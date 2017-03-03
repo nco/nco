@@ -1,5 +1,9 @@
 2017-03-03  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.5-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.5-alpha03 final changes';git push
+	git tag -a 4.6.5-alpha03 -m 'Version 4.6.5-alpha03 new features: rgr pop sungduk, timestamps, --version, --cnk_csh, --vrb_lvl ';git push --tags
+
 	* Add --prn_vrb option to ncremap
 
 2017-03-02  Charlie Zender  <zender@uci.edu>

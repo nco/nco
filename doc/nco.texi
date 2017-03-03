@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.5-alpha02
-@set doc-edition 4.6.5-alpha02
+@set nco-edition 4.6.5-alpha03
+@set doc-edition 4.6.5-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
 @set update-date 3 March 2017
@@ -21244,7 +21244,7 @@ ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_op
 [-M] [-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] 
 [-T @var{tempest_opt}] [-t @var{thr_nbr}] [-U @var{drc_tmp}] [-u @var{unq_sfx}] 
-[-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--vrb=@var{prn_vrb}] 
+[-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--vrb=@var{vrb_lvl}] 
 [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
 
@@ -21935,25 +21935,25 @@ ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr # Manua
 @noindent
 
 @html
-<a name="prn_vrb"></a> <!-- http://nco.sf.net/nco.html#prn_vrb -->
+<a name="vrb_lvl"></a> <!-- http://nco.sf.net/nco.html#vrb_lvl -->
 @end html
-@cindex @code{--vrb @var{prn_vrb}}
-@cindex @var{prn_vrb}
-@cindex @code{--prn_vrb}
+@cindex @code{--vrb @var{vrb_lvl}}
+@cindex @var{vrb_lvl}
+@cindex @code{--vrb_lvl}
 @cindex @code{--vrb}
 @cindex @code{--verbosity}
 @cindex @code{--print_verbosity}
-@item --vrb @var{prn_vrb} (@code{--prn_vrb}, @code{--vrb}, @code{--verbosity}, @code{--print_verbosity})
+@item --vrb @var{vrb_lvl} (@code{--vrb_lvl}, @code{--vrb}, @code{--verbosity}, @code{--print_verbosity})
 Specifies a verbosity level similar to the rest of @acronym{NCO}.
-If @math{@var{prn_vrb} = 0}, @command{ncremap} prints nothing except
+If @math{@var{vrb_lvl} = 0}, @command{ncremap} prints nothing except
 potentially serious warnings.
-If @math{@var{prn_vrb} = 1}, @command{ncremap} prints the basic
+If @math{@var{vrb_lvl} = 1}, @command{ncremap} prints the basic
 filenames involved in the remapping.
-If @math{@var{prn_vrb} = 2}, @command{ncremap} prints helpful comments
+If @math{@var{vrb_lvl} = 2}, @command{ncremap} prints helpful comments
 about the code path taken.
-If @math{@var{prn_vrb} > 2}, @command{ncremap} prints even more detailed
+If @math{@var{vrb_lvl} > 2}, @command{ncremap} prints even more detailed
 information.
-Note that @var{prn_vrb} is distinct from @var{dbg_lvl} which is
+Note that @var{vrb_lvl} is distinct from @var{dbg_lvl} which is
 passed to the regridder (@command{ncks}) for additional diagnostics.
 
 @html

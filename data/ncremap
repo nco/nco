@@ -282,7 +282,6 @@ out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='nil' # [sng] Parallelism type
 pdq_typ='' # [sng] Permutation type
-prn_vrb=1 # [sng] Print verbosity level
 #rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon --rnr=0.0' # [sng] Regridding options
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
 std_flg='No' # [sng] Input available from pipe to stdin
@@ -295,6 +294,7 @@ unq_sfx=".pid${spt_pid}" # [sng] Unique suffix
 var_lst='' # [sng] Variables to process (empty means all)
 var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
+vrb_lvl=1 # [sng] Verbosity level
 vrs_prn='No' # [sng] Print version information
 wgt_gnr='esmf' # [sng] Weight-generator program
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
@@ -330,7 +330,6 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}out_fl${fnt_nrm}   Output-file (regridded file) (empty copies Input filename) (default ${fnt_bld}${out_fl}${fnt_nrm}) [${fnt_tlc}out_fl, out_file, output_file${fnt_nrm}]"
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}pdq_typ${fnt_nrm}  Permutation type (empty means none) (default ${fnt_bld}${pdq_typ}${fnt_nrm}) [${fnt_tlc}pdq_typ, prm_typ, permutation, permute${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
-    echo " ${fnt_bld}--prn_vrb${fnt_nrm}  Print verbosity level (default ${fnt_bld}${prn_vrb}${fnt_nrm}) [${fnt_tlc}vrb, verbosity, print_verbosity${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}grd_src${fnt_nrm}  Grid-file (source) (empty means infer or use map_fl) (default ${fnt_bld}${grd_src}${fnt_nrm}) [${fnt_tlc}grd_src, grid_source, source_grid, src_grd${fnt_nrm}]"
     echo "${fnt_rvr}-T${fnt_nrm} ${fnt_bld}tps_opt${fnt_nrm}  TempestRemap GenerateOfflineMap options (default ${fnt_bld}${tps_opt}${fnt_nrm}) [${fnt_tlc}tps_opt, tempest_opt, tempest, tempest_options${fnt_nrm}]"
@@ -339,6 +338,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-u${fnt_nrm} ${fnt_bld}unq_sfx${fnt_nrm}  Unique suffix (prevents intermediate files from sharing names) (default ${fnt_bld}${unq_sfx}${fnt_nrm}) [${fnt_tlc}unq_sfx, unique_suffix, suffix${fnt_nrm}]"
     echo "${fnt_rvr}-V${fnt_nrm} ${fnt_bld}var_rgr${fnt_nrm}  CF template variable (empty means none) (default ${fnt_bld}${var_rgr}${fnt_nrm}) [${fnt_tlc}var_rgr, rgr_var, var_cf, cf_var, cf_variable${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
+    echo " ${fnt_bld}--vrb_lvl${fnt_nrm}  Verbosity level (default ${fnt_bld}${vrb_lvl}${fnt_nrm}) [${fnt_tlc}vrb, verbosity, print_verbosity${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_gnr${fnt_nrm}  Weight-generator (default ${fnt_bld}${wgt_gnr}${fnt_nrm}) [${fnt_tlc}wgt_gnr, weight_generator, generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
@@ -437,7 +437,6 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
 	       out_fl=?* | output_file=?* | out_file=?* ) out_fl="${LONG_OPTARG}" ;; # -o # Output file
 	       pdq_typ=?* | prm_typ=?* | permutation=?* | permute=?* ) pdq_typ="${LONG_OPTARG}" ;; # -P # Permutation type
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
-	       prn_vrb=?* | vrb=?* | verbosity=?* | print_verbosity=?* ) prn_vrb="${LONG_OPTARG}" ;; # # Print verbosity
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
 	       grd_src=?* | grid_source=?* | source_grid=?* | src_grd=?* ) grd_src="${LONG_OPTARG}" ;; # -s # Source grid-file
 	       tps_opt=?* | tempest_opt=?* | tempest=?* | tempest_options=?* ) tps_opt="${LONG_OPTARG}" ;; # -T # Tempest options
@@ -446,6 +445,7 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
 	       unq_sfx=?* | unique_suffix=?* | suffix=?* ) unq_usr="${LONG_OPTARG}" ;; # -u # Unique suffix
 	       var_rgr=?* | rgr_var=?* | var_cf=?* | cf_var=?* | cf_variable=?* ) var_rgr="${LONG_OPTARG}" ;; # -V # CF template variable 
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
+	       vrb_lvl=?* | vrb=?* | verbosity=?* | print_verbosity=?* ) vrb_lvl="${LONG_OPTARG}" ;; # # Print verbosity
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
 	       wgt_gnr=?* | weight_generator=?* | generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
@@ -878,24 +878,24 @@ fi # !drc_tmp
 
 # Human-readable summary
 date_srt=$(date +"%s")
-if [ ${prn_vrb} -ge 3 ]; then
+if [ ${vrb_lvl} -ge 3 ]; then
     printf "NCO regridder invoked with command:\n"
     echo "${cmd_ln}"
-fi # !prn_vrb
+fi # !vrb_lvl
 if [ -f 'PET0.RegridWeightGen.Log' ]; then
-    if [ ${prn_vrb} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge 2 ]; then
 	printf "${spt_nm}: Removing PET0.RegridWeightGen.Log file from current directory before running\n"
-    fi # !prn_vrb
+    fi # !vrb_lvl
     /bin/rm -f PET0.RegridWeightGen.Log
 fi # !PETO
-if [ ${prn_vrb} -ge 2 ]; then
+if [ ${vrb_lvl} -ge 2 ]; then
     printf "Started processing at `date`.\n"
     printf "Running remap script ${spt_nm} from directory ${drc_spt}\n"
     printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
     printf "Input files in or relative to directory ${drc_in}\n"
     printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
     printf "Output files to directory ${drc_out}\n"
-fi # !prn_vrb
+fi # !vrb_lvl
 if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ] && [ -n "${wgt_usr}" ]; then
     printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_gnr' is only allowed when creating a map (weight generator is superfluous when map is supplied)\n"
     exit 1
@@ -917,7 +917,7 @@ fi # !dst_usr_flg
 # Generate destination grid at most one-time (unlike source grid)
 # Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
 # Currently we require user to know (and specify) means by which destination grid is provided
-if [ ${prn_vrb} -ge 2 ]; then
+if [ ${vrb_lvl} -ge 2 ]; then
     if [ ${fl_nbr} -eq 0 ]; then
 	printf "Map-only run: no input data detected therefore will exit after generating map\n"
     fi # !fl_nbr
@@ -930,30 +930,30 @@ if [ ${prn_vrb} -ge 2 ]; then
  	    printf "Input assumed to be barenaked of attributes: will annotate NC_DOUBLE variables with _FillValue prior to regridding\n"
 	fi # !clm_flg
     fi # !mpas
-fi # !prn_vrb
+fi # !vrb_lvl
 if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ]; then 
-    if [ ${prn_vrb} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge 2 ]; then
 	printf "Source and destination grids will both be read from supplied map-file\n"
-    fi # !prn_vrb
+    fi # !vrb_lvl
 else # !map_usr_flg
     fl_idx=0 # [idx] Current file index
     if [ "${dst_usr_flg}" = 'Yes' ]; then 
 	# Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
 	# Infer destination grid-file from data file
-	if [ ${prn_vrb} -ge 2 ]; then
+	if [ ${vrb_lvl} -ge 2 ]; then
 	    printf "Destination grid will be inferred from data-file\n"
-	fi # !prn_vrb
+	fi # !vrb_lvl
 	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y ${nco_var_rgr} --rgr grid=${grd_dst} ${dst_fl} ${tmp_out_fl}"
     else # !dst_usr_flg
 	if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
-	    if [ ${prn_vrb} -ge 2 ]; then
+	    if [ ${vrb_lvl} -ge 2 ]; then
 		printf "Destination grid supplied by user\n"
-	    fi # !prn_vrb
+	    fi # !vrb_lvl
 	else
 	    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
-		if [ ${prn_vrb} -ge 2 ]; then
+		if [ ${vrb_lvl} -ge 2 ]; then
 		    printf "Destination grid will be generated from NCO grid string ${grd_sng}\n"
-		fi # !prn_vrb
+		fi # !vrb_lvl
 		cmd_dst[${fl_idx}]="ncks ${nco_opt} ${grd_sng} ${fl_in[0]} ${tmp_out_fl}"
 	    else
 		printf "${spt_nm}: ERROR Grid string grd_sng not provided\n"
@@ -977,24 +977,24 @@ else # !map_usr_flg
 	    fi # !grd_sng_usr_flg
 	fi # !dbg
     fi # !dst_usr_flg || grd_dst_usr_flg
-    if [ ${prn_vrb} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge 2 ]; then
 	printf "Weight-generation type: ${wgt_gnr}\n"
-    fi # !prn_vrb
+    fi # !vrb_lvl
     if [ "${wgt_gnr}" = 'esmf' ]; then 
-	if [ ${prn_vrb} -ge 2 ]; then
+	if [ ${vrb_lvl} -ge 2 ]; then
 	    printf "ESMF's ESMF_RegridWeightGen will generate mapping weights and map-file\n"
 	    printf "Algorithm used to generate weights in map-file is: ${alg_opt}\n"
-	fi # !prn_vrb
+	fi # !vrb_lvl
 	wgt_cmd='ESMF_RegridWeightGen'
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
-	if [ ${prn_vrb} -ge 2 ]; then
+	if [ ${vrb_lvl} -ge 2 ]; then
 	    printf "TempestRemap's GenerateOverlapMesh and GenerateOfflineMap will generate mapping weights and map-file\n"
-	fi # !prn_vrb
+	fi # !vrb_lvl
 	wgt_cmd='GenerateOfflineMap'
     fi # !tempest
     command -v ${wgt_cmd} 2>&1 /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command ${wgt_cmd}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is often provided in NCL packages. Tempest executables must be installed from source (https://github.com/ClimateGlobalChange/tempestremap)."; exit 1; }
-    if [ ${prn_vrb} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge 2 ]; then
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    if [ "${mlt_map_flg}" = 'Yes' ]; then 
 		printf "Input files assumed to use unique input grids\nOne source grid-file will be inferred and one map-file generated per input file\n"
@@ -1002,16 +1002,16 @@ else # !map_usr_flg
 		printf "Input files assumed to use same input grid\nOnly one source grid-file and one map-file will be generated\n"
 	    fi # !mlt_map_flg
 	fi # !fl_nbr
-    fi # !prn_vrb
+    fi # !vrb_lvl
 fi # !map_usr
 
 # If user provides source gridfile, assume it applies to every input file
 # Do not infer source gridfiles from input files within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
 if [ "${grd_src_usr_flg}" = 'Yes' ]; then
-    if [ ${prn_vrb} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge 2 ]; then
 	printf "Source grid supplied by user as ${grd_src}\n"
-    fi # !prn_vrb
+    fi # !vrb_lvl
     fl_idx=0
     if [ "${wgt_gnr}" = 'esmf' ]; then 
 	cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${esmf_opt} > /dev/null"
@@ -1068,9 +1068,9 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	in_fl="${drc_pwd}/${in_fl}"
     fi # !basename
     idx_prn=`printf "%02d" ${fl_idx}`
-    if [ ${prn_vrb} -ge 1 ]; then
+    if [ ${vrb_lvl} -ge 1 ]; then
 	printf "Input #${idx_prn}: ${in_fl}\n"
-    fi # !prn_vrb
+    fi # !vrb_lvl
     if [ "${out_usr_flg}" = 'Yes' ]; then 
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    echo "ERROR: Single output filename specified with -o for multiple input files"
@@ -1205,10 +1205,10 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	
     # Block 4b: Generic Permutation (AIRS, HIRDLS, MLS, MPAS)
     if [ -n "${pdq_opt}" ]; then
-	if [ ${prn_vrb} -ge 2 ]; then
+	if [ ${vrb_lvl} -ge 2 ]; then
 	    printf "PDQ(in)  : ${in_fl}\n"
 	    printf "PDQ(out) : ${pdq_fl}\n"
-	fi # !prn_vrb
+	fi # !vrb_lvl
 	cmd_pdq[${fl_idx}]="ncpdq ${nco_opt} ${nco_var_lst} ${pdq_opt} ${in_fl} ${pdq_fl}"
 	in_fl=${pdq_fl}
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -1224,10 +1224,10 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !pdq_opt
 
     # Block 5: Regrid
-    if [ ${prn_vrb} -ge 1 ]; then
+    if [ ${vrb_lvl} -ge 1 ]; then
 	printf "Map/Wgt  : ${map_fl}\n"
 	printf "Regridded: ${out_fl}\n"
-    fi # !prn_vrb
+    fi # !vrb_lvl
     cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
     
     # Block 5 Loop 2: Execute and/or echo commands
@@ -1306,18 +1306,18 @@ if [ -n "${par_opt}" ]; then
 fi # !par_typ
 
 if [ "${cln_flg}" = 'Yes' ]; then
-    if [ ${prn_vrb} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge 2 ]; then
 	printf "Cleaning-up intermediate files...\n"
-    fi # !prn_vrb
+    fi # !vrb_lvl
     /bin/rm -f ${att_fl} ${grd_dst_dfl} ${grd_src_dfl} ${map_fl_dfl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
-    if [ ${prn_vrb} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge 2 ]; then
 	printf "Explicitly instructed not to clean-up intermediate files.\n"
-    fi # !prn_vrb
+    fi # !vrb_lvl
 fi # !cln_flg
 
 date_end=$(date +"%s")
-if [ ${prn_vrb} -ge 2 ]; then
+if [ ${vrb_lvl} -ge 2 ]; then
     if [ ${fl_nbr} -eq 0 ]; then
 	printf "Completed generating map-file(s) at `date`.\n"
     else # !fl_nbr
@@ -1327,6 +1327,6 @@ if [ ${prn_vrb} -ge 2 ]; then
     fi # !fl_nbr
     date_dff=$((date_end-date_srt))
     echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
-fi # !prn_vrb
+fi # !vrb_lvl
 
 exit 0
