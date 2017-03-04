@@ -712,7 +712,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
     cmp_dat_sng=(char *)strdup("Unknown");
   } /* endif */
 
-  (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",lbr_vrs_sng,cmp_dat_sng);
+  (void)fprintf(stderr,"Linked to netCDF library version %s compiled %s\n",lbr_vrs_sng,cmp_dat_sng);
 
   cmp_dat_sng=(char *)nco_free(cmp_dat_sng);
   lbr_vrs_sng=(char *)nco_free(lbr_vrs_sng);

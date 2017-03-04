@@ -21942,8 +21942,8 @@ ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr # Manua
 @cindex @code{--vrb_lvl}
 @cindex @code{--vrb}
 @cindex @code{--verbosity}
-@cindex @code{--print_verbosity}
-@item --vrb @var{vrb_lvl} (@code{--vrb_lvl}, @code{--vrb}, @code{--verbosity}, @code{--print_verbosity})
+@cindex @code{--verbosity_level}
+@item --vrb @var{vrb_lvl} (@code{--vrb_lvl}, @code{--vrb}, @code{--verbosity}, @code{--verbosity_level})
 Specifies a verbosity level similar to the rest of @acronym{NCO}.
 If @math{@var{vrb_lvl} = 0}, @command{ncremap} prints nothing except
 potentially serious warnings.

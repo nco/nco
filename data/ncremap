@@ -225,6 +225,7 @@ while [ -h "${nco_exe}" ]; do
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 >/dev/null | grep NCO | awk '{print $5}')
+lbr_vrs=$(ncks --library 2>&1 >/dev/null | awk '{print $6}')
 
 # When running in a terminal window (not in an non-interactive batch queue)...
 if [ -n "${TERM}" ]; then
@@ -338,8 +339,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-u${fnt_nrm} ${fnt_bld}unq_sfx${fnt_nrm}  Unique suffix (prevents intermediate files from sharing names) (default ${fnt_bld}${unq_sfx}${fnt_nrm}) [${fnt_tlc}unq_sfx, unique_suffix, suffix${fnt_nrm}]"
     echo "${fnt_rvr}-V${fnt_nrm} ${fnt_bld}var_rgr${fnt_nrm}  CF template variable (empty means none) (default ${fnt_bld}${var_rgr}${fnt_nrm}) [${fnt_tlc}var_rgr, rgr_var, var_cf, cf_var, cf_variable${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
-    echo " ${fnt_bld}--vrb_lvl${fnt_nrm}  Verbosity level (default ${fnt_bld}${vrb_lvl}${fnt_nrm}) [${fnt_tlc}vrb, verbosity, print_verbosity${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
+    echo " ${fnt_bld}--vrb_lvl${fnt_nrm}  Verbosity level (default ${fnt_bld}${vrb_lvl}${fnt_nrm}) [${fnt_tlc}vrb_lvl, vrb, verbosity, print_verbosity${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_gnr${fnt_nrm}  Weight-generator (default ${fnt_bld}${wgt_gnr}${fnt_nrm}) [${fnt_tlc}wgt_gnr, weight_generator, generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
     printf "\n"
@@ -459,21 +460,30 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
 done # !getopts
 shift $((OPTIND-1)) # Advance one argument
 if [ ${vrs_prn} = 'Yes' ]; then
-    printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
-    printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
+    printf "${spt_nm}, the NCO regridder and map- and grid-generator, version ${nco_vrs}\n"
+    printf "Copyright (C) 2016--2017 Charlie Zender\n"
+    printf "This program is part of NCO, the netCDF Operators\n"
+    printf "NCO is free software and comes with a BIG FAT KISS and ABOLUTELY NO WARRANTY\n"
+    printf "You may redistribute and/or modify NCO under the terms of the\n"
+    printf "GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\n"
+    printf "GPL: http://www.gnu.org/copyleft/gpl.html\n"
+    printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
+    printf "Config: ${spt_nm} running from directory ${drc_spt}\n"
+    printf "Config: calling NCO binaries in directory ${drc_nco}\n"
+    printf "Config: binaries linked to netCDF library version ${lbr_vrs}\n"
     wgt_cmd='ESMF_RegridWeightGen'
     cmd_wgt=`command -v ${wgt_cmd} 2>&1 /dev/null`
     if [ $? -eq 0 ]; then
-	printf "Weight-generation command ${wgt_cmd} is available as ${cmd_wgt}\n"
+	printf "Config: ESMF weight-generation command ${wgt_cmd} found as ${cmd_wgt}\n"
     else
-	printf "Weight-generation command ${wgt_cmd} is unavailable\n"
+	printf "Config: ESMF weight-generation command ${wgt_cmd} is unavailable\n"
     fi # !err
     wgt_cmd='GenerateOverlapMesh'
     cmd_wgt=`command -v ${wgt_cmd} 2>&1 /dev/null`
     if [ $? -eq 0 ]; then
-	printf "Weight-generation command ${wgt_cmd} is available as ${cmd_wgt}\n"
+	printf "Config: Tempest weight-generation command ${wgt_cmd} found as ${cmd_wgt}\n"
     else
-	printf "Weight-generation command ${wgt_cmd} is unavailable\n"
+	printf "Config: Tempest weight-generation command ${wgt_cmd} is unavailable\n"
     fi # !err
     exit 0
 fi # !vrs_prn
