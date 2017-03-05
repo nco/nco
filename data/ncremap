@@ -224,8 +224,8 @@ while [ -h "${nco_exe}" ]; do
   [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
-nco_vrs=$(ncks --version 2>&1 >/dev/null | grep NCO | awk '{print $5}')
-lbr_vrs=$(ncks --library 2>&1 >/dev/null | awk '{print $6}')
+nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
+lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # When running in a terminal window (not in an non-interactive batch queue)...
 if [ -n "${TERM}" ]; then
@@ -472,14 +472,14 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "Config: calling NCO binaries in directory ${drc_nco}\n"
     printf "Config: binaries linked to netCDF library version ${lbr_vrs}\n"
     wgt_cmd='ESMF_RegridWeightGen'
-    cmd_wgt=`command -v ${wgt_cmd} 2>&1 /dev/null`
+    cmd_wgt=`command -v ${wgt_cmd} 2>&1 > /dev/null`
     if [ $? -eq 0 ]; then
 	printf "Config: ESMF weight-generation command ${wgt_cmd} found as ${cmd_wgt}\n"
     else
 	printf "Config: ESMF weight-generation command ${wgt_cmd} not found\n"
     fi # !err
     wgt_cmd='GenerateOverlapMesh'
-    cmd_wgt=`command -v ${wgt_cmd} 2>&1 /dev/null`
+    cmd_wgt=`command -v ${wgt_cmd} 2>&1 > /dev/null`
     if [ $? -eq 0 ]; then
 	printf "Config: Tempest weight-generation command ${wgt_cmd} found as ${cmd_wgt}\n"
     else
@@ -1003,7 +1003,7 @@ else # !map_usr_flg
 	fi # !vrb_lvl
 	wgt_cmd='GenerateOfflineMap'
     fi # !tempest
-    command -v ${wgt_cmd} 2>&1 /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command ${wgt_cmd}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is often provided in NCL packages. Tempest executables must be installed from source (https://github.com/ClimateGlobalChange/tempestremap)."; exit 1; }
+    command -v ${wgt_cmd} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command ${wgt_cmd}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is often provided in NCL packages. Tempest executables must be installed from source (https://github.com/ClimateGlobalChange/tempestremap)."; exit 1; }
     if [ ${vrb_lvl} -ge 2 ]; then
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    if [ "${mlt_map_flg}" = 'Yes' ]; then 
@@ -1144,8 +1144,10 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	
 	# Block 3: Source->destination maps
 	# Block 3 Loop 1: Map-file commands
-	printf "Grid(src): ${grd_src}\n"
-	printf "Grid(dst): ${grd_dst}\n"
+	if [ ${vrb_lvl} -ge 1 ]; then
+	    printf "Grid(src): ${grd_src}\n"
+	    printf "Grid(dst): ${grd_dst}\n"
+	fi # !vrb_lvl
 	if [ "${wgt_gnr}" = 'esmf' ]; then 
 	    cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${esmf_opt} > /dev/null"
 	fi # !esmf
