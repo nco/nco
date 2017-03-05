@@ -131,6 +131,36 @@ nco_dfl_case_cnk_plc_err(void) /* [fnc] Print error and exit for illegal switch(
 } /* end nco_dfl_case_cnk_plc_err() */
 
 int /* [rcd] Return code */
+nco_cnk_csh_ini /* [fnc] Initialize global chunk cache user-specified input */
+(const size_t cnk_csh_byt) /* I [B] Chunk cache size */
+{
+  /* Purpose: Initialize chunking from user-specified inputs */
+
+  const char fnc_nm[]="nco_cnk_csh_ini()"; /* [sng] Function name */
+
+  float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
+
+  int rcd=0; /* [enm] Return code  */
+  
+  size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
+  size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
+
+  if(cnk_csh_byt > 0ULL){
+    /* Use user-specified chunk cache size if available */
+    rcd+=nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+    rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
+  } /* !cnk_csh_byt */
+  
+    /* Report current system cache settings */
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+    rcd+=nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
+    (void)fprintf(stderr,"%s: INFO %s reports chunk cache size = cnk_csh_byt = %ld B, # of slots in raw data chunk cache has table = nelemsp = %ld, pre-emption favor fraction = pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
+  } /* !dbg */
+
+  return rcd;
+} /* end nco_cnk_csh_ini() */
+
+int /* [rcd] Return code */
 nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const fl_out, /* I [sng] Output filename */

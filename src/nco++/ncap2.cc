@@ -130,7 +130,7 @@ main(int argc,char **argv)
   const char * const att_nm_tmp="eulaVlliF_"; /* For netCDF4 name hack */
   const char * const opt_sht_lst="3467ACcD:FfhL:l:n:Oo:p:Rrs:S:t:vx-:"; /* [sng] Single letter command line options */
   
-  const char fnc_nm[]="main()"; /* [sng] Function name */
+  const char fnc_nm[]="main()";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -504,22 +504,8 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
-  if(True){
-    float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
-    size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
-    size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
-    if(cnk_csh_byt > 0ULL){
-      /* Use user-specified chunk cache size if available */
-      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-      rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
-    } /* !cnk_csh_byt */
-    
-    /* Report current system cache settings */
-    if(nco_dbg_lvl_get() >= nco_dbg_scl){
-      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-      (void)fprintf(stderr,"%s: INFO %s reports cnk_csh_byt = %ld, nelemsp = %ld, pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
-    } /* !dbg */
-  } /* !True */
+  /* Set/report global chunk cache */
+  rcd+=nco_cnk_csh_ini(cnk_csh_byt);
 
   /* Append ";\n" to command-script arguments, then concatenate them */
   for(idx=0;idx<nbr_spt;idx++){

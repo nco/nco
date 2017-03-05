@@ -256,7 +256,7 @@ nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
 } /* end nco_mss_val_cp() */
   
 int /* O [flg] Variable has missing value on output */
-nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable */
+nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable */
 (const int nc_id, /* I [id] netCDF input-file ID */
  var_sct * const var) /* I/O [sct] Variable with missing_value to update */
 {
@@ -348,7 +348,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
 } /* end nco_mss_val_get() */
 
 nco_bool /* O [flg] Variable has missing value */
-nco_mss_val_get_dbl /* [fnc] Return missing_value of variable, if any, as double precision number */
+nco_mss_val_get_dbl /* [fnc] Return missing value of variable, if any, as double precision number */
 (const int nc_id, /* I [id] netCDF input-file ID */
  const int var_id, /* I [id] netCDF variable ID */
  double *mss_val_dbl) /* O [frc] Missing value in double precision */
@@ -389,10 +389,14 @@ nco_mss_val_get_dbl /* [fnc] Return missing_value of variable, if any, as double
     } /* end if */
     /* If we got this far then retrieve attribute */
     has_mss_val=True;
-    /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
-    (void)nco_get_att(nc_id,var_id,att_nm,mss_val_dbl,NC_DOUBLE);
-    //(void)fprintf(stderr,"%s: INFO NC_DOUBLE version of \"%s\" attribute for %s is %g\n",nco_prg_nm_get(),att_nm,var_nm,*mss_val_dbl);
-    if(!isfinite(*mss_val_dbl)) (void)fprintf(stderr,"%s: WARNING NC_DOUBLE version of \"%s\" attribute for %s fails isfinite(), value is %s\n",nco_prg_nm_get(),att_nm,var_nm,(isnan(*mss_val_dbl)) ? "NaN" : ((isinf(*mss_val_dbl)) ? "Infinity" : ""));
+    /* Only retrieve value when pointer is non-NULL
+       This prevents excessive retrievals and (potentially) printing of lengthy WARNINGS below */
+    if(mss_val_dbl){
+      /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
+      (void)nco_get_att(nc_id,var_id,att_nm,mss_val_dbl,NC_DOUBLE);
+      //(void)fprintf(stderr,"%s: INFO NC_DOUBLE version of \"%s\" attribute for %s is %g\n",nco_prg_nm_get(),att_nm,var_nm,*mss_val_dbl);
+      if(!isfinite(*mss_val_dbl)) (void)fprintf(stderr,"%s: WARNING NC_DOUBLE version of \"%s\" attribute for %s fails isfinite(), value is %s, which can cause unpredictable results.\nHINT: If arithmetic results (e.g., from regridding) fails or values seem weird, retry after first converting %s to normal number with, e.g., \"ncatted -a %s,%s,m,f,1.0e36 in.nc out.nc\"\n",nco_prg_nm_get(),att_nm,var_nm,(isnan(*mss_val_dbl)) ? "NaN" : ((isinf(*mss_val_dbl)) ? "Infinity" : ""),nco_mss_val_sng_get(),nco_mss_val_sng_get(),var_id != NC_GLOBAL ? var_nm : "");
+    } /* !mss_val_dbl */
     break;
   } /* end loop over att */
 

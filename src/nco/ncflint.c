@@ -141,8 +141,6 @@ main(int argc,char **argv)
   const char * const CVS_Revision="$Revision$";
   const char * const opt_sht_lst="3467ACcD:d:Fg:G:hi:L:l:NOo:p:rRt:v:X:xw:-:";
 
-  const char fnc_nm[]="main()"; /* [sng] Function name */
-
   cnk_sct cnk; /* [sct] Chunking structure */
 
 #if defined(__cplusplus) || defined(PGI_CC)
@@ -596,22 +594,8 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
 
-  if(True){
-    float pmp_fvr_frc; /* [frc] Pre-emption favor fraction */
-    size_t cnk_csh_byt_crr; /* I [B] Chunk cache size current setting */
-    size_t nelemsp; /* [nbr] Chunk slots in raw data chunk cache hash table */
-    if(cnk_csh_byt > 0ULL){
-      /* Use user-specified chunk cache size if available */
-      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-      rcd+=nco_set_chunk_cache(cnk_csh_byt,nelemsp,pmp_fvr_frc);
-    } /* !cnk_csh_byt */
-    
-    /* Report current system cache settings */
-    if(nco_dbg_lvl_get() >= nco_dbg_scl){
-      nco_get_chunk_cache(&cnk_csh_byt_crr,&nelemsp,&pmp_fvr_frc);
-      (void)fprintf(stderr,"%s: INFO %s reports chunk cache size = cnk_csh_byt = %ld B, # of slots in raw data chunk cache has table = nelemsp = %ld, pre-emption favor fraction = pmp_fvr_frc = %g\n",nco_prg_nm_get(),fnc_nm,cnk_csh_byt_crr,nelemsp,pmp_fvr_frc);
-    } /* !dbg */
-  } /* !True */
+  /* Set/report global chunk cache */
+  rcd+=nco_cnk_csh_ini(cnk_csh_byt);
 
   if(CMD_LN_NTP_VAR && CMD_LN_NTP_WGT){
     (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) and fixed weight(s) (-w) both set\n",nco_prg_nm_get());

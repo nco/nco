@@ -1,3 +1,9 @@
+2017-03-05  Charlie Zender  <zender@uci.edu>
+
+	* Suppress multiple NaN warnings from nco_mss_val_get_dbl()
+
+	* Functionalize chunk cache size set into nco_cnk_csh_ini()
+
 2017-03-04  Charlie Zender  <zender@uci.edu>
 
 	* Output NCO-standardish copyright/config notice from ncremap/ncclimo --version

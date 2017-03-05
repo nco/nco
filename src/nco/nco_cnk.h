@@ -74,6 +74,10 @@ const char * /* O [sng] Chunking policy string */
 nco_cnk_plc_sng_get /* [fnc] Convert chunking policy enum to string */
 (const int nco_cnk_plc); /* I [enm] Chunking policy */
 
+int /* [rcd] Return code */
+nco_cnk_csh_ini /* [fnc] Initialize global chunk cache user-specified input */
+(const size_t cnk_csh_byt); /* I [B] Chunk cache size */
+
 int /* [rcd] [enm] Return code */
 nco_cnk_ini /* [fnc] Initialize chunking from user-specified inputs */
 (const int in_id, /* I [id] netCDF input file ID */
