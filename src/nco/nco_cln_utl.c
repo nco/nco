@@ -14,14 +14,14 @@
 /* Arrays to hold calendar type units */
 /* Format: year, month, day, hour, minute, second, origin, offset */
 /* origin for all calendars is 2001-01-01 (seconds)  (same as origin for udunits xalendar) */
-double DATA_360[8]={31104000.0,2592000.0,86400.0,3600.0,60.0,1.0, 31104000.0*2001.0, 0.0};
-double DATA_365[8]={31536000.0,2628000.0,86400.0,3600.0,60.0,1.0, 31536000.0*2001.0, 0.0};
-double DATA_366[8]={31622400.0,2635200.0,86400.0,3600.0,60.0,1.0,63276422400.0 , 0.0};
+static  double DATA_360[8]={31104000.0,2592000.0,86400.0,3600.0,60.0,1.0, 31104000.0*2001.0, 0.0};
+static double DATA_365[8]={31536000.0,2628000.0,86400.0,3600.0,60.0,1.0, 31536000.0*2001.0, 0.0};
+static double DATA_366[8]={31622400.0,2635200.0,86400.0,3600.0,60.0,1.0,63276422400.0 , 0.0};
 
 /* Days in months */
-int DAYS_PER_MONTH_360[12]={30,30,30,30,30,30,30,30,30,30,30,30};
-int DAYS_PER_MONTH_365[12]={31,28,31,30,31,30,31,31,30,31,30,31};
-int DAYS_PER_MONTH_366[12]={31,29,31,30,31,30,31,31,30,31,30,31};
+static int DAYS_PER_MONTH_360[12]={30,30,30,30,30,30,30,30,30,30,30,30};
+static int DAYS_PER_MONTH_365[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+static int DAYS_PER_MONTH_366[12]={31,29,31,30,31,30,31,31,30,31,30,31};
 
 /* Size of temporary buffer used in parsing calendar dates */
 #define NCO_MAX_LEN_TMP_SNG 200
@@ -143,7 +143,7 @@ tm_typ /* O [enm] Units type */
 nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
 (const char *ud_sng){ /* I [ptr] Units string  */
   int idx;
-  int len; 
+  size_t len; 
   char *lcl_sng;  
   tm_typ rcd_typ;
   
@@ -282,12 +282,12 @@ nco_cln_pop_tm         /* [fnc] Calculate other members  in cln_sct from value*/
 (tm_cln_sct *cln_sct) /* I/O [ptr] Calendar structure */
 {
   int idx;
-  int *days_per_month;
+  int *days_per_month=NULL_CEWI;
   long ivalue;
   long days;
   double fr_value;
   double m_value;
-  double *data;
+  double *data=NULL_CEWI;
 
   switch(cln_sct->sc_cln)
   {
@@ -875,9 +875,9 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
       if(var->has_mss_val){  
 	float mss_flt=var->mss_val.fp[0]; 
 	for(idx=0;idx<sz;idx++)
-	   if(fp[idx] != mss_flt) fp[idx]=fp[idx]*scl_val+crr_val;                      
+	  if(fp[idx] != mss_flt) fp[idx]=fp[idx]*(float)scl_val+(float)crr_val;                      
       }else{
-	for(idx=0;idx<sz;idx++) fp[idx]=fp[idx]*scl_val+crr_val;                      
+	for(idx=0;idx<sz;idx++) fp[idx]=fp[idx]*(float)scl_val+(float)crr_val;                      
       } /* !has_mss_val */
     } /* !NC_FLOAT */
    (void)cast_nctype_void(var->type,&op1);
