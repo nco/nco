@@ -1052,7 +1052,7 @@ var_sct* var2)
    a function template overload in VarOPNew.hh */
 var_sct* tmp_var_op_nco_string(var_sct* var1, int op) 
 {
-    long idx;
+
     long sz;
     nco_string *tp1;
 
@@ -1475,9 +1475,7 @@ ncap_var_var_op   /* [fnc] Add two variables */
   // att & var
   else if( vb1 && !vb2)
   {
-    var_sct *var_swp;
-    ptr_unn val_swp;  // Used to swap values around
-    
+
     var1=nco_var_cnf_typ(var2->type,var1);
     //if(var2->sz > 1 && var1->sz==1) (void)ncap_var_cnf_dmn(&var1,&var2);
     

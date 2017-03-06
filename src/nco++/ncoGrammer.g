@@ -1978,11 +1978,14 @@ end0:         if(bret)
                     if(!var_rhs->has_mss_val)
                       (void)nco_mss_val_cp(Nvar->var,var_rhs);   
                   }
-                  
-                  else if( var_rhs->sz >1 && n_sz >1 && var_rhs->sz != n_sz && n_sz % var_rhs->sz ==0)  
+
+                  // deal with NC_CHAR on RHS as special case - if too short then pad out with nulls else trucate
+                  else if(Nvar->var->type==NC_CHAR &&  Nvar->var->nbr_dim==1 && n_sz != var_rhs->sz && n_sz>1 )
+                      ncap_att_char_stretch(var_rhs, n_sz);
+
+                  else if( var_rhs->sz >1 && n_sz >1 && var_rhs->sz != n_sz && n_sz % var_rhs->sz ==0)
                       ncap_var_cnf_dmn(&Nvar->var,&var_rhs); 
-                   
-                
+
                   if(var_rhs->sz != Nvar->var->sz)
                    err_prn(fnc_nm, "size miss-match in simple assign between \""+ var_nm +"\""+ " size="+nbr2sng(Nvar->var->sz) + "var_rhs expr size="+nbr2sng(var_rhs->sz) );
 

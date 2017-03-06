@@ -96,6 +96,12 @@ ncap_att_stretch    /* stretch a single valued attribute from 1 to sz */
  long nw_sz);       /* I [nbr] new var size */
 
 
+nco_bool                /* O [flg] true if var has been stretched */
+ncap_att_char_stretch    /* stretch a single valued attribute from 1 to sz */
+(var_sct* var,      /* I/O [sct] variable */
+long nw_sz);       /* I [nbr] new var size */
+
+
 int 
 ncap_att_cpy_sct
 (var_sct *var1,
