@@ -332,6 +332,43 @@ ncap_att_stretch /* stretch a single valued attribute from 1 to sz */
 } /* end ncap_att_stretch */
 
 
+nco_bool /* O [flg] true if var has been stretched */
+ncap_att_char_stretch /* stretch a multivalued  valued attribute (by padding)  from var->sz to nw_sz */
+(var_sct* var, /* I/O [sct] variable */
+ long nw_sz) /* I [nbr] new var size */
+{
+  long  var_typ_sz;
+  char *cp;
+  void* vp;
+
+  if(var->type != NC_CHAR)
+    return False;
+
+  var_typ_sz=nco_typ_lng(NC_CHAR);
+
+
+  vp=(void*)nco_malloc(nw_sz*var_typ_sz);
+  cp=(char*)vp;
+  cast_void_nctype(NC_CHAR,&var->val);
+
+  if( nw_sz > var->sz ) {
+    strncpy(cp, var->val.cp, var->sz);
+    memset( cp+(ptrdiff_t)nw_sz,'\0', (size_t)(nw_sz-var->sz)  );
+  }
+  else{
+    strncpy(cp, var->val.cp,nw_sz);
+  }
+
+  cast_nctype_void(NC_CHAR,&var->val);
+
+  var->val.vp=(void*)nco_free(var->val.vp);
+  var->sz=nw_sz;
+  var->val.vp=vp;
+
+  return true;
+
+} /* end ncap_att_char_stretch */
+
 int 
 ncap_att_cpy_sct
 (var_sct *var1,
