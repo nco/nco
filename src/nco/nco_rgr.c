@@ -5358,12 +5358,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     nco_bool crd1_is_lat=False; /* [flg] Second coordinate is latitude */
     nco_bool crd1_is_lon=False; /* [flg] Second coordinate is longitude */
     if(cf->unt_sng[0]){
-      if(!strcasecmp(cf->unt_sng[0],"degrees_north")) crd0_is_lat=True;
-      if(!strcasecmp(cf->unt_sng[0],"degrees_east")) crd0_is_lon=True;
+      if(!strcasecmp(cf->unt_sng[0],"degrees_north") || !strcasecmp(cf->unt_sng[0],"degree_north") || !strcasecmp(cf->unt_sng[0],"degree_N") || !strcasecmp(cf->unt_sng[0],"degrees_N") || !strcasecmp(cf->unt_sng[0],"degreeN") || !strcasecmp(cf->unt_sng[0],"degreesN")) crd0_is_lat=True;
+      if(!strcasecmp(cf->unt_sng[0],"degrees_east") || !strcasecmp(cf->unt_sng[0],"degree_east") || !strcasecmp(cf->unt_sng[0],"degree_E") || !strcasecmp(cf->unt_sng[0],"degrees_E") || !strcasecmp(cf->unt_sng[0],"degreeE") || !strcasecmp(cf->unt_sng[0],"degreesE")) crd0_is_lon=True;
     } /* endif */      
     if(cf->unt_sng[1]){
-      if(!strcasecmp(cf->unt_sng[1],"degrees_north")) crd1_is_lat=True;
-      if(!strcasecmp(cf->unt_sng[1],"degrees_east")) crd1_is_lon=True;
+      if(!strcasecmp(cf->unt_sng[1],"degrees_north") || !strcasecmp(cf->unt_sng[1],"degree_north") || !strcasecmp(cf->unt_sng[1],"degree_N") || !strcasecmp(cf->unt_sng[1],"degrees_N") || !strcasecmp(cf->unt_sng[1],"degreeN") || !strcasecmp(cf->unt_sng[1],"degreesN")) crd1_is_lat=True;
+      if(!strcasecmp(cf->unt_sng[1],"degrees_east") || !strcasecmp(cf->unt_sng[1],"degree_east") || !strcasecmp(cf->unt_sng[1],"degree_E") || !strcasecmp(cf->unt_sng[1],"degrees_E") || !strcasecmp(cf->unt_sng[1],"degreeE") || !strcasecmp(cf->unt_sng[1],"degreesE")) crd1_is_lon=True;
     } /* endif */      
     assert((crd0_is_lat && crd1_is_lon) || (crd0_is_lon && crd1_is_lat));
     int idx_lat;
@@ -5489,6 +5489,25 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !3D */
   if(lat_rnk*lon_rnk != 1 && lat_rnk*lon_rnk != 4) assert(False);
 
+  /* Scrutinize coordinates for their dimensions
+     NB: Unstructure already known */
+  if(flg_grd_2D){
+    rcd+=nco_inq_dimname(in_id,dmn_id_lat,dmn_nm);
+    lat_dmn_nm=(char *)strdup(dmn_nm);
+    rcd+=nco_inq_dimname(in_id,dmn_id_lon,dmn_nm);
+    lon_dmn_nm=(char *)strdup(dmn_nm);
+  } /* !flg_grd_2D */
+  if(0){
+    if(flg_grd_crv){
+      rcd+=nco_inq_vardimid(in_id,lat_ctr_id,&dmn_ids);
+      
+      rcd+=nco_inq_dimname(in_id,dmn_id_lat,dmn_nm);
+      lat_dmn_nm=(char *)strdup(dmn_nm);
+      rcd+=nco_inq_dimname(in_id,dmn_id_lon,dmn_nm);
+      lon_dmn_nm=(char *)strdup(dmn_nm);
+    } /* !flg_grd_2D */
+  } /* !0 */
+  
   /* Locate dimensions that must be present in unstructured files */
   if(0){
     if((rcd=nco_inq_dimid_flg(in_id,"ncol",&dmn_id_col)) == NC_NOERR) col_dmn_nm=strdup("ncol"); /* CAM */
