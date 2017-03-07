@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.5-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 3 March 2017
+@set update-date 6 March 2017
 @set update-month March 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16802,9 +16802,9 @@ ncclimo [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}] 
-[-S @var{yr_prv}] [-s @var{yr_srt}] [--stdin] [--tpd=@var{tpd_dly}] [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] 
-[-v @var{var_lst}] [-x @var{cf_flg}] [-X @var{drc_xtn}] [-x @var{drc_prv}] [-Y @var{rgr_xtn}] [-y @var{rgr_prv}]
-[--ypf=@var{ypf_max}]
+[-S @var{yr_prv}] [-s @var{yr_srt}] [--stdin] [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}]
+[-v @var{var_lst}] [--version] [-x @var{cf_flg}] [-X @var{drc_xtn}] [-x @var{drc_prv}] 
+[-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
 @end example
 
 @noindent
@@ -16866,6 +16866,7 @@ The last month is November of the end year specified with @samp{-e}.
 @acronym{SDD}-mode stands for ``Seasonally Discontinuous December''. 
 The first month used is January of the specified start year. 
 The last month is December of the end year specified with @samp{-e}.
+
 @cindex @code{-C @var{clm_md}}
 @cindex @var{clm_md}
 @cindex @code{--clm_md}
@@ -16878,6 +16879,7 @@ Valid values are @samp{ann} and @samp{mth}.
 The value indicates the timespan of the averages in each input file.  
 The default mode is @samp{mth}, which means input files are monthly averages. 
 Use @samp{ann} if the input files are a series of annual means.
+
 @cindex @code{-c @var{caseid}}
 @cindex @var{caseid}
 @cindex @code{--caseid}
@@ -16901,6 +16903,7 @@ as an additional string in the output filename.
 For example, specifying @samp{-c control} would cause
 @file{T_000101_000912.nc} to be instead named 
 @file{T_control_000101_000912.nc}.
+
 @cindex @code{-D @var{dbg_lvl}}
 @cindex @var{dbg_lvl}
 @cindex @code{--dbg_lvl}
@@ -16915,6 +16918,7 @@ not execute these commands.
 If @math{@var{dbg_lvl} > 2}, @command{ncclimo} prints the diagnostic
 information, executes all commands, and passes-through the debugging
 level to the regridder (@command{ncks}) for additional diagnostics.
+
 @cindex @code{-e @var{end_yr}}
 @cindex @var{end_yr}
 @cindex @code{--end_yr}
@@ -16927,6 +16931,7 @@ Unless the option @samp{-a sdd} is specified, the last month used
 is November of the specified end year. 
 If @samp{-a sdd} is specified, the last month is December of the
 specified end year.  
+
 @cindex @code{-f @var{fml_nm}}
 @cindex @var{fml_nm}
 @cindex @code{--fml_nm}
@@ -16948,6 +16953,7 @@ as an additional string in the output filename.
 For example, specifying @samp{-f control} would cause
 @file{T_000101_000912.nc} to be instead named 
 @file{T_control_000101_000912.nc}.
+
 @cindex @code{-h @var{hst_nm}}
 @cindex @var{hst_nm}
 @cindex @code{--history_name}
@@ -16963,6 +16969,7 @@ with @samp{-m}) and the date range.
 Use @samp{-h @var{hst_nm}} to specify alternative history volumes.
 Examples include @samp{h0} (default, works for @acronym{CAM},
 @acronym{ALM/CLM}), @samp{h1}, and @samp{h} (for @acronym{CISM}).
+
 @cindex @code{-i @var{drc_in}}
 @cindex @var{drc_in}
 @cindex @code{--drc_in}
@@ -16979,6 +16986,7 @@ In timeseries reshaping mode, @command{ncclimo} uses all netCDF files
 @code{.cdf}, @code{.hdf}, @code{.he5}, or @code{.h5}) in @var{drc_in} to 
 create the list of input files when no list is provided through
 @code{stdin} or as positional arguments to the command-line. 
+
 @cindex @code{-j @var{job_nbr}}
 @cindex @var{job_nbr}
 @cindex @code{--job_nbr}
@@ -17035,6 +17043,7 @@ By default @command{ncclimo} symbolically links the full
 these linked filenames. 
 Use this switch to turn-off that linking and reduce filename
 proliferation if you do not need @acronym{AMWG} filenames.
+
 @cindex @code{-m @var{mdl_nm}}
 @cindex @var{mdl_nm}
 @cindex @code{--model_name}
@@ -17044,6 +17053,7 @@ proliferation if you do not need @acronym{AMWG} filenames.
 Model name (as embedded in monthly input filenames). 
 Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @samp{ice}, @samp{cism}, @samp{cice}, @samp{pop}. 
+
 @cindex @code{-n @var{nco_opt}}
 @cindex @var{nco_opt}
 @cindex @code{--nco_opt}
@@ -17053,6 +17063,7 @@ Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
 @var{nco_opt} defaults to @samp{-O --no_tmp_fl}.
+
 @cindex @code{-O @var{drc_rgr}}
 @cindex @var{drc_rgr}
 @cindex @code{--drc_rgr}
@@ -17063,6 +17074,7 @@ Specifies a string of options to pass-through unaltered to
 Directory to hold regridded climo files.
 Regridded climos are placed in @var{drc_out} unless a separate
 directory for them is specified with @samp{-O} (NB: capital ``O''). 
+
 @cindex @code{-o @var{drc_out}}
 @cindex @var{drc_out}
 @cindex @code{--drc_out}
@@ -17073,6 +17085,7 @@ directory for them is specified with @samp{-O} (NB: capital ``O'').
 Directory to hold computed (output) native grid climo files.
 Regridded climos are also placed here unless a separate directory
 for them is specified with @samp{-O} (NB: capital ``O''). 
+
 @cindex @code{-p @var{par_typ}}
 @cindex @var{par_typ}
 @cindex @code{--par_typ}
@@ -17089,6 +17102,7 @@ The default is background-mode parallelism.
 The default @var{par_typ} is @samp{bck}, which means @command{ncclimo} 
 runs spawns up to twelve (one for each month) parallel processes at a time.
 See discussion below under Memory Considerations.
+
 @cindex @code{-R @var{rgr_opt}}
 @cindex @var{rgr_opt}
 @cindex @code{--rgr_opt}
@@ -17097,6 +17111,7 @@ See discussion below under Memory Considerations.
 Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
 @var{rgr_opt} defaults to @samp{-O --no_tmp_fl}.
+
 @cindex @code{-r @var{rgr_map}}
 @cindex @var{rgr_map}
 @cindex @code{--rgr_map}
@@ -17114,6 +17129,7 @@ analysis grid.
 Options intended exclusively for the regridder may be passed as
 arguments to the @samp{-R} switch.
 See below the discussion on regridding.
+
 @cindex @code{-s @var{srt_yr}}
 @cindex @var{srt_yr}
 @cindex @code{--srt_yr}
@@ -17127,6 +17143,7 @@ be December of the year before the start year (to allow for contiguous
 @acronym{DJF} climos).   
 If @samp{-a sdd} is specified, the first month used is January of
 the specified start year. 
+
 @cindex @code{--stdin}
 @cindex @code{--inp_std}
 @cindex @code{--std_flg}
@@ -17149,6 +17166,7 @@ are piped to @code{stdin}, and on @acronym{SLURM} when the input files
 are redirected from a file to @code{stdin}.
 Using this switch in any other context (e.g., interactive shells) is
 optional. 
+
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
 @cindex @code{--thr_nbr}
@@ -17162,6 +17180,7 @@ However, regridding with the maximum number of threads can interfere
 with climatology generation in parallel climatology mode (i.e., when
 @math{@var{par_typ}} = @code{mpi} or @code{bck}). 
 Hence @command{ncclimo} defaults to @var{thr_nbr}=2.
+
 @cindex @code{--tpd_out @var{tpd_out}}
 @cindex @var{tpd_out}
 @cindex @code{--tpd_out}
@@ -17179,6 +17198,7 @@ resolution), can be used to produce climatological output at 3, 6,
 or 12-hourly resolution by setting @var{tpd_out} to 8, 4, or 2,
 respectively. 
 This option only takes effect in daily-average climatology mode.
+
 @cindex @code{-v @var{var_lst}}
 @cindex @var{var_lst}
 @cindex @code{--var_lst}
@@ -17196,6 +17216,20 @@ Regular expressions are allowed so, e.g., @samp{PREC.?} extracts
 the variables @samp{PRECC,PRECL,PRECSC,PRECSL} if present.
 Note that in reshaping mode all matches to a regular expression are
 placed in the same output file.
+
+@cindex @code{--version}
+@cindex @code{--vrs}
+@cindex @code{--config}
+@cindex @code{--configuration}
+@cindex @code{--cnf}
+@item --version (@code{--version}, @code{--vrs}, @code{--config}, @code{--configuration}, @code{--cnf})
+This switch (which takes no argument) causes the operator to print
+its version and configuration.
+This includes the copyright notice, @acronym{URL}s to the @acronym{GPL}
+and @acronym{NCO} license, directories from which the @acronym{NCO}
+scripts and binaries are running, and the locations of any separate 
+executables that may be used by the script.
+
 @cindex @code{--ypf_max @var{ypf_max}}
 @cindex @var{ypf_max}
 @cindex @code{--ypf_max}
@@ -17451,6 +17485,7 @@ Options:
 The ending year of the previous climo. 
 This argument is required to trigger binary climatologies,
 and should not be used for incremental climatologies.
+
 @cindex @code{-S @var{yr_srt_prv}}
 @cindex @var{yr_srt_prv}
 @cindex @code{--yr_srt_prv}
@@ -17460,6 +17495,7 @@ and should not be used for incremental climatologies.
 The starting year of the previous climo. 
 This argument is required to trigger incremental climatologies,
 and is also mandatory for binary climatologies.
+
 @cindex @code{-X @var{drc_xtn}}
 @cindex @var{drc_xtn}
 @cindex @code{--drc_xtn}
@@ -17472,6 +17508,7 @@ Default value is @var{drc_prv}.
 Unless a separate directory is specified (with @samp{-Y}) for the
 extended climo on the analysis grid, it will be stored in @var{drc_xtn},
 too.  
+
 @cindex @code{-x @var{drc_prv}}
 @cindex @var{drc_prv}
 @cindex @code{--drc_prv}
@@ -17484,6 +17521,7 @@ Default value is @var{drc_out}.
 Unless a separate directory is specified (with @samp{-y}) for the
 previous climo on the analysis grid, it is assumed to reside in
 @var{drc_prv}, too. 
+
 @cindex @code{-Y @var{drc_rgr_xtn}}
 @cindex @var{drc_rgr_xtn}
 @cindex @code{--drc_rgr_xtn}
@@ -17494,6 +17532,7 @@ previous climo on the analysis grid, it is assumed to reside in
 Directory in which the extended analysis grid climo files will be
 stored in an incremental climatology. 
 Default value is @var{drc_xtn}.
+
 @cindex @code{-y @var{drc_rgr_prv}}
 @cindex @var{drc_rgr_prv}
 @cindex @code{--drc_rgr_prv}
@@ -21244,7 +21283,7 @@ ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_op
 [-M] [-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] 
 [-T @var{tempest_opt}] [-t @var{thr_nbr}] [-U @var{drc_tmp}] [-u @var{unq_sfx}] 
-[-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--vrb=@var{vrb_lvl}] 
+[-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
 
@@ -21933,6 +21972,19 @@ ncremap -i in.nc -d dst.nc -O ~/rgr # Internal database
 ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr # Manual
 @end example
 @noindent
+
+@cindex @code{--version}
+@cindex @code{--vrs}
+@cindex @code{--config}
+@cindex @code{--configuration}
+@cindex @code{--cnf}
+@item --version (@code{--version}, @code{--vrs}, @code{--config}, @code{--configuration}, @code{--cnf})
+This switch (which takes no argument) causes the operator to print
+its version and configuration.
+This includes the copyright notice, @acronym{URL}s to the @acronym{GPL}
+and @acronym{NCO} license, directories from which the @acronym{NCO}
+scripts and binaries are running, and the locations of any separate 
+executables that may be used by the script.
 
 @html
 <a name="vrb_lvl"></a> <!-- http://nco.sf.net/nco.html#vrb_lvl -->

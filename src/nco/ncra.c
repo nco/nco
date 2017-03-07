@@ -266,7 +266,7 @@ main(int argc,char **argv)
   nco_bool flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
   nco_bool flg_cb=False; /* [flg] Climatology bounds */
   nco_bool flg_c2b=False; /* [flg] Climatology bounds-to-time bounds */
-  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_skp1; /* [flg] Current record is not dimension of this variable */
   nco_bool flg_skp2; /* [flg] Current record is not dimension of this variable */
 
@@ -331,7 +331,6 @@ main(int argc,char **argv)
     {"cb",no_argument,0,0}, /* [sct] Climatology bounds */
     {"clm2bnd",no_argument,0,0}, /* [sct] Climatology bounds-to-time bounds */
     {"c2b",no_argument,0,0}, /* [sct] Climatology bounds-to-time bounds */
-    {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
@@ -527,8 +526,8 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_frm_trm") || !strcmp(opt_crr,"no_formula_terms")) EXTRACT_FRM_TRM=False; /* [flg] Do not extract formula_terms variables */
       if(!strcmp(opt_crr,"cll_mth") || !strcmp(opt_crr,"cell_methods")) flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
       if(!strcmp(opt_crr,"no_cll_mth") || !strcmp(opt_crr,"no_cell_methods")) flg_cll_mth=False; /* [flg] Add/modify cell_methods attributes */
-      if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
-      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"clm_bnd") || !strcmp(opt_crr,"cb")) flg_cb=True; /* [sct] Climatology bounds */
       if(!strcmp(opt_crr,"clm2bnd") || !strcmp(opt_crr,"c2b")) flg_c2b=flg_cb=True; /* [sct] Climatology bounds-to-time bounds */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
@@ -1805,7 +1804,7 @@ main(int argc,char **argv)
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
   /* Clean memory unless dirty memory allowed */
-  if(flg_cln){
+  if(flg_mmr_cln){
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
@@ -1863,7 +1862,7 @@ main(int argc,char **argv)
     if(rec_usd_cml) rec_usd_cml=(long *)nco_free(rec_usd_cml);
     if(REC_LST_DSR) REC_LST_DSR=(nco_bool *)nco_free(REC_LST_DSR);
 
-  } /* !flg_cln */
+  } /* !flg_mmr_cln */
 
 #ifdef ENABLE_MPI
   MPI_Finalize();

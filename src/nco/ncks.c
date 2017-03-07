@@ -267,7 +267,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
-  nco_bool flg_cln=True; /* [flg] Clean memory prior to exit */
+  nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_rgr=False; /* [flg] Regrid */
   nco_bool flg_trr=False; /* [flg] Terraref */
 
@@ -291,6 +291,11 @@ main(int argc,char **argv)
   
   static struct option opt_lng[]={ /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
+    {"calendar",no_argument,0,0}, /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
+    {"cln_lgb",no_argument,0,0}, /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
+    {"prn_cln_lgb",no_argument,0,0}, /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
+    {"prn_lgb",no_argument,0,0}, /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
+    {"timestamp",no_argument,0,0}, /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
     {"cdl",no_argument,0,0}, /* [flg] Print CDL */
     {"cll_msr",no_argument,0,0}, /* [flg] Extract cell_measures variables */
     {"cell_measures",no_argument,0,0}, /* [flg] Extract cell_measures variables */
@@ -300,7 +305,6 @@ main(int argc,char **argv)
     {"formula_terms",no_argument,0,0}, /* [flg] Extract formula_terms variables */
     {"no_frm_trm",no_argument,0,0}, /* [flg] Do not extract formula_terms variables */
     {"no_formula_terms",no_argument,0,0}, /* [flg] Do not extract formula_terms variables */
-    {"cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
@@ -494,10 +498,6 @@ main(int argc,char **argv)
     {"get_grp_info",no_argument,0,0},
     {"get_file_info",no_argument,0,0},
     {"lbr_rcd",no_argument,0,0},
-    {"prn_cln_lgb",no_argument,0,0},
-    {"prn_lgb",no_argument,0,0},
-    {"calendar",no_argument,0,0},
-    {"timestamp",no_argument,0,0},
     {0,0,0,0}
   }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
@@ -552,6 +552,7 @@ main(int argc,char **argv)
         bfr_sz_hnt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif bfr_sz */
+      if(!strcmp(opt_crr,"calendar") || !strcmp(opt_crr,"cln_lgb") || !strcmp(opt_crr,"prn_cln_lgb") || !strcmp(opt_crr,"prn_lgb") || !strcmp(opt_crr,"timestamp")) PRN_CLN_LGB=True; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -592,8 +593,8 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "copyright" */
       if(!strcmp(opt_crr,"cdl")) PRN_CDL=True; /* [flg] Print CDL */
-      if(!strcmp(opt_crr,"cln") || !strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_cln=True; /* [flg] Clean memory prior to exit */
-      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")){
         const char fix_pfx[]="fix_"; /* [sng] Prefix string to fix dimension */
         rec_dmn_nm=(char *)nco_malloc((strlen(fix_pfx)+strlen(optarg)+1L)*sizeof(char));
@@ -734,7 +735,6 @@ main(int argc,char **argv)
       } /* !jsn_att_fmt */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
-      if(!strcmp(opt_crr,"prn_cln_lgb") || !strcmp(opt_crr,"prn_lgb") || !strcmp(opt_crr,"calendar") || !strcmp(opt_crr,"timestamp")) PRN_CLN_LGB=True; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
       if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
       if(!strcmp(opt_crr,"xml") || !strcmp(opt_crr,"ncml")) PRN_XML=True; /* [flg] Print XML (NcML) */
       if(!strcmp(opt_crr,"xml_no_location") || !strcmp(opt_crr,"ncml_no_location")){PRN_XML_LOCATION=False;PRN_XML=True;} /* [flg] Print XML location tag */
@@ -1311,7 +1311,7 @@ close_and_free:
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
   
   /* Clean memory unless dirty memory allowed */
-  if(flg_cln){
+  if(flg_mmr_cln){
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
@@ -1356,7 +1356,7 @@ close_and_free:
     if(smr_sng) smr_sng=(char *)nco_free(smr_sng);
     if(smr_xtn_sng) smr_xtn_sng=(char *)nco_free(smr_xtn_sng);
     rec_dmn_nm_fix=(char *)nco_free(rec_dmn_nm_fix);
-  } /* !flg_cln */
+  } /* !flg_mmr_cln */
   
 #ifdef ENABLE_MPI
   MPI_Finalize();

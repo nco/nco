@@ -193,7 +193,7 @@ TESTS = ${DAP_TESTS}
 
 EXTRA_DIST = ${NCO_GETOPT_C}
 
-DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
+#DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && ln -s -f ncbo ncdiff || (rm -f ncdiff && ln -s -f ncbo ncdiff)
