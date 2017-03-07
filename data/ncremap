@@ -296,6 +296,11 @@ var_lst='' # [sng] Variables to process (empty means all)
 var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
 vrb_lvl=1 # [sng] Verbosity level
+vrb_0=0 # [sng] Verbosity level: Quiet
+vrb_1=1 # [sng] Verbosity level: Standard, minimal files
+vrb_2=2 # [sng] Verbosity level: All files
+vrb_3=3 # [sng] Verbosity level: English
+vrb_4=4 # [sng] Verbosity level: Pedantic
 vrs_prn='No' # [sng] Print version information
 wgt_gnr='esmf' # [sng] Weight-generator program
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
@@ -888,17 +893,17 @@ fi # !drc_tmp
 
 # Human-readable summary
 date_srt=$(date +"%s")
-if [ ${vrb_lvl} -ge 3 ]; then
+if [ ${vrb_lvl} -ge ${vrb_4} ]; then
     printf "NCO regridder invoked with command:\n"
     echo "${cmd_ln}"
 fi # !vrb_lvl
 if [ -f 'PET0.RegridWeightGen.Log' ]; then
-    if [ ${vrb_lvl} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge ${vrb_4} ]; then
 	printf "${spt_nm}: Removing PET0.RegridWeightGen.Log file from current directory before running\n"
     fi # !vrb_lvl
     /bin/rm -f PET0.RegridWeightGen.Log
 fi # !PETO
-if [ ${vrb_lvl} -ge 2 ]; then
+if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     printf "Started processing at `date`.\n"
     printf "Running remap script ${spt_nm} from directory ${drc_spt}\n"
     printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
@@ -927,7 +932,7 @@ fi # !dst_usr_flg
 # Generate destination grid at most one-time (unlike source grid)
 # Eventually we will allow destination grid to be provided as grid-file, map-file, or data-file
 # Currently we require user to know (and specify) means by which destination grid is provided
-if [ ${vrb_lvl} -ge 2 ]; then
+if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ ${fl_nbr} -eq 0 ]; then
 	printf "Map-only run: no input data detected therefore will exit after generating map\n"
     fi # !fl_nbr
@@ -942,7 +947,7 @@ if [ ${vrb_lvl} -ge 2 ]; then
     fi # !mpas
 fi # !vrb_lvl
 if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ]; then 
-    if [ ${vrb_lvl} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Source and destination grids will both be read from supplied map-file\n"
     fi # !vrb_lvl
 else # !map_usr_flg
@@ -950,18 +955,18 @@ else # !map_usr_flg
     if [ "${dst_usr_flg}" = 'Yes' ]; then 
 	# Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
 	# Infer destination grid-file from data file
-	if [ ${vrb_lvl} -ge 2 ]; then
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Destination grid will be inferred from data-file\n"
 	fi # !vrb_lvl
 	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y ${nco_var_rgr} --rgr grid=${grd_dst} ${dst_fl} ${tmp_out_fl}"
     else # !dst_usr_flg
 	if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
-	    if [ ${vrb_lvl} -ge 2 ]; then
+	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "Destination grid supplied by user\n"
 	    fi # !vrb_lvl
 	else
 	    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
-		if [ ${vrb_lvl} -ge 2 ]; then
+		if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		    printf "Destination grid will be generated from NCO grid string ${grd_sng}\n"
 		fi # !vrb_lvl
 		cmd_dst[${fl_idx}]="ncks ${nco_opt} ${grd_sng} ${fl_in[0]} ${tmp_out_fl}"
@@ -987,24 +992,24 @@ else # !map_usr_flg
 	    fi # !grd_sng_usr_flg
 	fi # !dbg
     fi # !dst_usr_flg || grd_dst_usr_flg
-    if [ ${vrb_lvl} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Weight-generation type: ${wgt_gnr}\n"
     fi # !vrb_lvl
     if [ "${wgt_gnr}" = 'esmf' ]; then 
-	if [ ${vrb_lvl} -ge 2 ]; then
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "ESMF's ESMF_RegridWeightGen will generate mapping weights and map-file\n"
 	    printf "Algorithm used to generate weights in map-file is: ${alg_opt}\n"
 	fi # !vrb_lvl
 	wgt_cmd='ESMF_RegridWeightGen'
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
-	if [ ${vrb_lvl} -ge 2 ]; then
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "TempestRemap's GenerateOverlapMesh and GenerateOfflineMap will generate mapping weights and map-file\n"
 	fi # !vrb_lvl
 	wgt_cmd='GenerateOfflineMap'
     fi # !tempest
     command -v ${wgt_cmd} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command ${wgt_cmd}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is often provided in NCL packages. Tempest executables must be installed from source (https://github.com/ClimateGlobalChange/tempestremap)."; exit 1; }
-    if [ ${vrb_lvl} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    if [ "${mlt_map_flg}" = 'Yes' ]; then 
 		printf "Input files assumed to use unique input grids\nOne source grid-file will be inferred and one map-file generated per input file\n"
@@ -1019,7 +1024,7 @@ fi # !map_usr
 # Do not infer source gridfiles from input files within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
 if [ "${grd_src_usr_flg}" = 'Yes' ]; then
-    if [ ${vrb_lvl} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Source grid supplied by user as ${grd_src}\n"
     fi # !vrb_lvl
     fl_idx=0
@@ -1078,7 +1083,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	in_fl="${drc_pwd}/${in_fl}"
     fi # !basename
     idx_prn=`printf "%02d" ${fl_idx}`
-    if [ ${vrb_lvl} -ge 1 ]; then
+    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	printf "Input #${idx_prn}: ${in_fl}\n"
     fi # !vrb_lvl
     if [ "${out_usr_flg}" = 'Yes' ]; then 
@@ -1144,7 +1149,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	
 	# Block 3: Source->destination maps
 	# Block 3 Loop 1: Map-file commands
-	if [ ${vrb_lvl} -ge 1 ]; then
+	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	    printf "Grid(src): ${grd_src}\n"
 	    printf "Grid(dst): ${grd_dst}\n"
 	fi # !vrb_lvl
@@ -1202,6 +1207,10 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     # Block 4a: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then annotate here, so assume ncclimo is working with annotated files)
     if [ "${pdq_typ}" = 'mpas' ] && [ "${clm_flg}" = 'No' ]; then
 	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${in_fl} ${att_fl};"
+	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
+	    printf "att(in)  : ${in_fl}\n"
+	    printf "att(out) : ${att_fl}\n"
+	fi # !vrb_lvl
 	in_fl="${att_fl}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_att[${fl_idx}]}
@@ -1217,7 +1226,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	
     # Block 4b: Generic Permutation (AIRS, HIRDLS, MLS, MPAS)
     if [ -n "${pdq_opt}" ]; then
-	if [ ${vrb_lvl} -ge 2 ]; then
+	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
 	    printf "PDQ(in)  : ${in_fl}\n"
 	    printf "PDQ(out) : ${pdq_fl}\n"
 	fi # !vrb_lvl
@@ -1236,7 +1245,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !pdq_opt
 
     # Block 5: Regrid
-    if [ ${vrb_lvl} -ge 1 ]; then
+    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	printf "Map/Wgt  : ${map_fl}\n"
 	printf "Regridded: ${out_fl}\n"
     fi # !vrb_lvl
@@ -1318,18 +1327,18 @@ if [ -n "${par_opt}" ]; then
 fi # !par_typ
 
 if [ "${cln_flg}" = 'Yes' ]; then
-    if [ ${vrb_lvl} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Cleaning-up intermediate files...\n"
     fi # !vrb_lvl
     /bin/rm -f ${att_fl} ${grd_dst_dfl} ${grd_src_dfl} ${map_fl_dfl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
-    if [ ${vrb_lvl} -ge 2 ]; then
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files.\n"
     fi # !vrb_lvl
 fi # !cln_flg
 
 date_end=$(date +"%s")
-if [ ${vrb_lvl} -ge 2 ]; then
+if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ ${fl_nbr} -eq 0 ]; then
 	printf "Completed generating map-file(s) at `date`.\n"
     else # !fl_nbr

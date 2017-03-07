@@ -337,8 +337,8 @@ while [ -h "${nco_exe}" ]; do
   [[ ${nco_exe} != /* ]] && nco_exe="${drc_nco}/${nco_exe}"
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
-nco_vrs=$(ncks --version 2>&1 >/dev/null | grep NCO | awk '{print $5}')
-lbr_vrs=$(ncks --library 2>&1 >/dev/null | awk '{print $6}')
+nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
+lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # When running in a terminal window (not in an non-interactive batch queue)...
 if [ -n "${TERM}" ]; then
