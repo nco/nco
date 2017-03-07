@@ -96,10 +96,10 @@ ncap_att_stretch    /* stretch a single valued attribute from 1 to sz */
  long nw_sz);       /* I [nbr] new var size */
 
 
-nco_bool                /* O [flg] true if var has been stretched */
-ncap_att_char_stretch    /* stretch a single valued attribute from 1 to sz */
-(var_sct* var,      /* I/O [sct] variable */
-long nw_sz);       /* I [nbr] new var size */
+nco_bool                 /* O [flg] true if var has been stretched */
+ncap_att_char_stretch    /* pad out or truncate a NC_CHAR attribute */
+(var_sct* var,           /* I/O [sct] var/att */
+long nw_sz);             /* I [nbr] new var size */
 
 
 int 
