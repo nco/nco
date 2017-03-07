@@ -1103,23 +1103,60 @@ nco_cln_var_prs
 
   tm.sc_cln=lmt_cln;
 
+  if(var->type == NC_DOUBLE) {
+    double mss_val_dbl;
+    if(var->has_mss_val)
+       mss_val_dbl=var->mss_val.dp[0];
 
-   for(idx=0; idx<sz; idx++)
-   {
-      /* var is DOUBLE or FLOAT and NOTHING ELSE */
-      tm.value= (var->type==NC_DOUBLE ? var->val.dp[idx] : (double)(var->val.fp[idx]) );
+    for (idx = 0; idx < sz; idx++) {
 
-      if( lmt_cln==cln_360 || lmt_cln==cln_365 || lmt_cln ==cln_366 )
-         nco_cln_pop_tm(&tm);
+      tm.value = var->val.dp[idx];
+
+      /*
+      if(var->has_mss_val && tm.value==mss_val_dbl) {
+        var_ret->val.sngp[idx] = NC_FILL_STRING;
+        continue;
+      }
+      */
+      if (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)
+        nco_cln_pop_tm(&tm);
       else
-         (void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
+        (void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
 
-      var_ret->val.sngp[idx]= nco_cln_fmt_tm(&tm,ifmt);
+      var_ret->val.sngp[idx] = nco_cln_fmt_tm(&tm, ifmt);
 
-   }
+    }
+  }
+  else if(var->type==NC_FLOAT){
 
-    cast_nctype_void(var->type,&var->val);
-    cast_nctype_void(var_ret->type,&var->val);
+    float mss_val_flt;
+    if(var->has_mss_val)
+       mss_val_flt=var->mss_val.fp[0];
+
+    for (idx = 0; idx < sz; idx++) {
+      /*
+      if(var->has_mss_val && var->val.fp[idx]==mss_val_flt ){
+        var_ret->val.sngp[idx] = NC_FILL_STRING;
+        continue;
+      }
+      */
+
+      tm.value = (double) (var->val.fp[idx]);
+
+      if (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)
+        nco_cln_pop_tm(&tm);
+      else
+        (void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
+
+      var_ret->val.sngp[idx] = nco_cln_fmt_tm(&tm, ifmt);
+
+    }
+
+  }
+
+
+  cast_nctype_void(var->type,&var->val);
+  cast_nctype_void(var_ret->type,&var->val);
 
     return NCO_NOERR;
 
