@@ -1,3 +1,8 @@
+2017-03-07  Charlie Zender  <zender@uci.edu>
+
+	* Re-factor nco_grd_nfr() algorithm to find coordinates first,
+	then use coordinates to unambiguously deduce dimension names
+
 2017-03-05  Charlie Zender  <zender@uci.edu>
 
 	* Suppress multiple NaN warnings from nco_mss_val_get_dbl()

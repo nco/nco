@@ -815,6 +815,7 @@ nco_var_scv.c \
 nco_var_utl.c
 
 EXTRA_DIST = ${NCO_GETOPT_C}
+DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
 CLEANFILES = ncdiff ncea nces ncrcat mpncdiff mpncea mpnces mpncrcat
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
@@ -1386,6 +1387,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
@@ -1489,8 +1491,6 @@ uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 
 .PRECIOUS: Makefile
 
-
-#DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && ln -s -f ncbo ncdiff || (rm -f ncdiff && ln -s -f ncbo ncdiff)
