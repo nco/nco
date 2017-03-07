@@ -826,24 +826,22 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 
 
 void
-nco_prn_var_val_dlm_sng /* 0 print to stdout var values fromatted  by prn_flg or dlm_sng_in  or */
+nco_prn_var_val_cmt /* 0 print to stdout var values formatted by prn_flg or dlm_sng_in  or */
 (var_sct *var,          /* I [sct] variable to print */
- const prn_fmt_sct * const prn_flg,  /* I [sct] Print-format information */
- const char *dlm_sng_in)  /* I [char] custom format specifier */
+ const prn_fmt_sct * const prn_flg)  /* I [sct] Print-format information */
 {
   nco_bool is_mss_val;
   long lmn;
+  long sz;
   size_t val_sz_byt;
   char *fmt_sng_mss_val=NULL;
-  char *dlm_sng=NULL;
+  char dlm_sng[200]={0};
   const char *mss_val_sng="_";
   /* Print each element with user-supplied formatting code */
   /* Replace C language '\X' escape codes with ASCII bytes */
 
-  if(!dlm_sng_in)
-    dlm_sng=strdup(prn_flg->dlm_sng);
-  else
-    dlm_sng=strdup(dlm_sng_in);
+  sz=var->sz;
+  sprintf(dlm_sng, "%s",nco_typ_fmt_sng_var_cdl(var->type));
 
   (void)sng_ascii_trn(dlm_sng);
 
@@ -861,36 +859,46 @@ nco_prn_var_val_dlm_sng /* 0 print to stdout var values fromatted  by prn_flg or
       fmt_sng_mss_val=nco_fmt_sng_printf_subst(dlm_sng);
   #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
-  for(lmn=0;lmn<var->sz;lmn++){
+  /* print type in english in prefix text*/
+  if(var->type==NC_STRING)
+    (void)fprintf(stdout,"calendar format: ");
+  else
+    (void)fprintf(stdout,"%s value%s: ", cdl_typ_nm(var->type), (var->sz>1 ? "s":"" ));
 
-  /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
-  if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var->has_mss_val ? !memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt) : False;
+  for(lmn=0;lmn<sz;lmn++){
 
-  if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
-     if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(stdout,"%s, ",mss_val_sng);
-  }else{ /* !is_mss_val */
-      switch(var->type){
-        case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var->val.fp[lmn]); break;
-        case NC_DOUBLE: (void)fprintf(stdout,dlm_sng,var->val.dp[lmn]); break;
-        case NC_SHORT: (void)fprintf(stdout,dlm_sng,var->val.sp[lmn]); break;
-        case NC_INT: (void)fprintf(stdout,dlm_sng,var->val.ip[lmn]); break;
-        case NC_CHAR: (void)fprintf(stdout,dlm_sng,var->val.cp[lmn]); break;
-        case NC_BYTE: (void)fprintf(stdout,dlm_sng,var->val.bp[lmn]); break;
-        case NC_UBYTE: (void)fprintf(stdout,dlm_sng,var->val.ubp[lmn]); break;
-        case NC_USHORT: (void)fprintf(stdout,dlm_sng,var->val.usp[lmn]); break;
-        case NC_UINT: (void)fprintf(stdout,dlm_sng,var->val.uip[lmn]); break;
-        case NC_INT64: (void)fprintf(stdout,dlm_sng,var->val.i64p[lmn]); break;
-        case NC_UINT64: (void)fprintf(stdout,dlm_sng,var->val.ui64p[lmn]); break;
-        case NC_STRING: (void)fprintf(stdout,dlm_sng,var->val.sngp[lmn]); break;
-        default: nco_dfl_case_nc_type_err(); break;
-     } /* end switch */
-  } /* !is_mss_val */
+    /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
+    if(prn_flg->PRN_MSS_VAL_BLANK) is_mss_val = var->has_mss_val ? !memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt) : False;
+
+    if(prn_flg->PRN_MSS_VAL_BLANK && is_mss_val){
+       if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(stdout,"%s",mss_val_sng);
+    }else{ /* !is_mss_val */
+        switch(var->type){
+          case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var->val.fp[lmn]); break;
+          case NC_DOUBLE: (void)fprintf(stdout,dlm_sng,var->val.dp[lmn]); break;
+          case NC_SHORT: (void)fprintf(stdout,dlm_sng,var->val.sp[lmn]); break;
+          case NC_INT: (void)fprintf(stdout,dlm_sng,var->val.ip[lmn]); break;
+          case NC_CHAR: (void)fprintf(stdout,dlm_sng,var->val.cp[lmn]); break;
+          case NC_BYTE: (void)fprintf(stdout,dlm_sng,var->val.bp[lmn]); break;
+          case NC_UBYTE: (void)fprintf(stdout,dlm_sng,var->val.ubp[lmn]); break;
+          case NC_USHORT: (void)fprintf(stdout,dlm_sng,var->val.usp[lmn]); break;
+          case NC_UINT: (void)fprintf(stdout,dlm_sng,var->val.uip[lmn]); break;
+          case NC_INT64: (void)fprintf(stdout,dlm_sng,var->val.i64p[lmn]); break;
+          case NC_UINT64: (void)fprintf(stdout,dlm_sng,var->val.ui64p[lmn]); break;
+          case NC_STRING: (void)fprintf(stdout,dlm_sng,var->val.sngp[lmn]); break;
+          default: nco_dfl_case_nc_type_err(); break;
+       } /* end switch */
+
+    } /* !is_mss_val */
+    if(lmn<sz-1)
+      (void)fprintf(stdout,", ");
+
   } /* end loop over element */
 
   (void)fprintf(stdout,"\n");
 
   if(fmt_sng_mss_val) fmt_sng_mss_val=(char *)nco_free(fmt_sng_mss_val);
-  if(dlm_sng) dlm_sng=(char*)nco_free(dlm_sng);
+
 
 
 }/* end nco_prn_var_val_dlm_sng() */
@@ -1776,11 +1784,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   if(prn_flg->dlm_sng) dlm_sng=strdup(prn_flg->dlm_sng); /* [sng] User-specified delimiter string, if any */
 
-  if(dlm_sng){
-     nco_prn_var_val_dlm_sng(&var,prn_flg,(char*)NULL);
-  }
 
-  if(0 && dlm_sng ){
+  if(dlm_sng ){
     /* Print variable with user-supplied dlm_sng (includes nbr_dmn == 0) */
     char *fmt_sng_mss_val=NULL;
 
@@ -2031,12 +2036,12 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     rcd_prn+=0; /* CEWI */
 
     if(CDL){
-      char lcl_fmt_sng[NCO_MAX_LEN_FMT_SNG];
+      // char lcl_fmt_sng[NCO_MAX_LEN_FMT_SNG];
 
       if(var_aux && nco_dbg_lvl_get() == nco_dbg_std ){
-        (void)sprintf(lcl_fmt_sng,"%s, ",nco_typ_fmt_sng_var_cdl(var_aux->type));
+        // (void)sprintf(lcl_fmt_sng,"%s, ",nco_typ_fmt_sng_var_cdl(var_aux->type));
         fprintf(stdout, "; // ");
-        nco_prn_var_val_dlm_sng(var_aux,prn_flg, lcl_fmt_sng );
+        nco_prn_var_val_cmt(var_aux,prn_flg);
       }else {
         (void) fprintf(stdout, " ;\n");
       }
