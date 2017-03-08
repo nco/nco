@@ -19084,6 +19084,45 @@ coordinates to the binary file:
 @end example
 
 @html
+<a name="cal"></a> <!-- http://nco.sf.net/nco.html#cal -->
+<a name="cln"></a> <!-- http://nco.sf.net/nco.html#cln -->
+<a name="calendar"></a> <!-- http://nco.sf.net/nco.html#calendar -->
+@end html
+@cindex @code{--calendar}
+@cindex @code{--cln_lgb}
+@cindex @code{--prn_lgb}
+@cindex @code{--datestamp}
+@item --cal 
+As of @acronym{NCO} version 4.6.5 (March, 2017), @command{ncks} can
+print human-legible calendar strings corresponding to time values with 
+UDUnits-compatible date units of the form time-since-basetime, e.g.,
+@samp{days since 2000-01-01} and a @acronym{CF} calendar attribute, if
+any. 
+Enact this with the @samp{--calendar} (also @samp{--cln},
+@samp{prn_lgb}, and @samp{datestamp}) option when printing in any mode.
+Invoking this option when @math{@var{dbg_lvl} >= 1} in @acronym{CDL}
+mode prints both the value and the calendar string (one in comments):
+@example
+@verbatim
+zender@aerosol:~$ ncks -D 1 --cdl --cal -v tm_365 ~/nco/data/in.nc
+...
+  variables:
+    double tm_365 ;
+      tm_365:units = "days since 2013-01-01" ; // char
+      tm_365:calendar = "365_day" ; // char
+
+  data:
+    tm_365 = "2013-03-01"; // double value: 59
+...
+zender@aerosol:~$ ncks -D 1 --cdl -v tm_365 ~/nco/data/in.nc
+...
+    tm_365 = 59; // calendar format: "2013-03-01"
+...
+@end verbatim
+@end example
+This option is similar to the @command{ncdump} @samp{-t} option.
+
+@html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->
 <a name="fix_rec_dmn"></a> <!-- http://nco.sf.net/nco.html#fix_rec_dmn -->
 @end html

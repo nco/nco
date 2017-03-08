@@ -1,5 +1,11 @@
 2017-03-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.5 final changes';git push
+	git tag -a 4.6.5 -m 'Version 4.6.5 new features: ncclimo/ncremap version/vrb_lvl, ncks --cal, nfr() refactor, POP fix';git push --tags
+
+	* Document --calendar option
+
 	* NCO 4.6.5-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.5-alpha04 final changes';git push
 	git tag -a 4.6.5-alpha04 -m 'Version 4.6.5-alpha04 new features: ncclimo/ncremap copyright, quieter, nco_grd_nfr() refactor, ncap2 calendar format';git push --tags

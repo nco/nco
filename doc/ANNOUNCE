@@ -26,6 +26,21 @@ A. ncks allows setting chunk cache-size with --cnk_csh with all
    ncrcat --cnk_csh=1000000000 --cnk_plc=g3d --cnk_dmn=time,365 \
           --cnk_dmn=lat,1800 --cnk_dmn=lon,3600 in*.nc4 out.nc4
    http://nco.sf.net/nco.html#cnk_csh
+   Thanks to Hugo Oliveira for encouraging this feature
+
+A. ncks now prints the human-legible calendar string corresponding to
+   values with UDUnits date units (time since basetime, e.g., "days
+   since 2000-01-01") and CF calendar attribute, if any. Enact this
+   with the --calendar option when printing. Using dbg_lvl >= 1 in CDL 
+   mode prints both the value and calendar string (one in comments):
+
+   zender@aerosol:~$ ncks -D 1 --cdl --cal -v tm_365 ~/nco/data/in.nc
+   tm_365 = "2013-03-01"; // double value: 59
+   zender@aerosol:~$ ncks -D 1 --cdl -v tm_365 ~/nco/data/in.nc
+   tm_365 = 59; // calendar format: "2013-03-01"
+
+   This option is similar to the ncdump -t option.
+   http://nco.sf.net/nco.html#cal
 
 A. new features...ncclimo will reshape timeseries, i.e., split input datasets into
    per-variable files that span the entire timeseries.
@@ -42,6 +57,12 @@ BUG FIXES:
 
 A. The chunk cache option (--cnk_csh) implemented in ncks in 4.6.4 was  
    inadvertently doing a no-op. Now it works as advertised.
+   No workaround, solution is to upgrade.
+
+A. A broken diagnostic introduced in 4.6.3 or 4.6.4 could cause the
+   regridder to fail. This occurred with some POP files. Diagnostic
+   now turned-off. Solution is to upgrade, workaround is use NCO <=
+   4.6.2. Thanks to Sungduk Yu for reporting.
 
 KNOWN PROBLEMS DUE TO NCO:
 
