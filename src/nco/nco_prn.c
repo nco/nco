@@ -826,7 +826,7 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 
 
 void
-nco_prn_var_val_cmt /* 0 print to stdout var values formatted by prn_flg or dlm_sng_in  or */
+nco_prn_var_val_cmt /* 0 print to stdout var values as CDL comment (delimited by comma ) */
 (var_sct *var,          /* I [sct] variable to print */
  const prn_fmt_sct * const prn_flg)  /* I [sct] Print-format information */
 {
@@ -1672,6 +1672,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     var.val.vp=nco_msa_rcr_clc((int)0,var.nbr_dim,lmt,lmt_msa,&var);
   } /* ! Scalars */
 
+  /* Refresh number of attributes and missing value attribute, if any */
+  var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
+  if(var.has_mss_val) val_sz_byt=nco_typ_lng(var.type);
+
 
   unit_sng_var = nco_lmt_get_udu_att(grp_id,var.id,"units");
   if( unit_sng_var && strlen(unit_sng_var)) {
@@ -1686,6 +1690,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     char *cln_sng = (char *) NULL;
 
     var_tmp=nco_var_dpl(&var);
+
+    //(void)fprintf(stderr,"%s: %s reports var \"%s\" has missing value %d\n",nco_prg_nm_get(),fnc_nm,var.nm,var.has_mss_val);
 
     cln_sng = nco_lmt_get_udu_att(grp_id, var.id, "calendar");
     if (cln_sng)
@@ -1717,6 +1723,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         var_aux->val.vp = (void *) NULL;
         nco_var_cnf_typ(var_typ, var_aux);
         var_aux->val = val_swp;
+        nco_mss_val_cp(var_tmp,var_aux);
+
       }
 
     }else{
@@ -1778,9 +1786,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(nco_pck_dsk_inq(grp_id,&var))
       (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",nco_prg_nm_get(),var_nm);
 
-  /* Refresh number of attributes and missing value attribute, if any */
-  var.has_mss_val=nco_mss_val_get(var.nc_id,&var);
-  if(var.has_mss_val) val_sz_byt=nco_typ_lng(var.type);
 
   if(prn_flg->dlm_sng) dlm_sng=strdup(prn_flg->dlm_sng); /* [sng] User-specified delimiter string, if any */
 
@@ -2036,11 +2041,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     rcd_prn+=0; /* CEWI */
 
     if(CDL){
-      // char lcl_fmt_sng[NCO_MAX_LEN_FMT_SNG];
-
       if(var_aux && nco_dbg_lvl_get() == nco_dbg_std ){
-        // (void)sprintf(lcl_fmt_sng,"%s, ",nco_typ_fmt_sng_var_cdl(var_aux->type));
         fprintf(stdout, "; // ");
+        // print out list of values as a CDL text comment
         nco_prn_var_val_cmt(var_aux,prn_flg);
       }else {
         (void) fprintf(stdout, " ;\n");
@@ -2407,9 +2410,12 @@ lbl_chr_prn:
 
   /* Free value buffer */
   if(var.type == NC_STRING)
+     //nco_string_lst_free(var.val.sngp,var.sz);
       for(lmn=0;lmn<var.sz;lmn++)
-	if(var.val.sngp[lmn]) var.val.sngp[lmn]=(nco_string)nco_free(var.val.sngp[lmn]);
+	    if(var.val.sngp[lmn]) var.val.sngp[lmn]=(nco_string)nco_free(var.val.sngp[lmn]);
+
   var.val.vp=nco_free(var.val.vp);
+
   var.mss_val.vp=nco_free(var.mss_val.vp);
   var.nm=(char *)nco_free(var.nm);
 
