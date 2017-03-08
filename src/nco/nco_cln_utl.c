@@ -859,7 +859,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 
     if(var->type == NC_DOUBLE){
       double *dp;
-      dp=op1.dp;   
+      dp=op1.dp;
       if(var->has_mss_val){  
 	double mss_dbl=var->mss_val.dp[0]; 
 	for(idx=0;idx<sz;idx++)
@@ -871,7 +871,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 
     if(var->type == NC_FLOAT){
       float *fp;
-      fp=op1.fp;   
+      fp=op1.fp;
       if(var->has_mss_val){  
 	float mss_flt=var->mss_val.fp[0]; 
 	for(idx=0;idx<sz;idx++)
@@ -1103,6 +1103,11 @@ nco_cln_var_prs
 
   tm.sc_cln=lmt_cln;
 
+
+  // (void)fprintf(stderr,"%s: %s reports var \"%s\" has missing value %d\n",nco_prg_nm_get(),fnc_nm,var->nm,var->has_mss_val);
+
+
+
   if(var->type == NC_DOUBLE) {
     double mss_val_dbl;
     if(var->has_mss_val)
@@ -1110,14 +1115,14 @@ nco_cln_var_prs
 
     for (idx = 0; idx < sz; idx++) {
 
-      tm.value = var->val.dp[idx];
 
-      /*
-      if(var->has_mss_val && tm.value==mss_val_dbl) {
-        var_ret->val.sngp[idx] = NC_FILL_STRING;
+      if(var->has_mss_val && var->val.dp[idx]==mss_val_dbl) {
+        var_ret->val.sngp[idx] = strdup(NC_FILL_STRING);
         continue;
       }
-      */
+
+      tm.value = var->val.dp[idx];
+
       if (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)
         nco_cln_pop_tm(&tm);
       else
@@ -1134,12 +1139,12 @@ nco_cln_var_prs
        mss_val_flt=var->mss_val.fp[0];
 
     for (idx = 0; idx < sz; idx++) {
-      /*
+
       if(var->has_mss_val && var->val.fp[idx]==mss_val_flt ){
-        var_ret->val.sngp[idx] = NC_FILL_STRING;
+        var_ret->val.sngp[idx] = strdup(NC_FILL_STRING);
         continue;
       }
-      */
+
 
       tm.value = (double) (var->val.fp[idx]);
 
