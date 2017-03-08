@@ -1,3 +1,7 @@
+2017-03-08  Charlie Zender  <zender@uci.edu>
+
+	* Add ECMWF IFS data wrangling example to ncclimo docs for Jerry Potter
+
 2017-03-07  Charlie Zender  <zender@uci.edu>
 
 	* Improve nco_grd_nfr() to recognize all CF-approved forms of degrees_north and degrees_east

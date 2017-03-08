@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.5-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 6 March 2017
+@set update-date 8 March 2017
 @set update-month March 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18042,6 +18042,37 @@ Then call @command{ncclimo} with @file{merra2_200903.nc4} as
 @example
 ncclimo -c merra2_200903.nc4 -s 1980 -e 2016 -i $drc_in -o $drc_out
 @end example
+
+In the default monthly climo generation mode, @command{ncclimo} expects 
+each input file to contain one single record that is the monthly average 
+of all fields.
+Another example of of wrangling observed datasets into a
+@acronym{CESM}ish format is @acronym{ECMWF} Integrated Forecasting
+System (@acronym{IFS}) data that contains twelve months per file,
+rather than the one month per file that @command{ncclimo} expects.
+@example
+@verbatim
+for yr in {1979..2016}; do
+# Convert ifs_YYYY01-YYYY12.nc to ifs_YYYYMM.nc
+    yyyy=`printf "%04d" $yr`
+    for mth in {1..12}; do
+        mm=`printf "%02d" $mth`
+        ncks -O -F -d time,${mth} ifs_${yyyy}01-${yyyy}12.nc ifs_${yyyy}${mm}.nc
+    done
+done
+@end verbatim
+@end example
+Then call @command{ncclimo} with @file{ifs_197901.nc} as @var{caseid}:  
+@example
+ncclimo -c ifs_197901.nc -s 1979 -e 2016 -i $drc_in -o $drc_out
+@end example
+@acronym{ncclimo} does not recognize all combinations imaginable of
+records per file and files per year. 
+However, support can be added for the most prevalent combinations 
+so that @acronym{ncclimo}, rather than the user, does any necessary data
+wrangling.
+Contact us if there is a common input data format you would like
+supported as a custom option.
 
 Often one wishes to create a climatology of a single variable.
 The @samp{-f @var{fml_nm}} option to @command{ncclimo} makes this easy.
