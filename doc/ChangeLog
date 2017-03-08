@@ -1,5 +1,9 @@
 2017-03-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.5-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.5-alpha04 final changes';git push
+	git tag -a 4.6.5-alpha04 -m 'Version 4.6.5-alpha04 new features: ncclimo/ncremap copyright, quieter, nco_grd_nfr() refactor, ncap2 calendar format';git push --tags
+
 	* Add ECMWF IFS data wrangling example to ncclimo docs for Jerry Potter
 
 2017-03-07  Charlie Zender  <zender@uci.edu>
