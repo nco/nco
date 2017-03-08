@@ -1097,7 +1097,14 @@ nco_cln_var_prs
 
   var_ret->val.vp=nco_malloc( sizeof(nco_string) *var_ret->sz);
 
+
+  var_ret->has_mss_val=True;
+  var_ret->mss_val.vp=nco_malloc(sizeof(nco_string));
+
   cast_void_nctype(var_ret->type,&var_ret->val);
+
+  var_ret->mss_val.sngp[0]=strdup(NC_FILL_STRING);
+
 
   sz=var->sz;
 
