@@ -1553,33 +1553,61 @@ var=NULL_CEWI;
             }
 
           | vid2:VAR_ID {   
-              
-              var_sct *var_rhs;
+
+              var_sct *var_rhs=NULL_CEWI;
+              var_sct *var_lhs=NULL_CEWI;
+              var_sct *var_ret=NULL_CEWI;
               std::string var_nm;
-              
+              NcapVar *Nvar;
+
+              // Set class wide variables
+              bcst=false;
+              var_cst=NULL_CEWI;
+
               var_nm=vid2->getText();
 
               if(nco_dbg_lvl_get() >= nco_dbg_var) dbg_prn(fnc_nm,var_nm);
-               
-               // Set class wide variables           
-               bcst=false;
-               var_cst=NULL_CEWI; 
-             
-               // get shape from RHS
-               var_rhs=out(vid2->getNextSibling());
-               (void)nco_free(var_rhs->nm);                
-               var_rhs->nm =strdup(var_nm.c_str());
 
-               //Copy return variable
-               if(bret)
-                  var=nco_var_dpl(var_rhs);
-               else
-                  var=(var_sct*)NULL;  
-                
-               // Write var to int_vtr
-               // if var already in int_vtr or var_vtr then write call does nothing
-               (void)prs_arg->ncap_var_write(var_rhs,bram);
-               //(void)ncap_var_write_omp(var_rhs,bram,prs_arg);
+              // get shape from RHS
+              var_rhs=out(vid2->getNextSibling());
+
+              // deal with special case where RHS is a NC_CHAR
+              if(var_rhs->type==NC_CHAR)
+              {
+
+                Nvar=prs_arg->int_vtr.find(var_nm);
+                if(!Nvar)
+                   Nvar=prs_arg->var_vtr.find(var_nm);
+
+                // var is unread, is it in Input ?
+                if(!Nvar && prs_arg->ncap_var_init_chk(var_nm)){
+                    var_lhs=prs_arg->ncap_var_init(var_nm,false);
+                    if(var_lhs->type !=NC_CHAR)
+                        var_lhs=nco_var_free(var_lhs);
+                }
+               }
+
+               if(var_lhs)
+               {
+                 var_rhs=(var_sct*)nco_var_free(var_rhs);
+                 var_ret=var_lhs;
+
+               }
+               else if(var_rhs)
+               {
+                  (void)nco_free(var_rhs->nm);
+                  var_rhs->nm =strdup(var_nm.c_str());
+                  var_ret=var_rhs;
+                }
+
+                //Copy return variable
+                if(bret)
+                  var=nco_var_dpl(var_ret);
+                else
+                   var=(var_sct*)NULL;
+
+                (void)prs_arg->ncap_var_write(var_ret,bram);
+
 
 
         } // end action
@@ -1686,11 +1714,11 @@ var=NULL_CEWI;
                   
                  if(Nvar && Nvar->flg_stt==1){
                     var_sct *var_ini;
-                    var_ini=prs_arg->ncap_var_init(var_nm,true);       
+                    var_ini=prs_arg->ncap_var_init(var_nm,true);
                     Nvar->var->val.vp=var_ini->val.vp;
                     var_ini->val.vp=(void*)NULL;
                     var_ini=nco_var_free(var_ini);
-                    Nvar->flg_stt=2; 
+                    Nvar->flg_stt=2;
                  }
 
                  if(Nvar && Nvar->flg_stt==2)
@@ -1937,6 +1965,7 @@ end0:         if(bret)
 
                // Set class wide variables
                var_sct *var_rhs;
+               var_sct *var_shp;
                NcapVar *Nvar;
                std::string var_nm;
  
@@ -1963,33 +1992,66 @@ end0:         if(bret)
                  (void)ncap_att_cpy(var_nm,s_var_rhs,prs_arg);
                
                 // var is defined and populated &  RHS is scalar -then stretch var to match
-               if(Nvar && Nvar->flg_stt==2)
-               {  
-                  long n_sz=Nvar->var->sz;
+               // if(Nvar && Nvar->flg_stt==2)
+               if(Nvar )
+               {
+                  var_shp=Nvar->cpyVarNoData();
+                  nco_var_cnf_typ(var_shp->type,var_rhs);
 
-                  if(var_rhs->sz ==1 && Nvar->var->sz >1)
+                  long n_sz=var_shp->sz;
+
+                  if(var_rhs->sz ==1 && n_sz >1)
                   {
-                    var_rhs=nco_var_cnf_typ(Nvar->var->type,var_rhs);  
                     (void)ncap_att_stretch(var_rhs,n_sz);
                     
                     // this is a special case -- if the RHS scalar has
                     // no missing value then retain LHS missing value
                     // else LHS missing value gets over written by RHS
-                    if(!var_rhs->has_mss_val)
-                      (void)nco_mss_val_cp(Nvar->var,var_rhs);   
+                    //if(!var_rhs->has_mss_val)
+                    // (void)nco_mss_val_cp(Nvar->var,var_rhs);
                   }
 
                   // deal with NC_CHAR on RHS as special case - if too short then pad out with nulls else trucate
-                  else if(Nvar->var->type==NC_CHAR &&  Nvar->var->nbr_dim==1 && n_sz != var_rhs->sz && n_sz>1 )
+                  else if(var_rhs->sz>1 &&  n_sz != var_rhs->sz &&  var_shp->type==NC_CHAR  )
                       ncap_att_char_stretch(var_rhs, n_sz);
 
                   else if( var_rhs->sz >1 && n_sz >1 && var_rhs->sz != n_sz && n_sz % var_rhs->sz ==0)
                       ncap_var_cnf_dmn(&Nvar->var,&var_rhs); 
 
-                  if(var_rhs->sz != Nvar->var->sz)
+                  if(var_rhs->sz != n_sz)
                    err_prn(fnc_nm, "size miss-match in simple assign between \""+ var_nm +"\""+ " size="+nbr2sng(Nvar->var->sz) + "var_rhs expr size="+nbr2sng(var_rhs->sz) );
 
-               } 
+                   var_shp->val.vp=var_rhs->val.vp;
+                   var_rhs->val.vp=(void*)NULL;
+
+                   if(var_rhs->has_mss_val)
+                        (void)nco_mss_val_cp(var_rhs,var_shp);
+
+                   var_rhs=nco_var_free(var_rhs);
+                   var_rhs=var_shp;
+
+               }
+               // var is undefined in Output and special treatment of NC_CHAR on RHS
+               else if(!Nvar && var_rhs->type ==NC_CHAR)
+               {
+                 if( prs_arg->ncap_var_init_chk(var_nm))
+                    var_shp=prs_arg->ncap_var_init(var_nm,false);
+
+                 if(var_shp->type==NC_CHAR && var_shp->sz != var_rhs->sz)
+                 {
+                     ncap_att_char_stretch(var_rhs, var_shp->sz);
+                     var_shp->val.vp=var_rhs->val.vp;
+                     var_rhs->val.vp=(void*)NULL;
+                     if(var_rhs->has_mss_val)
+                        (void)nco_mss_val_cp(var_rhs,var_shp);
+
+                     var_rhs=nco_var_free(var_rhs);
+                     var_rhs=var_shp;
+
+                 }
+
+                }
+
 
                // finally add new name before write  
                (void)nco_free(var_rhs->nm);                
@@ -1997,7 +2059,7 @@ end0:         if(bret)
 
                // Write var to disk
                (void)prs_arg->ncap_var_write(var_rhs,bram);
-               //(void)ncap_var_write_omp(var_rhs,bram,prs_arg);
+
 
                 // See If we have to return something
                if(bret)
