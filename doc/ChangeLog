@@ -1,5 +1,7 @@
 2017-03-09  Charlie Zender  <zender@uci.edu>
 
+	* Add MSVC workaround to gmtime_r() in fmc_all_cls.cc
+
 	* Add missing stub prototypes to nco_cln_utl.h and fix MSVC compilation
 
 2017-03-09 Henry Butowsky  <henryb@hush.com>
