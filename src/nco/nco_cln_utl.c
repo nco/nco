@@ -14,9 +14,9 @@
 /* Arrays to hold calendar type units */
 /* Format: year, month, day, hour, minute, second, origin, offset */
 /* origin for all calendars is 2001-01-01 (seconds)  (same as origin for udunits xalendar) */
-static  double DATA_360[8]={31104000.0,2592000.0,86400.0,3600.0,60.0,1.0, 31104000.0*2001.0, 0.0};
-static double DATA_365[8]={31536000.0,2628000.0,86400.0,3600.0,60.0,1.0, 31536000.0*2001.0, 0.0};
-static double DATA_366[8]={31622400.0,2635200.0,86400.0,3600.0,60.0,1.0,63276422400.0 , 0.0};
+static  double DATA_360[8]={31104000.0,2592000.0,86400.0,3600.0,60.0,1.0,31104000.0*2001.0,0.0};
+static double DATA_365[8]={31536000.0,2628000.0,86400.0,3600.0,60.0,1.0,31536000.0*2001.0,0.0};
+static double DATA_366[8]={31622400.0,2635200.0,86400.0,3600.0,60.0,1.0,63276422400.0,0.0};
 
 /* Days in months */
 static int DAYS_PER_MONTH_360[12]={30,30,30,30,30,30,30,30,30,30,30,30};
@@ -469,8 +469,6 @@ nco_cln_prn_tm         /* [fnc] print tm sct*/
    return;
 }
 
-
-
 int /* O [flg] String is calendar date */
 nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
 (const char *unit_sng) /* I [sng] Units string */
@@ -482,10 +480,6 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
   if(strcasestr(unit_sng," from ") || strcasestr(unit_sng," since ") || strcasestr(unit_sng," after ")) return True; else return False;
 
 } /* end nco_cln_chk_tm() */
-
-
-
-
 
 #ifndef ENABLE_UDUNITS
 /* Stub functions to compile without UDUNITS2 */
@@ -533,12 +527,10 @@ nco_cln_var_prs
  nco_cln_typ lmt_cln,
  int ifmt,
  var_sct *var,
- var_sct *var_ret
-){
+ var_sct *var_ret)
+{
   return NCO_ERR;
-
-}
-
+} /*  !nco_cln_var_prs() */
 
 #endif /* !ENABLE_UDUNITS */
 
@@ -729,7 +721,7 @@ const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
 nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
 double *og_val)         /* O [dbl] output value */
 {
-  const char fnc_nm[]="nco_cln_clc_dbl_org"; /* [sng] Function name */
+  const char fnc_nm[]="nco_cln_clc_dbl_org()"; /* [sng] Function name */
 
   int is_date=0;  /* set to true if date/time unit */
   int rcd=0;

@@ -1,6 +1,10 @@
+2017-03-09  Charlie Zender  <zender@uci.edu>
+
+	* Add missing stub prototypes to nco_cln_utl.h and fix MSVC compilation
+
 2017-03-09 Henry Butowsky  <henryb@hush.com>
 
-	* fixes to plain var NC_CHAR assign statment -such that if var exists in Input then shape is gotten from Input
+	* Fix plain var NC_CHAR assign statment so if var exists in Input then shape is obtained from Input
 
 2017-03-08  Charlie Zender  <zender@uci.edu>
 
