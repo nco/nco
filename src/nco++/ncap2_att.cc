@@ -346,17 +346,15 @@ ncap_att_char_stretch    /* pad out or truncate a NC_CHAR attribute */
   var_typ_sz=nco_typ_lng(NC_CHAR);
 
 
-  vp=(void*)nco_malloc(nw_sz*var_typ_sz);
+  vp=(void*)nco_calloc(var_typ_sz,nw_sz);
   cp=(char*)vp;
   cast_void_nctype(NC_CHAR,&var->val);
 
-  if( nw_sz > var->sz ) {
+  if( nw_sz > var->sz )
     strncpy(cp, var->val.cp, var->sz);
-    memset( cp+(ptrdiff_t)nw_sz,'\0', (size_t)(nw_sz-var->sz)  );
-  }
-  else{
+  else
     strncpy(cp, var->val.cp,nw_sz);
-  }
+
 
   cast_nctype_void(NC_CHAR,&var->val);
 
