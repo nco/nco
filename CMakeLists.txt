@@ -1,5 +1,7 @@
 #CMake build, Pedro Vicente 
 #options
+#FIND_SZIP try to locate SZIP library (default ON)
+#library dependencies
 #NETCDF_INCLUDE
 #NETCDF_LIBRARY
 #HDF5_LIBRARY
@@ -57,12 +59,17 @@ else()
   message("-- Found zlib library at: " ${ZLIB_LIBRARY})
 endif()
 
+option(FIND_SZIP "Try to link with SZIP libarry" ON)
+
+if (FIND_SZIP)
+message("-- Trying to find SZIP library...")
 find_library(SZIP_LIBRARY NAMES sz)
 if(NOT SZIP_LIBRARY)
   message(FATAL_ERROR "szip library not found")
 else()
   message("-- Found szip library at: " ${SZIP_LIBRARY})
 endif()
+endif(FIND_SZIP)
 
 find_library(CURL_LIBRARY NAMES curl)
 if(NOT CURL_LIBRARY)
@@ -72,16 +79,20 @@ else()
 endif()
 
 if (MSVC)
-  add_definitions( "/D_CRT_SECURE_NO_WARNINGS" )
-  if (STATIC_CRT)
-    message("-- Building with static runtime library")
-	  set(CMAKE_CXX_FLAGS_DEBUG "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
-    set(CMAKE_CXX_FLAGS_MINSIZEREL     "/MT /O1 /Ob1 /D NDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE        "/MT /O2 /Ob2 /D NDEBUG")
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MT /Zi /O2 /Ob1 /D NDEBUG")
-  endif()  
+  add_definitions( "/D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_DEPRECATE" )
+  message("-- Building with static runtime library")
+  set(CMAKE_CXX_FLAGS_DEBUG "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
+  set(CMAKE_CXX_FLAGS_MINSIZEREL     "/MT /O1 /Ob1 /D NDEBUG")
+  set(CMAKE_CXX_FLAGS_RELEASE        "/MT /O2 /Ob2 /D NDEBUG")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MT /Zi /O2 /Ob1 /D NDEBUG")
+  #Compile as C++ Code (/TP)
+  set(CMAKE_C_FLAGS_DEBUG "/TP /D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
+  set(CMAKE_C_FLAGS_MINSIZEREL     "/TP /MT /O1 /Ob1 /D NDEBUG")
+  set(CMAKE_C_FLAGS_RELEASE        "/TP /MT /O2 /Ob2 /D NDEBUG")
+  set(CMAKE_C_FLAGS_RELWITHDEBINFO "/TP /MT /Zi /O2 /Ob1 /D NDEBUG")
   set(WINSOCK_LIBRARY ws2_32.lib winmm.lib wldap32.lib)
-endif(MSVC)
+
+else (MSVC)  
 
 if (CMAKE_VERSION VERSION_LESS "3.1")
   if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
@@ -90,6 +101,8 @@ if (CMAKE_VERSION VERSION_LESS "3.1")
 else ()
   set (CMAKE_C_STANDARD 99)
 endif ()
+
+endif(MSVC)
 
 include_directories(${NETCDF_INCLUDE_FOUND})
 
