@@ -1,5 +1,7 @@
 #CMake build, Pedro Vicente 
 #options
+#FIND_SZIP try to locate SZIP library (default ON)
+#library dependencies
 #NETCDF_INCLUDE
 #NETCDF_LIBRARY
 #HDF5_LIBRARY
@@ -57,12 +59,17 @@ else()
   message("-- Found zlib library at: " ${ZLIB_LIBRARY})
 endif()
 
+option(FIND_SZIP "Try to link with SZIP libarry" ON)
+
+if (FIND_SZIP)
+message("-- Trying to find SZIP library...")
 find_library(SZIP_LIBRARY NAMES sz)
 if(NOT SZIP_LIBRARY)
   message(FATAL_ERROR "szip library not found")
 else()
   message("-- Found szip library at: " ${SZIP_LIBRARY})
 endif()
+endif(FIND_SZIP)
 
 find_library(CURL_LIBRARY NAMES curl)
 if(NOT CURL_LIBRARY)
