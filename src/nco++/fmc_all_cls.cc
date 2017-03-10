@@ -4979,7 +4979,7 @@ var_sct *udunits_cls::strftime_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, 
           
         sgmt=(time_t)dp[idx];  
 #ifdef _MSC_VER
-    (void)gmtime(&sgmt,&tp);
+    (void)gmtime_s(&tp, &sgmt);
 #else
     (void)gmtime_r(&sgmt,&tp);
 #endif /* !_MSC_VER */
