@@ -1392,14 +1392,16 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
 
   size_t bfr_sz_hnt_lcl; /* [B] Buffer size hint */
 
+  static nco_bool FIRST_INFO=True;
+
   /* Initialize local buffer size hint with user-input value */
   bfr_sz_hnt_lcl= (bfr_sz_hnt) ? *bfr_sz_hnt : NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
   /* Is request implicit and sufficiently verbose? */
-  flg_rqs_vrb_mpl = ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_var) ? True : False;
+  flg_rqs_vrb_mpl = ((bfr_sz_hnt == NULL || *bfr_sz_hnt == NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_var && FIRST_INFO) ? True : False;
 
   /* Is request explicit and sufficiently verbose? */
-  flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_fl)  ? True : False;
+  flg_rqs_vrb_xpl = ((bfr_sz_hnt != NULL && *bfr_sz_hnt != NC_SIZEHINT_DEFAULT) && nco_dbg_lvl_get() >= nco_dbg_fl && FIRST_INFO) ? True : False;
 
   /* Print implicit or explicit buffer request depending on debugging level */
   if(flg_rqs_vrb_mpl) (void)fprintf(stderr,"%s: INFO %s reports nc__open() will request file buffer of default size\n",nco_prg_nm_get(),fnc_nm); 
@@ -1421,13 +1423,18 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   rcd+=nco_inq_format_extended(*nc_id,&fl_fmt_xtn_crr,&mode);
   if(fl_fmt_xtn_prv != nco_fmt_xtn_nil){
     /* Complain if set value of extended type does not match current type */
-    if(nco_dbg_lvl_get() >= nco_dbg_fl && fl_fmt_xtn_prv != fl_fmt_xtn_crr) (void)fprintf(stderr,"%s: INFO %s reports current extended filetype = %s does not equal previous extended filetype = %s. This is expected when NCO is instructed to convert filetypes, i.e., to read from one type and write to another. And when NCO generates grids or templates (which are always netCDF3) when the input file is netCDF4. It is also expected when multi-file operators receive files known to be of different types. However, it could also indicate an unexpected change in input dataset type of which the user should be cognizant.\n",nco_prg_nm_get(),fnc_nm,nco_fmt_xtn_sng(fl_fmt_xtn_crr),nco_fmt_xtn_sng(fl_fmt_xtn_prv));
+    if(nco_dbg_lvl_get() >= nco_dbg_fl && fl_fmt_xtn_prv != fl_fmt_xtn_crr && FIRST_INFO) (void)fprintf(stderr,"%s: INFO %s reports current extended filetype = %s does not equal previous extended filetype = %s. This is expected when NCO is instructed to convert filetypes, i.e., to read from one type and write to another. And when NCO generates grids or templates (which are always netCDF3) when the input file is netCDF4. It is also expected when multi-file operators receive files known to be of different types. However, it could also indicate an unexpected change in input dataset type of which the user should be cognizant.\n",nco_prg_nm_get(),fnc_nm,nco_fmt_xtn_sng(fl_fmt_xtn_crr),nco_fmt_xtn_sng(fl_fmt_xtn_prv));
   }else{
     /* Set undefined extended file type to actual extended filetype */
     nco_fmt_xtn_set(fl_fmt_xtn_crr);
   } /* endif */
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Extended filetype of %s is %s, mode = %d\n",nco_prg_nm_get(),fl_nm,nco_fmt_xtn_sng(fl_fmt_xtn_crr),mode);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl && FIRST_INFO) (void)fprintf(stderr,"%s: INFO Extended filetype of %s is %s, mode = %d\n",nco_prg_nm_get(),fl_nm,nco_fmt_xtn_sng(fl_fmt_xtn_crr),mode);
 
+  if(FIRST_INFO && nco_dbg_lvl_get() >= nco_dbg_fl){
+    (void)fprintf(stderr,"%s: INFO Many NCO operators open the same file multiple times when OpenMP is enabled. INFO messages are only printed the first time.\n",nco_prg_nm_get());
+    FIRST_INFO=False;
+  } /* !FIRST_INFO */
+    
   return rcd;
 } /* end nco_fl_open() */
 

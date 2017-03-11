@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.5-alpha04
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 8 March 2017
+@set update-date 10 March 2017
 @set update-month March 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -23396,9 +23396,10 @@ Large work-load testing
 @item Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Gary Strand, George White Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Filipe Fernandes
+@cindex Hugo Oliveira
 @cindex Rich Signell
 @cindex Kyle Wilcox
-@item Filipe Fernandes, Rich Signell, Kyle Wilcox
+@item Filipe Fernandes, Hugo Oliveira, Rich Signell, Kyle Wilcox
 Anaconda packaging
 @cindex Daniel Baumann
 @cindex Nick Bower

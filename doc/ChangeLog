@@ -1,5 +1,9 @@
 2017-03-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.5 final changes';git push
+	git tag -a 4.6.5 -m 'Version 4.6.5 new features: ncclimo/ncremap version/vrb_lvl, ncks --cal, nfr() refactor, POP fix';git push --tags
+
 	* Add MSVC workaround to gmtime_r() in fmc_all_cls.cc
 
 	* Add missing stub prototypes to nco_cln_utl.h and fix MSVC compilation
@@ -9,10 +13,6 @@
 	* Fix plain var NC_CHAR assign statment so if var exists in Input then shape is obtained from Input
 
 2017-03-08  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.6.5 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.5 final changes';git push
-	git tag -a 4.6.5 -m 'Version 4.6.5 new features: ncclimo/ncremap version/vrb_lvl, ncks --cal, nfr() refactor, POP fix';git push --tags
 
 	* Document --calendar option
 

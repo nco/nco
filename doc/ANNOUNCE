@@ -42,16 +42,45 @@ A. ncks now prints the human-legible calendar string corresponding to
    This option is similar to the ncdump -t option.
    http://nco.sf.net/nco.html#cal
 
-A. new features...ncclimo will reshape timeseries, i.e., split input datasets into
-   per-variable files that span the entire timeseries.
-   Input files are specified via stdin, via positional arguments
-   (after all options) on the command-line, or as the set of .nc files
-   in drc_in 
-   ls $drc_in/*.nc | ncclimo -v T,Q --output=drc_out --map=rgr_map
-   ncclimo -v T,Q --output=drc_out --map=rgr_map < list
-   ncclimo -v T,Q --output=drc_out --map=rgr_map $drc_in/*.nc
-   ncclimo -v T,Q --input=$drc_in --output=drc_out --map=rgr_map
+A. ncap2 now seamlessly edits character array.
+   Suppose you have a string stored as an old school character array
+   (not a netCDF4 string) with a fixed dimension size. ncap2 now
+   supports altering the string value without having to manually pad
+   the RHS to the exact dimension size of the LHS:
+
+   ncap2 -s 'date_sng="2016-05-11_06:00:00"' in.nc out.nc
+   ncap2 -s 'date_sng="automatic padding"' in.nc out.nc
+
+   The exact same syntax has always worked on netCDF4 strings.
+   This new feature frees users from needing to know the ugly details
+   of netCDF3 string storage.
+   http://nco.sf.net/nco.html#ncap2
+
+A. ncremap support a verbosity level option, --vrb_lvl.
+   Verbosity level is now independent of debug level, dbg_lvl, so
+   users can customize how much ncremap information to print.
+   Default vrb_lvl=2 and supported levels range from 0 (no output) to
+   4 (most verbose). The verbosity of the underlying remapping,
+   which invokes ncks, is still controlled by dbg_lvl not vrb_lvl.
+   ncremap --vrb_lvl=1 -i in.nc -m map.nc -o out.nc
+   http://nco.sf.net/nco.html#ncremap
+
+A. ncremap and ncclimo now support a version option, --version.
+   This option prints the operator version and configuration.
+   It's a painless way to tell, e.g., if ncremap knows where your 
+   ESMF_RegridWeightGen executable is, and where these scripts
+   look for NCO and what version of netCDF is linked to:
+   ncremap --version
+   ncclimo --version
+   http://nco.sf.net/nco.html#ncremap
    http://nco.sf.net/nco.html#ncclimo
+
+A. ncremap and ncks now parse more unknown grids than before.
+   The front-end of ncremap's grid-inferenence routine has been
+   refactored to rely on less user-provided information about
+   dimension names. Now it obtains more information than before
+   by examining the grid coordinates. As a result, grids from
+   data files with strange dimension names are likelier to be parsed. 
 
 BUG FIXES:
 
