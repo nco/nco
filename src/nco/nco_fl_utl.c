@@ -1431,7 +1431,7 @@ nco_fl_open /* [fnc] Open file using appropriate buffer size hints and verbosity
   if(nco_dbg_lvl_get() >= nco_dbg_scl && FIRST_INFO) (void)fprintf(stderr,"%s: INFO %s reports extended filetype of %s is %s, mode = %d\n",nco_prg_nm_get(),fnc_nm,fl_nm,nco_fmt_xtn_sng(fl_fmt_xtn_crr),mode);
 
   if(FIRST_INFO && nco_dbg_lvl_get() >= nco_dbg_fl){
-    (void)fprintf(stderr,"%s: %s will not print any more INFO messages if this file is opened again. (Many NCO operators open the same file multiple times when OpenMP is enabled, %s prints INFO messages only the first time).\n",nco_prg_nm_get(),fnc_nm,fnc_nm);
+    (void)fprintf(stderr,"%s: INFO %s will not print any more INFO messages if this file is opened again. (Many NCO operators open the same file multiple times when OpenMP is enabled, %s prints INFO messages only the first time because successive messages are usually redundant).\n",nco_prg_nm_get(),fnc_nm,fnc_nm);
     FIRST_INFO=False;
   } /* !FIRST_INFO */
     
