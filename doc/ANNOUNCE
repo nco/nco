@@ -84,6 +84,11 @@ A. ncremap and ncks now parse more unknown grids than before.
 
 BUG FIXES:
 
+A. ncap2 attribute propagation for some unary operators is fixed.
+   It had been broken since ~4.6.3 for unary operations like 'time+=10'
+   whereas it was working fine for binary operations, e.g., 'T=T+10'.
+   Thanks to Qi Tang for sounding the alert. Solution is to upgrade.
+
 A. The chunk cache option (--cnk_csh) implemented in ncks in 4.6.4 was  
    inadvertently doing a no-op. Now it works as advertised.
    No workaround, solution is to upgrade.
