@@ -92,7 +92,7 @@ nco_fmt_sng_printf_subst /* [fnc] Replace printf() format statements */
 
   /* Replace match with desired format */
   fmt_sng_new=(char *)strdup(fmt_sng);
-  if(mch_nbr){
+  if(mch_nbr && fmt_sng && strlen(fmt_sng)){
     mch_psn_srt=result->rm_so; /* [B] Byte offset from start of string to start of substring */
     mch_psn_end=result->rm_eo-1L; /* [B] Byte offset from start of string to end of substring */
     (void)nco_realloc(fmt_sng_new,(mch_psn_srt+strlen(fmt_sng)-mch_psn_end+2L)*sizeof(char));
