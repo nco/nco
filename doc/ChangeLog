@@ -8,6 +8,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.5-beta01 final changes';git push
 	git tag -a 4.6.5-beta01 -m 'Version 4.6.5-beta01 new features: unary operation attribute propagation, MSVC fixes';git push --tags
 
+	* Return with EXIT_FAILURE for bad commandline options
+
 	* Henry fixed attribute propagation on ncap2 unary operators
 
 2017-03-11  Charlie Zender  <zender@uci.edu>

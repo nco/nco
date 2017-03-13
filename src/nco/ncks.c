@@ -156,7 +156,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
+  const char * const opt_sht_lst=":34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -894,7 +894,12 @@ main(int argc,char **argv)
     case 'z': /* Print absolute path of all input variables then exit */
       GET_LIST=True;
       break;
-    case '?': /* Print proper usage */
+    case ':': /* Colon means unrecognized option, print proper usage then EXIT_FAILURE */
+      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Missing or unrecognized option. Please reformulate command accordingly.\n",nco_prg_nm_get());
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+      break;
+    case '?': /* Question mark means help, print proper usage then EXIT_SUCCESS */
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
       break;
