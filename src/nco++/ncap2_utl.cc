@@ -1646,38 +1646,45 @@ ncap_var_var_inc   /* [fnc] Add two variables */
  int op,            /* Deal with incremental operators i.e +=,-=,*=,/= */
  bool bram,         /* I [bool] If true make a RAM variable */ 
  bool bret, 
- prs_cls *prs_arg)
-{
-  const char fnc_nm[]="ncap_var_var_inc"; 
+ prs_cls *prs_arg) {
+  const char fnc_nm[] = "ncap_var_var_inc";
   const char *cvar1;
   const char *cvar2;
   nco_bool vb1;
   nco_bool vb2;
-  
-  var_sct *var_ret=NULL_CEWI;
-  
-  vb1 = ncap_var_is_att(var1);
-  
-  // If initial Scan
-  if(prs_arg->ntl_scn)
-  {
-    
-    // deal with variable
-    if(!vb1)
-    {
-      var_ret=nco_var_dpl(var1); 
-      (void)prs_arg->ncap_var_write(var1,bram);  
-    }
-    // deal with attribute 
-    else
-      var_ret=var1;
 
-    if(var2) 
-      var2=(var_sct*)nco_var_free(var2);
-    
+  var_sct *var_ret = NULL_CEWI;
+  NcapVar *Nvar;
+
+  vb1 = ncap_var_is_att(var1);
+
+  // If initial Scan
+  if (prs_arg->ntl_scn) {
+
+    // deal with variable
+    if (!vb1) {
+      var_ret = nco_var_dpl(var1);
+      (void) prs_arg->ncap_var_write(var1, bram);
+    }
+      // deal with attribute
+    else
+      var_ret = var1;
+
+    if (var2)
+      var2 = (var_sct *) nco_var_free(var2);
+
     return var_ret;
-  }   
-  
+  }
+
+
+  // do attribute inheritance
+  if (!vb1) {
+    Nvar = prs_arg->var_vtr.find(var1->nm);
+    if (!Nvar || (Nvar && Nvar->flg_stt == 1))
+      (void)ncap_att_cpy(SCS(var1->nm), SCS(var1->nm), prs_arg);
+
+  }
+
   //Deal with unary functions first
   if(var2==NULL_CEWI)
   {
@@ -1698,7 +1705,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
     else
     {
       std::string sa(var1->nm);
-      NcapVar *Nvar=new NcapVar(var1,sa);
+      Nvar=new NcapVar(var1,sa);
       prs_arg->var_vtr.push_ow(Nvar);       
     }
     return var_ret;    
@@ -1757,7 +1764,7 @@ ncap_var_var_inc   /* [fnc] Add two variables */
   {
     // deal with attribute
     std::string sa(var1->nm);
-    NcapVar *Nvar=new NcapVar(var1,sa);
+    Nvar=new NcapVar(var1,sa);
     prs_arg->var_vtr.push_ow(Nvar);       
     
   }
