@@ -1057,13 +1057,19 @@ nco_cln_var_prs
  var_sct *var_ret
 )
 {
-  long sz;
-  long idx;
+  size_t sz;
+  size_t idx;
+  char empty_sng[1];
+
   double resolution;
   tm_cln_sct tm;
+
+
+
   /* base units for udunits */
   const char *bs_sng="seconds since 2001-01-01";
   const char *fnc_nm="nco_cln_var_prs";
+  empty_sng[0]='\0';
 
   // if( lmt_cln != cln_std )
   //   return NCO_ERR;
@@ -1091,11 +1097,11 @@ nco_cln_var_prs
 
 
   var_ret->has_mss_val=True;
-  var_ret->mss_val.vp=nco_malloc(sizeof(nco_string));
+  var_ret->mss_val.vp=nco_malloc(sizeof(nco_string*));
 
   cast_void_nctype(var_ret->type,&var_ret->val);
 
-  var_ret->mss_val.sngp[0]=strdup(NC_FILL_STRING);
+  var_ret->mss_val.sngp[0]=strdup(empty_sng);
 
 
   sz=var->sz;
@@ -1116,7 +1122,7 @@ nco_cln_var_prs
 
 
       if(var->has_mss_val && var->val.dp[idx]==mss_val_dbl) {
-        var_ret->val.sngp[idx] = strdup(NC_FILL_STRING);
+        var_ret->val.sngp[idx] = strdup(empty_sng);
         continue;
       }
 
@@ -1140,7 +1146,7 @@ nco_cln_var_prs
     for (idx = 0; idx < sz; idx++) {
 
       if(var->has_mss_val && var->val.fp[idx]==mss_val_flt ){
-        var_ret->val.sngp[idx] = strdup(NC_FILL_STRING);
+        var_ret->val.sngp[idx] = strdup(empty_sng);
         continue;
       }
 
