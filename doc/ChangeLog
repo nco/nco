@@ -1,4 +1,4 @@
-2017-03-13  Charlie Zender  <zender@uci.edu>
+2017-03-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.5 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.5 final changes';git push
@@ -8,7 +8,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.5-beta01 final changes';git push
 	git tag -a 4.6.5-beta01 -m 'Version 4.6.5-beta01 new features: unary operation attribute propagation, MSVC fixes';git push --tags
 
-	* Return with EXIT_FAILURE for bad commandline options
+	* Return with EXIT_FAILURE not EXIT_SUCCESS for bad commandline options
+
+2017-03-13  Charlie Zender  <zender@uci.edu>
 
 	* Henry fixed attribute propagation on ncap2 unary operators
 

@@ -156,7 +156,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst=":34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
+  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -318,6 +318,8 @@ main(int argc,char **argv)
     {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
     {"hdn",no_argument,0,0}, /* [flg] Print hidden attributes */
     {"hidden",no_argument,0,0}, /* [flg] Print hidden attributes */
+    {"help",no_argument,0,0},
+    {"hlp",no_argument,0,0},
     {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
     {"lbr",no_argument,0,0},
     {"library",no_argument,0,0},
@@ -493,8 +495,6 @@ main(int argc,char **argv)
     {"auxiliary",required_argument,0,'X'},
     {"exclude",no_argument,0,'x'},
     {"xcl",no_argument,0,'x'},
-    {"help",no_argument,0,'?'},
-    {"hlp",no_argument,0,'?'},
     {"get_grp_info",no_argument,0,0},
     {"get_file_info",no_argument,0,0},
     {"lbr_rcd",no_argument,0,0},
@@ -615,6 +615,10 @@ main(int argc,char **argv)
         hdr_pad=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif "hdr_pad" */
+      if(!strcmp(opt_crr,"help") || !strcmp(opt_crr,"hlp")){
+	(void)nco_usg_prn();
+	nco_exit(EXIT_SUCCESS);
+      } /* endif "help" */
       if(!strcmp(opt_crr,"lbr") || !strcmp(opt_crr,"library")){
         (void)nco_lbr_vrs_prn();
         nco_exit(EXIT_SUCCESS);
@@ -894,14 +898,10 @@ main(int argc,char **argv)
     case 'z': /* Print absolute path of all input variables then exit */
       GET_LIST=True;
       break;
-    case ':': /* Colon means unrecognized option, print proper usage then EXIT_FAILURE */
-      (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Missing or unrecognized option. Please reformulate command accordingly.\n",nco_prg_nm_get());
+    case '?': /* Question mark means recognized option, print proper usage then EXIT_FAILURE */
+      (void)fprintf(stdout,"%s: ERROR in command-line syntax/options. Missing or unrecognized option. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
-      break;
-    case '?': /* Question mark means help, print proper usage then EXIT_SUCCESS */
-      (void)nco_usg_prn();
-      nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
       (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",nco_prg_nm_get());
