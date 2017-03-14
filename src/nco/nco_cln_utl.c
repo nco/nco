@@ -142,7 +142,6 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
 tm_typ /* O [enm] Units type */
 nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
 (const char *ud_sng){ /* I [ptr] Units string  */
-  int idx;
   size_t len; 
   char *lcl_sng;  
   tm_typ rcd_typ;
@@ -154,7 +153,7 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
   
   /* Convert to lower case */
   len=strlen(lcl_sng);
-  for(idx=0;idx<len;idx++) lcl_sng[idx]=tolower(lcl_sng[idx]);
+  for(size_t idx=0;idx<len;idx++) lcl_sng[idx]=tolower(lcl_sng[idx]);
   
   if(!strcmp(lcl_sng,"year") || !strcmp(lcl_sng,"years")) rcd_typ=tm_year;
   else if(!strcmp(lcl_sng,"month") || !strcmp(lcl_sng,"months")) rcd_typ=tm_month;
@@ -917,9 +916,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
    else if (( dt_sng=strstr(bfr,"s@")))
     dt_sng+=2;
 
-   if(!dt_sng)
-     return NCO_ERR;
-  
+   if(!dt_sng) return NCO_ERR;
 
    cnv_nbr=sscanf(dt_sng,"%d-%d-%d",&tm_in->year,&tm_in->month,&tm_in->day);
    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports sscanf() converted %d values and it should have converted 3 values, format string=\"%s\"\n",nco_prg_nm_get(),fnc_nm,cnv_nbr,dt_sng);

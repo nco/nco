@@ -861,26 +861,22 @@ nco_prn_var_val_cmt /* 0 print to stdout var values as CDL comment (delimited by
       fmt_sng_mss_val=nco_fmt_sng_printf_subst(dlm_sng);
   #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
-
-  /* print type in english in prefix text*/
-  if(var->type==NC_STRING)
-    (void)fprintf(stdout,"calendar format: ");
-  else
-    (void)fprintf(stdout,"%s value%s : ", cdl_typ_nm(var->type), (var->sz>1 ? "s":"" ));
+  /* Print type in English in prefix text */
+  if(var->type == NC_STRING) (void)fprintf(stdout,"calendar format: "); else (void)fprintf(stdout,"%s value%s : ",cdl_typ_nm(var->type),(var->sz > 1 ? "s":""));
 
   for(lmn=0;lmn<sz;lmn++){
 
-    /* memcmp() triggers  pedantic warning unless pointer arithmetic is cast to type char * */
-    if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val)
-      if(var->type==NC_STRING)
-        is_mss_val = !strcmp( var->val.sngp[lmn] ,var->mss_val.sngp[0]);
-      else
-        is_mss_val = !memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
-
-    if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val && is_mss_val   ){
-       if(strcmp(dlm_sng,fmt_sng_mss_val))
-         (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng);
-       else (void)fprintf(stdout,"%s",mss_val_sng);
+    if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
+      /* memcmp() triggers  pedantic warning unless pointer arithmetic is cast to type char */
+      if(var->type == NC_STRING) is_mss_val=!strcmp(var->val.sngp[lmn],var->mss_val.sngp[0]); else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
+    } /* !PRN_MSS_VAL_BLANK */
+      
+    if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val && is_mss_val){
+      if(strcmp(dlm_sng,fmt_sng_mss_val)){
+	(void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng);
+      }else{
+	(void)fprintf(stdout,"%s",mss_val_sng);
+      } /* !strcmp() */
     }else{ /* !is_mss_val */
         switch(var->type){
           case NC_FLOAT: (void)fprintf(stdout,dlm_sng,var->val.fp[lmn]); break;
@@ -1815,12 +1811,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     for(lmn=0;lmn<var->sz;lmn++){
 
       /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
-      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val )
-        if(var->type==NC_STRING)
-          is_mss_val = !strcmp( var->val.sngp[lmn] ,var->mss_val.sngp[0]);
-        else
-          is_mss_val = !memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
-
+      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
+        if(var->type==NC_STRING) is_mss_val=!strcmp(var->val.sngp[lmn],var->mss_val.sngp[0]); else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
+      } /* !PRN_MSS_VAL_BLANK */
+	
       if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val &&  is_mss_val){
         if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(stdout,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(stdout,"%s, ",mss_val_sng);
       }else{ /* !is_mss_val */
@@ -1938,22 +1932,19 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
       /* do bracketing of data if specified */
       if(JSN_BRK)
-        for(int bdz=var->nbr_dim-1; bdz>=1 ; bdz--)
-          if( lmn % mod_map_rv_cnt[bdz] == 0)
-	      (void)fprintf(stdout,"[");   
-
+        for(int bdz=var->nbr_dim-1;bdz>=1;bdz--)
+          if(lmn % mod_map_rv_cnt[bdz] == 0)
+	    (void)fprintf(stdout,"[");   
 
       is_mss_val=False;
-      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val )
-        if(var->type==NC_STRING)
-          is_mss_val = !strcmp( var->val.sngp[lmn] ,var->mss_val.sngp[0]);
-        /* in regular CDL format for NC_CHAR  if FillValue is NOT  '\0' then the char is printed as is  */
-        else if(var->type==NC_CHAR)
-          is_mss_val=False;
-        else
-          /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
-          is_mss_val = !memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
-
+      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
+        if(var->type == NC_STRING) is_mss_val = !strcmp( var->val.sngp[lmn] ,var->mss_val.sngp[0]);
+	  /* in regular CDL format for NC_CHAR if FillValue is NOT '\0' then the char is printed as is */
+	else if(var->type==NC_CHAR) is_mss_val=False;
+	/* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
+	else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
+      } /* !PRN_MSS_VAL_BLANK */
+	
       if(is_mss_val){
         (void)sprintf(val_sng,"%s",mss_val_sng);
       }else{ /* !is_mss_val */
