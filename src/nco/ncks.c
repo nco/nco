@@ -898,7 +898,7 @@ main(int argc,char **argv)
     case 'z': /* Print absolute path of all input variables then exit */
       GET_LIST=True;
       break;
-    case '?': /* Question mark means recognized option, print proper usage then EXIT_FAILURE */
+    case '?': /* Question mark means unrecognized option, print proper usage then EXIT_FAILURE */
       (void)fprintf(stdout,"%s: ERROR in command-line syntax/options. Missing or unrecognized option. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
