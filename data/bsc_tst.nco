@@ -545,6 +545,15 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
+  //check attribute inheritance using an incremental operand
+  // attribute propgation
+  three_dmn_var_crd+=10.0;
+  if(!exists(three_dmn_var_crd@units) || !exists(three_dmn_var_crd@long_name))
+  {  
+     print("ERROR: d8: error att inheritance with '+=' op\n");
+     nbr_err++;	
+  }
+
 
   print("RESULTS block d: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
