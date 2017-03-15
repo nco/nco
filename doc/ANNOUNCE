@@ -8,7 +8,7 @@ http://github.com/nco (Source Code, Releases, Developers)
 What's new?
 
 4.6.5 contains a potpurri of new features. Setting chunk cache size
-with --cnk_csh will accelerate aggregation of netCDF4 files.
+with --cnk_csh can accelerate aggregation of netCDF4 files.
 Climatology and regridder users may appreciate the cleaned-up
 ouput offered by the ncremap --vrb_lvl switch and more intelligent
 grid inferral. Everyone who has tried to convert "time since..." 
