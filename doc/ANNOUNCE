@@ -18,8 +18,8 @@ ncap2 attribute propagation in corner cases, and corrected error codes
 for bad command line arguments. 
 
 Work on NCO 4.6.6 has commenced. Planned improvements include 
-support for conda installs on MS Windows, and more ncclimo
-and ncremap features.
+support for conda installs on MS Windows, and human-legible calendar
+date printing, more ncclimo and ncremap features.
 
 Enjoy,
 Charlie

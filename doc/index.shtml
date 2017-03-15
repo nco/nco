@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Bienvenue sur le netCDF Operator (NCO) site</h1>
 
 <p><h2>
-Current stable NCO version is 4.6.4 released <!--#flastmod file="src/nco-4.6.4.tar.gz"-->
+Current stable NCO version is 4.6.5 released <!--#flastmod file="src/nco-4.6.5.tar.gz"-->
 </h2>
 
 <table border=0 width=100%>
@@ -149,33 +149,34 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2017 Mar&nbsp;??: 4.6.5 (<i>In progress</i>)
+<li>2017 Apr&nbsp;??: 4.6.6 (<i>In progress</i>)
+<li>2017 Mar&nbsp;15: 4.6.5 (Sundry features/fixes)
 <li>2017 Feb&nbsp;07: 4.6.4 (<tt>ncclimo</tt> splitter)
 <li>2017 Jan&nbsp;27: <i>Geosci. Model Dev.</i> publishes compression-error trade-off <a href="http://www.geosci-model-dev.net/10/413/2017">paper</a></li>
-<li>2016 Dec&nbsp;23: 4.6.3 (Minor features)
+<li>2016 Dec&nbsp;23: 4.6.3 (Sundry features/fixes)
 <li>2016 Nov&nbsp;16: 4.6.2 (JSON)
 <li>2016 Sep&nbsp;19: <i>Geosci. Model Dev.</i> publishes PPC <a href="http://www.geosci-model-dev.net/9/3199/2016">paper</a></li>
-<li>2016 Aug&nbsp;06: 4.6.1 (Stability)
+<li>2016 Aug&nbsp;06: 4.6.1 (Sundry features/fixes)
 <li>2016 Jul&nbsp;06: Submitted Layer-packing <a href="http://www.geosci-model-dev-discuss.net/gmd-2016-177">manuscript</a> to <i>Geosci. Model Dev.</i></li>
 <li>2016 May&nbsp;12: 4.6.0 (<tt>ncclimo</tt>)
 <li>2016 Apr&nbsp;06: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201604.pdf">Poster</a> at NASA ESDSWG, Greenbelt</li>
 <li>2016 Apr&nbsp;05: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">Talk</a> at NASA GES DISC, Greenbelt</li>
 <li>2016 Mar&nbsp;22: Submitted PPC manuscript to <i>Geosci. Model Dev.</i></li>
-<li>2016 Feb&nbsp;17: 4.5.5 (Stability)
+<li>2016 Feb&nbsp;17: 4.5.5 (Sundry features/fixes)
 <li>2016 Jan&nbsp;07: 4.5.4 (<tt>ncremap</tt>)
 <li>2015 Dec&nbsp;16: <a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">Poster</a> at Fall AGU, San Francisco</li>
 <li>2015 Nov&nbsp;04: <a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">Talk</a> at DOE ACME, Albuquerque</li>
 <li>2015 Oct&nbsp;20: 4.5.3 (Curvilinear)
 <li>2015 Sep&nbsp;06: 4.5.2 (Generate SCRIP)
 <li>2015 Sep&nbsp;01: NSF EarthCube <a href="#prp_e3">project</a> commences</li>
-<li>2015 Jul&nbsp;10: 4.5.1 (Stability)
+<li>2015 Jul&nbsp;10: 4.5.1 (Sundry features/fixes)
 <li>2015 Jun&nbsp;11: 4.5.0 (Regridding)
 <li>2015 May&nbsp;21: 4.4.9 (<tt>ncra</tt> weights)
 <li>2015 Feb&nbsp;16: 4.4.8 (Precision-Preserving Compression)
 <li>2014 Dec&nbsp;15: DOE ACME <a href="#prp_acme">project</a> commences</li>
 <li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
 <li>2014 Oct&nbsp;01: 4.4.6 (<tt>ncra, ncwa</tt> packing bugfixes, stride optimization)
-<li>2014 Aug&nbsp;26: 4.4.5 (Stability)
+<li>2014 Aug&nbsp;26: 4.4.5 (Sundry features/fixes)
 <li>2014 Jul&nbsp;01: NASA ACCESS 2013 <a href="#prp_axs">project</a> commences</li>
 <li><a href="./milestones_old.shtml">Milestones from 200301&ndash;201406 (versions 2.8.4&ndash;4.4.4)</a></li>
 <li><a href="./nco_news.shtml">News and Announcements from 199801&ndash;200212 (version 1.1.0&ndash;2.8.3) and earlier</a></li>
@@ -624,18 +625,22 @@ Identical copies of those tarballs are also stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge for historical
 continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
-<tt>git clone -b 4.6.4 http://github.com/nco/nco.git nco-4.6.4</tt></a>.
+<tt>git clone -b 4.6.5 http://github.com/nco/nco.git nco-4.6.5</tt></a>.
 <ul>
-<li><b>NCO 4.6.6</b>: (<i>Future</i>) 
-<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements, caching;
+<li><b>NCO 4.6.7</b>: (<i>Future</i>)
+<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements;
 extensive hashing?;
 netCDF4 compound types?;
-Optimize diskless files?;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
-<li><b>NCO 4.6.5</b>: (<i>In Progress, features in-progress or completed include</i>)
-<tt>ncks</tt> prints human-legible ISO8601 dates;</li>
-<li><b>NCO 4.6.4</b>: (<i>Current Stable Release</i>)
-<tt>ncks</tt> set chunk cache-size with <tt>--cnk_csh</tt>;
+<li><b>NCO 4.6.6</b>: (<i>In Progress, features in-progress or completed include</i>) 
+<tt>ncks --xtn</tt> better extensive variable treatment;</li>
+<li><b>NCO 4.6.5</b>: (<i>Current Stable Release</i>)
+<tt>ncks --cal</tt> prints human-legible ISO8601 dates;
+<tt>ncclimo/ncremap --version</tt> switch;
+<tt>ncremap --vrb_lvl</tt> verbosity level;
+<tt>ncremap</tt> refactor dimension inferral, fix POP re-grids;
+Set chunk cache-size with <tt>--cnk_csh</tt>;</li>
+<li><b>NCO 4.6.4</b>: 
 <tt>ncremap</tt> add <tt>w_stag</tt> weights to FV output;
 <tt>ncclimo</tt> timeseries reshaping ("splitting") mode;
 <tt>ncclimo</tt> daily climo mode;
@@ -790,7 +795,7 @@ goodies besides NCO) to your automatically-searched channels with
 &lsquo;<tt>conda config --add channels --conda-forge</tt>&rsquo;, then
 install NCO with &lsquo;<tt>conda install nco</tt>&rsquo;.
 The default NCO installed by <tt>conda</tt> is generally within a month of the latest release. 
-<li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.6.4</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
+<li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.6.5</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
 Thanks to Rich Signell, Filipe Fernandes (and others?) for developing and maintaining the NCO package for conda.
 </ul>
 
@@ -799,7 +804,7 @@ Thanks to Rich Signell, Filipe Fernandes (and others?) for developing and mainta
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.6.4</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.6.5</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="https://launchpad.net/ubuntu/+source/nco">Ubuntu NCO</a> homepages.
@@ -807,8 +812,8 @@ Thanks to Rich Signell, Filipe Fernandes (and others?) for developing and mainta
 NCO packages in the Debian/Ubuntu repositories (e.g., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/nco/nco/tree/master/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.6.4-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="https://launchpad.net/ubuntu/+source/nco/4.6.4-1">nco_4.6.4-1_amd64.deb</a> : Executables AMD64-compatible</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.6.5-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="https://launchpad.net/ubuntu/+source/nco/4.6.5-1">nco_4.6.5-1_amd64.deb</a> : Executables AMD64-compatible</li>
 Thanks to Daniel Baumann, Sebastian Couwenberg, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -852,10 +857,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # Mac OS X 10.12 (Sierra) systems (aerosol):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-4.6.4.macosx.10.12.tar.gz nc*;scp ${DATA}/nco-4.6.4.macosx.10.12.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.6.5.macosx.10.12.tar.gz nc*;scp ${DATA}/nco-4.6.5.macosx.10.12.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.6.4.macosx.10.12.tar.gz">nco-4.6.4.macosx.10.12.tar.gz</a> (<!--#fsize file="src/nco-4.6.4.macosx.10.12.tar.gz"-->): Executables MacOSX 10.12-compatible (last updated <!--#flastmod file="src/nco-4.6.4.macosx.10.12.tar.gz"-->). 
+<li><a href="src/nco-4.6.5.macosx.10.12.tar.gz">nco-4.6.5.macosx.10.12.tar.gz</a> (<!--#fsize file="src/nco-4.6.5.macosx.10.12.tar.gz"-->): Executables MacOSX 10.12-compatible (last updated <!--#flastmod file="src/nco-4.6.5.macosx.10.12.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
@@ -1050,11 +1055,11 @@ site.</li>
 The simplest way to acquire the source is to download the compressed tarball:
 <ul>
 <li>
-<!-- scp ${DATA}/nco-4.6.4.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
-<a href="https://github.com/nco/nco/archive/4.6.4.tar.gz">nco-4.6.4.tar.gz</a> 
-(<!--#fsize file="src/nco-4.6.4.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.6.4.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.6.4.tar.gz"--> 
+<!-- scp ${DATA}/nco-4.6.5.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
+<a href="https://github.com/nco/nco/archive/4.6.5.tar.gz">nco-4.6.5.tar.gz</a> 
+(<!--#fsize file="src/nco-4.6.5.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.6.5.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.6.5.tar.gz"--> 
 </li>
 </ul>
 
@@ -1073,8 +1078,8 @@ You may retrieve any NCO distribution you wish from
 <a href="https://help.github.com">GitHub</a>. 
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
-then checks out NCO version <tt>4.6.4</tt>:
-<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.6.4</tt></p>
+then checks out NCO version <tt>4.6.5</tt>:
+<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.6.5</tt></p>
 These commands retrieve the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p> or
@@ -1082,9 +1087,9 @@ development version of NCO into a local directory named <tt>nco</tt>:
 Track changes to the development version using
 <p><tt>cd nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>4.6.4</tt>) and the development version is that the
+(e.g., <tt>4.6.5</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.6.4</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.6.5</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1229,9 +1234,9 @@ Users should instead first download and install the ANTLR found <a href="http://
 
 <li>Once you have installed the pre-requisites as shown above, you may then build the latest stable NCO and install it in, e.g., <tt>/usr/local</tt> with: 
 <tt>
-<dt>wget https://github.com/nco/nco/archive/4.6.4.tar.gz</dt>
-<dt>tar xvzf 4.6.4.tar.gz</dt>
-<dt>cd nco-4.6.4</dt>
+<dt>wget https://github.com/nco/nco/archive/4.6.5.tar.gz</dt>
+<dt>tar xvzf 4.6.5.tar.gz</dt>
+<dt>cd nco-4.6.5</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>
