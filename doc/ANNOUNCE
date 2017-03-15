@@ -7,7 +7,15 @@ http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
 
-The main new features in 4.6.5 are ...
+4.6.5 contains a potpurri of new features. Setting chunk cache size
+with --cnk_csh will accelerate aggregation of netCDF4 files.
+Climatology and regridder users may appreciate the cleaned-up
+ouput offered by the ncremap --vrb_lvl switch and more intelligent
+grid inferral. Everyone who has tried to convert "time since..." 
+values to calendar dates will like the new ncks --cal switch that does
+the UDUnits conversion for you. There are also helpful bugfixes for
+ncap2 attribute propagation in corner cases, and corrected error codes
+for bad command line arguments. 
 
 Work on NCO 4.6.6 has commenced. Planned improvements include 
 support for conda installs on MS Windows, and more ncclimo
@@ -28,7 +36,7 @@ A. ncks allows setting chunk cache-size with --cnk_csh with all
    http://nco.sf.net/nco.html#cnk_csh
    Thanks to Hugo Oliveira for encouraging this feature
 
-A. ncks now prints the human-legible calendar string corresponding to
+B. ncks now prints the human-legible calendar string corresponding to
    values with UDUnits date units (time since basetime, e.g., "days
    since 2000-01-01") and CF calendar attribute, if any. Enact this
    with the --calendar option when printing. Using dbg_lvl >= 1 in CDL 
@@ -40,9 +48,10 @@ A. ncks now prints the human-legible calendar string corresponding to
    tm_365 = 59; // calendar format: "2013-03-01"
 
    This option is similar to the ncdump -t option.
+   Does this work how you'd like? Let us know.
    http://nco.sf.net/nco.html#cal
 
-A. ncap2 now seamlessly edits character array.
+C. ncap2 now seamlessly edits character arrays.
    Suppose you have a string stored as an old school character array
    (not a netCDF4 string) with a fixed dimension size. ncap2 now
    supports altering the string value without having to manually pad
@@ -56,7 +65,7 @@ A. ncap2 now seamlessly edits character array.
    of netCDF3 string storage.
    http://nco.sf.net/nco.html#ncap2
 
-A. ncremap support a verbosity level option, --vrb_lvl.
+D. ncremap support a verbosity level option, --vrb_lvl.
    Verbosity level is now independent of debug level, dbg_lvl, so
    users can customize how much ncremap information to print.
    Default vrb_lvl=2 and supported levels range from 0 (no output) to
@@ -64,8 +73,9 @@ A. ncremap support a verbosity level option, --vrb_lvl.
    which invokes ncks, is still controlled by dbg_lvl not vrb_lvl.
    ncremap --vrb_lvl=1 -i in.nc -m map.nc -o out.nc
    http://nco.sf.net/nco.html#ncremap
+   Thanks to Milena Veneziani for requesting.
 
-A. ncremap and ncclimo now support a version option, --version.
+E. ncremap and ncclimo now support a version option, --version.
    This option prints the operator version and configuration.
    It's a painless way to tell, e.g., if ncremap knows where your 
    ESMF_RegridWeightGen executable is, and where these scripts
@@ -75,7 +85,7 @@ A. ncremap and ncclimo now support a version option, --version.
    http://nco.sf.net/nco.html#ncremap
    http://nco.sf.net/nco.html#ncclimo
 
-A. ncremap and ncks now parse more unknown grids than before.
+F. ncremap and ncks now parse more unknown grids than before.
    The front-end of ncremap's grid-inferenence routine has been
    refactored to rely on less user-provided information about
    dimension names. Now it obtains more information than before
@@ -89,14 +99,18 @@ A. ncap2 attribute propagation for some unary operators is fixed.
    whereas it was working fine for binary operations, e.g., 'T=T+10'.
    Thanks to Qi Tang for sounding the alert. Solution is to upgrade.
 
-A. The chunk cache option (--cnk_csh) implemented in ncks in 4.6.4 was  
+B. The chunk cache option (--cnk_csh) implemented in ncks in 4.6.4 was  
    inadvertently doing a no-op. Now it works as advertised.
    No workaround, solution is to upgrade.
 
-A. A broken diagnostic introduced in 4.6.3 or 4.6.4 could cause the
+C. A broken diagnostic introduced in 4.6.3 or 4.6.4 could cause the
    regridder to fail. This occurred with some POP files. Diagnostic
    now turned-off. Solution is to upgrade, workaround is use NCO <=
    4.6.2. Thanks to Sungduk Yu for reporting.
+
+D. Bad command-line options now always return with EXIT_FAILURE (1).
+   Previously they could return with EXIT_SUCCESS (0).
+   Thanks to Jerome Mao for reporting.
 
 KNOWN PROBLEMS DUE TO NCO:
 
