@@ -477,14 +477,14 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "Config: calling NCO binaries in directory ${drc_nco}\n"
     printf "Config: binaries linked to netCDF library version ${lbr_vrs}\n"
     wgt_cmd='ESMF_RegridWeightGen'
-    cmd_wgt=`command -v ${wgt_cmd} 2>&1 > /dev/null`
+    cmd_wgt=`command -v ${wgt_cmd} 2> /dev/null`
     if [ $? -eq 0 ]; then
 	printf "Config: ESMF weight-generation command ${wgt_cmd} found as ${cmd_wgt}\n"
     else
 	printf "Config: ESMF weight-generation command ${wgt_cmd} not found\n"
     fi # !err
     wgt_cmd='GenerateOverlapMesh'
-    cmd_wgt=`command -v ${wgt_cmd} 2>&1 > /dev/null`
+    cmd_wgt=`command -v ${wgt_cmd} 2> /dev/null`
     if [ $? -eq 0 ]; then
 	printf "Config: Tempest weight-generation command ${wgt_cmd} found as ${cmd_wgt}\n"
     else

@@ -297,6 +297,7 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori:
+# Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
 # Latest sysadmin-compiled module usage: module load nco/4.6.4 # 20170210 (without ncap2)
 # Used 20151204-
 module load szip
@@ -315,6 +316,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 
 # acme: http://www.gnu.org/software/automake/manual/automake.html search for "shared by two hosts" use 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on edison:
+# Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
 # Latest sysadmin-compiled module usage: module load nco/4.6.4 # 20170210 (with ncap2)
 # Used 20150825-
 module load szip
@@ -375,6 +377,8 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues
+# Sysadmin upgrade request: 
+# Latest sysadmin-compiled module usage: soft add +nco-4.6.4 # 20170209
 # fails to link to udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 # First use: 20161223 Latest use: 20161223
@@ -410,9 +414,18 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.3.0/intel/12.
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
 
+# Post upgrade requests to sysadmins at ALCF, LCRC, NCAR, NERSC, OLCF
+# support@anl.gov # ALCF
+# support@lcrc.anl.gov # LCRC
+# https://nersc.service-now.com/navpage.do # NERSC
+# https://www.olcf.ornl.gov/support/submit-ticket # OLCF
+# Subject: Upgrade NCO module to 4.6.5 on rhea/titan
+# Request: "NCO 4.6.5 was released yesterday and contains many features of interest to your ACME users. Please upgrade the system module to 4.6.5 and make that the default NCO module. Thanks!"
+
 # gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
+# Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest sysadmin-compiled module usage: module load nco/4.6.4 # 20170215
-# Recipe last used successfully: 20170308
+# Recipe last used successfully: 20170315
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'

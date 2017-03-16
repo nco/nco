@@ -1,3 +1,7 @@
+2017-03-16  Charlie Zender  <zender@uci.edu>
+
+	* Fix cmd_wgt reported by ncremap --version
+
 2017-03-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.5 release procedure:
