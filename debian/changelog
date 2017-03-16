@@ -1,4 +1,10 @@
+nco (4.6.6-1) unstable; urgency=low
+
+  * new upstream version fxm
+
 nco (4.6.5-1) unstable; urgency=low
+
+ -- Charlie Zender <zender@uci.edu>  Wed, 15 Apr 2017 12:25:21 -0700
 
   * new upstream version cnk csh, EXIT_FAILURE, ncclimo/ncremap version/vrb_lvl, ncks --cal, nfr() refactor, POP fix
 

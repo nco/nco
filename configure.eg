@@ -419,8 +419,8 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNI
 # support@lcrc.anl.gov # LCRC
 # https://nersc.service-now.com/navpage.do # NERSC
 # https://www.olcf.ornl.gov/support/submit-ticket # OLCF
-# Subject: Upgrade NCO module to 4.6.5 on rhea/titan
-# Request: "NCO 4.6.5 was released yesterday and contains many features of interest to your ACME users. Please upgrade the system module to 4.6.5 and make that the default NCO module. Thanks!"
+# Subject: Upgrade NCO module to 4.6.6 on rhea/titan
+# Request: "NCO 4.6.6 was released yesterday and contains many features of interest to your ACME users. Please upgrade the system module to 4.6.6 and make that the default NCO module. Thanks!"
 
 # gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
