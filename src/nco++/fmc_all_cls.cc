@@ -3775,6 +3775,11 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
      case PATOI: 
        return atoi_fnd(is_mtd, vtr_args,fmc_obj, walker);     
        break;
+
+       // 20170317 Patch to build on OpenSUSE provided by Manfred Schwarb https://sourceforge.net/p/nco/bugs/94/
+  default:        // PJOIN, PATOL
+    return NULL;  // silence rpmlint error: is this correct?
+    break;        // E: nco no-return-in-nonvoid-function fmc_all_cls.cc:3780
   }
 
   }

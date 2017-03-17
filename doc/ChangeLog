@@ -1,3 +1,7 @@
+2017-03-17  Charlie Zender  <zender@uci.edu>
+
+	* Patch fmc_all_cls.cc to build on OpenSUSE https://sourceforge.net/p/nco/bugs/94
+
 2017-03-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.6-alpha01 release procedure:

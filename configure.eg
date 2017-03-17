@@ -230,6 +230,17 @@ Start LINUX
 Status: Works
 Commands for LINUX are the only ones "regularly" used after ~2010
 ************************************************************************
+# Post upgrade requests to sysadmins at ALCF, LCRC, NCAR, NCSA, NERSC, OLCF
+# support@anl.gov # ALCF Maintainer = Adam
+# conda update nco # Anaconda Maintainer = Filipe Fernandes (github: ocefpaf)
+# support@lcrc.anl.gov # LCRC
+# cislhelp@ucar.edu # NCAR
+# Yan Liu <yanliu@illinois.edu> # NCSA Maintainer = Yan Liu (github: yanliu-chn)
+# https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
+# https://www.olcf.ornl.gov/support/submit-ticket # OLCF
+# Subject: Upgrade NCO module to 4.6.5
+# Request: NCO 4.6.5 was released yesterday and contains many features of interest to your ACME users. Please upgrade the system NCO module to 4.6.5 and make that the default NCO module. Thanks!
+
 zender@dust:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUX
 Linux dust.ess.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unknown
@@ -258,8 +269,9 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
+# Sysadmin upgrade request: fxm
 # Latest sysadmin-compiled module usage:  # fxm
-# Recipe last used successfully: 201703
+# Personal recipe last used successfully: 201703??
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/unsupported/netcdf-4.3.2' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -271,6 +283,9 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on mira:
+# Sysadmin upgrade request: fxm
+# Latest sysadmin-compiled module usage:  # fxm
+# Personal recipe last used successfully: 2016??
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/netcdf/current' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -282,8 +297,8 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on roger:
-# Latest sysadmin-compiled module usage: module load nco/4.6.5-alpha02 # fxm
-# Recipe last used successfully: 20170315
+# Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170315
+# Personal recipe last used successfully: 20170315
 module load netcdf/4.4.0
 module load udunits
 export GNU_TRP=`~/nco/autobld/config.guess`
@@ -366,6 +381,9 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on aims4:
+# Sysadmin upgrade request: 
+# Latest sysadmin-compiled module usage: 
+# Personal recipe last used successfully: 20170315
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/uvcdat/2016-01-21/Externals' UDUNITS2_PATH='/usr/local/uvcdat/2016-01-21/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -376,9 +394,9 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
-# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues
-# Sysadmin upgrade request: 
-# Latest sysadmin-compiled module usage: soft add +nco-4.6.4 # 20170209
+# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
+# Sysadmin upgrade request: support@lcrc.anl.gov
+# Latest sysadmin-compiled module usage: soft add +nco-4.6.5 # 20170316
 # fails to link to udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 # First use: 20161223 Latest use: 20161223
@@ -408,24 +426,19 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # icc/icpc 20160217 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on yellowstone:
+# Sysadmin upgrade request: cislhelp@ucar.edu
+# Latest sysadmin-compiled module usage: module load nco/4.5.5 # 20160228
+# Personal recipe last used successfully: 20170315
 module add intel;module add gsl;module add netcdf/4.3.0;
 export PATH=${PATH}:/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib # needed to run NCO
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
 
-# Post upgrade requests to sysadmins at ALCF, LCRC, NCAR, NERSC, OLCF
-# support@anl.gov # ALCF
-# support@lcrc.anl.gov # LCRC
-# https://nersc.service-now.com/navpage.do # NERSC
-# https://www.olcf.ornl.gov/support/submit-ticket # OLCF
-# Subject: Upgrade NCO module to 4.6.6 on rhea/titan
-# Request: "NCO 4.6.6 was released yesterday and contains many features of interest to your ACME users. Please upgrade the system module to 4.6.6 and make that the default NCO module. Thanks!"
-
 # gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest sysadmin-compiled module usage: module load nco/4.6.4 # 20170215
-# Recipe last used successfully: 20170315
+# Personal recipe last used successfully: 20170315
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
