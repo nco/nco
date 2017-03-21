@@ -1225,7 +1225,7 @@ main(int argc,char **argv)
 
     /* Derived formats */
     if(prn_flg.cdl){
-      prn_flg.PRN_DMN_UNITS=False;
+      prn_flg.PRN_DMN_UNITS=True;
       prn_flg.PRN_DMN_VAR_NM=True;
       prn_flg.PRN_MSS_VAL_BLANK=True;
     } /* endif */
