@@ -1,8 +1,11 @@
+2017-03-21  Charlie Zender  <zender@uci.edu>
+
+	* Tidy nco_prn.c
 
 2017-03-21 Henry Butowsky  <henryb@hush.com>
 
-	* added printing of units in comment for cdl output when -D 1
-	
+	* Print units in comment for CDL output when dbg_lvl >= 1
+
 2017-03-17  Charlie Zender  <zender@uci.edu>
 
 	* Patch fmc_all_cls.cc to build on OpenSUSE https://sourceforge.net/p/nco/bugs/94

@@ -2029,19 +2029,18 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         } /* end switch */
       } /* !is_mss_val */
 
-      if(  var->type != NC_CHAR && var->type !=NC_STRING ||  (var->type==NC_STRING && is_mss_val  ))
+      if((var->type != NC_CHAR && var->type != NC_STRING) || (var->type==NC_STRING && is_mss_val))
         (void)fprintf(stdout,"%s",val_sng);
 
-      /* do bracketing of data if specified */
+      /* Bracket data if specified */
       if(JSN_BRK)
         for(int bdz=var->nbr_dim-1; bdz>=1 ; bdz--)
-          if( (lmn+1) % mod_map_rv_cnt[bdz] == 0)
-	      (void)fprintf(stdout,"]");   
+          if((lmn+1) % mod_map_rv_cnt[bdz] == 0)
+	    (void)fprintf(stdout,"]");   
 
-
-      if( lmn != var_szm1 )
-        if( (var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || var->type != NC_CHAR  )
-          (void)fprintf(stdout,"%s", spr_sng );
+      if(lmn != var_szm1)
+        if((var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || var->type != NC_CHAR)
+          (void)fprintf(stdout,"%s",spr_sng);
 
       /* if(var.type != NC_CHAR && var.type != NC_STRING ) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? spr_sng : ""); */
 
@@ -2050,7 +2049,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     if(CDL) {
       char tmp_sng[100] = {0};
-      if (nco_dbg_lvl_get() >= 1 && flg_malloc_unit_var)
+      if (nco_dbg_lvl_get() >= nco_dbg_std && flg_malloc_unit_var)
         (void) sprintf(tmp_sng, "units=\"%s\"", unit_sng_var);
 
       if (nco_dbg_lvl_get() == nco_dbg_std && var_aux) {
