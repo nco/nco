@@ -1,3 +1,8 @@
+
+2017-03-21 Henry Butowsky  <henryb@hush.com>
+
+	* added printing of units in comment for cdl output when -D 1
+	
 2017-03-17  Charlie Zender  <zender@uci.edu>
 
 	* Patch fmc_all_cls.cc to build on OpenSUSE https://sourceforge.net/p/nco/bugs/94
