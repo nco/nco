@@ -2048,25 +2048,23 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
 
-    if(CDL){
-      if(nco_dbg_lvl_get() == nco_dbg_std  ) {
-        char tmp_sng[100] = {0};
+    if(CDL) {
+      char tmp_sng[100] = {0};
+      if (nco_dbg_lvl_get() >= 1 && flg_malloc_unit_var)
+        (void) sprintf(tmp_sng, "units=\"%s\"", unit_sng_var);
 
-        if (flg_malloc_unit_var)
-          (void) sprintf(tmp_sng, "units=\"%s\"", unit_sng_var);
+      if (nco_dbg_lvl_get() == nco_dbg_std && var_aux) {
+        fprintf(stdout, "; // %s  ", tmp_sng);
+        // print out list of values as a CDL text comment
+        nco_prn_var_val_cmt(var_aux, prn_flg);
 
-        if (var_aux) {
-          fprintf(stdout, "; // %s  ", tmp_sng);
-          // print out list of values as a CDL text comment
-          nco_prn_var_val_cmt(var_aux, prn_flg);
-        } else if (flg_malloc_unit_var)
-          fprintf(stdout, "; // %s ", tmp_sng);
-        else
-          fprintf(stdout, " ;\n");
-      }
-      (void)fprintf(stdout, " ;\n");
+      } else if (tmp_sng[0])
+        (void) fprintf(stdout, " ; // %s\n", tmp_sng);
+      else
+        (void) fprintf(stdout, " ; \n");
 
     }
+
     if(XML) (void)fprintf(stdout,"</values>\n");
     /* close out array bracket if sz>1 */ 
     if(JSN && var->sz > 1 ) (void)fprintf(stdout,"]");
