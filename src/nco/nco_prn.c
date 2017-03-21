@@ -1735,8 +1735,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   }
 
-  /* no need to print units if we are using a timestamp */
-  if(unit_cln_var || !prn_flg->PRN_DMN_UNITS){
+
+  /* need to print units if we are using a timestamp */
+  if(!prn_flg->PRN_DMN_UNITS){
     unit_sng_var=(char*)nco_free(unit_sng_var);
     flg_malloc_unit_var=False;
     unit_sng_var=&nul_chr;
@@ -2028,7 +2029,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         } /* end switch */
       } /* !is_mss_val */
 
-      if(  var->type != NC_CHAR ||  (var->type == NC_STRING && is_mss_val))
+      if(  var->type != NC_CHAR && var->type !=NC_STRING ||  (var->type==NC_STRING && is_mss_val  ))
         (void)fprintf(stdout,"%s",val_sng);
 
       /* do bracketing of data if specified */
@@ -2048,13 +2049,22 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     rcd_prn+=0; /* CEWI */
 
     if(CDL){
-      if(var_aux && nco_dbg_lvl_get() == nco_dbg_std ){
-        fprintf(stdout, "; // ");
-        // print out list of values as a CDL text comment
-        nco_prn_var_val_cmt(var_aux,prn_flg);
-      }else {
-        (void) fprintf(stdout, " ;\n");
+      if(nco_dbg_lvl_get() == nco_dbg_std  ) {
+        char tmp_sng[100] = {0};
+
+        if (flg_malloc_unit_var)
+          (void) sprintf(tmp_sng, "units=\"%s\"", unit_sng_var);
+
+        if (var_aux) {
+          fprintf(stdout, "; // %s  ", tmp_sng);
+          // print out list of values as a CDL text comment
+          nco_prn_var_val_cmt(var_aux, prn_flg);
+        } else if (flg_malloc_unit_var)
+          fprintf(stdout, "; // %s ", tmp_sng);
+        else
+          fprintf(stdout, " ;\n");
       }
+      (void)fprintf(stdout, " ;\n");
 
     }
     if(XML) (void)fprintf(stdout,"</values>\n");
