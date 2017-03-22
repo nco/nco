@@ -1,3 +1,7 @@
+2017-03-22 Henry Butowsky  <henryb@hush.com>
+
+	* for CDL output (Netcdf4) print braces in data: when var has an unlimited dim(s) 
+
 2017-03-21  Charlie Zender  <zender@uci.edu>
 
 	* Tidy nco_prn.c
