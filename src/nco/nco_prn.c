@@ -1602,6 +1602,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
 
+
   long *dmn_sbs_dsk=NULL_CEWI; /* [nbr] Indices of hyperslab relative to original on disk */
   long *dmn_sbs_ram=NULL_CEWI; /* [nbr] Indices in hyperslab */
   long *mod_map_cnt=NULL_CEWI; /* [nbr] MSA modulo array */
@@ -1845,11 +1846,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   if(CDL || JSN || XML){
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
-    int cpd_rec_dmn_idx[NC_MAX_DIMS]; /* [idx] Indices of non-leading record dimensions */
-    int cpd_nbr=0; /* [nbr] Number of non-leading record dimensions */
     long chr_idx;
     nco_bool is_compound; /* [flg] Variable is compound (has non-leading record dimension) */
-    nco_bool cpd_rec_dmn[NC_MAX_DIMS]; /* [flg] Dimension is compound */
     char * (*chr2sng_sf)(const char chr_val, /* I [chr] Character to process */
     char * const val_sng); /* I/O [sng] String to stuff printable result into */
 
@@ -1913,29 +1911,31 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(CDL) (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
     nm_cdl=(char *)nco_free(nm_cdl);
     var_szm1=var->sz-1L;
-    is_compound=nco_prn_cpd_chk(var_trv,trv_tbl);
 
+
+    is_compound=False;
     /* Pre-compute elements that need brace punctuation */
-    if(is_compound){
-      /* Create brace list */
-      for(dmn_idx=1;dmn_idx<var->nbr_dim;dmn_idx++){ /* NB: dimension index starts at 1 */
-        dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl); 
-        cpd_rec_dmn[dmn_idx]=False;
-        if(dmn_trv->is_rec_dmn){
-          cpd_rec_dmn[dmn_idx]=True; 
-          cpd_rec_dmn_idx[cpd_nbr]=dmn_idx;
-          cpd_nbr++;
-        } /* endif */
-      } /* end loop over dimensions */
-    } /* !is_compound */
+    if(CDL && var->nbr_dim>1){
+      mod_map_rv_cnt[0]=0L;
+      /* Create brace list - here we simply modify mod_map_rv_cnt[idx] -
+       * if the dim is NOT unlimited we set mod_map_rv_cnt[idx] to zero  */
+      for(dmn_idx=1;dmn_idx<var->nbr_dim;dmn_idx++) { /* NB: dimension index starts at 1 */
+        dmn_trv = nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id, trv_tbl);
+        if(dmn_trv->is_rec_dmn)
+          is_compound=True;
+        else
+          mod_map_rv_cnt[dmn_idx]=0L;
+      }
+    }
 
     for(lmn=0;lmn<var->sz;lmn++){
 
       /* do bracketing of data if specified */
-      if(JSN_BRK)
+      if(JSN_BRK || is_compound)
         for(int bdz=var->nbr_dim-1;bdz>=1;bdz--)
-          if(lmn % mod_map_rv_cnt[bdz] == 0)
-	    (void)fprintf(stdout,"[");   
+          if(mod_map_rv_cnt[bdz] >0 && lmn % mod_map_rv_cnt[bdz] == 0)
+	        (void)fprintf(stdout,"%c", (JSN_BRK ? '[' : '{' ) );
+
 
       is_mss_val=False;
       if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
@@ -2033,10 +2033,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         (void)fprintf(stdout,"%s",val_sng);
 
       /* Bracket data if specified */
-      if(JSN_BRK)
+      if(JSN_BRK || is_compound)
         for(int bdz=var->nbr_dim-1; bdz>=1 ; bdz--)
-          if((lmn+1) % mod_map_rv_cnt[bdz] == 0)
-	    (void)fprintf(stdout,"]");   
+          if(mod_map_rv_cnt[bdz]>0 && (lmn+1) % mod_map_rv_cnt[bdz] == 0)
+	        (void)fprintf(stdout,"%c",  (JSN_BRK ? ']' : '}' ));
 
       if(lmn != var_szm1)
         if((var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || var->type != NC_CHAR)
