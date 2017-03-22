@@ -1932,8 +1932,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
       /* do bracketing of data if specified */
       if(JSN_BRK || is_compound)
-        for(int bdz=var->nbr_dim-1;bdz>=1;bdz--)
-          if(mod_map_rv_cnt[bdz] >0 && lmn % mod_map_rv_cnt[bdz] == 0)
+        for(int bdz=1; bdz<var->nbr_dim ; bdz++)
+          if(mod_map_rv_cnt[bdz]  && lmn % mod_map_rv_cnt[bdz] == 0)
 	        (void)fprintf(stdout,"%c", (JSN_BRK ? '[' : '{' ) );
 
 
@@ -2034,8 +2034,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
       /* Bracket data if specified */
       if(JSN_BRK || is_compound)
-        for(int bdz=var->nbr_dim-1; bdz>=1 ; bdz--)
-          if(mod_map_rv_cnt[bdz]>0 && (lmn+1) % mod_map_rv_cnt[bdz] == 0)
+        for(int bdz=1; bdz<var->nbr_dim ; bdz++)
+          if(mod_map_rv_cnt[bdz]  && (lmn+1) % mod_map_rv_cnt[bdz] == 0)
 	        (void)fprintf(stdout,"%c",  (JSN_BRK ? ']' : '}' ));
 
       if(lmn != var_szm1)
