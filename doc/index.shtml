@@ -633,6 +633,7 @@ extensive hashing?;
 netCDF4 compound types?;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
 <li><b>NCO 4.6.6</b>: (<i>In Progress, features in-progress or completed include</i>) 
+<tt>ncks --cdl</tt> print units when <i>dbg_lvl</i>&nbsp;&ge;&nbsp;1
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
 <li><b>NCO 4.6.5</b>: (<i>Current Stable Release</i>)
 <tt>ncks --cal</tt> prints human-legible ISO8601 dates;

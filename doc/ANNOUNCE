@@ -18,6 +18,14 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. ncks now prints the units, if any, in comments after CDL values
+   when debugging is enabled with dbg_lvl >=1:
+   zender@foo: ncks --cdl -D 1 in.nc
+   lat = -90, 90 ; // units="degrees_north"
+   lon = 0, 90, 180, 270 ; // units="degrees_east"
+   tpt = 273.1, 273.2, ... 274 ; // units="kelvin"
+   http://nco.sf.net/nco.html#cdl
+
 A. ncks now prints the human-legible calendar string corresponding to
    values with UDUnits date units (time since basetime, e.g., "days
    since 2000-01-01") and CF calendar attribute, if any. Enact this
