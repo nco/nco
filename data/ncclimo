@@ -687,7 +687,7 @@ else
 	mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
     fi # !stdin || !psn
     if [ -n "${ypf_max_usr}" ]; then 
-	# fxm: Must specify --ypf to turn-on split mode when input files are specified by -i drc_in
+	# fxm: Must specify --ypf to turn-on splitter mode when input files are specified by -i drc_in
 	# Otherwise it is ambiguous whether to generate climatology or to split
 	ypf_max=${ypf_max_usr}
 	sbs_flg='Yes'
@@ -902,7 +902,7 @@ fi # !inp_std
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${sbs_flg}" = 'Yes' ]; then
     if [ -z "${var_lst}" ]; then
-	echo "${spt_nm}: ERROR Split mode requires variable list"
+	echo "${spt_nm}: ERROR Splitter mode requires variable list"
 	echo "${spt_nm}: HINT Supply the variable list with -v var_lst"
 	exit 1
     fi # !var_lst

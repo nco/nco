@@ -9,6 +9,21 @@ What's new?
 
 4.6.6 contains a potpurri of new features...
 
+I am considering changing the default behavior of ncks printing.
+For 20+ years ncks has, by default, dumped the text representation
+of a file in (what we call) "traditional" mode. CDL has become
+increasingly popular, and may be more useful than traditional mode
+for the majority of users. ncks has printed CDL only since 2013 and so
+is not the default. ncdump has always printed CDL very cleanly and
+clearly there was little point in making CDL the default for ncks.
+
+ncks CDL mode has now matured to the point where it rivals ncdump, and
+is arguably superior in many ways. I find myself using CDL more and
+more and ncdump less and less. Hence I'm interested in changing
+the default printed output of ncks to CDL, and requiring a new "--trd"
+option to view the tradiational output. Then I can type simply
+"ncks" instead of "ncks --cdl". 
+
 Work on NCO 4.6.7 has commenced. Planned improvements include 
 support for conda installs on MS Windows, and human-legible calendar
 date printing, more ncclimo and ncremap features.

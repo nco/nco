@@ -36,9 +36,10 @@ netcdf buggy {
  att_var:ubyte_att = 0ub, 1ub, 2ub, 127ub, 128ub, 254ub, 255ub, 0ub; // 20130712: ncgen 4.3.0 translates this to byte
  att_var:ubyte2_att = '\000','\001','\002','\177','\200','\201','\376','\377'; // 20130712: ncgen 4.3.0 translates this to byte
  att_var:ushort_att = 37us;
- att_var:uint_att = 73u;
- att_var:int64_att = 9223372036854775807l; // 20130712: ncgen 4.3.0 chokes on ll, LL suffix for int64 attributes, and translates -l suffixed numbers to NC_UINT64. Bug reported (netCDF #HEX-795132) and fixed in snapshot 20131117
-  // att_var:uint64_att = 18446744073709551615ul; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes, 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maximum ubyte, ushort, and uint values), 20170322: ncgen 4.4.1 fails converting uint64 maximum value, throws "Value out of range" error
+ att_var:uint_att = 73u; // 20170322: ncgen 4.4.1 converts u-suffixed numbers to uint64 type instead of uint32. Counter-intuitive. Regular uint=uint32 must be obtained by ul suffix. 
+ att_var:uint_att2 = 73ul;
+ att_var:int64_att = 9223372036854775807ll; // 20130712: ncgen 4.3.0 chokes on ll, LL suffix for int64 attributes, and translates l-suffixed numbers to NC_UINT64. Bug reported (netCDF #HEX-795132) and fixed in snapshot 20131117
+ att_var:uint64_att = 18446744073709551615ull; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes, 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maximum ubyte, ushort, and uint values), 20170322: ncgen 4.4.1 works fine with ull
  att_var:string_att1 = "20130723: ncgen -k netCDF-4 version 4.0.x converts quoted string to NC_STRING not NC_CHAR. Incompatible with classic behavior.";
  att_var:string_att2 = "20130712: ncgen -k netCDF-4 version 4.2.x+ converts quoted string to NC_CHAR not NC_STRING. Backwards compatible with classic behavior.";
   string att_var:string_att3 = "20130723: Prefixing full attribute name with \"string\" causes CDL to produce NC_STRING.";

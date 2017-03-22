@@ -1,7 +1,10 @@
 2017-03-22  Charlie Zender  <zender@uci.edu>
 
+	* Change OpenMP INFO to print only when dbg_lvl >= 2
+
 	* NCO 4.6.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha02 final changes';git push
+	git tag -d 4.6.6-alpha02;git push origin :refs/tags/4.6.6-alpha02
 	git tag -a 4.6.6-alpha02 -m 'Version 4.6.6-alpha02 new features: cpd braces, units comments';git push --tags
 
 2017-03-22 Henry Butowsky  <henryb@hush.com>
