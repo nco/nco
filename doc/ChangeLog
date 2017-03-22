@@ -1,6 +1,12 @@
+2017-03-22  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.6-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha02 final changes';git push
+	git tag -a 4.6.6-alpha02 -m 'Version 4.6.6-alpha02 new features: cpd braces, units comments';git push --tags
+
 2017-03-22 Henry Butowsky  <henryb@hush.com>
 
-	* for CDL output (Netcdf4) print braces in data: when var has an unlimited dim(s) 
+	* Print braces for compound record variables in CDL mode
 
 2017-03-21  Charlie Zender  <zender@uci.edu>
 

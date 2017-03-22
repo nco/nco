@@ -26,11 +26,15 @@ A. ncks now prints the units, if any, in comments after CDL values
    tpt = 273.1, 273.2, ... 274 ; // units="kelvin"
    http://nco.sf.net/nco.html#cdl
 
-A. ncks now prints the human-legible calendar string corresponding to
-   values with UDUnits date units (time since basetime, e.g., "days
-   since 2000-01-01") and CF calendar attribute, if any. Enact this
-   with the --calendar option when printing. Using dbg_lvl >= 1 in CDL 
-   mode prints both the value and calendar string (one in comments):
+A. fxm: not done yet
+   Since 4.6.5 ncks has printed the human-legible calendar string
+   corresponding to values with UDUnits date units (time since
+   basetime, e.g., "days since 2000-01-01") and CF calendar attribute,
+   if any. Now ncks also translates and prints time values associated
+   with CF climatology and bounds variables as human legible dates.
+   As before, enact this with the --calendar option when printing.
+   Using dbg_lvl >= 1 in CDL mode prints both the value and calendar
+   string (one in comments): 
 
    zender@aerosol:~$ ncks -D 1 --cdl --cal -v tm_365 ~/nco/data/in.nc
    tm_365 = "2013-03-01"; // double value: 59
@@ -43,7 +47,12 @@ A. ncks now prints the human-legible calendar string corresponding to
 
 BUG FIXES:
 
-A. Hi
+A. ncks now prints the braces required to disambiguate compound
+   record dimensions in CDL mode. Such braces have been required by 
+   ncgen-like parsers since ~2013 in order to unambiguously determine
+   the record dimension sizes in variables with multiple record
+   dimensions. This fix only affects CDL printing of netCDF4 files
+   that contain compound record variables. 
 
 KNOWN PROBLEMS DUE TO NCO:
 
