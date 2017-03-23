@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.6-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 22 March 2017
+@set update-date 23 March 2017
 @set update-month March 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19372,11 +19372,15 @@ Behold @acronym{JSON} output in default mode:
 @verbatim
 zender@aerosol:~$ ncks --jsn -v one ~/nco/data/in.nc
 {
+  "variables": {
     "one": {
       "type": "float",
-      "long_name": "one",
+      "attributes": {
+        "long_name": "one"
+      },
       "data": 1.0
     }
+  }
 }
 @end verbatim
 @end example
@@ -22643,20 +22647,33 @@ ncks -v /g1/lon ~/foo.nc # Shows units and new_units are both gone
 @end example
 
 Clearly, renaming dimensions in netCDF4 files is non-trivial.
-The latest chapter in this saga is a netCDF4 bug discovered in
+The penultimate chapter in this saga is a netCDF4 bug discovered in
 September, 2015, and present in versions 4.3.3.1 (and possibly earlier 
 versions too) and later.
-As of this writing (July, 2016) the bug has not been fixed and is
-still present in netCDF4 version 4.4.1.
+As of this writing (March, 2017), this bug is still present in netCDF4
+version 4.4.2-development. 
 This bug causes @command{ncrename} to create corrupted output files
-when attempting to rename two dimensions simultaneously.
+when attempting to rename two or more dimensions simultaneously.
 The workaround is to rename the dimensions sequentially, in two separate  
 @command{ncrename} calls.
 @example
 @verbatim
 # Demonstate bug in netCDF4/HDF5 library netCDF-4.3.3.1
-ncrename -d y,rlat -d x,rlon dayclim_withoutpr.nc dayclim2.nc
-ncdump dayclim2.nc # File is unreadable
+ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc # Completes but file is unreadable
+ncks -v one ~/foo.nc # File is unreadable
+@end verbatim
+@end example
+
+Last but not least is a netCDF4 bug discovered in March, 2017, and
+present in version 4.4.1 (and possibly earlier versions too) and later.
+This bug causes @command{ncrename} to fail to rename a variable when the
+result would become a coordinate.
+The workaround is to convert to netCDF3, then rename, then convert back
+to netCDF4.
+@example
+@verbatim
+# Demonstate bug in netCDF4/HDF5 library netCDF-4.4.1
+ncrename -O -v non_coord,coord ~/nco/data/in_grp.nc ~/foo.nc # Fails (HDF error)
 @end verbatim
 @end example
 

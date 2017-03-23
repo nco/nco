@@ -332,7 +332,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # acme: http://www.gnu.org/software/automake/manual/automake.html search for "shared by two hosts" use 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on edison:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
-# Latest sysadmin-compiled module usage: module load nco/4.6.4 # 20170210 (with ncap2)
+# Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170322 (with ncap2)
 # Used 20150825-
 module load szip
 module load gsl

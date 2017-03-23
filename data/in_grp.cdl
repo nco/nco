@@ -42,6 +42,7 @@ netcdf in_grp {
   lat=2;
   lev=3;
   lon=4;
+  coord=2;
   time=unlimited; 
   vrt_nbr=2;
   gds_crd=8;
@@ -80,6 +81,9 @@ netcdf in_grp {
   float area(lat);
   area:units = "meter2";
 
+  float non_coord(coord);
+ non_coord:purpose = "Test whether netCDF4 supports renaming non-coordinates to coordinates";
+  
   float one;
   
   float val_one_mss(lat);

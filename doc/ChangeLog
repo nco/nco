@@ -1,4 +1,12 @@
+2017-03-23  Charlie Zender  <zender@uci.edu>
+
+	* Reported below bug found by ncrename user Paolo Oliveri to Unidata
+
+	* Document failure of netCDF library 4.4.1+ to rename non-coordinates to coordinates
+
 2017-03-22  Charlie Zender  <zender@uci.edu>
+
+	* Reported where ncgen interprets "u" suffix as uint64 not uint32 to Unidata
 
 	* Change OpenMP INFO to print only when dbg_lvl >= 2
 

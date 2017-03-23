@@ -129,11 +129,23 @@ B. NOT YET FIXED (netCDF4 library bug)
    20160212: Verified problem still exists in netCDF library
    20160512: Ditto
    20161028: Verified problem still exists with netCDF 4.4.1
+   20170323: Verified problem still exists with netCDF 4.4.2-development
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd
 
-C. FIXED in netCDF Development branch as of 20161116 and in maintenance release 4.4.1.1
+C. NOT YET FIXED (netCDF4 library bug)
+   Renaming a non-coordinate variable to a coordinate variable fails in netCDF4
+
+   Demonstration:
+   ncrename -O -v non_coord,coord ~/nco/data/in_grp.nc ~/foo.nc # Fails (HDF error)
+
+   20170323: Confirmed problem reported by Paolo Oliveri, reported to Unidata
+
+   Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
+   More details: http://nco.sf.net/nco.html#ncrename_crd
+
+D. FIXED in netCDF Development branch as of 20161116 and in maintenance release 4.4.1.1
    nc-config/nf-config produce erroneous switches that cause NCO builds to fail
    This problem affects netCDF 4.4.1 on all operating systems.
    Some pre-compiled netCDF packages may have patched the problem.
@@ -152,7 +164,7 @@ C. FIXED in netCDF Development branch as of 20161116 and in maintenance release 
    20161116: Unidata patch is in tree for netCDF 4.4.2 release
    20161123: Fixed in maintenance release netCDF 4.4.1.1
 
-D. NOT YET FIXED (would require DAP protocol change?)
+E. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
    Metadata are returned successfully, data are not.
@@ -167,7 +179,7 @@ D. NOT YET FIXED (would require DAP protocol change?)
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-E. NOT YET FIXED (would require DAP protocol change)
+F. NOT YET FIXED (would require DAP protocol change)
    Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol
