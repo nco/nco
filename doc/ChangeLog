@@ -1,5 +1,7 @@
 2017-03-24  Charlie Zender  <zender@uci.edu>
 
+	* Slight simplification of FV grid terminology
+
 	* Change JSON to use "shape" instead of "dims" keyword in variable object
 
 2017-03-23  Charlie Zender  <zender@uci.edu>

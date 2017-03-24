@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.6-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 23 March 2017
+@set update-date 24 March 2017
 @set update-month March 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6417,6 +6417,14 @@ ncks --rgr grd_ttl='Equi-Angular grid 180x360' --rgr grid=${DATA}/grids/180x360_
 # 129x256 CAM-FV grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='CAM-FV scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150901.nc \
      --rgr latlon=129,256 --rgr lat_typ=fv --rgr lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
+
+# 91x180 CAM-FV grid, first longitude centered at Greenwich (2 degree grid)
+ncks --rgr grd_ttl='CAM-FV scalar grid 91x180'#latlon=91,180#lat_typ=fv#lon_typ=grn_ctr \
+     --rgr grid=${DATA}/grids/91x180_SCRIP.20170401.nc ~zender/nco/data/in.nc ~/foo.nc
+
+# 25x48 CAM-FV grid, first longitude centered at Greenwich (7.5 degree grid)
+ncks --rgr grd_ttl='CAM-FV scalar grid 25x48'#latlon=25,48#lat_typ=fv#lon_typ=grn_ctr \
+     --rgr grid=${DATA}/grids/25x48_SCRIP.20170401.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # 128x256 Equi-Angular grid, Greenwich west edge of first longitude
 # This is the CAM-FV offset grid for the 129x256 CAM-FV scalar grid above
