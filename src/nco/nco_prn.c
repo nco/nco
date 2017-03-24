@@ -1450,7 +1450,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
         /* indent content */ 
         nm_jsn=nm2sng_jsn(var_trv->var_dmn[dmn_idx].dmn_nm);
         if(dmn_idx==0) (void)sprintf(dmn_sng,"%*s\"shape\": [", prn_ndn+prn_flg->sxn_fst,spc_sng); 
-	(void)sprintf(sng_foo,"\"%s\"%s",nm_jsn,(dmn_idx < nbr_dim-1) ? "," : "],"); 
+	(void)sprintf(sng_foo,"\"%s\"%s",nm_jsn,(dmn_idx < nbr_dim-1) ? ", " : "],"); 
 	nm_jsn=(char *)nco_free(nm_jsn);
       }else{
 	nm_cdl=nm2sng_cdl(var_trv->var_dmn[dmn_idx].dmn_nm);
