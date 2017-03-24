@@ -1442,10 +1442,6 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
     /* 20131122: Implement ugly NcML requirement that scalars have shape="" attribute */
     if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"\"");
-
-    /* if scalar var then print NOTHING  
-    if(prn_flg->jsn) (void)sprintf(dmn_sng,"%*s\"dims\": [],", prn_ndn+prn_flg->sxn_fst,spc_sng); 
-    */
   }else{
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       if(prn_flg->xml){
@@ -1453,7 +1449,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
       }else if(prn_flg->jsn){
         /* indent content */ 
         nm_jsn=nm2sng_jsn(var_trv->var_dmn[dmn_idx].dmn_nm);
-        if(dmn_idx==0) (void)sprintf(dmn_sng,"%*s\"dims\": [", prn_ndn+prn_flg->sxn_fst,spc_sng); 
+        if(dmn_idx==0) (void)sprintf(dmn_sng,"%*s\"dimensions\": [", prn_ndn+prn_flg->sxn_fst,spc_sng); 
 	(void)sprintf(sng_foo,"\"%s\"%s",nm_jsn,(dmn_idx < nbr_dim-1) ? "," : "],"); 
 	nm_jsn=(char *)nco_free(nm_jsn);
       }else{
