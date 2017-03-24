@@ -1,6 +1,6 @@
 2017-03-24  Charlie Zender  <zender@uci.edu>
 
-	* Change JSON to use "dimensions" instead of "dims" keyword in variable object
+	* Change JSON to use "shape" instead of "dims" keyword in variable object
 
 2017-03-23  Charlie Zender  <zender@uci.edu>
 
