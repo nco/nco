@@ -131,7 +131,6 @@ main(int argc,char **argv)
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
-  char *fl_scrip=NULL; /* [sng] SCRIP file name */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
@@ -217,8 +216,6 @@ main(int argc,char **argv)
   int xtn_nbr=0; /* [nbr] Number of extensive variables */
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
 
-  kvm_sct *sld_nfo=NULL; /* [sct] Container for SLD/SCRIP information */
-
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
  
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
@@ -239,8 +236,9 @@ main(int argc,char **argv)
   nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool GRP_XTR_VAR_XCL=False; /* [flg] Extract matching groups, exclude matching variables */
-  nco_bool HISTORY_APPEND=True; /* Option h */
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
+  nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool LST_RNK_GE2=False; /* [flg] Print extraction list of rank >= 2 variables */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool PRN_CDL=False; /* [flg] Print CDL */
   nco_bool PRN_HDN=False; /* [flg] Print hidden attributes */
@@ -323,6 +321,7 @@ main(int argc,char **argv)
     {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
     {"lbr",no_argument,0,0},
     {"library",no_argument,0,0},
+    {"lst_rnk_ge2",no_argument,0,0}, /* [flg] Print extraction list of rank >= 2 variables */
     {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"md5_wrt_att",no_argument,0,0}, /* [flg] Write MD5 digests as attributes */
@@ -417,7 +416,6 @@ main(int argc,char **argv)
     {"rgr_rnr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"rnr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"renormalize",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
-    {"scrip",required_argument,0,0}, /* SCRIP file */
     {"trr",required_argument,0,0}, /* [sng] Terraref */
     {"terraref",required_argument,0,0}, /* [sng] Terraref */
     {"trr_in",required_argument,0,0}, /* [sng] File containing raw Terraref imagery */
@@ -624,11 +622,7 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "lbr" */
       if(!strcmp(opt_crr,"lbr_rcd")) nco_exit_lbr_rcd();
-      if(!strcmp(opt_crr,"scrip")){
-        fl_scrip=strdup(optarg);
-	sld_nfo=(kvm_sct *)nco_malloc(BUFSIZ*sizeof(kvm_sct));
-        nco_scrip_read(fl_scrip,sld_nfo);
-      } /* endif "scrip" */
+      if(!strcmp(opt_crr,"lst_rnk_ge2") || !strcmp(opt_crr,"rank_ge2"))	LST_RNK_GE2=True; /* [flg] Print extraction list of rank >= 2 variables */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")){
 	if(strchr(optarg,',')){
 	  (void)fprintf(stdout,"%s: ERROR record dimension name %s contains a comma and appears to be a list\n",nco_prg_nm_get(),optarg);
@@ -964,6 +958,9 @@ main(int argc,char **argv)
   
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,EXTRACT_CLL_MSR,EXTRACT_FRM_TRM,nco_pck_plc_nil,&flg_dne,trv_tbl);
+
+  /* [fnc] Print extraction list of N>=D variables and exit */
+  if(LST_RNK_GE2) nco_xtr_ND_lst(trv_tbl);
 
   /* Were all user-specified dimensions found? */ 
   (void)nco_chk_dmn(lmt_nbr,flg_dne);    
@@ -1320,12 +1317,6 @@ close_and_free:
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
-    if(fl_scrip){
-      fl_scrip=(char *)nco_free(fl_scrip);
-      idx=0;
-      if(nco_dbg_lvl > nco_dbg_fl) while(sld_nfo[idx].key) nco_kvm_prn(sld_nfo[idx++]);
-      if(sld_nfo) sld_nfo=nco_kvm_lst_free(sld_nfo,idx);
-    } /* endif fl_scrip */
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);

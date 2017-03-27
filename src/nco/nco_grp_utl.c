@@ -1039,6 +1039,43 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 } /* end nco_xtr_crd_add() */
 
 void
+nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
+(trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Print extraction list of N>=D variables and exit
+     Used by ncks to supply arguments to splitter
+     Usage:
+     ncks --lst_rnk_ge2 ~/nco/data/in.nc
+     ncks --lst_rnk_ge2 ~/data/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc */
+
+  const char fnc_nm[]="nco_xtr_ND_lst()"; /* [sng] Function name */
+
+  int xtr_nbr_crr=0; /* [nbr] Number of N>=D variables found so far */
+  int rnk_xtr=2; /* [nbr] Minimum rank to extract */
+
+  /* If variable has N>=D dimensions, add it to list */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++)
+    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var)
+      if((trv_tbl->lst[idx_var].nbr_dmn >= rnk_xtr) && /* Rank at least 2 */
+	 (!trv_tbl->lst[idx_var].is_crd_var) && /* Not a coordinate variable */
+	 (trv_tbl->lst[idx_var].var_typ != NC_CHAR) /* Not an array of characters */
+	 ){
+	(void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
+	xtr_nbr_crr++;
+      } /* !N>=D */
+
+  if(xtr_nbr_crr > 0){
+    (void)fprintf(stdout,"\n");
+    nco_exit(EXIT_SUCCESS);
+  }else{
+    (void)fprintf(stdout,"%s: ERROR %s reports no variables found with rank >= 2\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !xtr_nbr_crr */
+    
+  return;
+} /* end nco_xtr_ND_lst() */
+
+void
 nco_xtr_cf_add /* [fnc] Add to extraction list variables associated with CF convention */
 (const int nc_id, /* I [ID] netCDF file ID */
  const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", "coordinates", or "grid_mapping") */
