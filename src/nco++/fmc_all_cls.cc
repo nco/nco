@@ -3772,7 +3772,8 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
        return get_fnd(is_mtd, vtr_args,fmc_obj, walker);    
        break;
   
-     case PATOI: 
+     case PATOI:
+     case PATOL:
        return atoi_fnd(is_mtd, vtr_args,fmc_obj, walker);     
        break;
 
@@ -4177,14 +4178,16 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
          iout=0; 
 
 	 // allows whites space prefix & suffix                                                                                                                                
-         iout=std::strtol(buffer,&pend,10);
+         iout=(nco_int)std::strtol(buffer,&pend,10);
 
          if( pend !=buffer  && (*pend=='\0'|| *pend==' ') )
             ierr=0;
          else
             ierr=errno;
 
-         var=ncap_sclr_var_mk( SCS("~zz@value_list"), vtype,iout);  
+         //wrn_prn(fnc_nm,"buffer="+ SCS(buffer)+ " value=" + nbr2sng(iout)+"\n" );
+         //var=ncap_sclr_var_mk( SCS("~zz@value_list"), vtype,iout);
+         var=ncap_sclr_var_mk(SCS("~zz@value_list"),iout);
 
        }   
        break; 
@@ -4195,22 +4198,26 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
          nco_int64 lout;
          lout=0; 
 
-	 // allows whites space prefix & suffix                                                                                                                                
-         lout=std::strtoll(buffer,&pend,10);
+	      // allows whites space prefix & suffix
+         lout=(nco_int64)std::strtoll(buffer,&pend,10);
 
          if( pend !=buffer  && (*pend=='\0'|| *pend==' ') )
             ierr=0;
          else
-	   ierr=errno;
+	        ierr=errno;
 
-         var=ncap_sclr_var_mk( SCS("~zz@value_list"), vtype,lout);  
+
+         wrn_prn(fnc_nm,"buffer="+ SCS(buffer)+ " value=" + nbr2sng(lout)+"\n" );
+         var=ncap_sclr_var_mk( SCS("~zz@value_list"),lout);
 
        }   
        break; 
   }
-  
-  var_err=ncap_sclr_var_mk(std::string("~zz@atoi_methods_err"), ierr);
-  prs_arg->ncap_var_write(var_err,true);
+
+  if(ierr) {
+    var_err = ncap_sclr_var_mk(std::string("~zz@atoi_methods_err"), ierr);
+    prs_arg->ncap_var_write(var_err, true);
+  }
                  
 
 
