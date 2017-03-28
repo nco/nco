@@ -906,7 +906,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     if [ -z "${var_lst}" ]; then
 	echo "${spt_nm}: ERROR Splitter mode requires variable list"
 	echo "${spt_nm}: HINT Supply the variable list with -v var_lst"
-	echo "${spt_nm}: DEBUG Provisional R>=2 list automatically generated for empty splitter list (not supported yet, ask CZ if you want this finished):"
+	echo "${spt_nm}: DEBUG Provisional R>=2 list automatically generated for empty splitter list (not supported yet, ask CZ to finish this ):"
 	var_lst=`ncks --lst_rnk_ge2 ${fl_in[0]}`
 	echo "${var_lst}"
 	exit 1
