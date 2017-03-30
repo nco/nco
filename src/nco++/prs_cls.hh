@@ -40,7 +40,8 @@ class fmc_cls;
   bool ATT_INHERIT;                      //Var on LHS inherits attributtes from var of the same name
                                          // in the input file 
   bool NCAP_MPI_SORT;                    // sort exressions after second parse for MPI optimization
-  bool NCAP4_FILL;                        //if true Ouptut file is netcdf4 & missing value="_FillValue"
+  bool NCAP4_FILL;                       //if true Ouptut file is netcdf4 & missing value="_FillValue"
+  bool FLG_CLL_MTH;                      // if true then add @cell_methods attribute to var for an agg_cls operation
   size_t *cnk_sz; /* [nbr] Chunk sizes */
   int dfl_lvl; /* [enm] Deflate level */
 
@@ -79,6 +80,7 @@ class fmc_cls;
      ATT_INHERIT=prs_cpy.ATT_INHERIT; 
      NCAP_MPI_SORT=prs_cpy.NCAP_MPI_SORT;
      NCAP4_FILL=prs_cpy.NCAP4_FILL;
+     FLG_CLL_MTH=prs_cpy.FLG_CLL_MTH;
      dfl_lvl=prs_cpy.dfl_lvl;
      cnk_sz=prs_cpy.cnk_sz;     
    }
@@ -114,6 +116,7 @@ class fmc_cls;
      ATT_INHERIT=prs_cpy.ATT_INHERIT; 
      NCAP_MPI_SORT=prs_cpy.NCAP_MPI_SORT;
      NCAP4_FILL=prs_cpy.NCAP4_FILL;
+     FLG_CLL_MTH=prs_cpy.FLG_CLL_MTH;
      dfl_lvl=prs_cpy.dfl_lvl;      
 
      return *this;
