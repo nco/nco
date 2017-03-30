@@ -667,6 +667,44 @@ ncap_att_char  /* extract string from a NC_CHAR or first NC_STRING */
 }
 
 
+var_sct *
+ncap_att_cll_mtd(
+const char *nm,
+dmn_sct **dim,
+int nbr_dim,
+enum nco_op_typ op_typ
+){
+  int idx;
+  var_sct *var_att;
+  std::string var_nm;
+  std::string att_txt("");
+
+  var_nm=std::string(nm)+SCS("@cell_methods");
+
+  for(idx=0;idx<nbr_dim;idx++){
+      att_txt += std::string(dim[idx]->nm);
+    if(idx<nbr_dim-1) att_txt+=SCS(", ");
+  }
+
+
+  att_txt+= SCS(": ")+SCS( nco_op_typ_to_rdc_sng(op_typ));
+
+  var_att=ncap_sclr_var_mk(var_nm, NC_CHAR,false);
+  var_att->val.vp=(void*)nco_malloc( sizeof(char)*att_txt.size());
+
+  cast_void_nctype(NC_CHAR,&var_att->val);
+  strncpy(var_att->val.cp, att_txt.c_str(), att_txt.size());
+  var_att->sz=att_txt.size();
+  cast_nctype_void(NC_CHAR,&var_att->val);
+
+  return var_att;
+
+}
+
+
+
+
+
 
 var_sct *
 ncap_sclr_var_mk

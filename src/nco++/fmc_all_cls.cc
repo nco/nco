@@ -89,9 +89,10 @@
             dmn_sct **dim_nw=NULL_CEWI;  
             var_sct *var=NULL_CEWI;
             var_sct *var1=NULL_CEWI;
+            var_sct *var_att_cll_mtd=NULL_CEWI;
            
-	    std::string susg;
-	    std::string sfnm=fmc_obj.fnm();
+	        std::string susg;
+	        std::string sfnm=fmc_obj.fnm();
 
             RefAST aRef;
             RefAST tr;
@@ -158,6 +159,7 @@
 
              } // end for 
 
+
 	    // Important to note that dmn_vtr contains dim pointers
             // picked up from var1->dim so there is no need to free them 
              if(vtr_args.size() >1) 
@@ -216,14 +218,14 @@
       
               dim_nw=(dmn_sct**)nco_malloc(nbr_dim*sizeof(dmn_sct*));
 
-	      for(idx=0 ; idx<nbr_dim; idx++){ 
+	          for(idx=0 ; idx<nbr_dim; idx++){
                 dim_nw[idx]=nco_dmn_dpl(var1->dim[idx]);   
                 dim_nw[idx]->srt=var1->srt[idx];
                 dim_nw[idx]->end=var1->end[idx];
                 dim_nw[idx]->cnt=var1->cnt[idx];
                 dim_nw[idx]->srd=var1->srd[idx];
                    
-	        var1->dim[idx]=dim_nw[idx]; 
+	            var1->dim[idx]=dim_nw[idx];
               }
 
             }  
@@ -231,12 +233,23 @@
             if(dmn_vtr.size() >0 && dmn_vtr.size()<nbr_dim ){
                 dim=&dmn_vtr[0];
                 avg_nbr_dim=dmn_vtr.size();
-	    // average over all dims                           
+	        // average over all dims
             }else{
                 dim=var1->dim;
                 avg_nbr_dim=nbr_dim; 
-            }    
-            
+            }
+
+
+          if(prs_arg->FLG_CLL_MTH) {
+            NcapVar *Nvar;
+            var_att_cll_mtd = ncap_att_cll_mtd(var1->nm,dim, avg_nbr_dim, (nco_op_typ)fdx);
+            Nvar=new NcapVar(var_att_cll_mtd);
+            prs_arg->var_vtr.push_ow(Nvar);
+
+          }
+
+
+
             // do the heavy lifting
             switch(fdx){
                     
@@ -307,11 +320,12 @@
              // var1 is freed/destroyed in nco_var_avg()
 
 
+
             // free local dim list if necessary
             if(dim_nw){
-	      for(idx=0; idx<nbr_dim;idx++)
-		dim_nw[idx]=nco_dmn_free(dim_nw[idx]);
-              nco_free(dim_nw);
+	          for(idx=0; idx<nbr_dim;idx++)
+		        dim_nw[idx]=nco_dmn_free(dim_nw[idx]);
+                nco_free(dim_nw);
             }  		 
             return var;                
 

@@ -134,6 +134,13 @@ char *            /* new malloc'ed string */
 ncap_att_char    /* extract string from a NC_CHAR or first NC_STRING */
 (var_sct *var_att);
 
+var_sct *
+ncap_att_cll_mtd(
+char const *nm,
+dmn_sct **dim,
+int nbr_dim,
+enum nco_op_typ op_typ
+);
 
 /*********************** make scalar vars/atts ********************************************/
 

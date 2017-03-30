@@ -207,8 +207,9 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
-  nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
-  
+  nco_bool flg_mmr_cln=True;  /* [flg] Clean memory prior to exit */
+  nco_bool flg_cll_mth=True;  /* [flg] Add/modify cell_methods attributes */
+
   nm_id_sct *dmn_lst=NULL_CEWI;
   nm_id_sct *xtr_lst=NULL_CEWI; /* Non-processed variables to copy to OUTPUT */
   nm_id_sct *xtr_lst_a=NULL_CEWI; /* Initialize to ALL variables in OUTPUT file */
@@ -232,6 +233,10 @@ main(int argc,char **argv)
   static struct option opt_lng[]={ /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"cll_mth",no_argument,0,0}, /* [flg] Add/modify cell_methods attributes */
+    {"cell_methods",no_argument,0,0}, /* [flg] Add/modify cell_methods attributes */
+    {"no_cll_mth",no_argument,0,0}, /* [flg] Do not add/modify cell_methods attributes */
+    {"no_cell_methods",no_argument,0,0}, /* [flg] Do not add/modify cell_methods attributes */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
@@ -401,8 +406,15 @@ main(int argc,char **argv)
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
+
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
+      if(!strcmp(opt_crr,"cll_mth") || !strcmp(opt_crr,"cell_methods")) flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
+
+      if(!strcmp(opt_crr,"cll_mth") || !strcmp(opt_crr,"cell_methods")) flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
+      if(!strcmp(opt_crr,"no_cll_mth") || !strcmp(opt_crr,"no_cell_methods")) flg_cll_mth=False; /* [flg] Add/modify cell_methods attributes */
+
+
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -736,7 +748,7 @@ main(int argc,char **argv)
   prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
   prs_arg.ATT_INHERIT=ATT_INHERIT;
   prs_arg.NCAP_MPI_SORT=(thr_nbr > 1 ? true:false);
-  
+  prs_arg.FLG_CLL_MTH=(flg_cll_mth ? true:false);
   prs_arg.dfl_lvl=dfl_lvl;  /* [enm] Deflate level */
   prs_arg.cnk_sz=(size_t *)NULL; /* Chunk sizes NULL for now */ 
   

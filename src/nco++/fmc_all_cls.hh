@@ -77,11 +77,13 @@ public:
     var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
 };
 
+
 //Aggregate Functions /***************************************/
 class agg_cls: public vtl_cls {
 private:
-  enum{ PAVG ,PAVGSQR , PMIBS, PMABS, PMEBS, PMAX ,PMIN ,PRMS,
-	PRMSSDN, PSQRAVG, PTTL};
+  /* we want the enums to be exactly identical to the values of nco_op_typ */
+  enum{ PAVG=nco_op_avg ,PAVGSQR=nco_op_avgsqr , PMIBS=nco_op_mibs, PMABS=nco_op_mabs, PMEBS=nco_op_mebs, PMAX=nco_op_max ,PMIN=nco_op_min ,PRMS=nco_op_rms,
+	PRMSSDN=nco_op_rmssdn, PSQRAVG=nco_op_sqravg, PTTL=nco_op_ttl};
   bool _flg_dbg;
 public:
   agg_cls(bool flg_dbg);
