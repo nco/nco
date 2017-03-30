@@ -2,7 +2,7 @@
 
 	* ncclimo: preliminary support for --lst_rnk_ge2
 
-	* Splitter infrastructure: ncks --lst_rnk_ge2 prints extraction list of N>=D variables and exits
+	* Splitter infrastructure: ncks --lst_rnk_ge2 prints extraction list of R>=2 variables and exits
 
 2017-03-24  Charlie Zender  <zender@uci.edu>
 
