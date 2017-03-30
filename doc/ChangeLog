@@ -1,8 +1,11 @@
+2017-03-30  Charlie Zender  <zender@uci.edu>
+
+	* Add HINT when nco_grd_nfr() cannot find coordinates
+
 2017-03-30 Henry Butowsky  <henryb@hush.com>
 
-	* added the cell_methods convention to the aggregate operations in agg_cls()
-	 default is on in ncap2 - can be toggled using the following command line flags
-	 --cll_mth, --cell_method, --no_cell_method, --no_cll_mth
+	* Add cell_methods CF convention to aggregate operations in ncap2 agg_cls()
+	 Default is on, toggled by --cll_mth, --cell_method, --no_cell_method, --no_cll_mth
 
 2017-03-26  Charlie Zender  <zender@uci.edu>
 

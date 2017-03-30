@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.6-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 24 March 2017
+@set update-date 30 March 2017
 @set update-month March 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22043,8 +22043,8 @@ suspects'' to identify latitude and longitude coordinate variables.
 Now, if @var{var_rgr} is @acronym{CF}-compliant, then @command{ncremap}
 will automatically identify the horizontal spatial dimensions. 
 If @var{var_rgr} is supplied but is not @acronym{CF}-compliant, then
-@command{ncremap} will use its internal database to identify 
-horizontal spatial dimensions.
+@command{ncremap} will still attempt to identify horizontal spatial
+dimensions using its internal database of ``likely names''.
 If both these automated methods fail, manually supply @command{ncremap}
 with the names of the horizontal spatial dimensions 
 @example

@@ -33,6 +33,13 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
+A. ncap2 now implements the CF cell_methods convention.
+   ncra, nces, and ncwa have long implemented this, and now the
+   relevant ncap2 methods (avg, min, max, etc.) record the operation
+   type in the cell_methods attribute.
+   ncap2 -s 'avg=one_dmn_rec_var.avg()' ~/nco/data/in.nc ~/foo.nc
+   http://nco.sf.net/nco.html#cll_mth
+
 A. ncks now prints the units, if any, in comments after CDL values
    when debugging is enabled with dbg_lvl >=1:
    zender@foo: ncks --cdl -D 1 in.nc
