@@ -5749,12 +5749,20 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  for(idx=0;idx<grd_sz_nbr;idx++){
 	    lat_idx=idx/lon_nbr;
 	    lon_idx=idx%lon_nbr;
+	    /* NB: Variables differ (lat vs. lon) but indexes are identical in next to lines */
 	    lat_crn[lat_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+crn_idx]=lat_crn_tmp[crn_idx*grd_sz_nbr+idx];
-	    lon_crn[lon_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+crn_idx]=lon_crn_tmp[crn_idx*grd_sz_nbr+idx];
+	    lon_crn[lat_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+crn_idx]=lon_crn_tmp[crn_idx*grd_sz_nbr+idx];
 	  } /* !idx */
 	} /* !crn_idx */
 	if(lat_crn_tmp) lat_crn_tmp=(double *)nco_free(lat_crn_tmp);
 	if(lon_crn_tmp) lon_crn_tmp=(double *)nco_free(lon_crn_tmp);
+	/* In this code branch, thought to be executed only for OMI DOMINO grids, re-compute grid center arrays (known to contain missing values) as centroids of supplied grid corners */
+	for(idx=0;idx<grd_sz_nbr;idx++){
+	  lat_idx=idx/lon_nbr;
+	  lon_idx=idx%lon_nbr;
+	  lat_ctr[idx]=0.25*(lat_crn[idx*grd_crn_nbr+0L]+lat_crn[idx*grd_crn_nbr+1L]+lat_crn[idx*grd_crn_nbr+2L]+lat_crn[idx*grd_crn_nbr+3L]);
+	  lon_ctr[idx]=nco_lon_crn_avg_brnch(lon_crn[idx*grd_crn_nbr+0L],lon_crn[idx*grd_crn_nbr+1L],lon_crn[idx*grd_crn_nbr+2L],lon_crn[idx*grd_crn_nbr+3L]);
+	} /* !idx */
       } /* !flg_crd_grd_lat_lon */
     } /* !lat_bnd_id */
   } /* !flg_grd_crv */

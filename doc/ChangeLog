@@ -1,6 +1,6 @@
 2017-04-01  Charlie Zender  <zender@uci.edu>
 
-	* Allow nco_grd_nfr() to read OMI DOMINO grid corners, permute from non-canonical to canonical order
+  	* Allow nco_grd_nfr() to read grid corners in non-canonical (crn_nbr,lat_nbr,lon_nbr) and permute to canonical (lat_nbr,lon_nbr,crn_nbr) order (for OMI DOMINO)
 
 2017-03-30  Charlie Zender  <zender@uci.edu>
 
