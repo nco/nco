@@ -1769,7 +1769,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
-  const int var_xcl_lst_nbr=42; /* [nbr] Number of objects on exclusion list */
+  const int var_xcl_lst_nbr=44; /* [nbr] Number of objects on exclusion list */
   /* Exception list source:
      AMSR: Latitude, Longitude
      CAM, CERES, CMIP5: lat, lon
@@ -1785,12 +1785,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      MPAS-O/I: areaCell, latCell, lonCell
      NCO: lat_vertices, lon_vertices
      OCO2: latitude_bnds, longitude_bnds
+     OMI DOMINO: Latitude, LatitudeCornerpoints, Longitude, LongitudeCornerpoints
      POP: TLAT, TLONG, ULAT, ULONG  (NB: CICE uses ?LON and POP uses ?LONG) (POP does not archive spatial bounds)
      TRMM: Latitude, Longitude
      UV-CDAT regridder: bounds_lat, bounds_lon
      Unknown: XLAT_M, XLONG_M
      WRF: XLAT, XLONG */
-  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/CO_Latitude","/slat","/S1_Latitude","/TLAT","/ULAT","/XLAT","/XLAT_M","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/slon","/S1_Longitude","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/bounds_lon","/w_stag"};
+  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/CO_Latitude","/slat","/S1_Latitude","/TLAT","/ULAT","/XLAT","/XLAT_M","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/slon","/S1_Longitude","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -5212,6 +5213,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool flg_grd_2D=False;
   nco_bool flg_grd_crv=False;
   nco_bool flg_wrt_crn=True;
+  nco_bool flg_crn_grd_lat_lon=False; /* [flg] Curvilinear corner array ordered non-canonically as grd_nbr,lat_nbr,lon_nbr */
   nco_bool has_mss_val_ctr=False;
   nco_bool has_mss_val_msk;
 
@@ -5636,12 +5638,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"lat_ntf",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("lat_ntf");
   else if((rcd=nco_inq_varid_flg(in_id,"lat_vertices",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("lat_vertices");
   else if((rcd=nco_inq_varid_flg(in_id,"latitude_bnds",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("latitude_bnds"); /* OCO2 */
+  else if((rcd=nco_inq_varid_flg(in_id,"LatitudeCornerpoints",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("LatitudeCornerpoints"); /* OMI */
   if((rcd=nco_inq_varid_flg(in_id,"lon_bnds",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lon_bnds");
   else if((rcd=nco_inq_varid_flg(in_id,"lont_bounds",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lont_bounds");
   else if((rcd=nco_inq_varid_flg(in_id,"lonu_bounds",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lonu_bounds");
   else if((rcd=nco_inq_varid_flg(in_id,"lon_ntf",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lon_ntf");
   else if((rcd=nco_inq_varid_flg(in_id,"lon_vertices",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lon_vertices");
   else if((rcd=nco_inq_varid_flg(in_id,"longitude_bnds",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("longitude_bnds"); /* OCO2 */
+  else if((rcd=nco_inq_varid_flg(in_id,"LongitudeCornerpoints",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("LongitudeCornerpoints"); /* OMI */
 
   if((rcd=nco_inq_varid_flg(in_id,"area",&area_id)) == NC_NOERR) area_nm_in=strdup("area");
   else if((rcd=nco_inq_varid_flg(in_id,"Area",&area_id)) == NC_NOERR) area_nm_in=strdup("Area");
@@ -5708,13 +5712,51 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !msk */
     /* Corners are on curvilinear corner grid
        Rectangular boundaries (i.e., lat_bnd=[lat_nbr,2]) DNE for curvilinear grids 
-       Read-in *_crn arrays in curvilinear grids, and *_bnd arrays for rectilinear grids */
+       Read-in *_crn arrays in curvilinear grids, and *_bnd arrays for rectilinear grids
+       Rank-ordering of corner arrays is usually lat_nbr,lon_nbr,grd_crn_nbr as produced/expected by SCRIP
+       However some datasets, e.g., OMI DOMINO use grd_crn_nbr,lat_nbr,lon_nbr
+       Sigh... */
     dmn_srt[0]=dmn_srt[1]=dmn_srt[2]=0L;
-    dmn_cnt[0]=lat_nbr;
-    dmn_cnt[1]=lon_nbr;
-    dmn_cnt[2]=grd_crn_nbr;
-    if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
-    if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
+    if(lat_bnd_id != NC_MIN_INT && lon_bnd_id != NC_MIN_INT){
+      rcd=nco_inq_vardimid(in_id,lat_bnd_id,dmn_ids);
+      if((dmn_ids[0] == dmn_id_lat && dmn_ids[1] == dmn_id_lon) || (dmn_ids[0] == dmn_id_lon && dmn_ids[1] == dmn_id_lat)){
+	dmn_id_bnd=dmn_ids[2];
+	dmn_cnt[0]=lat_nbr;
+	dmn_cnt[1]=lon_nbr;
+	dmn_cnt[2]=grd_crn_nbr;
+      }else if((dmn_ids[1] == dmn_id_lat && dmn_ids[2] == dmn_id_lon) || (dmn_ids[1] == dmn_id_lon && dmn_ids[2] == dmn_id_lat)){
+	dmn_id_bnd=dmn_ids[0];
+	dmn_cnt[0]=grd_crn_nbr;
+	dmn_cnt[1]=lat_nbr;
+	dmn_cnt[2]=lon_nbr;
+	flg_crn_grd_lat_lon=True;
+      }else{
+	(void)fprintf(stdout,"%s: WARNING %s confused by dimension-ordering of latitude bounds variable \"%s. Will ignore this bounds variable and attempt to extrapolate vertices from centers internally...\n",nco_prg_nm_get(),fnc_nm,lat_nm_in);
+	lat_bnd_id=NC_MIN_INT;
+	lon_bnd_id=NC_MIN_INT;
+      } /* !dmn_ids */
+      rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
+      rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
+      if(flg_crn_grd_lat_lon){
+	/* Permute corner arrays from non-canonical (grd_nbr,lat_nbr,lon_nbr) to canonical (lat_nbr,lon_nbr,grd_nbr) order */
+	double *lat_crn_tmp=NULL;
+	double *lon_crn_tmp=NULL;
+	lat_crn_tmp=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+	lon_crn_tmp=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
+	memcpy(lat_crn_tmp,lat_crn,grd_sz_nbr*grd_crn_nbr*sizeof(double));
+	memcpy(lon_crn_tmp,lon_crn,grd_sz_nbr*grd_crn_nbr*sizeof(double));
+	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
+	  for(idx=0;idx<grd_sz_nbr;idx++){
+	    lat_idx=idx/lon_nbr;
+	    lon_idx=idx%lon_nbr;
+	    lat_crn[lat_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+crn_idx]=lat_crn_tmp[crn_idx*grd_sz_nbr+idx];
+	    lon_crn[lon_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+crn_idx]=lon_crn_tmp[crn_idx*grd_sz_nbr+idx];
+	  } /* !idx */
+	} /* !crn_idx */
+	if(lat_crn_tmp) lat_crn_tmp=(double *)nco_free(lat_crn_tmp);
+	if(lon_crn_tmp) lon_crn_tmp=(double *)nco_free(lon_crn_tmp);
+      } /* !flg_crd_grd_lat_lon */
+    } /* !lat_bnd_id */
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
@@ -6052,7 +6094,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   if(flg_grd_crv || flg_1D_psd_rct_bnd){
     /* As of 20160308, use same sanity check for 1D pseudo-rectangular grids as for curvilinear grids
-       Pseudo-rectangular grids rely on user-produced boundaries which may be psychotic (CW, non-branch-cut)
+       Pseudo-rectangular grids rely on user-produced boundaries that may be psychotic (CW, non-branch-cut)
        Starting 20151205, use same sanity check for both inferred and copied curvilinear grids
        20151129: Curvilinear extrapolation technique above yields corners outside [-90.0,90.0], [-180.0,360.0]
        Also, it may assume input is ascending swath and fail for descending swaths

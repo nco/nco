@@ -1,3 +1,7 @@
+2017-04-01  Charlie Zender  <zender@uci.edu>
+
+	* Allow nco_grd_nfr() to read OMI DOMINO grid corners, permute from non-canonical to canonical order
+
 2017-03-30  Charlie Zender  <zender@uci.edu>
 
 	* Add HINT when nco_grd_nfr() cannot find coordinates
