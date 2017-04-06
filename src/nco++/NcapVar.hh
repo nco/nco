@@ -31,7 +31,15 @@ public:
 
   bool flg_mem;   // true -- then var data is written to memory  
                   // rather than disk -- At the moment all meta-data
-                  // is cached  ? --     
+                  // is cached  ? --
+
+                  // for an attribute flg_mem=true - means mark att as transient
+                  // this means that it  is inherited or propgagated once then deleted
+                  // This is requried so for example agg_cls() adds the attribute 'var_nm@cell_methods'
+                  // we want this att be picked up on the LHS but NOT written to 'var_nm'
+                  // for example   three_sum=three_dmn_var_dbl.sum();
+                  // so only three_sum gets @cell_methods().
+
   int flg_stt;    // status flag
                   // 0 -- var is defined in memory
                   // 1 -- var is defined in output - but no data written

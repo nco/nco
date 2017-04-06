@@ -244,9 +244,13 @@
             NcapVar *Nvar;
             var_att_cll_mtd = ncap_att_cll_mtd(var1->nm,dim, avg_nbr_dim, (nco_op_typ)fdx);
             Nvar=new NcapVar(var_att_cll_mtd);
+            // mark attribute as transient
+            // this mean it is propagated to the LHS only once then deleted
+            Nvar->flg_mem=true;
             prs_arg->var_vtr.push_ow(Nvar);
-
           }
+
+
 
 
 
@@ -3306,31 +3310,30 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
     // check limits co-ord increasing 
     if(bInc){
       for(idx=0;idx<r_sz;idx++){ 
-	 dval=var2->val.dp[idx]; 
+	    dval=var2->val.dp[idx];
          /* default set to out of range */   
-         ip[idx]=-1;  
-         if(dval>=dp_crd[0] && dval<=dp_crd[c_sz-1] )
+        ip[idx]=-1;
+        if(dval>=dp_crd[0] && dval<=dp_crd[c_sz-1] )
            for(jdx=0 ; jdx<c_sz-1 ; jdx++)
-             if( dval >= dp_crd[jdx] && dval <= dp_crd[jdx+1] )
-             {  
-	        ip[idx]=(dval-dp_crd[jdx]<= dp_crd[jdx+1]-dval ? jdx: jdx+1 );    
-                break;
-	     }  
+             if( dval >= dp_crd[jdx] && dval <= dp_crd[jdx+1] ) {
+               ip[idx] = (dval - dp_crd[jdx] <= dp_crd[jdx + 1] - dval ? jdx : jdx + 1);
+               break;
+             }
       }
     }
     // check limits co-ord decreasing
     if(!bInc){
       for(idx=0;idx<r_sz;idx++){  
-	 dval=var2->val.dp[idx]; 
-         /* default set to out of range */   
-         ip[idx]=-1;  
-         if(dval<=dp_crd[0] && dval>=dp_crd[c_sz-1] )
-           for(jdx=0 ; jdx<c_sz-1 ; jdx++)
-             if( dval <= dp_crd[jdx] && dval >= dp_crd[jdx+1] )
-             {  
-	        ip[idx]=(dp_crd[jdx]-dval <= dval-dp_crd[jdx+1] ? jdx: jdx+1 );    
-                break;
-	     }  
+	    dval=var2->val.dp[idx];
+        /* default set to out of range */
+        ip[idx]=-1;
+        if(dval<=dp_crd[0] && dval>=dp_crd[c_sz-1] )
+          for(jdx=0 ; jdx<c_sz-1 ; jdx++)
+            if( dval <= dp_crd[jdx] && dval >= dp_crd[jdx+1] )
+            {
+	          ip[idx]=(dp_crd[jdx]-dval <= dval-dp_crd[jdx+1] ? jdx: jdx+1 );
+              break;
+	        }
       }  
     }              
     (void)cast_nctype_void(NC_DOUBLE,&var1->val);
