@@ -217,10 +217,15 @@ ncap_att_gnrl
   std::string s_fll;
   
   NcapVar *Nvar;
-  
+
+  // this holds the idx of transient attributes in var_vtr
+  // these are one shot attributes that are used once
+  std::vector<int> tr_int_vtr;
   // De-reference 
   NcapVarVector &var_vtr=prs_arg->var_vtr;
   NcapVarVector att_vtr; // hold new attributes.
+
+
   
   if(location == 1) fl_id=prs_arg->in_id;  
   if(location == 2) fl_id=prs_arg->out_id;  
@@ -259,6 +264,10 @@ ncap_att_gnrl
 
       // Create string for new attribute
       s_fll=s_dst+"@"+(var_vtr[idx]->getAtt());
+      // mark transient att
+      if(var_vtr[idx]->flg_mem )
+        tr_int_vtr.push_back(idx);
+
       var_att=nco_var_dpl(var_vtr[idx]->var);
       Nvar=new NcapVar(var_att,s_fll);
       att_vtr.push_back(Nvar);
@@ -278,6 +287,13 @@ ncap_att_gnrl
     var_vtr.push_ow(att_vtr[idx]);         
 #endif
   }
+
+  //delete transient atts
+  // nb go through vector in reverse order deleting
+  if(tr_int_vtr.size())
+    for(idx=tr_int_vtr.size()-1; idx>=0; idx--)
+      var_vtr.erase( tr_int_vtr[idx] );
+
   return sz;
   
 } /* end ncap_att_gnrl() */
