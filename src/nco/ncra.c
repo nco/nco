@@ -1300,7 +1300,12 @@ main(int argc,char **argv)
             if(nco_prg_id == ncra) FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 
             /* Re-base record coordinate and bounds if necessary (e.g., time, time_bnds) */
-            if(var_prc[idx]->is_crd_var || nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id))
+            /* if(var_prc[idx]->is_crd_var|| nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id)) */
+
+            /*  This code rebases  the  coordinate var to the units of the coordinate var in the first input file */
+            /* this coordinate var is actually already read by the above call  (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV); */
+            /* So the rebasing that occurs here will always succeed (i think) */
+            if( !strcmp(var_prc[idx]->nm, lmt_rec[idx_rec]->nm) || nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id))
             {
               char *fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_prc[idx]->id,"units"); /* Units attribute of coordinate variable */ 
               if(fl_udu_sng && lmt_rec[idx_rec]->rbs_sng)
