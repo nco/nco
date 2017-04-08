@@ -680,7 +680,7 @@ nco1128. nco: ncrename --lowercase --uppercase options? MERRA2 merra
        ncrename --lowercase --var .ONE,.TWO,... in.nc out.nc
 nco1129. ncks allow --mk_rec_dmn to change multiple dimensions at one time
        ncks -O --mk_rec_dmn lat,lon ~/nco/data/in_grp.nc ~/foo.nc
-nco1130. ncatted support for '.' (dot) in names (reported by emontgomery 20160726 fixed 20160729)
+nco1130. ncatted support for '.' (dot) in names (reported by emontgomery 20160726 finished 20160729)
        ncatted treats dot.name as rx then fails to find match
        ncatted -O -a dot.name,global,o,c,value ~/nco/data/in.nc ~/foo.nc
 nco1131. nco: ncra --cb wrong unless single record per input file (see note tagged 20160824 in ncra.c)
@@ -689,15 +689,16 @@ nco1131. nco: ncra --cb wrong unless single record per input file (see note tagg
        ncks --cdl -v climatology_bounds ~/foo2.nc
        climatology_bounds are [0.5,1.5] but should be [2.5,6.5]
 nco1132. nco: ncclimo fails when input files have different variable orders. Allow user to suppress cb, or make ncra.c re-read cb IDs each file (Guido 20161101)
-nco1133. ncks CDL-mode do UDUnits time conversions to ISO (added 20161116)
+nco1133. ncks CDL-mode do UDUnits time conversions to ISO (added 20161116, finished 20170315)
 	 ncks -H -v tm_.? ~/nco/data/in.nc
 	 ncdump -t ~/nco/data/in.nc | grep tm_
 nco1134. MSA: wrapped limit with an additional limit pvn20160211 -- bug found that happens in nco 4.2.0 also
 	 ncks -O -C --msa -g g19 -v time -d time,9,0 -d time,1,2 ~/nco/data/in_grp_3.nc ~/foo.nc
-nco1135. USE_NC4_SRD_WORKAROUND is broken: (added 20170201 fixed 20170207)
+nco1135. USE_NC4_SRD_WORKAROUND is broken: (added 20170201, finished 20170207)
 	 ncks -v zg -H -C -d time,0,1 -d lev,0,2,2 ~/nco/data/in.nc # works
       	 ncks -v zg -H -C -d time,0,1 -d lev,0,2,2 ~/nco/data/in_4c.nc # borken
-nco1136. 
+nco1136. ncra valid_range, unpacked_valid_range, actual_range problem antonio rodriges https://sourceforge.net/p/nco/discussion/9830/thread/07f71305 (only valid_range is netCDF standard convention). One "solution" is to unpack valid_range attribute[s] using scale_factor, add_offset from first file. # added 20170407
+nco1137. 
 qrk
 ************************************************************************
 End ncoXXX TODOs

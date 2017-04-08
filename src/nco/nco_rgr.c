@@ -242,8 +242,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
   /* Initialize key-value properties used in grid generation */
-  rgr->fl_grd=NULL; /* [sng] Name of grid file to create */
+  rgr->fl_grd=NULL; /* [sng] Name of SCRIP grid file to create */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
+  rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
@@ -276,6 +277,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_grd=True;
       continue;
     } /* !skl */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"ugrid")){
+      rgr->fl_ugrid=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      rgr->flg_nfr=True;
+      continue;
+    } /* !ugrid */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"cell_measures") || !strcasecmp(rgr_lst[rgr_var_idx].key,"cll_msr")){
       rgr->flg_cll_msr=True;
       continue;
@@ -4783,7 +4789,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     if(rgr->lon_nm_out) lon_nm_out=rgr->lon_nm_out; else lon_nm_out=(char *)strdup("lon");
     if(rgr->col_nm_out) col_nm_out=rgr->col_nm_out; else col_nm_out=(char *)strdup("ncol");
 
-  /* Name output dimensions */
+    /* Name output dimensions */
     area_nm=rgr->area_nm;
     bnd_nm=rgr->bnd_nm;
     //bnd_tm_nm=rgr->bnd_tm_nm;
@@ -5457,7 +5463,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !lon_ctr_id */
   
   if(!lat_nm_in || !lon_nm_in){
-    (void)fprintf(stdout,"%s: ERROR %s unable to identify latitude and/or longitude variable.\nHINT: Potential causes and workarounds for this include: 1. Coordinate variables must be in the root directory (not in a group). If this might be the problem, try to \"flatten\" the input file before regridding it (see http://nco.sf.net/nco.html#flatten). 2. Horizontal dimensions with \"unusual\" names are hard to identify unless the user designates them somehow. ncremap will search for horizontal dimensions named in the \"coordinates\" attribute in a template variable specified with the \"-V rgr_var\" option. 3. NCO will also search its own internal database for likely names of horizontal coordinate variables (lat, latitude, LAT, XLAT, etc.).\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s unable to identify latitude and/or longitude variable.\nHINT: Potential causes and workarounds for this include: 1. Coordinate variables must be in the root directory (not in a group). If this might be the problem, try to \"flatten\" the input file before regridding it (see http://nco.sf.net/nco.html#flatten). 2. Horizontal dimensions with \"unusual\" names are hard to identify unless the user designates them somehow. ncremap will search for horizontal dimensions named in the \"coordinates\" attribute in a template variable specified with the \"-V rgr_var\" option. 3. NCO will also search its own internal database for likely names of horizontal coordinate variables (lat, latitude, LAT, XLAT, etc.). Contact the NCO project to have your idiosyncratic coordinate names added to the internal database.\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !lat_nm_in */
     
@@ -6760,6 +6766,23 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+  
+  fl_out=rgr->fl_ugrid;
+  if(fl_out){
+    /* Test UGRID:
+       ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
+
+    fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+    if(flg_wrt_crn) rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_id_grd_crn);
+    rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_id_grd_sz);
+    rcd=nco_def_dim(out_id,grd_rnk_nm,grd_rnk_nbr,&dmn_id_grd_rnk);
+
+    /* Begin data mode */
+    (void)nco_enddef(out_id);
+
+    /* Close output file and move it from temporary to permanent location */
+    (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+  } /* !fl_out */
   
   /* Free memory associated with input file */
   if(dmn_sz_int) dmn_sz_int=(int *)nco_free(dmn_sz_int);

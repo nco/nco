@@ -297,8 +297,8 @@ notice identical to this one except for the removal of this paragraph
 @html
 <meta name="Author" content="Charlie Zender">
 <meta name="Keywords" content="NCO documentation, NCO User Guide,
-netCDF, operator, GCM, CCM, scientific data, ncbo, ncfe, ncecat,
-ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
+netCDF, operator, GCM, CCM, scientific data, ncbo, ncclimo, ncfe, ncecat,
+ncflint, ncks, ncra, ncrcat, ncremap, ncrename, ncwa">
 @end html
 @html
 <body text="#000000" link="#0000EF" vlink="#008080" alink="#FF0000">
@@ -340,6 +340,16 @@ with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts. The license is available online at 
 @uref{http://www.gnu.org/copyleft/fdl.html}
 @sp 2
+We gratefully acknowledge support for @acronym{NCO} development and
+maintenance provided by these institutions and programs:
+@acronym{DOE} @acronym{ACME} DE-SC0012998, 
+@acronym{NASA} @acronym{ACCESS} NNX12AF48A and NNX14AH55A, and
+@acronym{NSF} @acronym{SEI} IIS-0431203.
+Research supported as part of the Accelerated Climate Modeling for
+Energy (@acronym{ACME}) program, funded by the U.S. Department of
+Energy, Office of Science, Office of Biological and Environmental
+Research.  
+@sp 2
 The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.@*
 Charlie Zender <surname at uci dot edu> (yes, my surname is zender)@*
@@ -348,7 +358,6 @@ Department of Earth System Science@*
 University of California, Irvine@*
 Irvine, CA 92697-3100@*
 @sp 2
-@c Cover art by Robynn Rudel
 @end titlepage
 
 @c Print table of contents
@@ -529,7 +538,7 @@ Irvine, California@*
 @c 20150619 Test values automagically installed by version.texi, which is a nightmare
 @c Test print @value{EDITION}, @value{VERSION}, @value{UPDATED}, @value{UPDATED-MONTH}.
 The @acronym{NASA} @acronym{ACCESS} 2011 program generously supported 
-(Cooperative Agreement NNX12AF48A) @acronym{NCO} from 2012--2015.
+(Cooperative Agreement NNX12AF48A) @acronym{NCO} from 2012--2014.
 This allowed us to produce the first iteration of a Group-oriented 
 Data Analysis and Distribution (@acronym{GODAD}) software ecosystem. 
 Shifting more geoscience data analysis to @acronym{GODAD} is a 
@@ -553,17 +562,16 @@ June, 2015@*
 Irvine, California@*
 
 @ignore
-The @acronym{DOE} @acronym{ACME} program generously supported ...
-
-Matching @acronym{NCO} against other analysis software, and often
-besting them, has been exhilirating.
-Henry Butowsky has re-joined our efforts.
+The @acronym{DOE} @acronym{ACME} program has generously supported 
+@acronym{NCO} development in support of high-performance climate
+modeling research. 
+This has allowed Henry Butowsky to re-join our efforts.
 Without him, much of this work would have been impossible.
 
 @sp 1
 @noindent
 Charlie Zender@*
-January, 2017@*
+June, 2017@*
 Laguna Beach, California@*
 @end ignore
 

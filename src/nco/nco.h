@@ -1114,7 +1114,8 @@ extern "C" {
     char *lon_vrt_nm; /* [sng] Name of non-rectangular boundary variable for longitude */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
     // User-specified grid properties
-    char *fl_grd; /* [sng] Name of grid file to create */
+    char *fl_grd; /* [sng] Name of SCRIP grid file to create */
+    char *fl_ugrid; /* [sng] Name of UGRID grid file to create */
     char *fl_skl; /* [sng] Name of skeleton data file to create */
     char *grd_ttl; /* [sng] Grid title */
     double lat_crv; /* [dgr] Latitudinal  curvilinearity */
