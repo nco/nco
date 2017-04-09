@@ -5178,6 +5178,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int lon_bnd_id=NC_MIN_INT; /* [id] Longitude centers of rectangular grid variable ID */
   int msk_id=NC_MIN_INT; /* [id] Mask variable ID */
   int val_two=2; /* [nbr] Value that can be non-erroneously pointed to */
+  int val_zero=0; /* [nbr] Value that can be non-erroneously pointed to */
   int var_id; /* [id] Current variable ID */
 
   long dmn_srt[dmn_nbr_grd_max];
@@ -6777,36 +6778,55 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
 
     char *dg_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as edges */
+    char *dg_nd_nm=NULL_CEWI; /* [sng] Name of edge_node_connectivity variable */
     char *fc_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as faces */
+    char *fc_nd_nm=NULL_CEWI; /* [sng] Name of face_node_connectivity variable */
     char *msh_nm=NULL_CEWI; /* [sng] Name of mesh topology variable */
     char *nd_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as nodes */
     char *ndx_nm=NULL_CEWI; /* [sng] Name of mesh topology variable */
     char *ndy_nm=NULL_CEWI; /* [sng] Name of mesh topology variable */
+    char *npe_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as nodes-per-edge */
+    char *npf_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as nodes-per-face */
     
     double *ndx=NULL_CEWI; /* [dgr] Longitude of nodes */
     double *ndy=NULL_CEWI; /* [dgr] Latitude  of nodes */
 
+    int *dg_nd; /* [idx] edge_node_connectivity variable */
+    int *fc_nd; /* [idx] face_node_connectivity variable */
+
+    int dg_nd_id=NC_MIN_INT; /* [id] edge_node_connectivity variable ID */
     int dmn_id_dg=NC_MIN_INT; /* [id] Dimension ID for edges */
     int dmn_id_fc=NC_MIN_INT; /* [id] Dimension ID for faces */
     int dmn_id_nd=NC_MIN_INT; /* [id] Dimension ID for nodes */
+    int dmn_id_npe=NC_MIN_INT; /* [id] Dimension ID for nodes-per-edge */
+    int dmn_id_npf=NC_MIN_INT; /* [id] Dimension ID for nodes-per-face */
+    int fc_nd_id=NC_MIN_INT; /* [id] face_node_connectivity variable ID */
     int msh_id=NC_MIN_INT; /* [id] Mesh topology variable ID */
     int msh_val=42; /* [id] Mesh topology variable value from Monty Python */
     int ndx_id=NC_MIN_INT; /* [id] Longitude of mesh nodes variable ID */
     int ndy_id=NC_MIN_INT; /* [id] Latitude  of mesh nodes variable ID */
     
+    const long fc_nbr=grd_sz_nbr; /* [nbr] Number of faces in mesh */
+    const long npe_nbr=2; /* [nbr] Number of nodes per edge */
+    const long npf_nbr=grd_crn_nbr; /* [nbr] Number of nodes in mesh */
+
     long dg_nbr=NC_MIN_INT64; /* [nbr] Number of edges in mesh */
-    long fc_nbr=NC_MIN_INT64; /* [nbr] Number of faces in mesh */
     long nd_nbr=NC_MIN_INT64; /* [nbr] Number of nodes in mesh */
-    long nd_idx; /* [nbr] Number of nodes in mesh */
+    long fc_idx; /* [idx] Counting index for faces */
+    long nd_idx; /* [idx] Counting index for nodes */
+    long npf_idx; /* [idx] Counting index for nodes-per-face */
 
     if(!dg_dmn_nm) dg_dmn_nm=(char *)strdup("nEdges");
     if(!fc_dmn_nm) fc_dmn_nm=(char *)strdup("nFaces");
+    if(!dg_nd_nm) dg_nd_nm=(char *)strdup("mesh_edge_nodes");
+    if(!fc_nd_nm) fc_nd_nm=(char *)strdup("mesh_face_nodes");
     if(!msh_nm) msh_nm=(char *)strdup("mesh");
     if(!nd_dmn_nm) nd_dmn_nm=(char *)strdup("nNodes");
     if(!ndx_nm) ndx_nm=(char *)strdup("mesh_node_x");
     if(!ndy_nm) ndy_nm=(char *)strdup("mesh_node_y");
+    if(!npe_dmn_nm) npe_dmn_nm=(char *)strdup("two");
+    if(!npf_dmn_nm) npf_dmn_nm=(char *)strdup("maxNodesPerFace");
 
-    fc_nbr=grd_sz_nbr;
     if(flg_grd_1D){
       (void)fprintf(stdout,"%s: ERROR %s UGRID output does not yet support 1D grids\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
@@ -6834,6 +6854,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       nco_exit(EXIT_FAILURE);
     } /* !flg_grd */
     
+    dg_nd=(int *)nco_malloc(2*dg_nbr*nco_typ_lng(NC_INT));
+    fc_nd=(int *)nco_malloc(fc_nbr*npf_nbr*nco_typ_lng(NC_INT));
     ndx=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
     ndy=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
 
@@ -6841,13 +6863,26 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       ndx[nd_idx]=0.0;
       ndy[nd_idx]=0.0;
     } /* !nd_idx */
+    for(fc_idx=0;fc_idx<fc_nbr;fc_idx++){
+      for(npf_idx=0;npf_idx<npf_nbr;npf_idx++){
+	fc_nd[fc_idx*npf_nbr+nd_idx]=0;
+      } /* !npf_idx */
+    } /* !fc_idx */
     
     fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
     rcd=nco_def_dim(out_id,dg_dmn_nm,dg_nbr,&dmn_id_dg);
     rcd=nco_def_dim(out_id,fc_dmn_nm,fc_nbr,&dmn_id_fc);
     rcd=nco_def_dim(out_id,nd_dmn_nm,nd_nbr,&dmn_id_nd);
+    rcd=nco_def_dim(out_id,npe_dmn_nm,npe_nbr,&dmn_id_npe);
+    rcd=nco_def_dim(out_id,npf_dmn_nm,npf_nbr,&dmn_id_npf);
 
+    dmn_ids[0]=dmn_id_dg;
+    dmn_ids[1]=dmn_id_npe;
+    rcd=nco_def_var(out_id,dg_nd_nm,(nc_type)NC_INT,dmn_nbr_2D,dmn_ids,&dg_nd_id);
+    dmn_ids[0]=dmn_id_fc;
+    dmn_ids[1]=dmn_id_npf;
+    rcd=nco_def_var(out_id,fc_nd_nm,(nc_type)NC_INT,dmn_nbr_2D,dmn_ids,&fc_nd_id);
     rcd=nco_def_var(out_id,msh_nm,(nc_type)NC_INT,dmn_nbr_0D,(int *)NULL,&msh_id);
     rcd=nco_def_var(out_id,ndx_nm,crd_typ,dmn_nbr_1D,&dmn_id_nd,&ndx_id);
     rcd=nco_def_var(out_id,ndy_nm,crd_typ,dmn_nbr_1D,&dmn_id_nd,&ndy_id);
@@ -6932,10 +6967,196 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(att_nm) att_nm=(char *)nco_free(att_nm);
     if(att_val) att_val=(char *)nco_free(att_val);
 
+    att_nm=strdup("edge_node_connectivity");
+    att_val=strdup(dg_nd_nm);
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("face_node_connectivity");
+    att_val=strdup(fc_nd_nm);
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("longitude");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=ndx_nm;
+    aed_mtd.id=ndx_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,ndx_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Longitude of mesh nodes");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=ndx_nm;
+    aed_mtd.id=ndx_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,ndx_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("units");
+    att_val=strdup("degrees_east");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=ndx_nm;
+    aed_mtd.id=ndx_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,ndx_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("latitude");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=ndy_nm;
+    aed_mtd.id=ndy_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,ndy_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Latitude of mesh nodes");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=ndy_nm;
+    aed_mtd.id=ndy_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,ndy_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("units");
+    att_val=strdup("degrees_north");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=ndy_nm;
+    aed_mtd.id=ndy_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,ndy_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("cf_role");
+    att_val=strdup("edge_node_connectivity");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=dg_nd_nm;
+    aed_mtd.id=dg_nd_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,dg_nd_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Maps every edge to the two nodes that it connects");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=dg_nd_nm;
+    aed_mtd.id=dg_nd_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,dg_nd_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("start_index");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=dg_nd_nm;
+    aed_mtd.id=dg_nd_id;
+    aed_mtd.sz=1;
+    aed_mtd.type=NC_INT;
+    aed_mtd.val.ip=&val_zero;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,dg_nd_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+
+    att_nm=strdup("cf_role");
+    att_val=strdup("face_node_connectivity");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fc_nd_nm;
+    aed_mtd.id=fc_nd_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fc_nd_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Maps every face to its corner nodes");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fc_nd_nm;
+    aed_mtd.id=fc_nd_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fc_nd_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("start_index");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fc_nd_nm;
+    aed_mtd.id=fc_nd_id;
+    aed_mtd.sz=1;
+    aed_mtd.type=NC_INT;
+    aed_mtd.val.ip=&val_zero;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fc_nd_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+
     /* Begin data mode */
     (void)nco_enddef(out_id);
 
     (void)nco_put_vara(out_id,msh_id,dmn_srt,dmn_cnt,&msh_val,(nc_type)NC_INT);
+    dmn_srt[0]=dmn_srt[1]=0L;
+    dmn_cnt[0]=dg_nbr;
+    dmn_cnt[1]=val_two;
+    (void)nco_put_vara(out_id,dg_nd_id,dmn_srt,dmn_cnt,dg_nd,(nc_type)NC_INT);
+    dmn_srt[0]=dmn_srt[1]=0L;
+    dmn_cnt[0]=nd_nbr;
+    dmn_cnt[1]=npf_nbr;
+    (void)nco_put_vara(out_id,fc_nd_id,dmn_srt,dmn_cnt,fc_nd,(nc_type)NC_INT);
     dmn_srt[0]=0L;
     dmn_cnt[0]=nd_nbr;
     (void)nco_put_vara(out_id,ndx_id,dmn_srt,dmn_cnt,ndx,crd_typ);
@@ -6948,16 +7169,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     (void)fprintf(stdout,"%s: DBG %s ending UGRID section\n",nco_prg_nm_get(),fnc_nm);
 
     /* Free memory associated with output file */
+    if(dg_nd) dg_nd=(int *)nco_free(dg_nd);
+    if(fc_nd) fc_nd=(int *)nco_free(fc_nd);
     if(ndx) ndx=(double *)nco_free(ndx);
     if(ndy) ndy=(double *)nco_free(ndy);
 
     /* Free strings */
+    if(dg_nd_nm) dg_nd_nm=(char *)nco_free(dg_nd_nm);
+    if(fc_nd_nm) fc_nd_nm=(char *)nco_free(fc_nd_nm);
     if(dg_dmn_nm) dg_dmn_nm=(char *)nco_free(dg_dmn_nm);
     if(fc_dmn_nm) fc_dmn_nm=(char *)nco_free(fc_dmn_nm);
     if(msh_nm) msh_nm=(char *)nco_free(msh_nm);
     if(nd_dmn_nm) nd_dmn_nm=(char *)nco_free(nd_dmn_nm);
     if(ndx_nm) ndx_nm=(char *)nco_free(ndx_nm);
     if(ndy_nm) ndy_nm=(char *)nco_free(ndy_nm);
+    if(npe_dmn_nm) npe_dmn_nm=(char *)nco_free(npe_dmn_nm);
+    if(npf_dmn_nm) npf_dmn_nm=(char *)nco_free(npf_dmn_nm);
   } /* !fl_ugrid */
   
   /* Free memory associated with input file */
