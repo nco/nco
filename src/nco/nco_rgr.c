@@ -6938,10 +6938,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     (void)nco_put_vara(out_id,msh_id,dmn_srt,dmn_cnt,&msh_val,(nc_type)NC_INT);
     dmn_srt[0]=0L;
     dmn_cnt[0]=nd_nbr;
-    (void)nco_put_vara(out_id,ndx_id,dmn_srt,dmn_cnt,&ndx,crd_typ);
+    (void)nco_put_vara(out_id,ndx_id,dmn_srt,dmn_cnt,ndx,crd_typ);
     dmn_srt[0]=0L;
     dmn_cnt[0]=nd_nbr;
-    (void)nco_put_vara(out_id,ndy_id,dmn_srt,dmn_cnt,&ndy,crd_typ);
+    (void)nco_put_vara(out_id,ndy_id,dmn_srt,dmn_cnt,ndy,crd_typ);
 
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
