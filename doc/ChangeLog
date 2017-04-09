@@ -1,3 +1,9 @@
+2017-04-09  Charlie Zender  <zender@uci.edu>
+
+	* Complete minimal UGRID metadata
+
+	* Fix mask type conversion in nco_grd_nfr()
+
 2017-04-08  Charlie Zender  <zender@uci.edu>
 
 	* Add stubs to create UGRID grids from nco_grd_nfr()

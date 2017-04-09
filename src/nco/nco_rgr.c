@@ -5177,6 +5177,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int lat_bnd_id=NC_MIN_INT; /* [id] Latitude centers of rectangular grid variable ID */
   int lon_bnd_id=NC_MIN_INT; /* [id] Longitude centers of rectangular grid variable ID */
   int msk_id=NC_MIN_INT; /* [id] Mask variable ID */
+  int mss_val_int_out=NC_MIN_INT; /* [nbr] Value that can be non-erroneously pointed to */
   int val_two=2; /* [nbr] Value that can be non-erroneously pointed to */
   int val_zero=0; /* [nbr] Value that can be non-erroneously pointed to */
   int var_id; /* [id] Current variable ID */
@@ -6531,7 +6532,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       break;
     case NC_DOUBLE:
       if(has_mss_val_msk){
-	const float mss_val_dbl=mss_val_msk_dbl;
+	const double mss_val_dbl=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
 	  if(msk_unn.dp[idx] == mss_val_dbl) msk[idx]=0; else msk[idx]=msk_unn.dp[idx];
       }else{
@@ -6540,7 +6541,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       break;
     case NC_INT:
       if(has_mss_val_msk){
-	const float mss_val_int=mss_val_msk_dbl;
+	const int mss_val_int=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
 	  if(msk_unn.ip[idx] == mss_val_int) msk[idx]=0; else msk[idx]=msk_unn.ip[idx];
       }else{
@@ -6549,7 +6550,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       break;
     case NC_SHORT:
       if(has_mss_val_msk){
-	const float mss_val_sht=mss_val_msk_dbl;
+	const short mss_val_sht=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
 	  if(msk_unn.sp[idx] == mss_val_sht) msk[idx]=0; else msk[idx]=msk_unn.sp[idx];
       }else{
@@ -6810,10 +6811,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     const long npe_nbr=2; /* [nbr] Number of nodes per edge */
     const long npf_nbr=grd_crn_nbr; /* [nbr] Number of nodes in mesh */
 
+    long dg_idx; /* [idx] Counting index for edges */
     long dg_nbr=NC_MIN_INT64; /* [nbr] Number of edges in mesh */
-    long nd_nbr=NC_MIN_INT64; /* [nbr] Number of nodes in mesh */
     long fc_idx; /* [idx] Counting index for faces */
     long nd_idx; /* [idx] Counting index for nodes */
+    long nd_nbr=NC_MIN_INT64; /* [nbr] Number of nodes in mesh */
+    long npe_idx; /* [idx] Counting index for nodes-per-edge */
     long npf_idx; /* [idx] Counting index for nodes-per-face */
 
     if(!dg_dmn_nm) dg_dmn_nm=(char *)strdup("nEdges");
@@ -6863,6 +6866,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       ndx[nd_idx]=0.0;
       ndy[nd_idx]=0.0;
     } /* !nd_idx */
+
+    for(dg_idx=0;dg_idx<dg_nbr;dg_idx++){
+      for(npe_idx=0;npe_idx<npe_nbr;npe_idx++){
+	dg_nd[dg_idx*npe_nbr+dg_idx]=0;
+      } /* !npe_idx */
+    } /* !dg_idx */
     for(fc_idx=0;fc_idx<fc_nbr;fc_idx++){
       for(npf_idx=0;npf_idx<npf_nbr;npf_idx++){
 	fc_nd[fc_idx*npf_nbr+nd_idx]=0;
@@ -7141,6 +7150,17 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     aed_mtd.sz=1;
     aed_mtd.type=NC_INT;
     aed_mtd.val.ip=&val_zero;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fc_nd_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+
+    att_nm=strdup("_FillValue");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fc_nd_nm;
+    aed_mtd.id=fc_nd_id;
+    aed_mtd.sz=1;
+    aed_mtd.type=NC_INT;
+    aed_mtd.val.ip=&mss_val_int_out;
     aed_mtd.mode=aed_create;
     (void)nco_aed_prc(out_id,fc_nd_id,aed_mtd);
     if(att_nm) att_nm=(char *)nco_free(att_nm);
