@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.6-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 5 April 2017
+@set update-date 9 April 2017
 @set update-month April 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18337,7 +18337,7 @@ To add a new record dimension named ``time'' to all variables
 ncecat -u time in.nc out.nc
 @end example
 To glue together multiple files with a new record variable named
-``reaalization'' 
+``realization'' 
 @example
 ncecat -u realization 85_0[1-5].nc 85.nc
 @end example

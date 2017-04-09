@@ -4879,7 +4879,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_id,shuffle,deflate,dfl_lvl);
     } /* !flg_grd_2D */
     
-    /* Define "units" attributes */
+    /* Define attributes */
     att_nm=strdup("title");
     att_val=strdup(rgr->grd_ttl);
     aed_mtd.att_nm=att_nm;
@@ -5086,6 +5086,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   const double rdn2dgr=180.0/M_PI;
   const double dgr2rdn=M_PI/180.0;
 
+  const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
@@ -5104,6 +5105,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *msk_nm_in=NULL;
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
 
+  /* SCRIP-format grid names are non-negotiable and thus fixed not dynamic */
   char area_nm[]="grid_area"; /* 20150830: NB ESMF_RegridWeightGen --user_areas looks for variable named "grid_area" */
   char dmn_sz_nm[]="grid_dims";
   char grd_crn_lat_nm[]="grid_corner_lat";
@@ -5175,6 +5177,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int lat_bnd_id=NC_MIN_INT; /* [id] Latitude centers of rectangular grid variable ID */
   int lon_bnd_id=NC_MIN_INT; /* [id] Longitude centers of rectangular grid variable ID */
   int msk_id=NC_MIN_INT; /* [id] Mask variable ID */
+  int val_two=2; /* [nbr] Value that can be non-erroneously pointed to */
   int var_id; /* [id] Current variable ID */
 
   long dmn_srt[dmn_nbr_grd_max];
@@ -5248,7 +5251,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
 
-  /* Identify grid-related variables, usually latitude and longitude */
   char *bnd_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as bounds */
   char *col_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as column */
   char *lat_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as latitude */
@@ -5259,8 +5261,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *lon_bnd_nm=NULL_CEWI; /* [sng] Name of longitude boundary variable */
   int dmn_id_bnd=NC_MIN_INT; /* [id] Dimension ID for spatial bounds */
   int dmn_id_col=NC_MIN_INT; /* [id] Dimension ID for unstructured grids */
-  int dmn_id_lat=NC_MIN_INT; /* [id] Dimension ID */
-  int dmn_id_lon=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_lat=NC_MIN_INT; /* [id] Dimension ID for latitude */
+  int dmn_id_lon=NC_MIN_INT; /* [id] Dimension ID for longitude */
 
   /* Begin CF-coordinates block */
   cf_crd_sct *cf=NULL;
@@ -5424,6 +5426,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* End CF-coordinates block */
   
   /* Locate fields that must be present in input file
+     Required variables are usually latitude and longitude
      Currently these variables must be in root group
      This fails for, e.g., OMI L2 which has coordinates /GEOLOCATION_DATA/[Latitude,Longitude]
      fxm: Generalize with traversal table so usual suspect coordinates may be in any group */
@@ -6614,7 +6617,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_crn_lon_id,shuffle,deflate,dfl_lvl);
   } /* !flg_wrt_crn */
   
-  /* Define "units" attributes */
+  /* Define attributes */
   aed_sct aed_mtd;
   char *att_nm;
   char *att_val;
@@ -6770,19 +6773,192 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   fl_out=rgr->fl_ugrid;
   if(fl_out){
     /* Test UGRID:
+       Documentation: https://github.com/ugrid-conventions/ugrid-conventions
        ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
 
+    char *dg_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as edges */
+    char *fc_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as faces */
+    char *msh_nm=NULL_CEWI; /* [sng] Name of mesh topology variable */
+    char *nd_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as nodes */
+    char *ndx_nm=NULL_CEWI; /* [sng] Name of mesh topology variable */
+    char *ndy_nm=NULL_CEWI; /* [sng] Name of mesh topology variable */
+    
+    double *ndx=NULL_CEWI; /* [dgr] Longitude of nodes */
+    double *ndy=NULL_CEWI; /* [dgr] Latitude  of nodes */
+
+    int dmn_id_dg=NC_MIN_INT; /* [id] Dimension ID for edges */
+    int dmn_id_fc=NC_MIN_INT; /* [id] Dimension ID for faces */
+    int dmn_id_nd=NC_MIN_INT; /* [id] Dimension ID for nodes */
+    int msh_id=NC_MIN_INT; /* [id] Mesh topology variable ID */
+    int msh_val=42; /* [id] Mesh topology variable value from Monty Python */
+    int ndx_id=NC_MIN_INT; /* [id] Longitude of mesh nodes variable ID */
+    int ndy_id=NC_MIN_INT; /* [id] Latitude  of mesh nodes variable ID */
+    
+    long dg_nbr=NC_MIN_INT64; /* [nbr] Number of edges in mesh */
+    long fc_nbr=NC_MIN_INT64; /* [nbr] Number of faces in mesh */
+    long nd_nbr=NC_MIN_INT64; /* [nbr] Number of nodes in mesh */
+    long nd_idx; /* [nbr] Number of nodes in mesh */
+
+    if(!dg_dmn_nm) dg_dmn_nm=(char *)strdup("nEdges");
+    if(!fc_dmn_nm) fc_dmn_nm=(char *)strdup("nFaces");
+    if(!msh_nm) msh_nm=(char *)strdup("mesh");
+    if(!nd_dmn_nm) nd_dmn_nm=(char *)strdup("nNodes");
+    if(!ndx_nm) ndx_nm=(char *)strdup("mesh_node_x");
+    if(!ndy_nm) ndy_nm=(char *)strdup("mesh_node_y");
+
+    fc_nbr=grd_sz_nbr;
+    if(flg_grd_1D){
+      (void)fprintf(stdout,"%s: ERROR %s UGRID output does not yet support 1D grids\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+    }else if(flg_grd_2D){
+      /* Assume 2D grids are global and comprised of quadrilaterals */
+      switch(lat_typ){
+      case nco_grd_lat_fv:
+      case nco_grd_lat_eqa:
+      case nco_grd_lat_gss:
+	/* Edges and nodes counted from South Pole (SP) to North Pole (NP) */
+	dg_nbr=lon_nbr*2+ /* SP: cells_per_row*unique_sides_per_cell */
+	  (lat_nbr-2)*lon_nbr*2+ /* Mid: rows*cells_per_row*unique_sides_per_cell */
+	  lon_nbr*1; /* NP: cells_per_row*unique_sides_per_cell */
+	nd_nbr=1+lon_nbr*1+ /* SP: SP+cells_per_row*unique_nodes_per_cell */
+	  (lat_nbr-2)*lon_nbr*1+ /* Mid: rows*cells_per_row*unique_nodes_per_cell */
+	  1; /* NP: NP */
+	break;
+      case nco_grd_lat_unk:
+      case nco_grd_lat_nil:
+      default:
+	nco_dfl_case_generic_err(); break;
+      } /* !lat_typ */
+    }else if(flg_grd_crv){
+      (void)fprintf(stdout,"%s: ERROR %s UGRID output does not yet support curvilinear grids\n",nco_prg_nm_get(),fnc_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* !flg_grd */
+    
+    ndx=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
+    ndy=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
+
+    for(nd_idx=0;nd_idx<nd_nbr;nd_idx++){
+      ndx[nd_idx]=0.0;
+      ndy[nd_idx]=0.0;
+    } /* !nd_idx */
+    
     fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
-    if(flg_wrt_crn) rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_id_grd_crn);
-    rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_id_grd_sz);
-    rcd=nco_def_dim(out_id,grd_rnk_nm,grd_rnk_nbr,&dmn_id_grd_rnk);
+
+    rcd=nco_def_dim(out_id,dg_dmn_nm,dg_nbr,&dmn_id_dg);
+    rcd=nco_def_dim(out_id,fc_dmn_nm,fc_nbr,&dmn_id_fc);
+    rcd=nco_def_dim(out_id,nd_dmn_nm,nd_nbr,&dmn_id_nd);
+
+    rcd=nco_def_var(out_id,msh_nm,(nc_type)NC_INT,dmn_nbr_0D,(int *)NULL,&msh_id);
+    rcd=nco_def_var(out_id,ndx_nm,crd_typ,dmn_nbr_1D,&dmn_id_nd,&ndx_id);
+    rcd=nco_def_var(out_id,ndy_nm,crd_typ,dmn_nbr_1D,&dmn_id_nd,&ndy_id);
+
+    att_nm=strdup("Conventions");
+    att_val=strdup("CF-1.6, UGRID-1.0");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=NULL;
+    aed_mtd.id=NC_GLOBAL;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
+    (void)nco_vrs_att_cat(out_id);
+
+    att_nm=strdup("cf_role");
+    att_val=strdup("mesh_topology");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("mesh_topology");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Topology data");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("topology_dimension");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.sz=1;
+    aed_mtd.type=NC_INT;
+    aed_mtd.val.ip=&val_two;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+
+    att_nm=strdup("node_coordinates");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.sz=strlen(ndx_nm)+strlen(ndy_nm)+1L;
+    att_val=(char *)nco_malloc((aed_mtd.sz+1L)*nco_typ_lng(aed_mtd.type));
+    (void)sprintf(att_val,"%s %s",ndx_nm,ndy_nm);
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
 
     /* Begin data mode */
     (void)nco_enddef(out_id);
 
+    (void)nco_put_vara(out_id,msh_id,dmn_srt,dmn_cnt,&msh_val,(nc_type)NC_INT);
+    dmn_srt[0]=0L;
+    dmn_cnt[0]=nd_nbr;
+    (void)nco_put_vara(out_id,ndx_id,dmn_srt,dmn_cnt,&ndx,crd_typ);
+    dmn_srt[0]=0L;
+    dmn_cnt[0]=nd_nbr;
+    (void)nco_put_vara(out_id,ndy_id,dmn_srt,dmn_cnt,&ndy,crd_typ);
+
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
-  } /* !fl_out */
+    (void)fprintf(stdout,"%s: DBG %s ending UGRID section\n",nco_prg_nm_get(),fnc_nm);
+
+    /* Free memory associated with output file */
+    if(ndx) ndx=(double *)nco_free(ndx);
+    if(ndy) ndy=(double *)nco_free(ndy);
+
+    /* Free strings */
+    if(dg_dmn_nm) dg_dmn_nm=(char *)nco_free(dg_dmn_nm);
+    if(fc_dmn_nm) fc_dmn_nm=(char *)nco_free(fc_dmn_nm);
+    if(msh_nm) msh_nm=(char *)nco_free(msh_nm);
+    if(nd_dmn_nm) nd_dmn_nm=(char *)nco_free(nd_dmn_nm);
+    if(ndx_nm) ndx_nm=(char *)nco_free(ndx_nm);
+    if(ndy_nm) ndy_nm=(char *)nco_free(ndy_nm);
+  } /* !fl_ugrid */
   
   /* Free memory associated with input file */
   if(dmn_sz_int) dmn_sz_int=(int *)nco_free(dmn_sz_int);
