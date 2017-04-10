@@ -4,7 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha04 final changes';git push
 	git tag -a 4.6.6-alpha04 -m 'Version 4.6.6-alpha04 new features: ncap2 cell_methods fix; 2-D UGRID; lst_rnk_ge2 time_bnds;';git push --tags
 
-	* ncremap neareststod options now invokes neareststod when requested, not nearestdtos (doh!)
+	* ncremap nco_grd_nfr() always writes mask data when input file has mask variable
+	Until today, nco_grd_nfr() would always define mask variable but only write data when input file had mask
+
+	* ncremap now invokes neareststod when requested, not nearestdtos (doh!)
 
 2017-04-10 Henry Butowsky  <henryb@hush.com>
 

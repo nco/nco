@@ -778,7 +778,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     (void)fprintf(stderr,"mapfile_generator = %s, map_method = %s, normalization = %s, src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = n_s = %li, num_wgts = %li\n",nco_rgr_mpf_sng(nco_rgr_mpf_typ),nco_rgr_mth_sng(nco_rgr_mth_typ),nco_rgr_nrm_sng(nco_rgr_nrm_typ),rgr_map.src_grid_size,rgr_map.dst_grid_size,rgr_map.src_grid_corners,rgr_map.dst_grid_corners,rgr_map.src_grid_rank,rgr_map.dst_grid_rank,rgr_map.num_links,rgr_map.num_wgts);
   } /* endif dbg */
   if(nco_rgr_nrm_typ == nco_rgr_nrm_none){
-    (void)fprintf(stdout,"%s: ERROR %s reports requested normalization type = %s is not yet supported. Specifically, masks specified by a mask variable (dst_grid_imask,mask_b) are not yet supported. Ask Charlie to do this.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
+    (void)fprintf(stdout,"%s: ERROR %s reports requested normalization type = %s is not yet supported. Specifically, masks specified by a mask variable (dst_grid_imask,mask_b) are ignored. More specifically, any destination mask information is assumed to be built into the weight array so that no source points will contribute to masked locations. Talk to Charlie if you want this changed.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
     nco_exit(EXIT_FAILURE);
   } /* !msk */
     
@@ -6606,8 +6606,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id); /* NB: Too small to deflate */
   (void)nco_def_var(out_id,area_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&area_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_id,shuffle,deflate,dfl_lvl);
-  (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msk_id,shuffle,deflate,dfl_lvl);
+  if(msk_id != NC_MIN_INT){
+    (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msk_id,shuffle,deflate,dfl_lvl);
+  } /* !msk */
   (void)nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lat_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lat_id,shuffle,deflate,dfl_lvl);
   (void)nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lon_id);
