@@ -18357,7 +18357,7 @@ and suppose the user wishes to convert @code{time} from a record
 dimension to a non-record dimension.
 This may be useful, for example, when the user has another use for the
 record variable.
-The simplest method is to use @samp{ncks --fix_rec_dmn} but another
+The simplest method is to use @samp{ncks --fix_rec_dmn}, and another
 possibility is to use @command{ncecat} followed by 
 @command{ncwa}: 
 @cindex degenerate dimension

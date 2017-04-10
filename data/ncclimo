@@ -907,10 +907,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
 #	echo "${spt_nm}: ERROR Splitter mode requires explicitly specified variable list"
 #	echo "${spt_nm}: HINT Supply the variable list with -v var_lst"
-#	echo "${spt_nm}: DEBUG Provisional R>=2 list automatically generated for empty splitter list (not supported yet, ask CZ to finish this ):"
+#	exit 1
 	var_lst=`ncks --lst_rnk_ge2 ${fl_in[0]}`
 	echo "${var_lst}"
-	exit 1
     fi # !var_lst
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
     var_nbr=0 # [sng] Split (subset) files

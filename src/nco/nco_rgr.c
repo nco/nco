@@ -1730,6 +1730,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack"); /* AIRS L2 DAP NC */
     else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack:L2_Standard_atmospheric&surface_product"); /* AIRS L2 HDF */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Along_Swath:mod04",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("Cell_Along_Swath:mod04"); /* MODIS MOD04 L2 */
+    else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Along_Swath_mod04",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("Cell_Along_Swath_mod04"); /* MODIS MOD04 L2 (ncl_convert2nc changes colon to underscore) */
     else if((rcd=nco_inq_dimid_flg(in_id,"CO_Latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude");
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x"); /* NSIDC polar stereographic */
     else{
@@ -1760,6 +1761,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("GeoXTrack"); /* AIRS L2 DAP NC */
     else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("GeoXTrack:L2_Standard_atmospheric&surface_product"); /* AIRS L2 HDF */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Across_Swath:mod04",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("Cell_Across_Swath:mod04"); /* MODIS MOD04 L2 */
+    else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Across_Swath_mod04",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("Cell_Across_Swath_mod04"); /* MODIS MOD04 L2 (ncl_convert2nc changes colon to underscore) */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("y"); /* NSIDC polar stereographic */
     else{
       (void)fprintf(stdout,"%s: ERROR %s reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of longitude dimension name with --rgr lon_nm=name\n",nco_prg_nm_get(),fnc_nm);
@@ -6816,8 +6818,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     long fc_idx; /* [idx] Counting index for faces */
     long nd_idx; /* [idx] Counting index for nodes */
     long nd_nbr=NC_MIN_INT64; /* [nbr] Number of nodes in mesh */
-    long npe_idx; /* [idx] Counting index for nodes-per-edge */
     long npf_idx; /* [idx] Counting index for nodes-per-face */
+    long srt_idx=0; /* [idx] start_index (C/Fortran) for edge_nodes, face_nodes */
 
     if(!dg_dmn_nm) dg_dmn_nm=(char *)strdup("nEdges");
     if(!fc_dmn_nm) fc_dmn_nm=(char *)strdup("nFaces");
@@ -6862,36 +6864,51 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     ndx=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
     ndy=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
 
-    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
-      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
-	fc_idx=lat_idx*lon_nbr+lon_idx;
-      } /* !lon_idx */
-    } /* !lat_idx */
+    //const long int idx_fst_crn_ll=0;
+    //const long int idx_fst_crn_lr=1;
+    const long int idx_fst_crn_ur=2;
+    //const long int idx_fst_crn_ul=3;
 
     /* SP */
-    nd_idx=0;
-    ndx[nd_idx]=lon_crn[0];
-    ndy[nd_idx]=lat_crn[0];
+    ndx[0]=lon_crn[0];
+    ndy[0]=lat_crn[0];
     /* Mid */
-    for(nd_idx=1;nd_idx<nd_nbr;nd_idx++){
-      if(nd_idx == 0){
-	ndx[nd_idx]=lon_crn[0];
-	ndy[nd_idx]=lat_crn[0];
-      }
-      ndx[nd_idx]=0.0;
-      ndy[nd_idx]=0.0;
+    for(nd_idx=1;nd_idx<nd_nbr-2;nd_idx++){
+      fc_idx=nd_idx-1L;
+      lat_idx=fc_idx/lon_nbr;
+      lon_idx=fc_nbr%lon_nbr;
+      ndx[nd_idx]=lon_crn[lat_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+idx_fst_crn_ur];
+      ndy[nd_idx]=lat_crn[lat_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+idx_fst_crn_ur];
     } /* !nd_idx */
     /* NP */
+    ndx[nd_nbr-1L]=lon_crn[grd_sz_nbr*grd_crn_nbr+idx_fst_crn_ur];
+    ndy[nd_nbr-1L]=lat_crn[grd_sz_nbr*grd_crn_nbr+idx_fst_crn_ur];
 
     /* SP */
-    dg_idx=0;
-    dg_nd[dg_idx]=0;
+    const int epf_nbr=2; /* [nbr] Number of distinct edges-per-face */
+    for(fc_idx=0;fc_idx<lon_nbr;fc_idx++){
+      dg_idx=fc_idx*epf_nbr;
+      dg_nd[dg_idx*npe_nbr+0L]=srt_idx;
+      dg_nd[dg_idx*npe_nbr+1L]=srt_idx+dg_idx*npe_nbr+1L;
+    } /* !fc_idx */
     /* Mid */
+    for(fc_idx=lon_nbr;fc_idx<(lat_nbr-1L)*lon_nbr;fc_idx++){
+      dg_idx=fc_idx*epf_nbr;
+      dg_nd[dg_idx*npe_nbr+0L]=srt_idx+fc_idx-lon_nbr+1L;
+      dg_nd[dg_idx*npe_nbr+1L]=srt_idx+fc_idx+1L;
+    } /* !fc_idx */
+    /* NP */
+    for(fc_idx=(lat_nbr-1L)*lon_nbr;fc_idx<fc_nbr;fc_idx++){
+      dg_idx=fc_idx*epf_nbr;
+      dg_nd[dg_idx*npe_nbr+0L]=srt_idx+fc_idx+1L;
+      dg_nd[dg_idx*npe_nbr+1L]=srt_idx+nd_nbr-1L;
+    } /* !fc_idx */
 
-    for(dg_idx=0;dg_idx<dg_nbr;dg_idx++){
-      for(npe_idx=0;npe_idx<npe_nbr;npe_idx++){
-	dg_nd[dg_idx*npe_nbr+dg_idx]=0;
-      } /* !npe_idx */
+    /* Mid */
+    for(dg_idx=0;dg_idx<dg_nbr-1;dg_idx++){
+      fc_idx=dg_idx%epf_nbr;
+      dg_nd[dg_idx*npe_nbr+0L]=srt_idx+dg_idx*npe_nbr;
+      dg_nd[dg_idx*npe_nbr+1L]=srt_idx+dg_idx*npe_nbr+1L;
     } /* !dg_idx */
 
     /* SP */
