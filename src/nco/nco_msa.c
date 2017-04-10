@@ -38,10 +38,71 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 
   /* Multiple hyperslabs */
   if(nbr_slb > 1){
+
+
+  /* True if wrapped dims or slabs DO NOT overlap or user-specified order */
+  if(lmt_lst[dpt_crr]->WRP || lmt_lst[dpt_crr]->MSA_USR_RDR)
+  {
+    long var_sz=1L;
+    long lcnt;
+
+    char *cp_wrp;
+    char *cp_stp;
+    char *slb;
+
+    ptrdiff_t slb_sz;
+    ptrdiff_t slb_stp;
+    ptrdiff_t cp_inc;
+    ptrdiff_t cp_max;
+    ptrdiff_t cp_fst;
+
+
+    for(idx=0;idx<dpt_crr_max;idx++)
+       var_sz*=(idx<dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt);
+
+
+    /* Used nco_callloc() for unknown reasons until 20140930 */
+    /*    vp=(void *)nco_clloc((size_t)var_sz,nco_typ_lng(vara->type));*/
+    vp=(void *)nco_malloc(var_sz*nco_typ_lng(vara->type));
+
+    lcnt=nco_typ_lng(vara->type);
+    for(idx=dpt_crr+1;idx<dpt_crr_max;idx++) 
+       lcnt*=lmt_lst[idx]->dmn_cnt;
+
+    cp_inc=(ptrdiff_t)(lcnt*lmt_lst[dpt_crr]->dmn_cnt);
+    cp_max=(ptrdiff_t)(var_sz*nco_typ_lng(vara->type));
+
+    cp_fst=0L;
+
+
+
+    for(idx=0;idx<nbr_slb;idx++)
+    {
+      lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[idx];
+      /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
+      cp_wrp=(char *)nco_msa_rcr_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
+
+      cp_stp=(char *)vp+cp_fst;
+      slb=cp_wrp;
+      slb_sz=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[idx]->cnt));
+      while(cp_stp-(char *)vp < cp_max)
+      {
+	(void)memcpy(cp_stp,slb,(size_t)slb_sz);
+	slb+=slb_sz;
+	cp_stp+=cp_inc;
+      } 
+      cp_fst+=slb_sz;      
+      cp_wrp=(char*)nco_free(cp_wrp); 
+    } 
+    vara->sz=var_sz; 
+  }
+  /* deal with possibly overlapping slabs */
+  else
+  { 
+  
     int slb_idx;
     long var_sz=1L;
     long lcnt;
-    long *cp_sz;
     long *indices;
 
     ptrdiff_t slb_sz;
@@ -55,15 +116,14 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     char *slb;
     lmt_sct lmt_ret;
 
-    cp_sz=(long *)nco_malloc(nbr_slb*sizeof(long));
     indices=(long *)nco_malloc(nbr_slb*sizeof(long));
     cp_wrp=(char **)nco_malloc(nbr_slb*sizeof(void *));
 
-    for(idx=0;idx<nbr_slb;idx++){
+    for(idx=0;idx<nbr_slb;idx++)
+    {
       lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[idx];
       /* NB: nco_msa_rcr_clc() with same nc_id contains OpenMP critical region */
       cp_wrp[idx]=(char *)nco_msa_rcr_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
-      cp_sz[idx]=vara->sz;
     } /* end loop over idx */
 
     for(idx=0;idx<dpt_crr_max;idx++) var_sz*=(idx<dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt);
@@ -82,46 +142,36 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 
     cp_fst=0L;
 
-    /* Deal first with wrapped dimensions
-       True if wrapped dims or slabs DO NOT overlap or user-specified order */
-    if(lmt_lst[dpt_crr]->WRP || lmt_lst[dpt_crr]->MSA_USR_RDR){
+    /* Multiple hyper-slabs */
+    while(nco_msa_clc_idx(True,lmt_lst[dpt_crr],&indices[0],&lmt_ret,&slb_idx))
+    {
+      cp_stp=(char *)vp+cp_fst;
+      slb=cp_wrp[slb_idx]+(ptrdiff_t)(lmt_ret.srt*lcnt);
+      slb_stp=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
+      slb_sz=(ptrdiff_t)(lmt_ret.cnt*lcnt);
 
-      for(slb_idx=0;slb_idx<nbr_slb;slb_idx++){
-        cp_stp=(char *)vp+cp_fst;
-        slb=cp_wrp[slb_idx];
-        slb_sz=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
-        while(cp_stp-(char *)vp < cp_max){
-          (void)memcpy(cp_stp,slb,(size_t)slb_sz);
-          slb+=slb_sz;
-          cp_stp+=cp_inc;
-        } /* end while */
-        cp_fst+=slb_sz;      
-      } /* end loop over two slabs */
-    }else{ 
-      /* Multiple hyper-slabs */
-      while(nco_msa_clc_idx(True,lmt_lst[dpt_crr],&indices[0],&lmt_ret,&slb_idx)){
-        cp_stp=(char *)vp+cp_fst;
-        slb=cp_wrp[slb_idx]+(ptrdiff_t)(lmt_ret.srt*lcnt);
-        slb_stp=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
-        slb_sz=(ptrdiff_t)(lmt_ret.cnt*lcnt);
-
-        while(cp_stp-(char *)vp < cp_max){
-          (void)memcpy(cp_stp,slb,(size_t)slb_sz);
-          slb+=slb_stp;
-          cp_stp+=cp_inc;
-        } /* end while */
-        cp_fst+=slb_sz;
+      while(cp_stp-(char *)vp < cp_max)
+      {
+	(void)memcpy(cp_stp,slb,(size_t)slb_sz);
+	slb+=slb_stp;
+	cp_stp+=cp_inc;
       } /* end while */
-    } /* end else */  
+      cp_fst+=slb_sz;
+    } /* end while */
+
+
+    for(idx=0;idx<nbr_slb;idx++) 
+       cp_wrp[idx]=(char *)nco_free(cp_wrp[idx]);
 
     indices=(long *)nco_free(indices);
-    cp_sz=(long *)nco_free(cp_sz);
-    for(idx=0;idx<nbr_slb;idx++) cp_wrp[idx]=(char *)nco_free(cp_wrp[idx]);
     cp_wrp=(char **)nco_free(cp_wrp);
 
     vara->sz=var_sz;
-    return vp;
+
   } /* endif multiple hyperslabs */
+   
+  return vp;
+  } 
 
 read_lbl:
   { 
@@ -229,6 +279,7 @@ read_lbl:
     vara->sz=var_sz;
     return vp;
   } /* end read_lbl */
+   
 
 } /* end nco_msa_rcr_clc() */
 
