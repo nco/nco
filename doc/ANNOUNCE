@@ -33,12 +33,18 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncap2 now implements the CF cell_methods convention.
-   ncra, nces, and ncwa have long implemented this, and now the
-   relevant ncap2 methods (avg, min, max, etc.) record the operation
-   type in the cell_methods attribute.
-   ncap2 -s 'avg=one_dmn_rec_var.avg()' ~/nco/data/in.nc ~/foo.nc
-   http://nco.sf.net/nco.html#cll_mth
+A. ncclimo's splitter mode no longer requires variable lists. 
+   Previously the splitter required a '-v var_lst' option to know
+   which variables to split into timeseries. Now when the -v option
+   is omitted the splitter creates timeseries of all variables of
+   rank R >= 2. Typically this includes all spatial variables. 
+   Variables known to be extensive (like grid properties) are
+   automatically excluded from this list. However, we expect there
+   will be some cases where the splitter creates timeseries from
+   R >= 2 variables that are not desirable. We are happy to encode
+   manual exceptions as we receive notice of them.
+   ncclimo -s 1979 -e 1981 -o $drc_out in*.nc
+   http://nco.sf.net/nco.html#ncclimo
 
 A. ncks now prints the units, if any, in comments after CDL values
    when debugging is enabled with dbg_lvl >=1:
@@ -47,6 +53,13 @@ A. ncks now prints the units, if any, in comments after CDL values
    lon = 0, 90, 180, 270 ; // units="degrees_east"
    tpt = 273.1, 273.2, ... 274 ; // units="kelvin"
    http://nco.sf.net/nco.html#cdl
+
+A. ncap2 now implements the CF cell_methods convention.
+   ncra, nces, and ncwa have long implemented this, and now the
+   relevant ncap2 methods (avg, min, max, etc.) record the operation
+   type in the cell_methods attribute.
+   ncap2 -s 'avg=one_dmn_rec_var.avg()' ~/nco/data/in.nc ~/foo.nc
+   http://nco.sf.net/nco.html#cll_mth
 
 A. fxm: not done yet
    Since 4.6.5 ncks has printed the human-legible calendar string
@@ -68,6 +81,16 @@ A. fxm: not done yet
    http://nco.sf.net/nco.html#cal
 
 BUG FIXES:
+
+A. ncremap now invokes the neareststod algorithm when requested.
+   Previously a typo caused ncremap to invoke nearestdtos when
+   neareststod was specified (doh!). Solution is to upgrade.
+
+A. ncremap now converts non-default masks correctly in infer mode.
+   Previously a "mask" variable in an input file whose grid structure
+   was being inferred could be incorrectly handled for some numeric
+   types. This likely only affected masks with missing values.
+   Sources of files possibly affected include AMSR and CICE.
 
 A. ncks now prints the braces required to disambiguate compound
    record dimensions in CDL mode. Such braces have been required by 

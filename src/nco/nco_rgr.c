@@ -6778,7 +6778,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(fl_out){
     /* Test UGRID:
        Documentation: https://github.com/ugrid-conventions/ugrid-conventions
-       ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ${DATA}/dstmch90/dstmch90_clm.nc ~/foo.nc */
+       ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/data/grids/180x360_SCRIP.20150901.nc ~/foo.nc
+       ncks --cdl -v mesh_node_y ~/grd_ugrid.nc
+       ncks --cdl -v grid_center_lat,grid_corner_lat -d grid_size,0,,360 -d grid_corners,0,3 ~/grd_scrip.nc
+       ncks --cdl -m -M ~/grd_ugrid.nc */
 
     char *dg_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as edges */
     char *dg_nd_nm=NULL_CEWI; /* [sng] Name of edge_node_connectivity variable */

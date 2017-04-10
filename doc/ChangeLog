@@ -1,12 +1,16 @@
-2017-04-10 Henry Butowsky  <henryb@hush.com>
-	* manually merged in branch hmb1-nco_msa. 
-	 refactoring of the function nco_msa_rcr_clc(). Uses less memory and runs faster for the --msa_usr_rdr code branch.
-
-2017-04-09  Charlie Zender  <zender@uci.edu>
+2017-04-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.6-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha04 final changes';git push
 	git tag -a 4.6.6-alpha04 -m 'Version 4.6.6-alpha04 new features: ncap2 cell_methods fix; 2-D UGRID; lst_rnk_ge2 time_bnds;';git push --tags
+
+	* ncremap neareststod options now invokes neareststod when requested, not nearestdtos (doh!)
+
+2017-04-10 Henry Butowsky  <henryb@hush.com>
+
+	* Refactor nco_msa_rcr_clc() to use less memory and run faster for --msa_usr_rdr
+
+2017-04-09  Charlie Zender  <zender@uci.edu>
 
 	* Add Cell_[Along/Across]_Swath_mod04 to dimension database for	ncl_convert2nc compatibility
 
