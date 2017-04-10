@@ -1303,18 +1303,18 @@ main(int argc,char **argv)
             /* if(var_prc[idx]->is_crd_var|| nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id)) */
 
             /*  This code rebases  the  coordinate var to the units of the coordinate var in the first input file */
-            /* this coordinate var is actually already read by the above call  (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV); */
-            /* So the rebasing that occurs here will always succeed (i think) */
-            if( !strcmp(var_prc[idx]->nm, lmt_rec[idx_rec]->nm) || nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id))
-            {
-              char *fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_prc[idx]->id,"units"); /* Units attribute of coordinate variable */ 
-              if(fl_udu_sng && lmt_rec[idx_rec]->rbs_sng)
-	      { 
-                if( nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng, lmt_rec[idx_rec]->lmt_cln, (double*)NULL, var_prc[idx]) !=NCO_NOERR)
-                    nco_exit(EXIT_FAILURE);     
+            /* if the record hyperslab indice(s) are double or strings then the coordinate var and limits are (re)read earlier by (void)nco_lmt_evl() */
+            /* so if the units between files are incompatible the ncra will bomb out in that call  and not in  nco_cln_clc_dbl_var_dff() below*/
+            if( !strcmp(var_prc[idx]->nm, lmt_rec[idx_rec]->nm) || nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id)) {
 
-                nco_free(fl_udu_sng); 
-	      } /* end re-basing */
+              char *fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_prc[idx]->id,"units"); /* Units attribute of coordinate variable */ 
+              if(fl_udu_sng && lmt_rec[idx_rec]->rbs_sng) {
+                if( nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng, lmt_rec[idx_rec]->lmt_cln, (double*)NULL, var_prc[idx]) !=NCO_NOERR) {
+                  (void)fprintf(fp_stderr,"%s: problem converting variable \"%s\" from units \"%s\" to \" %s\"\n",nco_prg_nm_get(), var_prc[idx]->nm, fl_udu_sng, lmt_rec[idx_rec]->rbs_sng);
+                  nco_exit(EXIT_FAILURE);
+                }
+                nco_free(fl_udu_sng);
+              } /* end re-basing */
             } 
               
             if(nco_prg_id == ncra){
