@@ -1,3 +1,7 @@
+2017-04-10 Henry Butowsky  <henryb@hush.com>
+	* manually merged in branch hmb1-nco_msa. 
+	 refactoring of the function nco_msa_rcr_clc(). Uses less memory and runs faster for the --msa_usr_rdr code branch.
+
 2017-04-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.6-alpha04 release procedure:
