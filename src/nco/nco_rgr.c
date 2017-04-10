@@ -6862,17 +6862,45 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     ndx=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
     ndy=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
 
-    for(nd_idx=0;nd_idx<nd_nbr;nd_idx++){
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+      for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+	fc_idx=lat_idx*lon_nbr+lon_idx;
+      } /* !lon_idx */
+    } /* !lat_idx */
+
+    /* SP */
+    nd_idx=0;
+    ndx[nd_idx]=lon_crn[0];
+    ndy[nd_idx]=lat_crn[0];
+    /* Mid */
+    for(nd_idx=1;nd_idx<nd_nbr;nd_idx++){
+      if(nd_idx == 0){
+	ndx[nd_idx]=lon_crn[0];
+	ndy[nd_idx]=lat_crn[0];
+      }
       ndx[nd_idx]=0.0;
       ndy[nd_idx]=0.0;
     } /* !nd_idx */
+    /* NP */
+
+    /* SP */
+    dg_idx=0;
+    dg_nd[dg_idx]=0;
+    /* Mid */
 
     for(dg_idx=0;dg_idx<dg_nbr;dg_idx++){
       for(npe_idx=0;npe_idx<npe_nbr;npe_idx++){
 	dg_nd[dg_idx*npe_nbr+dg_idx]=0;
       } /* !npe_idx */
     } /* !dg_idx */
+
+    /* SP */
+    fc_idx=0;
+    fc_nd[fc_idx]=0;
+    /* Mid */
     for(fc_idx=0;fc_idx<fc_nbr;fc_idx++){
+      lat_idx=fc_idx%lon_nbr;
+      lon_idx=fc_idx-lat_idx*lon_nbr;
       for(npf_idx=0;npf_idx<npf_nbr;npf_idx++){
 	fc_nd[fc_idx*npf_nbr+nd_idx]=0;
       } /* !npf_idx */

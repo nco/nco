@@ -904,9 +904,10 @@ fi # !inp_std
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${sbs_flg}" = 'Yes' ]; then
     if [ -z "${var_lst}" ]; then
-	echo "${spt_nm}: ERROR Splitter mode requires variable list"
-	echo "${spt_nm}: HINT Supply the variable list with -v var_lst"
-	echo "${spt_nm}: DEBUG Provisional R>=2 list automatically generated for empty splitter list (not supported yet, ask CZ to finish this ):"
+	echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
+#	echo "${spt_nm}: ERROR Splitter mode requires explicitly specified variable list"
+#	echo "${spt_nm}: HINT Supply the variable list with -v var_lst"
+#	echo "${spt_nm}: DEBUG Provisional R>=2 list automatically generated for empty splitter list (not supported yet, ask CZ to finish this ):"
 	var_lst=`ncks --lst_rnk_ge2 ${fl_in[0]}`
 	echo "${var_lst}"
 	exit 1

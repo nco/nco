@@ -1,5 +1,7 @@
 2017-04-09  Charlie Zender  <zender@uci.edu>
 
+	* Hardwire exclusion of time_bnds into lst_rnk_ge2
+
 	* Complete minimal UGRID metadata
 
 	* Fix mask type conversion in nco_grd_nfr()

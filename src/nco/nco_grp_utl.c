@@ -1058,8 +1058,11 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
     if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var)
       if((trv_tbl->lst[idx_var].nbr_dmn >= rnk_xtr) && /* Rank at least 2 */
 	 (!trv_tbl->lst[idx_var].is_crd_var) && /* Not a coordinate variable */
-	 (trv_tbl->lst[idx_var].var_typ != NC_CHAR) /* Not an array of characters */
-	 ){
+	 (trv_tbl->lst[idx_var].var_typ != NC_CHAR) && /* Not an array of characters */
+	 (strcmp(trv_tbl->lst[idx_var].nm,"time_bnds")) && /* Not a CAM-SE bounds variable */
+	 // 20170409: For unknown reason, time_bnds does not have is_crd_var set by nco_var_fll_trv()
+	 //	 (!nco_is_spc_in_cf_att(var->nc_id,"bounds",var->id) && /* Not a bounds variable */
+	 True){
 	(void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
 	xtr_nbr_crr++;
       } /* !N>=D */
