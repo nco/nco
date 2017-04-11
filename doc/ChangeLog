@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha04 final changes';git push
 	git tag -a 4.6.6-alpha04 -m 'Version 4.6.6-alpha04 new features: ncap2 cell_methods fix; 2-D UGRID; lst_rnk_ge2 time_bnds; nfr msk fix; neareststod';git push --tags
 
+	* Quiet CONVENTIONS attribute printing
+
 	* Verified that ncremap mask changes produce expected results with neareststod
 	neareststod/dtos uses nearest value, regardless of whether that value is valid
 	Accurate interpolation of ocean values across continents requires custom algorithm
