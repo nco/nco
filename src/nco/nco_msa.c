@@ -51,7 +51,6 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
     char *slb;
 
     ptrdiff_t slb_sz;
-    ptrdiff_t slb_stp;
     ptrdiff_t cp_inc;
     ptrdiff_t cp_max;
     ptrdiff_t cp_fst;
