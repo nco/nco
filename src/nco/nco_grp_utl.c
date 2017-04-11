@@ -1044,6 +1044,7 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
 {
   /* Purpose: Print extraction list of N>=D variables and exit
      Used by ncks to supply arguments to splitter
+     Hence we restrict returned list to non-coordinate record variables
      Usage:
      ncks --lst_rnk_ge2 ~/nco/data/in.nc
      ncks --lst_rnk_ge2 ~/data/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc */
@@ -1060,8 +1061,14 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
 	 (!trv_tbl->lst[idx_var].is_crd_var) && /* Not a coordinate variable */
 	 (trv_tbl->lst[idx_var].var_typ != NC_CHAR) && /* Not an array of characters */
 	 (strcmp(trv_tbl->lst[idx_var].nm,"time_bnds")) && /* Not a CAM-SE bounds variable */
+	 (strcmp(trv_tbl->lst[idx_var].nm,"area")) && /* Not a CAM-SE cell_measures variable */
+	 (strcmp(trv_tbl->lst[idx_var].nm,"lat_bnds")) && /* Not an NCO regridded bounds variable */
+	 (strcmp(trv_tbl->lst[idx_var].nm,"lon_bnds")) && /* Not an NCO regridded bounds variable */
+	 // (trv_tbl->lst[idx_var].is_rec_var) && /* Is a record variable */
 	 // 20170409: For unknown reason, time_bnds does not have is_crd_var set by nco_var_fll_trv()
-	 //	 (!nco_is_spc_in_cf_att(var->nc_id,"bounds",var->id) && /* Not a bounds variable */
+	 // 20170410: Possibly fix/extend methodology to handle cell_measures?
+	 // (!nco_is_spc_in_cf_att(var->nc_id,"bounds",var->id) && /* Not a bounds variable
+	 // (!nco_is_spc_in_cf_att(var->nc_id,"cell_measures",var->id) && /* Not a cell_measures variable */
 	 True){
 	(void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
 	xtr_nbr_crr++;
@@ -2547,7 +2554,8 @@ nco_bld_crd_rec_var_trv /* [fnc] Build dimension information for all variables *
           if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl)){
             /* Mark this variable as coordinate variable. NB: True coordinate variables are 1D */
             if(var_trv.nbr_dmn == 1) trv_tbl->lst[idx_var].is_crd_var=True; else trv_tbl->lst[idx_var].is_crd_var=False;
-            /* If the group dimension is a record dimension then the variable is a record variable */
+            /* 20170411: Notice today that this really detects is_rec_crd not is_rec_var
+            /* If group dimension is a record dimension then coordinate is a record coordinate */
             trv_tbl->lst[idx_var].is_rec_var=dmn_trv.is_rec_dmn;
             if(nco_dbg_lvl_get() == nco_dbg_old){
               (void)fprintf(stdout,"%s: INFO %s reports %s is ",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
@@ -2743,7 +2751,8 @@ nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
       } /* endif */
       if(var_trv.is_rec_var) (void)fprintf(stdout," (record)");
 
-      /* If record variable must be coordinate variable */
+      /* 20170411: WRONG!!! Following line confuses generic record variables with record coordinates
+	 If record variable must be coordinate variable */
       if(var_trv.is_rec_var) assert(var_trv.is_crd_var);
       (void)fprintf(stdout," %d dimensions: ",var_trv.nbr_dmn); 
 
@@ -4091,7 +4100,8 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->srd[idx_dmn]=1L;
     var->sz*=dmn_cnt;
     
-    /* This definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so */
+    /* This definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so 
+       20170411: Yes, because that IS the correct definition */
     if(dmn_trv->is_rec_dmn) var->is_rec_var=True; else var->sz_rec*=var->cnt[idx_dmn];
 
     /* Return a completed dmn_sct, use dimension ID and name from TRV object */
