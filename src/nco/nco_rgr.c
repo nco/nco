@@ -1402,7 +1402,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* !tst */
 
   /* Verify frc_out is sometimes non-zero
-     ESMF: "For bilinear and patch remapping, the destination grid frac array [frac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero." */
+     ESMF: "The grid frac arrays (frac_a and frac_b) are calculated by ESMF_RegridWeightGen. For conservative remapping, the grid frac array returns the area fraction of the grid cell which participates in the remap- ping. For bilinear and patch remapping, the destination grid frac array [frac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero."
+     SCRIP: Similar to ESMF
+     For both ESMF+SCRIP frac_[ab] are computed by the weight-generation algorithm and are not specified as part of the input grids
+     How does an input ocean grid indicate that, say, half the gridcell is land and half ocean?
+     Does it use the area variable to tell the weight generation algorithm that a gridcell is fractional?
+     In other words does it use grid_imask=1 and grid_area=0.5*full_gridcell_area and, e.g., T=273.0? */
   for(idx=0;idx<(long)grd_sz_out;idx++)
     if(frc_out[idx] != 0.0) break;
   if(idx == (long)grd_sz_out){

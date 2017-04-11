@@ -686,7 +686,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   if(!DAP_URL) rcd_stt=stat(fl_nm_lcl,&stat_sct);
   if(rcd_stt == -1 && (nco_dbg_lvl_get() >= nco_dbg_fl)) (void)fprintf(stderr,"\n%s: INFO stat() #1 failed: %s does not exist\n",nco_prg_nm_get(),fl_nm_lcl);
 
-  /* If not, check if file exists on local system under same path interpreted relative to current working directory */
+  /* If not, does file exist on local system under same path interpreted relative to current working directory? */
   if(rcd_stt == -1){
     if(fl_nm_lcl[0] == '/'){
       rcd_stt=stat(fl_nm_lcl+1UL,&stat_sct);
@@ -694,8 +694,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     } /* end if */
     if(rcd_stt == 0){
       /* NB: Adding one to filename pointer is like deleting initial slash on filename
-      Then free(fl_nm_lcl) would miss this initial byte (memory is lost)
-      Hence must copy new name into its own memory space */
+	 Then free(fl_nm_lcl) would miss this initial byte (memory is lost)
+	 Hence must copy new name into its own memory space */
       fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);
       fl_nm_lcl=(char *)nco_free(fl_nm_lcl);
       fl_nm_lcl=fl_nm_lcl_tmp;

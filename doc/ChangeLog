@@ -2,7 +2,14 @@
 
 	* NCO 4.6.6-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha04 final changes';git push
-	git tag -a 4.6.6-alpha04 -m 'Version 4.6.6-alpha04 new features: ncap2 cell_methods fix; 2-D UGRID; lst_rnk_ge2 time_bnds; nfr msk fix';git push --tags
+	git tag -a 4.6.6-alpha04 -m 'Version 4.6.6-alpha04 new features: ncap2 cell_methods fix; 2-D UGRID; lst_rnk_ge2 time_bnds; nfr msk fix; neareststod';git push --tags
+
+	* Verified that ncremap mask changes produce expected results with neareststod
+	neareststod/dtos uses nearest value, regardless of whether that value is valid
+	Accurate interpolation of ocean values across continents requires custom algorithm
+
+	* Noted that is_crd_var member of trv structures has been defined incorrectly since birth
+	Member should have been named is_rec_crd for accuracy and consistency with older NCO
 
 	* ncremap nco_grd_nfr() tolerates files with mask and without area variables
 
