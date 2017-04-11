@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.6-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 9 April 2017
+@set update-date 10 April 2017
 @set update-month April 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -12075,43 +12075,41 @@ Spacing (or increment) between elements.
 Variable from which the array can derive its shape 1D or nD
 @end table
 
-@noindent @strong{ One-Dimensional Arrays@*}
+@noindent @strong{One-Dimensional Arrays@*}
 Use form (A) or (B)  for 1D arrays 
 @example
-In the following var_out is of type NC_DOUBLE
-var_out=array(10.0, 2, $time)  //10.5,12.5,14.5,16.5,18.5,20.5,22.5,24.5,26.5,28.5
+# var_out will be NC_DOUBLE:
+var_out=array(10.0,2,$time) // 10.5,12.5,14.5,16.5,18.5,20.5,22.5,24.5,26.5,28.5
 
-The following is also ID 
-It gets its "shape" from the var "ilev" and is of type NC_UINT
-var_out=array( 0ul, 2, ilev)    // 0,2,4,6
+// var_out will be NC_UINT, and "shape" will duplicate "ilev"
+var_out=array(0ul,2,ilev) // 0,2,4,6
 
-The following is of type NC_FLOAT
-var_out=array(99.0f, 2.5, $lon) // 99,101.5,104,106.5
+// var_out will be NC_FLOAT
+var_out=array(99.0f,2.5,$lon) // 99,101.5,104,106.5
 
-// create an array of zeros 
-var_out=array(0, 0, $time) // 0,0,0,0,0,0,0,0,0,0 
+// Create an array of zeros 
+var_out=array(0,0,$time) // 0,0,0,0,0,0,0,0,0,0 
 
-// create an array of ones
-var_out=array(1.0, 0.0, $lon) // 1.0,1.0,1.0,1.0 
+// Create array of ones
+var_out=array(1.0,0.0,$lon) // 1.0,1.0,1.0,1.0 
 @end example
 
 @noindent @strong{ n-Dimensional Arrays@*}
 Use form (B) or (C) for creating n-D arrays.@* 
-nb In (C) the final argument is a list of dimensions
+NB: In (C) the final argument is a list of dimensions
 
 @example
-The following two are equivalent
+// These are equivalent
 var_out=array(1.0, 2.0, three_dmn_var)
 var_out=array(1.0, 2.0,/$lat, $lev, $lon/)
 
-Below the type is NC_BYTE
+// var_out is NC_BYTE
 var_out=array(20b, -4, /$lat,$lon/)  // 20,16,12,8,4,0,-4,-8  
 
 srt=3.14159f; inc=srt/2.0f
 var_out(srt,inc, var_2D_rrg)  
 // 3.14159, 4.712385, 6.28318, 7.853975, 9.42477, 10.99557, 12.56636, 14.13716 ; 
 @end example
-
 
 @cindex hyperslabs
 Hyperslabs in @command{ncap2} are more limited than hyperslabs with the

@@ -5694,7 +5694,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
     /* Obtain fields that may be present in unstructured input file */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
-    if(msk_id != NC_MIN_INT)  rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
+    if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     dmn_srt[0]=dmn_srt[1]=0L;
     dmn_cnt[0]=col_nbr;
     if(flg_1D_psd_rct_bnd){
@@ -6515,7 +6515,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   /* Input mask can be any type and output mask will always be NC_INT */
   if(msk_id == NC_MIN_INT){
-    /* Default mask if necessary */
+    /* ERWG will fail unless the grid file has a mask variable
+       The nul-mask (all points included) will be used whenever a true mask variable is not detected
+       fxm: Optionally construct mask from missing values of var_rgr? */
     for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
   }else{
     /* Change missing value mask points to 0 integer mask for SCRIP grids, which have no missing value convention
@@ -6606,10 +6608,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   (void)nco_def_var(out_id,dmn_sz_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_rnk,&dmn_sz_int_id); /* NB: Too small to deflate */
   (void)nco_def_var(out_id,area_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&area_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_id,shuffle,deflate,dfl_lvl);
-  if(msk_id != NC_MIN_INT){
-    (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
-    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msk_id,shuffle,deflate,dfl_lvl);
-  } /* !msk */
+  (void)nco_def_var(out_id,msk_nm,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_grd_sz,&msk_id);
+  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msk_id,shuffle,deflate,dfl_lvl);
   (void)nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lat_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lat_id,shuffle,deflate,dfl_lvl);
   (void)nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,&dmn_id_grd_sz,&grd_ctr_lon_id);
@@ -6751,11 +6751,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   dmn_srt[0]=0L;
   dmn_cnt[0]=grd_sz_nbr;
   rcd=nco_put_vara(out_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
-  if(msk_id != NC_MIN_INT){
-    dmn_srt[0]=0L;
-    dmn_cnt[0]=grd_sz_nbr;
-    rcd=nco_put_vara(out_id,msk_id,dmn_srt,dmn_cnt,msk,(nc_type)NC_INT);
-  } /* !msk */
+  dmn_srt[0]=0L;
+  dmn_cnt[0]=grd_sz_nbr;
+  rcd=nco_put_vara(out_id,msk_id,dmn_srt,dmn_cnt,msk,(nc_type)NC_INT);
   dmn_srt[0]=0L;
   dmn_cnt[0]=grd_sz_nbr;
   rcd=nco_put_vara(out_id,grd_ctr_lat_id,dmn_srt,dmn_cnt,grd_ctr_lat,crd_typ);
