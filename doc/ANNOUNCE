@@ -82,6 +82,11 @@ A. fxm: not done yet
 
 BUG FIXES:
 
+A. ncremap will no longer define mask variables in inferred grid
+   files unless it finds a mask variable in the source file.
+   Previously ncremap could define a mask variable in the inferred
+   grid file and never fill-it in with data.
+
 A. ncremap now invokes the neareststod algorithm when requested.
    Previously a typo caused ncremap to invoke nearestdtos when
    neareststod was specified (doh!). Solution is to upgrade.
