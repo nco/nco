@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha04 final changes';git push
 	git tag -a 4.6.6-alpha04 -m 'Version 4.6.6-alpha04 new features: ncap2 cell_methods fix; 2-D UGRID; lst_rnk_ge2 time_bnds; nfr msk fix';git push --tags
 
+	* ncremap nco_grd_nfr() tolerates files with mask and without area variables
+
 	* Hardwire exclusion of area, lat_bnds, lon_bnds into lst_rnk_ge2 so splitter works on NCO-regridded files
 
 2017-04-10  Charlie Zender  <zender@uci.edu>

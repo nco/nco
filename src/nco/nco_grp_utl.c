@@ -1065,7 +1065,7 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
 	 (strcmp(trv_tbl->lst[idx_var].nm,"lat_bnds")) && /* Not an NCO regridded bounds variable */
 	 (strcmp(trv_tbl->lst[idx_var].nm,"lon_bnds")) && /* Not an NCO regridded bounds variable */
 	 // (trv_tbl->lst[idx_var].is_rec_var) && /* Is a record variable */
-	 // 20170409: For unknown reason, time_bnds does not have is_crd_var set by nco_var_fll_trv()
+	 // 20170409: Because trv tbl sct incorrectly defines is_crd_var, time_bnds does not have is_crd_var set by nco_var_fll_trv()
 	 // 20170410: Possibly fix/extend methodology to handle cell_measures?
 	 // (!nco_is_spc_in_cf_att(var->nc_id,"bounds",var->id) && /* Not a bounds variable
 	 // (!nco_is_spc_in_cf_att(var->nc_id,"cell_measures",var->id) && /* Not a cell_measures variable */
@@ -2554,8 +2554,8 @@ nco_bld_crd_rec_var_trv /* [fnc] Build dimension information for all variables *
           if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl)){
             /* Mark this variable as coordinate variable. NB: True coordinate variables are 1D */
             if(var_trv.nbr_dmn == 1) trv_tbl->lst[idx_var].is_crd_var=True; else trv_tbl->lst[idx_var].is_crd_var=False;
-            /* 20170411: Notice today that this really detects is_rec_crd not is_rec_var
-            /* If group dimension is a record dimension then coordinate is a record coordinate */
+            /* 20170411: fxm this algorithm detects is_rec_crd not is_rec_var
+	       If group dimension is a record dimension then coordinate is a record coordinate */
             trv_tbl->lst[idx_var].is_rec_var=dmn_trv.is_rec_dmn;
             if(nco_dbg_lvl_get() == nco_dbg_old){
               (void)fprintf(stdout,"%s: INFO %s reports %s is ",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);

@@ -5781,8 +5781,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
-    int lon_psn_in; /* [idx] Ordinal position of longitude size in rectangular grid */
-    int lat_psn_in; /* [idx] Ordinal position of latitude  size in rectangular grid */
+    int lon_psn_in=0L; /* [idx] Ordinal position of longitude size in rectangular grid */
+    int lat_psn_in=1L; /* [idx] Ordinal position of latitude  size in rectangular grid */
+    int tpl_id=NC_MIN_INT; /* [idx] Ordinal position of latitude  size in rectangular grid */
 
     /* Obtain fields that must be present in input file */
     dmn_srt[0]=0L;
@@ -5792,9 +5793,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     dmn_cnt[0]=lon_nbr;
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
 
-    /* Obtain fields that may be present in input file */
-    if(area_id != NC_MIN_INT){
-      var_id=area_id;
+    /* Use fields that may be present in input file to override, if necessary, default lon/lat order
+       area and mask are both suitable templates for determining input lat/lon ordering
+       NB: Algorithm assumes area and mask do not have time dimension */
+    if(area_id != NC_MIN_INT) tpl_id=area_id;
+    else if(msk_id != NC_MIN_INT) tpl_id=msk_id;
+
+    if(tpl_id != NC_MIN_INT){
+      var_id=tpl_id;
       rcd=nco_inq_vardimid(in_id,var_id,dmn_ids);
       /* fxm: optimize discovery of lat/lon ordering */
       for(dmn_idx=0;dmn_idx<grd_rnk_nbr;dmn_idx++){
@@ -5811,6 +5817,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  lon_psn_in=dmn_idx;
 	} /* !lon */
       } /* !dmn_idx */
+    } /* !tpl */
+
+    /* Obtain fields that may be present in input file */
+    if(area_id != NC_MIN_INT){
+      var_id=area_id;
+      rcd=nco_inq_vardimid(in_id,var_id,dmn_ids);
       dmn_srt[lat_psn_in]=0L;
       dmn_cnt[lat_psn_in]=lat_nbr;
       dmn_srt[lon_psn_in]=0L;
