@@ -1287,10 +1287,12 @@ extern "C" {
   typedef struct{ 
     nco_obj_typ nco_typ;              /* [enm] netCDF4 object type: group or variable */
     char *nm_fll;                     /* [sng] Fully qualified name (path) */
-    var_dmn_sct *var_dmn;             /* [sct] (For variables only) Dimensions for variable object */
-    nco_bool is_crd_var;              /* [flg] (For variables only) Is a coordinate variable? (unique dimension exists in scope) */
-    nco_bool is_rec_var;              /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
-    nc_type var_typ;                  /* [enm] (For variables only) NetCDF type  */  
+    var_dmn_sct *var_dmn;             /* [sct] Dimensions for variable object */
+    nco_bool is_1D_crd;               /* [flg] Is a 1D coordinate variable? (unique dimension exists in scope) */
+    nco_bool is_1D_rec_crd;           /* [flg] Is a 1D record coordinate (e.g., time)? */
+    nco_bool is_crd_var;              /* [flg] Is a coordinate variable? (OLD incompatible definition meant is_1D_crd, new definition identical with is_crd_var in var_sct, i.e., coordinate-like variables, 2D, bounds...) */
+    nco_bool is_rec_var;              /* [flg] Is a record variable? (OLD incorrect definition meant is_1D_rec_crd, new definition identical with is_rec_var in var_sct, i.e., any variable with a record dimension) */
+    nc_type var_typ;                  /* [enm] netCDF type */
     size_t nm_fll_lng;                /* [sng] Length of full name */
     char *grp_nm_fll;                 /* [sng] Full group name (for groups, same as nm_fll) */
     char *grp_nm;                     /* [sng] Group name (for groups, same as nm) */

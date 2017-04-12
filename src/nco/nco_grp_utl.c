@@ -2637,7 +2637,7 @@ nco_bld_crd_var_trv /* [fnc] Build GTT "crd_sct" coordinate variable structure *
       if(var_trv.nco_typ == nco_obj_typ_var){
 
         /* Is there a variable with this dimension name anywhere? (relative name)  */
-        if(strcmp(dmn_trv.nm,var_trv.nm) == 0 ){
+        if(!strcmp(dmn_trv.nm,var_trv.nm)){
 
           /* Is variable in-scope of dimension ? */
           if(nco_crd_var_dmn_scp(&var_trv,&dmn_trv,trv_tbl)){
@@ -2663,7 +2663,7 @@ nco_bld_crd_var_trv /* [fnc] Build GTT "crd_sct" coordinate variable structure *
             /* Store relative name (same for dimension and variable) */
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->nm=strdup(var_trv.nm); 
 
-            /* Is a record dimension(variable) if the dimennsion is a record dimension */
+            /* Is a record dimension(variable) if the dimension is a record dimension */
             trv_tbl->lst_dmn[idx_dmn].crd[crd_idx]->is_rec_dmn=dmn_trv.is_rec_dmn;
 
             /* Size is size */
@@ -4101,7 +4101,7 @@ nco_var_fll_trv                       /* [fnc] Allocate variable structure and f
     var->sz*=dmn_cnt;
     
     /* This definition of "is_rec_var" says if any of the dimensions is a record then the variable is marked as so 
-       20170411: Yes, because that IS the correct definition */
+       20170411: Yes, because that IS the correct definition! */
     if(dmn_trv->is_rec_dmn) var->is_rec_var=True; else var->sz_rec*=var->cnt[idx_dmn];
 
     /* Return a completed dmn_sct, use dimension ID and name from TRV object */
