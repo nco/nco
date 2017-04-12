@@ -1386,9 +1386,10 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
 
 nco_bool /* [flg] Variable is listed in this CF attribute, thereby associated */
 nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby associated */
-(const int nc_id, /* I [id] netCDF file ID */
- const char * const cf_nm, /* I [sng] CF convention ("ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping") */
- const int var_trg_id) /* I [id] Variable ID */
+(const int nc_id,    /* I [id] netCDF file ID */
+ const char *const cf_nm, /* I [sng] cf att name */
+ const int var_trg_id,  /* I [id] CF Variable ID */
+ int *cf_var_id) /* O [id] CF Variable ID */
 {
   /* Purpose: Is variable specified in an associated attribute?
      Associated attributes include "ancillary_variables", "bounds", "climatology", "coordinates", "grid_mapping"
@@ -1454,7 +1455,10 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
           /* Does variable match name specified in CF attribute list? */
           if(!strcmp(var_trg_nm,cf_lst[idx_cf])) break;
         } /* end loop over coordinates in list */
-        if(idx_cf!=nbr_cf) IS_SPC_IN_CF_ATT=True;
+        if(idx_cf!=nbr_cf){
+           IS_SPC_IN_CF_ATT = True;
+           if(cf_var_id) *cf_var_id=var_id;
+        }
         /* Free allocated memory */
         att_val=(char *)nco_free(att_val);
         cf_lst=nco_sng_lst_free(cf_lst,nbr_cf);
@@ -1999,10 +2003,10 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   
   /* 20130112: Variables associated with "bounds", "climatology", "coordinates", and "grid_mapping" attributes should,
      in most cases, be treated as coordinates */
-  if(nco_is_spc_in_cf_att(var->nc_id,"bounds",var->id)) var->is_crd_var=True;
-  if(nco_is_spc_in_cf_att(var->nc_id,"climatology",var->id)) var->is_crd_var=True;
-  if(nco_is_spc_in_cf_att(var->nc_id,"coordinates",var->id)) var->is_crd_var=True;
-  if(nco_is_spc_in_cf_att(var->nc_id,"grid_mapping",var->id)) var->is_crd_var=True;
+  if(nco_is_spc_in_cf_att(var->nc_id, "bounds", var->id, NULL)) var->is_crd_var=True;
+  if(nco_is_spc_in_cf_att(var->nc_id, "climatology", var->id, NULL)) var->is_crd_var=True;
+  if(nco_is_spc_in_cf_att(var->nc_id, "coordinates", var->id, NULL)) var->is_crd_var=True;
+  if(nco_is_spc_in_cf_att(var->nc_id, "grid_mapping", var->id, NULL)) var->is_crd_var=True;
   
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
      nco_pck_dsk_inq() fills in these portions harmlessly */
