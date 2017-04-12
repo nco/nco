@@ -1594,7 +1594,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   int rcd_prn;
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int val_sz_byt=int_CEWI; /* [nbr] Type size */
-
+  int cf_var_id = -1; /* ba id is the index of the mentioned cf variable */
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
 
@@ -1610,7 +1610,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   long var_dsk; /* [nbr] Variable index relative to disk */
   long var_szm1;
 
-
+  nco_cln_typ lmt_cln = cln_std;   /* calendar type - for time@units */
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
   const nco_bool XML=prn_flg->xml; /* [flg] XML output */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
@@ -1679,29 +1679,36 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   /* Refresh missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
+  if(nco_is_spc_in_cf_att(grp_id, "bounds", var->id, &cf_var_id) ||
+     nco_is_spc_in_cf_att(grp_id, "climatology", var->id, &cf_var_id))
+    ;
+   else
+    cf_var_id=var->id;
 
 
-  unit_sng_var = nco_lmt_get_udu_att(grp_id,var->id,"units");
+  unit_sng_var = nco_lmt_get_udu_att(grp_id,cf_var_id,"units");
   if( unit_sng_var && strlen(unit_sng_var)) {
+    char *cln_sng = (char *) NULL;
     flg_malloc_unit_var=True;
     unit_cln_var=nco_cln_chk_tm(unit_sng_var);
+
+    cln_sng = nco_lmt_get_udu_att(grp_id, cf_var_id, "calendar");
+    if (cln_sng)
+      lmt_cln = nco_cln_get_cln_typ(cln_sng);
+    else
+      lmt_cln = cln_std;
+
+
+    if(cln_sng)
+      cln_sng=(char*)nco_free(cln_sng);
+
   }
 
   if(unit_cln_var && ( prn_flg->PRN_CLN_LGB || nco_dbg_lvl_get()== nco_dbg_std)) {
 
     var_sct *var_tmp=NULL_CEWI;
-    nco_cln_typ lmt_cln = cln_std;
-    char *cln_sng = (char *) NULL;
 
     var_tmp=nco_var_dpl(var);
-
-    //(void)fprintf(stderr,"%s: %s reports var \"%s\" has missing value %d\n",nco_prg_nm_get(),fnc_nm,var.nm,var.has_mss_val);
-
-    cln_sng = nco_lmt_get_udu_att(grp_id, var->id, "calendar");
-    if (cln_sng)
-      lmt_cln = nco_cln_get_cln_typ(cln_sng);
-    else
-      lmt_cln = cln_std;
 
     var_aux = nco_var_dpl(var);
     var_aux->val.vp = nco_free(var_aux->val.vp);
@@ -1728,8 +1735,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     }
 
     if(var_tmp) var_tmp=(var_sct*)nco_var_free(var_tmp);
-    if (cln_sng) cln_sng = (char *) nco_free(cln_sng);
-
   }
 
 
