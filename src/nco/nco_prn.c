@@ -1745,6 +1745,14 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     unit_sng_var=&nul_chr;
   }
 
+  /* for trd we print "(no units)" */
+  if( TRD && prn_flg->PRN_DMN_UNITS && flg_malloc_unit_var==False){
+    unit_sng_var=strdup("(no units)");
+    flg_malloc_unit_var=True;
+  }
+
+
+
   if(var->has_mss_val) val_sz_byt=nco_typ_lng(var->type);
 
   if(var->nbr_dim)
