@@ -1305,7 +1305,9 @@ main(int argc,char **argv)
             /*  This code rebases  the  coordinate var to the units of the coordinate var in the first input file */
             /* if the record hyperslab indice(s) are double or strings then the coordinate var and limits are (re)read earlier by (void)nco_lmt_evl() */
             /* so if the units between files are incompatible the ncra will bomb out in that call  and not in  nco_cln_clc_dbl_var_dff() below*/
-            if( !strcmp(var_prc[idx]->nm, lmt_rec[idx_rec]->nm) || nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id)) {
+            if(!strcmp(var_prc[idx]->nm, lmt_rec[idx_rec]->nm) ||
+               nco_is_spc_in_cf_att(grp_id, "bounds", var_prc[idx]->id, NULL) ||
+               nco_is_spc_in_cf_att(grp_id, "climatology", var_prc[idx]->id, NULL)) {
 
               char *fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_prc[idx]->id,"units"); /* Units attribute of coordinate variable */ 
               if(fl_udu_sng && lmt_rec[idx_rec]->rbs_sng) {
