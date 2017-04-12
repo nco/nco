@@ -1455,16 +1455,20 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
           /* Does variable match name specified in CF attribute list? */
           if(!strcmp(var_trg_nm,cf_lst[idx_cf])) break;
         } /* end loop over coordinates in list */
-        if(idx_cf!=nbr_cf){
-           IS_SPC_IN_CF_ATT = True;
-           if(cf_var_id) *cf_var_id=var_id;
-        }
         /* Free allocated memory */
         att_val=(char *)nco_free(att_val);
         cf_lst=nco_sng_lst_free(cf_lst,nbr_cf);
+
+        if(idx_cf!=nbr_cf){
+           IS_SPC_IN_CF_ATT = True;
+           if(cf_var_id) *cf_var_id=var_id;
+           goto end_lbl; /* break out of all loops */
+        }
       } /* !coordinates */
     } /* end loop over attributes */
   } /* end loop over idx_var */
+
+  end_lbl: ;
 
   return IS_SPC_IN_CF_ATT; /* [flg] Variable is listed in this CF attribute */
 } /* end nco_is_spc_in_cf_att() */
