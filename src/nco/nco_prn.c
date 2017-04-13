@@ -1594,7 +1594,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   int rcd_prn;
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int val_sz_byt=int_CEWI; /* [nbr] Type size */
-  int cf_var_id = -1; /* ba id is the index of the mentioned cf variable */
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
 
@@ -1679,77 +1678,71 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   /* Refresh missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
-  if(nco_is_spc_in_cf_att(grp_id, "bounds", var->id, &cf_var_id) ||
-     nco_is_spc_in_cf_att(grp_id, "climatology", var->id, &cf_var_id))
-    ;
-   else
-    cf_var_id=var->id;
 
-
-  unit_sng_var = nco_lmt_get_udu_att(grp_id,cf_var_id,"units");
-  if( unit_sng_var && strlen(unit_sng_var)) {
+  /* only TRD and CDL need units at this stage and have this flag set */
+  if(prn_flg->PRN_DMN_UNITS) {
+    int cf_var_id;
     char *cln_sng = (char *) NULL;
-    flg_malloc_unit_var=True;
-    unit_cln_var=nco_cln_chk_tm(unit_sng_var);
-
-    cln_sng = nco_lmt_get_udu_att(grp_id, cf_var_id, "calendar");
-    if (cln_sng)
-      lmt_cln = nco_cln_get_cln_typ(cln_sng);
-    else
-      lmt_cln = cln_std;
-
-
-    if(cln_sng)
-      cln_sng=(char*)nco_free(cln_sng);
-
-  }
-
-  if(unit_cln_var && ( prn_flg->PRN_CLN_LGB || nco_dbg_lvl_get()== nco_dbg_std)) {
-
     var_sct *var_tmp=NULL_CEWI;
+    var_sct *var_swp=NULL_CEWI;
 
-    var_tmp=nco_var_dpl(var);
+    if (!nco_is_spc_in_cf_att(grp_id, "bounds", var->id, &cf_var_id) &&
+        !nco_is_spc_in_cf_att(grp_id, "climatology", var->id, &cf_var_id))
+      cf_var_id = var->id;
 
-    var_aux = nco_var_dpl(var);
-    var_aux->val.vp = nco_free(var_aux->val.vp);
 
-    if(var_aux->has_mss_val)
-      var_aux->mss_val.vp=nco_free(var_aux->mss_val.vp);
-    var_aux->has_mss_val=False;
+    unit_sng_var = nco_lmt_get_udu_att(grp_id, cf_var_id, "units");
+    if (unit_sng_var && strlen(unit_sng_var)) {
 
-    nco_var_cnf_typ(NC_STRING, var_aux);
+      flg_malloc_unit_var = True;
+      unit_cln_var = nco_cln_chk_tm(unit_sng_var);
 
-    /* nb nco_cln_var_prs modifies var */
-    if (nco_cln_var_prs(unit_sng_var, lmt_cln, 2, var_tmp, var_aux) == NCO_NOERR) {
-      /* swap vars about */
-      if (prn_flg->PRN_CLN_LGB) {
-         var_sct *var_swp;
-          var_swp=var;
-          var=var_aux;
-          var_aux=var_swp;
+      cln_sng = nco_lmt_get_udu_att(grp_id, cf_var_id, "calendar");
+      if (cln_sng)
+        lmt_cln = nco_cln_get_cln_typ(cln_sng);
+      else
+        lmt_cln = cln_std;
+
+
+      if (cln_sng)
+        cln_sng = (char *) nco_free(cln_sng);
+
+    }
+
+    /* set default for TRD */
+    if(TRD && flg_malloc_unit_var ==False){
+      unit_sng_var=strdup("(no units)");
+      flg_malloc_unit_var=True;
+    }
+    else if(CDL && flg_malloc_unit_var == True)
+      if(prn_flg->PRN_CLN_LGB || nco_dbg_lvl_get()== nco_dbg_std) {
+
+
+        var_tmp=nco_var_dpl(var);
+
+        var_aux = nco_var_dpl(var);
+        var_aux->val.vp = nco_free(var_aux->val.vp);
+
+        if(var_aux->has_mss_val)
+          var_aux->mss_val.vp=nco_free(var_aux->mss_val.vp);
+        var_aux->has_mss_val=False;
+
+        nco_var_cnf_typ(NC_STRING, var_aux);
+
+        /* nb nco_cln_var_prs modifies var_tmp and var_aux */
+        if (nco_cln_var_prs(unit_sng_var, lmt_cln, 2, var_tmp, var_aux) == NCO_ERR)
+          var_aux = nco_var_free(var_aux);
+        /* swap values about */
+        else if (prn_flg->PRN_CLN_LGB) { var_swp=var;var=var_aux;var_aux=var_swp; }
+
+        if(var_tmp) var_tmp=(var_sct*)nco_var_free(var_tmp);
       }
 
     }else{
-      /* nco_cln_var_prs() has failed  */
-      if (var_aux) var_aux = nco_var_free(var_aux);
-    }
-
-    if(var_tmp) var_tmp=(var_sct*)nco_var_free(var_tmp);
+      flg_malloc_unit_var=False;
+      unit_sng_var=&nul_chr;
   }
 
-
-  /* need to print units if we are using a timestamp */
-  if(!prn_flg->PRN_DMN_UNITS){
-    unit_sng_var=(char*)nco_free(unit_sng_var);
-    flg_malloc_unit_var=False;
-    unit_sng_var=&nul_chr;
-  }
-
-  /* for trd we print "(no units)" */
-  if( TRD && prn_flg->PRN_DMN_UNITS && flg_malloc_unit_var==False){
-    unit_sng_var=strdup("(no units)");
-    flg_malloc_unit_var=True;
-  }
 
 
 
@@ -2050,6 +2043,12 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       if(lmn != var_szm1)
         if((var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || var->type != NC_CHAR)
           (void)fprintf(stdout,"%s",spr_sng);
+
+      /* pretty printing for CDL
+      if(CDL &&  (lmn+1) % lmt_msa[var->nbr_dim-1]->dmn_cnt  ==0)
+        (void)fprintf(stdout,"\n");
+       */
+
 
       /* if(var.type != NC_CHAR && var.type != NC_STRING ) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? spr_sng : ""); */
 
