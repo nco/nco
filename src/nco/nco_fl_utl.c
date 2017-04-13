@@ -996,8 +996,17 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         if(fl_pth_lcl == NULL){
           /* Derive path for storing local file from remote filename */
           (void)fprintf(stderr,"%s: INFO deriving local filepath from remote filename\n",nco_prg_nm_get());
-          fl_nm_stub=strrchr(fl_nm_lcl,'/')+1UL;
-          if(HTTP_URL){
+	  /* Search backwards from end for last path separator */
+          fl_nm_stub=strrchr(fl_nm_lcl,'/');
+	  if(fl_nm_stub){
+	    /* Successful search points to slash, add one to point to stub */
+	    fl_nm_stub++;
+	  }else{
+	    (void)fprintf(stderr,"%s: ERROR %s unable to find path component of requested file %s. Files on mass storage devices (e.g., HPSS) almost always have a multi-component path structure, so this file appears not be on HPSS and we cannot derive a local path for it.\n",nco_prg_nm_get(),fnc_nm,fl_pth_lcl_tmp);
+	    (void)fprintf(stderr,"%s: HINT This error often occurs because of a simple filename typo or missing input file. NCO calls exit() with a simpler error message when it cannot find a specified input file on systems without HPSS clients (as indicated by the presence of the hsi command). NCO just performed and failed a more elaborate search for the file because this system appears to have hsi (see http://nco.sf.net/nco.html#hsi). Please verify spelling/location of requested input files.\n",nco_prg_nm_get());
+            nco_exit(EXIT_FAILURE);
+	  } /* else */
+	  if(HTTP_URL){
             /* Strip leading slash from fl_nm_lcl for HTTP files so, e.g., 
 	       http://dust.ess.uci.edu/nco/in.nc produces local path "nco" not "/nco" */
             fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1UL);

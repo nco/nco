@@ -1,5 +1,9 @@
 2017-04-13  Charlie Zender  <zender@uci.edu>
 
+	* Exit with clear message instead of core dump on missing files on HPSS systems with hsi command
+
+	* Replace ncremap input file front-end with code from ncclimo
+
 	* Clarify effects of compression on expected memory use in documentation
 
 2017-04-11  Charlie Zender  <zender@uci.edu>
