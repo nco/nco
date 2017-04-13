@@ -828,7 +828,7 @@ NCO for Debian over the years.
 <ul>
 <dt>The <a href="https://admin.fedoraproject.org/pkgdb/package/nco">Fedora NCO</a> RPMs are usually up-to-date so that &lsquo;<tt>dnf install nco</tt>&rsquo; will install a recent version. 
 RHEL NCO RPMs are documented at the Fedora site.
-OpenSUSE keeps its NCO RPMs <a href="http://software.opensuse.org/package/nco">here</a>.
+OpenSUSE keeps NCO RPMs <a href="http://software.opensuse.org/package/nco">here</a>.
 A comprehensive list of pre-built RPMs for many OS's is <a href="http://rpmfind.net/linux/rpm2html/search.php?query=nco">here</a>.
 Volunteers have updated and maintained fairly up-to-date NCO packages in Fedora since it was added by Ed Hill in about 2004.
 Thanks to Patrice Dumas, Ed Hill, Orion Poplawski, and Manfred Schwarb for packaging NCO RPMs over the years.

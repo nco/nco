@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.6-alpha04
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 11 April 2017
+@set update-date 13 April 2017
 @set update-month April 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2322,12 +2322,20 @@ We commend these greedy users for pushing @acronym{NCO} to its limits!
 @cindex shared memory machines
 This section describes the memory @acronym{NCO} requires during
 operation.
-The required memory is based on the underlying algorithms.
+The required memory depends on the underlying algorithms, datatypes,
+and compression, if any. 
 The description below is the memory usage per thread.
 Users with shared memory machines may use the threaded @acronym{NCO}
 operators (@pxref{OpenMP Threading}).
 The peak and sustained memory usage will scale accordingly,
 i.e., by the number of threads.
+In all cases the memory use refers to the @emph{uncompressed} size of
+the data. 
+The netCDF4 library automatically decompresses variables during reads. 
+The filesize can easily belie the true size of the uncompressed data.
+In other words, the usage below can be taken at face value for netCDF3
+datasets only.
+Chunking will also affect memory usage on netCDF4 operations.
 Memory consumption patterns of all operators are similar, with
 the exception of @command{ncap2}.
 

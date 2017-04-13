@@ -406,6 +406,7 @@ par_typ='bck' # [sng] Parallelism type
 rgr_map='' # [sng] Regridding map
 #rgr_map="${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc"
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
+rtn_ntv='Yes' # [flg] Retain native-grid timeseries
 sbs_flg='No' # [sng] Split (subset) climatologies
 thr_nbr=2 # [nbr] Thread number for regridder
 tpd_out=1 # [nbr] Timesteps-per-day in ouput
@@ -439,8 +440,9 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_rgr${fnt_nrm}  Regridded directory (default ${fnt_bld}${drc_rgr}${fnt_nrm}) [${fnt_tlc}drc_rgr, rgr_drc, dir_regrid, regrid${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
-    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map$, map, map_file, map_fl]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
+    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map$, map, map_file, map_fl]"
+    echo " ${fnt_bld}--rtn_ntv${fnt_nrm}  Retain native-grid timeseries (default ${fnt_bld}${rtn_ntv}${fnt_nrm}) [${fnt_tlc}rtn_ntv${fnt_nrm}]"
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
     echo " ${fnt_bld}--std_flg${fnt_nrm}  Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, std_flg, inp_std, redirect, standard_input${fnt_nrm}]"
@@ -571,6 +573,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
 	       rgr_map=?* | regrid_map=?* | map=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map
+	       rtn_ntv=?* ) rtn_ntv="${LONG_OPTARG}" ;; # # Retain native-grid only
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
@@ -1087,6 +1090,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
+    printf "dbg: rtn_ntv  = ${rtn_ntv}\n"
     printf "dbg: sbs_flg  = ${sbs_flg}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
@@ -1170,16 +1174,16 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     printf "Input to split comprises ${yr_sbs} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     if [ ${sgm_nbr} -gt 1 ]; then
 	if [ ${sgm_flg} = 'Yes' ]; then 
-	    printf "Will split data into ${sgm_nbrm1} segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s)\n"
+	    printf "Will split data into ${sgm_nbrm1} timeseries segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s)\n"
 	else
-	    printf "Will split data into ${sgm_nbr} segment(s) of length ${ypf_max} years\n"
+	    printf "Will split data into ${sgm_nbr} timeseries segment(s) of length ${ypf_max} years\n"
 	fi # !sgm_flg
     else # !sgm_nbr
-	printf "Will place all output into one segment of length ${yr_sbs} years\n"
+	printf "Will split data into one timeseries of length ${yr_sbs} years\n"
     fi # !sgm_nbr
-    printf "Output files to directory ${drc_out}\n"
+    printf "Native-grid split files to directory ${drc_out}\n"
     if [ -n "${rgr_map}" ]; then 
-	printf "Split files will also be regridded\n"
+	printf "Regridded split files to directory ${drc_rgr}\n"
     else
 	printf "Split files will not be regridded\n"
     fi # !rgr
@@ -1517,6 +1521,14 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    done # !pid_idx
 		fi # !bch_flg
 	    fi # !par_typ
+
+	    if [ "${rtn_ntv}" != 'Yes' ]; then
+		# Remove native grid timeseries by moving fl_rgr to fl_out
+		for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
+		    /bin/mv -f ${fl_rgr[${var_idx}]} ${fl_out[${var_idx}]}
+		done # !var_idx
+	    fi # !rtn_ntv
+
 	fi # !rgr_map
 	
     done # !sgm_idx

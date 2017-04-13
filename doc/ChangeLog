@@ -1,3 +1,7 @@
+2017-04-13  Charlie Zender  <zender@uci.edu>
+
+	* Clarify effects of compression on expected memory use in documentation
+
 2017-04-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.6-alpha04 release procedure:
