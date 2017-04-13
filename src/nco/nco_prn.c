@@ -1910,7 +1910,12 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       } /* var.sz */
       (void)fprintf(stdout,">");
     } /* !xml */
-    if(CDL) (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
+    if(CDL) {
+      (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
+      /* pretty printing */
+      if(var->nbr_dim >=2)
+        (void)fprintf(stdout,"\n%*s",prn_ndn,spc_sng);
+    }
     nm_cdl=(char *)nco_free(nm_cdl);
     var_szm1=var->sz-1L;
 
@@ -2044,10 +2049,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         if((var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || var->type != NC_CHAR)
           (void)fprintf(stdout,"%s",spr_sng);
 
-      /* pretty printing for CDL
-      if(CDL &&  (lmn+1) % lmt_msa[var->nbr_dim-1]->dmn_cnt  ==0)
-        (void)fprintf(stdout,"\n");
-       */
+      /* pretty printing */
+      if(CDL && var->nbr_dim && lmn< var_szm1 && (lmn+1) % lmt_msa[var->nbr_dim-1]->dmn_cnt  ==0)
+        (void)fprintf(stdout,"\n%*s",prn_ndn,spc_sng);
+
 
 
       /* if(var.type != NC_CHAR && var.type != NC_STRING ) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? spr_sng : ""); */
