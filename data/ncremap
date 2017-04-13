@@ -246,6 +246,8 @@ fi # !TERM
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 alg_typ='bilinear' # [nbr] Algorithm for ESMF interpolation (bilinear|patch|neareststod|nearestdtos|conserve)
+bch_pbs='No' # [sng] PBS batch (non-interactive) job
+bch_slr='No' # [sng] SLURM batch (non-interactive) job
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
 clm_flg='No' # [flg] Invoked by ncclimo script
 dbg_lvl=0 # [nbr] Debugging level
@@ -270,6 +272,10 @@ grd_src_xmp='grd_src.nc' # [sng] Source grid-file for examples
 hdr_pad='10000' # [B] Pad at end of header section
 in_fl='' # [sng] Input file
 in_xmp='in.nc' # [sng] Input file for examples
+inp_aut='No' # [sng] Input file list automatically generated (in ncclimo, or specified with -i in ncremap)
+inp_glb='No' # [sng] Input file list from globbing directory 
+inp_psn='No' # [sng] Input file list from positional arguments
+inp_std='No' # [sng] Input file list from stdin
 job_nbr=2 # [nbr] Job simultaneity for parallelism
 map_fl='' # [sng] Map-file
 map_xmp='map.nc' # [sng] Map-file for examples
@@ -338,6 +344,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}grd_src${fnt_nrm}  Grid-file (source) (empty means infer or use map_fl) (default ${fnt_bld}${grd_src}${fnt_nrm}) [${fnt_tlc}grd_src, grid_source, source_grid, src_grd${fnt_nrm}]"
+    echo " ${fnt_bld}--std_flg${fnt_nrm}  Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, std_flg, inp_std, redirect, standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-T${fnt_nrm} ${fnt_bld}tps_opt${fnt_nrm}  TempestRemap GenerateOfflineMap options (default ${fnt_bld}${tps_opt}${fnt_nrm}) [${fnt_tlc}tps_opt, tempest_opt, tempest, tempest_options${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thread_number, thread, threads${fnt_nrm}]"
     echo "${fnt_rvr}-U${fnt_nrm} ${fnt_bld}drc_tmp${fnt_nrm}  Temporary directory (for intermediate files) (default ${fnt_bld}${drc_tmp}${fnt_nrm}) [${fnt_tlc}drc_tmp, tmp_drc, dir_tmp, tmp_dir, tmp${fnt_nrm}]"
@@ -445,6 +452,8 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
 	       grd_src=?* | grid_source=?* | source_grid=?* | src_grd=?* ) grd_src="${LONG_OPTARG}" ;; # -s # Source grid-file
+	       stdin | inp_std | std_flg | redirect | standard_input ) inp_std='Yes' ;; # # Input file list from stdin
+	       stdin=?* | inp_std=?* | std_flg=?* | redirect=?* | standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Input file list from stdin
 	       tps_opt=?* | tempest_opt=?* | tempest=?* | tempest_options=?* ) tps_opt="${LONG_OPTARG}" ;; # -T # Tempest options
 	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
 	       drc_tmp=?* | tmp_drc=?* | dir_tmp=?* | tmp_dir=?* | tmp=?* ) tmp_usr="${LONG_OPTARG}" ;; # -U # Temporary directory
@@ -464,6 +473,10 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
     esac # !OPT
 done # !getopts
 shift $((OPTIND-1)) # Advance one argument
+psn_nbr=$#
+if [ ${psn_nbr} -ge 1 ]; then
+    inp_psn='Yes'
+fi # !psn_nbr
 if [ ${vrs_prn} = 'Yes' ]; then
     printf "${spt_nm}, the NCO regridder and map- and grid-generator, version ${nco_vrs}\n"
     printf "Copyright (C) 2016--2017 Charlie Zender\n"
@@ -496,12 +509,55 @@ fi # !vrs_prn
 # Detect input on pipe to stdin:
 # http://stackoverflow.com/questions/2456750/detect-presence-of-stdin-contents-in-shell-script
 # http://unix.stackexchange.com/questions/33049/check-if-pipe-is-empty-and-run-a-command-on-the-data-if-it-isnt
-# 20170119 "if [ ! -t 0 ]" tests whether stdin connected to terminal, not whether pipe has data
-# Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives
-# Switch test from "if [ ! -t 0 ]" to "if [ -p /dev/stdin ]"
-if [ -p /dev/stdin ]; then
-    std_flg='Yes'
-fi # !stdin
+# 20170119 "if [ ! -t 0 ]" tests whether unit 0 (stdin) is connected to terminal, not whether pipe has data
+# Non-interactive batch mode (e.g., qsub, sbatch) disconnects stdin from terminal and triggers false-positives with ! -t 0
+# 20170123 "if [ -p foo ]" tests whether foo exists and is a pipe or named pipe
+# Non-interactive batch mode (i.e., sbatch) behaves as desired for -p /dev/stdin on SLURM
+# Non-interactive batch mode (e.g., qsub) always returns true for -p /dev/stdin on PBS, leads to FALSE POSITIVES!
+# This is because PBS uses stdin to set the job name
+# Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
+if [ -n "${PBS_ENVIRONMENT}" ]; then
+    if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
+	# PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
+	bch_pbs='Yes'
+    fi # !PBS_ENVIRONMENT
+fi # !PBS
+if [ -n "${SLURM_JOBID}" ] && [ -z "${SLURM_PTY_PORT}" ]; then
+    # SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
+    bch_slr='Yes'
+fi # !SLURM
+if [ ${bch_pbs} = 'Yes' ] || [ ${bch_slr} = 'Yes' ]; then
+    # Batch environment
+    if [ ${bch_pbs} = 'Yes' ]; then
+	if [ ! -p /dev/stdin ]; then
+	    # PBS batch jobs cause -p to return true except for stdin redirection 
+	    # When -p returns true we do not know whether stdin pipe contains any input
+	    # User must explicitly indicate use of stdin pipes with --stdin option
+	    # Redirection in PBS batch jobs unambiguously causes -p to return false
+	    inp_std='Yes'
+	fi # !stdin
+    fi # !bch_slr
+    if [ ${bch_slr} = 'Yes' ]; then
+	if [ -p /dev/stdin ]; then
+	    # SLURM batch jobs cause -p to return true for stdin pipes
+	    # When -p returns false we do not know whether output was redirectd
+	    # User must explicitly indicate use of redirection with --stdin option
+	    # Stdin pipes in SLURM batch jobs unambiguously cause -p to return true
+	    inp_std='Yes'
+	fi # !stdin
+    fi # !bch_slr
+else # !bch
+    # Interactive environment
+    if [ -p /dev/stdin ] || [ ! -t 0 ]; then
+	# Interactive environments unambiguously cause -p to return true for stdin pipes
+	# Interactive environments unambiguously cause -t 0 to return false for stdin redirection
+	inp_std='Yes'
+    fi # !stdin
+fi # !bch
+if [ ${inp_std} = 'Yes' ] && [ ${inp_psn} = 'Yes' ]; then
+    echo "${spt_nm}: ERROR expecting input both from stdin and positional command-line arguments\n"
+    exit 1
+fi # !inp_std
 
 # Derived variables
 if [ -n "${drc_usr}" ]; then
@@ -560,6 +616,9 @@ if [ -z "${drc_in}" ]; then
 else # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
+if [ -n "${in_fl}" ]; then
+    inp_aut='Yes'
+fi # !in_fl
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
@@ -719,57 +778,68 @@ if [ "${map_mk}" = 'Yes' ] && [ "${wgt_gnr}" = 'tempest' ]; then
     msh_fl=${msh_fl_dfl}
 fi # !tempest
 
-# Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
-if [ -n "${in_fl}" ]; then
+# Read files from stdin pipe, positional arguments, or directory glob
+# Code block taken from ncclimo
+# ncclimo sets inp_aut flag when file list is automatically (i.e., internally) generated
+# ncremap uses convention that input files specified with -i set inp_aut flag
+# That way, ncremap code block looks closer to ncclimo with introducing a new "inp_cmd" flag
+#printf "dbg: inp_aut  = ${inp_aut}\n"
+#printf "dbg: inp_glb  = ${inp_glb}\n"
+#printf "dbg: inp_psn  = ${inp_psn}\n"
+#printf "dbg: inp_std  = ${inp_std}\n"
+if [ ${inp_aut} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
+    inp_glb='Yes'
+fi # !inp_psn, !inp_std
+if [ "${map_mk}" != 'Yes' ] && [ ${inp_aut} = 'No' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
+    echo "${spt_nm}: ERROR Specify input file(s) with -i \$in_fl or with -I \$drc_in or with positional argument(s) or with stdin"
+    if [ ${bch_pbs} = 'Yes' ]; then
+	echo "${spt_nm}: HINT PBS batch job environment detected, pipe to stdin not allowed, try positional arguments instead"
+    else # !bch_pbs
+	echo "${spt_nm}: HINT Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
+    fi # !bch_pbs
+    exit 1
+fi # !sbs_flg
+if [ ${inp_aut} = 'Yes' ]; then 
     # Single file argument
     fl_in[0]=${in_fl}
     fl_nbr=1
-else # !in_fl
-    if [ ${std_flg} = 'No' ]; then 
-	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
-	    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
-		if [ -f "${fl}" ]; then
-		    fl_in[${fl_nbr}]=${fl}
-		    let fl_nbr=${fl_nbr}+1
-		fi # !file
-	    done
-	else # !drc_in
-	    if [ "${map_mk}" != 'Yes' ]; then 
-		# Read any positional arguments
-		psn_nbr=$#
-		if [ ${psn_nbr} -eq 1 ]; then
-		    fl_in[0]=${1}
-		    fl_nbr=1
-		elif [ ${psn_nbr} -eq 2 ]; then
-		    if [ -z "${out_fl}" ]; then
-			out_fl=${2}
-			out_usr_flg='Yes'
-			fl_nbr=1
-		    else # !out_fl
-			echo "ERROR: Output file specified with -o (${out_fl}) conflicts with second positional argument ${2}"
-			echo "HINT: Use -o out_fl or positional argument, not both"
-			exit 1
-		    fi # !out_fl
-		elif [ ${psn_nbr} -ge 3 ]; then
-		    for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
-			fl_in[(${psn_idx}-1)]=${!psn_idx}
-			fl_nbr=${psn_nbr}
-		    done # !psn_idx
-		else
-		    echo "ERROR: Specify input file(s) with -i or with positional argument(s) or with pipe to stdin"
-		    echo "HINT: Pipe input file list to stdin with, e.g., 'ls *.nc | ${spt_nm}'"
-		    exit 1
-		fi # !psn_nbr
-	    fi # !map_mk
-	fi # !drc_in
-    else # !std_flg
-	# Input awaits on unit 0, i.e., on stdin
-	while read -r line; do # NeR05 p. 179
-	    fl_in[${fl_nbr}]=${line}
+fi # !inp_aut
+if [ ${inp_glb} = 'Yes' ]; then 
+    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
+	if [ -f "${fl}" ]; then
+	    fl_in[${fl_nbr}]=${fl}
 	    let fl_nbr=${fl_nbr}+1
-	done < /dev/stdin
-    fi # stdin
-fi # !in_fl
+	fi # !file
+    done
+fi # !inp_glb
+if [ ${inp_psn} = 'Yes' ]; then
+    if [ ${psn_nbr} -eq 1 ]; then
+	fl_in[0]=${1}
+	fl_nbr=1
+    elif [ ${psn_nbr} -eq 2 ]; then
+	if [ -z "${out_fl}" ]; then
+	    out_fl=${2}
+	    out_usr_flg='Yes'
+	    fl_nbr=1
+	else # !out_fl
+	    echo "ERROR: Output file specified with -o (${out_fl}) conflicts with second positional argument ${2}"
+	    echo "HINT: Use -o out_fl or positional argument, not both"
+	    exit 1
+	fi # !out_fl
+    elif [ ${psn_nbr} -ge 3 ]; then
+	for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do
+	    fl_in[(${psn_idx}-1)]=${!psn_idx}
+	    fl_nbr=${psn_nbr}
+	done # !psn_idx
+    fi # !psn_nbr
+fi # !inp_psn
+if [ ${inp_std} = 'Yes' ]; then
+    # Input awaits on unit 0, i.e., on stdin
+    while read -r line; do # NeR05 p. 179
+	fl_in[${fl_nbr}]=${line}
+	let fl_nbr=${fl_nbr}+1
+    done < /dev/stdin
+fi # !inp_std
 
 if [ "${mpi_flg}" = 'Yes' ]; then
     if [ -n "${COBALT_NODEFILE}" ]; then 
@@ -1128,7 +1198,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	# Block 2: Source grid
 	# Block 2 Loop 1: Source gridfile command
 	if [ ! -f "${in_fl}" ]; then
-	    echo "${spt_nm}: ERROR Unable to find Input file ${in_fl}"
+	    echo "${spt_nm}: ERROR Unable to find input file ${in_fl}"
 	    echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
 	    exit 1
 	fi # ! -f
