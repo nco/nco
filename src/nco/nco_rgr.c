@@ -6021,7 +6021,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     } /* !msk */
 
-    /* Rectangular boundaries are on "abbreviated" bounds grid (two bounds per center)
+    /* Rectangular boundaries are often on "abbreviated" bounds grid (two bounds per center)
        Read-in *_crn arrays for 1D and curvilinear grids, and *_bnd arrays for rectilinear grids */
     dmn_srt[0]=dmn_srt[1]=0L;
     dmn_cnt[0]=lat_nbr;
@@ -6594,32 +6594,32 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	idx=grd_crn_nbr*lon_idx;
 	lon_crn[idx]=lon_ntf[lon_idx]; /* LL */
-	lon_crn[idx+1]=lon_ntf[lon_idx+1]; /* LR */
-	lon_crn[idx+2]=lon_ntf[lon_idx+1]; /* UR */
-	lon_crn[idx+3]=lon_ntf[lon_idx]; /* UL */
+	lon_crn[idx+1L]=lon_ntf[lon_idx+1L]; /* LR */
+	lon_crn[idx+2L]=lon_ntf[lon_idx+1L]; /* UR */
+	lon_crn[idx+3L]=lon_ntf[lon_idx]; /* UL */
       } /* !lon_idx */
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
 	idx=grd_crn_nbr*lat_idx;
 	lat_crn[idx]=lat_ntf[lat_idx]; /* LL */
-	lat_crn[idx+1]=lat_ntf[lat_idx]; /* LR */
-	lat_crn[idx+2]=lat_ntf[lat_idx+1]; /* UR */
-	lat_crn[idx+3]=lat_ntf[lat_idx+1]; /* UL */
+	lat_crn[idx+1L]=lat_ntf[lat_idx]; /* LR */
+	lat_crn[idx+2L]=lat_ntf[lat_idx+1L]; /* UR */
+	lat_crn[idx+3L]=lat_ntf[lat_idx+1L]; /* UL */
       } /* !lat_idx */
     }else{ /* !lat_bnd_id */
       /* If boundaries were provided in input dataset, copy corners from boundaries */
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	idx=grd_crn_nbr*lon_idx;
 	lon_crn[idx]=lon_bnd[2*lon_idx]; /* LL */
-	lon_crn[idx+1]=lon_bnd[2*lon_idx+1]; /* LR */
-	lon_crn[idx+2]=lon_bnd[2*lon_idx+1]; /* UR */
-	lon_crn[idx+3]=lon_bnd[2*lon_idx]; /* UL */
+	lon_crn[idx+1L]=lon_bnd[2*lon_idx+1L]; /* LR */
+	lon_crn[idx+2L]=lon_bnd[2*lon_idx+1L]; /* UR */
+	lon_crn[idx+3L]=lon_bnd[2*lon_idx]; /* UL */
       } /* !lon_idx */
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
 	idx=grd_crn_nbr*lat_idx;
 	lat_crn[idx]=lat_bnd[2*lat_idx]; /* LL */
-	lat_crn[idx+1]=lat_bnd[2*lat_idx]; /* LR */
-	lat_crn[idx+2]=lat_bnd[2*lat_idx+1]; /* UR */
-	lat_crn[idx+3]=lat_bnd[2*lat_idx+1]; /* UL */
+	lat_crn[idx+1L]=lat_bnd[2*lat_idx]; /* LR */
+	lat_crn[idx+2L]=lat_bnd[2*lat_idx+1L]; /* UR */
+	lat_crn[idx+3L]=lat_bnd[2*lat_idx+1L]; /* UL */
       } /* !lat_idx */
     } /* !lat_bnd_id */
   } /* !flg_grd_2D */
@@ -7071,16 +7071,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     ndx[0]=lon_crn[0];
     ndy[0]=lat_crn[0];
     /* Mid */
-    for(nd_idx=1;nd_idx<nd_nbr-2;nd_idx++){
+    for(nd_idx=1;nd_idx<nd_nbr-1L;nd_idx++){
       fc_idx=nd_idx-1L;
       lat_idx=fc_idx/lon_nbr;
-      lon_idx=fc_nbr%lon_nbr;
-      ndx[nd_idx]=lon_crn[lat_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+idx_fst_crn_ur];
-      ndy[nd_idx]=lat_crn[lat_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+idx_fst_crn_ur];
+      lon_idx=fc_idx%lon_nbr;
+      ndx[nd_idx]=lon_crn[lon_idx*grd_crn_nbr+idx_fst_crn_ur];
+      ndy[nd_idx]=lat_crn[lat_idx*grd_crn_nbr+idx_fst_crn_ur];
     } /* !nd_idx */
     /* NP */
-    ndx[nd_nbr-1L]=lon_crn[grd_sz_nbr*grd_crn_nbr+idx_fst_crn_ur];
-    ndy[nd_nbr-1L]=lat_crn[grd_sz_nbr*grd_crn_nbr+idx_fst_crn_ur];
+    ndx[nd_nbr-1L]=lon_crn[(lon_nbr-1)*grd_crn_nbr+idx_fst_crn_ur];
+    ndy[nd_nbr-1L]=lat_crn[(lat_nbr-1)*grd_crn_nbr+idx_fst_crn_ur];
 
     /* SP */
     const int epf_nbr=2; /* [nbr] Number of distinct edges-per-face */

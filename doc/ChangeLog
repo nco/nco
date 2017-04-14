@@ -1,6 +1,6 @@
 2017-04-13  Charlie Zender  <zender@uci.edu>
 
-	* Fix nco_grd_nfr() to infer 2d grids written by nco_grd_mk()
+	* Fix nco_grd_nfr() to infer 2D grids written by nco_grd_mk()
 
 	* Better annotate skeleton files in nco_grd_mk()
 
