@@ -7014,7 +7014,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     long fc_idx; /* [idx] Counting index for faces */
     long nd_idx; /* [idx] Counting index for nodes */
     long nd_nbr=NC_MIN_INT64; /* [nbr] Number of nodes in mesh */
-    long npf_idx; /* [idx] Counting index for nodes-per-face */
     long srt_idx=0; /* [idx] start_index (C/Fortran) for edge_nodes, face_nodes */
 
     if(!dg_dmn_nm) dg_dmn_nm=(char *)strdup("nEdges");
@@ -7060,9 +7059,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     ndx=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
     ndy=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
 
-    //const long int idx_fst_crn_ll=0;
-    //const long int idx_fst_crn_lr=1;
-    //const long int idx_fst_crn_ur=2;
+    const long int idx_fst_crn_ll=0;
+    const long int idx_fst_crn_lr=1;
+    const long int idx_fst_crn_ur=2;
     const long int idx_fst_crn_ul=3;
 
     /* Node Ordering:
@@ -7113,7 +7112,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       dg_nd[(dg_idx+1L)*npe_nbr+1L]=srt_idx+fc_idx+2L;
     } /* !fc_idx */
     /* NP */
-    for(fc_idx=(lat_nbr-1L)*lon_nbr;fc_idx<fc_nbr;fc_idx++){
+    for(fc_idx=fc_nbr-lon_nbr;fc_idx<fc_nbr;fc_idx++){
+      /* Only one new edge per face in last row, easiest to count backwards from last edge */
       dg_idx=dg_nbr-(fc_nbr-fc_idx);
       /* NP faces require only only one new edge, Edge 0 */
       dg_nd[(dg_idx+0L)*npe_nbr+0L]=srt_idx+fc_idx-lon_nbr+1L;
@@ -7121,15 +7121,25 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !fc_idx */
 
     /* SP */
-    fc_idx=0;
-    fc_nd[fc_idx]=0;
+    for(fc_idx=0;fc_idx<lon_nbr;fc_idx++){
+      fc_nd[fc_idx*npf_nbr+0L]=srt_idx+0L;
+      fc_nd[fc_idx*npf_nbr+1L]=srt_idx+fc_idx+2L; /* NB: CCW */
+      fc_nd[fc_idx*npf_nbr+2L]=srt_idx+fc_idx+1L; /* NB: CCW */
+      fc_nd[fc_idx*npf_nbr+3L]=mss_val_int_out;
+    } /* !fc_idx */
     /* Mid */
-    for(fc_idx=0;fc_idx<fc_nbr;fc_idx++){
-      lat_idx=fc_idx%lon_nbr;
-      lon_idx=fc_idx-lat_idx*lon_nbr;
-      for(npf_idx=0;npf_idx<npf_nbr;npf_idx++){
-	fc_nd[fc_idx*npf_nbr+npf_idx]=0;
-      } /* !npf_idx */
+    for(fc_idx=lon_nbr;fc_idx<fc_nbr-lon_nbr;fc_idx++){
+      fc_nd[fc_idx*npf_nbr+idx_fst_crn_ll]=srt_idx+fc_idx-lon_nbr+1L;
+      fc_nd[fc_idx*npf_nbr+idx_fst_crn_lr]=srt_idx+fc_idx-lon_nbr+2L;
+      fc_nd[fc_idx*npf_nbr+idx_fst_crn_ur]=srt_idx+fc_idx+2L;
+      fc_nd[fc_idx*npf_nbr+idx_fst_crn_ul]=srt_idx+fc_idx+1L;
+    } /* !fc_idx */
+    /* NP */
+    for(fc_idx=fc_nbr-lon_nbr;fc_idx<fc_nbr;fc_idx++){
+      fc_nd[fc_idx*npf_nbr+0L]=srt_idx+nd_nbr-(fc_nbr-fc_idx)-2L;
+      fc_nd[fc_idx*npf_nbr+1L]=srt_idx+nd_nbr-(fc_nbr-fc_idx)-1L;
+      fc_nd[fc_idx*npf_nbr+2L]=srt_idx+nd_nbr-1L;
+      fc_nd[fc_idx*npf_nbr+3L]=mss_val_int_out;
     } /* !fc_idx */
     
     fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -7425,10 +7435,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     (void)nco_put_vara(out_id,msh_id,dmn_srt,dmn_cnt,&msh_val,(nc_type)NC_INT);
     dmn_srt[0]=dmn_srt[1]=0L;
     dmn_cnt[0]=dg_nbr;
-    dmn_cnt[1]=val_two;
+    dmn_cnt[1]=epf_nbr;
     (void)nco_put_vara(out_id,dg_nd_id,dmn_srt,dmn_cnt,dg_nd,(nc_type)NC_INT);
     dmn_srt[0]=dmn_srt[1]=0L;
-    dmn_cnt[0]=nd_nbr;
+    dmn_cnt[0]=fc_nbr;
     dmn_cnt[1]=npf_nbr;
     (void)nco_put_vara(out_id,fc_nd_id,dmn_srt,dmn_cnt,fc_nd,(nc_type)NC_INT);
     dmn_srt[0]=0L;
