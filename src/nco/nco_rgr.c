@@ -5071,6 +5071,21 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     if(att_nm) att_nm=(char *)nco_free(att_nm);
     if(att_val) att_val=(char *)nco_free(att_val);
 
+    if(flg_grd_2D){
+      att_nm=strdup("long_name");
+      att_val=strdup("Latitude quadrature weights (normalized to sum to 2.0 on global grids)");
+      aed_mtd.att_nm=att_nm;
+      aed_mtd.var_nm=lat_wgt_nm;
+      aed_mtd.id=lat_wgt_id;
+      aed_mtd.sz=strlen(att_val);
+      aed_mtd.type=NC_CHAR;
+      aed_mtd.val.cp=att_val;
+      aed_mtd.mode=aed_create;
+      (void)nco_aed_prc(out_id,lat_wgt_id,aed_mtd);
+      if(att_nm) att_nm=(char *)nco_free(att_nm);
+      if(att_val) att_val=(char *)nco_free(att_val);
+    } /* !flg_grd_out_rct */
+    
     att_nm=strdup("long_name");
     att_val=strdup("Longitude");
     aed_mtd.att_nm=att_nm;
@@ -5746,6 +5761,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     lon_typ=nco_grd_lon_nil;
     /* Assume rectangular grids that do not specify otherwise use quadrilaterals */
     if(dmn_id_bnd == NC_MIN_INT) grd_crn_nbr=4;
+    /* Sometimes we infer from a 2D grid, like those produced by nco_grd_mk(), that has bounds with nv=2
+       This signals rectangular gridcell bounds are interfaces not vertices (to save half the space)
+       These rectangles really have four corners so we change grd_crn_nbr (not bnd_nbr) accordingly */
+    if(grd_crn_nbr == 2) grd_crn_nbr=4;
     /* Convention is to archive only two bounds for rectangular grids (since sides are identical)
        Non-quadrilateral rectangular grids are untested */
     if(grd_crn_nbr == 4) bnd_nbr=2;
