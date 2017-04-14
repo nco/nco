@@ -1020,7 +1020,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
             fl_nm_lcl=fl_nm_lcl_tmp;
           } /* !HTTP_URL */
           /* Construct local storage filepath name */
-          fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1UL;
+          if(fl_nm_stub != fl_nm_lcl) fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1UL; else fl_pth_lcl_lng=0L;
           /* Allocate enough room for terminating NUL */
           fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1UL)*sizeof(char));
           (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
@@ -1034,8 +1034,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
         /* Does local filepath exist already on local system? */
         rcd_stt=stat(fl_pth_lcl_tmp,&stat_sct);
-        /* If not, then create local filepath */
-        if(rcd_stt != 0){
+        /* If not, then create local filepath if one is needed */
+        if(rcd_stt != 0 && fl_pth_lcl_lng > 0L){
           /* Allocate enough room for joining space ' ' and terminating NUL */
           cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_lng+2UL)*sizeof(char));
           (void)strcpy(cmd_sys,cmd_mkdir);
