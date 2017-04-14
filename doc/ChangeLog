@@ -1,12 +1,16 @@
+2017-04-14  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.6-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha05 final changes';git push
+	git tag -a 4.6.6-alpha05 -m 'Version 4.6.6-alpha05 new features: ncremap front-end from ncclimo; --cal finds climatology, bounds variables; mmr documentation; UGRID 2D works; hsi locations';git push --tags
+
+	* Hard-code Cori/Edison and Rhea hsi locations
+
 2017-04-13  Charlie Zender  <zender@uci.edu>
 
 	* Fix nco_grd_nfr() to infer 2D grids written by nco_grd_mk()
 
 	* Better annotate skeleton files in nco_grd_mk()
-
-	* NCO 4.6.6-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha05 final changes';git push
-	git tag -a 4.6.6-alpha05 -m 'Version 4.6.6-alpha05 new features: ncremap front-end from ncclimo; --cal finds climatology, bounds variables; mmr documentation';git push --tags
 
 	* Exit with clear message instead of core dump on missing files on HPSS systems with hsi command
 

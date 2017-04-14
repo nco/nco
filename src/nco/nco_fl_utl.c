@@ -998,9 +998,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         if(fl_pth_lcl == NULL){
           /* Derive path for storing local file from remote filename */
           (void)fprintf(stderr,"%s: INFO Unable to find file %s on local system. Found hsi command indicating presence of High Performance Storage System (HPSS). Will assume file is stored on HPSS. Received no local path information and so will try to derive suitable local filepath from given filename...\n",nco_prg_nm_get(),fl_nm_lcl);
-	  /* Search backwards from end for last path separator */
-          fl_nm_stub=strrchr(fl_nm_lcl,'/');
-	  if(fl_nm_stub){
+	  /* HPSS paths must begin with slash. Search backwards from end for last path separator. */
+	  if(fl_nm_lcl[0] == '/') fl_nm_stub=strrchr(fl_nm_lcl,'/');
+	  if(fl_nm_stub != fl_nm_lcl){
 	    /* Successful search points to slash, add one to point to stub */
 	    fl_nm_stub++;
 	  }else{
