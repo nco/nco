@@ -969,8 +969,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
           if(rcd_stt == 0) rmt_cmd=&nrnet;
         } /* end if */
 
-        /* Before we look for file on remote system, make sure
-        filename has correct syntax to exist on remote system */
+        /* Before we look for file on remote system, be sure
+	   filename has correct syntax to exist on remote system */
         if(rmt_cmd == &msread || rmt_cmd == &nrnet || rmt_cmd == &msrcp){
           if (fl_nm_rmt[0] != '/' || fl_nm_rmt[1] < 'A' || fl_nm_rmt[1] > 'Z'){
             (void)fprintf(stderr,"%s: ERROR %s is not on local filesystem and is not a syntactically valid filename on remote file system\n",nco_prg_nm_get(),fl_nm_rmt);
@@ -982,16 +982,17 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         /* NB: HPSS commands replaced MSS commands in NCO 4.0.8 in 201104 */
         if(rmt_cmd == NULL){
           /* Does hsi command exist on local system? */
-          rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire default */
+	  rcd_stt=stat("which hsi",&stat_sct);
+          if(rcd_stt != 0) rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire default */
           if(rcd_stt != 0) rcd_stt=stat("/opt/hpss/bin/hsi",&stat_sct); /* CISL alternate */
           if(rcd_stt != 0) rcd_stt=stat("/usr/common/mss/bin/hsi",&stat_sct); /* Cori/Edison */
-          if(rcd_stt != 0) rcd_stt=stat("/sw/rhea/hsi/5.0.2.p1/rhel6.7/bin/hsi",&stat_sct); /* Rhea */
 	  if(rcd_stt != 0) rcd_stt=stat("/ncar/opt/hpss/hsi",&stat_sct); /* Yellowstone default added to NCO 4.3.2 in 201306 */
           if(rcd_stt == 0) rmt_cmd=&hsiget;
         } /* end if */
 
         if(rmt_cmd == NULL){
-          (void)fprintf(stderr,"%s: ERROR file %s neither exists locally nor matches remote filename patterns\n",nco_prg_nm_get(),fl_nm_rmt);
+          (void)fprintf(stderr,"%s: ERROR file %s does not exist on local filesystem and does not match remote filename patterns (e.g., http://foo), nor was a High Performance Storage System (HPSS) detected.\n",nco_prg_nm_get(),fl_nm_rmt);
+	  (void)fprintf(stderr,"%s: HINT This error often occurs because of a simple filename typo or missing file. Please verify spelling/location of requested file.\n",nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
         } /* end if */
 
@@ -1010,7 +1011,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	  } /* !fl_nm_stb */
 	  /* HPSS has no restrictions on filename syntax, following is deprecated:
 	  (void)fprintf(stderr,"%s: ERROR %s unable to find path component of requested file %s. HPSS filenames must have a multi-component path structure (i.e., contain slashes).\n",nco_prg_nm_get(),fnc_nm,fl_nm_lcl);
-	  (void)fprintf(stderr,"%s: HINT This error often occurs because of a simple filename typo or missing input file. NCO calls exit() with a simpler error message when it cannot find a specified input file on systems without HPSS clients. NCO just performed and failed a more elaborate search for the file because this system appears to have hsi (see http://nco.sf.net/nco.html#hsi). Please verify spelling/location of requested input files.\n",nco_prg_nm_get());
+	  (void)fprintf(stderr,"%s: HINT This error often occurs because of a simple filename typo or missing file. NCO calls exit() with a simpler error message when it cannot find a specified file on systems without HPSS clients. NCO just performed and failed a more elaborate search for the file because this system appears to have hsi (see http://nco.sf.net/nco.html#hsi). Please verify spelling/location of requested file.\n",nco_prg_nm_get());
 	  nco_exit(EXIT_FAILURE); */
 	  if(HTTP_URL){
             /* Strip leading slash from fl_nm_lcl for HTTP files so, e.g., 
