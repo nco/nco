@@ -61,8 +61,7 @@ A. ncap2 now implements the CF cell_methods convention.
    ncap2 -s 'avg=one_dmn_rec_var.avg()' ~/nco/data/in.nc ~/foo.nc
    http://nco.sf.net/nco.html#cll_mth
 
-A. fxm: not done yet
-   Since 4.6.5 ncks has printed the human-legible calendar string
+A. Since 4.6.5 ncks has printed the human-legible calendar string
    corresponding to values with UDUnits date units (time since
    basetime, e.g., "days since 2000-01-01") and CF calendar attribute,
    if any. Now ncks also translates and prints time values associated
@@ -80,7 +79,13 @@ A. fxm: not done yet
    Does this work how you'd like? Let us know.
    http://nco.sf.net/nco.html#cal
 
+A. ncks now prints "(no units)" instead of "(null)" as the units
+   string for variables with no units.
+
 BUG FIXES:
+
+A. NCO now exits with a clear message instead of core dump on missing
+   files on HPSS systems with the hsi command.
 
 A. ncremap will no longer define mask variables in inferred grid
    files unless it finds a mask variable in the source file.
