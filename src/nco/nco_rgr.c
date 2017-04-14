@@ -517,7 +517,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 (rgr_sct * const rgr, /* I/O [sct] Regridding structure */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */
 {
-  /* Purpose: Regrid fields using external weights (i.e., a mapping file)
+  /* Purpose: Regrid fields using external weights contained in a mapfile
 
      Examine ESMF, SCRIP, Tempest map-files:
      ncks --cdl -M -m ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc | m
@@ -2540,7 +2540,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_val) att_val=(char *)nco_free(att_val);
 
   /* UGRID Conventions define "topology" and "modulo" attributes 
-     https://github.com/ugrid-conventions/ugrid-conventions/blob/master/ugrid-conventions.md
+     https://github.com/ugrid-conventions/ugrid-conventions
      My understanding is these should only be utilized for global grids */
   if(nco_rgr_typ == nco_rgr_grd_2D_to_2D){
     /* fxm: change this to check whether lon_spn >= 360 or nco_grd_xtn == global */
@@ -4098,7 +4098,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-120.0,-90.0 ~/nco/data/in.nc ~/foo.nc
 
      Global RLL skeleton:
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
      Curvilinear grids:
      ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Degenerate case.' --rgr crv=Y --rgr lon_crv=0.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
@@ -4955,6 +4955,32 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     if(att_nm) att_nm=(char *)nco_free(att_nm);
     if(att_val) att_val=(char *)nco_free(att_val);
     
+    att_nm=strdup("long_name");
+    att_val=strdup("Solid angle subtended by gridcell");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=area_nm;
+    aed_mtd.id=area_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,area_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("area");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=area_nm;
+    aed_mtd.id=area_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,area_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+    
     att_nm=strdup("units");
     att_val=strdup("steradian");
     aed_mtd.att_nm=att_nm;
@@ -4968,29 +4994,160 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     if(att_nm) att_nm=(char *)nco_free(att_nm);
     if(att_val) att_val=(char *)nco_free(att_val);
     
-    att_nm=strdup("units");
-    att_val=strdup("degrees");
+    att_nm=strdup("long_name");
+    att_val=strdup("Latitude");
     aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lat_nm_out;
+    aed_mtd.id=lat_id;
     aed_mtd.sz=strlen(att_val);
     aed_mtd.type=NC_CHAR;
     aed_mtd.val.cp=att_val;
     aed_mtd.mode=aed_create;
-    /* Add same units attribute to four different variables */
+    (void)nco_aed_prc(out_id,lat_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("latitude");
+    aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=lat_nm_out;
     aed_mtd.id=lat_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
     (void)nco_aed_prc(out_id,lat_id,aed_mtd);
-    aed_mtd.var_nm=lon_nm_out;
-    aed_mtd.id=lon_id;
-    (void)nco_aed_prc(out_id,lon_id,aed_mtd);
-    aed_mtd.var_nm=lat_bnd_nm;
-    aed_mtd.id=lat_bnd_id;
-    (void)nco_aed_prc(out_id,lat_bnd_id,aed_mtd);
-    aed_mtd.var_nm=lon_bnd_nm;
-    aed_mtd.id=lon_bnd_id;
-    (void)nco_aed_prc(out_id,lon_bnd_id,aed_mtd);
     if(att_nm) att_nm=(char *)nco_free(att_nm);
     if(att_val) att_val=(char *)nco_free(att_val);
     
+    att_nm=strdup("units");
+    att_val=strdup("degrees_north");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lat_nm_out;
+    aed_mtd.id=lat_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lat_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+    
+    att_nm=strdup("axis");
+    att_val=strdup("Y");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lat_nm_out;
+    aed_mtd.id=lat_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lat_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("bounds");
+    att_val=lat_bnd_nm;
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lat_nm_out;
+    aed_mtd.id=lat_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lat_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+
+    att_nm=strdup("long_name");
+    if(flg_grd_2D) att_val=strdup("Gridcell latitude interfaces"); else att_val=strdup("Gridcell latitude vertices");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lat_bnd_nm;
+    aed_mtd.id=lat_bnd_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lat_bnd_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Longitude");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lon_nm_out;
+    aed_mtd.id=lon_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lon_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("longitude");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lon_nm_out;
+    aed_mtd.id=lon_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lon_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+    
+    att_nm=strdup("units");
+    att_val=strdup("degrees_east");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lon_nm_out;
+    aed_mtd.id=lon_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lon_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+    
+    att_nm=strdup("axis");
+    att_val=strdup("X");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lon_nm_out;
+    aed_mtd.id=lon_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lon_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("bounds");
+    att_val=lon_bnd_nm;
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lon_nm_out;
+    aed_mtd.id=lon_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lon_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+
+    att_nm=strdup("long_name");
+    if(flg_grd_2D) att_val=strdup("Gridcell longitude interfaces"); else att_val=strdup("Gridcell longitude vertices");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=lon_bnd_nm;
+    aed_mtd.id=lon_bnd_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,lon_bnd_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
     /* Begin data mode */
     (void)nco_enddef(out_id);
     
@@ -6795,7 +6952,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(fl_out){
     /* Test UGRID:
        Documentation: https://github.com/ugrid-conventions/ugrid-conventions
-       ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/data/grids/180x360_SCRIP.20150901.nc ~/foo.nc
+       Procedure: Create 1x1 skeleton file, infer UGRID and SCRIP grids from it
+       ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${HOME}/skl_180x360.nc --rgr grid=${HOME}/grd_180x360_SCRIP.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+       ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
        ncks --cdl -v mesh_node_y ~/grd_ugrid.nc
        ncks --cdl -v grid_center_lat,grid_corner_lat -d grid_size,0,,360 -d grid_corners,0,3 ~/grd_scrip.nc
        ncks --cdl -m -M ~/grd_ugrid.nc */
