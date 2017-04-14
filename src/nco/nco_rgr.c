@@ -6976,30 +6976,42 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ncks --cdl -v grid_center_lat,grid_corner_lat -d grid_size,0,,360 -d grid_corners,0,3 ~/grd_scrip.nc
        ncks --cdl -m -M ~/grd_ugrid.nc */
 
+    char *dgx_nm=NULL_CEWI; /* [sng] Name of edge_coordinates x variable */
+    char *dgy_nm=NULL_CEWI; /* [sng] Name of edge_coordinates y variable */
     char *dg_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as edges */
     char *dg_nd_nm=NULL_CEWI; /* [sng] Name of edge_node_connectivity variable */
+    char *fcx_nm=NULL_CEWI; /* [sng] Name of face_coordinates x variable */
+    char *fcy_nm=NULL_CEWI; /* [sng] Name of face_coordinates y variable */
     char *fc_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as faces */
     char *fc_nd_nm=NULL_CEWI; /* [sng] Name of face_node_connectivity variable */
     char *msh_nm=NULL_CEWI; /* [sng] Name of mesh topology variable */
     char *nd_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as nodes */
-    char *ndx_nm=NULL_CEWI; /* [sng] Name of mesh topology variable */
-    char *ndy_nm=NULL_CEWI; /* [sng] Name of mesh topology variable */
+    char *ndx_nm=NULL_CEWI; /* [sng] Name of node_coordinates x variable */
+    char *ndy_nm=NULL_CEWI; /* [sng] Name of node_coordinates y variable */
     char *npe_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as nodes-per-edge */
     char *npf_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as nodes-per-face */
     
     double *ndx=NULL_CEWI; /* [dgr] Longitude of nodes */
     double *ndy=NULL_CEWI; /* [dgr] Latitude  of nodes */
+    double *dgx=NULL_CEWI; /* [dgr] Characteristic longitude of edges */
+    double *dgy=NULL_CEWI; /* [dgr] Characteristic latitude  of edges */
+    double *fcx=NULL_CEWI; /* [dgr] Characteristic longitude of faces */
+    double *fcy=NULL_CEWI; /* [dgr] Characteristic latitude  of faces */
 
     int *dg_nd; /* [idx] edge_node_connectivity variable */
     int *fc_nd; /* [idx] face_node_connectivity variable */
 
     int dg_nd_id=NC_MIN_INT; /* [id] edge_node_connectivity variable ID */
+    int dgx_id=NC_MIN_INT; /* [id] Characteristic longitude of edges variable ID */
+    int dgy_id=NC_MIN_INT; /* [id] Characteristic latitude  of edges variable ID */
     int dmn_id_dg=NC_MIN_INT; /* [id] Dimension ID for edges */
     int dmn_id_fc=NC_MIN_INT; /* [id] Dimension ID for faces */
     int dmn_id_nd=NC_MIN_INT; /* [id] Dimension ID for nodes */
     int dmn_id_npe=NC_MIN_INT; /* [id] Dimension ID for nodes-per-edge */
     int dmn_id_npf=NC_MIN_INT; /* [id] Dimension ID for nodes-per-face */
     int fc_nd_id=NC_MIN_INT; /* [id] face_node_connectivity variable ID */
+    int fcx_id=NC_MIN_INT; /* [id] Characteristic longitude of faces variable ID */
+    int fcy_id=NC_MIN_INT; /* [id] Characteristic latitude  of faces variable ID */
     int msh_id=NC_MIN_INT; /* [id] Mesh topology variable ID */
     int msh_val=42; /* [id] Mesh topology variable value from Monty Python */
     int ndx_id=NC_MIN_INT; /* [id] Longitude of mesh nodes variable ID */
@@ -7016,7 +7028,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     long nd_nbr=NC_MIN_INT64; /* [nbr] Number of nodes in mesh */
     long srt_idx=0; /* [idx] start_index (C/Fortran) for edge_nodes, face_nodes */
 
+    if(!dgx_nm) dgx_nm=(char *)strdup("mesh_edge_x");
+    if(!dgx_nm) dgx_nm=(char *)strdup("mesh_edge_y");
     if(!dg_dmn_nm) dg_dmn_nm=(char *)strdup("nEdges");
+    if(!fcx_nm) fcx_nm=(char *)strdup("mesh_face_x");
+    if(!fcy_nm) fcy_nm=(char *)strdup("mesh_face_y");
     if(!fc_dmn_nm) fc_dmn_nm=(char *)strdup("nFaces");
     if(!dg_nd_nm) dg_nd_nm=(char *)strdup("mesh_edge_nodes");
     if(!fc_nd_nm) fc_nd_nm=(char *)strdup("mesh_face_nodes");
@@ -7141,7 +7157,20 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       fc_nd[fc_idx*npf_nbr+2L]=srt_idx+nd_nbr-1L;
       fc_nd[fc_idx*npf_nbr+3L]=mss_val_int_out;
     } /* !fc_idx */
-    
+
+    /* Characteristic coordinates */
+    for(dg_idx=0;dg_idx<dg_nbr-1L;dg_idx++){
+      idx=dg_idx*npe_nbr;
+      dgx[dg_idx]=0.5*(ndx[dg_nd[idx+0]]+ndx[dg_nd[idx+1]]);
+      dgy[dg_idx]=0.5*(ndy[dg_nd[idx+0]]+ndy[dg_nd[idx+1]]);
+    } /* !dg_idx */
+    for(fc_idx=0;fc_idx<fc_nbr-1L;fc_idx++){
+      idx=fc_idx*npf_nbr;
+      /* fxm for fcx use nco_lon_crn_avg_brnch() and 3-node version too */
+      if(fc_nd[idx+3] != mss_val_int_out) fcx[fc_idx]=0.25*(ndx[fc_nd[idx+0]]+ndx[fc_nd[idx+1]]+ndx[fc_nd[idx+2]]+ndx[fc_nd[idx+3]]); else fcx[fc_idx]=0.33*(ndx[fc_nd[idx+0]]+ndx[fc_nd[idx+1]]+ndx[fc_nd[idx+2]]);
+      if(fc_nd[idx+3] != mss_val_int_out) fcy[fc_idx]=0.25*(ndy[fc_nd[idx+0]]+ndy[fc_nd[idx+1]]+ndy[fc_nd[idx+2]]+ndy[fc_nd[idx+3]]); else fcy[fc_idx]=0.33*(ndy[fc_nd[idx+0]]+ndy[fc_nd[idx+1]]+ndy[fc_nd[idx+2]]);
+    } /* !fc_idx */
+
     fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
     rcd=nco_def_dim(out_id,dg_dmn_nm,dg_nbr,&dmn_id_dg);
@@ -7159,6 +7188,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     rcd=nco_def_var(out_id,msh_nm,(nc_type)NC_INT,dmn_nbr_0D,(int *)NULL,&msh_id);
     rcd=nco_def_var(out_id,ndx_nm,crd_typ,dmn_nbr_1D,&dmn_id_nd,&ndx_id);
     rcd=nco_def_var(out_id,ndy_nm,crd_typ,dmn_nbr_1D,&dmn_id_nd,&ndy_id);
+    rcd=nco_def_var(out_id,dgx_nm,crd_typ,dmn_nbr_1D,&dmn_id_dg,&dgx_id);
+    rcd=nco_def_var(out_id,dgy_nm,crd_typ,dmn_nbr_1D,&dmn_id_dg,&dgy_id);
+    rcd=nco_def_var(out_id,fcx_nm,crd_typ,dmn_nbr_1D,&dmn_id_fc,&fcx_id);
+    rcd=nco_def_var(out_id,fcy_nm,crd_typ,dmn_nbr_1D,&dmn_id_fc,&fcy_id);
 
     att_nm=strdup("Conventions");
     att_val=strdup("CF-1.6, UGRID-1.0");
@@ -7240,6 +7273,46 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(att_nm) att_nm=(char *)nco_free(att_nm);
     if(att_val) att_val=(char *)nco_free(att_val);
 
+    att_nm=strdup("face_node_connectivity");
+    att_val=strdup(fc_nd_nm);
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("face_coordinates");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.sz=strlen(fcx_nm)+strlen(fcy_nm)+1L;
+    att_val=(char *)nco_malloc((aed_mtd.sz+1L)*nco_typ_lng(aed_mtd.type));
+    (void)sprintf(att_val,"%s %s",fcx_nm,fcy_nm);
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("face_dimension");
+    att_val=strdup(fc_dmn_nm);
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
     att_nm=strdup("edge_node_connectivity");
     att_val=strdup(dg_nd_nm);
     aed_mtd.att_nm=att_nm;
@@ -7253,8 +7326,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(att_nm) att_nm=(char *)nco_free(att_nm);
     if(att_val) att_val=(char *)nco_free(att_val);
 
-    att_nm=strdup("face_node_connectivity");
-    att_val=strdup(fc_nd_nm);
+    att_nm=strdup("edge_coordinates");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msh_nm;
+    aed_mtd.id=msh_id;
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.sz=strlen(dgx_nm)+strlen(dgy_nm)+1L;
+    att_val=(char *)nco_malloc((aed_mtd.sz+1L)*nco_typ_lng(aed_mtd.type));
+    (void)sprintf(att_val,"%s %s",dgx_nm,dgy_nm);
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msh_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("edge_dimension");
+    att_val=strdup(dg_dmn_nm);
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=msh_nm;
     aed_mtd.id=msh_id;
@@ -7447,22 +7534,38 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     dmn_srt[0]=0L;
     dmn_cnt[0]=nd_nbr;
     (void)nco_put_vara(out_id,ndy_id,dmn_srt,dmn_cnt,ndy,crd_typ);
+    dmn_srt[0]=0L;
+    dmn_cnt[0]=dg_nbr;
+    (void)nco_put_vara(out_id,dgx_id,dmn_srt,dmn_cnt,dgx,crd_typ);
+    (void)nco_put_vara(out_id,dgy_id,dmn_srt,dmn_cnt,dgy,crd_typ);
+    dmn_srt[0]=0L;
+    dmn_cnt[0]=fc_nbr;
+    (void)nco_put_vara(out_id,fcx_id,dmn_srt,dmn_cnt,fcx,crd_typ);
+    (void)nco_put_vara(out_id,fcy_id,dmn_srt,dmn_cnt,fcy,crd_typ);
 
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
     (void)fprintf(stdout,"%s: DBG %s ending UGRID section\n",nco_prg_nm_get(),fnc_nm);
 
     /* Free memory associated with output file */
+    if(dgx) dgx=(double *)nco_free(dgx);
+    if(dgy) dgy=(double *)nco_free(dgy);
     if(dg_nd) dg_nd=(int *)nco_free(dg_nd);
+    if(fcx) fcx=(double *)nco_free(fcx);
+    if(fcy) fcy=(double *)nco_free(fcy);
     if(fc_nd) fc_nd=(int *)nco_free(fc_nd);
     if(ndx) ndx=(double *)nco_free(ndx);
     if(ndy) ndy=(double *)nco_free(ndy);
 
     /* Free strings */
-    if(dg_nd_nm) dg_nd_nm=(char *)nco_free(dg_nd_nm);
-    if(fc_nd_nm) fc_nd_nm=(char *)nco_free(fc_nd_nm);
+    if(dgx_nm) dgx_nm=(char *)nco_free(dgx_nm);
+    if(dgy_nm) dgy_nm=(char *)nco_free(dgy_nm);
     if(dg_dmn_nm) dg_dmn_nm=(char *)nco_free(dg_dmn_nm);
+    if(dg_nd_nm) dg_nd_nm=(char *)nco_free(dg_nd_nm);
+    if(fcx_nm) fcx_nm=(char *)nco_free(fcx_nm);
+    if(fcy_nm) fcy_nm=(char *)nco_free(fcy_nm);
     if(fc_dmn_nm) fc_dmn_nm=(char *)nco_free(fc_dmn_nm);
+    if(fc_nd_nm) fc_nd_nm=(char *)nco_free(fc_nd_nm);
     if(msh_nm) msh_nm=(char *)nco_free(msh_nm);
     if(nd_dmn_nm) nd_dmn_nm=(char *)nco_free(nd_dmn_nm);
     if(ndx_nm) ndx_nm=(char *)nco_free(ndx_nm);
