@@ -6971,8 +6971,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${HOME}/skl_180x360.nc --rgr grid=${HOME}/grd_180x360_SCRIP.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
        ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
        ncks --cdl -v mesh_node_y ~/grd_ugrid.nc
-       ncks --cdl -v mesh_face_nodes ~/grd_ugrid.nc
-       ncks --cdl -v mesh_edge_nodes ~/grd_ugrid.nc
+       ncks --cdl -v mesh_face_nodes -d nFaces,0 ~/grd_ugrid.nc
+       ncks --cdl -v mesh_edge_nodes -d nEdges,0 ~/grd_ugrid.nc
        ncks --cdl -v grid_center_lat,grid_corner_lat -d grid_size,0,,360 -d grid_corners,0,3 ~/grd_scrip.nc
        ncks --cdl -m -M ~/grd_ugrid.nc */
 
@@ -7007,7 +7007,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     
     const long fc_nbr=grd_sz_nbr; /* [nbr] Number of faces in mesh */
     const long npe_nbr=2; /* [nbr] Number of nodes per edge */
-    const long npf_nbr=grd_crn_nbr; /* [nbr] Number of nodes in mesh */
+    const long npf_nbr=grd_crn_nbr; /* [nbr] Number of nodes per face */
 
     long dg_idx; /* [idx] Counting index for edges */
     long dg_nbr=NC_MIN_INT64; /* [nbr] Number of edges in mesh */
@@ -7037,12 +7037,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       case nco_grd_lat_fv:
       case nco_grd_lat_eqa:
       case nco_grd_lat_gss:
-	/* Edges and nodes counted from South Pole (SP) to North Pole (NP) */
-	dg_nbr=lon_nbr*2+ /* SP: cells_per_row*unique_sides_per_cell */
-	  (lat_nbr-2)*lon_nbr*2+ /* Mid: rows*cells_per_row*unique_sides_per_cell */
-	  lon_nbr*1; /* NP: cells_per_row*unique_sides_per_cell */
-	nd_nbr=1+lon_nbr*1+ /* SP: SP+cells_per_row*unique_nodes_per_cell */
-	  (lat_nbr-2)*lon_nbr*1+ /* Mid: rows*cells_per_row*unique_nodes_per_cell */
+	/* Numbers of unique edges and nodes counted from South Pole (SP) to North Pole (NP) */
+	dg_nbr=lon_nbr*2+ /* SP: cells_per_lat*unique_edges_per_cell */
+	  (lat_nbr-2)*lon_nbr*2+ /* Mid: lats*cells_per_lat*unique_edges_per_cell */
+	  lon_nbr*1; /* NP: cells_per_lat*unique_edges_per_cell */
+	nd_nbr=1+lon_nbr*1+ /* SP: SP+cells_per_lat*unique_nodes_per_cell */
+	  (lat_nbr-2)*lon_nbr*1+ /* Mid: lats*cells_per_lat*unique_nodes_per_cell */
 	  1; /* NP: NP */
 	break;
       case nco_grd_lat_unk:
@@ -7055,7 +7055,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       nco_exit(EXIT_FAILURE);
     } /* !flg_grd */
     
-    dg_nd=(int *)nco_malloc(2*dg_nbr*nco_typ_lng(NC_INT));
+    dg_nd=(int *)nco_malloc(dg_nbr*npe_nbr*nco_typ_lng(NC_INT));
     fc_nd=(int *)nco_malloc(fc_nbr*npf_nbr*nco_typ_lng(NC_INT));
     ndx=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
     ndy=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
@@ -7065,8 +7065,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     //const long int idx_fst_crn_ur=2;
     const long int idx_fst_crn_ul=3;
 
+    /* Node Ordering:
+       Each interior face requires one new node
+       Node 0 at SP
+       New latitude row moves next node North
+       Add nodes to run West->East */
     /* SP */
-    ndx[0]=lon_crn[0];
+    ndx[0]=lon_crn[0]; /* Longitude degenerate at SP, NP, keep same longiture as corner array */
     ndy[0]=lat_crn[0];
     /* Mid */
     for(nd_idx=1;nd_idx<nd_nbr-1L;nd_idx++){
@@ -7080,24 +7085,39 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     ndx[nd_nbr-1L]=lon_crn[(lon_nbr-1)*grd_crn_nbr+idx_fst_crn_ul];
     ndy[nd_nbr-1L]=lat_crn[(lat_nbr-1)*grd_crn_nbr+idx_fst_crn_ul];
 
+    /* Edge Ordering:
+       epf_nbr is number of distinct edges-per-face (incremental, for interior cells)
+       Each additional interior rectangular gridcell requires two new edges:
+       Edge 0 runs South->North for all cells
+       Edge 1 runs West->East for all cells
+       NP row requires only one new edge per face */
     /* SP */
     const int epf_nbr=2; /* [nbr] Number of distinct edges-per-face (incremental, for interior cells) */
     for(fc_idx=0;fc_idx<lon_nbr;fc_idx++){
       dg_idx=fc_idx*epf_nbr;
-      dg_nd[dg_idx*npe_nbr+0L]=srt_idx;
-      dg_nd[dg_idx*npe_nbr+1L]=srt_idx+dg_idx*npe_nbr+1L;
+      /* Edge 0 */
+      dg_nd[(dg_idx+0L)*npe_nbr+0L]=srt_idx;
+      dg_nd[(dg_idx+0L)*npe_nbr+1L]=srt_idx+fc_idx+1L;
+      /* Edge 1 */
+      dg_nd[(dg_idx+1L)*npe_nbr+0L]=srt_idx+fc_idx+1L;
+      dg_nd[(dg_idx+1L)*npe_nbr+1L]=srt_idx+fc_idx+2L;
     } /* !fc_idx */
     /* Mid */
     for(fc_idx=lon_nbr;fc_idx<(lat_nbr-1L)*lon_nbr;fc_idx++){
       dg_idx=fc_idx*epf_nbr;
-      dg_nd[dg_idx*npe_nbr+0L]=srt_idx+fc_idx-lon_nbr+1L;
-      dg_nd[dg_idx*npe_nbr+1L]=srt_idx+fc_idx+1L;
+      /* Edge 0 */
+      dg_nd[(dg_idx+0L)*npe_nbr+0L]=srt_idx+fc_idx-lon_nbr+1L;
+      dg_nd[(dg_idx+0L)*npe_nbr+1L]=srt_idx+fc_idx+1L;
+      /* Edge 1 */
+      dg_nd[(dg_idx+1L)*npe_nbr+0L]=srt_idx+fc_idx+1L;
+      dg_nd[(dg_idx+1L)*npe_nbr+1L]=srt_idx+fc_idx+2L;
     } /* !fc_idx */
     /* NP */
     for(fc_idx=(lat_nbr-1L)*lon_nbr;fc_idx<fc_nbr;fc_idx++){
-      dg_idx=fc_idx*epf_nbr;
-      dg_nd[dg_idx*npe_nbr+0L]=srt_idx+fc_idx+1L;
-      dg_nd[dg_idx*npe_nbr+1L]=srt_idx+nd_nbr-1L;
+      dg_idx=dg_nbr-(fc_nbr-fc_idx);
+      /* NP faces require only only one new edge, Edge 0 */
+      dg_nd[(dg_idx+0L)*npe_nbr+0L]=srt_idx+fc_idx-lon_nbr+1L;
+      dg_nd[(dg_idx+0L)*npe_nbr+1L]=srt_idx+nd_nbr-1L;
     } /* !fc_idx */
 
     /* SP */
