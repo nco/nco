@@ -6413,15 +6413,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	lat_bnd[2*idx+1]=lat_ntf[idx+1];
       } /* !idx */
     }else{ /* !(lat_bnd_id && lon_bnd_id) */
-      /* Derive interfaces (ntf) and bounds (bnd) from corner data on disk */
-      for(idx=0;idx<lon_nbr;idx++){
-	lon_ntf[idx]=lon_bnd[2*idx];
-	lon_ntf[idx+1]=lon_bnd[2*idx+1];
-      } /* !idx */
-      for(idx=0;idx<lat_nbr;idx++){
-	lat_ntf[idx]=lat_bnd[2*idx];
-	lat_ntf[idx+1]=lat_bnd[2*idx+1];
-      } /* !idx */
+      /* Derive interfaces (ntf) from bounds (bnd) data on disk */
+      for(idx=0;idx<lon_nbr;idx++) lon_ntf[idx]=lon_bnd[2*idx];
+      lon_ntf[lon_nbr]=lon_bnd[2*lon_nbr-1];
+      for(idx=0;idx<lat_nbr;idx++) lat_ntf[idx]=lat_bnd[2*idx];
+      lat_ntf[lat_nbr]=lat_bnd[2*lat_nbr-1];
       lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
       lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
     } /* !(lat_bnd_id && lon_bnd_id) */
@@ -6976,6 +6972,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
        ncks --cdl -v mesh_node_y ~/grd_ugrid.nc
        ncks --cdl -v grid_center_lat,grid_corner_lat -d grid_size,0,,360 -d grid_corners,0,3 ~/grd_scrip.nc
+       ncks --cdl -v grid_center_lon,grid_corner_lon -d grid_size,0,,360 -d grid_corners,0,3 ~/grd_scrip.nc
        ncks --cdl -m -M ~/grd_ugrid.nc */
 
     char *dg_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as edges */
@@ -7083,7 +7080,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     ndy[nd_nbr-1L]=lat_crn[(lat_nbr-1)*grd_crn_nbr+idx_fst_crn_ur];
 
     /* SP */
-    const int epf_nbr=2; /* [nbr] Number of distinct edges-per-face */
+    const int epf_nbr=2; /* [nbr] Number of distinct edges-per-face (incremental, for interior cells) */
     for(fc_idx=0;fc_idx<lon_nbr;fc_idx++){
       dg_idx=fc_idx*epf_nbr;
       dg_nd[dg_idx*npe_nbr+0L]=srt_idx;
@@ -7102,13 +7099,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       dg_nd[dg_idx*npe_nbr+1L]=srt_idx+nd_nbr-1L;
     } /* !fc_idx */
 
-    /* Mid */
-    for(dg_idx=0;dg_idx<dg_nbr-1;dg_idx++){
-      fc_idx=dg_idx%epf_nbr;
-      dg_nd[dg_idx*npe_nbr+0L]=srt_idx+dg_idx*npe_nbr;
-      dg_nd[dg_idx*npe_nbr+1L]=srt_idx+dg_idx*npe_nbr+1L;
-    } /* !dg_idx */
-
     /* SP */
     fc_idx=0;
     fc_nd[fc_idx]=0;
@@ -7117,7 +7107,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       lat_idx=fc_idx%lon_nbr;
       lon_idx=fc_idx-lat_idx*lon_nbr;
       for(npf_idx=0;npf_idx<npf_nbr;npf_idx++){
-	fc_nd[fc_idx*npf_nbr+nd_idx]=0;
+	fc_nd[fc_idx*npf_nbr+npf_idx]=0;
       } /* !npf_idx */
     } /* !fc_idx */
     
