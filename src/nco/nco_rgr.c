@@ -6971,8 +6971,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${HOME}/skl_180x360.nc --rgr grid=${HOME}/grd_180x360_SCRIP.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
        ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
        ncks --cdl -v mesh_node_y ~/grd_ugrid.nc
+       ncks --cdl -v mesh_face_nodes ~/grd_ugrid.nc
+       ncks --cdl -v mesh_edge_nodes ~/grd_ugrid.nc
        ncks --cdl -v grid_center_lat,grid_corner_lat -d grid_size,0,,360 -d grid_corners,0,3 ~/grd_scrip.nc
-       ncks --cdl -v grid_center_lon,grid_corner_lon -d grid_size,0,,360 -d grid_corners,0,3 ~/grd_scrip.nc
        ncks --cdl -m -M ~/grd_ugrid.nc */
 
     char *dg_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as edges */
@@ -7061,8 +7062,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
     //const long int idx_fst_crn_ll=0;
     //const long int idx_fst_crn_lr=1;
-    const long int idx_fst_crn_ur=2;
-    //const long int idx_fst_crn_ul=3;
+    //const long int idx_fst_crn_ur=2;
+    const long int idx_fst_crn_ul=3;
 
     /* SP */
     ndx[0]=lon_crn[0];
@@ -7072,12 +7073,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       fc_idx=nd_idx-1L;
       lat_idx=fc_idx/lon_nbr;
       lon_idx=fc_idx%lon_nbr;
-      ndx[nd_idx]=lon_crn[lon_idx*grd_crn_nbr+idx_fst_crn_ur];
-      ndy[nd_idx]=lat_crn[lat_idx*grd_crn_nbr+idx_fst_crn_ur];
+      ndx[nd_idx]=lon_crn[lon_idx*grd_crn_nbr+idx_fst_crn_ul];
+      ndy[nd_idx]=lat_crn[lat_idx*grd_crn_nbr+idx_fst_crn_ul];
     } /* !nd_idx */
     /* NP */
-    ndx[nd_nbr-1L]=lon_crn[(lon_nbr-1)*grd_crn_nbr+idx_fst_crn_ur];
-    ndy[nd_nbr-1L]=lat_crn[(lat_nbr-1)*grd_crn_nbr+idx_fst_crn_ur];
+    ndx[nd_nbr-1L]=lon_crn[(lon_nbr-1)*grd_crn_nbr+idx_fst_crn_ul];
+    ndy[nd_nbr-1L]=lat_crn[(lat_nbr-1)*grd_crn_nbr+idx_fst_crn_ul];
 
     /* SP */
     const int epf_nbr=2; /* [nbr] Number of distinct edges-per-face (incremental, for interior cells) */
