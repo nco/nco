@@ -249,6 +249,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
+  rgr->flg_stg=True; /* [flg] Write staggered grid with FV output */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
   rgr->grd_typ=nco_grd_2D_eqa; /* [enm] Grid type */
   rgr->idx_dbg=0; /* [idx] Index of gridcell for debugging */
@@ -298,6 +299,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_nfr=True;
       continue;
     } /* !infer */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_stagger") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_stg")){
+      rgr->flg_stg=False;
+      continue;
+    } /* !stagger */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"grd_ttl")){
       if(rgr->grd_ttl) rgr->grd_ttl=(char *)nco_free(rgr->grd_ttl);
       rgr->grd_ttl=(char *)strdup(rgr_lst[rgr_var_idx].val);
@@ -623,6 +628,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_dgn_area_out=False; /* [flg] Diagnose area_out from grid boundaries */
   nco_bool flg_bnd_1D_usable=False; /* [flg] Usable 1D cell vertices exist */
+  nco_bool flg_stg=rgr->flg_stg; /* [flg] Write staggered grid with FV output */
   
   nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
   nco_grd_lat_typ_enm nco_grd_lat_typ=nco_grd_lat_nil; /* [enm] Latitude grid-type enum */
@@ -1301,7 +1307,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output longitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(nco_grd_lon_typ));
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed output grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
     
-    if(nco_grd_lat_typ == nco_grd_lat_fv){
+    if(nco_grd_lat_typ == nco_grd_lat_fv && flg_stg){
       slat_ctr_out=(double *)nco_malloc(slat_nbr_out*nco_typ_lng(crd_typ_out));
       slat_wgt_out=(double *)nco_malloc(slat_nbr_out*nco_typ_lng(crd_typ_out));
       slon_ctr_out=(double *)nco_malloc(slon_nbr_out*nco_typ_lng(crd_typ_out));
@@ -1975,7 +1981,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     lat_bnd_nm_out=rgr->lat_bnd_nm;
     lon_bnd_nm_out=rgr->lon_bnd_nm;
   } /* !flg_grd_out_2D */
-  if(nco_grd_lat_typ == nco_grd_lat_fv){
+  if(nco_grd_lat_typ == nco_grd_lat_fv && flg_stg){
     slat_nm_out=strdup("slat");
     slat_wgt_nm_out=strdup("w_stag");
     slon_nm_out=strdup("slon");
@@ -2022,7 +2028,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(flg_grd_out_2D){
     rcd+=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
     rcd+=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
-    if(nco_grd_lat_typ == nco_grd_lat_fv){
+    if(nco_grd_lat_typ == nco_grd_lat_fv && flg_stg){
       rcd+=nco_def_dim(out_id,slat_nm_out,slat_nbr_out,&dmn_id_slat);
       rcd+=nco_def_dim(out_id,slon_nm_out,slon_nbr_out,&dmn_id_slon);
     } /* !nco_grd_lat_fv */
@@ -2112,7 +2118,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon,&lon_out_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_out_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    if(nco_grd_lat_typ == nco_grd_lat_fv){
+    if(nco_grd_lat_typ == nco_grd_lat_fv && flg_stg){
       rcd+=nco_def_var(out_id,slat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_slat,&slat_out_id);
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,slat_out_id,shuffle,deflate,dfl_lvl);
       var_crt_nbr++;
@@ -2645,7 +2651,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
-  if(nco_grd_lat_typ == nco_grd_lat_fv){
+  if(nco_grd_lat_typ == nco_grd_lat_fv && flg_stg){
     att_nm=strdup("long_name");
     att_val=strdup("Latitude for staggered FV grid");
     aed_mtd.att_nm=att_nm;
@@ -2782,7 +2788,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(att_val_cll_msr) att_val_cll_msr=(char *)nco_free(att_val_cll_msr);
   } /* !flg_cll_msr */
 
-  if(nco_grd_lat_typ == nco_grd_lat_fv){
+  if(nco_grd_lat_typ == nco_grd_lat_fv && flg_stg){
     if(slat_nm_out) slat_nm_out=(char *)nco_free(slat_nm_out);
     if(slat_wgt_nm_out) slat_wgt_nm_out=(char *)nco_free(slat_wgt_nm_out);
     if(slon_nm_out) slon_nm_out=(char *)nco_free(slon_nm_out);
@@ -2839,7 +2845,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_srt_out[0]=0L;
     dmn_cnt_tuo[0]=lon_nbr_out;
     (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_tuo,lon_ctr_out,crd_typ_out);
-    if(nco_grd_lat_typ == nco_grd_lat_fv){
+    if(nco_grd_lat_typ == nco_grd_lat_fv && flg_stg){
       dmn_srt_out[0]=0L;
       dmn_cnt_tuo[0]=slat_nbr_out;
       (void)nco_put_vara(out_id,slat_out_id,dmn_srt_out,dmn_cnt_tuo,slat_ctr_out,crd_typ_out);

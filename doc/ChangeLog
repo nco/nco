@@ -1,5 +1,7 @@
 2017-04-14  Charlie Zender  <zender@uci.edu>
 
+	* Regridder implement no_stg flag to omit staggered FV grid information
+
 	* Regridder add valid_min/max to lat/lon
 
 	* --lst_rnk_ge2 successfully eliminates grid variables in generic cases

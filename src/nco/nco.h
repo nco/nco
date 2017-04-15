@@ -1149,6 +1149,7 @@ extern "C" {
     nco_bool flg_map; /* [flg] User-specified mapping weights */
     nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
+    nco_bool flg_stg; /* [flg] Write staggered grid with FV output */
     nco_bool flg_usr_rqs; /* [flg] User requested regridding */
   } rgr_sct; /* end Regrid structure */
 
