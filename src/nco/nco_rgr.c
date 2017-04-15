@@ -6971,8 +6971,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${HOME}/skl_180x360.nc --rgr grid=${HOME}/grd_180x360_SCRIP.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
        ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
        ncks --cdl -v mesh_node_y ~/grd_ugrid.nc
-       ncks --cdl -v mesh_face_nodes -d nFaces,0 ~/grd_ugrid.nc
-       ncks --cdl -v mesh_edge_nodes -d nEdges,0 ~/grd_ugrid.nc
+       ncks --cdl -v mesh_face_nodes,mesh_face_x,mesh_face_y -d nFaces,0 ~/grd_ugrid.nc
+       ncks --cdl -v mesh_edge_nodes,mesh_edge_x,mesh_edge_y -d nEdges,0 ~/grd_ugrid.nc
        ncks --cdl -v grid_center_lat,grid_corner_lat -d grid_size,0,,360 -d grid_corners,0,3 ~/grd_scrip.nc
        ncks --cdl -m -M ~/grd_ugrid.nc */
 
@@ -6991,12 +6991,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     char *npe_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as nodes-per-edge */
     char *npf_dmn_nm=NULL_CEWI; /* [sng] Name of dimension to recognize as nodes-per-face */
     
-    double *ndx=NULL_CEWI; /* [dgr] Longitude of nodes */
-    double *ndy=NULL_CEWI; /* [dgr] Latitude  of nodes */
     double *dgx=NULL_CEWI; /* [dgr] Characteristic longitude of edges */
     double *dgy=NULL_CEWI; /* [dgr] Characteristic latitude  of edges */
     double *fcx=NULL_CEWI; /* [dgr] Characteristic longitude of faces */
     double *fcy=NULL_CEWI; /* [dgr] Characteristic latitude  of faces */
+    double *ndx=NULL_CEWI; /* [dgr] Longitude of nodes */
+    double *ndy=NULL_CEWI; /* [dgr] Latitude  of nodes */
 
     int *dg_nd; /* [idx] edge_node_connectivity variable */
     int *fc_nd; /* [idx] face_node_connectivity variable */
@@ -7029,7 +7029,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     long srt_idx=0; /* [idx] start_index (C/Fortran) for edge_nodes, face_nodes */
 
     if(!dgx_nm) dgx_nm=(char *)strdup("mesh_edge_x");
-    if(!dgx_nm) dgx_nm=(char *)strdup("mesh_edge_y");
+    if(!dgy_nm) dgy_nm=(char *)strdup("mesh_edge_y");
     if(!dg_dmn_nm) dg_dmn_nm=(char *)strdup("nEdges");
     if(!fcx_nm) fcx_nm=(char *)strdup("mesh_face_x");
     if(!fcy_nm) fcy_nm=(char *)strdup("mesh_face_y");
@@ -7071,7 +7071,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !flg_grd */
     
     dg_nd=(int *)nco_malloc(dg_nbr*npe_nbr*nco_typ_lng(NC_INT));
+    dgx=(double *)nco_malloc(dg_nbr*nco_typ_lng(crd_typ));
+    dgy=(double *)nco_malloc(dg_nbr*nco_typ_lng(crd_typ));
     fc_nd=(int *)nco_malloc(fc_nbr*npf_nbr*nco_typ_lng(NC_INT));
+    fcx=(double *)nco_malloc(fc_nbr*nco_typ_lng(crd_typ));
+    fcy=(double *)nco_malloc(fc_nbr*nco_typ_lng(crd_typ));
     ndx=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
     ndy=(double *)nco_malloc(nd_nbr*nco_typ_lng(crd_typ));
 
@@ -7086,7 +7090,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        New latitude row moves next node North
        Add nodes to run West->East */
     /* SP */
-    ndx[0]=lon_crn[0]; /* Longitude degenerate at SP, NP, keep same longiture as corner array */
+    ndx[0]=lon_crn[0]; /* Longitude degenerate at SP, NP, keep same longitude as corner array */
     ndy[0]=lat_crn[0];
     /* Mid */
     for(nd_idx=1;nd_idx<nd_nbr-1L;nd_idx++){
@@ -7161,13 +7165,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Characteristic coordinates */
     for(dg_idx=0;dg_idx<dg_nbr-1L;dg_idx++){
       idx=dg_idx*npe_nbr;
-      dgx[dg_idx]=0.5*(ndx[dg_nd[idx+0]]+ndx[dg_nd[idx+1]]);
-      dgy[dg_idx]=0.5*(ndy[dg_nd[idx+0]]+ndy[dg_nd[idx+1]]);
+      dgx[dg_idx]=0.5*(ndx[dg_nd[idx+0L]]+ndx[dg_nd[idx+1L]]);
+      dgy[dg_idx]=0.5*(ndy[dg_nd[idx+0L]]+ndy[dg_nd[idx+1L]]);
     } /* !dg_idx */
+    /* Degenerate longitude at SP, NP, causes weird characterisic longitude unless special care taken */
     for(fc_idx=0;fc_idx<fc_nbr-1L;fc_idx++){
       idx=fc_idx*npf_nbr;
-      /* fxm for fcx use nco_lon_crn_avg_brnch() and 3-node version too */
-      if(fc_nd[idx+3] != mss_val_int_out) fcx[fc_idx]=0.25*(ndx[fc_nd[idx+0]]+ndx[fc_nd[idx+1]]+ndx[fc_nd[idx+2]]+ndx[fc_nd[idx+3]]); else fcx[fc_idx]=0.33*(ndx[fc_nd[idx+0]]+ndx[fc_nd[idx+1]]+ndx[fc_nd[idx+2]]);
+      if(fc_idx < lon_nbr){
+	fcx[fc_idx]=0.5*(ndx[fc_nd[idx+1]]+ndx[fc_nd[idx+2]]);
+      }else if(fc_idx >= fc_nbr-lon_nbr-1){
+	fcx[fc_idx]=0.5*(ndx[fc_nd[idx+0]]+ndx[fc_nd[idx+1]]);
+      }else if(fc_nd[idx+3] != mss_val_int_out){
+	/* fxm for fcx use nco_lon_crn_avg_brnch() and 3-node version too */
+	fcx[fc_idx]=0.25*(ndx[fc_nd[idx+0]]+ndx[fc_nd[idx+1]]+ndx[fc_nd[idx+2]]+ndx[fc_nd[idx+3]]);
+      }else{
+	abort();
+      } /* !fc_idx */
       if(fc_nd[idx+3] != mss_val_int_out) fcy[fc_idx]=0.25*(ndy[fc_nd[idx+0]]+ndy[fc_nd[idx+1]]+ndy[fc_nd[idx+2]]+ndy[fc_nd[idx+3]]); else fcy[fc_idx]=0.33*(ndy[fc_nd[idx+0]]+ndy[fc_nd[idx+1]]+ndy[fc_nd[idx+2]]);
     } /* !fc_idx */
 
@@ -7515,6 +7528,162 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     aed_mtd.mode=aed_create;
     (void)nco_aed_prc(out_id,fc_nd_id,aed_mtd);
     if(att_nm) att_nm=(char *)nco_free(att_nm);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("longitude");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=dgx_nm;
+    aed_mtd.id=dgx_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,dgx_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Characteristic longitude of 2D mesh face");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=dgx_nm;
+    aed_mtd.id=dgx_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,dgx_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("units");
+    att_val=strdup("degrees_east");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=dgx_nm;
+    aed_mtd.id=dgx_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,dgx_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("latitude");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=dgy_nm;
+    aed_mtd.id=dgy_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,dgy_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Characteristic latitude of 2D mesh face");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=dgy_nm;
+    aed_mtd.id=dgy_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,dgy_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("units");
+    att_val=strdup("degrees_north");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=dgy_nm;
+    aed_mtd.id=dgy_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,dgy_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("longitude");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fcx_nm;
+    aed_mtd.id=fcx_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fcx_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Characteristic longitude of 2D mesh edge");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fcx_nm;
+    aed_mtd.id=fcx_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fcx_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("units");
+    att_val=strdup("degrees_east");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fcx_nm;
+    aed_mtd.id=fcx_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fcx_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("standard_name");
+    att_val=strdup("latitude");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fcy_nm;
+    aed_mtd.id=fcy_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fcy_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("long_name");
+    att_val=strdup("Characteristic latitude of 2D mesh edge");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fcy_nm;
+    aed_mtd.id=fcy_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fcy_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+
+    att_nm=strdup("units");
+    att_val=strdup("degrees_north");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=fcy_nm;
+    aed_mtd.id=fcy_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,fcy_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
 
     /* Begin data mode */
     (void)nco_enddef(out_id);
