@@ -1,5 +1,7 @@
 2017-04-14  Charlie Zender  <zender@uci.edu>
 
+	* Regridder add valid_min/max to lat/lon
+
 	* --lst_rnk_ge2 successfully eliminates grid variables in generic cases
 
 	* Define is_crd_lk_var, is_rec_lk_var to avoid conflicting definitions of is_crd_var, is_rec_var

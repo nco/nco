@@ -2462,6 +2462,32 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
+  double vld_min;
+  double vld_max;
+  vld_min=-90.0;
+  att_nm=strdup("valid_min");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lat_nm_out;
+  aed_mtd.id=lat_out_id;
+  aed_mtd.sz=1;
+  aed_mtd.type=NC_DOUBLE;
+  aed_mtd.val.dp=&vld_min;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lat_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  
+  vld_max=90.0;
+  att_nm=strdup("valid_max");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lat_nm_out;
+  aed_mtd.id=lat_out_id;
+  aed_mtd.sz=1;
+  aed_mtd.type=NC_DOUBLE;
+  aed_mtd.val.dp=&vld_max;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lat_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  
   att_nm=strdup("bounds");
   att_val=lat_bnd_nm_out;
   aed_mtd.att_nm=att_nm;
@@ -2570,6 +2596,30 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
   } /* !nco_rgr_grd_2D_to_2D */
 
+  if(lon_ctr_out[0] >= 0.0) vld_min=0.0; else vld_min=-180.0;
+  att_nm=strdup("valid_min");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lon_nm_out;
+  aed_mtd.id=lon_out_id;
+  aed_mtd.sz=1;
+  aed_mtd.type=NC_DOUBLE;
+  aed_mtd.val.dp=&vld_min;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lon_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  
+  if(lon_ctr_out[0] >= 0.0) vld_max=360.0; else vld_max=180.0;
+  att_nm=strdup("valid_max");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=lon_nm_out;
+  aed_mtd.id=lon_out_id;
+  aed_mtd.sz=1;
+  aed_mtd.type=NC_DOUBLE;
+  aed_mtd.val.dp=&vld_max;
+  aed_mtd.mode=aed_create;
+  (void)nco_aed_prc(out_id,lon_out_id,aed_mtd);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  
   att_nm=strdup("bounds");
   att_val=lon_bnd_nm_out;
   aed_mtd.att_nm=att_nm;
