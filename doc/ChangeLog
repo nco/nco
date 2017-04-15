@@ -1,5 +1,7 @@
 2017-04-14  Charlie Zender  <zender@uci.edu>
 
+	* Splitter omits staggered FV grid by default when regridding
+
 	* Regridder implement no_stg flag to omit staggered FV grid information
 
 	* Regridder add valid_min/max to lat/lon

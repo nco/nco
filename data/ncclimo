@@ -1461,9 +1461,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    let idx_end=$((job_nbr-1))
 	    for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 		fl_rgr[${var_idx}]="${fl_rgr_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
-		cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+		cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks --rgr no_stagger=Y -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
-		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -C -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
+		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap --rgr no_stagger=Y -C -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
 		fi # !mdl_typ
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr[${var_idx}]}
