@@ -782,7 +782,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         fl_nm_rmt=fl_nm;
 
         /* URL specifier in filename unambiguously signals to use FTP */
-        if(rmt_cmd == NULL){
+        if(!rmt_cmd){
           if(FTP_URL){
             /* fxm: use autoconf HAVE_XXX rather than WIN32 token TODO nco292 */
 #ifdef WIN32
@@ -911,7 +911,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	   Hence actual transfer via SFTP uses scp syntax (for single files)
 	   Multiple file transfer via SFTP can use FTP-like scripts, requires more work
 	   NCO SFTP file specification must have colon separating hostname from filename */
-        if(rmt_cmd == NULL){
+        if(!rmt_cmd){
           if(SFTP_URL){
             /* Remote filename begins after URL but includes hostname */
             fl_nm_rmt+=url_sng_lng;
@@ -926,7 +926,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         } /* end if rmt_cmd */
 
         /* Attempt wget on files that contain http:// prefix and are not accessible via DAP */
-        if(rmt_cmd == NULL){
+        if(!rmt_cmd){
           if(HTTP_URL){
             rmt_cmd=&http;
             (void)fprintf(stderr,"%s: INFO Will now attempt wget on the full filepath. wget will fail if the file is \"hidden\" behind a DAP server. Unfortunately, failed wget attempts creates rather long pathnames in the current directory. fxm TODO nco970, nco971. On the other hand, wget should succeed if the file is stored in any publicly-accessible web location.\n",nco_prg_nm_get());
@@ -937,7 +937,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	   Determining whether to try scp instead of rcp is difficult
 	   Ideally, NCO would test remote machine for rcp/scp priveleges with system command like, e.g., "ssh echo ok"
 	   To start we use scp which has its own fall-through to rcp */
-        if(rmt_cmd == NULL){
+        if(!rmt_cmd){
           if((cln_ptr=strchr(fl_nm_rmt,':'))){
             if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
               ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.')){
@@ -948,7 +948,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
 #if 0
         /* NB: MSS commands deprecated 20110419 */
-        if(rmt_cmd == NULL){
+        if(!rmt_cmd){
           /* Does msrcp command exist on local system? */
           rcd_stt=stat("/usr/local/bin/msrcp",&stat_sct); /* SCD Dataproc, Ouray */
           if(rcd_stt != 0) rcd_stt=stat("/usr/bin/msrcp",&stat_sct); /* ACD Linux */
@@ -957,13 +957,13 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
           if(rcd_stt == 0) rmt_cmd=&msrcp;
         } /* end if */
 
-        if(rmt_cmd == NULL){
+        if(!rmt_cmd){
           /* Does msread command exist on local system? */
           rcd_stt=stat("/usr/local/bin/msread",&stat_sct);
           if(rcd_stt == 0) rmt_cmd=&msread;
         } /* end if */
 
-        if(rmt_cmd == NULL){
+        if(!rmt_cmd){
           /* Does nrnet command exist on local system? */
           rcd_stt=stat("/usr/local/bin/nrnet",&stat_sct);
           if(rcd_stt == 0) rmt_cmd=&nrnet;
@@ -980,9 +980,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 #endif /* endif False */
 
         /* NB: HPSS commands replaced MSS commands in NCO 4.0.8 in 201104 */
-        if(rmt_cmd == NULL){
+        if(!rmt_cmd){
           /* Does hsi command exist on local system? */
-	  rcd_stt=stat("which hsi",&stat_sct);
+	  rcd_stt=system("which hsi"); /* Generic location on user's PATH */
           if(rcd_stt != 0) rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire default */
           if(rcd_stt != 0) rcd_stt=stat("/opt/hpss/bin/hsi",&stat_sct); /* CISL alternate */
           if(rcd_stt != 0) rcd_stt=stat("/usr/common/mss/bin/hsi",&stat_sct); /* Cori/Edison */
@@ -990,7 +990,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
           if(rcd_stt == 0) rmt_cmd=&hsiget;
         } /* end if */
 
-        if(rmt_cmd == NULL){
+        if(!rmt_cmd){
           (void)fprintf(stderr,"%s: ERROR file %s does not exist on local filesystem and does not match remote filename patterns (e.g., http://foo), nor was a High Performance Storage System (HPSS) detected.\n",nco_prg_nm_get(),fl_nm_rmt);
 	  (void)fprintf(stderr,"%s: HINT This error often occurs because of a simple filename typo or missing file. Please verify spelling/location of requested file.\n",nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
