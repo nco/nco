@@ -1,3 +1,9 @@
+2017-04-15  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.6-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha06 final changes';git push
+	git tag -a 4.6.6-alpha06 -m 'Version 4.6.6-alpha06 new features: fix which hsi; lst_rnk_ge2 generic; valid_min/max; rgr no_stg splitter';git push --tags
+
 2017-04-14  Charlie Zender  <zender@uci.edu>
 
 	* Splitter omits staggered FV grid by default when regridding
