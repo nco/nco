@@ -1,5 +1,11 @@
 2017-04-14  Charlie Zender  <zender@uci.edu>
 
+	* --lst_rnk_ge2 successfully eliminates grid variables in generic cases
+
+	* Define is_crd_lk_var, is_rec_lk_var to avoid conflicting definitions of is_crd_var, is_rec_var
+
+	* Fix hsi discovery for generic case with `which hsi`
+
 	* NCO 4.6.6-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha05 final changes';git push
 	git tag -a 4.6.6-alpha05 -m 'Version 4.6.6-alpha05 new features: ncremap front-end from ncclimo; --cal finds climatology, bounds variables; mmr documentation; UGRID 2D works; hsi locations; HPSS works';git push --tags

@@ -1047,6 +1047,7 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
      Hence we restrict returned list to non-coordinate record variables
      Usage:
      ncks --lst_rnk_ge2 ~/nco/data/in.nc
+     ncks --lst_rnk_ge2 ~/data/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc
      ncks --lst_rnk_ge2 ~/data/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc */
 
   const char fnc_nm[]="nco_xtr_ND_lst()"; /* [sng] Function name */
@@ -1054,21 +1055,33 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
   int xtr_nbr_crr=0; /* [nbr] Number of N>=D variables found so far */
   int rnk_xtr=2; /* [nbr] Minimum rank to extract */
 
+  /* 20170414: csz add new definitions is_crd_lk_var and is_rec_lk_var, avoid PVN definitions for sanity */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    trv_sct var_trv=trv_tbl->lst[idx_var];
+    int nc_id; /* [id] File ID */
+    int var_id; /* [id] Variable ID */
+    int grp_id; /* [id] Group ID */
+    nc_id=trv_tbl->in_id_arr[0];
+    if(var_trv.nco_typ == nco_obj_typ_var){
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+      trv_tbl->lst[idx_var].is_crd_lk_var=trv_tbl->lst[idx_var].is_crd_lk_var;
+      if(nco_is_spc_in_cf_att(grp_id,"bounds",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
+      if(nco_is_spc_in_cf_att(grp_id,"cell_measures",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
+      if(nco_is_spc_in_cf_att(grp_id,"climatology",var_id,NULL)) trv_tbl->lst[idx_var].is_crd_lk_var=True;
+      for(int dmn_idx=0;dmn_idx<var_trv.nbr_dmn;dmn_idx++){
+	if(var_trv.var_dmn[dmn_idx].is_rec_dmn) trv_tbl->lst[idx_var].is_rec_lk_var=True;
+      } /* !dmn_idx */
+    } /* !nco_typ */
+  } /* !idx_var */
+
   /* If variable has N>=D dimensions, add it to list */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++)
     if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var)
       if((trv_tbl->lst[idx_var].nbr_dmn >= rnk_xtr) && /* Rank at least 2 */
-	 (!trv_tbl->lst[idx_var].is_crd_var) && /* Not a coordinate variable */
+	 (!trv_tbl->lst[idx_var].is_crd_lk_var) && /* Not a coordinate-like variable */
+	 (trv_tbl->lst[idx_var].is_rec_lk_var) && /* Is a record variable */
 	 (trv_tbl->lst[idx_var].var_typ != NC_CHAR) && /* Not an array of characters */
-	 (strcmp(trv_tbl->lst[idx_var].nm,"time_bnds")) && /* Not a CAM-SE bounds variable */
-	 (strcmp(trv_tbl->lst[idx_var].nm,"area")) && /* Not a CAM-SE cell_measures variable */
-	 (strcmp(trv_tbl->lst[idx_var].nm,"lat_bnds")) && /* Not an NCO regridded bounds variable */
-	 (strcmp(trv_tbl->lst[idx_var].nm,"lon_bnds")) && /* Not an NCO regridded bounds variable */
-	 // (trv_tbl->lst[idx_var].is_rec_var) && /* Is a record variable */
-	 // 20170409: Because trv tbl sct incorrectly defines is_crd_var, time_bnds does not have is_crd_var set by nco_var_fll_trv()
-	 // 20170410: Possibly fix/extend methodology to handle cell_measures?
-	 // (!nco_is_spc_in_cf_att(var->nc_id,"bounds",var->id) && /* Not a bounds variable
-	 // (!nco_is_spc_in_cf_att(var->nc_id,"cell_measures",var->id) && /* Not a cell_measures variable */
 	 True){
 	(void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
 	xtr_nbr_crr++;
@@ -2266,6 +2279,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].ppc=NC_MAX_INT;               /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
   trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] PPC is NSD */
 
+  trv_tbl->lst[idx].is_crd_lk_var=nco_obj_typ_err; /* [flg] Is a coordinate-like variable (same as var_sct is_crd_var: crd, 2D, bounds...) */
   trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;   /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in-scope) */
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
   trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;/* [enm] (For variables only) NetCDF type  */  
@@ -2370,6 +2384,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
     trv_tbl->lst[idx].flg_nsd=True; /* [flg] PPC is NSD */
     
+    trv_tbl->lst[idx].is_crd_lk_var=False;             
     trv_tbl->lst[idx].is_crd_var=False;             
     trv_tbl->lst[idx].is_rec_var=False; 
     trv_tbl->lst[idx].var_typ=var_typ; 
