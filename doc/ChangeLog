@@ -1,5 +1,9 @@
 2017-04-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.6-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha07 final changes';git push
+	git tag -a 4.6.6-alpha07 -m 'Version 4.6.6-alpha07 new features: Coordinate --cll_msr, --frm_trm, --no_stg_grd, --area_out in regridder and splitter';git push --tags
+
 	* Link --cll_msr, --frm_trm options to ncra, ncks front-ends
 
 	* Expose --no_cll_msr, --no_frm_trm, --no_stg_grd options to ncclimo users
