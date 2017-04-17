@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.6-alpha07
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 15 April 2017
+@set update-date 17 April 2017
 @set update-month April 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7430,8 +7430,9 @@ Use @samp{--mrd} to override this.
 @cindex @code{missing_value}
 @cindex @code{_FillValue}
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{nces},
-@command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@* 
+Availability: @command{ncap2}, @command{ncbo}, @command{ncclimo},
+@command{nces}, @command{ncflint}, @command{ncpdq}, @command{ncra},  
+@command{ncremap}, @command{ncwa}@* 
 Short options: None@*
 @end cartouche
 
@@ -7439,7 +7440,7 @@ The phrase @dfn{missing data} refers to data points that are missing,
 invalid, or for any reason not intended to be arithmetically processed
 in the same fashion as valid data.  
 @cindex arithmetic operators
-The @acronym{NCO} arithmetic operators attempt to handle missing data in
+All @acronym{NCO} arithmetic operators attempt to handle missing data in 
 an intelligent fashion. 
 There are four steps in the @acronym{NCO} treatment of missing data:
 @enumerate

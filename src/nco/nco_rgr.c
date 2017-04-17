@@ -1436,7 +1436,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(idx != (long)grd_sz_out)
       (void)fprintf(stdout,"%s: INFO %s reports frc_out contains zero-elements (e.g., at 1D idx=%ld)\n",nco_prg_nm_get(),fnc_nm,idx);
   /* Normalizing by frc_out is redundant iff frc_out == 1.0, so we can save time without sacrificing accuracy
-     However, frc_out is often (e.g., for CS <-> RLL maps) close but not equal to unity (an ESMF_Regrid_Weight_Gen issue?)
+     However, frc_out is often (e.g., for CS <-> RLL maps) close but not equal to unity (an ESMF_RegridWeightGen issue?)
      Hence, decide whether to normalize by frc_out by diagnosing the furthest excursion of frc_out from unity */
   nco_bool flg_frc_out_one=True;
   nco_bool flg_frc_out_wrt=False;
@@ -1455,7 +1455,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(!flg_frc_out_one && nco_rgr_mth_typ == nco_rgr_mth_conservative && (nco_rgr_nrm_typ == nco_rgr_nrm_destarea || nco_rgr_nrm_typ == nco_rgr_nrm_none)){
     flg_frc_nrm=True;
     flg_frc_out_wrt=True;
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports global metadata specifies conservative remapping with normalization of type = %s. Furthermore, destination fractions frc_dst = dst_frac = frac_b = frc_out contain non-unity elements (maximum deviation from unity of %g occurs for frc_out[%ld] = %g). Thus normalization issues cannot be ignored. Will apply \'destarea\' normalization (i.e., divide by non-zero frc_out[dst_idx]) to all regridded arrays.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ),frc_out_dff_one_max,idx_max_dvn,frc_out[idx_max_dvn]);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports global metadata specifies conservative remapping with normalization of type = %s. Furthermore, destination fractions frc_dst = dst_frac = frac_b = frc_out contain non-unity elements (maximum deviation from unity of %g exceeds hard-coded (in variable eps_rlt) relative-epsilon threshold of %g for frc_out[%ld] = %g). Thus normalization issues will be explicitly treated. Will apply \'destarea\' normalization (i.e., divide by non-zero frc_out[dst_idx]) to all regridded arrays. And will output fractional destination area as variable named frac_b in regridded output.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ),frc_out_dff_one_max,eps_rlt,idx_max_dvn,frc_out[idx_max_dvn]);
   } /* !sometimes non-unity */
   if(flg_frc_nrm && rgr->flg_rnr){
     (void)fprintf(stdout,"%s: INFO %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice can be an error, depending on intent of each. Charlie is all ears on how NCO should handle this :)\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));

@@ -1,3 +1,7 @@
+2017-04-17  Charlie Zender  <zender@uci.edu>
+
+	* Clarify conditions for outputting frac_b in regridder
+
 2017-04-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.6-alpha07 release procedure:
