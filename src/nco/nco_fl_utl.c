@@ -991,8 +991,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
         } /* end if */
 
         if(!rmt_cmd){
-          (void)fprintf(stderr,"%s: ERROR file %s does not exist on local filesystem and does not match remote filename patterns (e.g., http://foo), nor was a High Performance Storage System (HPSS) detected.\n",nco_prg_nm_get(),fl_nm_rmt);
-	  (void)fprintf(stderr,"%s: HINT This error often occurs because of a simple filename typo or missing file. Please verify spelling/location of requested file.\n",nco_prg_nm_get());
+          (void)fprintf(stderr,"%s: ERROR file %s not found. It does not exist on the local filesystem, nor does it match remote filename patterns (e.g., http://foo or foo.bar.edu:file), nor did NCO detect a High Performance Storage System (HPSS) to retrieve it from remote storage.\n",nco_prg_nm_get(),fl_nm_rmt);
+	  (void)fprintf(stderr,"%s: HINT file-not-found errors usually arise from filename typos, incorrect paths, missing files, or capricious gods. Please verify spelling and location of requested file.\n",nco_prg_nm_get());
           nco_exit(EXIT_FAILURE);
         } /* end if */
 

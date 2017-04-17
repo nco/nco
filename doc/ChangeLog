@@ -1,3 +1,9 @@
+2017-04-16  Charlie Zender  <zender@uci.edu>
+
+	* Link --cll_msr, --frm_trm options to ncra, ncks front-ends
+
+	* Expose --no_cll_msr, --no_frm_trm, --no_stg_grd options to ncclimo users
+
 2017-04-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.6-alpha06 release procedure:

@@ -245,6 +245,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_grd=NULL; /* [sng] Name of SCRIP grid file to create */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
+  rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
@@ -283,6 +284,14 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_nfr=True;
       continue;
     } /* !ugrid */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"area") || !strcasecmp(rgr_lst[rgr_var_idx].key,"area_out")){
+      rgr->flg_area_out=True;
+      continue;
+    } /* !area */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_area") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_area_out")){
+      rgr->flg_area_out=False;
+      continue;
+    } /* !area */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"cell_measures") || !strcasecmp(rgr_lst[rgr_var_idx].key,"cll_msr")){
       rgr->flg_cll_msr=True;
       continue;
@@ -2006,6 +2015,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   (void)sprintf(att_val_crd,"%s %s",lat_nm_out,lon_nm_out);
   aed_mtd_crd.val.cp=att_val_crd;
 
+  /* Reminder: 
+     Regridder area_out options, e.g., --rgr area_out=Y, set flg_area_out to control adding "area" variable to regridded output
+     Regridder cll_msr options, --rgr cll_msr=Y, set flg_cll_msr to control adding "cell_measures" attribute to regridded output
+     ncks & ncra cll_msr options, --cll_msr, set EXTRACT_CLL_MSR to control adding "cell_measures" variables (e.g., area) to extraction list of input file
+     EXTRACT_CLL_MSR supercedes --rgr area_out in determining whether to add "area" to regridded output */
+  nco_bool flg_area_out=rgr->flg_area_out; /* [flg] Add area to output */
   nco_bool flg_cll_msr=rgr->flg_cll_msr; /* [flg] Add cell_measures attribute */
   aed_sct aed_mtd_cll_msr;
   char *att_nm_cll_msr=NULL;
@@ -2075,9 +2090,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_def_var(out_id,lon_bnd_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_bnd_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&area_out_id);
-    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,shuffle,deflate,dfl_lvl);
-    var_crt_nbr++;
+    if(flg_area_out){
+      rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&area_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,shuffle,deflate,dfl_lvl);
+      var_crt_nbr++;
+    } /* !flg_area_out */
     if(flg_frc_out_wrt){
       rcd+=nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&frc_out_id);
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,frc_out_id,shuffle,deflate,dfl_lvl);
@@ -2093,9 +2110,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_out_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_out_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
-    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,shuffle,deflate,dfl_lvl);
-    var_crt_nbr++;
+    if(flg_area_out){
+      rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,shuffle,deflate,dfl_lvl);
+      var_crt_nbr++;
+    } /* !flg_area_out */
     if(flg_frc_out_wrt){
       rcd+=nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,frc_out_id,shuffle,deflate,dfl_lvl);
@@ -2144,9 +2163,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     var_crt_nbr++;
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_lon;
-    rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
-    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,shuffle,deflate,dfl_lvl);
-    var_crt_nbr++;
+    if(flg_area_out){
+      rcd+=nco_def_var(out_id,area_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,shuffle,deflate,dfl_lvl);
+      var_crt_nbr++;
+    } /* !flg_area_out */
     if(flg_frc_out_wrt){
       rcd+=nco_def_var(out_id,frc_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&frc_out_id);
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,frc_out_id,shuffle,deflate,dfl_lvl);
@@ -2334,58 +2355,60 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(dmn_ids_rec) dmn_ids_rec=(int *)nco_free(dmn_ids_rec);
 
   /* Define new metadata in regridded file */
-  att_nm=strdup("long_name");
-  att_val=strdup("Solid angle subtended by gridcell");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=area_nm_out;
-  aed_mtd.id=area_out_id;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
-  att_nm=strdup("standard_name");
-  att_val=strdup("area");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=area_nm_out;
-  aed_mtd.id=area_out_id;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
-  att_nm=strdup("units");
-  att_val=strdup("steradian");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=area_nm_out;
-  aed_mtd.id=area_out_id;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
-  att_nm=strdup("cell_methods");
-  att_val=(char *)nco_calloc((strlen(lat_nm_out)+strlen(lon_nm_out)+8L),sizeof(char));
-  (void)sprintf(att_val,"%s, %s: sum",lat_nm_out,lon_nm_out);
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=area_nm_out;
-  aed_mtd.id=area_out_id;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
+  if(flg_area_out){
+    att_nm=strdup("long_name");
+    att_val=strdup("Solid angle subtended by gridcell");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=area_nm_out;
+    aed_mtd.id=area_out_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+    
+    att_nm=strdup("standard_name");
+    att_val=strdup("area");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=area_nm_out;
+    aed_mtd.id=area_out_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+    
+    att_nm=strdup("units");
+    att_val=strdup("steradian");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=area_nm_out;
+    aed_mtd.id=area_out_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+    
+    att_nm=strdup("cell_methods");
+    att_val=(char *)nco_calloc((strlen(lat_nm_out)+strlen(lon_nm_out)+8L),sizeof(char));
+    (void)sprintf(att_val,"%s, %s: sum",lat_nm_out,lon_nm_out);
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=area_nm_out;
+    aed_mtd.id=area_out_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+  } /* !flg_area_out */
 
   if(flg_frc_out_wrt){
     att_nm=strdup("long_name");
@@ -2761,10 +2784,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 
   /* Annotate persistent metadata that should appear last in attribute list */
   if(flg_grd_out_1D){
-    aed_mtd_crd.var_nm=area_nm_out;
-    aed_mtd_crd.id=area_out_id;
-    (void)nco_aed_prc(out_id,area_out_id,aed_mtd_crd);
-
+    if(flg_area_out){
+      aed_mtd_crd.var_nm=area_nm_out;
+      aed_mtd_crd.id=area_out_id;
+      (void)nco_aed_prc(out_id,area_out_id,aed_mtd_crd);
+    } /* !flg_area_out */
+    
     if(flg_frc_out_wrt){
       aed_mtd_crd.var_nm=frc_nm_out;
       aed_mtd_crd.id=frc_out_id;
@@ -2816,9 +2841,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_cnt_tuo[0]=col_nbr_out;
     dmn_cnt_tuo[1]=bnd_nbr_out;
     (void)nco_put_vara(out_id,lon_bnd_id,dmn_srt_out,dmn_cnt_tuo,lon_bnd_out,crd_typ_out);
-    dmn_srt_out[0]=0L;
-    dmn_cnt_tuo[0]=col_nbr_out;
-    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
+    if(flg_area_out){
+      dmn_srt_out[0]=0L;
+      dmn_cnt_tuo[0]=col_nbr_out;
+      (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
+    } /* !flg_area_out */
   } /* !flg_grd_out_1D */
   if(flg_grd_out_crv){
     dmn_srt_out[0]=dmn_srt_out[1]=0L;
@@ -2826,7 +2853,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_cnt_tuo[1]=lon_nbr_out;
     (void)nco_put_vara(out_id,lat_out_id,dmn_srt_out,dmn_cnt_tuo,lat_ctr_out,crd_typ_out);
     (void)nco_put_vara(out_id,lon_out_id,dmn_srt_out,dmn_cnt_tuo,lon_ctr_out,crd_typ_out);
-    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
+    if(flg_area_out){
+      (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
+    } /* !flg_area_out */
     if(flg_frc_out_wrt){
       (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_tuo,frc_out,crd_typ_out);
     } /* !flg_frc_out_wrt */
@@ -2871,7 +2900,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     dmn_srt_out[0]=dmn_srt_out[1]=0L;
     dmn_cnt_tuo[0]=lat_nbr_out;
     dmn_cnt_tuo[1]=lon_nbr_out;
-    (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
+    if(flg_area_out){
+      (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
+    } /* !flg_area_out */
     if(flg_frc_out_wrt){
       (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_tuo,frc_out,crd_typ_out);
     } /* !flg_frc_out_wrt */
@@ -7106,6 +7137,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       /* Assume 2D grids are global and comprised of quadrilaterals */
       switch(lat_typ){
       case nco_grd_lat_fv:
+	/* Currently all 2D grids are converted to the same UGRID representation 
+	   fxm: Cap grids (e.g., FV) should eventually be written with a real cap,
+	   rather than as the "polar teeth" representation currently used.
+	   Polar teeth convention allows cap grid to be represented as rectangular on disk
+	   However, cap grids are better suited to non-rectangular UGRID meshes */
       case nco_grd_lat_eqa:
       case nco_grd_lat_gss:
 	/* Numbers of unique edges and nodes counted from South Pole (SP) to North Pole (NP) */

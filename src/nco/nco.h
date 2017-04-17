@@ -1141,6 +1141,7 @@ extern "C" {
     int xtn_nbr; /* [nbr] Number of extensive variables */
     long idx_dbg; /* [idx] Index of gridcell for debugging */
     long tst; /* [enm] Generic key for testing (undocumented) */
+    nco_bool flg_area_out; /* [flg] Add area to output */
     nco_bool flg_cll_msr; /* [flg] Add cell_measures attribute */
     nco_bool flg_crv; /* [flg] Use curvilinear coordinates */
     nco_bool flg_grd; /* [flg] Create SCRIP-format grid file */

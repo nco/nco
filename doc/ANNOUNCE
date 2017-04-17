@@ -6,27 +6,32 @@ http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
+4.6.6 contains a potpurri of new features:
+Output 2D rectangular grids formatted as UGRID meshes.
+Calendar dates print for bounds and climatology variables.
+Revamped HPSS/hsi support. The splitter produces cleaner output. 
+The regridder groks more files and masks, and annotates output with
+more helpful metadata. CDL mode handles compound record variables.
+JSON output has changed slightly to re-use NcML keywords. 
 
-4.6.6 contains a potpurri of new features...
-
-I am considering changing the default behavior of ncks printing.
+We would like to change the default behavior of ncks printing.
 For 20+ years ncks has, by default, dumped the text representation
-of a file in (what we call) "traditional" mode. CDL has become
-increasingly popular, and may be more useful than traditional mode
-for the majority of users. ncks has printed CDL only since 2013 and so
+of a file in (what we call) "traditional" mode. ncdump produces a
+format called CDL that has become more useful than traditional mode
+for most NCO users. ncks has printed CDL only since 2013 and so
 is not the default. ncdump has always printed CDL very cleanly and
 clearly there was little point in making CDL the default for ncks.
-
-ncks CDL mode has now matured to the point where it rivals ncdump, and
-is arguably superior in many ways. I find myself using CDL more and
-more and ncdump less and less. Hence I'm interested in changing
-the default printed output of ncks to CDL, and requiring a new "--trd"
-option to view the tradiational output. Then I can type simply
-"ncks" instead of "ncks --cdl". 
+Now ncks CDL mode rivals ncdump, and is superior in some ways.
+ncks now prints times as human-readable calendar dates, the last
+ncdump feature I used that ncks did not have.
+We may change the default printed output of ncks to CDL.
+Then one can type simply "ncks" instead of "ncks --cdl". 
+A new "--trd" option would still print traditional output.
+Let us know if this bothers or pleases you prior to 4.6.7.
 
 Work on NCO 4.6.7 has commenced. Planned improvements include 
-support for conda installs on MS Windows, and human-legible calendar
-date printing, more ncclimo and ncremap features.
+support for conda installs on MS Windows, more ncclimo and ncremap
+features. 
 
 Enjoy,
 Charlie
@@ -45,6 +50,17 @@ A. ncclimo's splitter mode no longer requires variable lists.
    manual exceptions as we receive notice of them.
    ncclimo -s 1979 -e 1981 -o $drc_out in*.nc
    http://nco.sf.net/nco.html#ncclimo
+
+A. The regridder now produces UGRID output for 2D rectangular grids.
+   Invoke ncremap in grid inferral mode with "--rgr ugrid=foo.nc"
+   and voilà, an annoted UGRID file is produce along with the
+   default SCRIP gridfile. The NCO UGRID is more complete than that 
+   produced by ESMF_Scrip2Unstruct, but ESMF can create UGRID for much 
+   more comlex grids. The NCO regridder can currently only generate
+   UGRID for rectangular 2D input grids, and there are no plans to
+   extend this to curvilinear or unstructured input grids.
+   ncks --rgr nfr=Y --rgr grid=scrip.nc --rgr ugrid=ugrid.nc in.nc out.nc
+   http://nco.sf.net/nco.html#rgr
 
 A. ncks now prints the units, if any, in comments after CDL values
    when debugging is enabled with dbg_lvl >=1:
@@ -69,18 +85,18 @@ A. Since 4.6.5 ncks has printed the human-legible calendar string
    As before, enact this with the --calendar option when printing.
    Using dbg_lvl >= 1 in CDL mode prints both the value and calendar
    string (one in comments): 
-
    zender@aerosol:~$ ncks -D 1 --cdl --cal -v tm_365 ~/nco/data/in.nc
    tm_365 = "2013-03-01"; // double value: 59
    zender@aerosol:~$ ncks -D 1 --cdl -v tm_365 ~/nco/data/in.nc
    tm_365 = 59; // calendar format: "2013-03-01"
-
    This option is similar to the ncdump -t option.
    Does this work how you'd like? Let us know.
    http://nco.sf.net/nco.html#cal
 
 A. ncks now prints "(no units)" instead of "(null)" as the units
-   string for variables with no units.
+   string for variables with no units. And in CDL mode ncks, when
+   invoked with debugging (e.g., -D 1) prints the units string in the
+   comment section after the values of a variable.
 
 BUG FIXES:
 
@@ -90,7 +106,7 @@ A. NCO now exits with a clear message instead of core dump on missing
 A. ncremap will no longer define mask variables in inferred grid
    files unless it finds a mask variable in the source file.
    Previously ncremap could define a mask variable in the inferred
-   grid file and never fill-it in with data.
+   grid file and never fill-it with data.
 
 A. ncremap now invokes the neareststod algorithm when requested.
    Previously a typo caused ncremap to invoke nearestdtos when
@@ -102,7 +118,7 @@ A. ncremap now converts non-default masks correctly in infer mode.
    types. This likely only affected masks with missing values.
    Sources of files possibly affected include AMSR and CICE.
 
-A. ncks now prints the braces required to disambiguate compound
+A. ncks now prints braces required to disambiguate compound
    record dimensions in CDL mode. Such braces have been required by 
    ncgen-like parsers since ~2013 in order to unambiguously determine
    the record dimension sizes in variables with multiple record
