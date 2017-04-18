@@ -3932,6 +3932,19 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
 
 
+#ncrcat #25
+    $tst_cmd[0]="ncatted  -h -O $fl_fmt $nco_D_flg -a units,time,o,c,'days since 1964-03-22 12:09:00 -9:00' $in_pth/in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg  -v time $in_pth/in.nc %tmp_fl_00% %tmp_fl_01% 2> %tmp_fl_05%";
+    $tst_cmd[2]="ncap2 -O -v -C -s 'climo_ttl=climatology_bounds.total();print(climo_ttl);' %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="climo_ttl = 420";
+    $dsc_sng="Concatenate 1D variable across two files no limits check climatology_bounds . Requires UDUnits.";
+    $tst_cmd[4]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+
+
+
 	
     #######################################
     #### Group tests (requires netCDF4) ###
@@ -3939,7 +3952,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
     if($RUN_NETCDF4_TESTS){
 	
-#ncrcat #25	
+#ncrcat #26	
 # same as ncrcat #02 with group
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc -d time,2.,3. %tmp_fl_00% 2> %tmp_fl_02%";
@@ -3950,7 +3963,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-#ncrcat #26	
+#ncrcat #27	
 # 2 groups each one with a record (part 1)
 # ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var -p ~/nco/data in_grp_3.nc in_grp_3.nc -d time,2.,3. ~/foo.nc
 
@@ -3962,7 +3975,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-#ncrcat #27
+#ncrcat #28
 # 2 groups each one with a record (part 2)
 # ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var -p ~/nco/data in_grp_3.nc in_grp_3.nc -d time,2.,3. ~/foo.nc
 
@@ -3974,7 +3987,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 	
-#ncrcat #28
+#ncrcat #29
 #same as #03 
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
@@ -3988,7 +4001,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 	} #### Group tests	
 	
-# ncrcat #29
+# ncrcat #30
 # Detect input_complete when stride skips user-specified idx_end_max
 # ncrcat -O -C -v time -d time,0,10,9,1 -p ~/nco/data in.nc in.nc ~/foo.nc
 # ncks -C -H -s '%g, ' -v time ~/foo.nc
@@ -4000,7 +4013,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
-# ncrcat #30
+# ncrcat #31
 # Another detect input_complete when stride skips user-specified idx_end_max
 # ncks -O -C -v time -d time,0,2 ~/nco/data/in.nc ~/foo1.nc
 # ncks -O -C -v time -d time,3,5 ~/nco/data/in.nc ~/foo2.nc
