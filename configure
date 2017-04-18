@@ -3003,9 +3003,8 @@ test -n "$target_alias" &&
 
 # Get NCO version
 if test -r doc/VERSION; then
-#    nco_version=`cat doc/VERSION`
-##  AC_DEFINE_UNQUOTED(NCO_VERSION,${nco_version},NCO Version)
-    NCO_VERSION=`cat doc/VERSION`
+#    NCO_VERSION=`cat doc/VERSION`
+    NCO_VERSION=`git describe --abbrev=7 --dirty --always --tags`
 
 fi
 

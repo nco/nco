@@ -969,9 +969,9 @@ if [ ${vrb_lvl} -ge ${vrb_4} ]; then
 fi # !vrb_lvl
 if [ -f 'PET0.RegridWeightGen.Log' ]; then
     if [ ${vrb_lvl} -ge ${vrb_4} ]; then
-	printf "${spt_nm}: Removing PET0.RegridWeightGen.Log file from current directory before running\n"
+	printf "${spt_nm}: Removing PET0.RegridWeightGen.Log file and any other PET0.* files from current directory before running\n"
     fi # !vrb_lvl
-    /bin/rm -f PET0.RegridWeightGen.Log
+    /bin/rm -f PET0.*
 fi # !PETO
 if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     printf "Started processing at `date`.\n"

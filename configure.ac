@@ -73,9 +73,8 @@ AC_CANONICAL_TARGET
 
 # Get NCO version
 if test -r doc/VERSION; then
-#    nco_version=`cat doc/VERSION`
-##  AC_DEFINE_UNQUOTED(NCO_VERSION,${nco_version},NCO Version)
-    NCO_VERSION=`cat doc/VERSION`
+#    NCO_VERSION=`cat doc/VERSION`
+    NCO_VERSION=`git describe --abbrev=7 --dirty --always --tags`
     AC_SUBST(NCO_VERSION)
 fi
 
