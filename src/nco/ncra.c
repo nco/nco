@@ -1190,12 +1190,34 @@ main(int argc,char **argv)
 
       /* Loop over number of different record dimensions in file */
       for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
+        int bnds_nbr=0;
+        int climo_nbr=0;
+        char *fl_udu_sng=NULL_CEWI;
+        char *fl_bnds_sng=NULL_CEWI;
+        char *fl_climo_sng=NULL_CEWI;
+
+        char **bnds_lst=NULL_CEWI;
+        char **climo_lst=NULL_CEWI;
 
         /* Obtain group ID */
         (void)nco_inq_grp_full_ncid(in_id,lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
 
         /* Fill record array */
         (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
+
+        if(lmt_rec[idx_rec]->is_rec_dmn)
+        {
+          int mid=-1;
+
+          if(nco_inq_varid_flg(grp_id, lmt_rec[idx_rec]->nm, &mid)==NC_NOERR  && mid>=0) {
+            fl_udu_sng = nco_lmt_get_udu_att(grp_id, mid, "units"); /* Units attribute of coordinate variable */
+            fl_bnds_sng = nco_lmt_get_udu_att(grp_id, mid, "bounds"); /* Bounds attribute of coordinate variable */
+            fl_climo_sng = nco_lmt_get_udu_att(grp_id, mid, "climatology"); /* Climatology attribute of coordinate variable */
+            if (fl_bnds_sng) bnds_lst = nco_lst_prs_sgl_2D(fl_bnds_sng, ",", &bnds_nbr);
+            if (fl_climo_sng) climo_lst = nco_lst_prs_sgl_2D(fl_climo_sng, ",", &climo_nbr);
+          }
+
+        }
 
         if(REC_APN){
           /* Append records directly to output file */
@@ -1208,7 +1230,7 @@ main(int argc,char **argv)
           (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
         } /* !REC_APN */
 
-        if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(fp_stdout,"%s: DEBUG record %d id %d name %s rec_dmn_sz %ld\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz);                    
+        /* if(nco_dbg_lvl_get() == nco_dbg_std) */ (void)fprintf(fp_stdout,"%s: DEBUG record %d id %d name %s rec_dmn_sz %ld units=\"%s\"\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz,fl_udu_sng);
         /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
         if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
         if(lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
@@ -1265,7 +1287,7 @@ main(int argc,char **argv)
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_MRO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
+#pragma omp parallel for default(none) private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_MRO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv,fl_udu_sng, fl_bnds_sng, fl_climo_sng, bnds_nbr, climo_nbr, bnds_lst,climo_lst)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 
@@ -1305,17 +1327,39 @@ main(int argc,char **argv)
             /*  This code rebases  the  coordinate var to the units of the coordinate var in the first input file */
             /* if the record hyperslab indice(s) are double or strings then the coordinate var and limits are (re)read earlier by (void)nco_lmt_evl() */
             /* so if the units between files are incompatible the ncra will bomb out in that call  and not in  nco_cln_clc_dbl_var_dff() below*/
-            if(!strcmp(var_prc[idx]->nm, lmt_rec[idx_rec]->nm) ||
-               nco_is_spc_in_cf_att(grp_id, "bounds", var_prc[idx]->id, NULL) ||
-               nco_is_spc_in_cf_att(grp_id, "climatology", var_prc[idx]->id, NULL)) {
+            {
+             int redx;
+             nco_bool do_rebase=False;
+             if(!strcmp(var_prc[idx]->nm, lmt_rec[idx_rec]->nm))
+                do_rebase=True;
 
-              char *fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_prc[idx]->id,"units"); /* Units attribute of coordinate variable */ 
-              if(fl_udu_sng && lmt_rec[idx_rec]->rbs_sng) {
+             /* search bounds attribute */
+             if(!do_rebase) {
+               for (redx = 0; redx < bnds_nbr; redx++)
+                 if (!strcmp(var_prc[idx]->nm, bnds_lst[redx]))
+                   break;
+               if (redx < bnds_nbr) do_rebase = True;
+             }
+              /* search climatology attribute */
+              if(!do_rebase) {
+                for (redx = 0; redx < climo_nbr; redx++)
+                  if (!strcmp(var_prc[idx]->nm, climo_lst[redx]))
+                    break;
+                if (redx < climo_nbr) do_rebase = True;
+              }
+              /*
+              nco_is_spc_in_cf_att(grp_id, "bounds", var_prc[idx]->id, NULL) ||
+              nco_is_spc_in_cf_att(grp_id, "climatology", var_prc[idx]->id, NULL))
+              char *fl_udu_sng=nco_lmt_get_udu_att(grp_id,var_prc[idx]->id,"units"); /* Units attribute of coordinate variable
+              */
+              (void)fprintf(fp_stderr,"%s: converting variable \"%s\" from units \"%s\" to \" %s\"\n",nco_prg_nm_get(), var_prc[idx]->nm, fl_udu_sng, lmt_rec[idx_rec]->rbs_sng);
+
+              if(do_rebase && fl_udu_sng && lmt_rec[idx_rec]->rbs_sng) {
                 if( nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng, lmt_rec[idx_rec]->lmt_cln, (double*)NULL, var_prc[idx]) !=NCO_NOERR) {
                   (void)fprintf(fp_stderr,"%s: problem converting variable \"%s\" from units \"%s\" to \" %s\"\n",nco_prg_nm_get(), var_prc[idx]->nm, fl_udu_sng, lmt_rec[idx_rec]->rbs_sng);
                   nco_exit(EXIT_FAILURE);
                 }
-                nco_free(fl_udu_sng);
+                //nco_free(fl_udu_sng);
               } /* end re-basing */
             } 
               
@@ -1522,6 +1566,15 @@ main(int argc,char **argv)
             nco_exit(EXIT_FAILURE);
           } /* end if */
         } /* end if */
+
+        if(bnds_nbr) bnds_lst=(char**)nco_free(bnds_lst);
+        if(climo_nbr) climo_lst=(char**)nco_free(climo_lst);
+
+        if(fl_udu_sng) fl_udu_sng=(char*)nco_free(fl_udu_sng);
+        if(fl_bnds_sng) fl_bnds_sng=(char*)nco_free(fl_bnds_sng);
+        if(fl_climo_sng) fl_climo_sng=(char*)nco_free(fl_climo_sng);
+
+
 
       } /* end idx_rec loop over different record variables to process */
 
