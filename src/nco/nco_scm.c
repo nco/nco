@@ -176,7 +176,12 @@ nco_vrs_prn /* [fnc] Print NCO version */
   /* 20170417: vrs_cpp is typically something like "4.6.6-alpha07" (quotes included) 
      The quotation marks annyoy me yet are necessary to protect the string in nco.h 
      Here we remove the quotation marks by pointing past the first and putting NUL in the last */
-  vrs_cpp[strlen(vrs_cpp)-1L]='\0';
+  char *vrs_sng; /* [sng] NCO version */
+  vrs_sng=vrs_cpp;
+  if(vrs_cpp[0L] == '"'){
+    vrs_cpp[strlen(vrs_cpp)-1L]='\0';
+    vrs_sng=vrs_cpp+1L;
+  } /* endif */
 
   if(strlen(CVS_Id) > strlen("*Id*")){
     /* CVS_Id is defined */
@@ -201,17 +206,17 @@ nco_vrs_prn /* [fnc] Print NCO version */
   } /* endif */
 
   if(strlen(CVS_Id) > strlen("*Id*")){
-    (void)fprintf(stderr,"NCO netCDF Operators version %s last modified %s built %s on %s by %s\n",vrs_cpp+1L,date_cvs,date_cpp,hst_cpp,usr_cpp);
+    (void)fprintf(stderr,"NCO netCDF Operators version %s last modified %s built %s on %s by %s\n",vrs_sng,date_cvs,date_cpp,hst_cpp,usr_cpp);
   }else{
     /* 20141008: Try new nco.h-based versioning */
-    /*    (void)fprintf(stderr,"NCO netCDF Operators version %s built %s on %s by %s\n",vrs_cpp+1L,date_cpp,hst_cpp,usr_cpp);*/
-    (void)fprintf(stderr,"NCO netCDF Operators version %s built by %s on %s at %s %s\n",vrs_cpp+1L,usr_cpp,hst_cpp,date_cpp,time_cpp);
+    /*    (void)fprintf(stderr,"NCO netCDF Operators version %s built %s on %s by %s\n",vrs_sng,date_cpp,hst_cpp,usr_cpp);*/
+    (void)fprintf(stderr,"NCO netCDF Operators version %s built by %s on %s at %s %s\n",vrs_sng,usr_cpp,hst_cpp,date_cpp,time_cpp);
   } /* endif */
   if(strlen(CVS_Id) > strlen("*Id*")){
     vrs_cvs=cvs_vrs_prs();
     (void)fprintf(stderr,"%s version %s\n",nco_prg_nm_get(),vrs_cvs);
   }else{
-    (void)fprintf(stderr,"%s version %s\n",nco_prg_nm_get(),vrs_cpp+1L);
+    (void)fprintf(stderr,"%s version %s\n",nco_prg_nm_get(),vrs_sng);
   } /* endif */
 
   if(date_cvs) date_cvs=(char *)nco_free(date_cvs);

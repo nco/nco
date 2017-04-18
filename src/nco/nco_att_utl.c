@@ -1923,17 +1923,19 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   /* 20170417: vrs_cpp is typically something like "4.6.6-alpha07" (quotes included) 
      The quotation marks annyoy me yet are necessary to protect the string in nco.h 
      Here we remove the quotation marks by pointing past the first and putting NUL in the last */
-  vrs_cpp[strlen(vrs_cpp)-1L]='\0';
-
   vrs_sng=vrs_cpp;
+  if(vrs_cpp[0L] == '"'){
+    vrs_cpp[strlen(vrs_cpp)-1L]='\0';
+    vrs_sng=vrs_cpp+1L;
+  } /* endif */
 
   /* Insert thread number into value */
-  att_val.cp=vrs_sng+1L;
+  att_val.cp=vrs_sng;
   /* Initialize NCO version attribute edit structure */
   vrs_sng_aed.att_nm=att_nm;
   vrs_sng_aed.var_nm=NULL;
   vrs_sng_aed.id=NC_GLOBAL;
-  vrs_sng_aed.sz=strlen(vrs_sng+1L)+1L;
+  vrs_sng_aed.sz=strlen(vrs_sng)+1L;
   vrs_sng_aed.type=NC_CHAR;
   /* Insert value into attribute structure */
   vrs_sng_aed.val=att_val;
