@@ -2,7 +2,7 @@
 #define INC_ncoLexer_hpp_
 
 #include <antlr/config.hpp>
-/* $ANTLR 2.7.7 (20130428): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
+/* $ANTLR 2.7.7 (20161005): "ncoGrammer.g" -> "ncoLexer.hpp"$ */
 #include <antlr/CommonToken.hpp>
 #include <antlr/InputBuffer.hpp>
 #include <antlr/BitSet.hpp>
