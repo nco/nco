@@ -1,5 +1,7 @@
 2017-04-17  Charlie Zender  <zender@uci.edu>
 
+	* Remove annoying quotation marks from version in nco_vrs_prn()
+
 	* Clarify conditions for outputting frac_b in regridder
 
 2017-04-16  Charlie Zender  <zender@uci.edu>

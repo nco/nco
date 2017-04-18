@@ -1916,30 +1916,30 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   /* Purpose: Write NCO version information to global metadata */
   aed_sct vrs_sng_aed;
   char att_nm[]="NCO"; /* [sng] Name of attribute in which to store NCO version */
-  char vrs_git[]=TKN2SNG(NCO_VERSION); /* [sng] Version according to Git */
-  char *vrs_cvs; /* [sng] Version according to RCS/CVS-like release tag */
+  char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version according to Git */
   char *vrs_sng; /* [sng] NCO version */
   ptr_unn att_val;
   
-  vrs_cvs=cvs_vrs_prs();
-  
-  vrs_sng=vrs_cvs;
-  vrs_sng=vrs_git;
+  /* 20170417: vrs_cpp is typically something like "4.6.6-alpha07" (quotes included) 
+     The quotation marks annyoy me yet are necessary to protect the string in nco.h 
+     Here we remove the quotation marks by pointing past the first and putting NUL in the last */
+  vrs_cpp[strlen(vrs_cpp)-1L]='\0';
+
+  vrs_sng=vrs_cpp;
 
   /* Insert thread number into value */
-  att_val.cp=vrs_sng;
+  att_val.cp=vrs_sng+1L;
   /* Initialize NCO version attribute edit structure */
   vrs_sng_aed.att_nm=att_nm;
   vrs_sng_aed.var_nm=NULL;
   vrs_sng_aed.id=NC_GLOBAL;
-  vrs_sng_aed.sz=strlen(vrs_sng)+1L;
+  vrs_sng_aed.sz=strlen(vrs_sng+1L)+1L;
   vrs_sng_aed.type=NC_CHAR;
   /* Insert value into attribute structure */
   vrs_sng_aed.val=att_val;
   vrs_sng_aed.mode=aed_overwrite;
   /* Write NCO version attribute to disk */
   (void)nco_aed_prc(out_id,NC_GLOBAL,vrs_sng_aed);
-  // vrs_sng=(char *)nco_free(vrs_sng);
 
 } /* end nco_vrs_att_cat() */
 
