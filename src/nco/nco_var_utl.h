@@ -119,12 +119,18 @@ extern "C" {
   (var_sct **var_lst, /* I/O [sct] Variable structure list to free */
    const int var_nbr); /* I [nbr] Number of variable structures in list */
 
-nco_bool /* [flg] Variable is listed in this CF attribute, thereby associated */
+  nco_bool /* [flg] Variable is listed in this CF attribute, thereby associated */
   nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby associated */
   (const int nc_id,    /* I [id] netCDF file ID */
    const char *const cf_nm,  /* I [sng] cf att name */
    const int var_trg_id, /* I [id] Variable ID */
    int *cf_var_id); /* I [id] Variable ID */
+
+  char ***  /* [0] [ptr]  list of lists - each ragged array terminated with empty string    */
+  nco_lst_cf_att /* [fnc] look in all vars for att cf_nm  */
+  (const int nc_id,    /* I [id] netCDF file ID */
+  const char *const cf_nm,  /* I [sng] cf att name */
+  int *nbr_lst); /* 0 [nbr] number of ragged arrays returned */
 
   nco_bool /* [flg] Variable is listed in a "bounds" attribute */
   nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
