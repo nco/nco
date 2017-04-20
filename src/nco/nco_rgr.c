@@ -284,10 +284,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_nfr=True;
       continue;
     } /* !ugrid */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"area") || !strcasecmp(rgr_lst[rgr_var_idx].key,"area_out")){
-      rgr->flg_area_out=True;
-      continue;
-    } /* !area */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_area") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_area_out")){
       rgr->flg_area_out=False;
       continue;

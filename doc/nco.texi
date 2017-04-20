@@ -6842,14 +6842,17 @@ These annotations include
 @cindex @code{cell_methods}
 @cindex @code{cell_area}
 @cindex @code{steradian}
-@cindex @samp{--rgr area_nm=@var{area_nm}}
+@cindex @samp{--no_cll_msr}
+@cindex @samp{--rgr no_area_out}
+@cindex @samp{--rgr no_area}
+@cindex @samp{--rgr area_out=@var{area_nm}}
 @cindex @var{area_nm}
 @cindex @acronym{SI}
 @cindex solid angle
 @cindex extensive variable
 @item Gridcell Area: @var{area}
-    The variable @var{area_nm} (which defaults to @code{area}) is
-    always (re-)created in the @var{output_file} to hold the gridcell
+    The variable @var{area_nm} (which defaults to @code{area}) is, by 
+    default, (re-)created in the @var{output_file} to hold the gridcell 
     area in steradians.     
     To store the area in a different variable, use the option
     @samp{--rgr area=@var{area_nm}}.
@@ -6861,6 +6864,11 @@ These annotations include
     that its value depends on the gridcell boundaries.  
     Since @var{area_nm} is a property of the grid, it is read directly
     from the @var{map-file} rather than regridded itself. 
+    To omit the area variable from the output file, set the
+    @var{no_area_out} variable to any value, e.g.,
+    @samp{--no_area_out='Y'}. 
+    The @code{--no_cll_msr} switch to @command{ncremap} and
+    @command{ncclimo} does this automatically.
 @cindex @code{frc}
 @cindex @samp{--rgr frc_nm=@var{frc_nm}}
 @cindex @var{frc_nm}
@@ -6908,10 +6916,12 @@ These annotations include
 <a name="slat"></a> <!-- http://nco.sf.net/nco.html#slat -->
 <a name="slon"></a> <!-- http://nco.sf.net/nco.html#slon -->
 <a name="stg"></a> <!-- http://nco.sf.net/nco.html#stg -->
-<a name="no_stg"></a> <!-- http://nco.sf.net/nco.html#no_stg -->
 <a name="stagger"></a> <!-- http://nco.sf.net/nco.html#stagger -->
 <a name="no_stagger"></a> <!-- http://nco.sf.net/nco.html#no_stagger -->
 @end html
+@cindex @code{--no_stg}
+@cindex @code{--no_stagger}
+@cindex @code{--no_stg_grd}
 @cindex @code{slat}
 @cindex @code{slon}
 @cindex @code{slat_wgt}
@@ -6920,9 +6930,6 @@ These annotations include
 @cindex @acronym{AMWG}
 @cindex staggered-grid
 @cindex no stagger
-@cindex @code{--no_stg}
-@cindex @code{--no_stagger}
-@cindex @code{--no_stg_grd}
 @item Staggered Grid Coordinates and Weights
     Owing to its heritage as an early @acronym{CCM} analysis tool,
     @acronym{NCO} tries to create output interoperable with other
@@ -6944,8 +6951,8 @@ These annotations include
     Turn-off archiving the staggered grid (i.e., @code{slat},
     @code{slon}, and @code{slat_wgt}) by setting @var{no_stagger}
     to any value, e.g., @samp{--no_stagger='Y'}.
-    The @code{--no_stg_grd} flag in @command{ncremap} sets this
-    @code{--no_stagger} flag.
+    The @code{--no_stg_grd} flag in @command{ncremap} and
+    @command{ncclimo} sets this @code{--no_stagger} flag.
 @end table
 
 One may supply muliple @samp{--rgr @var{key}=@var{value}} options
@@ -14783,7 +14790,7 @@ double gsl_stats_wmean (var_weight, weight_stride, var_data, data_stride, n, var
 double gsl_stats_quantile_from_sorted_data (var_sorted_data, data_stride, n, var_f) ;
 @end example
 
-@noindent @acronym{GSL} has no notion of missing values or dimensionality beyond one. If your data has missing values which you want ignored in the calculations then use the @command{ncap2} built in aggregate functions( @ref{Methods and functions} ). The @acronym{GSL} functions operate on a vector of values created from the var_data/stride/n arguments. The ncap wrappers check that there is no bounding error with regard to the size of the data and the final value in the vector. 
+@noindent @acronym{GSL} has no notion of missing values or dimensionality beyond one. If your data has missing values which you want ignored in the calculations then use the @command{ncap2} built in aggregate functions(@ref{Methods and functions}). The @acronym{GSL} functions operate on a vector of values created from the var_data/stride/n arguments. The ncap wrappers check that there is no bounding error with regard to the size of the data and the final value in the vector. 
 
 Some examples
 
@@ -16867,8 +16874,8 @@ SYNTAX
 ncclimo [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
-[-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}]
-[-R @var{rgr_opt}] [-r @var{rgr_map}] [--rm_ntv=@var{rm_ntv}]
+[--no_cll_msr ] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd]
+[-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--stdin] [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}]
 [-v @var{var_lst}] [--version] [-x @var{cf_flg}] [-X @var{drc_xtn}] [-x @var{drc_prv}] 
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
@@ -17142,6 +17149,66 @@ Directory to hold regridded climo files.
 Regridded climos are placed in @var{drc_out} unless a separate
 directory for them is specified with @samp{-O} (NB: capital ``O''). 
 
+@cindex @code{--no_cll_msr}
+@cindex @code{--no_cll}
+@cindex @code{--no_cell_measures}
+@cindex @code{cell_measures} attribute
+@item --no_cll_msr (@code{--no_cll_msr}, @code{--no_cll}, @code{--no_cell_measures})
+This switch (which takes no argument) controls whether @command{ncclimo}
+and @command{ncremap} add measures variables to the extraction list
+along with the primary variable and other associated variables. 
+See @ref{CF Conventions} for a detailed description.
+
+@cindex @code{--no_frm_trm}
+@cindex @code{--no_frm}
+@cindex @code{--no_formula_terms}
+@cindex @code{formula_terms} attribute
+@item --no_frm_trm (@code{--no_frm_trm}, @code{--no_frm}, @code{--no_formula_terms})
+This switch (which takes no argument) controls whether @command{ncclimo}
+and @command{ncremap} add formula variables to the extraction list along
+with the primary variable and other associated variables. 
+See @ref{CF Conventions} for a detailed description.
+
+@html
+<a name="no_ntv_tms"></a> <!-- http://nco.sf.net/nco.html#no_ntv_tms -->
+<a name="no_ntv"></a> <!-- http://nco.sf.net/nco.html#no_ntv -->
+<a name="no_native"></a> <!-- http://nco.sf.net/nco.html#no_native -->
+@end html
+@cindex @code{--no_ntv_tms}
+@cindex @code{--no_ntv}
+@cindex @code{--no_native}
+@cindex @code{--remove_native}
+@item --no_ntv_tms (@code{--no_ntv_tms}, @code{--no_ntv}, @code{--no_native}, @code{--remove_native})
+This switch (which takes no argument) controls whether the splitter
+retains native grid split files, which it does by default, or deletes them.
+@command{ncclimo} can split model output from multi-variable native grid
+files into per-variable timeseries files and regrid those onto a
+so-called analysis grid. 
+That is the typical format in which Model Intercomparison Projects
+(@acronym{MIP}s) request and disseminate contributions.
+When the data producer has no use for the split timeseries on the native
+grid, he/she can invoke this flag to cause @command{ncclimo} to
+delete the native grid timeseries (not the raw native grid datafiles). 
+
+@html
+<a name="no_stg_grd"></a> <!-- http://nco.sf.net/nco.html#no_stg_grd -->
+<a name="no_stg"></a> <!-- http://nco.sf.net/nco.html#no_stg -->
+@end html
+@cindex @code{slat}
+@cindex @code{slon}
+@cindex @code{slat_wgt}
+@cindex @code{--no_stg_grd}
+@cindex @code{--no_stg}
+@cindex @code{--no_stagger}
+@cindex @code{--no_staggered_grid}
+@item --no_stg_grd (@code{--no_stg_grd}, @code{--no_stg}, @code{--no_stagger}, @code{--no_staggered_grid})
+This switch (which takes no argument) controls whether
+regridded output will contain the staggered grid coordinates 
+@code{slat}, @code{slon}, and @code{slat_wgt} (@pxref{Regridding}). 
+By default the staggered grid is output for all files regridded from 
+a Cap (aka @acronym{FV}) grid, except when the regridding is performed
+as part of splitting (reshaping) into timeseries.
+
 @cindex @code{-o @var{drc_out}}
 @cindex @var{drc_out}
 @cindex @code{--drc_out}
@@ -17196,26 +17263,6 @@ analysis grid.
 Options intended exclusively for the regridder may be passed as
 arguments to the @samp{-R} switch.
 See below the discussion on regridding.
-
-@cindex @var{rm_ntv}
-@cindex @code{--rm_ntv}
-@cindex @code{--remove_native}
-@cindex @code{--del_ntv}
-@cindex @code{--delete_native}
-@item --rm_ntv (@code{--rm_ntv}, @code{--remove_native}, @code{--del_ntv}, @code{--delete_native})
-This option controls whether the splitter retains native grid split
-files, which it does by default.
-@command{ncclimo} can split model output from multi-variable native grid
-files into per-variable timeseries files and regrid those onto a
-so-called analysis grid. 
-That is the typical format in which Model Intercomparison Projects
-(@acronym{MIP}s) request and disseminate contributions.
-When the data producer has no use for the split timeseries on the native
-grid, he/she can use this option to cause @command{ncclimo} to
-automatically delete the native grid timeseries (not the raw native grid  
-datafiles). 
-Change the value of @var{rm_ntv} to ``Yes'' (with 
-@samp{--rm_ntv='Yes'}) to delete the native grid timeseries.
 
 @cindex @code{-s @var{srt_yr}}
 @cindex @var{srt_yr}
@@ -21445,7 +21492,7 @@ SYNTAX
 @example
 ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_opt}]
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
-[-M] [-m @var{map_fl}] [-n @var{nco_opt}] 
+[-M] [-m @var{map_fl}] [-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [--stdin]
 [-T @var{tempest_opt}] [-t @var{thr_nbr}] [-U @var{drc_tmp}] [-u @var{unq_sfx}] 
@@ -21861,6 +21908,41 @@ tedious, and unnecessary when batch processing data on the same grids.
 Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
 @var{nco_opt} defaults to @samp{-O --no_tmp_fl}.
+
+@cindex @code{--no_cll_msr}
+@cindex @code{--no_cll}
+@cindex @code{--no_cell_measures}
+@cindex @code{cell_measures} attribute
+@item --no_cll_msr (@code{--no_cll_msr}, @code{--no_cll}, @code{--no_cell_measures})
+This switch (which takes no argument) controls whether @command{ncclimo}
+and @command{ncremap} add measures variables to the extraction list
+along with the primary variable and other associated variables. 
+See @ref{CF Conventions} for a detailed description.
+
+@cindex @code{--no_frm_trm}
+@cindex @code{--no_frm}
+@cindex @code{--no_formula_terms}
+@cindex @code{formula_terms} attribute
+@item --no_frm_trm (@code{--no_frm_trm}, @code{--no_frm}, @code{--no_formula_terms})
+This switch (which takes no argument) controls whether @command{ncclimo}
+and @command{ncremap} add formula variables to the extraction list along
+with the primary variable and other associated variables. 
+See @ref{CF Conventions} for a detailed description.
+
+@cindex @code{slat}
+@cindex @code{slon}
+@cindex @code{slat_wgt}
+@cindex @code{--no_stg_grd}
+@cindex @code{--no_stg}
+@cindex @code{--no_stagger}
+@cindex @code{--no_staggered_grid}
+@item --no_stg_grd (@code{--no_stg_grd}, @code{--no_stg}, @code{--no_stagger}, @code{--no_staggered_grid})
+This switch (which takes no argument) controls whether
+regridded output will contain the staggered grid coordinates 
+@code{slat}, @code{slon}, and @code{slat_wgt} (@pxref{Regridding}). 
+By default the staggered grid is output for all files regridded from 
+a Cap (aka @acronym{FV}) grid, except when the regridding is performed
+as part of splitting (reshaping) into timeseries.
 
 @html
 <a name="out_drc"></a> <!-- http://nco.sf.net/nco.html#out_drc -->

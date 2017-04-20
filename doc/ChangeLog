@@ -1,8 +1,8 @@
 2017-04-20  Charlie Zender  <zender@uci.edu>
 
-	* Document ncremap --no_stg
+	* Document ncremap and ncclimo --no_cll_msr, --no_frm_trm, --no_stg_grd
 
-	* Document ncclimo --rm_ntv
+	* Document ncclimo --no_ntv_tms
 
 2017-04-17  Charlie Zender  <zender@uci.edu>
 
