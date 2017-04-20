@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.6-alpha07
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 17 April 2017
+@set update-date 20 April 2017
 @set update-month April 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6904,6 +6904,48 @@ These annotations include
     The @var{map-file} and @var{input-file} names are stored in the
     @var{output-file} global attributes @code{mapping_file} and
     @code{source_file}, respectively.
+@html
+<a name="slat"></a> <!-- http://nco.sf.net/nco.html#slat -->
+<a name="slon"></a> <!-- http://nco.sf.net/nco.html#slon -->
+<a name="stg"></a> <!-- http://nco.sf.net/nco.html#stg -->
+<a name="no_stg"></a> <!-- http://nco.sf.net/nco.html#no_stg -->
+<a name="stagger"></a> <!-- http://nco.sf.net/nco.html#stagger -->
+<a name="no_stagger"></a> <!-- http://nco.sf.net/nco.html#no_stagger -->
+@end html
+@cindex @code{slat}
+@cindex @code{slon}
+@cindex @code{slat_wgt}
+@cindex @acronym{CAM}
+@cindex @acronym{FV}
+@cindex @acronym{AMWG}
+@cindex staggered-grid
+@cindex no stagger
+@cindex @code{--no_stg}
+@cindex @code{--no_stagger}
+@cindex @code{--no_stg_grd}
+@item Staggered Grid Coordinates and Weights
+    Owing to its heritage as an early @acronym{CCM} analysis tool,
+    @acronym{NCO} tries to create output interoperable with other
+    @acronym{CESM} analysis tools. 
+    Like many models, @acronym{CAM} computes and archives thermodynamic
+    state variables on gridcell centers, while dynamics variables
+    (@var{U}, @var{V}) are on gridcell edges (interfaces).
+    The dual-grid, sometimes called the ``staggered grid'', formed
+    by connecting edge centers is thus the natural location for 
+    storing output dynamics variables.
+    Some analysis packages, such as the @acronym{AMWG} diagnostics, 
+    require access to these dual-grid coordinates with the names
+    @code{slat} and @code{slon} (for ``staggered'' latitude and
+    longitude).
+    By default the @acronym{NCO} regridder outputs these coordinates,
+    along with the latitude weights (called @code{slat_wgt}), when
+    the input is on a cap (aka @acronym{FV}) grid so that the result
+    can be processed by @acronym{AMWG} diagnostics. 
+    Turn-off archiving the staggered grid (i.e., @code{slat},
+    @code{slon}, and @code{slat_wgt}) by setting @var{no_stagger}
+    to any value, e.g., @samp{--no_stagger='Y'}.
+    The @code{--no_stg_grd} flag in @command{ncremap} sets this
+    @code{--no_stagger} flag.
 @end table
 
 One may supply muliple @samp{--rgr @var{key}=@var{value}} options
@@ -16811,6 +16853,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @html
 <a name="ncclimo"></a> <!-- http://nco.sf.net/nco.html#ncclimo -->
 <a name="ncsplit"></a> <!-- http://nco.sf.net/nco.html#ncsplit -->
+<a name="ncsplit"></a> <!-- http://nco.sf.net/nco.html#splitter -->
 @end html
 @node ncclimo netCDF Climatology Generator, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Reference Manual
 @section @command{ncclimo} netCDF Climatology Generator
@@ -16824,7 +16867,8 @@ SYNTAX
 ncclimo [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
-[-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}] 
+[-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}]
+[-R @var{rgr_opt}] [-r @var{rgr_map}] [--rm_ntv=@var{rm_ntv}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--stdin] [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}]
 [-v @var{var_lst}] [--version] [-x @var{cf_flg}] [-X @var{drc_xtn}] [-x @var{drc_prv}] 
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
@@ -17153,6 +17197,26 @@ Options intended exclusively for the regridder may be passed as
 arguments to the @samp{-R} switch.
 See below the discussion on regridding.
 
+@cindex @var{rm_ntv}
+@cindex @code{--rm_ntv}
+@cindex @code{--remove_native}
+@cindex @code{--del_ntv}
+@cindex @code{--delete_native}
+@item --rm_ntv (@code{--rm_ntv}, @code{--remove_native}, @code{--del_ntv}, @code{--delete_native})
+This option controls whether the splitter retains native grid split
+files, which it does by default.
+@command{ncclimo} can split model output from multi-variable native grid
+files into per-variable timeseries files and regrid those onto a
+so-called analysis grid. 
+That is the typical format in which Model Intercomparison Projects
+(@acronym{MIP}s) request and disseminate contributions.
+When the data producer has no use for the split timeseries on the native
+grid, he/she can use this option to cause @command{ncclimo} to
+automatically delete the native grid timeseries (not the raw native grid  
+datafiles). 
+Change the value of @var{rm_ntv} to ``Yes'' (with 
+@samp{--rm_ntv='Yes'}) to delete the native grid timeseries.
+
 @cindex @code{-s @var{srt_yr}}
 @cindex @var{srt_yr}
 @cindex @code{--srt_yr}
@@ -17230,15 +17294,19 @@ This option only takes effect in daily-average climatology mode.
 @cindex @code{--variables}
 @cindex @code{--variable_list}
 @item -v @var{var_lst} (@code{--var_lst}, @code{--var}, @code{--vars}, @code{--variables}, @code{--variable_list})
-Variables to subset or split.
+Variables to subset or to split.
 Same behavior as @ref{Subsetting Files}.
-The use of @var{var_lst} is optional in climate generation mode but is 
-mandatory in timeseries reshaping mode (to prevent inadvertently copying 
-the results of an entire model simulation).
+The use of @var{var_lst} is optional in climate generation mode.
+Invoking this switch was required in the original splitter released in 
+version 4.6.5 (March, 2017), and became optional as of version 4.6.6
+(May, 2017). 
+This option is recommended in timeseries reshaping mode to prevent
+inadvertently copying the results of an entire model simulation. 
 Regular expressions are allowed so, e.g., @samp{PREC.?} extracts
 the variables @samp{PRECC,PRECL,PRECSC,PRECSL} if present.
-Note that in reshaping mode all matches to a regular expression are
+Current in reshaping mode all matches to a regular expression are
 placed in the same output file.
+We hope to remove this limitation in the future.
 
 @cindex @code{--version}
 @cindex @code{--vrs}
@@ -21377,8 +21445,9 @@ SYNTAX
 @example
 ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_opt}]
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
-[-M] [-m @var{map_fl}] [-n @var{nco_opt}] [-O @var{drc_out}] [-o @var{output-file}]
-[-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] 
+[-M] [-m @var{map_fl}] [-n @var{nco_opt}] 
+[-O @var{drc_out}] [-o @var{output-file}]
+[-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [--stdin]
 [-T @var{tempest_opt}] [-t @var{thr_nbr}] [-U @var{drc_tmp}] [-u @var{unq_sfx}] 
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 

@@ -408,7 +408,7 @@ rgr_map='' # [sng] Regridding map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
 spl_rgr_opt='--rgr no_stagger=Y' # [sng] Splitter regridding options
-rtn_ntv='Yes' # [flg] Retain native-grid timeseries
+rm_ntv='No' # [flg] Remove native-grid split timeseries
 sbs_flg='No' # [sng] Split (subset) climatologies
 thr_nbr=2 # [nbr] Thread number for regridder
 tpd_out=1 # [nbr] Timesteps-per-day in ouput
@@ -446,8 +446,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
-    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map$, map, map_file, map_fl]"
-    echo " ${fnt_bld}--rtn_ntv${fnt_nrm}  Retain native-grid timeseries (default ${fnt_bld}${rtn_ntv}${fnt_nrm}) [${fnt_tlc}rtn_ntv${fnt_nrm}]"
+    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map$, map, map_file, map_fl${fnt_nrm}]"
+    echo " ${fnt_bld}--rm_ntv${fnt_nrm}   Remove native-grid timeseries (default ${fnt_bld}${rm_ntv}${fnt_nrm}) [${fnt_tlc}rm_ntv, remove_native, del_ntv, delete_native${fnt_nrm}]"
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
     echo " ${fnt_bld}--std_flg${fnt_nrm}  Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, std_flg, inp_std, redirect, standard_input${fnt_nrm}]"
@@ -584,7 +584,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
 	       rgr_map=?* | regrid_map=?* | map=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map
-	       rtn_ntv=?* ) rtn_ntv="${LONG_OPTARG}" ;; # # Retain native-grid only
+	       rm_ntv=?* | remove_native=?* | del_ntv=?* | delete_native=?* ) rm_ntv="${LONG_OPTARG}" ;; # # Remove native-grid split files
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       stdin | inp_std | std_flg | redirect | standard_input ) inp_std='Yes' ;; # # Input file list from stdin
@@ -1113,7 +1113,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
-    printf "dbg: rtn_ntv  = ${rtn_ntv}\n"
+    printf "dbg: rm_ntv   = ${rm_ntv}\n"
     printf "dbg: sbs_flg  = ${sbs_flg}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
@@ -1545,12 +1545,12 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		fi # !bch_flg
 	    fi # !par_typ
 
-	    if [ "${rtn_ntv}" != 'Yes' ]; then
-		# Remove native grid timeseries by moving fl_rgr to fl_out
+	    if [ "${rm_ntv}" = 'Yes' ]; then
+		# Remove native-grid split timeseries by moving fl_rgr to fl_out
 		for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 		    /bin/mv -f ${fl_rgr[${var_idx}]} ${fl_out[${var_idx}]}
 		done # !var_idx
-	    fi # !rtn_ntv
+	    fi # !rm_ntv
 
 	fi # !rgr_map
 	
