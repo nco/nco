@@ -6924,7 +6924,7 @@ These annotations include
 @cindex @code{--no_stg_grd}
 @cindex @code{slat}
 @cindex @code{slon}
-@cindex @code{slat_wgt}
+@cindex @code{w_stag}
 @cindex @acronym{CAM}
 @cindex @acronym{FV}
 @cindex @acronym{AMWG}
@@ -6945,11 +6945,11 @@ These annotations include
     @code{slat} and @code{slon} (for ``staggered'' latitude and
     longitude).
     By default the @acronym{NCO} regridder outputs these coordinates,
-    along with the latitude weights (called @code{slat_wgt}), when
+    along with the latitude weights (called @code{w_stag}), when
     the input is on a cap (aka @acronym{FV}) grid so that the result
     can be processed by @acronym{AMWG} diagnostics. 
     Turn-off archiving the staggered grid (i.e., @code{slat},
-    @code{slon}, and @code{slat_wgt}) by setting @var{no_stagger}
+    @code{slon}, and @code{w_stag}) by setting @var{no_stagger}
     to any value, e.g., @samp{--no_stagger='Y'}.
     The @code{--no_stg_grd} flag in @command{ncremap} and
     @command{ncclimo} sets this @code{--no_stagger} flag.
@@ -17196,7 +17196,7 @@ delete the native grid timeseries (not the raw native grid datafiles).
 @end html
 @cindex @code{slat}
 @cindex @code{slon}
-@cindex @code{slat_wgt}
+@cindex @code{w_stag}
 @cindex @code{--no_stg_grd}
 @cindex @code{--no_stg}
 @cindex @code{--no_stagger}
@@ -17204,7 +17204,7 @@ delete the native grid timeseries (not the raw native grid datafiles).
 @item --no_stg_grd (@code{--no_stg_grd}, @code{--no_stg}, @code{--no_stagger}, @code{--no_staggered_grid})
 This switch (which takes no argument) controls whether
 regridded output will contain the staggered grid coordinates 
-@code{slat}, @code{slon}, and @code{slat_wgt} (@pxref{Regridding}). 
+@code{slat}, @code{slon}, and @code{w_stag} (@pxref{Regridding}). 
 By default the staggered grid is output for all files regridded from 
 a Cap (aka @acronym{FV}) grid, except when the regridding is performed
 as part of splitting (reshaping) into timeseries.
@@ -21931,7 +21931,7 @@ See @ref{CF Conventions} for a detailed description.
 
 @cindex @code{slat}
 @cindex @code{slon}
-@cindex @code{slat_wgt}
+@cindex @code{w_stag}
 @cindex @code{--no_stg_grd}
 @cindex @code{--no_stg}
 @cindex @code{--no_stagger}
@@ -21939,7 +21939,7 @@ See @ref{CF Conventions} for a detailed description.
 @item --no_stg_grd (@code{--no_stg_grd}, @code{--no_stg}, @code{--no_stagger}, @code{--no_staggered_grid})
 This switch (which takes no argument) controls whether
 regridded output will contain the staggered grid coordinates 
-@code{slat}, @code{slon}, and @code{slat_wgt} (@pxref{Regridding}). 
+@code{slat}, @code{slon}, and @code{w_stag} (@pxref{Regridding}). 
 By default the staggered grid is output for all files regridded from 
 a Cap (aka @acronym{FV}) grid, except when the regridding is performed
 as part of splitting (reshaping) into timeseries.

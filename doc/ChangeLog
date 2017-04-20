@@ -1,5 +1,11 @@
 2017-04-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.6-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.6-alpha08 final changes';git push
+	git tag -a 4.6.6-alpha08 -m 'Version 4.6.6-alpha08 new features: Document, implement ncremap and ncclimo --no_cll_msr, --no_frm_trm, --no_stg_grd switches';git push --tags
+
+	* Separate eps_rlt_wrt_thr = 3.0e-13 threshold to write frac_b to regridded files
+
 	* Document ncremap and ncclimo --no_cll_msr, --no_frm_trm, --no_stg_grd
 
 	* Document ncclimo --no_ntv_tms
