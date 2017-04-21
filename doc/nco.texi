@@ -118,11 +118,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.6-alpha08
-@set doc-edition 4.6.6-alpha08
+@set nco-edition 4.6.6
+@set doc-edition 4.6.6
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 20 April 2017
+@set update-date 21 April 2017
 @set update-month April 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13268,7 +13268,7 @@ Consider the variables @code{float lon_2D_rct(lat,lon);} and
 Suppose we wish to multiply by two the elements for which @code{var_msk} 
 @w{equals 1}: 
 @example
-where(var_msk==1) lon_2D_rct=2*lon_2D_rct;
+where(var_msk == 1) lon_2D_rct=2*lon_2D_rct;
 @end example
 Suppose that we have the variable @code{int RDM(time)} and that we want
 to set its values less than 8 or greater than 80 @w{to 0}:
@@ -17152,8 +17152,9 @@ directory for them is specified with @samp{-O} (NB: capital ``O'').
 @cindex @code{--no_cll_msr}
 @cindex @code{--no_cll}
 @cindex @code{--no_cell_measures}
+@cindex @code{--no_area}
 @cindex @code{cell_measures} attribute
-@item --no_cll_msr (@code{--no_cll_msr}, @code{--no_cll}, @code{--no_cell_measures})
+@item --no_cll_msr (@code{--no_cll_msr}, @code{--no_cll}, @code{--no_cell_measures}, @code{--no_area})
 This switch (which takes no argument) controls whether @command{ncclimo}
 and @command{ncremap} add measures variables to the extraction list
 along with the primary variable and other associated variables. 
@@ -21912,8 +21913,9 @@ Specifies a string of options to pass-through unaltered to
 @cindex @code{--no_cll_msr}
 @cindex @code{--no_cll}
 @cindex @code{--no_cell_measures}
+@cindex @code{--no_area}
 @cindex @code{cell_measures} attribute
-@item --no_cll_msr (@code{--no_cll_msr}, @code{--no_cll}, @code{--no_cell_measures})
+@item --no_cll_msr (@code{--no_cll_msr}, @code{--no_cll}, @code{--no_cell_measures}, @code{--no_area})
 This switch (which takes no argument) controls whether @command{ncclimo}
 and @command{ncremap} add measures variables to the extraction list
 along with the primary variable and other associated variables. 

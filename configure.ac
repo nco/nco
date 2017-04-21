@@ -51,7 +51,7 @@
 
 # Process configure input with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
-AC_INIT([NCO netCDF Operators],[4.6.6-alpha08],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.6.6],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT

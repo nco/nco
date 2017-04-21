@@ -13,21 +13,25 @@ Revamped HPSS/hsi support. The splitter produces cleaner output.
 The regridder groks more files and masks, and annotates output with
 more helpful metadata. CDL mode handles compound record variables.
 JSON output has changed slightly to re-use NcML keywords. 
+ncclimo and ncremap have new extract/exclude options.
+
+EVERYONE WHO USES NCKS TO PRINT DATA PLEASE READ THIS:
 
 We would like to change the default behavior of ncks printing.
 For 20+ years ncks has, by default, dumped the text representation
 of a file in (what we call) "traditional" mode. ncdump produces a
-format called CDL that has become more useful than traditional mode
-for most NCO users. ncks has printed CDL only since 2013 and so
-is not the default. ncdump has always printed CDL very cleanly and
-clearly there was little point in making CDL the default for ncks.
+format called CDL that is more useful than traditional mode for most
+NCO users. ncks has produced CDL since only 2013 and so CDL is not the
+default. ncdump has always printed CDL very cleanly and clearly there
+was little point in making CDL the default for ncks. 
 Now ncks CDL mode rivals ncdump, and is superior in some ways.
-ncks now prints times as human-readable calendar dates, the last
-ncdump feature I used that ncks did not have.
+In particular, ncks now prints times as human-readable calendar dates,
+the last ncdump feature I used that ncks did not have.
 We may change the default printed output of ncks to CDL.
-Then one can type simply "ncks" instead of "ncks --cdl". 
+Then one would type simply "ncks" instead of "ncks --cdl". 
 A new "--trd" option would still print traditional output.
 Let us know if this bothers or pleases you prior to 4.6.7.
+You have been warned :)
 
 Work on NCO 4.6.7 has commenced. Planned improvements include 
 support for conda installs on MS Windows, more ncclimo and ncremap
@@ -38,7 +42,20 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo's splitter mode no longer requires variable lists. 
+A. ncremap and ncclimo support new extract/exclude switches:
+   --no_cll_msr: Exclude cell_measures variables
+   --no_frm_trm: Exclude formula_terms variables
+   --no_ntv_tms: Exclude native-grid timeseries (splitter only)
+   --no_stg_grd: Exclude staggered grid coordinates
+   By default, these variables are always extracted.
+   Use the above switches to exclude them instead, e.g.,
+   ncclimo --no_cll_msr --no_frm_trm --no_ntv_tms --no_stg_grd ...
+   http://nco.sf.net/nco.html#no_cll_msr
+   http://nco.sf.net/nco.html#no_frm_trm
+   http://nco.sf.net/nco.html#no_ntv_tms
+   http://nco.sf.net/nco.html#no_stg_grd
+
+B. ncclimo's splitter mode no longer requires variable lists. 
    Previously the splitter required a '-v var_lst' option to know
    which variables to split into timeseries. Now when the -v option
    is omitted the splitter creates timeseries of all variables of
@@ -51,7 +68,7 @@ A. ncclimo's splitter mode no longer requires variable lists.
    ncclimo -s 1979 -e 1981 -o $drc_out in*.nc
    http://nco.sf.net/nco.html#ncclimo
 
-A. The regridder now produces UGRID output for 2D rectangular grids.
+C. The regridder now produces UGRID output for 2D rectangular grids.
    Invoke ncremap in grid inferral mode with "--rgr ugrid=foo.nc"
    and voilà, an annoted UGRID file is produce along with the
    default SCRIP gridfile. The NCO UGRID is more complete than that 
@@ -62,7 +79,7 @@ A. The regridder now produces UGRID output for 2D rectangular grids.
    ncks --rgr nfr=Y --rgr grid=scrip.nc --rgr ugrid=ugrid.nc in.nc out.nc
    http://nco.sf.net/nco.html#rgr
 
-A. ncks now prints the units, if any, in comments after CDL values
+D. ncks now prints the units, if any, in comments after CDL values
    when debugging is enabled with dbg_lvl >=1:
    zender@foo: ncks --cdl -D 1 in.nc
    lat = -90, 90 ; // units="degrees_north"
@@ -70,14 +87,14 @@ A. ncks now prints the units, if any, in comments after CDL values
    tpt = 273.1, 273.2, ... 274 ; // units="kelvin"
    http://nco.sf.net/nco.html#cdl
 
-A. ncap2 now implements the CF cell_methods convention.
+E. ncap2 now implements the CF cell_methods convention.
    ncra, nces, and ncwa have long implemented this, and now the
    relevant ncap2 methods (avg, min, max, etc.) record the operation
    type in the cell_methods attribute.
    ncap2 -s 'avg=one_dmn_rec_var.avg()' ~/nco/data/in.nc ~/foo.nc
    http://nco.sf.net/nco.html#cll_mth
 
-A. Since 4.6.5 ncks has printed the human-legible calendar string
+F. Since 4.6.5 ncks has printed the human-legible calendar string
    corresponding to values with UDUnits date units (time since
    basetime, e.g., "days since 2000-01-01") and CF calendar attribute,
    if any. Now ncks also translates and prints time values associated
@@ -93,7 +110,7 @@ A. Since 4.6.5 ncks has printed the human-legible calendar string
    Does this work how you'd like? Let us know.
    http://nco.sf.net/nco.html#cal
 
-A. ncks now prints "(no units)" instead of "(null)" as the units
+G. ncks now prints "(no units)" instead of "(null)" as the units
    string for variables with no units. And in CDL mode ncks, when
    invoked with debugging (e.g., -D 1) prints the units string in the
    comment section after the values of a variable.
@@ -103,22 +120,22 @@ BUG FIXES:
 A. NCO now exits with a clear message instead of core dump on missing
    files on HPSS systems with the hsi command.
 
-A. ncremap will no longer define mask variables in inferred grid
+B. ncremap will no longer define mask variables in inferred grid
    files unless it finds a mask variable in the source file.
    Previously ncremap could define a mask variable in the inferred
    grid file and never fill-it with data.
 
-A. ncremap now invokes the neareststod algorithm when requested.
+C. ncremap now invokes the neareststod algorithm when requested.
    Previously a typo caused ncremap to invoke nearestdtos when
    neareststod was specified (doh!). Solution is to upgrade.
 
-A. ncremap now converts non-default masks correctly in infer mode.
+D. ncremap now converts non-default masks correctly in infer mode.
    Previously a "mask" variable in an input file whose grid structure
    was being inferred could be incorrectly handled for some numeric
    types. This likely only affected masks with missing values.
    Sources of files possibly affected include AMSR and CICE.
 
-A. ncks now prints braces required to disambiguate compound
+E. ncks now prints braces required to disambiguate compound
    record dimensions in CDL mode. Such braces have been required by 
    ncgen-like parsers since ~2013 in order to unambiguously determine
    the record dimension sizes in variables with multiple record
