@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.6
-@set doc-edition 4.6.6
+@set nco-edition 4.6.7-alpha01
+@set doc-edition 4.6.7-alpha01
 @set copyright-years 1995--2017
 @set update-year 2017
 @set update-date 21 April 2017
@@ -19588,7 +19588,7 @@ rather than as more complex objects:
 % ncks --jsn_fmt=0 -v att_var ~/nco/data/in_grp.nc
 ...
 "att_var": {
-  "dims": ["time"],
+  "shape": ["time"],
   "type": "float",
   "attributes": {
     "byte_att": [0, 1, 2, 127, -128, -127, -2, -1],
@@ -19640,7 +19640,7 @@ as in the @math{@var{lvl} = 0} above:
 % ncks --jsn_fmt=1 -v att_var ~/nco/data/in.nc
 ...
 "att_var": {
-  "dims": ["time"],
+  "shape": ["time"],
   "type": "float",
   "attributes": {
     "byte_att": { "type": "byte", "data": [0, 1, 2, 127, -128, -127, -2, -1]},
@@ -19679,7 +19679,7 @@ exact reproduction of the original dataset:
 % ncks --jsn_fmt=2 -v att_var ~/nco/data/in.nc
 ...
 "att_var": {
-  "dims": ["time"],
+  "shape": ["time"],
   "type": "float",
   "attributes": {
     "byte_att": { "type": "byte", "data": [0, 1, 2, 127, -128, -127, -2, -1]},

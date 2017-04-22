@@ -313,8 +313,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
-# Latest sysadmin-compiled module usage: module load nco/4.6.4 # 20170210 (without ncap2)
-# Used 20151204-
+# Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170322 (without ncap2)
+# Personal recipe last used successfully: 20170411
 module load szip
 module load gsl
 module load udunits
@@ -333,7 +333,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on edison:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
 # Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170322 (with ncap2)
-# Personal recipe last used successfully: 20170411
+# Personal recipe last used successfully: 20170421
 module load szip
 module load gsl
 module load udunits
@@ -351,7 +351,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on aims4:
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last used successfully: 20170315
+# Personal recipe last used successfully: 20170421
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/uvcdat/2016-01-21/Externals' UDUNITS2_PATH='/usr/local/uvcdat/2016-01-21/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -365,6 +365,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
 # Sysadmin upgrade request: support@lcrc.anl.gov
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.5 # 20170316
+# Personal recipe last used successfully: 20170421
 # fails to link to udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 # First use: 20161223 Latest use: 20161223
@@ -396,7 +397,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # icc/icpc 20160217 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on yellowstone:
 # Sysadmin upgrade request: cislhelp@ucar.edu
 # Latest sysadmin-compiled module usage: module load nco/4.5.5 # 20160228
-# Personal recipe last used successfully: 20170315
+# Personal recipe last used successfully: 20170421
 module add intel;module add gsl;module add netcdf/4.3.0;
 export PATH=${PATH}:/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib # needed to run NCO
@@ -407,7 +408,7 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNI
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 347675 on 20170316
 # Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170411
-# Personal recipe last used successfully: 20170315
+# Personal recipe last used successfully: 20170421
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -424,7 +425,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.3.3.1/rhe
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 347675 on 20170316
 # Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170411
-# Personal recipe last used successfully: 20170315
+# Personal recipe last used successfully: 20170421
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 module add gcc # change GCC from v 4.3.4 to 4.9.0
 #module add gsl # not used yet

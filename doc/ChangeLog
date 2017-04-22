@@ -1,5 +1,12 @@
 2017-04-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.7-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha01 final changes';git push
+	git tag -a 4.6.7-alpha01 -m 'Version 4.6.7-alpha01 new features:
+	Same as 4.6.6';git push --tags
+
+	* Add autoconf/configure stub to use same git-based version as bld/Makefile
+
 	* NCO 4.6.6 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.6 final changes';git push
 	git tag -a 4.6.6 -m 'Version 4.6.6 new features: no_cll_msr,no_frm_trm,no_stg_grd,hsi,lst_rnk_ge2,UGRID 2D,JSON shape,OMI';git push --tags
