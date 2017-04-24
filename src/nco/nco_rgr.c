@@ -243,6 +243,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 
   /* Initialize key-value properties used in grid generation */
   rgr->fl_grd=NULL; /* [sng] Name of SCRIP grid file to create */
+  rgr->fl_hnt_dst=NULL; /* [sng] ERWG hint destination */
+  rgr->fl_hnt_src=NULL; /* [sng] ERWG hint source */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
   rgr->flg_area_out=True; /* [flg] Add area to output */
@@ -274,6 +276,14 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_grd=True;
       continue;
     } /* !grid */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"hnt_dst") || !strcasecmp(rgr_lst[rgr_var_idx].key,"fl_hnt_dst")){
+      rgr->fl_hnt_dst=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !hnt_dst */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"hnt_src") || !strcasecmp(rgr_lst[rgr_var_idx].key,"fl_hnt_src")){
+      rgr->fl_hnt_src=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !hnt_src */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"skl")){
       rgr->fl_skl=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_grd=True;
@@ -3880,8 +3890,6 @@ nco_rgr_tps /* [fnc] Regrid using TempestRemap library */
   /* Allow for whitespace characters in fl_grd_dst
      Assume CDL translation results in acceptable name for shell commands */
   fl_grd_dst_cdl=nm2sng_fl(fl_grd_dst);
-  //drc_tps=strcat(drc_tps,"/");
-  //drc_tps=strcat(drc_tps,fl_grd_dst);
 
   /* Construct and execute regridding command */
   nco_rgr_cmd=nco_rgr_GenerateRLLMesh;
@@ -5497,6 +5505,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
   nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
+  nco_grd_xtn_enm nco_grd_xtn=nco_grd_xtn_nil; /* [enm] Grid-extent enum */
 
   nc_type msk_typ;
 
@@ -6509,10 +6518,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
     } /* !(lat_bnd_id && lon_bnd_id) */
   } /* !flg_grd_2D */
-  
+
   if(flg_grd_2D){
     /* Diagnose type of two-dimensional input grid by testing second latitude center against formulae */
-    nco_grd_xtn_enm nco_grd_xtn=nco_grd_xtn_glb; /* [enm] Extent of grid */
     const double lat_ctr_tst_eqa=lat_ntf[0]+lat_spn*1.5/lat_nbr;
     const double lat_ctr_tst_fv=lat_ntf[0]+lat_spn/(lat_nbr-1);
     double lat_ctr_tst_gss;
@@ -6627,7 +6635,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Diagnose type of longitude grid by testing second longitude center against formulae */
     lon_spn=lon_ntf[lon_nbr]-lon_ntf[0];
     lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
-    if((float)lon_spn != 360.0f || (float)lat_spn != 180.0f) nco_grd_xtn=nco_grd_xtn_rgn;
+    if((float)lon_spn == 360.0f && (float)lat_spn == 180.0f) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
     if(lon_typ == nco_grd_lon_nil){
       if(     (float)lon_ctr[0] ==    0.0f && (float)lon_ctr[1] == (float)(lon_ctr[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_Grn_ctr;
       else if((float)lon_ctr[0] == -180.0f && (float)lon_ctr[1] == (float)(lon_ctr[0]+lon_spn/lon_nbr)) lon_typ=nco_grd_lon_180_ctr;
@@ -6640,27 +6648,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input 2D grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_2D_sng(grd_typ));
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input latitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lat_sng(lat_typ));
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input longitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(lon_typ));
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
-
-    if(nco_grd_xtn == nco_grd_xtn_rgn){
-      const char fl_hnt[]="ncremap_hints.txt";
-      const char *fl_mode="w";
-      FILE *fp_hnt; /* [fl] Unformatted binary output file handle */
-      (void)fprintf(stderr,"%s: INFO %s writing weight-generation hint to file %s\n",nco_prg_nm_get(),fnc_nm,fl_hnt);
-      /* Open output file */
-      if((fp_hnt=fopen(fl_hnt,fl_mode)) == NULL){
-	(void)fprintf(stderr,"%s: ERROR unable to open hint output file %s\n",nco_prg_nm_get(),fl_hnt);
-	nco_exit(EXIT_FAILURE);
-      } /* end if */
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Opened hint file %s\n",nco_prg_nm_get(),fl_hnt);
-      (void)fprintf(fp_hnt,"--src_regional --dst_regional --ignore_unmapped\n");
-      rcd=fclose(fp_hnt);
-      if(rcd != 0){
-	(void)fprintf(stderr,"%s: ERROR unable to close hint output file %s\n",nco_prg_nm_get(),fl_hnt);
-	nco_exit(EXIT_FAILURE);
-      } /* end if */
-      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Closed hint file %s\n",nco_prg_nm_get(),fl_hnt);
-    } /* !nco_grd_xtn */
 
   } /* !flg_grd_2D */
 
@@ -6765,20 +6752,21 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !lat */
   } /* !flg_grd_2D */
   
-  /* Find span of any grid that has boundaries */
+  /* Find span of all grids */
+  double lat_max; /* [dgr] Maximum latitude */
+  double lat_min; /* [dgr] Minimum latitude */
+  double lon_max; /* [dgr] Maximum longitude */
+  double lon_min; /* [dgr] Minimum longitude */
+  idx_ctr=0;
+  if(has_mss_val_ctr){
+    /* Find first non-missing value center and thus corners */
+    for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
+      if(grd_ctr_lat[idx_ctr] != mss_val_ctr_dbl) break;
+    } /* !grd_sz_nbr */
+    assert(idx_ctr != grd_sz_nbr);
+  } /* !has_mss_val_ctr */
   if(flg_wrt_crn){
-    double lat_max; /* [dgr] Maximum latitude */
-    double lat_min; /* [dgr] Minimum latitude */
-    double lon_max; /* [dgr] Maximum longitude */
-    double lon_min; /* [dgr] Minimum longitude */
-    idx_ctr=0;
-    if(has_mss_val_ctr){
-      /* Find first non-missing value center and thus corners */
-      for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
-	if(grd_ctr_lat[idx_ctr] != mss_val_ctr_dbl) break;
-      } /* !grd_sz_nbr */
-      assert(idx_ctr != grd_sz_nbr);
-    } /* !has_mss_val_ctr */
+    /* Grids with corner boundaries supplied or inferred */
     lon_max=grd_crn_lon[idx_ctr*grd_crn_nbr];
     lat_max=grd_crn_lat[idx_ctr*grd_crn_nbr];
     lon_min=grd_crn_lon[idx_ctr*grd_crn_nbr];
@@ -6791,11 +6779,59 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       lat_min=(grd_crn_lat[idx] < lat_min) ? grd_crn_lat[idx] : lat_min;
       lon_min=(grd_crn_lon[idx] < lon_min) ? grd_crn_lon[idx] : lon_min;
     } /* !idx */
-    lat_spn=lat_max-lat_min;
-    lon_spn=lon_max-lon_min;
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports grid resolution %li x %li, spans %g x %g degrees: [%g <= lat <= %g], [%g <= lon <= %g]\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_spn,lon_spn,lat_min,lat_max,lon_min,lon_max);
-  } /* !flg_wrt_crn */
+  }else{ /* !flg_wrt_crn */
+    /* 20170424: Diagnose grid-extent when corners were not provided or inferred
+       This is usually (always?) for 1d unstructured grids with only centers provided */
+    lon_max=grd_ctr_lon[idx_ctr];
+    lat_max=grd_ctr_lat[idx_ctr];
+    lon_min=grd_ctr_lon[idx_ctr];
+    lat_min=grd_ctr_lat[idx_ctr];
+    for(idx=1;idx<grd_sz_nbr;idx++){
+      if(grd_ctr_lat[idx] == mss_val_ctr_dbl) continue;
+      lat_max=(grd_ctr_lat[idx] > lat_max) ? grd_ctr_lat[idx] : lat_max;
+      lon_max=(grd_ctr_lon[idx] > lon_max) ? grd_ctr_lon[idx] : lon_max;
+      lat_min=(grd_ctr_lat[idx] < lat_min) ? grd_ctr_lat[idx] : lat_min;
+      lon_min=(grd_ctr_lon[idx] < lon_min) ? grd_ctr_lon[idx] : lon_min;
+    } /* !idx */
+  } /* flg_wrt_crn */
+  lat_spn=lat_max-lat_min;
+  lon_spn=lon_max-lon_min;
+  /* Use strict rules when corners provided, looser for spans that are center-to-center not corner-to-corner */
+  if(flg_wrt_crn){
+    if((float)lon_spn == 360.0f && (float)lat_spn == 180.0f) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
+  }else{ /* !flg_wrt_crn */
+    if((float)lon_spn >= 350.0f && (float)lat_spn >= 175.0f) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
+  } /* flg_wrt_crn */
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports grid resolution %li x %li, spans %g x %g degrees: [%g <= lat <= %g], [%g <= lon <= %g]\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_spn,lon_spn,lat_min,lat_max,lon_min,lon_max);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
 
+  /* Write ERWG hints if filenames provided and grid is regional */
+  char *fl_hnt=NULL;
+  char *fl_hnt_dst=NULL;
+  char *fl_hnt_src=NULL;
+  if(rgr->fl_hnt_dst) fl_hnt=fl_hnt_dst=rgr->fl_hnt_dst;
+  if(rgr->fl_hnt_src) fl_hnt=fl_hnt_src=rgr->fl_hnt_src;
+  if(nco_grd_xtn == nco_grd_xtn_rgn && fl_hnt){
+    const char *fl_mode="w";
+    FILE *fp_hnt; /* [fl] Hint file (for ERWG switches) file handle */
+    (void)fprintf(stderr,"%s: INFO %s writing weight-generation hint to file %s\n",nco_prg_nm_get(),fnc_nm,fl_hnt);
+    /* Open output file */
+    if((fp_hnt=fopen(fl_hnt,fl_mode)) == NULL){
+      (void)fprintf(stderr,"%s: ERROR unable to open hint output file %s\n",nco_prg_nm_get(),fl_hnt);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Opened hint file %s\n",nco_prg_nm_get(),fl_hnt);
+    if(fl_hnt_src) (void)fprintf(fp_hnt,"--src_regional");
+    if(fl_hnt_dst) (void)fprintf(fp_hnt,"--dst_regional");
+    rcd=fclose(fp_hnt);
+    if(rcd != 0){
+      (void)fprintf(stderr,"%s: ERROR unable to close hint output file %s\n",nco_prg_nm_get(),fl_hnt);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Closed hint file %s\n",nco_prg_nm_get(),fl_hnt);
+  } /* !nco_grd_xtn */
+  if(fl_hnt) fl_hnt=(char *)nco_free(fl_hnt);
+  
   /* Diagnose area if necessary */
   if(area_id == NC_MIN_INT && flg_wrt_crn){
     /* Not absolutely necessary to diagnose area because ERWG will diagnose and output area itself */

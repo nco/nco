@@ -584,7 +584,8 @@ fi # !out_fl
 att_fl="${drc_tmp}/ncremap_tmp_att.nc" # [sng] Missing value workflow (MPAS) default
 grd_dst_dfl="${drc_tmp}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
 grd_src_dfl="${drc_tmp}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
-hnt_fl="${drc_tmp}/ncremap_tmp_hnt.txt" # [sng] Hint file (for ERWG) default
+hnt_dst_fl="${drc_tmp}/ncremap_tmp_hnt_dst.txt" # [sng] Hint (for ERWG) destination
+hnt_src_fl="${drc_tmp}/ncremap_tmp_hnt_src.txt" # [sng] Hint (for ERWG) source
 ncwa_fl="${drc_tmp}/ncremap_tmp_ncwa.nc" # [sng] ncwa workflow (HIRDLS, MLS) default
 pdq_fl="${drc_tmp}/ncremap_tmp_pdq.nc" # [sng] Permuted data default (AIRS, HIRDLS, MLS, MPAS) 
 tmp_out_fl="${drc_tmp}/${tmp_out_fl}" # [sng] Temporary output file
@@ -604,6 +605,8 @@ fi # !unq_sfx
 att_fl=${att_fl}${unq_sfx}
 grd_dst_dfl=${grd_dst_dfl}${unq_sfx}
 grd_src_dfl=${grd_src_dfl}${unq_sfx}
+hnt_dst_fl=${hnt_dst_fl}${unq_sfx}
+hnt_src_fl=${hnt_src_fl}${unq_sfx}
 ncwa_fl=${ncwa_fl}${unq_sfx}
 pdq_fl=${pdq_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
@@ -1047,7 +1050,7 @@ else # !map_usr_flg
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Destination grid will be inferred from data-file\n"
 	fi # !vrb_lvl
-	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y ${nco_var_rgr} --rgr grid=${grd_dst} ${dst_fl} ${tmp_out_fl}"
+	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr hnt_dst=${hnt_dst_fl} ${nco_var_rgr} --rgr grid=${grd_dst} ${dst_fl} ${tmp_out_fl}"
     else # !dst_usr_flg
 	if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -1118,7 +1121,14 @@ if [ "${grd_src_usr_flg}" = 'Yes' ]; then
     fi # !vrb_lvl
     fl_idx=0
     if [ "${wgt_gnr}" = 'esmf' ]; then 
-	cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${esmf_opt} > /dev/null"
+	rgn_opt=''
+	if [ -f "${hnt_src_fl}" ]; then
+	    rgn_opt="`cat ${hnt_src_fl}`"
+	fi # !hnt_src_fl
+	if [ -f "${hnt_dst_fl}" ]; then
+	    rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
+	fi # !hnt_dst_fl
+	cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${esmf_opt} ${rgn_opt} > /dev/null"
     fi # !esmf
     if [ "${wgt_gnr}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} > /dev/null"
@@ -1222,7 +1232,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    exit 1
 	fi # ! -f
 	# Infer source grid-file from input data file
-	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y ${nco_var_rgr} --rgr grid=${grd_src} ${in_fl} ${tmp_out_fl}"
+	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr hnt_src=${hnt_src_fl} ${nco_var_rgr} --rgr grid=${grd_src} ${in_fl} ${tmp_out_fl}"
 	
 	# Block 2 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -1243,7 +1253,14 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    printf "Grid(dst): ${grd_dst}\n"
 	fi # !vrb_lvl
 	if [ "${wgt_gnr}" = 'esmf' ]; then 
-	    cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${esmf_opt} > /dev/null"
+	    rgn_opt=''
+	    if [ -f "${hnt_src_fl}" ]; then
+		rgn_opt="`cat ${hnt_src_fl}`"
+	    fi # !hnt_src_fl
+	    if [ -f "${hnt_dst_fl}" ]; then
+		rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
+	    fi # !hnt_dst_fl
+	    cmd_map[${fl_idx}]="ESMF_RegridWeightGen -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${esmf_opt} ${rgn_opt} > /dev/null"
 	fi # !esmf
 	if [ "${wgt_gnr}" = 'tempest' ]; then 
 	    printf "Mesh-File: ${msh_fl}\n"
@@ -1419,7 +1436,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Cleaning-up intermediate files...\n"
     fi # !vrb_lvl
-    /bin/rm -f ${att_fl} ${grd_dst_dfl} ${grd_src_dfl} ${map_fl_dfl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${att_fl} ${grd_dst_dfl} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files.\n"

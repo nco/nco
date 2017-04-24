@@ -1,6 +1,6 @@
 2017-04-24  Charlie Zender  <zender@uci.edu>
 
-	* nco_grd_nfr() writes hint file ncremap_tmp_hnt.txt with regional ERWG flags
+	* nco_grd_nfr() writes hint file ncremap_tmp_hnt_[dst/src].txt with regional ERWG flags
 
 2017-04-21  Charlie Zender  <zender@uci.edu>
 

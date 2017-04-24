@@ -637,7 +637,10 @@ netCDF4 compound types?;
 <tt>ncremap</tt> hints to ERWG;</li>
 <li><b>NCO 4.6.6</b>: 
 <tt>ncks --cdl</tt> prints units when <i>dbg_lvl</i>&nbsp;&ge;&nbsp;1;
-<tt>ncks --cdl</tt> prints braces for compound record variables;</li>
+<tt>ncks --cdl</tt> prints braces for compound record variables;
+<tt>ncremap/ncclimo no_cll_msr,no_frm_trm,no_ntv_tms,no_stg_grd</tt> switches;
+<tt>ncremap</tt> outputs UGRID-format rectangular grids;
+<tt>ncremap</tt> masks;</li>
 <li><b>NCO 4.6.5</b>: (<i>Current Stable Release</i>)
 <tt>ncks --cal</tt> prints human-legible ISO8601 dates;
 <tt>ncclimo/ncremap --version</tt> switch;
