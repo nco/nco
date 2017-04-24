@@ -6642,6 +6642,26 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input longitude grid-type: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_lon_sng(lon_typ));
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
 
+    if(nco_grd_xtn == nco_grd_xtn_rgn){
+      const char fl_hnt[]="ncremap_hints.txt";
+      const char *fl_mode="w";
+      FILE *fp_hnt; /* [fl] Unformatted binary output file handle */
+      (void)fprintf(stderr,"%s: INFO %s writing weight-generation hint to file %s\n",nco_prg_nm_get(),fnc_nm,fl_hnt);
+      /* Open output file */
+      if((fp_hnt=fopen(fl_hnt,fl_mode)) == NULL){
+	(void)fprintf(stderr,"%s: ERROR unable to open hint output file %s\n",nco_prg_nm_get(),fl_hnt);
+	nco_exit(EXIT_FAILURE);
+      } /* end if */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Opened hint file %s\n",nco_prg_nm_get(),fl_hnt);
+      (void)fprintf(fp_hnt,"--src_regional --dst_regional --ignore_unmapped\n");
+      rcd=fclose(fp_hnt);
+      if(rcd != 0){
+	(void)fprintf(stderr,"%s: ERROR unable to close hint output file %s\n",nco_prg_nm_get(),fl_hnt);
+	nco_exit(EXIT_FAILURE);
+      } /* end if */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Closed hint file %s\n",nco_prg_nm_get(),fl_hnt);
+    } /* !nco_grd_xtn */
+
   } /* !flg_grd_2D */
 
   if(flg_grd_2D){
