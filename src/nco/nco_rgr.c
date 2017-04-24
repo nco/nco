@@ -1808,7 +1808,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      ESMF: gridcell_area
      GPM: S1_Latitude, S1_Longitude
      HIRDLS: Latitude
-     MAR: LAT, LON
+     MAR/RACMO: LAT, LON
      MLS: CO_Latitude
      MPAS-O/I: areaCell, latCell, lonCell
      NCO: lat_vertices, lon_vertices
@@ -5706,7 +5706,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"Lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("Lat");
     else if((rcd=nco_inq_varid_flg(in_id,"XLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("XLAT"); /* WRF */
     else if((rcd=nco_inq_varid_flg(in_id,"XLAT_M",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("XLAT_M"); /* Unknown */
-    else if((rcd=nco_inq_varid_flg(in_id,"LAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LAT"); /* MAR */
+    else if((rcd=nco_inq_varid_flg(in_id,"LAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LAT"); /* MAR/RACMO */
     else if((rcd=nco_inq_varid_flg(in_id,"TLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("TLAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"CO_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude"); /* MLS */
     else if((rcd=nco_inq_varid_flg(in_id,"S1_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("S1_Latitude"); /* GPM */
@@ -5723,7 +5723,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"Lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("Lon");
     else if((rcd=nco_inq_varid_flg(in_id,"XLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG"); /* WRF */
     else if((rcd=nco_inq_varid_flg(in_id,"XLONG_M",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG_M"); /* Unknown */
-    else if((rcd=nco_inq_varid_flg(in_id,"LON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LON"); /* MAR */
+    else if((rcd=nco_inq_varid_flg(in_id,"LON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LON"); /* MAR/RACMO */
     else if((rcd=nco_inq_varid_flg(in_id,"S1_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("S1_Longitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"TLON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLON"); /* CICE */
     else if((rcd=nco_inq_varid_flg(in_id,"TLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLONG"); /* POP */
