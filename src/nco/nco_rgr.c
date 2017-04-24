@@ -6796,11 +6796,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* flg_wrt_crn */
   lat_spn=lat_max-lat_min;
   lon_spn=lon_max-lon_min;
-  /* Use strict rules when corners provided, looser for spans that are center-to-center not corner-to-corner */
-  if(flg_wrt_crn){
+  /* Use strict rules for rectangular grids, looser for spans that are inferred, or center-to-center not corner-to-corner */
+  if(flg_grd_2D){
     if((float)lon_spn == 360.0f && (float)lat_spn == 180.0f) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
-  }else{ /* !flg_wrt_crn */
-    if((float)lon_spn >= 350.0f && (float)lat_spn >= 175.0f) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
+  }else{ /* !flg_grd_2D */
+    if((float)lon_spn >= 340.0f && (float)lat_spn >= 170.0f) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
   } /* flg_wrt_crn */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s reports grid resolution %li x %li, spans %g x %g degrees: [%g <= lat <= %g], [%g <= lon <= %g]\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_spn,lon_spn,lat_min,lat_max,lon_min,lon_max);
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s diagnosed input grid-extent: %s\n",nco_prg_nm_get(),fnc_nm,nco_grd_xtn_sng(nco_grd_xtn));
