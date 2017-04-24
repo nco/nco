@@ -6147,7 +6147,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   dfl_lvl=rgr->dfl_lvl;
   fl_out=rgr->fl_grd;
   fl_out_fmt=rgr->fl_out_fmt;
-
+  if(!fl_out){
+    (void)fprintf(stdout,"%s: ERROR %s filename for output grid is uninitialized, supply it with --rgr grid=filename.nc\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !fl_out */
+  
   /* Define output variable values */
   int lon_psn; /* [idx] Ordinal position of longitude size in rectangular grid */
   int lat_psn; /* [idx] Ordinal position of latitude  size in rectangular grid */
@@ -7862,7 +7866,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
     /* Close output file and move it from temporary to permanent location */
     (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
-    (void)fprintf(stdout,"%s: DBG %s ending UGRID section\n",nco_prg_nm_get(),fnc_nm);
 
     /* Free memory associated with output file */
     if(dgx) dgx=(double *)nco_free(dgx);

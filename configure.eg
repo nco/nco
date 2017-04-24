@@ -231,15 +231,15 @@ Status: Works
 Commands for LINUX are the only ones "regularly" used after ~2010
 ************************************************************************
 # Post upgrade requests to sysadmins at ALCF, LCRC, NCAR, NCSA, NERSC, OLCF
-# support@anl.gov # ALCF Maintainer = Adam
+# support@anl.gov # ALCF Maintainer = Adam (email borken)
 # conda update nco # Anaconda Maintainer = Filipe Fernandes (github: ocefpaf)
-# support@lcrc.anl.gov # LCRC
+# support@lcrc.anl.gov # LCRC Maintainer = Adam
 # cislhelp@ucar.edu # NCAR
 # Yan Liu <yanliu@illinois.edu> # NCSA Maintainer = Yan Liu (github: yanliu-chn)
 # https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # https://www.olcf.ornl.gov/support/submit-ticket # OLCF
-# Subject: Upgrade NCO module to 4.6.5
-# Request: NCO 4.6.5 was released yesterday and contains many features of interest to your ACME users. Please upgrade the system NCO module to 4.6.5 and make that the default NCO module. Thanks!
+# Subject: Please upgrade NCO module to 4.6.6
+# Request: NCO 4.6.6 was released 4/21 and contains many features of interest to your ACME users. Please upgrade the system NCO module to 4.6.6 and make that the default NCO module. Thanks!
 
 zender@dust:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUX
