@@ -584,6 +584,7 @@ fi # !out_fl
 att_fl="${drc_tmp}/ncremap_tmp_att.nc" # [sng] Missing value workflow (MPAS) default
 grd_dst_dfl="${drc_tmp}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
 grd_src_dfl="${drc_tmp}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
+hnt_fl="${drc_tmp}/ncremap_tmp_hnt.txt" # [sng] Hint file (for ERWG) default
 ncwa_fl="${drc_tmp}/ncremap_tmp_ncwa.nc" # [sng] ncwa workflow (HIRDLS, MLS) default
 pdq_fl="${drc_tmp}/ncremap_tmp_pdq.nc" # [sng] Permuted data default (AIRS, HIRDLS, MLS, MPAS) 
 tmp_out_fl="${drc_tmp}/${tmp_out_fl}" # [sng] Temporary output file

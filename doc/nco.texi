@@ -118,8 +118,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.6
-@set doc-edition 4.6.6
+@set nco-edition 4.6.7-alpha01
+@set doc-edition 4.6.7-alpha01
 @set copyright-years 1995--2017
 @set update-year 2017
 @set update-date 21 April 2017
@@ -6455,6 +6455,10 @@ ncks --rgr grd_ttl='T42 Gaussian grid' --rgr grid=${DATA}/grids/t42_SCRIP.201509
 # Date-line west edge of first longitude, east edge of last longitude
 ncks --rgr grd_ttl='Equi-Angular grid 3600x7200 (NASA CMG)' --rgr grid=${DATA}/grids/3600x7200_SCRIP.20160301.nc \
      --rgr latlon=3600,7200 --rgr lat_typ=uni --rgr lon_typ=180_wst ~zender/nco/data/in.nc ~/foo.nc
+
+# 1x1 degree Equi-Angular Regional grid over Greenland, centered longitudes
+ncks --rgr grd_ttl='Equi-Angular Greenland grid ' --rgr grid=${HOME}/greenland_SCRIP.nc \
+     --rgr latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
 @end verbatim
 @end example
 
@@ -13441,8 +13445,6 @@ As of @acronym{NCO} version 4.6.3 (December, 2016), The user can specify the dir
 export NCO_PATH=":/home/henryb/bin/:/usr/local/scripts:/opt/SOURCES/nco/data:"
 @end example
 
-
-
 @html
 <a name="srt"></a> <!-- http://nco.sf.net/nco.html#srt -->
 <a name="sort"></a> <!-- http://nco.sf.net/nco.html#sort -->
@@ -19588,7 +19590,7 @@ rather than as more complex objects:
 % ncks --jsn_fmt=0 -v att_var ~/nco/data/in_grp.nc
 ...
 "att_var": {
-  "dims": ["time"],
+  "shape": ["time"],
   "type": "float",
   "attributes": {
     "byte_att": [0, 1, 2, 127, -128, -127, -2, -1],
@@ -19640,7 +19642,7 @@ as in the @math{@var{lvl} = 0} above:
 % ncks --jsn_fmt=1 -v att_var ~/nco/data/in.nc
 ...
 "att_var": {
-  "dims": ["time"],
+  "shape": ["time"],
   "type": "float",
   "attributes": {
     "byte_att": { "type": "byte", "data": [0, 1, 2, 127, -128, -127, -2, -1]},
@@ -19679,7 +19681,7 @@ exact reproduction of the original dataset:
 % ncks --jsn_fmt=2 -v att_var ~/nco/data/in.nc
 ...
 "att_var": {
-  "dims": ["time"],
+  "shape": ["time"],
   "type": "float",
   "attributes": {
     "byte_att": { "type": "byte", "data": [0, 1, 2, 127, -128, -127, -2, -1]},

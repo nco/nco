@@ -149,7 +149,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2017 Apr&nbsp;21: 4.6.6 (<i>In progress</i>)
+<li>2017 May&nbsp;??: 4.6.7 (<i>In progress</i>)
+<li>2017 Apr&nbsp;21: 4.6.6 (UGRID)
 <li>2017 Mar&nbsp;15: 4.6.5 (Sundry features/fixes)
 <li>2017 Feb&nbsp;07: 4.6.4 (<tt>ncclimo</tt> splitter)
 <li>2017 Jan&nbsp;27: <i>Geosci. Model Dev.</i> publishes compression-error trade-off <a href="http://www.geosci-model-dev.net/10/413/2017">paper</a></li>
@@ -627,15 +628,16 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.6.6 http://github.com/nco/nco.git nco-4.6.6</tt></a>.
 <ul>
-<li><b>NCO 4.6.7</b>: (<i>Future</i>)
+<li><b>NCO 4.6.8</b>: (<i>Future</i>)
 <a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements;
 extensive hashing?;
 netCDF4 compound types?;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
-<li><b>NCO 4.6.6</b>: (<i>In Progress, features in-progress or completed include</i>) 
+<li><b>NCO 4.6.7</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<tt>ncremap</tt> hints to ERWG;</li>
+<li><b>NCO 4.6.6</b>: 
 <tt>ncks --cdl</tt> prints units when <i>dbg_lvl</i>&nbsp;&ge;&nbsp;1;
-<tt>ncks --cdl</tt> prints braces for compound record variables;
-<tt>ncks --xtn</tt> better extensive variable treatment;</li>
+<tt>ncks --cdl</tt> prints braces for compound record variables;</li>
 <li><b>NCO 4.6.5</b>: (<i>Current Stable Release</i>)
 <tt>ncks --cal</tt> prints human-legible ISO8601 dates;
 <tt>ncclimo/ncremap --version</tt> switch;
