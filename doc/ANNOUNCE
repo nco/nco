@@ -27,7 +27,7 @@ was little point in making CDL the default for ncks.
 Now ncks CDL mode rivals ncdump, and is superior in some ways.
 In particular, ncks now prints times as human-readable calendar dates,
 the last ncdump feature I used that ncks did not have.
-We may change the default printed output of ncks to CDL.
+We propose to change the default printed output of ncks to CDL.
 Then one would type simply "ncks" instead of "ncks --cdl". 
 A new "--trd" option would still print traditional output.
 Let us know if this bothers or pleases you prior to 4.6.7.
