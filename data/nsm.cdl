@@ -1,0 +1,55 @@
+// -*-C++-*-
+// Generate netCDF file with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/nsm.nc ~/nco/data/nsm.cdl
+
+netcdf nsm {
+  :Conventions = "CF-1.5";
+  :history = "Tue Apr 25 12:46:10 PDT 2017: ncgen -k netCDF-4 -b -o ~/nco/data/clc.nc ~/nco/data/clc.cdl";
+  :Purpose = "Demonstrate a model ensemble stored in hierarchical format";
+
+  group: cesm_01 {
+      :Scenario = "Historical";
+      :Model = "CESM";
+      :Realization = "1";
+
+    dimensions:
+      time=unlimited;
+    variables:
+      float temperature(time);
+      double time(time);
+    data:
+      temperature=272.1,272.1,272.1,272.1;
+      time=1.,2.,3.,4.;
+    } // cesm_01
+
+  group: cesm_02 {
+      :Scenario = "Historical";
+      :Model = "CESM";
+      :Realization = "2";
+
+    dimensions:
+      time=unlimited;
+    variables:
+      float temperature(time);
+      double time(time);
+    data:
+      temperature=272.2,272.2,272.2,272.2;
+      time=1.,2.,3.,4.;
+    } // cesm_02
+    
+  group: cesm_03 {
+      :Scenario = "Historical";
+      :Model = "CESM";
+      :Realization = "3";
+
+    dimensions:
+      time=unlimited;
+    variables:
+      float temperature(time);
+      double time(time);
+    data:
+      temperature=272.3,272.3,272.3,272.3;
+      time=1.,2.,3.,4.;
+    } // cesm_03
+    
+} // root group

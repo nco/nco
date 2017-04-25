@@ -6033,7 +6033,13 @@ hyperslab and multi-slab options.
 Also @samp{--auxiliary}.
 This switch supports hyperslabbing cell-based grids (aka unstructured
 grids) over coordinate ranges. 
-This works on datasets that associate coordinate variables to
+When these grids are stored as 1D-arrays of cell data, this feature is
+helpful at hyperslabbing and/or performing arithmetic on selected
+geographic regions.
+This feature cannot be used to select regions of 2D grids (instead use
+the @command{ncap2} @code{where} statement for such grids 
+@ref{Where statement}).
+This feature works on datasets that associate coordinate variables to 
 grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})   
 @code{coordinates} and @code{standard_name} attributes described 
 @uref{http://cfconventions.org/1.6.html#coordinate-system, here}. 
@@ -14903,7 +14909,6 @@ double gsl_stats_wmean (double w[], size_t wstride, double data[], size_t stride
 double gsl_stats_quantile_from_sorted_data (double sorted_data[], size_t stride, size_t n, double f) ;
 @end example
 
-
 @noindent Equivalent ncap2 wrapper functions
 @example
 short gsl_stats_max (var_data, data_stride, n);
@@ -14914,9 +14919,6 @@ double gsl_stats_quantile_from_sorted_data (var_sorted_data, data_stride, n, var
 @end example
 
 @noindent @acronym{GSL} has no notion of missing values or dimensionality beyond one. If your data has missing values which you want ignored in the calculations then use the @command{ncap2} built in aggregate functions(@ref{Methods and functions}). The @acronym{GSL} functions operate on a vector of values created from the var_data/stride/n arguments. The ncap wrappers check that there is no bounding error with regard to the size of the data and the final value in the vector. 
-
-Some examples
-
 @example
 @verbatim
 a1[time]={1,2,3,4,5,6,7,8,9,10};

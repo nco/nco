@@ -1,5 +1,7 @@
 2017-04-25  Charlie Zender  <zender@uci.edu>
 
+	* Add clc.cdl, nsm.cdl, and trj.cdl files for EarthCube CF2 project
+
 	* Change "grid" argument to "scrip" to distinguish it from UGRID
 
 2017-04-24  Charlie Zender  <zender@uci.edu>

@@ -11,9 +11,9 @@ netcdf clc {
   lat=2;
   lon=3;
   time=unlimited;
-  variables:
+  variables: // Variable attributes omitted for clarity
   float temperature(time,lat,lon);
-  double time(time); // Variable attributes omitted for clarity
+  double time(time);
   double lat(lat);
   double lon(lon);
   data:
@@ -29,9 +29,9 @@ netcdf clc {
   lat=3;
   lon=4;
   time=unlimited;
-  variables:
+  variables: // Variable attributes omitted for clarity
   float temperature(time,lat,lon);
-  double time(time); // Variable attributes omitted for clarity
+  double time(time);
   double lat(lat);
   double lon(lon);
   data:
@@ -45,9 +45,9 @@ netcdf clc {
   :Source = "In situ measurements, e.g., from an automated weather station with its own time-frequency";
   dimensions:
   time=unlimited;
-  variables:
+  variables: // Variable attributes omitted for clarity
   float temperature_10m(time);
-  double time(time); // Variable attributes omitted for clarity
+  double time(time);
   data:
   temperature_10m=271,272,273,274;
   time=1.,2.,3.,4.;
