@@ -1,3 +1,7 @@
+2017-04-25  Charlie Zender  <zender@uci.edu>
+
+	* Change "grid" argument to "scrip" to distinguish it from UGRID
+
 2017-04-24  Charlie Zender  <zender@uci.edu>
 
 	* Document UGRID

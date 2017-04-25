@@ -264,7 +264,6 @@ esmf_opt='--ignore_unmapped' # [sng] ESMF_RegridWeightGen options
 fl_nbr=0 # [nbr] Number of files to remap
 gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_command=\"'${cmd_ln}'\" --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
 grd_dst='' # [sng] Destination grid-file
-grd_dst_glb="${DATA}/grids/180x360_SCRIP.20150901.nc" # [sng] Grid-file (destination) global
 grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
 grd_sng='' # [sng] Grid string
 grd_src='' # [sng] Source grid-file
@@ -302,11 +301,11 @@ var_lst='' # [sng] Variables to process (empty means all)
 var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
 vrb_lvl=2 # [sng] Verbosity level
-vrb_0=0 # [sng] Verbosity level: Quiet
-vrb_1=1 # [sng] Verbosity level: Standard, minimal file I/O
-vrb_2=2 # [sng] Verbosity level: All file I/O
-vrb_3=3 # [sng] Verbosity level: English
-vrb_4=4 # [sng] Verbosity level: Pedantic
+vrb_0=0 # [enm] Verbosity level: Quiet
+vrb_1=1 # [enm] Verbosity level: Standard, minimal file I/O
+vrb_2=2 # [enm] Verbosity level: All file I/O
+vrb_3=3 # [enm] Verbosity level: English
+vrb_4=4 # [enm] Verbosity level: Pedantic
 vrs_prn='No' # [sng] Print version information
 wgt_gnr='esmf' # [sng] Weight-generator program
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
@@ -743,7 +742,7 @@ else
     grd_src=${grd_src_dfl} # [sng] Grid-file default
 fi # !grd_src
 if [ -z "${grd_sng}" ]; then 
-    grd_sng_dfl="--rgr grd_ttl='Default internally-generated grid' --rgr grid=${grd_dst_dfl} --rgr latlon=100,100 --rgr snwe=30.0,70.0,-130.0,-90.0" # [sng] Grid string default
+    grd_sng_dfl="--rgr grd_ttl='Default internally-generated grid' --rgr scrip=${grd_dst_dfl} --rgr latlon=100,100 --rgr snwe=30.0,70.0,-130.0,-90.0" # [sng] Grid string default
     grd_sng="${grd_sng_dfl}"
 else
     grd_sng_usr_flg='Yes'
@@ -1050,7 +1049,7 @@ else # !map_usr_flg
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Destination grid will be inferred from data-file\n"
 	fi # !vrb_lvl
-	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr hnt_dst=${hnt_dst_fl} ${nco_var_rgr} --rgr grid=${grd_dst} ${dst_fl} ${tmp_out_fl}"
+	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr hnt_dst=${hnt_dst_fl} ${nco_var_rgr} --rgr scrip=${grd_dst} ${dst_fl} ${tmp_out_fl}"
     else # !dst_usr_flg
 	if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -1232,7 +1231,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    exit 1
 	fi # ! -f
 	# Infer source grid-file from input data file
-	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr hnt_src=${hnt_src_fl} ${nco_var_rgr} --rgr grid=${grd_src} ${in_fl} ${tmp_out_fl}"
+	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr nfr=y --rgr hnt_src=${hnt_src_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${in_fl} ${tmp_out_fl}"
 	
 	# Block 2 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then

@@ -271,7 +271,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   for(rgr_var_idx=0;rgr_var_idx<rgr_var_nbr;rgr_var_idx++){
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"grid")){
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"grid") || !strcasecmp(rgr_lst[rgr_var_idx].key,"scrip")){
       rgr->fl_grd=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_grd=True;
       continue;
@@ -6148,7 +6148,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   fl_out=rgr->fl_grd;
   fl_out_fmt=rgr->fl_out_fmt;
   if(!fl_out){
-    (void)fprintf(stdout,"%s: ERROR %s filename for output grid is uninitialized, supply it with --rgr grid=filename.nc\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s filename for inferred SCRIP grid-file is uninitialized, supply it with --rgr grid=filename.nc\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: HINT ncremap supplies an automatically generated default name for any output SCRIP grid-file. Users of the standalone regridder (ncks) must explicitly specify a name for the inferred SCRIP grid-file.\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* !fl_out */
   
