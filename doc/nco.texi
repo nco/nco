@@ -6160,6 +6160,7 @@ to avoid confusion.
 @cindex Gaussian grid
 @cindex Equi-Angular grid
 @cindex FV grid
+@cindex FV grid
 @cindex CAM-FV grid
 @cindex grid, Fixed
 @cindex grid, Offset
@@ -6465,6 +6466,7 @@ ncks --rgr grd_ttl='Equi-Angular Greenland grid ' --rgr grid=${HOME}/greenland_S
 @html
 <a name="nfr"></a> <!-- http://nco.sf.net/nco.html#nfr -->
 <a name="infer"></a> <!-- http://nco.sf.net/nco.html#infer -->
+<a name="ugrid"></a> <!-- http://nco.sf.net/nco.html#ugrid -->
 @end html
 @cindex infer
 @cindex @code{--rgr nfr}
@@ -6489,14 +6491,131 @@ comprises quadrilateral cells whose edges are midway between cell
 centers, for both rectilinear and curvilinear grids. 
 @example
 @verbatim
-# Infer the grid of the AIRS swath from input, write it to grd_airs.nc
-ncks --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_airs.nc \
+# Infer the grid of the AIRS swath from input, write it to grd_scrip.nc
+ncks --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_scrip.nc \
      ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.nc ~/foo.nc
 @end verbatim
 @end example
-When inferring grids, the grid file (@file{grd_airs.nc}) is written,
-the input file (@file{AIRS...nc}) is read, and the output file
-(@file{foo.nc}) is overwritten (its contents are immaterial).
+When inferring grids, the grid file (@file{grd_scrip.nc}) is written
+in @acronym{SCRIP} format, the input file (@file{AIRS...nc}) is read,
+and the output file (@file{foo.nc}) is overwritten (its contents are
+immaterial). 
+
+@cindex @acronym{UGRID}
+@cindex @code{--rgr ugrid}
+As of @acronym{NCO} @w{version 4.6.6}, released in April, 2017,
+inferred 2D rectangular grids may also be written in
+@acronym{UGRID}-format (defined
+@uref{http://ugrid-conventions.github.io/ugrid-conventions, here}).
+Request a @acronym{UGRID} mesh with the option
+@samp{--rgr ugrid=@var{fl_ugrid}}.
+Currently a @acronym{SCRIP} grid must be requested in order for the
+@acronym{UGRID} option to work, e.g.,
+@example
+@verbatim
+ncks --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc \
+     --rgr grid=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
+@end verbatim
+@end example
+
+The @acronym{SCRIP} gridfile and @acronym{UGRID} meshfile metadata
+produced for the equiangular @w{1-by-1 degree} global grid are:
+@example
+@verbatim
+zender@aerosol:~$ ncks --cdl -m ~/grd_scrip.nc 
+netcdf grd_scrip {
+  dimensions:
+    grid_corners = 4 ;
+    grid_rank = 2 ;
+    grid_size = 64800 ;
+
+  variables:
+    double grid_area(grid_size) ;
+      grid_area:units = "steradian" ;
+
+    double grid_center_lat(grid_size) ;
+      grid_center_lat:units = "degrees" ;
+
+    double grid_center_lon(grid_size) ;
+      grid_center_lon:units = "degrees" ;
+
+    double grid_corner_lat(grid_size,grid_corners) ;
+      grid_corner_lat:units = "degrees" ;
+
+    double grid_corner_lon(grid_size,grid_corners) ;
+      grid_corner_lon:units = "degrees" ;
+
+    int grid_dims(grid_rank) ;
+
+    int grid_imask(grid_size) ;
+} // group /
+
+zender@aerosol:~$ ncks --cdl -m ~/grd_ugrid.nc 
+netcdf grd_ugrid {
+  dimensions:
+    maxNodesPerFace = 4 ;
+    nEdges = 129240 ;
+    nFaces = 64800 ;
+    nNodes = 64442 ;
+    two = 2 ;
+
+  variables:
+    int mesh ;
+      mesh:cf_role = "mesh_topology" ;
+      mesh:standard_name = "mesh_topology" ;
+      mesh:long_name = "Topology data" ;
+      mesh:topology_dimension = 2 ;
+      mesh:node_coordinates = "mesh_node_x mesh_node_y" ;
+      mesh:face_node_connectivity = "mesh_face_nodes" ;
+      mesh:face_coordinates = "mesh_face_x mesh_face_y" ;
+      mesh:face_dimension = "nFaces" ;
+      mesh:edge_node_connectivity = "mesh_edge_nodes" ;
+      mesh:edge_coordinates = "mesh_edge_x mesh_edge_y" ;
+      mesh:edge_dimension = "nEdges" ;
+
+    int mesh_edge_nodes(nEdges,two) ;
+      mesh_edge_nodes:cf_role = "edge_node_connectivity" ;
+      mesh_edge_nodes:long_name = "Maps every edge to the two nodes that it connects" ;
+      mesh_edge_nodes:start_index = 0 ;
+
+    double mesh_edge_x(nEdges) ;
+      mesh_edge_x:standard_name = "longitude" ;
+      mesh_edge_x:long_name = "Characteristic longitude of 2D mesh face" ;
+      mesh_edge_x:units = "degrees_east" ;
+
+    double mesh_edge_y(nEdges) ;
+      mesh_edge_y:standard_name = "latitude" ;
+      mesh_edge_y:long_name = "Characteristic latitude of 2D mesh face" ;
+      mesh_edge_y:units = "degrees_north" ;
+
+    int mesh_face_nodes(nFaces,maxNodesPerFace) ;
+      mesh_face_nodes:cf_role = "face_node_connectivity" ;
+      mesh_face_nodes:long_name = "Maps every face to its corner nodes" ;
+      mesh_face_nodes:start_index = 0 ;
+      mesh_face_nodes:_FillValue = -2147483648 ;
+
+    double mesh_face_x(nFaces) ;
+      mesh_face_x:standard_name = "longitude" ;
+      mesh_face_x:long_name = "Characteristic longitude of 2D mesh edge" ;
+      mesh_face_x:units = "degrees_east" ;
+
+    double mesh_face_y(nFaces) ;
+      mesh_face_y:standard_name = "latitude" ;
+      mesh_face_y:long_name = "Characteristic latitude of 2D mesh edge" ;
+      mesh_face_y:units = "degrees_north" ;
+
+    double mesh_node_x(nNodes) ;
+      mesh_node_x:standard_name = "longitude" ;
+      mesh_node_x:long_name = "Longitude of mesh nodes" ;
+      mesh_node_x:units = "degrees_east" ;
+
+    double mesh_node_y(nNodes) ;
+      mesh_node_y:standard_name = "latitude" ;
+      mesh_node_y:long_name = "Latitude of mesh nodes" ;
+      mesh_node_y:units = "degrees_north" ;
+} // group /
+@end verbatim
+@end example
 
 @html
 <a name="skl"></a> <!-- http://nco.sf.net/nco.html#skl -->
@@ -6522,7 +6641,7 @@ datasets of the same geometry.
 @verbatim
 # Generate T42 Gaussian grid file t42_SCRIP.nc and skeleton file t42_skl.nc
 ncks --rgr skl=${DATA}/grids/t42_skl.nc --rgr grid=${DATA}/grids/t42_SCRIP.nc \
-     --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr \
+     --rgr latlon=64,128#lat_typ=gss#lon_typ=Grn_ctr \
      ~zender/nco/data/in.nc ~/foo.nc
 @end verbatim
 @end example

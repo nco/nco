@@ -1,5 +1,7 @@
 2017-04-24  Charlie Zender  <zender@uci.edu>
 
+	* Document UGRID
+
 	* NCO 4.6.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha02 final changes';git push
 	git tag -a 4.6.7-alpha02 -m 'Version 4.6.7-alpha02 new features: auto-detect regional grids for ERWG';git push --tags
