@@ -1120,6 +1120,7 @@ extern "C" {
     char *fl_ugrid; /* [sng] Name of UGRID grid file to create */
     char *fl_skl; /* [sng] Name of skeleton data file to create */
     char *grd_ttl; /* [sng] Grid title */
+    char *msk_var; /* [sng] Mask-template variable */
     double lat_crv; /* [dgr] Latitudinal  curvilinearity */
     double lon_crv; /* [dgr] Longitudinal curvilinearity */
     double lat_sth; /* [dgr] Latitude of southern edge of grid */

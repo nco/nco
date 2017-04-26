@@ -84,6 +84,11 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
 
   /* free() strings associated with grid properties */
   if(rgr->fl_grd) rgr->fl_grd=(char *)nco_free(rgr->fl_grd);
+  if(rgr->fl_hnt_dst) rgr->fl_hnt_dst=(char *)nco_free(rgr->fl_hnt_dst);
+  if(rgr->fl_hnt_src) rgr->fl_hnt_src=(char *)nco_free(rgr->fl_hnt_src);
+  if(rgr->fl_skl) rgr->fl_skl=(char *)nco_free(rgr->fl_skl);
+  if(rgr->fl_ugrid) rgr->fl_ugrid=(char *)nco_free(rgr->fl_ugrid);
+  if(rgr->msk_var) rgr->msk_var=(char *)nco_free(rgr->msk_var);
 
   /* Tempest */
   if(rgr->drc_tps) rgr->drc_tps=(char *)nco_free(rgr->drc_tps);
@@ -266,6 +271,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_wst=NC_MAX_DOUBLE; /* [dgr] Longitude of western edge of grid */
   rgr->lat_nrt=NC_MAX_DOUBLE; /* [dgr] Latitude of northern edge of grid */
   rgr->lon_est=NC_MAX_DOUBLE; /* [dgr] Longitude of eastern edge of grid */
+  rgr->msk_var=NULL; /* [sng] Mask-template variable */
   rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
   
   /* Parse key-value properties */
@@ -284,6 +290,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->fl_hnt_src=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !hnt_src */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"msk_var") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_var") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_variable")){
+      rgr->msk_var=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !msk_var */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"skl")){
       rgr->fl_skl=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_grd=True;
@@ -5944,11 +5954,18 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"tarea",&area_id)) == NC_NOERR) area_nm_in=strdup("tarea"); /* CICE */
   else if((rcd=nco_inq_varid_flg(in_id,"uarea",&area_id)) == NC_NOERR) area_nm_in=strdup("uarea"); /* CICE */
 
-  if((rcd=nco_inq_varid_flg(in_id,"mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask");
-  else if((rcd=nco_inq_varid_flg(in_id,"Mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("Mask");
-  else if((rcd=nco_inq_varid_flg(in_id,"grid_imask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("grid_imask");
-  else if((rcd=nco_inq_varid_flg(in_id,"tmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("tmask"); /* CICE */
-
+  msk_nm_in=rgr->msk_var;
+  if(msk_nm_in){
+    /* Try user-supplied name */
+    rcd=nco_inq_varid(in_id,msk_nm_in,&msk_id);
+  }else{
+    /* Otherwise search database */
+    if((rcd=nco_inq_varid_flg(in_id,"mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask");
+    else if((rcd=nco_inq_varid_flg(in_id,"Mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("Mask");
+    else if((rcd=nco_inq_varid_flg(in_id,"grid_imask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("grid_imask");
+    else if((rcd=nco_inq_varid_flg(in_id,"tmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("tmask"); /* CICE */
+  } /* !msk_nm_in */
+  
   /* Mask field requires special handling for non-conformant models */
   if(msk_id != NC_MIN_INT){
     /* 20151201: All models tested define mask as NC_INT except CICE which uses NC_FLOAT
@@ -6852,9 +6869,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   /* Input mask can be any type and output mask will always be NC_INT */
   if(msk_id == NC_MIN_INT){
-    /* ERWG will fail unless the grid file has a mask variable
-       The nul-mask (all points included) will be used whenever a true mask variable is not detected
-       fxm: Optionally construct mask from missing values of var_rgr? */
+    /* ERWG will fail unless grid file has mask variable
+       Use nul-mask (all points included) whenever true mask variable not supplied/detected 
+       Define nul-mask */
     for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
   }else{
     /* Change missing value mask points to 0 integer mask for SCRIP grids, which have no missing value convention

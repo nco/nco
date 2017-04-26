@@ -1,3 +1,9 @@
+2017-04-26  Charlie Zender  <zender@uci.edu>
+
+	* Regridder can now infer masks from missing values of any variable
+
+	* Add msk_src and msk_dst to specify mask-template variables to ncremap
+
 2017-04-25  Charlie Zender  <zender@uci.edu>
 
 	* Add clc.cdl, nsm.cdl, and trj.cdl for EarthCube CF2 project
