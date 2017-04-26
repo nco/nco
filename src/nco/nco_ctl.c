@@ -844,7 +844,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always include terminal \n so mnemonic does not dangle */
-  return "NAM 1 NARR 0\n";
+  return "Blaze\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -862,8 +862,8 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
 #ifdef _MSC_VER
   int len;
   if(strrchr(nm_out_tmp,'\\')) nm_out_tmp=strrchr(nm_out_tmp,'\\')+1;
-  char *s=strstr(nm_out_tmp,".exe");
-  if(s!=NULL && !strcmp(s,".exe")){
+  char *sfx=strstr(nm_out_tmp,".exe");
+  if(!sfx && !strcmp(sfx,".exe")){
     len=strlen(nm_out_tmp); /* cut any '.exe' from name */ 
     nm_out_tmp[len-4]='\0';   
   } /* endif */
