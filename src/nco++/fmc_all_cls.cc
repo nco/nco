@@ -350,6 +350,8 @@
       fmc_vtr.push_back( fmc_cls("has_miss",this,(int)HAS_MISS));
       fmc_vtr.push_back( fmc_cls("ram_write",this,(int)RAM_WRITE));
       fmc_vtr.push_back( fmc_cls("ram_delete",this,(int)RAM_DELETE));
+      fmc_vtr.push_back( fmc_cls("fill_linear_miss",this,(int)FILL_LINEAR_MISS));
+      fmc_vtr.push_back( fmc_cls("fill_miss",this,(int)FILL_MISS));
      
     }
   }
@@ -391,13 +393,47 @@
       
      if(nbr_args ==0) 
        err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
-     
-     // deal with is_miss in a seperate function     
+
+
+
+     // deal with is_miss in a seperate function
+    /*
      if(fdx==NUM_MISS||fdx==HAS_MISS)
        return is_fnd(is_mtd, vtr_args,fmc_obj,walker);           
      if(fdx==GET_MISS)       
-       return get_fnd(is_mtd, vtr_args,fmc_obj,walker);             
-  
+       return get_fnd(is_mtd, vtr_args,fmc_obj,walker);
+    if(fdx==FILL_LINEAR_MISS)
+      return fill_fnd(is_mtd, vtr_args,fmc_obj,walker);
+
+    */
+
+    switch(fdx)
+    {
+      case NUM_MISS:
+      case HAS_MISS:
+        return is_fnd(is_mtd, vtr_args,fmc_obj,walker);
+        break;
+
+      case GET_MISS:
+        return get_fnd(is_mtd, vtr_args,fmc_obj,walker);
+        break;
+
+      case FILL_LINEAR_MISS:
+        return fill_linear_fnd(is_mtd, vtr_args,fmc_obj,walker);
+        break;
+
+      case FILL_MISS:
+        return fill_fnd(is_mtd, vtr_args,fmc_obj,walker);
+        break;
+
+
+
+        // do nothing just continue
+      default:
+        break;
+    }
+
+
 
     if( fdx==SET_MISS || fdx==CH_MISS) {
 
@@ -554,7 +590,7 @@
 
   
 var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
-  const std::string fnc_nm("srt_cls::imap_fnd");
+  const std::string fnc_nm("utl_cls::is_fnd");
     int nbr_args;
     int fdx=fmc_obj.fdx();
     long icnt;
@@ -618,7 +654,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
  
 // custom function for GET_MISS
 var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
-  const std::string fnc_nm("srt_cls::imap_fnd");
+  const std::string fnc_nm("utl_cls::get_fnd");
     int nbr_args;
     int fdx=fmc_obj.fdx();
     var_sct *var=NULL_CEWI;
@@ -694,7 +730,351 @@ var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
     return var_ret; 	
 
-} 
+}
+
+var_sct * utl_cls::fill_linear_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("utl_cls::fill_linear_fnd");
+  nco_bool do_permute=False;
+  int idx;
+  int jdx;
+  int nbr_dim;
+  int nbr_args;
+  int re_dim_nbr;
+  int swp_nbr;
+  int fdx=fmc_obj.fdx();
+  long icnt;
+  var_sct *var=NULL_CEWI;
+  var_sct *var_int=NULL_CEWI;
+  nc_type styp=NC_INT; // used to hold the mapping type either NC_INT or NC_UINT64
+  std::string sfnm =fmc_obj.fnm(); //method name
+  std::string var_nm;
+  std::string dim_nm;
+  std::string susg;
+  prs_cls *prs_arg=walker.prs_arg;
+
+
+  sfnm =fmc_obj.fnm(); //method name
+
+  susg="usage: var_out="+sfnm+"(var_in,$dim?)";
+
+
+  nbr_args=args_vtr.size();
+  var=walker.out(args_vtr[0] );
+  nbr_dim=var->nbr_dim;
+
+  if(nbr_args==0)
+    err_prn(sfnm,"Function has been called with no arguments\n"+susg);
+
+  if(prs_arg->ntl_scn){
+    return var;
+
+  }
+
+  if(nbr_args >1)
+  {
+    RefAST aRef=args_vtr[1];
+    if(aRef->getType() != DIM_ID)
+      err_prn(sfnm, "Second argument must be a single dimension\n"+susg);
+
+    dim_nm=aRef->getText();
+
+    for(idx=0;idx<nbr_dim;idx++)
+      if(!strcmp(var->dim[idx]->nm, dim_nm.c_str())) break;
+
+    if(idx==nbr_dim)
+      err_prn(sfnm, "Unable to find dim " + dim_nm +" in var "+ SCS(var->nm)+".");
+
+    re_dim_nbr=idx;
+
+  }
+  // dim not specified so choose last dim in var
+  else
+  {
+    re_dim_nbr = var->nbr_dim - 1;
+    dim_nm=SCS(var->dim[re_dim_nbr]->nm );
+  }
+
+  std::vector<nco_bool>  bool_vtr(nbr_dim,False);
+  std::vector<int> dmn_idx_in_out(nbr_dim,0);
+  std::vector<int> dmn_idx_out_in(nbr_dim,0);
+
+  for(idx=0;idx<nbr_dim;idx++)
+    dmn_idx_in_out[idx]=idx;
+
+  // do we need to permute dims ?
+  if(nbr_dim ==1 || re_dim_nbr == nbr_dim-1)
+  {
+   do_permute=False;
+
+  }
+  else
+  {
+    dmn_sct *swp_dim;
+    do_permute=True;
+    // swap about last value;
+    dmn_idx_in_out[re_dim_nbr]=nbr_dim-1;
+    dmn_idx_in_out[nbr_dim-1]=re_dim_nbr;
+
+    var_int=nco_var_dpl(var);
+    swp_dim=var->dim[re_dim_nbr];
+
+    var_int->dim[re_dim_nbr]=var_int->dim[nbr_dim-1];
+    var_int->dim[nbr_dim-1]=swp_dim;
+
+    // create "out_in" mapping from "in_out" mapping
+    for(idx=0 ; idx <nbr_dim ; idx++)
+      for(jdx=0 ; jdx<nbr_dim; jdx++)
+        if( idx==dmn_idx_in_out[jdx]){
+          dmn_idx_out_in[idx]=jdx;
+          break;
+        }
+
+
+
+  }
+
+  //do opera
+  if(do_permute)
+  {
+    (void) nco_var_dmn_rdr_val(var, var_int, &dmn_idx_out_in[0], &bool_vtr[0]);
+  }
+
+  // do fill
+  if(1)
+  {
+
+    int slb_sz=var_int->dim[nbr_dim-1]->cnt;
+    int sz=var->sz/slb_sz;
+    double *dp;
+
+    cast_void_nctype(NC_DOUBLE,&var_int->val);
+    dp=var_int->val.dp;
+
+    for(idx=0;idx<sz;idx++)
+      for(jdx=0;jdx<slb_sz;jdx++)
+        dp[idx*slb_sz+jdx]=jdx;
+
+
+    cast_nctype_void(NC_DOUBLE,&var_int->val);
+  }
+
+  // permute back to original state
+  if(do_permute)
+  {
+
+    (void) nco_var_dmn_rdr_val(var_int, var, &dmn_idx_in_out[0], &bool_vtr[0]);
+    var_int = (var_sct *) nco_var_free(var_int);
+
+  }
+
+  return var;
+
+
+
+}
+
+
+
+var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("utl_cls::fill_fnd");
+  nco_bool do_permute=False;
+  int idx;
+  int jdx;
+  int nbr_dim;
+  int nbr_args;
+  int re_dim_nbr;
+  int swp_nbr;
+  int fdx=fmc_obj.fdx();
+  long icnt;
+  nc_type lcl_typ;
+  var_sct *var=NULL_CEWI;
+  var_sct *var_int=NULL_CEWI;
+  nc_type styp=NC_INT; // used to hold the mapping type either NC_INT or NC_UINT64
+  std::string sfnm =fmc_obj.fnm(); //method name
+  std::string var_nm;
+  std::string dim_nm;
+  std::string susg;
+  prs_cls *prs_arg=walker.prs_arg;
+
+
+  sfnm =fmc_obj.fnm(); //method name
+
+  susg="usage: var_out="+sfnm+"(var_in)";
+
+
+  nbr_args=args_vtr.size();
+  var=walker.out(args_vtr[0] );
+  nbr_dim=var->nbr_dim;
+
+  if(nbr_args==0)
+    err_prn(sfnm,"Function has been called with no arguments\n"+susg);
+
+  if(prs_arg->ntl_scn){
+    return var;
+
+  }
+
+  // number of dims
+  if(var->nbr_dim<2)
+    err_prn(sfnm,"variable must have a least 2 dims.\"" + SCS(var->nm) + "\" has "+nbr2sng(var->nbr_dim)+ " dims." );
+
+  lcl_typ=var->type;
+  // if not double then convert to double
+  if(var->type != NC_DOUBLE )
+    nco_var_cnf_typ(NC_DOUBLE, var);
+
+
+
+  {
+    // move throgh data in blocks if number of dims >2
+    int idx;
+    int nbr_dim;
+    int  blk_nbr;
+    size_t blk_sz;
+    size_t slb_sz;
+    void *vp;
+
+    nbr_dim=var->nbr_dim;
+
+    blk_sz= var->dim[nbr_dim-2]->cnt * var->dim[nbr_dim-1]->cnt;
+    blk_nbr=var->sz / blk_sz;
+
+    slb_sz=nco_typ_lng(var->type);
+
+    // save pointer to restore later
+    vp=var->val.vp;
+
+    for(idx=0;idx<blk_nbr;idx++)
+    {
+      long sx=blk_sz*idx*slb_sz;
+      var->val.vp=vp+(size_t)(blk_sz*idx*slb_sz);
+      alpha_fill(var);
+      printf("in prefill sx=%ld\n", sx);
+
+
+    }
+
+    var->val.vp=vp;
+
+  }
+
+  // convert back to original type
+  if(lcl_typ != var->type)
+     nco_var_cnf_typ(lcl_typ, var);
+
+
+  return var;
+
+}
+
+
+int utl_cls::alpha_fill(var_sct* var){
+
+  // we now have a 2 D var assume [lat, lon]
+  int idx;
+  int jdx;
+  int nbr_dim=var->nbr_dim;
+  int inum;
+  int lat_sz;
+  int lon_sz;
+  double dbl_mss_val;
+  float sum;
+  size_t slb_sz;
+  int cnt;
+
+  lat_sz=var->dim[nbr_dim-2]->cnt;
+  lon_sz=var->dim[nbr_dim-1]->cnt;
+
+  double *dp[lat_sz];
+
+  cast_void_nctype(var->type, &var->val);
+  if(var->has_mss_val)
+    dbl_mss_val=*var->mss_val.dp;
+  else
+    dbl_mss_val=NC_FILL_DOUBLE;
+
+  slb_sz=nco_typ_lng(var->type);
+
+  // make indexing easier
+  for(idx=0;idx<lat_sz;idx++)
+    dp[idx] = &(var->val.dp[lon_sz * idx]);
+
+
+  // start with quick fill
+  // move from right to left (lon) and bottom to top (lat)
+  for(jdx=lon_sz-1;jdx>=1;jdx--)
+    for(idx=1;idx<lat_sz-1;idx++)
+
+      if( dp[idx][jdx]==dbl_mss_val ){
+        sum=0.0f;
+        cnt=0;
+        if(dp[idx-1][jdx]!= dbl_mss_val )
+        { sum+=dp[idx-1][jdx];cnt++; }
+
+        if(dp[idx+1][jdx]!= dbl_mss_val )
+        {  sum+=dp[idx+1][jdx];cnt++; }
+
+        if(dp[idx][jdx-1]!= dbl_mss_val )
+        { sum+=dp[idx][jdx-1];cnt++; }
+
+        if(dp[idx][jdx+1]!= dbl_mss_val )
+        { sum+=dp[idx][jdx+1];cnt++; }
+
+        if(cnt>0)
+          dp[idx][jdx]=sum/cnt;
+
+      }
+
+    // move from top to bottom(lat) and left to right (lon)
+    for(idx=lat_sz-1;idx>=0;idx--)
+      for(jdx=0;jdx<lon_sz;jdx++)
+
+
+      if( dp[idx][jdx]==dbl_mss_val ){
+        sum=0.0f;
+        cnt=0;
+        if(idx>0 && dp[idx-1][jdx]!= dbl_mss_val )
+        { sum+=dp[idx-1][jdx];cnt++; }
+
+        if(idx< lat_sz-1 && dp[idx+1][jdx]!= dbl_mss_val )
+        {  sum+=dp[idx+1][jdx];cnt++; }
+
+        if(jdx>0 && dp[idx][jdx-1]!= dbl_mss_val )
+        { sum+=dp[idx][jdx-1];cnt++; }
+
+        if(jdx<lon_sz-1 && dp[idx][jdx+1]!= dbl_mss_val )
+        { sum+=dp[idx][jdx+1];cnt++; }
+
+        if(cnt>0) {
+          dp[idx][jdx] = sum / cnt;
+          continue;
+        }
+        // reach out to other squares if cnt is zero
+          if(idx>0 && jdx>0 && dp[idx-1][jdx-1]!= dbl_mss_val )
+          { sum+=dp[idx-1][jdx-1];cnt++; }
+
+          if(idx>0 && jdx<lon_sz-1 &&  dp[idx-1][jdx+1]!= dbl_mss_val )
+          { sum+=dp[idx-1][jdx+1];cnt++; }
+
+
+          if(idx< lat_sz-1 && jdx>0  && dp[idx+1][jdx-1]!= dbl_mss_val )
+          {  sum+=dp[idx+1][jdx-1];cnt++; }
+
+
+          if(idx<lat_sz-1 &&  jdx<lon_sz-1 && dp[idx+1][jdx+1]!= dbl_mss_val )
+          { sum+=dp[idx+1][jdx+1];cnt++; }
+
+          if(cnt>0)
+            dp[idx][jdx]=sum/cnt;
+
+
+        }
+
+  cast_nctype_void(var->type,&var->val);
+
+}
+
+
 
 
 

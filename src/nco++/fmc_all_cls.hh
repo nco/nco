@@ -93,13 +93,16 @@ public:
 //Utility Functions /****************************************/
 class utl_cls: public vtl_cls {
 private:
-  enum {SET_MISS,CH_MISS,DEL_MISS,GET_MISS,NUM_MISS,HAS_MISS, RAM_WRITE,RAM_DELETE};
+  enum {SET_MISS,CH_MISS,DEL_MISS,GET_MISS,NUM_MISS,HAS_MISS, RAM_WRITE,RAM_DELETE, FILL_LINEAR_MISS, FILL_MISS};
    bool _flg_dbg;
 public:
   utl_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
   var_sct *is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
-  var_sct *get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
+  var_sct *get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
+  var_sct *fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
+  var_sct *fill_linear_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
+  int alpha_fill(var_sct* var);
 };
 
 //Basic Functions /****************************************/
