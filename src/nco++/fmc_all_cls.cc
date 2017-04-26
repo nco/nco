@@ -874,25 +874,19 @@ var_sct * utl_cls::fill_linear_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, 
 }
 
 
-
+/* fill_miss() method  assumes that the final two dims of the var are lat,lon */
+/* if type not double then converts to double for fill, then converts back to orginal type */
 var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::fill_fnd");
-  nco_bool do_permute=False;
   int idx;
   int jdx;
   int nbr_dim;
   int nbr_args;
-  int re_dim_nbr;
-  int swp_nbr;
   int fdx=fmc_obj.fdx();
   long icnt;
   nc_type lcl_typ;
   var_sct *var=NULL_CEWI;
-  var_sct *var_int=NULL_CEWI;
-  nc_type styp=NC_INT; // used to hold the mapping type either NC_INT or NC_UINT64
   std::string sfnm =fmc_obj.fnm(); //method name
-  std::string var_nm;
-  std::string dim_nm;
   std::string susg;
   prs_cls *prs_arg=walker.prs_arg;
 
@@ -946,12 +940,8 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 
     for(idx=0;idx<blk_nbr;idx++)
     {
-      long sx=blk_sz*idx*slb_sz;
       var->val.vp=vp+(size_t)(blk_sz*idx*slb_sz);
       alpha_fill(var);
-      printf("in prefill sx=%ld\n", sx);
-
-
     }
 
     var->val.vp=vp;
@@ -968,6 +958,7 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 }
 
 
+/* simple fill function for replacing _FillValue with average of nearest neighbour(s) */
 int utl_cls::alpha_fill(var_sct* var){
 
   // we now have a 2 D var assume [lat, lon]
