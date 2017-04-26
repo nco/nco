@@ -896,6 +896,7 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
   susg="usage: var_out="+sfnm+"(var_in)";
 
 
+
   nbr_args=args_vtr.size();
   var=walker.out(args_vtr[0] );
   nbr_dim=var->nbr_dim;
@@ -919,10 +920,9 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 
 
 
+
   {
     // move throgh data in blocks if number of dims >2
-    int idx;
-    int nbr_dim;
     int  blk_nbr;
     size_t blk_sz;
     size_t slb_sz;
@@ -940,7 +940,7 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 
     for(idx=0;idx<blk_nbr;idx++)
     {
-      var->val.vp=vp+(size_t)(blk_sz*idx*slb_sz);
+      var->val.vp=(char*)vp+(ptrdiff_t)(blk_sz*idx*slb_sz);
       alpha_fill(var);
     }
 
