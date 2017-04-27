@@ -1,0 +1,29 @@
+// -*-C++-*-
+// Generate netCDF file with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/trj.nc ~/nco/data/trj.cdl
+
+netcdf trj {
+  :Conventions = "CF-1.6";
+  :history = "Tue Apr 25 12:46:10 PDT 2017: ncgen -k netCDF-4 -b -o ~/nco/data/trj.nc ~/nco/data/trj.cdl";
+  :Purpose = "Demonstrate trajectory profiles stored in hierarchical format";
+  :CF_documentation = "http://cfconventions.org/cf-conventions/cf-conventions.html#trajectory-profiles";
+
+  group: argo_01 {
+      :Platform_ID = "Buoy 01";
+      :featureType = "trajectoryProfile";
+
+    dimensions:
+    profile=unlimited;
+    z=3;
+    variables:
+      double lat(profile);
+      double lon(profile);
+      double alt(profile,z);
+      double time(profile);
+      float temperature(profile,z);
+    data:
+      temperature=;
+      time=1.;
+    } // argo_01
+    
+} // root group
