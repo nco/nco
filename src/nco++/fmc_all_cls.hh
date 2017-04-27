@@ -102,7 +102,8 @@ public:
   var_sct *get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
   var_sct *fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
   var_sct *fill_linear_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
-  int alpha_fill(var_sct* var);
+  int beta_fill(var_sct *var, void* msk_vp);
+
 };
 
 //Basic Functions /****************************************/

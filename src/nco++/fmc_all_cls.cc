@@ -919,32 +919,35 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
     nco_var_cnf_typ(NC_DOUBLE, var);
 
 
-
-
   {
     // move throgh data in blocks if number of dims >2
-    int  blk_nbr;
+    int blk_nbr;
     size_t blk_sz;
     size_t slb_sz;
     void *vp;
+    void *msk_vp = NULL_CEWI;
 
-    nbr_dim=var->nbr_dim;
+    nbr_dim = var->nbr_dim;
 
-    blk_sz= var->dim[nbr_dim-2]->cnt * var->dim[nbr_dim-1]->cnt;
-    blk_nbr=var->sz / blk_sz;
+    blk_sz = var->dim[nbr_dim - 2]->cnt * var->dim[nbr_dim - 1]->cnt;
+    blk_nbr = var->sz / blk_sz;
 
-    slb_sz=nco_typ_lng(var->type);
+    slb_sz = nco_typ_lng(var->type);
 
     // save pointer to restore later
-    vp=var->val.vp;
+    vp = var->val.vp;
+    // create space here for use in beta_fill
+    msk_vp = nco_malloc(blk_sz * slb_sz);
 
-    for(idx=0;idx<blk_nbr;idx++)
-    {
-      var->val.vp=(char*)vp+(ptrdiff_t)(blk_sz*idx*slb_sz);
-      alpha_fill(var);
+    for (idx = 0; idx < blk_nbr; idx++) {
+      var->val.vp = (char *) vp + (ptrdiff_t) (blk_sz * idx * slb_sz);
+      beta_fill(var, msk_vp);
     }
 
-    var->val.vp=vp;
+    var->val.vp = vp;
+
+
+    msk_vp = nco_free(msk_vp);
 
   }
 
@@ -958,24 +961,31 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 }
 
 
+
 /* simple fill function for replacing _FillValue with average of nearest neighbour(s) */
-int utl_cls::alpha_fill(var_sct* var){
+int utl_cls::beta_fill(var_sct* var, void* msk_vp){
 
   // we now have a 2 D var assume [lat, lon]
   int idx;
   int jdx;
   int nbr_dim=var->nbr_dim;
-  int inum;
+  int imax_loop=1000;
+  int num_miss;
+  int cnt=0;
   int lat_sz;
   int lon_sz;
-  double dbl_mss_val;
-  float sum;
   size_t slb_sz;
-  int cnt;
+  double dbl_mss_val;
+  double sum=0.0;
 
+
+  slb_sz=nco_typ_lng(var->type);
   lat_sz=var->dim[nbr_dim-2]->cnt;
   lon_sz=var->dim[nbr_dim-1]->cnt;
 
+
+
+  double *msk_dp[lat_sz];
   double *dp[lat_sz];
 
   cast_void_nctype(var->type, &var->val);
@@ -984,84 +994,65 @@ int utl_cls::alpha_fill(var_sct* var){
   else
     dbl_mss_val=NC_FILL_DOUBLE;
 
-  slb_sz=nco_typ_lng(var->type);
 
   // make indexing easier
-  for(idx=0;idx<lat_sz;idx++)
+  for(idx=0;idx<lat_sz;idx++) {
     dp[idx] = &(var->val.dp[lon_sz * idx]);
+    msk_dp[idx]= (double*)msk_vp+ptrdiff_t(lon_sz*idx);
+
+  }
+
+  // set num miss to get loop going
+  num_miss=999;
 
 
-  // start with quick fill
-  // move from right to left (lon) and bottom to top (lat)
-  for(jdx=lon_sz-1;jdx>=1;jdx--)
-    for(idx=1;idx<lat_sz-1;idx++)
+  while( imax_loop-->0 && num_miss>0) {
+    num_miss=0;
+    // set msk to latest values
+    memcpy((char*)msk_vp, (char*)var->val.dp, lat_sz * lon_sz * slb_sz);
 
-      if( dp[idx][jdx]==dbl_mss_val ){
-        sum=0.0f;
-        cnt=0;
-        if(dp[idx-1][jdx]!= dbl_mss_val )
-        { sum+=dp[idx-1][jdx];cnt++; }
+    // move from bottom to top (lat)  and left to right (lon)
+    for (idx = 0 ; idx < lat_sz; idx++)
+      for (jdx = 0; jdx < lon_sz; jdx++)
+        if (msk_dp[idx][jdx] == dbl_mss_val) {
+          sum = 0.0;
+          cnt = 0;
+          if (idx > 0 && msk_dp[idx - 1][jdx] != dbl_mss_val) {
+            sum += msk_dp[idx - 1][jdx];
+            cnt++;
+          }
 
-        if(dp[idx+1][jdx]!= dbl_mss_val )
-        {  sum+=dp[idx+1][jdx];cnt++; }
+          if (idx < lat_sz - 1 && msk_dp[idx + 1][jdx] != dbl_mss_val) {
+            sum += msk_dp[idx + 1][jdx];
+            cnt++;
+          }
 
-        if(dp[idx][jdx-1]!= dbl_mss_val )
-        { sum+=dp[idx][jdx-1];cnt++; }
+          if (jdx > 0 && msk_dp[idx][jdx - 1] != dbl_mss_val) {
+            sum += msk_dp[idx][jdx - 1];
+            cnt++;
+          }
 
-        if(dp[idx][jdx+1]!= dbl_mss_val )
-        { sum+=dp[idx][jdx+1];cnt++; }
+          if (jdx < lon_sz - 1 && msk_dp[idx][jdx + 1] != dbl_mss_val) {
+            sum += msk_dp[idx][jdx + 1];
+            cnt++;
+          }
 
-        if(cnt>0)
-          dp[idx][jdx]=sum/cnt;
-
-      }
-
-    // move from top to bottom(lat) and left to right (lon)
-    for(idx=lat_sz-1;idx>=0;idx--)
-      for(jdx=0;jdx<lon_sz;jdx++)
-
-
-      if( dp[idx][jdx]==dbl_mss_val ){
-        sum=0.0f;
-        cnt=0;
-        if(idx>0 && dp[idx-1][jdx]!= dbl_mss_val )
-        { sum+=dp[idx-1][jdx];cnt++; }
-
-        if(idx< lat_sz-1 && dp[idx+1][jdx]!= dbl_mss_val )
-        {  sum+=dp[idx+1][jdx];cnt++; }
-
-        if(jdx>0 && dp[idx][jdx-1]!= dbl_mss_val )
-        { sum+=dp[idx][jdx-1];cnt++; }
-
-        if(jdx<lon_sz-1 && dp[idx][jdx+1]!= dbl_mss_val )
-        { sum+=dp[idx][jdx+1];cnt++; }
-
-        if(cnt>0) {
-          dp[idx][jdx] = sum / cnt;
-          continue;
-        }
-        // reach out to other squares if cnt is zero
-          if(idx>0 && jdx>0 && dp[idx-1][jdx-1]!= dbl_mss_val )
-          { sum+=dp[idx-1][jdx-1];cnt++; }
-
-          if(idx>0 && jdx<lon_sz-1 &&  dp[idx-1][jdx+1]!= dbl_mss_val )
-          { sum+=dp[idx-1][jdx+1];cnt++; }
-
-
-          if(idx< lat_sz-1 && jdx>0  && dp[idx+1][jdx-1]!= dbl_mss_val )
-          {  sum+=dp[idx+1][jdx-1];cnt++; }
-
-
-          if(idx<lat_sz-1 &&  jdx<lon_sz-1 && dp[idx+1][jdx+1]!= dbl_mss_val )
-          { sum+=dp[idx+1][jdx+1];cnt++; }
-
-          if(cnt>0)
-            dp[idx][jdx]=sum/cnt;
-
-
+          if (cnt > 0)
+            dp[idx][jdx] = sum / cnt;
+          else
+            num_miss++;
         }
 
+    // get number of missing elements
+    // printf("beta_fill: inum=%d  num_miss=%ld\n", imax_loop, num_miss);
+
+
+  }
   cast_nctype_void(var->type,&var->val);
+
+
+
+  return NCO_NOERR;
 
 }
 
