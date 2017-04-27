@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.7-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 25 April 2017
+@set update-date 27 April 2017
 @set update-month April 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7020,6 +7020,29 @@ These annotations include
     boundaries.   
     Since @var{frc_nm} is a property of the grid, it is read directly
     from the @var{map-file} rather than regridded itself. 
+@cindex @code{mask}
+@cindex @samp{--no_msk}
+@cindex @samp{--no_mask}
+@cindex @samp{--msk_out}
+@cindex @samp{--mask_out}
+@cindex @samp{--rgr no_msk_out}
+@cindex @samp{--rgr no_mask}
+@cindex @samp{--rgr msk_nm=@var{msk_nm}}
+@cindex @var{msk_nm}
+@item Gridcell Mask: @var{mask}
+    The variable @var{msk_nm} (which defaults to @code{mask}) can, if
+    present, be copied from the @var{map-file} to hold the gridcell mask 
+    on the destination grid in @var{output-file}.
+    To store the mask in a different variable, use the option
+    @samp{--rgr msk_nm=@var{msk_nm}}.
+    Since @var{msk_nm} is a property of the grid, it is read directly
+    from the @var{map-file} rather than regridded itself. 
+    To include the mask variable in the output file, set the
+    @var{msk_out} variable to any value, e.g.,
+    @samp{--msk_out='Y'}. 
+    To omit the mask variable from the output file, set the
+    @var{no_msk_out} variable to any value, e.g.,
+    @samp{--no_msk_out='Y'}. 
 @cindex @code{gw}
 @cindex @samp{--rgr lat_weight=@var{lat_wgt_nm}}
 @cindex @var{lat_wgt_nm}

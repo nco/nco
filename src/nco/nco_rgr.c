@@ -258,7 +258,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
-  rgr->flg_msk_out=True; /* [flg] Add mask to output */
+  rgr->flg_msk_out=False; /* [flg] Add mask to output */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
   rgr->flg_stg=True; /* [flg] Write staggered grid with FV output */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
@@ -295,6 +295,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* !hnt_src */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"msk_var") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_var") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_variable")){
       rgr->msk_var=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      rgr->flg_msk_out=True;
       continue;
     } /* !msk_var */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"skl")){
@@ -315,6 +316,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_msk_out=False;
       continue;
     } /* !msk */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"msk_out") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_out")){
+      rgr->flg_msk_out=True;
+      continue;
+    } /* !mask */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"cell_measures") || !strcasecmp(rgr_lst[rgr_var_idx].key,"cll_msr")){
       rgr->flg_cll_msr=True;
       continue;
@@ -510,6 +515,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* !tst */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"msk_nm") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_nm")){
       rgr->msk_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      rgr->flg_msk_out=True;
       continue;
     } /* !msk_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){

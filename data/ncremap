@@ -1120,7 +1120,7 @@ else # !map_usr_flg
 	fi # !vrb_lvl
 	wgt_cmd='GenerateOfflineMap'
     fi # !tempest
-    command -v ${wgt_cmd} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command ${wgt_cmd}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is often provided in NCL packages. Tempest executables must be installed from source (https://github.com/ClimateGlobalChange/tempestremap)."; exit 1; }
+    command -v ${wgt_cmd} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command ${wgt_cmd}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is often provided in NCL packages. Tempest executables must be installed from source (https://github.com/ClimateGlobalChange/tempestremap).\n"; exit 1; }
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    if [ "${mlt_map_flg}" = 'Yes' ]; then 
