@@ -112,6 +112,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->lon_nm_in) rgr->lon_nm_in=(char *)nco_free(rgr->lon_nm_in);
   if(rgr->lon_nm_out) rgr->lon_nm_out=(char *)nco_free(rgr->lon_nm_out);
   if(rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)nco_free(rgr->lon_vrt_nm);
+  if(rgr->msk_nm) rgr->msk_nm=(char *)nco_free(rgr->msk_nm);
   if(rgr->vrt_nm) rgr->vrt_nm=(char *)nco_free(rgr->vrt_nm);
 
   /* Lastly, free() regrid structure itself */
@@ -244,6 +245,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_nm_in=NULL; /* [sng] Name of dimension to recognize as longitude */
   rgr->lon_nm_out=NULL; /* [sng] Name of output dimension for longitude */
   rgr->lon_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for longitude */
+  rgr->msk_nm=NULL; /* [sng] Name of variable containing destination mask */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
   /* Initialize key-value properties used in grid generation */
@@ -256,6 +258,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
+  rgr->flg_msk_out=True; /* [flg] Add mask to output */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
   rgr->flg_stg=True; /* [flg] Write staggered grid with FV output */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
@@ -308,6 +311,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_area_out=False;
       continue;
     } /* !area */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_msk") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_msk_out") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_mask") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_mask_out")){
+      rgr->flg_msk_out=False;
+      continue;
+    } /* !msk */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"cell_measures") || !strcasecmp(rgr_lst[rgr_var_idx].key,"cll_msr")){
       rgr->flg_cll_msr=True;
       continue;
@@ -501,6 +508,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
     } /* !tst */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"msk_nm") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_nm")){
+      rgr->msk_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !msk_nm */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -526,6 +537,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(!rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)strdup("lon_bnds"); /* [sng] Name of rectangular boundary variable for longitude */
   if(!rgr->lon_nm_in) rgr->lon_nm_in=(char *)strdup("lon"); /* [sng] Name of dimension to recognize as longitude */
   if(!rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)strdup("lon_vertices"); /* [sng] Name of non-rectangular boundary variable for longitude */
+  if(!rgr->msk_nm) rgr->msk_nm=(char *)strdup("mask"); /* [sng] Name of variable containing destination mask */
   if(!rgr->vrt_nm) rgr->vrt_nm=(char *)strdup("nv"); /* [sng] Name of dimension to employ for vertices */
 
   /* Derived from defaults and command-line arguments */
@@ -841,7 +853,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int dst_grd_ctr_lat_id; /* [id] Destination grid center latitudes  variable ID */
   int dst_grd_ctr_lon_id; /* [id] Destination grid center longitudes variable ID */
   int frc_dst_id; /* [id] Fraction variable ID */
-  int msk_dst_id; /* [id] Mask variable ID */
+  int msk_dst_id=NC_MIN_INT; /* [id] Mask variable ID */
   int row_dst_adr_id; /* [id] Destination address (row) variable ID */
   int wgt_raw_id; /* [id] Remap matrix variable ID */
 
@@ -880,13 +892,17 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     break;
   } /* end switch */
   /* Obtain fields whose presence depends on mapfile type */
-  if(nco_rgr_mpf_typ == nco_rgr_mpf_ESMF){
-    rcd+=nco_inq_varid(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
-  }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
-    rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
-  }else{ /* !SCRIP */
-    msk_dst_id=NC_MIN_INT;
-  } /* !Tempest */
+  nco_bool flg_msk_out=rgr->flg_msk_out; /* [flg] Add mask to output */
+  if(flg_msk_out){
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_ESMF){
+      rcd+=nco_inq_varid(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
+    }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
+      rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
+    }else{ /* !SCRIP */
+      msk_dst_id=NC_MIN_INT;
+      flg_msk_out=False;
+    } /* !Tempest */
+  } /* !flg_msk_out */
   /* Obtain fields whose names are independent of mapfile type */
   rcd+=nco_inq_varid(in_id,"src_grid_dims",&dmn_sz_in_int_id);
   rcd+=nco_inq_varid(in_id,"dst_grid_dims",&dmn_sz_out_int_id);
@@ -957,7 +973,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   double *wgt_raw; /* [frc] Remapping weights */
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
-  int *msk_out=NULL; /* [flg] Mask of destination grid */
+  int *msk_out=NULL; /* [flg] Mask on destination grid */
   int *dmn_sz_in_int; /* [nbr] Array of dimension sizes of source grid */
   int *dmn_sz_out_int; /* [nbr] Array of dimension sizes of destination grid */
   long *dmn_cnt_in=NULL;
@@ -1963,6 +1979,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   char *lat_wgt_nm;
   char *lon_bnd_nm_out;
   char *lon_nm_out;
+  char *msk_nm_out;
   char *slat_nm_out=NULL;
   char *slat_wgt_nm_out=NULL;
   char *slon_nm_out=NULL;
@@ -1977,6 +1994,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   int lat_wgt_id; /* [id] Variable ID for latitude weight */
   int lon_bnd_id; /* [id] Variable ID for lon_bnds/lon_vertices */
   int lat_bnd_id; /* [id] Variable ID for lat_bnds/lat_vertices */
+  int msk_out_id; /* [id] Variable ID for mask */
   int slat_out_id; /* [id] Variable ID for staggered latitude */
   int slat_wgt_id; /* [id] Variable ID for staggered latitude weight */
   int slon_out_id; /* [id] Variable ID for staggered longitude */
@@ -1991,6 +2009,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   lat_bnd_nm_out=rgr->lat_bnd_nm;
   lat_wgt_nm=rgr->lat_wgt_nm;
   lon_bnd_nm_out=rgr->lon_bnd_nm;
+  msk_nm_out=rgr->msk_nm;
   /* Use explicitly specified output names, if any, otherwise use input names (either explicitly specified or discovered by fuzzing) */
   if(rgr->col_nm_out) col_nm_out=rgr->col_nm_out; else col_nm_out=col_nm_in;
   if(rgr->lat_nm_out) lat_nm_out=rgr->lat_nm_out; else lat_nm_out=lat_nm_in;
@@ -2120,6 +2139,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,frc_out_id,shuffle,deflate,dfl_lvl);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
+    if(flg_msk_out){
+      rcd+=nco_def_var(out_id,msk_nm_out,(nc_type)NC_INT,dmn_nbr_1D,&dmn_id_col,&msk_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msk_out_id,shuffle,deflate,dfl_lvl);
+      var_crt_nbr++;
+    } /* !flg_msk_out */
   } /* !flg_grd_out_1D */
   if(flg_grd_out_crv){
     dmn_ids_out[0]=dmn_id_lat;
@@ -2140,6 +2164,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,frc_out_id,shuffle,deflate,dfl_lvl);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
+    if(flg_msk_out){
+      rcd+=nco_def_var(out_id,msk_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&msk_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msk_out_id,shuffle,deflate,dfl_lvl);
+      var_crt_nbr++;
+    } /* !flg_msk_out */
     dmn_ids_out[0]=dmn_id_lat;
     dmn_ids_out[1]=dmn_id_lon;
     dmn_ids_out[2]=dmn_id_bnd;
@@ -2193,6 +2222,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,frc_out_id,shuffle,deflate,dfl_lvl);
       var_crt_nbr++;
     } /* !flg_frc_out_wrt */
+    if(flg_msk_out){
+      rcd+=nco_def_var(out_id,msk_nm_out,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&msk_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msk_out_id,shuffle,deflate,dfl_lvl);
+      var_crt_nbr++;
+    } /* !flg_msk_out */
   } /* !flg_grd_out_rct */
 
   /* Pre-allocate dimension ID and cnt/srt space */
@@ -2459,6 +2493,21 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
   } /* !flg_frc_out_wrt */
   
+  if(flg_msk_out){
+    att_nm=strdup("long_name");
+    att_val=strdup("Mask (0 = invalid cell, 1 = valid cell)");
+    aed_mtd.att_nm=att_nm;
+    aed_mtd.var_nm=msk_nm_out;
+    aed_mtd.id=msk_out_id;
+    aed_mtd.sz=strlen(att_val);
+    aed_mtd.type=NC_CHAR;
+    aed_mtd.val.cp=att_val;
+    aed_mtd.mode=aed_create;
+    (void)nco_aed_prc(out_id,msk_out_id,aed_mtd);
+    if(att_nm) att_nm=(char *)nco_free(att_nm);
+    if(att_val) att_val=(char *)nco_free(att_val);
+  } /* !flg_msk_out */
+
   att_nm=strdup("long_name");
   att_val=strdup("Latitude");
   aed_mtd.att_nm=att_nm;
@@ -2816,6 +2865,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       (void)nco_aed_prc(out_id,frc_out_id,aed_mtd_crd);
     } /* !flg_frc_out_wrt */
 
+    if(flg_msk_out){
+      aed_mtd_crd.var_nm=msk_nm_out;
+      aed_mtd_crd.id=msk_out_id;
+      (void)nco_aed_prc(out_id,msk_out_id,aed_mtd_crd);
+    } /* !flg_msk_out */
+
     aed_mtd_crd.var_nm=lat_nm_out;
     aed_mtd_crd.id=lat_out_id;
     (void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
@@ -2866,6 +2921,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
       dmn_cnt_tuo[0]=col_nbr_out;
       (void)nco_put_vara(out_id,area_out_id,dmn_srt_out,dmn_cnt_tuo,area_out,crd_typ_out);
     } /* !flg_area_out */
+    if(flg_msk_out){
+      dmn_srt_out[0]=0L;
+      dmn_cnt_tuo[0]=col_nbr_out;
+      (void)nco_put_vara(out_id,msk_out_id,dmn_srt_out,dmn_cnt_tuo,msk_out,crd_typ_out);
+    } /* !flg_msk_out */
   } /* !flg_grd_out_1D */
   if(flg_grd_out_crv){
     dmn_srt_out[0]=dmn_srt_out[1]=0L;
@@ -2879,6 +2939,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(flg_frc_out_wrt){
       (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_tuo,frc_out,crd_typ_out);
     } /* !flg_frc_out_wrt */
+    if(flg_msk_out){
+      (void)nco_put_vara(out_id,msk_out_id,dmn_srt_out,dmn_cnt_tuo,msk_out,crd_typ_out);
+    } /* !flg_msk_out */
     dmn_srt_out[0]=dmn_srt_out[1]=dmn_srt_out[2]=0L;
     dmn_cnt_tuo[0]=lat_nbr_out;
     dmn_cnt_tuo[1]=lon_nbr_out;
@@ -2926,6 +2989,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(flg_frc_out_wrt){
       (void)nco_put_vara(out_id,frc_out_id,dmn_srt_out,dmn_cnt_tuo,frc_out,crd_typ_out);
     } /* !flg_frc_out_wrt */
+    if(flg_msk_out){
+      (void)nco_put_vara(out_id,msk_out_id,dmn_srt_out,dmn_cnt_tuo,msk_out,crd_typ_out);
+    } /* !flg_msk_out */
   } /* !flg_grd_out_rct */
 
   /* Regrid or copy variable values */

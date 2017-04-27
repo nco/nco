@@ -1114,6 +1114,7 @@ extern "C" {
     char *lon_nm_in; /* [sng] Name of dimension to recognize as longitude */
     char *lon_nm_out; /* [sng] Name of output dimension for longitude */
     char *lon_vrt_nm; /* [sng] Name of non-rectangular boundary variable for longitude */
+    char *msk_nm; /* [sng] Name of variable containing destination mask */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
     // User-specified grid properties
     char *fl_grd; /* [sng] Name of SCRIP grid file to create */
@@ -1151,6 +1152,7 @@ extern "C" {
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
     nco_bool flg_grd_src; /* [flg] User-specified input grid */
     nco_bool flg_map; /* [flg] User-specified mapping weights */
+    nco_bool flg_msk_out; /* [flg] Add mask to output */
     nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
     nco_bool flg_stg; /* [flg] Write staggered grid with FV output */
