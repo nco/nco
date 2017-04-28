@@ -912,10 +912,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   rcd+=nco_inq_varid(in_id,"src_grid_dims",&dmn_sz_in_int_id);
   rcd+=nco_inq_varid(in_id,"dst_grid_dims",&dmn_sz_out_int_id);
 
-  int lon_psn_src; /* [idx] Ordinal position of longitude size in rectangular source grid */
-  int lat_psn_src; /* [idx] Ordinal position of latitude  size in rectangular source grid */
-  int lon_psn_dst=int_CEWI; /* [idx] Ordinal position of longitude size in rectangular destination grid */
-  int lat_psn_dst=int_CEWI; /* [idx] Ordinal position of latitude  size in rectangular destination grid */
+  int lon_psn_src; /* [idx] Ordinal position of longitude in rectangular source grid dimension-size array */
+  int lat_psn_src; /* [idx] Ordinal position of latitude  in rectangular source grid dimension-size array */
+  int lon_psn_dst=int_CEWI; /* [idx] Ordinal position of longitude in rectangular destination grid dimension-size array */
+  int lat_psn_dst=int_CEWI; /* [idx] Ordinal position of latitude  in rectangular destination grid dimension-size array */
   if(flg_grd_in_2D){
     lon_psn_src=0; /* SCRIP introduced [lon,lat] convention because more natural for Fortran */
     lat_psn_src=1;
@@ -2500,7 +2500,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   
   if(flg_msk_out){
     att_nm=strdup("long_name");
-    att_val=strdup("Mask (0 = invalid cell, 1 = valid cell)");
+    att_val=strdup("Mask (0 = invalid destination, 1 = valid destination)");
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=msk_nm_out;
     aed_mtd.id=msk_out_id;
@@ -4447,8 +4447,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   grd_crn_lon=(double *)nco_malloc(grd_crn_nbr*grd_sz_nbr*nco_typ_lng(crd_typ));
   
   /* Define variable values */
-  int lon_psn=int_CEWI; /* [idx] Ordinal position of longitude size in rectangular grid */
-  int lat_psn=int_CEWI; /* [idx] Ordinal position of latitude  size in rectangular grid */
+  int lon_psn=int_CEWI; /* [idx] Ordinal position of longitude in rectangular grid dimension-size array */
+  int lat_psn=int_CEWI; /* [idx] Ordinal position of latitude  in rectangular grid dimension-size array */
   if(grd_rnk_nbr == dmn_nbr_2D){
     lon_psn=0; /* SCRIP introduced [lon,lat] convention because more natural for Fortran */
     lat_psn=1;
@@ -6027,7 +6027,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   msk_nm_in=rgr->msk_var;
   if(msk_nm_in){
-    /* Try user-supplied name */
+    /* User-supplied name overrides database */
     rcd=nco_inq_varid(in_id,msk_nm_in,&msk_id);
   }else{
     /* Otherwise search database */
@@ -6042,7 +6042,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* 20151201: All models tested define mask as NC_INT except CICE which uses NC_FLOAT
        20160111: No observations tested define mask except AMSR which uses NC_SHORT to store bitmasks. Bitmask is 1 for missing data, and up to 128 for various quality levels of valid data. Hence, almost better to ignore AMSR mask variable. */
     rcd=nco_inq_varndims(in_id,msk_id,&msk_rnk_nbr);
-    if(msk_rnk_nbr != grd_rnk_nbr) (void)fprintf(stdout,"%s: WARNING %s reports mask variable \"%s\" is rank %d while grid is rank %ld so results unpredictable.\n",nco_prg_nm_get(),fnc_nm,msk_nm_in,msk_rnk_nbr,grd_rnk_nbr);
+    if(msk_rnk_nbr != grd_rnk_nbr && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports input mask variable \"%s\" is rank %d while grid is rank %ld so will use first timestep/layer to determine output mask\n",nco_prg_nm_get(),fnc_nm,msk_nm_in,msk_rnk_nbr,grd_rnk_nbr);
     rcd=nco_inq_vartype(in_id,msk_id,&msk_typ);
     msk_unn.vp=(void *)nco_malloc(grd_sz_nbr*nco_typ_lng(msk_typ));
   } /* !msk */
@@ -6169,8 +6169,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
-    int lon_psn_in=1L; /* [idx] Ordinal position of longitude size in rectangular grid */
-    int lat_psn_in=0L; /* [idx] Ordinal position of latitude  size in rectangular grid */
+    int lon_psn_in=1L; /* [idx] Ordinal position of longitude dimension in rectangular grid variables like area */
+    int lat_psn_in=0L; /* [idx] Ordinal position of latitude  dimension in rectangular grid variables like area */
     int tpl_id=NC_MIN_INT; /* [id] ID of template field */
 
     /* Obtain fields that must be present in input file */
@@ -6281,8 +6281,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !fl_out */
   
   /* Define output variable values */
-  int lon_psn; /* [idx] Ordinal position of longitude size in rectangular grid */
-  int lat_psn; /* [idx] Ordinal position of latitude  size in rectangular grid */
+  int lon_psn; /* [idx] Ordinal position of longitude dimension in rectangular grid dimension-size array */
+  int lat_psn; /* [idx] Ordinal position of latitude  dimension in rectangular grid dimension-size array */
   if(grd_rnk_nbr == dmn_nbr_1D){
     dmn_sz_int[0]=col_nbr;
   }else if(grd_rnk_nbr == dmn_nbr_2D){ /* !dmn_nbr_1D */

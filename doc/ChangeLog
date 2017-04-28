@@ -1,12 +1,20 @@
 2017-04-28  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.7-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha03 final changes';git push
+	git tag -a 4.6.7-alpha03 -m 'Version 4.6.7-alpha03 new features: msk_src,msk_dst,msk_out,ugrid;';git push --tags
+
+	* Document mask features
+
+	* Add --msk_out to ncremap
+
+	* Generalize nco_grd_nfr() to handle msk_rnk_nbr > grd_rnk_nbr so, e.g., SST(time,lat,lon) works
+
+	* Fix numerous other nco_grd_nfr() errors in new mask code
+
 	* Fix uninitialized memory errors caught by valgrind in recent nco_grd_nfr() grid-span code
 
 2017-04-27  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.6.7-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha03 final changes';git push
-	git tag -a 4.6.7-alpha03 -m 'Version 4.6.7-alpha03 new features: msk_src,msk_dst,ugrid;';git push --tags
 
 	* Add mask_b = mask_out = dst_grid_imask to regridded output when flg_msk_out == True
 

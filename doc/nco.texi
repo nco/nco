@@ -118,11 +118,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.7-alpha02
-@set doc-edition 4.6.7-alpha02
+@set nco-edition 4.6.7-alpha03
+@set doc-edition 4.6.7-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 27 April 2017
+@set update-date 28 April 2017
 @set update-month April 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7028,6 +7028,7 @@ These annotations include
 @cindex @samp{--rgr no_msk_out}
 @cindex @samp{--rgr no_mask}
 @cindex @samp{--rgr msk_nm=@var{msk_nm}}
+@cindex infer
 @cindex @var{msk_nm}
 @item Gridcell Mask: @var{mask}
     The variable @var{msk_nm} (which defaults to @code{mask}) can, if
@@ -7043,6 +7044,16 @@ These annotations include
     To omit the mask variable from the output file, set the
     @var{no_msk_out} variable to any value, e.g.,
     @samp{--no_msk_out='Y'}. 
+    In grid inferral and map-generation modes, this option tells the
+    regridder to generate an integer mask map from the variable
+    @var{msk_nm}. 
+    The mask will be one (i.e., points at that location will contribute
+    to regridding weights) where @var{msk_nm} has valid values. 
+    The mask will be zero (i.e., points at that location will not
+    contribute to regridding weights) where @var{msk_nm} has a missing
+    value.
+    This feature is useful when creating weights between masked grids,
+    e.g., ocean-only points or land-only points.
 @cindex @code{gw}
 @cindex @samp{--rgr lat_weight=@var{lat_wgt_nm}}
 @cindex @var{lat_wgt_nm}
@@ -21641,10 +21652,11 @@ SYNTAX
 @example
 ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_opt}]
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
-[-M] [-m @var{map_fl}] [-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
+[-M] [-m @var{map_fl}] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}]
+[-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [--stdin]
-[-T @var{tempest_opt}] [-t @var{thr_nbr}] [-U @var{drc_tmp}] [-u @var{unq_sfx}] 
+[-T @var{tempest_opt}] [-t @var{thr_nbr}] [-U @var{drc_tmp}] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
@@ -22046,6 +22058,100 @@ batches of data on different grids (e.g., swath-like data), and slow,
 tedious, and unnecessary when batch processing data on the same grids.
 
 @html
+<a name="msk_dst"></a> <!-- http://nco.sf.net/nco.html#msk_dst -->
+@end html
+@cindex @code{--msk_dst=@var{msk_dst}}
+@cindex @var{msk_dst}
+@cindex @code{--msk_dst}
+@cindex @code{--dst_msk}
+@cindex @code{--mask_destination}
+@cindex @code{--mask_dst}
+@item --msk_dst=@var{msk_dst} (@code{--msk_dst}, @code{--dst_msk}, @code{--mask_destination}, @code{--mask_dst})
+Specifies a template variable to use for the integer mask of the
+destination grid when inferring grid files and/or creating
+map-files (i.e., generating weights). 
+Any variable on the same horizontal grid as a data file can serve as a
+mask template for that grid. 
+The mask will be one (i.e., gridcells will participate in regridding) 
+where @var{msk_dst} has valid values in the data file from which
+@acronym{NCO} infers the destination grid.   
+The mask will be zero (i.e., gridcells will not participate in
+regridding) where @var{msk_nm} has a missing value.  
+A typical example of this option would be to use Sea-surface Temperature
+(SST) as a template variable for an ocean mask because SST is often
+defined only over ocean, and missing values might denote locations to
+which regridded quantities should never be placed.
+@var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
+@var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
+@var{msk_out} is the name to give the destination mask in any regridded file, and
+@var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
+
+@html
+<a name="msk_out"></a> <!-- http://nco.sf.net/nco.html#msk_out -->
+@end html
+@cindex @code{--msk_out=@var{msk_out}}
+@cindex @var{msk_out}
+@cindex @code{--msk_out}
+@cindex @code{--out_msk}
+@cindex @code{--mask_destination}
+@cindex @code{--mask_out}
+@item --msk_out=@var{msk_out} (@code{--msk_out}, @code{--out_msk}, @code{--mask_destination}, @code{--mask_out})
+Use of this option tells @command{ncremap} to include a variable named 
+@var{msk_out} in any regridded file.
+The variable @var{msk_out} will contain the integer-valued
+regridding mask on the destination grid.
+The mask will be one (i.e., fields may have valid values in this
+gridcell) or zero (i.e., fields will have missing values in this
+gridcell). 
+By default, @command{ncremap} does not output the destination mask to
+the regridded file.
+This option changes that default behavior and causes @command{ncremap}
+to ingest the default destination mask variable contained in the
+@var{map-file}. 
+@acronym{ERWG} generates @acronym{SCRIP}-format map-files that contain
+the destination mask in the variable named @code{mask_b}.
+@acronym{SCRIP} generates map-files that contain the destination mask in
+the variable named @code{dst_grid_imask}. 
+The @code{msk_out} option works with map-files that adhere to either of
+these conventions. 
+Tempest generates map-files that do not typically contain the
+destination mask, and so the @code{msk_out} option has no effect on
+files that Tempest regrids.
+@var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
+@var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
+@var{msk_out} is the name to give the destination mask in any regridded file, and
+@var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
+
+@html
+<a name="msk_src"></a> <!-- http://nco.sf.net/nco.html#msk_src -->
+@end html
+@cindex @code{--msk_src=@var{msk_src}}
+@cindex @var{msk_src}
+@cindex @code{--msk_src}
+@cindex @code{--src_msk}
+@cindex @code{--mask_source}
+@cindex @code{--mask_src}
+@item --msk_src=@var{msk_src} (@code{--msk_src}, @code{--src_msk}, @code{--mask_source}, @code{--mask_src})
+Specifies a template variable to use for the integer mask of the
+source grid when inferring grid files and/or creating
+map-files (i.e., generating weights). 
+Any variable on the same horizontal grid as a data file can serve as a
+mask template for that grid. 
+The mask will be one (i.e., gridcells will participate in regridding) 
+where @var{msk_src} has valid values in the data file from which
+@acronym{NCO} infers the source grid.   
+The mask will be zero (i.e., gridcells will not participate in
+regridding) where @var{msk_nm} has a missing value.  
+A typical example of this option would be to use Sea-surface Temperature
+(SST) as a template variable for an ocean mask because SST is often
+defined only over ocean, and missing values might denote locations from
+which regridded quantities should emanate.
+@var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
+@var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
+@var{msk_out} is the name to give the destination mask in any regridded file, and
+@var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
+
+@html
 <a name="nco_opt"></a> <!-- http://nco.sf.net/nco.html#nco_opt -->
 @end html
 @cindex @code{-n @var{nco_opt}}
@@ -22166,7 +22272,7 @@ In @acronym{MPAS}-mode the order is
 @cindex @code{--parallel_type}
 @cindex @code{--parallel_mode}
 @cindex @code{--parallel}
-@item -p @var{par_typ} (@code{--}, @code{--}, @code{--}, @code{--})
+@item -p @var{par_typ} (@code{--par_typ}, @code{--par_md}, @code{--parallel_type}, @code{--parallel_mode}, @code{--parallel})
 Specifies the parallelism mode desired.
 Parallelism accelerates throughput when regridding multiple files in one  
 @command{ncremap} invocation.
@@ -22387,13 +22493,13 @@ executables that may be used by the script.
 @html
 <a name="vrb_lvl"></a> <!-- http://nco.sf.net/nco.html#vrb_lvl -->
 @end html
-@cindex @code{--vrb @var{vrb_lvl}}
+@cindex @code{--vrb=@var{vrb_lvl}}
 @cindex @var{vrb_lvl}
 @cindex @code{--vrb_lvl}
 @cindex @code{--vrb}
 @cindex @code{--verbosity}
 @cindex @code{--verbosity_level}
-@item --vrb @var{vrb_lvl} (@code{--vrb_lvl}, @code{--vrb}, @code{--verbosity}, @code{--verbosity_level})
+@item --vrb=@var{vrb_lvl} (@code{--vrb_lvl}, @code{--vrb}, @code{--verbosity}, @code{--verbosity_level})
 Specifies a verbosity level similar to the rest of @acronym{NCO}.
 If @math{@var{vrb_lvl} = 0}, @command{ncremap} prints nothing except
 potentially serious warnings.
