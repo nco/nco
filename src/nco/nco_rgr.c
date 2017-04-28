@@ -6950,7 +6950,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Define nul-mask */
     for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
   }else{
-    /* Change missing value mask points to 0 integer mask for SCRIP grids, which have no missing value convention
+    /* Change missing-value-masked points to 0 integer mask for SCRIP grids (SCRIP has no missing value convention)
        Applications: 
        CICE mask is NC_FLOAT and uses NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value */
