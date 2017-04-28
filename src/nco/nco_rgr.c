@@ -5445,8 +5445,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
-  const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
-  const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
+  const int dmn_nbr_grd_max=4; /* [nbr] Maximum rank of grid variables (msk_[src/dst] could be rank 4) */
   const int itr_nbr_max=20; // [nbr] Maximum number of iterations
   const int idx_ccw=0; /* [idx] Index of starting vertice for CCW check (Point A = tail side AB) */
   const int rcr_lvl=1; /* [nbr] Recursion level (1 is top level, 2 and greater are recursed */
@@ -6173,7 +6172,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(flg_grd_2D){
     int lon_psn_in=0L; /* [idx] Ordinal position of longitude size in rectangular grid */
     int lat_psn_in=1L; /* [idx] Ordinal position of latitude  size in rectangular grid */
-    int tpl_id=NC_MIN_INT; /* [idx] Ordinal position of latitude  size in rectangular grid */
+    int tpl_id=NC_MIN_INT; /* [id] ID of template field */
 
     /* Obtain fields that must be present in input file */
     dmn_srt[0]=0L;
@@ -6185,9 +6184,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
     /* Use fields that may be present in input file to override, if necessary, default lon/lat order
        area and mask are both suitable templates for determining input lat/lon ordering
-       NB: Algorithm assumes area and mask do not have time dimension */
+       NB: Algorithm assumes area is same rank as grid, and falls-back to mask if that has same rank as grid */
     if(area_id != NC_MIN_INT) tpl_id=area_id;
-    else if(msk_id != NC_MIN_INT) tpl_id=msk_id;
+    else if(msk_id != NC_MIN_INT && msk_rnk_nbr == grd_rnk_nbr) tpl_id=msk_id;
 
     if(tpl_id != NC_MIN_INT){
       int tpl_rnk_nbr;
@@ -6230,6 +6229,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       dmn_cnt[lat_psn_in]=lat_nbr;
       dmn_srt[lon_psn_in]=0L;
       dmn_cnt[lon_psn_in]=lon_nbr;
+      if(msk_rnk_nbr != grd_rnk_nbr){
+	/* Retrieve mask elements only from first horizontal grid, e.g., first timestep, first layer... */
+	for(dmn_idx=0;dmn_idx<msk_rnk_nbr-2;dmn_idx++){
+	  dmn_srt[dmn_idx]=0L;
+	  dmn_cnt[dmn_idx]=1L;
+	} /* !dmn_idx */
+	dmn_srt[dmn_idx]=dmn_srt[dmn_idx+1]=0L;
+	dmn_cnt[dmn_idx+lat_psn_in]=lat_nbr;
+	dmn_cnt[dmn_idx+lon_psn_in]=lon_nbr;
+      } /* !msk_rnk_nbr */
       rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     } /* !msk */
 
