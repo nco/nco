@@ -6063,9 +6063,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Obtain fields that may be present in unstructured input file */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
     if(msk_id != NC_MIN_INT){
-      if(msk_rnk_nbr != grd_rnk_nbr){
+      if(msk_rnk_nbr > grd_rnk_nbr){
 	/* Retrieve mask elements only from first horizontal grid, e.g., first timestep, first layer... */
-	for(dmn_idx=0;dmn_idx<msk_rnk_nbr-1;dmn_idx++){
+	for(dmn_idx=0;dmn_idx<msk_rnk_nbr-grd_rnk_nbr;dmn_idx++){
 	  dmn_srt[dmn_idx]=0L;
 	  dmn_cnt[dmn_idx]=1L;
 	} /* !dmn_idx */
@@ -6099,9 +6099,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        area and mask are same size as lat and lon */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
     if(msk_id != NC_MIN_INT){
-      if(msk_rnk_nbr != grd_rnk_nbr){
+      if(msk_rnk_nbr > grd_rnk_nbr){
 	/* Retrieve mask elements only from first horizontal grid, e.g., first timestep, first layer... */
-	for(dmn_idx=0;dmn_idx<msk_rnk_nbr-2;dmn_idx++){
+	for(dmn_idx=0;dmn_idx<msk_rnk_nbr-grd_rnk_nbr;dmn_idx++){
 	  dmn_srt[dmn_idx]=0L;
 	  dmn_cnt[dmn_idx]=1L;
 	} /* !dmn_idx */
@@ -6170,8 +6170,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !flg_grd_crv */
 
   if(flg_grd_2D){
-    int lon_psn_in=0L; /* [idx] Ordinal position of longitude size in rectangular grid */
-    int lat_psn_in=1L; /* [idx] Ordinal position of latitude  size in rectangular grid */
+    int lon_psn_in=1L; /* [idx] Ordinal position of longitude size in rectangular grid */
+    int lat_psn_in=0L; /* [idx] Ordinal position of latitude  size in rectangular grid */
     int tpl_id=NC_MIN_INT; /* [id] ID of template field */
 
     /* Obtain fields that must be present in input file */
@@ -6231,7 +6231,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       dmn_cnt[lon_psn_in]=lon_nbr;
       if(msk_rnk_nbr != grd_rnk_nbr){
 	/* Retrieve mask elements only from first horizontal grid, e.g., first timestep, first layer... */
-	for(dmn_idx=0;dmn_idx<msk_rnk_nbr-2;dmn_idx++){
+	for(dmn_idx=0;dmn_idx<msk_rnk_nbr-grd_rnk_nbr;dmn_idx++){
 	  dmn_srt[dmn_idx]=0L;
 	  dmn_cnt[dmn_idx]=1L;
 	} /* !dmn_idx */
@@ -6239,6 +6239,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	dmn_cnt[dmn_idx+lat_psn_in]=lat_nbr;
 	dmn_cnt[dmn_idx+lon_psn_in]=lon_nbr;
       } /* !msk_rnk_nbr */
+      (void)fprintf(stdout,"quark\n");
+      for(dmn_idx=0;dmn_idx<msk_rnk_nbr;dmn_idx++){
+	(void)fprintf(stdout,"idx=%d srt=%ld cnt=%ld\n",dmn_idx,dmn_srt[dmn_idx],dmn_cnt[dmn_idx]);
+      } /* !dmn_idx */
       rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     } /* !msk */
 
