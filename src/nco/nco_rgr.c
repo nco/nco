@@ -6928,7 +6928,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* end if */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Closed hint file %s\n",nco_prg_nm_get(),fl_hnt);
   } /* !nco_grd_xtn */
-  if(fl_hnt) fl_hnt=(char *)nco_free(fl_hnt);
   
   /* Diagnose area if necessary */
   if(area_id == NC_MIN_INT && flg_wrt_crn){
