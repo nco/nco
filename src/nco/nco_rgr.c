@@ -5533,6 +5533,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int lat_bnd_id=NC_MIN_INT; /* [id] Latitude centers of rectangular grid variable ID */
   int lon_bnd_id=NC_MIN_INT; /* [id] Longitude centers of rectangular grid variable ID */
   int msk_id=NC_MIN_INT; /* [id] Mask variable ID */
+  int msk_rnk_nbr; /* [id] Mask rank */
   int mss_val_int_out=NC_MIN_INT; /* [nbr] Value that can be non-erroneously pointed to */
   int val_two=2; /* [nbr] Value that can be non-erroneously pointed to */
   int val_zero=0; /* [nbr] Value that can be non-erroneously pointed to */
@@ -6042,6 +6043,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(msk_id != NC_MIN_INT){
     /* 20151201: All models tested define mask as NC_INT except CICE which uses NC_FLOAT
        20160111: No observations tested define mask except AMSR which uses NC_SHORT to store bitmasks. Bitmask is 1 for missing data, and up to 128 for various quality levels of valid data. Hence, almost better to ignore AMSR mask variable. */
+    rcd=nco_inq_varndims(in_id,msk_id,&msk_rnk_nbr);
+    if(msk_rnk_nbr != grd_rnk_nbr) (void)fprintf(stdout,"%s: WARNING %s reports mask variable \"%s\" is rank %d while grid is rank %ld so results unpredictable.\n",nco_prg_nm_get(),fnc_nm,msk_nm_in,msk_rnk_nbr,grd_rnk_nbr);
     rcd=nco_inq_vartype(in_id,msk_id,&msk_typ);
     msk_unn.vp=(void *)nco_malloc(grd_sz_nbr*nco_typ_lng(msk_typ));
   } /* !msk */
@@ -6060,7 +6063,18 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
     /* Obtain fields that may be present in unstructured input file */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
-    if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
+    if(msk_id != NC_MIN_INT){
+      if(msk_rnk_nbr != grd_rnk_nbr){
+	/* Retrieve mask elements only from first horizontal grid, e.g., first timestep, first layer... */
+	for(dmn_idx=0;dmn_idx<msk_rnk_nbr-1;dmn_idx++){
+	  dmn_srt[dmn_idx]=0L;
+	  dmn_cnt[dmn_idx]=1L;
+	} /* !dmn_idx */
+	dmn_srt[dmn_idx]=0L;
+	dmn_cnt[dmn_idx]=col_nbr;
+      } /* !msk_rnk_nbr */
+      rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
+    } /* !msk_id */
     dmn_srt[0]=dmn_srt[1]=0L;
     dmn_cnt[0]=col_nbr;
     if(flg_1D_psd_rct_bnd){
@@ -6085,7 +6099,20 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* 20150923: Also input, if present in curvilinear file, corners, area, and mask
        area and mask are same size as lat and lon */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
-    if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
+    if(msk_id != NC_MIN_INT){
+      if(msk_rnk_nbr != grd_rnk_nbr){
+	/* Retrieve mask elements only from first horizontal grid, e.g., first timestep, first layer... */
+	for(dmn_idx=0;dmn_idx<msk_rnk_nbr-2;dmn_idx++){
+	  dmn_srt[dmn_idx]=0L;
+	  dmn_cnt[dmn_idx]=1L;
+	} /* !dmn_idx */
+	dmn_srt[dmn_idx]=dmn_srt[dmn_idx+1]=0L;
+	dmn_cnt[dmn_idx]=lat_nbr;
+	dmn_cnt[dmn_idx+1]=lon_nbr;
+      } /* !msk_rnk_nbr */
+      rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
+    } /* !msk_id */
+
     /* Corners are on curvilinear corner grid
        Rectangular boundaries (i.e., lat_bnd=[lat_nbr,2]) DNE for curvilinear grids 
        Read-in *_crn arrays in curvilinear grids, and *_bnd arrays for rectilinear grids
@@ -6163,9 +6190,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if(msk_id != NC_MIN_INT) tpl_id=msk_id;
 
     if(tpl_id != NC_MIN_INT){
+      int tpl_rnk_nbr;
       var_id=tpl_id;
+      /* NB: Template variable rank may exceed two with --msk_[src/dst] (e.g., SST(time,lat,lon)) */
+      rcd=nco_inq_varndims(in_id,var_id,&tpl_rnk_nbr);
       rcd=nco_inq_vardimid(in_id,var_id,dmn_ids);
-      /* fxm: optimize discovery of lat/lon ordering */
+      /* fxm: Optimize discovery of lat/lon ordering */
       for(dmn_idx=0;dmn_idx<grd_rnk_nbr;dmn_idx++){
 	rcd=nco_inq_dimname(in_id,dmn_ids[dmn_idx],dmn_nm);
 	rcd+=nco_inq_dimlen(in_id,dmn_ids[dmn_idx],&dmn_sz);
