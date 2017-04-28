@@ -1,3 +1,7 @@
+2017-04-28  Charlie Zender  <zender@uci.edu>
+
+	* Fix uninitialized memory errors caught by valgrind in recent nco_grd_nfr() grid-span code
+
 2017-04-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.7-alpha03 release procedure:
