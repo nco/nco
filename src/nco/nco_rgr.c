@@ -5582,7 +5582,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool flg_wrt_crn=True;
   nco_bool flg_crn_grd_lat_lon=False; /* [flg] Curvilinear corner array ordered non-canonically as grd_nbr,lat_nbr,lon_nbr */
   nco_bool has_mss_val_ctr=False;
-  nco_bool has_mss_val_msk;
+  nco_bool has_mss_val_msk=False;
 
   nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
@@ -6085,10 +6085,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* 20150923: Also input, if present in curvilinear file, corners, area, and mask
        area and mask are same size as lat and lon */
     if(area_id != NC_MIN_INT) rcd=nco_get_vara(in_id,area_id,dmn_srt,dmn_cnt,area,crd_typ);
-    if(msk_id != NC_MIN_INT){
-      rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
-      has_mss_val_msk=nco_mss_val_get_dbl(in_id,msk_id,&mss_val_msk_dbl);
-    } /* !msk */
+    if(msk_id != NC_MIN_INT) rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     /* Corners are on curvilinear corner grid
        Rectangular boundaries (i.e., lat_bnd=[lat_nbr,2]) DNE for curvilinear grids 
        Read-in *_crn arrays in curvilinear grids, and *_bnd arrays for rectilinear grids
@@ -6954,6 +6951,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Applications: 
        CICE mask is NC_FLOAT and uses NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value */
+    has_mss_val_msk=nco_mss_val_get_dbl(in_id,msk_id,&mss_val_msk_dbl);
     switch(msk_typ){
     case NC_FLOAT:
       if(has_mss_val_msk){
