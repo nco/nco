@@ -6215,6 +6215,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
   } /* !flg_grd_2D */
 
+  /* Additional information that may be required for any input grid */
+  if(msk_id != NC_MIN_INT) has_mss_val_msk=nco_mss_val_get_dbl(in_id,msk_id,&mss_val_msk_dbl);
+
   /* 20160115: AMSR coordinates are packed as NC_SHORT with scale_value=0.01f. What to do? Is it worth unpacking everything? */
   int flg_pck; /* [flg] Variable is packed on disk  */
   rcd=nco_inq_var_packing(in_id,lat_ctr_id,&flg_pck);
@@ -6951,7 +6954,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Applications: 
        CICE mask is NC_FLOAT and uses NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value */
-    has_mss_val_msk=nco_mss_val_get_dbl(in_id,msk_id,&mss_val_msk_dbl);
     switch(msk_typ){
     case NC_FLOAT:
       if(has_mss_val_msk){
