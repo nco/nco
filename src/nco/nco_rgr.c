@@ -88,7 +88,6 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_hnt_src) rgr->fl_hnt_src=(char *)nco_free(rgr->fl_hnt_src);
   if(rgr->fl_skl) rgr->fl_skl=(char *)nco_free(rgr->fl_skl);
   if(rgr->fl_ugrid) rgr->fl_ugrid=(char *)nco_free(rgr->fl_ugrid);
-  if(rgr->msk_var) rgr->msk_var=(char *)nco_free(rgr->msk_var);
 
   /* Tempest */
   if(rgr->drc_tps) rgr->drc_tps=(char *)nco_free(rgr->drc_tps);
@@ -6239,10 +6238,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	dmn_cnt[dmn_idx+lat_psn_in]=lat_nbr;
 	dmn_cnt[dmn_idx+lon_psn_in]=lon_nbr;
       } /* !msk_rnk_nbr */
-      (void)fprintf(stdout,"quark\n");
-      for(dmn_idx=0;dmn_idx<msk_rnk_nbr;dmn_idx++){
-	(void)fprintf(stdout,"idx=%d srt=%ld cnt=%ld\n",dmn_idx,dmn_srt[dmn_idx],dmn_cnt[dmn_idx]);
-      } /* !dmn_idx */
       rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     } /* !msk */
 
