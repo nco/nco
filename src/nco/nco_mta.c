@@ -112,7 +112,9 @@ nco_remove_hyphens /* [fnc] Remove the hyphens come before the flag */
     int absolute_pos=hyphen_pos-args;/* Get memory address offset */
     memmove(&args[absolute_pos],&args[absolute_pos+1L],strlen(args)-absolute_pos);
     return nco_remove_hyphens(args);
-  }else return args;
+  }
+  else
+    return args;
 }
 
 char ** /* O [sng] Group of split strings */
@@ -284,15 +286,16 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
     }
     else
     { /*Pure key case (flags) */
-      value=strdup(nco_remove_hyphens(separate_args[sng_idx]));
-      set_of_keys=strdup(value);
+      set_of_keys=strdup(nco_remove_hyphens(separate_args[sng_idx]));
+      value=NULL;
     }
     char **individual_args=nco_sng_split(set_of_keys,nco_mta_sub_dlm);
     
     for(int sub_idx=0;sub_idx<nco_count_blocks(set_of_keys,nco_mta_sub_dlm);sub_idx++){
       char *temp_value=strdup(individual_args[sub_idx]);
-      temp_value=(char *)nco_realloc(temp_value,strlen(temp_value)+strlen(value)+1L);
-      temp_value=strcat(temp_value,value);
+      temp_value=(char *)nco_realloc(temp_value,strlen(temp_value)+(value ? strlen(value) : 0)+1L);
+      if(value)
+        temp_value= strcat(temp_value,value);
       kvm_set[kvm_idx++]=nco_sng2kvm(nco_remove_backslash(temp_value));
       nco_free(temp_value);
     } /* !sub_idx */
