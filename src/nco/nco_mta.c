@@ -13,6 +13,8 @@
 
 const char *nco_mta_sub_dlm=","; /* [sng] Multi-argument sub-delimiter */
 
+
+
 kvm_sct /* O [kvm_sct] key-value pair*/
 nco_sng2kvm /* [fnc] Convert string to key-value pair */
 (const char *args) /* I [sng] Input string argument with equal sign connecting key & value */
@@ -28,6 +30,14 @@ nco_sng2kvm /* [fnc] Convert string to key-value pair */
   char *args_copy=strdup(args);
   char *ptr_for_free=args_copy;
   kvm_sct kvm;
+
+  if(!strstr(args_copy, "="))
+  {
+    kvm.key=strdup(args_copy);
+    kvm.val=NULL;
+    nco_free(ptr_for_free);
+    return kvm;
+  }
   
   kvm.key=strdup(strsep(&args_copy,"="));
   kvm.val=strdup(args_copy);
@@ -81,13 +91,27 @@ nco_kvm_prn(kvm_sct kvm)
   if(kvm.key) (void)fprintf(stdout,"%s = %s\n",kvm.key,kvm.val); else return;
 } /* end nco_kvm_prn() */
 
-char *nco_remove_backslash(char *args)
+char * /* O/I [sng] string that has backslash(es)*/
+nco_remove_backslash
+(char *args) /* O/I [sng] string that had already been got rid of backslash(es)*/
 { /* Purpose: recursively remove backslash from string */
   char *backslash_pos=strstr(args,"\\"); 
   if(backslash_pos){
     int absolute_pos=backslash_pos-args;/* Get memory address offset */
     memmove(&args[absolute_pos],&args[absolute_pos+1L],strlen(args)-absolute_pos);
     return nco_remove_backslash(args);
+  }else return args;
+}
+
+char * /* O [sng] the flag that has no hyphens */
+nco_remove_hyphens /* [fnc] Remove the hyphens come before the flag */
+(char* args) /* I [sng] the flag that has hyphens in it*/
+{
+  char *hyphen_pos=strstr(args,"-"); 
+  if(hyphen_pos){
+    int absolute_pos=hyphen_pos-args;/* Get memory address offset */
+    memmove(&args[absolute_pos],&args[absolute_pos+1L],strlen(args)-absolute_pos);
+    return nco_remove_hyphens(args);
   }else return args;
 }
 
@@ -146,6 +170,52 @@ nco_sng_split /* [fnc] Split string by delimiter */
   return sng_fnl;
 } /* end nco_sng_split() */
 
+int /* O [bool] boolean for whether it is a ncks flag */
+nco_is_flag /* [fnc] Check whether the input is a ncks flag*/
+(const char* flag) /* I [sng] Input string */
+{
+    const char *rgr_flags[] ={"--no_area",
+                              "--no_area_out",
+                              "--cell_measures",
+                              "--cll_msr",
+                              "--no_cell_measures",
+                              "--no_cll_msr",
+                              "--curvilinear",
+                              "--crv",
+                              "--crv",
+                              "--infer",
+                              "-nfr",
+                              "--no_stagger",
+                              "--no_stg"};
+    const char *gaa_flags[] ={""};
+    const char *trr_flags[] ={""};
+    const char *ppc_flags[] ={""};
+
+    for(int index=0;index<sizeof(rgr_flags)/sizeof(char*);index++)
+    {
+      if(!strcmp(flag, rgr_flags[index])){
+        return NCO_NOERR;
+      }
+    }
+    for(int index=0;index<sizeof(gaa_flags)/sizeof(char*);index++)
+    {
+      if(!strcmp(flag, gaa_flags[index])) 
+        return NCO_NOERR;
+    }
+    for(int index=0;index<sizeof(trr_flags)/sizeof(char*);index++)
+    {
+      if(!strcmp(flag, trr_flags[index])) 
+        return NCO_NOERR;
+    }
+    for(int index=0;index<sizeof(ppc_flags)/sizeof(char*);index++)
+    {
+      if(!strcmp(flag, ppc_flags[index])) 
+        return NCO_NOERR;
+    }
+    return NCO_ERR;
+
+}
+
 int /* O [flg] Input has valid syntax */
 nco_input_check /* [fnc] Check whether input has valid syntax */
 (const char *args) /* O [sng] Input arguments */
@@ -155,8 +225,10 @@ nco_input_check /* [fnc] Check whether input has valid syntax */
   const char fnc_nm[]="nco_input_check()"; /* [sng] Function name */
 
   if(!strstr(args,"=")){ // If no equal sign in arguments
-    (void)fprintf(stderr,"%s: ERROR %s did not detect equal sign between key and value for argument \"%s\".\n%s HINT This can occur when the designated or default key-value delimiter \"%s\" is mixed into the literal text of the value. Try changing the delimiter to a string guaranteed not to appear in the value string with, e.g., --dlm=\"##\".\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get(),nco_mta_dlm_get());
-    return NCO_ERR;
+    if(!nco_is_flag(args)){
+      (void)fprintf(stderr,"%s: ERROR %s did not detect equal sign between key and value for argument \"%s\".\n%s HINT This can occur when the designated or default key-value delimiter \"%s\" is mixed into the literal text of the value. Try changing the delimiter to a string guaranteed not to appear in the value string with, e.g., --dlm=\"##\".\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get(),nco_mta_dlm_get());
+      return NCO_ERR;
+    }
   }
   if(strstr(args,"=") == args){ // Equal sign is at argument start (no key)
     (void)fprintf(stderr,"%s: ERROR %s reports no key in key-value pair for argument \"%s\".\n%s HINT It appears that an equal sign is the first character of the argument, meaning that a value was specified with a corresponding key.\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get()); 
@@ -204,8 +276,17 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
   size_t kvm_idx=0;
   
   for(int sng_idx=0;sng_idx<nco_count_blocks(args,nco_mta_dlm);sng_idx++){
-    char *value=strdup(strstr(separate_args[sng_idx],"="));
-    char *set_of_keys=strdup(strtok(separate_args[sng_idx],"=")); 
+    char *value=NULL, *set_of_keys=NULL;
+    if(strstr(separate_args[sng_idx],"="))
+    { /*key-value pair case*/
+      value=strdup(strstr(separate_args[sng_idx],"="));
+      set_of_keys=strdup(strtok(separate_args[sng_idx],"="));
+    }
+    else
+    { /*Pure key case (flags) */
+      value=strdup(nco_remove_hyphens(separate_args[sng_idx]));
+      set_of_keys=strdup(value);
+    }
     char **individual_args=nco_sng_split(set_of_keys,nco_mta_sub_dlm);
     
     for(int sub_idx=0;sub_idx<nco_count_blocks(set_of_keys,nco_mta_sub_dlm);sub_idx++){

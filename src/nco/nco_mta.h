@@ -49,9 +49,9 @@ extern "C" {
   nco_kvm_prn /* [fnc] Print kvm contents */
   (kvm_sct kvm); /* [fnc] kvm to print */
 
-  char *
-  nco_remove_backslash
-  (char* args);
+  char * /* O [sng] the flag that has no hyphens */
+  nco_remove_hyphens /* [fnc] Remove the hyphens come before the flag */
+  (char* args); /* I [sng] the flag that has hyphens in it*/
 
   char ** /* O [sng] Group of split strings */
   nco_sng_split /* [fnc] Split string by delimiter */
