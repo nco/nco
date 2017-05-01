@@ -1036,7 +1036,7 @@ main(int argc,char **argv)
 
   if(fl_bnr && !fl_out){
     /* Native binary files depend on writing netCDF file to enter generic I/O logic */
-    (void)fprintf(stdout,"%s: ERROR Native binary files cannot be written unless netCDF output filename also specified. HINT: Repeat command with dummy netCDF file specified for output file (e.g., -o foo.nc)\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR Native binary files cannot be written unless netCDF output filename also specified.\nHINT: Repeat command with dummy netCDF file specified for output file (e.g., -o foo.nc)\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif fl_bnr */
     

@@ -13,8 +13,6 @@
 
 const char *nco_mta_sub_dlm=","; /* [sng] Multi-argument sub-delimiter */
 
-
-
 kvm_sct /* O [kvm_sct] key-value pair*/
 nco_sng2kvm /* [fnc] Convert string to key-value pair */
 (const char *args) /* I [sng] Input string argument with equal sign connecting key & value */
@@ -172,74 +170,77 @@ nco_sng_split /* [fnc] Split string by delimiter */
   return sng_fnl;
 } /* end nco_sng_split() */
 
-int /* O [bool] boolean for whether it is a ncks flag */
-nco_is_flag /* [fnc] Check whether the input is a ncks flag*/
+int /* O [flg] Is flag */
+nco_is_flag /* [fnc] Check whether input is a flag */
 (const char* flag) /* I [sng] Input string */
 {
-    const char *rgr_flags[] ={"no_area",
-                              "no_area_out",
-                              "cell_measures",
-                              "cll_msr",
-                              "no_cell_measures",
-                              "no_cll_msr",
-                              "curvilinear",
-                              "crv",
-                              "infer",
-                              "nfr",
-                              "no_stagger",
-                              "no_stg"};
-    const char *gaa_flags[] ={""};
-    const char *trr_flags[] ={""};
-    const char *ppc_flags[] ={""};
-
-    for(int index=0;index<sizeof(rgr_flags)/sizeof(char*);index++)
+  const char fnc_nm[]="nco_is_flag()"; /* [sng] Function name */
+  const char *rgr_flags[] ={
+    "no_area",
+    "no_area_out",
+    "cell_measures",
+    "cll_msr",
+    "no_cell_measures",
+    "no_cll_msr",
+    "curvilinear",
+    "crv",
+    "infer",
+    "nfr",
+    "no_stagger",
+    "no_stg"};
+  const char *gaa_flags[] ={""};
+  const char *trr_flags[] ={""};
+  const char *ppc_flags[] ={""};
+  
+  for(int index=0;index<sizeof(rgr_flags)/sizeof(char*);index++)
     {
       if(!strcmp(flag, rgr_flags[index])){
         return NCO_NOERR;
       }
     }
-    for(int index=0;index<sizeof(gaa_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(gaa_flags)/sizeof(char*);index++)
     {
       if(!strcmp(flag, gaa_flags[index])) 
         return NCO_NOERR;
     }
-    for(int index=0;index<sizeof(trr_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(trr_flags)/sizeof(char*);index++)
     {
       if(!strcmp(flag, trr_flags[index])) 
         return NCO_NOERR;
     }
-    for(int index=0;index<sizeof(ppc_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(ppc_flags)/sizeof(char*);index++)
     {
       if(!strcmp(flag, ppc_flags[index])) 
         return NCO_NOERR;
     }
+  
+  (void)fprintf(stderr, "%s: ERROR %s Multi-Argument (MTA) parser reports unrecognized option \"%s\"\n%s: HINT Lack of equals sign indicates this may be a mis-typed flag rather than an erroneous key-value pair specification. Valid MTA flags are listed below. Synonyms for each flag are listed on the same line. A leading \"--\" is optional. MTA documentation is at http://nco.sf.net/nco.html#mta\n",nco_prg_nm_get(),fnc_nm,flag,nco_prg_nm_get());
 
-    (void)fprintf(stderr, "ERROR: Possibly you mistyped a flag. HINT If you are trying to use a (or multiple) ncks flag(s), please refer to the following lists of ncks flags  dand make sure that you correct any typos. The flag(s) can be Linux style (with \"--\") or concise style (w/o \"--\")\n");
-
-    (void)fprintf(stderr, "ncks rgr (Regridding) flags:\n");
-    for(int index=0;index<sizeof(rgr_flags)/sizeof(char*);index++)
+  (void)fprintf(stderr, "Regridder flags (\"rgr\" indicator):\n");
+  for(int index=0;index<sizeof(rgr_flags)/sizeof(char*);index++)
     {
-     (void)fprintf(stderr, "  %2d. %s\n",index+1,rgr_flags[index]);
+      (void)fprintf(stderr, "  %2d. %s\n",index+1,rgr_flags[index]);
     }
+  /*
     (void)fprintf(stderr, "ncks gaa (Global Attribute Adding) flags:\n");
     for(int index=0;index<sizeof(gaa_flags)/sizeof(char*);index++)
     {
       (void)fprintf(stderr, "%s\n",gaa_flags[index]);
     }
-
-    (void)fprintf(stderr, "ncks trr (Terraref) flags:\n");
-    for(int index=0;index<sizeof(trr_flags)/sizeof(char*);index++)
+  
+  (void)fprintf(stderr, "ncks trr (Terraref) flags:\n");
+  for(int index=0;index<sizeof(trr_flags)/sizeof(char*);index++)
     {
       (void)fprintf(stderr, "%s\n",trr_flags[index]);
     }
-    (void)fprintf(stderr, "ncks ppc (Precision-Preserving Compression) flags:\n");
-    for(int index=0;index<sizeof(ppc_flags)/sizeof(char*);index++)
+  (void)fprintf(stderr, "ncks ppc (Precision-Preserving Compression) flags:\n");
+  for(int index=0;index<sizeof(ppc_flags)/sizeof(char*);index++)
     {
       (void)fprintf(stderr, "%s\n",ppc_flags[index]);
     }
-
-    return NCO_ERR;
-
+  */
+  
+  return NCO_ERR;
 }
 
 
@@ -250,22 +251,22 @@ nco_input_check /* [fnc] Check whether input has valid syntax */
   /* Check argument syntax
    * If return value is false the parser will terminate the program */
   const char fnc_nm[]="nco_input_check()"; /* [sng] Function name */
-
+  
   if(!strstr(args,"=")){ // If no equal sign in arguments
     char* arg_copy=strdup(args);
     if(!nco_is_flag(nco_remove_hyphens(arg_copy))){
-      (void)fprintf(stderr,"%s: ERROR %s did not detect equal sign between key and value for argument \"%s\".\n%s HINT This can occur when the designated or default key-value delimiter \"%s\" is mixed into the literal text of the value. Try changing the delimiter to a string guaranteed not to appear in the value string with, e.g., --dlm=\"##\".\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get(),nco_mta_dlm_get());
+      (void)fprintf(stderr,"%s: ERROR %s did not detect equal sign between key and value for argument \"%s\".\n%s: HINT This can occur when the designated or default key-value delimiter string \"%s\" is mixed into the literal text of the value. Try changing delimiter to a string guaranteed not to appear in the value string with, e.g., --dlm=\"##\".\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get(),nco_mta_dlm_get());
       nco_free(arg_copy);
       return NCO_ERR;
     }
     nco_free(arg_copy);
   }
   if(strstr(args,"=") == args){ // Equal sign is at argument start (no key)
-    (void)fprintf(stderr,"%s: ERROR %s reports no key in key-value pair for argument \"%s\".\n%s HINT It appears that an equal sign is the first character of the argument, meaning that a value was specified with a corresponding key.\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get()); 
+    (void)fprintf(stderr,"%s: ERROR %s reports no key in key-value pair for argument \"%s\".\n%s: HINT It appears that an equal sign is the first character of the argument, meaning that a value was specified with a corresponding key.\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get()); 
     return NCO_ERR;
   }
   if(strstr(args,"=") == args+strlen(args)-1L){ // Equal sign is at argument end
-    (void)fprintf(stderr,"%s: ERROR %s reports no value in key-value pair for argument \"%s\".\n%s HINT This usually occurs when the value of a key is unintentionally omitted, e.g., --gaa foo= , --ppc foo= , --rgr foo= , or --trr foo= . Each equal sign must immediatte precede a value for the specified key(s).\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR %s reports no value in key-value pair for argument \"%s\".\n%s: HINT This usually occurs when the value of a key is unintentionally omitted, e.g., --gaa foo= , --ppc foo= , --rgr foo= , or --trr foo= . Each equal sign must immediatte precede a value for the specified key(s).\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get());
     return NCO_ERR;
   }
   return NCO_NOERR;
