@@ -1976,7 +1976,11 @@ nco_glb_att_add /* [fnc] Add global attributes */
     gaa_aed.type=NC_CHAR;
     /* Insert value into attribute structure */
     gaa_aed.val=att_val;
-    gaa_aed.sz=strlen(gaa_aed.val.cp);
+    /* 20170428 jm: Update for flag parsing*/
+    if(gaa_aed.val.cp)
+      gaa_aed.sz=strlen(gaa_aed.val.cp);
+    else
+      gaa_aed.sz=0;
     /* 20160324: which is better mode for gaa---overwrite or append? 
        20160330: answer is overwrite. otherwise, climo_nco.sh produces ANN file with, e.g.,
        :climo_script = "climo_nco.shclimo_nco.shclimo_nco.sh" ;
