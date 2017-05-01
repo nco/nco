@@ -1087,7 +1087,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd=nco_get_vara(in_id,dst_grd_crn_lon_id,dmn_srt,dmn_cnt,lon_crn_out,crd_typ_out);
     rcd=nco_get_vara(in_id,dst_grd_crn_lat_id,dmn_srt,dmn_cnt,lat_crn_out,crd_typ_out);
 
-    /* User may specify curvilinear grid (with --rgr crv='y'). If not specified, manually test output grid for curvilinearity... */
+    /* User may specify curvilinear grid (with --rgr crv). If not specified, manually test output grid for curvilinearity... */
     flg_grd_out_crv=rgr->flg_crv; /* [flg] Curvilinear coordinates */
     if(flg_grd_out_crv){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid specified to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
@@ -1604,7 +1604,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        ncks --cdl -m ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc | grep coordinates
        4LFTX_221_SPDY_S113:coordinates = "gridlat_221 gridlon_221" ;
        Usage:
-       ncks -O -D 3 --rgr nfr=y --rgr_var=ALBDO_221_SFC_S113 --rgr grid=~/grd_narr.nc ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc ~/foo.nc */
+       ncks -O -D 3 --rgr infer --rgr_var=ALBDO_221_SFC_S113 --rgr grid=~/grd_narr.nc ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc ~/foo.nc */
     char crd_sng[]="coordinates"; /* CF-standard coordinates attribute name */
     
     cf=(cf_crd_sct *)nco_malloc(sizeof(cf_crd_sct));
@@ -2060,8 +2060,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   aed_mtd_crd.val.cp=att_val_crd;
 
   /* Reminder: 
-     Regridder area_out options, e.g., --rgr area_out=Y, set flg_area_out to control adding "area" variable to regridded output
-     Regridder cll_msr options, --rgr cll_msr=Y, set flg_cll_msr to control adding "cell_measures" attribute to regridded output
+     Regridder area_out options, e.g., --rgr area_out, set flg_area_out to control adding "area" variable to regridded output
+     Regridder cll_msr options, --rgr cll_msr, set flg_cll_msr to control adding "cell_measures" attribute to regridded output
      ncks & ncra cll_msr options, --cll_msr, set EXTRACT_CLL_MSR to control adding "cell_measures" variables (e.g., area) to extraction list of input file
      EXTRACT_CLL_MSR supercedes --rgr area_out in determining whether to add "area" to regridded output */
   nco_bool flg_area_out=rgr->flg_area_out; /* [flg] Add area to output */
@@ -3412,7 +3412,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc # Interrogate file
        ncwa -O -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
        ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
-       ncks -O -D 1 -t 1 -v T --rgr nfr=y --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
+       ncks -O -D 1 -t 1 -v T --rgr infer --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
        ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
        ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
        ncremap -v T -i ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
@@ -4277,7 +4277,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
      Curvilinear grids:
-     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Degenerate case.' --rgr crv=Y --rgr lon_crv=0.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Degenerate case.' --rgr crv --rgr lon_crv=0.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
      ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Curvilinearity = 1.0 lon' --rgr lon_crv=1.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
 
      1-D Latitude (no longitude) grids:
@@ -5433,8 +5433,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Purpose: Use grid information and guesswork to create SCRIP-format grid file from input data file
      
      Test curvilinear grids:
-     ncks -O -D 1 --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.nc ~/foo.nc
-     ncks -O -D 1 --rgr nfr=y --rgr grid=${DATA}/sld/rgr/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc */
+     ncks -O -D 1 --rgr infer --rgr grid=${DATA}/sld/rgr/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.nc ~/foo.nc
+     ncks -O -D 1 --rgr infer --rgr grid=${DATA}/sld/rgr/grd_airs.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_grd_nfr()"; /* [sng] Function name */
 
@@ -5633,7 +5633,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ncks --cdl -m ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc | grep coordinates
        4LFTX_221_SPDY_S113:coordinates = "gridlat_221 gridlon_221" ;
        Usage:
-       ncks -O -D 3 --rgr nfr=y --rgr_var=4LFTX_221_SPDY_S113 --rgr grid=~/grd_narr.nc ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc ~/foo.nc */
+       ncks -O -D 3 --rgr infer --rgr_var=4LFTX_221_SPDY_S113 --rgr grid=~/grd_narr.nc ${DATA}/hdf/narrmon-a_221_20100101_0000_000.nc ~/foo.nc */
     char crd_sng[]="coordinates"; /* CF-standard coordinates attribute name */
     
     cf=(cf_crd_sct *)nco_malloc(sizeof(cf_crd_sct));
@@ -7247,7 +7247,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Documentation: https://github.com/ugrid-conventions/ugrid-conventions
        Procedure: Create 1x1 skeleton file, infer UGRID and SCRIP grids from it
        ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${HOME}/skl_180x360.nc --rgr grid=${HOME}/grd_180x360_SCRIP.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-       ncks -O -D 1 --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
+       ncks -O -D 1 --rgr infer --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
        ncks --cdl -v mesh_node_y ~/grd_ugrid.nc
        ncks --cdl -v mesh_face_nodes,mesh_face_x,mesh_face_y -d nFaces,0 ~/grd_ugrid.nc
        ncks --cdl -v mesh_edge_nodes,mesh_edge_x,mesh_edge_y -d nEdges,0 ~/grd_ugrid.nc

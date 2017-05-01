@@ -408,7 +408,7 @@ rgr_map='' # [sng] Regridding map
 #rgr_map="${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc"
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
-spl_rgr_opt='--rgr no_stagger=Y' # [sng] Splitter regridding options
+spl_rgr_opt='--rgr no_stagger' # [sng] Splitter regridding options
 sbs_flg='No' # [sng] Split (subset) climatologies
 thr_nbr=2 # [nbr] Thread number for regridder
 tpd_out=1 # [nbr] Timesteps-per-day in ouput

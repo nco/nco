@@ -1,3 +1,9 @@
+2017-05-01  Charlie Zender  <zender@uci.edu>
+
+	* Alter docs and ncclimo/ncremap to use MTA flag-handling
+
+	* Merge Jerome's MTA flag-handling
+
 2017-04-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.7-alpha03 release procedure:

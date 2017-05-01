@@ -122,8 +122,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.7-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 28 April 2017
-@set update-month April 2017
+@set update-date 1 May 2017
+@set update-month May 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -2919,6 +2919,7 @@ Users are expected to pick the unambiguous truncation of each option
 name that most suits their taste.
 
 @html
+<a name="MTA"></a> <!-- http://nco.sf.net/nco.html#MTA -->
 <a name="mta"></a> <!-- http://nco.sf.net/nco.html#mta -->
 <a name="multi-arguments"></a> <!-- http://nco.sf.net/nco.html#multi-arguments -->
 <a name="Multi-arguments"></a> <!-- http://nco.sf.net/nco.html#Multi-arguments -->
@@ -2926,6 +2927,7 @@ name that most suits their taste.
 @node Multi-arguments,  , Truncating Long Options, Command Line Options
 @subsection Multi-arguments
 @cindex Multi-arguments
+@cindex @acronym{MTA}
 @cindex Options, multi-argument
 @cindex @code{--gaa @var{key}=@var{val}}
 @cindex @code{--ppc @var{key}=@var{val}}
@@ -2933,7 +2935,8 @@ name that most suits their taste.
 @cindex @code{--trr @var{key}=@var{val}}
 As of @acronym{NCO} version 4.6.2 (November, 2016), @acronym{NCO} accepts
 multiple key-value pair options for a single feature to be joined
-together into a single extended argument called a @dfn{multi-argument}. 
+together into a single extended argument called a @dfn{multi-argument},
+sometimes abbreviated @acronym{MTA}. 
 Only four @acronym{NCO} features accept multiple key-value pairs that
 can be aggregated into multi-arguments. 
 These features are:
@@ -3012,6 +3015,22 @@ These special characters include @samp{:}, @samp{$}, @samp{%}, @samp{*},
 If @var{val} is a long text string that could contain the default
 delimiter, then delimit with a unique multi-character string such as
 @samp{csz} in the third example. 
+
+As of @acronym{NCO} version 4.6.7 (May, 2017), multi-argument
+flags no longer need be specified as key-value pairs.
+By definition a flag sets a boolean value to either True or False.
+Previously @acronym{MTA} flags had to employ key-value pair syntax,
+e.g., @samp{--rgr infer=Y} or @samp{--rgr no_cll_msr=anything} in order 
+to parse correctly.
+Now the @acronym{MTA} parser accepts flags in the more intuitive syntax
+where they are listed by name, i.e., the flag name alone indicates the
+flag to set, e.g., @samp{--rgr infer} or @samp{--rgr no_cll_msr} are
+valid. 
+Flags in multi-arument strings appear even simpler, e.g., 
+@samp{--rgr infer#no_cll_msr#latlon=129,256}.
+It is also valid to prefix flags in multi-arument strings with
+single or double-dashes to make the flags more visible, e.g.,
+@samp{--rgr latlon=129,256#--infer#-no_cll_msr}. 
 
 @html
 <a name="fl_in"></a> <!-- http://nco.sf.net/nco.html#fl_in -->
@@ -6478,6 +6497,7 @@ ncks --rgr grd_ttl='Equi-Angular Greenland grid ' --rgr scrip=${HOME}/greenland_
 @end html
 @cindex infer
 @cindex @code{--rgr nfr}
+@cindex @code{--rgr infer}
 Often researchers face the problem not of generating a known, idealized
 grid but of understanding an unknown, possibly irregular or curvilinear
 grid underlying a dataset produced elsewhere.
@@ -6486,7 +6506,7 @@ coordinates (and boundaries, if available), reformat that information
 as necessary to diagnose gridcell areas, and output the results in
 @acronym{SCRIP} format.
 As of @acronym{NCO} @w{version 4.5.3}, released in October, 2015,
-the @samp{--rgr nfr='y'} switch activates the machinery to infer the grid
+the @samp{--rgr infer} flag activates the machinery to infer the grid
 rather than construct the grid from other user-specified switches.
 To infer the grid properties, @acronym{NCO} interrogates
 @var{input-file} for horizontal coordinate information, such as the
@@ -6499,8 +6519,8 @@ comprises quadrilateral cells whose edges are midway between cell
 centers, for both rectilinear and curvilinear grids. 
 @example
 @verbatim
-# Infer the grid of the AIRS swath from input, write it to grd_scrip.nc
-ncks --rgr nfr=y --rgr scrip=${DATA}/sld/rgr/grd_scrip.nc \
+# Infer AIRS swath grid from input, write it to grd_scrip.nc
+ncks --rgr infer --rgr scrip=${DATA}/sld/rgr/grd_scrip.nc \
      ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.nc ~/foo.nc
 @end verbatim
 @end example
@@ -6521,7 +6541,7 @@ Currently a @acronym{SCRIP} grid must be requested in order for the
 @acronym{UGRID} option to work, e.g.,
 @example
 @verbatim
-ncks --rgr nfr=y --rgr ugrid=${HOME}/grd_ugrid.nc \
+ncks --rgr infer --rgr ugrid=${HOME}/grd_ugrid.nc \
      --rgr scrip=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
 @end verbatim
 @end example
@@ -6996,8 +7016,7 @@ These annotations include
     Since @var{area_nm} is a property of the grid, it is read directly
     from the @var{map-file} rather than regridded itself. 
     To omit the area variable from the output file, set the
-    @var{no_area_out} variable to any value, e.g.,
-    @samp{--no_area_out='Y'}. 
+    @var{no_area_out} flag.
     The @code{--no_cll_msr} switch to @command{ncremap} and
     @command{ncclimo} does this automatically.
 @cindex @code{frc}
@@ -7039,11 +7058,9 @@ These annotations include
     Since @var{msk_nm} is a property of the grid, it is read directly
     from the @var{map-file} rather than regridded itself. 
     To include the mask variable in the output file, set the
-    @var{msk_out} variable to any value, e.g.,
-    @samp{--msk_out='Y'}. 
+    @var{msk_out} flag.
     To omit the mask variable from the output file, set the
-    @var{no_msk_out} variable to any value, e.g.,
-    @samp{--no_msk_out='Y'}. 
+    @var{no_msk_out} flag.
     In grid inferral and map-generation modes, this option tells the
     regridder to generate an integer mask map from the variable
     @var{msk_nm}. 
@@ -7114,8 +7131,8 @@ These annotations include
     the input is on a cap (aka @acronym{FV}) grid so that the result
     can be processed by @acronym{AMWG} diagnostics. 
     Turn-off archiving the staggered grid (i.e., @code{slat},
-    @code{slon}, and @code{w_stag}) by setting @var{no_stagger}
-    to any value, e.g., @samp{--no_stagger='Y'}.
+    @code{slon}, and @code{w_stag}) by setting the @var{no_stagger}
+    flag. 
     The @code{--no_stg_grd} flag in @command{ncremap} and
     @command{ncclimo} sets this @code{--no_stagger} flag.
 @end table
