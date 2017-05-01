@@ -3026,7 +3026,8 @@ Now the @acronym{MTA} parser accepts flags in the more intuitive syntax
 where they are listed by name, i.e., the flag name alone indicates the
 flag to set, e.g., @samp{--rgr infer} or @samp{--rgr no_cll_msr} are
 valid. 
-Flags in multi-arument strings appear even simpler, e.g., 
+A consequence of this is that flags in multi-argument strings appear
+as straightforward flag names, e.g.,
 @samp{--rgr infer#no_cll_msr#latlon=129,256}.
 It is also valid to prefix flags in multi-arument strings with
 single or double-dashes to make the flags more visible, e.g.,
