@@ -1,8 +1,8 @@
 2017-05-02  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.6.7-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha03 final changes';git push
-	git tag -a 4.6.7-alpha03 -m 'Version 4.6.7-alpha03 new features: msk_src,msk_dst,msk_out,ugrid;';git push --tags
+	* NCO 4.6.7-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha04 final changes';git push
+	git tag -a 4.6.7-alpha04 -m 'Version 4.6.7-alpha04 new features: MTA flags, ncap2 in-fill, MSVC';git push --tags
 
 	* Fix Windows MSVC C++ compilation issues introduced in 4.6.6
 
