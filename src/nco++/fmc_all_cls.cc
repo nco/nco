@@ -977,16 +977,17 @@ int utl_cls::beta_fill(var_sct* var, void* msk_vp){
   size_t slb_sz;
   double dbl_mss_val;
   double sum=0.0;
-
+  double **msk_dp=NULL_CEWI;
+  double **dp=NULL_CEWI;
 
   slb_sz=nco_typ_lng(var->type);
   lat_sz=var->dim[nbr_dim-2]->cnt;
   lon_sz=var->dim[nbr_dim-1]->cnt;
 
 
-
-  double *msk_dp[lat_sz];
-  double *dp[lat_sz];
+  // make indexing easier
+  msk_dp=(double**)nco_malloc( sizeof(double*) * lat_sz);
+  dp=(double**)nco_malloc( sizeof(double*) * lat_sz);
 
   cast_void_nctype(var->type, &var->val);
   if(var->has_mss_val)
@@ -1048,9 +1049,11 @@ int utl_cls::beta_fill(var_sct* var, void* msk_vp){
 
 
   }
+
   cast_nctype_void(var->type,&var->val);
 
-
+  dp=(double**)nco_free(dp);
+  msk_dp=(double**)nco_free(dp);
 
   return NCO_NOERR;
 
