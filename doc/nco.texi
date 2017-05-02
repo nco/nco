@@ -344,11 +344,13 @@ We gratefully acknowledge support for @acronym{NCO} development and
 maintenance provided by these institutions and programs:
 @acronym{DOE} @acronym{ACME} DE-SC0012998, 
 @acronym{NASA} @acronym{ACCESS} NNX12AF48A and NNX14AH55A, and
-@acronym{NSF} @acronym{SEI} IIS-0431203.
+@acronym{NSF} @acronym{SEI} IIS-0431203 and AGS-1541031.
 Research supported as part of the Accelerated Climate Modeling for
 Energy (@acronym{ACME}) program, funded by the U.S. Department of
 Energy, Office of Science, Office of Biological and Environmental
 Research.  
+This material is based upon work supported by the National Science
+Foundation under Grants IIS-0431203 and AGS-1541031.
 @sp 2
 The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.@*

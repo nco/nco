@@ -1,3 +1,13 @@
+2017-05-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.7-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha03 final changes';git push
+	git tag -a 4.6.7-alpha03 -m 'Version 4.6.7-alpha03 new features: msk_src,msk_dst,msk_out,ugrid;';git push --tags
+
+	* Fix Windows MSVC C++ compilation issues introduced in 4.6.6
+
+	* Henry added simple_fill_miss() weighted_fill_miss() to ncap2
+
 2017-05-01  Charlie Zender  <zender@uci.edu>
 
 	* Alter docs and ncclimo/ncremap to use MTA flag-handling
