@@ -350,8 +350,9 @@
       fmc_vtr.push_back( fmc_cls("has_miss",this,(int)HAS_MISS));
       fmc_vtr.push_back( fmc_cls("ram_write",this,(int)RAM_WRITE));
       fmc_vtr.push_back( fmc_cls("ram_delete",this,(int)RAM_DELETE));
-      fmc_vtr.push_back( fmc_cls("fill_linear_miss",this,(int)FILL_LINEAR_MISS));
-      fmc_vtr.push_back( fmc_cls("fill_miss",this,(int)FILL_MISS));
+      fmc_vtr.push_back( fmc_cls("linear_fill_miss",this,(int)LINEAR_FILL_MISS));
+      fmc_vtr.push_back( fmc_cls("simple_fill_miss",this,(int)SIMPLE_FILL_MISS));
+      fmc_vtr.push_back( fmc_cls("weighted_fill_miss",this,(int)WEIGHT_FILL_MISS));
      
     }
   }
@@ -418,15 +419,14 @@
         return get_fnd(is_mtd, vtr_args,fmc_obj,walker);
         break;
 
-      case FILL_LINEAR_MISS:
-        return fill_linear_fnd(is_mtd, vtr_args,fmc_obj,walker);
+      case LINEAR_FILL_MISS:
+        return linear_fill_fnd(is_mtd, vtr_args,fmc_obj,walker);
         break;
 
-      case FILL_MISS:
+      case SIMPLE_FILL_MISS:
+      case WEIGHT_FILL_MISS:
         return fill_fnd(is_mtd, vtr_args,fmc_obj,walker);
         break;
-
-
 
         // do nothing just continue
       default:
@@ -732,7 +732,7 @@ var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 }
 
-var_sct * utl_cls::fill_linear_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct * utl_cls::linear_fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::fill_linear_fnd");
   nco_bool do_permute=False;
   int idx;
@@ -884,8 +884,13 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
   int nbr_args;
   int fdx=fmc_obj.fdx();
   long icnt;
+  double *lat_dp=NULL_CEWI;
+  double *lon_dp=NULL_CEWI;
   nc_type lcl_typ;
   var_sct *var=NULL_CEWI;
+  var_sct *var_lat=NULL_CEWI;
+  var_sct *var_lon=NULL_CEWI;
+
   std::string sfnm =fmc_obj.fnm(); //method name
   std::string susg;
   prs_cls *prs_arg=walker.prs_arg;
@@ -918,16 +923,41 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
   if(var->type != NC_DOUBLE )
     nco_var_cnf_typ(NC_DOUBLE, var);
 
+  nbr_dim = var->nbr_dim;
+
+  if(fdx==WEIGHT_FILL_MISS) {
+    // grab lat & lon -- assume 1D and there names are the same as their dim names and the dim order is lat,lon
+    var_lat = prs_arg->ncap_var_init(std::string(var->dim[nbr_dim - 2]->nm), true); // lat second to last
+    var_lon = prs_arg->ncap_var_init(std::string(var->dim[nbr_dim - 1]->nm), true); // lon last dim
+
+    if (var_lat && var_lon) {
+
+      if (var_lat->type != NC_DOUBLE)
+        nco_var_cnf_typ(NC_DOUBLE, var_lat);
+
+      if (var_lon->type != NC_DOUBLE)
+        nco_var_cnf_typ(NC_DOUBLE, var_lon);
+
+      cast_void_nctype(var_lat->type, &var_lat->val);
+      cast_void_nctype(var_lon->type, &var_lon->val);
+
+      lat_dp = var_lat->val.dp;
+      lon_dp = var_lon->val.dp;
+    }
+    else
+      err_prn(sfnm,"to get the lat/lon coord-variables this function assumes that they are are named after the final two dims in your variable argument.");
+
+
+  }
 
   {
-    // move throgh data in blocks if number of dims >2
+    // move through data in blocks if number of dims >2
     int blk_nbr;
     size_t blk_sz;
     size_t slb_sz;
     void *vp;
     void *msk_vp = NULL_CEWI;
 
-    nbr_dim = var->nbr_dim;
 
     blk_sz = var->dim[nbr_dim - 2]->cnt * var->dim[nbr_dim - 1]->cnt;
     blk_nbr = var->sz / blk_sz;
@@ -941,7 +971,10 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 
     for (idx = 0; idx < blk_nbr; idx++) {
       var->val.vp = (char *) vp + (ptrdiff_t) (blk_sz * idx * slb_sz);
-      beta_fill(var, msk_vp);
+      if(fdx==SIMPLE_FILL_MISS)
+         simple_fill(var, msk_vp);
+      else if(fdx==WEIGHT_FILL_MISS)
+         weight_fill(var,msk_vp,lat_dp,lon_dp);
     }
 
     var->val.vp = vp;
@@ -956,6 +989,17 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
      nco_var_cnf_typ(lcl_typ, var);
 
 
+  // free lat/lon
+  if(fdx==WEIGHT_FILL_MISS)
+  {
+    cast_nctype_void(var_lat->type,&var_lat->val);
+    cast_nctype_void(var_lon->type,&var_lon->val);
+    var_lat=nco_var_free(var_lat);
+    var_lon=nco_var_free(var_lon);
+  }
+
+
+
   return var;
 
 }
@@ -963,7 +1007,7 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 
 
 /* simple fill function for replacing _FillValue with average of nearest neighbour(s) */
-int utl_cls::beta_fill(var_sct* var, void* msk_vp){
+int utl_cls::simple_fill(var_sct* var, void* msk_vp){
 
   // we now have a 2 D var assume [lat, lon]
   int idx;
@@ -976,7 +1020,6 @@ int utl_cls::beta_fill(var_sct* var, void* msk_vp){
   int lon_sz;
   size_t slb_sz;
   double dbl_mss_val;
-  double sum=0.0;
   double **msk_dp=NULL_CEWI;
   double **dp=NULL_CEWI;
 
@@ -1008,6 +1051,7 @@ int utl_cls::beta_fill(var_sct* var, void* msk_vp){
 
 
   while( imax_loop-->0 && num_miss>0) {
+    double sum=0.0;
     num_miss=0;
     // set msk to latest values
     memcpy((char*)msk_vp, (char*)var->val.dp, lat_sz * lon_sz * slb_sz);
@@ -1060,6 +1104,125 @@ int utl_cls::beta_fill(var_sct* var, void* msk_vp){
 }
 
 
+/* simple fill function for replacing _FillValue with average of nearest neighbour(s) */
+int utl_cls::weight_fill(var_sct* var, void* msk_vp, double *lat, double *lon){
+
+  // we now have a 2 D var assume [lat, lon]
+  int idx;
+  int jdx;
+  int nbr_dim=var->nbr_dim;
+  int imax_loop=1000;
+  int num_miss;
+  int cnt=0;
+  int lat_sz;
+  int lon_sz;
+  size_t slb_sz;
+  double dbl_mss_val;
+  double **msk_dp=NULL_CEWI;
+  double **dp=NULL_CEWI;
+
+  slb_sz=nco_typ_lng(var->type);
+  lat_sz=var->dim[nbr_dim-2]->cnt;
+  lon_sz=var->dim[nbr_dim-1]->cnt;
+
+
+  // make indexing easier
+  msk_dp=(double**)nco_malloc( sizeof(double*) * lat_sz);
+  dp=(double**)nco_malloc( sizeof(double*) * lat_sz);
+
+  cast_void_nctype(var->type, &var->val);
+  if(var->has_mss_val)
+    dbl_mss_val=*var->mss_val.dp;
+  else
+    dbl_mss_val=NC_FILL_DOUBLE;
+
+
+  // make indexing easier
+  for(idx=0;idx<lat_sz;idx++) {
+    dp[idx] = &(var->val.dp[lon_sz * idx]);
+    msk_dp[idx]= (double*)msk_vp+ptrdiff_t(lon_sz*idx);
+
+  }
+
+  // set num miss to get loop going
+  num_miss=999;
+
+
+  while( imax_loop-->0 && num_miss>0) {
+
+    num_miss = 0;
+    // set msk to latest values
+    memcpy((char *) msk_vp, (char *) var->val.dp, lat_sz * lon_sz * slb_sz);
+
+    // move from bottom to top (lat)  and left to right (lon)
+    for (idx = 0; idx < lat_sz; idx++)
+      for (jdx = 0; jdx < lon_sz; jdx++)
+        if (msk_dp[idx][jdx] == dbl_mss_val) {
+          // sum numerator
+          double sum_nd = 0.0;
+          //  sum denominator
+          double sum_dd = 0.0;
+          // distance from target point - to neighbour
+          double dist = 0.0;
+          int cnt = 0;
+
+          for (int xdx = idx - 1; xdx <= idx + 1; xdx++) {
+            if (xdx < 0 || xdx >= lat_sz) continue;
+
+            for (int ydx = jdx - 1; ydx <= jdx + 1; ydx++) {
+              if (ydx < 0 || ydx >= lon_sz || xdx == idx && ydx == jdx) continue;
+
+              if (msk_dp[xdx][ydx] != dbl_mss_val) {
+                dist = point2point(lat[idx], lon[jdx], lat[xdx], lon[ydx]);
+                sum_nd += msk_dp[xdx][ydx] / dist;
+                sum_dd += 1.0 / dist;
+                cnt++;
+              }
+
+              if (cnt > 0)
+                dp[idx][jdx] = sum_nd / sum_dd;
+              else
+                num_miss++;
+            }
+          }
+        }
+  }
+
+    // get number of missing elements
+    // printf("beta_fill: inum=%d  num_miss=%ld\n", imax_loop, num_miss);
+
+
+
+
+  cast_nctype_void(var->type,&var->val);
+
+  dp=(double**)nco_free(dp);
+  msk_dp=(double**)nco_free(dp);
+
+  return NCO_NOERR;
+
+}
+
+
+// distance between two points on a great circle
+double utl_cls::point2point(double lat1,double lon1,double lat2, double lon2) {
+
+double dist;
+double alpha;
+
+
+  if(lon1==lon2)
+    return fabs(lat2-lat1);
+  else if(lat1==lat2)
+    alpha=  pow(sin(lat1),2.0) +  pow( cos(lat1),2.0) * cos(lon2-lon1);
+  else
+    alpha=sin(lat1)*sin(lat2)+cos(lat1)*cos(lat2)*cos(lon2-lon1);
+
+  dist=fabs(acos(alpha));
+
+  return dist;
+
+}
 
 
 
