@@ -6980,52 +6980,57 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !flg_grd_2D */
   } /* !area_id */
 
-  /* Input mask can be any type and output mask will always be NC_INT */
-  if(msk_id == NC_MIN_INT){
     /* ERWG will fail unless grid file has mask variable
-       Use nul-mask (all points included) whenever true mask variable not supplied/detected 
-       Define nul-mask */
-    for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
-  }else{
+       Use nul-mask (all points included) whenever input mask variable not supplied/detected 
+       Define nul-mask true everywhere and overwrite with false below
+       Input mask can be any type and output mask will always be NC_INT */
+  for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
+  if(msk_id != NC_MIN_INT){
     /* Change missing-value-masked points to 0 integer mask for SCRIP grids (SCRIP has no missing value convention)
+       Input mask can be any type and output mask will always be NC_INT
        Applications: 
+       ALM/CLM mask (landmask) is NC_FLOAT and defines but does not use NC_FLOAT missing value
        CICE mask is NC_FLOAT and uses NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value */
-    switch(msk_typ){
+  switch(msk_typ){
     case NC_FLOAT:
       if(has_mss_val_msk){
 	const float mss_val_flt=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
-	  if(msk_unn.fp[idx] == mss_val_flt) msk[idx]=0; else msk[idx]=msk_unn.fp[idx];
+	  if(msk_unn.fp[idx] == mss_val_flt || msk_unn.fp[idx] == 0.0f) msk[idx]=0;
       }else{
-	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.fp[idx];
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.fp[idx] == 0.0f) msk[idx]=0;
       } /* !mss_val */
       break;
     case NC_DOUBLE:
       if(has_mss_val_msk){
 	const double mss_val_dbl=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
-	  if(msk_unn.dp[idx] == mss_val_dbl) msk[idx]=0; else msk[idx]=msk_unn.dp[idx];
+	  if(msk_unn.dp[idx] == mss_val_dbl || msk_unn.dp[idx] == 0.0) msk[idx]=0;
       }else{
-	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.dp[idx];
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.dp[idx] == 0.0) msk[idx]=0;
       } /* !mss_val */
       break;
     case NC_INT:
       if(has_mss_val_msk){
 	const int mss_val_int=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
-	  if(msk_unn.ip[idx] == mss_val_int) msk[idx]=0; else msk[idx]=msk_unn.ip[idx];
+	  if(msk_unn.ip[idx] == mss_val_int || msk_unn.ip[idx] == 0) msk[idx]=0;
       }else{
-	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.ip[idx];
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.ip[idx] == 0) msk[idx]=0;
       } /* !mss_val */
       break;
     case NC_SHORT:
       if(has_mss_val_msk){
 	const short mss_val_sht=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
-	  if(msk_unn.sp[idx] == mss_val_sht) msk[idx]=0; else msk[idx]=msk_unn.sp[idx];
+	  if(msk_unn.sp[idx] == mss_val_sht || msk_unn.sp[idx] == 0s) msk[idx]=0;
       }else{
-	for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=msk_unn.sp[idx];
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.sp[idx] == 0s) msk[idx]=0;
 	/* 20160111: AMSR kludge fxm */
 	//	for(idx=0;idx<grd_sz_nbr;idx++) if(msk[idx] == 1) msk[idx]=0;
       } /* !mss_val */

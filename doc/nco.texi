@@ -122,7 +122,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.7-alpha04
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 1 May 2017
+@set update-date 3 May 2017
 @set update-month May 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6823,6 +6823,16 @@ not conservative.
 Both algorithms produce identical answers when no missing data maps to 
 the destination gridcell.
 
+The renormalized algorithm is useful because it solves some problems,
+like producing physically unrealistic temperature values, at the expense
+of incurring others, like non-conservation.
+Many land and ocean modelers eschew unrealistic gridpoint values, and
+conservative regridding often produces ``weird'' values along coastlines  
+or missing data gaps where state variables are regridded to/from small
+fractions of a gridcell.
+Renormalization ensures the output values are physically consistent,
+although the integral of their value times area is not conservative.
+
 @cindex @var{wgt_thr}
 By default, @acronym{NCO} implements the ``conservative'' algorithm
 because it has useful properties, is simpler to understand, and requires
@@ -6865,9 +6875,9 @@ algorithm when performing conservative regridding, and the
 bilinear interpolation or nearest-neighbor.
 Another consideration is whether the fields being regridded are fluxes
 or state variables. 
-For example, temperature (unlike heat) or concentrations (amount per
+For example, temperature (unlike heat) and concentrations (amount per
 unit volume) are not physically conserved quantities under
-areal-regridding so it often makes sense to interpolate them in a
+areal-regridding so it often makes sense to interpolate them in a 
 non-conservative fashion, to preserve their fine-scale structure. 
 Few researchers can digest the unphysical values of temperature that the  
 ``conservative'' option will produce in regions rife with missing

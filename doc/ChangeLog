@@ -1,3 +1,7 @@
+2017-05-03  Charlie Zender  <zender@uci.edu>
+
+	* Re-formulate mask conversion in nco_grd_nfr() so output mask is 1 wherever input mask is non-zero and non-missing, and is otherwise 0
+
 2017-05-02  Charlie Zender  <zender@uci.edu>
 
 	* Add ALM/CLM unstructured grid ("almu") stubs to ncremap
