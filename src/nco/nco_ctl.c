@@ -863,7 +863,7 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   int len;
   if(strrchr(nm_out_tmp,'\\')) nm_out_tmp=strrchr(nm_out_tmp,'\\')+1;
   char *sfx=strstr(nm_out_tmp,".exe");
-  if(!sfx && !strcmp(sfx,".exe")){
+  if(sfx && !strcmp(sfx,".exe")){
     len=strlen(nm_out_tmp); /* cut any '.exe' from name */ 
     nm_out_tmp[len-4]='\0';   
   } /* endif */
