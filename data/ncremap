@@ -204,9 +204,9 @@ esac # !HOSTNAME
 # Omit cell_measures:
 # ncremap --no_cll_msr --var=FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 # ALMU (201705):
-# ncremap --var=DSTDEP,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison.clm2.h0.0001-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
-# ncremap -a conserve -E '--user_areas --ignore_unmapped' --var=DSTDEP,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison.clm2.h0.0001-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
-# ncremap --vrb=3 -P almu --var=DSTDEP,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison.clm2.h0.0001-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
+# ncremap --var=DSTDEP,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/almu_off.nc
+# ncremap -a conserve -E '--user_areas --ignore_unmapped' --var=DSTDEP,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
+# ncremap --vrb=3 -P almu --var=DSTDEP,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/almu.nc
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr > ~/ncremap.out 2>&1 &
 
@@ -1157,21 +1157,43 @@ fi # !map_usr
 
 if [ "${pdq_typ}" = 'almu' ]; then 
     fl_idx=0
-    grd_src_almu="${HOME}/almu.nc"
-    cmd_almu[${fl_idx}]="ncks -O -A -C ${nco_opt} -v ${lnd_frc} ${fl_in[${fl_idx}]} ${grd_src_almu}"
+    grd_src_almu="${HOME}/grd_src_almu.nc"
+    # Duplicate source grid then modify that (original source grid will be untouched)
+    cmd_cp[${fl_idx}]="/bin/cp -f ${grd_src} ${grd_src_almu}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_cp[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_cp[${fl_idx}]}
+	if [ $? -ne 0 ] || [ ! -f ${grd_src_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to duplicate source grid to ALMU SCRIP file. Debug this:\n${cmd_cp[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+    # Append land fraction from data-file to grid-file
+    cmd_almu[${fl_idx}]="ncks -A -C -v ${lnd_frc} ${fl_in[${fl_idx}]} ${grd_src_almu}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_almu[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_almu[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${almu_fl} ]; then
-	    printf "${spt_nm}: ERROR Failed to extract grid from ALMU SCRIP file. Debug this:\n${cmd_almu[${fl_idx}]}\n"
+	if [ $? -ne 0 ] || [ ! -f ${grd_src_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to add land fraction from ALMU data to ALMU SCRIP file. Debug this:\n${cmd_almu[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
-    # fxm: -O set twice!
-    cmd_almu[1]="ncap2 ${nco_opt} -v -s 'where(${lnd_frc} > 1.0) ${lnd_frc}=0.0;grid_area*=${lnd_frc}' ${grd_src_almu} ${grd_src_almu}"
-    eval ${cmd_almu[1]}
+    # Compute active grid area
+    cmd_where[${fl_idx}]="ncap2 -O -s 'where(${lnd_frc} > 1.0) ${lnd_frc}=0.0;grid_area*=${lnd_frc}' ${grd_src_almu} ${grd_src_almu}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_where[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_where[${fl_idx}]}
+	if [ $? -ne 0 ] || [ ! -f ${grd_src_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to add land fraction from ALMU data to ALMU SCRIP file. Debug this:\n${cmd_where[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
     # Ensure map-generation uses modified grid file
     grd_src=${grd_src_almu}
 fi # !almu
