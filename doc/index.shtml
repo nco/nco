@@ -634,6 +634,8 @@ extensive hashing?;
 netCDF4 compound types?;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
 <li><b>NCO 4.6.7</b>: (<i>In Progress, features in-progress or complete include</i>) 
+Multi-argument (MTA) flag parsing;
+<tt>ncap2</tt> in-fill functions simple_fill_miss() weighted_fill_miss();
 <tt>ncremap</tt> 2D UGRID output;
 <tt>ncremap</tt> msk_src/dst conversion;
 <tt>ncremap</tt> src/dst_regional hints to ERWG;</li>
