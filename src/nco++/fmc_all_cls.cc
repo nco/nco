@@ -945,7 +945,7 @@ var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
       lon_dp = var_lon->val.dp;
     }
     else
-      err_prn(sfnm,"to get the lat/lon coord-variables this function assumes that they are are named after the final two dims in your variable argument.");
+      err_prn(sfnm,"to get the lat/lon coord-variables this function assumes that they are named after the final two dims in your variable argument.");
 
 
   }
@@ -1104,7 +1104,7 @@ int utl_cls::simple_fill(var_sct* var, void* msk_vp){
 }
 
 
-/* simple fill function for replacing _FillValue with average of nearest neighbour(s) */
+/* fill function uses weighted value of eight nearest neighbours */
 int utl_cls::weight_fill(var_sct* var, void* msk_vp, double *lat, double *lon){
 
   // we now have a 2 D var assume [lat, lon]
@@ -1174,8 +1174,8 @@ int utl_cls::weight_fill(var_sct* var, void* msk_vp, double *lat, double *lon){
 
               if (msk_dp[xdx][ydx] != dbl_mss_val) {
                 dist = point2point(lat[idx], lon[jdx], lat[xdx], lon[ydx]);
-                sum_nd += msk_dp[xdx][ydx] / dist;
-                sum_dd += 1.0 / dist;
+                sum_nd += msk_dp[xdx][ydx] / dist /dist;
+                sum_dd += 1.0 / dist / dist ;
                 cnt++;
               }
 
