@@ -1838,8 +1838,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
-  const int var_xcl_lst_nbr=44; /* [nbr] Number of objects on exclusion list */
   /* Exception list source:
+     ALM/CLM: landmask
      AMSR: Latitude, Longitude
      CAM, CERES, CMIP5: lat, lon
      CAM, CMIP5: gw, lat_bnds, lon_bnds
@@ -1860,7 +1860,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      UV-CDAT regridder: bounds_lat, bounds_lon
      Unknown: XLAT_M, XLONG_M
      WRF: XLAT, XLONG */
-  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/CO_Latitude","/slat","/S1_Latitude","/TLAT","/ULAT","/XLAT","/XLAT_M","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/slon","/S1_Longitude","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
+  const int var_xcl_lst_nbr=45; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/landmask","/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/CO_Latitude","/slat","/S1_Latitude","/TLAT","/ULAT","/XLAT","/XLAT_M","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/slon","/S1_Longitude","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */

@@ -723,6 +723,7 @@ fi # !airs
 if [ "${pdq_typ}" = 'almu' ]; then 
     alg_typ='conserve'
     alg_opt='conserve'
+    esmf_opt='--user_areas --ignore_unmapped'
 #	rgr_opt="${rgr_opt} --rnr=0.0"
 fi # !almu
 if [ "${pdq_typ}" = 'hirdls' ]; then 
@@ -1244,6 +1245,17 @@ if [ "${pdq_typ}" = 'almu' ]; then
 	eval ${cmd_lnd_rmp[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${lnd_frc_out_almu} ]; then
 	    printf "${spt_nm}: ERROR Failed to regrid land fraction. Debug this:\n${cmd_lnd_rmp[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'landarea=landfrac*area;landmask=int(landarea)*0;where(landarea > 0) landmask=1; elsewhere landmask=0;' ${lnd_frc_out_almu} ${lnd_frc_out_almu}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_lnd_msk[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_lnd_msk[${fl_idx}]}
+	if [ $? -ne 0 ] || [ ! -f ${lnd_frc_out_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to derive mask from regridded land fraction. Debug this:\n${cmd_lnd_msk[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
