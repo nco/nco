@@ -2965,10 +2965,10 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
 
 # ncks #122
-# ncks -O --rgr grid=~/foo_grid.nc#latlon=64,128#--no_area#lat_typ=gss#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+# ncks -O -h --rgr grid=~/foo_grid.nc#latlon=64,128#--no_area#lat_typ=gss#lon_typ=Grn_ctr --gaa foo5,foo6=bar4 ~/nco/data/in.nc ~/foo.nc
 # ncks -M ~/foo.nc | grep foo6 | cut -d ' ' -f 11
-    $dsc_sng="Multi-argument parsing test when has a flag in it";
-    $tst_cmd[0]="ncks -O --rgr grid=~/foo_grid.nc#latlon=64,128#--no_area#lat_typ=gss#lon_typ=Grn_ctr $in_pth_arg in.nc %tmp_fl_00%";
+    $dsc_sng="Multi-argument parsing test with flags";
+    $tst_cmd[0]="ncks -O -h --rgr grid=~/foo_grid.nc#latlon=64,128#--no_area#lat_typ=gss#lon_typ=Grn_ctr --gaa foo5,foo6=bar4 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -M %tmp_fl_00% | grep foo6 | cut -d ' ' -f 11";
     $tst_cmd[2]="bar4";
     $tst_cmd[3]="SS_OK";   

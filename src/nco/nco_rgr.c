@@ -7024,13 +7024,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !mss_val */
       break;
     case NC_SHORT:
+      /* http://stackoverflow.com/questions/208433/how-do-i-write-a-short-literal-in-c */
       if(has_mss_val_msk){
 	const short mss_val_sht=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
-	  if(msk_unn.sp[idx] == mss_val_sht || msk_unn.sp[idx] == 0s) msk[idx]=0;
+	  if(msk_unn.sp[idx] == mss_val_sht || msk_unn.sp[idx] == ((short)0)) msk[idx]=0;
       }else{
 	for(idx=0;idx<grd_sz_nbr;idx++)
-	  if(msk_unn.sp[idx] == 0s) msk[idx]=0;
+	  if(msk_unn.sp[idx] == ((short)0)) msk[idx]=0;
 	/* 20160111: AMSR kludge fxm */
 	//	for(idx=0;idx<grd_sz_nbr;idx++) if(msk[idx] == 1) msk[idx]=0;
       } /* !mss_val */

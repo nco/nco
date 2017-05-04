@@ -720,6 +720,11 @@ fi # !pdq_typ
 if [ "${pdq_typ}" = 'airs' ]; then 
     pdq_opt='-a StdPressureLev,GeoTrack,GeoXTrack'
 fi # !airs
+if [ "${pdq_typ}" = 'almu' ]; then 
+    alg_typ='conserve'
+    alg_opt='conserve'
+#	rgr_opt="${rgr_opt} --rnr=0.0"
+fi # !almu
 if [ "${pdq_typ}" = 'hirdls' ]; then 
     pdq_opt='-a Pressure,Latitude,lon'
 fi # !hirdls
@@ -727,8 +732,8 @@ if [ "${pdq_typ}" = 'mls' ]; then
     pdq_opt='-a CO_Pressure,CO_Latitude,lon'
 fi # !mls
 if [ "${pdq_typ}" = 'mpas' ]; then 
-#    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean only
-#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # Ice only
+#    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean
+#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # Ice
     pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
     rgr_opt="${rgr_opt} --rnr=0.0"
 fi # !mpas
@@ -1072,8 +1077,6 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     fi # !mpas
     if [ "${pdq_typ}" = 'almu' ]; then 
 	printf "Input assumed to be ALM/CLM-like unstructured grid data: will multiply source grid areas by ${lnd_frc} and regrid conservatively\n"
-	alg_typ='conserve'
-	alg_opt='conserve'
 	if [ ${fl_nbr} -eq 0 ] || [ -z "${grd_src}" ] ; then
 	    printf "${spt_nm}: ERROR ALM/CLM handling requires specification of both source grid in SCRIP format (for the gridcell areas of the unstructured grid) and at least one data file (for the land fractions)\n"
 	    echo "${spt_nm}: HINT: Supply a source grid with \"-s grd_src\" and an input data file"
@@ -1157,45 +1160,122 @@ fi # !map_usr
 
 if [ "${pdq_typ}" = 'almu' ]; then 
     fl_idx=0
+    lnd_frc_in_almu="${HOME}/lnd_frc_in_almu.nc"
+    lnd_frc_out_almu="${HOME}/lnd_frc_out_almu.nc"
     grd_src_almu="${HOME}/grd_src_almu.nc"
+    grd_dst_almu="${HOME}/grd_dst_almu.nc"
+    # Duplicate destination grid then modify that (ensures original destination grid is untouched)
+    cmd_cp_dst[${fl_idx}]="/bin/cp -f ${grd_dst} ${grd_dst_almu}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_cp_dst[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_cp_dst[${fl_idx}]}
+	if [ $? -ne 0 ] || [ ! -f ${grd_dst_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to duplicate destination grid to ALMU SCRIP file. Debug this:\n${cmd_cp_dst[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
     # Duplicate source grid then modify that (original source grid will be untouched)
-    cmd_cp[${fl_idx}]="/bin/cp -f ${grd_src} ${grd_src_almu}"
+    cmd_cp_src[${fl_idx}]="/bin/cp -f ${grd_src} ${grd_src_almu}"
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_cp[${fl_idx}]}
+	echo ${cmd_cp_src[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_cp[${fl_idx}]}
+	eval ${cmd_cp_src[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${grd_src_almu} ]; then
-	    printf "${spt_nm}: ERROR Failed to duplicate source grid to ALMU SCRIP file. Debug this:\n${cmd_cp[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to duplicate source grid to ALMU SCRIP file. Debug this:\n${cmd_cp_src[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
-    # Append land fraction from data-file to grid-file
-    cmd_almu[${fl_idx}]="ncks -A -C -v ${lnd_frc} ${fl_in[${fl_idx}]} ${grd_src_almu}"
+    # Append land fraction from data-file to source grid-file (NB: Data-file must be 1D)
+    cmd_lnd_src[${fl_idx}]="ncks -A -C -v ${lnd_frc} ${fl_in[${fl_idx}]} ${grd_src_almu}"
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_almu[${fl_idx}]}
+	echo ${cmd_lnd_src[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_almu[${fl_idx}]}
+	eval ${cmd_lnd_src[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${grd_src_almu} ]; then
-	    printf "${spt_nm}: ERROR Failed to add land fraction from ALMU data to ALMU SCRIP file. Debug this:\n${cmd_almu[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to append land fraction from ALMU data to ALMU source SCRIP file. Debug this:\n${cmd_lnd_src[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
-    # Compute active grid area
-    cmd_where[${fl_idx}]="ncap2 -O -s 'where(${lnd_frc} > 1.0) ${lnd_frc}=0.0;grid_area*=${lnd_frc}' ${grd_src_almu} ${grd_src_almu}"
+    # 1. Set missing values to 0 land fraction. (NB: where() evaluates _FillValue as false)
+    # 2. Set 0 land fraction to 0 imask
+    # 3. Compute active grid area
+    cmd_wheresrc[${fl_idx}]="ncap2 -O -s 'where(${lnd_frc} >= -73.0f) ${lnd_frc}=${lnd_frc}+0.0f;elsewhere ${lnd_frc}=0.0f;where(${lnd_frc} == 0.0f) grid_imask=0;grid_area*=${lnd_frc}' ${grd_src_almu} ${grd_src_almu}"
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_where[${fl_idx}]}
+	echo ${cmd_wheresrc[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_where[${fl_idx}]}
+	eval ${cmd_wheresrc[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${grd_src_almu} ]; then
-	    printf "${spt_nm}: ERROR Failed to add land fraction from ALMU data to ALMU SCRIP file. Debug this:\n${cmd_where[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to derive fraction, mask, and area in ALMU source SCRIP file. Debug this:\n${cmd_wheresrc[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
-    # Ensure map-generation uses modified grid file
+    cmd_lnd_in[${fl_idx}]="ncks -O -v ${lnd_frc} ${grd_src_almu} ${lnd_frc_in_almu}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_lnd_in[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_lnd_in[${fl_idx}]}
+	if [ $? -ne 0 ] || [ ! -f ${lnd_frc_in_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to extract land fraction from ALMU SCRIP file. Debug this:\n${cmd_lnd_in[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+    cmd_lnd_att[${fl_idx}]="ncatted -O -a _FillValue,${lnd_frc},d,, -a missing_value,${lnd_frc},d,, ${lnd_frc_in_almu}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_lnd_att[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_lnd_att[${fl_idx}]}
+	if [ $? -ne 0 ] || [ ! -f ${lnd_frc_in_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to eliminate attributes from land fraction file. Debug this:\n${cmd_lnd_att[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+    cmd_lnd_rmp[${fl_idx}]="ncremap -a conserve -v ${lnd_frc} -i ${lnd_frc_in_almu} -s ${grd_src} -g ${grd_dst} -o ${lnd_frc_out_almu}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_lnd_rmp[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_lnd_rmp[${fl_idx}]}
+	if [ $? -ne 0 ] || [ ! -f ${lnd_frc_out_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to regrid land fraction. Debug this:\n${cmd_lnd_rmp[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+    # Append regridded land fraction to destination grid-file
+    cmd_lnd_dst[${fl_idx}]="ncks -A -C -v ${lnd_frc} ${lnd_frc_out_almu} ${grd_dst_almu}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_lnd_dst[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_lnd_dst[${fl_idx}]}
+	if [ $? -ne 0 ] || [ ! -f ${grd_dst_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to append regridded land fraction to ALMU destination SCRIP file. Debug this:\n${cmd_lnd_dst[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+    # 1. Set 0 land fraction to 0 imask
+    # 2. Compute active grid area
+    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${lnd_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${lnd_frc}' ${grd_dst_almu} ${grd_dst_almu}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_wheredst[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_wheredst[${fl_idx}]}
+	if [ $? -ne 0 ] || [ ! -f ${grd_dst_almu} ]; then
+	    printf "${spt_nm}: ERROR Failed to derive mask and area in ALMU destination SCRIP file. Debug this:\n${cmd_wheredst[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+
+    # Ensure map-generation uses modified grid files
     grd_src=${grd_src_almu}
+    grd_dst=${grd_dst_almu}
 fi # !almu
 
 # If user provides source gridfile, assume it applies to every input file

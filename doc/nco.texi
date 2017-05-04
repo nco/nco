@@ -13384,7 +13384,7 @@ Variables that are frequently accessed within @code{for} or @code{where}
 clauses provide the greatest opportunities for optimization. 
 To declare and define a @acronym{RAM} variable simply prefix the variable name
 with an asterisk (@code{*}) when the variable is declared/initialized.
-To delete a @acronym{RAM} variables (and recover their memory) use the
+To delete @acronym{RAM} variables (and recover their memory) use the
 @code{ram_delete()} method. 
 To write a @acronym{RAM} variable to disk (like a regular variable) use
 @code{ram_write()}. 
