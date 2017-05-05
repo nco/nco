@@ -1,3 +1,18 @@
+2017-05-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.7-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha05 final changes';git push
+	git tag -a 4.6.7-alpha05 -m 'ncremap ALM/CLM unstructured grids (almu option) works';git push --tags
+
+	* Delete missing values with ncap2, eliminate corresponding ncatted step for almu in ncremap
+
+2017-05-04  Charlie Zender  <zender@uci.edu>
+
+	* Revert and allow landmask to be regridded since errors less than not having it at all:
+	T42 CLM with almu has global-mean errors of ~0.005 W/m2 and ~0.01 K (why not better? float landfrac may propagate errors)
+	T42 CLM without almu but with almu landmask has global-mean errors of ~2 W/m2 and ~2 K
+	T42 CLM without almu and with straight regridder land mask has global-mean errors of ~1.5 W/m2 and ~0 K
+
 2017-05-03  Charlie Zender  <zender@uci.edu>
 
 	* Add landmask to regridder exclusion list to keep ALM/CLM sane (users can re-derive it from landfrac)

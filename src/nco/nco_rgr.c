@@ -1835,11 +1835,11 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !err */
   } /* !2D */
     
-  /* Do not extract grid variables (that are also extensive variables) like lon, lat, and area
+  /* Do not extract grid variables (that are also extensive variables) like lon, lat, area, and masks
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
   /* Exception list source:
-     ALM/CLM: landmask
+     ALM/CLM: landmask (20170504: Debatable, including erroneous mask may be better than completely excluding an expected mask) (20170504: must keep landfrac since regridded by ncremap for almu option)
      AMSR: Latitude, Longitude
      CAM, CERES, CMIP5: lat, lon
      CAM, CMIP5: gw, lat_bnds, lon_bnds
@@ -1860,8 +1860,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      UV-CDAT regridder: bounds_lat, bounds_lon
      Unknown: XLAT_M, XLONG_M
      WRF: XLAT, XLONG */
-  const int var_xcl_lst_nbr=45; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/landmask","/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/CO_Latitude","/slat","/S1_Latitude","/TLAT","/ULAT","/XLAT","/XLAT_M","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/slon","/S1_Longitude","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
+  const int var_xcl_lst_nbr=44; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/CO_Latitude","/slat","/S1_Latitude","/TLAT","/ULAT","/XLAT","/XLAT_M","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/slon","/S1_Longitude","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -5913,6 +5913,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* 1D grids without their own boundaries are at the mercy of the weight generator */
     if(dmn_id_bnd == NC_MIN_INT){
       (void)fprintf(stdout,"%s: WARNING %s reports an unstructured grid without spatial boundary information. NCO can copy but not infer spatial boundaries from unstructured grids. Thus NCO will not write spatial bounds to the gridfile inferred from this input file. Instead, the weight generator that ingests this gridfile must generate weights for gridcells with unknown spatial extent. This is feasible for grids and mappings where weights masquerade as areas and are determined by underlying grid and interpolation type (e.g., bilinear remapping of spectral element grid). Unfortunately, the ESMF_RegridWeightGen (ERWG) program requires cell interfaces in both grid files, so ERWG will break on this gridfile. Other weight generators such as TempestRemap may be more successful with this SCRIP file.\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: HINT Re-run the regridder, this time adding the \"-s src_grd\" option to specify the source grid file in SCRIP format. That SCRIP file will have the spatial bounds information required by the ESMF_RegridWeightGen (ERWG) program, so that the regridder will circumvent inferring the underlying grid through its black but fragile magic.\n",nco_prg_nm_get());
       flg_wrt_crn=False;
       /* Input could actually be from grid with no polygonal definition, e.g., CAM-SE 
 	 Corner number is non-deterministic since, e.g., CAM-SE dual grid can be fit to quadrilaterals, pentagons, chevrons, etc.

@@ -370,6 +370,7 @@ main(int argc,char **argv)
     {"ncml_no_location",no_argument,0,0}, /* [flg] Omit XML location tag */
     /* Long options with argument, no short option counterpart */
     {"baa",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
+    {"bit_alg",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
@@ -679,7 +680,7 @@ main(int argc,char **argv)
 	rgr_var=(char *)strdup(optarg);
       } /* !rgr_var */
       if(!strcmp(opt_crr,"secret") || !strcmp(opt_crr,"scr") || !strcmp(opt_crr,"shh")){
-        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
+        (void)fprintf(stdout,"Hidden/unsupported NCO options:\nBit-Adjustment Alg.\t--baa, --bit_alg\nCompiler used\t\t--cmp, --compiler\nCopyright\t\t--cpy, --copyright, --license\nHidden functions\t--scr, --ssh, --secret\nLibrary used\t\t--lbr, --library\nMemory clean\t\t--mmr_cln, --cln, --clean\nMemory dirty\t\t--mmr_drt, --drt, --dirty\nMPI implementation\t--mpi_implementation\nNo-clobber files\t--no_clb, --no-clobber\nPseudonym\t\t--pseudonym, -Y (ncra only)\nSpinlock\t\t--spinlock\nStreams\t\t\t--srm\nSysconf\t\t\t--sysconf\nTest UDUnits\t\t--tst_udunits,'units_in','units_out','cln_sng'? \nVersion\t\t\t--vrs, --version\n\n");
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */

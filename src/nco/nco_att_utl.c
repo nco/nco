@@ -287,6 +287,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     mss_val_crr.vp=(void *)nco_malloc(att_sz*nco_typ_lng(var->type));
     mss_val_new.vp=(void *)nco_malloc(aed.sz*nco_typ_lng(var->type));
 
+    /* 20170505: Does nco_val_cnf_typ() work as expected on NaNs? */
     (void)nco_val_cnf_typ(var->type,var->mss_val,var->type,mss_val_crr); 
     (void)nco_val_cnf_typ(aed.type,aed.val,var->type,mss_val_new);
 

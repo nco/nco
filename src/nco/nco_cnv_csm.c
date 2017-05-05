@@ -414,13 +414,13 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     (void)strcat(aed.val.cp,": ");
     (void)strcat(aed.val.cp,att_op_sng);
 
-    /* 20150625: Older versions of CAM, e.g., CAM3, used "cell_method" instead of "cell_methods" 
+    /* 20150625: Older versions of CAM, e.g., CAM3 and CLM3, used "cell_method" instead of "cell_methods" 
        If old attribute is not deleted then the output file will contain both attributes
        Does variable already have "cell_method" attribute? */
     strcpy(aed.att_nm,"cell_method");
     rcd=nco_inq_att_flg(grp_out_id,var_out_id,aed.att_nm,&att_typ,&att_lng);
     if(rcd == NC_NOERR){
-      if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING: Variable \"%s\" uses the non-standard attribute name \"cell_method\" instead of \"cell_methods\", the correct attribute name. The CAM3 model (and others?) have this problem. Expect \"double attributes\" in output. This message is printed only once per invocation, although the problem likely occurs in multiple variables.\n",nco_prg_nm_get(),aed.var_nm);
+      if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING: Variable \"%s\" uses the non-standard attribute name \"cell_method\" instead of \"cell_methods\", the correct attribute name. The CAM3 and CLM3 models (and others?) have this problem. Expect \"double attributes\" in output. This message is printed only once per invocation, although the problem likely occurs in multiple variables.\n",nco_prg_nm_get(),aed.var_nm);
       FIRST_WARNING=False;
     } /* endif attribute exists */
 
