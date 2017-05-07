@@ -214,6 +214,8 @@ esac # !HOSTNAME
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Daily pipe:
 # cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# ALM
+# ncclimo -d 1 -v TBOT -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ~/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150621.nc
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -853,6 +855,12 @@ if [ -n "${rgr_map}" ]; then
 	echo "${spt_nm}: HINT Supply the full path-name for the regridding map"
 	exit 1
     fi # ! -f
+    if [ "${mdl_nm}" = 'clm2' ]; then
+	printf "${spt_nm}: ERROR ${spt_nm} refuses to regrid ALM/CLM output because doing so correctly requires additional steps that can currently only be performed by invoking ncremap with extra arguments.\n"
+	printf "${spt_nm}: HINT Use ${spt_nm} to generate climatology/time-series files from ALM/CLM, and then issue a separate ncremap command with the extra information to regrid those files. To regrid ALM/CLM data, ncremap requires specification of the source and destination grid files (with -s grd_src and -g grd_dst, respectively).\n"
+	printf "${spt_nm}: INFO This restriction prevents users from inadvertently generating regridded output that is up to a few percent wrong. Naively regridding ALM/CLM output will generate inaccurate results in all destination gridcells that contain contributions gridcells whose land fraction (landfrac) is less than 1.0 on the source grid. Using ncremap ensures that all coastlines are treated correctly. For more information, contact Charlie.\n"
+	exit 1
+    fi # !mdl_nm
     rgr_opt="${rgr_opt} --map ${rgr_map}"
 fi # !rgr_map
 if [ -n "${thr_usr}" ]; then 
