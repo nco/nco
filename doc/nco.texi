@@ -8060,7 +8060,7 @@ variables that contain at least one record dimension) must be chunked.
 Also variables that are compressed or use checksums must be chunked.
 Such variables cannot be unchunked.@*  
 Alternate invocation: @code{ncunchunk}@*
-@var{cnk_plc} key values: @samp{uck}, @samp{cnk_uck}, @samp{plc_uck}, @samp{unchunk}@*
+@var{cnk_plc} key values: @samp{uck}, @samp{cnk_uck}, @samp{plc_uck}, @samp{none}, @samp{unchunk}@*
 Mnemonic: @emph{U}n@emph{C}hun@emph{K}@*
 @end table
 @noindent

@@ -1205,7 +1205,7 @@ if [ "${pdq_typ}" = 'almu' ]; then
     # 2. Set (formerly) missing values to 0 land fraction
     # 3. Set 0 land fraction to 0 imask
     # 4. Compute active grid area
-    cmd_wheresrc[${fl_idx}]="ncap2 -O -s '${lnd_frc}=${lnd_frc};ram_delete(${lnd_frc}@missing_value);delete_miss(${lnd_frc});where(${lnd_frc} > 1.0f) ${lnd_frc}=0.0f;where(${lnd_frc} == 0.0f) grid_imask=0;grid_area*=${lnd_frc}' ${grd_src_almu} ${grd_src_almu}"
+    cmd_wheresrc[${fl_idx}]="ncap2 -O -s '${lnd_frc}=${lnd_frc};if(${lnd_frc}@missing_value.exists()) ram_delete(${lnd_frc}@missing_value);delete_miss(${lnd_frc});where(${lnd_frc} > 1.0f) ${lnd_frc}=0.0f;where(${lnd_frc} == 0.0f) grid_imask=0;grid_area*=${lnd_frc}' ${grd_src_almu} ${grd_src_almu}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_wheresrc[${fl_idx}]}
     fi # !dbg
@@ -1241,7 +1241,7 @@ if [ "${pdq_typ}" = 'almu' ]; then
 	fi # !err
     fi # !dbg
     # Re-derive landmask on new grid so it can be copied into final destination file
-    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'landarea=landfrac*area;landmask=int(landarea)*0;where(landarea > 0) landmask=1; elsewhere landmask=0;' ${lnd_frc_out_almu} ${lnd_frc_out_almu}"
+    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'landarea=landfrac*area;landmask=0*int(landarea);where(landarea > 0) landmask=1; elsewhere landmask=0;landmask@long_name=\"land/ocean mask (0.=ocean and 1.=land)\";if(landmask@cell_measures.exists()) ram_delete(landmask@cell_measures)' ${lnd_frc_out_almu} ${lnd_frc_out_almu}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_msk[${fl_idx}]}
     fi # !dbg

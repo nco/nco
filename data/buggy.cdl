@@ -66,6 +66,22 @@ netcdf buggy {
  nan_scl:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
  nan_scl:_FillValue = nan;
 
+ float nan_val;
+ nan_val:long_name = "Intended for scalar representation of IEEE NaN without missing values";
+ nan_val:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
+ nan_val:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";
+ nan_val:note3 = "20120625 netCDF ncgen on netCDF 4.1.1 on apparently chokes on variable/attribute values of nan";
+ nan_val:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
+ nan_val:note7 = "20170505 For testing without missing values"; 
+
+ float nan_val_dbl;
+ nan_val_dbl:long_name = "Intended for scalar representation of IEEE NaN without missing values";
+ nan_val_dbl:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
+ nan_val_dbl:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";
+ nan_val_dbl:note3 = "20120625 netCDF ncgen on netCDF 4.1.1 on apparently chokes on variable/attribute values of nan";
+ nan_val_dbl:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
+ nan_val_dbl:note7 = "20170505 For testing without missing values"; 
+
  int lat_time(lat,time);
  lat_time:purpose = "record variable where record dimension is not first dimension"; 
  lat_time:bug = "ncgen until 4.3.3-rc2 20140922 fails to parse this because of Jira NCF-315. Some variables with non-leading record dimensions (like lat_tm2, lat_tm3) did work before today in \"standalone\" files like buggy.cdl, but lat_time did not.";
@@ -106,6 +122,8 @@ netcdf buggy {
 
   nan_arr=0,nan;
   nan_scl=nan;
+  nan_val=nan;
+  nan_val_dbl=nan;
 
    // 20130208: netCDF 4.2.1.1- fail as nc_get_var1_uint() returns -60 = NetCDF: Numeric conversion not representable on (valid) input values exceeding INT_MAX=2147483647. This was bug netCDF #PUX-602809 fixed in daily snapshot 20130210.
    uint_var=4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U

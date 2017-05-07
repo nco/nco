@@ -1,8 +1,12 @@
-2017-05-05  Charlie Zender  <zender@uci.edu>
+2017-05-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.7-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha05 final changes';git push
 	git tag -a 4.6.7-alpha05 -m 'ncremap ALM/CLM unstructured grids (almu option) works';git push --tags
+
+	* Add "none" as synonym for unchunk policy
+
+2017-05-05  Charlie Zender  <zender@uci.edu>
 
 	* Delete missing values with ncap2, eliminate corresponding ncatted step for almu in ncremap
 
