@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha05 final changes';git push
 	git tag -a 4.6.7-alpha05 -m 'ncremap ALM/CLM unstructured grids (almu option) works';git push --tags
 
+	* ncremap move ALM files from homedir to intermediate location
+
 	* Add "none" as synonym for unchunk policy
 
 2017-05-05  Charlie Zender  <zender@uci.edu>
