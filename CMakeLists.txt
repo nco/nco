@@ -34,7 +34,7 @@ add_definitions(-DHAVE_NETCDF4_H)
 if (MSVC)
 
   #//////////////////////////
-  #visual studio defines math symbols in math.h, avoid duplicate defintion
+  #visual studio defines math symbols in math.h, avoid duplicate definition
   #//////////////////////////
   
   add_definitions(-D_MATH_DEFINES_DEFINED)
@@ -118,7 +118,11 @@ if (MSVC)
 
 else (MSVC)  
 
-if (CMAKE_VERSION VERSION_LESS "3.1")
+#//////////////////////////
+#compile as C99
+#//////////////////////////
+
+if (CMAKE_VERSION VERSION_LESS "3.1")  
   if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
     set (CMAKE_C_FLAGS "--std=gnu99 ${CMAKE_C_FLAGS}")
   endif ()
@@ -215,8 +219,30 @@ target_link_libraries (ncpdq ${LIB_DEP})
 target_link_libraries (ncra ${LIB_DEP})
 target_link_libraries (ncrename ${LIB_DEP})
 
+#//////////////////////////
+#ncap2 
+#//////////////////////////
 
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/Invoke.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/ncap2.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/ncap2_utl.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/ncap2_att.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/sdo_utl.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/sym_cls.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/fmc_all_cls.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/fmc_gsl_cls.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/prs_cls.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/NcapVar.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/NcapVarVector.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/ncoLexer.cpp)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/ncoParser.cpp)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/ncoTree.cpp)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/Invoke.cc)
+set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/nco_gsl.c)
 
+add_executable(ncap2 ${ncap2_SOURCES})
+target_include_directories(ncap2 PRIVATE src/nco)
+target_link_libraries (ncap2 ${LIB_DEP})
 
 
 
