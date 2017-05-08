@@ -203,6 +203,7 @@ set(nco_SOURCES ${nco_SOURCES} src/nco/nco_var_rth.c src/nco/nco_var_rth.h)
 set(nco_SOURCES ${nco_SOURCES} src/nco/nco_var_scv.c src/nco/nco_var_scv.h)
 set(nco_SOURCES ${nco_SOURCES} src/nco/nco_var_utl.c src/nco/nco_var_utl.h)
 
+add_library(nco STATIC ${nco_SOURCES})
 add_executable(ncks src/nco/ncks.c ${nco_SOURCES})
 add_executable(ncbo src/nco/ncbo.c ${nco_SOURCES})
 add_executable(ncecat src/nco/ncecat.c ${nco_SOURCES})
@@ -267,8 +268,7 @@ set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/nco_gsl.c)
 if(ANTLR_INCLUDE_FOUND)
   add_executable(ncap2 ${ncap2_SOURCES})
   target_include_directories(ncap2 PRIVATE src/nco ${ANTLR_INCLUDE_FOUND})
-  target_link_libraries (ncap2 ${LIB_DEP})
-  
+  target_link_libraries (ncap2 ${LIB_DEP}) 
 endif(ANTLR_INCLUDE_FOUND)
 
 
