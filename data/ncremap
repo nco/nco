@@ -206,7 +206,7 @@ esac # !HOSTNAME
 # ALM (201705):
 # ncremap --vrb=3 -P alm --var=area,DSTDEP,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/alm_rgr.nc
 # ncremap --vrb=3 -P alm --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/t42_rgr.nc
-# ncremap --vrb=3 --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/t42_noalm.nc
+# ncremap --vrb=3 -p nil -P alm -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr > ~/ncremap.out 2>&1 &
 
@@ -1607,10 +1607,11 @@ if [ -n "${par_opt}" ]; then
     fi # !bch_flg
 fi # !par_typ
 
+# fxm: Parallelize post-processing, if any
 if [ "${pdq_typ}" = 'alm' ]; then 
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	# Append full gridcell area, regridded land fraction, and re-derived land mask to regridded file
-	# These replace user-areas area, user-areas land fraction, and empty (excluded) land mask, respectively
+	# These replace user-areas area, user-areas land fraction, and naively regridded (rather than accurately re-derived) land mask, respectively
 	cmd_grd_rpl[${fl_idx}]="ncks -A -C -v area,${lnd_frc},landmask ${lnd_frc_out_alm} ${fl_out[${fl_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_grd_rpl[${fl_idx}]}
@@ -1618,7 +1619,7 @@ if [ "${pdq_typ}" = 'alm' ]; then
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_grd_rpl[${fl_idx}]}
 	    if [ $? -ne 0 ] || [ ! -f ${grd_dst_alm} ]; then
-		printf "${spt_nm}: ERROR Failed to append regridded land fraction to ALM/CLM destination SCRIP file. Debug this:\n${cmd_grd_rpl[${fl_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to replace area, landfrac, and landmask with full gridcell area, regridded land fraction, and re-derived land mask in output ALM/CLM file. Debug this:\n${cmd_grd_rpl[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
