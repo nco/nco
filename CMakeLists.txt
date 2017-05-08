@@ -11,7 +11,8 @@
 #SZIP_LIBRARY
 #CURL_LIBRARY
 
-#Logic for finding header files and library dependencies:
+#///////////////////////////////////////////////////////
+#logic for finding header files and library dependencies:
 #find_path
 #find_library
 #are used (with optional location hints); the first argument contains the found file if found.
@@ -19,10 +20,29 @@
 #if not found the first argument variable is the same as a user option that contains the file location full path.
 #the same message "-- Found file at location" is made
 #but there is not an attempt at this time to validate the user input file (.h or .a)
+#///////////////////////////////////////////////////////
 
 cmake_minimum_required(VERSION 2.8)
 project (nco)
 set(BUILD_SHARED_LIBRARIES OFF)
+
+#//////////////////////////
+#preprocessor definitions
+#//////////////////////////
+
+add_definitions(-DHAVE_NETCDF4_H)
+if (MSVC)
+
+  #//////////////////////////
+  #visual studio defines math symbols in math.h, avoid duplicate defintion
+  #//////////////////////////
+  
+  add_definitions(-D_MATH_DEFINES_DEFINED)
+endif(MSVC)
+
+#//////////////////////////
+#detect dependencies
+#//////////////////////////
 
 find_path(NETCDF_INCLUDE_FOUND netcdf.h HINTS ${NETCDF_INCLUDE} "/usr/include")
 if(NOT NETCDF_INCLUDE_FOUND)
@@ -85,7 +105,11 @@ if (MSVC)
   set(CMAKE_CXX_FLAGS_MINSIZEREL     "/MT /O1 /Ob1 /D NDEBUG")
   set(CMAKE_CXX_FLAGS_RELEASE        "/MT /O2 /Ob2 /D NDEBUG")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MT /Zi /O2 /Ob1 /D NDEBUG")
-  #Compile as C++ Code (/TP)
+  
+  #//////////////////////////
+  #compile as C++ Code (/TP)
+  #//////////////////////////
+  
   set(CMAKE_C_FLAGS_DEBUG "/TP /D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
   set(CMAKE_C_FLAGS_MINSIZEREL     "/TP /MT /O1 /Ob1 /D NDEBUG")
   set(CMAKE_C_FLAGS_RELEASE        "/TP /MT /O2 /Ob2 /D NDEBUG")
@@ -104,11 +128,28 @@ endif ()
 
 endif(MSVC)
 
+#//////////////////////////
+#compiler includes
+#//////////////////////////
+
 include_directories(${NETCDF_INCLUDE_FOUND})
+
+#//////////////////////////
+#link with libraries
+#//////////////////////////
 
 set(LIB_DEP ${LIB_DEP} ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${CURL_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
-set(LIB_DEP ${LIB_DEP} ${WINSOCK_LIBRARY} m)
+
+if (MSVC)
+  set(LIB_DEP ${LIB_DEP} ${WINSOCK_LIBRARY})
+else (MSVC)
+  set(LIB_DEP ${LIB_DEP} m)
+endif(MSVC)
+
+#//////////////////////////
+#nco lib sources 
+#//////////////////////////
 
 set(SRC ${SRC} src/nco/libnco.h)
 set(SRC ${SRC} src/nco/nco_att_utl.c src/nco/nco_att_utl.h)
@@ -173,5 +214,9 @@ target_link_libraries (ncflint ${LIB_DEP})
 target_link_libraries (ncpdq ${LIB_DEP})
 target_link_libraries (ncra ${LIB_DEP})
 target_link_libraries (ncrename ${LIB_DEP})
+
+
+
+
 
 
