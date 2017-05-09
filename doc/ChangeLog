@@ -1,8 +1,10 @@
-2017-05-08  Charlie Zender  <zender@uci.edu>
+2017-05-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.7-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha05 final changes';git push
-	git tag -a 4.6.7-alpha05 -m 'ncremap ALM/CLM unstructured grids (almu option) works';git push --tags
+	git tag -a 4.6.7-alpha05 -m 'ncremap with sub-gridscale data (-P sgs) works';git push --tags
+
+2017-05-08  Charlie Zender  <zender@uci.edu>
 
 	* Improve verbosity for debugging and generalize names away from ALM/CLM to SGS for "sub-gridcell", and also "fractional area"
 
