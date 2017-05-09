@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha05 final changes';git push
 	git tag -a 4.6.7-alpha05 -m 'ncremap ALM/CLM unstructured grids (almu option) works';git push --tags
 
-	* Allow ncremap to infer source grid when regridding ALM/CLM files (not working yet)
+	* Improve verbosity for debugging and generalize names away from ALM/CLM to SGS for "sub-gridcell", and also "fractional area"
+
+	* Allow ncremap to infer source grid when regridding "fractional area" files (not working yet)
 
 2017-05-07  Charlie Zender  <zender@uci.edu>
 
