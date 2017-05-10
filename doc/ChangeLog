@@ -1,6 +1,8 @@
 2017-05-10  Charlie Zender  <zender@uci.edu>
 
-	* Always infer lat_ntf[0]=-90.0 for Gaussian grids
+	* Diagnose bad option values in nco_rgr_ini() before calling abort()
+
+	* Always infer lat_ntf[0]=-90.0, lat_ntf[lat_nbr]=90.0 for Gaussian grids
 
 2017-05-09  Charlie Zender  <zender@uci.edu>
 

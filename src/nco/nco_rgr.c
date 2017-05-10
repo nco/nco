@@ -371,6 +371,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* !lon_nbr */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"snwe")){
       cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%lf,%lf,%lf,%lf",&rgr->lat_sth,&rgr->lat_nrt,&rgr->lon_wst,&rgr->lon_est);
+      (void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
       assert(cnv_nbr == 4);
       if(cnv_nbr != 4) abort(); /* CEWI Use cnv_nbr at least once outside of assert() to avoid gcc 4.8.2 set-but-not-used warning */
       continue;
@@ -424,7 +425,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"gss")){
 	rgr->lat_typ=nco_grd_lat_gss;
 	rgr->grd_typ=nco_grd_2D_gss;
-      }else abort();
+      }else{
+	(void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
+	abort();
+      } /* !val */
       continue;
     } /* !lat_typ */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_typ")){
@@ -436,7 +440,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 	rgr->lon_typ=nco_grd_lon_Grn_wst;
       else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"Grn_ctr"))
 	rgr->lon_typ=nco_grd_lon_Grn_ctr;
-      else abort();
+      else{
+	(void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
+	abort();
+      } /* !val */
       continue;
     } /* !lon_typ */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"area_nm")){
@@ -5499,6 +5506,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double lat_ncr; /* [dgr] Latitude increment */
   double lon_spn; /* [dgr] Longitude span */
   double lat_spn; /* [dgr] Latitude span */
+  double mss_val_area_dbl;
   double mss_val_ctr_dbl;
   double mss_val_msk_dbl;
   
@@ -5581,6 +5589,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool flg_grd_crv=False;
   nco_bool flg_wrt_crn=True;
   nco_bool flg_crn_grd_lat_lon=False; /* [flg] Curvilinear corner array ordered non-canonically as grd_nbr,lat_nbr,lon_nbr */
+  nco_bool use_mss_val_area=False;
+  nco_bool has_mss_val_area=False;
   nco_bool has_mss_val_ctr=False;
   nco_bool has_mss_val_msk=False;
 
@@ -6258,6 +6268,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !flg_grd_2D */
 
   /* Additional information that may be required for any input grid */
+  if(area_id != NC_MIN_INT) has_mss_val_area=nco_mss_val_get_dbl(in_id,area_id,&mss_val_area_dbl);
   if(msk_id != NC_MIN_INT) has_mss_val_msk=nco_mss_val_get_dbl(in_id,msk_id,&mss_val_msk_dbl);
 
   /* 20160115: AMSR coordinates are packed as NC_SHORT with scale_value=0.01f. What to do? Is it worth unpacking everything? */
@@ -6981,9 +6992,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Closed hint file %s\n",nco_prg_nm_get(),fl_hnt);
   } /* !nco_grd_xtn */
   
-  /* Diagnose area if necessary */
-  if(area_id == NC_MIN_INT && flg_wrt_crn){
-    /* Not absolutely necessary to diagnose area because ERWG will diagnose and output area itself */
+  /* Diagnose area if necessary
+     20170510: ALM/CLM "area" is _FillValue=1.0e36f over ocean and total gridcell area in km2 (not multiplied by landfrac) elsewhere
+     Writing this ALM/CLM "area" variable to gridfile, then using with ERWG --user_areas could be disastrous (depending on mask array and interpolation type)
+     On the other hand CAM "area" variable is exactly what we want for gridfile
+     Input areas are considered "untrustworthy" iff they have _and use_ missing value attribute
+     Re-diagnose areas considered untrustworthy so output area array does not contain missing values */
+  if(flg_wrt_crn && has_mss_val_area){
+    const double mss_val_dbl=mss_val_area_dbl;
+    for(idx=0;idx<grd_sz_nbr;idx++)
+      if(area[idx] == mss_val_dbl) break;
+    if(idx < grd_sz_nbr) use_mss_val_area=True;
+  } /* !has_mss_val_area */
+  //  if(area_id == NC_MIN_INT && flg_wrt_crn){
+  if((area_id == NC_MIN_INT && flg_wrt_crn) || /* If bounds are from disk or inferred and area is not in input file ... */
+     (flg_wrt_crn && use_mss_val_area)){ /* If bounds are from disk or inferred and area is from input file but is untrustworthy */
+    /* Not absolutely necessary to diagnose area because ERWG will diagnose and output area itself _unless_ --user_areas option is given */
     if(flg_grd_crv || flg_grd_1D){
       /* Area of arbitrary unstructured or curvilinear grids requires spherical trigonometry */
       nco_sph_plg_area(grd_crn_lat,grd_crn_lon,grd_sz_nbr,grd_crn_nbr,area);
@@ -6994,10 +7018,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !flg_grd_2D */
   } /* !area_id */
 
-    /* ERWG will fail unless grid file has mask variable
-       Use nul-mask (all points included) whenever input mask variable not supplied/detected 
-       Define nul-mask true everywhere and overwrite with false below
-       Input mask can be any type and output mask will always be NC_INT */
+  /* ERWG will fail unless grid file has mask variable
+     Use nul-mask (all points included) whenever input mask variable not supplied/detected 
+     Define nul-mask true everywhere and overwrite with false below
+     Input mask can be any type and output mask will always be NC_INT */
   for(idx=0;idx<grd_sz_nbr;idx++) msk[idx]=1;
   if(msk_id != NC_MIN_INT){
     /* Change missing-value-masked points to 0 integer mask for SCRIP grids (SCRIP has no missing value convention)
