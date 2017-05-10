@@ -371,13 +371,13 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     } /* !lon_nbr */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"snwe")){
       cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%lf,%lf,%lf,%lf",&rgr->lat_sth,&rgr->lat_nrt,&rgr->lon_wst,&rgr->lon_est);
-      (void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
+      if(cnv_nbr != 4) (void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
       assert(cnv_nbr == 4);
       if(cnv_nbr != 4) abort(); /* CEWI Use cnv_nbr at least once outside of assert() to avoid gcc 4.8.2 set-but-not-used warning */
       continue;
     } /* !snwe */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"wesn")){
-      cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%lf,%lf,%lf,%lf",&rgr->lon_wst,&rgr->lon_est,&rgr->lat_sth,&rgr->lat_nrt);
+      if(cnv_nbr != 4) cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%lf,%lf,%lf,%lf",&rgr->lon_wst,&rgr->lon_est,&rgr->lat_sth,&rgr->lat_nrt);
       assert(cnv_nbr == 4);
       continue;
     } /* !wesn */
@@ -7003,8 +7003,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     for(idx=0;idx<grd_sz_nbr;idx++)
       if(area[idx] == mss_val_dbl) break;
     if(idx < grd_sz_nbr) use_mss_val_area=True;
+    if(nco_dbg_lvl_get() >= nco_dbg_fl && use_mss_val_area) (void)fprintf(stdout,"%s: INFO %s reports input area field %s is considered untrustworthy because it uses missing values, will diagnose area from cell boundaries instead...\n",nco_prg_nm_get(),fnc_nm,area_nm_in);
   } /* !has_mss_val_area */
-  //  if(area_id == NC_MIN_INT && flg_wrt_crn){
   if((area_id == NC_MIN_INT && flg_wrt_crn) || /* If bounds are from disk or inferred and area is not in input file ... */
      (flg_wrt_crn && use_mss_val_area)){ /* If bounds are from disk or inferred and area is from input file but is untrustworthy */
     /* Not absolutely necessary to diagnose area because ERWG will diagnose and output area itself _unless_ --user_areas option is given */

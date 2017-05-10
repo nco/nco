@@ -16,11 +16,11 @@
 
 	* Improve verbosity for debugging and generalize names away from ALM/CLM to SGS for "sub-gridcell", and also "fractional area"
 
-	* Allow ncremap to infer source grid when regridding "fractional area" files (not working yet)
+	* Allow ncremap to infer source grid when regridding "fractional area" files (not fully working)
 
 2017-05-07  Charlie Zender  <zender@uci.edu>
 
-	* Prevent ncclimo from inadavertently incorrectly regridding ALM/CLM files
+	* Prevent ncclimo from inadavertently incorrectly (without SGS) regridding ALM/CLM files
 
 	* ncremap move ALM files from homedir to intermediate location
 
