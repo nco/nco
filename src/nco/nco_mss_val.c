@@ -126,7 +126,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
       /* World's most anally formatted warning message... */
-      (void)fprintf(stderr,"%s: WARNING Input variables have different NCO_MSS_VAL_SNG's:\nVariable #1 = %s has NCO_MSS_VAL_SNG type = %s, value = %s\nVariable 2 = %s has NCO_MSS_VAL_SNG type = %s, value = %s\nVariable #3 = output = %s will have NCO_MSS_VAL_SNG type = %s, value = %s\nWill translate values of var2 equaling mss_val2 to mss_val1 before computing var3 arithmetic operation\n",nco_prg_nm_get(),var1->nm,nco_typ_sng(var1->type),mss_val_1_sng,var2->nm,nco_typ_sng(var2->type),mss_val_2_sng,var1->nm,nco_typ_sng(var1->type),mss_val_1_sng);
+      (void)fprintf(stderr,"%s: WARNING Input variables have different NCO_MSS_VAL_SNG's:\nVariable #1 = %s has NCO_MSS_VAL_SNG type = %s, value = %s\nVariable #2 = %s has NCO_MSS_VAL_SNG type = %s, value = %s\nVariable #3 = output = %s will have NCO_MSS_VAL_SNG type = %s, value = %s\nWill translate values of var2 equaling mss_val2 to mss_val1 before evaluating arithmetic operation to compute var3\n",nco_prg_nm_get(),var1->nm,nco_typ_sng(var1->type),mss_val_1_sng,var2->nm,nco_typ_sng(var2->type),mss_val_2_sng,var1->nm,nco_typ_sng(var1->type),mss_val_1_sng);
     } /* MSS_VAL_EQL */
     (void)cast_nctype_void(var_typ,&var1->mss_val);
     (void)cast_nctype_void(var_typ,&var2->mss_val);

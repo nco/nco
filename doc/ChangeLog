@@ -1,3 +1,7 @@
+2017-05-10  Charlie Zender  <zender@uci.edu>
+
+	* Always infer lat_ntf[0]=-90.0 for Gaussian grids
+
 2017-05-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.7-alpha05 release procedure:

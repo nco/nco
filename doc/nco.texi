@@ -39,6 +39,7 @@ Usage:
 export TEX='tex --src-specials'
 cd ~/nco/doc;texi2dvi nco.texi;makeinfo --html --ifinfo --no-split --output=nco.html nco.texi;makeinfo nco.texi;dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --ifinfo --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:Sites/nco;cd -
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
@@ -22273,6 +22274,13 @@ using @samp{-I @var{in_drc}} or standard input) generates an error
 
 @html
 <a name="pdq_typ"></a> <!-- http://nco.sf.net/nco.html#pdq_typ -->
+<a name="sgs"></a> <!-- http://nco.sf.net/nco.html#sgs -->
+<a name="alm"></a> <!-- http://nco.sf.net/nco.html#alm -->
+<a name="sgs_frc"></a> <!-- http://nco.sf.net/nco.html#sgs_frc -->
+<a name="sgs_msk"></a> <!-- http://nco.sf.net/nco.html#sgs_msk -->
+<a name="sub-gridscale"></a> <!-- http://nco.sf.net/nco.html#sub-gridscale -->
+<a name="sub-grid"></a> <!-- http://nco.sf.net/nco.html#sub-grid -->
+<a name="subgrid"></a> <!-- http://nco.sf.net/nco.html#subgrid -->
 @end html
 @cindex @code{-P @var{pdq_typ}}
 @cindex @var{pdq_typ}
@@ -22286,9 +22294,11 @@ As of January~15, 2016, one can tell @command{ncremap} to automatically
 tagpermute the dimensions in the data file prior to regridding for a
 limited (though growning) number of data-file types that suffer from
 the @command{ncremap} limitation concerning dimension ordering.
-Valid types are @samp{airs} (for @acronym{NASA AIRS} satellite data), 
-@samp{alm} (for @acronym{ALM/CLM} land model data), 
-@samp{mpas} (for @acronym{MPAS} ocean/ice model data), and @samp{nil} (for none).
+Valid types are @samp{airs} for @acronym{NASA AIRS} satellite data, 
+@samp{mpas} for @acronym{MPAS} ocean/ice model data,
+@samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
+(such as @acronym{ALM/CLM} land model data), 
+and @samp{nil} (for none).
 The default @var{pdq_typ} is @samp{nil}, which means @command{ncremap} 
 does not permute the dimension order prior to regridding.
 In @acronym{AIRS}-mode, @command{ncremap} calls @command{ncpdq} to
@@ -22297,22 +22307,33 @@ permute dimensions from their order in the input file to this order:
 In @acronym{MPAS}-mode the order is 
 @code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}. 
 
-In @acronym{ALM}-mode, @command{ncremap} performs substantial pre- and
-post-processing so that regridding conserves fields weighted by a
-data field whose value may change spatially.
+@cindex Sub-gridscale (@acronym{SGS}) data
+@cindex @acronym{SGS}-mode
+@cindex @var{sgs_frc}
+@cindex @var{sgs_msk}
+@cindex @code{--sgs_frc @var{sgs_frc}}
+@cindex @code{--sgs_msk @var{sgs_msk}}
+In sub-grid mode, @command{ncremap} performs substantial pre- and
+post-processing so that regridding conserves fields that may represent
+only a fraction of the entire gridcell.
+The sub-gridscale (@acronym{SGS}) fraction represented by each 
+field is contained in the variable @var{sgs_frc}, whose name defaults
+to @code{landfrac} and may be specified with the
+@samp{--sgs_frc=@var{sgs_frc}} option. 
+The sub-grid fraction usually changes spatially.
 For concreteness we assume that field represents land fraction, though
-it could be any similar quantity such as ocean fraction, vegetated
-fraction, and so on.
-The spatial fields output by most geophysical models are intensive, 
-and so the regridder attempts to conserve the integral of the area times 
-the field value such that the integral is equal on source and
+it could be any similar quantity such as ocean fraction, ice fraction,
+vegetated fraction, and so on.
+Spatial fields output by most geophysical models are intensive, 
+and so by default the regridder attempts to conserve the integral of the
+area times the field value such that the integral is equal on source and
 destination grids. 
 However some models (like @acronym{ALM} and @acronym{CLM}) output
-gridcell values intended to apply to only a fraction @var{lnd_frc}
+gridcell values intended to apply to only a fraction @var{sgs_frc}
 (which stands for ``land fraction'') of the gridcell.
-Land fraction is non-unity in gridcells that contain coastlines or
-islands. 
-Regridding weights that assume @math{@var{lnd_frc} = 1} everywhere would 
+Land fraction is non-unity in gridcells that resolve coastlines or
+islands.  
+Regridding weights that assume @math{@var{sgs_frc} = 1} everywhere would 
 create subtle, difficult-to-notice, biases in coastal regions that,
 on Earth, would alter global mean values (e.g., of temperature, fluxes)
 by up to a few percent at common grid resolutions.

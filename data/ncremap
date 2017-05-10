@@ -204,12 +204,13 @@ esac # !HOSTNAME
 # Omit cell_measures:
 # ncremap --no_cll_msr --var=FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 # SGS (201705):
-# ncremap --vrb=3 --var=hi,uvel,ANGLE,ANGLET,HTE,HTN,TLAT,TLON,ULAT,ULON,aice,aisnap,albsno,blkmask,fswabs,fswabs_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc
-# ncremap --vrb=3 -P sgs --var=area,DSTDEP,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/alm_rgr.nc
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/t42_rgr.nc
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -s ${DATA}/grids/t42_SCRIP.20150901.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/t42_rgr.nc # infer D not S
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -d ${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc -o ~/t42_rgr.nc # infer S and D borken
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/alm_rgr.nc # 20170510 1D->2D works conserve and bilinear, no inferral
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/t42_rgr.nc # 20170510 2D->2D works conserve and bilinear, no inferral
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -s ${DATA}/grids/t42_SCRIP.20150901.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear, conserve scaling wrong by area fraction but spatially correct, infer D not S
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear, fails conserve (why???), infer S and D
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -d ${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc -o ~/t42_rgr.nc # 20170510 mixed area units between CLM and CAM ruins scaling? but regridding works
 # ncremap --vrb=3 -p nil -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
+# ncremap --vrb=3 -P sgs -a bilinear --sfc_frc=aice --sfc_msk=tmask --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170510 -a conserve fails on curvilinear CICE output, bilinear completes with spatially wrong answers
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr > ~/ncremap.out 2>&1 &
 
@@ -729,8 +730,8 @@ if [ "${pdq_typ}" = 'airs' ]; then
     pdq_opt='-a StdPressureLev,GeoTrack,GeoXTrack'
 fi # !airs
 if [ "${pdq_typ}" = 'sgs' ]; then 
-    alg_typ='conserve'
-    alg_opt='conserve'
+#    alg_typ='conserve'
+#    alg_opt='conserve'
     esmf_opt='--user_areas --ignore_unmapped'
 #	rgr_opt="${rgr_opt} --rnr=0.0"
 fi # !sgs
@@ -1092,11 +1093,16 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    echo "${spt_nm}: HINT: Supply a data file with \"-i fl_in\""
 	    exit 1
 	fi # !fl_nbr
-	if [ "${grd_src_usr_flg}" != 'Yes' ] || [ "${grd_dst_usr_flg}" != 'Yes' ]; then
-	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP grid-files for both source and destination grids. In addition, the source grid-file must include the (normally non-essential) gridcell_area field.\n"
-	    echo "${spt_nm}: HINT: Supply source and destination grid-files with \"-s grd_src\" and \"-g grd_dst\", respectively"
-	    exit 1
+	if [ "${grd_src_usr_flg}" != 'Yes' ]; then
+	    # Deprecated 20170509
+	    #printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP grid-files for both source and destination grids. In addition, the source grid-file must include the (normally non-essential) gridcell_area field. We are working to eliminate this requirement and permit grid inferral, at least with 2D rectangular grids...\n"
+	    #echo "${spt_nm}: HINT: Supply source and destination grid-files with \"-s grd_src\" and \"-g grd_dst\", respectively"
+	    #exit 1
+	    printf "${spt_nm}: Sub-gridscale handling will attempt to infer the source SCRIP grid-file from the input data file. This will only work for rectangular 2D data files, because SGS requires the source grid-file to contain the (normally non-essential) gridcell_area field for the input grid.\n"
 	fi # !grd_src_usr_flg
+	if [ "${grd_dst_usr_flg}" != 'Yes' ]; then
+	    printf "${spt_nm}: Sub-gridscale handling will attempt to infer the destination SCRIP grid-file from the provided output data file template (which will not be touched).\n"
+	fi # !grd_dst_usr_flg
 	if [ "${map_usr_flg}" = 'Yes' ]; then
 	    printf "${spt_nm}: ERROR Sub-grid handling forbids specification of a precomputed map-file. Sub-grid handling must generate map-files from specially pre-processed SCRIP grid-files. Allowing pre-computed map-files risks users inadvertently supplying incorrect map-files. The supplied or inferred SCRIP grid-files must include the (normally non-essential) gridcell_area field, which ${spt_nm} can normally infer from rectangular 2-D datafiles, though not from 1-D (unstructured) datafiles.\n"
 	    echo "${spt_nm}: HINT: Remove the the map-file specification by eliminating the \"-m map_fl\" option"
@@ -1242,7 +1248,7 @@ if [ "${pdq_typ}" = 'sgs' ]; then
     fi # !dbg
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Append surface fraction from data-file to fractional source grid-file (fxm NB: Data-file must be 1D)...\n"
+	printf "Append surface fraction from data-file to fractional source grid-file (fxm NB: Data-file must be 1D?)...\n"
     fi # !vrb_lvl
     cmd_lnd_src[${fl_idx}]="ncks -A -C -v ${sfc_frc} ${fl_in[${fl_idx}]} ${grd_src_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
@@ -1291,10 +1297,10 @@ if [ "${pdq_typ}" = 'sgs' ]; then
     fi # !dbg
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Conservatively (always) regrid surface fraction ${sfc_frc} to destination grid...\n"
+	printf "Regrid surface fraction ${sfc_frc} to destination grid...\n"
     fi # !vrb_lvl
     # NB: Do not regrid surface mask as it may contain _FillValue (ALM/CLM landmask does)
-    cmd_lnd_rmp[${fl_idx}]="ncremap --vrb=0 -a conserve -v ${sfc_frc} -i ${sfc_frc_in_sgs} -s ${grd_src} -g ${grd_dst} -o ${sfc_frc_out_sgs}"
+    cmd_lnd_rmp[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -v ${sfc_frc} -i ${sfc_frc_in_sgs} -s ${grd_src} -g ${grd_dst} -o ${sfc_frc_out_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_rmp[${fl_idx}]}
     fi # !dbg
@@ -1309,7 +1315,10 @@ if [ "${pdq_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Derive surface mask ${sfc_msk} from regridded surface fraction...\n"
     fi # !vrb_lvl
-    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'sfcarea=${sfc_frc}*area;${sfc_msk}=0*int(sfcarea);where(sfcarea > 0) ${sfc_msk}=1; elsewhere ${sfc_msk}=0;${sfc_msk}@long_name=\"land/ocean mask (0.=ocean and 1.=land)\";if(${sfc_msk}@cell_measures.exists()) ram_delete(${sfc_msk}@cell_measures)' ${sfc_frc_out_sgs} ${sfc_frc_out_sgs}"
+    # Be careful changing this
+    # Allow for possibility that sfc_frc is 3D (time,lat,lon) as in CICE
+    #cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'sfcarea=${sfc_frc}*area;${sfc_msk}=0*int(sfcarea);where(sfcarea > 0) ${sfc_msk}=1; elsewhere ${sfc_msk}=0;${sfc_msk}@long_name=\"land/ocean mask (0.=ocean and 1.=land)\";if(${sfc_msk}@cell_measures.exists()) ram_delete(${sfc_msk}@cell_measures)' ${sfc_frc_out_sgs} ${sfc_frc_out_sgs}"
+    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'if(${sfc_frc}.ndims() < 3) sfcarea=${sfc_frc}*area; else sfcarea=${sfc_frc}(0,:,:);${sfc_msk}=0*int(sfcarea);where(sfcarea > 0) ${sfc_msk}=1; elsewhere ${sfc_msk}=0;${sfc_msk}@long_name=\"land/ocean mask (0.=ocean and 1.=land)\";if(${sfc_msk}@cell_measures.exists()) ram_delete(${sfc_msk}@cell_measures)' ${sfc_frc_out_sgs} ${sfc_frc_out_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_msk[${fl_idx}]}
     fi # !dbg
@@ -1358,10 +1367,10 @@ if [ "${pdq_typ}" = 'sgs' ]; then
     grd_dst=${grd_dst_sgs}
 fi # !sgs
 
-# If user provides source gridfile, assume it applies to every input file
+# If user provides source gridfile, or it was inferred in sub_grid mode, assume it applies to every input file
 # Do not infer source gridfiles from input files within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
-if [ "${grd_src_usr_flg}" = 'Yes' ]; then
+if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${pdq_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Source grid supplied by user as ${grd_src}\n"
     fi # !vrb_lvl
@@ -1451,6 +1460,8 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fl_out[${fl_idx}]=${out_fl}
 
     # Generate new map unless map-file was supplied or already-generated
+    # NB: Sub-grid infers (if necessary) source grid outside file loop, and forbids multiple source grids
+    # Sub-grid also produces map before file loop, and will not make maps inside file loop
     if [ "${map_mk}" = 'Yes' ]; then
 
 	# Block 1: Special cases
@@ -1471,30 +1482,27 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    fi # !dbg
 	fi # !znl
 
-	# Sub-grid infers source grid outside file loop, and forbids multiple source grids
-	if [ "${pdq_typ}" != 'sgs' ]; then 
-	    # Block 2: Source grid
-	    # Block 2 Loop 1: Source gridfile command
-	    if [ ! -f "${in_fl}" ]; then
-		echo "${spt_nm}: ERROR Unable to find input file ${in_fl}"
-		echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
+	# Block 2: Source grid
+	# Block 2 Loop 1: Source gridfile command
+	if [ ! -f "${in_fl}" ]; then
+	    echo "${spt_nm}: ERROR Unable to find input file ${in_fl}"
+	    echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
-	    fi # ! -f
-	    # Infer source grid-file from input data file
-	    cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${in_fl} ${tmp_out_fl}"
+	fi # ! -f
+	# Infer source grid-file from input data file
+	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${in_fl} ${tmp_out_fl}"
 	
-	    # Block 2 Loop 2: Execute and/or echo commands
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_src[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_src[${fl_idx}]}
-		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR Failed to infer source grid. Debug this:\n${cmd_src[${fl_idx}]}\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	fi # !sgs
+	# Block 2 Loop 2: Execute and/or echo commands
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_src[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_src[${fl_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to infer source grid. Debug this:\n${cmd_src[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
 	
 	# Block 3: Source->destination maps
 	# Block 3 Loop 1: Map-file commands

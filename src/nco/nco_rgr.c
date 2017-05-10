@@ -583,7 +583,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      grid_size: Number of gridcells (product of lat*lon)
      address: Source and destination index for each link pair
      num_links: Number of unique address pairs in remapping, i.e., size of sparse matrix
-     num_wgts: Number of weights per vertice for given remapping
+     num_wgts: Number of weights per vertice for given remapping (we only handle num_wgts == 1 below)
      = 1 Bilinear
          Destination grid value determined by weights times known source grid values 
          at vertices of source quadrilateral that bounds destination point P
@@ -1544,9 +1544,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   if(nco_rgr_mpf_typ != nco_rgr_mpf_SCRIP){
     rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,NC_DOUBLE);
   }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
-    /* SCRIP mapfiles stored 2D weight array remap_matrix[num_links,num_wgts]
+    /* SCRIP mapfiles store 2D weight array remap_matrix[num_links,num_wgts]
        Apply only first weight for first-order conservative accuracy (i.e., area overlap)
-       Applying all three weights for second-order conservative accuracy (by including gradients from centroid to vertices) */
+       Apply all three weights for second-order conservative accuracy (by including gradients from centroid to vertices) */
     dmn_srd[0]=1L;
     dmn_srt[1]=0L;
     dmn_cnt[1]=1L;
@@ -1845,7 +1845,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      CAM, CMIP5: gw, lat_bnds, lon_bnds
      CAM-FV: slon, slat, w_stag (w_stag is weights for slat grid, analagous to gw for lat grid)
      CAM-SE: area
-     CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (NB: CICE uses ?LON and POP uses ?LONG)
+     CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (NB: CICE uses ?LON and POP uses ?LONG) (aice is ice area, tmask is state-variable mask, both not currently excluded)
      ESMF: gridcell_area
      GPM: S1_Latitude, S1_Longitude
      HIRDLS: Latitude
@@ -6024,8 +6024,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"Area",&area_id)) == NC_NOERR) area_nm_in=strdup("Area");
   else if((rcd=nco_inq_varid_flg(in_id,"areaCell",&area_id)) == NC_NOERR) area_nm_in=strdup("areaCell"); /* MPAS-O/I */
   else if((rcd=nco_inq_varid_flg(in_id,"grid_area",&area_id)) == NC_NOERR) area_nm_in=strdup("grid_area");
-  else if((rcd=nco_inq_varid_flg(in_id,"tarea",&area_id)) == NC_NOERR) area_nm_in=strdup("tarea"); /* CICE */
-  else if((rcd=nco_inq_varid_flg(in_id,"uarea",&area_id)) == NC_NOERR) area_nm_in=strdup("uarea"); /* CICE */
+  // else if((rcd=nco_inq_varid_flg(in_id,"aice",&area_id)) == NC_NOERR) area_nm_in=strdup("aice"); /* CICE time-dependent ice area (3D), not total gridcell area */
+  else if((rcd=nco_inq_varid_flg(in_id,"tarea",&area_id)) == NC_NOERR) area_nm_in=strdup("tarea"); /* CICE time-invariant state-variable gridcell area (2D) */
+  else if((rcd=nco_inq_varid_flg(in_id,"uarea",&area_id)) == NC_NOERR) area_nm_in=strdup("uarea"); /* CICE time-invariant dynamics variables (2D) */
 
   msk_nm_in=rgr->msk_var;
   if(msk_nm_in){
@@ -6036,6 +6037,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if((rcd=nco_inq_varid_flg(in_id,"mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("mask");
     else if((rcd=nco_inq_varid_flg(in_id,"Mask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("Mask");
     else if((rcd=nco_inq_varid_flg(in_id,"grid_imask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("grid_imask");
+    else if((rcd=nco_inq_varid_flg(in_id,"landmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("landmask"); /* ALM/CLM */
     else if((rcd=nco_inq_varid_flg(in_id,"tmask",&msk_id)) == NC_NOERR) msk_nm_in=strdup("tmask"); /* CICE */
   } /* !msk_nm_in */
   
@@ -6747,6 +6749,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !lat_typ */
       /* Ensure rounding errors do not produce unphysical grid */
       lat_ntf[lat_nbr]=lat_nrt;
+
+      if(lat_typ == nco_grd_lat_gss){
+	/* 20170510: First approximation above to exterior interfaces for Gaussian grid are ~ +/-89 degrees
+	   Loops below recompute interior interfaces only 
+	   Southern- and northern-most interfaces must be explicitly assigned 
+	   Inferral test for Gaussian grid _assumes_ global grid 
+	   Hence WLOG can assign [-90.0, 90.0] to Gaussian grid exterior boundaries */
+	lat_ntf[0]=-90.0;
+	lat_ntf[lat_nbr]=90.0;
+      } /* !nco_grd_lat_gss */
     } /* !(lat_bnd_id && lon_bnd_id) */
     
     /* Use centers and boundaries to diagnose latitude weights */
@@ -6992,7 +7004,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Input mask can be any type and output mask will always be NC_INT
        Applications: 
        ALM/CLM mask (landmask) is NC_FLOAT and defines but does not use NC_FLOAT missing value
-       CICE mask is NC_FLOAT and uses NC_FLOAT missing value
+       CICE mask (tmask/umask) is NC_FLOAT and uses NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value */
   switch(msk_typ){
     case NC_FLOAT:
