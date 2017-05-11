@@ -1148,6 +1148,7 @@ extern "C" {
     nco_bool flg_area_out; /* [flg] Add area to output */
     nco_bool flg_cll_msr; /* [flg] Add cell_measures attribute */
     nco_bool flg_crv; /* [flg] Use curvilinear coordinates */
+    nco_bool flg_dgn_area; /* [flg] Diagnose rather than copy inferred area */
     nco_bool flg_grd; /* [flg] Create SCRIP-format grid file */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
     nco_bool flg_grd_src; /* [flg] User-specified input grid */

@@ -1,3 +1,7 @@
+2017-05-11  Charlie Zender  <zender@uci.edu>
+
+	* Use dgn_area/diagnose_area flag if ncremap SGS calls nco_grd_nfr()
+
 2017-05-10  Charlie Zender  <zender@uci.edu>
 
 	* Diagnose bad option values in nco_rgr_ini() before calling abort()

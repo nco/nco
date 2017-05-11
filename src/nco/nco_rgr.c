@@ -255,6 +255,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
   rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
+  rgr->flg_dgn_area=False; /* [flg] Diagnose rather than copy inferred area */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
@@ -335,6 +336,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_nfr=True;
       continue;
     } /* !infer */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"diagnose_area") || !strcasecmp(rgr_lst[rgr_var_idx].key,"dgn_area")){
+      rgr->flg_dgn_area=True;
+      continue;
+    } /* !diagnose */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_stagger") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_stg")){
       rgr->flg_stg=False;
       continue;
@@ -7005,8 +7010,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(idx < grd_sz_nbr) use_mss_val_area=True;
     if(nco_dbg_lvl_get() >= nco_dbg_fl && use_mss_val_area) (void)fprintf(stdout,"%s: INFO %s reports input area field %s is considered untrustworthy because it uses missing values, will diagnose area from cell boundaries instead...\n",nco_prg_nm_get(),fnc_nm,area_nm_in);
   } /* !has_mss_val_area */
-  if((area_id == NC_MIN_INT && flg_wrt_crn) || /* If bounds are from disk or inferred and area is not in input file ... */
-     (flg_wrt_crn && use_mss_val_area)){ /* If bounds are from disk or inferred and area is from input file but is untrustworthy */
+  /* 20170511: There remain a handful of cases when input area should be diagnosed not copied
+     These include using ncremap in SGS mode when inferred grids must use sensible area units
+     Otherwise an inferred grid with area [km2] from ALM/CLM might be combined with area [sr] from NCO,
+     and then ERWG --user_areas would go haywire
+     Setting flg_dgn_area ensures inferred area uses [sr] */
+  const nco_bool flg_dgn_area=rgr->flg_dgn_area; /* [flg] Diagnose rather than copy inferred area */
+  if(flg_wrt_crn && /* If bounds are available to compute area and ... */
+     (area_id == NC_MIN_INT || /* Area is not in input file ... */
+      use_mss_val_area || /* Area is untrustworthy */
+      flg_dgn_area)){ /* User/application explicitly requests diagnostic area */
     /* Not absolutely necessary to diagnose area because ERWG will diagnose and output area itself _unless_ --user_areas option is given */
     if(flg_grd_crv || flg_grd_1D){
       /* Area of arbitrary unstructured or curvilinear grids requires spherical trigonometry */

@@ -175,7 +175,7 @@ nco_is_flag /* [fnc] Check whether input is a flag */
 (const char* flag) /* I [sng] Input string */
 {
   const char fnc_nm[]="nco_is_flag()"; /* [sng] Function name */
-  const char *rgr_flags[] ={
+  const char *rgr_flags[]={
     "no_area",
     "no_area_out",
     "cell_measures",
@@ -184,31 +184,33 @@ nco_is_flag /* [fnc] Check whether input is a flag */
     "no_cll_msr",
     "curvilinear",
     "crv",
+    "dgn_area",
+    "diagnose_area",
     "infer",
     "nfr",
     "no_stagger",
     "no_stg"};
-  const char *gaa_flags[] ={""};
-  const char *trr_flags[] ={""};
-  const char *ppc_flags[] ={""};
+  const char *gaa_flags[]={""};
+  const char *trr_flags[]={""};
+  const char *ppc_flags[]={""};
   
-  for(int index=0;index<sizeof(rgr_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++)
     {
-      if(!strcmp(flag, rgr_flags[index])){
+      if(!strcmp(flag,rgr_flags[index])){
         return NCO_NOERR;
       }
     }
-  for(int index=0;index<sizeof(gaa_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++)
     {
       if(!strcmp(flag, gaa_flags[index])) 
         return NCO_NOERR;
     }
-  for(int index=0;index<sizeof(trr_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(trr_flags)/sizeof(char *);index++)
     {
       if(!strcmp(flag, trr_flags[index])) 
         return NCO_NOERR;
     }
-  for(int index=0;index<sizeof(ppc_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(ppc_flags)/sizeof(char *);index++)
     {
       if(!strcmp(flag, ppc_flags[index])) 
         return NCO_NOERR;
@@ -217,24 +219,24 @@ nco_is_flag /* [fnc] Check whether input is a flag */
   (void)fprintf(stderr, "%s: ERROR %s Multi-Argument (MTA) parser reports unrecognized option \"%s\"\n%s: HINT Lack of equals sign indicates this may be a mis-typed flag rather than an erroneous key-value pair specification. Valid MTA flags are listed below. Synonyms for each flag are listed on the same line. A leading \"--\" is optional. MTA documentation is at http://nco.sf.net/nco.html#mta\n",nco_prg_nm_get(),fnc_nm,flag,nco_prg_nm_get());
 
   (void)fprintf(stderr, "Regridder flags (\"rgr\" indicator):\n");
-  for(int index=0;index<sizeof(rgr_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++)
     {
       (void)fprintf(stderr, "  %2d. %s\n",index+1,rgr_flags[index]);
     }
   /*
     (void)fprintf(stderr, "ncks gaa (Global Attribute Adding) flags:\n");
-    for(int index=0;index<sizeof(gaa_flags)/sizeof(char*);index++)
+    for(int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++)
     {
       (void)fprintf(stderr, "%s\n",gaa_flags[index]);
     }
   
   (void)fprintf(stderr, "ncks trr (Terraref) flags:\n");
-  for(int index=0;index<sizeof(trr_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(trr_flags)/sizeof(char *);index++)
     {
       (void)fprintf(stderr, "%s\n",trr_flags[index]);
     }
   (void)fprintf(stderr, "ncks ppc (Precision-Preserving Compression) flags:\n");
-  for(int index=0;index<sizeof(ppc_flags)/sizeof(char*);index++)
+  for(int index=0;index<sizeof(ppc_flags)/sizeof(char *);index++)
     {
       (void)fprintf(stderr, "%s\n",ppc_flags[index]);
     }
@@ -253,7 +255,7 @@ nco_input_check /* [fnc] Check whether input has valid syntax */
   const char fnc_nm[]="nco_input_check()"; /* [sng] Function name */
   
   if(!strstr(args,"=")){ // If no equal sign in arguments
-    char* arg_copy=strdup(args);
+    char *arg_copy=strdup(args);
     if(!nco_is_flag(nco_remove_hyphens(arg_copy))){
       (void)fprintf(stderr,"%s: ERROR %s did not detect equal sign between key and value for argument \"%s\".\n%s: HINT This can occur when the designated or default key-value delimiter string \"%s\" is mixed into the literal text of the value. Try changing delimiter to a string guaranteed not to appear in the value string with, e.g., --dlm=\"##\".\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get(),nco_mta_dlm_get());
       nco_free(arg_copy);
