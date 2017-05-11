@@ -5556,7 +5556,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   long att_sz;
   long bnd_idx;
-  long bnd_nbr; /* [nbr] Number of bounds in gridcell */
+  long bnd_nbr=NC_MIN_INT; /* [nbr] Number of bounds in gridcell */
   long col_idx;
   long col_nbr; /* [nbr] Number of columns in grid */
   long crn_idx; /* [idx] Counting index for corners */
@@ -5983,12 +5983,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   msk=(int *)nco_malloc(grd_sz_nbr*nco_typ_lng((nc_type)NC_INT));
   
   if(flg_grd_1D){
-    lat_bnd=(double *)nco_malloc(grd_sz_nbr*bnd_nbr*nco_typ_lng(crd_typ));
+    if(bnd_nbr != NC_MIN_INT) lat_bnd=(double *)nco_malloc(grd_sz_nbr*bnd_nbr*nco_typ_lng(crd_typ));
     lat_crn=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
     lat_ctr=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
     lat_ntf=(double *)nco_malloc((lat_nbr+1L)*nco_typ_lng(crd_typ));
     lat_wgt=(double *)nco_malloc(lat_nbr*nco_typ_lng(crd_typ));
-    lon_bnd=(double *)nco_malloc(grd_sz_nbr*bnd_nbr*nco_typ_lng(crd_typ));
+    if(bnd_nbr != NC_MIN_INT) lon_bnd=(double *)nco_malloc(grd_sz_nbr*bnd_nbr*nco_typ_lng(crd_typ));
     lon_crn=(double *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng(crd_typ));
     lon_ctr=(double *)nco_malloc(grd_sz_nbr*nco_typ_lng(crd_typ));
     lon_ntf=(double *)nco_malloc((lon_nbr+1L)*nco_typ_lng(crd_typ));
