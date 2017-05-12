@@ -1,3 +1,7 @@
+2017-05-12  Charlie Zender  <zender@uci.edu>
+
+	* Disallow SGS source grid inferral due to biases from latitude great/small circle assumptions
+
 2017-05-11  Charlie Zender  <zender@uci.edu>
 
 	* Use dgn_area/diagnose_area flag if ncremap SGS calls nco_grd_nfr()

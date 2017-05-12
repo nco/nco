@@ -186,6 +186,8 @@ nco_is_flag /* [fnc] Check whether input is a flag */
     "crv",
     "dgn_area",
     "diagnose_area",
+    "dgn_bnd",
+    "diagnose_bounds",
     "infer",
     "nfr",
     "no_stagger",

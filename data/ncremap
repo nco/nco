@@ -207,9 +207,10 @@ esac # !HOSTNAME
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/alm_rgr.nc # 20170510 1D->2D works conserve and bilinear, no inferral
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/t42_rgr.nc # 20170510 2D->2D works conserve and bilinear, no inferral
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -s ${DATA}/grids/t42_SCRIP.20150901.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve, infer D not S
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve, infer S and D
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -d ${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve, infer S and D
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -d ${DATA}/essgcm14/essgcm14.cam2.h0.0000-01.nc -o ~/fv09_rgr.nc # 20170510 2D->2D ??? bilinear and conserve, infer S and D
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -d ${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -d ${DATA}/essgcm14/essgcm14.cam2.h0.0000-01.nc -o ~/fv09_rgr.nc # 20170510 2D->2D bilinear works and conserve ~2% wrong, infer S and D
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -d ${HOME}/skl_t42.nc -o ~/fv09_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
 # ncremap --vrb=3 -p nil -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
 # ncremap --vrb=3 -P sgs -a bilinear --sfc_frc=aice --sfc_msk=tmask --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170510 -a conserve fails on curvilinear CICE output, bilinear completes with spatially wrong answers
 # Debugging and Benchmarking:
@@ -1096,11 +1097,11 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    exit 1
 	fi # !fl_nbr
 	if [ "${grd_src_usr_flg}" != 'Yes' ]; then
-	    # Deprecated 20170509
-	    #printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP grid-files for both source and destination grids. In addition, the source grid-file must include the (normally non-essential) grid_area field. We are working to eliminate this requirement and permit grid inferral, at least with 2D rectangular grids...\n"
-	    #echo "${spt_nm}: HINT: Supply source and destination grid-files with \"-s grd_src\" and \"-g grd_dst\", respectively"
-	    #exit 1
-	    printf "${spt_nm}: Sub-gridscale handling will attempt to infer the source SCRIP grid-file from the input data file. This will only work for rectangular 2D data files, because SGS requires the source grid-file to contain the (normally non-essential) grid_area field for the input grid.\n"
+	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP source grid-file. Moreover, the source grid-file must include the (normally non-essential) grid_area field. It is infeasible to permit source-grid inferral, because weight-generators assume great circle arcs but 2D-grids usually have small-circles in latitude, and this can lead to area mis-matches. However, sub-gridscale handling does support infering destination grids.\n"
+	    echo "${spt_nm}: HINT: Supply source grid-file with \"-s grd_src\""
+	    exit 1
+	    # 20170511: Inferring source grids leads to ~2% biases with conservative regridding and 2D source grids
+	    # printf "${spt_nm}: Sub-gridscale handling will attempt to infer the source SCRIP grid-file from the input data file. This will only work for rectangular 2D data files, because SGS requires the source grid-file to contain the (normally non-essential) grid_area field for the input grid.\n"
 	fi # !grd_src_usr_flg
 	if [ "${grd_dst_usr_flg}" != 'Yes' ]; then
 	    printf "${spt_nm}: Sub-gridscale handling will attempt to infer the destination SCRIP grid-file from the provided output data file template (which will not be touched).\n"
@@ -1250,7 +1251,7 @@ if [ "${pdq_typ}" = 'sgs' ]; then
     fi # !dbg
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Append surface fraction from data-file to fractional source grid-file (fxm NB: Data-file must be 1D?)...\n"
+	printf "Append surface fraction from data-file to fractional source grid-file\n"
     fi # !vrb_lvl
     cmd_lnd_src[${fl_idx}]="ncks -A -C -v ${sfc_frc} ${fl_in[${fl_idx}]} ${grd_src_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then

@@ -256,6 +256,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_dgn_area=False; /* [flg] Diagnose rather than copy inferred area */
+  rgr->flg_dgn_bnd=False; /* [flg] Diagnose rather than copy inferred bounds */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
@@ -339,7 +340,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"diagnose_area") || !strcasecmp(rgr_lst[rgr_var_idx].key,"dgn_area")){
       rgr->flg_dgn_area=True;
       continue;
-    } /* !diagnose */
+    } /* !diagnose_area */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"diagnose_bounds") || !strcasecmp(rgr_lst[rgr_var_idx].key,"dgn_bnd")){
+      rgr->flg_dgn_bnd=True;
+      continue;
+    } /* !diagnose_bounds */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_stagger") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_stg")){
       rgr->flg_stg=False;
       continue;
@@ -6633,8 +6638,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !idx */
   } /* !flg_grd_crv */
 
+  /* 20150512 Many 2D datasets have bad bounds
+     Primary example is Gaussian grids archived by CESM models that use midpoint rule rather than iterate to compute interfaces from quadrature points
+     Such files have correct gw arrays and incorrect cell bounds
+     flg_dgn_bnd allows nco_grd_nfr() to override faulty boundaries in file with correct bounds */
+  const nco_bool flg_dgn_bnd=rgr->flg_dgn_bnd; /* [flg] Diagnose rather than copy inferred bounds */
   if(flg_grd_2D){
-    if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
+    if(flg_dgn_bnd || (lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT)){
+      if(nco_dbg_lvl_get() >= nco_dbg_std && flg_dgn_bnd) (void)fprintf(stdout,"%s: INFO %s will diagnose cell boundaries from cell centers...\n",nco_prg_nm_get(),fnc_nm);
       /* Derive interfaces (ntf) and bounds (bnd) from midpoints approximation applied to center data
 	 NB: Simplistically derived interfaces (ntf) only valid on some rectangular grids (not on Gaussian grids)
 	 These inferred-from-midpoint interfaces/bounds are overwritten in next block once lat grid is known */
@@ -6710,7 +6721,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else assert(False);
 
     /* Diagnose latitude interfaces from gridcell centers (if boundaries not provided) */
-    if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
+    if(flg_dgn_bnd || (lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT)){
       lat_nrt=lat_ntf[lat_nbr];
       lat_spn=lat_ntf[lat_nbr]-lat_ntf[0];
       switch(lat_typ){
@@ -6841,7 +6852,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   if(flg_grd_2D){
     assert(grd_crn_nbr == 4);
-    if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
+    if(flg_dgn_bnd || (lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT)){
       /* If interfaces were diagnosed from centers, copy corners from interfaces */
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	idx=grd_crn_nbr*lon_idx;
@@ -7012,8 +7023,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !has_mss_val_area */
   /* 20170511: There remain a handful of cases when input area should be diagnosed not copied
      These include using ncremap in SGS mode when inferred grids must use sensible area units
-     Otherwise an inferred grid with area [km2] from ALM/CLM might be combined with area [sr] from NCO,
-     and then ERWG --user_areas would go haywire
+     Otherwise an inferred grid with area [km2] from ALM/CLM might be combined with area [sr] from NCO
+     This would bias ERWG --user_areas produced values by ~10^10
      Setting flg_dgn_area ensures inferred area uses [sr] */
   const nco_bool flg_dgn_area=rgr->flg_dgn_area; /* [flg] Diagnose rather than copy inferred area */
   if(flg_wrt_crn && /* If bounds are available to compute area and ... */
@@ -7021,6 +7032,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       use_mss_val_area || /* Area is untrustworthy */
       flg_dgn_area)){ /* User/application explicitly requests diagnostic area */
     /* Not absolutely necessary to diagnose area because ERWG will diagnose and output area itself _unless_ --user_areas option is given */
+    if(nco_dbg_lvl_get() >= nco_dbg_std && flg_dgn_area) (void)fprintf(stdout,"%s: INFO %s reports diagnosing area from cell boundaries...\n",nco_prg_nm_get(),fnc_nm);
     if(flg_grd_crv || flg_grd_1D){
       /* Area of arbitrary unstructured or curvilinear grids requires spherical trigonometry */
       nco_sph_plg_area(grd_crn_lat,grd_crn_lon,grd_sz_nbr,grd_crn_nbr,area);
