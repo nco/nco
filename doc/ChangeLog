@@ -1,5 +1,13 @@
 2017-05-12  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.7-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.7-alpha06 final changes';git push
+	git tag -a 4.6.7-alpha06 -m 'Polish and document SGS option';git push --tags
+
+	* Change ncremap pdq_typ to prc_typ to reflect expanded role
+
+	* Document SGS algorithm
+
 	* Disallow SGS source grid inferral due to biases from latitude great/small circle assumptions
 
 2017-05-11  Charlie Zender  <zender@uci.edu>

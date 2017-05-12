@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.7-alpha05
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 8 May 2017
+@set update-date 11 May 2017
 @set update-month May 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -21690,7 +21690,7 @@ ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_op
 [-M] [-m @var{map_fl}] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}]
 [-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}]
-[-P @var{pdq_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [--stdin]
+[-P @var{prc_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [--stdin]
 [-T @var{tempest_opt}] [-t @var{thr_nbr}] [-U @var{drc_tmp}] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
@@ -22273,6 +22273,7 @@ using @samp{-I @var{in_drc}} or standard input) generates an error
 (output files will be named the same as input files).
 
 @html
+<a name="prc_typ"></a> <!-- http://nco.sf.net/nco.html#prc_typ -->
 <a name="pdq_typ"></a> <!-- http://nco.sf.net/nco.html#pdq_typ -->
 <a name="sgs"></a> <!-- http://nco.sf.net/nco.html#sgs -->
 <a name="alm"></a> <!-- http://nco.sf.net/nco.html#alm -->
@@ -22282,29 +22283,31 @@ using @samp{-I @var{in_drc}} or standard input) generates an error
 <a name="sub-grid"></a> <!-- http://nco.sf.net/nco.html#sub-grid -->
 <a name="subgrid"></a> <!-- http://nco.sf.net/nco.html#subgrid -->
 @end html
-@cindex @code{-P @var{pdq_typ}}
-@cindex @var{pdq_typ}
+@cindex @code{-P @var{prc_typ}}
+@cindex @var{prc_typ}
+@cindex @code{--prc_typ}
 @cindex @code{--pdq_typ}
 @cindex @code{--prm_typ}
-@cindex @code{--permutation}
-@cindex @code{--permute}
-@item -P @var{pdq_typ} (@code{--pdq_typ}, @code{--prm_typ}, @code{--permutation}, @code{--permute})
+@cindex @code{--procedure}
+@item -P @var{prc_typ} (@code{--prc_typ}, @code{--pdq_typ}, @code{--prm_typ}, @code{--procedure})
 Specifies the permutation mode desired.
-As of January~15, 2016, one can tell @command{ncremap} to automatically
-tagpermute the dimensions in the data file prior to regridding for a
-limited (though growning) number of data-file types that suffer from
-the @command{ncremap} limitation concerning dimension ordering.
-Valid types are @samp{airs} for @acronym{NASA AIRS} satellite data, 
-@samp{mpas} for @acronym{MPAS} ocean/ice model data,
+As of January~15, 2016, one can tell @command{ncremap} to invoke special
+processing procedures for different types of input data.
+For instance, to automatically permute the dimensions in the data file
+prior to regridding for a limited (though growing) number of data-file
+types that encounter the @command{ncremap} limitation concerning
+dimension ordering. 
+Valid procedure types are @samp{airs} for @acronym{NASA AIRS} satellite
+data, @samp{mpas} for @acronym{MPAS} ocean/ice model data,
 @samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
 (such as @acronym{ALM/CLM} land model data), 
 and @samp{nil} (for none).
-The default @var{pdq_typ} is @samp{nil}, which means @command{ncremap} 
-does not permute the dimension order prior to regridding.
-In @acronym{AIRS}-mode, @command{ncremap} calls @command{ncpdq} to
-permute dimensions from their order in the input file to this order:
+The default @var{prc_typ} is @samp{nil}, which means @command{ncremap} 
+does not perform any special procedure prior to regridding.
+The @acronym{AIRS} procedure calls @command{ncpdq} to permute dimensions
+from their order in the input file to this order: 
 @code{StdPressureLev,GeoTrack,GeoXTrack}.
-In @acronym{MPAS}-mode the order is 
+The @acronym{MPAS} procedure permutes input data into this order:
 @code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}. 
 
 @cindex Sub-gridscale (@acronym{SGS}) data
@@ -22321,25 +22324,72 @@ field is contained in the variable @var{sgs_frc}, whose name defaults
 to @code{landfrac} and may be specified with the
 @samp{--sgs_frc=@var{sgs_frc}} option. 
 The sub-grid fraction usually changes spatially.
-For concreteness we assume that field represents land fraction, though
-it could be any similar quantity such as ocean fraction, ice fraction,
-vegetated fraction, and so on.
 Spatial fields output by most geophysical models are intensive, 
 and so by default the regridder attempts to conserve the integral of the
 area times the field value such that the integral is equal on source and
 destination grids. 
 However some models (like @acronym{ALM} and @acronym{CLM}) output
 gridcell values intended to apply to only a fraction @var{sgs_frc}
-(which stands for ``land fraction'') of the gridcell.
-Land fraction is non-unity in gridcells that resolve coastlines or
+(which stands for ``sub-gridscale fraction'') of the gridcell.
+For concreteness consider a sub-grid field that represents the land
+fraction, though it could be any similar quantity such as ocean
+fraction, ice fraction, vegetated fraction, and so on.
+Land fraction is less than one in gridcells that resolve coastlines or 
 islands.  
+@acronym{ALM} and @acronym{CLM}) happily output temperature values, say,
+valid only for a small (i.e., @math{@var{sgs_frc} << 1}) island within
+the larger gridcell.
 Regridding weights that assume @math{@var{sgs_frc} = 1} everywhere would 
 create subtle, difficult-to-notice, biases in coastal regions that,
 on Earth, would alter global mean values (e.g., of temperature, fluxes)
 by up to a few percent at common grid resolutions.
 Though models like @acronym{ALM} and @acronym{CLM} may run on the same
 horizontal grid as the overlying atmosphere, they cannot be regridded
-with the same weights or map-files as the atmosphere.
+with the atmosphere's weights which account for the whole gridcell, not  
+just for the sub-grid land fraction.
+
+To correctly regrid sub-grid data, specify the @samp{-P sgs} option, 
+and names of the @var{sgs_frc} and @var{sgs_msk} variables (if they
+differ from their respective defaults @code{landfrac} and
+@code{landmask}). 
+@command{ncremap} will re-derive @var{sgs_msk} based on the regridded 
+values of @var{sgs_frc}. 
+Sub-gridscale handling currently requires the user to specify the SCRIP
+source grid-file. 
+Moreover, the source grid-file must include the (normally non-essential)
+grid_area field.
+It is infeasible to permit source-grid inferral, because
+weight-generators assume great circle arcs but 2D-grids usually have
+small-circles in latitude, and this can lead to area mis-matches.
+However, sub-gridscale handling will infer destination grids from
+2D-data files, if requested: 
+@example
+ncremap -P sgs -i in.nc -s src_grd.nc -g dst_grd.nc  -o out.nc
+ncremap -P sgs -i in.nc -s src_grd.nc -d dst_data.nc -o out.nc
+@end example
+
+The method used to regrid sub-grid values is somewhat involved.
+First we conservatively regrid the sub-grid fraction, and multiply
+the destination area by this regridded fraction.
+Then we duplicate the source and destination grids, to modify the
+copies without tampering with the originals.
+We multiply the grid-cell area in the duplicated source grid by  
+the sub-grid fraction in the input data file. 
+We multiply the grid-cell area in the duplicated duplicated destination
+grid by regridded sub-grid fraction.
+We then construct a map-file that conserves a field weighted by
+the altered source and destination gridcell areas.
+@command{ncremap} then applies these regridding weights to all
+input fields to construct the regridded fields.
+Finally we overwrite the area, sub-grid fraction, and sub-grid mask with
+the correct values from the first step, the conservatively regridded
+sub-grid fraction.
+During development of this procedure, we learned that regridding
+sub-grid values correctly versus incorrectly (i.e., with and 
+without @samp{-P sgs}, respectively) alters global-mean answers
+for land-based quantities by @w{about 1%} for typical grid resolutions  
+on Earth.
+This is small enough to be easily overlooked.
 
 @html
 <a name="par_typ"></a> <!-- http://nco.sf.net/nco.html#par_typ -->
