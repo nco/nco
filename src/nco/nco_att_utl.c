@@ -1191,8 +1191,13 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     }else if(arg_lst[3] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[2]) != 'm'){
       msg_sng=strdup("Type must be explicitly specified for all modes except delete and modify");
       NCO_SYNTAX_ERROR=True;
-    }else if(arg_lst[idx_att_val_arg] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[3]) != 'c'){
-      /* ... value is not specified except that att_val = "" is valid for character type */
+    }else if(arg_lst[idx_att_val_arg] == NULL && *(arg_lst[2]) != 'd' && (*(arg_lst[3]) != 'c' || !strcmp(arg_lst[3],"sng"))){
+      /* 20170515: 
+	 ncks --cdl -v one ~/nco/data/in.nc
+	 ncatted -O -a long_name,one,o,c,'' ~/nco/data/in.nc ~/foo.nc
+	 ncks --cdl -v one ~/foo.nc
+      */
+      /* ... value is not specified except that att_val = "" is valid for character and string types */
       msg_sng=strdup("Value must be explicitly specified for all modes except delete (although an empty string value is permissible for attributes of type NC_CHAR and NC_STRING)");
       NCO_SYNTAX_ERROR=True;
     } /* end else */
