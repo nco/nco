@@ -149,7 +149,7 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2017 May&nbsp;??: 4.6.7 (<i>In progress</i>)
+<li>2017 May&nbsp;??: 4.6.7 (<i>In Progress...Sub-grid</i>)
 <li>2017 Apr&nbsp;21: 4.6.6 (UGRID)
 <li>2017 Mar&nbsp;15: 4.6.5 (Sundry features/fixes)
 <li>2017 Feb&nbsp;07: 4.6.4 (<tt>ncclimo</tt> splitter)
@@ -635,8 +635,9 @@ netCDF4 compound types?;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
 <li><b>NCO 4.6.7</b>: (<i>In Progress, features in-progress or complete include</i>) 
 Multi-argument (MTA) flag parsing;
-<tt>ncap2</tt> in-fill functions simple_fill_miss() weighted_fill_miss();
-<tt>ncremap</tt> 2D UGRID output;
+<tt>ncap2</tt> in-fill functions simple_fill_miss() + weighted_fill_miss();
+<tt>ncap2</tt> duplicates input variable chunking;
+<tt>ncremap -P sgs</tt> sub-gridscale remapping;
 <tt>ncremap</tt> msk_src/dst conversion;
 <tt>ncremap</tt> src/dst_regional hints to ERWG;</li>
 <li><b>NCO 4.6.6</b>: (<i>Current Stable Release</i>)

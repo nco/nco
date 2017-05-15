@@ -19381,7 +19381,8 @@ variables.
 Specifying @code{-a} results in the variables being extracted, printed,
 and written to disk in the order in which they were saved in the input
 file.
-Thus @code{-a} retains the original ordering of the variables.
+Thus @code{-a} retains the original (often non-alphabetic) variable
+ordering.
 Also @samp{--abc} and @samp{--alphabetize}.
 
 @html
