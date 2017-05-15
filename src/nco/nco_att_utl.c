@@ -1191,10 +1191,11 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     }else if(arg_lst[3] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[2]) != 'm'){
       msg_sng=strdup("Type must be explicitly specified for all modes except delete and modify");
       NCO_SYNTAX_ERROR=True;
-    }else if(arg_lst[idx_att_val_arg] == NULL && *(arg_lst[2]) != 'd' && (*(arg_lst[3]) != 'c' || !strcmp(arg_lst[3],"sng"))){
+    }else if(arg_lst[idx_att_val_arg] == NULL && *(arg_lst[2]) != 'd' && *(arg_lst[3]) != 'c' && strcmp(arg_lst[3],"sng")){
       /* 20170515: 
 	 ncks --cdl -v one ~/nco/data/in.nc
 	 ncatted -O -a long_name,one,o,c,'' ~/nco/data/in.nc ~/foo.nc
+	 ncatted -O -a long_name,one,o,sng,'' ~/nco/data/in_4.nc ~/foo.nc
 	 ncks --cdl -v one ~/foo.nc
       */
       /* ... value is not specified except that att_val = "" is valid for character and string types */
@@ -1319,12 +1320,12 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
         /* strdup() attaches a trailing NUL to the user-specified string 
 	   Retaining is obliquely discussed in netCDF Best Practices document:
 	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char */
-        aed_lst[idx].val.cp=(nco_char *)strdup(arg_lst[idx_att_val_arg]);
+        
+	aed_lst[idx].val.cp= (aed_lst[idx].sz > 0L) ? (nco_char *)strdup(arg_lst[idx_att_val_arg]) : NULL; 
       }else if(aed_lst[idx].type == NC_STRING){
         aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
-        for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+        for(lmn=0L;lmn<aed_lst[idx].sz;lmn++)
           aed_lst[idx].val.sngp[lmn]=(nco_string)strdup(arg_lst[idx_att_val_arg+lmn]);
-        } /* end loop over elements */
       }else{
         char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
         double *val_arg_dbl=NULL_CEWI;
