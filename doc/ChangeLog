@@ -1,3 +1,9 @@
+2017-03-21 Henry Butowsky  <henryb@hush.com>
+
+	* added to utl_cls() - "missing()" and its synonym "mask_miss()" 
+	all it does is create a 0/1 array for the expression ( var== var_miss)
+	the returned type is the same as input type.
+
 2017-05-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.7-alpha06 release procedure:
