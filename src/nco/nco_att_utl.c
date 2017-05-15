@@ -1324,8 +1324,9 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	aed_lst[idx].val.cp= (aed_lst[idx].sz > 0L) ? (nco_char *)strdup(arg_lst[idx_att_val_arg]) : NULL; 
       }else if(aed_lst[idx].type == NC_STRING){
         aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
-        for(lmn=0L;lmn<aed_lst[idx].sz;lmn++)
-          aed_lst[idx].val.sngp[lmn]=(nco_string)strdup(arg_lst[idx_att_val_arg+lmn]);
+        for(lmn=0L;lmn<aed_lst[idx].sz;lmn++){
+	  if(arg_lst[idx_att_val_arg+lmn] != NULL) aed_lst[idx].val.sngp[lmn]=(nco_string)strdup(arg_lst[idx_att_val_arg+lmn]); else aed_lst[idx].val.sngp[lmn]=(nco_string)NULL;
+	} /* !lmn */
       }else{
         char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
         double *val_arg_dbl=NULL_CEWI;
