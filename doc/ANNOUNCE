@@ -6,14 +6,7 @@ http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-4.6.7 contains a potpurri of new features:
-Output 2D rectangular grids formatted as UGRID meshes.
-Calendar dates print for bounds and climatology variables.
-Revamped HPSS/hsi support. The splitter produces cleaner output. 
-The regridder groks more files and masks, and annotates output with
-more helpful metadata. CDL mode handles compound record variables.
-JSON output has changed slightly to re-use NcML keywords. 
-ncclimo and ncremap have new extract/exclude options.
+
 
 EVERYONE WHO USES NCKS TO PRINT DATA PLEASE READ THIS:
 
@@ -42,105 +35,20 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap and ncclimo support new extract/exclude switches:
-   --no_cll_msr: Exclude cell_measures variables
-   --no_frm_trm: Exclude formula_terms variables
-   --no_ntv_tms: Exclude native-grid timeseries (splitter only)
-   --no_stg_grd: Exclude staggered grid coordinates
-   By default, these variables are always extracted.
-   Use the above switches to exclude them instead, e.g.,
-   ncclimo --no_cll_msr --no_frm_trm --no_ntv_tms --no_stg_grd ...
-   http://nco.sf.net/nco.html#no_cll_msr
-   http://nco.sf.net/nco.html#no_frm_trm
-   http://nco.sf.net/nco.html#no_ntv_tms
-   http://nco.sf.net/nco.html#no_stg_grd
+A. ncremap and ncclimo now
 
-B. ncclimo's splitter mode no longer requires variable lists. 
-   Previously the splitter required a '-v var_lst' option to know
-   which variables to split into timeseries. Now when the -v option
-   is omitted the splitter creates timeseries of all variables of
-   rank R >= 2. Typically this includes all spatial variables. 
-   Variables known to be extensive (like grid properties) are
-   automatically excluded from this list. However, we expect there
-   will be some cases where the splitter creates timeseries from
-   R >= 2 variables that are not desirable. We are happy to encode
-   manual exceptions as we receive notice of them.
-   ncclimo -s 1979 -e 1981 -o $drc_out in*.nc
-   http://nco.sf.net/nco.html#ncclimo
-
-C. The regridder now produces UGRID output for 2D rectangular grids.
-   Invoke ncremap in grid inferral mode with "--rgr ugrid=foo.nc"
-   and voilà, an annoted UGRID file is produce along with the
-   default SCRIP gridfile. The NCO UGRID is more complete than that 
-   produced by ESMF_Scrip2Unstruct, but ESMF can create UGRID for much 
-   more comlex grids. The NCO regridder can currently only generate
-   UGRID for rectangular 2D input grids, and there are no plans to
-   extend this to curvilinear or unstructured input grids.
-   ncks --rgr nfr=Y --rgr grid=scrip.nc --rgr ugrid=ugrid.nc in.nc out.nc
-   http://nco.sf.net/nco.html#rgr
-
-D. ncks now prints the units, if any, in comments after CDL values
-   when debugging is enabled with dbg_lvl >=1:
-   zender@foo: ncks --cdl -D 1 in.nc
-   lat = -90, 90 ; // units="degrees_north"
-   lon = 0, 90, 180, 270 ; // units="degrees_east"
-   tpt = 273.1, 273.2, ... 274 ; // units="kelvin"
-   http://nco.sf.net/nco.html#cdl
-
-E. ncap2 now implements the CF cell_methods convention.
+A. ncap2 now implements the CF cell_methods convention.
    ncra, nces, and ncwa have long implemented this, and now the
    relevant ncap2 methods (avg, min, max, etc.) record the operation
    type in the cell_methods attribute.
    ncap2 -s 'avg=one_dmn_rec_var.avg()' ~/nco/data/in.nc ~/foo.nc
    http://nco.sf.net/nco.html#cll_mth
 
-F. Since 4.6.5 ncks has printed the human-legible calendar string
-   corresponding to values with UDUnits date units (time since
-   basetime, e.g., "days since 2000-01-01") and CF calendar attribute,
-   if any. Now ncks also translates and prints time values associated
-   with CF climatology and bounds variables as human legible dates.
-   As before, enact this with the --calendar option when printing.
-   Using dbg_lvl >= 1 in CDL mode prints both the value and calendar
-   string (one in comments): 
-   zender@aerosol:~$ ncks -D 1 --cdl --cal -v tm_365 ~/nco/data/in.nc
-   tm_365 = "2013-03-01"; // double value: 59
-   zender@aerosol:~$ ncks -D 1 --cdl -v tm_365 ~/nco/data/in.nc
-   tm_365 = 59; // calendar format: "2013-03-01"
-   This option is similar to the ncdump -t option.
-   Does this work how you'd like? Let us know.
-   http://nco.sf.net/nco.html#cal
-
-G. ncks now prints "(no units)" instead of "(null)" as the units
-   string for variables with no units. And in CDL mode ncks, when
-   invoked with debugging (e.g., -D 1) prints the units string in the
-   comment section after the values of a variable.
-
 BUG FIXES:
 
-A. NCO now exits with a clear message instead of core dump on missing
-   files on HPSS systems with the hsi command.
-
-B. ncremap will no longer define mask variables in inferred grid
-   files unless it finds a mask variable in the source file.
-   Previously ncremap could define a mask variable in the inferred
-   grid file and never fill-it with data.
-
-C. ncremap now invokes the neareststod algorithm when requested.
-   Previously a typo caused ncremap to invoke nearestdtos when
-   neareststod was specified (doh!). Solution is to upgrade.
-
-D. ncremap now converts non-default masks correctly in infer mode.
-   Previously a "mask" variable in an input file whose grid structure
-   was being inferred could be incorrectly handled for some numeric
-   types. This likely only affected masks with missing values.
-   Sources of files possibly affected include AMSR and CICE.
-
-E. ncks now prints braces required to disambiguate compound
-   record dimensions in CDL mode. Such braces have been required by 
-   ncgen-like parsers since ~2013 in order to unambiguously determine
-   the record dimension sizes in variables with multiple record
-   dimensions. This fix only affects CDL printing of netCDF4 files
-   that contain compound record variables. 
+A. ncatted allows writing an empty NC_CHAR or NC_STRING attribute.
+   Previously ncatted would core dump.
+   Solution is to upgrade.
 
 KNOWN PROBLEMS DUE TO NCO:
 

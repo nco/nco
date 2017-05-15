@@ -1,8 +1,11 @@
-2017-05-14  Charlie Zender  <zender@uci.edu>
+2017-05-15  Charlie Zender  <zender@uci.edu>
+
+	* Allow ncatted to write empty NC_STRING
 
 	* NCO 4.6.7-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.7-beta01 final changes';git push
 	git tag -a 4.6.7-beta01 -m 'ncap2 in-fill, MTA flags, ERWG rgn hints, SGS';git push --tags
+
 
 2017-05-13 Henry Butowsky  <henryb@hush.com>
 
