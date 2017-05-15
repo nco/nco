@@ -117,7 +117,7 @@
               while(tr=tr->getNextSibling());    
             } 
       
-            nbr_args=vtr_args.size();  
+            nbr_args=vtr_args.size();
 
             susg="usage: var_out="+sfnm+"(var_in,$dim1,$dim2...$dimn)";
 
@@ -129,7 +129,7 @@
             nbr_dim=var1->nbr_dim;  
 
             // Process function arguments if any exist !! 
-            for(idx=1; idx<nbr_args; idx++){  
+            for(idx=1; idx<nbr_args; idx++){
                 aRef=vtr_args[idx];
            
                 switch(aRef->getType()){
@@ -350,6 +350,9 @@
       fmc_vtr.push_back( fmc_cls("has_miss",this,(int)HAS_MISS));
       fmc_vtr.push_back( fmc_cls("ram_write",this,(int)RAM_WRITE));
       fmc_vtr.push_back( fmc_cls("ram_delete",this,(int)RAM_DELETE));
+      fmc_vtr.push_back( fmc_cls("mask_miss",this,(int)MASK_MISS));
+      /* synomn */
+      fmc_vtr.push_back( fmc_cls("missing",this,(int)MASK_MISS));
       fmc_vtr.push_back( fmc_cls("linear_fill_miss",this,(int)LINEAR_FILL_MISS));
       fmc_vtr.push_back( fmc_cls("simple_fill_miss",this,(int)SIMPLE_FILL_MISS));
       fmc_vtr.push_back( fmc_cls("weighted_fill_miss",this,(int)WEIGHT_FILL_MISS));
@@ -421,6 +424,10 @@
 
       case LINEAR_FILL_MISS:
         return linear_fill_fnd(is_mtd, vtr_args,fmc_obj,walker);
+        break;
+
+      case MASK_MISS:
+        return mask_fnd(is_mtd, vtr_args,fmc_obj,walker);
         break;
 
       case SIMPLE_FILL_MISS:
@@ -1223,6 +1230,77 @@ double alpha;
   return dist;
 
 }
+
+
+var_sct * utl_cls::mask_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker) {
+  const std::string fnc_nm("utl_cls::mask_fnd");
+  nco_bool do_permute = False;
+  int idx;
+  int jdx;
+  int nbr_dim;
+  int nbr_args;
+  int re_dim_nbr;
+  int swp_nbr;
+  int fdx = fmc_obj.fdx();
+  long icnt;
+  var_sct *var = NULL_CEWI;
+  var_sct * var_miss= NULL_CEWI;
+  nc_type styp = NC_INT; // used to hold the mapping type either NC_INT or NC_UINT64
+  std::string sfnm = fmc_obj.fnm(); //method name
+  std::string var_nm;
+  std::string dim_nm;
+  std::string susg;
+  prs_cls *prs_arg = walker.prs_arg;
+
+
+  sfnm = fmc_obj.fnm(); //method name
+
+  susg = "usage: var_out=" + sfnm + "(var_in)";
+
+
+  nbr_args = args_vtr.size();
+  var = walker.out(args_vtr[0]);
+  nbr_dim = var->nbr_dim;
+
+  if (nbr_args == 0)
+    err_prn(sfnm, "Function has been called with no arguments\n" + susg);
+
+  if (prs_arg->ntl_scn)
+  {
+    if(var->has_mss_val)
+      if(var->mss_val.vp) {
+        var->mss_val.vp = nco_free(var->mss_val.vp);
+        var->has_mss_val = False;
+      }
+
+
+    return var;
+
+  }
+
+  /* remember the default fill for var->type is used for val.vp in this function call */
+  var_miss=ncap_sclr_var_mk("~var_miss",var->type,true);
+
+  if(var->has_mss_val){
+
+    (void)memcpy(var_miss->val.vp, var->mss_val.vp, nco_typ_lng(var->type));
+    var->has_mss_val=False;
+    var->mss_val.vp=(void*)NULL;
+
+  }else{
+   wrn_prn(sfnm,"Warning method is using default fill value as \""+ SCS(var->nm)+ "\" has no missing value.");
+
+  }
+
+  /* remember this function calls frees up second operand miss_var */
+  (void)ncap_var_var_op(var,var_miss, EQ );
+
+  return var;
+
+
+}
+
+
 
 
 
