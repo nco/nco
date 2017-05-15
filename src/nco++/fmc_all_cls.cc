@@ -1265,7 +1265,15 @@ var_sct * utl_cls::mask_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
   if (nbr_args == 0)
     err_prn(sfnm, "Function has been called with no arguments\n" + susg);
 
-  if (prs_arg->ntl_scn) {
+  if (prs_arg->ntl_scn)
+  {
+    if(var->has_mss_val)
+      if(var->mss_val.vp) {
+        var->mss_val.vp = nco_free(var->mss_val.vp);
+        var->has_mss_val = False;
+      }
+
+
     return var;
 
   }
