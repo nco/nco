@@ -1701,6 +1701,9 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
   char *grp_out_fll;                   /* [sng] Group name */
 
+  dmn_cmn_sct *dmn_cmn_out;            /* [sct] List of all dimensions in output file (used for RETAIN_ALL_DIMS) */
+  gpe_nm_sct *gpe_nm;                  /* [sct] GPE name duplicate check array */
+
   int fl_fmt;                          /* [enm] netCDF file format */
   int grp_id;                          /* [ID] Group ID in input file */
   int grp_out_id;                      /* [ID] Group ID in output file */ 
@@ -1710,10 +1713,6 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
   int nbr_dmn_cmn_out;                 /* [sct] Number of all dimensions in output file (used for RETAIN_ALL_DIMS) */
 
   nco_bool PCK_ATT_CPY;                /* [flg] Copy attributes "scale_factor", "add_offset" */
-
-  gpe_nm_sct *gpe_nm;                  /* [sct] GPE name duplicate check array */
-
-  dmn_cmn_sct *dmn_cmn_out;            /* [sct] List of all dimensions in output file (used for RETAIN_ALL_DIMS) */
 
   nco_prg_id=nco_prg_id_get(); 
   nbr_gpe_nm=0;

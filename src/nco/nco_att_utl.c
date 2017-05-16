@@ -744,7 +744,12 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     } /* !flg_autoconvert */
 
     if(strcmp(att_nm,nco_mss_val_sng_get())){
-      if(flg_autoconvert){
+      /* Normal (non-_FillValue) attributes */
+      if(!flg_autoconvert){
+	/* Copy all attributes except _FillValue with fast library routine
+	   20170516: library routine does not copy empty NC_CHAR attributes? */
+	(void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
+      }else{ /* autoconvert */
 	var_sct att_var; /* [sct] Variable structure */
 	var_sct *att_var_ptr=NULL; /* [sct] Variable structure */
 
@@ -768,11 +773,8 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 	  rcd=nco_put_att(out_id,var_out_id,att_nm,att_typ_out,att_sz,att_var_ptr->val.vp);
 	  if(att_var_ptr->val.vp) att_var_ptr->val.vp=nco_free(att_var_ptr->val.vp);
 	} /* !NC_STRING */
-      }else{
-	/* Copy all attributes except _FillValue with fast library routine */
-	(void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
-      } /* !Autoconvert */
-    }else{
+      } /* !autoconvert */
+    }else{ /* !_FillValue */
       /* Convert "_FillValue" attribute to unpacked type then copy 
 	 Impose NCO convention that _FillValue is same type as variable,
 	 whether variable is packed or not */

@@ -1,3 +1,7 @@
+2017-05-16  Charlie Zender  <zender@uci.edu>
+
+	* Add ncremap --hnt_dst option to manually specify '--dst_regional' for supplied destination grids
+
 2017-05-15  Charlie Zender  <zender@uci.edu>
 
 	* Allow ncatted to write empty NC_STRING
