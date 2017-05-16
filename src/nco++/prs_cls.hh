@@ -155,7 +155,13 @@ bool bram);
 
 void 
 ncap_def_ntl_scn           /* define variables captured on first parse */
-(void); 
+(void);
+
+int 
+ncap_get_cnk_sz(
+var_sct *var);
+
+
  };
 
 #endif // PRS_CLS_HH
