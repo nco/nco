@@ -6,7 +6,6 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.7-beta01 final changes';git push
 	git tag -a 4.6.7-beta01 -m 'ncap2 in-fill, MTA flags, ERWG rgn hints, SGS';git push --tags
 
-
 2017-05-13 Henry Butowsky  <henryb@hush.com>
 
 	* ncap2 add "missing()" and synonym "mask_miss()" to utl_cls()

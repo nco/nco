@@ -37,8 +37,13 @@ NEW FEATURES (full details always in ChangeLog):
 
 A. ncremap and ncclimo now
 
-A. ncap2 now implements the CF cell_methods convention.
-   ncra, nces, and ncwa have long implemented this, and now the
+A. ncap2 has a new function named missing(), aka mask_miss() that
+   return an array of the same size of its argument, with values
+   of zero where valid data are present and one where missing data
+   are present. The resulting array can be useful in characterizing
+   and masking the original array.
+
+A. ncap2 now implements ncra, nces, and ncwa have long implemented this, and now the
    relevant ncap2 methods (avg, min, max, etc.) record the operation
    type in the cell_methods attribute.
    ncap2 -s 'avg=one_dmn_rec_var.avg()' ~/nco/data/in.nc ~/foo.nc
