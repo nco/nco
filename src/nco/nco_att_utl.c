@@ -1322,7 +1322,6 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
         /* strdup() attaches a trailing NUL to the user-specified string 
 	   Retaining is obliquely discussed in netCDF Best Practices document:
 	   http://www.unidata.ucar.edu/software/netcdf/docs/BestPractices.html#Strings%20and%20Variables%20of%20type%20char */
-        
 	aed_lst[idx].val.cp= (aed_lst[idx].sz > 0L) ? (nco_char *)strdup(arg_lst[idx_att_val_arg]) : NULL; 
       }else if(aed_lst[idx].type == NC_STRING){
         aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
