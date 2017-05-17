@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.7-alpha06
-@set doc-edition 4.6.7-alpha06
+@set nco-edition 4.6.7-beta01
+@set doc-edition 4.6.7-beta01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 16 May 2017
+@set update-date 17 May 2017
 @set update-month May 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6787,6 +6787,7 @@ regionally refined grids.
 Support for irregular 2D- and regional grids (e.g., swath-like data) is
 planned.  
 
+@unnumberedsubsec Renormalization
 @html
 <a name="rnr"></a> <!-- http://nco.sf.net/nco.html#rnr -->
 <a name="renormalize"></a> <!-- http://nco.sf.net/nco.html#renormalize -->
@@ -6886,7 +6887,7 @@ values.
 A counter-example is fluxes, which should be physically conserved under 
 areal-regridding.
 One should consider both the type of field and its conservation
-properties before choosing a regridding strategy.
+properties when choosing a regridding strategy.
 
 @acronym{NCO} automatically annotates the output with relevant metadata
 such as coordinate bounds, axes, and vertices (@w{@`{a} la} @acronym{CF}). 
@@ -21695,8 +21696,9 @@ ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_op
 [-M] [-m @var{map_fl}] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}]
 [-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}]
-[-P @var{prc_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-s @var{grd_src}] [--stdin]
-[-T @var{tempest_opt}] [-t @var{thr_nbr}] [-U @var{drc_tmp}] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
+[-P @var{prc_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]
+[-s @var{grd_src}] [--stdin] [-T @var{tempest_opt}] [-t @var{thr_nbr}]
+[-U @var{drc_tmp}] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
@@ -22303,8 +22305,9 @@ For instance, to automatically permute the dimensions in the data file
 prior to regridding for a limited (though growing) number of data-file
 types that encounter the @command{ncremap} limitation concerning
 dimension ordering. 
-Valid procedure types are @samp{airs} for @acronym{NASA AIRS} satellite
-data, @samp{mpas} for @acronym{MPAS} ocean/ice model data,
+Valid procedure types are @samp{airs} for @acronym{NASA AIRS} satellite data, 
+@samp{mpas} for @acronym{MPAS} ocean/ice model data,
+@samp{mod04} for @w{Level 2} @acronym{MODIS} @acronym{MOD04} product,
 @samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
 (such as @acronym{ALM/CLM} land model data), 
 and @samp{nil} (for none).
@@ -22313,8 +22316,10 @@ does not perform any special procedure prior to regridding.
 The @acronym{AIRS} procedure calls @command{ncpdq} to permute dimensions
 from their order in the input file to this order: 
 @code{StdPressureLev,GeoTrack,GeoXTrack}.
+The @acronym{MOD04} procedure unpacks input data.
 The @acronym{MPAS} procedure permutes input data into this order:
-@code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}. 
+@code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}, and invokes
+renormalization.  
 
 @cindex Sub-gridscale (@acronym{SGS}) data
 @cindex @acronym{SGS}-mode
@@ -22440,9 +22445,66 @@ when all source files share the same grid.
 @command{ncremap} passes @var{rgr_opt} directly through to the
 regridder.  
 This is useful to customize output grids and metadata.
+One use is to rename output variables and dimensions from the defaults
+provided by or derived from input data.
 The default value is @samp{--rgr lat_nm_out=lat --rgr lon_nm_out=lon},
 i.e., by default @command{ncremap} always names latitude and longitude
 ``lat'' and ``lon'', respectively, regardless of their input names.
+
+@html
+<a name="rnr_thr"></a> <!-- http://nco.sf.net/nco.html#rnr_thr -->
+@end html
+@cindex @code{-r @var{rnr_thr}}
+@cindex @var{rnr_thr}
+@cindex @code{--rnr_thr}
+@cindex @code{--thr_rnr}
+@cindex @code{--renormalize_threshold}
+@item -r @var{rnr_thr} (@code{--rnr_thr}, @code{--thr_rnr}, @code{--renormalize_threshold})
+Use this option to request renormalization (see @ref{Regridding}) 
+and to specify the weight threshold.
+For example, @samp{-r 0.9} tells the regridder to renormalize
+with a weight threshold of 90%, so that all destination gridcells
+with at least 90% of their area contributed by valid source gridcells
+will be contain valid (not missing) values that are the area-weighted
+mean of the valid source values.
+This option was introduced because renormalization is a frequently used
+feature which previously could only be invoked by using the uglier and
+more generic @code{-R @var{rgr_opt}} option defined above.
+Specifying @samp{-r 0.9} or @samp{--rnr_thr=0.9} is equivalent to
+specifying @samp{-R '--rgr rnr=0.9'}.
+
+@html
+<a name="rgn_dst"></a> <!-- http://nco.sf.net/nco.html#rgn_dst -->
+<a name="rgn_src"></a> <!-- http://nco.sf.net/nco.html#rgn_src -->
+@end html
+@cindex @var{rgn_dst}
+@cindex @code{--rgn_dst}
+@cindex @code{--dst_rgn}
+@cindex @code{--regional_destination}
+@item --rgn_dst (@code{--rgn_dst}, @code{--dst_rgn}, @code{--regional_destination})
+@cindex @var{rgn_src}
+@cindex @code{--rgn_src}
+@cindex @code{--src_rgn}
+@cindex @code{--regional_source}
+@item --rgn_src (@code{--rgn_src}, @code{--src_rgn}, @code{--regional_source})
+Use these flags which take no argument to indicate that a user-supplied 
+(i.e., with @samp{-s @var{grd_src}} or @samp{-g @var{grd_dst}})
+grid is regional.
+The @acronym{ERWG} weight-generator needs to be told whether the source,
+destination, or both grids are regional or global in order to optimize
+weight production.
+@command{ncremap} supplies this information to the regridder for grids
+it automatically infers from data files. 
+However, the regridder needs to be explicitly told if user-supplied
+(i.e., with either @samp{-s @var{grd_src}} or @samp{-g @var{grd_dst}})
+grids are regional because the regridder does not examine supplied grids 
+before calling @acronym{ERWG} which assumes, unless told otherwise,
+that grids are global in extent.
+The sole effect of these flags is to add the arguments
+@samp{--src_regional} and/or @samp{--dst_regional} to @acronym{ERWG} 
+calls.
+Supplying regional grids without invoking these flags may dramatically 
+increase the map-file size and time to compute.
 
 @html
 <a name="grd_src"></a> <!-- http://nco.sf.net/nco.html#grd_src -->

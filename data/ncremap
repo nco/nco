@@ -212,7 +212,7 @@ esac # !HOSTNAME
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -d ${DATA}/essgcm14/essgcm14.cam2.h0.0000-01.nc -o ~/fv09_rgr.nc # 20170510 2D->2D bilinear works and conserve ~2% wrong, infer S and D
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -d ${HOME}/skl_t42.nc -o ~/fv09_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
 # ncremap --vrb=3 -p nil -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
-# ncremap --vrb=3 -P sgs -a bilinear --sfc_frc=aice --sfc_msk=tmask --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170510 -a conserve fails on curvilinear CICE output, bilinear completes with spatially wrong answers
+# ncremap --vrb=3 -P sgs -a bilinear --sgs_frc=aice --sgs_msk=tmask --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170510 -a conserve fails on curvilinear CICE output, bilinear completes with spatially wrong answers
 # Wenshan's CICE/CESM shipping simulations: grid inferral produces non-CCW cell, fails in conservative mode
 # ncremap -a conserve -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256 ~/wenshan.nc # 20170515: borken
 # Debugging and Benchmarking:
@@ -306,10 +306,10 @@ out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='nil' # [sng] Parallelism type
 prc_typ='' # [sng] Procedure type
-#rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon --rnr=0.0' # [sng] Regridding options
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
-sfc_frc='landfrac' # [sng] Surface fraction variable
-sfc_msk='landmask' # [sng] Surface mask variable
+rnr_thr='' # [sng] Renormalization option
+sgs_frc='landfrac' # [sng] Sub-grid fraction variable
+sgs_msk='landmask' # [sng] Sub-grid mask variable
 std_flg='No' # [sng] Input available from pipe to stdin
 thr_nbr=2 # [nbr] Thread number for regridder
 tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
@@ -329,6 +329,7 @@ vrb_3=3 # [enm] Verbosity level: English
 vrb_4=4 # [enm] Verbosity level: Pedantic
 vrs_prn='No' # [sng] Print version information
 wgt_gnr='esmf' # [sng] Weight-generator program
+wgt_opt='' # [sng] Weight-generator options
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 
 # Set temporary-file directory
@@ -369,11 +370,12 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, pdq_typ, prm_typ, procedure${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
+    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, thr_rnr, renormalize_threshold${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_dst${fnt_nrm}  Regional destination grid [${fnt_tlc}rgn_dst, dst_rgn, regional_destination${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_src${fnt_nrm}  Regional source grid [${fnt_tlc}rgn_src, src_rgn, regional_source${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}grd_src${fnt_nrm}  Grid-file (source) (empty means infer or use map_fl) (default ${fnt_bld}${grd_src}${fnt_nrm}) [${fnt_tlc}grd_src, grid_source, source_grid, src_grd${fnt_nrm}]"
-    echo " ${fnt_bld}--sfc_frc${fnt_nrm}  Surface fraction variable (empty means none) (default ${fnt_bld}${sfc_frc}${fnt_nrm}) [${fnt_tlc}sfc_frc, ice_frc, lnd_frc, ocn_frc, surface_fraction${fnt_nrm}]"
-    echo " ${fnt_bld}--sfc_msk${fnt_nrm}  Surface mask variable (empty means none) (default ${fnt_bld}${sfc_msk}${fnt_nrm}) [${fnt_tlc}sfc_msk, ice_msk, lnd_msk, ocn_msk, surface_mask${fnt_nrm}]"
+    echo " ${fnt_bld}--sgs_frc${fnt_nrm}  Sub-grid fraction variable (empty means none) (default ${fnt_bld}${sgs_frc}${fnt_nrm}) [${fnt_tlc}sgs_frc, ice_frc, lnd_frc, ocn_frc, subgrid_fraction${fnt_nrm}]"
+    echo " ${fnt_bld}--sgs_msk${fnt_nrm}  Sub-grid mask variable (empty means none) (default ${fnt_bld}${sgs_msk}${fnt_nrm}) [${fnt_tlc}sgs_msk, ice_msk, lnd_msk, ocn_msk, subgrid_mask${fnt_nrm}]"
     echo " ${fnt_bld}--std_flg${fnt_nrm}  Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, std_flg, inp_std, redirect, standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-T${fnt_nrm} ${fnt_bld}tps_opt${fnt_nrm}  TempestRemap GenerateOfflineMap options (default ${fnt_bld}${tps_opt}${fnt_nrm}) [${fnt_tlc}tps_opt, tempest_opt, tempest, tempest_options${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thread_number, thread, threads${fnt_nrm}]"
@@ -428,7 +430,7 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
-while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; do
+while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:r:s:T:t:U:u:V:v:w:x:-: OPT; do
     case ${OPT} in
 	a) alg_typ="${OPTARG}" ;; # Algorithm
 	C) clm_flg='Yes' ;; # Climo flag (undocumented)
@@ -447,6 +449,7 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
 	o) out_fl="${OPTARG}" ;; # Output file
 	P) prc_typ="${OPTARG}" ;; # Procedure type
 	p) par_typ="${OPTARG}" ;; # Parallelism type
+	r) rnr_thr="${OPTARG}" ;; # Renormalization threshold
 	R) rgr_opt="${OPTARG}" ;; # Regridding options
 	s) grd_src="${OPTARG}" ;; # Source grid-file
 	T) tps_opt="${OPTARG}" ;; # Tempest options
@@ -491,13 +494,14 @@ while getopts :a:CD:d:E:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:s:T:t:U:u:V:v:w:x:-: OPT; d
 	       prc_typ=?* | pdq_typ=?* | prm_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
+	       rnr_thr=?* | thr_rnr=?* | renormalization_threshold=?* ) rnr_thr="${LONG_OPTARG}" ;; # -r # Renormalization threshold
 	       rgn_dst=?* | dst_rgn=?* | regional_destination=?* ) hnt_dst='--dst_regional' ;; # # Regional destination grid
 	       rgn_dst=?* | dst_rgn=?* | regional_destination=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Regional destination grid
 	       rgn_src=?* | src_rgn=?* | regional_source=?* ) hnt_src='--src_regional' ;; # # Regional source grid
 	       rgn_src=?* | src_rgn=?* | regional_source=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Regional source grid
 	       grd_src=?* | grid_source=?* | source_grid=?* | src_grd=?* ) grd_src="${LONG_OPTARG}" ;; # -s # Source grid-file
-	       sfc_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | surface_fraction=?* ) sfc_frc="${LONG_OPTARG}" ;; # # Surface fraction variable
-	       sfc_msk=?* | ice_msk=?* | lnd_msk=?* | ocn_msk=?* | surface_mask=?* ) sfc_msk="${LONG_OPTARG}" ;; # # Surface mask variable
+	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | surface_fraction=?* ) sgs_frc="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
+	       sgs_msk=?* | ice_msk=?* | lnd_msk=?* | ocn_msk=?* | surface_mask=?* ) sgs_msk="${LONG_OPTARG}" ;; # # Sub-grid mask variable
 	       stdin | inp_std | std_flg | redirect | standard_input ) inp_std='Yes' ;; # # Input file list from stdin
 	       stdin=?* | inp_std=?* | std_flg=?* | redirect=?* | standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Input file list from stdin
 	       tps_opt=?* | tempest_opt=?* | tempest=?* | tempest_options=?* ) tps_opt="${LONG_OPTARG}" ;; # -T # Tempest options
@@ -625,7 +629,7 @@ grd_src_dfl="${drc_tmp}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) defau
 hnt_dst_fl="${drc_tmp}/ncremap_tmp_hnt_dst.txt" # [sng] Hint (for ERWG) destination
 hnt_src_fl="${drc_tmp}/ncremap_tmp_hnt_src.txt" # [sng] Hint (for ERWG) source
 ncwa_fl="${drc_tmp}/ncremap_tmp_ncwa.nc" # [sng] ncwa workflow (HIRDLS, MLS) default
-pdq_fl="${drc_tmp}/ncremap_tmp_pdq.nc" # [sng] Permuted/Unpacked data default (AIRS, HIRDLS, MLS, MOD3K, MPAS) 
+pdq_fl="${drc_tmp}/ncremap_tmp_pdq.nc" # [sng] Permuted/Unpacked data default (AIRS, HIRDLS, MLS, MOD04, MPAS) 
 tmp_out_fl="${drc_tmp}/${tmp_out_fl}" # [sng] Temporary output file
 znl_fl="${drc_tmp}/ncremap_tmp_znl.nc" # [sng] Zonal workflow (HIRDLS, MLS) default
 
@@ -701,6 +705,9 @@ fi # !no_frm_trm
 if [ "${no_stg_grd}" = 'Yes' ]; then 
     rgr_opt="${rgr_opt} --rgr no_stagger"
 fi # !no_stg_grd
+if [ -n "${rnr_thr}" ]; then 
+    rgr_opt="${rgr_opt} --rgr rnr=${rnr_thr}"
+fi # !rnr_thr
 if [ -n "${var_lst}" ]; then 
     nco_var_lst="-v ${var_lst}"
 fi # !var_lst
@@ -739,9 +746,9 @@ elif [ "${par_typ}" = 'mpi' ]; then
     par_opt=' &'
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod3k' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'sgs' ] ; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'sgs' ] ; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'hirdls', 'mls', 'mod3k', 'mpas', 'nil', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'hirdls', 'mls', 'mod04', 'mpas', 'nil', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -754,11 +761,10 @@ fi # !hirdls
 if [ "${prc_typ}" = 'mls' ]; then 
     pdq_opt='-a CO_Pressure,CO_Latitude,lon'
 fi # !mls
-if [ "${prc_typ}" = 'mod3k' ]; then 
+if [ "${prc_typ}" = 'mod04' ]; then 
     pdq_opt='-U'
     hnt_dst='--dst_regional'
-    rgr_opt="${rgr_opt} --rnr=0.9"
-fi # !mod3k
+fi # !mod04
 if [ "${prc_typ}" = 'mpas' ]; then 
 #    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean
 #    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # Ice
@@ -766,11 +772,8 @@ if [ "${prc_typ}" = 'mpas' ]; then
     rgr_opt="${rgr_opt} --rnr=0.0"
 fi # !mpas
 if [ "${prc_typ}" = 'sgs' ]; then 
-#    alg_typ='conserve'
-#    alg_opt='conserve'
     nco_dgn_area='--rgr diagnose_area'
     esmf_opt='--user_areas --ignore_unmapped'
-#	rgr_opt="${rgr_opt} --rnr=0.0"
 fi # !sgs
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
@@ -1021,7 +1024,10 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
     printf "dbg: out_fl   = ${out_fl}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
-    printf "dbg: sfc_frc  = ${sfc_frc}\n"
+    printf "dbg: rgr_opt  = ${rgr_opt}\n"
+    printf "dbg: rnr_thr  = ${rnr_thr}\n"
+    printf "dbg: sgs_frc  = ${sgs_frc}\n"
+    printf "dbg: sgs_msk  = ${sgs_msk}\n"
     printf "dbg: spt_pid  = ${spt_pid}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: ugrid_fl = ${ugrid_fl}\n"
@@ -1112,7 +1118,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	fi # !clm_flg
     fi # !mpas
     if [ "${prc_typ}" = 'sgs' ]; then 
-	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid for gridcell fraction specified by \"${sfc_frc}\" variable, not for entire gridcell_area (except where ${sfc_frc} = 1.0). Will first conservatively regrid ${sfc_frc}, and then normalize subsequent regridding to conserve ${sfc_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
+	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid for gridcell fraction specified by \"${sgs_frc}\" variable, not for entire gridcell_area (except where ${sgs_frc} = 1.0). Will first conservatively regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
 	if [ ${fl_nbr} -eq 0 ] || [ "${map_usr_flg}" = 'Yes' ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires at least one data file (for the surface fractions of each gridcell)\n"
 	    echo "${spt_nm}: HINT Supply a data file with \"-i fl_in\""
@@ -1219,8 +1225,8 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fl_idx=0
     grd_dst_sgs="${drc_tmp}/ncremap_tmp_grd_dst_sgs.nc${unq_sfx}" # [sng] Fractional destination grid-file
     grd_src_sgs="${drc_tmp}/ncremap_tmp_grd_src_sgs.nc${unq_sfx}" # [sng] Fractional source grid-file
-    sfc_frc_in_sgs="${drc_tmp}/ncremap_tmp_sfc_frc_in_sgs.nc${unq_sfx}" # [sng] Surface fraction on input data grid
-    sfc_frc_out_sgs="${drc_tmp}/ncremap_tmp_sfc_frc_out_sgs.nc${unq_sfx}" # [sng] Surface fraction on output data grid
+    frc_in_sgs="${drc_tmp}/ncremap_tmp_frc_in_sgs.nc${unq_sfx}" # [sng] Sub-grid fraction on input data grid
+    frc_out_sgs="${drc_tmp}/ncremap_tmp_frc_out_sgs.nc${unq_sfx}" # [sng] Sub-grid fraction on output data grid
 
     if [ "${grd_src_usr_flg}" != 'Yes' ]; then
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -1278,16 +1284,16 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Append surface fraction from data-file to fractional source grid-file\n"
+	printf "Append sub-grid fraction from data-file to fractional source grid-file\n"
     fi # !vrb_lvl
-    cmd_lnd_src[${fl_idx}]="ncks -A -C -v ${sfc_frc} ${fl_in[${fl_idx}]} ${grd_src_sgs}"
+    cmd_lnd_src[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${fl_in[${fl_idx}]} ${grd_src_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_src[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_lnd_src[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to append surface fraction from data file to fractional source grid-file. Debug this:\n${cmd_lnd_src[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to append sub-grid fraction from data file to fractional source grid-file. Debug this:\n${cmd_lnd_src[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -1296,10 +1302,10 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	printf "Derive fraction, mask, and area in fractional source grid-file...\n"
     fi # !vrb_lvl
     # 1. Eliminate _FillValue and missing_value attributes before using where() which would evaluate _FillValue as false, and necessitate using a weird where() condition
-    # 2. Set (formerly) missing values to 0 surface fraction
-    # 3. Set 0 surface fraction to 0 imask
+    # 2. Set (formerly) missing values to 0 sub-grid fraction
+    # 3. Set 0 sub-grid fraction to 0 imask
     # 4. Compute active grid area
-    cmd_wheresrc[${fl_idx}]="ncap2 -O -s '${sfc_frc}=${sfc_frc};if(${sfc_frc}@missing_value.exists()) ram_delete(${sfc_frc}@missing_value);delete_miss(${sfc_frc});where(${sfc_frc} > 1.0f) ${sfc_frc}=0.0f;where(${sfc_frc} == 0.0f) grid_imask=0;grid_area*=${sfc_frc}' ${grd_src_sgs} ${grd_src_sgs}"
+    cmd_wheresrc[${fl_idx}]="ncap2 -O -s '${sgs_frc}=${sgs_frc};if(${sgs_frc}@missing_value.exists()) ram_delete(${sgs_frc}@missing_value);delete_miss(${sgs_frc});where(${sgs_frc} > 1.0f) ${sgs_frc}=0.0f;where(${sgs_frc} == 0.0f) grid_imask=0;grid_area*=${sgs_frc}' ${grd_src_sgs} ${grd_src_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_wheresrc[${fl_idx}]}
     fi # !dbg
@@ -1312,64 +1318,64 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Create surface fraction ${sfc_frc} data file for regridding...\n"
+	printf "Create sub-grid fraction ${sgs_frc} data file for regridding...\n"
     fi # !vrb_lvl
-    cmd_lnd_in[${fl_idx}]="ncks -O -v ${sfc_frc} ${grd_src_sgs} ${sfc_frc_in_sgs}"
+    cmd_lnd_in[${fl_idx}]="ncks -O -v ${sgs_frc} ${grd_src_sgs} ${frc_in_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_in[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_lnd_in[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${sfc_frc_in_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to extract surface fraction from fractional source grid-file. Debug this:\n${cmd_lnd_in[${fl_idx}]}\n"
+	if [ $? -ne 0 ] || [ ! -f ${frc_in_sgs} ]; then
+	    printf "${spt_nm}: ERROR Failed to extract sub-grid fraction from fractional source grid-file. Debug this:\n${cmd_lnd_in[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Regrid surface fraction ${sfc_frc} to destination grid...\n"
+	printf "Regrid sub-grid fraction ${sgs_frc} to destination grid...\n"
     fi # !vrb_lvl
-    # NB: Do not regrid surface mask as it is extensive and may contain _FillValue (ALM/CLM landmask does)
-    cmd_lnd_rmp[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -v ${sfc_frc} -i ${sfc_frc_in_sgs} -s ${grd_src} -g ${grd_dst} -o ${sfc_frc_out_sgs}"
+    # NB: Do not regrid sub-grid mask as it is extensive and may contain _FillValue (ALM/CLM landmask does)
+    cmd_lnd_rmp[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -v ${sgs_frc} -i ${frc_in_sgs} -s ${grd_src} -g ${grd_dst} -o ${frc_out_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_rmp[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_lnd_rmp[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${sfc_frc_out_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to regrid surface fraction. Debug this:\n${cmd_lnd_rmp[${fl_idx}]}\n"
+	if [ $? -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
+	    printf "${spt_nm}: ERROR Failed to regrid sub-grid fraction. Debug this:\n${cmd_lnd_rmp[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Derive surface mask ${sfc_msk} from regridded surface fraction...\n"
+	printf "Derive sub-grid mask ${sgs_msk} from regridded sub-grid fraction...\n"
     fi # !vrb_lvl
-    # Be careful changing this
-    # Allow for possibility that sfc_frc is 3D (time,lat,lon) as in CICE
-    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'if(${sfc_frc}.ndims() < 3) sfcarea=${sfc_frc}*area; else sfcarea=${sfc_frc}(0,:,:);${sfc_msk}=0*int(sfcarea);where(sfcarea > 0) ${sfc_msk}=1; elsewhere ${sfc_msk}=0;${sfc_msk}@long_name=\"land/ocean mask (0.=ocean and 1.=land)\";if(${sfc_msk}@cell_measures.exists()) ram_delete(${sfc_msk}@cell_measures)' ${sfc_frc_out_sgs} ${sfc_frc_out_sgs}"
+    # Allow for possibility that sgs_frc is 3D (time,lat,lon) as in CICE
+    # And be CAREFUL changing this
+    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"land/ocean mask (0.=ocean and 1.=land)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' ${sgs_frc_out_sgs} ${sgs_frc_out_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_msk[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_lnd_msk[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${sfc_frc_out_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to derive mask from regridded surface fraction. Debug this:\n${cmd_lnd_msk[${fl_idx}]}\n"
+	if [ $? -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
+	    printf "${spt_nm}: ERROR Failed to derive mask from regridded sub-grid fraction. Debug this:\n${cmd_lnd_msk[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Append regridded surface fraction to destination fractional grid-file...\n"
+	printf "Append regridded sub-grid fraction to destination fractional grid-file...\n"
     fi # !vrb_lvl
-    cmd_lnd_dst[${fl_idx}]="ncks -A -C -v ${sfc_frc} ${sfc_frc_out_sgs} ${grd_dst_sgs}"
+    cmd_lnd_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${frc_out_sgs} ${grd_dst_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_dst[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_lnd_dst[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to append regridded surface fraction to destination fractional grid-file. Debug this:\n${cmd_lnd_dst[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to append regridded sub-grid fraction to destination fractional grid-file. Debug this:\n${cmd_lnd_dst[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -1377,9 +1383,9 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Derive mask and area in fractional destination grid-file...\n"
     fi # !vrb_lvl
-    # 1. Set 0 surface fraction to 0 imask
+    # 1. Set 0 sub-grid fraction to 0 imask
     # 2. Compute active grid area
-    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sfc_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${sfc_frc}' ${grd_dst_sgs} ${grd_dst_sgs}"
+    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_wheredst[${fl_idx}]}
     fi # !dbg
@@ -1625,7 +1631,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
     fi # !mpas
 	
-    # Block 4b: Generic Permutation/Unpacking (AIRS, HIRDLS, MLS, MOD3K, MPAS)
+    # Block 4b: Generic Permutation/Unpacking (AIRS, HIRDLS, MLS, MOD04, MPAS)
     if [ -n "${pdq_opt}" ]; then
 	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
 	    printf "PDQ(in)  : ${in_fl}\n"
@@ -1731,17 +1737,17 @@ fi # !par_typ
 if [ "${prc_typ}" = 'sgs' ]; then 
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Append full gridcell area, regridded surface fraction, and re-derived surface mask to regridded file...\n"
+	printf "Append full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask to regridded file...\n"
 	fi # !vrb_lvl
-	# These replace user-areas area, user-areas surface fraction, and naïvely regridded (rather than accurately re-derived) surface mask, respectively
-	cmd_grd_rpl[${fl_idx}]="ncks -A -C -v area,${sfc_frc},${sfc_msk} ${sfc_frc_out_sgs} ${fl_out[${fl_idx}]}"
+	# These replace user-areas area, user-areas sub-grid fraction, and naïvely regridded (rather than accurately re-derived) sub-grid mask, respectively
+	cmd_grd_rpl[${fl_idx}]="ncks -A -C -v area,${sgs_frc},${sgs_msk} ${frc_out_sgs} ${fl_out[${fl_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_grd_rpl[${fl_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_grd_rpl[${fl_idx}]}
 	    if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		printf "${spt_nm}: ERROR Failed to replace area, ${sfc_frc}, and ${sfc_msk} with full gridcell area, regridded surface fraction, and re-derived surface mask in output data file. Debug this:\n${cmd_grd_rpl[${fl_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to replace area, ${sgs_frc}, and ${sgs_msk} with full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask in output data file. Debug this:\n${cmd_grd_rpl[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
@@ -1752,7 +1758,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Cleaning-up intermediate files...\n"
     fi # !vrb_lvl
-    /bin/rm -f ${att_fl} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${sfc_frc_in_sgs} ${sfc_frc_out_sgs} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${att_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files.\n"

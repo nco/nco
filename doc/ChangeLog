@@ -1,8 +1,18 @@
 2017-05-17  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.7-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.7-beta01 final changes';git push
+	git tag -a 4.6.7-beta01 -m 'ncap2 in-fill, MTA flags, ERWG rgn hints, SGS';git push --tags
+
+	* Document --rgn_dst/src, -r rgr_thr
+
+	* Add ncremap -r rgr_thr option
+
+	* Make mod04 automatically unpack
+
 	* Change --hnt_dst/src options to --rgn_dst/src flags
 
-	* Add ncremap -P mod3k and make -a tempest synonymous with -w tempest
+	* Add ncremap -P mod04 and make -a tempest synonymous with -w tempest
 
 2017-05-16  Charlie Zender  <zender@uci.edu>
 
@@ -11,10 +21,6 @@
 2017-05-15  Charlie Zender  <zender@uci.edu>
 
 	* Allow ncatted to write empty NC_STRING
-
-	* NCO 4.6.7-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.7-beta01 final changes';git push
-	git tag -a 4.6.7-beta01 -m 'ncap2 in-fill, MTA flags, ERWG rgn hints, SGS';git push --tags
 
 2017-05-13 Henry Butowsky  <henryb@hush.com>
 
