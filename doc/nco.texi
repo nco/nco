@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.7-alpha06
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 11 May 2017
+@set update-date 16 May 2017
 @set update-month May 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19534,12 +19534,14 @@ detailed descriptions of the meanings of these hidden attributes.
 <a name="cdl"></a> <!-- http://nco.sf.net/nco.html#cdl -->
 <a name="hdp"></a> <!-- http://nco.sf.net/nco.html#hdp -->
 <a name="hncgen"></a> <!-- http://nco.sf.net/nco.html#hncgen -->
+<a name="h4_ncgen"></a> <!-- http://nco.sf.net/nco.html#h4_ncgen -->
 <a name="ncgen-hdf"></a> <!-- http://nco.sf.net/nco.html#ncgen-hdf -->
 @end html
 @cindex @command{hdp}
 @cindex @command{ncgen}
 @cindex @command{ncgen-hdf}
 @cindex @command{hncgen}
+@cindex @command{h4_ncgen}
 @cindex @command{ncdump}
 @cindex @code{--cdl}
 @cindex @acronym{CDL}
@@ -19581,20 +19583,22 @@ ncgen -k netCDF-4 -b -o ~/in.nc ~/in.cdl
 ncks -v one ~/in.nc
 @end example
 The @acronym{HDF} version of @command{ncgen}, often named
-@command{hncgen} or @command{ncgen-hdf}, converts netCDF3 @acronym{CDL}
+@command{hncgen}, @command{h4_ncgen}, or @command{ncgen-hdf}, converts netCDF3 @acronym{CDL}
 into an @acronym{HDF} file:  
 @example
 /usr/hdf4/bin/ncgen -b -o ~/in.hdf ~/in.cdl # HDF ncgen (local builds)
 /usr/bin/hncgen     -b -o ~/in.hdf ~/in.cdl # Same as HDF ncgen (RPM packages?)
+/usr/bin/h4_ncgen   -b -o ~/in.hdf ~/in.cdl # Same as HDF ncgen (Anaconda)
 /usr/bin/ncgen-hdf  -b -o ~/in.hdf ~/in.cdl # Same as HDF ncgen (Debian packages?)
 hdp dumpsds ~/in.hdf                        # ncdump/h5dump-equivalent for HDF4
+h4_ncdump dumpsds ~/in.hdf                  # ncdump/h5dump-equivalent for HDF4
 @end example
 Note that @acronym{HDF4} does not support netCDF-style groups, so the
 above commands fail when the input file contains groups.
 Only netCDF4 and @acronym{HDF5} support groups.
 In our experience the @acronym{HDF} @command{ncgen} command, by whatever 
-name installed, is not robust and can fail on valid netCDF3
-@acronym{CDL}.  
+name installed, is not robust and fails on many valid netCDF3
+@acronym{CDL} constructs.
 
 @html
 <a name="dmn_rec_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_rec_mk -->
@@ -21801,13 +21805,13 @@ Features common to many operators are described in
 @cindex @code{--regrid_algorithm}
 @item -a @var{alg_typ} (@code{--alg_typ}, @code{--algorithm}, @code{--regrid_algorithm})
 Specifies the interpolation algorithm for weight-generation for use by
-@command{ESMF_RegridWeightGen} (@acronym{ERWG}).
+@command{ESMF_RegridWeightGen} (@acronym{ERWG}) and/or TempestRemap.
 @command{ncremap} unbundles this algorithm choice from the rest of
-the @acronym{ERWG} invocation syntax because interpolation algorithms
-are more frequently change by users than other @acronym{ERWG} options
+the weight-generator invocation syntax because user more frequently
+change interpolation algorithms than other options
 (that can be changed with @samp{-E @var{esmf_opt}}).
-The @var{alg_typ} argument must be one of @acronym{ERWG}'s five
-interpolation algorithms: 
+The @var{alg_typ} argument must be @code{tempest} or one of
+@acronym{ERWG}'s five interpolation algorithms:
 @code{bilinear} (default, acceptable abbreviation is @code{bln}), 
 @code{conserve} (or @code{conservative} or @code{cns}), 
 @code{nearestdtos} (or @code{nds} or @code{dtos}), 
@@ -21815,8 +21819,9 @@ interpolation algorithms:
 and @code{patch} (or @code{pch} or @code{ptc}). 
 See @acronym{ERWG} documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03020000000000000000, here}
-for detailed descriptions of each algorithm. 
-This option currently has no effect on TempestRemap weight-generation. 
+for detailed descriptions of @acronym{ERWG} algorithms.
+Specifying @code{tempest} invokes TempestRemap weight-generation,
+and is currently the same as invoking @samp{-w tempest}.
 
 @html
 <a name="dbg_lvl"></a> <!-- http://nco.sf.net/nco.html#dbg_lvl -->

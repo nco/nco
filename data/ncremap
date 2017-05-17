@@ -257,7 +257,7 @@ fi # !TERM
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
-alg_typ='bilinear' # [nbr] Algorithm for ESMF interpolation (bilinear|patch|neareststod|nearestdtos|conserve)
+alg_typ='bilinear' # [nbr] Algorithm for interpolation (bilinear|conserve|nearestdtos|neareststod|patch|tempest)
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
@@ -346,7 +346,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}$spt_nm -i in_fl -d dst_fl -o out_fl${fnt_nrm}\n"
     printf "${fnt_nrm} ${fnt_bld}${spt_nm} --input_file=in_fl --destination=dst_fl --output_file=out_fl${fnt_nrm}\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
-    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for ESMF weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
+    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}esmf_opt${fnt_nrm} ESMF ESMF_RegridWeightGen options (default ${fnt_bld}${esmf_opt}${fnt_nrm}) [${fnt_tlc}esmf_opt, esmf, esmf_options${fnt_nrm}]"
@@ -623,7 +623,7 @@ grd_src_dfl="${drc_tmp}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) defau
 hnt_dst_fl="${drc_tmp}/ncremap_tmp_hnt_dst.txt" # [sng] Hint (for ERWG) destination
 hnt_src_fl="${drc_tmp}/ncremap_tmp_hnt_src.txt" # [sng] Hint (for ERWG) source
 ncwa_fl="${drc_tmp}/ncremap_tmp_ncwa.nc" # [sng] ncwa workflow (HIRDLS, MLS) default
-pdq_fl="${drc_tmp}/ncremap_tmp_pdq.nc" # [sng] Permuted data default (AIRS, HIRDLS, MLS, MPAS) 
+pdq_fl="${drc_tmp}/ncremap_tmp_pdq.nc" # [sng] Permuted/Unpacked data default (AIRS, HIRDLS, MLS, MOD3K, MPAS) 
 tmp_out_fl="${drc_tmp}/${tmp_out_fl}" # [sng] Temporary output file
 znl_fl="${drc_tmp}/ncremap_tmp_znl.nc" # [sng] Zonal workflow (HIRDLS, MLS) default
 
@@ -648,8 +648,8 @@ pdq_fl=${pdq_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
+# Algorithm options are bilinear|conserve|nearestdtos|neareststod|patch|tempest
 if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bln' ]; then 
-    # ESMF algorithms are bilinear|patch|neareststod|nearestdtos|conserve
     alg_opt='bilinear'
 elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ]; then 
     alg_opt='conserve'
@@ -659,6 +659,13 @@ elif [ ${alg_typ} = 'neareststod' ] || [ ${alg_typ} = 'nsd' ] || [ ${alg_typ} = 
     alg_opt='neareststod'
 elif [ ${alg_typ} = 'patch' ] || [ ${alg_typ} = 'pch' ] || [ ${alg_typ} = 'ptc' ]; then 
     alg_opt='patch'
+elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp' ]; then 
+    alg_opt='tempest'
+    wgt_usr='tempest'
+else 
+    echo "${spt_nm}: ERROR ${alg_typ} is not a valid interpolation option\n"
+    echo "${spt_nm}: HINT Valid interpolation options are bilinear|conserve|nearestdtos|neareststod|patch|tempest\n"
+    exit 1
 fi # !alg_typ
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
@@ -730,15 +737,31 @@ elif [ "${par_typ}" = 'mpi' ]; then
     par_opt=' &'
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'sgs' ] ; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod3k' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'sgs' ] ; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'hirdls', 'mls', 'mpas', 'nil', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'hirdls', 'mls', 'mod3k', 'mpas', 'nil', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
 if [ "${prc_typ}" = 'airs' ]; then 
     pdq_opt='-a StdPressureLev,GeoTrack,GeoXTrack'
 fi # !airs
+if [ "${prc_typ}" = 'hirdls' ]; then 
+    pdq_opt='-a Pressure,Latitude,lon'
+fi # !hirdls
+if [ "${prc_typ}" = 'mls' ]; then 
+    pdq_opt='-a CO_Pressure,CO_Latitude,lon'
+fi # !mls
+if [ "${prc_typ}" = 'mod3k' ]; then 
+    pdq_opt='-U'
+    hnt_dst='--dst_regional'
+fi # !mod3k
+if [ "${prc_typ}" = 'mpas' ]; then 
+#    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean
+#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # Ice
+    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
+    rgr_opt="${rgr_opt} --rnr=0.0"
+fi # !mpas
 if [ "${prc_typ}" = 'sgs' ]; then 
 #    alg_typ='conserve'
 #    alg_opt='conserve'
@@ -746,18 +769,6 @@ if [ "${prc_typ}" = 'sgs' ]; then
     esmf_opt='--user_areas --ignore_unmapped'
 #	rgr_opt="${rgr_opt} --rnr=0.0"
 fi # !sgs
-if [ "${prc_typ}" = 'hirdls' ]; then 
-    pdq_opt='-a Pressure,Latitude,lon'
-fi # !hirdls
-if [ "${prc_typ}" = 'mls' ]; then 
-    pdq_opt='-a CO_Pressure,CO_Latitude,lon'
-fi # !mls
-if [ "${prc_typ}" = 'mpas' ]; then 
-#    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean
-#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # Ice
-    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
-    rgr_opt="${rgr_opt} --rnr=0.0"
-fi # !mpas
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
 fi # !thr_usr
@@ -1101,12 +1112,17 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid for gridcell fraction specified by \"${sfc_frc}\" variable, not for entire gridcell_area (except where ${sfc_frc} = 1.0). Will first conservatively regrid ${sfc_frc}, and then normalize subsequent regridding to conserve ${sfc_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
 	if [ ${fl_nbr} -eq 0 ] || [ "${map_usr_flg}" = 'Yes' ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires at least one data file (for the surface fractions of each gridcell)\n"
-	    echo "${spt_nm}: HINT: Supply a data file with \"-i fl_in\""
+	    echo "${spt_nm}: HINT Supply a data file with \"-i fl_in\""
 	    exit 1
 	fi # !fl_nbr
+	if [ "${wgt_gnr}" = 'tempest' ]; then
+	    printf "${spt_nm}: ERROR Sub-gridscale handling currently does not support TempestRemap.\n"
+	    echo "${spt_nm}: HINT Use ESMF weight-generator (and ask Charlie to implement SGS for Tempest)"
+	    exit 1
+	fi # !wgt_gnr
 	if [ "${grd_src_usr_flg}" != 'Yes' ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP source grid-file. Moreover, the source grid-file must include the (normally non-essential) grid_area field. It is infeasible to permit source-grid inferral, because weight-generators assume great circle arcs but 2D-grids usually have small-circles in latitude, and this can lead to area mis-matches. However, sub-gridscale handling will infer destination grids.\n"
-	    echo "${spt_nm}: HINT: Supply source grid-file with \"-s grd_src\""
+	    echo "${spt_nm}: HINT Supply source grid-file with \"-s grd_src\""
 	    exit 1
 	    # 20170511: Inferring source grids leads to ~2% biases with conservative regridding and 2D source grids
 	    # printf "${spt_nm}: Sub-gridscale handling will attempt to infer the source SCRIP grid-file from the input data file. This will only work for rectangular 2D data files, because SGS requires the source grid-file to contain the (normally non-essential) grid_area field for the input grid.\n"
@@ -1116,7 +1132,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	fi # !grd_dst_usr_flg
 	if [ "${map_usr_flg}" = 'Yes' ]; then
 	    printf "${spt_nm}: ERROR Sub-grid handling forbids specification of a precomputed map-file. Sub-grid handling must generate map-files from specially pre-processed SCRIP grid-files. Allowing pre-computed map-files risks users inadvertently supplying incorrect map-files. The supplied or inferred SCRIP grid-files must include the (normally non-essential) grid_area field, which ${spt_nm} can normally infer from rectangular 2-D datafiles, though not from 1-D (unstructured) datafiles.\n"
-	    echo "${spt_nm}: HINT: Remove the the map-file specification by eliminating the \"-m map_fl\" option"
+	    echo "${spt_nm}: HINT Remove map-file specification by eliminating the \"-m map_fl\" option"
 	    exit 1
 	fi # !fl_nbr
     fi # !sgs
@@ -1606,7 +1622,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
     fi # !mpas
 	
-    # Block 4b: Generic Permutation (AIRS, HIRDLS, MLS, MPAS)
+    # Block 4b: Generic Permutation/Unpacking (AIRS, HIRDLS, MLS, MOD3K, MPAS)
     if [ -n "${pdq_opt}" ]; then
 	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
 	    printf "PDQ(in)  : ${in_fl}\n"
