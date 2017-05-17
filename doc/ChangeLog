@@ -1,5 +1,7 @@
 2017-05-17  Charlie Zender  <zender@uci.edu>
 
+	* Change --hnt_dst/src options to --rgn_dst/src flags
+
 	* Add ncremap -P mod3k and make -a tempest synonymous with -w tempest
 
 2017-05-16  Charlie Zender  <zender@uci.edu>
