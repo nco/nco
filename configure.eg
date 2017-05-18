@@ -408,7 +408,7 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNI
 # gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 347675 on 20170316
-# Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170411
+# Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170515
 # Personal recipe last used successfully: 20170509
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
