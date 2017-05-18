@@ -21691,16 +21691,16 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [-E @var{esmf_opt}]
+ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}]
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-M] [-m @var{map_fl}] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}]
 [-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{prc_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]
-[-s @var{grd_src}] [--stdin] [-T @var{tempest_opt}] [-t @var{thr_nbr}]
-[-U @var{drc_tmp}] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
+[-s @var{grd_src}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
+[-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[-w @var{wgt_gnr}] [-x @var{xtn_lst}[,@dots{}]] 
+[-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
 
 @noindent
@@ -21822,8 +21822,7 @@ and @code{patch} (or @code{pch} or @code{ptc}).
 See @acronym{ERWG} documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03020000000000000000, here}
 for detailed descriptions of @acronym{ERWG} algorithms.
-Specifying @code{tempest} invokes TempestRemap weight-generation,
-and is currently the same as invoking @samp{-w tempest}.
+Specifying @code{tempest} invokes TempestRemap weight-generation.
 
 @html
 <a name="dbg_lvl"></a> <!-- http://nco.sf.net/nco.html#dbg_lvl -->
@@ -21870,22 +21869,6 @@ be interpolated or guessed-at.
 @acronym{NCO} only reads coordinate and grid data and metadata from
 @var{dst_fl}. 
 @var{dst_fl} is not modified, and may have read-only permissions.
-
-@html
-<a name="esmf_opt"></a> <!-- http://nco.sf.net/nco.html#esmf_opt -->
-@end html
-@cindex @code{-E @var{esmf_opt}}
-@cindex @var{esmf_opt}
-@cindex @code{--esmf_opt}
-@cindex @code{--esmf}
-@cindex @code{--esmf_options}
-@item -E @var{esmf_opt} (@code{--esmf_opt}, @code{--esmf}, @code{--esmf_options})
-@command{ncremap} passes @var{esmf_opt} directly through to
-@acronym{ERWG}. 
-The user-specified contents of @var{esmf_opt} supercede its default
-contents (@samp{--ignore_unmapped}).
-Sometimes users may wish @acronym{ERWG} to assume regional grids,
-in which case @var{esmf_opt} could be @samp{-r --ignore_upmapped}.
 
 @html
 <a name="grd_dst"></a> <!-- http://nco.sf.net/nco.html#grd_dst -->
@@ -22546,16 +22529,27 @@ Thus @acronym{NCO} will call @acronym{ERWG} only once, and will use that
 @command{GenerateOfflineMap} (not to @command{GenerateOverlapMesh}).
 The user-specified contents of @var{tempest_opt} supercede its default
 contents, which are currently empty.
-For example, to cause @command{GenerateOfflineMap} to use a
-@code{_FillValue} of @math{-1}, pass 
-@samp{-T "--fillvalue -1.0"} to @command{ncremap}.
-Other common options include enforcing monotonicity (which is not the
-default in TempestRemap) constraints. 
-To guarantee monotonicity in regridding from Finite Volume @acronym{FV} 
-to @acronym{FV} maps (e.g., @acronym{MPAS}-to-rectangular), pass 
-@samp{-T "-in_np 1"} to @command{ncremap}.
-To guarantee monotonicity in regridding from Finite Element @acronym{FE} 
-to @acronym{FV} maps, pass @samp{-T "--mono"}.
+
+@html
+<a name="tmp_drc"></a> <!-- http://nco.sf.net/nco.html#tmp_drc -->
+@end html
+@cindex @code{-T @var{tmp_drc}}
+@cindex @var{tmp_drc}
+@cindex @code{--tmp_drc}
+@cindex @code{--drc_tmp}
+@cindex @code{--tmp_dir}
+@cindex @code{--dir_tmp}
+@cindex @code{--tmp}
+@item -T @var{tmp_drc} (@code{--tmp_drc}, @code{--drc_tmp}, @code{--tmp_dir}, @code{--dir_tmp}, @code{--tmp_drc})
+Specifies the directory in which to place intermediate output files.
+Depending on how it is invoked, @command{ncremap} may generate
+a few or many intermediate files (grids and maps) that it will, by
+default, remove upon successful completion.
+These files can be large, so the option to set @var{tmp_drc} is offered
+to ensure their location is convenient to the system.
+If the user does not specify @var{tmp_drc}, then @command{ncremap} uses
+the value of @code{$TMPDIR}, if any, or else @file{/tmp} if it exists,
+or else it uses the current working director (@code{$PWD}).
 
 @html
 <a name="thr_nbr"></a> <!-- http://nco.sf.net/nco.html#thr_nbr -->
@@ -22569,27 +22563,6 @@ to @acronym{FV} maps, pass @samp{-T "--mono"}.
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
 The @acronym{NCO} regridder scales well up to 8--16 threads.
-
-@html
-<a name="tmp_drc"></a> <!-- http://nco.sf.net/nco.html#tmp_drc -->
-@end html
-@cindex @code{-U @var{tmp_drc}}
-@cindex @var{tmp_drc}
-@cindex @code{--tmp_drc}
-@cindex @code{--drc_tmp}
-@cindex @code{--tmp_dir}
-@cindex @code{--dir_tmp}
-@cindex @code{--tmp}
-@item -U @var{tmp_drc} (@code{--tmp_drc}, @code{--drc_tmp}, @code{--tmp_dir}, @code{--dir_tmp}, @code{--tmp_drc})
-Specifies the directory in which to place intermediate output files.
-Depending on how it is invoked, @command{ncremap} may generate
-a few or many intermediate files (grids and maps) that it will, by
-default, remove upon successful completion.
-These files can be large, so the option to set @var{tmp_drc} is offered
-to ensure their location is convenient to the system.
-If the user does not specify @var{tmp_drc}, then @command{ncremap} uses
-the value of @code{$TMPDIR}, if any, or else @file{/tmp} if it exists,
-or else it uses the current working director (@code{$PWD}).
 
 @html
 <a name="unq_sfx"></a> <!-- http://nco.sf.net/nco.html#unq_sfx -->
@@ -22674,6 +22647,24 @@ ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr # Manua
 @end example
 @noindent
 
+@html
+<a name="upk_inp"></a> <!-- http://nco.sf.net/nco.html#upk_inp -->
+@end html
+@cindex @code{-U}
+@cindex @code{--unpack}
+@cindex @code{--upk}
+@cindex @code{--upk_inp}
+@item -U (@code{--unpack}, @code{--upk}, @code{--upk_inp})
+This switch (which takes no argument) causes @command{ncremap} to
+unpack (see @ref{Packed data}) input data before regridding it.
+Many insititutions, including especially @acronym{NASA},
+pack datasets to conserve space before distributing them.
+This option allows one to regrid input data without having
+to manually unpack it first.
+
+@html
+<a name="cnf"></a> <!-- http://nco.sf.net/nco.html#cnf -->
+@end html
 @cindex @code{--version}
 @cindex @code{--vrs}
 @cindex @code{--config}
@@ -22710,19 +22701,61 @@ Note that @var{vrb_lvl} is distinct from @var{dbg_lvl} which is
 passed to the regridder (@command{ncks}) for additional diagnostics.
 
 @html
-<a name="wgt_gnr"></a> <!-- http://nco.sf.net/nco.html#wgt_gnr -->
+<a name="wgt_opt"></a> <!-- http://nco.sf.net/nco.html#wgt_opt -->
 @end html
-@cindex @code{-w @var{wgt_gnr}}
-@cindex @var{wgt_gnr}
+@cindex @code{-W @var{wgt_opt}}
+@cindex @var{wgt_opt}
+@cindex @code{--wgt_opt}
+@cindex @code{--weight_options}
+@cindex @code{--tps_opt}
+@cindex @code{--tempest_options}
+@cindex @code{--esmf_opt}
+@cindex @code{--esmf_options}
+@item -W @var{wgt_opt} (@code{--wgt_opt}, @code{--weight_options}, @code{--esmf_opt}, @code{--esmf_options}, @code{--tps_opt}, @code{--tempest_options}, )
+@command{ncremap} passes @var{wgt_opt} directly through to the 
+weight-generator (currently @acronym{ERWG} or GenerateOfflineMap). 
+The user-specified contents of @var{wgt_opt}, if any, supercede the
+default contents for the weight-generator.
+The default option for @acronym{ERWG} is @samp{--ignore_unmapped}).
+The @acronym{ERWG} and TempestRemap documentation shows all available
+options. 
+For example, to cause @acronym{ERWG} to output to a netCDF4 file,  
+pass @samp{-W "--netcdf4"} to @command{ncremap}.
+
+GenerateOfflineMap is, by default, run without any options.
+To cause @command{GenerateOfflineMap} to use a @code{_FillValue} of
+@math{-1}, pass @samp{-W "--fillvalue -1.0"} to @command{ncremap}.
+Other common options include enforcing monotonicity (which is not the
+default in TempestRemap) constraints. 
+To guarantee monotonicity in regridding from Finite Volume @acronym{FV} 
+to @acronym{FV} maps (e.g., @acronym{MPAS}-to-rectangular), pass 
+@samp{-W "-in_np 1"} to @command{ncremap}.
+To guarantee monotonicity in regridding from Finite Element @acronym{FE} 
+to @acronym{FV} maps, pass @samp{-W "--mono"}.
+
+@html
+<a name="wgt_cmd"></a> <!-- http://nco.sf.net/nco.html#wgt_cmd -->
+@end html
+@cindex @code{-w @var{wgt_cmd}}
+@cindex @var{wgt_cmd}
+@cindex @code{--wgt_cmd}
 @cindex @code{--wgt_gnr}
+@cindex @code{--weight_command}
 @cindex @code{--weight_generator}
-@item -w @var{wgt_gnr} (@code{--wgt_gnr}, @code{--weight_generator}, @code{--generator})
-Specifies the weight-generator to use when a map-file is not provided. 
-The @var{wgt_gnr} argument must be @code{esmf} for @acronym{ESMF}'s
-@command{ESMF_RegridWeightGen} (@acronym{ERWG}), or 
-@code{tempest} for TempestRemaps's
-@command{GenerateOverlapMesh} and @command{GenerateOfflineMap}.
-Specifying @var{wgt_gnr} and supplying (with @samp{-m}) a map-file
+@item -w @var{wgt_cmd} (@code{--wgt_cmd}, @code{--weight_command}, @code{--wgt_gnr}, @code{--weight_generator})
+Specifies a (possibly extended) command to use to run the
+weight-generator when a map-file is not provided.  
+This command overrides the default executable executable for the
+weight generator, which is @command{ESMF_RegridWeightGen} for
+@acronym{ESMF} and @command{GenerateOfflineMap} for TempestRemap.
+(There is currently no way to override @command{GenerateOverlapMesh}  
+for TempestRemap). 
+The @var{wgt_cmd} must accept the same arguments as the default
+command. 
+Examples include @samp{mpirun -np 24 ESMF_RegridWeightGen},
+@samp{mpirun-openmpi-mp -np 16 ESMF_RegridWeightGen}, and other
+ways of exploiting parallelism that are system-dependent.
+Specifying @var{wgt_cmd} and supplying (with @samp{-m}) a map-file
 is not permitted (since the weight-generator would not be used).
 
 @html
