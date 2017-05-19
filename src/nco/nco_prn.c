@@ -862,7 +862,7 @@ nco_prn_var_val_cmt /* 0 print to stdout var values as CDL comment (delimited by
   #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 
   /* Print type in English in prefix text */
-  if(var->type == NC_STRING) (void)fprintf(stdout,"calendar format: "); else (void)fprintf(stdout,"%s value%s : ",cdl_typ_nm(var->type),(var->sz > 1 ? "s":""));
+  if(var->type == NC_STRING) (void)fprintf(stdout,"calendar format: "); else (void)fprintf(stdout,"%s value%s: ",cdl_typ_nm(var->type),(var->sz > 1 ? "s":""));
 
   for(lmn=0;lmn<sz;lmn++){
 

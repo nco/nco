@@ -214,7 +214,7 @@ esac # !HOSTNAME
 # ncremap --vrb=3 -p nil -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
 # ncremap --vrb=3 -P sgs -a bilinear --sgs_frc=aice --sgs_msk=tmask --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170510 -a conserve fails on curvilinear CICE output, bilinear completes with spatially wrong answers
 # Wenshan's CICE/CESM shipping simulations: grid inferral produces non-CCW cell, fails in conservative mode
-# ncremap -a conserve -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256 ~/wenshan.nc # 20170515: borken
+# ncremap -a conserve -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/wenshan.nc # 20170515: borken
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr > ~/ncremap.out 2>&1 &
 
@@ -1095,7 +1095,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     printf "Output files to directory ${drc_out}\n"
 fi # !vrb_lvl
 if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ] && [ -n "${wgt_usr}" ]; then
-    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_cmd' is only allowed when creating a map (weight generator is superfluous when map is supplied)\n"
+    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_cmd' is only allowed when creating a map (weight generator is superfluous when user supplies map)\n"
     exit 1
 fi # wgt_usr
     
@@ -1124,13 +1124,13 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     fi # !pdq_opt
     if [ -n "${pdq_opt}" ]; then
 	if [ -n "${pdq_typ}" ]; then 
-	    printf "Input data shaped in \"${prc_typ}\"-order, will permute with \"ncpdq ${pdq_opt}\"\n"
+	    printf "Input data shaped in \"${prc_typ}\"-order, will first permute with \"ncpdq ${pdq_opt}\"\n"
 	else
-	    printf "Input assumed to contain packed data, will unpack with \"ncpdq ${pdq_opt}\"\n"
+	    printf "Input assumed to contain packed data, will first unpack with \"ncpdq ${pdq_opt}\"\n"
 	fi # !pdq_typ
     fi # !pdq_opt
     if [ "${prc_typ}" = 'mpas' ]; then
-	printf "Input assumed to be MPAS-O/I data: will apply renormalized regridding (--rnr=0.0)\n"
+	printf "Input assumed to be MPAS-O/I data: will renormalize (with --rnr=0.0) regridding\n"
 	if [ "${clm_flg}" = 'No' ]; then
  	    printf "Input assumed to be barenaked of attributes: will annotate NC_DOUBLE variables with _FillValue prior to regridding\n"
 	fi # !clm_flg
@@ -1148,8 +1148,8 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    exit 1
 	fi # !wgt_typ
 	if [ "${grd_src_usr_flg}" != 'Yes' ]; then
-	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP source grid-file. Moreover, the source grid-file must include the (normally non-essential) grid_area field. It is infeasible to permit source-grid inferral, because weight-generators assume great circle arcs but 2D-grids usually have small-circles in latitude, and this can lead to area mis-matches. However, sub-gridscale handling will infer destination grids.\n"
-	    echo "${spt_nm}: HINT Supply source grid-file with \"-s grd_src\""
+	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP source grid-file. Moreover, the source grid-file must include the (normally non-essential) grid_area field. It is infeasible to permit SGS source-grid inferral, because weight-generators assume great circle arcs but 2D-grids usually have small-circles in latitude, and this can lead to significant area mis-matches. Despite this, sub-gridscale handling is happy to infer destination (not source) grids.\n"
+	    echo "${spt_nm}: HINT Supply source grid-file with \"-s grd_src\". If the source grid-file is unavailable, first multiply sub-grid fields by ${sgs_frc} (with, e.g., ncap2 -s \"foo*=${sgs_frc};\" in.nc out.nc) and then regrid as normal without invoking sub-gridscale handling, i.e., omit the '-P sgs' option."
 	    exit 1
 	    # 20170511: Inferring source grids leads to ~2% biases with conservative regridding and 2D source grids
 	    # printf "${spt_nm}: Sub-gridscale handling will attempt to infer the source SCRIP grid-file from the input data file. This will only work for rectangular 2D data files, because SGS requires the source grid-file to contain the (normally non-essential) grid_area field for the input grid.\n"
@@ -1362,7 +1362,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !vrb_lvl
     # Allow for possibility that sgs_frc is 3D (time,lat,lon) as in CICE
     # And be CAREFUL changing this
-    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"land/ocean mask (0.=ocean and 1.=land)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' ${sgs_frc_out_sgs} ${sgs_frc_out_sgs}"
+    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"land/ocean mask (0.=ocean and 1.=land)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' ${frc_out_sgs} ${frc_out_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_msk[${fl_idx}]}
     fi # !dbg

@@ -1195,7 +1195,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
           *(cf_lst[nbr_cf]+var_lng)='\0';
           strncpy(cf_lst[nbr_cf],cln_ptr+2L,var_lng);
 	  cln_ptr+=var_lng;
-	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: DEBUG %s reports variable %s %s variable #%d is %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,att_nm,nbr_cf,cf_lst[nbr_cf]);
+	  if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stderr,"%s: DEBUG %s reports variable %s %s variable #%d is %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,att_nm,nbr_cf,cf_lst[nbr_cf]);
 	  nbr_cf++;
 	} /* !att_val */
       }else{

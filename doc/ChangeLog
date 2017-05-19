@@ -1,3 +1,15 @@
+2017-05-19  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.7-beta02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.7-beta02 final changes';git push
+	git tag -a 4.6.7-beta02 -m 'ncap2 in-fill, MTA flags, ERWG rgn hints, SGS, ncremap rationalization';git push --tags
+
+	* Add stubs to infer entire grid from regional rectangular CICE in curvilinear format with masked land
+
+	* Add fl_fmt=CDF5 options to documentation
+
+	* Re-run test cases, fix rationalization bugs, improve documentation...
+
 2017-05-18  Charlie Zender  <zender@uci.edu>
 
 	* Document new ncremap options

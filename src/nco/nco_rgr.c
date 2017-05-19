@@ -5507,16 +5507,17 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   double area_ttl=0.0; /* [frc] Exact sum of area */
   double lat_nrt; /* [dgr] Latitude of northern edge of grid */
-  //double lat_sth; /* [dgr] Latitude of southern edge of grid */
+  double lat_sth; /* [dgr] Latitude of southern edge of grid */
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
   double lat_wgt_gss; /* [frc] Latitude weight estimated from interface latitudes */
   //  double lon_est; /* [dgr] Longitude of eastern edge of grid */
-  //  double lon_wst; /* [dgr] Longitude of western edge of grid */
-  //  double lon_ncr; /* [dgr] Longitude increment */
+  double lon_wst; /* [dgr] Longitude of western edge of grid */
+  double lon_ncr; /* [dgr] Longitude increment */
   double lat_ncr; /* [dgr] Latitude increment */
   double lon_spn; /* [dgr] Longitude span */
   double lat_spn; /* [dgr] Latitude span */
   double mss_val_area_dbl;
+  double mss_val_bnd_dbl;
   double mss_val_ctr_dbl;
   double mss_val_msk_dbl;
   
@@ -5571,6 +5572,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long grd_sz_nbr; /* [nbr] Number of gridcells in grid */
   long idx2; /* [idx] Counting index for unrolled grids */
   long idx; /* [idx] Counting index for unrolled grids */
+  long idx_crn;
   long idx_ctr;
   long lat_idx2; /* [idx] Counting index for unrolled latitude */
   long lat_idx;
@@ -5601,6 +5603,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool flg_crn_grd_lat_lon=False; /* [flg] Curvilinear corner array ordered non-canonically as grd_nbr,lat_nbr,lon_nbr */
   nco_bool use_mss_val_area=False;
   nco_bool has_mss_val_area=False;
+  nco_bool has_mss_val_bnd=False;
   nco_bool has_mss_val_ctr=False;
   nco_bool has_mss_val_msk=False;
 
@@ -6073,9 +6076,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   /* All grids: 
      Some real-world datasets violate convention that coordinates ought never have missing values 
-     CICE lists missing value for lat/lon_ctr arrays (TLAT, TLONG) and re-uses that for bounds arrays */
-  has_mss_val_ctr=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
-
+     CICE lists missing value for lat/lon_ctr arrays (TLAT, TLONG) and re-uses that for bounds arrays (latt_bounds, lont_bounds) that do not bother to have their own missing value attributes
+     Without counter-example, assume has_mss_val_bnd=has_mss_val_ctr and mss_val_bnd_dbl=mss_val_ctr_dbl */
+  has_mss_val_bnd=has_mss_val_ctr=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
+  mss_val_bnd_dbl=mss_val_ctr_dbl;
+  
   if(flg_grd_1D){
     /* Obtain fields that must be present in unstructured input file */
     dmn_srt[0]=0L;
@@ -6324,6 +6329,49 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* For curvilinear grids first, if necessary, infer corner boundaries
        Then perform sanity check using same code on inferred and copied grids */
     
+    if(False && !has_mss_val_bnd && grd_crn_nbr == 4 && !strcmp(lat_bnd_nm,"latt_bounds") && !strcmp(lon_bnd_nm,"lont_bounds") && lat_bnd_id != NC_MIN_INT && lon_bnd_id != NC_MIN_INT){
+      /* Only CESM CICE is known to fit these constraints
+	 Its data files seem (often) to be arranged on a regular rectangular regional grid 
+	 Grid begins at southernmost Antarctic ocean latitude and longitude near 79S,320E, ends at north pole
+	 Coordinates stored as 2D arrays, possibly to allow curvilinear grids
+	 Grid of data files I have from CESM are regularly spaced where sea-ice is present
+	 Consistent with CICE running in unstructured mode, each column writes separately to output buffer
+	 This could explain missing coordinates in non-ocean gridcells
+	 Rectangular output eases restarts (and analysis) and so kind-of required for global simulations
+	 Can imagine all this infrastructure working in curvilinear regional model with time-constant grid
+	 Cool!
+	 However, land points are completely masked (grid centers and corners are missing)
+	 Seems like an oversight---they should have written the coordinates for land and just masked the cells
+	 Regridder needs corners so we fill-in missing boundaries with derived grid */
+      double lat_ctr_drv; /* [dgr] Latitude center, derived */
+      double lon_ctr_drv; /* [dgr] Longitude center, derived */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s will assume grid is regional rectangular CICE in curvilinear format with masked land. Will diagnose missing cell boundaries and centers from present boundaries and centers.\n",nco_prg_nm_get(),fnc_nm);
+      for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
+	if(grd_ctr_lat[idx_ctr] != mss_val_ctr_dbl) break;
+      } /* !grd_sz_nbr */
+      assert(idx_ctr != grd_sz_nbr);
+      idx_crn=idx_ctr*grd_crn_nbr;
+      lat_sth=lat_bnd[idx_crn];
+      lon_wst=lon_bnd[idx_crn];
+      lat_ncr=lat_bnd[idx_crn+3]-lat_bnd[idx_crn]; /* ul-ll */
+      lon_ncr=lon_bnd[idx_crn+1]-lon_bnd[idx_crn]; /* lr-ll */
+      for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+	lat_ctr_drv=lat_sth+lat_ncr*(lat_idx+0.5);
+	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+	  idx_ctr=lat_idx*lon_nbr+lon_idx;
+	  if(grd_ctr_lat[idx_ctr] == mss_val_ctr_dbl){
+	    grd_ctr_lat[idx_ctr]=lat_ctr_drv;
+	  } /* !grd_ctr_lat */
+	} /* !lon_idx */
+      } /* !lat_idx */
+      for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
+	if(grd_ctr_lat[idx_ctr] == mss_val_ctr_dbl){
+	  lat_idx=idx_ctr%lon_nbr;
+	} /* !grd_ctr_lat */
+      } /* !grd_sz_nbr */
+      idx_crn=idx_ctr*grd_crn_nbr;
+    } /* CICE */
+
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
       /* Interfaces (ntf) and boundaries (bnd) for curvilinear grids are ill-defined since sides need not follow latitudes nor meridians 
 	 Simplest representation that contains equivalent information to interfaces/boundaries is grid corners array
@@ -6991,7 +7039,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(nco_grd_xtn == nco_grd_xtn_rgn && fl_hnt){
     const char *fl_mode="w";
     FILE *fp_hnt; /* [fl] Hint file (for ERWG switches) file handle */
-    (void)fprintf(stderr,"%s: INFO %s writing weight-generation hint to file %s\n",nco_prg_nm_get(),fnc_nm,fl_hnt);
+    (void)fprintf(stderr,"%s: INFO %s writing weight-generation regional hint to file %s\n",nco_prg_nm_get(),fnc_nm,fl_hnt);
     /* Open output file */
     if((fp_hnt=fopen(fl_hnt,fl_mode)) == NULL){
       (void)fprintf(stderr,"%s: ERROR unable to open hint output file %s\n",nco_prg_nm_get(),fl_hnt);

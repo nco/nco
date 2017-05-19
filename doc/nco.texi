@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.7-beta01
-@set doc-edition 4.6.7-beta01
+@set nco-edition 4.6.7-beta02
+@set doc-edition 4.6.7-beta02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 17 May 2017
+@set update-date 19 May 2017
 @set update-month May 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -11743,7 +11743,7 @@ in-depth examples of @command{ncap2} solutions to complex problems.
 @noindent
 SYNTAX
 @example
-ncap2 [-3] [-4] [-6] [-7] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] 
+ncap2 [-3] [-4] [-5] [-6] [-7] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [-c] 
 [-D @var{dbg}] [-F] [-f] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] [-L @var{dfl_lvl}] [-l @var{path}]
 [--no_tmp_fl] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [--ram_all]
 [-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
@@ -16633,7 +16633,7 @@ omitted in batch scripts.
 @noindent
 SYNTAX
 @example 
-ncbo [-3] [-4] [-6] [-7] [-A] [-C] [-c]
+ncbo [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
@@ -18431,7 +18431,7 @@ Moreover, the climatologies can be generated in parallel.
 @noindent
 SYNTAX
 @example
-ncecat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
+ncecat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
@@ -18699,7 +18699,7 @@ of changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-nces [-3] [-4] [-6] [-7] [-A] [-C] [-c]
+nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
@@ -18928,7 +18928,7 @@ member in the first file.
 @noindent
 SYNTAX
 @example
-ncflint [-3] [-4] [-6] [-7] [-A] [-C] [-c]
+ncflint [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
@@ -18982,7 +18982,7 @@ computed as @math{@var{wgt2} = 1 @minus{} @var{wgt1}}.
 Note that weights larger @w{than 1} are allowed. 
 Thus it is possible to specify @math{@var{wgt1} = 2} and
 @math{@var{wgt2} = -3}.
-One can use this functionality to multiply all the values in a given
+One can use this functionality to multiply all values in a given
 file by a constant.
 
 @cindex normalization
@@ -20707,7 +20707,7 @@ For more details @xref{Wrapped Coordinates}.
 @noindent
 SYNTAX
 @example
-ncpdq [-3] [-4] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
+ncpdq [-3] [-4] [-5] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
@@ -21306,7 +21306,7 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-3] [-4] [-6] [-7] [-A] [-C] [-c] [--cb]
+ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
@@ -21555,7 +21555,7 @@ The last example
 @noindent
 SYNTAX
 @example
-ncrcat [-3] [-4] [-6] [-7] [-A] [-C] [-c]
+ncrcat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
@@ -22657,10 +22657,26 @@ ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -i in.nc -d dst.nc -O ~/rgr # Manua
 @item -U (@code{--unpack}, @code{--upk}, @code{--upk_inp})
 This switch (which takes no argument) causes @command{ncremap} to
 unpack (see @ref{Packed data}) input data before regridding it.
-Many insititutions, including especially @acronym{NASA},
-pack datasets to conserve space before distributing them.
+This switch causes unpacking at the regridding stage that occurs
+after map generation.
+Hence this switch does not benefit grid inferral.
+Grid inferral examines only the coordinate variables in a dataset.
+If coordinates are packed (a terrible practice) in a file from which a
+grid will be inferred, users should first manually unpack the file (this
+option will not help). 
+Fortunately, coordinate variables are usually not packed, even in files
+with other packed data.
+
+Many institutions (like @acronym{NASA}) pack datasets to conserve space
+before distributing them. 
 This option allows one to regrid input data without having
 to manually unpack it first.
+Beware that @acronym{NASA} uses at least three different and
+incompatible versions of packing in its @acronym{L2} datasets.
+The unpacking algorithm employed by this option is the default netCDF
+algorithm, which is appropriate for @acronym{MOD04} and is inappropriate
+for @acronym{MOD08} and @acronym{MOD13}. 
+See @ref{Packed data} for more details and workarounds.
 
 @html
 <a name="cnf"></a> <!-- http://nco.sf.net/nco.html#cnf -->
@@ -23408,7 +23424,7 @@ Variables not prefixed with a period (@code{global}) must be present.
 @noindent
 SYNTAX
 @example
-ncwa [-3] [-4] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
+ncwa [-3] [-4] [-5] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
