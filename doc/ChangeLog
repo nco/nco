@@ -1,3 +1,7 @@
+2017-05-20  Charlie Zender  <zender@uci.edu>
+
+	* Realized CICE grid is truly curvilinear
+
 2017-05-19  Charlie Zender  <zender@uci.edu>
 
 	* CICE grid partially inferred over masked cells

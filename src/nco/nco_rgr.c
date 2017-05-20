@@ -1856,13 +1856,13 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      If necessary, use remap data to diagnose them from scratch
      Other extensive variables (like counts, population) will be extracted and summed not averaged */
   /* Exception list source:
-     ALM/CLM: landmask (20170504: Debatable, including erroneous mask may be better than completely excluding an expected mask) (20170504: must keep landfrac since regridded by ncremap for almu option)
+     ALM/CLM: landmask (20170504: Debatable, including erroneous mask may be better than completely excluding an expected mask) (20170504: must keep landfrac since regridded by ncremap for SGS option)
      AMSR: Latitude, Longitude
      CAM, CERES, CMIP5: lat, lon
      CAM, CMIP5: gw, lat_bnds, lon_bnds
      CAM-FV: slon, slat, w_stag (w_stag is weights for slat grid, analagous to gw for lat grid)
      CAM-SE: area
-     CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (NB: CICE uses ?LON and POP uses ?LONG) (aice is ice area, tmask is state-variable mask, both not currently excluded)
+     CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (NB: CICE uses ?LON and POP uses ?LONG) (aice is ice area, tmask is state-variable mask, both not currently excluded, although all binary masks like tmask should be recomputed on new grid)
      ESMF: gridcell_area
      GPM: S1_Latitude, S1_Longitude
      HIRDLS: Latitude
@@ -6331,17 +6331,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     
     if(has_mss_val_bnd && grd_crn_nbr == 4 && !strcmp(lat_bnd_nm,"latt_bounds") && !strcmp(lon_bnd_nm,"lont_bounds") && lat_bnd_id != NC_MIN_INT && lon_bnd_id != NC_MIN_INT){
       /* Only CESM CICE is known to fit these constraints
-	 Its data files seem (often) to be arranged on a regular rectangular regional grid stored as a degenerate curvilinear grid (i.e., with 2D coordinates)
-	 Grid from southernmost Antarctic ocean latitude and longitude near 79S,320E to North Pole
+	 Its data files seem (often) to be arranged as rectangular (and regular in longitude) in the SH, and a curvilinear (in latitude, still regular in longitude) 
+	 Hence grid is degenerate curvilinear grid (i.e., with 2D coordinates) in SH, true curvilinear in NH
+	 Grid is from southernmost Antarctic ocean latitude and longitude near 79S,320E to North Pole
 	 Coordinates stored as 2D arrays, possibly to allow curvilinear grids
-	 Grid of data files I have from CESM are regularly spaced where sea-ice is present
+	 CESM grids in data files I have are always regularly spaced in longitude where sea-ice is present
 	 Consistent with CICE running in unstructured mode, each column writes separately to output buffer
 	 This could explain missing coordinates in non-ocean gridcells
-	 Rectangular output eases restarts (and analysis) and so kind-of required for global simulations
-	 Imagine that same infrastructure works in truly curvilinear regional model with time-constant grid
-	 Cool!
 	 However, land points are completely masked (grid centers and corners are missing)
-	 Seems like an oversight---they should have written the coordinates for land and just masked the cells
+	 Oversight? Why not write coordinates for land-masked cells?
 	 Regridder needs corners so we fill-in missing boundaries with derived grid */
       double lat_ctr_drv; /* [dgr] Latitude center, derived */
       double lon_ctr_drv; /* [dgr] Longitude center, derived */
@@ -6356,18 +6354,28 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       lon_wst=lon_crn[idx_crn];
       lat_ncr=lat_crn[idx_crn+3]-lat_crn[idx_crn]; /* ul-ll */
       lon_ncr=lon_crn[idx_crn+1]-lon_crn[idx_crn]; /* lr-ll */
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s will assume grid is regional rectangular CICE in curvilinear format with masked land. Will diagnose missing cell boundaries and centers from present boundaries and centers. lat_nbr=%ld, lon_nbr=%ld, lat_sth=%g, lat_ncr=%g, lon_wst=%g, lon_ncr=%g\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_sth,lat_ncr,lon_wst,lon_ncr);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s will assume grid is regional CICE in curvilinear format with masked land. Will diagnose missing cell boundaries and centers from present boundaries and centers. lat_nbr=%ld, lon_nbr=%ld, lat_sth=%g, lat_ncr=%g, lon_wst=%g, lon_ncr=%g\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_sth,lat_ncr,lon_wst,lon_ncr);
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
-	lat_ctr_drv=lat_sth+lat_ncr*(lat_idx+0.5);
-	lat_crn_drv=lat_sth+lat_ncr*lat_idx;
+	idx_ctr=lat_idx*lon_nbr;
+	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+	  if(lat_ctr[idx_ctr+lon_idx] != mss_val_ctr_dbl) break;
+	} /* !grd_sz_nbr */
+	/* 20170519: Verify all latitudes have at least one valid point */
+	assert(lon_idx != lon_nbr);
+	idx_ctr=lat_idx*lon_nbr+lon_idx;
+	idx_crn=idx_ctr*grd_crn_nbr;
+	lat_sth=lat_crn[idx_crn];
+	lat_ncr=lat_crn[idx_crn+3]-lat_crn[idx_crn]; /* ul-ll */
+	lat_ctr_drv=lat_sth+0.5*lat_ncr;
+	lat_crn_drv=lat_sth;
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	  idx_ctr=lat_idx*lon_nbr+lon_idx;
 	  if(lat_ctr[idx_ctr] == mss_val_ctr_dbl){
 	    idx_crn=idx_ctr*grd_crn_nbr;
+	    /* lon_wst never changes */
 	    lon_ctr_drv=lon_wst+lon_ncr*(lon_idx+0.5);
 	    lon_crn_drv=lon_wst+lon_ncr*lon_idx;
 	    if(lon_ctr_drv >= 360.0) lon_ctr_drv-=360.0;
-	    if(lon_crn_drv >= 360.0) lon_crn_drv-=360.0;
 	    lat_ctr[idx_ctr]=lat_ctr_drv;
 	    lon_ctr[idx_ctr]=lon_ctr_drv;
 	    lat_crn[idx_crn+0L]=lat_crn[idx_crn+1L]=lat_crn_drv;
@@ -7113,7 +7121,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Input mask can be any type and output mask will always be NC_INT
        Applications: 
        ALM/CLM mask (landmask) is NC_FLOAT and defines but does not use NC_FLOAT missing value
-       CICE mask (tmask/umask) is NC_FLOAT and uses NC_FLOAT missing value
+       CICE mask (tmask/umask) is NC_FLOAT and defines and uses NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value */
   switch(msk_typ){
     case NC_FLOAT:
