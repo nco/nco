@@ -6179,7 +6179,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  for(idx=0;idx<grd_sz_nbr;idx++){
 	    lat_idx=idx/lon_nbr;
 	    lon_idx=idx%lon_nbr;
-	    /* NB: Variables differ (lat vs. lon) but indexes are identical in next to lines */
+	    /* NB: Variables differ (lat vs. lon) but indexes are identical in next two lines */
 	    lat_crn[lat_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+crn_idx]=lat_crn_tmp[crn_idx*grd_sz_nbr+idx];
 	    lon_crn[lat_idx*lon_nbr*grd_crn_nbr+lon_idx*grd_crn_nbr+crn_idx]=lon_crn_tmp[crn_idx*grd_sz_nbr+idx];
 	  } /* !idx */
@@ -6329,47 +6329,59 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* For curvilinear grids first, if necessary, infer corner boundaries
        Then perform sanity check using same code on inferred and copied grids */
     
-    if(False && !has_mss_val_bnd && grd_crn_nbr == 4 && !strcmp(lat_bnd_nm,"latt_bounds") && !strcmp(lon_bnd_nm,"lont_bounds") && lat_bnd_id != NC_MIN_INT && lon_bnd_id != NC_MIN_INT){
+    if(has_mss_val_bnd && grd_crn_nbr == 4 && !strcmp(lat_bnd_nm,"latt_bounds") && !strcmp(lon_bnd_nm,"lont_bounds") && lat_bnd_id != NC_MIN_INT && lon_bnd_id != NC_MIN_INT){
       /* Only CESM CICE is known to fit these constraints
-	 Its data files seem (often) to be arranged on a regular rectangular regional grid 
-	 Grid begins at southernmost Antarctic ocean latitude and longitude near 79S,320E, ends at north pole
+	 Its data files seem (often) to be arranged on a regular rectangular regional grid stored as a degenerate curvilinear grid (i.e., with 2D coordinates)
+	 Grid from southernmost Antarctic ocean latitude and longitude near 79S,320E to North Pole
 	 Coordinates stored as 2D arrays, possibly to allow curvilinear grids
 	 Grid of data files I have from CESM are regularly spaced where sea-ice is present
 	 Consistent with CICE running in unstructured mode, each column writes separately to output buffer
 	 This could explain missing coordinates in non-ocean gridcells
 	 Rectangular output eases restarts (and analysis) and so kind-of required for global simulations
-	 Can imagine all this infrastructure working in curvilinear regional model with time-constant grid
+	 Imagine that same infrastructure works in truly curvilinear regional model with time-constant grid
 	 Cool!
 	 However, land points are completely masked (grid centers and corners are missing)
 	 Seems like an oversight---they should have written the coordinates for land and just masked the cells
 	 Regridder needs corners so we fill-in missing boundaries with derived grid */
       double lat_ctr_drv; /* [dgr] Latitude center, derived */
       double lon_ctr_drv; /* [dgr] Longitude center, derived */
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s will assume grid is regional rectangular CICE in curvilinear format with masked land. Will diagnose missing cell boundaries and centers from present boundaries and centers.\n",nco_prg_nm_get(),fnc_nm);
+      double lat_crn_drv; /* [dgr] Latitude corner, derived */
+      double lon_crn_drv; /* [dgr] Longitude corner, derived */
       for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
-	if(grd_ctr_lat[idx_ctr] != mss_val_ctr_dbl) break;
+	if(lat_ctr[idx_ctr] != mss_val_ctr_dbl) break;
       } /* !grd_sz_nbr */
       assert(idx_ctr != grd_sz_nbr);
       idx_crn=idx_ctr*grd_crn_nbr;
-      lat_sth=lat_bnd[idx_crn];
-      lon_wst=lon_bnd[idx_crn];
-      lat_ncr=lat_bnd[idx_crn+3]-lat_bnd[idx_crn]; /* ul-ll */
-      lon_ncr=lon_bnd[idx_crn+1]-lon_bnd[idx_crn]; /* lr-ll */
+      lat_sth=lat_crn[idx_crn];
+      lon_wst=lon_crn[idx_crn];
+      lat_ncr=lat_crn[idx_crn+3]-lat_crn[idx_crn]; /* ul-ll */
+      lon_ncr=lon_crn[idx_crn+1]-lon_crn[idx_crn]; /* lr-ll */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s will assume grid is regional rectangular CICE in curvilinear format with masked land. Will diagnose missing cell boundaries and centers from present boundaries and centers. lat_nbr=%ld, lon_nbr=%ld, lat_sth=%g, lat_ncr=%g, lon_wst=%g, lon_ncr=%g\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_sth,lat_ncr,lon_wst,lon_ncr);
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
 	lat_ctr_drv=lat_sth+lat_ncr*(lat_idx+0.5);
+	lat_crn_drv=lat_sth+lat_ncr*lat_idx;
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	  idx_ctr=lat_idx*lon_nbr+lon_idx;
-	  if(grd_ctr_lat[idx_ctr] == mss_val_ctr_dbl){
-	    grd_ctr_lat[idx_ctr]=lat_ctr_drv;
-	  } /* !grd_ctr_lat */
+	  if(lat_ctr[idx_ctr] == mss_val_ctr_dbl){
+	    idx_crn=idx_ctr*grd_crn_nbr;
+	    lon_ctr_drv=lon_wst+lon_ncr*(lon_idx+0.5);
+	    lon_crn_drv=lon_wst+lon_ncr*lon_idx;
+	    if(lon_ctr_drv >= 360.0) lon_ctr_drv-=360.0;
+	    if(lon_crn_drv >= 360.0) lon_crn_drv-=360.0;
+	    lat_ctr[idx_ctr]=lat_ctr_drv;
+	    lon_ctr[idx_ctr]=lon_ctr_drv;
+	    lat_crn[idx_crn+0L]=lat_crn[idx_crn+1L]=lat_crn_drv;
+	    lat_crn[idx_crn+2L]=lat_crn[idx_crn+3L]=lat_crn_drv+lat_ncr;
+	    lon_crn[idx_crn+0L]=lon_crn[idx_crn+3L]=lon_crn_drv;
+	    lon_crn[idx_crn+1L]=lon_crn[idx_crn+2L]=lon_crn_drv+lon_ncr;
+	    /* Branch-cut rule */
+	    if(lon_crn_drv+lon_ncr >= 360.0){
+	      lon_crn[idx_crn+0L]=lon_crn[idx_crn+3L]=lon_crn_drv-360.0;
+	      lon_crn[idx_crn+1L]=lon_crn[idx_crn+2L]=lon_crn_drv+lon_ncr-360.0;
+	    } /* !brnch */
+	  } /* !lat_ctr */
 	} /* !lon_idx */
       } /* !lat_idx */
-      for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
-	if(grd_ctr_lat[idx_ctr] == mss_val_ctr_dbl){
-	  lat_idx=idx_ctr%lon_nbr;
-	} /* !grd_ctr_lat */
-      } /* !grd_sz_nbr */
-      idx_crn=idx_ctr*grd_crn_nbr;
     } /* CICE */
 
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){

@@ -1,5 +1,7 @@
 2017-05-19  Charlie Zender  <zender@uci.edu>
 
+	* CICE grid partially inferred over masked cells
+
 	* NCO 4.6.7-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.7-beta02 final changes';git push
 	git tag -a 4.6.7-beta02 -m 'ncap2 in-fill, MTA flags, ERWG rgn hints, SGS, ncremap rationalization';git push --tags
