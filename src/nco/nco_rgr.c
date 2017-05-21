@@ -6329,50 +6329,112 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* For curvilinear grids first, if necessary, infer corner boundaries
        Then perform sanity check using same code on inferred and copied grids */
     
-    if(has_mss_val_bnd && grd_crn_nbr == 4 && !strcmp(lat_bnd_nm,"latt_bounds") && !strcmp(lon_bnd_nm,"lont_bounds") && lat_bnd_id != NC_MIN_INT && lon_bnd_id != NC_MIN_INT){
+    if(False && has_mss_val_bnd && grd_crn_nbr == 4 && !strcmp(lat_bnd_nm,"latt_bounds") && !strcmp(lon_bnd_nm,"lont_bounds") && lat_bnd_id != NC_MIN_INT && lon_bnd_id != NC_MIN_INT){
       /* Only CESM CICE is known to fit these constraints
-	 Its data files seem (often) to be arranged as rectangular (and regular in longitude) in the SH, and a curvilinear (in latitude, still regular in longitude) 
-	 Hence grid is degenerate curvilinear grid (i.e., with 2D coordinates) in SH, true curvilinear in NH
-	 Grid is from southernmost Antarctic ocean latitude and longitude near 79S,320E to North Pole
-	 Coordinates stored as 2D arrays, possibly to allow curvilinear grids
-	 CESM grids in data files I have are always regularly spaced in longitude where sea-ice is present
-	 Consistent with CICE running in unstructured mode, each column writes separately to output buffer
+	 Cell center locations are (misleadingly) reported in a regular, rectangular, regional grid
+	 Cell corners/boundaries are regular only in SH, curvilinear in NH, i.e., displaced or tripole grid
+	 Grid is from southernmost Antarctic Ocean latitude and longitude near 79S,320E to North Pole
+	 Nominal centers do not agree with true centers computed from corners
+	 CICE may run in decomposed/unstructured mode, each column writes separately to output buffer?
 	 This could explain missing coordinates in non-ocean gridcells
 	 However, land points are completely masked (grid centers and corners are missing)
 	 Oversight? Why not write coordinates for land-masked cells?
-	 Regridder needs corners so we fill-in missing boundaries with derived grid */
+	 Regridder needs corners so we fill-in missing boundaries with derived grid
+	 Gave up on inferring 20170521 once tri-pole grid complexity became apparent */
+      const long idx_dbg=rgr->idx_dbg;
       double lat_ctr_drv; /* [dgr] Latitude center, derived */
       double lon_ctr_drv; /* [dgr] Longitude center, derived */
       double lat_crn_drv; /* [dgr] Latitude corner, derived */
       double lon_crn_drv; /* [dgr] Longitude corner, derived */
+      long idx_ctr_sth; /* [idx] Index of southern neighbor */
+      long idx_ctr_nrt; /* [idx] Index of northern neighbor */
+      long idx_crn_sth; /* [idx] Index of southern neighbor */
+      long idx_crn_nrt; /* [idx] Index of northern neighbor */
+      long lon_idx_crr; /* [idx] Current longitude index */
+      long lon_vld_frs; /* [idx] First valid longitude in latitude row */
+      long lon_vld_prv[lon_nbr]; /* [idx] Previous valid longitude in latitude row */
+      long lon_vld_nxt[lon_nbr]; /* [idx] Next valid longitude in latitude row */
+      /* First valid gridcell sets west and south bounds of entire grid */
       for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
 	if(lat_ctr[idx_ctr] != mss_val_ctr_dbl) break;
       } /* !grd_sz_nbr */
       assert(idx_ctr != grd_sz_nbr);
       idx_crn=idx_ctr*grd_crn_nbr;
       lat_sth=lat_crn[idx_crn];
-      lon_wst=lon_crn[idx_crn];
       lat_ncr=lat_crn[idx_crn+3]-lat_crn[idx_crn]; /* ul-ll */
+      lon_wst=lon_crn[idx_crn];
       lon_ncr=lon_crn[idx_crn+1]-lon_crn[idx_crn]; /* lr-ll */
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s will assume grid is regional CICE in curvilinear format with masked land. Will diagnose missing cell boundaries and centers from present boundaries and centers. lat_nbr=%ld, lon_nbr=%ld, lat_sth=%g, lat_ncr=%g, lon_wst=%g, lon_ncr=%g\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr,lat_sth,lat_ncr,lon_wst,lon_ncr);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s will assume grid is regional CICE in curvilinear format with masked land. Will diagnose missing cell boundaries and centers from present boundaries and centers in grid of size lat_nbr=%ld, lon_nbr=%ld.\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr);
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
 	idx_ctr=lat_idx*lon_nbr;
+	lon_vld_frs=-1L;
+	/* Find first valid longitude at this latitude */
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	  if(lat_ctr[idx_ctr+lon_idx] != mss_val_ctr_dbl) break;
-	} /* !grd_sz_nbr */
-	/* 20170519: Verify all latitudes have at least one valid point */
+	} /* !lon_idx */
+	/* 20170519: Verified all latitudes have at least one valid point */
 	assert(lon_idx != lon_nbr);
-	idx_ctr=lat_idx*lon_nbr+lon_idx;
-	idx_crn=idx_ctr*grd_crn_nbr;
-	lat_sth=lat_crn[idx_crn];
-	lat_ncr=lat_crn[idx_crn+3]-lat_crn[idx_crn]; /* ul-ll */
-	lat_ctr_drv=lat_sth+0.5*lat_ncr;
-	lat_crn_drv=lat_sth;
+	lon_vld_frs=lon_idx;
+	for(lon_idx_crr=0;lon_idx_crr<lon_nbr;lon_idx++){
+	  /* Find previous and next valid longitude for all longitudes at this latitude
+	     Cells can be their own previous/next valid longitude */
+	  lon_vld_prv[lon_idx_crr]=-1L;
+	  lon_vld_nxt[lon_idx_crr]=-1L;
+	  /* Start from current longitude and move left (west)... */
+	  for(lon_idx=lon_idx_crr;lon_idx>=0;lon_idx--)
+	    if(lat_ctr[idx_ctr+lon_idx] != mss_val_ctr_dbl) break;
+	  if(lon_idx >= 0) lon_vld_prv[lon_idx_crr]=lon_idx;
+	  /* Start from current longitude and move right (east)... */
+	  for(lon_idx=lon_idx_crr;lon_idx<lon_nbr;lon_idx++)
+	    if(lat_ctr[idx_ctr+lon_idx] != mss_val_ctr_dbl) break;
+	  if(lon_idx < lon_nbr) lon_vld_nxt[lon_idx_crr]=lon_idx;
+	  /* Wrap west if previous valid cell not found */
+	  lon_vld_prv[lon_idx_crr]=lon_vld_prv[lon_nbr-1L];
+	  /* Wrap east if next valid cell not found */
+	  lon_vld_nxt[lon_idx_crr]=lon_vld_nxt[0];
+	} /* !lon_idx_crr */
+	/* Derive centers and corners for each missing point */
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
 	  idx_ctr=lat_idx*lon_nbr+lon_idx;
+	  idx_crn=idx_ctr*grd_crn_nbr;
+	  if(lat_ctr[idx_ctr] != mss_val_ctr_dbl){
+	    lat_sth=lat_crn[idx_crn];
+	    lat_ncr=lat_crn[idx_crn+3]-lat_crn[idx_crn]; /* ul-ll */
+	    lat_ctr_drv=lat_sth+0.5*lat_ncr;
+	    lat_crn_drv=lat_sth;
+	    lon_wst=lon_crn[idx_crn];
+	    lon_ncr=lon_crn[idx_crn+1]-lon_crn[idx_crn]; /* lr-ll */
+	    lon_ctr_drv=lon_wst+lon_ncr*(lon_idx+0.5);
+	    if(nco_dbg_lvl_get() >= nco_dbg_std && idx_ctr == idx_dbg) (void)fprintf(stdout,"%s: DEBUG %s idx=%ld lat_idx=%ld, lon_idx=%ld, lat_sth=%g, lat_ncr=%g, lon_wst=%g, lon_ncr=%g\n",nco_prg_nm_get(),fnc_nm,idx_ctr,lat_idx,lon_idx,lat_sth,lat_ncr,lon_wst,lon_ncr);
+	  } /* !idx_ctr */
 	  if(lat_ctr[idx_ctr] == mss_val_ctr_dbl){
-	    idx_crn=idx_ctr*grd_crn_nbr;
-	    /* lon_wst never changes */
+	    if(lat_idx != 0L){
+	      /* Not bottom row */
+	      idx_ctr_sth=idx_ctr-lon_nbr;
+	      if(lat_ctr[idx_ctr_sth] != mss_val_ctr_dbl){
+		/* Copy southern corners from northern corners of southern neighbor */
+		idx_crn_sth=idx_ctr_sth*grd_crn_nbr;
+		lat_crn[idx_crn+0L]=lat_crn[idx_crn_sth+3L];
+		lat_crn[idx_crn+1L]=lat_crn[idx_crn_sth+2L];
+		lon_crn[idx_crn+0L]=lon_crn[idx_crn_sth+3L];
+		lon_crn[idx_crn+1L]=lon_crn[idx_crn_sth+2L];
+	      } /* !mss_val */
+	    } /* !lat_idx */
+	    if(lat_idx != lat_nbr-1L){
+	      /* Not top row */
+	      idx_ctr_nrt=idx_ctr+lon_nbr;
+	      if(lat_ctr[idx_ctr_nrt] != mss_val_ctr_dbl){
+		/* Copy northern corners from southern corners of northern neighbor */
+		idx_crn_nrt=idx_ctr_nrt*grd_crn_nbr;
+		lat_crn[idx_crn+2L]=lat_crn[idx_crn_nrt+1L];
+		lat_crn[idx_crn+3L]=lat_crn[idx_crn_nrt+0L];
+		lon_crn[idx_crn+2L]=lon_crn[idx_crn_nrt+1L];
+		lon_crn[idx_crn+3L]=lon_crn[idx_crn_nrt+0L];
+	      } /* !mss_val */
+	    } /* !lat_idx */
+	    /* Got to here before giving up
+	       Idea was to interpolate missing cell corners between previous and next valid cell */
+	    /* Algorithm assumes lon_wst never changes (too simple for displaced/tri_pole) */
 	    lon_ctr_drv=lon_wst+lon_ncr*(lon_idx+0.5);
 	    lon_crn_drv=lon_wst+lon_ncr*lon_idx;
 	    if(lon_ctr_drv >= 360.0) lon_ctr_drv-=360.0;
@@ -6387,7 +6449,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	      lon_crn[idx_crn+0L]=lon_crn[idx_crn+3L]=lon_crn_drv-360.0;
 	      lon_crn[idx_crn+1L]=lon_crn[idx_crn+2L]=lon_crn_drv+lon_ncr-360.0;
 	    } /* !brnch */
-	  } /* !lat_ctr */
+	  } /* !mss_val */
 	} /* !lon_idx */
       } /* !lat_idx */
     } /* CICE */

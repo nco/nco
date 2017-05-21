@@ -1,6 +1,6 @@
 2017-05-20  Charlie Zender  <zender@uci.edu>
 
-	* Realized CICE grid is truly curvilinear
+	* Realized CICE grid is truly curvilinear, either displaced pole or tri-pole. Gave up.
 
 2017-05-19  Charlie Zender  <zender@uci.edu>
 
