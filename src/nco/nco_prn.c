@@ -461,9 +461,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,(long)att[idx].val.ip[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_CHAR:
-
-      (void)fprintf(stderr,"nco_prn_att(): lmn=%ld, att_sz=%ld\n", lmn, att_sz);
-
       for(lmn=0;lmn<att_sz;lmn++){
 	chr_val=att[idx].val.cp[lmn];
 	if(CDL_OR_JSN_OR_XML){
