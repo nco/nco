@@ -404,7 +404,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  if(strstr(att[idx].val.cp,spr_sng)) spr_sng=spr_xml_chr_bck;
 	if(att[idx].type == NC_STRING){
 	  for(lmn=0;lmn<att_sz;lmn++){
-	    if(strstr(att[idx].val.sngp[lmn],spr_sng)){
+	    if(att[idx].val.sngp[lmn] && strstr(att[idx].val.sngp[lmn],spr_sng)){
 	      spr_sng=spr_xml_chr_bck;
 	      break;
 	    } /* endif */
