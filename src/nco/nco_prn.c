@@ -332,9 +332,17 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       att[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
       (void)nco_inq_attname(grp_id,var_id,idx,att[idx].nm);
       (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
+
       /* Allocate enough space to hold attribute */
-      att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng(att[idx].type));
-      (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+      att[idx].val.vp = (void *) nco_malloc(att[idx].sz * nco_typ_lng(att[idx].type));
+      (void) nco_get_att(grp_id, var_id, att[idx].nm, att[idx].val.vp, att[idx].type);
+
+      /* an NC_CHAR can have zero length size maybe others ? -create with a single FILL value */
+      if(att[idx].sz==0){
+        att[idx].val=nco_mss_val_mk(att[idx].type);
+        att[idx].sz=1;
+      }
+
     } /* idx == att_nbr */
     
     /* Copy value to avoid indirection in loop over att_sz */
@@ -453,6 +461,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       for(lmn=0;lmn<att_sz;lmn++) (void)fprintf(stdout,att_sng_dlm,(long)att[idx].val.ip[lmn],(lmn != att_szm1) ? spr_sng : "");
       break;
     case NC_CHAR:
+
+      (void)fprintf(stderr,"nco_prn_att(): lmn=%ld, att_sz=%ld\n", lmn, att_sz);
+
       for(lmn=0;lmn<att_sz;lmn++){
 	chr_val=att[idx].val.cp[lmn];
 	if(CDL_OR_JSN_OR_XML){
@@ -462,6 +473,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	    sng_lngm1=sng_lng-1UL;
 	    /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
 	    sng_val_sng_cpy=sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
+
 	  } /* endif first element of string array */
 	  /* New string begins each element where penultimate dimension changes */
 	  if(lmn%sng_lng == 0L){
@@ -503,6 +515,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     case NC_STRING:
       for(lmn=0;lmn<att_sz;lmn++){
 	sng_val=att[idx].val.sngp[lmn];
+    /* in strict CDL a NC_STRING null is indictaed by NIL - for now we output an empty string */
+    if(!sng_val) sng_val=(char*)"";
 	sng_lng=strlen(sng_val);
 	sng_lngm1=sng_lng-1UL;
 	if(CDL||XML||JSN){
