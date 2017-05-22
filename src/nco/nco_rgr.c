@@ -6317,8 +6317,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     dmn_sz_int[0]=col_nbr;
   }else if(grd_rnk_nbr == dmn_nbr_2D){ /* !dmn_nbr_1D */
     /* SCRIP introduced [lon,lat] convention because more natural for Fortran 
-       NB: I think this [lon,lat] convention applies only to grid_dims variable 
-       All other SCRIP variables seem to be written as [lat,lon] (fxm: verify) */
+       NB: This [lon,lat] convention applies ONLY to grid_dims variable 
+       Write all other SCRIP variables as [lat,lon]
+       Nonsensical? Yes, but backwards compatibility is priceless */
     lon_psn=0;
     lat_psn=1;
     dmn_sz_int[lon_psn]=lon_nbr;
@@ -6452,7 +6453,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  } /* !mss_val */
 	} /* !lon_idx */
       } /* !lat_idx */
-    } /* CICE */
+    } /* !CICE */
 
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
       /* Interfaces (ntf) and boundaries (bnd) for curvilinear grids are ill-defined since sides need not follow latitudes nor meridians 
