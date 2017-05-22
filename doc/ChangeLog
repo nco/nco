@@ -1,6 +1,14 @@
+2017-05-21  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.7 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.7 final changes';git push
+	git tag -a 4.6.7 -m 'ncap2 in-fill, MTA flags, ERWG rgn hints, SGS, ncremap rationalization';git push --tags
+
 2017-05-20  Charlie Zender  <zender@uci.edu>
 
-	* Realized CICE grid is truly curvilinear, either displaced pole or tri-pole. Gave up.
+	* Searched unsuccessfully for tri-pole grid production routines
+
+	* Realized CICE grid is displaced pole or tri-pole. Abandoned empirical inferral routine due to fold nasti-ness at pole.
 
 2017-05-19  Charlie Zender  <zender@uci.edu>
 

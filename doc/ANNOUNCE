@@ -35,13 +35,65 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap and ncclimo now....
+A. ncremap has a new sub-gridscale (SGS) mode, -P sgs.
+   In sub-grid mode, ncremap performs substantial pre- and
+   post-processing so that regridding conserves fields that may
+   represent only a fraction of the entire gridcell.
+   The sub-gridscale fraction represented by each field is contained
+   in variable whose can be set with the new --sgs_frc option
+   (default is "landfrac"). SGS mode eases regridding of datasets
+   (e.g., from ALM, CLM, CICE) that output data normalized to a
+   fraction (rather than the entire extent) of the gridcell. 
+   ncremap -P sgs -s src_grd.nc -i in.nc -d 1x1.nc -o rgr.nc
+   http://nco.sf.net/nco.html#sgs
+   Thanks to Forrest Hoffmann and Min Xu for prototyping the
+   algorithm and verifying the results.
+
+A. ncremap now automatically indicates to the weight generator
+   when either or both source and destination grids are regional.
+   This information can considerably reduce the time and space
+   the weight generator requires to generate and store the map-file.
+   ncremap uses fuzzy logic to determine this for inferred grids.
+   The user must inform ncremap whether supplied grids (i.e.,
+   specified with -s or -g) are regional with the new --rgn_dst
+   and --rgn_src flags:
+   ncremap -i in.nc -d dst.nc -m map.nc # Inferred (no option necessary)
+   ncremap -s grd_src.nc -g grd_dst.nc -m map.nc --rgn_src # Supplied
+   Users may notice significantly faster throughput due to this.
+   http://nco.sf.net/nco.html#rgn_src
+
+A. ncremap switches have been "rationalized" to eliminate poor UI
+   decisions made early in its development. Please read the old/new 
+   option meanings and change your scripts accordingly. Now -a
+   subsumes the old role of -w. HINT: use long-options (e.g.,
+   --algorithm=conserve) to future-proof your scripts. 
+   Meaning of -a:
+   Old: Interpolation algorithm for ESMF only
+   New: Interpolation algorithm for ESMF and Tempest ('tempest')
+   Meaning of -E:
+   Old: Options for ESMF_RegridWeightGen (now use -W)
+   New: Unused
+   Meaning of -T:
+   Old: Options for TempestRemap (now use -W)
+   New: temporary directory (replaces old -U)
+   Meaning of -U:
+   Old: temporary directory
+   New: unpack flag (tells ncremap to unpack data before regridding)
+   Meaning of -w:
+   Old: Weight-generator keyword. Valid options were 'esmf' and 'tempest'. 
+   New: Weight-generator command string (e.g., "mpirun ESMF_RegridWeightGen -n 24") 
+     Supercedes default 'ESMF_RegridWeightGen' or 'GenerateOfflineMap'
+   Meaning of -W:
+   Old: Unused
+   New: Options for weight-generator (replaces old -E and -T)
+   http://nco.sf.net/nco.html#ncremap
 
 A. ncap2 has a new function named missing(), aka mask_miss() that
-   return an array of the same size of its argument, with values
+   returns an array of the same size of its argument, with values
    of zero where valid data are present and one where missing data
    are present. The resulting array can be useful in characterizing
    and masking the original array.
+   http://nco.sf.net/nco.html#mask_miss
 
 A. ncap2 now propagates existing chunking parameters from the input
    file to the output file, and similarly chunks created variables.

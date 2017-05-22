@@ -4240,7 +4240,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      https://acme-svn2.ornl.gov/acme-repo/acme/inputdata/cpl/gridmaps
 
      NCAR:
-     /glade/p/cesm/cseg/mapping/grids
+     yellowstone.ucar.edu:/glade/p/cesm/cseg/mapping/grids
 
      Global RLL grids:
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
@@ -6370,10 +6370,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx_ctr=lat_idx*lon_nbr;
 	lon_vld_frs=-1L;
 	/* Find first valid longitude at this latitude */
-	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
+	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
 	  if(lat_ctr[idx_ctr+lon_idx] != mss_val_ctr_dbl) break;
-	} /* !lon_idx */
-	/* 20170519: Verified all latitudes have at least one valid point */
+	/* 20170519: Verified all tri-pole grid latitudes have at least one valid point */
 	assert(lon_idx != lon_nbr);
 	lon_vld_frs=lon_idx;
 	for(lon_idx_crr=0;lon_idx_crr<lon_nbr;lon_idx++){

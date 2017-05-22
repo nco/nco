@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.7-beta02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 20 May 2017
+@set update-date 22 May 2017
 @set update-month May 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13055,6 +13055,9 @@ n2=-999,-999,11,11,11,11,11,11,999,-999;
 @end example
 
 @html
+<a name="mask_miss"></a> <!-- http://nco.sf.net/nco.html#mask_miss -->
+<a name="has_miss"></a> <!-- http://nco.sf.net/nco.html#has_miss -->
+<a name="delete_miss"></a> <!-- http://nco.sf.net/nco.html#delete_miss -->
 <a name="set_miss"></a> <!-- http://nco.sf.net/nco.html#set_miss -->
 <a name="get_miss"></a> <!-- http://nco.sf.net/nco.html#get_miss -->
 <a name="change_miss"></a> <!-- http://nco.sf.net/nco.html#change_miss -->
