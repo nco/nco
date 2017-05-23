@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Purpose: Regrid (subsets of) netCDF files between different Swath, Curvilinear, Rectangular, or Unstructured data (SCRUD) grids, generate required/requested rectangular grids and/or mapfiles in SCRIP format
+# Purpose: Regrid (subsets of) netCDF files between different Swath, Curvilinear, Rectangular, and Unstructured data (SCRUD) grids, generate any required/requested global or regional rectangular grid, output SCRIP, UGRID, and/or skeleton data formats
 
 # Copyright (C) 2015--2017 Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.

@@ -5519,7 +5519,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double lon_spn; /* [dgr] Longitude span */
   double lat_spn; /* [dgr] Latitude span */
   double mss_val_area_dbl;
-  double mss_val_bnd_dbl;
   double mss_val_ctr_dbl;
   double mss_val_msk_dbl;
   
@@ -6081,7 +6080,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
      CICE lists missing value for lat/lon_ctr arrays (TLAT, TLONG) and re-uses that for bounds arrays (latt_bounds, lont_bounds) that do not bother to have their own missing value attributes
      Without counter-example, assume has_mss_val_bnd=has_mss_val_ctr and mss_val_bnd_dbl=mss_val_ctr_dbl */
   has_mss_val_bnd=has_mss_val_ctr=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
-  mss_val_bnd_dbl=mss_val_ctr_dbl;
   
   if(flg_grd_1D){
     /* Obtain fields that must be present in unstructured input file */
@@ -6370,13 +6368,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s will assume grid is regional CICE in curvilinear format with masked land. Will diagnose missing cell boundaries and centers from present boundaries and centers in grid of size lat_nbr=%ld, lon_nbr=%ld.\n",nco_prg_nm_get(),fnc_nm,lat_nbr,lon_nbr);
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
 	idx_ctr=lat_idx*lon_nbr;
-	lon_vld_frs=-1L;
 	/* Find first valid longitude at this latitude */
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
 	  if(lat_ctr[idx_ctr+lon_idx] != mss_val_ctr_dbl) break;
-	/* 20170519: Verified all tri-pole grid latitudes have at least one valid point */
-	assert(lon_idx != lon_nbr);
 	lon_vld_frs=lon_idx;
+	/* 20170519: Verified all tri-pole grid latitudes have at least one valid point */
+	if(lon_vld_frs == -1L) abort();
 	for(lon_idx_crr=0;lon_idx_crr<lon_nbr;lon_idx++){
 	  /* Find previous and next valid longitude for all longitudes at this latitude
 	     Cells can be their own previous/next valid longitude */
