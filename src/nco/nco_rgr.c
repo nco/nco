@@ -281,25 +281,25 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   for(rgr_var_idx=0;rgr_var_idx<rgr_var_nbr;rgr_var_idx++){
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"grid") || !strcasecmp(rgr_lst[rgr_var_idx].key,"scrip")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"grid") || !strcasecmp(rgr_lst[rgr_var_idx].key,"scrip")){
       rgr->fl_grd=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_grd=True;
       continue;
     } /* !grid */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"hnt_dst") || !strcasecmp(rgr_lst[rgr_var_idx].key,"fl_hnt_dst")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"hnt_dst") || !strcmp(rgr_lst[rgr_var_idx].key,"fl_hnt_dst")){
       rgr->fl_hnt_dst=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !hnt_dst */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"hnt_src") || !strcasecmp(rgr_lst[rgr_var_idx].key,"fl_hnt_src")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"hnt_src") || !strcmp(rgr_lst[rgr_var_idx].key,"fl_hnt_src")){
       rgr->fl_hnt_src=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !hnt_src */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"msk_var") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_var") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_variable")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"msk_var") || !strcmp(rgr_lst[rgr_var_idx].key,"mask_var") || !strcmp(rgr_lst[rgr_var_idx].key,"mask") || !strcmp(rgr_lst[rgr_var_idx].key,"mask_variable")){
       rgr->msk_var=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_msk_out=True;
       continue;
     } /* !msk_var */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"skl")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"skl")){
       rgr->fl_skl=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_grd=True;
       continue;
@@ -309,72 +309,72 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_nfr=True;
       continue;
     } /* !ugrid */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_area") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_area_out")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"no_area") || !strcmp(rgr_lst[rgr_var_idx].key,"no_area_out")){
       rgr->flg_area_out=False;
       continue;
     } /* !area */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_msk") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_msk_out") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_mask") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_mask_out")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"no_msk") || !strcmp(rgr_lst[rgr_var_idx].key,"no_msk_out") || !strcmp(rgr_lst[rgr_var_idx].key,"no_mask") || !strcmp(rgr_lst[rgr_var_idx].key,"no_mask_out")){
       rgr->flg_msk_out=False;
       continue;
     } /* !msk */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"msk_out") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_out")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"msk_out") || !strcmp(rgr_lst[rgr_var_idx].key,"mask_out")){
       rgr->flg_msk_out=True;
       continue;
     } /* !mask */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"cell_measures") || !strcasecmp(rgr_lst[rgr_var_idx].key,"cll_msr")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"cell_measures") || !strcmp(rgr_lst[rgr_var_idx].key,"cll_msr")){
       rgr->flg_cll_msr=True;
       continue;
     } /* !cell_measures */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_cell_measures") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_cll_msr")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"no_cell_measures") || !strcmp(rgr_lst[rgr_var_idx].key,"no_cll_msr")){
       rgr->flg_cll_msr=False;
       continue;
     } /* !cell_measures */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"curvilinear") || !strcasecmp(rgr_lst[rgr_var_idx].key,"crv")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"curvilinear") || !strcmp(rgr_lst[rgr_var_idx].key,"crv")){
       rgr->flg_crv=True;
       continue;
     } /* !curvilinear */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"infer") || !strcasecmp(rgr_lst[rgr_var_idx].key,"nfr")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"infer") || !strcmp(rgr_lst[rgr_var_idx].key,"nfr")){
       rgr->flg_nfr=True;
       continue;
     } /* !infer */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"diagnose_area") || !strcasecmp(rgr_lst[rgr_var_idx].key,"dgn_area")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"diagnose_area") || !strcmp(rgr_lst[rgr_var_idx].key,"dgn_area")){
       rgr->flg_dgn_area=True;
       continue;
     } /* !diagnose_area */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"diagnose_bounds") || !strcasecmp(rgr_lst[rgr_var_idx].key,"dgn_bnd")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"diagnose_bounds") || !strcmp(rgr_lst[rgr_var_idx].key,"dgn_bnd")){
       rgr->flg_dgn_bnd=True;
       continue;
     } /* !diagnose_bounds */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"no_stagger") || !strcasecmp(rgr_lst[rgr_var_idx].key,"no_stg")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"no_stagger") || !strcmp(rgr_lst[rgr_var_idx].key,"no_stg")){
       rgr->flg_stg=False;
       continue;
     } /* !stagger */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"grd_ttl")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"grd_ttl")){
       if(rgr->grd_ttl) rgr->grd_ttl=(char *)nco_free(rgr->grd_ttl);
       rgr->grd_ttl=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !grd_ttl */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"idx_dbg")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"idx_dbg")){
       rgr->idx_dbg=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
     } /* !idx_dbg */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"latlon")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"latlon")){
       cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%ld,%ld",&rgr->lat_nbr,&rgr->lon_nbr);
       assert(cnv_nbr == 2);
       continue;
     } /* !latlon */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lonlat")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lonlat")){
       cnv_nbr=sscanf(rgr_lst[rgr_var_idx].val,"%ld,%ld",&rgr->lon_nbr,&rgr->lat_nbr);
       assert(cnv_nbr == 2);
       continue;
     } /* !lonlat */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nbr")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_nbr")){
       rgr->lat_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
     } /* !lat_nbr */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_nbr")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_nbr")){
       rgr->lon_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
@@ -391,41 +391,41 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       assert(cnv_nbr == 4);
       continue;
     } /* !wesn */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_crv")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_crv")){
       rgr->lat_crv=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* !lat_crv */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_crv")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_crv")){
       rgr->lon_crv=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* !lon_crv */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_sth")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_sth")){
       rgr->lat_sth=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       //      rgr->lat_typ=nco_grd_lat_bb;
       continue;
     } /* !lat_sth */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_wst")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_wst")){
       rgr->lon_wst=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       rgr->lon_typ=nco_grd_lon_bb;
       continue;
     } /* !lon_wst */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nrt")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_nrt")){
       rgr->lat_nrt=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       //rgr->lat_typ=nco_grd_lat_bb;
       continue;
     } /* !lat_nrt */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_est")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_est")){
       rgr->lon_est=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       rgr->lon_typ=nco_grd_lon_bb;
       continue;
     } /* !lon_est */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"cap") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fv") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fix") || !strcasecmp(rgr_lst[rgr_var_idx].val,"yarmulke")){
 	rgr->lat_typ=nco_grd_lat_fv;
 	rgr->grd_typ=nco_grd_2D_fv;
@@ -441,7 +441,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       } /* !val */
       continue;
     } /* !lat_typ */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_typ")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_typ")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"180_wst"))
 	rgr->lon_typ=nco_grd_lon_180_wst;
       else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"180_ctr"))
@@ -456,85 +456,85 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       } /* !val */
       continue;
     } /* !lon_typ */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"area_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"area_nm")){
       rgr->area_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !area_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"bnd_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"bnd_nm")){
       rgr->bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !bnd_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"bnd_tm_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"bnd_tm_nm")){
       rgr->bnd_tm_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !bnd_tm_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"col_nm_in") || !strcasecmp(rgr_lst[rgr_var_idx].key,"col_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"col_nm_in") || !strcmp(rgr_lst[rgr_var_idx].key,"col_nm")){
       rgr->col_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !col_nm_in */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"col_nm_out")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"col_nm_out")){
       rgr->col_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !col_nm_out */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"frc_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"frc_nm")){
       rgr->frc_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !frc_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_bnd_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_bnd_nm")){
       rgr->lat_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lat_bnd_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_dmn_nm") || !strcasecmp(rgr_lst[rgr_var_idx].key,"lat_dmn")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_dmn_nm") || !strcmp(rgr_lst[rgr_var_idx].key,"lat_dmn")){
       rgr->lat_dmn_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lat_dmn_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nm_in") || !strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_nm_in") || !strcmp(rgr_lst[rgr_var_idx].key,"lat_nm")){
       rgr->lat_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lat_nm_in */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_nm_out")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_nm_out")){
       rgr->lat_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lat_nm_out */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_vrt_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_vrt_nm")){
       rgr->lat_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lat_vrt_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lat_wgt_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_wgt_nm")){
       rgr->lat_wgt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lat_wgt_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_bnd_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_bnd_nm")){
       rgr->lon_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lon_bnd_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_dmn_nm") || !strcasecmp(rgr_lst[rgr_var_idx].key,"lon_dmn")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_dmn_nm") || !strcmp(rgr_lst[rgr_var_idx].key,"lon_dmn")){
       rgr->lon_dmn_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lon_dmn_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_nm_in") || !strcasecmp(rgr_lst[rgr_var_idx].key,"lon_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_nm_in") || !strcmp(rgr_lst[rgr_var_idx].key,"lon_nm")){
       rgr->lon_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lon_nm_in */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_nm_out")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_nm_out")){
       rgr->lon_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lon_nm_out */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"lon_vrt_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_vrt_nm")){
       rgr->lon_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lon_vrt_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"tst")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"tst")){
       rgr->tst=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
       continue;
     } /* !tst */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"msk_nm") || !strcasecmp(rgr_lst[rgr_var_idx].key,"mask_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"msk_nm") || !strcmp(rgr_lst[rgr_var_idx].key,"mask_nm")){
       rgr->msk_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_msk_out=True;
       continue;
     } /* !msk_nm */
-    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"vrt_nm")){
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !vrt_nm */
@@ -1320,10 +1320,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     const double lat_ctr_tst_eqa=lat_ntf_out[0]+lat_spn*1.5/lat_nbr_out;
     const double lat_ctr_tst_fv=lat_ntf_out[0]+lat_spn/(lat_nbr_out-1);
     double lat_ctr_tst_gss;
-    /* In diagnosing grids, agreement with input to single-precision is "good enough for government work"
+    /* In diagnosing grids, agreement to slightly worse than single-precision is "good enough for government work"
        Hence some comparisons cast from double to float before comparison
        20150526: T42 grid from SCRIP and related maps, and NCL-generated Gaussian grids for CESM, are accurate to at most ~eight digits
-       20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006 */
+       20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006
+       20170521: T62 grid from NCEP-NCAR Reanalysis 1 worse than single precision, has yc_[192]=-86.6531 not expected exact value lat_ctr[1]=-86.6532 */
+
     if((float)lat_ctr_out[1] == (float)lat_ctr_tst_eqa) nco_grd_lat_typ=nco_grd_lat_eqa;
     if((float)lat_ctr_out[1] == (float)lat_ctr_tst_fv) nco_grd_lat_typ=nco_grd_lat_fv;
     double *wgt_Gss_out=NULL; // [frc] Gaussian weights double precision
@@ -6834,7 +6836,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
       if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr[1] = %g, lat_ctr_tst_gss = %g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1],lat_ctr_tst_gss);
-      if((float)lat_ctr[1] == (float)lat_ctr_tst_gss) lat_typ=nco_grd_lat_gss;
+      const double eps_rlt_cnv_gss=1.0e-7; // Convergence criterion (1.0e-7 fails for NCEP NCAR Reanalysis 1
+      if(fabs(1.0-lat_ctr[1]/lat_ctr_tst_gss) < eps_rlt_cnv_gss) lat_typ=nco_grd_lat_gss;
     } /* !Gaussian */
     if(lat_typ == nco_grd_lat_nil){
       /* If still of unknown type, this 2D grid may be weird
@@ -7296,7 +7299,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   
   att_nm=strdup("title");
   if(strstr(rgr->grd_ttl,"None given")){
-    const char att_fmt[]="Grid inferred by NCO from input file %s";
+    const char att_fmt[]="NCO inferred this grid from input file %s";
     att_val=(char *)nco_malloc((strlen(att_fmt)+strlen(rgr->fl_in)+1L)*sizeof(char));
     sprintf(att_val,att_fmt,rgr->fl_in);
   }else{
