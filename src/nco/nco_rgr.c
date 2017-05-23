@@ -7207,7 +7207,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(nco_grd_xtn == nco_grd_xtn_rgn && fl_hnt){
     const char *fl_mode="w";
     FILE *fp_hnt; /* [fl] Hint file (for ERWG switches) file handle */
-    (void)fprintf(stderr,"%s: INFO %s writing weight-generation regional hint to file %s\n",nco_prg_nm_get(),fnc_nm,fl_hnt);
+    (void)fprintf(stderr,"%s: INFO %s writing ERWG weight-generation regional hint to file %s\n",nco_prg_nm_get(),fnc_nm,fl_hnt);
     /* Open output file */
     if((fp_hnt=fopen(fl_hnt,fl_mode)) == NULL){
       (void)fprintf(stderr,"%s: ERROR unable to open hint output file %s\n",nco_prg_nm_get(),fl_hnt);
