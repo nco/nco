@@ -16441,8 +16441,10 @@ ncatted -a long_name,T,o,c,temperature in.nc
 @cindex @code{_FillValue}
 Many model and observational datasets use missing values that are not
 annotated in the standard manner.
-For example, the MPAS ocean and ice models use
-@math{-9.99999979021476795361e+33} as the missing value.
+For example, at the time (2015--2016) of this writing,
+the @acronym{MPAS} ocean and ice models use
+@math{-9.99999979021476795361e+33} as the missing value, yet do not
+store a @code{_FillValue} attribute with any variables.
 To prevent arithmetic from treating these values as normal, designate
 this value as the @code{_FillValue} attribute:
 @example
