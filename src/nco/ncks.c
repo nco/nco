@@ -244,6 +244,7 @@ main(int argc,char **argv)
   nco_bool PRN_HDN=False; /* [flg] Print hidden attributes */
   nco_bool PRN_SRM=False; /* [flg] Print ncStream */
   nco_bool PRN_JSN=False; /* [flg] Print JSON */
+  nco_bool PRN_TRD=False; /* [flg] Print traditional */
   nco_bool PRN_XML=False; /* [flg] Print XML (NcML) */
   nco_bool PRN_XML_LOCATION=True; /* [flg] Print XML location tag */
   nco_bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
@@ -362,6 +363,8 @@ main(int argc,char **argv)
     {"vrs",no_argument,0,0},
     {"jsn",no_argument,0,0}, /* [flg] Print JSON */
     {"json",no_argument,0,0}, /* [flg] Print JSON */
+    {"trd",no_argument,0,0}, /* [flg] Print traditional */
+    {"traditional",no_argument,0,0}, /* [flg] Print traditional */
     {"w10",no_argument,0,0}, /* [flg] Print JSON */
     {"w10n",no_argument,0,0}, /* [flg] Print JSON */
     {"xml",no_argument,0,0}, /* [flg] Print XML (NcML) */
@@ -596,6 +599,7 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "copyright" */
       if(!strcmp(opt_crr,"cdl")) PRN_CDL=True; /* [flg] Print CDL */
+      if(!strcmp(opt_crr,"trd") || !strcmp(opt_crr,"traditional")) PRN_TRD=True; /* [flg] Print traditional */
       if(!strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")){
@@ -1184,7 +1188,7 @@ main(int argc,char **argv)
     prn_flg.jsn=PRN_JSN;
     prn_flg.srm=PRN_SRM;
     prn_flg.xml=PRN_XML;
-    prn_flg.trd=!(PRN_CDL || PRN_XML || PRN_JSN);
+    prn_flg.trd=PRN_TRD || !(PRN_CDL || PRN_XML || PRN_JSN); // 20170522
     if((prn_flg.cdl || prn_flg.xml) && nco_dbg_lvl >= nco_dbg_std) prn_flg.nfo_xtr=True; else prn_flg.nfo_xtr=False;
     prn_flg.new_fmt=(PRN_CDL || PRN_JSN || PRN_SRM || PRN_XML);
     prn_flg.hdn=PRN_HDN;

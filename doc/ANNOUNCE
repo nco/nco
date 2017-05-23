@@ -6,29 +6,34 @@ http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-
+The main new features in 4.6.7 are in the regridder, which
+introduces a sub-grid regridding option, more automated handling
+and flexibility with regional grids, and easier flag specification.
+ncap2 added some specialty functions to simplify handling of missing
+values and in-filling large missing regions with interpolated data.
 
 EVERYONE WHO USES NCKS TO PRINT DATA PLEASE READ THIS:
 
-We would like to change the default behavior of ncks printing.
+The default behavior of ncks printing will change in summer 2017.
 For 20+ years ncks has, by default, dumped the text representation
 of a file in (what we call) "traditional" mode. ncdump produces a
 format called CDL that is more useful than traditional mode for most
 NCO users. ncks has produced CDL since only 2013 and so CDL is not the
-default. ncdump has always printed CDL very cleanly and clearly there
-was little point in making CDL the default for ncks. 
-Now ncks CDL mode rivals ncdump, and is superior in some ways.
-In particular, ncks now prints times as human-readable calendar dates,
-the last ncdump feature I used that ncks did not have.
-We propose to change the default printed output of ncks to CDL.
-Then one would type simply "ncks" instead of "ncks --cdl". 
-A new "--trd" option would still print traditional output.
-Let us know if this bothers or pleases you prior to 4.6.7.
+default. ncdump has always printed CDL very cleanly and so there was
+little point in making CDL also the default for ncks.  
+However, ncks CDL mode now rivals output from ncdump.
+In particular, ncks now prints times as human-readable calendar dates
+(with --cln) the last ncdump feature I used that ncks did not have.
+In summer 2017 default printed output of ncks change to CDL.
+Then one will type simply "ncks" instead of "ncks --cdl". 
+We added a new "--trd" option to print traditional output.
+User --trd in your scripts that print and behavior will not change.
+Otherwise your printing scripts will start to print CDL this summer.
 You have been warned :)
 
 Work on NCO 4.6.8 has commenced. Planned improvements include 
 support for conda installs on MS Windows, more ncclimo and ncremap
-features. 
+features, better ncap2 chunking flexibility. 
 
 Enjoy,
 Charlie
@@ -49,7 +54,7 @@ A. ncremap has a new sub-gridscale (SGS) mode, -P sgs.
    Thanks to Forrest Hoffmann and Min Xu for prototyping the
    algorithm and verifying the results.
 
-A. ncremap now automatically indicates to the weight generator
+A. ncremap now automatically indicates to the ERWG weight generator
    when either or both source and destination grids are regional.
    This information can considerably reduce the time and space
    the weight generator requires to generate and store the map-file.
@@ -93,6 +98,8 @@ A. ncap2 has a new function named missing(), aka mask_miss() that
    of zero where valid data are present and one where missing data
    are present. The resulting array can be useful in characterizing
    and masking the original array.
+   ncap2 -s 'mss_val=three_dmn_var_dbl.missing().ttl($time)' in.nc out.nc
+   Thanks to Adrian Tompkins for suggesting this feature.
    http://nco.sf.net/nco.html#mask_miss
 
 A. ncap2 now propagates existing chunking parameters from the input
@@ -102,11 +109,21 @@ A. ncap2 now propagates existing chunking parameters from the input
    ncap2 -s 'avg=one_dmn_rec_var.avg()' ~/nco/data/in.nc ~/foo.nc
    http://nco.sf.net/nco.html#cll_mth
 
+A. ncks now has a --trd (or --traditional) option to print output
+   in the "tradiational" format. Start to use this unless you prefer
+   CDL output which will become the default in summer 2017, possibly
+   in NCO 4.7.0. At that time, the --cdl option will become default.
+
 BUG FIXES:
 
 A. ncatted allows writing an empty NC_CHAR or NC_STRING attribute.
-   Previously ncatted would core dump.
-   Solution is to upgrade.
+   Previously ncatted would core dump. ncks also prints such values.
+   No workaround. Solution is to upgrade.
+
+A. ncap2 could die when performing computations with pre-chunked
+   and/or deflated data. Workaround is to convert to netCDF3
+   before computations. Solution is to upgrade.
+   Thanks to Dave Blodgett for reporting this issue.
 
 KNOWN PROBLEMS DUE TO NCO:
 

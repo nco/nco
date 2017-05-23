@@ -19254,6 +19254,9 @@ then writes in netCDF format to @var{output-file}, and
 optionally writes it in flat binary format to @file{fl_bnr}, and
 optionally prints it to screen.
 
+@cindex @code{--trd}
+@cindex @code{--traditional}
+@cindex traditional
 @command{ncks} prints netCDF input data in @acronym{ASCII},
 @acronym{CDL}, @acronym{JSON}, or @acronym{NcML/XML} text formats to
 @code{stdout}, like (an extended version of) @command{ncdump}.
@@ -19265,14 +19268,16 @@ Option @samp{-s} (or long options @samp{--sng_fmt} and @samp{--string})
 permits the user to format data using C-style format strings, while
 option @samp{--cdl} outputs @acronym{CDL},
 option @samp{--jsn} (or @samp{json}) outputs @acronym{JSON},
+option @samp{--trd} (or @samp{traditional}) outputs ``traditional'' format,
 and option @samp{--xml} (or @samp{ncml}) outputs @acronym{NcML}. 
 @command{ncks} exposes many flexible controls over printed output,
 including @acronym{CDL}, @acronym{JSON}, and @acronym{NcML}.
 
 Options @samp{-a}, @samp{--cdl}, @samp{-F} , @samp{-H},
 @samp{--hdn}, @samp{--jsn}, @samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q},
-@samp{-q}, @samp{-s}, @samp{-u}, @samp{-V}, and @samp{--xml} (and their
-long option counterparts) control the formatted appearance of the data.
+@samp{-q}, @samp{-s}, @samp{--trd}, @samp{-u}, @samp{-V}, and
+@samp{--xml} (and their long option counterparts) control the formatted
+appearance of the data. 
 
 @cindex global attributes
 @cindex attributes, global
@@ -20114,6 +20119,28 @@ These hidden or secret features are used mainly by developers.
 They are not supported for general use and may change at any time.
 This demonstrates conclusively that I cannot keep a secret.
 Also @samp{--ssh} and @samp{--scr}. 
+
+@html
+<a name="trd"></a> <!-- http://nco.sf.net/nco.html#trd -->
+<a name="traditional"></a> <!-- http://nco.sf.net/nco.html#traditional -->
+@end html
+@cindex @code{--trd}
+@cindex @code{--traditional}
+@item --trd, --traditional
+From 1995--2017 @command{ncks} dumped the @acronym{ASCII} text
+representation of netCDF files in what we now call ``traditional''
+mode. 
+Much of this manual contains output printed in traditional mode,
+which places one value per line, with complete dimensional
+information.
+Tradiational-mode metadata output includes lower-level information,
+such as @acronym{RAM} usage and internal variable IDs, than
+@acronym{CDL}.  
+However, @acronym{CDL} is more useful than traditional mode for most
+users.  
+In summer 2017 @acronym{CDL} will become the default printing mode.
+Traditional mode will still be accessible using the @samp{--trd}
+option. 
 
 @html
 <a name="units"></a> <!-- http://nco.sf.net/nco.html#units -->
@@ -24074,6 +24101,7 @@ Auxiliary coordinate support.
 @cindex Scott Capps
 @item Scott Capps
 Large work-load testing
+@cindex Dave Blodgett
 @cindex Peter Campbell
 @cindex Martin Dix
 @cindex Mark Flanner
@@ -24086,10 +24114,11 @@ Large work-load testing
 @cindex Michael Schulz
 @cindex Rich Signell
 @cindex Gary Strand
+@cindex Adrian Tompkins
 @cindex Andrew Wittenberg
 @cindex George White
 @cindex Remik Ziemlinski
-@item Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Gary Strand, George White Andrew Wittenberg, Remik Ziemlinski
+@item Dave Blodgett, Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Gary Strand, Adrian Tompkins, George White Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Filipe Fernandes
 @cindex Hugo Oliveira
