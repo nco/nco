@@ -13104,6 +13104,11 @@ with a variable. The methods that ``manipulate'' will only succeed on variables 
 @cindex @code{has_miss()}
 Returns 1 (True) if the variable has a missing value associated with it. 
 else returns 0 (False)
+@item missing()
+@cindex @code{missing(), mask_miss()}
+This function creates a True/False mask array of where the missing value is set.
+It is syntatically equivalent to ( var_in == var_in.get_miss()). except that cant do this
+unless you delete the missing value before-hand!!
 @end table
 
 @example
@@ -13129,6 +13134,12 @@ print(three_dmn_var_dbl@_FillValue);
 print("Number of missing values in three_dmn_var_dbl: ");
 print(mss_val_nbr,"%d");
 print(three_dmn_var_dbl);
+
+// find the total number of missing values along dims $lat and $lon
+ms_ttl=three_mn_var_dbl.missing().ttl($lat,$lon);
+print(ms_ttl); //  0, 0, 0, 8, 0, 0, 0, 1, 0, 2 ;
+
+
 @end verbatim
 @end example
 
