@@ -1,5 +1,7 @@
 2017-05-22  Charlie Zender  <zender@uci.edu>
 
+	* Warn when grid to infer runs N-S instead of S-N
+
 	* Infer NCEP NCAR Reanalysis 1 as Gaussian grid, requires relaxing weight tolerance to < 1.0e-6
 
 2017-05-21  Charlie Zender  <zender@uci.edu>
