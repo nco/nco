@@ -189,6 +189,9 @@ extern "C" {
   /* Linux default blocksize is 4096 B---a good chunk size for 1-D record dimension variables */
 #define NCO_CNK_SZ_BYT_R1D_DFL 4096
 
+  /* Maximum number of names to examine in CF "coordinates" attribute */
+#define NCO_MAX_CRD_PER_VAR 6
+
   /* netCDF provides no guidance on maximum nesting of groups */
 #define NCO_MAX_GRP_DEPTH 10
 

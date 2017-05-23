@@ -1,3 +1,9 @@
+2017-05-23  Charlie Zender  <zender@uci.edu>
+
+	* Add NEMO (IPSL version) coordinates to regridder database
+
+	* Improve CF-inferral algorithm to handle coordinate attributes with > 2 names
+
 2017-05-22  Charlie Zender  <zender@uci.edu>
 
 	* Warn when grid to infer runs N-S instead of S-N

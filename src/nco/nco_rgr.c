@@ -1661,49 +1661,81 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !rcd && att_typ */
       
     /* Valid coordinates attribute requires two coordinate names separated by space character */
-    char *sbs_srt; /* [sng] Coordinate name start position */
-    char *sbs_end; /* [sng] Coordinate name   end position */
-    cf->crd_nm[0]=(char *)strdup(cf->crd_sng);
-    sbs_end=strchr(cf->crd_nm[0],' ');
-    /* NUL-terminate first coordinate name */
-    *sbs_end='\0'; 
-    sbs_srt=sbs_end+1; 
-    cf->crd_nm[1]=(char *)strdup(sbs_srt);
-    /* NUL-terminate second coordinate name at first space, if one exists 
-       Coordinates attribute may include more than two coordinate names, and order is not guaranteed
-       Algorithm fails unless lat and lon are first two coordinates in attribute */
-    sbs_end=strchr(cf->crd_nm[1],' ');
-    sbs_srt=sbs_end+1;
-    if(sbs_end){
-      *sbs_end='\0';
-      (void)fprintf(stderr,"%s: WARNING %s found space character after second name (%s) in coordinates attribute. NCO expects the first two names listed to be the horizontal spatial coordinates, otherwise hilarity may ensue. The remaining names in the coordinates attribute is/are %s.\nHINT: Use the '-V var_rgr to specify a template variable with only two horizontal spatial dimension, both of which are listed in its coordinates attribute. Usually a variable that contains gridcell area is a good candidate for var_rgr.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[1],sbs_srt);
-    } /* !sbs_end */
-
-    if((rcd=nco_inq_varid_flg(in_id,cf->crd_nm[0],&cf->crd_id[0])) != NC_NOERR){
-      (void)fprintf(stderr,"%s: WARNING %s reports first coordinates variable %s not found. Turning-off CF coordinates search for this file.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0]);
+    char *crd_nm[NCO_MAX_CRD_PER_VAR]; /* [sng] Coordinate name start position */
+    char *crd_dpl; /* [sng] Modifiable duplicate of coordinates string */
+    char *spc_ptr; /* [sng] Pointer to space character (' ') */
+    int crd_nbr=0; /* [nbr] Number of names in coordinates attribute */
+    int crd_spt=0; /* [nbr] Number of "spatial-like" (that include "degree" in units) coordinates */
+    int crd_idx=0; /* [idx] Counter for coordinate names */
+    for(crd_idx=0;crd_idx<NCO_MAX_CRD_PER_VAR;crd_idx++) crd_nm[crd_idx]=NULL;
+    crd_dpl=(char *)strdup(cf->crd_sng);
+    /* Search for spaces starting from end of string */
+    while((spc_ptr=strrchr(crd_dpl,' '))){
+      crd_nm[crd_nbr]=spc_ptr+1L;
+      crd_nbr++;
+      /* NUL-terminate so next search ends here */
+      *spc_ptr='\0'; 
+    } /* !sbs_ptr */
+    /* Final coordinate name begins where coordinate string starts */
+    crd_nm[crd_nbr]=crd_dpl;
+    if(crd_nbr < 2){
+      (void)fprintf(stderr,"%s: WARNING %s found only %d coordinates in coordinates attribute \"%s\", at least two are required. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,crd_nbr,cf->crd_sng);
       goto skp_cf;
-    } /* !rcd */ 
-    if((rcd=nco_inq_varid_flg(in_id,cf->crd_nm[1],&cf->crd_id[1])) != NC_NOERR){
-      (void)fprintf(stderr,"%s: WARNING %s reports second coordinates variable %s not found. Turning-off CF coordinates search for this file.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[1]);
-      goto skp_cf;
-    } /* !rcd */ 
+    } /* !crd_nbr */
+    /* If more than two coordinate names are present, choose first two (searching backwards from end) with "degree" in units attributes, otherwise just choose first two */
+    crd_idx=crd_spt=0;
+    while(crd_spt < 2 && crd_idx < crd_nbr){
+      cf->crd_nm[crd_spt]=crd_nm[crd_idx];
+      if((rcd=nco_inq_varid_flg(in_id,cf->crd_nm[crd_spt],&cf->crd_id[crd_spt])) == NC_NOERR){
+	rcd=nco_inq_att_flg(in_id,cf->crd_id[crd_spt],unt_sng,&att_typ,&att_sz);
+	if(rcd == NC_NOERR && att_typ == NC_CHAR){
+	  cf->unt_sng[crd_spt]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+	  rcd=nco_get_att(in_id,cf->crd_id[crd_spt],unt_sng,cf->unt_sng[crd_spt],att_typ);
+	  /* NUL-terminate attribute before using strstr() */
+	  *(cf->unt_sng[crd_spt]+att_sz)='\0';
+	  if(strcasestr(cf->unt_sng[crd_spt],"degree")){
+	    /* Increment count of spatial-like coordinates... */
+	    crd_spt++;
+	  }else{
+	    /* ...or free() memory allocated during search */
+	    cf->unt_sng[crd_spt]=(char *)nco_free(cf->unt_sng[crd_spt]);
+	  } /* !strcasestr() */
+	  crd_idx++;
+	} /* !rcd && att_typ */
+      } /* !rcd */ 
+    } /* !crd_spt */
 
-    rcd=nco_inq_att_flg(in_id,cf->crd_id[0],unt_sng,&att_typ,&att_sz);
-    if(rcd == NC_NOERR && att_typ == NC_CHAR){
-      cf->unt_sng[0]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-      rcd=nco_get_att(in_id,cf->crd_id[0],unt_sng,cf->unt_sng[0],att_typ);
-      /* NUL-terminate attribute before using strstr() */
-      *(cf->unt_sng[0]+att_sz)='\0';
-      if(!strcasestr(cf->unt_sng[0],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports first coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->unt_sng[0]);
-    } /* !rcd && att_typ */
-    rcd=nco_inq_att_flg(in_id,cf->crd_id[1],unt_sng,&att_typ,&att_sz);
-    if(rcd == NC_NOERR && att_typ == NC_CHAR){
-      cf->unt_sng[1]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-      rcd=nco_get_att(in_id,cf->crd_id[1],unt_sng,cf->unt_sng[1],att_typ);
-      /* NUL-terminate attribute before using strstr() */
-      *(cf->unt_sng[1]+att_sz)='\0';
-      if(!strcasestr(cf->unt_sng[1],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports second coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[1],cf->unt_sng[1]);
-    } /* !rcd && att_typ */
+    /* If while()-loop was successful then we are done searching
+       Use first two coordinate names regardless of units, and print more diagnostics */
+    if(crd_spt < 2){
+      cf->crd_nm[0]=crd_nm[0];
+      cf->crd_nm[1]=crd_nm[1];
+      if((rcd=nco_inq_varid_flg(in_id,cf->crd_nm[0],&cf->crd_id[0])) != NC_NOERR){
+	(void)fprintf(stderr,"%s: WARNING %s reports first coordinates variable %s not found. Turning-off CF coordinates search for this file.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0]);
+	goto skp_cf;
+      } /* !rcd */ 
+      if((rcd=nco_inq_varid_flg(in_id,cf->crd_nm[1],&cf->crd_id[1])) != NC_NOERR){
+	(void)fprintf(stderr,"%s: WARNING %s reports second coordinates variable %s not found. Turning-off CF coordinates search for this file.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[1]);
+	goto skp_cf;
+      } /* !rcd */ 
+      
+      rcd=nco_inq_att_flg(in_id,cf->crd_id[0],unt_sng,&att_typ,&att_sz);
+      if(rcd == NC_NOERR && att_typ == NC_CHAR){
+	cf->unt_sng[0]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+	rcd=nco_get_att(in_id,cf->crd_id[0],unt_sng,cf->unt_sng[0],att_typ);
+	/* NUL-terminate attribute before using strstr() */
+	*(cf->unt_sng[0]+att_sz)='\0';
+	if(!strcasestr(cf->unt_sng[0],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports first coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->unt_sng[0]);
+      } /* !rcd && att_typ */
+      rcd=nco_inq_att_flg(in_id,cf->crd_id[1],unt_sng,&att_typ,&att_sz);
+      if(rcd == NC_NOERR && att_typ == NC_CHAR){
+	cf->unt_sng[1]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+	rcd=nco_get_att(in_id,cf->crd_id[1],unt_sng,cf->unt_sng[1],att_typ);
+	/* NUL-terminate attribute before using strstr() */
+	*(cf->unt_sng[1]+att_sz)='\0';
+	if(!strcasestr(cf->unt_sng[1],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports second coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[1],cf->unt_sng[1]);
+      } /* !rcd && att_typ */
+    } /* !crd_spt */
       
     int crd_rnk; /* [nbr] Coordinate rank */
     rcd=nco_inq_varndims(in_id,cf->crd_id[0],&crd_rnk);
@@ -1764,8 +1796,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Coordinates %s and %s \"units\" values are \"%s\" and \"%s\", respectively.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->crd_nm[1],cf->unt_sng[0] ? cf->unt_sng[0] : "(non-existent)",cf->unt_sng[1] ? cf->unt_sng[1] : "(non-existent)");
 
     /* Clean-up CF coordinates memory */
-    if(cf->crd_nm[0]) cf->crd_nm[0]=(char *)nco_free(cf->crd_nm[0]);
-    if(cf->crd_nm[1]) cf->crd_nm[1]=(char *)nco_free(cf->crd_nm[1]);
+    if(crd_dpl) crd_dpl=(char *)nco_free(crd_dpl);
     if(cf->crd_sng) cf->crd_sng=(char *)nco_free(cf->crd_sng);
     if(cf->dmn_nm[0]) cf->dmn_nm[0]=(char *)nco_free(cf->dmn_nm[0]);
     if(cf->dmn_nm[1]) cf->dmn_nm[1]=(char *)nco_free(cf->dmn_nm[1]);
@@ -1881,6 +1912,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      MLS: CO_Latitude
      MPAS-O/I: areaCell, latCell, lonCell
      NCO: lat_vertices, lon_vertices
+     NEMO: nav_lat, nav_lon
      OCO2: latitude_bnds, longitude_bnds
      OMI DOMINO: Latitude, LatitudeCornerpoints, Longitude, LongitudeCornerpoints
      POP: TLAT, TLONG, ULAT, ULONG  (NB: CICE uses ?LON and POP uses ?LONG) (POP does not archive spatial bounds)
@@ -1888,8 +1920,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      UV-CDAT regridder: bounds_lat, bounds_lon
      Unknown: XLAT_M, XLONG_M
      WRF: XLAT, XLONG */
-  const int var_xcl_lst_nbr=44; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/CO_Latitude","/slat","/S1_Latitude","/TLAT","/ULAT","/XLAT","/XLAT_M","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/slon","/S1_Longitude","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
+  const int var_xcl_lst_nbr=46; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/nav_lat","/slat","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/nav_lon","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -5705,8 +5737,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !rcd && att_typ */
       
     /* Valid coordinates attribute requires two coordinate names separated by space character */
-    /* Maximum number of coordinate names per variable to examine */
-#define NCO_MAX_CRD_PER_VAR 5 
     char *crd_nm[NCO_MAX_CRD_PER_VAR]; /* [sng] Coordinate name start position */
     char *crd_dpl; /* [sng] Modifiable duplicate of coordinates string */
     char *spc_ptr; /* [sng] Pointer to space character (' ') */
@@ -5722,7 +5752,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       /* NUL-terminate so next search ends here */
       *spc_ptr='\0'; 
     } /* !sbs_ptr */
-    /* Final coordinate name starts at beginning of coordinate string */
+    /* Final coordinate name begins where coordinate string starts */
     crd_nm[crd_nbr]=crd_dpl;
     if(crd_nbr < 2){
       (void)fprintf(stderr,"%s: WARNING %s found only %d coordinates in coordinates attribute \"%s\", at least two are required. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,crd_nbr,cf->crd_sng);
@@ -5842,8 +5872,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s Coordinates %s and %s \"units\" values are \"%s\" and \"%s\", respectively.\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->crd_nm[1],cf->unt_sng[0] ? cf->unt_sng[0] : "(non-existent)",cf->unt_sng[1] ? cf->unt_sng[1] : "(non-existent)");
 
     /* Clean-up CF coordinates memory */
-    if(cf->crd_nm[0]) cf->crd_nm[0]=(char *)nco_free(cf->crd_nm[0]);
-    if(cf->crd_nm[1]) cf->crd_nm[1]=(char *)nco_free(cf->crd_nm[1]);
+    if(crd_dpl) crd_dpl=(char *)nco_free(crd_dpl);
     if(cf->crd_sng) cf->crd_sng=(char *)nco_free(cf->crd_sng);
     if(cf->dmn_nm[0]) cf->dmn_nm[0]=(char *)nco_free(cf->dmn_nm[0]);
     if(cf->dmn_nm[1]) cf->dmn_nm[1]=(char *)nco_free(cf->dmn_nm[1]);
@@ -5875,10 +5904,11 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"XLAT_M",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("XLAT_M"); /* Unknown */
     else if((rcd=nco_inq_varid_flg(in_id,"LAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LAT"); /* MAR/RACMO */
     else if((rcd=nco_inq_varid_flg(in_id,"TLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("TLAT"); /* CICE, POP */
-    else if((rcd=nco_inq_varid_flg(in_id,"CO_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude"); /* MLS */
-    else if((rcd=nco_inq_varid_flg(in_id,"S1_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("S1_Latitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
+    else if((rcd=nco_inq_varid_flg(in_id,"nav_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("nav_lat"); /* NEMO */
+    else if((rcd=nco_inq_varid_flg(in_id,"CO_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude"); /* MLS */
+    else if((rcd=nco_inq_varid_flg(in_id,"S1_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("S1_Latitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"yc",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("yc"); /* RTM */
   } /* !lat_ctr_id */
   
@@ -5891,12 +5921,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"XLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG"); /* WRF */
     else if((rcd=nco_inq_varid_flg(in_id,"XLONG_M",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG_M"); /* Unknown */
     else if((rcd=nco_inq_varid_flg(in_id,"LON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LON"); /* MAR/RACMO */
-    else if((rcd=nco_inq_varid_flg(in_id,"S1_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("S1_Longitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"TLON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLON"); /* CICE */
     else if((rcd=nco_inq_varid_flg(in_id,"TLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLONG"); /* POP */
     else if((rcd=nco_inq_varid_flg(in_id,"ULON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULON"); /* CICE */
     else if((rcd=nco_inq_varid_flg(in_id,"ULONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULONG"); /* POP */
     else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I */
+    else if((rcd=nco_inq_varid_flg(in_id,"nav_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("nav_lon"); /* NEMO */
+    else if((rcd=nco_inq_varid_flg(in_id,"CO_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("CO_Longitude"); /* MLS */
+    else if((rcd=nco_inq_varid_flg(in_id,"S1_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("S1_Longitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"xc",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("xc"); /* RTM */
   } /* !lon_ctr_id */
   
