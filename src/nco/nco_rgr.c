@@ -1952,7 +1952,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,mpas_xcl_lst[idx])) break;
       if(idx_tbl < trv_nbr){
 	if(trv_tbl->lst[idx_tbl].flg_xtr){
-	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) pre-defined MPAS exclusion-list variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
 	  var_xcl_nbr++;
 	} /* endif */
 	trv_tbl->lst[idx_tbl].flg_xtr=False;
@@ -7209,7 +7209,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(nco_grd_xtn == nco_grd_xtn_rgn && fl_hnt){
     const char *fl_mode="w";
     FILE *fp_hnt; /* [fl] Hint file (for ERWG switches) file handle */
-    (void)fprintf(stderr,"%s: INFO %s writing ERWG weight-generation regional hint to file %s\n",nco_prg_nm_get(),fnc_nm,fl_hnt);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s writing ERWG weight-generation regional hint to file %s\n",nco_prg_nm_get(),fnc_nm,fl_hnt);
     /* Open output file */
     if((fp_hnt=fopen(fl_hnt,fl_mode)) == NULL){
       (void)fprintf(stderr,"%s: ERROR unable to open hint output file %s\n",nco_prg_nm_get(),fl_hnt);

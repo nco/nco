@@ -100,8 +100,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   const nco_bool CDL_OR_TRD=prn_flg->cdl || prn_flg->trd; /* [flg] CDL or Traditional output */
   const nco_bool CDL_OR_JSN_OR_XML=prn_flg->cdl || prn_flg->jsn || prn_flg->xml; /* [flg] CDL or JSON or XML output */
 
-  //nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
-
   nco_string sng_val; /* [sng] Current string */
 
   prn_ndn=prn_flg->ndn;
@@ -512,8 +510,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     case NC_STRING:
       for(lmn=0;lmn<att_sz;lmn++){
 	sng_val=att[idx].val.sngp[lmn];
-    /* in strict CDL a NC_STRING null is indictaed by NIL - for now we output an empty string */
-    if(!sng_val) sng_val=(char*)"";
+    /* In strict CDL an NC_STRING null is indictaed by NIL, for now we output an empty string */
+    if(!sng_val) sng_val="";
 	sng_lng=strlen(sng_val);
 	sng_lngm1=sng_lng-1UL;
 	if(CDL||XML||JSN){
@@ -1631,7 +1629,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   nco_bool flg_malloc_unit_crd=False; /* [flg] Allocated memory for coordinate units string */
   nco_bool flg_malloc_unit_var=False; /* [flg] Allocated memory for variable units string */
   nco_bool unit_cln_crd=False; /* [flg] Coordinate has calendar units */
-  nco_bool unit_cln_var=False; /* [flg] Variable has calendar units */
+  //nco_bool unit_cln_var=False; /* [flg] Variable has calendar units */
 
   nco_string sng_val; /* [sng] Current string */
 
@@ -1706,7 +1704,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if (unit_sng_var && strlen(unit_sng_var)) {
 
       flg_malloc_unit_var = True;
-      unit_cln_var = nco_cln_chk_tm(unit_sng_var);
+      //unit_cln_var = nco_cln_chk_tm(unit_sng_var);
 
       cln_sng = nco_lmt_get_udu_att(grp_id, cf_var_id, "calendar");
       if (cln_sng)

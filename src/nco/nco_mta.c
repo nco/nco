@@ -89,9 +89,9 @@ nco_kvm_prn(kvm_sct kvm)
   if(kvm.key) (void)fprintf(stdout,"%s = %s\n",kvm.key,kvm.val); else return;
 } /* end nco_kvm_prn() */
 
-char * /* O/I [sng] string that has backslash(es)*/
+char * /* O/I [sng] string that has backslash(es) */
 nco_remove_backslash
-(char *args) /* O/I [sng] string that had already been got rid of backslash(es)*/
+(char *args) /* O/I [sng] string that had already been got rid of backslash(es) */
 { /* Purpose: recursively remove backslash from string */
   char *backslash_pos=strstr(args,"\\"); 
   if(backslash_pos){
@@ -99,7 +99,7 @@ nco_remove_backslash
     memmove(&args[absolute_pos],&args[absolute_pos+1L],strlen(args)-absolute_pos);
     return nco_remove_backslash(args);
   }else return args;
-}
+} /* !nco_remove_backslash() */
 
 char * /* O [sng] the flag that has no hyphens */
 nco_remove_hyphens /* [fnc] Remove the hyphens come before the flag */
@@ -196,23 +196,23 @@ nco_is_flag /* [fnc] Check whether input is a flag */
   const char *trr_flags[]={""};
   const char *ppc_flags[]={""};
   
-  for(int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++)
+  for(unsigned int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++)
     {
       if(!strcmp(flag,rgr_flags[index])){
         return NCO_NOERR;
       }
     }
-  for(int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++)
+  for(unsigned int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++)
     {
       if(!strcmp(flag, gaa_flags[index])) 
         return NCO_NOERR;
     }
-  for(int index=0;index<sizeof(trr_flags)/sizeof(char *);index++)
+  for(unsigned int index=0;index<sizeof(trr_flags)/sizeof(char *);index++)
     {
       if(!strcmp(flag, trr_flags[index])) 
         return NCO_NOERR;
     }
-  for(int index=0;index<sizeof(ppc_flags)/sizeof(char *);index++)
+  for(unsigned int index=0;index<sizeof(ppc_flags)/sizeof(char *);index++)
     {
       if(!strcmp(flag, ppc_flags[index])) 
         return NCO_NOERR;
@@ -221,24 +221,24 @@ nco_is_flag /* [fnc] Check whether input is a flag */
   (void)fprintf(stderr, "%s: ERROR %s Multi-Argument (MTA) parser reports unrecognized option \"%s\"\n%s: HINT Lack of equals sign indicates this may be a mis-typed flag rather than an erroneous key-value pair specification. Valid MTA flags are listed below. Synonyms for each flag are listed on the same line. A leading \"--\" is optional. MTA documentation is at http://nco.sf.net/nco.html#mta\n",nco_prg_nm_get(),fnc_nm,flag,nco_prg_nm_get());
 
   (void)fprintf(stderr, "Regridder flags (\"rgr\" indicator):\n");
-  for(int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++)
+  for(unsigned int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++)
     {
       (void)fprintf(stderr, "  %2d. %s\n",index+1,rgr_flags[index]);
     }
   /*
     (void)fprintf(stderr, "ncks gaa (Global Attribute Adding) flags:\n");
-    for(int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++)
+    for(unsigned int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++)
     {
       (void)fprintf(stderr, "%s\n",gaa_flags[index]);
     }
   
   (void)fprintf(stderr, "ncks trr (Terraref) flags:\n");
-  for(int index=0;index<sizeof(trr_flags)/sizeof(char *);index++)
+  for(unsigned int index=0;index<sizeof(trr_flags)/sizeof(char *);index++)
     {
       (void)fprintf(stderr, "%s\n",trr_flags[index]);
     }
   (void)fprintf(stderr, "ncks ppc (Precision-Preserving Compression) flags:\n");
-  for(int index=0;index<sizeof(ppc_flags)/sizeof(char *);index++)
+  for(unsigned int index=0;index<sizeof(ppc_flags)/sizeof(char *);index++)
     {
       (void)fprintf(stderr, "%s\n",ppc_flags[index]);
     }
@@ -302,7 +302,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
   char **separate_args=nco_sng_split(args,(const char *)nco_mta_dlm);
   size_t counter=nco_count_blocks(args,nco_mta_dlm)*nco_count_blocks(args,nco_mta_sub_dlm); /* [nbr] Maximum number of kvm structures in this argument */
 
-  for(int index=0;index<nco_count_blocks(args,nco_mta_dlm);index++){
+   for(int index=0;index<nco_count_blocks(args,nco_mta_dlm);index++){
     if(!nco_input_check(separate_args[index])) nco_exit(EXIT_FAILURE);
   } /* !index */
   

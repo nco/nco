@@ -1474,11 +1474,11 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
 } /* end nco_is_spc_in_cf_att() */
 
 
-char ***  /* [0] [ptr]  list of lists - each ragged array terminated with empty string    */
+char *** /* O [ptr]  list of lists - each ragged array terminated with empty string    */
 nco_lst_cf_att /* [fnc] look in all vars for att cf_nm  */
-(const int nc_id,    /* I [id] netCDF file ID */
- const char *const cf_nm,  /* I [sng] cf att name */
- int *nbr_lst) /* 0 [nbr] number of ragged arrays returned */
+(const int nc_id, /* I [id] netCDF file ID */
+ const char *const cf_nm, /* I [sng] CF att name */
+ int *nbr_lst) /* O [nbr] number of ragged arrays returned */
 {
   /* Purpose: Is variable specified in an associated attribute?
      Associated attributes include "ancillary_variables", "bounds", "climatology", "coordinates", "grid_mapping"
@@ -1512,7 +1512,7 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm  */
   rcd+=nco_inq_nvars(nc_id,&nbr_var);
 
   /* This assumption, praise the Lord, is valid in netCDF2, netCDF3, and netCDF4 */
-  for(var_id=0; var_id<nbr_var;var_id++){
+  for(var_id=0;var_id<nbr_var;var_id++){
 
     nco_inq_varname(nc_id,var_id,var_nm);
 
@@ -1531,11 +1531,10 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm  */
         /* NUL-terminate attribute */
         att_val[att_sz]='\0';
         /* Split list into separate variable names
-	     Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
+	   Use nco_lst_prs_sgl_2D() not nco_lst_prs_2D() to avert TODO nco944 */
         cf_lst=nco_lst_prs_sgl_2D(att_val,dlm_sng,&nbr_cf);
 
-
-        int_lst=(char**)nco_malloc( (nbr_cf+3) * sizeof(char*)  );
+        int_lst=(char **)nco_malloc((nbr_cf+3)*sizeof(char *));
         int_lst[0]=strdup(var_nm);
         int_lst[1]=strdup(cf_nm);
 
@@ -1546,19 +1545,17 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm  */
         int_lst[nbr_cf+2]=strdup("");
 
         /* add ragged array to list */
-        ra_lst=(char***)nco_realloc( ra_lst, sizeof(char**)*(*nbr_lst+1) );
+        ra_lst=(char ***)nco_realloc(ra_lst,sizeof(char**)*(*nbr_lst+1));
         ra_lst[*nbr_lst]=int_lst;
         ++*nbr_lst;
 
         att_val=(char *)nco_free(att_val);
         cf_lst=nco_sng_lst_free(cf_lst,nbr_cf);
         // cf_lst=nco_free(cf_lst);
-        int_lst=(char**)NULL_CEWI;
-
+        int_lst=(char **)NULL_CEWI;
       }
     } /* end loop over attributes */
   } /* end loop over var_id */
-
 
   return ra_lst;
 } /* end nco_lst_cf_att() */

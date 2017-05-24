@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.7-beta02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 22 May 2017
+@set update-date 24 May 2017
 @set update-month May 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18511,7 +18511,7 @@ the record dimension size if the requested record hyperslab
 (@pxref{Hyperslabs}) resolves to the same size for all files. 
 @cindex @acronym{CMIP}
 This allows easier gluing/averaging of unequal length timeseries from 
-simulation ensembles (e.g., the @acronym{CMIP} rchive). 
+simulation ensembles (e.g., the @acronym{CMIP} archive). 
 
 @cindex fixed dimension
 @cindex fix record dimension
