@@ -6907,7 +6907,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        20150526: T42 grid from SCRIP and related maps are only accurate to ~eight digits
        20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006
        20170521: T62 grid from NCEP-NCAR Reanalysis 1 worse than single precision, has yc_[192]=-86.6531 not expected exact value lat_ctr[1]=-86.6532 */
-    if(lat_ctr[0] > 0.0) (void)fprintf(stderr,"%s: WARNING %s reports lat_ctr[0] = %g is positive and lat_ctr[%ld] = %g is negative. Grid inferral currently assumes 2D global grids run from south-to-north, not north-to-south. Global N-to-S grids will not be correctly recognized.\nHINT: Re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm,lat_ctr[0],lat_nbr-1L,lat_ctr[lat_nbr-1L]);
+    if(lat_ctr[0] > 0.0) (void)fprintf(stderr,"%s: WARNING %s reports lat_ctr[0] = %g is positive and lat_ctr[%ld] = %g is negative. Grid inferral currently assumes 2D global grids run from south-to-north, not north-to-south. Global N-to-S grids may not be correctly recognized. Please contact us if full support for inferring N-to-S grids is important to you.\nHINT: Re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm,lat_ctr[0],lat_nbr-1L,lat_ctr[lat_nbr-1L]);
     if((float)lat_ctr[1] == (float)lat_ctr_tst_eqa) lat_typ=nco_grd_lat_eqa;
     if((float)lat_ctr[1] == (float)lat_ctr_tst_fv) lat_typ=nco_grd_lat_fv;
     double *lat_sin=NULL_CEWI; // [frc] Sine of Gaussian latitudes double precision
@@ -6922,7 +6922,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
       if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr[1] = %g, lat_ctr_tst_gss = %g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1],lat_ctr_tst_gss);
       const double eps_rlt_cnv_gss=1.0e-7; // Convergence criterion (1.0e-7 fails for NCEP NCAR Reanalysis 1
-      if(fabs(1.0-lat_ctr[1]/lat_ctr_tst_gss) < eps_rlt_cnv_gss) lat_typ=nco_grd_lat_gss;
+      if(fabs(1.0-fabs(lat_ctr[1])/lat_ctr_tst_gss) < eps_rlt_cnv_gss) lat_typ=nco_grd_lat_gss;
     } /* !Gaussian */
     if(lat_typ == nco_grd_lat_nil){
       /* If still of unknown type, this 2D grid may be weird
