@@ -1,5 +1,8 @@
 2017-05-23  Charlie Zender  <zender@uci.edu>
 
+	* NCO_NETCDF4_AND_FILLVALUE rides again! Fix bug reported by Kyle Wilcox:
+	Adding _FillValue to written variable works in 4.5.5, 4.6.1, wipes whole variable in 4.6.6 :)
+
 	* Add NEMO (IPSL version) coordinates to regridder database
 
 	* Improve CF-inferral algorithm to handle coordinate attributes with > 2 names

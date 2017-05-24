@@ -359,9 +359,10 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   /* According to netCDF4 C Reference Manual:
      "Fill values must be written while the file is still in initial define mode, that
      is, after the file is created, but before it leaves define mode for the first time.
-     NC EFILLVALUE is returned when the user attempts to set the fill value after
+     NC_EFILLVALUE is returned when the user attempts to set the fill value after
      it is too late." 
-     The netCDF4/_FillValue code (and rename trick) works around that limitation. */
+     (netcdf.h replaced NC_EFILLVALUE by NC_ELATEFILL after about netCDF ~4.2.1)
+     The NCO netCDF4/_FillValue code (and rename trick) works around that limitation */
 
   /* Bold hack which gets around problem of modifying netCDF4 "_FillValue" attributes
      netCDF4 does not allow this by default, though netCDF3 does
@@ -381,11 +382,13 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
      aed.att_nm && /* 20130419: Verify att_nm exists before using it in strcmp() below. att_nm does not exist when user leaves field blank. Fix provided by Etienne Tourigny. */
      !strcmp(aed.att_nm,nco_mss_val_sng_get()) && /* ... attribute is missing value and ... */
      aed.mode != aed_delete &&  /* ... we are not deleting attribute */
-     NC_LIB_VERSION <= 440){ /* netCDF library does not contain fix to NCF-187 */
+     // 20170523: Remove this condition as it did not seem to help anymore
+     //     NC_LIB_VERSION <= 440 && /* netCDF library does not contain fix to NCF-187 */
+     True){
     /* Rename existing attribute to netCDF4-safe name 
        After modifying missing value attribute with netCDF4-safe name below, 
        we will rename attribute to original missing value name. */
-    if(nco_dbg_lvl_get() >= nco_dbg_var && nco_dbg_lvl_get() != nco_dbg_dev) (void)fprintf(stdout,"%s: INFO %s reports creating, modifying, or overwriting %s attribute %s in netCDF4 file requires re-name trick\n",nco_prg_nm_get(),fnc_nm,var_nm,aed.att_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports attempt to create, modify, or overwrite %s attribute %s in netCDF4 file violates netCDF4 capabilities (and would result in NC_ELATEFILL error) so will invoke NCO hocus-pocus rename trick...\n",nco_prg_nm_get(),fnc_nm,var_nm,aed.att_nm);
     if(rcd_inq_att == NC_NOERR) (void)nco_rename_att(nc_id,var_id,aed.att_nm,att_nm_tmp);
     flg_netCDF4_rename_trick=True; /* [flg] Re-name _FillValue in order to create/modify/overwrite it */
     strcpy(aed.att_nm,att_nm_tmp); 
