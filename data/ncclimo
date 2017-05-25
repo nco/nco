@@ -336,7 +336,7 @@ if [ -z "${nco_exe}" ]; then
     echo "${spt_nm}: ERROR Unable to find NCO, nco_exe = ${nco_exe}"
     exit 1
 fi # !nco_exe
-# Use StackOverflow method to find NCO directory
+# StackOverflow method finds NCO directory
 while [ -h "${nco_exe}" ]; do
   drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
   nco_exe="$(readlink "${nco_exe}")"

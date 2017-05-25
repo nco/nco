@@ -213,8 +213,8 @@ esac # !HOSTNAME
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -d ${HOME}/skl_t42.nc -o ~/fv09_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
 # ncremap --vrb=3 -p nil -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
 # ncremap --vrb=3 -P sgs -a conserve --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170525 normalization required to get mask right
-# ncremap --vrb=3 -P cice --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170525 cice short-cut
-# CICE/CESM on POP grid: full grid inferral (and thus conservative remapping) fails because masked vertices/cells missing 
+# ncremap --vrb=3 -P cice -a conserve --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170525 cice short-cut
+# CICE/CESM on POP grid: full grid inferral (and thus conservative remapping) fails because masked vertices/cells missing, must use bilinear or supply grid-file for conservative
 # ncremap -a bilinear -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/wenshan.nc # 20170515: grid centers/bounds in non-masked regions suffice for bilinear interpolation
 # ncremap -a conserve -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/wenshan.nc # 20170521: conservative requires supplied tri-pole grid for centers/bounds in masked regions
 # Debugging and Benchmarking:
@@ -231,7 +231,7 @@ if [ -z "${nco_exe}" ]; then
     echo "ERROR: Unable to find NCO, nco_exe = ${nco_exe}"
     exit 1
 fi # !nco_exe
-# Use stackoverflow method to find NCO directory
+# StackOverflow method finds NCO directory
 while [ -h "${nco_exe}" ]; do
   drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
   nco_exe="$(readlink "${nco_exe}")"
@@ -767,9 +767,9 @@ elif [ "${par_typ}" = 'mpi' ]; then
     par_opt=' &'
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'sgs' ] ; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'sgs' ] ; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'hirdls', 'mls', 'mod04', 'mpas', 'nil', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'hirdls', 'mls', 'mod04', 'mpas', 'nil', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -1790,7 +1790,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 		printf "SGS: Implement idiosyncratic ALM characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [km2]
-	    cmd_alm[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@units=\"km^2\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
+	    cmd_alm[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@long_name=\"Gridcell area\";area@units=\"km^2\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_alm[${fl_idx}]}
 	    fi # !dbg
@@ -1807,7 +1807,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 		printf "SGS: Implement idiosyncratic CICE characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [m2], and aice from [frc] to [%]
-	    cmd_cice[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2;area@units=\"m^2\";${sgs_frc}*=100;${sgs_frc}@units=\"%\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
+	    cmd_cice[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2;area@long_name=\"Gridcell area\";area@units=\"m^2\";${sgs_frc}*=100;${sgs_frc}@units=\"%\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_cice[${fl_idx}]}
 	    fi # !dbg

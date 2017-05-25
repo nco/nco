@@ -22340,16 +22340,22 @@ prior to regridding for a limited (though growing) number of data-file
 types that encounter the @command{ncremap} limitation concerning
 dimension ordering. 
 Valid procedure types are @samp{airs} for @acronym{NASA AIRS} satellite data, 
-@samp{mpas} for @acronym{MPAS} ocean/ice model data,
+@samp{alm} or @samp{clm} @acronym{DOE ALM} and @acronym{NCAR CLM} model data,
+@samp{cice} for @acronym{CICE} ice model data on 2D grids,
+@samp{mpas} for @acronym{MPAS} ocean/ice model data on unstructured grids,
 @samp{mod04} for @w{Level 2} @acronym{MODIS} @acronym{MOD04} product,
 @samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
-(such as @acronym{ALM/CLM} land model data), 
+(such as @acronym{ALM/CLM} land model data or @acronym{CICE} sea-ice
+model data), 
 and @samp{nil} (for none).
 The default @var{prc_typ} is @samp{nil}, which means @command{ncremap} 
 does not perform any special procedure prior to regridding.
 The @acronym{AIRS} procedure calls @command{ncpdq} to permute dimensions
 from their order in the input file to this order: 
 @code{StdPressureLev,GeoTrack,GeoXTrack}.
+The @acronym{ALM}, @acronym{CLM}, and @acronym{CICE} procedures set 
+idiosyncratic model values and then invoke the Sub-gridscale
+(@acronym{SGS}) procedure (see below). 
 The @acronym{MOD04} procedure unpacks input data.
 The @acronym{MPAS} procedure permutes input data into this order:
 @code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}, and invokes
@@ -22408,6 +22414,20 @@ sub-grid area appropriately before regridding.
 values of @var{sgs_frc}: @math{@var{sgs_msk} = 1} is assigned to
 destination gridcells with @math{@var{sgs_frc} > 0.0}, and all others
 @math{@var{sgs_msk} = 0}.
+
+@command{ncremap} supports convenience options to recover most of the  
+original, model-specific idiosyncracies in raw @acronym{ALM/CLM} and
+@acronym{CICE} datasets.
+@example
+# Invocations for ALM/CLM data
+ncremap -P alm -i in.nc -s src_grd.nc -d dst_data.nc -o out.nc
+ncremap -P sgs -i in.nc -s src_grd.nc -d dst_data.nc -o out.nc
+ncremap -P sgs --sgs_frc=landfrac --sgs_msk=landmask ... 
+
+# Equivalent invocations for CICE data
+ncremap -P cice -i in.nc -s src_grd.nc -d dst_data.nc -o out.nc
+ncremap -P sgs --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 ... 
+@end example
 
 Sub-gridscale handling currently requires the user to specify the
 source @acronym{SCRIP} grid-file. 
