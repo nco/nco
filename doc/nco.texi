@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.7-beta02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 24 May 2017
+@set update-date 25 May 2017
 @set update-month May 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2678,9 +2678,17 @@ metadata operations.
 Use the @samp{--hdr_pad} and @samp{--header_pad} switches to request
 that @var{hdr_pad} bytes be inserted into the metadata section of the
 output file.
+There is little downside to padding a header with kilobyte of space,
+since subsequent manipulation of the file will annotate the
+@code{history} attribute with all commands, let alone any explicit
+metadata additions with @command{ncatted}.
+@example
+ncks --hdr_pad=1000  in.nc out.nc # Pad header with  1 kB space
+ncks --hdr_pad=10000 in.nc out.nc # Pad header with 10 kB space
+@end example
 Future metadata expansions will not incur the netCDF3 performance
 penalty of copying the entire output file unless the expansion exceeds
-the amount of header padding exceeded.
+the amount of header padding.
 This can be beneficial when it is known that some metadata will be added
 at a future date.
 The operators which benefit most from judicious use of header padding
@@ -22430,9 +22438,21 @@ We then construct a map-file that conserves a field weighted by
 the altered source and destination gridcell areas.
 @command{ncremap} then applies these regridding weights to all
 input fields to construct the regridded fields.
-Finally we overwrite the area, sub-grid fraction, and sub-grid mask with
-the correct values from the first step, the conservatively regridded
-sub-grid fraction.
+We then overwrite the area, sub-grid fraction, and sub-grid
+mask with the correct values from the first step, the conservatively
+regridded sub-grid fraction.
+For generic data this is the final step.
+The @code{area} and @var{sgs_frc} fields in the regridded file will be
+in units of sterradians and fraction, respectively.
+However, @command{ncremap} offers custom options to reproduce the
+idiosyncratic data and metadata format of two particular models,
+@acronym{ALM} and @acronym{CICE}.
+When invoked with @samp{-P alm} (or @samp{-P clm}), the final step
+converts the output @code{area} from sterradians to square kilometers. 
+When invoked with @samp{-P cice}, the final step converts the output
+@code{area} from sterradians to square meters, and the output
+@code{sgs_frc} from a fraction to a percent.
+
 During development of this procedure, we learned that regridding
 sub-grid values correctly versus incorrectly (i.e., with and 
 without @samp{-P sgs}, respectively) alters global-mean answers

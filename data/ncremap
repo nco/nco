@@ -303,12 +303,11 @@ out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='nil' # [sng] Parallelism type
 prc_typ='' # [sng] Procedure type
-rds_rth='6.37122e6' # Radius of Earth in ALM/CLM (SHR_CONST_REARTH)
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
 rnr_thr='' # [frc] Renormalization option
 sgs_frc='landfrac' # [sng] Sub-grid fraction variable
 sgs_msk='landmask' # [sng] Sub-grid mask variable
-sgs_nrm=1.0 # [frc] Sub-grid normalization
+sgs_nrm='1.0' # [frc] Sub-grid normalization
 std_flg='No' # [sng] Input available from pipe to stdin
 thr_nbr=2 # [nbr] Thread number for regridder
 tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
@@ -792,6 +791,24 @@ if [ "${prc_typ}" = 'mpas' ]; then
     pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
     rgr_opt="${rgr_opt} --rnr=0.0"
 fi # !mpas
+if [ "${prc_typ}" = 'alm' || "${prc_typ} = 'clm' ]; then 
+    # Set ALM/CLM-specific options first, then change prc_typ to sgs
+    rds_rth='6.37122e6' # [m] Radius of Earth in ALM/CLM (SHR_CONST_REARTH)
+    sgs_frc='landfrac'
+    sgs_msk='landmask'
+    sgs_nrm='1.0'
+    prc_alm='Yes'
+    prc_typ='sgs'
+fi # !alm
+if [ "${prc_typ}" = 'cice' ]; then 
+    # Set CICE-specific options first, then change prc_typ to sgs
+    rds_rth='6371229.0' # [m] Radius of Earth in MPAS-CICE (global attribute sphere_radius)
+    sgs_frc='aice'
+    sgs_msk='tmask'
+    sgs_nrm='100.0'
+    prc_cice='Yes'
+    prc_typ='sgs'
+fi # !alm
 if [ "${prc_typ}" = 'sgs' ]; then 
     nco_dgn_area='--rgr diagnose_area'
     wgt_opt_esmf='--user_areas --ignore_unmapped'
@@ -1753,7 +1770,7 @@ fi # !par_typ
 if [ "${prc_typ}" = 'sgs' ]; then 
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Append full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask to regridded file...\n"
+	    printf "SGS: Append full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask to regridded file...\n"
 	fi # !vrb_lvl
 	# These replace user-areas area, user-areas sub-grid fraction, and naïvely regridded (rather than accurately re-derived) sub-grid mask, respectively
 	cmd_grd_rpl[${fl_idx}]="ncks -A -C -v area,${sgs_frc},${sgs_msk} ${frc_out_sgs} ${fl_out[${fl_idx}]}"
@@ -1767,6 +1784,40 @@ if [ "${prc_typ}" = 'sgs' ]; then
 		exit 1
 	    fi # !err
 	fi # !dbg
+	if [ -n "${prc_alm}" ]; then
+	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+		printf "SGS: Implement idiosyncratic ALM characteristics in regridded file...\n"
+	    fi # !vrb_lvl
+	    # Convert area from [sr] to [km2]
+	    cmd_alm[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@units=\"km^2\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_alm[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_alm[${fl_idx}]}
+		if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+		    printf "${spt_nm}: ERROR Failed to replace convert output area from [sr] to [km2]. Debug this:\n${cmd_alm[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !prc_alm
+	if [ -n "${prc_cice}" ]; then
+	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+		printf "SGS: Implement idiosyncratic CICE characteristics in regridded file...\n"
+	    fi # !vrb_lvl
+	    # Convert area from [sr] to [m2], and aice from [frc] to [%]
+	    cmd_cice[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2;area@units=\"m^2\";${sgs_frc}*=100;${sgs_frc}@units=\"%\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_cice[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_cice[${fl_idx}]}
+		if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+		    printf "${spt_nm}: ERROR Failed to replace convert output area from [sr] to [m2] and ${sgs_frc} from [frc] to [%]. Debug this:\n${cmd_cice[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !prc_cice
     done # !fl_idx
 fi # !sgs
 
