@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.7 final changes';git push
 	git tag -a 4.6.7 -m 'ncap2 in-fill, MTA flags, ERWG rgn hints, SGS, ncremap re-org, ncatted nc4 fll_val';git push --tags
 
+	* Add sub-grid fraction normalization option sgs_nrm for CICE
+
+	* Fix compiler warnings from recent code
+
 2017-05-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO_NETCDF4_AND_FILLVALUE rides again! Fix bug reported by Kyle Wilcox:

@@ -21740,8 +21740,8 @@ ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}]
 [-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{prc_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]
-[-s @var{grd_src}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
-[-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
+[-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
+[--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}] [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] 
 @end example
@@ -22351,29 +22351,28 @@ renormalization.
 @cindex @acronym{SGS}-mode
 @cindex @var{sgs_frc}
 @cindex @var{sgs_msk}
+@cindex @var{sgs_nrm}
 @cindex @code{--sgs_frc @var{sgs_frc}}
 @cindex @code{--sgs_msk @var{sgs_msk}}
+@cindex @code{--sgs_nrm @var{sgs_nrm}}
 In sub-grid mode, @command{ncremap} performs substantial pre- and
-post-processing so that regridding conserves fields that may represent
-only a fraction of the entire gridcell.
-The sub-gridscale (@acronym{SGS}) fraction represented by each 
-field is contained in the variable @var{sgs_frc}, whose name defaults
-to @code{landfrac} and may be specified with the
-@samp{--sgs_frc=@var{sgs_frc}} option. 
-The sub-grid fraction usually changes spatially.
+post-processing to conserve fields that represent fractional parts
+of a gridcell.
+The sub-gridscale (@acronym{SGS}) fraction usually changes spatially
+with the geographic distribution of ice, ocean, vegetation, and so on.
 Spatial fields output by most geophysical models are intensive, 
 and so by default the regridder attempts to conserve the integral of the
 area times the field value such that the integral is equal on source and
 destination grids. 
-However some models (like @acronym{ALM} and @acronym{CLM}) output
-gridcell values intended to apply to only a fraction @var{sgs_frc}
-(which stands for ``sub-gridscale fraction'') of the gridcell.
+However some models (like @acronym{ALM}, @acronym{CLM}, and
+@acronym{CICE}) output gridcell values intended to apply to only a
+fraction @var{sgs_frc} (which stands for ``sub-gridscale fraction'') of
+the gridcell. 
 For concreteness consider a sub-grid field that represents the land
-fraction, though it could be any similar quantity such as ocean
-fraction, ice fraction, vegetated fraction, and so on.
+fraction.
 Land fraction is less than one in gridcells that resolve coastlines or 
 islands.  
-@acronym{ALM} and @acronym{CLM}) happily output temperature values, say,
+@acronym{ALM} and @acronym{CLM}) happily output temperature values
 valid only for a small (i.e., @math{@var{sgs_frc} << 1}) island within
 the larger gridcell.
 Regridding weights that assume @math{@var{sgs_frc} = 1} everywhere would 
@@ -22382,19 +22381,30 @@ on Earth, would alter global mean values (e.g., of temperature, fluxes)
 by up to a few percent at common grid resolutions.
 Though models like @acronym{ALM} and @acronym{CLM} may run on the same
 horizontal grid as the overlying atmosphere, they cannot be regridded
-with the atmosphere's weights which account for the whole gridcell, not  
-just for the sub-grid land fraction.
+with the atmosphere's grid weights that account for the whole gridcell
+instead of the sub-grid land fraction. 
 
 To correctly regrid sub-grid data, specify the @samp{-P sgs} option, 
 and names of the @var{sgs_frc} and @var{sgs_msk} variables (if they
 differ from their respective defaults @code{landfrac} and
 @code{landmask}). 
+Trouble will ensue @var{sgs_frc} is a percentage, or an absolute area. 
+In that case provide the normalization factor @var{sgs_nrm} by which
+@var{sgs_frc} must be @emph{divided} (not multiplied) to obtain a true
+fraction (between zero and one).
+Datasets (such as those from @acronym{CICE}) that store @var{sgs_frc} 
+in percent should specify the option
+@samp{--sgs_nrm=100} to instruct @command{ncremap} to normalize the
+sub-grid area appropriately before regridding.
 @command{ncremap} will re-derive @var{sgs_msk} based on the regridded 
-values of @var{sgs_frc}. 
-Sub-gridscale handling currently requires the user to specify the SCRIP
-source grid-file. 
-Moreover, the source grid-file must include the (normally non-essential)
-grid_area field.
+values of @var{sgs_frc}: @math{@var{sgs_msk} = 1} is assigned to
+destination gridcells with @math{@var{sgs_frc} > 0.0}, and all others
+@math{@var{sgs_msk} = 0}.
+
+Sub-gridscale handling currently requires the user to specify the
+source @acronym{SCRIP} grid-file. 
+Moreover, this source grid-file must include the (normally
+non-essential) @code{grid_area} field.
 It is infeasible to permit source-grid inferral, because
 weight-generators assume great circle arcs but 2D-grids usually have
 small-circles in latitude, and this can lead to area mis-matches.
@@ -22406,13 +22416,15 @@ ncremap -P sgs -i in.nc -s src_grd.nc -d dst_data.nc -o out.nc
 @end example
 
 The method used to regrid sub-grid values is somewhat involved.
-First we conservatively regrid the sub-grid fraction, and multiply
-the destination area by this regridded fraction.
+First, if necessary, we normalize the sub-grid variable to be a 
+fraction between zero and one.
+We then regrid the sub-grid fraction, and multiply the destination area  
+by the regridded fraction. 
 Then we duplicate the source and destination grids, to modify the
 copies without tampering with the originals.
 We multiply the grid-cell area in the duplicated source grid by  
 the sub-grid fraction in the input data file. 
-We multiply the grid-cell area in the duplicated duplicated destination
+We multiply the grid-cell area in the duplicated destination
 grid by regridded sub-grid fraction.
 We then construct a map-file that conserves a field weighted by
 the altered source and destination gridcell areas.

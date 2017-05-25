@@ -904,8 +904,8 @@ nco_prn_var_val_cmt /* 0 print to stdout var values as CDL comment (delimited by
        } /* end switch */
 
     } /* !is_mss_val */
-    if(lmn<sz-1)
-      (void)fprintf(stdout,", ");
+
+    if(lmn<sz-1L) (void)fprintf(stdout,", ");
 
   } /* end loop over element */
 
@@ -913,12 +913,7 @@ nco_prn_var_val_cmt /* 0 print to stdout var values as CDL comment (delimited by
 
   if(fmt_sng_mss_val) fmt_sng_mss_val=(char *)nco_free(fmt_sng_mss_val);
 
-
-
 }/* end nco_prn_var_val_cmt() */
-
-
-
 
 void
 nco_prn_var_val_lmt /* [fnc] Print variable data */
