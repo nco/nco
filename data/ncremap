@@ -303,6 +303,7 @@ out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='nil' # [sng] Parallelism type
 prc_typ='' # [sng] Procedure type
+rds_rth='6.37122e6' # Radius of Earth in ALM/CLM (SHR_CONST_REARTH)
 rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
 rnr_thr='' # [frc] Renormalization option
 sgs_frc='landfrac' # [sng] Sub-grid fraction variable
@@ -1320,7 +1321,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     # 2. Set (formerly) missing values to 0 sub-grid fraction
     # 3. Set 0 sub-grid fraction to 0 imask
     # 4. Compute active grid area
-    cmd_wheresrc[${fl_idx}]="ncap2 -O -s '${sgs_frc}=${sgs_frc};if(${sgs_nrm} != 1.0){${sgs_frc}/=${sgs_nrm};${sgs_frc}@units=\"1\";}if(${sgs_frc}@missing_value.exists()) ram_delete(${sgs_frc}@missing_value);delete_miss(${sgs_frc});where(${sgs_frc} > 1.0f) ${sgs_frc}=0.0f;where(${sgs_frc} == 0.0f) grid_imask=0;grid_area*=${sgs_frc}' ${grd_src_sgs} ${grd_src_sgs}"
+    cmd_wheresrc[${fl_idx}]="ncap2 -O -s '${sgs_frc}=${sgs_frc}; if(${sgs_nrm} != 1.0){${sgs_frc}/=${sgs_nrm}; ${sgs_frc}@units=\"1\";} if(${sgs_frc}@missing_value.exists()) ram_delete(${sgs_frc}@missing_value); delete_miss(${sgs_frc}); where(${sgs_frc} > 1.0f) ${sgs_frc}=0.0f; where(${sgs_frc} == 0.0f) grid_imask=0; grid_area*=${sgs_frc}' ${grd_src_sgs} ${grd_src_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_wheresrc[${fl_idx}]}
     fi # !dbg
@@ -1368,14 +1369,14 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !vrb_lvl
     # Allow for possibility that sgs_frc is 3D (time,lat,lon) as in CICE
     # And be CAREFUL changing this
-    cmd_lnd_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"land/ocean mask (0.=ocean and 1.=land)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' ${frc_out_sgs} ${frc_out_sgs}"
+    cmd_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"surface mask (0=invalid and 1=valid)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' ${frc_out_sgs} ${frc_out_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_lnd_msk[${fl_idx}]}
+	echo ${cmd_msk[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_lnd_msk[${fl_idx}]}
+	eval ${cmd_msk[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to derive mask from regridded sub-grid fraction. Debug this:\n${cmd_lnd_msk[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to derive mask from regridded sub-grid fraction. Debug this:\n${cmd_msk[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
