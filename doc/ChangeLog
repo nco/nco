@@ -2,7 +2,7 @@
 
 	* NCO 4.6.8-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.8-alpha01 final changes';git push
-	git tag -a 4.6.8-alpha01 -m 'Same as 4.6.7 except for minor fixes';git push --tags
+	git tag -a 4.6.8-alpha01 -m 'Same as 4.6.7 except for version';git push --tags
 
 	* NCO 4.6.7 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.7 final changes';git push

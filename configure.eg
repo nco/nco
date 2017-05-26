@@ -238,8 +238,8 @@ Commands for LINUX are the only ones "regularly" used after ~2010
 # Yan Liu <yanliu@illinois.edu> # NCSA Maintainer = Yan Liu (github: yanliu-chn)
 # https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # https://www.olcf.ornl.gov/support/submit-ticket # OLCF
-# Subject: Please upgrade NCO module to 4.6.6
-# Request: NCO 4.6.6 was released 4/21 and contains many features of interest to your ACME users. Please upgrade the system NCO module to 4.6.6 and make that the default NCO module. Thanks!
+# Subject: Please upgrade NCO module to 4.6.8
+# Request: NCO 4.6.8 was released 5/26 and contains many features of interest to your ACME users. Please upgrade the system NCO module to 4.6.8 and make that the default NCO module. Thanks!
 
 zender@dust:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUX
@@ -333,8 +333,9 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # acme: http://www.gnu.org/software/automake/manual/automake.html search for "shared by two hosts" use 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on edison:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
+# Latest ticket: INC0102292 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170420 (with ncap2)
-# Personal recipe last used successfully: 20170519
+# Personal recipe last used successfully: 20170526
 module load szip
 module load gsl
 module load udunits
@@ -365,8 +366,9 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
 # Sysadmin upgrade request: support@lcrc.anl.gov
+# Latest ticket: AREQ0159277 on 20170526
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.5 # 20170316
-# Personal recipe last used successfully: 20170421
+# Personal recipe last used successfully: 20170526
 # fails to link to udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 # First use: 20161223 Latest use: 20161223
@@ -397,8 +399,9 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 
 # icc/icpc 20160217 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on yellowstone:
 # Sysadmin upgrade request: cislhelp@ucar.edu
+# Latest ticket: 157798 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.5.5 # 20160228
-# Personal recipe last used successfully: 20170421
+# Personal recipe last used successfully: 20170526
 module add intel;module add gsl;module add netcdf/4.3.0;
 export PATH=${PATH}:/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib # needed to run NCO
@@ -407,7 +410,7 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNI
 
 # gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
-# Latest ticket: 347675 on 20170316
+# Latest ticket: 358890 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170515
 # Personal recipe last used successfully: 20170519
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
@@ -426,7 +429,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/sw/redhat6/netcdf/4.3.3.1/rhe
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 347675 on 20170316
 # Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170411
-# Personal recipe last used successfully: 20170421
+# Personal recipe last used successfully: 20170526
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 module add gcc # change GCC from v 4.3.4 to 4.9.0
 #module add gsl # not used yet

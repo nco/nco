@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.6.7 are ready. 
+The netCDF Operators NCO version 4.6.8 are ready. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-The main new features in 4.6.7 are in the regridder, which
+The main new features in 4.6.8 are in the regridder, which
 introduces a sub-grid regridding option, more automated handling
 and flexibility with regional grids, and easier flag specification.
 ncap2 added specialty functions to simplify handling of missing
@@ -145,7 +145,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.6.7 built/tested under
+   These problems occur with NCO 4.6.8 built/tested under
    MacOS 10.12.5 with netCDF 4.4.1 on HDF5 1.10.0-patch1 and with
    Linux with netCDF 4.4.2-development (20170322) on HDF5 1.8.17.
 
