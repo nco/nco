@@ -6439,8 +6439,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       long idx_crn_nrt; /* [idx] Index of northern neighbor */
       long lon_idx_crr; /* [idx] Current longitude index */
       long lon_vld_frs; /* [idx] First valid longitude in latitude row */
-      long lon_vld_prv[lon_nbr]; /* [idx] Previous valid longitude in latitude row */
-      long lon_vld_nxt[lon_nbr]; /* [idx] Next valid longitude in latitude row */
+      long *lon_vld_prv=NULL; /* [idx] Previous valid longitude in latitude row */
+      long *lon_vld_nxt=NULL; /* [idx] Next valid longitude in latitude row */
+
+      lon_vld_prv=(long *)nco_malloc(lon_nbr*sizeof(long));
+      lon_vld_nxt=(long *)nco_malloc(lon_nbr*sizeof(long));
+
       /* First valid gridcell sets west and south bounds of entire grid */
       for(idx_ctr=0;idx_ctr<grd_sz_nbr;idx_ctr++){
 	if(lat_ctr[idx_ctr] != mss_val_ctr_dbl) break;
@@ -6537,6 +6541,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  } /* !mss_val */
 	} /* !lon_idx */
       } /* !lat_idx */
+      if(lon_vld_nxt) lon_vld_nxt=(long *)nco_free(lon_vld_nxt);
+      if(lon_vld_prv) lon_vld_prv=(long *)nco_free(lon_vld_prv);
     } /* !CICE */
 
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
