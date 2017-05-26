@@ -1,3 +1,9 @@
+nco (4.6.7-1) unstable; urgency=low
+
+  * new upstream version ncap2 in-fill, MTA flags, ERWG rgn hints, SGS, ncremap re-org, ncatted nc4 fll_val
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 26 May 2017 12:25:23 -0700
+
 nco (4.6.6-1) unstable; urgency=low
 
   * new upstream version no_cll_msr,no_frm_trm,no_stg_grd,hsi,lst_rnk_ge2,UGRID 2D,JSON shape,OMI

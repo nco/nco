@@ -1,8 +1,12 @@
-2017-05-25  Charlie Zender  <zender@uci.edu>
+2017-05-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.7 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.7 final changes';git push
 	git tag -a 4.6.7 -m 'ncap2 in-fill, MTA flags, ERWG rgn hints, SGS, ncremap re-org, ncatted nc4 fll_val';git push --tags
+
+	* Document -P alm, clm, cice
+
+2017-05-25  Charlie Zender  <zender@uci.edu>
 
 	* Add ncremap -P alm, clm, cice options for SGS to implement model-specific idiosyncratic conventions
 

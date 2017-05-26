@@ -13,8 +13,7 @@ ncap2 added specialty functions to simplify handling of missing
 values and in-filling large missing regions with interpolated data.
 ncatted received an important bugfix for netCDF4 with _FillValue. 
 
-EVERYONE WHO USES NCKS TO PRINT DATA PLEASE READ THIS:
-
+PLEASE READ THIS IF YOU USE NCKS TO PRINT DATA:
 The ncks default printing will change to CDL in summer 2017.
 For 20+ years ncks has, by default, dumped the text representation
 of a file in (what we call) "traditional" mode, which best facilitates
@@ -49,8 +48,17 @@ A. ncremap has a new sub-gridscale (SGS) mode, -P sgs.
    in variable whose can be set with the new --sgs_frc option
    (default is "landfrac"). SGS mode eases regridding of datasets
    (e.g., from ALM, CLM, CICE) that output data normalized to a
-   fraction (rather than the entire extent) of the gridcell. 
+   fraction (rather than the entire extent) of the gridcell.
+   SGS mode automatically derives new binary masks (--sgs_msk)
+   and allows for additional normalization (--sgs_nrm).
+   Specific flavors of SGS can be selected (-P alm, clm, or cice).
+   These ensure regridded datasets recreate the idiosyncratic units
+   (e.g., %, km2) employed by raw ALM, CLM, and CICE model output.
+   Discerning these regridded from raw datasets is difficult :)
    ncremap -P sgs -s src_grd.nc -i in.nc -d 1x1.nc -o rgr.nc
+   ncremap -P alm -s src_grd.nc -i in.nc -d 1x1.nc -o rgr.nc
+   ncremap -P cice -s src_grd.nc -i in.nc -d 1x1.nc -o rgr.nc
+   ncremap -P sgs --sgs_frc=aice --sgs_msk=tmask --src_nrm=100 ... 
    http://nco.sf.net/nco.html#sgs
    Thanks to Forrest Hoffmann and Min Xu for prototyping the
    algorithm and verifying the results.
@@ -60,7 +68,7 @@ B. ncremap now automatically indicates to the ERWG weight generator
    This information can considerably reduce the time and space
    the weight generator requires to generate and store the map-file.
    ncremap uses fuzzy logic to determine this for inferred grids.
-   The user must inform ncremap whether supplied grids (i.e.,
+   The user may inform ncremap whether supplied grids (i.e.,
    specified with -s or -g) are regional with the new --rgn_dst
    and --rgn_src flags:
    ncremap -i in.nc -d dst.nc -m map.nc # Inferred (no option necessary)
