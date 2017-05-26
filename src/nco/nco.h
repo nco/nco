@@ -342,7 +342,7 @@ extern "C" {
 # define NCO_VERSION_PATCH 7
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE "beta02" /* Blank for final versions, non-blank (e.g., "beta37") for pre-release versions */
+# define NCO_VERSION_NOTE "" /* Blank for final versions, non-blank (e.g., "beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
