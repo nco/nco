@@ -149,36 +149,36 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2017 Jun&nbsp;??: 4.6.8 (<i>In Progress...</i>)
-<li>2017 May&nbsp;26: 4.6.7 (Sub-grid regridding)
-<li>2017 Apr&nbsp;21: 4.6.6 (UGRID)
-<li>2017 Mar&nbsp;15: 4.6.5 (Sundry features/fixes)
-<li>2017 Feb&nbsp;07: 4.6.4 (<tt>ncclimo</tt> splitter)
+<li>2017 Jun&nbsp;??: 4.6.8 <i>In Progress...</i>
+<li>2017 May&nbsp;26: 4.6.7 Sub-gridscale regridding
+<li>2017 Apr&nbsp;21: 4.6.6 UGRID
+<li>2017 Mar&nbsp;15: 4.6.5 Sundry features/fixes
+<li>2017 Feb&nbsp;07: 4.6.4 <tt>ncclimo</tt> splitter
 <li>2017 Jan&nbsp;27: <i>Geosci. Model Dev.</i> publishes compression-error trade-off <a href="http://www.geosci-model-dev.net/10/413/2017">paper</a></li>
-<li>2016 Dec&nbsp;23: 4.6.3 (Sundry features/fixes)
-<li>2016 Nov&nbsp;16: 4.6.2 (JSON)
+<li>2016 Dec&nbsp;23: 4.6.3 Sundry features/fixes
+<li>2016 Nov&nbsp;16: 4.6.2 JSON
 <li>2016 Sep&nbsp;19: <i>Geosci. Model Dev.</i> publishes PPC <a href="http://www.geosci-model-dev.net/9/3199/2016">paper</a></li>
-<li>2016 Aug&nbsp;06: 4.6.1 (Sundry features/fixes)
+<li>2016 Aug&nbsp;06: 4.6.1 Sundry features/fixes
 <li>2016 Jul&nbsp;06: Submitted Layer-packing <a href="http://www.geosci-model-dev-discuss.net/gmd-2016-177">manuscript</a> to <i>Geosci. Model Dev.</i></li>
-<li>2016 May&nbsp;12: 4.6.0 (<tt>ncclimo</tt>)
+<li>2016 May&nbsp;12: 4.6.0 <tt>ncclimo</tt>
 <li>2016 Apr&nbsp;06: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201604.pdf">Poster</a> at NASA ESDSWG, Greenbelt</li>
 <li>2016 Apr&nbsp;05: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">Talk</a> at NASA GES DISC, Greenbelt</li>
 <li>2016 Mar&nbsp;22: Submitted PPC manuscript to <i>Geosci. Model Dev.</i></li>
-<li>2016 Feb&nbsp;17: 4.5.5 (Sundry features/fixes)
-<li>2016 Jan&nbsp;07: 4.5.4 (<tt>ncremap</tt>)
+<li>2016 Feb&nbsp;17: 4.5.5 Sundry features/fixes
+<li>2016 Jan&nbsp;07: 4.5.4 <tt>ncremap</tt>
 <li>2015 Dec&nbsp;16: <a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">Poster</a> at Fall AGU, San Francisco</li>
 <li>2015 Nov&nbsp;04: <a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">Talk</a> at DOE ACME, Albuquerque</li>
-<li>2015 Oct&nbsp;20: 4.5.3 (Curvilinear)
-<li>2015 Sep&nbsp;06: 4.5.2 (Generate SCRIP)
+<li>2015 Oct&nbsp;20: 4.5.3 Curvilinear
+<li>2015 Sep&nbsp;06: 4.5.2 Generate SCRIP
 <li>2015 Sep&nbsp;01: NSF EarthCube <a href="#prp_e3">project</a> commences</li>
-<li>2015 Jul&nbsp;10: 4.5.1 (Sundry features/fixes)
-<li>2015 Jun&nbsp;11: 4.5.0 (Regridding)
-<li>2015 May&nbsp;21: 4.4.9 (<tt>ncra</tt> weights)
-<li>2015 Feb&nbsp;16: 4.4.8 (Precision-Preserving Compression)
+<li>2015 Jul&nbsp;10: 4.5.1 Sundry features/fixes
+<li>2015 Jun&nbsp;11: 4.5.0 Regridding
+<li>2015 May&nbsp;21: 4.4.9 <tt>ncra</tt> weights
+<li>2015 Feb&nbsp;16: 4.4.8 Precision-Preserving Compression
 <li>2014 Dec&nbsp;15: DOE ACME <a href="#prp_acme">project</a> commences</li>
-<li>2014 Nov&nbsp;26: 4.4.7 (Chunking features)
-<li>2014 Oct&nbsp;01: 4.4.6 (<tt>ncra, ncwa</tt> packing bugfixes, stride optimization)
-<li>2014 Aug&nbsp;26: 4.4.5 (Sundry features/fixes)
+<li>2014 Nov&nbsp;26: 4.4.7 Chunking features
+<li>2014 Oct&nbsp;01: 4.4.6 <tt>ncra, ncwa</tt> packing bugfixes, stride optimization
+<li>2014 Aug&nbsp;26: 4.4.5 Sundry features/fixes
 <li>2014 Jul&nbsp;01: NASA ACCESS 2013 <a href="#prp_axs">project</a> commences</li>
 <li><a href="./milestones_old.shtml">Milestones from 200301&ndash;201406 (versions 2.8.4&ndash;4.4.4)</a></li>
 <li><a href="./nco_news.shtml">News and Announcements from 199801&ndash;200212 (version 1.1.0&ndash;2.8.3) and earlier</a></li>
@@ -629,13 +629,13 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.6.7 http://github.com/nco/nco.git nco-4.6.7</tt></a>.
 <ul>
-<li><b>NCO 4.6.8</b>: (<i>Future</i>)
-<a href="http://nco.sf.net/nco.html#cnk">Chunking</a> bytes not elements;
+<li><b>NCO 4.6.9</b>: (<i>Future</i>)
+Chunking bytes not elements;
 extensive hashing?;
 netCDF4 compound types?;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
 <li><b>NCO 4.6.8</b>: (<i>In Progress, features in-progress or complete include</i>) 
-<tt>ncks --iso8661</tt> put the &lquote;T&rquote; in time;</li>
+<tt>ncks --iso8661</tt> put the &ldquo;T&rdquo; in time;</li>
 <li><b>NCO 4.6.7</b>: (<i>Current Stable Release</i>)
 Multi-argument (MTA) flag parsing;
 <tt>ncap2</tt> in-fill functions simple_fill_miss() + weighted_fill_miss();
@@ -644,7 +644,7 @@ Multi-argument (MTA) flag parsing;
 <tt>ncremap -P sgs, alm, clm, cice</tt> sub-gridscale remapping;
 <tt>ncremap</tt> msk_src/dst conversion;
 <tt>ncremap</tt> src/dst_regional hints to ERWG;</li>
-<li><b>NCO 4.6.6</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.6.6</b>:
 <tt>ncks --cdl</tt> prints units when <i>dbg_lvl</i>&nbsp;&ge;&nbsp;1;
 <tt>ncks --cdl</tt> prints braces for compound record variables;
 <tt>ncks</tt> outputs UGRID-format rectangular grids;

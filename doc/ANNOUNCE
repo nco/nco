@@ -6,12 +6,7 @@ http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-The main new features in 4.6.8 are in the regridder, which
-introduces a sub-grid regridding option, more automated handling
-and flexibility with regional grids, and easier flag specification.
-ncap2 added specialty functions to simplify handling of missing
-values and in-filling large missing regions with interpolated data.
-ncatted received an important bugfix for netCDF4 with _FillValue. 
+The main new features in 4.6.8...
 
 PLEASE READ THIS IF YOU USE NCKS TO PRINT DATA:
 The ncks default printing will change to CDL in summer 2017.
@@ -31,7 +26,7 @@ User --trd in your scripts and their behavior will not change.
 Otherwise your printing scripts will start to print CDL this summer.
 You have been warned :)
 
-Work on NCO 4.6.8 has commenced. Planned improvements include 
+Work on NCO 4.6.9 has commenced. Planned improvements include 
 support for conda installs on MS Windows, more ncclimo and ncremap
 features, more ncap2 chunking flexibility. 
 
@@ -40,106 +35,11 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap has a new sub-gridscale (SGS) mode, -P sgs.
-   In sub-grid mode, ncremap performs substantial pre- and
-   post-processing so that regridding conserves fields that may
-   represent only a fraction of the entire gridcell.
-   The sub-gridscale fraction represented by each field is contained
-   in variable whose can be set with the new --sgs_frc option
-   (default is "landfrac"). SGS mode eases regridding of datasets
-   (e.g., from ALM, CLM, CICE) that output data normalized to a
-   fraction (rather than the entire extent) of the gridcell.
-   SGS mode automatically derives new binary masks (--sgs_msk)
-   and allows for additional normalization (--sgs_nrm).
-   Specific flavors of SGS can be selected (-P alm, clm, or cice).
-   These ensure regridded datasets recreate the idiosyncratic units
-   (e.g., %, km2) employed by raw ALM, CLM, and CICE model output.
-   Discerning these regridded from raw datasets is difficult :)
-   ncremap -P sgs -s src_grd.nc -i in.nc -d 1x1.nc -o rgr.nc
-   ncremap -P alm -s src_grd.nc -i in.nc -d 1x1.nc -o rgr.nc
-   ncremap -P cice -s src_grd.nc -i in.nc -d 1x1.nc -o rgr.nc
-   ncremap -P sgs --sgs_frc=aice --sgs_msk=tmask --src_nrm=100 ... 
-   http://nco.sf.net/nco.html#sgs
-   Thanks to Forrest Hoffmann and Min Xu for prototyping the
-   algorithm and verifying the results.
-
-B. ncremap now automatically indicates to the ERWG weight generator
-   when either or both source and destination grids are regional.
-   This information can considerably reduce the time and space
-   the weight generator requires to generate and store the map-file.
-   ncremap uses fuzzy logic to determine this for inferred grids.
-   The user may inform ncremap whether supplied grids (i.e.,
-   specified with -s or -g) are regional with the new --rgn_dst
-   and --rgn_src flags:
-   ncremap -i in.nc -d dst.nc -m map.nc # Inferred (no option necessary)
-   ncremap -s grd_src.nc -g grd_dst.nc -m map.nc --rgn_src # Supplied
-   Users may notice significantly faster throughput due to this.
-   http://nco.sf.net/nco.html#rgn_src
-
-C. ncremap switches have been "rationalized" to eliminate poor UI
-   decisions made in early development. Please read the old/new 
-   option meanings and change your scripts accordingly. Now -a
-   subsumes the old role of -w. HINT: use long-options (e.g.,
-   --algorithm=conserve) to future-proof your scripts. 
-   Meaning of -a:
-   Old: Interpolation algorithm for ESMF only
-   New: Interpolation algorithm for ESMF and Tempest ('tempest')
-   Meaning of -E:
-   Old: Options for ESMF_RegridWeightGen (now use -W)
-   New: Unused
-   Meaning of -T:
-   Old: Options for TempestRemap (now use -W)
-   New: temporary directory (replaces old -U)
-   Meaning of -U:
-   Old: temporary directory
-   New: unpack flag (tells ncremap to unpack data before regridding)
-   Meaning of -w:
-   Old: Weight-generator keyword. Valid options were 'esmf' and 'tempest'. 
-   New: Weight-generator command string (e.g., "mpirun ESMF_RegridWeightGen -n 24") 
-     Supercedes default 'ESMF_RegridWeightGen' or 'GenerateOfflineMap'
-   Meaning of -W:
-   Old: Unused
-   New: Options for weight-generator (replaces old -E and -T)
-   http://nco.sf.net/nco.html#ncremap
-
-D. ncap2 has a new function named missing(), aka mask_miss() that
-   returns an array of the same size of its argument, with values
-   of zero where valid data are present and one where missing data
-   are present. The resulting array can be useful in characterizing
-   and masking the original array.
-   ncap2 -s 'mss_val=three_dmn_var_dbl.missing().ttl($time)' in.nc out.nc
-   Thanks to Adrian Tompkins for suggesting this feature.
-   http://nco.sf.net/nco.html#mask_miss
-
-E. ncap2 now propagates existing chunking parameters from the input
-   file to the output file, and similarly chunks created variables.
-   The rest of NCO has long implemented comprehensive chunking
-   features and now ncap2 supports the basic methods.
-   ncap2 -s 'avg=one_dmn_rec_var.avg()' ~/nco/data/in.nc ~/foo.nc
-   http://nco.sf.net/nco.html#cll_mth
-
-F. ncks now has a --trd (or --traditional) option to print output
-   in the "tradiational" format. Start to use this unless you prefer
-   CDL output which will become the default in summer 2017, possibly
-   in NCO 4.7.0. At that time, the --cdl option will become default.
+A. Hi
 
 BUG FIXES:
 
-A. ncatted allows writing an empty NC_CHAR or NC_STRING attribute.
-   Previously ncatted would core dump. ncks also prints such values.
-   No workaround. Solution is to upgrade.
-
-B. ncap2 could die when performing computations with pre-chunked
-   and/or deflated data. Workaround is to convert to netCDF3
-   before computations. Solution is to upgrade.
-   Thanks to Dave Blodgett for reporting this issue.
-
-C. ncatted now correctly handles creation, modification, overwriting
-   of _FillValue attributes in netCDF4 data. Since about 4.6.2
-   fiddling with netCDF4 _FillValue attributes with existing data
-   could lead to data loss. The workaround is to convert to netCDF3,
-   fiddle, then convert back to netCDF4. The solution is to upgrade.
-   Thanks to Kyle Wilcox for reporting this issue.
+A. Hi
 
 KNOWN PROBLEMS DUE TO NCO:
 

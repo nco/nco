@@ -367,7 +367,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
 # Sysadmin upgrade request: support@lcrc.anl.gov
 # Latest ticket: AREQ0159277 on 20170526
-# Latest sysadmin-compiled module usage: soft add +nco-4.6.5 # 20170316
+# Latest sysadmin-compiled module usage: soft add +nco-4.6.7 # 20170526
 # Personal recipe last used successfully: 20170526
 # fails to link to udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
