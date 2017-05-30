@@ -1,3 +1,7 @@
+2017-05-30  Charlie Zender  <zender@uci.edu>
+
+	* Fix ncks regress test #49 --mk_rec_dmn false negative by adding --no_frm_trm option
+
 2017-05-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.8-alpha01 release procedure:
