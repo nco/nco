@@ -1,5 +1,7 @@
 2017-05-30  Charlie Zender  <zender@uci.edu>
 
+	* Warn when ncclimo/ncremap and binaries are from different directories
+
 	* Eliminate false positives from warnings about N-to-S grids
 
 	* Fix ncks regress test #49 --mk_rec_dmn false negative by adding --no_frm_trm option

@@ -241,6 +241,12 @@ drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
 lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
+# Detect and warn about mixed modules
+if [ "${drc_spt}" != "${drc_nco}" ]; then
+    echo "WARNING: Possible mixture of NCO versions from different locations. Script ${spt_nm} is from directory ${drc_spt} while NCO binaries are from directory ${drc_nco}. Normally the script and binaries are from the same executables directory. This WARNING may be safely ignore for customized scripts and/or binaries that the user has intentionally split into different directories."
+    echo "HINT: Conflicting script and binary directories may result from 1) Hardcoding an NCO script and/or binary pathname, 2) Having incomplete NCO installations in one or more directories in the \$PATH environment variable, 3) Loading multiple NCO modules with different locations."
+fi # drc_spt
+
 # When running in a terminal window (not in an non-interactive batch queue)...
 if [ -n "${TERM}" ]; then
     # Set fonts for legibility
