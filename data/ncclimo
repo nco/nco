@@ -703,6 +703,12 @@ if [ -n "${yr_srt_prv}" ]; then
 fi # !yr_srt_prv extended climo
 if [ -n "${clm_md_usr}" ]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are piped or positional
+    if [ "${clm_md_usr}" = 'daily' ] || [ "${clm_md_usr}" = 'doy' ] || [ "${clm_md_usr}" = 'day' ] ; then
+	clm_md_usr='dly'
+    fi # !clm_md
+    if [ "${clm_md_usr}" = 'annual' ] || [ "${clm_md_usr}" = 'yearly' ] || [ "${clm_md_usr}" = 'year' ] ; then
+	clm_md_usr='ann'
+    fi # !clm_md
     clm_md="${clm_md_usr}"
     clm_flg='Yes' # redundant (and safe)
 else
