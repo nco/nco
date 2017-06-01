@@ -335,7 +335,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
 # Latest ticket: INC0102292 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170420 (with ncap2)
-# Personal recipe last used successfully: 20170526
+# Personal recipe last used successfully: 20170530
 module load szip
 module load gsl
 module load udunits
@@ -412,7 +412,7 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNI
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 358890 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170515
-# Personal recipe last used successfully: 20170519
+# Personal recipe last used successfully: 20170530
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
