@@ -216,7 +216,7 @@ esac # !HOSTNAME
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Daily pipe:
 # cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
-# SGS
+# SGS:
 # ncclimo -d 1 -v TBOT -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ~/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150621.nc
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
@@ -1653,7 +1653,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
     let srd=${dpy}*${tpd_out}
     drn=${tpd_out}
     
-    # fxm stormy
     yyyy_srt=`printf "%04d" ${yr_srt}`
     yyyy_end=`printf "%04d" ${yr_end}`
     clm_idx=0
