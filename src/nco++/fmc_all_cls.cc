@@ -4796,14 +4796,14 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   {
      case PATOI: 
        {          
-         char *pend='\0';
+         char *pend=NULL;
          nco_int iout;
          iout=0; 
 
 	 // allows whites space prefix & suffix                                                                                                                                
          iout=(nco_int)std::strtol(buffer,&pend,10);
 
-         if( pend !=buffer  && (*pend=='\0'|| *pend==' ') )
+         if(pend != buffer && (*pend == '\0'|| *pend == ' '))
             ierr=0;
          else
             ierr=errno;
@@ -4817,14 +4817,14 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 
      case PATOL: 
        {          
-         char *pend='\0';
+         char *pend=NULL;
          nco_int64 lout;
          lout=0; 
 
 	      // allows whites space prefix & suffix
          lout=(nco_int64)std::strtoll(buffer,&pend,10);
 
-         if( pend !=buffer  && (*pend=='\0'|| *pend==' ') )
+         if( pend !=buffer && (*pend == '\0' || *pend == ' '))
             ierr=0;
          else
 	        ierr=errno;

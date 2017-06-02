@@ -1,5 +1,7 @@
 2017-06-01  Charlie Zender  <zender@uci.edu>
 
+	* Patch for NUL = '\0' != NULL errors in ncap2 supplied by Manfred Schwarb
+
 	* ncclimo add clm_md synonyms: dly=daily,day,doy  ann=annual,yearly,year
 
 2017-05-30  Charlie Zender  <zender@uci.edu>
