@@ -19985,8 +19985,19 @@ fi
 	if test -d "${UDUNITS2_PATH}"; then
 	    # NB: Use ${UDUNITS2_PATH} not ${UDUNITS2_ROOT} because UDUnits software looks for ${UDUNITS2_PATH}
 	    # Add ${UDUNITS2_PATH}/lib to search path if present
-	    nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
-	    LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
+      # Some systems install 64bit libraries into $prefix/lib64 instead of 
+      #  $prefix/lib. If NCO libraries are installed into $prefix/lib64, 
+      #  UDUNITS presumably was installed in $UDUNITS2_PATH/lib64 as well.
+      #  Therefore, we take `basename $libdir` (libdir=$prefix/lib|lib64),
+      #  which is 'lib' or 'lib64', and append it to UDUNITS2_PATH. If this
+      #  directory does not exist, we append 'lib' to UDUNITS2_PATH.
+      #   (Daniel Neumann, 3rd June 2017)
+      nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
+      if test -d "${UDUNITS2_PATH}/`basename $libdir`"; then
+        LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/`basename $libdir`"
+      else
+        LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
+      fi
 	    CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
 	else
 	    echo "WARNING: UDUNITS2_PATH location \"${UDUNITS2_PATH}\" does not exist!"
