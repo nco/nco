@@ -635,10 +635,8 @@ if test "${enable_gsl}" != 'no'; then
     fi
     if test "${GSL_LIB}"; then
 	LIBS="${LIBS} -L${GSL_LIB}"
-    else
-	GSL_LIB="${GSL_ROOT}/lib"
-	LIBS="${LIBS} `${GSL_CONFIG} --libs`"
     fi
+	LIBS="${LIBS} `${GSL_CONFIG} --libs`"
     AC_MSG_NOTICE([These GSL library and header tests must succeed for GSL support:])
 # fxm: default action of check_lib adds a superfluous -lgsl to $LIBS
     AC_CHECK_LIB([gsl],[gsl_sf_gamma_inc],,enable_gsl=no)
