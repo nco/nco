@@ -733,7 +733,9 @@ if [ "${no_stg_grd}" = 'Yes' ]; then
     rgr_opt="${rgr_opt} --rgr no_stagger"
 fi # !no_stg_grd
 if [ -n "${rnr_thr}" ]; then 
-    rgr_opt="${rgr_opt} --rgr rnr=${rnr_thr}"
+    if [ "${rnr_thr}" != 'off' ]; then 
+	rgr_opt="${rgr_opt} --rnr_thr=${rnr_thr}"
+    fi # !rnr_thr
 fi # !rnr_thr
 if [ -n "${var_lst}" ]; then 
     nco_var_lst="-v ${var_lst}"
@@ -796,7 +798,14 @@ if [ "${prc_typ}" = 'mpas' ]; then
 #    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean
 #    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # Ice
     pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
-    rgr_opt="${rgr_opt} --rnr=0.0"
+    if [ -n "${rnr_thr}" ]; then 
+	# Setting rnr_thr='off' in MPAS mode turns-off renormalization
+	if [ "${rnr_thr}" != 'off' ]; then 
+	    rgr_opt="${rgr_opt} --rnr_thr=${rnr_thr}"
+	fi # !rnr_thr
+    else
+	rgr_opt="${rgr_opt} --rnr_thr=0.0"
+    fi # !rnr_thr
 fi # !mpas
 if [ "${prc_typ}" = 'alm' ] || [ "${prc_typ}" = 'clm' ]; then 
     # Set ALM/CLM-specific options first, then change prc_typ to sgs

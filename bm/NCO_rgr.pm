@@ -2596,7 +2596,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # Test -X writing (apply limits to all standard 'lat' 'lon')
 # ncks -O -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar ~/nco/data/in_grp_3.nc ~/foo.nc
     $dsc_sng="(Groups) Auxiliary coordinates writing -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar";
-    $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $nco_D_flg -X 0.,1.,-30.,-29. -g g18g1 -v gds_3dvar $in_pth_arg in_grp_3.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks $nco_D_flg -v lon_gds_1 %tmp_fl_00%";
     $tst_cmd[2]="gds_crd[0]=1 lon_gds_1[0]=0 degree";
     $tst_cmd[3]="SS_OK";   
@@ -2621,7 +2621,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # Test -X writing
 # ncks -O -X 0.,1.,-30.,-29. -v gds_3dvar ~/nco/data/in.nc ~/foo.nc
     $dsc_sng="Auxiliary coordinates writing -X 0.,1.,-30.,-29. -v gds_3dvar";
-    $tst_cmd[0]="ncks $nco_D_flg -X 0.,1.,-30.,-29. -v gds_3dvar $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks -O $nco_D_flg -X 0.,1.,-30.,-29. -v gds_3dvar $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks $nco_D_flg -v gds_crd %tmp_fl_00%";
     $tst_cmd[2]="gds_crd[0]=1 lon_gds[0]=0 degree";
     $tst_cmd[3]="SS_OK";   

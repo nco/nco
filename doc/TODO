@@ -698,7 +698,11 @@ nco1135. USE_NC4_SRD_WORKAROUND is broken: (added 20170201, finished 20170207)
 	 ncks -v zg -H -C -d time,0,1 -d lev,0,2,2 ~/nco/data/in.nc # works
       	 ncks -v zg -H -C -d time,0,1 -d lev,0,2,2 ~/nco/data/in_4c.nc # borken
 nco1136. ncra valid_range, unpacked_valid_range, actual_range problem antonio rodriges https://sourceforge.net/p/nco/discussion/9830/thread/07f71305 (only valid_range is netCDF standard convention). One "solution" is to unpack valid_range attribute[s] using scale_factor, add_offset from first file. # added 20170407
-nco1137. 
+nco1137. ncwa chunking fails with --rdd reported by Joy 20170605 pedro?
+	 mv 1.clim.tile.nc4 ~/cnk_bug.nc4
+	 ncwa -D 7 -O --rdd -a lat,lon ~/cnk_bug.nc4 ~/foo.nc # borken
+	 ncwa -D 7 -O -a lat,lon ~/cnk_bug.nc4 ~/foo.nc # works
+nco1138. 	 
 qrk
 ************************************************************************
 End ncoXXX TODOs

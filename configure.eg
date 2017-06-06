@@ -365,6 +365,8 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
+# LCRC uses Spack module written and tested by Adam Stewart: https://github.com/LLNL/spack/pull/4370/files
+# spack install --run-tests nco%gcc ^netcdf@4.4.0
 # Sysadmin upgrade request: support@lcrc.anl.gov
 # Latest ticket: AREQ0159277 on 20170526
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.7 # 20170526

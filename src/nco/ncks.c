@@ -418,7 +418,7 @@ main(int argc,char **argv)
     {"map_file",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
     {"rgr_var",required_argument,0,0}, /* I [sng] Variable for special regridding treatment */
     {"rgr_rnr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
-    {"rnr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
+    {"rnr_thr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"renormalize",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"trr",required_argument,0,0}, /* [sng] Terraref */
     {"terraref",required_argument,0,0}, /* [sng] Terraref */
@@ -675,7 +675,7 @@ main(int argc,char **argv)
         flg_rgr=True;
 	rgr_map=(char *)strdup(optarg);
       } /* endif rgr_map */
-      if(!strcmp(opt_crr,"rnr") || !strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize")){
+      if(!strcmp(opt_crr,"rnr_thr") || !strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize")){
         wgt_vld_thr=strtod(optarg,&sng_cnv_rcd);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtod",sng_cnv_rcd);
       } /* endif rgr_rnr */

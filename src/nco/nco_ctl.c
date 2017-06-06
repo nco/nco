@@ -844,7 +844,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always include terminal \n so mnemonic does not dangle */
-  return "Strizzi's\n";
+  return "Elder Price\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -1129,8 +1129,8 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--rad")) (void)fprintf(stdout,"    --orphan, --rph_dmn\tRetain or print all (including orphaned) dimensions\n");
   if(strstr(opt_sng,"--ram_all")) (void)fprintf(stdout,"    --ram_all, --diskless_all\tOpen netCDF3 files and create output files in RAM\n");
   if(strstr(opt_sng,"--rec_apn")) (void)fprintf(stdout,"    --rec_apn, --record_append\tAppend records directly to output file\n");
-  if(strstr(opt_sng,"--rgr")) (void)fprintf(stdout,"    --rgr key=value\t\tSee http://nco.sf.net/nco.html#regrid for valid keys\n");
-  if(strstr(opt_sng,"--rnr")) (void)fprintf(stdout,"    --rnr=wgt, --renormalize\t\tWeight threshold for valid destination value\n");
+  if(strstr(opt_sng,"--rgr")) (void)fprintf(stdout,"    --rgr key=value\tSee http://nco.sf.net/nco.html#regrid for valid keys\n");
+  if(strstr(opt_sng,"--rnr")) (void)fprintf(stdout,"    --rnr_thr=wgt \tCoverage threshold to renormalize valid destination value\n");
   // if(strstr(opt_sng,"--rgr_grd_dst")) (void)fprintf(stdout,"    --rgr_grd_dst file\tDestination grid\n");
   // if(strstr(opt_sng,"--rgr_grd_src")) (void)fprintf(stdout,"    --rgr_grd_src file\tSource grid\n");
   // if(strstr(opt_sng,"--rgr_in")) (void)fprintf(stdout,"    --rgr_in file\tFile containing fields to be regridded\n");

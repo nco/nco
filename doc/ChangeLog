@@ -1,7 +1,12 @@
+2017-06-04  Charlie Zender  <zender@uci.edu>
+
+	* User-specified --rnr_thr='off' turns-off renormalization
+
+	* User-specified --rnr_thr overrides default 0.0 in MPAS-mode
+
 2017-06-02  Charlie Zender  <zender@uci.edu>
 
 	* Invoking --sgs_frc, --sgs_msk, or --sgs_nrm automatically triggers SGS-mode
-
 
 2017-06-01  Charlie Zender  <zender@uci.edu>
 

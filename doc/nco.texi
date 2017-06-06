@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 2 June 2017
+@set update-date 5 June 2017
 @set update-month June 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22910,16 +22910,19 @@ Currently variables marked as extensive are summed, not regridded.
 
 @unnumberedsubsec Limitations to @command{ncremap}
 
-There are two significant limitations to @command{ncremap} that we
-hope to remove in the coming year.
-First, the fields to be regridded must have latitude and longitude as
-the final two dimension in @var{in_fl}. 
+@command{ncremap} has two significant limitations to be aware of.
+First, for two-dimensional input grids the fields to be regridded must
+have latitude and longitude, or, in the case of curvilinear data, the
+two equivalent horizontal dimensions, as the final two dimensions in
+@var{in_fl}.
 Fields with other dimension orders (e.g., @samp{lat,lev,lon}) will not
 regrid properly. 
-To workaround this limitation for the time-being, please employ 
+To workaround this limitation for the time-being, one can employ 
 @command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly})
 to permute the dimensions before (and un-permute them after) regridding.
-For example
+@command{ncremap} utilizes this method internally for some common
+input grids.
+For example,
 @example
 # AIRS Level2 vertical profiles
 ncpdq -a StdPressureLev,GeoTrack,GeoXTrack AIRS_L2.hdf AIRS_L2_ncpdq.nc
@@ -22932,9 +22935,9 @@ ncremap -R "--rgr col_nm=nCells" -i mpas_ncpdq.nc -m mpas120_to_t62.nc -O ~/rgr
 The previous two examples occur so frequently that @command{ncremap} has
 been specially equipped to handle @acronym{AIRS} and @acronym{MPAS}
 files. 
-As of 20160115, the following @command{ncremap} commands with @samp{-P}
-switches automagically perform all the required permutation and renaming
-necessary:
+As of 20160115, the following @command{ncremap} commands with the
+@samp{-P @var{prc_typ}} option automagically perform all required
+permutation and renaming necessary:
 @example
 # AIRS Level2 vertical profiles
 ncremap -P airs -i AIRS_L2.nc -d dst_1x1.nc -O ~/rgr
@@ -22943,10 +22946,9 @@ ncremap -P mpas -i mpas.nc -m mpas120_to_t62.nc -O ~/rgr
 @end example
 @noindent
 The machinery to handle permutations and special options for other
-datafiles is relatively easy to extend. 
+datafiles is relatively easy to extend with new @var{prc_typ} options. 
 If you work with common datasets that could benefit from their own
-@command{ncremap} @samp{-P} options, contact us and we will try to
-implement them. 
+pre-processing options, contact us and we will try to implement them.  
 
 The second limitation is that @command{ncremap} currently must read
 weights from an on-disk mapfile, it cannot yet compute weights itself 
