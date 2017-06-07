@@ -964,8 +964,8 @@ extern "C" {
     nco_bool new_fmt; /* [flg] Print in new format */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
     int fll_pth; /* [nbr] Print full paths */
+    int cdl_fmt_tm; /* [enm] CDL date-stamp format specifier */ 
     int jsn_att_fmt; /* [enm] JSON format for netCDF attributes: 0 (no object, only data), 1 (data only for string, char, int, and floating-point types, otherwise object), 2 (always object) */
-    int cdl_fmt_tm; /* [enm]  cdl date stamp format specifier <*/ 
     int jsn_data_brk; /* [flg] JSON format for netCDF variables: 0 (no bracketing of var data ), 1 ( bracketing of var data )*/
     int nbr_zro; /* [nbr] Trailing zeros allowed after decimal point */
     int ndn; /* [nbr] Indentation */
