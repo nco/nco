@@ -13,6 +13,7 @@ ACLOCAL_AMFLAGS = -I m4
 test:	tst
 tst:
 	$(MAKE) check
+	cd data && $(MAKE) in_4c.nc && cd ..
 	cd bm && ./nco_bm.pl --regress
 
 regress:	rgr
