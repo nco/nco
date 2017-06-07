@@ -215,6 +215,7 @@ main(int argc,char **argv)
   int var_ntm_fl;
   int xtn_nbr=0; /* [nbr] Number of extensive variables */
   int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
+  int cdl_fmt_tm=fmt_tm_reg;
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
  
@@ -376,6 +377,7 @@ main(int argc,char **argv)
     {"bit_alg",required_argument,0,0}, /* [enm] Bit-Adjustment Algorithm */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"cdl_fmt_tm",required_argument,0,0}, /* [enm] format to print date string when --cal is enabled */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"cnk_csh",required_argument,0,0}, /* [B] Chunk cache size in bytes */
@@ -555,6 +557,9 @@ main(int argc,char **argv)
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
       } /* endif bfr_sz */
       if(!strcmp(opt_crr,"calendar") || !strcmp(opt_crr,"cln_lgb") || !strcmp(opt_crr,"prn_cln_lgb") || !strcmp(opt_crr,"prn_lgb") || !strcmp(opt_crr,"timestamp")) PRN_CLN_LGB=True; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
+      if(!strcmp(opt_crr,"cdl_fmt_tm")) {
+        cdl_fmt_tm=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      }
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -1218,6 +1223,7 @@ main(int argc,char **argv)
     if(nco_dbg_lvl >= nco_dbg_scl) prn_flg.fll_pth=True; else prn_flg.fll_pth=False;
     if(prn_flg.xml) prn_flg.nwl_pst_val=False; else prn_flg.nwl_pst_val=True;
     prn_flg.dlm_sng=dlm_sng;
+    prn_flg.cdl_fmt_tm=cdl_fmt_tm;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
     prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
     prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;

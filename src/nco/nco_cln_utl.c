@@ -170,7 +170,7 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
 char *                 /* O [sng] contains newly malloced output string */
 nco_cln_fmt_tm         /*   [fnc] format an output string */
 (tm_cln_sct *ttx,      /* I [ptr] Calendar structure */
-int ifmt)              /* I [int] format type */
+int ifmt)              /* I [enm] nco_fmt_tm */
 {
  char bdate[200]={0};
  char btime[200]={0};
@@ -181,12 +181,20 @@ int ifmt)              /* I [int] format type */
  switch(ifmt)
  {
     /* plain format all out */
-    case 1:
+    case fmt_tm_reg:
      sprintf(buff,"%04d-%02d-%02d %02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec  );
      break;
 
-    /* do date and time if time not all zero */
-    case 2:
+
+     /* plain format all out with 'T' char as spacer*/
+   case fmt_tm_iso8601:
+     sprintf(buff,"%04d-%02d-%02dT%02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec  );
+     break;
+
+
+     /* do date and time if time not all zero */
+    case fmt_tm_sht:
+    case fmt_tm_nil:
       sprintf(bdate,"%04d-%02d-%02d", ttx->year,ttx->month, ttx->day);
       if( ttx->hour !=0 || ttx->min!=0 || ttx->sec !=0.0 )
       {
@@ -203,6 +211,7 @@ int ifmt)              /* I [int] format type */
       }
       sprintf(buff,"%s%s", bdate,btime);
       break;
+
 
  }
 
