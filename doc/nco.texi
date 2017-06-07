@@ -6282,10 +6282,9 @@ Examples include ``CAM-FV scalar grid 129x256'' and ``T42 Gaussian grid''.
 @cindex @samp{--rgr scrip=@var{scrip_grid}}
 @item Grid File: @var{scrip_grid}
 The grid-generation @acronym{API} was bolted-on to @acronym{NCO}
-and is somewhat primitive, e.g., having to repeat the @samp{--rgr}
-option. 
-Another aspect of this is that the output grid filename is distinct
-from the output filename of the host @command{ncks} command. 
+and contains some temporary kludges.
+For example, the output grid filename is distinct from the output
+filename of the host @command{ncks} command.  
 Specify the output gridfile name @var{scrip_grid} with keywords
 @code{grid} or @code{scrip}, e.g., @samp{--rgr grid=@var{scrip_grid}} or  
 @samp{--rgr scrip=@file{t42_SCRIP.20150901.nc}}.

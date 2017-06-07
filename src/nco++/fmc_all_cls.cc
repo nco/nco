@@ -271,15 +271,19 @@
                     break;
                     
                 case PMIBS:
+                    (void)nco_var_abs(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val);
                     var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_mibs,False,&ddra_info);
                     break;
                     
                 case PMABS:
+                    (void)nco_var_abs(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val);
                     var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_mabs,False,&ddra_info);
                     break;
                     
                 case PMEBS:
-                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_mebs,False,&ddra_info);
+                    (void)nco_var_abs(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_avg,False,&ddra_info);
+                    (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
                     break;
                     
                 case PMAX:

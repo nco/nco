@@ -1,3 +1,7 @@
+	2017-06-07 Henry Butowsky  <henryb@hush.com>
+	
+	* aggregate operations  mibs(), mebs(), mabs() now working correctly in ncap2
+
 2017-06-06  Charlie Zender  <zender@uci.edu>
 
 	* Merged Daniel Neumann's autoconf patch for SUSE directory structure
