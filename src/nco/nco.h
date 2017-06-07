@@ -781,7 +781,14 @@ extern "C" {
     cln_366, /* Leap year Calendar */ 
     cln_nil /* No calendar found */
   } nco_cln_typ; /* [enm] Calendar type */
-  
+
+  typedef enum {
+    fmt_tm_reg=1,    /* format time string  with ALL date and time fields*/
+    fmt_tm_iso8601,  /* format time as  'fmt_tm_reg'  above but use 'T' as separator between date and time*/
+    fmt_tm_sht,      /* format time using as short as string as possible*/
+    fmt_tm_nil       /* no fmt_tm specified */
+  } nco_fmt_tm;
+
   /* Limit structure */
   typedef struct { /* lmt_sct */
     char *nm; /* [sng] Dimension name */
@@ -957,7 +964,8 @@ extern "C" {
     nco_bool new_fmt; /* [flg] Print in new format */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
     int fll_pth; /* [nbr] Print full paths */
-    int jsn_att_fmt; /* [enm] JSON format for netCDF attributes: 0 (no object, only data), 1 (data only for string, char, int, and floating-point types, otherwise object), 2 (always object) */ 
+    int jsn_att_fmt; /* [enm] JSON format for netCDF attributes: 0 (no object, only data), 1 (data only for string, char, int, and floating-point types, otherwise object), 2 (always object) */
+    int cdl_fmt_tm; /* [enm]  cdl date stamp format specifier <*/ 
     int jsn_data_brk; /* [flg] JSON format for netCDF variables: 0 (no bracketing of var data ), 1 ( bracketing of var data )*/
     int nbr_zro; /* [nbr] Trailing zeros allowed after decimal point */
     int ndn; /* [nbr] Indentation */
