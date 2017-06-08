@@ -19691,10 +19691,8 @@ if test "${enable_gsl}" != 'no'; then
     fi
     if test "${GSL_LIB}"; then
 	LIBS="${LIBS} -L${GSL_LIB}"
-    else
-	GSL_LIB="${GSL_ROOT}/lib"
-	LIBS="${LIBS} `${GSL_CONFIG} --libs`"
     fi
+	LIBS="${LIBS} `${GSL_CONFIG} --libs`"
     { $as_echo "$as_me:${as_lineno-$LINENO}: These GSL library and header tests must succeed for GSL support:" >&5
 $as_echo "$as_me: These GSL library and header tests must succeed for GSL support:" >&6;}
 # fxm: default action of check_lib adds a superfluous -lgsl to $LIBS
