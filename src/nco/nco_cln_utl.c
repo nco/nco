@@ -168,9 +168,9 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
 
 
 char *                 /* O [sng] contains newly malloced output string */
-nco_cln_fmt_tm         /*   [fnc] format an output string */
+nco_cln_fmt_dt         /*   [fnc] format an output string */
 (tm_cln_sct *ttx,      /* I [ptr] Calendar structure */
-int ifmt)              /* I [enm] nco_fmt_tm */
+int ifmt)              /* I [enm] nco_fmt_dt */
 {
  char bdate[200]={0};
  char btime[200]={0};
@@ -181,20 +181,19 @@ int ifmt)              /* I [enm] nco_fmt_tm */
  switch(ifmt)
  {
     /* plain format all out */
-    case fmt_tm_reg:
+    case fmt_dt_rgl:
      sprintf(buff,"%04d-%02d-%02d %02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec  );
      break;
 
 
      /* plain format all out with 'T' char as spacer*/
-   case fmt_tm_iso8601:
+   case fmt_dt_iso8601:
      sprintf(buff,"%04d-%02d-%02dT%02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec  );
      break;
 
-
      /* do date and time if time not all zero */
-    case fmt_tm_sht:
-    case fmt_tm_nil:
+    case fmt_dt_sht:
+    case fmt_dt_nil:
       sprintf(bdate,"%04d-%02d-%02d", ttx->year,ttx->month, ttx->day);
       if( ttx->hour !=0 || ttx->min!=0 || ttx->sec !=0.0 )
       {
@@ -211,8 +210,6 @@ int ifmt)              /* I [enm] nco_fmt_tm */
       }
       sprintf(buff,"%s%s", bdate,btime);
       break;
-
-
  }
 
    return buff;
@@ -1139,7 +1136,7 @@ nco_cln_var_prs
       else
         (void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
 
-      var_ret->val.sngp[idx] = nco_cln_fmt_tm(&tm, ifmt);
+      var_ret->val.sngp[idx] = nco_cln_fmt_dt(&tm, ifmt);
 
     }
   }
@@ -1164,7 +1161,7 @@ nco_cln_var_prs
       else
         (void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
 
-      var_ret->val.sngp[idx] = nco_cln_fmt_tm(&tm, ifmt);
+      var_ret->val.sngp[idx] = nco_cln_fmt_dt(&tm, ifmt);
 
     }
 

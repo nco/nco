@@ -115,7 +115,7 @@ extern "C" {
   (tm_cln_sct *cln_sct); /* I [ptr] Calendar structure */
 
   char*                    /* O [sng] contains newly malloced output string */
-  nco_cln_fmt_tm           /*   [fnc] format an output string */
+  nco_cln_fmt_dt           /*   [fnc] format an output string */
   (tm_cln_sct *cln_sct,   /* I [ptr] Calendar structure */
    int fmt);              /* I [int] format type */
 

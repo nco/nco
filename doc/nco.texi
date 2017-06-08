@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 5 June 2017
+@set update-date 8 June 2017
 @set update-month June 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6466,12 +6466,12 @@ Generating common grids:
 @example
 @verbatim
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='Equi-Angular grid 180x360' --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc \
-     --rgr latlon=180,360 --rgr lat_typ=uni --rgr lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
+ncks --rgr grd_ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
+     --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # 129x256 CAM-FV grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='CAM-FV scalar grid 129x256' --rgr scrip=${DATA}/grids/129x256_SCRIP.20150901.nc \
-     --rgr latlon=129,256 --rgr lat_typ=fv --rgr lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
+ncks --rgr grd_ttl='CAM-FV scalar grid 129x256'#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr \
+     --rgr scrip=${DATA}/grids/129x256_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # 91x180 CAM-FV grid, first longitude centered at Greenwich (2 degree grid)
 ncks --rgr grd_ttl='CAM-FV scalar grid 91x180'#latlon=91,180#lat_typ=fv#lon_typ=grn_ctr \
@@ -6483,21 +6483,21 @@ ncks --rgr grd_ttl='CAM-FV scalar grid 25x48'#latlon=25,48#lat_typ=fv#lon_typ=gr
 
 # 128x256 Equi-Angular grid, Greenwich west edge of first longitude
 # This is the CAM-FV offset grid for the 129x256 CAM-FV scalar grid above
-ncks --rgr grd_ttl='Equi-Angular grid 128x256' --rgr scrip=${DATA}/grids/128x256_SCRIP.20150901.nc \
-     --rgr latlon=128,256 --rgr lat_typ=uni --rgr lon_typ=grn_wst ~zender/nco/data/in.nc ~/foo.nc
+ncks --rgr grd_ttl='Equi-Angular grid 128x256'#latlon=128,256#lat_typ=uni#lon_typ=grn_wst \
+     --rgr scrip=${DATA}/grids/128x256_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # T42 Gaussian grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='T42 Gaussian grid' --rgr scrip=${DATA}/grids/t42_SCRIP.20150901.nc \
-     --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
+ncks --rgr grd_ttl='T42 Gaussian grid'latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
+     --rgr scrip=${DATA}/grids/t42_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree) Equi-Angular grid
 # Date-line west edge of first longitude, east edge of last longitude
-ncks --rgr grd_ttl='Equi-Angular grid 3600x7200 (NASA CMG)' --rgr scrip=${DATA}/grids/3600x7200_SCRIP.20160301.nc \
-     --rgr latlon=3600,7200 --rgr lat_typ=uni --rgr lon_typ=180_wst ~zender/nco/data/in.nc ~/foo.nc
+ncks --rgr grd_ttl='Equi-Angular grid 3600x7200 (NASA CMG)'#latlon=3600,7200#lat_typ=uni#lon_typ=180_wst \
+     --rgr scrip=${DATA}/grids/3600x7200_SCRIP.20160301.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # 1x1 degree Equi-Angular Regional grid over Greenland, centered longitudes
-ncks --rgr grd_ttl='Equi-Angular Greenland grid ' --rgr scrip=${HOME}/greenland_SCRIP.nc \
-     --rgr latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr ~zender/nco/data/in.nc ~/foo.nc
+ncks --rgr grd_ttl='Equi-Angular Greenland grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
+     --rgr scrip=${HOME}/greenland_SCRIP.nc ~zender/nco/data/in.nc ~/foo.nc
 @end verbatim
 @end example
 

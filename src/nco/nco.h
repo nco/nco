@@ -782,12 +782,12 @@ extern "C" {
     cln_nil /* No calendar found */
   } nco_cln_typ; /* [enm] Calendar type */
 
-  typedef enum {
-    fmt_tm_reg=1,    /* format time string  with ALL date and time fields*/
-    fmt_tm_iso8601,  /* format time as  'fmt_tm_reg'  above but use 'T' as separator between date and time*/
-    fmt_tm_sht,      /* format time using as short as string as possible*/
-    fmt_tm_nil       /* no fmt_tm specified */
-  } nco_fmt_tm;
+  typedef enum { /* [enm] Date format */
+    fmt_dt_nil=0, /* None specified */
+    fmt_dt_sht, /* Shortest string possible */
+    fmt_dt_rgl, /* All date and time fields */
+    fmt_dt_iso8601, /* Include ISO 8601 'T' separator between date and time */
+  } nco_fmt_dt;
 
   /* Limit structure */
   typedef struct { /* lmt_sct */
@@ -964,7 +964,7 @@ extern "C" {
     nco_bool new_fmt; /* [flg] Print in new format */
     nco_bool nwl_pst_val; /* [flg] Print newline after variable values */
     int fll_pth; /* [nbr] Print full paths */
-    int cdl_fmt_tm; /* [enm] CDL date-stamp format specifier */ 
+    int cdl_fmt_dt; /* [enm] CDL date-stamp format specifier */ 
     int jsn_att_fmt; /* [enm] JSON format for netCDF attributes: 0 (no object, only data), 1 (data only for string, char, int, and floating-point types, otherwise object), 2 (always object) */
     int jsn_data_brk; /* [flg] JSON format for netCDF variables: 0 (no bracketing of var data ), 1 ( bracketing of var data )*/
     int nbr_zro; /* [nbr] Trailing zeros allowed after decimal point */

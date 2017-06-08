@@ -1,6 +1,10 @@
-	2017-06-07 Henry Butowsky  <henryb@hush.com>
-	
-	* aggregate operations  mibs(), mebs(), mabs() now working correctly in ncap2
+2017-06-08  Charlie Zender  <zender@uci.edu>
+
+	* Rename and re-order cdl_fmt_tm to dt_fmt
+
+2017-06-07 Henry Butowsky  <henryb@hush.com>
+
+	* Aggregate operations mibs(), mebs(), mabs() now work correctly in ncap2
 
 2017-06-06  Charlie Zender  <zender@uci.edu>
 
