@@ -1,5 +1,9 @@
 2017-06-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.8-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.8-alpha02 final changes';git push
+	git tag -a 4.6.8-alpha02 -m 'ncap2 mabs(), CDL dt_fmt, SUSE, --rnr_thr, SGS';git push --tags
+
 	* Rename and re-order cdl_fmt_tm to dt_fmt
 
 2017-06-07 Henry Butowsky  <henryb@hush.com>
