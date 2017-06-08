@@ -102,6 +102,7 @@ B. NOT YET FIXED (netCDF4 library bug)
    20160512: Ditto
    20161028: Verified problem still exists with netCDF 4.4.1
    20170323: Verified problem still exists with netCDF 4.4.2-development
+   20170323: https://github.com/Unidata/netcdf-c/issues/381
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd
@@ -113,6 +114,7 @@ C. NOT YET FIXED (netCDF4 library bug)
    ncrename -O -v non_coord,coord ~/nco/data/in_grp.nc ~/foo.nc # Fails (HDF error)
 
    20170323: Confirmed problem reported by Paolo Oliveri, reported to Unidata
+   20170323: https://github.com/Unidata/netcdf-c/issues/381
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd

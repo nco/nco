@@ -183,7 +183,7 @@ sub bm_ntl($$){
 # If libtool created shared libraries, then point to real executables
 # in ../src/nco/.libs
     my $dotlib = '';
-    $dotlib = ".libs/lt-" if `head -1 $MY_BIN_DIR/ncatted` =~ m/sh/;
+#    $dotlib = ".libs/lt-" if `head -1 $MY_BIN_DIR/ncatted` =~ m/sh/;
     $sym_link{ncdiff}=$dotlib . "ncbo";
     $sym_link{nces}=$dotlib . "ncra";
     $sym_link{ncrcat}=$dotlib . "ncra";
