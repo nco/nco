@@ -43,7 +43,7 @@ A. ncap2 now fully implements NCO chunking maps and policies.
    http://nco.sf.net/nco.html#cnk
 
 A. ncks CDL printing supports finer-grained control of date formats,
-   including ISO 8601 option. Previously ncks printed
+   including an ISO 8601 "T" option. Previously ncks printed
    UDUnits-compliant times as dates when invoked with the --cdl and
    --cal options. A third option, --dt_fmt, now exposes finer
    control of the format with short, regular, and ISO8601 options:

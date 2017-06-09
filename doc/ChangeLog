@@ -1,3 +1,7 @@
+2017-06-09  Charlie Zender  <zender@uci.edu>
+
+	* Add lat_nm_in=j, lon_nm_in=i to look-up table for NorESM1 and similar CMIP5 grids
+
 2017-06-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.8-alpha02 release procedure:

@@ -310,7 +310,7 @@ out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='nil' # [sng] Parallelism type
 prc_typ='' # [sng] Procedure type
-rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
+rgr_opt='--rgr lat_nm_out=lat#lon_nm_out=lon' # [sng] Regridding options
 rnr_thr='' # [frc] Renormalization option
 sgs_frc='landfrac' # [sng] Sub-grid fraction variable
 sgs_msk='landmask' # [sng] Sub-grid mask variable
