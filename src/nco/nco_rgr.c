@@ -1678,8 +1678,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     } /* !sbs_ptr */
     /* Final coordinate name begins where coordinate string starts */
     crd_nm[crd_nbr]=crd_dpl;
+    /* Change crd_nbr from 0-based index to actual coordinate number */
+    crd_nbr++;
     if(crd_nbr < 2){
-      (void)fprintf(stderr,"%s: WARNING %s found only %d coordinates in coordinates attribute \"%s\", at least two are required. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,crd_nbr,cf->crd_sng);
+      (void)fprintf(stderr,"%s: WARNING %s found only %d coordinate(s) in \"coordinates\" attribute \"%s\", at least two are required. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,crd_nbr,cf->crd_sng);
       goto skp_cf;
     } /* !crd_nbr */
     /* If more than two coordinate names are present, choose first two (searching backwards from end) with "degree" in units attributes, otherwise just choose first two */
@@ -5758,8 +5760,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* !sbs_ptr */
     /* Final coordinate name begins where coordinate string starts */
     crd_nm[crd_nbr]=crd_dpl;
+    /* Change crd_nbr from 0-based index to actual coordinate number */
+    crd_nbr++;
     if(crd_nbr < 2){
-      (void)fprintf(stderr,"%s: WARNING %s found only %d coordinates in coordinates attribute \"%s\", at least two are required. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,crd_nbr,cf->crd_sng);
+      (void)fprintf(stderr,"%s: WARNING %s found only %d coordinate(s) in \"coordinates\" attribute \"%s\", at least two are required. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,crd_nbr,cf->crd_sng);
       goto skp_cf;
     } /* !crd_nbr */
     /* If more than two coordinate names are present, choose first two (searching backwards from end) with "degree" in units attributes, otherwise just choose first two */

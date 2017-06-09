@@ -1,5 +1,7 @@
 2017-06-09  Charlie Zender  <zender@uci.edu>
 
+	* Fix CF dimension inferral algorithm to correctly count coordinates
+
 	* Add lat_nm_in=j, lon_nm_in=i to look-up table for NorESM1 and similar CMIP5 grids
 
 2017-06-08  Charlie Zender  <zender@uci.edu>
