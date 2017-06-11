@@ -1,3 +1,8 @@
+2017-06-11  Charlie Zender  <zender@uci.edu>
+
+	* Temporary fix to TODO nco1137 ncwa chunking fails with --rdd reported by Joy 20170605
+	dmn_cmn[] contains zero for some dimensions with --rdd, so set minimum cnk_sz to 1
+
 2017-06-09  Charlie Zender  <zender@uci.edu>
 
 	* Fix CF dimension inferral algorithm to correctly count coordinates
