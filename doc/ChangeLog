@@ -1,6 +1,6 @@
 2017-06-12  Charlie Zender  <zender@uci.edu>
 
-	* Tweak temporary fix to apply whenever cnk_sz == 0L
+	* Apply temporary fix whenever cnk_sz == 0L, period
 
 2017-06-11  Charlie Zender  <zender@uci.edu>
 
