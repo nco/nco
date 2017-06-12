@@ -1438,7 +1438,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
     } /* end if */
     /* 20170610: TODO nco1137 bug ncwa chunking fails with --rdd reported by Joy 20170605 because dmn_cmn[] contains zero for some dimensions */
     if((cnk_sz[dmn_idx] == 0L) || (dmn_cmn[dmn_idx].sz == 0L && !dmn_cmn[dmn_idx].is_rec_dmn)){
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: WARNING %s final check manually overriding chunksize of \"%s\" dimension from 0L to 1L as workaround to TODO nco1137: bad interaction of chunking with --rdd\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s final check manually overriding chunksize of \"%s\" dimension from 0L to 1L as workaround to TODO nco1137: bad interaction of chunking with --rdd\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm);
       cnk_sz[dmn_idx]=1L;
     } /* end cnk_sz */
   } /* end loop over dmn */
