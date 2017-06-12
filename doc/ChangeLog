@@ -1,3 +1,7 @@
+2017-06-12  Charlie Zender  <zender@uci.edu>
+
+	* Tweak temporary fix to apply whenever cnk_sz == 0L
+
 2017-06-11  Charlie Zender  <zender@uci.edu>
 
 	* Temporary fix to TODO nco1137 ncwa chunking fails with --rdd reported by Joy 20170605

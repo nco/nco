@@ -1143,7 +1143,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       if(dmn_cmn[dmn_idx].NON_HYP_DMN){
         /* When not hyperslabbed, use input record dimension size, except workaround zero size
 	   reported for new record dimensions before anything is written */
-	if(dmn_cmn[dmn_idx].sz == 0) cnk_sz[dmn_idx]=1UL; else cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
+	if(dmn_cmn[dmn_idx].sz == 0L) cnk_sz[dmn_idx]=1UL; else cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
 	/* 20140518: As of netCDF 4.3.2, employ smarter defaults for record dimension in 1-D variables
 	   20150505: This "smarter" treatment of 1-D record variables consistently leads to cnk_sz ~ 512k
 	   This seems ridiculously large since many datasets have O(1) time slices but many 1-D in time variables
@@ -1437,7 +1437,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       } /* rcd_dmn_id */
     } /* end if */
     /* 20170610: TODO nco1137 bug ncwa chunking fails with --rdd reported by Joy 20170605 because dmn_cmn[] contains zero for some dimensions */
-    if((cnk_sz[dmn_idx] == 0L) || (dmn_cmn[dmn_idx].sz == 0L && !dmn_cmn[dmn_idx].is_rec_dmn)){
+    if(cnk_sz[dmn_idx] == 0L){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s final check manually overriding chunksize of \"%s\" dimension from 0L to 1L as workaround to TODO nco1137: bad interaction of chunking with --rdd\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm);
       cnk_sz[dmn_idx]=1L;
     } /* end cnk_sz */
