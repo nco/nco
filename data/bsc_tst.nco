@@ -300,7 +300,7 @@ nbr_err_ttl=0;
  b13[lat,lon]={1,2,3,4,5,6,7,8};
  b14[lon,lat]={1,5,2,6,3,7,4,8};
 
- b15=b13*b14; 
+ b15=b14*b13; 
  if( (b15-b13*b13).total() !=0 || b15(0,1) != 4  )
   {
      print("ERROR: b15 b) var_var_op(*) conformance\n");
@@ -308,7 +308,7 @@ nbr_err_ttl=0;
   }
   
  b16=b14+b13; 
- if( (b16-2*b14).total() !=0 || b16(0,1) != 10 )
+ if( (b16-2*b13).total() !=0 || b16(0,1) != 4 )
   {
      print("ERROR: b16 b) var_var_op(+) conformance\n");
      nbr_err++;	
@@ -348,6 +348,27 @@ nbr_err_ttl=0;
   }
  
 
+ // mabs,mibs,mebs 
+ b23[time]={-10.0,-6.0, -0.5,2.0,3.0,4.0,5.0,6.0,7.0,8.0};
+ if( b23.mabs() != 10.0 )   
+  {
+     print("ERROR: b23) error with mabs()\n");
+     nbr_err++;	
+  }
+
+  if( b23.mibs() != 0.5 )   
+  {
+     print("ERROR: b23) error with mibs()\n");
+     nbr_err++;	
+  }
+
+  if( b23.mebs() != 5.15 )   
+  {
+     print("ERROR: b23) error with mebs()\n");
+     nbr_err++;	
+  }
+
+ 
 
   print("RESULTS block b: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
