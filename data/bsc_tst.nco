@@ -362,6 +362,13 @@ nbr_err_ttl=0;
      nbr_err++;	
   }
 
+  if( b23.tabs() != 51.5 )   
+  {
+     print("ERROR: b23) error with tabs()\n");
+     nbr_err++;	
+  }
+
+  
   if( b23.mebs() != 5.15 )   
   {
      print("ERROR: b23) error with mebs()\n");
