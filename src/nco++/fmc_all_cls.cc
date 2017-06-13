@@ -75,6 +75,9 @@
       fmc_vtr.push_back( fmc_cls("total",this,(int)PTTL));
       fmc_vtr.push_back( fmc_cls("ttl",this,(int)PTTL));
       fmc_vtr.push_back( fmc_cls("sum",this,(int)PTTL));
+      fmc_vtr.push_back( fmc_cls("tabs",this,(int)PTABS));
+      fmc_vtr.push_back( fmc_cls("ttlabs",this,(int)PTABS));
+
     }
   }		      
 		      
@@ -252,8 +255,6 @@
 
 
 
-
-
             // do the heavy lifting
             switch(fdx){
                     
@@ -285,7 +286,12 @@
                     var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_avg,False,&ddra_info);
                     (void)nco_var_nrm(var->type,var->sz,var->has_mss_val,var->mss_val,var->tally,var->val);
                     break;
-                    
+
+                case PTABS:
+                    (void)nco_var_abs(var1->type,var1->sz,var1->has_mss_val,var1->mss_val,var1->val);
+                    var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_avg,False,&ddra_info);
+                    break;
+
                 case PMAX:
                     var=nco_var_avg(var1,dim,avg_nbr_dim,nco_op_max,False,&ddra_info);
                     break;

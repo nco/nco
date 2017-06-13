@@ -83,7 +83,7 @@ class agg_cls: public vtl_cls {
 private:
   /* we want the enums to be exactly identical to the values of nco_op_typ */
   enum{ PAVG=nco_op_avg ,PAVGSQR=nco_op_avgsqr , PMIBS=nco_op_mibs, PMABS=nco_op_mabs, PMEBS=nco_op_mebs, PMAX=nco_op_max ,PMIN=nco_op_min ,PRMS=nco_op_rms,
-	PRMSSDN=nco_op_rmssdn, PSQRAVG=nco_op_sqravg, PTTL=nco_op_ttl};
+	PRMSSDN=nco_op_rmssdn, PSQRAVG=nco_op_sqravg, PTTL=nco_op_ttl, PTABS=nco_op_tabs};
   bool _flg_dbg;
 public:
   agg_cls(bool flg_dbg);
