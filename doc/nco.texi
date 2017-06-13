@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 8 June 2017
+@set update-date 13 June 2017
 @set update-month June 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13143,11 +13143,10 @@ print(mss_val_nbr,"%d");
 print(three_dmn_var_dbl);
 
 // find the total number of missing values along dims $lat and $lon
-ms_ttl=three_mn_var_dbl.missing().ttl($lat,$lon);
-print(ms_ttl); //  0, 0, 0, 8, 0, 0, 0, 1, 0, 2 ;
+mss_ttl=three_mn_var_dbl.missing().ttl($lat,$lon);
+print(mss_ttl); // 0, 0, 0, 8, 0, 0, 0, 1, 0, 2 ;
 @end verbatim
 @end example
-
 
 @table @code
 @item simple_fill_miss(var)
