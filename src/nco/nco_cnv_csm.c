@@ -389,6 +389,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     case nco_op_mabs: strcpy(att_op_sng,"maximum_absolute_value"); break; /* Maximum absolute value */
     case nco_op_mebs: strcpy(att_op_sng,"mean_absolute_value"); break; /* Mean absolute value */
     case nco_op_mibs: strcpy(att_op_sng,"minimum_absolute_value"); break; /* Minimum absolute value */
+    case nco_op_tabs: strcpy(att_op_sng,"sum absolute_value"); break; /* sum  absolute value */
     case nco_op_sqravg: strcpy(att_op_sng,"square_of_mean"); break; /* Square of mean */
     case nco_op_sqrt: strcpy(att_op_sng,"square_root_of_mean"); break; /* Square root of mean */ 
     case nco_op_rms: strcpy(att_op_sng,"root_mean_square"); break; /* Root-mean-square (normalized by N) */
@@ -559,6 +560,7 @@ nco_rdc_sng_to_op_typ /* [fnc] Convert operation string to integer */
   if(!strcmp(att_op_sng,"mabs")) return nco_op_mabs;
   if(!strcmp(att_op_sng,"mebs")) return nco_op_mebs;
   if(!strcmp(att_op_sng,"mibs")) return nco_op_mibs;
+  if(!strcmp(att_op_sng,"tabs")) return nco_op_tabs;
   if(!strcmp(att_op_sng,"mean")) return nco_op_avg;
   if(!strcmp(att_op_sng,"minimum")) return nco_op_min;
   if(!strcmp(att_op_sng,"maximum")) return nco_op_max;
@@ -581,6 +583,7 @@ nco_op_typ_to_rdc_sng /* [fnc] Convert operation type to string */
   case nco_op_mabs: return "mabs";
   case nco_op_mebs: return "mebs";
   case nco_op_mibs: return "mibs";
+  case nco_op_tabs: return "tabs";
   case nco_op_min: return "minimum";
   case nco_op_max: return "maximum";
   case nco_op_ttl: return "sum";
