@@ -13145,10 +13145,35 @@ print(three_dmn_var_dbl);
 // find the total number of missing values along dims $lat and $lon
 ms_ttl=three_mn_var_dbl.missing().ttl($lat,$lon);
 print(ms_ttl); //  0, 0, 0, 8, 0, 0, 0, 1, 0, 2 ;
-
-
 @end verbatim
 @end example
+
+
+@table @code
+@item simple_fill_miss(var)
+@cindex @code{simple_fill_miss()}
+This function takes a variable and attempts to fill missing values using an average
+of up to the 4 nearest neighbour grid points. The method used is iterative (up to 1000 cycles).
+For very large areas of missing values results can be unpredictable.
+The given variable must be at least 2D; and the algorithm assumes that the last two dims are lat/lon
+or y/x
+@item weighted_fill_miss(var)
+@cindex @code{weighted_fill_miss()}
+Weighted_fill_miss is more sophisticated. Up to 8 nearest neighbours  are used to calculate a weighted average.
+The weighting used is the inverse  square of distance. Again the method is iterative (up to 1000 cycles).
+The area filled is defined by the final  two dims of the variable. In addition this function assumes the existance of
+coordinate vars the same name as the last two dims. if it doesn't find these dims it will gently exit with warning.
+@end table
+
+
+
+
+
+
+
+
+
+
 
 @html
 <a name="ncap_mth"></a> <!-- http://nco.sf.net/nco.html#ncap_mth -->
