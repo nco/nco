@@ -1,3 +1,7 @@
+2017-06-13  Charlie Zender  <zender@uci.edu>
+
+	* Make dt_fmt automatically set PRN_CLN_LGB and obviate redundant --cal
+
 2017-06-12  Charlie Zender  <zender@uci.edu>
 
 	* Apply temporary fix whenever cnk_sz == 0L, period
