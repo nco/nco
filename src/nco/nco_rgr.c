@@ -7777,16 +7777,25 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     dmn_ids[0]=dmn_id_dg;
     dmn_ids[1]=dmn_id_npe;
     rcd=nco_def_var(out_id,dg_nd_nm,(nc_type)NC_INT,dmn_nbr_2D,dmn_ids,&dg_nd_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,dg_nd_id,shuffle,deflate,dfl_lvl);
     dmn_ids[0]=dmn_id_fc;
     dmn_ids[1]=dmn_id_npf;
     rcd=nco_def_var(out_id,fc_nd_nm,(nc_type)NC_INT,dmn_nbr_2D,dmn_ids,&fc_nd_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,fc_nd_id,shuffle,deflate,dfl_lvl);
     rcd=nco_def_var(out_id,msh_nm,(nc_type)NC_INT,dmn_nbr_0D,(int *)NULL,&msh_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,msh_id,shuffle,deflate,dfl_lvl);
     rcd=nco_def_var(out_id,ndx_nm,crd_typ,dmn_nbr_1D,&dmn_id_nd,&ndx_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ndx_id,shuffle,deflate,dfl_lvl);
     rcd=nco_def_var(out_id,ndy_nm,crd_typ,dmn_nbr_1D,&dmn_id_nd,&ndy_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ndy_id,shuffle,deflate,dfl_lvl);
     rcd=nco_def_var(out_id,dgx_nm,crd_typ,dmn_nbr_1D,&dmn_id_dg,&dgx_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,dgx_id,shuffle,deflate,dfl_lvl);
     rcd=nco_def_var(out_id,dgy_nm,crd_typ,dmn_nbr_1D,&dmn_id_dg,&dgy_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,dgy_id,shuffle,deflate,dfl_lvl);
     rcd=nco_def_var(out_id,fcx_nm,crd_typ,dmn_nbr_1D,&dmn_id_fc,&fcx_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,fcx_id,shuffle,deflate,dfl_lvl);
     rcd=nco_def_var(out_id,fcy_nm,crd_typ,dmn_nbr_1D,&dmn_id_fc,&fcy_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,fcy_id,shuffle,deflate,dfl_lvl);
 
     att_nm=strdup("Conventions");
     att_val=strdup("CF-1.6, UGRID-1.0");

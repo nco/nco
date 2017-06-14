@@ -6492,8 +6492,16 @@ ncks --rgr grd_ttl='T42 Gaussian grid'latlon=64,128#lat_typ=gss#lon_typ=grn_ctr 
 
 # NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree) Equi-Angular grid
 # Date-line west edge of first longitude, east edge of last longitude
-ncks --rgr grd_ttl='Equi-Angular grid 3600x7200 (NASA CMG)'#latlon=3600,7200#lat_typ=uni#lon_typ=180_wst \
+# Write to compressed netCDF4-classic file to reduce filesize ~140x from 2.2 GB to 16 MB
+ncks -7 -L 1 \
+     --rgr grd_ttl='Equi-Angular grid 3600x7200 (NASA CMG)'#latlon=3600,7200#lat_typ=uni#lon_typ=180_wst \
      --rgr scrip=${DATA}/grids/3600x7200_SCRIP.20160301.nc ~zender/nco/data/in.nc ~/foo.nc
+
+# DOE ACME High Resolution Topography (1 x 1 km grid) for Elevation Classes
+# Write to compressed netCDF4-classic file to reduce filesize from ~85 GB to 607 MB
+ncks -O -7 -L 1 \
+     --rgr grd_ttl='Global latxlon = 18000x36000 ~ 1 x 1 km'#latlon=18000,36000#lat_typ=uni#lon_typ=grn_ctr \
+     --rgr scrip=${DATA}/grids/grd_18000x36000_SCRIP.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # 1x1 degree Equi-Angular Regional grid over Greenland, centered longitudes
 ncks --rgr grd_ttl='Equi-Angular Greenland grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
@@ -13163,16 +13171,6 @@ The weighting used is the inverse  square of distance. Again the method is itera
 The area filled is defined by the final  two dims of the variable. In addition this function assumes the existance of
 coordinate vars the same name as the last two dims. if it doesn't find these dims it will gently exit with warning.
 @end table
-
-
-
-
-
-
-
-
-
-
 
 @html
 <a name="ncap_mth"></a> <!-- http://nco.sf.net/nco.html#ncap_mth -->
