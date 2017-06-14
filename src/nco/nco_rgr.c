@@ -758,7 +758,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(strstr(att_val,"NCAR-CSM")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF;
     else if(strstr(att_val,"SCRIP")) nco_rgr_mpf_typ=nco_rgr_mpf_SCRIP;
     else if(strstr(att_val,"Tempest")) nco_rgr_mpf_typ=nco_rgr_mpf_Tempest;
-    else if(strstr(att_val,"ESMF Regrid Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF;
+    else if(strstr(att_val,"ESMF Regrid Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF_weight_only;
     if(nco_rgr_mpf_typ == nco_rgr_mpf_nil) (void)fprintf(stderr,"%s: ERROR %s unrecognized map-type specified in attribute Conventions = %s\n",nco_prg_nm_get(),fnc_nm,att_val);
     if(att_val) att_val=(char *)nco_free(att_val);
   } /* end rcd && att_typ */
@@ -773,7 +773,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimid(in_id,"dst_grid_rank",&dst_grid_rank_id);
     rcd+=nco_inq_dimid(in_id,"num_links",&num_links_id);
     rcd+=nco_inq_dimid(in_id,"num_wgts",&num_wgts_id);
-  break;
+    break;
+  case nco_rgr_mpf_ESMF_weight_only:
+    rcd+=nco_inq_dimid(in_id,"n_s",&num_links_id);
+    break;
   case nco_rgr_mpf_ESMF:
   case nco_rgr_mpf_Tempest:
     rcd+=nco_inq_dimid(in_id,"n_a",&src_grid_size_id);
@@ -782,8 +785,8 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimid(in_id,"nv_b",&dst_grid_corners_id);
     rcd+=nco_inq_dimid(in_id,"src_grid_rank",&src_grid_rank_id);
     rcd+=nco_inq_dimid(in_id,"dst_grid_rank",&dst_grid_rank_id);
-    rcd+=nco_inq_dimid(in_id,"n_s",&num_links_id);
     if(nco_rgr_mpf_typ != nco_rgr_mpf_Tempest) rcd+=nco_inq_dimid(in_id,"num_wgts",&num_wgts_id);
+    rcd+=nco_inq_dimid(in_id,"n_s",&num_links_id);
     break;
   default:
     (void)fprintf(stderr,"%s: ERROR %s unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
@@ -794,6 +797,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     return NCO_ERR;
     break;
   } /* end switch */
+
+  /* Got to here in bullet-proofing code for weight-only map-files */
+  assert(nco_rgr_mpf_typ != nco_rgr_mpf_ESMF_weight_only);
 
   /* Use dimension IDs to get dimension sizes */
   rcd+=nco_inq_dimlen(in_id,src_grid_size_id,&rgr_map.src_grid_size);
@@ -902,13 +908,16 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     rcd+=nco_inq_varid(in_id,"remap_matrix",&wgt_raw_id); /* NB: remap_matrix[num_links,num_wgts] != S[n_s] */
     break;
   case nco_rgr_mpf_ESMF:
+  case nco_rgr_mpf_ESMF_weight_only:
   case nco_rgr_mpf_Tempest:
-    rcd+=nco_inq_varid(in_id,"area_b",&area_dst_id); /* SCRIP: dst_grid_area */
-    rcd+=nco_inq_varid(in_id,"xc_b",&dst_grd_ctr_lon_id); /* SCRIP: dst_grid_center_lon */
-    rcd+=nco_inq_varid(in_id,"yc_b",&dst_grd_ctr_lat_id); /* SCRIP: dst_grid_center_lat */
-    rcd+=nco_inq_varid(in_id,"xv_b",&dst_grd_crn_lon_id); /* SCRIP: dst_grid_corner_lon */
-    rcd+=nco_inq_varid(in_id,"yv_b",&dst_grd_crn_lat_id); /* SCRIP: dst_grid_corner_lat */
-    rcd+=nco_inq_varid(in_id,"frac_b",&frc_dst_id); /* SCRIP: dst_grid_frac */
+    if(nco_rgr_mpf_typ != nco_rgr_mpf_ESMF_weight_only){
+      rcd+=nco_inq_varid(in_id,"area_b",&area_dst_id); /* SCRIP: dst_grid_area */
+      rcd+=nco_inq_varid(in_id,"xc_b",&dst_grd_ctr_lon_id); /* SCRIP: dst_grid_center_lon */
+      rcd+=nco_inq_varid(in_id,"yc_b",&dst_grd_ctr_lat_id); /* SCRIP: dst_grid_center_lat */
+      rcd+=nco_inq_varid(in_id,"xv_b",&dst_grd_crn_lon_id); /* SCRIP: dst_grid_corner_lon */
+      rcd+=nco_inq_varid(in_id,"yv_b",&dst_grd_crn_lat_id); /* SCRIP: dst_grid_corner_lat */
+      rcd+=nco_inq_varid(in_id,"frac_b",&frc_dst_id); /* SCRIP: dst_grid_frac */
+    } /* !nco_rgr_mpf_ESMF_weight_only */
     rcd+=nco_inq_varid(in_id,"row",&row_dst_adr_id); /* SCRIP: dst_address */
     rcd+=nco_inq_varid(in_id,"col",&col_src_adr_id); /* SCRIP: src_address */
     rcd+=nco_inq_varid(in_id,"S",&wgt_raw_id); /* NB: remap_matrix[num_links,num_wgts] != S[n_s] */
@@ -922,6 +931,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     return NCO_ERR;
     break;
   } /* end switch */
+
   /* Obtain fields whose presence depends on mapfile type */
   nco_bool flg_msk_out=rgr->flg_msk_out; /* [flg] Add mask to output */
   if(flg_msk_out){
@@ -4177,9 +4187,10 @@ nco_rgr_mpf_sng /* [fnc] Convert mapfile generator enum to string */
 {
   /* Purpose: Convert mapfile generator enum to string */
   switch(nco_rgr_mpf_typ){
-  case nco_rgr_mpf_ESMF: return "ESMF Offline Regridding Weight Generator (either ESMF_RegridWeightGen directly or via NCL)";
+  case nco_rgr_mpf_ESMF: return "ESMF Offline Regridding Weight Generator (ERWG), either from ESMF_RegridWeightGen directly or via NCL";
   case nco_rgr_mpf_SCRIP: return "SCRIP (original LANL package)";
   case nco_rgr_mpf_Tempest: return "TempestRemap (GenerateOfflineMap)";
+  case nco_rgr_mpf_ESMF_weight_only: return "ESMF Offline Regridding Weight Generator (ERWG), either from ESMF_RegridWeightGen directly or via NCL, with --weight_only option from ERWG 7.1+";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 

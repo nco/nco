@@ -55,6 +55,7 @@ extern "C" {
     nco_rgr_mpf_ESMF,
     nco_rgr_mpf_SCRIP,
     nco_rgr_mpf_Tempest,
+    nco_rgr_mpf_ESMF_weight_only,
   } nco_rgr_mpf_typ_enm;
 
   typedef enum nco_rgr_typ_enm{ /* [enm] Regrid type enum */
