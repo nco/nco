@@ -964,7 +964,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   /* Obtain variable ID */
   (void)nco_inq_varid(grp_id_out,var_nm,&var_id_out);
-  (void)nco_inq_varid(grp_id_in,var_nm,&var_id_in);
+  if(nco_inq_varid_flg(grp_id_in,var_nm,&var_id_in) !=NC_NOERR)
+    var_id_in=-1;
 
   /* Get type and number of dimensions for variable */
   (void)nco_inq_var(grp_id_out,var_id_out,(char *)NULL,&var_typ_dsk,&dmn_nbr,(int *)NULL,(int *)NULL);
@@ -996,7 +997,10 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   if(is_rec_var || is_chk_var || is_cmp_var) must_be_chunked=True; else must_be_chunked=False;
 
   /* Is variable currently chunked? */
-  if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) is_chunked=nco_cnk_dsk_inq(grp_id_in,var_id_in);
+  if( var_id_in>=0 &&  (nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433))
+    is_chunked=nco_cnk_dsk_inq(grp_id_in,var_id_in);
+  else
+    is_chunked=False;
 
   /* Does variable have any user-chunked dimensions? */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
@@ -1093,7 +1097,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	} /* end loop over dmn_idx_in */
 	if(dmn_idx_in == dmn_nbr_in){
 	  /* Output file dimension not found in input file */
-	  assert(nco_prg_id_get() == ncecat);
+	  assert(nco_prg_id_get() == ncecat || nco_prg_id_get() == ncap );
 	  if(dmn_cmn[dmn_idx].NON_HYP_DMN){
 	    if(dmn_cmn[dmn_idx].sz == 0) cnk_sz[dmn_idx]=1UL; else cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].sz;
 	  }else{ /* !NON_HYP_DMN */

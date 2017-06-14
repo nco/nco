@@ -17,6 +17,7 @@
 // Standard C headers
 #include <assert.h>
 #include <ctype.h>
+#include <nco.h>
 
 // Personal headers
 #include "ncap2_utl.hh"
@@ -466,14 +467,20 @@ prs_cls::ncap_var_write_omp(
       (void)nco_inq_format(out_id,&fl_fmt);
       if( (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) && var->nbr_dim > 0)
       {
+        dmn_cmn_sct cmn[NC_MAX_DIMS];
+        ncap_pop_dmn_cmn();
+        ncap_pop_var_dmn_cmn(var, cmn);
+        (void)nco_cnk_sz_set_trv(in_id,out_id,cnk_in, var->nm,cmn);
+
+
 
           int flg_cnk;
 	      if(dfl_lvl >= 0)
-            (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,dfl_lvl);
+            (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle, True,dfl_lvl);
           else if(var->dfl_lvl >= 0)
-            (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle,(int)True,var->dfl_lvl);
+            (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle, True,var->dfl_lvl);
 
-          /* remember ncap_get_cnk_sz can set var->cnk_sz */
+        /*
           flg_cnk=ncap_get_cnk_sz(var);
 
           for(idx=0;idx<var->nbr_dim;idx++)
@@ -485,7 +492,7 @@ prs_cls::ncap_var_write_omp(
             (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CHUNKED,var->cnk_sz);
           else
             (void)nco_def_var_chunking(out_id,var_out_id,(int)NC_CONTIGUOUS,var->cnk_sz);
-
+        */
 
 	  } /* endif netCDF4 */
 
@@ -556,6 +563,9 @@ void prs_cls::ncap_def_ntl_scn(void) {
   NcapVar *Nvar;
   NcapVar *Cvar;
   var_sct *var1;
+  dmn_cmn_sct cmn[NC_MAX_DIMS];
+
+  ncap_pop_dmn_cmn();
 
   int fl_fmt; /* [enm] Output file format */
 
@@ -593,25 +603,40 @@ void prs_cls::ncap_def_ntl_scn(void) {
 
         if ((fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) && var1->nbr_dim)
         {
-          int flg_cnk;
-          if (dfl_lvl >= 0)
-            (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, (int) True, dfl_lvl);
-          else if (var1->dfl_lvl >= 0)
-            (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, (int) True, var1->dfl_lvl);
+          // use chunking inheritance
+          if(1 || cnk_in->cnk_plc== nco_cnk_plc_nil) {
+            ncap_pop_var_dmn_cmn(var1, cmn);
+            (void)nco_cnk_sz_set_trv(in_id,out_id,cnk_in, var1->nm,cmn);
+
+            if (dfl_lvl >= 0)
+              (void) nco_def_var_deflate(out_id, var_id, var1->shuffle,  True, dfl_lvl);
+            else if (var1->dfl_lvl >= 0)
+              (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, True, var1->dfl_lvl);
 
 
-          for (jdx = 0; jdx < var1->nbr_dim; jdx++)
-            if (var1->dim[jdx]->is_rec_dmn)
-              break;
 
-          //  nb ncap_get_cnk_sz() checks the var->nm  in input. IF AND ONLY IF it is the same shape as var1
-          //  then the chunking is copied over
-          flg_cnk = ncap_get_cnk_sz(var1);
-          // chunk if var contains rec_dmn, deflated , or valid chunking from Input
-          if (jdx < var1->nbr_dim || dfl_lvl >= 0 || var1->dfl_lvl >= 0 || flg_cnk)
-            (void) nco_def_var_chunking(out_id, var_id, (int) NC_CHUNKED, var1->cnk_sz);
-          else
-            (void) nco_def_var_chunking(out_id, var_id, (int) NC_CONTIGUOUS, var1->cnk_sz);
+          }else{
+            int flg_cnk;
+            if (dfl_lvl >= 0)
+              (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, (int) True, dfl_lvl);
+            else if (var1->dfl_lvl >= 0)
+              (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, (int) True, var1->dfl_lvl);
+
+
+            for (jdx = 0; jdx < var1->nbr_dim; jdx++)
+              if (var1->dim[jdx]->is_rec_dmn)
+                break;
+
+            //  nb ncap_get_cnk_sz() checks the var->nm  in input. IF AND ONLY IF it is the same shape as var1
+            //  then the chunking is copied over
+            flg_cnk = ncap_get_cnk_sz(var1);
+            // chunk if var contains rec_dmn, deflated , or valid chunking from Input
+            if (jdx < var1->nbr_dim || dfl_lvl >= 0 || var1->dfl_lvl >= 0 || flg_cnk)
+              (void) nco_def_var_chunking(out_id, var_id, (int) NC_CHUNKED, var1->cnk_sz);
+            else
+              (void) nco_def_var_chunking(out_id, var_id, (int) NC_CONTIGUOUS, var1->cnk_sz);
+
+          }
 
         }
 
@@ -633,6 +658,57 @@ void prs_cls::ncap_def_ntl_scn(void) {
   // Empty int_vtr n.b pointers have all been deleted
   int_vtr.clear();
 }
+
+void prs_cls::ncap_pop_dmn_cmn(void){
+
+  int idx;
+  int sz;
+  dmn_cmn_sct *dmn_cmn;
+  if(dmn_out_vtr.size() == dmn_cmn_vtr.size() )
+    return;
+   sz=dmn_out_vtr.size();
+
+   for(idx=0;idx<sz; idx++ )
+     if(!dmn_cmn_vtr.find( dmn_out_vtr[idx]->nm) ){
+       dmn_cmn=(dmn_cmn_sct*)nco_malloc( sizeof(dmn_cmn_sct) );
+       dmn_cmn->nm_fll=strdup(dmn_out_vtr[idx]->nm);
+       // dmn_cmn->nm_fll=(char*)NULL;
+       strcpy(dmn_cmn->nm, dmn_out_vtr[idx]->nm);
+       dmn_cmn->id=dmn_out_vtr[idx]->id;
+       dmn_cmn->NON_HYP_DMN=True;
+       dmn_cmn->is_rec_dmn=dmn_out_vtr[idx]->is_rec_dmn;
+       dmn_cmn->dmn_cnt=dmn_out_vtr[idx]->cnt;
+       dmn_cmn->sz=dmn_out_vtr[idx]->cnt;
+
+       dmn_cmn_vtr.push_back(dmn_cmn);
+       // wrn_prn("prs_cls::ncap_pop_dmn_cmn",SCS(dmn_cmn->nm));
+     }
+
+   return;
+
+}
+
+/* populate cmn from dmn_cmn_vtr - nb this assumes that cmn array size has already be
+   been allocated */
+void prs_cls::ncap_pop_var_dmn_cmn(var_sct* var, dmn_cmn_sct *cmn){
+
+  int idx;
+  int fdx;
+  int nbr_dim;
+
+  nbr_dim=var->nbr_dim;
+
+  for(idx=0;idx<nbr_dim;idx++)
+    /* nb this search should ALLWAYS succeed */
+    if( (fdx=dmn_cmn_vtr.findi(var->dim[idx]->nm)) >=0 )
+      cmn[idx]=*dmn_cmn_vtr[fdx];
+    else
+      (void)err_prn("prs_cls::ncap_pop_var_dmn_cmn", "could not find "+ SCS(var->dim[idx]->nm)+ " in dmn_cmn_vtr\n" );
+
+   return;
+
+}
+
 
 int prs_cls::ncap_get_cnk_sz(var_sct *var){
 
