@@ -467,7 +467,7 @@ while getopts :a:CD:d:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-: OPT; 
 	u) unq_usr="${OPTARG}" ;; # Unique suffix
 	V) var_rgr="${OPTARG}" ;; # CF template variable 
 	v) var_lst="${OPTARG}" ;; # Variables
-	W) wgt_opt="${OPTARG}" ;; # Weight-generator options
+	W) wgt_opt_usr="${OPTARG}" ;; # Weight-generator options
 	w) wgt_usr="${OPTARG}" ;; # Weight-generator command
 	x) xtn_var="${OPTARG}" ;; # Extensive variables
 	-) LONG_OPTARG="${OPTARG#*=}"
@@ -524,7 +524,7 @@ while getopts :a:CD:d:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-: OPT; 
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
 	       vrb_lvl=?* | vrb=?* | verbosity=?* | print_verbosity=?* ) vrb_lvl="${LONG_OPTARG}" ;; # # Print verbosity
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
-	       wgt_opt=?* | esmf_opt=?* | esmf_options=?* | tps_opt=?* | tempest_opt=?* | tempest_options=?* ) wgt_opt="${LONG_OPTARG}" ;; # -W # Weight-generator options
+	       wgt_opt=?* | esmf_opt=?* | esmf_options=?* | tps_opt=?* | tempest_opt=?* | tempest_options=?* ) wgt_opt_usr="${LONG_OPTARG}" ;; # -W # Weight-generator options
 	       wgt_cmd=?* | weight_command=?* | wgt_gnr=?* | weight_generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator command
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
                '' ) break ;; # "--" terminates argument processing
@@ -696,6 +696,10 @@ else
     wgt_exe="${wgt_exe_tps}"
     wgt_opt="${wgt_opt_tps}"
 fi # !wgt_typ
+# NB: Define after wgt_typ-block so user can override default options
+if [ -n "${wgt_opt_usr}" ]; then 
+    wgt_opt=${wgt_opt_usr}
+fi # !wgt_usr    
 if [ -n "${wgt_usr}" ]; then 
     wgt_cmd=${wgt_usr}
 fi # !wgt_usr    

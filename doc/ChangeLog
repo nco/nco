@@ -1,5 +1,7 @@
 2017-06-14  Charlie Zender  <zender@uci.edu>
 
+	* Fix 4.6.7 ncremap bug where -W wgt_opt was ignored
+
 	* Allow compression with UGRID output
 
 2017-06-13  Charlie Zender  <zender@uci.edu>
