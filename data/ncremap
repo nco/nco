@@ -110,7 +110,8 @@ case "${HOSTNAME}" in
 	# Why do cori/edison and rhea require workarounds for different packages?
 	module load gsl
 	module load udunits
-	# On cori and edison, module load ncl installs ERWG in ${NCARG_ROOT}/../intel/bin
+	# On cori and edison, module load ncl installs ERWG 5.2 (from 2012) in ${NCARG_ROOT}/../intel/bin
+	# module load ncl/6.3.0 
 	if [ -n "${NCARG_ROOT}" ]; then
             export PATH="${NCARG_ROOT}/bin:${PATH}"
 	fi # !NCARG_ROOT
@@ -119,7 +120,8 @@ case "${HOSTNAME}" in
     edison* )
 	module load gsl
 	module load udunits
-	# On cori and edison, module load ncl installs ERWG in ${NCARG_ROOT}/../intel/bin
+	# On cori and edison, module load ncl installs ERWG 5.2 (from 2012) in ${NCARG_ROOT}/../intel/bin
+	# module load ncl/6.3.0 
 	if [ -n "${NCARG_ROOT}" ]; then
             export PATH="${NCARG_ROOT}/bin:${PATH}"
 	fi # !NCARG_ROOT
@@ -164,7 +166,7 @@ esac # !HOSTNAME
 
 # Test cases (for Charlie's machines)
 # Map-only:
-# ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -a bilinear -a bilinear
+# ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -a bilinear
 # ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -a tempest
 # ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
 # Regrid:
