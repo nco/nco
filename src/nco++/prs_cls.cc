@@ -472,13 +472,10 @@ prs_cls::ncap_var_write_omp(
         ncap_pop_var_dmn_cmn(var, cmn);
         (void)nco_cnk_sz_set_trv(in_id,out_id,cnk_in, var->nm,cmn);
 
-
-
-          int flg_cnk;
-	      if(dfl_lvl >= 0)
-            (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle, True,dfl_lvl);
-          else if(var->dfl_lvl >= 0)
-            (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle, True,var->dfl_lvl);
+        if(dfl_lvl >= 0)
+          (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle, True,dfl_lvl);
+        else if(var->dfl_lvl >= 0)
+          (void)nco_def_var_deflate(out_id,var_out_id,var->shuffle, True,var->dfl_lvl);
 
         /*
           flg_cnk=ncap_get_cnk_sz(var);
@@ -601,45 +598,43 @@ void prs_cls::ncap_def_ntl_scn(void) {
 
         /* Set HDF Lempel-Ziv compression level, if requested */
 
-        if ((fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) && var1->nbr_dim)
-        {
+        if ((fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) && var1->nbr_dim) {
           // use chunking inheritance
-          if(1 || cnk_in->cnk_plc== nco_cnk_plc_nil) {
-            ncap_pop_var_dmn_cmn(var1, cmn);
-            (void)nco_cnk_sz_set_trv(in_id,out_id,cnk_in, var1->nm,cmn);
+          ncap_pop_var_dmn_cmn(var1, cmn);
+          (void) nco_cnk_sz_set_trv(in_id, out_id, cnk_in, var1->nm, cmn);
 
-            if (dfl_lvl >= 0)
-              (void) nco_def_var_deflate(out_id, var_id, var1->shuffle,  True, dfl_lvl);
-            else if (var1->dfl_lvl >= 0)
-              (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, True, var1->dfl_lvl);
-
+          if (dfl_lvl >= 0)
+            (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, True, dfl_lvl);
+          else if (var1->dfl_lvl >= 0)
+            (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, True, var1->dfl_lvl);
 
 
-          }else{
-            int flg_cnk;
-            if (dfl_lvl >= 0)
-              (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, (int) True, dfl_lvl);
-            else if (var1->dfl_lvl >= 0)
-              (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, (int) True, var1->dfl_lvl);
+          /*
+          {
+          int flg_cnk;
+          if (dfl_lvl >= 0)
+            (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, (int) True, dfl_lvl);
+          else if (var1->dfl_lvl >= 0)
+            (void) nco_def_var_deflate(out_id, var_id, var1->shuffle, (int) True, var1->dfl_lvl);
 
 
-            for (jdx = 0; jdx < var1->nbr_dim; jdx++)
-              if (var1->dim[jdx]->is_rec_dmn)
-                break;
+          for (jdx = 0; jdx < var1->nbr_dim; jdx++)
+            if (var1->dim[jdx]->is_rec_dmn)
+              break;
 
-            //  nb ncap_get_cnk_sz() checks the var->nm  in input. IF AND ONLY IF it is the same shape as var1
-            //  then the chunking is copied over
-            flg_cnk = ncap_get_cnk_sz(var1);
-            // chunk if var contains rec_dmn, deflated , or valid chunking from Input
-            if (jdx < var1->nbr_dim || dfl_lvl >= 0 || var1->dfl_lvl >= 0 || flg_cnk)
-              (void) nco_def_var_chunking(out_id, var_id, (int) NC_CHUNKED, var1->cnk_sz);
-            else
-              (void) nco_def_var_chunking(out_id, var_id, (int) NC_CONTIGUOUS, var1->cnk_sz);
-
-          }
+          //  nb ncap_get_cnk_sz() checks the var->nm  in input. IF AND ONLY IF it is the same shape as var1
+          //  then the chunking is copied over
+          flg_cnk = ncap_get_cnk_sz(var1);
+          // chunk if var contains rec_dmn, deflated , or valid chunking from Input
+          if (jdx < var1->nbr_dim || dfl_lvl >= 0 || var1->dfl_lvl >= 0 || flg_cnk)
+            (void) nco_def_var_chunking(out_id, var_id, (int) NC_CHUNKED, var1->cnk_sz);
+          else
+            (void) nco_def_var_chunking(out_id, var_id, (int) NC_CONTIGUOUS, var1->cnk_sz);
 
         }
 
+        */
+        }
 
       } else {
         //deal with RAM only var
