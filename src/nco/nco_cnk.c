@@ -43,6 +43,7 @@
    http://www.unidata.ucar.edu/software/netcdf/docs_rc/default_chunking_4_1.html */
 
 #include "nco_cnk.h" /* Chunking */
+#include "nco.h"
 
 const char * /* O [sng] Chunking map string */
 nco_cnk_map_sng_get /* [fnc] Convert chunking map enum to string */
@@ -1133,9 +1134,9 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 
   /* Set "reasonable" defaults */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-
     /* Is this a record dimension? */
     if(dmn_cmn[dmn_idx].is_rec_dmn){
+
       /* Does policy specify record dimension treatment? */
       if(cnk_map == nco_cnk_map_rd1){
         cnk_sz[dmn_idx]=1UL;
@@ -1152,7 +1153,8 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
 	   20150505: This "smarter" treatment of 1-D record variables consistently leads to cnk_sz ~ 512k
 	   This seems ridiculously large since many datasets have O(1) time slices but many 1-D in time variables
 	   Perhaps lose this 1-D exception that scales chunksize with blocksize? */
-	if(dmn_nbr == 1) cnk_sz[dmn_idx]=NCO_CNK_SZ_BYT_R1D_DFL/typ_sz;
+
+	if(dmn_nbr ==1 ) cnk_sz[dmn_idx]=NCO_CNK_SZ_BYT_R1D_DFL/typ_sz;
       }else{ /* !NON_HYP_DMN */
         /* ... and when hyperslabbed, use user-specified count */
         cnk_sz[dmn_idx]=dmn_cmn[dmn_idx].dmn_cnt;
@@ -1432,9 +1434,15 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
      Loop below implements similar final safety check for ALL dimensions and ALL chunking maps
      Check trims fixed (not record) dimension chunksize to never be larger than dimension size */
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-    if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
-      if(!dmn_cmn[dmn_idx].is_rec_dmn){
-        /* Unlike record dimensions, non-record dimensions must have cnk_sz <= dmn_sz */
+    if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz) {
+      if (dmn_cmn[dmn_idx].is_rec_dmn){
+         /* rec dmn size 0 then we can apply any cnk_sz - else cnk_sz <= dmn_sz */
+        long lcl_dmn_sz=0ll;
+        if( nco_inq_dim_flg(grp_id_out, dmn_cmn[dmn_idx].id, (char*)NULL, &lcl_dmn_sz)==NC_NOERR && lcl_dmn_sz>0)
+          cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;
+
+      }else{
+        /* non-record dimensions must have cnk_sz <= dmn_sz */
         if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stderr,"%s: INFO %s final check trimming chunksize of \"%s\" dimension from %lu to %lu\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_sz[dmn_idx],(unsigned long)dmn_cmn[dmn_idx].sz);
         /* Trim else out-of-bounds sizes will fail in HDF library in nc_enddef() */
         cnk_sz[dmn_idx]=(size_t)dmn_cmn[dmn_idx].sz;

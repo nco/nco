@@ -1,3 +1,9 @@
+	2017-05-15 Henry Butowsky  <henryb@hush.com>
+
+	* VERY IMPORTANT:
+	  mods to nco_cnk_sz_set_trv(): in "final safety check" check that if dim_sz in output
+	  is non zero then DONT allow cnk_sz>dim_sz
+
 2017-06-14  Charlie Zender  <zender@uci.edu>
 
 	* Implement stubs to handle ERWG 7.1+ --weight_only map-files
