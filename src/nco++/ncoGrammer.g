@@ -1693,7 +1693,7 @@ var=NULL_CEWI;
                // index in limit -- i.e hyperslab a mult-dimensional var
                // with a single index 
               
-               if(lmt->getNumberOfChildren()==1 && 
+               if(lmt->getNumberOfChildren()==1 &&
                   lmt->getFirstChild()->getNumberOfChildren()==1 &&
                   lmt->getFirstChild()->getFirstChild()->getType() != COLON
                  ){
@@ -3689,6 +3689,7 @@ var_sct *var_nbr;
                 }
  
                 var_lhs=prs_arg->ncap_var_init(var_nm,false);
+
                     
                // fortran index convention   
                if(prs_arg->FORTRAN_IDX_CNV)
@@ -3719,6 +3720,7 @@ var_sct *var_nbr;
                  long srt1[NC_MAX_DIMS];   
                  long sz_dim=1; 
 
+                 var_lhs->sz=1;
                  // convert srt into multiple indices  
                  for(idx=0;idx<nbr_dim;idx++)
                    sz_dim*= var_lhs->cnt[idx]; 
