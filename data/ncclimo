@@ -1653,7 +1653,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
     declare -a dpm
     dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
     let srd=${dpy}*${tpd_out}
-    drn=1
+    drn=${tpd_out}
     
     yyyy_srt=`printf "%04d" ${yr_srt}`
     yyyy_end=`printf "%04d" ${yr_end}`
@@ -1663,14 +1663,16 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	for day in `seq 1 ${dpm[${mth}]}`; do
 	    DD=`printf "%02d" ${day}`
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_climo.nc"
+	    fl_cat[${clm_idx}]="${drc_out}/${out_nm}_${yyyy_srt}${MM}${DD}_${yyyy_end}${MM}${DD}_ncrcat.nc"
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
 	    tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:00"
 	    tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
 	    if [ ${tpd_out} -eq 1 ]; then
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
 	    else
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncea -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
-#		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --mro -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
+#		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncea -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
+#		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --mro -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} \"ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} -p ${drc_in} ${fl_all} ${fl_cat[${clm_idx}]};ncra -O ${nco_opt} ${gaa_sng} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]}\""
 	    fi # !tpd
 	    let clm_idx=${clm_idx}+1
 	done # !day
