@@ -1,8 +1,10 @@
-2017-05-15 Henry Butowsky  <henryb@hush.com>
+2017-06-19  Charlie Zender  <zender@uci.edu>
 
-	* VERY IMPORTANT:
-	  mods to nco_cnk_sz_set_trv(): in "final safety check" check that if dim_sz in output
-	  is non zero then DONT allow cnk_sz>dim_sz
+	* ncclimo: experiment with tpd for diurnal daily climos
+
+2017-06-15 Henry Butowsky  <henryb@hush.com>
+
+	* Modify nco_cnk_sz_set_trv() "final safety check" so if dim_sz != 0L then cnk_sz<=dim_sz
 
 2017-06-14  Charlie Zender  <zender@uci.edu>
 
