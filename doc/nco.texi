@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 13 June 2017
+@set update-date 14 June 2017
 @set update-month June 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6556,8 +6556,8 @@ inferred 2D rectangular grids may also be written in
 @uref{http://ugrid-conventions.github.io/ugrid-conventions, here}).
 Request a @acronym{UGRID} mesh with the option
 @samp{--rgr ugrid=@var{fl_ugrid}}.
-Currently a @acronym{SCRIP} grid must be requested in order for the
-@acronym{UGRID} option to work, e.g.,
+Currently both @acronym{UGRID} and @acronym{SCRIP} grids must be
+requested in order to produce the @acronym{UGRID} output, e.g., 
 @example
 @verbatim
 ncks --rgr infer --rgr ugrid=${HOME}/grd_ugrid.nc \
