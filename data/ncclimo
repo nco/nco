@@ -1669,7 +1669,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    if [ ${tpd_out} -eq 1 ]; then
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
 	    else
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncea -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncea -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
 #		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --mro -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${fl_all} -p ${drc_in} ${fl_out[${clm_idx}]}"
 	    fi # !tpd
 	    let clm_idx=${clm_idx}+1
