@@ -1,5 +1,7 @@
 2017-06-20  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo clean-up ncrcat files in diurnal mode
+
 	* About to work on ncwa mask bug
 
 	* NCO 4.6.8-alpha03 release procedure:
