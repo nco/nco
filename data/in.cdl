@@ -932,6 +932,11 @@ variables:
         orog:cell_measures = "area: areacella" ;
         orog:purpose = "Replicate processing of files produced by CESM and distributed on ESGF" ;
 
+	float orog2(lat,lon);
+	orog2:long_name = "Value of 1 everywhere on latxlon grid";
+	orog2:units = "fraction";
+        orog2:purpose = "debug TODO nco1138" ;
+
 	float weight(lat);
 	weight:long_name = "Gaussian weight";
 	weight:units = "fraction";
@@ -1410,6 +1415,7 @@ data:
 	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
 	ORO=0.,1.,0.,0.,1.,1.,0.,2.;
 	orog=0.,1.,0.,0.,1.,1.,0.,2.;
+	orog2=1.,1.,1.,1.,1.,1.,1.,1.;
 	mask=0.,1.,0.,0.,1.,1.,0.,1.;
 //	mask=0.,0.,0.,0.,0.,0.,0.,0.;
 //	mask=1.,1.,1.,1.,1.,1.,1.,1.;

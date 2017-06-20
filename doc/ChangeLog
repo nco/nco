@@ -1,3 +1,11 @@
+2017-06-20  Charlie Zender  <zender@uci.edu>
+
+	* About to work on ncwa mask bug
+
+	* NCO 4.6.8-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.8-alpha03 final changes';git push
+	git tag -a 4.6.8-alpha03 -m 'ncap2 cnk, ncclimo diurnal, -W wgt_opt bug, NorESM rgr';git push --tags
+
 2017-06-19  Charlie Zender  <zender@uci.edu>
 
 	* Diurnal daily climos appear to work, though slowly
