@@ -1,5 +1,7 @@
 2017-06-19  Charlie Zender  <zender@uci.edu>
 
+	* Diurnal daily climos appear to work, though slowly
+
 	* ncclimo: experiment with tpd for diurnal daily climos
 
 2017-06-15 Henry Butowsky  <henryb@hush.com>

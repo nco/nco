@@ -41,6 +41,7 @@
 # scp ~/nco/data/ncclimo blues.lcrc.anl.gov:bin
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
+# scp ~/nco/data/ncclimo dust.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo edison.nersc.gov:bin_edison
 # scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
@@ -1668,11 +1669,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:00"
 	    tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
 	    if [ ${tpd_out} -eq 1 ]; then
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},1 -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
 	    else
-#		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncea -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
-#		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --mro -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} \"ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} -p ${drc_in} ${fl_all} ${fl_cat[${clm_idx}]};ncra -O ${nco_opt} ${gaa_sng} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]}\""
+		# 20170619: Diurnal mode fxm is really slow
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} -p ${drc_in} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done"
 	    fi # !tpd
 	    let clm_idx=${clm_idx}+1
 	done # !day

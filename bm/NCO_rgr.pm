@@ -5342,6 +5342,17 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 
+#ncwa #70
+# ncwa -O -C -y ttl -v orog -d lat,0.,90. --mask_condition 'ORO > 0.0' ~/nco/data/in.nc ~/foo.nc
+# ncks -H -v orog ~/foo.nc
+    $dsc_sng="Mask condition (expect failure TODO nco1138)";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -y ttl -v orog -d lat,0.,90. --mask_condition 'ORO > 0.0' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -v orog %tmp_fl_00%";
+    $tst_cmd[2]="orog = 4";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+    
 ####################
 #### ncrename tests #### OK!
 ####################

@@ -702,7 +702,11 @@ nco1137. ncwa chunking fails with --rdd reported by Joy 20170605 pedro?
 	 mv 1.clim.tile.nc4 ~/cnk_bug.nc4
 	 ncwa -D 7 -O --rdd -a lat,lon ~/cnk_bug.nc4 ~/foo.nc # borken
 	 ncwa -D 7 -O -a lat,lon ~/cnk_bug.nc4 ~/foo.nc # works
-nco1138. 	 
+nco1138. ncwa masking broken reported 20170602 by Tony Leboissetier
+	 https://sourceforge.net/p/nco/discussion/9830/thread/f1cb00d7/?limit=25#7622
+	 ncwa -O -C -y ttl -v orog -d lat,0.,90. --mask_condition 'ORO > 0.0' ~/nco/data/in.nc ~/foo.nc # borken
+	 ncks -H -v orog ~/foo.nc # Correct answer is 4 not 1
+nco1139. 	 
 qrk
 ************************************************************************
 End ncoXXX TODOs
