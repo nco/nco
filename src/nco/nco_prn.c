@@ -510,9 +510,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     case NC_STRING:
       for(lmn=0;lmn<att_sz;lmn++){
 	sng_val=att[idx].val.sngp[lmn];
-    /* In strict CDL an NC_STRING null is indictaed by NIL, for now we output an empty string */
-    if(!sng_val) sng_val="";
-	sng_lng=strlen(sng_val);
+	/* In strict CDL an NC_STRING null is indictaed by NIL, for now we output an empty string */
+	if(sng_val) sng_lng=strlen(sng_val); else sng_lng=0L;
 	sng_lngm1=sng_lng-1UL;
 	if(CDL||XML||JSN){
 	  /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */

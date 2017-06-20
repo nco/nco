@@ -62,6 +62,10 @@ extern "C" {
   (const char *source, /* I [sng] Source string */
    const char *delimiter); /* I [char] Delimiter */
 
+  int /* O [flg] Option is flag */
+  nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
+  (const char* flag); /* I [sng] Input string */
+
   int /* O [int] the boolean for the checking result */
   nco_input_check /* [fnc] check whether the input is legal and give feedback accordingly. */
   (const char *args); /* O [sng] input arguments */

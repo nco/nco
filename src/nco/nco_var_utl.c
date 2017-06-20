@@ -1474,8 +1474,8 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
 } /* end nco_is_spc_in_cf_att() */
 
 
-char *** /* O [ptr]  list of lists - each ragged array terminated with empty string    */
-nco_lst_cf_att /* [fnc] look in all vars for att cf_nm  */
+char *** /* O [ptr] List of lists - each ragged array terminated with empty string */
+nco_lst_cf_att /* [fnc] look in all vars for att cf_nm */
 (const int nc_id, /* I [id] netCDF file ID */
  const char *const cf_nm, /* I [sng] CF att name */
  int *nbr_lst) /* O [nbr] number of ragged arrays returned */
@@ -1491,7 +1491,6 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm  */
      It is based on nco_is_spc_in_crd_att() */
 
   const char dlm_sng[]=" "; /* [sng] Delimiter string */
-  const char fnc_nm[]="nco_lst_cf_att()"; /* [sng] Function name */
   char **cf_lst; /* [sng] 1D array of list elements */
   char **int_lst=NULL_CEWI; /* store pointer to ragged array */
   char *att_val;
@@ -1559,7 +1558,6 @@ nco_lst_cf_att /* [fnc] look in all vars for att cf_nm  */
 
   return ra_lst;
 } /* end nco_lst_cf_att() */
-
 
 nco_bool /* [flg] Variable is listed in a "coordinates" attribute */
 nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute */

@@ -1,5 +1,7 @@
 2017-06-20  Charlie Zender  <zender@uci.edu>
 
+	* Clean-up compiler warnings and CEWIs on Linux
+
 	* ncclimo clean-up ncrcat files in diurnal mode
 
 	* About to work on ncwa mask bug

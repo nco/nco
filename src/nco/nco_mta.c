@@ -170,11 +170,11 @@ nco_sng_split /* [fnc] Split string by delimiter */
   return sng_fnl;
 } /* end nco_sng_split() */
 
-int /* O [flg] Is flag */
-nco_is_flag /* [fnc] Check whether input is a flag */
+int /* O [flg] Option is flag */
+nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
 (const char* flag) /* I [sng] Input string */
 {
-  const char fnc_nm[]="nco_is_flag()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_opt_is_flg()"; /* [sng] Function name */
   const char *rgr_flags[]={
     "no_area",
     "no_area_out",
@@ -258,7 +258,7 @@ nco_input_check /* [fnc] Check whether input has valid syntax */
   
   if(!strstr(args,"=")){ // If no equal sign in arguments
     char *arg_copy=strdup(args);
-    if(!nco_is_flag(nco_remove_hyphens(arg_copy))){
+    if(!nco_opt_is_flg(nco_remove_hyphens(arg_copy))){
       (void)fprintf(stderr,"%s: ERROR %s did not detect equal sign between key and value for argument \"%s\".\n%s: HINT This can occur when the designated or default key-value delimiter string \"%s\" is mixed into the literal text of the value. Try changing delimiter to a string guaranteed not to appear in the value string with, e.g., --dlm=\"##\".\n",nco_prg_nm_get(),fnc_nm,args,nco_prg_nm_get(),nco_mta_dlm_get());
       nco_free(arg_copy);
       return NCO_ERR;
