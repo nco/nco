@@ -937,6 +937,11 @@ variables:
 	orog2:units = "fraction";
         orog2:purpose = "debug TODO nco1138" ;
 
+	float orog3(lat,lon);
+	orog3:long_name = "Value of 0 first half, 1 second half on latxlon grid";
+	orog3:units = "fraction";
+        orog3:purpose = "debug TODO nco1138" ;
+
 	float weight(lat);
 	weight:long_name = "Gaussian weight";
 	weight:units = "fraction";
@@ -1416,6 +1421,7 @@ data:
 	ORO=0.,1.,0.,0.,1.,1.,0.,2.;
 	orog=0.,1.,0.,0.,1.,1.,0.,2.;
 	orog2=1.,1.,1.,1.,1.,1.,1.,1.;
+	orog3=0.,0.,0.,0.,1.,1.,1.,1.;
 	mask=0.,1.,0.,0.,1.,1.,0.,1.;
 //	mask=0.,0.,0.,0.,0.,0.,0.,0.;
 //	mask=1.,1.,1.,1.,1.,1.,1.,1.;

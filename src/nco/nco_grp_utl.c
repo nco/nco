@@ -7155,7 +7155,7 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
  const var_sct * const var,         /* I [sct] Variable that needs weight/mask */
  const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */
 {
-  /* Purpose: Return weight or mask variable closest in-scope to specified variable */
+  /* Purpose: Return weight or mask variable closest in scope to specified variable */
 
   int grp_id; /* [ID] Group ID */
   int var_id; /* [ID] Variable ID */
@@ -7187,7 +7187,7 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
     wgt_trv=(trv_sct **)nco_malloc(wgt_nbr*sizeof(trv_sct *));
     idx_wgt=0;
 
-    /* Creat list of potential weight structures */
+    /* Create list of potential weight structures */
     for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
       if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && !strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm)){
         wgt_trv[idx_wgt]=&trv_tbl->lst[tbl_idx]; 
@@ -7203,9 +7203,14 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
 	trv_sct var_trv=trv_tbl->lst[idx_var];  
 
 	/* 20150711: This is buggy, at best it returns last weight found, not closest-in-scope */
+	/* 20170620: Broken because it requires that weight and variable be in same group */
 	/* Which weight is closest-in-scope to variable? */
 	for(idx_wgt=0;idx_wgt<wgt_nbr;idx_wgt++){
-	  if(!strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){
+	  /* 20170620: Change from strcmp() to strstr() so weight can be in any ancestor group
+	     This still does NOT have the desired behavior of selecting the _closest-in-scope_,
+	     but at least it allows weights to be in ancestor groups */
+	  //if(!strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){
+	  if(strstr(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){
 	    (void)nco_inq_grp_full_ncid(nc_id,wgt_trv[idx_wgt]->grp_nm_fll,&grp_id);
 	    (void)nco_inq_varid(grp_id,wgt_trv[idx_wgt]->nm,&var_id);
 	    /* Transfer from table to local variable */

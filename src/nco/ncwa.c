@@ -575,7 +575,7 @@ main(int argc,char **argv)
     case 'm': /* Name of variable to use as mask in reducing. Default is none */
       msk_nm=(char *)strdup(optarg);
       break;
-    case 'M': /* Good data defined by relation to mask value. Default is 1. */
+    case 'M': /* Good data defined by relation to mask value. Default is 1.0 */
       msk_val=strtod(optarg,&sng_cnv_rcd);
       if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtod",sng_cnv_rcd);
       break;
@@ -900,12 +900,6 @@ main(int argc,char **argv)
 
       in_id=in_id_arr[omp_get_thread_num()];
 
-      /* Find weighting variable that matches current variable */
-      if(wgt_nm) wgt=nco_var_get_wgt_trv(in_id,wgt_nm,var_prc[idx],trv_tbl);
-
-      /* Find mask variable that matches current variable */
-      if(msk_nm) msk=nco_var_get_wgt_trv(in_id,msk_nm,var_prc[idx],trv_tbl);
-
       /* Obtain variable GTT object using full variable name */
       var_trv=trv_tbl_var_nm_fll(var_prc[idx]->nm_fll,trv_tbl);
 
@@ -931,6 +925,12 @@ main(int argc,char **argv)
       (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
 
       (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
+
+      /* Find weighting variable that matches current variable */
+      if(wgt_nm) wgt=nco_var_get_wgt_trv(in_id,wgt_nm,var_prc[idx],trv_tbl);
+
+      /* Find mask variable that matches current variable */
+      if(msk_nm) msk=nco_var_get_wgt_trv(in_id,msk_nm,var_prc[idx],trv_tbl);
 
       /* Retrieve variable from disk into memory */
       (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);

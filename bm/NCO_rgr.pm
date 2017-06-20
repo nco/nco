@@ -4620,11 +4620,13 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+# ncwa -N -O -a lat,lon -w gw ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H -s '%g' -v mask ~/foo.nc
 #ncwa #5
     $dsc_sng="do not normalize by denominator (FAILURE netCDF4 nco946)";
     $tst_cmd[0]="ncwa -N $omp_flg -h -O $fl_fmt $nco_D_flg -a lat,lon -w gw $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H -s '%f' -v mask %tmp_fl_00%";
-    $tst_cmd[2]="50";
+    $tst_cmd[1]="ncks -C -H -s '%g' -v mask %tmp_fl_00%";
+    $tst_cmd[2]="40";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
