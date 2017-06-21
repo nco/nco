@@ -211,6 +211,9 @@ add_executable(ncflint src/nco/ncflint.c)
 add_executable(ncpdq src/nco/ncpdq.c)
 add_executable(ncra src/nco/ncra.c)
 add_executable(ncrename src/nco/ncrename.c)
+if (MSVC)
+add_executable(ncwa src/nco/ncwa.c)
+endif(MSVC)
 
 set(nco_LIB nco)
 
@@ -221,6 +224,9 @@ target_link_libraries (ncflint ${nco_LIB} ${LIB_DEP})
 target_link_libraries (ncpdq ${nco_LIB} ${LIB_DEP})
 target_link_libraries (ncra ${nco_LIB} ${LIB_DEP})
 target_link_libraries (ncrename ${nco_LIB} ${LIB_DEP})
+if (MSVC)
+target_link_libraries (ncwa ${nco_LIB} ${LIB_DEP})
+endif(MSVC)
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #ncap2 
