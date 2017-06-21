@@ -1,3 +1,8 @@
+2017-06-21 Henry Butowsky  <henryb@hush.com>
+
+	* The feature  --cll_mth not working correctly
+	  so have set the default to off in ncap2.cc
+
 2017-06-20  Charlie Zender  <zender@uci.edu>
 
 	* Extend ESMF_weight_only section
