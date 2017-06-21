@@ -208,8 +208,9 @@ main(int argc,char **argv)
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_mmr_cln=True;  /* [flg] Clean memory prior to exit */
-  nco_bool flg_cll_mth=True;  /* [flg] Add/modify cell_methods attributes */
+  nco_bool flg_cll_mth=False;  /* [flg] Add/modify cell_methods attributes */
 
+  
   nm_id_sct *dmn_lst=NULL_CEWI;
   nm_id_sct *xtr_lst=NULL_CEWI; /* Non-processed variables to copy to OUTPUT */
   nm_id_sct *xtr_lst_a=NULL_CEWI; /* Initialize to ALL variables in OUTPUT file */
