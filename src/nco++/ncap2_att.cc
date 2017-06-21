@@ -279,7 +279,7 @@ ncap_att_gnrl
   if(tr_int_vtr.size())
     for(idx=tr_int_vtr.size()-1; idx>=0; idx--)
       var_vtr.erase(tr_int_vtr[idx]);
-    
+
 
 
 
@@ -323,16 +323,22 @@ ncap_att_stretch /* stretch a single valued attribute from 1 to sz */
   // and and calloc space for new ones
   if(var->type == (nc_type)NC_STRING)
   {
-    
-    (void)cast_void_nctype((nc_type)NC_STRING,&var->val);    
-    
-    nco_free(var->val.sngp[0]);  
-    nco_free(var->val.sngp);     
-    
-    var->val.sngp=(char**)nco_calloc(nw_sz,var_typ_sz);         
-    (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
+    ptr_unn nw_val;
 
-    
+    nw_val.sngp=(char**)nco_calloc(nw_sz,var_typ_sz);
+    (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
+
+    for(idx=0;idx<nw_sz;idx++)
+      nw_val.sngp[idx]=strdup(var->val.sngp[0]);
+
+
+    var->val.sngp[0]=(nco_string )nco_free(var->val.sngp[0]);
+    var->val.sngp=(nco_string*)nco_free(var->val.sngp);
+
+    var->val=nw_val;
+
+    (void)cast_nctype_void((nc_type)NC_STRING,&var->val);
+    var->sz=nw_sz;
   }
   else
   {
