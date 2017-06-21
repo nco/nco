@@ -1,0 +1,19 @@
+t=time;
+th=three_dmn_var_dbl;
+lev=lev;
+lon=lon;
+lon@str={"alpha"s, "beta"s,"gamma"s, "delta"s};
+lon@str(0)=""s;
+lon@str(3)="gamma"s;
+t(9)=-9999999.0;
+three_dmn_var_dbl(4)=44444.0;
+
+greek[$lon]=lon@str;
+greek(2)="hello"s;
+
+ss[time]="Buy"s;
+
+// failure right here 2017-06-21 
+ss(1)=greek(0);
+
+nbr_err_ttl=0;
