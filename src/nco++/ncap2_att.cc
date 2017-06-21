@@ -329,7 +329,7 @@ ncap_att_stretch /* stretch a single valued attribute from 1 to sz */
     (void)cast_void_nctype((nc_type)NC_STRING,&var->val);
 
     for(idx=0;idx<nw_sz;idx++)
-      nw_val.sngp[idx]=strdup(var->val.sngp[0]);
+      nw_val.sngp[idx]=  var->val.sngp[0] ? strdup(var->val.sngp[0]) : NULL_CEWI ;
 
 
     var->val.sngp[0]=(nco_string )nco_free(var->val.sngp[0]);
