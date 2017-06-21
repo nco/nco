@@ -273,7 +273,17 @@ ncap_att_gnrl
       att_vtr.push_back(Nvar);
     }
   }
-  
+
+  //delete transient atts
+  // nb go through vector in reverse order deleting
+  if(tr_int_vtr.size())
+    for(idx=tr_int_vtr.size()-1; idx>=0; idx--)
+      var_vtr.erase(tr_int_vtr[idx]);
+    
+
+
+
+
   sz=att_vtr.size();
   // add new att to list;
   for(idx=0;idx< sz;idx++){
@@ -287,12 +297,6 @@ ncap_att_gnrl
     var_vtr.push_ow(att_vtr[idx]);         
 #endif
   }
-
-  //delete transient atts
-  // nb go through vector in reverse order deleting
-  if(tr_int_vtr.size())
-    for(idx=tr_int_vtr.size()-1; idx>=0; idx--)
-      var_vtr.erase( tr_int_vtr[idx] );
 
   return sz;
   
