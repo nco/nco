@@ -1,5 +1,7 @@
 2017-06-20  Charlie Zender  <zender@uci.edu>
 
+	* Extend ESMF_weight_only section
+
 	* Fix false-positive regression with ncwa #5
 
 	* Clean-up compiler warnings and CEWIs on Linux

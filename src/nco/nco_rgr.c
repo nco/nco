@@ -145,7 +145,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   /* Allocate */
   rgr=(rgr_sct *)nco_malloc(sizeof(rgr_sct));
   
-  /* Initialize variable directly or indirectly set via command-line (except for key-value arguments) */
+  /* Initialize variables directly or indirectly set via command-line (except for key-value arguments) */
   rgr->cmd_ln=strdup(cmd_ln); /* [sng] Command-line */
 
   rgr->flg_usr_rqs=False; /* [flg] User requested regridding */
@@ -798,20 +798,27 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     break;
   } /* end switch */
 
-  /* Got to here in bullet-proofing code for weight-only map-files */
-  assert(nco_rgr_mpf_typ != nco_rgr_mpf_ESMF_weight_only);
-
   /* Use dimension IDs to get dimension sizes */
-  rcd+=nco_inq_dimlen(in_id,src_grid_size_id,&rgr_map.src_grid_size);
-  rcd+=nco_inq_dimlen(in_id,dst_grid_size_id,&rgr_map.dst_grid_size);
-  rcd+=nco_inq_dimlen(in_id,src_grid_corners_id,&rgr_map.src_grid_corners);
-  rcd+=nco_inq_dimlen(in_id,dst_grid_corners_id,&rgr_map.dst_grid_corners);
-  rcd+=nco_inq_dimlen(in_id,src_grid_rank_id,&rgr_map.src_grid_rank);
-  rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&rgr_map.dst_grid_rank);
   rcd+=nco_inq_dimlen(in_id,num_links_id,&rgr_map.num_links);
-  /* TempestRemap does not generate num_wgts */
-  if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) rgr_map.num_wgts=int_CEWI; else rcd+=nco_inq_dimlen(in_id,num_wgts_id,&rgr_map.num_wgts); 
-  assert(rgr_map.src_grid_size < INT_MAX && rgr_map.dst_grid_size < INT_MAX);
+  if(nco_rgr_mpf_typ != nco_rgr_mpf_ESMF_weight_only){
+    rcd+=nco_inq_dimlen(in_id,src_grid_size_id,&rgr_map.src_grid_size);
+    rcd+=nco_inq_dimlen(in_id,dst_grid_size_id,&rgr_map.dst_grid_size);
+    rcd+=nco_inq_dimlen(in_id,src_grid_corners_id,&rgr_map.src_grid_corners);
+    rcd+=nco_inq_dimlen(in_id,dst_grid_corners_id,&rgr_map.dst_grid_corners);
+    rcd+=nco_inq_dimlen(in_id,src_grid_rank_id,&rgr_map.src_grid_rank);
+    rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&rgr_map.dst_grid_rank);
+    /* TempestRemap does not generate num_wgts */
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) rgr_map.num_wgts=int_CEWI; else rcd+=nco_inq_dimlen(in_id,num_wgts_id,&rgr_map.num_wgts); 
+    assert(rgr_map.src_grid_size < INT_MAX && rgr_map.dst_grid_size < INT_MAX);
+  }else{
+    rgr_map.src_grid_size=long_CEWI;
+    rgr_map.dst_grid_size=long_CEWI;
+    rgr_map.src_grid_corners=long_CEWI;
+    rgr_map.dst_grid_corners=long_CEWI;
+    rgr_map.src_grid_rank=long_CEWI;
+    rgr_map.dst_grid_rank=long_CEWI;
+    rgr_map.num_wgts=int_CEWI;
+  } /* !ESMF_weight_only */
   
   cnv_sng=strdup("normalization");
   nco_rgr_nrm_typ_enm nco_rgr_nrm_typ=nco_rgr_nrm_nil;
@@ -827,8 +834,9 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     if(strstr(att_val,"none")) nco_rgr_nrm_typ=nco_rgr_nrm_none;
     if(att_val) att_val=(char *)nco_free(att_val);
   }else{
-    /* 20150712: Tempest does not store a normalization attribute */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) nco_rgr_nrm_typ=nco_rgr_nrm_unknown;
+    /* 20150712: Tempest does not store a normalization attribute
+       20170620: ESMF weight_only does not store a normalization attribute */
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_ESMF_weight_only) nco_rgr_nrm_typ=nco_rgr_nrm_unknown;
   } /* endif normalization */
   assert(nco_rgr_nrm_typ != nco_rgr_nrm_nil);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
@@ -862,6 +870,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     nco_exit(EXIT_FAILURE);
   } /* !msk */
     
+  /* Got to here in bullet-proofing code for weight-only map-files */
+  if(nco_rgr_mpf_typ == nco_rgr_mpf_ESMF_weight_only) (void)fprintf(stderr,"%s: WARNING %s reached end of ESMF_weight_only section\n",nco_prg_nm_get(),fnc_nm);
+  assert(nco_rgr_mpf_typ != nco_rgr_mpf_ESMF_weight_only);
+ 
   /* Set type of grid conversion */
   if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 1) nco_rgr_typ=nco_rgr_grd_1D_to_1D;
   if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 2) nco_rgr_typ=nco_rgr_grd_1D_to_2D;
@@ -4173,7 +4185,7 @@ nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */
   case nco_rgr_mth_conservative: return "Conservative remapping";
   case nco_rgr_mth_bilinear: return "Bilinear remapping";
   case nco_rgr_mth_none: return "none";
-  case nco_rgr_mth_unknown: return "Unknown (TempestRemap)";
+  case nco_rgr_mth_unknown: return "Unknown (TempestRemap or ESMF_weight_only)";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -4207,7 +4219,7 @@ nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */
   case nco_rgr_nrm_fracarea: return "fracarea";
   case nco_rgr_nrm_destarea: return "destarea";
   case nco_rgr_nrm_none: return "none";
-  case nco_rgr_nrm_unknown: return "Unknown (TempestRemap)";
+  case nco_rgr_nrm_unknown: return "Unknown (TempestRemap or ESMF_weight_only)";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
