@@ -613,10 +613,10 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
 	       ypf_max=?* | ypf=?* | years=?* | years_per_file=?* ) ypf_max_usr="${LONG_OPTARG}" ;; # -z # Years-per-output-file maximum
                '' ) break ;; # "--" terminates argument processing
-               * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
+               * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG
 	\?) # Unrecognized option
-	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not allowed\n" >&2
+	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not recognized\n" >&2
 	    fnc_usg_prn ;;
     esac # !OPT
 done # !getopts

@@ -530,10 +530,10 @@ while getopts :a:CD:d:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-: OPT; 
 	       wgt_cmd=?* | weight_command=?* | wgt_gnr=?* | weight_generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator command
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
                '' ) break ;; # "--" terminates argument processing
-               * ) printf "\nERROR: Illegal option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
+               * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG
 	\?) # Unrecognized option
-	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not allowed\n" >&2
+	    printf "\nERROR: Option ${fnt_bld}-${OPTARG}${fnt_nrm} not recognized\n" >&2
 	    fnc_usg_prn ;;
     esac # !OPT
 done # !getopts
