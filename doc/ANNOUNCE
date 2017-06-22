@@ -47,14 +47,17 @@ A. ncks CDL printing supports finer-grained control of date formats,
    UDUnits-compliant times as dates when invoked with the --cdl and
    --cal options. A third option, --dt_fmt, now exposes finer
    control of the format with short, regular, and ISO8601 options:
-   ncks -H -m -v time_bnds -C --cdl --cal --dt_fmt 1 ~/nco/data/in.nc
-   ncks -H -m -v time_bnds -C --cdl --cal --dt_fmt 2 ~/nco/data/in.nc
-   ncks -H -m -v time_bnds -C --cdl --cal --dt_fmt 3 ~/nco/data/in.nc
+   ncks -H -m -v time_bnds -C --cdl --dt_fmt=1 ~/nco/data/in.nc
+   ncks -H -m -v time_bnds -C --cdl --dt_fmt=2 ~/nco/data/in.nc
+   ncks -H -m -v time_bnds -C --cdl --dt_fmt=3 ~/nco/data/in.nc
    dt_fmt:   Output:
    0,1       1964-03-13 09:08:16 (Default, short format)
    2	     1964-03-13 09:08:16.000000 (regular format)
    3         1964-03-13T09:08:16.000000 (ISO8601 "T" format)
+   Note that --dt_fmt automatically implies --cal.
    http://nco.sf.net/nco.html#cln
+
+A. 
 
 BUG FIXES:
 
