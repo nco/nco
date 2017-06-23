@@ -5953,6 +5953,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("nav_lat"); /* NEMO */
     else if((rcd=nco_inq_varid_flg(in_id,"global_latitude0",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("global_latitude0"); /* Oxford */
+    else if((rcd=nco_inq_varid_flg(in_id,"latitude0",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latitude0"); /* Oxford NB: Must search for global_* first */
     else if((rcd=nco_inq_varid_flg(in_id,"CO_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude"); /* MLS */
     else if((rcd=nco_inq_varid_flg(in_id,"S1_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("S1_Latitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"yc",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("yc"); /* RTM */
@@ -5973,7 +5974,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"ULONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULONG"); /* POP */
     else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("nav_lon"); /* NEMO */
-    else if((rcd=nco_inq_varid_flg(in_id,"global_longitude0",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("global_longitude0"); /* Oxford */
+    else if((rcd=nco_inq_varid_flg(in_id,"global_longitude0",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("global_longitude0"); /* Oxford NB: Must search for global_* first */
+    else if((rcd=nco_inq_varid_flg(in_id,"longitude0",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("longitude0"); /* Oxford */
     else if((rcd=nco_inq_varid_flg(in_id,"CO_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("CO_Longitude"); /* MLS */
     else if((rcd=nco_inq_varid_flg(in_id,"S1_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("S1_Longitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"xc",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("xc"); /* RTM */
@@ -6958,7 +6960,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        20150526: T42 grid from SCRIP and related maps are only accurate to ~eight digits
        20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006
        20170521: T62 grid from NCEP-NCAR Reanalysis 1 worse than single precision, has yc_[192]=-86.6531 not expected exact value lat_ctr[1]=-86.6532 */
-    if(lat_ctr[0] > lat_ctr[lat_nbr-1L]) (void)fprintf(stderr,"%s: WARNING %s reports lat_ctr[0] = %g > %g = lat_ctr[%ld]. Grid inferral currently assumes 2D global grids run from south-to-north, not north-to-south. Global N-to-S grids may not be correctly recognized. Please contact us if full support for inferring N-to-S grids is important to you.\nHINT: Re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm,lat_ctr[0],lat_ctr[lat_nbr-1L],lat_nbr-1L);
+    if(lat_ctr[0] > lat_ctr[lat_nbr-1L]) (void)fprintf(stderr,"%s: WARNING %s reports lat_ctr[0] = %g > %g = lat_ctr[%ld]. Grid inferral currently assumes 2D global grids run from south-to-north, not north-to-south. Global N-to-S grids may not be correctly recognized. Please contact us if full support for inferring N-to-S grids is important to you.\nHINT: If present command fails, re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm,lat_ctr[0],lat_ctr[lat_nbr-1L],lat_nbr-1L);
     if((float)lat_ctr[1] == (float)lat_ctr_tst_eqa) lat_typ=nco_grd_lat_eqa;
     if((float)lat_ctr[1] == (float)lat_ctr_tst_fv) lat_typ=nco_grd_lat_fv;
     double *lat_sin=NULL_CEWI; // [frc] Sine of Gaussian latitudes double precision
