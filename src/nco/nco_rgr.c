@@ -1888,6 +1888,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Along_Swath_mod04",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("Cell_Along_Swath_mod04"); /* MODIS MOD04 L2 (ncl_convert2nc changes colon to underscore) */
     else if((rcd=nco_inq_dimid_flg(in_id,"CO_Latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude");
     else if((rcd=nco_inq_dimid_flg(in_id,"j",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("j"); /* CMIP5 NorESM1 ocean */
+    else if((rcd=nco_inq_dimid_flg(in_id,"latitude0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("latitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else{
@@ -1920,6 +1921,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Across_Swath:mod04",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("Cell_Across_Swath:mod04"); /* MODIS MOD04 L2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Across_Swath_mod04",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("Cell_Across_Swath_mod04"); /* MODIS MOD04 L2 (ncl_convert2nc changes colon to underscore) */
     else if((rcd=nco_inq_dimid_flg(in_id,"i",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("i"); /* CMIP5 NorESM1 ocean */
+    else if((rcd=nco_inq_dimid_flg(in_id,"longitude0",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("longitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("y"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else{
@@ -1954,13 +1956,14 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      NEMO: nav_lat, nav_lon
      OCO2: latitude_bnds, longitude_bnds
      OMI DOMINO: Latitude, LatitudeCornerpoints, Longitude, LongitudeCornerpoints
+     Oxford: global_latitude0, global_longitude0, latitude0, longitude0, rotated_pole0
      POP: TLAT, TLONG, ULAT, ULONG  (NB: CICE uses ?LON and POP uses ?LONG) (POP does not archive spatial bounds)
      TRMM: Latitude, Longitude
      UV-CDAT regridder: bounds_lat, bounds_lon
      Unknown: XLAT_M, XLONG_M
      WRF: XLAT, XLONG */
-  const int var_xcl_lst_nbr=46; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/nav_lat","/slat","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/nav_lon","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
+  const int var_xcl_lst_nbr=51; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/nav_lat","/global_latitude0","/latitude0","/slat","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/nav_lon","/global_longitude0","/longitude0","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag","/rotated_pole0"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -5949,6 +5952,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("nav_lat"); /* NEMO */
+    else if((rcd=nco_inq_varid_flg(in_id,"global_latitude0",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("global_latitude0"); /* Oxford */
     else if((rcd=nco_inq_varid_flg(in_id,"CO_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude"); /* MLS */
     else if((rcd=nco_inq_varid_flg(in_id,"S1_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("S1_Latitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"yc",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("yc"); /* RTM */
@@ -5969,6 +5973,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"ULONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULONG"); /* POP */
     else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("nav_lon"); /* NEMO */
+    else if((rcd=nco_inq_varid_flg(in_id,"global_longitude0",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("global_longitude0"); /* Oxford */
     else if((rcd=nco_inq_varid_flg(in_id,"CO_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("CO_Longitude"); /* MLS */
     else if((rcd=nco_inq_varid_flg(in_id,"S1_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("S1_Longitude"); /* GPM */
     else if((rcd=nco_inq_varid_flg(in_id,"xc",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("xc"); /* RTM */
