@@ -1,7 +1,7 @@
 // ncgen -k netCDF-4 -b -o ~/nco/data/clc.nc ~/nco/data/clc.cdl
 
 netcdf clc {
-  :Conventions = "CF-1.5";
+  :Conventions = "CF-1.5 CF2-Group";
   :history = "Tue Apr 25 12:46:10 PDT 2017: ncgen -k netCDF-4 -b -o ~/nco/data/clc.nc ~/nco/data/clc.cdl";
   :Purpose = "Demonstrate a collection of related datasets stored in hierarchical format";
 
