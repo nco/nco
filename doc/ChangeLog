@@ -1,7 +1,10 @@
+2017-06-23  Charlie Zender  <zender@uci.edu>
+
+	* nco_rgr.c avoid abort() when nco_rgr_map() gets undefined (e.g., regional curvilinear) lat grid
+
 2017-06-21 Henry Butowsky  <henryb@hush.com>
 
-	* The feature  --cll_mth not working correctly
-	  so have set the default to off in ncap2.cc
+	* --cll_mth feature not working correctly so turned-off by default in ncap2.cc
 
 2017-06-20  Charlie Zender  <zender@uci.edu>
 

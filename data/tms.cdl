@@ -5,36 +5,69 @@
 netcdf tms {
   :Conventions = "CF-1.5 CF2-Group";
   :history = "Thu Jun 22 17:45:12 PDT 2017: ncgen -k netCDF-4 -b -o ~/nco/data/tms.nc ~/nco/data/tms.cdl";
-  :Purpose = "Demonstrate a DSG timeSeries featureType stored in hierarchical format";
+  :Purpose = "Demonstrate a collection of DSG timeSeries featureType stored in hierarchical format";
+  :featureType = "timeSeries";
 
-  group: irvine {
-      :Scenario = "Historical";
-      :Model = "CESM";
-      :Realization = "1";
+ group: irvine {
 
-    dimensions:
-      time=unlimited;
-    variables:
-      float temperature(time);
-      double time(time);
-    data:
-      temperature=272.1,272.1,272.1,272.1;
-      time=1.,2.,3.,4.;
-    } // irvine
+  dimensions:
+    time=unlimited;
 
-  group: boulder {
-      :Scenario = "Historical";
-      :Model = "CESM";
-      :Realization = "2";
+  variables:
+    
+    float humidity(time) ;
+  humidity:standard_name = "specific humidity" ;
+  humidity:coordinates = "lat lon alt station_name" ;
+  humidity:_FillValue = -999.9f;
+    
+    double time(time) ;
+  time:standard_name = "time";
+  time:long_name = "time of measurement" ;
+  time:units = "days since 1970-01-01 00:00:00" ;
+    
+    float lon ;
+  lon:standard_name = "longitude";
+  lon:long_name = "station longitude";
+  lon:units = "degrees_east";
+    
+    float lat ;
+  lat:standard_name = "latitude";
+  lat:long_name = "station latitude" ;
+  lat:units = "degrees_north" ;
+    
+    float alt ;
+  alt:long_name = "vertical distance above the surface" ;
+  alt:standard_name = "height" ;
+  alt:units = "m";
+  alt:positive = "up";
+  alt:axis = "Z";
 
-    dimensions:
-      time=unlimited;
-    variables:
-      float temperature(time);
-      double time(time);
-    data:
-      temperature=272.2,272.2,272.2,272.2;
-      time=1.,2.,3.,4.;
-    } // boulder
+    string station_name;
+  station_name:long_name = "station name" ;
+  station_name:cf_role = "timeseries_id";
+
+  } // irvine
+     
+ group: boulder {
+
+  dimensions:
+    time=unlimited;
+
+  variables:
+
+    // Variables are repeated for each station/group and are omitted for clarity
+
+  } // boulder
+    
+ group: laguna_beach {
+
+  dimensions:
+    time=unlimited;
+
+  variables:
+
+    // Variables are repeated for each station/group and are omitted for clarity
+
+  } // laguna_beach
     
 } // root group

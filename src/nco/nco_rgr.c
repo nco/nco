@@ -1438,8 +1438,10 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     lat_wgt_ttl=0.0;
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
     lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0]);
-    if(nco_grd_lat_typ != nco_grd_lat_unk) assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
-    if(lat_wgt_ttl_xpc < 0.0) abort();  /* CEWI Use lat_wgt_ttl_xpc at least once outside of assert() to avoid gcc 4.8.2 set-but-not-used warning */
+    if(nco_grd_lat_typ != nco_grd_lat_unk){
+      assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
+      if(lat_wgt_ttl_xpc < 0.0) abort(); /* CEWI Use lat_wgt_ttl_xpc at least once outside of assert() to avoid gcc 4.8.2 set-but-not-used warning */
+    } /* !nco_grd_lat_unk */
   } /* !flg_grd_out_rct */
     
   /* When possible, ensure area_out is non-zero
