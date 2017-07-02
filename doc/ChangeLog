@@ -1,3 +1,7 @@
+2017-07-02  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: pass fl_fmt -3,-4,-5,-6,-7 options
+
 2017-06-23  Charlie Zender  <zender@uci.edu>
 
 	* nco_rgr.c avoid abort() when nco_rgr_map() gets undefined (e.g., regional curvilinear) lat grid
