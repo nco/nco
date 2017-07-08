@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 20 June 2017
-@set update-month June 2017
+@set update-date 8 July 2017
+@set update-month July 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -4898,10 +4898,10 @@ availale is to use @command{ncrename} (@pxref{ncrename netCDF Renamer}).
 <a name="xmp_flt"></a> <!-- http://nco.sf.net/nco.html#xmp_flt -->
 @end html
 One may wish to flatten hierarchical group files for many reasons.
-These include @w{1. Obtaining} flat netCDF3 files for use with tools
-that do not work with netCDF4 files, @w{2. Splitting} apart
+These include @w{1. To} obtain flat netCDF3 files for use with tools
+that do not work with netCDF4 files, @w{2. To} split-apart
 hierarchies to re-assemble into different hierarchies, and
-@w{3. Providing} a subset of a hierarchical file with the simplest
+@w{3. To} provide a subset of a hierarchical file with the simplest
 possible storage structure.
 @example
 ncks -O -G : -g cesm -3 ~/nco/data/cmip5.nc ~/cesm.nc # Extract /cesm to /

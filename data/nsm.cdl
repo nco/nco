@@ -3,7 +3,7 @@
 // ncgen -k netCDF-4 -b -o ~/nco/data/nsm.nc ~/nco/data/nsm.cdl
 
 netcdf nsm {
-  :Conventions = "CF-1.5 CF2-Group";
+  :Conventions = "CF-1.5 CF2-Group-2.0";
   :history = "Tue Apr 25 12:46:10 PDT 2017: ncgen -k netCDF-4 -b -o ~/nco/data/nsm.nc ~/nco/data/nsm.cdl";
   :Purpose = "Demonstrate a model ensemble stored in hierarchical format";
 

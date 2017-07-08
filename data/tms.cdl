@@ -3,7 +3,7 @@
 // ncgen -k netCDF-4 -b -o ~/nco/data/tms.nc ~/nco/data/tms.cdl
 
 netcdf tms {
-  :Conventions = "CF-1.5 CF2-Group";
+  :Conventions = "CF-1.5 CF2-Group-2.0";
   :history = "Thu Jun 22 17:45:12 PDT 2017: ncgen -k netCDF-4 -b -o ~/nco/data/tms.nc ~/nco/data/tms.cdl";
   :Purpose = "Demonstrate a collection of DSG timeSeries featureType stored in hierarchical format";
   :featureType = "timeSeries";
