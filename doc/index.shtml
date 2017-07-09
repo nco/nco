@@ -1075,7 +1075,8 @@ The simplest way to acquire the source is to download the compressed tarball:
 <a href="https://github.com/nco/nco/archive/4.6.7.tar.gz">nco-4.6.7.tar.gz</a> 
 (<!--#fsize file="src/nco-4.6.7.tar.gz"--> compressed tar-file)<br>
 <!--#exec cmd="openssl dgst -md5 src/nco-4.6.7.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.6.7.tar.gz"--> 
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.6.7.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha256 src/nco-4.6.7.tar.gz"--> 
 </li>
 </ul>
 

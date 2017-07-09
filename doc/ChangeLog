@@ -1,3 +1,7 @@
+2017-07-09  Charlie Zender  <zender@uci.edu>
+
+	* Add SHA256 value to homepage
+
 2017-07-02  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: pass fl_fmt -3,-4,-5,-6,-7 options
