@@ -10067,3 +10067,33 @@ nco_var_xtr_trv                       /* [fnc] Print all variables to extract (d
     } /* Filter variables  */
   } /* Loop table */
 } /* nco_var_xtr_trv() */
+
+crd_sct*
+nco_get_crd_sct                       /* [fnc] Return a coordinate variable crd_sct for a given table variable var_trv */
+(trv_sct * const var_trv,             /* I [sct] GTT Variable */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt)                       /* I [sct] Limit array. Structure comming from nco_lmt_prs() */
+{
+  /* Return a coordinate variable crd_sct for a given table variable var_trv that matches a specified limit name
+  NB: assumed the limit name is a coordinate variable */
+
+  /* Loop input variable dimensions */
+  for (int idx_var_dmn = 0; idx_var_dmn < var_trv->nbr_dmn; idx_var_dmn++) {
+
+    /* Loop input name list */
+    for (int lmt_idx = 0; lmt_idx < lmt_nbr; lmt_idx++) {
+
+      /* Match input relative name to dimension relative name */
+      if (!strcmp(lmt[lmt_idx]->nm, var_trv->var_dmn[idx_var_dmn].dmn_nm)) {
+
+        /* Dimension has coordinate variables */
+        if (var_trv->var_dmn[idx_var_dmn].crd) {
+          crd_sct *crd = var_trv->var_dmn[idx_var_dmn].crd;
+          return crd;
+        }
+      }
+    }
+  }
+  return NULL;
+}
+

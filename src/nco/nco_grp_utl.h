@@ -935,6 +935,12 @@ void
 nco_var_xtr_trv                       /* [fnc] Print all variables to extract (debug) */
 (const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
 
+crd_sct*
+nco_get_crd_sct                       /* [fnc] Return a coordinate variable crd_sct for a given table variable var_trv */
+(trv_sct * const var_trv,             /* I [sct] GTT Variable */
+ int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
+ lmt_sct **lmt);                      /* I [sct] Limit array. Structure comming from nco_lmt_prs() */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
