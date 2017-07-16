@@ -7168,15 +7168,15 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
   int idx_wgt; /* [nbr] Weight array counter */
   var_sct *wgt_var; /* O [sct] Variable (weight/mask) */
 
-  /* 201707015 pvn nco1138. Detect the cases where 
+  /* 201707015 pvn nco1138. Detect the cases where
   a) the weight variable is also a coordinate variable (of the variable being masked)
-  b) an hyperslab was requested for this coordinate variable 
+  b) an hyperslab was requested for this coordinate variable
   Use case:
-  ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc 
-  ncks -H -v orog ~/foo.nc # Correct answer is 4 
+  ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc
+  ncks -H -v orog ~/foo.nc # Correct answer is 4
   In this case 'lat' is both the weight and a coordinate variable of 'orog2'
-  The hyperslab definition for coordinate variable 'lat' can be found following the following chain of variables 
-  *var_dmn (var_dmn_sct) array of dimensions of 'orog2'--> 
+  The hyperslab definition for coordinate variable 'lat' can be found following the following chain of variables
+  *var_dmn (var_dmn_sct) array of dimensions of 'orog2'-->
   *crd (crd_sct) pointer to coordinate variable if any -->
   lmt_msa_sct lmt_msa, MSA Limits structure for every coordinate -->
   lmt_sct **lmt_dmn, list of limit structures associated with each dimension
@@ -7210,6 +7210,17 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
                     crd->lmt_msa.lmt_dmn[idx_lmt]->end,
                     crd->lmt_msa.lmt_dmn[idx_lmt]->cnt,
                     crd->lmt_msa.lmt_dmn[idx_lmt]->srd);
+                  /* Found it... to get the correspondent 'var_sct' weight variable we can get the GGT variable
+                  for the coordinate variable ('lat' above), using nco_var_fll_trv(), that is *not* hyperslabbed,
+                  and apply the hyperslabing information above as a "patch" */
+                  trv_sct *wgt_trv;
+                  /* NB to get the GGT variable use the *full name* of the weight that must be one dimension of the variable */
+                  wgt_trv = trv_tbl_var_nm_fll(var->dim[idx_dmn]->nm_fll, trv_tbl);
+                  (void)nco_inq_grp_full_ncid(nc_id, wgt_trv->grp_nm_fll, &grp_id);
+                  (void)nco_inq_varid(grp_id, wgt_trv->nm, &var_id);
+                  /* Transfer from table to local variable */
+                  wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
+
                 }
               }
             }
