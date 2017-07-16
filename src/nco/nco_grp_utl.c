@@ -7167,7 +7167,6 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
   int var_id; /* [ID] Variable ID */
   int idx_wgt; /* [nbr] Weight array counter */
   var_sct *wgt_var; /* O [sct] Variable (weight/mask) */
-  nco_bool is_msk_crd=False; /* O [flg] Is the weight variable also a coordinate variable ? */
 
   /* 201707015 pvn nco1138. Detect the cases where 
   a) the weight variable is also a coordinate variable (of the variable being masked)
@@ -7192,11 +7191,29 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
       for (int idx_dmn = 0; idx_dmn < var->nbr_dim; idx_dmn++) {
         /* Dimension matches mask name and it is a coordinate variable */
         if ((!strcmp(var->dim[idx_dmn]->nm, wgt_nm)) && var->dim[idx_dmn]->is_crd_dmn) {
-          /* Get the GTT version of the variable (using input full name of the dimension) */
-          trv_sct *var_trv = NULL;
-          /* The variable must exist because it was found to be a coordinate variable */
-
-
+          /* Get the GTT version of the variable *that needs* weight/mask, 'orog2'above (using its input full name) */
+          trv_sct *var_trv = trv_tbl_var_nm_fll(var->nm_fll, trv_tbl);
+          assert(var_trv);
+          assert(var_trv->nbr_dmn == var->nbr_dim);
+          for (int idx_dmn_var = 0; idx_dmn_var < var_trv->nbr_dmn; idx_dmn_var++) {
+            /* The dimension name that is the mask */
+            if (!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm, wgt_nm)) {
+              /* The coordinate variable structure must exist because it was found to be a coordinate variable */
+              crd_sct *crd = var_trv->var_dmn[idx_dmn_var].crd;
+              assert(crd);
+              int lmt_dmn_nbr = crd->lmt_msa.lmt_dmn_nbr;
+              /* Loop limits in search for weight name (again) */
+              for (int idx_lmt = 0; idx_lmt < lmt_dmn_nbr; idx_lmt++) {
+                if (!strcmp(crd->lmt_msa.lmt_dmn[idx_lmt]->nm, wgt_nm)) {
+                  (void)fprintf(stdout, "hyperslabed %s: srt=%li,end=%li,cnt=%li,srd=%li\n", wgt_nm,
+                    crd->lmt_msa.lmt_dmn[idx_lmt]->srt,
+                    crd->lmt_msa.lmt_dmn[idx_lmt]->end,
+                    crd->lmt_msa.lmt_dmn[idx_lmt]->cnt,
+                    crd->lmt_msa.lmt_dmn[idx_lmt]->srd);
+                }
+              }
+            }
+          }
         }
       }
     }
