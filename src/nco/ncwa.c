@@ -884,8 +884,8 @@ main(int argc,char **argv)
        firstprivate(): rcd gets incremented, so keep initial value
        lastprivate(): retain rcd value from last thread
        private(): wgt_avg does not need initialization
-       shared(): msk and wgt are not altered within loop */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,rcd) lastprivate(rcd) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_nm,op_typ_rlt,out_id,trv_tbl,var_prc,var_prc_out,wgt_nm)
+       shared(): msk, wgt and lmt_nbr are not altered within loop */
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,rcd) lastprivate(rcd) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_nm,op_typ_rlt,out_id,trv_tbl,var_prc,var_prc_out,wgt_nm,lmt_nbr)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       char *grp_out_fll=NULL; /* [sng] Group name */
@@ -927,16 +927,16 @@ main(int argc,char **argv)
       (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
 
       /* Find weighting variable that matches current variable */
-      if(wgt_nm) wgt=nco_var_get_wgt_trv(in_id,wgt_nm,var_prc[idx],trv_tbl);
+      if(wgt_nm) wgt=nco_var_get_wgt_trv(in_id,lmt_nbr,wgt_nm,var_prc[idx],trv_tbl);
 
       /* Find mask variable that matches current variable */
-      if(msk_nm) msk=nco_var_get_wgt_trv(in_id,msk_nm,var_prc[idx],trv_tbl);
+      if(msk_nm) msk=nco_var_get_wgt_trv(in_id,lmt_nbr,msk_nm,var_prc[idx],trv_tbl);
 
       /* Retrieve variable from disk into memory */
       (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
       /* var_prc_out still has type = packed type for packed variables
-	 nco_typ_cnv_rth() fixes that for most operations, though not for minimization or maximization
-	 Following line is necessary only for packed variables subject to minimization or maximization */
+      nco_typ_cnv_rth() fixes that for most operations, though not for minimization or maximization
+      Following line is necessary only for packed variables subject to minimization or maximization */
       if(var_prc[idx]->typ_dsk != var_prc[idx]->type && var_prc[idx]->typ_upk == var_prc[idx]->type) var_prc_out[idx]=nco_var_cnf_typ(var_prc[idx]->type,var_prc_out[idx]);
 
       /* Convert char, short, long, int, and float types to doubles before arithmetic */

@@ -3433,6 +3433,11 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
       /* Transfer from table to local variable array; nco_var_fll() needs location ID and name */
       var[idx_var]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
 
+      /* Transfer dimensions  */
+      for (int idx_dmn = 0; idx_dmn < var[idx_var]->nbr_dim; idx_dmn++) {
+        var[idx_var]->dim[idx_dmn]->nm_fll = strdup(var_trv.var_dmn[idx_dmn].dmn_nm_fll);
+      }
+
       idx_var++;
 
     } /* Filter variables  */
@@ -7151,6 +7156,7 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
 var_sct *                           /* O [sct] Variable (weight/mask) */  
 nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable */
 (const int nc_id,                   /* I [id] netCDF file ID */
+ const int lmt_nbr,                 /* I [nbr] number of dimensions with limits (used as boolean only) */
  const char * const wgt_nm,         /* I [sng] Weight or mask variable name (relative or absolute) */
  const var_sct * const var,         /* I [sct] Variable that needs weight/mask */
  const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */
@@ -7160,7 +7166,41 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
   int grp_id; /* [ID] Group ID */
   int var_id; /* [ID] Variable ID */
   int idx_wgt; /* [nbr] Weight array counter */
-  var_sct *wgt_var;
+  var_sct *wgt_var; /* O [sct] Variable (weight/mask) */
+  nco_bool is_msk_crd=False; /* O [flg] Is the weight variable also a coordinate variable ? */
+
+  /* 201707015 pvn nco1138. Detect the cases where 
+  a) the weight variable is also a coordinate variable (of the variable being masked)
+  b) an hyperslab was requested for this coordinate variable 
+  Use case:
+  ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc 
+  ncks -H -v orog ~/foo.nc # Correct answer is 4 
+  In this case 'lat' is both the weight and a coordinate variable of 'orog2'
+  The hyperslab definition for coordinate variable 'lat' can be found following the following chain of variables 
+  *var_dmn (var_dmn_sct) array of dimensions of 'orog2'--> 
+  *crd (crd_sct) pointer to coordinate variable if any -->
+  lmt_msa_sct lmt_msa, MSA Limits structure for every coordinate -->
+  lmt_sct **lmt_dmn, list of limit structures associated with each dimension
+  */
+
+  /* The limit names could have been passed here, but no need to repeat the name detection logic,
+  because the GTT variable knows if it has limits or not */
+  if (lmt_nbr) {
+    /* Deal with the relative path case */
+    if (wgt_nm[0] != '/') {
+      /* Search for the weight/mask in the dimensions of the variable that needs weight/mask*/
+      for (int idx_dmn = 0; idx_dmn < var->nbr_dim; idx_dmn++) {
+        /* Dimension matches mask name and it is a coordinate variable */
+        if ((!strcmp(var->dim[idx_dmn]->nm, wgt_nm)) && var->dim[idx_dmn]->is_crd_dmn) {
+          /* Get the GTT version of the variable (using input full name of the dimension) */
+          trv_sct *var_trv = NULL;
+          /* The variable must exist because it was found to be a coordinate variable */
+
+
+        }
+      }
+    }
+  }
 
   /* If first character is '/' then weight name is absolute path */
   if(wgt_nm[0] == '/'){

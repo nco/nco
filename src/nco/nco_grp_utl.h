@@ -573,7 +573,8 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
 var_sct *                             /* O [sct] Variable (weight) */  
 nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variable */
 (const int nc_id,                     /* I [id] netCDF file ID */
- const char * const wgt_nm,           /* I [sng] Weight variable name (relative) */
+ const int lmt_nbr,                   /* I [nbr] number of dimensions with limits (used as boolean only) */
+ const char * const wgt_nm,           /* I [sng] Weight or mask variable name (relative or absolute) */
  const var_sct * const var,           /* I [sct] Variable that needs the weight/mask variable */
  const trv_tbl_sct * const trv_tbl);  /* I [lst] Traversal table */
 
