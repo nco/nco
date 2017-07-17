@@ -7197,8 +7197,6 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   lmt_sct **lmt_dmn, list of limit structures associated with each dimension
   */
 
-  /* The limit names could have been passed here, but no need to repeat the name detection logic,
-  because the GTT variable knows if it has limits or not */
   if (lmt_nbr) {
     lmt_sct **lmt = NULL_CEWI;  /* [sct] User defined limits */
     /* Deal with the relative path case */
@@ -7214,30 +7212,13 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
           for (int idx_dmn_var = 0; idx_dmn_var < var_trv->nbr_dmn; idx_dmn_var++) {
             /* The dimension name that is the mask */
             if (!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm, wgt_nm)) {
-              /* The coordinate variable structure must exist because it was found to be a coordinate variable */
-              crd_sct *crd = var_trv->var_dmn[idx_dmn_var].crd;
-              assert(crd);
-              int lmt_dmn_nbr = crd->lmt_msa.lmt_dmn_nbr;
-              /* Loop limits in search for weight name (again) */
-              for (int idx_lmt = 0; idx_lmt < lmt_dmn_nbr; idx_lmt++) {
-                if (!strcmp(crd->lmt_msa.lmt_dmn[idx_lmt]->nm, wgt_nm)) {
-                  (void)fprintf(stdout, "hyperslabed %s: srt=%li,end=%li,cnt=%li,srd=%li\n", wgt_nm,
-                    crd->lmt_msa.lmt_dmn[idx_lmt]->srt,
-                    crd->lmt_msa.lmt_dmn[idx_lmt]->end,
-                    crd->lmt_msa.lmt_dmn[idx_lmt]->cnt,
-                    crd->lmt_msa.lmt_dmn[idx_lmt]->srd);
-                  /* Found it... to get the correspondent 'var_sct' weight variable we can get the GGT variable
-                  for the coordinate variable ('lat' above), using nco_var_fll_trv(), that is *not* hyperslabbed,
-                  and apply the hyperslabing information above as a "patch" */
-                  trv_sct *wgt_trv;
-                  /* NB to get the GGT variable use the *full name* of the weight that must be one dimension of the variable */
-                  wgt_trv = trv_tbl_var_nm_fll(var->dim[idx_dmn]->nm_fll, trv_tbl);
-                  lmt = nco_lmt_prs(lmt_nbr, lmt_arg);
-                  nco_bld_lmt_var(nc_id, MSA_USR_RDR, lmt_nbr, lmt, FORTRAN_IDX_CNV, wgt_trv);
+              trv_sct *wgt_trv;
+              /* NB to get the GGT variable use the *full name* of the weight (that must be one dimension of the variable) */
+              wgt_trv = trv_tbl_var_nm_fll(var_trv->var_dmn[idx_dmn_var].dmn_nm_fll, trv_tbl);
+              lmt = nco_lmt_prs(lmt_nbr, lmt_arg);
+              nco_bld_lmt_var(nc_id, MSA_USR_RDR, lmt_nbr, lmt, FORTRAN_IDX_CNV, wgt_trv);
 
-                  lmt = nco_lmt_lst_free(lmt, lmt_nbr);
-                }
-              }
+              lmt = nco_lmt_lst_free(lmt, lmt_nbr);
             }
           }
         }
