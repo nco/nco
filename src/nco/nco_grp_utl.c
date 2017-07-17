@@ -7349,13 +7349,13 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
 var_sct *                             /* O [sct] Variable (weight or mask) */
 nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variable */
 (const int nc_id,                     /* I [id] netCDF file ID */
- const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
- CST_X_PTR_CST_PTR_CST_Y(char, lmt_arg), /* I [sng] List of user-specified dimension limits */
- nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
- nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
- const char * const wgt_nm,           /* I [sng] Weight or mask variable name (relative or absolute) */
- const var_sct * const var,           /* I [sct] Variable that needs weight/mask */
- const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */
+  const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
+  CST_X_PTR_CST_PTR_CST_Y(char, lmt_arg), /* I [sng] List of user-specified dimension limits */
+  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+  nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+  const char * const wgt_nm,           /* I [sng] Weight or mask variable name (relative or absolute) */
+  const var_sct * const var,           /* I [sct] Variable that needs weight/mask */
+  const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */
 {
   /* Purpose: Return weight or mask variable closest in scope to specified variable */
 
@@ -7404,7 +7404,7 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
               /* Similar to nco_msa_var_get_trv() but just with one input GTT variable */
               (void)nco_msa_var_get_sct(nc_id, wgt_var, wgt_trv);
               lmt = nco_lmt_lst_free(lmt, lmt_nbr);
-              //return wgt_var;
+              return wgt_var;
             }
           }
         }
@@ -7413,60 +7413,62 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   }
 
   /* If first character is '/' then weight name is absolute path */
-  if(wgt_nm[0] == '/'){
+  if (wgt_nm[0] == '/') {
     /* Absolute name given for weight. Straightforward extract and copy */
     trv_sct *wgt_trv;
-    wgt_trv=trv_tbl_var_nm_fll(wgt_nm,trv_tbl);
-    (void)nco_inq_grp_full_ncid(nc_id,wgt_trv->grp_nm_fll,&grp_id);
-    (void)nco_inq_varid(grp_id,wgt_trv->nm,&var_id);
+    wgt_trv = trv_tbl_var_nm_fll(wgt_nm, trv_tbl);
+    (void)nco_inq_grp_full_ncid(nc_id, wgt_trv->grp_nm_fll, &grp_id);
+    (void)nco_inq_varid(grp_id, wgt_trv->nm, &var_id);
     /* Transfer from table to local variable */
-    wgt_var=nco_var_fll_trv(grp_id,var_id,wgt_trv,trv_tbl);
+    wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
     /* Retrieve variable NB: use GTT version, that "knows" all limits */
-    (void)nco_msa_var_get_trv(nc_id,wgt_var,trv_tbl);
+    (void)nco_msa_var_get_trv(nc_id, wgt_var, trv_tbl);
     return wgt_var;
-  }else{
+  }
+  else {
     /* Relative name given for weight. Must identify most-in-scope match... */
-    int wgt_nbr=0; /* [nbr] Number of weight/mask variables in file */
-    trv_sct **wgt_trv=NULL; /* [sct] Weight/mask list */
+    int wgt_nbr = 0; /* [nbr] Number of weight/mask variables in file */
+    trv_sct **wgt_tbl = NULL; /* [sct] Weight/mask list */
 
     /* Count matching weight names in order to allocate space */
-    for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
-      if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (!strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm))) wgt_nbr++;
+    for (unsigned tbl_idx = 0; tbl_idx < trv_tbl->nbr; tbl_idx++)
+      if (trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (!strcmp(trv_tbl->lst[tbl_idx].nm, wgt_nm))) wgt_nbr++;
 
-      /* Fill-in variable structure list for all weights */
-      wgt_trv=(trv_sct **)nco_malloc(wgt_nbr*sizeof(trv_sct *));
-      idx_wgt=0;
+    /* Fill-in variable structure list for all weights */
+    wgt_tbl = (trv_sct **)nco_malloc(wgt_nbr * sizeof(trv_sct *));
+    idx_wgt = 0;
 
-      /* Create list of potential weight structures */
-      for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-        if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && !strcmp(trv_tbl->lst[tbl_idx].nm,wgt_nm)){
-          wgt_trv[idx_wgt]=&trv_tbl->lst[tbl_idx]; 
-          idx_wgt++;
-        } /* endif */
-      } /* !tbl_idx */
+    /* Create list of potential weight structures */
+    for (unsigned tbl_idx = 0; tbl_idx < trv_tbl->nbr; tbl_idx++) {
+      if (trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && !strcmp(trv_tbl->lst[tbl_idx].nm, wgt_nm)) {
+        wgt_tbl[idx_wgt] = &trv_tbl->lst[tbl_idx];
+        idx_wgt++;
+      } /* endif */
+    } /* !tbl_idx */
 
-    for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    for (unsigned idx_var = 0; idx_var < trv_tbl->nbr; idx_var++) {
       /* Find variable that needs weight/mask */
-      if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var 
-        && trv_tbl->lst[idx_var].flg_xtr 
-        && !strcmp(trv_tbl->lst[idx_var].nm_fll,var->nm_fll)){
-        trv_sct var_trv=trv_tbl->lst[idx_var];
+      if (trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var
+        && trv_tbl->lst[idx_var].flg_xtr
+        && !strcmp(trv_tbl->lst[idx_var].nm_fll, var->nm_fll)) {
+        trv_sct var_trv = trv_tbl->lst[idx_var];
 
         /* 20150711: This is buggy, at best it returns last weight found, not closest-in-scope */
         /* 20170620: Broken because it requires that weight and variable be in same group */
         /* Which weight is closest-in-scope to variable? */
-        for(idx_wgt=0;idx_wgt<wgt_nbr;idx_wgt++){
+        for (idx_wgt = 0; idx_wgt < wgt_nbr; idx_wgt++) {
+          trv_sct *wgt_trv = wgt_tbl[idx_wgt];
           /* 20170620: Change from strcmp() to strstr() so weight can be in any ancestor group
              This still does NOT have the desired behavior of selecting the _closest-in-scope_,
              but at least it allows weights to be in ancestor groups */
-          if(strstr(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){
-            (void)nco_inq_grp_full_ncid(nc_id,wgt_trv[idx_wgt]->grp_nm_fll,&grp_id);
-            (void)nco_inq_varid(grp_id,wgt_trv[idx_wgt]->nm,&var_id);
+          if (strstr(wgt_trv->grp_nm_fll, var_trv.grp_nm_fll)) {
+            (void)nco_inq_grp_full_ncid(nc_id, wgt_trv->grp_nm_fll, &grp_id);
+            (void)nco_inq_varid(grp_id, wgt_trv->nm, &var_id);
             /* Transfer from table to local variable */
-            wgt_var=nco_var_fll_trv(grp_id,var_id,wgt_trv[idx_wgt],trv_tbl);
+            wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
             /* Retrieve variable NB: use GTT version, that "knows" all limits */
-            (void)nco_msa_var_get_trv(nc_id,wgt_var,trv_tbl);
-            wgt_trv=(trv_sct **)nco_free(wgt_trv);
+            (void)nco_msa_var_get_trv(nc_id, wgt_var, trv_tbl);
+            wgt_tbl = (trv_sct **)nco_free(wgt_tbl);
             return wgt_var;
           } /* !strcmp() */
         } /* !idx_wgt */
@@ -7475,8 +7477,8 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   } /* !Relative name */
 
   /* If function has not yet returned, then variable was not found */
-  (void)fprintf(stdout,"%s: ERROR nco_var_get_wgt_trv() reports unable to find specified weight or mask variable \"%s\"\n",nco_prg_nm_get(),wgt_nm);
-  nco_exit(EXIT_FAILURE); 
+  (void)fprintf(stdout, "%s: ERROR nco_var_get_wgt_trv() reports unable to find specified weight or mask variable \"%s\"\n", nco_prg_nm_get(), wgt_nm);
+  nco_exit(EXIT_FAILURE);
 
   return NULL;
 } /* nco_var_get_wgt_trv() */
