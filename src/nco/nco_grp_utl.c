@@ -7008,7 +7008,7 @@ nco_bld_lmt_var                       /* [fnc] Assign user specified dimension l
   trv_sct *var_trv)                  /* I/O [sct] GTT variable (used for weight/mask) */
 {
   /* Purpose: Assign user-specified dimension limits to to one GTT variable
-   Same as nco_bld_lmt(), with 4 step loops, but for one variable, 'var_trv'
+   Same as nco_bld_lmt(), with 3 step loops, but for one variable, 'var_trv'
    At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known */
 
    /* Loop step 1, alloc 'lmt_dmn' */
@@ -7294,11 +7294,7 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc
   ncks -H -v orog ~/foo.nc # Correct answer is 4
   In this case 'lat' is both the weight and a coordinate variable of 'orog2'
-  The hyperslab definition for coordinate variable 'lat' can be found following the following chain of variables
-  *var_dmn (var_dmn_sct) array of dimensions of 'orog2'-->
-  *crd (crd_sct) pointer to coordinate variable if any -->
-  lmt_msa_sct lmt_msa, MSA Limits structure for every coordinate -->
-  lmt_sct **lmt_dmn, list of limit structures associated with each dimension
+  For this case define the hyperslab for the coordinate variable from the original input user name list
   */
 
   if (lmt_nbr) {
@@ -7321,7 +7317,9 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
               wgt_trv = trv_tbl_var_nm_fll(var_trv->var_dmn[idx_dmn_var].dmn_nm_fll, trv_tbl);
               lmt = nco_lmt_prs(lmt_nbr, lmt_arg);
               nco_bld_lmt_var(nc_id, MSA_USR_RDR, lmt_nbr, lmt, FORTRAN_IDX_CNV, wgt_trv);
-
+              /* Assign the hyperslab information for a variable 'var_sct'  from the obtained GTT variable */
+              /* Similar to nco_msa_var_get_trv() but just with one input GTT variable */
+              (void)nco_msa_var_get_sct(nc_id, wgt_var, wgt_trv);
               lmt = nco_lmt_lst_free(lmt, lmt_nbr);
             }
           }

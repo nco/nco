@@ -1558,7 +1558,7 @@ nco_cpy_msa_lmt                     /* [fnc] Copy MSA struct from table to local
 } /* nco_cpy_msa_lmt() */
 
 void
-nco_msa_var_get_trv                 /* [fnc] Get variable data from disk taking account of multihyperslabs */
+nco_msa_var_get_trv                 /* [fnc] Define a 'var_sct' hyperslab fields from a GTT variable */
 (const int nc_id,                   /* I [ID] netCDF file ID */
  var_sct *var_in,                   /* I/O [sct] Variable */
  const trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
@@ -1651,6 +1651,16 @@ do_upk:
 
   return;
 } /* end nco_msa_var_get_trv() */
+
+void
+nco_msa_var_get_sct                 /* [fnc] Define a 'var_sct' hyperslab fields from a GTT variable ('trv_sct')*/
+(const int nc_id,                   /* I [ID] netCDF file ID */
+  var_sct *var_in,                  /* I/O [sct] Variable */
+  const trv_sct * const var_trv)    /* I [sct] GTT variable */
+{
+  /* Same as nco_msa_var_get_trv() but with input 'var_trv' */
+
+} /* end nco_msa_var_get_sct() */
 
 void
 nco_lmt_msa_free                    /* [fnc] Free MSA */
