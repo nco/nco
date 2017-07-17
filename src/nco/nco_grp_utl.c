@@ -7288,13 +7288,15 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   var_sct *wgt_var; /* O [sct] Variable (weight/mask) */
 
   /* 201707015 pvn nco1138. Detect the cases where
-  a) the weight variable is also a coordinate variable (of the variable being masked)
-  b) an hyperslab was requested for this coordinate variable
+  a) a variable <var> was requested with -v <var>
+  b) an hyperslab was requested on the dimensions of the variable, with -d <dim>
+  c) a mask <wgt_var> was requested on a variable that is *not* <var> in the -v list
+  The consequence of this case is that <wgt_var> was not hyperslabled in the table traversal
   Use case:
   ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc
   ncks -H -v orog ~/foo.nc # Correct answer is 4
-  In this case 'lat' is both the weight and a coordinate variable of 'orog2'
-  For this case define the hyperslab for the coordinate variable from the original input user name list
+  For this case define here the hyperslab for <wgt_var> from the original input
+  user name list 'lmt_arg'
   */
 
   if (lmt_nbr) {
@@ -7331,7 +7333,6 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
         }
       }
     }
-    
   }
 
   /* If first character is '/' then weight name is absolute path */
@@ -7381,7 +7382,6 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
           /* 20170620: Change from strcmp() to strstr() so weight can be in any ancestor group
              This still does NOT have the desired behavior of selecting the _closest-in-scope_,
              but at least it allows weights to be in ancestor groups */
-          //if(!strcmp(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){
           if(strstr(wgt_trv[idx_wgt]->grp_nm_fll,var_trv.grp_nm_fll)){
             (void)nco_inq_grp_full_ncid(nc_id,wgt_trv[idx_wgt]->grp_nm_fll,&grp_id);
             (void)nco_inq_varid(grp_id,wgt_trv[idx_wgt]->nm,&var_id);
