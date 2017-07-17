@@ -6998,6 +6998,7 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 } /* nco_bld_lmt() */
 
+
 void
 nco_bld_lmt_var                       /* [fnc] Assign user specified dimension limits to one GTT variable */
 (const int nc_id,                     /* I [ID] netCDF file ID */
@@ -7030,7 +7031,10 @@ nco_bld_lmt_var                       /* [fnc] Assign user specified dimension l
         }
         else {
           /* Non coordinate variable structure case */
-          dmn_trv_sct *ncd = var_trv->var_dmn[idx_var_dmn].ncd;
+          /* Increment number of dimension limits for this dimension */
+          var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr++;
+          int nbr_lmt = var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr;
+          var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn = (lmt_sct **)nco_realloc(var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn, nbr_lmt * sizeof(lmt_sct *));
         }
       }
   }
@@ -7066,6 +7070,22 @@ nco_bld_lmt_var                       /* [fnc] Assign user specified dimension l
         else {
           /* Non coordinate variable structure case */
           dmn_trv_sct *ncd = var_trv->var_dmn[idx_var_dmn].ncd;
+          /* Limit is same as dimension in input file ? */
+          var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.NON_HYP_DMN = False;
+          /* Parse user-specified limits into hyperslab specifications. NOTE: Use False parameter and "dmn" */
+          (void)nco_lmt_evl_dmn_crd(nc_id, 0L, FORTRAN_IDX_CNV, ncd->grp_nm_fll, ncd->nm, ncd->sz, ncd->is_rec_dmn, False, lmt[lmt_idx]);
+          /* Current index (lmt_crr) of dimension limits for this (idx_dmn) table dimension  */
+          int lmt_crr = ncd->lmt_msa.lmt_crr;
+          /* Increment current index being initialized  */
+          var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_crr++;
+          /* Alloc this limit */
+          var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn[lmt_crr] = (lmt_sct *)nco_malloc(sizeof(lmt_sct));
+          /* Initialize this entry */
+          (void)nco_lmt_init(var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn[lmt_crr]);
+          /* Store dimension ID */
+          lmt[lmt_idx]->id = ncd->dmn_id;
+          /* Store this valid input; deep-copy to table */
+          (void)nco_lmt_cpy(lmt[lmt_idx], var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn[lmt_crr]);
         }
       }
     }
@@ -7125,11 +7145,49 @@ nco_bld_lmt_var                       /* [fnc] Assign user specified dimension l
         else {
           /* Non coordinate variable structure case */
           dmn_trv_sct *ncd = var_trv->var_dmn[idx_var_dmn].ncd;
+          /* Adapted from the original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
+          nco_bool flg_ovl; /* [flg] Limits overlap */
+          /* GTT: If this dimension has no limits, continue */
+          if (ncd->lmt_msa.lmt_dmn_nbr == 0) {
+            continue;
+          }
+          /* ncra/ncrcat have only one limit for record dimension so skip evaluation otherwise this messes up multi-file operation */
+          if (ncd->is_rec_dmn && (nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat)) {
+            continue;
+          }
+          /* Split-up wrapped limits */
+          (void)nco_msa_wrp_splt_trv(var_trv->var_dmn[idx_var_dmn].ncd);
+          /* Wrapped hyperslabs are dimensions broken into the "wrong" order,e.g. from
+          -d time,8,2 broken into -d time,8,9 -d time,0,2
+          WRP flag set only when list contains dimensions split as above */
+          if (var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.WRP) {
+            /* Find and store size of output dim */
+            (void)nco_msa_clc_cnt_trv(var_trv->var_dmn[idx_var_dmn].ncd);
+            continue;
+          } /* End WRP flag set */
+            /* Single slab---no analysis needed */
+          if (var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.lmt_dmn_nbr == 1) {
+            (void)nco_msa_clc_cnt_trv(var_trv->var_dmn[idx_var_dmn].ncd);
+            continue;
+          } /* End Single slab */
+            /* Does Multi-Slab Algorithm returns hyperslabs in user-specified order ? */
+          if (MSA_USR_RDR) {
+            var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.MSA_USR_RDR = True;
+            /* Find and store size of output dimension */
+            (void)nco_msa_clc_cnt_trv(var_trv->var_dmn[idx_var_dmn].ncd);
+            continue;
+          } /* End MSA_USR_RDR */
+            /* Sort limits */
+          (void)nco_msa_qsort_srt_trv(var_trv->var_dmn[idx_var_dmn].ncd);
+          /* Check for overlap */
+          flg_ovl = nco_msa_ovl_trv(var_trv->var_dmn[idx_var_dmn].ncd);
+          if (!flg_ovl) var_trv->var_dmn[idx_var_dmn].ncd->lmt_msa.MSA_USR_RDR = True;
+          /* Find and store size of output dimension */
+          (void)nco_msa_clc_cnt_trv(var_trv->var_dmn[idx_var_dmn].ncd);
         }
       }
     }
   }
-
 
 } /* end nco_bld_lmt_var() */
 
