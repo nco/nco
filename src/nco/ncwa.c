@@ -885,7 +885,7 @@ main(int argc,char **argv)
        lastprivate(): retain rcd value from last thread
        private(): wgt_avg does not need initialization
        shared(): msk, wgt and lmt_nbr are not altered within loop */
-#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,rcd) lastprivate(rcd) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_nm,op_typ_rlt,out_id,trv_tbl,var_prc,var_prc_out,wgt_nm,lmt_nbr)
+#pragma omp parallel for default(none) firstprivate(DO_CONFORM_MSK,DO_CONFORM_WGT,ddra_info,rcd) lastprivate(rcd) private(idx,in_id,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dmn_avg,dmn_avg_nbr,flg_ddra,flg_rdd,gpe,in_id_arr,msk_nm,msk_val,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_nm,op_typ_rlt,out_id,trv_tbl,var_prc,var_prc_out,wgt_nm,lmt_nbr,lmt_arg,FORTRAN_IDX_CNV,MSA_USR_RDR)
 #endif /* !_OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       char *grp_out_fll=NULL; /* [sng] Group name */
@@ -927,10 +927,10 @@ main(int argc,char **argv)
       (void)nco_var_mtd_refresh(grp_id,var_prc[idx]);
 
       /* Find weighting variable that matches current variable */
-      if(wgt_nm) wgt=nco_var_get_wgt_trv(in_id,lmt_nbr,wgt_nm,var_prc[idx],trv_tbl);
+      if(wgt_nm) wgt=nco_var_get_wgt_trv(in_id,lmt_nbr,lmt_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,wgt_nm,var_prc[idx],trv_tbl);
 
       /* Find mask variable that matches current variable */
-      if(msk_nm) msk=nco_var_get_wgt_trv(in_id,lmt_nbr,msk_nm,var_prc[idx],trv_tbl);
+      if(msk_nm) msk=nco_var_get_wgt_trv(in_id,lmt_nbr,lmt_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,msk_nm,var_prc[idx],trv_tbl);
 
       /* Retrieve variable from disk into memory */
       (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);

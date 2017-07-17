@@ -6998,6 +6998,18 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 } /* nco_bld_lmt() */
 
+void
+nco_bld_lmt_var                       /* [fnc] Assign user specified dimension limits to one GTT variable */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+  nco_bool MSA_USR_RDR,               /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+  int lmt_nbr,                        /* I [nbr] Number of user-specified dimension limits */
+  lmt_sct **lmt,                      /* I [sct] Structure comming from nco_lmt_prs() */
+  nco_bool FORTRAN_IDX_CNV,           /* I [flg] Hyperslab indices obey Fortran convention */
+  trv_sct *wgt_trv)                  /* I/O [sct] GTT variable (used for weight/mask) */
+{
+
+}
+
 void 
 nco_msa_var_get_rec_trv             /* [fnc] Read a user-defined limit */
 (const int nc_id,                   /* I [ID] netCDF file ID */
@@ -7153,13 +7165,16 @@ nco_skp_var                          /* [fnc] Skip variable while doing record  
 
 } /* nco_skp_var() */
 
-var_sct *                           /* O [sct] Variable (weight/mask) */  
-nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable */
-(const int nc_id,                   /* I [id] netCDF file ID */
- const int lmt_nbr,                 /* I [nbr] number of dimensions with limits (used as boolean only) */
- const char * const wgt_nm,         /* I [sng] Weight or mask variable name (relative or absolute) */
- const var_sct * const var,         /* I [sct] Variable that needs weight/mask */
- const trv_tbl_sct * const trv_tbl) /* I [lst] Traversal table */
+var_sct *                             /* O [sct] Variable (weight or mask) */
+nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variable */
+(const int nc_id,                     /* I [id] netCDF file ID */
+ const int lmt_nbr,                   /* I [nbr] number of dimensions with limits */
+ CST_X_PTR_CST_PTR_CST_Y(char, lmt_arg), /* I [sng] List of user-specified dimension limits */
+ nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+ nco_bool FORTRAN_IDX_CNV,            /* I [flg] Hyperslab indices obey Fortran convention */
+ const char * const wgt_nm,           /* I [sng] Weight or mask variable name (relative or absolute) */
+ const var_sct * const var,           /* I [sct] Variable that needs weight/mask */
+ const trv_tbl_sct * const trv_tbl)   /* I [lst] Traversal table */
 {
   /* Purpose: Return weight or mask variable closest in scope to specified variable */
 
@@ -7185,6 +7200,7 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
   /* The limit names could have been passed here, but no need to repeat the name detection logic,
   because the GTT variable knows if it has limits or not */
   if (lmt_nbr) {
+    lmt_sct **lmt = NULL_CEWI;  /* [sct] User defined limits */
     /* Deal with the relative path case */
     if (wgt_nm[0] != '/') {
       /* Search for the weight/mask in the dimensions of the variable that needs weight/mask*/
@@ -7216,11 +7232,10 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
                   trv_sct *wgt_trv;
                   /* NB to get the GGT variable use the *full name* of the weight that must be one dimension of the variable */
                   wgt_trv = trv_tbl_var_nm_fll(var->dim[idx_dmn]->nm_fll, trv_tbl);
-                  (void)nco_inq_grp_full_ncid(nc_id, wgt_trv->grp_nm_fll, &grp_id);
-                  (void)nco_inq_varid(grp_id, wgt_trv->nm, &var_id);
-                  /* Transfer from table to local variable */
-                  wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
+                  lmt = nco_lmt_prs(lmt_nbr, lmt_arg);
+                  nco_bld_lmt_var(nc_id, MSA_USR_RDR, lmt_nbr, lmt, FORTRAN_IDX_CNV, wgt_trv);
 
+                  lmt = nco_lmt_lst_free(lmt, lmt_nbr);
                 }
               }
             }
@@ -7228,6 +7243,7 @@ nco_var_get_wgt_trv                 /* [fnc] Retrieve weighting or mask variable
         }
       }
     }
+    
   }
 
   /* If first character is '/' then weight name is absolute path */
