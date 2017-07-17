@@ -7317,10 +7317,15 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
               wgt_trv = trv_tbl_var_nm_fll(var_trv->var_dmn[idx_dmn_var].dmn_nm_fll, trv_tbl);
               lmt = nco_lmt_prs(lmt_nbr, lmt_arg);
               nco_bld_lmt_var(nc_id, MSA_USR_RDR, lmt_nbr, lmt, FORTRAN_IDX_CNV, wgt_trv);
+              (void)nco_inq_grp_full_ncid(nc_id, wgt_trv->grp_nm_fll, &grp_id);
+              (void)nco_inq_varid(grp_id, wgt_trv->nm, &var_id);
+              /* Transfer from table to local variable */
+              wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
               /* Assign the hyperslab information for a variable 'var_sct'  from the obtained GTT variable */
               /* Similar to nco_msa_var_get_trv() but just with one input GTT variable */
               (void)nco_msa_var_get_sct(nc_id, wgt_var, wgt_trv);
               lmt = nco_lmt_lst_free(lmt, lmt_nbr);
+              return wgt_var;
             }
           }
         }
