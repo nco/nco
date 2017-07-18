@@ -7487,15 +7487,32 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
         for (idx_wgt = 0; idx_wgt < wgt_nbr; idx_wgt++) {
           trv_sct *wgt_trv = wgt_tbl[idx_wgt];
           /* 20170620: Change from strcmp() to strstr() so weight can be in any ancestor group
-             This still does NOT have the desired behavior of selecting the _closest-in-scope_,
-             but at least it allows weights to be in ancestor groups */
+          This still does NOT have the desired behavior of selecting the _closest-in-scope_,
+          but at least it allows weights to be in ancestor groups */
           if (strstr(wgt_trv->grp_nm_fll, var_trv.grp_nm_fll)) {
             (void)nco_inq_grp_full_ncid(nc_id, wgt_trv->grp_nm_fll, &grp_id);
             (void)nco_inq_varid(grp_id, wgt_trv->nm, &var_id);
-            /* Transfer from table to local variable */
-            wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
-            /* Retrieve variable NB: use GTT version, that "knows" all limits */
-            (void)nco_msa_var_get_trv(nc_id, wgt_var, trv_tbl);
+
+            /* Case of input limits, reconstruct limits and hyperslab */
+            if (lmt_nbr) {
+              lmt_sct **lmt = NULL_CEWI;  /* [sct] User defined limits */
+              lmt = nco_lmt_prs(lmt_nbr, lmt_arg);
+              nco_bld_lmt_var(nc_id, MSA_USR_RDR, lmt_nbr, lmt, FORTRAN_IDX_CNV, wgt_trv);
+              /* Transfer from table to local variable */
+              wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
+              /* Assign the hyperslab information for a variable 'var_sct'  from the obtained GTT variable */
+              /* Similar to nco_msa_var_get_trv() but just with one input GTT variable */
+              (void)nco_msa_var_get_sct(nc_id, wgt_var, wgt_trv);
+              lmt = nco_lmt_lst_free(lmt, lmt_nbr);
+            }
+            else {
+              /* Retrieve hyperslabs from table */
+              /* Transfer from table to local variable */
+              wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
+              /* Retrieve variable NB: use GTT version, that "knows" all limits */
+              (void)nco_msa_var_get_trv(nc_id, wgt_var, trv_tbl);
+            }
+
             wgt_tbl = (trv_sct **)nco_free(wgt_tbl);
             return wgt_var;
           } /* !strcmp() */
