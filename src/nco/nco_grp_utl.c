@@ -7009,12 +7009,42 @@ nco_bld_lmt_var                       /* [fnc] Assign user specified dimension l
   trv_sct *var_trv)                  /* I/O [sct] GTT variable (used for weight/mask) */
 {
   /* Purpose: Assign user-specified dimension limits to to one GTT variable
-   Same as nco_bld_lmt(), with 3 step loops, but for one variable, 'var_trv'
-   At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known */
+  Same as nco_bld_lmt(), with 3 step loops, but for one variable, 'var_trv'
+  At this point "lmt" was parsed from nco_lmt_prs(); only the relative names and  min, max, stride are known */
 
-   /* Loop step 1, alloc 'lmt_dmn' */
+  /* Remove and initialize MSA structures for the dimensions. Members that so require are:
+  lmt_sct **lmt_dmn: list of limit structures associated with each dimension, must be free(d)
+  int lmt_dmn_nbr: number of lmt arguments, must be reset to zero
+  int lmt_crr: index of current limit structure being initialized (helper to initialze lmt_sct*), must be reset to zero
+  Other members of 'lmt_msa_sct' remain the same or are not incremented
+  */
 
-   /* Loop variable dimensions */
+  for (int dmn_idx = 0; dmn_idx < var_trv->nbr_dmn; dmn_idx++) {
+    if (var_trv->var_dmn[dmn_idx].crd) {
+      /* Free first ! */
+      for (int lmt_idx = 0; lmt_idx < var_trv->var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr; lmt_idx++) {
+        var_trv->var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx] = nco_lmt_free(var_trv->var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn[lmt_idx]);
+      }
+      var_trv->var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn = (lmt_sct **)nco_free(var_trv->var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn);
+      /* Reset after ! */
+      var_trv->var_dmn[dmn_idx].crd->lmt_msa.lmt_dmn_nbr = 0;
+      var_trv->var_dmn[dmn_idx].crd->lmt_msa.lmt_crr = 0;
+    }
+    else if (var_trv->var_dmn[dmn_idx].ncd) {
+      /* Free first ! */
+      for (int lmt_idx = 0; lmt_idx < var_trv->var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn_nbr; lmt_idx++) {
+        var_trv->var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn[lmt_idx] = nco_lmt_free(var_trv->var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn[lmt_idx]);
+      }
+      var_trv->var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn = (lmt_sct **)nco_free(var_trv->var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn);
+      /* Reset after ! */
+      var_trv->var_dmn[dmn_idx].ncd->lmt_msa.lmt_dmn_nbr = 0;
+      var_trv->var_dmn[dmn_idx].ncd->lmt_msa.lmt_crr = 0;
+    }
+  }
+
+  /* Loop step 1, alloc 'lmt_dmn' */
+
+  /* Loop variable dimensions */
   for (int idx_var_dmn = 0; idx_var_dmn < var_trv->nbr_dmn; idx_var_dmn++) {
     /* Loop input name list */
     for (int lmt_idx = 0; lmt_idx < lmt_nbr; lmt_idx++)
@@ -7022,8 +7052,6 @@ nco_bld_lmt_var                       /* [fnc] Assign user specified dimension l
       if (strcmp(lmt[lmt_idx]->nm, var_trv->var_dmn[idx_var_dmn].dmn_nm) == 0) {
         /* Coordinate variable structure case */
         if (var_trv->var_dmn[idx_var_dmn].crd) {
-          /* Reset hyperslabbing for the variable */
-          var_trv->var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr = 0;
           /* Increment number of dimension limits for this dimension */
           var_trv->var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr++;
           int nbr_lmt = var_trv->var_dmn[idx_var_dmn].crd->lmt_msa.lmt_dmn_nbr;
@@ -7147,7 +7175,7 @@ nco_bld_lmt_var                       /* [fnc] Assign user specified dimension l
           dmn_trv_sct *ncd = var_trv->var_dmn[idx_var_dmn].ncd;
           /* Adapted from the original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
           nco_bool flg_ovl; /* [flg] Limits overlap */
-          /* GTT: If this dimension has no limits, continue */
+                            /* GTT: If this dimension has no limits, continue */
           if (ncd->lmt_msa.lmt_dmn_nbr == 0) {
             continue;
           }
@@ -7376,7 +7404,7 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   user name list 'lmt_arg'
   */
 
-  if (lmt_nbr) {
+  if (0) {
     lmt_sct **lmt = NULL_CEWI;  /* [sct] User defined limits */
     /* Deal with the relative path case */
     if (wgt_nm[0] != '/') {

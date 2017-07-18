@@ -5354,7 +5354,7 @@ if(0){
 #ncwa #70
 # ncwa -O -C -y ttl -v orog -d lat,0.,90. --mask_condition 'ORO > 0.0' ~/nco/data/in.nc ~/foo.nc
 # ncks -H -v orog ~/foo.nc
-    $dsc_sng="Mask condition (expect failure TODO nco1138)";
+    $dsc_sng="Mask condition not in varible list (expect failure TODO nco1138)";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -y ttl -v orog -d lat,0.,90. --mask_condition 'ORO > 0.0' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -v orog %tmp_fl_00%";
     $tst_cmd[2]="orog = 4";
@@ -5365,7 +5365,7 @@ if(0){
 #ncwa #71 (pvn 20170717)
 # ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc
 # ncks -H -v orog2 ~/foo.nc
-    $dsc_sng="Mask condition with mask and input limit being coordinate variable";
+    $dsc_sng="Mask condition not in varible list (mask is coordinate variable) (expect failure TODO nco1138)";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -v orog2 %tmp_fl_00%";
     $tst_cmd[2]="orog2 = 4";
