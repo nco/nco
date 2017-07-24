@@ -31,6 +31,7 @@ set(BUILD_SHARED_LIBRARIES OFF)
 #//////////////////////////
 
 add_definitions(-DHAVE_NETCDF4_H)
+add_definitions(-DENABLE_NETCDF4)
 if (MSVC)
 
   #//////////////////////////
