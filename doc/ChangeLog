@@ -1,3 +1,8 @@
+2017-08-01 Henry Butowsky  <henryb@hush.com>
+
+	* fixed hyperslabbing of var with type NC_STRING in LHS assign and RHS exp
+	  TODO fix above but with ram vars
+
 2017-07-09  Charlie Zender  <zender@uci.edu>
 
 	* Add SHA256 value to homepage
