@@ -2473,7 +2473,7 @@ int sz)
 
   val.cp=cp;
 
-  for(idx==0;idx<sz;idx++ )
+  for(idx=0;idx<sz;idx++ )
     if(val.sngp[idx])
       val.sngp[idx]=(nco_string)strdup(val.sngp[idx]);
 
