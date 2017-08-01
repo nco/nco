@@ -3647,7 +3647,7 @@ var_sct *var_nbr;
 
                  }else{
                     var_lhs=prs_arg->ncap_var_init(var_nm,true);       
-               }
+                 }
                   
                // fortran index convention   
                if(prs_arg->FORTRAN_IDX_CNV)
@@ -3670,7 +3670,11 @@ var_sct *var_nbr;
                  var_rhs=nco_var_cnf_typ(var_lhs->type,var_rhs);             
                
                  slb_sz=nco_typ_lng(var_lhs->type);     
-                 (void)memcpy((char*)var_lhs->val.vp+(ptrdiff_t)(srt*slb_sz),var_rhs->val.vp,slb_sz);    
+                 (void)memcpy((char*)var_lhs->val.vp+(ptrdiff_t)(srt*slb_sz),var_rhs->val.vp,slb_sz);
+                 
+                 if(var_lhs->type==NC_STRING)
+                    (void)ncap_sngcpy((char*)var_lhs->val.vp+(ptrdiff_t)(srt*slb_sz),1);
+
 
                  if(!Nvar)
                    (void)prs_arg->ncap_var_write(var_lhs,true); 
@@ -3742,7 +3746,7 @@ var_sct *var_nbr;
                  (void)prs_arg->ncap_var_write_slb(var_lhs);     
 
                 }//end write block 
-            }     
+              }     
                    var_rhs=nco_var_free(var_rhs); 
                    var_nbr=nco_var_free(var_nbr); 
 }
@@ -3923,7 +3927,19 @@ var=NULL_CEWI;
            if(var->sz ==1) {
               
              var1=ncap_sclr_var_mk(var_nm,var->type,true);
+             
              (void)memcpy( (void*)var1->val.vp,var->val.vp,nco_typ_lng(var1->type));
+             if(var1->type==NC_STRING)
+                 (void)ncap_sngcpy((char*)var1->val.vp,1);
+             /*
+             if(var->type==NC_STRING){
+                 cast_void_nctype(NC_STRING, &var->val); 
+                 var1->val.sngp[0]=(nco_string)strdup(var->val.sngp[0]);
+                 cast_nctype_void(NC_STRING, &var->val); 
+             }else{
+             
+           }
+           */  
              
              // copy missing value if any from var_rhs to var1
              nco_mss_val_cp(var_rhs,var1);
