@@ -7,6 +7,7 @@
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
+#include <nco.h>
 #include "ncap2_utl.hh"
 
 
@@ -2331,12 +2332,14 @@ char *cp_out)                   // Slab to be "put"
     
       if(srd==1) {
         (void)memcpy(cp_end,cp_in,cnt*slb_sz);
+        if(var_out->type==NC_STRING) ncap_sngcpy(cp_end,1);
         cp_in+=(ptrdiff_t)cnt*slb_sz;
       }
       if(srd >1) {
         char *cp_lcl=cp_end;
         for(jdx=0 ; jdx<cnt ; jdx++ ){
           (void)memcpy(cp_lcl,cp_in,slb_sz);
+          if(var_out->type==NC_STRING) ncap_sngcpy(cp_lcl,1);
           cp_in+=(ptrdiff_t)slb_sz;
           cp_lcl+=(ptrdiff_t)(srd*slb_sz);
         } //loop jdx
@@ -2423,13 +2426,15 @@ NcapVector<lmt_sct*> &dmn_vtr)
    
   // user has specified  the whole hyperslab
   if(var_in->sz==var_out->sz){
-    (void)memcpy(cp_out,cp_in, var_in->sz*nco_typ_lng(var_in->type)); 
+    (void)memcpy(cp_out,cp_in, var_in->sz*nco_typ_lng(var_in->type));
+    if(var_in->type==NC_STRING) ncap_sngcpy(cp_out, var_in->sz);
   }
   else
   // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
     (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,var_out,1L,cp_in,cp_out);
   
 } /* end nco_put_var_mem() */
+
 
 // See if node contains any utility fuctions
 // if so return true
@@ -2456,6 +2461,25 @@ RefAST tr
  
  return false;
 }
+
+
+void
+ncap_sngcpy(
+char *cp,
+int sz)
+{
+  int idx;
+  ptr_unn val;
+
+  val.cp=cp;
+
+  for(idx==0;idx<sz;idx++ )
+    if(val.sngp[idx])
+      val.sngp[idx]=(nco_string)strdup(val.sngp[idx]);
+
+}
+
+
 
 /*********************************************************************************/
 /* Following - all MPI optimization routines                                     */

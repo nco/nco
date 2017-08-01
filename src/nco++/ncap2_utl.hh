@@ -127,7 +127,11 @@ ncap_norm_shp_chk(
 var_sct* var1, 
 var_sct* var2); 
 
-
+void
+ncap_sngcpy(
+char *cp,
+int sz
+);
 
 /***************************************************************************************/
 
