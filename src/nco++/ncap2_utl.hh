@@ -128,10 +128,9 @@ var_sct* var1,
 var_sct* var2); 
 
 void
-ncap_sngcpy(
+ncap_sngcpy(  /* take a list of nco_string's and refresh them with strdup */
 char *cp,
-int sz
-);
+int bsz);
 
 /***************************************************************************************/
 
