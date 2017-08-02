@@ -1,3 +1,8 @@
+2017-08-02 Henry Butowsky  <henryb@hush.com>
+
+	* fixed hyperslabbing of ram_vars of type NC_STRING
+	  added more regression tests
+
 2017-08-01 Henry Butowsky  <henryb@hush.com>
 
 	* fixed hyperslabbing of var with type NC_STRING in LHS assign and RHS exp
