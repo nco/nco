@@ -1,19 +1,35 @@
-t=time;
+
+defdim("dss",20);
 th=three_dmn_var_dbl;
 lev=lev;
 lon=lon;
 lon@str={"alpha"s, "beta"s,"gamma"s, "delta"s};
-lon@str(0)=""s;
-lon@str(3)="gamma"s;
-t(9)=-9999999.0;
-three_dmn_var_dbl(4)=44444.0;
+
 
 greek[$lon]=lon@str;
 greek(2)="hello"s;
 
 ss[time]="Buy"s;
+ss(1)=greek(3);
+ss(2:5)={"three"s,"four"s,"five"s,"six"s};
+ss(6:7)=greek(2:3);
+ss(8:9)=lon@str(2:3); 
 
-// failure right here 2017-06-21 
-ss(1)=greek(0);
+
+
+//try with a ram var
+*ss_ram[dss]="ram"s;
+ss_ram(1)="beginnings"s;
+ss_ram(2:3)=greek(2:3);
+ss_ram(4:7)="Buy"s;
+ss_ram(8:9)={"bb"s,"cc"s};
+ss_ram(10:11)=lon@str(2:3);
+ss_ram(12:19:2)="two_stride"s;
+ss_ram(13:19:2)=greek(0);
+
+ 
+ram_write(ss_ram); 
+
+
 
 nbr_err_ttl=0;
