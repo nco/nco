@@ -104,7 +104,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     /* ...if possible... */
     if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(fp_stderr,"%s: INFO Command-line requests %d thread%s\n",nco_prg_nm_get(),thr_nbr,(thr_nbr > 1) ? "s" : "");
     if(thr_nbr > thr_nbr_max){
-      (void)fprintf(fp_stderr,"%s: WARNING Reducing user-requested thread number = %d to maximum thread number allowed = %d\n",nco_prg_nm_get(),thr_nbr,thr_nbr_max);
+      (void)fprintf(fp_stderr,"%s: INFO Reducing user-requested thread number = %d to maximum thread number allowed = %d\n",nco_prg_nm_get(),thr_nbr,thr_nbr_max);
       thr_nbr_rqs=thr_nbr_max; /* [nbr] Number of threads to request */
     } /* endif */
   }else{ /* !USR_SPC_THR_RQS */

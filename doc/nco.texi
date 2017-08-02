@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 8 July 2017
-@set update-month July 2017
+@set update-date 1 August 2017
+@set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -19874,6 +19874,17 @@ This is why @acronym{NCO} @emph{always} prints the @code{NC_TYPE}
 of variable data.
 Downstream parsers can (but are not required to) take advantage of the
 variable's @code{NC_TYPE} to choose the most efficient storage type. 
+
+The Shape member of the variable object is an ordered array of
+dimension names such as @code{"shape": ["lat","lon"]}, similar to its
+use in NcML.
+Each name corresponds to a previously defined Dimension object
+that, taken together, define the rank, shape, and size of the
+variable. 
+Variables are assumed to be scalar by default.
+Hence the Shape member is mandatory for arrays, and is always omitted
+for scalars (by contrast, NcML requires an empty shape string to
+indicate scalars).  
 
 @item @math{@var{lvl} = 1} is a medium-pedantic level that prints all
 attributes as objects (with explicit types) @emph{except} those
