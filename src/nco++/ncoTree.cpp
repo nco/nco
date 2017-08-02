@@ -3690,7 +3690,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 				(void)prs_arg->ncap_var_write(var_lhs,true); 
 				
 				// deal with Regular Vars
-				} else {                 
+				}else{                 
 				
 				// if var undefined in O or defined but not populated
 				if(!Nvar || ( Nvar && Nvar->flg_stt==1)){              
@@ -5491,7 +5491,7 @@ var_sct * ncoTree::var_lmt_one_lhs(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 			(void)memcpy((char*)var_lhs->val.vp+(ptrdiff_t)(srt*slb_sz),var_rhs->val.vp,slb_sz);
 			
 			if(var_lhs->type==NC_STRING)
-			(void)ncap_sngcpy((char*)var_lhs->val.vp+(ptrdiff_t)(srt*slb_sz),1);
+			(void)ncap_sngcpy((char*)var_lhs->val.vp+(ptrdiff_t)(srt*slb_sz),slb_sz);
 			
 			
 			if(!Nvar)
@@ -5781,7 +5781,7 @@ var_sct * ncoTree::var_lmt(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			
 			(void)memcpy( (void*)var1->val.vp,var->val.vp,nco_typ_lng(var1->type));
 			if(var1->type==NC_STRING)
-			(void)ncap_sngcpy((char*)var1->val.vp,1);
+			(void)ncap_sngcpy((char*)var1->val.vp, nco_typ_lng(var1->type) );
 			/*
 			if(var->type==NC_STRING){
 			cast_void_nctype(NC_STRING, &var->val); 
