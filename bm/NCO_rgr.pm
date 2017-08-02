@@ -3650,7 +3650,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 ####################
 
 #ncrcat #01
-
+    
 #if($mpi_prc == 0){ # fxm test hangs because of ncrcat TODO 593
     $dsc_sng="Concatenate float with double missing values across two files";
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_flt_mss_val_dbl $in_pth_arg in.nc in.nc %tmp_fl_00% 2> %tmp_fl_02%";
@@ -4058,7 +4058,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncrcat -h --no_tmp_fl --rec_apn -v one_dmn_rec_var ~/nco/data/in_grp.nc in_grp1.nc
 
     $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrcat $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncrcat $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[2]="ncks -C -g g4 -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="(Groups) Append records to existing file without copying original (Group with 1 record case)";
     $tst_cmd[3]="time[19]=10 one_dmn_rec_var[19]=10 kelvin";
@@ -4071,7 +4071,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncrcat -h --no_tmp_fl --rec_apn -g g5 -v one_dmn_rec_var ~/nco/data/in_grp.nc in_grp1.nc
 
     $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncrcat $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncra -Y ncrcat  $omp_flg -h --no_tmp_fl --rec_apn $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[2]="ncks -C -g g5 -v one_dmn_rec_var %tmp_fl_00%";
     $dsc_sng="(Groups) Append records to existing file without copying original (Group with 2 records case)";
     $tst_cmd[3]="time52[19]=10 one_dmn_rec_var[19]=10 kelvin";
@@ -4085,10 +4085,10 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncrcat -O -h -g g5 -v one_dmn_rec_var -p ~/nco/data in_grp1.nc in_grp2.nc ~/foo.nc
 #ncks -C -g g5 -v one_dmn_rec_var ~/foo.nc
 
-	$tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks $omp_flg -h -O $fl_fmt $nco_D_flg -v one_dmn_rec_var,time51,time52 $in_pth_arg in_grp.nc %tmp_fl_01%";
-    $tst_cmd[2]="ncrcat -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
-	$tst_cmd[3]="ncks -C -g g5 -v one_dmn_rec_var %tmp_fl_02%";
+    $tst_cmd[2]="ncra -Y ncrcat  -h -O $fl_fmt $nco_D_flg -g g5 -v one_dmn_rec_var %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -g g5 -v one_dmn_rec_var %tmp_fl_02%";
     $dsc_sng="(Groups) Group with 2 records case";
     $tst_cmd[4]="time52[19]=10 one_dmn_rec_var[19]=10 kelvin";
     $tst_cmd[5]="SS_OK";
