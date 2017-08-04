@@ -1,7 +1,10 @@
+2017-08-04  Charlie Zender  <zender@uci.edu>
+
+	* JSON now prints "null" instead of "NaN" for NaNs as suggested by Bob Simons
+
 2017-08-02 Henry Butowsky  <henryb@hush.com>
 
-	* fixed hyperslabbing of ram_vars of type NC_STRING
-	  added more regression tests
+	* Fixed hyperslabbing of ram_vars of type NC_STRING, added more regression tests
 
 2017-08-01 Henry Butowsky  <henryb@hush.com>
 

@@ -12,7 +12,7 @@
 // /usr/local/bin/ncgen -k hdf5-nc3 -b -o in_4c.nc in.cdl
 // /usr/local/bin/ncgen -k hdf5-nc3 -b -o ${HOME}/nco/data/in_4c.nc ${HOME}/nco/data/in.cdl
 
-// URL: 
+// URL:
 // http://dust.ess.uci.edu/nco/in.nc
 // http://dust.ess.uci.edu/nco/in_4.nc
 // http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc
@@ -1436,8 +1436,8 @@ data:
 	mss_val_scl=1.0e36;
 	//	nan_arr=0,nan;
 	nan_arr=0,73;
-	//	nan_scl=nan;
-	nan_scl=1;
+	nan_scl=nan;
+	//nan_scl=1;
 	negative_one=-1.;
 	nm_pnd=1;
 	nm_spc=1;
