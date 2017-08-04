@@ -3313,7 +3313,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
 	   Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
 	   Extensive variables are the exception in models, yet are commonly used for sampling information, e.g., 
 	   number of photons, number of overpasses 
-	   Pass NCO the extensive variable list with, e.g., --xtn=TSurfStd_ct,... */
+	   Pass extensive variable list to NCO with, e.g., --xtn=TSurfStd_ct,... */
 	  
 	/* Apply weights */
 	if(!has_mss_val){
