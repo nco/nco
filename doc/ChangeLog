@@ -1,5 +1,7 @@
 2017-08-04  Charlie Zender  <zender@uci.edu>
 
+	* First successful GCC7 build: gcc 7.1.1, FC26, netCDF 4.5.0-rc1
+
 	* JSON now prints "null" instead of "NaN" for NaNs as suggested by Bob Simons
 
 2017-08-02 Henry Butowsky  <henryb@hush.com>
