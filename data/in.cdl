@@ -1434,10 +1434,10 @@ data:
 	mss_val_all=1.0e36,1.0e36,1.0e36,1.0e36;
 	mss_val_fst=-999,73,-999,73;
 	mss_val_scl=1.0e36;
-	//	nan_arr=0,nan;
+	//nan_arr=0,nan;
 	nan_arr=0,73;
-	nan_scl=nan;
-	//nan_scl=1;
+	//nan_scl=nan;
+	nan_scl=1;
 	negative_one=-1.;
 	nm_pnd=1;
 	nm_spc=1;
