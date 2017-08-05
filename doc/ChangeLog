@@ -1,5 +1,7 @@
 2017-08-04  Charlie Zender  <zender@uci.edu>
 
+	* JSON now prints "null" instead of "Infinity"
+
 	* NCO 4.6.8-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.8-alpha04 final changes';git push
 	git tag -a 4.6.8-alpha04 -m 'json null, gcc7';git push --tags
@@ -8,16 +10,17 @@
 
 	* First successful GCC7 build: gcc 7.1.1, FC26, netCDF 4.5.0-rc1
 
+	* Update netcdf.txt build script for GCC7, netCDF 4.5.0-rc1
+
 	* JSON now prints "null" instead of "NaN" for NaNs as suggested by Bob Simons
 
 2017-08-02 Henry Butowsky  <henryb@hush.com>
 
-	* Fixed hyperslabbing of ram_vars of type NC_STRING, added more regression tests
+	* Fix hyperslabbing of ram_vars of type NC_STRING, added more regression tests
 
 2017-08-01 Henry Butowsky  <henryb@hush.com>
 
-	* fixed hyperslabbing of var with type NC_STRING in LHS assign and RHS exp
-	  TODO fix above but with ram vars
+	* Fix hyperslabbing of var with type NC_STRING in LHS assign and RHS exp
 
 2017-07-09  Charlie Zender  <zender@uci.edu>
 

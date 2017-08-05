@@ -435,7 +435,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	}else{
 	  if(isnan(val_flt)) (void)sprintf(val_sng,(JSN) ? "null" : "NaNf");
-	  else if(isinf(val_flt)) (void)sprintf(val_sng,"%sInfinityf",(val_flt < 0.0f) ? "-" : "");
+	  else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_flt < 0.0f) ? "-Infinityf" : "Infinityf");
 	} /* endelse */
 	(void)fprintf(stdout,"%s%s",val_sng,(lmn != att_szm1) ? spr_sng : "");
       } /* end loop */
@@ -448,7 +448,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	}else{
 	  if(isnan(val_dbl)) (void)sprintf(val_sng,(JSN) ? "null" : "NaN");
-	  else if(isinf(val_dbl)) (void)sprintf(val_sng,"%sInfinity",(val_dbl < 0.0) ? "-" : "");
+	  else if(isinf(val_dbl)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");
 	} /* endelse */
 	(void)fprintf(stdout,"%s%s",val_sng,(lmn != att_szm1) ? spr_sng : "");
       } /* end loop */
@@ -1946,7 +1946,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
           }else{
 	    if(isnan(val_flt)) (void)sprintf(val_sng,(JSN) ? "null" : "NaNf");
-	    else if(isinf(val_flt)) (void)sprintf(val_sng,"%sInfinityf",(val_flt < 0.0f) ? "-" : "");
+	    else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_flt < 0.0f) ? "-Infinityf" : "Infinityf");
           } /* endelse */
           break;
         case NC_DOUBLE:
@@ -1956,7 +1956,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
           }else{
 	    if(isnan(val_dbl)) (void)sprintf(val_sng,(JSN) ? "null" : "NaN");
-            else if(isinf(val_dbl)) (void)sprintf(val_sng,"%sInfinity",(val_dbl < 0.0) ? "-" : "");
+	    else if(isinf(val_dbl)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");
           } /* endelse */
           break;
         case NC_SHORT: (void)sprintf(val_sng,fmt_sng,var->val.sp[lmn]); break;
