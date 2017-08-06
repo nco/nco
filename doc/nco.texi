@@ -119,12 +119,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.8-alpha03
-@set doc-edition 4.6.8-alpha03
+@set nco-edition 4.6.8-alpha04
+@set doc-edition 4.6.8-alpha04
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 8 July 2017
-@set update-month July 2017
+@set update-date 1 August 2017
+@set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -19875,6 +19875,17 @@ of variable data.
 Downstream parsers can (but are not required to) take advantage of the
 variable's @code{NC_TYPE} to choose the most efficient storage type. 
 
+The Shape member of the variable object is an ordered array of
+dimension names such as @code{"shape": ["lat","lon"]}, similar to its
+use in NcML.
+Each name corresponds to a previously defined Dimension object
+that, taken together, define the rank, shape, and size of the
+variable. 
+Variables are assumed to be scalar by default.
+Hence the Shape member is mandatory for arrays, and is always omitted
+for scalars (by contrast, NcML requires an empty shape string to
+indicate scalars).  
+
 @item @math{@var{lvl} = 1} is a medium-pedantic level that prints all
 attributes as objects (with explicit types) @emph{except} those
 attributes whose types match the simplest default @acronym{JSON} value
@@ -19948,6 +19959,8 @@ datatypes may be verified by a @acronym{JSON} syntax checker command
 like @command{jsonlint}. 
 Please let us know how to improve @acronym{JSON} features for your
 application.  
+
+There 
 
 @html
 <a name="Metadata"></a> <!-- http://nco.sf.net/nco.html#Metadata -->
@@ -24222,12 +24235,13 @@ Large work-load testing
 @cindex Lori Sentman
 @cindex Michael Schulz
 @cindex Rich Signell
+@cindex Bob Simons
 @cindex Gary Strand
 @cindex Adrian Tompkins
 @cindex Andrew Wittenberg
 @cindex George White
 @cindex Remik Ziemlinski
-@item Dave Blodgett, Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Gary Strand, Adrian Tompkins, George White Andrew Wittenberg, Remik Ziemlinski
+@item Dave Blodgett, Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Adrian Tompkins, George White Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Filipe Fernandes
 @cindex Hugo Oliveira

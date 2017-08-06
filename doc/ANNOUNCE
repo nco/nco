@@ -64,7 +64,8 @@ BUG FIXES:
 A. The ncap2 implementation of mibs()/mabs()/mebs() is fixed.
    Thanks to Dominique Briand for reporting this.
 
-B. 
+B. JSON now prints "null" instead of "NaN" for NaN values.
+   Thanks to Bob Simon for noticing this.
 
 KNOWN PROBLEMS DUE TO NCO:
 

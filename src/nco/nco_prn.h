@@ -118,7 +118,6 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents in cdl or trd format *
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
 
-
 int /* [rcd] Return code */
 nco_prn_jsn /* [fnc] Recursively print group contents in JSON format */
 (const int nc_id, /* I [id] netCDF file ID */
@@ -132,8 +131,6 @@ nco_prn_xml /* [fnc] Recursively print group contents in XML format */
  const char * const grp_nm_fll, /* I [sng] Absolute group name (path) */
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
-
-
 
 nco_bool /* O [flg] Variable is compound */
 nco_prn_cpd_chk /* [fnc] Check whether variable is compound */

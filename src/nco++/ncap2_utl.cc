@@ -7,6 +7,7 @@
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
+#include <nco.h>
 #include "ncap2_utl.hh"
 
 
@@ -2185,6 +2186,7 @@ ncap_get_var_mem
     if(srd==1) {
       for(jdx=0 ; jdx <nbr_lpp ; jdx++){  
         (void)memcpy(cp_out, cp_srt, ptrdiff_t(cnt*slb_sz));
+        if(var_in->type==NC_STRING) ncap_sngcpy(cp_out,cnt);
         cp_out+=ptrdiff_t(cnt*slb_sz);
         cp_srt+=ptrdiff_t(dpt_cnt*slb_sz); 
       }
@@ -2196,6 +2198,7 @@ ncap_get_var_mem
         for(idx=0 ; idx<cnt ; idx++ ){
           
           (void)memcpy(cp_out,cp_lcl,slb_sz);
+          if(var_in->type==NC_STRING) ncap_sngcpy(cp_out,1);
           cp_out+=slb_sz;
           cp_lcl+=(ptrdiff_t)(srd*slb_sz);
         }
@@ -2331,12 +2334,14 @@ char *cp_out)                   // Slab to be "put"
     
       if(srd==1) {
         (void)memcpy(cp_end,cp_in,cnt*slb_sz);
+        if(var_out->type==NC_STRING) ncap_sngcpy(cp_end, cnt*slb_sz);
         cp_in+=(ptrdiff_t)cnt*slb_sz;
       }
       if(srd >1) {
         char *cp_lcl=cp_end;
         for(jdx=0 ; jdx<cnt ; jdx++ ){
           (void)memcpy(cp_lcl,cp_in,slb_sz);
+          if(var_out->type==NC_STRING) ncap_sngcpy(cp_lcl,slb_sz);
           cp_in+=(ptrdiff_t)slb_sz;
           cp_lcl+=(ptrdiff_t)(srd*slb_sz);
         } //loop jdx
@@ -2423,13 +2428,15 @@ NcapVector<lmt_sct*> &dmn_vtr)
    
   // user has specified  the whole hyperslab
   if(var_in->sz==var_out->sz){
-    (void)memcpy(cp_out,cp_in, var_in->sz*nco_typ_lng(var_in->type)); 
+    (void)memcpy(cp_out,cp_in, var_in->sz*nco_typ_lng(var_in->type));
+    if(var_out->type==NC_STRING) ncap_sngcpy(cp_out, var_in->sz* nco_typ_lng(var_in->type) );
   }
   else
   // Call in-memory nco_put_var_mem (n.b is recursive of course!!)
     (void)ncap_put_var_mem(0,dpt_max-1,shp_vtr,dmn_vtr,var_out,1L,cp_in,cp_out);
   
 } /* end nco_put_var_mem() */
+
 
 // See if node contains any utility fuctions
 // if so return true
@@ -2456,6 +2463,27 @@ RefAST tr
  
  return false;
 }
+
+/* take a list of nco_string's and refresh them with strdup */
+void
+ncap_sngcpy(
+char *cp, /* nb pointer to first nco_string in list  (technically this of type char ** ) */
+int bsz)  /* total size (in bytes) of array of nco_string */
+{
+  int idx;
+  ptr_unn val;
+
+  val.cp=cp;
+
+  bsz/=sizeof(nco_string);
+
+  for(idx=0;idx<bsz;idx++ )
+    if(val.sngp[idx])
+       val.sngp[idx]=(nco_string)strdup(val.sngp[idx]);
+
+}
+
+
 
 /*********************************************************************************/
 /* Following - all MPI optimization routines                                     */

@@ -18,14 +18,14 @@
 # cooley.alcf.anl.g  : NCO          Configure All else GCC
 # edison.nersc.gov   : NCO          Configure All else Intel
 # firn.ess.uci.edu   : NCO          Configure All else LLVM
-# frazil.ess.uci.edu : NCO + netCDF Configure All else GCC
+# frazil.ess.uci.edu : NCO          Configure All else GCC
 # givre.ess.uci.edu  : NCO + netCDF Makefile  All else LLVM
 # glace.ess.uci.edu  : NCO          Configure All else GCC
 # grele.ess.uci.edu  : NCO          Makefile  All else GCC
 # neige.ess.uci.edu  : NCO          Makefile  All else GCC
 # rhea.ccs.ornl.gov  : NCO          Makefile  All else GCC
 # roulee.ess.uci.edu : NCO + netCDF Makefile  All else GCC
-# skyglow.ess.uci.edu: NCO          Configure All else GCC
+# skyglow.ess.uci.edu: NCO + netCDF Configure All else GCC
 # travis CI          : NCO          Configure All else gcc,clang,g++
 # yellowstone.ucar.e : NCO          Makefile  All else Intel
 

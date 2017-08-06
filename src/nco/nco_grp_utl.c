@@ -7131,7 +7131,7 @@ nco_bld_lmt_var                       /* [fnc] Assign user specified dimension l
         /* Coordinate variable structure case */
         if (var_trv->var_dmn[idx_var_dmn].crd) {
           /* Adapted from original MSA loop in nco_msa_lmt_all_ntl(); differences are marked GTT specific */
-          nco_bool flg_ovl; /* [flg] Limits overlap */
+          //nco_bool flg_ovl; /* [flg] Limits overlap */
           crd_sct *crd = var_trv->var_dmn[idx_var_dmn].crd;
           /* GTT: If this coordinate has no limits, continue */
           if (crd->lmt_msa.lmt_dmn_nbr == 0) {
@@ -7166,7 +7166,7 @@ nco_bld_lmt_var                       /* [fnc] Assign user specified dimension l
             /* Sort limits */
           (void)nco_msa_qsort_srt(&var_trv->var_dmn[idx_var_dmn].crd->lmt_msa);
           /* Check for overlap */
-          flg_ovl = nco_msa_ovl(&var_trv->var_dmn[idx_var_dmn].crd->lmt_msa);
+          //flg_ovl = nco_msa_ovl(&var_trv->var_dmn[idx_var_dmn].crd->lmt_msa);
           /* Find and store size of output dimension */
           (void)nco_msa_clc_cnt(&var_trv->var_dmn[idx_var_dmn].crd->lmt_msa);
         }

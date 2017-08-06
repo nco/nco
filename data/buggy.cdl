@@ -56,7 +56,7 @@ netcdf buggy {
  nan_arr:note4 = "If your NCO build fails because your version of netCDF does not support nan, then cd to the directory that contains the file nco/data/in.cdl and run the command in note5 first and then try to build again";
  nan_arr:note5 = "sed -e 's/nan;/1.0f;/' in.cdl > foo.cdl;ncgen -b -o in.nc foo.cdl";
  nan_arr:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
- nan_arr:_FillValue = nan;
+ nan_arr:_FillValue = nanf;
 
  float nan_scl;
  nan_scl:long_name = "Intended for scalar representation of IEEE NaN";
@@ -64,7 +64,7 @@ netcdf buggy {
  nan_scl:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";
  nan_scl:note3 = "20120625 netCDF ncgen on netCDF 4.1.1 on apparently chokes on variable/attribute values of nan";
  nan_scl:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
- nan_scl:_FillValue = nan;
+ nan_scl:_FillValue = nanf;
 
  float nan_val;
  nan_val:long_name = "Intended for scalar representation of IEEE NaN without missing values";
@@ -120,9 +120,9 @@ netcdf buggy {
 
   lat_time={1,2,3,4,5,6,7,8,9,10},{11,12,13,14,15,16,17,18,19,20};
 
-  nan_arr=0,nan;
-  nan_scl=nan;
-  nan_val=nan;
+  nan_arr=0,nanf;
+  nan_scl=nanf;
+  nan_val=nanf;
   nan_val_dbl=nan;
 
    // 20130208: netCDF 4.2.1.1- fail as nc_get_var1_uint() returns -60 = NetCDF: Numeric conversion not representable on (valid) input values exceeding INT_MAX=2147483647. This was bug netCDF #PUX-602809 fixed in daily snapshot 20130210.
