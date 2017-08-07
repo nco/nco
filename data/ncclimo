@@ -221,6 +221,8 @@ esac # !HOSTNAME
 # cd ${DATA}/ne30/raw;ls *h4*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly --tpd=8 -s 2001 -e 2002 --var=PRECT,TS,FSDS --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # SGS:
 # ncclimo -d 1 -v TBOT -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ~/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150621.nc
+# Seasons:
+# ncclimo -d 2 --csn_lst=mam,jja,son,djf -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -463,7 +465,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map$, map, map_file, map_fl${fnt_nrm}]"
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
-    echo " ${fnt_bld}--seasons${fnt_nrm}  Seasons to output (default ${fnt_bld}${csn_out}${fnt_nrm}) [${fnt_tlc}csn_out, seasons${fnt_nrm}]"
+    echo " ${fnt_bld}--seasons${fnt_nrm}  Seasons to output (default ${fnt_bld}${csn_lst}${fnt_nrm}) [${fnt_tlc}csn_lst, seasons${fnt_nrm}]"
     echo " ${fnt_bld}--std_flg${fnt_nrm}  Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, std_flg, inp_std, redirect, standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thread_number, thread, threads${fnt_nrm}]"
     echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
@@ -602,7 +604,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	       rgr_map=?* | regrid_map=?* | map=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
-	       seasons=?* | csn_out=?* ) csn_out="${LONG_OPTARG}" ;; # # Seasons to output
+	       seasons=?* | csn_lst=?* ) csn_lst="${LONG_OPTARG}" ;; # # Seasons to output
 	       stdin | inp_std | std_flg | redirect | standard_input ) inp_std='Yes' ;; # # Input file list from stdin
 	       stdin=?* | inp_std=?* | std_flg=?* | redirect=?* | standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Input file list from stdin
 	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
@@ -808,10 +810,9 @@ if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     out_nm=${bs_nm}
     bs_sfx="${caseid#*.}"
 fi # !caseid
-if [ -z "${csn_out}" ]; then
-    csn_out='mam,jja,son,djf'
+if [ -n "${csn_lst}" ]; then
     csn_flg='Yes'
-fi # !csn_out
+fi # !csn_lst
 if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ] ; then 
     echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
     exit 1
@@ -1120,7 +1121,63 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_on=9
     csn_fm=10
     csn_nbr_max=10 # [nbr] Maximum number of seasons in definitions database
-    csn_nbr=4 # [nbr] Number of seasons to compute
+
+    # Seasonal two- or three-letter acronyms
+    csn_tla_mam='MAM'
+    csn_tla_jja='JJA'
+    csn_tla_son='SON'
+    csn_tla_djf='DJF'
+    csn_tla_jfm='JFM'
+    csn_tla_amj='AMJ'
+    csn_tla_jas='JAS'
+    csn_tla_ond='OND'
+    csn_tla_on='ON'
+    csn_tla_fm='FM'
+
+    # Seasonal start-month (1-based calendar)
+    csn_srt_mam='03'
+    csn_srt_jja='06'
+    csn_srt_son='09'
+    csn_srt_djf='12'
+    csn_srt_jfm='01'
+    csn_srt_amj='04'
+    csn_srt_jas='07'
+    csn_srt_ond='10'
+    csn_srt_on='10'
+    csn_srt_fm='02'
+
+    # Seasonal end-month (1-based calendar)
+    csn_end_mam='05'
+    csn_end_jja='08'
+    csn_end_son='11'
+    csn_end_djf='02'
+    csn_end_jfm='03'
+    csn_end_amj='06'
+    csn_end_jas='09'
+    csn_end_ond='12'
+    csn_end_on='11'
+    csn_end_fm='03'
+
+    # Seasonal monthly weights (ncra -w argument)
+    csn_wgt_mam='31,30,31'
+    csn_wgt_jja='30,31,31'
+    csn_wgt_son='30,31,30'
+    csn_wgt_djf='31,31,28'
+    csn_wgt_jfm='31,28,31'
+    csn_wgt_amj='30,31,30'
+    csn_wgt_jas='31,31,30'
+    csn_wgt_ond='31,30,31'
+    csn_wgt_on='31,30'
+    csn_wgt_fm='28,31'
+
+    # Which seasons were requested?
+    # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
+    csn_nbr=0 # [sng] Number of seasons to compute
+    for csn in ${csn_lst//,/ }; do
+	csn_tla[${csn_nbr}]=${csn}
+	let csn_nbr=${csn_nbr}+1
+    done # !csn_lst
+
 fi # !csn
     
 # Print initial state
@@ -1131,8 +1188,8 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: clm_flg  = ${clm_flg}\n"
     printf "dbg: clm_md   = ${clm_md}\n"
     printf "dbg: clm_nbr  = ${clm_nbr}\n"
+    printf "dbg: csn_lst  = ${csn_lst}\n"
     printf "dbg: csn_nbr  = ${csn_nbr}\n"
-    printf "dbg: csn_out  = ${csn_out}\n"
     printf "dbg: dec_md   = ${dec_md}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
     printf "dbg: drc_in   = ${drc_in}\n"
@@ -1174,6 +1231,11 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: yr_sbs   = ${yr_sbs}\n"
     printf "dbg: yyyy_end = ${yyyy_end}\n"
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
+    if [ "${csn_flg}" = 'Yes' ]; then
+	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
+	    printf "Season ${csn_idx} = ${csn_tla[${csn_idx}]}\n"
+	done # !var_idx
+    fi # !csn
     if [ "${sbs_flg}" = 'Yes' ]; then
 	printf "dbg: Will split into files for ${var_nbr} variables:\n"
 	for ((var_idx=0;var_idx<${var_nbr};var_idx++)); do
