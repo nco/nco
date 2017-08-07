@@ -629,7 +629,7 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "${spt_nm}, the NCO climatology operator, version ${nco_vrs}\n"
     printf "Copyright (C) 2016--2017 Charlie Zender\n"
     printf "This program is part of NCO, the netCDF Operators\n"
-    printf "NCO is free software and comes with a BIG FAT KISS and ABOLUTELY NO WARRANTY\n"
+    printf "NCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\n"
     printf "You may redistribute and/or modify NCO under the terms of the\n"
     printf "GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\n"
     printf "GPL: http://www.gnu.org/copyleft/gpl.html\n"

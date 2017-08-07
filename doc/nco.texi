@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha04
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 1 August 2017
+@set update-date 7 August 2017
 @set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -19748,10 +19748,22 @@ print extracted metadata and data to screen (i.e., @code{stdout}) as
 @acronym{JSON}, JavaScript Object Notation, defined 
 @uref{http://www.json.org, here}.
 @command{ncks} supports @acronym{JSON} output more completely, flexibly,
-and robustly than any other tools to our knowledge.
+and robustly than any other tool to our knowledge.
 With @command{ncks} one can translate entire netCDF3 and netCDF4 files
 into @acronym{JSON}, including metadata and data, using all 
 @acronym{NCO}'s subsetting and hyperslabbing capabilities.
+@acronym{NCO} uses a @acronym{JSON} format we developed ourselves,
+during a year of discussion among interested researchers.
+Some refer to this format as @acronym{NCO-JSON}, to disambiguate it from 
+other @acronym{JSON} formats for netCDF data.
+Other projects have since adopted, and some can generate, 
+@acronym{NCO-JSON}.
+@cindex @acronym{ERDDAP}
+@cindex @acronym{CF-JSON}
+Projects that support @acronym{NCO-JSON} include @acronym{ERDDAP} 
+(@url{https://coastwatch.pfeg.noaa.gov/erddap/index.html}) and
+@acronym{CF-JSON} (@url{http://cf-json.org}).
+
 Behold @acronym{JSON} output in default mode:
 @example
 @verbatim

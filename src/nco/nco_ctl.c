@@ -551,6 +551,10 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
   /* NB: Same return values for 4.3.3 and 4.3.3.1. Few people installed 4.3.3, most installed 4.3.3.1. */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '3' && lbr_sng[3] == '.' && lbr_sng[4] == '3' ){rcd=433;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '4' && lbr_sng[3] == '.' && lbr_sng[4] == '0' ){rcd=440;}
+  /* NB: Same return values for 4.4.1 and 4.4.1.1, which simply fixes an ncgen bug in 4.4.1. */
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '4' && lbr_sng[3] == '.' && lbr_sng[4] == '1' ){rcd=441;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '5' && lbr_sng[3] == '.' && lbr_sng[4] == '0' ){rcd=450;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '5' && lbr_sng[3] == '.' && lbr_sng[4] == '1' ){rcd=451;}
 #endif /* HAVE_NETCDF4_H */
   /* exit() with custom rcd for use by Perl regression tester nco_bm.pl/NCO_rgr.pm */
   rcd-=300;
@@ -689,7 +693,8 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
      netCDF 3.4--3.6.x: "3.4 of May 16 1998 14:06:16 $"
      netCDF 4.0-alpha1--4.0-alpha10: NULL
      netCDF 4.0-alpha11--4.0-alpha16: "4.0-alpha11"
-     netCDF 4.0-beta1--present: "4.0-beta1" */  
+     netCDF 4.0-beta1--4.4: "4.0-beta1"
+     netCDF 4.4--present: "4.5.0-development" */  
   lbr_sng=(char *)strdup(nc_inq_libvers());
   /* (void)fprintf(stderr,"%s: nco_lbr_vrs_prn() returns %s\n",nco_prg_nm_get(),lbr_sng);*/
   of_ptr=strstr(lbr_sng," of ");

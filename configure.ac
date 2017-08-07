@@ -817,7 +817,6 @@ case ${host} in
     i*86-*-linux-gnu | x86_64*-linux* )
 	case ${CC} in
 	    como* ) CFLAGS="${CFLAGS} --c99" ; ;;
-# 20150109: fxm Introduce -D_DEFAULT_SOURCE in place of deprecated (as of gcc 4.9.2) -D_BSD_SOURCE -D_POSIX_SOURCE 
 # 20150525: fxm Remove -no-gcc from icc flags as per ocehugo
 #	    icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE -no-gcc" ; ;;
 	    icc* ) CFLAGS="${CFLAGS} -std=c99" ; CPPFLAGS="${CPPFLAGS} -D_BSD_SOURCE -D_POSIX_SOURCE" ; ;;
@@ -1149,6 +1148,7 @@ fi
 # Tell GNU C compiler to use C99 standard (older gcc versions default to C89)
 # fxm: only do this for gcc, not g++
 if test $ac_compiler_gnu = 'yes'; then
+    # 20150109: fxm Introduce -D_DEFAULT_SOURCE in place of deprecated (as of gcc 4.9.2) -D_BSD_SOURCE -D_POSIX_SOURCE 
     # _BSD_SOURCE needed for backward compatibility with old GCC
     # 20160418: default cori gcc is 4.3.4 from 2008!
     CFLAGS="${CFLAGS} -std=c99 -D_BSD_SOURCE -D_POSIX_SOURCE"

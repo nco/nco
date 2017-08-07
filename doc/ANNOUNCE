@@ -7,6 +7,9 @@ http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
 The main new features in 4.6.8...
+This release includes an important ncwa fix that prevents
+incorrect answers when hyperslabs are used with masks and/or weights.
+Recommend upgrading if you ever use ncwa with -d hyperslabs.
 
 PLEASE READ THIS IF YOU USE NCKS TO PRINT DATA:
 The ncks default printing will change to CDL in summer 2017.
@@ -64,8 +67,18 @@ BUG FIXES:
 A. The ncap2 implementation of mibs()/mabs()/mebs() is fixed.
    Thanks to Dominique Briand for reporting this.
 
-B. JSON now prints "null" instead of "NaN" for NaN values.
-   Thanks to Bob Simon for noticing this.
+B. JSON now prints "null" instead of "NaN" for non-normal
+   floating-point values like NaN and Infinity.
+   This makes output fully JSON-compliant, although it simultaneously 
+   makes it impossible for JSON parsers to determine whether a "null"
+   floating-point value is NaN, or +/-Infinity.
+   Thanks to Bob Simons for noticing this.
+
+C. Fix longstanding (since ~4.2.3) ncwa issue where hyperslabs
+   were not correctly handled for masks and weights. Hyperslabs
+   that started after the first array element could lead to incorrect
+   answers. Thanks to Tony Leboissetier for reporting the problem,
+   and to Pedro Vicente for fixing it.   	    
 
 KNOWN PROBLEMS DUE TO NCO:
 
