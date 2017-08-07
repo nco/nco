@@ -19761,8 +19761,10 @@ Other projects have since adopted, and some can generate,
 @cindex @acronym{ERDDAP}
 @cindex @acronym{CF-JSON}
 Projects that support @acronym{NCO-JSON} include @acronym{ERDDAP} 
-(@url{https://coastwatch.pfeg.noaa.gov/erddap/index.html}) and
-@acronym{CF-JSON} (@url{http://cf-json.org}).
+(@url{https://coastwatch.pfeg.noaa.gov/erddap/index.html}, choose output
+filetype @code{.ncoJson} from this 
+@uref{https://coastwatch.pfeg.noaa.gov/erddap/griddap/documentation.html#fileType, table}) 
+and @acronym{CF-JSON} (@url{http://cf-json.org}).
 
 Behold @acronym{JSON} output in default mode:
 @example

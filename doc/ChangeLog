@@ -1,5 +1,7 @@
 2017-08-07  Charlie Zender  <zender@uci.edu>
 
+	* Add stubs for ncclimo custom season support
+
 	* Add support for netCDF versions 4.4.1, 4.5.0, and 4.5.1 to nco_exit_lbr_rcd()
 
 	* Pedro merged code to fix nco1138, so ncwa hyperslabs with masks/weights should work again
