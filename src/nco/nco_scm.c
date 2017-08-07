@@ -174,7 +174,7 @@ nco_vrs_prn /* [fnc] Print NCO version */
   char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */
 
   /* 20170417: vrs_cpp is typically something like "4.6.6-alpha08" (quotes included) 
-     The quotation marks annyoy me yet are necessary to protect the string in nco.h 
+     The quotation marks annoy me yet are necessary to protect the string in nco.h 
      Here we remove the quotation marks by pointing past the first and putting NUL in the last */
   char *vrs_sng; /* [sng] NCO version */
   vrs_sng=vrs_cpp;
