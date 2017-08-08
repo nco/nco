@@ -1192,7 +1192,6 @@ if [ "${csn_flg}" = 'Yes' ]; then
 	    if [[ "${csn}" =~ "${csn_tla[${csn_dfn_idx}]}" ]] || [[ "${csn}" =~ "${csn_tla_lc[${csn_dfn_idx}]}" ]]; then
 		# Map requested to defined seasons, i.e., map_r2d[0]=3 means first requested season is third defined in table
 		map_r2d[${csn_nbr}]=${csn_dfn_idx}
-		printf "${spt_nm}: DEBUG Requested season index ${csn_nbr} (\"${csn}\") is defined season index ${map_r2d[${csn_nbr}]} (\"${csn_tla[${map_r2d[${csn_nbr}]}]}\")\n"
 		let csn_nbr=${csn_nbr}+1
 		break
 	    fi # !match
@@ -1202,15 +1201,6 @@ if [ "${csn_flg}" = 'Yes' ]; then
 	    exit 1
 	fi # !match
     done # !csn_lst
-
-    # Check input validity
-    for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
-	csn_dfn_sng='mam,jja,son,djf,jfm,amj,jas,ond,fm,on'
-	if [[ ! "${csn_dfn_sng}" =~ "${csn_rqs[${csn_idx}]}" ]]; then
-	    printf "${spt_nm}: ERROR Requested season ${csn_rqs[${csn_idx}]} not found in defined season list: ${csn_dfn_sng}\n"
-	    exit 1
-	fi # !err
-    done # !csn_idx
 
 fi # !csn_flg
     
@@ -1267,7 +1257,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
     if [ "${csn_flg}" = 'Yes' ]; then
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
-	    printf "Season ${csn_idx} = ${csn_rqs[${csn_idx}]}\n"
+	    printf "dbg: Requested season index ${csn_idx} (\"${csn_rqs[${csn_idx}]}\") is defined season index ${map_r2d[${csn_idx}]} (\"${csn_tla[${map_r2d[${csn_idx}]}]}\")\n"
 	done # !var_idx
     fi # !csn
     if [ "${sbs_flg}" = 'Yes' ]; then

@@ -1,5 +1,11 @@
 2017-08-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.8-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.8-alpha05 final changes';git push
+	git tag -a 4.6.8-alpha05 -m 'nco1138 ncwa hyp/msk/wgt';git push --tags
+
+	* Season infrastructure works non-intrusively, about to change clm_idx and parallelization
+
 	* ncclimo can map requested to defined seasons
 
 2017-08-07  Charlie Zender  <zender@uci.edu>
