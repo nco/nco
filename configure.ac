@@ -51,9 +51,9 @@
 
 # Process configure input with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
-#AC_INIT([NCO netCDF Operators],[4.6.8-alpha04],[nco-bugs@lists.sourceforge.net],[nco])
-#AC_INIT([NCO netCDF Operators],[m4_esyscmd([git describe --abbrev=7 --dirty --always --tags])],[nco-bugs@lists.sourceforge.net],[nco])
+# 20170808: Changed from old version without Git info to Git-based version
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
+#AC_INIT([NCO netCDF Operators],[4.6.8-alpha05],[nco-bugs@lists.sourceforge.net],[nco])
 AC_INIT([NCO netCDF Operators],m4_esyscmd([git describe --abbrev=7 --dirty --always --tags | tr -d '\n']),[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
