@@ -1110,6 +1110,7 @@ fi # !mpi
 if [ "${csn_flg}" = 'Yes' ]; then
     # Standard and custom season definitions
     # Index into season definition table
+    csn_idx_srt=1 # [idx] Starting index for season definitions
     csn_mam=1
     csn_jja=2
     csn_son=3
@@ -1122,63 +1123,96 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_fm=10
     csn_nbr_max=10 # [nbr] Maximum number of seasons in definitions database
 
-    # Seasonal two- or three-letter acronyms
-    csn_tla_mam='MAM'
-    csn_tla_jja='JJA'
-    csn_tla_son='SON'
-    csn_tla_djf='DJF'
-    csn_tla_jfm='JFM'
-    csn_tla_amj='AMJ'
-    csn_tla_jas='JAS'
-    csn_tla_ond='OND'
-    csn_tla_on='ON'
-    csn_tla_fm='FM'
+    # Seasonal two- or three-letter acronyms, uppercase
+    csn_tla[${csn_mam}]='MAM'
+    csn_tla[${csn_jja}]='JJA'
+    csn_tla[${csn_son}]='SON'
+    csn_tla[${csn_djf}]='DJF'
+    csn_tla[${csn_jfm}]='JFM'
+    csn_tla[${csn_amj}]='AMJ'
+    csn_tla[${csn_jas}]='JAS'
+    csn_tla[${csn_ond}]='OND'
+    csn_tla[${csn_on}]='ON'
+    csn_tla[${csn_fm}]='FM'
+
+    # Seasonal two- or three-letter acronyms, lowercase
+    csn_tla_lc[${csn_mam}]='mam'
+    csn_tla_lc[${csn_jja}]='jja'
+    csn_tla_lc[${csn_son}]='son'
+    csn_tla_lc[${csn_djf}]='djf'
+    csn_tla_lc[${csn_jfm}]='jfm'
+    csn_tla_lc[${csn_amj}]='amj'
+    csn_tla_lc[${csn_jas}]='jas'
+    csn_tla_lc[${csn_ond}]='ond'
+    csn_tla_lc[${csn_on}]='on'
+    csn_tla_lc[${csn_fm}]='fm'
 
     # Seasonal start-month (1-based calendar)
-    csn_srt_mam='03'
-    csn_srt_jja='06'
-    csn_srt_son='09'
-    csn_srt_djf='12'
-    csn_srt_jfm='01'
-    csn_srt_amj='04'
-    csn_srt_jas='07'
-    csn_srt_ond='10'
-    csn_srt_on='10'
-    csn_srt_fm='02'
+    csn_srt[${csn_mam}]='03'
+    csn_srt[${csn_jja}]='06'
+    csn_srt[${csn_son}]='09'
+    csn_srt[${csn_djf}]='12'
+    csn_srt[${csn_jfm}]='01'
+    csn_srt[${csn_amj}]='04'
+    csn_srt[${csn_jas}]='07'
+    csn_srt[${csn_ond}]='10'
+    csn_srt[${csn_on}]='10'
+    csn_srt[${csn_fm}]='02'
 
     # Seasonal end-month (1-based calendar)
-    csn_end_mam='05'
-    csn_end_jja='08'
-    csn_end_son='11'
-    csn_end_djf='02'
-    csn_end_jfm='03'
-    csn_end_amj='06'
-    csn_end_jas='09'
-    csn_end_ond='12'
-    csn_end_on='11'
-    csn_end_fm='03'
+    csn_end[${csn_mam}]='05'
+    csn_end[${csn_jja}]='08'
+    csn_end[${csn_son}]='11'
+    csn_end[${csn_djf}]='02'
+    csn_end[${csn_jfm}]='03'
+    csn_end[${csn_amj}]='06'
+    csn_end[${csn_jas}]='09'
+    csn_end[${csn_ond}]='12'
+    csn_end[${csn_on}]='11'
+    csn_end[${csn_fm}]='03'
 
     # Seasonal monthly weights (ncra -w argument)
-    csn_wgt_mam='31,30,31'
-    csn_wgt_jja='30,31,31'
-    csn_wgt_son='30,31,30'
-    csn_wgt_djf='31,31,28'
-    csn_wgt_jfm='31,28,31'
-    csn_wgt_amj='30,31,30'
-    csn_wgt_jas='31,31,30'
-    csn_wgt_ond='31,30,31'
-    csn_wgt_on='31,30'
-    csn_wgt_fm='28,31'
+    csn_wgt[${csn_mam}]='31,30,31'
+    csn_wgt[${csn_jja}]='30,31,31'
+    csn_wgt[${csn_son}]='30,31,30'
+    csn_wgt[${csn_djf}]='31,31,28'
+    csn_wgt[${csn_jfm}]='31,28,31'
+    csn_wgt[${csn_amj}]='30,31,30'
+    csn_wgt[${csn_jas}]='31,31,30'
+    csn_wgt[${csn_ond}]='31,30,31'
+    csn_wgt[${csn_on}]='31,30'
+    csn_wgt[${csn_fm}]='28,31'
 
     # Which seasons were requested?
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
     csn_nbr=0 # [sng] Number of seasons to compute
     for csn in ${csn_lst//,/ }; do
-	csn_tla[${csn_nbr}]=${csn}
-	let csn_nbr=${csn_nbr}+1
+	csn_rqs[${csn_nbr}]=${csn}
+	for ((csn_dfn_idx=${csn_idx_srt};csn_dfn_idx<${csn_nbr_max};csn_dfn_idx++)); do
+	    if [[ "${csn}" =~ "${csn_tla[${csn_dfn_idx}]}" ]] || [[ "${csn}" =~ "${csn_tla_lc[${csn_dfn_idx}]}" ]]; then
+		# Map requested to defined seasons, i.e., map_r2d[0]=3 means first requested season is third defined in table
+		map_r2d[${csn_nbr}]=${csn_dfn_idx}
+		printf "${spt_nm}: DEBUG Requested season index ${csn_nbr} (\"${csn}\") is defined season index ${map_r2d[${csn_nbr}]} (\"${csn_tla[${map_r2d[${csn_nbr}]}]}\")\n"
+		let csn_nbr=${csn_nbr}+1
+		break
+	    fi # !match
+	done # !csn_dfn_idx
+	if [ "${csn_dfn_idx}" -eq "${csn_nbr_max}" ]; then
+	    printf "${spt_nm}: ERROR Requested season ${csn} not defined\n"
+	    exit 1
+	fi # !match
     done # !csn_lst
 
-fi # !csn
+    # Check input validity
+    for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
+	csn_dfn_sng='mam,jja,son,djf,jfm,amj,jas,ond,fm,on'
+	if [[ ! "${csn_dfn_sng}" =~ "${csn_rqs[${csn_idx}]}" ]]; then
+	    printf "${spt_nm}: ERROR Requested season ${csn_rqs[${csn_idx}]} not found in defined season list: ${csn_dfn_sng}\n"
+	    exit 1
+	fi # !err
+    done # !csn_idx
+
+fi # !csn_flg
     
 # Print initial state
 if [ ${dbg_lvl} -ge 2 ]; then
@@ -1233,7 +1267,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: yyyy_srt = ${yyyy_srt}\n"
     if [ "${csn_flg}" = 'Yes' ]; then
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
-	    printf "Season ${csn_idx} = ${csn_tla[${csn_idx}]}\n"
+	    printf "Season ${csn_idx} = ${csn_rqs[${csn_idx}]}\n"
 	done # !var_idx
     fi # !csn
     if [ "${sbs_flg}" = 'Yes' ]; then
