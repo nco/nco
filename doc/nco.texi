@@ -6306,7 +6306,7 @@ are, by the way, independent of eachother) are @var{lon_typ} and
 The @var{lat_typ} options for global grids are @samp{uni} for
 Uniform, @samp{cap} (or @samp{fv}) for Capped (equivalent to
 @acronym{FV}), and @samp{gss} for Gaussian.  
-These values are all case-independent, so @samp{Gss} and @samp{gss} both 
+These values are all case-independent, so @samp{Gss} and @samp{gss} both
 work. 
 
 As its name suggests, the latitudes in a Uniform-latitude grid are
@@ -6392,8 +6392,8 @@ The ``Fixed'' terminology seems broken.
 
 Finally, Gaussian grids are the Cartesian representation of global
 spectral transform models. 
-Gaussian grids do not have points at the poles, and must have an even
-number of latitudes. 
+Gaussian grids do not have points at the poles, and typically have an
+even number of latitudes. 
 All three latitude grid-type supported by @acronym{NCO} (Uniform, Cap, 
 and Gaussian) are Regular grids in that they are monotonic. 
 
@@ -6487,7 +6487,7 @@ ncks --rgr grd_ttl='Equi-Angular grid 128x256'#latlon=128,256#lat_typ=uni#lon_ty
      --rgr scrip=${DATA}/grids/128x256_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # T42 Gaussian grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='T42 Gaussian grid'latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
+ncks --rgr grd_ttl='T42 Gaussian grid'#latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/t42_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree) Equi-Angular grid

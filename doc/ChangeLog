@@ -1,3 +1,10 @@
+2017-08-09  Charlie Zender  <zender@uci.edu>
+
+	* Custom seasons work in ncclimo: compute ANN only when MAM,JJA,SON,DJF requested;
+	verify ANN is BFB with old method; zero seasons when csn_lst='none'
+
+	* L'Huilier not L'Huillier
+
 2017-08-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.8-alpha05 release procedure:

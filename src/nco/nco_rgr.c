@@ -3636,7 +3636,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   lat_sin_p1=(double *)nco_malloc((lat_nbr+1)*sizeof(double)); // Sine of Gaussian latitudes double precision
   wgt_Gss_p1=(double *)nco_malloc((lat_nbr+1)*sizeof(double)); // Gaussian weights double precision
     
-  /* Use Newton iteration to find abscissas */
+  /* Use Newton iteration to find abscissae */
   c_cff=0.25*(1.0-4.0/(pi*pi));
   lat_nbr_dbl=lat_nbr;
   lat_nbr_rcp2=lat_nbr/2; // NB: Integer arithmetic
@@ -3694,7 +3694,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   //memcpy(lat_sin,lat_sin_p1,lat_nbr*sizeof(double));
   //memcpy(wgt_Gss,wgt_Gss_p1,lat_nbr*sizeof(double));
   
-  /* Reverse and shift arrays because original CCM code algorithm computed latitudes from north-to-south
+  /* Reverse and shift arrays because original CCM code algorithm computes latitudes from north-to-south
      Shift by one to remove Fortran offset in p1 arrays */
   for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
     lat_sin[lat_idx]=lat_sin_p1[lat_nbr-lat_idx];
@@ -3729,9 +3729,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
      semi-perimeter = half-perimeter of triangle = 0.5*(a+b+c)
      Spherical Excess (SE) difference between the sum of the angles of a spherical triangle area and a planar triangle area with same interior angles (which has sum equal to pi)
      SE is also the solid angle subtended by the spherical triangle and that's, well, astonishing and pretty cool
-     Wikipedia shows a better SE formula for triangles which are ill-conditioned for L'Huillier's formula because a = b ~ 0.5c
+     Wikipedia shows a better SE formula for triangles which are ill-conditioned for L'Huilier's formula because a = b ~ 0.5c
      https://en.wikipedia.org/wiki/Spherical_trigonometry#Area_and_spherical_excess 
-     See also interesting discussion of L'Huillier by Charles Karney who suggests his own alternative:
+     See also interesting discussion of L'Huilier by Charles Karney who suggests his own alternative:
      http://osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html
      The discussion mentions Mil94
      Robert D. Miller, Computing the area of a spherical polygon, Graphic Gems IV, chapter II.4, pages 132-137.
@@ -3758,7 +3758,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
      1. Girard method: Loses precision due to mismatch between pi and small spherical excesses
         A. Find interior angles/arc-lengths (a,b,c,d...) using spherical law of cosines along each edge
         B. Apply generalized Girard formula SE_n = Sum(A_n) - (N-2) - pi
-     2. L'Huillier method, N-2 triangle version by Zender: 
+     2. L'Huilier method, N-2 triangle version by Zender: 
         Convert polygon into triangles by cycling spoke through all sides from common apex
         This method requires computation of N-2 (not N) triangles, though fewer sides due to optimization
 	It works on all convex polygons (interior angles less than 180) but not, in general, concave polygons
@@ -3768,16 +3768,16 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   ii. Third vertice of preceding triangle becomes second vertice of next triangle
 	   iii. Next non-identical point becomes last vertice of next triangle
 	   iv. Side C of previous triangle is side A of next triangle
-	B. For each triangle, compute area with L'Huillier formula unless A = B ~ 0.5*C
-     3. L'Huillier method, N triangle version by Taylor: 
+	B. For each triangle, compute area with L'Huilier formula unless A = B ~ 0.5*C
+     3. L'Huilier method, N triangle version by Taylor: 
         Compute polygon centroid and treat this as hub from which spokes are drawn to all vertices
         This method requires computation of N triangles, though fewer sides due to optimization
 	Moreover, it works on all convex polygons and on slightly concave polygons
 	Centroid/hub has clear view of interior of most simple concave polygons
-     4. L'Huillier method with exact RLL grids by Zender and Agress 20160918
+     4. L'Huilier method with exact RLL grids by Zender and Agress 20160918
         A. Decompose polygon into triangles via and method (e.g., method 2 or 3 above)
 	B. Determine whether triangle is spherical or contains RLL (constant latitude)
-	C. Spherical triangles use L'Huillier, RLL triangles use series expansion */
+	C. Spherical triangles use L'Huilier, RLL triangles use series expansion */
   const char fnc_nm[]="nco_sph_plg_area()";
   const double dgr2rdn=M_PI/180.0;
   short int bnd_idx;
@@ -3921,7 +3921,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       } /* !ill */
       /* Semi-perimeter */
       prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
-      /* L'Huillier's formula */
+      /* L'Huilier's formula */
       xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
       xcs_sph=4.0*atan(xcs_sph_qtr_tan);
       area[col_idx]+=xcs_sph;

@@ -466,7 +466,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map$, map, map_file, map_fl${fnt_nrm}]"
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
-    echo " ${fnt_bld}--seasons${fnt_nrm}  Seasons to output (default ${fnt_bld}${csn_lst}${fnt_nrm}) [${fnt_tlc}csn_lst, seasons${fnt_nrm}]"
+    echo " ${fnt_bld}--seasons${fnt_nrm}  Seasons to output ('none' means none) (default ${fnt_bld}${csn_lst}${fnt_nrm}) [${fnt_tlc}csn_lst, seasons${fnt_nrm}]"
     echo " ${fnt_bld}--std_flg${fnt_nrm}  Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, std_flg, inp_std, redirect, standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thread_number, thread, threads${fnt_nrm}]"
     echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
@@ -813,6 +813,10 @@ if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
 fi # !caseid
 if [ -n "${csn_lst}" ]; then
     csn_flg='Yes'
+    if [ ${csn_lst} = 'none' ]; then
+	csn_nbr=0
+	csn_flg='No'
+    fi # !csn_lst
 fi # !csn_lst
 if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ] ; then 
     echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
@@ -825,7 +829,7 @@ elif [ "${clm_md}" = 'dly' ]; then
     clm_nbr=${dpy}
     dec_md='sdd'
 elif [ "${clm_md}" = 'mth' ]; then 
-    clm_nbr=17
+    clm_nbr=12
 fi # !clm_md
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
@@ -1080,29 +1084,34 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_abb_lc[${csn_on}]='on'
     csn_abb_lc[${csn_fm}]='fm'
 
-    # Seasonal start-month (1-based calendar)
-    csn_srt[${csn_mam}]='03'
-    csn_srt[${csn_jja}]='06'
-    csn_srt[${csn_son}]='09'
-    csn_srt[${csn_djf}]='12'
-    csn_srt[${csn_jfm}]='01'
-    csn_srt[${csn_amj}]='04'
-    csn_srt[${csn_jas}]='07'
-    csn_srt[${csn_ond}]='10'
-    csn_srt[${csn_on}]='10'
-    csn_srt[${csn_fm}]='02'
+    # Seasonal start-month index (1-based calendar)
+    csn_srt_idx[${csn_mam}]=3
+    csn_srt_idx[${csn_jja}]=6
+    csn_srt_idx[${csn_son}]=9
+    csn_srt_idx[${csn_djf}]=12
+    csn_srt_idx[${csn_jfm}]=1
+    csn_srt_idx[${csn_amj}]=4
+    csn_srt_idx[${csn_jas}]=7
+    csn_srt_idx[${csn_ond}]=10
+    csn_srt_idx[${csn_on}]=10
+    csn_srt_idx[${csn_fm}]=2
 
-    # Seasonal end-month (1-based calendar)
-    csn_end[${csn_mam}]='05'
-    csn_end[${csn_jja}]='08'
-    csn_end[${csn_son}]='11'
-    csn_end[${csn_djf}]='02'
-    csn_end[${csn_jfm}]='03'
-    csn_end[${csn_amj}]='06'
-    csn_end[${csn_jas}]='09'
-    csn_end[${csn_ond}]='12'
-    csn_end[${csn_on}]='11'
-    csn_end[${csn_fm}]='03'
+    # Seasonal end-month index (1-based calendar)
+    csn_end_idx[${csn_mam}]=5
+    csn_end_idx[${csn_jja}]=8
+    csn_end_idx[${csn_son}]=11
+    csn_end_idx[${csn_djf}]=2
+    csn_end_idx[${csn_jfm}]=3
+    csn_end_idx[${csn_amj}]=6
+    csn_end_idx[${csn_jas}]=9
+    csn_end_idx[${csn_ond}]=12
+    csn_end_idx[${csn_on}]=11
+    csn_end_idx[${csn_fm}]=3
+
+    for ((csn_idx=0;csn_idx<${csn_nbr_max};csn_idx++)); do
+	csn_srt_mm[${csn_idx}]=`printf "%02d" ${csn_srt_idx[${csn_idx}]}`
+	csn_end_mm[${csn_idx}]=`printf "%02d" ${csn_end_idx[${csn_idx}]}`
+    done # !csn_idx
 
     # Seasonal number of months
     csn_nom[${csn_mam}]=3
@@ -1136,8 +1145,11 @@ if [ "${csn_flg}" = 'Yes' ]; then
 	# NB: Requested seasons are 0-based, defined seasons are 0-based
 	for ((csn_dfn_idx=${csn_idx_srt};csn_dfn_idx<${csn_nbr_max};csn_dfn_idx++)); do
 	    if [[ "${csn}" =~ "${csn_abb[${csn_dfn_idx}]}" ]] || [[ "${csn}" =~ "${csn_abb_lc[${csn_dfn_idx}]}" ]]; then
-		# Map requested to defined seasons, i.e., map_r2d[0]=3 means first requested season is fourth defined in table
+		# Map requested to defined (r2d) )seasons and inverse (d2r)
+		# map_r2d[0]=3 means first requested season is fourth defined in table
+		# map_d2r[3]=0 means fourth defined season is first requested
 		map_r2d[${csn_nbr}]=${csn_dfn_idx}
+		map_d2r[${csn_dfn_idx}]=${csn_nbr}
 		let csn_nbr=${csn_nbr}+1
 		break
 	    fi # !match
@@ -1148,10 +1160,28 @@ if [ "${csn_flg}" = 'Yes' ]; then
 	fi # !match
     done # !csn_lst
 
+    # Were all four seasons requested so annual mean can be computed from seasons?
+    ann_flg='No'
+    ann_nbr=0
+    if [[ ${csn_lst} =~ 'mam' ]] || [[ ${csn_lst} =~ 'MAM' ]]; then
+	let clm_csn_mam_idx=${map_d2r[${csn_mam}]}+12+1
+	if [[ ${csn_lst} =~ 'jja' ]] || [[ ${csn_lst} =~ 'JJA' ]]; then
+	    let clm_csn_jja_idx=${map_d2r[${csn_jja}]}+12+1
+	    if [[ ${csn_lst} =~ 'son' ]] || [[ ${csn_lst} =~ 'SON' ]]; then
+		let clm_csn_son_idx=${map_d2r[${csn_son}]}+12+1
+		if [[ ${csn_lst} =~ 'djf' ]] || [[ ${csn_lst} =~ 'DJF' ]]; then
+		    let clm_csn_djf_idx=${map_d2r[${csn_djf}]}+12+1
+		    ann_flg='Yes'
+		    ann_nbr=1
+		fi # !djf
+	    fi # !son
+	fi # !jja
+    fi # !mam
+
     # Account for season number in climatology command number and parallelism
-    let clm_nbr=12+${csn_nbr}+1
     let clm_csn_srt_idx=12+1
     let clm_csn_end_idx=12+${csn_nbr}
+    let clm_nbr=12+${csn_nbr}+${ann_nbr}
     
 fi # !csn_flg
     
@@ -1284,7 +1314,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     if [ "${csn_flg}" = 'Yes' ]; then
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    printf "dbg: Requested season index ${csn_idx} (\"${csn_rqs[${csn_idx}]}\") is defined season index ${map_r2d[${csn_idx}]} (\"${csn_abb[${map_r2d[${csn_idx}]}]}\")\n"
-	done # !var_idx
+	done # !csn_idx
     fi # !csn
     if [ "${sbs_flg}" = 'Yes' ]; then
 	printf "dbg: Will split into files for ${var_nbr} variables:\n"
@@ -1404,7 +1434,9 @@ if [ "${clm_flg}" = 'Yes' ]; then
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
-    if [ ${clm_md} = 'mth' ]; then 
+    if [ ${csn_flg} = 'No' ]; then 
+	printf "Seasons and therefore annual means have been turned-off and will not be computed\n"
+    elif [ ${clm_md} = 'mth' ]; then 
 	if [ ${dec_md} = 'scd' ]; then 
 	    printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive and cross calendar-year boundaries\n"
 	else
@@ -1481,7 +1513,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
     for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	# Produces names like "${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
 	let clm_idx=1+12+${csn_idx}
-	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt}${csn_srt[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end[${map_r2d[${csn_idx}]}]}_climo.nc"
+	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
 	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_DJF_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
 	fi # !DJF
@@ -1490,7 +1522,9 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 #    fl_out[14]="${drc_out}/${out_nm}_JJA_${yyyy_srt}06_${yyyy_end}08_climo.nc"
 #    fl_out[15]="${drc_out}/${out_nm}_SON_${yyyy_srt}09_${yyyy_end}11_climo.nc"
 #    fl_out[16]="${drc_out}/${out_nm}_DJF_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
-    fl_out[${clm_nbr}]="${drc_out}/${out_nm}_ANN_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
+    if [ "${ann_flg}" = 'Yes' ]; then
+	fl_out[${clm_nbr}]="${drc_out}/${out_nm}_ANN_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
+    fi # !ann_flg
     # Derive all regridded and AMWG names from output names
     for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 	fl_amwg[${clm_idx}]=`expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
@@ -2047,48 +2081,49 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		    rgr_pid[${clm_idx}]=$!
 		fi # !par_opt
 	    fi # !dbg
-	done 
+	done # !clm_idx
 	# Start seasonal means first, then wait() for monthly regridding to finish
     fi # !rgr_map
     
     # Block 2: Climatological seasonal means
-    # Block 2 Loop 1: Generate seasonal commands
-    printf "Climatological seasonal means...\n"
-    for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
-	let clm_idx=1+12+${csn_idx}
-	# fxm fxm
-	fl_out_arg=''
-	for ((mth_idx=${csn_srt[${map_r2d[${csn_idx}]}]};mth_idx<=${csn_srt[${map_r2d[${csn_idx}]}]};mth_idx++)); do
-	    fl_out_arg="${fl_out_arg} ${fl_out[mth_idx]}"
-	done # !mth_idx
-	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O -w ${csn_wgt[${map_r2d[${csn_idx}]}]} ${nco_opt} ${gaa_sng} ${fl_out_arg} ${fl_out[${clm_idx}]}"
-	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[${clm_idx}]}"
-	fi # !DJF
-    done # !csn_idx
-#    cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${gaa_sng} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
-#    cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${gaa_sng} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
-#    cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${gaa_sng} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
-#    cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
+    if [ "${csn_flg}" = 'Yes' ]; then
+	# Block 2 Loop 1: Generate seasonal commands
+	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
+	    printf "Climatological seasonal mean for ${csn_abb[${map_r2d[${csn_idx}]}]} ...\n"
+	    let clm_idx=1+12+${csn_idx}
+	    fl_lst=''
+	    for ((mth_idx=${csn_srt_idx[${map_r2d[${csn_idx}]}]};mth_idx<=${csn_end_idx[${map_r2d[${csn_idx}]}]};mth_idx++)); do
+		fl_lst="${fl_lst} ${fl_out[${mth_idx}]}"
+	    done # !mth_idx
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O -w ${csn_wgt[${map_r2d[${csn_idx}]}]} ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_idx}]}"
+	    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[${clm_idx}]}"
+	    fi # !DJF
+	done # !csn_idx
+	# cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${gaa_sng} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
+	# cmd_clm[14]="${cmd_mpi[14]} ncra --cb -O -w 30,31,31 ${nco_opt} ${gaa_sng} ${fl_out[6]} ${fl_out[7]} ${fl_out[8]} ${fl_out[14]}"
+	# cmd_clm[15]="${cmd_mpi[15]} ncra --cb -O -w 30,31,30 ${nco_opt} ${gaa_sng} ${fl_out[9]} ${fl_out[10]} ${fl_out[11]} ${fl_out[15]}"
+	# cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
 
-    # Block 2 Loop 2: Execute and/or echo seasonal climatology commands
-    for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_clm[${clm_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    if [ -z "${par_opt}" ]; then
-		eval ${cmd_clm[${clm_idx}]}
-		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-		    exit 1
-		fi # !err
-	    else # !par_opt
-		eval ${cmd_clm[${clm_idx}]} ${par_opt}
-		clm_pid[${clm_idx}]=$!
-	    fi # !par_opt
-	fi # !dbg
-    done # !clm_idx
+	# Block 2 Loop 2: Execute and/or echo seasonal climatology commands
+	for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_clm[${clm_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_clm[${clm_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_opt
+		    eval ${cmd_clm[${clm_idx}]} ${par_opt}
+		    clm_pid[${clm_idx}]=$!
+		fi # !par_opt
+	    fi # !dbg
+	done # !clm_idx
+    fi # !csn_flg
     # wait() for monthly regridding, if any, to finish
     if [ -n "${rgr_map}" ]; then 
 	if [ -n "${par_opt}" ]; then
@@ -2102,92 +2137,103 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	fi # !par_opt
     fi # !rgr_map
     # wait() for seasonal climatologies to finish
-    if [ -n "${par_opt}" ]; then
-	for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
-	    wait ${clm_pid[${clm_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-		exit 1
-	    fi # !err
-	done # !clm_idx
-    fi # !par_opt
-    wait
-    
-    # Block 2: Loop 4: Regrid seasonal files. Load-balance by using idle nodes (nodes not used for annual mean).
-    if [ -n "${rgr_map}" ]; then 
-	printf "Regrid seasonal data...\n"
-	for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
-	    let nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
-	    if [ ${nd_idx} -lt ${csn_nbr} ]; then
-		let nd_idx=${nd_idx}+${csn_nbr}
-	    fi # !nd
-	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
-	    fi # !mdl_typ
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_rgr[${clm_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -le 1 ]; then
-		if [ -z "${par_opt}" ]; then
-		    eval ${cmd_rgr[${clm_idx}]}
-		    if [ $? -ne 0 ]; then
-			printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-			exit 1
-		    fi # !err
-		else # !par_opt
-		    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
-		    rgr_pid[${clm_idx}]=$!
-		fi # !par_opt
-	    fi # !dbg
-	done 
-	# Start annual mean first, then wait() for seasonal regridding to finish
-    fi # !rgr_map
-    
-    # Block 3: Climatological annual mean (seventeenth file)
-    printf "Climatological annual mean...\n"
-    cmd_clm[${clm_nbr}]="${cmd_mpi[${clm_nbr}]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
-#    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_clm[${clm_nbr}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -le 1 ]; then
-	if [ -z "${par_opt}" ]; then
-	    eval ${cmd_clm[${clm_nbr}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_nbr}] failed. Debug this:\n${cmd_clm[${clm_nbr}]}\n"
-		exit 1
-	    fi # !err
-	else # !par_opt
-	    eval ${cmd_clm[${clm_nbr}]} ${par_opt}
-	    clm_pid[${clm_nbr}]=$!
-	fi # !par_opt
-    fi # !dbg
-    # wait() for seasonal regridding, if any, to finish
-    if [ -n "${rgr_map}" ]; then 
+    if [ "${csn_flg}" = 'Yes' ]; then
 	if [ -n "${par_opt}" ]; then
 	    for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
-		wait ${rgr_pid[${clm_idx}]}
+		wait ${clm_pid[${clm_idx}]}
 		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
+		    printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
 	    done # !clm_idx
 	fi # !par_opt
-    fi # !rgr_map
-    # wait() for annual climatology to finish
-    if [ -n "${par_opt}" ]; then
-	wait ${clm_pid[${clm_nbr}]}
-	if [ $? -ne 0 ]; then
-	    printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_nbr}] failed. Debug this:\n${cmd_clm[${clm_nbr}]}\n"
-	    exit 1
-	fi # !err
-    fi # !par_opt
+    fi # !csn_flg
+    # fxm: 20170809 what is this next line waiting for?
+    wait
     
-    # Block 5: Regrid climatological annual mean
-    if [ -n "${rgr_map}" ]; then 
-	printf "Regrid annual data...\n"
-	for ((clm_idx=17;clm_idx<=17;clm_idx++)); do
+    # Block 2: Loop 4: Regrid seasonal files. Load-balance by using idle nodes (nodes not used for annual mean).
+    if [ "${csn_flg}" = 'Yes' ]; then
+	if [ -n "${rgr_map}" ]; then 
+	    printf "Regrid seasonal data...\n"
+	    for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
+		let nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
+		if [ ${nd_idx} -lt ${csn_nbr} ]; then
+		    let nd_idx=${nd_idx}+${csn_nbr}
+		fi # !nd
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		if [ "${mdl_typ}" = 'mpas' ]; then
+		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		fi # !mdl_typ
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_rgr[${clm_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -le 1 ]; then
+		    if [ -z "${par_opt}" ]; then
+			eval ${cmd_rgr[${clm_idx}]}
+			if [ $? -ne 0 ]; then
+			    printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
+			    exit 1
+			fi # !err
+		    else # !par_opt
+			eval ${cmd_rgr[${clm_idx}]} ${par_opt}
+			rgr_pid[${clm_idx}]=$!
+		    fi # !par_opt
+		fi # !dbg
+	    done # !clm_idx
+	    # Start annual mean first, then wait() for seasonal regridding to finish
+	fi # !rgr_map
+    fi # !csn_flg
+    
+    # Block 3: Climatological annual mean
+    if [ "${ann_flg}" = 'Yes' ]; then
+	printf "Climatological annual mean...\n"
+	fl_lst="${fl_out[${clm_csn_mam_idx}]} ${fl_out[${clm_csn_jja_idx}]} ${fl_out[${clm_csn_son_idx}]} ${fl_out[${clm_csn_djf_idx}]}"
+	cmd_clm[${clm_nbr}]="${cmd_mpi[${clm_nbr}]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_nbr}]}"
+	#    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_clm[${clm_nbr}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -le 1 ]; then
+	    if [ -z "${par_opt}" ]; then
+		eval ${cmd_clm[${clm_nbr}]}
+		if [ $? -ne 0 ]; then
+		    printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_nbr}] failed. Debug this:\n${cmd_clm[${clm_nbr}]}\n"
+		    exit 1
+		fi # !err
+	    else # !par_opt
+		eval ${cmd_clm[${clm_nbr}]} ${par_opt}
+		clm_pid[${clm_nbr}]=$!
+	    fi # !par_opt
+	fi # !dbg
+    fi # !ann_flg
+    # wait() for seasonal regridding, if any, to finish
+    if [ "${csn_flg}" = 'Yes' ]; then
+	if [ -n "${rgr_map}" ]; then 
+	    if [ -n "${par_opt}" ]; then
+		for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
+		    wait ${rgr_pid[${clm_idx}]}
+		    if [ $? -ne 0 ]; then
+			printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		done # !clm_idx
+	    fi # !par_opt
+	fi # !rgr_map
+    fi # !csn_flg
+    if [ "${ann_flg}" = 'Yes' ]; then
+	clm_idx=${clm_nbr}
+	# wait() for annual climatology to finish
+	if [ -n "${par_opt}" ]; then
+	    wait ${clm_pid[${clm_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !par_opt
+	
+	# Block 5: Regrid climatological annual mean
+	if [ -n "${rgr_map}" ]; then 
+	    printf "Regrid annual data...\n"
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
@@ -2203,8 +2249,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		    exit 1
 		fi # !err
 	    fi # !dbg
-	done 
-    fi # !rgr_map
+	fi # !rgr_map
+    fi # !ann_flg
     
     # Link ACME-climo to AMWG-climo filenames
     # drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
@@ -2294,27 +2340,29 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    # Produce names like "${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end_prv}05_climo.nc"
 	    let clm_idx=1+12+${csn_idx}
-	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_prv}${csn_srt[${map_r2d[${csn_idx}]}]}_${yyyy_end_prv}${csn_end[${map_r2d[${csn_idx}]}]}_climo.nc"
-	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_prv}${csn_srt[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end[${map_r2d[${csn_idx}]}]}_climo.nc"
+	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_prv}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end_prv}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
+	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_prv}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
 	    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
 		fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end_prv}${mm_djf_end}_climo.nc"
 		fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
 	    fi # !DJF
-	done # !clm_idx
+	done # !csn_idx
 
 #	fl_prv[13]="${drc_prv}/${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end_prv}05_climo.nc"
 #	fl_prv[14]="${drc_prv}/${out_nm}_JJA_${yyyy_srt_prv}06_${yyyy_end_prv}08_climo.nc"
 #	fl_prv[15]="${drc_prv}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end_prv}11_climo.nc"
 #	fl_prv[16]="${drc_prv}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end_prv}${mm_djf_end}_climo.nc"
-	fl_prv[${clm_nbr}]="${drc_prv}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end_prv}${mm_ann_end}_climo.nc"
-	
 #	fl_xtn[13]="${drc_xtn}/${out_nm}_MAM_${yyyy_srt_prv}03_${yyyy_end}05_climo.nc"
 #	fl_xtn[14]="${drc_xtn}/${out_nm}_JJA_${yyyy_srt_prv}06_${yyyy_end}08_climo.nc"
 #	fl_xtn[15]="${drc_xtn}/${out_nm}_SON_${yyyy_srt_prv}09_${yyyy_end}11_climo.nc"
 #	fl_xtn[16]="${drc_xtn}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
-	fl_xtn[${clm_nbr}]="${drc_xtn}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
 	
-	# Derive all seventeen regridded and AMWG names from output names
+	if [ "${ann_flg}" = 'Yes' ]; then
+	    fl_prv[${clm_nbr}]="${drc_prv}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end_prv}${mm_ann_end}_climo.nc"
+	    fl_xtn[${clm_nbr}]="${drc_xtn}/${out_nm}_ANN_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
+	fi # !ann_flg
+	
+	# Derive all regridded and AMWG names from output names
 	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 	    fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
 	    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_srt}/_${yyyy_srt_prv}}"
@@ -2328,7 +2376,14 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	    fl_amwg_xtn[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_xtn}\//}" # Delete prepended path to ease symlinking
 	    if [ ${dec_md} = 'scd' ] ; then
 		# Handle Dec, DJF, and ANN
-		if [ ${clm_idx} -eq 12 ] || [ ${clm_idx} -eq 16 ] || [ ${clm_idx} -eq 17 ] ; then 
+		let csn_idx=${clm_idx}-12-1
+		let ann_idx=${clm_csn_end_idx}+1
+		if [ ${csn_idx} -ge 0 ]; then
+		    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ] || [ ${clm_idx} -eq ${ann_idx} ] ; then
+			flg_djf_or_ann='Yes'
+		    fi # !djf or ann
+		fi # !csn_idx
+		if [ ${clm_idx} -eq 12 ] || [ ${flg_djf_or_ann} = 'Yes' ] ; then 
 		    fl_rgr_prv[${clm_idx}]="${fl_rgr[${clm_idx}]/${drc_rgr}/${drc_rgr_prv}}"
 		    fl_rgr_prv[${clm_idx}]="${fl_rgr_prv[${clm_idx}]/_${yyyy_clm_srt_dec}/_${yyyy_clm_srt_dec_prv}}"
 		    if [ ${clm_idx} -eq 12 ] ; then 
@@ -2449,7 +2504,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	echo "Quick plots of last climatological daily mean:"
 	let idx_lst=${clm_nbr}-1
     else
-	echo "Quick plots of climatological annual mean:"
+	echo "Quick plots of last computed climatology:"
 	let idx_lst=${clm_nbr}
     fi # !dly
     
