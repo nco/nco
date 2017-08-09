@@ -1,5 +1,9 @@
 2017-08-09  Charlie Zender  <zender@uci.edu>
 
+	* Run developer tests for =~ /zender/ not just == 'zender' so aims4 works
+
+	* Fix ANTLR_LIB handling in configure.ac (helps edison build)
+
 	* NCO 4.6.8-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.8-alpha06 final changes';git push
 	git tag -a 4.6.8-alpha06 -m 'ncclimo custom months';git push --tags

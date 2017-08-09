@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha06
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 7 August 2017
+@set update-date 9 August 2017
 @set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17112,8 +17112,9 @@ ncclimo [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-j @var{job_nbr}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
 [--no_cll_msr ] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd]
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}]
-[-S @var{yr_prv}] [-s @var{yr_srt}] [--stdin] [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}]
-[-v @var{var_lst}] [--version] [-x @var{cf_flg}] [-X @var{drc_xtn}] [-x @var{drc_prv}] 
+[-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--stdin] 
+[-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [-v @var{var_lst}] [--version] 
+[-x @var{cf_flg}] [-X @var{drc_xtn}] [-x @var{drc_prv}] 
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
 @end example
 
@@ -17127,7 +17128,7 @@ means.
 Alternatively, in timeseries reshaping mode, @command{ncclimo} will
 subset and temporally split the input raw data timeseries into
 per-variable files spanning the entire period. 
-@command{ncclimo} can optionally regrid all output files in either mode. 
+@command{ncclimo} can optionally regrid all output files in either mode.
 
 There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
 @samp{-i}, and @samp{-o})) to generate climatologies, and many more
@@ -17514,6 +17515,28 @@ be December of the year before the start year (to allow for contiguous
 @acronym{DJF} climos).   
 If @samp{-a sdd} is specified, the first month used is January of
 the specified start year. 
+
+@cindex @code{--seasons @var{csn_lst}}
+@cindex @var{csn_lst}
+@cindex @code{--seasons}
+@cindex @code{--csn}
+@cindex @code{--csn_lst}
+@item --seasons @var{csn_lst} (@code{--seasons}, @code{--csn_lst}, @code{--csn})
+Seasons for @command{ncclimo} to compute in monthly climatology
+generation mode. 
+The list of seasons, @var{csn_lst}, is a comma-separated,
+case-insensitive, unordered subset of the abbreviations for the ten (so 
+far) defined seasons: 
+@code{jfm}, @code{amj}, @code{jas}, @code{ond}, @code{on}, @code{fm},
+@code{djf}, @code{mam}, @code{jja}, and @code{son}
+By default @code{@var{csn_lst}=mam,jja,son,djf}.
+The climatological annual mean, @code{ANN}, is computed only if and only 
+if DJF, MAM, JJA, and SON are all requested (which is the default).
+Note that ANN is computed as the time-weighted average of the four
+seasons, rather than as the time-weighted average of the twelve months. 
+(This has implications for the parallelism of the operation).
+The special value @code{@var{csn_lst}=none} turns-off computation of
+seasonal (and annual) climatologies. 
 
 @cindex @code{--stdin}
 @cindex @code{--inp_std}

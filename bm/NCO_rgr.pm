@@ -130,7 +130,7 @@ print "\n";
     $USER=$ENV{'USER'};
     $DATA=$ENV{'DATA'};
     $HOME=$ENV{'HOME'};
-if($USER eq 'zender'){
+if($USER =~ /zender/){
 # NB: area variable is not in ACME cube-sphere native output so this answer is not area-weighted
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm
 # ncwa -O ${DATA}/ne30/clm/famipc5_ne30_v0.3_00003_ANN_197912_198311_climo.nc ~/foo.nc
