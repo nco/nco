@@ -19054,15 +19054,15 @@ if test "${enable_ncoxx}" != 'no'; then
 	    ANTLR_LIB="${ANTLR_ROOT}/lib"
 	fi
     fi
-    if test "${ANTLR_BIN}"; then
+    if test -d "${ANTLR_BIN}"; then
 # Add ${ANTLR_BIN}, if present, to binary search path
 	PATH="${PATH}:${ANTLR_BIN}"
     fi
-    if test "${ANTLR_INC}"; then
+    if test -d "${ANTLR_INC}"; then
 # Add ${ANTLR_INC}, if present, to include search path
 	CPPFLAGS="${CPPFLAGS} -I${ANTLR_INC}"
     fi
-    if test "${ANTLR_LIB}"; then
+    if test -d "${ANTLR_LIB}"; then
 # Add ${ANTLR_LIB}, if present, to library search path
 	LDFLAGS="${LDFLAGS} -L${ANTLR_LIB}"
     fi
