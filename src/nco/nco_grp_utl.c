@@ -7402,43 +7402,14 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
   ncks -H -v orog ~/foo.nc # Correct answer is 4
   For this case define here the hyperslab for <wgt_var> from the original input
   user name list 'lmt_arg'
+  This detection uses a new function nco_msa_var_get_sct()
+  that is the same as nco_msa_var_get_trv() but with input 'var_trv' '
+  TODO: Deprecate nco_msa_var_get_trv() and use this new function nco_msa_var_get_sct()
+  because some code is repeated
+  NB: this detection is done below for both cases of absolute and relative weight path
   */
 
-  if (0) {
-    lmt_sct **lmt = NULL_CEWI;  /* [sct] User defined limits */
-    /* Deal with the relative path case */
-    if (wgt_nm[0] != '/') {
-      /* Search for the weight/mask in the dimensions of the variable that needs weight/mask*/
-      for (int idx_dmn = 0; idx_dmn < var->nbr_dim; idx_dmn++) {
-        /* Dimension matches mask name and it is a coordinate variable */
-        if ((!strcmp(var->dim[idx_dmn]->nm, wgt_nm)) && var->dim[idx_dmn]->is_crd_dmn) {
-          /* Get the GTT version of the variable *that needs* weight/mask, 'orog2'above (using its input full name) */
-          trv_sct *var_trv = trv_tbl_var_nm_fll(var->nm_fll, trv_tbl);
-          assert(var_trv);
-          assert(var_trv->nbr_dmn == var->nbr_dim);
-          for (int idx_dmn_var = 0; idx_dmn_var < var_trv->nbr_dmn; idx_dmn_var++) {
-            /* The dimension name that is the mask */
-            if (!strcmp(var_trv->var_dmn[idx_dmn_var].dmn_nm, wgt_nm)) {
-              trv_sct *wgt_trv;
-              /* NB to get the GGT variable use the *full name* of the weight (that must be one dimension of the variable) */
-              wgt_trv = trv_tbl_var_nm_fll(var_trv->var_dmn[idx_dmn_var].dmn_nm_fll, trv_tbl);
-              lmt = nco_lmt_prs(lmt_nbr, lmt_arg);
-              nco_bld_lmt_var(nc_id, MSA_USR_RDR, lmt_nbr, lmt, FORTRAN_IDX_CNV, wgt_trv);
-              (void)nco_inq_grp_full_ncid(nc_id, wgt_trv->grp_nm_fll, &grp_id);
-              (void)nco_inq_varid(grp_id, wgt_trv->nm, &var_id);
-              /* Transfer from table to local variable */
-              wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
-              /* Assign the hyperslab information for a variable 'var_sct'  from the obtained GTT variable */
-              /* Similar to nco_msa_var_get_trv() but just with one input GTT variable */
-              (void)nco_msa_var_get_sct(nc_id, wgt_var, wgt_trv);
-              lmt = nco_lmt_lst_free(lmt, lmt_nbr);
-              return wgt_var;
-            }
-          }
-        }
-      }
-    }
-  }
+  
 
   /* If first character is '/' then weight name is absolute path */
   if (wgt_nm[0] == '/') {
@@ -7447,10 +7418,14 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
     wgt_trv = trv_tbl_var_nm_fll(wgt_nm, trv_tbl);
     (void)nco_inq_grp_full_ncid(nc_id, wgt_trv->grp_nm_fll, &grp_id);
     (void)nco_inq_varid(grp_id, wgt_trv->nm, &var_id);
+
+
     /* Transfer from table to local variable */
     wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
     /* Retrieve variable NB: use GTT version, that "knows" all limits */
     (void)nco_msa_var_get_trv(nc_id, wgt_var, trv_tbl);
+
+
     return wgt_var;
   }
   else {
