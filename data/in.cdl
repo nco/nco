@@ -454,6 +454,11 @@ variables:
 	mss_val_scl:long_name = "scalar missing value";
 	mss_val_scl:_FillValue = 1.0e36f;
 
+	float mss_val_scl_sml;
+	mss_val_scl_sml:long_name = "scalar missing value";
+	mss_val_scl_sml:purpose = "Unlike mss_val_scl, mss_val_scl_sml has a missing value that fits within any packed data type range";
+	mss_val_scl_sml:_FillValue = 1.0e4f;
+
 	float mss_val_fst(lon);
 	mss_val_fst:long_name = "offset partial missing value example";
 	mss_val_fst:_FillValue = -999.0f;
@@ -1435,6 +1440,7 @@ data:
 	mss_val_all=1.0e36,1.0e36,1.0e36,1.0e36;
 	mss_val_fst=-999,73,-999,73;
 	mss_val_scl=1.0e36;
+	mss_val_scl_sml=1.0e4;
 	//nan_arr=0,nan;
 	nan_arr=0,73;
 	//nan_scl=nan;

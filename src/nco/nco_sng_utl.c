@@ -263,6 +263,8 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
   while(*chr_in_ptr){
     if(isascii(*chr_in_ptr)){
       if(iscntrl(*chr_in_ptr)){	/* Render control chars as two hex digits, \%xx */
+	/* 20170810: GCC7.x produces -Wformat-truncation warning here, that 4 B destination is too small
+	   False-positive warning? How to eliminate? */
 	snprintf(chr_out_ptr,4,"\\%%%.2x",*chr_in_ptr);
 	chr_out_ptr+=4;
       }else{
@@ -416,6 +418,8 @@ nm2sng_fl /* [fnc] Turn file name into legal string for shell commands */
   while(*chr_in_ptr){
     if(isascii(*chr_in_ptr)){
       if(iscntrl(*chr_in_ptr)){	/* Render control chars as two hex digits, \%xx */
+	/* 20170810: GCC7.x produces -Wformat-truncation warning here, that 4 B destination is too small 
+	   False-positive warning? How to eliminate? */
 	snprintf(chr_out_ptr,4,"\\%%%.2x",*chr_in_ptr);
 	chr_out_ptr+=4;
       }else{

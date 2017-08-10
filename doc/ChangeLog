@@ -4,7 +4,9 @@
 	when attempting to stuff IEEE data like 1.0e30 (_FillValue) into signed short spots.
 	Although correct, this new behavior causes many ncpdq regressions...
 
-	* Address one implicit-fallthrough warning. Others require modifying nco_uthash.h. Yikes.
+	* Address false-positive implicit-fallthrough warnings in nco_uthash.h by inserting FALLTHRU comments
+
+	* Fix one implicit-fallthrough bug identified by GCC7 (the warning proves useful)
 
 	* Add custom season 'ANN' computed in seasonal loop from all twelve monthly climos
 
