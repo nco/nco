@@ -5373,12 +5373,23 @@ if(0){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-	
+
 #ncwa #71 (pvn 20170717)
 # ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc
 # ncks -H -v orog2 ~/foo.nc
-    $dsc_sng="Mask condition not in variable list (mask is coordinate variable) (fixed with nco1138 20170804)";
+    $dsc_sng="Mask condition not in variable list (mask is relative coordinate variable) (fixed with nco1138 20170804)";
     $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -v orog2 %tmp_fl_00%";
+    $tst_cmd[2]="orog2 = 4";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array	
+
+#ncwa #72 (pvn 20170810)
+# ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -m lat -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc
+# ncks -H -v orog2 ~/foo.nc
+    $dsc_sng="Mask condition not in variable list (mask is absolute coordinate variable) (fixed with nco1138 20170804)";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -y ttl -v orog2 -d lat,0.,90. -m /lat -M 0.0 -T gt $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H -v orog2 %tmp_fl_00%";
     $tst_cmd[2]="orog2 = 4";
     $tst_cmd[3]="SS_OK";
