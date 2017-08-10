@@ -581,6 +581,7 @@ variables:
 	float scalar_var;
 	scalar_var:long_name = "scalar variable";
 	scalar_var:units = "fraction";
+	scalar_var:_FillValue = 1.0e36f;
 
 	float float_var;
 	float_var:long_name = "float";
