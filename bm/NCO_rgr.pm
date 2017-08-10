@@ -1798,6 +1798,10 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array
     
 #ncks #18 
+# ncatted -O -a _FillValue,global,c,l,222 ~/nco/data/in.nc ~/foo.nc
+# ncks -O ~/foo.nc ~/foo2.nc
+# ncap2 -v -O -s 'n2=global@_FillValue;' ~/foo2.nc ~/foo3.nc
+# ncks -C -H -s '%d' -v n2 ~/foo3.nc
     $tst_cmd[0]="ncatted -O $fl_fmt $nco_D_flg -a _FillValue,global,c,l,222 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -v -O -s 'n2=global\@_FillValue;' %tmp_fl_01% %tmp_fl_02%";
@@ -3344,6 +3348,8 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
 
 #ncpdq #31
+#ncpdq -O -C -P all_xst -v three_dmn_var_dbl -d time,0,2 -d time,8,9 -d lon,0 -d lon,1 -d lat,1 ~/nco/data/in.nc ~/foo.nc
+#ncks -C -H -s '%i' -v three_dmn_var_dbl -d time,2 -d lon,1 -d lat,0 ~/foo.nc
     ##### TODO 880
     $dsc_sng="Pack 3D variable with MSA -C -P all_xst -v three_dmn_var_dbl -d time,0,2 -d time,8,9 -d lon,0 -d lon,1 -d lat,1"; 
     $tst_cmd[0]="ncpdq $omp_flg -h -O -C $fl_fmt $nco_D_flg -P all_xst -v three_dmn_var_dbl -d time,0,2 -d time,8,9 -d lon,0 -d lon,1 -d lat,1 $in_pth_arg in.nc %tmp_fl_00%";
