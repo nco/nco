@@ -1,5 +1,11 @@
 2017-08-10  Charlie Zender  <zender@uci.edu>
 
+	* netCDF 4.5.x dies with "Not a valid data type or _FillValue type mismatch"
+	when attempting to stuff IEEE data like 1.0e30 (_FillValue) into signed short spots.
+	Although correct, this new behavior causes many ncpdq regressions...
+
+	* Address one implicit-fallthrough warning. Others require modifying nco_uthash.h. Yikes.
+
 	* Add custom season 'ANN' computed in seasonal loop from all twelve monthly climos
 
 2017-08-09  Charlie Zender  <zender@uci.edu>

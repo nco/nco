@@ -445,15 +445,25 @@ do {                                                                            
   hashv += keylen;                                                               \
   switch ( _hj_k ) {                                                             \
      case 11: hashv += ( (unsigned)_hj_key[10] << 24 );                          \
-     case 10: hashv += ( (unsigned)_hj_key[9] << 16 );                           \
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
+     case 10: hashv += ( (unsigned)_hj_key[9] << 16 );			\
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
      case 9:  hashv += ( (unsigned)_hj_key[8] << 8 );                            \
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
      case 8:  _hj_j += ( (unsigned)_hj_key[7] << 24 );                           \
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
      case 7:  _hj_j += ( (unsigned)_hj_key[6] << 16 );                           \
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
      case 6:  _hj_j += ( (unsigned)_hj_key[5] << 8 );                            \
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
      case 5:  _hj_j += _hj_key[4];                                               \
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
      case 4:  _hj_i += ( (unsigned)_hj_key[3] << 24 );                           \
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
      case 3:  _hj_i += ( (unsigned)_hj_key[2] << 16 );                           \
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
      case 2:  _hj_i += ( (unsigned)_hj_key[1] << 8 );                            \
+       /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
      case 1:  _hj_i += _hj_key[0];                                               \
   }                                                                              \
   HASH_JEN_MIX(_hj_i, _hj_j, hashv);                                             \
@@ -582,7 +592,9 @@ do {                                                                   \
   _mur_k1=0;                                                           \
   switch((keylen) & 3) {                                               \
     case 3: _mur_k1 ^= _mur_tail[2] << 16;                             \
+    /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
     case 2: _mur_k1 ^= _mur_tail[1] << 8;                              \
+    /* FALLTHRU CSZ CEWI to avoid GCC7+ implicit-fallthrough warning 20170810 */ \
     case 1: _mur_k1 ^= _mur_tail[0];                                   \
     _mur_k1 *= _mur_c1;                                                \
     _mur_k1 = MUR_ROTL32(_mur_k1,15);                                  \
