@@ -223,6 +223,7 @@ esac # !HOSTNAME
 # ncclimo -d 1 -v TBOT -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ~/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150621.nc
 # Seasons:
 # ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
+# ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (cori,edison), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
@@ -1058,7 +1059,8 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_ond=7
     csn_on=8
     csn_fm=9
-    csn_nbr_max=10 # [nbr] Maximum number of seasons in definitions database
+    csn_ann=10
+    csn_nbr_max=11 # [nbr] Maximum number of seasons in definitions database
 
     # Seasonal abbreviations, uppercase
     csn_abb[${csn_mam}]='MAM'
@@ -1071,6 +1073,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_abb[${csn_ond}]='OND'
     csn_abb[${csn_on}]='ON'
     csn_abb[${csn_fm}]='FM'
+    csn_abb[${csn_ann}]='ANN'
 
     # Seasonal abbreviations, lowercase
     csn_abb_lc[${csn_mam}]='mam'
@@ -1083,6 +1086,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_abb_lc[${csn_ond}]='ond'
     csn_abb_lc[${csn_on}]='on'
     csn_abb_lc[${csn_fm}]='fm'
+    csn_abb_lc[${csn_ann}]='ann'
 
     # Seasonal start-month index (1-based calendar)
     csn_srt_idx[${csn_mam}]=3
@@ -1095,6 +1099,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_srt_idx[${csn_ond}]=10
     csn_srt_idx[${csn_on}]=10
     csn_srt_idx[${csn_fm}]=2
+    csn_srt_idx[${csn_ann}]=1
 
     # Seasonal end-month index (1-based calendar)
     csn_end_idx[${csn_mam}]=5
@@ -1107,6 +1112,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_end_idx[${csn_ond}]=12
     csn_end_idx[${csn_on}]=11
     csn_end_idx[${csn_fm}]=3
+    csn_end_idx[${csn_ann}]=12
 
     for ((csn_idx=0;csn_idx<${csn_nbr_max};csn_idx++)); do
 	csn_srt_mm[${csn_idx}]=`printf "%02d" ${csn_srt_idx[${csn_idx}]}`
@@ -1124,6 +1130,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_nom[${csn_ond}]=3
     csn_nom[${csn_on}]=2
     csn_nom[${csn_fm}]=2
+    csn_nom[${csn_ann}]=12
 
     # Seasonal monthly weights (ncra -w argument)
     csn_wgt[${csn_mam}]='31,30,31'
@@ -1136,6 +1143,7 @@ if [ "${csn_flg}" = 'Yes' ]; then
     csn_wgt[${csn_ond}]='31,30,31'
     csn_wgt[${csn_on}]='31,30'
     csn_wgt[${csn_fm}]='28,31'
+    csn_wgt[${csn_ann}]='31,28,31,30,31,30,31,31,30,31,30,31'
 
     # Which seasons are requested?
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
@@ -1144,9 +1152,13 @@ if [ "${csn_flg}" = 'Yes' ]; then
 	csn_rqs[${csn_nbr}]=${csn}
 	# NB: Requested seasons are 0-based, defined seasons are 0-based
 	for ((csn_dfn_idx=${csn_idx_srt};csn_dfn_idx<${csn_nbr_max};csn_dfn_idx++)); do
+	    if [[ "${csn}" =~ 'ANN' ]] || [[ "${csn}" =~ 'ann' ]]; then
+		printf "${spt_nm}: ERROR Requested season ${csn} not yet supported\n"
+#		exit 1
+	    fi # !ANN
 	    if [[ "${csn}" =~ "${csn_abb[${csn_dfn_idx}]}" ]] || [[ "${csn}" =~ "${csn_abb_lc[${csn_dfn_idx}]}" ]]; then
-		# Map requested to defined (r2d) )seasons and inverse (d2r)
-		# map_r2d[0]=3 means first requested season is fourth defined in table
+		# Map requested to defined (r2d) seasons and inverse (d2r)
+		# map_r2d[0]=3 means first season that user requested (i.e., in csn_lst) is fourth defined in table
 		# map_d2r[3]=0 means fourth defined season is first requested
 		map_r2d[${csn_nbr}]=${csn_dfn_idx}
 		map_d2r[${csn_dfn_idx}]=${csn_nbr}
@@ -1515,7 +1527,12 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	let clm_idx=1+12+${csn_idx}
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
 	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
-	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_DJF_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
+	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
+	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
+	fi # !DJF
+	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'ANN' ]; then
+	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
+	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
 	fi # !DJF
     done # !csn_idx
 #    fl_out[13]="${drc_out}/${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
@@ -2096,6 +2113,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		fl_lst="${fl_lst} ${fl_out[${mth_idx}]}"
 	    done # !mth_idx
 	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O -w ${csn_wgt[${map_r2d[${csn_idx}]}]} ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_idx}]}"
+	    # DJF specified as exception since month-order is non-consecutive (12,1,2)
 	    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[${clm_idx}]}"
 	    fi # !DJF
@@ -2343,8 +2361,12 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	    fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_prv}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end_prv}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
 	    fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt_prv}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
 	    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
-		fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end_prv}${mm_djf_end}_climo.nc"
-		fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_DJF_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
+		fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end_prv}${mm_djf_end}_climo.nc"
+		fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec_prv}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
+	    fi # !DJF
+	    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'ANN' ]; then
+		fl_prv[${clm_idx}]="${drc_prv}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end_prv}${mm_ann_end}_climo.nc"
+		fl_xtn[${clm_idx}]="${drc_xtn}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec_prv}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
 	    fi # !DJF
 	done # !csn_idx
 

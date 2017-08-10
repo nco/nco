@@ -1,3 +1,7 @@
+2017-08-10  Charlie Zender  <zender@uci.edu>
+
+	* Add custom season 'ANN' computed in seasonal loop from all twelve monthly climos
+
 2017-08-09  Charlie Zender  <zender@uci.edu>
 
 	* Run developer tests for =~ /zender/ not just == 'zender' so aims4 works
