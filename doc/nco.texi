@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha06
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 9 August 2017
+@set update-date 10 August 2017
 @set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17525,18 +17525,35 @@ the specified start year.
 Seasons for @command{ncclimo} to compute in monthly climatology
 generation mode. 
 The list of seasons, @var{csn_lst}, is a comma-separated,
-case-insensitive, unordered subset of the abbreviations for the ten (so 
-far) defined seasons: 
+case-insensitive, unordered subset of the abbreviations for the eleven
+(so far) defined seasons: 
 @code{jfm}, @code{amj}, @code{jas}, @code{ond}, @code{on}, @code{fm},
-@code{djf}, @code{mam}, @code{jja}, and @code{son}
+@code{djf}, @code{mam}, @code{jja}, @code{son}, and @code{ann}.
 By default @code{@var{csn_lst}=mam,jja,son,djf}.
-The climatological annual mean, @code{ANN}, is computed only if and only 
-if DJF, MAM, JJA, and SON are all requested (which is the default).
-Note that ANN is computed as the time-weighted average of the four
-seasons, rather than as the time-weighted average of the twelve months. 
-(This has implications for the parallelism of the operation).
+Moreover, @command{ncclimo} automatically computes the climatological
+annual mean, @code{ANN}, is always computed when MAM, JJA, SON, and DJF
+are all requested (which is the default).
+The ANN computed automatically is the time-weighted average of the four
+seasons, rather than as the time-weighted average of the twelve monthly
+climatologies. 
+Users who need ANN but not DJF, MAM, JJA, and SON should instead
+explicitly specify ANN as a season in @var{csn_lst}.
+The ANN computed as a season is the time-weighted average of the twelve
+monthly climatologies, rather than the time-weighted average of four
+seasonal climatologies. 
+Specifying the four seasons and ANN in @var{csn_lst} (e.g.,
+@code{@var{csn_lst}=mam,jja,son,djf,ann}) is legal though redundant
+and wasteful.
+It cause ANN to be computed twice, first as the average of the twelve
+monthly climatologies, then as the average of the four seasons.
 The special value @code{@var{csn_lst}=none} turns-off computation of
 seasonal (and annual) climatologies. 
+@example
+ncclimo --seasons=none ...            # Produce only monthly climos
+ncclimo --seasons=mam,jja,son,djf ... # Monthly + MAM,JJA,SON,DJF,ANN
+ncclimo --seasons=jfm,jas,ann ...     # Monthly + JFM,JAS,ANN
+ncclimo --seasons=fm,on ...           # Monthly + FM,ON
+@end example
 
 @cindex @code{--stdin}
 @cindex @code{--inp_std}

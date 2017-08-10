@@ -14,7 +14,7 @@
 /* Arrays to hold calendar type units */
 /* Format: year, month, day, hour, minute, second, origin, offset */
 /* origin for all calendars is 2001-01-01 (seconds)  (same as origin for udunits xalendar) */
-static  double DATA_360[8]={31104000.0,2592000.0,86400.0,3600.0,60.0,1.0,31104000.0*2001.0,0.0};
+static double DATA_360[8]={31104000.0,2592000.0,86400.0,3600.0,60.0,1.0,31104000.0*2001.0,0.0};
 static double DATA_365[8]={31536000.0,2628000.0,86400.0,3600.0,60.0,1.0,31536000.0*2001.0,0.0};
 static double DATA_366[8]={31622400.0,2635200.0,86400.0,3600.0,60.0,1.0,63276422400.0,0.0};
 
@@ -494,10 +494,10 @@ nco_cln_clc_dbl_var_dff( /* [fnc] difference between two co-ordinate units */
 const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
 const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
 nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
-double *val_dbl,           /* I/O [dbl] var values modified */
+double *val_dbl         /* I/O [dbl] var values modified */
 var_sct *var)           /* I/O [var_sct] var values modified */
 {
-  (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to convert values from \"%s\" to \"%s\". See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n", nco_prg_nm_get(),fl_unt_sng,fl_bs_sng);
+  (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to convert values from \"%s\" to \"%s\". See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng,nco_prg_nm_get());
 
   return NCO_NOERR;
 } /* end nco_cln_clc_dbl_var_dff() */
@@ -510,7 +510,7 @@ nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */
 double *og_val)         /* O [dbl] output value */
 {
   *og_val=0.0; /* CEWI */
-  (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to interpret the string \"%s\" limit argument. HINT Re-build or re-install NCO enabled with UDUnits.\n", nco_prg_nm_get(),val_unt_sng);
+  (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to interpret the string \"%s\" limit argument.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",nco_prg_nm_get(),val_unt_sng,nco_prg_nm_get());
   return NCO_NOERR; 
 } /* !nco_cln_clc_dbl_org() */
 
