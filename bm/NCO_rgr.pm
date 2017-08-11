@@ -5395,6 +5395,55 @@ if(0){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
+
+# (pvn 20170811), 3 tests for mask, weight, hyperslab combined 
+#data is
+#lat=-90,90;
+#lon=0,90,180,270;
+#orog2=1.,1.,1.,1.,1.,1.,1.,1.;
+#mask=0.,1.,0.,0.,1.,1.,0.,1.;
+#byt_arr=0,1,2,3,4,5,6,7;
+#ncwa -O -C -y ttl -v orog2 -w byt_arr ~/nco/data/in.nc ~/foo.nc ; 28
+#ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -w byt_arr ~/nco/data/in.nc ~/foo.nc ; 22
+#ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -w byt_arr -m mask -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc ; 16
+# first test, sum all values of byt_arr = 28
+# second test, sum indexes [4,5,6,7] of byt_arr = 22
+# third test, sum indexes [4,5,7] of byt_arr = 16
+
+#ncwa #73 
+# ncwa -O -C -y ttl -v orog2 -w byt_arr ~/nco/data/in.nc ~/foo.nc ; 28
+# ncks -H -v orog2 ~/foo.nc
+    $dsc_sng="Weight without mask and without hyperslab";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -y ttl -v orog2 -w byt_arr $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -v orog2 %tmp_fl_00%";
+    $tst_cmd[2]="orog2 = 28";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+#ncwa #74
+#ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -w byt_arr ~/nco/data/in.nc ~/foo.nc ; 22
+# ncks -H -v orog2 ~/foo.nc
+    $dsc_sng="Weight without mask and with hyperslab";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -y ttl -v orog2 -d lat,0.,90. -w byt_arr $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -v orog2 %tmp_fl_00%";
+    $tst_cmd[2]="orog2 = 22";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+#ncwa #75
+#ncwa -O -C -y ttl -v orog2 -d lat,0.,90. -w byt_arr -m mask -M 0.0 -T gt ~/nco/data/in.nc ~/foo.nc ; 16
+# ncks -H -v orog2 ~/foo.nc
+    $dsc_sng="Weight with mask and with hyperslab";
+    $tst_cmd[0]="ncwa $omp_flg $nco_D_flg -O -C -y ttl -v orog2 -d lat,0.,90. -w byt_arr -m mask -M 0.0 -T gt $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -H -v orog2 %tmp_fl_00%";
+    $tst_cmd[2]="orog2 = 16";
+    $tst_cmd[3]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+
     
 ####################
 #### ncrename tests #### OK!
