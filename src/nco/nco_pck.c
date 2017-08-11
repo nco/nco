@@ -711,10 +711,14 @@ nco_var_pck /* [fnc] Pack variable in memory */
      NB: Value buffer var->val.vp is usually free()'d here
      Variables in calling routine which point to var->val.vp will be left dangling */
 
-  nco_bool PURE_MSS_VAL_FLD=False; /* [flg] Field is pure missing_value, i.e., no valid values */
   const char fnc_nm[]="nco_var_pck()"; /* [sng] Function name */
+
   double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
   double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
+
+  nco_bool PURE_MSS_VAL_FLD=False; /* [flg] Field is pure missing_value, i.e., no valid values */
+
+  static nco_bool FIRST_WARNING=True;
 
   /* Set flag true once new scale_factor/add_offset generated */
   *PCK_VAR_WITH_NEW_PCK_ATT=False;
@@ -884,7 +888,8 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
       mss_val_dbl=ptr_unn_mss_val_dbl.dp[0];
       if(nc_typ_pck != NC_STRING && (mss_val_dbl < pck_rng_min_dbl || mss_val_dbl > pck_rng_max_dbl)){ 
-	(void)fprintf(stdout,"%s: WARNING %s reports mss_val_dbl (= %g) is outside range (%g <= x <= %g) represented by packed data type (= %s). Conversion of missing values is unpredictable and could lead to erroneous results. Workaround is to set _FillValue to be within packed range with, e.g.,\nncatted -O -a _FillValue,,o,f,%g inout.nc\nFor more information on this workaround, see\nhttp://nco.sf.net/nco.html#mss_val\n",nco_prg_nm_get(),fnc_nm,mss_val_dbl,pck_rng_min_dbl,pck_rng_max_dbl,nco_typ_sng(nc_typ_pck),mss_val_dfl_dbl);
+	if(FIRST_WARNING) (void)fprintf(stdout,"%s: WARNING %s reports mss_val_dbl (= %g) is outside range (%g <= x <= %g) represented by packed data type (= %s). Conversion of missing values is unpredictable and could lead to erroneous results. Workaround is to set _FillValue to be within packed range with, e.g.,\nncatted -O -a _FillValue,,o,f,%g inout.nc\nTo avoid excessive noise, NCO prints this WARNING at most once per dataset. For more information on this workaround, see\nhttp://nco.sf.net/nco.html#mss_val\n",nco_prg_nm_get(),fnc_nm,mss_val_dbl,pck_rng_min_dbl,pck_rng_max_dbl,nco_typ_sng(nc_typ_pck),mss_val_dfl_dbl);
+	FIRST_WARNING=False;
       } /* NC_STRING */
     } /* end if(var->has_mss_val && !PURE_MSS_VAL_FLD) */
 
