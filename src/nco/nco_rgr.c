@@ -7325,7 +7325,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Applications: 
        ALM/CLM mask (landmask) is NC_FLOAT and defines but does not use NC_FLOAT missing value
        CICE mask (tmask/umask) is NC_FLOAT and defines and uses NC_FLOAT missing value
-       AMSR mask is NC_SHORT and has no missing value */
+       AMSR mask is NC_SHORT and has no missing value
+       PODAAC CMC mask is NC_BYTE and is a quality flag with missing value == -1b */
   switch(msk_typ){
     case NC_FLOAT:
       if(has_mss_val_msk){
@@ -7370,8 +7371,19 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	//	for(idx=0;idx<grd_sz_nbr;idx++) if(msk[idx] == 1) msk[idx]=0;
       } /* !mss_val */
       break;
+    case NC_BYTE:
+      if(has_mss_val_msk){
+	const nco_byte mss_val_byt=mss_val_msk_dbl;
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.bp[idx] == mss_val_byt || msk_unn.bp[idx] == ((nco_byte)0)) msk[idx]=0;
+      }else{
+	for(idx=0;idx<grd_sz_nbr;idx++)
+	  if(msk_unn.bp[idx] == ((nco_byte)0)) msk[idx]=0;
+	/* 20170811: PODAAC CMC kludge fxm */
+      } /* !mss_val */
+      break;
     default:
-      (void)fprintf(stderr,"%s: ERROR %s unknown mask type\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stderr,"%s: ERROR %s mask variable \"%s\" has unsupported type = %s\n",nco_prg_nm_get(),fnc_nm,msk_nm,nco_typ_sng(msk_typ));
       nco_dfl_case_generic_err();
       return NCO_ERR;
       break;
