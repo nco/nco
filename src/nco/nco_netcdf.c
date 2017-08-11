@@ -2199,10 +2199,10 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   /* 20170811: netCDF 4.5.x enforces rule attempting to add _FillValue to root/group (NC_GLOBAL) returns NC_EGLOBAL */
-  if(rcd == NC_EGLOBAL){
+  if(rcd == NC_EGLOBAL && !strcmp(att_nm,"_FillValue")){
     char grp_nm[NC_MAX_NAME+1L];
     (void)nco_inq_grpname(nc_id,grp_nm);
-    (void)fprintf(stdout,"WARNING: %s reports error writing attribute \"%s\" to metadata for group \"%s\". netCDF 4.5.x forbids doing this, though earlier versions allowed it. Proceeding without writing attribute...\n",fnc_nm,att_nm,grp_nm);
+    (void)fprintf(stdout,"WARNING: %s received NC_EGLOBAL error writing attribute \"%s\" to metadata for group \"%s\". netCDF 4.5.x forbids this with the _FillValue attribute, though earlier versions allow it. Proceeding normally without writing %s attribute...\n",fnc_nm,att_nm,grp_nm,att_nm);
     rcd=NC_NOERR;
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att()");

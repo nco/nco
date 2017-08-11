@@ -808,7 +808,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 
       if(!flg_autoconvert){
 	/* Do not convert global attributes or PCK_ATT_CPY */  
-	if(PCK_ATT_CPY || var_out_id==NC_GLOBAL) att_typ_out=att_typ_in; else (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
+	if(PCK_ATT_CPY || var_out_id == NC_GLOBAL) att_typ_out=att_typ_in; else (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
       } /* flg_autoconvert */
 
       if(att_typ_out == att_typ_in){
