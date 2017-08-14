@@ -1,3 +1,7 @@
+2017-08-14  Charlie Zender  <zender@uci.edu>
+
+	* Create --map_[src/dst]='none' to short-circuit mask processing in nco_grd_nfr()
+
 2017-08-11  Charlie Zender  <zender@uci.edu>
 
 	* Allow NC_EGLOBAL return values from nco_put_att() of _FillValue to NC_GLOBAL for netCDF 4.5.x

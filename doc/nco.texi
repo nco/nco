@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-alpha06
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 10 August 2017
+@set update-date 14 August 2017
 @set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22250,6 +22250,11 @@ which regridded quantities should never be placed.
 @var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
 @var{msk_out} is the name to give the destination mask in any regridded file, and
 @var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
+The special value @math{@var{msk_dst} = @code{none}} prevents the
+regridder from inferring and treating any variable (even one named,
+e.g., @code{mask}) in a source file as a mask variable.
+This guarantees that all points in the inferred destination grid will be 
+unmasked.  
 
 @html
 <a name="msk_out"></a> <!-- http://nco.sf.net/nco.html#msk_out -->
@@ -22315,6 +22320,11 @@ which regridded quantities should emanate.
 @var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
 @var{msk_out} is the name to give the destination mask in any regridded file, and
 @var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
+The special value @math{@var{msk_src} = @code{none}} prevents the
+regridder from inferring and treating any variable (even one named,
+e.g., @code{mask}) in a source file as a mask variable.
+This guarantees that all points in the inferred source grid will be 
+unmasked.  
 
 @html
 <a name="nco_opt"></a> <!-- http://nco.sf.net/nco.html#nco_opt -->
