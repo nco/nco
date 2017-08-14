@@ -1,10 +1,16 @@
+2017-08-11  Charlie Zender  <zender@uci.edu>
+
+	* Allow NC_EGLOBAL return values from nco_put_att() of _FillValue to NC_GLOBAL for netCDF 4.5.x
+
+	* Allow NC_BYTE masks in nco_grd_nfr(), improve bad-mask diagnostics
+
 2017-08-10  Charlie Zender  <zender@uci.edu>
 
 	* netCDF 4.5.x dies with "Not a valid data type or _FillValue type mismatch"
 	when attempting to stuff IEEE data like 1.0e30 (_FillValue) into signed short spots.
 	Although correct, this new behavior causes many ncpdq regressions...
 
-	* Address false-positive implicit-fallthrough warnings in nco_uthash.h by inserting FALLTHRU comments
+	* Address false-positive implicit-fallthrough warnings in nco_uthash.h by inserting GCC7 FALLTHRU comments
 
 	* Fix one implicit-fallthrough bug identified by GCC7 (the warning proves useful)
 
@@ -12,7 +18,7 @@
 
 2017-08-09  Charlie Zender  <zender@uci.edu>
 
-	* Run developer tests for =~ /zender/ not just == 'zender' so aims4 works
+	* Run developer tests in NCO_rgr.pl for =~ /zender/ not just == 'zender' so aims4 works
 
 	* Fix ANTLR_LIB handling in configure.ac (helps edison build)
 

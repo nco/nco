@@ -7326,9 +7326,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ALM/CLM mask (landmask) is NC_FLOAT and defines but does not use NC_FLOAT missing value
        CICE mask (tmask/umask) is NC_FLOAT and defines and uses NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value
-       PODAAC CMC mask is NC_BYTE and is a quality flag with missing value == -1b */
-  switch(msk_typ){
-    case NC_FLOAT:
+       PODAAC CMC mask is NC_BYTE and is a multi-valued surface-type flag with missing value == -1b */
+    if(msk_typ != NC_INT){
+      (void)fprintf(stderr,"%s: WARNING %s mask variable \"%s\" has odd type = %s. The regridder expects a variable named \"mask\", to be of type NC_INT.\n",nco_prg_nm_get(),fnc_nm,msk_nm,nco_typ_sng(msk_typ)); /* fxm */
+    } /* msk_typ */
+    switch(msk_typ){
+      case NC_FLOAT:
       if(has_mss_val_msk){
 	const float mss_val_flt=mss_val_msk_dbl;
 	for(idx=0;idx<grd_sz_nbr;idx++)
