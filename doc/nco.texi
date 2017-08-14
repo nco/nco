@@ -19542,6 +19542,26 @@ zender@aerosol:~$ ncks -D 1 --cdl -v tm_365 ~/nco/data/in.nc
 @end verbatim
 @end example
 This option is similar to the @command{ncdump} @samp{-t} option.
+As of @acronym{NCO} version 4.6.8 (August, 2017), @command{ncks} 
+@acronym{CDL} printing supports finer-grained control of date formats
+with the @samp{--dt_fmt=@var{dt_fmt}} (or @samp{--date_format}) option. 
+The @var{dt_fmt} is an enumerated integer from 0--3.
+Values @math{@var{dt_fmt}=0} or 1 correspond to the short format for
+dates that are the default.
+The value @math{@var{dt_fmt}=2} requests the ``regular'' format for
+dates, @math{@var{dt_fmt}=3} requests the full @acronym{ISO}-8601 format
+with the ``T'' separator:
+@example
+@verbatim
+ncks -H -m -v time_bnds -C --dt_fmt=1 ~/nco/data/in.nc
+dt_fmt:   Output:
+0,1       1964-03-13 09:08:16        # Default, short format
+2         1964-03-13 09:08:16.000000 # Regular format
+3         1964-03-13T09:08:16.000000 # ISO8601 "T" format
+@end verbatim
+@end example
+Note that @samp{--dt_fmt} automatically implies @samp{--cal} and
+@samp{--cdl} and makes those option superfluous.
 
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->

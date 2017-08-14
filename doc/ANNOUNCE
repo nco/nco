@@ -6,13 +6,20 @@ http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-The main new features in 4.6.8...
-This release includes an important ncwa fix that prevents
+The main new features in 4.6.8 are, once again, related to
+climatologies and regridding. ncclimo can now be given an
+explicit list of seasons to compute instead of or in addition to 
+MAM,JJA,SON,DJF. ncremap has improved handling of masks.
+There are also a collection of minor bugfixes and improvements,
+including JSON tweaks, ISO8601 printing, and GCC7 and netCDF 4.5.x
+compatibility. 
+
+Also, this release includes an important ncwa fix that prevents
 incorrect answers when hyperslabs are used with masks and/or weights.
-Recommend upgrading if you ever use ncwa with -d hyperslabs.
+Upgrade if you use ncwa with -d hyperslabs.
 
 PLEASE READ THIS IF YOU USE NCKS TO PRINT DATA:
-The ncks default printing will change to CDL in summer 2017.
+The ncks default printing will change to CDL in NCO 4.7.0.
 For 20+ years ncks has, by default, dumped the text representation
 of a file in (what we call) "traditional" mode, which best facilitates
 meticulous data examination in line-by-line format.
@@ -29,9 +36,9 @@ User --trd in your scripts and their behavior will not change.
 Otherwise your printing scripts will start to print CDL this summer.
 You have been warned :)
 
-Work on NCO 4.6.9 has commenced. Planned improvements include 
+Work on NCO 4.7.0 has commenced. Planned improvements include 
 support for conda installs on MS Windows, more ncclimo and ncremap
-features, more ncap2 chunking flexibility. 
+feature.
 
 Enjoy,
 Charlie
@@ -60,7 +67,23 @@ A. ncks CDL printing supports finer-grained control of date formats,
    Note that --dt_fmt automatically implies --cal.
    http://nco.sf.net/nco.html#cln
 
-A. 
+A. Some data are best evaluated with custom-defined seasons, e.g., JFM
+   instead of DJF, or two-month seasons such as FM or ON. ncclimo now
+   supports up to eleven (and counting) seasons, although by default it
+   only computes MAM, JJA, SON, and DJF. As of NCO 4.6.8, use the
+   seasons option to specify additional or alternate seasons: 
+   ncclimo --seasons=jfm,jas,ann -s 1980 -e 1983 -i drc_in -o drc_out
+   Use "–seasons=none" to completely turn-off seasonal and annual-mean
+   climatologies:
+   ncclimo --seasons=none -s 1980 -e 1983 -i drc_in -o drc_out
+   http://nco.sf.net/nco.html#ncclimo
+
+A. ncremap --msk_src and --msk_dst options now accept the value 'none'
+   to prevent the regridder from interpreting any variable as a mask
+   in files from which source or destination grids are inferred.
+   ncremap -i ~/ed.nc --msk_src=none -d ~/ed.nc -o ~/foo.nc
+   ncremap -i ~/ed.nc -d ~/ed.nc --msk_dst=none -o ~/foo.nc
+   http://nco.sf.net/nco.html#ncremap
 
 BUG FIXES:
 
@@ -79,6 +102,9 @@ C. Fix longstanding (since ~4.2.3) ncwa issue where hyperslabs
    that started after the first array element could lead to incorrect
    answers. Thanks to Tony Leboissetier for reporting the problem,
    and to Pedro Vicente for fixing it.   	    
+
+D. Ensure ncclimo and ncremap load netCDF libraries 4.4.x+ on
+   certain clusters so that CDF5 capabilities always available.
 
 KNOWN PROBLEMS DUE TO NCO:
 

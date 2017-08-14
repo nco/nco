@@ -561,6 +561,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"dt_fmt") || !strcmp(opt_crr,"date_format")){
         dt_fmt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	PRN_CLN_LGB=True;
+	PRN_CDL=True;
       } /* !dt_fmt */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);

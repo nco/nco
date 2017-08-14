@@ -1,5 +1,7 @@
 2017-08-14  Charlie Zender  <zender@uci.edu>
 
+	* Make --dt_fmt imply --cdl (and --cln)
+
 	* NCO 4.6.8-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.8-beta01 final changes';git push
 	git tag -a 4.6.8-beta01 -m 'ncclimo custom libraries,rgr msk=byte,none,NC_EGLOBAL';git push --tags
