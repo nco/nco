@@ -6187,7 +6187,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   msk_nm_in=rgr->msk_var;
   /* 20170814: Some variables named, e.g., "mask" are, e.g., quality control masks not regridding masks */
-  if(!strcasecmp(msk_nm_in,"none")) msk_nm_in=(char *)nco_free(msk_nm_in);
+  if(msk_nm_in && strcasecmp(msk_nm_in,"none")) msk_nm_in=(char *)nco_free(msk_nm_in);
   if(msk_nm_in){
     /* User-supplied name overrides database */
     rcd=nco_inq_varid(in_id,msk_nm_in,&msk_id);
