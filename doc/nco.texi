@@ -19553,11 +19553,11 @@ dates, @math{@var{dt_fmt}=3} requests the full @acronym{ISO}-8601 format
 with the ``T'' separator:
 @example
 @verbatim
-ncks -H -m -v time_bnds -C --dt_fmt=1 ~/nco/data/in.nc
-dt_fmt:   Output:
-0,1       1964-03-13 09:08:16        # Default, short format
-2         1964-03-13 09:08:16.000000 # Regular format
-3         1964-03-13T09:08:16.000000 # ISO8601 "T" format
+ncks -H -m -v time_bnds -C --dt_fmt=value ~/nco/data/in.nc
+# Value:    Output:
+# 0,1       1964-03-13 09:08:16        # Default, short format
+# 2         1964-03-13 09:08:16.000000 # Regular format
+# 3         1964-03-13T09:08:16.000000 # ISO8601 'T' format
 @end verbatim
 @end example
 Note that @samp{--dt_fmt} automatically implies @samp{--cal} and
