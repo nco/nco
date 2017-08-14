@@ -1,5 +1,9 @@
 2017-08-14  Charlie Zender  <zender@uci.edu>
 
+	* Change custom library overrides for ncclimo to use netCDF 4.4.1.X
+
+	* Change custom build procedures for titan, rhea, yellowstone to use netCDF 4.4.1.X so CDF5 always works
+
 	* Create --map_[src/dst]='none' to short-circuit mask processing in nco_grd_nfr()
 
 2017-08-11  Charlie Zender  <zender@uci.edu>
