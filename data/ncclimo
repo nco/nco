@@ -33,7 +33,7 @@
 # Source: https://github.com/nco/nco/tree/master/data/ncclimo
 # Documentation: http://nco.sf.net/nco.html#ncclimo
 # Additional Documentation:
-# HowTo: https://acme-climate.atlassian.net/wiki/display/ATM/Generating+and+Regridding+Climatologies+%28climo+files%29+with+NCO+and+ncclimo
+# HowTo: https://acme-climate.atlassian.net/wiki/display/SIM/Generate%2C+Regrid%2C+and+Split+Climatologies+%28climo+files%29+with+ncclimo+and+ncremap
 # ACME Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
 
 # Insta-install:
@@ -115,7 +115,8 @@ case "${HOSTNAME}" in
 	# Why do cori/edison and rhea require workarounds for different packages?
 	module load gsl
 	module load udunits
-	# On cori, module load ncl installs ERWG in ${NCARG_ROOT}/../intel/bin
+	# On cori and edison, module load ncl installs ERWG 5.2 (from 2012) in ${NCARG_ROOT}/../intel/bin
+	# module load ncl/6.3.0 
 	if [ -n "${NCARG_ROOT}" ]; then
             export PATH="${NCARG_ROOT}/bin:${PATH}"
 	fi # !NCARG_ROOT

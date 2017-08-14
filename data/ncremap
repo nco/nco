@@ -26,14 +26,17 @@
 # University of California, Irvine
 # Irvine, CA 92697-3100
 
+# Prerequisites: Bash, NCO
+# Script could use other shells, e.g., dash (Debian default) after rewriting function definition and looping constructs
+# For full functionality also install ESMF_RegridWeightGen and/or TempestRemap
+
 # Source: https://github.com/nco/nco/tree/master/data/ncremap
 # Documentation: http://nco.sf.net/nco.html#ncremap
+# Additional Documentation:
+# HowTo: https://acme-climate.atlassian.net/wiki/display/SIM/Generate%2C+Regrid%2C+and+Split+Climatologies+%28climo+files%29+with+ncclimo+and+ncremap
+# ACME Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
 
-# Prerequisites: Bash and NCO
-# For full functionality also install ESMF_RegridWeightGen and/or TempestRemap
-# Script could use other shells, e.g., dash (Debian default) after re-writing function definition and looping constructs
-
-# Script runs in one of four modes:
+# Regridder works in one of four modes:
 # 1. Free-will: Infer source and destination grids to generate map-file, then regrid
 # 2. Old Grid: Use known-good destination grid to generate map-file then regrid
 # 3. New Grid: Generate source-grid from ncks parameter string
@@ -81,27 +84,37 @@ fi # HOSTNAME
 # Default input and output directory is ${DATA}
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
-	cooley* | cc* | mira* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
-	cori* | edison* | nid* ) DATA="${SCRATCH}" ; ;; # NERSC edison compute nodes named nidNNNNN, 24|64 cores|GB/node; cori 32|128 cores|GB/node
+	constance* | node* ) DATA='/scratch' ; ;; # PNNL
+	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 16|64 cores|GB/node 
+	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
+	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|128 cores|GB/node (cori login nodes 512 GB)
 	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
 	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
 	ys* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR yellowstone compute nodes named ysNNN, 32 GB/node
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
-# Ensure batch jobs access correct 'mpirun' (or, on cori/edison, 'srun') command, netCDF library, and NCO executables and library:
+# Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library:
 case "${HOSTNAME}" in 
     aims* )
 	export PATH='/export/zender1/bin'\:${PATH}
         export LD_LIBRARY_PATH='/export/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
-    cooley* | cc* | mira* )
+    blues* | blogin* | b[0123456789][0123456789][0123456789] )
+	soft add @openmpi-gcc
+	export PATH='/home/zender/bin'\:${PATH}
+	export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+    cooley* )
+	# 20160421: Split cooley from mira binary locations to allow for different system libraries
 	# http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
 	soft add +mvapich2 
         export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
-	export PATH='/home/zender/bin'\:${PATH}
-	export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
-    # 20160407: Split cori from edison binary locations to allow for different system libraries
+	export PATH='/home/zender/bin_cooley'\:${PATH}
+	export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
+    mira* )
+	export PATH='/home/zender/bin_mira'\:${PATH}
+	export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
     cori* )
+	# 20160407: Separate cori from edison binary locations to allow for different system libraries
 	# 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
 	# Not necessary for interactive, nor for CSZ non-interactive, batch submisssions
 	# Must be due to home environment differences between CSZ and other users
@@ -147,21 +160,21 @@ case "${HOSTNAME}" in
             export PATH="${NCL_DIR}/bin:${PATH}"
 	fi # !NCL_DIR
         export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
-	export LD_LIBRARY_PATH='/sw/redhat6/netcdf/4.3.3.1/rhel6.6_gcc4.8.2--with-dap+hdf4/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
+	export LD_LIBRARY_PATH='/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
     titan* )
 	source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	module load gcc
         export PATH='/ccs/home/zender/bin_titan'\:${PATH}
-	export LD_LIBRARY_PATH='/opt/cray/netcdf/4.3.2/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
+	export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
     ys* )
 	# 20151018: Yellowstone support not yet tested in batch mode
-	# On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
+	# On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
 	if [ -n "${NCARG_ROOT}" ]; then
 #            export PATH="${NCARG_ROOT}/bin:${PATH}"
-            export PATH="${PATH}:/glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin"
+            export PATH="${PATH}:/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin"
 	fi # !NCARG_ROOT
         export PATH='/glade/u/home/zender/bin'\:${PATH}
-        export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
+        export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
 esac # !HOSTNAME
 
 # Test cases (for Charlie's machines)

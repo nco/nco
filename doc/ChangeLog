@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.8-beta01 final changes';git push
 	git tag -a 4.6.8-beta01 -m 'ncclimo custom libraries,rgr msk=byte,none,NC_EGLOBAL';git push --tags
 
-	* Change custom library overrides for ncclimo to use netCDF 4.4.1.X
+	* Change custom library overrides for ncclimo/ncremap to use netCDF 4.4.1.X
 
 	* Change custom build procedures for titan, rhea, yellowstone to use netCDF 4.4.1.X so CDF5 always works
 
