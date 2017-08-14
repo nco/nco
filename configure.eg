@@ -404,12 +404,6 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: 157798 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.5.5 # 20160228
 # Personal recipe last used successfully: 20170526
-module add intel;module add gsl;module add netcdf/4.3.0;
-export PATH=${PATH}:/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/bin # needed for ncgen
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib # needed to run NCO
-cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.3.0/intel/default' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
-# 20170814
 module add intel/16.0.3;module add gsl;module add netcdf/4.4.1;
 export PATH=${PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib # needed to run NCO

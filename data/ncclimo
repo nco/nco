@@ -154,13 +154,13 @@ case "${HOSTNAME}" in
 	export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
     ys* )
 	# 20151018: Yellowstone support not yet tested in batch mode
-	# On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
+	# On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
 	if [ -n "${NCARG_ROOT}" ]; then
 #            export PATH="${NCARG_ROOT}/bin:${PATH}"
-            export PATH="${PATH}:/glade/apps/opt/ncl/6.3.0/intel/12.1.5/bin"
+            export PATH="${PATH}:/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin"
 	fi # !NCARG_ROOT
         export PATH='/glade/u/home/zender/bin'\:${PATH}
-        export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.3.0/intel/12.1.5/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
+        export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
 esac # !HOSTNAME
 
 # Production usage:
