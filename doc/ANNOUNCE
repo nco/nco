@@ -9,7 +9,7 @@ What's new?
 The main new features in 4.6.8 are, once again, related to
 climatologies and regridding. ncclimo can now be given an
 explicit list of seasons to compute instead of or in addition to 
-MAM,JJA,SON,DJF. ncremap has improved handling of masks.
+MAM,JJA,SON,DJF. ncremap has improved mask and format handling.
 There are also a collection of minor bugfixes and improvements,
 including JSON tweaks, ISO8601 printing, and GCC7 and netCDF 4.5.x
 compatibility. 
@@ -36,9 +36,9 @@ User --trd in your scripts and their behavior will not change.
 Otherwise your printing scripts will start to print CDL this summer.
 You have been warned :)
 
-Work on NCO 4.7.0 has commenced. Planned improvements include 
-support for conda installs on MS Windows, more ncclimo and ncremap
-feature.
+Work on NCO 4.7.0 has commenced. Planned changes include printing
+CDL by default, and planned improvements include support for conda
+installs on MS Windows, and more ncclimo and ncremap features.
 
 Enjoy,
 Charlie
@@ -52,7 +52,7 @@ A. ncap2 now fully implements NCO chunking maps and policies.
    ncap2 --cnk_plc=unchunk -S cnk.nco in.nc4 out.nc4
    http://nco.sf.net/nco.html#cnk
 
-A. ncks CDL printing supports finer-grained control of date formats,
+B. ncks CDL printing supports finer-grained control of date formats,
    including an ISO 8601 "T" option. Previously ncks printed
    UDUnits-compliant times as dates when invoked with the --cdl and
    --cal options. A third option, --dt_fmt, now exposes finer
@@ -67,7 +67,7 @@ A. ncks CDL printing supports finer-grained control of date formats,
    Note that --dt_fmt automatically implies --cal.
    http://nco.sf.net/nco.html#cln
 
-A. Some data are best evaluated with custom-defined seasons, e.g., JFM
+C. Some data are best evaluated with custom-defined seasons, e.g., JFM
    instead of DJF, or two-month seasons such as FM or ON. ncclimo now
    supports up to eleven (and counting) seasons, although by default it
    only computes MAM, JJA, SON, and DJF. As of NCO 4.6.8, use the
@@ -78,12 +78,23 @@ A. Some data are best evaluated with custom-defined seasons, e.g., JFM
    ncclimo --seasons=none -s 1980 -e 1983 -i drc_in -o drc_out
    http://nco.sf.net/nco.html#ncclimo
 
-A. ncremap --msk_src and --msk_dst options now accept the value 'none'
+D. ncremap --msk_src and --msk_dst options now accept the value 'none'
    to prevent the regridder from interpreting any variable as a mask
    in files from which source or destination grids are inferred.
    ncremap -i ~/ed.nc --msk_src=none -d ~/ed.nc -o ~/foo.nc
    ncremap -i ~/ed.nc -d ~/ed.nc --msk_dst=none -o ~/foo.nc
    http://nco.sf.net/nco.html#ncremap
+
+E. ncremap now accepts standard NCO arguments for output file type.
+   The -3, -4, -5, -6, and -7 flags, or their long-option equivalents
+   --fl_fmt=fmt or --file_format=fmt where fmt is classic, netcdf4,
+   64bit_data, 64bit_offset, or netcdf4_classic (or some synonyms)
+   causes the output files created by ncremap, e.g., the regridded
+   files and the grid files, to have the requested format.
+   The ERWG and TempestRemap weight-generators support only a subset
+   of these formats.
+   ncremap -7 -i ~/deepthroat.nc -d ~/wapo.nc -o ~/foo.nc
+   http://nco.sf.net/nco.html#fl_fmt_ncremap
 
 BUG FIXES:
 
@@ -111,8 +122,8 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.6.8 built/tested under
-   MacOS 10.12.5 with netCDF 4.4.1 on HDF5 1.10.0-patch1 and with
-   Linux with netCDF 4.4.2-development (20170322) on HDF5 1.8.17.
+   MacOS 10.12.6 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
+   Linux with netCDF 4.5.1-development (20170811) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments

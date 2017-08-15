@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.8-beta01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 14 August 2017
+@set update-date 15 August 2017
 @set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16681,7 +16681,7 @@ SYNTAX
 ncbo [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] 
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] [--ram_all]
@@ -18519,7 +18519,7 @@ SYNTAX
 ncecat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
@@ -19016,7 +19016,7 @@ SYNTAX
 ncflint [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--fl_fmt @var{fl_fmt}]
 [-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
 [-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [-N]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
@@ -19312,7 +19312,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fix_rec_dmn @var{dim}] 
-[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
+[--fl_fmt @var{fl_fmt}] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
 [-H] [-h] [--hdn] [--hdr_pad @var{nbr}] [--jsn] [--jsn_fmt @var{lvl}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [-m] [--map @var{map-file}] 
 [--md5] [--mk_rec_dmn @var{dim}] [--no_blank] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
@@ -20869,8 +20869,8 @@ SYNTAX
 ncpdq [-3] [-4] [-5] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
-[-F] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
+[-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd]
 [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] [--ppc ...]
@@ -21468,7 +21468,7 @@ SYNTAX
 ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-N] [-n @var{loop}] 
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
@@ -21717,7 +21717,7 @@ SYNTAX
 ncrcat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}]
 [--no_tmp_fl] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
@@ -21850,7 +21850,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncremap [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}]
+ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--fl_fmt=@var{fl_fmt}] 
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-M] [-m @var{map_fl}] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}]
 [-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
@@ -22045,6 +22045,32 @@ source gridfile (either inferred from @var{input-file}, supplied with
 @samp{-s @var{grd_src}}, or generated from @samp{-G @var{grd_sng}}) to
 produce the remapping weights. 
 @var{grd_dst} is not modified, and may have read-only permissions.
+
+@html
+<a name="fl_fmt_ncremap"></a> <!-- http://nco.sf.net/nco.html#fl_fmt_ncremap -->
+@end html
+@cindex @code{--fl_fmt_ncremap}
+@cindex @code{--file_format_ncremap}
+@cindex @code{-3}
+@cindex @code{-3}
+@cindex @code{-4}
+@cindex @code{-5}
+@cindex @code{-6}
+@cindex @code{-7}
+As of @acronym{NCO} version 4.6.8 (August, 2017), @command{ncremap}
+supports most of the file format options that the rest of @acronym{NCO}
+has long supported (@pxref{File Formats and Conversion}).
+This includes short flags (e.g., @samp{-4}) and key-value options (e.g., 
+@samp{--fl_fmt=netcdf4}) though not long-flags without values
+(e.g., @samp{--netcdf4}).
+However, @command{ncremap} can only the full suite of file format
+options to files that it creates, i.e., regridded files.
+The weight generators (@acronym{ERWG} and TempestRemap) are limited
+in the file formats that they can read and write.
+Currently (August, 2017), @acronym{ERWG} supports @code{CLASSIC},
+@code{64BIT_OFFSET}, and @code{NETCDF4}, while TempestRemap
+supports only @code{CLASSIC}.
+The weightfiles produced are limited to these formats.
 
 @html
 <a name="grd_sng"></a> <!-- http://nco.sf.net/nco.html#grd_sng -->
@@ -23663,7 +23689,7 @@ SYNTAX
 ncwa [-3] [-4] [-5] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
 [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}] [-I]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] 
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 

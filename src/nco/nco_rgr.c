@@ -6188,7 +6188,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   msk_nm_in=rgr->msk_var;
   if(msk_nm_in){
     if(!strcasecmp(msk_nm_in,"none")){
-      /* 20170814: Some variables named, e.g., "mask" are, e.g., quality control masks not regridding masks */
+      /* 20170814: Some variables named "*mask*" are, e.g., quality control masks not regridding masks per se */
       msk_nm_in=(char *)nco_free(msk_nm_in);
     }else{
       /* User-supplied name overrides database */
@@ -6206,7 +6206,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Mask field requires special handling for non-conformant models */
   if(msk_id != NC_MIN_INT){
     /* 20151201: All models tested define mask as NC_INT except CICE which uses NC_FLOAT
-       20160111: No observations tested define mask except AMSR which uses NC_SHORT to store bitmasks. Bitmask is 1 for missing data, and up to 128 for various quality levels of valid data. Hence, almost better to ignore AMSR mask variable. */
+       20160111: Few observations tested define mask. Exceptions include AMSR and GHRSST. AMSR uses NC_SHORT to store bitmasks. Bitmask is 1 for missing data, and up to 128 for various quality levels of valid data. Hence, almost better to ignore AMSR mask variable. GHRSST uses NC_BYTE for its 3D "mask" bit-mask of surface-type values 1,2,4,8,16. */
     rcd=nco_inq_varndims(in_id,msk_id,&msk_rnk_nbr);
     if(msk_rnk_nbr != grd_rnk_nbr && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports input mask variable \"%s\" is rank %d while grid is rank %ld so will use first timestep/layer to determine output mask\n",nco_prg_nm_get(),fnc_nm,msk_nm_in,msk_rnk_nbr,grd_rnk_nbr);
     rcd=nco_inq_vartype(in_id,msk_id,&msk_typ);
@@ -7331,9 +7331,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        ALM/CLM mask (landmask) is NC_FLOAT and defines but does not use NC_FLOAT missing value
        CICE mask (tmask/umask) is NC_FLOAT and defines and uses NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value
-       PODAAC CMC mask is NC_BYTE and is a multi-valued surface-type flag with missing value == -1b */
+       GHRSST mask is NC_BYTE and is a multi-valued surface-type flag with missing value == -1b */
     if(msk_typ != NC_INT){
-      (void)fprintf(stderr,"%s: WARNING %s mask variable \"%s\" has odd type = %s. The regridder expects a variable named \"mask\", to be of type NC_INT.\n",nco_prg_nm_get(),fnc_nm,msk_nm,nco_typ_sng(msk_typ)); /* fxm */
+      if(nco_dbg_lvl_get() == nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s mask variable \"%s\" has odd type = %s. Re-run with higher debugging level for more information.\n",nco_prg_nm_get(),fnc_nm,msk_nm,nco_typ_sng(msk_typ));
+      if(nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s mask variable \"%s\" has odd type = %s. Regridding weight generators require a mask variable of type NC_INT to specify points to include/exclude as sources/destinations. Points where the mask variable is zero will be excluded (ignored) in regridding, all other points will be included. When inferring gridfiles, NCO assumes the first variable with a \"mask\"-like name (\"mask\", \"Mask\", \"grid_imask\", \"landmask\", or \"tmask\"), or the variable designated by the \"--msk_[src/dst]=msk_nm\" option, is this mask. However the variable \"%s\" in this file is not type NC_INT and so may not be intended as a regridding mask, hence this pleasant informational warning. To prevent NCO from interpreting \"%s\" as a regridding mask, specify \"--msk_src=none\" and/or \"--msk_dst=none\", as appropriate. To utilize some other variable as the mask variable, specify \"--msk_src=msk_nm\" and/or \"--msk_dst=msk_nm\", as appropriate. Mask treatment is subtle, and NCO tries to \"do the right thing\". Whether it does is often easiest to discern by visual inspection of the regridded results.\n",nco_prg_nm_get(),fnc_nm,msk_nm,nco_typ_sng(msk_typ),msk_nm,msk_nm);
     } /* msk_typ */
     switch(msk_typ){
       case NC_FLOAT:
@@ -7387,7 +7388,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       }else{
 	for(idx=0;idx<grd_sz_nbr;idx++)
 	  if(msk_unn.bp[idx] == ((nco_byte)0)) msk[idx]=0;
-	/* 20170811: PODAAC CMC kludge fxm */
+	/* 20170811: GHRSST kludge? */
       } /* !mss_val */
       break;
     default:

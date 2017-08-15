@@ -182,6 +182,7 @@ esac # !HOSTNAME
 # ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -a bilinear
 # ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -a tempest
 # ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
+# ncremap -s ${DATA}/grids/128x256_SCRIP.20160301.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
 # Regrid:
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
 # ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
@@ -211,8 +212,8 @@ esac # !HOSTNAME
 # ncremap -P mpas -i ${DATA}/hdf/mpaso.hist.am.timeSeriesStatsMonthly.0001-01-01.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -O ~/rgr
 # ncremap -P mpas -i ${DATA}/hdf/mpascice.hist.am.timeSeriesStatsMonthly.0251-01-01.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -O ~/rgr
 # ACME benchmarks:
-# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
-# ncremap -v FSNT,AODVIS -a bilinear    -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
+# ncremap -v FSNT,AODVIS -a conserve -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
+# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
 # ncremap -v FSNT,AODVIS -a tempest -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ~/rgr
 # Positional arguments:
 # ncremap --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
@@ -374,6 +375,11 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}$spt_nm -i in_fl -d dst_fl -o out_fl${fnt_nrm}\n"
     printf "${fnt_nrm} ${fnt_bld}${spt_nm} --input_file=in_fl --destination=dst_fl --output_file=out_fl${fnt_nrm}\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
+    echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
+    echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
+    echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (pnetCDF3) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
+    echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
+    echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
@@ -459,8 +465,13 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options
 # http://tuxtweaks.com/2014/05/bash-getopts
-while getopts :a:CD:d:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-: OPT; do
+while getopts :34567a:CD:d:f:g:G:h:I:i:j:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-: OPT; do
     case ${OPT} in
+	3) fl_fmt='3' ;; # File format
+	4) fl_fmt='4' ;; # File format
+	5) fl_fmt='5' ;; # File format
+	6) fl_fmt='6' ;; # File format
+	7) fl_fmt='7' ;; # File format
 	a) alg_typ="${OPTARG}" ;; # Algorithm
 	C) clm_flg='Yes' ;; # Climo flag (undocumented)
 	D) dbg_lvl="${OPTARG}" ;; # Debugging level
