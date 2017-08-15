@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.8-beta01
-@set doc-edition 4.6.8-beta01
+@set nco-edition 4.6.8-beta02
+@set doc-edition 4.6.8-beta02
 @set copyright-years 1995--2017
 @set update-year 2017
 @set update-date 15 August 2017
@@ -346,10 +346,11 @@ maintenance provided by these institutions and programs:
 @acronym{DOE} @acronym{ACME} DE-SC0012998, 
 @acronym{NASA} @acronym{ACCESS} NNX12AF48A and NNX14AH55A, and
 @acronym{NSF} @acronym{SEI} IIS-0431203 and AGS-1541031.
-Research supported as part of the Accelerated Climate Modeling for
-Energy (@acronym{ACME}) program, funded by the U.S. Department of
-Energy, Office of Science, Office of Biological and Environmental
-Research.  
+This research was supported as part of the Energy Exascale Earth System
+Model (@acronym{E3SM}) project, formerly known as Accelerated Climate
+Modeling for Energy (@acronym{ACME}),
+funded by the U.S. Department of Energy, Office of Science, Office of
+Biological and Environmental Research.
 This material is based upon work supported by the National Science
 Foundation under Grants IIS-0431203 and AGS-1541031.
 @sp 2
@@ -565,16 +566,16 @@ June, 2015@*
 Irvine, California@*
 
 @ignore
-The @acronym{DOE} @acronym{ACME} program has generously supported 
-@acronym{NCO} development in support of high-performance climate
-modeling research. 
+The @acronym{DOE} Energy Exascale Earth System Model (@acronym{E3SM})
+project (formerly @acronym{ACME}) has generously supported @acronym{NCO}
+development in support of high-performance climate modeling research.  
 This has allowed Henry Butowsky to re-join our efforts.
 Without him, much of this work would have been impossible.
 
 @sp 1
 @noindent
 Charlie Zender@*
-June, 2017@*
+August, 2017@*
 Laguna Beach, California@*
 @end ignore
 
