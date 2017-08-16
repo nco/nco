@@ -1,8 +1,10 @@
-2017-08-15  Charlie Zender  <zender@uci.edu>
+2017-08-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.8 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.8 final changes';git push
 	git tag -a 4.6.8 -m 'ncap2 cnk, ncks dt_fmt, seasons, msk=none,	ncwa_hyp_msk_wgt bug';git push --tags
+
+2017-08-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.8-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.8-beta02 final changes';git push

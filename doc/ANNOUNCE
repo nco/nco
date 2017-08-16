@@ -6,34 +6,33 @@ http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-The main new features in 4.6.8 are, once again, related to
-climatologies and regridding. ncclimo can now be given an
-explicit list of seasons to compute instead of or in addition to 
-MAM,JJA,SON,DJF. ncremap has improved mask and format handling.
-There are also a collection of minor bugfixes and improvements,
-including JSON tweaks, ISO8601 printing, and GCC7 and netCDF 4.5.x
-compatibility. 
+Many new features in 4.6.8 are, as usual, related to climatologies and
+regridding. ncclimo can now be given an explicit list of seasons to
+compute instead of, or in addition to, MAM,JJA,SON,DJF. ncremap has
+improved mask and format handling. There are also a collection of
+minor bugfixes and improvements, including JSON tweaks, ISO8601
+printing, and GCC7 and netCDF 4.5.x compatibility. 
 
-Also, this release includes an important ncwa fix that prevents
-incorrect answers when hyperslabs are used with masks and/or weights.
+This release includes an important ncwa fix that prevents incorrect
+answers when hyperslabs are used with masks and/or weights.
 Upgrade if you use ncwa with -d hyperslabs.
 
 PLEASE READ THIS IF YOU USE NCKS TO PRINT DATA:
 The ncks default printing will change to CDL in NCO 4.7.0.
-For 20+ years ncks has, by default, dumped the text representation
-of a file in (what we call) "traditional" mode, which best facilitates
-meticulous data examination in line-by-line format.
+For 20+ years ncks has, by default, printed the text representation
+of a file in what we now call "traditional" mode. This mode best
+facilitates meticulous data examination in line-by-line format.
 ncdump produces CDL format that is more useful for most NCO users.
 ncdump has always printed clean CDL and for many years there was
 little point in defaulting ncks printed output to CDL.
 However, ncks CDL mode now rivals ncdump in many ways.
 In particular, ncks --cln now prints times as human-readable calendar
 dates, the last ncdump feature that I used which ncks lacked. 
-Hence in summer 2017 ncks default printed output will change to CDL. 
+Hence in NCO 4.7.0 ncks default printed output will change to CDL. 
 Then one will type simply "ncks" instead of "ncks --cdl". 
 We just added a new "--trd" option to print traditional output.
-User --trd in your scripts and their behavior will not change.
-Otherwise your printing scripts will start to print CDL this summer.
+Add --trd to your scripts and their behavior will not change.
+Otherwise your printing scripts will start to print CDL.
 You have been warned :)
 
 Work on NCO 4.7.0 has commenced. Planned changes include printing
