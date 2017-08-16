@@ -132,7 +132,7 @@ case "${HOSTNAME}" in
         export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
     edison* )
 	module load gsl
-	module load udunits
+	module load udunits2 # 20170816 Name changed to udunits2
 	# On cori and edison, module load ncl installs ERWG 5.2 (from 2012) in ${NCARG_ROOT}/../intel/bin
 	# module load ncl/6.3.0 
 	if [ -n "${NCARG_ROOT}" ]; then

@@ -124,7 +124,7 @@ case "${HOSTNAME}" in
         export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
     edison* )
 	module load gsl
-	module load udunits
+	module load udunits2 # 20170816 Name changed to udunits2
 	export PATH='/global/homes/z/zender/bin_edison'\:${PATH}
         export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH} ; ;;
     pileus* )
@@ -1153,10 +1153,6 @@ if [ "${csn_flg}" = 'Yes' ]; then
 	csn_rqs[${csn_nbr}]=${csn}
 	# NB: Requested seasons are 0-based, defined seasons are 0-based
 	for ((csn_dfn_idx=${csn_idx_srt};csn_dfn_idx<${csn_nbr_max};csn_dfn_idx++)); do
-	    if [[ "${csn}" =~ 'ANN' ]] || [[ "${csn}" =~ 'ann' ]]; then
-		printf "${spt_nm}: ERROR Requested season ${csn} not yet supported\n"
-#		exit 1
-	    fi # !ANN
 	    if [[ "${csn}" =~ "${csn_abb[${csn_dfn_idx}]}" ]] || [[ "${csn}" =~ "${csn_abb_lc[${csn_dfn_idx}]}" ]]; then
 		# Map requested to defined (r2d) seasons and inverse (d2r)
 		# map_r2d[0]=3 means first season that user requested (i.e., in csn_lst) is fourth defined in table

@@ -679,13 +679,13 @@ variables:
 	zero:long_name = "zero";
 
 	float ppc_zro_flt(time);
-	zero:long_name = "array of single precision floating point zeros";
+	ppc_zro_flt:long_name = "array of single precision floating point zeros";
 
 	double ppc_zro_dbl(time);
-	zero:long_name = "array of double precision floating point zeros";
+	ppc_zro_dbl:long_name = "array of double precision floating point zeros";
 
 	int ppc_zro_int(time);
-	zero:long_name = "array of integer zeros";
+	ppc_zro_int:long_name = "array of integer zeros";
 
 	float one;
 	one:long_name = "one";

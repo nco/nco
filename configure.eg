@@ -271,6 +271,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
 # Sysadmin upgrade request: fxm
 # Latest sysadmin-compiled module usage:  # fxm
+# Personal recipe last modified: 201703??
 # Personal recipe last used successfully: 201703??
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
@@ -285,6 +286,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on mira:
 # Sysadmin upgrade request: fxm
 # Latest sysadmin-compiled module usage:  # fxm
+# Personal recipe last modified: 2016??
 # Personal recipe last used successfully: 2016??
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
@@ -299,6 +301,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on roger:
 # Sysadmin upgrade request: Yan Liu <yanliu@illinois.edu>
 # Latest sysadmin-compiled module usage: module load nco/4.6.5 # 20170315
+# Personal recipe last modified: 20170424
 # Personal recipe last used successfully: 20170424
 module load netcdf/4.4.0
 module load udunits
@@ -315,7 +318,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
 # Latest sysadmin-compiled module usage: module load nco/4.6.7 # 20170612 (without ncap2)
-# Personal recipe last used successfully: 20170411
+# Personal recipe last modified: 20170411
+# Personal recipe last used successfully: 20170816
 module load szip
 module load gsl
 module load udunits
@@ -335,7 +339,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
 # Latest ticket: INC0106410 on 20170804
 # Latest sysadmin-compiled module usage: module load nco/4.6.7 # 20170809 (with ncap2)
-# Personal recipe last used successfully: 20170807
+# Personal recipe last modified: 20170807
+# Personal recipe last used successfully: 20170816
 module load szip
 module load gsl
 module load udunits2
@@ -353,7 +358,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on aims4:
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last used successfully: 20170428
+# Personal recipe last modified: 2016??
+# Personal recipe last used successfully: 20170816
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/uvcdat/2016-01-21/Externals' UDUNITS2_PATH='/usr/local/uvcdat/2016-01-21/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -370,6 +376,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: support@lcrc.anl.gov
 # Latest ticket: AREQ0159277 on 20170526
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.7 # 20170526
+# Personal recipe last modified: 20161223
 # Personal recipe last used successfully: 20170526
 # fails to link to udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
@@ -403,7 +410,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: cislhelp@ucar.edu
 # Latest ticket: 157798 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.5.5 # 20160228
-# Personal recipe last used successfully: 20170526
+# Personal recipe last modified: 20170812
+# Personal recipe last used successfully: 20170816
 module add intel/16.0.3;module add gsl;module add netcdf/4.4.1;
 export PATH=${PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib # needed to run NCO
@@ -414,7 +422,8 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3' UDUNIT
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 358890 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170515
-# Personal recipe last used successfully: 20170814
+# Personal recipe last modified: 20170814
+# Personal recipe last used successfully: 20170816
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -432,7 +441,8 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/autofs/nccs-svm1_sw/rhea/.swc
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 347675 on 20170316
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170411
-# Personal recipe last used successfully: 20170814
+# Personal recipe last modified: 20170814
+# Personal recipe last used successfully: 20170816
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 module add gcc # change GCC from v 4.3.4 to 4.9.0
 #module add gsl # not used yet

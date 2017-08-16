@@ -1,6 +1,6 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.6.8 are ready. 
+The netCDF Operators NCO version 4.6.8 are released. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
@@ -117,6 +117,8 @@ C. Fix longstanding (since ~4.2.3) ncwa issue where hyperslabs
 D. Ensure ncclimo and ncremap load netCDF libraries 4.4.x+ on
    certain clusters so that CDF5 capabilities always available.
    Thanks to Milena Veneziani for reporting this.
+
+Full release statement at http://nco.sf.net/ANNOUNCE
 
 KNOWN PROBLEMS DUE TO NCO:
 
