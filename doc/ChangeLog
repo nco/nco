@@ -1,3 +1,7 @@
+2017-08-17  Charlie Zender  <zender@uci.edu>
+
+	* Replace ACME by E3SM or ACME/E3SM as appropriate
+
 2017-08-16  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncclimo false-positive warning about ANN
