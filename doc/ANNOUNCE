@@ -1,21 +1,12 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.6.8 are released. 
+The netCDF Operators NCO version 4.6.9 are released. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-Many new features in 4.6.8 are, as usual, related to climatologies and
-regridding. ncclimo can now be given an explicit list of seasons to
-compute instead of, or in addition to, MAM,JJA,SON,DJF. ncremap has
-improved mask and format handling. There are also a collection of
-minor bugfixes and improvements, including JSON tweaks, ISO8601
-printing, and GCC7 and netCDF 4.5.x compatibility. 
-
-This release includes an important ncwa fix that prevents incorrect
-answers when hyperslabs are used with masks and/or weights.
-Upgrade if you use ncwa with -d hyperslabs.
+Version 4.6.9 fixes a few issues has no new major features.
 
 PLEASE READ THIS IF YOU USE NCKS TO PRINT DATA:
 The ncks default printing will change to CDL in NCO 4.7.0.
@@ -69,7 +60,7 @@ B. ncks CDL printing supports finer-grained control of date formats,
 C. Some data are best evaluated with custom-defined seasons, e.g., JFM
    instead of DJF, or two-month seasons such as FM or ON. ncclimo now
    supports up to eleven (and counting) seasons, although by default it
-   only computes MAM, JJA, SON, and DJF. As of NCO 4.6.8, use the
+   only computes MAM, JJA, SON, and DJF. As of NCO 4.6.9, use the
    seasons option to specify additional or alternate seasons: 
    ncclimo --seasons=jfm,jas,ann -s 1980 -e 1983 -i drc_in -o drc_out
    Use "–seasons=none" to completely turn-off seasonal and annual-mean
@@ -124,7 +115,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.6.8 built/tested under
+   These problems occur with NCO 4.6.9 built/tested under
    MacOS 10.12.6 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
    Linux with netCDF 4.5.1-development (20170811) on HDF5 1.8.19.
 

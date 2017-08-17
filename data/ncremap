@@ -70,7 +70,7 @@ while [ -h "${spt_src}" ]; do # Recursively resolve ${spt_src} until file is no 
 done
 cmd_ln="${spt_src} ${@}"
 drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
-spt_nm=$(basename ${spt_src}) # [sng] Script name (Unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
+spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
 
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}

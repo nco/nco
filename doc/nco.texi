@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.8
-@set doc-edition 4.6.8
+@set nco-edition 4.6.9-alpha01
+@set doc-edition 4.6.9-alpha01
 @set copyright-years 1995--2017
 @set update-year 2017
 @set update-date 17 August 2017
@@ -17191,10 +17191,23 @@ The last month is December of the end year specified with @samp{-e}.
 @cindex @code{--climatology}
 @item -C @var{clm_md} (@code{--clm_md}, @code{--climatology_mode}, @code{--mode}, @code{--climatology})
 Climatology mode.
-Valid values are @samp{ann} and @samp{mth}.
-The value indicates the timespan of the averages in each input file.  
-The default mode is @samp{mth}, which means input files are monthly averages. 
-Use @samp{ann} if the input files are a series of annual means.
+Valid values are for @var{clm_md} are @samp{ann}, @samp{mth}, and @samp{dly}.
+The value indicates the timespan of each input file for annual and
+monthly climatologies.
+The default mode is @samp{mth}, which means input files are monthly
+averages.  
+Use @samp{ann} when the input files are a series of annual means 
+(a common temporal resolution for ice-sheet simulations).
+The value @samp{dly} is used for all input files whose temporal
+resolution is daily or finer.
+The data could be a daily average, or diurnally-resolved, e.g.,
+3-hourly. 
+The climatology generator and splitter do not require that daily-mode
+input files begin or end on daily boundaries.
+These tools hyperslab the input files using the date information
+required to performed their analysis.
+This facilitates analyzing datasets with varying numbers of days per
+input file.
 
 @cindex @code{-c @var{caseid}}
 @cindex @var{caseid}

@@ -238,8 +238,8 @@ Commands for LINUX are the only ones "regularly" used after ~2010
 # Yan Liu <yanliu@illinois.edu> # NCSA Maintainer = Yan Liu (github: yanliu-chn)
 # https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # https://www.olcf.ornl.gov/support/submit-ticket # OLCF
-# Subject: Please upgrade NCO module to 4.6.8
-# Request: NCO 4.6.8 was released 5/26 and contains many features of interest to your ACME users. Please upgrade the system NCO module to 4.6.8 and make that the default NCO module. Thanks!
+# Subject: Please upgrade NCO module to 4.6.9
+# Request: NCO 4.6.9 was released 5/26 and contains many features of interest to your ACME users. Please upgrade the system NCO module to 4.6.9 and make that the default NCO module. Thanks!
 
 zender@dust:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUX
