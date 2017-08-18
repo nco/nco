@@ -1,3 +1,9 @@
+2017-08-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.9-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.9-alpha01 final changes';git push
+	git tag -a 4.6.9-alpha01 -m 'ANN false-positive, edison module udunits2';git push --tags
+
 2017-08-17  Charlie Zender  <zender@uci.edu>
 
 	* Replace ACME by E3SM or ACME/E3SM as appropriate
