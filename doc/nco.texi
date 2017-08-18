@@ -2402,8 +2402,8 @@ For example, @command{ncra}, @command{nces}, and @command{ncwa} all
 promote integer types to double-precision floating-point prior to
 arithmetic, then perform the arithmetic, then demote back to the
 original integer type after arithmetic.
-This preserves the on-disk storage type while obtaining the accuracy
-advantages of floating-point arithmetic. 
+This preserves the on-disk storage type while obtaining the precision
+advantages of double-precision floating-point arithmetic. 
 Since version 4.3.6 (released in September, 2013), @acronym{NCO} also
 by default converts single-precision floating-point to double-precision
 prior to arithmetic, which incurs the same @acronym{RAM} penalty.
@@ -2435,15 +2435,19 @@ one input weight, one conformed/working weight, one weight tally,
 one input mask, one conformed/working mask, and
 one output variable. 
 @acronym{NCO}'s tally arrays are of type C-type @code{long}, whose size 
-is 8-bytes on all modern computers, the same as @code{NC_DOUBLE}.
+is eight-bytes on all modern computers, the same as @code{NC_DOUBLE}
+@footnote{By contrast @code{NC_INT} and its deprecated synonym
+@code{NC_LONG} are only four-bytes.
+Perhaps this is one reason why the @code{NC_LONG} token is
+deprecated.}. 
 When invoked, the weighting and masking features contribute up to
 three-eighths and two-eighths of these requirements apiece.
 If weights and masks are @emph{not} specified 
 (i.e., no @samp{-w} or @samp{-a} options)
 then @command{ncwa} requirements drop to @math{MS <= 3VT}
 (one input variable, one tally array, and the output variable). 
-The output variable is the same size as the input variable when
-averaging over a degenerate dimension.
+The output variable is the same size as the input variable when 
+averaging only over a degenerate dimension.
 However, normally the output variable is much smaller than the input, 
 and is often a simple scalar, in which case the memory requirements
 drop by @math{1VT} since the output array requires essentially no
@@ -2453,7 +2457,7 @@ All of this is subject to the type promotion rules mentioned above.
 For example, @command{ncwa} averaging a variable of type
 @code{NC_FLOAT} requires @math{MS <= 16VT} (rather than @math{MS <= 8VT}) 
 since all arrays are (at least temporarily) composed of eight-byte
-elements.
+elements, twice the size of the values on disk.
 Without mask or weights, the requirements for @code{NC_FLOAT} are
 @math{MS <= 6VT} (rather than @math{MS <= 3VT} as for @code{NC_DOUBLE}) 
 due to temporary internal promotion of both the input variable and the

@@ -1439,12 +1439,12 @@ if [ "${clm_flg}" = 'Yes' ]; then
     if [ ${clm_md} = 'ann' ]; then 
 	printf "Each input file assumed to contain mean of one year\n"
     elif [ ${clm_md} = 'dly' ]; then 
-	printf "Each input file assumed to contain mean of one day\n"
+	printf "Each input file assumed to contain one or more daily or sub-daily (e.g., 3-hourly) means\n"
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
     if [ ${csn_flg} = 'No' ]; then 
-	printf "Seasons and therefore annual means have been turned-off and will not be computed\n"
+	printf "Seasons and therefore annual means derived from seasonal means have been turned-off and will not be computed\n"
     elif [ ${clm_md} = 'mth' ]; then 
 	if [ ${dec_md} = 'scd' ]; then 
 	    printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive and cross calendar-year boundaries\n"

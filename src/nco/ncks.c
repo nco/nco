@@ -1192,11 +1192,12 @@ main(int argc,char **argv)
 
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;
-    prn_flg.cdl=PRN_CDL;
+    // prn_flg.trd=PRN_TRD || !(PRN_CDL || PRN_XML || PRN_JSN); // 20170522
+    prn_flg.cdl=PRN_CDL || !(PRN_TRD || PRN_XML || PRN_JSN); // 20170817
+    prn_flg.trd=PRN_TRD;
     prn_flg.jsn=PRN_JSN;
     prn_flg.srm=PRN_SRM;
     prn_flg.xml=PRN_XML;
-    prn_flg.trd=PRN_TRD || !(PRN_CDL || PRN_XML || PRN_JSN); // 20170522
     if((prn_flg.cdl || prn_flg.xml) && nco_dbg_lvl >= nco_dbg_std) prn_flg.nfo_xtr=True; else prn_flg.nfo_xtr=False;
     prn_flg.new_fmt=(PRN_CDL || PRN_JSN || PRN_SRM || PRN_XML);
     prn_flg.hdn=PRN_HDN;
@@ -1305,13 +1306,10 @@ main(int argc,char **argv)
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
 	/* Ineptly named nco_grp_prn() emits full CDL and XML formats, and partial JSN 
 	   rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl); */
-
         if(prn_flg.jsn) rcd+=nco_prn_jsn(in_id,trv_pth,&prn_flg,trv_tbl);
         else if(prn_flg.xml) rcd+=nco_prn_xml(in_id,trv_pth,&prn_flg,trv_tbl);
         else if(prn_flg.cdl || prn_flg.trd) rcd+=nco_prn_cdl_trd(in_id,trv_pth,&prn_flg,trv_tbl); 
         /* else rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl); */
-
- 
       }else{
 	/* Place-holder for other options for organization/alphabetization */
 	if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
