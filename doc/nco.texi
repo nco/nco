@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.9-alpha01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 17 August 2017
+@set update-date 20 August 2017
 @set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3876,20 +3876,31 @@ these formats.
 Datasets in the default @code{CLASSIC} or the newer @code{64BIT_OFFSET}
 formats have maximum backwards-compatibility with older applications. 
 @acronym{NCO} has deep support for @code{NETCDF4} formats.
-If performance or disk-space as important as backwards compatibility,
-then use @code{NETCDF4_CLASSIC} instead of @code{CLASSIC} format files. 
-As of 2014, @acronym{NCO} support for the @code{NETCDF4} format is
-nearly complete and the most powerful and disk/@acronym{RAM} efficient 
-workflows will utilize this format.
+If backwards compatibility is important, and your datasets are too large
+for netCDF3, use @code{NETCDF4_CLASSIC} instead of @code{CLASSIC} format
+files.  
+@acronym{NCO} support for the @code{NETCDF4} format is complete and many
+high-performance disk/@acronym{RAM} efficient workflows utilize this
+format.   
 
 As mentioned above, all operators write use the input file format for
 output files unless told otherwise.
 Toggling the short option @samp{-6} or the long option @samp{--6} or
 @samp{--64bit_offset} (or their @var{key}-@var{value} equivalent
-@samp{--fl_fmt=64bit_offset}) produces the netCDF3 64-bit offset format
+@samp{--fl_fmt=64bit_offset}) produces the netCDF3 64-bit offset format 
 named @code{64BIT_OFFSET}.
 @acronym{NCO} must be built with @w{netCDF 3.6} or higher to produce
 a @code{64BIT_OFFSET} file.
+As of @acronym{NCO} version 4.6.9 (September, 2017), toggling the short
+option @samp{-5} or the long options @samp{--5}, @samp{--64bit_data},
+@samp{--cdf5}, or @samp{--pnetcdf} (or their @var{key}-@var{value}
+equivalent @samp{--fl_fmt=64bit_data}) produces the netCDF3 64-bit data
+format named @code{64BIT_DATA}. 
+This format is widely used by @acronym{MPI}-enabled modeling codes
+because of its long association with PnetCDF.
+@acronym{NCO} must be built with @w{netCDF 4.4} or higher to produce
+a @code{64BIT_DATA} file.
+
 Using the @samp{-4} switch (or its long option equivalents
 @samp{--4} or @samp{--netcdf4}), or setting its @var{key}-@var{value}
 equivalent @samp{--fl_fmt=netcdf4} produces a @code{NETCDF4} file

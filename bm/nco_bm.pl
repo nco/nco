@@ -190,7 +190,7 @@ dbg_msg(1,$lcl_vars); # Print local variables
 if($ARGV == 0){NCO_bm::bm_usg();}
 
 # Test file format
-if ($fl_fmt eq "64bit" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic") {
+if ($fl_fmt eq "64bit_offset" || $fl_fmt eq "netcdf4" || $fl_fmt eq "netcdf4_classic") {
     $fl_fmt="--fl_fmt=".$fl_fmt;
     dbg_msg(1,"File format set to [$fl_fmt]");
 }elsif ($fl_fmt eq "classic"){

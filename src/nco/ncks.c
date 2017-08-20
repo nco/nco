@@ -435,12 +435,12 @@ main(int argc,char **argv)
     /* Long options with short counterparts */
     {"3",no_argument,0,'3'},
     {"4",no_argument,0,'4'},
-    {"64bit_offset",no_argument,0,'4'},
     {"netcdf4",no_argument,0,'4'},
     {"5",no_argument,0,'5'},
     {"64bit_data",no_argument,0,'5'},
     {"cdf5",no_argument,0,'5'},
     {"pnetcdf",no_argument,0,'5'},
+    {"64bit_offset",no_argument,0,'6'},
     {"7",no_argument,0,'7'},
     {"abc",no_argument,0,'a'},
     {"alphabetize",no_argument,0,'a'},
