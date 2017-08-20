@@ -40,12 +40,13 @@ nco_create_mode_prs // [fnc] Parse user-specified file format
   if(static_cast<std::string>("classic").find(fl_fmt_sng) != std::string::npos && fl_fmt_sng.find("netcdf4") == std::string::npos){
   // If "classic" contains string and string does not contain "netcdf4"
     fl_fmt_enm=NC_FORMAT_CLASSIC;
-  }else if(static_cast<std::string>("64bit_offset").find(fl_fmt_sng) != std::string::npos){
-    /* If "64bit_offset" contains string */
-    fl_fmt_enm=NC_FORMAT_64BIT_OFFSET;
-  }else if(static_cast<std::string>("64bit_data").find(fl_fmt_sng) != std::string::npos){
+  }else if(static_cast<std::string>("64bit").find(fl_fmt_sng) != std::string::npos){
+    /* If "64bit" contains string */
+    fl_fmt_enm=NC_FORMAT_64BIT;
+    //  }else if(static_cast<std::string>("64bit_data").find(fl_fmt_sng) != std::string::npos){
+    /* 20170820: CDF5 not yet supported on Travis CI machines */
     /* If "64bit_data" contains string */
-    fl_fmt_enm=NC_FORMAT_64BIT_DATA;
+    //    fl_fmt_enm=NC_FORMAT_64BIT_DATA;
   }else if(fl_fmt_sng.find("netcdf4") != std::string::npos){
 #ifdef ENABLE_NETCDF4
     if(static_cast<std::string>("classic").find(fl_fmt_sng) != std::string::npos){
