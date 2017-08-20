@@ -1049,20 +1049,16 @@ main(int argc,char **argv)
   } /* end for */
   
   /* Set chunksize parameters */
-  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) {
-
+  if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
     //(void) nco_cnk_sz_set(out_id, (lmt_msa_sct **) NULL_CEWI, (int) 0, &cnk_map, &cnk_plc, cnk_sz_scl, cnk.cnk_dmn,cnk_nbr);
     dmn_cmn_sct cmn[NC_MAX_DIMS];
     /* update member dmn_cmn_vtr() from dmn_out_vtr */
     prs_arg.ncap_pop_dmn_cmn();
-    for(idx=0; idx<nbr_var_fix;idx++) {
+    for(idx=0;idx<nbr_var_fix;idx++){
       prs_arg.ncap_pop_var_dmn_cmn(var_fix[idx], cmn);
-      (void) nco_cnk_sz_set_trv(in_id, out_id, &cnk, var_fix[idx]->nm, cmn);
+      (void)nco_cnk_sz_set_trv(in_id,out_id,&cnk,var_fix[idx]->nm,cmn);
     }
   }
-
-
-
 
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

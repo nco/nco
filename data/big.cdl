@@ -16,22 +16,23 @@
 
 // Create 4 GB file with one variable 
 // Expect failure on "small RAM" (< ~4 GB) machines:
-// ncap2 --64 -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0f" -s "wvl_1e1[wvl_1e1]=1.0f" -s "wvl_1e2[wvl_1e2]=1.0f" -s "wvl_1e3[wvl_1e3]=1.0f" -s "wvl_1e4[wvl_1e4]=1.0f" -s "wvl_1e5[wvl_1e5]=1.0f" -s "wvl_1e6[wvl_1e6]=1.0f" -s "wvl_1e7[wvl_1e7]=1.0f" -s "wvl_1e8[wvl_1e8]=1.0f" -s "wvl_1e9[wvl_1e9]=1.0f" ~/nco/data/big.nc ~/foo_big.nc
+// ncap2 -5 -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0f" -s "wvl_1e1[wvl_1e1]=1.0f" -s "wvl_1e2[wvl_1e2]=1.0f" -s "wvl_1e3[wvl_1e3]=1.0f" -s "wvl_1e4[wvl_1e4]=1.0f" -s "wvl_1e5[wvl_1e5]=1.0f" -s "wvl_1e6[wvl_1e6]=1.0f" -s "wvl_1e7[wvl_1e7]=1.0f" -s "wvl_1e8[wvl_1e8]=1.0f" -s "wvl_1e9[wvl_1e9]=1.0f" ~/nco/data/big.nc ~/foo_big.nc
+// ncap2 -5 -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0d" -s "wvl_1e1[wvl_1e1]=1.0d" -s "wvl_1e2[wvl_1e2]=1.0d" -s "wvl_1e3[wvl_1e3]=1.0d" -s "wvl_1e4[wvl_1e4]=1.0d" -s "wvl_1e5[wvl_1e5]=1.0d" -s "wvl_1e6[wvl_1e6]=1.0d" -s "wvl_1e7[wvl_1e7]=1.0d" -s "wvl_1e8[wvl_1e8]=1.0d" -s "wvl_1e9[wvl_1e9]=1.0d" ~/nco/data/big.nc ~/foo_big.nc
 // ls -l ~/foo_big.nc
 
 // On small-RAM machines, create 4 GB file with multiple variables instead
 // This reduces peak memory usage to ~400 MB, and still tests LFS capability
-// ncap2 --64 -D 3 -O -s "wvl_1e8[wvl_1e8]=1.0f" ~/nco/data/big.nc ${DATA}/nco_bm/big.nc # Data buffer size: 400 MB
-// ncrename -D 3 -d wvl_1e8,wvl ${DATA}/nco_bm/big.nc # Rename because ncecat does not concatenate coordinate variables
+// ncap2 -5 -D 3 -O -s "wvl_1e8[wvl_1e8]=1.0f" ~/nco/data/big.nc ${HOME}/big.nc # Data buffer size: 400 MB
+// ncrename -D 3 -d wvl_1e8,wvl ${HOME}/big.nc # Rename because ncecat does not concatenate coordinate variables
 // Aggregate ten files together
-// ncecat -u time -D 3 -O -p ${DATA}/nco_bm big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc ${DATA}/nco_bm/big.nc 
-// ls -l ${DATA}/nco_bm/big.nc
+// ncecat -u time -D 3 -O -p ${HOME} big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc ${HOME}/big.nc 
+// ls -l ${HOME}/big.nc
 
 // Test data access:
 // This is where LFS is useful
 // These commands should work on 32-bit systems with LFS support even though files exceed 2 GB
-// ncks -m -M -H ${DATA}/nco_bm/big.nc | m
-// ncks -H -d wvl_1e9,999999999 ${DATA}/nco_bm/big.nc | m
+// ncks -m -M -H ${HOME}/big.nc | m
+// ncks -H -d wvl_1e9,999999999 ${HOME}/big.nc | m
 
 // Valid CDF/netCDF files need not have any defined variable or data
 // Use ncap LHS-casting to define variables with big dimensions
