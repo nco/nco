@@ -1193,7 +1193,8 @@ main(int argc,char **argv)
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;
     // prn_flg.trd=PRN_TRD || !(PRN_CDL || PRN_XML || PRN_JSN); // 20170522
-    prn_flg.cdl=PRN_CDL || !(PRN_TRD || PRN_XML || PRN_JSN); // 20170817
+    PRN_CDL=PRN_CDL || !(PRN_TRD || PRN_XML || PRN_JSN); // 20170817
+    prn_flg.cdl=PRN_CDL;
     prn_flg.trd=PRN_TRD;
     prn_flg.jsn=PRN_JSN;
     prn_flg.srm=PRN_SRM;
