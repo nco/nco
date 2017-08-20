@@ -1362,7 +1362,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   if(nco_prg_id_get() == ncks){
     /* File format needed for decision tree and to enable netCDF4 features */
     (void)nco_inq_format(out_id,&fl_fmt);
-    if(fl_fmt != NC_FORMAT_NETCDF4 && !nco_typ_nc3(var_typ_in)){
+    if(fl_fmt != NC_FORMAT_NETCDF4 && fl_fmt != NC_FORMAT_64BIT_DATA && !nco_typ_nc3(var_typ_in)){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting variable %s from %s of netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,(nbr_dim > 0) ? "array" : "scalar",nco_typ_sng(var_typ_in),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
       var_typ_out=nco_typ_nc4_nc3(var_typ_in);
 

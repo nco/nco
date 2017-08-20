@@ -9,31 +9,31 @@
 // netCDF4: ncgen arguments depend on version:
 // "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
 // "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
-// /usr/local/bin/ncgen -k netCDF-4 -b -o in_4.nc in_4.cdl
-// /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in_4.cdl
+// /usr/local/bin/ncgen -k netCDF-4 -b -o in_4.nc4 in_4.cdl
+// /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc4 ${HOME}/nco/data/in_4.cdl
 
 // URL: 
 // http://dust.ess.uci.edu/nco/in.nc
-// http://dust.ess.uci.edu/nco/in_4.nc
+// http://dust.ess.uci.edu/nco/in_4.nc4
 // http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in.nc
-// http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc
+// http://motherlode.ucar.edu:8080/thredds/dodsC/testdods/in_4.nc4
 
 // netCDF3:
-// ncgen -b -o in_4.nc in_4.cdl
-// ncgen -b -o ${HOME}/nco/data/in_4.nc ${HOME}/nco/data/in_4.cdl
-// scp ~/nco/data/in_4.cdl ~/nco/data/in_4.nc dust.ess.uci.edu:nco/data
-// scp ~/nco/data/in_4.nc ~/nco/data/in_4.nc dust.ess.uci.edu:/var/www/html/nco
-// scp ~/nco/data/in_4.nc ~/nco/data/in_4.nc dust.ess.uci.edu:/data/home/www/html/dodsdata
-// mswrite -t 365 ~/nco/data/in_4.nc /ZENDER/tmp/in_4.nc
-// mswrite -t 365 ~/nco/data/in_4.nc /ZENDER/tmp/h0001.nc
-// mswrite -t 365 ~/nco/data/in_4.nc /ZENDER/tmp/h0002.nc
-// mswrite -t 365 ~/nco/data/in_4.nc /ZENDER/tmp/h0003.nc
-// mswrite -t 365 ~/nco/data/in_4.nc /ZENDER/tmp/h0004.nc
-// msrcp -period 365 ~/nco/data/in_4.nc mss:/ZENDER/tmp/in_4.nc
-// msrcp -period 365 ~/nco/data/in_4.nc mss:/ZENDER/tmp/h0001.nc
-// msrcp -period 365 ~/nco/data/in_4.nc mss:/ZENDER/tmp/h0002.nc
-// msrcp -period 365 ~/nco/data/in_4.nc mss:/ZENDER/tmp/h0003.nc
-// msrcp -period 365 ~/nco/data/in_4.nc mss:/ZENDER/tmp/h0004.nc
+// ncgen -b -o in_4.nc4 in_4.cdl
+// ncgen -b -o ${HOME}/nco/data/in_4.nc4 ${HOME}/nco/data/in_4.cdl
+// scp ~/nco/data/in_4.cdl ~/nco/data/in_4.nc4 dust.ess.uci.edu:nco/data
+// scp ~/nco/data/in_4.nc4 ~/nco/data/in_4.nc4 dust.ess.uci.edu:/var/www/html/nco
+// scp ~/nco/data/in_4.nc4 ~/nco/data/in_4.nc4 dust.ess.uci.edu:/data/home/www/html/dodsdata
+// mswrite -t 365 ~/nco/data/in_4.nc4 /ZENDER/tmp/in_4.nc4
+// mswrite -t 365 ~/nco/data/in_4.nc4 /ZENDER/tmp/h0001.nc
+// mswrite -t 365 ~/nco/data/in_4.nc4 /ZENDER/tmp/h0002.nc
+// mswrite -t 365 ~/nco/data/in_4.nc4 /ZENDER/tmp/h0003.nc
+// mswrite -t 365 ~/nco/data/in_4.nc4 /ZENDER/tmp/h0004.nc
+// msrcp -period 365 ~/nco/data/in_4.nc4 mss:/ZENDER/tmp/in_4.nc4
+// msrcp -period 365 ~/nco/data/in_4.nc4 mss:/ZENDER/tmp/h0001.nc
+// msrcp -period 365 ~/nco/data/in_4.nc4 mss:/ZENDER/tmp/h0002.nc
+// msrcp -period 365 ~/nco/data/in_4.nc4 mss:/ZENDER/tmp/h0003.nc
+// msrcp -period 365 ~/nco/data/in_4.nc4 mss:/ZENDER/tmp/h0004.nc
 
 // WARNING: Changing values of variables below, especially coordinate variables, affects outcome of nco_tst.pl test script
 // Other programs, e.g., ~/f/fff.F90, ~/c++/ccc.cc, ~/c/c.c may also break
@@ -49,7 +49,7 @@
 // double: 1.0, 1.d, 1.0e-20 (decimal point is required, d is not required)
 
 // NCL usage:
-// id_in=addfile("/home/zender/nco/data/in_4.nc","r")
+// id_in=addfile("/home/zender/nco/data/in_4.nc4","r")
 // print(id_in)
 // list_filevars(id_in)
 

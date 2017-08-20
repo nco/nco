@@ -18,6 +18,7 @@
 // Expect failure on "small RAM" (< ~4 GB) machines:
 // ncap2 -5 -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0f" -s "wvl_1e1[wvl_1e1]=1.0f" -s "wvl_1e2[wvl_1e2]=1.0f" -s "wvl_1e3[wvl_1e3]=1.0f" -s "wvl_1e4[wvl_1e4]=1.0f" -s "wvl_1e5[wvl_1e5]=1.0f" -s "wvl_1e6[wvl_1e6]=1.0f" -s "wvl_1e7[wvl_1e7]=1.0f" -s "wvl_1e8[wvl_1e8]=1.0f" -s "wvl_1e9[wvl_1e9]=1.0f" ~/nco/data/big.nc ~/foo_big.nc
 // ncap2 -5 -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0d" -s "wvl_1e1[wvl_1e1]=1.0d" -s "wvl_1e2[wvl_1e2]=1.0d" -s "wvl_1e3[wvl_1e3]=1.0d" -s "wvl_1e4[wvl_1e4]=1.0d" -s "wvl_1e5[wvl_1e5]=1.0d" -s "wvl_1e6[wvl_1e6]=1.0d" -s "wvl_1e7[wvl_1e7]=1.0d" -s "wvl_1e8[wvl_1e8]=1.0d" -s "wvl_1e9[wvl_1e9]=1.0d" ~/nco/data/big.nc ~/foo_big.nc
+// ncap2 -4 --cnk_dmn=wvl_1e9,100000 -D 3 -O -s "wvl_1e0[wvl_1e0]=1.0d" -s "wvl_1e1[wvl_1e1]=1.0d" -s "wvl_1e2[wvl_1e2]=1.0d" -s "wvl_1e3[wvl_1e3]=1.0d" -s "wvl_1e4[wvl_1e4]=1.0d" -s "wvl_1e5[wvl_1e5]=1.0d" -s "wvl_1e6[wvl_1e6]=1.0d" -s "wvl_1e7[wvl_1e7]=1.0d" -s "wvl_1e8[wvl_1e8]=1.0d" -s "wvl_1e9[wvl_1e9]=1.0d" ~/nco/data/big.nc ~/foo_big.nc
 // ls -l ~/foo_big.nc
 
 // On small-RAM machines, create 4 GB file with multiple variables instead

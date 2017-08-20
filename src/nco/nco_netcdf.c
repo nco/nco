@@ -78,7 +78,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   switch(rcd){
   case NC_EACCESS:  /* netcdf.h added NC_EACCESS in ~2012 */
     (void)fprintf(stdout,"ERROR NC_EACCESS Access failure\nHINT: NC_EACCESS errors signify a problem receiving data from a DAP server. This can occur, e.g., when NCO requests (with nco_var_get()) more data than the server is configured to dispense at one time. A workaround might be to request smaller chunks of data at one time. This can be accomplished by accessing hyperslabs or multi-slabs of data as described at http://nco.sf.net/nco.html#mlt\n"); break; /* NB: NC_EACCESS added to netcdf.h for DAP support in ~2012 */
-  case NC_EBADTYPE: (void)fprintf(stdout,"ERROR NC_BADTYPE Not a netCDF data type\nHINT: NC_EBADTYPE errors can occur when NCO tries to write netCDF4 features to a netCDF3 file, and, separately, when a variable's type conflicts with its _FillValue type. 1. netCDF4 features that cannot be defined in a netCDF3 file, and that thus will trigger this error, include groups and netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE). To avoid this, remove all netCDF4 features before attempting to convert them to netCDF3 format, or write a netCDF4 output file instead of a netCDF3 output file. 2. The netCDF best practice is for _FillValue attributes to be the same numeric type as their host variables.\n"); break;
+  case NC_EBADTYPE: (void)fprintf(stdout,"ERROR NC_BADTYPE Not a netCDF data type\nHINT: NC_EBADTYPE errors can occur when NCO tries to write netCDF4 features to a netCDF3 file, and, separately, when a variable's type conflicts with its _FillValue type. 1. netCDF4 features that cannot be defined in a netCDF3 file, and that thus will trigger this error, include groups and netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE, NC_INT64). To avoid this, remove all netCDF4 features before attempting to convert them to netCDF3 format, or write a netCDF4 output file instead of a netCDF3 output file. 2. The netCDF best practice is for _FillValue attributes to be the same numeric type as their host variables.\n"); break;
   case NC_ECANTWRITE: (void)fprintf(stdout,"ERROR NC_ECANTWRITE Can't write file\nHINT: NC_ECANTWRITE errors can occur when NCO tries to write to an HDF5 file that is not netCDF4-compliant. One workaround is translate the file to a netCDF4-compliant file first, e.g., with \'ncks in.h5 out.nc\'.\n"); break;
   case NC_EINVAL: (void)fprintf(stdout,"ERROR NC_EINVAL Invalid argument\nHINT: NC_EINVAL errors can occur for many reasons. Three common ones are described here. 1. When invalid chunking directives are given, e.g., to unchunk a record variable or to chunk a variable with an invalid size (such as zero or larger than a fixed dimension). This is the most frequent/likely cause in our experience. 2. When HDF4-enabled NCO attempts to directly write to an HDF4 (not HDF5) file. Not all HDF5 calls are available with HDF4, and the operators ncrename and ncatted are liklier to trigger this problem. We are working to solve this (fxm TODO nco1104). Please let us know if it affects you. For now the workaround is to convert the HDF4 file to netCDF4 first (e.g., with ncks -4 in.hdf out.nc), then use ncrename or ncatted. 3. When NCO operators attempt to open netCDF4 files using the diskless option, usually invoked with --diskless_all, --ram_all, or --open_ram. Is your input file netCDF4 format?  (http://nco.sf.net/nco.html#fmt_inq shows how to tell.) If so then omitting the diskless option may solve this problem.\n"); break; 
   case NC_EIO: /* netcdf.h added NC_EIO in ~2012 */
@@ -1827,6 +1827,7 @@ int
 nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_put_var1_*() */
+  const char fnc_nm[]="nco_put_var1()";
   int rcd=NC_NOERR;
   switch(type){
   case NC_FLOAT: rcd=nc_put_var1_float(nc_id,var_id,(const size_t *)srt,(const float *)vp); break;
@@ -1863,6 +1864,11 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
+  if(rcd != NC_NOERR){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_put_var1() variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var1()");
   return rcd;
 } /* end nco_put_var1 */

@@ -945,7 +945,7 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
 fi # !clm_flg
 if [ ${inp_glb} = 'Yes' ]; then 
-    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
+    for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ]; then
 	    fl_in[${fl_nbr}]=${fl}
 	    let fl_nbr=${fl_nbr}+1

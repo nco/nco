@@ -17327,6 +17327,7 @@ The use of @var{drc_in} is mandatory in climate generation mode but is
 optional in timeseries reshaping mode.
 In timeseries reshaping mode, @command{ncclimo} uses all netCDF files
 (meaning files with suffixes @code{.nc}, @code{.nc3}, @code{.nc4},
+@code{.nc5}, @code{.nc6}, @code{.nc7},
 @code{.cdf}, @code{.hdf}, @code{.he5}, or @code{.h5}) in @var{drc_in} to 
 create the list of input files when no list is provided through
 @code{stdin} or as positional arguments to the command-line. 
@@ -22150,7 +22151,8 @@ constructed by appending a slash and the filename to the directory:
 @samp{@var{in_drc}/@var{in_fl}}.
 Specifying @var{in_drc} without @var{in_fl} causes @command{ncremap}
 to attempt to remap every file in @var{in_drc} that ends with one of
-these suffixes: @code{.nc}, @code{.nc3}, @code{.nc4}, @code{.cdf},
+these suffixes: @code{.nc}, @code{.nc3}, @code{.nc4}, @code{.nc5},
+@code{.nc6}, @code{.nc7}, @code{.cdf},
 @code{.hdf}, @code{.he5}, or @code{.h5}.
 When multiple files are regridded, each output file takes the name
 of the corresponding input file.
