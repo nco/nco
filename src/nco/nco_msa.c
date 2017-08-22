@@ -1659,7 +1659,7 @@ nco_msa_var_get_sct                 /* [fnc] Define a 'var_sct' hyperslab fields
   const trv_sct * const var_trv)    /* I [sct] GTT variable */
 {
   /* Same as nco_msa_var_get_trv() but with input 'var_trv' '
-  TODO Deprecate nco_msa_var_get_trv() and use this function */
+     TODO Deprecate nco_msa_var_get_trv() and use this function */
 
   const char fnc_nm[] = "nco_msa_var_get_sct()"; /* [sng] Function name  */
 

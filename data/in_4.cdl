@@ -9,8 +9,9 @@
 // netCDF4: ncgen arguments depend on version:
 // "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
 // "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
-// /usr/local/bin/ncgen -k netCDF-4 -b -o in_4.nc4 in_4.cdl
-// /usr/local/bin/ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc4 ${HOME}/nco/data/in_4.cdl
+// ncgen -k netCDF-4 -b -o in_4.nc4 in_4.cdl
+// ncgen -k netCDF-4 -b -o ${HOME}/nco/data/in_4.nc4 ${HOME}/nco/data/in_4.cdl
+// ncgen -k cdf5 -b -o ${HOME}/nco/data/in_4.nc5 ${HOME}/nco/data/in_4.cdl
 
 // URL: 
 // http://dust.ess.uci.edu/nco/in.nc
