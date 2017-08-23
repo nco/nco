@@ -501,14 +501,14 @@ main(int argc,char **argv)
     case '3': /* Request netCDF3 output storage format */
       fl_out_fmt=NC_FORMAT_CLASSIC;
       break;
-    case '4': /* Catch-all to prescribe output storage format */
-      if(!strcmp(opt_crr,"64bit_offset")) fl_out_fmt=NC_FORMAT_64BIT; else fl_out_fmt=NC_FORMAT_NETCDF4; 
+    case '4': /* Request netCDF4 output storage format */
+      fl_out_fmt=NC_FORMAT_NETCDF4; 
       break;
     case '5': /* Request netCDF3 64-bit offset+data storage (i.e., pnetCDF) format */
       fl_out_fmt=NC_FORMAT_CDF5;
       break;
     case '6': /* Request netCDF3 64-bit offset output storage format */
-      fl_out_fmt=NC_FORMAT_64BIT;
+      fl_out_fmt=NC_FORMAT_64BIT_OFFSET;
       break;
     case '7': /* Request netCDF4-classic output storage format */
       fl_out_fmt=NC_FORMAT_NETCDF4_CLASSIC;
