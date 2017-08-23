@@ -1341,6 +1341,54 @@ nco_typ_nc3 /* [fnc] Identify netCDF3 atomic types */
   return flg_nc3;
 } /* end nco_typ_nc3() */
 
+nco_bool /* O [flg] Input is CDF5 atomic type */
+nco_typ_nc5 /* [fnc] Identify CDF5 atomic types */
+(nc_type typ_in) /* I [enm] Type to check for CDF5 compliance */
+{
+  nco_bool flg_nc5=True; /* CEWI */
+
+  switch(typ_in){
+  case NC_FLOAT: 
+  case NC_DOUBLE: 
+  case NC_INT: 
+  case NC_SHORT: 
+  case NC_BYTE: 
+  case NC_CHAR: 
+  case NC_INT64: 
+  case NC_UBYTE: 
+  case NC_USHORT:
+  case NC_UINT:
+  case NC_UINT64:
+    flg_nc5=True;
+    break;       
+  case NC_STRING: 
+    flg_nc5=False;
+    break;
+  case NC_NAT: 
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  return flg_nc5;
+} /* end nco_typ_nc5() */
+
+nc_type /* O [enm] CDF5 atomic type */
+nco_typ_nc4_nc5 /* [fnc] Convert netCDF4 to CDF5 atomic type */
+(const nc_type typ_nc4) /* I [enm] netCDF4 type */
+{
+  /* Purpose: Perform intelligent type conversion from netCDF4->5 type */
+
+  /* Already CDF5 type */
+  if(nco_typ_nc5(typ_nc4)) return typ_nc4;
+
+  switch(typ_nc4){
+  case NC_STRING: 
+    return NC_CHAR;
+    break;
+  case NC_NAT:
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  return typ_nc4;
+} /* end nco_typ_nc4_nc5() */
+
 nc_type /* O [enm] netCDF3 type */
 nco_typ_nc4_nc3 /* [fnc] Convert netCDF4 to netCDF3 atomic type */
 (const nc_type typ_nc4) /* I [enm] netCDF4 type */

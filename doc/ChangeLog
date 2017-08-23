@@ -1,3 +1,7 @@
+2017-08-22  Charlie Zender  <zender@uci.edu>
+
+	* Implement auto-conversion for CDF5 destination files
+
 2017-08-20  Charlie Zender  <zender@uci.edu>
 
 	* Skip autoconversion of atomic types to CDF5 destination files

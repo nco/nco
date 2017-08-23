@@ -1358,13 +1358,17 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
     var_out=var_in;
   } /* !Array */
 
-  /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
+  /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3- or CDF5-supported output type ... */
   if(nco_prg_id_get() == ncks){
     /* File format needed for decision tree and to enable netCDF4 features */
     (void)nco_inq_format(out_id,&fl_fmt);
-    if(fl_fmt != NC_FORMAT_NETCDF4 && fl_fmt != NC_FORMAT_64BIT_DATA && !nco_typ_nc3(var_typ_in)){
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting variable %s from %s of netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),var_nm,(nbr_dim > 0) ? "array" : "scalar",nco_typ_sng(var_typ_in),nco_typ_sng(nco_typ_nc4_nc3(var_typ_out)));
-      var_typ_out=nco_typ_nc4_nc3(var_typ_in);
+
+    if(fl_fmt == NC_FORMAT_NETCDF4) var_typ_out=var_typ_in;
+    else if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT_OFFSET || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) var_typ_out=nco_typ_nc4_nc3(var_typ_in);
+    else if(fl_fmt == NC_FORMAT_64BIT_DATA) var_typ_out=nco_typ_nc4_nc5(var_typ_in);
+
+    if(var_typ_out != var_typ_in){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting variable %s from %s of type %s to %s-supported type %s\n",nco_prg_nm_get(),var_nm,(nbr_dim > 0) ? "array" : "scalar",nco_typ_sng(var_typ_in),nco_fmt_sng(fl_fmt),nco_typ_sng(var_typ_out));
 
       if(var_typ_in == NC_STRING && var_typ_out == NC_CHAR){
 	/* Special case for string conversion:
@@ -1372,7 +1376,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
 	   Too many other limits on string translation to list them all :)
 	   This only handles plain strings */
 	if(var_out.sz > 1L){
-	  (void)fprintf(stdout,"%s: ERROR Unable to autoconvert. %s reports string variable %s is an array of %li strings. Autoconversion of string variables is currently limited to scalar string variables (that contain a single string), and does not work on arrays of strings. Even single strings are currently translated incorrectly because each string is typically a distinct size, meaning a distinct phony dimension would need to be created for every single string and NCO is loathe to do that. Complaints? Let us know.\n",nco_prg_nm_get(),fnc_nm,var_nm,var_out.sz);
+	  (void)fprintf(stdout,"%s: ERROR Unable to autoconvert. %s reports string variable %s is an array of %li strings. Autoconversion of string variables is currently limited to scalar string variables (that contain a single string), and does not work on arrays of strings. Even single strings are currently translated incorrectly because each string is typically a distinct size, meaning a distinct phony dimension would need to be created for every single string and NCO is loathe to do that. Instead, NCO curretly translates single strings to a single character (instead of, say, creating a new string dimension of some arbitrary size). Complaints? Suggestions? Let us know.\n",nco_prg_nm_get(),fnc_nm,var_nm,var_out.sz);
 	  nco_exit(EXIT_FAILURE);
 	} /* endif err */
 

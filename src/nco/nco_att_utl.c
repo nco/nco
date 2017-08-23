@@ -739,12 +739,15 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     /* File format needed for autoconversion */
     (void)nco_inq_format(out_id,&fl_fmt);
 
-    /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
-    if(nco_prg_id_get() == ncks && fl_fmt != NC_FORMAT_NETCDF4 && fl_fmt != NC_FORMAT_64BIT_DATA && !nco_typ_nc3(att_typ_in)){
-      att_typ_out=nco_typ_nc4_nc3(att_typ_in);
-      flg_autoconvert=True;
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting %s%s attribute %s from netCDF4 type %s to netCDF3 type %s\n",nco_prg_nm_get(),(var_out_id == NC_GLOBAL) ? "global or group" : "variable ",(var_out_id == NC_GLOBAL) ? "" : var_nm,att_nm,nco_typ_sng(att_typ_in),nco_typ_sng(att_typ_out));
-    } /* !flg_autoconvert */
+    /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3- or CDF5-supported output type ... */
+    if(nco_prg_id_get() == ncks){
+      if(((fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT_OFFSET || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) && !nco_typ_nc3(att_typ_in)) ||
+	 (fl_fmt == NC_FORMAT_64BIT_DATA && !nco_typ_nc5(att_typ_in))){
+	flg_autoconvert=True;
+	if(fl_fmt == NC_FORMAT_64BIT_DATA) att_typ_out=nco_typ_nc4_nc5(att_typ_in); else att_typ_out=nco_typ_nc4_nc3(att_typ_in);
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Autoconverting %s%s attribute %s from type %s to %s-supported type %s\n",nco_prg_nm_get(),(var_out_id == NC_GLOBAL) ? "global or group" : "variable ",(var_out_id == NC_GLOBAL) ? "" : var_nm,att_nm,nco_fmt_sng(fl_fmt),nco_typ_sng(att_typ_in),nco_typ_sng(att_typ_out));
+      } /* !flg_autoconvert */
+    } /* !ncks */
 
     if(strcmp(att_nm,nco_mss_val_sng_get())){
       /* Normal (non-_FillValue) attributes */

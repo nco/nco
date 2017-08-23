@@ -6489,6 +6489,10 @@ ncks --rgr grd_ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_ty
 ncks --rgr grd_ttl='CAM-FV scalar grid 129x256'#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/129x256_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
+# 1441x2880 CAM-FV grid, first longitude centered at Greenwich
+ncks --rgr grd_ttl='CAM-FV scalar grid 1441x2880'#latlon=1441,2880#lat_typ=fv#lon_typ=grn_ctr \
+     --rgr scrip=${DATA}/grids/1441x2880_SCRIP.20170901.nc ~zender/nco/data/in.nc ~/foo.nc
+
 # 91x180 CAM-FV grid, first longitude centered at Greenwich (2 degree grid)
 ncks --rgr grd_ttl='CAM-FV scalar grid 91x180'#latlon=91,180#lat_typ=fv#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/91x180_SCRIP.20170401.nc ~zender/nco/data/in.nc ~/foo.nc

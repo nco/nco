@@ -111,8 +111,16 @@ nco_bool /* O [flg] Input is netCDF3 atomic type */
 nco_typ_nc3 /* [fnc] Identify netCDF3 atomic types */
 (const nc_type typ_in); /* I [enm] Type to check netCDF3 compliance */
 
+nco_bool /* O [flg] Input is CDF5 atomic type */
+nco_typ_nc5 /* [fnc] Identify CDF5 atomic types */
+(nc_type typ_in); /* I [enm] Type to check for CDF5 compliance */
+
 nc_type /* O [enm] netCDF3 type */
 nco_typ_nc4_nc3 /* [fnc] Convert netCDF4 to netCDF3 atomic type */
+(const nc_type typ_nc4); /* I [enm] netCDF4 type */
+
+nc_type /* O [enm] CDF5 atomic type */
+nco_typ_nc4_nc5 /* [fnc] Convert netCDF4 to CDF5 atomic type */
 (const nc_type typ_nc4); /* I [enm] netCDF4 type */
 
 #ifdef __cplusplus

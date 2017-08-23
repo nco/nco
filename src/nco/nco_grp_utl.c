@@ -4801,8 +4801,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   }else{ /* !ncwa */
 
-    /* Allow ncks to autoconvert netCDF4 atomic types to netCDF3 output type ... */
-    if(nco_prg_id == ncks && fl_fmt != NC_FORMAT_NETCDF4 && fl_fmt != NC_FORMAT_64BIT_DATA && !nco_typ_nc3(var_typ_out)) var_typ_out=nco_typ_nc4_nc3(var_typ_out);
+    /* Allow ncks to autoconvert any netCDF4-supported atomic type to netCDF3 or netCDF5-supported output type ... */
+    if(nco_prg_id == ncks){
+      if(fl_fmt == NC_FORMAT_CLASSIC || fl_fmt == NC_FORMAT_64BIT_OFFSET || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) var_typ_out=nco_typ_nc4_nc3(var_typ_out); else if(fl_fmt == NC_FORMAT_64BIT_DATA) var_typ_out=nco_typ_nc4_nc5(var_typ_out);
+    } /* !ncks */
+    
     /* fxm TODO nco1106 too complicated--need phony dimensions for NC_CHAR array length */
     /* if(var_typ_out == NC_STRING) nbr_dmn_var_out++; */ 
 
