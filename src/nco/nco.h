@@ -494,7 +494,7 @@ extern "C" {
 #endif
 
   /* Three compatibility tokens from pnetcdf.h introduced to NCO 20140604 
-     None are used yet */
+     These were first fully supported in 201708 (NCO 4.6.9) */
 #ifndef NC_64BIT_DATA
 # define NC_64BIT_DATA	0x0010 /* CDF-5 format, (64-bit) supported */
 #endif
