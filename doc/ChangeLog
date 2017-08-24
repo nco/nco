@@ -1,5 +1,7 @@
 2017-08-24  Charlie Zender  <zender@uci.edu>
 
+	* Add/clarify syntax to some regridder HINTs
+
 	* Put MD5 in operator self-help for ncks
 
 2017-08-23  Charlie Zender  <zender@uci.edu>

@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.9-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 20 August 2017
+@set update-date 24 August 2017
 @set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9394,7 +9394,7 @@ as when it is subsequently read from disk.
 This incurs the major additional overhead of reading in each variable
 after it is written and performing the hash algorithm again on that to
 compare to the original hash.
-Moreover, it is assumed that such operations are generally done
+Moreover, it is assumed that such operations are generally done in
 ``production mode'' where the user is not interested in actually
 examining the digests herself.
 The digests proceed silently unless the debugging level exceeds three:

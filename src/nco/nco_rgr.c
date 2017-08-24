@@ -1857,7 +1857,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"nEdges",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nEdges"); /* MPAS-O/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("sounding_id"); /* OCO2 */
     else{
-      (void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension name that matches the usual suspects for unstructured dimensions (ncol, lndgrid, nCells, nEdges, sounding_id). HINT: Provide horizontal dimension name with \"-r col_nm=foo\"\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension name that matches the usual suspects for unstructured dimensions (ncol, lndgrid, nCells, nEdges, sounding_id). HINT: Provide horizontal dimension name with \"--rgr col_nm=foo\"\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
     } /* !col_nm_in */
     rcd=nco_inq_dimlen(in_id,dmn_id_col,&col_nbr_in_dat);
@@ -1892,7 +1892,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else{
-      (void)fprintf(stdout,"%s: ERROR %s reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input latitude dimension name with --rgr lat_nm_in=name\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: ERROR %s reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input latitude dimension name with \"--rgr lat_nm_in=name\"\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
     } /* !lat */
     rcd=nco_inq_dimlen(in_id,dmn_id_lat,&lat_nbr_in_dat);
@@ -1925,7 +1925,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("y"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
     else{
-      (void)fprintf(stdout,"%s: ERROR %s reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input longitude dimension name with --rgr lon_nm_in=name\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: ERROR %s reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input longitude dimension name with \"--rgr lon_nm_in=name\"\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
     } /* !lat */
     rcd=nco_inq_dimlen(in_id,dmn_id_lon,&lon_nbr_in_dat);
@@ -2145,7 +2145,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   /* Ensure temporal bounds dimension name is distinct from spatial bounds when their sizes differ */
   if(bnd_nbr_out != bnd_tm_nbr_out){
     if(!strcmp(bnd_nm_out,bnd_tm_nm_out)){
-      (void)fprintf(stdout,"%s: INFO %s reports spatial and temporal output bounds dimensions are identical (and named \"%s\") by default for rectangular output grids because both can be stored as 2D arrays. That cannot work for this mapping because temporal and spatial bounds dimensions sizes differ (bnd_nbr_out = %d, bnd_tm_nbr_out = %d). Using fall-back spatial bounds name \"%s\" instead. HINT: You may change one or both manually with --rgr bnd_nm=name or --rgr bnd_tm_nm=name.\n",nco_prg_nm_get(),fnc_nm,bnd_tm_nm_out,bnd_nbr_out,bnd_tm_nbr_out,bnd_nm_out);
+      (void)fprintf(stdout,"%s: INFO %s reports spatial and temporal output bounds dimensions are identical (and named \"%s\") by default for rectangular output grids because both can be stored as 2D arrays. That cannot work for this mapping because temporal and spatial bounds dimensions sizes differ (bnd_nbr_out = %d, bnd_tm_nbr_out = %d). Using fall-back spatial bounds name \"%s\" instead. HINT: You may change one or both manually with \"--rgr bnd_nm=name\" or \"--rgr bnd_tm_nm=name\".\n",nco_prg_nm_get(),fnc_nm,bnd_tm_nm_out,bnd_nbr_out,bnd_tm_nbr_out,bnd_nm_out);
     } /* !strcmp() */
   } /* !bnd_nbr_out */
 
@@ -6443,7 +6443,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   fl_out=rgr->fl_grd;
   fl_out_fmt=rgr->fl_out_fmt;
   if(!fl_out){
-    (void)fprintf(stdout,"%s: ERROR %s filename for inferred SCRIP grid-file is uninitialized, supply it with --rgr grid=filename.nc\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s filename for inferred SCRIP grid-file is uninitialized, supply it with \"--rgr grid=filename.nc\"\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT ncremap supplies an automatically generated default name for any output SCRIP grid-file. Users of the standalone regridder (ncks) must explicitly specify a name for the inferred SCRIP grid-file.\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* !fl_out */
