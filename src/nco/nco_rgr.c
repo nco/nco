@@ -1857,7 +1857,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"nEdges",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nEdges"); /* MPAS-O/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("sounding_id"); /* OCO2 */
     else{
-      (void)fprintf(stdout,"%s: ERROR %s reports datafile does not contain unstructured dimension name that matches a usual suspect (ncol, lndgrid, nCells, nEdges, sounding_id). HINT: Provide horizontal dimension name with \"-r col_nm=foo\"\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension name that matches the usual suspects for unstructured dimensions (ncol, lndgrid, nCells, nEdges, sounding_id). HINT: Provide horizontal dimension name with \"-r col_nm=foo\"\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
     } /* !col_nm_in */
     rcd=nco_inq_dimlen(in_id,dmn_id_col,&col_nbr_in_dat);
