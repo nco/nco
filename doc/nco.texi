@@ -9359,9 +9359,9 @@ that the user simply wishes to see the digest of every variable and this
 is done when the debugging level exceeds one.
 This incurs only the minor overhead of performing the hash algorithm for
 each variable read.
-@acronym{MD5} digests may be activated in both the one- and two-filename
-argument forms of @command{ncks}, which are used for printing and for
-sub-setting, respectively.
+@acronym{MD5} digests may be activated in both @command{ncks} invocation
+type, the one-filename argument form for printing and the two-filename
+argument form for sub-setting.
 The @acronym{MD5} digests are shown as a 32-character hexadecimal string 
 in which each two characters represent one byte of the 16-byte digest:
 @example

@@ -987,7 +987,7 @@ main(int argc,char **argv)
 
   /* Make output and input files consanguinous */
   (void)nco_inq_format(in_id,&fl_in_fmt);
-  if(fl_out && fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
+  if(fl_out_fmt == NCO_FORMAT_UNDEFINED) fl_out_fmt=fl_in_fmt;
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) (void)omp_set_num_threads((int)0);
 
 #ifdef ENABLE_MPI
@@ -1229,6 +1229,7 @@ main(int argc,char **argv)
     if(prn_flg.xml) prn_flg.nwl_pst_val=False; else prn_flg.nwl_pst_val=True;
     prn_flg.dlm_sng=dlm_sng;
     prn_flg.cdl_fmt_dt=dt_fmt;
+    prn_flg.fl_out_fmt=fl_out_fmt;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
     prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
     prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
