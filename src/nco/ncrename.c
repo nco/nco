@@ -473,6 +473,7 @@ main(int argc,char **argv)
 	mch_nbr++;
 	(void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst_dmn[tbl_idx].grp_nm_fll,&grp_id);
 	rcd=nco_inq_dimid(grp_id,trv_tbl->lst_dmn[tbl_idx].nm,&dmn_rnm_lst[idx_dmn].id);
+	if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stdout,"%s: grp_nm_fll= \'%s\', grp_id=%d, dmn_id = %d\n",nco_prg_nm,trv_tbl->lst_dmn[tbl_idx].grp_nm_fll,grp_id,dmn_rnm_lst[idx_dmn].id);
 	(void)nco_rename_dim(grp_id,dmn_rnm_lst[idx_dmn].id,dmn_rnm_lst[idx_dmn].new_nm);
 	if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stdout,"%s: Renamed dimension \'%s\' to \'%s\'\n",nco_prg_nm,trv_tbl->lst_dmn[tbl_idx].nm_fll,dmn_rnm_lst[idx_dmn].new_nm);
       } /* endif */

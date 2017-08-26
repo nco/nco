@@ -155,10 +155,11 @@ case "${HOSTNAME}" in
 	    source /lustre/atlas1/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
 	    export ${UVCDAT_SETUP_PATH}
 	fi # !UVCDAT_SETUP_PATH
-	# On rhea, module load ncl installs ERWG in ${NCL_DIR}/bin
-	if [ -n "${NCL_DIR}" ]; then
-            export PATH="${NCL_DIR}/bin:${PATH}"
-	fi # !NCL_DIR
+	# On rhea, module load ncl installs ERWG in ${NCARG_ROOT}/bin (formerly ${NCL_DIR}/bin)
+	# 20170825: Use module load ncl/6.3.0 (6.4.0 lacks ERWG)
+	if [ -n "${NCARG_ROOT}" ]; then
+            export PATH="${NCARG_ROOT}/bin:${PATH}"
+	fi # !NCARG_ROOT
         export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
 	export LD_LIBRARY_PATH='/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
     titan* )

@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.9-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 24 August 2017
+@set update-date 25 August 2017
 @set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20498,7 +20498,7 @@ narrow the verbose output of @command{ncks} into more precise targets.
 For example, to obtain an uncluttered listing of the variables in a file
 try 
 @example
-ncks -m in.nc | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort
+ncks --trd -m in.nc | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort
 @end example
 A Bash user could alias the previous filter to the shell command
 @command{nclist} as shown below.
@@ -20508,17 +20508,17 @@ of an attribute, e.g., for textual file examination or for passing to
 another shell command.
 Say the attribute is @code{purpose}, the variable is @code{z}, and the
 file is @code{in.nc}.
-In this example, @command{ncks -m -v z} is too verbose so a robust
+In this example, @command{ncks --trd -m -v z} is too verbose so a robust
 @command{grep} and @command{cut} filter is desirable, such as
 @example
-ncks -M -m in.nc | grep -E -i "^z attribute [0-9]+: purpose" | cut -f 11- -d ' ' | sort
+ncks --trd -M -m in.nc | grep -E -i "^z attribute [0-9]+: purpose" | cut -f 11- -d ' ' | sort
 @end example
 The filters are clearly too complex to remember on-the-fly so the entire 
 procedure could be implemented as a shell command or function called,
 say, @command{ncattget}
 @example
 @verbatim
-function ncattget { ncks -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
+function ncattget { ncks --trd -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
 @end verbatim
 @end example
 The shell @command{ncattget} is invoked with three arugments that are,
@@ -20572,47 +20572,51 @@ These files are usually named @file{.bashrc}, @file{.cshrc}, and
 @example
 @verbatim
 # NB: Untested on Csh, Ksh, Sh, Zsh! Send us feedback!
-# Bash shell (/bin/bash) users place these in .bashrc
+# Bash shell (/bin/bash), .bashrc examples
 # ncattget $att_nm $var_nm $fl_nm : What attributes does variable have?
-function ncattget { ncks -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
+function ncattget { ncks --trd -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
 # ncunits $att_val $fl_nm : Which variables have given units?
-function ncunits { ncks -m ${2} | grep -E -i " attribute [0-9]+: units.+ ${1}" | cut -f 1 -d ' ' | sort ; }
+function ncunits { ncks --trd -m ${2} | grep -E -i " attribute [0-9]+: units.+ ${1}" | cut -f 1 -d ' ' | sort ; }
 # ncavg $var_nm $fl_nm : What is mean of variable?
-function ncavg { ncwa -y avg -O -C -v ${1} ${2} ~/foo.nc ; ncks -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
+function ncavg { ncwa -y avg -O -C -v ${1} ${2} ~/foo.nc ; ncks --trd -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncavg $var_nm $fl_nm : What is mean of variable?
 function ncavg { ncap2 -O -C -v -s "foo=${1}.avg();print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncdmnlist $fl_nm : What dimensions are in file?
-ncdmnlist { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
+function ncdmnlist { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
 # ncdmnsz $dmn_nm $fl_nm : What is dimension size?
-function ncdmnsz { ncks -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
+function ncdmnsz { ncks --trd -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
 # ncgrplist $fl_nm : What groups are in file?
 function ncgrplist { ncks --cdl -m ${1} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ; }
 # nclist $fl_nm : What variables are in file?
-function nclist { ncks -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
+function nclist { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 # ncmax $var_nm $fl_nm : What is maximum of variable?
-function ncmax { ncwa -y max -O -C -v ${1} ${2} ~/foo.nc ; ncks -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
+function ncmax { ncwa -y max -O -C -v ${1} ${2} ~/foo.nc ; ncks --trd -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncmax $var_nm $fl_nm : What is maximum of variable?
 function ncmax { ncap2 -O -C -v -s "foo=${1}.max();print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncmdn $var_nm $fl_nm : What is median of variable?
 function ncmdn { ncap2 -O -C -v -s "foo=gsl_stats_median_from_sorted_data(${1}.sort());print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
+# ncmin $var_nm $fl_nm : What is minimum of variable?
+function ncmin { ncap2 -O -C -v -s "foo=${1}.min();print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncrng $var_nm $fl_nm : What is range of variable?
 function ncrng { ncap2 -O -C -v -s "foo_min=${1}.min();foo_max=${1}.max();print(foo_min,\"%f\");print(\" to \");print(foo_max,\"%f\")" ${2} ~/foo.nc ; }
 # ncmode $var_nm $fl_nm : What is mode of variable?
 function ncmode { ncap2 -O -C -v -s "foo=gsl_stats_median_from_sorted_data(${1}.sort());print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncrecsz $fl_nm : What is record dimension size?
-function ncrecsz { ncks -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
+function ncrecsz { ncks --trd -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
 # nctypget $var_nm $fl_nm : What type is variable?
-function nctypget { ncks -m -v ${1} ${2} | grep -E -i "^${1}: type" | cut -f 3 -d ' ' | cut -f 1 -d ',' ; }
-# Csh shell (/bin/csh) users place these in .cshrc
-ncattget() { ncks -M -m -v ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
-ncdmnsz() { ncks -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
-nclist() { ncks -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
-ncrecsz() { ncks -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
-# Sh shell (/bin/sh) users place these in .profile
-ncattget() { ncks -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
-ncdmnsz() { ncks -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
-nclist() { ncks -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
-ncrecsz() { ncks -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
+function nctypget { ncks --trd -m -v ${1} ${2} | grep -E -i "^${1}: type" | cut -f 3 -d ' ' | cut -f 1 -d ',' ; }
+
+# Csh shell (/bin/csh), .cshrc examples (derive others from Bash definitions):
+ncattget() { ncks --trd -M -m -v ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
+ncdmnsz() { ncks --trd -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
+nclist() { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
+ncrecsz() { ncks --trd -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
+
+# Sh shell (/bin/sh), .profile examples (derive others from Bash definitions):
+ncattget() { ncks --trd -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
+ncdmnsz() { ncks --trd -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
+nclist() { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
+ncrecsz() { ncks --trd -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
 @end verbatim
 @end example
 
@@ -25131,9 +25135,9 @@ for mth in {1..12}; do
 done # end loop over mth
 
 Make sure the output file averages correct input files!
-ncks -M prints global metadata: 
+ncks --trd -M prints global metadata: 
 
-  ncks -M ${drc_out}/${caseid}_clm01.nc
+  ncks --trd -M ${drc_out}/${caseid}_clm01.nc
 
 The input files ncra used to create the climatological monthly mean
 will appear in the global attribute named 'history'.
@@ -25241,13 +25245,13 @@ Task 4: Accessing data stored remotely
 OPeNDAP server examples:
 
 UCI DAP servers:
-ncks -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
+ncks --trd -M -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata in.nc
 ncrcat -O -C -D 3 \
   -p http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata \
   -l /tmp in.nc in.nc ~/foo.nc
 
 Unidata DAP servers:
-ncks -M -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc
+ncks --trd -M -p http://thredds-test.ucar.edu/thredds/dodsC/testdods in.nc
 ncrcat -O -C -D 3 \
   -p http://thredds-test.ucar.edu/thredds/dodsC/testdods \
   -l /tmp in.nc in.nc ~/foo.nc
@@ -25258,7 +25262,7 @@ http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis.dailyavgs/su
 pres.sfc.1969.nc ~/foo.nc
 
 LLNL PCMDI IPCC OPeNDAP Data Portal: 
-ncks -M -p http://username:password@esgcet.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
+ncks --trd -M -p http://username:password@esgcet.llnl.gov/cgi-bin/dap-cgi.py/ipcc4/sresa1b/ncar_ccsm3_0 pcmdi.ipcc4.ncar_ccsm3_0.sresa1b.run1.atm.mo.xml
 
 Earth System Grid (ESG): http://www.earthsystemgrid.org
 

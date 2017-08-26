@@ -156,6 +156,10 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 
 void
+nco_xtr_lst /* [fnc] Print extraction list and exit */
+(trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+
+void
 nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
 (trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
 

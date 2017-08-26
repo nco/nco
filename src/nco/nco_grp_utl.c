@@ -1039,6 +1039,39 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 } /* end nco_xtr_crd_add() */
 
 void
+nco_xtr_lst /* [fnc] Print extraction list and exit */
+(trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Print extraction list and exit
+     ncclimo and ncremap invoke this ncks function to process regular expressions in variable lists
+     Usage:
+     ncks -v three.? --lst_xtr ~/nco/data/in.nc
+     ncks -v FSNT,TREFHT --lst_xtr ~/data/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc
+     ncks -v [a-bA-B].? --lst_xtr ~/data/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc */
+
+  const char fnc_nm[]="nco_xtr_lst()"; /* [sng] Function name */
+
+  int xtr_nbr_crr=0; /* [nbr] Number of N>=D variables found so far */
+
+  /* If variable is on extraction list, add it to list */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++)
+    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_var].flg_xtr){
+      (void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
+      xtr_nbr_crr++;
+    } /* !flg_xtr */
+
+  if(xtr_nbr_crr > 0){
+    (void)fprintf(stdout,"\n");
+    nco_exit(EXIT_SUCCESS);
+  }else{
+    (void)fprintf(stdout,"%s: ERROR %s reports extraction list was empty\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !xtr_nbr_crr */
+    
+  return;
+} /* end nco_xtr_lst() */
+
+void
 nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
 (trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {

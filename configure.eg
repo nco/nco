@@ -231,7 +231,7 @@ Status: Works
 Commands for LINUX are the only ones "regularly" used after ~2010
 ************************************************************************
 # Post upgrade requests to sysadmins at ALCF, LCRC, NCAR, NCSA, NERSC, OLCF
-# support@anl.gov # ALCF Maintainer = Adam (email borken)
+# support@alcf.anl.gov # ALCF Maintainer = 
 # conda update nco # Anaconda Maintainer = Filipe Fernandes (github: ocefpaf)
 # support@lcrc.anl.gov # LCRC Maintainer = Adam
 # cislhelp@ucar.edu # NCAR
@@ -269,10 +269,11 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
-# Sysadmin upgrade request: fxm
+# Sysadmin upgrade request: 20170825
+# Latest ticket: alcf-support #345910
 # Latest sysadmin-compiled module usage:  # fxm
 # Personal recipe last modified: 201703??
-# Personal recipe last used successfully: 201703??
+# Personal recipe last used successfully: 20170825
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/libraries/unsupported/netcdf-4.3.2' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -284,7 +285,7 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on mira:
-# Sysadmin upgrade request: fxm
+# Sysadmin upgrade request: 20170825
 # Latest sysadmin-compiled module usage:  # fxm
 # Personal recipe last modified: 2016??
 # Personal recipe last used successfully: 2016??

@@ -137,7 +137,7 @@ netcdf in_grp {
   ppc_dbl:purpose = "test --ppc switches";
   ppc_dbl:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
   
-    //coordinate variable (/lon)
+    // Coordinate variable (/lon)
     float lon(lon);
     lon:units = "degrees_east";
     float scl;
@@ -188,7 +188,7 @@ netcdf in_grp {
   
  group: g2 { 
   variables:
-    //coordinate variable (dimension at root)
+    // Coordinate variable (dimension at root)
     double time(time);
     float lon(lon);
     float scl;
@@ -276,7 +276,7 @@ netcdf in_grp {
         ppc_dbl:original_values="123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1";
 
   
-    //coordinate variable (/g7/gds_crd)
+    // Coordinate variable (/g7/gds_crd)
     float gds_crd(gds_crd);
     gds_crd:long_name = "Geodesic coordinate";
     gds_crd:units = "degree";
