@@ -1,5 +1,7 @@
 2017-08-25  Charlie Zender  <zender@uci.edu>
 
+	* Add --lst_xtr stubs to ncclimo to expand var_lst rx
+
 	* Add ncks --lst_xtr to print extraction list for ncremap and ncclimo
 
 	* ncremap/ncclimo correct ERWG location for module load ncl/6.3.0 on rhea

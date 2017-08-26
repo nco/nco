@@ -433,6 +433,7 @@ thr_nbr=2 # [nbr] Thread number for regridder
 tpd_out=1 # [nbr] Timesteps-per-day in ouput
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
+var_lst_rx_xtr='Yes' # [sng] Process var_lst to expand rx
 vrs_prn='No' # [sng] Print version information
 xtn_flg='No' # [sng] Produce extended climatology
 ypf_max=50 # [yr] Years-per-output-file
@@ -856,7 +857,10 @@ if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="-D ${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
 if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
-    nco_opt="${nco_opt} -v ${var_lst}"
+    # 20170825: Use nco_xtr_lst() to parse regular expressions for monthly climos
+    #if [ ${clm_flg} != 'Yes' ] && [ ${clm_md} != 'mth' ]; then
+	nco_opt="${nco_opt} -v ${var_lst}"
+    #fi # !mth
 fi # !var_lst
 if [ -n "${hdr_pad}" ]; then
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
@@ -972,11 +976,7 @@ fi # !inp_std
 if [ "${sbs_flg}" = 'Yes' ]; then
     if [ -z "${var_lst}" ]; then
 	echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
-#	echo "${spt_nm}: ERROR Splitter mode requires explicitly specified variable list"
-#	echo "${spt_nm}: HINT Supply the variable list with -v var_lst"
-#	exit 1
 	var_lst=`ncks --lst_rnk_ge2 ${fl_in[0]}`
-	echo "${var_lst}"
     fi # !var_lst
     # http://stackoverflow.com/questions/27702452/loop-through-a-comma-separated-shell-variable
     var_nbr=0 # [sng] Split (subset) files
@@ -1515,6 +1515,16 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	    # In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
 	    drc_out="${drc_in}"
 	fi # !bnr_flg
+	if [ -n "${var_lst}" ] && [ "${var_lst_rx_xtr}" = 'Yes' ] && [ 'Yes' = 'No' ] ; then
+	    # Match regular expressions to contents of first file to create real extraction list
+	    # https://stackoverflow.com/questions/2440414/how-to-retrieve-the-first-word-of-the-output-of-a-command-in-bash
+	    fl_arr=( ${fl_all} ) # Create array
+	    echo "${spt_nm}: DEBUG var_lst before expansion = ${var_lst}"
+	    var_lst=`ncks -v ${var_lst} --lst_xtr ${drc_in}/${fl_arr[0]}`
+	    echo "${spt_nm}: DEBUG var_lst after  expansion = ${var_lst}"
+	    nco_opt="${nco_opt} -v ${var_lst}"
+	    var_lst_rx_xtr='No'
+	fi # !var_lst
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
 	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
     done # !mth
