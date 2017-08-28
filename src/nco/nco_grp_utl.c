@@ -1124,7 +1124,7 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
     (void)fprintf(stdout,"\n");
     nco_exit(EXIT_SUCCESS);
   }else{
-    (void)fprintf(stdout,"%s: ERROR %s reports no variables found with rank >= 2\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s reports no variables found with rank >= %d\n",nco_prg_nm_get(),fnc_nm,rnk_xtr);
     nco_exit(EXIT_FAILURE);
   } /* !xtr_nbr_crr */
     
