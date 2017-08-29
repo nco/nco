@@ -1,5 +1,7 @@
 2017-08-29  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo -v var_lst_rx finally works as intended!
+
 	* ncclimo fix --lst_xtr to exclude bounds coordinates so, e.g., time_bnds not explicitly
 	passed to seasonal climos that have replaced it	with climatology_bounds
 
