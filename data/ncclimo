@@ -858,9 +858,9 @@ if [ ${dbg_lvl} -ge 2 ]; then
 fi # !dbg_lvl
 if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
     # 20170825: Use nco_xtr_lst() to parse regular expressions for monthly climos
-    #if [ ${clm_flg} != 'Yes' ] && [ ${clm_md} != 'mth' ]; then
+    if [ ${clm_flg} != 'Yes' ] && [ ${clm_md} != 'mth' ]; then
 	nco_opt="${nco_opt} -v ${var_lst}"
-    #fi # !mth
+    fi # !mth
 fi # !var_lst
 if [ -n "${hdr_pad}" ]; then
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
@@ -1515,13 +1515,13 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	    # In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
 	    drc_out="${drc_in}"
 	fi # !bnr_flg
-	if [ -n "${var_lst}" ] && [ "${var_lst_rx_xtr}" = 'Yes' ] && [ 'Yes' = 'No' ] ; then
-	    # Match regular expressions to contents of first file to create real extraction list
+	if [ -n "${var_lst}" ] && [ "${var_lst_rx_xtr}" = 'Yes' ] ; then
+	    # Match var_lst regular expressions to contents of first file to create real extraction list
 	    # https://stackoverflow.com/questions/2440414/how-to-retrieve-the-first-word-of-the-output-of-a-command-in-bash
-	    fl_arr=( ${fl_all} ) # Create array
-	    echo "${spt_nm}: DEBUG var_lst before expansion = ${var_lst}"
+	    fl_arr=( ${fl_all} ) # Create file array
+	    #echo "${spt_nm}: DEBUG var_lst before expansion = ${var_lst}"
 	    var_lst=`ncks -v ${var_lst} --lst_xtr ${drc_in}/${fl_arr[0]}`
-	    echo "${spt_nm}: DEBUG var_lst after  expansion = ${var_lst}"
+	    #echo "${spt_nm}: DEBUG var_lst after  expansion = ${var_lst}"
 	    nco_opt="${nco_opt} -v ${var_lst}"
 	    var_lst_rx_xtr='No'
 	fi # !var_lst

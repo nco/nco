@@ -1053,21 +1053,41 @@ nco_xtr_lst /* [fnc] Print extraction list and exit */
 
   int xtr_nbr_crr=0; /* [nbr] Number of N>=D variables found so far */
 
-  /* If variable is on extraction list, add it to list */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++)
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_var].flg_xtr){
-      (void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
-      xtr_nbr_crr++;
-    } /* !flg_xtr */
+  int grp_id; /* [id] Group ID */
+  int nc_id; /* [id] File ID */
+  int var_id; /* [id] Variable ID */
 
+  trv_sct var_trv;
+
+  nc_id=trv_tbl->in_id_arr[0];
+
+  /* If variable is on extraction list, print it to stdout */
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    var_trv=trv_tbl->lst[idx_var];
+    if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
+      /* 20170829: Eliminate bounds variables from stdout list
+	 Intended to keep time bounds variables from reaching ncclimo 
+	 Variables like time_bnds may be replaced by, e.g., climatology_bounds in seasonal files
+	 Hence time bounds variables should not be specifically requested because they may not exist
+	 NCO's associated coordinate feature will extract them anyway
+	 So best not to explicitly request them in ncclimo */
+      if(!nco_is_spc_in_cf_att(grp_id,"bounds",var_id,NULL)){
+	(void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",var_trv.nm);
+	xtr_nbr_crr++;
+      } /* !bounds */
+    } /* !flg_xtr */
+  } /* !idx_var */
+  
   if(xtr_nbr_crr > 0){
     (void)fprintf(stdout,"\n");
     nco_exit(EXIT_SUCCESS);
   }else{
-    (void)fprintf(stdout,"%s: ERROR %s reports extraction list was empty\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s reports empty extraction list\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !xtr_nbr_crr */
-    
+  
   return;
 } /* end nco_xtr_lst() */
 
@@ -1085,16 +1105,21 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
 
   const char fnc_nm[]="nco_xtr_ND_lst()"; /* [sng] Function name */
 
+  const int rnk_xtr=2; /* [nbr] Minimum rank to extract */
+
   int xtr_nbr_crr=0; /* [nbr] Number of N>=D variables found so far */
-  int rnk_xtr=2; /* [nbr] Minimum rank to extract */
+
+  int grp_id; /* [id] Group ID */
+  int nc_id; /* [id] File ID */
+  int var_id; /* [id] Variable ID */
+
+  trv_sct var_trv;
+
+  nc_id=trv_tbl->in_id_arr[0];
 
   /* 20170414: csz add new definitions is_crd_lk_var and is_rec_lk_var, avoid PVN definitions for sanity */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
-    trv_sct var_trv=trv_tbl->lst[idx_var];
-    int nc_id; /* [id] File ID */
-    int var_id; /* [id] Variable ID */
-    int grp_id; /* [id] Group ID */
-    nc_id=trv_tbl->in_id_arr[0];
+    var_trv=trv_tbl->lst[idx_var];
     if(var_trv.nco_typ == nco_obj_typ_var){
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
       (void)nco_inq_varid(grp_id,var_trv.nm,&var_id);
@@ -1109,8 +1134,8 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
   } /* !idx_var */
 
   /* If variable has N>=D dimensions, add it to list */
-  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++)
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var)
+  for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
+    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var){
       if((trv_tbl->lst[idx_var].nbr_dmn >= rnk_xtr) && /* Rank at least 2 */
 	 (!trv_tbl->lst[idx_var].is_crd_lk_var) && /* Not a coordinate-like variable */
 	 (trv_tbl->lst[idx_var].is_rec_lk_var) && /* Is a record variable */
@@ -1119,7 +1144,8 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
 	(void)fprintf(stdout,"%s%s",(xtr_nbr_crr > 0) ? "," : "",trv_tbl->lst[idx_var].nm);
 	xtr_nbr_crr++;
       } /* !N>=D */
-
+    } /* !nco_typ */
+  } /* !idx_var */
   if(xtr_nbr_crr > 0){
     (void)fprintf(stdout,"\n");
     nco_exit(EXIT_SUCCESS);
