@@ -184,7 +184,9 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   int grp_nbr_lcl; /* [nbr] Number of groups in file */
   int var_ntm_lcl; /* [nbr] Number of non-atomic variables in file */
   int var_tmc_lcl; /* [nbr] Number of atomic-type variables in file */
- 
+
+  size_t ram_sz_ttl=0L;
+  
   /* Initialize */
   att_glb_lcl=0;
   att_grp_lcl=0;
@@ -197,6 +199,16 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct trv=trv_tbl->lst[idx_tbl]; 
+    if(trv.nco_typ == nco_obj_typ_var){
+      size_t ram_sz_crr=1L;
+      for(unsigned int dmn_idx=0;dmn_idx<trv.nbr_dmn;dmn_idx++){
+	//ram_sz_crr*=trv.var_dmn[dmn_idx].sz;
+	//ram_sz_crr*=1;
+      } /* !dmn */
+      ram_sz_crr*=nco_typ_lng(trv.var_typ);
+      ram_sz_ttl+=ram_sz_crr;
+      ram_sz_crr=ram_sz_ttl; /* CEWI */
+    } /* !var */
     if(trv.nco_typ == nco_obj_typ_var) att_var_lcl+=trv.nbr_att;
     if(trv.nco_typ == nco_obj_typ_nonatomic_var) var_ntm_lcl++;
     if(trv.nco_typ == nco_obj_typ_grp){ 
