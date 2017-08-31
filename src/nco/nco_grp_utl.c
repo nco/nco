@@ -1047,7 +1047,7 @@ nco_xtr_lst /* [fnc] Print extraction list and exit */
      Usage:
      ncks -v three.? --lst_xtr ~/nco/data/in.nc
      ncks -v FSNT,TREFHT --lst_xtr ~/data/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc
-     ncks -v [a-bA-B].? --lst_xtr ~/data/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc */
+     ncks -v ^[a-bA-B].? --lst_xtr ~/data/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc */
 
   const char fnc_nm[]="nco_xtr_lst()"; /* [sng] Function name */
 
@@ -2005,7 +2005,7 @@ nco_xtr_wrt                           /* [fnc] Write extracted data to output fi
     nm_id_sct **rec_lst=NULL; /* [sct] Record variables to be extracted */
     nm_id_sct *xtr_lst=NULL; /* [sct] Variables to be extracted */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",nco_prg_nm_get());
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Using MM3-workaround to hasten copying of record variables\n",nco_prg_nm_get());
 
     /* Convert extraction list from traversal table to nm_id_sct format to re-use old code */
     xtr_lst=nco_trv_tbl_nm_id(nc_id_in,nc_id_out,gpe,&xtr_nbr,trv_tbl);

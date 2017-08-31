@@ -1,3 +1,7 @@
+2017-08-30  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up MD5 messages and nco_fl_utl.c INFO messages
+
 2017-08-29  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo -v var_lst_rx finally works as intended!

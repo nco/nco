@@ -1120,8 +1120,8 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--nsm_fl")) (void)fprintf(stdout,"    --nsm_fl, --ensemble_file\tEnsembles comprise equally weighted files\n");
   if(strstr(opt_sng,"--nsm_grp")) (void)fprintf(stdout,"    --nsm_grp, --ensemble_group\tEnsembles comprise equally weighted groups\n");
   if(strstr(opt_sng,"--nsm_sfx")) (void)fprintf(stdout,"    --nsm_sfx, --ensemble_suffix\tPlace ensemble output in group parent/parent+nsm_sfx\n");
-  if(strstr(opt_sng,"[-o")) (void)fprintf(stdout,"-o, --output, --fl_out out.nc\tOutput file name (or use last positional argument)\n");
   if(strstr(opt_sng,"[-O]")) (void)fprintf(stdout,"-O, --ovr, --overwrite\tOverwrite existing output file, if any\n");
+  if(strstr(opt_sng,"[-o")) (void)fprintf(stdout,"-o, --output, --fl_out out.nc\tOutput file name (or use last positional argument)\n");
   if(strstr(opt_sng,"[-P")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-P, --prn, --print\tPrint data, metadata, and units. Abbreviation for -C -H -M -m -u.\n");
     if(prg_lcl == ncpdq) (void)fprintf(stdout,"-P, --pck_plc, --pack_policy pck_plc\tPacking policy [all_new,all_xst,xst_new,upk]\n");

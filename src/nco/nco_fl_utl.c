@@ -249,7 +249,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
     (void)fprintf(stdout,"%s: ERROR nco_fl_cp() is unable to execute cp command \"%s\"\n",nco_prg_nm_get(),cmd_cp);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"done\n");
 
   cmd_cp=(char *)nco_free(cmd_cp);
   if(fl_dst_cdl) fl_dst_cdl=(char *)nco_free(fl_dst_cdl);
@@ -1199,7 +1199,7 @@ nco_fl_mv /* [fnc] Move first file to second */
     (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",nco_prg_nm_get(),cmd_mv);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"done\n");
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"done\n");
 
   cmd_mv=(char *)nco_free(cmd_mv);
   if(fl_dst_cdl) fl_dst_cdl=(char *)nco_free(fl_dst_cdl);

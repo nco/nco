@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.9-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 25 August 2017
+@set update-date 29 August 2017
 @set update-month August 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17659,6 +17659,10 @@ This option only takes effect in daily-average climatology mode.
 Variables to subset or to split.
 Same behavior as @ref{Subsetting Files}.
 The use of @var{var_lst} is optional in climate generation mode.
+We suggest using this feature to test whether an @command{ncclimo}
+command, especially one that is lengthy and/or time-consuming, works as
+intended on one or a few variables with, e.g., @samp{-v T,FSNT} before
+generating the full climatology (by omitting this option). 
 Invoking this switch was required in the original splitter released in 
 version 4.6.5 (March, 2017), and became optional as of version 4.6.6
 (May, 2017). 
@@ -17666,7 +17670,7 @@ This option is recommended in timeseries reshaping mode to prevent
 inadvertently copying the results of an entire model simulation. 
 Regular expressions are allowed so, e.g., @samp{PREC.?} extracts
 the variables @samp{PRECC,PRECL,PRECSC,PRECSL} if present.
-Current in reshaping mode all matches to a regular expression are
+Currently in reshaping mode all matches to a regular expression are
 placed in the same output file.
 We hope to remove this limitation in the future.
 

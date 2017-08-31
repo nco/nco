@@ -149,7 +149,7 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2017 Sep&nbsp;??: 4.7.0 <i>In Progress...</i>
+<li>2017 Sep&nbsp;??: 4.6.9 <i>In Progress...</i>
 <li>2017 Aug&nbsp;16: 4.6.8 Sundry features/fixes
 <li>2017 May&nbsp;26: 4.6.7 Sub-gridscale regridding
 <li>2017 Apr&nbsp;21: 4.6.6 UGRID
@@ -634,7 +634,8 @@ You may retrieve the source of tagged versions directly with, e.g.,
 Chunking bytes not elements;
 extensive hashing?;
 netCDF4 compound types?;</li>
-<li><b>NCO 4.7.0</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<li><b>NCO 4.6.9</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<tt>ncclimo -v</tt> fully supports regular expressions;</li>
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
 <li><b>NCO 4.6.8</b>: (<i>Current Stable Release</i>)
 <tt>ncap2</tt> full chunking options;
