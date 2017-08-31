@@ -635,7 +635,8 @@ Chunking bytes not elements;
 extensive hashing?;
 netCDF4 compound types?;</li>
 <li><b>NCO 4.6.9</b>: (<i>In Progress, features in-progress or complete include</i>) 
-<tt>ncclimo -v</tt> fully supports regular expressions;</li>
+Complete CDF5 support, autoconversion;
+<tt>ncclimo -v</tt> fully supports regular expressions;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
 <li><b>NCO 4.6.8</b>: (<i>Current Stable Release</i>)
 <tt>ncap2</tt> full chunking options;
@@ -696,7 +697,7 @@ Multi-argument support for <tt>--gaa</tt>, <tt>--rgr</tt>, <tt>--ppc</tt>, <tt>-
 <tt>ncremap</tt> uses CF to find coordinates;
 <tt>ncremap</tt> uses $TMPDIR;</li>
 <li><b>NCO 4.5.5</b>:
-All operators support CDF5 format;
+Initial CDF5 support;
 <tt>ncap2</tt> fix negative dimension indices handling;
 <tt>ncremap -P airs,hirdls,mls,mpas</tt>;
 <tt>nces/ncra</tt> fix <tt>-y mebs</tt> normalization, add <tt>-y tabs</tt>;

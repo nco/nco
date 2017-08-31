@@ -165,6 +165,10 @@ case "${HOSTNAME}" in
     titan* )
 	source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	module load gcc
+	# 20170831: Use module load ncl (6.3.0 lacks ERWG)
+	if [ -n "${NCARG_ROOT}" ]; then
+            export PATH="${NCARG_ROOT}/bin:${PATH}"
+	fi # !NCARG_ROOT
         export PATH='/ccs/home/zender/bin_titan'\:${PATH}
 	export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
     ys* )
