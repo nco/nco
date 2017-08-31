@@ -25,11 +25,7 @@ ss_ram(4:7)="Buy"s;
 ss_ram(8:9)={"bb"s,"cc"s};
 ss_ram(10:11)=lon@str(2:3);
 ss_ram(12:19:2)="two_stride"s;
-ss_ram(13:19:2)=greek(0);
-
- 
+ss_ram(13:19:2)=greek(0); 
 ram_write(ss_ram); 
-
-
 
 nbr_err_ttl=0;
