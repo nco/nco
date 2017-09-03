@@ -1,15 +1,21 @@
 #CMake build, Pedro Vicente 
 #command line options for library dependencies
 #-DFIND_SZIP=BOOL try to locate SZIP library (default ON)
-#library dependencies
+#mininum library dependencies
 #-DNETCDF_INCLUDE=PATH
 #-DNETCDF_LIBRARY=FILE
-#-DHDF5_LIBRARY=FILE
 #-DHDF5_LIBRARY=FILE
 #-DHDF5_HL_LIBRARY=FILE
 #-DZLIB_LIBRARY=FILE
 #-DSZIP_LIBRARY=FILE
 #-DCURL_LIBRARY=FILE
+#/////////////////////////////////////////////////////////////////////////////////////
+#ncap2 
+#/////////////////////////////////////////////////////////////////////////////////////
+#options
+#command line options for library dependencies
+#-DANTLR_INCLUDE=PATH
+#-DANTLR_LIBRARY=FILE
 
 #///////////////////////////////////////////////////////
 #logic for finding header files and library dependencies:
@@ -25,13 +31,13 @@
 cmake_minimum_required(VERSION 2.8)
 project (nco)
 set(BUILD_SHARED_LIBRARIES OFF)
+option(FIND_SZIP "Try to link with SZIP library" ON)
 
 #//////////////////////////
 #preprocessor definitions
+#a netCDF4 library version is assumed
 #//////////////////////////
 
-add_definitions(-DHAVE_NETCDF4_H)
-add_definitions(-DENABLE_NETCDF4)
 if (MSVC)
 
   #//////////////////////////
@@ -42,7 +48,7 @@ if (MSVC)
 endif(MSVC)
 
 #//////////////////////////
-#detect dependencies
+#detect minimum dependencies
 #//////////////////////////
 
 find_path(NETCDF_INCLUDE_FOUND netcdf.h HINTS ${NETCDF_INCLUDE} "/usr/include")
@@ -80,8 +86,6 @@ else()
   message("-- Found zlib library at: " ${ZLIB_LIBRARY})
 endif()
 
-option(FIND_SZIP "Try to link with SZIP library" ON)
-
 if (FIND_SZIP)
 message("-- Trying to find SZIP library...")
 find_library(SZIP_LIBRARY NAMES sz)
@@ -98,6 +102,36 @@ if(NOT CURL_LIBRARY)
 else()
   message("-- Found curl library at: " ${CURL_LIBRARY})
 endif()
+
+#//////////////////////////
+#detect optional dependencies
+#//////////////////////////
+
+find_path(UDUNITS2_INCLUDE_FOUND udunits2.h HINTS ${UDUNITS2_INCLUDE})
+if(NOT UDUNITS2_INCLUDE_FOUND)
+  message("-- Unidata units library header files not found")
+else()
+  message("-- Found Unidata units library header files at: " ${UDUNITS2_INCLUDE_FOUND})
+endif()
+
+find_library(UDUNITS2_LIBRARY NAMES udunits2)
+if(NOT UDUNITS2_LIBRARY)
+  message("-- Unidata units library not found")
+else()
+  message("-- Found Unidata units library at: " ${UDUNITS2_LIBRARY})
+endif()
+
+if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE_FOUND)
+  # UDUnits depends on expat
+  find_library(EXPAT_LIBRARY NAMES libexpatMT expat)
+  if(NOT EXPAT_LIBRARY)
+    message("-- Expat library not found")
+  else()
+    message("-- Found Expat library at: " ${EXPAT_LIBRARY})
+	message("-- Building with UDUNITS support")
+  endif()
+endif()
+
 
 if (MSVC)
   add_definitions( "/D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_DEPRECATE" )
@@ -133,18 +167,35 @@ endif ()
 
 endif(MSVC)
 
-#//////////////////////////
-#compiler includes
-#//////////////////////////
-
-include_directories(${NETCDF_INCLUDE_FOUND})
 
 #//////////////////////////
 #link with libraries
 #//////////////////////////
 
-set(LIB_DEP ${LIB_DEP} ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY})
-set(LIB_DEP ${LIB_DEP} ${CURL_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
+set(LIB_DEP ${LIB_DEP})
+set(LIB_DEP ${LIB_DEP} ${NETCDF_LIBRARY})
+set(LIB_DEP ${LIB_DEP} ${HDF5_HL_LIBRARY})
+set(LIB_DEP ${LIB_DEP} ${HDF5_LIBRARY})
+set(LIB_DEP ${LIB_DEP} ${CURL_LIBRARY})
+set(LIB_DEP ${LIB_DEP} ${ZLIB_LIBRARY})
+set(LIB_DEP ${LIB_DEP} ${SZIP_LIBRARY})
+
+#//////////////////////////
+#add definitions based on libraries found
+#//////////////////////////
+
+if(NETCDF_INCLUDE_FOUND AND NETCDF_LIBRARY)
+add_definitions(-DHAVE_NETCDF4_H)
+add_definitions(-DENABLE_NETCDF4)
+include_directories(${NETCDF_INCLUDE_FOUND})
+endif()
+
+if(UDUNITS2_INCLUDE_FOUND AND UDUNITS2_LIBRARY AND EXPAT_LIBRARY)
+add_definitions(-DENABLE_UDUNITS)  
+add_definitions(-DHAVE_UDUNITS2_H) 
+include_directories(${UDUNITS2_INCLUDE_FOUND})  
+set(LIB_DEP ${LIB_DEP} ${UDUNITS2_LIBRARY} ${EXPAT_LIBRARY}) 
+endif()
 
 if (MSVC)
   set(LIB_DEP ${LIB_DEP} ${WINSOCK_LIBRARY})
@@ -229,15 +280,6 @@ if (MSVC)
 target_link_libraries (ncwa ${nco_LIB} ${LIB_DEP})
 endif(MSVC)
 
-#/////////////////////////////////////////////////////////////////////////////////////
-#ncap2 
-#/////////////////////////////////////////////////////////////////////////////////////
-
-#options
-#command line options for library dependencies
-#-DANTLR_INCLUDE=PATH
-#-DANTLR_LIBRARY=FILE
-
 #//////////////////////////
 #detect dependencies
 #note: cmake can detect relative paths, e.g, antlr/AST.hpp
@@ -275,11 +317,12 @@ set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/ncoTree.cpp)
 set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/Invoke.cc)
 set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/nco_gsl.c)
 
-if(ANTLR_INCLUDE_FOUND)
+if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
   add_executable(ncap2 ${ncap2_SOURCES})
   target_include_directories(ncap2 PRIVATE src/nco ${ANTLR_INCLUDE_FOUND})
   target_link_libraries (ncap2 ${nco_LIB} ${LIB_DEP} ${ANTLR_LIBRARY}) 
-endif(ANTLR_INCLUDE_FOUND)
+endif()
+
 
 
 
