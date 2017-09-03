@@ -107,6 +107,10 @@ endif()
 #detect optional dependencies
 #//////////////////////////
 
+#//////////////////////////
+# UDUNITS2 (and EXPAT)
+#//////////////////////////
+
 find_path(UDUNITS2_INCLUDE_FOUND udunits2.h HINTS ${UDUNITS2_INCLUDE})
 if(NOT UDUNITS2_INCLUDE_FOUND)
   message("-- Unidata units library header files not found")
@@ -131,6 +135,7 @@ if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE_FOUND)
 	message("-- Building with UDUNITS support")
   endif()
 endif()
+
 
 
 if (MSVC)
@@ -317,12 +322,40 @@ set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/ncoTree.cpp)
 set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/Invoke.cc)
 set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/nco_gsl.c)
 
+#//////////////////////////
+# GSL
+#//////////////////////////
+
+if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+  find_path(GSL_INCLUDE_FOUND gsl/gsl_errno.h HINTS ${GSL_INCLUDE})
+  if(NOT GSL_INCLUDE_FOUND)
+    message("-- GSL header files not found")
+  else()
+    message("-- Found GSL header files at: " ${GSL_INCLUDE_FOUND})
+  endif()
+  find_library(GSL_LIBRARY NAMES gsl HINTS libgsl_d.lib)
+  if(NOT GSL_LIBRARY)
+    message("-- GSL library not found")
+  else()
+    message("-- Found GSL library at: " ${GSL_LIBRARY})
+  endif()
+  if(GSL_INCLUDE_FOUND AND GSL_LIBRARY)
+  add_definitions(-DENABLE_GSL)   
+  include_directories(${GSL_INCLUDE_FOUND})  
+  set(LIB_DEP ${LIB_DEP} ${GSL_LIBRARY}) 
+  message("-- Building with GSL support")
+  endif (GSL_INCLUDE_FOUND AND GSL_LIBRARY)
+endif(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+
+#//////////////////////////
+# ncap2
+#//////////////////////////
+
 if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
   add_executable(ncap2 ${ncap2_SOURCES})
   target_include_directories(ncap2 PRIVATE src/nco ${ANTLR_INCLUDE_FOUND})
   target_link_libraries (ncap2 ${nco_LIB} ${LIB_DEP} ${ANTLR_LIBRARY}) 
 endif()
-
 
 
 
