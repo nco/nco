@@ -175,6 +175,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* [fnc] Find and return global file summaries like # of dimensions, variables, attributes */
+  const char fnc_nm[]="trv_tbl_inq()"; /* [sng] Function name  */
 
   int att_glb_lcl; /* [nbr] Number of global attributes in file */
   int att_grp_lcl; /* [nbr] Number of group attributes in file */
@@ -185,7 +186,9 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   int var_ntm_lcl; /* [nbr] Number of non-atomic variables in file */
   int var_tmc_lcl; /* [nbr] Number of atomic-type variables in file */
 
+  size_t ram_sz_crr;
   size_t ram_sz_ttl=0L;
+  size_t dmn_sz[NC_MAX_DIMS]; /* [nbr] Dimension sizes */
   
   /* Initialize */
   att_glb_lcl=0;
@@ -198,24 +201,33 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   var_tmc_lcl=0;
 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    trv_sct trv=trv_tbl->lst[idx_tbl]; 
-    if(trv.nco_typ == nco_obj_typ_var){
-      size_t ram_sz_crr=1L;
-      for(unsigned int dmn_idx=0;dmn_idx<trv.nbr_dmn;dmn_idx++){
-	//ram_sz_crr*=trv.var_dmn[dmn_idx].sz;
-	//ram_sz_crr*=1;
+    trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
+    if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
+      ram_sz_crr=1L;
+      for(unsigned int dmn_idx=0;dmn_idx<var_trv.nbr_dmn;dmn_idx++){
+	if(var_trv.var_dmn[dmn_idx].is_crd_var){
+	  /* Get coordinate from table */
+	  crd_sct *crd=var_trv.var_dmn[dmn_idx].crd;
+	  /* Use hyperslabbed size */
+	  dmn_sz[dmn_idx]=crd->lmt_msa.dmn_cnt;
+	}else{
+	  /* Get unique dimension */
+	  dmn_trv_sct *dmn_trv=var_trv.var_dmn[dmn_idx].ncd;
+	  /* Use hyperslabbed size */
+	  dmn_sz[dmn_idx]=dmn_trv->lmt_msa.dmn_cnt;
+	} /* !is_crd_var */
+	ram_sz_crr*=dmn_sz[dmn_idx];
       } /* !dmn */
-      ram_sz_crr*=nco_typ_lng(trv.var_typ);
+      ram_sz_crr*=nco_typ_lng(var_trv.var_typ);
       ram_sz_ttl+=ram_sz_crr;
-      ram_sz_crr=ram_sz_ttl; /* CEWI */
     } /* !var */
-    if(trv.nco_typ == nco_obj_typ_var) att_var_lcl+=trv.nbr_att;
-    if(trv.nco_typ == nco_obj_typ_nonatomic_var) var_ntm_lcl++;
-    if(trv.nco_typ == nco_obj_typ_grp){ 
-      grp_nbr_lcl+=trv.nbr_grp;
-      var_tmc_lcl+=trv.nbr_var;
-      if(grp_dpt_lcl < trv.grp_dpt) grp_dpt_lcl=trv.grp_dpt;
-      if(!strcmp(trv.nm_fll,"/")) att_glb_lcl=trv.nbr_att; else att_grp_lcl+=trv.nbr_att; 
+    if(var_trv.nco_typ == nco_obj_typ_var) att_var_lcl+=var_trv.nbr_att;
+    if(var_trv.nco_typ == nco_obj_typ_nonatomic_var) var_ntm_lcl++;
+    if(var_trv.nco_typ == nco_obj_typ_grp){ 
+      grp_nbr_lcl+=var_trv.nbr_grp;
+      var_tmc_lcl+=var_trv.nbr_var;
+      if(grp_dpt_lcl < var_trv.grp_dpt) grp_dpt_lcl=var_trv.grp_dpt;
+      if(!strcmp(var_trv.nm_fll,"/")) att_glb_lcl=var_trv.nbr_att; else att_grp_lcl+=var_trv.nbr_att; 
     } /* end nco_obj_typ_grp */
   } /* end idx_tbl */
 
@@ -231,6 +243,8 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   if(grp_nbr_all) *grp_nbr_all=grp_nbr_lcl;
   if(var_ntm_all) *var_ntm_all=var_ntm_lcl;
   if(var_tmc_all) *var_tmc_all=var_tmc_lcl;
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: %s reports expected total RAM size of all data (not metadata) in file, accounting for subsets and hyperslabs specified in this command, is %lu B = %lu kB = %lu MB = %lu GB\n",nco_prg_nm_get(),fnc_nm,(unsigned long)ram_sz_ttl,(unsigned long)ram_sz_ttl/NCO_BYT_PER_KB,(unsigned long)ram_sz_ttl/NCO_BYT_PER_MB,(unsigned long)ram_sz_ttl/NCO_BYT_PER_GB);
 
   return;
 } /* end trv_tbl_inq() */
