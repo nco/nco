@@ -283,12 +283,13 @@ if (UNIX)
   if(BISON_FOUND AND FLEX_FOUND)
     message("-- Bison found at ${BISON_EXECUTABLE}")
     message("-- Flex found at ${FLEX_EXECUTABLE}")
-    BISON_TARGET(nco_parser src/nco/ncap_yacc.y ${CMAKE_CURRENT_BINARY_DIR}/ncap_yacc.c)
-    FLEX_TARGET(nco_scanner src/nco/ncap_lex.l ${CMAKE_CURRENT_BINARY_DIR}/ncap_lex.c)
+    BISON_TARGET(nco_parser src/nco/ncap_yacc.y ${CMAKE_CURRENT_BINARY_DIR}/ncap_yacc.c COMPILE_FLAGS "--name-prefix=nco_yy")
+    FLEX_TARGET(nco_scanner src/nco/ncap_lex.l ${CMAKE_CURRENT_BINARY_DIR}/ncap_lex.c COMPILE_FLAGS "-Pnco_yy")
     ADD_FLEX_BISON_DEPENDENCY(nco_scanner nco_parser)
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
     include_directories(src/nco)
     message("-- Bison/Flex will generate ${BISON_nco_parser_OUTPUTS} ${FLEX_nco_scanner_OUTPUTS}")
+    add_executable(ncwa src/nco/ncwa.c ${BISON_nco_parser_OUTPUTS} ${FLEX_nco_scanner_OUTPUTS} src/nco/ncap_utl.c)
   endif()  
 endif(UNIX)
 
@@ -306,9 +307,8 @@ target_link_libraries (ncpdq ${nco_LIB} ${LIB_DEP})
 target_link_libraries (ncra ${nco_LIB} ${LIB_DEP})
 target_link_libraries (ncrename ${nco_LIB} ${LIB_DEP})
 target_link_libraries (ncatted ${nco_LIB} ${LIB_DEP})
-if (MSVC)
 target_link_libraries (ncwa ${nco_LIB} ${LIB_DEP})
-endif(MSVC)
+
 
 #//////////////////////////
 #detect dependencies
