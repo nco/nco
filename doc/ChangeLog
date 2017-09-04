@@ -1,5 +1,7 @@
 2017-09-04  Charlie Zender  <zender@uci.edu>
 
+	* Update travis to work with Ubuntu 14.04, move from libnetcdf6 to libnetcdf11
+
 	* Discriminate between KiB and KB (kibibytes and kilobytes) in diagnostics
 
 2017-09-01  Charlie Zender  <zender@uci.edu>

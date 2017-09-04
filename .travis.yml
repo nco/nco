@@ -9,7 +9,7 @@ compiler:
 
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install -y -qq antlr libantlr-dev libnetcdf6 libnetcdf-dev netcdf-bin udunits-bin libudunits2-0 libudunits2-dev
+  - sudo apt-get install -y -qq antlr libantlr-dev libnetcdf11 libnetcdf-dev netcdf-bin udunits-bin libudunits2-0 libudunits2-dev
   - ./configure
   - export DATA='/home/travis'
 
