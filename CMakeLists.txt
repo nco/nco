@@ -269,6 +269,25 @@ add_executable(ncpdq src/nco/ncpdq.c)
 add_executable(ncra src/nco/ncra.c)
 add_executable(ncrename src/nco/ncrename.c)
 add_executable(ncatted src/nco/ncatted.c)
+
+#//////////////////////////
+#ncwa, flex, bison on UNIX
+#//////////////////////////
+
+if (UNIX)
+  find_package(BISON)
+  find_package(FLEX)
+  
+  if(BISON_FOUND)
+    message("-- Bison found at ${BISON_EXECUTABLE}")	
+  endif(BISON_FOUND)
+   
+  if(FLEX_FOUND)
+    message("-- Flex found at ${FLEX_EXECUTABLE}")
+  endif(FLEX_FOUND)
+    
+endif(UNIX)
+
 if (MSVC)
 add_executable(ncwa src/nco/ncwa.c)
 endif(MSVC)
