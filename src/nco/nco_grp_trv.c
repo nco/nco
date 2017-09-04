@@ -223,7 +223,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
 	ram_sz_ttl+=ram_sz_crr;
       } /* !var */
     } /* end idx_tbl */
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: %s reports expected total RAM size of all data (not metadata) in file, accounting for subsets and hyperslabs specified in this command, is %lu B ~ %lu kB ~ %lu MB ~ %lu GB\n",nco_prg_nm_get(),fnc_nm,(unsigned long)ram_sz_ttl,(unsigned long)ram_sz_ttl/NCO_BYT_PER_KB,(unsigned long)ram_sz_ttl/NCO_BYT_PER_MB,(unsigned long)ram_sz_ttl/NCO_BYT_PER_GB);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: %s reports expected total RAM size of all data (not metadata) in file, accounting for subsets and hyperslabs specified in this command, is %lu B ~ %lu kB, %lu kiB ~ %lu MB, %lu MiB ~ %lu GB, %lu GiB\n",nco_prg_nm_get(),fnc_nm,(unsigned long)ram_sz_ttl,(unsigned long)ram_sz_ttl/NCO_BYT_PER_KB,(unsigned long)ram_sz_ttl/NCO_BYT_PER_KiB,(unsigned long)ram_sz_ttl/NCO_BYT_PER_MB,(unsigned long)ram_sz_ttl/NCO_BYT_PER_MiB,(unsigned long)ram_sz_ttl/NCO_BYT_PER_GB,(unsigned long)ram_sz_ttl/NCO_BYT_PER_GiB);
   } /* !ncks */
     
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
