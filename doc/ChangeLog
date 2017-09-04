@@ -1,6 +1,10 @@
-2017-09-03  Charlie Zender  <zender@uci.edu>
+2017-09-04  Charlie Zender  <zender@uci.edu>
 
-	* Report computed data size when dbg_lvl >= 2
+	* Hi
+
+2017-09-01  Charlie Zender  <zender@uci.edu>
+
+	* ncks report computed data size when dbg_lvl >= 2
 
 2017-08-31  Charlie Zender  <zender@uci.edu>
 
