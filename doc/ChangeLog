@@ -1,6 +1,6 @@
 2017-09-04  Charlie Zender  <zender@uci.edu>
 
-	* Hi
+	* Discriminate between KiB and KB (kibibytes and kilobytes) in diagnostics
 
 2017-09-01  Charlie Zender  <zender@uci.edu>
 

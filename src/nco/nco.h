@@ -138,10 +138,15 @@ extern "C" {
 #define CEWI_unused(x)   ((void)x)
   
   /* Numeric constants to simplify arithmetic */
-#define NCO_BYT_PER_KB 1024UL
-#define NCO_BYT_PER_MB 1048576UL
-#define NCO_BYT_PER_GB 1073741824UL
-#define NCO_BYT_PER_TB 1099511627776UL
+#define NCO_BYT_PER_KiB 1024UL
+#define NCO_BYT_PER_MiB 1048576UL
+#define NCO_BYT_PER_GiB 1073741824UL
+#define NCO_BYT_PER_TiB 1099511627776UL
+
+#define NCO_BYT_PER_KB 1000UL
+#define NCO_BYT_PER_MB 1000000UL
+#define NCO_BYT_PER_GB 1000000000UL
+#define NCO_BYT_PER_TB 1000000000000UL
 
   /* netcdf.h NC_GLOBAL is, strictly, the variable ID for global attributes
      NCO_REC_DMN_UNDEFINED is dimension ID of record dimension iff record dimension is undefined
