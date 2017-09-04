@@ -272,20 +272,25 @@ add_executable(ncatted src/nco/ncatted.c)
 
 #//////////////////////////
 #ncwa, flex, bison on UNIX
+#flex -Pnco_yy ncap_lex.l
+#mv lex.nco_yy.c ncap_lex.c
+#bison -d --name-prefix=nco_yy --output=ncap_yacc.c -d ncap_yacc.y
 #//////////////////////////
 
 if (UNIX)
   find_package(BISON)
-  find_package(FLEX)
-  
-  if(BISON_FOUND)
-    message("-- Bison found at ${BISON_EXECUTABLE}")	
-  endif(BISON_FOUND)
-   
-  if(FLEX_FOUND)
-    message("-- Flex found at ${FLEX_EXECUTABLE}")
-  endif(FLEX_FOUND)
-    
+  find_package(FLEX) 
+  if(BISON_FOUND AND FLEX_FOUND)
+    message("-- Bison found at ${BISON_EXECUTABLE}")
+	message("-- Flex found at ${FLEX_EXECUTABLE}")
+    BISON_TARGET(nco_parser src/nco/ncap_yacc.y ${CMAKE_CURRENT_BINARY_DIR}/ncap_yacc.c)
+    FLEX_TARGET(nco_scanner src/nco/ncap_lex.l ${CMAKE_CURRENT_BINARY_DIR}/ncap_lex.c)
+    ADD_FLEX_BISON_DEPENDENCY(nco_scanner nco_parser)
+    include_directories(${CMAKE_CURRENT_BINARY_DIR})
+	include_directories(src/nco)
+	#add_executable(ncwa src/nco/ncwa.c ${BISON_nco_parser_OUTPUTS} ${FLEX_nco_scanner_OUTPUTS} src/nco/ncap_utl.c)
+	message("-- Bison/Flex will generate ${BISON_nco_parser_OUTPUTS} ${FLEX_nco_scanner_OUTPUTS}")
+  endif()  
 endif(UNIX)
 
 if (MSVC)
