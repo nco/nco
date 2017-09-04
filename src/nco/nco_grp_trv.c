@@ -205,7 +205,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
       trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
       if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
 	ram_sz_crr=1L;
-	for(unsigned int dmn_idx=0;dmn_idx<var_trv.nbr_dmn;dmn_idx++){
+	for(unsigned int dmn_idx=0;dmn_idx<(unsigned int)var_trv.nbr_dmn;dmn_idx++){
 	  if(var_trv.var_dmn[dmn_idx].is_crd_var){
 	    /* Get coordinate from table */
 	    crd_sct *crd=var_trv.var_dmn[dmn_idx].crd;

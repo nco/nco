@@ -3137,7 +3137,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      3. flg_rnr,fnc_nm,wgt_vld_thr must be explicit shared for icc 13.1.3 (rhea) */
 #ifdef __GNUG__
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
-# if GCC_LIB_VERSION < 480
+# if GCC_LIB_VERSION < 490
 #  define GXX_OLD_OPENMP_SHARED_TREATMENT 1
 # endif /* 480 */
 #endif /* !__GNUC__ */
