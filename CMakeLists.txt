@@ -384,8 +384,13 @@ endif()
 
 # add the install targets
 if (UNIX)
-message("-- Installing to: " ${CMAKE_INSTALL_PREFIX})
-install (TARGETS ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa RUNTIME DESTINATION bin)
+set(NCO_TARGETS ${NCO_TARGETS})
+set(NCO_TARGETS ${NCO_TARGETS} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
+if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+  set(NCO_TARGETS ${NCO_TARGETS} ncap2)
+endif()
+message("-- Installing ${NCO_TARGETS} to: " ${CMAKE_INSTALL_PREFIX}/bin)
+install (TARGETS ${NCO_TARGETS} RUNTIME DESTINATION bin)
 endif()
 
 
