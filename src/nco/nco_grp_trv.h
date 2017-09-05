@@ -18,6 +18,7 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
 #include <string.h> /* strcmp() */
 
 /* 3rd party vendors */

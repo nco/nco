@@ -17,6 +17,11 @@ Makefile.in
 /missing
 /Makefile
 
+# CMake
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+
 # Odd files, litter
 gmon.out
 PET0.RegridWeightGen.Log

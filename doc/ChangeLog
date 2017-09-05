@@ -1,5 +1,7 @@
 2017-09-04  Charlie Zender  <zender@uci.edu>
 
+	* fnc_nm (only!) must be explicit shared for g++ 4.8.4 (travis)
+
 	* Update travis to work with Ubuntu 14.04, move from libnetcdf6 to libnetcdfc7
 
 	* Discriminate between KiB and KB (kibibytes and kilobytes) in diagnostics
