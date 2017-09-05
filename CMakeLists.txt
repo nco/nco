@@ -382,6 +382,11 @@ if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
   target_link_libraries (ncap2 ${nco_LIB} ${LIB_DEP} ${ANTLR_LIBRARY}) 
 endif()
 
+# add the install targets
+if (UNIX)
+message("-- Installing to: " ${CMAKE_INSTALL_PREFIX})
+install (TARGETS ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa DESTINATION bin)
+endif()
 
 
 
