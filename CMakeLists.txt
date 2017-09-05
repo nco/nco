@@ -385,7 +385,7 @@ endif()
 # add the install targets
 if (UNIX)
 message("-- Installing to: " ${CMAKE_INSTALL_PREFIX})
-install (TARGETS ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa DESTINATION bin)
+install (TARGETS ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa RUNTIME DESTINATION bin)
 endif()
 
 
