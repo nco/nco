@@ -1,3 +1,7 @@
+2017-09-05  Charlie Zender  <zender@uci.edu>
+
+	* round() filesize estimates instead of truncating them
+
 2017-09-04  Charlie Zender  <zender@uci.edu>
 
 	* fnc_nm (only!) must be explicit shared for g++ 4.8.4 (travis)
