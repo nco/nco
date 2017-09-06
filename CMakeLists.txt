@@ -437,17 +437,6 @@ if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
   target_link_libraries (ncap2 ${nco_LIB} ${LIB_DEP} ${ANTLR_LIBRARY}) 
 endif()
 
-# add the install targets
-if (UNIX)
-  set(NCO_TARGETS ${NCO_TARGETS})
-  set(NCO_TARGETS ${NCO_TARGETS} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
-  if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
-    set(NCO_TARGETS ${NCO_TARGETS} ncap2)
-  endif()
-  message("-- Installing ${NCO_TARGETS} to: " ${CMAKE_INSTALL_PREFIX}/bin)
-  install (TARGETS ${NCO_TARGETS} RUNTIME DESTINATION bin)
-endif()
-
 #//////////////////////////
 #additional informational definitions used by ncks -r
 #//////////////////////////
@@ -458,4 +447,19 @@ add_definitions(-DENABLE_STATIC)
 
 if (CURL_LIBRARY)
   add_definitions(-DENABLE_DAP)
+endif()
+
+#//////////////////////////
+# install target
+#//////////////////////////
+
+if (UNIX)
+  set(NCO_TARGETS ${NCO_TARGETS})
+  set(NCO_TARGETS ${NCO_TARGETS} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
+  if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+    set(NCO_TARGETS ${NCO_TARGETS} ncap2)
+  endif()
+  install(TARGETS ${NCO_TARGETS} RUNTIME DESTINATION bin)
+  install(FILES data/ncremap data/ncclimo DESTINATION bin)
+  message("-- Installing ${NCO_TARGETS};data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
