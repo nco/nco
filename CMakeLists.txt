@@ -34,14 +34,38 @@ set(BUILD_SHARED_LIBRARIES OFF)
 option(FIND_SZIP "Try to link with SZIP library" ON)
 
 #//////////////////////////
-# system specific functions
+# detect system specific functions
 #//////////////////////////
 
 include(CheckFunctionExists)
-check_function_exists(mkstemp HAVE_MKSTEMP)
+include(CheckIncludeFile)
 
+check_function_exists(mkstemp HAVE_MKSTEMP)
 if (HAVE_MKSTEMP)
+  message("-- Found function mkstemp")
   add_definitions(-DHAVE_MKSTEMP)
+endif()
+
+#//////////////////////////
+# detect system/libraries specific header files
+#//////////////////////////
+
+check_include_file(strings.h HAVE_STRINGS_H)
+if (HAVE_STRINGS_H)
+  message("-- Found header strings.h")
+  add_definitions(-DHAVE_STRINGS_H)
+endif()
+
+check_include_file(regex.h HAVE_REGEX_H)
+if (HAVE_REGEX_H)
+  message("-- Found header regex.h")
+  add_definitions(-DHAVE_REGEX_H)
+endif()
+
+check_include_file(netcdf_meta.h NC_HAVE_META_H)
+if (NC_HAVE_META_H)
+  message("-- Found header netcdf_meta.h")
+  add_definitions(-DNC_HAVE_META_H)
 endif()
 
 #//////////////////////////
