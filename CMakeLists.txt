@@ -34,8 +34,18 @@ set(BUILD_SHARED_LIBRARIES OFF)
 option(FIND_SZIP "Try to link with SZIP library" ON)
 
 #//////////////////////////
+# system specific functions
+#//////////////////////////
+
+include(CheckFunctionExists)
+check_function_exists(mkstemp HAVE_MKSTEMP)
+
+if (HAVE_MKSTEMP)
+  add_definitions(-DHAVE_MKSTEMP)
+endif()
+
+#//////////////////////////
 #preprocessor definitions
-#a netCDF4 library version is assumed
 #//////////////////////////
 
 if (MSVC)
@@ -187,6 +197,7 @@ set(LIB_DEP ${LIB_DEP} ${SZIP_LIBRARY})
 
 #//////////////////////////
 #add definitions based on libraries found
+#a netCDF4 library version is assumed
 #//////////////////////////
 
 if(NETCDF_INCLUDE_FOUND AND NETCDF_LIBRARY)
