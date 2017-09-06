@@ -1,0 +1,19 @@
+# Git-ignore patterns for ~/nco/cmake
+
+cmake/Makefile
+cmake/install_manifest.txt
+cmake/libnco.a
+cmake/ncap2
+cmake/ncap_lex.c
+cmake/ncap_yacc.c
+cmake/ncap_yacc.h
+cmake/ncatted
+cmake/ncbo
+cmake/ncecat
+cmake/ncflint
+cmake/ncks
+cmake/ncpdq
+cmake/ncra
+cmake/ncrename
+cmake/ncwa
+
