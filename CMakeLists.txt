@@ -202,11 +202,19 @@ include_directories(${UDUNITS2_INCLUDE_FOUND})
 set(LIB_DEP ${LIB_DEP} ${UDUNITS2_LIBRARY} ${EXPAT_LIBRARY}) 
 endif()
 
-if (MSVC)
+#//////////////////////////
+# system specific libraries
+#//////////////////////////
+
+if(APPLE)
+  set(LIB_DEP ${LIB_DEP} resolv)
+endif()
+
+if(MSVC)
   set(LIB_DEP ${LIB_DEP} ${WINSOCK_LIBRARY})
-else (MSVC)
+else ()
   set(LIB_DEP ${LIB_DEP} m)
-endif(MSVC)
+endif()
 
 #//////////////////////////
 #nco lib sources 
