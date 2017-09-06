@@ -1,5 +1,11 @@
 2017-09-05  Charlie Zender  <zender@uci.edu>
 
+	* Add CDF5 presence to ncks -r report
+
+	* Refine CMake templates
+
+	* CMake implementation from Pedro
+
 	* round() filesize estimates instead of truncating them
 
 2017-09-04  Charlie Zender  <zender@uci.edu>
