@@ -30,7 +30,6 @@
 
 cmake_minimum_required(VERSION 2.8)
 project (nco)
-set(BUILD_SHARED_LIBRARIES OFF)
 option(FIND_SZIP "Try to link with SZIP library" ON)
 
 #//////////////////////////
@@ -56,16 +55,29 @@ if (HAVE_STRINGS_H)
   add_definitions(-DHAVE_STRINGS_H)
 endif()
 
+check_include_file(netcdf_meta.h NC_HAVE_META_H)
+if (NC_HAVE_META_H)
+  message("-- Found header netcdf_meta.h")
+  add_definitions(-DNC_HAVE_META_H)
+endif()
+
+
+#//////////////////////////
+# regex
+#//////////////////////////
+
 check_include_file(regex.h HAVE_REGEX_H)
+check_function_exists(regexec HAVE_REGEXEC)
+check_function_exists(regcomp HAVE_REGCOMP)
+check_function_exists(regfree HAVE_REGFREE)
 if (HAVE_REGEX_H)
   message("-- Found header regex.h")
   add_definitions(-DHAVE_REGEX_H)
 endif()
 
-check_include_file(netcdf_meta.h NC_HAVE_META_H)
-if (NC_HAVE_META_H)
-  message("-- Found header netcdf_meta.h")
-  add_definitions(-DNC_HAVE_META_H)
+if (HAVE_REGEX_H AND HAVE_REGEXEC AND HAVE_REGCOMP AND HAVE_REGFREE)
+  message("-- Enabling Regex functionality...")
+  add_definitions(-DNCO_HAVE_REGEX_FUNCTIONALITY)
 endif()
 
 #//////////////////////////
@@ -121,13 +133,13 @@ else()
 endif()
 
 if (FIND_SZIP)
-message("-- Trying to find SZIP library...")
-find_library(SZIP_LIBRARY NAMES sz)
-if(NOT SZIP_LIBRARY)
-  message(FATAL_ERROR "szip library not found")
-else()
-  message("-- Found szip library at: " ${SZIP_LIBRARY})
-endif()
+  message("-- Trying to find SZIP library...")
+  find_library(SZIP_LIBRARY NAMES sz)
+  if(NOT SZIP_LIBRARY)
+    message(FATAL_ERROR "szip library not found")
+  else()
+    message("-- Found szip library at: " ${SZIP_LIBRARY})
+  endif()
 endif(FIND_SZIP)
 
 find_library(CURL_LIBRARY NAMES curl)
@@ -401,7 +413,7 @@ if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
   else()
     message("-- Found GSL header files at: " ${GSL_INCLUDE_FOUND})
   endif()
-  find_library(GSL_LIBRARY NAMES gsl HINTS libgsl_d.lib)
+  find_library(GSL_LIBRARY NAMES gsl HINTS libgsl_d.lib gslcblas)
   if(NOT GSL_LIBRARY)
     message("-- GSL library not found")
   else()
@@ -425,16 +437,29 @@ if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
   target_link_libraries (ncap2 ${nco_LIB} ${LIB_DEP} ${ANTLR_LIBRARY}) 
 endif()
 
-# add the install targets
+#//////////////////////////
+#additional informational definitions used by ncks -r
+#//////////////////////////
+
+set(BUILD_STATIC_LIBS ON)
+set(BUILD_SHARED_LIBS OFF)
+add_definitions(-DENABLE_STATIC)
+
+if (CURL_LIBRARY)
+  add_definitions(-DENABLE_DAP)
+endif()
+
+#//////////////////////////
+# install target
+#//////////////////////////
+
 if (UNIX)
-set(NCO_TARGETS ${NCO_TARGETS})
-set(NCO_TARGETS ${NCO_TARGETS} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
-if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
-  set(NCO_TARGETS ${NCO_TARGETS} ncap2)
+  set(NCO_TARGETS ${NCO_TARGETS})
+  set(NCO_TARGETS ${NCO_TARGETS} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
+  if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+    set(NCO_TARGETS ${NCO_TARGETS} ncap2)
+  endif()
+  install(TARGETS ${NCO_TARGETS} RUNTIME DESTINATION bin)
+  install(FILES data/ncremap data/ncclimo DESTINATION bin)
+  message("-- Installing ${NCO_TARGETS};data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
-message("-- Installing ${NCO_TARGETS} to: " ${CMAKE_INSTALL_PREFIX}/bin)
-install (TARGETS ${NCO_TARGETS} RUNTIME DESTINATION bin)
-endif()
-
-
-
