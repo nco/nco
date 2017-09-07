@@ -1,23 +1,39 @@
 #CMake build, Pedro Vicente 
-#command line options for library dependencies
-#-DFIND_SZIP=BOOL try to locate SZIP library (default ON)
-#mininum library dependencies
-#-DNETCDF_INCLUDE=PATH
-#-DNETCDF_LIBRARY=FILE
-#-DHDF5_LIBRARY=FILE
-#-DHDF5_HL_LIBRARY=FILE
-#-DZLIB_LIBRARY=FILE
-#-DSZIP_LIBRARY=FILE
-#-DCURL_LIBRARY=FILE
-#/////////////////////////////////////////////////////////////////////////////////////
-#ncap2 
-#/////////////////////////////////////////////////////////////////////////////////////
-#options
-#command line options for library dependencies
-#-DANTLR_INCLUDE=PATH
-#-DANTLR_LIBRARY=FILE
 
-#///////////////////////////////////////////////////////
+#/////////////////////////////////////////////////////////////////////////////////////
+#command line options for library dependencies
+#/////////////////////////////////////////////////////////////////////////////////////
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#parameter options
+#/////////////////////////////////////////////////////////////////////////////////////
+
+#-DFIND_SZIP:BOOL=<ON or OFF> try to locate SZIP library (default ON)
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#mininum library dependencies: netCDF, HDF5, HDF5_HL, ZLIB (SZIP)
+#/////////////////////////////////////////////////////////////////////////////////////
+
+#-DNETCDF_INCLUDE:PATH=<some_path>
+#-DNETCDF_LIBRARY:FILE=<some_file>
+#-DHDF5_LIBRARY:FILE=<some_file>
+#-DHDF5_HL_LIBRARY:FILE=<some_file>
+#-DZLIB_LIBRARY:FILE=<some_file>
+#-DSZIP_LIBRARY:FILE=<some_file>
+#-DCURL_LIBRARY:FILE=<some_file>
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#optional library dependencies (Antlr, UDUNITS, EXPAT, GSL)
+#/////////////////////////////////////////////////////////////////////////////////////
+
+#-DANTLR_INCLUDE:PATH=<some_path>
+#-DANTLR_LIBRARY:FILE=<some_file>
+#-DUDUNITS2_INCLUDE:PATH=<some_path>
+#-DUDUNITS2_LIBRARY:FILE=<some_file>
+#-DEXPAT_LIBRARY:FILE=<some_file>
+#-DGSL_INCLUDE:PATH=<some_path>
+#-DGSL_LIBRARY:FILE=<some_file>
+
 #logic for finding header files and library dependencies:
 #find_path
 #find_library
@@ -332,25 +348,24 @@ add_executable(ncatted src/nco/ncatted.c)
 #bison -d --name-prefix=nco_yy --output=ncap_yacc.c -d ncap_yacc.y
 #//////////////////////////
 
-if (UNIX)
-  find_package(BISON)
-  find_package(FLEX) 
-  if(BISON_FOUND AND FLEX_FOUND)
-    message("-- Bison found at ${BISON_EXECUTABLE}")
-    message("-- Flex found at ${FLEX_EXECUTABLE}")
-    BISON_TARGET(nco_parser src/nco/ncap_yacc.y ${CMAKE_CURRENT_BINARY_DIR}/ncap_yacc.c COMPILE_FLAGS "--name-prefix=nco_yy")
-    FLEX_TARGET(nco_scanner src/nco/ncap_lex.l ${CMAKE_CURRENT_BINARY_DIR}/ncap_lex.c COMPILE_FLAGS "-Pnco_yy")
-    ADD_FLEX_BISON_DEPENDENCY(nco_scanner nco_parser)
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
-    include_directories(src/nco)
-    message("-- Bison/Flex will generate ${BISON_nco_parser_OUTPUTS} ${FLEX_nco_scanner_OUTPUTS}")
-    add_executable(ncwa src/nco/ncwa.c ${BISON_nco_parser_OUTPUTS} ${FLEX_nco_scanner_OUTPUTS} src/nco/ncap_utl.c)
-  endif()  
-endif(UNIX)
+set(ncwa_SOURCES ${ncwa_SOURCES})
+set(ncwa_SOURCES ${ncwa_SOURCES} src/nco/ncwa.c)
+find_package(BISON QUIET)
+find_package(FLEX  QUIET) 
+if(BISON_FOUND AND FLEX_FOUND)
+ add_definitions(-DHAVE_BISON_FLEX)
+ message("-- Bison found at ${BISON_EXECUTABLE}")
+ message("-- Flex found at ${FLEX_EXECUTABLE}")
+ BISON_TARGET(nco_parser src/nco/ncap_yacc.y ${CMAKE_CURRENT_BINARY_DIR}/ncap_yacc.c COMPILE_FLAGS "--name-prefix=nco_yy")
+ FLEX_TARGET(nco_scanner src/nco/ncap_lex.l ${CMAKE_CURRENT_BINARY_DIR}/ncap_lex.c COMPILE_FLAGS "-Pnco_yy")
+ ADD_FLEX_BISON_DEPENDENCY(nco_scanner nco_parser)
+ include_directories(${CMAKE_CURRENT_BINARY_DIR})
+ include_directories(src/nco)
+ message("-- Bison/Flex will generate ${BISON_nco_parser_OUTPUTS} ${FLEX_nco_scanner_OUTPUTS}")
+ set(ncwa_SOURCES ${ncwa_SOURCES} ${BISON_nco_parser_OUTPUTS} ${FLEX_nco_scanner_OUTPUTS} src/nco/ncap_utl.c)
+endif()  
+add_executable(ncwa ${ncwa_SOURCES})
 
-if (MSVC)
-add_executable(ncwa src/nco/ncwa.c)
-endif(MSVC)
 
 set(nco_LIB nco)
 
@@ -453,12 +468,14 @@ endif()
 # install target
 #//////////////////////////
 
+
+set(NCO_TARGETS ${NCO_TARGETS})
+set(NCO_TARGETS ${NCO_TARGETS} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
+if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+  set(NCO_TARGETS ${NCO_TARGETS} ncap2)
+endif()
+
 if (UNIX)
-  set(NCO_TARGETS ${NCO_TARGETS})
-  set(NCO_TARGETS ${NCO_TARGETS} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
-  if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
-    set(NCO_TARGETS ${NCO_TARGETS} ncap2)
-  endif()
   install(TARGETS ${NCO_TARGETS} RUNTIME DESTINATION bin)
   install(FILES data/ncremap data/ncclimo DESTINATION bin)
   message("-- Installing ${NCO_TARGETS};data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX}/bin)
