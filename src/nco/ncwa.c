@@ -48,7 +48,11 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #ifndef _MSC_VER
-#define HAVE_BISON_FLEX /* 21070906 pvn add this definition to automake, currently in CMake */
+# if !defined(HAVE_BISON_FLEX)
+# define HAVE_BISON_FLEX /* 21070906 pvn add this definition to automake, currently in CMake */
+# endif
+#endif
+#ifndef _MSC_VER
 # include <unistd.h> /* POSIX stuff */
 #endif /* _MSC_VER */
 #ifndef HAVE_GETOPT_LONG

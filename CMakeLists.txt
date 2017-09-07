@@ -1,23 +1,39 @@
 #CMake build, Pedro Vicente 
-#command line options for library dependencies
-#-DFIND_SZIP=BOOL try to locate SZIP library (default ON)
-#mininum library dependencies
-#-DNETCDF_INCLUDE=PATH
-#-DNETCDF_LIBRARY=FILE
-#-DHDF5_LIBRARY=FILE
-#-DHDF5_HL_LIBRARY=FILE
-#-DZLIB_LIBRARY=FILE
-#-DSZIP_LIBRARY=FILE
-#-DCURL_LIBRARY=FILE
-#/////////////////////////////////////////////////////////////////////////////////////
-#ncap2 
-#/////////////////////////////////////////////////////////////////////////////////////
-#options
-#command line options for library dependencies
-#-DANTLR_INCLUDE=PATH
-#-DANTLR_LIBRARY=FILE
 
-#///////////////////////////////////////////////////////
+#/////////////////////////////////////////////////////////////////////////////////////
+#command line options for library dependencies
+#/////////////////////////////////////////////////////////////////////////////////////
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#parameter options
+#/////////////////////////////////////////////////////////////////////////////////////
+
+#-DFIND_SZIP:BOOL=<ON or OFF> try to locate SZIP library (default ON)
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#mininum library dependencies: netCDF, HDF5, HDF5_HL, ZLIB (SZIP)
+#/////////////////////////////////////////////////////////////////////////////////////
+
+#-DNETCDF_INCLUDE:PATH=<some_path>
+#-DNETCDF_LIBRARY:FILE=<some_file>
+#-DHDF5_LIBRARY:FILE=<some_file>
+#-DHDF5_HL_LIBRARY:FILE=<some_file>
+#-DZLIB_LIBRARY:FILE=<some_file>
+#-DSZIP_LIBRARY:FILE=<some_file>
+#-DCURL_LIBRARY:FILE=<some_file>
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#optional library dependencies (Antlr, UDUNITS, EXPAT, GSL)
+#/////////////////////////////////////////////////////////////////////////////////////
+
+#-DANTLR_INCLUDE:PATH=<some_path>
+#-DANTLR_LIBRARY:FILE=<some_file>
+#-DUDUNITS2_INCLUDE:PATH=<some_path>
+#-DUDUNITS2_LIBRARY:FILE=<some_file>
+#-DEXPAT_LIBRARY:FILE=<some_file>
+#-DGSL_INCLUDE:PATH=<some_path>
+#-DGSL_LIBRARY:FILE=<some_file>
+
 #logic for finding header files and library dependencies:
 #find_path
 #find_library
