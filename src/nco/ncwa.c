@@ -49,10 +49,8 @@
 #include <time.h> /* machine time */
 #ifndef _MSC_VER
 # if !defined(HAVE_BISON_FLEX)
-# define HAVE_BISON_FLEX /* 21070906 pvn add this definition to automake, currently in CMake */
-# endif
-#endif
-#ifndef _MSC_VER
+#  define HAVE_BISON_FLEX /* 21070906 pvn add this definition to automake, currently in CMake */
+# endif /* HAVE_BISON_FLEX */
 # include <unistd.h> /* POSIX stuff */
 #endif /* _MSC_VER */
 #ifndef HAVE_GETOPT_LONG
@@ -88,7 +86,7 @@
 #define MAIN_PROGRAM_FILE
 #ifdef HAVE_BISON_FLEX
 # include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
-#endif /* HAVE_BISON_FLEX */
+#endif /* !HAVE_BISON_FLEX */
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 #ifdef HAVE_BISON_FLEX
@@ -96,7 +94,7 @@
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
 char **ncap_fl_spt_glb; /* [fl] Script file */
-#endif /* HAVE_BISON_FLEX */
+#endif /* !HAVE_BISON_FLEX */
 
 int 
 main(int argc,char **argv)
@@ -249,7 +247,7 @@ main(int argc,char **argv)
 
 #ifdef HAVE_BISON_FLEX
   prs_sct prs_arg;  /* I/O [sct] Global information required in ncwa parser */
-#endif /* HAVE_BISON_FLEX */
+#endif /* !HAVE_BISON_FLEX */
 
 #ifdef ENABLE_MPI
   /* Declare all MPI-specific variables here */
@@ -534,9 +532,9 @@ main(int argc,char **argv)
     case 'B': /* Mask string to be parsed */
       msk_cnd_sng=(char *)strdup(optarg);
 #ifndef HAVE_BISON_FLEX
-      (void)fprintf(fp_stdout,"%s: ERROR -B and --mask_condition options unsupported, system a parser and lexe. HINT: Break condition into component -m -T -M switches, e.g., use -m ORO -T lt -M 1.0 instead of -B \"ORO < 1\"\n",nco_prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR -B and --mask_condition options unsupported because configuration could not find a parser (e.g., Bison) and lexer (e.g., Flex). HINT: Break condition into component -m -T -M switches, e.g., use -m ORO -T lt -M 1.0 instead of -B \"ORO < 1\"\n",nco_prg_nm);
       nco_exit(EXIT_FAILURE);
-#endif /* !HAVE_BISON_FLEX */
+#endif /* HAVE_BISON_FLEX */
       break;
     case 'b': /* [flg] Retain degenerate dimensions */
       flg_rdd=True;
@@ -701,7 +699,7 @@ main(int argc,char **argv)
     ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
     if(ncap_ncwa_scn(&prs_arg,msk_cnd_sng,&msk_nm,&msk_val,&op_typ_rlt) != NCO_NOERR) nco_exit(EXIT_FAILURE); 
   } /* endif msk_cnd_sng */ 
-#endif /* HAVE_BISON_FLEX */
+#endif /* !HAVE_BISON_FLEX */
 
   /* Ensure we do not attempt to normalize by non-existent weight */
   if(!wgt_nm) NORMALIZE_BY_WEIGHT=False;
