@@ -1435,9 +1435,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   /* Use nbr_dmn+1 in malloc() to handle case when nbr_dim == 0 and allow for formatting characters */
   dmn_sng=(char *)nco_malloc((nbr_dim+1)*NC_MAX_NAME*sizeof(char));
   dmn_sng[0]='\0';
-  ram_sz_crr=var_sz*nco_typ_lng(var_typ);
-  ram_sz_ttl+=ram_sz_crr;
   if(nbr_dim == 0){
+    ram_sz_crr=var_sz*nco_typ_lng(var_typ);
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)ram_sz_crr);
     /* 20131122: Implement ugly NcML requirement that scalars have shape="" attribute */
     if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"\"");
@@ -1468,6 +1467,7 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     (void)strcat(sz_sng,sng_foo);
 
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) var_sz*=dmn_sz[dmn_idx];
+    ram_sz_crr=var_sz*nco_typ_lng(var_typ);
     if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 
     if(prn_flg->trd){
@@ -1477,6 +1477,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
     } /* !prn_flg->trd */
 
   } /* end if variable is scalar */
+  ram_sz_ttl+=ram_sz_crr;
+
   if(prn_flg->cdl){
     nm_cdl=nm2sng_cdl(var_trv->nm);
     (void)fprintf(stdout,"%*s%s %s%s ;\n",prn_ndn,spc_sng,cdl_typ_nm(var_typ),nm_cdl,dmn_sng);

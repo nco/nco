@@ -2432,6 +2432,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
 #ncks #75
 # ncks -O -c ~/nco/data/in_grp.nc ~/foo.nc
+# ncks --trd -v lat ~/foo.nc | grep 'lat size'
     $dsc_sng="(Groups) -c Extract all coordinate variables";
     $tst_cmd[0]="ncks -O $nco_D_flg $in_pth_arg -c in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks --trd -v lat %tmp_fl_00% | grep 'lat size'";

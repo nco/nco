@@ -1,8 +1,12 @@
-2017-09-05  Charlie Zender  <zender@uci.edu>
+2017-09-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.9-alpha03 final changes';git push
 	git tag -a 4.6.9-alpha03 -m 'CMake implementation;data size estimates with ncks -D 2;--lst_xtr';git push --tags
+
+	* Fix calculation of ram_sz_crr in nco_prn()
+
+2017-09-05  Charlie Zender  <zender@uci.edu>
 
 	* Add CDF5 presence to ncks -r report
 
