@@ -49,6 +49,13 @@ project (nco)
 option(FIND_SZIP "Try to link with SZIP library" ON)
 
 #//////////////////////////
+# add non-standard locations to search for include and library files (e.g UDunits on Mac)
+#//////////////////////////
+
+set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/opt/local/include/")
+set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "/opt/local/lib/")
+
+#//////////////////////////
 # detect system specific functions
 #//////////////////////////
 
