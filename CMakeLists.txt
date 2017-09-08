@@ -48,6 +48,7 @@
 cmake_minimum_required(VERSION 2.8)
 project (nco)
 option(FIND_SZIP "Try to link with SZIP library" ON)
+option(USE_OPENMP "Use OpenMP" ON)
 
 #//////////////////////////
 # colorized output
@@ -522,6 +523,21 @@ cmake_host_system_information(RESULT nco_hostname QUERY HOSTNAME)
 if(nco_hostname)
  message("-- HOSTNAME is set to: " ${nco_hostname})
  add_definitions(-DHOSTNAME=${nco_hostname})
+endif()
+
+#//////////////////////////
+# OpenMP
+#//////////////////////////
+
+if(USE_OPENMP AND NOT MSVC)
+  find_package(OpenMP QUIET)
+  if(OPENMP_FOUND)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    message("-- Building with OpenMP support")
+  else()
+    message("-- Building without OpenMP support")
+  endif()
 endif()
 
 #//////////////////////////
