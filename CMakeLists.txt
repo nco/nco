@@ -33,6 +33,7 @@
 #-DEXPAT_LIBRARY:FILE=<some_file>
 #-DGSL_INCLUDE:PATH=<some_path>
 #-DGSL_LIBRARY:FILE=<some_file>
+#-DGSL_CBLAS_LIBRARY:FILE=<some_file>
 
 #logic for finding header files and library dependencies:
 #find_path
@@ -463,7 +464,7 @@ if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
   else()
     message("-- Found GSL library at: " ${GSL_LIBRARY})
   endif()
-  find_library(GSL_CBLAS_LIBRARY NAMES gslcblas)
+  find_library(GSL_CBLAS_LIBRARY NAMES gslcblas HINTS libgslcblas_d.lib)
   if(NOT GSL_CBLAS_LIBRARY)
     message("${color_magenta}-- GSL CBLAS library not found${color_reset}")
   else()
