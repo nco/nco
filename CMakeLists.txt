@@ -509,15 +509,20 @@ endif()
 #which does not set that variable by default.
 #//////////////////////////
 
-if(NOT MSVC)
 set(nco_user "$ENV{USER}")
-cmake_host_system_information(RESULT nco_hostname QUERY HOSTNAME)
-message("-- USER environment variable is set to: " ${nco_user})
-message("-- HOSTNAME is set to: " ${nco_hostname})
-add_definitions(-DUSER=${nco_user})
-add_definitions(-DHOSTNAME=${nco_hostname})
+if(NOT nco_user)
+ set(nco_user "$ENV{USERNAME}")
+endif()
+if(nco_user)
+ message("-- USER is set to: " ${nco_user})
+ add_definitions(-DUSER=${nco_user})
 endif()
 
+cmake_host_system_information(RESULT nco_hostname QUERY HOSTNAME)
+if(nco_hostname)
+ message("-- HOSTNAME is set to: " ${nco_hostname})
+ add_definitions(-DHOSTNAME=${nco_hostname})
+endif()
 
 #//////////////////////////
 # install target
