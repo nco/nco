@@ -12,6 +12,7 @@ cmake .. ^
 -DUDUNITS2_LIBRARY:FILE=I:\udunits2\build\lib\Debug\udunits2.lib ^
 -DEXPAT_LIBRARY:FILE=I:\expat\expat\win32\bin\Debug\libexpatMT.lib ^
 -DGSL_INCLUDE:PATH=I:\gsl-1.8\src ^
--DGSL_LIBRARY:FILE=I:\gsl-1.8\src\gsl\1.8\gsl-1.8\VC8\libgsl\Debug-StaticLib\libgsl_d.lib
+-DGSL_LIBRARY:FILE=I:\gsl-1.8\src\gsl\1.8\gsl-1.8\VC8\libgsl\Debug-StaticLib\libgsl_d.lib ^
+-DGSL_CBLAS_LIBRARY:FILE=I:\gsl-1.8\src\gsl\1.8\gsl-1.8\VC8\libgslcblas\Debug-StaticLib\libgslcblas_d.lib
 
 

@@ -504,13 +504,20 @@ endif()
 
 #//////////////////////////
 #USER, HOSTNASME
+#HOSTNAME is a variable that is set by some shells like bash only, 
+#but cmake for speed and consistency runs commands using the most basic unix shell (ie. sh), 
+#which does not set that variable by default.
 #//////////////////////////
 
 if(NOT MSVC)
 set(nco_user "$ENV{USER}")
-add_definitions(-DUSER=${nco_user})
+site_name(nco_hostname)
 message("-- USER environment variable is set to: " ${nco_user})
+message("-- HOSTNAME is set to: " ${nco_hostname})
+add_definitions(-DUSER=${nco_user})
+add_definitions(-DHOSTNAME=${nco_hostname})
 endif()
+
 
 #//////////////////////////
 # install target
