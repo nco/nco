@@ -457,7 +457,7 @@ if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
   else()
     message("-- Found GSL header files at: " ${GSL_INCLUDE_FOUND})
   endif()
-  find_library(GSL_LIBRARY NAMES gsl HINTS libgsl_d.lib gslcblas)
+  find_library(GSL_LIBRARY NAMES gsl HINTS libgsl_d.lib)
   if(NOT GSL_LIBRARY)
     message("${color_magenta}-- GSL library not found${color_reset}")
   else()
@@ -505,9 +505,11 @@ endif()
 #USER, HOSTNASME
 #//////////////////////////
 
+if(NOT MSVC)
 set(nco_user "$ENV{USER}")
 add_definitions(-DUSER=${nco_user})
 message("-- USER environment variable is set to: " ${nco_user})
+endif()
 
 #//////////////////////////
 # install target
