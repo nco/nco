@@ -1798,11 +1798,11 @@ if($USER eq 'zender'){
 # ncks -O ~/foo.nc ~/foo2.nc
 # ncap2 -v -O -s 'n2=global@_FillValue;' ~/foo2.nc ~/foo3.nc
 # ncks -C -H --trd -s '%d' -v n2 ~/foo3.nc
+    $dsc_sng="Create/copy global _FillValue";
     $tst_cmd[0]="ncatted -O $fl_fmt $nco_D_flg -a _FillValue,global,c,l,222 $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -v -O -s 'n2=global\@_FillValue;' %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[3]="ncks -C -H --trd -s '%d' -v n2 %tmp_fl_02%";
-    $dsc_sng="Create/copy of global _FillValue";
     $tst_cmd[4]="222";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -2884,7 +2884,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 #ncks #113 wrapped limit with an additional limit (with --msa) pvn20160211 -- bug found that happens in nco 4.2.0 also
 # ncks -O -C --msa -g g19 -v time -d time,9,0 -d time,1,2 ~/nco/data/in_grp_3.nc ~/foo.nc
-    $dsc_sng="(Groups) Test wrapped limit with additonal limit and msa user order (expect failure TODO nco1134)";
+    $dsc_sng="(Groups) Test wrapped limit with additional limit and msa user order (expect failure TODO nco1134)";
     $tst_cmd[0]="ncks -O $nco_D_flg -C --msa -g g19 -v time -d time,9,0 -d time,1,2 $in_pth_arg in_grp_3.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -H --trd %tmp_fl_00 | grep '=3'";
     $tst_cmd[2]="time[3]=3"; 

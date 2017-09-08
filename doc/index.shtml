@@ -903,7 +903,7 @@ The most up-to-date executables are probably those in the tarball below. Those u
 These native Windows executables should be stand-alone, i.e., not
 require users to have any additional software. 
 This is a new feature as of 20120615, please send us feedback. 
-To build NCO from source yourself using MSVC with CMake, please see /cmake/build.bat.
+To build NCO from source yourself using MSVC with CMake, please see nco/cmake/build.bat.
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
@@ -1203,8 +1203,8 @@ For Debian-based systems (like Ubuntu) (<tt>aptitude</tt> is similar to and inte
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
 <dt>sudo aptitude install libcurl4-gnutls-dev libexpat1-dev libxml2-dev # DAP-prereqs (curl, expat XML parser) </dt>
-<dt>sudo aptitude install bison flex gcc g++ # GNU toolchain</dt>
-<dt>sudo aptitude install gsl-bin libgsl0-dev # GSL</dt>
+<dt>sudo aptitude install bison cmake flex gcc g++ # GNU toolchain</dt>
+<dt>sudo aptitude install gsl-bin libgsl-dev # GSL</dt>
 <dt>sudo aptitude install libnetcdf11 libnetcdf-dev netcdf-bin # netCDF and DAP</dt>
 <dt>sudo aptitude install libhdf5-serial-dev # HDF5</dt>
 <dt>sudo aptitude install ncl-ncarg # ESMF_RegridWeightGen (for ncremap)</dt>
@@ -1221,7 +1221,7 @@ For RPM-based systems like Fedora and CentOS (substitute <tt>yum</tt> for <tt>dn
 <dt>sudo dnf install curl-devel libxml2-devel -y # DAP-prereqs</dt>
 <dt>sudo dnf install expat expat-devel -y # expat XML parser, a UDUnits-prereq (RHEL only?)</dt>
 <dt>sudo dnf install libdap libdap-devel -y # DAP</dt>
-<dt>sudo dnf install bison flex gcc gcc-c++ -y # GNU toolchain</dt>
+<dt>sudo dnf install bison cmake flex gcc gcc-c++ -y # GNU toolchain</dt>
 <dt>sudo dnf install ncl # ESMF_RegridWeightGen (for ncremap)</dt>
 <dt>sudo dnf install gsl gsl-devel -y # GSL</dt>
 <dt>sudo dnf install netcdf netcdf-devel -y # netCDF</dt>
@@ -1234,6 +1234,7 @@ For RPM-based systems like Fedora and CentOS (substitute <tt>yum</tt> for <tt>dn
 For Mac OS X with MacPorts:
 <tt>
 <dt>sudo port install antlr # Antlr</dt>
+<dt>sudo port install cmake # CMake</dt>
 <dt>sudo port install esmf # ESMF_RegridWeightGen (for ncremap)</dt>
 <dt>sudo port install libdap # DAP</dt>
 <dt>sudo port install gsl # GSL</dt>
@@ -1281,13 +1282,12 @@ Otherwise we will likely redirect you here.
 For more sophisticated build/install options, see the next section.
 <li>CMake build. To build with CMake, do:
 <tt>
-<dt>mkdir build</dt>
-<dt>cd build</dt>
+<dt>cd ~/nco/cmake</dt>
 <dt>cmake ..</dt>
 <dt>make</dt>
 </tt>
-The CMake script tries to find header and dependency libraries in standard locations.
-They can also be set manually with, e.g., 
+CMake tries to find header and dependency libraries in standard locations.
+Override these manually with, e.g., 
 <tt>
 <dt>cmake .. -DNETCDF_INCLUDE:PATH=/my/netcdf/include/path 
 -DNETCDF_LIBRARY=/my/netcdf/library/file 
