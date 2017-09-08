@@ -472,6 +472,14 @@ if (CURL_LIBRARY)
 endif()
 
 #//////////////////////////
+#USER, HOSTNASME
+#//////////////////////////
+
+set(nco_user "$ENV{USER}")
+add_definitions(-DUSER=${nco_user})
+message("-- USER environment variable is set to: " ${nco_user})
+
+#//////////////////////////
 # install target
 #//////////////////////////
 
