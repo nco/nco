@@ -511,7 +511,7 @@ endif()
 
 if(NOT MSVC)
 set(nco_user "$ENV{USER}")
-site_name(nco_hostname)
+cmake_host_system_information(RESULT nco_hostname QUERY HOSTNAME)
 message("-- USER environment variable is set to: " ${nco_user})
 message("-- HOSTNAME is set to: " ${nco_hostname})
 add_definitions(-DUSER=${nco_user})
