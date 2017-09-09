@@ -729,9 +729,11 @@ void
 nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 {
   /* Purpose: Print NCO configuration and help text */
+  const char bld_ngn[]=TKN2SNG(NCO_BUILDENGINE); // [sng] Build-engine
 
   (void)fprintf(stdout,"Homepage: http://nco.sf.net\n");
   (void)fprintf(stdout,"User Guide: http://nco.sf.net/nco.html\n");
+  (void)fprintf(stdout,"Build-engine: %s\n",bld_ngn);
   /* fxm: TKN2YESNO breaks when TKN is undefined
      Full macro language like M4 might be useful here, though probably too much trouble */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))

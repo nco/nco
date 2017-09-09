@@ -223,6 +223,10 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
 	ram_sz_ttl+=ram_sz_crr;
       } /* !var */
     } /* end idx_tbl */
+    char *smr_fl_sz_sng=NULL; /* [sng] File extended summary string */
+    smr_fl_sz_sng=(char *)nco_malloc(300L*sizeof(char)); /* [sng] File extended summary string */
+    if(nco_dbg_lvl_get() > nco_dbg_std) (void)sprintf(smr_fl_sz_sng,"RAM size of all data (not metadata) in file, accounting for subsets and hyperslabs, is %lu B",(unsigned long)ram_sz_ttl); else smr_fl_sz_sng[0]='\0';
+    if(smr_fl_sz_sng) smr_fl_sz_sng=(char *)nco_free(smr_fl_sz_sng);
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: %s reports expected total RAM size of all data (not metadata) in file, accounting for subsets and hyperslabs specified in this command, is %lu B ~ %lu kB, %lu kiB ~ %lu MB, %lu MiB ~ %lu GB, %lu GiB\n",nco_prg_nm_get(),fnc_nm,(unsigned long)ram_sz_ttl,(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_KB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_KiB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_MB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_MiB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_GB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_GiB));
   } /* !ncks */
     

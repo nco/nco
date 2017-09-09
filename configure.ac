@@ -82,6 +82,9 @@ if test -r doc/VERSION; then
     AC_SUBST(NCO_VERSION)
 fi
 
+# Set build-engine
+AC_DEFINE(NCO_BUILDENGINE,Autoconf,System used to build/install NCO)
+
 # Set egrep
 AC_PROG_EGREP
 
@@ -318,6 +321,8 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
     AC_DEFINE([ENABLE_OPENMP],[1],[Compile operators with OpenMP support])
     AC_MSG_NOTICE([OpenMP support enabled])
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
+    # Oddly, the linker needs the same OpenMP flags as the compiler (fxm: Only ncks should use this)
+    LDFLAGS="${LDFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP
 

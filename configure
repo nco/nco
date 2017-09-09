@@ -3009,6 +3009,11 @@ if test -r doc/VERSION; then
 
 fi
 
+# Set build-engine
+
+$as_echo "#define NCO_BUILDENGINE Autoconf" >>confdefs.h
+
+
 # Set egrep
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
 $as_echo_n "checking for grep that handles long lines and -e... " >&6; }
@@ -17902,6 +17907,8 @@ $as_echo "#define ENABLE_OPENMP 1" >>confdefs.h
     { $as_echo "$as_me:${as_lineno-$LINENO}: OpenMP support enabled" >&5
 $as_echo "$as_me: OpenMP support enabled" >&6;}
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
+    # Oddly, the linker needs the same OpenMP flags as the compiler (fxm: Only ncks should use this)
+    LDFLAGS="${LDFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP
 
