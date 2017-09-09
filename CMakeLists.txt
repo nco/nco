@@ -53,6 +53,9 @@ project (nco)
 #/////////////////////////////////////////////////////////////////////////////////////
 
 option(FIND_SZIP "Try to link with SZIP library" ON)
+if(APPLE)
+  set(FIND_SZIP OFF)
+endif()
 option(USE_OPENMP "Use OpenMP" ON)
 
 #/////////////////////////////////////////////////////////////////////////////////////
@@ -75,13 +78,6 @@ if(NOT WIN32)
   set(color_red     "${Esc}[31m")
 endif()
 
-
-#//////////////////////////
-# add non-standard locations to search for include and library files (e.g UDunits on Mac)
-#//////////////////////////
-
-set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/opt/local/include/")
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} "/opt/local/lib/")
 
 #//////////////////////////
 # detect system specific functions
@@ -285,7 +281,9 @@ set(LIB_DEP ${LIB_DEP} ${HDF5_HL_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${HDF5_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${CURL_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${ZLIB_LIBRARY})
-set(LIB_DEP ${LIB_DEP} ${SZIP_LIBRARY})
+if (FIND_SZIP)
+  set(LIB_DEP ${LIB_DEP} ${SZIP_LIBRARY})
+endif()
 
 #//////////////////////////
 #add definitions based on libraries found
