@@ -206,7 +206,12 @@ endif()
 
 #//////////////////////////
 # UDUNITS2 (and EXPAT)
+# Add non standard UDUNITS2 header paths (Mac ports, Linux Fedora)
 #//////////////////////////
+
+set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH})
+set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/opt/local/include/udunits2")
+set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/usr/include/udunits2")
 
 find_path(UDUNITS2_INCLUDE_FOUND udunits2.h HINTS ${UDUNITS2_INCLUDE})
 if(NOT UDUNITS2_INCLUDE_FOUND)
