@@ -1,14 +1,11 @@
 #CMake build, Pedro Vicente 
 
 #/////////////////////////////////////////////////////////////////////////////////////
-#command line options for library dependencies
-#/////////////////////////////////////////////////////////////////////////////////////
-
-#/////////////////////////////////////////////////////////////////////////////////////
 #parameter options
 #/////////////////////////////////////////////////////////////////////////////////////
 
 #-DFIND_SZIP:BOOL=<ON or OFF> try to locate SZIP library (default ON)
+#-DUSE_OPENMP:BOOL=<ON or OFF> use OpenMP (default ON)
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #mininum library dependencies: netCDF, HDF5, HDF5_HL, ZLIB (SZIP)
@@ -78,7 +75,6 @@ if(NOT WIN32)
   set(color_red     "${Esc}[31m")
 endif()
 
-
 #//////////////////////////
 # detect system specific functions
 #//////////////////////////
@@ -126,19 +122,6 @@ if (HAVE_REGEX_H AND HAVE_REGEXEC AND HAVE_REGCOMP AND HAVE_REGFREE)
   message("-- Enabling Regex functionality...")
   add_definitions(-DNCO_HAVE_REGEX_FUNCTIONALITY)
 endif()
-
-#//////////////////////////
-#preprocessor definitions
-#//////////////////////////
-
-if (MSVC)
-
-  #//////////////////////////
-  #visual studio defines math symbols in math.h, avoid duplicate definition
-  #//////////////////////////
-  
-  add_definitions(-D_MATH_DEFINES_DEFINED)
-endif(MSVC)
 
 #//////////////////////////
 #detect minimum dependencies
@@ -239,7 +222,9 @@ if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE_FOUND)
   endif()
 endif()
 
-
+#//////////////////////////
+#visual studio 
+#//////////////////////////
 
 if (MSVC)
   add_definitions( "/D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_DEPRECATE" )
@@ -258,6 +243,12 @@ if (MSVC)
   set(CMAKE_C_FLAGS_RELEASE        "/TP /MT /O2 /Ob2 /D NDEBUG")
   set(CMAKE_C_FLAGS_RELWITHDEBINFO "/TP /MT /Zi /O2 /Ob1 /D NDEBUG")
   set(WINSOCK_LIBRARY ws2_32.lib winmm.lib wldap32.lib)
+  
+  #//////////////////////////
+  #visual studio defines math symbols in math.h, avoid duplicate definition
+  #//////////////////////////
+
+  add_definitions(-D_MATH_DEFINES_DEFINED)
 
 else (MSVC)  
 
@@ -519,6 +510,12 @@ endif()
 if (CURL_LIBRARY)
   add_definitions(-DENABLE_DAP)
 endif()
+
+if (CMAKE_BUILD_TYPE MATCHES Debug)
+  add_definitions(-DENABLE_DEBUG_SYMBOLS)
+  message("-- Using debug symbols in build")
+endif()
+
 
 #//////////////////////////
 #USER, HOSTNAME, NCO_BUILDENGINE
