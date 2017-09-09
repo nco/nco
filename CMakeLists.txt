@@ -47,8 +47,22 @@
 
 cmake_minimum_required(VERSION 2.8)
 project (nco)
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#command line options
+#/////////////////////////////////////////////////////////////////////////////////////
+
 option(FIND_SZIP "Try to link with SZIP library" ON)
 option(USE_OPENMP "Use OpenMP" ON)
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#general C/C++ build flags
+#/////////////////////////////////////////////////////////////////////////////////////
+
+set(CMAKE_BUILD_TYPE Debug)
+set(BUILD_STATIC_LIBS ON)
+set(BUILD_SHARED_LIBS OFF)
+add_definitions(-DENABLE_STATIC)
 
 #//////////////////////////
 # colorized output
@@ -132,6 +146,10 @@ endif(MSVC)
 
 #//////////////////////////
 #detect minimum dependencies
+#find_library()
+#list a static name first to avoid link errors in systems with multiple versions of the same libraries in PATH
+#used for: 
+#ZLIB: libz.a
 #//////////////////////////
 
 find_path(NETCDF_INCLUDE_FOUND netcdf.h HINTS ${NETCDF_INCLUDE} "/usr/include")
@@ -162,7 +180,7 @@ else()
   message("-- Found hdf5 high level library at: " ${HDF5_HL_LIBRARY})
 endif()
 
-find_library(ZLIB_LIBRARY NAMES z)
+find_library(ZLIB_LIBRARY NAMES libz.a z)
 if(NOT ZLIB_LIBRARY)
   message(FATAL_ERROR "${color_red}zlib library not found${color_reset}")
 else()
@@ -495,10 +513,6 @@ endif()
 #additional informational definitions used by ncks -r
 #//////////////////////////
 
-set(BUILD_STATIC_LIBS ON)
-set(BUILD_SHARED_LIBS OFF)
-add_definitions(-DENABLE_STATIC)
-
 if (CURL_LIBRARY)
   add_definitions(-DENABLE_DAP)
 endif()
@@ -544,15 +558,41 @@ endif()
 # install target
 #//////////////////////////
 
-
-set(NCO_TARGETS ${NCO_TARGETS})
-set(NCO_TARGETS ${NCO_TARGETS} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
+set(nco_targets ${nco_targets})
+set(nco_targets ${nco_targets} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
 if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
-  set(NCO_TARGETS ${NCO_TARGETS} ncap2)
+  
+  #//////////////////////////
+  #make ncap2 build last 
+  #//////////////////////////
+  
+  add_dependencies(ncap2 ${nco_targets})
+  set(nco_targets ${nco_targets} ncap2)
 endif()
 
+message("-- Building ${nco_targets}")
+
 if (UNIX)
-  install(TARGETS ${NCO_TARGETS} RUNTIME DESTINATION bin)
+  install(TARGETS ${nco_targets} RUNTIME DESTINATION bin)
   install(FILES data/ncremap data/ncclimo DESTINATION bin)
-  message("-- Installing ${NCO_TARGETS};data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX}/bin)
+  message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX}/bin)
+endif()
+
+#//////////////////////////
+# ncea->ncra
+# nces->ncra
+# ncrcat->ncra
+# ncdiff->ncbo
+# ncunpack->ncpdq
+# the following cmake -E commands are available only on UNIX:
+# create_symlink <old> <new> 
+# create a symbolic link <new> naming <old>. 
+#//////////////////////////
+
+if (UNIX)
+  set(src ncra)
+  set(dest ncea)
+  add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION bin)
+  message("-- Installing ${dest} to: " ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
