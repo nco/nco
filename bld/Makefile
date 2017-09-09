@@ -146,7 +146,6 @@ MY_DAT_DIR := ../data
 MY_DBN_DIR := ../debian
 MY_DOC_DIR := ../doc
 MY_DPN_DIR := ${MY_OBJ_DIR}
-MY_QT_DIR := ../qt
 MY_SRC_DIR := ../src/nco
 MY_INC_DIR := ${MY_SRC_DIR}
 NCO_CXX_SRC_DIR := ${MY_SRC_DIR}/../nco_c++
@@ -211,6 +210,9 @@ endif # endif MPI
 ifndef MPI_FAKE # MPI
  MPI_FAKE := N
 endif # endif MPI_FAKE
+ifndef NCO_BUILDENGINE
+ NCO_BUILDENGINE := nco/bld/Makefile
+endif # NCO_BUILDENGINE
 ifndef NCO_VRS
 # Used for RPM building
  NCO_VRS := $(shell cat ${MY_DOC_DIR}/VERSION)
@@ -286,7 +288,7 @@ endif # endif ZNETCDF
 # These tokens should not be altered by hand
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
-CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DNCO_VERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
+CPP_TKN = ${USR_TKN} -DNCO_BUILDENGINE=${NCO_BUILDENGINE} -D${PVM_ARCH} -DNO_NETCDF_2 -DNCO_VERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
 ifndef LFLAGS # Flags for Flex (Lex)
  LFLAGS := -P${NCO_YY_PFX}
 endif
@@ -553,7 +555,7 @@ MDL_DAT_STB := $(addsuffix .nc,${MDL_DAT_STB}) # `make data' creates these files
 MDL_DAT := $(addprefix ${MY_DAT_DIR}/,${MDL_DAT_STB}) # `make distclean' removes these files
 
 # Variables having to do with NCO documentation
-MDL_DOC_SRC := $(addprefix ../,acinclude.m4 configure.ac configure.eg Makefile.am) $(addprefix ${MY_DOC_DIR}/,nco.texi ANNOUNCE MANIFEST NEWS README TODO VERSION beta.txt debian.txt dods.sh index.shtml xmp_cesm.html man_end.txt man_srt.txt ncap.txt nco_news.shtml nco_src_frg.txt opendap.sh) $(addprefix ${MY_DBN_DIR}/,changelog compat control copyright files info rules doc-base) # `make tags' includes these files
+MDL_DOC_SRC := $(addprefix ../,acinclude.m4 CMakeLists.txt configure.ac configure.eg Makefile.am) $(addprefix ${MY_DOC_DIR}/,nco.texi ANNOUNCE MANIFEST NEWS README TODO VERSION beta.txt debian.txt dods.sh index.shtml xmp_cesm.html man_end.txt man_srt.txt ncap.txt nco_news.shtml nco_src_frg.txt opendap.sh) $(addprefix ${MY_DBN_DIR}/,changelog compat control copyright files info rules doc-base) # `make tags' includes these files
 MDL_DOC_TRG := nco.dvi nco.html nco.info nco.pdf nco.ps nco.txt nco.xml # `make doc' creates these files
 MDL_DOC := $(addprefix ${MY_DOC_DIR}/,${MDL_DOC_TRG}) # `make distclean' removes these files
 
@@ -570,9 +572,6 @@ MDL_BLD_SRC += $(addprefix ${MY_DAT_DIR}/,Makefile.am) $(addprefix ${MY_SRC_DIR}
 TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc ../bld/lex.${NCO_YY_PFX}.c
 # TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
 
-# Variables having to do with Qt build system
-MDL_QT_SRC := $(addprefix ${MY_QT_DIR}/,nco.pro libnco/libnco.pro ncatted/ncatted.pro ncbo/ncbo.pro ncecat/ncecat.pro ncflint/ncflint.pro ncks/ncks.pro ncpdq/ncpdq.pro ncra/ncra.pro ncrename/ncrename.pro ncwa/ncwa.pro tst_nco_c++/tst_nco_c++.pro) # `make tags' includes these files
-
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
 MDL_NCAP_TRG := ncap_yacc.c ncap_yacc.h ncap_lex.c # `make ncap' creates these files
@@ -582,7 +581,7 @@ MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,${MDL_NCAP_TRG}) # `make distclean' remov
 # fxm: auto-generate source code components of C++ lists
 MDL_CXX_SRC := $(addprefix ${NCOXX_SRC_DIR}/,libnco++.hh Makefile.am Makefile.old ncap2.cc ncap2.hh ncap2_utl.cc NcapVar.cc NcapVar.hh NcapVarVector.cc NcapVarVector.hh NcapVector.hh ncoGrammer.g nco_antlr_pst_prc.pl fmc_cls.cc fmc_cls.hh fmc_all_cls.cc fmc_all_cls.hh fmc_gsl_cls.cc fmc_gsl_cls.hh Invoke.cc Invoke.hh map_srt_tmp.hh nco_gsl.c nco_gsl.h prs_cls.cc prs_cls.hh sdo_utl.cc sdo_utl.hh sym_cls.cc sym_cls.hh VarOp.hh vtl_cls.hh) $(addprefix ${NCO_CXX_SRC_DIR}/,INSTALL libnco_c++.hh Makefile.am Makefile.old nco_att.cc nco_att.hh nco_dmn.cc nco_dmn.hh nco_fl.cc nco_fl.hh nco_hgh.cc nco_hgh.hh nco_utl.cc nco_utl.hh nco_var.cc nco_var.hh README TODO tst.cc) # `make tags' includes these files
 
-TAGS_FILES := ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
+TAGS_FILES := ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC}
 
 # Redefine default C and C++ pattern rules
 ${MY_OBJ_DIR}/%.o : %.c
@@ -2118,7 +2117,7 @@ dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_DAT_DIR}; rm -f buggy.nc cmip5.nc dsm.nc obs.nc hdf.hdf mdl_1.nc mdl_2.nc mdl_3.nc in.nc in_4c.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_grp_8.nc in_rec_zero.nc *~
 tags: 
 	etags ${TAGS_FILES}
-#	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_QT_SRC}
+#	etags ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC}
 
 # Reset internal YACC and LEX patterns
 %.c : %.y

@@ -3009,6 +3009,11 @@ if test -r doc/VERSION; then
 
 fi
 
+# Set build-engine
+
+$as_echo "#define NCO_BUILDENGINE Autoconf" >>confdefs.h
+
+
 # Set egrep
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for grep that handles long lines and -e" >&5
 $as_echo_n "checking for grep that handles long lines and -e... " >&6; }

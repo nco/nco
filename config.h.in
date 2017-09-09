@@ -421,6 +421,9 @@
 /* Building TeXInfo documentation requires version greater than 4.8 */
 #undef MAKEINFO_VERSION
 
+/* System used to build/install NCO */
+#undef NCO_BUILDENGINE
+
 /* GSL major version number */
 #undef NCO_GSL_MAJOR_VERSION
 

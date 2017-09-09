@@ -516,7 +516,7 @@ if (CURL_LIBRARY)
 endif()
 
 #//////////////////////////
-#USER, HOSTNASME
+#USER, HOSTNAME, NCO_BUILDENGINE
 #HOSTNAME is a variable that is set by some shells like bash only, 
 #but cmake for speed and consistency runs commands using the most basic unix shell (ie. sh), 
 #which does not set that variable by default.
@@ -535,6 +535,12 @@ cmake_host_system_information(RESULT nco_hostname QUERY HOSTNAME)
 if(nco_hostname)
  message("-- HOSTNAME is set to: " ${nco_hostname})
  add_definitions(-DHOSTNAME=${nco_hostname})
+endif()
+
+set(NCO_BUILDENGINE "CMake")
+if(NCO_BUILDENGINE)
+ message("-- NCO_BUILDENGINE is set to: " ${NCO_BUILDENGINE})
+ add_definitions(-DNCO_BUILDENGINE=${NCO_BUILDENGINE})
 endif()
 
 #//////////////////////////

@@ -82,6 +82,9 @@ if test -r doc/VERSION; then
     AC_SUBST(NCO_VERSION)
 fi
 
+# Set build-engine
+AC_DEFINE(NCO_BUILDENGINE,Autoconf,System used to build/install NCO)
+
 # Set egrep
 AC_PROG_EGREP
 
