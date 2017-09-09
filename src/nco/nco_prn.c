@@ -1481,7 +1481,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
 
   if(prn_flg->cdl){
     nm_cdl=nm2sng_cdl(var_trv->nm);
-    (void)fprintf(stdout,"%*s%s %s%s ;\n",prn_ndn,spc_sng,cdl_typ_nm(var_typ),nm_cdl,dmn_sng);
+    (void)fprintf(stdout,"%*s%s %s%s ;",prn_ndn,spc_sng,cdl_typ_nm(var_typ),nm_cdl,dmn_sng);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout," // RAM size = %s = %li*%lu = %lu bytes\n",sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)ram_sz_crr); else (void)fprintf(stdout,"\n");
     nm_cdl=(char *)nco_free(nm_cdl);
   } /* !cdl */
   if(prn_flg->xml){
