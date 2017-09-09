@@ -1,3 +1,11 @@
+2017-09-09  Charlie Zender  <zender@uci.edu>
+
+	* clang builds on Linux do not build ncap2 because NCO_GSL_VERSION not defined
+
+	* Add ncks --bld, --build_engine to print NCO_BUILDENGINE
+
+	* Define NCO_BUILDENGINE for all three build types
+
 2017-09-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.9-alpha03 release procedure:
