@@ -442,9 +442,9 @@ else()
 endif()
 
 if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
-  message("-- Building ncpa2, netCDF Arithmetic Processor")
+  message("-- Building ncap2, netCDF Arithmetic Processor")
 else()
-  message("${color_magenta}-- Disabling ncpa2, netCDF Arithmetic Processor${color_reset}")
+  message("${color_magenta}-- Disabling ncap2, netCDF Arithmetic Processor${color_reset}")
 endif()
 
 set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/Invoke.cc)
