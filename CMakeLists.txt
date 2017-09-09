@@ -554,10 +554,15 @@ endif()
 # install target
 #//////////////////////////
 
-
 set(nco_targets ${nco_targets})
 set(nco_targets ${nco_targets} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
 if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+  
+  #//////////////////////////
+  #make ncap2 build last 
+  #//////////////////////////
+  
+  add_dependencies(ncap2 ${nco_targets})
   set(nco_targets ${nco_targets} ncap2)
 endif()
 
