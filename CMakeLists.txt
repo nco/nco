@@ -545,14 +545,35 @@ endif()
 #//////////////////////////
 
 
-set(NCO_TARGETS ${NCO_TARGETS})
-set(NCO_TARGETS ${NCO_TARGETS} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
+set(nco_targets ${nco_targets})
+set(nco_targets ${nco_targets} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
 if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
-  set(NCO_TARGETS ${NCO_TARGETS} ncap2)
+  set(nco_targets ${nco_targets} ncap2)
 endif()
 
+message("-- Building ${nco_targets}")
+
 if (UNIX)
-  install(TARGETS ${NCO_TARGETS} RUNTIME DESTINATION bin)
+  install(TARGETS ${nco_targets} RUNTIME DESTINATION bin)
   install(FILES data/ncremap data/ncclimo DESTINATION bin)
-  message("-- Installing ${NCO_TARGETS};data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX}/bin)
+  message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX}/bin)
+endif()
+
+#//////////////////////////
+# ncea->ncra
+# nces->ncra
+# ncrcat->ncra
+# ncdiff->ncbo
+# ncunpack->ncpdq
+# the following cmake -E commands are available only on UNIX:
+# create_symlink <old> <new> 
+# create a symbolic link <new> naming <old>. 
+#//////////////////////////
+
+if (UNIX)
+  set(src ncra)
+  set(dest ncea)
+  add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION bin)
+  message("-- Installing ${dest} to: " ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
