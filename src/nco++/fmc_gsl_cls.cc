@@ -3299,18 +3299,15 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
      (void)cast_nctype_void((nc_type)NC_UINT64,&(var[2]->val));
      var[2]=nco_var_free(var[2]);   
    }else{
-     sz=1+ (var[0]->sz-1)/d_srd;
+     sz=1L+(var[0]->sz-1)/d_srd;
    }
    
    // Check hyperslab limits
-   if( 1+ (sz-1)*d_srd >var[0]->sz){
-     err_prn(sfnm,"Requested hyperslab with stride="+nbr2sng(d_srd)+" and n="+ nbr2sng(sz)+" doesn't fit into variable \""+string(var[0]->nm)+"\" with size="+nbr2sng(var[0]->sz)); 
+   if(1L+(sz-1)*d_srd > var[0]->sz){
+     err_prn(sfnm,"Requested hyperslab with stride="+nbr2sng(d_srd)+" and n="+ nbr2sng(sz)+" does not fit into variable \""+string(var[0]->nm)+"\" with size="+nbr2sng(var[0]->sz)); 
     }
-
-
   
    switch(fdx){
-
     
    case PS_MAX_IDX:{
      nco_int r_val; 
