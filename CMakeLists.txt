@@ -146,6 +146,10 @@ endif(MSVC)
 
 #//////////////////////////
 #detect minimum dependencies
+#find_library()
+#list a static name first to avoid link errors in systems with multiple versions of the same libraries in PATH
+#used for: 
+#ZLIB: libz.a
 #//////////////////////////
 
 find_path(NETCDF_INCLUDE_FOUND netcdf.h HINTS ${NETCDF_INCLUDE} "/usr/include")
@@ -176,7 +180,7 @@ else()
   message("-- Found hdf5 high level library at: " ${HDF5_HL_LIBRARY})
 endif()
 
-find_library(ZLIB_LIBRARY NAMES z)
+find_library(ZLIB_LIBRARY NAMES libz.a z)
 if(NOT ZLIB_LIBRARY)
   message(FATAL_ERROR "${color_red}zlib library not found${color_reset}")
 else()
