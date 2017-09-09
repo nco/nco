@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.6.9-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 29 August 2017
-@set update-month August 2017
+@set update-date 9 September 2017
+@set update-month September 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -10576,11 +10576,11 @@ of higher precision.
 @item Aggressive, aka C Convention
 The @w{C language} is by default much more aggressive (and thus
 wasteful) than Fortran, and will always implicitly convert single- 
-to double-precision numbers for no good reason.
+to double-precision numbers, even when there is no good reason.
 All real-number standard @w{C library} functions are double-precision, 
 and @w{C programmers} must take extra steps to only utilize single
 precision arithmetic.
-The high level interpreted data analysis languages @acronym{IDL},
+The high-level interpreted data analysis languages @acronym{IDL},
 Matlab, and @acronym{NCL} all adopt the @w{C Convention}.
 @end enumerate
 

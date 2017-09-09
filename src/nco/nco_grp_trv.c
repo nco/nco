@@ -186,8 +186,6 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   int var_ntm_lcl; /* [nbr] Number of non-atomic variables in file */
   int var_tmc_lcl; /* [nbr] Number of atomic-type variables in file */
 
-  size_t ram_sz_crr;
-  size_t ram_sz_ttl=0L;
   size_t dmn_sz[NC_MAX_DIMS]; /* [nbr] Dimension sizes */
   
   /* Initialize */
@@ -199,36 +197,6 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   grp_nbr_lcl=0;
   var_ntm_lcl=0;
   var_tmc_lcl=0;
-
-  if(nco_prg_id_get() == ncks && nco_dbg_lvl_get() >= nco_dbg_std){
-    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-      trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
-      if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
-	ram_sz_crr=1L;
-	for(unsigned int dmn_idx=0;dmn_idx<(unsigned int)var_trv.nbr_dmn;dmn_idx++){
-	  if(var_trv.var_dmn[dmn_idx].is_crd_var){
-	    /* Get coordinate from table */
-	    crd_sct *crd=var_trv.var_dmn[dmn_idx].crd;
-	    /* Use hyperslabbed size */
-	    dmn_sz[dmn_idx]=crd->lmt_msa.dmn_cnt;
-	  }else{
-	    /* Get unique dimension */
-	    dmn_trv_sct *dmn_trv=var_trv.var_dmn[dmn_idx].ncd;
-	    /* Use hyperslabbed size */
-	    dmn_sz[dmn_idx]=dmn_trv->lmt_msa.dmn_cnt;
-	  } /* !is_crd_var */
-	  ram_sz_crr*=dmn_sz[dmn_idx];
-	} /* !dmn */
-	ram_sz_crr*=nco_typ_lng(var_trv.var_typ);
-	ram_sz_ttl+=ram_sz_crr;
-      } /* !var */
-    } /* end idx_tbl */
-    char *smr_fl_sz_sng=NULL; /* [sng] File extended summary string */
-    smr_fl_sz_sng=(char *)nco_malloc(300L*sizeof(char)); /* [sng] File extended summary string */
-    if(nco_dbg_lvl_get() > nco_dbg_std) (void)sprintf(smr_fl_sz_sng,"RAM size of all data (not metadata) in file, accounting for subsets and hyperslabs, is %lu B",(unsigned long)ram_sz_ttl); else smr_fl_sz_sng[0]='\0';
-    if(smr_fl_sz_sng) smr_fl_sz_sng=(char *)nco_free(smr_fl_sz_sng);
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: %s reports expected total RAM size of all data (not metadata) in file, accounting for subsets and hyperslabs specified in this command, is %lu B ~ %lu kB, %lu kiB ~ %lu MB, %lu MiB ~ %lu GB, %lu GiB\n",nco_prg_nm_get(),fnc_nm,(unsigned long)ram_sz_ttl,(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_KB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_KiB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_MB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_MiB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_GB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_GiB));
-  } /* !ncks */
     
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
