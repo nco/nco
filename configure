@@ -657,6 +657,7 @@ HAVE_ANTLR
 ANTLR_ROOT
 NCO_NEED_GETOPT_LONG_FALSE
 NCO_NEED_GETOPT_LONG_TRUE
+OPENMP_LDFLAGS
 OPENMP_CFLAGS
 NETCDF_ROOT
 NETCDF_LIB
@@ -17897,11 +17898,13 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
 
 
 
+
 $as_echo "#define ENABLE_OPENMP 1" >>confdefs.h
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: OpenMP support enabled" >&5
 $as_echo "$as_me: OpenMP support enabled" >&6;}
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
+    LDFLAGS="${LDFLAGS} ${OPENMP_LDFLAGS}"
 fi
 # End OpenMP
 
@@ -23636,6 +23639,7 @@ echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
 echo "NETCDF_ROOT.......... ${NETCDF_ROOT}"
 echo "OPENMP_CFLAGS........ ${OPENMP_CFLAGS}"
+echo "OPENMP_LDFLAGS....... ${OPENMP_LDFLAGS}"
 echo "host................. ${host}"
 echo "install prefix ...... ${prefix}"
 # Inform users of the very useful configure.eg

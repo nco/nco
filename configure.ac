@@ -315,9 +315,11 @@ AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [[d
 if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
     AC_OPENMP
     AC_SUBST(OPENMP_CFLAGS)
+    AC_SUBST(OPENMP_LDFLAGS)
     AC_DEFINE([ENABLE_OPENMP],[1],[Compile operators with OpenMP support])
     AC_MSG_NOTICE([OpenMP support enabled])
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
+    LDFLAGS="${LDFLAGS} ${OPENMP_LDFLAGS}"
 fi
 # End OpenMP
 
@@ -1290,6 +1292,7 @@ echo "LDFLAGS.............. ${LDFLAGS}"
 echo "LIBS................. ${LIBS}"
 echo "NETCDF_ROOT.......... ${NETCDF_ROOT}"
 echo "OPENMP_CFLAGS........ ${OPENMP_CFLAGS}"
+echo "OPENMP_LDFLAGS....... ${OPENMP_LDFLAGS}"
 echo "host................. ${host}"
 echo "install prefix ...... ${prefix}"
 # Inform users of the very useful configure.eg
