@@ -78,7 +78,7 @@ nco_md5_chk /* [fnc] Perform and optionally compare MD5 digest(s) on hyperslab *
 
   /* MD5 digest of hyperslab already in RAM */
   (void)nco_md5_chk_ram(var_sz_byt,vp,md5_dgs_hxd_sng_ram);
-  if(nco_prg_id == ncks && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO sizeof(%s MD5 buffer) = %ld B\n",nco_prg_nm_get(),var_nm,var_sz_byt);
+  if(nco_prg_id == ncks && nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO sizeof(%s MD5 buffer) = %ld B\n",nco_prg_nm_get(),var_nm,var_sz_byt);
   if((nco_prg_id == ncks && nco_dbg_lvl_get() >= nco_dbg_std) ||
      ((nco_prg_id == ncecat || nco_prg_id == ncrcat) && nco_dbg_lvl_get() >= nco_dbg_var) ||
      False)
