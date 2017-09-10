@@ -1,5 +1,7 @@
 2017-09-09  Charlie Zender  <zender@uci.edu>
 
+	* Change custom build to use simple VERSION string
+
 	* Fix Custom build on MacOSX by modifying ARFLAGS
 
 	* Distinguish MD5 output with different debugging levels

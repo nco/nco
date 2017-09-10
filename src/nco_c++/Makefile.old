@@ -184,7 +184,10 @@ ifndef USR_TKN
  USR_TKN := -DABORT_ON_ERROR
 endif # endif USR_TKN
 ifndef VRS_SNG
- VRS_SNG := $(shell date +%Y%m%d)
+# VRS_SNG := $(shell date +%Y%m%d)
+# 20150622
+# VRS_SNG := $(shell git describe --abbrev=7 --dirty --always --tags)
+ VRS_SNG := $(shell cat ${MY_DOC_DIR}/VERSION)
 endif # endif VRS_SNG
 
 # Derived-tokens based on primary tokens
