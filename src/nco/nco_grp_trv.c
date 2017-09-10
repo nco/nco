@@ -175,7 +175,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   /* [fnc] Find and return global file summaries like # of dimensions, variables, attributes */
-  const char fnc_nm[]="trv_tbl_inq()"; /* [sng] Function name  */
+  //const char fnc_nm[]="trv_tbl_inq()"; /* [sng] Function name  */
 
   int att_glb_lcl; /* [nbr] Number of global attributes in file */
   int att_grp_lcl; /* [nbr] Number of group attributes in file */
@@ -186,8 +186,6 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   int var_ntm_lcl; /* [nbr] Number of non-atomic variables in file */
   int var_tmc_lcl; /* [nbr] Number of atomic-type variables in file */
 
-  size_t dmn_sz[NC_MAX_DIMS]; /* [nbr] Dimension sizes */
-  
   /* Initialize */
   att_glb_lcl=0;
   att_grp_lcl=0;

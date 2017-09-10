@@ -30,7 +30,7 @@
 # 64-bit ABI netCDF3 on NCAR AIX systems (bluefire):
 # cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' NETCDF_LIB='/usr/local/lib64/r4i4' UDUNITS_INC='/contrib/udunits-1.12.9/include' UDUNITS_LIB='/contrib/udunits-1.12.9/lib' make -f Makefile.old --jobs=1 ABI=64 OPTS=D NETCDF4=N UDUNITS=N all;cd -
 # 64-bit ABI netCDF4 on NCAR AIX systems (bluefire):
-# cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' CURL_LIB='/contrib/curl/7.21.2/lib' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' GSL_MAJOR_VERSION='1' GSL_MINOR_VERSION='12' HDF5_ROOT='/contrib/hdf5-1.8.7_seq' LDFLAGS='-lnetcdf -lhdf5_hl -lhdf5 -lz' NETCDF_ROOT='/contrib/netcdf/4.1.3_seq' SZ_LIB='/contrib/szip/lib' UDUNITS_LIB='/contrib/zlib/lib' make -f Makefile.old --jobs=1 ABI=64 OPTS=D SZ=Y all;cd -
+# cd ${HOME}/nco/src/nco++;ANTLR='/contrib/antlr-2.7.7/bin/antlr' ANTLR_ROOT='/contrib/antlr-2.7.7' CURL_LIB='/contrib/curl/7.21.2/lib' GSL_INC='/contrib/gsl-1.12/include' GSL_LIB='/contrib/gsl-1.12/lib' GSL_MAJOR_VERSION='1' GSL_MINOR_VERSION='12' GSL_PATCH_VERSION='0' HDF5_ROOT='/contrib/hdf5-1.8.7_seq' LDFLAGS='-lnetcdf -lhdf5_hl -lhdf5 -lz' NETCDF_ROOT='/contrib/netcdf/4.1.3_seq' SZ_LIB='/contrib/szip/lib' UDUNITS_LIB='/contrib/zlib/lib' make -f Makefile.old --jobs=1 ABI=64 OPTS=D SZ=Y all;cd -
 # 
 # Cygwin on Windows Vista systems:
 # cd ~/nco/src/nco++;ANTLR='antlr' make -f Makefile.old GSL=Y OPTS=D NETCDF4=Y UDUNITS=Y all;cd -
@@ -352,7 +352,10 @@ ifndef GSL_MINOR_VERSION
    GSL_MINOR_VERSION := 4
    GSL_PATCH_VERSION := 0
   endif # end if GSL_MINOR_VERSION
- endif # endif GSL_MINOR_VERSION
+ endif # endif GSL_PATCH_VERSION
+ ifndef GSL_PATCH_VERSION
+   GSL_PATCH_VERSION := 0
+ endif # endif GSL_PATCH_VERSION
 endif # end if GSL
 
 ifeq (${SZ},Y)
@@ -1450,8 +1453,9 @@ dbg:
 	@printf "FL_FMT = ${FL_FMT}\n"
 	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "GSL = $(GSL)\n"
-	@printf "GSL_MINOR_VERSION = $(GSL_MINOR_VERSION)\n"
 	@printf "GSL_MAJOR_VERSION = $(GSL_MAJOR_VERSION)\n"
+	@printf "GSL_MINOR_VERSION = $(GSL_MINOR_VERSION)\n"
+	@printf "GSL_PATCH_VERSION = $(GSL_PATCH_VERSION)\n"
 	@printf "HOST = ${HOST}\n"
 	@printf "HOSTNAME = ${HOSTNAME}\n"
 	@printf "ICC_RCH_ARG = ${ICC_RCH_ARG}\n"
