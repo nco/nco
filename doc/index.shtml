@@ -1230,6 +1230,7 @@ For RPM-based systems like Fedora and CentOS (substitute <tt>yum</tt> for <tt>dn
 <dt>sudo dnf install ncl # ESMF_RegridWeightGen (for ncremap)</dt>
 <dt>sudo dnf install gsl gsl-devel -y # GSL</dt>
 <dt>sudo dnf install netcdf netcdf-devel -y # netCDF</dt>
+<dt>sudo dnf install zlib-devel -y # zlib</dt>
 <dt>sudo dnf install librx librx-devel -y # RX</dt>
 <dt>sudo dnf install udunits2 udunits2-devel -y # UDUnits</dt>
 </tt>
