@@ -1,5 +1,11 @@
 2017-09-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.9-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.9-alpha04 final changes';git push
+	git tag -a 4.6.9-alpha04 -m 'CMake hardening;Fix Traditional bld/Makefile';git push --tags
+
+	* Try and fail to get Travis clang build to succeed, need better build matrix...
+
 	* Change custom build to use simple VERSION string
 
 	* Fix Custom build on MacOSX by modifying ARFLAGS
