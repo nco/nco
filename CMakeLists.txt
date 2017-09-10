@@ -4,6 +4,7 @@
 #parameter options
 #/////////////////////////////////////////////////////////////////////////////////////
 
+#-DFIND_ZLIB:BOOL=<ON or OFF> try to locate ZLIB library (default ON)
 #-DFIND_SZIP:BOOL=<ON or OFF> try to locate SZIP library (default ON)
 #-DUSE_OPENMP:BOOL=<ON or OFF> use OpenMP (default ON)
 
@@ -49,6 +50,7 @@ project (nco)
 #command line options
 #/////////////////////////////////////////////////////////////////////////////////////
 
+option(FIND_ZLIB "Try to link with ZLIB library" ON)
 option(FIND_SZIP "Try to link with SZIP library" ON)
 if(APPLE)
   set(FIND_SZIP OFF)
@@ -159,15 +161,18 @@ else()
   message("-- Found hdf5 high level library at: " ${HDF5_HL_LIBRARY})
 endif()
 
-find_library(ZLIB_LIBRARY NAMES libz.a z)
-if(NOT ZLIB_LIBRARY)
-  message(FATAL_ERROR "${color_red}zlib library not found${color_reset}")
-else()
-  message("-- Found zlib library at: " ${ZLIB_LIBRARY})
+if (FIND_ZLIB)
+  message("-- Trying to find the ZLIB library...")
+  find_library(ZLIB_LIBRARY NAMES libz.a z)
+  if(NOT ZLIB_LIBRARY)
+    message(FATAL_ERROR "${color_red}zlib library not found${color_reset}")
+  else()
+    message("-- Found zlib library at: " ${ZLIB_LIBRARY})
+  endif()
 endif()
 
 if (FIND_SZIP)
-  message("-- Trying to find SZIP library...")
+  message("-- Trying to find the SZIP library...")
   find_library(SZIP_LIBRARY NAMES sz)
   if(NOT SZIP_LIBRARY)
     message(FATAL_ERROR "${color_red}szip library not found${color_reset}")
@@ -276,7 +281,9 @@ set(LIB_DEP ${LIB_DEP} ${NETCDF_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${HDF5_HL_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${HDF5_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${CURL_LIBRARY})
-set(LIB_DEP ${LIB_DEP} ${ZLIB_LIBRARY})
+if (FIND_ZLIB)
+  set(LIB_DEP ${LIB_DEP} ${ZLIB_LIBRARY})
+endif()
 if (FIND_SZIP)
   set(LIB_DEP ${LIB_DEP} ${SZIP_LIBRARY})
 endif()
