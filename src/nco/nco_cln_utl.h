@@ -13,13 +13,9 @@
 #ifndef NCO_CLN_UTL_H
 #define NCO_CLN_UTL_H
 
-
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
-
-// #include "../../config.h" /* Autotools tokens */
-// #define ENABLE_UDUNITS
 
 /* Standard header files */
 #include <ctype.h> /* isalnum(), isdigit(), tolower() */
@@ -49,8 +45,6 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_sng_utl.h" /* String utilities */
-
-
 
 #ifdef __cplusplus
 extern "C" {

@@ -93,6 +93,46 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
 
   return rcd; /* [rcd] Return code */
 } /* end nco_create_mode_prs() */
+void
+nco_fl_sz_est /* [fnc] Estimate RAM size == uncompressed file size */
+(char *smr_fl_sz_sng, /* I/O [sng] String describing estimated file size */
+ const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
+{
+  /* Purpose: Estimate RAM size == uncompressed file size */
+  const char fnc_nm[]="nco_fl_sz_est()"; /* [sng] Function name  */
+
+  size_t ram_sz_crr;
+  size_t ram_sz_ttl=0L;
+  size_t dmn_sz[NC_MAX_DIMS]; /* [nbr] Dimension sizes */
+  
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
+    if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var){
+      ram_sz_crr=1L;
+      for(unsigned int dmn_idx=0;dmn_idx<(unsigned int)var_trv.nbr_dmn;dmn_idx++){
+	if(var_trv.var_dmn[dmn_idx].is_crd_var){
+	  /* Get coordinate from table */
+	  crd_sct *crd=var_trv.var_dmn[dmn_idx].crd;
+	  /* Use hyperslabbed size */
+	  dmn_sz[dmn_idx]=crd->lmt_msa.dmn_cnt;
+	}else{
+	  /* Get unique dimension */
+	  dmn_trv_sct *dmn_trv=var_trv.var_dmn[dmn_idx].ncd;
+	  /* Use hyperslabbed size */
+	  dmn_sz[dmn_idx]=dmn_trv->lmt_msa.dmn_cnt;
+	} /* !is_crd_var */
+	ram_sz_crr*=dmn_sz[dmn_idx];
+      } /* !dmn */
+      ram_sz_crr*=nco_typ_lng(var_trv.var_typ);
+      ram_sz_ttl+=ram_sz_crr;
+    } /* !var */
+  } /* end idx_tbl */
+
+  (void)sprintf(smr_fl_sz_sng,"Size expected in RAM or uncompressed storage of all data (not metadata), accounting for subsets and hyperslabs, is %lu B ~ %lu kB, %lu kiB ~ %lu MB, %lu MiB ~ %lu GB, %lu GiB",(unsigned long)ram_sz_ttl,(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_KB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_KiB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_MB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_MiB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_GB),(unsigned long)round(1.0*ram_sz_ttl/NCO_BYT_PER_GiB));
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: %s reports %s\n",nco_prg_nm_get(),fnc_nm,smr_fl_sz_sng);
+
+  return;
+} /* end nco_fl_sz_est() */
 
 void
 nco_fl_cmp_err_chk(void) /* [fnc] Perform error checking on file */

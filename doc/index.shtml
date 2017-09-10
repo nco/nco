@@ -630,14 +630,19 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.6.8 http://github.com/nco/nco.git nco-4.6.8</tt></a>.
 <ul>
-<li><b>NCO 4.7.1</b>: (<i>Future</i>)
+<li><b>NCO 4.7.1</b>: (<i>Distant Future</i>)
 Chunking bytes not elements;
 extensive hashing?;
 netCDF4 compound types?;</li>
-<li><b>NCO 4.6.9</b>: (<i>In Progress, features in-progress or complete include</i>) 
-Complete CDF5 support, autoconversion;
-<tt>ncclimo -v</tt> fully supports regular expressions;
+<li><b>NCO 4.7.0</b>: (<i>Future</i>)
+<tt>ncclimo -v</tt> can better support regular expressions;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
+<li><b>NCO 4.6.9</b>: (<i>In Progress, features in-progress or complete include</i>) 
+CMake build is mature;
+Complete CDF5 support, including autoconversion;
+<tt>ncks</tt> estimates correct filesizes;
+<tt>ncks</tt> CDL prints variable RAM size;
+<tt>ncks</tt> prints CDL by default;</li>
 <li><b>NCO 4.6.8</b>: (<i>Current Stable Release</i>)
 <tt>ncap2</tt> full chunking options;
 <tt>ncclimo --seasons</tt> custom season support;
@@ -815,7 +820,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 cross-platform Python environment that utilizes the <tt>conda</tt> package manager.
 Up-to-date versions of NCO for Linux and MacOS are maintained at <a href="https://github.com/conda-forge/nco-feedstock">conda-forge</a>.
 Install NCO in your Anaconda framework with one command &lsquo;<tt>conda install -c conda-forge nco</tt>&rsquo;.
-Or, alternatively, permanently add conda-forge (which has numerous
+Or, alternatively, permanently add conda-forge (which teems with
 goodies besides NCO) to your automatically-searched channels with
 &lsquo;<tt>conda config --add channels --conda-forge</tt>&rsquo;, then
 install NCO with &lsquo;<tt>conda install nco</tt>&rsquo;.

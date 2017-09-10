@@ -8,9 +8,9 @@
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 
 # Quickie test copies:
-# scp ~/nco/bld/Makefile tephra.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile gplogin2.ps.uci.edu:nco/bld
+# scp ~/nco/bld/Makefile skyglow.ess.uci.edu:nco/bld
 
 # Machine build parameters
 #                         Source     Method   Packages Compiler
@@ -211,7 +211,7 @@ ifndef MPI_FAKE # MPI
  MPI_FAKE := N
 endif # endif MPI_FAKE
 ifndef NCO_BUILDENGINE
- NCO_BUILDENGINE := nco/bld/Makefile
+ NCO_BUILDENGINE := Traditional \(nco/bld/Makefile\)
 endif # NCO_BUILDENGINE
 ifndef NCO_VRS
 # Used for RPM building
@@ -279,7 +279,8 @@ endif # endif USR_TKN
 ifndef VRS_SNG
 # VRS_SNG := $(shell date +%Y%m%d)
 # 20150622
- VRS_SNG := $(shell git describe --abbrev=7 --dirty --always --tags)
+# VRS_SNG := $(shell git describe --abbrev=7 --dirty --always --tags)
+ VRS_SNG := $(shell cat ${MY_DOC_DIR}/VERSION)
 endif # endif VRS_SNG
 ifndef ZNETCDF # znetcdf support
  ZNETCDF := N
@@ -288,7 +289,7 @@ endif # endif ZNETCDF
 # These tokens should not be altered by hand
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
-CPP_TKN = ${USR_TKN} -DNCO_BUILDENGINE=${NCO_BUILDENGINE} -D${PVM_ARCH} -DNO_NETCDF_2 -DNCO_VERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
+CPP_TKN = ${USR_TKN} -DNCO_BUILDENGINE='${NCO_BUILDENGINE}' -D${PVM_ARCH} -DNO_NETCDF_2 -DNCO_VERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
 ifndef LFLAGS # Flags for Flex (Lex)
  LFLAGS := -P${NCO_YY_PFX}
 endif
@@ -934,7 +935,10 @@ else ifneq (${null},$(findstring titan,${HOSTNAME}))
  ARFLAGS := rsv
 else ifneq (${null},$(findstring ys,${HOSTNAME}))
  ARFLAGS := rsv
-endif # !rhea,titan,yellowston
+endif # !rhea,titan,yellowstone
+ifeq (${PVM_ARCH},MACOSX)
+ ARFLAGS := rsv
+endif # !aerosol,firn
 CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CC}

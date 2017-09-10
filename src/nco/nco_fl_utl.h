@@ -52,6 +52,7 @@ typedef int pid_t;
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_sng_utl.h" /* String utilities */
+#include "nco_grp_trv.h" /* Group traversal */
 
 /* 20120301: Replace multiple instances of hard-coded retry limit with CPP token NCO_MAX_NBR_USR_INPUT_RETRY */
 #ifndef NCO_MAX_NBR_USR_INPUT_RETRY
@@ -78,6 +79,11 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
  int * const fl_fmt_enm); /* O [enm] Output file format */
 
 void
+nco_fl_sz_est /* [fnc] Estimate RAM size == uncompressed file size */
+(char *smr_fl_sz_sng, /* I/O [sng] String describing estimated file size */
+ const trv_tbl_sct * const trv_tbl); /* I [sct] Traversal table */
+
+  void
 nco_fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */
 
 void

@@ -321,8 +321,9 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
     AC_DEFINE([ENABLE_OPENMP],[1],[Compile operators with OpenMP support])
     AC_MSG_NOTICE([OpenMP support enabled])
     CFLAGS="${CFLAGS} ${OPENMP_CFLAGS}"
-    # Oddly, the linker needs the same OpenMP flags as the compiler (fxm: Only ncks should use this)
-    LDFLAGS="${LDFLAGS} ${OPENMP_CFLAGS}"
+    # Oddly, linker needs same OpenMP flag(s) as compiler
+    # 20170909 Linux clang on travis does not resolve __kmpc* symbols, apparently needs -lgomp or -lomp
+    # LDFLAGS="${LDFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP
 

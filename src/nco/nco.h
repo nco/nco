@@ -953,6 +953,7 @@ extern "C" {
     char *fl_in; /* [sng] Input filename */
     char *fl_stb; /* [sng] Input filename stub */
     char *smr_sng; /* [sng] Summary string */
+    char *smr_fl_sz_sng; /* [sng] String describing estimated file size */
     char *spr_chr; /* [sng] Separator string for character types */
     char *spr_nmr; /* [sng] Separator string for numeric types */
     gpe_sct *gpe; /* I [sng] GPE structure */
