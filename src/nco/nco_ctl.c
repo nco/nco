@@ -734,12 +734,13 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
   (void)fprintf(stdout,"Homepage: http://nco.sf.net\n");
   (void)fprintf(stdout,"User Guide: http://nco.sf.net/nco.html\n");
   (void)fprintf(stdout,"Build-engine: %s\n",bld_ngn);
+  (void)fprintf(stderr,"%s\n",nco_nmn_get());
   /* fxm: TKN2YESNO breaks when TKN is undefined
      Full macro language like M4 might be useful here, though probably too much trouble */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* NB: Keep configuration option tokens consistent among configure.ac, bld/Makefile, and nco_ctl.c
      Alphabetize list by first word in English text description of token */
-  (void)fprintf(stdout,"Configuration Option:\tActive?\tMeaning or Reference:\nCheck _FillValue\t%s\thttp://nco.sf.net/nco.html#mss_val\nCheck missing_value\t%s\thttp://nco.sf.net/nco.html#mss_val\nDAP clients\t\t%s\thttp://nco.sf.net/nco.html#dap\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nESMF Library\t\t%s\thttp://nco.sf.net/nco.html#esmf\nGNU Scientific Library\t%s\thttp://nco.sf.net/nco.html#gsl\nHDF4 support\t\t%s\thttp://nco.sf.net/nco.html#hdf4\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nMPI parallelization\t%s\thttp://nco.sf.net/nco.html#mpi (beta)\nnetCDF3 64-bit offset\t%s\thttp://nco.sf.net/nco.html#lfs\nnetCDF3 64-bit data\t%s\thttp://nco.sf.net/nco.html#cdf5\nnetCDF4/HDF5 available\t%s\thttp://nco.sf.net/nco.html#nco4\nnetCDF4/HDF5 enabled\t%s\thttp://nco.sf.net/nco.html#nco4\nOpenMP SMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nParallel netCDF3\t%s\thttp://nco.sf.net/nco.html#pnetcdf (pre-alpha)\nRegular Expressions\t%s\thttp://nco.sf.net/nco.html#rx\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#udunits\nUDUnits2 conversions\t%s\thttp://nco.sf.net/nco.html#udunits\n%s",
+  (void)fprintf(stdout,"Configuration Option:\tActive?\tMeaning or Reference:\nCheck _FillValue\t%s\thttp://nco.sf.net/nco.html#mss_val\nCheck missing_value\t%s\thttp://nco.sf.net/nco.html#mss_val\nDAP clients\t\t%s\thttp://nco.sf.net/nco.html#dap\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nESMF Library\t\t%s\thttp://nco.sf.net/nco.html#esmf\nGNU Scientific Library\t%s\thttp://nco.sf.net/nco.html#gsl\nHDF4 support\t\t%s\thttp://nco.sf.net/nco.html#hdf4\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nMPI parallelization\t%s\thttp://nco.sf.net/nco.html#mpi (beta)\nnetCDF3 64-bit offset\t%s\thttp://nco.sf.net/nco.html#lfs\nnetCDF3 64-bit data\t%s\thttp://nco.sf.net/nco.html#cdf5\nnetCDF4/HDF5 available\t%s\thttp://nco.sf.net/nco.html#nco4\nnetCDF4/HDF5 enabled\t%s\thttp://nco.sf.net/nco.html#nco4\nOpenMP SMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nParallel netCDF3\t%s\thttp://nco.sf.net/nco.html#pnetcdf (pre-alpha)\nRegular Expressions\t%s\thttp://nco.sf.net/nco.html#rx\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits2 conversions\t%s\thttp://nco.sf.net/nco.html#udunits\n%s",
 		(!strcmp("_FillValue",nco_mss_val_sng_get())) ? "Yes" : "No",
 		(!strcmp("missing_value",nco_mss_val_sng_get())) ? "Yes" : "No",
 #if defined(ENABLE_DAP) && (ENABLE_DAP)
@@ -838,17 +839,15 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 		"No",
 #endif /* !ENABLE_STATIC */
 #if defined(ENABLE_UDUNITS) && (ENABLE_UDUNITS)
+# if defined(HAVE_UDUNITS2_H) && (HAVE_UDUNITS2_H)
 		"Yes",
+# else /* !HAVE_UDUNITS2_H */
+		"No",
+# endif /* !HAVE_UDUNITS2_H */
 #else /* !ENABLE_UDUNITS */
 		"No",
 #endif /* !ENABLE_UDUNITS */
-#if defined(HAVE_UDUNITS2_H) && (HAVE_UDUNITS2_H)
-		"Yes",
-#else /* !HAVE_UDUNITS2_H */
-		"No",
-#endif /* !HAVE_UDUNITS2_H */
-		""); /* End of print statement marker */
-  (void)fprintf(stderr,"\n%s",nco_nmn_get());
+		"\n"); /* End of print statement marker */
 } /* end nco_cnf_prn() */
 
 const char * /* O [sng] Mnemonic that describes current NCO version */
@@ -856,7 +855,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always include terminal \n so mnemonic does not dangle */
-  return "Sanitas\n";
+  return "Mnemonic: Sanitas\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
