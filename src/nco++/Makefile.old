@@ -784,7 +784,10 @@ else ifneq (${null},$(findstring titan,${HOSTNAME}))
  ARFLAGS := rsv
 else ifneq (${null},$(findstring ys,${HOSTNAME}))
  ARFLAGS := rsv
-endif # !rhea,titan,yellowston
+endif # !rhea,titan,yellowstone
+ifeq (${PVM_ARCH},MACOSX)
+ ARFLAGS := rsv
+endif # !aerosol,firn
 CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CXX}

@@ -1,5 +1,7 @@
 2017-09-09  Charlie Zender  <zender@uci.edu>
 
+	* Fix Custom build on MacOSX by modifying ARFLAGS
+
 	* Distinguish MD5 output with different debugging levels
 
 	* Add nco_fl_sz_est() and print smr_fl_sz_sng to CDL
