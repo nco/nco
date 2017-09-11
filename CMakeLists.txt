@@ -73,9 +73,10 @@ add_definitions(-DENABLE_STATIC)
 if(NOT WIN32)
   string(ASCII 27 Esc)
   set(color_reset   "${Esc}[m")
-  set(color_magenta "${Esc}[35m")
-  set(color_red     "${Esc}[31m")
-  set(color_green   "${Esc}[32m")
+  set(color_magenta "${Esc}[1;35m")
+  set(color_red     "${Esc}[1;31m")
+  set(color_green   "${Esc}[1;32m")
+  set(color_blue    "${Esc}[1;34m")
 endif()
 
 #//////////////////////////
@@ -128,10 +129,8 @@ endif()
 
 #//////////////////////////
 #detect minimum dependencies
-#find_library()
-#list a static name first to avoid link errors in systems with multiple versions of the same libraries in PATH
-#used for: 
-#ZLIB: libz.a
+#find_library() list a static name first to avoid link errors in systems with multiple versions of the same libraries in PATH
+#used for ZLIB_LIBRARY: libz.a
 #//////////////////////////
 
 find_path(NETCDF_INCLUDE_FOUND netcdf.h HINTS ${NETCDF_INCLUDE} "/usr/include")
@@ -162,6 +161,45 @@ else()
   message("-- Found hdf5 high level library at: " ${HDF5_HL_LIBRARY})
 endif()
 
+#//////////////////////////
+#HDF5 can be optionally linked with the SZIP library (Science Data Lossless Compression Program)
+#//////////////////////////
+
+if(MSVC)
+  set(NEED_SZIP "Yes")
+  set(NEED_ZLIB "Yes")
+else(MSVC)
+  find_program(readelf_prg readelf)
+  if (readelf_prg MATCHES "NOTFOUND")
+  else()
+    execute_process(COMMAND ${readelf_prg} -Ws ${HDF5_LIBRARY} OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/readelf.txt)
+    message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the SZIP library...")
+    file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/readelf.txt NEED_SZIP REGEX "SZ_BufftoBuffCompress")
+    if (NEED_SZIP)
+      message("${color_blue}--  SZIP library is needed...${color_reset}")
+    else()
+      message("-- SZIP library is not needed...")
+    endif()
+    message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the ZLIB library...")
+    file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/readelf.txt NEED_ZLIB REGEX "inflateEnd")
+    if (NEED_ZLIB)
+      message("${color_blue}-- ZLIB library is needed...${color_reset}")
+    else()
+      message("-- ZLIB library is not needed...")
+    endif()
+  endif()
+endif(MSVC)
+
+if (FIND_SZIP AND NEED_SZIP)
+  message("-- Trying to find the SZIP library...")
+  find_library(SZIP_LIBRARY NAMES sz)
+  if(NOT SZIP_LIBRARY)
+    message(FATAL_ERROR "${color_red}szip library not found${color_reset}")
+  else()
+    message("-- Found szip library at: " ${SZIP_LIBRARY})
+  endif()
+endif()
+
 if (FIND_ZLIB)
   message("-- Trying to find the ZLIB library...")
   find_library(ZLIB_LIBRARY NAMES libz.a z)
@@ -171,16 +209,6 @@ if (FIND_ZLIB)
     message("-- Found zlib library at: " ${ZLIB_LIBRARY})
   endif()
 endif()
-
-if (FIND_SZIP)
-  message("-- Trying to find the SZIP library...")
-  find_library(SZIP_LIBRARY NAMES sz)
-  if(NOT SZIP_LIBRARY)
-    message(FATAL_ERROR "${color_red}szip library not found${color_reset}")
-  else()
-    message("-- Found szip library at: " ${SZIP_LIBRARY})
-  endif()
-endif(FIND_SZIP)
 
 find_library(CURL_LIBRARY NAMES curl)
 if(NOT CURL_LIBRARY)
@@ -285,7 +313,7 @@ set(LIB_DEP ${LIB_DEP} ${CURL_LIBRARY})
 if (FIND_ZLIB)
   set(LIB_DEP ${LIB_DEP} ${ZLIB_LIBRARY})
 endif()
-if (FIND_SZIP)
+if (FIND_SZIP AND NEED_SZIP)
   set(LIB_DEP ${LIB_DEP} ${SZIP_LIBRARY})
 endif()
 
