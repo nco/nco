@@ -52,9 +52,6 @@ project (nco)
 
 option(FIND_ZLIB "Try to link with ZLIB library" ON)
 option(FIND_SZIP "Try to link with SZIP library" ON)
-if(APPLE)
-  set(FIND_SZIP OFF)
-endif()
 option(USE_OPENMP "Use OpenMP" ON)
 
 #/////////////////////////////////////////////////////////////////////////////////////
@@ -73,10 +70,10 @@ add_definitions(-DENABLE_STATIC)
 if(NOT WIN32)
   string(ASCII 27 Esc)
   set(color_reset   "${Esc}[m")
-  set(color_magenta "${Esc}[1;35m")
-  set(color_red     "${Esc}[1;31m")
-  set(color_green   "${Esc}[1;32m")
-  set(color_blue    "${Esc}[1;34m")
+  set(color_magenta "${Esc}[35m")
+  set(color_red     "${Esc}[31m")
+  set(color_green   "${Esc}[32m")
+  set(color_blue    "${Esc}[34m")
 endif()
 
 #//////////////////////////
@@ -163,29 +160,39 @@ endif()
 
 #//////////////////////////
 #HDF5 can be optionally linked with the SZIP library (Science Data Lossless Compression Program)
+#Mac:
+#brew install binutils
+#gobjdump --syms <lib_file>
 #//////////////////////////
 
 if(MSVC)
   set(NEED_SZIP "Yes")
   set(NEED_ZLIB "Yes")
 else(MSVC)
-  find_program(readelf_prg readelf)
-  if (NOT ${readelf_prg} MATCHES "NOTFOUND")
+  find_program(read_symbols_prg readelf)
+  if (${read_symbols_prg} MATCHES "readelf")
     set(have_read_symbols "yes")
-    message("-- Readelf program found: " ${readelf_prg}) 
-    execute_process(COMMAND ${readelf_prg} -Ws ${HDF5_LIBRARY} OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/readelf.txt)
+    message("-- Readelf program found: " ${read_symbols_prg}) 
+    execute_process(COMMAND ${read_symbols_prg} -Ws ${HDF5_LIBRARY} OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt)
+  endif()
+  
+  find_program(read_symbols_prg gobjdump)
+  if (${read_symbols_prg} MATCHES "gobjdump")
+    set(have_read_symbols "yes")
+    message("-- Gobjdump program found: " ${read_symbols_prg}) 
+    execute_process(COMMAND ${read_symbols_prg} --syms ${HDF5_LIBRARY} OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt)
   endif()
     
   if (${have_read_symbols} MATCHES "yes")
     message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the SZIP library...")
-    file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/readelf.txt NEED_SZIP REGEX "SZ_BufftoBuffCompress")
+    file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt NEED_SZIP REGEX "SZ_BufftoBuffCompress")
     if (NEED_SZIP)
       message("${color_blue}--  SZIP library is needed...${color_reset}")
     else()
       message("-- SZIP library is not needed...")
     endif(NEED_SZIP)
     message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the ZLIB library...")
-    file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/readelf.txt NEED_ZLIB REGEX "inflateEnd")
+    file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt NEED_ZLIB REGEX "inflateEnd")
     if (NEED_ZLIB)
       message("${color_blue}-- ZLIB library is needed...${color_reset}")
     else()
