@@ -83,11 +83,40 @@ endif()
 include(CheckFunctionExists)
 include(CheckIncludeFile)
 
-check_function_exists(mkstemp HAVE_MKSTEMP)
-if (HAVE_MKSTEMP)
+check_function_exists(mkstemp HAVE_mkstemp)
+if (HAVE_mkstemp)
   message("-- Found function mkstemp")
   add_definitions(-DHAVE_MKSTEMP)
 endif()
+
+#//////////////////////////
+#math functions, including float versions
+#"#define HAVE_XXX 1" and "#undef NEED_XXX" when function xxx() is found and
+#"#undef HAVE_XXX" and "#define NEED_XXX 1" when function xxx() is not found
+#NCO_CHECK_FUNCS([atan2])
+#NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
+#NCO_CHECK_FUNCS([erff erfcf gammaf])
+#NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
+#NCO_CHECK_FUNCS([ceilf floorf])
+#NCO_CHECK_FUNCS([nearbyint rint round trunc])
+#NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
+#CMAKE_REQUIRED_LIBRARIES is required for check_function_exists() to find the function
+#//////////////////////////
+
+find_library(MATH_LIBRARY NAMES m)
+if(MATH_LIBRARY)
+  message("-- Math library found: " ${MATH_LIBRARY})
+  set(CMAKE_REQUIRED_LIBRARIES m)
+
+  check_function_exists(acosf HAVE_acosf)
+  if (HAVE_acosf)
+  else()
+    message("${color_blue}-- Using NCO defined version of acos${color_reset}")
+    add_definitions(-DNEED_ACOSF)
+  endif()
+
+endif(MATH_LIBRARY)
+
 
 #//////////////////////////
 # detect system/libraries specific header files
