@@ -1,4 +1,7 @@
 #CMake build, Pedro Vicente 
+#assumptions:
+#netCDF version 4 (based on HDF5) library version 
+#that's all
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #parameter options
@@ -34,17 +37,18 @@
 #-DGSL_CBLAS_LIBRARY:FILE=<some_file>
 
 #logic for finding header files and library dependencies:
-#find_path
-#find_library
+#find_path()
+#find_library()
 #are used (with optional location hints); the first argument contains the found file if found.
 #and the message "-- Found file at location" is made
 #if not found the first argument variable is the same as a user option that contains the file location full path.
 #the same message "-- Found file at location" is made
-#but there is not an attempt at this time to validate the user input file (.h or .a)
 #///////////////////////////////////////////////////////
 
 cmake_minimum_required(VERSION 2.8)
 project (nco)
+include(CheckFunctionExists)
+include(CheckIncludeFile)
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #command line options
@@ -65,6 +69,10 @@ add_definitions(-DENABLE_STATIC)
 
 #//////////////////////////
 # colorized output
+# red, fatal error, cannot build (missing netCDF, HDF5, CURL libraries)
+# magenta, "negative" warning (missing optional libraries, GSL, ANTLR, UDUNITS)
+# green, "positive" warning (opposite of magenta, optional libraries found)
+# blue, general information to take notice (SZIP/ZLIB were detected as needed, special NCO functions are defined
 #//////////////////////////
 
 if(NOT WIN32)
@@ -79,9 +87,6 @@ endif()
 #//////////////////////////
 # detect system specific functions
 #//////////////////////////
-
-include(CheckFunctionExists)
-include(CheckIncludeFile)
 
 check_function_exists(mkstemp HAVE_mkstemp)
 if (HAVE_mkstemp)
@@ -299,7 +304,7 @@ if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE_FOUND)
 endif()
 
 #//////////////////////////
-#visual studio 
+#compile as C++/static CRT on Visual Studio and as C99 on UNIX
 #//////////////////////////
 
 if (MSVC)
@@ -345,6 +350,7 @@ endif(MSVC)
 
 #//////////////////////////
 #link with libraries
+#LIB_DEP contains a cascade definition of all the libraries needed to link
 #//////////////////////////
 
 set(LIB_DEP ${LIB_DEP})
@@ -361,7 +367,6 @@ endif()
 
 #//////////////////////////
 #add definitions based on libraries found
-#a netCDF4 library version is assumed
 #//////////////////////////
 
 if(NETCDF_INCLUDE_FOUND AND NETCDF_LIBRARY)
@@ -378,7 +383,7 @@ set(LIB_DEP ${LIB_DEP} ${UDUNITS2_LIBRARY} ${EXPAT_LIBRARY})
 endif()
 
 #//////////////////////////
-# system specific libraries
+# system specific libraries needed to link (assume existing)
 #//////////////////////////
 
 if(APPLE)
@@ -387,7 +392,9 @@ endif()
 
 if(MSVC)
   set(LIB_DEP ${LIB_DEP} ${WINSOCK_LIBRARY})
-else ()
+endif()
+
+if(UNIX)
   set(LIB_DEP ${LIB_DEP} m)
 endif()
 
