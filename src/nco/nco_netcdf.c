@@ -551,13 +551,13 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 #else /* !NC_LIB_VERSION */
     switch(fl_fmt_xtn){
     case NC_FORMATX_NC3:
-      return "NC_FORMATX_NC3";
+      return "NC_FORMATX_NC3"; /* NB: CDF5 self-report NC_FORMATX_NC3 as NC3 when files opened through netCDF serial API */
     case NC_FORMATX_NC_HDF5:
       return "NC_FORMATX_HDF5";
     case NC_FORMATX_NC_HDF4:
       return "NC_FORMATX_HDF4";
     case NC_FORMATX_PNETCDF:
-      return "NC_FORMATX_PNETCDF";
+      return "NC_FORMATX_PNETCDF"; /* CDF5 files report NC_FORMATX_NC3 as PNETCDF when ...? */
     case NC_FORMATX_DAP2:
       return "NC_FORMATX_DAP2";
     case NC_FORMATX_DAP4:
@@ -1770,6 +1770,7 @@ nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type
      20160228: nc_put_var() family does type conversion, nc_put_vara() family does not */
   const char fnc_nm[]="nco_put_var()";
   int rcd=NC_NOERR;
+#if NC_LIB_VERSION < 440
   switch(type){
   case NC_FLOAT: rcd=nc_put_var_float(nc_id,var_id,(const float *)vp); break;
   case NC_DOUBLE: rcd=nc_put_var_double(nc_id,var_id,(const double *)vp); break;
@@ -1777,7 +1778,7 @@ nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type
   case NC_SHORT: rcd=nc_put_var_short(nc_id,var_id,(const short *)vp); break;
   case NC_CHAR: rcd=NCO_PUT_VAR_CHAR(nc_id,var_id,(const nco_char *)vp); break;
   case NC_BYTE: rcd=NCO_PUT_VAR_BYTE(nc_id,var_id,(const nco_byte *)vp); break;
-#ifdef ENABLE_NETCDF4
+# ifdef ENABLE_NETCDF4
   case NC_UBYTE: rcd=NCO_PUT_VAR_UBYTE(nc_id,var_id,(const nco_ubyte *)vp); break;
   case NC_USHORT: rcd=NCO_PUT_VAR_USHORT(nc_id,var_id,(const nco_ushort *)vp); break;
   case NC_UINT: rcd=NCO_PUT_VAR_UINT(nc_id,var_id,(const nco_uint *)vp); break;
@@ -1785,9 +1786,51 @@ nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type
   case NC_UINT64: rcd=NCO_PUT_VAR_UINT64(nc_id,var_id,(const nco_uint64 *)vp); break;
     /* NC_STRING prototype next causes same compiler warnings described in nco_put_var1() above */
   case NC_STRING: rcd=NCO_PUT_VAR_STRING(nc_id,var_id,(const char **)vp); break;
-#endif /* !ENABLE_NETCDF4 */
+# endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
+# endif /* !NC_LIB_VERSION */
+#if NC_LIB_VERSION >= 440
+  int dmn_id[NC_MAX_DIMS];
+  int dmn_idx;
+  int dmn_nbr;
+  int fl_fmt; /* I [enm] File format */
+  size_t dmn_sz[NC_MAX_DIMS];
+  size_t var_sz=1L;
+  rcd=nc_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_CDF5){
+    char var_nm[NC_MAX_NAME+1L];
+    rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
+    rcd=nc_inq_vardimid(nc_id,var_id,dmn_id);
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      rcd=nc_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
+      var_sz*=dmn_sz[dmn_idx];
+    } /* !dmn_idx */
+    var_sz*=nco_typ_lng(type);
+    if(var_sz > 2ULL*1073741824ULL){ /* 2 GiB */
+      rcd=nc_inq_varname(nc_id,var_id,var_nm);
+      (void)fprintf(stdout,"WARNING: %s detects large (%lu B) write request for variable \"%s\". Such writes are buggy in netCDF library versions 4.4.0-4.4.1 (https://github.com/Unidata/netcdf-c/issues/463)\n",fnc_nm,(unsigned long)var_sz,var_nm);
+    } /* !var_sz */
+  } /* !CDF5 */
+  switch(type){
+  case NC_FLOAT: rcd=nc_put_var_float(nc_id,var_id,(const float *)vp); break;
+  case NC_DOUBLE: rcd=nc_put_var_double(nc_id,var_id,(const double *)vp); break;
+  case NC_INT: rcd=NCO_PUT_VAR_INT(nc_id,var_id,(const nco_int *)vp); break;
+  case NC_SHORT: rcd=nc_put_var_short(nc_id,var_id,(const short *)vp); break;
+  case NC_CHAR: rcd=NCO_PUT_VAR_CHAR(nc_id,var_id,(const nco_char *)vp); break;
+  case NC_BYTE: rcd=NCO_PUT_VAR_BYTE(nc_id,var_id,(const nco_byte *)vp); break;
+# ifdef ENABLE_NETCDF4
+  case NC_UBYTE: rcd=NCO_PUT_VAR_UBYTE(nc_id,var_id,(const nco_ubyte *)vp); break;
+  case NC_USHORT: rcd=NCO_PUT_VAR_USHORT(nc_id,var_id,(const nco_ushort *)vp); break;
+  case NC_UINT: rcd=NCO_PUT_VAR_UINT(nc_id,var_id,(const nco_uint *)vp); break;
+  case NC_INT64: rcd=NCO_PUT_VAR_INT64(nc_id,var_id,(const nco_int64 *)vp); break;
+  case NC_UINT64: rcd=NCO_PUT_VAR_UINT64(nc_id,var_id,(const nco_uint64 *)vp); break;
+    /* NC_STRING prototype next causes same compiler warnings described in nco_put_var1() above */
+  case NC_STRING: rcd=NCO_PUT_VAR_STRING(nc_id,var_id,(const char **)vp); break;
+# endif /* !ENABLE_NETCDF4 */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+# endif /* !NC_LIB_VERSION */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
@@ -1905,6 +1948,7 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   /* Purpose: Wrapper for nc_put_vara_*() */
   const char fnc_nm[]="nco_put_vara()";
   int rcd=NC_NOERR;
+#if NC_LIB_VERSION < 440
   switch(type){
   case NC_FLOAT: rcd=nc_put_vara_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const float *)vp); break;
   case NC_DOUBLE: rcd=nc_put_vara_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const double *)vp); break;
@@ -1923,6 +1967,48 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
+# endif /* !NC_LIB_VERSION */
+#if NC_LIB_VERSION >= 440
+  int dmn_id[NC_MAX_DIMS];
+  int dmn_idx;
+  int dmn_nbr;
+  int fl_fmt; /* I [enm] File format */
+  size_t dmn_sz[NC_MAX_DIMS];
+  size_t var_sz=1L;
+  rcd=nc_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_CDF5){
+    char var_nm[NC_MAX_NAME+1L];
+    rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
+    rcd=nc_inq_vardimid(nc_id,var_id,dmn_id);
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      rcd=nc_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
+      var_sz*=dmn_sz[dmn_idx];
+    } /* !dmn_idx */
+    var_sz*=nco_typ_lng(type);
+    if(var_sz > 2ULL*1073741824ULL){ /* 2 GiB */
+      (void)nc_inq_varname(nc_id,var_id,var_nm);
+      (void)fprintf(stdout,"WARNING: %s detects large (%lu B) write request for variable \"%s\". Such writes are buggy in netCDF library versions 4.4.0-4.4.1 (https://github.com/Unidata/netcdf-c/issues/463)\n",fnc_nm,(unsigned long)var_sz,var_nm);
+    } /* !var_sz */
+  } /* !CDF5 */
+  switch(type){
+  case NC_FLOAT: rcd=nc_put_vara_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const float *)vp); break;
+  case NC_DOUBLE: rcd=nc_put_vara_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const double *)vp); break;
+  case NC_INT: rcd=NCO_PUT_VARA_INT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_int *)vp); break;
+  case NC_SHORT: rcd=nc_put_vara_short(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const short *)vp); break;
+  case NC_CHAR: rcd=NCO_PUT_VARA_CHAR(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_char *)vp); break;
+  case NC_BYTE: rcd=NCO_PUT_VARA_BYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_byte *)vp); break;
+#ifdef ENABLE_NETCDF4
+  case NC_UBYTE: rcd=NCO_PUT_VARA_UBYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_ubyte *)vp); break;
+  case NC_USHORT: rcd=NCO_PUT_VARA_USHORT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_ushort *)vp); break;
+  case NC_UINT: rcd=NCO_PUT_VARA_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_uint *)vp); break;
+  case NC_INT64: rcd=NCO_PUT_VARA_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_int64 *)vp); break;
+  case NC_UINT64: rcd=NCO_PUT_VARA_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_uint64 *)vp); break;
+    /* NC_STRING prototype next causes same compiler warnings described in nco_put_var1() above */
+  case NC_STRING: rcd=NCO_PUT_VARA_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const char **)vp); break;
+#endif /* !ENABLE_NETCDF4 */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+# endif /* !NC_LIB_VERSION */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
@@ -1962,7 +2048,9 @@ int
 nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_put_vars_*() */
+  const char fnc_nm[]="nco_put_vars()";
   int rcd=NC_NOERR;
+#if NC_LIB_VERSION < 440
   switch(type){
   case NC_FLOAT: rcd=nc_put_vars_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const float *)vp); break;
   case NC_DOUBLE: rcd=nc_put_vars_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const double *)vp); break;
@@ -1981,6 +2069,48 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
+# endif /* !NC_LIB_VERSION */
+#if NC_LIB_VERSION >= 440
+  int dmn_id[NC_MAX_DIMS];
+  int dmn_idx;
+  int dmn_nbr;
+  int fl_fmt; /* I [enm] File format */
+  size_t dmn_sz[NC_MAX_DIMS];
+  size_t var_sz=1L;
+  rcd=nc_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_CDF5){
+    char var_nm[NC_MAX_NAME+1L];
+    rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
+    rcd=nc_inq_vardimid(nc_id,var_id,dmn_id);
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      rcd=nc_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
+      var_sz*=dmn_sz[dmn_idx];
+    } /* !dmn_idx */
+    var_sz*=nco_typ_lng(type);
+    if(var_sz > 2ULL*1073741824ULL){ /* 2 GiB */
+      rcd=nc_inq_varname(nc_id,var_id,var_nm);
+      (void)fprintf(stdout,"WARNING: %s detects large (%lu B) write request for variable \"%s\". Such writes are buggy in netCDF library versions 4.4.0-4.4.1 (https://github.com/Unidata/netcdf-c/issues/463)\n",fnc_nm,(unsigned long)var_sz,var_nm);
+    } /* !var_sz */
+  } /* !CDF5 */
+  switch(type){
+  case NC_FLOAT: rcd=nc_put_vars_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const float *)vp); break;
+  case NC_DOUBLE: rcd=nc_put_vars_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const double *)vp); break;
+  case NC_INT: rcd=NCO_PUT_VARS_INT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_int *)vp); break;
+  case NC_SHORT: rcd=nc_put_vars_short(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const short *)vp); break;
+  case NC_CHAR: rcd=NCO_PUT_VARS_CHAR(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_char *)vp); break;
+  case NC_BYTE: rcd=NCO_PUT_VARS_BYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_byte *)vp); break;
+#ifdef ENABLE_NETCDF4
+  case NC_UBYTE: rcd=NCO_PUT_VARS_UBYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_ubyte *)vp); break;
+  case NC_USHORT: rcd=NCO_PUT_VARS_USHORT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_ushort *)vp); break;
+  case NC_UINT: rcd=NCO_PUT_VARS_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_uint *)vp); break;
+  case NC_INT64: rcd=NCO_PUT_VARS_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_int64 *)vp); break;
+  case NC_UINT64: rcd=NCO_PUT_VARS_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_uint64 *)vp); break;
+    /* NC_STRING prototype next causes same compiler warnings described in nco_put_var1() above */
+  case NC_STRING: rcd=NCO_PUT_VARS_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const char **)vp); break;
+#endif /* !ENABLE_NETCDF4 */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+# endif /* !NC_LIB_VERSION */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vars()");
   return rcd;
 } /* end nco_put_vars */

@@ -9,11 +9,14 @@ ncap_yacc.c
 ncap_yacc.h
 ncatted
 ncbo
+ncdiff
+ncea
 ncecat
 ncflint
 ncks
 ncpdq
 ncra
+ncrcat
 ncrename
 ncwa
 
