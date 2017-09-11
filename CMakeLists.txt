@@ -165,9 +165,10 @@ endif()
 #gobjdump --syms <lib_file>
 #//////////////////////////
 
+set(have_read_symbols "no")
 if(MSVC)
-  set(NEED_SZIP "Yes")
-  set(NEED_ZLIB "Yes")
+  set(NEED_SZIP "yes")
+  set(NEED_ZLIB "yes")
 else(MSVC)
   find_program(read_symbols_prg readelf)
   if (${read_symbols_prg} MATCHES "readelf")
@@ -182,6 +183,10 @@ else(MSVC)
     message("-- Gobjdump program found: " ${read_symbols_prg}) 
     execute_process(COMMAND ${read_symbols_prg} --syms ${HDF5_LIBRARY} OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt)
   endif()
+  
+  if (${have_read_symbols} MATCHES "no")
+    message("${color_magenta}-- Programs readelf/gobjdump missing, cannot find if SZIP/ZLIB library dependencies are needed...${color_reset}")
+  endif()
     
   if (${have_read_symbols} MATCHES "yes")
     message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the SZIP library...")
@@ -191,6 +196,7 @@ else(MSVC)
     else()
       message("-- SZIP library is not needed...")
     endif(NEED_SZIP)
+    
     message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the ZLIB library...")
     file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt NEED_ZLIB REGEX "inflateEnd")
     if (NEED_ZLIB)
