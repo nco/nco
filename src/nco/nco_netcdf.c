@@ -506,21 +506,22 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 (const int fl_fmt_xtn) /* I [enm] netCDF extended file format */
 {
   /* Purpose: Convert netCDF extended file format enum to string */
+  /* NB: nc_inq_format_extended() introduced in netCDF 4.3.1, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #if NC_LIB_VERSION < 440
     switch(fl_fmt_xtn){
-    case NC_FORMATX_NC3:
-      return "NC_FORMATX_NC3";
-    case NC_FORMATX_NC_HDF5:
+    case NC_FORMAT_NC3:
+      return "NCX_FORMAT_NC3";
+    case NC_FORMAT_NC_HDF5:
       return "NC_FORMATX_NC_HDF5";
-    case NC_FORMATX_NC_HDF4:
+    case NC_FORMAT_NC_HDF4:
       return "NC_FORMATX_NC_HDF4";
-    case NC_FORMATX_PNETCDF:
+    case NC_FORMAT_PNETCDF:
       return "NC_FORMATX_PNETCDF";
-    case NC_FORMATX_DAP2:
+    case NC_FORMAT_DAP2:
       return "NC_FORMATX_DAP2";
-    case NC_FORMATX_DAP4:
+    case NC_FORMAT_DAP4:
       return "NC_FORMATX_DAP4";
-    case NC_FORMATX_UNDEFINED:
+    case NC_FORMAT_UNDEFINED:
       return "NC_FORMATX_UNDEFINED";
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
@@ -980,6 +981,7 @@ nco_inq_format(const int nc_id,int * const fl_fmt)
   return rcd;
 } /* end nco_inq_format() */
 
+  /* NB: nc_inq_format_extended() introduced in netCDF 4.3.1, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #ifndef NC_HAVE_INQ_FORMAT_EXTENDED
 int nc_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
 {
