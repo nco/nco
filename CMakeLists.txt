@@ -612,11 +612,14 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
   set(nco_targets ${nco_targets} ncap2)
 endif()
 
+
+set(PERMISSIONS_DEFAULT OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+
 message("-- Building ${nco_targets}")
 
 if (UNIX)
-  install(TARGETS ${nco_targets} RUNTIME DESTINATION bin)
-  install(FILES data/ncremap data/ncclimo DESTINATION bin)
+  install(TARGETS ${nco_targets} RUNTIME DESTINATION bin PERMISSIONS ${PERMISSIONS_DEFAULT})
+  install(FILES data/ncremap data/ncclimo DESTINATION bin PERMISSIONS ${PERMISSIONS_DEFAULT})
   message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
 
@@ -635,6 +638,6 @@ if (UNIX)
   set(src ncra)
   set(dest ncea)
   add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION bin)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION bin PERMISSIONS ${PERMISSIONS_DEFAULT})
   message("-- Installing ${dest} to: " ${CMAKE_INSTALL_PREFIX}/bin)
 endif()
