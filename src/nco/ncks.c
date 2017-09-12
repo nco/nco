@@ -970,7 +970,7 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
   /* Initialize thread information */
-  thr_nbr=nco_openmp_ini(thr_nbr);
+  if(flg_rgr) thr_nbr=nco_openmp_ini(thr_nbr); else thr_nbr=nco_openmp_ini((int)1);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
   trv_tbl->thr_nbr=thr_nbr;
   trv_tbl->in_id_arr=in_id_arr;
