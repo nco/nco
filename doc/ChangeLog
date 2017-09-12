@@ -1,5 +1,7 @@
 2017-09-12  Charlie Zender  <zender@uci.edu>
 
+	* Passes all expected regression tests
+
 	* Allow ncks thr_nbr > 1 only when regridder is activated
 
 	* Automatically detect and warn about possibly corrupt CDF5 files in nco_close()
