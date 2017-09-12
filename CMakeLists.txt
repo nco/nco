@@ -1,7 +1,4 @@
 #CMake build, Pedro Vicente 
-#assumptions:
-#netCDF version 4 (based on HDF5) library version 
-#that's all
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #mininum library dependencies: netCDF, HDF5, HDF5_HL, ZLIB (SZIP)
@@ -27,15 +24,6 @@
 #-DGSL_INCLUDE:PATH=<some_path>
 #-DGSL_LIBRARY:FILE=<some_file>
 #-DGSL_CBLAS_LIBRARY:FILE=<some_file>
-
-#logic for finding header files and library dependencies:
-#find_path()
-#find_library()
-#are used (with optional location hints); the first argument contains the found file if found.
-#and the message "-- Found file at location" is made
-#if not found the first argument variable is the same as a user option that contains the file location full path.
-#the same message "-- Found file at location" is made
-#///////////////////////////////////////////////////////
 
 cmake_minimum_required(VERSION 2.8)
 project (nco)
@@ -145,11 +133,11 @@ endif()
 #used for ZLIB_LIBRARY: libz.a
 #//////////////////////////
 
-find_path(NETCDF_INCLUDE_FOUND netcdf.h HINTS ${NETCDF_INCLUDE} "/usr/include")
-if(NOT NETCDF_INCLUDE_FOUND)
+find_path(NETCDF_INCLUDE netcdf.h)
+if(NOT NETCDF_INCLUDE)
   message(FATAL_ERROR "${color_red}netcdf.h header file not found${color_reset}")
 else()
-  message("-- Found netcdf.h header file at: " ${NETCDF_INCLUDE_FOUND})
+  message("-- Found netcdf.h header file at: " ${NETCDF_INCLUDE})
 endif()
 
 find_library(NETCDF_LIBRARY NAMES netcdf)
@@ -240,11 +228,11 @@ set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH})
 set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/opt/local/include/udunits2")
 set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/usr/include/udunits2")
 
-find_path(UDUNITS2_INCLUDE_FOUND udunits2.h HINTS ${UDUNITS2_INCLUDE})
-if(NOT UDUNITS2_INCLUDE_FOUND)
+find_path(UDUNITS2_INCLUDE udunits2.h)
+if(NOT UDUNITS2_INCLUDE)
   message("${color_magenta}-- Unidata units library header files not found${color_reset}")
 else()
-  message("-- Found Unidata units library header files at: " ${UDUNITS2_INCLUDE_FOUND})
+  message("-- Found Unidata units library header files at: " ${UDUNITS2_INCLUDE})
 endif()
 
 find_library(UDUNITS2_LIBRARY NAMES udunits2)
@@ -254,7 +242,7 @@ else()
   message("-- Found Unidata units library at: " ${UDUNITS2_LIBRARY})
 endif()
 
-if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE_FOUND)
+if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE)
   # UDUnits depends on expat
   find_library(EXPAT_LIBRARY NAMES libexpatMT expat)
   if(NOT EXPAT_LIBRARY)
@@ -332,16 +320,16 @@ endif()
 #add definitions based on libraries found
 #//////////////////////////
 
-if(NETCDF_INCLUDE_FOUND AND NETCDF_LIBRARY)
+if(NETCDF_INCLUDE AND NETCDF_LIBRARY)
 add_definitions(-DHAVE_NETCDF4_H)
 add_definitions(-DENABLE_NETCDF4)
-include_directories(${NETCDF_INCLUDE_FOUND})
+include_directories(${NETCDF_INCLUDE})
 endif()
 
-if(UDUNITS2_INCLUDE_FOUND AND UDUNITS2_LIBRARY AND EXPAT_LIBRARY)
+if(UDUNITS2_INCLUDE AND UDUNITS2_LIBRARY AND EXPAT_LIBRARY)
 add_definitions(-DENABLE_UDUNITS)  
 add_definitions(-DHAVE_UDUNITS2_H) 
-include_directories(${UDUNITS2_INCLUDE_FOUND})  
+include_directories(${UDUNITS2_INCLUDE})  
 set(LIB_DEP ${LIB_DEP} ${UDUNITS2_LIBRARY} ${EXPAT_LIBRARY}) 
 endif()
 
@@ -469,11 +457,11 @@ target_link_libraries (ncwa ${nco_LIB} ${LIB_DEP})
 #note: cmake can detect relative paths, e.g, antlr/AST.hpp
 #//////////////////////////
 
-find_path(ANTLR_INCLUDE_FOUND antlr/AST.hpp HINTS ${ANTLR_INCLUDE})
-if(NOT ANTLR_INCLUDE_FOUND)
+find_path(ANTLR_INCLUDE antlr/AST.hpp)
+if(NOT ANTLR_INCLUDE)
   message("${color_magenta}-- ANTLR header files not found${color_reset}")
 else()
-  message("-- Found ANTLR header files at: " ${ANTLR_INCLUDE_FOUND})
+  message("-- Found ANTLR header files at: " ${ANTLR_INCLUDE})
 endif()
 
 find_library(ANTLR_LIBRARY NAMES antlr)
@@ -483,7 +471,7 @@ else()
   message("-- Found ANTLR library at: " ${ANTLR_LIBRARY})
 endif()
 
-if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
   message("${color_green}-- Building ncap2, netCDF Arithmetic Processor${color_reset}")
 else()
   message("${color_magenta}-- Disabling ncap2, netCDF Arithmetic Processor${color_reset}")
@@ -512,42 +500,42 @@ set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/nco_gsl.c)
 # GSL CBLAS needed for Linux Fedora; assuming here all gsl-dev packages have it
 #//////////////////////////
 
-if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
-  find_path(GSL_INCLUDE_FOUND gsl/gsl_errno.h HINTS ${GSL_INCLUDE})
-  if(NOT GSL_INCLUDE_FOUND)
+if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
+  find_path(GSL_INCLUDE gsl/gsl_errno.h)
+  if(NOT GSL_INCLUDE)
     message("${color_magenta}-- GSL header files not found${color_reset}")
   else()
-    message("-- Found GSL header files at: " ${GSL_INCLUDE_FOUND})
+    message("-- Found GSL header files at: " ${GSL_INCLUDE})
   endif()
-  find_library(GSL_LIBRARY NAMES gsl HINTS libgsl_d.lib)
+  find_library(GSL_LIBRARY NAMES gsl libgsl_d.lib)
   if(NOT GSL_LIBRARY)
     message("${color_magenta}-- GSL library not found${color_reset}")
   else()
     message("-- Found GSL library at: " ${GSL_LIBRARY})
   endif()
-  find_library(GSL_CBLAS_LIBRARY NAMES gslcblas HINTS libgslcblas_d.lib)
+  find_library(GSL_CBLAS_LIBRARY NAMES gslcblas libgslcblas_d.lib)
   if(NOT GSL_CBLAS_LIBRARY)
     message("${color_magenta}-- GSL CBLAS library not found${color_reset}")
   else()
     message("-- Found GSL CBLAS library at: " ${GSL_CBLAS_LIBRARY})
   endif()
-  if(GSL_INCLUDE_FOUND AND GSL_LIBRARY AND GSL_CBLAS_LIBRARY)
+  if(GSL_INCLUDE AND GSL_LIBRARY AND GSL_CBLAS_LIBRARY)
     add_definitions(-DENABLE_GSL)
-    include_directories(${GSL_INCLUDE_FOUND})
+    include_directories(${GSL_INCLUDE})
     set(LIB_DEP ${LIB_DEP} ${GSL_LIBRARY} ${GSL_CBLAS_LIBRARY})
     message("${color_green}-- Building with GSL support${color_reset}")
   else()
     message("${color_magenta}-- Disabling GSL support${color_reset}")
   endif ()
-endif(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+endif(ANTLR_INCLUDE AND ANTLR_LIBRARY)
 
 #//////////////////////////
 # ncap2
 #//////////////////////////
 
-if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
   add_executable(ncap2 ${ncap2_SOURCES})
-  target_include_directories(ncap2 PRIVATE src/nco ${ANTLR_INCLUDE_FOUND})
+  target_include_directories(ncap2 PRIVATE src/nco ${ANTLR_INCLUDE})
   target_link_libraries (ncap2 ${nco_LIB} ${LIB_DEP} ${ANTLR_LIBRARY}) 
 endif()
 
@@ -614,7 +602,7 @@ endif()
 
 set(nco_targets ${nco_targets})
 set(nco_targets ${nco_targets} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
-if(ANTLR_INCLUDE_FOUND AND ANTLR_LIBRARY)
+if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
   
   #//////////////////////////
   #make ncap2 build last 
