@@ -501,30 +501,6 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
   return (char *)NULL;
 } /* end nco_fmt_sng() */
 
-const char * /* O [sng] String describing file format for hidden attributes */
-nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden attributes */
-(const int fl_fmt) /* I [enm] netCDF file format */
-{
-  /* Purpose: Convert netCDF file format enum to string for hidden attributes
-     20131229: String values obtained from ncgen man page */
-  switch(fl_fmt){
-  case NC_FORMAT_CLASSIC:
-    return "classic";
-  case NC_FORMAT_64BIT_OFFSET:
-    return "\"64-bit offset\"";
-  case NC_FORMAT_NETCDF4:
-    return "netCDF-4";
-  case NC_FORMAT_NETCDF4_CLASSIC:
-    return "\"netCDF-4 classic model\"";
-  case NC_FORMAT_CDF5:
-    return "\"64-bit data\"";
-  default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
-
-  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
-  return (char *)NULL;
-} /* end nco_fmt_hdn_sng() */
-
 const char * /* O [sng] String describing extended file format */
 nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 (const int fl_fmt_xtn) /* I [enm] netCDF extended file format */
@@ -551,13 +527,13 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 #else /* !NC_LIB_VERSION */
     switch(fl_fmt_xtn){
     case NC_FORMATX_NC3:
-      return "NC_FORMATX_NC3"; /* NB: CDF5 self-report NC_FORMATX_NC3 as NC3 when files opened through netCDF serial API */
+      return "NC_FORMATX_NC3"; /* NB: CDF5 self-report NC_FORMATX_NC3 when files opened through netCDF serial API */
     case NC_FORMATX_NC_HDF5:
       return "NC_FORMATX_HDF5";
     case NC_FORMATX_NC_HDF4:
       return "NC_FORMATX_HDF4";
     case NC_FORMATX_PNETCDF:
-      return "NC_FORMATX_PNETCDF"; /* CDF5 files report NC_FORMATX_NC3 as PNETCDF when ...? */
+      return "NC_FORMATX_PNETCDF"; /* CDF5 files report NC_FORMATX_PNETCDF when ... */
     case NC_FORMATX_DAP2:
       return "NC_FORMATX_DAP2";
     case NC_FORMATX_DAP4:
@@ -571,6 +547,30 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_fmt_xtn_sng() */
+
+const char * /* O [sng] String describing file format for hidden attributes */
+nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden attributes */
+(const int fl_fmt) /* I [enm] netCDF file format */
+{
+  /* Purpose: Convert netCDF file format enum to string for hidden attributes
+     20131229: String values obtained from ncgen man page */
+  switch(fl_fmt){
+  case NC_FORMAT_CLASSIC:
+    return "classic";
+  case NC_FORMAT_64BIT_OFFSET:
+    return "\"64-bit offset\"";
+  case NC_FORMAT_NETCDF4:
+    return "netCDF-4";
+  case NC_FORMAT_NETCDF4_CLASSIC:
+    return "\"netCDF-4 classic model\"";
+  case NC_FORMAT_CDF5:
+    return "\"64-bit data\"";
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_fmt_hdn_sng() */
 
 const char * /* O [sng] String describing endianness for hidden attributes */
 nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attributes */
@@ -898,8 +898,13 @@ nco_close(const int nc_id)
   int rcd=NC_NOERR;
 #if NC_LIB_VERSION >= 440
   /* 20170912 Diagnose whether file may be (for input files) or is (for output files) infected by CDF5 bug */
-  int fl_fmt; /* I [enm] File format */
+  int fl_fmt; /* [enm] File format */
+  int fl_fmt_xtn; /* [enm] Extended file format */
+  int mode; /* [enm] Mode */
   rcd=nc_inq_format(nc_id,&fl_fmt);
+  rcd=nc_inq_format_extended(nc_id,&fl_fmt_xtn,&mode);
+  //(void)fprintf(stdout,"DEBUG: %s reports NC_LIB_VERSION = %d.\n",fnc_nm,NC_LIB_VERSION);
+  (void)fprintf(stdout,"DEBUG: %s reports file format and extended format are %d = %s and %d = %s, respectively\n",fnc_nm,fl_fmt,nco_fmt_sng(fl_fmt),fl_fmt_xtn,nco_fmt_xtn_sng(fl_fmt_xtn));
   if(fl_fmt == NC_FORMAT_CDF5){
     char var_nm[NC_MAX_NAME+1L];
     int dmn_id[NC_MAX_DIMS];
@@ -926,13 +931,13 @@ nco_close(const int nc_id)
       var_sz*=nco_typ_lng(var_typ);
       if(var_sz > 4ULL*1073741824ULL){ /* 4 GiB */
 	rcd=nc_inq_varname(nc_id,var_id[var_idx],var_nm);
-	(void)fprintf(stdout,"WARNING: %s detects \"large\" (%lu B =~ %lu GiB > 4294967296 B = 4 GiB) variable \"%s\" in CDF5 file.\n",fnc_nm,(unsigned long)var_sz,(unsigned long)(1.0*var_sz/1073741824UL),var_nm);
+	(void)fprintf(stdout,"WARNING: %s detects \"large\" (%lu B =~ %lu GiB > 4294967296 B = 4 GiB) variable \"%s\" in CDF5 file\n",fnc_nm,(unsigned long)var_sz,(unsigned long)(1.0*var_sz/1073741824UL),var_nm);
 	bug_idx=var_idx;
 	bug_nbr++;
       } /* !var_sz */
     } /* !var_idx */
     if(bug_nbr > 0){
-      (void)fprintf(stdout,"WARNING: %s reports total number of \"large\" (> 4 GiB) variables in CDF5 file is %d.\n",fnc_nm,bug_nbr);
+      (void)fprintf(stdout,"WARNING: %s reports total number of \"large\" (> 4 GiB) variables in CDF5 file is %d\n",fnc_nm,bug_nbr);
       if(bug_nbr > 1 || bug_idx != var_nbr-1){
 	(void)fprintf(stdout,"WARNING: %s reports at least one \"large\" (> 4 GiB) variable in CDF5 file is not the last variable defined in the dataset. Writing CDF5 files with large variables is buggy in netCDF library versions 4.4.0-4.4.1 unless there is only one such \"large\" variable and it is the last to be defined. This NCO is linked to netCDF library version %d. If this is an input file written by PnetCDF and read by NCO then the input data are fine (because PnetCDF writes CDF5 through a different mechanism than serial programs like NCO's writer). And if this CDF5 file was written by any netCDF version 4.5.0 or greater, then it is fine. However, if this is an input file and it was written by any serial netCDF writer (like NCO) employing netCDF library 4.4.x, then this file is likely corrupt and variables were silently truncated when writing it. Likewise, if this is an output file then it will like be corrupt, as NCO is employing a buggy netCDF library to write it.\nHINT: There are three potential solutions for data affected by this bug: 1. Re-write (using any netCDF version) original input files in netCDF4 format instead of CDF5, then process these as normal and write netCDF4 output (instead of CDF5); 2. Re-compile NCO with netCDF library 4.5.0 or later and use it to convert non-corrupt datasets to netCDF4 format, then process the data. This message should only appear if there is a possibility that you are reading or writing a corrupt dataset. Sorry to scare you if this is a false positive. For more information on this nasty bug, see https://github.com/Unidata/netcdf-c/issues/463\n",fnc_nm,NC_LIB_VERSION);
       } /* !bug_idx */
