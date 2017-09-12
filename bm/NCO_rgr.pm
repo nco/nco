@@ -1652,6 +1652,8 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array
     
 #ncks #03
+# ncks -h -O -v lev ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H --trd -s '%f,' -v lev ~/foo.nc
     $dsc_sng="extract a dimension";
     $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lev $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --trd -s '%f,' -v lev %tmp_fl_00%";

@@ -1955,7 +1955,6 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   /* Purpose: Wrapper for nc_put_vara_*() */
   const char fnc_nm[]="nco_put_vara()";
   int rcd=NC_NOERR;
-#if NC_LIB_VERSION < 440
   switch(type){
   case NC_FLOAT: rcd=nc_put_vara_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const float *)vp); break;
   case NC_DOUBLE: rcd=nc_put_vara_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const double *)vp); break;
@@ -1974,7 +1973,6 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-# endif /* !NC_LIB_VERSION */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
@@ -2016,7 +2014,6 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
   /* Purpose: Wrapper for nc_put_vars_*() */
   const char fnc_nm[]="nco_put_vars()";
   int rcd=NC_NOERR;
-#if NC_LIB_VERSION < 440
   switch(type){
   case NC_FLOAT: rcd=nc_put_vars_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const float *)vp); break;
   case NC_DOUBLE: rcd=nc_put_vars_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const double *)vp); break;
@@ -2035,7 +2032,6 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-# endif /* !NC_LIB_VERSION */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vars()");
   return rcd;
 } /* end nco_put_vars */
