@@ -508,20 +508,20 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
   /* Purpose: Convert netCDF extended file format enum to string */
 #if NC_LIB_VERSION < 440
     switch(fl_fmt_xtn){
-    case NC_FORMAT_NC3:
-      return "NC_FORMAT_NC3";
-    case NC_FORMAT_NC_HDF5:
-      return "NC_FORMAT_HDF5";
-    case NC_FORMAT_NC_HDF4:
-      return "NC_FORMAT_HDF4";
-    case NC_FORMAT_PNETCDF:
-      return "NC_FORMAT_PNETCDF";
-    case NC_FORMAT_DAP2:
-      return "NC_FORMAT_DAP2";
-    case NC_FORMAT_DAP4:
-      return "NC_FORMAT_DAP4";
-    case NC_FORMAT_UNDEFINED:
-      return "NC_FORMAT_UNDEFINED";
+    case NC_FORMATX_NC3:
+      return "NC_FORMATX_NC3";
+    case NC_FORMATX_NC_HDF5:
+      return "NC_FORMATX_NC_HDF5";
+    case NC_FORMATX_NC_HDF4:
+      return "NC_FORMATX_NC_HDF4";
+    case NC_FORMATX_PNETCDF:
+      return "NC_FORMATX_PNETCDF";
+    case NC_FORMATX_DAP2:
+      return "NC_FORMATX_DAP2";
+    case NC_FORMATX_DAP4:
+      return "NC_FORMATX_DAP4";
+    case NC_FORMATX_UNDEFINED:
+      return "NC_FORMATX_UNDEFINED";
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
 #else /* !NC_LIB_VERSION */
@@ -529,9 +529,9 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
     case NC_FORMATX_NC3:
       return "NC_FORMATX_NC3"; /* NB: CDF5 self-report NC_FORMATX_NC3 when files opened through netCDF serial API */
     case NC_FORMATX_NC_HDF5:
-      return "NC_FORMATX_HDF5";
+      return "NC_FORMATX_NC_HDF5";
     case NC_FORMATX_NC_HDF4:
-      return "NC_FORMATX_HDF4";
+      return "NC_FORMATX_NC_HDF4";
     case NC_FORMATX_PNETCDF:
       return "NC_FORMATX_PNETCDF"; /* CDF5 files report NC_FORMATX_PNETCDF when ... */
     case NC_FORMATX_DAP2:
@@ -903,8 +903,6 @@ nco_close(const int nc_id)
   int mode; /* [enm] Mode */
   rcd=nc_inq_format(nc_id,&fl_fmt);
   rcd=nc_inq_format_extended(nc_id,&fl_fmt_xtn,&mode);
-  //(void)fprintf(stdout,"DEBUG: %s reports NC_LIB_VERSION = %d.\n",fnc_nm,NC_LIB_VERSION);
-  (void)fprintf(stdout,"DEBUG: %s reports file format and extended format are %d = %s and %d = %s, respectively\n",fnc_nm,fl_fmt,nco_fmt_sng(fl_fmt),fl_fmt_xtn,nco_fmt_xtn_sng(fl_fmt_xtn));
   if(fl_fmt == NC_FORMAT_CDF5){
     char var_nm[NC_MAX_NAME+1L];
     int dmn_id[NC_MAX_DIMS];
@@ -918,6 +916,8 @@ nco_close(const int nc_id)
     nc_type var_typ;
     size_t dmn_sz[NC_MAX_DIMS];
     size_t var_sz;
+    //(void)fprintf(stdout,"DEBUG: %s reports NC_LIB_VERSION = %d.\n",fnc_nm,NC_LIB_VERSION);
+    (void)fprintf(stdout,"DEBUG: %s reports file format and extended format are %d = %s and %d = %s, respectively\n",fnc_nm,fl_fmt,nco_fmt_sng(fl_fmt),fl_fmt_xtn,nco_fmt_xtn_sng(fl_fmt_xtn));
     rcd=nc_inq_varids(nc_id,&var_nbr,var_id);
     for(var_idx=0;var_idx<var_nbr;var_idx++){
       var_sz=1L;

@@ -27,7 +27,7 @@ nco_create_mode_mrg /* [fnc] Merge clobber mode with user-specified file format 
   } /* endif */
 
   md_create=md_clobber;
-  if(fl_out_fmt == NC_FORMAT_64BIT){
+  if(fl_out_fmt == NC_FORMAT_64BIT_OFFSET){
     md_create|=NC_64BIT_OFFSET;
   }else if(fl_out_fmt == NC_FORMAT_CDF5){
     md_create|=NC_64BIT_DATA;
