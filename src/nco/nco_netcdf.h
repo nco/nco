@@ -122,7 +122,10 @@
 # define NC_NOSHUFFLE 0
 #endif
 
-  /* Seven compatibility tokens introduced 20131222 in netCDF 4.3.1-rc7 netcdf.h */
+  /* 20131222: Seven compatibility tokens introduced in netCDF 4.3.1-rc7 netcdf.h
+     20151222: Tokens are superseded in netCDF 4.4.0-RC4 netcdf.h by same tokens with "FORMATX" instead of "FORMAT"
+     This disambiguates extended format (FORMATX) flags returned by nc_inq_format_extended() from format flags (e.g., NC_FORMAT_CLASSIC) returned by nco_inq_format()
+     Also added NC_FORMAT_NC4 as alias to NC_FORMAT_NC_HDF5 */
 #ifndef NC_FORMAT_UNDEFINED
 # define NC_FORMAT_UNDEFINED (0)
 #else
@@ -132,10 +135,13 @@
 # define NC_FORMAT_NC3     (1)
 #endif
 #ifndef NC_FORMAT_NC_HDF5
-# define NC_FORMAT_NC_HDF5 (2) /*cdf 4 subset of HDF5 */
+# define NC_FORMAT_NC_HDF5 (2) /* netCDF-4 subset of HDF5 */
+#endif
+#ifndef NC_FORMAT_NC4
+# define NC_FORMAT_NC4 NC_FORMAT_NC_HDF5 /* alias */
 #endif
 #ifndef NC_FORMAT_NC_HDF4
-# define NC_FORMAT_NC_HDF4 (3) /* netcdf 4 subset of HDF4 */
+# define NC_FORMAT_NC_HDF4 (3) /* netCDF-4 subset of HDF4 */
 #endif
 #ifndef NC_FORMAT_PNETCDF
 # define NC_FORMAT_PNETCDF (4)
@@ -145,6 +151,33 @@
 #endif
 #ifndef NC_FORMAT_DAP4
 # define NC_FORMAT_DAP4    (6)
+#endif
+
+#ifndef NC_FORMATX_UNDEFINED
+# define NC_FORMATX_UNDEFINED (0)
+#else
+# define NC_HAVE_INQ_FORMATX_EXTENDED
+#endif
+#ifndef NC_FORMATX_NC3
+# define NC_FORMATX_NC3     (1)
+#endif
+#ifndef NC_FORMATX_NC_HDF5
+# define NC_FORMATX_NC_HDF5 (2) /* netCDF4 subset of HDF5 */
+#endif
+#ifndef NC_FORMATX_NC4
+# define NC_FORMATX_NC4 NC_FORMATX_NC_HDF5 /* alias */
+#endif
+#ifndef NC_FORMATX_NC_HDF4
+# define NC_FORMATX_NC_HDF4 (3) /* netcdf4 subset of HDF4 */
+#endif
+#ifndef NC_FORMATX_PNETCDF
+# define NC_FORMATX_PNETCDF (4)
+#endif
+#ifndef NC_FORMATX_DAP2
+# define NC_FORMATX_DAP2    (5)
+#endif
+#ifndef NC_FORMATX_DAP4
+# define NC_FORMATX_DAP4    (6)
 #endif
 
 /* Three compatibility tokens from pnetcdf.h introduced to NCO 20140604 

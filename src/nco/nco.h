@@ -471,6 +471,7 @@ extern "C" {
 #ifndef NC_FORMAT_DAP4
 # define NC_FORMAT_DAP4    (6)
 #endif
+
 #ifndef NC_FORMATX_UNDEFINED
 # define NC_FORMATX_UNDEFINED (0)
 #else
