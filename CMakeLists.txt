@@ -4,14 +4,6 @@
 #that's all
 
 #/////////////////////////////////////////////////////////////////////////////////////
-#parameter options
-#/////////////////////////////////////////////////////////////////////////////////////
-
-#-DFIND_ZLIB:BOOL=<ON or OFF> try to locate ZLIB library (default ON)
-#-DFIND_SZIP:BOOL=<ON or OFF> try to locate SZIP library (default ON)
-#-DUSE_OPENMP:BOOL=<ON or OFF> use OpenMP (default ON)
-
-#/////////////////////////////////////////////////////////////////////////////////////
 #mininum library dependencies: netCDF, HDF5, HDF5_HL, ZLIB (SZIP)
 #/////////////////////////////////////////////////////////////////////////////////////
 
@@ -49,6 +41,7 @@ cmake_minimum_required(VERSION 2.8)
 project (nco)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
+include(CheckLibraryExists)
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #command line options
@@ -72,7 +65,7 @@ add_definitions(-DENABLE_STATIC)
 # red, fatal error, cannot build (missing netCDF, HDF5, CURL libraries)
 # magenta, "negative" warning (missing optional libraries, GSL, ANTLR, UDUNITS)
 # green, "positive" warning (opposite of magenta, optional libraries found)
-# blue, general information to take notice (SZIP/ZLIB were detected as needed, special NCO functions are defined
+# blue, general information to take notice (SZIP/ZLIB were detected as needed, special NCO functions are defined)
 #//////////////////////////
 
 if(NOT WIN32)
@@ -96,8 +89,6 @@ endif()
 
 #//////////////////////////
 #math functions, including float versions
-#"#define HAVE_XXX 1" and "#undef NEED_XXX" when function xxx() is found and
-#"#undef HAVE_XXX" and "#define NEED_XXX 1" when function xxx() is not found
 #NCO_CHECK_FUNCS([atan2])
 #NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
 #NCO_CHECK_FUNCS([erff erfcf gammaf])
@@ -105,7 +96,6 @@ endif()
 #NCO_CHECK_FUNCS([ceilf floorf])
 #NCO_CHECK_FUNCS([nearbyint rint round trunc])
 #NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
-#CMAKE_REQUIRED_LIBRARIES is required for check_function_exists() to find the function
 #//////////////////////////
 
 find_library(MATH_LIBRARY NAMES m)
@@ -121,7 +111,6 @@ if(MATH_LIBRARY)
   endif()
 
 endif(MATH_LIBRARY)
-
 
 #//////////////////////////
 # detect system/libraries specific header files
@@ -194,50 +183,32 @@ endif()
 
 #//////////////////////////
 #HDF5 can be optionally linked with the SZIP library (Science Data Lossless Compression Program) and ZLIB
-#Linux: readelf -Ws <lib_file>
-#Mac: brew install binutils && gobjdump --syms <lib_file>
-#Windows: dumbin, but requires PATH setting, so set manually with options -DFIND_SZIP=<ON,OFF> -FIND_ZLIB=<ON,OFF>  
+#Symbol to detect in ZLIB can be only H5Z_DEFLATE, a structure only defined in H5Zdeflate.c if the filter is enabled
+#For SZIP the structure can be only H5Z_SZIP, defined in H5Zszip.c if the filter is enabled
+#check_library_exists() tries to link a temporary program with these symbols
+#On MSVC for this detection to work, the HDF5 library MUST HAVE as additional dependencies the ZLIB and SZIP libraries,
+#which is not a requirement for the libarry to build successfully
 #//////////////////////////
 
-set(have_read_symbols "no")
-find_program(read_symbols_prg readelf)
-if (${read_symbols_prg} MATCHES "readelf")
-  set(have_read_symbols "yes")
-  message("-- Readelf program found: " ${read_symbols_prg}) 
-  execute_process(COMMAND ${read_symbols_prg} -Ws ${HDF5_LIBRARY} OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt)
-endif()
-find_program(read_symbols_prg gobjdump)
-if (${read_symbols_prg} MATCHES "gobjdump")
-  set(have_read_symbols "yes")
-  message("-- Gobjdump program found: " ${read_symbols_prg}) 
-  execute_process(COMMAND ${read_symbols_prg} --syms ${HDF5_LIBRARY} OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt)
-endif()
-if (${have_read_symbols} MATCHES "no")
-  message("${color_magenta}-- Programs readelf/gobjdump/dumpbin missing, cannot find if SZIP/ZLIB library dependencies are needed, set options manually...${color_reset}")
-  set(NEED_SZIP ${FIND_SZIP})
-  set(NEED_ZLIB ${FIND_ZLIB})
+set(CMAKE_REQUIRED_LIBRARIES ${HDF5_LIBRARY})
+
+message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the ZLIB library...")
+check_library_exists(${HDF5_LIBRARY} H5Z_DEFLATE "" NEED_ZLIB)
+if (NEED_ZLIB)
+  message("${color_blue}-- ZLIB library is needed...${color_reset}")
+else()
+  message("${color_blue}-- ZLIB library is not needed...${color_reset}")
 endif()
 
-if (${have_read_symbols} MATCHES "yes")
-  message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the SZIP library...")
-  file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt NEED_SZIP REGEX "SZ_BufftoBuffCompress")
-  if (NEED_SZIP)
-    message("${color_blue}--  SZIP library is needed...${color_reset}")
-  else()
-    message("-- SZIP library is not needed...")
-  endif(NEED_SZIP)
-
-  message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the ZLIB library...")
-  file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/symbols.txt NEED_ZLIB REGEX "inflateEnd")
-  if (NEED_ZLIB)
-    message("${color_blue}-- ZLIB library is needed...${color_reset}")
-  else()
-    message("-- ZLIB library is not needed...")
-  endif(NEED_ZLIB)
+message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the SZIP library...")
+check_library_exists(${HDF5_LIBRARY} H5Z_SZIP "" NEED_SZIP)
+if (NEED_SZIP)
+  message("${color_blue}-- SZIP library is needed...${color_reset}")
+else()
+  message("${color_blue}-- SZIP library is not needed...${color_reset}")
 endif()
 
-
-if (FIND_SZIP AND NEED_SZIP)
+if (NEED_SZIP)
   message("-- Trying to find the SZIP library...")
   find_library(SZIP_LIBRARY NAMES sz)
   if(NOT SZIP_LIBRARY)
@@ -247,7 +218,7 @@ if (FIND_SZIP AND NEED_SZIP)
   endif()
 endif()
 
-if (FIND_ZLIB AND NEED_ZLIB)
+if (NEED_ZLIB)
   message("-- Trying to find the ZLIB library...")
   find_library(ZLIB_LIBRARY NAMES libz.a z)
   if(NOT ZLIB_LIBRARY)
@@ -634,7 +605,7 @@ endif()
 # OpenMP
 #//////////////////////////
 
-if(USE_OPENMP AND NOT MSVC)
+if(NOT MSVC)
   find_package(OpenMP QUIET)
   if(OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
