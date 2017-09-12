@@ -97,7 +97,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
      (void)fprintf(stdout,"2. NCO attempts to read other filetypes (HDF4, HDF-EOS2, pnetCDF/CDF5) for which support must be (but was not) enabled at netCDF build-time. NCO can access HDF4 files if NCO is first re-linked to a version of netCDF configured with the --enable-hdf4 option. This is a non-standard netCDF build option described here: http://www.unidata.ucar.edu/software/netcdf/docs/build_hdf4.html. NCO can access pnetCDF/CDF5 files if NCO is first re-linked to netCDF version 4.4.0 or later.\n3. NCO attempts to utilize diskless (i.e., RAM) files.  In this case remove the diskless switches (e.g., --ram or --diskless) and then re-issue the command.\n4. Access to a DAP URL fails, and the backup method of downloading the URL using wget obtains a data aggregation file (e.g., a .ncml file) instead of an actual netCDF file. In this case the problem is with the DAP server or URL.\n"); break; 
   case NC_ERANGE: (void)fprintf(stdout,"ERROR NC_ERANGE Result not representable in output file\nHINT: NC_ERANGE errors typically occur after an arithmetic operation results in a value not representible by the output variable type when NCO attempts to write those values to an output file.  Possible workaround: Promote the variable to higher precision before attempting arithmetic.  For example,\nncap2 -O -s \'foo=double(foo);\' in.nc in.nc\nFor more details, see http://nco.sf.net/nco.html#typ_cnv\n"); break; 
   case NC_EUNLIMIT: (void)fprintf(stdout,"ERROR NC_UNLIMIT NC_UNLIMITED size already in use\nHINT: NC_EUNLIMIT errors can occur when attempting to convert netCDF4 classic files that contain multiple record dimensions into a netCDF3 file that allows only one record dimension. In this case, try first fixing the excess record dimension(s) (with, e.g., ncks --fix_rec_dmn) and then convert to netCDF3. For more details, see http://nco.sf.net/nco.html#fix_rec_dmn\n"); break;
-  case NC_EVARSIZE: (void)fprintf(stdout,"ERROR NC_EVARSIZE One or more variable sizes violate format constraints\nHINT: NC_EVARSIZE errors occur when attempting to aggregate files together into outputs that exceed the capacity of the file format, and when trying to write individual variables that exceed the constraints of the file format. Relevant limits: netCDF3 NETCDF_CLASSIC format limits fixed variables to sizes smaller than 2^31 B = 2 GiB ~ 2.1 GB, and record variables to that size per record. netCDF3 NETCDF_64BIT_OFFSET format limits fixed variables to sizes smaller than 2^32 B = 4 GiB ~ 4.2 GB, and record variables to that size per record. The netCDF3 NETCDF_64BIT_SIZE and netCDF4 NETCDF4 formats have no variable size limitations of real-world import. If any variable in your dataset exceeds these limits, alter the output file to a format capacious enough, either netCDF3 classic with 64-bit offsets (with -6 or --64), to pnetCDF/CDF5 with 64-bit data (with -5), or to netCDF4 (with -4). For more details, see http://nco.sf.net/nco.html#fl_fmt\n"); break;
+  case NC_EVARSIZE: (void)fprintf(stdout,"ERROR NC_EVARSIZE One or more variable sizes violate format constraints\nHINT: NC_EVARSIZE errors occur when attempting to copy or aggregate input files together into an output file that exceeds the per-file capacity of the output file format, and when trying to copy, aggregate, or define individual variables that exceed the per-variable constraints of the output file format. The per-file limit of all netCDF formats is not less than 8 EiB on modern computers, so any NC_EVARSIZE error is almost certainly due to violating a per-variable limit. Relevant limits: netCDF3 NETCDF_CLASSIC format limits fixed variables to sizes smaller than 2^31 B = 2 GiB ~ 2.1 GB, and record variables to that size per record. A single variable may exceed this limit if and only if it is the last defined variable. netCDF3 NETCDF_64BIT_OFFSET format limits fixed variables to sizes smaller than 2^32 B = 4 GiB ~ 4.2 GB, and record variables to that size per record. Any number of variables may reach, though not exceed, this size for fixed variables, or this size per record for record variables. The netCDF3 NETCDF_64BIT_DATA and netCDF4 NETCDF4 formats have no variable size limitations of real-world import. If any variable in your dataset exceeds these limits, alter the output file to a format capacious enough, either netCDF3 classic with 64-bit offsets (with -6 or --64), to pnetCDF/CDF5 with 64-bit data (with -5), or to netCDF4 (with -4). For more details, see http://nco.sf.net/nco.html#fl_fmt\n"); break;
   } /* end switch */
 
   /* Print NCO-generated error message, if any */
@@ -896,6 +896,49 @@ nco_close(const int nc_id)
   /* Purpose: Wrapper for nc_close() */
   const char fnc_nm[]="nco_close()";
   int rcd=NC_NOERR;
+#if NC_LIB_VERSION >= 440
+  /* 20170912 Diagnose whether file may be (for input files) or is (for output files) infected by CDF5 bug */
+  int fl_fmt; /* I [enm] File format */
+  rcd=nc_inq_format(nc_id,&fl_fmt);
+  if(fl_fmt == NC_FORMAT_CDF5){
+    char var_nm[NC_MAX_NAME+1L];
+    int dmn_id[NC_MAX_DIMS];
+    int var_id[NC_MAX_VARS];
+    int bug_idx=-1;
+    int bug_nbr=0;
+    int dmn_idx;
+    int dmn_nbr;
+    int var_idx;
+    int var_nbr;
+    nc_type var_typ;
+    size_t dmn_sz[NC_MAX_DIMS];
+    size_t var_sz;
+    rcd=nc_inq_varids(nc_id,&var_nbr,var_id);
+    for(var_idx=0;var_idx<var_nbr;var_idx++){
+      var_sz=1L;
+      rcd=nc_inq_varndims(nc_id,var_id[var_idx],&dmn_nbr);
+      rcd=nc_inq_vardimid(nc_id,var_id[var_idx],dmn_id);
+      for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	rcd=nc_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
+	var_sz*=dmn_sz[dmn_idx];
+      } /* !dmn_idx */
+      rcd=nc_inq_vartype(nc_id,var_id[var_idx],&var_typ);
+      var_sz*=nco_typ_lng(var_typ);
+      if(var_sz > 4ULL*1073741824ULL){ /* 4 GiB */
+	rcd=nc_inq_varname(nc_id,var_id[var_idx],var_nm);
+	(void)fprintf(stdout,"WARNING: %s detects \"large\" (%lu B =~ %lu GiB > 4294967296 B = 4 GiB) variable \"%s\" in CDF5 file.\n",fnc_nm,(unsigned long)var_sz,(unsigned long)(1.0*var_sz/1073741824UL),var_nm);
+	bug_idx=var_idx;
+	bug_nbr++;
+      } /* !var_sz */
+    } /* !var_idx */
+    if(bug_nbr > 0){
+      (void)fprintf(stdout,"WARNING: %s reports total number of \"large\" (> 4 GiB) variables in CDF5 file is %d.\n",fnc_nm,bug_nbr);
+      if(bug_nbr > 1 || bug_idx != var_nbr-1){
+	(void)fprintf(stdout,"WARNING: %s reports at least one \"large\" (> 4 GiB) variable in CDF5 file is not the last variable defined in the dataset. Writing CDF5 files with large variables is buggy in netCDF library versions 4.4.0-4.4.1 unless there is only one such \"large\" variable and it is the last to be defined. This NCO is linked to netCDF library version %d. If this is an input file written by PnetCDF and read by NCO then the input data are fine (because PnetCDF writes CDF5 through a different mechanism than serial programs like NCO's writer). And if this CDF5 file was written by any netCDF version 4.5.0 or greater, then it is fine. However, if this is an input file and it was written by any serial netCDF writer (like NCO) employing netCDF library 4.4.x, then this file is likely corrupt and variables were silently truncated when writing it. Likewise, if this is an output file then it will like be corrupt, as NCO is employing a buggy netCDF library to write it.\nHINT: There are three potential solutions for data affected by this bug: 1. Re-write (using any netCDF version) original input files in netCDF4 format instead of CDF5, then process these as normal and write netCDF4 output (instead of CDF5); 2. Re-compile NCO with netCDF library 4.5.0 or later and use it to convert non-corrupt datasets to netCDF4 format, then process the data. This message should only appear if there is a possibility that you are reading or writing a corrupt dataset. Sorry to scare you if this is a false positive. For more information on this nasty bug, see https://github.com/Unidata/netcdf-c/issues/463\n",fnc_nm,NC_LIB_VERSION);
+      } /* !bug_idx */
+    } /* !bug_nbr */
+  } /* !CDF5 */
+#endif /* !NC_LIB_VERSION */
   rcd=nc_close(nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
@@ -1770,7 +1813,6 @@ nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type
      20160228: nc_put_var() family does type conversion, nc_put_vara() family does not */
   const char fnc_nm[]="nco_put_var()";
   int rcd=NC_NOERR;
-#if NC_LIB_VERSION < 440
   switch(type){
   case NC_FLOAT: rcd=nc_put_var_float(nc_id,var_id,(const float *)vp); break;
   case NC_DOUBLE: rcd=nc_put_var_double(nc_id,var_id,(const double *)vp); break;
@@ -1789,48 +1831,6 @@ nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type
 # endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-# endif /* !NC_LIB_VERSION */
-#if NC_LIB_VERSION >= 440
-  int dmn_id[NC_MAX_DIMS];
-  int dmn_idx;
-  int dmn_nbr;
-  int fl_fmt; /* I [enm] File format */
-  size_t dmn_sz[NC_MAX_DIMS];
-  size_t var_sz=1L;
-  rcd=nc_inq_format(nc_id,&fl_fmt);
-  if(fl_fmt == NC_FORMAT_CDF5){
-    char var_nm[NC_MAX_NAME+1L];
-    rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
-    rcd=nc_inq_vardimid(nc_id,var_id,dmn_id);
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-      rcd=nc_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
-      var_sz*=dmn_sz[dmn_idx];
-    } /* !dmn_idx */
-    var_sz*=nco_typ_lng(type);
-    if(var_sz > 2ULL*1073741824ULL){ /* 2 GiB */
-      rcd=nc_inq_varname(nc_id,var_id,var_nm);
-      (void)fprintf(stdout,"WARNING: %s detects large (%lu B) write request for variable \"%s\". Such writes are buggy in netCDF library versions 4.4.0-4.4.1 (https://github.com/Unidata/netcdf-c/issues/463)\n",fnc_nm,(unsigned long)var_sz,var_nm);
-    } /* !var_sz */
-  } /* !CDF5 */
-  switch(type){
-  case NC_FLOAT: rcd=nc_put_var_float(nc_id,var_id,(const float *)vp); break;
-  case NC_DOUBLE: rcd=nc_put_var_double(nc_id,var_id,(const double *)vp); break;
-  case NC_INT: rcd=NCO_PUT_VAR_INT(nc_id,var_id,(const nco_int *)vp); break;
-  case NC_SHORT: rcd=nc_put_var_short(nc_id,var_id,(const short *)vp); break;
-  case NC_CHAR: rcd=NCO_PUT_VAR_CHAR(nc_id,var_id,(const nco_char *)vp); break;
-  case NC_BYTE: rcd=NCO_PUT_VAR_BYTE(nc_id,var_id,(const nco_byte *)vp); break;
-# ifdef ENABLE_NETCDF4
-  case NC_UBYTE: rcd=NCO_PUT_VAR_UBYTE(nc_id,var_id,(const nco_ubyte *)vp); break;
-  case NC_USHORT: rcd=NCO_PUT_VAR_USHORT(nc_id,var_id,(const nco_ushort *)vp); break;
-  case NC_UINT: rcd=NCO_PUT_VAR_UINT(nc_id,var_id,(const nco_uint *)vp); break;
-  case NC_INT64: rcd=NCO_PUT_VAR_INT64(nc_id,var_id,(const nco_int64 *)vp); break;
-  case NC_UINT64: rcd=NCO_PUT_VAR_UINT64(nc_id,var_id,(const nco_uint64 *)vp); break;
-    /* NC_STRING prototype next causes same compiler warnings described in nco_put_var1() above */
-  case NC_STRING: rcd=NCO_PUT_VAR_STRING(nc_id,var_id,(const char **)vp); break;
-# endif /* !ENABLE_NETCDF4 */
-  default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
-# endif /* !NC_LIB_VERSION */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
@@ -1968,47 +1968,6 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 # endif /* !NC_LIB_VERSION */
-#if NC_LIB_VERSION >= 440
-  int dmn_id[NC_MAX_DIMS];
-  int dmn_idx;
-  int dmn_nbr;
-  int fl_fmt; /* I [enm] File format */
-  size_t dmn_sz[NC_MAX_DIMS];
-  size_t var_sz=1L;
-  rcd=nc_inq_format(nc_id,&fl_fmt);
-  if(fl_fmt == NC_FORMAT_CDF5){
-    char var_nm[NC_MAX_NAME+1L];
-    rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
-    rcd=nc_inq_vardimid(nc_id,var_id,dmn_id);
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-      rcd=nc_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
-      var_sz*=dmn_sz[dmn_idx];
-    } /* !dmn_idx */
-    var_sz*=nco_typ_lng(type);
-    if(var_sz > 2ULL*1073741824ULL){ /* 2 GiB */
-      (void)nc_inq_varname(nc_id,var_id,var_nm);
-      (void)fprintf(stdout,"WARNING: %s detects large (%lu B) write request for variable \"%s\". Such writes are buggy in netCDF library versions 4.4.0-4.4.1 (https://github.com/Unidata/netcdf-c/issues/463)\n",fnc_nm,(unsigned long)var_sz,var_nm);
-    } /* !var_sz */
-  } /* !CDF5 */
-  switch(type){
-  case NC_FLOAT: rcd=nc_put_vara_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const float *)vp); break;
-  case NC_DOUBLE: rcd=nc_put_vara_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const double *)vp); break;
-  case NC_INT: rcd=NCO_PUT_VARA_INT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_int *)vp); break;
-  case NC_SHORT: rcd=nc_put_vara_short(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const short *)vp); break;
-  case NC_CHAR: rcd=NCO_PUT_VARA_CHAR(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_char *)vp); break;
-  case NC_BYTE: rcd=NCO_PUT_VARA_BYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_byte *)vp); break;
-#ifdef ENABLE_NETCDF4
-  case NC_UBYTE: rcd=NCO_PUT_VARA_UBYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_ubyte *)vp); break;
-  case NC_USHORT: rcd=NCO_PUT_VARA_USHORT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_ushort *)vp); break;
-  case NC_UINT: rcd=NCO_PUT_VARA_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_uint *)vp); break;
-  case NC_INT64: rcd=NCO_PUT_VARA_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_int64 *)vp); break;
-  case NC_UINT64: rcd=NCO_PUT_VARA_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const nco_uint64 *)vp); break;
-    /* NC_STRING prototype next causes same compiler warnings described in nco_put_var1() above */
-  case NC_STRING: rcd=NCO_PUT_VARA_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const char **)vp); break;
-#endif /* !ENABLE_NETCDF4 */
-  default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
-# endif /* !NC_LIB_VERSION */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
@@ -2051,47 +2010,6 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
   const char fnc_nm[]="nco_put_vars()";
   int rcd=NC_NOERR;
 #if NC_LIB_VERSION < 440
-  switch(type){
-  case NC_FLOAT: rcd=nc_put_vars_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const float *)vp); break;
-  case NC_DOUBLE: rcd=nc_put_vars_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const double *)vp); break;
-  case NC_INT: rcd=NCO_PUT_VARS_INT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_int *)vp); break;
-  case NC_SHORT: rcd=nc_put_vars_short(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const short *)vp); break;
-  case NC_CHAR: rcd=NCO_PUT_VARS_CHAR(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_char *)vp); break;
-  case NC_BYTE: rcd=NCO_PUT_VARS_BYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_byte *)vp); break;
-#ifdef ENABLE_NETCDF4
-  case NC_UBYTE: rcd=NCO_PUT_VARS_UBYTE(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_ubyte *)vp); break;
-  case NC_USHORT: rcd=NCO_PUT_VARS_USHORT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_ushort *)vp); break;
-  case NC_UINT: rcd=NCO_PUT_VARS_UINT(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_uint *)vp); break;
-  case NC_INT64: rcd=NCO_PUT_VARS_INT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const nco_int64 *)vp); break;
-  case NC_UINT64: rcd=NCO_PUT_VARS_UINT64(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const nco_uint64 *)vp); break;
-    /* NC_STRING prototype next causes same compiler warnings described in nco_put_var1() above */
-  case NC_STRING: rcd=NCO_PUT_VARS_STRING(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const char **)vp); break;
-#endif /* !ENABLE_NETCDF4 */
-  default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
-# endif /* !NC_LIB_VERSION */
-#if NC_LIB_VERSION >= 440
-  int dmn_id[NC_MAX_DIMS];
-  int dmn_idx;
-  int dmn_nbr;
-  int fl_fmt; /* I [enm] File format */
-  size_t dmn_sz[NC_MAX_DIMS];
-  size_t var_sz=1L;
-  rcd=nc_inq_format(nc_id,&fl_fmt);
-  if(fl_fmt == NC_FORMAT_CDF5){
-    char var_nm[NC_MAX_NAME+1L];
-    rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
-    rcd=nc_inq_vardimid(nc_id,var_id,dmn_id);
-    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-      rcd=nc_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
-      var_sz*=dmn_sz[dmn_idx];
-    } /* !dmn_idx */
-    var_sz*=nco_typ_lng(type);
-    if(var_sz > 2ULL*1073741824ULL){ /* 2 GiB */
-      rcd=nc_inq_varname(nc_id,var_id,var_nm);
-      (void)fprintf(stdout,"WARNING: %s detects large (%lu B) write request for variable \"%s\". Such writes are buggy in netCDF library versions 4.4.0-4.4.1 (https://github.com/Unidata/netcdf-c/issues/463)\n",fnc_nm,(unsigned long)var_sz,var_nm);
-    } /* !var_sz */
-  } /* !CDF5 */
   switch(type){
   case NC_FLOAT: rcd=nc_put_vars_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd, (const float *)vp); break;
   case NC_DOUBLE: rcd=nc_put_vars_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(const double *)vp); break;
