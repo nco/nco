@@ -288,13 +288,25 @@ else (MSVC)
 #compile as C99
 #//////////////////////////
 
-if (CMAKE_VERSION VERSION_LESS "3.1")  
-  if (CMAKE_C_COMPILER_ID STREQUAL "GNU")
-    set (CMAKE_C_FLAGS "--std=gnu99 ${CMAKE_C_FLAGS}")
-  endif ()
-else ()
-  set (CMAKE_C_STANDARD 99)
-endif ()
+if(CMAKE_VERSION VERSION_LESS "3.1")  
+  if(CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_C_FLAGS "--std=gnu99 ${CMAKE_C_FLAGS}")
+  endif()
+else()
+  set(CMAKE_C_STANDARD 99)
+endif()
+
+#//////////////////////////
+# other gcc flags
+#//////////////////////////
+
+if(CMAKE_COMPILER_IS_GNUCC)
+  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+   set(CMAKE_C_FLAGS "-D_BSD_SOURCE -D_POSIX_SOURCE ${CMAKE_C_FLAGS}")
+  else()
+   set(CMAKE_C_FLAGS "-D_DEFAULT_SOURCE ${CMAKE_C_FLAGS}")
+  endif()
+endif()
 
 endif(MSVC)
 
