@@ -44,14 +44,6 @@ include(CheckIncludeFile)
 include(CheckLibraryExists)
 
 #/////////////////////////////////////////////////////////////////////////////////////
-#command line options
-#/////////////////////////////////////////////////////////////////////////////////////
-
-option(FIND_ZLIB "Try to link with ZLIB library" ON)
-option(FIND_SZIP "Try to link with SZIP library" ON)
-option(USE_OPENMP "Use OpenMP" ON)
-
-#/////////////////////////////////////////////////////////////////////////////////////
 #general C/C++ build flags
 #/////////////////////////////////////////////////////////////////////////////////////
 
@@ -187,7 +179,7 @@ endif()
 #For SZIP the structure can be only H5Z_SZIP, defined in H5Zszip.c if the filter is enabled
 #check_library_exists() tries to link a temporary program with these symbols
 #On MSVC for this detection to work, the HDF5 library MUST HAVE as additional dependencies the ZLIB and SZIP libraries,
-#which is not a requirement for the libarry to build successfully
+#which is not a requirement for the library to build successfully
 #//////////////////////////
 
 set(CMAKE_REQUIRED_LIBRARIES ${HDF5_LIBRARY})
@@ -329,10 +321,10 @@ set(LIB_DEP ${LIB_DEP} ${NETCDF_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${HDF5_HL_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${HDF5_LIBRARY})
 set(LIB_DEP ${LIB_DEP} ${CURL_LIBRARY})
-if (FIND_ZLIB AND NEED_ZLIB)
+if (NEED_ZLIB)
   set(LIB_DEP ${LIB_DEP} ${ZLIB_LIBRARY})
 endif()
-if (FIND_SZIP AND NEED_SZIP)
+if (NEED_SZIP)
   set(LIB_DEP ${LIB_DEP} ${SZIP_LIBRARY})
 endif()
 
