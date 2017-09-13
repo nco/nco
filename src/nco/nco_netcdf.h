@@ -323,7 +323,7 @@ int nco_open_par  (const char * const fl_nm,const int  mode,MPI_Comm mpi_cmm,MPI
 int nco_var_par_access(const int nc_id,const int var_id,const int par_access);
 # endif /* !HAVE_NETCDF4_H */
 # ifdef PNETCDF_EXPOSED_API
-/* pnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
+/* PnetCDF routines defined by ANL Parallel netCDF Library libpnetcdf.a */
 int ncompi_create(MPI_Comm mpi_cmm,const char * const fl_nm,const int cmode,MPI_Info mpi_nfo,int * const nc_id);
 int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_Info mpi_nfo,int * const nc_id);
 # endif /* !PNETCDF_EXPOSED_API */
@@ -344,13 +344,17 @@ int nco_sync(const int nc_id);
 int nco_abort(const int nc_id);
 int nco_close(const int nc_id);
 int nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * const att_glb_nbr,int * const rec_dmn_id);
+#if NC_LIB_VERSION >= 440
+int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path);
+#endif /* 4.4.0 */
+int nco_inq_path(const int nc_id,size_t * const pathlen,char * const path);
 #if NEED_NC_INQ_FORMAT
-/* Stub for nc_inq_format(), which appeared in netCDF 3.6.1 or 3.6.2 */
+/* Stub for nc_inq_format(), introduced in netCDF 3.6.1 or 3.6.2 */
 int nc_inq_format(int nc_id,int * const fl_fmt);
 #endif /* !NEED_NC_INQ_FORMAT */
 int nco_inq_format(const int nc_id,int * const fl_fmt);
 #ifndef NC_HAVE_INQ_FORMAT_EXTENDED
-/* 20131222: Stub for nc_inq_format_extended(), which appeared in netCDF 4.3.1-rc7 */
+/* 20131222: Stub for nc_inq_format_extended(), introduced in netCDF 4.3.1-rc7 */
 int nc_inq_format_extended(int nc_id,int * const fl_fmt,int * const mode);
 #endif /* !NC_HAVE_INQ_FORMAT_EXTENDED */
 int nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode);

@@ -84,7 +84,7 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
     if(NC_LIB_VERSION >= 440){
       *fl_fmt_enm=NC_FORMAT_CDF5;
     }else{
-      (void)fprintf(stderr,"%s: ERROR This NCO was not built with PnetCDF (aka CDF5, http://trac.mcs.anl.gov/projects/parallel-netcdf) capabilities and cannot create the requested PnetCDF file format. PnetCDF (CDF5) was introduced in the base netCDF library in version 4.4.0 in January, 2016. HINT: Re-try with requisite library version or select a supported file format such as \"classic\" or \"64bit_offset\".\n",nco_prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR This NCO was not built with CDF5 (http://trac.mcs.anl.gov/projects/parallel-netcdf) capabilities and cannot create the requested CDF5 (aka PnetCDF) file format. CDF5 was introduced in the base netCDF library in version 4.4.0 in January, 2016. HINT: Re-try with after building NCO with the requisite netCDF library version or select a supported file format such as \"classic\" or \"64bit_offset\".\n",nco_prg_nm_get());
     } /* !NC_LIB_VERSION */
   }else{
     (void)fprintf(stderr,"%s: ERROR Unknown output file format \"%s\" requested. Valid formats are (unambiguous leading characters of) \"classic\", \"64bit_offset\",%s \"netcdf4\", and \"netcdf4_classic\".\n",nco_prg_nm_get(),fl_fmt_sng,(NC_LIB_VERSION >= 440) ? "\"64bit_data\"," : "");

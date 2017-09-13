@@ -1,3 +1,13 @@
+2017-09-13  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.6.9-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.9-alpha05 final changes';git push
+	git tag -a 4.6.9-alpha05 -m 'CMake hardening;CDF5 bug diagnosis';git push --tags
+
+	* CDL output ID = xxx in comments when dbg_lvl >= 2
+
+	* Add/use nco_inq_path() to improve CDF5 diagnostics
+
 2017-09-12  Charlie Zender  <zender@uci.edu>
 
 	* Passes all expected regression tests

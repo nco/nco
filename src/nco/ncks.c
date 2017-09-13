@@ -143,7 +143,7 @@ main(int argc,char **argv)
   char *rgr_grd_dst=NULL; /* [sng] File containing destination grid */
   char *rgr_map=NULL; /* [sng] File containing mapping weights from source to destination grid */
   char *rgr_var=NULL; /* [sng] Variable for special regridding treatment */
-  char *smr_fl_sz_sng; /* [sng] String describing estimated file size */
+  char *smr_fl_sz_sng=NULL; /* [sng] String describing estimated file size */
   char *smr_sng=NULL; /* [sng] File summary string */
   char *smr_xtn_sng=NULL; /* [sng] File extended summary string */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -1284,8 +1284,10 @@ main(int argc,char **argv)
       if(nco_dbg_lvl > nco_dbg_std) (void)sprintf(smr_xtn_sng," (representation of extended/underlying filetype %s)",nco_fmt_xtn_sng(nco_fmt_xtn_get())); else smr_xtn_sng[0]='\0';
       (void)sprintf(smr_sng,"Summary of %s: filetype = %s%s, %i groups (max. depth = %i), %i dimensions (%i fixed, %i record), %i variables (%i atomic-type, %i non-atomic), %i attributes (%i global, %i group, %i variable)",fl_in,nco_fmt_sng(fl_in_fmt),smr_xtn_sng,grp_nbr_fl,grp_dpt_fl,trv_tbl->nbr_dmn,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,var_nbr_fl+var_ntm_fl,var_nbr_fl,var_ntm_fl,att_glb_nbr+att_grp_nbr+att_var_nbr,att_glb_nbr,att_grp_nbr,att_var_nbr);
 
-      prn_flg.smr_fl_sz_sng=smr_fl_sz_sng=(char *)nco_malloc(300L*sizeof(char)); /* [sng] String describing estimated file size */
-      if(nco_dbg_lvl > nco_dbg_std) (void)nco_fl_sz_est(smr_fl_sz_sng,trv_tbl);
+      if(nco_dbg_lvl > nco_dbg_std){
+	prn_flg.smr_fl_sz_sng=smr_fl_sz_sng=(char *)nco_malloc(300L*sizeof(char)); /* [sng] String describing estimated file size */
+ 	(void)nco_fl_sz_est(smr_fl_sz_sng,trv_tbl);
+      } /* !dbg */
       // if(!prn_flg.cdl && !prn_flg.xml && !prn_flg.srm) (void)fprintf(stdout,"%s\n\n",smr_sng);
     } /* endif summary */
 

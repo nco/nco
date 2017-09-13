@@ -1426,7 +1426,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
 
   if(prn_flg->trd){
     if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? %s, chunked? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(deflate) ? "yes" : "no",(srg_typ == NC_CHUNKED) ? "yes" : "no",(packing) ? "yes" : "no"); else (void)fprintf(stdout,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? HDF4_UNKNOWN, chunked? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
-    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%*s%s id = %d\n",prn_ndn,spc_sng,var_trv->nm,var_id);
+    /* 20170913: Typically users not interested in variable ID. However, ID helps diagnose susceptibility to CDF5 bug */
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%*s%s ID = netCDF define order = %d\n",prn_ndn,spc_sng,var_trv->nm,var_id);
   } /* !trd */
   if(prn_flg->xml) (void)fprintf(stdout,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,xml_typ_nm(var_typ));
   if(prn_flg->jsn) (void)fprintf(stdout,"%*s\"%s\": {\n",prn_ndn,spc_sng,var_trv->nm);
@@ -1482,7 +1483,10 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   if(prn_flg->cdl){
     nm_cdl=nm2sng_cdl(var_trv->nm);
     (void)fprintf(stdout,"%*s%s %s%s ;",prn_ndn,spc_sng,cdl_typ_nm(var_typ),nm_cdl,dmn_sng);
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout," // RAM size = %s = %li*%lu = %lu bytes\n",sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)ram_sz_crr); else (void)fprintf(stdout,"\n");
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout," // RAM size = %s = %li*%lu = %lu bytes",sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)ram_sz_crr);
+    /* 20170913: Typically users not interested in variable ID. However, ID helps diagnose susceptibility to CDF5 bug */
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,", ID = %d",var_id);
+    (void)fprintf(stdout,"\n");
     nm_cdl=(char *)nco_free(nm_cdl);
   } /* !cdl */
   if(prn_flg->xml){
@@ -1900,7 +1904,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     nm_cdl=(char *)nco_free(nm_cdl);
     var_szm1=var->sz-1L;
 
-
     is_compound=False;
     /* Pre-compute elements that need brace punctuation */
     if(CDL && var->nbr_dim>1){
@@ -1923,7 +1926,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         for(int bdz=1; bdz<var->nbr_dim ; bdz++)
           if(mod_map_rv_cnt[bdz]  && lmn % mod_map_rv_cnt[bdz] == 0)
 	        (void)fprintf(stdout,"%c", (JSN_BRK ? '[' : '{' ) );
-
 
       is_mss_val=False;
       if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
@@ -2957,8 +2959,8 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   nm_cdl=(char *)nco_free(nm_cdl);
   if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(stdout,"\n");
   if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
-  if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
-  if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// Generate binary file: ncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
+  if(grp_dpt == 0 && prn_flg->nfo_xtr && nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
+  if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// Generate binary file from this CDL: ncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
   
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;

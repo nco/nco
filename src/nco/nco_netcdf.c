@@ -905,6 +905,7 @@ nco_close(const int nc_id)
   rcd=nc_inq_format(nc_id,&fl_fmt);
   rcd=nc_inq_format_extended(nc_id,&fl_fmt_xtn,&mode);
   if(fl_fmt == NC_FORMAT_CDF5){
+    char *path=NULL;
     char var_nm[NC_MAX_NAME+1L];
     int dmn_id[NC_MAX_DIMS];
     int var_id[NC_MAX_VARS];
@@ -916,9 +917,15 @@ nco_close(const int nc_id)
     int var_nbr;
     nc_type var_typ;
     size_t dmn_sz[NC_MAX_DIMS];
+    size_t pathlen;
     size_t var_sz;
     //(void)fprintf(stdout,"DEBUG: %s reports NC_LIB_VERSION = %d.\n",fnc_nm,NC_LIB_VERSION);
+    rcd=nc_inq_path(nc_id,&pathlen,NULL);
+    path=(char *)malloc(pathlen*sizeof(char));
+    rcd=nc_inq_path(nc_id,NULL,path);
+    (void)fprintf(stdout,"DEBUG: %s reports currently closing file %s\n",fnc_nm,path);
     (void)fprintf(stdout,"DEBUG: %s reports file format and extended format are %d = %s and %d = %s, respectively\n",fnc_nm,fl_fmt,nco_fmt_sng(fl_fmt),fl_fmt_xtn,nco_fmt_xtn_sng(fl_fmt_xtn));
+    (void)fprintf(stdout,"DEBUG: %s reports file mode is %o (octal) = %d (decimal) = %04x (hex)\n",fnc_nm,mode,(unsigned)mode,(unsigned)mode);
     rcd=nc_inq_varids(nc_id,&var_nbr,var_id);
     for(var_idx=0;var_idx<var_nbr;var_idx++){
       var_sz=1L;
@@ -932,15 +939,16 @@ nco_close(const int nc_id)
       var_sz*=nco_typ_lng(var_typ);
       if(var_sz > 4ULL*1073741824ULL){ /* 4 GiB */
 	rcd=nc_inq_varname(nc_id,var_id[var_idx],var_nm);
-	(void)fprintf(stdout,"WARNING: %s detects \"large\" (%lu B =~ %lu GiB > 4294967296 B = 4 GiB) variable \"%s\" in CDF5 file\n",fnc_nm,(unsigned long)var_sz,(unsigned long)(1.0*var_sz/1073741824UL),var_nm);
+	(void)fprintf(stdout,"WARNING: %s detects \"large\" (%lu B =~ %lu GiB > 4294967296 B = 4 GiB) variable \"%s\" in CDF5 file %s\n",fnc_nm,(unsigned long)var_sz,(unsigned long)(1.0*var_sz/1073741824UL),var_nm,path);
 	bug_idx=var_idx;
 	bug_nbr++;
       } /* !var_sz */
     } /* !var_idx */
+    if(path) free((void *)path);
     if(bug_nbr > 0){
-      (void)fprintf(stdout,"WARNING: %s reports total number of \"large\" (> 4 GiB) variables in CDF5 file is %d\n",fnc_nm,bug_nbr);
+      (void)fprintf(stdout,"WARNING: %s reports total number of \"large\" (> 4 GiB) variables in this CDF5 file is %d\n",fnc_nm,bug_nbr);
       if(bug_nbr > 1 || bug_idx != var_nbr-1){
-	(void)fprintf(stdout,"WARNING: %s reports at least one \"large\" (> 4 GiB) variable in CDF5 file is not the last variable defined in the dataset. Writing CDF5 files with large variables is buggy in netCDF library versions 4.4.0-4.4.1 unless there is only one such \"large\" variable and it is the last to be defined. This NCO is linked to netCDF library version %d. If this is an input file (i.e., NCO is _reading_ it) written by PnetCDF then the input data are fine (because PnetCDF writes CDF5 through a different mechanism than serial programs like NCO's writer). And if this CDF5 file was written by any netCDF version 4.5.0 or greater, then it is fine. However, if this is an input file and it was written by any serial netCDF writer (like NCO) employing netCDF library 4.4.x, then this file is likely corrupt and variables were silently truncated when writing it. If this is an output file (i.e., NCO is writing it) then it will definitely be corrupt, as NCO is employing (i.e., linked to) a buggy netCDF library (please upgrade to netCDF 4.5.x ASAP).\nHINT: There are two potential solutions for data affected by this bug: 1. Re-write (using any netCDF version) original input files in netCDF4 format instead of CDF5, then process these as normal and write netCDF4 output (instead of CDF5); 2. Re-compile NCO with netCDF library 4.5.0 or later and use it to convert non-corrupt datasets to netCDF4 format, then process the data. This message should only appear if there is a possibility that you are reading or writing a corrupt dataset. Sorry to scare you if this is a false positive. For more information on this nasty bug, see https://github.com/Unidata/netcdf-c/issues/463\n",fnc_nm,NC_LIB_VERSION);
+	(void)fprintf(stdout,"WARNING: %s reports at least one \"large\" (> 4 GiB) variable in this CDF5 file is not the last variable defined. Writing CDF5 files with large variables is buggy in netCDF library versions 4.4.0-4.4.1 unless there is only one such \"large\" variable and it is the last to be defined. This NCO is linked to netCDF library version %d. If this is an input file (i.e., NCO is _reading_ it) written by PnetCDF then the input data are fine (because PnetCDF writes CDF5 through a different mechanism than serial programs like NCO's writer). And if this CDF5 file was written by any netCDF version 4.5.0 or greater, then it is fine. However, if this is an input file and it was written by any serial netCDF writer (like NCO) employing netCDF library 4.4.x, then this file is likely corrupt and variables were silently truncated when writing it. If this is an output file (i.e., NCO is writing it) then it will definitely be corrupt, as NCO is employing (i.e., linked to) a buggy netCDF library (please upgrade to netCDF 4.5.x ASAP).\nHINT: There are two potential solutions for data affected by this bug: 1. Re-write (using any netCDF version) original input files in netCDF4 format instead of CDF5, then process these as normal and write netCDF4 output (instead of CDF5); 2. Re-compile NCO with netCDF library 4.5.0 or later and use it to convert non-corrupt datasets to netCDF4 format, then process the data. This message should only appear if there is a possibility that you are reading or writing a corrupt dataset. Sorry to scare you if this is a false positive. For more information on this nasty bug, see https://github.com/Unidata/netcdf-c/issues/463\n",fnc_nm,NC_LIB_VERSION);
       } /* !bug_idx */
     } /* !bug_nbr */
   } /* !CDF5 */
@@ -960,10 +968,29 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
   return rcd;
 } /* end nco_inq() */
 
-#ifdef NEED_NC_INQ_FORMAT
-int nc_inq_format(int nc_id, int * const fl_fmt)
+#if NC_LIB_VERSION < 440
+int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path)
 {
-  /* Purpose: Stub for nc_inq_format(), which appeared in netCDF 3.6.1 or 3.6.2
+  /* Purpose: 20170913: Stub for nc_inq_path(), introduced in netCDF 4.4.0
+     Forward compatibility prototype required for systems with netCDF < 4.4.0 */
+  *pathlen=0L;
+  path=NULL;
+  return NC_NOERR+0*nc_id; /* CEWI */
+} /* !nc_inq_path() */
+#endif /* 4.4.0 */
+int nco_inq_path(const int nc_id,size_t * const pathlen,char * const path)
+{
+  /* Purpose: Wrapper for nc_inq_path() */
+  int rcd;
+  rcd=nc_inq_path(nc_id,pathlen,path);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format()");
+  return rcd;
+} /* !nco_inq_path() */
+
+#ifdef NEED_NC_INQ_FORMAT
+int nc_inq_format(int nc_id,int * const fl_fmt)
+{
+  /* Purpose: Stub for nc_inq_format(), introduced in netCDF 3.6.1 or 3.6.2
      20070901 Current OPeNDAP does not have nc_inq_format() and thus requires this stub */
   *fl_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   return NC_NOERR+0*nc_id; /* CEWI */
@@ -1000,6 +1027,7 @@ nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
   int rcd=NC_NOERR;
   /* NB: 20131222: Function nc_inq_format_extended(int ncid,int *formatp,int *mode) appeared in netCDF 4.3.1-rc7
      Forward compatibility prototype required for systems with netCDF < 4.3.1 */
+  /* NUG: "netCDF API presents file as if it had the format specified by nc_inq_format(). The true file format, however, may not even be a netCDF file; it might be DAP, HDF4, or PNETCDF, for example. nc_inq_format_extended() returns that true file type. It also returns the effective mode for the file. */
   rcd=nc_inq_format_extended(nc_id,fl_fmt,mode);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format_extended()");
   return rcd;
