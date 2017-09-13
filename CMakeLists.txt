@@ -193,76 +193,6 @@ if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE)
 endif()
 
 #//////////////////////////
-# detect system specific functions used by NCO
-#//////////////////////////
-
-check_function_exists(mkstemp HAVE_mkstemp)
-if (HAVE_mkstemp)
-  message("-- Found function mkstemp")
-  add_definitions(-DHAVE_MKSTEMP)
-endif()
-
-#//////////////////////////
-#math functions, including float versions
-#NCO_CHECK_FUNCS([atan2])
-#NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
-#NCO_CHECK_FUNCS([erff erfcf gammaf])
-#NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
-#NCO_CHECK_FUNCS([ceilf floorf])
-#NCO_CHECK_FUNCS([nearbyint rint round trunc])
-#NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
-#//////////////////////////
-
-find_library(MATH_LIBRARY NAMES m ${find_opt})
-if(MATH_LIBRARY)
-  message("-- Math library found: " ${MATH_LIBRARY})
-  set(CMAKE_REQUIRED_LIBRARIES m)
-  macro(nco_check_funcs func def)
-  unset(have_result CACHE)
-  check_function_exists(${ARGV0} have_result)
-  if (NOT have_result)
-    message("${color_blue}-- Using NCO defined version of ${ARGV0}${color_reset}")
-    add_definitions(-D${ARGV1})
-  endif()
-  endmacro(nco_check_funcs)
-  nco_check_funcs(atan2 NEED_ATAN2)
-  nco_check_funcs(acosf NEED_ACOSF)
-  nco_check_funcs(asinf NEED_ASINF)
-endif(MATH_LIBRARY)
-
-check_include_file(strings.h HAVE_STRINGS_H)
-if (HAVE_STRINGS_H)
-  message("-- Found header strings.h")
-  add_definitions(-DHAVE_STRINGS_H)
-endif()
-
-check_include_file(netcdf_meta.h NC_HAVE_META_H)
-if (NC_HAVE_META_H)
-  message("-- Found header netcdf_meta.h")
-  add_definitions(-DNC_HAVE_META_H)
-endif()
-
-
-#//////////////////////////
-# regex
-#//////////////////////////
-
-check_include_file(regex.h HAVE_REGEX_H)
-check_function_exists(regexec HAVE_REGEXEC)
-check_function_exists(regcomp HAVE_REGCOMP)
-check_function_exists(regfree HAVE_REGFREE)
-if (HAVE_REGEX_H)
-  message("-- Found header regex.h")
-  add_definitions(-DHAVE_REGEX_H)
-endif()
-
-if (HAVE_REGEX_H AND HAVE_REGEXEC AND HAVE_REGCOMP AND HAVE_REGFREE)
-  message("-- Enabling Regex functionality...")
-  add_definitions(-DNCO_HAVE_REGEX_FUNCTIONALITY)
-endif()
-
-
-#//////////////////////////
 #compile as C++/static CRT on Visual Studio and as C99 on UNIX
 #//////////////////////////
 
@@ -558,6 +488,89 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
   target_include_directories(ncap2 PRIVATE src/nco ${ANTLR_INCLUDE})
   target_link_libraries (ncap2 ${nco_LIB} ${LIB_DEP} ${ANTLR_LIBRARY}) 
 endif()
+
+
+#//////////////////////////
+# detect system specific functions used by NCO
+#//////////////////////////
+
+check_function_exists(mkstemp HAVE_mkstemp)
+if (HAVE_mkstemp)
+  message("-- Found function mkstemp")
+  add_definitions(-DHAVE_MKSTEMP)
+endif()
+
+#//////////////////////////
+#math functions, including float versions
+#NCO_CHECK_FUNCS([atan2])
+#NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
+#NCO_CHECK_FUNCS([erff erfcf gammaf])
+#NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
+#NCO_CHECK_FUNCS([ceilf floorf])
+#NCO_CHECK_FUNCS([nearbyint rint round trunc])
+#NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
+#//////////////////////////
+
+find_library(MATH_LIBRARY NAMES m ${find_opt})
+if(MATH_LIBRARY)
+  message("-- Math library found: " ${MATH_LIBRARY})
+  set(CMAKE_REQUIRED_LIBRARIES m)
+  macro(nco_check_funcs func)
+  unset(have_result CACHE)
+  check_function_exists(${ARGV0} have_result)
+  if (NOT have_result)
+    message("${color_blue}-- Using NCO defined version of ${ARGV0}${color_reset}")
+    string(TOUPPER ${ARGV0} def_fnc )
+    add_definitions(-DNEED_${def_fnc})
+  endif()
+  endmacro(nco_check_funcs)
+  nco_check_funcs(atan2)
+  nco_check_funcs(acosf)
+  nco_check_funcs(asinf)
+  nco_check_funcs(atanf)
+  nco_check_funcs(cosf)
+  nco_check_funcs(expf)
+  nco_check_funcs(fabsf)
+  nco_check_funcs(fmodf)
+  nco_check_funcs(log10f)
+  nco_check_funcs(logf)
+  nco_check_funcs(powf)
+  nco_check_funcs(sinf)
+  nco_check_funcs(sqrtf)
+  nco_check_funcs(tanf)
+endif(MATH_LIBRARY)
+
+check_include_file(strings.h HAVE_STRINGS_H)
+if (HAVE_STRINGS_H)
+  message("-- Found header strings.h")
+  add_definitions(-DHAVE_STRINGS_H)
+endif()
+
+check_include_file(netcdf_meta.h NC_HAVE_META_H)
+if (NC_HAVE_META_H)
+  message("-- Found header netcdf_meta.h")
+  add_definitions(-DNC_HAVE_META_H)
+endif()
+
+
+#//////////////////////////
+# regex
+#//////////////////////////
+
+check_include_file(regex.h HAVE_REGEX_H)
+check_function_exists(regexec HAVE_REGEXEC)
+check_function_exists(regcomp HAVE_REGCOMP)
+check_function_exists(regfree HAVE_REGFREE)
+if (HAVE_REGEX_H)
+  message("-- Found header regex.h")
+  add_definitions(-DHAVE_REGEX_H)
+endif()
+
+if (HAVE_REGEX_H AND HAVE_REGEXEC AND HAVE_REGCOMP AND HAVE_REGFREE)
+  message("-- Enabling Regex functionality...")
+  add_definitions(-DNCO_HAVE_REGEX_FUNCTIONALITY)
+endif()
+
 
 #//////////////////////////
 #additional informational definitions used by ncks -r
