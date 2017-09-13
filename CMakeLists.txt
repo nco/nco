@@ -68,6 +68,24 @@ endif()
 
 set(find_opt NO_SYSTEM_ENVIRONMENT_PATH)
 
+#/////////////////////////////////////////////////////////////////////////////////////
+#netCDF
+#detect a user defined system environment variable NETCDF_ROOT
+#this sets the include path to NETCDF_INCLUDE directly
+#and a PATHS hint for NETCDF_LIBRARY (because the library name can be any legal combination of "netcdf" )
+#NOTE: For this case find_library(NETCDF_LIBRARY) MUST be called 2 times
+#First time it looks in NETCDF_LIBRARY_PATH if set, avoiding all other PATHS with NO_DEFAULT_PATH
+#If not found, business as usual
+#//////////////////////////
+
+set(netcdf_root "$ENV{NETCDF_ROOT}")
+if(netcdf_root)
+  set(NETCDF_INCLUDE "${netcdf_root}/include")
+  set(NETCDF_LIBRARY_PATH "${netcdf_root}/lib")
+  message("${color_blue}-- Using user defined netCDF include location: ${netcdf_root}/include${color_reset}")
+  message("${color_blue}-- Using user defined netCDF library location: ${netcdf_root}/lib${color_reset}")
+endif()
+
 find_path(NETCDF_INCLUDE netcdf.h ${find_opt})
 if(NOT NETCDF_INCLUDE)
   message(FATAL_ERROR "${color_red}netcdf.h header file not found${color_reset}")
@@ -75,6 +93,7 @@ else()
   message("-- Found netcdf.h header file at: " ${NETCDF_INCLUDE})
 endif()
 
+find_library(NETCDF_LIBRARY NAMES netcdf PATHS ${NETCDF_LIBRARY_PATH} NO_DEFAULT_PATH)
 find_library(NETCDF_LIBRARY NAMES netcdf ${find_opt})
 if(NOT NETCDF_LIBRARY)
   message(FATAL_ERROR "${color_red}netcdf library not found${color_reset}")
