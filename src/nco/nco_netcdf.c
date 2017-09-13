@@ -974,7 +974,7 @@ int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path)
   /* Purpose: 20170913: Stub for nc_inq_path(), introduced in netCDF 4.4.0
      Forward compatibility prototype required for systems with netCDF < 4.4.0 */
   *pathlen=0L;
-  path=NULL;
+  *path=NULL;
   return NC_NOERR+0*nc_id; /* CEWI */
 } /* !nc_inq_path() */
 #endif /* 4.4.0 */
