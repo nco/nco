@@ -58,103 +58,38 @@ if(NOT WIN32)
 endif()
 
 #//////////////////////////
-# detect system specific functions
+#detect minimum dependencies using
+#find_path()
+#find_library()
+#Notes:
+#1) list a static name first to avoid link errors in systems with multiple versions of the same libraries in PATH, used for libz.a
+#2) use option NO_SYSTEM_ENVIRONMENT_PATH
 #//////////////////////////
 
-check_function_exists(mkstemp HAVE_mkstemp)
-if (HAVE_mkstemp)
-  message("-- Found function mkstemp")
-  add_definitions(-DHAVE_MKSTEMP)
-endif()
+set(find_opt NO_SYSTEM_ENVIRONMENT_PATH)
 
-#//////////////////////////
-#math functions, including float versions
-#NCO_CHECK_FUNCS([atan2])
-#NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
-#NCO_CHECK_FUNCS([erff erfcf gammaf])
-#NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
-#NCO_CHECK_FUNCS([ceilf floorf])
-#NCO_CHECK_FUNCS([nearbyint rint round trunc])
-#NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
-#//////////////////////////
-
-find_library(MATH_LIBRARY NAMES m)
-if(MATH_LIBRARY)
-  message("-- Math library found: " ${MATH_LIBRARY})
-  set(CMAKE_REQUIRED_LIBRARIES m)
-
-  check_function_exists(acosf HAVE_acosf)
-  if (HAVE_acosf)
-  else()
-    message("${color_blue}-- Using NCO defined version of acos${color_reset}")
-    add_definitions(-DNEED_ACOSF)
-  endif()
-
-endif(MATH_LIBRARY)
-
-#//////////////////////////
-# detect system/libraries specific header files
-#//////////////////////////
-
-check_include_file(strings.h HAVE_STRINGS_H)
-if (HAVE_STRINGS_H)
-  message("-- Found header strings.h")
-  add_definitions(-DHAVE_STRINGS_H)
-endif()
-
-check_include_file(netcdf_meta.h NC_HAVE_META_H)
-if (NC_HAVE_META_H)
-  message("-- Found header netcdf_meta.h")
-  add_definitions(-DNC_HAVE_META_H)
-endif()
-
-
-#//////////////////////////
-# regex
-#//////////////////////////
-
-check_include_file(regex.h HAVE_REGEX_H)
-check_function_exists(regexec HAVE_REGEXEC)
-check_function_exists(regcomp HAVE_REGCOMP)
-check_function_exists(regfree HAVE_REGFREE)
-if (HAVE_REGEX_H)
-  message("-- Found header regex.h")
-  add_definitions(-DHAVE_REGEX_H)
-endif()
-
-if (HAVE_REGEX_H AND HAVE_REGEXEC AND HAVE_REGCOMP AND HAVE_REGFREE)
-  message("-- Enabling Regex functionality...")
-  add_definitions(-DNCO_HAVE_REGEX_FUNCTIONALITY)
-endif()
-
-#//////////////////////////
-#detect minimum dependencies
-#find_library() list a static name first to avoid link errors in systems with multiple versions of the same libraries in PATH
-#used for ZLIB_LIBRARY: libz.a
-#//////////////////////////
-
-find_path(NETCDF_INCLUDE netcdf.h)
+find_path(NETCDF_INCLUDE netcdf.h ${find_opt})
 if(NOT NETCDF_INCLUDE)
   message(FATAL_ERROR "${color_red}netcdf.h header file not found${color_reset}")
 else()
   message("-- Found netcdf.h header file at: " ${NETCDF_INCLUDE})
 endif()
 
-find_library(NETCDF_LIBRARY NAMES netcdf)
+find_library(NETCDF_LIBRARY NAMES netcdf ${find_opt})
 if(NOT NETCDF_LIBRARY)
   message(FATAL_ERROR "${color_red}netcdf library not found${color_reset}")
 else()
   message("-- Found netcdf library at: " ${NETCDF_LIBRARY})
 endif()
 
-find_library(HDF5_LIBRARY NAMES hdf5)
+find_library(HDF5_LIBRARY NAMES hdf5 ${find_opt})
 if(NOT HDF5_LIBRARY)
   message(FATAL_ERROR "${color_red}hdf5 library not found${color_reset}")
 else()
   message("-- Found hdf5 library at: " ${HDF5_LIBRARY})
 endif()
 
-find_library(HDF5_HL_LIBRARY NAMES hdf5_hl)
+find_library(HDF5_HL_LIBRARY NAMES hdf5_hl ${find_opt})
 if(NOT HDF5_HL_LIBRARY)
   message(FATAL_ERROR "${color_red}hdf5 high level library not found${color_reset}")
 else()
@@ -190,7 +125,7 @@ endif()
 
 if (NEED_SZIP)
   message("-- Trying to find the SZIP library...")
-  find_library(SZIP_LIBRARY NAMES sz)
+  find_library(SZIP_LIBRARY NAMES sz ${find_opt})
   if(NOT SZIP_LIBRARY)
     message(FATAL_ERROR "${color_red}szip library not found${color_reset}")
   else()
@@ -200,7 +135,7 @@ endif()
 
 if (NEED_ZLIB)
   message("-- Trying to find the ZLIB library...")
-  find_library(ZLIB_LIBRARY NAMES libz.a z)
+  find_library(ZLIB_LIBRARY NAMES libz.a z ${find_opt})
   if(NOT ZLIB_LIBRARY)
     message(FATAL_ERROR "${color_red}zlib library not found${color_reset}")
   else()
@@ -208,7 +143,7 @@ if (NEED_ZLIB)
   endif()
 endif()
 
-find_library(CURL_LIBRARY NAMES curl)
+find_library(CURL_LIBRARY NAMES curl ${find_opt})
 if(NOT CURL_LIBRARY)
   message(FATAL_ERROR "${color_red}curl library not found${color_reset}")
 else()
@@ -228,23 +163,26 @@ set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH})
 set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/opt/local/include/udunits2")
 set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} "/usr/include/udunits2")
 
-find_path(UDUNITS2_INCLUDE udunits2.h)
+find_path(UDUNITS2_INCLUDE udunits2.h ${find_opt})
 if(NOT UDUNITS2_INCLUDE)
   message("${color_magenta}-- Unidata units library header files not found${color_reset}")
 else()
   message("-- Found Unidata units library header files at: " ${UDUNITS2_INCLUDE})
 endif()
 
-find_library(UDUNITS2_LIBRARY NAMES udunits2)
+find_library(UDUNITS2_LIBRARY NAMES udunits2 ${find_opt})
 if(NOT UDUNITS2_LIBRARY)
   message("${color_magenta}-- Unidata units library not found${color_reset}")
 else()
   message("-- Found Unidata units library at: " ${UDUNITS2_LIBRARY})
 endif()
 
+#//////////////////////////
+# UDUnits depends on expat
+#//////////////////////////
+
 if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE)
-  # UDUnits depends on expat
-  find_library(EXPAT_LIBRARY NAMES libexpatMT expat)
+  find_library(EXPAT_LIBRARY NAMES libexpatMT expat ${find_opt})
   if(NOT EXPAT_LIBRARY)
     message("${color_magenta}-- Expat library not found${color_reset}")
     message("-- Disabling UDUNITS support")
@@ -253,6 +191,71 @@ if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE)
     message("${color_green}-- Building with UDUNITS support${color_reset}")
   endif()
 endif()
+
+#//////////////////////////
+# detect system specific functions used by NCO
+#//////////////////////////
+
+check_function_exists(mkstemp HAVE_mkstemp)
+if (HAVE_mkstemp)
+  message("-- Found function mkstemp")
+  add_definitions(-DHAVE_MKSTEMP)
+endif()
+
+#//////////////////////////
+#math functions, including float versions
+#NCO_CHECK_FUNCS([atan2])
+#NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
+#NCO_CHECK_FUNCS([erff erfcf gammaf])
+#NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
+#NCO_CHECK_FUNCS([ceilf floorf])
+#NCO_CHECK_FUNCS([nearbyint rint round trunc])
+#NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
+#//////////////////////////
+
+find_library(MATH_LIBRARY NAMES m ${find_opt})
+if(MATH_LIBRARY)
+  message("-- Math library found: " ${MATH_LIBRARY})
+  set(CMAKE_REQUIRED_LIBRARIES m)
+  check_function_exists(acosf HAVE_acosf)
+  if (HAVE_acosf)
+  else()
+    message("${color_blue}-- Using NCO defined version of acos${color_reset}")
+    add_definitions(-DNEED_ACOSF)
+  endif()
+endif(MATH_LIBRARY)
+
+check_include_file(strings.h HAVE_STRINGS_H)
+if (HAVE_STRINGS_H)
+  message("-- Found header strings.h")
+  add_definitions(-DHAVE_STRINGS_H)
+endif()
+
+check_include_file(netcdf_meta.h NC_HAVE_META_H)
+if (NC_HAVE_META_H)
+  message("-- Found header netcdf_meta.h")
+  add_definitions(-DNC_HAVE_META_H)
+endif()
+
+
+#//////////////////////////
+# regex
+#//////////////////////////
+
+check_include_file(regex.h HAVE_REGEX_H)
+check_function_exists(regexec HAVE_REGEXEC)
+check_function_exists(regcomp HAVE_REGCOMP)
+check_function_exists(regfree HAVE_REGFREE)
+if (HAVE_REGEX_H)
+  message("-- Found header regex.h")
+  add_definitions(-DHAVE_REGEX_H)
+endif()
+
+if (HAVE_REGEX_H AND HAVE_REGEXEC AND HAVE_REGCOMP AND HAVE_REGFREE)
+  message("-- Enabling Regex functionality...")
+  add_definitions(-DNCO_HAVE_REGEX_FUNCTIONALITY)
+endif()
+
 
 #//////////////////////////
 #compile as C++/static CRT on Visual Studio and as C99 on UNIX
@@ -469,14 +472,14 @@ target_link_libraries (ncwa ${nco_LIB} ${LIB_DEP})
 #note: cmake can detect relative paths, e.g, antlr/AST.hpp
 #//////////////////////////
 
-find_path(ANTLR_INCLUDE antlr/AST.hpp)
+find_path(ANTLR_INCLUDE antlr/AST.hpp ${find_opt})
 if(NOT ANTLR_INCLUDE)
   message("${color_magenta}-- ANTLR header files not found${color_reset}")
 else()
   message("-- Found ANTLR header files at: " ${ANTLR_INCLUDE})
 endif()
 
-find_library(ANTLR_LIBRARY NAMES antlr)
+find_library(ANTLR_LIBRARY NAMES antlr ${find_opt})
 if(NOT ANTLR_LIBRARY)
   message("${color_magenta}-- ANTLR library not found${color_reset}")
 else()
@@ -513,19 +516,19 @@ set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/nco_gsl.c)
 #//////////////////////////
 
 if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
-  find_path(GSL_INCLUDE gsl/gsl_errno.h)
+  find_path(GSL_INCLUDE gsl/gsl_errno.h ${find_opt})
   if(NOT GSL_INCLUDE)
     message("${color_magenta}-- GSL header files not found${color_reset}")
   else()
     message("-- Found GSL header files at: " ${GSL_INCLUDE})
   endif()
-  find_library(GSL_LIBRARY NAMES gsl libgsl_d.lib)
+  find_library(GSL_LIBRARY NAMES gsl libgsl_d.lib ${find_opt})
   if(NOT GSL_LIBRARY)
     message("${color_magenta}-- GSL library not found${color_reset}")
   else()
     message("-- Found GSL library at: " ${GSL_LIBRARY})
   endif()
-  find_library(GSL_CBLAS_LIBRARY NAMES gslcblas libgslcblas_d.lib)
+  find_library(GSL_CBLAS_LIBRARY NAMES gslcblas libgslcblas_d.lib ${find_opt})
   if(NOT GSL_CBLAS_LIBRARY)
     message("${color_magenta}-- GSL CBLAS library not found${color_reset}")
   else()
