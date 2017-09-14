@@ -86,8 +86,11 @@ if [ -z "${DATA}" ]; then
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
-if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
-    # Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library:
+
+# Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library
+# 20170914 This entire block is identical between ncclimo and ncremap---keep it that way!
+hrd_pth='Yes' # [sng] Hard-code machine-dependent NCO paths
+if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
     case "${HOSTNAME}" in 
 	aims* )
 	    export PATH='/export/zender1/bin'\:${PATH}
@@ -116,7 +119,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    # Why do cori/edison and rhea require workarounds for different packages?
 	    module load gsl
 	    module load udunits
-	    # On cori and edison, module load ncl installs ERWG 5.2 (from 2012) in ${NCARG_ROOT}/../intel/bin
 	    # module load ncl/6.3.0 
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${NCARG_ROOT}/bin:${PATH}"
@@ -126,6 +128,10 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	edison* )
 	    module load gsl
 	    module load udunits2 # 20170816 Name changed to udunits2
+	    # module load ncl/6.3.0 
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${NCARG_ROOT}/bin:${PATH}"
+	    fi # !NCARG_ROOT
 	    export PATH='/global/homes/z/zender/bin_edison'\:${PATH}
             export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH} ; ;;
 	pileus* )
@@ -143,7 +149,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 		source /lustre/atlas1/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
 		export ${UVCDAT_SETUP_PATH}
 	    fi # !UVCDAT_SETUP_PATH
-	    # On rhea, module load ncl installs ERWG in ${NCARG_ROOT}/bin (formerly ${NCL_DIR}/bin)
 	    # 20170825: Use module load ncl/6.3.0 (6.4.0 lacks ERWG)
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${NCARG_ROOT}/bin:${PATH}"
@@ -163,7 +168,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    # 20151018: Yellowstone support not yet tested in batch mode
 	    # On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
 	    if [ -n "${NCARG_ROOT}" ]; then
-#            export PATH="${NCARG_ROOT}/bin:${PATH}"
 		export PATH="${PATH}:/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin"
 	    fi # !NCARG_ROOT
             export PATH='/glade/u/home/zender/bin'\:${PATH}
@@ -414,7 +418,6 @@ fl_nbr=0 # [nbr] Number of files to split
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
 hdr_pad='10000' # [B] Pad at end of header section
-hrd_pth='Yes' # [sng] Hard-code machine-dependent NCO paths
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 inp_aut='No' # [sng] Input file list automatically generated
 inp_glb='No' # [sng] Input file list from globbing directory 
