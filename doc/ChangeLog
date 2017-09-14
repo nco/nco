@@ -1,6 +1,8 @@
 2017-09-14  Charlie Zender  <zender@uci.edu>
 
-q	* Deprecate ncks --get_grp_info, --get_file_info, -z (GET_LIST)
+	* Implement CDF5 bug-workaround to use descending qsort on -v timeMonthly_avg_vertVelocityTop,timeMonthly_avg_normalVelocity
+
+	* Deprecate ncks --get_grp_info, --get_file_info, -z (GET_LIST)
 
 	* Modify trv_tbl_srt() to allow ascending and descending qsort()
 
