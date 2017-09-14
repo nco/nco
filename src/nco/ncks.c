@@ -1002,8 +1002,8 @@ main(int argc,char **argv)
 #endif /* !ENABLE_MPI */
 
   /* 20170914: Workaround CDF5 bug for MPAS MOC */
-  if(var_lst_in_nbr == 2 && (!strcmp(var_lst_in[0],"timeMonthly_avg_normalVelocity") || !strcmp(var_lst_in[0],"timeMonthly_avg_normalVelocity"))){
-    (void)fprintf(stderr,"%s: INFO CDF5 bug workaround: reverse-alphabetize output\n",nco_prg_nm_get());
+  if(var_lst_in_nbr == 2 && (!strcmp(var_lst_in[0],"timeMonthly_avg_normalVelocity") || !strcmp(var_lst_in[1],"timeMonthly_avg_normalVelocity"))){
+    (void)fprintf(stderr,"%s: INFO Implementing CDF5 bug workaround: define output in reverse-alphabetical (instead of alphabetical) order when two fields are requested and one is timeMonthly_avg_normalVelocity\n",nco_prg_nm_get());
     srt_mth=1;
   } /* !CDF5 */
 
