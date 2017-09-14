@@ -1,5 +1,11 @@
 2017-09-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.6.9-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.6.9-alpha05 final changes';git push
+	git tag -a 4.6.9-alpha05 -m 'CMake hardening;CDF5 bug diagnosis;NCO_PATH_OVERRIDE';git push --tags
+
+	* De-activate CDF5 workaround
+
 	* If NCO_PATH_OVERRIDE is set to 'No' do not override user PATH with database of HPCC machine-dependent paths
 
 	* Workaround fails because nc_close() hangs. Dang.
@@ -11,10 +17,6 @@
 	* Modify trv_tbl_srt() to allow ascending and descending qsort()
 
 2017-09-13  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.6.9-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.6.9-alpha05 final changes';git push
-	git tag -a 4.6.9-alpha05 -m 'CMake hardening;CDF5 bug diagnosis';git push --tags
 
 	* Refine and test CDF5 diagnostics
 
