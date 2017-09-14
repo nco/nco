@@ -156,7 +156,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:x-:";
+  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -911,7 +911,11 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract groups and variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
-    case '?': /* Question mark means unrecognized option, print proper usage then EXIT_FAILURE */
+    case 'z': /* Print absolute path of all input variables then exit */
+      trv_tbl_prn(trv_tbl);
+      goto close_and_free; 
+      break;
+     case '?': /* Question mark means unrecognized option, print proper usage then EXIT_FAILURE */
       (void)fprintf(stdout,"%s: ERROR in command-line syntax/options. Missing or unrecognized option. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
@@ -1003,8 +1007,8 @@ main(int argc,char **argv)
 
   /* 20170914: Workaround CDF5 bug for MPAS MOC */
   if(var_lst_in_nbr == 2 && (!strcmp(var_lst_in[0],"timeMonthly_avg_normalVelocity") || !strcmp(var_lst_in[1],"timeMonthly_avg_normalVelocity"))){
-    (void)fprintf(stderr,"%s: INFO Implementing CDF5 bug workaround: define output in reverse-alphabetical (instead of alphabetical) order when two fields are requested and one is timeMonthly_avg_normalVelocity\n",nco_prg_nm_get());
-    srt_mth=1;
+    srt_mth=0; // fxm: Set to 1 to activate workaround. Currently broken, seems to produce invalid trv_tbl
+    if(srt_mth == 1) (void)fprintf(stderr,"%s: INFO Activating CDF5 bug workaround: define output in reverse-alphabetical (instead of alphabetical) order when two fields are requested and one is timeMonthly_avg_normalVelocity\n",nco_prg_nm_get());
   } /* !CDF5 */
 
   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(srt_mth,trv_tbl);

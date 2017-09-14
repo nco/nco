@@ -1,5 +1,9 @@
 2017-09-14  Charlie Zender  <zender@uci.edu>
 
+	* If NCO_PATH_OVERRIDE is set to 'No' do not override user PATH with database of HPCC machine-dependent paths
+
+	* Workaround fails because nc_close() hangs. Dang.
+
 	* Implement CDF5 bug-workaround to use descending qsort on -v timeMonthly_avg_vertVelocityTop,timeMonthly_avg_normalVelocity
 
 	* Deprecate ncks --get_grp_info, --get_file_info, -z (GET_LIST)

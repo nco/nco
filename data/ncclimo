@@ -86,7 +86,7 @@ if [ -z "${DATA}" ]; then
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
-if [ "${hrd_pth}" = 'Yes' ]; then
+if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
     # Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library:
     case "${HOSTNAME}" in 
 	aims* )
@@ -169,7 +169,7 @@ if [ "${hrd_pth}" = 'Yes' ]; then
             export PATH='/glade/u/home/zender/bin'\:${PATH}
             export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
     esac # !HOSTNAME
-fi # !hrd_pth
+fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Production usage:
 # ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm

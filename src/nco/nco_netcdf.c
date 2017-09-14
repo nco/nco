@@ -919,11 +919,11 @@ nco_close(const int nc_id)
     size_t dmn_sz[NC_MAX_DIMS];
     size_t pathlen;
     size_t var_sz;
-    //(void)fprintf(stdout,"DEBUG: %s reports NC_LIB_VERSION = %d.\n",fnc_nm,NC_LIB_VERSION);
     rcd=nc_inq_path(nc_id,&pathlen,NULL);
     path=(char *)malloc(pathlen*sizeof(char));
     rcd=nc_inq_path(nc_id,NULL,path);
-    (void)fprintf(stdout,"INFO: %s currently closing and sniffing for corruption CDF5 file %s\n",fnc_nm,path);
+    (void)fprintf(stdout,"INFO: %s currently closing and sniffing-around for corruption in CDF5 file %s\n",fnc_nm,path);
+    //(void)fprintf(stdout,"DEBUG: %s reports NC_LIB_VERSION = %d.\n",fnc_nm,NC_LIB_VERSION);
     //(void)fprintf(stdout,"DEBUG: %s reports file format and extended format are %d = %s and %d = %s, respectively\n",fnc_nm,fl_fmt,nco_fmt_sng(fl_fmt),fl_fmt_xtn,nco_fmt_xtn_sng(fl_fmt_xtn));
     //(void)fprintf(stdout,"DEBUG: %s reports file mode is %o (octal) = %d (decimal) = %04x (hex)\n",fnc_nm,mode,(unsigned)mode,(unsigned)mode);
     rcd=nc_inq_varids(nc_id,&var_nbr,var_id);
