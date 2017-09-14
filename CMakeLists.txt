@@ -82,8 +82,7 @@ set(netcdf_root "$ENV{NETCDF_ROOT}")
 if(netcdf_root)
   set(NETCDF_INCLUDE "${netcdf_root}/include")
   set(NETCDF_LIBRARY_PATH "${netcdf_root}/lib")
-  message("${color_blue}-- Using user defined netCDF include location: ${netcdf_root}/include${color_reset}")
-  message("${color_blue}-- Using user defined netCDF library location: ${netcdf_root}/lib${color_reset}")
+  message("${color_blue}-- Using user defined netCDF location: ${netcdf_root}${color_reset}")
 endif()
 
 find_path(NETCDF_INCLUDE netcdf.h ${find_opt})
@@ -422,8 +421,23 @@ target_link_libraries (ncwa ${nco_LIB} ${LIB_DEP})
 
 
 #//////////////////////////
-#detect dependencies
+#ANLR
 #note: cmake can detect relative paths, e.g, antlr/AST.hpp
+#detect a user defined system environment variable ANTLR_ROOT
+#this sets the include path to ANTLR_INCLUDE directly
+#and a PATHS hint for ANTLR_LIBRARY 
+#NOTE: For this case find_library(ANTLR_LIBRARY) MUST be called 2 times
+#First time it looks in ANTLR_LIBRARY_PATH if set, avoiding all other PATHS with NO_DEFAULT_PATH
+#//////////////////////////
+
+set(antlr_root "$ENV{ANTLR_ROOT}")
+if(antlr_root)
+  set(ANTLR_INCLUDE "${antlr_root}/include")
+  set(ANTLR_LIBRARY_PATH "${antlr_root}/lib")
+  set(ANTLR_BIN "${antlr_root}/bin")
+  set(ENV{PATH} "${ANTLR_BIN}:$ENV{PATH}")
+  message("${color_blue}-- Using user defined antlr location: ${antlr_root}${color_reset}")
+endif()
 #//////////////////////////
 
 find_path(ANTLR_INCLUDE antlr/AST.hpp ${find_opt})
@@ -433,6 +447,7 @@ else()
   message("-- Found ANTLR header files at: " ${ANTLR_INCLUDE})
 endif()
 
+find_library(ANTLR_LIBRARY NAMES antlr PATHS ${ANTLR_LIBRARY_PATH} NO_DEFAULT_PATH)
 find_library(ANTLR_LIBRARY NAMES antlr ${find_opt})
 if(NOT ANTLR_LIBRARY)
   message("${color_magenta}-- ANTLR library not found${color_reset}")
