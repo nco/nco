@@ -156,7 +156,7 @@ main(int argc,char **argv)
 
   const char * const CVS_Id="$Id$"; 
   const char * const CVS_Revision="$Revision$";
-  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:xz-:";
+  const char * const opt_sht_lst="34567aABb:CcD:d:FG:g:HhL:l:MmOo:Pp:qQrRs:t:uVv:X:x-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
@@ -210,13 +210,14 @@ main(int argc,char **argv)
   int rgr_nbr=0; /* [nbr] Number of regridding arguments */
   int trr_nbr=0; /* [nbr] Number of TERRAREF arguments */
   int rcd=NC_NOERR; /* [rcd] Return code */
+  int srt_mth=0; /* [enm] Sort method [0=ascending, 1=descending] */
   int thr_idx; /* [idx] Index of current thread */
   int thr_nbr=int_CEWI; /* [nbr] Thread number Option t */
   int var_lst_in_nbr=0;
   int var_nbr_fl;
   int var_ntm_fl;
   int xtn_nbr=0; /* [nbr] Number of extensive variables */
-  int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
+  int xtr_nbr=0; /* [nbr] xtr_nbr will not otherwise be set for -c with no -v */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
  
@@ -233,9 +234,6 @@ main(int argc,char **argv)
   nco_bool FORCE_NOCLOBBER=False; /* Option no-clobber */
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
-  nco_bool GET_GRP_INFO=False; /* [flg] Iterate file, get group extended information */
-  nco_bool GET_FILE_INFO=False; /* [flg] Get file information (#groups, #dimensions, #attributes, #variables) */
-  nco_bool GET_LIST=False; /* [flg] Iterate file, print variables and exit */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool GRP_XTR_VAR_XCL=False; /* [flg] Extract matching groups, exclude matching variables */
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
@@ -505,8 +503,6 @@ main(int argc,char **argv)
     {"auxiliary",required_argument,0,'X'},
     {"exclude",no_argument,0,'x'},
     {"xcl",no_argument,0,'x'},
-    {"get_grp_info",no_argument,0,0},
-    {"get_file_info",no_argument,0,0},
     {"lbr_rcd",no_argument,0,0},
     {0,0,0,0}
   }; /* end opt_lng */
@@ -632,8 +628,6 @@ main(int argc,char **argv)
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
         gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
       } /* endif gaa */
-      if(!strcmp(opt_crr,"get_grp_info") || !strcmp(opt_crr,"grp_info_get")) GET_GRP_INFO=True;
-      if(!strcmp(opt_crr,"get_file_info")) GET_FILE_INFO=True;
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdn") || !strcmp(opt_crr,"hidden")) PRN_HDN=True; /* [flg] Print hidden attributes */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
@@ -917,9 +911,6 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract groups and variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
-    case 'z': /* Print absolute path of all input variables then exit */
-      GET_LIST=True;
-      break;
     case '?': /* Question mark means unrecognized option, print proper usage then EXIT_FAILURE */
       (void)fprintf(stdout,"%s: ERROR in command-line syntax/options. Missing or unrecognized option. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
@@ -1010,23 +1001,13 @@ main(int argc,char **argv)
   (void)fprintf(stdout,"%s: MPI process rank %d reports %d process%s\n",nco_prg_nm,prc_rnk,prc_nbr,(prc_nbr == 1) ? "" : "es");
 #endif /* !ENABLE_MPI */
 
-  /* Pedro's options, essentially for debugging (deprecated, likely to be eliminated in future) */ 
-  if(GET_LIST){ 
-    if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
-    trv_tbl_prn(trv_tbl);
-    goto close_and_free; 
-  } /* !GET_LIST */ 
-  if(GET_GRP_INFO){ 
-    nco_prn_trv_tbl(in_id,trv_tbl);
-    goto close_and_free; 
-  } /* !GET_GRP_INFO */
-  if(GET_FILE_INFO){ 
-    (void)fprintf(stderr,"%s: INFO reports file information\n",nco_prg_nm_get());
-    (void)fprintf(stdout,"%d subgroups, %d fixed dimensions, %d record dimensions, %d group + global attributes, %d atomic-type variables, %d non-atomic variables\n",grp_nbr_fl,trv_tbl->nbr_dmn-dmn_rec_fl,dmn_rec_fl,att_glb_nbr+att_glb_nbr,var_nbr_fl,var_ntm_fl);
-    goto close_and_free; 
-  } /* !GET_FILE_INFO */
+  /* 20170914: Workaround CDF5 bug for MPAS MOC */
+  if(var_lst_in_nbr == 2 && (!strcmp(var_lst_in[0],"timeMonthly_avg_normalVelocity") || !strcmp(var_lst_in[0],"timeMonthly_avg_normalVelocity"))){
+    (void)fprintf(stderr,"%s: INFO CDF5 bug workaround: reverse-alphabetize output\n",nco_prg_nm_get());
+    srt_mth=1;
+  } /* !CDF5 */
 
-  if(ALPHABETIZE_OUTPUT) trv_tbl_srt(trv_tbl);
+  if(ALPHABETIZE_OUTPUT) trv_tbl_srt(srt_mth,trv_tbl);
 
   /* We now have final list of variables to extract. Phew. */
 

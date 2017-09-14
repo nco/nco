@@ -18,38 +18,38 @@ trv_tbl_init                           /* [fnc] GTT initialize */
 (trv_tbl_sct **tbl)                    /* I/O [sct] Traversal table */
 {
   trv_tbl_sct *tb=(trv_tbl_sct *)nco_malloc(sizeof(trv_tbl_sct));
-
+  
   /* Object (group/variable) list */
   tb->nbr=0;
   tb->lst=NULL; 
-
+  
   /* Dimension list */
   tb->nbr_dmn=0;
   tb->lst_dmn=NULL;
-
+  
   /* Degenerate dimensions used by ncwa */
   tb->nbr_dmn_dgn=0;
   tb->dmn_dgn=NULL;
-
+  
   /* Ensembles */
   tb->nsm_nbr=0;
   tb->nsm=NULL;
   tb->nsm_sfx=NULL;
-
+  
   *tbl=tb;
 } /* trv_tbl_init() */
- 
+
 void 
 trv_tbl_free                           /* [fnc] GTT free memory */
 (trv_tbl_sct *tbl)                     /* I [sct] Traversal table */
 {
-
+  
   const char fnc_nm[]="trv_tbl_free()"; /* [sng] Function name  */
-
+  
 #ifdef DEBUG_LEAKS
   int crt_counter=0;
 #endif
-
+  
   /* Hash Table */
   nco_trv_hsh_del(tbl);
   
@@ -63,16 +63,16 @@ trv_tbl_free                           /* [fnc] GTT free memory */
     tbl->lst[idx].nsm_nm=(char *)nco_free(tbl->lst[idx].nsm_nm);
     tbl->lst[idx].rec_dmn_nm_out=(char *)nco_free(tbl->lst[idx].rec_dmn_nm_out);
     tbl->lst[idx].hsh_key=(char *)nco_free(tbl->lst[idx].hsh_key);
-
+    
     /* Dimensions */
     for(int dmn_idx=0;dmn_idx<tbl->lst[idx].nbr_dmn;dmn_idx++){
-
+      
       /* If dimensions exist (only for variables ) */
       if(tbl->lst[idx].var_dmn){
         tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm_fll);
         tbl->lst[idx].var_dmn[dmn_idx].dmn_nm=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].dmn_nm);
         tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].grp_nm_fll);
-
+	
         int nbr_lat_crd=tbl->lst[idx].var_dmn[dmn_idx].nbr_lat_crd;
         for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++) tbl->lst[idx].var_dmn[dmn_idx].lat_crd[idx_crd].nm_fll=(char *)nco_free(tbl->lst[idx].var_dmn[dmn_idx].lat_crd[idx_crd].nm_fll);
 
@@ -419,24 +419,38 @@ trv_tbl_prn_xtr                        /* [fnc] Print extraction flag of travers
 
 } /* end trv_tbl_prn_xtr() */
 
-static int                             /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
-trv_tbl_cmp_nm_fll                     /* [fnc] Compare two trv_sct's by full name member */
+int                                    /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+trv_tbl_cmp_asc_nm_fll                 /* [fnc] Compare two trv_sct's by full name member, return ascending order */
 (const void *val_1,                    /* I [sct] trv_sct to compare */
  const void *val_2)                    /* I [sct] trv_sct to compare */
 {
   /* Purpose: Compare two trv_sct's by name structure member
+     Comparison results, when interpreted by qsort(), sort in ascending (alphabetical) order
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h
      Code based on responses to my comp.lang.c thread 20040101 */
   return strcmp((*(trv_sct const *)val_1).nm_fll,(*(trv_sct const *)val_2).nm_fll);
 } /* end nco_cmp_trv_tbl_nm() */
 
+int                                    /* O [enm] Comparison result [<,=,>] 0 iff val_1 [>,==,<] val_2 */
+trv_tbl_cmp_dsc_nm_fll                 /* [fnc] Compare two trv_sct's by full name member, return descending order */
+(const void *val_1,                    /* I [sct] trv_sct to compare */
+ const void *val_2)                    /* I [sct] trv_sct to compare */
+{
+  /* Purpose: Compare two trv_sct's by name structure member
+     Comparison results, when interpreted by qsort(), sort in descending (reverse alphabetical) order
+     Function is suitable for argument to ANSI C qsort() routine in stdlib.h
+     Code based on responses to my comp.lang.c thread 20040101 */
+  return -1*strcmp((*(trv_sct const *)val_1).nm_fll,(*(trv_sct const *)val_2).nm_fll);
+} /* end nco_cmp_trv_tbl_nm() */
+
 void 
 trv_tbl_srt                            /* [fnc] Sort traversal table */
-(trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+(const int srt_mth,                    /* [enm] Sort method */
+ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
   /* Purpose: Alphabetize list by object full name
      This produces easy-to-search variable name screen output with ncks */
-  qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),trv_tbl_cmp_nm_fll);
+  if(srt_mth == 0) qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),trv_tbl_cmp_asc_nm_fll); else if(srt_mth == 1) qsort(trv_tbl->lst,(size_t)trv_tbl->nbr,sizeof(trv_sct),trv_tbl_cmp_dsc_nm_fll);
 } /* end trv_tbl_srt() */
 
 void                          
@@ -745,13 +759,13 @@ nco_nm_mch                             /* [fnc] Match 2 lists of strings and mar
  int * nbr_cmn_nm)                     /* I/O [nbr] Number of common names */
 {
   /* Purpose: Match 2 lists of strings and export common strings. 
-  Use cosequential match algorithm described in
-  Folk, Michael; Zoellick, Bill. (1992). File Structures. Addison-Wesley.
+     Use cosequential match algorithm described in
+     Folk, Michael; Zoellick, Bill. (1992). File Structures. Addison-Wesley.
 
   Compare 2 ordered lists of names:
-  if Name(1) is less than Name(2), read next name from List 1; this is done by incrementing current index
-  if Name(1) is greater than Name(2), read next name from List 2
-  if names are identical, read next names from both lists  */
+  If Name(1) is less than Name(2), read next name from List 1; this is done by incrementing current index
+  If Name(1) is greater than Name(2), read next name from List 2
+  If names are identical, read next names from both lists */
 
   int idx_lst;                   /* [idx] Current position in common List */ 
   int idx_tbl_1;                 /* [idx] Current position in List 1 */ 

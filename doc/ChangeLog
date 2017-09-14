@@ -1,3 +1,9 @@
+2017-09-14  Charlie Zender  <zender@uci.edu>
+
+q	* Deprecate ncks --get_grp_info, --get_file_info, -z (GET_LIST)
+
+	* Modify trv_tbl_srt() to allow ascending and descending qsort()
+
 2017-09-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.9-alpha05 release procedure:
@@ -24,7 +30,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.9-alpha04 final changes';git push
 	git tag -a 4.6.9-alpha04 -m 'CMake hardening;Fix Traditional bld/Makefile';git push --tags
 
-	* Try and fail to get Travis clang build to succeed, need better build matrix...
+	* Travis Linux clang build of ncap2 fails after upgrade to Ubuntu Trusty due to unresolved
+	link errors to __kmpc_*() (OpenMP) because ncap2 erroneously links with g++ instead of clang
 
 	* Change custom build to use simple VERSION string
 
@@ -34,7 +41,7 @@
 
 	* Add nco_fl_sz_est() and print smr_fl_sz_sng to CDL
 
-	* clang builds on Linux do not build ncap2 because NCO_GSL_VERSION not defined
+	* clang builds on Linux does not build ncap2 because NCO_GSL_VERSION not defined
 
 	* Add ncks --bld, --build_engine to print NCO_BUILDENGINE
 

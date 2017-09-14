@@ -6629,7 +6629,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   (void)nco_bld_var_dmn(trv_tbl);       
 
   /* ncbo co-sequential match algorithm requires alphabetical sorted full names. Do it here, to avoid rebuilding hash table */
-  if(nco_prg_id_get() == ncbo) (void)trv_tbl_srt(trv_tbl);
+  if(nco_prg_id_get() == ncbo) (void)trv_tbl_srt((int)0,trv_tbl);
 
   /* Hash traversal table for faster access */
   (void)nco_trv_hsh_bld(trv_tbl);

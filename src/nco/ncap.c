@@ -198,7 +198,7 @@ main(int argc,char **argv)
   int nbr_var_fl;/* number of vars in a file */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_var_ycc=0; /* [nbr] Number of vars to be defined after 1st parse */
-  int xtr_nbr=0; /* xtr_nbr will not otherwise be set for -c with no -v */
+  int xtr_nbr=0; /* [nbr] xtr_nbr will not otherwise be set for -c with no -v */
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
