@@ -438,7 +438,6 @@ if(antlr_root)
   set(ENV{PATH} "${ANTLR_BIN}:$ENV{PATH}")
   message("${color_blue}-- Using user defined antlr location: ${antlr_root}${color_reset}")
 endif()
-#//////////////////////////
 
 find_path(ANTLR_INCLUDE antlr/AST.hpp ${find_opt})
 if(NOT ANTLR_INCLUDE)
@@ -480,12 +479,41 @@ set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/Invoke.cc)
 set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/nco_gsl.c)
 
 #//////////////////////////
-# GSL
-# GSL CBLAS needed for Linux Fedora; assuming here all gsl-dev packages have it
+#GSL
+#GSL CBLAS needed for Linux Fedora; assuming here all gsl-dev packages have it
 #//////////////////////////
 
 if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
-  find_path(GSL_INCLUDE gsl/gsl_errno.h ${find_opt})
+
+#//////////////////////////
+#GSL_ROOT
+#detect a user defined system environment variable GSL_ROOT
+#this sets the include path to GSL_INCLUDE directly
+#and a PATHS hint for GSL_LIBRARY and GSL_CBLAS_LIBRARY
+#NOTE: For this case find_library(GSL_LIBRARY/GSL_CBLAS_LIBRARY) MUST be called 2 times
+#First time it looks in GSL_LIBRARY_PATH if set, avoiding all other PATHS with NO_DEFAULT_PATH
+#//////////////////////////
+
+  set(gsl_root "$ENV{GSL_ROOT}")
+  if(gsl_root)
+    set(GSL_INCLUDE "${gsl_root}/include")
+    set(GSL_LIBRARY_PATH "${gsl_root}/lib")
+    set(GSL_CBLAS_LIBRARY_PATH "${gsl_root}/lib")
+    message("${color_blue}-- Found user defined GSL location: ${gsl_root}${color_reset}")
+    set(gsl_config ${gsl_root}/bin/gsl-config)
+  else(gsl_root)
+    set(gsl_config gsl-config)
+  endif(gsl_root)
+  
+  execute_process(COMMAND ${gsl_config} --prefix OUTPUT_VARIABLE gsl_prefix)
+  if (gsl_prefix)
+    string(REGEX REPLACE "\n$" "" gsl_prefix "${gsl_prefix}")
+    message("${color_blue}-- Found GSL installation prefix at ${gsl_prefix}${color_reset}")
+  else(gsl_prefix)
+    message("${color_blue}-- Cannot GSL installation prefix with gsl-config --prefix${color_reset}")
+  endif(gsl_prefix)
+
+  find_path(GSL_INCLUDE gsl/gsl_sf_gamma.h ${find_opt})
   if(NOT GSL_INCLUDE)
     message("${color_magenta}-- GSL header files not found${color_reset}")
   else()
