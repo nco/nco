@@ -73,7 +73,7 @@ set(find_opt NO_SYSTEM_ENVIRONMENT_PATH)
 #detect a user defined system environment variable NETCDF_ROOT
 #this sets the include path to NETCDF_INCLUDE directly
 #and a PATHS hint for NETCDF_LIBRARY (because the library name can be any legal combination of "netcdf" )
-#NOTE: For this case find_library(NETCDF_LIBRARY) MUST be called 2 times
+#For this case find_library(NETCDF_LIBRARY) MUST be called 2 times
 #First time it looks in NETCDF_LIBRARY_PATH if set, avoiding all other PATHS with NO_DEFAULT_PATH
 #If not found, business as usual
 #//////////////////////////
@@ -422,11 +422,11 @@ target_link_libraries (ncwa ${nco_LIB} ${LIB_DEP})
 
 #//////////////////////////
 #ANLR
-#note: cmake can detect relative paths, e.g, antlr/AST.hpp
+#cmake can detect relative paths, e.g, antlr/AST.hpp
 #detect a user defined system environment variable ANTLR_ROOT
 #this sets the include path to ANTLR_INCLUDE directly
 #and a PATHS hint for ANTLR_LIBRARY 
-#NOTE: For this case find_library(ANTLR_LIBRARY) MUST be called 2 times
+#For this case find_library(ANTLR_LIBRARY) MUST be called 2 times
 #First time it looks in ANTLR_LIBRARY_PATH if set, avoiding all other PATHS with NO_DEFAULT_PATH
 #//////////////////////////
 
@@ -490,8 +490,9 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
 #detect a user defined system environment variable GSL_ROOT
 #this sets the include path to GSL_INCLUDE directly
 #and a PATHS hint for GSL_LIBRARY and GSL_CBLAS_LIBRARY
-#NOTE: For this case find_library(GSL_LIBRARY/GSL_CBLAS_LIBRARY) MUST be called 2 times
+#For this case find_library(GSL_LIBRARY/GSL_CBLAS_LIBRARY) MUST be called 2 times
 #First time it looks in GSL_LIBRARY_PATH if set, avoiding all other PATHS with NO_DEFAULT_PATH
+#gsl-config NOT used at this time
 #//////////////////////////
 
   set(gsl_root "$ENV{GSL_ROOT}")
@@ -499,7 +500,7 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
     set(GSL_INCLUDE "${gsl_root}/include")
     set(GSL_LIBRARY_PATH "${gsl_root}/lib")
     set(GSL_CBLAS_LIBRARY_PATH "${gsl_root}/lib")
-    message("${color_blue}-- Found user defined GSL location: ${gsl_root}${color_reset}")
+    message("${color_blue}-- Using user defined GSL location: ${gsl_root}${color_reset}")
     set(gsl_config ${gsl_root}/bin/gsl-config)
   else(gsl_root)
     set(gsl_config gsl-config)
@@ -519,18 +520,23 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
   else()
     message("-- Found GSL header files at: " ${GSL_INCLUDE})
   endif()
+  
+  find_library(GSL_LIBRARY NAMES gsl libgsl_d.lib PATHS ${GSL_LIBRARY_PATH} NO_DEFAULT_PATH)
   find_library(GSL_LIBRARY NAMES gsl libgsl_d.lib ${find_opt})
   if(NOT GSL_LIBRARY)
     message("${color_magenta}-- GSL library not found${color_reset}")
   else()
     message("-- Found GSL library at: " ${GSL_LIBRARY})
   endif()
+  
+  find_library(GSL_CBLAS_LIBRARY NAMES gslcblas libgslcblas_d.lib PATHS ${GSL_CBLAS_LIBRARY_PATH} NO_DEFAULT_PATH)
   find_library(GSL_CBLAS_LIBRARY NAMES gslcblas libgslcblas_d.lib ${find_opt})
   if(NOT GSL_CBLAS_LIBRARY)
     message("${color_magenta}-- GSL CBLAS library not found${color_reset}")
   else()
     message("-- Found GSL CBLAS library at: " ${GSL_CBLAS_LIBRARY})
   endif()
+  
   if(GSL_INCLUDE AND GSL_LIBRARY AND GSL_CBLAS_LIBRARY)
     add_definitions(-DENABLE_GSL)
     include_directories(${GSL_INCLUDE})
