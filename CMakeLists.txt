@@ -68,6 +68,24 @@ endif()
 
 set(find_opt NO_SYSTEM_ENVIRONMENT_PATH)
 
+#/////////////////////////////////////////////////////////////////////////////////////
+#netCDF
+#detect a user defined system environment variable NETCDF_ROOT
+#this sets the include path to NETCDF_INCLUDE directly
+#and a PATHS hint for NETCDF_LIBRARY (because the library name can be any legal combination of "netcdf" )
+#NOTE: For this case find_library(NETCDF_LIBRARY) MUST be called 2 times
+#First time it looks in NETCDF_LIBRARY_PATH if set, avoiding all other PATHS with NO_DEFAULT_PATH
+#If not found, business as usual
+#//////////////////////////
+
+set(netcdf_root "$ENV{NETCDF_ROOT}")
+if(netcdf_root)
+  set(NETCDF_INCLUDE "${netcdf_root}/include")
+  set(NETCDF_LIBRARY_PATH "${netcdf_root}/lib")
+  message("${color_blue}-- Using user defined netCDF include location: ${netcdf_root}/include${color_reset}")
+  message("${color_blue}-- Using user defined netCDF library location: ${netcdf_root}/lib${color_reset}")
+endif()
+
 find_path(NETCDF_INCLUDE netcdf.h ${find_opt})
 if(NOT NETCDF_INCLUDE)
   message(FATAL_ERROR "${color_red}netcdf.h header file not found${color_reset}")
@@ -75,6 +93,7 @@ else()
   message("-- Found netcdf.h header file at: " ${NETCDF_INCLUDE})
 endif()
 
+find_library(NETCDF_LIBRARY NAMES netcdf PATHS ${NETCDF_LIBRARY_PATH} NO_DEFAULT_PATH)
 find_library(NETCDF_LIBRARY NAMES netcdf ${find_opt})
 if(NOT NETCDF_LIBRARY)
   message(FATAL_ERROR "${color_red}netcdf library not found${color_reset}")
@@ -538,6 +557,25 @@ if(MATH_LIBRARY)
   nco_check_funcs(sinf)
   nco_check_funcs(sqrtf)
   nco_check_funcs(tanf)
+  nco_check_funcs(erff)
+  nco_check_funcs(erfcf)
+  nco_check_funcs(gammaf)
+  nco_check_funcs(acoshf)
+  nco_check_funcs(asinhf)
+  nco_check_funcs(atanhf)
+  nco_check_funcs(coshf)
+  nco_check_funcs(sinhf)
+  nco_check_funcs(tanhf)
+  nco_check_funcs(ceilf)
+  nco_check_funcs(floorf)
+  nco_check_funcs(nearbyint)
+  nco_check_funcs(rint)
+  nco_check_funcs(round)
+  nco_check_funcs(trunc)
+  nco_check_funcs(nearbyintf)
+  nco_check_funcs(rintf)
+  nco_check_funcs(roundf)
+  nco_check_funcs(truncf)
 endif(MATH_LIBRARY)
 
 check_include_file(strings.h HAVE_STRINGS_H)
