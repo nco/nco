@@ -923,9 +923,9 @@ nco_close(const int nc_id)
     rcd=nc_inq_path(nc_id,&pathlen,NULL);
     path=(char *)malloc(pathlen*sizeof(char));
     rcd=nc_inq_path(nc_id,NULL,path);
-    (void)fprintf(stdout,"DEBUG: %s reports currently closing file %s\n",fnc_nm,path);
-    (void)fprintf(stdout,"DEBUG: %s reports file format and extended format are %d = %s and %d = %s, respectively\n",fnc_nm,fl_fmt,nco_fmt_sng(fl_fmt),fl_fmt_xtn,nco_fmt_xtn_sng(fl_fmt_xtn));
-    (void)fprintf(stdout,"DEBUG: %s reports file mode is %o (octal) = %d (decimal) = %04x (hex)\n",fnc_nm,mode,(unsigned)mode,(unsigned)mode);
+    (void)fprintf(stdout,"INFO: %s currently closing and sniffing for corruption CDF5 file %s\n",fnc_nm,path);
+    //(void)fprintf(stdout,"DEBUG: %s reports file format and extended format are %d = %s and %d = %s, respectively\n",fnc_nm,fl_fmt,nco_fmt_sng(fl_fmt),fl_fmt_xtn,nco_fmt_xtn_sng(fl_fmt_xtn));
+    //(void)fprintf(stdout,"DEBUG: %s reports file mode is %o (octal) = %d (decimal) = %04x (hex)\n",fnc_nm,mode,(unsigned)mode,(unsigned)mode);
     rcd=nc_inq_varids(nc_id,&var_nbr,var_id);
     for(var_idx=0;var_idx<var_nbr;var_idx++){
       var_sz=1L;
@@ -939,7 +939,7 @@ nco_close(const int nc_id)
       var_sz*=nco_typ_lng(var_typ);
       if(var_sz > 4ULL*1073741824ULL){ /* 4 GiB */
 	rcd=nc_inq_varname(nc_id,var_id[var_idx],var_nm);
-	(void)fprintf(stdout,"WARNING: %s detects \"large\" (%lu B =~ %lu GiB > 4294967296 B = 4 GiB) variable \"%s\" in CDF5 file %s\n",fnc_nm,(unsigned long)var_sz,(unsigned long)(1.0*var_sz/1073741824UL),var_nm,path);
+	(void)fprintf(stdout,"WARNING: %s reports variable %s is \"large\" (%lu B =~ %lu GiB > 4294967296 B = 4 GiB)\n",fnc_nm,var_nm,(unsigned long)var_sz,(unsigned long)(1.0*var_sz/1073741824UL));
 	bug_idx=var_idx;
 	bug_nbr++;
       } /* !var_sz */
@@ -948,7 +948,9 @@ nco_close(const int nc_id)
     if(bug_nbr > 0){
       (void)fprintf(stdout,"WARNING: %s reports total number of \"large\" (> 4 GiB) variables in this CDF5 file is %d\n",fnc_nm,bug_nbr);
       if(bug_nbr > 1 || bug_idx != var_nbr-1){
-	(void)fprintf(stdout,"WARNING: %s reports at least one \"large\" (> 4 GiB) variable in this CDF5 file is not the last variable defined. Writing CDF5 files with large variables is buggy in netCDF library versions 4.4.0-4.4.1 unless there is only one such \"large\" variable and it is the last to be defined. This NCO is linked to netCDF library version %d. If this is an input file (i.e., NCO is _reading_ it) written by PnetCDF then the input data are fine (because PnetCDF writes CDF5 through a different mechanism than serial programs like NCO's writer). And if this CDF5 file was written by any netCDF version 4.5.0 or greater, then it is fine. However, if this is an input file and it was written by any serial netCDF writer (like NCO) employing netCDF library 4.4.x, then this file is likely corrupt and variables were silently truncated when writing it. If this is an output file (i.e., NCO is writing it) then it will definitely be corrupt, as NCO is employing (i.e., linked to) a buggy netCDF library (please upgrade to netCDF 4.5.x ASAP).\nHINT: There are two potential solutions for data affected by this bug: 1. Re-write (using any netCDF version) original input files in netCDF4 format instead of CDF5, then process these as normal and write netCDF4 output (instead of CDF5); 2. Re-compile NCO with netCDF library 4.5.0 or later and use it to convert non-corrupt datasets to netCDF4 format, then process the data. This message should only appear if there is a possibility that you are reading or writing a corrupt dataset. Sorry to scare you if this is a false positive. For more information on this nasty bug, see https://github.com/Unidata/netcdf-c/issues/463\n",fnc_nm,NC_LIB_VERSION);
+	(void)fprintf(stdout,"WARNING: %s reports at least one \"large\" (> 4 GiB) variable in this CDF5 file is not the last variable defined. Writing CDF5 files with large variables is buggy in netCDF library versions 4.4.0-4.4.1 unless there is only one such \"large\" variable and it is the last to be defined. If this file is an input dataset (i.e., NCO is _reading_ it) written by PnetCDF then the input data are fine (because PnetCDF writes CDF5 through a different mechanism than serial programs like NCO's writer). And if this CDF5 dataset was originally written by any netCDF version 4.5.0 or greater, then it is fine. However, if this is an input file and it was written by any serial netCDF writer (like NCO) employing netCDF library 4.4.x, then this file is likely corrupt and variables were silently truncated when writing it. If this is an output file (i.e., NCO is writing it) then it will definitely be corrupt, as this NCO employs (i.e., is linked to) netCDF library version %d which is buggy (so please upgrade to netCDF 4.5.x ASAP).\nHINT: There are two potential solutions for data affected by this bug: 1. Re-write (using any netCDF version) original input files in netCDF4 format instead of CDF5, then process these as normal and write netCDF4 output (instead of CDF5); 2. Re-compile NCO with netCDF library 4.5.0 or later and use it to convert non-corrupt datasets to netCDF4 format, then process the data. This message should only appear if there is a possibility that you are reading or writing a corrupt dataset. Sorry to scare you if this is a false positive. For more information on this nasty bug, see https://github.com/Unidata/netcdf-c/issues/463\n",fnc_nm,NC_LIB_VERSION);
+      }else{
+	(void)fprintf(stdout,"WARNING: Congratulations! %s reports that the only \"large\" (> 4 GiB) variable in this CDF5 file appears to be the last variable defined. Writing CDF5 files with large variables is buggy in netCDF library versions 4.4.0-4.4.1 (this NCO is linked to netCDF library version %d) unless there is only one such \"large\" variable and it is the last to be defined. Therefore this file may be fine, i.e., not corrupted by this nasty netCDF CDF5 bug: https://github.com/Unidata/netcdf-c/issues/463. Sorry not to scare you if this is a false negative.\n",fnc_nm,NC_LIB_VERSION);
       } /* !bug_idx */
     } /* !bug_nbr */
   } /* !CDF5 */

@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.9-alpha05 final changes';git push
 	git tag -a 4.6.9-alpha05 -m 'CMake hardening;CDF5 bug diagnosis';git push --tags
 
+	* Refine and test CDF5 diagnostics
+
 	* CDL output ID = xxx in comments when dbg_lvl >= 2
 
 	* Add/use nco_inq_path() to improve CDF5 diagnostics
