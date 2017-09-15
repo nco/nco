@@ -503,6 +503,8 @@ set(ncap2_SOURCES ${ncap2_SOURCES} src/nco++/nco_gsl.c)
 
 if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
 
+
+
 #//////////////////////////
 #GSL_ROOT
 #detect a user defined system environment variable GSL_ROOT
@@ -510,7 +512,6 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
 #and a PATHS hint for GSL_LIBRARY and GSL_CBLAS_LIBRARY
 #For this case find_library(GSL_LIBRARY/GSL_CBLAS_LIBRARY) MUST be called 2 times
 #First time it looks in GSL_LIBRARY_PATH if set, avoiding all other PATHS with NO_DEFAULT_PATH
-#gsl-config NOT used at this time
 #//////////////////////////
 
   set(gsl_root "$ENV{GSL_ROOT}")
@@ -519,18 +520,28 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
     set(GSL_LIBRARY_PATH "${gsl_root}/lib")
     set(GSL_CBLAS_LIBRARY_PATH "${gsl_root}/lib")
     message("${color_blue}-- Using user defined GSL location: ${gsl_root}${color_reset}")
-    set(gsl_config ${gsl_root}/bin/gsl-config)
-  else(gsl_root)
-    set(gsl_config gsl-config)
+    set(GSL_CONFIG_PATH ${gsl_root}/bin/gsl-config)
   endif(gsl_root)
   
-  execute_process(COMMAND ${gsl_config} --prefix OUTPUT_VARIABLE gsl_prefix)
-  if (gsl_prefix)
-    string(REGEX REPLACE "\n$" "" gsl_prefix "${gsl_prefix}")
-    message("${color_blue}-- Found GSL installation prefix at ${gsl_prefix}${color_reset}")
-  else(gsl_prefix)
-    message("${color_blue}-- Cannot GSL installation prefix with gsl-config --prefix${color_reset}")
-  endif(gsl_prefix)
+#//////////////////////////
+#find gsl-config
+#//////////////////////////  
+  
+  find_program(gsl_config NAMES gsl-config PATHS ${GSL_CONFIG_PATH} NO_DEFAULT_PATH)
+  find_program(gsl_config NAMES gsl-config ${find_opt})
+  
+  if (gsl_config)
+    execute_process(COMMAND ${gsl_config} --prefix OUTPUT_VARIABLE gsl_prefix)
+    if (gsl_prefix)
+      string(REGEX REPLACE "\n$" "" gsl_prefix "${gsl_prefix}")
+      message("${color_blue}-- Found GSL installation prefix at ${gsl_prefix}${color_reset}")
+    endif(gsl_prefix)
+    execute_process(COMMAND ${gsl_config} --version OUTPUT_VARIABLE gsl_version)
+    if (gsl_version)
+      string(REGEX REPLACE "\n$" "" gsl_version "${gsl_version}")
+      message("${color_blue}-- Found GSL version ${gsl_version}${color_reset}")
+    endif(gsl_version)
+  endif(gsl_config)
 
   find_path(GSL_INCLUDE gsl/gsl_sf_gamma.h ${find_opt})
   if(NOT GSL_INCLUDE)
