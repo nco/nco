@@ -112,6 +112,10 @@ check_library_exists(${NETCDF_LIBRARY} nc_inq_path "" has_nc_inq_path)
 if (has_nc_inq_path)
   add_definitions(-DHAVE_NC_INQ_PATH)
 endif()
+check_library_exists(${NETCDF_LIBRARY} nc_inq_format "" has_nc_inq_format)
+if (has_nc_inq_format)
+  add_definitions(-DHAVE_NC_INQ_FORMAT)
+endif()
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #HDF5
