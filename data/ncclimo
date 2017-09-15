@@ -88,27 +88,31 @@ if [ -z "${DATA}" ]; then
 fi # DATA
 
 # Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library
-# 20170914 This entire block is identical between ncclimo and ncremap---keep it that way!
-hrd_pth='Yes' # [sng] Hard-code machine-dependent NCO paths
+# 20170914 Entire block is identical between ncclimo and ncremap---keep it that way!
+hrd_pth='Yes' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
 if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
     case "${HOSTNAME}" in 
 	aims* )
 	    export PATH='/export/zender1/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/export/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
+            export LD_LIBRARY_PATH='/export/zender1/lib'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
 	    soft add @openmpi-gcc
 	    export PATH='/home/zender/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
 	cooley* )
 	    # 20160421: Split cooley from mira binary locations to allow for different system libraries
 	    # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
 	    soft add +mvapich2 
             export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
 	mira* )
 	    export PATH='/home/zender/bin_mira'\:${PATH}
-	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
 	cori* )
 	    # 20160407: Separate cori from edison binary locations to allow for different system libraries
 	    # 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
@@ -124,7 +128,8 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 		export PATH="${NCARG_ROOT}/bin:${PATH}"
 	    fi # !NCARG_ROOT
 	    export PATH='/global/homes/z/zender/bin_cori'\:${PATH}
-            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH} ; ;;
+            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_cori'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
 	edison* )
 	    module load gsl
 	    module load udunits2 # 20170816 Name changed to udunits2
@@ -133,10 +138,12 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 		export PATH="${NCARG_ROOT}/bin:${PATH}"
 	    fi # !NCARG_ROOT
 	    export PATH='/global/homes/z/zender/bin_edison'\:${PATH}
-            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH} ; ;;
+            export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
 	pileus* )
 	    export PATH='/home/zender/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals/lib:/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals/lib:/home/zender/lib'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
 	rhea* )
 	    # 20151017: CSZ next three lines guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
@@ -154,7 +161,8 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 		export PATH="${NCARG_ROOT}/bin:${PATH}"
 	    fi # !NCARG_ROOT
             export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
-	    export LD_LIBRARY_PATH='/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
 	titan* )
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	    module load gcc
@@ -163,7 +171,8 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 		export PATH="${NCARG_ROOT}/bin:${PATH}"
 	    fi # !NCARG_ROOT
             export PATH='/ccs/home/zender/bin_titan'\:${PATH}
-	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
 	ys* )
 	    # 20151018: Yellowstone support not yet tested in batch mode
 	    # On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
@@ -172,6 +181,7 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    fi # !NCARG_ROOT
             export PATH='/glade/u/home/zender/bin'\:${PATH}
             export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH}
+	    hrd_pth_fnd='Yes' ; ;;
     esac # !HOSTNAME
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
@@ -657,11 +667,11 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "Config: ${spt_nm} running from directory ${drc_spt}\n"
     printf "Config: calling NCO binaries in directory ${drc_nco}\n"
     printf "Config: binaries linked to netCDF library version ${lbr_vrs}\n"
-    if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
-	printf "Config: Prepending hardcoded paths and/or modules for HOSTNAME = ${HOSTNAME}\n"
+    if [ "${hrd_pth_fnd}" = 'Yes']; then
+	printf "Config: Employ machine-depdendent hardcoded paths/modules for ${HOSTNAME}\n"
     else
-	printf "Config: No hardcoded path and/or module overrides for HOSTNAME = ${HOSTNAME}\n"
-    fi # !hrd_pth && !NCO_PATH_OVERRIDE
+	printf "Config: No hardcoded path/module overrides\n"
+    fi # !hrd_pth_fnd
     exit 0
 fi # !vrs_prn
 
@@ -874,9 +884,9 @@ if [ ${dbg_lvl} -ge 2 ]; then
 fi # !dbg_lvl
 if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
     # 20170825: Use nco_xtr_lst() to parse regular expressions for monthly climos
-    if [ ${clm_flg} != 'Yes' ] && [ ${clm_md} != 'mth' ]; then
-	nco_opt="${nco_opt} -v ${var_lst}"
-    fi # !mth
+    # if [ ${clm_flg} != 'Yes' ] && [ ${clm_md} != 'mth' ]; then
+    nco_opt="${nco_opt} -v ${var_lst}"
+    # fi # !mth
 fi # !var_lst
 if [ -n "${hdr_pad}" ]; then
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
