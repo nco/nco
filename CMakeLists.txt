@@ -112,6 +112,10 @@ check_library_exists(${NETCDF_LIBRARY} nc_inq_path "" has_nc_inq_path)
 if (has_nc_inq_path)
   add_definitions(-DHAVE_NC_INQ_PATH)
 endif()
+check_library_exists(${NETCDF_LIBRARY} nc_inq_format "" has_nc_inq_format)
+if (has_nc_inq_format)
+  add_definitions(-DHAVE_NC_INQ_FORMAT)
+endif()
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #HDF5
@@ -248,8 +252,7 @@ if (MSVC)
   set(CMAKE_C_FLAGS_MINSIZEREL     "/TP /MT /O1 /Ob1 /D NDEBUG")
   set(CMAKE_C_FLAGS_RELEASE        "/TP /MT /O2 /Ob2 /D NDEBUG")
   set(CMAKE_C_FLAGS_RELWITHDEBINFO "/TP /MT /Zi /O2 /Ob1 /D NDEBUG")
-  set(WINSOCK_LIBRARY ws2_32.lib winmm.lib wldap32.lib)
-  
+
   #//////////////////////////
   #visual studio defines math symbols in math.h, avoid duplicate definition
   #//////////////////////////
@@ -328,7 +331,7 @@ if(APPLE)
 endif()
 
 if(MSVC)
-  set(LIB_DEP ${LIB_DEP} ${WINSOCK_LIBRARY})
+  set(LIB_DEP ${LIB_DEP} ws2_32.lib winmm.lib wldap32.lib)
 endif()
 
 if(UNIX)
@@ -540,6 +543,19 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
     if (gsl_version)
       string(REGEX REPLACE "\n$" "" gsl_version "${gsl_version}")
       message("${color_blue}-- Found GSL version ${gsl_version}${color_reset}")
+      string(REPLACE "." ";" version_list ${gsl_version})
+      list(GET version_list 0 GSL_MAJOR)
+      list(GET version_list 1 GSL_MINOR)
+      if (GSL_MAJOR)
+        add_definitions(-DNCO_GSL_MAJOR_VERSION=${GSL_MAJOR})
+      endif()
+      if (GSL_MINOR)
+        add_definitions(-DNCO_GSL_MINOR_VERSION=${GSL_MINOR})
+      endif()
+      math(EXPR GSL_VER "${GSL_MAJOR} * 100 + ${GSL_MINOR}")
+      if (GSL_VER)
+        add_definitions(-DGSL_VER=${GSL_VER})
+      endif()
     endif(gsl_version)
   endif(gsl_config)
 
