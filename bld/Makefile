@@ -20,7 +20,7 @@
 # firn.ess.uci.edu   : NCO          Configure All else LLVM
 # frazil.ess.uci.edu : NCO          Configure All else GCC
 # givre.ess.uci.edu  : NCO + netCDF Makefile  All else LLVM
-# glace.ess.uci.edu  : NCO          Configure All else GCC
+# glace.ess.uci.edu  : NCO          CMake     All else GCC
 # grele.ess.uci.edu  : NCO          Makefile  All else GCC
 # neige.ess.uci.edu  : NCO          Makefile  All else GCC
 # rhea.ccs.ornl.gov  : NCO          Makefile  All else GCC
@@ -541,6 +541,7 @@ ifeq (${MPI},Y)
 endif # endif MPI
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SPT} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
+MDL_SPT_SRC := $(addprefix ${MY_DAT_DIR}/,${MDL_BIN_SPT})
 
 # Variables having to do with header files created by module
 # List header targets alphabetically by "category":
@@ -582,7 +583,7 @@ MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,${MDL_NCAP_TRG}) # `make distclean' remov
 # fxm: auto-generate source code components of C++ lists
 MDL_CXX_SRC := $(addprefix ${NCOXX_SRC_DIR}/,libnco++.hh Makefile.am Makefile.old ncap2.cc ncap2.hh ncap2_utl.cc NcapVar.cc NcapVar.hh NcapVarVector.cc NcapVarVector.hh NcapVector.hh ncoGrammer.g nco_antlr_pst_prc.pl fmc_cls.cc fmc_cls.hh fmc_all_cls.cc fmc_all_cls.hh fmc_gsl_cls.cc fmc_gsl_cls.hh Invoke.cc Invoke.hh map_srt_tmp.hh nco_gsl.c nco_gsl.h prs_cls.cc prs_cls.hh sdo_utl.cc sdo_utl.hh sym_cls.cc sym_cls.hh VarOp.hh vtl_cls.hh) $(addprefix ${NCO_CXX_SRC_DIR}/,INSTALL libnco_c++.hh Makefile.am Makefile.old nco_att.cc nco_att.hh nco_dmn.cc nco_dmn.hh nco_fl.cc nco_fl.hh nco_hgh.cc nco_hgh.hh nco_utl.cc nco_utl.hh nco_var.cc nco_var.hh README TODO tst.cc) # `make tags' includes these files
 
-TAGS_FILES := ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC}
+TAGS_FILES := ${MY_SRC_DIR}/*.h $(filter-out ${TAGS_FILTER_FILES},${SRC_LST}) ${MDL_DOC_SRC} ${MDL_MAN} ${MDL_BLD_SRC} ${MDL_CXX_SRC} ${MDL_NCAP_SRC} ${MDL_SPT_SRC}
 
 # Redefine default C and C++ pattern rules
 ${MY_OBJ_DIR}/%.o : %.c

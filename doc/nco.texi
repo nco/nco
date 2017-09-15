@@ -6518,7 +6518,7 @@ ncks -7 -L 1 \
      --rgr grd_ttl='Equi-Angular grid 3600x7200 (NASA CMG)'#latlon=3600,7200#lat_typ=uni#lon_typ=180_wst \
      --rgr scrip=${DATA}/grids/3600x7200_SCRIP.20160301.nc ~zender/nco/data/in.nc ~/foo.nc
 
-# DOE ACME/E3SM High Resolution Topography (1 x 1 km grid) for Elevation Classes
+# DOE E3SM/ACME High Resolution Topography (1 x 1 km grid) for Elevation Classes
 # Write to compressed netCDF4-classic file to reduce filesize from ~85 GB to 607 MB
 ncks -O -7 -L 1 \
      --rgr grd_ttl='Global latxlon = 18000x36000 ~ 1 x 1 km'#latlon=18000,36000#lat_typ=uni#lon_typ=grn_ctr \
@@ -7332,9 +7332,9 @@ Here are some quick examples of regridding from common models.
 All examples require @samp{in.nc out.nc} at the end.
 @example
 @verbatim
-# Identity re-map ACME/E3SM CAM-SE Cubed-Sphere output (to improve metadata)
+# Identity re-map E3SM/ACME CAM-SE Cubed-Sphere output (to improve metadata)
 ncks --map=${DATA}/maps/map_ne30np4_to_ne30np4_aave.20150603.nc
-# Convert ACME/E3SM CAM-SE Cubed Sphere output to rectangular lat/lon
+# Convert E3SM/ACME CAM-SE Cubed Sphere output to rectangular lat/lon
 ncks --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.150418.nc
 # Convert CAM3 T42 output to Cubed-Sphere grid
 ncks --map=${DATA}/maps/map_ne30np4_to_t42_aave.20150601.nc
@@ -11346,14 +11346,14 @@ is considered to be a ``mask'' or a ``weight'' and is thus preserved
 (not operated on when arithmetic can be avoided). 
 
 As of @acronym{NCO} version 4.5.0 (June, 2015), @acronym{NCO} began
-to support behavior required for the @acronym{DOE} @acronym{ACME/E3SM}
-program, and we refer to these rules collectively as the @acronym{ACME/E3SM} 
+to support behavior required for the @acronym{DOE} @acronym{E3SM/ACME}
+program, and we refer to these rules collectively as the @acronym{E3SM/ACME} 
 convention. 
 @cindex @acronym{GMT}
 @cindex @code{date_written}
 @cindex @code{time_written}
 @cindex @code{gmtime()}
-The first @acronym{ACME/E3SM} rule implemented is that the contents of
+The first @acronym{E3SM/ACME} rule implemented is that the contents of
 @var{input-file} variables named @code{date_written} and
 @code{time_written}, if any, will be updated to the current 
 system-supplied (with @code{gmtime()}) @acronym{GMT}-time as the
@@ -17384,11 +17384,11 @@ throughput much more in @command{ncremap} than in @command{ncclimo}.
 @cindex @code{--no_amwg_links}
 @item -l (@code{--lnk_flg}, @code{--link_flag}, @code{--no_amwg_links})
 This switch (which takes no argument) turns-off the default linking of
-@acronym{ACME/E3SM}-climo to @acronym{AMWG}-climo filenames.   
+@acronym{E3SM/ACME}-climo to @acronym{AMWG}-climo filenames.   
 @acronym{AMWG} omits the @acronym{YYYYMM} components of climo filenames,
 resulting in shorter names.
 By default @command{ncclimo} symbolically links the full
-(@acronym{ACME/E3SM}) filename to the shorter (@acronym{AMWG}) name.
+(@acronym{E3SM/ACME}) filename to the shorter (@acronym{AMWG}) name.
 @acronym{AMWG} diagnostics scripts can produce plots directly from
 these linked filenames. 
 Use this switch to turn-off that linking and reduce filename
@@ -18063,10 +18063,10 @@ ncclimo -c caseid -S 1980 -E 1981 -x prv -s 1980 -e 1981 -i crr -o clm
 @end example
 
 @unnumberedsubsec Coupled Runs
-@command{ncclimo} works on all @acronym{ACME/E3SM} and @acronym{CESM} models. 
+@command{ncclimo} works on all @acronym{E3SM/ACME} and @acronym{CESM} models. 
 It can simultaneously generate climatologies for a coupled run, where
 climatologies mean both native and regridded monthly, seasonal, and
-annual averages as per @acronym{ACME/E3SM} specifications (which mandate
+annual averages as per @acronym{E3SM/ACME} specifications (which mandate
 the inclusion of certain helpful metadata and provenance information).
 Here are template commands for a recent simulation:
 @example
@@ -18342,7 +18342,7 @@ annual mean (@acronym{ANN}) and then regridding that.
 Other climatologies (e.g., daily to monthly, or
 annual-to-climatological) involve similar choices. 
 
-@acronym{ACME/E3SM} (and @acronym{CESM}) computes fields in @acronym{DP} and
+@acronym{E3SM/ACME} (and @acronym{CESM}) computes fields in @acronym{DP} and
 outputs history (not restart) files as monthly means in @acronym{SP}. 
 The @acronym{NCO} climatology generator (@command{ncclimo}) processes
 these data in four stages. 
@@ -18373,7 +18373,7 @@ annual mean.
 @w{Stage 2} weights each input month by its number of days (e.g., 31 for 
 January), and @w{Stage 3} weights each input season by its number of days 
 (e.g., 92 for @acronym{MAM}). 
-@acronym{ACME/E3SM} runs @acronym{CAM-SE} with a 365-day calendar, so these
+@acronym{E3SM/ACME} runs @acronym{CAM-SE} with a 365-day calendar, so these
 weights are independent of year and never change. 
 The treatment of missing values in @w{Stages 1--3} is limited by the
 lack of missing value tallies provided by @w{Stage 0} (model) output. 
@@ -18419,17 +18419,17 @@ Instead, @acronym{NCO} copies these fields directly from the first input
 file.  
 @w{Stage 4} uses a mapfile to regrid climos from the native to the
 desired analysis grid. 
-@acronym{ACME/E3SM} currently uses mapfiles generated by
+@acronym{E3SM/ACME} currently uses mapfiles generated by
 @command{ESMF_RegridWeightGen} (@acronym{ERWG}) and by TempestRemap.  
 
 The algorithmic choices, approximations, and commands used to generate
 mapfiles from input gridfiles are separate issues.
 We mention only some of these issues here for brevity.
-Input gridfiles used by @acronym{ACME/E3SM} until ~20150901, and by
+Input gridfiles used by @acronym{E3SM/ACME} until ~20150901, and by
 @acronym{CESM} (then and currently, at least for Gaussian grids)
 contained flaws that effectively reduced their precision, especially at
 regional scales, and especially for Gaussian grids. 
-@acronym{ACME/E3SM} (and @acronym{CESM}) mapfiles continue to approximate
+@acronym{E3SM/ACME} (and @acronym{CESM}) mapfiles continue to approximate
 grids as connected by great circles, whereas most analysis grids (and
 some models) use great circles for longitude and small circles for
 latitude. 

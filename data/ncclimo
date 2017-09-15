@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Purpose: Climatology script tailored to CESM'ish monthly input and ACME/E3SM output guidelines
+# Purpose: Climatology script tailored to CESM'ish monthly input and E3SM/ACME output guidelines
 # Produces and optionally regrids climatological monthly means, seasonal means, annual mean
 
 # Copyright (C) 2015--2017 Charlie Zender
@@ -34,7 +34,7 @@
 # Documentation: http://nco.sf.net/nco.html#ncclimo
 # Additional Documentation:
 # HowTo: https://acme-climate.atlassian.net/wiki/display/SIM/Generate%2C+Regrid%2C+and+Split+Climatologies+%28climo+files%29+with+ncclimo+and+ncremap
-# ACME/E3SM Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
+# E3SM/ACME Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
 
 # Insta-install:
 # scp ~/nco/data/ncclimo aims4.llnl.gov:bin
@@ -313,9 +313,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #          SCD seasonal averages are inconsistent with (calendar-year-based) annual averages, but better capture seasonal the "natural" (not calendar-year-based) climate year
 #          SDD seasonal averages are fully consistent with (calendar-year-based) annual averages
 # drc_rgr: Regridding directory---store regridded files, if any, in drc_rgr rather than drc_out
-# lnk_flg: Link ACME/E3SM-climo to AMWG-climo filenames
+# lnk_flg: Link E3SM/ACME-climo to AMWG-climo filenames
 #          AMWG omits the YYYYMM components of climo filenames, resulting in shorter names
-#          This switch (on by default) symbolically links the full (ACME/E3SM) filename to the shorter (AMWG) name
+#          This switch (on by default) symbolically links the full (E3SM/ACME) filename to the shorter (AMWG) name
 #          AMWG diagnostics scripts can produce plots directly from these linked filenames
 # par_typ: Parallelism type---all values _except_ exact matches to "bck" and "mpi" are interpreted as "nil" (and invoke serial mode)
 #          bck = Background: Spawn children (basic blocks) as background processes on control node then wait()
@@ -424,7 +424,7 @@ inp_glb='No' # [sng] Input file list from globbing directory
 inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
 job_nbr=2 # [nbr] Job simultaneity for parallelism
-lnk_flg='Yes' # [sng] Link ACME/E3SM-climo to AMWG-climo filenames
+lnk_flg='Yes' # [sng] Link E3SM/ACME-climo to AMWG-climo filenames
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpaso', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for filenames and regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
@@ -444,7 +444,7 @@ thr_nbr=2 # [nbr] Thread number for regridder
 tpd_out=1 # [nbr] Timesteps-per-day in ouput
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
-var_lst_rx_xtr='Yes' # [sng] Process var_lst to expand rx
+var_lst_rx_xtr='No' # [sng] Process var_lst to expand rx
 vrs_prn='No' # [sng] Print version information
 xtn_flg='No' # [sng] Produce extended climatology
 ypf_max=50 # [yr] Years-per-output-file
@@ -467,7 +467,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
-    echo "${fnt_rvr}-l${fnt_nrm} ${fnt_bld}lnk_flg${fnt_nrm}  Link ACME/E3SM-climo to AMWG-climo filenames (default ${fnt_bld}${lnk_flg}${fnt_nrm}) [${fnt_tlc}lnk_flg, link_flag, no_amwg_links${fnt_nrm}]"
+    echo "${fnt_rvr}-l${fnt_nrm} ${fnt_bld}lnk_flg${fnt_nrm}  Link E3SM/ACME-climo to AMWG-climo filenames (default ${fnt_bld}${lnk_flg}${fnt_nrm}) [${fnt_tlc}lnk_flg, link_flag, no_amwg_links${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}mdl_nm${fnt_nrm}   Model name (default ${fnt_bld}${mdl_nm}${fnt_nrm}) [${fnt_tlc}mdl_nm, model_name, model${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco, nco_options${fnt_nrm}]"
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"
@@ -568,7 +568,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	h) hst_nm="${OPTARG}" ;; # History tape name
 	i) drc_in="${OPTARG}" ;; # Input directory
 	j) job_usr="${OPTARG}" ;; # Job simultaneity
-	l) lnk_flg="${OPTARG}" ;; # Link ACME/E3SM to AMWG name
+	l) lnk_flg="${OPTARG}" ;; # Link E3SM/ACME to AMWG name
 	m) mdl_nm="${OPTARG}" ;; # Model name
 	n) nco_opt="${OPTARG}" ;; # NCO options
 	o) drc_out_usr="${OPTARG}" ;; # Output directory
@@ -601,8 +601,8 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
-	       lnk_flg | link_flag | no_amwg_link | no_amwg_links | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # -l # Link ACME/E3SM to AMWG name
-	       lnk_flg=?* | link_flag=?* | no_amwg_link=?* | no_amwg_links=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link ACME/E3SM to AMWG name
+	       lnk_flg | link_flag | no_amwg_link | no_amwg_links | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # -l # Link E3SM/ACME to AMWG name
+	       lnk_flg=?* | link_flag=?* | no_amwg_link=?* | no_amwg_links=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM/ACME to AMWG name
 	       mdl_nm=?* | model_name=?* | model=?* ) mdl_nm="${LONG_OPTARG}" ;; # -m # Model name
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
@@ -657,6 +657,11 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "Config: ${spt_nm} running from directory ${drc_spt}\n"
     printf "Config: calling NCO binaries in directory ${drc_nco}\n"
     printf "Config: binaries linked to netCDF library version ${lbr_vrs}\n"
+    if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
+	printf "Config: Prepending hardcoded paths and/or modules for HOSTNAME = ${HOSTNAME}\n"
+    else
+	printf "Config: No hardcoded path and/or module overrides for HOSTNAME = ${HOSTNAME}\n"
+    fi # !hrd_pth && !NCO_PATH_OVERRIDE
     exit 0
 fi # !vrs_prn
 
@@ -1447,7 +1452,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${mdl_typ}" = 'yyyymm' ]; then
 	printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
     else # !mdl_typ
-	printf "Filenames will be constructed with CESM'ish or ACME/E3SM'ish conventions\n"
+	printf "Filenames will be constructed with CESM'ish or E3SM/ACME'ish conventions\n"
     fi # !mdl_typ
     if [ ${clm_md} = 'ann' ]; then 
 	printf "Each input file assumed to contain mean of one year\n"
@@ -2290,11 +2295,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	fi # !rgr_map
     fi # !ann_flg
     
-    # Link ACME/E3SM-climo to AMWG-climo filenames
+    # Link E3SM/ACME-climo to AMWG-climo filenames
     # drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
     # Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
     if [ ${lnk_flg} = 'Yes' ]; then
-	printf "Link ACME/E3SM-climo to AMWG-climo filenames...\n"
+	printf "Link E3SM/ACME-climo to AMWG-climo filenames...\n"
 	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 	    if [ -n "${rgr_map}" ]; then 
 		cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr};ln -s -f ${fl_rgr[${clm_idx}]/${drc_rgr}\//} ${fl_amwg[${clm_idx}]/${drc_rgr}\//}"
@@ -2307,7 +2312,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    if [ ${dbg_lvl} -le 1 ]; then
 		eval ${cmd_lnk[${clm_idx}]}
 		if [ $? -ne 0 ]; then
-		    printf "${spt_nm}: ERROR linking ACME/E3SM to AMWG filename cmd_lnk[${clm_idx}] failed. Debug this:\n${cmd_lnk[${clm_idx}]}\n"
+		    printf "${spt_nm}: ERROR linking E3SM/ACME to AMWG filename cmd_lnk[${clm_idx}] failed. Debug this:\n${cmd_lnk[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
@@ -2502,11 +2507,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	    wait
 	fi # !rgr_map
 	
-	# Link ACME/E3SM-climo to AMWG-climo filenames
+	# Link E3SM/ACME-climo to AMWG-climo filenames
 	# drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
 	# Strategy: Start in drc_pwd, cd to drc_rgr, then link so return code comes from ln not cd
 	if [ ${lnk_flg} = 'Yes' ]; then
-	    printf "Link extended ACME/E3SM-climo to AMWG-climo filenames...\n"
+	    printf "Link extended E3SM/ACME-climo to AMWG-climo filenames...\n"
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		if [ -n "${rgr_map}" ]; then 
 		    cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr_xtn};ln -s -f ${fl_rgr_xtn[${clm_idx}]/${drc_rgr_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_rgr_xtn}\//}"
@@ -2519,7 +2524,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 		if [ ${dbg_lvl} -le 1 ]; then
 		    eval ${cmd_lnk_xtn[${clm_idx}]}
 		    if [ $? -ne 0 ]; then
-			printf "${spt_nm}: ERROR linking ACME/E3SM to AMWG filename cmd_lnk_xtn[${clm_idx}] failed. Debug this:\n${cmd_lnk_xtn[${clm_idx}]}\n"
+			printf "${spt_nm}: ERROR linking E3SM/ACME to AMWG filename cmd_lnk_xtn[${clm_idx}] failed. Debug this:\n${cmd_lnk_xtn[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
 		fi # !dbg
