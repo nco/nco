@@ -973,8 +973,8 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
 #if NC_LIB_VERSION < 440
 int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path)
 {
-  /* Purpose: 20170913: Stub for nc_inq_path(), introduced in netCDF 4.4.0
-     Forward compatibility prototype required for systems with netCDF < 4.4.0 */
+  /* Purpose: 20170913: Stub for nc_inq_path(), introduced in netCDF 4.3.2
+     Forward compatibility prototype required for systems with netCDF < 4.3.2 */
   *pathlen=0L;
   *path=NULL;
   return NC_NOERR+0*nc_id; /* CEWI */
