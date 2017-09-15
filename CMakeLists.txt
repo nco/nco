@@ -100,6 +100,24 @@ else()
   message("-- Found netcdf library at: " ${NETCDF_LIBRARY})
 endif()
 
+#/////////////////////////////////////////////////////////////////////////////////////
+#netCDF
+#Check for several functions in the netCDF library; define C macro accordingly
+#CMAKE_REQUIRED_LIBRARIES needs NETCDF_LIBRARY
+#/////////////////////////////////////////////////////////////////////////////////////
+
+set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_LIBRARY})
+
+check_library_exists(${NETCDF_LIBRARY} nc_inq_path "" has_nc_inq_path)
+if (has_nc_inq_path)
+  add_definitions(-DHAVE_NC_INQ_PATH)
+endif()
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#HDF5
+#/////////////////////////////////////////////////////////////////////////////////////
+
+
 find_library(HDF5_LIBRARY NAMES hdf5 ${find_opt})
 if(NOT HDF5_LIBRARY)
   message(FATAL_ERROR "${color_red}hdf5 library not found${color_reset}")
