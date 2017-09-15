@@ -252,8 +252,7 @@ if (MSVC)
   set(CMAKE_C_FLAGS_MINSIZEREL     "/TP /MT /O1 /Ob1 /D NDEBUG")
   set(CMAKE_C_FLAGS_RELEASE        "/TP /MT /O2 /Ob2 /D NDEBUG")
   set(CMAKE_C_FLAGS_RELWITHDEBINFO "/TP /MT /Zi /O2 /Ob1 /D NDEBUG")
-  set(WINSOCK_LIBRARY ws2_32.lib winmm.lib wldap32.lib)
-  
+
   #//////////////////////////
   #visual studio defines math symbols in math.h, avoid duplicate definition
   #//////////////////////////
@@ -332,7 +331,7 @@ if(APPLE)
 endif()
 
 if(MSVC)
-  set(LIB_DEP ${LIB_DEP} ${WINSOCK_LIBRARY})
+  set(LIB_DEP ${LIB_DEP} ws2_32.lib winmm.lib wldap32.lib)
 endif()
 
 if(UNIX)
@@ -552,6 +551,10 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
       endif()
       if (GSL_MINOR)
         add_definitions(-DNCO_GSL_MINOR_VERSION=${GSL_MINOR})
+      endif()
+      math(EXPR GSL_VER "${GSL_MAJOR} * 100 + ${GSL_MINOR}")
+      if (GSL_VER)
+        add_definitions(-DGSL_VER=${GSL_VER})
       endif()
     endif(gsl_version)
   endif(gsl_config)
