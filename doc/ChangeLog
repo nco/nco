@@ -1,3 +1,9 @@
+2017-09-15  Charlie Zender  <zender@uci.edu>
+
+	* Echo hardpath/NCO_PATH_OVERRIDE status as Config:
+
+	* Turn-off var_lst_rx_xtr so ncclimo 4.6.9-alphaXX works with 4.6.8 binaries
+
 2017-09-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.9-alpha05 release procedure:

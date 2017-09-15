@@ -20,7 +20,7 @@
 # firn.ess.uci.edu   : NCO          Configure All else LLVM
 # frazil.ess.uci.edu : NCO          Configure All else GCC
 # givre.ess.uci.edu  : NCO + netCDF Makefile  All else LLVM
-# glace.ess.uci.edu  : NCO          Configure All else GCC
+# glace.ess.uci.edu  : NCO          CMake     All else GCC
 # grele.ess.uci.edu  : NCO          Makefile  All else GCC
 # neige.ess.uci.edu  : NCO          Makefile  All else GCC
 # rhea.ccs.ornl.gov  : NCO          Makefile  All else GCC
