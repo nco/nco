@@ -667,7 +667,7 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "Config: ${spt_nm} running from directory ${drc_spt}\n"
     printf "Config: calling NCO binaries in directory ${drc_nco}\n"
     printf "Config: binaries linked to netCDF library version ${lbr_vrs}\n"
-    if [ "${hrd_pth_fnd}" = 'Yes']; then
+    if [ "${hrd_pth_fnd}" = 'Yes' ]; then
 	printf "Config: Employ machine-depdendent hardcoded paths/modules for ${HOSTNAME}\n"
     else
 	printf "Config: No hardcoded path/module overrides\n"
