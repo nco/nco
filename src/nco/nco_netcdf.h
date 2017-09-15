@@ -344,18 +344,21 @@ int nco_sync(const int nc_id);
 int nco_abort(const int nc_id);
 int nco_close(const int nc_id);
 int nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * const att_glb_nbr,int * const rec_dmn_id);
-#if NC_LIB_VERSION >= 440
-int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path);
-#endif /* 4.4.0 */
+  /* NB: nc_inq_path() introduced in netCDF 4.3.2, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
+#ifndef HAVE_NC_INQ_PATH
+  int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path);
+#endif /* !HAVE_NC_INQ_PATH */
 int nco_inq_path(const int nc_id,size_t * const pathlen,char * const path);
-#if NEED_NC_INQ_FORMAT
-/* Stub for nc_inq_format(), introduced in netCDF 3.6.1 or 3.6.2 */
-int nc_inq_format(int nc_id,int * const fl_fmt);
-#endif /* !NEED_NC_INQ_FORMAT */
+  /* NB: nc_inq_format() introduced in netCDF 3.6.1, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
+#ifndef HAVE_NC_INQ_FORMAT
+  /* Stub for nc_inq_format(), introduced in netCDF 3.6.1 or 3.6.2 */
+  int nc_inq_format(int nc_id,int * const fl_fmt);
+#endif /* !HAVE_NC_INQ_FORMAT */
 int nco_inq_format(const int nc_id,int * const fl_fmt);
+  /* NB: nc_inq_format_extended() introduced in netCDF 4.3.1, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #ifndef NC_HAVE_INQ_FORMAT_EXTENDED
-/* 20131222: Stub for nc_inq_format_extended(), introduced in netCDF 4.3.1-rc7 */
-int nc_inq_format_extended(int nc_id,int * const fl_fmt,int * const mode);
+  /* 20131222: Stub for nc_inq_format_extended(), introduced in netCDF 4.3.1-rc7 */
+  int nc_inq_format_extended(int nc_id,int * const fl_fmt,int * const mode);
 #endif /* !NC_HAVE_INQ_FORMAT_EXTENDED */
 int nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode);
 int nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id);

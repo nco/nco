@@ -18418,6 +18418,20 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi
+ac_fn_c_check_func "$LINENO" "nc_inq_path" "ac_cv_func_nc_inq_path"
+if test "x$ac_cv_func_nc_inq_path" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_NC_INQ_PATH 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_NC_INQ_PATH 1
+_ACEOF
+
+fi
 
 ac_fn_c_check_func "$LINENO" "getopt" "ac_cv_func_getopt"
 if test "x$ac_cv_func_getopt" = xyes; then :

@@ -509,8 +509,9 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
   /* NB: nc_inq_format_extended() introduced in netCDF 4.3.1, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #if NC_LIB_VERSION < 440
     switch(fl_fmt_xtn){
+      /* NB: netCDF < 4.3.1 unaware of NC_FORMATX_* tokens */
     case NC_FORMAT_NC3:
-      return "NCX_FORMAT_NC3";
+      return "NC_FORMATX_NC3";
     case NC_FORMAT_NC_HDF5:
       return "NC_FORMATX_NC_HDF5";
     case NC_FORMAT_NC_HDF4:
@@ -534,7 +535,7 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
     case NC_FORMATX_NC_HDF4:
       return "NC_FORMATX_NC_HDF4";
     case NC_FORMATX_PNETCDF:
-      return "NC_FORMATX_PNETCDF"; /* CDF5 files report NC_FORMATX_PNETCDF when ... */
+      return "NC_FORMATX_PNETCDF"; /* CDF5 files report NC_FORMATX_PNETCDF when opened through PnetCDF parallel API */
     case NC_FORMATX_DAP2:
       return "NC_FORMATX_DAP2";
     case NC_FORMATX_DAP4:
@@ -970,7 +971,8 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
   return rcd;
 } /* end nco_inq() */
 
-#if NC_LIB_VERSION < 440
+  /* NB: nc_inq_path() introduced in netCDF 4.3.2, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
+#ifndef HAVE_NC_INQ_PATH
 int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path)
 {
   /* Purpose: 20170913: Stub for nc_inq_path(), introduced in netCDF 4.3.2
@@ -979,7 +981,7 @@ int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path)
   *path=NULL;
   return NC_NOERR+0*nc_id; /* CEWI */
 } /* !nc_inq_path() */
-#endif /* 4.4.0 */
+#endif /* !HAVE_NC_INQ_PATH */
 int nco_inq_path(const int nc_id,size_t * const pathlen,char * const path)
 {
   /* Purpose: Wrapper for nc_inq_path() */
@@ -989,7 +991,8 @@ int nco_inq_path(const int nc_id,size_t * const pathlen,char * const path)
   return rcd;
 } /* !nco_inq_path() */
 
-#ifdef NEED_NC_INQ_FORMAT
+  /* NB: nc_inq_format() introduced in netCDF 3.6.1, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
+#ifndef HAVE_NC_INQ_FORMAT
 int nc_inq_format(int nc_id,int * const fl_fmt)
 {
   /* Purpose: Stub for nc_inq_format(), introduced in netCDF 3.6.1 or 3.6.2
@@ -997,7 +1000,7 @@ int nc_inq_format(int nc_id,int * const fl_fmt)
   *fl_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   return NC_NOERR+0*nc_id; /* CEWI */
 } /* end nc_inq_format() */
-#endif /* !NEED_NC_INQ_FORMAT */
+#endif /* !HAVE_NC_INQ_FORMAT */
 int
 nco_inq_format(const int nc_id,int * const fl_fmt)
 {
