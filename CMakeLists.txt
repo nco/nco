@@ -1,4 +1,4 @@
-#CMake build, Pedro Vicente 
+#CMake build, Pedro Vicente
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #mininum library dependencies: netCDF, HDF5, HDF5_HL, ZLIB (SZIP)
@@ -247,7 +247,7 @@ if (MSVC)
   #//////////////////////////
   #compile as C++ Code (/TP)
   #//////////////////////////
-  
+
   set(CMAKE_C_FLAGS_DEBUG "/TP /D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
   set(CMAKE_C_FLAGS_MINSIZEREL     "/TP /MT /O1 /Ob1 /D NDEBUG")
   set(CMAKE_C_FLAGS_RELEASE        "/TP /MT /O2 /Ob2 /D NDEBUG")
@@ -259,13 +259,13 @@ if (MSVC)
 
   add_definitions(-D_MATH_DEFINES_DEFINED)
 
-else (MSVC)  
+else (MSVC)
 
 #//////////////////////////
 #compile as C99
 #//////////////////////////
 
-if(CMAKE_VERSION VERSION_LESS "3.1")  
+if(CMAKE_VERSION VERSION_LESS "3.1")
   if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_C_FLAGS "--std=gnu99 ${CMAKE_C_FLAGS}")
   endif()
@@ -822,7 +822,7 @@ add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_D
 #//////////////////////////
 
 find_program(nc_gen NAMES ncgen)
-if (nc_gen)
+if (nc_gen AND todo)
   set(nco_data ${CMAKE_CURRENT_SOURCE_DIR}/data)
   message("${color_blue}-- Using the ncgen tool at ${nc_gen}${color_reset}")
   message("${color_blue}-- Creating sample netCDF data files for self-tests in ${nco_data}${color_reset}")
