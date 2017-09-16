@@ -149,7 +149,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2017 Sep&nbsp;??: 4.6.9 <i>In Progress...</i>
+<li>2017 Oct&nbsp;??: 4.7.0 <i>In Progress...</i>
+<li>2017 Sep&nbsp;18? 4.6.9 CDF5
 <li>2017 Aug&nbsp;16: 4.6.8 Sundry features/fixes
 <li>2017 May&nbsp;26: 4.6.7 Sub-gridscale regridding
 <li>2017 Apr&nbsp;21: 4.6.6 UGRID
@@ -639,7 +640,7 @@ netCDF4 compound types?;</li>
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
 <li><b>NCO 4.6.9</b>: (<i>In Progress, features in-progress or complete include</i>) 
 CMake build is mature;
-Complete CDF5 support, including autoconversion;
+Complete CDF5 support, including autoconversion, corruption detection;
 <tt>ncks</tt> estimates correct filesizes;
 <tt>ncks</tt> CDL prints variable RAM size;
 <tt>ncks</tt> prints CDL by default;</li>
@@ -1276,22 +1277,17 @@ Users should instead first download and install the ANTLR found <a href="http://
 <dt>export PATH=/usr/local/bin\:${PATH}</dt>
 <dt>export LD_LIBRARY_PATH=/usr/local/lib\:${LD_LIBRARY_PATH}</dt>
 </tt>
-<dt><a name="bonobo"></a></dt> <!-- http://nco.sf.net#bonobo -->
-<dt><a name="bnb"></a></dt> <!-- http://nco.sf.net#bnb -->
-Please post questions about building or installing NCO to the 
-<a href="http://sf.net/p/nco/discussion/9830">list</a>
-only after reading and attempting to follow these instructions.
-To indicate you have done this, include the word &ldquo;bonobo&rdquo;
-in the first sentence of your post. 
-Yes, &ldquo;bonobo&rdquo;.
-Otherwise we will likely redirect you here.
-For more sophisticated build/install options, see the next section.
-<li>CMake build. To build with CMake, do:
+<dt><a name="cmake"></a></dt> <!-- http://nco.sf.net#cmake -->
+<dt><a name="CMake"></a></dt> <!-- http://nco.sf.net#CMake -->
+<li>The CMake-equivalent to the autoconf/configure build-engine
+  example above is:
 <tt>
 <dt>cd ~/nco/cmake</dt>
-<dt>cmake ..</dt>
+<dt>cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local</dt>
 <dt>make</dt>
+<dt>sudo make install</dt>
 </tt>
+Unlike autoconf/configure, CMake works well on MS Windows. 
 CMake tries to find header and dependency libraries in standard locations.
 Override these manually with, e.g., 
 <tt>
@@ -1303,6 +1299,17 @@ Override these manually with, e.g.,
 -DZLIB_LIBRARY=/my/zlib/library/file 
 -DCURL_LIBRARY=/my/curl/library/file</dt>
 </tt>
+</p>
+<dt><a name="bonobo"></a></dt> <!-- http://nco.sf.net#bonobo -->
+<dt><a name="bnb"></a></dt> <!-- http://nco.sf.net#bnb -->
+Please post questions about building or installing NCO to the 
+<a href="http://sf.net/p/nco/discussion/9830">list</a>
+only after reading and attempting to follow these instructions.
+To indicate you have done this, include the word &ldquo;bonobo&rdquo;
+in the first sentence of your post. 
+Yes, &ldquo;bonobo&rdquo;.
+Otherwise we will likely redirect you here.
+For more sophisticated build/install options, see the next section.
 </ul>
 
 <dt><a name="Makefile"></a></dt> <!-- http://nco.sf.net#Makefile -->
@@ -1391,7 +1398,41 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 <h2>Known Problems from 2013 (version 4.2.4) Onwards</h2>
 
 <ul><b>Recent Generic Run-time Problems:</b>
-<!-- http://nco.sf.net#bug_nc4_srd -->
+
+<!-- http://nco.sf.net#bug_cdf5 -->
+<a name="bug_cdf5"></a>
+<li><i>netCDF CDF5 corruption:</i>
+  netCDF library 4.4.x supports the CDF5 binary format.
+  Unfortunately the CDF5 implementation is buggy for large (> 4 GiB)
+  variables. 
+  Writing CDF5 files with large variables is buggy in netCDF library
+  versions 4.4.0&ndash;4.4.1 unless there is only one such
+  &ldquo;large&rdquo; variable and it is the last to be defined.
+  If the file is an input dataset (i.e., NCO <i>reads</i> it) written
+  by PnetCDF then the input data are fine (because PnetCDF writes CDF5
+  through a different mechanism than serial programs like NCO's
+  writer). And if the CDF5 dataset was originally written by any
+  netCDF version 4.5.0 or greater, then it is fine.
+  However, an input file written by any serial netCDF writer
+  (like NCO) employing netCDF library 4.4.x, is likely corrupt and
+  variables were silently truncated when writing it.
+  Output files (that NCO wrote) with large variables will definitely
+  be corrupt if NCO was linked to netCDF library version 4.4.x (so
+  please upgrade to netCDF 4.5.x ASAP).
+  There are two potential solutions for data affected by this bug:
+  1. Re-write (using any netCDF version) original input files in
+  netCDF4 format instead of CDF5, then process these as normal and
+  write netCDF4 output (instead of CDF5); 
+  2. Re-compile NCO with netCDF library 4.5.0 or later and use it to
+  convert non-corrupt datasets to netCDF4 format, then process the
+  data.
+  For more information on this nasty bug, see
+  <a href="https://github.com/Unidata/netcdf-c/issues/463">here</a>.
+  Our understanding of this bug is still evolving and salient updates
+  will be posted here.
+</li>
+  
+  <!-- http://nco.sf.net#bug_nc4_srd -->
 <a name="bug_nc4_srd"></a>
 <li><i>netCDF4 Strided Hyperslab bug:</i>
 Multiple users complain that access to strided hyperslabs of

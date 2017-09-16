@@ -1436,11 +1436,14 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   /* Use nbr_dmn+1 in malloc() to handle case when nbr_dim == 0 and allow for formatting characters */
   dmn_sng=(char *)nco_malloc((nbr_dim+1)*NC_MAX_NAME*sizeof(char));
   dmn_sng[0]='\0';
+  sz_sng[0]='\0';
   if(nbr_dim == 0){
     ram_sz_crr=var_sz*nco_typ_lng(var_typ);
     if(prn_flg->trd) (void)fprintf(stdout,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)ram_sz_crr);
     /* 20131122: Implement ugly NcML requirement that scalars have shape="" attribute */
     if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"\"");
+    (void)sprintf(sng_foo,"1*sizeof(%s)",nco_typ_sng(var_typ));
+    (void)strcat(sz_sng,sng_foo);
   }else{
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       if(prn_flg->xml){
@@ -1459,7 +1462,6 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
       (void)strcat(dmn_sng,sng_foo);
     } /* end loop over dim */
 
-    sz_sng[0]='\0';
     for(dmn_idx=0;dmn_idx<nbr_dim-1;dmn_idx++){
       (void)sprintf(sng_foo,"%li*",(long)dmn_sz[dmn_idx]);
       (void)strcat(sz_sng,sng_foo);
@@ -2562,7 +2564,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(stdout,"\n");
     if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
     if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
-    if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// Generate binary file: ncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
+    if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// %sncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file: " : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
   }else if(JSN){
     nm_jsn=nm2sng_jsn(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
     /* JSN print main opening brace */
@@ -2959,8 +2961,8 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   nm_cdl=(char *)nco_free(nm_cdl);
   if(prn_flg->fll_pth) (void)fprintf(stdout," // fullname: %s\n",nco_gpe_evl(prn_flg->gpe,grp_nm_fll)); else (void)fprintf(stdout,"\n");
   if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
-  if(grp_dpt == 0 && prn_flg->nfo_xtr && nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
-  if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// Generate binary file from this CDL: ncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
+  if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA && nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(stdout,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
+  if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(stdout,"%*s// %sncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file from this CDL: " : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
   
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;

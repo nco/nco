@@ -7,107 +7,69 @@ http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
 Version 4.6.9 fixes a few issues has no new major features.
+Most improvements relate to CDF5 handling and CMake builds.
+The other significant change is ncks print CDL by default.
 
-PLEASE READ THIS IF YOU USE NCKS TO PRINT DATA:
-The ncks default printing will change to CDL in NCO 4.7.0.
-For 20+ years ncks has, by default, printed the text representation
-of a file in what we now call "traditional" mode. This mode best
-facilitates meticulous data examination in line-by-line format.
-ncdump produces CDL format that is more useful for most NCO users.
-ncdump has always printed clean CDL and for many years there was
-little point in defaulting ncks printed output to CDL.
-However, ncks CDL mode now rivals ncdump in many ways.
-In particular, ncks --cln now prints times as human-readable calendar
-dates, the last ncdump feature that I used which ncks lacked. 
-Hence in NCO 4.7.0 ncks default printed output will change to CDL. 
-Then one will type simply "ncks" instead of "ncks --cdl". 
-We just added a new "--trd" option to print traditional output.
-Add --trd to your scripts and their behavior will not change.
-Otherwise your printing scripts will start to print CDL.
-You have been warned :)
-
-Work on NCO 4.7.0 has commenced. Planned changes include printing
-CDL by default, and planned improvements include support for conda
-installs on MS Windows, and more ncclimo and ncremap features.
+Work on NCO 4.7.0 has commenced. Planned changes include 
+more ncclimo and ncremap features. 
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncap2 now fully implements NCO chunking maps and policies.
-   Previously ncap2 preserved existing chunking in variables,
-   but could not be told to do anythin different. Now all command-line
-   chunking behavior supported by NCO works in ncap2.
-   ncap2 --cnk_plc=unchunk -S cnk.nco in.nc4 out.nc4
-   http://nco.sf.net/nco.html#cnk
+A. CDF5: All NCO operators now fully support CDF5.
+   Specify CDF5 output with the -5 switch   
+   ncra -5 in*.nc out.nc
+   This includes auto-conversion.
+   ncks converts among netCDF's five-different binary formats:
+   ncks [-3 -4 -5 -6 -7] in.nc out.nc
+   http://nco.sf.net/nco.html#autoconversion
 
-B. ncks CDL printing supports finer-grained control of date formats,
-   including an ISO 8601 "T" option. Previously ncks printed
-   UDUnits-compliant times as dates when invoked with the --cdl and
-   --cal options. A third option, --dt_fmt, now exposes finer
-   control of the format with short, regular, and ISO8601 options:
-   ncks -H -m -v time_bnds -C --cdl --dt_fmt=1 ~/nco/data/in.nc
-   ncks -H -m -v time_bnds -C --cdl --dt_fmt=2 ~/nco/data/in.nc
-   ncks -H -m -v time_bnds -C --cdl --dt_fmt=3 ~/nco/data/in.nc
-   dt_fmt:   Output:
-   0,1       1964-03-13 09:08:16 (Default, short format)
-   2	     1964-03-13 09:08:16.000000 (regular format)
-   3         1964-03-13T09:08:16.000000 (ISO8601 "T" format)
-   Note that --dt_fmt automatically implies --cal.
-   http://nco.sf.net/nco.html#cln
+B. CDF5: NCO warns when CDF5 files may be corrupted by the newly
+   discovered (!) netCDF CDF5 bug.
+   http://nco.sf.net#bug_cdf5
 
-C. Some data are best evaluated with custom-defined seasons, e.g., JFM
-   instead of DJF, or two-month seasons such as FM or ON. ncclimo now
-   supports up to eleven (and counting) seasons, although by default it
-   only computes MAM, JJA, SON, and DJF. As of NCO 4.6.9, use the
-   seasons option to specify additional or alternate seasons: 
-   ncclimo --seasons=jfm,jas,ann -s 1980 -e 1983 -i drc_in -o drc_out
-   Use "–seasons=none" to completely turn-off seasonal and annual-mean
-   climatologies:
-   ncclimo --seasons=none -s 1980 -e 1983 -i drc_in -o drc_out
+C. CDF5: In support of detecting the CDF5 bug, and also of more
+   general use, are new ncks features to print, in CDL comments,
+   the uncompressed RAM size of every variable (when dbg_lvl >= 1).
+   When dbg_lvl >= 2, the RAM size of all the data in a file,
+   and the variable ID of each variable, are also printed.
+   ncks -D 1 -v one ~/nco/data/in.nc
+   ncks -D 2 -v one ~/nco/data/in.nc
+   ncks -M -D 2 -v one ~/nco/data/in.nc
+   http://nco.sf.net#cdl
+
+D. Pedro Vicente has generously contributed a CMake build-engine. 
+   CMake can build NCO on any architecture including MS Windows,
+   and most or all features are available, including ncap2, GSL,
+   DAP, and UDUnits2. To build with CMake and install in /usr/local: 
+   cd nco/cmake
+   cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
+   make
+   sudo make install
+   Additional examples in cmake/build.bat
+   http://nco.sf.net#bld
+
+E. ncks now prints CDL by default.
+   Advance notice of this change was first given in May.
+   Use the --trd switch to print with "traditional" syntax:
+   ncks --trd in.nc
+   http://nco.sf.net/nco.html#trd
+   http://nco.sf.net/nco.html#cdl
+
+F. ncclimo and ncremap have changes "under-the-hood".
+   E3SM/ACME users may notice cosmetic differences.
+   Hard-coded paths on DOE machines can now be avoided by
+   export NCO_PATH_OVERRIDE='No'
+   in the shell where ncclimo/ncremap are invoked.
    http://nco.sf.net/nco.html#ncclimo
-
-D. ncremap --msk_src and --msk_dst options now accept the value 'none'
-   to prevent the regridder from interpreting any variable as a mask
-   in files from which source or destination grids are inferred.
-   ncremap -i ~/ed.nc --msk_src=none -d ~/ed.nc -o ~/foo.nc
-   ncremap -i ~/ed.nc -d ~/ed.nc --msk_dst=none -o ~/foo.nc
-   http://nco.sf.net/nco.html#ncremap
-
-E. ncremap now accepts standard NCO arguments for output file type.
-   The -3, -4, -5, -6, and -7 flags, or their long-option equivalents
-   --fl_fmt=fmt or --file_format=fmt where fmt is classic, netcdf4,
-   64bit_data, 64bit_offset, or netcdf4_classic (or some synonyms)
-   causes the output files created by ncremap, e.g., the regridded
-   files and the grid files, to have the requested format.
-   The ERWG and TempestRemap weight-generators support only a subset
-   of these formats.
-   ncremap -7 -i ~/deepthroat.nc -d ~/wapo.nc -o ~/foo.nc
-   http://nco.sf.net/nco.html#fl_fmt_ncremap
 
 BUG FIXES:
 
-A. The ncap2 implementation of mibs()/mabs()/mebs() is fixed.
-   Thanks to Dominique Briand for reporting this.
+A. ncclimo false-positive messages about 'ANN' eliminated
 
-B. JSON now prints "null" instead of "NaN" for non-normal
-   floating-point values like NaN and Infinity.
-   This makes output fully JSON-compliant, although it simultaneously 
-   makes it impossible for JSON parsers to determine whether a "null"
-   floating-point value is NaN, or +/-Infinity.
-   Thanks to Bob Simons for noticing this.
-
-C. Fix longstanding (since ~4.2.3) ncwa issue where hyperslabs
-   were not correctly handled for masks and weights. Hyperslabs
-   that started after the first array element could lead to incorrect
-   answers. Thanks to Tony Leboissetier for reporting the problem,
-   and to Pedro Vicente for fixing it.   	    
-   http://nco.sf.net#bug_ncwa_hyp_msk_wgt
-
-D. Ensure ncclimo and ncremap load netCDF libraries 4.4.x+ on
-   certain clusters so that CDF5 capabilities always available.
-   Thanks to Milena Veneziani for reporting this.
+B. ncclimo/ncremap updated udunits2 module for edison
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
