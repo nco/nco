@@ -1,2 +1,2 @@
 #bin/bash
-rm -rf CMakeCache.txt CMakeFiles Makefile install_manifest.txt cmake_install.cmake
+rm -rf CMakeCache.txt CMakeFiles Makefile install_manifest.txt cmake_install.cmake cmake_uninstall.cmake
