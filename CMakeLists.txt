@@ -55,7 +55,6 @@ endif()
 set(install_path "$ENV{MY_BIN_DIR}")
 if(install_path)
   set(CMAKE_INSTALL_PREFIX ${install_path})
-  message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
 endif()
 
 
@@ -829,16 +828,36 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in" "${C
 add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
 #//////////////////////////
+# check target 
+# NOTE: the check target is only set if a custom install prefix is set
+# with environment $MY_BIN_DIR or set manually with cmake .. -DCMAKE_INSTALL_PREFIX=<path>
+# because the default install prefix (e.g /usr) requires 'sudo' previleges 
+# and the target would FAIL for this case, on the 'make install' part
+#//////////////////////////
+
+if(install_path)
+
+#//////////////////////////
 # find ncgen (any ncgen will do)
 #//////////////////////////
 
-find_program(nc_gen NAMES ncgen)
-if (nc_gen AND todo)
-  set(nco_data ${CMAKE_CURRENT_SOURCE_DIR}/data)
-  message("${color_blue}-- Using the ncgen tool at ${nc_gen}${color_reset}")
-  message("${color_blue}-- Creating sample netCDF data files for self-tests in ${nco_data}${color_reset}")
-  execute_process(COMMAND ${nc_gen} -b -o ${nco_data}/in.nc ${nco_data}/in.cdl)
-  execute_process(COMMAND ${nc_gen} -k netCDF-4 -b -o ${nco_data}/in_grp.nc ${nco_data}/in_grp.cdl)
-endif()
+  find_program(nc_gen NAMES ncgen)
+  if (nc_gen)
+    set(nco_data ${CMAKE_CURRENT_SOURCE_DIR}/data)
+    message("${color_blue}-- Using the ncgen tool at ${nc_gen}${color_reset}")
+    message("${color_blue}-- Creating sample netCDF data files for self-tests in ${nco_data}${color_reset}")
+    execute_process(COMMAND ${nc_gen} -b -o ${nco_data}/in.nc ${nco_data}/in.cdl)
+    execute_process(COMMAND ${nc_gen} -k netCDF-4 -b -o ${nco_data}/in_grp.nc ${nco_data}/in_grp.cdl)
+  endif()
+
+  message("${color_blue}-- Generating check target...${color_reset}")
+  add_custom_target(check
+  COMMAND cmake --build . --target install
+  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bm/nco_bm.pl --regress)
+  add_dependencies(check ${nco_targets})
+endif(install_path)
+
+message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
+
 
 
