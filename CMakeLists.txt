@@ -31,15 +31,6 @@ include(CheckFunctionExists)
 include(CheckIncludeFile)
 include(CheckLibraryExists)
 
-#/////////////////////////////////////////////////////////////////////////////////////
-#general C/C++ build flags
-#/////////////////////////////////////////////////////////////////////////////////////
-
-set(CMAKE_BUILD_TYPE Debug)
-set(BUILD_STATIC_LIBS ON)
-set(BUILD_SHARED_LIBS OFF)
-add_definitions(-DENABLE_STATIC)
-
 #//////////////////////////
 # colorized output
 # red, fatal error, cannot build (missing netCDF, HDF5, CURL libraries)
@@ -56,6 +47,26 @@ if(NOT WIN32)
   set(color_green   "${Esc}[32m")
   set(color_blue    "${Esc}[34m")
 endif()
+
+#//////////////////////////
+# install prefix
+#//////////////////////////
+
+set(install_path "$ENV{MY_BIN_DIR}")
+if(install_path)
+  set(CMAKE_INSTALL_PREFIX ${install_path})
+  message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
+endif()
+
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#general C/C++ build flags
+#/////////////////////////////////////////////////////////////////////////////////////
+
+set(CMAKE_BUILD_TYPE Debug)
+set(BUILD_STATIC_LIBS ON)
+set(BUILD_SHARED_LIBS OFF)
+add_definitions(-DENABLE_STATIC)
 
 #//////////////////////////
 #detect minimum dependencies using
@@ -781,9 +792,9 @@ set(PERMISSIONS_DEFAULT OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EX
 message("-- Building ${nco_targets}")
 
 if (UNIX)
-  install(TARGETS ${nco_targets} RUNTIME DESTINATION bin PERMISSIONS ${PERMISSIONS_DEFAULT})
-  install(FILES data/ncremap data/ncclimo DESTINATION bin PERMISSIONS ${PERMISSIONS_DEFAULT})
-  message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX}/bin)
+  install(TARGETS ${nco_targets} RUNTIME DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
+  install(FILES data/ncremap data/ncclimo DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
+  message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX})
 endif()
 
 #//////////////////////////
@@ -800,14 +811,14 @@ endif()
 if (UNIX)
   macro(install_links src dest)
   add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION bin PERMISSIONS ${PERMISSIONS_DEFAULT})
-  message("-- Installing ${dest} to: " ${CMAKE_INSTALL_PREFIX}/bin)
+  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
   endmacro(install_links)
   install_links(ncra ncea)
   install_links(ncra nces)
   install_links(ncra ncrcat)
   install_links(ncbo ncdiff)
   install_links(ncpdq ncunpack)
+  message("-- Installing links ncea;nces;ncrcat;ncdiff;ncunpack to: " ${CMAKE_INSTALL_PREFIX})
 endif()
 
 #//////////////////////////
@@ -829,4 +840,5 @@ if (nc_gen AND todo)
   execute_process(COMMAND ${nc_gen} -b -o ${nco_data}/in.nc ${nco_data}/in.cdl)
   execute_process(COMMAND ${nc_gen} -k netCDF-4 -b -o ${nco_data}/in_grp.nc ${nco_data}/in_grp.cdl)
 endif()
+
 
