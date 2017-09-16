@@ -818,15 +818,14 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in" "${C
 add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
 #//////////////////////////
-# test target
 # find ncgen (any ncgen will do)
 #//////////////////////////
 
 find_program(nc_gen NAMES ncgen)
 if (nc_gen)
   set(nco_data ${CMAKE_CURRENT_SOURCE_DIR}/data)
-  message("${color_blue}-- Using the ncgen tool at ${ncgen_path}${color_reset}")
-  message("${color_blue}-- Creating sample netCDF data files for self-tests in ${CMAKE_CURRENT_SOURCE_DIR}/data${color_reset}")
+  message("${color_blue}-- Using the ncgen tool at ${nc_gen}${color_reset}")
+  message("${color_blue}-- Creating sample netCDF data files for self-tests in ${nco_data}${color_reset}")
   execute_process(COMMAND ${nc_gen} -b -o ${nco_data}/in.nc ${nco_data}/in.cdl)
   execute_process(COMMAND ${nc_gen} -k netCDF-4 -b -o ${nco_data}/in_grp.nc ${nco_data}/in_grp.cdl)
 endif()
