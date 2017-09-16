@@ -52,9 +52,9 @@ endif()
 # install prefix
 #//////////////////////////
 
-set(install_path "$ENV{MY_BIN_DIR}")
-if(install_path)
-  set(CMAKE_INSTALL_PREFIX ${install_path})
+set(test_dir "$ENV{MY_BIN_DIR}")
+if(test_dir)
+  set(CMAKE_INSTALL_PREFIX ${test_dir})
 endif()
 
 
@@ -830,12 +830,12 @@ add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_D
 #//////////////////////////
 # check target 
 # NOTE: the check target is only set if a custom install prefix is set
-# with environment $MY_BIN_DIR or set manually with cmake .. -DCMAKE_INSTALL_PREFIX=<path>
+# with environment $MY_BIN_DIR 
 # because the default install prefix (e.g /usr) requires 'sudo' previleges 
 # and the target would FAIL for this case, on the 'make install' part
 #//////////////////////////
 
-if(install_path)
+if(test_dir)
 
 #//////////////////////////
 # find ncgen (any ncgen will do)
@@ -855,7 +855,7 @@ if(install_path)
   COMMAND cmake --build . --target install
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bm/nco_bm.pl --regress)
   add_dependencies(check ${nco_targets})
-endif(install_path)
+endif(test_dir)
 
 message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
 
