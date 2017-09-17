@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.6.9 final changes';git push
 	git tag -a 4.6.9 -m 'CDF5, CMake, MPAS-O/I';git push --tags
 
+	* Update and auto-load ncl modules for cori, edison, rhea, titan
+
 	* Fix ncremap bracket error
 
 2017-09-15  Charlie Zender  <zender@uci.edu>
