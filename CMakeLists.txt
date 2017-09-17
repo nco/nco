@@ -57,7 +57,6 @@ if(test_dir)
   set(CMAKE_INSTALL_PREFIX ${test_dir})
 endif()
 
-
 #/////////////////////////////////////////////////////////////////////////////////////
 #general C/C++ build flags
 #/////////////////////////////////////////////////////////////////////////////////////
@@ -634,8 +633,9 @@ endif()
 
 find_library(MATH_LIBRARY NAMES m ${find_opt})
 if(MATH_LIBRARY)
-  message("-- Math library found: " ${MATH_LIBRARY})
+  message("-- Checking for math library functions at: " ${MATH_LIBRARY})
   set(CMAKE_REQUIRED_LIBRARIES m)
+  set(CMAKE_REQUIRED_QUIET 1)
   macro(nco_check_funcs func)
   unset(have_result CACHE)
   check_function_exists(${ARGV0} have_result)
@@ -707,7 +707,7 @@ if (HAVE_REGEX_H)
 endif()
 
 if (HAVE_REGEX_H AND HAVE_REGEXEC AND HAVE_REGCOMP AND HAVE_REGFREE)
-  message("-- Enabling Regex functionality...")
+  message("${color_green}-- Enabling Regex functionality...${color_reset}")
   add_definitions(-DNCO_HAVE_REGEX_FUNCTIONALITY)
 endif()
 
@@ -722,7 +722,6 @@ endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   add_definitions(-DENABLE_DEBUG_SYMBOLS)
-  message("-- Using debug symbols in build")
 endif()
 
 
@@ -763,7 +762,7 @@ if(NOT MSVC)
   if(OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    message("-- Building with OpenMP support")
+    message("${color_green}-- Building with OpenMP support${color_reset}")
   else()
     message("-- Building without OpenMP support")
   endif()
@@ -844,21 +843,26 @@ endif()
 
 #//////////////////////////
 # check target , 'make check'
-# NOTE: the check target is only set if a custom install prefix is set
-# with environment $MY_BIN_DIR 
-# because the default install prefix (e.g /usr) requires 'sudo' previleges 
-# and the target would FAIL for this case, on the 'make install' part
 # It depends on the NCO executables AND on the 'data' target
+# in NCO 'make check' depends on 'make install', so tests can only be done
+# if we can install to a writable directory, test -w /path; echo $? returns 0 if writable
+# The default install prefix (e.g /usr) requires 'sudo' previleges 
+# and the target would FAIL for this case, on the 'make install' part
 #//////////////////////////
 
-if(test_dir)
-  message("${color_blue}-- Generating check target...${color_reset}")
+execute_process(COMMAND test -w ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_w)
+if (NOT test_w)
+ set(can_write 1)
+endif()
+
+if(can_write)
+  message("${color_blue}-- Generating check/install target with executables at: ${CMAKE_INSTALL_PREFIX}${color_reset}")
   add_custom_target(check
-  COMMENT "${color_green}Running self-tests with executables in ${test_dir}${color_reset}"
+  COMMENT "${color_green}Running self-tests with executables in ${CMAKE_INSTALL_PREFIX}${color_reset}"
   COMMAND cmake --build . --target install
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bm/nco_bm.pl --regress)
   add_dependencies(check ${nco_targets} data)
-endif(test_dir)
+endif()
 
 message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
 
