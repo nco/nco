@@ -768,10 +768,12 @@ endif()
 #/////////////////////////////////////////////////////////////////////////////////////
 
 set(test_dir "$ENV{MY_BIN_DIR}")
-if(test_dir STREQUAL ${CMAKE_INSTALL_PREFIX})
-else()
-  message("${color_magenta}-- Modifying installation prefix to location expected by test suite : ${test_dir}${color_reset}")
-  set(CMAKE_INSTALL_PREFIX ${test_dir})
+if(test_dir)
+  if(test_dir STREQUAL ${CMAKE_INSTALL_PREFIX})
+  else()
+    message("${color_magenta}-- Modifying installation prefix to location expected by test suite : ${test_dir}${color_reset}")
+    set(CMAKE_INSTALL_PREFIX ${test_dir})
+  endif()
 endif()
 
 
@@ -844,6 +846,8 @@ if (nc_gen)
   COMMAND ${nc_gen} -k netCDF-4 -b -o ${nco_data}/in_grp.nc ${nco_data}/in_grp.cdl)
 endif()
 
+
+if (UNIX)
 #//////////////////////////
 # check target , 'make check'
 # it depends on the NCO executables AND on the 'data' target
@@ -853,35 +857,34 @@ endif()
 # and the target would FAIL for this case, on the 'make install' part
 # if CMAKE_INSTALL_PREFIX does not exist, it is created
 #//////////////////////////
- 
 
-execute_process(COMMAND test -d ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_d)
-if (test_d)
- message("${color_blue}-- Creating directory: ${CMAKE_INSTALL_PREFIX}${color_reset}")
- file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX})
-endif()
-execute_process(COMMAND test -w ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_w)
-if (NOT test_w)
- set(can_write 1)
-endif()
+  execute_process(COMMAND test -d ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_d)
+  if (test_d)
+   message("${color_blue}-- Creating directory: ${CMAKE_INSTALL_PREFIX}${color_reset}")
+   file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+  endif()
+  execute_process(COMMAND test -w ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_w)
+  if (NOT test_w)
+   set(can_write 1)
+  endif()
 
-if(can_write)
-  message("${color_blue}-- Generating check/install target with executables at: ${CMAKE_INSTALL_PREFIX}${color_reset}")
-  add_custom_target(check
-  COMMENT "${color_green}Running self-tests with executables in ${CMAKE_INSTALL_PREFIX}${color_reset}"
-  COMMAND cmake --build . --target install
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bm/nco_bm.pl --regress)
-  add_dependencies(check ${nco_targets} data)
-endif()
+  if(can_write)
+    message("${color_blue}-- Generating check/install target with executables at: ${CMAKE_INSTALL_PREFIX}${color_reset}")
+    add_custom_target(check
+    COMMENT "${color_green}Running self-tests with executables in ${CMAKE_INSTALL_PREFIX}${color_reset}"
+    COMMAND cmake --build . --target install
+    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bm/nco_bm.pl --regress)
+    add_dependencies(check ${nco_targets} data)
+  endif()
 
 #//////////////////////////
 # install prefix
 #//////////////////////////
 
-message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
-if (NOT can_write)
- message("${color_magenta}-- Installing NCO requires write permission to: ${CMAKE_INSTALL_PREFIX}; check target is disabled${color_reset}")
-endif()
-
+  message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
+  if (NOT can_write)
+   message("${color_magenta}-- Installing NCO requires write permission to: ${CMAKE_INSTALL_PREFIX}; check target is disabled${color_reset}")
+  endif()
+endif(UNIX)
 
 
