@@ -48,15 +48,6 @@ if(NOT WIN32)
   set(color_blue    "${Esc}[34m")
 endif()
 
-#//////////////////////////
-# install prefix
-#//////////////////////////
-
-set(test_dir "$ENV{MY_BIN_DIR}")
-if(test_dir)
-  set(CMAKE_INSTALL_PREFIX ${test_dir})
-endif()
-
 #/////////////////////////////////////////////////////////////////////////////////////
 #general C/C++ build flags
 #/////////////////////////////////////////////////////////////////////////////////////
@@ -855,6 +846,7 @@ execute_process(COMMAND test -d ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_d)
 if (test_d)
  message("${color_blue}-- Creating directory: ${CMAKE_INSTALL_PREFIX}${color_reset}")
  execute_process(COMMAND mkdir ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE mkdir_d ERROR_QUIET)
+ file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 endif()
 execute_process(COMMAND test -w ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_w)
 if (NOT test_w)
@@ -870,9 +862,17 @@ if(can_write)
   add_dependencies(check ${nco_targets} data)
 endif()
 
+#//////////////////////////
+# install prefix
+#//////////////////////////
+
 message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
 if (NOT can_write)
  message("${color_magenta}-- Installing NCO requires write permission to: ${CMAKE_INSTALL_PREFIX}; check target is disabled${color_reset}")
+endif()
+set(test_dir "$ENV{MY_BIN_DIR}")
+if(test_dir)
+  message("${color_magenta}-- Test suite expecting installation at: ${test_dir}${color_reset}")
 endif()
 
 
