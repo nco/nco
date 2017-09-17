@@ -1,8 +1,12 @@
-2017-09-15  Charlie Zender  <zender@uci.edu>
+2017-09-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.9 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.9 final changes';git push
 	git tag -a 4.6.9 -m 'CDF5, CMake, MPAS-O/I';git push --tags
+
+	* Fix ncremap bracket error
+
+2017-09-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.9-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.9-beta01 final changes';git push

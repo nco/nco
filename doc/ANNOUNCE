@@ -10,25 +10,37 @@ Version 4.6.9 fixes a few issues has no new major features.
 Most improvements relate to CDF5 handling and CMake builds.
 The other significant change is ncks print CDL by default.
 
-Work on NCO 4.7.0 has commenced. Planned changes include 
-more ncclimo and ncremap features. 
+I shelved my plans to skip 4.6.9 when we discovered a
+consequential bug with the netCDF CDF5 implementation.
+This led to a flurry of minro features to diagnose, and warn
+users who might inadvertently stumble on corrupt CDF5 data.
+Understanding the ramifications of this CDF5 bug is ongoing.
+The best case scenario now, a month after discovering it,
+is that Unidata will soon declare the bug solved and release
+netCDF 4.5.0 with the appropriate patch. We will make any
+final adjustments to diagnose CDF5 issues based on that
+patch, and release NCO 4.7.0 soon thereafter.
+
+Work on NCO 4.7.0 has commenced. Planned changes include
+better diagnosis and workarounds for the netCDF CDF5 bug,
+and more ncclimo and ncremap features. 
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. CDF5: All NCO operators now fully support CDF5.
+A. CDF5: NCO warns when CDF5 files may be corrupted by the newly
+   discovered (!) netCDF CDF5 bug.
+   http://nco.sf.net#bug_cdf5
+
+B. CDF5: All NCO operators now fully support CDF5.
    Specify CDF5 output with the -5 switch   
    ncra -5 in*.nc out.nc
    This includes auto-conversion.
    ncks converts among netCDF's five-different binary formats:
    ncks [-3 -4 -5 -6 -7] in.nc out.nc
    http://nco.sf.net/nco.html#autoconversion
-
-B. CDF5: NCO warns when CDF5 files may be corrupted by the newly
-   discovered (!) netCDF CDF5 bug.
-   http://nco.sf.net#bug_cdf5
 
 C. CDF5: In support of detecting the CDF5 bug, and also of more
    general use, are new ncks features to print, in CDL comments,
