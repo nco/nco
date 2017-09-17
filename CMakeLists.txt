@@ -846,10 +846,13 @@ if (PATH_TO_NCGEN)
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_2.nc ${PATH_DATA}/mdl_2.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_3.nc ${PATH_DATA}/mdl_3.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/cmip5.nc ${PATH_DATA}/cmip5.cdl
-  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/obs.nc ${PATH_DATA}/obs.cdl
-)
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/obs.nc ${PATH_DATA}/obs.cdl)
 
+#//////////////////////////
+#make data build last 
+#//////////////////////////
 
+  add_dependencies(data ${nco_targets})
 endif()
 
 #//////////////////////////
@@ -875,7 +878,7 @@ endif()
 if(can_write)
   message("${color_blue}-- Generating check/install target with executables at: ${CMAKE_INSTALL_PREFIX}${color_reset}")
   add_custom_target(check
-  COMMENT "${color_green}Running self-tests with executables in ${CMAKE_INSTALL_PREFIX}${color_reset}"
+  COMMENT "${color_green}Running self-tests with NCO executables in ${CMAKE_INSTALL_PREFIX}${color_reset}"
   COMMAND cmake --build . --target install
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bm/nco_bm.pl --regress)
   add_dependencies(check ${nco_targets} data)
