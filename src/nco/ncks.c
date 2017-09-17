@@ -1026,7 +1026,7 @@ main(int argc,char **argv)
       if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_GLB_METADATA;
     } /* !FORCE_APPEND */
   }else{ /* !fl_out */
-    /* Only input file is specified, so some printing should occur */
+    /* Only input file is specified, so print it */
     if(PRN_VRB || (!PRN_VAR_DATA_TGL && !PRN_VAR_METADATA_TGL && !PRN_GLB_METADATA_TGL)){
       /* Verbose printing simply means assume user wants deluxe frills by default */
       if(PRN_DMN_UNITS_TGL) PRN_DMN_UNITS=False; else PRN_DMN_UNITS=True;
