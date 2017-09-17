@@ -828,33 +828,36 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in" "${C
 add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
 #//////////////////////////
-# check target 
+# 'data' target , 'make data', generate .nc files from .cdl
+# find ncgen (any ncgen will do)
+#//////////////////////////
+
+find_program(nc_gen NAMES ncgen)
+if (nc_gen)
+  set(nco_data ${CMAKE_CURRENT_SOURCE_DIR}/data)
+  message("${color_blue}-- Generating data target, using the ncgen tool at ${nc_gen}${color_reset}")
+  add_custom_target(data
+  COMMENT "${color_green}Creating sample netCDF data files for self-tests in ${nco_data}${color_reset}"
+  COMMAND ${nc_gen} -b -o ${nco_data}/in.nc ${nco_data}/in.cdl
+  COMMAND ${nc_gen} -k netCDF-4 -b -o ${nco_data}/in_grp.nc ${nco_data}/in_grp.cdl)
+endif()
+
+#//////////////////////////
+# check target , 'make check'
 # NOTE: the check target is only set if a custom install prefix is set
 # with environment $MY_BIN_DIR 
 # because the default install prefix (e.g /usr) requires 'sudo' previleges 
 # and the target would FAIL for this case, on the 'make install' part
+# It depends on the NCO executables AND on the 'data' target
 #//////////////////////////
 
 if(test_dir)
-
-#//////////////////////////
-# find ncgen (any ncgen will do)
-#//////////////////////////
-
-  find_program(nc_gen NAMES ncgen)
-  if (nc_gen)
-    set(nco_data ${CMAKE_CURRENT_SOURCE_DIR}/data)
-    message("${color_blue}-- Using the ncgen tool at ${nc_gen}${color_reset}")
-    message("${color_blue}-- Creating sample netCDF data files for self-tests in ${nco_data}${color_reset}")
-    execute_process(COMMAND ${nc_gen} -b -o ${nco_data}/in.nc ${nco_data}/in.cdl)
-    execute_process(COMMAND ${nc_gen} -k netCDF-4 -b -o ${nco_data}/in_grp.nc ${nco_data}/in_grp.cdl)
-  endif()
-
   message("${color_blue}-- Generating check target...${color_reset}")
   add_custom_target(check
+  COMMENT "${color_green}Running self-tests with executables in ${test_dir}${color_reset}"
   COMMAND cmake --build . --target install
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bm/nco_bm.pl --regress)
-  add_dependencies(check ${nco_targets})
+  add_dependencies(check ${nco_targets} data)
 endif(test_dir)
 
 message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
