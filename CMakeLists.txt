@@ -825,14 +825,31 @@ add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_D
 # find ncgen (any ncgen will do)
 #//////////////////////////
 
-find_program(nc_gen NAMES ncgen)
-if (nc_gen)
-  set(nco_data ${CMAKE_CURRENT_SOURCE_DIR}/data)
-  message("${color_blue}-- Generating data target, using the ncgen tool at ${nc_gen}${color_reset}")
+find_program(PATH_TO_NCGEN NAMES ncgen)
+if (PATH_TO_NCGEN)
+  set(PATH_DATA ${CMAKE_CURRENT_SOURCE_DIR}/data)
+  message("${color_blue}-- Generating data target, using the ncgen tool at ${PATH_TO_NCGEN}${color_reset}")
   add_custom_target(data
-  COMMENT "${color_green}Creating sample netCDF data files for self-tests in ${nco_data}${color_reset}"
-  COMMAND ${nc_gen} -b -o ${nco_data}/in.nc ${nco_data}/in.cdl
-  COMMAND ${nc_gen} -k netCDF-4 -b -o ${nco_data}/in_grp.nc ${nco_data}/in_grp.cdl)
+  COMMENT "${color_green}Creating sample netCDF data files for self-tests in ${PATH_DATA}${color_reset}"
+  COMMAND ${PATH_TO_NCGEN} -b -o ${PATH_DATA}/in.nc ${PATH_DATA}/in.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp.nc ${PATH_DATA}/in_grp.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_1.nc ${PATH_DATA}/in_grp_1.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_2.nc ${PATH_DATA}/in_grp_2.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_3.nc ${PATH_DATA}/in_grp_3.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_4.nc ${PATH_DATA}/in_grp_4.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_5.nc ${PATH_DATA}/in_grp_5.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_6.nc ${PATH_DATA}/in_grp_6.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_7.nc ${PATH_DATA}/in_grp_7.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_1.nc ${PATH_DATA}/in_1.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_2.nc ${PATH_DATA}/in_2.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_1.nc ${PATH_DATA}/mdl_1.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_2.nc ${PATH_DATA}/mdl_2.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_3.nc ${PATH_DATA}/mdl_3.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/cmip5.nc ${PATH_DATA}/cmip5.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/obs.nc ${PATH_DATA}/obs.cdl
+)
+
+
 endif()
 
 #//////////////////////////
