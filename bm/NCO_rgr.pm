@@ -343,7 +343,7 @@ if($USER eq 'zender'){
 # ncap2 #2
     $dsc_sng="Testing foo=log(e_flt)^1 (may fail on old AIX TODO ncap57)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_flt)^1' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H --trd -v foo -s '%.6f\\n' %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --trd -v foo -s '%.6f' %tmp_fl_00%";
     $tst_cmd[2]="1.000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -352,7 +352,7 @@ if($USER eq 'zender'){
 # ncap2 #3
     $dsc_sng="Testing foo=log(e_dbl)^1";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=log(e_dbl)^1' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H --trd -s '%.12f\\n' %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --trd -s '%.12f' %tmp_fl_00%";
     $tst_cmd[2]="1.000000000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -361,17 +361,19 @@ if($USER eq 'zender'){
 # ncap2 #4
     $dsc_sng="Testing foo=4*atan(1)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=4*atan(1)' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H --trd -s '%.12f\\n' %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --trd -s '%.12f' %tmp_fl_00%";
     $tst_cmd[2]="3.141592741013";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
 # ncap2 #5
+# ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=erf(1)' ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H --trd -s '%.12f' ~/foo.nc
     $dsc_sng="Testing foo=erf(1) (may fail on old AIX TODO ncap57)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=erf(1)' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H --trd -s '%.12f\\n' %tmp_fl_00%";
-    $tst_cmd[2]="0.842701";
+    $tst_cmd[1]="ncks -C -H --trd -s '%.12f' %tmp_fl_00%";
+    $tst_cmd[2]="0.842700779438";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -379,7 +381,7 @@ if($USER eq 'zender'){
 # ncap2 #6
     $dsc_sng="Testing foo=gamma(0.5) (may fail on old AIX TODO ncap57)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'foo=gamma(0.5)' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H --trd -s '%.12f\\n' %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --trd -s '%.12f' %tmp_fl_00%";
     $tst_cmd[2]="1.772453851";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -388,7 +390,7 @@ if($USER eq 'zender'){
 # ncap2 #7
     $dsc_sng="Testing foo=sin(pi/2)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=sin(pi/2)' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H --trd -v foo -s '%.12f\\n' %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --trd -v foo -s '%.12f' %tmp_fl_00%";
     $tst_cmd[2]="1.000000000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -397,7 +399,7 @@ if($USER eq 'zender'){
 # ncap2 #8
     $dsc_sng="Testing foo=cos(pi)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -C -v -s 'pi=4*atan(1);foo=cos(pi)' $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks -C -H --trd -v foo -s '%.12f\\n' %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --trd -v foo -s '%.12f' %tmp_fl_00%";
     $tst_cmd[2]="-1.000000000000";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);

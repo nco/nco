@@ -403,7 +403,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
     echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
-    echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (pnetCDF3) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
+    echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3 CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
@@ -754,7 +754,7 @@ if [ -n "${fl_fmt}" ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4'
 	wgt_opt_esmf="${wgt_opt_esmf} --netcdf4"
     fi # !fl_fmt
-    if [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'pnetcdf' ]; then
+    if [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_data'
 	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset" # Change when ERWG supports netCDF5
     fi # !fl_fmt

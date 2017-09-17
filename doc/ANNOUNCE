@@ -35,14 +35,15 @@ A. CDF5: NCO warns when CDF5 files may be corrupted by the newly
    http://nco.sf.net#bug_cdf5
 
 B. CDF5: All NCO operators now fully support CDF5.
-   Specify CDF5 output with the -5 switch   
+   Previously some operators would not output it.
+   Now, all output CDF5 with the -5 switch:
    ncra -5 in*.nc out.nc
    This includes auto-conversion.
    ncks converts among netCDF's five-different binary formats:
    ncks [-3 -4 -5 -6 -7] in.nc out.nc
    http://nco.sf.net/nco.html#autoconversion
 
-C. CDF5: In support of detecting the CDF5 bug, and also of more
+C. CDF5: In support of detecting the CDF5 bug, and also for more
    general use, are new ncks features to print, in CDL comments,
    the uncompressed RAM size of every variable (when dbg_lvl >= 1).
    When dbg_lvl >= 2, the RAM size of all the data in a file,
@@ -54,8 +55,11 @@ C. CDF5: In support of detecting the CDF5 bug, and also of more
 
 D. Pedro Vicente has generously contributed a CMake build-engine. 
    CMake can build NCO on any architecture including MS Windows,
-   and most or all features are available, including ncap2, GSL,
-   DAP, and UDUnits2. To build with CMake and install in /usr/local: 
+   and nearly all expected features are available, including ncap2,
+   GSL, DAP, and UDUnits2. A few of the more esoteric features 
+   (intrinsic math functions like erf()) remain to be implemented.
+   Please give us feedback on any other wrinkles in the CMake build. 
+   To build with CMake and install in /usr/local: 
    cd nco/cmake
    cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
    make
@@ -66,6 +70,7 @@ D. Pedro Vicente has generously contributed a CMake build-engine.
 E. ncks now prints CDL by default.
    Advance notice of this change was first given in May.
    Use the --trd switch to print with "traditional" syntax:
+   ncks in.nc
    ncks --trd in.nc
    http://nco.sf.net/nco.html#trd
    http://nco.sf.net/nco.html#cdl

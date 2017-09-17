@@ -1564,7 +1564,6 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
 
-
       /* Basic math: acos, asin, atan, cos, exp, log, log10, rnd_nbr, sin, sqrt, tan */
       //sym_vtr.push_back(sym_cls("rnd_nbr",rnd_nbr,rnd_nbrf));
       sym_vtr.push_back(sym_cls("acos",acos,acosf));  
@@ -1592,7 +1591,7 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
 	 20050610: C99 mandates support for erf(), erfc(), tgamma()
 	 Eventually users without C99 will forego ncap */
       
-#if defined(LINUX) || defined(LINUXAMD64)  || defined(MACOSX)
+#if defined(LINUX) || defined(LINUXAMD64) || defined(MACOSX)
       sym_vtr.push_back(sym_cls("erf",erf,erff));
       sym_vtr.push_back(sym_cls("erfc",erfc,erfcf));
       sym_vtr.push_back(sym_cls("gamma",tgamma,tgammaf));
@@ -1614,7 +1613,7 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
       
       /* Advanced Rounding: nearbyint, rint, round, trunc */
       /* Advanced Rounding: nearbyint, round, trunc */
-      /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf
+      /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf()
 	 Only LINUX* supplies all of these and I do not care about them enough
 	 to activate them on LINUX* but not on MACOSX* and SUN* */
       /* 20130326: Re-activate these functions on all architectures */

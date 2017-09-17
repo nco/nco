@@ -1,8 +1,14 @@
-2017-09-16  Charlie Zender  <zender@uci.edu>
+2017-09-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.9 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.6.9 final changes';git push
 	git tag -a 4.6.9 -m 'CDF5, CMake, MPAS-O/I';git push --tags
+
+	* Minor documentation fixes
+
+	* Load ncl modules for cori, edison, rhea, titan only in ncremap not ncclimo
+
+2017-09-16  Charlie Zender  <zender@uci.edu>
 
 	* Update and auto-load ncl modules for cori, edison, rhea, titan
 
