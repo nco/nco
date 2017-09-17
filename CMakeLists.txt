@@ -763,6 +763,18 @@ endif()
 # install target
 #//////////////////////////
 
+#/////////////////////////////////////////////////////////////////////////////////////
+#install prefix: detect test suite expected location; if present use it instead
+#/////////////////////////////////////////////////////////////////////////////////////
+
+set(test_dir "$ENV{MY_BIN_DIR}")
+if(test_dir STREQUAL ${CMAKE_INSTALL_PREFIX})
+else()
+  message("${color_magenta}-- Modifying installation prefix to location expected by test suite : ${test_dir}${color_reset}")
+  set(CMAKE_INSTALL_PREFIX ${test_dir})
+endif()
+
+
 set(nco_targets ${nco_targets})
 set(nco_targets ${nco_targets} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
 if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
@@ -839,13 +851,13 @@ endif()
 # if we can install to a writable directory, test -w /path; echo $? returns 0 if writable
 # the default install prefix (e.g /usr) requires 'sudo' previleges 
 # and the target would FAIL for this case, on the 'make install' part
-# if CMAKE_INSTALL_PREFIX does not exist, it is created and added to $PATH
+# if CMAKE_INSTALL_PREFIX does not exist, it is created
 #//////////////////////////
+ 
 
 execute_process(COMMAND test -d ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_d)
 if (test_d)
  message("${color_blue}-- Creating directory: ${CMAKE_INSTALL_PREFIX}${color_reset}")
- execute_process(COMMAND mkdir ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE mkdir_d ERROR_QUIET)
  file(MAKE_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 endif()
 execute_process(COMMAND test -w ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_w)
@@ -870,9 +882,6 @@ message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color
 if (NOT can_write)
  message("${color_magenta}-- Installing NCO requires write permission to: ${CMAKE_INSTALL_PREFIX}; check target is disabled${color_reset}")
 endif()
-set(test_dir "$ENV{MY_BIN_DIR}")
-if(test_dir)
-  message("${color_magenta}-- Test suite expecting installation at: ${test_dir}${color_reset}")
-endif()
+
 
 
