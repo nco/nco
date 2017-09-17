@@ -48,16 +48,6 @@ if(NOT WIN32)
   set(color_blue    "${Esc}[34m")
 endif()
 
-#//////////////////////////
-# install prefix
-#//////////////////////////
-
-set(test_dir "$ENV{MY_BIN_DIR}")
-if(test_dir)
-  set(CMAKE_INSTALL_PREFIX ${test_dir})
-endif()
-
-
 #/////////////////////////////////////////////////////////////////////////////////////
 #general C/C++ build flags
 #/////////////////////////////////////////////////////////////////////////////////////
@@ -634,8 +624,9 @@ endif()
 
 find_library(MATH_LIBRARY NAMES m ${find_opt})
 if(MATH_LIBRARY)
-  message("-- Math library found: " ${MATH_LIBRARY})
+  message("-- Checking for math library functions at: " ${MATH_LIBRARY})
   set(CMAKE_REQUIRED_LIBRARIES m)
+  set(CMAKE_REQUIRED_QUIET 1)
   macro(nco_check_funcs func)
   unset(have_result CACHE)
   check_function_exists(${ARGV0} have_result)
@@ -707,7 +698,7 @@ if (HAVE_REGEX_H)
 endif()
 
 if (HAVE_REGEX_H AND HAVE_REGEXEC AND HAVE_REGCOMP AND HAVE_REGFREE)
-  message("-- Enabling Regex functionality...")
+  message("${color_green}-- Enabling Regex functionality...${color_reset}")
   add_definitions(-DNCO_HAVE_REGEX_FUNCTIONALITY)
 endif()
 
@@ -722,7 +713,6 @@ endif()
 
 if (CMAKE_BUILD_TYPE MATCHES Debug)
   add_definitions(-DENABLE_DEBUG_SYMBOLS)
-  message("-- Using debug symbols in build")
 endif()
 
 
@@ -763,38 +753,43 @@ if(NOT MSVC)
   if(OPENMP_FOUND)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-    message("-- Building with OpenMP support")
+    message("${color_green}-- Building with OpenMP support${color_reset}")
   else()
     message("-- Building without OpenMP support")
   endif()
 endif()
 
-#//////////////////////////
-# install target
-#//////////////////////////
+#/////////////////////////////////////////////////////////////////////////////////////
+#install target
+#install prefix: detect test suite expected location; if present use it instead
+#/////////////////////////////////////////////////////////////////////////////////////
+
+set(test_dir "$ENV{MY_BIN_DIR}")
+if(test_dir)
+  if(test_dir STREQUAL ${CMAKE_INSTALL_PREFIX})
+  else()
+    message("${color_magenta}-- Modifying installation prefix to location expected by test suite : ${test_dir}${color_reset}")
+    set(CMAKE_INSTALL_PREFIX ${test_dir})
+  endif()
+endif()
 
 set(nco_targets ${nco_targets})
 set(nco_targets ${nco_targets} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
+
+#//////////////////////////
+#make ncap2 build last 
+#//////////////////////////
+
 if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
-  
-  #//////////////////////////
-  #make ncap2 build last 
-  #//////////////////////////
-  
   add_dependencies(ncap2 ${nco_targets})
   set(nco_targets ${nco_targets} ncap2)
 endif()
 
-
 set(PERMISSIONS_DEFAULT OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
 message("-- Building ${nco_targets}")
-
-if (UNIX)
-  install(TARGETS ${nco_targets} RUNTIME DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
-  install(FILES data/ncremap data/ncclimo DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
-  message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX})
-endif()
+install(TARGETS ${nco_targets} RUNTIME DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
+install(FILES data/ncremap data/ncclimo DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
+message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX})
 
 #//////////////////////////
 # ncea->ncra
@@ -807,18 +802,16 @@ endif()
 # create a symbolic link <new> naming <old>. 
 #//////////////////////////
 
-if (UNIX)
-  macro(install_links src dest)
-  add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
-  endmacro(install_links)
-  install_links(ncra ncea)
-  install_links(ncra nces)
-  install_links(ncra ncrcat)
-  install_links(ncbo ncdiff)
-  install_links(ncpdq ncunpack)
-  message("-- Installing links ncea;nces;ncrcat;ncdiff;ncunpack to: " ${CMAKE_INSTALL_PREFIX})
-endif()
+macro(install_links src dest)
+add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
+endmacro(install_links)
+install_links(ncra ncea)
+install_links(ncra nces)
+install_links(ncra ncrcat)
+install_links(ncbo ncdiff)
+install_links(ncpdq ncunpack)
+message("-- Installing links ncea;nces;ncrcat;ncdiff;ncunpack to: " ${CMAKE_INSTALL_PREFIX})
 
 #//////////////////////////
 # uninstall target
@@ -844,23 +837,41 @@ endif()
 
 #//////////////////////////
 # check target , 'make check'
-# NOTE: the check target is only set if a custom install prefix is set
-# with environment $MY_BIN_DIR 
-# because the default install prefix (e.g /usr) requires 'sudo' previleges 
+# it depends on the NCO executables AND on the 'data' target
+# in NCO 'make check' depends on 'make install', so tests can only be done
+# if we can install to a writable directory, test -w /path; echo $? returns 0 if writable
+# the default install prefix (e.g /usr) requires 'sudo' previleges 
 # and the target would FAIL for this case, on the 'make install' part
-# It depends on the NCO executables AND on the 'data' target
+# if CMAKE_INSTALL_PREFIX does not exist, it is created
 #//////////////////////////
 
-if(test_dir)
-  message("${color_blue}-- Generating check target...${color_reset}")
+execute_process(COMMAND test -d ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_d)
+if (test_d)
+ message("${color_blue}-- Creating directory: ${CMAKE_INSTALL_PREFIX}${color_reset}")
+ execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_INSTALL_PREFIX} ERROR_QUIET)
+endif()
+execute_process(COMMAND test -w ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_w)
+if (NOT test_w)
+ set(can_write 1)
+endif()
+
+if(can_write)
+  message("${color_blue}-- Generating check/install target with executables at: ${CMAKE_INSTALL_PREFIX}${color_reset}")
   add_custom_target(check
-  COMMENT "${color_green}Running self-tests with executables in ${test_dir}${color_reset}"
+  COMMENT "${color_green}Running self-tests with executables in ${CMAKE_INSTALL_PREFIX}${color_reset}"
   COMMAND cmake --build . --target install
   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/bm/nco_bm.pl --regress)
   add_dependencies(check ${nco_targets} data)
-endif(test_dir)
+endif()
+
+#//////////////////////////
+# install prefix
+#//////////////////////////
 
 message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
+if (NOT can_write)
+ message("${color_magenta}-- Installing NCO requires write permission to: ${CMAKE_INSTALL_PREFIX}; check target is disabled${color_reset}")
+endif()
 
 
 
