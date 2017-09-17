@@ -843,11 +843,12 @@ endif()
 
 #//////////////////////////
 # check target , 'make check'
-# It depends on the NCO executables AND on the 'data' target
+# it depends on the NCO executables AND on the 'data' target
 # in NCO 'make check' depends on 'make install', so tests can only be done
 # if we can install to a writable directory, test -w /path; echo $? returns 0 if writable
-# The default install prefix (e.g /usr) requires 'sudo' previleges 
+# the default install prefix (e.g /usr) requires 'sudo' previleges 
 # and the target would FAIL for this case, on the 'make install' part
+# if CMAKE_INSTALL_PREFIX does not exist, it is created and added to $PATH
 #//////////////////////////
 
 execute_process(COMMAND test -d ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_d)
