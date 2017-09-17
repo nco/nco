@@ -850,6 +850,11 @@ endif()
 # and the target would FAIL for this case, on the 'make install' part
 #//////////////////////////
 
+execute_process(COMMAND test -d ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_d)
+if (test_d)
+ message("${color_blue}-- Creating directory: ${CMAKE_INSTALL_PREFIX}${color_reset}")
+ execute_process(COMMAND mkdir ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE mkdir_d ERROR_QUIET)
+endif()
 execute_process(COMMAND test -w ${CMAKE_INSTALL_PREFIX} RESULT_VARIABLE test_w)
 if (NOT test_w)
  set(can_write 1)
@@ -865,6 +870,8 @@ if(can_write)
 endif()
 
 message("${color_blue}-- Using installation path: ${CMAKE_INSTALL_PREFIX}${color_reset}")
-
+if (NOT can_write)
+ message("${color_magenta}-- Installing NCO requires write permission to: ${CMAKE_INSTALL_PREFIX}; check target is disabled${color_reset}")
+endif()
 
 
