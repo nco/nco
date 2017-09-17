@@ -132,7 +132,9 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    # Why do cori/edison and rhea require workarounds for different packages?
 	    module load gsl
 	    module load udunits
-	    module load ncl # 20170916 OK
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		module load ncl # 20170916 OK
+	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 	    fi # !NCARG_ROOT
@@ -141,7 +143,9 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	edison* )
 	    module load gsl
 	    module load udunits2 # 20170816 Name changed to udunits2
-	    module load ncl # 20170916 OK
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		module load ncl # 20170916 OK
+	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 	    fi # !NCARG_ROOT
@@ -162,8 +166,10 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 		source /lustre/atlas1/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
 		export ${UVCDAT_SETUP_PATH}
 	    fi # !UVCDAT_SETUP_PATH
-	    # 20170825: Use module load ncl/6.3.0 (6.4.0 lacks ERWG)
-	    module load ncl/6.3.0
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# 20170825: Use module load ncl/6.3.0 (6.4.0 lacks ERWG)
+		module load ncl/6.3.0
+	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 	    fi # !NCARG_ROOT
@@ -172,8 +178,10 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	titan* )
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	    module load gcc
-	    # 20170831: Use module load ncl (6.3.0 lacks ERWG)
-	    module load ncl # 20170916 OK
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# 20170831: Use module load ncl (6.3.0 lacks ERWG)
+		module load ncl # 20170916 OK
+	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
 	    fi # !NCARG_ROOT
@@ -181,8 +189,10 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
 	ys* )
 	    # 20151018: Yellowstone support not yet tested in batch mode
-	    # On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
-	    module load ncl
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
+		module load ncl
+	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin"
 	    fi # !NCARG_ROOT
