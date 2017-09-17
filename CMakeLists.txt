@@ -759,11 +759,8 @@ if(NOT MSVC)
   endif()
 endif()
 
-#//////////////////////////
-# install target
-#//////////////////////////
-
 #/////////////////////////////////////////////////////////////////////////////////////
+#install target
 #install prefix: detect test suite expected location; if present use it instead
 #/////////////////////////////////////////////////////////////////////////////////////
 
@@ -776,29 +773,23 @@ if(test_dir)
   endif()
 endif()
 
-
 set(nco_targets ${nco_targets})
 set(nco_targets ${nco_targets} ncks ncbo ncecat ncflint ncpdq ncra ncrename ncatted ncwa)
+
+#//////////////////////////
+#make ncap2 build last 
+#//////////////////////////
+
 if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
-  
-  #//////////////////////////
-  #make ncap2 build last 
-  #//////////////////////////
-  
   add_dependencies(ncap2 ${nco_targets})
   set(nco_targets ${nco_targets} ncap2)
 endif()
 
-
 set(PERMISSIONS_DEFAULT OWNER_WRITE OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
-
 message("-- Building ${nco_targets}")
-
-if (UNIX)
-  install(TARGETS ${nco_targets} RUNTIME DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
-  install(FILES data/ncremap data/ncclimo DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
-  message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX})
-endif()
+install(TARGETS ${nco_targets} RUNTIME DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
+install(FILES data/ncremap data/ncclimo DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
+message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX})
 
 #//////////////////////////
 # ncea->ncra
@@ -811,18 +802,16 @@ endif()
 # create a symbolic link <new> naming <old>. 
 #//////////////////////////
 
-if (UNIX)
-  macro(install_links src dest)
-  add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
-  endmacro(install_links)
-  install_links(ncra ncea)
-  install_links(ncra nces)
-  install_links(ncra ncrcat)
-  install_links(ncbo ncdiff)
-  install_links(ncpdq ncunpack)
-  message("-- Installing links ncea;nces;ncrcat;ncdiff;ncunpack to: " ${CMAKE_INSTALL_PREFIX})
-endif()
+macro(install_links src dest)
+add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
+endmacro(install_links)
+install_links(ncra ncea)
+install_links(ncra nces)
+install_links(ncra ncrcat)
+install_links(ncbo ncdiff)
+install_links(ncpdq ncunpack)
+message("-- Installing links ncea;nces;ncrcat;ncdiff;ncunpack to: " ${CMAKE_INSTALL_PREFIX})
 
 #//////////////////////////
 # uninstall target
