@@ -1547,7 +1547,6 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
       for(idx=0;idx<ndims;idx++)     
 	var_att->val.sngp[idx]=strdup(var->dim[idx]->nm);
 
-
       (void)cast_nctype_void((nc_type)NC_STRING,&var_att->val); 
     }
 
@@ -1555,9 +1554,6 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
 
     return var_att;
 }
-
-
-
   
 //Math Functions /******************************************/
   mth_cls::mth_cls(bool flg_dbg){
