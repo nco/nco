@@ -893,5 +893,15 @@ if (NOT can_write)
  message("${color_magenta}-- Installing NCO requires write permission to: ${CMAKE_INSTALL_PREFIX}; check target is disabled${color_reset}")
 endif()
 
+#//////////////////////////
+# generate 'path.sh' on build path, run with 'source path.sh'
+# sets $PATH to locate the binaries we just built
+#//////////////////////////
 
-
+if (UNIX)
+ set(file_sh ${CMAKE_CURRENT_BINARY_DIR}/path.sh)
+ set(path "${CMAKE_INSTALL_PREFIX}:$ENV{PATH}")
+ file(WRITE ${file_sh} "#!/usr/bin/env bash\n")
+ file(APPEND ${file_sh} "export PATH=\"${path}\"")
+ execute_process(COMMAND chmod a+x ${file_sh} RESULT_VARIABLE res)
+endif()
