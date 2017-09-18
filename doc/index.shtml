@@ -70,7 +70,7 @@ Try to disable Spammers' machines:
 <p><h1 align="center">Bienvenue sur le netCDF Operator (NCO) site</h1>
 
 <p><h2>
-Current stable NCO version is 4.6.8 released <!--#flastmod file="src/nco-4.6.8.tar.gz"-->
+Current stable NCO version is 4.6.9 released <!--#flastmod file="src/nco-4.6.9.tar.gz"-->
 </h2>
 
 <table border=0 width=100%>
@@ -150,7 +150,7 @@ and
 
 <ul>
 <li>2017 Oct&nbsp;??: 4.7.0 <i>In Progress...</i>
-<li>2017 Sep&nbsp;18? 4.6.9 CDF5
+<li>2017 Sep&nbsp;18: 4.6.9 CDF5, CMake
 <li>2017 Aug&nbsp;16: 4.6.8 Sundry features/fixes
 <li>2017 May&nbsp;26: 4.6.7 Sub-gridscale regridding
 <li>2017 Apr&nbsp;21: 4.6.6 UGRID
@@ -629,22 +629,23 @@ Identical copies of those tarballs are also stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge for historical
 continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
-<tt>git clone -b 4.6.8 http://github.com/nco/nco.git nco-4.6.8</tt></a>.
+<tt>git clone -b 4.6.9 http://github.com/nco/nco.git nco-4.6.9</tt></a>.
 <ul>
-<li><b>NCO 4.7.1</b>: (<i>Distant Future</i>)
+<li><b>NCO 4.7.1</b>:  (<i>Future</i>)
 Chunking bytes not elements;
 extensive hashing?;
 netCDF4 compound types?;</li>
-<li><b>NCO 4.7.0</b>: (<i>Future</i>)
-<tt>ncclimo -v</tt> can better support regular expressions;
+<li><b>NCO 4.7.0</b>: (<i>In Progress, features in-progress or complete include</i>) 
+CMake build-engine intrinsic math, networking support on MS Windows;
+<tt>ncclimo -v</tt> splitter support for regular expressions;
 <tt>ncks --xtn</tt> better extensive variable treatment;</li>
-<li><b>NCO 4.6.9</b>: (<i>In Progress, features in-progress or complete include</i>) 
-CMake build is mature;
-Complete CDF5 support, including autoconversion, corruption detection;
+<li><b>NCO 4.6.9</b>: (<i>Current Stable Release</i>)
+CDF5 autoconversion, features to help detect <a href="#bug_cdf5">corruption</a>;
+CMake build-engine is mature;
 <tt>ncks</tt> estimates correct filesizes;
 <tt>ncks</tt> CDL prints variable RAM size;
 <tt>ncks</tt> prints CDL by default;</li>
-<li><b>NCO 4.6.8</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.6.8</b>:
 <tt>ncap2</tt> full chunking options;
 <tt>ncclimo --seasons</tt> custom season support;
 <tt>ncks --dt_fmt</tt> put the &ldquo;T&rdquo; in time;
@@ -826,7 +827,7 @@ goodies besides NCO) to your automatically-searched channels with
 &lsquo;<tt>conda config --add channels --conda-forge</tt>&rsquo;, then
 install NCO with &lsquo;<tt>conda install nco</tt>&rsquo;.
 The default NCO installed by <tt>conda</tt> is generally within a month of the latest release. 
-<li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.6.8</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
+<li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.6.9</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
 Thanks to Rich Signell, Filipe Fernandes (and others?) for developing and maintaining the NCO package for conda.
 </ul>
 
@@ -835,7 +836,7 @@ Thanks to Rich Signell, Filipe Fernandes (and others?) for developing and mainta
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.6.8</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.6.9</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="https://launchpad.net/ubuntu/+source/nco">Ubuntu NCO</a> homepages.
@@ -843,8 +844,8 @@ Thanks to Rich Signell, Filipe Fernandes (and others?) for developing and mainta
 NCO packages in the Debian/Ubuntu repositories (e.g., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/nco/nco/tree/master/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.6.8-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="https://launchpad.net/ubuntu/+source/nco/4.6.8-1">nco_4.6.8-1_amd64.deb</a> : Executables AMD64-compatible</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.6.9-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="https://launchpad.net/ubuntu/+source/nco/4.6.9-1">nco_4.6.9-1_amd64.deb</a> : Executables AMD64-compatible</li>
 Thanks to Daniel Baumann, Sebastian Couwenberg, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -888,10 +889,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # Mac OS X 10.12 (Sierra) systems (aerosol):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-4.6.8.macosx.10.12.tar.gz nc*;scp ${DATA}/nco-4.6.8.macosx.10.12.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.6.9.macosx.10.12.tar.gz nc*;scp ${DATA}/nco-4.6.9.macosx.10.12.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.6.8.macosx.10.12.tar.gz">nco-4.6.8.macosx.10.12.tar.gz</a> (<!--#fsize file="src/nco-4.6.8.macosx.10.12.tar.gz"-->): Executables MacOSX 10.12-compatible (last updated <!--#flastmod file="src/nco-4.6.8.macosx.10.12.tar.gz"-->). 
+<li><a href="src/nco-4.6.9.macosx.10.12.tar.gz">nco-4.6.9.macosx.10.12.tar.gz</a> (<!--#fsize file="src/nco-4.6.9.macosx.10.12.tar.gz"-->): Executables MacOSX 10.12-compatible (last updated <!--#flastmod file="src/nco-4.6.9.macosx.10.12.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
@@ -913,9 +914,9 @@ To build NCO from source yourself using MSVC with CMake, please see nco/cmake/bu
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.6.8.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.6.9.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.6.8.windows.mvs.exe">nco-4.6.8.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.6.8.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.6.8.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+<li><a href="src/nco-4.6.9.windows.mvs.exe">nco-4.6.9.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.6.9.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.6.9.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
@@ -1086,12 +1087,12 @@ site.</li>
 The simplest way to acquire the source is to download the compressed tarball:
 <ul>
 <li>
-<!-- scp ${DATA}/nco-4.6.8.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
-<a href="https://github.com/nco/nco/archive/4.6.8.tar.gz">nco-4.6.8.tar.gz</a> 
-(<!--#fsize file="src/nco-4.6.8.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.6.8.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.6.8.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha256 src/nco-4.6.8.tar.gz"--> 
+<!-- scp ${DATA}/nco-4.6.9.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
+<a href="https://github.com/nco/nco/archive/4.6.9.tar.gz">nco-4.6.9.tar.gz</a> 
+(<!--#fsize file="src/nco-4.6.9.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.6.9.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.6.9.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha256 src/nco-4.6.9.tar.gz"--> 
 </li>
 </ul>
 
@@ -1110,8 +1111,8 @@ You may retrieve any NCO distribution you wish from
 <a href="https://help.github.com">GitHub</a>. 
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
-then checks out NCO version <tt>4.6.8</tt>:
-<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.6.8</tt></p>
+then checks out NCO version <tt>4.6.9</tt>:
+<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.6.9</tt></p>
 These commands retrieve the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p> or
@@ -1119,9 +1120,9 @@ development version of NCO into a local directory named <tt>nco</tt>:
 Track changes to the development version using
 <p><tt>cd nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>4.6.8</tt>) and the development version is that the
+(e.g., <tt>4.6.9</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.6.8</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.6.9</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1268,9 +1269,9 @@ Users should instead first download and install the ANTLR found <a href="http://
 
 <li>Once you have installed the pre-requisites as shown above, you may then build the latest stable NCO and install it in, e.g., <tt>/usr/local</tt> with: 
 <tt>
-<dt>wget https://github.com/nco/nco/archive/4.6.8.tar.gz</dt>
-<dt>tar xvzf 4.6.8.tar.gz</dt>
-<dt>cd nco-4.6.8</dt>
+<dt>wget https://github.com/nco/nco/archive/4.6.9.tar.gz</dt>
+<dt>tar xvzf 4.6.9.tar.gz</dt>
+<dt>cd nco-4.6.9</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>
@@ -1411,15 +1412,16 @@ LAM installs easily with our own testing environment (latest Ubuntu).
   If the file is an input dataset (i.e., NCO <i>reads</i> it) written
   by PnetCDF then the input data are fine (because PnetCDF writes CDF5
   through a different mechanism than serial programs like NCO's
-  writer). And if the CDF5 dataset was originally written by any
-  netCDF version 4.5.0 or greater, then it is fine.
-  However, an input file written by any serial netCDF writer
-  (like NCO) employing netCDF library 4.4.x, is likely corrupt and
-  variables were silently truncated when writing it.
+  writer).
+  And if the CDF5 dataset was originally written by any netCDF version
+  4.5.0 or greater, then it is fine. 
+  However, an input file with large variables written by any serial
+  netCDF writer (like NCO) employing netCDF library 4.4.x, is likely
+  corrupt and variables were silently truncated when writing it.
   Output files (that NCO wrote) with large variables will definitely
   be corrupt if NCO was linked to netCDF library version 4.4.x (so
-  please upgrade to netCDF 4.5.x ASAP).
-  There are two potential solutions for data affected by this bug:
+  upgrade to netCDF 4.5.x ASAP).
+  Here are two potential workarounds for data affected by this bug:
   1. Re-write (using any netCDF version) original input files in
   netCDF4 format instead of CDF5, then process these as normal and
   write netCDF4 output (instead of CDF5); 
