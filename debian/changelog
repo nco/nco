@@ -1,8 +1,8 @@
 nco (4.6.9-1) unstable; urgency=low
 
-  * new upstream version fxm
+  * new upstream version CDF5, CMake, MPAS-O/I
 
- -- Charlie Zender <zender@uci.edu>  Wed, 16 Sep 2017 12:25:25 -0700
+ -- Charlie Zender <zender@uci.edu>  Mon, 18 Sep 2017 12:25:25 -0700
 
 nco (4.6.8-1) unstable; urgency=low
 
