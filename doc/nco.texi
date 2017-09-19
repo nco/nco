@@ -5015,7 +5015,7 @@ if [ ${cf_chk} != '0' ] && [ ${cf_chk} != 'nerc' ]; then
     hash cfchecker 2>/dev/null || { echo >&2 "Local cfchecker command not found, will smallify and upload to NERC checker instead"; chk_nrc='y'; chk_dck='n'; }
 fi # !cf_chk
 # Obtain group list
-grp_lst=`ncks --cdl -m ${fl_in} | grep '// group' | awk '{$1=$2=$3="";sub(/^  */,"",$0);print}'`
+grp_lst=`ncks -m ${fl_in} | grep '// group' | awk '{$1=$2=$3="";sub(/^  */,"",$0);print}'`
 IFS=$'\n' # Change Internal-Field-Separator from <Space><Tab><Newline> to <Newline>
 for grp_in in ${grp_lst} ; do
     # Replace slashes by dots for output group filenames
@@ -5328,10 +5328,10 @@ Printing variable @var{three_dmn_var} in file @file{in.nc} first with
 the @w{C indexing} convention, then with Fortran indexing convention
 results in the following output formats: 
 @example
-% ncks -v three_dmn_var in.nc
+% ncks --trd -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dmn_var[0]=0 
 ...
-% ncks -F -v three_dmn_var in.nc
+% ncks --trd -F -v three_dmn_var in.nc
 lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0 
 ...
 @end example
@@ -6590,7 +6590,7 @@ The @acronym{SCRIP} gridfile and @acronym{UGRID} meshfile metadata
 produced for the equiangular @w{1-by-1 degree} global grid are:
 @example
 @verbatim
-zender@aerosol:~$ ncks --cdl -m ~/grd_scrip.nc 
+zender@aerosol:~$ ncks -m ~/grd_scrip.nc 
 netcdf grd_scrip {
   dimensions:
     grid_corners = 4 ;
@@ -6618,7 +6618,7 @@ netcdf grd_scrip {
     int grid_imask(grid_size) ;
 } // group /
 
-zender@aerosol:~$ ncks --cdl -m ~/grd_ugrid.nc 
+zender@aerosol:~$ ncks -m ~/grd_ugrid.nc 
 netcdf grd_ugrid {
   dimensions:
     maxNodesPerFace = 4 ;
@@ -9366,13 +9366,13 @@ argument form for sub-setting.
 The @acronym{MD5} digests are shown as a 32-character hexadecimal string 
 in which each two characters represent one byte of the 16-byte digest:
 @example
-> ncks -O -D 2 -C --md5 -v md5_a,md5_abc ~/nco/data/in.nc
+> ncks --trd -D 2 -C --md5 -v md5_a,md5_abc ~/nco/data/in.nc
 ...
 ncks: INFO MD5(md5_a) = 0cc175b9c0f1b6a831c399e269772661
 md5_a = 'a' 
 ncks: INFO MD5(md5_abc) = 900150983cd24fb0d6963f7d28e17f72
 lev[0]=100 md5_abc[0--2]='abc' 
-> ncks -O -D 2 -C -d lev,0 --md5 -v md5_a,md5_abc ~/nco/data/in.nc
+> ncks --trd -D 2 -C -d lev,0 --md5 -v md5_a,md5_abc ~/nco/data/in.nc
 ...
 ncks: INFO MD5(md5_a) = 0cc175b9c0f1b6a831c399e269772661
 md5_a = 'a' 
@@ -10635,7 +10635,7 @@ In @w{Method 2} we obtain 15-year ensemble January average in a single
 step, by averaging all 15 Januaries at one time:
 @example
 # tpt_flt and tpt_dbl are identical except for precision
-ncks --cdl -C -v tpt_flt,tpt_dbl ~/nco/data/in.nc
+ncks -C -v tpt_flt,tpt_dbl ~/nco/data/in.nc
 # tpt_dbl = 273.1, 273.2, 273.3, 273.4, 273.5, 273.6, 273.7, 273.8, 273.9, 274
 # tpt_flt = 273.1, 273.2, 273.3, 273.4, 273.5, 273.6, 273.7, 273.8, 273.9, 274
 # Create file with five "ten-month years" (i.e., 50 timesteps) of temperature data
@@ -10653,7 +10653,7 @@ ncra --flt -O ~/foo_avg1.nc ~/foo_avg2.nc ~/foo_avg3.nc ~/foo_avg_mth1.nc
 ncra --flt -O -F -d time,1,,10,3 ~/foo.nc ~/foo_avg_mth2.nc
 # Difference the two methods
 ncbo -O ~/foo_avg_mth1.nc ~/foo_avg_mth2.nc ~/foo_avg_dff.nc
-ncks --cdl ~/foo_avg_dff.nc
+ncks ~/foo_avg_dff.nc
 # tpt_dbl = 5.6843418860808e-14 ;
 # tpt_flt = -3.051758e-05 ;
 @end example
@@ -10696,7 +10696,7 @@ ncra --dbl -O -F -d time,1,,10,3 ~/foo.nc ~/foo_avg_mth2.nc
 # Difference the two methods
 ncbo -O ~/foo_avg_mth1.nc ~/foo_avg_mth2.nc ~/foo_avg_dff.nc
 # Show differences
-ncks --cdl ~/foo_avg_dff.nc
+ncks ~/foo_avg_dff.nc
 # tpt_dbl = 5.6843418860808e-14 ;
 # tpt_flt = 0 ;
 @end example
@@ -19568,7 +19568,7 @@ Invoking this option when @math{@var{dbg_lvl} >= 1} in @acronym{CDL}
 mode prints both the value and the calendar string (one in comments):
 @example
 @verbatim
-zender@aerosol:~$ ncks -D 1 --cdl --cal -v tm_365 ~/nco/data/in.nc
+zender@aerosol:~$ ncks -D 1 --cal -v tm_365 ~/nco/data/in.nc
 ...
   variables:
     double tm_365 ;
@@ -19578,7 +19578,7 @@ zender@aerosol:~$ ncks -D 1 --cdl --cal -v tm_365 ~/nco/data/in.nc
   data:
     tm_365 = "2013-03-01"; // double value: 59
 ...
-zender@aerosol:~$ ncks -D 1 --cdl -v tm_365 ~/nco/data/in.nc
+zender@aerosol:~$ ncks -D 1 -v tm_365 ~/nco/data/in.nc
 ...
     tm_365 = 59; // calendar format: "2013-03-01"
 ...
@@ -19710,7 +19710,7 @@ valid @acronym{CDL} (network Common data form Description Language).
 Compare @command{ncks} ``traditional'' with @acronym{CDL} printing:
 @example
 @verbatim
-zender@roulee:~$ ncks -v one ~/nco/data/in.nc
+zender@roulee:~$ ncks --trd -v one ~/nco/data/in.nc
 one: type NC_FLOAT, 0 dimensions, 1 attribute, chunked? no, compressed? no, packed? no
 one size (RAM) = 1*sizeof(NC_FLOAT) = 1*4 = 4 bytes
 one attribute 0: long_name, size = 3 NC_CHAR, value = one
@@ -19732,7 +19732,7 @@ netcdf in {
 @end example
 @command{ncgen} converts @acronym{CDL}-mode output into a netCDF file:
 @example
-ncks --cdl -v one ~/nco/data/in.nc > ~/in.cdl
+ncks -v one ~/nco/data/in.nc > ~/in.cdl
 ncgen -k netCDF-4 -b -o ~/in.nc ~/in.cdl
 ncks -v one ~/in.nc
 @end example
@@ -20211,7 +20211,7 @@ Variable (not dimension) indices are printed.
 Variable names appear flush left in the output:
 @example
 @verbatim
-zender@roulee:~$ ncks -Q -v three_dmn_rec_var -C -H ~/nco/data/in.nc              
+zender@roulee:~$ ncks --trd -Q -v three_dmn_rec_var -C -H ~/nco/data/in.nc              
 three_dmn_rec_var[0]=1 
 ...
 @end verbatim
@@ -20339,7 +20339,7 @@ Do not print variable and dimension names, indices, and coordinate
 values when printing arrays. 
 @example
 @verbatim
-zender@roulee:~$ ncks -V -v three_dmn_rec_var -C -H ~/nco/data/in.nc
+zender@roulee:~$ ncks --trd -V -v three_dmn_rec_var -C -H ~/nco/data/in.nc
 1
 ...
 @end verbatim
@@ -20370,7 +20370,7 @@ into @acronym{NcML}, including metadata and data, using all
 Compare @command{ncks} ``traditional'' with @acronym{XML} printing:
 @example
 @verbatim
-zender@roulee:~$ ncks -v one ~/nco/data/in.nc
+zender@roulee:~$ ncks --trd -v one ~/nco/data/in.nc
 one: type NC_FLOAT, 0 dimensions, 1 attribute, chunked? no, compressed? no, packed? no
 one size (RAM) = 1*sizeof(NC_FLOAT) = 1*4 = 4 bytes
 one attribute 0: long_name, size = 3 NC_CHAR, value = one
@@ -20587,11 +20587,11 @@ function ncavg { ncwa -y avg -O -C -v ${1} ${2} ~/foo.nc ; ncks --trd -H -C -v $
 # ncavg $var_nm $fl_nm : What is mean of variable?
 function ncavg { ncap2 -O -C -v -s "foo=${1}.avg();print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncdmnlist $fl_nm : What dimensions are in file?
-function ncdmnlist { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
+function ncdmnlist { ncks -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
 # ncdmnsz $dmn_nm $fl_nm : What is dimension size?
 function ncdmnsz { ncks --trd -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
 # ncgrplist $fl_nm : What groups are in file?
-function ncgrplist { ncks --cdl -m ${1} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ; }
+function ncgrplist { ncks -m ${1} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ; }
 # nclist $fl_nm : What variables are in file?
 function nclist { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 # ncmax $var_nm $fl_nm : What is maximum of variable?
@@ -23610,7 +23610,7 @@ ncks -O -4 -C -M -v lat ~/nco/data/in.nc ~/bug.nc
 ncrename -O -v lat,tal ~/bug.nc ~/foo.nc # Broken until netCDF-4.3.3
 ncrename -O -d lat,tal ~/bug.nc ~/foo.nc # Broken until netCDF-4.3.3
 ncrename -O -d lat,tal -v lat,tal ~/bug.nc ~/foo.nc # Broken too
-ncks --cdl ~/foo.nc
+ncks ~/foo.nc
 @end example
 To avoid this faulty behavior, either build @acronym{NCO} with netCDF 
 version 4.3.3 or later, or convert the file to netCDF3 first, then
