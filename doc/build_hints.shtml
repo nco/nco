@@ -302,10 +302,7 @@ See the <a href="http://nco.sf.net/nco.html#wnd">User's Guide</a>
 for more details.
 </li>
 
-<!--Qt/MSVC -->
-<li><i>Windows build with Qt/MSVC:</i>
-As of NCO 4.2.0, you may build NCO from source using MSVC and Qt, please see the <a href="nco_qt_msvc.shtml">NCO Qt/MSVC build</a> page.
-</li>
+
 </ul>
 <hr></p>
 

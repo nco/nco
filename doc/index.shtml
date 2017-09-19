@@ -1264,7 +1264,6 @@ For Windows with Cygwin, select and install the following packages with Cygwin S
 <dt>udunits2 # UDUnits</dt>
 </tt>
 As of 20131101 there is no Cygwin package for ANTLR, and the netCDF package does not yet support DAP. 
-Users should instead first download and install the ANTLR found <a href="http://nco.sourceforge.net/nco_qt_msvc.shtml">here</a>.
 </li>
 
 <li>Once you have installed the pre-requisites as shown above, you may then build the latest stable NCO and install it in, e.g., <tt>/usr/local</tt> with: 
@@ -1298,7 +1297,15 @@ Override these manually with, e.g.,
 -DHDF5_HL_LIBRARY=/my/hdf5 high level/library/file 
 -DSZIP_LIBRARY=/my/szip/library/file 
 -DZLIB_LIBRARY=/my/zlib/library/file 
--DCURL_LIBRARY=/my/curl/library/file</dt>
+-DCURL_LIBRARY=/my/curl/library/file 
+-DANTLR_INCLUDE:PATH=/my/antlr/include/path 
+-DANTLR_LIBRARY:FILE=/my/antlr/library/file 
+-DUDUNITS2_INCLUDE:PATH=/my/udunits2/include/path 
+-DUDUNITS2_LIBRARY:FILE=/my/udunits2/library/file 
+-DEXPAT_LIBRARY:FILE=/my/expat/library/file 
+-DGSL_INCLUDE:PATH=/my/gsl/include/path 
+-DGSL_LIBRARY:FILE=/my/gsl/library/file 
+-DGSL_CBLAS_LIBRARY:FILE=/my/cblas/library/file</dt>
 </tt>
 </p>
 <dt><a name="bonobo"></a></dt> <!-- http://nco.sf.net#bonobo -->
