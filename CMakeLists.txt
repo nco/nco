@@ -806,11 +806,13 @@ macro(install_links src dest)
 add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
 endmacro(install_links)
-install_links(ncra ncea)
-install_links(ncra nces)
-install_links(ncra ncrcat)
-install_links(ncbo ncdiff)
-install_links(ncpdq ncunpack)
+if(UNIX)
+  install_links(ncra ncea)
+  install_links(ncra nces)
+  install_links(ncra ncrcat)
+  install_links(ncbo ncdiff)
+  install_links(ncpdq ncunpack)
+endif()
 message("-- Installing links ncea;nces;ncrcat;ncdiff;ncunpack to: " ${CMAKE_INSTALL_PREFIX})
 
 #//////////////////////////
@@ -875,7 +877,7 @@ if (NOT test_w)
  set(can_write 1)
 endif()
 
-if(can_write)
+if(can_write AND UNIX)
   message("${color_blue}-- Generating check/install target with executables at: ${CMAKE_INSTALL_PREFIX}${color_reset}")
   add_custom_target(check
   COMMENT "${color_green}Running self-tests with NCO executables in ${CMAKE_INSTALL_PREFIX}${color_reset}"
