@@ -914,6 +914,7 @@ nco_close(const int nc_id)
     int bug_nbr=0;
     int dmn_idx;
     int dmn_nbr;
+    int FIRST_WARNING=1;
     int var_idx;
     int var_nbr;
     nc_type var_typ;
@@ -923,7 +924,6 @@ nco_close(const int nc_id)
     rcd=nc_inq_path(nc_id,&pathlen,NULL);
     path=(char *)malloc(pathlen*sizeof(char));
     rcd=nc_inq_path(nc_id,NULL,path);
-    (void)fprintf(stdout,"INFO: %s currently closing and sniffing-around for corruption in CDF5 file %s\n",fnc_nm,path);
     //(void)fprintf(stdout,"DEBUG: %s reports NC_LIB_VERSION = %d.\n",fnc_nm,NC_LIB_VERSION);
     //(void)fprintf(stdout,"DEBUG: %s reports file format and extended format are %d = %s and %d = %s, respectively\n",fnc_nm,fl_fmt,nco_fmt_sng(fl_fmt),fl_fmt_xtn,nco_fmt_xtn_sng(fl_fmt_xtn));
     //(void)fprintf(stdout,"DEBUG: %s reports file mode is %o (octal) = %d (decimal) = %04x (hex)\n",fnc_nm,mode,(unsigned)mode,(unsigned)mode);
@@ -939,6 +939,10 @@ nco_close(const int nc_id)
       rcd=nc_inq_vartype(nc_id,var_id[var_idx],&var_typ);
       var_sz*=nco_typ_lng(var_typ);
       if(var_sz > 4ULL*1073741824ULL){ /* 4 GiB */
+	if(FIRST_WARNING){
+	  (void)fprintf(stdout,"INFO: %s currently closing and sniffing-around for corruption in CDF5 file %s\n",fnc_nm,path);
+	  FIRST_WARNING=0;
+	} /* !FIRST_WARNING */
 	rcd=nc_inq_varname(nc_id,var_id[var_idx],var_nm);
 	(void)fprintf(stdout,"WARNING: %s reports variable %s is \"large\" (%lu B =~ %lu GiB > 4294967296 B = 4 GiB)\n",fnc_nm,var_nm,(unsigned long)var_sz,(unsigned long)(1.0*var_sz/1073741824UL));
 	bug_idx=var_idx;

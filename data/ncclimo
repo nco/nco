@@ -434,6 +434,7 @@ drc_rgr_xmp="${DATA}/ne30/rgr" # [sng] Regrid file directory for examples
 drc_rgr_xtn='' # [sng] Regridded file directory for for extended climatology
 drc_xtn='' # [sng] Directory containing extended climatology
 dpy=365 # [nbr] Days-per-year
+fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to split
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
@@ -477,6 +478,11 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_bld}${spt_nm} -v var_lst -s yr_srt -e yr_end -o drc_out -r rgr_map in1.nc in2.nc ... inN.nc${fnt_nrm} # Split, reshape, & regrid timeseries\n"
     printf "${fnt_bld}${spt_nm} --case=caseid --start=yr_srt --end=yr_end --input=drc_in --output=drc_out --map=rgr_map${fnt_nrm} # Long options\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
+    echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
+    echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
+    echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
+    echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
+    echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}dec_md${fnt_nrm}   December mode (default ${fnt_bld}${dec_md}${fnt_nrm}) [${fnt_tlc}dec_md, december_mode, dec_mode${fnt_nrm}]"
     echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}]"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
@@ -484,6 +490,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year previous climo (empty means none) (default ${fnt_bld}${yr_end_prv}${fnt_nrm}) [${fnt_tlc}yr_end_prv, prv_yr_end, previous_end${fnt_nrm}]"
     echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm}) [${fnt_tlc}yr_end, end_yr, year_end, end_year, end${fnt_nrm}]"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm}) [${fnt_tlc}fml_nm, family_name${fnt_nrm}]"
+    echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is inherited from input) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
@@ -576,8 +583,13 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options (see method by Adam Katz)
 # http://tuxtweaks.com/2014/05/bash-getopts
-while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
+while getopts :34567a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
     case ${OPT} in
+	3) fl_fmt='3' ;; # File format
+	4) fl_fmt='4' ;; # File format
+	5) fl_fmt='5' ;; # File format
+	6) fl_fmt='6' ;; # File format
+	7) fl_fmt='7' ;; # File format
 	a) dec_md="${OPTARG}" ;; # December mode
 	C) clm_md_usr="${OPTARG}" ;; # Climatology mode
 	c) caseid="${OPTARG}" ;; # CASEID
@@ -620,6 +632,7 @@ while getopts :a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
 	       fml_nm=?* | family_name=?* | family=?* ) fml_nm_usr="${LONG_OPTARG}" ;; # -f # Family name
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
+	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       lnk_flg | link_flag | no_amwg_link | no_amwg_links | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # -l # Link E3SM/ACME to AMWG name
 	       lnk_flg=?* | link_flag=?* | no_amwg_link=?* | no_amwg_links=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM/ACME to AMWG name
@@ -890,6 +903,24 @@ fi # !gaa_sng
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
+if [ -n "${fl_fmt}" ]; then
+    if [ "${fl_fmt}" = '3' ] || [ "${fl_fmt}" = 'classic' ] || [ "${fl_fmt}" = 'netcdf3' ]; then
+	nco_fl_fmt='--fl_fmt=classic'
+    fi # !fl_fmt
+    if [ "${fl_fmt}" = '4' ] || [ "${fl_fmt}" = 'netcdf4' ] || [ "${fl_fmt}" = 'hdf5' ]; then
+	nco_fl_fmt='--fl_fmt=netcdf4'
+    fi # !fl_fmt
+    if [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
+	nco_fl_fmt='--fl_fmt=64bit_data'
+    fi # !fl_fmt
+    if [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
+	nco_fl_fmt='--fl_fmt=64bit_offset'
+    fi # !fl_fmt
+    if [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
+	nco_fl_fmt='--fl_fmt=netcdf4_classic'
+    fi # !fl_fmt
+    nco_opt="${nco_opt} ${nco_fl_fmt}"
+fi # !fl_fmt
 if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="-D ${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
@@ -1327,6 +1358,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: drc_rgr  = ${drc_rgr}\n"
     printf "dbg: drc_spt  = ${drc_spt}\n"
     printf "dbg: drc_xtn  = ${drc_xtn}\n"
+    printf "dbg: fl_fmt   = ${fl_fmt}\n"
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: fml_nm   = ${fml_nm}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"

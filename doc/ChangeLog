@@ -1,3 +1,9 @@
+2017-09-19  Charlie Zender  <zender@uci.edu>
+
+	* Only print CDF5 sniffing message when large variable found
+
+	* Add [-3, -4, -5, -6, -7] options to ncclimo
+
 2017-09-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.6.9 release procedure:

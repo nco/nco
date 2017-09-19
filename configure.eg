@@ -320,7 +320,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
 # Latest sysadmin-compiled module usage: module load nco/4.6.7 # 20170612 (without ncap2)
 # Personal recipe last modified: 20170411
-# Personal recipe last used successfully: 20170816
+# Personal recipe last used successfully: 20170919
 module load szip
 module load gsl
 module load udunits
@@ -341,7 +341,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: INC0106410 on 20170804
 # Latest sysadmin-compiled module usage: module load nco/4.6.7 # 20170809 (with ncap2)
 # Personal recipe last modified: 20170807
-# Personal recipe last used successfully: 20170916
+# Personal recipe last used successfully: 20170919
 module load szip
 module load gsl
 module load udunits2
@@ -412,7 +412,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: 157798 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.5.5 # 20160228
 # Personal recipe last modified: 20170812
-# Personal recipe last used successfully: 20170816
+# Personal recipe last used successfully: 20170919
 module add intel/16.0.3;module add gsl;module add netcdf/4.4.1;
 export PATH=${PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib # needed to run NCO
@@ -424,7 +424,7 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3' UDUNIT
 # Latest ticket: 358890 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170515
 # Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20170916
+# Personal recipe last used successfully: 20170919
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -443,7 +443,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/autofs/nccs-svm1_sw/rhea/.swc
 # Latest ticket: 347675 on 20170316
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170411
 # Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20170816
+# Personal recipe last used successfully: 20170919
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 module add gcc # change GCC from v 4.3.4 to 4.9.0
 #module add gsl # not used yet
