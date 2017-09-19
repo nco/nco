@@ -1,5 +1,9 @@
 2017-09-19  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.0-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.0-alpha01 final changes';git push
+	git tag -a 4.7.0-alpha01 -m 'ncclimo fl_fmt,quiet CDF5 sniffing';git push --tags
+
 	* Only print CDF5 sniffing message when large variable found
 
 	* Add [-3, -4, -5, -6, -7] options to ncclimo

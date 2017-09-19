@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.6.9
-@set doc-edition 4.6.9
+@set nco-edition 4.7.0-alpha01
+@set doc-edition 4.7.0-alpha01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 18 September 2017
+@set update-date 19 September 2017
 @set update-month September 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17132,8 +17132,8 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 SYNTAX
 @example
-ncclimo [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
-[-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [-h @var{hst_nm}] [-i @var{drc_in}]
+ncclimo [-3] [-4] [-5] [-6] [-7] [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
+[-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
 [--no_cll_msr ] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd]
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}]

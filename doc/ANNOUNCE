@@ -1,27 +1,14 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.6.9 are released. 
+The netCDF Operators NCO version 4.7.0 are released. 
 
 http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-Version 4.6.9 fixes a few issues has no new major features.
-Most improvements relate to CDF5 handling and CMake builds.
-Also, ncks now prints CDL by default.
+Version 4.7.0 fixes ...
 
-I shelved my plans to skip 4.6.9 because we discovered a
-consequential bug with the netCDF CDF5 implementation.
-This led to a flurry of mini-features to diagnose and warn
-users who might inadvertently stumble on corrupt CDF5 data.
-Understanding the ramifications of this CDF5 bug is ongoing.
-The best case scenario now, after a month of investigation,
-is that Unidata will soon declare the bug solved and put the 
-appropriate patches in netCDF 4.5.0. We may make final
-adjustments to diagnose/handle CDF5 issues based on those
-patches, and release NCO 4.7.0 soon thereafter.
-
-Work on NCO 4.7.0 has commenced. Planned changes include
+Work on NCO 4.7.1 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
 and more ncclimo and ncremap features, and CMake polishing. 
 
@@ -30,29 +17,15 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. CDF5: NCO warns when CDF5 files may be corrupted by the newly
-   discovered (!) netCDF CDF5 bug: http://nco.sf.net#bug_cdf5
-
-B. CDF5: All NCO operators now fully support CDF5.
-   Previously some operators would not output it.
-   Now, all output CDF5 with the -5 switch:
-   ncra -5 in*.nc out.nc
-   This includes auto-conversion.
-   ncks converts among netCDF's five-different binary formats:
-   ncks [-3 -4 -5 -6 -7] in.nc out.nc
+A. ncclimo accepts fl_fmt switch for output file format.
+   ncclimo [-3 -4 -5 -6 -7] in.nc out.nc
    http://nco.sf.net/nco.html#autoconversion
 
-C. CDF5: In support of detecting the CDF5 bug, and also for more
-   general use, are new ncks features to print, in CDL comments,
-   the uncompressed RAM size of every variable (when dbg_lvl >= 1).
-   When dbg_lvl >= 2, the RAM size of all the data in a file,
-   and the variable ID of each variable, are also printed.
-   ncks -D 1 -v one ~/nco/data/in.nc
-   ncks -D 2 -v one ~/nco/data/in.nc
-   ncks -M -D 2 -v one ~/nco/data/in.nc
-   http://nco.sf.net#cdl
+A. CDF5: Operators are now quiet when examining CDF5 files for 
+   corruption, unless they detect a "large" (> 4 GB) variable.
+   http://nco.sf.net#bug_cdf5
 
-D. Pedro Vicente has generously contributed a CMake build-engine. 
+A. CMake: Pedro Vicente contributed a CMake build-engine. 
    CMake can build NCO on any architecture, including MS Windows,
    and makes available nearly all important features, including ncap2, 
    GSL, DAP, and UDUnits2. A few esoteric NCO features (intrinsic math
@@ -66,26 +39,9 @@ D. Pedro Vicente has generously contributed a CMake build-engine.
    Additional examples in cmake/build.bat
    http://nco.sf.net#bld
 
-E. ncks now prints CDL by default.
-   Advance notice of this change was first given in May.
-   Use the --trd switch to print with "traditional" syntax:
-   ncks in.nc
-   ncks --trd in.nc
-   http://nco.sf.net/nco.html#trd
-   http://nco.sf.net/nco.html#cdl
-
-F. ncclimo and ncremap have changes "under-the-hood".
-   E3SM/ACME users may notice cosmetic differences.
-   Hard-coded paths on DOE machines can now be avoided by
-   export NCO_PATH_OVERRIDE='No'
-   in the shell where ncclimo/ncremap are invoked.
-   http://nco.sf.net/nco.html#ncclimo
-
 BUG FIXES:
 
-A. ncclimo false-positive messages about 'ANN' eliminated
-
-B. ncclimo/ncremap updated udunits2 module for edison
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -93,7 +49,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.6.9 built/tested under
+   These problems occur with NCO 4.7.0 built/tested under
    MacOS 10.12.6 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
    Linux with netCDF 4.5.1-development (20170811) on HDF5 1.8.19.
 
