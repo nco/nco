@@ -19385,16 +19385,17 @@ optionally prints it to screen.
 @command{ncks} prints netCDF input data in @acronym{ASCII},
 @acronym{CDL}, @acronym{JSON}, or @acronym{NcML/XML} text formats to
 @code{stdout}, like (an extended version of) @command{ncdump}.
-By default @command{ncks} prints data in a tabular format intended to be
-easy to search for the data you want, one datum per screen line, with
-all dimension subscripts and coordinate values (if any) preceding the
-datum. 
+By default @command{ncks} prints @acronym{CDL} format.
 Option @samp{-s} (or long options @samp{--sng_fmt} and @samp{--string}) 
 permits the user to format data using C-style format strings, while
 option @samp{--cdl} outputs @acronym{CDL},
 option @samp{--jsn} (or @samp{json}) outputs @acronym{JSON},
 option @samp{--trd} (or @samp{traditional}) outputs ``traditional'' format,
 and option @samp{--xml} (or @samp{ncml}) outputs @acronym{NcML}. 
+The ``traditional'' tabular format is intended to be
+easy to search for the data you want, one datum per screen line, with
+all dimension subscripts and coordinate values (if any) preceding the
+datum. 
 @command{ncks} exposes many flexible controls over printed output,
 including @acronym{CDL}, @acronym{JSON}, and @acronym{NcML}.
 
@@ -19603,8 +19604,8 @@ ncks -H -m -v time_bnds -C --dt_fmt=value ~/nco/data/in.nc
 # 3         1964-03-13T09:08:16.000000 # ISO8601 'T' format
 @end verbatim
 @end example
-Note that @samp{--dt_fmt} automatically implies @samp{--cal} and
-@samp{--cdl} and makes those option superfluous.
+Note that @samp{--dt_fmt} automatically implies @samp{--cal}
+makes that options superfluous.
 
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->
@@ -19707,6 +19708,9 @@ print extracted data and metadata to screen (i.e., @code{stdout}) as
 valid @acronym{CDL} (network Common data form Description Language). 
 @acronym{CDL} is the human-readable ``lingua franca'' of netCDF ingested by
 @command{ncgen} and excreted by @command{ncdump}.
+As of @acronym{NCO} version 4.6.9 (September, 2017), @command{ncks} 
+prints @acronym{CDL} by default, and the ``traditional'' mode must
+be explicitly selected with @samp{--trd}.
 Compare @command{ncks} ``traditional'' with @acronym{CDL} printing:
 @example
 @verbatim
