@@ -598,6 +598,18 @@ if(ANTLR_INCLUDE AND ANTLR_LIBRARY)
   add_executable(ncap2 ${ncap2_SOURCES})
   target_include_directories(ncap2 PRIVATE src/nco ${ANTLR_INCLUDE})
   target_link_libraries (ncap2 ${nco_LIB} ${LIB_DEP} ${ANTLR_LIBRARY}) 
+  
+  #//////////////////////////
+  # macros used in ncap2 to use advanced math: erf, erfc, gamma
+  # LINUX LINUXAMD64 MACOSX
+  #//////////////////////////
+  
+  if(APPLE)
+    add_definitions(-DMACOSX)
+  endif() 
+  if(UNIX AND NOT APPLE)
+   add_definitions(-DLINUX)
+  endif() 
 endif()
 
 

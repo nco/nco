@@ -1587,7 +1587,7 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
 	 20050610: C99 mandates support for erf(), erfc(), tgamma()
 	 Eventually users without C99 will forego ncap */
       
-#if defined(LINUX) || defined(LINUXAMD64) || defined(MACOSX)
+#if defined(LINUX) || defined(LINUXAMD64) || defined(MACOSX) || defined(_MSC_VER)
       sym_vtr.push_back(sym_cls("erf",erf,erff));
       sym_vtr.push_back(sym_cls("erfc",erfc,erfcf));
       sym_vtr.push_back(sym_cls("gamma",tgamma,tgammaf));
