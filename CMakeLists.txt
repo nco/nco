@@ -110,10 +110,12 @@ set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_LIBRARY})
 
 check_library_exists(${NETCDF_LIBRARY} nc_inq_path "" has_nc_inq_path)
 if (has_nc_inq_path)
+  message("-- Found nc_inq_path in: " ${NETCDF_LIBRARY})
   add_definitions(-DHAVE_NC_INQ_PATH)
 endif()
 check_library_exists(${NETCDF_LIBRARY} nc_inq_format "" has_nc_inq_format)
 if (has_nc_inq_format)
+  message("-- Found nc_inq_format in: " ${NETCDF_LIBRARY})
   add_definitions(-DHAVE_NC_INQ_FORMAT)
 endif()
 
