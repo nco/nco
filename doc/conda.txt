@@ -1,0 +1,38 @@
+# $Header$ -*-text-*-
+
+# Purpose: Conda information for NCO netCDF Operators project
+# Notes describe procedure to manipulate Debian-specific distribution
+
+# Install Miniconda in direcetory $HOME/anaconda
+# Anaconda itself is ~10x bigger than Miniconda and contains too much extraneous stuff
+scp Miniconda2-latest-Linux-x86_64.sh skyglow.ess.uci.edu:
+bash Miniconda2-latest-Linux-x86_64.sh
+
+20170920:
+> @doutriaux1 reports that OSX conda package is not available despite
+> Linux package having been available for a day. 
+
+Travis-CI, which builds our OS X packages, is having trouble. See
+https://www.traviscistatus.com/incidents/h6gwvyq9zky0 
+
+Follow the build check at
+https://travis-ci.org/conda-forge/nco-feedstock/builds/277263541
+
+> The build-status indicator for both is green on the nco-feedstock
+  homepage. Is that a false-negative for OSX? 
+
+Not really, it is probably reflecting the last build.
+
+Build logs are in the Travis CI logs at
+https://travis-ci.org/conda-forge/nco-feedstock
+
+> FWIW I have received build failures with clang since ~Sep 4 when
+> Travis updated to new Ubuntu Trusty. 
+
+conda-forge uses a CentOS 6 docker image to build Linux using
+CircleCI. We only use Travis-CI for OS X, so we are not affected.
+But thanks for letting us know! 
+
+In conda-forge we do build OS X pkgs with clang by default but not
+with OpenMP though, we should look into that. 
+

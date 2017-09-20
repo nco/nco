@@ -21,15 +21,15 @@ A. ncclimo accepts fl_fmt switch for output file format.
    ncclimo [-3 -4 -5 -6 -7] in.nc out.nc
    http://nco.sf.net/nco.html#autoconversion
 
-A. CDF5: Operators are now quiet when examining CDF5 files for 
-   corruption, unless they detect a "large" (> 4 GB) variable.
+A. CDF5: Operators are now quiet when sniffing CDF5 files for 
+   corruption, until they detect a "large" (> 4 GB) variable.
+   In 4.6.9 the sniffing algorithm was noisier, and printed an INFO
+   upon closing any CDF5 file.
    http://nco.sf.net#bug_cdf5
 
-A. CMake: Pedro Vicente contributed a CMake build-engine. 
-   CMake can build NCO on any architecture, including MS Windows,
-   and makes available nearly all important features, including ncap2, 
-   GSL, DAP, and UDUnits2. A few esoteric NCO features (intrinsic math
-   functions like erf(),erff(),gamm()...) remain to be implemented. 
+A. CMake: Pedro Vicente contributed a CMake build-engine in 4.6.9. 
+   The CMake engine now correctly links ncap2 to intrinsic math
+   functions like erf(), gamma(), ... 
    Please give us feedback on any wrinkles in the CMake build. 
    To build with CMake and install in /usr/local: 
    cd nco/cmake

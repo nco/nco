@@ -824,7 +824,7 @@ Up-to-date versions of NCO for Linux and MacOS are maintained at <a href="https:
 Install NCO in your Anaconda framework with one command &lsquo;<tt>conda install -c conda-forge nco</tt>&rsquo;.
 Or, alternatively, permanently add conda-forge (which teems with
 goodies besides NCO) to your automatically-searched channels with
-&lsquo;<tt>conda config --add channels --conda-forge</tt>&rsquo;, then
+&lsquo;<tt>conda config --add channels conda-forge</tt>&rsquo;, then
 install NCO with &lsquo;<tt>conda install nco</tt>&rsquo;.
 The default NCO installed by <tt>conda</tt> is generally within a month of the latest release. 
 <li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.6.9</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
