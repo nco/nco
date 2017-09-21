@@ -1,6 +1,6 @@
 2017-09-21  Charlie Zender  <zender@uci.edu>
 
-	* Add var_nm diagnostics when all put/get functions fail
+	* Add var_nm to diagnostic when all put/get functions fail
 
 2017-09-20  Charlie Zender  <zender@uci.edu>
 

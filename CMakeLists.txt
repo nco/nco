@@ -862,6 +862,7 @@ if (PATH_TO_NCGEN)
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_2.nc ${PATH_DATA}/mdl_2.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_3.nc ${PATH_DATA}/mdl_3.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/cmip5.nc ${PATH_DATA}/cmip5.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/split.nc ${PATH_DATA}/split.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/obs.nc ${PATH_DATA}/obs.cdl)
 
 #//////////////////////////

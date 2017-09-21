@@ -1891,11 +1891,13 @@ if($USER eq 'zender'){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
-#ncks #25 groups: Extract global attributes
-    $dsc_sng="Extract global attributes";
+# ncks -O ~/nco/data/in_grp.nc ~/foo.nc
+# ncks -M --trd ~/foo.nc | grep Conventions | cut -d ' ' -f 11
+#ncks #25 groups: Extract global attribute
+    $dsc_sng="Extract global attribute";
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncks --trd %tmp_fl_00% | grep Conventions";
-    $tst_cmd[2]="Global attribute 0: Conventions, size = 6 NC_CHAR, value = CF-1.0";
+    $tst_cmd[1]="ncks -M --trd %tmp_fl_00% | grep Conventions | cut -d ' ' -f 11";
+    $tst_cmd[2]="CF-1.0";
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -2976,6 +2978,8 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
 	
 # ncks #120 
+# ncks -O -d time,'1979-01-01 0:0:0','1981-01-01 0:0:0' -v time,time_bnds ~/nco/data/split.nc ~/foo.nc
+# ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl);' ~/foo.nc ~/foo1.nc
     $dsc_sng="Test UDUNITS with dates as limits - fails without UDUNITS";
     $tst_cmd[0]="ncks -O $nco_D_flg -d time,'1979-01-01 0:0:0','1981-01-01 0:0:0' -v time,time_bnds $in_pth_arg split.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl);' %tmp_fl_00% %tmp_fl_01%";
