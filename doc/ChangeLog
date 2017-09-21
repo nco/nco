@@ -1,5 +1,8 @@
 2017-09-21  Charlie Zender  <zender@uci.edu>
 
+	* Fix bug where ncra, ncrcat were treating negative record hyperslab indices
+	with old (pre-2014) convention, and off-by-one relative to non-record hyperslabs
+
 	* Add var_nm to diagnostic when all put/get functions fail
 
 2017-09-20  Charlie Zender  <zender@uci.edu>

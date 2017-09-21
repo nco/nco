@@ -7060,7 +7060,6 @@ nco_bld_lmt                           /* [fnc] Assign user specified dimension l
 
 } /* nco_bld_lmt() */
 
-
 void
 nco_bld_lmt_var                       /* [fnc] Assign user specified dimension limits to one GTT variable */
 (const int nc_id,                     /* I [ID] netCDF file ID */

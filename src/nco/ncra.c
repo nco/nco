@@ -1216,18 +1216,14 @@ main(int argc,char **argv)
         /* Fill record array */
         (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
 
-        if(lmt_rec[idx_rec]->is_rec_dmn)
-        {
+        if(lmt_rec[idx_rec]->is_rec_dmn){
           int mid=-1;
-
-          if(nco_inq_varid_flg(grp_id, lmt_rec[idx_rec]->nm, &mid)==NC_NOERR  && mid>=0) {
-            fl_udu_sng = nco_lmt_get_udu_att(grp_id, mid, "units"); /* Units attribute of coordinate variable */
-
+          if(nco_inq_varid_flg(grp_id,lmt_rec[idx_rec]->nm,&mid) == NC_NOERR && mid >= 0){
+            fl_udu_sng=nco_lmt_get_udu_att(grp_id,mid,"units"); /* Units attribute of coordinate variable */
             ra_bnds_lst=nco_lst_cf_att(grp_id,"bounds",&ra_bnds_nbr);
             ra_climo_lst=nco_lst_cf_att(grp_id,"climatology",&ra_climo_nbr);
-          }
-
-        }
+          } /* !mid */
+        } /* !is_rec_dmn */
 
         if(REC_APN){
           /* Append records directly to output file */
@@ -1334,29 +1330,25 @@ main(int argc,char **argv)
             /* Re-base record coordinate and bounds if necessary (e.g., time, time_bnds) */
             /* if(var_prc[idx]->is_crd_var|| nco_is_spc_in_cf_att(grp_id,"bounds",var_prc[idx]->id) || nco_is_spc_in_cf_att(grp_id,"climatology",var_prc[idx]->id)) */
 
-            /*  This code rebases  the  coordinate var to the units of the coordinate var in the first input file */
-            /* if the record hyperslab indice(s) are double or strings then the coordinate var and limits are (re)read earlier by (void)nco_lmt_evl() */
-            /* so if the units between files are incompatible the ncra will bomb out in that call  and not in  nco_cln_clc_dbl_var_dff() below*/
-            if(var_prc[idx]->is_crd_var)
-            {
+            /* Re-base coordinate variable to units of coordinate in the first input file
+	       If record hyperslab indice(s) are double or strings then coordinate variable and limits
+	       are (re)-read earlier by nco_lmt_evl() and if units between files are incompatible 
+	       then ncra will die in that call and not in nco_cln_clc_dbl_var_dff() below */
+            if(var_prc[idx]->is_crd_var){
               nco_bool do_rebase=False;
-
-              if( !strcmp(var_prc[idx]->nm, lmt_rec[idx_rec]->nm) ||
-                  ra_lst_chk( ra_bnds_lst,ra_bnds_nbr, lmt_rec[idx_rec]->nm, var_prc[idx]->nm ) ||
-                  ra_lst_chk( ra_climo_lst, ra_climo_nbr, lmt_rec[idx_rec]->nm, var_prc[idx]->nm   )
-              ) do_rebase=True;
-
-
-              //(void)fprintf(fp_stderr,"%s: converting variable \"%s\" from units \"%s\" to \" %s\"\n",nco_prg_nm_get(), var_prc[idx]->nm, fl_udu_sng, lmt_rec[idx_rec]->rbs_sng);
-
-              if(do_rebase && fl_udu_sng && lmt_rec[idx_rec]->rbs_sng) {
-                if( nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng, lmt_rec[idx_rec]->lmt_cln, (double*)NULL, var_prc[idx]) !=NCO_NOERR) {
+              if(!strcmp(var_prc[idx]->nm,lmt_rec[idx_rec]->nm) ||
+		 ra_lst_chk(ra_bnds_lst,ra_bnds_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm) ||
+		 ra_lst_chk(ra_climo_lst,ra_climo_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm))
+		do_rebase=True;
+              //(void)fprintf(fp_stderr,"%s: converting variable \"%s\" from units \"%s\" to \" %s\"\n",nco_prg_nm_get(),var_prc[idx]->nm,fl_udu_sng,lmt_rec[idx_rec]->rbs_sng);
+              if(do_rebase && fl_udu_sng && lmt_rec[idx_rec]->rbs_sng){
+                if(nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng,lmt_rec[idx_rec]->lmt_cln,(double*)NULL,var_prc[idx]) != NCO_NOERR){
                   (void)fprintf(fp_stderr,"%s: problem converting variable \"%s\" from units \"%s\" to \" %s\"\n",nco_prg_nm_get(), var_prc[idx]->nm, fl_udu_sng, lmt_rec[idx_rec]->rbs_sng);
                   nco_exit(EXIT_FAILURE);
-                }
+                } /* !nco_cln_clc_dbl_var_dff() */
                 //nco_free(fl_udu_sng);
-              } /* end re-basing */
-            } 
+              } /* end !do_rebase */
+            } /* !crd_var */
               
             if(nco_prg_id == ncra){
               nco_bool flg_rth_ntl;

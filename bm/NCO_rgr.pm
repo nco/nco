@@ -286,7 +286,7 @@ if($USER eq 'zender'){
 # ncks -O --rgr skl=~/skl_t42.nc --rgr grid=~/grd_t42.nc --rgr latlon=64,128 --rgr lat_typ=gss --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 # ncks -O --rgr grid=~/grd_2x2.nc --rgr latlon=90,180 --rgr lat_typ=eqa --rgr lon_typ=Grn_wst ~/nco/data/in.nc ~/foo.nc
 # ncap2 -O -s 'tst[lat,lon]=1.0f' ~/skl_t42.nc ~/dat_t42.nc
-# /bin/rm -f ~/foo_map_t42_to_2x2.nc
+# /bin/rm -f ~/map_t42_to_2x2.nc
 # ncremap -a conserve -s ~/grd_t42.nc -g ~/grd_2x2.nc -m ~/map_t42_to_2x2.nc
 # ncremap -i ~/dat_t42.nc -m ~/map_t42_to_2x2.nc -o ~/dat_2x2.nc
 # ncwa -O ~/dat_2x2.nc ~/dat_avg.nc

@@ -1078,9 +1078,20 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(lmt.max_idx > 0L) lmt.max_idx--;
     } /* end if */
 
-    /* 20120709 Negative integer as min or max element of hyperslab specification indicates offset from end */
-    if(lmt.min_idx < 0L) lmt.min_idx+=dmn_sz-1L;
-    if(lmt.max_idx < 0L) lmt.max_idx+=dmn_sz-1L;
+    /* Negative integer as min or max element of hyperslab specification indicates offset from end
+       pharoahs--20120708 Negative integers produce domain error
+       20120709--20141001 Negative integer is elements away from last element, e.g., -1 is penultimate element
+       20141002--forever  -1 is last element, e.g., -2 is penultimate element, -N is first element (Python convention) */
+    nco_bool flg_old_usg=False;
+    if(lmt.min_idx == 0L && lmt.min_sng)
+      if(lmt.min_sng[0] == '-') 
+	flg_old_usg=True;
+    if(lmt.max_idx == 0L && lmt.max_sng)
+      if(lmt.max_sng[0] == '-')
+	flg_old_usg=True;
+    if(flg_old_usg) (void)fprintf(stdout,"%s: WARNING Only NCO 4.4.6 treats negative zero as the last element of a dimension. Beginning 20141002, NCO uses the Python convention where negative one is the last element of a dimension, and negative zero is the same as zero and so selects the first element of a dimension. Negative zero also causes this warning to be printed in case the 4.4.6 behavior was intended.\n",nco_prg_nm_get());
+    if(lmt.min_idx < 0L) lmt.min_idx+=dmn_sz;
+    if(lmt.max_idx < 0L) lmt.max_idx+=dmn_sz;
 
     /* Exit if requested indices are always invalid for all operators... */
     if(lmt.min_idx < 0L){
@@ -1858,7 +1869,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
     /* Negative integer as min or max element of hyperslab specification indicates offset from end
        pharoahs--20120708 Negative integers produce domain error
-       20120709--20151001 Negative integer is elements away from last element, e.g., -1 is penultimate element
+       20120709--20141001 Negative integer is elements away from last element, e.g., -1 is penultimate element
        20141002--forever  -1 is last element, e.g., -2 is penultimate element, -N is first element (Python convention) */
     nco_bool flg_old_usg=False;
     if(lmt.min_idx == 0L && lmt.min_sng)
