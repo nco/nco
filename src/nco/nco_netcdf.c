@@ -1828,6 +1828,7 @@ int
 nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_get_var_*() */
+  const char fnc_nm[]="nco_get_var()";
   int rcd=NC_NOERR;
   switch(type){
   case NC_FLOAT: rcd=nc_get_var_float(nc_id,var_id,(float *)vp); break;
@@ -1846,7 +1847,12 @@ nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type type)
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var()");
+  if(rcd != NC_NOERR){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_get_var() variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_get_var */
 
@@ -1888,6 +1894,7 @@ int
 nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * const vp,const nc_type var_typ)
 {
   /* Purpose: Wrapper for nc_get_var1_*() */
+  const char fnc_nm[]="nco_get_var1()";
   int rcd=NC_NOERR;
   switch(var_typ){
   case NC_FLOAT: rcd=nc_get_var1_float(nc_id,var_id,(const size_t *)srt,(float *)vp); break;
@@ -1906,7 +1913,12 @@ nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * cons
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var1()");
+  if(rcd != NC_NOERR){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_get_var1() variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_get_var1 */
 
@@ -1956,7 +1968,7 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
     (void)nco_inq_varname(nc_id,var_id,var_nm);
     (void)fprintf(stdout,"ERROR: %s failed to nc_put_var1() variable \"%s\"\n",fnc_nm,var_nm);
   } /* endif */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var1()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_put_var1 */
 
@@ -1964,6 +1976,7 @@ int
 nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_get_vara_*() */
+  const char fnc_nm[]="nco_get_vara()";
   int rcd=NC_NOERR;
   switch(type){
   case NC_FLOAT: rcd=nc_get_vara_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(float *)vp); break;
@@ -1982,7 +1995,12 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_vara()");
+  if(rcd != NC_NOERR){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_get_vara() variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_get_vara */
 
@@ -2023,6 +2041,7 @@ int
 nco_get_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,void * const vp,const nc_type type)
 {
   /* Purpose: Wrapper for nc_get_vars_*() */
+  const char fnc_nm[]="nco_get_vars()";
   int rcd=NC_NOERR;
   switch(type){
   case NC_FLOAT: rcd=nc_get_vars_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(const ptrdiff_t *)srd,(float *)vp); break;
@@ -2041,7 +2060,12 @@ nco_get_vars(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_vars()");
+  if(rcd != NC_NOERR){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_get_vars() variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_get_vars */
 
@@ -2069,7 +2093,12 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vars()");
+  if(rcd != NC_NOERR){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_put_vars() variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_put_vars */
 

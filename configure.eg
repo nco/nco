@@ -657,7 +657,7 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
-# gcc/g++ Zender uses this to debug NCO with pre-built (i.e., yum/dnf install'd or aptitude install'd) netCDF in /usr (frazil, glace)
+# gcc/g++ Zender uses this to debug NCO with pre-built (i.e., yum/dnf install'd or aptitude install'd) netCDF in /usr (glace)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -686,6 +686,18 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 #CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 # 20170810 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
 CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
+/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
+make clean;make > nco.make.${GNU_TRP}.foo 2>&1
+make check >> nco.make.${GNU_TRP}.foo 2>&1
+make install >> nco.make.${GNU_TRP}.foo 2>&1
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+
+# gcc/g++ Zender uses this to debug NCO with custom-built netCDF binaries in /usr/local with clang (frazil)
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+# 20170810 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
+CC='clang' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='clang -std=c++11' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1

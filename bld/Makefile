@@ -14,11 +14,11 @@
 
 # Machine build parameters
 #                         Source     Method   Packages Compiler
-# aerosol.ess.uci.edu: NCO          Configure All else LLVM
+# aerosol.ess.uci.edu: NCO          Configure All else clang
 # cooley.alcf.anl.g  : NCO          Configure All else GCC
 # edison.nersc.gov   : NCO          Configure All else Intel
-# firn.ess.uci.edu   : NCO          Configure All else LLVM
-# frazil.ess.uci.edu : NCO          Configure All else GCC
+# firn.ess.uci.edu   : NCO          Configure All else clang
+# frazil.ess.uci.edu : NCO          Configure All else clang
 # glace.ess.uci.edu  : NCO          CMake     All else GCC
 # grele.ess.uci.edu  : NCO          Makefile  All else GCC
 # rhea.ccs.ornl.gov  : NCO          Makefile  All else GCC
