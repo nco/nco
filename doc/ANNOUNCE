@@ -41,7 +41,12 @@ A. CMake: Pedro Vicente contributed a CMake build-engine in 4.6.9.
 
 BUG FIXES:
 
-A. Hi
+A. Fix bug where ncra and ncrcat treated negative record hyperslab
+   indices with old (pre-2014) convention, and were off-by-one
+   relative to the 2014+ Python-based convention. Previously
+   "ncrcat -d time,-1" extracted the penultimate record, now it
+   extracts the last. This bug only affected the record dimension
+   of the multi-file operators ncra and ncrcat.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

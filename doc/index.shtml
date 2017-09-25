@@ -161,7 +161,7 @@ and
 <li>2016 Nov&nbsp;16: 4.6.2 JSON
 <li>2016 Sep&nbsp;19: <i>Geosci. Model Dev.</i> publishes PPC <a href="http://www.geosci-model-dev.net/9/3199/2016">paper</a></li>
 <li>2016 Aug&nbsp;06: 4.6.1 Sundry features/fixes
-<li>2016 Jul&nbsp;06: Submitted Layer-packing <a href="http://www.geosci-model-dev-discuss.net/gmd-2016-177">manuscript</a> to <i>Geosci. Model Dev.</i></li>
+<li>2016 Jul&nbsp;06: Submitted compression-error trade-off <a href="http://www.geosci-model-dev-discuss.net/gmd-2016-177">manuscript</a> to <i>Geosci. Model Dev.</i></li>
 <li>2016 May&nbsp;12: 4.6.0 <tt>ncclimo</tt>
 <li>2016 Apr&nbsp;06: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201604.pdf">Poster</a> at NASA ESDSWG, Greenbelt</li>
 <li>2016 Apr&nbsp;05: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">Talk</a> at NASA GES DISC, Greenbelt</li>
@@ -1206,7 +1206,7 @@ Remember, to compile NCO from source, you need not only the library
 dependencies the "devel" versions 
 (which include the header files) of the 
 
-For Debian-based systems (like Ubuntu) (<tt>aptitude</tt> is similar to and interchangeable, I think, with <tt>apt-get</tt>):
+For Debian-based systems (like Ubuntu) (<tt>aptitude</tt> is similar to and interchangeable with <tt>apt-get</tt>):
 <tt>
 <dt>sudo aptitude install antlr libantlr-dev # ANTLR</dt>
 <dt>sudo aptitude install libcurl4-gnutls-dev libexpat1-dev libxml2-dev # DAP-prereqs (curl, expat XML parser) </dt>
