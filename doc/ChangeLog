@@ -1,10 +1,12 @@
-2017-09-21  Charlie Zender  <zender@uci.edu>
+2017-09-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.0-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.0-alpha02 final changes';git push
 	git tag -a 4.7.0-alpha02 -m 'ncra/ncrcat negative record hyp fix,';git push --tags
 
-	* Fix bug where ncra, ncrcat were treating negative record hyperslab indices
+2017-09-21  Charlie Zender  <zender@uci.edu>
+
+	* Fix bug where ncra, ncrcat treated negative record hyperslab indices
 	with old (pre-2014) convention, and off-by-one relative to non-record hyperslabs
 
 	* Add var_nm to diagnostic when all put/get functions fail
