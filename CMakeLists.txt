@@ -816,16 +816,17 @@ message("-- Installing data/ncremap;data/ncclimo to: " ${CMAKE_INSTALL_PREFIX})
 # create a symbolic link <new> naming <old>. 
 #//////////////////////////
 
-macro(install_links src dest)
-add_custom_command(TARGET ncra POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} DEPENDS ${src})
+macro(install_links target src dest)
+add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E create_symlink ${src} ${dest} 
+COMMENT "Making symbolic link ${src} -> ${dest}")
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${dest} DESTINATION . PERMISSIONS ${PERMISSIONS_DEFAULT})
 endmacro(install_links)
 if(UNIX)
-  install_links(ncra ncea)
-  install_links(ncra nces)
-  install_links(ncra ncrcat)
-  install_links(ncbo ncdiff)
-  install_links(ncpdq ncunpack)
+  install_links(ncra ${CMAKE_INSTALL_PREFIX}/ncra ncea)
+  install_links(ncra ${CMAKE_INSTALL_PREFIX}/ncra nces)
+  install_links(ncra ${CMAKE_INSTALL_PREFIX}/ncra ncrcat)
+  install_links(ncbo ${CMAKE_INSTALL_PREFIX}/ncbo ncdiff)
+  install_links(ncpdq ${CMAKE_INSTALL_PREFIX}/ncpdq ncunpack)
 endif()
 message("-- Installing links ncea;nces;ncrcat;ncdiff;ncunpack to: " ${CMAKE_INSTALL_PREFIX})
 
