@@ -77,7 +77,7 @@ fi # HOSTNAME
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
-	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 16|64 cores|GB/node 
+	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 36|64 cores|GB/node 
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|128 cores|GB/node (cori login nodes 512 GB)
 	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
@@ -89,7 +89,7 @@ fi # DATA
 
 # Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library
 # 20170914 Entire block is identical between ncclimo and ncremap---keep it that way!
-# hrd_pth a placeholder no-op that could one day be used as a command-line option to control environment
+# hrd_pth is a placeholder no-op that could be a command-line option to control environment
 # Set NCO_PATH_OVERRIDE to 'No' to prevent NCO from executing next block that overrides PATH:
 # export NCO_PATH_OVERRIDE='No'
 hrd_pth='Yes' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
