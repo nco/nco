@@ -685,8 +685,8 @@ CMake build option;
 <tt>ncclimo, ncremap</tt> support long-options;
 <tt>ncks --cdl</tt> attribute types as comments;
 <tt>ncks --json</tt> strided brackets for multi-dimensional arrays;</li>
-<li><b>NCO 4.6.2</b>: (<i>Current Stable Release</i>)
-Improved <tt>ncclimo, ncremap</tt> behavior in <tt>module</tt> environments;
+<li><b>NCO 4.6.2</b>: 
+Improve <tt>ncclimo, ncremap</tt> behavior in <tt>module</tt> environments;
 <tt>ncks --json</tt> for JSON output;
 Multi-argument support for <tt>--gaa</tt>, <tt>--rgr</tt>, <tt>--ppc</tt>, <tt>--trr</tt> options;</li>
 <li><b>NCO 4.6.1</b>:
