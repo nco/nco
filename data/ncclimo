@@ -421,6 +421,7 @@ clm_md='mth' # [sng] Climatology mode ('ann', 'dly', or 'mth')
 csn_lst='mam,jja,son,djf' # [sng] Seasons to output (subset of mam,jja,son,djf,jfm,amj,jas,ond,fm,on)
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
+dfl_lvl=0 # [enm] Deflate level
 drc_in='' # [sng] Input file directory
 drc_in_xmp="${DATA}/ne30/raw" # [sng] Input file directory for examples
 drc_in_mps="${DATA}/mpas/raw" # [sng] Input file directory for MPAS examples
@@ -494,6 +495,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
+    echo " ${fnt_bld}-L${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-l${fnt_nrm} ${fnt_bld}lnk_flg${fnt_nrm}  Link E3SM/ACME-climo to AMWG-climo filenames (default ${fnt_bld}${lnk_flg}${fnt_nrm}) [${fnt_tlc}lnk_flg, link_flag, no_amwg_links${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}mdl_nm${fnt_nrm}   Model name (default ${fnt_bld}${mdl_nm}${fnt_nrm}) [${fnt_tlc}mdl_nm, model_name, model${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco, nco_options${fnt_nrm}]"
@@ -583,7 +585,7 @@ fi # !arg_nbr
 # Parse command-line options:
 # http://stackoverflow.com/questions/402377/using-getopts-in-bash-shell-script-to-get-long-and-short-command-line-options (see method by Adam Katz)
 # http://tuxtweaks.com/2014/05/bash-getopts
-while getopts :34567a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
+while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; do
     case ${OPT} in
 	3) fl_fmt='3' ;; # File format
 	4) fl_fmt='4' ;; # File format
@@ -600,6 +602,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; 
 	h) hst_nm="${OPTARG}" ;; # History tape name
 	i) drc_in="${OPTARG}" ;; # Input directory
 	j) job_usr="${OPTARG}" ;; # Job simultaneity
+	L) dfl_lvl="${OPTARG}" ;; # Deflate level
 	l) lnk_flg="${OPTARG}" ;; # Link E3SM/ACME to AMWG name
 	m) mdl_nm="${OPTARG}" ;; # Model name
 	n) nco_opt="${OPTARG}" ;; # NCO options
@@ -627,6 +630,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT; 
 	       clm_md=?* | climatology_mode=?* | climo_mode=?* ) clm_md_usr="${LONG_OPTARG}" ;; # -C # Climatology mode
 	       caseid=?* | case_id=?* | case=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
+	       dfl_lvl=?* | deflate=?* | dfl=?* ) dfl_lvl="${LONG_OPTARG}" ;; # # Deflate level
 	       yr_end_prv=?* | prv_yr_end=?* | previous_end=?* ) yr_end_prv="${LONG_OPTARG}" ;; # -E # End year previous
 	       yr_end=?* | end_yr=?* | year_end=?* | end_year=?* | end=?* ) yr_end="${LONG_OPTARG}" ;; # -e # End year
 	       fml_nm=?* | family_name=?* | family=?* ) fml_nm_usr="${LONG_OPTARG}" ;; # -f # Family name
@@ -930,6 +934,9 @@ if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
     nco_opt="${nco_opt} -v ${var_lst}"
     # fi # !mth
 fi # !var_lst
+if [ -n "${dfl_lvl}" ]; then
+    nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
+fi # !dfl_lvl
 if [ -n "${hdr_pad}" ]; then
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
 fi # !hdr_pad
@@ -1350,6 +1357,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: csn_nbr  = ${csn_nbr}\n"
     printf "dbg: dec_md   = ${dec_md}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
+    printf "dbg: dfl_lvl  = ${dfl_lvl}\n"
     printf "dbg: drc_in   = ${drc_in}\n"
     printf "dbg: drc_nco  = ${drc_nco}\n"
     printf "dbg: drc_out  = ${drc_out}\n"
