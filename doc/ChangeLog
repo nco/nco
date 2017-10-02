@@ -1,6 +1,6 @@
 2017-10-01  Charlie Zender  <zender@uci.edu>
 
-	* Add -L dfl_lvl option to ncclimo
+	* Add, document, and test -L dfl_lvl option to ncclimo
 
 2017-09-25  Charlie Zender  <zender@uci.edu>
 

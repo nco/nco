@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.0-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 01 October 2017
+@set update-date 02 October 2017
 @set update-month October 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2725,9 +2725,7 @@ library (@pxref{File Formats and Conversion}).
 @cindex @code{--omp_num_threads @var{thr_nbr}}
 @cindex @code{-t @var{thr_nbr}}
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{nces}, @command{ncecat},
-@command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncrcat},
-@command{ncwa}@*
+Availability: @command{ncclimo}, @command{ncks}, @command{ncremap}@*
 Short options: @samp{-t}@*
 Long options: @samp{--thr_nbr}, @samp{--threads},
 @samp{--omp_num_threads}@* 
@@ -2749,9 +2747,14 @@ wallclock time) because nearly all @acronym{NCO} operations are
 I/O-bound. 
 This means that @acronym{NCO} spends negligible time doing anything
 compared to reading and writing. 
-We have seen some and can imagine other use cases where
-@command{ncwa}, @command{ncpdq}, and @command{ncap2} (with long scripts) 
-will complete faster due to threading. 
+The only exception is regridding with @command{ncremap} which uses
+@command{ncks} under-the-hood.
+As of 2017, threading works only for regridding, thus this section is
+relevant only to @command{ncclimo}, @command{ncks}, and
+@command{ncremap}. 
+We have seen some and can imagine other use cases where @command{ncwa},
+@command{ncpdq}, and @command{ncap2} (with long scripts) will complete
+faster due to threading.  
 The main benefits of threading so far have been to isolate the serial
 from parallel portions of code. 
 This parallelism is now exploited by OpenMP but then runs into the I/O
@@ -2760,7 +2763,7 @@ The bottleneck will be ameliorated for large files by the use of
 MPI-enabled calls in the netCDF4 library when the underlying filesystem
 is parallel (e.g., @acronym{PVFS} or @acronym{JFS}).
 Implementation of the parallel output calls in @acronym{NCO} is not a
-goal of our current funding and would require new volunteers or funding.  
+goal of our current funding and would require new volunteers or funding.   
 @end cartouche
 
 @cindex @var{thr_nbr}
@@ -2785,8 +2788,8 @@ In the future (perhaps with netCDF4), we hope to demonstrate significant
 threading improvements with operators like @code{ncrcat} by performing
 multiple simultaneous writes. 
 
-Compute-intensive operators (@code{ncap2}, @code{ncwa} and @code{ncpdq}) 
-benefit most from threading.
+Compute-intensive operators (@code{ncremap}) benefit most from
+threading. 
 The greatest increases in throughput due to threading occur on
 large datasets where each thread performs millions, at least,
 of floating-point operations.
@@ -9265,9 +9268,9 @@ ncar_cam.nc ~/foo.nc
 @cindex compression
 @cindex deflation
 @cartouche
-Availability: @command{ncap2}, @command{ncbo}, @command{nces},
+Availability: @command{ncap2}, @command{ncbo}, @command{ncclimo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
-@command{ncra}, @command{ncrcat}, @command{ncwa}@*
+@command{ncra}, @command{ncrcat}, @command{ncremap}, @command{ncwa}@*
 Short options: @samp{-L}@*
 Long options: @samp{--dfl_lvl}, @samp{--deflate}@*  
 @end cartouche
@@ -17384,7 +17387,12 @@ throughput much more in @command{ncremap} than in @command{ncclimo}.
 @cindex @code{--dfl}
 @cindex @code{--deflate}
 @item -L (@code{--dfl_lvl}, @code{--dfl}, @code{--deflate})
-fxm
+Activate deflation (i.e., lossless compress, see @ref{Deflation}) with
+the @code{-L @var{dfl_lvl}} short option (or with the same argument to 
+the @samp{--dfl_lvl} or @samp{--deflate} long options). 
+Specify deflation level @var{dfl_lvl} on a scale from no deflation
+(@var{dfl_lvl = 0}, the default) to maximum deflation
+(@var{dfl_lvl = 9}).
 
 @cindex @code{-l}
 @cindex @code{--lnk_flg}

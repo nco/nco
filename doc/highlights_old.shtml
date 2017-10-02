@@ -23,8 +23,72 @@ scp -p ~/nco/doc/highlights_old.shtml dust.ess.uci.edu:Sites/nco
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
 <dt><a name="News"></a></dt>
-<h2>Release Highlights from 200001&ndash;201406 (versions 1.1.47&ndash;4.4.4)</h2>
+<h2>Release Highlights from 200001&ndash;201512 (versions 1.1.47&ndash;4.5.3)</h2>
 
+<li><b>NCO 4.5.3</b>: 
+<tt>ncatted</tt> fix deletion of all attributes;
+<tt>ncecat</tt> fix <tt>gag</tt> mode;
+<tt>ncks</tt> infers rectangular and curvilinear grids;
+<tt>ncks --xtn</tt> specifies extensive variables;
+<tt>ncks</tt> regridder fix multi-level field normalization;</li>
+<li><b>NCO 4.5.2</b>: 
+All operators support <tt>--glb_att_add</tt>;
+<tt>ncks</tt> better support for <tt>fracarea</tt>, <tt>mask</tt>, and displaced-pole grids;
+<tt>ncks</tt> diagnoses <tt>area</tt> for bilinear remapping and when area_b equals 0.0;
+<tt>ncks</tt> <i>generates</i> exact Gaussian and equi-angular, rectangular, and regional gridfiles;
+<tt>ncks</tt> regrid with old, new, and regional TempestRemap mapfiles;
+<tt>ncra -n NINTAP</tt> option understands calendar month counting;
+<tt>ncra -N</tt> avoids normalizing by weights;
+<tt>ncra -w</tt> bugfix with missing value normalization;
+<tt>ncwa</tt> bugfix when weights were not found;</li>
+<li><b>NCO 4.5.1</b>: 
+<tt>cell_method</tt> improvments;
+<tt>ncap2</tt> gets </tt>mibs()/mabs()/mebs()</tt> methods;
+<tt>ncatted</tt> regular expressions in </tt>att_nm</tt>;
+<tt>ncks</tt> regrid using TempestRemap mapfiles;
+<tt>ncra</tt> weights with </tt>--wgt wgt_nm</tt>;</li>
+<li><b>NCO 4.5.0</b>:
+Regridding with <tt>ncks --map</tt>;
+<tt>date/time_written</tt> updates;
+<tt>history</tt> provenance with <tt>-A</tt> (append-mode);
+<tt>ncdismember</tt> uploads to NERC;</li>
+<li><b>NCO 4.4.9</b>: 
+Output chunking map/policy nco/nco = rew/all is default for netCDF3 input;
+Turn-off MM3 workaround for MM3->MM4 copying to speed-up compression-induced chunking;
+LFP chunking uses &ldquo;reasonable defaults&rdquo; when variable smaller than default chunksize;
+Shuffle by default when manually deflating;
+Support CF <tt>climatology</tt> attribute;
+Output chunking defaults to <tt>rew/all</tt> on netCDF3 input;
+Unchunking plays nicely with <tt>shuffle</tt>;
+<tt>ncra</tt> weights with </tt>--wgt 1,2,3</tt>;
+<tt>ncks</tt> suggests <tt>-C</tt> with <tt>-x -v crd</tt>;
+<tt>ncwa</tt> modifies <tt>coordinates</tt> attribute;</li>
+<li><b>NCO 4.4.8</b>:
+Precision-Preserving Compression with <tt>--ppc</tt>;
+Arithmetic operators <tt>-y mabs/mebs/mibs</tt></li>
+<li><b>NCO 4.4.7</b>:
+<tt>cnk_min</tt> minimum chunksize;
+Chunking <tt>cnk_map=rew</tt>;
+Smarter chunking defaults;</li>
+<li><b>NCO 4.4.6</b>: 
+<tt>-0</tt> hyperslabs;
+<tt>configure</tt> DAP correctly;
+HDF4 chunking and deflation;
+netCDF4 stride (NC4_SRD) <a href="#bug_nc4_srd">bugfix</a>;
+<tt>ncap2</tt> command line args with scripts;
+<tt>ncra --dbl</tt> averaging packed variables with missing values <a href="#bug_ncra_dbl_pck_mss">bugfix</a>;
+<tt>ncwa --dbl</tt> minimization/maximization of packed variables <a href="#bug_ncwa_pck_min_max">bugfix</a>;
+<tt>ncks _SOURCE_FORMAT</tt> and <tt>-V</tt>;
+<tt>ncrename</tt> re-write</li>
+<li><b>NCO 4.4.5</b>:
+DAP on <a href="http://nco.sf.net/nco.html#dap">HTTPS</a>;
+<tt>ancillary_variables</tt> for <a href="http://nco.sf.net/nco.html#ncl">CF</a>;
+<tt>ncks --grp_xtr_var_xcl</tt> <a href="http://nco.sf.net/nco.html#gxvx">subsetting</a>
+Chunking <tt>cnk_plc=r1d</tt>;
+Default chunking policy/map is <tt>xst/xst</tt>;
+Fix <tt>ncpdq</tt> dimension-reversal parsing;
+Chunking while hyperslabbing <a href="#bug_cnk_hyp">bugfix</a>;
+Correctly parse MS Windows volume names like <tt>C:\foo</tt></li>
 <li><b>NCO 4.4.4</b>:
 netCDF'ize non-compliant element names;
 <tt>-x var</tt> tolerates non-existence;

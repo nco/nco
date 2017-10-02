@@ -23,9 +23,23 @@ scp -p ~/nco/doc/milestones_old.shtml dust.ess.uci.edu:Sites/nco
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
 <dt><a name="News"></a></dt>
-<h2>Releases &amp; Milestones from 2003&ndash;2013 (versions 2.8.4&ndash;4.4.4)</h2>
+<h2>Releases &amp; Milestones from 2003&ndash;2015 (versions 2.8.4&ndash;4.5.3)</h2>
 
 <ul>
+<li>2015 Dec&nbsp;16: <a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">Poster</a> at Fall AGU, San Francisco</li>
+<li>2015 Nov&nbsp;04: <a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">Talk</a> at DOE ACME, Albuquerque</li>
+<li>2015 Oct&nbsp;20: 4.5.3 Curvilinear
+<li>2015 Sep&nbsp;06: 4.5.2 Generate SCRIP
+<li>2015 Sep&nbsp;01: NSF EarthCube <a href="#prp_e3">project</a> commences</li>
+<li>2015 Jul&nbsp;10: 4.5.1 Sundry features/fixes
+<li>2015 Jun&nbsp;11: 4.5.0 Regridding
+<li>2015 May&nbsp;21: 4.4.9 <tt>ncra</tt> weights
+<li>2015 Feb&nbsp;16: 4.4.8 Precision-Preserving Compression
+<li>2014 Dec&nbsp;15: DOE ACME <a href="#prp_acme">project</a> commences</li>
+<li>2014 Nov&nbsp;26: 4.4.7 Chunking features
+<li>2014 Oct&nbsp;01: 4.4.6 <tt>ncra, ncwa</tt> packing bugfixes, stride optimization
+<li>2014 Aug&nbsp;26: 4.4.5 Sundry features/fixes
+<li>2014 Jul&nbsp;01: NASA ACCESS 2013 <a href="#prp_axs">project</a> commences</li>
 <li>2014 May&nbsp;29: 4.4.4 (Stability)
 <li>2014 Apr&nbsp;02: 4.4.3 (Stability)
 <li>2014 Mar&nbsp;27: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201403.pdf">Talk</a> at NASA GSFC, Greenbelt</li>

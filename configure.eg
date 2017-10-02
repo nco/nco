@@ -409,8 +409,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 
 # icc/icpc 20160217 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on yellowstone:
 # Sysadmin upgrade request: cislhelp@ucar.edu
-# Latest ticket: 157798 on 20170526
-# Latest sysadmin-compiled module usage: module load nco/4.5.5 # 20160228
+# Latest ticket: 172597 on 20170526
+# Latest sysadmin-compiled module usage: module load nco/4.6.9 # 20171002
 # Personal recipe last modified: 20170812
 # Personal recipe last used successfully: 20170919
 module add intel/16.0.3;module add gsl;module add netcdf/4.4.1;
