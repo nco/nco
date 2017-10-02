@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.0-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 19 September 2017
-@set update-month September 2017
+@set update-date 01 October 2017
+@set update-month October 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -17135,7 +17135,7 @@ SYNTAX
 ncclimo [-3] [-4] [-5] [-6] [-7] 
 [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [-h @var{hst_nm}] [-i @var{drc_in}]
-[-j @var{job_nbr}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
+[-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
 [--no_cll_msr ] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd]
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--stdin] 
@@ -17378,6 +17378,13 @@ Regridding requires math that can relieve some I/O contention and
 allows for some throughput gains with increasing @var{job_nbr}.
 In general, though, increasing @var{job_nbr} is expected to improve
 throughput much more in @command{ncremap} than in @command{ncclimo}. 
+
+@cindex @code{-L}
+@cindex @code{--dfl_lvl}
+@cindex @code{--dfl}
+@cindex @code{--deflate}
+@item -L (@code{--dfl_lvl}, @code{--dfl}, @code{--deflate})
+fxm
 
 @cindex @code{-l}
 @cindex @code{--lnk_flg}
