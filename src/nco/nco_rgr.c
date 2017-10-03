@@ -39,13 +39,14 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   /* Create SCRIP-format grid file */
   if(flg_grd) rcd=nco_grd_mk(rgr);
 
-  /* Infer SCRIP-format grid file */
+  /* Infer SCRIP-format grid file from data file */
   if(flg_nfr) rcd=nco_grd_nfr(rgr);
 
-  /* Regrid using external mapping weights */
+  /* Regrid data file using weights from mapping file */
   if(flg_map) rcd=nco_rgr_map(rgr,trv_tbl);
 
-  /* Regrid using ESMF library */
+  /* Regrid using ESMF library
+     20150701: On-line weight generation with ESMF never worked well and was abandoned */
   if(flg_smf){
 #ifdef ENABLE_ESMF
     (void)fprintf(stderr,"%s: %s calling nco_rgr_esmf() to generate and apply regridding map\n",nco_prg_nm_get(),fnc_nm);

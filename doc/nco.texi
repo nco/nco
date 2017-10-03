@@ -986,20 +986,30 @@ platform, and the change in the wallclock time for execution.}.
 @cindex Microsoft Visual Studio
 
 @acronym{NCO} has been successfully ported and tested on most Microsoft  
-Windows operating systems including: @acronym{XP} SP2/Vista/7.
+Windows operating systems including: @acronym{XP} SP2/Vista/7/10.
 Support is provided for compiling either native Windows executables,
-using the Microsoft Visual Studio 2010 Compiler, or with Cygwin, the
-@acronym{UNIX}-emulating compatibility layer with the @acronym{GNU} toolchain.
+using the Microsoft Visual Studio Compiler (@acronym{MVSC}), or with
+Cygwin, the @acronym{UNIX}-emulating compatibility layer with the
+@acronym{GNU} toolchain. 
 The switches necessary to accomplish both are included in the standard
 distribution of @acronym{NCO}.
 
-@cindex Qt
 @cindex C99
-Using Microsoft Visual Studio (@acronym{MVS}), one must build
-@acronym{NCO} with the C++ compiler since @acronym{MVS} does not support C99.
-Qt, a convenient integrated development environment, was used to convert
-the project files to @acronym{MVS} format.
-The Qt files themselves are distributed in the @file{nco/qt} directory.
+@cindex CMake
+With Microsoft Visual Studio compiler, one must build @acronym{NCO}
+with C++ since @acronym{MVSC} does not support C99.
+Support for Qt, a convenient integrated development environment, was
+deprecated in 2017.
+As of @acronym{NCO} version 4.6.9 (September, 2017) please build native
+Windows executables with CMake:
+@example
+@verbatim
+cd ~/nco/cmake
+cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}
+@end verbatim
+@end example
+The file @file{nco/cmake/build.bat} shows how deal with various path
+issues. 
 
 Using the freely available Cygwin (formerly gnu-win32) development
 environment  
