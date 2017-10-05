@@ -850,15 +850,15 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
             rmt_cmd=&ftp;
 
             /* Get UID to get password structure which contains home directory, login name
-            Home directory needed to search for .netrc
-            Login name used to construct e-mail address for anonymous FTP */
+	       Home directory needed to search for .netrc
+	       Login name used to construct e-mail address for anonymous FTP */
             usr_uid=getuid();
             usr_pwd=getpwuid(usr_uid);
             usr_nm=usr_pwd->pw_name;
 
             /* Construct remote hostname and filename now since:
-            1. .netrc, if any, will soon be searched for remote hostname
-            2. Remote hostname and filename always needed for remote retrieval */
+	       1. .netrc, if any, will soon be searched for remote hostname
+	       2. Remote hostname and filename always needed for remote retrieval */
 
             /* Remote hostname begins directly after "[s]ftp://" */
             host_nm_rmt=fl_nm_rmt+url_sng_lng;

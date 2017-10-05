@@ -79,7 +79,7 @@ if [ -z "${DATA}" ]; then
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 36|64 cores|GB/node 
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
-	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|128 cores|GB/node (cori login nodes 512 GB)
+	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|(96/128) cores|GB/node (knl/haswell) (cori login nodes 512 GB)
 	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
 	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
 	ys* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR yellowstone compute nodes named ysNNN, 32 GB/node
@@ -292,7 +292,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 2. Cobalt appends stdout/stderr to existing output files, if any, whereas PBS overwrites existing files
 # 3. Cobalt uses ${COBALT_NODEFILE} and (NA) whereas PBS uses ${PBS_NODEFILE} and ${PBS_NUM_PPN}, respectively, and SLURM uses ${SLURM_NODELIST} and ${SLURM_CPUS_ON_NODE}, respectively
 # 4. SLURM automatically combines stdout and stderr, yet does not understand tilde (~ = home directory) expansion in error/output filenames
-# Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s
+# 5. After merger of Cori Phase 1 Haswell and Phase 2 KNL cabinets in ~2017, SLURM on Cori requires Quality-of-Service (QOS) argument, either -C haswell or -C knl
+# Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s; difference 5 requires -C argument on Cori only
 #   Blues a):  echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Cooley a): /bin/rm -f ~/ncclimo.err  ~/ncclimo.out
 #              echo '#!/bin/bash' > ~/ncclimo.cobalt
@@ -302,7 +303,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc"  > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cooley b): qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
-#   Cori,Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=regular --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+#   Cori b): sbatch -A acme -C haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+#   Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Hopper b): qsub -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Rhea b):   qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 

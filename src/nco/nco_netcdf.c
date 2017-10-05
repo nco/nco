@@ -2325,7 +2325,7 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   if(rcd == NC_EGLOBAL && !strcmp(att_nm,"_FillValue")){
     char grp_nm[NC_MAX_NAME+1L];
     (void)nco_inq_grpname(nc_id,grp_nm);
-    (void)fprintf(stdout,"WARNING: %s received NC_EGLOBAL error writing attribute \"%s\" to metadata for group \"%s\". netCDF 4.5.x forbids this with the _FillValue attribute, though earlier versions allow it. Proceeding normally without writing %s attribute...\n",fnc_nm,att_nm,grp_nm,att_nm);
+    (void)fprintf(stdout,"WARNING: %s received NC_EGLOBAL error writing attribute \"%s\" to metadata for group \"%s\". netCDF 4.5.x forbids writing the _FillValue attribute to global or group metadata, though earlier versions allow it. Proceeding normally without writing %s attribute...\n",fnc_nm,att_nm,grp_nm,att_nm);
     rcd=NC_NOERR;
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att()");
