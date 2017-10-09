@@ -781,7 +781,7 @@ nco_ppc_bitmask_scl /* [fnc] Round input value significand by specified number o
 {
   /* Purpose: Mask-out bit_xpl_nbr_zro least most significant bits of a scalar double precision value
      Code originally from nco_ppc_bitmask() (bitmasking is my signature move)
-     Code used in nco_rgr_map() when diagnosing whether quadrature weights properly normalized */
+     Code used in nco_rgr_wgt() when diagnosing whether quadrature weights properly normalized */
 
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicit. */
   double val_rnd; /* [frc] Rounded version of exact value */

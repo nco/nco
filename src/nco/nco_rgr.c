@@ -19,31 +19,32 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   const char fnc_nm[]="nco_rgr_ctl()";
 
   nco_bool flg_grd=False; /* [flg] Create SCRIP-format grid file */
+  nco_bool flg_map=False; /* [flg] Create ESMF-format mapfile */
   nco_bool flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
-  nco_bool flg_map=False; /* [flg] Regrid with external weights */
-  nco_bool flg_smf=False; /* [flg] ESMF regridding */
-  nco_bool flg_tps=False; /* [flg] Tempest regridding */
+  nco_bool flg_wgt=False; /* [flg] Regrid with external weights */
+  nco_bool flg_smf=False; /* [flg] ESMF regridding (unused) */
+  nco_bool flg_tps=False; /* [flg] Tempest regridding (unused) */
 
   /* Main control branching occurs here
      Branching complexity and utility will increase as regridding features are added */
   if(rgr->flg_grd) flg_grd=True;
-
+  if(rgr->flg_grd_src && rgr->flg_grd_dst && rgr->flg_wgt) flg_map=True;
   if(rgr->flg_nfr) flg_nfr=True;
-  if(rgr->flg_map) flg_map=True;
-  if(rgr->flg_grd_src && rgr->flg_grd_dst) flg_smf=True;
-  if(rgr->drc_tps && !flg_map) flg_tps=True;
-  assert(!(flg_smf && flg_map));
-  assert(!(flg_smf && flg_tps));
-  assert(!(flg_map && flg_tps));
+  if(rgr->flg_wgt && !(rgr->flg_grd_src && rgr->flg_grd_dst)) flg_wgt=True;
+  assert(!flg_smf);
+  assert(!flg_tps);
   
   /* Create SCRIP-format grid file */
   if(flg_grd) rcd=nco_grd_mk(rgr);
+
+  /* Create ESMF-format map file */
+  //if(flg_map) rcd=nco_map_mk(rgr);
 
   /* Infer SCRIP-format grid file from data file */
   if(flg_nfr) rcd=nco_grd_nfr(rgr);
 
   /* Regrid data file using weights from mapping file */
-  if(flg_map) rcd=nco_rgr_map(rgr,trv_tbl);
+  if(flg_wgt) rcd=nco_rgr_wgt(rgr,trv_tbl);
 
   /* Regrid using ESMF library
      20150701: On-line weight generation with ESMF never worked well and was abandoned */
@@ -168,7 +169,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_out=rgr_out; /* [sng] File containing regridded fields */
   rgr->fl_out_tmp=NULL_CEWI; /* [sng] Temporary file containing regridded fields */
 
-  rgr->flg_map= rgr_map ? True : False; /* [flg] User-specified mapping weights */
+  rgr->flg_wgt= rgr_map ? True : False; /* [flg] User-specified mapping weights */
   rgr->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
 
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
@@ -578,7 +579,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 } /* end nco_rgr_ini() */
   
 int /* O [enm] Return code */
-nco_rgr_map /* [fnc] Regrid with external weights */
+nco_rgr_wgt /* [fnc] Regrid with external weights */
 (rgr_sct * const rgr, /* I/O [sct] Regridding structure */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */
 {
@@ -650,7 +651,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
      Sample regrid T42->POP43, SCRIP:
      ncks -O --map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
 
-  const char fnc_nm[]="nco_rgr_map()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_rgr_wgt()"; /* [sng] Function name */
 
   char *fl_in;
   char *fl_pth_lcl=NULL;
@@ -1817,12 +1818,12 @@ nco_rgr_map /* [fnc] Regrid with external weights */
        Internally we label LRV as "lat" and MRV as "lon" so that code looks similar for curvilinear and rectangular grids */
     dmn_id_lat=cf->dmn_id[0];
     dmn_id_lon=cf->dmn_id[1];
-    /* Subtlety: lat_nm_in is coordinate (variable+dimension) name when specified from command-line (as in nco_grd_nfr()), dimension name when found through CF-method (as in nco_rgr_map()). This confusing distinction could be avoided by passing command-line dimension names through-to nco_rgr_map(). However, that route would require complex priorities for what to do when passing command-line coordinate names not dimension names and visa-versa. */
+    /* Subtlety: lat_nm_in is coordinate (variable+dimension) name when specified from command-line (as in nco_grd_nfr()), dimension name when found through CF-method (as in nco_rgr_wgt()). This confusing distinction could be avoided by passing command-line dimension names through-to nco_rgr_wgt(). However, that route would require complex priorities for what to do when passing command-line coordinate names not dimension names and visa-versa. */
     lat_nm_in=strdup(cf->dmn_nm[0]);
     lon_nm_in=strdup(cf->dmn_nm[1]);
     //lat_nm_in=strdup(cf->crd_nm[idx_lat]);
     //lon_nm_in=strdup(cf->crd_nm[idx_lon]);
-    /* Next four lines unnecessary in nco_rgr_map() which only needs dimension names (it reads input coordinates from map- not data-file) */
+    /* Next four lines unnecessary in nco_rgr_wgt() which only needs dimension names (it reads input coordinates from map- not data-file) */
     //lat_ctr_id=cf->crd_id[idx_lat];
     //lon_ctr_id=cf->crd_id[idx_lon];
     //lat_dmn_nm=strdup(cf->dmn_nm[0]);
@@ -3526,7 +3527,7 @@ nco_rgr_map /* [fnc] Regrid with external weights */
   } /* !flg_grd_out_crv */
 
   return rcd;
-} /* end nco_rgr_map() */
+} /* end nco_rgr_wgt() */
 
 void
 nco_bsl_zro /* Return Bessel function zeros */
@@ -4046,6 +4047,9 @@ nco_rgr_tps /* [fnc] Regrid using TempestRemap library */
 (rgr_sct * const rgr) /* I/O [sct] Regridding structure */
 {
   /* Purpose: Regrid fields using TempestRemap "library" (more precisely, executables)
+     Routine was originally written to call Tempest executables
+     However, that functionality was all placed into the ncremap shell script
+     Thus this C-interface is currently unused
 
      Test Tempest library: no way to activate yet
      export DATA_TEMPEST='/data/zender/rgr';ncks -O --rgr=Y ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */
@@ -5903,12 +5907,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Internally we label LRV as "lat" and MRV as "lon" so that code looks similar for curvilinear and rectangular grids */
     dmn_id_lat=cf->dmn_id[0];
     dmn_id_lon=cf->dmn_id[1];
-    /* Subtlety: lat_nm_in is coordinate (variable+dimension) name when specified from command-line (as in nco_grd_nfr()), dimension name when found through CF-method (as in nco_rgr_map()). This confusing distinction could be avoided by passing command-line dimension names through-to nco_rgr_map(). However, that route would require complex priorities for what to do when passing command-line coordinate names not dimension names and visa-versa. */
+    /* Subtlety: lat_nm_in is coordinate (variable+dimension) name when specified from command-line (as in nco_grd_nfr()), dimension name when found through CF-method (as in nco_rgr_wgt()). This confusing distinction could be avoided by passing command-line dimension names through-to nco_rgr_wgt(). However, that route would require complex priorities for what to do when passing command-line coordinate names not dimension names and visa-versa. */
     //lat_nm_in=strdup(cf->dmn_nm[0]);
     //lon_nm_in=strdup(cf->dmn_nm[1]);
     lat_nm_in=strdup(cf->crd_nm[idx_lat]);
     lon_nm_in=strdup(cf->crd_nm[idx_lon]);
-    /* Next four lines unnecessary in nco_rgr_map() which only needs dimension names (it reads input coordinates from map- not data-file) */
+    /* Next four lines unnecessary in nco_rgr_wgt() which only needs dimension names (it reads input coordinates from map- not data-file) */
     lat_ctr_id=cf->crd_id[idx_lat];
     lon_ctr_id=cf->crd_id[idx_lon];
     lat_dmn_nm=strdup(cf->dmn_nm[0]);
