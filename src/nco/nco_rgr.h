@@ -34,7 +34,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  typedef enum nco_rgr_cmd_typ_enm{ /* [enm] Tempest remap type enum */
+  typedef enum nco_rgr_tps_cmd_enm{ /* [enm] Tempest remap type enum */
     nco_rgr_AAA_nil=0,
     nco_rgr_ApplyOfflineMap,
     nco_rgr_CalculateDiffNorms,
@@ -48,7 +48,7 @@ extern "C" {
     nco_rgr_GenerateTestData,
     nco_rgr_MeshToTxt,
     nco_rgr_ZZZ_last
-  } nco_rgr_cmd_typ;
+  } nco_rgr_tps_cmd;
 
   typedef enum nco_rgr_mpf_typ_enm{ /* [enm] Mapfile type enum */
     nco_rgr_mpf_nil=0,
@@ -201,11 +201,11 @@ extern "C" {
 
   const char * /* O [sng] String containing regridding command and format */
   nco_tps_cmd_fmt_sng /* [fnc] Convert Tempest remap command enum to command string */
-  (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
+  (const nco_rgr_tps_cmd nco_tps_cmd); /* I [enm] Tempest remap command enum */
 
   const char * /* O [sng] String containing regridding command name */
   nco_tps_cmd_sng /* [fnc] Convert Tempest remap command enum to command name */
-  (const nco_rgr_cmd_typ nco_rgr_cmd); /* I [enm] Tempest remap command enum */
+  (const nco_rgr_tps_cmd nco_tps_cmd); /* I [enm] Tempest remap command enum */
 
   double /* O [dgr] Longitude difference (lon_r-lon_l) */
   nco_lon_dff_brnch_dgr /* [fnc] Subtract longitudes with branch-cut rules */

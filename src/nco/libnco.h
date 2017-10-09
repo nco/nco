@@ -37,6 +37,7 @@
 #include "nco_grp_utl.h" /* Group utilities */
 #include "nco_lmt.h" /* Hyperslab limits */
 #include "nco_lst_utl.h" /* List utilities */
+#include "nco_map.h" /* Map generation */
 #include "nco_md5.h" /* MD5 digests */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_msa.h" /* Multi-slabbing algorithm */

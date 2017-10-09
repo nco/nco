@@ -419,7 +419,11 @@ main(int argc,char **argv)
     {"regridding",required_argument,0,0}, /* [sng] Regridding */
     {"rgr_in",required_argument,0,0}, /* [sng] File containing fields to be regridded */
     {"rgr_grd_src",required_argument,0,0}, /* [sng] File containing input grid */
+    {"grd_src",required_argument,0,0}, /* [sng] File containing input grid */
+    {"src_grd",required_argument,0,0}, /* [sng] File containing input grid */
     {"rgr_grd_dst",required_argument,0,0}, /* [sng] File containing destination grid */
+    {"dst_grd",required_argument,0,0}, /* [sng] File containing destination grid */
+    {"grd_dst",required_argument,0,0}, /* [sng] File containing destination grid */
     {"rgr_map",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
     {"map_file",required_argument,0,0}, /* [sng] File containing mapping weights from source to destination grid */
     {"rgr_var",required_argument,0,0}, /* I [sng] Variable for special regridding treatment */
@@ -682,8 +686,8 @@ main(int argc,char **argv)
         rgr_arg[rgr_nbr++]=(char *)strdup(optarg);
       } /* endif "rgr" */
       if(!strcmp(opt_crr,"rgr_in")) rgr_in=(char *)strdup(optarg);
-      if(!strcmp(opt_crr,"rgr_grd_src")) rgr_grd_src=(char *)strdup(optarg);
-      if(!strcmp(opt_crr,"rgr_grd_dst")) rgr_grd_dst=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"rgr_grd_src") || !strcmp(opt_crr,"grd_src") || !strcmp(opt_crr,"src_grd")) rgr_grd_src=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"rgr_grd_dst") || !strcmp(opt_crr,"grd_dst") || !strcmp(opt_crr,"dst_grd")) rgr_grd_dst=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rgr_map") || !strcmp(opt_crr,"map_file")){
         flg_rgr=True;
 	rgr_map=(char *)strdup(optarg);

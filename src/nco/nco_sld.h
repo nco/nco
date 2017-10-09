@@ -34,11 +34,6 @@ extern "C" {
 #endif /* __cplusplus */
 
   int /* O [rcd] Return code */
-  nco_scrip_read /* [fnc] Read, parse, and print contents of SCRIP file */
-  (char *fl_scrip, /* I [sng] SCRIP file name with proper path */
-   kvm_sct *kvm_scrip); /* I/O [sct] Structure to hold contents of SCRIP file */ 
-
-  int /* O [rcd] Return code */
   nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   (trr_sct *trr_nfo); /* I/O [sct] Terraref information */
   

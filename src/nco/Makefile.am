@@ -102,6 +102,7 @@ nco_grp_utl.h \
 nco_grp_trv.h \
 nco_lmt.h \
 nco_lst_utl.h \
+nco_map.h \
 nco_md5.h \
 nco_mmr.h \
 nco_mpi.h \
@@ -164,6 +165,7 @@ nco_grp_utl.c \
 nco_grp_trv.c \
 nco_lmt.c \
 nco_lst_utl.c \
+nco_map.c \
 nco_md5.c \
 nco_mmr.c \
 nco_msa.c \

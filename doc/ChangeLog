@@ -1,3 +1,7 @@
+2017-10-09  Charlie Zender  <zender@uci.edu>
+
+	* Add nco_map.[ch] to build engines
+
 2017-10-07  Charlie Zender  <zender@uci.edu>
 
 	* Re-arrange/rename weight-application logic to make room for nco_map_mk() stub in nco_map.c

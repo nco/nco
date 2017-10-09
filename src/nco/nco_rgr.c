@@ -21,9 +21,9 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   nco_bool flg_grd=False; /* [flg] Create SCRIP-format grid file */
   nco_bool flg_map=False; /* [flg] Create ESMF-format mapfile */
   nco_bool flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
-  nco_bool flg_wgt=False; /* [flg] Regrid with external weights */
   nco_bool flg_smf=False; /* [flg] ESMF regridding (unused) */
   nco_bool flg_tps=False; /* [flg] Tempest regridding (unused) */
+  nco_bool flg_wgt=False; /* [flg] Regrid with external weights */
 
   /* Main control branching occurs here
      Branching complexity and utility will increase as regridding features are added */
@@ -38,7 +38,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   if(flg_grd) rcd=nco_grd_mk(rgr);
 
   /* Create ESMF-format map file */
-  //if(flg_map) rcd=nco_map_mk(rgr);
+  if(flg_map) rcd=nco_map_mk(rgr);
 
   /* Infer SCRIP-format grid file from data file */
   if(flg_nfr) rcd=nco_grd_nfr(rgr);
@@ -659,20 +659,21 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   const double rdn2dgr=180.0/M_PI;
   const double dgr2rdn=M_PI/180.0;
   const double eps_rlt=1.0e-14; /* [frc] Round-off error tolerance */
+
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
   double area_out_ttl=0.0; /* [frc] Exact sum of area */
 
+  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
+  int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
+  int fll_md_old; /* [enm] Old fill mode */
   int in_id; /* I [id] Input netCDF file ID */
-  int out_id; /* I [id] Output netCDF file ID */
   int md_open; /* [enm] Mode flag for nc_open() call */
+  int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;
 
-  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int dst_grid_corners_id; /* [id] Destination grid corners dimension ID */
   int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
   int dst_grid_size_id; /* [id] Destination grid size dimension ID */
-  int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
-  int fll_md_old; /* [enm] Old fill mode */
   int num_links_id; /* [id] Number of links dimension ID */
   int num_wgts_id; /* [id] Number of weights dimension ID */
   int src_grid_corners_id; /* [id] Source grid corners dimension ID */
@@ -4064,7 +4065,7 @@ nco_rgr_tps /* [fnc] Regrid using TempestRemap library */
   int rcd_sys;
   int lat_nbr_rqs=180;
   int lon_nbr_rqs=360;
-  nco_rgr_cmd_typ nco_rgr_cmd; /* [enm] TempestRemap command enum */
+  nco_rgr_tps_cmd nco_tps_cmd; /* [enm] TempestRemap command enum */
 
   char *nvr_DATA_TEMPEST; /* [sng] Directory where Tempest grids, meshes, and weights are stored */
   nvr_DATA_TEMPEST=getenv("DATA_TEMPEST");
@@ -4081,8 +4082,8 @@ nco_rgr_tps /* [fnc] Regrid using TempestRemap library */
   fl_grd_dst_cdl=nm2sng_fl(fl_grd_dst);
 
   /* Construct and execute regridding command */
-  nco_rgr_cmd=nco_rgr_GenerateRLLMesh;
-  cmd_rgr_fmt=nco_tps_cmd_fmt_sng(nco_rgr_cmd);
+  nco_tps_cmd=nco_rgr_GenerateRLLMesh;
+  cmd_rgr_fmt=nco_tps_cmd_fmt_sng(nco_tps_cmd);
   cmd_rgr=(char *)nco_malloc((strlen(cmd_rgr_fmt)+strlen(fl_grd_dst_cdl)-fmt_chr_nbr+1UL)*sizeof(char));
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: %s reports generating %d by %d RLL mesh in %s...\n",nco_prg_nm_get(),fnc_nm,lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst);
   (void)sprintf(cmd_rgr,cmd_rgr_fmt,lat_nbr_rqs,lon_nbr_rqs,fl_grd_dst_cdl);
@@ -4239,10 +4240,10 @@ nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */
 
 const char * /* O [sng] String containing regridding command and format */
 nco_tps_cmd_fmt_sng /* [fnc] Convert TempestRemap command enum to command string */
-(const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] TempestRemap command enum */
+(const nco_rgr_tps_cmd nco_tps_cmd) /* I [enm] TempestRemap command enum */
 {
   /* Purpose: Convert TempestRemap command enum to command string and format */
-  switch(nco_rgr_cmd){
+  switch(nco_tps_cmd){
   case nco_rgr_ApplyOfflineMap:
     return "ApplyOfflineMap";
   case nco_rgr_CalculateDiffNorms:
@@ -4276,10 +4277,10 @@ nco_tps_cmd_fmt_sng /* [fnc] Convert TempestRemap command enum to command string
 
 const char * /* O [sng] String containing regridding command name */
 nco_tps_cmd_sng /* [fnc] Convert TempestRemap command enum to command name */
-(const nco_rgr_cmd_typ nco_rgr_cmd) /* I [enm] TempestRemap command enum */
+(const nco_rgr_tps_cmd nco_tps_cmd) /* I [enm] TempestRemap command enum */
 {
   /* Purpose: Convert TempestRemap command enum to command string */
-  switch(nco_rgr_cmd){
+  switch(nco_tps_cmd){
   case nco_rgr_ApplyOfflineMap: return "ApplyOfflineMap";
   case nco_rgr_CalculateDiffNorms: return "CalculateDiffNorms";
   case nco_rgr_GenerateCSMesh: return "GenerateCSMesh";
