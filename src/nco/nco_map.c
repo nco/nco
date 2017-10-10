@@ -66,6 +66,20 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_inq_dimid(in_id_src,"grid_rank",&src_grid_rank_id);
   rcd+=nco_inq_dimid(in_id_src,"grid_size",&src_grid_size_id);
 
+  /* Use dimension IDs to get dimension sizes */
+  rcd+=nco_inq_dimlen(in_id_src,src_grid_size_id,&rgr->src_grid_size);
+  rcd+=nco_inq_dimlen(in_id_dst,dst_grid_size_id,&rgr->dst_grid_size);
+  rcd+=nco_inq_dimlen(in_id_src,src_grid_corners_id,&rgr->src_grid_corners);
+  rcd+=nco_inq_dimlen(in_id_dst,dst_grid_corners_id,&rgr->dst_grid_corners);
+  rcd+=nco_inq_dimlen(in_id_src,src_grid_rank_id,&rgr->src_grid_rank);
+  rcd+=nco_inq_dimlen(in_id_dst,dst_grid_rank_id,&rgr->dst_grid_rank);
+  assert(rgr->src_grid_size < INT_MAX && rgr->dst_grid_size < INT_MAX);
+  
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
+    (void)fprintf(stderr,"%s: INFO %s regridding input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li\n",rgr->src_grid_size,rgr->dst_grid_size,rgr->src_grid_corners,rgr->dst_grid_corners,rgr->src_grid_rank,rgr->dst_grid_rank);
+  } /* endif dbg */
+
   assert(rcd == NC_NOERR);
 
   /* Close input netCDF file */
