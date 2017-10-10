@@ -41,6 +41,8 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
 
+  nco_mpf_sct mpf;
+
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining source grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_src);
@@ -67,17 +69,17 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_inq_dimid(in_id_src,"grid_size",&src_grid_size_id);
 
   /* Use dimension IDs to get dimension sizes */
-  rcd+=nco_inq_dimlen(in_id_src,src_grid_size_id,&rgr->src_grid_size);
-  rcd+=nco_inq_dimlen(in_id_dst,dst_grid_size_id,&rgr->dst_grid_size);
-  rcd+=nco_inq_dimlen(in_id_src,src_grid_corners_id,&rgr->src_grid_corners);
-  rcd+=nco_inq_dimlen(in_id_dst,dst_grid_corners_id,&rgr->dst_grid_corners);
-  rcd+=nco_inq_dimlen(in_id_src,src_grid_rank_id,&rgr->src_grid_rank);
-  rcd+=nco_inq_dimlen(in_id_dst,dst_grid_rank_id,&rgr->dst_grid_rank);
-  assert(rgr->src_grid_size < INT_MAX && rgr->dst_grid_size < INT_MAX);
+  rcd+=nco_inq_dimlen(in_id_src,src_grid_size_id,&mpf.src_grid_size);
+  rcd+=nco_inq_dimlen(in_id_dst,dst_grid_size_id,&mpf.dst_grid_size);
+  rcd+=nco_inq_dimlen(in_id_src,src_grid_corners_id,&mpf.src_grid_corners);
+  rcd+=nco_inq_dimlen(in_id_dst,dst_grid_corners_id,&mpf.dst_grid_corners);
+  rcd+=nco_inq_dimlen(in_id_src,src_grid_rank_id,&mpf.src_grid_rank);
+  rcd+=nco_inq_dimlen(in_id_dst,dst_grid_rank_id,&mpf.dst_grid_rank);
+  assert(mpf.src_grid_size < INT_MAX && mpf.dst_grid_size < INT_MAX);
   
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
     (void)fprintf(stderr,"%s: INFO %s regridding input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stderr,"src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li\n",rgr->src_grid_size,rgr->dst_grid_size,rgr->src_grid_corners,rgr->dst_grid_corners,rgr->src_grid_rank,rgr->dst_grid_rank);
+    (void)fprintf(stderr,"src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li\n",mpf.src_grid_size,mpf.dst_grid_size,mpf.src_grid_corners,mpf.dst_grid_corners,mpf.src_grid_rank,mpf.dst_grid_rank);
   } /* endif dbg */
 
   assert(rcd == NC_NOERR);

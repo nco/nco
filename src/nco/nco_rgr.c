@@ -696,7 +696,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nco_grd_lat_typ_enm nco_grd_lat_typ=nco_grd_lat_nil; /* [enm] Latitude grid-type enum */
   nco_grd_lon_typ_enm nco_grd_lon_typ=nco_grd_lon_nil; /* [enm] Longitude grid-type enum */
 
-  nco_mpf_sct rgr_map;
+  nco_mpf_sct mpf;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   
@@ -802,25 +802,25 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   } /* end switch */
 
   /* Use dimension IDs to get dimension sizes */
-  rcd+=nco_inq_dimlen(in_id,num_links_id,&rgr_map.num_links);
+  rcd+=nco_inq_dimlen(in_id,num_links_id,&mpf.num_links);
   if(nco_rgr_mpf_typ != nco_rgr_mpf_ESMF_weight_only){
-    rcd+=nco_inq_dimlen(in_id,src_grid_size_id,&rgr_map.src_grid_size);
-    rcd+=nco_inq_dimlen(in_id,dst_grid_size_id,&rgr_map.dst_grid_size);
-    rcd+=nco_inq_dimlen(in_id,src_grid_corners_id,&rgr_map.src_grid_corners);
-    rcd+=nco_inq_dimlen(in_id,dst_grid_corners_id,&rgr_map.dst_grid_corners);
-    rcd+=nco_inq_dimlen(in_id,src_grid_rank_id,&rgr_map.src_grid_rank);
-    rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&rgr_map.dst_grid_rank);
+    rcd+=nco_inq_dimlen(in_id,src_grid_size_id,&mpf.src_grid_size);
+    rcd+=nco_inq_dimlen(in_id,dst_grid_size_id,&mpf.dst_grid_size);
+    rcd+=nco_inq_dimlen(in_id,src_grid_corners_id,&mpf.src_grid_corners);
+    rcd+=nco_inq_dimlen(in_id,dst_grid_corners_id,&mpf.dst_grid_corners);
+    rcd+=nco_inq_dimlen(in_id,src_grid_rank_id,&mpf.src_grid_rank);
+    rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&mpf.dst_grid_rank);
     /* TempestRemap does not generate num_wgts */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) rgr_map.num_wgts=int_CEWI; else rcd+=nco_inq_dimlen(in_id,num_wgts_id,&rgr_map.num_wgts); 
-    assert(rgr_map.src_grid_size < INT_MAX && rgr_map.dst_grid_size < INT_MAX);
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) mpf.num_wgts=int_CEWI; else rcd+=nco_inq_dimlen(in_id,num_wgts_id,&mpf.num_wgts); 
+    assert(mpf.src_grid_size < INT_MAX && mpf.dst_grid_size < INT_MAX);
   }else{
-    rgr_map.src_grid_size=long_CEWI;
-    rgr_map.dst_grid_size=long_CEWI;
-    rgr_map.src_grid_corners=long_CEWI;
-    rgr_map.dst_grid_corners=long_CEWI;
-    rgr_map.src_grid_rank=long_CEWI;
-    rgr_map.dst_grid_rank=long_CEWI;
-    rgr_map.num_wgts=int_CEWI;
+    mpf.src_grid_size=long_CEWI;
+    mpf.dst_grid_size=long_CEWI;
+    mpf.src_grid_corners=long_CEWI;
+    mpf.dst_grid_corners=long_CEWI;
+    mpf.src_grid_rank=long_CEWI;
+    mpf.dst_grid_rank=long_CEWI;
+    mpf.num_wgts=int_CEWI;
   } /* !ESMF_weight_only */
   
   cnv_sng=strdup("normalization");
@@ -866,7 +866,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
     (void)fprintf(stderr,"%s: INFO %s regridding input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stderr,"mapfile_generator = %s, map_method = %s, normalization = %s, src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = n_s = %li, num_wgts = %li\n",nco_rgr_mpf_sng(nco_rgr_mpf_typ),nco_rgr_mth_sng(nco_rgr_mth_typ),nco_rgr_nrm_sng(nco_rgr_nrm_typ),rgr_map.src_grid_size,rgr_map.dst_grid_size,rgr_map.src_grid_corners,rgr_map.dst_grid_corners,rgr_map.src_grid_rank,rgr_map.dst_grid_rank,rgr_map.num_links,rgr_map.num_wgts);
+    (void)fprintf(stderr,"mapfile_generator = %s, map_method = %s, normalization = %s, src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = n_s = %li, num_wgts = %li\n",nco_rgr_mpf_sng(nco_rgr_mpf_typ),nco_rgr_mth_sng(nco_rgr_mth_typ),nco_rgr_nrm_sng(nco_rgr_nrm_typ),mpf.src_grid_size,mpf.dst_grid_size,mpf.src_grid_corners,mpf.dst_grid_corners,mpf.src_grid_rank,mpf.dst_grid_rank,mpf.num_links,mpf.num_wgts);
   } /* endif dbg */
   if(nco_rgr_nrm_typ == nco_rgr_nrm_none){
     (void)fprintf(stdout,"%s: ERROR %s reports requested normalization type = %s is not yet supported. Specifically, masks specified by a mask variable (dst_grid_imask,mask_b) are ignored. More specifically, any destination mask information is assumed to be built into the weight array so that no source points will contribute to masked locations. Talk to Charlie if you want this changed.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
@@ -878,10 +878,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   assert(nco_rgr_mpf_typ != nco_rgr_mpf_ESMF_weight_only);
  
   /* Set type of grid conversion */
-  if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 1) nco_rgr_typ=nco_rgr_grd_1D_to_1D;
-  if(rgr_map.src_grid_rank == 1 && rgr_map.dst_grid_rank == 2) nco_rgr_typ=nco_rgr_grd_1D_to_2D;
-  if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 1) nco_rgr_typ=nco_rgr_grd_2D_to_1D;
-  if(rgr_map.src_grid_rank == 2 && rgr_map.dst_grid_rank == 2) nco_rgr_typ=nco_rgr_grd_2D_to_2D;
+  if(mpf.src_grid_rank == 1 && mpf.dst_grid_rank == 1) nco_rgr_typ=nco_rgr_grd_1D_to_1D;
+  if(mpf.src_grid_rank == 1 && mpf.dst_grid_rank == 2) nco_rgr_typ=nco_rgr_grd_1D_to_2D;
+  if(mpf.src_grid_rank == 2 && mpf.dst_grid_rank == 1) nco_rgr_typ=nco_rgr_grd_2D_to_1D;
+  if(mpf.src_grid_rank == 2 && mpf.dst_grid_rank == 2) nco_rgr_typ=nco_rgr_grd_2D_to_2D;
   assert(nco_rgr_typ != nco_rgr_grd_nil);
   /* Save typing later */
   nco_bool flg_grd_in_1D=False;
@@ -1045,29 +1045,29 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   dmn_srd=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
 
   dmn_srt[0]=0L;
-  dmn_cnt[0]=rgr_map.src_grid_rank;
-  dmn_sz_in_int=(int *)nco_malloc(rgr_map.src_grid_rank*nco_typ_lng((nc_type)NC_INT));
+  dmn_cnt[0]=mpf.src_grid_rank;
+  dmn_sz_in_int=(int *)nco_malloc(mpf.src_grid_rank*nco_typ_lng((nc_type)NC_INT));
   rcd=nco_get_vara(in_id,dmn_sz_in_int_id,dmn_srt,dmn_cnt,dmn_sz_in_int,(nc_type)NC_INT);
   dmn_srt[0]=0L;
-  dmn_cnt[0]=rgr_map.dst_grid_rank;
-  dmn_sz_out_int=(int *)nco_malloc(rgr_map.dst_grid_rank*nco_typ_lng((nc_type)NC_INT));
+  dmn_cnt[0]=mpf.dst_grid_rank;
+  dmn_sz_out_int=(int *)nco_malloc(mpf.dst_grid_rank*nco_typ_lng((nc_type)NC_INT));
   rcd=nco_get_vara(in_id,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
 
   /* Check-for and workaround faulty Tempest and MPAS-O/I grid sizes */
-  if(flg_grd_in_1D && (rgr_map.src_grid_size != dmn_sz_in_int[0])){
-    (void)fprintf(stdout,"%s: INFO %s reports input grid dimension sizes disagree: rgr_map.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.src_grid_size,dmn_sz_in_int[0]);
-      dmn_sz_in_int[0]=rgr_map.src_grid_size;
+  if(flg_grd_in_1D && (mpf.src_grid_size != dmn_sz_in_int[0])){
+    (void)fprintf(stdout,"%s: INFO %s reports input grid dimension sizes disagree: mpf.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.src_grid_size,dmn_sz_in_int[0]);
+      dmn_sz_in_int[0]=mpf.src_grid_size;
   } /* !bug */
-  if(flg_grd_out_1D && (rgr_map.dst_grid_size != dmn_sz_out_int[0])){
-    (void)fprintf(stdout,"%s: INFO %s reports output grid dimension sizes disagree: rgr_map.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,rgr_map.dst_grid_size,dmn_sz_out_int[0]);
-    dmn_sz_out_int[0]=rgr_map.dst_grid_size;
+  if(flg_grd_out_1D && (mpf.dst_grid_size != dmn_sz_out_int[0])){
+    (void)fprintf(stdout,"%s: INFO %s reports output grid dimension sizes disagree: mpf.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.dst_grid_size,dmn_sz_out_int[0]);
+    dmn_sz_out_int[0]=mpf.dst_grid_size;
   } /* !bug */
  
   long col_nbr_in; /* [idx] Number of columns in source grid */
   long lon_nbr_in; /* [idx] Number of longitudes in rectangular source grid */
   long lat_nbr_in; /* [idx] Number of latitudes  in rectangular source grid */
-  const size_t grd_sz_in=rgr_map.src_grid_size; /* [nbr] Number of elements in single layer of input grid */
-  const size_t grd_sz_out=rgr_map.dst_grid_size; /* [nbr] Number of elements in single layer of output grid */
+  const size_t grd_sz_in=mpf.src_grid_size; /* [nbr] Number of elements in single layer of input grid */
+  const size_t grd_sz_out=mpf.dst_grid_size; /* [nbr] Number of elements in single layer of output grid */
   if(flg_grd_in_1D){
     col_nbr_in=dmn_sz_in_int[0];
     lon_nbr_in=dmn_sz_in_int[0];
@@ -1088,7 +1088,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   long slat_nbr_out=long_CEWI; /* [nbr] Number of latitudes in staggered FV grid destination grid */
   long slon_nbr_out=long_CEWI; /* [nbr] Number of longitudes in staggered FV grid destination grid */
   if(flg_grd_out_1D){
-    bnd_nbr_out=rgr_map.dst_grid_corners;
+    bnd_nbr_out=mpf.dst_grid_corners;
     col_nbr_out=dmn_sz_out_int[0];
     lat_nbr_out=dmn_sz_out_int[0];
     lon_nbr_out=dmn_sz_out_int[0];
@@ -1125,8 +1125,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(flg_grd_out_2D){
     lon_ctr_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ_out));
     lat_ctr_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ_out));
-    lon_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*grd_sz_out*nco_typ_lng(crd_typ_out));
-    lat_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*grd_sz_out*nco_typ_lng(crd_typ_out));
+    lon_crn_out=(double *)nco_malloc(mpf.dst_grid_corners*grd_sz_out*nco_typ_lng(crd_typ_out));
+    lat_crn_out=(double *)nco_malloc(mpf.dst_grid_corners*grd_sz_out*nco_typ_lng(crd_typ_out));
 
     dmn_srt[0]=0L;
     dmn_cnt[0]=grd_sz_out;
@@ -1134,7 +1134,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd=nco_get_vara(in_id,dst_grd_ctr_lat_id,dmn_srt,dmn_cnt,lat_ctr_out,crd_typ_out);
     dmn_srt[0]=dmn_srt[1]=0L;
     dmn_cnt[0]=grd_sz_out;
-    dmn_cnt[1]=rgr_map.dst_grid_corners;
+    dmn_cnt[1]=mpf.dst_grid_corners;
     rcd=nco_get_vara(in_id,dst_grd_crn_lon_id,dmn_srt,dmn_cnt,lon_crn_out,crd_typ_out);
     rcd=nco_get_vara(in_id,dst_grd_crn_lat_id,dmn_srt,dmn_cnt,lat_crn_out,crd_typ_out);
 
@@ -1154,7 +1154,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid detected to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
     } /* !flg_grd_out_crv */
 
-    if(flg_grd_out_crv) bnd_nbr_out=rgr_map.dst_grid_corners;
+    if(flg_grd_out_crv) bnd_nbr_out=mpf.dst_grid_corners;
     if(flg_grd_out_rct) bnd_nbr_out=2; /* NB: Assumes rectangular latitude and longitude and is invalid for other quadrilaterals */
   } /* !flg_grd_out_2D */
 
@@ -1178,8 +1178,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(lon_crn_out) lon_crn_out=(double *)nco_free(lon_crn_out);
     lon_ctr_out=(double *)nco_malloc(lon_nbr_out*nco_typ_lng(crd_typ_out));
     lat_ctr_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
-    lon_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lon_nbr_out*nco_typ_lng(crd_typ_out));
-    lat_crn_out=(double *)nco_malloc(rgr_map.dst_grid_corners*lat_nbr_out*nco_typ_lng(crd_typ_out));
+    lon_crn_out=(double *)nco_malloc(mpf.dst_grid_corners*lon_nbr_out*nco_typ_lng(crd_typ_out));
+    lat_crn_out=(double *)nco_malloc(mpf.dst_grid_corners*lat_nbr_out*nco_typ_lng(crd_typ_out));
     lat_wgt_out=(double *)nco_malloc(lat_nbr_out*nco_typ_lng(crd_typ_out));
     lon_ntf_out=(double *)nco_malloc((lon_nbr_out+1L)*nco_typ_lng(crd_typ_out));
     lat_ntf_out=(double *)nco_malloc((lat_nbr_out+1L)*nco_typ_lng(crd_typ_out));
@@ -1253,20 +1253,20 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd=nco_get_vars(in_id,dst_grd_ctr_lat_id,dmn_srt,dmn_cnt,dmn_srd,lat_ctr_out,crd_typ_out);
     dmn_srt[0]=dmn_srt[1]=0L;
     dmn_cnt[0]=lon_nbr_out;
-    dmn_cnt[1]=rgr_map.dst_grid_corners;
+    dmn_cnt[1]=mpf.dst_grid_corners;
     rcd=nco_get_vara(in_id,dst_grd_crn_lon_id,dmn_srt,dmn_cnt,lon_crn_out,crd_typ_out);
     dmn_srt[0]=0L;
     dmn_cnt[0]=lat_nbr_out;
     dmn_srd[0]=lon_nbr_out;
     dmn_srt[1]=0L;
-    dmn_cnt[1]=rgr_map.dst_grid_corners;
+    dmn_cnt[1]=mpf.dst_grid_corners;
     dmn_srd[1]=1L;
     rcd=nco_get_vars(in_id,dst_grd_crn_lat_id,dmn_srt,dmn_cnt,dmn_srd,lat_crn_out,crd_typ_out);
     if(flg_crd_rdn){
       for(idx=0;idx<lon_nbr_out;idx++) lon_ctr_out[idx]*=rdn2dgr;
       for(idx=0;idx<lat_nbr_out;idx++) lat_ctr_out[idx]*=rdn2dgr;
-      for(idx=0;idx<lon_nbr_out*rgr_map.dst_grid_corners;idx++) lon_crn_out[idx]*=rdn2dgr;
-      for(idx=0;idx<lat_nbr_out*rgr_map.dst_grid_corners;idx++) lat_crn_out[idx]*=rdn2dgr;
+      for(idx=0;idx<lon_nbr_out*mpf.dst_grid_corners;idx++) lon_crn_out[idx]*=rdn2dgr;
+      for(idx=0;idx<lat_nbr_out*mpf.dst_grid_corners;idx++) lat_crn_out[idx]*=rdn2dgr;
     } /* !rdn */
   } /* !flg_grd_out_rct */
     
@@ -1274,8 +1274,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(flg_crd_rdn){
       for(idx=0;idx<(long)grd_sz_out;idx++) lon_ctr_out[idx]*=rdn2dgr;
       for(idx=0;idx<(long)grd_sz_out;idx++) lat_ctr_out[idx]*=rdn2dgr;
-      for(idx=0;idx<(long)grd_sz_out*rgr_map.dst_grid_corners;idx++) lon_crn_out[idx]*=rdn2dgr;
-      for(idx=0;idx<(long)grd_sz_out*rgr_map.dst_grid_corners;idx++) lat_crn_out[idx]*=rdn2dgr;
+      for(idx=0;idx<(long)grd_sz_out*mpf.dst_grid_corners;idx++) lon_crn_out[idx]*=rdn2dgr;
+      for(idx=0;idx<(long)grd_sz_out*mpf.dst_grid_corners;idx++) lat_crn_out[idx]*=rdn2dgr;
     } /* !rdn */
   } /* !flg_grd_out_crv */
 
@@ -1325,11 +1325,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     double lat_spn; /* [dgr] Latitude span */
 
     /* Obtain 1-D rectangular interfaces from unrolled 1-D vertice arrays */
-    for(idx=0;idx<lon_nbr_out;idx++) lon_ntf_out[idx]=lon_crn_out[rgr_map.dst_grid_corners*idx];
-    lon_ntf_out[lon_nbr_out]=lon_crn_out[rgr_map.dst_grid_corners*lon_nbr_out-(rgr_map.dst_grid_corners-1L)];
+    for(idx=0;idx<lon_nbr_out;idx++) lon_ntf_out[idx]=lon_crn_out[mpf.dst_grid_corners*idx];
+    lon_ntf_out[lon_nbr_out]=lon_crn_out[mpf.dst_grid_corners*lon_nbr_out-(mpf.dst_grid_corners-1L)];
     lon_spn=lon_ntf_out[lon_nbr_out]-lon_ntf_out[0];
-    for(idx=0;idx<lat_nbr_out;idx++) lat_ntf_out[idx]=lat_crn_out[rgr_map.dst_grid_corners*idx];
-    lat_ntf_out[lat_nbr_out]=lat_crn_out[rgr_map.dst_grid_corners*lat_nbr_out-1L];
+    for(idx=0;idx<lat_nbr_out;idx++) lat_ntf_out[idx]=lat_crn_out[mpf.dst_grid_corners*idx];
+    lat_ntf_out[lat_nbr_out]=lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-1L];
     lat_spn=lat_ntf_out[lat_nbr_out]-lat_ntf_out[0];
 
     /* Place 1-D rectangular interfaces into 2-D coordinate boundaries */
@@ -1585,17 +1585,17 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   } /* endif dbg */
 
   /* Allocate space for and obtain weights and addresses */
-  wgt_raw=(double *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_DOUBLE),fnc_nm,"Unable to malloc() value buffer for remapping weights");
-  col_src_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
-  row_dst_adr=(int *)nco_malloc_dbg(rgr_map.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
+  wgt_raw=(double *)nco_malloc_dbg(mpf.num_links*nco_typ_lng(NC_DOUBLE),fnc_nm,"Unable to malloc() value buffer for remapping weights");
+  col_src_adr=(int *)nco_malloc_dbg(mpf.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
+  row_dst_adr=(int *)nco_malloc_dbg(mpf.num_links*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
 
   /* Obtain remap matrix addresses and weights from map file */
   dmn_srt[0]=0L;
-  dmn_cnt[0]=rgr_map.num_links;
+  dmn_cnt[0]=mpf.num_links;
   rcd=nco_get_vara(in_id,col_src_adr_id,dmn_srt,dmn_cnt,col_src_adr,NC_INT);
   rcd=nco_get_vara(in_id,row_dst_adr_id,dmn_srt,dmn_cnt,row_dst_adr,NC_INT);
   dmn_srt[0]=0L;
-  dmn_cnt[0]=rgr_map.num_links;
+  dmn_cnt[0]=mpf.num_links;
   if(nco_rgr_mpf_typ != nco_rgr_mpf_SCRIP){
     rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,NC_DOUBLE);
   }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
@@ -1605,14 +1605,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     dmn_srd[0]=1L;
     dmn_srt[1]=0L;
     dmn_cnt[1]=1L;
-    dmn_srd[1]=rgr_map.num_wgts;
+    dmn_srd[1]=mpf.num_wgts;
     rcd=nco_get_vars(in_id,wgt_raw_id,dmn_srt,dmn_cnt,dmn_srd,wgt_raw,NC_DOUBLE);
   } /* !SCRIP */
 
   /* Pre-subtract one from row/column addresses (stored, by convention, as Fortran indices) to optimize access with C indices */
   size_t lnk_nbr; /* [nbr] Number of links */
   size_t lnk_idx; /* [idx] Link index */
-  lnk_nbr=rgr_map.num_links;
+  lnk_nbr=mpf.num_links;
   for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) row_dst_adr[lnk_idx]--;
   for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++) col_src_adr[lnk_idx]--;
   if(nco_dbg_lvl_get() >= nco_dbg_io){

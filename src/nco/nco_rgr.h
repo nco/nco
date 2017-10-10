@@ -25,6 +25,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_map.h" /* Map generation */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_sld.h" /* Swath-Like Data */
