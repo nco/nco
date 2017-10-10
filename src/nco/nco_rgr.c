@@ -1039,7 +1039,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   long *dmn_srd=NULL;
   long idx; /* [idx] Counting index for unrolled grids */
     
-  /* Allocate space to hold dimension metadata for rectangular destination grid */
+  /* Allocate space to hold dimension metadata for destination grid */
   dmn_srt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
   dmn_cnt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
   dmn_srd=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));

@@ -14,7 +14,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 (rgr_sct * const rgr) /* I/O [sct] Regridding structure */
 {
   /* Purpose: Use information from two grids to create map-file
-     ncks -D 1 -O --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/129x256_SCRIP.20150901.nc --map=${HOME}/grids/map_foo.nc ~/nco/data/in.nc ~/foo.nc */
+     ncks -D 1 -O --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/129x256_SCRIP.20150901.nc --map=${HOME}/map_foo.nc ~/nco/data/in.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_map_mk()"; /* [sng] Function name */
 
@@ -123,6 +123,18 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   shuffle=NC_SHUFFLE;
   dfl_lvl=rgr->dfl_lvl;
   fl_out_fmt=rgr->fl_out_fmt;
+  fl_out=rgr->fl_map;
+
+  /* Copy arguments from mapfile structure to more easily recognized names */
+  dst_grd_rnk_nbr=mpf.dst_grid_rank;
+  src_grd_rnk_nbr=mpf.src_grid_rank;
+  dst_grd_crn_nbr=mpf.dst_grid_corners;
+  src_grd_crn_nbr=mpf.src_grid_corners;
+  dst_grd_sz_nbr=mpf.dst_grid_size;
+  src_grd_sz_nbr=mpf.src_grid_size;
+
+  /* Spoof arguments to be carefuly defined later */
+  lnk_nbr=1L;
 
   /* Open mapfile */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -136,6 +148,51 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_def_dim(out_id,"nv_b",dst_grd_crn_nbr,&dst_grid_corners_id);
   rcd+=nco_def_dim(out_id,"src_grid_rank",src_grd_rnk_nbr,&src_grid_rank_id);
 
+  const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
+  const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
+  const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
+  const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
+
+  int *dmn_sz_in_int; /* [nbr] Array of dimension sizes of source grid */
+  int *dmn_sz_out_int; /* [nbr] Array of dimension sizes of destination grid */
+
+  int dmn_sz_in_int_id; /* [id] Source grid dimension sizes ID */
+  int dmn_sz_out_int_id; /* [id] Destination grid dimension sizes ID */
+
+  long *dmn_cnt=NULL;
+  long *dmn_srt=NULL;
+
+  dmn_srt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
+  dmn_cnt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
+
+  dmn_sz_in_int=(int *)nco_malloc(mpf.src_grid_rank*nco_typ_lng((nc_type)NC_INT));
+  dmn_sz_out_int=(int *)nco_malloc(mpf.dst_grid_rank*nco_typ_lng((nc_type)NC_INT));
+
+  rcd+=nco_def_var(out_id,"src_grid_dims",NC_INT,dmn_nbr_1D,&src_grid_rank_id,&dmn_sz_in_int_id);
+  rcd+=nco_def_var(out_id,"dst_grid_dims",NC_INT,dmn_nbr_1D,&dst_grid_rank_id,&dmn_sz_out_int_id);
+
+  /* Turn-off default filling behavior to enhance efficiency */
+  nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+      
+  /* Begin data mode */
+  (void)nco_enddef(out_id);
+
+  /* Write values to mapfile */
+  dmn_srt[0]=0L;
+  dmn_cnt[0]=mpf.src_grid_rank;
+  rcd=nco_put_vara(out_id,dmn_sz_in_int_id,dmn_srt,dmn_cnt,dmn_sz_in_int,(nc_type)NC_INT);
+  dmn_srt[0]=0L;
+  dmn_cnt[0]=mpf.dst_grid_rank;
+  rcd=nco_put_vara(out_id,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
+
+  if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
+  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+  if(dmn_sz_in_int) dmn_sz_in_int=(int *)nco_free(dmn_sz_in_int);
+  if(dmn_sz_out_int) dmn_sz_out_int=(int *)nco_free(dmn_sz_out_int);
+
+  /* Close input netCDF file */
+  nco_close(out_id);
+  
   assert(rcd != NC_NOERR);
 
   /* Clean-up dynamic memory */

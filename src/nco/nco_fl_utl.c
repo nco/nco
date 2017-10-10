@@ -1593,6 +1593,11 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   } /* netCDF4 */
 #endif /* ENABLE_NETCDF4 */
 
+  if(!fl_out){
+    (void)fprintf(stdout,"%s: ERROR %s received empty filename to open\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* fl_out */
+
   /* Set default clobber mode then modify for specified file format */
   md_create=NC_CLOBBER; /* [enm] Mode flag for nco_create() call */
   /* [fnc] Merge clobber mode with user-specified file format */

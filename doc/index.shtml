@@ -742,7 +742,10 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 <ul>
 <a href="https://www.continuum.io/why-anaconda">Anaconda</a> is a coordinated,
 cross-platform Python environment that utilizes the <tt>conda</tt> package manager.
-Up-to-date versions of NCO for Linux and MacOS are maintained at <a href="https://github.com/conda-forge/nco-feedstock">conda-forge</a>.
+Anaconda can be easily installed into a user-owned directory.
+This bypasses the normal headache of relying on system-administrators to install the latest NCO on shared systems like supercomputers.
+Miniconda (rather than the full Anaconda install) suffices for most purposes.
+Up-to-date Anaconda-compatible versions of NCO for Linux and MacOS (and soon Windows!) are maintained at <a href="https://github.com/conda-forge/nco-feedstock">conda-forge</a>.
 Install NCO in your Anaconda framework with one command &lsquo;<tt>conda install -c conda-forge nco</tt>&rsquo;.
 Or, alternatively, permanently add conda-forge (which teems with
 goodies besides NCO) to your automatically-searched channels with
