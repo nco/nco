@@ -77,12 +77,12 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_inq_dimlen(in_id_dst,dst_grid_rank_id,&mpf.dst_grid_rank);
   assert(mpf.src_grid_size < INT_MAX && mpf.dst_grid_size < INT_MAX);
   
-  if(nco_dbg_lvl_get() >= nco_dbg_scl){
-    (void)fprintf(stderr,"%s: INFO %s regridding input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    (void)fprintf(stderr,"%s: INFO %s mapfile generation input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li\n",mpf.src_grid_size,mpf.dst_grid_size,mpf.src_grid_corners,mpf.dst_grid_corners,mpf.src_grid_rank,mpf.dst_grid_rank);
   } /* endif dbg */
 
-  assert(rcd == NC_NOERR);
+  assert(rcd != NC_NOERR);
 
   /* Close input netCDF file */
   nco_close(in_id_dst);
@@ -95,8 +95,10 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   char *fl_out_tmp=NULL_CEWI;
   char *fl_out;
 
+  int deflate; /* [flg] Turn-on deflate filter */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int out_id; /* I [id] Output netCDF file ID */
+  int shuffle; /* [flg] Turn-on shuffle filter */
 
   int num_links_id; /* [id] Number of links dimension ID */
   int num_wgts_id; /* [id] Number of weights dimension ID */
@@ -113,11 +115,16 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
 
-  size_t wgt_nbr=int_CEWI; /* [nbr] Number of weights */
+  size_t wgt_nbr=1L; /* [nbr] Number of weights */
   size_t lnk_nbr; /* [nbr] Number of links */
   size_t lnk_idx; /* [idx] Link index */
 
-  /* Open grid file */
+  deflate=(int)True;
+  shuffle=NC_SHUFFLE;
+  dfl_lvl=rgr->dfl_lvl;
+  fl_out_fmt=rgr->fl_out_fmt;
+
+  /* Open mapfile */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
   rcd+=nco_def_dim(out_id,"dst_grid_rank",dst_grd_rnk_nbr,&dst_grid_rank_id);
@@ -129,12 +136,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_def_dim(out_id,"nv_b",dst_grd_crn_nbr,&dst_grid_corners_id);
   rcd+=nco_def_dim(out_id,"src_grid_rank",src_grd_rnk_nbr,&src_grid_rank_id);
 
-  int shuffle; /* [flg] Turn-on shuffle filter */
-  int deflate; /* [flg] Turn-on deflate filter */
-  deflate=(int)True;
-  shuffle=NC_SHUFFLE;
-
-  assert(rcd == NC_NOERR);
+  assert(rcd != NC_NOERR);
 
   /* Clean-up dynamic memory */
   if(fl_in_dst) fl_in_dst=(char *)nco_free(fl_in_dst);
