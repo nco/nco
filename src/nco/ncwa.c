@@ -384,9 +384,9 @@ main(int argc,char **argv)
     {"normalize-by-tally",no_argument,0,'W',},
     {"exclude",no_argument,0,'x'},
     {"xcl",no_argument,0,'x'},
-    {"weight",no_argument,0,'w'},
-    {"wgt",no_argument,0,'w'},
-    {"wgt_var",no_argument,0,'w'},
+    {"weight",required_argument,0,'w'},
+    {"wgt",required_argument,0,'w'},
+    {"wgt_var",required_argument,0,'w'},
     {"operation",required_argument,0,'y'},
     {"op_typ",required_argument,0,'y'},
     {0,0,0,0}

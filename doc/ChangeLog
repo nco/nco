@@ -1,3 +1,7 @@
+2017-10-11  Charlie Zender  <zender@uci.edu>
+
+	* Fix/change --weight et al. to option_type=required_argument in ncwa.c, ncflint.c
+
 2017-10-09  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_map.[ch] to build engines

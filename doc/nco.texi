@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.0-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 02 October 2017
+@set update-date 11 October 2017
 @set update-month October 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9633,12 +9633,13 @@ See @ref{ncks netCDF Kitchen Sink} for a description of deflation, a
 lossless compression technique available with netCDF4 only.
 Packed data may be deflated to save additional space.
 
-@unnumberedsubsec Packing Algorithm
+@unnumberedsubsec Standard Packing Algorithm
 @dfn{Packing}
 The standard netCDF linear packing algorithm (described
 @uref{http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html, here})
 produces packed data with the same dynamic range as the original but
 which requires no more than half the space to store.
+@acronym{NCO} will always use this algorithm for packing.
 Like all packing algorithms, linear packing is @emph{lossy}.
 Just how lossy depends on the values themselves, especially their range.
 The packed variable is stored (usually) as type @code{NC_SHORT}
@@ -9688,7 +9689,7 @@ additional, loss-less packing algorithms perform well on top of it.
 <a name="upk"></a> <!-- http://nco.sf.net/nco.html#upk -->
 <a name="unpack"></a> <!-- http://nco.sf.net/nco.html#unpack -->
 @end html
-@unnumberedsubsec Unpacking Algorithm
+@unnumberedsubsec Standard (Default) Unpacking Algorithm
 @dfn{Unpacking}
 The unpacking algorithm depends on the presence of two attributes,
 @code{scale_factor} and @code{add_offset}.
@@ -9711,6 +9712,8 @@ $$
 @var{upk} = @var{scale_factor}*@var{pck} + @var{add_offset} = (@var{max}-@var{min})*@var{pck}/@var{ndrv} + 0.5*(@var{min}+@var{max})@*
 @sp 1
 @end ifnottex
+@acronym{NCO} will use this algorithm for unpacking unless told
+otherwise as described below.
 When @code{scale_factor} and @code{add_offset} are used for packing, the
 associated variable (containing the packed data) is typically of type
 @code{byte} or @code{short}, whereas the unpacked values are intended to
@@ -9719,7 +9722,7 @@ An attribute's @code{scale_factor} and @code{add_offset} and
 @code{_FillValue}, if any, should all be of the type intended for the
 unpacked data, i.e., @code{int}, @code{float} or @code{double}. 
 
-@unnumberedsubsec Default Handling of Packed Data
+@unnumberedsubsec Non-Standard Packing and Unpacking Algorithms
 @html
 <a name="hdf_upk"></a> <!-- http://nco.sf.net/nco.html#hdf_upk -->
 <a name="hdf_unpack"></a> <!-- http://nco.sf.net/nco.html#hdf_unpack -->
@@ -9832,7 +9835,7 @@ See @ref{ncpdq netCDF Permute Dimensions Quickly} for an easy technique
 to unpack data packed with the @acronym{HDF} convention, and then
 re-pack it with the netCDF convention.
 
-@unnumberedsubsec Default Handling of Packed Data
+@unnumberedsubsec Handling of Packed Data by Other Operators
 All @acronym{NCO} arithmetic operators understand packed data.
 The operators automatically unpack any packed variable in the input 
 file which will be arithmetically processed.

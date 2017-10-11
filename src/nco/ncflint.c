@@ -344,7 +344,7 @@ main(int argc,char **argv)
     {"omp_num_threads",required_argument,0,'t'},
     {"variable",required_argument,0,'v'},
     {"weight",required_argument,0,'w'},
-    {"wgt_var",no_argument,0,'w'},
+    {"wgt_var",required_argument,0,'w'},
     {"auxiliary",required_argument,0,'X'},
     {"exclude",no_argument,0,'x'},
     {"xcl",no_argument,0,'x'},
