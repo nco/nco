@@ -1,6 +1,6 @@
 2017-10-11  Charlie Zender  <zender@uci.edu>
 
-	* Corrent NC_NOERR checks
+	* Correct NC_NOERR checks
 
 	* Read, error-correct, and write src/dst grid rank and dimensions in nco_map_mk()
 

@@ -143,12 +143,11 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     dmn_sz_out_int[0]=mpf.dst_grid_size;
   } /* !bug */
 
-  int lon_psn; /* [idx] Ordinal position of longitude in source grid dimension-size array */
-  int lat_psn; /* [idx] Ordinal position of latitude  in source grid dimension-size array */
-  lon_psn=0; /* SCRIP introduced [lon,lat] convention because more natural for Fortran */
-  lat_psn=1;
+  /* SCRIP introduced [lon,lat] convention because more natural for Fortran */
+  const int lon_psn=0; /* [idx] Ordinal position of longitude in source grid dimension-size array */
+  const int lat_psn=1; /* [idx] Ordinal position of latitude  in source grid dimension-size array */
 
-  int bnd_nbr_in=int_CEWI; /* [nbr] Number of vertices for source grid coordinates */
+  int bnd_nbr_in; /* [nbr] Number of vertices for source grid coordinates */
   long col_nbr_in; /* [idx] Number of columns in source grid */
   long lon_nbr_in; /* [idx] Number of longitudes in source grid */
   long lat_nbr_in; /* [idx] Number of latitudes  in source grid */
@@ -167,10 +166,10 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     assert(lat_nbr_in*lon_nbr_in == (long)grd_sz_in);
   } /* !src_grid_rank */
 
-  int bnd_nbr_out=int_CEWI; /* [nbr] Number of vertices for destination grid coordinates */
-  long col_nbr_out=long_CEWI; /* [nbr] Number of columns in destination grid */
-  long lon_nbr_out=long_CEWI; /* [nbr] Number of longitudes in rectangular destination grid */
-  long lat_nbr_out=long_CEWI; /* [nbr] Number of latitudes  in rectangular destination grid */
+  int bnd_nbr_out; /* [nbr] Number of vertices for destination grid coordinates */
+  long col_nbr_out; /* [nbr] Number of columns in destination grid */
+  long lon_nbr_out; /* [nbr] Number of longitudes in rectangular destination grid */
+  long lat_nbr_out; /* [nbr] Number of latitudes  in rectangular destination grid */
   bnd_nbr_out=mpf.dst_grid_corners;
   if(flg_grd_out_1D){
     col_nbr_out=dmn_sz_out_int[0];
@@ -186,6 +185,68 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     assert(lat_nbr_out*lon_nbr_out == (long)grd_sz_out);
   } /* !dst_grid_rank */
 
+#if 0
+  /* Obtain grid values necessary to compute output latitude and longitude coordinates */
+  int area_dst_id; /* [id] Area variable ID */
+  int col_src_adr_id; /* [id] Source address (col) variable ID */
+  int dmn_sz_in_int_id; /* [id] Source grid dimension sizes ID */
+  int dmn_sz_out_int_id; /* [id] Destination grid dimension sizes ID */
+  int dst_grd_crn_lat_id; /* [id] Destination grid corner latitudes  variable ID */
+  int dst_grd_crn_lon_id; /* [id] Destination grid corner longitudes variable ID */
+  int dst_grd_ctr_lat_id; /* [id] Destination grid center latitudes  variable ID */
+  int dst_grd_ctr_lon_id; /* [id] Destination grid center longitudes variable ID */
+  int frc_dst_id; /* [id] Fraction variable ID */
+  int msk_dst_id=NC_MIN_INT; /* [id] Mask variable ID */
+  int row_dst_adr_id; /* [id] Destination address (row) variable ID */
+  int wgt_raw_id; /* [id] Remap matrix variable ID */
+
+  rcd+=nco_inq_varid(in_id_src,"grid_area",&area_src_id); /* ESMF: area_a */
+  rcd+=nco_inq_varid(in_id_src,"grid_center_lon",&src_grd_ctr_lon_id); /* ESMF: xc_a */
+  rcd+=nco_inq_varid(in_id_src,"grid_center_lat",&src_grd_ctr_lat_id); /* ESMF: yc_a */
+  rcd+=nco_inq_varid(in_id_src,"grid_corner_lon",&src_grd_crn_lon_id); /* ESMF: xv_a */
+  rcd+=nco_inq_varid(in_id_src,"grid_corner_lat",&src_grd_crn_lat_id); /* ESMF: yv_a */
+  rcd+=nco_inq_varid(in_id_src,"grid_imask",&msk_src_id); /* ESMF: mask_a */
+
+  nco_bool flg_grd_out_crv=False; /* [flg] Curvilinear coordinates */
+  nco_bool flg_grd_out_rct=False; /* [flg] Rectangular coordinates */
+  const nc_type crd_typ_out=NC_DOUBLE;
+  if(flg_grd_out_2D){
+    lon_ctr_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ_out));
+    lat_ctr_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ_out));
+    lon_crn_out=(double *)nco_malloc(mpf.dst_grid_corners*grd_sz_out*nco_typ_lng(crd_typ_out));
+    lat_crn_out=(double *)nco_malloc(mpf.dst_grid_corners*grd_sz_out*nco_typ_lng(crd_typ_out));
+
+    dmn_srt[0]=0L;
+    dmn_cnt[0]=grd_sz_out;
+    rcd=nco_get_vara(in_id,dst_grd_ctr_lon_id,dmn_srt,dmn_cnt,lon_ctr_out,crd_typ_out);
+    rcd=nco_get_vara(in_id,dst_grd_ctr_lat_id,dmn_srt,dmn_cnt,lat_ctr_out,crd_typ_out);
+    dmn_srt[0]=dmn_srt[1]=0L;
+    dmn_cnt[0]=grd_sz_out;
+    dmn_cnt[1]=mpf.dst_grid_corners;
+    rcd=nco_get_vara(in_id,dst_grd_crn_lon_id,dmn_srt,dmn_cnt,lon_crn_out,crd_typ_out);
+    rcd=nco_get_vara(in_id,dst_grd_crn_lat_id,dmn_srt,dmn_cnt,lat_crn_out,crd_typ_out);
+
+    /* User may specify curvilinear grid (with --rgr crv). If not specified, manually test output grid for curvilinearity... */
+    flg_grd_out_crv=rgr->flg_crv; /* [flg] Curvilinear coordinates */
+    if(flg_grd_out_crv){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid specified to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
+    }else{
+      long idx_tst=long_CEWI; /* [idx] Index of first latitude or longitude */
+      for(idx=0;idx<(long)grd_sz_out;idx++){
+	if(idx%lon_nbr_out == 0) idx_tst=idx;
+	if(lat_ctr_out[idx] != lat_ctr_out[idx_tst]) break;
+	// (void)fprintf(stdout,"%s: DEBUG lat_ctr_out[%li] = %g, lat_ctr_out[%li] = %g\n",nco_prg_nm_get(),idx,lat_ctr_out[idx],idx_tst,lat_ctr_out[idx_tst]);
+	/* fxm: also test lon */
+      } /* !rectangular */
+      if(idx != (long)grd_sz_out) flg_grd_out_crv=True; else flg_grd_out_rct=True;
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid detected to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
+    } /* !flg_grd_out_crv */
+
+    if(flg_grd_out_crv) bnd_nbr_out=mpf.dst_grid_corners;
+    if(flg_grd_out_rct) bnd_nbr_out=2; /* NB: Assumes rectangular latitude and longitude and is invalid for other quadrilaterals */
+  } /* !flg_grd_out_2D */
+#endif /* !0 */
+  
   /* Close input netCDF files */
   nco_close(in_id_dst);
   nco_close(in_id_src);
@@ -235,7 +296,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   fl_out_fmt=rgr->fl_out_fmt;
   fl_out=rgr->fl_map;
 
-  /* Spoof arguments to be carefuly defined later */
+  /* Spoof arguments to be carefully defined later */
   lnk_nbr=1L;
 
   /* Open mapfile */
