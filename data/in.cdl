@@ -1200,6 +1200,14 @@ variables:
 	three_dmn_rec_var:units = "watt meter-2";
 	three_dmn_rec_var:_FillValue = -99.;
 
+	short three_dmn_rec_var_pck(time,lat,lon);
+	three_dmn_rec_var_pck:long_name = "three dimensional record variable";
+	three_dmn_rec_var_pck:purpose = "should unpack into identical values with three_dmn_rec_var (i.e., 1..80)";
+	three_dmn_rec_var_pck:units = "watt meter-2";
+	three_dmn_rec_var_pck:_FillValue = -99.;
+        three_dmn_rec_var_pck:add_offset = 40.5f ;
+        three_dmn_rec_var_pck:scale_factor = -0.001205518f ;
+
 	int three_dmn_var_int(time,lat,lon);
 	three_dmn_var_int:long_name = "three dimensional record variable of type int";
 	three_dmn_var_int:units = "watt meter-2";
@@ -1423,7 +1431,6 @@ data:
 	var_mss_1=0.,_,2.,3.;
 	var_mss_2=0.,1.,_,3.;
 	var_mss_3=0.,1.,2.,_;
-	var_msk=0.,1.,0.,0.,1.,1.,0.,2.;
 	ORO=0.,1.,0.,0.,1.,1.,0.,2.;
 	orog=0.,1.,0.,0.,1.,1.,0.,2.;
 	orog2=1.,1.,1.,1.,1.,1.,1.,1.;
@@ -1731,6 +1738,16 @@ data:
 				57,58,59,60,61,62,63,64,
 				65,66,67,68,69,70,71,72,
 				73,74,75,76,77,78,79,80;
+	three_dmn_rec_var_pck=  32766, 31936, 31107, 30277, 29448, 28618, 27789, 26959, 
+	  26130, 25300, 24471, 23641, 22812, 21982, 21153, 20323, 
+	  19494, 18664, 17835, 17005, 16176, 15346, 14517, 13687, 
+	  12858, 12028, 11199, 10369, 9539, 8710, 7880, 7051, 
+	  6221, 5392, 4562, 3733, 2903, 2074, 1244, 415, 
+	  -415, -1244, -2074, -2903, -3733, -4562, -5392, -6221, 
+	  -7051, -7880, -8710, -9539, -10369, -11199, -12028, -12858, 
+	  -13687, -14517, -15346, -16176, -17005, -17835, -18664, -19494, 
+	  -20323, -21153, -21982, -22812, -23641, -24471, -25300, -26130, 
+	  -26959, -27789, -28618, -29448, -30277, -31107, -31936, -32766 ; 
 	prs_sfc=		 1, 2, 3, 4, 5, 6, 7, 8,
 				 9,10,11,12,13,14,15,16,
 				17,18,19,20,21,22,23,24,

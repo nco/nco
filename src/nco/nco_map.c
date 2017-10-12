@@ -185,7 +185,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     assert(lat_nbr_out*lon_nbr_out == (long)grd_sz_out);
   } /* !dst_grid_rank */
 
-#if 0
+#if 1
   /* Obtain grid values necessary to compute output latitude and longitude coordinates */
   int area_dst_id; /* [id] Area variable ID */
   int col_src_adr_id; /* [id] Source address (col) variable ID */
