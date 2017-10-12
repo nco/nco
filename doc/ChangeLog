@@ -1,5 +1,7 @@
 2017-10-12  Charlie Zender  <zender@uci.edu>
 
+	* Read coordinates from source grid in nco_map_mk()
+
 	* Modify in.cdl to include three_dmn_rec_var_pck to test masking weighted averages of packed variables for Antonio Rodrigues
 
 2017-10-11  Charlie Zender  <zender@uci.edu>
