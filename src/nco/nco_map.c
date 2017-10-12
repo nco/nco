@@ -32,7 +32,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   int in_id_dst; /* I [id] Input netCDF file ID */
   int in_id_src; /* I [id] Input netCDF file ID */
   int md_open; /* [enm] Mode flag for nc_open() call */
-  int rcd=NCO_NOERR;
+  int rcd=NC_NOERR;
 
   int dst_grid_corners_id; /* [id] Destination grid corners dimension ID */
   int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
@@ -118,7 +118,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   
   rcd+=nco_inq_varid(in_id_src,"grid_dims",&dmn_sz_in_int_id);
   rcd+=nco_inq_varid(in_id_dst,"grid_dims",&dmn_sz_out_int_id);
-  assert(rcd != NC_NOERR);
+  assert(rcd == NC_NOERR);
 
   dmn_srt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
   dmn_cnt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
@@ -270,7 +270,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   /* Close input netCDF file */
   nco_close(out_id);
   
-  assert(rcd != NC_NOERR);
+  assert(rcd == NC_NOERR);
 
   /* Clean-up dynamic memory */
   if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);

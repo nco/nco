@@ -1,5 +1,7 @@
 2017-10-11  Charlie Zender  <zender@uci.edu>
 
+	* Corrent NC_NOERR checks
+
 	* Read, error-correct, and write src/dst grid rank and dimensions in nco_map_mk()
 
 	* Fix/change --weight et al. to option_type=required_argument in ncwa.c, ncflint.c
