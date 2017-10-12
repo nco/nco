@@ -133,13 +133,13 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   dmn_cnt[0]=mpf.dst_grid_rank;
   rcd=nco_get_vara(in_id_dst,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
 
-  /* Check-for and workaround faulty Tempest and MPAS-O/I grid sizes */
+  /* Check-for and workaround faulty grid sizes, typically from bogus dual-grid generation algorithm */
   if(flg_grd_in_1D && (mpf.src_grid_size != dmn_sz_in_int[0])){
-    (void)fprintf(stdout,"%s: INFO %s reports input grid dimension sizes disagree: mpf.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect src_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.src_grid_size,dmn_sz_in_int[0]);
+    (void)fprintf(stdout,"%s: INFO %s reports input grid dimension sizes disagree: mpf.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect grid_dims variable in source gridfile. This is a known issue with some gridfiles generated prior to ~20150901, particularly for spectral element dual-grids. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.src_grid_size,dmn_sz_in_int[0]);
       dmn_sz_in_int[0]=mpf.src_grid_size;
   } /* !bug */
   if(flg_grd_out_1D && (mpf.dst_grid_size != dmn_sz_out_int[0])){
-    (void)fprintf(stdout,"%s: INFO %s reports output grid dimension sizes disagree: mpf.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect dst_grid_dims variable. This is a known issue with some TempestRemap mapfiles generated prior to ~20150901, and in some ESMF mapfiles for MPAS-O/I. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.dst_grid_size,dmn_sz_out_int[0]);
+    (void)fprintf(stdout,"%s: INFO %s reports output grid dimension sizes disagree: mpf.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect grid_dims variable in destination gridfile. This is a known issue with gridfiles generated prior to ~20150901, particularly for spectral element dual-grids. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.dst_grid_size,dmn_sz_out_int[0]);
     dmn_sz_out_int[0]=mpf.dst_grid_size;
   } /* !bug */
 
@@ -270,7 +270,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   /* Close input netCDF file */
   nco_close(out_id);
   
-  //  assert(rcd != NC_NOERR);
+  assert(rcd != NC_NOERR);
 
   /* Clean-up dynamic memory */
   if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
