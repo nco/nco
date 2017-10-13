@@ -234,6 +234,32 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_inq_varid(in_id_dst,"grid_corner_lat",&dst_grd_crn_lat_id); /* ESMF: yv_b */
   rcd+=nco_inq_varid(in_id_dst,"grid_imask",&msk_out_id); /* ESMF: msk_b */
 
+  /* Ensure coordinates are in degrees not radians for simplicity and CF-compliance
+     NB: ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc has [xy]?_a in degrees and [xy]?_b in radians! */
+  char unt_sng[]="units"; /* [sng] netCDF-standard units attribute name */
+  nco_bool flg_crd_rdn_src=False; /* [flg] Source coordinates are in radians not degrees */
+  rcd=nco_inq_att_flg(in_id_src,src_grd_ctr_lat_id,unt_sng,&att_typ,&att_sz);
+  if(rcd == NC_NOERR && att_typ == NC_CHAR){
+    att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+    rcd+=nco_get_att(in_id,src_grd_ctr_lat_id,unt_sng,att_val,att_typ);
+    /* NUL-terminate attribute before using strstr() */
+    att_val[att_sz]='\0';
+    /* Match "radian" and "radians" */
+    if(strstr(att_val,"radian")) flg_crd_rdn_src=True;
+    if(att_val) att_val=(char *)nco_free(att_val);
+  } /* end rcd && att_typ */
+  nco_bool flg_crd_rdn_dst=False; /* [flg] Destination coordinates are in radians not degrees */
+  rcd=nco_inq_att_flg(in_id_dst,dst_grd_ctr_lat_id,unt_sng,&att_typ,&att_sz);
+  if(rcd == NC_NOERR && att_typ == NC_CHAR){
+    att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+    rcd+=nco_get_att(in_id,dst_grd_ctr_lat_id,unt_sng,att_val,att_typ);
+    /* NUL-terminate attribute before using strstr() */
+    att_val[att_sz]='\0';
+    /* Match "radian" and "radians" */
+    if(strstr(att_val,"radian")) flg_crd_rdn_dst=True;
+    if(att_val) att_val=(char *)nco_free(att_val);
+  } /* end rcd && att_typ */
+
   nco_bool flg_grd_in_crv=False; /* [flg] Curvilinear coordinates */
   nco_bool flg_grd_in_rct=False; /* [flg] Rectangular coordinates */
   nco_bool flg_grd_out_crv=False; /* [flg] Curvilinear coordinates */
@@ -280,6 +306,32 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_get_vara(in_id_dst,dst_grd_crn_lon_id,dmn_srt,dmn_cnt,lon_crn_out,crd_typ);
   rcd=nco_get_vara(in_id_dst,dst_grd_crn_lat_id,dmn_srt,dmn_cnt,lat_crn_out,crd_typ);
   
+  if(flg_crd_rdn_src){
+    for(idx=0;idx<grd_sz_in;idx++){
+      lon_ctr_in[idx]*=rdn2dgr;
+      lat_ctr_in[idx]*=rdn2dgr;
+    } /* !idx */
+    long grd_crn_sz_in;
+    grd_crn_sz_in=mpf.src_grid_corners*grd_sz_in;
+    for(idx=0;idx<grd_crn_sz_in;idx++){
+      lon_crn_in[idx]*=rdn2dgr;
+      lat_crn_in[idx]*=rdn2dgr;
+    } /* !idx */
+  } /* !rdn */
+  
+  if(flg_crd_rdn_dst){
+    for(idx=0;idx<grd_sz_out;idx++){
+      lon_ctr_out[idx]*=rdn2dgr;
+      lat_ctr_out[idx]*=rdn2dgr;
+    } /* !idx */
+    long grd_crn_sz_out;
+    grd_crn_sz_out=mpf.dst_grid_corners*grd_sz_out;
+    for(idx=0;idx<grd_crn_sz_out;idx++){
+      lon_crn_out[idx]*=rdn2dgr;
+      lat_crn_out[idx]*=rdn2dgr;
+    } /* !idx */
+  } /* !rdn */
+
   /* User may specify curvilinear grid (with --rgr crv). Otherwise, manually test for curvilinear source grid. */
   if(flg_grd_in_2D){
     flg_grd_in_crv=rgr->flg_crv; /* [flg] Curvilinear coordinates */
