@@ -22,6 +22,10 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   char *fl_in_src;
   char *fl_pth_lcl=NULL;
 
+  const double rdn2dgr=180.0/M_PI;
+  const double dgr2rdn=M_PI/180.0;
+  const double eps_rlt=1.0e-14; /* [frc] Round-off error tolerance */
+
   double *area_in=NULL; /* [sr] Area of source grid */
   double *frc_in=NULL; /* [frc] Fraction of source grid */
   double *lat_crn_in=NULL; /* [dgr] Latitude  corners of source grid */
@@ -84,6 +88,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   
   long *dmn_cnt=NULL;
   long *dmn_srt=NULL;
+
   long idx; /* [idx] Counting index for unrolled grids */
 
   nco_bool FL_RTR_RMT_LCN_DST;
@@ -236,12 +241,15 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   /* Ensure coordinates are in degrees not radians for simplicity and CF-compliance
      NB: ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc has [xy]?_a in degrees and [xy]?_b in radians! */
+  char *att_val;
   char unt_sng[]="units"; /* [sng] netCDF-standard units attribute name */
+  long att_sz;
+  nc_type att_typ;
   nco_bool flg_crd_rdn_src=False; /* [flg] Source coordinates are in radians not degrees */
   rcd=nco_inq_att_flg(in_id_src,src_grd_ctr_lat_id,unt_sng,&att_typ,&att_sz);
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
     att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-    rcd+=nco_get_att(in_id,src_grd_ctr_lat_id,unt_sng,att_val,att_typ);
+    rcd+=nco_get_att(in_id_src,src_grd_ctr_lat_id,unt_sng,att_val,att_typ);
     /* NUL-terminate attribute before using strstr() */
     att_val[att_sz]='\0';
     /* Match "radian" and "radians" */
@@ -252,7 +260,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_inq_att_flg(in_id_dst,dst_grd_ctr_lat_id,unt_sng,&att_typ,&att_sz);
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
     att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-    rcd+=nco_get_att(in_id,dst_grd_ctr_lat_id,unt_sng,att_val,att_typ);
+    rcd+=nco_get_att(in_id_dst,dst_grd_ctr_lat_id,unt_sng,att_val,att_typ);
     /* NUL-terminate attribute before using strstr() */
     att_val[att_sz]='\0';
     /* Match "radian" and "radians" */
@@ -502,7 +510,6 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   /* Define global and "units" attributes */
   aed_sct aed_mtd;
   char *att_nm;
-  char *att_val;
 
   att_nm=strdup("title");
   att_val=strdup(rgr->grd_ttl);
