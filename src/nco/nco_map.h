@@ -39,6 +39,35 @@ extern "C" {
   nco_map_mk /* [fnc] Create ESMF-format map file */
   (rgr_sct * const rgr); /* I/O [sct] Regridding structure */
 
+  int /* O [enm] Return code */
+  nco_msh_mk /* [fnc] Compute overlap mesh and weights */
+  (rgr_sct * const rgr, /* I [sct] Regridding structure */
+   
+   double *area_in, /* I [sr] Area of source grid */
+   int *msk_in, /* I [flg] Mask on source grid */
+   double *lat_ctr_in, /* I [dgr] Latitude  centers of source grid */
+   double *lon_ctr_in, /* I [dgr] Longitude centers of source grid */
+   double *lat_crn_in, /* I [dgr] Latitude  corners of source grid */
+   double *lon_crn_in, /* I [dgr] Longitude corners of source grid */
+   size_t grd_sz_in, /* I [nbr] Number of elements in single layer of source grid */
+   long grd_crn_nbr_in, /* I [nbr] Maximum number of corners in source gridcell */
+   
+   double *area_out, /* I [sr] Area of destination grid */
+   int *msk_out, /* I [flg] Mask on destination grid */
+   double *lat_ctr_out, /* I [dgr] Latitude  centers of destination grid */
+   double *lon_ctr_out, /* I [dgr] Longitude centers of destination grid */
+   double *lat_crn_out, /* I [dgr] Latitude  corners of destination grid */
+   double *lon_crn_out, /* I [dgr] Longitude corners of destination grid */
+   size_t grd_sz_out, /* I [nbr] Number of elements in single layer of destination grid */
+   long grd_crn_nbr_out, /* I [nbr] Maximum number of corners in destination gridcell */
+   
+   double **frc_in_ptr, /* O [frc] Fraction of source grid */
+   double **frc_out_ptr, /* O [frc] Fraction of destination grid */
+   int **col_src_adr_ptr, /* O [idx] Source address (col) */
+   int **row_dst_adr_ptr, /* O [idx] Destination address (row) */
+   double **wgt_raw_ptr, /* O [frc] Remapping weights */ 
+   size_t *lnk_nbr_ptr); /* O [nbr] Number of links */
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

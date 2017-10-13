@@ -1,5 +1,7 @@
 2017-10-13  Charlie Zender  <zender@uci.edu>
 
+	* Create nco_msh_mk() to compute overlap mesh
+
 	* Ensure input and output coordinates all in degrees
 
 	* Important milestone: All supplied grid information is read-in, and all mapfile information is written-out

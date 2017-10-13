@@ -3113,12 +3113,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   double *wgt_vld_out=NULL;
   double var_val_crr;
   int *tally=NULL; /* [nbr] Number of valid (non-missing) values */
-  size_t idx_in; /* [idx] Input grid index */
-  size_t idx_out; /* [idx] Output grid index */
   int lvl_idx; /* [idx] Level index */
   int lvl_nbr; /* [nbr] Number of levels */
   int thr_idx; /* [idx] Thread index */
   size_t dst_idx; 
+  size_t idx_in; /* [idx] Input grid index */
+  size_t idx_out; /* [idx] Output grid index */
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
@@ -3127,7 +3127,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: # means regridded, ~ means copied\n");
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning
-     Copy appropriate filehandle to variable scoped shared in parallel clause */
+     Copy appropriate filehandle to variable scoped as shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
   /* OpenMP notes:

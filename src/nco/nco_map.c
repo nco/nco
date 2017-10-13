@@ -429,23 +429,15 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   fl_out_fmt=rgr->fl_out_fmt;
   fl_out=rgr->fl_map;
 
-  /* fxm: Routine to define overlap mesh vertices goes here */
-  lnk_nbr=1L;
+  /* Define overlap mesh vertices, count links, compute overlap weights
+     This includes Mohammed Abouali code to create triangle list and Zender code to compute triangle areas */
+  (void)nco_msh_mk
+    (rgr,
+     area_in,msk_in,lat_ctr_in,lon_ctr_in,lat_crn_in,lon_crn_in,grd_sz_in,mpf.src_grid_corners,
+     area_out,msk_out,lat_ctr_out,lon_ctr_out,lat_crn_out,lon_crn_out,grd_sz_out,mpf.dst_grid_corners,
+     &frc_in,&frc_out,&col_src_adr,&row_dst_adr,&wgt_raw,&lnk_nbr);
 
-  /* Allocate space for and obtain weights and addresses */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile based on %li links\n",nco_prg_nm_get(),lnk_nbr);
-  wgt_raw=(double *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_DOUBLE),fnc_nm,"Unable to malloc() value buffer for remapping weights");
-  col_src_adr=(int *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
-  row_dst_adr=(int *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
-
-  /* Spoof arguments to be defined in previous subroutines */
-  for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=0.0;
-  for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=-1;
-  for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=-1;
-  for(idx=0;idx<src_grd_sz_nbr;idx++) frc_in[idx]=0.0;
-  for(idx=0;idx<dst_grd_sz_nbr;idx++) frc_out[idx]=0.0;
-
-  /* fxm: Routine to compute areas and weights of overlap mesh goes here (though could be combined with mesh definition) */
 
   /* Open mapfile */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -738,3 +730,76 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   return rcd;
 } /* !nco_map_mk() */
+
+int /* O [enm] Return code */
+nco_msh_mk /* [fnc] Compute overlap mesh and weights */
+(rgr_sct * const rgr, /* I [sct] Regridding structure */
+
+ double *area_in, /* I [sr] Area of source grid */
+ int *msk_in, /* I [flg] Mask on source grid */
+ double *lat_ctr_in, /* I [dgr] Latitude  centers of source grid */
+ double *lon_ctr_in, /* I [dgr] Longitude centers of source grid */
+ double *lat_crn_in, /* I [dgr] Latitude  corners of source grid */
+ double *lon_crn_in, /* I [dgr] Longitude corners of source grid */
+ size_t grd_sz_in, /* I [nbr] Number of elements in single layer of source grid */
+ long grd_crn_nbr_in, /* I [nbr] Maximum number of corners in source gridcell */
+
+ double *area_out, /* I [sr] Area of destination grid */
+ int *msk_out, /* I [flg] Mask on destination grid */
+ double *lat_ctr_out, /* I [dgr] Latitude  centers of destination grid */
+ double *lon_ctr_out, /* I [dgr] Longitude centers of destination grid */
+ double *lat_crn_out, /* I [dgr] Latitude  corners of destination grid */
+ double *lon_crn_out, /* I [dgr] Longitude corners of destination grid */
+ size_t grd_sz_out, /* I [nbr] Number of elements in single layer of destination grid */
+ long grd_crn_nbr_out, /* I [nbr] Maximum number of corners in destination gridcell */
+
+ double **frc_in_ptr, /* O [frc] Fraction of source grid */
+ double **frc_out_ptr, /* O [frc] Fraction of destination grid */
+ int **col_src_adr_ptr, /* O [idx] Source address (col) */
+ int **row_dst_adr_ptr, /* O [idx] Destination address (row) */
+ double **wgt_raw_ptr, /* O [frc] Remapping weights */ 
+ size_t *lnk_nbr_ptr) /* O [nbr] Number of links */
+{
+  /* Purpose: Compute overlap mesh and weights */
+  const char fnc_nm[]="nco_msh_mk()";
+
+  double *frc_in; /* [frc] Fraction of source grid */
+  double *frc_out; /* [frc] Fraction of destination grid */
+  double *wgt_raw; /* [frc] Remapping weights */ 
+
+  int *col_src_adr; /* [idx] Source address (col) */
+  int *row_dst_adr; /* [idx] Destination address (row) */
+
+  int rcd=NCO_NOERR;
+
+  long idx; /* [idx] Counting index for unrolled grids */
+
+  size_t lnk_nbr; /* [nbr] Number of links */
+  size_t lnk_idx; /* [idx] Link index */
+
+  /* Do hard stuff now 
+     Here begins loops to construct overlap mesh 
+     NB: Loop should be parallelized with OpenMP and/or MPI */
+
+  lnk_nbr=1L;
+  
+  wgt_raw=(double *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_DOUBLE),fnc_nm,"Unable to malloc() value buffer for remapping weights");
+  col_src_adr=(int *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
+  row_dst_adr=(int *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
+
+  /* Initialize arguments before they are actually computed */
+  for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=0.0;
+  for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=-1;
+  for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=-1;
+  for(idx=0;idx<grd_sz_in;idx++) frc_in[idx]=0.0;
+  for(idx=0;idx<grd_sz_out;idx++) frc_out[idx]=0.0;
+
+  *wgt_raw_ptr=wgt_raw;
+  *col_src_adr_ptr=col_src_adr;
+  *row_dst_adr_ptr=row_dst_adr;
+  *frc_in_ptr=frc_in;
+  *frc_out_ptr=frc_out;
+  *lnk_nbr_ptr=lnk_nbr;
+
+  return rcd;
+} /* !nco_msh_mk() */
