@@ -1138,7 +1138,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd=nco_get_vara(in_id,dst_grd_crn_lon_id,dmn_srt,dmn_cnt,lon_crn_out,crd_typ_out);
     rcd=nco_get_vara(in_id,dst_grd_crn_lat_id,dmn_srt,dmn_cnt,lat_crn_out,crd_typ_out);
 
-    /* User may specify curvilinear grid (with --rgr crv). If not specified, manually test output grid for curvilinearity... */
+    /* User may specify curvilinear grid (with --rgr crv). Otherwise, manually test for curvilinear source grid. */
     flg_grd_out_crv=rgr->flg_crv; /* [flg] Curvilinear coordinates */
     if(flg_grd_out_crv){
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Output grid specified to be %s\n",nco_prg_nm_get(),flg_grd_out_crv ? "Curvilinear" : "Rectangular");
@@ -1294,7 +1294,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     msk_out=(int *)nco_malloc(grd_sz_out*nco_typ_lng(NC_INT));
     dmn_srt[0]=0L;
     dmn_cnt[0]=grd_sz_out;
-    rcd=nco_get_vara(in_id,msk_dst_id,dmn_srt,dmn_cnt,msk_out,NC_INT);
+    rcd=nco_get_vara(in_id,msk_dst_id,dmn_srt,dmn_cnt,msk_out,(nc_type)NC_INT);
   } /* !msk */
   
   /* Derive 2D interface boundaries from lat and lon grid-center values
@@ -4908,7 +4908,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   (void)nco_def_var(out_id,grd_crn_lon_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lon_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_crn_lon_id,shuffle,deflate,dfl_lvl);
 
-  /* Define "units" attributes */
+  /* Define global and "units" attributes */
   aed_sct aed_mtd;
   char *att_nm;
   char *att_val;

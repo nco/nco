@@ -419,6 +419,18 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
 
+# icc/icpc 20171013 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cheyenne:
+# Sysadmin upgrade request: cislhelp@ucar.edu
+# Latest ticket: fxm on fxm
+# Latest sysadmin-compiled module usage: module load nco/4.6.9 # 20171002
+# Personal recipe last modified: 20171013
+# Personal recipe last used successfully: 20171013 (except ncap2, which would require backporting to inter 16.0.3 to get gsl)
+module add gsl
+export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/bin # needed for ncgen
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
+cd ~/nco;git reset --hard origin/master
+cd ~/nco/bld;make NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
+
 # gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 358890 on 20170526
