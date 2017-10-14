@@ -435,7 +435,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     (rgr,
      area_in,msk_in,lat_ctr_in,lon_ctr_in,lat_crn_in,lon_crn_in,grd_sz_in,mpf.src_grid_corners,
      area_out,msk_out,lat_ctr_out,lon_ctr_out,lat_crn_out,lon_crn_out,grd_sz_out,mpf.dst_grid_corners,
-     &frc_in,&frc_out,&col_src_adr,&row_dst_adr,&wgt_raw,&lnk_nbr);
+     frc_in,frc_out,&col_src_adr,&row_dst_adr,&wgt_raw,&lnk_nbr);
 
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile based on %li links\n",nco_prg_nm_get(),lnk_nbr);
 
@@ -753,8 +753,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
  size_t grd_sz_out, /* I [nbr] Number of elements in single layer of destination grid */
  long grd_crn_nbr_out, /* I [nbr] Maximum number of corners in destination gridcell */
 
- double **frc_in_ptr, /* O [frc] Fraction of source grid */
- double **frc_out_ptr, /* O [frc] Fraction of destination grid */
+ double *frc_in, /* O [frc] Fraction of source grid */
+ double *frc_out, /* O [frc] Fraction of destination grid */
  int **col_src_adr_ptr, /* O [idx] Source address (col) */
  int **row_dst_adr_ptr, /* O [idx] Destination address (row) */
  double **wgt_raw_ptr, /* O [frc] Remapping weights */ 
@@ -763,8 +763,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   /* Purpose: Compute overlap mesh and weights */
   const char fnc_nm[]="nco_msh_mk()";
 
-  double *frc_in; /* [frc] Fraction of source grid */
-  double *frc_out; /* [frc] Fraction of destination grid */
   double *wgt_raw; /* [frc] Remapping weights */ 
 
   int *col_src_adr; /* [idx] Source address (col) */
@@ -797,8 +795,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *wgt_raw_ptr=wgt_raw;
   *col_src_adr_ptr=col_src_adr;
   *row_dst_adr_ptr=row_dst_adr;
-  *frc_in_ptr=frc_in;
-  *frc_out_ptr=frc_out;
   *lnk_nbr_ptr=lnk_nbr;
 
   return rcd;

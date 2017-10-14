@@ -61,8 +61,8 @@ extern "C" {
    size_t grd_sz_out, /* I [nbr] Number of elements in single layer of destination grid */
    long grd_crn_nbr_out, /* I [nbr] Maximum number of corners in destination gridcell */
    
-   double **frc_in_ptr, /* O [frc] Fraction of source grid */
-   double **frc_out_ptr, /* O [frc] Fraction of destination grid */
+   double *frc_in, /* O [frc] Fraction of source grid */
+   double *frc_out, /* O [frc] Fraction of destination grid */
    int **col_src_adr_ptr, /* O [idx] Source address (col) */
    int **row_dst_adr_ptr, /* O [idx] Destination address (row) */
    double **wgt_raw_ptr, /* O [frc] Remapping weights */ 
