@@ -1,10 +1,16 @@
+2017-10-15  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.0-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.0-alpha03 final changes';git push
+	git tag -a 4.7.0-alpha03 -m 'nco_map/msh_mk() routines;ncclimo deflate';git push --tags
+
 2017-10-13  Charlie Zender  <zender@uci.edu>
 
 	* Create nco_msh_mk() to compute overlap mesh
 
 	* Ensure input and output coordinates all in degrees
 
-	* Important milestone: All supplied grid information is read-in, and all mapfile information is written-out
+	* Milestone: Supplied grid information is read-in, and mapfile information is written-out
 
 2017-10-12  Charlie Zender  <zender@uci.edu>
 
