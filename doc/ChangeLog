@@ -1,7 +1,7 @@
 2017-10-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.0-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.0-alpha03 final changes';git push
+	cd ~/nco;git commit -a -m 'Version 4.7.0-alpha03: Ultrasonic Curtains';git push
 	git tag -a 4.7.0-alpha03 -m 'nco_map/msh_mk() routines;ncclimo deflate';git push --tags
 
 2017-10-13  Charlie Zender  <zender@uci.edu>
