@@ -14064,6 +14064,51 @@ print(tNew);
 @end verbatim
 @end example
 
+@noindent strftime()
+
+The @code{var_str=strtime(var_time, fmt_sng )} method take time based variable and a format string and returns a NC_STRING variable ( of the same shape as var_time) of time-stamps in the form specified by 'fmt_sng'. In order to run this command output type must be NetCDF-4  
+
+@example 
+@verbatim
+ncap2 -4  -v -O -s 'time_str=strftime(time,"%Y-%m-%d");' in.nc foo.nc
+
+time_str="1964-03-13", "1964-03-14", "1964-03-15", "1964-03-16", 
+         "1964-03-17", "1964-03-18", "1964-03-19", "1964-03-20", 
+         "1964-03-21", "1964-03-22" ;
+
+@end verbatim
+@end example
+
+Under the hood there are  a few steps invoved. @*
+First the method reads 'var_time@@units' and 'var_time@@calendar' (if present)  then  converts  var-time  to 'seconds since 1970-01-01'. @*
+It then converts these possibly UTC seconds to the standard struture @code{struct *tm}.@* 
+Finally strftime is called with fmt_sng and the *tm struct. @*
+The c-standard @code{strftime} is used as defined in 'time.h' @*
+If the method is called without fmt_sng then the following default is used: @code{"%Y-%m-%d %H:%M:%S"} @*
+     
+@example 
+@verbatim
+ncap2 -4  -v -O -s 'time_str=strftime(time);' in.nc foo.nc
+
+time_str = "1964-03-13 21:09:00", "1964-03-14 21:09:00", "1964-03-15 21:09:00", 
+           "1964-03-16 21:09:00", "1964-03-17 21:09:00", "1964-03-18 21:09:00", 
+           "1964-03-19 21:09:00", "1964-03-20 21:09:00", "1964-03-21 21:09:00", 
+           "1964-03-22 21:09:00" ;
+
+@end verbatim
+@end example
+
+@noindent Another  working example
+@example
+@verbatim
+ncap2 -v -O -s 'ts=strftime(frametime(0),"%Y-%m-%d/envlog_netcdf_L1_ua-mac_%Y-%m-%d.nc");' in.nc out.nc
+ts="2017-08-11/envlog_netcdf_L1_ua-mac_2017-08-11.nc" 
+@end verbatim
+@end example
+
+
+
+
 @node Vpointer, Irregular grids, UDUnits script, ncap2 netCDF Arithmetic Processor
 @subsection Vpointer
 @cindex vpointer
@@ -15035,6 +15080,36 @@ yout[e1]=0.0;
 yout=gsl_fit_linear_est(xout, c0,c1, cov00,cov01, cov11, sumsq);
 
 print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
+@end verbatim
+@end example
+
+@*@*
+@noindent The following code does linear regression of sst(time,lat,lon) for each time-step@* @*
+
+@example
+@verbatim
+// Declare variables
+c0[$lat, $lon]=0.; // Intercept
+c1[$lat, $lon]=0.; // Slope
+sdv[$lat, $lon]=0.; // Standard deviation
+covxy[$lat, $lon]=0.; // Covariance
+for (i=0;i<$lat.size;i++) // Loop over lat
+{
+  for (j=0;j<$lon.size;j++) // Loop over lon
+  {
+      // Linear regression function
+      gsl_fit_linear(time,1,sst(:, i, j),1, $time.size, &tc0, &tc1, &cov00, &cov01,&cov11,&sumsq); 
+      c0(i,j) = tc0; // Output results
+      c1(i,j) = tc1; // Output results
+      // Covariance function
+      covxy(i,j) = gsl_stats_covariance(time,1,$time.size,double(sst(:,i,j)),1,$time.size); 
+      // Standard deviation function
+      sdv(i,j) = gsl_stats_sd(sst(:,i,j), 1, $time.size); 
+  }
+ }
+
+// slope (c1) missing values are set to '0', change to -999. (variable c0 intercept value)
+where( c0 == -999 ) c1 = -999;
 @end verbatim
 @end example
 @* @*
