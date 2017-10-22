@@ -97,6 +97,47 @@ netcdf in_grp {
   
   float lat_lon(lat,lon);
 
+  float att_var(time);
+ att_var:byte_att = '\000','\001','\002','\177','\200','\201','\376','\377';
+ att_var:char_att = "Sentence one.\nSentence two.\n";
+ att_var:short_att = 37s;
+ att_var:int_att = 73;
+ att_var:long_att = 73;
+ att_var:float_att = 73.0f,72.0f,71.0f,70.010f,69.0010f,68.010000f,67.01000100f;
+ att_var:double_att = 73.0,72.0,71.0,70.010,69.0010,68.010000,67.01000100;
+  
+  int att_var_jsn;
+ att_var_jsn:char\ att\ with\ whitespace = "cf-json.org <http://cf-json.org>";
+ att_var_jsn:double\ att\ with\ whitespace = 3.14;
+ att_var_jsn:int\ att\ with\ whitespace = 1;
+ att_var_jsn:int_array\ att\ with\ whitespace = 1,2;
+ string att_var_jsn:string_array\ att\ with\ whitespace = "1","2";
+  
+  // Purpose: Test special characters in names
+  // Most special characters need backslash protection
+  int att_var_spc_chr;
+ att_var_spc_chr:space\ in\ name = "foo";
+ att_var_spc_chr:comma_in_name\, = "foo";
+ att_var_spc_chr:lt_in_name\< = "foo";
+ att_var_spc_chr:gt_in_name\> = "foo";
+ att_var_spc_chr:hash_in_name\# = "foo";
+ att_var_spc_chr:xclaim_in_name\! = "foo";
+ att_var_spc_chr:dollar_in_name\$ = "foo";
+ att_var_spc_chr:ampersand_in_name\& = "foo";
+ att_var_spc_chr:equals_in_name\= = "foo";
+ att_var_spc_chr:semicolon_in_name\; = "foo";
+ att_var_spc_chr:colon_in_name\: = "foo";
+ att_var_spc_chr:lbrace_in_name\{ = "foo";
+ att_var_spc_chr:rbrace_in_name\} = "foo";
+ att_var_spc_chr:lparen_in_name\( = "foo";
+ att_var_spc_chr:rparen_in_name\) = "foo";
+ att_var_spc_chr:lbracket_in_name\[ = "foo";
+ att_var_spc_chr:rbracket_in_name\] = "foo";
+ att_var_spc_chr:plus_in_name+ = "foo";
+  //  : period_in_name. = "foo"; // Likely to cause DAP server error
+ att_var_spc_chr:hyphen_in_name- = "foo";
+ att_var_spc_chr:at_in_name@ = "foo";
+  
 // Global attributes
   :Conventions = "CF-1.0";
   :history = "History global attribute.\n";
@@ -118,6 +159,9 @@ netcdf in_grp {
   time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
   unique=73;
   val_one_mss=1.,1.0e36;
+  att_var=10.0,10.1,10.20,10.3000,10.40101,10.500001,10.60000001,10.7000001,10.80,10.9900;
+  att_var_jsn=73;
+  att_var_spc_chr=73;
 
  group: g1 { 
   :history = "History group attribute.\n";
@@ -487,6 +531,7 @@ netcdf in_grp {
  group: g12 { // Level 1
     // Purpose: Test special characters in names
     // Most special characters need backslash protection
+  : space\ in\ name = "foo";
   : comma_in_name\, = "foo";
   : lt_in_name\< = "foo";
   : gt_in_name\> = "foo";
