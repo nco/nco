@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.0-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 15 October 2017
+@set update-date 25 October 2017
 @set update-month October 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22008,7 +22008,7 @@ SYNTAX
 ncremap [-3] [-4] [-5] [-6] [-7] 
 [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--fl_fmt=@var{fl_fmt}] 
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
-[-M] [-m @var{map_fl}] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}]
+[-L @var{dfl_lvl}] [-M] [-m @var{map_fl}] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}]
 [-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}]
 [-P @var{prc_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]

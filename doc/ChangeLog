@@ -1,3 +1,7 @@
+2017-10-25  Charlie Zender  <zender@uci.edu>
+
+	* Add, document, and test -L dfl_lvl option to ncremap
+
 2017-10-22  Charlie Zender  <zender@uci.edu>
 
 	* Add att_var_jsn to in.cdl in_grp.cdl to demonstrate JSON formats
