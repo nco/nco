@@ -11274,34 +11274,36 @@ metadata.
 Skip this section if you never work with @acronym{CF} metadata.
 
 The latest @acronym{CF} netCDF conventions are described 
-@uref{http://cfconventions.org/1.6.html, here}. 
+@uref{http://cfconventions.org/1.7.html, here}. 
 Most @acronym{CF} netCDF conventions are transparent to @acronym{NCO}.
 There are no known pitfalls associated with using any @acronym{NCO}
 operator on files adhering to these conventions.
-To increase user friendliness, @acronym{NCO} applies special rules to
-certain variables in @acronym{CF} files. 
-Rules not required by @acronym{CF} are because experience shows that
-they simplify data analysis.   
+@acronym{NCO} applies some rules that are not in @acronym{CF}, or
+anywhere else, because experience shows that they simplify
+data analysis, and stay true to the @acronym{NCO} mantra to do what 
+users want.
 
 Here is a general sense of @acronym{NCO}'s @acronym{CF}-support: 
-Understanding and implementing @acronym{NUG} recommendations such
+@itemize @bullet
+@item Understand and implement @acronym{NUG} recommendations such
 as the history attribute, packing conventions, and attention to units. 
-Special handling of variables designated as coordinates, bounds, or
-ancillary variables, so that users subsetting a certain variable
+@item Special handling of variables designated as coordinates, bounds,
+or ancillary variables, so that users subsetting a certain variable
 automatically obtain all related variables.
-Special handling and prevention of meaningless operations 
+@item Special handling and prevention of meaningless operations 
 (e.g., the root-mean-square of latitude) so that coordinates and bounds
-preserve meaningful information even as normal fields are statistically
-transformed.
-Understanding units and certain calendars so that hyperslabs
+preserve meaningful information even as normal (non-coordinate) fields
+are statistically transformed.
+@item Understand units and certain calendars so that hyperslabs
 may be specified in physical units, and so that user needs not manually
 decode per-file time specifications.
-Understanding auxiliary coordinates so that irregular hyperslabs may be
-specified on complex geometric grids.
-Checking for CF-compliance on netCDF3 and netCDF4 and @acronym{HDF}
+@item Understand auxiliary coordinates so that irregular hyperslabs may
+be specified on complex geometric grids.
+@item Check for CF-compliance on netCDF3 and netCDF4 and @acronym{HDF}
 files. 
-Converting netCDF4 and @acronym{HDF} files to netCDF3 for strict  
-@acronym{CF}-compliance.
+@item Convert netCDF4 and @acronym{HDF} files to netCDF3 for strict
+@acronym{CF}-compliance. 
+@end itemize
 Finally, a main use of @acronym{NCO} is to ``produce @acronym{CF}'', 
 i.e., to improve @acronym{CF}-compliance by annotating metadata,
 renaming objects (attributes, variables, and dimensions), permuting and
@@ -16304,8 +16306,8 @@ The description of these arguments follows in their order of
 appearance. 
 
 The value of @var{att_nm} is the name of the attribute to edit. 
-This meaning of this should be clear to all @command{ncatted} users.
-Both @var{att_nm}) and @var{var_nm} may be specified as regular
+The meaning of this should be clear to all @command{ncatted} users.
+Both @var{att_nm} and @var{var_nm} may be specified as regular
 expressions.
 If @var{att_nm} is omitted (i.e., left blank) and @dfn{Delete} mode is 
 selected, then all attributes associated with the specified variable
