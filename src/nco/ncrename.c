@@ -612,12 +612,14 @@ main(int argc,char **argv)
   /* Reset error return code */
   rcd=NC_NOERR;
 
-  (void)fprintf(stdout,"%s: In total renamed ",nco_prg_nm);
-  (void)fprintf(stdout,"%d attribute%s",mch_nbr_att,mch_nbr_att != 1 ? "s" : "");
-  (void)fprintf(stdout,", %d dimension%s",mch_nbr_dmn,mch_nbr_dmn != 1 ? "s" : "");
-  (void)fprintf(stdout,", %d group%s",mch_nbr_grp,mch_nbr_grp != 1 ? "s" : "");
-  (void)fprintf(stdout,", and %d variable%s\n",mch_nbr_var,mch_nbr_var != 1 ? "s" : "");
-
+  if(nco_dbg_lvl >= nco_dbg_std){
+    (void)fprintf(stdout,"%s: In total renamed ",nco_prg_nm);
+    (void)fprintf(stdout,"%d attribute%s",mch_nbr_att,mch_nbr_att != 1 ? "s" : "");
+    (void)fprintf(stdout,", %d dimension%s",mch_nbr_dmn,mch_nbr_dmn != 1 ? "s" : "");
+    (void)fprintf(stdout,", %d group%s",mch_nbr_grp,mch_nbr_grp != 1 ? "s" : "");
+    (void)fprintf(stdout,", and %d variable%s\n",mch_nbr_var,mch_nbr_var != 1 ? "s" : "");
+  } /* !nco_dbg_lvl */
+    
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
   if(gaa_nbr > 0) (void)nco_glb_att_add(nc_id,gaa_arg,gaa_nbr);
