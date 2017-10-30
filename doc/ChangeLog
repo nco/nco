@@ -1,3 +1,9 @@
+2017-10-30  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.0-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.0-alpha04: Einstein Brown';git push
+	git tag -a 4.7.0-alpha04 -m 'ncrename quiet, ncremap dfl_lvl';git push --tags
+
 2017-10-29  Charlie Zender  <zender@uci.edu>
 
 	* Quiet ncrename: As per PJCS request, summary renaming only prints with dbg_lvl > 0
