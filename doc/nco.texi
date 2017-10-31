@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.0-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 25 October 2017
+@set update-date 31 October 2017
 @set update-month October 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20081,9 +20081,8 @@ This least pedantic mode produces the most easily read results, and
 suffices for many (most?) purposes.  
 Any downstream parser is expected to assign an appropriate type as
 indicated by @acronym{JSON} syntax rules.
-Because the original attribute's @code{NC_TYPE} is not output, it is
-not guaranteed that a downstream parser can exactly reproduce the input  
-file datatypes. 
+Because the original attributes' @code{NC_TYPE} are not output, 
+a downstream parser may not exactly reproduce the input file datatypes. 
 For example, whether the original attribute string was stored as
 @code{NC_CHAR} or @code{NC_STRING} will be unknown to a downstream
 parser.
@@ -20114,11 +20113,14 @@ for scalars (by contrast, NcML requires an empty shape string to
 indicate scalars).  
 
 @item @math{@var{lvl} = 1} is a medium-pedantic level that prints all
-attributes as objects (with explicit types) @emph{except} those
-attributes whose types match the simplest default @acronym{JSON} value
-types (@code{NC_FLOAT}, @code{NC_CHAR}/@code{NC_STRING}, @code{NC_INT}).   
-double, string, and int attributes are printed as @acronym{JSON} arrays, 
-as in the @math{@var{lvl} = 0} above:
+attributes as objects (with explicit types) unless the attribute type
+match the simplest default @acronym{JSON} value types.
+In other words, attributes of type @code{NC_FLOAT}, @code{NC_CHAR},
+@code{NC_SHORT}, and @code{NC_BYTE} are printed as objects with an
+explicit type so that parsers do not use the default type. 
+Attributes of type @code{NC_DOUBLE}, @code{NC_STRING}, and @code{NC_INT}
+are printed as @acronym{JSON} arrays, as in the @math{@var{lvl} = 0}
+above: 
 @example
 @verbatim
 % ncks --jsn_fmt=1 -v att_var ~/nco/data/in.nc
