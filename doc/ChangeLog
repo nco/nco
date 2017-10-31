@@ -1,8 +1,10 @@
-2017-10-30  Charlie Zender  <zender@uci.edu>
+2017-10-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.0-alpha04: Einstein Brown';git push
 	git tag -a 4.7.0-alpha04 -m 'ncrename quiet, ncremap dfl_lvl';git push --tags
+
+	* Add ppc option to ncclimo
 
 2017-10-29  Charlie Zender  <zender@uci.edu>
 

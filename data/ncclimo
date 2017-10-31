@@ -458,6 +458,7 @@ nd_nbr=1 # [nbr] Number of nodes
 no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ='bck' # [sng] Parallelism type
+ppc_nsd='' # [nbr] Precision-preserving compression number of significant digits
 rgr_map='' # [sng] Regridding map
 #rgr_map="${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc"
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
@@ -508,6 +509,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_rgr${fnt_nrm}  Regridded directory (default ${fnt_bld}${drc_rgr}${fnt_nrm}) [${fnt_tlc}drc_rgr, rgr_drc, dir_regrid, regrid${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
+    echo " ${fnt_bld}--ppc${fnt_nrm} ${fnt_bld}ppc_nsd${fnt_nrm} Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_nsd}${fnt_nrm}) [${fnt_tlc}ppc, precision, quantize${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rgr_map${fnt_nrm}  Regrid map (empty means none) (default ${fnt_bld}${rgr_map}${fnt_nrm}) [${fnt_tlc}rgr_map, regrid_map$, map, map_file, map_fl${fnt_nrm}]"
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
@@ -655,6 +657,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       drc_out=?* | out_drc=?* | dir_out=?* | out_dir=?* | output=?* ) drc_out_usr="${LONG_OPTARG}" ;; # -o # Output directory
 	       drc_rgr=?* | rgr_drc=?* | dir_regrid=?* | regrid_dir=?* | regrid=?* ) drc_rgr_usr="${LONG_OPTARG}" ;; # -O # Regridded directory
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
+	       ppc=?* | ppc_nsd=?* | precision=?* | quantize=?* ) ppc_nsd="${LONG_OPTARG}" ;; # # Precision-preserving compression
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
 	       rgr_map=?* | regrid_map=?* | map=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
@@ -936,6 +939,9 @@ if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
     nco_opt="${nco_opt} -v ${var_lst}"
     # fi # !mth
 fi # !var_lst
+if [ -n "${ppc_nsd}" ]; then
+    nco_opt="${nco_opt} --ppc default=${ppc_nsd}"
+fi # !ppc_nsd
 if [ -n "${dfl_lvl}" ]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
 fi # !dfl_lvl
@@ -1390,6 +1396,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
     printf "dbg: out_nm   = ${out_nm}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
+    printf "dbg: ppc_nsd  = ${ppc_nsd}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
     printf "dbg: no_ntv   = ${no_ntv_tms}\n"
