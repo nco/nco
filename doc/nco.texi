@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.0-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 31 October 2017
-@set update-month October 2017
+@set update-date 1 November 2017
+@set update-month November 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -8470,6 +8470,7 @@ value is less than one-half of one one-hundredth, i.e.,
 
 @cindex Number of Significant Digits
 @cindex @acronym{NSD}
+@cindex Bit-Grooming
 One @acronym{PPC} algorithm preserves the specified total 
 @dfn{Number of Signifcant Digits} (@acronym{NSD}) of the value.
 For example there is only one significant digit in the weight of
@@ -17230,7 +17231,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
 [--no_cll_msr ] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd]
-[-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [--ppc=@var{ppc_nsd}]
+[-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--stdin] 
 [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [-v @var{var_lst}] [--version] 
@@ -17621,6 +17622,34 @@ The default @var{par_typ} is @samp{bck}, which means @command{ncclimo}
 runs spawns up to twelve (one for each month) parallel processes at a time.
 See discussion below under Memory Considerations.
 
+@html
+<a name="ppc_prc"></a> <!-- http://nco.sf.net/nco.html#ppc_prc -->
+@end html
+@cindex @code{--ppc=@var{ppc_prc}}
+@cindex @var{ppc_prc}
+@cindex @code{--ppc}
+@cindex @code{--ppc_prc}
+@cindex @code{--precision}
+@cindex @code{--quantize}
+@item --ppc=@var{ppc_prc} (@code{--ppc}, @code{--ppc_prc}, @code{--precision}, @code{--quantize})
+@cindex Decimal Significant Digits
+@cindex Number of Significant Digits
+@cindex Bit-Grooming
+Specifies the precision of the Precision-Preserving Compression
+algorithm (@pxref{Precision-Preserving Compression}).
+A positive integer is interpreted as the Number of Significant Digits
+for the Bit-Grooming algorithm, and is equivalent to specifying
+@samp{--ppc default=@var{ppc_prc}} to a binary operator.
+A positive or negative integer preceded by a period, e.g., @samp{.-2} is 
+interpreted as the number of Decimal Significant Digits for the
+rounding algorithm and is equivalent to specifying
+@samp{--ppc default=.@var{ppc_prc}} to a binary operator.
+This option applies one precision algorithm and a uniform precision
+for the entire file. 
+To specify variable-by-variable precision options, pass the desired
+options as a quoted string directly with @samp{-n @var{nco_opt}},
+e.g., @samp{-n '--ppc FSNT,TREFHT=4 --ppc CLOUD=2'}.
+
 @cindex @code{-R @var{rgr_opt}}
 @cindex @var{rgr_opt}
 @cindex @code{--rgr_opt}
@@ -17662,12 +17691,12 @@ be December of the year before the start year (to allow for contiguous
 If @samp{-a sdd} is specified, the first month used is January of
 the specified start year. 
 
-@cindex @code{--seasons @var{csn_lst}}
+@cindex @code{--seasons=@var{csn_lst}}
 @cindex @var{csn_lst}
 @cindex @code{--seasons}
 @cindex @code{--csn}
 @cindex @code{--csn_lst}
-@item --seasons @var{csn_lst} (@code{--seasons}, @code{--csn_lst}, @code{--csn})
+@item --seasons=@var{csn_lst} (@code{--seasons}, @code{--csn_lst}, @code{--csn})
 Seasons for @command{ncclimo} to compute in monthly climatology
 generation mode. 
 The list of seasons, @var{csn_lst}, is a comma-separated,
@@ -17738,11 +17767,11 @@ with climatology generation in parallel climatology mode (i.e., when
 @math{@var{par_typ}} = @code{mpi} or @code{bck}). 
 Hence @command{ncclimo} defaults to @var{thr_nbr}=2.
 
-@cindex @code{--tpd_out @var{tpd_out}}
+@cindex @code{--tpd_out=@var{tpd_out}}
 @cindex @var{tpd_out}
 @cindex @code{--tpd_out}
 @cindex @code{--tpd}
-@item --tpd_out @var{tpd_out} (@code{--tpd_out}, @code{--tpd}, @code{--timesteps_per_day})
+@item --tpd_out=@var{tpd_out} (@code{--tpd_out}, @code{--tpd}, @code{--timesteps_per_day})
 The number of timesteps-per-day in output created by @command{ncclimo}'s
 climatology generator in daily average mode.
 The climatology output from input files at daily or sub-daily resolution
@@ -22015,8 +22044,8 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-L @var{dfl_lvl}] [-M] [-m @var{map_fl}] [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}]
 [-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
-[-O @var{drc_out}] [-o @var{output-file}]
-[-P @var{prc_typ}] [-p @var{par_typ}] [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]
+[-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
+[-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]
 [-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
 [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}] [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
@@ -22672,9 +22701,9 @@ renormalization.
 @cindex @var{sgs_frc}
 @cindex @var{sgs_msk}
 @cindex @var{sgs_nrm}
-@cindex @code{--sgs_frc @var{sgs_frc}}
-@cindex @code{--sgs_msk @var{sgs_msk}}
-@cindex @code{--sgs_nrm @var{sgs_nrm}}
+@cindex @code{--sgs_frc=@var{sgs_frc}}
+@cindex @code{--sgs_msk=@var{sgs_msk}}
+@cindex @code{--sgs_nrm=@var{sgs_nrm}}
 In sub-grid mode, @command{ncremap} performs substantial pre- and
 post-processing to conserve fields that represent fractional parts
 of a gridcell.
