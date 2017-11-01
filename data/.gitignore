@@ -2,3 +2,7 @@
 /Makefile
 /%tmp_fl_*
 /nco_bm.stderr
+
+in.nc5
+in_4.nc4
+in_4.nc5
