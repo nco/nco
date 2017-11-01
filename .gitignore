@@ -25,6 +25,7 @@ cmake_install.cmake
 # Odd files, litter
 gmon.out
 PET0.RegridWeightGen.Log
+texput.log
 
 # Editors
 
