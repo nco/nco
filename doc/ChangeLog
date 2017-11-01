@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.0-alpha04: Einstein Brown';git push
 	git tag -a 4.7.0-alpha04 -m 'ncrename quiet, ncremap dfl_lvl, ncclimo ppc';git push --tags
 
+	* Fix ncrename regressions caused by 20171029 change
+
+	* Update documentation and homepage and nco_netcdf.c regarding CDF5 bug and netCDF 4.5.0
+
 	* Implement but do not document ppc in ncremap, option currently does nothing
 	Would not be too hard to finish, but unclear that PPC is appropriate for ncremap
 

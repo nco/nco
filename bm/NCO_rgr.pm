@@ -5478,10 +5478,10 @@ if(0){
 #################### Attributes
 
 #ncrename #1
-#ncrename -O -a .nothing,new_nothing ~/nco/data/in_grp.nc ~/foo.nc 
+#ncrename -O -D 1 -a .nothing,new_nothing ~/nco/data/in_grp.nc ~/foo.nc 
 #optional relative rename nothing to new_nothing (print warning)
     $dsc_sng="Attributes: Optional relative rename '.nothing' to 'new_nothing'";
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a .nothing,new_nothing $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -D 1 -a .nothing,new_nothing $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5619,7 +5619,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # Absolute non existing absolute rename
 
     $dsc_sng="Dimensions: Optional non-existing absolute rename './lat_non_existing,new_lat' to 'new_lat'";
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d ./lat_non_existing,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -D 1 -d ./lat_non_existing,new_lat $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5681,7 +5681,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #Optional non-existing absolute rename '/g1/v1_not'
 
     $dsc_sng="Variables: Optional non-existing absolute rename './g1/v1_not' to '/g1/new_v1'";
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -v ./g1/v1_not,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -D 1 -v ./g1/v1_not,new_v1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5734,7 +5734,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 # optional relative rename gfoo to new_g1 (print warning)
 
     $dsc_sng="Groups: Optional relative rename '.gfoo' to 'new_g1'";
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -g .gfoo,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -D 1 -g .gfoo,new_g1 $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncrename: In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5784,7 +5784,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #Fail when required attribute not present
 
     $dsc_sng="Attributes: Fail when required attribute not present";
-    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -a xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -D 1 -a xyz,abc $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="In total renamed 0 attributes, 0 dimensions, 0 groups, and 0 variables";
     $tst_cmd[2]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
@@ -5914,7 +5914,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -H --trd -s %d -v one ~/foo.nc
 # Check for corruption after simultaneously renaming multiple dimensions in netCDF4 file
-    $dsc_sng="netCDF4: Simultaneously rename multiple dimensions (netCDF bug, will require netCDF 4.5.???)";
+    $dsc_sng="netCDF4: Simultaneously rename multiple dimensions (netCDF bug, will require Unidata to fix in netCDF 4.5.???)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d lev,z -d lat,y -d lon,x $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H --trd -s %d -v one %tmp_fl_00%";
     $tst_cmd[2]="1";

@@ -1339,31 +1339,40 @@ LAM installs easily with our own testing environment (latest Ubuntu).
   Unfortunately the CDF5 implementation is buggy for large (> 4 GiB)
   variables. 
   Writing CDF5 files with large variables is buggy in netCDF library
-  versions 4.4.0&ndash;4.4.1 unless there is only one such
+  versions 4.4.0&ndash;4.5.0 unless there is only one such
   &ldquo;large&rdquo; variable and it is the last to be defined.
   If the file is an input dataset (i.e., NCO <i>reads</i> it) written
   by PnetCDF then the input data are fine (because PnetCDF writes CDF5
   through a different mechanism than serial programs like NCO's
   writer).
   And if the CDF5 dataset was originally written by any netCDF version
-  4.5.0 or greater, then it is fine. 
-  However, an input file with large variables written by any serial
-  netCDF writer (like NCO) employing netCDF library 4.4.x, is likely
+  4.5.1 or greater, then it may be fine (It depends whether/when
+  Unidata patches the bug we identified on 20170906, as of 20171101
+  they have not.) 
+  However, a CDF5 input file with large variables written by any serial
+  netCDF writer (like NCO) employing netCDF library 4.4.0&ndash;4.5.0, is likely
   corrupt and variables were silently truncated when writing it.
   Output files (that NCO wrote) with large variables will definitely
-  be corrupt if NCO was linked to netCDF library version 4.4.x (so
-  upgrade to netCDF 4.5.x ASAP).
+  be corrupt if NCO was linked to netCDF library version 4.4.0&ndash;4.5.0 (so
+  upgrade to netCDF 4.5.1+ ASAP).
   Here are two potential workarounds for data affected by this bug:
   1. Re-write (using any netCDF version) original input files in
   netCDF4 format instead of CDF5, then process these as normal and
   write netCDF4 output (instead of CDF5); 
-  2. Re-compile NCO with netCDF library 4.5.0 or later and use it to
+  2. Re-compile NCO with netCDF library 4.5.1+ or later and use it to
   convert non-corrupt datasets to netCDF4 format, then process the
   data.
   For more information on this nasty bug, see
   <a href="https://github.com/Unidata/netcdf-c/issues/463">here</a>.
   Our understanding of this bug is still evolving and salient updates
   will be posted here.
+  <b>UPDATE</b>: Unidata released netCDF 4.5.0 on 20171020.
+  Unfortunately a patch to fix the CDF5 bug was not included.
+  Hence the earliest a general-purpose CDF5 fix will appear is 4.5.1.
+  Those bonking their heads against walls and willing to try what
+  Unidata chose not to include in 4.5.0 can use this experimental 
+  <a href="https://github.com/Unidata/netcdf-c/pull/478">patch</a>.
+  YMMV. Unsupported.
 </li>
   
   <!-- http://nco.sf.net#bug_nc4_srd -->
