@@ -112,6 +112,7 @@ B. NOT YET FIXED (netCDF4 library bug)
    20161028: Verified problem still exists with netCDF 4.4.1
    20170323: Verified problem still exists with netCDF 4.4.2-development
    20170323: https://github.com/Unidata/netcdf-c/issues/381
+   20171102: Verified problem still exists with netCDF 4.5.1-development
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd
@@ -124,6 +125,7 @@ C. NOT YET FIXED (netCDF4 library bug)
 
    20170323: Confirmed problem reported by Paolo Oliveri, reported to Unidata
    20170323: https://github.com/Unidata/netcdf-c/issues/381
+   20171102: Verified problem still exists with netCDF 4.5.1-development
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd

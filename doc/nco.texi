@@ -12376,7 +12376,7 @@ is simple with the @code{array()} function.
 @example
 (A) var_out=array(val_srt, val_inc, $dmn_nm);           // One-dimensional output
 (B) var_out=array(val_srt, val_inc, var_tpl);           // Multi-dimensional output
-(C) var_out=array(val_srt, val_inc, /dmn1,dmn2..dmnN/); // Multi-dimensional output
+(C) var_out=array(val_srt, val_inc, /$dmn1,$dmn2...,$dmnN/); // Multi-dimensional output
 @end example
 @noindent
 
@@ -23541,12 +23541,12 @@ whose attributes are to be renamed.
 <a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
 @end html
 @cartouche
-Caveat lector: Unforunately from 2007--present (July, 2016) the
-netCDF library (versions 4.0.0--4.4.1) contains bugs or limitations
+Caveat lector: Unforunately from 2007--present (November, 2017) the
+netCDF library (versions 4.0.0--4.5.0) contains bugs or limitations
 that sometimes prevent @acronym{NCO} from correctly renaming coordinate
 variables, dimensions, and groups in netCDF4 files. 
 (To our knowledge the netCDF library calls for renaming always work
-well on netCDF3 files so one workaround to some netCDF4 issues is
+well on netCDF3 files so one workaround to many netCDF4 issues is
 convert to netCDF3, rename, then convert back). 
 To understand the renaming limitations associated with particular
 netCDF versions, read the @command{ncrename} documentation below in 
@@ -23723,7 +23723,7 @@ This bug caused renaming @emph{either} a dimension @emph{or} its
 associated coordinate variable (not both, which would fail as above) in
 a netCDF4 file to inadvertently rename both:
 @example
-# Demonstate bug in netCDF4/HDF5 library prior to netCDF-4.3.1-rc5
+# Demonstrate bug in netCDF4/HDF5 library prior to netCDF-4.3.1-rc5
 ncks -O -h -m -M -4 -v lat_T42 ~/nco/data/in.nc ~/foo.nc
 ncrename -O -v lat_T42,lat ~/foo.nc ~/foo2.nc # Also renames dimension
 ncrename -O -d lat_T42,lat ~/foo.nc ~/foo2.nc # Also renames variable
@@ -23748,7 +23748,7 @@ variables.
 This bug corrupts affected variables by replacing their values with the
 default @code{_FillValue} for that variable's type: 
 @example
-# Demonstate bug in netCDF4/HDF5 library prior to netCDF-4.3.3
+# Demonstrate bug in netCDF4 libraries prior to version 4.3.3
 ncks -O -4 -C -M -v lat ~/nco/data/in.nc ~/bug.nc
 ncrename -O -v lat,tal ~/bug.nc ~/foo.nc # Broken until netCDF-4.3.3
 ncrename -O -d lat,tal ~/bug.nc ~/foo.nc # Broken until netCDF-4.3.3
@@ -23769,7 +23769,7 @@ This bug causes renamed attributes of coordinate variables in netCDF4
 to files to disappear: 
 @example
 @verbatim
-# Demonstate bug in netCDF4/HDF5 library netCDF-4.3.3
+# Demonstrate bug in netCDF4 library version 4.3.3
 ncrename -O -h -a /g1/lon@units,new_units ~/nco/data/in_grp.nc ~/foo.nc 
 ncks -v /g1/lon ~/foo.nc # Shows units and new_units are both gone
 @end verbatim
@@ -23779,30 +23779,58 @@ Clearly, renaming dimensions in netCDF4 files is non-trivial.
 The penultimate chapter in this saga is a netCDF4 bug discovered in
 September, 2015, and present in versions 4.3.3.1 (and possibly earlier 
 versions too) and later.
-As of this writing (March, 2017), this bug is still present in netCDF4
-version 4.4.2-development. 
+As of this writing (November, 2017), this bug is still present in netCDF4
+version 4.5.1-development. 
 This bug causes @command{ncrename} to create corrupted output files
 when attempting to rename two or more dimensions simultaneously.
 The workaround is to rename the dimensions sequentially, in two separate  
 @command{ncrename} calls.
 @example
 @verbatim
-# Demonstate bug in netCDF4/HDF5 library netCDF-4.3.3.1
+# Demonstrate bug in netCDF4 library versions 4.3.3.1--4.5.0+
 ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc # Completes but file is unreadable
-ncks -v one ~/foo.nc # File is unreadable
+ncks -v one ~/foo.nc # File is unreadable (multiple dimensions with same ID?)
 @end verbatim
 @end example
 
-Last but not least is a netCDF4 bug discovered in March, 2017, and
-present in version 4.4.1 (and possibly earlier versions too) and later.
+A new netCDF4 renaming bug was discovered in March, 2017.
+It is present in version 4.4.1 (and possibly earlier versions too) and later.
+As of this writing (November, 2017), this bug is still present in netCDF4
+version 4.5.1-development. 
 This bug causes @command{ncrename} to fail to rename a variable when the
 result would become a coordinate.
 The workaround is to convert to netCDF3, then rename, then convert back
 to netCDF4.
 @example
 @verbatim
-# Demonstate bug in netCDF4/HDF5 library netCDF-4.4.1
+# Demonstrate bug in netCDF4 library versions 4.4.1--4.5.0+
 ncrename -O -v non_coord,coord ~/nco/data/in_grp.nc ~/foo.nc # Fails (HDF error)
+@end verbatim
+@end example
+
+Last but not least is a potentially new netCDF4 bug discovered in November, 2017.
+It is present in versions 4.4.1.1--4.5.0 (and possibly earlier versions too).
+As of this writing (November, 2017), this bug is still present in netCDF4
+version 4.5.1-development. 
+This bug causes @command{ncrename} to fail to rename a variable when the
+result would become a coordinate.
+Oddly fxm
+The workaround is to convert to netCDF3, then rename, then convert back
+to netCDF4.
+@example
+@verbatim
+# Demonstrate bug in netCDF4 library versions 4.4.1--4.5.0+
+# Create test dataset
+ncks -O -C -v lon ~/nco/data/in_grp.nc ~/in_grp.nc
+ncks -O -x -g g1,g2 ~/in_grp.nc ~/in_grp.nc
+# Rename dimension then variable
+ncrename -d lon,longitude ~/in_grp.nc # works
+ncrename -v lon,longitude ~/in_grp.nc # borken "HDF error"
+# Rename variable then dimension
+ncrename -v lon,longitude ~/in_grp.nc # works
+ncrename -d lon,longitude ~/in_grp.nc # borken "nc4_reform_coord_var: Assertion `dim_datasetid > 0' failed."
+# Oddly renaming both simultaneously works:
+ncrename -d lon,longitude -v lon,longitude ~/in_grp.nc # works
 @end verbatim
 @end example
 
