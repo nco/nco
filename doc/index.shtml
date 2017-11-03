@@ -1335,12 +1335,11 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 <!-- http://nco.sf.net#bug_cdf5 -->
 <a name="bug_cdf5"></a>
 <li><i>netCDF CDF5 corruption:</i>
-  netCDF library 4.4.x supports the CDF5 binary format.
+  netCDF libraries 4.4.0+ supports the CDF5 binary format.
   Unfortunately the CDF5 implementation is buggy for large (> 4 GiB)
-  variables. 
-  Writing CDF5 files with large variables is buggy in netCDF library
-  versions 4.4.0&ndash;4.5.0 unless there is only one such
-  &ldquo;large&rdquo; variable and it is the last to be defined.
+  variables in library versions 4.4.0&ndash;4.5.0. 
+  Writing CDF5 files with large variables is buggy unless there is
+  only one such &ldquo;large&rdquo; variable and it is the last to be defined.
   If the file is an input dataset (i.e., NCO <i>reads</i> it) written
   by PnetCDF then the input data are fine (because PnetCDF writes CDF5
   through a different mechanism than serial programs like NCO's
