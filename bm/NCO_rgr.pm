@@ -108,6 +108,9 @@ sub tst_rgr {
     # 440 (for library 4.4.0)
     # 441 (for library 4.4.1.x)
     # 450 (for library 4.5.0)
+    # 451 (for library 4.5.1)
+    # 452 (for library 4.5.2)
+    # 453 (for library 4.5.3)
 
   if($exit_value == 410){print "netCDF version 4.1.x detected\n";}
   if($exit_value == 431){print "netCDF version 4.3.1 detected\n";}
@@ -117,6 +120,8 @@ sub tst_rgr {
   if($exit_value == 441){print "netCDF version 4.4.1 detected\n";}
   if($exit_value == 450){print "netCDF version 4.5.0 detected\n";}
   if($exit_value == 451){print "netCDF version 4.5.1 detected\n";}
+  if($exit_value == 452){print "netCDF version 4.5.2 detected\n";}
+  if($exit_value == 453){print "netCDF version 4.5.3 detected\n";}
 
   if($exit_value >= 400){$RUN_NETCDF4_TESTS=1;}
   if($exit_value >= 431){$RUN_NETCDF4_TESTS_VERSION_GE_431=1;}
