@@ -6,28 +6,59 @@ http://nco.sf.net (Homepage, Mailing lists)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-Version 4.7.0 fixes ...
+Version 4.7.0 adds spit and polish through the toolkit.
+Nothing major stands out, except perhaps for easy access
+to compression algorithms in ncclimo and ncremap.
 
 Work on NCO 4.7.1 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
-and more ncclimo and ncremap features, and CMake polishing. 
+and parallel weight generation by ncremap.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo accepts fl_fmt switch for output file format.
-   ncclimo [-3 -4 -5 -6 -7] in.nc out.nc
+A. ncclimo and ncremap accept fl_fmt options for output file format.  
+   The option behaves the same as it does for other operators:
+   ncclimo [-3 -4 -5 -6 -7] ...
+   ncremap [-3 -4 -5 -6 -7] ...
+   ncclimo --fl_fmt=netcdf4 ...
+   ncremap --fl_fmt=cdf5 ...
+   http://nco.sf.net/nco.html#fl_fmt
    http://nco.sf.net/nco.html#autoconversion
 
-A. CDF5: Operators are now quiet when sniffing CDF5 files for 
+B. ncclimo and ncremap accept the dfl_lvl option for compression.
+   The value of dfl_lvl is an integer fro 0..9 that specifies the
+   DEFLATE (= Lempel-Ziv + Huffman) compression level for netCDF4.
+   The option behaves the same as it does for other operators:
+   ncclimo --dfl_lvl=3 ...
+   ncremap --dfl_lvl=3 ...
+   ncclimo -L 3 ...
+   ncremap -L 3 ...
+   http://nco.sf.net/nco.html#deflate
+
+C. ncclimo accepts the ppc option for Precision-Preserving Compression. 
+   Other operators allow multiple, per-variable PPC specification.
+   ncclimo allows only one PPC option, equivalent to specifying
+   --ppc default=<val> with the compiled operators.  
+   NB: regridding does not yet accept PPC.
+   ncclimo --ppc=3 ...
+   http://nco.sf.net/nco.html#ppc
+   http://nco.sf.net/nco.html#bitgrooming
+
+D. CDF5: Operators are now quiet when sniffing CDF5 files for 
    corruption, until they detect a "large" (> 4 GB) variable.
    In 4.6.9 the sniffing algorithm was noisier, and printed an INFO
    upon closing any CDF5 file.
    http://nco.sf.net#bug_cdf5
 
-A. CMake: Pedro Vicente contributed a CMake build-engine in 4.6.9. 
+E. ncrename is now quiet by default, like all other operators.
+   The old summary line that tallied the numbers of things renamed
+   can still be seen by invoking ncrename with -D 1.
+   http://nco.sf.net#ncrename
+
+F. CMake: Pedro Vicente contributed a CMake build-engine in 4.6.9. 
    The CMake engine now correctly links ncap2 to intrinsic math
    functions like erf(), gamma(), ... 
    Please give us feedback on any wrinkles in the CMake build. 
@@ -56,7 +87,7 @@ KNOWN PROBLEMS DUE TO NCO:
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.7.0 built/tested under
    MacOS 10.12.6 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
-   Linux with netCDF 4.5.1-development (20170811) on HDF5 1.8.19.
+   Linux with netCDF 4.5.1-development (201701101) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments

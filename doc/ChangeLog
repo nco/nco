@@ -1,8 +1,14 @@
-2017-11-03  Charlie Zender  <zender@uci.edu>
+2017-11-07  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.0 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.0: Ta Nehisi';git push
+	git tag -a 4.7.0 -m 'ncremap/ncclimo dfl_lvl, fl_fmt;ncclimo ppc;nco_map/msh_mk();ncra/ncrcat neg hyp;quiet CDF5, ncrename';git push --tags
+
+2017-11-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.0-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.0-beta01: Mag-safe';git push
-	git tag -a 4.7.0-beta01 -m '';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.7.0-beta01: Hairy Yoda';git push
+	git tag -a 4.7.0-beta01 -m 'Verified CMake on Windows';git push --tags
 
 2017-11-01  Charlie Zender  <zender@uci.edu>
 

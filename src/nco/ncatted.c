@@ -446,7 +446,7 @@ main(int argc,char **argv)
       /* Variable name of "global" means edit global attributes */
       (void)nco_aed_prc_glb(nc_id,aed_lst[idx_aed],trv_tbl);
     }else{ 
-      /* Regular ole' variable name means edits attributes that match absolute and relative names */
+      /* Regular ole' variable name means edit attributes that match absolute and relative names */
       (void)nco_aed_prc_var_nm(nc_id,aed_lst[idx_aed],trv_tbl);
     } /* end var_nm */
   } /* end loop over aed structures */

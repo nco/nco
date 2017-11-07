@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.0-alpha04
-@set doc-edition 4.7.0-alpha04
+@set nco-edition 4.7.0-beta01
+@set doc-edition 4.7.0-beta01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 1 November 2017
+@set update-date 7 November 2017
 @set update-month November 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -8367,6 +8367,8 @@ variables.
 
 @html
 <a name="bg"></a> <!-- http://nco.sf.net/nco.html#bg -->
+<a name="bitgrooming"></a> <!-- http://nco.sf.net/nco.html#bitgrooming -->
+<a name="Bit-Grooming"></a> <!-- http://nco.sf.net/nco.html#Bit-Grooming -->
 <a name="BG"></a> <!-- http://nco.sf.net/nco.html#BG -->
 <a name="ppc"></a> <!-- http://nco.sf.net/nco.html#ppc -->
 <a name="PPC"></a> <!-- http://nco.sf.net/nco.html#PPC -->
