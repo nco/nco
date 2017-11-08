@@ -47,18 +47,12 @@ C. ncclimo accepts the ppc option for Precision-Preserving Compression.
    http://nco.sf.net/nco.html#ppc
    http://nco.sf.net/nco.html#bitgrooming
 
-D. CDF5: Operators are now quiet when sniffing CDF5 files for 
-   corruption, until they detect a "large" (> 4 GB) variable.
-   In 4.6.9 the sniffing algorithm was noisier, and printed an INFO
-   upon closing any CDF5 file.
-   http://nco.sf.net#bug_cdf5
-
-E. ncrename is now quiet by default, like all other operators.
+D. ncrename is now quiet by default, like all other operators.
    The old summary line that tallied the numbers of things renamed
    can still be seen by invoking ncrename with -D 1.
    http://nco.sf.net#ncrename
 
-F. CMake: Pedro Vicente contributed a CMake build-engine in 4.6.9. 
+E. CMake: Pedro Vicente contributed a CMake build-engine in 4.6.9. 
    The CMake engine now correctly links ncap2 to intrinsic math
    functions like erf(), gamma(), ... 
    Please give us feedback on any wrinkles in the CMake build. 
@@ -69,6 +63,17 @@ F. CMake: Pedro Vicente contributed a CMake build-engine in 4.6.9.
    sudo make install
    Additional examples in cmake/build.bat
    http://nco.sf.net#bld
+
+F. The automatic CDF5 bug checker in 4.6.9 has been turned-off.
+   It produced too much distracting output in workflows affected
+   by the CDF5 bug. To activate this check, build NCO with, e.g.,
+   CPPFLAGS='-DNCO_CDF5_BUG_CHK' ./configure ...
+   The checker itself has been improved so that, when turned on,
+   operators are now quiet when sniffing CDF5 files for corruption,
+   until they detect a "large" (> 4 GB) variable.
+   In 4.6.9 the sniffing algorithm was noisier, and printed an INFO
+   upon closing any CDF5 file.
+   http://nco.sf.net#bug_cdf5
 
 BUG FIXES:
 

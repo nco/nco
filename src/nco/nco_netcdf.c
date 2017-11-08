@@ -898,6 +898,7 @@ nco_close(const int nc_id)
   /* Purpose: Wrapper for nc_close() */
   const char fnc_nm[]="nco_close()";
   int rcd=NC_NOERR;
+  /* 20171108: Activate this check by building NCO with, e.g., CPPFLAGS='-DNCO_CDF5_BUG_CHK' ./configure ... */
 #ifdef NCO_CDF5_BUG_CHK
 # if NC_LIB_VERSION >= 440
   /* 20170912 Diagnose whether file may be (for input files) or is (for output files) infected by CDF5 bug */

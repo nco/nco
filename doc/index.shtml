@@ -1352,8 +1352,7 @@ LAM installs easily with our own testing environment (latest Ubuntu).
   writer).
   And if the CDF5 dataset was originally written by any netCDF version
   4.5.1 or greater, then it may be fine (It depends whether/when
-  Unidata patches the bug we identified on 20170906, as of 20171101
-  they have not.) 
+  Unidata patches the bug, see below, that we identified on 20170906.) 
   However, a CDF5 input file with large variables written by any serial
   netCDF writer (like NCO) employing netCDF library 4.4.0&ndash;4.5.0, is likely
   corrupt and variables were silently truncated when writing it.
