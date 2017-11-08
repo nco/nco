@@ -1,5 +1,9 @@
 2017-11-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.1-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.1-alpha01: 1.3 lb salad';git push
+	git tag -a 4.7.1-alpha01 -m 'Identical to 4.7.0 except for version info';git push --tags
+
 	* NCO 4.7.0 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.0: Ta Nehisi';git push
 	git tag -a 4.7.0 -m 'ncremap/ncclimo dfl_lvl, fl_fmt;ncclimo ppc;nco_map/msh_mk();ncra/ncrcat neg hyp;quiet CDF5, ncrename';git push --tags
