@@ -1254,7 +1254,7 @@ For more sophisticated build/install options, see the next section.
 <dt><a name="Makefile"></a></dt> <!-- http://nco.sf.net#Makefile -->
 <dt><a name="hnt"></a></dt> <!-- http://nco.sf.net#hnt -->
 <dt><a name="bld_hnt"></a></dt> <!-- http://nco.sf.net#bld_hnt -->
-Still having trouble building NCO from source? Read these 
+Still having trouble building NCO from source? Read these (much older)
 <a href="./build_hints.shtml">Build Hints</a>
 
 </ul>
