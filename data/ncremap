@@ -777,6 +777,27 @@ if [ -n "${fl_fmt}" ]; then
     fi # !fl_fmt
     nco_opt="${nco_opt} ${nco_fl_fmt}"
 fi # !fl_fmt
+if [ 0 ]; then
+    # 20171108 Implement more sophisticated TempestRemap options based on mapping type
+    # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
+    if [ ${map_typ} = 'se2fv_flx' ]; then 
+	map_opt='--in_type cgll --in_np 4'
+    elif [ ${map_typ} = 'conserve' ] || [ ${map_typ} = 'conservative' ] || [ ${map_typ} = 'cns' ]; then 
+	map_opt='conserve'
+    elif [ ${map_typ} = 'nearestdtos' ] || [ ${map_typ} = 'nds' ] || [ ${map_typ} = 'dtos' ]; then 
+	map_opt='nearestdtos'
+    elif [ ${map_typ} = 'neareststod' ] || [ ${map_typ} = 'nsd' ] || [ ${map_typ} = 'stod' ]; then 
+	map_opt='neareststod'
+    elif [ ${map_typ} = 'patch' ] || [ ${map_typ} = 'pch' ] || [ ${map_typ} = 'ptc' ]; then 
+	map_opt='patch'
+    elif [ ${map_typ} = 'tempest' ] || [ ${map_typ} = 'tps' ] || [ ${map_typ} = 'tmp' ]; then 
+	map_opt='tempest'
+    else 
+	echo "${spt_nm}: ERROR ${map_typ} is not a valid mapping type\n"
+	echo "${spt_nm}: HINT Valid mapping types are se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt\n"
+	exit 1
+    fi # !map_typ
+fi # !0
 if [ ${alg_opt} = 'tempest' ]; then
     wgt_typ='tempest'
 fi # alg_opt

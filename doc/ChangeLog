@@ -1,5 +1,7 @@
 2017-11-08  Charlie Zender  <zender@uci.edu>
 
+	* ncremap: Add hooks for more elaborate TempestRemap options
+
 	* NCO 4.7.1-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.1-alpha01: 1.3 lb salad';git push
 	git tag -a 4.7.1-alpha01 -m 'Identical to 4.7.0 except for version info';git push --tags
