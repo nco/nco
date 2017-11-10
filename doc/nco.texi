@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.1-alpha01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 7 November 2017
+@set update-date 10 November 2017
 @set update-month November 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -23816,12 +23816,15 @@ As of this writing (November, 2017), this bug is still present in netCDF4
 version 4.5.1-development. 
 This bug causes @command{ncrename} to fail to rename a variable when the
 result would become a coordinate.
-Oddly fxm
+Oddly this issue shows that simultaneously renaming a dimension and
+coordinate can succeed (in contrast to a bug described above), and that
+separating that into two steps can fail.
 The workaround is to convert to netCDF3, then rename, then convert back
 to netCDF4.
 @example
 @verbatim
 # Demonstrate bug in netCDF4 library versions 4.4.1--4.5.0+
+# 20171107: https://github.com/Unidata/netcdf-c/issues/597
 # Create test dataset
 ncks -O -C -v lon ~/nco/data/in_grp.nc ~/in_grp.nc
 ncks -O -x -g g1,g2 ~/in_grp.nc ~/in_grp.nc

@@ -1,3 +1,9 @@
+2017-11-10  Charlie Zender  <zender@uci.edu>
+
+	* ncrename: simplify collective rename bug report to Unidata as https://github.com/Unidata/netcdf-c/issues/597
+
+	* ncremap: disambiguate TempestRemap options
+
 2017-11-08  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Add hooks for more elaborate TempestRemap options
