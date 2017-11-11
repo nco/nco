@@ -1,5 +1,7 @@
 2017-11-10  Charlie Zender  <zender@uci.edu>
 
+	* ncremap: Use gll_fl only when supplied, do not require it
+
 	* ncremap: Implement all boutique Tempest algorithms except for transpose
 
 	* ncrename: report collective rename bugs in https://github.com/Unidata/netcdf-c/issues/597

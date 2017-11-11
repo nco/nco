@@ -263,6 +263,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.091226.nc -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc
 # TempestRemap boutique:
 # GenerateCSMesh --alt --res 30 --file ${DATA}/grids/ne30.g
+# ncremap --dbg=1 --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_conserve.20180101.nc -a se2fv_flx
 # ncremap --dbg=1 --src_grd=${DATA}/grids/ne30.g --se_mtd=${DATA}/grids/ne30np4_latlon.091226.nc --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_conserve.20180101.nc -a se2fv_flx
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr > ~/ncremap.out 2>&1 &
@@ -329,7 +330,7 @@ dst_xmp='dst.nc' # [sng] Destination file for examples
 fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to remap
 gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_command=\"'${cmd_ln}'\" --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
-gll_fl='' # [sng] GLL grid metadata (geometry+connectivity) file
+gll_fl='' # [sng] GLL grid metadata (geometry+connectivity+Jacobian) file
 grd_dst='' # [sng] Destination grid-file
 grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
 grd_sng='' # [sng] Grid string
@@ -418,7 +419,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation argument string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use grd_sng or map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dst_grd, dest_grid, destination_grid${fnt_nrm}]"
-    echo " ${fnt_bld}--gll_fl${fnt_nrm}   GLL metadata (SE grid geometry+connectivity) file (default ${fnt_bld}${gll_fl}${fnt_nrm}) [${fnt_tlc}gll_fl, gll_mtd, se_gmt, se_mtd${fnt_nrm}]"
+    echo " ${fnt_bld}--gll_fl${fnt_nrm}   GLL metadata (SE grid geometry+connectivity+Jacobian) file (default ${fnt_bld}${gll_fl}${fnt_nrm}) [${fnt_tlc}gll_fl, gll_mtd, se_gmt, se_mtd${fnt_nrm}]"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means pipe to stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm}) [${fnt_tlc}in_fl, in_file, input_file${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
@@ -552,7 +553,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       grd_sng=?* | grid_generation=?* | grid_gen=?* | grid_string=?* ) grd_sng="${LONG_OPTARG}" ;; # -G # Grid generation string
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
-	       gll_fl=?* | gll_mtd=?* | se_gmt=?* | se_mtd=?* ) gll_fl="${LONG_OPTARG}" ;; # # GLL grid metadata (geometry+connectivity) file
+	       gll_fl=?* | gll_mtd=?* | se_gmt=?* | se_mtd=?* ) gll_fl="${LONG_OPTARG}" ;; # # GLL grid metadata (geometry+connectivity+Jacobian) file
 	       in_fl=?* | in_file=?* | input_file=?* ) in_fl="${LONG_OPTARG}" ;; # -i # Input file
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
@@ -762,24 +763,42 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     alg_opt='tempest'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'conserve_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # map_tag='conserve'
-    wgt_opt_tps="--in_type cgll --in_np 4 --in_meta ${gll_fl} --out_type fv --out_double --mono"
+    wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono"
+    if [ -n "${gll_fl}" ]; then
+	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
+    fi # !gll_fl
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # map_tag='highorder'
-    wgt_opt_tps="--in_type cgll --in_np 4 --in_meta ${gll_fl} --out_type fv --out_double"
+    wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double"
+    if [ -n "${gll_fl}" ]; then
+	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
+    fi # !gll_fl
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # map_tag='intbilin'
-    wgt_opt_tps="--in_type cgll --in_np 4 --in_meta ${gll_fl} --out_type fv --out_double --mono3 --noconserve"
+    wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono3 --noconserve"
+    if [ -n "${gll_fl}" ]; then
+	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
+    fi # !gll_fl
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'transpose_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # map_tag='transpose'
-    wgt_opt_tps="--in_type cgll --in_np 4 --in_meta ${gll_fl} --out_type fv --out_double --mono"
+    wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono"
+    if [ -n "${gll_fl}" ]; then
+	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
+    fi # !gll_fl
     wgt_typ='tempest'
     # fxm: transpose maps need additional call:
     # ./GenerateTransposeMap --in map_atm2ocn_conserve.nc --out map_ocn2atm_transpose.nc
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # map_tag='highorder'
-    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np 4 --out_meta ${gll_fl} --out_double --volumetric"
+    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np 4 --out_double --volumetric"
+    if [ -n "${gll_fl}" ]; then
+	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
+    fi # !gll_fl
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'conserve_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # map_tag='conserve'
-    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np 4 --out_meta ${gll_fl} --out_double --mono --volumetric"
+    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np 4 --out_double --mono --volumetric"
+    if [ -n "${gll_fl}" ]; then
+	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
+    fi # !gll_fl
     wgt_typ='tempest'
 else 
     echo "${spt_nm}: ERROR ${alg_typ} is not a valid remapping algorithm\n"
