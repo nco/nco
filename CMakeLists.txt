@@ -124,14 +124,14 @@ endif()
 #/////////////////////////////////////////////////////////////////////////////////////
 
 
-find_library(HDF5_LIBRARY NAMES hdf5 ${find_opt})
+find_library(HDF5_LIBRARY NAMES hdf5 PATHS "/usr/lib/x86_64-linux-gnu/hdf5/serial")
 if(NOT HDF5_LIBRARY)
   message(FATAL_ERROR "${color_red}hdf5 library not found${color_reset}")
 else()
   message("-- Found hdf5 library at: " ${HDF5_LIBRARY})
 endif()
 
-find_library(HDF5_HL_LIBRARY NAMES hdf5_hl ${find_opt})
+find_library(HDF5_HL_LIBRARY NAMES hdf5_hl PATHS "/usr/lib/x86_64-linux-gnu/hdf5/serial")
 if(NOT HDF5_HL_LIBRARY)
   message(FATAL_ERROR "${color_red}hdf5 high level library not found${color_reset}")
 else()
