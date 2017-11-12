@@ -104,6 +104,7 @@ endif()
 #netCDF
 #Check for several functions in the netCDF library; define C macro accordingly
 #CMAKE_REQUIRED_LIBRARIES needs NETCDF_LIBRARY
+#check for header file netcdf_mem.h existence
 #/////////////////////////////////////////////////////////////////////////////////////
 
 set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_LIBRARY})
@@ -117,6 +118,14 @@ check_library_exists(${NETCDF_LIBRARY} nc_inq_format "" has_nc_inq_format)
 if (has_nc_inq_format)
   message("-- Found nc_inq_format in: " ${NETCDF_LIBRARY})
   add_definitions(-DHAVE_NC_INQ_FORMAT)
+endif()
+
+find_path(netcdf_mem_h netcdf_mem.h)
+if (netcdf_mem_h)
+  message("-- Found netcdf_mem.h in: " ${netcdf_mem_h})
+  add_definitions(-DHAVE_NC_MEM_H)
+else()
+  message("-- NetCDF diskless functionaliy not available, netcdf_mem.h does not exist")
 endif()
 
 #/////////////////////////////////////////////////////////////////////////////////////
