@@ -1,3 +1,7 @@
+2017-11-12  Charlie Zender  <zender@uci.edu>
+
+	* Modify how netcdf_mem.h and nc_open_mem() are detected/provided
+
 2017-11-10  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Use gll_fl only when supplied, do not require it

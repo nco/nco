@@ -263,8 +263,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.091226.nc -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc
 # TempestRemap boutique:
 # GenerateCSMesh --alt --res 30 --file ${DATA}/grids/ne30.g
-# ncremap --dbg=1 --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_conserve.20180101.nc -a se2fv_flx
-# ncremap --dbg=1 --src_grd=${DATA}/grids/ne30.g --se_mtd=${DATA}/grids/ne30np4_latlon.091226.nc --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_conserve.20180101.nc -a se2fv_flx
+# ncremap --dbg=1 --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180101.nc -a se2fv_flx
+# ncremap --dbg=1 --src_grd=${DATA}/grids/ne30.g --se_mtd=${DATA}/grids/ne30np4_latlon.091226.nc --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180101.nc -a se2fv_flx
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr > ~/ncremap.out 2>&1 &
 
@@ -313,7 +313,7 @@ fi # !TERM
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
-alg_typ='bilinear' # [nbr] Algorithm for remapping (bilinear|conserve|nearestdtos|neareststod|patch|tempest)
+alg_typ='bilinear' # [nbr] Algorithm for remapping (bilinear|conserve|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt)
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
@@ -414,6 +414,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
+    echo "            ESMF algorithms: bilinear|conserve|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt"
+    echo "            Tempest algorithms: tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
@@ -744,7 +746,7 @@ pdq_fl=${pdq_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
-# Algorithm options are bilinear|conserve|nearestdtos|neareststod|patch|tempest
+# Algorithm options are bilinear|conserve|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt
 if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bln' ]; then 
     alg_opt='bilinear'
 elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ]; then 
@@ -762,7 +764,7 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # map_tag in comments is for E3SM naming convention map_src_to_dst_${map_tag}.20180101.nc
     alg_opt='tempest'
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'conserve_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # map_tag='conserve'
+elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # map_tag='mono'
     wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
@@ -780,21 +782,21 @@ elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${al
 	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
     fi # !gll_fl
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'transpose_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # map_tag='transpose'
+elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # map_tag='monotr'
     wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
     fi # !gll_fl
     wgt_typ='tempest'
     # fxm: transpose maps need additional call:
-    # ./GenerateTransposeMap --in map_atm2ocn_conserve.nc --out map_ocn2atm_transpose.nc
+    # ./GenerateTransposeMap --in map_atm2ocn_mono.nc --out map_ocn2atm_monotr.nc
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # map_tag='highorder'
     wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np 4 --out_double --volumetric"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
     fi # !gll_fl
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'conserve_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # map_tag='conserve'
+elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # map_tag='mono'
     wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np 4 --out_double --mono --volumetric"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
@@ -803,7 +805,7 @@ elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'conserve_fv2se' ] || [ ${al
 else 
     echo "${spt_nm}: ERROR ${alg_typ} is not a valid remapping algorithm\n"
     echo "${spt_nm}: HINT Valid ESMF remapping algorithms are bilinear,bln | conserve,cns | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch\n"
-    echo "${spt_nm}: HINT Valid TempestRemap remapping options are tempest | se2fv_flx,conserve_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | fv2se_flx,transpose_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,conserve_fv2se\n"
+    echo "${spt_nm}: HINT Valid TempestRemap remapping options are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se\n"
     exit 1
 fi # !alg_typ
 if [ -n "${fl_fmt}" ]; then

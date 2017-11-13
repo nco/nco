@@ -726,7 +726,8 @@ nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
   return rcd;
 } /* end nco_open */
 
-#if NC_LIB_VERSION < 440
+/* #if NC_LIB_VERSION < 440 */
+#ifndef HAVE_NETCDF_MEM_H
 int
 nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id)
 {
