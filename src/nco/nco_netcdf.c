@@ -1397,7 +1397,10 @@ nco_inq_dim(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
   /* Purpose: Wrapper for nc_inq_dim() */
   const char fnc_nm[]="nco_inq_dim()";
   int rcd;
-  rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,(size_t *)dmn_sz);
+  size_t dmn_sz_t; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
+  if(dmn_sz) dmn_sz_t=*dmn_sz;
+  rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,&dmn_sz_t);
+  if(dmn_sz) *dmn_sz=(long)dmn_sz_t;
   if(rcd == NC_EBADDIM){
     (void)fprintf(stdout,"ERROR: %s reports requested dimension \"%s\" is not in input file\n",fnc_nm,dmn_nm);
     nco_err_exit(rcd,fnc_nm);
@@ -1411,7 +1414,10 @@ nco_inq_dim_flg(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
 {
   /* Purpose: Error-tolerant wrapper for nc_inq_dim_flg(). Tolerates NC_EBADDIM. */
   int rcd;
-  rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,(size_t *)dmn_sz);
+  size_t dmn_sz_t; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
+  if(dmn_sz) dmn_sz_t=*dmn_sz;
+  rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,&dmn_sz_t);
+  if(dmn_sz) *dmn_sz=(long)dmn_sz_t;
   if(rcd == NC_EBADDIM) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim_flg()");
   return rcd;
@@ -1432,7 +1438,10 @@ nco_inq_dimlen(const int nc_id,const int dmn_id,long *dmn_sz)
 {
   /* Purpose: Wrapper for nc_inq_dimlen() */
   int rcd;
-  rcd=nc_inq_dimlen(nc_id,dmn_id,(size_t *)dmn_sz);
+  size_t dmn_sz_t; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
+  if(dmn_sz) dmn_sz_t=*dmn_sz;
+  rcd=nc_inq_dimlen(nc_id,dmn_id,&dmn_sz_t);
+  if(dmn_sz) *dmn_sz=(long)dmn_sz_t;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimlen()");
   return rcd;
 } /* end nco_inq_dimlen */
@@ -2168,7 +2177,10 @@ nco_inq_att(const int nc_id,const int var_id,const char * const att_nm,nc_type *
   /* Purpose: Wrapper for nc_inq_att() */
   const char fnc_nm[]="nco_inq_att()";
   int rcd;
-  rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,(size_t *)att_sz);
+  size_t att_sz_t; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
+  if(att_sz) att_sz_t=*att_sz;
+  rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,&att_sz_t);
+  if(att_sz) *att_sz=(long)att_sz_t;
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"ERROR: %s unable to inquire attribute var_id: %d, att_nm: %s\n",fnc_nm,var_id,att_nm);
     nco_err_exit(rcd,fnc_nm);
@@ -2182,7 +2194,10 @@ nco_inq_att_flg(const int nc_id,const int var_id,const char * const att_nm,nc_ty
   /* Purpose: Error-tolerant wrapper for nc_inq_att(). Tolerates ENOTATT. */
   const char fnc_nm[]="nco_inq_att_flg()";
   int rcd;
-  rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,(size_t *)att_sz);
+  size_t att_sz_t; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
+  if(att_sz) att_sz_t=*att_sz;
+  rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,&att_sz_t);
+  if(att_sz) *att_sz=(long)att_sz_t;
   if(rcd == NC_ENOTATT) return rcd;
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"ERROR: %s unable to inquire attribute var_id: %d, att_nm: %s\n",fnc_nm,var_id,att_nm);
@@ -2231,7 +2246,10 @@ nco_inq_attlen(const int nc_id,const int var_id,const char * const att_nm,long *
 {
   /* Purpose: Wrapper for nc_inq_attlen() */
   int rcd;
-  rcd=nc_inq_attlen(nc_id,var_id,att_nm,(size_t *)att_sz);
+  size_t att_sz_t; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
+  if(att_sz) att_sz_t=*att_sz;
+  rcd=nc_inq_attlen(nc_id,var_id,att_nm,&att_sz_t);
+  if(att_sz) *att_sz=(long)att_sz_t;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attlen()");
   return rcd;
 } /* end nco_inq_attlen */
@@ -2242,7 +2260,10 @@ nco_inq_attlen_flg(const int nc_id,const int var_id,const char * const att_nm,lo
   /* Purpose: Error-tolerant wrapper for nc_inq_attlen(). Tolerates NC_ENOTATT. */
   const char fnc_nm[]="nco_inq_attlen_flg()";
   int rcd;
-  rcd=nc_inq_attlen(nc_id,var_id,att_nm,(size_t *)att_sz);
+  size_t att_sz_t; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
+  if(att_sz) att_sz_t=*att_sz;
+  rcd=nc_inq_attlen(nc_id,var_id,att_nm,&att_sz_t);
+  if(att_sz) *att_sz=(long)att_sz_t;
   if(rcd == NC_ENOTATT) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
