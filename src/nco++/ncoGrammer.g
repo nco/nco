@@ -3510,7 +3510,7 @@ var_sct *var_nbr;
               int fl_id;
               int nbr_dim=var_rhs->nbr_dim;
               long srt; 
-              long srt1[NC_MAX_DIMS];   
+              long srt1[NC_MAX_VAR_DIMS];   
               long sz_dim=1;
               NcapVar *Nvar;
 
@@ -3721,7 +3721,7 @@ var_sct *var_nbr;
                 // write block
                 { 
                  int nbr_dim=var_lhs->nbr_dim;
-                 long srt1[NC_MAX_DIMS];   
+                 long srt1[NC_MAX_VAR_DIMS];   
                  long sz_dim=1; 
 
                  var_lhs->sz=1;

@@ -5284,7 +5284,7 @@ var_sct * ncoTree::var_lmt_one(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 			int fl_id;
 			int nbr_dim=var_rhs->nbr_dim;
 			long srt; 
-			long srt1[NC_MAX_DIMS];   
+			long srt1[NC_MAX_VAR_DIMS];   
 			long sz_dim=1;
 			NcapVar *Nvar;
 			
@@ -5539,7 +5539,7 @@ var_sct * ncoTree::var_lmt_one_lhs(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 			// write block
 			{ 
 			int nbr_dim=var_lhs->nbr_dim;
-			long srt1[NC_MAX_DIMS];   
+			long srt1[NC_MAX_VAR_DIMS];   
 			long sz_dim=1; 
 			
 			var_lhs->sz=1;

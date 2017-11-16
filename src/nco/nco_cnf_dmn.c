@@ -191,14 +191,14 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     char * restrict wgt_cp;
     char * restrict wgt_out_cp;
 
-    int idx_wgt_var[NC_MAX_DIMS];
+    int idx_wgt_var[NC_MAX_VAR_DIMS];
     int wgt_nbr_dim;
     int var_nbr_dmn_m1;
 
     long * restrict var_cnt;
-    long dmn_ss[NC_MAX_DIMS];
-    long dmn_var_map[NC_MAX_DIMS];
-    long dmn_wgt_map[NC_MAX_DIMS];
+    long dmn_ss[NC_MAX_VAR_DIMS];
+    long dmn_var_map[NC_MAX_VAR_DIMS];
+    long dmn_wgt_map[NC_MAX_VAR_DIMS];
     long var_lmn;
     long wgt_lmn;
     long var_sz;
@@ -460,12 +460,12 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
   
-  int dmn_idx_in_shr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->share Purely diagnostic */
-  int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
-  int dmn_idx_in_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->re-order NB: Purely diagnostic */
-  int dmn_idx_shr_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->re-order */	  
-  int dmn_idx_shr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->input */	  
-  int dmn_idx_shr_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, share->output */	  
+  int dmn_idx_in_shr[NC_MAX_VAR_DIMS]; /* [idx] Dimension correspondence, input->share Purely diagnostic */
+  int dmn_idx_in_out[NC_MAX_VAR_DIMS]; /* [idx] Dimension correspondence, input->output */
+  int dmn_idx_in_rdr[NC_MAX_VAR_DIMS]; /* [idx] Dimension correspondence, input->re-order NB: Purely diagnostic */
+  int dmn_idx_shr_rdr[NC_MAX_VAR_DIMS]; /* [idx] Dimension correspondence, share->re-order */	  
+  int dmn_idx_shr_in[NC_MAX_VAR_DIMS]; /* [idx] Dimension correspondence, share->input */	  
+  int dmn_idx_shr_out[NC_MAX_VAR_DIMS]; /* [idx] Dimension correspondence, share->output */	  
   int dmn_idx_rec_out=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output variable */
   int dmn_shr_nbr=0; /* [nbr] Number of dimensions dmn_in and dmn_rdr share */
   int dmn_in_idx; /* [idx] Counting index for dmn_in */
@@ -668,9 +668,9 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   int rcd=0; /* [rcd] Return code */
   int typ_sz; /* [B] Size of data element in memory */
   
-  long dmn_in_map[NC_MAX_DIMS]; /* [idx] Map for each dimension of input variable */
-  long dmn_out_map[NC_MAX_DIMS]; /* [idx] Map for each dimension of output variable */
-  long dmn_in_sbs[NC_MAX_DIMS]; /* [idx] Dimension subscripts into N-D input array */
+  long dmn_in_map[NC_MAX_VAR_DIMS]; /* [idx] Map for each dimension of input variable */
+  long dmn_out_map[NC_MAX_VAR_DIMS]; /* [idx] Map for each dimension of output variable */
+  long dmn_in_sbs[NC_MAX_VAR_DIMS]; /* [idx] Dimension subscripts into N-D input array */
   long var_in_lmn; /* [idx] Offset into 1-D input array */
   long var_out_lmn; /* [idx] Offset into 1-D output array */
   long *var_in_cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
@@ -714,7 +714,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   
   /* Report full metadata re-order, if requested */
   if(nco_dbg_lvl_get() > 3){
-    int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
+    int dmn_idx_in_out[NC_MAX_VAR_DIMS]; /* [idx] Dimension correspondence, input->output */
     /* Create reverse correspondence */
     for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
       dmn_idx_in_out[dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;

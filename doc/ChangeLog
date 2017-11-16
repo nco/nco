@@ -1,6 +1,10 @@
 2017-11-15  Charlie Zender  <zender@uci.edu>
 
-	* WIN64 workaround for sizeof(long) = 4 != 8 = sizeof(size_t)
+	* Change most NC_MAX_DIMS to NC_MAX_VAR_DIMS
+
+	* long/size_t workaround for srt,cnt in nco_get_vara()
+
+	* WIN64 workaround for sizeof(long) = 4 != 8 = sizeof(size_t) with dmn_sz, att_sz
 
 2017-11-12  Charlie Zender  <zender@uci.edu>
 

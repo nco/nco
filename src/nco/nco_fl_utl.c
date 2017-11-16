@@ -103,7 +103,7 @@ nco_fl_sz_est /* [fnc] Estimate RAM size == uncompressed file size */
 
   size_t ram_sz_crr;
   size_t ram_sz_ttl=0L;
-  size_t dmn_sz[NC_MAX_DIMS]; /* [nbr] Dimension sizes */
+  size_t dmn_sz[NC_MAX_VAR_DIMS]; /* [nbr] Dimension sizes */
   
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct var_trv=trv_tbl->lst[idx_tbl]; 

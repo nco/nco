@@ -136,7 +136,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     int fll_nil; /* [flg] NO_FILL */
     int shuffle; /* [flg] Shuffling is on */
     int srg_typ; /* [enm] Storage type */
-    size_t cnk_sz[NC_MAX_DIMS]; /* [nbr] Chunk sizes */
+    size_t cnk_sz[NC_MAX_VAR_DIMS]; /* [nbr] Chunk sizes */
     if(var_id == NC_GLOBAL){
       /* _Format */
       if(!XML){
@@ -1376,8 +1376,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
 
   nco_bool CRR_DMN_IS_REC_IN_INPUT[NC_MAX_DIMS]; /* [flg] Is record dimension */
 
-  size_t cnk_sz[NC_MAX_DIMS]; /* [nbr] Chunk sizes */
-  size_t dmn_sz[NC_MAX_DIMS]; /* [nbr] Dimension sizes */
+  size_t cnk_sz[NC_MAX_VAR_DIMS]; /* [nbr] Chunk sizes */
+  size_t dmn_sz[NC_MAX_VAR_DIMS]; /* [nbr] Dimension sizes */
 
   size_t ram_sz_crr;
   static size_t ram_sz_ttl=0L;

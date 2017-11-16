@@ -1155,7 +1155,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
   const char fnc_nm[]="nco_var_dfn()"; /* [sng] Function name */
 
   int dmn_nbr=0;
-  int dmn_id_vec[NC_MAX_DIMS];
+  int dmn_id_vec[NC_MAX_VAR_DIMS];
   int idx;
   int dmn_idx;
   int fl_fmt; /* [enm] Output file format */

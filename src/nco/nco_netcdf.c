@@ -911,7 +911,7 @@ nco_close(const int nc_id)
   if(fl_fmt == NC_FORMAT_CDF5){
     char *path=NULL;
     char var_nm[NC_MAX_NAME+1L];
-    int dmn_id[NC_MAX_DIMS];
+    int dmn_id[NC_MAX_VAR_DIMS];
     int var_id[NC_MAX_VARS];
     int bug_idx=-1;
     int bug_nbr=0;
@@ -921,7 +921,7 @@ nco_close(const int nc_id)
     int var_idx;
     int var_nbr;
     nc_type var_typ;
-    size_t dmn_sz[NC_MAX_DIMS];
+    size_t dmn_sz[NC_MAX_VAR_DIMS];
     size_t pathlen;
     size_t var_sz;
     rcd=nc_inq_path(nc_id,&pathlen,NULL);
@@ -1991,6 +1991,32 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
   /* Purpose: Wrapper for nc_get_vara_*() */
   const char fnc_nm[]="nco_get_vara()";
   int rcd=NC_NOERR;
+  int dmn_nbr; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
+  rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
+  size_t cnt_sz_t[NC_MAX_VAR_DIMS];
+  size_t srt_sz_t[NC_MAX_VAR_DIMS];
+  for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+    cnt_sz_t[dmn_idx]=cnt[dmn_idx];
+    srt_sz_t[dmn_idx]=srt[dmn_idx];
+  } /* !dmn_idx */
+  switch(type){
+  case NC_FLOAT: rcd=nc_get_vara_float(nc_id,var_id,srt_sz_t,cnt_sz_t,(float *)vp); break;
+  case NC_DOUBLE: rcd=nc_get_vara_double(nc_id,var_id,srt_sz_t,cnt_sz_t,(double *)vp); break;
+  case NC_INT: rcd=NCO_GET_VARA_INT(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_int *)vp); break;
+  case NC_SHORT: rcd=nc_get_vara_short(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_short *)vp); break;
+  case NC_CHAR: rcd=NCO_GET_VARA_CHAR(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_char *)vp); break;
+  case NC_BYTE: rcd=NCO_GET_VARA_BYTE(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_byte *)vp); break;
+#ifdef ENABLE_NETCDF4
+  case NC_UBYTE: rcd=NCO_GET_VARA_UBYTE(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_ubyte *)vp); break;
+  case NC_USHORT: rcd=NCO_GET_VARA_USHORT(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_ushort *)vp); break;
+  case NC_UINT: rcd=NCO_GET_VARA_UINT(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_uint *)vp); break;
+  case NC_INT64: rcd=NCO_GET_VARA_INT64(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_int64 *)vp); break;
+  case NC_UINT64: rcd=NCO_GET_VARA_UINT64(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_uint64 *)vp); break;
+  case NC_STRING: rcd=NCO_GET_VARA_STRING(nc_id,var_id,srt_sz_t,cnt_sz_t,(nco_string *)vp); break;
+#endif /* !ENABLE_NETCDF4 */
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+#if 0
   switch(type){
   case NC_FLOAT: rcd=nc_get_vara_float(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(float *)vp); break;
   case NC_DOUBLE: rcd=nc_get_vara_double(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(double *)vp); break;
@@ -2008,6 +2034,7 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
 #endif /* !ENABLE_NETCDF4 */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
+#endif /* !0 */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);

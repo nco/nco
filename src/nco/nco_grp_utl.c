@@ -4333,7 +4333,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   char dmn_nm_grp[NC_MAX_NAME+1];        /* [sng] Dimension name for group */  
   char var_nm[NC_MAX_NAME+1];            /* [sng] Variable name (local copy of object name) */ 
 
-  dmn_cmn_sct dmn_cmn[NC_MAX_DIMS];      /* [sct] Dimension information on output (for a variable) */
+  dmn_cmn_sct dmn_cmn[NC_MAX_VAR_DIMS];      /* [sct] Dimension information on output (for a variable) */
 
   dmn_trv_sct *dmn_trv;                  /* [sct] Unique dimension object */
   
@@ -4343,7 +4343,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   int *dmn_out_id_tmp;                   /* [idx] Copy of dmn_out_id (ncpdq) */
   int *udm_out_id_grp; /* [enm] Unlimited dimension IDs */
   int dmn_id_out;                        /* [id] Dimension ID defined in outout group */  
-  int dmn_out_id[NC_MAX_DIMS];           /* [id] Dimension IDs array for output variable */
+  int dmn_out_id[NC_MAX_VAR_DIMS];           /* [id] Dimension IDs array for output variable */
   int fl_fmt;                            /* [enm] Output file format */
   int grp_dmn_out_id;                    /* [id] Group ID where dimension visible to specified group is defined */
   int grp_in_id;                         /* [id] Group ID */
@@ -4800,7 +4800,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
        ...variable is processing type */
 
     /* Temporary store for old IDs */
-    int dmn_tmp_id[NC_MAX_DIMS];
+    int dmn_tmp_id[NC_MAX_VAR_DIMS];
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++) dmn_tmp_id[idx_dmn]=dmn_out_id[idx_dmn];
 
     /* Increment number of dimensions for this variable */
@@ -4846,7 +4846,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* Special case for ncwa */
   if(nco_prg_id == ncwa){
-    int dmn_ids_out[NC_MAX_DIMS];  /* [id] Dimension IDs array for output variable (ncwa can skip some dimensions, rearrange) */
+    int dmn_ids_out[NC_MAX_VAR_DIMS];  /* [id] Dimension IDs array for output variable (ncwa can skip some dimensions, rearrange) */
     int idx_dmn_def=0;
     for(int idx_dmn=0;idx_dmn<nbr_dmn_var;idx_dmn++){
       if(DEFINE_DIM[idx_dmn]){
@@ -4936,7 +4936,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* Define extra dimension on output (e.g., ncecat adds "record" dimension) */
     if(nco_prg_id == ncecat && rec_dmn_nm && var_trv->enm_prc_typ == prc_typ){ 
       /* Temporary store for old dimensions */
-      dmn_cmn_sct dmn_cmn_tmp[NC_MAX_DIMS];
+      dmn_cmn_sct dmn_cmn_tmp[NC_MAX_VAR_DIMS];
       for(int idx_dmn=0;idx_dmn<nbr_dmn_var_out;idx_dmn++) dmn_cmn_tmp[idx_dmn]=dmn_cmn[idx_dmn];
       /* Define record dimension made for ncecat */
       dmn_cmn[0].sz=NC_UNLIMITED;
@@ -5520,9 +5520,9 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
   int dmn_out_nbr;                 /* [nbr] Number of dimensions in output variable */
   int typ_sz;                      /* [B] Size of data element in memory */
 
-  long dmn_in_map[NC_MAX_DIMS];    /* [idx] Map for each dimension of input variable */
-  long dmn_out_map[NC_MAX_DIMS];   /* [idx] Map for each dimension of output variable */
-  long dmn_in_sbs[NC_MAX_DIMS];    /* [idx] Dimension subscripts into N-D input array */
+  long dmn_in_map[NC_MAX_VAR_DIMS];    /* [idx] Map for each dimension of input variable */
+  long dmn_out_map[NC_MAX_VAR_DIMS];   /* [idx] Map for each dimension of output variable */
+  long dmn_in_sbs[NC_MAX_VAR_DIMS];    /* [idx] Dimension subscripts into N-D input array */
   long var_in_lmn;                 /* [idx] Offset into 1-D input array */
   long var_out_lmn;                /* [idx] Offset into 1-D output array */
   long *var_in_cnt;                /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
@@ -5589,7 +5589,7 @@ nco_var_dmn_rdr_val_trv               /* [fnc] Change dimension ordering of vari
 
       /* Report full metadata re-order, if requested */
       if(nco_dbg_lvl_get() > 3){
-        int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
+        int dmn_idx_in_out[NC_MAX_VAR_DIMS]; /* [idx] Dimension correspondence, input->output */
         /* Create reverse correspondence */
         for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
           dmn_idx_in_out[dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;

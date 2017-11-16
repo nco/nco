@@ -467,7 +467,7 @@ prs_cls::ncap_var_write_omp(
       (void)nco_inq_format(out_id,&fl_fmt);
       if( (fl_fmt == NC_FORMAT_NETCDF4 || fl_fmt == NC_FORMAT_NETCDF4_CLASSIC) && var->nbr_dim > 0)
       {
-        dmn_cmn_sct cmn[NC_MAX_DIMS];
+        dmn_cmn_sct cmn[NC_MAX_VAR_DIMS];
         ncap_pop_dmn_cmn();
         ncap_pop_var_dmn_cmn(var, cmn);
         (void)nco_cnk_sz_set_trv(in_id,out_id,cnk_in, var->nm,cmn);
