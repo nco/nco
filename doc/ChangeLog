@@ -1,5 +1,9 @@
 2017-11-15  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.1-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.1-alpha02: Shrimp parade';git push
+	git tag -a 4.7.1-alpha02 -m 'long/size_t workaround for WIN64';git push --tags
+
 	* long/size_t workaround for var1 routines
 
 	* Change most NC_MAX_DIMS to NC_MAX_VAR_DIMS
