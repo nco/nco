@@ -1,5 +1,7 @@
 2017-11-15  Charlie Zender  <zender@uci.edu>
 
+	* long/size_t workaround for var1 routines
+
 	* Change most NC_MAX_DIMS to NC_MAX_VAR_DIMS
 
 	* long/size_t workaround for srt,cnt and long/ptrdiff_t workaround for srd,map
