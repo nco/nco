@@ -1684,6 +1684,7 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
       fmc_vtr.push_back( fmc_cls("atan2",this,(int)PATAN2));
       fmc_vtr.push_back( fmc_cls("convert",this,(int)PCONVERT));
       fmc_vtr.push_back( fmc_cls("xratio",this,(int)PXRATIO));
+      fmc_vtr.push_back( fmc_cls("solar_zenith_angle",this,(int)PSOLARZENITHANGLE));
     }
   }
 
@@ -1937,11 +1938,122 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
 	}  
         break;
 
+
+       case PSOLARZENITHANGLE:
+	 { 
+           // convert all args to type double              
+           var1=nco_var_cnf_typ( NC_FLOAT, var1);
+           var2=nco_var_cnf_typ( NC_FLOAT, var2);
+
+           var=nco_var_dpl(var1);
+
+           if(!prs_arg->ntl_scn)       
+	   {    
+             long idx;
+             long sz; 
+             float *z_fp; 
+	     float *tm_fp;   // array of times 
+             float  lat_flt; // latitude in degrees
+             float cosSZA;      
+             float calendar_day_of_year;    
+             (void)cast_void_nctype(var->type,&var->val);      
+             (void)cast_void_nctype(var1->type,&var1->val);      
+             (void)cast_void_nctype(var2->type,&var2->val);
+
+             tm_fp=var1->val.fp;    
+             lat_flt=var2->val.fp[0];      
+             z_fp=var->val.fp;    
+
+             // convert lat_dbl to radians    
+             lat_flt *=  M_PI /180.0f;
+                       
+             sz=var1->sz;
+    
+             for(idx=0;idx<sz;idx++)
+	     {                          
+               cosSZA=-1;;
+               calendar_day_of_year=tm_fp[idx];                         
+	       (void)solar_geometry( lat_flt, calendar_day_of_year , 1, (float *)NULL, &cosSZA, (float *)NULL);
+               z_fp[idx]=180.0f/ M_PI *  acos( cosSZA);                      
+
+             } 
+
+
+            (void)cast_nctype_void(var->type,&var->val);      
+            (void)cast_nctype_void(var1->type,&var1->val);      
+            (void)cast_nctype_void(var2->type,&var2->val);      
+
+
+
+           }  
+           var1=nco_var_free(var1);   
+           var2=nco_var_free(var2);   
+    
+         } 
+         break; 
+
+
     }
       
     return var; 
 
   }
+
+
+
+void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, int num_long, float *local_time, float *cosSZA, float *eccentricity_factor)
+{
+
+  float cos_lat;
+  float cos_delta;
+  float cphase;
+  float delta;
+  float phi;
+  float sin_lat;
+  float sin_delta;
+  float theta;
+  float eccentricity;
+
+  int ilong;
+
+  int days_per_year=365;
+
+  /* compute eccentricity factor (sun-earth distance factor) */
+  theta=2.0*M_PI*calendar_day_of_year/days_per_year;
+  eccentricity=1.000110+.034221*cos(theta)+0.001280*sin(theta)+ 0.000719*cos(2.*theta)+0.000077*sin(2.*theta);
+
+  /* solar declination in radians: */
+  delta=0.006918-0.399912*cos(theta)+0.070257*sin(theta)- 0.006758*cos(2.*theta)+0.000907*sin(2.*theta)- 0.002697*cos(3.*theta)+0.001480*sin(3.*theta);
+
+  /* compute local cosine solar zenith angle: */
+  sin_lat=sin(latitude_rad);
+  sin_delta=sin(delta);
+  cos_lat=cos(latitude_rad);
+  cos_delta=cos(delta);
+
+  /* calendar_day_of_year is the calender day for greenwich, including fraction
+     of day; the fraction of the day represents a local time at
+     greenwich; to adjust this to produce a true instantaneous time
+     for other longitudes, we must correct for the local time change: */
+
+  for(ilong=1;ilong<=num_long;ilong++)
+  {
+    phi=calendar_day_of_year+((float)(ilong-1)/(float)(num_long));
+    cphase=cos(2.0*M_PI*phi);
+
+    if( cosSZA != NULL)
+      cosSZA[ilong-1]=sin_lat*sin_delta-cos_lat*cos_delta*cphase;
+
+    if( local_time != NULL)   
+      local_time[ilong-1]=12.0*acos(cphase)/M_PI;
+
+    if(eccentricity_factor != NULL)
+      eccentricity_factor[ilong-1]=eccentricity;
+  }
+
+  return;
+}
+
 
 
 //PDQ Functions /******************************************/

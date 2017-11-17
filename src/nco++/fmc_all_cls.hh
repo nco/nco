@@ -133,11 +133,13 @@ public:
 //Maths2 - Maths functions that take 2 args /*********/
 class mth2_cls: public vtl_cls {
 private:
-  enum {PPOW,PATAN2,PCONVERT, PXRATIO};
+  enum {PPOW,PATAN2,PCONVERT, PXRATIO, PSOLARZENITHANGLE};
    bool _flg_dbg;
 public:
   mth2_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+  void solar_geometry(float latitude_rad, float calendar_day_of_year, int num_longitudes, float *local_time, float *cosSZA, float *eccentricity_factor);
+
 };
 
 //PDQ Functions /****************************************/
