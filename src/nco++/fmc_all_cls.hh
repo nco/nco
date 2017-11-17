@@ -133,7 +133,7 @@ public:
 //Maths2 - Maths functions that take 2 args /*********/
 class mth2_cls: public vtl_cls {
 private:
-   enum {PPOW,PATAN2,PCONVERT};
+  enum {PPOW,PATAN2,PCONVERT, PXRATIO};
    bool _flg_dbg;
 public:
   mth2_cls(bool flg_dbg);

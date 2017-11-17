@@ -1683,6 +1683,7 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
       fmc_vtr.push_back( fmc_cls("pow",this,(int)PPOW));
       fmc_vtr.push_back( fmc_cls("atan2",this,(int)PATAN2));
       fmc_vtr.push_back( fmc_cls("convert",this,(int)PCONVERT));
+      fmc_vtr.push_back( fmc_cls("xratio",this,(int)PXRATIO));
     }
   }
 
@@ -1754,23 +1755,187 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
       var=ncap_var_var_op(var1,var2,ATAN2);
         break;                
 
-    case PCONVERT:          
-      if(prs_arg->ntl_scn){
-        var=ncap_var_udf("~mth2_cls");  
-       }else{
+      case PCONVERT:          
+        if(prs_arg->ntl_scn){
+          var=ncap_var_udf("~mth2_cls");  
+        }else{
 
-        /* Change type to int */
-        int c_typ;
-        var2=nco_var_cnf_typ(NC_INT,var2);
-        (void)cast_void_nctype(NC_INT,&var2->val);
-        c_typ=var2->val.ip[0];      
-        (void)cast_nctype_void(NC_INT,&var2->val);
-        var2=nco_var_free(var2);
+          /* Change type to int */
+          int c_typ;
+          var2=nco_var_cnf_typ(NC_INT,var2);
+          (void)cast_void_nctype(NC_INT,&var2->val);
+          c_typ=var2->val.ip[0];      
+          (void)cast_nctype_void(NC_INT,&var2->val);
+          var2=nco_var_free(var2);
 
-        var=nco_var_cnf_typ( (nc_type)c_typ, var1);
-      } 
+          var=nco_var_cnf_typ( (nc_type)c_typ, var1);
+        } 
         break;
-         
+      
+      case  PXRATIO: 
+	if( var1->type == NC_DOUBLE || var2->type == NC_DOUBLE )
+	{       
+            var1=nco_var_cnf_typ( NC_DOUBLE, var1);
+            var2=nco_var_cnf_typ( NC_DOUBLE, var2);
+        }
+        else if ( var1->type == NC_FLOAT || var2->type == NC_FLOAT )
+	{        
+            var1=nco_var_cnf_typ( NC_FLOAT, var1);
+            var2=nco_var_cnf_typ( NC_FLOAT, var2);
+        }
+        else 
+	{    
+            var1=nco_var_cnf_typ( NC_DOUBLE, var1);
+            var2=nco_var_cnf_typ( NC_DOUBLE, var2);
+        }  
+
+
+        var=nco_var_dpl(var1);      
+
+        if(prs_arg->ntl_scn)
+	{                    
+          var1=nco_var_free(var1);  
+	  var2=nco_var_free(var2);
+
+        }
+        else 
+	{ // start heavy lifting      
+
+	  if(var1->sz != var2->sz)
+          {
+            std::string serr;
+	    serr="For  this function to succeed Operands must have same number of elements \n"+susg;               
+            err_prn(sfnm,serr);
+          }  
+
+          (void)cast_void_nctype(var->type,&var->val);      
+          (void)cast_void_nctype(var1->type,&var1->val);      
+          (void)cast_void_nctype(var2->type,&var2->val);
+
+          // FLOAT      
+          if(var1->type == NC_FLOAT)   
+	  {
+	    nco_bool has_mss;
+            long idx;
+            long sz;         
+            float mss_flt;  
+            float *fp;     
+            float *fp1;
+            float *fp2;
+                          
+            fp=var->val.fp;
+            fp1=var1->val.fp;
+            fp2=var2->val.fp;
+                             
+
+            has_mss=False;         
+            if( var1->has_mss_val)
+	    {       
+	      has_mss=True; 
+              mss_flt=var1->mss_val.fp[0];  
+
+            }   
+            else if(var2->has_mss_val)
+	    { 
+              has_mss=True;       
+              mss_flt=var2->mss_val.fp[0];        
+              nco_mss_val_cp(var2,var);
+
+            }   
+
+            sz=var1->sz;   
+              
+            if( has_mss)      
+	    {   
+              for(idx=0 ; idx<sz ; idx++)   
+                if( fp1[idx] == mss_flt || fp2[idx]== mss_flt ) 
+                  fp[idx]=mss_flt;
+                else       
+		  fp[idx] = ( fp1[idx] - fp2[idx] ) /  ( fp1[idx] + fp2[idx] ) ;     
+
+	    }    
+            else
+	    {  
+              for(idx=0 ; idx<sz ; idx++)   
+		fp[idx]= ( fp1[idx] - fp2[idx] ) /  ( fp1[idx] + fp2[idx] ) ;     
+
+
+
+
+            }
+       
+
+	  }       
+
+
+          // DOUBLE
+          if(var1->type == NC_DOUBLE)   
+	  {
+	    nco_bool has_mss;
+            long idx;
+            long sz;         
+            double mss_dbl;  
+            double *dp;     
+            double *dp1;
+            double *dp2;
+                          
+            
+            dp=var->val.dp;
+            dp1=var1->val.dp;
+            dp2=var2->val.dp;
+                             
+
+            has_mss=False;         
+            if( var1->has_mss_val)
+	    {       
+	      has_mss=True; 
+              mss_dbl=var1->mss_val.dp[0];  
+
+            }   
+            else if(var2->has_mss_val)
+	    { 
+              has_mss=True;       
+              mss_dbl=var2->mss_val.dp[0];        
+              nco_mss_val_cp(var2,var);
+              // var->has_mss_val=True;   
+               
+            }   
+
+            sz=var1->sz;   
+              
+            if( has_mss)      
+	    {   
+              for(idx=0 ; idx<sz ; idx++)   
+                if( dp1[idx] == mss_dbl || dp2[idx]== mss_dbl ) 
+                  dp[idx]=mss_dbl;
+                else       
+		  dp[idx] = ( dp1[idx] - dp2[idx] ) /  ( dp1[idx] + dp2[idx] ) ;     
+
+	    }    
+            else
+	    {  
+              for(idx=0 ; idx<sz ; idx++)   
+		dp[idx]= ( dp1[idx] - dp2[idx] ) /  ( dp1[idx] + dp2[idx] ) ;     
+
+
+
+
+            }
+       
+
+	  }       
+
+            (void)cast_nctype_void(var->type,&var->val);      
+            (void)cast_nctype_void(var1->type,&var1->val);      
+            (void)cast_nctype_void(var2->type,&var2->val);    
+            var1=nco_var_free(var1);  
+	    var2=nco_var_free(var2);
+
+
+
+
+	}  
+        break;
 
     }
       
