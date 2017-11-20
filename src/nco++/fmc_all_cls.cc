@@ -1955,25 +1955,76 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
 	     float *tm_fp;   // array of times 
              float  lat_flt; // latitude in degrees
              float cosSZA;      
-             float calendar_day_of_year;    
+             char units_sng[200]={0};             
+             char units_new_sng[200]={0};
+
+             //grab units atts for var1->nm
+             // fixme:(2017-11-20)   for now not reading calendar type of var1->nm: assume it is cln_std            
+             {  
+
+               var_sct *var_att=NULL_CEWI;
+               NcapVar *Nvar=NULL;
+	       std::string att_nm; 
+               tm_cln_sct lcl_tm_sct;      
+
+	       att_nm=std::string(var1->nm)+ "@units";       
+	       Nvar=prs_arg->var_vtr.find(att_nm);
+
+	       if(Nvar !=NULL)
+		 var_att=nco_var_dpl(Nvar->var);
+	       else    
+		 var_att=ncap_att_init(att_nm,prs_arg);
+
+	       if(var_att == NULL_CEWI )
+		 err_prn(fnc_nm,"Unable to locate attribute " +att_nm+ " in input or output files.");
+	       if(var_att->type != NC_CHAR && var_att->type != NC_STRING)
+		 err_prn(fnc_nm,"The NC type for "+ att_nm+ " must be NC_CHAR or NC_STRING");
+
+	       (void)cast_void_nctype(var_att->type,&var_att->val); 
+  
+	       // copy string - no need for NULL as units_sng is all nulls     
+               if( var_att->type == NC_CHAR) 
+	          strncpy(units_sng,var_att->val.cp,var_att->sz); 
+               else if(var_att->type==NC_STRING)
+		  strcpy(units_sng, var_att->val.sngp[0]);   
+        
+	       (void)cast_nctype_void(var_att->type,&var_att->val);    
+	       var_att=nco_var_free(var_att); 
+
+               // we want the time coord to be "days since start of year" 
+               // need to parse the date string to extract the year
+               if( nco_cln_prs_tm(units_sng, &lcl_tm_sct) != NCO_NOERR)              
+                 err_prn(fnc_nm, "Error trying to parse the units string " + std::string(units_sng) + " \n"); 
+
+               // assemble new units string
+               sprintf(units_new_sng,"days since %d-01-01 00:00:00", lcl_tm_sct.year);           
+ 
+             }   
+                 
+             // convert var1 from units_sng  units_new_sng that is calendar_day_of_year; 
+             // nb calendar is cln_std for now       
+             (void)nco_cln_clc_dbl_var_dff(units_sng,units_new_sng, cln_std, (double*)NULL, var1); 
+
              (void)cast_void_nctype(var->type,&var->val);      
              (void)cast_void_nctype(var1->type,&var1->val);      
              (void)cast_void_nctype(var2->type,&var2->val);
 
-             tm_fp=var1->val.fp;    
-             lat_flt=var2->val.fp[0];      
+	  
              z_fp=var->val.fp;    
+             tm_fp=var1->val.fp;    
 
+             lat_flt=var2->val.fp[0];
+        
              // convert lat_dbl to radians    
-             lat_flt *=  M_PI /180.0f;
-                       
+             lat_flt *=  M_PI /180.0f;      
+
              sz=var1->sz;
     
              for(idx=0;idx<sz;idx++)
 	     {                          
                cosSZA=-1;;
-               calendar_day_of_year=tm_fp[idx];                         
-	       (void)solar_geometry( lat_flt, calendar_day_of_year , 1, (float *)NULL, &cosSZA, (float *)NULL);
+	       (void)solar_geometry( lat_flt, tm_fp[idx], 1, (float *)NULL, &cosSZA, (float *)NULL);
+               // convert back to degree's 
                z_fp[idx]=180.0f/ M_PI *  acos( cosSZA);                      
 
              } 
