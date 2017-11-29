@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.1-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 10 November 2017
+@set update-date 20 November 2017
 @set update-month November 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17320,12 +17320,31 @@ The value @samp{dly} is used for all input files whose temporal
 resolution is daily or finer.
 The data could be a daily average, or diurnally-resolved, e.g.,
 3-hourly. 
+
 The climatology generator and splitter do not require that daily-mode
 input files begin or end on daily boundaries.
 These tools hyperslab the input files using the date information
 required to performed their analysis.
 This facilitates analyzing datasets with varying numbers of days per
 input file.
+
+@cindex @code{stdin}
+@cindex @command{crontab}
+@cindex @code{nohup}
+@cindex Python
+Explicitly specifying @samp{--clm_md=mth} serves a secondary purpose,
+namely invoking the default setting on systems that control
+@code{stdin}.
+When @command{ncclimo} detects that @code{stdin} is not attached to the
+terminal (keyboard) it automatically expects a list of files on
+@code{stdin}. 
+Some environments, however, hijack @code{stdin} for their purposes
+and thereby confuse @code{ncclimo} into expecting a list argument.
+Users have encountered this issue when attempting to run
+@command{ncclimo} in Python parallel environments, via inclusion in 
+@command{crontab}, and in @command{nohup}-mode (whatever that is!).
+In such cases, explicitly specify @samp{--clm_md=mth} (or @code{ann} or
+@code{day}) to persuade @command{ncclimo} to run a normal climatology.
 
 @cindex @code{-c @var{caseid}}
 @cindex @var{caseid}
@@ -17732,6 +17751,8 @@ ncclimo --seasons=jfm,jas,ann ...     # Monthly + JFM,JAS,ANN
 ncclimo --seasons=fm,on ...           # Monthly + FM,ON
 @end example
 
+@cindex @acronym{SLURM}
+@cindex @acronym{PBS}
 @cindex @code{--stdin}
 @cindex @code{--inp_std}
 @cindex @code{--std_flg}
@@ -17753,7 +17774,15 @@ non-interactive batch jobs on @acronym{PBS} when the input files
 are piped to @code{stdin}, and on @acronym{SLURM} when the input files 
 are redirected from a file to @code{stdin}.
 Using this switch in any other context (e.g., interactive shells) is
-optional. 
+optional.
+
+In some other non-interactive environments (e.g., @command{crontab},
+@code{nohup}), @command{ncclimo} may mistakenly expect input to be
+provided on @code{stdin} simply because the environment is using
+@code{stdin} for other purposes.
+In such cases users may persuade @command{ncclimo} to @emph{ignore}
+@code{stdin} by explicitly invoking the @samp{--clm_md} option
+(described above).
 
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
