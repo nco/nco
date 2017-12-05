@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.1-alpha02
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 20 November 2017
-@set update-month November 2017
+@set update-date 5 December 2017
+@set update-month December 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -7930,7 +7930,7 @@ Dataset chunking issues are described by @acronym{THG} and Unidata
 and
 @uref{http://www.unidata.ucar.edu/blogs/developer/en/entry/chunking_data_choosing_shapes,here}.
 @acronym{NCO} authors are working on generalized algorithms and
-applications of chunking strategies (stay tuned for more in 2017).
+applications of chunking strategies (stay tuned for more in 2018).
 
 @html
 <a name="chunk_cache"></a> <!-- http://nco.sf.net/nco.html#chunk_cache -->
