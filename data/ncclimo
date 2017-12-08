@@ -1520,8 +1520,10 @@ if [ "${clm_flg}" = 'Yes' ]; then
     fi # !bnr_flg
     if [ "${mdl_typ}" = 'yyyymm' ]; then
 	printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
+    elif [ ${inp_aut} = 'Yes' ]; then 
+	printf "Input filenames will be constructed with CESM'ish or E3SM/ACME'ish conventions\n"
     else # !mdl_typ
-	printf "Filenames will be constructed with CESM'ish or E3SM/ACME'ish conventions\n"
+	printf "Input filenames will be read from globbing, positional arguments, or stdin\n"
     fi # !mdl_typ
     if [ ${clm_md} = 'ann' ]; then 
 	printf "Each input file assumed to contain mean of one year\n"
@@ -1530,10 +1532,10 @@ if [ "${clm_flg}" = 'Yes' ]; then
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
-    if [ ${csn_flg} = 'No' ]; then 
-	printf "Seasons and therefore annual means derived from seasonal means have been turned-off and will not be computed\n"
-    elif [ ${clm_md} = 'mth' ]; then 
-	if [ ${dec_md} = 'scd' ]; then 
+    if [ ${clm_md} = 'mth' ]; then 
+	if [ ${csn_flg} = 'No' ]; then 
+	    printf "Seasons and therefore annual means derived from seasonal means have been turned-off and will not be computed\n"
+	elif [ ${dec_md} = 'scd' ]; then 
 	    printf "Winter statistics based on seasonally contiguous December (scd-mode): DJF sequences are consecutive and cross calendar-year boundaries\n"
 	else
 	    printf "Winter statistics based on seasonally discontiguous December (sdd-mode): DJF sequences comprise three months from the same calendar year\n"
@@ -1940,6 +1942,16 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	fl_all="${fl_all} ${fl_in[${fl_idx}]}"
     done # !fl
 
+    ppn_opt="-p ${drc_in}"
+    if [ ${inp_std} = 'Yes' ]; then
+	# 20171208 Detect whether stdin names are full-path (i.e., contain directory prefix)
+	# If full-path, then use as-is later on, otherwise prepend drc_in
+	# Currently this is only done for 'dly', yet could be adapted to sbs as well
+	if [ "$(basename ${fl_in[0]})" != "${fl_in[0]}" ]; then
+	    ppn_opt=''
+	fi # !basename
+    fi # !inp_std
+
     unset dpm # Days per month
     declare -a dpm
     dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
@@ -1959,10 +1971,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    tm_srt="${yyyy_srt}-${MM}-${DD} 00:00:00"
 	    tm_end="${yyyy_end}-${MM}-${DD} 23:59:59"
 	    if [ ${tpd_out} -eq 1 ]; then
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},1 -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},1 ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    else
 		# 20170619: Diurnal mode is really slow on MacOSX (UDUnits parsing sluggishness?)
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} -p ${drc_in} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
 	    fi # !tpd
 	    let clm_idx=${clm_idx}+1
 	done # !day

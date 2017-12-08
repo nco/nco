@@ -1,6 +1,10 @@
+2017-12-08  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo: for clm_md=dly and inp_std, prepend drc_in to fl_in iff stdin names are basenames
+
 2017-12-07  Charlie Zender  <zender@uci.edu>
 
-	* Fix ncclimo from setting csn_flg when clm_md='dly' or 'ann'
+	* Stop ncclimo from setting csn_flg when clm_md='dly' or 'ann'
 
 	* Fix ncclimo E3SM instruction on how to override default PATH at HPCs
 
