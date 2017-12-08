@@ -420,6 +420,7 @@ caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', or 'mth')
+csn_flg='No' # [flg] Trigger season-processing code
 csn_lst='mam,jja,son,djf' # [sng] Seasons to output (subset of mam,jja,son,djf,jfm,amj,jas,ond,fm,on)
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
@@ -874,13 +875,6 @@ if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     out_nm=${bs_nm}
     bs_sfx="${caseid#*.}"
 fi # !caseid
-if [ -n "${csn_lst}" ]; then
-    csn_flg='Yes'
-    if [ ${csn_lst} = 'none' ]; then
-	csn_nbr=0
-	csn_flg='No'
-    fi # !csn_lst
-fi # !csn_lst
 if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ] ; then 
     echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
     exit 1
@@ -893,6 +887,11 @@ elif [ "${clm_md}" = 'dly' ]; then
     dec_md='sdd'
 elif [ "${clm_md}" = 'mth' ]; then 
     clm_nbr=12
+    csn_flg='Yes'
+    if [ ${csn_lst} = 'none' ]; then
+	csn_nbr=0
+	csn_flg='No'
+    fi # !csn_lst
 fi # !clm_md
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"

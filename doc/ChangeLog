@@ -1,6 +1,8 @@
 2017-12-07  Charlie Zender  <zender@uci.edu>
 
-	* Fix ncclimo E3SM instruction on how to override default PATH
+	* Fix ncclimo from setting csn_flg when clm_md='dly' or 'ann'
+
+	* Fix ncclimo E3SM instruction on how to override default PATH at HPCs
 
 2017-12-03  Charlie Zender  <zender@uci.edu>
 
