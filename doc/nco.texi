@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.1-alpha02
-@set doc-edition 4.7.1-alpha02
+@set nco-edition 4.7.1-alpha03
+@set doc-edition 4.7.1-alpha03
 @set copyright-years 1995--2017
 @set update-year 2017
 @set update-date 5 December 2017
@@ -19671,21 +19671,37 @@ Features common to many operators are described in
 @end html
 @cindex alphabetization
 @cindex sort alphabetically
-@cindex @code{-a}
 @cindex @code{--abc}
 @cindex @code{--alphabetize}
+@cindex @code{--no_abc}
+@cindex @code{--no_alphabetize}
+@cindex @code{--no-abc}
+@cindex @code{--no-alphabetize}
 @item -a
-Do not alphabetize extracted fields. 
-By default, the specified output variables are extracted, printed, and
-written to disk in alphabetical order.
+Switches @samp{-a}, @samp{--abc}, and @samp{--alphabetize}
+@emph{turn-off} the default alphbetization of extracted fields in
+@command{ncks} only.
+These switches are misleadingly named and were deprecated in
+@command{ncks} as of @acronym{NCO} version 4.7.1 (December, 2017).  
+
+This is the default behavior so these switches are no-ops included only
+for completeness.
+By default, @acronym{NCO} extracts, prints, and writes specified output
+variables to disk in alphabetical order. 
 This tends to make long output lists easier to search for particular
 variables. 
-Specifying @code{-a} results in the variables being extracted, printed,
-and written to disk in the order in which they were saved in the input
-file.
-Thus @code{-a} retains the original (often non-alphabetic) variable
-ordering.
-Also @samp{--abc} and @samp{--alphabetize}.
+Again, no option is necessary to write output in alphabetical order.
+Until @acronym{NCO} version 4.7.1 (December, 2017), @command{ncks}
+used the @code{-a}, @code{--abc}, or @code{--alphabetize} switches to
+@emph{turn-off} the default alphabetization.
+These names were counter-intuitive and needlessly confusing.
+As of @acronym{NCO} version 4.7.1, @command{ncks} uses the new switches
+@code{--no_abc}, @code{--no-abc}, @code{--no_alphabetize}, or
+@code{--no-alphabetize}, all of which are equivalent.
+The @code{--abc} and @code{--alphabetize} switches are now no-ops,
+i.e., they write the output in the unsorted order of the input.
+The @code{-a} switch is now completely deprecated in favor of the
+clearer long option switches.
 
 @html
 <a name="bnr"></a> <!-- http://nco.sf.net/nco.html#bnr -->

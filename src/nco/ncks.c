@@ -334,6 +334,10 @@ main(int argc,char **argv)
     {"mpi_implementation",no_argument,0,0},
     {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     {"msa_user_order",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
+    {"no_abc",no_argument,0,0},
+    {"no-abc",no_argument,0,0},
+    {"no_alphabetize",no_argument,0,0},
+    {"no-alphabetize",no_argument,0,0},
     {"no_blank",no_argument,0,0}, /* [flg] Print numeric missing values */
     {"no-blank",no_argument,0,0}, /* [flg] Print numeric missing values */
     {"noblank",no_argument,0,0}, /* [flg] Print numeric missing values */
@@ -673,6 +677,7 @@ main(int argc,char **argv)
       } /* endif "md5_wrt_att" */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"mta_dlm") || !strcmp(opt_crr,"dlm_mta")) nco_mta_dlm_set(optarg);
+      if(!strcmp(opt_crr,"no_abc") || !strcmp(opt_crr,"no-abc") || !strcmp(opt_crr,"no_alphabetize") || !strcmp(opt_crr,"no-alphabetize")) ALPHABETIZE_OUTPUT=False;
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_nm_prn") || !strcmp(opt_crr,"no_dmn_var_nm")) PRN_DMN_VAR_NM=False; /* endif "no_nm_prn" */
@@ -794,8 +799,9 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'a': /* Toggle ALPHABETIZE_OUTPUT */
-      ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
+    case 'a': /* Do not alphabetize output */
+      ALPHABETIZE_OUTPUT=False;
+      (void)fprintf(stderr,"%s: WARNING the ncks '-a', '--abc', and '--alphabetize' switches are misleadingly named because they turn-off the default alphabetization. These switches are deprecated as of NCO 4.7.1 and will soon be deleted. Instead, please use the new long options --no_abc, --no-abc, --no_alphabetize, or --no-alphabetize, all of which turn-off the default alphabetization.\n",nco_prg_nm_get());
       break;
     case 'b': /* Set file for binary output */
       fl_bnr=(char *)strdup(optarg);
@@ -986,6 +992,14 @@ main(int argc,char **argv)
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,EXTRACT_CLL_MSR,EXTRACT_FRM_TRM,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
+  /* 20170914: Workaround CDF5 bug for MPAS MOC */
+  if(var_lst_in_nbr == 2 && (!strcmp(var_lst_in[0],"timeMonthly_avg_normalVelocity") || !strcmp(var_lst_in[1],"timeMonthly_avg_normalVelocity"))){
+    srt_mth=0; // fxm: Set to 1 to activate workaround. Currently broken, seems to produce invalid trv_tbl
+    if(srt_mth == 1) (void)fprintf(stderr,"%s: INFO Activating CDF5 bug workaround: define output in reverse-alphabetical (instead of alphabetical) order when two fields are requested and one is timeMonthly_avg_normalVelocity\n",nco_prg_nm_get());
+  } /* !CDF5 */
+
+  if(ALPHABETIZE_OUTPUT) trv_tbl_srt(srt_mth,trv_tbl);
+
   /* [fnc] Print extraction list and exit */
   if(LST_XTR) nco_xtr_lst(trv_tbl);
 
@@ -1008,14 +1022,6 @@ main(int argc,char **argv)
   /* Roll call */
   (void)fprintf(stdout,"%s: MPI process rank %d reports %d process%s\n",nco_prg_nm,prc_rnk,prc_nbr,(prc_nbr == 1) ? "" : "es");
 #endif /* !ENABLE_MPI */
-
-  /* 20170914: Workaround CDF5 bug for MPAS MOC */
-  if(var_lst_in_nbr == 2 && (!strcmp(var_lst_in[0],"timeMonthly_avg_normalVelocity") || !strcmp(var_lst_in[1],"timeMonthly_avg_normalVelocity"))){
-    srt_mth=0; // fxm: Set to 1 to activate workaround. Currently broken, seems to produce invalid trv_tbl
-    if(srt_mth == 1) (void)fprintf(stderr,"%s: INFO Activating CDF5 bug workaround: define output in reverse-alphabetical (instead of alphabetical) order when two fields are requested and one is timeMonthly_avg_normalVelocity\n",nco_prg_nm_get());
-  } /* !CDF5 */
-
-  if(ALPHABETIZE_OUTPUT) trv_tbl_srt(srt_mth,trv_tbl);
 
   /* We now have final list of variables to extract. Phew. */
 

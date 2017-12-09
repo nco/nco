@@ -758,7 +758,7 @@ else # !bch
     fi # !stdin
 fi # !bch
 if [ ${inp_std} = 'Yes' ] && [ ${inp_psn} = 'Yes' ]; then
-    echo "${spt_nm}: ERROR expecting input both from stdin and positional command-line arguments\n"
+    echo "${spt_nm}: ERROR expecting input both from stdin and positional command-line arguments"
     exit 1
 fi # !inp_std
 
