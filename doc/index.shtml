@@ -253,8 +253,8 @@ special cases.
 
 <p><hr width="100%"></p>
 
-<!-- http://nco.sf.net#Contribute -->
-<dt><a name="Contribute"></a></dt>
+<a name="Contribute"></a> <!-- http://nco.sf.net#Contribute -->
+<a name="contribute"></a> <!-- http://nco.sf.net#contribute -->
 <h2>How to Contribute: Volunteer, Endorse, or Donate</h2>
 <p>NCO has always (since 1995) been GPL'd Open Source.
 <a href="http://sf.net">SourceForge.net</a> started hosting NCO 
@@ -1078,6 +1078,7 @@ Source documentation for NCO and netCDF4(alpha13)</a></li>
 <!-- http://nco.sf.net#bld -->
 <dt><a name="Rqr"></a><a name="rqr"></a></dt> <!-- http://nco.sf.net#rqr -->
 <dt><a name="bld"></a></dt> <!-- http://nco.sf.net#bld -->
+<dt><a name="build"></a></dt> <!-- http://nco.sf.net#build -->
 <dt><a name="cmp"></a></dt> <!-- http://nco.sf.net#cmp -->
 <h2>Compilation Requirements</h2>
 

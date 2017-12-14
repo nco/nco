@@ -1,3 +1,7 @@
+2017-12-14  Charlie Zender  <zender@uci.edu>
+
+	* CMakefile.txt and nco_sng_utl.h changes for Conda Windows package
+
 2017-12-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.1-alpha03 release procedure:
