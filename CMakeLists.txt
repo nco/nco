@@ -52,10 +52,12 @@ endif()
 #general C/C++ build flags
 #/////////////////////////////////////////////////////////////////////////////////////
 
-set(CMAKE_BUILD_TYPE Debug)
-set(BUILD_STATIC_LIBS ON)
-set(BUILD_SHARED_LIBS OFF)
-add_definitions(-DENABLE_STATIC)
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build.")
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libs.")
+
+if (NOT BUILD_SHARED_LIBS)
+  add_definitions(-DENABLE_STATIC)
+endif()
 
 #//////////////////////////
 #detect minimum dependencies using
@@ -247,22 +249,27 @@ endif()
 #compile as C++/static CRT on Visual Studio and as C99 on UNIX
 #//////////////////////////
 
+set(NCO_MSVC_USE_MT yes CACHE BOOL "Use MT flags when compiling in MSVC")
+
 if (MSVC)
   add_definitions( "/D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_DEPRECATE" )
-  message("-- Building with static runtime library")
-  set(CMAKE_CXX_FLAGS_DEBUG "/D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
-  set(CMAKE_CXX_FLAGS_MINSIZEREL     "/MT /O1 /Ob1 /D NDEBUG")
-  set(CMAKE_CXX_FLAGS_RELEASE        "/MT /O2 /Ob2 /D NDEBUG")
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "/MT /Zi /O2 /Ob1 /D NDEBUG")
-  
+
+  if (NCO_MSVC_USE_MT)
+     foreach(CompilerFlag CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+                          CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                          CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+                          CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+       string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+     endforeach()
+  endif()
+
   #//////////////////////////
   #compile as C++ Code (/TP)
   #//////////////////////////
-
-  set(CMAKE_C_FLAGS_DEBUG "/TP /D_DEBUG /MTd /Zi /Ob0 /Od /RTC1")
-  set(CMAKE_C_FLAGS_MINSIZEREL     "/TP /MT /O1 /Ob1 /D NDEBUG")
-  set(CMAKE_C_FLAGS_RELEASE        "/TP /MT /O2 /Ob2 /D NDEBUG")
-  set(CMAKE_C_FLAGS_RELWITHDEBINFO "/TP /MT /Zi /O2 /Ob1 /D NDEBUG")
+  foreach(CompilerFlag CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+                       CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+    set(${CompilerFlag} "/TP ${${CompilerFlag}}")
+  endforeach()
 
   #//////////////////////////
   #visual studio defines math symbols in math.h, avoid duplicate definition
@@ -402,7 +409,8 @@ set(nco_SOURCES ${nco_SOURCES} src/nco/nco_var_rth.c src/nco/nco_var_rth.h)
 set(nco_SOURCES ${nco_SOURCES} src/nco/nco_var_scv.c src/nco/nco_var_scv.h)
 set(nco_SOURCES ${nco_SOURCES} src/nco/nco_var_utl.c src/nco/nco_var_utl.h)
 
-add_library(nco STATIC ${nco_SOURCES})
+# Type of library (SHARED, STATIC) is configured using BUILD_SHARED_LIBS
+add_library(nco ${nco_SOURCES})
 add_executable(ncks src/nco/ncks.c)
 add_executable(ncbo src/nco/ncbo.c)
 add_executable(ncecat src/nco/ncecat.c)
