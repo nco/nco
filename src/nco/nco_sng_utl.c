@@ -319,7 +319,7 @@ nm2sng_cdl /* [fnc] Turn variable/dimension/attribute name into legal CDL */
 } /* end nm2sng_cdl() */
 
 char * /* O [sng] JSON-compatible name */
-nm2sng_jsn /* [fnc] Turn variable/dimension/attribute name into legal CDL */
+nm2sng_jsn /* [fnc] Turn variable/dimension/attribute name into legal JSON */
 (const char * const nm_sng) /* I [sng] Name to CDL-ize */
 {
   /* Valid JSON strings can be any selected set of control chars, any non-conrol chars from ASCII and Unicode 
@@ -552,8 +552,9 @@ chr2sng_jsn /* [fnc] Translate C language character to printable, visible ASCII 
   case '\0':	
     break;
   default: 
-    /* json is quite strict about control-chars - only the above are allowed */
-    if(iscntrl(chr_val)) *val_sng=0; else sprintf(val_sng,"%c",chr_val);
+    /* JSON is quite strict about control-chars - only the above are allowed */
+    // if(iscntrl(chr_val)) *val_sng=0; else sprintf(val_sng,"%c",chr_val);
+    if(iscntrl(chr_val)) *val_sng='\0'; else sprintf(val_sng,"%c",chr_val);
     break;
   } /* end switch */
 

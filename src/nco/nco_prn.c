@@ -1970,7 +1970,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
             if(chr_val != '\0') (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
-            val_sng[0]='\0';
+            val_sng[0]='\0'; /* Re-initialize with NUL byte to be safe */
           }else{ /* var.nbr_dim > 0 */
             /* Multi-dimensional string arrays of NC_CHAR */
             val_sng[0]='\0';

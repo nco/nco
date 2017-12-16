@@ -114,7 +114,6 @@ extern "C" {
   char * /* O [sng] JSON -compatible name */
   nm2sng_jsn /* [fnc] Turn variable/dimension/attribute name into legal JSON */
   (const char * const nm_sng); /* I [sng] Name to CDL-ize */
-
   
   char * /* O [sng] CDL-compatible name */
   nm2sng_fl /* [fnc] Turn file name into legal string for shell commands */
