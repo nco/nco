@@ -1,0 +1,38 @@
+environment:
+  matrix:
+    - TARGET_ARCH: x64
+      CONDA_PY: 36
+      CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
+
+platform:
+  - x64
+
+install:
+  # If there is a newer build queued for the same PR, cancel this one.
+  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:APPVEYOR_BUILD_NUMBER -ne ((Invoke-RestMethod `
+        https://ci.appveyor.com/api/projects/$env:APPVEYOR_ACCOUNT_NAME/$env:APPVEYOR_PROJECT_SLUG/history?recordsNumber=50).builds | `
+        Where-Object pullRequestId -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)[0].buildNumber) { `
+        throw "There are newer queued builds for this pull request, failing early." }
+
+  - cmd: rmdir C:\cygwin /s /q
+
+  # Add path, activate `conda` and update conda.
+  - cmd: call %CONDA_INSTALL_LOCN%\Scripts\activate.bat
+
+  # # Add path, activate `conda` and update conda.
+  - cmd: conda config --set always_yes yes --set changeps1 no --set show_channel_urls true
+  - cmd: conda update conda
+  - cmd: conda config --prepend channels conda-forge
+
+  - cmd: set PYTHONUNBUFFERED=1
+
+  - cmd: conda install conda-build
+  - cmd: conda info --all
+  - cmd: conda list
+
+
+# Skip .NET project specific build phase.
+build: off
+
+test_script:
+  - "conda build conda.recipe"
