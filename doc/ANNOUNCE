@@ -7,10 +7,13 @@ http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
 Version 4.7.1 contains minor fixes without new features.
-One major improvement, which has been a long time coming,
-is the release of a Conda Windows port for NCO.
-Building on the CMake contribution of Pedro Vicente, 
-a team of about six 
+One major improvement, long in development, is a Conda Windows port. 
+Building on the Pedro Vicente's CMake contribution, a team of about
+six volunteers used, refined, or implemented Windows ports for the
+full NCO software stack. Filipe Fernandez coordinated all the work.
+It was pretty impressive to see the power of Open Source development.
+Most NCO functionality is now easily available to Windows users
+through the Conda distribution. 
 
 Work on NCO 4.7.1 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
@@ -21,7 +24,16 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo in daily mode now handles stdin input more cleverly.
+A. NCO Conda package for Windows: All NCO binaries are thought
+   to work correctly, although the regression test script itself
+   (which is written in Perl) has not yet been run on Windows.
+   The two scripted operators, ncclimo and ncremap, are problematic.
+   As sophisticated Bash scripts, these do not work on Windows.
+   Volunteers to port them to a Windows-friendly language (e.g.,
+   Python) are most welcome. 
+   http://nco.sf.net/nco.html#conda
+   
+B. ncclimo in daily mode now handles stdin input more cleverly.
    Piping or redirecting filename lists to ncclimo --clm_md=dly
    is the easiest way to feed huge lists of filenames to ncclimo.
    However, these lists are often dominated in size by the path
@@ -35,13 +47,13 @@ A. ncclimo in daily mode now handles stdin input more cleverly.
    ls *.clm2.h0.* | ncclimo -c caseid -C dly -s 1960 -e 2005 -i data
    http://nco.sf.net/nco.html#ncclimo
 
-B. JSON printing of netCDF3 strings, i.e., character arrays,
+C. JSON printing of netCDF3 strings, i.e., character arrays,
    has changed. Previously ncks printed square brackets around
-   the string, as with any numeric array. However this was
-   somewhat redundant since the quotation marks around a JSON
-   string already indicate an array of characters. Now ncks
-   omits the inner-most (i.e., most rapidly varying) set of
-   brackets from the printing of character arrays:
+   the string, as with numeric arrays. However this was somewhat
+   redundant since the quotation marks around a JSON string already
+   indicate an array of characters. Now ncks omits the inner-most
+   (i.e., most rapidly varying) set of brackets from the printing of
+   character arrays: 
    ncks --jsn_fmt=2 -C -H -v char_var_2D_arr ~/nco/data/in.nc
    {
      "dimensions": {
@@ -55,7 +67,8 @@ B. JSON printing of netCDF3 strings, i.e., character arrays,
          "data": ["one", "two"]
     ...
 
-   (instead of "data": [["one"], ["two"]])
+   This is instead of "data": [["one"], ["two"]]
+   in the last line. 
    http://nco.sf.net/nco.html#json
 
 C. 

@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.1-beta01
 @set copyright-years 1995--2017
 @set update-year 2017
-@set update-date 5 December 2017
+@set update-date 18 December 2017
 @set update-month December 2017
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1016,6 +1016,26 @@ make install
 @end example
 The file @file{nco/cmake/build.bat} shows how deal with various path
 issues. 
+
+@cindex Anaconda
+@cindex Conda
+@html
+<a name="anaconda"></a> <!-- http://nco.sf.net/nco.html#anaconda -->
+<a name="cnd"></a> <!-- http://nco.sf.net/nco.html#cnd -->
+<a name="conda"></a> <!-- http://nco.sf.net/nco.html#conda -->
+@end html
+As of @acronym{NCO} version 4.7.1 (September, 2017) the Conda package
+for @acronym{NCO} is available from the @code{conda-forge} channel on
+all three smithies: Linux, MacOS, and Windows. 
+@example
+@verbatim
+# Recommended install with Conda
+conda config --add channels conda-forge # Permananently add conda-forge
+conda install nco
+# Or, specify conda-forge explicitly as a one-off:
+conda install -c conda-forge nco
+@end verbatim
+@end example
 
 Using the freely available Cygwin (formerly gnu-win32) development
 environment  
@@ -2107,8 +2127,7 @@ numerous or their names are too lengthy (when strung together as a
 single argument) to be passed by the calling shell to the @acronym{NCO}
 operator
 @footnote{The exact length which exceeds the operating system internal
-limit for command line lengths varies from @acronym{OS} to @acronym{OS}
-and from shell to shell.  
+limit for command line lengths varies across @acronym{OS}s and shells.
 @acronym{GNU} @code{bash} may not have any arbitrary fixed limits to the
 size of command line arguments. 
 Many @acronym{OS}s cannot handle command line arguments (including
