@@ -655,6 +655,8 @@ CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_GETPAGESIZE -
 CPP_TKN_OS += -DHAVE_NC_INQ_FORMAT
 # Assume netCDF >= 4.3.2
 CPP_TKN_OS += -DHAVE_NC_INQ_PATH
+# Assume netCDF >= 4.4.0
+CPP_TKN_OS += -DHAVE_NETCDF_MEM_H
 # gcc 4.7.3 finally includes strcasestr() in string.h iff _GNU_SOURCE token is defined
 # NB: C++ (or at least g++ 4.7.3) always includes strcasestr()---work around this with tokens in nco_sng_utl.[ch]
 ifneq (${PVM_ARCH},CRAY)

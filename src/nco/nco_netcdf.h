@@ -463,7 +463,8 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
      Symptom of "missing netcdf_mem.h" and/or "unresolved nc_open_mem()" occurs with NCO 4.6.2+
      Until 20171112 we used (Option 1): 
      #if NC_LIB_VERSION >= 440 
-     which forces Ubuntu netCDF 4.4.0 users to build netCDF with autoconf and install, e.g., into /usr/local
+     which forces Ubuntu netCDF 4.4.0 users to build netCDF with autoconf and install, e.g., into /usr/local, or
+     to manually copy netcdf_mem.h into /usr/include (has anyone tested whether that really solves the problem?)
      Option 2 is to add test/symbol in build-engine, e.g., 
      #if defined(HAVE_NETCDF_MEM_H)
      which requires additional build tests in Autoconf/CMake/Makefile */

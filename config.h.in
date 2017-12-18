@@ -253,6 +253,9 @@
 /* Define to 1 if you have the <netcdf.h> header file. */
 #undef HAVE_NETCDF_H
 
+/* Define to 1 if <netcdf_mem.h> is present */
+#undef HAVE_NETCDF_MEM_H
+
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
 

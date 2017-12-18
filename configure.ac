@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[4.7.1-alpha03],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.7.1-beta01],[nco-bugs@lists.sourceforge.net],[nco])
 #AC_INIT([NCO netCDF Operators],m4_esyscmd([git describe --abbrev=7 --dirty --always --tags | tr -d '\n']),[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
@@ -311,6 +311,19 @@ if (test "x${enable_netcdf4}" = 'xyes' && test "x${header_defines_nc_chunked}" =
 	    AC_MSG_NOTICE([Bad news: Simple program does not compile and link with netCDF4 library])
 	    ])
 fi
+
+# 20171218: nc_open_mem() is defined in netCDF >= 4.4.0, however ...
+# Ubuntu (Xenial at least) used broken netCDF CMake (not autoconf) to package 4.4.0 (it does not install netcdf_mem.h):
+# https://github.com/nco/nco/issues/44
+# Symptom of "missing netcdf_mem.h" and/or "unresolved nc_open_mem()" occurs with NCO 4.6.2+
+# Until 20171112 we used (Option 1): 
+# #if NC_LIB_VERSION >= 440 
+# which forces Ubuntu netCDF 4.4.0 users to build netCDF with autoconf and install, e.g., into /usr/local, or
+# to manually copy netcdf_mem.h into /usr/include (has anyone tested whether that really solves the problem?)
+# Option 2 is to add test/symbol in build-engine, e.g., 
+#  #if defined(HAVE_NETCDF_MEM_H)
+# which requires additional build tests in Autoconf/CMake/Makefile */
+AC_CHECK_HEADER([netcdf_mem.h],AC_DEFINE([HAVE_NETCDF_MEM_H],1,[Define to 1 if <netcdf_mem.h> is present]),nco_have_netcdf_mem_h=no)
 
 # Begin OpenMP
 AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [[default=yes]]]),enable_openmp=${enableval},enable_openmp=yes)

@@ -127,7 +127,7 @@ if (netcdf_mem_h)
   message("-- Found netcdf_mem.h in: " ${netcdf_mem_h})
   add_definitions(-DHAVE_NETCDF_MEM_H)
 else()
-  message("-- NetCDF diskless functionaliy not available, netcdf_mem.h does not exist")
+  message("-- NetCDF diskless functionaliy not available, netcdf_mem.h not found")
 endif()
 
 #/////////////////////////////////////////////////////////////////////////////////////

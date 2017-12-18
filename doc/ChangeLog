@@ -1,3 +1,23 @@
+2017-12-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.1-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.1: Ajudar';git push
+	git tag -a 4.7.1 -m 'Conda Windows; JSON tweaks; fix clm_md=dly,ann; WIN64 fixes';git push --tags
+
+	* NCO 4.7.1-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.1-beta01: Neverwhere';git push
+	git tag -a 4.7.1-beta01 -m 'JSON NUL, brackets, Conda Windows';git push --tags
+
+	* Add detection of netcdf_mem.h to autoconf and #define	HAVE_NETCDF_MEM_H accordingly
+
+	* Print scalar char of NUL as "" instead of 0 in JSON, CDL, XML
+
+	* Remove inner set of brackets when printing character arrays in JSON
+
+2017-12-16  Charlie Zender  <zender@uci.edu>
+
+	* Add AppVeyor to build conda recipe for Windows. Contributed by Filipe.
+
 2017-12-14  Charlie Zender  <zender@uci.edu>
 
 	* CMakefile.txt and nco_sng_utl.h changes for Conda Windows package
