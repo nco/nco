@@ -996,6 +996,11 @@ distribution of @acronym{NCO}.
 
 @cindex C99
 @cindex CMake
+@html
+<a name="CMake"></a> <!-- http://nco.sf.net/nco.html#CMake -->
+<a name="cmake"></a> <!-- http://nco.sf.net/nco.html#cmake -->
+<a name="cmk"></a> <!-- http://nco.sf.net/nco.html#cmk -->
+@end html
 With Microsoft Visual Studio compiler, one must build @acronym{NCO}
 with C++ since @acronym{MVSC} does not support C99.
 Support for Qt, a convenient integrated development environment, was
@@ -1006,6 +1011,7 @@ Windows executables with CMake:
 @verbatim
 cd ~/nco/cmake
 cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}
+make install
 @end verbatim
 @end example
 The file @file{nco/cmake/build.bat} shows how deal with various path
@@ -24569,6 +24575,7 @@ OPeNDAP configuration.
 @item Pedro Vicente
 Windows Visual Studio support.
 netCDF4 groups.
+CMake build-engine.
 @cindex Jerome Mao
 @item Jerome Mao
 Multi-argument parsing.
