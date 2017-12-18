@@ -1851,9 +1851,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(JSN){
       chr2sng_sf=chr2sng_jsn;
       (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var->type));
-      /* If var is size=1 (scalar?) then no array brackets */   
-      if(var->sz == 1) (void)fprintf(stdout,"%*s\"data\": ",prn_ndn,spc_sng); else (void)fprintf(stdout,"%*s\"data\": [",prn_ndn,spc_sng);
-      /* use bracketing array if needed */ 
+   
+      (void)fprintf(stdout,"%*s\"data\": ",prn_ndn,spc_sng);
+      /* non-scalar vars need bracketing - skip  first level bracketing for NC_CHAR */
+      if(var->sz>1 && var->type !=NC_CHAR) (void)fprintf(stdout,"[");
+      
       if(prn_flg->jsn_data_brk && var->nbr_dim >=2) JSN_BRK=True;
     } /* !JSN */
 
@@ -1968,7 +1970,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           chr_val=var->val.cp[lmn];
           if(var->nbr_dim == 0){
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
-            if(chr_val != '\0') (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
+	    /* the NetCDF standard is to print nul as "0" so we shall follow this -for CDL and JSN print "" */    
+            if(chr_val != '0' || CDL )
+	       (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
             val_sng[0]='\0'; /* Re-initialize with NUL byte to be safe */
           }else{ /* var.nbr_dim > 0 */
@@ -2062,8 +2066,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     }
 
     if(XML) (void)fprintf(stdout,"</values>\n");
-    /* close out array bracket if sz>1 */ 
-    if(JSN && var->sz > 1 ) (void)fprintf(stdout,"]");
+    /* close out array bracket if sz>1 and NOT NC_CHAR  */ 
+    if(JSN && var->sz > 1 && var->type !=NC_CHAR ) (void)fprintf(stdout,"]");
 
   } /* end if CDL_OR_JSN_OR_XML */
 
