@@ -30,7 +30,8 @@
   /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
   
   /* GNU g++ barfs at these float declartions -- remove if g++ used */
-#ifndef __GNUG__
+  /* MSVC complains because dllimport is not used */
+#if !defined(__GNUG__) && !defined(_MSC_VER)
   extern float acosf(float);
   extern float asinf(float);
   extern float atanf(float);
