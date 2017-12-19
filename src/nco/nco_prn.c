@@ -1853,8 +1853,12 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var->type));
    
       (void)fprintf(stdout,"%*s\"data\": ",prn_ndn,spc_sng);
-      /* non-scalar vars need bracketing - skip  first level bracketing for NC_CHAR */
-      if(var->sz>1 && var->type !=NC_CHAR) (void)fprintf(stdout,"[");
+      /* non-scalar vars need bracketing - skip  first level bracketing for 1D NC_CHAR */
+      if(var->sz>1 && var->type !=NC_CHAR || var->type == NC_CHAR && var->nbr_dim>1 ) (void)fprintf(stdout,"[");
+
+      /* for NC_CHAR we dont need final dim  brackets as they are already quoted */ 
+      if(var->type ==NC_CHAR && var->nbr_dim >=2)
+	mod_map_rv_cnt[var->nbr_dim-1]=0L;
       
       if(prn_flg->jsn_data_brk && var->nbr_dim >=2) JSN_BRK=True;
     } /* !JSN */
@@ -2067,8 +2071,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     if(XML) (void)fprintf(stdout,"</values>\n");
     /* close out array bracket if sz>1 and NOT NC_CHAR  */ 
-    if(JSN && var->sz > 1 && var->type !=NC_CHAR ) (void)fprintf(stdout,"]");
-
+    if(JSN && (  (var->sz>1 && var->type !=NC_CHAR) || var->type == NC_CHAR && var->nbr_dim>1) ) (void)fprintf(stdout,"]");
+    
   } /* end if CDL_OR_JSN_OR_XML */
 
   if(var->nbr_dim == 0 && !dlm_sng && TRD){
