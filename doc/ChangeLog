@@ -1,8 +1,10 @@
-2017-12-20  Charlie Zender  <zender@uci.edu>
+2017-12-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.1 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.1: Ajudar';git push
-	git tag -a 4.7.1 -m 'Conda Windows; JSON tweaks; fix clm_md=dly,ann; WIN64 fixes';git push --tags
+	git tag -a 4.7.1 -m 'WIN64 ABI; Conda Windows; JSON tweaks; fix clm_md=dly,ann;';git push --tags
+
+2017-12-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.1-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.1-beta01: Neverwhere';git push

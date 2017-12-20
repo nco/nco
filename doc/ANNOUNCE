@@ -39,6 +39,7 @@ A. NCO Conda package for Windows: All NCO binaries are thought
    As sophisticated Bash scripts, these do not work on Windows.
    Volunteers to port them to a Windows-friendly language (e.g.,
    Python) are most welcome. 
+   conda install -c conda-forge nco   
    http://nco.sf.net/nco.html#conda
    
 B. ncclimo in daily mode now handles stdin input more cleverly.
