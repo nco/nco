@@ -2063,24 +2063,24 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     rcd_prn+=0; /* CEWI */
 
     if(CDL){
-      char tmp_sng[100] = {0};
+      char tmp_sng[100]={0};
       if(nco_dbg_lvl_get() >= nco_dbg_std && flg_malloc_unit_var)
-        (void) sprintf(tmp_sng, "units=\"%s\"", unit_sng_var);
+	(void)sprintf(tmp_sng,"units=\"%s\"",unit_sng_var);
 
       if(nco_dbg_lvl_get() == nco_dbg_std && var_aux){
-        fprintf(stdout, "; // %s  ", tmp_sng);
+        fprintf(stdout, "; // %s  ",tmp_sng);
         // Print values as CDL text comment
-        nco_prn_var_val_cmt(var_aux, prn_flg);
+        nco_prn_var_val_cmt(var_aux,prn_flg);
       }else if(tmp_sng[0]){
-        (void)fprintf(stdout, " ; // %s\n", tmp_sng);
+        (void)fprintf(stdout, " ; // %s\n",tmp_sng);
       }else{
         (void) fprintf(stdout, " ; \n");
-      }
-    }
+      } /* !dbg */
+    } /* !CDL */
 
     if(XML) (void)fprintf(stdout,"</values>\n");
-    /* close out array bracket if sz>1 and NOT NC_CHAR  */ 
-    if(JSN && (  (var->type !=NC_CHAR && var->nbr_dim>0) || var->type == NC_CHAR && var->nbr_dim>=2) ) (void)fprintf(stdout,"]");
+    /* Close-out array bracket if sz > 1 and NOT NC_CHAR */ 
+    if(JSN && ((var->type != NC_CHAR && var->nbr_dim > 0) || (var->type == NC_CHAR && var->nbr_dim >= 2))) (void)fprintf(stdout,"]");
     
   } /* end if CDL_OR_JSN_OR_XML */
 
@@ -2102,7 +2102,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           if(var->val.cp[lmn] != '\0'){
             (void)sprintf(var_sng,"%*s%%s = '%s' %%s\n",prn_ndn,spc_sng,nco_typ_fmt_sng(var->type));
             (void)fprintf(stdout,var_sng,var_nm,var->val.cp[lmn],unit_sng_var);
-          }else{ /* Deal with NUL character here */
+          }else{ /* 20171220 Deal with NUL character here, otherwise NUL will print as '0' (which ncdump does, though we think that is a bug) */
             (void)fprintf(stdout,"%*s%s = \"\" %s\n",prn_ndn,spc_sng,var_nm,unit_sng_var);
           } /* end if */
           break;
@@ -2125,7 +2125,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           if(var->val.cp[lmn] != '\0'){
             (void)sprintf(var_sng,"'%s'\n",nco_typ_fmt_sng(var->type));
             (void)fprintf(stdout,var_sng,var->val.cp[lmn]);
-          }else{ /* Deal with NUL character here */
+          }else{ /* 20171220 Deal with NUL character here, otherwise NUL will print as '0' (which ncdump does, though we think that is a bug) */
             (void)fprintf(stdout, "\"\"\n");
           } /* end if */
           break;
@@ -3515,18 +3515,18 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
     if(var_idx == 0){ 
       if(JSN_BLOCK) (void)fprintf(stdout,",\n"); else JSN_BLOCK=True;              
       (void)fprintf(stdout,"%*s\"variables\": {\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng);   
-    } 
+    } /* !var_idx */
         
     /* DOES NOT include a return as we may wanna add a COMMA */
     prn_flg->ndn=prn_ndn+2*prn_flg->spc_per_lvl; 
     (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
 
-    /* nco_prn_att() prints the final brace but no return - as we may need to add a comma */ 
+    /* nco_prn_att() prints final brace without carriage return since we may need to add a comma */
     if(prn_flg->PRN_VAR_METADATA && nco_att_nbr(grp_id,var_id) > 0){     
       (void)fprintf(stdout,",\n");            
       //prn_flg->ndn=prn_ndn+2*prn_flg->spc_per_lvl;  
       (void)nco_prn_att(grp_id,prn_flg,var_id);
-    } 
+    } /* !prn_flg */
         
     if( prn_flg->PRN_VAR_DATA){  
       (void)fprintf(stdout,",\n");  
@@ -3535,12 +3535,12 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
     }else{
       (void)fprintf(stdout,"\n");        
     }
-    /* Close json tag -but dont add return as we may need to add comma later*/
-    (void)fprintf(stdout,"%*s}%s",prn_flg->ndn,spc_sng, (var_idx<var_nbr_xtr-1 ?",\n":"\n")  );   
+    /* Close JSON tag without carriage return since we may need to add comma later */
+    (void)fprintf(stdout,"%*s}%s",prn_flg->ndn,spc_sng, (var_idx<var_nbr_xtr-1 ?",\n":"\n"));
     
   } /* end loop over var_idx */
 
-  /* close out json variable tag */
+  /* Close-out JSON variable tag */
   if(var_nbr_xtr>0) (void)fprintf(stdout,"%*s}",prn_ndn+prn_flg->spc_per_lvl,spc_sng);   
 
   if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA){

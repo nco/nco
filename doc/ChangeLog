@@ -1,6 +1,6 @@
-2017-12-18  Charlie Zender  <zender@uci.edu>
+2017-12-20  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.7.1-beta01 release procedure:
+	* NCO 4.7.1 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.1: Ajudar';git push
 	git tag -a 4.7.1 -m 'Conda Windows; JSON tweaks; fix clm_md=dly,ann; WIN64 fixes';git push --tags
 
@@ -8,11 +8,15 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.1-beta01: Neverwhere';git push
 	git tag -a 4.7.1-beta01 -m 'JSON NUL, brackets, Conda Windows';git push --tags
 
-	* Add detection of netcdf_mem.h to autoconf and #define	HAVE_NETCDF_MEM_H accordingly
+	* Fix Travis build matrix to eliminate false negatives (thanks to @isuruf)
 
 	* Print scalar char of NUL as "" instead of 0 in JSON, CDL, XML
 
 	* Remove inner set of brackets when printing character arrays in JSON
+
+2017-12-18  Charlie Zender  <zender@uci.edu>
+
+	* Add detection of netcdf_mem.h to autoconf and #define	HAVE_NETCDF_MEM_H accordingly
 
 2017-12-16  Charlie Zender  <zender@uci.edu>
 

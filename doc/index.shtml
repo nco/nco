@@ -1185,6 +1185,7 @@ For Mac OS X with MacPorts:
 <dt>sudo port install libdap # DAP</dt>
 <dt>sudo port install gsl # GSL</dt>
 <dt>sudo port install netcdf # netCDF</dt>
+<dt>sudo port install netcdf-fortran +gcc7 # netCDF for ESMF</dt>
 <dt>sudo port install udunits2 # UDUnits</dt>
 </tt>
 Without MacPorts, the system TeXInfo may be too old to build the

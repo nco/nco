@@ -24649,10 +24649,11 @@ Large work-load testing
 @item Dave Blodgett, Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Adrian Tompkins, George White Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Filipe Fernandes
+@cindex Isuru Fernando
 @cindex Hugo Oliveira
 @cindex Rich Signell
 @cindex Kyle Wilcox
-@item Filipe Fernandes, Hugo Oliveira, Rich Signell, Kyle Wilcox
+@item Filipe Fernandes, Isuru Fernando, Hugo Oliveira, Rich Signell, Kyle Wilcox
 Anaconda packaging
 @cindex Daniel Baumann
 @cindex Nick Bower

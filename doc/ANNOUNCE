@@ -8,16 +8,22 @@ http://github.com/nco (Source Code, Releases, Developers)
 What's new?
 Version 4.7.1 contains minor fixes without new features.
 One major improvement, long in development, is a Conda Windows port. 
-Building on the Pedro Vicente's CMake contribution, a team of about
-six volunteers used, refined, or implemented Windows ports for the
-full NCO software stack. Filipe Fernandez coordinated all the work.
-It was pretty impressive to see the power of Open Source development.
 Most NCO functionality is now easily available to Windows users
 through the Conda distribution. 
 
+Pedro Vicente turned his Windows scripts into a CMake implementation. 
+Building on Pedro's CMake contribution, a team of about six volunteers
+used, refined, or implemented Windows ports for the full NCO software
+stack. Filipe Fernandez coordinated the Conda work, added AppVeyor
+support, and brought in extra help and testing. Pedro and Isuru
+Fernando tracked down bugs and improved the build matrix.
+No one person could have accomplished this.
+I am in awe of the power of Open Source development!
+
 Work on NCO 4.7.1 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
-and parallel weight generation by ncremap.
+parallel weight generation by ncremap, and possibly workarounds for 
+using quotation marks with ncap2 in Windows.
 
 Enjoy,
 Charlie
@@ -27,6 +33,8 @@ NEW FEATURES (full details always in ChangeLog):
 A. NCO Conda package for Windows: All NCO binaries are thought
    to work correctly, although the regression test script itself
    (which is written in Perl) has not yet been run on Windows.
+   Windows' idiosyncratic quoting rules can interfere with ncap2.
+   (try running from Powershell to use UNIXy quotes).
    The two scripted operators, ncclimo and ncremap, are problematic.
    As sophisticated Bash scripts, these do not work on Windows.
    Volunteers to port them to a Windows-friendly language (e.g.,
@@ -71,13 +79,15 @@ C. JSON printing of netCDF3 strings, i.e., character arrays,
    in the last line. 
    http://nco.sf.net/nco.html#json
 
-C. 
-
 BUG FIXES:
 
 A. Fix bug where ncclimo --clm_md=dly/ann expected a season list.
    This bug was inadvertently introduced with season code in 4.6.8.
    The workaround is to use NCO <= 4.6.7 or upgrade to 4.7.1.
+
+B. ncks in JSON, CDL, and XML modes now prints a single NUL as "".
+   Previously a scalar NUL printed as "0", as in ncdump's CDL.
+   However, we think this is a bug in ncdump since NUL is not zero.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -86,8 +96,8 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.7.1 built/tested under
-   MacOS 10.12.6 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
-   Linux with netCDF 4.5.1-development (201701101) on HDF5 1.8.19.
+   MacOS 10.13.2 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
+   Linux with netCDF 4.5.1-development (20171220) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
