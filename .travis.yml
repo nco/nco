@@ -7,7 +7,6 @@ compiler:
   - gcc
   - clang
   - g++
-  - clang++
 
 before_install:
   - if [[ "${CC}" == "gcc" || "${CC}" == "g++" ]]; then export CXX=g++; fi
