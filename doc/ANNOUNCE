@@ -6,7 +6,7 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-Version 4.7.1 contains minor fixes without new features.
+Version 4.7.1 contains mostly minor fixes and few new features.
 One major improvement, long in development, is a Conda Windows port. 
 Most NCO functionality is now easily available to Windows users
 through the Conda distribution. 
@@ -18,7 +18,7 @@ stack. Filipe Fernandez coordinated the Conda work, added AppVeyor
 support, and brought in extra help and testing. Pedro and Isuru
 Fernando tracked down bugs and improved the build matrix.
 No one person could have accomplished this.
-I am in awe of the power of Open Source development!
+The power of Open Source development is awesome.
 
 Work on NCO 4.7.1 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
@@ -33,12 +33,13 @@ NEW FEATURES (full details always in ChangeLog):
 A. NCO Conda package for Windows: All NCO binaries are thought
    to work correctly, although the regression test script itself
    (which is written in Perl) has not yet been run on Windows.
-   Windows' idiosyncratic quoting rules can interfere with ncap2.
+   Windows' idiosyncratic quoting rules can interfere with ncap2
    (try running from Powershell to use UNIXy quotes).
    The two scripted operators, ncclimo and ncremap, are problematic.
    As sophisticated Bash scripts, these do not work on Windows.
    Volunteers to port them to a Windows-friendly language (e.g.,
-   Python) are most welcome. 
+   Python) are welcome! 
+   Within a few days of release, try this Windows install command:
    conda install -c conda-forge nco   
    http://nco.sf.net/nco.html#conda
    
