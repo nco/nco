@@ -1622,7 +1622,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
   const nco_bool JSN=prn_flg->jsn; /* [flg] JSON output */
 
-  nco_bool JSN_BRK=False;    /* [flg] JSON output - data bracketed */
   nco_bool is_mss_val=False; /* [flg] Current value is missing value */
   nco_bool flg_malloc_unit_crd=False; /* [flg] Allocated memory for coordinate units string */
   nco_bool flg_malloc_unit_var=False; /* [flg] Allocated memory for variable units string */
@@ -1854,22 +1853,17 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
    
       (void)fprintf(stdout,"%*s\"data\": ",prn_ndn,spc_sng);
 
-       /* start level 0  bracketing if non-scalar and NOT char  */     	
-      if(var->type !=NC_CHAR && var->nbr_dim >0)
-	 (void)fprintf(stdout,"[");
-      /* for NC_CHAR we dont need final dim  brackets as they are already quoted 
-         1D vars dont need brackets */ 
-      else if(var->type ==NC_CHAR && var->nbr_dim >=2)
-	{
-	  /* dim zero brackets */
-	  (void)fprintf(stdout,"[");
-	  /* final dim brackets switched off here */
-	  mod_map_rv_cnt[var->nbr_dim-1]=0L;
-	}  
-      
+      /* if  false then this means  only one set of braces for nbr_dim>1 */
+      if( prn_flg->jsn_data_brk == False)
+        for(dmn_idx=1;dmn_idx<var->nbr_dim;dmn_idx++) 
+           mod_map_rv_cnt[dmn_idx]=0L;
 
-      
-      if(prn_flg->jsn_data_brk && var->nbr_dim >=2) JSN_BRK=True;
+
+      /* switch   off final level braces for NC_CHAR as string is already quoted */      
+      if(var->nbr_dim >=1 && var->type==NC_CHAR)  
+           mod_map_rv_cnt[var->nbr_dim-1]=0L;
+
+
     } /* !JSN */
 
     nm_cdl=nm2sng_cdl(var_nm);
@@ -1921,17 +1915,14 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     nm_cdl=(char *)nco_free(nm_cdl);
     var_szm1=var->sz-1L;
 
-    is_compound=False;
     /* Pre-compute elements that need brace punctuation */
-    if(CDL && var->nbr_dim>1){
+    if(CDL && var->nbr_dim>=1){
       mod_map_rv_cnt[0]=0L;
       /* Create brace list - here we simply modify mod_map_rv_cnt[idx] -
        * if the dim is NOT unlimited we set mod_map_rv_cnt[idx] to zero  */
       for(dmn_idx=1;dmn_idx<var->nbr_dim;dmn_idx++) { /* NB: dimension index starts at 1 */
         dmn_trv = nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id, trv_tbl);
-        if(dmn_trv->is_rec_dmn)
-          is_compound=True;
-        else
+        if(dmn_trv->is_rec_dmn == False)
           mod_map_rv_cnt[dmn_idx]=0L;
       }
     }
@@ -1939,10 +1930,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     for(lmn=0;lmn<var->sz;lmn++){
 
       /* do bracketing of data if specified */
-      if(JSN_BRK || is_compound)
-        for(int bdz=1; bdz<var->nbr_dim ; bdz++)
+      if(JSN || CDL)
+        for(int bdz=0; bdz<var->nbr_dim ; bdz++)
           if(mod_map_rv_cnt[bdz]  && lmn % mod_map_rv_cnt[bdz] == 0)
-	        (void)fprintf(stdout,"%c", (JSN_BRK ? '[' : '{' ) );
+	    (void)fprintf(stdout,"%c", (JSN ? '[' : '{' ) );
 
       is_mss_val=False;
       if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
@@ -1983,7 +1974,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           chr_val=var->val.cp[lmn];
           if(var->nbr_dim == 0){
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
-	    /* the NetCDF standard is to print nul as "0" so we shall follow this -for CDL and JSN print "" */    
+	    /* the NetCDF standard is to print nul as "0" but  we shall  print "" for all formats */    
             if(chr_val != '0' )
 	       (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
@@ -2044,10 +2035,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         (void)fprintf(stdout,"%s",val_sng);
 
       /* Bracket data if specified */
-      if(JSN_BRK || is_compound)
-        for(int bdz=1; bdz<var->nbr_dim ; bdz++)
+      if(JSN || CDL)
+        for(int bdz=0; bdz<var->nbr_dim ; bdz++)
           if(mod_map_rv_cnt[bdz]  && (lmn+1) % mod_map_rv_cnt[bdz] == 0)
-	        (void)fprintf(stdout,"%c",  (JSN_BRK ? ']' : '}' ));
+	        (void)fprintf(stdout,"%c",  (JSN ? ']' : '}' ));
 
       if(lmn != var_szm1)
         if((var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || var->type != NC_CHAR)
@@ -2057,7 +2048,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       if(CDL && var->nbr_dim && lmn< var_szm1 && (lmn+1) % lmt_msa[var->nbr_dim-1]->dmn_cnt  ==0)
         (void)fprintf(stdout,"\n%*s",prn_ndn,spc_sng);
 
-      /* if(var.type != NC_CHAR && var.type != NC_STRING ) (void)fprintf(stdout,"%s%s",val_sng,(lmn != var_szm1) ? spr_sng : ""); */
 
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
@@ -2079,8 +2069,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     } /* !CDL */
 
     if(XML) (void)fprintf(stdout,"</values>\n");
-    /* Close-out array bracket if sz > 1 and NOT NC_CHAR */ 
-    if(JSN && ((var->type != NC_CHAR && var->nbr_dim > 0) || (var->type == NC_CHAR && var->nbr_dim >= 2))) (void)fprintf(stdout,"]");
+
     
   } /* end if CDL_OR_JSN_OR_XML */
 
