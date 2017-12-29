@@ -8,8 +8,6 @@ set temp=%cd%
 set root=%temp:\=/%
 echo root is %root%
 
-@call "%VS140COMNTOOLS%VsDevCmd.bat" amd64
-
 pushd zlib
 if exist build\Makefile (
  echo skipping zlib build
@@ -111,9 +109,10 @@ if exist %root%\netcdf-c\build\ncdump\ncdump.exe (
 
 :build_nco
 cmake .. ^
+-DNCO_MSVC_USE_MT=no ^
 -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
--DNETCDF_LIBRARY:FILE=%root%/netcdf-c/liblib/netcdf.lib ^
+-DNETCDF_LIBRARY:FILE=%root%/netcdf-c/build/liblib/netcdf.lib ^
 -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/libhdf5_D.lib ^
 -DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/libhdf5_hl_D.lib ^
 -DZLIB_LIBRARY:FILE=%root%/zlib/build/zlibstaticd.lib ^
--DCURL_LIBRARY:FILE==%root%/curl/build/lib/libcurl-d_imp.lib
+-DCURL_LIBRARY:FILE=%root%/curl/build/lib/libcurl-d_imp.lib
