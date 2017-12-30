@@ -26,7 +26,11 @@
 
 #ifdef _MSC_VER
 # define NEED_STRSEP
-//# define NEED_STRCASECMP (netcdf defines strcasecmp for MSVC)
+//udunits2 defines strcasecmp for MSVC
+#ifdef HAVE_UDUNITS2_H
+#else
+# define NEED_STRCASECMP 
+#endif
 # define strncasecmp _strnicmp // (but not strncasecmp)
 # define NEED_STRCASESTR
 #endif /* !_MSC_VER */
