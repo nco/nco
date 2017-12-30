@@ -2,6 +2,7 @@
 :: Pedro Vicente
 
 @echo off
+@call "%VS140COMNTOOLS%VsDevCmd.bat" amd64
 
 :: replace the character string '\' with '/' needed for cmake
 set temp=%cd%
@@ -77,6 +78,8 @@ if exist build\ncdump\ncdump.exe (
   mkdir build
   pushd build
   cmake .. -G "NMake Makefiles" ^
+           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
+           -DENABLE_TESTS=OFF ^
            -DCMAKE_BUILD_TYPE=Debug ^
            -DBUILD_SHARED_LIBS=OFF ^
            -DHDF5_HL_LIBRARY=%root%/hdf5/build/bin/libhdf5_hl_D.lib ^
@@ -109,6 +112,7 @@ if exist %root%\netcdf-c\build\ncdump\ncdump.exe (
 
 :build_nco
 cmake .. ^
+-DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
 -DNCO_MSVC_USE_MT=no ^
 -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
 -DNETCDF_LIBRARY:FILE=%root%/netcdf-c/build/liblib/netcdf.lib ^
