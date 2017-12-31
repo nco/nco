@@ -87,11 +87,35 @@ if(netcdf_root)
   message("${color_blue}-- Using user defined netCDF location: ${netcdf_root}${color_reset}")
 endif()
 
+#//////////////////////////
+#a user defined -DNETCDF_INCLUDE was specified; check if it really exists :-)
+#//////////////////////////
+
+if(NETCDF_INCLUDE)
+  if(EXISTS "${NETCDF_INCLUDE}/netcdf.h")
+    message("-- Using ${NETCDF_INCLUDE}/netcdf.h")
+  else()
+    message(FATAL_ERROR "${color_red}netcdf.h not found at ${NETCDF_INCLUDE}${color_reset}")
+  endif()
+endif()
+
 find_path(NETCDF_INCLUDE netcdf.h ${find_opt})
 if(NOT NETCDF_INCLUDE)
   message(FATAL_ERROR "${color_red}netcdf.h header file not found${color_reset}")
 else()
   message("-- Found netcdf.h header file at: " ${NETCDF_INCLUDE})
+endif()
+
+#//////////////////////////
+#a user defined -DNETCDF_LIBRARY was specified; check if it really exists :-)
+#//////////////////////////
+
+if(NETCDF_LIBRARY)
+  if(EXISTS "${NETCDF_LIBRARY}")
+    message("-- Using ${NETCDF_LIBRARY}")
+  else()
+    message(FATAL_ERROR "${color_red}Specified ${NETCDF_LIBRARY} does not exist${color_reset}")
+  endif()
 endif()
 
 find_library(NETCDF_LIBRARY NAMES netcdf PATHS ${NETCDF_LIBRARY_PATH} NO_DEFAULT_PATH)
@@ -122,7 +146,7 @@ if (has_nc_inq_format)
   add_definitions(-DHAVE_NC_INQ_FORMAT)
 endif()
 
-find_path(netcdf_mem_h netcdf_mem.h)
+find_path(netcdf_mem_h netcdf_mem.h PATHS ${NETCDF_INCLUDE})
 if (netcdf_mem_h)
   message("-- Found netcdf_mem.h in: " ${netcdf_mem_h})
   add_definitions(-DHAVE_NETCDF_MEM_H)
