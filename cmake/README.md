@@ -59,6 +59,12 @@ edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
 </Lib>
 ```
 
+edit CMakeLists.txt and add an option to detect the HDF5 HL library
+
+```
+INCLUDE_DIRECTORIES(${HDF5_HL_INCLUDE_DIR})
+```
+
 # NCO CMake build
 
 NCO should detect the ZLIB dependency in HDF5 as
@@ -67,4 +73,12 @@ NCO should detect the ZLIB dependency in HDF5 as
 -- Looking for H5Z_DEFLATE in I:/nco/cmake/hdf5/build/bin/Debug/libhdf5_D.lib
 -- Looking for H5Z_DEFLATE in I:/nco/cmake/hdf5/build/bin/Debug/libhdf5_D.lib - found
 -- ZLIB library is needed...
+```
+
+the netcdf function detection should be
+
+```
+-- Found netcdf library at: I:/nco/cmake/netcdf-c/build/liblib/Debug/netcdf.lib
+-- Looking for nc_inq_path in I:/nco/cmake/netcdf-c/build/liblib/Debug/netcdf.lib
+-- Looking for nc_inq_path in I:/nco/cmake/netcdf-c/build/liblib/Debug/netcdf.lib - found
 ```
