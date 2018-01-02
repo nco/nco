@@ -299,7 +299,7 @@ make install
 # Latest ticket: alcf-support #345910
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.8, soft add +netcdf-4.4.1.1
 # Personal recipe last modified: 20170825
-# Personal recipe last used successfully: 20171108
+# Personal recipe last used successfully: 20171221
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 cd ~/nco;git reset --hard origin/master
@@ -347,7 +347,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do
 # Latest sysadmin-compiled module usage: module load nco/4.6.7 # 20170612 (without ncap2)
 # Personal recipe last modified: 20170411
-# Personal recipe last used successfully: 20171108
+# Personal recipe last used successfully: 20171221
 module load szip
 module load gsl
 module load udunits
@@ -368,7 +368,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: INC0106410 on 20170804
 # Latest sysadmin-compiled module usage: module load nco/4.6.7 # 20170809 (with ncap2)
 # Personal recipe last modified: 20170807
-# Personal recipe last used successfully: 20171108
+# Personal recipe last used successfully: 20171221
 module load szip
 module load gsl
 module load udunits2
@@ -387,7 +387,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 2016??
-# Personal recipe last used successfully: 20171108
+# Personal recipe last used successfully: 20171221
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/uvcdat/2016-01-21/Externals' UDUNITS2_PATH='/usr/local/uvcdat/2016-01-21/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -405,7 +405,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: AREQ0159277 on 20170526
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.7 # 20170526
 # Personal recipe last modified: 20161223
-# Personal recipe last used successfully: 20171108
+# Personal recipe last used successfully: 20171221
 # fails to link to udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 # First use: 20161223 Latest use: 20161223
@@ -443,7 +443,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 module add intel/16.0.3;module add gsl;module add netcdf/4.4.1;
 export PATH=${PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib # needed to run NCO
-cd ~/nco;git pull
+cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3' UDUNITS_INC='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/include' UDUNITS_LIB='/glade/apps/opt/udunits/2.1.24/intel/12.1.4/lib' OPTS=D allinone;cd -
 
 # icc/icpc 20171013 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cheyenne:
@@ -451,10 +451,11 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3' UDUNIT
 # Latest ticket: fxm on fxm
 # Latest sysadmin-compiled module usage: module load nco/4.6.9 # 20171002
 # Personal recipe last modified: 20171013
-# Personal recipe last used successfully: 20171013 (except ncap2, which would require backporting to inter 16.0.3 to get gsl)
+# Personal recipe last used successfully: 20171013 (except ncap2, which would require backporting to intel 16.0.3 to get gsl)
 module add gsl
 export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
 
@@ -463,7 +464,7 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1'
 # Latest ticket: 358890 on 20170526
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170515
 # Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20171108
+# Personal recipe last used successfully: 20171221
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -482,7 +483,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/autofs/nccs-svm1_sw/rhea/.swc
 # Latest ticket: 347675 on 20170316
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170411
 # Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20171108
+# Personal recipe last used successfully: 20171221
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 module add gcc # change GCC from v 4.3.4 to 4.9.0
 #module add gsl # not used yet
