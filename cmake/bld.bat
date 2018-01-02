@@ -54,24 +54,15 @@ if exist build\bin\Debug\h5dump.exe (
 )
 
 :build_curl
-pushd curl
-if exist build\curl.sln (
+if exist curl/builds (
  echo skipping curl build
- popd
  goto build_netcdf
 ) else (
   echo building curl
-  mkdir build
-  pushd build
-  cmake .. -G "Visual Studio 14 2015" ^
-           -DCMAKE_BUILD_TYPE=Debug ^
-           -DBUILD_SHARED_LIBS=OFF ^
-           -DBUILD_TESTING=OFF ^
-           -DHTTP_ONLY=ON ^
-           -DENABLE_DEBUG=ON ^
-           -DENABLE_CURLDEBUG=ON ^
-           -DCURL_STATICLIB=ON
-  msbuild curl.sln /target:build /property:configuration=debug
+  pushd curl
+  call buildconf.bat
+  pushd winbuild
+  nmake /f Makefile.vc mode=static vc=14 debug=yes machine=x86 gen_pdb=yes
   popd
   popd
 )
@@ -99,7 +90,7 @@ if exist build\ncdump\ncdump.exe (
            -DZLIB_INCLUDE_DIR:PATH=%root%/zlib ^
            -DHAVE_HDF5_H=%root%/hdf5/build ^
            -DHDF5_HL_INCLUDE_DIR=%root%/hdf5/hl/src ^
-           -DCURL_LIBRARY=%root%/curl/build/lib/Debug/libcurl-d.lib ^
+           -DCURL_LIBRARY=%root%/curl/builds/libcurl-vc14-x86-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
            -DCURL_INCLUDE_DIR=%root%/curl/include
   msbuild netcdf.sln /target:build /property:configuration=debug
   popd
@@ -109,10 +100,9 @@ if exist build\ncdump\ncdump.exe (
 :test_netcdf
 if exist %root%\netcdf-c\build\ncdump\ncdump.exe (
  echo testing netcdf build
- %root%\netcdf-c\build\ncdump\ncdump.exe http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+ %root%\netcdf-c\build\ncdump\ncdump.exe -h http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
  goto build_nco
 )
-
 
 :build_nco
 if exist Debug\ncks.exe (
@@ -128,7 +118,7 @@ if exist Debug\ncks.exe (
   -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
   -DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
   -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
-  -DCURL_LIBRARY:FILE=%root%/curl/build/lib/Debug/libcurl-d.lib
+  -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x86-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib
   msbuild nco.sln /target:build /property:configuration=debug
 )
 
