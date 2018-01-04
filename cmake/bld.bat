@@ -2,20 +2,21 @@
 :: Pedro Vicente
 
 @echo off
-@call "%VS140COMNTOOLS%VsDevCmd.bat" amd64
+if not defined DevEnvDir (
+  @call "%VS140COMNTOOLS%VsDevCmd.bat" amd64
+)
 
 :: replace the character string '\' with '/' needed for cmake
-set root_exe=%cd%
-set root=%root_exe:\=/%
-echo root is %root%
+set root_win=%cd%
+set root=%root_win:\=/%
+echo cmake root is %root%
 
-pushd zlib
-if exist build\zlib.sln (
+if exist %root_win%\zlib\build\zlib.sln (
  echo skipping zlib build
- popd
  goto build_hdf5
 ) else (
   echo building zlib
+  pushd zlib
   mkdir build
   pushd build
   cmake .. -G "Visual Studio 14 2015" ^
@@ -28,13 +29,12 @@ if exist build\zlib.sln (
 )
 
 :build_hdf5
-pushd hdf5
-if exist build\bin\Debug\h5dump.exe (
+if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
  echo skipping hdf5 build
- popd
  goto build_curl
 ) else (
   echo building hdf5
+  pushd hdf5
   mkdir build
   pushd build
   cmake .. -G "Visual Studio 14 2015" ^
@@ -54,7 +54,7 @@ if exist build\bin\Debug\h5dump.exe (
 )
 
 :build_curl
-if exist curl/builds (
+if exist %root_win%\curl\builds (
  echo skipping curl build
  goto build_netcdf
 ) else (
@@ -69,13 +69,12 @@ if exist curl/builds (
 
 
 :build_netcdf
-pushd netcdf-c
-if exist build\ncdump\ncdump.exe (
+if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
  echo skipping netcdf build
- popd
  goto test_netcdf
 ) else (
   echo building netcdf
+  pushd netcdf-c
   mkdir build
   pushd build
   cmake .. -G "Visual Studio 14 2015" ^
@@ -98,9 +97,9 @@ if exist build\ncdump\ncdump.exe (
 )
 
 :test_netcdf
-if exist %root%\netcdf-c\build\ncdump\ncdump.exe (
+if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
  echo testing netcdf build
- %root%\netcdf-c\build\ncdump\ncdump.exe -h http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+ %root_win%\netcdf-c\build\ncdump\ncdump.exe -h http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
  goto build_nco
 )
 
@@ -123,10 +122,10 @@ if exist Debug\ncks.exe (
 )
 
 :test_nco
-%root_exe%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %root_exe%\..\data\in_grp.nc %root_exe%\..\data\in_grp.cdl
 pushd Debug
 @echo on
-ncks.exe --jsn_fmt 2 -C -g g10 -v two_dmn_rec_var %root_exe%\..\data\in_grp.nc
+%root_win%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %root_win%\..\data\in_grp.nc %root_win%\..\data\in_grp.cdl
+ncks.exe --jsn_fmt 2 -C -g g10 -v two_dmn_rec_var %root_win%\..\data\in_grp.nc
 ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
 @echo off
 popd
