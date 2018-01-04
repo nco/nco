@@ -2,6 +2,13 @@
 :: Pedro Vicente
 
 @echo off
+if "%~1" == "crt" (
+  set STATIC_CRT=ON
+) else (
+  set STATIC_CRT=OFF
+)
+echo using static crt %STATIC_CRT%
+
 if not defined DevEnvDir (
   @call "%VS140COMNTOOLS%VsDevCmd.bat" amd64
 )
@@ -20,13 +27,17 @@ if exist %root_win%\zlib\build\zlib.sln (
   mkdir build
   pushd build
   cmake .. -G "Visual Studio 14 2015" ^
+           -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
+           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DCMAKE_BUILD_TYPE=Debug ^
            -DBUILD_SHARED_LIBS=OFF
   msbuild zlib.sln /target:build /property:configuration=debug
   cp %root%\zlib\build\zconf.h %root%\zlib
   popd
   popd
+  if errorlevel 1 goto :eof
 )
+
 
 :build_hdf5
 if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
@@ -38,6 +49,8 @@ if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
   mkdir build
   pushd build
   cmake .. -G "Visual Studio 14 2015" ^
+           -DBUILD_STATIC_CRT_LIBS=%STATIC_CRT% ^
+           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DCMAKE_BUILD_TYPE=Debug ^
            -DBUILD_SHARED_LIBS=OFF ^
            -DBUILD_STATIC_EXECS=ON ^
@@ -51,7 +64,9 @@ if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
   msbuild HDF5.sln /target:build /property:configuration=debug
   popd
   popd
+  if errorlevel 1 goto :eof
 )
+
 
 :build_curl
 if exist %root_win%\curl\builds (
@@ -62,9 +77,16 @@ if exist %root_win%\curl\builds (
   pushd curl
   call buildconf.bat
   pushd winbuild
-  nmake /f Makefile.vc mode=static vc=14 debug=yes machine=x86 gen_pdb=yes
+  @echo on
+  if %STATIC_CRT% == ON (
+   nmake /f Makefile.vc mode=static vc=14 debug=yes machine=x86 gen_pdb=yes RTLIBCFG=static
+  ) else (
+   nmake /f Makefile.vc mode=static vc=14 debug=yes machine=x86 gen_pdb=yes
+  )
+  @echo off
   popd
   popd
+  if errorlevel 1 goto :eof
 )
 
 
@@ -78,6 +100,7 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
   mkdir build
   pushd build
   cmake .. -G "Visual Studio 14 2015" ^
+           -DNC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DENABLE_TESTS=OFF ^
            -DCMAKE_BUILD_TYPE=Debug ^
@@ -94,7 +117,9 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
   msbuild netcdf.sln /target:build /property:configuration=debug
   popd
   popd
+  if errorlevel 1 goto :eof
 )
+
 
 :test_netcdf
 if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
@@ -110,8 +135,8 @@ if exist Debug\ncks.exe (
 ) else (
   rm -rf CMakeCache.txt CMakeFiles
   cmake .. -G "Visual Studio 14 2015" ^
+  -DNCO_MSVC_USE_MT=%STATIC_CRT% ^
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
-  -DNCO_MSVC_USE_MT=no ^
   -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
   -DNETCDF_LIBRARY:FILE=%root%/netcdf-c/build/liblib/Debug/netcdf.lib ^
   -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
@@ -119,6 +144,7 @@ if exist Debug\ncks.exe (
   -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
   -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x86-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib
   msbuild nco.sln /target:build /property:configuration=debug
+  if errorlevel 1 goto :eof
 )
 
 :test_nco

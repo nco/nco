@@ -14,5 +14,6 @@ cmake .. ^
 -DGSL_INCLUDE:PATH=I:/gsl-1.8/src ^
 -DGSL_LIBRARY:FILE=I:/gsl-1.8/src/gsl/1.8/gsl-1.8/VC8/libgsl/Debug-StaticLib/libgsl_d.lib ^
 -DGSL_CBLAS_LIBRARY:FILE=I:/gsl-1.8/src/gsl/1.8/gsl-1.8/VC8/libgslcblas/Debug-StaticLib/libgslcblas_d.lib
+msbuild nco.sln /target:build /property:configuration=debug
 
 

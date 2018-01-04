@@ -6,8 +6,8 @@ http://nco.sourceforge.net/
 Do
 
 ```
-clone.bat
-bld.bat
+clone
+bld
 ```
 
 this clones and builds
@@ -20,9 +20,17 @@ netcdf
 nco
 ```
 
+## Options
+
+Use static linking of the C Run-time Library (CRT)
+
+```
+bld crt
+```
+
 # Changes needed
 
-## libcurl
+## libcurl (if building with CMake)
 
 edit libcurl.vcxproj to include ws2_32.lib as library dependenccy
 
@@ -48,6 +56,12 @@ edit hdf5-static.vcxproj and add full path of zlib library as dependency
 </Lib>
 ```
 
+edit CMakeLists.txt at root and add for case when static linking of the C Run-time Library (CRT)
+
+```
+INCLUDE(config/cmake/UserMacros/WINDOWS_MT.cmake)
+```
+
 ## netcdf
 
 edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
@@ -55,7 +69,7 @@ edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
 ```
 <Lib>
 <AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
-<AdditionalDependencies>I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_hl_D.lib;I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_D.lib;I:\nco\cmake\curl\build\lib\Debug\libcurl-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+<AdditionalDependencies>I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_hl_D.lib;I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_D.lib;I:\nco\cmake\curl\builds\libcurl-vc14-x86-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
 </Lib>
 ```
 
@@ -82,3 +96,11 @@ the netcdf function detection should be
 -- Looking for nc_inq_path in I:/nco/cmake/netcdf-c/build/liblib/Debug/netcdf.lib
 -- Looking for nc_inq_path in I:/nco/cmake/netcdf-c/build/liblib/Debug/netcdf.lib - found
 ```
+
+# NCO tests
+
+```
+ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+```
+
+it requires curl built with WinSSL (default)
