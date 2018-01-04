@@ -32,11 +32,11 @@ bld crt
 
 ## libcurl (if building with CMake)
 
-edit libcurl.vcxproj to include ws2_32.lib as library dependenccy
+edit libcurl.vcxproj to include ws2_32.lib as library dependenccy and set LinkLibraryDependencies as true
 
 ```
 <Lib>
-<AdditionalOptions>%(AdditionalOptions) /machine:X86 /machine:X86</AdditionalOptions>
+<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
 <AdditionalDependencies>ws2_32.lib</AdditionalDependencies>
 </Lib>
 <ProjectReference>
@@ -51,8 +51,8 @@ edit hdf5-static.vcxproj and add full path of zlib library as dependency
 
 ```
 <Lib>
-<AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
-<AdditionalDependencies>I:\nco\cmake\zlib\build\Debug\zlibstaticd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+<AdditionalDependencies>I:\nco\cmake\zlib\build\Debug\zlibstaticd.lib</AdditionalDependencies>
 </Lib>
 ```
 
@@ -68,8 +68,8 @@ edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
 
 ```
 <Lib>
-<AdditionalOptions>%(AdditionalOptions) /machine:X86</AdditionalOptions>
-<AdditionalDependencies>I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_hl_D.lib;I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_D.lib;I:\nco\cmake\curl\builds\libcurl-vc14-x86-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+<AdditionalDependencies>I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_hl_D.lib;I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_D.lib;I:\nco\cmake\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
 </Lib>
 ```
 

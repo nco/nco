@@ -2,16 +2,20 @@
 :: Pedro Vicente
 
 @echo off
+echo "%VS140COMNTOOLS%VsDevCmd.bat" 
+call "%VS140COMNTOOLS%VsDevCmd.bat" 
+echo "%VCINSTALLDIR%vcvarsall.bat" amd64
+call "%VCINSTALLDIR%vcvarsall.bat" amd64
+if %errorlevel% neq 0 goto :eof
+
 if "%~1" == "crt" (
   set STATIC_CRT=ON
 ) else (
   set STATIC_CRT=OFF
 )
+set MSVC_VERSION="Visual Studio 14 2015 Win64"
 echo using static crt %STATIC_CRT%
-
-if not defined DevEnvDir (
-  @call "%VS140COMNTOOLS%VsDevCmd.bat" amd64
-)
+echo using %MSVC_VERSION%
 
 :: replace the character string '\' with '/' needed for cmake
 set root_win=%cd%
@@ -26,7 +30,7 @@ if exist %root_win%\zlib\build\zlib.sln (
   pushd zlib
   mkdir build
   pushd build
-  cmake .. -G "Visual Studio 14 2015" ^
+  cmake .. -G %MSVC_VERSION% ^
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DCMAKE_BUILD_TYPE=Debug ^
@@ -35,7 +39,7 @@ if exist %root_win%\zlib\build\zlib.sln (
   cp %root%\zlib\build\zconf.h %root%\zlib
   popd
   popd
-  if errorlevel 1 goto :eof
+  if %errorlevel% neq 0 goto :eof
 )
 
 
@@ -48,7 +52,7 @@ if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
   pushd hdf5
   mkdir build
   pushd build
-  cmake .. -G "Visual Studio 14 2015" ^
+  cmake .. -G %MSVC_VERSION% ^
            -DBUILD_STATIC_CRT_LIBS=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DCMAKE_BUILD_TYPE=Debug ^
@@ -64,12 +68,12 @@ if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
   msbuild HDF5.sln /target:build /property:configuration=debug
   popd
   popd
-  if errorlevel 1 goto :eof
+  if %errorlevel% neq 0 goto :eof
 )
 
 
 :build_curl
-if exist %root_win%\curl\builds (
+if exist %root_win%\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib (
  echo skipping curl build
  goto build_netcdf
 ) else (
@@ -79,14 +83,14 @@ if exist %root_win%\curl\builds (
   pushd winbuild
   @echo on
   if %STATIC_CRT% == ON (
-   nmake /f Makefile.vc mode=static vc=14 debug=yes machine=x86 gen_pdb=yes RTLIBCFG=static
+   nmake /f Makefile.vc mode=static vc=14 debug=yes gen_pdb=yes MACHINE=x64 RTLIBCFG=static
   ) else (
-   nmake /f Makefile.vc mode=static vc=14 debug=yes machine=x86 gen_pdb=yes
+   nmake /f Makefile.vc mode=static vc=14 debug=yes gen_pdb=yes MACHINE=x64
   )
   @echo off
   popd
   popd
-  if errorlevel 1 goto :eof
+  if %errorlevel% neq 0 goto :eof
 )
 
 
@@ -99,7 +103,7 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
   pushd netcdf-c
   mkdir build
   pushd build
-  cmake .. -G "Visual Studio 14 2015" ^
+  cmake .. -G %MSVC_VERSION% ^
            -DNC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DENABLE_TESTS=OFF ^
@@ -112,12 +116,12 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
            -DZLIB_INCLUDE_DIR:PATH=%root%/zlib ^
            -DHAVE_HDF5_H=%root%/hdf5/build ^
            -DHDF5_HL_INCLUDE_DIR=%root%/hdf5/hl/src ^
-           -DCURL_LIBRARY=%root%/curl/builds/libcurl-vc14-x86-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
+           -DCURL_LIBRARY=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
            -DCURL_INCLUDE_DIR=%root%/curl/include
   msbuild netcdf.sln /target:build /property:configuration=debug
   popd
   popd
-  if errorlevel 1 goto :eof
+  if %errorlevel% neq 0 goto :eof
 )
 
 
@@ -134,7 +138,7 @@ if exist Debug\ncks.exe (
  goto test_nco
 ) else (
   rm -rf CMakeCache.txt CMakeFiles
-  cmake .. -G "Visual Studio 14 2015" ^
+  cmake .. -G %MSVC_VERSION% ^
   -DNCO_MSVC_USE_MT=%STATIC_CRT% ^
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
   -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
@@ -142,9 +146,9 @@ if exist Debug\ncks.exe (
   -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
   -DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
   -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
-  -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x86-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib
+  -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib
   msbuild nco.sln /target:build /property:configuration=debug
-  if errorlevel 1 goto :eof
+  if %errorlevel% neq 0 goto :eof
 )
 
 :test_nco
