@@ -12,7 +12,7 @@ Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2017 Charlie Zender
+Copyright (C) 1995--2018 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
@@ -119,12 +119,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.1
-@set doc-edition 4.7.1
-@set copyright-years 1995--2017
-@set update-year 2017
-@set update-date 21 December 2017
-@set update-month December 2017
+@set nco-edition 4.7.2-alpha01
+@set doc-edition 4.7.2-alpha01
+@set copyright-years 1995--2018
+@set update-year 2018
+@set update-date 4 January 2018
+@set update-month January 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -1024,7 +1024,7 @@ issues.
 <a name="cnd"></a> <!-- http://nco.sf.net/nco.html#cnd -->
 <a name="conda"></a> <!-- http://nco.sf.net/nco.html#conda -->
 @end html
-As of @acronym{NCO} version 4.7.1 (September, 2017) the Conda package
+As of @acronym{NCO} version 4.7.1 (December, 2017) the Conda package
 for @acronym{NCO} is available from the @code{conda-forge} channel on
 all three smithies: Linux, MacOS, and Windows. 
 @example
@@ -19942,6 +19942,28 @@ netcdf in {
 } // group /
 @end verbatim
 @end example
+Users should note the @acronym{NCO}'s @acronym{CDL} mode outputs
+successively more verbose additional diagnostic information in
+@acronym{CDL} comments as the level of debugging increases from
+zero to two.
+For example printing the above with @samp{-D 2} yields
+@example
+@verbatim
+zender@roulee:~$ ncks -D 2 --cdl -v one ~/nco/data/in.nc
+netcdf in {
+  // ncgen -k classic -b -o in.nc in.cdl
+
+  variables:
+    float one ; // RAM size = 1*sizeof(NC_FLOAT) = 1*4 = 4 bytes, ID = 147
+      one:long_name = "one" ; // char
+
+  data:
+    one = 1 ; 
+
+} // group /
+@end verbatim
+@end example
+
 @command{ncgen} converts @acronym{CDL}-mode output into a netCDF file:
 @example
 ncks -v one ~/nco/data/in.nc > ~/in.cdl
@@ -20519,14 +20541,15 @@ mode.
 Much of this manual contains output printed in traditional mode,
 which places one value per line, with complete dimensional
 information.
-Tradiational-mode metadata output includes lower-level information,
+Traditional-mode metadata output includes lower-level information,
 such as @acronym{RAM} usage and internal variable IDs, than
 @acronym{CDL}.  
-However, @acronym{CDL} is more useful than traditional mode for most
+While this is useful for some developers and user, @acronym{CDL} has,
+over the years, become more useful than traditional mode for most
 users.  
-In summer 2017 @acronym{CDL} will become the default printing mode.
-Traditional mode will still be accessible using the @samp{--trd}
-option. 
+As of @acronym{NCO} version 4.6.9 (September, 2017) @acronym{CDL} became 
+the default printing mode. 
+Traditional printing mode is accessed via the @samp{--trd} option.  
 
 @html
 <a name="units"></a> <!-- http://nco.sf.net/nco.html#units -->

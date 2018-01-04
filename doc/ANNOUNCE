@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.7.1 have escaped.
+The netCDF Operators NCO version 4.7.2 have escaped.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-Version 4.7.1 contains mostly minor fixes and few new features.
+Version 4.7.2 contains mostly minor fixes and few new features.
 One major improvement, long in development, is a Conda Windows port. 
 Most NCO functionality is now easily available to Windows users
 through the Conda distribution. 
@@ -20,7 +20,7 @@ Fernando tracked down bugs and improved the build matrix.
 No one person could have accomplished this.
 The power of Open Source development is awesome.
 
-Work on NCO 4.7.1 has commenced. Planned changes include
+Work on NCO 4.7.3 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
 parallel weight generation by ncremap, and possibly workarounds for 
 using quotation marks with ncap2 in Windows.
@@ -85,7 +85,7 @@ BUG FIXES:
 
 A. Fix bug where ncclimo --clm_md=dly/ann expected a season list.
    This bug was inadvertently introduced with season code in 4.6.8.
-   The workaround is to use NCO <= 4.6.7 or upgrade to 4.7.1.
+   The workaround is to use NCO <= 4.6.7 or upgrade to 4.7.2.
 
 B. ncks in JSON, CDL, and XML modes now prints a single NUL as "".
    Previously a scalar NUL printed as "0", as in ncdump's CDL.
@@ -97,7 +97,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.7.1 built/tested under
+   These problems occur with NCO 4.7.2 built/tested under
    MacOS 10.13.2 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
    Linux with netCDF 4.5.1-development (20171220) on HDF5 1.8.19.
 

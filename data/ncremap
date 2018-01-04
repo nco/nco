@@ -2,7 +2,7 @@
 
 # Purpose: Regrid (subsets of) netCDF files between different Swath, Curvilinear, Rectangular, and Unstructured data (SCRUD) grids, generate any required/requested global or regional rectangular grid, output SCRIP, UGRID, and/or skeleton data formats
 
-# Copyright (C) 2015--2017 Charlie Zender
+# Copyright (C) 2015--2018 Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.
 # You may redistribute and/or modify NCO under the terms of the 
 # GNU General Public License (GPL) Version 3.
@@ -616,7 +616,7 @@ if [ ${psn_nbr} -ge 1 ]; then
 fi # !psn_nbr
 if [ ${vrs_prn} = 'Yes' ]; then
     printf "${spt_nm}, the NCO regridder and map- and grid-generator, version ${nco_vrs}\n"
-    printf "Copyright (C) 2016--2017 Charlie Zender\n"
+    printf "Copyright (C) 2016--2018 Charlie Zender\n"
     printf "This program is part of NCO, the netCDF Operators\n"
     printf "NCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\n"
     printf "You may redistribute and/or modify NCO under the terms of the\n"

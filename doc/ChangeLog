@@ -1,3 +1,15 @@
+2018-01-04  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.2-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.2-alpha01: Orphan Black';git push
+	git tag -a 4.7.2-alpha01 -m 'Orphan Black: Functionally equivalent to Ajudar (4.7.1)';git push --tags
+
+	* Update copyright year to 2018, and version tags
+
+	* Update rationale and effects for --trd/--cdl defaults in nco.texi
+
+	* Pedro implemented CMake improvements and flexibility for Windows builds
+
 2017-12-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.1 release procedure:
