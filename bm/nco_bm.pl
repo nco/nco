@@ -374,7 +374,7 @@ $server_name="sand.ess.uci.edu";  #change this to dust.ess.uci.edu?
 $server_ip="128.200.14.132";
 $server_port=29659;
 
-if($usg){bm_usg()};
+if($usg){NCO_bm::bm_usg()};
 if(0){tst_tm_hrz();} # Test hires timer - needs explicit code mod to do this
 
 if($iosockfound){
