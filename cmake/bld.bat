@@ -160,7 +160,7 @@ if exist %root_win%\libexpat\expat\build\expat.sln (
 :build_udunits
 if exist %root_win%\UDUNITS-2\build\udunits.sln (
  echo skipping udunits build
- goto build_nco
+ goto build_gsl
 ) else (
   echo building udunits
   pushd UDUNITS-2
@@ -177,6 +177,58 @@ if exist %root_win%\UDUNITS-2\build\udunits.sln (
   popd
   if errorlevel 1 goto :eof
 )
+
+
+:build_gsl
+if exist %root_win%\GSL\build\GSL.sln (
+ echo skipping gsl build
+ goto build_antlr
+) else (
+  echo building gsl
+  pushd GSL
+  mkdir build
+  pushd build
+  if %STATIC_CRT%==ON (
+  set DYNAMIC_CRT=OFF
+  ) else (
+  set DYNAMIC_CRT=ON
+  )
+  echo using dynamic CRT %DYNAMIC_CRT%
+  cmake .. -G %MSVC_VERSION% ^
+           -DMSVC_RUNTIME_DYNAMIC=%DYNAMIC_CRT% ^
+           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
+           -DBUILD_SHARED_LIBS=OFF ^
+           -DGSL_DISABLE_TESTS=ON
+  msbuild GSL.sln /target:build /property:configuration=debug
+  popd
+  popd
+  if errorlevel 1 goto :eof
+)
+
+:build_antlr
+if exist %root_win%\antlr2\lib\cpp\build\Project.sln (
+ echo skipping antlr build
+ goto build_nco
+) else (
+  echo building antlr
+  pushd antlr2
+  pushd lib
+  pushd cpp
+  mkdir build
+  pushd build
+  cmake .. -G %MSVC_VERSION% ^
+           -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
+           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
+           -DBUILD_SHARED_LIBS=OFF
+  msbuild Project.sln /target:build /property:configuration=debug
+  popd
+  popd
+  popd
+  popd
+  if errorlevel 1 goto :eof
+)
+
+
 
 :build_nco
 if exist Debug\ncks.exe (
@@ -195,7 +247,12 @@ if exist Debug\ncks.exe (
   -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
   -DUDUNITS2_INCLUDE:PATH=%root%/UDUNITS-2/lib ^
   -DUDUNITS2_LIBRARY:FILE=%root%/UDUNITS-2/build/lib/Debug/udunits2.lib ^
-  -DEXPAT_LIBRARY:FILE=%root%/libexpat/expat/build/Debug/expatd.lib
+  -DEXPAT_LIBRARY:FILE=%root%/libexpat/expat/build/Debug/expatd.lib ^
+  -DGSL_INCLUDE:PATH=%root%/gsl/build ^
+  -DGSL_LIBRARY:FILE=%root%/gsl/build/Debug/gsl.lib ^
+  -DGSL_CBLAS_LIBRARY:FILE=%root%/gsl/build/Debug/gslcblas.lib ^
+  -DANTLR_INCLUDE:PATH=%root%/antlr2/lib/cpp ^
+  -DANTLR_LIBRARY:FILE=%root%/antlr2/lib/cpp/build/Debug/antlr.lib 
   msbuild nco.sln /target:build /property:configuration=debug
   if errorlevel 1 goto :eof
 )

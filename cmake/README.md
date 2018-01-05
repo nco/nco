@@ -1,7 +1,7 @@
 # nco_bld
 build NCO and its dependencies on Windows
 
-http://nco.sourceforge.net/
+https://github.com/nco/nco
 
 Do
 
@@ -138,5 +138,21 @@ https://github.com/libexpat/libexpat
 https://github.com/Unidata/UDUNITS-2
 
 
+# List of dependencies
+
+```
+git clone https://github.com/Unidata/netcdf-c
+pushd netcdf-c
+git checkout tags/v4.5.0
+popd
+git clone https://github.com/curl/curl
+git clone https://github.com/madler/zlib
+git clone https://github.com/erdc/szip
+git clone https://github.com/live-clones/hdf5
+git clone https://github.com/Unidata/UDUNITS-2
+git clone https://github.com/libexpat/libexpat
+git clone https://github.com/ampl/gsl
+git clone https://github.com/Distrotech/antlr2
+```
 
 
