@@ -2,11 +2,13 @@
 :: Pedro Vicente
 
 @echo off
-echo "%VS140COMNTOOLS%VsDevCmd.bat" 
-call "%VS140COMNTOOLS%VsDevCmd.bat" 
-echo "%VCINSTALLDIR%vcvarsall.bat" amd64
-call "%VCINSTALLDIR%vcvarsall.bat" amd64
-if %errorlevel% neq 0 goto :eof
+if not defined DevEnvDir (
+ echo "%VS140COMNTOOLS%VsDevCmd.bat" 
+ call "%VS140COMNTOOLS%VsDevCmd.bat" 
+ echo "%VCINSTALLDIR%vcvarsall.bat" amd64
+ call "%VCINSTALLDIR%vcvarsall.bat" amd64
+ if errorlevel 1 goto :eof
+)
 
 if "%~1" == "crt" (
   set STATIC_CRT=ON
@@ -39,7 +41,7 @@ if exist %root_win%\zlib\build\zlib.sln (
   cp %root%\zlib\build\zconf.h %root%\zlib
   popd
   popd
-  if %errorlevel% neq 0 goto :eof
+  if errorlevel 1 goto :eof
 )
 
 
@@ -68,7 +70,7 @@ if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
   msbuild HDF5.sln /target:build /property:configuration=debug
   popd
   popd
-  if %errorlevel% neq 0 goto :eof
+  if errorlevel 1 goto :eof
 )
 
 
@@ -90,7 +92,7 @@ if exist %root_win%\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\l
   @echo off
   popd
   popd
-  if %errorlevel% neq 0 goto :eof
+  if errorlevel 1 goto :eof
 )
 
 
@@ -121,7 +123,7 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
   msbuild netcdf.sln /target:build /property:configuration=debug
   popd
   popd
-  if %errorlevel% neq 0 goto :eof
+  if errorlevel 1 goto :eof
 )
 
 
@@ -129,7 +131,51 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
 if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
  echo testing netcdf build
  %root_win%\netcdf-c\build\ncdump\ncdump.exe -h http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+ goto build_expat
+)
+
+:build_expat
+if exist %root_win%\libexpat\expat\build\expat.sln (
+ echo skipping expat build
+ goto build_udunits
+) else (
+  echo building expat
+  pushd libexpat
+  pushd expat
+  mkdir build
+  pushd build
+  cmake .. -G %MSVC_VERSION% ^
+           -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
+           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
+           -DBUILD_SHARED_LIBS=OFF ^
+           -DBUILD_shared=OFF
+  msbuild expat.sln /target:build /property:configuration=debug
+  popd
+  popd
+  popd
+  if errorlevel 1 goto :eof
+)
+
+
+:build_udunits
+if exist %root_win%\UDUNITS-2\build\udunits.sln (
+ echo skipping udunits build
  goto build_nco
+) else (
+  echo building udunits
+  pushd UDUNITS-2
+  mkdir build
+  pushd build
+  cmake .. -G %MSVC_VERSION% ^
+           -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
+           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
+           -DBUILD_SHARED_LIBS=OFF ^
+           -DEXPAT_INCLUDE_DIR=%root%/libexpat/expat/lib ^
+           -DEXPAT_LIBRARY=%root%/libexpat/expat/build/Debug/expatd.lib
+  msbuild udunits.sln /target:build /property:configuration=debug
+  popd
+  popd
+  if errorlevel 1 goto :eof
 )
 
 :build_nco
@@ -146,9 +192,12 @@ if exist Debug\ncks.exe (
   -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
   -DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
   -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
-  -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib
+  -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
+  -DUDUNITS2_INCLUDE:PATH=%root%/UDUNITS-2/lib ^
+  -DUDUNITS2_LIBRARY:FILE=%root%/UDUNITS-2/build/lib/Debug/udunits2.lib ^
+  -DEXPAT_LIBRARY:FILE=%root%/libexpat/expat/build/Debug/expatd.lib
   msbuild nco.sln /target:build /property:configuration=debug
-  if %errorlevel% neq 0 goto :eof
+  if errorlevel 1 goto :eof
 )
 
 :test_nco

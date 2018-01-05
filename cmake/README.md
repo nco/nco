@@ -104,3 +104,39 @@ ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/pre
 ```
 
 it requires curl built with WinSSL (default)
+
+# Changes needed for static CRT
+
+To static linking of the C Run-time Library (CRT), these changes must be made for the following libraries,
+in the CMakeLists.txt file
+
+```
+set(MSVC_USE_STATIC_CRT off CACHE BOOL "Use MT flags when compiling in MSVC")
+if (MSVC)
+  if (MSVC_USE_STATIC_CRT)
+     message("-- Using static CRT ${MSVC_USE_STATIC_CRT}")
+     foreach(flag_var CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+                          CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                          CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+                          CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+       string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+     endforeach()
+  endif()
+endif()
+```
+
+## zlib
+
+https://github.com/madler/zlib
+
+## expat (dependency for UDUNITS-2)
+
+https://github.com/libexpat/libexpat
+
+## UDUNITS-2
+
+https://github.com/Unidata/UDUNITS-2
+
+
+
+
