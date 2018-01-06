@@ -146,13 +146,24 @@ if (has_nc_inq_format)
   add_definitions(-DHAVE_NC_INQ_FORMAT)
 endif()
 
-find_path(netcdf_mem_h netcdf_mem.h PATHS ${NETCDF_INCLUDE})
-if (netcdf_mem_h)
-  message("-- Found netcdf_mem.h in: " ${netcdf_mem_h})
-  add_definitions(-DHAVE_NETCDF_MEM_H)
-else()
-  message("-- NetCDF diskless functionaliy not available, netcdf_mem.h not found")
+find_path(path_netcdf_mem_h netcdf_mem.h PATHS ${NETCDF_INCLUDE})
+if (path_netcdf_mem_h)
+  message("-- Found netcdf_mem.h in: " ${path_netcdf_mem_h})
 endif()
+
+check_library_exists(${NETCDF_LIBRARY} nc_open_mem "" has_nc_open_mem)
+if (has_nc_open_mem)
+  message("-- Found nc_open_mem in: " ${NETCDF_LIBRARY})
+endif()
+
+if (has_nc_open_mem AND path_netcdf_mem_h)
+  add_definitions(-DHAVE_NETCDF_MEM_H)
+  message("-- NetCDF diskless functionaliy enabled")
+else()
+  message("-- NetCDF diskless functionaliy not available, netcdf_mem.h or nc_open_mem not found")
+endif()
+
+
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #HDF5

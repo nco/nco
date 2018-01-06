@@ -467,7 +467,10 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
      to manually copy netcdf_mem.h into /usr/include (has anyone tested whether that really solves the problem?)
      Option 2 is to add test/symbol in build-engine, e.g., 
      #if defined(HAVE_NETCDF_MEM_H)
-     which requires additional build tests in Autoconf/CMake/Makefile */
+     which requires additional build tests in Autoconf/CMake/Makefile 
+     20180106 For CMake this is correctly done by detecting both the existence of
+     netcdf_mem.h and symbol nc_open_mem in the netCDF library and defining HAVE_NETCDF_MEM_H 
+     only when both exist */
 #ifdef HAVE_NETCDF_MEM_H
 # include <netcdf_mem.h> /* nc_open_mem() defined in netCDF >= 4.4.0 */
 #else /* 4.4.0 */
