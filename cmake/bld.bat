@@ -155,7 +155,10 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
 :test_netcdf
 if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
  echo testing netcdf build
- %root_win%\netcdf-c\build\ncdump\ncdump.exe -h http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+ @echo on
+ %root_win%\netcdf-c\build\ncdump\ncdump.exe -k http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+ @echo off
+ @echo.
  goto build_expat
 )
 
@@ -288,8 +291,8 @@ if exist Debug\ncks.exe (
 @echo on
 %root_win%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %root_win%\..\data\in_grp.nc %root_win%\..\data\in_grp.cdl
 %root_win%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %root_win%\..\data\in.nc %root_win%\..\data\in.cdl
-Debug\ncks.exe --jsn_fmt 2 -C -g g10 -v two_dmn_rec_var %root_win%\..\data\in_grp.nc
-Debug\ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+%root_win%\Debug\ncks.exe --jsn_fmt 2 -C -g g10 -v two_dmn_rec_var %root_win%\..\data\in_grp.nc
+%root_win%\Debug\ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
 
 :: generate text files in_grp.nc.gen.txt from in_grp.nc and in.nc and use tool FC to compare contents 
 :: with pre-existing in_grp.nc.txt, in.nc.txt, generated in Linux
