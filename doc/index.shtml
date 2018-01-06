@@ -844,10 +844,10 @@ The most up-to-date executables are probably those in the tarball below. Those u
 <a name="windows"></a> <!-- http://nco.sf.net#windows -->
 <h3><a href="http://www.microsoft.com">Microsoft Windows</a>
 (native build, compiled with <a href="https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx">Visual Studio 2015</a>, use this if unsure)</h3>
-These native Windows executables should be stand-alone, i.e., not
+These native Windows executables (64bit) are stand-alone, i.e., do not
 require users to have any additional software. 
 This is a new feature as of 20120615, please send us feedback. 
-To build NCO from source yourself using MSVC with CMake, please see nco/cmake/build.bat.
+To build NCO from source yourself using MSVC with CMake, please see example  nco/cmake/build.bat.
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
