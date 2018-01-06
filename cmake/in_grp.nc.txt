@@ -1,0 +1,603 @@
+netcdf in_grp {
+  dimensions:
+    coord = 2 ;
+    gds_crd = 8 ;
+    lat = 2 ;
+    lev = 3 ;
+    lon = 4 ;
+    time = UNLIMITED ; // (10 currently)
+    vrt_nbr = 2 ;
+
+  variables:
+    float area(lat) ;
+      area:units = "meter2" ;
+
+    float att_var(time) ;
+      att_var:byte_att = 0b, 1b, 2b, 127b, -128b, -127b, -2b, -1b ;
+      att_var:char_att = "Sentence one.\n",
+        "Sentence two.\n" ;
+      att_var:short_att = 37s ;
+      att_var:int_att = 73 ;
+      att_var:long_att = 73 ;
+      att_var:float_att = 73.f, 72.f, 71.f, 70.01f, 69.001f, 68.01f, 67.01f ;
+      att_var:double_att = 73., 72., 71., 70.01, 69.001, 68.01, 67.010001 ;
+
+    int att_var_jsn ;
+      att_var_jsn:char\ att\ with\ whitespace = "cf-json.org <http://cf-json.org>" ;
+      att_var_jsn:double\ att\ with\ whitespace = 3.14 ;
+      att_var_jsn:int\ att\ with\ whitespace = 1 ;
+      att_var_jsn:int_array\ att\ with\ whitespace = 1, 2 ;
+      string att_var_jsn:string_array\ att\ with\ whitespace = "1", "2" ;
+
+    int att_var_spc_chr ;
+      att_var_spc_chr:space\ in\ name = "foo" ;
+      att_var_spc_chr:comma_in_name\, = "foo" ;
+      att_var_spc_chr:lt_in_name\< = "foo" ;
+      att_var_spc_chr:gt_in_name\> = "foo" ;
+      att_var_spc_chr:hash_in_name\# = "foo" ;
+      att_var_spc_chr:xclaim_in_name\! = "foo" ;
+      att_var_spc_chr:dollar_in_name\$ = "foo" ;
+      att_var_spc_chr:ampersand_in_name\& = "foo" ;
+      att_var_spc_chr:equals_in_name\= = "foo" ;
+      att_var_spc_chr:semicolon_in_name\; = "foo" ;
+      att_var_spc_chr:colon_in_name\: = "foo" ;
+      att_var_spc_chr:lbrace_in_name\{ = "foo" ;
+      att_var_spc_chr:rbrace_in_name\} = "foo" ;
+      att_var_spc_chr:lparen_in_name\( = "foo" ;
+      att_var_spc_chr:rparen_in_name\) = "foo" ;
+      att_var_spc_chr:lbracket_in_name\[ = "foo" ;
+      att_var_spc_chr:rbracket_in_name\] = "foo" ;
+      att_var_spc_chr:plus_in_name+ = "foo" ;
+      att_var_spc_chr:hyphen_in_name- = "foo" ;
+      att_var_spc_chr:at_in_name@ = "foo" ;
+
+    float lat(lat) ;
+      lat:units = "degrees_north" ;
+
+    float lat_lon(lat,lon) ;
+
+    float lev(lev) ;
+      lev:units = "hybrid_sigma_pressure" ;
+      lev:bounds = "lev_bnd" ;
+
+    float lev_bnd(lev,vrt_nbr) ;
+      lev_bnd:purpose = "Cell boundaries for lev coordinate" ;
+
+    float lon(lon) ;
+      lon:units = "degrees_east" ;
+
+    float non_coord(coord) ;
+      non_coord:purpose = "Test whether netCDF4 supports renaming non-coordinates to coordinates" ;
+
+    float one ;
+
+    double ppc_big(time) ;
+
+    double ppc_dbl(time) ;
+      ppc_dbl:long_name = "Precision-Preserving Compression, big numbers" ;
+      ppc_dbl:purpose = "test --ppc switches" ;
+      ppc_dbl:original_values = "123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1" ;
+
+    float ppc_flt(time) ;
+      ppc_flt:long_name = "Precision-Preserving Compression, single precision" ;
+      ppc_flt:purpose = "test --ppc switches" ;
+      ppc_flt:original_values = "0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789" ;
+
+    float scl ;
+
+    double time(time) ;
+
+    int unique ;
+      unique:purpose = "the only variable of this name in this file, to test smallest possible access requests" ;
+
+    float val_one_mss(lat) ;
+      val_one_mss:long_name = "one regular value, one missing value" ;
+      val_one_mss:_FillValue = 1.e+36f ;
+
+  // global attributes:
+    :Conventions = "CF-1.0" ;
+    :history = "History global attribute.\n" ;
+    :julian_day = 200000.04 ;
+    :RCS_Header = "$Header$" ;
+
+
+  data:
+    area = 10, 10 ; 
+
+    att_var = 10, 10.1, 10.2, 10.3, 10.40101, 10.5, 10.6, 10.7, 10.8, 10.99 ; 
+
+    att_var_jsn = 73 ; 
+
+    att_var_spc_chr = 73 ; 
+
+    lat = -90, 90 ; 
+
+    lat_lon = 
+    1, 2, 3, 4, 
+    5, 6, 7, 8 ; 
+
+    lev = 100, 500, 1000 ; 
+
+    lev_bnd = 
+    0, 300, 
+    300, 750, 
+    750, 1013.25 ; 
+
+    lon = 0, 90, 180, 270 ; 
+
+    non_coord = 9.96921e+36, 9.96921e+36 ; 
+
+    one = 1 ; 
+
+    ppc_big = 0.0123456789, 0.123456789, 1.23456789, 12.3456789, 123.456789, 1234.56789, 12345.6789, 123456.789, 1234567.89, 12345678.9 ; 
+
+    ppc_dbl = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.12345678, 0.123456789 ; 
+
+    ppc_flt = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.1234568, 0.1234568 ; 
+
+    scl = 1 ; 
+
+    time = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ; 
+
+    unique = 73 ; 
+
+    val_one_mss = 1, _ ; 
+
+  group: g1 {
+
+    variables:
+      int g1v1 ;
+
+      int g1v2 ;
+
+      float lon(lon) ;
+        lon:units = "degrees_east" ;
+
+      double ppc_big(time) ;
+
+      double ppc_dbl(time) ;
+        ppc_dbl:long_name = "Precision-Preserving Compression, big numbers" ;
+        ppc_dbl:purpose = "test --ppc switches" ;
+        ppc_dbl:original_values = "123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1" ;
+
+      float ppc_flt(time) ;
+        ppc_flt:long_name = "Precision-Preserving Compression, single precision" ;
+        ppc_flt:purpose = "test --ppc switches" ;
+        ppc_flt:original_values = "0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789" ;
+
+      float scl ;
+
+      int v1 ;
+
+    // group attributes:
+      :history = "History group attribute.\n" ;
+
+    data:
+      g1v1 = 1 ; 
+
+      g1v2 = 2 ; 
+
+      lon = 0, 90, 180, 270 ; 
+
+      ppc_big = 0.0123456789, 0.123456789, 1.23456789, 12.3456789, 123.456789, 1234.56789, 12345.6789, 123456.789, 1234567.89, 12345678.9 ; 
+
+      ppc_dbl = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.12345678, 0.123456789 ; 
+
+      ppc_flt = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.1234568, 0.1234568 ; 
+
+      scl = 1.1 ; 
+
+      v1 = 1 ; 
+
+    group: g1g1 {
+
+      variables:
+        double ppc_big(time) ;
+
+        double ppc_dbl(time) ;
+          ppc_dbl:long_name = "Precision-Preserving Compression, big numbers" ;
+          ppc_dbl:purpose = "test --ppc switches" ;
+          ppc_dbl:original_values = "123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1" ;
+
+        float ppc_flt(time) ;
+          ppc_flt:long_name = "Precision-Preserving Compression, single precision" ;
+          ppc_flt:purpose = "test --ppc switches" ;
+          ppc_flt:original_values = "0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789" ;
+
+        float scl ;
+
+        int v1 ;
+
+      data:
+        ppc_big = 0.0123456789, 0.123456789, 1.23456789, 12.3456789, 123.456789, 1234.56789, 12345.6789, 123456.789, 1234567.89, 12345678.9 ; 
+
+        ppc_dbl = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.12345678, 0.123456789 ; 
+
+        ppc_flt = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.1234568, 0.1234568 ; 
+
+        scl = 1.11 ; 
+
+        v1 = 11 ; 
+
+    } // group /g1/g1g1
+    group: g1\:g2 {
+
+      // group attributes:
+        :purpose = "group name with semi-special character, a colon (makes CDL-parsing hard)" ;
+        :csznote = "As of 20131006, ncks skips groups whose names contain special characters. ncdump handles them fine. e.g.,\n",
+          "ncgen -k netCDF-4 -b -o ~/nco/data/in_grp.nc ~/nco/data/in_grp.cdl\n",
+          "ncks --cdl -m -g g1 ~/nco/data/in_grp.nc | m\n",
+          "ncdump -h -g g1 ~/nco/data/in_grp.nc | m\n" ;
+    } // group /g1/g1\:g2
+  } // group /g1
+  group: g2 {
+
+    variables:
+      float lon(lon) ;
+
+      float scl ;
+
+      double time(time) ;
+
+    data:
+      lon = 0, 90, 180, 270 ; 
+
+      scl = 1.2 ; 
+
+      time = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ; 
+
+  } // group /g2
+  group: g4 {
+
+    variables:
+      int one_dmn_rec_var(time) ;
+        one_dmn_rec_var:long_name = "one dimensional record variable" ;
+        one_dmn_rec_var:units = "kelvin" ;
+
+      double ppc_big(time) ;
+
+      double ppc_dbl(time) ;
+        ppc_dbl:long_name = "Precision-Preserving Compression, big numbers" ;
+        ppc_dbl:purpose = "test --ppc switches" ;
+        ppc_dbl:original_values = "123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1" ;
+
+      float ppc_flt(time) ;
+        ppc_flt:long_name = "Precision-Preserving Compression, single precision" ;
+        ppc_flt:purpose = "test --ppc switches" ;
+        ppc_flt:original_values = "0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789" ;
+
+    data:
+      one_dmn_rec_var = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ; 
+
+      ppc_big = 0.0123456789, 0.123456789, 1.23456789, 12.3456789, 123.456789, 1234.56789, 12345.6789, 123456.789, 1234567.89, 12345678.9 ; 
+
+      ppc_dbl = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.12345678, 0.123456789 ; 
+
+      ppc_flt = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.1234568, 0.1234568 ; 
+
+  } // group /g4
+  group: g5 {
+    dimensions:
+      time51 = UNLIMITED ; // (2 currently)
+      time52 = UNLIMITED ; // (10 currently)
+
+    variables:
+      int one_dmn_rec_var(time52) ;
+        one_dmn_rec_var:long_name = "one dimensional record variable" ;
+        one_dmn_rec_var:units = "kelvin" ;
+
+      double time51(time51) ;
+
+      double time52(time52) ;
+
+    data:
+      one_dmn_rec_var = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ; 
+
+      time51 = 1, 2 ; 
+
+      time52 = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ; 
+
+  } // group /g5
+  group: g6 {
+
+    variables:
+      float area(lat) ;
+
+      float area1(lat) ;
+
+    data:
+      area = 20, 30 ; 
+
+      area1 = 21, 31 ; 
+
+    group: g6g1 {
+
+      variables:
+        float area(lat) ;
+
+      data:
+        area = 40, 50 ; 
+
+    } // group /g6/g6g1
+  } // group /g6
+  group: g7 {
+
+    variables:
+      float gds_crd(gds_crd) ;
+        gds_crd:long_name = "Geodesic coordinate" ;
+        gds_crd:units = "degree" ;
+        gds_crd:purpose = "enumerated coordinate like those that might define points in a geodesic grid" ;
+        gds_crd:coordinates = "lat_gds lon_gds" ;
+
+      double lat_gds(gds_crd) ;
+        lat_gds:units = "degree" ;
+        lat_gds:long_name = "Latitude" ;
+        lat_gds:standard_name = "latitude" ;
+        lat_gds:purpose = "1-D latitude coordinate referred to by geodesic grid variables" ;
+
+      double lon_gds(gds_crd) ;
+        lon_gds:long_name = "Longitude" ;
+        lon_gds:standard_name = "longitude" ;
+        lon_gds:units = "degree" ;
+        lon_gds:purpose = "1-D longitude coordinate referred to by geodesic grid variables" ;
+
+      double ppc_big(time) ;
+
+      double ppc_dbl(time) ;
+        ppc_dbl:long_name = "Precision-Preserving Compression, big numbers" ;
+        ppc_dbl:purpose = "test --ppc switches" ;
+        ppc_dbl:original_values = "123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1" ;
+
+      float ppc_flt(time) ;
+        ppc_flt:long_name = "Precision-Preserving Compression, single precision" ;
+        ppc_flt:purpose = "test --ppc switches" ;
+        ppc_flt:original_values = "0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789" ;
+
+    data:
+      gds_crd = 0, 1, 2, 3, 4, 5, 6, 7 ; 
+
+      lat_gds = -90, -30, -30, 0, 0, 30, 30, 90 ; 
+
+      lon_gds = 0, 0, 180, 0, 180, 0, 180, 0 ; 
+
+      ppc_big = 0.0123456789, 0.123456789, 1.23456789, 12.3456789, 123.456789, 1234.56789, 12345.6789, 123456.789, 1234567.89, 12345678.9 ; 
+
+      ppc_dbl = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.12345678, 0.123456789 ; 
+
+      ppc_flt = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.1234568, 0.1234568 ; 
+
+    group: g7g1 {
+
+      variables:
+        float gds_var(gds_crd) ;
+          gds_var:units = "meter" ;
+          gds_var:coordinates = "lat_gds lon_gds" ;
+
+      data:
+        gds_var = 273.1, 273.2, 273.3, 273.4, 273.5, 273.6, 273.7, 273.8 ; 
+
+    } // group /g7/g7g1
+  } // group /g7
+  group: g8 {
+    group: g8g1 {
+      group: g8g1g1 {
+        group: g8g1g1g1 {
+
+          // group attributes:
+            :mtd_grp = "Group metadata from g8g1g1g1, a leaf-group with no variables, to test whether metadata-only leaf groups are copied and/or printed" ;
+            :answer = "Twerking" ;
+        } // group /g8/g8g1/g8g1g1/g8g1g1g1
+      } // group /g8/g8g1/g8g1g1
+    } // group /g8/g8g1
+  } // group /g8
+  group: g9 {
+    group: g9g1 {
+
+      variables:
+        int v6 ;
+
+      data:
+        v6 = 63 ; 
+
+      group: g9g1g1 {
+        group: g9g1g1g1 {
+
+          // group attributes:
+            :mtd_grp = "Group metadata from g9g1g1g1, a group with no variables, to test whether group metadata are copied to ancestor groups of extracted variables" ;
+          group: g9g1g1g1g1 {
+            group: g9g1g1g1g1g1 {
+              group: g9g1g1g1g1g1g1 {
+
+                variables:
+                  double ppc_big(time) ;
+
+                  double ppc_dbl(time) ;
+                    ppc_dbl:long_name = "Precision-Preserving Compression, big numbers" ;
+                    ppc_dbl:purpose = "test --ppc switches" ;
+                    ppc_dbl:original_values = "123456789e-10,123456789e-9,123456789e-8,123456789e-7,123456789e-6,123456789e-5,123456789e-4,123456789e-3,123456789e-2,123456789e-1" ;
+
+                  float ppc_flt(time) ;
+                    ppc_flt:long_name = "Precision-Preserving Compression, single precision" ;
+                    ppc_flt:purpose = "test --ppc switches" ;
+                    ppc_flt:original_values = "0.0,0.1,0.12,0.123,0.1234,0.12345,0.123456,0.1234567,0.12345678,0.123456789" ;
+
+                  int v7 ;
+
+                data:
+                  ppc_big = 0.0123456789, 0.123456789, 1.23456789, 12.3456789, 123.456789, 1234.56789, 12345.6789, 123456.789, 1234567.89, 12345678.9 ; 
+
+                  ppc_dbl = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.12345678, 0.123456789 ; 
+
+                  ppc_flt = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.1234568, 0.1234568 ; 
+
+                  v7 = 73 ; 
+
+              } // group /g9/g9g1/g9g1g1/g9g1g1g1/g9g1g1g1g1/g9g1g1g1g1g1/g9g1g1g1g1g1g1
+            } // group /g9/g9g1/g9g1g1/g9g1g1g1/g9g1g1g1g1/g9g1g1g1g1g1
+          } // group /g9/g9g1/g9g1g1/g9g1g1g1/g9g1g1g1g1
+        } // group /g9/g9g1/g9g1g1/g9g1g1g1
+      } // group /g9/g9g1/g9g1g1
+    } // group /g9/g9g1
+  } // group /g9
+  group: g10 {
+
+    variables:
+      float three_dmn_rec_var(time,lat,lon) ;
+        three_dmn_rec_var:units = "watt meter-2" ;
+
+      float two_dmn_rec_var(time,lev) ;
+
+    data:
+      three_dmn_rec_var = 
+      1, 2, 3, 4, 
+      5, 6, 7, 8, 
+      9, 10, 11, 12, 
+      13, 14, 15, 16, 
+      17, 18, 19, 20, 
+      21, 22, 23, 24, 
+      25, 26, 27, 28, 
+      29, 30, 31, 32, 
+      33, 34, 35, 36, 
+      37, 38, 39, 40, 
+      41, 42, 43, 44, 
+      45, 46, 47, 48, 
+      49, 50, 51, 52, 
+      53, 54, 55, 56, 
+      57, 58, 59, 60, 
+      61, 62, 63, 64, 
+      65, 66, 67, 68, 
+      69, 70, 71, 72, 
+      73, 74, 75, 76, 
+      77, 78, 79, 80 ; 
+
+      two_dmn_rec_var = 
+      1, 2, 3, 
+      1, 2.1, 3, 
+      1, 2.2, 3, 
+      1, 2.3, 3, 
+      1, 2.4, 3, 
+      1, 2.5, 3, 
+      1, 2.6, 3, 
+      1, 2.7, 3, 
+      1, 2.8, 3, 
+      1, 2.9, 3 ; 
+
+  } // group /g10
+  group: g11 {
+
+    variables:
+      byte byte_var ;
+        byte_var:long_name = "byte-type variable" ;
+
+      char char_var ;
+        char_var:long_name = "char-type variable" ;
+
+      char char_var_arr(time) ;
+        char_var_arr:long_name = "char-type variable array" ;
+
+      double double_var ;
+        double_var:long_name = "double-type variable" ;
+
+      float float_var ;
+        float_var:long_name = "float-type variable" ;
+
+      int64 int64_var ;
+        int64_var:long_name = "int64-type variable" ;
+
+      int int_var ;
+        int_var:long_name = "int-type variable" ;
+
+      int long_var ;
+        long_var:long_name = "long-type variable" ;
+        long_var:purpose = "Variable of CDL type=long, which is deprecated for int. Included to test back-compatibility" ;
+
+      short short_var ;
+        short_var:long_name = "short-type variable" ;
+
+      string string_arr(lat) ;
+        string_arr:long_name = "string-type array variable" ;
+
+      string string_rec_arr(time) ;
+        string_rec_arr:long_name = "string-type record array variable" ;
+
+      string string_var ;
+        string_var:long_name = "string-type variable" ;
+
+      ubyte ubyte_var ;
+        ubyte_var:long_name = "ubyte-type variable" ;
+
+      uint64 uint64_var ;
+        uint64_var:long_name = "uint64-type variable" ;
+
+      uint uint_arr(lat) ;
+        uint_arr:long_name = "uint-type array variable" ;
+
+      uint uint_var ;
+        uint_var:long_name = "uint-type variable" ;
+        uint_var:_FillValue = 73ul ;
+        uint_var:purpose = "_FillValue attribute tests whether NcML parser inadvertently creates two _FillValues for unsigned types" ;
+
+      ushort ushort_var ;
+        ushort_var:long_name = "ushort-type variable" ;
+
+    data:
+      byte_var = 122 ; 
+
+      char_var = "z" ; 
+
+      char_var_arr = "two words" ; 
+
+      double_var = 10 ; 
+
+      float_var = 10 ; 
+
+      int64_var = 9223372036854775807 ; 
+
+      int_var = 10 ; 
+
+      long_var = 10 ; 
+
+      short_var = 10 ; 
+
+      string_arr = "Stanza 1", "Stanza 2" ; 
+
+      string_rec_arr = "One little ", "two little ", "three little indians, ", "four little ", "five little ", "six little indians, ", "seven little ", "eight little ", "nine little indians, ", "ten little indian boys." ; 
+
+      string_var = "If you prick us, do we not bleed? If you tickle us, do we not laugh? If you poison us, do we not die? And if you wrong us, shall we not revenge?" ; 
+
+      ubyte_var = 122 ; 
+
+      uint64_var = 0 ; 
+
+      uint_arr = 4294967295, 4294967295 ; 
+
+      uint_var = 0 ; 
+
+      ushort_var = 65535 ; 
+
+  } // group /g11
+  group: g12 {
+
+    // group attributes:
+      :space\ in\ name = "foo" ;
+      :comma_in_name\, = "foo" ;
+      :lt_in_name\< = "foo" ;
+      :gt_in_name\> = "foo" ;
+      :hash_in_name\# = "foo" ;
+      :xclaim_in_name\! = "foo" ;
+      :dollar_in_name\$ = "foo" ;
+      :ampersand_in_name\& = "foo" ;
+      :equals_in_name\= = "foo" ;
+      :semicolon_in_name\; = "foo" ;
+      :colon_in_name\: = "foo" ;
+      :lbrace_in_name\{ = "foo" ;
+      :rbrace_in_name\} = "foo" ;
+      :lparen_in_name\( = "foo" ;
+      :rparen_in_name\) = "foo" ;
+      :lbracket_in_name\[ = "foo" ;
+      :rbracket_in_name\] = "foo" ;
+      :plus_in_name+ = "foo" ;
+      :hyphen_in_name- = "foo" ;
+      :at_in_name@ = "foo" ;
+  } // group /g12
+} // group /

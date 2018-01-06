@@ -285,11 +285,20 @@ if exist Debug\ncks.exe (
 )
 
 :test_nco
-pushd Debug
 @echo on
 %root_win%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %root_win%\..\data\in_grp.nc %root_win%\..\data\in_grp.cdl
-ncks.exe --jsn_fmt 2 -C -g g10 -v two_dmn_rec_var %root_win%\..\data\in_grp.nc
-ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
-@echo off
-popd
+%root_win%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %root_win%\..\data\in.nc %root_win%\..\data\in.cdl
+Debug\ncks.exe --jsn_fmt 2 -C -g g10 -v two_dmn_rec_var %root_win%\..\data\in_grp.nc
+Debug\ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+
+:: generate text files in_grp.nc.gen.txt from in_grp.nc and in.nc and use tool FC to compare contents 
+:: with pre-existing in_grp.nc.txt, in.nc.txt, generated in Linux
+:: generation of in_grp.nc.gen.txt must be done in 'data' folder so that paths match
+
+@pushd %root_win%\..\data
+%root_win%\Debug\ncks.exe in_grp.nc > %root_win%\in_grp.nc.gen.txt 
+%root_win%\Debug\ncks.exe in.nc > %root_win%\in.nc.gen.txt 
+@popd
+fc in_grp.nc.gen.txt in_grp.nc.txt
+fc in.nc.gen.txt in.nc.txt
 echo done
