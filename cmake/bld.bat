@@ -24,9 +24,10 @@ set root_win=%cd%
 set root=%root_win:\=/%
 echo cmake root is %root%
 
+:build_zlib
 if exist %root_win%\zlib\build\zlib.sln (
  echo skipping zlib build
- goto build_hdf5
+ goto build_szip
 ) else (
   echo building zlib
   pushd zlib
@@ -44,6 +45,25 @@ if exist %root_win%\zlib\build\zlib.sln (
   if errorlevel 1 goto :eof
 )
 
+:build_szip
+if exist %root_win%\szip\build\SZIP.sln (
+ echo skipping szip build
+ goto build_hdf5
+) else (
+  echo building szip
+  pushd szip
+  mkdir build
+  pushd build
+  cmake .. -G %MSVC_VERSION% ^
+           -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
+           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
+           -DBUILD_SHARED_LIBS=OFF ^
+           -DBUILD_TESTING=OFF
+  msbuild SZIP.sln /target:build /property:configuration=debug
+  popd
+  popd
+  if errorlevel 1 goto :eof
+)
 
 :build_hdf5
 if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
@@ -66,7 +86,12 @@ if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
            -DHDF5_ENABLE_Z_LIB_SUPPORT=ON ^
            -DH5_ZLIB_HEADER=%root%/zlib/zlib.h ^
            -DZLIB_STATIC_LIBRARY:FILEPATH=%root%/zlib/build/Debug/zlibstaticd.lib ^
-           -DZLIB_INCLUDE_DIRS:PATH=%root%/zlib
+           -DZLIB_INCLUDE_DIRS:PATH=%root%/zlib ^
+           -DHDF5_ENABLE_SZIP_SUPPORT=ON ^
+           -DSZIP_USE_EXTERNAL=ON ^
+           -DSZIP_FOUND=ON ^
+           -DSZIP_STATIC_LIBRARY:FILEPATH=%root%/szip/build/bin/Debug/libszip_D.lib ^
+           -DSZIP_INCLUDE_DIRS:PATH=%root%/szip/src
   msbuild HDF5.sln /target:build /property:configuration=debug
   popd
   popd
@@ -235,6 +260,7 @@ if exist Debug\ncks.exe (
  echo skipping nco build
  goto test_nco
 ) else (
+  echo building NCO
   rm -rf CMakeCache.txt CMakeFiles
   cmake .. -G %MSVC_VERSION% ^
   -DNCO_MSVC_USE_MT=%STATIC_CRT% ^
@@ -244,6 +270,7 @@ if exist Debug\ncks.exe (
   -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
   -DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
   -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
+  -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/libszip_D.lib ^
   -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
   -DUDUNITS2_INCLUDE:PATH=%root%/UDUNITS-2/lib ^
   -DUDUNITS2_LIBRARY:FILE=%root%/UDUNITS-2/build/lib/Debug/udunits2.lib ^

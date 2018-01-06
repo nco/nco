@@ -10,14 +10,18 @@ clone
 bld
 ```
 
-this clones and builds
+this clones and builds the following NCO dependency libraries
 
 ```
 zlib
+szip
 hdf5
 curl
 netcdf
-nco
+expat
+udunits
+gsl
+antlr
 ```
 
 ## Options
@@ -47,12 +51,12 @@ edit libcurl.vcxproj to include ws2_32.lib as library dependenccy and set LinkLi
 
 ## hdf5
 
-edit hdf5-static.vcxproj and add full path of zlib library as dependency
+edit hdf5-static.vcxproj and add full path of ZLIB and SZIP libraries as dependencies
 
 ```
 <Lib>
 <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>I:\nco\cmake\zlib\build\Debug\zlibstaticd.lib</AdditionalDependencies>
+<AdditionalDependencies>I:\nco\cmake\zlib\build\Debug\zlibstaticd.lib;I:\nco\cmake\szip\build\bin\Debug\libszip_D.lib</AdditionalDependencies>
 </Lib>
 ```
 
@@ -127,15 +131,19 @@ endif()
 
 ## zlib
 
-https://github.com/madler/zlib
+git clone https://github.com/madler/zlib
+
+## szip
+
+git clone https://github.com/soumagne/szip
 
 ## expat (dependency for UDUNITS-2)
 
-https://github.com/libexpat/libexpat
+git clone https://github.com/libexpat/libexpat
 
 ## UDUNITS-2
 
-https://github.com/Unidata/UDUNITS-2
+git clone https://github.com/Unidata/UDUNITS-2
 
 
 # List of dependencies
@@ -147,7 +155,7 @@ git checkout tags/v4.5.0
 popd
 git clone https://github.com/curl/curl
 git clone https://github.com/madler/zlib
-git clone https://github.com/erdc/szip
+git clone https://github.com/soumagne/szip
 git clone https://github.com/live-clones/hdf5
 git clone https://github.com/Unidata/UDUNITS-2
 git clone https://github.com/libexpat/libexpat
