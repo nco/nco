@@ -140,6 +140,7 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
            -DHDF5_C_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
            -DHDF5_INCLUDE_DIR=%root%/hdf5/src ^
            -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
+           -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/libszip_D.lib ^
            -DZLIB_INCLUDE_DIR:PATH=%root%/zlib ^
            -DHAVE_HDF5_H=%root%/hdf5/build ^
            -DHDF5_HL_INCLUDE_DIR=%root%/hdf5/hl/src ^
