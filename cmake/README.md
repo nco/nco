@@ -6,11 +6,11 @@ https://github.com/nco/nco
 Do
 
 ```
-clone
-bld
+clone.bat
+bld.bat
 ```
 
-this clones and builds the following NCO dependency libraries
+this git clones and builds the following NCO dependency libraries
 
 ```
 zlib
@@ -34,31 +34,8 @@ bld crt
 
 # Changes needed
 
-## libcurl (if building with CMake)
-
-edit libcurl.vcxproj to include ws2_32.lib as library dependenccy and set LinkLibraryDependencies as true
-
-```
-<Lib>
-<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>ws2_32.lib</AdditionalDependencies>
-</Lib>
-<ProjectReference>
-<LinkLibraryDependencies>true</LinkLibraryDependencies>
-</ProjectReference>
-```
-
 
 ## hdf5
-
-edit hdf5-static.vcxproj and add full path of ZLIB and SZIP libraries as dependencies
-
-```
-<Lib>
-<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>I:\nco\cmake\zlib\build\Debug\zlibstaticd.lib;I:\nco\cmake\szip\build\bin\Debug\libszip_D.lib</AdditionalDependencies>
-</Lib>
-```
 
 edit CMakeLists.txt at root and add for case when static linking of the C Run-time Library (CRT)
 
@@ -67,15 +44,6 @@ INCLUDE(config/cmake/UserMacros/WINDOWS_MT.cmake)
 ```
 
 ## netcdf
-
-edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
-
-```
-<Lib>
-<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_hl_D.lib;I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_D.lib;I:\nco\cmake\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
-</Lib>
-```
 
 edit CMakeLists.txt and add an option to detect the HDF5 HL library
 
@@ -146,6 +114,32 @@ git clone https://github.com/libexpat/libexpat
 git clone https://github.com/Unidata/UDUNITS-2
 
 
+# Changes needed for ZLIB and SZIP detection in NCO
+
+
+## hdf5
+
+edit hdf5-static.vcxproj and add full path of ZLIB and SZIP libraries as dependencies
+
+```
+<Lib>
+<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+<AdditionalDependencies>I:\nco\cmake\zlib\build\Debug\zlibstaticd.lib;I:\nco\cmake\szip\build\bin\Debug\libszip_D.lib</AdditionalDependencies>
+</Lib>
+```
+
+## netcdf
+
+edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
+
+```
+<Lib>
+<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+<AdditionalDependencies>I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_hl_D.lib;I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_D.lib;I:\nco\cmake\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+</Lib>
+```
+
+
 # List of dependencies
 
 ```
@@ -164,3 +158,16 @@ git clone https://github.com/Distrotech/antlr2
 ```
 
 
+## Changes needed for libcurl if building with CMake
+
+edit libcurl.vcxproj to include ws2_32.lib as library dependenccy and set LinkLibraryDependencies as true
+
+```
+<Lib>
+<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+<AdditionalDependencies>ws2_32.lib</AdditionalDependencies>
+</Lib>
+<ProjectReference>
+<LinkLibraryDependencies>true</LinkLibraryDependencies>
+</ProjectReference>
+```
