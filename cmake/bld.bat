@@ -36,7 +36,6 @@ if exist %root_win%\zlib\build\zlib.sln (
   cmake .. -G %MSVC_VERSION% ^
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
-           -DCMAKE_BUILD_TYPE=Debug ^
            -DBUILD_SHARED_LIBS=OFF
   msbuild zlib.sln /target:build /property:configuration=debug
   cp %root%\zlib\build\zconf.h %root%\zlib
@@ -77,7 +76,6 @@ if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
   cmake .. -G %MSVC_VERSION% ^
            -DBUILD_STATIC_CRT_LIBS=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
-           -DCMAKE_BUILD_TYPE=Debug ^
            -DBUILD_SHARED_LIBS=OFF ^
            -DBUILD_STATIC_EXECS=ON ^
            -DBUILD_TESTING=OFF ^
@@ -134,7 +132,6 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
            -DNC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DENABLE_TESTS=OFF ^
-           -DCMAKE_BUILD_TYPE=Debug ^
            -DBUILD_SHARED_LIBS=OFF ^
            -DHDF5_HL_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
            -DHDF5_C_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
@@ -267,7 +264,7 @@ if exist Debug\ncks.exe (
   echo building NCO
   rm -rf CMakeCache.txt CMakeFiles
   cmake .. -G %MSVC_VERSION% ^
-  -DNCO_MSVC_USE_MT=%STATIC_CRT% ^
+  -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
   -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
   -DNETCDF_LIBRARY:FILE=%root%/netcdf-c/build/liblib/Debug/netcdf.lib ^

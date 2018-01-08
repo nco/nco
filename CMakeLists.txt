@@ -284,19 +284,24 @@ endif()
 #compile as C++/static CRT on Visual Studio and as C99 on UNIX
 #//////////////////////////
 
-set(NCO_MSVC_USE_MT yes CACHE BOOL "Use MT flags when compiling in MSVC")
+set(MSVC_USE_STATIC_CRT ON CACHE BOOL "Use /MT flag (static CRT) when compiling in MSVC")
 
 if (MSVC)
-  add_definitions( "/D_CRT_SECURE_NO_WARNINGS /D_CRT_NONSTDC_NO_DEPRECATE" )
 
-  if (NCO_MSVC_USE_MT)
-     foreach(CompilerFlag CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-                          CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
-                          CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-                          CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
-       string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
-     endforeach()
+  if (MSVC_USE_STATIC_CRT)
+    message("-- Using static CRT ${MSVC_USE_STATIC_CRT}")
+    foreach(flag_var CMAKE_CXX_FLAGS_DEBUG 
+    CMAKE_CXX_FLAGS_RELEASE
+    CMAKE_CXX_FLAGS_MINSIZEREL 
+    CMAKE_CXX_FLAGS_RELWITHDEBINFO
+    CMAKE_C_FLAGS_DEBUG 
+    CMAKE_C_FLAGS_RELEASE
+    CMAKE_C_FLAGS_MINSIZEREL 
+    CMAKE_C_FLAGS_RELWITHDEBINFO)
+    string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+    endforeach()
   endif()
+
 
   #//////////////////////////
   #compile as C++ Code (/TP)

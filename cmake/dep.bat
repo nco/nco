@@ -113,7 +113,7 @@ if exist %root%\netcdf-c\build\ncdump\ncdump.exe (
 :build_nco
 cmake .. ^
 -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
--DNCO_MSVC_USE_MT=no ^
+-DMSVC_USE_STATIC_CRT=OFF ^
 -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
 -DNETCDF_LIBRARY:FILE=%root%/netcdf-c/build/liblib/netcdf.lib ^
 -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/libhdf5_D.lib ^
