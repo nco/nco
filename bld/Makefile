@@ -15,6 +15,7 @@
 # Machine build parameters
 #                         Source     Method   Packages Compiler
 # aerosol.ess.uci.edu: NCO          Configure All else clang
+# cheyenne.ucar.edu  : NCO          Makefile  All else Intel
 # cooley.alcf.anl.g  : NCO          Configure All else GCC
 # edison.nersc.gov   : NCO          Configure All else Intel
 # firn.ess.uci.edu   : NCO          Configure All else clang
@@ -25,7 +26,6 @@
 # roulee.ess.uci.edu : NCO + netCDF Makefile  All else GCC
 # skyglow.ess.uci.edu: NCO + netCDF Configure All else GCC
 # travis CI          : NCO          Configure All else gcc,clang,g++
-# yellowstone.ucar.e : NCO          Makefile  All else Intel
 
 # Usage (testing):
 # make tst                           # Vanilla regression test
