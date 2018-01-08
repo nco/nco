@@ -50,11 +50,16 @@ endif()
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #general C/C++ build flags
+#on single-configuration generators (Unix Makefiles, NMake Makefiles) use Debug as default
+#on multi-configuration generators (Visual Studio, Xcode) define only 2 types: Debug;Release
 #/////////////////////////////////////////////////////////////////////////////////////
 
-set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build.")
-set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libs.")
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+if(CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
+endif()
 
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build static libs.")
 if (NOT BUILD_SHARED_LIBS)
   add_definitions(-DENABLE_STATIC)
 endif()
@@ -284,31 +289,31 @@ endif()
 #compile as C++/static CRT on Visual Studio and as C99 on UNIX
 #//////////////////////////
 
-set(MSVC_USE_STATIC_CRT ON CACHE BOOL "Use /MT flag (static CRT) when compiling in MSVC")
-
 if (MSVC)
-
+  set(MSVC_USE_STATIC_CRT ON CACHE BOOL "Use /MT flag (static CRT) when compiling in MSVC")
   if (MSVC_USE_STATIC_CRT)
     message("-- Using static CRT ${MSVC_USE_STATIC_CRT}")
     foreach(flag_var CMAKE_CXX_FLAGS_DEBUG 
-    CMAKE_CXX_FLAGS_RELEASE
-    CMAKE_CXX_FLAGS_MINSIZEREL 
-    CMAKE_CXX_FLAGS_RELWITHDEBINFO
-    CMAKE_C_FLAGS_DEBUG 
-    CMAKE_C_FLAGS_RELEASE
-    CMAKE_C_FLAGS_MINSIZEREL 
-    CMAKE_C_FLAGS_RELWITHDEBINFO)
+      CMAKE_CXX_FLAGS_RELEASE
+      CMAKE_CXX_FLAGS_MINSIZEREL 
+      CMAKE_CXX_FLAGS_RELWITHDEBINFO
+      CMAKE_C_FLAGS_DEBUG 
+      CMAKE_C_FLAGS_RELEASE
+      CMAKE_C_FLAGS_MINSIZEREL 
+      CMAKE_C_FLAGS_RELWITHDEBINFO)
     string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
     endforeach()
   endif()
 
-
   #//////////////////////////
   #compile as C++ Code (/TP)
   #//////////////////////////
-  foreach(CompilerFlag CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-                       CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
-    set(${CompilerFlag} "/TP ${${CompilerFlag}}")
+  
+  foreach(flag_var CMAKE_C_FLAGS_DEBUG 
+    CMAKE_C_FLAGS_RELEASE
+    CMAKE_C_FLAGS_MINSIZEREL 
+    CMAKE_C_FLAGS_RELWITHDEBINFO)
+  set(${flag_var} "/TP ${${flag_var}}")
   endforeach()
 
   #//////////////////////////
@@ -319,29 +324,29 @@ if (MSVC)
 
 else (MSVC)
 
-#//////////////////////////
-#compile as C99
-#//////////////////////////
+  #//////////////////////////
+  #compile as C99
+  #//////////////////////////
 
-if(CMAKE_VERSION VERSION_LESS "3.1")
-  if(CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_C_FLAGS "--std=gnu99 ${CMAKE_C_FLAGS}")
-  endif()
-else()
-  set(CMAKE_C_STANDARD 99)
-endif()
-
-#//////////////////////////
-# other gcc flags
-#//////////////////////////
-
-if(CMAKE_COMPILER_IS_GNUCC)
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
-   set(CMAKE_C_FLAGS "-D_BSD_SOURCE -D_POSIX_SOURCE ${CMAKE_C_FLAGS}")
+  if(CMAKE_VERSION VERSION_LESS "3.1")
+    if(CMAKE_COMPILER_IS_GNUCC)
+      set(CMAKE_C_FLAGS "--std=gnu99 ${CMAKE_C_FLAGS}")
+    endif()
   else()
-   set(CMAKE_C_FLAGS "-D_DEFAULT_SOURCE ${CMAKE_C_FLAGS}")
+    set(CMAKE_C_STANDARD 99)
   endif()
-endif()
+
+  #//////////////////////////
+  # other gcc flags
+  #//////////////////////////
+
+  if(CMAKE_COMPILER_IS_GNUCC)
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.9)
+     set(CMAKE_C_FLAGS "-D_BSD_SOURCE -D_POSIX_SOURCE ${CMAKE_C_FLAGS}")
+    else()
+     set(CMAKE_C_FLAGS "-D_DEFAULT_SOURCE ${CMAKE_C_FLAGS}")
+    endif()
+  endif()
 
 endif(MSVC)
 
