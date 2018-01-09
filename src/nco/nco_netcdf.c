@@ -1191,8 +1191,12 @@ int
 nco_rename_grp(int grp_id,const char * const grp_nm)
 {
   /* Purpose: Wrapper for nc_rename_grp() */
+  const char fnc_nm[]="nco_rename_grp()";
   int rcd;
   rcd=nc_rename_grp(grp_id,grp_nm);
+  if(rcd == NC_ENAMEINUSE){
+    (void)fprintf(stdout,"ERROR: %s cannot define group name \"%s\" which is already in use\n",fnc_nm,grp_nm);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_grp()");
   return rcd;
 } /* end nco_rename_grp() */
@@ -1450,8 +1454,12 @@ int
 nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
 {
   /* Purpose: Wrapper for nc_rename_dim() */
+  const char fnc_nm[]="nco_rename_dim()";
   int rcd;
   rcd=nc_rename_dim(nc_id,dmn_id,dmn_nm);
+  if(rcd == NC_ENAMEINUSE){
+    (void)fprintf(stdout,"ERROR: %s cannot define dimension name \"%s\" which is already in use\n",fnc_nm,dmn_nm);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_dim()");
   return rcd;
 }  /* end nco_inq_rename_dim */
@@ -1828,8 +1836,12 @@ int
 nco_rename_var(const int nc_id,const int var_id,const char * const var_nm)
 {
   /* Purpose: Wrapper for nc_rename_var() */
+  const char fnc_nm[]="nco_rename_var()";
   int rcd;
   rcd=nc_rename_var(nc_id,var_id,var_nm);
+  if(rcd == NC_ENAMEINUSE){
+    (void)fprintf(stdout,"ERROR: %s cannot define variable name \"%s\" which is already in use\n",fnc_nm,var_nm);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_var()");
   return rcd;
 } /* end nco_rename_var */
