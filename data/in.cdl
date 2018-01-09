@@ -629,6 +629,10 @@ variables:
 	char char_var_nul;
 	char_var_nul:long_name = "Character variable containing one NUL";
 
+	char char_var_empty;
+	char_var_empty:long_name = "Character string empty";
+
+	
 	char char_var_1D_arr(time);
         char_var_1D_arr:long_name = "char-type 1D variable array";
 
@@ -1367,10 +1371,12 @@ data:
 	//	char_var_multinul="\b\n\0";
 	// char_var_multinul='0','\n','\0';
 	char_var_nul='\0';
+	char_var_empty="";
 	char_var_space=" ";
         char_var_1D_arr="two words";
         char_var_2D_arr="one","two";
         cnv_CF_grd=1,2,3,4,5,6,7,8;
+	albers_conical_equal_area="";
 	cnv_CF_crd=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8;
 	cnv_CF_ncl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	cnv_CF_ncl_var_1=11.,22.,23.,24.,25.,26.,27.,28.,29.,30.;
