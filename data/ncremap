@@ -350,6 +350,7 @@ inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
 job_nbr=2 # [nbr] Job simultaneity for parallelism
 map_fl='' # [sng] Map-file
+map_trn_fl='' # [sng] Map-file transpose (for Tempest)
 map_xmp='map.nc' # [sng] Map-file for examples
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
@@ -1076,6 +1077,9 @@ fi # !map_fl
 if [ "${map_mk}" = 'Yes' ] && [ "${wgt_typ}" = 'tempest' ]; then 
     msh_fl_dfl="${drc_tmp}/ncremap_tmp_msh_ovr_${wgt_typ}.g${unq_sfx}" # [sng] Mesh-file default
     msh_fl=${msh_fl_dfl}
+    if [ "${trn_map}" = 'Yes' ]; then 
+	map_trn_fl="${drc_tmp}/ncremap_tmp_map_trn_${wgt_typ}.nc${unq_sfx}" # [sng] Map-file transpose default
+    fi # !trn_map
 fi # !tempest
 
 # Read files from stdin pipe, positional arguments, or directory glob
@@ -1642,7 +1646,6 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'sgs' ]; then
 	cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
 	if [ "${trn_map}" = 'Yes' ]; then 
 	    # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-	    map_trn_fl=${map_fl}.'transpose'
 	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_dst} --b ${grd_src} --out ${msh_fl} > /dev/null"
 	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_dst} --out_mesh ${grd_src} --ov_mesh ${msh_fl} --out_map ${map_trn_fl} ${wgt_opt} > /dev/null"
 	    cmd_trn[${fl_idx}]="GenerateTransposeMap --in ${map_trn_fl} --out ${map_fl} > /dev/null"
@@ -1801,7 +1804,6 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
 	    if [ "${trn_map}" = 'Yes' ]; then 
 		# NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-		map_trn_fl=${map_fl}.'transpose'
 		cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_dst} --b ${grd_src} --out ${msh_fl} > /dev/null"
 		cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_dst} --out_mesh ${grd_src} --ov_mesh ${msh_fl} --out_map ${map_trn_fl} ${wgt_opt} > /dev/null"
 		cmd_trn[${fl_idx}]="GenerateTransposeMap --in ${map_trn_fl} --out ${map_fl} > /dev/null"
@@ -2043,7 +2045,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Clean-up intermediate files...\n"
     fi # !vrb_lvl
-    /bin/rm -f ${att_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${att_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files.\n"
