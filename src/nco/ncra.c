@@ -937,7 +937,7 @@ main(int argc,char **argv)
 
       /* Input file must have either (but not both) time bounds or climatology bounds */
       if(cb->tm_bnd_in && cb->clm_bnd_in){
-	(void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on time coordinate with both time bounds attribute \"%s\" and climatology bounds attribute \"%s\". Results would be ambiguous. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,clm_sng);
+	(void)fprintf(stderr,"%s: WARNING Climatology bounds invoked on time coordinate with both time bounds attribute \"%s\" (value = \"%s\") and climatology bounds attribute \"%s\" (value = \"%s\"). Results would be ambiguous. Turning-off climatology bounds mode.\n",nco_prg_nm_get(),bnd_sng,cb->tm_bnd_nm,clm_sng,cb->clm_bnd_nm);
 	flg_cb=False;
 	goto skp_cb;
       } /* !(cb->tm_bnd_in && cb->clm_bnd_in) */
@@ -957,7 +957,7 @@ main(int argc,char **argv)
     if(flg_c2b && cb->clm_bnd_in) cb->clm2bnd=True;
     if(cb->clm_bnd_in) cb->clm2clm=True;
     if(cb->tm_bnd_in) cb->bnd2clm=True;
-    
+
     if(cb->tm_bnd_in){
       rcd=nco_inq_varid_flg(in_id,cb->tm_bnd_nm,&cb->tm_bnd_id_in); 
       if(cb->tm_bnd_id_in == NC_MIN_INT){
