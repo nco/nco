@@ -1,7 +1,13 @@
+2018-01-10  Charlie Zender  <zender@uci.edu>
+
+	* Add GenerateTransposeMap to support fv2se_flx (monotr)
+
+	* Verify that ncremap se2fv_flx (mono) and fv2se_stt (highorder) work with Tempest2 (Tempest1 fv2se_stt is buggy)
+
 2018-01-10 Henry Butowsky  <henryb@hush.com>
 
 	* Print scalar char of NUL as "" only if it is defined in data section as ""
-	  if defined in data section as '\0' then "0" is printed (as per ncdump) 
+	  if defined in data section as '\0' then "0" is printed (as per ncdump)
 
 2018-01-09  Charlie Zender  <zender@uci.edu>
 

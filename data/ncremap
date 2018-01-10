@@ -263,8 +263,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.091226.nc -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc
 # TempestRemap boutique:
 # GenerateCSMesh --alt --res 30 --file ${DATA}/grids/ne30.g
-# ncremap --dbg=1 --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180101.nc -a se2fv_flx
-# ncremap --dbg=1 --src_grd=${DATA}/grids/ne30.g --se_mtd=${DATA}/grids/ne30np4_latlon.091226.nc --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180101.nc -a se2fv_flx
+# ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180101.nc
+# ncremap --dbg=1 -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc -o ~/foo_fv129x256.nc
+# ncremap --dbg=1 -a fv2se_stt --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc
+# ncremap --dbg=1 -i ~/foo_fv129x256.nc -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc -o ~/foo_ne30.nc
+# ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --se_mtd=${DATA}/grids/ne30np4_latlon.091226.nc --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
 
@@ -370,6 +373,7 @@ sgs_nrm='1.0' # [frc] Sub-grid normalization
 std_flg='No' # [sng] Input available from pipe to stdin
 thr_nbr=2 # [nbr] Thread number for regridder
 tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
+trn_map='' # [flg] Tempest transpose map (i.e., fv2se_flx == monotr)
 ugrid_fl='' # [sng] UGRID file
 unq_sfx=".pid${spt_pid}" # [sng] Unique suffix
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
@@ -761,7 +765,7 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # 20171108 'tempest' invokes TempestRemap with no automatic options, suitable for RLL re-mapping?
     # 20171108 TempestRemap boutique options based on particular remapping type
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
-    # map_tag in comments is for E3SM naming convention map_src_to_dst_${map_tag}.20180101.nc
+    # map_tag in comments is for E3SM naming convention map_src_to_dst_${map_tag}.20180301.nc
     alg_opt='tempest'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # map_tag='mono'
@@ -783,11 +787,13 @@ elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${al
     fi # !gll_fl
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # map_tag='monotr'
+    # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
     wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
     fi # !gll_fl
     wgt_typ='tempest'
+    trn_map='Yes'
     # fxm: transpose maps need additional call:
     # ./GenerateTransposeMap --in map_atm2ocn_mono.nc --out map_ocn2atm_monotr.nc
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # map_tag='highorder'
@@ -1634,6 +1640,13 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'sgs' ]; then
     if [ "${wgt_typ}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} > /dev/null"
 	cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
+	if [ "${trn_map}" = 'Yes' ]; then 
+	    # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
+	    map_trn_fl=${map_fl}.'transpose'
+	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_dst} --b ${grd_src} --out ${msh_fl} > /dev/null"
+	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_dst} --out_mesh ${grd_src} --ov_mesh ${msh_fl} --out_map ${map_trn_fl} ${wgt_opt} > /dev/null"
+	    cmd_trn[${fl_idx}]="GenerateTransposeMap --in ${map_trn_fl} --out ${map_fl} > /dev/null"
+	fi # !trn_map
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_msh[${fl_idx}]}
 	fi # !dbg
@@ -1670,6 +1683,18 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'sgs' ]; then
 	    fi # !err
 	fi # !map_usr_flg
     fi # !dbg
+    if [ "${trn_map}" = 'Yes' ]; then 
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_trn[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_trn[${fl_idx}]}
+	    if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
+		printf "${spt_nm}: ERROR Failed to transpose map-file. Debug this:\n${cmd_trn[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    fi # !trn_map
     # Set map_mk to something besides 'Yes' to avoid re-generating map within file loop
     map_mk='Already made map once. Never again.'
 fi # !grd_src_usr_flg
@@ -1774,6 +1799,13 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    printf "Mesh-File: ${msh_fl}\n"
 	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} > /dev/null"
 	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
+	    if [ "${trn_map}" = 'Yes' ]; then 
+		# NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
+		map_trn_fl=${map_fl}.'transpose'
+		cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_dst} --b ${grd_src} --out ${msh_fl} > /dev/null"
+		cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_dst} --out_mesh ${grd_src} --ov_mesh ${msh_fl} --out_map ${map_trn_fl} ${wgt_opt} > /dev/null"
+		cmd_trn[${fl_idx}]="GenerateTransposeMap --in ${map_trn_fl} --out ${map_fl} > /dev/null"
+	    fi # !trn_map
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_msh[${fl_idx}]}
 	    fi # !dbg
@@ -1809,6 +1841,18 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 		fi # !err
 	    fi # !map_usr_flg
 	fi # !dbg
+	if [ "${trn_map}" = 'Yes' ]; then 
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_trn[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_trn[${fl_idx}]}
+		if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
+		    printf "${spt_nm}: ERROR Failed to transpose map-file. Debug this:\n${cmd_trn[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !trn_map
 
 	# Prevent creating new source gridfile and map-file after first iteration
 	if [ "${mlt_map_flg}" = 'No' ] && [ ${fl_idx} -eq 0 ]; then 
