@@ -1974,8 +1974,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           chr_val=var->val.cp[lmn];
           if(var->nbr_dim == 0){
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
-	    /* the NetCDF standard is to print nul as "0" but  we shall  print "" for all formats */    
-            if(chr_val != '0' )
+	    /* the NetCDF standard is to print nul as "0" but  we shall  print "" for all formats */
+            if(chr_val != 0 )
 	       (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
             val_sng[0]='\0'; /* Re-initialize with NUL byte to be safe */
