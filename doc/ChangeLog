@@ -1,3 +1,8 @@
+2018-01-10 Henry Butowsky  <henryb@hush.com>
+
+	* Print scalar char of NUL as "" only if it is defined in data section as ""
+	  if defined in data section as '\0' then "0" is printed (as per ncdump) 
+
 2018-01-09  Charlie Zender  <zender@uci.edu>
 
 	* Print offending var/dim/group name when nco_rename_* returns NC_ENAMEINUSE
