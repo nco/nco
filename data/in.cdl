@@ -803,6 +803,14 @@ variables:
 	att_var_spc_chr:hyphen_in_name- = "foo";
 	att_var_spc_chr:at_in_name@ = "foo";
 
+	// Purpose test special chars in char atts 
+        int att_sng;
+        att_sng:nul_sng = '\0';
+	att_sng:empty_sng = "";
+        att_sng:space_sng = " ";
+	att_sng:zero_sng = "0";
+
+	
 	int bnd_var(lev,bnd);
 	bnd_var:byte_att = '\0';
 	bnd_var:char_att = "Sentence one.\nSentence two.\n";
@@ -1346,6 +1354,7 @@ data:
 	att_var=10.0,10.1,10.20,10.3000,10.40101,10.500001,10.60000001,10.7000001,10.80,10.9900;
 	att_var_jsn=73;
 	att_var_spc_chr=73;
+	att_sng=20;
 	area=10.,10.;
 	area2=20.,5.;
 	area_asm=1.,2.;
