@@ -1,3 +1,7 @@
+2018-01-11  Charlie Zender  <zender@uci.edu>
+
+	* Rename and implement char_var_nul and char_var_nul_c_format more precisely in accord with ncgen usage
+
 2018-01-10  Charlie Zender  <zender@uci.edu>
 
 	* Add GenerateTransposeMap to support fv2se_flx (monotr)

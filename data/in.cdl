@@ -627,12 +627,14 @@ variables:
 	char_var_space:long_name = "Character variable with whitespace on ends";
 
 	char char_var_nul;
-	char_var_nul:long_name = "Character variable containing one NUL";
+	char_var_nul:long_name = "Character variable containing one NUL specified as empty string: \"\"";
 
-	char char_var_empty;
-	char_var_empty:long_name = "Character string empty";
+	char char_var_nul_c_format;
+	char_var_nul_c_format:long_name = "Character variable containing one NUL specified in C-format: \'\\0\'";
 
-	
+	char char_var_zero;
+	char_var_zero:long_name = "Character variable containing zero";
+
 	char char_var_1D_arr(time);
         char_var_1D_arr:long_name = "char-type 1D variable array";
 
@@ -809,7 +811,6 @@ variables:
 	att_sng:empty_sng = "";
         att_sng:space_sng = " ";
 	att_sng:zero_sng = "0";
-
 	
 	int bnd_var(lev,bnd);
 	bnd_var:byte_att = '\0';
@@ -1379,8 +1380,15 @@ data:
 	// 20131015: This confuses the XML parser
 	//	char_var_multinul="\b\n\0";
 	// char_var_multinul='0','\n','\0';
-	char_var_nul='\0';
-	char_var_empty="";
+	// 20180111: Historically we specified char_var_nul as '\0'
+	// However, ncgen apparently turns '\0' into a zero
+	// "correct" (meaning ncgen-supported) way to specify a scalar NUL character is with ""
+	// As of today we specify char_var_nul as "" and char_var_nul_c_format as '\0'
+	// char_var_nul_c_format indicates what happens when specifying characters in C-format
+	// I think ncgen should support C-format byte codes for characters, though ncgen does not yet do so correctly
+	char_var_nul="";
+	char_var_nul_c_format='\0';
+	char_var_zero="0";
 	char_var_space=" ";
         char_var_1D_arr="two words";
         char_var_2D_arr="one","two";
