@@ -1087,7 +1087,7 @@ fi # !tempest
 # Code block taken from ncclimo
 # ncclimo sets inp_aut flag when file list is automatically (i.e., internally) generated
 # ncremap uses convention that input files specified with -i set inp_aut flag
-# That way, ncremap code block looks closer to ncclimo with introducing a new "inp_cmd" flag
+# That way, ncremap code block looks closer to ncclimo without introducing a new "inp_cmd" flag
 #printf "dbg: inp_aut  = ${inp_aut}\n"
 #printf "dbg: inp_glb  = ${inp_glb}\n"
 #printf "dbg: inp_psn  = ${inp_psn}\n"
@@ -1123,6 +1123,7 @@ if [ ${inp_psn} = 'Yes' ]; then
 	fl_nbr=1
     elif [ ${psn_nbr} -eq 2 ]; then
 	if [ -z "${out_fl}" ]; then
+	    fl_in[0]=${1}
 	    out_fl=${2}
 	    out_usr_flg='Yes'
 	    fl_nbr=1
@@ -1219,11 +1220,16 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: drc_tmp  = ${drc_tmp}\n"
     printf "dbg: dst_fl   = ${dst_fl}\n"
     printf "dbg: fl_fmt   = ${fl_fmt}\n"
+    printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: gll_fl   = ${gll_fl}\n"
     printf "dbg: grd_dst  = ${grd_dst}\n"
     printf "dbg: grd_sng  = ${grd_sng}\n"
     printf "dbg: grd_src  = ${grd_src}\n"
+    printf "dbg: inp_aut  = ${inp_aut}\n"
+    printf "dbg: inp_glb  = ${inp_glb}\n"
+    printf "dbg: inp_psn  = ${inp_psn}\n"
+    printf "dbg: inp_std  = ${inp_std}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
     printf "dbg: hrd_pth  = ${hrd_pth}\n"
     printf "dbg: job_nbr  = ${job_nbr}\n"

@@ -1,5 +1,7 @@
 2018-01-11  Charlie Zender  <zender@uci.edu>
 
+	* Correctly handle special case of NCO canonical format: ncremap -m map.nc in.nc out.nc
+
 	* ncremap check for and modify map_rsl_fl instead of map_fl
 
 	* Rename and implement char_var_nul and char_var_nul_c_format more precisely in accord with ncgen usage
