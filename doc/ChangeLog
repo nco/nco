@@ -1,5 +1,7 @@
 2018-01-11  Charlie Zender  <zender@uci.edu>
 
+	* ncremap check for and modify map_rsl_fl instead of map_fl
+
 	* Rename and implement char_var_nul and char_var_nul_c_format more precisely in accord with ncgen usage
 
 2018-01-10  Charlie Zender  <zender@uci.edu>

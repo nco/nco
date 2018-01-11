@@ -350,6 +350,7 @@ inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
 job_nbr=2 # [nbr] Job simultaneity for parallelism
 map_fl='' # [sng] Map-file
+map_rsl_fl='' # [sng] File containing results of weight-generation command (i.e., map_fl or map_trn_fl for monotr)
 map_trn_fl='' # [sng] Map-file transpose (for Tempest)
 map_xmp='map.nc' # [sng] Map-file for examples
 mlt_map_flg='Yes' # [sng] Multi-map flag
@@ -1072,11 +1073,13 @@ else # !map_fl
     fi # !tempest
     map_fl=${map_fl_dfl}
 fi # !map_fl
+map_rsl_fl=${map_fl}
 if [ "${map_mk}" = 'Yes' ] && [ "${wgt_typ}" = 'tempest' ]; then 
     msh_fl_dfl="${drc_tmp}/ncremap_tmp_msh_ovr_${wgt_typ}.g${unq_sfx}" # [sng] Mesh-file default
     msh_fl=${msh_fl_dfl}
     if [ "${trn_map}" = 'Yes' ]; then 
 	map_trn_fl="${drc_tmp}/ncremap_tmp_map_trn_${wgt_typ}.nc${unq_sfx}" # [sng] Map-file transpose default
+	map_rsl_fl=${map_trn_fl}
     fi # !trn_map
 fi # !tempest
 
@@ -1664,7 +1667,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_map[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
+	if [ $? -ne 0 ] || [ ! -f ${map_rsl_fl} ]; then
 	    printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
 	    if [ "${wgt_typ}" = 'esmf' ]; then 
 		printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
@@ -1676,7 +1679,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'sgs' ]; then
 	    if [ "${wgt_typ}" = 'tempest' ]; then 
 		hst_att="${hst_att};${cmd_msh[${fl_idx}]}"
 	    fi # !tempest
-	    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_fl}"
+	    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_rsl_fl}"
 	    eval ${cmd_att[${fl_idx}]}
 	    if [ $? -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
@@ -1824,7 +1827,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_map[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
+	    if [ $? -ne 0 ] || [ ! -f ${map_rsl_fl} ]; then
 		printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
 		if [ "${wgt_typ}" = 'esmf' ]; then 
 		    printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
@@ -1833,7 +1836,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    fi # !err
 	    if [ "${map_usr_flg}" = 'Yes' ]; then
 		hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
-		cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_fl}"
+		cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_rsl_fl}"
 		eval ${cmd_att[${fl_idx}]}
 		if [ $? -ne 0 ]; then
 		    printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
