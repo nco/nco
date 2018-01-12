@@ -1295,7 +1295,7 @@ nco_var_is_fix                               /* [fnc] Variable should be treated
   
   /* Conditions #1 and #2 are already implemented above in the case() statement */
   /* Check condition #4 above: */
-  if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") )) var_is_fix=True;
+  if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") || !strcmp(var_nm,"latitude") || !strcmp(var_nm,"longitude") )) var_is_fix=True;
 
   return var_is_fix;
 

@@ -1,5 +1,10 @@
 2018-01-12  Charlie Zender  <zender@uci.edu>
 
+	* Update CF references to version 1.7 in nco.texi
+
+	* Add latitude, longitude to empirical list of fixed variables in nco_var_is_fix()
+	This is necessary because JAWS will use these as scalar coordinate variables
+
 	* Tidy splitter debug output
 
 2018-01-11  Charlie Zender  <zender@uci.edu>

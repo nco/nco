@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.2-alpha02
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 11 January 2018
+@set update-date 12 January 2018
 @set update-month January 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6128,7 +6128,7 @@ the @command{ncap2} @code{where} statement for such grids
 This feature works on datasets that associate coordinate variables to 
 grid-mappings using the @acronym{CF}-convention (@pxref{CF Conventions})   
 @code{coordinates} and @code{standard_name} attributes described 
-@uref{http://cfconventions.org/1.6.html#coordinate-system, here}. 
+@uref{http://cfconventions.org/cf-conventions/cf-conventions.html#coordinate-system, here}. 
 Currently, @acronym{NCO} understands auxiliary coordinate variables 
 pointed to by the @code{standard_name} attributes for @var{latitude} and  
 @var{longitude}.   
@@ -11420,7 +11420,7 @@ or alter the @code{Conventions} attribute.
 As of @acronym{NCO} version 4.0.8 (April, 2011), @acronym{NCO} 
 supports the @acronym{CF} @code{bounds} convention for cell boundaries 
 described 
-@uref{http://cfconventions.org/1.6.html#cell-boundaries, here}.
+@uref{http://cfconventions.org/cf-conventions/cf-conventions.html#cell-boundaries, here}.
 This convention allows coordinate variables (including multidimensional
 coordinates) to describe the boundaries of their cells.
 This is done by naming the variable which contains the bounds in
@@ -11470,7 +11470,7 @@ Climatology variables are subject to the user-specified override switches
 As of @acronym{NCO} version 4.4.5 (July, 2014), @acronym{NCO} 
 supports the @acronym{CF} @code{ancillary_variables} convention for 
 described 
-@uref{http://cfconventions.org/1.6.html#ancillary-data, here}.
+@uref{http://cfconventions.org/cf-conventions/cf-conventions.html#ancillary-data, here}.
 This convention allows ancillary variables to be associated with one or
 more primary variables.
 @acronym{NCO} attaches any such variables to the extraction list along 
@@ -11492,7 +11492,7 @@ Ancillary variables are subject to the user-specified override switches
 As of @acronym{NCO} version 4.6.4 (January, 2017), @acronym{NCO} 
 supports the @acronym{CF} @code{cell_measures} convention 
 described 
-@uref{http://cfconventions.org/1.6.html#cell-measures, here}.
+@uref{http://cfconventions.org/cf-conventions/cf-conventions.html#cell-measures, here}.
 This convention allows variables to indicate which other variable or
 variables contains area or volume information about a gridcell.
 These measures variables are pointed to by the @code{cell_measures}
@@ -11536,7 +11536,7 @@ These options are available in all operators that perform subsetting
 As of @acronym{NCO} version 4.6.4 (January, 2017), @acronym{NCO} 
 supports the @acronym{CF} @code{formula_terms} convention 
 described 
-@uref{http://cfconventions.org/1.6.html#formula-terms, here}.
+@uref{http://cfconventions.org/cf-conventions/cf-conventions.html#formula-terms, here}.
 This convention encodes formulas used to construct (usually vertical)
 coordinate grids.
 The @acronym{CDL} specification of a vertical coordinate formula for
@@ -11608,7 +11608,7 @@ switches (including @samp{-c} and @samp{-C}) described in
 @cindex @code{--crd}
 As of @acronym{NCO} version 3.9.6 (January, 2009), @acronym{NCO}
 supports the @acronym{CF} @code{coordinates} convention described 
-@uref{http://cfconventions.org/1.6.html#coordinate-system, here}. 
+@uref{http://cfconventions.org/cf-conventions/cf-conventions.html#coordinate-system, here}. 
 This convention allows variables to specify additional coordinates
 (including mult-idimensional coordinates) in a space-separated string 
 attribute named @code{coordinates}. 
@@ -11627,7 +11627,7 @@ In particular, @command{ncwa} eliminates from the @code{coordinates}
 attribute any dimension that it collapses, e.g., by averaging.
 The former presence of this dimension will usually be indicated by the 
 @acronym{CF} @code{cell_methods} convention described 
-@uref{http://cfconventions.org/1.6.html#cell-methods, here}.
+@uref{http://cfconventions.org/cf-conventions/cf-conventions.html#cell-methods, here}.
 Hence the @acronym{CF} @code{cell_methods} and @code{coordinates} 
 conventions can be said to work in tandem to characterize the state and
 history of a variable's analysis.
@@ -11647,7 +11647,7 @@ history of a variable's analysis.
 @cindex cell methods convention
 As of @acronym{NCO} version 4.4.2 (February, 2014), @acronym{NCO} 
 supports some of the @acronym{CF} @code{cell_methods} 
-@uref{http://cfconventions.org/1.6.html#cell-methods, convention}
+@uref{http://cfconventions.org/cf-conventions/cf-conventions.html#cell-methods, convention}
 to describe the analysis procedures that have been applied to data.
 The convention creates (or appends to an existing) @code{cell_methods}
 attribute a space-separated list of couplets of the form @var{dmn: op}
@@ -23176,7 +23176,7 @@ The @samp{-V} option tells @command{ncremap} to use the same grid as
 @var{var_rgr} in the input file.
 If @var{var_rgr} adheres to the @acronym{CF} @code{coordinates}
 convention described 
-@uref{http://cfconventions.org/1.6.html#coordinate-system, here},
+@uref{http://cfconventions.org/cf-conventions/cf-conventions.html#coordinate-system, here},
 then @command{ncclimo} will infer the grid as represented by those
 coordinate variables.
 This option simplifies inferring grids when the grid coordinate names 
