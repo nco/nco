@@ -1,5 +1,9 @@
 2018-01-11  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.2-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.2-alpha02: Sucko Stucco';git push
+	git tag -a 4.7.2-alpha02 -m 'Sucko Stucco: splitter segments fixed, tempest2 boutique support';git push --tags
+
 	* Correct splitter file segmentation when sgm_rmd != 0. Fixes serious bug reported by Sterling Baldwin.
 	Until now, all subsets miss years when sgm_rmd != 0, i.e., when	yr_nbr%ypf_max != 0
 	Workaround for NCO pre-4.7.2 is to set ypf_max such that yr_nbr%ypf_max == 0
