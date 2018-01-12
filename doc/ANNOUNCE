@@ -53,20 +53,6 @@ A. ncremap supports "canonical" NCO argument ordering.
    http://nco.sf.net/nco.html#ncremap
    http://nco.sf.net/nco.html#alg_typ
 
-B. ncclimo in daily mode now handles stdin input more cleverly.
-   Piping or redirecting filename lists to ncclimo --clm_md=dly
-   is the easiest way to feed huge lists of filenames to ncclimo.
-   However, these lists are often dominated in size by the path
-   component of the filename, rather than the filename itself.
-   Now ncclimo allows specification of the path with -i drc_in,
-   and it will prepend that path to the standard input names.
-   Previously it prepended the current working directory.
-   This functionality allows easy retention of the full
-   provenance of the input files, without requiring repetitive
-   inclusion of long pathnames in the filenames.
-   ls *.clm2.h0.* | ncclimo -c caseid -C dly -s 1960 -e 2005 -i data
-   http://nco.sf.net/nco.html#ncclimo
-
 BUG FIXES:
 
 A. Fix ncclimo splitter bug when the total number requested
