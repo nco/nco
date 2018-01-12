@@ -1412,20 +1412,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
 	    printf "dbg: Requested season index ${csn_idx} (\"${csn_rqs[${csn_idx}]}\") is defined season index ${map_r2d[${csn_idx}]} (\"${csn_abb[${map_r2d[${csn_idx}]}]}\")\n"
 	done # !csn_idx
     fi # !csn
-    if [ "${sbs_flg}" = 'Yes' ]; then
-	printf "dbg: Will split into files for ${var_nbr} variables:\n"
-	for ((var_idx=0;var_idx<${var_nbr};var_idx++)); do
-	    printf "${var_sbs[${var_idx}]}\n"
-	done # !var_idx
-	printf "dbg: Will split timeseries into ${sgm_nbr} segments:\n"
-	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
-	    printf "Segment ${sgm_idx} months: ${yyyy_srt_sgm[${sgm_idx}]}01--${yyyy_end_sgm[${sgm_idx}]}12\n"
-	done # !sgm_idx
-	printf "dbg: Will split ${fl_nbr} files into ${sgm_nbr} segments:\n"
-	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
-	    printf "${fl_sgm[${sgm_idx}]}\n"
-	done # !sgm_idx
-    fi # !sbs
 fi # !dbg
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: yyyy_srt   = ${yyyy_srt}\n"
@@ -1701,11 +1687,20 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 
     done # !sgm_idx
 
-    # 20180111 dbg rm
-    printf "dbg: Will split timeseries into ${sgm_nbr} segments:\n"
-    for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
-	printf "Segment ${sgm_idx} months: ${yyyy_srt_sgm[${sgm_idx}]}01--${yyyy_end_sgm[${sgm_idx}]}12\n"
-    done # !sgm_idx
+    if [ ${dbg_lvl} -ge 2 ]; then
+	printf "dbg: Will split into files for ${var_nbr} variable(s):\n"
+	for ((var_idx=0;var_idx<${var_nbr};var_idx++)); do
+	    printf "${var_sbs[${var_idx}]}\n"
+	done # !var_idx
+	printf "dbg: Will split timeseries into ${sgm_nbr} segment(s):\n"
+	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
+	    printf "Segment ${sgm_idx} months: ${yyyy_srt_sgm[${sgm_idx}]}01--${yyyy_end_sgm[${sgm_idx}]}12\n"
+	done # !sgm_idx
+#	printf "dbg: Will split ${fl_nbr} files into ${sgm_nbr} segment(s):\n"
+#	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
+#	    printf "${fl_sgm[${sgm_idx}]}\n"
+#	done # !sgm_idx
+    fi # !dbg
 
     # Create template output filenames (to avoid Bash 2D string arrays)
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
@@ -1791,7 +1786,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    let bch_flg=$((var_nbr % job_nbr))
 	    if [ ${bch_flg} -ne 0 ]; then
 		let bch_idx=$((bch_idx+1))
-		printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+		if [ ${idx_srt} -lt ${var_nbr} ]; then
+		    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+		fi # !idx_srt
 		for ((pid_idx=${idx_srt};pid_idx<${var_nbr};pid_idx++)); do
 		    wait ${sbs_pid[${pid_idx}]}
 		    if [ $? -ne 0 ]; then
@@ -1858,7 +1855,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		let bch_flg=$((var_nbr % job_nbr))
 		if [ ${bch_flg} -ne 0 ]; then
 		    let bch_idx=$((bch_idx+1))
-		    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+		    if [ ${idx_srt} -lt ${var_nbr} ]; then
+			printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+		    fi # !idx_srt
 		    for ((pid_idx=${idx_srt};pid_idx<${var_nbr};pid_idx++)); do
 			wait ${rgr_pid[${pid_idx}]}
 			if [ $? -ne 0 ]; then
