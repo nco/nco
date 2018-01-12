@@ -22253,7 +22253,7 @@ Features common to many operators are described in
 Specifies the interpolation algorithm for weight-generation for use by
 @command{ESMF_RegridWeightGen} (@acronym{ERWG}) and/or TempestRemap.
 @command{ncremap} unbundles this algorithm choice from the rest of
-the weight-generator invocation syntax because user more frequently
+the weight-generator invocation syntax because users more frequently
 change interpolation algorithms than other options
 (that can be changed with @samp{-E @var{esmf_opt}}).
 The @var{alg_typ} argument must be @code{tempest} or one of
@@ -22267,6 +22267,65 @@ See @acronym{ERWG} documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03020000000000000000, here}
 for detailed descriptions of @acronym{ERWG} algorithms.
 Specifying @code{tempest} invokes TempestRemap weight-generation.
+
+@cindex TempestRemap
+@cindex Tempest2
+@cindex @code{se2fv_flx}
+@cindex @code{fv2se_flx}
+@cindex @code{se2fv_stt}
+@cindex @code{fv2se_stt}
+@cindex @code{se2fv_alt}
+@cindex @code{fv2se_alt}
+@cindex @code{mono_se2fv}
+@cindex @code{conservative_monotone_se2fv}
+@cindex @code{monotr_fv2se}
+@cindex @code{conservative_monotone_fv2se}
+@cindex @code{highorder_se2fv}
+@cindex @code{accurate_conservative_nonmonotone_se2fv}
+@cindex @code{highorder_fv2se}
+@cindex @code{accurate_conservative_nonmonotone_fv2se}
+@cindex @code{intbilin_se2fv}
+@cindex @code{accurate_monotone_nonconservative_se2fv}
+@cindex @code{mono_fv2se}
+@cindex @code{conservative_monotone_fv2se_alt}
+As of @acronym{NCO} version 4.7.2 (January, 2018), @command{ncremap}
+implements @acronym{E3SM}-recommended TempestRemap algorithms.
+@command{ncremap} can now easily generate and use the each of the six 
+@acronym{E3SM}-recommended mappings between @acronym{FV} and
+@acronym{SE} flux and state variables.
+@command{ncremap} automatically employs the recommended ``boutique''
+TempestRemap for these algorithms (this requires TempestRemap version
+2.0.0 or later).
+The supported canonical algorithm names, and their synonyms are:
+@code{se2fv_flx} (synonyms @code{mono_se2fv}, @code{conservative_monotone_se2fv}),
+@code{fv2se_flx} (synonyms @code{monotr_fv2se}, @code{conservative_monotone_fv2se}),
+@code{se2fv_stt} (synonyms @code{highorder_se2fv}, @code{accurate_conservative_nonmonotone_se2fv}),
+@code{fv2se_stt} (synonyms @code{highorder_fv2se}, @code{accurate_conservative_nonmonotone_fv2se}),
+@code{se2fv_alt} (synonyms @code{intbilin_se2fv}, @code{accurate_monotone_nonconservative_se2fv}),
+@code{fv2se_alt} (synonyms @code{mono_fv2se}, @code{conservative_monotone_fv2se_alt}).
+To generate and use the recommended weights to remap fluxes from
+@acronym{SE} to @acronym{FV} grids, for example, use
+@example
+@verbatim
+ncremap -a se2fv_flx --src_grd=se.g --dst_grd=fv.nc -m map.nc
+ncremap -m map.nc in.nc out.nc
+@end verbatim
+@end example
+This automatically invokes TempestRemap with the options
+@samp{--in_type cgll --in_np 4 --out_type fv --out_double --mono}
+to generate the conservative and monotone remapping that @acronym{E3SM} 
+recommends for flux variables.
+It is equivalent to, yet much simpler to remember and invoke than,
+@example
+@verbatim
+ncremap -a tempest -W '--in_type cgll --in_np 4 --out_type fv --out_double --mono' \
+        --src_grd=se.g --dst_grd=fv.nc -m map.nc
+@end verbatim
+@end example
+Full documentation of the @acronym{E3SM}-recommended TempestRemap
+options is
+@uref{https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids?focusedCommentId=443777208#comment-443777208, here}
+(may require @acronym{E3SM}-authorization to view).
 
 @html
 <a name="dbg_lvl"></a> <!-- http://nco.sf.net/nco.html#dbg_lvl -->
@@ -23464,6 +23523,22 @@ wallclock time:
 ncremap -i in.nc  -m map.nc -o out.nc
 ncremap -I drc_in -m map.nc -O regrid
 @end example
+
+As of @acronym{NCO} version 4.7.2 (January, 2018), @command{ncremap}
+supports ``canonical'' argument ordering of command line arguments most
+frequently desired for one-off regridding, where a single input and
+output filename are supplied as command-line positional arguments
+without switches, pipes, or redirection: 
+@example
+ncremap -m map.nc in.nc out.nc # Requires 4.7.2+
+ncremap -m map.nc -i in.nc -o out.nc
+ncremap -m map.nc -o out.nc in.nc
+ncremap -m map.nc -O out_dir in1.nc in2.nc
+ncremap -m map.nc -o out.nc < in.nc
+ls in.nc | ncremap -m map.nc -o out.nc
+@end example
+These are all equivalent methods, but the canonical ordering shown in
+the first example only works in @acronym{NCO} version 4.7.2 and later.
 
 @command{ncremap} annotates the gridfiles and mapfiles that it creates
 with helpful metadata containing the full provenance of the command.

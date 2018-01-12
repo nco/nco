@@ -6,19 +6,14 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Releases, Developers)
 
 What's new?
-Version 4.7.2 contains mostly minor fixes and few new features.
-One major improvement, long in development, is a Conda Windows port. 
-Most NCO functionality is now easily available to Windows users
-through the Conda distribution. 
-
-Pedro Vicente turned his Windows scripts into a CMake implementation. 
-Building on Pedro's CMake contribution, a team of about six volunteers
-used, refined, or implemented Windows ports for the full NCO software
-stack. Filipe Fernandez coordinated the Conda work, added AppVeyor
-support, and brought in extra help and testing. Pedro and Isuru
-Fernando tracked down bugs and improved the build matrix.
-No one person could have accomplished this.
-The power of Open Source development is awesome.
+Version 4.7.2 contains one new cool feature for ncremap, one important
+bugfix for the splitter, and assorted minor improvements and fixes.
+ncremap now implements E3SM-recommended Tempest remapping algorithms
+for all combinations of FV<->SE remapping for flux and state variables. 
+The ncclimo splitter functionality has an important bugfix for cases
+when the total number requested time-periods (usually years) of
+averaging is not evenly divisible by the maximum number of
+time-periods per output-file.
 
 Work on NCO 4.7.3 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
@@ -30,19 +25,34 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. NCO Conda package for Windows: All NCO binaries are thought
-   to work correctly, although the regression test script itself
-   (which is written in Perl) has not yet been run on Windows.
-   Windows' idiosyncratic quoting rules can interfere with ncap2
-   (try running from Powershell to use UNIXy quotes).
-   The two scripted operators, ncclimo and ncremap, are problematic.
-   As sophisticated Bash scripts, these do not work on Windows.
-   Volunteers to port them to a Windows-friendly language (e.g.,
-   Python) are welcome! 
-   Within a few days of release, try this Windows install command:
-   conda install -c conda-forge nco   
-   http://nco.sf.net/nco.html#conda
+A. ncremap implements E3SM-recommended Tempest remapping algorithms. 
+   ncremap can now easily generate and use the each of the six
+   E3SM-recommended mappings between FV<->SE flux & state variables.
+   ncremap automatically employs the "boutique" TempestRemap options 
+   so long as Tempest2 is installed.
+   ncremap -a se2fv_flx --src_grd=ne30.g --dst_grd=fv.nc -m map.nc
+   ncremap -m map.nc in.nc out.nc
+   Canonical algorithm names are se2fv_flx, se2fv_stt, se2fv_alt,
+   fv2se_flx, fv2se_stt, fv2se_alt.
+   http://nco.sf.net/nco.html#ncremap
    
+A. ncremap supports "canonical" NCO argument ordering.
+   Canonical ordering is: command [options] [input] [output].
+   Previously ncremap required the use of options (like -i
+   and -o) or pipes to supply filenames:
+   ncremap -m map.nc -i in.nc -o out.nc
+   ncremap -m map.nc -o out.nc in.nc
+   ncremap -m map.nc -O out_dir in1.nc in2.nc
+   ls in.nc | ncremap -m map.nc -o out.nc
+   ncremap -m map.nc -o out.nc < in.nc
+   Now ncremap finally supports the canonical ordering of command line
+   arguments most frequently desired for one-off regridding, where a
+   single input and output filename are supplied as command-line
+   positional arguments without switches, pipes, or redirection:
+   ncremap -m map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#ncremap
+   http://nco.sf.net/nco.html#alg_typ
+
 B. ncclimo in daily mode now handles stdin input more cleverly.
    Piping or redirecting filename lists to ncclimo --clm_md=dly
    is the easiest way to feed huge lists of filenames to ncclimo.
@@ -57,39 +67,18 @@ B. ncclimo in daily mode now handles stdin input more cleverly.
    ls *.clm2.h0.* | ncclimo -c caseid -C dly -s 1960 -e 2005 -i data
    http://nco.sf.net/nco.html#ncclimo
 
-C. JSON printing of netCDF3 strings, i.e., character arrays,
-   has changed. Previously ncks printed square brackets around
-   the string, as with numeric arrays. However this was somewhat
-   redundant since the quotation marks around a JSON string already
-   indicate an array of characters. Now ncks omits the inner-most
-   (i.e., most rapidly varying) set of brackets from the printing of
-   character arrays: 
-   ncks --jsn_fmt=2 -C -H -v char_var_2D_arr ~/nco/data/in.nc
-   {
-     "dimensions": {
-         "lat": 2,
-         "lon": 4
-      },
-      "variables": {
-         "char_var_2D_arr": {
-         "shape": ["lat", "lon"],
-         "type": "char",
-         "data": ["one", "two"]
-    ...
-
-   This is instead of "data": [["one"], ["two"]]
-   in the last line. 
-   http://nco.sf.net/nco.html#json
-
 BUG FIXES:
 
-A. Fix bug where ncclimo --clm_md=dly/ann expected a season list.
-   This bug was inadvertently introduced with season code in 4.6.8.
-   The workaround is to use NCO <= 4.6.7 or upgrade to 4.7.2.
-
-B. ncks in JSON, CDL, and XML modes now prints a single NUL as "".
-   Previously a scalar NUL printed as "0", as in ncdump's CDL.
-   However, we think this is a bug in ncdump since NUL is not zero.
+A. Fix ncclimo splitter bug when the total number requested
+   time-periods (usually years) of averaging is not evenly divisible
+   by the maximum number of time-periods per output-file.
+   Previously the splitter would omit time-series segments.
+   The workaround for NCO < 4.7.2 is to specify a maximum number
+   of years-per-file that evenly divides the total number of years.
+   For example, split a 75 year climatology by setting --ypf
+   to 1, 3, 5, 15, 25, or 75 or greater.
+   The solution is to upgrade to 4.7.2.
+   Then you can use the default (ypf=50) or any other value.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -99,7 +88,7 @@ KNOWN PROBLEMS DUE TO NCO:
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.7.2 built/tested under
    MacOS 10.13.2 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
-   Linux with netCDF 4.5.1-development (20171220) on HDF5 1.8.19.
+   Linux with netCDF 4.5.1-development (20180110) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments

@@ -1,11 +1,15 @@
 2018-01-12  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.2-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.2-beta01: Sapiens';git push
+	git tag -a 4.7.2-beta01 -m 'Sapiens: splitter, tempest2	boutique,ncremap psn arg';git push --tags
+
 	* Update CF references to version 1.7 in nco.texi
 
 	* Add latitude, longitude to empirical list of fixed variables in nco_var_is_fix()
 	This is necessary because JAWS will use these as scalar coordinate variables
 
-	* Tidy splitter debug output
+	* Tidy ncremap and ncclimo debug output when waiting for PIDs
 
 2018-01-11  Charlie Zender  <zender@uci.edu>
 
