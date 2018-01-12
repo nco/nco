@@ -1095,11 +1095,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     let sgm_rmd=${yr_sbs}%${ypf_max}
     if [ ${sgm_rmd} -ne 0 ]; then
 	let sgm_nbr=${sgm_nbr}+1
-	let sgm_nbrm1=${sgm_nbr}-1
 	sgm_flg='Yes'
     else # !sgm_rmd
 	sgm_flg='No'
     fi # !sgm_rmd  
+    let sgm_nbrm1=${sgm_nbr}-1
 
 else # !sbs_flg
 
@@ -1681,10 +1681,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy}
 	let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
 	let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
-	if [ ${sgm_rmd} -ne 0 ]; then
+	if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
 	    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpy}
 	    let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
-	fi # !sgm_rmd
+	fi # !sgm_nbrm1
 	for ((fl_idx=fl_idx_srt;fl_idx<fl_idx_end;fl_idx++)); do
 	    fl_sgm[${sgm_idx}]="${fl_sgm[${sgm_idx}]} ${fl_in[${fl_idx}]}"
 	    yyyy_srt_sgm[${sgm_idx}]=`printf "%04d" ${yr_srt_sgm}`
@@ -1699,6 +1699,12 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    fi # ! -f
 	done # !fl_crr
 
+    done # !sgm_idx
+
+    # 20180111 dbg rm
+    printf "dbg: Will split timeseries into ${sgm_nbr} segments:\n"
+    for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
+	printf "Segment ${sgm_idx} months: ${yyyy_srt_sgm[${sgm_idx}]}01--${yyyy_end_sgm[${sgm_idx}]}12\n"
     done # !sgm_idx
 
     # Create template output filenames (to avoid Bash 2D string arrays)
@@ -2666,14 +2672,5 @@ else # !caseid
 fi # !caseid
 date_dff=$((date_end-date_srt))
 echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
-
-# PMC: add SMB's Git (SHA1) hash info to climo files
-# Assumes utility to add Git hash resides in ../utils/add_git_hash_to_netcdf_metadata
-#for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-#    fl_out_lst="${fl_out_lst} ${fl_out[${clm_idx}]}"
-#done
-# CSZ: 20150826 disable until less fragile (than relative path) solution is found 
-#cd ${drc_spt}
-# ../utils/add_git_hash_to_netcdf_metadata ${fl_out_lst}
 
 exit 0
