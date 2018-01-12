@@ -48,12 +48,12 @@
 # Insta-install:
 # scp ~/nco/data/ncremap aims4.llnl.gov:bin
 # scp ~/nco/data/ncremap blues.lcrc.anl.gov:bin
+# scp ~/nco/data/ncremap cheyenne.ucar.edu:bin
 # scp ~/nco/data/ncremap cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncremap cori.nersc.gov:bin_cori
 # scp ~/nco/data/ncremap edison.nersc.gov:bin_edison
 # scp ~/nco/data/ncremap rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncremap skyglow.ess.uci.edu:bin
-# scp ~/nco/data/ncremap yellowstone.ucar.edu:bin
 # scp dust.ess.uci.edu:nco/data/ncremap ~/bin
 
 # Set script name, directory, PID, run directory

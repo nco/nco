@@ -39,13 +39,13 @@
 # Insta-install:
 # scp ~/nco/data/ncclimo aims4.llnl.gov:bin
 # scp ~/nco/data/ncclimo blues.lcrc.anl.gov:bin
+# scp ~/nco/data/ncclimo cheyenne.ucar.edu:bin
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
 # scp ~/nco/data/ncclimo dust.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo edison.nersc.gov:bin_edison
 # scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
-# scp ~/nco/data/ncclimo yellowstone.ucar.edu:bin
 # scp dust.ess.uci.edu:nco/data/ncclimo ~/bin
 
 # Set script name, directory, PID, run directory
@@ -78,11 +78,11 @@ if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 36|64 cores|GB/node 
+	cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named cheyenneNNN, 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|(96/128) cores|GB/node (knl/haswell) (cori login nodes 512 GB)
 	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
 	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
-	ys* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR yellowstone compute nodes named ysNNN, 32 GB/node
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
@@ -179,17 +179,17 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    fi # !NCARG_ROOT
             export PATH='/ccs/home/zender/bin_titan'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
-	ys* )
-	    # 20151018: Yellowstone support not yet tested in batch mode
+	cheyenne* )
+	    # 20180112: Cheyenne support not yet tested in batch mode
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		# On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
+		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
 		module load ncl
 	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin"
+		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin"
 	    fi # !NCARG_ROOT
             export PATH='/glade/u/home/zender/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
@@ -266,6 +266,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
 # http://www.alcf.anl.gov/user-guides/using-cobalt-cooley
 # https://www.alcf.anl.gov/user-guides/cobalt-job-control
+# NCAR PBS:
+# https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/quick-start-cheyenne
 # NERSC SLURM:
 # https://www.nersc.gov/users/computational-systems/cori/running-jobs/slurm-introduction
 # https://www.nersc.gov/users/computational-systems/cori/running-jobs/for-edison-users/torque-moab-vs-slurm-comparisons
@@ -281,11 +283,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # SLURM:   salloc, sbatch, squeue, scancel
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
 #   Blues:  qsub -I -A ACME -q acme -l nodes=12 -l walltime=00:30:00 -N ncclimo
+#   Cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q small -N ncclimo # Bigmem: 
 #   Cooley: qsub -I -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A acme --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit, Edison too
 #   Hopper: qsub -I -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q debug -N ncclimo # deprecated, old Edison
 #   Rhea:   qsub -I -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
-#   Yellow: fxm # Bigmem: 
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs|slurm] b) qsub ncclimo.[cobalt|pbs|slurm]
 # Non-interactive batch queue differences (besides argument syntax):
 # 1. Cobalt and SLURM require initial 'shebang' line to specify the shell interpreter (not required on PBS)

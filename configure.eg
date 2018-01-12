@@ -451,7 +451,7 @@ cd ~/nco/bld;make NETCDF_ROOT='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3' UDUNIT
 # Latest ticket: fxm on fxm
 # Latest sysadmin-compiled module usage: module load nco/4.6.9 # 20171002
 # Personal recipe last modified: 20171013
-# Personal recipe last used successfully: 20171013 (except ncap2, which would require backporting to intel 16.0.3 to get gsl)
+# Personal recipe last used successfully: 20180112 (except ncap2, which would require backporting to intel 16.0.3 to get gsl)
 module add gsl
 export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
