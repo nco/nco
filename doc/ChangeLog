@@ -1,6 +1,8 @@
 2018-01-11  Charlie Zender  <zender@uci.edu>
 
-	* Correctly handle special case of NCO canonical format: ncremap -m map.nc in.nc out.nc
+	* Restore elapsed time to splitter output
+
+	* Correctly handle and document special case of NCO canonical format: ncremap -m map.nc in.nc out.nc
 
 	* ncremap check for and modify map_rsl_fl instead of map_fl
 

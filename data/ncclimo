@@ -2620,13 +2620,6 @@ else # !xtn_flg extended climos
     
 fi # !xtn_flg extended climos
 
-date_end=$(date +"%s")
-if [ -n "${caseid}" ]; then
-    printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset ${caseid} at `date`\n"
-else # !caseid
-    printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at `date`\n"
-fi # !caseid
-date_dff=$((date_end-date_srt))
 if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${clm_md}" = 'dly' ]; then
 	echo "Quick plots of last climatological daily mean:"
@@ -2653,7 +2646,6 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	    echo "panoply ${fl_out[${idx_lst}]} &"
 	fi # !rgr_map    
     fi # !yr_srt_prv
-    echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 fi # !clm_flg
 if [ "${sbs_flg}" = 'Yes' ]; then
     echo "Quick plots of last variable split in last segment:"
@@ -2666,6 +2658,14 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	echo "panoply ${fl_out[${idx_lst}]} &"
     fi # !rgr_map    
 fi # !sbs_flg
+date_end=$(date +"%s")
+if [ -n "${caseid}" ]; then
+    printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset ${caseid} at `date`\n"
+else # !caseid
+    printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at `date`\n"
+fi # !caseid
+date_dff=$((date_end-date_srt))
+echo "Elapsed time $((date_dff/60))m$((date_dff % 60))s"
 
 # PMC: add SMB's Git (SHA1) hash info to climo files
 # Assumes utility to add Git hash resides in ../utils/add_git_hash_to_netcdf_metadata

@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.2-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 4 January 2018
+@set update-date 11 January 2018
 @set update-month January 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22144,7 +22144,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
 [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}] [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] 
+[-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] [@var{input-file(s)}] [@var{output-file}]
 @end example
 
 @noindent
@@ -22409,8 +22409,9 @@ When multiple files are regridded, each output file takes the name
 of the corresponding input file.
 There is no namespace conflict because the input and output files are in
 separate directories. 
-Note that @command{ncremap} can instead accept the list of input files
-through standard input, e.g., @samp{ls *.nc | ncremap ...}. 
+Note that @command{ncremap} can instead accept a list of input files
+through standard input (e.g., @samp{ls *.nc | ncremap ...}) or as
+positional command-line arguments (e.g., @samp{ncremap in1.nc in2.nc ...}).
 
 @html
 <a name="in_fl"></a> <!-- http://nco.sf.net/nco.html#in_fl -->
@@ -22437,8 +22438,14 @@ then @acronym{NCO} will guess (for rectangular grids) or interpolate
 Unstructured grids must supply cell boundary information, as it cannot
 be interpolated or guessed-at.
 @var{in_fl} is not modified, and may have read-only permissions.
-Note that @command{ncremap} can instead accept the input file name
-through standard input, e.g., @samp{ls *.nc | ncremap ...}. 
+Note that @command{ncremap} can instead accept input file name(s)
+through standard input (e.g., @samp{ls *.nc | ncremap ...}) or as
+positional command-line arguments (e.g.,
+@samp{ncremap in1.nc in2.nc ...}).
+When one or three-or-more positional arguments are given, they are
+all interpreted as input filename(s).  
+Two positional arguments are interpreted as a single @var{input-file}
+and its corresponding @var{output-file}.
 
 @html
 <a name="job_nbr"></a> <!-- http://nco.sf.net/nco.html#job_nbr -->
@@ -22743,6 +22750,8 @@ If @var{out_fl} already exists it will be overwritten.
 Specifying @var{out_fl} when there are multiple input files (i.e., from
 using @samp{-I @var{in_drc}} or standard input) generates an error 
 (output files will be named the same as input files).
+Two positional arguments are interpreted as a single @var{input-file}
+and its corresponding @var{output-file}.
 
 @html
 <a name="prc_typ"></a> <!-- http://nco.sf.net/nco.html#prc_typ -->
