@@ -114,6 +114,17 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	mira* )
 	    export PATH='/home/zender/bin_mira'\:${PATH}
 	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
+	cheyenne* )
+	    # 20180112: Cheyenne support not yet tested in batch mode
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
+		module load ncl
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin"
+	    fi # !NCARG_ROOT
+            export PATH='/glade/u/home/zender/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	cori* )
 	    # 20160407: Separate cori from edison binary locations to allow for different system libraries
 	    # 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
@@ -179,17 +190,6 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    fi # !NCARG_ROOT
             export PATH='/ccs/home/zender/bin_titan'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
-	cheyenne* )
-	    # 20180112: Cheyenne support not yet tested in batch mode
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
-		module load ncl
-	    fi # !ncremap
-	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin"
-	    fi # !NCARG_ROOT
-            export PATH='/glade/u/home/zender/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME

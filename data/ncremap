@@ -85,19 +85,19 @@ fi # HOSTNAME
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
-	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 16|64 cores|GB/node 
+	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 36|64 cores|GB/node 
+	cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named cheyenneNNN, 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
-	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|128 cores|GB/node (cori login nodes 512 GB)
+	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|(96/128) cores|GB/node (knl/haswell) (cori login nodes 512 GB)
 	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
 	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
-	ys* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR yellowstone compute nodes named ysNNN, 32 GB/node
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
 
 # Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library
 # 20170914 Entire block is identical between ncclimo and ncremap---keep it that way!
-# hrd_pth a placeholder no-op that could one day be used as a command-line option to control environment
+# hrd_pth is a placeholder no-op that could be a command-line option to control environment
 # Set NCO_PATH_OVERRIDE to 'No' to prevent NCO from executing next block that overrides PATH:
 # export NCO_PATH_OVERRIDE='No'
 hrd_pth='Yes' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
@@ -122,6 +122,17 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	mira* )
 	    export PATH='/home/zender/bin_mira'\:${PATH}
 	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
+	cheyenne* )
+	    # 20180112: Cheyenne support not yet tested in batch mode
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
+		module load ncl
+	    fi # !ncremap
+	    if [ -n "${NCARG_ROOT}" ]; then
+		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin"
+	    fi # !NCARG_ROOT
+            export PATH='/glade/u/home/zender/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	cori* )
 	    # 20160407: Separate cori from edison binary locations to allow for different system libraries
 	    # 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
@@ -187,17 +198,6 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    fi # !NCARG_ROOT
             export PATH='/ccs/home/zender/bin_titan'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/cray/netcdf/4.4.1.1/GNU/49/lib:/sw/xk6/udunits/2.1.24/sl_gcc4.5.3/lib:/ccs/home/zender/lib_titan'\:${LD_LIBRARY_PATH} ; ;;
-	ys* )
-	    # 20151018: Yellowstone support not yet tested in batch mode
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		# On yellowstone, module load ncl installs ERWG in /glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin (not in ${NCARG_ROOT}/bin)
-		module load ncl
-	    fi # !ncremap
-	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:/glade/apps/opt/ncl/6.4.0/intel/12.1.5/bin"
-	    fi # !NCARG_ROOT
-            export PATH='/glade/u/home/zender/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/glade/apps/opt/netcdf/4.4.1/intel/16.0.3/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	* ) # Default fall-through
 	    hrd_pth_fnd='No' ; ;;
     esac # !HOSTNAME
