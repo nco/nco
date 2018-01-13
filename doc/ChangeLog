@@ -2,7 +2,7 @@
 
 	* NCO 4.7.2-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.2-beta01: Sapiens';git push
-	git tag -a 4.7.2-beta01 -m 'Sapiens: splitter, tempest2	boutique,ncremap psn arg';git push --tags
+	git tag -a 4.7.2-beta01 -m 'Sapiens: splitter, tempest2	boutique,ncremap psn arg, cheyenne';git push --tags
 
 	* Update ncremap/ncclimo to use latest cheyenne paths, deprecate yellowstone
 
