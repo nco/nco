@@ -276,6 +276,14 @@ cd ~/nco/cmake
 cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}
 make install
 
+# clang Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories with CMake:
+# Generic when netCDF is in ~/anaconda (MacOS katabatic)
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+cd ~/nco/cmake
+cmake .. -DCMAKE_INSTALL_PREFIX=${HOME} -DNETCDF_INCLUDE:PATH=${NETCDF_INC} -DNETCDF_LIBRARY:FILE=${NETCDF_LIB}/libnetcdf.a -DHDF5_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a -DHDF5_HL_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a
+make install
+
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in system directories with CMake:
 # Generic when netCDF is in /usr (Ubuntu glace, Fedora skyglow)
 cd ~/nco/cmake
@@ -345,6 +353,7 @@ module load ncarenv intel ncarcompilers mpt netcdf
 module add intel
 module add netcdf
 module add mpt
+export PATH=${PATH}:/opt/pbs/bin/qsub # needed for qsub
 export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean

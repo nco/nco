@@ -847,7 +847,7 @@ The most up-to-date executables are probably those in the tarball below. Those u
 These native Windows executables (64bit) are stand-alone, i.e., do not
 require users to have any additional software. 
 This is a new feature as of 20120615, please send us feedback. 
-To build NCO from source yourself using MSVC with CMake, please see example  nco/cmake/build.bat.
+To build NCO from source yourself using MSVC with CMake, please see example in <tt>nco/cmake/build.bat</tt>.
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
