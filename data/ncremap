@@ -237,6 +237,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # New MPAS filename conventions (as of ~201612):
 # ncremap -P mpas -i ${DATA}/hdf/mpaso.hist.am.timeSeriesStatsMonthly.0001-01-01.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -O ~/rgr
 # ncremap -P mpas -i ${DATA}/hdf/mpascice.hist.am.timeSeriesStatsMonthly.0251-01-01.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -O ~/rgr
+# ncremap -P mpas --mss_val=-1.0e36 -s ${DATA}/grids/ais20km.150910.SCRIP.nc -i ${DATA}/hdf/ais20km.20180117.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
 # E3SM/ACME benchmarks:
 # ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -o ~/foo.nc
 # ncremap -v FSNT,AODVIS -a conserve -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
@@ -359,6 +360,8 @@ msh_fl='' # [sng] Mesh-file (for Tempest)
 msk_dst='' # [sng] Mask-template variable in destination file
 msk_out='' # [sng] Mask variable in regridded file
 msk_src='' # [sng] Mask-template variable in source file
+mss_val='-9.99999979021476795361e+33' # [frc] Missing value for MPAS (ocean+seaice)
+#mss_val='-1.0e36' # [frc] Missing value for MPAS (landice)
 nco_opt='-O --no_tmp_fl' # [sng] NCO defaults (e.g., '-O -6 -t 1')
 nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 nd_nbr=1 # [nbr] Number of nodes
@@ -435,8 +438,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file) [${fnt_tlc}mlt_map, no_multimap${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
     echo " ${fnt_bld}--msk_dst${fnt_nrm}  Mask-template variable in destination file (empty means none) (default ${fnt_bld}${msk_dst}${fnt_nrm}) [${fnt_tlc}msk_dst, dst_msk, mask_destination, mask_dst${fnt_nrm}]"
-    echo " ${fnt_bld}--msk_out${fnt_nrm}  Mask variable in regridded file (empty means none) (default ${fnt_bld}${msk_out}${fnt_nrm}) [${fnt_tlc}msk_out, out_msk, mask_output, mask_rgr${fnt_nrm}]"
+    echo " ${fnt_bld}--msk_out${fnt_nrm}  Mask variable in regridded file (empty means none) (default ${fnt_bl
+d}${msk_out}${fnt_nrm}) [${fnt_tlc}msk_out, out_msk, mask_output, mask_rgr${fnt_nrm}]"
     echo " ${fnt_bld}--msk_src${fnt_nrm}  Mask-template variable in source file (empty means none) (default ${fnt_bld}${msk_src}${fnt_nrm}) [${fnt_tlc}msk_src, src_msk, mask_source, mask_src${fnt_nrm}]"
+    echo " ${fnt_bld}--mss_val${fnt_nrm}  Missing value for MPAS (empty means none) (default ${fnt_bld}${mss_val}${fnt_nrm}) [${fnt_tlc}mss_val, fll_val, missing_value, _FillValue${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco_options${fnt_nrm}]"
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"
     echo " ${fnt_bld}--no_frm_trm${fnt_nrm}  Omit formula_terms variables (e.g., 'hyba', 'PS') [${fnt_tlc}no_frm_trm, no_formula_terms${fnt_nrm}]"
@@ -570,6 +575,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       msk_dst=?* | dst_msk=?* | mask_destination=?* | mask_dst=?* ) msk_dst="${LONG_OPTARG}" ;; # # Mask-template variable in destination file
 	       msk_out=?* | out_msk=?* | mask_output=?* | mask_out=?* ) msk_out="${LONG_OPTARG}" ;; # # Mask variable in regridded file
 	       msk_src=?* | src_msk=?* | mask_source=?* | mask_src=?* ) msk_src="${LONG_OPTARG}" ;; # # Mask-template variable in source file
+	       mss_val=?* | fll_val=?* | missing_value=?* | _FillValue=?* ) mss_val="${LONG_OPTARG}" ;; # # Missing value for MPAS
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_usr="${LONG_OPTARG}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
 	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit cell_measures variables
@@ -955,7 +961,8 @@ if [ "${prc_typ}" = 'mod04' ]; then
 fi # !mod04
 if [ "${prc_typ}" = 'mpas' ]; then 
 #    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean
-#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # Ice
+#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # SeaIce
+#    pdq_opt='-a Time,nCategories,TWO,nEdges,nCells' # LandIce
     pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
     if [ -n "${rnr_thr}" ]; then 
 	# Setting rnr_thr='off' in MPAS mode turns-off renormalization
@@ -1344,7 +1351,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	fi # !pdq_typ
     fi # !pdq_opt
     if [ "${prc_typ}" = 'mpas' ]; then
-	printf "Input assumed to be MPAS-O/I data: will renormalize (with --rnr=0.0) regridding\n"
+	printf "Input assumed to be MPAS data: will renormalize (with --rnr=0.0) regridding\n"
 	if [ "${clm_flg}" = 'No' ]; then
  	    printf "Input assumed to be barenaked of attributes: will annotate NC_DOUBLE variables with _FillValue prior to regridding\n"
 	fi # !clm_flg
@@ -1873,7 +1880,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     # Block 4: Special cases
     # Block 4a: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then annotate here, so assume ncclimo is working with annotated files)
     if [ "${prc_typ}" = 'mpas' ] && [ "${clm_flg}" = 'No' ]; then
-	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${in_fl} ${att_fl};"
+	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,${mss_val} ${in_fl} ${att_fl};"
 	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
 	    printf "att(in)  : ${in_fl}\n"
 	    printf "att(out) : ${att_fl}\n"
