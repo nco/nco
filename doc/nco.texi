@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.2-alpha02
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 13 January 2018
+@set update-date 18 January 2018
 @set update-month January 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9712,8 +9712,8 @@ Thus for @code{NC_SHORT}, @math{ndrv = 65536 - 2 = 65534}.
 Less often, the variable may be packed into type @code{NC_CHAR}, 
 where @math{ndrv = 2^{8} - 2 = 256 - 2 = 254}, or type @code{NC_INT} where
 where @math{ndrv = 2^{32} - 2 = 4294967295 - 2 = 4294967293}.
-One useful feature of (lossy) netCDF packing algorithm is that
-additional, loss-less packing algorithms perform well on top of it. 
+One useful feature of the (lossy) netCDF packing algorithm is that 
+lossless packing algorithms perform well on top of it. 
 
 @html
 <a name="upk"></a> <!-- http://nco.sf.net/nco.html#upk -->
@@ -9760,14 +9760,13 @@ unpacked data, i.e., @code{int}, @code{float} or @code{double}.
 @cindex interoperability
 @cindex @acronym{HDF} unpacking
 Many (most?) files originally written in @acronym{HDF4} format use
-poorly documented @acronym{HDF} packing/unpacking algorithms that are
-incompatible and easily confused with the netCDF packing algorithm 
-described above.   
+poorly documented packing/unpacking algorithms that are incompatible and
+easily confused with the netCDF packing algorithm described above.   
 The unpacking component of the ``conventional'' @acronym{HDF} algorithm
 (described @uref{http://www.hdfgroup.org/HDF5/doc/UG/UG_frame10Datasets.html, here}
 and in Section 3.10.6 of the @acronym{HDF4} Users Guide
 @uref{http://www.hdfgroup.org/release4/doc/UsrGuide_html/UG_PDF.pdf,
-here}) 
+here}, 
 and in the @acronym{FAQ} for @acronym{MODIS} @acronym{MOD08} data
 @uref{http://modis-atmos.gsfc.nasa.gov/MOD08_D3/faq.html, here}) 
 is
@@ -9803,27 +9802,11 @@ for @acronym{MODIS} @acronym{MOD04} data is the same as the netCDF
 algorithm.
 
 @ignore
-Unfortunately, @acronym{HDF} packing is hard to understand and
-documentation is often lacking.
-Many @acronym{MODIS} @acronym{HDF4} datasets use what we used to call
-``the @acronym{HDF} algorithm'', until we realized there was more than
-one incompatible (with netCDF) @acronym{HDF} algorithm.
-These include @acronym{MODIS} @acronym{MOD10CM} datasets.
-However, we must discriminate between @acronym{HDF4} and @acronym{HDF5}  
-packing. 
-@acronym{HDF4}, or at least some @acronym{HDF4} datasets implement the
-``@acronym{HDF} algorithm'', aka linear @code{scale_factor} and 
-@code{add_offset} in the other order from netCDF. 
 @acronym{HDF5} only implements D-scaling, aka, decimal-scaling
 bit-packing. 
 D-Scaling uses @code{add_offset} as a minimum data value, and
 @code{scale_factor} as the integer power @w{of 10} by which the
 @code{add_offset} corrected data are divided before storage.
-
-@cindex scale-offset compression
-@cindex scale-offset filter
-@acronym{HDF} also calls this @dfn{scale-offset compression} and the
-@dfn{scale-offset filter}.
 @end ignore
 Confusingly, the (incompatible) netCDF and @acronym{HDF} algorithms both 
 store their parameters in attributes with the same names

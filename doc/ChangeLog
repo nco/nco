@@ -1,8 +1,12 @@
-2018-01-12  Charlie Zender  <zender@uci.edu>
+2018-01-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.2-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.2-beta01: Sapiens';git push
 	git tag -a 4.7.2-beta01 -m 'Sapiens: splitter, tempest2	boutique,ncremap psn arg, cheyenne';git push --tags
+
+	* #include "nco_cln_utl.h" in fmc_all_cls.hh to prototype nco_cln_prs_tm() and fix compilation error on edison
+
+2018-01-12  Charlie Zender  <zender@uci.edu>
 
 	* Update ncremap/ncclimo to use latest cheyenne paths, deprecate yellowstone
 

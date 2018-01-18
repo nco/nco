@@ -19,6 +19,7 @@
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
+#include "nco_cln_utl.h" /* Calendar utilities */
 #include "nco_rth_flt.h" /* Float-precision arithmetic, MSVC macros */
 
 #include "sym_cls.hh" // holder for float/double math function pointers
