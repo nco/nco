@@ -283,7 +283,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # SLURM:   salloc, sbatch, squeue, scancel
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
 #   Blues:  qsub -I -A ACME -q acme -l nodes=12 -l walltime=00:30:00 -N ncclimo
-#   Cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q small -N ncclimo # Bigmem: 
+#   Cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=18:mpiprocs=1 -l walltime=00:30:00 -q share -N ncclimo # Bigmem: 
 #   Cooley: qsub -I -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A acme --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit, Edison too
 #   Hopper: qsub -I -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q debug -N ncclimo # deprecated, old Edison

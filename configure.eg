@@ -353,7 +353,7 @@ module load ncarenv intel ncarcompilers mpt netcdf
 module add intel
 module add netcdf
 module add mpt
-export PATH=${PATH}:/opt/pbs/bin/qsub # needed for qsub
+export PATH=${PATH}:/opt/pbs/bin # needed for qsub
 export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/bin # needed for ncgen
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
