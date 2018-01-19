@@ -501,7 +501,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
-    echo " ${fnt_bld}-L${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
+    echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-l${fnt_nrm} ${fnt_bld}lnk_flg${fnt_nrm}  Link E3SM/ACME-climo to AMWG-climo filenames (default ${fnt_bld}${lnk_flg}${fnt_nrm}) [${fnt_tlc}lnk_flg, link_flag, no_amwg_links${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}mdl_nm${fnt_nrm}   Model name (default ${fnt_bld}${mdl_nm}${fnt_nrm}) [${fnt_tlc}mdl_nm, model_name, model${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco, nco_options${fnt_nrm}]"

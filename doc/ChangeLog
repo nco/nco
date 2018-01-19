@@ -2,7 +2,9 @@
 
 	* NCO 4.7.2-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.2-beta01: Sapiens';git push
-	git tag -a 4.7.2-beta01 -m 'Sapiens: splitter, tempest2	boutique,ncremap psn arg, cheyenne';git push --tags
+	git tag -a 4.7.2-beta01 -m 'Sapiens: splitter ypf, tempest2 boutique, ncremap psn arg, cheyenne';git push --tags
+
+	* Tweak ncremap, ncclimo usage strings
 
 2018-01-18  Charlie Zender  <zender@uci.edu>
 

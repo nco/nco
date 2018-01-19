@@ -2152,46 +2152,46 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
         } /* endif dbg */
         if(strcmp(var_trv.var_dmn[idx_dmn_var].dmn_nm,dmn_trv->nm)){
 
-        /* Test case generates duplicated dimension IDs in netCDF file
-
-        ncks -O  -v two_dmn_rec_var in_grp.nc out.nc
-
-        defines new dimensions for the file, as
-
-        ID=0 index [0]:</time> 
-        ID=1 index [1]:</lev> 
-        ID=2 index [0]:</g8/lev> 
-        ID=3 index [1]:</g8/vrt_nbr> 
-        ID=4 index [1]:</vrt_nbr> 
-
-        but the resulting file, when read, has the following IDs
-
-        dimensions:
-        #0,time = UNLIMITED ; // (10 currently)
-        #1,lev = 3 ;
-        #4,vrt_nbr = 2 ;
-
-        group: g8 {
-        dimensions:
-        #0,lev = 3 ;
-        #1,vrt_nbr = 2 ;
-
-        From: "Unidata netCDF Support" <support-netcdf@unidata.ucar.edu>
-        To: <pvicente@uci.edu>
-        Sent: Tuesday, March 12, 2013 5:02 AM
-        Subject: [netCDF #SHH-257980]: Re: [netcdfgroup] Dimensions IDs
-
-        > Your Ticket has been received, and a Unidata staff member will review it and reply accordingly. Listed below are details of this new Ticket. Please make sure the Ticket ID remains in the Subject: line on all correspondence related to this Ticket.
-        > 
-        >    Ticket ID: SHH-257980
-        >    Subject: Re: [netcdfgroup] Dimensions IDs
-        >    Department: Support netCDF
-        >    Priority: Normal
-        >    Status: Open
-        */
-
+	  /* Test case generates duplicated dimension IDs in netCDF file:
+	     
+	     ncks -O  -v two_dmn_rec_var in_grp.nc out.nc
+	     
+	     defines new dimensions for the file, as
+	     
+	     ID=0 index [0]:</time> 
+	     ID=1 index [1]:</lev> 
+	     ID=2 index [0]:</g8/lev> 
+	     ID=3 index [1]:</g8/vrt_nbr> 
+	     ID=4 index [1]:</vrt_nbr> 
+	     
+	     but the resulting file, when read, has the following IDs
+	     
+	     dimensions:
+	     #0,time = UNLIMITED ; // (10 currently)
+	     #1,lev = 3 ;
+	     #4,vrt_nbr = 2 ;
+	     
+	     group: g8 {
+	     dimensions:
+	     #0,lev = 3 ;
+	     #1,vrt_nbr = 2 ;
+	     
+	     From: "Unidata netCDF Support" <support-netcdf@unidata.ucar.edu>
+	     To: <pvicente@uci.edu>
+	     Sent: Tuesday, March 12, 2013 5:02 AM
+	     Subject: [netCDF #SHH-257980]: Re: [netcdfgroup] Dimensions IDs
+	     
+	     > Your Ticket has been received, and a Unidata staff member will review it and reply accordingly. Listed below are details of this new Ticket. Please make sure the Ticket ID remains in the Subject: line on all correspondence related to this Ticket.
+	     > 
+	     >    Ticket ID: SHH-257980
+	     >    Subject: Re: [netcdfgroup] Dimensions IDs
+	     >    Department: Support netCDF
+	     >    Priority: Normal
+	     >    Status: Open
+	  */
+	  
           (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with duplicate dimensions\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
-          (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Please use netCDF version at least 4.3.0.\n",nco_prg_nm_get());
+          (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Please use netCDF version at least 4.3.0. NB: Simultaneously renaming multiple dimensions with ncrename can trigger this bug with netCDF versions up to 4.5.1 (current as of 20180119).\n",nco_prg_nm_get());
           (void)nco_prn_trv_tbl(nc_id,trv_tbl);
           nco_exit(EXIT_FAILURE);
         }
