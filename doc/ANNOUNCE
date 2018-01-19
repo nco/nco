@@ -53,6 +53,18 @@ A. ncremap supports "canonical" NCO argument ordering.
    http://nco.sf.net/nco.html#ncremap
    http://nco.sf.net/nco.html#alg_typ
 
+A. ncremap support a --mss_val=val option for MPAS data.
+   ncremap pre-processes MPAS datasets (indicated with -P mpas) and
+   annotates their floating point variables with the _FillValue
+   attribute. By default it sets _FillValue to the correct value
+   for MPAS ocean and sea-ice models. However, the MPAS land-ice model
+   uses a different missing value. Hence this option is usually
+   invoked as --mss_val=-1.0e36 to facilitate processing of
+   MPAS land-ice datasets. 
+   ncremap -P mpas --mss_val=-1.0e36 -s ais.nc -i data.nc -g fv.nc -o out.nc
+   http://nco.sf.net/nco.html#ncremap
+   http://nco.sf.net/nco.html#mss_val_ncremap
+
 BUG FIXES:
 
 A. Fix ncclimo splitter bug when the total number requested

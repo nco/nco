@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.2-alpha02
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 18 January 2018
+@set update-date 19 January 2018
 @set update-month January 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17242,7 +17242,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
-[--no_cll_msr ] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd]
+[--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd]
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--stdin] 
@@ -22123,8 +22123,8 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-a @var{alg_typ}] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--fl_fmt=@var{fl_fmt}] 
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-L @var{dfl_lvl}] [-M] [-m @var{map_fl}]
-[--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}]
-[-n @var{nco_opt}] [--no_cll_msr ] [--no_frm_trm] [--no_stg_grd]
+[--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
+[-n @var{nco_opt}] [--no_cll_msr] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]
 [-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
@@ -22737,6 +22737,26 @@ This guarantees that all points in the inferred source grid will be
 unmasked.  
 
 @html
+<a name="--mss_val"></a> <!-- http://nco.sf.net/nco.html#--mss_val -->
+<a name="mss_val_ncremap"></a> <!-- http://nco.sf.net/nco.html#mss_val_ncremap -->
+@end html
+@cindex @code{--mss_val=@var{mss_val}}
+@cindex @var{mss_val}
+@cindex @code{--mss_val}
+@cindex @code{--fll_val}
+@cindex @code{--missing_value}
+@cindex @code{--fill_value}
+@item --mss_val=@var{mss_val} (@code{--mss_val}, @code{--fll_val}, @code{--missing_value}, @code{--fill_value})
+Specifies the numeric value that indicates missing data when processing
+@acronym{MPAS} datasets, i.e., when @samp{-P mpas} is invoked.
+The default missing value is @code{-9.99999979021476795361e+33} which is
+correct for the @acronym{MPAS} ocean and sea-ice models.
+Currently (January, 2018) the @acronym{MPAS} land-ice model uses
+@code{-1.0e36} for missing values.
+Hence this option is usually invoked as @samp{--mss_val=-1.0e36} to
+facilitate processing of @acronym{MPAS} land-ice datasets.
+
+@html
 <a name="nco_opt"></a> <!-- http://nco.sf.net/nco.html#nco_opt -->
 @end html
 @cindex @code{-n @var{nco_opt}}
@@ -22843,8 +22863,9 @@ and its corresponding @var{output-file}.
 @cindex @code{--procedure}
 @item -P @var{prc_typ} (@code{--prc_typ}, @code{--pdq_typ}, @code{--prm_typ}, @code{--procedure})
 Specifies the permutation mode desired.
-As of January~15, 2016, one can tell @command{ncremap} to invoke special
-processing procedures for different types of input data.
+As of @acronym{NCO} version 4.5.5 (February, 2016), one can tell
+@command{ncremap} to invoke special processing procedures for different
+types of input data. 
 For instance, to automatically permute the dimensions in the data file
 prior to regridding for a limited (though growing) number of data-file
 types that encounter the @command{ncremap} limitation concerning
@@ -23418,7 +23439,7 @@ two equivalent horizontal dimensions, as the final two dimensions in
 @var{in_fl}.
 Fields with other dimension orders (e.g., @samp{lat,lev,lon}) will not
 regrid properly. 
-To workaround this limitation for the time-being, one can employ 
+To workaround this limitation one can employ 
 @command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly})
 to permute the dimensions before (and un-permute them after) regridding.
 @command{ncremap} utilizes this method internally for some common
@@ -23436,9 +23457,9 @@ ncremap -R "--rgr col_nm=nCells" -i mpas_ncpdq.nc -m mpas120_to_t62.nc -O ~/rgr
 The previous two examples occur so frequently that @command{ncremap} has
 been specially equipped to handle @acronym{AIRS} and @acronym{MPAS}
 files. 
-As of 20160115, the following @command{ncremap} commands with the
-@samp{-P @var{prc_typ}} option automagically perform all required
-permutation and renaming necessary:
+As of @acronym{NCO} version 4.5.5 (February, 2016), the following
+@command{ncremap} commands with the @samp{-P @var{prc_typ}} option
+automagically perform all required permutation and renaming necessary: 
 @example
 # AIRS Level2 vertical profiles
 ncremap -P airs -i AIRS_L2.nc -d dst_1x1.nc -O ~/rgr

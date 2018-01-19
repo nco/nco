@@ -441,7 +441,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--msk_out${fnt_nrm}  Mask variable in regridded file (empty means none) (default ${fnt_bl
 d}${msk_out}${fnt_nrm}) [${fnt_tlc}msk_out, out_msk, mask_output, mask_rgr${fnt_nrm}]"
     echo " ${fnt_bld}--msk_src${fnt_nrm}  Mask-template variable in source file (empty means none) (default ${fnt_bld}${msk_src}${fnt_nrm}) [${fnt_tlc}msk_src, src_msk, mask_source, mask_src${fnt_nrm}]"
-    echo " ${fnt_bld}--mss_val${fnt_nrm}  Missing value for MPAS (empty means none) (default ${fnt_bld}${mss_val}${fnt_nrm}) [${fnt_tlc}mss_val, fll_val, missing_value, _FillValue${fnt_nrm}]"
+    echo " ${fnt_bld}--mss_val${fnt_nrm}  Missing value for MPAS (empty means none) (default ${fnt_bld}${mss_val}${fnt_nrm}) [${fnt_tlc}mss_val, fll_val, missing_value, fill_value${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco_options${fnt_nrm}]"
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"
     echo " ${fnt_bld}--no_frm_trm${fnt_nrm}  Omit formula_terms variables (e.g., 'hyba', 'PS') [${fnt_tlc}no_frm_trm, no_formula_terms${fnt_nrm}]"
@@ -575,7 +575,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       msk_dst=?* | dst_msk=?* | mask_destination=?* | mask_dst=?* ) msk_dst="${LONG_OPTARG}" ;; # # Mask-template variable in destination file
 	       msk_out=?* | out_msk=?* | mask_output=?* | mask_out=?* ) msk_out="${LONG_OPTARG}" ;; # # Mask variable in regridded file
 	       msk_src=?* | src_msk=?* | mask_source=?* | mask_src=?* ) msk_src="${LONG_OPTARG}" ;; # # Mask-template variable in source file
-	       mss_val=?* | fll_val=?* | missing_value=?* | _FillValue=?* ) mss_val="${LONG_OPTARG}" ;; # # Missing value for MPAS
+	       mss_val=?* | fll_val=?* | missing_value=?* | fill_value=?* ) mss_val="${LONG_OPTARG}" ;; # # Missing value for MPAS
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_usr="${LONG_OPTARG}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
 	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit cell_measures variables
@@ -1353,7 +1353,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ "${prc_typ}" = 'mpas' ]; then
 	printf "Input assumed to be MPAS data: will renormalize (with --rnr=0.0) regridding\n"
 	if [ "${clm_flg}" = 'No' ]; then
- 	    printf "Input assumed to be barenaked of attributes: will annotate NC_DOUBLE variables with _FillValue prior to regridding\n"
+ 	    printf "Input assumed to be barenaked of attributes: will annotate NC_DOUBLE variables with _FillValue = ${mss_val} prior to regridding\n"
 	fi # !clm_flg
     fi # !mpas
     if [ "${prc_typ}" = 'sgs' ]; then 
