@@ -1,8 +1,12 @@
-2018-01-19  Charlie Zender  <zender@uci.edu>
+2018-01-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.2-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.2-beta01: Sapiens';git push
 	git tag -a 4.7.2-beta01 -m 'Sapiens: splitter ypf, tempest2 boutique, ncremap psn arg, cheyenne';git push --tags
+
+	* ncclimo fully working on cheyenne
+
+2018-01-19  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo fails on cheyenne non-interactive compute nodes due to mpirun issues
 

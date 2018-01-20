@@ -36,7 +36,7 @@ A. ncremap implements E3SM-recommended Tempest remapping algorithms.
    fv2se_flx, fv2se_stt, fv2se_alt.
    http://nco.sf.net/nco.html#ncremap
    
-A. ncremap supports "canonical" NCO argument ordering.
+B. ncremap supports "canonical" NCO argument ordering.
    Canonical ordering is: command [options] [input] [output].
    Previously ncremap required the use of options (like -i
    and -o) or pipes to supply filenames:
@@ -53,7 +53,7 @@ A. ncremap supports "canonical" NCO argument ordering.
    http://nco.sf.net/nco.html#ncremap
    http://nco.sf.net/nco.html#alg_typ
 
-A. ncremap support a --mss_val=val option for MPAS data.
+C. ncremap support a --mss_val=val option for MPAS data.
    ncremap pre-processes MPAS datasets (indicated with -P mpas) and
    annotates their floating point variables with the _FillValue
    attribute. By default it sets _FillValue to the correct value
@@ -64,6 +64,14 @@ A. ncremap support a --mss_val=val option for MPAS data.
    ncremap -P mpas --mss_val=-1.0e36 -s ais.nc -i data.nc -g fv.nc -o out.nc
    http://nco.sf.net/nco.html#ncremap
    http://nco.sf.net/nco.html#mss_val_ncremap
+
+D. ncclimo has improved support for NCAR cheyenne batch queues
+   Previously ncclimo -p mpi failed on Cheyenne due to differences
+   between SGI MPT mpirun and "normal" mpirun syntax.
+   Now ncclimo uses mpirun syntax expected by SGI MPT on cheyenne.
+   qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l \
+   walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out 
+   http://nco.sf.net/nco.html#ncclimo
 
 BUG FIXES:
 
