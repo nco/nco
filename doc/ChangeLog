@@ -4,6 +4,12 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.2-beta01: Sapiens';git push
 	git tag -a 4.7.2-beta01 -m 'Sapiens: splitter ypf, tempest2 boutique, ncremap psn arg, cheyenne';git push --tags
 
+	* ncclimo fails on cheyenne non-interactive compute nodes due to mpirun issues
+
+	* Verified ncclimo bck mode works on cheyenne interactive compute nodes
+
+	* Include cheyenne compute nodes in list of hardcoded paths to add
+
 	* Tweak ncremap, ncclimo usage strings
 
 2018-01-18  Charlie Zender  <zender@uci.edu>

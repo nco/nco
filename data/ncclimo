@@ -78,7 +78,7 @@ if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 36|64 cores|GB/node 
-	cheyenne* | r8i0n* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named cheyenneNNN, 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
+	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/HiRes_EarthSys/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|(96/128) cores|GB/node (knl/haswell) (cori login nodes 512 GB)
 	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
@@ -114,7 +114,7 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	mira* )
 	    export PATH='/home/zender/bin_mira'\:${PATH}
 	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
-	cheyenne* | r8i0n* )
+	*cheyenne* )
 	    # 20180112: Cheyenne support not yet tested in batch mode
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		# On cheyenne, module load ncl installs ERWG in /glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin (i.e., ${NCARG_ROOT}/bin)
@@ -283,7 +283,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # SLURM:   salloc, sbatch, squeue, scancel
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
 #   Blues:  qsub -I -A ACME -q acme -l nodes=12 -l walltime=00:30:00 -N ncclimo
-#   Cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=18:mpiprocs=1 -l walltime=00:30:00 -q share -N ncclimo
+#   Cheyenne: qsub -I -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
 #   Cooley: qsub -I -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A acme --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit, Edison too
 #   Hopper: qsub -I -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q debug -N ncclimo # deprecated, old Edison
@@ -297,6 +297,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 5. After merger of Cori Phase 1 Haswell and Phase 2 KNL cabinets in ~2017, SLURM on Cori requires Quality-of-Service (QOS) argument, either -C haswell or -C knl
 # Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s; difference 5 requires -C argument on Cori only
 #   Blues a):  echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#   Cheyenne a) echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc"  > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Cooley a): /bin/rm -f ~/ncclimo.err  ~/ncclimo.out
 #              echo '#!/bin/bash' > ~/ncclimo.cobalt
 #              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 55 -e 58 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
@@ -304,6 +305,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc"  > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
+#   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo  -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cooley b): qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
 #   Cori b): sbatch -A acme -C haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
@@ -537,6 +539,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_bld}ncclimo -a sdd -c ${caseid_xmp} -m cam -S 41 -E 50 -x ${drc_rgr_xmp}/0041-0050 -s 51 -e 60 -i ${drc_rgr_xmp}/0051-0060 -X ${drc_rgr_xmp}/0041-0060 ${fnt_nrm}# Combine two climos\n\n"
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
     printf "blues : qsub -I -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
+    printf "cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
     printf "cooley: qsub -I -A HiRes_EarthSys --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
     printf "cori  : salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
     printf "edison: salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
