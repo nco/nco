@@ -318,6 +318,12 @@ netcdf in {
       areacella:units = "meter2" ;
       areacella:purpose = "Variable to hold cell areas of 2D fields. Intended to be pointed to by cell_measures attribute of 2D fields. Would have named it plain-old area but too many regression tests already depend on 1D float area below. areacella is name used by ESGF-distributed versions of some CESM simulations anyway, e.g., baseURL: http://cmip-pcmdi.llnl.gov/CMIP5/dataLocation gridspecFile: gridspec_atmos_fx_CCSM4_amip_r0i0p0.nc areacella: areacella_fx_CCSM4_amip_r0i0p0.nc" ;
 
+    int att_sng ;
+      att_sng:nul_sng = 48b ;
+      att_sng:empty_sng = "" ;
+      att_sng:space_sng = " " ;
+      att_sng:zero_sng = "0" ;
+
     float att_var(time) ;
       att_var:byte_att = 0b, 1b, 2b, 127b, -128b, -127b, -2b, -1b ;
       att_var:char_att = "Sentence one.\n",
@@ -391,10 +397,16 @@ netcdf in {
       char_var_2D_arr:long_name = "char-type 2D variable array" ;
 
     char char_var_nul ;
-      char_var_nul:long_name = "Character variable containing one NUL" ;
+      char_var_nul:long_name = "Character variable containing one NUL specified as empty string: \"\"" ;
+
+    char char_var_nul_c_format ;
+      char_var_nul_c_format:long_name = "Character variable containing one NUL specified in C-format: \'\\0\'" ;
 
     char char_var_space ;
       char_var_space:long_name = "Character variable with whitespace on ends" ;
+
+    char char_var_zero ;
+      char_var_zero:long_name = "Character variable containing zero" ;
 
     float climatology_bounds(time,vrt_nbr) ;
       climatology_bounds:purpose = "Variable containing CF-compliant climatology bounds for time dimension" ;
@@ -1665,7 +1677,7 @@ netcdf in {
 
     SALT = _, 0.032, 0.033, 0.034, 0.035, 0.036, 0.037, 0.038, _, _ ; 
 
-    albers_conical_equal_area = "_" ; 
+    albers_conical_equal_area = "" ; 
 
     area = 10, 10 ; 
 
@@ -1676,6 +1688,8 @@ netcdf in {
     areacella = 
     1, 1, 2, 2, 
     3, 3, 4, 4 ; 
+
+    att_sng = 20 ; 
 
     att_var = 10, 10.1, 10.2, 10.3, 10.40101, 10.5, 10.6, 10.7, 10.8, 10.99 ; 
 
@@ -1740,7 +1754,11 @@ netcdf in {
 
     char_var_nul = "" ; 
 
+    char_var_nul_c_format = "0" ; 
+
     char_var_space = " " ; 
+
+    char_var_zero = "0" ; 
 
     climatology_bounds = 
     0.5, 1.5, 
