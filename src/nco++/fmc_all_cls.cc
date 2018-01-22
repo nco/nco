@@ -5783,15 +5783,8 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
    if( calendar_in_sng.size())
      cln_typ=nco_cln_get_cln_typ(calendar_in_sng.c_str());
 
-   
-
-
-   #ifdef ENABLE_UDUNITS
-   # ifdef HAVE_UDUNITS2_H
-       rcd=nco_cln_clc_dbl_var_dff(units_in_sng.c_str(),units_out_sng,cln_typ,(double*)NULL, var);
-   #endif
-   #endif
-   
+     rcd=nco_cln_clc_dbl_var_dff(units_in_sng.c_str(),units_out_sng,cln_typ,(double*)NULL, var);
+    
    if(rcd!=NCO_NOERR)
       err_prn(sfnm, "Udunits was unable to convert data in the var '"+std::string(var->nm)+"' from '" +std::string(units_in_sng) +"' to '"+std::string(units_out_sng)+"'\n");
 
@@ -5909,11 +5902,7 @@ var_sct *udunits_cls::strftime_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, 
       cln_typ=cln_nil;
 
 
-    #ifdef ENABLE_UDUNITS
-    # ifdef HAVE_UDUNITS2_H
-       rcd=nco_cln_clc_dbl_var_dff(units_in_sng.c_str(),units_out_sng.c_str(),cln_typ,(double*)NULL, var);
-     #endif
-    #endif
+    rcd=nco_cln_clc_dbl_var_dff(units_in_sng.c_str(),units_out_sng.c_str(),cln_typ,(double*)NULL, var);
 
     if(rcd!=NCO_NOERR)
          err_prn(sfnm, "Udunits was unable to convert data in the var '"+std::string(var->nm)+"' from '" +units_in_sng +"' to '"+units_out_sng+"'\n");
