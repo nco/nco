@@ -168,6 +168,12 @@ extern "C" {
    const char *unit_sng, /* I [sng] Units string */
    char *lgb_sng); /* O [sng] Legible version of input string */
 
+  int /* [flg] NCO_NOERR or NCO_ERR */
+  nco_cln_prs_tm /* Extract time stamp from a parsed udunits string */
+  (const char *unt_sng, /* I [ptr] units attribute string */  
+   tm_cln_sct *tm_in); /*  O [sct] struct to be populated */
+
+
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H
 
@@ -190,10 +196,6 @@ extern "C" {
    double *rgn_val, /* I/O [ptr] time diff in units based on fl_bs_sng */ 
    var_sct *var);   /* I/O [ptr]  */ 
   
-  int /* [flg] NCO_NOERR or NCO_ERR */
-  nco_cln_prs_tm /* Extract time stamp from a parsed udunits string */
-  (const char *unt_sng, /* I [ptr] units attribute string */  
-   tm_cln_sct *tm_in); /*  O [sct] struct to be populated */
 
 # endif /* !HAVE_UDUNITS2_H */
 #endif /* !ENABLE_UDUNITS */
