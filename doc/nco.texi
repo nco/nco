@@ -11893,6 +11893,7 @@ already contain the appended dimensions.
 * Operator precedence and associativity ::
 * ID Quoting::
 * create_bounds() function::
+* solar_zenith_angle function::
 @end menu
 
 @html
@@ -16166,7 +16167,7 @@ netcdf-4.0 Final  2008/08/28@*
 @end example
 @c End HMB documentation
 
-@node create_bounds() function,  , ID Quoting, ncap2 netCDF Arithmetic Processor
+@node create_bounds() function, solar_zenith_angle function , ID Quoting, ncap2 netCDF Arithmetic Processor
 @subsection create_bounds() function
 @cindex create_bounds() function
 The @command{ncap2} custom function 'create_bounds()' takes any monotonic 1D coordinate variable with regular or irregular (e.g., Gaussian) spacing and creates a bounds variable.
@@ -16196,6 +16197,36 @@ Another common CF convention:
 defdim("nv",2);
 climatology_bounds=create_bounds(time,$nv,"climatology_bounds");
 @end example
+
+
+
+@node solar_zenith_angle function, , ncap2 netCDF Arithmetic Processor
+@subsection solar_zenith_angle function
+@cindex solar_zenith_angle function
+
+@emph{<zenith_out>=solar_zenith_angle( <time_in>, <latitude in>)}  
+
+
+This function takes two arguments, time and latitude. Calculation and output is done with type @code{NC_DOUBLE}
+The calendar attribute for <time_in> in NOT read and is assumed to be gregorian ( this is the calendar that udunits uses).
+As part of the calculation <time_in> is converted to days since start of year; so for some  input units e.g seconds 
+this function may produce gobbledygook. The output <zenith_out> is in @code{degrees}. 
+
+For more details of the algorithm used please examine the function @code{solar_geometry()} in @code{fmc_all_cls.cc}; 
+   
+
+@example
+my_time[time]=@{10.50, 11.0, 11.50, 12.0, 12.5, 13.0, 13.5, 14.0, 14.50, 15.00@};  
+my_time@@units="hours since 2017-06-21";
+
+// assume we are at Greenwich Meridian
+latitude=0.0;
+
+// 32.05428, 27.61159, 24.55934, 23.45467, 24.55947, 27.61184, 32.05458, 37.39353, 43.29914, 49.55782 ;
+zenith=solar_zenith_angle(my_time, latitude);
+@end example
+
+
 
 @page
 @html
