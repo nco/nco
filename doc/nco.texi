@@ -16219,7 +16219,7 @@ For more details of the algorithm used please examine the function @code{solar_g
 my_time[time]=@{10.50, 11.0, 11.50, 12.0, 12.5, 13.0, 13.5, 14.0, 14.50, 15.00@};  
 my_time@@units="hours since 2017-06-21";
 
-// assume we are at Greenwich Meridian
+// assume we are at Equator
 latitude=0.0;
 
 // 32.05428, 27.61159, 24.55934, 23.45467, 24.55947, 27.61184, 32.05458, 37.39353, 43.29914, 49.55782 ;
