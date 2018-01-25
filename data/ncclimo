@@ -2165,6 +2165,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     
     # Block 1 Loop 2: Execute and/or echo monthly climatology commands
     printf "Generating climatology...\n"
+    [[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
     for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 	printf "Climatological monthly mean for month ${clm_idx} ...\n"
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -2199,12 +2200,16 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    fi # !err
 	done # !clm_idx
     fi # !par_opt
-    # fxm: 20170809 what does this next line wait for? superfluous?
-    wait
+    if [ ${dbg_lvl} -ge 1 ]; then
+	date_crr=$(date +"%s")
+	date_dff=$((date_crr-date_clm))
+	echo "Elapsed time to generate monthly climos $((date_dff/60))m$((date_dff % 60))s"
+    fi # !dbg
     
     # Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).
     if [ -n "${rgr_map}" ]; then 
 	printf "Regrid monthly data...\n"
+	[[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
 	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 	    # NB: Months, seasons, files are 1-based ([1..12], [13..16], [1..17]), nodes are 0-based ([0..11])
 	    let nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
@@ -2237,6 +2242,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     # Block 2: Climatological seasonal means
     if [ "${csn_flg}" = 'Yes' ]; then
 	# Block 2 Loop 1: Generate seasonal commands
+	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	    printf "Climatological seasonal mean for ${csn_abb[${map_r2d[${csn_idx}]}]} ...\n"
 	    let clm_idx=1+12+${csn_idx}
@@ -2285,6 +2291,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		fi # !err
 	    done # !clm_idx
 	fi # !par_opt
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    date_crr=$(date +"%s")
+	    date_dff=$((date_crr-date_rgr))
+	    echo "Elapsed time to regrid monthly climos $((date_dff/60))m$((date_dff % 60))s"
+	fi # !dbg
     fi # !rgr_map
     # wait() for seasonal climatologies to finish
     if [ "${csn_flg}" = 'Yes' ]; then
@@ -2297,14 +2308,18 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		fi # !err
 	    done # !clm_idx
 	fi # !par_opt
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    date_crr=$(date +"%s")
+	    date_dff=$((date_crr-date_clm))
+	    echo "Elapsed time to generate seasonal climos $((date_dff/60))m$((date_dff % 60))s"
+	fi # !dbg
     fi # !csn_flg
-    # fxm: 20170809 what does this next line wait for? superfluous?
-    wait
     
     # Block 2: Loop 4: Regrid seasonal files. Load-balance by using idle nodes (nodes not used for annual mean).
     if [ "${csn_flg}" = 'Yes' ]; then
 	if [ -n "${rgr_map}" ]; then 
 	    printf "Regrid seasonal data...\n"
+	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
 	    for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
 		let nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
 		if [ ${nd_idx} -lt ${csn_nbr} ]; then
@@ -2337,6 +2352,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     # Block 3: Climatological annual mean
     if [ "${ann_flg}" = 'Yes' ]; then
 	printf "Climatological annual mean...\n"
+	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
 	fl_lst="${fl_out[${clm_csn_mam_idx}]} ${fl_out[${clm_csn_jja_idx}]} ${fl_out[${clm_csn_son_idx}]} ${fl_out[${clm_csn_djf_idx}]}"
 	cmd_clm[${clm_nbr}]="${cmd_mpi[${clm_nbr}]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_nbr}]}"
 	#    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
@@ -2368,6 +2384,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		    fi # !err
 		done # !clm_idx
 	    fi # !par_opt
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		date_crr=$(date +"%s")
+		date_dff=$((date_crr-date_rgr))
+		echo "Elapsed time to regrid seasonal climos $((date_dff/60))m$((date_dff % 60))s"
+	    fi # !dbg
 	fi # !rgr_map
     fi # !csn_flg
     if [ "${ann_flg}" = 'Yes' ]; then
@@ -2380,10 +2401,16 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		exit 1
 	    fi # !err
 	fi # !par_opt
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    date_crr=$(date +"%s")
+	    date_dff=$((date_crr-date_clm))
+	    echo "Elapsed time to generate annual climos $((date_dff/60))m$((date_dff % 60))s"
+	fi # !dbg
 	
 	# Block 5: Regrid climatological annual mean
 	if [ -n "${rgr_map}" ]; then 
 	    printf "Regrid annual data...\n"
+	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
@@ -2398,6 +2425,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		    printf "${spt_nm}: ERROR annual regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		date_crr=$(date +"%s")
+		date_dff=$((date_crr-date_rgr))
+		echo "Elapsed time to regrid annual climo $((date_dff/60))m$((date_dff % 60))s"
 	    fi # !dbg
 	fi # !rgr_map
     fi # !ann_flg

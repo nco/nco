@@ -1,5 +1,7 @@
 2018-01-25  Charlie Zender  <zender@uci.edu>
 
+	* Add timers to ncclimo
+
 	* Add nc[o]_def/inq_var_filter() stubs
 
 	* NCO 4.7.3-alpha01 release procedure:
