@@ -468,6 +468,26 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
+# 20180124: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on theta:
+# Sysadmin upgrade request: 
+# Latest sysadmin-compiled module usage:  # fxm
+# Personal recipe last modified: 20180124
+# Problem is that .bashrc resets PATH so cannot find icc/gcc ...
+# Personal recipe last used successfully: fxm
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+module load cray-netcdf
+#module add PrgEnv-intel
+#module swap PrgEnv-intel PrgEnv-gnu
+#module swap PrgEnv-gnu PrgEnv-intel
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_theta CC='icc' CXX='icpc' GSL_ROOT='csz_not_available_yet' NETCDF_INC='/opt/cray/pe/netcdf/4.4.1.1.6/intel/16.0/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.4.1.1.6/intel/16.0/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.4.1.1.6' UDUNITS2_PATH='csz_not_available_yet' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
+/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
+make clean;make > nco.make.${GNU_TRP}.foo 2>&1
+make check >> nco.make.${GNU_TRP}.foo 2>&1
+make install >> nco.make.${GNU_TRP}.foo 2>&1
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+
 # gcc/g++ 20160420 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on titan:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 347675 on 20170316

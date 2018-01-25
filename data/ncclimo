@@ -83,7 +83,7 @@ if [ -z "${DATA}" ]; then
 	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|(96/128) cores|GB/node (knl/haswell) (cori login nodes 512 GB)
 	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
 	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
-	theta* ) DATA="/projects/ClimateEnergy_2/${USER}" ; ;; # ALCF theta compute nodes named fxm, fxm GB/node 
+	theta* ) DATA="/projects/ClimateEnergy_2/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
@@ -1343,6 +1343,10 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		hopper* )
 		    # NB: NERSC migrated from aprun to srun in 201601. Hopper commands will soon be deprecated.
 		    cmd_mpi[${mpi_idx}]="aprun -L ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # NERSC
+		theta* )
+		    # NB: ALCF Theta (not cooley or mira) uses aprun:
+		    # https://www.alcf.anl.gov/user-guides/example-program-and-makefile-xc40
+		    cmd_mpi[${mpi_idx}]="aprun -L ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # ALCF Theta
 		* )
 		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other

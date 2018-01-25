@@ -149,7 +149,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2017 Jan&nbsp;??: 4.7.2 <i>In Progress...</i>
+<li>2018 Feb&nbsp;??: 4.7.3 <i>In Progress...</i>
+<li>2018 Jan&nbsp;25: 4.7.2 Tempest2
 <li>2017 Dec&nbsp;21: 4.7.1 Conda Windows port
 <li>2017 Nov&nbsp;08: 4.7.0 Sundry features/fixes
 <li>2017 Sep&nbsp;18: 4.6.9 CDF5, CMake
@@ -617,17 +618,21 @@ Identical copies of those tarballs are also stored
 <a href="http://nco.sf.net/src">here</a> on SourceForge for historical
 continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
-<tt>git clone -b 4.7.1 http://github.com/nco/nco.git nco-4.7.1</tt></a>.
+<tt>git clone -b 4.7.2 http://github.com/nco/nco.git nco-4.7.2</tt></a>.
 <ul>
-<li><b>NCO 4.7.3</b>: (<i>Future</i>)
+<li><b>NCO 4.7.4</b>: (<i>Future</i>)
 Chunking bytes not elements;
 extensive hashing?;
 netCDF4 compound types?;</li>
-<li><b>NCO 4.7.2</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<li><b>NCO 4.7.3</b>: (<i>In Progress, features in-progress or complete include</i>) 
 <tt>ncclimo -v</tt> splitter support for regular expressions;
 <tt>ncks --xtn</tt> better extensive variable treatment;
 <tt>ncremap</tt> generate weights;</li>
-<li><b>NCO 4.7.1</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.7.2</b>: (<i>Current Stable Release</i>)
+<tt>ncclimo</tt> splitter <i>ypf</i> bugfix;
+<tt>ncremap</tt> canonical positional arguments;
+<tt>ncremap</tt> TempestRemap2 support;</li>
+<li><b>NCO 4.7.1</b>: 
 Conda Windows port;
 <tt>ncclimo --clm_md=dly/ann</tt> fix;
 JSON tweaks;</li>
@@ -764,7 +769,7 @@ goodies besides NCO) to your automatically-searched channels with
 &lsquo;<tt>conda config --add channels conda-forge</tt>&rsquo;, then
 install NCO with &lsquo;<tt>conda install nco</tt>&rsquo;.
 The default NCO installed by <tt>conda</tt> is generally within a month of the latest release. 
-<li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.7.1</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
+<li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.7.2</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
 Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, and others for developing and maintaining the NCO package for conda.
 </ul>
 
@@ -773,7 +778,7 @@ Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, and others for developi
 <h3><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.7.1</a></li>
+<li><a href="http://www.debian.org">Debian</a> and <a href="http://www.ubuntu.com">Ubuntu</a> GNU/Linux-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-4.7.2</a></li>
 -->
 <a href="http://packages.debian.org/unstable/science/nco">Debian NCO</a> and 
 <a href="https://launchpad.net/ubuntu/+source/nco">Ubuntu NCO</a> homepages.
@@ -781,8 +786,8 @@ Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, and others for developi
 NCO packages in the Debian/Ubuntu repositories (e.g., Sid and Raring) generally lag the packages distributed here by 6&ndash;12 months.
 <a name="beta"></a><a name="prerelease"> <!-- http://nco.sf.net#beta -->
 Newer (beta- or pre-release) packages are often available for intrepid Debian/Ubuntu users as described <a href="https://github.com/nco/nco/tree/master/doc/beta.txt">here</a>.
-<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.7.1-1_i386.deb</tt>&rsquo;):</dt>
-<li><a href="https://launchpad.net/ubuntu/+source/nco/4.7.1-1">nco_4.7.1-1_amd64.deb</a> : Executables AMD64-compatible</li>
+<dt>Debian package for most recent NCO release (install with, e.g., &lsquo;<tt>dpkg --install nco_4.7.2-1_i386.deb</tt>&rsquo;):</dt>
+<li><a href="https://launchpad.net/ubuntu/+source/nco/4.7.2-1">nco_4.7.2-1_amd64.deb</a> : Executables AMD64-compatible</li>
 Thanks to Daniel Baumann, Sebastian Couwenberg, Barry deFreese, Francesco Lovergine, 
 Brian Mays, Rorik Peterson, and Matej Vela for their help packaging
 NCO for Debian over the years. 
@@ -826,10 +831,10 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # Mac OS X 10.13 (High Sierra) systems (aerosol):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-4.7.1.macosx.10.13.tar.gz nc*;scp ${DATA}/nco-4.7.1.macosx.10.13.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.7.2.macosx.10.13.tar.gz nc*;scp ${DATA}/nco-4.7.2.macosx.10.13.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.7.1.macosx.10.13.tar.gz">nco-4.7.1.macosx.10.13.tar.gz</a> (<!--#fsize file="src/nco-4.7.1.macosx.10.13.tar.gz"-->): Executables MacOSX 10.13-compatible (last updated <!--#flastmod file="src/nco-4.7.1.macosx.10.13.tar.gz"-->). 
+<li><a href="src/nco-4.7.2.macosx.10.13.tar.gz">nco-4.7.2.macosx.10.13.tar.gz</a> (<!--#fsize file="src/nco-4.7.2.macosx.10.13.tar.gz"-->): Executables MacOSX 10.13-compatible (last updated <!--#flastmod file="src/nco-4.7.2.macosx.10.13.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
@@ -1024,12 +1029,12 @@ site.</li>
 The simplest way to acquire the source is to download the compressed tarball:
 <ul>
 <li>
-<!-- scp ${DATA}/nco-4.7.1.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
-<a href="https://github.com/nco/nco/archive/4.7.1.tar.gz">nco-4.7.1.tar.gz</a> 
-(<!--#fsize file="src/nco-4.7.1.tar.gz"--> compressed tar-file)<br>
-<!--#exec cmd="openssl dgst -md5 src/nco-4.7.1.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha1 src/nco-4.7.1.tar.gz"--><br>
-<!--#exec cmd="openssl dgst -sha256 src/nco-4.7.1.tar.gz"--> 
+<!-- scp ${DATA}/nco-4.7.2.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src -->
+<a href="https://github.com/nco/nco/archive/4.7.2.tar.gz">nco-4.7.2.tar.gz</a> 
+(<!--#fsize file="src/nco-4.7.2.tar.gz"--> compressed tar-file)<br>
+<!--#exec cmd="openssl dgst -md5 src/nco-4.7.2.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha1 src/nco-4.7.2.tar.gz"--><br>
+<!--#exec cmd="openssl dgst -sha256 src/nco-4.7.2.tar.gz"--> 
 </li>
 </ul>
 
@@ -1048,8 +1053,8 @@ You may retrieve any NCO distribution you wish from
 <a href="https://help.github.com">GitHub</a>. 
 Usually you wish to retrieve a recent tagged (i.e., released) version.
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
-then checks out NCO version <tt>4.7.1</tt>:
-<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.7.1</tt></p>
+then checks out NCO version <tt>4.7.2</tt>:
+<p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.7.2</tt></p>
 These commands retrieve the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p> or
@@ -1057,9 +1062,9 @@ development version of NCO into a local directory named <tt>nco</tt>:
 Track changes to the development version using
 <p><tt>cd nco;git pull</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>4.7.1</tt>) and the development version is that the
+(e.g., <tt>4.7.2</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>4.7.1</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>4.7.2</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -1207,9 +1212,9 @@ As of 20131101 there is no Cygwin package for ANTLR, and the netCDF package does
 
 <li>Once you have installed the pre-requisites as shown above, you may then build the latest stable NCO and install it in, e.g., <tt>/usr/local</tt> with: 
 <tt>
-<dt>wget https://github.com/nco/nco/archive/4.7.1.tar.gz</dt>
-<dt>tar xvzf 4.7.1.tar.gz</dt>
-<dt>cd nco-4.7.1</dt>
+<dt>wget https://github.com/nco/nco/archive/4.7.2.tar.gz</dt>
+<dt>tar xvzf 4.7.2.tar.gz</dt>
+<dt>cd nco-4.7.2</dt>
 <dt>./configure --prefix=/usr/local</dt>
 <dt>make</dt>
 <dt>sudo make install</dt>

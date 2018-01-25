@@ -1,8 +1,12 @@
-2018-01-20  Charlie Zender  <zender@uci.edu>
+2018-01-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.2: Sapiens';git push
 	git tag -a 4.7.2 -m 'Sapiens: splitter ypf, tempest2 boutique, ncremap psn arg, cheyenne';git push --tags
+
+	* ncclimo: provisional, lackluster support for Theta
+
+2018-01-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.2-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.2-beta01: Flighty';git push
@@ -30,7 +34,7 @@
 
 	* Update ncremap/ncclimo to use latest cheyenne paths, deprecate yellowstone
 
-	* Successfully built Tempest2 on MacOS, so now ncremap is cross-platform again
+	* Successful Tempest2 builds on MacOS, now ncremap is cross-platform again
 
 	* Update CF references to version 1.7 in nco.texi
 
