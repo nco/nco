@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha01: Coughy';git push
 	git tag -a 4.7.3-alpha01 -m 'Functionally identical to 4.7.2';git push --tags
 
-	* Add DSCOVR L2 dimensions number_of_lines, number_of_pixels to	ncremap database
+	* Add DSCOVR L2 dimensions number_of_lines, number_of_pixels to ncremap database
 
 	* ncclimo/ncremap: deprecate pileus
 
