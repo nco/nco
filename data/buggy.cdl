@@ -85,6 +85,7 @@ netcdf buggy {
  int tm3_lat_flt(tm3,lat);
  tm3_lat_flt:purpose = "record variable compressed with netCDF 4.6.0 _Filter attribute"; 
  tm3_lat_flt:bug = "ncgen until 4.6.0 20180125 fails to parse this. Variables compressed with _Filters must be chunked, so we make this a record variable. More instructions at https://www.unidata.ucar.edu/software/netcdf/docs/md__Users_wfisher_Desktop_gitprojects_netcdf-c_docs_filters.html";
+ tm3_lat_flt:usage="export HDF5_PLUGIN_PATH=/usr/lib";
  tm3_lat_flt:_Filter = "307,9";
  tm3_lat_flt:_Storage = "chunked";
  tm3_lat_flt:_ChunkSizes = 3,2;
