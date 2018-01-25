@@ -82,6 +82,13 @@ netcdf buggy {
  nan_val_dbl:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
  nan_val_dbl:note7 = "20170505 For testing without missing values"; 
 
+ int tm3_lat_flt(tm3,lat);
+ tm3_lat_flt:purpose = "record variable compressed with netCDF 4.6.0 _Filter attribute"; 
+ tm3_lat_flt:bug = "ncgen until 4.6.0 20180125 fails to parse this. Variables compressed with _Filters must be chunked, so we make this a record variable. More instructions at https://www.unidata.ucar.edu/software/netcdf/docs/md__Users_wfisher_Desktop_gitprojects_netcdf-c_docs_filters.html";
+ tm3_lat_flt:_Filter = "307,9";
+ tm3_lat_flt:_Storage = "chunked";
+ tm3_lat_flt:_ChunkSizes = 3,2;
+ 
  int lat_time(lat,time);
  lat_time:purpose = "record variable where record dimension is not first dimension"; 
  lat_time:bug = "ncgen until 4.3.3-rc2 20140922 fails to parse this because of Jira NCF-315. Some variables with non-leading record dimensions (like lat_tm2, lat_tm3) did work before today in \"standalone\" files like buggy.cdl, but lat_time did not.";
@@ -113,6 +120,8 @@ netcdf buggy {
   lat_tm3={1,2,3},{4,5,6}; // NB: Unlimited dimensions (other than the first) must be enclosed in braces
   tm2_lat=1,2,3,4; // NB: Braces forbidden when unlimited dimension is first. sizeof(tm2)=sizeof(whole)/$lat
   tm3_lat=1,2,3,4,5,6; // NB: Braces forbidden when unlimited dimension is first. sizeof(tm2)=sizeof(whole)/$lat
+
+  tm3_lat_flt=1,2,3,4,5,6;
 
   tm2_tm3={1.,2.,3.},{4.,5.,6.};
 
