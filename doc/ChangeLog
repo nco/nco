@@ -1,5 +1,7 @@
 2018-01-25  Charlie Zender  <zender@uci.edu>
 
+	* Add nc[o]_def/inq_var_filter() stubs
+
 	* NCO 4.7.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha01: Coughy';git push
 	git tag -a 4.7.3-alpha01 -m 'Functionally identical to 4.7.2';git push --tags

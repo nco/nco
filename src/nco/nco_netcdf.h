@@ -344,7 +344,7 @@ int nco_sync(const int nc_id);
 int nco_abort(const int nc_id);
 int nco_close(const int nc_id);
 int nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * const att_glb_nbr,int * const rec_dmn_id);
-  /* NB: nc_inq_path() introduced in netCDF 4.3.2, but   NC_LIB_VERSION does not work until netCDF 4.4.0 */
+  /* NB: nc_inq_path() introduced in netCDF 4.3.2, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #ifndef HAVE_NC_INQ_PATH
   int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path);
 #endif /* !HAVE_NC_INQ_PATH */
@@ -407,12 +407,14 @@ int nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id);
 int nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id);
 int nco_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz);
 int nco_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
+int nco_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int *prm);
 int nco_def_var_fletcher32(const int nc_id,const int var_id,const int chk_typ);
 int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * const var_typ,int * const dmn_nbr,int * const dmn_id,int * const att_nbr);
 int nco_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
 int nco_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle,int * const deflate,int * const dfl_lvl);
 int nco_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ);
 int nco_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val);
+int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm);
 int nco_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
 int nco_inq_var_packing(const int nc_id,const int var_id,int * const packing);
 int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);
@@ -458,7 +460,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_rename_grp(int grp_id,const char * const grp_nm);
 #endif /* NC_HAVE_RENAME_GRP */
   /* nc_open_mem() is defined in netCDF >= 4.4.0, however ...
-     Ubuntu (Xenial at least) used broken netCDF CMake (not autoconf) to package 4.4.0 (it does not install netcdf_mem.h):
+     Ubuntu (Xenial at least) used broken netCDF CMake (not autoconf) to package 4.4.0, and it does not install netcdf_mem.h:
      https://github.com/nco/nco/issues/44
      Symptom of "missing netcdf_mem.h" and/or "unresolved nc_open_mem()" occurs with NCO 4.6.2+
      Until 20171112 we used (Option 1): 
@@ -469,15 +471,19 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
      #if defined(HAVE_NETCDF_MEM_H)
      which requires additional build tests in Autoconf/CMake/Makefile 
      20180106 For CMake this is correctly done by detecting both the existence of
-     netcdf_mem.h and symbol nc_open_mem in the netCDF library and defining HAVE_NETCDF_MEM_H 
-     only when both exist */
+     netcdf_mem.h and symbol nc_open_mem() in the netCDF library and defining HAVE_NETCDF_MEM_H only when both exist */
 #ifdef HAVE_NETCDF_MEM_H
 # include <netcdf_mem.h> /* nc_open_mem() defined in netCDF >= 4.4.0 */
 #else /* 4.4.0 */
   int nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id);
 #endif /* 4.4.0 */
 
-/* Begin netCDF4 stubs */
+#if NC_LIB_VERSION < 460 
+  int nc_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm);
+  int nc_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm);
+#endif /* 4.6.0 */
+
+  /* Begin netCDF4 stubs */
 #ifndef HAVE_NETCDF4_H
   /* Stubs so netCDF4 functions work without protection in netCDF3 environments */
 # ifdef NC_HAVE_NEW_CHUNKING_API

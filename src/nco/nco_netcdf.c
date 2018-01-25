@@ -737,7 +737,7 @@ nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const
   int rcd;
   const char fnc_nm[]="nc_open_mem()";
   rcd=strlen(fl_nm)+mode+sz;
-  (void)fprintf(stdout,"ERROR: %s reports attempt to open file memory was foiled because libnetcdf.a does not contain nc_open_mem(). To obtain this functionality, please rebuild NCO against netCDF library version 4.4.0-rc1 (released ~20150610) or later.\nExiting...\n",fnc_nm);
+  (void)fprintf(stdout,"ERROR: %s reports attempt to open file memory was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.4.0-rc1 (released ~20150610) or later.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   *nc_id=*((int *)void_ptr);
   return rcd;
@@ -757,6 +757,35 @@ nco_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * cons
   } /* endif */
   return rcd;
 } /* end nco_open_mem() */
+
+#if NC_LIB_VERSION < 460
+int nc_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm)
+{
+  /* Purpose: Pseudo-library stub function to create a filter for a variable
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library that it too old to have the nc_def_var_filter() function. */
+  int rcd;
+  const char fnc_nm[]="nc_def_var_filter()";
+  rcd=NC_NOERR+0*(nc_id+var_id+flt_id+prm_nbr+*prm); /* CEWI */
+  (void)fprintf(stdout,"ERROR: %s reports define variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.6.0 (released ~20180125) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nc_def_var_filter() */
+
+int nc_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm)
+{
+  /* Purpose: Pseudo-library stub function to inquire a filter for a variable
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library that it too old to have the nc_inq_var_filter() function. */
+  int rcd;
+  const char fnc_nm[]="nc_inq_var_filter()";
+  rcd=NC_NOERR+0*(nc_id+var_id);
+  *flt_id=*prm_nbr=*prm=rcd; /* CEWI */
+  (void)fprintf(stdout,"ERROR: %s reports define variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.6.0 (released ~20180125) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nc_inq_var_filter() */
+#endif /* 4.6.0 */
 
 #ifdef ENABLE_MPI
 # ifdef HAVE_NETCDF4_H
@@ -1549,6 +1578,15 @@ int nco_def_var_deflate
   return rcd;
 } /* end nco_def_var_deflate() */
 
+int nco_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm)
+{
+  /* Purpose: Wrapper for nc_def_var_filter() */
+  int rcd;
+  rcd=nc_def_var_filter(nc_id,var_id,flt_id,prm_nbr,prm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_filter()");
+  return rcd;
+} /* end nco_def_var_filter() */
+
 int
 nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_typ,int * const dmn_nbr,int * const dmn_id,int * const att_nbr)
 {
@@ -1652,6 +1690,15 @@ nco_inq_var_fill
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_fill()");
   return rcd;
 } /* end nco_inq_var_fill() */
+
+int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm)
+{
+  /* Purpose: Wrapper for nc_inq_var_filter() */
+  int rcd;
+  rcd=nc_inq_var_filter(nc_id,var_id,flt_id,prm_nbr,prm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter()");
+  return rcd;
+} /* end nco_inq_var_filter() */
 
 int
 nco_def_var_fletcher32
