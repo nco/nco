@@ -4,7 +4,11 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha01: Coughy';git push
 	git tag -a 4.7.3-alpha01 -m 'Functionally identical to 4.7.2';git push --tags
 
-	* nco.texi: Fix error introduced by solar_zenith_angle() documentation
+	* Add DSCOVR L2 dimensions number_of_lines, number_of_pixels to	ncremap database
+
+	* ncclimo/ncremap: deprecate pileus
+
+	* nco.texi: Fix errors introduced by solar_zenith_angle() documentation
 
 	* NCO 4.7.2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.2: Sapiens';git push

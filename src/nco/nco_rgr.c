@@ -1885,6 +1885,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"nlat",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nlat"); /* POP */
     else if((rcd=nco_inq_dimid_flg(in_id,"nscan",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nscan"); /* AMSR, TRMM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nTimes",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nTimes"); /* OMI L2 */
+    else if((rcd=nco_inq_dimid_flg(in_id,"number_of_lines",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("number_of_lines"); /* DSCOVR L2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack"); /* AIRS L2 DAP NC */
     else if((rcd=nco_inq_dimid_flg(in_id,"GeoTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("GeoTrack:L2_Standard_atmospheric&surface_product"); /* AIRS L2 HDF */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Along_Swath:mod04",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("Cell_Along_Swath:mod04"); /* MODIS MOD04 L2 */
@@ -1919,6 +1920,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"npixel",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("npixel"); /* TRMM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nxtrack",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("nxtrack"); /* MODIS DeepBlue SeaWiFS L2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"nXtrack",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("nXtrack"); /* OMI L2 */
+    else if((rcd=nco_inq_dimid_flg(in_id,"number_of_pixels",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("number_of_pixels"); /* DSCOVR L2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("GeoXTrack"); /* AIRS L2 DAP NC */
     else if((rcd=nco_inq_dimid_flg(in_id,"GeoXTrack:L2_Standard_atmospheric&surface_product",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("GeoXTrack:L2_Standard_atmospheric&surface_product"); /* AIRS L2 HDF */
     else if((rcd=nco_inq_dimid_flg(in_id,"Cell_Across_Swath:mod04",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("Cell_Across_Swath:mod04"); /* MODIS MOD04 L2 */
@@ -1949,6 +1951,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      CAM-FV: slon, slat, w_stag (w_stag is weights for slat grid, analagous to gw for lat grid)
      CAM-SE: area
      CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (NB: CICE uses ?LON and POP uses ?LONG) (aice is ice area, tmask is state-variable mask, both not currently excluded, although all binary masks like tmask should be recomputed on new grid)
+     DSCOVR L2: latitude, longitude
      ESMF: gridcell_area
      GPM: S1_Latitude, S1_Longitude
      HIRDLS: Latitude

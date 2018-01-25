@@ -81,7 +81,6 @@ if [ -z "${DATA}" ]; then
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/HiRes_EarthSys_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|(96/128) cores|GB/node (knl/haswell) (cori login nodes 512 GB)
-	pileus* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF CADES
 	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
 	theta* ) DATA="/projects/ClimateEnergy_2/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
@@ -155,9 +154,6 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    fi # !NCARG_ROOT
 	    export PATH='/global/homes/z/zender/bin_edison'\:${PATH}
             export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH} ; ;;
-	pileus* )
-	    export PATH='/home/zender/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals/lib:/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	rhea* )
 	    # 20151017: CSZ next three lines guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
@@ -306,7 +302,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 55 -e 58 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
 #   Cori,Edison a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
-#   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc"  > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cooley b): qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt

@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.2
-@set doc-edition 4.7.2
+@set nco-edition 4.7.3-alpha01
+@set doc-edition 4.7.3-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
 @set update-date 25 January 2018
@@ -22165,7 +22165,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]]
-[@var{input-file(s)}] [@var{output-file}]
+[@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent
@@ -22264,12 +22264,28 @@ Features common to many operators are described in
 
 @html
 <a name="alg_typ"></a> <!-- http://nco.sf.net/nco.html#alg_typ -->
+<a name="neareststod"></a> <!-- http://nco.sf.net/nco.html#neareststod -->
+<a name="nearestdtos"></a> <!-- http://nco.sf.net/nco.html#nearestdtos -->
+<a name="patch"></a> <!-- http://nco.sf.net/nco.html#patch -->
+<a name="bilinear"></a> <!-- http://nco.sf.net/nco.html#bilinear -->
+<a name="conserve"></a> <!-- http://nco.sf.net/nco.html#conserve -->
+<a name="fv2se_flx"></a> <!-- http://nco.sf.net/nco.html#fv2se_flx -->
+<a name="se2fv_flx"></a> <!-- http://nco.sf.net/nco.html#se2fv_flx -->
+<a name="fv2se_stt"></a> <!-- http://nco.sf.net/nco.html#fv2se_stt -->
+<a name="se2fv_stt"></a> <!-- http://nco.sf.net/nco.html#se2fv_stt -->
+<a name="fv2se_alt"></a> <!-- http://nco.sf.net/nco.html#fv2se_alt -->
+<a name="se2fv_alt"></a> <!-- http://nco.sf.net/nco.html#se2fv_alt -->
 @end html
 @cindex @code{-a @var{alg_typ}}
 @cindex @var{alg_typ}
 @cindex @code{--alg_typ}
 @cindex @code{--algorithm}
 @cindex @code{--regrid_algorithm}
+@cindex @code{neareststod}
+@cindex @code{nearestdtos}
+@cindex @code{patch}
+@cindex @code{bilinear}
+@cindex @code{conserve}
 @item -a @var{alg_typ} (@code{--alg_typ}, @code{--algorithm}, @code{--regrid_algorithm})
 Specifies the interpolation algorithm for weight-generation for use by
 @command{ESMF_RegridWeightGen} (@acronym{ERWG}) and/or TempestRemap.
