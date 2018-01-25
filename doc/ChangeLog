@@ -1,5 +1,11 @@
 2018-01-25  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.3-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha01: Coughy';git push
+	git tag -a 4.7.3-alpha01 -m 'Functionally identical to 4.7.2';git push --tags
+
+	* nco.texi: Fix error introduced by solar_zenith_angle() documentation
+
 	* NCO 4.7.2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.2: Sapiens';git push
 	git tag -a 4.7.2 -m 'Sapiens: splitter ypf, tempest2 boutique, ncremap psn arg, cheyenne';git push --tags

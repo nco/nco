@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.2
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 22 January 2018
+@set update-date 25 January 2018
 @set update-month January 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16167,7 +16167,7 @@ netcdf-4.0 Final  2008/08/28@*
 @end example
 @c End HMB documentation
 
-@node create_bounds() function, solar_zenith_angle function , ID Quoting, ncap2 netCDF Arithmetic Processor
+@node create_bounds() function, solar_zenith_angle function, ID Quoting, ncap2 netCDF Arithmetic Processor
 @subsection create_bounds() function
 @cindex create_bounds() function
 The @command{ncap2} custom function 'create_bounds()' takes any monotonic 1D coordinate variable with regular or irregular (e.g., Gaussian) spacing and creates a bounds variable.
@@ -16198,7 +16198,7 @@ defdim("nv",2);
 climatology_bounds=create_bounds(time,$nv,"climatology_bounds");
 @end example
 
-@node solar_zenith_angle function, , ncap2 netCDF Arithmetic Processor
+@node solar_zenith_angle function,  , create_bounds() function, ncap2 netCDF Arithmetic Processor
 @subsection solar_zenith_angle function
 @cindex solar_zenith_angle function
 
