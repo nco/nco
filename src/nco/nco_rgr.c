@@ -3836,7 +3836,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   area_ltr_ttl=0.0;
   area_crc_ttl=0.0;
   area_crc_abs_ttl=0.0;
-  for(unsigned int col_idx=0;col_idx<col_nbr;col_idx++){
+  for(long col_idx=0;col_idx<col_nbr;col_idx++){
     flg_ltr_cll=False;
     ngl_c=double_CEWI; /* Otherwise compiler unsure ngl_c is initialized first use */
     area[col_idx]=0.0;
@@ -3923,7 +3923,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       if(((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) || /* c is half a and b */
 	 ((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) || /* a is half b and c */
 	 ((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b))){  /* b is half c and a */
-	(void)fprintf(stdout,"%s: WARNING %s reports col_idx = %u triangle %d is ill-conditioned. Spherical excess and thus cell area are likely inaccurate. Ask Charlie to implement SAS formula...\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+	(void)fprintf(stdout,"%s: WARNING %s reports col_idx = %li triangle %d is ill-conditioned. Spherical excess and thus cell area are likely inaccurate. Ask Charlie to implement SAS formula...\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
       } /* !ill */
       /* Semi-perimeter */
       prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
@@ -4025,7 +4025,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  (void)fprintf(stdout,"%s: Latitude-triangle area using series approximation...not implemented yet\n",nco_prg_nm_get());
 	} /* !0 */
 	if(nco_dbg_lvl_get() >= nco_dbg_scl){
-	  (void)fprintf(stdout,"%s: INFO %s col_idx = %u triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
+	  (void)fprintf(stdout,"%s: INFO %s col_idx = %li triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
 	  if(fabs(area_crc/xcs_sph) > 0.1){
 	    (void)fprintf(stdout,"%s: DBG Non-spherical correction exceeds 10%% for current triangle with ABC vertices at lat,lon [dgr] = %g, %g\n%g, %g\n%g, %g\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
 	  } /* !fabs */
@@ -4034,7 +4034,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
     } /* !tri_idx */
     if(flg_ltr_cll){
       /* Current gridcell contained at least one latitude-triangle */
-      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s col_idx = %u spherical area, latitude-gridcell area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_ltr,100.0*(area_ltr-area[col_idx])/area[col_idx]);
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s col_idx = %li spherical area, latitude-gridcell area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_ltr,100.0*(area_ltr-area[col_idx])/area[col_idx]);
     } /* !flg_ltr_cll */    
   } /* !col_idx */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s total spherical area, latitude-gridcell area, %% difference, crc_ttl, crc_abs_ttl: %g, %g, %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,area_ttl,area_ltr_ttl,100.0*(area_ltr_ttl-area_ttl)/area_ttl,area_crc_ttl,area_crc_abs_ttl);
@@ -7670,10 +7670,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     const long npf_nbr=grd_crn_nbr; /* [nbr] Number of nodes per face */
 
     long dg_idx; /* [idx] Counting index for edges */
-    long dg_nbr=NC_MIN_INT64; /* [nbr] Number of edges in mesh */
+    long dg_nbr=(long)NC_MIN_INT64; /* [nbr] Number of edges in mesh */
     long fc_idx; /* [idx] Counting index for faces */
     long nd_idx; /* [idx] Counting index for nodes */
-    long nd_nbr=NC_MIN_INT64; /* [nbr] Number of nodes in mesh */
+    long nd_nbr=(long)NC_MIN_INT64; /* [nbr] Number of nodes in mesh */
     long srt_idx=0; /* [idx] start_index (C/Fortran) for edge_nodes, face_nodes */
 
     if(!dgx_nm) dgx_nm=(char *)strdup("mesh_edge_x");

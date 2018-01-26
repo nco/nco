@@ -1,3 +1,7 @@
+2018-01-26  Charlie Zender  <zender@uci.edu>
+
+	* Modify code to eliminate MSVC compiler warnings
+
 2018-01-25  Charlie Zender  <zender@uci.edu>
 
 	* Add _Filter printing to nco_prn_att()

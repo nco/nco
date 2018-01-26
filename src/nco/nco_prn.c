@@ -1859,7 +1859,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
     long chr_idx;
-    nco_bool is_compound; /* [flg] Variable is compound (has non-leading record dimension) */
     char * (*chr2sng_sf)(const char chr_val, /* I [chr] Character to process */
     char * const val_sng); /* I/O [sng] String to stuff printable result into */
 

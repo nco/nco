@@ -217,9 +217,9 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     /* Sanity-check */
     assert(col_nbr_out == (long)grd_sz_out);
   }else if(flg_grd_out_2D){
-    col_nbr_out=lat_nbr_out*lon_nbr_out;
     lat_nbr_out=dmn_sz_out_int[lat_psn];
     lon_nbr_out=dmn_sz_out_int[lon_psn];
+    col_nbr_out=lat_nbr_out*lon_nbr_out;
     /* Sanity-check */
     assert(lat_nbr_out*lon_nbr_out == (long)grd_sz_out);
   } /* !dst_grid_rank */
@@ -421,7 +421,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   size_t wgt_nbr=1L; /* [nbr] Number of weights */
   size_t lnk_nbr; /* [nbr] Number of links */
-  size_t lnk_idx; /* [idx] Link index */
+  //size_t lnk_idx; /* [idx] Link index */
 
   deflate=(int)True;
   shuffle=NC_SHUFFLE;
@@ -779,7 +779,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   long grd_crn_nbr_vrl; /* [nbr] Maximum number of corners in overlap polygon */
 
   size_t lnk_nbr; /* [nbr] Number of links */
-  size_t lnk_idx; /* [idx] Link index */
+  //size_t lnk_idx; /* [idx] Link index */
 
   /* Construct overlap mesh here
      NB: Parallelize loop with OpenMP and/or MPI

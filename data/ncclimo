@@ -310,6 +310,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Hopper b): qsub -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Rhea b):   qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
+# NB: stdout/stderr files returned from batch jobs are read-protected, need 'chmod 644 ~/ncclimo.out' afterwards
 
 # Normal use: Set five "mandatory" inputs (caseid, yr_srt, yr_end, drc_in, drc_out), and possibly rgr_map, on command line
 # caseid:  Simulation name (filenames must start with ${caseid})
