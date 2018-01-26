@@ -85,6 +85,8 @@ set(find_opt NO_SYSTEM_ENVIRONMENT_PATH)
 #If not found, business as usual
 #//////////////////////////
 
+# NETCDF_ROOT, if found in environment, will be searched after specific command line locations for NETCDF_INCLUDE
+# and NETCDF_LIBRARY
 set(netcdf_root "$ENV{NETCDF_ROOT}")
 if(netcdf_root)
   message("${color_blue}-- Using user-defined netCDF root location: ${netcdf_root}${color_reset}")
@@ -126,10 +128,6 @@ if(NETCDF_LIBRARY)
   else()
     if(netcdf_root)
         set(NETCDF_LIBRARY_PATH "${netcdf_root}/lib")
-        set(NETCDF_LIBRARY "${netcdf_root}/lib")
-    endif()
-    if(EXISTS "${NETCDF_LIBRARY}")
-        message("-- Using ${NETCDF_LIBRARY}")
     else()
         message(FATAL_ERROR "${color_red}Specified ${NETCDF_LIBRARY} does not exist${color_reset}")
     endif()
