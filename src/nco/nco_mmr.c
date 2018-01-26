@@ -503,7 +503,6 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
 
   int rcd_stm; /* [enm] Return code for /proc/PID/statm call */
   int rcd_stt; /* [enm] Return code for /proc/PID/stat call */
-  int rcd_sys; /* [enm] Return code for system call */
 
 #ifndef __GNUG__
   extern int errno; /* [enm] Error code in errno.h */
@@ -586,6 +585,7 @@ nco_mmr_usg_prn /* [fnc] Print rusage memory usage statistics */
 #endif /* !SUNMP */
 
   /* fxm: use input argument rusage_who instead of RUSAGE_SELF */
+  int rcd_sys; /* [enm] Return code for system call */
   rcd_sys=getrusage(RUSAGE_SELF,&usg);
   if(rcd_sys) rcd_sys+=0; /* CEWI */
   /* MACOSX rusage structure elements ru_utime and ru_stime are of type 'int' not 'long int' */

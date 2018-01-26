@@ -272,20 +272,19 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Generic when netCDF is in /usr (Ubuntu glace, Fedora skyglow)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-cd ~/nco/cmake
-cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}
+cd ~/nco;cmake/clean.sh
+cd ~/nco/cmake;cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}
 make install
 
 # clang Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories with CMake:
 # Generic when netCDF is in ~/anaconda (MacOS katabatic)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-cd ~/nco/cmake
 unset NETCDF_ROOT
 export NETCDF_INC='/usr/local/opt/netcdf/include'
 export NETCDF_LIB='/usr/local/opt/netcdf/lib'
-cmake .. -DCMAKE_INSTALL_PREFIX=${HOME} -DNETCDF_INCLUDE:PATH=${NETCDF_INC} -DNETCDF_LIBRARY:FILE=${NETCDF_LIB}/libnetcdf.a -DHDF5_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a -DHDF5_HL_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a
-cmake .. -DCMAKE_INSTALL_PREFIX=${HOME} -DNETCDF_INCLUDE:PATH=${NETCDF_INC} -DNETCDF_LIBRARY:PATH=${NETCDF_LIB} -DHDF5_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a -DHDF5_HL_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a
+cd ~/nco;cmake/clean.sh
+cd ~/nco/cmake;cmake .. -DCMAKE_INSTALL_PREFIX=${HOME} -DNETCDF_INCLUDE:PATH=${NETCDF_INC} -DNETCDF_LIBRARY:FILE=${NETCDF_LIB}/libnetcdf.a -DHDF5_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a -DHDF5_HL_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a
 make install
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in system directories with CMake:
