@@ -585,7 +585,6 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 #endif /* !ENABLE_DAP */
   int rcd_stt=0; /* [rcd] Return code from stat() */
   int rcd_sys; /* [rcd] Return code from system() */
-  int rcd_frd; /* [rcd] Return code from fread() and fclose() */
 
   size_t url_sng_lng=0L; /* CEWI */
 
@@ -827,7 +826,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
             /* fxm: use autoconf HAVE_XXX rather than WIN32 token TODO nco292 */
 #ifdef WIN32
             /* #ifndef HAVE_NETWORK fxm */
-            /* I have no idea how networking calls work in MS Windows, so just exit */
+            /* I have no idea how FTP networking calls work in MS Windows, so just exit */
             (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported by this operating system\n",nco_prg_nm_get(),fl_nm_rmt);
             nco_exit(EXIT_FAILURE);
 #else /* !WIN32 */
@@ -878,6 +877,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
               char *host_nm_rmt_psn;
               char *fl_netrc_bfr;
               FILE *fp_netrc; /* [fl] .netrc inpu file handle */
+	      int rcd_frd; /* [rcd] Return code from fread() and fclose() */
               if((fp_netrc=fopen(fl_nm_netrc,"r")) == NULL){
                 (void)fprintf(stderr,"%s: ERROR unable to open user's .netrc file %s\n",nco_prg_nm_get(),fl_nm_netrc);
                 /* Why did fopen() command fail? */
