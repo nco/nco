@@ -303,7 +303,10 @@ if (MSVC)
       CMAKE_C_FLAGS_RELWITHDEBINFO)
     string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
     endforeach()
-  endif()
+    add_definitions(-DNEED_STRCASECMP)
+  else()
+    add_definitions(-Dstrncasecmp=_strnicmp)
+  endif(MSVC_USE_STATIC_CRT)
 
   #//////////////////////////
   #compile as C++ Code (/TP)
@@ -986,3 +989,34 @@ if (UNIX)
  file(APPEND ${file_sh} "export PATH=\"${path}\"")
  execute_process(COMMAND chmod a+x ${file_sh} RESULT_VARIABLE res)
 endif()
+
+#//////////////////////////
+# compiler/linker warnings
+#//////////////////////////
+
+if(MSVC)
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
+if (MSVC_DEVELOPER)
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /wd4267 /wd4244 /wd4477")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4267 /wd4244 /wd4477")
+endif()
+endif()
+
+#//////////////////////////
+# disable .pdb not found warnings
+#//////////////////////////
+
+
+if (MSVC)
+set_target_properties(ncks PROPERTIES LINK_FLAGS "/ignore:4099")
+set_target_properties(ncbo PROPERTIES LINK_FLAGS "/ignore:4099")
+set_target_properties(ncecat PROPERTIES LINK_FLAGS "/ignore:4099")
+set_target_properties(ncflint PROPERTIES LINK_FLAGS "/ignore:4099")
+set_target_properties(ncpdq PROPERTIES LINK_FLAGS "/ignore:4099")
+set_target_properties(ncra PROPERTIES LINK_FLAGS "/ignore:4099")
+set_target_properties(ncrename PROPERTIES LINK_FLAGS "/ignore:4099")
+set_target_properties(ncatted PROPERTIES LINK_FLAGS "/ignore:4099")
+set_target_properties(ncwa PROPERTIES LINK_FLAGS "/ignore:4099")
+set_target_properties(ncap2 PROPERTIES LINK_FLAGS "/ignore:4099")
+endif (MSVC)
