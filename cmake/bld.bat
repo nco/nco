@@ -264,8 +264,9 @@ if exist Debug\ncks.exe (
   echo building NCO
   rm -rf CMakeCache.txt CMakeFiles
   cmake .. -G %MSVC_VERSION% ^
+  -DMSVC_DEVELOPER=ON ^
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF ^
   -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
   -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
   -DNETCDF_LIBRARY:FILE=%root%/netcdf-c/build/liblib/Debug/netcdf.lib ^
   -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
