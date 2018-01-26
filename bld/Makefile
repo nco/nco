@@ -22,7 +22,7 @@
 # frazil.ess.uci.edu : NCO          Configure All else clang
 # glace.ess.uci.edu  : NCO          CMake     All else GCC
 # grele.ess.uci.edu  : NCO          Makefile  All else GCC
-# katabatic.ess.uci.e: NCO                    All else clang
+# katabatic.ess.uci.e: NCO          CMake     All else clang
 # rhea.ccs.ornl.gov  : NCO          Makefile  All else GCC
 # roulee.ess.uci.edu : NCO + netCDF Makefile  All else GCC
 # skyglow.ess.uci.edu: NCO + netCDF Configure All else GCC

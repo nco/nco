@@ -1,5 +1,7 @@
 2018-01-26  Charlie Zender  <zender@uci.edu>
 
+	* Give cmake -DNETCDF_INCLUDE:PATH=${NETCDF_INC} precedence over ${NETCDF_ROOT}/include, same for lib
+
 	* Modify code to eliminate MSVC compiler warnings
 
 2018-01-25  Charlie Zender  <zender@uci.edu>
