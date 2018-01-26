@@ -1,5 +1,7 @@
 2018-01-25  Charlie Zender  <zender@uci.edu>
 
+	* Add _Filter printing to nco_prn_att()
+
 	* Add timers to ncclimo
 
 	* Add nc[o]_def/inq_var_filter() stubs
