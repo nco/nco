@@ -26,7 +26,6 @@
 
 #ifdef _MSC_VER
 # define NEED_STRSEP
-# define NEED_STRCASECMP 
 # define NEED_STRCASESTR
 #endif /* !_MSC_VER */
 

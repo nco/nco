@@ -303,7 +303,10 @@ if (MSVC)
       CMAKE_C_FLAGS_RELWITHDEBINFO)
     string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
     endforeach()
-  endif()
+    add_definitions(-DNEED_STRCASECMP)
+  else()
+    add_definitions(-Dstrncasecmp=_strnicmp)
+  endif(MSVC_USE_STATIC_CRT)
 
   #//////////////////////////
   #compile as C++ Code (/TP)
