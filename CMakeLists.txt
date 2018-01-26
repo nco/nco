@@ -997,6 +997,10 @@ endif()
 if(MSVC)
 add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 add_definitions(-D_CRT_NONSTDC_NO_DEPRECATE)
+if (MSVC_DEVELOPER)
+  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /wd4267 /wd4244 /wd4477")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /wd4267 /wd4244 /wd4477")
+endif()
 endif()
 
 #//////////////////////////
