@@ -269,6 +269,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --dbg=1 -a fv2se_stt --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc
 # ncremap --dbg=1 -i ~/foo_fv129x256.nc -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc -o ~/foo_ne30.nc
 # ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --se_mtd=${DATA}/grids/ne30np4_latlon.091226.nc --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
+# Atmosphere->Ocean:
+# ncremap --dbg=1 --a2o -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180101.nc
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
 
@@ -317,6 +319,7 @@ fi # !TERM
 
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
+a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
 alg_typ='bilinear' # [nbr] Algorithm for remapping (bilinear|conserve|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt)
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
@@ -425,6 +428,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "            ESMF algorithms: bilinear|conserve|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt"
     echo "            Tempest algorithms: tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt"
+    echo " ${fnt_bld}--a2o${fnt_nrm}   Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
@@ -556,6 +560,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       # Long options with no argument, no short option counterpart
 	       # Long options with argument, no short option counterpart
 	       # Long options with short counterparts, ordered by short option key
+	       a2o=?* | atm2ocn=?* | b2l=?* | big2ltl=?* | l2s=?* | lrg2sml=?* ) a2o_flg='Yes' ;; # # Atmosphere-to-ocean
+	       a2o=?* | atm2ocn=?* | b2l=?* | big2ltl=?* | l2s=?* | lrg2sml=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Atmosphere-to-ocean
 	       alg_typ=?* | algorithm=?* | regrid_algorithm=?* ) alg_typ="${LONG_OPTARG}" ;; # -a # Algorithm
 	       clm_flg=?* | climatology_flag=?* ) clm_flg='Yes' ;; # -C # Climo flag (undocumented)
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
@@ -1656,6 +1662,9 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'sgs' ]; then
     fi # !esmf
     if [ "${wgt_typ}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} > /dev/null"
+	if [ "${a2o_flg}" = 'Yes' ]; then 
+	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --b ${grd_src} --a ${grd_dst} --out ${msh_fl} > /dev/null"
+	fi # !a2o_flg
 	cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
 	if [ "${trn_map}" = 'Yes' ]; then 
 	    # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
@@ -1814,6 +1823,9 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ "${wgt_typ}" = 'tempest' ]; then 
 	    printf "Mesh-File: ${msh_fl}\n"
 	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} > /dev/null"
+	    if [ "${a2o_flg}" = 'Yes' ]; then 
+		cmd_msh[${fl_idx}]="GenerateOverlapMesh --b ${grd_src} --a ${grd_dst} --out ${msh_fl} > /dev/null"
+	    fi # !a2o_flg
 	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
 	    if [ "${trn_map}" = 'Yes' ]; then 
 		# NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
