@@ -232,7 +232,7 @@ if exist %root_win%\GSL\build\GSL.sln (
 )
 
 :build_antlr
-if exist %root_win%\antlr\lib\cpp\build\antlr.sln (
+if exist %root_win%\antlr2\lib\cpp\build\antlr.sln (
  echo skipping antlr build
  goto build_nco
 ) else (
@@ -280,8 +280,8 @@ if exist Debug\ncks.exe (
   -DGSL_INCLUDE:PATH=%root%/gsl/build ^
   -DGSL_LIBRARY:FILE=%root%/gsl/build/Debug/gsl.lib ^
   -DGSL_CBLAS_LIBRARY:FILE=%root%/gsl/build/Debug/gslcblas.lib ^
-  -DANTLR_INCLUDE:PATH=%root%/antlr/lib/cpp ^
-  -DANTLR_LIBRARY:FILE=%root%/antlr/lib/cpp/build/Debug/antlr.lib 
+  -DANTLR_INCLUDE:PATH=%root%/antlr2/lib/cpp ^
+  -DANTLR_LIBRARY:FILE=%root%/antlr2/lib/cpp/build/Debug/antlr.lib 
   msbuild nco.sln /target:build /property:configuration=debug
   if errorlevel 1 goto :eof
 )

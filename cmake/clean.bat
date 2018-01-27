@@ -1,4 +1,4 @@
-rmdir antlr\lib\cpp\build /s /q
+rmdir antlr2\lib\cpp\build /s /q
 rmdir curl\builds /s /q
 rmdir gsl\build /s /q
 rmdir hdf5\build /s /q
