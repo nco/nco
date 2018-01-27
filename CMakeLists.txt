@@ -1055,13 +1055,24 @@ set_target_properties(ncap2 PROPERTIES LINK_FLAGS "/ignore:4099")
 endif (MSVC)
 
 #//////////////////////////
-# use of strncasecmp (MSVC does not define strncasecmp)
+# use of strcasecmp and strncasecmp
+# UDUNITS2 defines strcasecmp
 #//////////////////////////
+
+if (UDUNITS2_LIBRARY AND UDUNITS2_INCLUDE)
+ set(have_udunits)
+endif()
 
 if (MSVC)
   if (MSVC_USE_STATIC_CRT)
-    add_definitions(-DNEED_STRCASECMP)
-  else()
+    if (NOT ${have_udunits})
+      add_definitions(-DNEED_STRCASECMP)
+    endif()
+    add_definitions(-DNEED_STRNCASECMP)
+  else(MSVC_USE_STATIC_CRT)
+    if (NOT ${have_udunits})
+      add_definitions(-Dstrcasecmp=_stricmp)
+    endif()
     add_definitions(-Dstrncasecmp=_strnicmp)
   endif(MSVC_USE_STATIC_CRT)
 endif(MSVC)
