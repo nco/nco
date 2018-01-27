@@ -336,9 +336,6 @@ if (MSVC)
       CMAKE_C_FLAGS_RELWITHDEBINFO)
     string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
     endforeach()
-    add_definitions(-DNEED_STRCASECMP)
-  else()
-    add_definitions(-Dstrncasecmp=_strnicmp)
   endif(MSVC_USE_STATIC_CRT)
 
   #//////////////////////////
@@ -1056,3 +1053,15 @@ set_target_properties(ncatted PROPERTIES LINK_FLAGS "/ignore:4099")
 set_target_properties(ncwa PROPERTIES LINK_FLAGS "/ignore:4099")
 set_target_properties(ncap2 PROPERTIES LINK_FLAGS "/ignore:4099")
 endif (MSVC)
+
+#//////////////////////////
+# use of strncasecmp (MSVC does not define strncasecmp)
+#//////////////////////////
+
+if (MSVC)
+  if (MSVC_USE_STATIC_CRT)
+    add_definitions(-DNEED_STRCASECMP)
+  else()
+    add_definitions(-Dstrncasecmp=_strnicmp)
+  endif(MSVC_USE_STATIC_CRT)
+endif(MSVC)
