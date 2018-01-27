@@ -156,11 +156,33 @@ if (has_nc_inq_path)
   message("-- Found nc_inq_path in: " ${NETCDF_LIBRARY})
   add_definitions(-DHAVE_NC_INQ_PATH)
 endif()
+
 check_library_exists(${NETCDF_LIBRARY} nc_inq_format "" has_nc_inq_format)
 if (has_nc_inq_format)
   message("-- Found nc_inq_format in: " ${NETCDF_LIBRARY})
   add_definitions(-DHAVE_NC_INQ_FORMAT)
 endif()
+
+#/////////////////////////////////////////////////////////////////////////////////////
+#netCDF 4.6.0 
+#nc_def_var_filter , has_inq_var_filter, define NC_LIB_VERSION=460 if both found 
+#/////////////////////////////////////////////////////////////////////////////////////
+
+check_library_exists(${NETCDF_LIBRARY} nc_def_var_filter "" has_nc_def_var_filter)
+if (has_nc_def_var_filter)
+  message("-- Found nc_def_var_filter in: " ${NETCDF_LIBRARY})
+  add_definitions(-DHAVE_NC_DEF_VAR_FILTER)
+endif()
+
+check_library_exists(${NETCDF_LIBRARY} nc_inq_var_filter "" has_inq_var_filter)
+if (has_inq_var_filter)
+  message("-- Found has_inq_var_filter in: " ${NETCDF_LIBRARY})
+  add_definitions(-DHAVE_NC_INQ_VAR_FILTER)
+endif()
+
+if (has_nc_def_var_filter AND has_inq_var_filter)
+  add_definitions(-DNC_LIB_VERSION=460)
+endif ()
 
 find_path(path_netcdf_mem_h netcdf_mem.h PATHS ${NETCDF_INCLUDE})
 if (path_netcdf_mem_h)

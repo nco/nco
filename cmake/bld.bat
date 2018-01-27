@@ -265,7 +265,7 @@ if exist Debug\ncks.exe (
   rm -rf CMakeCache.txt CMakeFiles
   cmake .. -G %MSVC_VERSION% ^
   -DMSVC_DEVELOPER=ON ^
-  -DCMAKE_VERBOSE_MAKEFILE:BOOL=OFF ^
+  -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
   -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
   -DNETCDF_INCLUDE:PATH=%root%/netcdf-c/include ^
   -DNETCDF_LIBRARY:FILE=%root%/netcdf-c/build/liblib/Debug/netcdf.lib ^
