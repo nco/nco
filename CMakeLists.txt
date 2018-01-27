@@ -54,7 +54,7 @@ endif()
 #on multi-configuration generators (Visual Studio, Xcode) define only 2 types: Debug;Release
 #/////////////////////////////////////////////////////////////////////////////////////
 
-set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build.")
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 endif()
