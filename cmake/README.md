@@ -124,7 +124,7 @@ edit hdf5-static.vcxproj and add full path of ZLIB and SZIP libraries as depende
 ```
 <Lib>
 <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>I:\nco\cmake\zlib\build\Debug\zlibstaticd.lib;I:\nco\cmake\szip\build\bin\Debug\libszip_D.lib</AdditionalDependencies>
+<AdditionalDependencies>E:\nco\cmake\zlib\build\Debug\zlibstaticd.lib;E:\nco\cmake\szip\build\bin\Debug\libszip_D.lib</AdditionalDependencies>
 </Lib>
 ```
 
@@ -135,7 +135,7 @@ edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
 ```
 <Lib>
 <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_hl_D.lib;I:\nco\cmake\hdf5\build\bin\Debug\libhdf5_D.lib;I:\nco\cmake\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+<AdditionalDependencies>E:\nco\cmake\hdf5\build\bin\Debug\libhdf5_hl_D.lib;E:\nco\cmake\hdf5\build\bin\Debug\libhdf5_D.lib;E:\nco\cmake\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
 </Lib>
 ```
 
@@ -145,7 +145,7 @@ edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
 ```
 git clone https://github.com/Unidata/netcdf-c
 pushd netcdf-c
-git checkout tags/v4.5.0
+git checkout tags/v4.6.0
 popd
 git clone https://github.com/curl/curl
 git clone https://github.com/madler/zlib
@@ -154,7 +154,7 @@ git clone https://github.com/live-clones/hdf5
 git clone https://github.com/Unidata/UDUNITS-2
 git clone https://github.com/libexpat/libexpat
 git clone https://github.com/ampl/gsl
-git clone https://github.com/Distrotech/antlr2
+git clone https://github.com/nco/antlr
 ```
 
 
