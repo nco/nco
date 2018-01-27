@@ -246,7 +246,7 @@ if exist %root_win%\antlr\lib\cpp\build\antlr.sln (
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF
-  msbuild Project.sln /target:build /property:configuration=debug
+  msbuild antlr.sln /target:build /property:configuration=debug
   popd
   popd
   popd
