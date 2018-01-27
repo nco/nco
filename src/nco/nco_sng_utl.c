@@ -62,7 +62,9 @@ strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
     if(chr_1 == 0)    return 0;
   } /* end while */
 } /* end strcasecmp() */
+#endif /* !NEED_STRCASECMP */
 
+#ifdef NEED_STRNCASECMP
 int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
 strncasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 (const char * const sng_1, /* I [sng] First string */
@@ -94,7 +96,7 @@ strncasecmp /* [fnc] Lexicographical case-insensitive string comparison */
   } /* end while */
   return 0;
 } /* end strncasecmp() */
-#endif /* !NEED_STRCASECMP */
+#endif /* !NEED_STRNCASECMP */
 
 #ifdef NEED_ISBLANK
 int /* O [flg] Character is a space or horizontal tab */

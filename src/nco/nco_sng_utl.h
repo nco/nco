@@ -29,9 +29,9 @@
 # define NEED_STRCASESTR
 #endif /* !_MSC_VER */
 
-#if defined(NEED_STRCASECMP) || defined(NEED_STRCASESTR)
+#if (defined NEED_STRCASECMP) || (defined NEED_STRNCASECMP) || (defined NEED_STRDUP)
 # include <ctype.h> /* isalnum(), isdigit(), tolower() */
-#endif /* !NEED_STRCASECMP || !NEED_STRCASESTR */
+#endif /* NEED_STRCASECMP || NEED_STRNCASECMP || NEED_STRDUP */
 
 /* 3rd party vendors */
 
@@ -60,13 +60,15 @@ extern "C" {
   strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
   (const char * const sng_1, /* I [sng] First string */
    const char * const sng_2); /* I [sng] Second string */
+#endif /* !NEED_STRCASECMP */
   
+#ifdef NEED_STRNCASECMP
   int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
   strncasecmp /* [fnc] Lexicographical case-insensitive string comparison */
   (const char * const sng_1, /* I [sng] First string */
    const char * const sng_2, /* I [sng] Second string */
    const size_t chr_nbr); /* I [nbr] Compare at most chr_nbr characters */
-#endif /* !NEED_STRCASECMP */
+#endif /* !NEED_STRNCASECMP */
   
   /* 20161205 GNU since gcc 4.7.3 provides strcasestr() as non-standard extension iff _GNU_SOURCE is defined */
 #if 0

@@ -33,9 +33,9 @@
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_prn.h" /* Print variables, attributes, metadata */
-#if (defined NEED_STRCASECMP) || (defined NEED_STRDUP)
+#if (defined NEED_STRCASECMP) || (defined NEED_STRNCASECMP) || (defined NEED_STRDUP)
 # include "nco_sng_utl.h" /* String utilities */
-#endif /* NEED_STRCASECMP || NEED_STRDUP */
+#endif /* NEED_STRCASECMP || NEED_STRNCASECMP || NEED_STRDUP */
 
 #ifdef __cplusplus
 extern "C" {
