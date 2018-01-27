@@ -54,7 +54,7 @@ endif()
 #on multi-configuration generators (Visual Studio, Xcode) define only 2 types: Debug;Release
 #/////////////////////////////////////////////////////////////////////////////////////
 
-set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build.")
 if(CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_CONFIGURATION_TYPES "Debug;Release")
 endif()
@@ -328,12 +328,8 @@ if (MSVC)
     message("-- Using static CRT ${MSVC_USE_STATIC_CRT}")
     foreach(flag_var CMAKE_CXX_FLAGS_DEBUG 
       CMAKE_CXX_FLAGS_RELEASE
-      CMAKE_CXX_FLAGS_MINSIZEREL 
-      CMAKE_CXX_FLAGS_RELWITHDEBINFO
       CMAKE_C_FLAGS_DEBUG 
-      CMAKE_C_FLAGS_RELEASE
-      CMAKE_C_FLAGS_MINSIZEREL 
-      CMAKE_C_FLAGS_RELWITHDEBINFO)
+      CMAKE_C_FLAGS_RELEASE)
     string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
     endforeach()
   endif(MSVC_USE_STATIC_CRT)
@@ -343,9 +339,7 @@ if (MSVC)
   #//////////////////////////
   
   foreach(flag_var CMAKE_C_FLAGS_DEBUG 
-    CMAKE_C_FLAGS_RELEASE
-    CMAKE_C_FLAGS_MINSIZEREL 
-    CMAKE_C_FLAGS_RELWITHDEBINFO)
+    CMAKE_C_FLAGS_RELEASE)
   set(${flag_var} "/TP ${${flag_var}}")
   endforeach()
 
