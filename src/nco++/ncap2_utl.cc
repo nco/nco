@@ -14,7 +14,7 @@
 std::vector<std::string> /* [O] [vector] array of files paths to be used to locate include files */
 ncap_make_include_paths(const char *spaths)       /* list of file path(s) delimited by ':' */
 {
-  int vdx;
+  unsigned long vdx;
   size_t srt; 
   size_t idx; 
   std::vector<std::string> str_vtr;  
@@ -78,7 +78,7 @@ ncap_var_is_op_doable( var_sct *var1, var_sct *var2)
   if( var1->sz==var2->sz) 
     return True; 
   
-  if( var1->sz >1 && var2->sz==1 || var1->sz==1 && var2->sz>1)
+  if( (var1->sz >1 && var2->sz==1) || (var1->sz==1 && var2->sz>1))
     return True;
 
   return False;
@@ -1132,7 +1132,7 @@ var_sct* var_var_op(var_sct* var1 , var_sct* var2, int op)
       default: nco_dfl_case_nc_type_err(); break;
       }
   }
-   else if( var1->sz ==1 && var2->sz>1 || var1->sz>1 && var2->sz==1 ) 
+  else if( (var1->sz ==1 && var2->sz>1) || (var1->sz>1 && var2->sz==1) ) 
    {
      switch (var1->type) 
       {

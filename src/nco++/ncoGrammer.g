@@ -819,7 +819,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 	long jdx;
 	long sz;   
     long dmn_sz;     
-    ptr_unn op1;
 	var_sct *var;
 	std::string fnc_nm="lmt_var_mk"; 
 	
@@ -909,7 +908,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 
 int idx;
 int jdx;
-int sz;
 long ldx=0L;
 var_sct *var_out;
 lmt_sct *lmt_ptr;
@@ -1417,7 +1415,6 @@ static std::vector<std::string> lpp_vtr;
           bunlimited =true;
         } else    
         if(dCall==1 && var2){
-           int ityp;
            // nb var2 is in upper scope - defined at statment action start
            var2=nco_var_cnf_typ(NC_INT,var2);
            (void)cast_void_nctype(NC_INT,&var2->val);
@@ -1964,8 +1961,8 @@ end0:         if(bret)
           | vid2:VAR_ID {
 
                // Set class wide variables
-               var_sct *var_rhs;
-               var_sct *var_shp;
+               var_sct *var_rhs=NULL_CEWI; ;
+               var_sct *var_shp=NULL_CEWI; ;
                NcapVar *Nvar;
                std::string var_nm;
  
@@ -2127,11 +2124,11 @@ end0:         if(bret)
             { 
               long szn; 
               long idx; 
-              long cnt=0;  
-              char buffer[NC_MAX_ATTRS];  
 
+              char buffer[NC_MAX_ATTRS];  
+               
               buffer[0]='\0';
- 
+              cnt=0L;
               cast_void_nctype(NC_STRING, &var_lhs->val);    
               cast_void_nctype(var_rhs->type, &var_rhs->val);     
                
@@ -2933,7 +2930,7 @@ NcapVar *Nvar;
     // Plain attribute
     |   att:ATT_ID { 
             // check "output"
-            NcapVar *Nvar=NULL;
+
          
             if(att->getFirstChild())
                 err_prn(fnc_nm,"Invalid Lvalue " +att->getText() );
@@ -2976,7 +2973,7 @@ att_plain returns [var_sct *var]
 const std::string fnc_nm("att_plain");
 var=NULL_CEWI; 
 string att_nm; 
-NcapVar *Nvar;
+
    
 }
 
@@ -3151,7 +3148,7 @@ var=NULL_CEWI;
 }
  :(vlst:VALUE_LIST) {
 
-         char *cp;
+
          int nbr_lst;
          int idx;
          int tsz;
@@ -3432,7 +3429,6 @@ var_sct *var_rhs;
     char *cp_out;
     short *sp;
     long idx;
-    long jdx;
     long sz;
     size_t slb_sz;
 
@@ -3602,7 +3598,6 @@ var_sct *var_nbr;
 }
   :#(vid:VAR_ID #(LMT_LIST #(LMT var_nbr=out))) {
                int idx; 
-               int var_id; 
                int slb_sz;
                long srt;
 
