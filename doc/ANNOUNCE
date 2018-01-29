@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.7.2 have slithered out.
+The netCDF Operators NCO version 4.7.3 have hatched.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
-http://github.com/nco (Source Code, Releases, Developers)
+http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.2 contains one new cool feature for ncremap, one important
+Version 4.7.3 contains one new cool feature for ncremap, one important
 bugfix for the splitter, and assorted minor improvements and fixes.
 ncremap now implements E3SM-recommended Tempest remapping algorithms
 for all combinations of FV<->SE remapping for flux and state variables. 
@@ -26,65 +26,31 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. ncremap implements E3SM-recommended Tempest remapping algorithms. 
-   ncremap can now easily generate and use the each of the six
-   E3SM-recommended mappings between FV<->SE flux & state variables.
-   ncremap automatically employs the "boutique" TempestRemap options 
-   so long as Tempest2 is installed.
-   ncremap -a se2fv_flx --src_grd=ne30.g --dst_grd=fv.nc -m map.nc
-   ncremap -m map.nc in.nc out.nc
-   Canonical algorithm names are se2fv_flx, se2fv_stt, se2fv_alt,
-   fv2se_flx, fv2se_stt, fv2se_alt.
+   It has done so since 4.7.2, but that version omitted a switch that
+   only a user can provide, and is necessary to indicate to
+   TempestRemap to generate mapping weights from a source grid that
+   has more coverage than the destination grid, i.e., the destination
+   grid is a subset of the source. The switch is --a2o, or --atm2ocn,
+   or numerous synonyms (b2l, big2ltl, l2s, lrg2sml).
+   When computing the intersection of two meshes, TempestRemap uses an
+   algorithm (an executable named GenerateOverlapMesh) that expects
+   the mesh with less coverage to be the first grid, and the grid with
+   greater coverage to be the second, regardless of mapping direction.
+   By default, ncremap supplies the source grid first and the
+   destination second, and this order causes GenerateOverlapMesh to
+   fail when the source grid covers regions not in the destination
+   grid. For example, a global atmosphere grid has more coverage than
+   a global ocean grid, so that remapping from atmosphere-to-ocean
+   would require invoking the --atm2ocn switch:
+   ncremap --a2o -a se2fv_flx --src_grd=ne30.g --dst_grd=fv.nc -m map.nc
+   http://nco.sf.net/nco.html#a2o
    http://nco.sf.net/nco.html#ncremap
    
-B. ncremap supports "canonical" NCO argument ordering.
-   Canonical ordering is: command [options] [input] [output].
-   Previously ncremap required the use of options (like -i
-   and -o) or pipes to supply filenames:
-   ncremap -m map.nc -i in.nc -o out.nc
-   ncremap -m map.nc -o out.nc in.nc
-   ncremap -m map.nc -O out_dir in1.nc in2.nc
-   ls in.nc | ncremap -m map.nc -o out.nc
-   ncremap -m map.nc -o out.nc < in.nc
-   Now ncremap finally supports the canonical ordering of command line
-   arguments most frequently desired for one-off regridding, where a
-   single input and output filename are supplied as command-line
-   positional arguments without switches, pipes, or redirection:
-   ncremap -m map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#ncremap
-   http://nco.sf.net/nco.html#alg_typ
-
-C. ncremap support a --mss_val=val option for MPAS data.
-   ncremap pre-processes MPAS datasets (indicated with -P mpas) and
-   annotates their floating point variables with the _FillValue
-   attribute. By default it sets _FillValue to the correct value
-   for MPAS ocean and sea-ice models. However, the MPAS land-ice model
-   uses a different missing value. Hence this option is usually
-   invoked as --mss_val=-1.0e36 to facilitate processing of
-   MPAS land-ice datasets. 
-   ncremap -P mpas --mss_val=-1.0e36 -s ais.nc -i data.nc -g fv.nc -o out.nc
-   http://nco.sf.net/nco.html#ncremap
-   http://nco.sf.net/nco.html#mss_val_ncremap
-
-D. ncclimo has improved support for NCAR cheyenne batch queues
-   Previously ncclimo -p mpi failed on Cheyenne due to differences
-   between SGI MPT mpirun and "normal" mpirun syntax.
-   Now ncclimo uses mpirun syntax expected by SGI MPT on cheyenne.
-   qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l \
-   walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out 
-   http://nco.sf.net/nco.html#ncclimo
+A. fxm
 
 BUG FIXES:
 
-A. Fix ncclimo splitter bug when the total number requested
-   time-periods (usually years) of averaging is not evenly divisible
-   by the maximum number of time-periods per output-file.
-   Previously the splitter would omit time-series segments.
-   The workaround for NCO < 4.7.2 is to specify a maximum number
-   of years-per-file that evenly divides the total number of years.
-   For example, split a 75 year climatology by setting --ypf
-   to 1, 3, 5, 15, 25, or 75 or greater.
-   The solution is to upgrade to 4.7.2.
-   Then you can use the default (ypf=50) or any other value.
+A. fxm
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -92,9 +58,9 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.7.2 built/tested under
+   These problems occur with NCO 4.7.3 built/tested under
    MacOS 10.13.2 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
-   Linux with netCDF 4.5.1-development (20180110) on HDF5 1.8.19.
+   Linux with netCDF 4.6.1-development (20180110) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments

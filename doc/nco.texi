@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.3-alpha01
-@set doc-edition 4.7.3-alpha01
+@set nco-edition 4.7.3-alpha02
+@set doc-edition 4.7.3-alpha02
 @set copyright-years 1995--2018
 @set update-year 2018
 @set update-date 29 January 2018
@@ -22401,31 +22401,55 @@ added as canonical options for @command{ncremap}.
 @cindex @code{--l2s}
 @cindex @code{--lrg2sml}
 @item --a2o (@code{--a2o}, @code{--atm2ocn}, @code{--b2l}, @code{--big2ltl}, @code{--l2s}, @code{--lrg2sml})
-Use these flags which take no argument to indicate to TempestRemap to
-generate mapping weights from a source grid that has more coverage than
-the destination grid, e.g., the destination grid is a subset of the
-source.
+Use one of these flags (which takes no argument) to indicate to
+TempestRemap to generate mapping weights from a source grid that has
+more coverage than the destination grid, i.e., the destination grid is a 
+subset of the source.
 When computing the intersection of two meshes, TempestRemap uses an
 algorithm (an executable named @command{GenerateOverlapMesh}) that
 expects the mesh with less coverage to be the first grid, and the
-grid with greater coverage to be the second, regardless of the direction
-of the mapping.
+grid with greater coverage to be the second, regardless of the mapping
+direction.
 By default, @command{ncremap} supplies the source grid first and the
 destination second, and this order causes @command{GenerateOverlapMesh} 
-to fail when the source grid has more coverage.
+to fail when the source grid covers regions not in the destination
+grid. 
 For example, a global atmosphere grid has more coverage than a global
 ocean grid, so that remapping from atmosphere-to-ocean would require
-invoking the @samp{--atm2ocn} switch.
-Remapping from global ocean-to-atmosphere grids, on the other hand,
-does not require (and should not invoke) this switch.
+invoking the @samp{--atm2ocn} switch:
 @example
 # Use --a2o to generate weights for "big" to "little" remaps:
 ncremap --a2o -a se2fv_flx --src_grd=atm.nc --dst_grd=ocn.nc -m map.nc
 # Otherwise, omit it:
 ncremap       -a se2fv_flx --src_grd=ocn.nc --dst_grd=atm.nc -m map.nc
+ncremap       -a se2fv_flx --src_grd=atm1.nc --dst_grd=atm2.nc -m map.nc
+# Only necessary when generating, not applying, weights:
+ncremap -m atm2ocn.nc in.nc out.nc
 @end example
-These switches are only available in @acronym{NCO} version 4.7.3
-(February, 2017) and later.
+As shown in the second example above, remapping from global
+ocean-to-atmosphere grids does not require (and should not invoke) this
+switch. 
+The third example shows that the switch is only needed when
+@emph{generating} weights, not when applying them. 
+The switch is never needed (and is ignored) when generating weights
+with @acronym{ERWG} (which constructs the intersection mesh with a
+different algorithm than TempestRemap).
+Attempting to remap a larger source grid to a subset destination grid
+without using @samp{--a2o} causes @command{GenerateOverlapMesh} to emit
+an error (and a potential workaround) like this:
+@example
+....Nearest target face 130767
+....ERROR: No overlapping face found
+....This may be caused by mesh B being a subset of mesh A
+....Try swapping order of mesh A and B, or override with --allow_no_overlap
+....EXCEPTION (../src/OverlapMesh.cpp, Line 1738) Exiting
+@end example
+The @samp{--a2o} switch and its synonyms are available in @acronym{NCO}
+version 4.7.3 (February, 2018) and later.
+Currently (January, 2018) @code{ncremap} has no means of transmitting
+options (like @samp{--allow_no_overlap} to
+@command{GenerateOverlapMesh}.
+Please let us know if this capability is important to you.
 
 @html
 <a name="dbg_lvl"></a> <!-- http://nco.sf.net/nco.html#dbg_lvl -->

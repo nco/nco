@@ -1,8 +1,16 @@
+2018-01-29  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.3-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha02: Hedgy';git push
+	git tag -a 4.7.3-alpha02 -m 'AppVeyor, a2o, nco_def/inq_var_filter(), _Filter';git push --tags
+
 2018-01-28  Charlie Zender  <zender@uci.edu>
 
 	* Integrate --a2o with consistenly with GenerateOverlapMesh call for all options including monotr
 
 2018-01-26  Charlie Zender  <zender@uci.edu>
+
+	* Pedro, Filipe, Isuru, and Xylar fixed AppVeyor failure
 
 	* ncremap --a2o indicates large-to-small regridding, e.g., atmosphere-to-ocean, so reverse grids in GenerateOverlapMesh
 
