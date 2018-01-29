@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.7 (20161013): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.7 (20160429): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -12,7 +12,7 @@
 
 /* Purpose: ANTLR Grammar and support files for ncap2 */
 
-/* Copyright (C) 1995--2017 Charlie Zender
+/* Copyright (C) 1995--2018 Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
@@ -180,7 +180,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 	long jdx;
 	long sz;   
     long dmn_sz;     
-    ptr_unn op1;
 	var_sct *var;
 	std::string fnc_nm="lmt_var_mk"; 
 	
@@ -270,7 +269,6 @@ NcapVector<lmt_sct*> &lmt_vtr )
 
 int idx;
 int jdx;
-int sz;
 long ldx=0L;
 var_sct *var_out;
 lmt_sct *lmt_ptr;
