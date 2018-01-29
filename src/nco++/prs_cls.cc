@@ -312,8 +312,8 @@ prs_cls::ncap_var_write_omp(
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char fnc_nm[]="prs_cls::ncap_var_write";
 
-  int idx;
-  int rcd; /* [rcd] Return code */
+
+
   int var_out_id;
   
   bool bdef=false;
@@ -552,11 +552,11 @@ prs_cls::ncap_var_write_omp(
 
 void prs_cls::ncap_def_ntl_scn(void) {
   int idx;
-  int jdx;
+
   int sz;
   int var_id;
-  int rcd;
-  size_t cnks[NC_MAX_VAR_DIMS] = {0};
+
+  // size_t cnks[NC_MAX_VAR_DIMS] = {0};
   NcapVar *Nvar;
   NcapVar *Cvar;
   var_sct *var1;
@@ -749,9 +749,9 @@ int prs_cls::ncap_get_cnk_sz(var_sct *var){
     for(jdx=0;jdx< sz;jdx++  )
       if (dmn_in_vtr[jdx]->id == dim_id[idx])
         break;
-        cnt[idx]= ( jdx<sz ?   dmn_in_vtr[jdx]->cnt: 0);
+      cnt[idx]= ( jdx<sz ?   dmn_in_vtr[jdx]->cnt: 0);
 
-    }
+  }
 
 
   // compare disc var cnt with var->cnt
