@@ -22393,6 +22393,7 @@ added as canonical options for @command{ncremap}.
 <a name="l2s"></a> <!-- http://nco.sf.net/nco.html#l2s -->
 <a name="lrg2sml"></a> <!-- http://nco.sf.net/nco.html#lrg2sml -->
 @end html
+@cindex @command{GenerateOverlapMesh}
 @cindex @var{a2o}
 @cindex @code{--a2o}
 @cindex @code{--atm2ocn}
@@ -22411,9 +22412,9 @@ expects the mesh with less coverage to be the first grid, and the
 grid with greater coverage to be the second, regardless of the mapping
 direction.
 By default, @command{ncremap} supplies the source grid first and the
-destination second, and this order causes @command{GenerateOverlapMesh} 
-to fail when the source grid covers regions not in the destination
-grid. 
+destination second, but this order causes @command{GenerateOverlapMesh}  
+(which is agnostic about ordering when the grids have the same coverage)
+to fail when the source grid covers regions not in the destination grid.  
 For example, a global atmosphere grid has more coverage than a global
 ocean grid, so that remapping from atmosphere-to-ocean would require
 invoking the @samp{--atm2ocn} switch:

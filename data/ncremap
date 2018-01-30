@@ -381,7 +381,7 @@ sgs_nrm='1.0' # [frc] Sub-grid normalization
 std_flg='No' # [sng] Input available from pipe to stdin
 thr_nbr=2 # [nbr] Thread number for regridder
 tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
-trn_map='' # [flg] Tempest transpose map (i.e., fv2se_flx == monotr)
+trn_map='No' # [flg] Tempest transpose map (i.e., fv2se_flx == monotr)
 ugrid_fl='' # [sng] UGRID file
 unq_sfx=".pid${spt_pid}" # [sng] Unique suffix
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
@@ -1668,9 +1668,6 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'sgs' ]; then
 	cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
 	if [ "${trn_map}" = 'Yes' ]; then 
 	    # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-	    if [ "${a2o_flg}" != 'Yes' ]; then 
-		cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_dst} --b ${grd_src} --out ${msh_fl} > /dev/null"
-	    fi # !a2o_flg
 	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_dst} --out_mesh ${grd_src} --ov_mesh ${msh_fl} --out_map ${map_trn_fl} ${wgt_opt} > /dev/null"
 	    cmd_trn[${fl_idx}]="GenerateTransposeMap --in ${map_trn_fl} --out ${map_fl} > /dev/null"
 	fi # !trn_map
@@ -1831,9 +1828,6 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
 	    if [ "${trn_map}" = 'Yes' ]; then 
 		# NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-		if [ "${a2o_flg}" != 'Yes' ]; then 
-		    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_dst} --b ${grd_src} --out ${msh_fl} > /dev/null"
-		fi # !a2o_flg
 		cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_dst} --out_mesh ${grd_src} --ov_mesh ${msh_fl} --out_map ${map_trn_fl} ${wgt_opt} > /dev/null"
 		cmd_trn[${fl_idx}]="GenerateTransposeMap --in ${map_trn_fl} --out ${map_fl} > /dev/null"
 	    fi # !trn_map
