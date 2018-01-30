@@ -1,8 +1,10 @@
-2018-01-29  Charlie Zender  <zender@uci.edu>
+2018-01-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha02: Hedgy';git push
 	git tag -a 4.7.3-alpha02 -m 'AppVeyor, a2o, nco_def/inq_var_filter(), _Filter';git push --tags
+
+	* Fix and test a2o switch to work with transpose maps
 
 2018-01-28  Charlie Zender  <zender@uci.edu>
 
