@@ -315,7 +315,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp1[idx] != tmss )
 	      tp1[idx]+=*tp2;
-            else tp1[idx]=tmss;
 	    
        if(!bun) 
           { tp_swp=tp1;tp1=tp2;tp2=tp_swp;}    
@@ -332,7 +331,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 		for(idx=0 ; idx<sz ; idx++)
 		  if( tp1[idx] != tmss )
 		    tp1[idx]-=*tp2;
-		  else tp1[idx]=tmss;
 	  }
           else
 	  {
@@ -342,7 +340,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 		for(idx=0 ; idx<sz ; idx++)
 		  if( tp2[idx] != tmss )
 		    tp2[idx]=*tp1-tp2[idx];
-		  else tp2[idx]=tmss;
 	  }
           break;
 
@@ -359,7 +356,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++){
 	    if( tp1[idx] != tmss )
 	      tp1[idx]*=*tp2;
-	    else tp1[idx]=tmss;
 	  }
 	}  
         if(!bun) 
@@ -376,7 +372,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp1[idx] != tmss )
 	      tp1[idx] /= *tp2;
-	    else tp1[idx]=tmss;
 	  
 	}  
         else
@@ -387,7 +382,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp2[idx] != tmss )
 	      tp2[idx]= *tp1 / tp2[idx];
-	    else tp2[idx]=tmss;
 	  
 	}  
 
@@ -415,8 +409,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp1[idx] != tmss )
 	      tp1[idx]=tp1[idx] &&  *tp2;
-	    else tp1[idx]=tmss;
-	  
 	 
         if(!bun) 
           { tp_swp=tp1;tp1=tp2;tp2=tp_swp;}    
@@ -433,9 +425,8 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] ||  *tp2;
 	else
 	  for(idx=0 ; idx<sz ; idx++)
-	    if( tp1[idx] != tmss && tp2[idx] != tmss)
+	    if( tp1[idx] != tmss )
 	      tp1[idx]=tp1[idx] ||  *tp2;
-	    else tp1[idx]=tmss;
 	
         if(!bun) 
           { tp_swp=tp1;tp1=tp2;tp2=tp_swp;}    
@@ -452,7 +443,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp1[idx] != tmss )
 	      tp1[idx]=tp1[idx] < *tp2;
-	    else tp1[idx]=tmss;
 	} 
         else
         {
@@ -462,7 +452,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp2[idx] != tmss )
 	      tp2[idx]=*tp1 < tp2[idx];
-	    else tp2[idx]=tmss;
 	}  
         break;
 
@@ -476,7 +465,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp1[idx] != tmss )
 	      tp1[idx]=tp1[idx] > *tp2;
-	    else tp1[idx]=tmss;
 	  
 	}  
         else
@@ -487,7 +475,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp2[idx] != tmss )
 	      tp2[idx]=*tp1 > tp2[idx];
-	    else tp2[idx]=tmss;
 	  
 	}  
         break;
@@ -503,7 +490,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp1[idx] != tmss )
 	      tp1[idx]=tp1[idx] >= *tp2;
-	    else tp1[idx]=tmss;
 	  
 	}  
         else
@@ -514,7 +500,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp2[idx] != tmss )
 	      tp2[idx]=*tp1 >= tp2[idx];
-	    else tp2[idx]=tmss;
 	  
 	}  
         break;
@@ -529,7 +514,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp1[idx] != tmss )
 	      tp1[idx]=tp1[idx] <= *tp2;
-	    else tp1[idx]=tmss;
 	  
 	}  
         else
@@ -540,8 +524,6 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
 	  for(idx=0 ; idx<sz ; idx++)
 	    if( tp2[idx] != tmss )
 	      tp2[idx]= *tp1 <= tp2[idx];
-	    else tp2[idx]=tmss;
-	  
 	}  
         break;
 
@@ -549,24 +531,21 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
       case EQ:
         if(bun) 
         {
-	if(!bmss) 
-	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] == *tp2;
-	else
-	  for(idx=0 ; idx<sz ; idx++)
-	    if( tp1[idx] != tmss )
-	      tp1[idx]=tp1[idx] == *tp2;
-	    else tp1[idx]=tmss;
-	  
+	  if(!bmss) 
+	    for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] == *tp2;
+	  else
+	    for(idx=0 ; idx<sz ; idx++)
+	      if( tp1[idx] != tmss )
+		tp1[idx]=tp1[idx] == *tp2;
 	}  
         else
         {
-	if(!bmss) 
-	  for(idx=0 ; idx<sz ; idx++) tp2[idx]=*tp1 == tp2[idx];
-	else
-	  for(idx=0 ; idx<sz ; idx++)
-	    if( tp2[idx] != tmss )
-	      tp2[idx]=*tp1 == tp2[idx];
-	    else tp2[idx]=tmss;
+	  if(!bmss) 
+	    for(idx=0 ; idx<sz ; idx++) tp2[idx]=*tp1 == tp2[idx];
+	  else
+	    for(idx=0 ; idx<sz ; idx++)
+	      if( tp2[idx] != tmss )
+		tp2[idx]=*tp1 == tp2[idx];
 	  
 	}  
         break;
@@ -575,23 +554,21 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
       case NEQ:
         if(bun) 
         {
-	if(!bmss) 
-	  for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] != *tp2;
-	else
-	  for(idx=0 ; idx<sz ; idx++)
-	    if( tp1[idx] != tmss )
-	      tp1[idx]=tp1[idx] != *tp2;
-	    else tp1[idx]=tmss;
+	  if(!bmss) 
+	    for(idx=0 ; idx<sz ; idx++) tp1[idx]=tp1[idx] != *tp2;
+	  else
+	    for(idx=0 ; idx<sz ; idx++)
+	      if( tp1[idx] != tmss )
+		tp1[idx]=tp1[idx] != *tp2;
 	}  
         else
         {
-	if(!bmss) 
-	  for(idx=0 ; idx<sz ; idx++) tp2[idx]=*tp1 != tp2[idx];
-	else
-	  for(idx=0 ; idx<sz ; idx++)
-	    if( tp2[idx] != tmss )
-	      tp2[idx]=*tp1 != tp2[idx];
-	    else tp2[idx]=tmss;
+	  if(!bmss) 
+	    for(idx=0 ; idx<sz ; idx++) tp2[idx]=*tp1 != tp2[idx];
+	  else
+	    for(idx=0 ; idx<sz ; idx++)
+	      if( tp2[idx] != tmss )
+		tp2[idx]=*tp1 != tp2[idx];
 	}  
         break;
 
@@ -600,31 +577,31 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
       case FLTHAN:
         if(bun) 
         { 
-	if(!bmss) 
-	  for(idx=0 ; idx<sz ; idx++) 
-           if(tp1[idx] >= *tp2) tp1[idx]=*tp2;
-	else
-	{  
-          for(idx=0 ; idx<sz ; idx++)
-            if(tp1[idx]==tmss )
-               tp1[idx]=tmss; 
-	    else if(tp1[idx] >= *tp2  )
-	      tp1[idx]=*tp2;
-	}  
+	  if(!bmss)
+	  {  
+	      for(idx=0 ; idx<sz ; idx++) 
+		if(tp1[idx] >= *tp2) tp1[idx]=*tp2;
+	  }  
+	  else
+	  {  
+	      for(idx=0 ; idx<sz ; idx++)
+		if(  tp1[idx]!=tmss &&  tp1[idx] >= *tp2  )
+		  tp1[idx]=*tp2;
+	  }  
 	}
         else
         { 
-	if(!bmss) 
-	  for(idx=0 ; idx<sz ; idx++) 
-           if(*tp1 >= tp2[idx]) tp2[idx]=*tp1;
-	else
-	{  
-	  for(idx=0 ; idx<sz ; idx++)
-            if(tp2[idx]==tmss )
-               tp2[idx]=tmss; 
-	    else if(*tp1 >= tp2[idx]  )
-	      tp2[idx]=*tp1;
-	}  
+	  if(!bmss)
+	  {  
+	      for(idx=0 ; idx<sz ; idx++) 
+		if(*tp1 >= tp2[idx]) tp2[idx]=*tp1;
+	  }  
+	  else
+	  {  
+	      for(idx=0 ; idx<sz ; idx++)
+		if(tp2[idx] != tmss &&  *tp1 >= tp2[idx]  )
+		  tp2[idx]=*tp1;
+	  } 
 	}
         break;
 
@@ -632,29 +609,31 @@ var_sct* tmp_var_var_op_unequal(var_sct* var1, var_sct* var2, int op) {
       case FGTHAN:
       if(bun)
       {
-	if(!bmss) 
+	if(!bmss)
+	{  
 	  for(idx=0 ; idx<sz ; idx++) 
            if(tp1[idx] <= *tp2)
              tp1[idx]=*tp2;
+	}  
 	else
+	{  
 	  for(idx=0 ; idx<sz ; idx++)
-            if(tp1[idx]==tmss )
-               tp1[idx]=tmss; 
-            else if(tp1[idx] <= *tp2 )
-	      tp1[idx]=*tp2;
+            if(tp1[idx]!=tmss &&  tp1[idx] <= *tp2 )
+	       tp1[idx]=*tp2;
+	}  
       }
       else
       {
-	if(!bmss) 
+	if(!bmss)
+	{  
 	  for(idx=0 ; idx<sz ; idx++) 
 	    if(tp2[idx]>*tp1)
                tp2[idx]=*tp1;
+	}  
 	else
 	{
 	  for(idx=0 ; idx<sz ; idx++)
-            if(tp2[idx]==tmss )
-               tp2[idx]=tmss; 
-            else if(tp2[idx]>*tp1 )
+             if(tp2[idx]!=tmss &&  tp2[idx]>*tp1 )
 	      tp2[idx]=*tp1;
         }
       }

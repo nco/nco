@@ -70,7 +70,7 @@ void ncap_sort_and_map(var_sct *var, var_sct *var_mp, bool bd)
   if(bd)
     std::sort(mp,mp+sz);  // increasing
   else 
-    std:sort(mp,mp+sz,map_srt<T>::greater);  // decreasing
+    std::sort(mp,mp+sz,map_srt<T>::greater);  // decreasing
 
   //The above line may not work with some compilers if so replace with the following
   // { std::sort(mp,mp+sz); std::reverse(mp,mp+sz);}           

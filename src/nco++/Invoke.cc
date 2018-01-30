@@ -40,7 +40,6 @@ int kdx;
 int mdx;
 int lcl_sz;
 int nbr_sz;
-var_sct *var;
 RefAST tr;
 
  static int wlk_nbr; // Same as number of threads

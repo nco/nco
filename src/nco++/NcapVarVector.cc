@@ -54,7 +54,6 @@ long NcapVarVector::findi(std::string s_fnm){
 
 // used in attribute propagation
 long NcapVarVector::find_lwr(std::string s_fnm){
-    bool bmth;
     long lret;
     std::string s_fl;
     NcapVar* Ntmp;
@@ -144,7 +143,6 @@ void NcapVarVector::sort(){
 // deletes that and all associated attributes 
 // of the form var_m@
 void NcapVarVector::erase_all(std::string var_nm){
-  bool match=false;
   long sz;
   long idx;
   long srt=-1;
@@ -159,12 +157,11 @@ void NcapVarVector::erase_all(std::string var_nm){
   {
     if( (*this)[idx]->xpr_typ==ncap_att &&  (*this)[idx]->getVar()==var_nm)
       if(srt==-1) srt=idx;    
-    else      
-      if(srt>=0)
-      {    
+    else if(srt>=0)
+    {    
 	end=idx-1;
         break; 
-      } 
+    } 
   }  
 
   if(srt >=0) 
