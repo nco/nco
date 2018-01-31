@@ -2647,8 +2647,8 @@ var_sct * srt_cls::imap_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
     (void)cast_void_nctype((nc_type)NC_UINT64,&var1->val);
 
      {
-       ulong idx;
-       ulong sz; 
+       long idx;
+       long sz; 
        nco_uint64 *lp_mp;  
        nco_uint64 *lp_mp_out;   
        sz=var1->sz;
@@ -2875,11 +2875,11 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
       {
           char *cp_in;
           char *cp_out;
-          ulong idx; 
-          ulong jdx;
-          ulong sz; 
-          ulong sz_idx;
-          ulong slb_sz;
+          long idx; 
+          long jdx;
+          long sz; 
+          long sz_idx;
+          long slb_sz;
           nco_uint64 *lp_mp; 
           var_sct *var_out;
 
