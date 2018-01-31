@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.3-alpha02
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 29 January 2018
+@set update-date 31 January 2018
 @set update-month January 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -311,7 +311,7 @@ ncflint, ncks, ncra, ncrcat, ncremap, ncrename, ncwa">
 @subtitle @value{update-month}
 
 @author by Charlie Zender
-@author Departments of Earth System Science and of Computer Science
+@author Departments of Earth System Science and Computer Science
 @author University of California, Irvine
 @html
 <p>WWW readers: Having trouble finding the section you want?</p> 
@@ -17328,6 +17328,9 @@ Long option synonyms are given just after the letter.
 When invoked without options, @command{ncclimo} prints a succinct table
 of all options and some examples.
 @table @option
+@html
+<a name="dec_md"></a> <!-- http://nco.sf.net/nco.html#dec_md -->
+@end html
 @cindex @code{-a @var{dec_md}}
 @cindex @code{--dec_md}
 @cindex @code{--dec_mode}
@@ -17344,6 +17347,9 @@ The last month is November of the end year specified with @samp{-e}.
 The first month used is January of the specified start year. 
 The last month is December of the end year specified with @samp{-e}.
 
+@html
+<a name="clm_md"></a> <!-- http://nco.sf.net/nco.html#clm_md -->
+@end html
 @cindex @code{-C @var{clm_md}}
 @cindex @var{clm_md}
 @cindex @code{--clm_md}
@@ -17389,6 +17395,9 @@ Users have encountered this issue when attempting to run
 In such cases, explicitly specify @samp{--clm_md=mth} (or @code{ann} or
 @code{day}) to persuade @command{ncclimo} to run a normal climatology.
 
+@html
+<a name="caseid"></a> <!-- http://nco.sf.net/nco.html#caseid -->
+@end html
 @cindex @code{-c @var{caseid}}
 @cindex @var{caseid}
 @cindex @code{--caseid}
@@ -17405,8 +17414,10 @@ The @samp{.cam.} and @samp{.h0.} bits are added internally to produce
 the input filenames.
 These can be modified via the @option{-m @var{mdl_nm}} and 
 @option{-h @var{hst_nm}} switches if needed.  
-For input files like @file{merra2_198001.nc},
-specify @samp{-c merra2_198001.nc}. 
+For input files like @file{merra2_198001.nc} (i.e., the six digits that
+precede the suffix are @var{YYYYMM}-format, specify
+@samp{-c merra2_198001.nc} and the prefix (@code{merra2}) will be
+automatically abstracted and used to template all filenames.
 In timeseries reshaping mode, @var{caseid} will be used, if supplied,
 as an additional string in the output filename.
 For example, specifying @samp{-c control} would cause
@@ -17428,6 +17439,9 @@ If @math{@var{dbg_lvl} > 2}, @command{ncclimo} prints the diagnostic
 information, executes all commands, and passes-through the debugging
 level to the regridder (@command{ncks}) for additional diagnostics.
 
+@html
+<a name="end_yr"></a> <!-- http://nco.sf.net/nco.html#end_yr -->
+@end html
 @cindex @code{-e @var{end_yr}}
 @cindex @var{end_yr}
 @cindex @code{--end_yr}
@@ -17441,6 +17455,9 @@ is November of the specified end year.
 If @samp{-a sdd} is specified, the last month is December of the
 specified end year.  
 
+@html
+<a name="fml_nm"></a> <!-- http://nco.sf.net/nco.html#fml_nm -->
+@end html
 @cindex @code{-f @var{fml_nm}}
 @cindex @var{fml_nm}
 @cindex @code{--fml_nm}
@@ -17463,6 +17480,9 @@ For example, specifying @samp{-f control} would cause
 @file{T_000101_000912.nc} to be instead named 
 @file{T_control_000101_000912.nc}.
 
+@html
+<a name="hst_nm"></a> <!-- http://nco.sf.net/nco.html#hst_nm -->
+@end html
 @cindex @code{-h @var{hst_nm}}
 @cindex @var{hst_nm}
 @cindex @code{--history_name}
@@ -17479,6 +17499,9 @@ Use @samp{-h @var{hst_nm}} to specify alternative history volumes.
 Examples include @samp{h0} (default, works for @acronym{CAM},
 @acronym{ALM/CLM}), @samp{h1}, and @samp{h} (for @acronym{CISM}).
 
+@html
+<a name="drc_in"></a> <!-- http://nco.sf.net/nco.html#drc_in -->
+@end html
 @cindex @code{-i @var{drc_in}}
 @cindex @var{drc_in}
 @cindex @code{--drc_in}
@@ -17497,6 +17520,9 @@ In timeseries reshaping mode, @command{ncclimo} uses all netCDF files
 create the list of input files when no list is provided through
 @code{stdin} or as positional arguments to the command-line. 
 
+@html
+<a name="job_nbr"></a> <!-- http://nco.sf.net/nco.html#job_nbr -->
+@end html
 @cindex @code{-j @var{job_nbr}}
 @cindex @var{job_nbr}
 @cindex @code{--job_nbr}
@@ -17550,6 +17576,9 @@ Specify deflation level @var{dfl_lvl} on a scale from no deflation
 (@var{dfl_lvl = 0}, the default) to maximum deflation
 (@var{dfl_lvl = 9}).
 
+@html
+<a name="lnk_flg"></a> <!-- http://nco.sf.net/nco.html#lnk_flg -->
+@end html
 @cindex @code{-l}
 @cindex @code{--lnk_flg}
 @cindex @code{--link_flag}
@@ -17566,6 +17595,9 @@ these linked filenames.
 Use this switch to turn-off that linking and reduce filename
 proliferation if you do not need @acronym{AMWG} filenames.
 
+@html
+<a name="mdl_nm"></a> <!-- http://nco.sf.net/nco.html#mdl_nm -->
+@end html
 @cindex @code{-m @var{mdl_nm}}
 @cindex @var{mdl_nm}
 @cindex @code{--model_name}
@@ -17576,6 +17608,9 @@ Model name (as embedded in monthly input filenames).
 Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @samp{ice}, @samp{cism}, @samp{cice}, @samp{pop}. 
 
+@html
+<a name="nco_opt"></a> <!-- http://nco.sf.net/nco.html#nco_opt -->
+@end html
 @cindex @code{-n @var{nco_opt}}
 @cindex @var{nco_opt}
 @cindex @code{--nco_opt}
@@ -17586,6 +17621,9 @@ Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
 @var{nco_opt} defaults to @samp{-O --no_tmp_fl}.
 
+@html
+<a name="drc_rgr"></a> <!-- http://nco.sf.net/nco.html#drc_rgr -->
+@end html
 @cindex @code{-O @var{drc_rgr}}
 @cindex @var{drc_rgr}
 @cindex @code{--drc_rgr}
@@ -17597,6 +17635,9 @@ Directory to hold regridded climo files.
 Regridded climos are placed in @var{drc_out} unless a separate
 directory for them is specified with @samp{-O} (NB: capital ``O''). 
 
+@html
+<a name="no_cll_msr"></a> <!-- http://nco.sf.net/nco.html#no_cll_msr -->
+@end html
 @cindex @code{--no_cll_msr}
 @cindex @code{--no_cll}
 @cindex @code{--no_cell_measures}
@@ -17608,6 +17649,9 @@ and @command{ncremap} add measures variables to the extraction list
 along with the primary variable and other associated variables. 
 See @ref{CF Conventions} for a detailed description.
 
+@html
+<a name="no_frm_trm"></a> <!-- http://nco.sf.net/nco.html#no_frm_trm -->
+@end html
 @cindex @code{--no_frm_trm}
 @cindex @code{--no_frm}
 @cindex @code{--no_formula_terms}
@@ -17658,6 +17702,9 @@ By default the staggered grid is output for all files regridded from
 a Cap (aka @acronym{FV}) grid, except when the regridding is performed
 as part of splitting (reshaping) into timeseries.
 
+@html
+<a name="drc_out"></a> <!-- http://nco.sf.net/nco.html#drc_out -->
+@end html
 @cindex @code{-o @var{drc_out}}
 @cindex @var{drc_out}
 @cindex @code{--drc_out}
@@ -17669,6 +17716,9 @@ Directory to hold computed (output) native grid climo files.
 Regridded climos are also placed here unless a separate directory
 for them is specified with @samp{-O} (NB: capital ``O''). 
 
+@html
+<a name="par_typ"></a> <!-- http://nco.sf.net/nco.html#par_typ -->
+@end html
 @cindex @code{-p @var{par_typ}}
 @cindex @var{par_typ}
 @cindex @code{--par_typ}
@@ -17714,6 +17764,9 @@ To specify variable-by-variable precision options, pass the desired
 options as a quoted string directly with @samp{-n @var{nco_opt}},
 e.g., @samp{-n '--ppc FSNT,TREFHT=4 --ppc CLOUD=2'}.
 
+@html
+<a name="rgr_opt"></a> <!-- http://nco.sf.net/nco.html#rgr_opt -->
+@end html
 @cindex @code{-R @var{rgr_opt}}
 @cindex @var{rgr_opt}
 @cindex @code{--rgr_opt}
@@ -17723,6 +17776,9 @@ Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
 @var{rgr_opt} defaults to @samp{-O --no_tmp_fl}.
 
+@html
+<a name="rgr_map"></a> <!-- http://nco.sf.net/nco.html#rgr_map -->
+@end html
 @cindex @code{-r @var{rgr_map}}
 @cindex @var{rgr_map}
 @cindex @code{--rgr_map}
@@ -17741,6 +17797,9 @@ Options intended exclusively for the regridder may be passed as
 arguments to the @samp{-R} switch.
 See below the discussion on regridding.
 
+@html
+<a name="srt_yr"></a> <!-- http://nco.sf.net/nco.html#srt_yr -->
+@end html
 @cindex @code{-s @var{srt_yr}}
 @cindex @var{srt_yr}
 @cindex @code{--srt_yr}
@@ -17755,6 +17814,9 @@ be December of the year before the start year (to allow for contiguous
 If @samp{-a sdd} is specified, the first month used is January of
 the specified start year. 
 
+@html
+<a name="csn_lst"></a> <!-- http://nco.sf.net/nco.html#csn_lst -->
+@end html
 @cindex @code{--seasons=@var{csn_lst}}
 @cindex @var{csn_lst}
 @cindex @code{--seasons}
@@ -17794,6 +17856,9 @@ ncclimo --seasons=jfm,jas,ann ...     # Monthly + JFM,JAS,ANN
 ncclimo --seasons=fm,on ...           # Monthly + FM,ON
 @end example
 
+@html
+<a name="stdin"></a> <!-- http://nco.sf.net/nco.html#stdin -->
+@end html
 @cindex @acronym{SLURM}
 @cindex @acronym{PBS}
 @cindex @code{--stdin}
@@ -17841,6 +17906,9 @@ with climatology generation in parallel climatology mode (i.e., when
 @math{@var{par_typ}} = @code{mpi} or @code{bck}). 
 Hence @command{ncclimo} defaults to @var{thr_nbr}=2.
 
+@html
+<a name="tpd"></a> <!-- http://nco.sf.net/nco.html#tpd -->
+@end html
 @cindex @code{--tpd_out=@var{tpd_out}}
 @cindex @var{tpd_out}
 @cindex @code{--tpd_out}
@@ -17898,6 +17966,9 @@ and @acronym{NCO} license, directories from which the @acronym{NCO}
 scripts and binaries are running, and the locations of any separate 
 executables that may be used by the script.
 
+@html
+<a name="ypf"></a> <!-- http://nco.sf.net/nco.html#ypf -->
+@end html
 @cindex @code{--ypf_max @var{ypf_max}}
 @cindex @var{ypf_max}
 @cindex @code{--ypf_max}
@@ -18681,7 +18752,7 @@ EXAMPLES
 <a name="merra2"></a> <!-- http://nco.sf.net/nco.html#merra2 -->
 @end html
 How to create a climo from a collection of monthly
-non-@acronym{CESM}'ish files? 
+non-@acronym{CESM}'ish files?  
 This is a two-step procedure:
 First be sure the names are arranged with a @acronym{YYYYMM}-format date
 preceding the suffix (usually @samp{.nc}).
@@ -22358,7 +22429,7 @@ ncremap -a tempest --src_grd=se.g --dst_grd=fv.nc -m map.nc \
 @end example
 
 The full list of supported canonical algorithm names, their synonyms,
-and boutique options passed to @command{GenerateOfflineMap}) are:
+and boutique options passed to @command{GenerateOfflineMap} are:
 @table @asis
 @item @code{se2fv_flx} (synonyms @code{mono_se2fv}, @code{conservative_monotone_se2fv})
 Options: @samp{--in_type cgll --in_np 4 --out_type fv --out_double --mono}
@@ -22382,7 +22453,7 @@ Full documentation of the @acronym{E3SM}-recommended boutique options
 for TempestRemap is
 @uref{https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids, here}
 (may require @acronym{E3SM}-authorization to view).
-Let us know iff you would like other boutique TempestRemap switch sets
+Let us know if you would like other boutique TempestRemap switch sets
 added as canonical options for @command{ncremap}.
 
 @html
@@ -22402,10 +22473,10 @@ added as canonical options for @command{ncremap}.
 @cindex @code{--l2s}
 @cindex @code{--lrg2sml}
 @item --a2o (@code{--a2o}, @code{--atm2ocn}, @code{--b2l}, @code{--big2ltl}, @code{--l2s}, @code{--lrg2sml})
-Use one of these flags (which takes no argument) to indicate to
-TempestRemap to generate mapping weights from a source grid that has
-more coverage than the destination grid, i.e., the destination grid is a 
-subset of the source.
+Use one of these flags (that take no arguments) to cause TempestRemap to
+generate mapping weights from a source grid that has more coverage than
+the destination grid, i.e., the destination grid is a subset of the
+source. 
 When computing the intersection of two meshes, TempestRemap uses an
 algorithm (an executable named @command{GenerateOverlapMesh}) that
 expects the mesh with less coverage to be the first grid, and the
@@ -23544,6 +23615,8 @@ The @samp{-x} option causes @command{ncremap} to treat the variables in
 the gridcell boundaries. 
 Support for extensive variables during regridding is nascent.
 Currently variables marked as extensive are summed, not regridded.
+We are interested in ``real-world'' situations that require regridding
+extensive variables, please contact us if you have one.
 @end table
 
 @unnumberedsubsec Limitations to @command{ncremap}

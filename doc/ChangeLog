@@ -1,5 +1,7 @@
 2018-01-30  Charlie Zender  <zender@uci.edu>
 
+	* Add HINT on --a2o for GenerateOverlapMesh failures
+
 	* NCO 4.7.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha02: Hedgy';git push
 	git tag -a 4.7.3-alpha02 -m 'AppVeyor, a2o, nco_def/inq_var_filter(), _Filter';git push --tags
