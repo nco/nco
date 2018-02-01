@@ -1,5 +1,7 @@
 2018-02-01  Charlie Zender  <zender@uci.edu>
 
+	* Alter regression output for 'make test > ~/foo 2>&1;cat ~/foo | grep FAILED | grep Unidata'
+
 	* Add nc_set_log_level() to all binaries
 
 	* Practice git feature-based workflow with new log_level branch

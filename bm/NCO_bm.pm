@@ -910,7 +910,7 @@ sub SS_prepare {
 ####################
 sub failed {
     $failure{$opr_nm}++;
-    $err_sng .= "   ERR: FAILURE in $opr_nm failure: $dsc_sng\n";
+    $err_sng .= "   ERR: FAILED in $opr_nm test: $dsc_sng\n";
     foreach(@cmd_lst) { $err_sng .= "   $_\n";}
     $err_sng .= "   ERR::EXPLAIN: Result: [$cmd_rsl] != Expected: [$nsr_xpc]\n\n" ;
     return;
