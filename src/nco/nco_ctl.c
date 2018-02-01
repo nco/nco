@@ -555,8 +555,10 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '4' && lbr_sng[3] == '.' && lbr_sng[4] == '1' ){rcd=441;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '5' && lbr_sng[3] == '.' && lbr_sng[4] == '0' ){rcd=450;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '5' && lbr_sng[3] == '.' && lbr_sng[4] == '1' ){rcd=451;}
-  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '5' && lbr_sng[3] == '.' && lbr_sng[4] == '2' ){rcd=452;}
-  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '5' && lbr_sng[3] == '.' && lbr_sng[4] == '3' ){rcd=453;}
+  /* NB: Same return values for 4.6.0 and 4.6.0.1, which appeared quickly after 4.6.0. */
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '6' && lbr_sng[3] == '.' && lbr_sng[4] == '0' ){rcd=460;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '6' && lbr_sng[3] == '.' && lbr_sng[4] == '1' ){rcd=461;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '6' && lbr_sng[3] == '.' && lbr_sng[4] == '2' ){rcd=462;}
 #endif /* HAVE_NETCDF4_H */
   /* exit() with custom rcd for use by Perl regression tester nco_bm.pl/NCO_rgr.pm */
   rcd-=300;
