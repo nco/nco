@@ -412,6 +412,8 @@ main(int argc,char **argv)
     {"jsn_format",required_argument,0,0}, /* [enm] JSON format */
     {"json_fmt",required_argument,0,0}, /* [enm] JSON format */
     {"json_format",required_argument,0,0}, /* [enm] JSON format */
+    {"log_lvl",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
+    {"log_level",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
     {"mk_rec_dmn",required_argument,0,0}, /* [sng] Name of record dimension in output */
     {"mk_rec_dim",required_argument,0,0}, /* [sng] Name of record dimension in output */
     {"mta_dlm",required_argument,0,0}, /* [sng] Multi-argument delimiter */
@@ -763,6 +765,7 @@ main(int argc,char **argv)
 	if(JSN_ATT_FMT == 3) JSN_ATT_FMT=2;
       } /* !jsn_att_fmt */
       if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
+      if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")) nc_set_log_level(optarg); /* [enm] netCDF library debugging verbosity [0..5] */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
       if(!strcmp(opt_crr,"xml") || !strcmp(opt_crr,"ncml")) PRN_XML=True; /* [flg] Print XML (NcML) */
