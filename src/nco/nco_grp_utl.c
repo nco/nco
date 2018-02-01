@@ -2099,12 +2099,12 @@ nco_prn_dmn_grp /* [fnc] Print dimensions for a group  */
     for(int dnm_ult_idx=0;dnm_ult_idx<nbr_dmn_ult;dnm_ult_idx++){ 
       if(dmn_ids[dnm_idx] == dmn_ids_ult[dnm_ult_idx]){ 
         is_rec_dim=True;
-        (void)fprintf(stdout," #%d record dimension: '%s'(%li)\n",dmn_ids[dnm_idx],dmn_nm,dmn_sz);
+        (void)fprintf(stdout,"Record dimension name, size, ID = %s, %li, %d\n",dmn_nm,dmn_sz,dmn_ids[dnm_idx]);
       } /* end if */
     } /* end dnm_ult_idx dimensions */
 
     /* An unlimited ID was not matched, so dimension is a plain vanilla dimension */
-    if(!is_rec_dim) (void)fprintf(stdout," #%d dimension: '%s'(%li)\n",dmn_ids[dnm_idx],dmn_nm,dmn_sz);
+    if(!is_rec_dim) (void)fprintf(stdout,"Fixed dimension name, size, ID = %s, %li, %d\n",dmn_nm,dmn_sz,dmn_ids[dnm_idx]);
 
   } /* end dnm_idx dimensions */
 
