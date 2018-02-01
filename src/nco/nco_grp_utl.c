@@ -2191,7 +2191,7 @@ nco_bld_dmn_ids_trv                   /* [fnc] Build dimension info for all vari
 	  */
 	  
           (void)fprintf(stdout,"%s: INFO %s reports variable <%s> with duplicate dimensions\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
-          (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Please use netCDF version at least 4.3.0. NB: Simultaneously renaming multiple dimensions with ncrename can trigger this bug with netCDF versions up to 4.5.1 (current as of 20180119).\n",nco_prg_nm_get());
+          (void)fprintf(stdout,"%s: ERROR netCDF file with duplicate dimension IDs detected. Please use netCDF version at least 4.3.0. NB: Simultaneously renaming multiple dimensions with ncrename can trigger this bug with netCDF versions up to 4.6.0.1 (current as of 20180201).\n",nco_prg_nm_get());
           (void)nco_prn_trv_tbl(nc_id,trv_tbl);
           nco_exit(EXIT_FAILURE);
         }
