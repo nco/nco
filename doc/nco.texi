@@ -24188,7 +24188,7 @@ ncks -v one ~/foo.nc # File is unreadable (multiple dimensions with same ID?)
 A new netCDF4 renaming bug was discovered in March, 2017.
 It is present in versions 4.4.1--4.6.0 (and possibly earlier versions).
 As of this writing (February, 2018), this bug is not present in netCDF4
-version 4.6.0.1-development. 
+version 4.6.0.1-development (Yay Ed!). 
 This bug causes @command{ncrename} to fail to rename a variable when the
 result would become a coordinate.
 The workaround is to convert to netCDF3, then rename, then convert back
@@ -24201,9 +24201,9 @@ ncrename -O -v non_coord,coord ~/nco/data/in_grp.nc ~/foo.nc # Fails (HDF error)
 @end example
 
 Last but not least is a potentially new netCDF4 bug discovered in November, 2017.
-It is present in versions 4.4.1.1--4.5.0 (and possibly earlier versions too).
+It is present in versions 4.4.1.1--4.6.0 (and possibly earlier versions too).
 As of this writing (February, 2018), this bug is not present in netCDF4
-version 4.6.0.1-development. 
+version 4.6.0.1-development (Yay Ed!). 
 This bug causes @command{ncrename} to fail to rename a variable when the
 result would become a coordinate.
 Oddly this issue shows that simultaneously renaming a dimension and
