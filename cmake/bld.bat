@@ -237,7 +237,7 @@ if exist %root_win%\antlr2\lib\cpp\build\antlr.sln (
  goto build_nco
 ) else (
   echo building antlr
-  pushd antlr
+  pushd antlr2
   pushd lib
   pushd cpp
   mkdir build
