@@ -747,9 +747,9 @@ int prs_cls::ncap_get_cnk_sz(var_sct *var){
   sz=dmn_in_vtr.size();
   for(idx=0;idx<dmn_var_nbr;idx++){
     for(jdx=0;jdx< sz;jdx++  )
-      if (dmn_in_vtr[jdx]->id == dim_id[idx])
-        break;
-      cnt[idx]= ( jdx<sz ?   dmn_in_vtr[jdx]->cnt: 0);
+      if (dmn_in_vtr[jdx]->id == dim_id[idx]) break;
+    
+    cnt[idx]= ( jdx<sz ?   dmn_in_vtr[jdx]->cnt: 0);
 
   }
 

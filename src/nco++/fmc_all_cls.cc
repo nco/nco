@@ -608,7 +608,7 @@
   
 var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::is_fnd");
-    int nbr_args;
+    // int nbr_args;
     int fdx=fmc_obj.fdx();
     long icnt;
     var_sct *var=NULL_CEWI;
@@ -632,7 +632,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
 #endif 
   
 
-    nbr_args=args_vtr.size(); 
+
     var=walker.out(args_vtr[0] );
 
     if(prs_arg->ntl_scn){
@@ -673,7 +673,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
 var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::get_fnd");
     int nbr_args;
-    int fdx=fmc_obj.fdx();
+    // int fdx=fmc_obj.fdx();
     var_sct *var=NULL_CEWI;
     var_sct *var_ret=NULL_CEWI;
     std::string sfnm =fmc_obj.fnm(); //method name
@@ -757,12 +757,8 @@ var_sct * utl_cls::linear_fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, 
   int nbr_dim;
   int nbr_args;
   int re_dim_nbr;
-  int swp_nbr;
-  int fdx=fmc_obj.fdx();
-  long icnt;
   var_sct *var=NULL_CEWI;
   var_sct *var_int=NULL_CEWI;
-  nc_type styp=NC_INT; // used to hold the mapping type either NC_INT or NC_UINT64
   std::string sfnm =fmc_obj.fnm(); //method name
   std::string var_nm;
   std::string dim_nm;
@@ -896,11 +892,9 @@ var_sct * utl_cls::linear_fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, 
 var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::fill_fnd");
   int idx;
-  int jdx;
   int nbr_dim;
   int nbr_args;
   int fdx=fmc_obj.fdx();
-  long icnt;
   double *lat_dp=NULL_CEWI;
   double *lon_dp=NULL_CEWI;
   nc_type lcl_typ;
@@ -1130,7 +1124,6 @@ int utl_cls::weight_fill(var_sct* var, void* msk_vp, double *lat, double *lon){
   int nbr_dim=var->nbr_dim;
   int imax_loop=1000;
   int num_miss;
-  int cnt=0;
   int lat_sz;
   int lon_sz;
   size_t slb_sz;
@@ -1187,7 +1180,7 @@ int utl_cls::weight_fill(var_sct* var, void* msk_vp, double *lat, double *lon){
             if (xdx < 0 || xdx >= lat_sz) continue;
 
             for (int ydx = jdx - 1; ydx <= jdx + 1; ydx++) {
-              if (ydx < 0 || ydx >= lon_sz || xdx == idx && ydx == jdx) continue;
+              if (ydx < 0 || ydx >= lon_sz || (xdx == idx && ydx == jdx)) continue;
 
               if (msk_dp[xdx][ydx] != dbl_mss_val) {
                 dist = point2point(lat[idx], lon[jdx], lat[xdx], lon[ydx]);
@@ -1244,18 +1237,9 @@ double alpha;
 
 var_sct * utl_cls::mask_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker) {
   const std::string fnc_nm("utl_cls::mask_fnd");
-  nco_bool do_permute = False;
-  int idx;
-  int jdx;
-  int nbr_dim;
   int nbr_args;
-  int re_dim_nbr;
-  int swp_nbr;
-  int fdx = fmc_obj.fdx();
-  long icnt;
   var_sct *var = NULL_CEWI;
   var_sct * var_miss= NULL_CEWI;
-  nc_type styp = NC_INT; // used to hold the mapping type either NC_INT or NC_UINT64
   std::string sfnm = fmc_obj.fnm(); //method name
   std::string var_nm;
   std::string dim_nm;
@@ -1270,7 +1254,6 @@ var_sct * utl_cls::mask_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 
   nbr_args = args_vtr.size();
   var = walker.out(args_vtr[0]);
-  nbr_dim = var->nbr_dim;
 
   if (nbr_args == 0)
     err_prn(sfnm, "Function has been called with no arguments\n" + susg);
@@ -1480,7 +1463,7 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
 {
   const std::string fnc_nm("bsc_cls::getndims_fnd");
     int nbr_args;
-    int fdx=fmc_obj.fdx();
+    // int fdx=fmc_obj.fdx();
     var_sct *var=NULL_CEWI;
     var_sct *var_att=NULL_CEWI;
     std::string sfnm =fmc_obj.fnm(); //method name
@@ -2634,9 +2617,8 @@ var_sct *srt_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walke
 var_sct * srt_cls::imap_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("srt_cls::imap_fnd");
     int nbr_args;
-    int fdx=fmc_obj.fdx();
+    // int fdx=fmc_obj.fdx();
     var_sct *var1=NULL_CEWI;
-    var_sct *var_ret=NULL_CEWI;
     nc_type styp; // used to hold the mapping type either NC_INT or NC_UINT64 
     std::string sfnm =fmc_obj.fnm(); //method name
     std::string var_nm;
@@ -2759,7 +2741,7 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           variable 
 	 */
 
-          if(bdef && prs_arg->ntl_scn || bdef && !prs_arg->ntl_scn && Nvar->flg_stt==2 ){
+          if( (bdef && prs_arg->ntl_scn) || (bdef && !prs_arg->ntl_scn && Nvar->flg_stt==2) ){
             var2=prs_arg->ncap_var_init(var_nm,true);  
          }else{
 	    var2=nco_var_dpl(var1);
@@ -2984,54 +2966,52 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
   var_sct *agg_idx_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
     const std::string fnc_nm("agg__idx_cls::fnd");
-		int fdx;
-		int nbr_args;
-		int idx;
-		int nbr_dim;
+    int fdx;
+    int nbr_args;
+    int idx;
+    int nbr_dim;
         
-       long sz_dim=1L;
-       long my_index=0L;
+    long sz_dim=1L;
+    long my_index=0L;
        
-		dmn_sct **dim;
-		dmn_sct **dim_nw=NULL_CEWI;  
-		var_sct *var=NULL_CEWI;
-		var_sct *var_out=NULL_CEWI;
+    var_sct *var=NULL_CEWI;
+    var_sct *var_out=NULL_CEWI;
            
-	    std::string susg;
-	    std::string sfnm=fmc_obj.fnm();
+    std::string susg;
+    std::string sfnm=fmc_obj.fnm();
 
-		RefAST aRef;
-		RefAST tr;
-		std::vector<RefAST> vtr_args; 
+    RefAST aRef;
+    RefAST tr;
+    std::vector<RefAST> vtr_args; 
        
-		nc_type mp_typ=NC_INT;
+    nc_type mp_typ=NC_INT;
 		
             
-		// de-reference 
-		prs_cls *prs_arg=walker.prs_arg;
+    // de-reference 
+    prs_cls *prs_arg=walker.prs_arg;
 
-		fdx=fmc_obj.fdx();
+    fdx=fmc_obj.fdx();
  
  
-		// Put args into vector 
-		if(expr)
-			vtr_args.push_back(expr);
+    // Put args into vector 
+    if(expr)
+      vtr_args.push_back(expr);
 
-		if(tr=fargs->getFirstChild()) {
-			do  
-			  vtr_args.push_back(tr);
-			while(tr=tr->getNextSibling());    
-		} 
+    if(tr=fargs->getFirstChild()) {
+      do  
+	vtr_args.push_back(tr);
+      while(tr=tr->getNextSibling());    
+    } 
       
-		nbr_args=vtr_args.size();  
+    nbr_args=vtr_args.size();  
 
-		susg="usage: var_out="+sfnm+"(var_in)";
+    susg="usage: var_out="+sfnm+"(var_in)";
 
-		if(nbr_args==0)
-			err_prn(sfnm, " Function has been called with no arguments\n"+susg); 
+    if(nbr_args==0)
+      err_prn(sfnm, " Function has been called with no arguments\n"+susg); 
 
 
-		var=walker.out(vtr_args[0]);
+    var=walker.out(vtr_args[0]);
 		
         #ifdef ENABLE_NETCDF4
         { /* scope for fl_fmt temporary */
@@ -3209,7 +3189,6 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     int fdx;
     int nbr_args;
     var_sct *var1;
-    var_sct *var;   
     fdx=fmc_obj.fdx(); 
     std::string susg;
     std::string sfnm =fmc_obj.fnm(); 
@@ -3282,8 +3261,6 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   int fdx;
   int nbr_args;
   int idx;
-  int nbr_dim;
-  dmn_sct **dim;
   var_sct *var1=NULL_CEWI;
   var_sct *var2=NULL_CEWI;
   var_sct *var_ret;
@@ -3298,7 +3275,6 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;            
-  vtl_typ lcl_typ;
 
   fdx=fmc_obj.fdx();
  
@@ -3472,12 +3448,10 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   } 
   var_sct * bnds_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("arr_cls::fnd");
-  int fdx;
+  // int fdx=fmc_obj.fdx();
   int nbr_args;
   int idx;
-  int nbr_dim;
   nc_type itype;
-  dmn_sct **dim;
   var_sct *var1=NULL_CEWI;
   var_sct *var_txt=NULL_CEWI;
   var_sct *var_ret;
@@ -3491,9 +3465,8 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;            
-  vtl_typ lcl_typ;
 
-  fdx=fmc_obj.fdx();
+  
  
 
   if(expr)
@@ -3683,13 +3656,11 @@ bil_cls::bil_cls(bool flg_dbg){
 var_sct * bil_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("bil_cls::fnd");
   bool bwrp;  //if tue then wrap X and Y coo-ordinates in grid
-  bool b_rev_y;
-  bool b_rev_x;
+
   int fdx;
   int nbr_args;
   int in_nbr_args;
   int idx;
-  int nbr_dim;
   var_sct *var_arr[6];
   
   nc_type in_typ;           
@@ -3702,7 +3673,6 @@ var_sct * bil_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walk
   std::vector<RefAST> vtr_args; 
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;            
-  vtl_typ lcl_typ;
   
   fdx=fmc_obj.fdx();
   
@@ -3867,7 +3837,7 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
      y_min=(long)(lower_bound(v_yin->val.dp, v_yin->val.dp+v_yin->sz, v_yout->val.dp[jdx])-v_yin->val.dp);
 
      // do some bounds checking      
-     if(y_min==v_yin->sz || y_min==0L && v_yout->val.dp[jdx]< v_yin->val.dp[0] )   
+     if(y_min==v_yin->sz || ( y_min==0L && v_yout->val.dp[jdx]< v_yin->val.dp[0] ) )   
          err_prn(sfnm, "Bounding error with \""+string(v_yout->nm)+"\" output co-ordinate variable");   
 
      // not an exact match 
@@ -3897,7 +3867,7 @@ void bil_cls::clc_bil_fnc(var_sct *v_xin,var_sct *v_yin, var_sct *v_din, var_sct
        x_min=(long)(lower_bound(v_xin->val.dp, v_xin->val.dp+v_xin->sz, v_xout->val.dp[kdx])-v_xin->val.dp);     
 
        // do some bounds checking      
-       if(x_min==v_xin->sz || x_min==0L && v_xout->val.dp[kdx]< v_xin->val.dp[0] )   
+       if(x_min==v_xin->sz || ( x_min==0L && v_xout->val.dp[kdx]< v_xin->val.dp[0] ))   
          err_prn(sfnm, "Bounding error with \""+string(v_xout->nm)+"\" output co-ordinate variable");   
 
        // not an exact match
@@ -4150,11 +4120,8 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
   var_sct * cod_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("cod_cls::fnd");
-  int fdx;
+  // int fdx=fmc_obj.fdx();
   int nbr_args;
-  int nbr_dim;
-  long lret;
-  dmn_sct **dim;
   var_sct *var1=NULL_CEWI;
   var_sct *var2=NULL_CEWI;
   var_sct *var_ret;
@@ -4168,9 +4135,8 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;            
-  vtl_typ lcl_typ;
 
-  fdx=fmc_obj.fdx();
+
  
 
   if(expr)
@@ -4481,8 +4447,8 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
       long vmcnt=0l; // num missing processed;   
       double mss_dbl=9.999e20; 
       double *dpi;   // input pointer
-      double *dpo;   //output pointer 
-      double *dpm;   // mask pointer;  
+      double *dpo;   //output pointer
+      double *dpm;   //output pointer 
       // save in type; 
       ostringstream os; 
       
@@ -4567,7 +4533,6 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
       long m_sz;
       long x_sz;
       long y_sz;
-      size_t m_offset=0ll; 
       double mss_dbl=9.999e20; 
       double *dpi;   // input pointer
       double *dpo;   //output pointer 
@@ -4688,9 +4653,8 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
   var_sct *vlist_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("vlist_cls::fnd");
-  bool bret;
   int fdx;
-  int nbr_args;
+  // int nbr_args;
 
   std::string susg;
   std::string sfnm=fmc_obj.fnm();
@@ -4698,7 +4662,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
   RefAST tr;
   std::vector<RefAST> vtr_args; 
-  prs_cls *prs_arg=walker.prs_arg;
+  // prs_cls *prs_arg=walker.prs_arg;
 
   bool is_mtd;  
         
@@ -4746,8 +4710,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   {
   const std::string fnc_nm("push_fnd::fnd");
   bool bret;
-  int idx;
-  int fdx;
+  // int fdx=fmc_obj.fdx();
   int nbr_args;
   std::string susg;
   std::string sfnm=fmc_obj.fnm();
@@ -4764,7 +4727,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 
   NcapVar *Nvar=NULL;
           
-  fdx=fmc_obj.fdx();
+
 
   nbr_args=vtr_args.size();  
 
