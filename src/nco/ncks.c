@@ -762,9 +762,9 @@ main(int argc,char **argv)
 	JSN_ATT_FMT%=4; /* 20161221: Valid values are 0,1,2 */
 	if(JSN_ATT_FMT == 3) JSN_ATT_FMT=2;
       } /* !jsn_att_fmt */
+      if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
-      if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
       if(!strcmp(opt_crr,"xml") || !strcmp(opt_crr,"ncml")) PRN_XML=True; /* [flg] Print XML (NcML) */
       if(!strcmp(opt_crr,"xml_no_location") || !strcmp(opt_crr,"ncml_no_location")){PRN_XML_LOCATION=False;PRN_XML=True;} /* [flg] Print XML location tag */
       if(!strcmp(opt_crr,"xml_spr_chr")){spr_chr=(char *)strdup(optarg);PRN_XML=True;} /* [flg] Separator for XML character types */

@@ -1,5 +1,7 @@
 2018-02-01  Charlie Zender  <zender@uci.edu>
 
+	* Practice git feature-based workflow with new log_level branch
+
 	* Verify rename bug still exists in 4.6.0.1
 
 	* Update NCO_rgr.pl and nco_exit_lbr_rcd() for 4.6.0, 4.6.1, 4.6.2
