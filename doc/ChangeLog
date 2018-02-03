@@ -1,3 +1,15 @@
+2018-02-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.3-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha03: Super Blue Blood Moon';git push
+	git tag -a 4.7.3-alpha03 -m 'nc_set_log_level(), nm_typ yyyy-mm-01, fml_nm';git push --tags
+
+	* Ensure fml_nm works with rx nm_typ
+
+	* Change rx to allow filenames with multiple periods for nm_typ='yyyymm' and 'yyyy-mm-01'
+
+	* ncclimo distinguish mdl_typ from nm_typ, add 'yyyy-mm-01' rx
+
 2018-02-01  Charlie Zender  <zender@uci.edu>
 
 	* Alter regression output for 'make test > ~/foo 2>&1;cat ~/foo | grep FAILED | grep Unidata'

@@ -455,11 +455,12 @@ inp_std='No' # [sng] Input file list from stdin
 job_nbr=2 # [nbr] Job simultaneity for parallelism
 lnk_flg='Yes' # [sng] Link E3SM/ACME-climo to AMWG-climo filenames
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpaso', 'ocn')
-mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for filenames and regridding)
+mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
 ncr_flg='No' # [sng] Incremental method
 nd_nbr=1 # [nbr] Number of nodes
+nm_typ='cesm' # [sng] Name type ('cesm', 'mpas', 'yyyymm', 'yyyy-mm-01') (for filenames)
 no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ='bck' # [sng] Parallelism type
@@ -860,26 +861,36 @@ let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
 out_nm=${caseid}
 if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpascice' ]; then
     mdl_typ='mpas'
+    nm_typ='mpas'
 fi # !caseid
 if [ "${mdl_typ}" = 'mpas' ]; then
     out_nm="${mdl_nm}"
     hst_nm='hist'
 fi # !mdl_typ
-if [ -n "${fml_nm_usr}" ]; then 
-    fml_nm="${fml_nm_usr}"
-    out_nm="${fml_nm}"
-fi # !fml_nm
 # http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
 # http://stackoverflow.com/questions/17420994/bash-regex-match-string
 if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
-    mdl_typ='yyyymm'
+    nm_typ='yyyymm'
     bs_nm="${BASH_REMATCH[1]}"
     bs_nm="$(basename ${bs_nm})"
     bs_nm="${bs_nm%.*}"
     bs_nm="${bs_nm%_*}"
     out_nm=${bs_nm}
-    bs_sfx="${caseid#*.}"
+    bs_sfx="${caseid##*.}"
 fi # !caseid
+if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9]-01.nc.?)$ ]]; then
+    nm_typ='yyyy-mm-01'
+    bs_nm="${BASH_REMATCH[1]}"
+    bs_nm="$(basename ${bs_nm})"
+    bs_nm="${bs_nm%.*}"
+    bs_nm="${bs_nm%_*}"
+    out_nm=${bs_nm}
+    bs_sfx="${caseid##*.}"
+fi # !caseid
+if [ -n "${fml_nm_usr}" ]; then 
+    fml_nm="${fml_nm_usr}"
+    out_nm="${fml_nm}"
+fi # !fml_nm
 if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ] ; then 
     echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
     exit 1
@@ -1373,6 +1384,8 @@ fi # !mpi
 # Print initial state
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: bnr_flg  = ${bnr_flg}\n"
+    printf "dbg: bs_nm    = ${bs_nm}\n"
+    printf "dbg: bs_sfx   = ${bs_sfx}\n"
     printf "dbg: caseid   = ${caseid}\n"
     printf "dbg: cf_flg   = ${cf_flg}\n"
     printf "dbg: clm_flg  = ${clm_flg}\n"
@@ -1411,6 +1424,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: nco_opt  = ${nco_opt}\n"
     printf "dbg: ncr_flg  = ${ncr_flg}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
+    printf "dbg: nm_typ   = ${nm_typ}\n"
     printf "dbg: out_nm   = ${out_nm}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
@@ -1522,13 +1536,15 @@ if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${bnr_flg}" = 'No' ]; then
 	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     fi # !bnr_flg
-    if [ "${mdl_typ}" = 'yyyymm' ]; then
+    if [ "${nm_typ}" = 'yyyymm' ]; then
 	printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
+    elif [ "${nm_typ}" = 'yyyy-mm-01' ]; then
+	printf "Filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01.${bs_sfx}\n"
     elif [ ${inp_aut} = 'Yes' ]; then 
 	printf "Input filenames will be constructed with CESM'ish or E3SM/ACME'ish conventions\n"
-    else # !mdl_typ
+    else # !nm_typ
 	printf "Input filenames will be read from globbing, positional arguments, or stdin\n"
-    fi # !mdl_typ
+    fi # !nm_typ
     if [ ${clm_md} = 'ann' ]; then 
 	printf "Each input file assumed to contain mean of one year\n"
     elif [ ${clm_md} = 'dly' ]; then 
@@ -1568,27 +1584,31 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	fl_all=''
 	for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
 	    YYYY=`printf "%04d" ${yr}`
-	    if [ ${mdl_typ} = 'cesm' ]; then
+	    if [ ${nm_typ} = 'cesm' ]; then
 		fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-	    elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
+	    elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
 		# 20161130: Old MPAS rule until today
 		# fl_all="${fl_all} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
 		# Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
  		fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
-	    elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
+	    elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 		fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
+	    elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
+		fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
 	    fi # !cesm
 	done # !yr
 	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
 	    fl_all=''
 	    for yr in `seq ${yr_srtm1} ${yr_endm1}`; do
 		YYYY=`printf "%04d" ${yr}`
-		if [ ${mdl_typ} = 'cesm' ]; then
+		if [ ${nm_typ} = 'cesm' ]; then
 		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-		elif [ ${mdl_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
+		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
  		    fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
-		elif [ ${mdl_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
+		elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 		    fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
+		elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
+		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
 		fi # !cesm
 	    done # !yr
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}
