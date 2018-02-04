@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.3-alpha03
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 31 January 2018
-@set update-month January 2018
+@set update-date 3 February 2018
+@set update-month February 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -17412,12 +17412,25 @@ For @acronym{CESM}'ish input files like
 specify @samp{-c famipc5_ne30_v0.3_00001}. 
 The @samp{.cam.} and @samp{.h0.} bits are added internally to produce
 the input filenames.
-These can be modified via the @option{-m @var{mdl_nm}} and 
-@option{-h @var{hst_nm}} switches if needed.  
-For input files like @file{merra2_198001.nc} (i.e., the six digits that
-precede the suffix are @var{YYYYMM}-format, specify
+Modify these via the @option{-m @var{mdl_nm}} and @option{-h
+@var{hst_nm}} switches if needed.   
+For input files named slightly differently than standard
+@acronym{CESM}'ish names, supply the filename (excluding the path
+component) as the @var{caseid} and @command{ncclimo} will attempt
+to parse it by matching it to a database of know regular expressions
+common to model output.
+These are all of the format
+@var{prefix}[.-]@var{YYYY}[-]@var{MM}[-]@var{DD}.@var{suffix}.
+The particular formats current supported are
+@var{prefix}@code{_YYYYMM}.@var{suffix}, 
+@var{prefix}@code{.YYYY-MM}.@var{suffix}, and
+@var{prefix}@code{.YYYY-MM-01}.@var{suffix}.
+For example, input files like @file{merra2_198001.nc} (i.e., the six
+digits that precede the suffix are @var{YYYYMM}-format), specify
 @samp{-c merra2_198001.nc} and the prefix (@code{merra2}) will be
-automatically abstracted and used to template all filenames.
+automatically abstracted and used to template and generate all the
+filenames based on the specified @var{yr_srt} and @var{yr_end}. 
+
 In timeseries reshaping mode, @var{caseid} will be used, if supplied,
 as an additional string in the output filename.
 For example, specifying @samp{-c control} would cause
