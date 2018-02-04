@@ -869,16 +869,15 @@ if [ "${mdl_typ}" = 'mpas' ]; then
 fi # !mdl_typ
 # http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
 # http://stackoverflow.com/questions/17420994/bash-regex-match-string
+# Order ensure name matches fullest rx, and else ensures it is not multiply processed
 if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     nm_typ='yyyymm'
-fi # !caseid
-if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9].nc.?)$ ]]; then
+elif [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9]-01.nc.?)$ ]]; then
+    nm_typ='yyyy-mm-01'
+elif [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9].nc.?)$ ]]; then
     nm_typ='yyyy-mm'
 fi # !caseid
-if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9]-01.nc.?)$ ]]; then
-    nm_typ='yyyy-mm-01'
-fi # !caseid
-if [ "${nm_typ}" = 'yyyymm' ] || [ "${nm_typ}" = 'yyyymm' ] || [ "${nm_typ}" = 'yyyymm' ]; then
+if [ "${nm_typ}" = 'yyyymm' ] || [ "${nm_typ}" = 'yyyy-mm-01' ] || [ "${nm_typ}" = 'yyyy-mm' ]; then
     bs_nm="${BASH_REMATCH[1]}"
     bs_nm="$(basename ${bs_nm})"
     bs_nm="${bs_nm%.*}"
@@ -1595,7 +1594,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	    elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 		fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
 	    elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM
-		fl_all="${fl_all} ${bs_nm}.${YYYY}${MM}.${bs_sfx}"
+		fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
 	    elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
 		fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
 	    fi # !cesm

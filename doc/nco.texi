@@ -17421,7 +17421,8 @@ to parse it by matching it to a database of know regular expressions
 common to model output.
 These are all of the format
 @var{prefix}[.-]@var{YYYY}[-]@var{MM}[-]@var{DD}.@var{suffix}.
-The particular formats current supported are
+The particular formats current supported, as of @acronym{NCO} version
+4.7.3 (February, 2018) are:
 @var{prefix}@code{_YYYYMM}.@var{suffix}, 
 @var{prefix}@code{.YYYY-MM}.@var{suffix}, and
 @var{prefix}@code{.YYYY-MM-01}.@var{suffix}.
@@ -17430,6 +17431,8 @@ digits that precede the suffix are @var{YYYYMM}-format), specify
 @samp{-c merra2_198001.nc} and the prefix (@code{merra2}) will be
 automatically abstracted and used to template and generate all the
 filenames based on the specified @var{yr_srt} and @var{yr_end}. 
+Please tell us any dataset filename regular expressions that you would
+like added to @command{ncclimo}'s internal database.
 
 In timeseries reshaping mode, @var{caseid} will be used, if supplied,
 as an additional string in the output filename.
