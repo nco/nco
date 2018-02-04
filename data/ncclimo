@@ -2743,7 +2743,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 fi # !sbs_flg
 date_end=$(date +"%s")
 if [ -n "${caseid}" ]; then
-    printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset ${caseid} at `date`\n"
+    printf "Completed ${yr_nbr_xtn}-year climatology operations for dataset with caseid = ${caseid} at `date`\n"
 else # !caseid
     printf "Completed ${yr_nbr_xtn}-year climatology operations for input data at `date`\n"
 fi # !caseid
