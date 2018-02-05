@@ -1,5 +1,9 @@
 2018-02-04  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.3-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha04: Mayeishanism';git push
+	git tag -a 4.7.3-alpha04 -m 'nm_typ yyyy-mm';git push --tags
+
 	* Fix three bugs introduced in 10 supposedly simple lines of changes from yesterday
 
 2018-02-03  Charlie Zender  <zender@uci.edu>

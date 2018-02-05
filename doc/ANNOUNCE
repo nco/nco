@@ -46,7 +46,15 @@ A. ncremap implements E3SM-recommended Tempest remapping algorithms.
    http://nco.sf.net/nco.html#a2o
    http://nco.sf.net/nco.html#ncremap
    
-A. fxm
+A. ncclimo support two more dataset filename template regular
+   expressions: prefix.YYYY-MM.suffix, and prefix.YYYY-MM-01.suffix.
+   When such a filename is given as the argument to --caseid, the
+   prefix and suffix will be automatically abstracted and used to
+   template and generate all the filenames based on the specified
+   yr_srt and yr_end. Please tell us any dataset filename regular
+   expressions that you would like added to ncclimo rx database.
+   ncclimo -s 300 -e 400 --caseid=foo.0300-01-01.nc -i . -o /tmp
+   http://nco.sf.net/nco.html#caseid
 
 BUG FIXES:
 
