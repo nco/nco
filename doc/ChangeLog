@@ -1,3 +1,7 @@
+2018-02-05 Henry Butowsky  <henryb@hush.com>
+
+	* added  shell script bm/cch_clr.sh to clear caches. works with linux and macos
+
 2018-02-04  Charlie Zender  <zender@uci.edu>
 
 	* Fix three bugs introduced in 10 supposedly simple lines of changes from yesterday
