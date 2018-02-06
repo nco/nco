@@ -1439,7 +1439,7 @@ nco_is_spc_in_cf_att /* [fnc] Variable is listed in this CF attribute, thereby a
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
           rcd=nco_inq_varname(nc_id,var_id,var_nm);
-          if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute. NB: To avoid excessive noise, NCO prints this WARNING at most once per dataset.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+          if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute. NB: To avoid excessive noise, NCO prints this WARNING at most once per dataset.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
 	  FIRST_WARNING=False;
           return IS_SPC_IN_CF_ATT;
         } /* end if */
@@ -1606,7 +1606,7 @@ nco_is_spc_in_crd_att /* [fnc] Variable is listed in a "coordinates" attribute *
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
           rcd=nco_inq_varname(nc_id,var_id,var_nm);
-          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_CRD_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -1680,7 +1680,7 @@ nco_is_spc_in_bnd_att /* [fnc] Variable is listed in a "bounds" attribute */
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
           rcd=nco_inq_varname(nc_id,var_id,var_nm);
-          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_BND_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -1754,7 +1754,7 @@ nco_is_spc_in_clm_att /* [fnc] Variable is listed in a "climatology" attribute *
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
           rcd=nco_inq_varname(nc_id,var_id,var_nm);
-          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_CLM_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -1828,7 +1828,7 @@ nco_is_spc_in_grd_att /* [fnc] Variable is listed in a "grid_mapping" attribute 
         rcd+=nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
         if(att_typ != NC_CHAR){
           rcd=nco_inq_varname(nc_id,var_id,var_nm);
-          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+          (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
           return IS_SPC_IN_GRD_ATT;
         } /* end if */
         att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));

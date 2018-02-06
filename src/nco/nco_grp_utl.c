@@ -1224,7 +1224,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute. If you want CF to support NC_STRING attributes, please tell them and CC: NCO.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute. If you want CF to support NC_STRING attributes, please tell CF and CC: NCO.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
         return;
       } /* end if */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -7663,7 +7663,7 @@ nco_var_has_cf /* [fnc] Variable has CF-compliant attributes ("ancillary_variabl
       /* Yes, get list of specified attributes */
       (void)nco_inq_att(grp_id,var_id,att_nm,&att_typ,&att_sz);
       if(att_typ != NC_CHAR){
-        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+        (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,var_trv->nm_fll,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
         return NULL;
       } /* end if */
       att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));

@@ -1,6 +1,14 @@
+2018-02-06  Charlie Zender  <zender@uci.edu>
+
+	* Clarify CF violation warning
+
+2018-02-05  Charlie Zender  <zender@uci.edu>
+
+	* Henry cleaned-up ncap2 which now builds warning-free with gcc, clang, g++, and MSVC
+
 2018-02-05 Henry Butowsky  <henryb@hush.com>
 
-	* added  shell script bm/cch_clr.sh to clear caches. works with linux and macos
+	* Add shell script bm/cch_clr.sh to clear caches. Works with Linux and MacOS.
 
 2018-02-04  Charlie Zender  <zender@uci.edu>
 

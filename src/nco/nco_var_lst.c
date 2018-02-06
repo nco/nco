@@ -313,7 +313,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
           /* Yes, get list of specified attributes */
           (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
           if(att_typ != NC_CHAR){
-            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
             return xtr_lst;
           } /* end if */
           att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -398,7 +398,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
           /* Yes, get list of specified attributes */
           (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
           if(att_typ != NC_CHAR){
-            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
             return xtr_lst;
           } /* end if */
           att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -539,7 +539,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
           /* Yes, get list of specified attributes */
           (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
           if(att_typ != NC_CHAR){
-            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
             return xtr_lst;
           } /* end if */
           att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
@@ -620,7 +620,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
           /* Yes, get list of specified attributes */
           (void)nco_inq_att(nc_id,var_id,att_nm,&att_typ,&att_sz);
           if(att_typ != NC_CHAR){
-            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for specifying additional attributes. Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
+            (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for variable %s is type %s, not %s. This violates the CF convention for allowed datatypes (http://cfconventions.org/cf-conventions/cf-conventions.html#_data_types). Therefore %s will skip this attribute.\n",nco_prg_nm_get(),att_nm,xtr_lst[idx_var].nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),fnc_nm);
             return xtr_lst;
           } /* end if */
           att_val=(char *)nco_malloc((att_sz+1L)*sizeof(char));
