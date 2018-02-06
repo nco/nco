@@ -835,7 +835,7 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
       nco_uint *uip;
       double *dp;
       
-      var_sct *var_out;
+      var_sct *var_out=NULL_CEWI;
       
       gsl_sf_result rslt;  /* structure for result from gsl lib call */
       
@@ -890,7 +890,7 @@ var_sct *gsl_cls::hnd_fnc_x(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gp
       nco_int *ip;
       double *dp;
       
-      var_sct *var_out;
+      var_sct *var_out=NULL_CEWI;
       
       gsl_sf_result rslt;  /* structure for result from gsl lib call */
       
@@ -1036,14 +1036,13 @@ var_sct *gsl_cls::hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   case NC_DOUBLE:
     // This is handled in hnd_fnc_nd,P2DBL
      break;
-    
+
+     
   case NC_INT: { 
     bool has_mss_val=false;
     int sz;
-    nco_int mss_val_ntg; 
     nco_int *ip1; 
     double *dp2;
-    
     double mss_val_dbl;
     gsl_sf_result rslt;  /* structure for result from gsl lib call */
     int (*fnc_int)(int,double, gsl_sf_result*);
@@ -1067,7 +1066,7 @@ var_sct *gsl_cls::hnd_fnc_xd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
     if(var1->has_mss_val){
       //has_mss_val=true; 
       (void)cast_void_nctype(NC_INT,&var1->mss_val);
-      mss_val_ntg=*var1->mss_val.ip;
+      // mss_val_ntg=*var1->mss_val.ip;
       (void)cast_nctype_void(NC_INT,&(var1->mss_val));
     } 
     
@@ -1249,7 +1248,7 @@ var_sct *gsl_cls::hnd_fnc_idpd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
   std::string sfnm=gpr_obj.fnm();
   std::string susg;        // usage string;   
   std::string var_nm;
-  var_sct *var_arr[2];
+  var_sct *var_arr[2]={NULL_CEWI};
   var_sct *var_out=NULL_CEWI;
   var_sct *var_tmp=NULL_CEWI;
   
@@ -1361,16 +1360,14 @@ var_sct *gsl_cls::hnd_fnc_nd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   int fdx=gpr_obj.type(); // very important 
   int args_nbr;
   int args_in_nbr(-1); // CEWI
-  nc_type type;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
-  var_sct *var_ret; 
-  var_sct **var_arr;
-  var_sct ***var_arr_ptr;
+  var_sct *var_ret=NULL_CEWI; 
+  var_sct **var_arr=NULL_CEWI;
+  var_sct ***var_arr_ptr=NULL_CEWI;
   
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
-  type=gpr_obj.type();  
   
   args_nbr=args_vtr.size();
   
@@ -1908,7 +1905,7 @@ var_sct *gsl_cls::hnd_fnc_idd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
   int args_nbr;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
-  var_sct *var_ret;
+  var_sct *var_ret=NULL_CEWI;
   var_sct *var_arr[3];
   var_sct **var_arr_ptr[3]; 
   
@@ -2015,7 +2012,6 @@ var_sct *gsl_cls::hnd_fnc_ud(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   const std::string fnc_nm("hnd_fnc_ud");
   long idx;
   int args_nbr;
-  nc_type type;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
   var_sct *var1=NULL_CEWI;
@@ -2024,7 +2020,6 @@ var_sct *gsl_cls::hnd_fnc_ud(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
-  type=gpr_obj.type();  
   
   args_nbr=args_vtr.size();
   
@@ -2217,7 +2212,6 @@ var_sct *gsl_cls::hnd_fnc_rnd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
   int fdx=gpr_obj.type(); // very important 
   int args_nbr;
   int args_in_nbr(-1); // CEWI
-  nc_type type;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
   var_sct *var_ret; 
@@ -2228,7 +2222,6 @@ var_sct *gsl_cls::hnd_fnc_rnd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
 
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
-  type=gpr_obj.type();  
   
   args_nbr=args_vtr.size();
   
@@ -2300,8 +2293,6 @@ var_sct *gsl_cls::hnd_fnc_rnd(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&
     double **dp;
     double mss_val_dbl=0.0;
               
-    gsl_mode_t mde_t=ncap_gsl_mode_prec; // initialize local from global variable */
-    gsl_sf_result rslt;  /* structure for result from gsl lib call */
 
     dp=(double**)nco_malloc(sizeof(double*)*args_in_nbr);
     
@@ -2434,7 +2425,6 @@ var_sct *gsl_cls::hnd_fnc_ru(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   const std::string fnc_nm("hnd_fnc_ru");
   int idx;
   int args_nbr;
-  nc_type type;
   std::string styp=(is_mtd ? "method":"function");
   std::string sfnm=gpr_obj.fnm();
   var_sct *var=NULL_CEWI;
@@ -2446,7 +2436,6 @@ var_sct *gsl_cls::hnd_fnc_ru(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&g
   
   args_nbr=args_vtr.size();
   
-  type=gpr_obj.type(); 
   
   if(args_nbr==0) err_prn(fnc_nm,styp+" \""+sfnm+"\" has been called with no arguments"); 
   
@@ -2869,7 +2858,6 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
       long sz=var->sz;
       nco_uint64 *ui64p;
       nco_uint64 mss_val_uint64;
-      double *dp; 
 
       unsigned long int(*fnc_int)(const gsl_rng*,unsigned long int);
       
@@ -2933,7 +2921,6 @@ var_sct *gsl_cls::hnd_fnc_stat1(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   int idx;
   int nbr_args;
   int in_nbr_args;
-  nc_type type;
   std::string susg;
   std::string sfnm=gpr_obj.fnm();
   var_sct *var[3];
@@ -2944,12 +2931,13 @@ var_sct *gsl_cls::hnd_fnc_stat1(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
-  type=gpr_obj.type();  
   
   nbr_args=args_vtr.size();
   
   susg=susg="usage: double_val="+sfnm+"(var_data, data_stride?, n?)";
 
+  r_val=0.0;
+  
   if(nbr_args <1){
     err_prn(sfnm,"Function requires at least one argument.\n"+susg  ); 
   }
@@ -3068,16 +3056,15 @@ var_sct *gsl_cls::hnd_fnc_stat2(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   const std::string fnc_nm("hnd_fnc_stat2");
   int idx;
   int args_nbr;
-  nc_type type;
   std::string susg;
   std::string sfnm=gpr_obj.fnm();
   var_sct *var_arr[4];
   double r_val;
-   
-    
+
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
-  type=gpr_obj.type();  
+  
+  r_val=0.0;
   
   args_nbr=args_vtr.size();
   
@@ -3205,19 +3192,16 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   int nbr_args;
   int in_nbr_args;
   int fdx=gpr_obj.type(); // very important
-  nc_type type;
   std::string susg;
   std::string sfnm=gpr_obj.fnm();
   var_sct *var[3];
-  var_sct *var_ret;
-  double r_val;
+  var_sct *var_ret=NULL_CEWI;
    
   
   var[0]=var[1]=var[2]=(var_sct*)NULL;    
   
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
-  type=gpr_obj.type();  
   
   nbr_args=args_vtr.size();
   
@@ -3310,7 +3294,9 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
    switch(fdx){
     
    case PS_MAX_IDX:{
-     nco_int r_val; 
+     nco_int r_val;
+     r_val=0;
+
      switch(var[0]->type){
        case NC_FLOAT:  r_val=gsl_stats_float_max_index( var[0]->val.fp,d_srd,sz);break;
        case NC_DOUBLE: r_val=gsl_stats_max_index( var[0]->val.dp,d_srd,sz);break;
@@ -3342,7 +3328,9 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
    
     
    case PS_MIN_IDX:{
-     nco_int r_val; 
+     nco_int r_val;
+     r_val=0;
+
      switch(var[0]->type){
        case NC_FLOAT:  r_val=gsl_stats_float_min_index( var[0]->val.fp,d_srd,sz);break;
        case NC_DOUBLE: r_val=gsl_stats_min_index( var[0]->val.dp,d_srd,sz);break;
@@ -3494,7 +3482,6 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   int idx;
   int fdx=gpr_obj.type(); // very important
   int args_nbr;
-  nc_type type;
   std::string susg;
   std::string sfnm=gpr_obj.fnm();
   var_sct *var_arr[6];
@@ -3503,7 +3490,6 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     
   // de-reference 
   prs_cls *prs_arg=walker.prs_arg;
-  type=gpr_obj.type();  
   
   args_nbr=args_vtr.size();
   
@@ -3764,7 +3750,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     int fdx=fmc_obj.fdx();   //index
     int nbr_args;
     unsigned long vlng;
-    var_sct *var;
+    var_sct *var=NULL_CEWI;
     prs_cls* prs_arg=walker.prs_arg;
     std::string sfnm =fmc_obj.fnm(); //method name
     std::string styp;
@@ -3871,22 +3857,20 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   const std::string fnc_nm("gsl_stt2_cls::fnd");
     int idx;
     int fdx=fmc_obj.fdx();   //index
-    int nbr_args;
-    int in_nbr_args;
+    int nbr_args=0;
+    int in_nbr_args=0;
     double r_val;
-    var_sct *var;
     prs_cls* prs_arg=walker.prs_arg;
     std::string sfnm =fmc_obj.fnm(); //method name
     std::string susg;
     RefAST tr;
     std::vector<RefAST> vtr_args; 
     var_sct **var_arr;
-    var_sct ***var_arr_ptr;
 
 
     nbr_args=0;
-
-
+    r_val=0.0; 
+     
 
     if(expr)
       vtr_args.push_back(expr);
@@ -3958,7 +3942,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   
  // check weight type and data type 
  
- if(var_arr[0]->type != var_arr[2]->type || var_arr[2]->type != NC_FLOAT && var_arr[2]->type != NC_DOUBLE  ){   
+  if(var_arr[0]->type != var_arr[2]->type || (var_arr[2]->type != NC_FLOAT && var_arr[2]->type != NC_DOUBLE  )){   
    ostringstream os;  
    os<<"The data type and the weight type most both be NC_FLOAT or NC_DOUBLE. In your arguments the data is type "<<nco_typ_sng(var_arr[2]->type)<< " and the weight is type "<<nco_typ_sng(var_arr[0]->type);
 
@@ -4240,7 +4224,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 // nb this method is only call with fdx==PEVAL
 var_sct *gsl_spl_cls::eval_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("gsl_spl_cls::eval_fnd");
-    int fdx=fmc_obj.fdx();   //index
+    // int fdx=fmc_obj.fdx();   //index
     int nbr_args;
     int in_nbr_args;
     prs_cls* prs_arg=walker.prs_arg;
@@ -4369,7 +4353,7 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
 
     
     NcapVar *Nvar;       
-    const gsl_interp_type *ts;
+    const gsl_interp_type *ts=NULL_CEWI;
     gsl_spline *spline;   
  
     nbr_args=args_vtr.size();  
@@ -4565,8 +4549,8 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
     int idx;
     int fdx=fmc_obj.fdx();   //index
     int nbr_args;    // actual nunber of args
-    int in_nbr_args; // target number of args
-    int in_val_nbr_args; // number of expressions
+    int in_nbr_args=0; // target number of args
+    int in_val_nbr_args=0; // number of expressions
     int ret; 
     prs_cls* prs_arg=walker.prs_arg;
     std::string sfnm =fmc_obj.fnm(); //method name
@@ -4576,7 +4560,8 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
     
     var_sct *var_in[13];  
        
- 
+    ret=NCO_GSL_SUCCESS;
+    
     nbr_args=vtr_args.size();  
 
     switch(fdx){
@@ -4901,9 +4886,8 @@ var_sct *gsl_fit_cls::fit_est_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, f
     bool has_mss_val; 
     int idx;
     int fdx=fmc_obj.fdx();   //index
-    int nbr_args;    // actual nunber of args
-    int in_nbr_args; // target number of args
-    int in_val_nbr_args; // number of expressions
+    int nbr_args=0;    // actual nunber of args
+    int in_nbr_args=0; // target number of args
     double mss_val_dbl;
 
     prs_cls* prs_arg=walker.prs_arg;
@@ -4911,8 +4895,8 @@ var_sct *gsl_fit_cls::fit_est_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, f
     std::string susg;
     std::string serr;    
     
-    var_sct *var_in[12];  
-    var_sct *var_out; 
+    var_sct *var_in[12]={NULL_CEWI};  
+    var_sct *var_out=NULL_CEWI; 
        
  
     nbr_args=vtr_args.size();  
@@ -4920,12 +4904,10 @@ var_sct *gsl_fit_cls::fit_est_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, f
     switch(fdx){
       case PLIN_EST:
 	in_nbr_args=6;
-        in_val_nbr_args=4;
         susg="usage: data_y="+sfnm+"(data_x,c0,c1,cov00,cov01,cov11)";
 	break;   
       case PMUL_EST:
 	in_nbr_args=3;
-        in_val_nbr_args=1;
         susg="usage: data_y="+sfnm+"(data_x,c1,cov11)";
 	break; 
 
