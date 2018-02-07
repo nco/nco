@@ -19,13 +19,99 @@ set MSVC_VERSION="Visual Studio 14 2015 Win64"
 echo using static crt %STATIC_CRT%
 echo using %MSVC_VERSION%
 
-:: replace the character string '\' with '/' needed for cmake
+:: 'git clone' all the dependencies
+:: the build folder is 'build'
+:: git clone https://github.com/Unidata/netcdf-c
+:: git clone https://github.com/curl/curl
+:: git clone https://github.com/madler/zlib
+:: git clone https://github.com/soumagne/szip
+:: git clone https://github.com/live-clones/hdf5
+:: git clone https://github.com/Unidata/UDUNITS-2
+:: git clone https://github.com/libexpat/libexpat
+:: git clone https://github.com/ampl/gsl
+:: git clone https://github.com/nco/antlr2
+
+:: current place
 set root_win=%cd%
-set root=%root_win:\=/%
+set build=%root_win%\build
+
+if not exist %build% (
+ mkdir %build%
+ echo cloning/building in %build%
+) else (
+ echo skipping mkdir %build%
+)
+
+:: change to build place 
+:: replace the character string '\' with '/' needed for cmake
+pushd %build%
+set tmp=%cd%
+set root=%tmp:\=/%
 echo cmake root is %root%
 
+if not exist %build%\netcdf-c (
+ git clone https://github.com/Unidata/netcdf-c
+ pushd netcdf-c
+ git checkout tags/v4.6.0
+ popd
+) else (
+ echo skipping netcdf git clone
+)
+
+if not exist %build%\curl (
+ git clone https://github.com/curl/curl
+) else (
+ echo skipping curl git clone
+)
+
+if not exist %build%\zlib (
+ git clone https://github.com/madler/zlib
+) else (
+ echo skipping zlib git clone
+)
+
+if not exist %build%\szip (
+ git clone https://github.com/soumagne/szip
+) else (
+ echo skipping szip git clone
+)
+
+if not exist %build%\hdf5 (
+ git clone https://github.com/live-clones/hdf5
+) else (
+ echo skipping hdf5 git clone
+)
+
+if not exist %build%\UDUNITS-2 (
+ git clone https://github.com/Unidata/UDUNITS-2
+) else (
+ echo skipping UDUNITS-2 git clone
+)
+
+if not exist %build%\libexpat (
+ git clone https://github.com/libexpat/libexpat
+) else (
+ echo skipping libexpat git clone
+)
+
+if not exist %build%\gsl (
+ git clone https://github.com/ampl/gsl
+) else (
+ echo skipping gsl git clone
+)
+
+if not exist %build%\antlr2 (
+ git clone https://github.com/nco/antlr2
+) else (
+ echo skipping antlr2 git clone
+)
+
+:: //////////////////////////////////////////////////////////
+:: zlib
+:: //////////////////////////////////////////////////////////
+
 :build_zlib
-if exist %root_win%\zlib\build\zlib.sln (
+if exist %build%\zlib\build\zlib.sln (
  echo skipping zlib build
  goto build_szip
 ) else (
@@ -38,14 +124,18 @@ if exist %root_win%\zlib\build\zlib.sln (
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF
   msbuild zlib.sln /target:build /property:configuration=debug
-  cp %root%\zlib\build\zconf.h %root%\zlib
+  cp %build%\zlib\build\zconf.h %build%\zlib
   popd
   popd
   if errorlevel 1 goto :eof
 )
 
+:: //////////////////////////////////////////////////////////
+:: szip
+:: //////////////////////////////////////////////////////////
+
 :build_szip
-if exist %root_win%\szip\build\SZIP.sln (
+if exist %build%\szip\build\SZIP.sln (
  echo skipping szip build
  goto build_hdf5
 ) else (
@@ -64,8 +154,12 @@ if exist %root_win%\szip\build\SZIP.sln (
   if errorlevel 1 goto :eof
 )
 
+:: //////////////////////////////////////////////////////////
+:: hdf5
+:: //////////////////////////////////////////////////////////
+
 :build_hdf5
-if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
+if exist %build%\hdf5\build\bin\Debug\h5dump.exe (
  echo skipping hdf5 build
  goto build_curl
 ) else (
@@ -96,9 +190,12 @@ if exist %root_win%\hdf5\build\bin\Debug\h5dump.exe (
   if errorlevel 1 goto :eof
 )
 
+:: //////////////////////////////////////////////////////////
+:: curl
+:: //////////////////////////////////////////////////////////
 
 :build_curl
-if exist %root_win%\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib (
+if exist %build%\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib (
  echo skipping curl build
  goto build_netcdf
 ) else (
@@ -118,9 +215,12 @@ if exist %root_win%\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\l
   if errorlevel 1 goto :eof
 )
 
+:: //////////////////////////////////////////////////////////
+:: netcdf
+:: //////////////////////////////////////////////////////////
 
 :build_netcdf
-if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
+if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
  echo skipping netcdf build
  goto test_netcdf
 ) else (
@@ -151,17 +251,21 @@ if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
 
 
 :test_netcdf
-if exist %root_win%\netcdf-c\build\ncdump\ncdump.exe (
+if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
  echo testing netcdf build
  @echo on
- %root_win%\netcdf-c\build\ncdump\ncdump.exe -k http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+ %build%\netcdf-c\build\ncdump\ncdump.exe -h http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
  @echo off
  @echo.
  goto build_expat
 )
 
+:: //////////////////////////////////////////////////////////
+:: expat
+:: //////////////////////////////////////////////////////////
+
 :build_expat
-if exist %root_win%\libexpat\expat\build\expat.sln (
+if exist %build%\libexpat\expat\build\expat.sln (
  echo skipping expat build
  goto build_udunits
 ) else (
@@ -182,9 +286,12 @@ if exist %root_win%\libexpat\expat\build\expat.sln (
   if errorlevel 1 goto :eof
 )
 
+:: //////////////////////////////////////////////////////////
+:: udunits
+:: //////////////////////////////////////////////////////////
 
 :build_udunits
-if exist %root_win%\UDUNITS-2\build\udunits.sln (
+if exist %build%\UDUNITS-2\build\udunits.sln (
  echo skipping udunits build
  goto build_gsl
 ) else (
@@ -204,9 +311,12 @@ if exist %root_win%\UDUNITS-2\build\udunits.sln (
   if errorlevel 1 goto :eof
 )
 
+:: //////////////////////////////////////////////////////////
+:: gsl
+:: //////////////////////////////////////////////////////////
 
 :build_gsl
-if exist %root_win%\GSL\build\GSL.sln (
+if exist %build%\GSL\build\GSL.sln (
  echo skipping gsl build
  goto build_antlr
 ) else (
@@ -231,8 +341,12 @@ if exist %root_win%\GSL\build\GSL.sln (
   if errorlevel 1 goto :eof
 )
 
+:: //////////////////////////////////////////////////////////
+:: antlr
+:: //////////////////////////////////////////////////////////
+
 :build_antlr
-if exist %root_win%\antlr2\lib\cpp\build\antlr.sln (
+if exist %build%\antlr2\lib\cpp\build\antlr.sln (
  echo skipping antlr build
  goto build_nco
 ) else (
@@ -254,16 +368,21 @@ if exist %root_win%\antlr2\lib\cpp\build\antlr.sln (
   if errorlevel 1 goto :eof
 )
 
+:: //////////////////////////////////////////////////////////
+:: NCO
+:: use undocumented option -H (location of CMakeLists.txt)
+:: //////////////////////////////////////////////////////////
 
 
 :build_nco
-if exist Debug\ncks.exe (
+if exist %build%\Debug\ncks.exe (
  echo skipping nco build
  goto test_nco
 ) else (
   echo building NCO
   rm -rf CMakeCache.txt CMakeFiles
-  cmake .. -G %MSVC_VERSION% ^
+  cmake .. -H..\.. ^
+   -G %MSVC_VERSION% ^
   -DMSVC_DEVELOPER=ON ^
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
   -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
@@ -288,18 +407,18 @@ if exist Debug\ncks.exe (
 
 :test_nco
 @echo on
-%root_win%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %root_win%\..\data\in_grp.nc %root_win%\..\data\in_grp.cdl
-%root_win%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %root_win%\..\data\in.nc %root_win%\..\data\in.cdl
-%root_win%\Debug\ncks.exe --jsn_fmt 2 -C -g g10 -v two_dmn_rec_var %root_win%\..\data\in_grp.nc
-%root_win%\Debug\ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+%build%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %build%\..\data\in_grp.nc %build%\..\data\in_grp.cdl
+%build%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %build%\..\data\in.nc %build%\..\data\in.cdl
+%build%\Debug\ncks.exe --jsn_fmt 2 -C -g g10 -v two_dmn_rec_var %build%\..\data\in_grp.nc
+%build%\Debug\ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
 
 :: generate text files in_grp.nc.gen.txt from in_grp.nc and in.nc and use tool FC to compare contents 
 :: with pre-existing in_grp.nc.txt, in.nc.txt, generated in Linux
 :: generation of in_grp.nc.gen.txt must be done in 'data' folder so that paths match
 
-@pushd %root_win%\..\data
-%root_win%\Debug\ncks.exe in_grp.nc > %root_win%\in_grp.nc.gen.txt 
-%root_win%\Debug\ncks.exe in.nc > %root_win%\in.nc.gen.txt 
+@pushd %build%\..\data
+%build%\Debug\ncks.exe in_grp.nc > %build%\in_grp.nc.gen.txt 
+%build%\Debug\ncks.exe in.nc > %build%\in.nc.gen.txt 
 @popd
 fc in_grp.nc.gen.txt in_grp.nc.txt
 fc in.nc.gen.txt in.nc.txt

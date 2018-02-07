@@ -6,7 +6,6 @@ https://github.com/nco/nco
 Do
 
 ```
-clone.bat
 bld.bat
 ```
 
