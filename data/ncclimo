@@ -206,6 +206,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Annual climo testing:
 # ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 2006 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm
 # ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 1852 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -C ann -m mpas -s 1851 -e 1852 -i ${DATA}/hdf/mpasLIoutput.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS,TREFHT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc

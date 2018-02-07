@@ -1,6 +1,10 @@
+2018-02-07  Charlie Zender  <zender@uci.edu>
+
+	* Remove duplicate nc_set_log_level() call triggered by dbg_lvl
+
 2018-02-06  Charlie Zender  <zender@uci.edu>
 
-	* Clarify CF violation warning
+	* Clarify CF violation warning when attribute type is NC_STRING
 
 2018-02-05  Charlie Zender  <zender@uci.edu>
 

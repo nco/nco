@@ -264,13 +264,13 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.091226.nc -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc
 # TempestRemap boutique:
 # GenerateCSMesh --alt --res 30 --file ${DATA}/grids/ne30.g
-# ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180101.nc
+# ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # ncremap --dbg=1 -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc -o ~/foo_fv129x256.nc
 # ncremap --dbg=1 -a fv2se_stt --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc
 # ncremap --dbg=1 -i ~/foo_fv129x256.nc -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc -o ~/foo_ne30.nc
 # ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --se_mtd=${DATA}/grids/ne30np4_latlon.091226.nc --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # Atmosphere->Ocean:
-# ncremap --dbg=1 --a2o -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180101.nc
+# ncremap --dbg=1 --a2o -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
 

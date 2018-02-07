@@ -6530,6 +6530,10 @@ ncks --rgr grd_ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_ty
 ncks --rgr grd_ttl='CAM-FV scalar grid 129x256'#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/129x256_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
+# 192x288 CAM-FV grid, first longitude centered at Greenwich
+ncks --rgr grd_ttl='CAM-FV scalar grid 192x288'#latlon=192,288#lat_typ=fv#lon_typ=grn_ctr \
+     --rgr scrip=${DATA}/grids/192x288_SCRIP.20160301.nc ~zender/nco/data/in.nc ~/foo.nc
+
 # 1441x2880 CAM-FV grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='CAM-FV scalar grid 1441x2880'#latlon=1441,2880#lat_typ=fv#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/1441x2880_SCRIP.20170901.nc ~zender/nco/data/in.nc ~/foo.nc
@@ -22494,7 +22498,7 @@ generate mapping weights from a source grid that has more coverage than
 the destination grid, i.e., the destination grid is a subset of the
 source. 
 When computing the intersection of two meshes, TempestRemap uses an
-algorithm (an executable named @command{GenerateOverlapMesh}) that
+algorithm (in an executable named @command{GenerateOverlapMesh}) that
 expects the mesh with less coverage to be the first grid, and the
 grid with greater coverage to be the second, regardless of the mapping
 direction.
