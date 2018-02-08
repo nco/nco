@@ -75,7 +75,7 @@
 # cd ~/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y OPTS=D NETCDF4=Y SZ=Y UDUNITS=N allinone;cd - # greenplanet intel
 # cd ~/nco/bld;ANTLR=/sopt/pgf90_pgcc/bin/antlr ANTLR_ROOT=/sopt/pgf90_pgcc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y OPTS=D NETCDF4=N SZ=Y UDUNITS=N allinone;cd - # greenplanet pgi
 # cd ~/nco/bld;make OMP=Y OPTS=D NETCDF4=N UDUNITS=Y allinone;cd - # pbs
-# cd ~/nco/bld;make OMP=Y OPTS=D NETCDF4=N UDUNITS=Y allinone;cd - # grele
+# cd ~/nco/bld;make OMP=Y OPTS=D UDUNITS=Y UBUNTU_440=Y allinone # grele
 # cd ~/nco/bld;make NETCDF4=N all ncap2;cd - # tephra
 # cd ~/nco/bld;make OMP=Y OPTS=D NETCDF4=N UDUNITS=N allinone;cd - # silt, clay
 # cd ~/nco/bld;NETCDF_INC='/usr/include/netcdf-3' NETCDF_LIB='/usr/lib64' make GSL=N OMP=N OPTS=D NETCDF4=N UDUNITS=N allinone;cd - # snow
