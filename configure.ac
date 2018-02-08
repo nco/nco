@@ -42,7 +42,7 @@
 # AC_CHECK_LIB Find libXXX.a, prepend -lXXX to LIBS, define HAVE_LIBXXX
 # AC_CHECK_PROG Find whether prg_nm is on ${PATH}, define ${flg} accordingly
 # AC_DEFINE Define token TKN to value VAL with comment CMNT in config.h
-# AC_DEFINE_UNQUOTED Define token TKN to value VAL with comment CMNT in config.h. Use then when TKN or VAL are shell variables.
+# AC_DEFINE_UNQUOTED Define token TKN to value VAL with comment CMNT in config.h. Use when TKN or VAL are shell variables.
 # AC_EGREP_HEADER Search CPP output of header.h (NB: CPP outputs C-code only), define ${flg} accordingly
 # AC_MSG_NOTICE Print MSG to output
 # AC_MSG_WARN Print MSG to output
@@ -389,7 +389,7 @@ esac
 # "#define HAVE_XXX 1" and "#undef NEED_XXX" when function xxx() is found and
 # "#undef HAVE_XXX" and "#define NEED_XXX 1" when function xxx() is not found
 # Purpose: CPP macros like "if(NEED_XXX)" are simpler to read than "if(!HAVE_xxx)"
-NCO_CHECK_FUNCS([nc_inq_format nc_inq_path])
+NCO_CHECK_FUNCS([nc_inq_format nc_inq_path nc_set_log_level])
 NCO_CHECK_FUNCS([getopt getopt_long])
 NCO_CHECK_FUNCS([atan2])
 NCO_CHECK_FUNCS([acosf asinf atanf atan2f cosf expf fabsf fmodf log10f logf powf sinf sqrtf tanf])
@@ -1295,6 +1295,7 @@ echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_ESMF...........${enable_esmf}"
 echo "ENABLE_GSL........... ${enable_gsl}"
+echo "ENABLE_LOGGING....... ${enable_logging}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
 echo "ENABLE_OPENMP........ ${enable_openmp}"
 echo "ENABLE_UDUNITS....... ${enable_udunits}"

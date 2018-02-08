@@ -1008,7 +1008,7 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
   return rcd;
 } /* end nco_inq() */
 
-  /* NB: nc_inq_path() introduced in netCDF 4.3.2, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
+/* NB: nc_inq_path() introduced in netCDF 4.3.2, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #ifndef HAVE_NC_INQ_PATH
 int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path)
 {

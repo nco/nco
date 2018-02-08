@@ -1,4 +1,10 @@
+2018-02-08  Charlie Zender  <zender@uci.edu>
+
+	* bld/Makefile allows for Ubuntu 4.4.0 exception with UBUNTU_440 argument
+
 2018-02-07  Charlie Zender  <zender@uci.edu>
+
+	* Add --enable-logging to autoconf
 
 	* Remove duplicate nc_set_log_level() call triggered by dbg_lvl
 

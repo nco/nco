@@ -18454,6 +18454,20 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi
+ac_fn_c_check_func "$LINENO" "nc_set_log_level" "ac_cv_func_nc_set_log_level"
+if test "x$ac_cv_func_nc_set_log_level" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_NC_SET_LOG_LEVEL 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_NC_SET_LOG_LEVEL 1
+_ACEOF
+
+fi
 
 ac_fn_c_check_func "$LINENO" "getopt" "ac_cv_func_getopt"
 if test "x$ac_cv_func_getopt" = xyes; then :
@@ -23666,6 +23680,7 @@ echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_ESMF...........${enable_esmf}"
 echo "ENABLE_GSL........... ${enable_gsl}"
+echo "ENABLE_LOGGING....... ${enable_logging}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
 echo "ENABLE_OPENMP........ ${enable_openmp}"
 echo "ENABLE_UDUNITS....... ${enable_udunits}"

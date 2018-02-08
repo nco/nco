@@ -745,7 +745,7 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* NB: Keep configuration option tokens consistent among configure.ac, bld/Makefile, and nco_ctl.c
      Alphabetize list by first word in English text description of token */
-  (void)fprintf(stdout,"Configuration Option:\tActive?\tMeaning or Reference:\nCheck _FillValue\t%s\thttp://nco.sf.net/nco.html#mss_val\nDAP support\t\t%s\thttp://nco.sf.net/nco.html#dap\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nGNU Scientific Library\t%s\thttp://nco.sf.net/nco.html#gsl\nHDF4 support\t\t%s\thttp://nco.sf.net/nco.html#hdf4\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nMPI parallelization\t%s\thttp://nco.sf.net/nco.html#mpi (pre-alpha)\nnetCDF3 64-bit offset\t%s\thttp://nco.sf.net/nco.html#lfs\nnetCDF3 64-bit data\t%s\thttp://nco.sf.net/nco.html#cdf5\nnetCDF4/HDF5 support\t%s\thttp://nco.sf.net/nco.html#nco4\nOpenMP SMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nPnetCDF support\t\t%s\thttp://nco.sf.net/nco.html#pnetcdf (pre-alpha)\nRegular Expressions\t%s\thttp://nco.sf.net/nco.html#rx\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits2 conversions\t%s\thttp://nco.sf.net/nco.html#udunits\n%s",
+  (void)fprintf(stdout,"Configuration Option:\tActive?\tMeaning or Reference:\nCheck _FillValue\t%s\thttp://nco.sf.net/nco.html#mss_val\nDAP support\t\t%s\thttp://nco.sf.net/nco.html#dap\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nGNU Scientific Library\t%s\thttp://nco.sf.net/nco.html#gsl\nHDF4 support\t\t%s\thttp://nco.sf.net/nco.html#hdf4\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nLogging\t%s\thttp://nco.sf.net/nco.html#dbg\nMPI parallelization\t%s\thttp://nco.sf.net/nco.html#mpi (pre-alpha)\nnetCDF3 64-bit offset\t%s\thttp://nco.sf.net/nco.html#lfs\nnetCDF3 64-bit data\t%s\thttp://nco.sf.net/nco.html#cdf5\nnetCDF4/HDF5 support\t%s\thttp://nco.sf.net/nco.html#nco4\nOpenMP SMP threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nPnetCDF support\t\t%s\thttp://nco.sf.net/nco.html#pnetcdf (pre-alpha)\nRegular Expressions\t%s\thttp://nco.sf.net/nco.html#rx\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits2 conversions\t%s\thttp://nco.sf.net/nco.html#udunits\n%s",
 		(!strcmp("_FillValue",nco_mss_val_sng_get())) ? "Yes" : "No",
 #if defined(ENABLE_DAP) && (ENABLE_DAP)
 		"Yes",
@@ -782,6 +782,11 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 #else /* !I18N */
 		"No",
 #endif /* !I18N */
+#if defined(ENABLE_LOGGING) && (ENABLE_LOGGING)
+		"Yes",
+#else /* !ENABLE_LOGGING */
+		"No",
+#endif /* !ENABLE_LOGGING */
 #if defined(ENABLE_MPI) && (ENABLE_MPI)
 		"Yes",
 #else /* !ENABLE_MPI */
