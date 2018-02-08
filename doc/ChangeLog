@@ -1,5 +1,7 @@
 2018-02-08  Charlie Zender  <zender@uci.edu>
 
+	* Remove "var" from Invoke.cc OMP clause
+
 	* bld/Makefile allows for Ubuntu 4.4.0 exception with UBUNTU_440 argument
 
 2018-02-07  Charlie Zender  <zender@uci.edu>

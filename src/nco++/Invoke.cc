@@ -91,7 +91,7 @@ RefAST tr;
    } 
    */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(kdx,wlk_lcl,var,tr) shared(wlk_ptr,idx,nbr_sz,inn_vtr )
+#pragma omp parallel for default(none) private(kdx,wlk_lcl,tr) shared(wlk_ptr,idx,nbr_sz,inn_vtr )
 #endif
    for(kdx=0 ;kdx< nbr_sz; kdx++) {      
      wlk_lcl= wlk_ptr[omp_get_thread_num()];
