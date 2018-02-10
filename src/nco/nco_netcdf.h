@@ -348,7 +348,7 @@ int nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * 
 #ifndef HAVE_NC_INQ_PATH
   int nc_inq_path(const int nc_id,size_t * const pathlen,char * const path);
 #endif /* !HAVE_NC_INQ_PATH */
-int nco_inq_path(const int nc_id,size_t * const pathlen,char * const path);
+  int nco_inq_path(const int nc_id,size_t * const pathlen,char * const path);
   /* NB: nc_inq_format() introduced in netCDF 3.6.1, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #ifndef HAVE_NC_INQ_FORMAT
   /* Stub for nc_inq_format(), introduced in netCDF 3.6.1 or 3.6.2 */

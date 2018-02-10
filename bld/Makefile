@@ -75,7 +75,7 @@
 # cd ~/nco/bld;ANTLR=/sopt/ifort_icpc/bin/antlr ANTLR_ROOT=/sopt/ifort_icpc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y OPTS=D NETCDF4=Y SZ=Y UDUNITS=N allinone;cd - # greenplanet intel
 # cd ~/nco/bld;ANTLR=/sopt/pgf90_pgcc/bin/antlr ANTLR_ROOT=/sopt/pgf90_pgcc SZ_LIB=/sopt/lib UDUNITS_INC=/sopt/include UDUNITS_LIB=/sopt/lib make OMP=Y OPTS=D NETCDF4=N SZ=Y UDUNITS=N allinone;cd - # greenplanet pgi
 # cd ~/nco/bld;make OMP=Y OPTS=D NETCDF4=N UDUNITS=Y allinone;cd - # pbs
-# cd ~/nco/bld;make OMP=Y OPTS=D NETCDF4=N UDUNITS=Y allinone;cd - # grele
+# cd ~/nco/bld;make OMP=Y OPTS=D UDUNITS=Y UBUNTU_440=Y allinone # grele
 # cd ~/nco/bld;make NETCDF4=N all ncap2;cd - # tephra
 # cd ~/nco/bld;make OMP=Y OPTS=D NETCDF4=N UDUNITS=N allinone;cd - # silt, clay
 # cd ~/nco/bld;NETCDF_INC='/usr/include/netcdf-3' NETCDF_LIB='/usr/lib64' make GSL=N OMP=N OPTS=D NETCDF4=N UDUNITS=N allinone;cd - # snow
@@ -656,8 +656,10 @@ CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_GETPAGESIZE -
 CPP_TKN_OS += -DHAVE_NC_INQ_FORMAT
 # Assume netCDF >= 4.3.2
 CPP_TKN_OS += -DHAVE_NC_INQ_PATH
-# Assume netCDF >= 4.4.0
-CPP_TKN_OS += -DHAVE_NETCDF_MEM_H
+# Assume netCDF >= 4.4.0, but Ubuntu 4.4.0 (e.g., on grele) fumbled netcdf_mem.h header
+ifndef UBUNTU_440
+ CPP_TKN_OS += -DHAVE_NETCDF_MEM_H
+endif # !grele
 # gcc 4.7.3 finally includes strcasestr() in string.h iff _GNU_SOURCE token is defined
 # NB: C++ (or at least g++ 4.7.3) always includes strcasestr()---work around this with tokens in nco_sng_utl.[ch]
 ifneq (${PVM_ARCH},CRAY)

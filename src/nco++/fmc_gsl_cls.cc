@@ -2993,7 +2993,7 @@ var_sct *gsl_cls::hnd_fnc_stat1(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
    }
    
    // Check hyperslab limits
-   if( 1+ (sz-1)*d_srd >var[0]->sz){
+   if( 1+ (sz-1)*d_srd >(size_t)var[0]->sz){
      err_prn(sfnm,"Requested hyperslab with stride="+nbr2sng(d_srd)+" and n="+ nbr2sng(sz)+" doesn't fit into variable \""+string(var[0]->nm)+"\" with size="+nbr2sng(var[0]->sz)); 
     }
    
@@ -3120,7 +3120,7 @@ var_sct *gsl_cls::hnd_fnc_stat2(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
    
    // Check hyperslab limits
-   if( 1+ (sz-1)*d_srd >var_arr[0]->sz){
+   if( 1+ (sz-1)*d_srd > (size_t)var_arr[0]->sz){
      err_prn(sfnm,"Requested hyperslab with stride="+nbr2sng(d_srd)+" and n="+ nbr2sng(sz)+" doesn't fit into variable \""+string(var_arr[0]->nm)+"\" with size="+nbr2sng(var_arr[0]->sz)); 
     }
 
@@ -3287,7 +3287,7 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
    }
    
    // Check hyperslab limits
-   if(1L+(sz-1)*d_srd > var[0]->sz){
+   if(1L+(sz-1)*d_srd > (size_t)var[0]->sz){
      err_prn(sfnm,"Requested hyperslab with stride="+nbr2sng(d_srd)+" and n="+ nbr2sng(sz)+" does not fit into variable \""+string(var[0]->nm)+"\" with size="+nbr2sng(var[0]->sz)); 
     }
   
@@ -4015,7 +4015,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
    
    // Check hyperslab limits
-   if( 1+ (sz-1)*d_srd >var_arr[0]->sz){
+   if( 1+ (sz-1)*d_srd > (size_t)var_arr[0]->sz){
      err_prn(sfnm,"Requested hyperslab with stride="+nbr2sng(d_srd)+" and n="+ nbr2sng(sz)+" doesn't fit into variable \""+string(var_arr[0]->nm)+"\" with size="+nbr2sng(var_arr[0]->sz)); 
     }
 

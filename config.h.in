@@ -241,6 +241,9 @@
 /* Define to 1 if compiler finds external `nc_inq_path' function */
 #undef HAVE_NC_INQ_PATH
 
+/* Define to 1 if compiler finds external `nc_set_log_level' function */
+#undef HAVE_NC_SET_LOG_LEVEL
+
 /* Define to 1 if compiler finds external `nearbyint' function */
 #undef HAVE_NEARBYINT
 
@@ -516,6 +519,9 @@
 
 /* Define to 1 if compiler needs external `nc_inq_path' function */
 #undef NEED_NC_INQ_PATH
+
+/* Define to 1 if compiler needs external `nc_set_log_level' function */
+#undef NEED_NC_SET_LOG_LEVEL
 
 /* Define to 1 if compiler needs external `nearbyint' function */
 #undef NEED_NEARBYINT
