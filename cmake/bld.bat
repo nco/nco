@@ -47,9 +47,9 @@ set root=%tmp:\=/%
 echo cmake root is %root%
 
 if not exist %build%\netcdf-c (
- git clone https://github.com/Unidata/netcdf-c
+ git clone https://github.com/nco/netcdf-c
  pushd netcdf-c
- git checkout tags/v4.6.0
+ git checkout Branch_v4.6.0
  popd
 ) else (
  echo skipping netcdf git clone
