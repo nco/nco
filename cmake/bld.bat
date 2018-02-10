@@ -3,10 +3,7 @@
 
 @echo off
 if not defined DevEnvDir (
- echo "%VS140COMNTOOLS%VsDevCmd.bat" 
- call "%VS140COMNTOOLS%VsDevCmd.bat" 
- echo "%VCINSTALLDIR%vcvarsall.bat" amd64
- call "%VCINSTALLDIR%vcvarsall.bat" amd64
+ call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
  if errorlevel 1 goto :eof
 )
 
@@ -123,7 +120,7 @@ if exist %build%\zlib\build\zlib.sln (
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF
-  msbuild zlib.sln /target:build /property:configuration=debug
+  msbuild zlib.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   cp %build%\zlib\build\zconf.h %build%\zlib
   popd
   popd
@@ -148,7 +145,7 @@ if exist %build%\szip\build\SZIP.sln (
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF ^
            -DBUILD_TESTING=OFF
-  msbuild SZIP.sln /target:build /property:configuration=debug
+  msbuild SZIP.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   popd
   popd
   if errorlevel 1 goto :eof
@@ -184,7 +181,7 @@ if exist %build%\hdf5\build\bin\Debug\h5dump.exe (
            -DSZIP_FOUND=ON ^
            -DSZIP_STATIC_LIBRARY:FILEPATH=%root%/szip/build/bin/Debug/libszip_D.lib ^
            -DSZIP_INCLUDE_DIRS:PATH=%root%/szip/src
-  msbuild HDF5.sln /target:build /property:configuration=debug
+  msbuild HDF5.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   popd
   popd
   if errorlevel 1 goto :eof
@@ -243,7 +240,7 @@ if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
            -DHDF5_HL_INCLUDE_DIR=%root%/hdf5/hl/src ^
            -DCURL_LIBRARY=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
            -DCURL_INCLUDE_DIR=%root%/curl/include
-  msbuild netcdf.sln /target:build /property:configuration=debug
+  msbuild netcdf.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   popd
   popd
   if errorlevel 1 goto :eof
@@ -279,7 +276,7 @@ if exist %build%\libexpat\expat\build\expat.sln (
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF ^
            -DBUILD_shared=OFF
-  msbuild expat.sln /target:build /property:configuration=debug
+  msbuild expat.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   popd
   popd
   popd
@@ -305,7 +302,7 @@ if exist %build%\UDUNITS-2\build\udunits.sln (
            -DBUILD_SHARED_LIBS=OFF ^
            -DEXPAT_INCLUDE_DIR=%root%/libexpat/expat/lib ^
            -DEXPAT_LIBRARY=%root%/libexpat/expat/build/Debug/expatd.lib
-  msbuild udunits.sln /target:build /property:configuration=debug
+  msbuild udunits.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   popd
   popd
   if errorlevel 1 goto :eof
@@ -335,7 +332,7 @@ if exist %build%\GSL\build\GSL.sln (
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF ^
            -DGSL_DISABLE_TESTS=ON
-  msbuild GSL.sln /target:build /property:configuration=debug
+  msbuild GSL.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   popd
   popd
   if errorlevel 1 goto :eof
@@ -360,7 +357,7 @@ if exist %build%\antlr2\lib\cpp\build\antlr.sln (
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF
-  msbuild antlr.sln /target:build /property:configuration=debug
+  msbuild antlr.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   popd
   popd
   popd
@@ -401,7 +398,7 @@ if exist %build%\Debug\ncks.exe (
   -DGSL_CBLAS_LIBRARY:FILE=%root%/gsl/build/Debug/gslcblas.lib ^
   -DANTLR_INCLUDE:PATH=%root%/antlr2/lib/cpp ^
   -DANTLR_LIBRARY:FILE=%root%/antlr2/lib/cpp/build/Debug/antlr.lib 
-  msbuild nco.sln /target:build /property:configuration=debug
+  msbuild nco.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   if errorlevel 1 goto :eof
 )
 
