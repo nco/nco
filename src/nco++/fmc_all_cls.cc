@@ -114,10 +114,10 @@
             if(expr)
                vtr_args.push_back(expr);
 
-            if(tr=fargs->getFirstChild()) {
+            if((tr=fargs->getFirstChild())) {
               do  
 	        vtr_args.push_back(tr);
-              while(tr=tr->getNextSibling());    
+              while((tr=tr->getNextSibling()));    
             } 
       
             nbr_args=vtr_args.size();
@@ -397,10 +397,10 @@
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
      nbr_args=vtr_args.size();  
@@ -1352,10 +1352,10 @@ var_sct * utl_cls::mask_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
      nbr_args=vtr_args.size();  
@@ -1632,10 +1632,10 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
      nbr_args=vtr_args.size();  
@@ -1695,10 +1695,10 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
      nbr_args=vtr_args.size();  
@@ -2129,10 +2129,10 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
             if(expr)
               vtr_args.push_back(expr);
 
-            if(tr=fargs->getFirstChild()) {
+            if((tr=fargs->getFirstChild())) {
               do  
 	       vtr_args.push_back(tr);
-              while(tr=tr->getNextSibling());    
+              while((tr=tr->getNextSibling()));    
             } 
       
             nbr_args=vtr_args.size();  
@@ -2285,10 +2285,10 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
        do  
          vtr_args.push_back(tr);
-       while(tr=tr->getNextSibling());    
+       while((tr=tr->getNextSibling()));    
     } 
       
     nbr_args=vtr_args.size();  
@@ -2466,10 +2466,10 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
        do  
          vtr_args.push_back(tr);
-       while(tr=tr->getNextSibling());    
+       while((tr=tr->getNextSibling()));    
     } 
       
     nbr_args=vtr_args.size();  
@@ -2587,10 +2587,10 @@ var_sct *srt_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walke
   if(expr)
     vtr_args.push_back(expr);
   
-  if(tr=fargs->getFirstChild()) {
+  if((tr=fargs->getFirstChild())) {
     do  
       vtr_args.push_back(tr);
-    while(tr=tr->getNextSibling());    
+    while((tr=tr->getNextSibling()));    
   }
   
   is_mtd=(expr ? true: false);
@@ -2997,10 +2997,10 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
     nbr_args=vtr_args.size();  
@@ -3203,10 +3203,10 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
     if(expr)
       args_vtr.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	args_vtr.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
      nbr_args=args_vtr.size();  
@@ -3282,10 +3282,10 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   if(expr)
       args_vtr.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+  if((tr=fargs->getFirstChild())) {
       do  
 	args_vtr.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
   nbr_args=args_vtr.size();  
@@ -3472,11 +3472,11 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   if(expr)
       args_vtr.push_back(expr);
 
-   if(tr=fargs->getFirstChild()) 
+  if((tr=fargs->getFirstChild())) 
    {
       do  
 	args_vtr.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
    } 
       
   nbr_args=args_vtr.size();  
@@ -3680,10 +3680,10 @@ var_sct * bil_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walk
   if(expr)
     vtr_args.push_back(expr);
   
-  if(tr=fargs->getFirstChild()) {
+  if((tr=fargs->getFirstChild())) {
     do  
       vtr_args.push_back(tr);
-    while(tr=tr->getNextSibling());    
+    while((tr=tr->getNextSibling()));    
   } 
   
   nbr_args=vtr_args.size();  
@@ -4143,10 +4143,10 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   if(expr)
       args_vtr.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+  if((tr=fargs->getFirstChild())) {
       do  
 	args_vtr.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
   nbr_args=args_vtr.size();  
@@ -4308,10 +4308,10 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
        do  
          vtr_args.push_back(tr);
-       while(tr=tr->getNextSibling());    
+       while((tr=tr->getNextSibling()));    
     } 
 
       
@@ -4672,10 +4672,10 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   if(expr)
     vtr_args.push_back(expr);
 
-  if(tr=fargs->getFirstChild())
+  if((tr=fargs->getFirstChild()))
     do  
       vtr_args.push_back(tr);
-    while(tr=tr->getNextSibling());    
+    while((tr=tr->getNextSibling()));    
   
   
   is_mtd=(expr ? true: false);
@@ -5163,11 +5163,11 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   if(expr)
     vtr_args.push_back(expr);
 
-  if(tr=fargs->getFirstChild())
+  if((tr=fargs->getFirstChild()))
   {
     do  
       vtr_args.push_back(tr);
-    while(tr=tr->getNextSibling());    
+    while((tr=tr->getNextSibling()));    
   } 
             
   nbr_args=vtr_args.size();  
@@ -5283,10 +5283,10 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   if(expr)
     vtr_args.push_back(expr);
 
-  if(tr=fargs->getFirstChild()) {
+  if((tr=fargs->getFirstChild())) {
     do  
       vtr_args.push_back(tr);
-    while(tr=tr->getNextSibling());    
+    while((tr=tr->getNextSibling()));    
   } 
       
   nbr_args=vtr_args.size();  
@@ -5437,10 +5437,10 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   if(expr)
     vtr_args.push_back(expr);
 
-  if(tr=fargs->getFirstChild()) {
+  if((tr=fargs->getFirstChild())) {
     do  
       vtr_args.push_back(tr);
-    while(tr=tr->getNextSibling());    
+    while((tr=tr->getNextSibling()));    
   } 
 
   nbr_args=vtr_args.size();
@@ -5643,10 +5643,10 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
   if(expr)
       args_vtr.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	args_vtr.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
   nbr_args=args_vtr.size();  
