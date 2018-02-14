@@ -2911,7 +2911,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
             cp_out=(char*)var_out->val.vp+ (ptrdiff_t)idx*sz*slb_sz;              
             for(jdx=0 ;jdx<sz; jdx++){
               // do bounds checking for the mapping
-	      if(lp_mp[jdx] >=0 && lp_mp[jdx]< sz )
+	      if(lp_mp[jdx]< sz )
                 // copy element from var1 to var_out
                 (void)memcpy(cp_out+(ptrdiff_t)(lp_mp[jdx]*slb_sz),cp_in,slb_sz); 
 	      cp_in+=(ptrdiff_t)slb_sz;
@@ -2925,7 +2925,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
             cp_in=(char*)var1->val.vp+ (ptrdiff_t)idx*sz*slb_sz;              
             for(jdx=0 ;jdx<sz; jdx++){
               // do bounds checking for the mapping
-	      if(lp_mp[jdx] >=0 && lp_mp[jdx]< sz )
+	      if(lp_mp[jdx]< sz )
                 // copy element from var1 to var_out
                 (void)memcpy(cp_out,cp_in+(ptrdiff_t)(lp_mp[jdx]*slb_sz),slb_sz); 
 	      cp_out+=(ptrdiff_t)slb_sz;
