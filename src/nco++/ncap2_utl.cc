@@ -1946,17 +1946,15 @@ ncap_cst_mk  /* [fnc] create casting var from a list of dims */
     // Search dmn_in_vtr for dimension
     dmn_item=prs_arg->dmn_in_vtr.find(lst_nm);
     // die if not in list
-    if(dmn_item == NULL_CEWI) {
-      err_prn(fnc_nm,"Unrecognized dimension \""+std::string(lst_nm)+ "\"in LHS subscripts");
-    }
-    if(!bdef) { 
+    if(dmn_item == NULL_CEWI) err_prn(fnc_nm,"Unrecognized dimension \""+std::string(lst_nm)+"\" in LHS subscripts");
 
+    if(!bdef){
 #ifdef _OPENMP
-       if(omp_in_parallel())
-	 err_prn(fnc_nm,"Attempt to go into netCDF define mode while in OpenMP parallel mode");
+      if(omp_in_parallel())
+	err_prn(fnc_nm,"Attempt to go into netCDF define mode while in OpenMP parallel mode");
 #endif
-       bdef=true;  
-       (void)nco_redef(prs_arg->out_id);
+      bdef=true;  
+      (void)nco_redef(prs_arg->out_id);
     }
 
     dmn_new=nco_dmn_dpl(dmn_item);

@@ -860,22 +860,22 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 } /* end nco_typ_fmt_sng() */
 
 void
-nco_prn_var_val_cmt /* 0 print to stdout var values as CDL comment (delimited by comma ) */
-(var_sct *var,          /* I [sct] variable to print */
- const prn_fmt_sct * const prn_flg)  /* I [sct] Print-format information */
+nco_prn_var_val_cmt /* Print to stdout variable values as CDL comment (delimited by comma) */
+(var_sct *var, /* I [sct] variable to print */
+ const prn_fmt_sct * const prn_flg) /* I [sct] Print-format information */
 {
   nco_bool is_mss_val=False;
   long lmn;
   long sz;
   size_t val_sz_byt;
   char *fmt_sng_mss_val=NULL;
-  char dlm_sng[200]={0};
+  char dlm_sng[NCO_MAX_LEN_FMT_SNG]={0};
   const char *mss_val_sng="_";
+
   /* Print each element with user-supplied formatting code */
   /* Replace C language '\X' escape codes with ASCII bytes */
-
   sz=var->sz;
-  sprintf(dlm_sng, "%s",nco_typ_fmt_sng_var_cdl(var->type));
+  sprintf(dlm_sng,"%s",nco_typ_fmt_sng_var_cdl(var->type));
 
   (void)sng_ascii_trn(dlm_sng);
 
@@ -1153,7 +1153,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 
   } /* end if dlm_sng */
 
-  if(var.nbr_dim == 0 && dlm_sng == NULL){ 
+  if(var.nbr_dim == 0 && !dlm_sng){ 
     /* Variable is scalar, byte, or character */
     lmn=0;
     (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type));
@@ -1177,7 +1177,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
     } /* end switch */
   } /* end if variable is scalar, byte, or character */
 
-  if(var.nbr_dim > 0 && dlm_sng == NULL){ 
+  if(var.nbr_dim > 0 && !dlm_sng){ 
     /* Generate nicely formatted output for multidimensional arrays */
 
     char arr_lft_dlm=char_CEWI;
@@ -1604,6 +1604,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   char nul_chr='\0'; /* [sng] Character to end string */ 
 
   char *dlm_sng=NULL; /* [sng] User-specified delimiter string, if any */
+  char *fmt_val=NULL; /* [sng] Format string for variable values */
   char *nm_cdl;
   char *sng_val_sng=NULL_CEWI; /* [sng] String of NC_CHAR */
   char *sng_val_sng_cpy; /* [sng] Copy of sng_val_sng to avoid cppcheck error about using sng_val_sng as both parameter and desitnation in sprintf(). NB: free() only one of these two pointers. */
@@ -1628,9 +1629,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   int rcd_prn;
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int val_sz_byt=int_CEWI; /* [nbr] Type size */
+
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
   lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
-
 
   long *dmn_sbs_dsk=NULL_CEWI; /* [nbr] Indices of hyperslab relative to original on disk */
   long *dmn_sbs_ram=NULL_CEWI; /* [nbr] Indices in hyperslab */
@@ -1644,6 +1645,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   long var_szm1;
 
   nco_cln_typ lmt_cln = cln_std;   /* calendar type - for time@units */
+
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
   const nco_bool XML=prn_flg->xml; /* [flg] XML output */
   const nco_bool TRD=prn_flg->trd; /* [flg] Traditional output */
@@ -1653,12 +1655,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   nco_bool flg_malloc_unit_crd=False; /* [flg] Allocated memory for coordinate units string */
   nco_bool flg_malloc_unit_var=False; /* [flg] Allocated memory for variable units string */
   nco_bool unit_cln_crd=False; /* [flg] Coordinate has calendar units */
-  //nco_bool unit_cln_var=False; /* [flg] Variable has calendar units */
 
   nco_string sng_val; /* [sng] Current string */
 
   var_sct *var=NULL_CEWI; /* [sct] Variable structure */
-  var_sct *var_aux=NULL_CEWI; /* used to hold var data to be printed as CDL comment AFTER regular var data */
+  var_sct *var_aux=NULL_CEWI; /* Holds variable data printed as CDL comment AFTER regular variable data */
 
   if(prn_flg->new_fmt && (CDL||TRD||JSN)) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
   if(XML) prn_ndn=prn_flg->ndn;
@@ -1722,39 +1723,30 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
        !nco_is_spc_in_cf_att(grp_id, "climatology", var->id, &cf_var_id))
       cf_var_id = var->id;
 
-    unit_sng_var=nco_lmt_get_udu_att(grp_id, cf_var_id, "units");
+    unit_sng_var=nco_lmt_get_udu_att(grp_id,cf_var_id,"units");
     if(unit_sng_var && strlen(unit_sng_var)){
-      flg_malloc_unit_var = True;
-      //unit_cln_var = nco_cln_chk_tm(unit_sng_var);
-
-      cln_sng = nco_lmt_get_udu_att(grp_id, cf_var_id, "calendar");
-      if(cln_sng) lmt_cln = nco_cln_get_cln_typ(cln_sng); else lmt_cln=cln_std;
+      flg_malloc_unit_var=True;
+      cln_sng=nco_lmt_get_udu_att(grp_id, cf_var_id,"calendar");
+      if(cln_sng) lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt_cln=cln_std;
       if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
-    } 
+    } /* !unit_sng_var */
 
     /* Set default for TRD */
     if(TRD && flg_malloc_unit_var == False){
       unit_sng_var=strdup("(no units)");
       flg_malloc_unit_var=True;
     }else if(CDL && flg_malloc_unit_var == True){
-      if(prn_flg->PRN_CLN_LGB || nco_dbg_lvl_get()== nco_dbg_std){
+      if(prn_flg->PRN_CLN_LGB || nco_dbg_lvl_get() == nco_dbg_std){
         var_tmp=nco_var_dpl(var);
+        var_aux=nco_var_dpl(var);
+        var_aux->val.vp=nco_free(var_aux->val.vp);
 
-        var_aux = nco_var_dpl(var);
-        var_aux->val.vp = nco_free(var_aux->val.vp);
-
-        if(var_aux->has_mss_val)
-          var_aux->mss_val.vp=nco_free(var_aux->mss_val.vp);
+        if(var_aux->has_mss_val) var_aux->mss_val.vp=nco_free(var_aux->mss_val.vp);
         var_aux->has_mss_val=False;
+        nco_var_cnf_typ(NC_STRING,var_aux);
 
-        nco_var_cnf_typ(NC_STRING, var_aux);
-
-        /* nb nco_cln_var_prs modifies var_tmp and var_aux */
-        if (nco_cln_var_prs(unit_sng_var, lmt_cln, prn_flg->cdl_fmt_dt , var_tmp, var_aux) == NCO_ERR)
-          var_aux = nco_var_free(var_aux);
-        /* swap values about */
-        else if (prn_flg->PRN_CLN_LGB) { var_swp=var;var=var_aux;var_aux=var_swp; }
-
+        /* NB: nco_cln_var_prs() modifies var_tmp and var_aux */
+        if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_ERR) var_aux=nco_var_free(var_aux); else if(prn_flg->PRN_CLN_LGB){var_swp=var;var=var_aux;var_aux=var_swp;}
         if(var_tmp) var_tmp=(var_sct*)nco_var_free(var_tmp);
       } /* !PRN_CLN_LGB */
     } /* !CDL */
@@ -1804,8 +1796,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       (void)fprintf(stderr,"%s: WARNING will print packed values of variable \"%s\". Unpack first (with ncpdq -U) to see actual values.\n",nco_prg_nm_get(),var_nm);
 
   if(prn_flg->dlm_sng) dlm_sng=strdup(prn_flg->dlm_sng); /* [sng] User-specified delimiter string, if any */
+  if(prn_flg->fmt_val) fmt_val=strdup(prn_flg->fmt_val); /* [sng] Format string for variable values */
 
-  if(dlm_sng){
+  if(dlm_sng && TRD){
     /* Print variable with user-supplied dlm_sng (includes nbr_dmn == 0) */
     char *fmt_sng_mss_val=NULL;
 
@@ -1855,7 +1848,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     (void)fprintf(stdout,"\n");
 
     if(fmt_sng_mss_val) fmt_sng_mss_val=(char *)nco_free(fmt_sng_mss_val);
-  } /* end if dlm_sng */
+  } /* !dlm_sng */
 
   spr_sng=cma_sng; /* [sng] Output separator string */
   if(CDL || JSN || XML){
@@ -1867,29 +1860,25 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
     if(CDL){     
       chr2sng_sf=chr2sng_cdl;
-      (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var->type));
+      if(fmt_val && (var->type == NC_FLOAT || var->type == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var->type));
     } /* !CDL */
     if(XML){     
       chr2sng_sf=chr2sng_xml;
-      (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var->type));
+      if(fmt_val && (var->type == NC_FLOAT || var->type == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var->type));
     } /* !XML */
     if(JSN){
       chr2sng_sf=chr2sng_jsn;
-      (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var->type));
+      if(fmt_val && (var->type == NC_FLOAT || var->type == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var->type));
    
       (void)fprintf(stdout,"%*s\"data\": ",prn_ndn,spc_sng);
 
-      /* if  false then this means  only one set of braces for nbr_dim>1 */
-      if( prn_flg->jsn_data_brk == False)
-        for(dmn_idx=1;dmn_idx<var->nbr_dim;dmn_idx++) 
-           mod_map_rv_cnt[dmn_idx]=0L;
+      /* If false then print only one set of braces even when nbr_dim > 1 */
+      if(prn_flg->jsn_data_brk == False)
+        for(dmn_idx=1;dmn_idx<var->nbr_dim;dmn_idx++)
+	  mod_map_rv_cnt[dmn_idx]=0L;
 
-
-      /* switch   off final level braces for NC_CHAR as string is already quoted */      
-      if(var->nbr_dim >=1 && var->type==NC_CHAR)  
-           mod_map_rv_cnt[var->nbr_dim-1]=0L;
-
-
+      /* Switch-off final level braces for NC_CHAR as string is already quoted */      
+      if(var->nbr_dim >=1 && var->type==NC_CHAR) mod_map_rv_cnt[var->nbr_dim-1]=0L;
     } /* !JSN */
 
     nm_cdl=nm2sng_cdl(var_nm);
@@ -1932,39 +1921,37 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       } /* var.sz */
       (void)fprintf(stdout,">");
     } /* !xml */
-    if(CDL) {
+    if(CDL){
       (void)fprintf(stdout,"%*s%s = ",prn_ndn,spc_sng,nm_cdl);
-      /* pretty printing */
-      if(var->nbr_dim >=2)
-        (void)fprintf(stdout,"\n%*s",prn_ndn,spc_sng);
-    }
+      /* Pretty printing */
+      if(var->nbr_dim >= 2) (void)fprintf(stdout,"\n%*s",prn_ndn,spc_sng);
+    } /* !CDL */
     nm_cdl=(char *)nco_free(nm_cdl);
     var_szm1=var->sz-1L;
 
     /* Pre-compute elements that need brace punctuation */
-    if(CDL && var->nbr_dim>=1){
+    if(CDL && var->nbr_dim >= 1){
       mod_map_rv_cnt[0]=0L;
-      /* Create brace list - here we simply modify mod_map_rv_cnt[idx] -
-       * if the dim is NOT unlimited we set mod_map_rv_cnt[idx] to zero  */
-      for(dmn_idx=1;dmn_idx<var->nbr_dim;dmn_idx++) { /* NB: dimension index starts at 1 */
-        dmn_trv = nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id, trv_tbl);
-        if(dmn_trv->is_rec_dmn == False)
-          mod_map_rv_cnt[dmn_idx]=0L;
-      }
-    }
+      /* Create brace list here we simply modify mod_map_rv_cnt[idx]
+	 If dimensions is NOT unlimited we set mod_map_rv_cnt[idx] to zero */
+      for(dmn_idx=1;dmn_idx<var->nbr_dim;dmn_idx++){ /* NB: dimension index starts at 1 */
+        dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl);
+        if(dmn_trv->is_rec_dmn == False) mod_map_rv_cnt[dmn_idx]=0L;
+      } /* !dmn_idx */
+    } /* !CDL */
 
     for(lmn=0;lmn<var->sz;lmn++){
 
-      /* do bracketing of data if specified */
+      /* Bracket data if specified */
       if(JSN || CDL)
-        for(int bdz=0; bdz<var->nbr_dim ; bdz++)
-          if(mod_map_rv_cnt[bdz]  && lmn % mod_map_rv_cnt[bdz] == 0)
-	    (void)fprintf(stdout,"%c", (JSN ? '[' : '{' ) );
+        for(int bdz=0;bdz<var->nbr_dim;bdz++)
+          if(mod_map_rv_cnt[bdz] && lmn % mod_map_rv_cnt[bdz] == 0)
+	    (void)fprintf(stdout,"%c",(JSN ? '[' : '{' ));
 
       is_mss_val=False;
       if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
-        if(var->type == NC_STRING) is_mss_val = !strcmp( var->val.sngp[lmn] ,var->mss_val.sngp[0]);
-	  /* in regular CDL format for NC_CHAR if FillValue is NOT '\0' then the char is printed as is */
+        if(var->type == NC_STRING) is_mss_val=!strcmp(var->val.sngp[lmn],var->mss_val.sngp[0]);
+	  /* In regular CDL format for NC_CHAR if _FillValue is NOT '\0' then the char is printed as is */
 	else if(var->type==NC_CHAR) is_mss_val=False;
 	/* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
 	else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
@@ -1982,7 +1969,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           }else{
 	    if(isnan(val_flt)) (void)sprintf(val_sng,(JSN) ? "null" : "NaNf");
 	    else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_flt < 0.0f) ? "-Infinityf" : "Infinityf");
-          } /* endelse */
+          } /* !isfinite() */
           break;
         case NC_DOUBLE:
           val_dbl=var->val.dp[lmn];
@@ -1992,7 +1979,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           }else{
 	    if(isnan(val_dbl)) (void)sprintf(val_sng,(JSN) ? "null" : "NaN");
 	    else if(isinf(val_dbl)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");
-          } /* endelse */
+          } /* !isfinite() */
           break;
         case NC_SHORT: (void)sprintf(val_sng,fmt_sng,var->val.sp[lmn]); break;
         case NC_INT: (void)sprintf(val_sng,fmt_sng,var->val.ip[lmn]); break;
@@ -2000,9 +1987,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           chr_val=var->val.cp[lmn];
           if(var->nbr_dim == 0){
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
-	    /* the NetCDF standard is to print nul as "0" but  we shall  print "" for all formats */
-            if(chr_val != 0 )
-	       (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
+	    /* ncdump prints NUL as "0" but NCO prints NUL as "" for all formats to disambiguate from zero */
+            if(chr_val != 0) (void)fprintf(stdout,"%s",(*chr2sng_sf)(chr_val,val_sng));
             if(CDL||TRD||JSN) (void)fprintf(stdout,"\"");
             val_sng[0]='\0'; /* Re-initialize with NUL byte to be safe */
           }else{ /* var.nbr_dim > 0 */
@@ -2057,46 +2043,38 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         } /* end switch */
       } /* !is_mss_val */
 
-      if((var->type != NC_CHAR && var->type != NC_STRING) || (var->type==NC_STRING && is_mss_val))
-        (void)fprintf(stdout,"%s",val_sng);
+      if((var->type != NC_CHAR && var->type != NC_STRING) || (var->type==NC_STRING && is_mss_val)) (void)fprintf(stdout,"%s",val_sng);
 
       /* Bracket data if specified */
       if(JSN || CDL)
-        for(int bdz=0; bdz<var->nbr_dim ; bdz++)
-          if(mod_map_rv_cnt[bdz]  && (lmn+1) % mod_map_rv_cnt[bdz] == 0)
-	        (void)fprintf(stdout,"%c",  (JSN ? ']' : '}' ));
+        for(int bdz=0;bdz<var->nbr_dim;bdz++)
+          if(mod_map_rv_cnt[bdz] && (lmn+1) % mod_map_rv_cnt[bdz] == 0)
+	    (void)fprintf(stdout,"%c",(JSN ? ']' : '}'));
 
       if(lmn != var_szm1)
         if((var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || var->type != NC_CHAR)
           (void)fprintf(stdout,"%s",spr_sng);
 
-      /* pretty printing */
-      if(CDL && var->nbr_dim && lmn< var_szm1 && (lmn+1) % lmt_msa[var->nbr_dim-1]->dmn_cnt  ==0)
-        (void)fprintf(stdout,"\n%*s",prn_ndn,spc_sng);
-
-
+      /* Pretty printing */
+      if(CDL && var->nbr_dim && lmn< var_szm1 && (lmn+1) % lmt_msa[var->nbr_dim-1]->dmn_cnt == 0) (void)fprintf(stdout,"\n%*s",prn_ndn,spc_sng);
     } /* end loop over element */
     rcd_prn+=0; /* CEWI */
 
     if(CDL){
       char tmp_sng[100]={0};
-      if(nco_dbg_lvl_get() >= nco_dbg_std && flg_malloc_unit_var)
-	(void)sprintf(tmp_sng,"units=\"%s\"",unit_sng_var);
-
+      if(nco_dbg_lvl_get() >= nco_dbg_std && flg_malloc_unit_var) (void)sprintf(tmp_sng,"units=\"%s\"",unit_sng_var);
       if(nco_dbg_lvl_get() == nco_dbg_std && var_aux){
-        fprintf(stdout, "; // %s  ",tmp_sng);
-        // Print values as CDL text comment
+        (void)fprintf(stdout,"; // %s  ",tmp_sng);
+        /* Print values as CDL text comment */
         nco_prn_var_val_cmt(var_aux,prn_flg);
       }else if(tmp_sng[0]){
-        (void)fprintf(stdout, " ; // %s\n",tmp_sng);
+        (void)fprintf(stdout," ; // %s\n",tmp_sng);
       }else{
-        (void) fprintf(stdout, " ; \n");
+        (void)fprintf(stdout," ;\n");
       } /* !dbg */
     } /* !CDL */
 
     if(XML) (void)fprintf(stdout,"</values>\n");
-
-    
   } /* end if CDL_OR_JSN_OR_XML */
 
   if(var->nbr_dim == 0 && !dlm_sng && TRD){
@@ -2224,7 +2202,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 		if(unit_cln_crd){
 #ifdef HAVE_UDUNITS2_H
 		/* 20160418: Even when UDUnits is available, the lgb software produces poor formatting and needs work so turn-off for now */
-		unit_cln_crd=False;
+		  unit_cln_crd=False;
 #else /* !HAVE_UDUNITS2 */
 		  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports units string \"%s\" is a calendar string, but UDUNITS2 not built-in, so will not attempt to print calendar dates legibly\n",nco_prg_nm_get(),fnc_nm,unit_sng_crd);
 		  unit_cln_crd=False;
@@ -2462,9 +2440,7 @@ lbl_chr_prn:
 
   if(flg_malloc_unit_crd) unit_sng_crd=(char *)nco_free(unit_sng_crd);
   if(flg_malloc_unit_var) unit_sng_var=(char *)nco_free(unit_sng_var);
-
   if(dlm_sng) dlm_sng=(char *)nco_free(dlm_sng);
-
   if(prn_flg->nwl_pst_val) (void)fprintf(stdout,"\n");
 
   /* Free (allocated for non scalars only) */
@@ -2474,7 +2450,6 @@ lbl_chr_prn:
   } /* endif */
 
   var=nco_var_free(var);
-  /* free var_aux */
   if(var_aux) var_aux=nco_var_free(var_aux);
 
 } /* end nco_prn_var_val_trv() */
@@ -2713,15 +2688,12 @@ nco_grp_prn /* [fnc] Recursively print group contents */
     if(XML){
       (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv); 
       
-      if( prn_flg->PRN_VAR_METADATA )  
-        (void)nco_prn_att(grp_id,prn_flg,var_id);
+      if(prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
    
-
-      if( prn_flg->PRN_VAR_DATA) 
-        (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
+      if(prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
       /* XML close variable tag */
       (void)fprintf(stdout,"%*s</variable>\n",prn_ndn,spc_sng);
-    }  
+    } /* !XML */
 
     if(JSN){ 
       /* Deal with first iteration */   

@@ -347,14 +347,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 3
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE "-alpha03" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
+# define NCO_VERSION_NOTE "-alpha04" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.7.3-alpha03"
+# define NCO_VERSION "4.7.3-alpha04"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -953,6 +953,7 @@ extern "C" {
     char *dlm_sng; /* [sng] User specified delimiter string for printed output */
     char *fl_in; /* [sng] Input filename */
     char *fl_stb; /* [sng] Input filename stub */
+    char *fmt_val; /* [sng] Format string for variable values */
     char *smr_sng; /* [sng] Summary string */
     char *smr_fl_sz_sng; /* [sng] String describing estimated file size */
     char *spr_chr; /* [sng] Separator string for character types */

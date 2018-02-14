@@ -46,15 +46,26 @@ A. ncremap implements E3SM-recommended Tempest remapping algorithms.
    http://nco.sf.net/nco.html#a2o
    http://nco.sf.net/nco.html#ncremap
    
-A. ncclimo support two more dataset filename template regular
+A. ncclimo supports two more dataset filename template regular
    expressions: prefix.YYYY-MM.suffix, and prefix.YYYY-MM-01.suffix.
-   When such a filename is given as the argument to --caseid, the
-   prefix and suffix will be automatically abstracted and used to
-   template and generate all the filenames based on the specified
-   yr_srt and yr_end. Please tell us any dataset filename regular
-   expressions that you would like added to ncclimo rx database.
+   When such a name is the argument to --caseid, the prefix and suffix
+   will be automatically abstracted and used to template and generate
+   all monthly filenames based on the specified yr_srt and yr_end.
+   Please tell us any dataset filename regular expressions that you
+   would like added to ncclimo rx database. 
    ncclimo -s 300 -e 400 --caseid=foo.0300-01-01.nc -i . -o /tmp
    http://nco.sf.net/nco.html#caseid
+
+A. printf() format option for printed output (CDL, XML, JSON, TRD).  
+   Formerly ncks would always print variable values with the default
+   format specification for the given output type. This meant that,
+   single and double-precision values would print ~7 and ~15 digits,
+   respectively. The new --fmt_val option causes ncks to use the
+   supplied printf() format string to print floating point values:
+   ncks --fmt_val %.5f ~/nco/data/in.nc   
+   will print up to five significant digits, and no more.
+   This allows users to round numbers before printing them.
+   http://nco.sf.net/nco.html#fmt_val
 
 BUG FIXES:
 

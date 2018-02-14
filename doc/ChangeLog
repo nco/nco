@@ -1,3 +1,15 @@
+2018-02-13  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.3-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha04: Breaded venison';git push
+	git tag -a 4.7.3-alpha04 -m 'fmt_val, set_log_level()';git push --tags
+
+	* Document --fmt_val, ensure it only applies to floating point values
+
+2018-02-12  Charlie Zender  <zender@uci.edu>
+
+	* Add --fmt_val, --val_fmt, --value_format for formatting variable values
+
 2018-02-08  Charlie Zender  <zender@uci.edu>
 
 	* Deprecate old/unused feature status from nco_cnf_prn()
@@ -25,10 +37,6 @@
 	* Add shell script bm/cch_clr.sh to clear caches. Works with Linux and MacOS.
 
 2018-02-04  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.7.3-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha04: Mayeishanism';git push
-	git tag -a 4.7.3-alpha04 -m 'nm_typ yyyy-mm';git push --tags
 
 	* Fix three bugs introduced in 10 supposedly simple lines of changes from yesterday
 

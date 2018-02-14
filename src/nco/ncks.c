@@ -131,6 +131,7 @@ main(int argc,char **argv)
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *fmt_val=NULL; /* [sng] Format string for variable values */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
@@ -404,6 +405,9 @@ main(int argc,char **argv)
     {"file_format",required_argument,0,0},
     {"fix_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
     {"no_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
+    {"fmt_val",required_argument,0,0}, /* [sng] Format string for variable values */
+    {"val_fmt",required_argument,0,0}, /* [sng] Format string for variable values */
+    {"value_format",required_argument,0,0}, /* [sng] Format string for variable values */
     {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"hdr_pad",required_argument,0,0},
@@ -632,12 +636,13 @@ main(int argc,char **argv)
         rec_dmn_nm=strcpy(rec_dmn_nm,fix_pfx);
         rec_dmn_nm=strcat(rec_dmn_nm,optarg);
         rec_dmn_nm_fix=strdup(optarg);
-      } /* endif fix_rec_dmn */
+      } /* !fix_rec_dmn */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"fmt_val") || !strcmp(opt_crr,"val_fmt") || !strcmp(opt_crr,"value_format")) fmt_val=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
         gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
-      } /* endif gaa */
+      } /* !gaa */
       if(!strcmp(opt_crr,"hdf4")) nco_fmt_xtn=nco_fmt_xtn_hdf4; /* [enm] Treat file as HDF4 */
       if(!strcmp(opt_crr,"hdn") || !strcmp(opt_crr,"hidden")) PRN_HDN=True; /* [flg] Print hidden attributes */
       if(!strcmp(opt_crr,"hdr_pad") || !strcmp(opt_crr,"header_pad")){
@@ -892,7 +897,8 @@ main(int argc,char **argv)
       while(!nco_spn_lck_brk) usleep(nco_spn_lck_us); /* Spinlock. fxm: should probably insert a sched_yield */
       break;
 #endif /* !ENABLE_MPI */
-    case 's': /* User specified delimiter string for printed output */
+    case 's': /* User-specified delimiter string for traditional printed output */
+      PRN_TRD=True; /* [flg] Print traditional */
       dlm_sng=(char *)strdup(optarg);
       break;
     case 't': /* Thread number */
@@ -1241,6 +1247,7 @@ main(int argc,char **argv)
     prn_flg.dlm_sng=dlm_sng;
     prn_flg.cdl_fmt_dt=dt_fmt;
     prn_flg.fl_out_fmt=fl_out_fmt;
+    prn_flg.fmt_val=fmt_val;
     prn_flg.ALPHA_BY_FULL_GROUP=ALPHA_BY_FULL_GROUP;
     prn_flg.ALPHA_BY_STUB_GROUP=ALPHA_BY_STUB_GROUP;
     prn_flg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
