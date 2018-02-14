@@ -560,7 +560,7 @@ main(int argc,char **argv)
 	(void)nco_usg_prn();
 	nco_exit(EXIT_SUCCESS);
       } /* endif "help" */
-      if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")) nc_set_log_level(optarg); /* [enm] netCDF library debugging verbosity [0..5] */
+      if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){nc_set_log_level(optarg);} /* [enm] netCDF library debugging verbosity [0..5] */
       if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
         if(!md5) md5=nco_md5_ini();
         md5->dgs=True;

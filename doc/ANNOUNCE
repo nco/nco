@@ -69,7 +69,8 @@ A. printf() format option for printed output (CDL, XML, JSON, TRD).
 
 BUG FIXES:
 
-A. fxm
+A. Those who build NCO from source will notice that most or all of
+   the compiler warnings from building ncap2 have been eliminated.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
