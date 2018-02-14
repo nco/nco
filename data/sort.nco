@@ -1,0 +1,53 @@
+
+// Count number of errors
+nbr_err=0;
+nbr_err_ttl=0;
+
+
+// check sorting block a
+{
+  a1[time]={9,8,7,6,3,2,1,10,4,5};
+  a1s[time]={1,2,3,4,5,6,7,8,9,10}; 
+  a2=a1.sort(&smap);
+
+  if(a2 != a1s)
+  {
+      print("ERROR: a1 sorting 1D array");
+      nbr_err++;	
+  }
+
+  // unsort 
+  a2=a2.unmap(smap);
+ if(a2 != a1)
+  {
+      print("ERROR: a2 unmap 1D array");
+      nbr_err++;	
+  }
+
+  // try remap
+  a2=a1.remap(smap);
+  if(a2 != a1s)
+  {
+      print("ERROR: a3 remap 1D array");
+      nbr_err++;	
+  }
+
+  // try decending sort
+  if( a1.dsort() != a1s.reverse($time))
+  {  
+      print("ERROR: a1 dsort 1D array");
+      nbr_err++;	
+  }
+
+    
+  print("RESULTS block a: Num errors="); print(nbr_err,"%d");
+  nbr_err_ttl+=nbr_err;
+  nbr_err=0;
+  
+
+}
+
+// Results summany
+print("RESULTS SUMMARY: total errors=");print(nbr_err_ttl,"%d");
+
+
