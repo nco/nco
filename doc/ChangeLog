@@ -1,3 +1,7 @@
+2018-02-14  Charlie Zender  <zender@uci.edu>
+
+	* Fix compiler warnings when nc_set_log_level() is #undef'd
+
 2018-02-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.3-alpha04 release procedure:
