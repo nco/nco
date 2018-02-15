@@ -22,6 +22,12 @@
 # NCAP=
 # endif
 
+# if BUILD_YACC_SOURCE
+# NCWA=ncwa
+# else
+# NCWA=
+# endif
+
 
 VPATH = @srcdir@
 am__is_gnu_make = { \
@@ -101,14 +107,14 @@ target_triplet = @target@
 @ENABLE_MPI_FALSE@bin_PROGRAMS = ncatted$(EXEEXT) ncbo$(EXEEXT) \
 @ENABLE_MPI_FALSE@	ncecat$(EXEEXT) ncflint$(EXEEXT) \
 @ENABLE_MPI_FALSE@	ncks$(EXEEXT) ncpdq$(EXEEXT) ncra$(EXEEXT) \
-@ENABLE_MPI_FALSE@	ncrename$(EXEEXT) $(am__EXEEXT_1)
+@ENABLE_MPI_FALSE@	ncrename$(EXEEXT) ncwa$(EXEEXT)
 @ENABLE_MPI_TRUE@bin_PROGRAMS = ncatted$(EXEEXT) ncbo$(EXEEXT) \
 @ENABLE_MPI_TRUE@	ncecat$(EXEEXT) ncflint$(EXEEXT) \
 @ENABLE_MPI_TRUE@	ncks$(EXEEXT) ncpdq$(EXEEXT) ncra$(EXEEXT) \
 @ENABLE_MPI_TRUE@	ncrename$(EXEEXT) mpncbo$(EXEEXT) \
 @ENABLE_MPI_TRUE@	mpncecat$(EXEEXT) mpncflint$(EXEEXT) \
 @ENABLE_MPI_TRUE@	mpncpdq$(EXEEXT) mpncra$(EXEEXT) \
-@ENABLE_MPI_TRUE@	mpncwa$(EXEEXT) $(am__EXEEXT_1)
+@ENABLE_MPI_TRUE@	mpncwa$(EXEEXT) ncwa$(EXEEXT)
 TESTS =
 subdir = src/nco
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -195,7 +201,6 @@ am__v_lt_1 =
 libnco_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libnco_la_LDFLAGS) $(LDFLAGS) -o $@
-@BUILD_YACC_SOURCE_TRUE@am__EXEEXT_1 = ncwa$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 am_mpncbo_OBJECTS = mpncbo.$(OBJEXT)
 mpncbo_OBJECTS = $(am_mpncbo_OBJECTS)
@@ -590,8 +595,6 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 UDUNITS2_PATH = @UDUNITS2_PATH@
 VERSION = @VERSION@
-YACC = @YACC@
-YFLAGS = @YFLAGS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -649,8 +652,6 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@BUILD_YACC_SOURCE_FALSE@NCWA = 
-@BUILD_YACC_SOURCE_TRUE@NCWA = ncwa
 @NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT_C = 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT_C = nco_getopt.c
 @NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT_H = 
