@@ -263,7 +263,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 #ifdef _MSC_VER
   const char cmd_cp_fmt[]="copy %s %s";
 #else /* !_MSC_VER */
-  const char cmd_cp_fmt[]="cp %s %s";
+  const char cmd_cp_fmt[]="/bin/cp %s %s";
 #endif /* !_MSC_VER */
 
   int rcd;
@@ -1209,7 +1209,7 @@ nco_fl_mv /* [fnc] Move first file to second */
 #ifdef _MSC_VER
   const char cmd_mv_fmt[]="move %s %s";
 #else /* !_MSC_VER */
-  const char cmd_mv_fmt[]="mv -f %s %s";
+  const char cmd_mv_fmt[]="/bin/mv -f %s %s";
 #endif /* !_MSC_VER */
 
   int rcd_sys; /* [rcd] Return code from system() */
