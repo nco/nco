@@ -1,5 +1,7 @@
 2018-02-15  Charlie Zender  <zender@uci.edu>
 
+	* Security: Explicitly unset IFS before wordsplitting, so Bash uses default IFS=<space><tab><newline>
+
 	* Use /bin/mv and /bin/cp instead of mv and cp, respectively
 
 	* Add 'bilin' and 'aave' as synonyms to 'bilinear' and 'conserve', respectively
