@@ -179,7 +179,7 @@ AC_PROG_CPP
 AC_PROG_CXXCPP
 AC_PROG_CC_STDC
 AM_PROG_LEX
-AC_PROG_YACC
+# AC_PROG_YACC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
@@ -188,7 +188,7 @@ AC_PROG_LIBTOOL
 LIBTOOL="${LIBTOOL} --tag=CXX"
 #LIBTOOL="${LIBTOOL} --tag=ignore_tag_err"
 
-AM_CONDITIONAL(BUILD_YACC_SOURCE,[test "${YACC}" != "yacc" || test -f "src/nco/ncap_yacc.c"])
+# AM_CONDITIONAL(BUILD_YACC_SOURCE,[test "${YACC}" != "yacc" || test -f "src/nco/ncap_yacc.c"])
 
 # Disable maintainer-only options in generated Makefiles unless flag
 # --enable-maintainer-mode is given at configure time
