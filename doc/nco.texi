@@ -6526,6 +6526,10 @@ Generating common grids:
 ncks --rgr grd_ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
+# 180x360 (1x1 degree) Equi-Angular grid, first longitude west edge at Greenwich
+ncks --rgr grd_ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_wst \
+     --rgr scrip=${DATA}/grids/180x360wst_SCRIP.20180301.nc ~zender/nco/data/in.nc ~/foo.nc
+
 # 129x256 CAM-FV grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='CAM-FV scalar grid 129x256'#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/129x256_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
@@ -22407,7 +22411,9 @@ Features common to many operators are described in
 <a name="nearestdtos"></a> <!-- http://nco.sf.net/nco.html#nearestdtos -->
 <a name="patch"></a> <!-- http://nco.sf.net/nco.html#patch -->
 <a name="bilinear"></a> <!-- http://nco.sf.net/nco.html#bilinear -->
+<a name="bilin"></a> <!-- http://nco.sf.net/nco.html#bilin -->
 <a name="conserve"></a> <!-- http://nco.sf.net/nco.html#conserve -->
+<a name="aave"></a> <!-- http://nco.sf.net/nco.html#aave -->
 <a name="fv2se_flx"></a> <!-- http://nco.sf.net/nco.html#fv2se_flx -->
 <a name="se2fv_flx"></a> <!-- http://nco.sf.net/nco.html#se2fv_flx -->
 <a name="fv2se_stt"></a> <!-- http://nco.sf.net/nco.html#fv2se_stt -->
@@ -22424,6 +22430,8 @@ Features common to many operators are described in
 @cindex @code{nearestdtos}
 @cindex @code{patch}
 @cindex @code{bilinear}
+@cindex @code{bilin}
+@cindex @code{aave}
 @cindex @code{conserve}
 @item -a @var{alg_typ} (@code{--alg_typ}, @code{--algorithm}, @code{--regrid_algorithm})
 Specifies the interpolation algorithm for weight-generation for use by
@@ -22434,8 +22442,8 @@ change interpolation algorithms than other options
 (that can be changed with @samp{-E @var{esmf_opt}}).
 The @var{alg_typ} argument must be @code{tempest} or one of
 @acronym{ERWG}'s five interpolation algorithms:
-@code{bilinear} (default, acceptable abbreviation is @code{bln}), 
-@code{conserve} (or @code{conservative} or @code{cns}), 
+@code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{bln}), 
+@code{conserve} (or @code{conservative}, @code{cns}, or @code{aave}), 
 @code{nearestdtos} (or @code{nds} or @code{dtos}), 
 @code{neareststod} (or @code{nds} or @code{stod}), 
 and @code{patch} (or @code{pch} or @code{ptc}). 

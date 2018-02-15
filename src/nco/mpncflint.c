@@ -531,7 +531,7 @@ main(int argc,char **argv)
     nco_exit(EXIT_FAILURE);
   } /* end else */
   
-  /* Process positional arguments and fill in filenames */
+  /* Process positional arguments and fill-in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
   /* Make uniform list of user-specified chunksizes */

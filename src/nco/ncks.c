@@ -979,7 +979,7 @@ main(int argc,char **argv)
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);
  
-  /* Process positional arguments and fill in filenames */
+  /* Process positional arguments and fill-in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
   /* Initialize thread information */

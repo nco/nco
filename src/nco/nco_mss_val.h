@@ -48,12 +48,12 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
 nco_bool /* O [flg] One or both operands have missing value */
 nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 */
 (var_sct * const var1, /* I [sct] Variable with template missing value to copy */
- var_sct * const var2); /* I/O [sct] Variable with missing value to fill in/overwrite */
+ var_sct * const var2); /* I/O [sct] Variable with missing value to fill-in/overwrite */
 
 void
 nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
 (const var_sct * const var1, /* I [sct] Variable with template missing value to copy */
- var_sct * const var2); /* I/O [sct] Variable with missing value to fill in/overwrite */
+ var_sct * const var2); /* I/O [sct] Variable with missing value to fill-in/overwrite */
 
 int /* O [flg] Variable has missing value on output */
 nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable */
