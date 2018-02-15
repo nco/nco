@@ -213,7 +213,7 @@ am_mpncra_OBJECTS = mpncra.$(OBJEXT)
 mpncra_OBJECTS = $(am_mpncra_OBJECTS)
 mpncra_DEPENDENCIES = libnco.la
 am_mpncwa_OBJECTS = mpncwa.$(OBJEXT) ncap_utl.$(OBJEXT) \
-	ncap_lex.$(OBJEXT) ncap_yacc.$(OBJEXT)
+	ncap_lex.$(OBJEXT)
 mpncwa_OBJECTS = $(am_mpncwa_OBJECTS)
 mpncwa_DEPENDENCIES = libnco.la
 am_ncatted_OBJECTS = ncatted.$(OBJEXT)
@@ -240,8 +240,7 @@ ncra_DEPENDENCIES = libnco.la
 am_ncrename_OBJECTS = ncrename.$(OBJEXT)
 ncrename_OBJECTS = $(am_ncrename_OBJECTS)
 ncrename_DEPENDENCIES = libnco.la
-am_ncwa_OBJECTS = ncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT) \
-	ncap_yacc.$(OBJEXT)
+am_ncwa_OBJECTS = ncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT)
 ncwa_OBJECTS = $(am_ncwa_OBJECTS)
 ncwa_DEPENDENCIES = libnco.la
 AM_V_P = $(am__v_P_@AM_V@)
@@ -287,16 +286,6 @@ am__v_LEX_ = $(am__v_LEX_@AM_DEFAULT_V@)
 am__v_LEX_0 = @echo "  LEX     " $@;
 am__v_LEX_1 = 
 YLWRAP = $(top_srcdir)/autobld/ylwrap
-@MAINTAINER_MODE_FALSE@am__skipyacc = test -f $@ ||
-am__yacc_c2h = sed -e s/cc$$/hh/ -e s/cpp$$/hpp/ -e s/cxx$$/hxx/ \
-		   -e s/c++$$/h++/ -e s/c$$/h/
-YACCCOMPILE = $(YACC) $(AM_YFLAGS) $(YFLAGS)
-LTYACCCOMPILE = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=compile $(YACC) $(AM_YFLAGS) $(YFLAGS)
-AM_V_YACC = $(am__v_YACC_@AM_V@)
-am__v_YACC_ = $(am__v_YACC_@AM_DEFAULT_V@)
-am__v_YACC_0 = @echo "  YACC    " $@;
-am__v_YACC_1 = 
 SOURCES = $(libnco_la_SOURCES) $(mpncbo_SOURCES) $(mpncecat_SOURCES) \
 	$(mpncflint_SOURCES) $(mpncpdq_SOURCES) $(mpncra_SOURCES) \
 	$(mpncwa_SOURCES) $(ncatted_SOURCES) $(ncbo_SOURCES) \
@@ -511,7 +500,7 @@ am__set_b = \
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/autobld/depcomp \
 	$(top_srcdir)/autobld/mkinstalldirs \
 	$(top_srcdir)/autobld/test-driver $(top_srcdir)/autobld/ylwrap \
-	ncap_lex.c ncap_yacc.c ncap_yacc.h
+	ncap_lex.c
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -704,9 +693,9 @@ mpncra_LDADD = libnco.la
 
 # mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
 # mpncwa_LDADD = libnco.la
-ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.y
+ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l #ncap_yacc.y
 ncwa_LDADD = libnco.la
-mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.y
+mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l #ncap_yacc.y
 mpncwa_LDADD = libnco.la
 HEADER_SRC = \
 libnco.h \
@@ -826,7 +815,7 @@ all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .l .lo .log .o .obj .test .test$(EXEEXT) .trs .y
+.SUFFIXES: .c .l .lo .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -963,9 +952,6 @@ mpncpdq$(EXEEXT): $(mpncpdq_OBJECTS) $(mpncpdq_DEPENDENCIES) $(EXTRA_mpncpdq_DEP
 mpncra$(EXEEXT): $(mpncra_OBJECTS) $(mpncra_DEPENDENCIES) $(EXTRA_mpncra_DEPENDENCIES) 
 	@rm -f mpncra$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(mpncra_OBJECTS) $(mpncra_LDADD) $(LIBS)
-ncap_yacc.h: ncap_yacc.c
-	@if test ! -f $@; then rm -f ncap_yacc.c; else :; fi
-	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) ncap_yacc.c; else :; fi
 
 mpncwa$(EXEEXT): $(mpncwa_OBJECTS) $(mpncwa_DEPENDENCIES) $(EXTRA_mpncwa_DEPENDENCIES) 
 	@rm -f mpncwa$(EXEEXT)
@@ -1021,7 +1007,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncwa.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap_lex.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap_utl.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap_yacc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncatted.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncbo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncecat.Po@am__quote@
@@ -1098,9 +1083,6 @@ distclean-compile:
 
 .l.c:
 	$(AM_V_LEX)$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
-
-.y.c:
-	$(AM_V_YACC)$(am__skipyacc) $(SHELL) $(YLWRAP) $< y.tab.c $@ y.tab.h `echo $@ | $(am__yacc_c2h)` y.output $*.output -- $(YACCCOMPILE)
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1394,8 +1376,6 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f ncap_lex.c
-	-rm -f ncap_yacc.c
-	-rm -f ncap_yacc.h
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 

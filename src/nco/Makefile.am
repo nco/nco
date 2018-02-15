@@ -79,10 +79,10 @@ mpncra_LDADD = libnco.la
 # mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
 # mpncwa_LDADD = libnco.la
 
-ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.y
+ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l #ncap_yacc.y
 ncwa_LDADD = libnco.la
 
-mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.y
+mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l #ncap_yacc.y
 mpncwa_LDADD = libnco.la
 
 
