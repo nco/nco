@@ -55,17 +55,17 @@ INCLUDE_DIRECTORIES(${HDF5_HL_INCLUDE_DIR})
 NCO should detect the ZLIB dependency in HDF5 as
 
 ```
--- Looking for H5Z_DEFLATE in I:/nco/cmake/hdf5/build/bin/Debug/libhdf5_D.lib
--- Looking for H5Z_DEFLATE in I:/nco/cmake/hdf5/build/bin/Debug/libhdf5_D.lib - found
+-- Looking for H5Z_DEFLATE in I:/nco/cmake/build/hdf5/build/bin/Debug/libhdf5_D.lib
+-- Looking for H5Z_DEFLATE in I:/nco/cmake/build/hdf5/build/bin/Debug/libhdf5_D.lib - found
 -- ZLIB library is needed...
 ```
 
 the netcdf function detection should be
 
 ```
--- Found netcdf library at: I:/nco/cmake/netcdf-c/build/liblib/Debug/netcdf.lib
--- Looking for nc_inq_path in I:/nco/cmake/netcdf-c/build/liblib/Debug/netcdf.lib
--- Looking for nc_inq_path in I:/nco/cmake/netcdf-c/build/liblib/Debug/netcdf.lib - found
+-- Found netcdf library at: I:/nco/cmake/build/netcdf-c/build/liblib/Debug/netcdf.lib
+-- Looking for nc_inq_path in I:/nco/cmake/build/netcdf-c/build/liblib/Debug/netcdf.lib
+-- Looking for nc_inq_path in I:/nco/cmake/build/netcdf-c/build/liblib/Debug/netcdf.lib - found
 ```
 
 # NCO tests
@@ -123,7 +123,7 @@ edit hdf5-static.vcxproj and add full path of ZLIB and SZIP libraries as depende
 ```
 <Lib>
 <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>E:\nco\cmake\zlib\build\Debug\zlibstaticd.lib;E:\nco\cmake\szip\build\bin\Debug\libszip_D.lib</AdditionalDependencies>
+<AdditionalDependencies>E:\nco\cmake\build\zlib\build\Debug\zlibstaticd.lib;E:\nco\cmake\build\szip\build\bin\Debug\libszip_D.lib</AdditionalDependencies>
 </Lib>
 ```
 
@@ -134,7 +134,7 @@ edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
 ```
 <Lib>
 <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>E:\nco\cmake\hdf5\build\bin\Debug\libhdf5_hl_D.lib;E:\nco\cmake\hdf5\build\bin\Debug\libhdf5_D.lib;E:\nco\cmake\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+<AdditionalDependencies>E:\nco\cmake\build\hdf5\build\bin\Debug\libhdf5_hl_D.lib;E:\nco\cmake\build\hdf5\build\bin\Debug\libhdf5_D.lib;E:\nco\cmake\build\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
 </Lib>
 ```
 
