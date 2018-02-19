@@ -756,9 +756,9 @@ main(int argc,char **argv)
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt,&prs_arg.out_id_readonly);
   
-  prs_arg.FORTRAN_IDX_CNV=FORTRAN_IDX_CNV;
-  prs_arg.ATT_PROPAGATE=ATT_PROPAGATE;      
-  prs_arg.ATT_INHERIT=ATT_INHERIT;
+  prs_arg.FORTRAN_IDX_CNV=(FORTRAN_IDX_CNV==True);
+  prs_arg.ATT_PROPAGATE=(ATT_PROPAGATE==True);      
+  prs_arg.ATT_INHERIT=(ATT_INHERIT==True);
   prs_arg.NCAP_MPI_SORT=(thr_nbr > 1 ? true:false);
   prs_arg.FLG_CLL_MTH=(flg_cll_mth ? true:false);
   prs_arg.dfl_lvl=dfl_lvl;  /* [enm] Deflate level */
@@ -1180,8 +1180,7 @@ ram_vars_add
 (prs_cls *prs_arg)
 {
   char buff[20]={0};
-  double dnan;
-
+  
   var_sct *var1;
   
   var1=ncap_sclr_var_mk(std::string("NC_BYTE"),nco_int(NC_NAT));
@@ -1242,6 +1241,8 @@ ram_vars_add
 #endif // !HUGE_VAL
 
 #ifndef _MSC_VER
+  double dnan=0.0;
+  
   if((dnan=nan(buff))){
     var1=ncap_sclr_var_mk(std::string("nan"),dnan); // double
     prs_arg->ncap_var_write(var1,true);

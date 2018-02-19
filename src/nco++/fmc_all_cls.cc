@@ -1999,7 +1999,7 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
              lat_flt=var2->val.fp[0];
         
              // convert lat_dbl to radians    
-             lat_flt *=  M_PI /180.0f;      
+             lat_flt *=  (float)M_PI /180.0f;      
 
              sz=var1->sz;
     
@@ -2724,7 +2724,7 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
           err_prn(sfnm," second argument must be a call by reference variable\n"+susg);   
 
           var_nm=args_vtr[1]->getFirstChild()->getText(); 
-          bdef=prs_arg->ncap_var_init_chk(var_nm);
+          bdef=(prs_arg->ncap_var_init_chk(var_nm)>0);
           Nvar=prs_arg->var_vtr.find(var_nm);  
            
         /*This horrible line below:
