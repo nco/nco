@@ -6,11 +6,12 @@
 # NCAP=
 # endif
 
-if BUILD_YACC_SOURCE
-NCWA=ncwa
-else
-NCWA=
-endif
+# if BUILD_YACC_SOURCE
+# NCWA=ncwa
+# else
+# NCWA=
+# endif
+
 
 if NCO_NEED_GETOPT_LONG
 NCO_GETOPT_C=nco_getopt.c
@@ -21,12 +22,12 @@ NCO_GETOPT_H=
 endif
 
 if ENABLE_MPI
-bin_PROGRAMS = ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa ${NCWA}
+bin_PROGRAMS = ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename mpncbo mpncecat mpncflint mpncpdq mpncra mpncwa ncwa
 else
-bin_PROGRAMS = ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ${NCWA}
+bin_PROGRAMS = ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
 endif
 
-BUILT_SOURCES = ncap_yacc.h
+# BUILT_SOURCES = ncap_yacc.h
 
 AM_YFLAGS = -d --name-prefix=nco_yy
 
@@ -204,7 +205,7 @@ TESTS = ${DAP_TESTS}
 
 EXTRA_DIST = ${NCO_GETOPT_C}
 
-DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
+DISTCLEANFILES = ncap_lex.c ncap_yacc.c 
 
 install-exec-hook:
 	cd $(DESTDIR)$(bindir) && ln -s -f ncbo ncdiff || (rm -f ncdiff && ln -s -f ncbo ncdiff)
