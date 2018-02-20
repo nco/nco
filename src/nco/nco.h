@@ -958,6 +958,7 @@ extern "C" {
     char *smr_fl_sz_sng; /* [sng] String describing estimated file size */
     char *spr_chr; /* [sng] Separator string for character types */
     char *spr_nmr; /* [sng] Separator string for numeric types */
+    FILE *fp_out; /* [fl] Formatted text output file handle */
     gpe_sct *gpe; /* I [sng] GPE structure */
     md5_sct *md5; /* [flg] MD5 configuration */
     nco_bool cdl; /* [flg] Print CDL */

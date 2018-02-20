@@ -129,6 +129,7 @@ main(int argc,char **argv)
   char *fl_in=NULL;
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
+  char *fl_prn=NULL; /* [sng] Formatted text output file */
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *fmt_val=NULL; /* [sng] Format string for variable values */
@@ -174,6 +175,7 @@ main(int argc,char **argv)
   extern int optind;
 
   FILE *fp_bnr=NULL; /* [fl] Unformatted binary output file handle */
+  FILE *fp_prn=NULL; /* [fl] Formatted text output file handle */
 
   gpe_sct *gpe=NULL; /* [sng] Group Path Editing (GPE) structure */
 
@@ -405,6 +407,8 @@ main(int argc,char **argv)
     {"file_format",required_argument,0,0},
     {"fix_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
     {"no_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
+    {"fl_prn",required_argument,0,0}, /* [sng] Formatted text output file */
+    {"file_print",required_argument,0,0}, /* [sng] Formatted text output file */
     {"fmt_val",required_argument,0,0}, /* [sng] Format string for variable values */
     {"val_fmt",required_argument,0,0}, /* [sng] Format string for variable values */
     {"value_format",required_argument,0,0}, /* [sng] Format string for variable values */
@@ -638,6 +642,7 @@ main(int argc,char **argv)
         rec_dmn_nm_fix=strdup(optarg);
       } /* !fix_rec_dmn */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"fl_prn") || !strcmp(opt_crr,"file_print")) fl_prn=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"fmt_val") || !strcmp(opt_crr,"val_fmt") || !strcmp(opt_crr,"value_format")) fmt_val=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
@@ -1281,6 +1286,8 @@ main(int argc,char **argv)
       
     if(prn_flg.xml) prn_flg.PRN_MSS_VAL_BLANK=False;
 
+    prn_flg.fp_out=stdout;
+
     /* File summary */
     if(PRN_GLB_METADATA){
       prn_flg.smr_sng=smr_sng=(char *)nco_malloc((strlen(fl_in)+300L*sizeof(char))); /* [sng] File summary string */
@@ -1327,18 +1334,31 @@ main(int argc,char **argv)
         goto close_and_free;
       } /* !PRN_SRM */
 
+      if(fl_prn){
+	if((fp_prn=fopen(fl_prn,"w")) == NULL){
+	  (void)fprintf(stderr,"%s: ERROR unable to open formatted output file %s\n",nco_prg_nm_get(),fl_prn);
+	  nco_exit(EXIT_FAILURE);
+	  prn_flg.fp_out=fp_prn;
+	} /* !fp_prn */
+      } /* !fl_prn */
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
-	/* Ineptly named nco_grp_prn() emits full CDL and XML formats, and partial JSN 
-	   rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl); */
+	/* Print CDL, JSN, TRD, and XML formats */
         if(prn_flg.jsn) rcd+=nco_prn_jsn(in_id,trv_pth,&prn_flg,trv_tbl);
         else if(prn_flg.xml) rcd+=nco_prn_xml(in_id,trv_pth,&prn_flg,trv_tbl);
         else if(prn_flg.cdl || prn_flg.trd) rcd+=nco_prn_cdl_trd(in_id,trv_pth,&prn_flg,trv_tbl); 
-        /* else rcd+=nco_grp_prn(in_id,trv_pth,&prn_flg,trv_tbl); */
       }else{
 	/* Place-holder for other options for organization/alphabetization */
 	if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
 	if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
       } /* end if */
+      if(fl_prn){
+	rcd=fclose(fp_prn);
+	if(rcd != 0){
+	  (void)fprintf(stderr,"%s: ERROR unable to close formatted output file %s\n",nco_prg_nm_get(),fl_prn);
+	  nco_exit(EXIT_FAILURE);
+	} /* !fp_prn */
+      } /* !fl_prn */
+
     } /* endif new format */
 
     if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
@@ -1357,6 +1377,7 @@ close_and_free:
   if(flg_mmr_cln){
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
+    if(fl_prn) fl_prn=(char *)nco_free(fl_prn);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
