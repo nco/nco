@@ -1,5 +1,9 @@
 2018-02-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.3-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.3-alpha05: SW4';git push
+	git tag -a 4.7.3-alpha05 -m '--fl_prn, IFS';git push --tags
+
 	* Document --fl_prn
 
 	* Change remaining printf() to fprintf() and finish printing to fp_prn
