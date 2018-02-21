@@ -1214,7 +1214,8 @@ main(int argc,char **argv)
 
     /* No output file was specified so PRN_ tokens refer to screen printing */
     prn_fmt_sct prn_flg;
-    // prn_flg.trd=PRN_TRD || !(PRN_CDL || PRN_XML || PRN_JSN); // 20170522
+    /* Printing defaults to stdout */
+    prn_flg.fp_out=stdout;
     PRN_CDL=PRN_CDL || !(PRN_TRD || PRN_XML || PRN_JSN); // 20170817
     prn_flg.cdl=PRN_CDL;
     prn_flg.trd=PRN_TRD;
@@ -1286,8 +1287,6 @@ main(int argc,char **argv)
       
     if(prn_flg.xml) prn_flg.PRN_MSS_VAL_BLANK=False;
 
-    prn_flg.fp_out=stdout;
-
     /* File summary */
     if(PRN_GLB_METADATA){
       prn_flg.smr_sng=smr_sng=(char *)nco_malloc((strlen(fl_in)+300L*sizeof(char))); /* [sng] File summary string */
@@ -1299,8 +1298,15 @@ main(int argc,char **argv)
 	prn_flg.smr_fl_sz_sng=smr_fl_sz_sng=(char *)nco_malloc(300L*sizeof(char)); /* [sng] String describing estimated file size */
  	(void)nco_fl_sz_est(smr_fl_sz_sng,trv_tbl);
       } /* !dbg */
-      // if(!prn_flg.cdl && !prn_flg.xml && !prn_flg.srm) (void)fprintf(stdout,"%s\n\n",smr_sng);
     } /* endif summary */
+
+    if(fl_prn){
+      if((fp_prn=fopen(fl_prn,"w")) == NULL){
+	(void)fprintf(stderr,"%s: ERROR unable to open formatted output file %s\n",nco_prg_nm_get(),fl_prn);
+	nco_exit(EXIT_FAILURE);
+      } /* !fp_prn */
+      prn_flg.fp_out=fp_prn;
+    } /* !fl_prn */
 
     if(!prn_flg.new_fmt){
       /* Traditional printing order/format always used prior to 201307 */
@@ -1314,7 +1320,7 @@ main(int argc,char **argv)
           long rec_dmn_sz;
           for(int rec_idx=0;rec_idx<nbr_rec_lcl;rec_idx++){
             (void)nco_inq_dim(in_id,dmn_ids_rec[rec_idx],dmn_nm,&rec_dmn_sz);
-            (void)fprintf(stdout,"Root record dimension %d: name = %s, size = %li\n",rec_idx,dmn_nm,rec_dmn_sz);
+            (void)fprintf(prn_flg.fp_out,"Root record dimension %d: name = %s, size = %li\n",rec_idx,dmn_nm,rec_dmn_sz);
           } /* end loop over rec_idx */
           (void)fprintf(stdout,"\n");
         } /* NCO_REC_DMN_UNDEFINED */
@@ -1334,13 +1340,6 @@ main(int argc,char **argv)
         goto close_and_free;
       } /* !PRN_SRM */
 
-      if(fl_prn){
-	if((fp_prn=fopen(fl_prn,"w")) == NULL){
-	  (void)fprintf(stderr,"%s: ERROR unable to open formatted output file %s\n",nco_prg_nm_get(),fl_prn);
-	  nco_exit(EXIT_FAILURE);
-	  prn_flg.fp_out=fp_prn;
-	} /* !fp_prn */
-      } /* !fl_prn */
       if(ALPHA_BY_FULL_GROUP || ALPHA_BY_STUB_GROUP){
 	/* Print CDL, JSN, TRD, and XML formats */
         if(prn_flg.jsn) rcd+=nco_prn_jsn(in_id,trv_pth,&prn_flg,trv_tbl);
@@ -1351,17 +1350,17 @@ main(int argc,char **argv)
 	if(PRN_VAR_METADATA) (void)nco_prn_xtr_mtd(in_id,&prn_flg,trv_tbl);
 	if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
       } /* end if */
-      if(fl_prn){
-	rcd=fclose(fp_prn);
-	if(rcd != 0){
-	  (void)fprintf(stderr,"%s: ERROR unable to close formatted output file %s\n",nco_prg_nm_get(),fl_prn);
-	  nco_exit(EXIT_FAILURE);
-	} /* !fp_prn */
-      } /* !fl_prn */
-
     } /* endif new format */
 
+    if(fl_prn){
+      rcd=fclose(fp_prn);
+      if(rcd != 0){
+	(void)fprintf(stderr,"%s: ERROR unable to close formatted output file %s\n",nco_prg_nm_get(),fl_prn);
+	nco_exit(EXIT_FAILURE);
+      } /* !fp_prn */
+    } /* !fl_prn */
     if(fl_in_dpl) fl_in_dpl=(char *)nco_free(fl_in_dpl);
+
   } /* !fl_out */
 
   /* goto close_and_free */

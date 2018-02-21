@@ -890,7 +890,7 @@ nco_prn_var_val_cmt /* Print variable values as CDL comment (delimited by comma)
 
   if(var->has_mss_val) val_sz_byt=nco_typ_lng(var->type);
 
-  // (void)printf(stdout,"nco_prn_var_val_cmt(): fmt_sng_mss_val=%s\n","hello" );
+  // (void)fprintf(stdout,"nco_prn_var_val_cmt(): fmt_sng_mss_val=%s\n","hello" );
 
   /* Assume -s argument (dlm_sng) formats entire string
      Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var->type),
@@ -2612,10 +2612,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       nm_jsn=nm2sng_jsn(dmn_lst[dmn_idx].nm);
       (void)fprintf(fp_out,"%*s\"%s\": %lu",prn_ndn,spc_sng,nm_jsn,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);   
       /* Add comma and carriage-return unless last element */
-      if(dmn_idx<dmn_nbr-1) (void)printf(",\n");
+      if(dmn_idx<dmn_nbr-1) (void)fprintf(fp_out,",\n");
       else{  
         prn_ndn-=prn_flg->var_fst;
-	(void)printf("\n%*s}",prn_ndn,spc_sng);         
+	(void)fprintf(fp_out,"\n%*s}",prn_ndn,spc_sng);         
       } /* !dmn_idx */
        
       nm_jsn=(char *)nco_free(nm_jsn);   
@@ -3459,7 +3459,7 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
     nm_jsn=nm2sng_jsn(dmn_lst[dmn_idx].nm);
     (void)fprintf(fp_out,"%*s\"%s\": %lu",prn_ndn+2*prn_flg->spc_per_lvl,spc_sng,nm_jsn,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);   
     /* Add comma and carriage-return unless last element */
-    if(dmn_idx<dmn_nbr-1) (void)printf(",\n"); else (void)printf("\n%*s}",prn_ndn+prn_flg->spc_per_lvl,spc_sng);         
+    if(dmn_idx<dmn_nbr-1) (void)fprintf(fp_out,",\n"); else (void)fprintf(fp_out,"\n%*s}",prn_ndn+prn_flg->spc_per_lvl,spc_sng);         
     nm_jsn=(char *)nco_free(nm_jsn);   
     JSN_BLOCK=True;    
   } /* end loop over dimension */
