@@ -71,6 +71,15 @@ A. printf() format option for printed output (CDL, XML, JSON, TRD).
    This allows users to round numbers before printing them.
    http://nco.sf.net/nco.html#fmt_val
 
+A. ncks now accepts a --print_file=file option to print directly to
+   the named file rather than to stdout. Previously one could
+   achieve the same result by redirecting stdout to a named file.
+   However, it is slightly faster to print formatted output directly
+   to a file than to stdout. 
+   ncks --print_file=foo.txt --jsn in.nc
+   Synonyms are --fl_prn, --prn_fl, --file_print, and --print_file.
+   http://nco.sf.net/nco.html#prn_fl
+
 BUG FIXES:
 
 A. Those who build NCO from source will notice that most or all of

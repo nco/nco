@@ -19667,7 +19667,7 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
 [-L @var{dfl_lvl}] [-l @var{path}]
 [-M] [-m] [--map @var{map-file}] [--md5] [--mk_rec_dmn @var{dim}]
 [--no_blank] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
+[-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...] [--prn_fl @var{print-file}]
 [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt]
 [-s @var{format}] [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
 @var{input-file} [[@var{output-file}]]
@@ -19708,10 +19708,11 @@ datum.
 including @acronym{CDL}, @acronym{JSON}, and @acronym{NcML}.
 
 Options @samp{-a}, @samp{--cdl}, @samp{-F}, @samp{--fmt_val}, @samp{-H},
-@samp{--hdn}, @samp{--jsn}, @samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q},
-@samp{-q}, @samp{-s}, @samp{--trd}, @samp{-u}, @samp{-V}, and
-@samp{--xml} (and their long option counterparts) control the presence
-of data and metadata and their formatted appearance when printed.
+@samp{--hdn}, @samp{--jsn}, @samp{-M}, @samp{-m}, @samp{-P},
+@samp{--prn_fl}, @samp{-Q}, @samp{-q}, @samp{-s}, @samp{--trd},
+@samp{-u}, @samp{-V}, and @samp{--xml} (and their long option
+counterparts) control the presence of data and metadata and their
+formatted location and appearance when printed. 
 
 @cindex global attributes
 @cindex attributes, global
@@ -20549,6 +20550,23 @@ The @samp{-P} switch is a convenience abbreviation for
 @samp{-C -H -M -m -u}.
 Also activated using @samp{--print} or @samp{--prn}.
 This set of switches is useful for exploring file contents.
+
+@html
+<a name="fl_prn"></a> <!-- http://nco.sf.net/nco.html#fl_prn -->
+<a name="prn_fl"></a> <!-- http://nco.sf.net/nco.html#prn_fl -->
+@end html
+@cindex print file
+@cindex @code{--fl_prn}
+@cindex @code{--prn_fl}
+@item --prn_fl @file{print-file}
+Activate printing formatted output to file @file{print-file}.
+Also @samp{--print_file}, @samp{--fl_prn}, and @samp{--file_print}.
+One can achieve the same result by redirecting stdout to a named file.
+However, it is slightly faster to print formatted output directly to a
+file than to stdout:
+@example
+ncks --fl_prn=foo.txt --jsn in.nc
+@end example
 
 @html
 <a name="Q"></a> <!-- http://nco.sf.net/nco.html#Q -->

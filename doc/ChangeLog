@@ -1,10 +1,12 @@
 2018-02-21  Charlie Zender  <zender@uci.edu>
 
+	* Document --fl_prn
+
 	* Change remaining printf() to fprintf() and finish printing to fp_prn
 
 2018-02-20  Charlie Zender  <zender@uci.edu>
 
-	* Allow ncks to print to formatted file fp_prn rather than stdout
+	* Allow ncks to print to formatted file fp_prn rather than to stdout
 
 2018-02-15  Charlie Zender  <zender@uci.edu>
 
