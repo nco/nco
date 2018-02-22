@@ -56,8 +56,8 @@
 
   /* Headers specific to this program */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
-#include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
-#include "ncap_yacc.h" /* Symbol definitions from parser */
+#include "ncap_utl.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
+  //#include "ncap_yacc.h" /* Symbol definitions from parser */
 
   /* We want yylex() errors to skip current line rather than stop execution
      We do this by provoking error in parser by returning unrecognized token
