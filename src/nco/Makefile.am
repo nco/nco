@@ -1,18 +1,5 @@
 # $Header$ -*-makefile-*-
 
-# if BUILD_YACC_SOURCE
-# NCAP=ncap
-# else
-# NCAP=
-# endif
-
-# if BUILD_YACC_SOURCE
-# NCWA=ncwa
-# else
-# NCWA=
-# endif
-
-
 if NCO_NEED_GETOPT_LONG
 NCO_GETOPT_C=nco_getopt.c
 NCO_GETOPT_H=nco_getopt.h
@@ -27,12 +14,9 @@ else
 bin_PROGRAMS = ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
 endif
 
-# BUILT_SOURCES = ncap_yacc.h
 
 AM_YFLAGS = -d --name-prefix=nco_yy
 
-# ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
-# ncap_LDADD = libnco.la
 
 ncatted_SOURCES = ncatted.c
 ncatted_LDADD = libnco.la
@@ -73,17 +57,11 @@ mpncpdq_LDADD = libnco.la
 mpncra_SOURCES = mpncra.c
 mpncra_LDADD = libnco.la
 
-# ncwa also requires ncap_yacc.y which should already have been built for ncap
-# ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
-# ncwa_LDADD = libnco.la
 
-# mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
-# mpncwa_LDADD = libnco.la
-
-ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l #ncap_yacc.y
+ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l 
 ncwa_LDADD = libnco.la
 
-mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l #ncap_yacc.y
+mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l 
 mpncwa_LDADD = libnco.la
 
 
@@ -92,8 +70,6 @@ HEADER_SRC = \
 libnco.h \
 ${NCO_GETOPT_H} \
 ncap.h \
-ncap_yacc.h \
-nco.h \
 nco_att_utl.h \
 nco_aux.h \
 nco_bnr.h \

@@ -2835,7 +2835,6 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-#AC_INIT([NCO netCDF Operators],m4_esyscmd([git describe --abbrev=7 --dirty --always --tags | tr -d '\n']),[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 
