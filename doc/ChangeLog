@@ -1,3 +1,13 @@
+2018-02-22  Charlie Zender  <zender@uci.edu>
+
+	* White-list percent sign (NCO regression test uses, e.g., %tmp_fl_00)
+
+	* Eliminate waiting on user input for regression tests
+
+	* Implement nco_sng_sntz(), notice 13 new ncks regressions
+
+	* Create sanitize_input branch
+
 2018-02-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.3-alpha05 release procedure:

@@ -151,6 +151,10 @@ extern "C" {
   nco_sng2typ /* [fnc] Convert user-supplied string to netCDF type enum */
   (const char * const typ_sng); /* I [sng] String indicating type */
 
+  char * /* O [sng] Sanitized string */
+  nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous characters */
+  (char * const sng_drt); /* I/O [sng] String to sanitize */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

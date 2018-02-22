@@ -383,6 +383,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   /* Might there be problems with any specified files? */
   for(idx=arg_crr;idx<argc;idx++){
     if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not be portable to older operating systems\n",nco_prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
+    (void)nco_sng_sntz(argv[idx]);
   } /* end loop over idx */
 
   /* All operators except multi-file operators must have at least one positional argument */
@@ -538,9 +539,15 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
-  /* Assign output file from positional argument */
-  if(FL_OUT_FROM_PSN_ARG) *fl_out=(char *)strdup(argv[argc-1]);
+  /* Sanitize input list from stdin or from positional arguments */
+  for(int fl_idx=0;fl_idx<*fl_nbr;fl_idx++) (void)nco_sng_sntz(fl_lst_in[fl_idx]);
 
+  /* Assign output file from positional argument */
+  if(FL_OUT_FROM_PSN_ARG){
+    *fl_out=(char *)strdup(argv[argc-1]);
+    *fl_out=nco_sng_sntz(*fl_out);
+  } /* !FL_OUT_FROM_PSN_ARG */
+ 
   return fl_lst_in;
 
 } /* end nco_fl_lst_mk() */
