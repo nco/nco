@@ -781,17 +781,17 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
      20180214: White-list space (Methinks some Windows people do have data files with spaces)
      20180214: White-list forward slash on UNIX, backslash on Windows (path separators) 
      20180222: White-list percent sign (NCO regression test uses, e.g., %tmp_fl_00)
+     20180227: White-list forward slash on Windows so URLs are acceptable (http://...)
      Crucial characters that are implicitly blacklisted (and could be transformed into underscores) are:
      ";|<>[](),*&" */
   static char wht_lst[]="abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "1234567890_-.@"
-    " :%"
-#ifndef _MSC_VER
-    "/";
-#else /* !_MSC_VER */
-  "\\";
+    " :%/"
+#ifdef _MSC_VER
+    "\\"
 #endif /* !_MSC_VER */
+    ;
   /* ": re-balance syntax highlighting */
 
   char *usr_dta=sng_drt;
