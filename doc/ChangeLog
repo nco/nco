@@ -1,3 +1,7 @@
+2018-02-27  Charlie Zender  <zender@uci.edu>
+
+	* Make sure single file operator input is sanitized
+
 2018-02-22  Charlie Zender  <zender@uci.edu>
 
 	* Protect MSVC backslash

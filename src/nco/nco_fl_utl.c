@@ -405,8 +405,15 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     } /* end if */
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
     fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+
+    /* Sanitize input list from stdin and from positional arguments */
+    for(int fl_idx=0;fl_idx<*fl_nbr;fl_idx++) (void)nco_sng_sntz(fl_lst_in[fl_idx]);
+
     /* Output file is optional for these operators */
-    if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]);
+    if(arg_crr == argc-1){
+      *fl_out=(char *)strdup(argv[arg_crr]);
+      *fl_out=nco_sng_sntz(*fl_out);
+    } /* !arg_crr */
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */
   case ncbo:
