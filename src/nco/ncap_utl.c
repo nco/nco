@@ -8,8 +8,14 @@
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include <assert.h>
-#include "ncap.h" /* netCDF arithmetic processor */
+#include "ncap_utl.h" /* netCDF arithmetic processor */
 extern char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
+/* Global variables */
+extern size_t ncap_ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
+extern size_t *ncap_ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+extern char **ncap_fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
+
+
 
 var_sct *
 /* fxm: which prototype to use? */
@@ -312,551 +318,6 @@ ncap_scv_2_ptr_unn
   return val;
 } /* end ncap_scv_2_ptr_unn() */
 
-var_sct * /* O [sct] Sum of input variables (var_1+var_2) */
-ncap_var_var_add /* [fnc] Add two variables */
-(var_sct *var_1, /* I [sct] Input variable structure containing first operand */
- var_sct *var_2) /* I [sct] Input variable structure containing second operand */
-{
-  /* Purpose: Add two variables */
-  /* Store result in var_2 */
-  if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) {
-    var_1=nco_var_free(var_1);
-    return var_2;
-  }
-  (void)ncap_var_retype(var_1,var_2);
-  
-  /* Handle initial scan */
-  if(var_1->val.vp==(void*)NULL ) {
-    if(var_1->nbr_dim > var_2->nbr_dim) {
-      var_2=nco_var_free(var_2);
-      return var_1;
-    }else{
-      var_1=nco_var_free(var_1);
-      return var_2;
-    }
-  } 
-  
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  
-  //  if(var_1 != var_chk1) var_chk1 = (var_sct*)nco_var_free(var_chk1);
-  //if(var_2 != var_chk2) var_chk2 = (var_sct*)nco_var_free(var_chk2);
-  
-  /* fxm: bug in nco_var_add()? missing_value is not carried over to var_2 in result when var_1->has_mss_val is true */
-  if(var_1->has_mss_val){
-    (void)nco_var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
-  }else{
-    (void)nco_var_add(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
-  } /* end if */
-  
-  var_1=nco_var_free(var_1);
-  return var_2;
-} /* end ncap_var_var_add() */
-
-var_sct * /* O [sct] Quotient of input variables (var_2/var_1) */
-ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */ 
-(var_sct *var_1, /* I [sct] Variable structure containing denominator */
- var_sct *var_2) /* I [sct] Variable structure containing numerator */
-{
-  /* Purpose: Divide two variables (var_2/var_1) */
-  
-  /* Purpose: Divide two variables */
-  /* Store result in var_2 */
-  if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) {
-    var_1=nco_var_free(var_1);
-    return var_2;
-  }
-  (void)ncap_var_retype(var_1,var_2);
-  
-  /* Handle initial scan */
-  if(var_1->val.vp==(void*)NULL ) {
-    if(var_1->nbr_dim > var_2->nbr_dim) {
-      var_2=nco_var_free(var_2);
-      return var_1;
-    }else{
-      var_1=nco_var_free(var_1);
-      return var_2;
-    }
-  } 
-  
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  if(var_1->has_mss_val){
-    (void)nco_var_dvd(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
-  }else{
-    (void)nco_var_dvd(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
-  } /* end else */
-  
-  var_1=nco_var_free(var_1);
-  return var_2;
-} /* end ncap_var_var_dvd() */
-
-var_sct * /* O [sct] Product of input variables (var_1*var_2) */
-ncap_var_var_mlt /* [fnc] Multiply two variables */ 
-(var_sct *var_1, /* I [sct] Variable structure containing first operand */
- var_sct *var_2) /* I [sct] Variable structure containing second operand */
-{
-  
-  /* Purpose: Multiply two variables */
-  /* Store result in var_2 */
-  if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) {
-    var_1=nco_var_free(var_1);
-    return var_2;
-  }
-  (void)ncap_var_retype(var_1,var_2);
-  
-  /* Handle initial scan */
-  if(var_1->val.vp==(void*)NULL ) {
-    if(var_1->nbr_dim > var_2->nbr_dim) {
-      var_2=nco_var_free(var_2);
-      return var_1;
-    }else{
-      var_1=nco_var_free(var_1);
-      return var_2;
-    }
-  } 
-  
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  if(var_1->has_mss_val){
-    (void)nco_var_mlt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
-  }else{
-    (void)nco_var_mlt(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
-  } /* end else */
-  
-  var_1=nco_var_free(var_1);
-  return var_2;
-} /* end ncap_var_var_mlt() */
-
-var_sct * /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
-ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
-(var_sct *var_1, /* I [sct] Variable structure containing field */
- var_sct *var_2) /* I [sct] Variable structure containing divisor */
-{
-  /* Purpose: Remainder (modulo) operation of two variables (var_1%var_2) */
-  /* Store result in var_2 */
-  if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) {
-    var_1=nco_var_free(var_1);
-    return var_2;
-  }
-  (void)ncap_var_retype(var_1,var_2);
-  
-  /* Handle initial scan */
-  if(var_1->val.vp==(void*)NULL ) {
-    if(var_1->nbr_dim > var_2->nbr_dim) {
-      var_2=nco_var_free(var_2);
-      return var_1;
-    }else{
-      var_1=nco_var_free(var_1);
-      return var_2;
-    }
-  } 
-  
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  if(var_1->has_mss_val){
-    (void)nco_var_mod(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
-  }else{
-    (void)nco_var_mod(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
-  } /* end else */
-  
-  var_1=nco_var_free(var_1);
-  return var_2;
-} /* end ncap_var_var_mod() */
-
-var_sct * /* O [sct] Empowerment of input variables (var_1^var_2) */
-ncap_var_var_pwr /* [fnc] Empowerment of two variables */ 
-(var_sct *var_1, /* I [sct] Variable structure containing base */
- var_sct *var_2) /* I [sct] Variable structure containing exponent */
-{
-  /* Purpose: Empower two variables (var_1^var_2) */
-  
-  /* Purpose: Add two variables */
-  /* Store result in var_2 */
-  if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) {
-    var_1=nco_var_free(var_1);
-    return var_2;
-  }
-  /* Make sure vars are at least float precision */
-  if(nco_rth_prc_rnk(var_1->type) < nco_rth_prc_rnk_float && nco_rth_prc_rnk(var_2->type < nco_rth_prc_rnk_float)) var_1=nco_var_cnf_typ((nc_type)NC_FLOAT,var_1);
-  
-  (void)ncap_var_retype(var_1,var_2);   
-  
-  /* Handle initial scan */
-  if(var_1->val.vp==(void*)NULL ) {
-    if(var_1->nbr_dim > var_2->nbr_dim) {
-      var_2=nco_var_free(var_2);
-      return var_1;
-    }else{
-      var_1=nco_var_free(var_1);
-      return var_2;
-    }
-  } 
-  
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  if(var_1->has_mss_val){
-    (void)nco_var_pwr(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
-  }else{
-    (void)nco_var_pwr(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
-  } /* end else */
-  return var_2;
-} /* end ncap_var_var_pwr() */
-
-var_sct * /* O [frc] Remainder of input variables (var_2-var_1) */
-ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */ 
-(var_sct *var_2, /* I [sct] Variable structure containing second operand */ /* fxm TODO: 19 non-standard argument order */
- var_sct *var_1) /* I [sct] Variable structure containing first operand */
-{
-  /* Purpose: Subtract a variable from another variable */
-  
-  /* Purpose: Add two variables */
-  /* Store result in var_2 */
-  if(var_1->undefined) var_2->undefined=True;
-  if(var_2->undefined) {
-    var_1=nco_var_free(var_1);
-    return var_2;
-  }
-  (void)ncap_var_retype(var_1,var_2);
-  
-  /* Handle initial scan */
-  if(var_1->val.vp==(void*)NULL ) {
-    if(var_1->nbr_dim > var_2->nbr_dim) {
-      var_2=nco_var_free(var_2);
-      return var_1;
-    }else{
-      var_1=nco_var_free(var_1);
-      return var_2;
-    }
-  } 
-  
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  if(var_1->has_mss_val){
-    (void)nco_var_sbt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
-  }else{
-    (void)nco_var_sbt(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
-  }/* end else */
-  var_1=nco_var_free(var_1);
-  return var_2;
-} /* end ncap_var_var_sub() */
-
-var_sct *
-ncap_var_fnc(var_sct *var_in,sym_sct *app)
-{
-  /* Purpose: Evaluate fnc_dbl(var) or fnc_flt(var) for each value in variable
-     Float and double functions are in app */
-  long idx;
-  long sz;
-  ptr_unn op1;
-  
-  if(var_in->undefined) return var_in;
-  
-  
-  /* Promote variable to NC_FLOAT */
-  if(nco_rth_prc_rnk(var_in->type) < nco_rth_prc_rnk_float) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
-  
-  /* Handle initial scan differently */
-  if(var_in->val.vp == NULL) return var_in; 
-  
-  op1=var_in->val;
-  sz=var_in->sz;
-  (void)cast_void_nctype(var_in->type,&op1);
-  if(var_in->has_mss_val) (void)cast_void_nctype(var_in->type,&(var_in->mss_val));
-  
-  switch(var_in->type){ 
-  case NC_DOUBLE: {
-    if(!var_in->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]=(*(app->fnc_dbl))(op1.dp[idx]);
-    }else{
-      double mss_val_dbl=*(var_in->mss_val.dp); /* Temporary variable reduces de-referencing */
-      for(idx=0;idx<sz;idx++){
-        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=(*(app->fnc_dbl))(op1.dp[idx]);
-      } /* end for */
-    } /* end else */
-    break;
-  }
-  case NC_FLOAT: {
-    if(!var_in->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.fp[idx]=(*(app->fnc_flt))(op1.fp[idx]);
-    }else{
-      float mss_val_flt=*(var_in->mss_val.fp); /* Temporary variable reduces de-referencing */
-      for(idx=0;idx<sz;idx++){
-        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(*(app->fnc_flt))(op1.fp[idx]);
-      } /* end for */
-    } /* end else */
-    break;
-  }
-  default: nco_dfl_case_nc_type_err(); break;
-  }/* end switch */
-  
-  if(var_in->has_mss_val) (void)cast_nctype_void(var_in->type,&(var_in->mss_val));
-  return var_in;
-} /* end ncap_var_fnc() */
-
-var_sct *
-ncap_var_scv_add(var_sct *var,scv_sct scv)
-{
-  /* Purpose: add the value in scv to each element of var */
-  
-  if(var->undefined) return var;
-  
-  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-  
-  (void)nco_var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
-  return var;
-} /* end ncap_var_scv_add() */
-
-var_sct *
-ncap_var_scv_sub(var_sct *var,scv_sct scv)
-{
-  /* Purpose: Subtract value in scv from each element of var */
-  if(var->undefined) return var;
-  
-  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-  
-  (void)ncap_scv_minus(&scv);
-  (void)nco_var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
-  
-  return var;
-} /* end ncap_var_scv_sub() */
-
-var_sct *
-ncap_var_scv_mlt(var_sct *var,scv_sct scv)
-{
-  /* Purpose: Multiply variable by value in scv */
-  if(var->undefined) return var;
-  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-    
-  (void)nco_var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
-  return var;
-} /* end ncap_var_scv_mlt */
-
-var_sct *
-ncap_var_scv_dvd(var_sct *var,scv_sct scv)
-{
-  /* Purpose: Divide each element of var by value in scv */
-  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-  
-  (void)nco_var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
-  return var;
-} /* end ncap_var_scv_dvd */
-
-var_sct *
-ncap_scv_var_dvd(scv_sct scv,var_sct *var)
-{
-  /* Purpose: Divide scv by value of each element in var */
-  if(var->undefined) return var;
-  
-  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-  
-  (void)nco_scv_var_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
-  return var;
-} /* end ncap_scv_var_dvd */
-
-var_sct *
-ncap_var_scv_mod(var_sct *var,scv_sct scv)
-{
-  /* Purpose: Modulus of each element of var with scv */
-  if(var->undefined) return var;
-  
-  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-  
-  (void)nco_var_scv_mod(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
-  return var;
-} /* ncap_var_scv_mod */
-
-var_sct *
-ncap_scv_var_mod(scv_sct scv,var_sct *var)
-{
-  /* Purpose: Modulus of scv with each element of var */
-  if(var->undefined) return var;
-  
-  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-  
-  (void)nco_scv_var_mod(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
-  return var;
-} /* ncap_var_scv_mod */
-
-var_sct *
-ncap_var_scv_pwr(var_sct *var,scv_sct scv)
-{
-  /* Purpose: Empower each element in var by scv */
-  /* Promote scv and var to NC_FLOAT if necessary since C has no integer empowerment 
-     This reduces type conversion warnings (it is not done to avoid overflow) */
-  if(nco_rth_prc_rnk(var->type) < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
-  (void)nco_scv_cnf_typ(var->type,&scv);
-  
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-  
-  (void)nco_var_scv_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
-  return var;
-} /* end ncap_var_scv_pwr */
-
-var_sct *
-ncap_scv_var_pwr(scv_sct scv,var_sct *var)
-{
-  /* Purpose: Empower each element in scv by var */
-  /* Promote scv and var to NC_FLOAT if necessary since C has no integer empowerment 
-     This reduces type conversion warnings (it is not done to avoid overflow) */
-  if(var->undefined) return var;
-  
-  if(nco_rth_prc_rnk(var->type) < nco_rth_prc_rnk_float) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
-  (void)nco_scv_cnf_typ(var->type,&scv);
-  
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-  
-  (void)nco_scv_var_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
-  return var;
-} /* end ncap_var_scv_pwr */
-
-var_sct *
-ncap_var_abs(var_sct *var)
-{
-  /* Purpose: Find absolute value of each element of var */
-  if(var->undefined) return var;
-  
-  /* Deal with inital scan */
-  if(var->val.vp == NULL) return var; 
-  
-  (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
-  return var;
-} /* end ncap_var_abs */
-
-scv_sct  
-ncap_scv_clc
-(scv_sct scv_1,
- const char op,
- scv_sct scv_2)
-{
-  /* Purpose: Calculate (scv_1 op scv_2) NB: Scalar values must be of same type */
-  
-  /* http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
-     __GNUC__ : Defined by gcc 
-     __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
-  
-#ifndef __GNUG__ 
-  extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
-  extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
-#endif   /* __GNUG__ */
-  
-  scv_sct scv_out;
-  scv_out.type=scv_1.type;
-  
-  /*
-    if(scv_1.undefined || scv_2.undefined ) {
-    scv_out.undefined=True;
-    return scv_out;
-    }
-  */
-  switch(scv_out.type){ 
-  case NC_FLOAT:
-    switch(op){
-    case '+': scv_out.val.f=scv_1.val.f+scv_2.val.f;break;
-    case '-': scv_out.val.f=scv_1.val.f-scv_2.val.f;break;
-    case '/': scv_out.val.f=scv_1.val.f/scv_2.val.f;break;
-    case '*': scv_out.val.f=scv_1.val.f*scv_2.val.f;break;
-    case '%': scv_out.val.f=fmodf(scv_1.val.f,fabsf(scv_2.val.f));break;
-    } break;
-  case NC_DOUBLE:
-    switch(op){
-    case '+': scv_out.val.d=scv_1.val.d+scv_2.val.d;break;
-    case '-': scv_out.val.d=scv_1.val.d-scv_2.val.d;break;
-    case '/': scv_out.val.d=scv_1.val.d/scv_2.val.d;break;
-    case '*': scv_out.val.d=scv_1.val.d*scv_2.val.d;break;
-    case '%': scv_out.val.d=fmod(scv_1.val.d,fabs(scv_2.val.d));break;
-    } break;
-  case NC_INT:
-    switch(op){
-    case '+': scv_out.val.i=scv_1.val.i+scv_2.val.i;break;
-    case '-': scv_out.val.i=scv_1.val.i-scv_2.val.i;break;
-    case '/': scv_out.val.i=scv_1.val.i/scv_2.val.i;break;
-    case '*': scv_out.val.i=scv_1.val.i*scv_2.val.i;break;
-    case '%': scv_out.val.i=scv_1.val.i%scv_2.val.i;break;
-    } break;
-  case NC_SHORT:
-    switch(op){
-    case '+': scv_out.val.s=scv_1.val.s+scv_2.val.s;break;
-    case '-': scv_out.val.s=scv_1.val.s-scv_2.val.s;break;
-    case '/': scv_out.val.s=scv_1.val.s/scv_2.val.s;break;
-    case '*': scv_out.val.s=scv_1.val.s*scv_2.val.s;break;
-    case '%': scv_out.val.s=scv_1.val.s%scv_2.val.s;break;
-    } break;
-  case NC_USHORT:
-    switch(op){
-    case '+': scv_out.val.us=scv_1.val.us+scv_2.val.us;break;
-    case '-': scv_out.val.us=scv_1.val.us-scv_2.val.us;break;
-    case '/': scv_out.val.us=scv_1.val.us/scv_2.val.us;break;
-    case '*': scv_out.val.us=scv_1.val.us*scv_2.val.us;break;
-    case '%': scv_out.val.us=scv_1.val.us%scv_2.val.us;break;
-    } break;
-  case NC_UINT:
-    switch(op){
-    case '+': scv_out.val.ui=scv_1.val.ui+scv_2.val.ui;break;
-    case '-': scv_out.val.ui=scv_1.val.ui-scv_2.val.ui;break;
-    case '/': scv_out.val.ui=scv_1.val.ui/scv_2.val.ui;break;
-    case '*': scv_out.val.ui=scv_1.val.ui*scv_2.val.ui;break;
-    case '%': scv_out.val.ui=scv_1.val.ui%scv_2.val.ui;break;
-    } break;
-  case NC_INT64:
-    switch(op){
-    case '+': scv_out.val.i64=scv_1.val.i64+scv_2.val.i64;break;
-    case '-': scv_out.val.i64=scv_1.val.i64-scv_2.val.i64;break;
-    case '/': scv_out.val.i64=scv_1.val.i64/scv_2.val.i64;break;
-    case '*': scv_out.val.i64=scv_1.val.i64*scv_2.val.i64;break;
-    case '%': scv_out.val.i64=scv_1.val.i64%scv_2.val.i64;break;
-    } break;
-  case NC_UINT64:
-    switch(op){
-    case '+': scv_out.val.ui64=scv_1.val.ui64+scv_2.val.ui64;break;
-    case '-': scv_out.val.ui64=scv_1.val.ui64-scv_2.val.ui64;break;
-    case '/': scv_out.val.ui64=scv_1.val.ui64/scv_2.val.ui64;break;
-    case '*': scv_out.val.ui64=scv_1.val.ui64*scv_2.val.ui64;break;
-    case '%': scv_out.val.ui64=scv_1.val.ui64%scv_2.val.ui64;break;
-    } break;
-  case NC_BYTE:
-    switch(op){
-    case '+': scv_out.val.b=scv_1.val.b+scv_2.val.b;break;
-    case '-': scv_out.val.b=scv_1.val.b-scv_2.val.b;break;
-    case '/': scv_out.val.b=scv_1.val.b/scv_2.val.b;break;
-    case '*': scv_out.val.b=scv_1.val.b*scv_2.val.b;break;
-    case '%': scv_out.val.b=scv_1.val.b%scv_2.val.b;break;
-    } break;
-  case NC_UBYTE:
-    switch(op){
-    case '+': scv_out.val.ub=scv_1.val.ub+scv_2.val.ub;break;
-    case '-': scv_out.val.ub=scv_1.val.ub-scv_2.val.ub;break;
-    case '/': scv_out.val.ub=scv_1.val.ub/scv_2.val.ub;break;
-    case '*': scv_out.val.ub=scv_1.val.ub*scv_2.val.ub;break;
-    case '%': scv_out.val.ub=scv_1.val.ub%scv_2.val.ub;break;
-    } break;
-  case NC_CHAR: break; /* Do nothing */
-  case NC_STRING: break; /* Do nothing */
-  default: nco_dfl_case_nc_type_err(); break;
-  }/* end switch */    
-  
-  return scv_out;
-} /* end ncap_scv_clc_type */
 
 scv_sct
 ncap_scv_abs(scv_sct scv)
@@ -913,198 +374,7 @@ ncap_scv_minus(scv_sct *scv)
   return scv->type;
 } /* end ncap_scv_minus() */
 
-nm_id_sct *
-nco_var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
-{
-  /* Purpose: Copy xtr_lst and return new list */
-  int idx;
-  nm_id_sct *xtr_new_lst;
-  
-  if(lst_nbr == 0) return NULL;
-  xtr_new_lst=(nm_id_sct *)nco_malloc(lst_nbr*sizeof(nm_id_sct));
-  for(idx=0;idx<lst_nbr;idx++){
-    xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
-    xtr_new_lst[idx].id=xtr_lst[idx].id;
-  } /* end loop over variable */
-  return xtr_new_lst;           
-} /* end nco_var_lst_copy() */
 
-nm_id_sct *
-nco_var_lst_sub(nm_id_sct *xtr_lst,int *xtr_nbr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
-{
-  /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present and return new list */
-  int idx;
-  int xtr_idx;
-  int xtr_nbr_new=0;
-  
-  nco_bool match;
-  
-  nm_id_sct *xtr_new_lst=NULL;
-  
-  if(*xtr_nbr == 0) return xtr_lst;
-  
-  xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)(*xtr_nbr)*sizeof(nm_id_sct)); 
-  for(idx=0;idx<*xtr_nbr;idx++){
-    match=False;
-    for(xtr_idx=0;xtr_idx<nbr_lst_b;xtr_idx++)
-      if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[xtr_idx].nm)){match=True;break;}
-    if(match) continue;
-    xtr_new_lst[xtr_nbr_new].nm=(char *)strdup(xtr_lst[idx].nm);
-    xtr_new_lst[xtr_nbr_new++].id=xtr_lst[idx].id;
-  } /* end loop over idx */
-  /* realloc to actual size */
-  xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,xtr_nbr_new*sizeof(nm_id_sct)); 
-  /* free old list */
-  xtr_lst=nco_nm_id_lst_free(xtr_lst,*xtr_nbr);
-  
-  *xtr_nbr=xtr_nbr_new;
-  return xtr_new_lst;     
-}/* end nco_var_lst_sub */
-
-nm_id_sct *
-nco_var_lst_add(nm_id_sct *xtr_lst,int *xtr_nbr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
-{
-  /* Purpose: Add to xtr_lst any elements from xtr_lst_a not already present and return new list */
-  int idx;
-  int xtr_idx;
-  int xtr_nbr_crr;
-  
-  nm_id_sct *xtr_new_lst;
-  
-  nco_bool match;
-  
-  xtr_nbr_crr=*xtr_nbr;
-  if(xtr_nbr_crr > 0){
-    xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)(*xtr_nbr)*sizeof(nm_id_sct));
-    for(idx=0;idx<xtr_nbr_crr;idx++){
-      xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
-      xtr_new_lst[idx].id=xtr_lst[idx].id;
-    } /* end loop over variables */
-  }else{
-    *xtr_nbr=nbr_lst_a;
-    return nco_var_lst_copy(xtr_lst_a,nbr_lst_a);
-  }/* end if */
-  
-  for(idx=0;idx<nbr_lst_a;idx++){
-    match=False;
-    for(xtr_idx=0;xtr_idx<*xtr_nbr;xtr_idx++)
-      if(!strcmp(xtr_lst[xtr_idx].nm,xtr_lst_a[idx].nm)){match=True;break;}
-    if(match) continue;
-    xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(size_t)(xtr_nbr_crr+1)*sizeof(nm_id_sct));
-    xtr_new_lst[xtr_nbr_crr].nm=(char *)strdup(xtr_lst_a[idx].nm);
-    xtr_new_lst[xtr_nbr_crr++].id=xtr_lst_a[idx].id;
-  } /* end for */
-  *xtr_nbr=xtr_nbr_crr;
-  return xtr_new_lst;           
-} /* nco_var_lst_add */
-
-nm_id_sct *
-nco_nm_id_lst_crd_make
-(int nc_id,
- nm_id_sct *xtr_lst,
- int *xtr_nbr)
-     /* 
-	int nc_id: I netCDF file ID
-	nm_id_sct *xtr_lst: I/O current extraction list 
-	int *xtr_nbr: I/O number of variables in current extraction list: Overwritten by new list 
-	nm_id_sct nco_nm_id_lst_crd_make: list of coordinate dimensions 
-     */
-{
-  /* Purpose: Make list co-ordinate dimensions from list of ordinary and co-ordinate variables */
-  char dmn_nm[NC_MAX_NAME];
-  
-  int crd_id;
-  int idx_dim;
-  int idx_var;
-  int nbr_dim;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  int nbr_new_lst=0;
-  
-  nm_id_sct *new_lst=NULL_CEWI;
-  
-  /* Get number of dimensions */
-  (void)nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
-  /* ...for each dimension in input file... */
-  for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
-    /* ...see if it is a coordinate dimension... */
-    (void)nco_inq_dimname(nc_id,idx_dim,dmn_nm);
-    rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
-    if(rcd == NC_NOERR){
-      /* Is this coordinate already on extraction list? */
-      for(idx_var=0;idx_var<*xtr_nbr;idx_var++){
-	if(!strcmp(dmn_nm,xtr_lst[idx_var].nm)){
-	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
-	  else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(size_t)(nbr_new_lst+1)*sizeof(nm_id_sct));
-	  new_lst[nbr_new_lst].nm=(char *)strdup(dmn_nm);
-	  new_lst[nbr_new_lst++].id=crd_id;
-	  break;
-        } /* end if */
-      } /* end for */
-    } /* end if */
-  } /* end for */
-  
-  *xtr_nbr=nbr_new_lst;
-  return new_lst;
-} /* end nco_nm_id_lst_crd_make() */
-
-nm_id_sct * /* O [sct] List of dimensions associated with input variable list */
-nco_dmn_lst /* [fnc] Create list of all dimensions in file  */
-(const int nc_id, /* I [id] netCDF input-file ID */
- int * const nbr_dmn) /* O [nbr] Number of dimensions in  list */
-{
-  int idx;
-  int nbr_dmn_in;
-  char dmn_nm[NC_MAX_NAME];
-  nm_id_sct *dmn;
-  /* Get number of dimensions */
-  (void)nco_inq(nc_id,&nbr_dmn_in,(int *)NULL,(int *)NULL,(int *)NULL);
-  
-  dmn=(nm_id_sct *)nco_malloc(nbr_dmn_in*sizeof(nm_id_sct));
-  
-  for(idx=0;idx<nbr_dmn_in;idx++){
-    (void)nco_inq_dimname(nc_id,idx,dmn_nm);
-    dmn[idx].id=idx;
-    dmn[idx].nm=(char *)strdup(dmn_nm);
-  } /* end loop over dmn */
-  
-  *nbr_dmn=nbr_dmn_in;
-  return dmn;
-} /* end nco_dmn_lst() */
-
-nm_id_sct * 
-nco_att_lst_mk
-(const int in_id,
- const int out_id,
- aed_sct **att_lst,
- int nbr_att,
- int *nbr_lst)
-{
-  int idx;
-  int jdx;
-  int rcd;
-  int var_id;
-  int size=0;
-  nm_id_sct *xtr_lst=NULL;  
-  for(idx=0;idx<nbr_att;idx++){
-    rcd=nco_inq_varid_flg(out_id,att_lst[idx]->var_nm,&var_id);
-    if(rcd== NC_NOERR) continue;   
-    rcd=nco_inq_varid_flg(in_id,att_lst[idx]->var_nm,&var_id);   
-    if(rcd == NC_NOERR){
-      /* eliminate any duplicates from list */
-      for(jdx=0;jdx<size;jdx++)
-	if(!strcmp(xtr_lst[jdx].nm,att_lst[idx]->var_nm)) break;
-      if(jdx!=size) continue;
-      /* fxm mmr TODO 491: memory leak xtr_lst */
-      xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(size+1)*sizeof(nm_id_sct));
-      xtr_lst[size].id=var_id;
-      xtr_lst[size++].nm=(char *)strdup(att_lst[idx]->var_nm);
-    } /* end if */
-  } /* end loop over att */
-  
-  *nbr_lst=size;
-  
-  return xtr_lst;
-} /* end nco_att_lst_mk() */
 
 nco_bool /* O [flg] Variables now conform */
 ncap_var_stretch /* [fnc] Stretch variables */
@@ -1395,3 +665,103 @@ ncap_var_stretch /* [fnc] Stretch variables */
   /* Variables now conform */
   return DO_CONFORM;
 } /* end ncap_var_stretch() */
+
+
+
+int /* [rcd] Return code */
+nco_yyerror /* [fnc] Print error/warning/info messages generated by parser */
+(prs_sct *prs_arg, const char * const err_sng_lcl) /* [sng] Message to print */
+{
+  /* Purpose: Print error/warning/info messages generated by parser
+     Use eprokoke_skip to skip error message after sending error message from yylex()
+     Stop provoked error message from yyparse being printed */
+  
+  static nco_bool eprovoke_skip;
+  
+  prs_arg=prs_arg+0; /* CEWI otherwise unused parameter error */
+
+  /* if(eprovoke_skip){eprovoke_skip=False ; return 0;} */
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    (void)fprintf(stderr,"%s: %s line %lu",nco_prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],(unsigned long)ncap_ln_nbr_crr[ncap_ncl_dpt_crr]);
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr," %s",err_sng_lcl);
+    (void)fprintf(stderr,"\n");
+    (void)fflush(stderr);
+  } /* endif dbg */
+  
+  if(err_sng_lcl[0] == '#') eprovoke_skip=True;
+  eprovoke_skip=eprovoke_skip+0; /* CEWI Do nothing except avoid compiler warnings */
+  return 0;
+} /* end yyerror() */
+
+aed_sct *  /* O [idx] Location of attribute in list */
+ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribute */
+(const char * const var_nm, /* I [sng] Variable name */
+ const char * const att_nm, /* I [sng] Attribute name */
+ prs_sct *  prs_arg,   /* contains attribute list */       
+ const nco_bool update) /* I [flg] Delete existing value or add new attribute to list */
+{
+  int idx;
+  int size;
+  aed_sct *ptr_aed;
+  
+  size=*(prs_arg->nbr_att);
+  
+  for(idx=0;idx<size;idx++){
+    ptr_aed=(*(prs_arg->att_lst))[idx];
+    
+    if(strcmp(ptr_aed->att_nm,att_nm) || strcmp(ptr_aed->var_nm,var_nm)) 
+      continue; 
+    
+    if(update) ptr_aed->val.vp=nco_free(ptr_aed->val.vp);   
+    /* Return pointer to list element */
+    return ptr_aed;
+    
+  } /* end for */
+  
+  if(!update) return (aed_sct *)NULL;
+  
+  *(prs_arg->att_lst)=(aed_sct **)nco_realloc(*(prs_arg->att_lst),(size+1)*sizeof(aed_sct*));
+  ++*(prs_arg->nbr_att);
+  (*(prs_arg->att_lst))[size]=(aed_sct *)nco_malloc(sizeof(aed_sct));
+  (*(prs_arg->att_lst))[size]->var_nm=strdup(var_nm);
+  (*(prs_arg->att_lst))[size]->att_nm=strdup(att_nm);
+  
+  return (*(prs_arg->att_lst))[size];
+} /* end ncap_aed_lookup() */
+
+var_sct * /*I [sct] varibale in list */
+ncap_var_lookup
+(var_sct *var, /* I  [sct] variable  */
+ prs_sct *prs_arg, /* I/O [sct] contains var list */
+ const nco_bool add) /* I if not in list then add to list */          
+{
+  int idx;
+  int size;
+  
+  var_sct *ptr_var; 
+  
+  size = *(prs_arg->nbr_var);
+  
+  for(idx=0;idx<size;idx++){
+    
+    ptr_var=(*(prs_arg->var_lst))[idx];
+    /*
+      assert(var->nm);
+      assert(ptr_var->nm);
+      if(!strcmp(var->nm,ptr_var->nm)) return ptr_var;    
+    */
+    if(ptr_var==NULL || strcmp(var->nm,ptr_var->nm) ) continue;
+    
+    return ptr_var;
+  } /* end loop over idx */
+  
+  if(!add) return (var_sct *)NULL;
+  
+  *(prs_arg->var_lst)=(var_sct **)nco_realloc(*(prs_arg->var_lst),(size+1)*sizeof(var_sct*));
+  ++*(prs_arg->nbr_var);
+  (*(prs_arg->var_lst))[size]=var;
+  
+  return (var_sct *)NULL;
+} /* end ncap_var_lookup() */
+
+

@@ -92,19 +92,17 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@ENABLE_MPI_FALSE@bin_PROGRAMS = $(am__EXEEXT_1) ncatted$(EXEEXT) \
-@ENABLE_MPI_FALSE@	ncbo$(EXEEXT) ncecat$(EXEEXT) \
-@ENABLE_MPI_FALSE@	ncflint$(EXEEXT) ncks$(EXEEXT) \
-@ENABLE_MPI_FALSE@	ncpdq$(EXEEXT) ncra$(EXEEXT) \
-@ENABLE_MPI_FALSE@	ncrename$(EXEEXT) $(am__EXEEXT_2)
-@ENABLE_MPI_TRUE@bin_PROGRAMS = $(am__EXEEXT_1) ncatted$(EXEEXT) \
-@ENABLE_MPI_TRUE@	ncbo$(EXEEXT) ncecat$(EXEEXT) \
-@ENABLE_MPI_TRUE@	ncflint$(EXEEXT) ncks$(EXEEXT) ncpdq$(EXEEXT) \
-@ENABLE_MPI_TRUE@	ncra$(EXEEXT) ncrename$(EXEEXT) \
-@ENABLE_MPI_TRUE@	mpncbo$(EXEEXT) mpncecat$(EXEEXT) \
-@ENABLE_MPI_TRUE@	mpncflint$(EXEEXT) mpncpdq$(EXEEXT) \
-@ENABLE_MPI_TRUE@	mpncra$(EXEEXT) mpncwa$(EXEEXT) \
-@ENABLE_MPI_TRUE@	$(am__EXEEXT_2)
+@ENABLE_MPI_FALSE@bin_PROGRAMS = ncatted$(EXEEXT) ncbo$(EXEEXT) \
+@ENABLE_MPI_FALSE@	ncecat$(EXEEXT) ncflint$(EXEEXT) \
+@ENABLE_MPI_FALSE@	ncks$(EXEEXT) ncpdq$(EXEEXT) ncra$(EXEEXT) \
+@ENABLE_MPI_FALSE@	ncrename$(EXEEXT) ncwa$(EXEEXT)
+@ENABLE_MPI_TRUE@bin_PROGRAMS = ncatted$(EXEEXT) ncbo$(EXEEXT) \
+@ENABLE_MPI_TRUE@	ncecat$(EXEEXT) ncflint$(EXEEXT) \
+@ENABLE_MPI_TRUE@	ncks$(EXEEXT) ncpdq$(EXEEXT) ncra$(EXEEXT) \
+@ENABLE_MPI_TRUE@	ncrename$(EXEEXT) mpncbo$(EXEEXT) \
+@ENABLE_MPI_TRUE@	mpncecat$(EXEEXT) mpncflint$(EXEEXT) \
+@ENABLE_MPI_TRUE@	mpncpdq$(EXEEXT) mpncra$(EXEEXT) \
+@ENABLE_MPI_TRUE@	mpncwa$(EXEEXT) ncwa$(EXEEXT)
 TESTS =
 subdir = src/nco
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -149,13 +147,13 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libnco_la_LIBADD =
-am__libnco_la_SOURCES_DIST = libnco.h nco_getopt.h ncap.h ncap_yacc.h \
-	nco.h nco_att_utl.h nco_aux.h nco_bnr.h nco_cln_utl.h \
-	nco_cnf_dmn.h nco_cnf_typ.h nco_cnk.h nco_cnv_arm.h \
-	nco_cnv_csm.h nco_ctl.h nco_dbg.h nco_dmn_utl.h nco_fl_utl.h \
-	nco_grp_utl.h nco_grp_trv.h nco_lmt.h nco_lst_utl.h nco_map.h \
-	nco_md5.h nco_mmr.h nco_mpi.h nco_msa.h nco_mss_val.h \
-	nco_mta.h nco_netcdf.h nco_omp.h nco_pck.h nco_ppc.h nco_prn.h \
+am__libnco_la_SOURCES_DIST = libnco.h nco_getopt.h ncap.h \
+	nco_att_utl.h nco_aux.h nco_bnr.h nco_cln_utl.h nco_cnf_dmn.h \
+	nco_cnf_typ.h nco_cnk.h nco_cnv_arm.h nco_cnv_csm.h nco_ctl.h \
+	nco_dbg.h nco_dmn_utl.h nco_fl_utl.h nco_grp_utl.h \
+	nco_grp_trv.h nco_lmt.h nco_lst_utl.h nco_map.h nco_md5.h \
+	nco_mmr.h nco_mpi.h nco_msa.h nco_mss_val.h nco_mta.h \
+	nco_netcdf.h nco_omp.h nco_pck.h nco_ppc.h nco_prn.h \
 	nco_rec_var.h nco_rgr.h nco_rth_flt.h nco_rth_utl.h \
 	nco_scl_utl.h nco_scm.h nco_sld.h nco_sng_utl.h nco_srm.h \
 	nco_typ.h nco_uthash.h nco_var_avg.h nco_var_lst.h \
@@ -191,8 +189,6 @@ am__v_lt_1 =
 libnco_la_LINK = $(LIBTOOL) $(AM_V_lt) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libnco_la_LDFLAGS) $(LDFLAGS) -o $@
-@BUILD_YACC_SOURCE_TRUE@am__EXEEXT_1 = ncap$(EXEEXT)
-@BUILD_YACC_SOURCE_TRUE@am__EXEEXT_2 = ncwa$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 am_mpncbo_OBJECTS = mpncbo.$(OBJEXT)
 mpncbo_OBJECTS = $(am_mpncbo_OBJECTS)
@@ -210,13 +206,9 @@ am_mpncra_OBJECTS = mpncra.$(OBJEXT)
 mpncra_OBJECTS = $(am_mpncra_OBJECTS)
 mpncra_DEPENDENCIES = libnco.la
 am_mpncwa_OBJECTS = mpncwa.$(OBJEXT) ncap_utl.$(OBJEXT) \
-	ncap_lex.$(OBJEXT) ncap_yacc.$(OBJEXT)
+	ncap_lex.$(OBJEXT)
 mpncwa_OBJECTS = $(am_mpncwa_OBJECTS)
 mpncwa_DEPENDENCIES = libnco.la
-am_ncap_OBJECTS = ncap_utl.$(OBJEXT) ncap.$(OBJEXT) \
-	ncap_yacc.$(OBJEXT) ncap_lex.$(OBJEXT)
-ncap_OBJECTS = $(am_ncap_OBJECTS)
-ncap_DEPENDENCIES = libnco.la
 am_ncatted_OBJECTS = ncatted.$(OBJEXT)
 ncatted_OBJECTS = $(am_ncatted_OBJECTS)
 ncatted_DEPENDENCIES = libnco.la
@@ -241,8 +233,7 @@ ncra_DEPENDENCIES = libnco.la
 am_ncrename_OBJECTS = ncrename.$(OBJEXT)
 ncrename_OBJECTS = $(am_ncrename_OBJECTS)
 ncrename_DEPENDENCIES = libnco.la
-am_ncwa_OBJECTS = ncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT) \
-	ncap_yacc.$(OBJEXT)
+am_ncwa_OBJECTS = ncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT)
 ncwa_OBJECTS = $(am_ncwa_OBJECTS)
 ncwa_DEPENDENCIES = libnco.la
 AM_V_P = $(am__v_P_@AM_V@)
@@ -288,28 +279,18 @@ am__v_LEX_ = $(am__v_LEX_@AM_DEFAULT_V@)
 am__v_LEX_0 = @echo "  LEX     " $@;
 am__v_LEX_1 = 
 YLWRAP = $(top_srcdir)/autobld/ylwrap
-@MAINTAINER_MODE_FALSE@am__skipyacc = test -f $@ ||
-am__yacc_c2h = sed -e s/cc$$/hh/ -e s/cpp$$/hpp/ -e s/cxx$$/hxx/ \
-		   -e s/c++$$/h++/ -e s/c$$/h/
-YACCCOMPILE = $(YACC) $(AM_YFLAGS) $(YFLAGS)
-LTYACCCOMPILE = $(LIBTOOL) $(AM_V_lt) $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=compile $(YACC) $(AM_YFLAGS) $(YFLAGS)
-AM_V_YACC = $(am__v_YACC_@AM_V@)
-am__v_YACC_ = $(am__v_YACC_@AM_DEFAULT_V@)
-am__v_YACC_0 = @echo "  YACC    " $@;
-am__v_YACC_1 = 
 SOURCES = $(libnco_la_SOURCES) $(mpncbo_SOURCES) $(mpncecat_SOURCES) \
 	$(mpncflint_SOURCES) $(mpncpdq_SOURCES) $(mpncra_SOURCES) \
-	$(mpncwa_SOURCES) $(ncap_SOURCES) $(ncatted_SOURCES) \
+	$(mpncwa_SOURCES) $(ncatted_SOURCES) $(ncbo_SOURCES) \
+	$(ncecat_SOURCES) $(ncflint_SOURCES) $(ncks_SOURCES) \
+	$(ncpdq_SOURCES) $(ncra_SOURCES) $(ncrename_SOURCES) \
+	$(ncwa_SOURCES)
+DIST_SOURCES = $(am__libnco_la_SOURCES_DIST) $(mpncbo_SOURCES) \
+	$(mpncecat_SOURCES) $(mpncflint_SOURCES) $(mpncpdq_SOURCES) \
+	$(mpncra_SOURCES) $(mpncwa_SOURCES) $(ncatted_SOURCES) \
 	$(ncbo_SOURCES) $(ncecat_SOURCES) $(ncflint_SOURCES) \
 	$(ncks_SOURCES) $(ncpdq_SOURCES) $(ncra_SOURCES) \
 	$(ncrename_SOURCES) $(ncwa_SOURCES)
-DIST_SOURCES = $(am__libnco_la_SOURCES_DIST) $(mpncbo_SOURCES) \
-	$(mpncecat_SOURCES) $(mpncflint_SOURCES) $(mpncpdq_SOURCES) \
-	$(mpncra_SOURCES) $(mpncwa_SOURCES) $(ncap_SOURCES) \
-	$(ncatted_SOURCES) $(ncbo_SOURCES) $(ncecat_SOURCES) \
-	$(ncflint_SOURCES) $(ncks_SOURCES) $(ncpdq_SOURCES) \
-	$(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -512,7 +493,7 @@ am__set_b = \
 am__DIST_COMMON = $(srcdir)/Makefile.in $(top_srcdir)/autobld/depcomp \
 	$(top_srcdir)/autobld/mkinstalldirs \
 	$(top_srcdir)/autobld/test-driver $(top_srcdir)/autobld/ylwrap \
-	ncap_lex.c ncap_yacc.c ncap_yacc.h
+	ncap_lex.c
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -602,8 +583,6 @@ SHELL = @SHELL@
 STRIP = @STRIP@
 UDUNITS2_PATH = @UDUNITS2_PATH@
 VERSION = @VERSION@
-YACC = @YACC@
-YFLAGS = @YFLAGS@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -661,18 +640,11 @@ target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-@BUILD_YACC_SOURCE_FALSE@NCAP = 
-@BUILD_YACC_SOURCE_TRUE@NCAP = ncap
-@BUILD_YACC_SOURCE_FALSE@NCWA = 
-@BUILD_YACC_SOURCE_TRUE@NCWA = ncwa
 @NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT_C = 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT_C = nco_getopt.c
 @NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT_H = 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT_H = nco_getopt.h
-BUILT_SOURCES = ncap_yacc.h
 AM_YFLAGS = -d --name-prefix=nco_yy
-ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l
-ncap_LDADD = libnco.la
 ncatted_SOURCES = ncatted.c
 ncatted_LDADD = libnco.la
 ncbo_SOURCES = ncbo.c
@@ -699,18 +671,14 @@ mpncpdq_SOURCES = mpncpdq.c
 mpncpdq_LDADD = libnco.la
 mpncra_SOURCES = mpncra.c
 mpncra_LDADD = libnco.la
-
-# ncwa also requires ncap_yacc.y which should already have been built for ncap
-ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
+ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l 
 ncwa_LDADD = libnco.la
-mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
+mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l 
 mpncwa_LDADD = libnco.la
 HEADER_SRC = \
 libnco.h \
 ${NCO_GETOPT_H} \
 ncap.h \
-ncap_yacc.h \
-nco.h \
 nco_att_utl.h \
 nco_aux.h \
 nco_bnr.h \
@@ -817,13 +785,12 @@ nco_var_scv.c \
 nco_var_utl.c
 
 EXTRA_DIST = ${NCO_GETOPT_C}
-DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
+DISTCLEANFILES = ncap_lex.c ncap_yacc.c 
 CLEANFILES = ncdiff ncea nces ncrcat mpncdiff mpncea mpnces mpncrcat
-all: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) all-am
+all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .l .lo .log .o .obj .test .test$(EXEEXT) .trs .y
+.SUFFIXES: .c .l .lo .log .o .obj .test .test$(EXEEXT) .trs
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -964,13 +931,6 @@ mpncra$(EXEEXT): $(mpncra_OBJECTS) $(mpncra_DEPENDENCIES) $(EXTRA_mpncra_DEPENDE
 mpncwa$(EXEEXT): $(mpncwa_OBJECTS) $(mpncwa_DEPENDENCIES) $(EXTRA_mpncwa_DEPENDENCIES) 
 	@rm -f mpncwa$(EXEEXT)
 	$(AM_V_CCLD)$(LINK) $(mpncwa_OBJECTS) $(mpncwa_LDADD) $(LIBS)
-ncap_yacc.h: ncap_yacc.c
-	@if test ! -f $@; then rm -f ncap_yacc.c; else :; fi
-	@if test ! -f $@; then $(MAKE) $(AM_MAKEFLAGS) ncap_yacc.c; else :; fi
-
-ncap$(EXEEXT): $(ncap_OBJECTS) $(ncap_DEPENDENCIES) $(EXTRA_ncap_DEPENDENCIES) 
-	@rm -f ncap$(EXEEXT)
-	$(AM_V_CCLD)$(LINK) $(ncap_OBJECTS) $(ncap_LDADD) $(LIBS)
 
 ncatted$(EXEEXT): $(ncatted_OBJECTS) $(ncatted_DEPENDENCIES) $(EXTRA_ncatted_DEPENDENCIES) 
 	@rm -f ncatted$(EXEEXT)
@@ -1020,10 +980,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncpdq.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncra.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mpncwa.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap_lex.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap_utl.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap_yacc.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncatted.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncbo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncecat.Po@am__quote@
@@ -1100,9 +1058,6 @@ distclean-compile:
 
 .l.c:
 	$(AM_V_LEX)$(am__skiplex) $(SHELL) $(YLWRAP) $< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
-
-.y.c:
-	$(AM_V_YACC)$(am__skipyacc) $(SHELL) $(YLWRAP) $< y.tab.c $@ y.tab.h `echo $@ | $(am__yacc_c2h)` y.output $*.output -- $(YACCCOMPILE)
 
 mostlyclean-libtool:
 	-rm -f *.lo
@@ -1350,8 +1305,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
-check: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) check-am
+check: check-am
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS)
 install-binPROGRAMS: install-libLTLIBRARIES
 
@@ -1359,8 +1313,7 @@ installdirs:
 	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
-install: $(BUILT_SOURCES)
-	$(MAKE) $(AM_MAKEFLAGS) install-am
+install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -1396,9 +1349,6 @@ maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
 	-rm -f ncap_lex.c
-	-rm -f ncap_yacc.c
-	-rm -f ncap_yacc.h
-	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
@@ -1472,8 +1422,7 @@ ps-am:
 uninstall-am: uninstall-binPROGRAMS uninstall-libLTLIBRARIES
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
-.MAKE: all check check-am install install-am install-exec-am \
-	install-strip uninstall-am
+.MAKE: check-am install-am install-exec-am install-strip uninstall-am
 
 .PHONY: CTAGS GTAGS TAGS all all-am check check-TESTS check-am clean \
 	clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \

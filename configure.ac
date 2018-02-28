@@ -55,7 +55,6 @@
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
 AC_INIT([NCO netCDF Operators],[4.7.3-alpha05],[nco-bugs@lists.sourceforge.net],[nco])
-#AC_INIT([NCO netCDF Operators],m4_esyscmd([git describe --abbrev=7 --dirty --always --tags | tr -d '\n']),[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -179,7 +178,7 @@ AC_PROG_CPP
 AC_PROG_CXXCPP
 AC_PROG_CC_STDC
 AM_PROG_LEX
-AC_PROG_YACC
+# AC_PROG_YACC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
@@ -188,7 +187,7 @@ AC_PROG_LIBTOOL
 LIBTOOL="${LIBTOOL} --tag=CXX"
 #LIBTOOL="${LIBTOOL} --tag=ignore_tag_err"
 
-AM_CONDITIONAL(BUILD_YACC_SOURCE,[test "${YACC}" != "yacc" || test -f "src/nco/ncap_yacc.c"])
+# AM_CONDITIONAL(BUILD_YACC_SOURCE,[test "${YACC}" != "yacc" || test -f "src/nco/ncap_yacc.c"])
 
 # Disable maintainer-only options in generated Makefiles unless flag
 # --enable-maintainer-mode is given at configure time
