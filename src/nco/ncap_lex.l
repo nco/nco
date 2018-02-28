@@ -55,7 +55,6 @@
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
   /* Headers specific to this program */
-#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "ncap_utl.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
   //#include "ncap_yacc.h" /* Symbol definitions from parser */
 
