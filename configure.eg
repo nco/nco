@@ -478,6 +478,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Personal recipe last modified: 20180124
 # Problem is that .bashrc resets PATH so cannot find icc/gcc ...
 # Personal recipe last used successfully: fxm
+# module use /projects/ClimateEnergy_2/software/modulefiles/all
+# module load e3sm-unified/1.1.2-py2-x
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 module load cray-netcdf

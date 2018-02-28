@@ -590,7 +590,7 @@ main(int argc,char **argv)
   /* Default operation depends on invocation name */
   if(nco_op_typ_sng == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
 
-  /* Process positional arguments and fill in filenames */
+  /* Process positional arguments and fill-in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
 
   /* Initialize thread information */

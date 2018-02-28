@@ -6,16 +6,20 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.3 contains one new cool feature for ncremap, one important
-bugfix for the splitter, and assorted minor improvements and fixes.
-ncremap now implements E3SM-recommended Tempest remapping algorithms
-for all combinations of FV<->SE remapping for flux and state variables. 
-The ncclimo splitter functionality has an important bugfix for cases
-when the total number requested time-periods (usually years) of
-averaging is not evenly divisible by the maximum number of
-time-periods per output-file.
+Version 4.7.3 contains ...
 
-Work on NCO 4.7.3 has commenced. Planned changes include
+NCO manipulates files, sometimes with shell calls.
+We have never received a report of a security issue due to NCO.
+Nevertheless, to pre-emptively reduce potential vulnerabilities, we
+will soon institute a whitelist of allowed filename characters.
+The first draft of allowed characters is:
+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-.@ :\/
+The implied blacklist includes:
+;|<>[](),*
+If you want a character(s) added to the whitelist, please send me
+the rationale and a real-world use-case.
+
+Work on NCO 4.7.4 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
 parallel weight generation by ncremap, and possibly workarounds for 
 using quotation marks with ncap2 in Windows.
@@ -66,6 +70,15 @@ A. printf() format option for printed output (CDL, XML, JSON, TRD).
    will print up to five significant digits, and no more.
    This allows users to round numbers before printing them.
    http://nco.sf.net/nco.html#fmt_val
+
+A. ncks now accepts a --print_file=file option to print directly to
+   the named file rather than to stdout. Previously one could
+   achieve the same result by redirecting stdout to a named file.
+   However, it is slightly faster to print formatted output directly
+   to a file than to stdout. 
+   ncks --print_file=foo.txt --jsn in.nc
+   Synonyms are --fl_prn, --prn_fl, --file_print, and --print_file.
+   http://nco.sf.net/nco.html#prn_fl
 
 BUG FIXES:
 

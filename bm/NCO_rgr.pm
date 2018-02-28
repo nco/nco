@@ -1261,7 +1261,7 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array
 
 #nces #19 (check coordinate variables)
-# ncra -Y ncge -h -O mdl_1.nc ~/foo.nc
+# ncra -Y ncge -h -O ~/nco/data/mdl_1.nc ~/foo.nc
 # ncks -g cesm -v time ~/foo.nc
 # NB: This test succeeds when it fails, i.e., the NCO command fails as it should because the input files do not conform
     $dsc_sng="(Groups) Ensemble record coordinate variables";

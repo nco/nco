@@ -236,7 +236,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
 void
 nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
 (const var_sct * const var1, /* I [sct] Variable with template missing value to copy */
- var_sct * const var2) /* I/O [sct] Variable with missing value to fill in/overwrite */
+ var_sct * const var2) /* I/O [sct] Variable with missing value to fill-in/overwrite */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Copy missing value from var1 to var2

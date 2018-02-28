@@ -347,14 +347,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 3
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE "-alpha04" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
+# define NCO_VERSION_NOTE "-alpha05" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.7.3-alpha04"
+# define NCO_VERSION "4.7.3-alpha05"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -958,6 +958,7 @@ extern "C" {
     char *smr_fl_sz_sng; /* [sng] String describing estimated file size */
     char *spr_chr; /* [sng] Separator string for character types */
     char *spr_nmr; /* [sng] Separator string for numeric types */
+    FILE *fp_out; /* [fl] Formatted text output file handle */
     gpe_sct *gpe; /* I [sng] GPE structure */
     md5_sct *md5; /* [flg] MD5 configuration */
     nco_bool cdl; /* [flg] Print CDL */

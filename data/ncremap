@@ -58,6 +58,8 @@
 
 # Set script name, directory, PID, run directory
 drc_pwd=${PWD}
+# Security: Explicitly unset IFS before wordsplitting, so Bash uses default IFS=<space><tab><newline>
+unset IFS
 # Set these before 'module' command which can overwrite ${BASH_SOURCE[0]}
 # NB: dash supports $0 syntax, not ${BASH_SOURCE[0]} syntax
 # http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
@@ -764,9 +766,9 @@ tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
 # Algorithm options are bilinear|conserve|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt
-if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bln' ]; then 
+if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bilin' ] || [ ${alg_typ} = 'bln' ]; then 
     alg_opt='bilinear'
-elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ]; then 
+elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] || [ ${alg_typ} = 'aave' ]; then 
     alg_opt='conserve'
 elif [ ${alg_typ} = 'nearestdtos' ] || [ ${alg_typ} = 'nds' ] || [ ${alg_typ} = 'dtos' ]; then 
     alg_opt='nearestdtos'
@@ -821,7 +823,7 @@ elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_ty
     wgt_typ='tempest'
 else 
     echo "${spt_nm}: ERROR ${alg_typ} is not a valid remapping algorithm\n"
-    echo "${spt_nm}: HINT Valid ESMF remapping algorithms are bilinear,bln | conserve,cns | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch\n"
+    echo "${spt_nm}: HINT Valid ESMF remapping algorithms are bilinear,bilin,bln | conserve,cns,aave | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch\n"
     echo "${spt_nm}: HINT Valid TempestRemap remapping options are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se\n"
     exit 1
 fi # !alg_typ

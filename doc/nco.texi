@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.3-alpha04
-@set doc-edition 4.7.3-alpha04
+@set nco-edition 4.7.3-alpha05
+@set doc-edition 4.7.3-alpha05
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 13 February 2018
+@set update-date 21 February 2018
 @set update-month February 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6525,6 +6525,10 @@ Generating common grids:
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
+
+# 180x360 (1x1 degree) Equi-Angular grid, first longitude west edge at Greenwich
+ncks --rgr grd_ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_wst \
+     --rgr scrip=${DATA}/grids/180x360wst_SCRIP.20180301.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # 129x256 CAM-FV grid, first longitude centered at Greenwich
 ncks --rgr grd_ttl='CAM-FV scalar grid 129x256'#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr \
@@ -16848,8 +16852,8 @@ omitted in batch scripts.
 SYNTAX
 @example 
 ncbo [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
@@ -18862,8 +18866,8 @@ Moreover, the climatologies can be generated in parallel.
 SYNTAX
 @example
 ncecat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--gag] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M] [--md5_digest] [--mrd] [-n @var{loop}]
@@ -19130,8 +19134,8 @@ of changing variable dimensionality, including the record dimension.
 SYNTAX
 @example
 nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [-n @var{loop}]
@@ -19359,8 +19363,8 @@ member in the first file.
 SYNTAX
 @example
 ncflint [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [--fl_fmt @var{fl_fmt}]
 [-F] [--fix_rec_crd] [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
 [-i @var{var},@var{val3}] [-L @var{dfl_lvl}] [-l @var{path}] [-N]
@@ -19654,8 +19658,8 @@ ncatted -a units,prs_sfc,o,c,millibar out.nc
 SYNTAX
 @example
 ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]]
 [-F] [--fix_rec_dmn @var{dim}] [--fl_fmt @var{fl_fmt}] [--fmt_val @var{format}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [--grp_xtr_var_xcl]
@@ -19663,9 +19667,9 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
 [-L @var{dfl_lvl}] [-l @var{path}]
 [-M] [-m] [--map @var{map-file}] [--md5] [--mk_rec_dmn @var{dim}]
 [--no_blank] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...]
-[-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt] [-s @var{format}] 
-[-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
+[-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...] [--prn_fl @var{print-file}]
+[-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt]
+[-s @var{format}] [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
 @var{input-file} [[@var{output-file}]]
 @end example
 
@@ -19704,10 +19708,11 @@ datum.
 including @acronym{CDL}, @acronym{JSON}, and @acronym{NcML}.
 
 Options @samp{-a}, @samp{--cdl}, @samp{-F}, @samp{--fmt_val}, @samp{-H},
-@samp{--hdn}, @samp{--jsn}, @samp{-M}, @samp{-m}, @samp{-P}, @samp{-Q},
-@samp{-q}, @samp{-s}, @samp{--trd}, @samp{-u}, @samp{-V}, and
-@samp{--xml} (and their long option counterparts) control the presence
-of data and metadata and their formatted appearance when printed.
+@samp{--hdn}, @samp{--jsn}, @samp{-M}, @samp{-m}, @samp{-P},
+@samp{--prn_fl}, @samp{-Q}, @samp{-q}, @samp{-s}, @samp{--trd},
+@samp{-u}, @samp{-V}, and @samp{--xml} (and their long option
+counterparts) control the presence of data and metadata and their
+formatted location and appearance when printed. 
 
 @cindex global attributes
 @cindex attributes, global
@@ -20547,6 +20552,23 @@ Also activated using @samp{--print} or @samp{--prn}.
 This set of switches is useful for exploring file contents.
 
 @html
+<a name="fl_prn"></a> <!-- http://nco.sf.net/nco.html#fl_prn -->
+<a name="prn_fl"></a> <!-- http://nco.sf.net/nco.html#prn_fl -->
+@end html
+@cindex print file
+@cindex @code{--fl_prn}
+@cindex @code{--prn_fl}
+@item --prn_fl @file{print-file}
+Activate printing formatted output to file @file{print-file}.
+Also @samp{--print_file}, @samp{--fl_prn}, and @samp{--file_print}.
+One can achieve the same result by redirecting stdout to a named file.
+However, it is slightly faster to print formatted output directly to a
+file than to stdout:
+@example
+ncks --fl_prn=foo.txt --jsn in.nc
+@end example
+
+@html
 <a name="Q"></a> <!-- http://nco.sf.net/nco.html#Q -->
 <a name="quiet"></a> <!-- http://nco.sf.net/nco.html#quiet -->
 @end html
@@ -21308,8 +21330,8 @@ For more details @xref{Wrapped Coordinates}.
 SYNTAX
 @example
 ncpdq [-3] [-4] [-5] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{pck_map}] [--mrd]
@@ -21907,8 +21929,8 @@ changing variable dimensionality, including the record dimension.
 SYNTAX
 @example
 ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdf] [--hdr_pad @var{nbr}] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-N] [-n @var{loop}] 
@@ -22156,8 +22178,8 @@ The last example
 SYNTAX
 @example
 ncrcat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}]
 [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}]
@@ -22407,7 +22429,9 @@ Features common to many operators are described in
 <a name="nearestdtos"></a> <!-- http://nco.sf.net/nco.html#nearestdtos -->
 <a name="patch"></a> <!-- http://nco.sf.net/nco.html#patch -->
 <a name="bilinear"></a> <!-- http://nco.sf.net/nco.html#bilinear -->
+<a name="bilin"></a> <!-- http://nco.sf.net/nco.html#bilin -->
 <a name="conserve"></a> <!-- http://nco.sf.net/nco.html#conserve -->
+<a name="aave"></a> <!-- http://nco.sf.net/nco.html#aave -->
 <a name="fv2se_flx"></a> <!-- http://nco.sf.net/nco.html#fv2se_flx -->
 <a name="se2fv_flx"></a> <!-- http://nco.sf.net/nco.html#se2fv_flx -->
 <a name="fv2se_stt"></a> <!-- http://nco.sf.net/nco.html#fv2se_stt -->
@@ -22424,6 +22448,8 @@ Features common to many operators are described in
 @cindex @code{nearestdtos}
 @cindex @code{patch}
 @cindex @code{bilinear}
+@cindex @code{bilin}
+@cindex @code{aave}
 @cindex @code{conserve}
 @item -a @var{alg_typ} (@code{--alg_typ}, @code{--algorithm}, @code{--regrid_algorithm})
 Specifies the interpolation algorithm for weight-generation for use by
@@ -22434,8 +22460,8 @@ change interpolation algorithms than other options
 (that can be changed with @samp{-E @var{esmf_opt}}).
 The @var{alg_typ} argument must be @code{tempest} or one of
 @acronym{ERWG}'s five interpolation algorithms:
-@code{bilinear} (default, acceptable abbreviation is @code{bln}), 
-@code{conserve} (or @code{conservative} or @code{cns}), 
+@code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{bln}), 
+@code{conserve} (or @code{conservative}, @code{cns}, or @code{aave}), 
 @code{nearestdtos} (or @code{nds} or @code{dtos}), 
 @code{neareststod} (or @code{nds} or @code{stod}), 
 and @code{patch} (or @code{pch} or @code{ptc}). 
@@ -24369,8 +24395,8 @@ Variables not prefixed with a period (@code{global}) must be present.
 SYNTAX
 @example
 ncwa [-3] [-4] [-5] [-6] [-7] [-A] [-a @var{dim}[,@dots{}]] [-B @var{mask_cond}] [-b] [-C] [-c]
-[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}] [--cnk_map @var{map}]
-[--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
+[--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
+[--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...] [-h] [--hdr_pad @var{nbr}] [-I]
 [-L @var{dfl_lvl}] [-l @var{path}] [-M @var{mask_val}] [-m @var{mask_var}] [-N] 

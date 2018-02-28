@@ -311,7 +311,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
        dimension.
        Then, when nco_lmt_sct_mk() creates the record dimension structure, it must
        be created consistently with the FORTRAN_IDX_CNV flag for the other dimensions.
-       In order to do that, fill in max_sng, min_sng, and srd_sng
+       In order to do that, fill-in max_sng, min_sng, and srd_sng
        arguments with strings as if they had been read from keyboard.
        An alternate solution is to add flag to lmt_sct indicating whether this
        limit struct had been automatically generated and then act accordingly. */
