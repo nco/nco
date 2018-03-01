@@ -686,7 +686,7 @@ sub tst_run {
 	    $cmd_lst_cnt++;
 	    if ($dbg_lvl > 2) {
 		print "\ntst_run: test cycle held - hit <Enter> to continue\n";
-		my $wait = <STDIN>;
+		#		my $wait = <STDIN>;
 	    }
 	} # end loop: 	foreach (@cmd_lst)
     } # end of client side 'else'
