@@ -259,7 +259,7 @@ if ($os_sng =~ /Darwin/){
 	  
 	  Hit <Enter> to acknowledge your miserable state of cut kharma.
 BADCUT
-        $tmp=<STDIN>;
+#        $tmp=<STDIN>;
 	$gnu_cut=0;
     }
 }
@@ -429,7 +429,7 @@ if(-e "/usr/bin/time" && -x "/usr/bin/time"){
 
 if($dbg_lvl > 1){
     print "\nAbout to begin requested tests; waiting for keypress to proceed.\n";
-    my $tmp=<STDIN>;
+#    my $tmp=<STDIN>;
 }
 
 # Regression tests

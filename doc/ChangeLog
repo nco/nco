@@ -1,3 +1,15 @@
+2018-03-01  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.3-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.3-beta01: RFC water';git push
+	git tag -a 4.7.3-beta01 -m '--a2o, --nm_typ, --fmt_val, --fl_prn, deprecate ncap';git push --tags
+
+	* Merge sanitize_input branch so nco_sng_sntz() allows only white-listed characters in filenames
+
+	* Deprecate ncap from bld/Makefile
+
+	* Merge ncap deprecation branch for autoconf/CMake
+
 2018-02-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.3-alpha05 release procedure:

@@ -574,8 +574,8 @@ TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc ../bld/lex.${NCO_YY_PF
 # TAGS_FILTER_FILES := .//libnco_tst.c .//libnco_c++_tst.cc
 
 # Variables having to do with ncap
-MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
-MDL_NCAP_TRG := ncap_yacc.c ncap_yacc.h ncap_lex.c # `make ncap' creates these files
+MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_lex.l ncap_utl.h) # `make tags' includes these files
+MDL_NCAP_TRG := ncap_lex.c # `make ncap' creates these files
 MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,${MDL_NCAP_TRG}) # `make distclean' removes these files
 
 # Variables having to do with C++ source and documentation
@@ -1683,8 +1683,8 @@ ${MY_BIN_DIR}/mpncra:	${MY_OBJ_DIR}/mpncra.o lib
 	cd ${MY_BIN_DIR}; rm -f mpnces; ln -s -f mpncra mpnces
 	cd ${MY_BIN_DIR}; rm -f mpncrcat; ln -s -f mpncra mpncrcat
 mpncwa:   ${MY_BIN_DIR}/mpncwa
-${MY_BIN_DIR}/mpncwa:	${MY_OBJ_DIR}/mpncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
-	${MPICC} -o $@${BNR_SFX} $<  ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
+${MY_BIN_DIR}/mpncwa:	${MY_OBJ_DIR}/mpncwa.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
+	${MPICC} -o $@${BNR_SFX} $< ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncatted:   ${MY_BIN_DIR}/ncatted
 ${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o lib
@@ -1731,11 +1731,11 @@ ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
 	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncwa:   ${MY_BIN_DIR}/ncwa
-${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
+${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
 ifeq (${MSVC},TRUE)
 	${CC} -o $@${BNR_SFX} $< ${LDFLAGS}
 else
-	${CC} -o $@${BNR_SFX} $< ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
+	${CC} -o $@${BNR_SFX} $< ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${LDFLAGS}
 endif
 	chmod 755 $@${BNR_SFX}
 bin: ${MDL_BIN_TRG} ${MDL_BIN_SPT}
@@ -2177,18 +2177,12 @@ ncap : LDFLAGS += -lC
 endif # endif AIX VA Compiler Collection
 endif # endif AIX
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
-ncap:	${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ncap_yacc.h ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
-#        ${YACC} --name-prefix=nco_
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDWIN32SGIMP64))
-	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}
-else	
-	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
-endif
-	chmod 755 ${MY_BIN_DIR}/$@${BNR_SFX}
+ncap:	${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
+
 ncap2 :
 	-cd ../src/nco++; ${MAKE} -f Makefile.old DAP=${DAP} DBG=${DBG} GSL=${GSL} MPI=${MPI} NETCDF4=${NETCDF4} OMP=${OMP} OPTS=${OPTS} PNETCDF=${PNETCDF} SZ=${SZ} UDUNITS=${UDUNITS} all
 
-#	/bin/rm -f ${MDL_NCAP} ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/ncap_yacc.h ${MY_OBJ_DIR}/ncap_yacc.c
+#	/bin/rm -f ${MDL_NCAP} ${MY_OBJ_DIR}/$@_lex.o
 
 # Create dependency files only if they will not be immediately deleted
 INCLUDE_DPN := TRUE
