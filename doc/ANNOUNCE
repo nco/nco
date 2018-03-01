@@ -6,17 +6,17 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.3 contains ...
+Version 4.7.3 contains numerous features and fixes, none major.
 
+One change, related to security, could break your workflows:
 NCO manipulates files, sometimes with shell calls.
 We have never received a report of a security issue due to NCO.
 Nevertheless, to pre-emptively reduce potential vulnerabilities, we
-will soon institute a whitelist of allowed filename characters.
-The first draft of allowed characters is:
-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-.@ :\/
+instituted in 4.7.3 a whitelist of allowed filename characters:
+abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-.@ :%\/
 The implied blacklist includes:
 ;|<>[](),*
-If you want a character(s) added to the whitelist, please send me
+If you want a character(s) added to the whitelist, please send us
 the rationale and a real-world use-case.
 
 Work on NCO 4.7.4 has commenced. Planned changes include

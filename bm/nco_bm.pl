@@ -257,7 +257,6 @@ if ($os_sng =~ /Darwin/){
 	  If you want life to be better, consider installing the GNU coreutils
 	  which will provide an acceptable 'cut'.
 	  
-	  Hit <Enter> to acknowledge your miserable state of cut kharma.
 BADCUT
 #        $tmp=<STDIN>;
 	$gnu_cut=0;
@@ -427,7 +426,7 @@ if(-e "/usr/bin/time" && -x "/usr/bin/time"){
     $tmr_app="time "; # bash builtin or other 'time'-like application (AIX)
 } # endif time
 
-if($dbg_lvl > 1){
+if($dbg_lvl >= 4){
     print "\nAbout to begin requested tests; waiting for keypress to proceed.\n";
 #    my $tmp=<STDIN>;
 }

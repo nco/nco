@@ -768,3 +768,48 @@ nco_sng2typ /* [fnc] Convert user-supplied string to netCDF type enum */
 
 } /* end nco_sng2typ() */
 
+char * /* O [sng] Sanitized string */
+nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous characters */
+(char * const sng_drt) /* I [sng] String to sanitize */
+{
+  const char fnc_nm[]="nco_sng_sntz()"; /* [sng] Function name */
+    
+  /* Whitelist algorithm based on:
+     https://wiki.sei.cmu.edu/confluence/display/c/STR02-C.+Sanitize+data+passed+to+complex+subsystems 
+     NCO modifications to CMU default whitelist:
+     20180214: White-list colon (WRF filenames sometimes have timestamps with colons, Windows drive labels have colons) 
+     20180214: White-list space (Methinks some Windows people do have data files with spaces)
+     20180214: White-list forward slash on UNIX, backslash on Windows (path separators) 
+     20180222: White-list percent sign (NCO regression test uses, e.g., %tmp_fl_00)
+     20180227: White-list forward slash on Windows so URLs are acceptable (http://...)
+     Crucial characters that are implicitly blacklisted (and could be transformed into underscores) are:
+     ";|<>[](),*&" */
+  static char wht_lst[]="abcdefghijklmnopqrstuvwxyz"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "1234567890_-.@"
+    " :%/"
+#ifdef _MSC_VER
+    "\\"
+#endif /* !_MSC_VER */
+    ;
+  /* ": re-balance syntax highlighting */
+
+  char *usr_dta=sng_drt;
+  char *cp=usr_dta; /* Cursor into string */
+  
+  if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stderr,"%s: DEBUG %s reports unsanitized usr_dta = %s\n",nco_prg_nm_get(),fnc_nm,usr_dta);
+
+  const char *sng_end=usr_dta+strlen(usr_dta);
+  for(cp+=strspn(cp,wht_lst);cp!=sng_end;cp+=strspn(cp,wht_lst)){
+    (void)fprintf(stderr,"%s: ERROR %s reports character \'%c\' from unsanitized user-input string \"%s\" is not on whitelist of acceptable characters. For security purposes NCO restricts the set of characters appearing in user input, including filenames, to: \"%s\". NB: This restriction was first imposed in NCO 4.7.3 (February, 2018), and may cause breakage of older workflows. Please contact NCO if you have a real-world use-case that shows why the character \'%c\' should be white-listed. HINT: Re-try command after replacing transgressing characters with innocuous characters.\n",nco_prg_nm_get(),fnc_nm,*cp,usr_dta,wht_lst,*cp);
+    /* Uncomment next two lines to sanitize unsafe character with an underscore
+     *cp='_';
+     if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stderr,"%s: DEBUG %s reports sanitized usr_dta = %s\n",nco_prg_nm_get(),fnc_nm,usr_dta); */
+
+    /* Provide escape route so newly broken workflows will still work with -D 73
+       Eliminate back-door after a few new versions of NCO, e.g., by version 4.7.5 */
+    if(nco_dbg_lvl_get() != 73) nco_exit(EXIT_FAILURE);
+  } /* !cp */
+
+  return usr_dta;
+} /* !nco_sng_sntz() */

@@ -13522,12 +13522,13 @@ temp_avg.ram_write();           // Write Variable to output
 @node Where statement, Loops, RAM variables, ncap2 netCDF Arithmetic Processor
 @subsection Where statement
 @cindex where()
-A @code{where()} combines the definition and application of a mask all in one go and can lead to succinct code. 
+A @code{where()} combines the definition and application of a mask all
+in one go and can lead to succinct code.  
 The full syntax of a @code{where()} statement is as follows:
 
 @example
 @verbatim
-// Single assign (the 'elsewhere' block is optional)
+// Single assign ('elsewhere' is optional)
 where(mask) 
    var1=expr1;
 elsewhere
