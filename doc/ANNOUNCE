@@ -7,17 +7,9 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 Version 4.7.3 contains numerous features and fixes, none major.
-
-One change, related to security, could break your workflows:
-NCO manipulates files, sometimes with shell calls.
-We have never received a report of a security issue due to NCO.
-Nevertheless, to pre-emptively reduce potential vulnerabilities, we
-instituted in 4.7.3 a whitelist of allowed filename characters:
-abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-.@ :%\/
-The implied blacklist includes:
-;|<>[](),*
-If you want a character(s) added to the whitelist, please send us
-the rationale and a real-world use-case.
+A new security whitelist could break some workflows, and the
+other features offer better support for TempestRemap, MPAS, and
+heavy users of NCO print features in CDL, JSON, and XML.
 
 Work on NCO 4.7.4 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
@@ -29,7 +21,18 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap implements E3SM-recommended Tempest remapping algorithms. 
+A. Filename character whitelist:
+   NCO manipulates files, sometimes with shell calls.
+   We have never received a report of a security issue due to NCO.
+   Nevertheless, to pre-emptively reduce potential vulnerabilities, we 
+   instituted in 4.7.3 a whitelist of allowed filename characters:
+   abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-.@ :%\/
+   The implied blacklist includes ;|<>[](),*
+   If you want a character(s) added to the whitelist, please send us
+   the rationale and a real-world use-case.
+   http://nco.sf.net/nco.html#whitelist
+
+B. ncremap implements E3SM-recommended Tempest remapping algorithms. 
    It has done so since 4.7.2, but that version omitted a switch that
    only a user can provide, and is necessary to indicate to
    TempestRemap to generate mapping weights from a source grid that
@@ -50,7 +53,7 @@ A. ncremap implements E3SM-recommended Tempest remapping algorithms.
    http://nco.sf.net/nco.html#a2o
    http://nco.sf.net/nco.html#ncremap
    
-A. ncclimo supports two more dataset filename template regular
+C. ncclimo supports two more dataset filename template regular
    expressions: prefix.YYYY-MM.suffix, and prefix.YYYY-MM-01.suffix.
    When such a name is the argument to --caseid, the prefix and suffix
    will be automatically abstracted and used to template and generate
@@ -60,7 +63,7 @@ A. ncclimo supports two more dataset filename template regular
    ncclimo -s 300 -e 400 --caseid=foo.0300-01-01.nc -i . -o /tmp
    http://nco.sf.net/nco.html#caseid
 
-A. printf() format option for printed output (CDL, XML, JSON, TRD).  
+D. printf() format option for printed output (CDL, XML, JSON, TRD).  
    Formerly ncks would always print variable values with the default
    format specification for the given output type. This meant that,
    single and double-precision values would print ~7 and ~15 digits,
@@ -71,7 +74,7 @@ A. printf() format option for printed output (CDL, XML, JSON, TRD).
    This allows users to round numbers before printing them.
    http://nco.sf.net/nco.html#fmt_val
 
-A. ncks now accepts a --print_file=file option to print directly to
+E. ncks now accepts a --print_file=file option to print directly to
    the named file rather than to stdout. Previously one could
    achieve the same result by redirecting stdout to a named file.
    However, it is slightly faster to print formatted output directly
@@ -79,6 +82,10 @@ A. ncks now accepts a --print_file=file option to print directly to
    ncks --print_file=foo.txt --jsn in.nc
    Synonyms are --fl_prn, --prn_fl, --file_print, and --print_file.
    http://nco.sf.net/nco.html#prn_fl
+
+F. ncap, the predecessor to ncap2, has been completely eliminated.
+   This simplifies the build procedure by eliminating Yacc.
+   Flex is still used by other operators (notably ncwa).
 
 BUG FIXES:
 
