@@ -1,3 +1,9 @@
+2018-03-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.3 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.3: Avid Poi';git push
+	git tag -a 4.7.3 -m 'sanitize, --a2o, --nm_typ, --fmt_val, --fl_prn, deprecate ncap';git push --tags
+
 2018-03-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.3-beta01 release procedure:

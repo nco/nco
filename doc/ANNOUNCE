@@ -6,7 +6,7 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.3 contains numerous features and fixes, none major.
+Version 4.7.3 contains little features and fixes.
 A new security whitelist could break some workflows, and the
 other features offer better support for TempestRemap, MPAS, and
 heavy users of NCO print features in CDL, JSON, and XML.
@@ -84,9 +84,9 @@ E. ncks now accepts a --print_file=file option to print directly to
    http://nco.sf.net/nco.html#prn_fl
 
 F. ncap, the predecessor to ncap2, has been completely eliminated.
-   This simplifies the build procedure by eliminating Yacc.
-   (Flex is still used by other operators (notably ncwa)).
-   Old files may cause your repository to fail to build from source.
+   This simplifies the build procedure by eliminating Bison/Yacc.
+   (Flex/Lex is still needed for other operators (notably ncwa)).
+   Old files may cause local NCO repositories to fail to build.
    If this occurs, simply delete then re-check-out the repository.
 
 BUG FIXES:

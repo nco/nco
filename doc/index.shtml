@@ -630,7 +630,9 @@ netCDF4 compound types?;</li>
 <tt>ncks --xtn</tt> better extensive variable treatment;
 <tt>ncremap</tt> generate weights;</li>
 <li><b>NCO 4.7.3</b>: (<i>Current Stable Release</i>)
+Sanitize input/output filenames;
 <tt>ncclimo</tt> Support <tt>YYYY-MM</tt> and <tt>YYYY-MM-01</tt> rx's;
+<tt>ncks --fmt_val --fl_prn</tt> for printing;
 <tt>ncremap --a2o</tt> for TempestRemap2 ordering;
 <tt>ncap2</tt> silence compiler warnings;</li>
 <li><b>NCO 4.7.2</b>:
