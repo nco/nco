@@ -1,17 +1,14 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.7.3 have hatched.
+The netCDF Operators NCO version 4.7.4 have hatched.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.3 contains little features and fixes.
-A new security whitelist could break some workflows, and the
-other features offer better support for TempestRemap, MPAS, and
-heavy users of NCO print features in CDL, JSON, and XML.
+Version 4.7.4 contains
 
-Work on NCO 4.7.4 has commenced. Planned changes include
+Work on NCO 4.7.5 has commenced. Planned changes include
 better diagnosis and workarounds for the netCDF CDF5 bug,
 parallel weight generation by ncremap, and possibly workarounds for 
 using quotation marks with ncap2 in Windows.
@@ -21,78 +18,11 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Filename character whitelist:
-   NCO manipulates files, sometimes with shell calls.
-   We have never received a report of a security issue due to NCO.
-   Nevertheless, to pre-emptively reduce potential vulnerabilities, we 
-   instituted in 4.7.3 a whitelist of allowed filename characters:
-   abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_-.@ :%\/
-   The implied blacklist includes ;|<>[](),*
-   If you want a character(s) added to the whitelist, please send us
-   the rationale and a real-world use-case.
-   http://nco.sf.net/nco.html#whitelist
-
-B. ncremap implements E3SM-recommended Tempest remapping algorithms. 
-   It has done so since 4.7.2, but that version omitted a switch that
-   only a user can provide, and is necessary to indicate to
-   TempestRemap to generate mapping weights from a source grid that
-   has more coverage than the destination grid, i.e., the destination
-   grid is a subset of the source. The switch is --a2o, or --atm2ocn,
-   or numerous synonyms (b2l, big2ltl, l2s, lrg2sml).
-   When computing the intersection of two meshes, TempestRemap uses an
-   algorithm (an executable named GenerateOverlapMesh) that expects
-   the mesh with less coverage to be the first grid, and the grid with
-   greater coverage to be the second, regardless of mapping direction.
-   By default, ncremap supplies the source grid first and the
-   destination second, and this order causes GenerateOverlapMesh to
-   fail when the source grid covers regions not in the destination
-   grid. For example, a global atmosphere grid has more coverage than
-   a global ocean grid, so that remapping from atmosphere-to-ocean
-   would require invoking the --atm2ocn switch:
-   ncremap --a2o -a se2fv_flx --src_grd=ne30.g --dst_grd=fv.nc -m map.nc
-   http://nco.sf.net/nco.html#a2o
-   http://nco.sf.net/nco.html#ncremap
-   
-C. ncclimo supports two more dataset filename template regular
-   expressions: prefix.YYYY-MM.suffix, and prefix.YYYY-MM-01.suffix.
-   When such a name is the argument to --caseid, the prefix and suffix
-   will be automatically abstracted and used to template and generate
-   all monthly filenames based on the specified yr_srt and yr_end.
-   Please tell us any dataset filename regular expressions that you
-   would like added to ncclimo rx database. 
-   ncclimo -s 300 -e 400 --caseid=foo.0300-01-01.nc -i . -o /tmp
-   http://nco.sf.net/nco.html#caseid
-
-D. printf() format option for printed output (CDL, XML, JSON, TRD).  
-   Formerly ncks would always print variable values with the default
-   format specification for the given output type. This meant that,
-   single and double-precision values would print ~7 and ~15 digits,
-   respectively. The new --fmt_val option causes ncks to use the
-   supplied printf() format string to print floating point values:
-   ncks --fmt_val %.5f ~/nco/data/in.nc   
-   will print up to five significant digits, and no more.
-   This allows users to round numbers before printing them.
-   http://nco.sf.net/nco.html#fmt_val
-
-E. ncks now accepts a --print_file=file option to print directly to
-   the named file rather than to stdout. Previously one could
-   achieve the same result by redirecting stdout to a named file.
-   However, it is slightly faster to print formatted output directly
-   to a file than to stdout. 
-   ncks --print_file=foo.txt --jsn in.nc
-   Synonyms are --fl_prn, --prn_fl, --file_print, and --print_file.
-   http://nco.sf.net/nco.html#prn_fl
-
-F. ncap, the predecessor to ncap2, has been completely eliminated.
-   This simplifies the build procedure by eliminating Bison/Yacc.
-   (Flex/Lex is still needed for other operators (notably ncwa)).
-   Old files may cause local NCO repositories to fail to build.
-   If this occurs, simply delete then re-check-out the repository.
+A. Hi
 
 BUG FIXES:
 
-A. Those who build NCO from source will notice that most or all of
-   the compiler warnings from building ncap2 have been eliminated.
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -100,7 +30,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.7.3 built/tested under
+   These problems occur with NCO 4.7.4 built/tested under
    MacOS 10.13.2 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
    Linux with netCDF 4.6.1-development (20180110) on HDF5 1.8.19.
 

@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.3-alpha05
-@set doc-edition 4.7.3-alpha05
+@set nco-edition 4.7.4-alpha01
+@set doc-edition 4.7.4-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 1 March 2018
+@set update-date 2 March 2018
 @set update-month March 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17432,7 +17432,7 @@ common to model output.
 These are all of the format
 @var{prefix}[.-]@var{YYYY}[-]@var{MM}[-]@var{DD}.@var{suffix}.
 The particular formats current supported, as of @acronym{NCO} version
-4.7.3 (February, 2018) are:
+4.7.3 (March, 2018) are:
 @var{prefix}@code{_YYYYMM}.@var{suffix}, 
 @var{prefix}@code{.YYYY-MM}.@var{suffix}, and
 @var{prefix}@code{.YYYY-MM-01}.@var{suffix}.
@@ -20688,7 +20688,7 @@ For reference, the default @code{printf()} @var{format} for
 respectively, for single-precision data, and, for double-precision data is
 @code{%#.15g}, @code{%#.15g}, @code{%.12g}, and @code{%#.15g},
 respectively.
-@acronym{NCO} introduced this feature in version 4.7.3 (February, 2018).
+@acronym{NCO} introduced this feature in version 4.7.3 (March, 2018).
 We would appreciate your feedback on whether and how to extend this
 feature to make it more useful. 
 
@@ -22612,7 +22612,7 @@ an error (and a potential workaround) like this:
 ....EXCEPTION (../src/OverlapMesh.cpp, Line 1738) Exiting
 @end example
 The @samp{--a2o} switch and its synonyms are available in @acronym{NCO}
-version 4.7.3 (February, 2018) and later.
+version 4.7.3 (March, 2018) and later.
 Currently (January, 2018) @code{ncremap} has no means of transmitting
 options (like @samp{--allow_no_overlap} to
 @command{GenerateOverlapMesh}.

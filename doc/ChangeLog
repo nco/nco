@@ -1,5 +1,9 @@
 2018-03-02  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.4-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha01: Flo Rida';git push
+	git tag -a 4.7.4-alpha01 -m 'Functionally identical to 4.7.3';git push --tags
+
 	* NCO 4.7.3 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.3: Avid Poi';git push
 	git tag -a 4.7.3 -m 'sanitize, --a2o, --nm_typ, --fmt_val, --fl_prn, deprecate ncap';git push --tags
