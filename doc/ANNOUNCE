@@ -85,7 +85,9 @@ E. ncks now accepts a --print_file=file option to print directly to
 
 F. ncap, the predecessor to ncap2, has been completely eliminated.
    This simplifies the build procedure by eliminating Yacc.
-   Flex is still used by other operators (notably ncwa).
+   (Flex is still used by other operators (notably ncwa)).
+   Old files may cause your repository to fail to build from source.
+   If this occurs, simply delete then re-check-out the repository.
 
 BUG FIXES:
 
