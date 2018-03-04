@@ -785,7 +785,7 @@ nco_var_scv.c \
 nco_var_utl.c
 
 EXTRA_DIST = ${NCO_GETOPT_C}
-DISTCLEANFILES = ncap_lex.c ncap_yacc.c 
+DISTCLEANFILES = ncap_lex.c
 CLEANFILES = ncdiff ncea nces ncrcat mpncdiff mpncea mpnces mpncrcat
 all: all-am
 

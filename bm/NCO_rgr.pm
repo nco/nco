@@ -479,8 +479,9 @@ if($USER eq 'zender'){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-
 # ncap2 #16
+# ncap2 -h -O -v -S ~/nco/data/string.nco ~/nco/data/in_4.nc ~/foo.nc
+# ncks -C -H --trd -v nbr_err_ttl -s '%d' ~/foo.nc
     $dsc_sng="Run script to to test ncap2 NC_STRING handling (failure expected 2017-06-21)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S '../data/string.nco' $in_pth_arg in_4.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --trd -v nbr_err_ttl -s '%d' %tmp_fl_00%";
@@ -497,9 +498,6 @@ if($USER eq 'zender'){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-
-
-
     
     if($dodap eq "FALSE"){
 ####################
