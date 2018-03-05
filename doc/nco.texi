@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.4-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 2 March 2018
+@set update-date 4 March 2018
 @set update-month March 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1348,7 +1348,7 @@ improved netCDF library capabilities in response to our requests.
 a version of netCDF (4.3.2 or later?) that does not unexpectedly die
 when probing @acronym{HDF4} files with standard netCDF calls.
 @acronym{NCO} versions 4.3.7--4.3.9 (October--December, 2013)
-use a special flag to workaround netCDF @acronym{HDF4} issues.
+use a special flag to circumvent netCDF @acronym{HDF4} issues.
 The user must tell these versions of @acronym{NCO} that an input file is 
 @acronym{HDF4} format by using the @samp{--hdf4} switch. 
 
@@ -21746,7 +21746,7 @@ For example,
 That switch is now obsolete, though harmless for backwards
 compatibility. 
 Prior to version 4.3.7 (October, 2013), @acronym{NCO} lacked the
-software necessary to workaround netCDF library flaws handling
+software necessary to circumvent netCDF library flaws handling
 @acronym{HDF4} files, and thus @acronym{NCO} failed to convert
 @acronym{HDF4} files to netCDF files.
 In those cases, use the @command{ncl_convert2nc} command distributed
@@ -23723,7 +23723,7 @@ two equivalent horizontal dimensions, as the final two dimensions in
 @var{in_fl}.
 Fields with other dimension orders (e.g., @samp{lat,lev,lon}) will not
 regrid properly. 
-To workaround this limitation one can employ 
+To circumvent this limitation one can employ 
 @command{ncpdq} (@pxref{ncpdq netCDF Permute Dimensions Quickly})
 to permute the dimensions before (and un-permute them after) regridding.
 @command{ncremap} utilizes this method internally for some common
@@ -23767,19 +23767,19 @@ easily computable ``on the fly'', e.g., rectangular-to-rectangular
 mappings. 
 Otherwise the weight-generation takes much more time than the
 weight-application, at which @command{ncremap} is quite fast.
-To workaround this limitation, build @command{ESMF_RegridWeightGen} 
+To circumvent this limitation, build @command{ESMF_RegridWeightGen} 
 with parallel capabilities and ask me to enhance @command{ncremap} 
 to call @acronym{ERWG} with the options to exploit those capabilities. 
 
 A side-effect of @command{ncremap} being an offline regridder is that,
 when necessary, it generates intermediate files to store grids and maps.  
 These files are named, by default, 
-@file{ncremap_tmp_grd_dst.nc}@samp{unq_sfx},
-@file{ncremap_tmp_grd_src.nc}@samp{unq_sfx},
-@file{ncremap_tmp_gnr_out.nc}@samp{unq_sfx},
-@file{ncremap_tmp_map_*.nc}@samp{unq_sfx},
-@file{ncremap_tmp_msh_ovr_*.nc}@samp{unq_sfx}, and
-@file{ncremap_tmp_pdq.nc}@samp{unq_sfx}.
+@file{ncremap_tmp_grd_dst.nc}@file{$@{unq_sfx@}},
+@file{ncremap_tmp_grd_src.nc}@file{$@{unq_sfx@}},
+@file{ncremap_tmp_gnr_out.nc}@file{$@{unq_sfx@}},
+@file{ncremap_tmp_map_*.nc}@file{$@{unq_sfx@}},
+@file{ncremap_tmp_msh_ovr_*.nc}@file{$@{unq_sfx@}}, and
+@file{ncremap_tmp_pdq.nc}@file{$@{unq_sfx@}}.
 They are placed in @var{drc_out} with the output file(s).
 In general, no intermediate grid or map files are generated when the
 map-file is provided. 

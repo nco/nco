@@ -86,4 +86,4 @@ techniques for climate data analysis:
 
 The NCO project [homepage](http://sf.net/projects/nco)
 points to mailing lists, discussion forums, and instructions to make
-contributing easy. It contains everything about NCO that you may be looking for.
+contributing easy. 

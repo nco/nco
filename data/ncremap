@@ -27,7 +27,7 @@
 # Irvine, CA 92697-3100
 
 # Prerequisites: Bash, NCO
-# Script could use other shells, e.g., dash (Debian default) after rewriting function definition and looping constructs
+# Script could use other shells, e.g., dash (Debian default) after rewriting function definitions and loops
 # For full functionality also install ESMF_RegridWeightGen and/or TempestRemap
 
 # Source: https://github.com/nco/nco/tree/master/data/ncremap

@@ -452,7 +452,9 @@ if($USER eq 'zender'){
     $#tst_cmd=0; # Reset array
 
 # ncap2 #13
-    $dsc_sng="Run script to to test casting, hyperslabbing and intrinsic functions";
+# ncap2 -h -O -v -S ~/nco/data/bsc_tst.nco ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H --trd -v nbr_err_ttl -s '%d' ~/foo.nc
+    $dsc_sng="Run script to to test casting, hyperslabbing and intrinsic functions (Requires GSL)";
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S '../data/bsc_tst.nco' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --trd -v nbr_err_ttl -s '%d' %tmp_fl_00%";
     $tst_cmd[2]="0";

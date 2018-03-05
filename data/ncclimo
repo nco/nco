@@ -28,7 +28,7 @@
 # Irvine, CA 92697-3100
 
 # Prerequisites: Bash, NCO
-# Script could use other shells, e.g., dash (Debian default) after rewriting function definition and looping constructs
+# Script could use other shells, e.g., dash (Debian default) after rewriting function definitions and loops
 
 # Source: https://github.com/nco/nco/tree/master/data/ncclimo
 # Documentation: http://nco.sf.net/nco.html#ncclimo
