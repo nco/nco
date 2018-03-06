@@ -355,20 +355,24 @@ Be on the lookout for announcements!
 <a name="DOE"></a> <!-- http://nco.sf.net#DOE -->
 <a name="ACME"></a> <!-- http://nco.sf.net#ACME -->
 <a name="acme"></a> <!-- http://nco.sf.net#acme -->
+<a name="E3SM"></a> <!-- http://nco.sf.net#E3SM -->
+<a name="e3sm"></a> <!-- http://nco.sf.net#e3sm -->
 <dt><a name="prp_acme"></a></dt> <!-- http://nco.sf.net#prp_acme -->
-<h2>DOE ACME Project</h2>
+<dt><a name="prp_e3sm"></a></dt> <!-- http://nco.sf.net#prp_e3sm -->
+<h2>DOE E3SM (formerly ACME) Project</h2>
 <img src="doe.jpg" height=180 width=180 align=right>
 &ldquo;Lightweight Climate Analysis Tools for ACME&rdquo;
 is a US Department of Energy Cooperative Agreement (CA)
 <a href="http://www.climatemodeling.science.energy.gov/projects/nco">DE-SC0012998</a>
 from 20141215&ndash;20171214 that funds our
 <a href="http://dust.ess.uci.edu/prp/prp_acme/prp_acme.pdf">contribution</a>
-to the Accelerated Climate Modeling for Energy (ACME)
+to the Energy Exascale Earth System Model (E3SM)
+(formerly the Accelerated Climate Modeling for Energy, or ACME)
 <a href="https://acme-climate.atlassian.net/wiki/display/ACME/ACME+Home">project</a>,
 a part of DOE's Earth System Modeling (ESM)
 <a href="http://science.energy.gov/ber/research/cesd/earth-system-modeling-program">program</a>.
-The ACME project provides the resources to implement support for
-parallel regridding and workflows in NCO accessible through UV-CDAT.
+The E3SM project provides the resources to implement support for
+parallel regridding and workflows in NCO.
 Spatially intelligent, parallelized analysis tools are a key component
 of the Group-Oriented Data Analysis and Distribution
 (<a href="http://nco.sf.net/nco.html#godad">GODAD</a>) paradigm we
