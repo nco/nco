@@ -1,3 +1,7 @@
+2018-03-09  Charlie Zender  <zender@uci.edu>
+
+	* Change NCO attribute from VERSION to "netCDF Operators version VERSION (http://nco.sf.net)"
+
 2018-03-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4-alpha01 release procedure:

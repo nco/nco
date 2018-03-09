@@ -3468,11 +3468,12 @@ remote systems.
 ncks -l . ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
 ncks -l . sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
 ncks -l . dust.ess.uci.edu:/home/zender/nco/data/in.nc
-ncks -l . /ZENDER/nco/in.nc
-ncks -l . /home/zender/nco/in.nc
+ncks -l . /ZENDER/nco/in.nc # NCAR (broken old MSS path)
+ncks -l . /home/zender/nco/in.nc # NCAR
 ncks -l . http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc 
 @end example
 @noindent
+@c ncks -l . /home/z/zender/in.nc # NERSC
 The first example works verbatim if your system is connected to the
 Internet and is not behind a firewall. 
 The second example works if you have @command{sftp} access to the

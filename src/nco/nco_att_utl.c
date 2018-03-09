@@ -1932,7 +1932,10 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   aed_sct vrs_sng_aed;
   char att_nm[]="NCO"; /* [sng] Name of attribute in which to store NCO version */
   char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version according to Git */
-  char *vrs_sng; /* [sng] NCO version */
+  char *vrs_sng; /* [sng] NCO version, numeric part only */
+  char vrs_pfx[]="netCDF Operators version ";; /* [sng] NCO version attribute prefix */
+  char vrs_sfx[]=" (http://nco.sf.net)"; /* [sng] NCO version attribute suffix */
+  char *vrs_sng_xtn; /* [sng] NCO version value, with extended information */
   ptr_unn att_val;
   
   /* 20170417: vrs_cpp is typically something like "4.6.6-alpha07" (quotes included) 
@@ -1944,13 +1947,20 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
     vrs_sng=vrs_cpp+1L;
   } /* endif */
 
-  /* Insert thread number into value */
-  att_val.cp=vrs_sng;
+  /* Insert numeric version into extended version string */
+  vrs_sng_xtn=(char *)nco_malloc(strlen(vrs_pfx)+strlen(vrs_sng)+strlen(vrs_sfx)+1L);
+  vrs_sng_xtn[0]='\0';
+  vrs_sng_xtn=strcat(vrs_sng_xtn,vrs_pfx);
+  vrs_sng_xtn=strcat(vrs_sng_xtn,vrs_sng);
+  vrs_sng_xtn=strcat(vrs_sng_xtn,vrs_sfx);
+  
+  /* Insert version number into value */
+  att_val.cp=vrs_sng_xtn;
   /* Initialize NCO version attribute edit structure */
   vrs_sng_aed.att_nm=att_nm;
   vrs_sng_aed.var_nm=NULL;
   vrs_sng_aed.id=NC_GLOBAL;
-  vrs_sng_aed.sz=strlen(vrs_sng)+1L;
+  vrs_sng_aed.sz=strlen(vrs_sng_xtn)+1L;
   vrs_sng_aed.type=NC_CHAR;
   /* Insert value into attribute structure */
   vrs_sng_aed.val=att_val;
@@ -1958,6 +1968,7 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   /* Write NCO version attribute to disk */
   (void)nco_aed_prc(out_id,NC_GLOBAL,vrs_sng_aed);
 
+  if(vrs_sng_xtn) vrs_sng_xtn=(char *)nco_free(vrs_sng_xtn);
 } /* end nco_vrs_att_cat() */
 
 void 
