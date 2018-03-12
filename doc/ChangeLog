@@ -1,3 +1,7 @@
+2018-03-11  Charlie Zender  <zender@uci.edu>
+
+	* Add gridcell to nco_rgr_wgt() guesses for unstructured dimension (fixes PJCS problem regridding ne30 surfdata)
+
 2018-03-09  Charlie Zender  <zender@uci.edu>
 
 	* Change NCO attribute from VERSION to "netCDF Operators version VERSION (http://nco.sf.net)"

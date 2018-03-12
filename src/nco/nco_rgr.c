@@ -1855,12 +1855,21 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     long col_nbr_in_dat; /* [nbr] Number of columns in input datafile */
     /* Check default or command-line option first, then search usual suspects */
     if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
+    else if((rcd=nco_inq_dimid_flg(in_id,"gridcell",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("gridcell"); /* surfdata */
     else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nCells",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nCells"); /* MPAS-O/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"nEdges",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nEdges"); /* MPAS-O/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("sounding_id"); /* OCO2 */
     else{
-      (void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension name that matches the usual suspects for unstructured dimensions (ncol, lndgrid, nCells, nEdges, sounding_id). HINT: Provide horizontal dimension name with \"--rgr col_nm=foo\"\n",nco_prg_nm_get(),fnc_nm);
+      /* 20180312: Unstructured dimension must have same size as input map file, suggested by PJCS */
+      int *dmn_ids_in; /* [nbr] Input file dimension IDs */
+      int dmn_nbr_in; /* [nbr] Number of dimensions in input file */
+      const int flg_prn=0; /* [enm] Parent flag */
+      rcd=nco_inq_dimids(in_id,&dmn_nbr_in,NULL,flg_prn);
+      dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+      rcd=nco_inq_dimids(in_id,NULL,dmn_ids_in,flg_prn);
+      if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
+      (void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension name that matches the usual suspects for unstructured dimensions (ncol, gridcell, lndgrid, nCells, nEdges, sounding_id). HINT: Provide horizontal dimension name to ncks with \"--rgr col_nm=foo\" or to ncremap with \"ncremap -R '--rgr col_nm=foo'\"\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
     } /* !col_nm_in */
     rcd=nco_inq_dimlen(in_id,dmn_id_col,&col_nbr_in_dat);
