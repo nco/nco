@@ -2,7 +2,7 @@
 
 test_data = big.nc in.nc in_rec_zero.nc
 
-test_data_netCDF4 = in_4c.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_grp_8.nc cmip5.nc obs.nc mdl_1.nc mdl_2.nc mdl_3.nc hdn.nc mrd.nc split.nc
+test_data_netCDF4 = in_4c.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.nc in_grp_4.nc in_grp_5.nc in_grp_6.nc in_grp_7.nc in_grp_8.nc cmip5.nc obs.nc mdl_1.nc mdl_2.nc mdl_3.nc hdn.nc mrd.nc split.nc ref_utf8.nc
 
 # netCDF build rules
 %.nc : %.cdl
@@ -74,6 +74,9 @@ mdl_3.nc : mdl_3.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 split.nc : split.cdl
+	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
+
+ref_utf8.nc : ref_utf8.cdl
 	-@PATH_TO_NCGEN@ -k netCDF-4 -o $@ $< 
 
 
