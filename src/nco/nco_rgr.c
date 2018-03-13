@@ -671,6 +671,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;
 
+  int dmn_idx; /* [idx] Dimension index */
   int dst_grid_corners_id; /* [id] Destination grid corners dimension ID */
   int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
   int dst_grid_size_id; /* [id] Destination grid size dimension ID */
@@ -1853,7 +1854,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
   if(flg_grd_in_1D){
     long col_nbr_in_dat; /* [nbr] Number of columns in input datafile */
-    /* Check default or command-line option first, then search usual suspects */
+    /* Check default or command-line option first, then search usual suspects, and if that fails then guess
+       unstructured dimension is dimension in input file with size n_a expected by input map file, suggested by PJCS
+       Using internal database names first ensures users can pick between multiple dimensions of size n_a 
+       20180313: fxm New PJCS algorithm is superior, should eliminate internal database for unstructured grids? 
+       Database is necessary for 2D grids because otherwise no good way to disambiguate latitude from longitude */
     if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
     else if((rcd=nco_inq_dimid_flg(in_id,"gridcell",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("gridcell"); /* surfdata */
     else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
@@ -1861,6 +1866,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"nEdges",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nEdges"); /* MPAS-O/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("sounding_id"); /* OCO2 */
     else{
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s expects data on an unstructured grid but cannot find a dimension name that matches the usual suspects for unstructured dimensions (ncol, gridcell, lndgrid, nCells, nEdges, sounding_id). Consider specifying horizontal dimension name to ncks with \"--rgr col_nm=foo\" or to ncremap with \"ncremap -R '--rgr col_nm=foo'\", and consider requesting the NCO project to add this horizontal dimension name to its internal database. Proceeding with fallback algorithm that guesses unstructured dimension by searching for first dimension in data file of equal size to that expected by supplied map-file...\n",nco_prg_nm_get(),fnc_nm);
       /* 20180312: Unstructured dimension must have same size as input map file, suggested by PJCS */
       int *dmn_ids_in; /* [nbr] Input file dimension IDs */
       int dmn_nbr_in; /* [nbr] Number of dimensions in input file */
@@ -1868,9 +1874,22 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       rcd=nco_inq_dimids(in_id,&dmn_nbr_in,NULL,flg_prn);
       dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
       rcd=nco_inq_dimids(in_id,NULL,dmn_ids_in,flg_prn);
+      /* Find dimension, if any, with same size as map "a" src_grid_dims[0] = n_a dimension */
+      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	dmn_id_col=dmn_ids_in[dmn_idx];
+	rcd=nco_inq_dimlen(in_id,dmn_id_col,&col_nbr_in_dat);
+	if(col_nbr_in == col_nbr_in_dat){
+	  rcd=nco_inq_dimname(in_id,dmn_id_col,col_nm_in);
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s found that dimension %s in datafile has same size (n_a = %ld) expected by map-file. Assuming %s is the unstructured dimension.\n",nco_prg_nm_get(),fnc_nm,col_nm_in,col_nbr_in,col_nm_in);
+	  break;
+	} /* !col_nbr_in */
+      } /* !dmn_idx */
       if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
-      (void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension name that matches the usual suspects for unstructured dimensions (ncol, gridcell, lndgrid, nCells, nEdges, sounding_id). HINT: Provide horizontal dimension name with \"ncks --rgr col_nm=foo\" or \"ncremap -R '--rgr col_nm=foo'\"\n",nco_prg_nm_get(),fnc_nm);
-      nco_exit(EXIT_FAILURE);
+      if(dmn_idx == dmn_nbr_in){
+	dmn_id_col=NC_MIN_INT;
+	(void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension in the input file that matches the size of the unstructured dimension in the supplied map-file = src_grd_dims[0] = n_a = %ld. HINT: \n",nco_prg_nm_get(),fnc_nm,col_nbr_in);
+	nco_exit(EXIT_FAILURE);
+      } /* !dmn_idx */
     } /* !col_nm_in */
     rcd=nco_inq_dimlen(in_id,dmn_id_col,&col_nbr_in_dat);
     if(col_nbr_in != col_nbr_in_dat){
@@ -2017,7 +2036,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   } /* !False */
   
   char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
-  int dmn_idx; /* [idx] Dimension index */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input variable */
   int dmn_nbr_out; /* [nbr] Number of dimensions in output variable */
   nco_bool has_lon; /* [flg] Contains longitude dimension */

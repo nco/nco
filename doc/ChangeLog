@@ -1,5 +1,13 @@
 2018-03-13  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.4-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha02: AquaLung Look2 Impulse3';git push
+	git tag -a 4.7.4-alpha02 -m 'support absolute/relative OOG paths for CF attributes';git push --tags
+
+	* ncremap guesses unstructured dimension is first dimension with size n_a in input map file src_grid_dims[0]
+
+	* Add Unicode test file (ref_utf8.cdl) copied from netCDF source
+
 	* Support absolute and relative paths to out-of-group (OOG) variables in CF attributes as per CF2 Group specification
 
 	* Add ncremap versions of ncks HINTs in nco_rgr.c

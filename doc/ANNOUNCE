@@ -18,7 +18,8 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Hi
+A. Support absolute and relative paths to out-of-group (OOG) variables
+   in CF attributes as per CF2 Group specification.
 
 BUG FIXES:
 

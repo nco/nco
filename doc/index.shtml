@@ -626,13 +626,15 @@ You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.7.3 http://github.com/nco/nco.git nco-4.7.3</tt></a>.
 <ul>
 <li><b>NCO 4.7.5</b>: (<i>Future</i>)
-Chunking bytes not elements;
+Chunking bytes not elements?;
 extensive hashing?;
-netCDF4 compound types?;</li>
+netCDF4 compound types?;
+<tt>ncclimo -v</tt> splitter support for regular expressions?;
+<tt>ncks --xtn</tt> better extensive variable treatment?;
+<tt>ncremap</tt> generate weights?;</li>
 <li><b>NCO 4.7.4</b>: (<i>In Progress, features in-progress or complete include</i>) 
-<tt>ncclimo -v</tt> splitter support for regular expressions;
-<tt>ncks --xtn</tt> better extensive variable treatment;
-<tt>ncremap</tt> generate weights;</li>
+<tt>ncremap</tt> guesses column dimension for unstructured grids;
+Support Out-of-Group (OOG) variables in CF attributes;</li>
 <li><b>NCO 4.7.3</b>: (<i>Current Stable Release</i>)
 Sanitize input/output filenames;
 <tt>ncclimo</tt> Support <tt>YYYY-MM</tt> and <tt>YYYY-MM-01</tt> rx's;
