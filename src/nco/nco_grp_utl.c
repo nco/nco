@@ -1273,11 +1273,36 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
         char *ptr_chr;            /* [sng] Pointer to character '/' in full name */
         int psn_chr;              /* [nbr] Position of character '/' in in full name */
 
-        /* Construct full name of CF variable */
+	
+        /* does cf_lst_var have an absoule path */
+        if(cf_lst_var[0]==sls_chr){
+          /* If variable is on list */
+          if(trv_tbl_fnd_var_nm_fll(cf_lst_var,trv_tbl))
+            /* Mark it for extraction */
+            (void)trv_tbl_mrk_xtr(cf_lst_var,True,trv_tbl);
+	  
+          break;
+	}  
+
+
+	/* Construct full name of CF variable */
         cf_lst_var_nm_fll=(char *)nco_malloc(strlen(var_trv->grp_nm_fll)+strlen(cf_lst_var)+2L);
         strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
         if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcat(cf_lst_var_nm_fll,sls_sng);
         strcat(cf_lst_var_nm_fll,cf_lst_var);
+
+        /* does cf_lst_var have a relative path */
+	ptr_chr=strchr(cf_lst_var,sls_chr);
+        if(ptr_chr){        
+          /* If variable is on list */
+          if(trv_tbl_fnd_var_nm_fll(cf_lst_var_nm_fll,trv_tbl))
+            /* Mark it for extraction */
+            (void)trv_tbl_mrk_xtr(cf_lst_var_nm_fll,True,trv_tbl);
+
+	  cf_lst_var_nm_fll=(char *)nco_free(cf_lst_var_nm_fll);
+          break;
+	}  
+	
 
         /* Find last occurence of '/' */
         ptr_chr=strrchr(cf_lst_var_nm_fll,sls_chr);
