@@ -1281,7 +1281,7 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
             /* Mark it for extraction */
             (void)trv_tbl_mrk_xtr(cf_lst_var,True,trv_tbl);
 	  
-          break;
+          continue;
 	}  
 
 
@@ -1300,7 +1300,8 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
             (void)trv_tbl_mrk_xtr(cf_lst_var_nm_fll,True,trv_tbl);
 
 	  cf_lst_var_nm_fll=(char *)nco_free(cf_lst_var_nm_fll);
-          break;
+	  
+          continue;
 	}  
 	
 
