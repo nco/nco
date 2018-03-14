@@ -786,10 +786,10 @@ var_sct * gsl_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walk
   if(expr)
     args_vtr.push_back(expr);
   
-  if(tr=fargs->getFirstChild()) {
+  if((tr=fargs->getFirstChild())) {
     do  
       args_vtr.push_back(tr);
-    while(tr=tr->getNextSibling());    
+    while((tr=tr->getNextSibling()));    
   } 
   
   hnd_fnc=gpr_vtr[fdx]._hnd_fnc;
@@ -3768,10 +3768,10 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
      nbr_args=vtr_args.size();  
@@ -3875,10 +3875,10 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     } 
       
      nbr_args=vtr_args.size();  
@@ -4191,10 +4191,10 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     }
  
 
@@ -4515,10 +4515,10 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
     if(expr)
       vtr_args.push_back(expr);
 
-    if(tr=fargs->getFirstChild()) {
+    if((tr=fargs->getFirstChild())) {
       do  
 	vtr_args.push_back(tr);
-      while(tr=tr->getNextSibling());    
+      while((tr=tr->getNextSibling()));    
     }
  
 
@@ -5061,11 +5061,11 @@ var_sct *nco_gsl_cls::fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &wal
     vtr_args.push_back(expr);
   }
 
-  if(tr=fargs->getFirstChild()) 
+  if((tr=fargs->getFirstChild())) 
   {
     do  
     vtr_args.push_back(tr);
-    while(tr=tr->getNextSibling());    
+    while((tr=tr->getNextSibling()));    
   }
 
   is_mtd=(expr ? true: false);
