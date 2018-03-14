@@ -149,9 +149,11 @@ netcdf in_grp_3 {
     variables:
     float lat1(lat);
     float lon2_var(lon2); //variable with no associated coordinate variable
+    float blon2;
     data:
     lat1=0.,1.;
     lon2_var=0.,1.,2.,3.; 
+    blon2=8.0;
     
     group: g16g1 { 
      dimensions:
@@ -194,9 +196,10 @@ netcdf in_grp_3 {
      variables:
      //intermediate "in scope " coordinate
      float lon4(lon4);
+     float blon3;
      data:
      lon4=1.,2.;     
-     
+     blon3=8.0;
       group: g16g4g1 { 
       variables:
       //intermediate "in scope " coordinate
@@ -207,9 +210,20 @@ netcdf in_grp_3 {
         group: g16g4g1g1 { 
         variables:
         //variable that uses one of the intermediate "in scope " coordinate
+	float blon4;
         float lon4_var(lon4);
+	// check retrival of bounds var(s) -scope, scope, absolute path, relative path
+	      lon4_var:bounds="blon4 blon3 /g16/blon2 g16g4g1g1g1/blon1";
         data:
-        lon4_var=0.,1.; 
+	blon4=10.0;
+        lon4_var=0.,1.;
+
+        group: g16g4g1g1g1 {
+	 variables:
+	  float blon1;
+	data:
+	  blon1=1.0;  
+	} // end g16g4g1g1g1
        } // end g16g4g1g1
      } // end g16g4g1
     } // end g16g4
