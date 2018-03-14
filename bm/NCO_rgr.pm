@@ -3029,6 +3029,18 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+# ncks #123
+    $dsc_sng="NetCDF4 test extraction of CF2 vars declared in  lon4_var:bounds" ;
+    $tst_cmd[0]="ncks -h -O $fl_fmt $nco_D_flg -v lon4_var $in_pth_arg in_grp_3.nc %tmp_fl_01%";
+    $tst_cmd[1]="ncks -h -O $nco_D_flg -v 'blon?' -G : %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[2]="ncap2 -h -O $fl_fmt $nco_D_flg -s 'if(exists(blon1) && exists(blon2) && exists(blon3) && exists(blon4)) err=1;else err=0;' %tmp_fl_02% %tmp_fl_03%";
+    $tst_cmd[3]="ncks -O -C -H --trd -v err -s '%d' %tmp_fl_03%";
+    $tst_cmd[4]=1;
+    $tst_cmd[5]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+    
 #####################
 #### ncpdq tests #### -OK !
 #####################
