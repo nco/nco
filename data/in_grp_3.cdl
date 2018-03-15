@@ -146,14 +146,17 @@ netcdf in_grp_3 {
     lon2=4;  //dimension that does NOT have a coordinate variable anywhere 
     lon3=4;  //dimension that has a coordinate "out of scope" (with group depth greater than the variable that uses the coordinate, g16g3g3)
     lon4=2;  //dimension that has several intermediate "in scope" coordinates
+    lat4=2;
     variables:
     float lat1(lat);
     float lon2_var(lon2); //variable with no associated coordinate variable
     float blon2;
+    float blat3;
     data:
     lat1=0.,1.;
     lon2_var=0.,1.,2.,3.; 
     blon2=8.0;
+    blat3=3.0;
     
     group: g16g1 { 
      dimensions:
@@ -162,9 +165,11 @@ netcdf in_grp_3 {
      // MSA test -v lon1_var -d lon1,3.0, result is 3.
      float lon1(lon1);  //coordinate variable /g16/g16g1/lon1 that has dimension (/g16/lon1) in scope
      float lon1_var(lon1); // variable /g16/g16g1/lon1_var that has dimension (/g16/lon1) in scope *and* coordinate (/g16/g16g1/lon1) in scope
+     float blat4;
      data:
      lon1=0.,1.,2.,3.;
-     lon1_var=0.,1.,2.,3.;  
+     lon1_var=0.,1.,2.,3.;
+     blat4=4.0;
       } // end g16g1 
 
     group: g16g2 { 
@@ -211,18 +216,26 @@ netcdf in_grp_3 {
         variables:
         //variable that uses one of the intermediate "in scope " coordinate
 	float blon4;
+	float blat2;
         float lon4_var(lon4);
-	// check retrival of bounds var(s) -scope, scope, absolute path, relative path
-	      lon4_var:bounds="blon4 blon3 /g16/blon2 g16g4g1g1g1/blon1";
+	      // check retrival of bounds var(s) -scope, scope, absolute path, relative path
+	      lon4_var:bounds="blon4 blon3 /g16/blon2 ../g16g4g1g1/g16g4g1g1g1/blon1";
         data:
 	blon4=10.0;
+	blat2=2.0;
         lon4_var=0.,1.;
 
         group: g16g4g1g1g1 {
 	 variables:
+	  float lat4_var(lat4);
+	        // check retrival of "coordinate vars"  curr directory, relative path, absolute path, absolute path
+	        lat4_var:coordinates="./blat1 ../blat2 /g16/blat3 /g16/g16g1/blat4"; 
 	  float blon1;
+	  float blat1;
 	data:
-	  blon1=1.0;  
+	  lat4_var=10.0,11.0;
+	  blon1=1.0;
+	  blat1=1.0;
 	} // end g16g4g1g1g1
        } // end g16g4g1g1
      } // end g16g4g1
