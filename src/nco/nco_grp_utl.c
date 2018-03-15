@@ -1267,33 +1267,52 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
         char *cf_lst_var=cf_lst[idx_cf];
         if(!cf_lst_var) continue;
 
-        char *cf_lst_var_nm_fll;  /* [sng] Built full name of 'CF' variable to find */
-        const char sls_chr='/';   /* [chr] Slash character */
-        const char sls_sng[]="/"; /* [sng] Slash string */
-        char *ptr_chr;            /* [sng] Pointer to character '/' in full name */
-        int psn_chr;              /* [nbr] Position of character '/' in in full name */
+        char *cf_lst_var_nm_fll;       /* [sng] Built full name of 'CF' variable to find */
+        const char sls_chr='/';        /* [chr] Slash character */
+        const char sls_sng[]="/";      /* [sng] Slash string */
+	const char cur_dir_sng[]="./"; /* [sng] current dir */  
+	const char up_dir_sng[]="../"; /* [sng] current dir */  					 
+        char *ptr_chr;                 /* [sng] Pointer to character '/' in full name */
+        int psn_chr;                   /* [nbr] Position of character '/' in in full name */
 
 	
-        /* does cf_lst_var have an absoule path */
-        if(cf_lst_var[0]==sls_chr){
-          /* If variable is on list */
-          if(trv_tbl_fnd_var_nm_fll(cf_lst_var,trv_tbl))
-            /* Mark it for extraction */
-            (void)trv_tbl_mrk_xtr(cf_lst_var,True,trv_tbl);
-	  
-          continue;
-	}  
 
-
-	/* Construct full name of CF variable */
+	/* create memory for full name of CF variable */
         cf_lst_var_nm_fll=(char *)nco_malloc(strlen(var_trv->grp_nm_fll)+strlen(cf_lst_var)+2L);
-        strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
-        if(strcmp(var_trv->grp_nm_fll,sls_sng)) strcat(cf_lst_var_nm_fll,sls_sng);
-        strcat(cf_lst_var_nm_fll,cf_lst_var);
-
-        /* does cf_lst_var have a relative path */
+        cf_lst_var_nm_fll[0]='\0'; 
+	
+        /* does cf_lst_var have a  path of some kind */
 	ptr_chr=strchr(cf_lst_var,sls_chr);
-        if(ptr_chr){        
+        if(ptr_chr){
+
+          /* does cf_lst start with '/' an absolute path */      
+	  if(cf_lst_var[0]=='/') {
+	    strcpy(cf_lst_var_nm_fll, cf_lst_var);
+	  }  
+          /* does cf_lst_var start with './' */
+	  else if(strncmp(cf_lst_var, cur_dir_sng, strlen(cur_dir_sng) )==0){
+            if(strcmp(var_trv->grp_nm_fll,sls_sng))    
+                strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
+
+	    strcat(cf_lst_var_nm_fll, cf_lst_var+(size_t)1);
+	  }
+	  /* does cf_lst_var start with '../' */
+          else if(strncmp(cf_lst_var, up_dir_sng, strlen(up_dir_sng) )==0){
+	      /* remove last dirname from var_trv->grp_nm_fll */
+	      strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
+	      /* search for final '/' */
+              ptr_chr=strrchr(cf_lst_var_nm_fll,sls_chr);      
+	      if(ptr_chr) *ptr_chr='\0';
+              strcat(cf_lst_var_nm_fll, cf_lst_var+(size_t)2);     
+	  }
+	  /* '/' some-where in middle of string */
+          else
+	  {    
+              strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
+              if(strcmp(var_trv->grp_nm_fll,sls_sng))
+		  strcat(cf_lst_var_nm_fll,sls_sng);
+              strcat(cf_lst_var_nm_fll,cf_lst_var);
+          } 	  
           /* If variable is on list */
           if(trv_tbl_fnd_var_nm_fll(cf_lst_var_nm_fll,trv_tbl))
             /* Mark it for extraction */
@@ -1304,7 +1323,14 @@ nco_xtr_cf_var_add /* [fnc] Add variables associated (via CF) with specified var
           continue;
 	}  
 	
-
+	
+        strcpy(cf_lst_var_nm_fll,var_trv->grp_nm_fll);
+        if(strcmp(var_trv->grp_nm_fll,sls_sng))
+	  strcat(cf_lst_var_nm_fll,sls_sng);
+	
+        strcat(cf_lst_var_nm_fll,cf_lst_var);
+ 
+	
         /* Find last occurence of '/' */
         ptr_chr=strrchr(cf_lst_var_nm_fll,sls_chr);
         psn_chr=ptr_chr-cf_lst_var_nm_fll;
