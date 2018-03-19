@@ -19,7 +19,25 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. Support absolute and relative paths to out-of-group (OOG) variables
-   in CF attributes as per CF2 Group specification.
+   in CF attributes as per CF2 Group draft specification:
+   https://docs.google.com/document/d/1KK6IZ2ZmpaUTVgrw-GlFd6almppjvGz6D7nxVTO3BtI/edit
+   This feature completes NCO support for the CF2-Group extension.
+   Sentinel-5P TROPOMI datasets, for example, require this feature.
+   ncks -O -v aerosol_index_340_380 ~/S5P.nc
+   Thanks to ESA, KNMI, and NILU folks for reporting this issue.
+
+B. ncremap guesses unstructured dimension is first dimension with size
+   n_a in input map file src_grid_dims[0]. Previously ncremap required
+   that the unstructured dimension, if any, be pre-stored in an
+   internal database of common dimension names, or be specified on the
+   command line. Now, if neither of these is done, ncremap tries the
+   first dimension in the input data file with the same size that the
+   supplied input mapping file, if any, expects. 
+   ncremap -m map.nc unstructured.nc out.nc
+   http://nco.sf.net/nco.html#ncremap   
+   Thanks to Philip Cameron-Smith for suggesting this feature.
+
+C. fxm
 
 BUG FIXES:
 

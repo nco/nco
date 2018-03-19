@@ -58,9 +58,11 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
     (void)fprintf(stderr,"%s: ERROR %s reports attempt to use ESMF regridding without built-in support. Re-configure with --enable_esmf.\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
 #endif /* !ENABLE_ESMF */
-} /* !flg_smf */
+  } /* !flg_smf */
   
-  /* Regrid using Tempest regridding */
+  /* Regrid using TempestRemap regridding
+     20180314: Weight generation with Tempest is implemented off-line via ncremap, not internally on-line
+     However, do not deprecate this since TempestRemap2 has a library that could be accessed on-line */
   if(flg_tps) rcd=nco_rgr_tps(rgr);
 
   return rcd;
@@ -4082,6 +4084,7 @@ nco_rgr_tps /* [fnc] Regrid using TempestRemap library */
      Routine was originally written to call Tempest executables
      However, that functionality was all placed into the ncremap shell script
      Thus this C-interface is currently unused
+     TempestRemap2 has a library that may be accessed on-line
 
      Test Tempest library: no way to activate yet
      export DATA_TEMPEST='/data/zender/rgr';ncks -O --rgr=Y ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */

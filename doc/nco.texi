@@ -24946,6 +24946,7 @@ maintain netCDF, UDUnits, and OPeNDAP.
 @cindex John Caron
 @cindex Glenn Davis
 @cindex Steve Emmerson
+@cindex Ward Fisher
 @cindex James Gallagher
 @cindex Ed Hartnett
 @cindex Dennis Heimbigner
@@ -24955,6 +24956,7 @@ Russ Rew,
 John Caron,
 Glenn Davis, 
 Steve Emmerson, 
+Ward Fisher,
 James Gallagher, 
 Ed Hartnett, 
 and Dennis Heimbigner.
@@ -25046,6 +25048,7 @@ Auxiliary coordinate support.
 Large work-load testing
 @cindex Dave Blodgett
 @cindex Peter Campbell
+@cindex Philip Cameron-Smith
 @cindex Martin Dix
 @cindex Mark Flanner
 @cindex Markus Liebig
@@ -25062,7 +25065,7 @@ Large work-load testing
 @cindex Andrew Wittenberg
 @cindex George White
 @cindex Remik Ziemlinski
-@item Dave Blodgett, Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Adrian Tompkins, George White Andrew Wittenberg, Remik Ziemlinski
+@item Dave Blodgett, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Markus Liebig, Keith Lindsay, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Adrian Tompkins, George White Andrew Wittenberg, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Filipe Fernandes
 @cindex Isuru Fernando

@@ -991,8 +991,8 @@ if [ -n "${rgr_map}" ]; then
 	exit 1
     fi # ! -f
     if [ "${mdl_nm}" = 'clm2' ]; then
-	printf "${spt_nm}: ERROR ${spt_nm} refuses to regrid ALM/CLM output because doing so correctly requires additional steps required for sub-gridscale (SGS) data. These steps can currently only be performed by invoking ncremap with extra arguments.\n"
-	printf "${spt_nm}: HINT Use ${spt_nm} to generate climatology/time-series files from ALM/CLM, and then issue a separate ncremap command with the extra information to regrid those files. To regrid ALM/CLM data, ncremap requires specification of the source and destination grid files (with -s grd_src and -g grd_dst, respectively).\n"
+	printf "${spt_nm}: ERROR ${spt_nm} refuses to regrid ALM/CLM/ELM output because doing so correctly requires additional steps required for sub-gridscale (SGS) data. These steps can currently only be performed by invoking ncremap with extra arguments.\n"
+	printf "${spt_nm}: HINT Use ${spt_nm} to generate climatology/time-series files from ALM/CLM/ELM, and then issue a separate ncremap command with the extra information to regrid those files. To regrid ALM/CLM/ELM data, ncremap requires specification of the source and destination grid files (with -s grd_src and -g grd_dst, respectively).\n"
 	printf "${spt_nm}: INFO This restriction prevents users from inadvertently generating regridded output that is up to a few percent wrong. Naively regridding sub-gridscale output will generate inaccurate results in all destination gridcells that contain contributions gridcells whose surface fraction (e.g., landfrac) is less than 1.0 on the source grid. Using ncremap ensures that values from sub-gridcell features like coastlines and islands are treated correctly. For more information, contact Charlie.\n"
 	exit 1
     fi # !mdl_nm

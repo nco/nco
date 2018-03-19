@@ -981,8 +981,8 @@ if [ "${prc_typ}" = 'mpas' ]; then
     fi # !rnr_thr
 fi # !mpas
 if [ "${prc_typ}" = 'alm' ] || [ "${prc_typ}" = 'clm' ]; then 
-    # Set ALM/CLM-specific options first, then change prc_typ to sgs
-    rds_rth='6.37122e6' # [m] Radius of Earth in ALM/CLM (SHR_CONST_REARTH)
+    # Set ALM/CLM/ELM-specific options first, then change prc_typ to sgs
+    rds_rth='6.37122e6' # [m] Radius of Earth in ALM/CLM/ELM (SHR_CONST_REARTH)
     sgs_frc='landfrac'
     sgs_msk='landmask'
     sgs_nrm='1.0'
@@ -1573,7 +1573,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Regrid sub-grid fraction ${sgs_frc} to destination grid...\n"
     fi # !vrb_lvl
-    # NB: Do not regrid sub-grid mask as it is extensive and may contain _FillValue (ALM/CLM landmask does)
+    # NB: Do not regrid sub-grid mask as it is extensive and may contain _FillValue (ALM/CLM/ELM landmask does)
     cmd_lnd_rmp[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -v ${sgs_frc} -i ${frc_in_sgs} -s ${grd_src} -g ${grd_dst} -o ${frc_out_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_rmp[${fl_idx}]}
