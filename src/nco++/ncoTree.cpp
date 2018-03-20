@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (20160429): "ncoGrammer.g" -> "ncoTree.cpp"$ */
+/* $ANTLR 2.7.7 (2006-11-01): "ncoGrammer.g" -> "ncoTree.cpp"$ */
 #include "ncoTree.hpp"
 #include <antlr/Token.hpp>
 #include <antlr/AST.hpp>
@@ -2997,13 +2997,13 @@ var_sct * ncoTree::out(ANTLR_USE_NAMESPACE(antlr)RefAST _t) {
 																										if(var==NULL)
 																										err_prn(fnc_nm,"Could not read var "+ v->getText());
 																										
-																										if(bcst && var_cst && var->sz >1)          
+																										if(bcst && var_cst && var->sz >1)
+																										{    
 																										if(var_cst->nbr_dim==var->nbr_dim)     
 																										ncap_var_cnf_dmn(&var,&var_cst);
 																										else    
-																										{
 																										var=ncap_cst_do(var,var_cst,prs_arg->ntl_scn);
-																										}
+																										}   
 																										}
 																										
 																										
