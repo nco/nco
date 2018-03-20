@@ -156,12 +156,14 @@ void NcapVarVector::erase_all(std::string var_nm){
   for(idx=0; idx<sz;idx++)
   {
     if( (*this)[idx]->xpr_typ==ncap_att &&  (*this)[idx]->getVar()==var_nm)
+    {  
       if(srt==-1) srt=idx;    
-    else if(srt>=0)
-    {    
+       else if(srt>=0)
+       {    
 	end=idx-1;
         break; 
-    } 
+       }
+    }  
   }  
 
   if(srt >=0) 
