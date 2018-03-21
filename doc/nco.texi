@@ -7391,6 +7391,7 @@ ncks --map=${DATA}/maps/map_ne30np4_to_t42_aave.20150601.nc
 @end example
 
 @html
+<a name="udunits"></a> <!-- http://nco.sf.net/nco.html#udunits -->
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
 <a name="UDUnits2"></a> <!-- http://nco.sf.net/nco.html#UDUnits2 -->
 @end html
@@ -23383,8 +23384,7 @@ mean of the valid source values.
 This option was introduced because renormalization is a frequently used
 feature which previously could only be invoked by using the uglier and
 more generic @code{-R @var{rgr_opt}} option defined above.
-Specifying @samp{-r 0.9} or @samp{--rnr_thr=0.9} is equivalent to
-specifying @samp{-R '--rgr rnr=0.9'}.
+Specifying @samp{-r 0.9} and @samp{--rnr_thr=0.9} are equivalent.
 
 @html
 <a name="rgn_dst"></a> <!-- http://nco.sf.net/nco.html#rgn_dst -->
