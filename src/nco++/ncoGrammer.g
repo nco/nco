@@ -3372,8 +3372,8 @@ var_sct *var_lhs;
 var_sct *var_rhs;
 
 }
-  //:#(EXPR #(ASSIGN vid:VAR_ID var_rhs=out)) {
-:#(EXPR #(ASSIGN var_lhs=out var_rhs=out)) {
+  :#(EXPR #(ASSIGN vid:. var_rhs=out)) {
+//:#(EXPR #(ASSIGN var_lhs=out var_rhs=out)) {
     
    bool bfr=false;
    nco_bool DO_CONFORM;
@@ -3383,7 +3383,11 @@ var_sct *var_rhs;
 
    bret=false;
 
+   if(vid->getType()==VAR_ID &&  vid->getFirstChild()  && vid->getFirstChild()->getType()==LMT_LIST )  
+     err_prn(fnc_nm, "the \"where statement\" cannot handle a variable with limits on the Left-Hand-Side of an assign statment. Please  remove the limts and try again\nThe variable involved is \""+ vid->getText()+"\"");
+                     
    //var_lhs=prs_arg->ncap_var_init(var_nm,true);
+   var_lhs=out(vid);
    if(var_lhs==NULL_CEWI) 
      nco_exit(EXIT_FAILURE);
             

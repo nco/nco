@@ -1,3 +1,8 @@
+	2018-03-21 Henry Butowsky  <henryb@hush.com>
+	
+	* mods to where statement - script execution terminates if it
+	encounters an LHS var with indices
+
 2018-03-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4-alpha02 release procedure:
