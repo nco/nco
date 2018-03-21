@@ -13568,6 +13568,9 @@ then script execution halts.
 code/block statement and to True in the elsewhere block/statement. 
 @item LHS variable elements set to missing value are treated just like any other
  elements and can be re-assigned as the mask dictates
+@item LHS variable cannot include subscripts - if they do script execution will terminate. 
+See below example for work-araound.
+
 @end itemize
 
 Example:
@@ -13668,6 +13671,24 @@ two-dimensional, there would be no way to tell.
 This shows how @acronym{NCO} hides from the user the complexity of
 analyzing multi-dimensional @acronym{SLD}. 
 We plan to extend such @acronym{SLD} features to more operators soon.
+
+
+To use where on a variable subset use a temporary variable e.g
+@example
+@verbatim
+*var_tmp=var2(:,0,:,:); 
+
+where (var1 < 0.5) 
+  var_tmp=1234; 
+
+var2(;.0,:,;)=var_tmp;
+ram_delete(var_tmp);
+
+@end verbatim
+@end example
+
+
+
 
 @html
 <a name="ncap_lop"></a> <!-- http://nco.sf.net/nco.html#ncap_lop -->
