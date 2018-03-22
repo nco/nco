@@ -5945,7 +5945,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncrename -O -d lev,z -d lat,y -d lon,x ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -H --trd -s %d -v one ~/foo.nc
 # Check for corruption after simultaneously renaming multiple dimensions in netCDF4 file
-    $dsc_sng="netCDF4: Simultaneously rename multiple dimensions (netCDF bug, will require Unidata to fix)";
+    $dsc_sng="netCDF4: Simultaneously rename multiple dimensions (netCDF bug, requires Unidata fix https://github.com/Unidata/netcdf-c/issues/597)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d lev,z -d lat,y -d lon,x $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -H --trd -s %d -v one %tmp_fl_00%";
     $tst_cmd[2]="1";

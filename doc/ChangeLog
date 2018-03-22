@@ -1,7 +1,16 @@
-	2018-03-21 Henry Butowsky  <henryb@hush.com>
-	
-	* mods to where statement - script execution terminates if it
-	encounters an LHS var with indices
+2018-03-21  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.4-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha03: Rancho Leonero';git push
+	git tag -a 4.7.4-alpha03 -m 'clarify where(), CDF5 fix';git push --tags
+
+	* Filipe Fernandes fixed breakage caused by AppVeyor update
+
+	* Verify new netCDF 4.6.1 release fixes CDF5 bug. Update NCO warning messages, docs, and CDF5 workarounds.
+
+2018-03-21 Henry Butowsky  <henryb@hush.com>
+
+	* Modify where() statement to terminate script if it encounters an LHS var with indices
 
 2018-03-13  Charlie Zender  <zender@uci.edu>
 

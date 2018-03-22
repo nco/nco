@@ -112,40 +112,7 @@ B. NOT YET FIXED (netCDF4 library bug)
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
    More details: http://nco.sf.net/nco.html#ncrename_crd
 
-C. NOT YET FIXED (netCDF4 library bug)
-   Renaming a non-coordinate variable to a coordinate variable fails in netCDF4
-
-   Demonstration:
-   ncrename -O -v non_coord,coord ~/nco/data/in_grp.nc ~/foo.nc # Fails (HDF error)
-
-   20170323: Confirmed problem reported by Paolo Oliveri, reported to Unidata
-   20170323: https://github.com/Unidata/netcdf-c/issues/381
-   20171102: Verified problem still exists with netCDF 4.5.1-development
-   20171107: https://github.com/Unidata/netcdf-c/issues/597
-
-   Bug tracking: https://www.unidata.ucar.edu/jira/browse/fxm
-   More details: http://nco.sf.net/nco.html#ncrename_crd
-
-D. FIXED in netCDF Development branch as of 20161116 and in maintenance release 4.4.1.1
-   nc-config/nf-config produce erroneous switches that cause NCO builds to fail
-   This problem affects netCDF 4.4.1 on all operating systems.
-   Some pre-compiled netCDF packages may have patched the problem.
-   Hence it does not affect my MacPorts install of netCDF 4.4.1.
-
-   Demonstration:
-   % nc-config --cflags # Produces extraneous text that confuses make
-   Using nf-config: /usr/local/bin/nf-config
-   -I/usr/local/include -I/usr/local/include -I/usr/include/hdf
-
-   If your nc-config output contains the "Using ..." line, you are
-   affected by this issue. 
-
-   20161029: Reported problem to Unidata
-   20161101: Unidata confirmed reproducibility, attributed to netCDF 4.4.1 changes
-   20161116: Unidata patch is in tree for netCDF 4.4.2 release
-   20161123: Fixed in maintenance release netCDF 4.4.1.1
-
-E. NOT YET FIXED (would require DAP protocol change?)
+C. NOT YET FIXED (would require DAP protocol change?)
    Unable to retrieve contents of variables including period '.' in name
    Periods are legal characters in netCDF variable names.
    Metadata are returned successfully, data are not.
@@ -160,7 +127,7 @@ E. NOT YET FIXED (would require DAP protocol change?)
 
    Bug tracking: https://www.unidata.ucar.edu/jira/browse/NCF-47
 
-F. NOT YET FIXED (would require DAP protocol change)
+D. NOT YET FIXED (would require DAP protocol change)
    Correctly read scalar characters over DAP.
    DAP non-transparency: Works locally, fails through DAP server.
    Problem, IMHO, is with DAP definition/protocol
