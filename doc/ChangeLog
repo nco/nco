@@ -1,8 +1,12 @@
-2018-03-21  Charlie Zender  <zender@uci.edu>
+2018-03-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha03: Rancho Leonero';git push
-	git tag -a 4.7.4-alpha03 -m 'clarify where(), CDF5 fix';git push --tags
+	git tag -a 4.7.4-alpha03 -m 'clarify where(), CDF5 fix, whitelist *?';git push --tags
+
+	* Re-arrange whitelist logic and whitelist asterisk and question mark so globbing works	again
+
+2018-03-21  Charlie Zender  <zender@uci.edu>
 
 	* Filipe Fernandes fixed breakage caused by AppVeyor update
 
