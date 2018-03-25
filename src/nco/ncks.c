@@ -545,13 +545,13 @@ main(int argc,char **argv)
   nco_prg_nm=nco_prg_prs(argv[0],&nco_prg_id);
   
   /* MPI I/O: Either Parallel netCDF (PnetCDF) or HDF5-based
-   export NETCDF_ROOT=/usr/local/parallel;export NETCDF_INC=/usr/local/parallel/include;export NETCDF_LIB=/usr/local/parallel/lib;export NETCDF4_ROOT=/usr/local/parallel;
-   cd ~/nco/bld;make MPI=Y;cd -
-   LD_LIBRARY_PATH=/usr/local/parallel/lib\:${LD_LIBRARY_PATH}
-   ldd `which ncks`
-   ncks -O -5 ~/nco/data/in.nc ~/foo.nc # PnetCDF 
-   mpiexec -n 1 ncks -O -4 ~/nco/data/in.nc ~/foo.nc # HDF5
-   od -An -c -N4 ~/foo.nc */
+     export NETCDF_ROOT=/usr/local/parallel;export NETCDF_INC=/usr/local/parallel/include;export NETCDF_LIB=/usr/local/parallel/lib;export NETCDF4_ROOT=/usr/local/parallel;
+     cd ~/nco/bld;make MPI=Y;cd -
+     LD_LIBRARY_PATH=/usr/local/parallel/lib\:${LD_LIBRARY_PATH}
+     ldd `which ncks`
+     ncks -O -5 ~/nco/data/in.nc ~/foo.nc # PnetCDF 
+     mpiexec -n 1 ncks -O -4 ~/nco/data/in.nc ~/foo.nc # HDF5
+     od -An -c -N4 ~/foo.nc */
 #ifdef ENABLE_MPI
   /* MPI Initialization */
   if(False) (void)fprintf(stdout,gettext("%s: WARNING Compiled with MPI\n"),nco_prg_nm);

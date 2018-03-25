@@ -243,6 +243,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # E3SM/ACME benchmarks:
 # ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -o ~/foo.nc
 # ncremap -v FSNT,AODVIS -a conserve -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
+# ncremap -v FSNT,AODVIS -a conserve2nd -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
+# ncremap -v FSNT,AODVIS --rnr=0.99 --xtr_mth=idavg -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
 # ncremap -v FSNT,AODVIS -a tempest -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
 # Positional arguments:
 # ncremap --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
@@ -322,7 +324,7 @@ fi # !TERM
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
-alg_typ='bilinear' # [nbr] Algorithm for remapping (bilinear|conserve|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt)
+alg_typ='bilinear' # [sng] Algorithm for remapping (bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt)
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
@@ -401,11 +403,13 @@ wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap executable
 wgt_typ='esmf' # [sng] Weight-generator program ('esmf' or 'tempest')
 wgt_opt='' # [sng] Weight-generator options
-#wgt_opt_esmf='--ignore_unmapped --netcdf4' # [sng] ESMF_RegridWeightGen options
 wgt_opt_esmf='--ignore_unmapped' # [sng] ESMF_RegridWeightGen options
 #wgt_opt_tps='--mono' # [sng] TempestRemap options
 wgt_opt_tps='' # [sng] TempestRemap options
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
+xtr_nsp=8 # [nbr] Extrapolation number of source points
+xtr_typ='' # [sng] Extrapolation type
+xtr_xpn=2.0 # [frc] Extrapolation exponent
 
 # Set temporary-file directory
 if [ -d "${TMPDIR}" ]; then
@@ -428,7 +432,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
-    echo "            ESMF algorithms: bilinear|conserve|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt"
+    echo "            ESMF algorithms: bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch"
     echo "            Tempest algorithms: tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
@@ -458,7 +462,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
 # 20171101: Implement but do not yet advertise PPC in ncremap
 #    echo " ${fnt_bld}--ppc${fnt_nrm} ${fnt_bld}ppc_prc${fnt_nrm} Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, precision, quantize${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
-    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, thr_rnr, renormalize_threshold${fnt_nrm}]"
+    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, thr_rnr, rnr, renormalize_threshold${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_dst${fnt_nrm}  Regional destination grid [${fnt_tlc}rgn_dst, dst_rgn, regional_destination${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_src${fnt_nrm}  Regional source grid [${fnt_tlc}rgn_src, src_rgn, regional_source${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}grd_src${fnt_nrm}  Grid-file (source) (empty means infer or use map_fl) (default ${fnt_bld}${grd_src}${fnt_nrm}) [${fnt_tlc}grd_src, grid_source, source_grid, src_grd${fnt_nrm}]"
@@ -478,6 +482,9 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-W${fnt_nrm} ${fnt_bld}wgt_opt${fnt_nrm}  Weight-generator options (default ${fnt_bld}${wgt_opt_esmf}${fnt_nrm}) [${fnt_tlc}wgt_opt, esmf_opt, esmf_options, tempest_opt, tps_opt${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_cmd${fnt_nrm}  Weight-generator command (default ${fnt_bld}${wgt_exe_esmf}${fnt_nrm}) [${fnt_tlc}wgt_cmd, wgt_gnr, weight_command, weight_generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
+    echo " ${fnt_bld}--xtr_nsp${fnt_nrm}  Extrapolation number of source points (default ${fnt_bld}${xtr_nsp}${fnt_nrm}) [${fnt_tlc}xtr_nsp, xtr_pnt_src_nbr, extrap_num_src_pnts${fnt_nrm}]"
+    echo " ${fnt_bld}--xtr_typ${fnt_nrm}  Extrapolation type (empty means none) (default ${fnt_bld}${xtr_typ}${fnt_nrm}) [${fnt_tlc}xtr_typ, xtr_mth, extrap_type, extrap_method${fnt_nrm}]"
+    echo " ${fnt_bld}--xtr_xpn${fnt_nrm}  Extrapolation distance exponent (default ${fnt_bld}${xtr_xpn}${fnt_nrm}) [${fnt_tlc}xtr_xpn, xtr_dst_xpn, extrap_dist_exponent${fnt_nrm}]"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -i ${in_xmp} -m ${map_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
@@ -596,7 +603,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       ppc=?* | ppc_prc=?* | precision=?* | quantize=?* ) ppc_prc="${LONG_OPTARG}" ;; # # Precision-preserving compression
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
-	       rnr_thr=?* | thr_rnr=?* | renormalization_threshold=?* ) rnr_thr="${LONG_OPTARG}" ;; # -r # Renormalization threshold
+	       rnr_thr=?* | thr_rnr=?* | rnr=?* | renormalization_threshold=?* ) rnr_thr="${LONG_OPTARG}" ;; # -r # Renormalization threshold
 	       rgn_dst=?* | dst_rgn=?* | regional_destination=?* ) hnt_dst='--dst_regional' ;; # # Regional destination grid
 	       rgn_dst=?* | dst_rgn=?* | regional_destination=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Regional destination grid
 	       rgn_src=?* | src_rgn=?* | regional_source=?* ) hnt_src='--src_regional' ;; # # Regional source grid
@@ -620,6 +627,9 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       wgt_opt=?* | esmf_opt=?* | esmf_options=?* | tps_opt=?* | tempest_opt=?* | tempest_options=?* ) wgt_opt_usr="${LONG_OPTARG}" ;; # -W # Weight-generator options
 	       wgt_cmd=?* | weight_command=?* | wgt_gnr=?* | weight_generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator command
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
+	       xtr_nsp=?* | xtr_pnt_src_nbr=?* | extrap_num_src_pts=?* ) xtr_nsp_usr="${LONG_OPTARG}" ;; # # Extrapolation number of source points
+	       xtr_typ=?* | xtr_mth=?* | extrap_type=?* | extrap_method=?* ) xtr_typ="${LONG_OPTARG}" ;; # # Extrapolation type
+	       xtr_xpn=?* | xtr_dst_xpn=?* | extrap_dist_exponent=?* ) xtr_xpn_usr="${LONG_OPTARG}" ;; # # Extrapolation exponent
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG
@@ -765,11 +775,13 @@ pdq_fl=${pdq_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
-# Algorithm options are bilinear|conserve|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt
+# Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt
 if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bilin' ] || [ ${alg_typ} = 'bln' ]; then 
     alg_opt='bilinear'
 elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] || [ ${alg_typ} = 'aave' ]; then 
     alg_opt='conserve'
+elif [ ${alg_typ} = 'conserve2nd' ] || [ ${alg_typ} = 'conservative2nd' ] || [ ${alg_typ} = 'c2' ] || [ ${alg_typ} = 'c2nd' ]; then 
+    alg_opt='conserve2nd'
 elif [ ${alg_typ} = 'nearestdtos' ] || [ ${alg_typ} = 'nds' ] || [ ${alg_typ} = 'dtos' ]; then 
     alg_opt='nearestdtos'
 elif [ ${alg_typ} = 'neareststod' ] || [ ${alg_typ} = 'nsd' ] || [ ${alg_typ} = 'stod' ]; then 
@@ -822,9 +834,9 @@ elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_ty
     fi # !gll_fl
     wgt_typ='tempest'
 else 
-    echo "${spt_nm}: ERROR ${alg_typ} is not a valid remapping algorithm\n"
-    echo "${spt_nm}: HINT Valid ESMF remapping algorithms are bilinear,bilin,bln | conserve,cns,aave | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch\n"
-    echo "${spt_nm}: HINT Valid TempestRemap remapping options are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se\n"
+    echo "${spt_nm}: ERROR ${alg_typ} is not a valid remapping algorithm"
+    echo "${spt_nm}: HINT Valid ESMF remapping algorithms and synonyms are bilinear,bilin,bln | conserve,cns,aave | conserve2nd,c2,c2nd | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch"
+    echo "${spt_nm}: HINT Valid TempestRemap remapping options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se"
     exit 1
 fi # !alg_typ
 if [ -n "${fl_fmt}" ]; then
@@ -849,6 +861,26 @@ if [ -n "${fl_fmt}" ]; then
     fi # !fl_fmt
     nco_opt="${nco_opt} ${nco_fl_fmt}"
 fi # !fl_fmt
+if [ -n "${xtr_nsp_usr}" ]; then
+    xtr_nsp=${xtr_nsp_usr}
+fi # !xtr_nsp_usr
+if [ -n "${xtr_xpn_usr}" ]; then
+    xtr_xpn=${xtr_xpn_usr}
+fi # !xtr_xpn_usr
+if [ -n "${xtr_typ}" ]; then
+    if [ ${xtr_typ} = 'neareststod' ] || [ ${xtr_typ} = 'stod' ] || [ ${xtr_typ} = 'nsd' ]; then 
+	xtr_opt='neareststod'
+    elif [ ${xtr_typ} = 'nearestidavg' ] || [ ${xtr_typ} = 'idavg' ] || [ ${xtr_typ} = 'id' ]; then 
+	xtr_opt='nearestidavg'
+    elif [ ${xtr_typ} = 'none' ] || [ ${xtr_typ} = 'nil' ] || [ ${xtr_typ} = 'nowaydude' ]; then 
+	xtr_opt='none'
+    else 
+	echo "${spt_nm}: ERROR ${xtr_typ} is not a valid extrapolation method"
+	echo "${spt_nm}: HINT Valid ESMF extrapolation methods and synonyms are neareststod,stod,nsd | nearestidavg,idavg,id | none,nil"
+	exit 1
+    fi # !xtr_typ
+    wgt_opt_esmf="${wgt_opt_esmf} --extrap_method ${xtr_opt} --extrap_num_src_pnts ${xtr_nsp} --extrap_dist_exponent ${xtr_xpn}"
+fi # !xtr_typ
 if [ ${wgt_typ} = 'esmf' ]; then
     wgt_cmd="${wgt_exe_esmf}"
     wgt_exe="${wgt_exe_esmf}"
@@ -1274,6 +1306,9 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: wgt_cmd  = ${wgt_cmd}\n"
     printf "dbg: wgt_opt  = ${wgt_opt}\n"
     printf "dbg: wgt_usr  = ${wgt_usr}\n"
+    printf "dbg: xtr_typ  = ${xtr_typ}\n"
+    printf "dbg: xtr_nsp  = ${xtr_nsp}\n"
+    printf "dbg: xtr_xpn  = ${xtr_xpn}\n"
     printf "dbg: Will regrid ${fl_nbr} files:\n"
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	printf "${fl_in[${fl_idx}]}\n"

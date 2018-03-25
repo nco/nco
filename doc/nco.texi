@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.4-alpha02
-@set doc-edition 4.7.4-alpha02
+@set nco-edition 4.7.4-alpha04
+@set doc-edition 4.7.4-alpha04
 @set copyright-years 1995--2018
 @set update-year 2018
 @set update-date 4 March 2018
@@ -23384,8 +23384,9 @@ i.e., by default @command{ncremap} always names latitude and longitude
 @cindex @var{rnr_thr}
 @cindex @code{--rnr_thr}
 @cindex @code{--thr_rnr}
+@cindex @code{--rnr}
 @cindex @code{--renormalize_threshold}
-@item -r @var{rnr_thr} (@code{--rnr_thr}, @code{--thr_rnr}, @code{--renormalize_threshold})
+@item -r @var{rnr_thr} (@code{--rnr_thr}, @code{--thr_rnr}, @code{--rnr}, @code{--renormalize_threshold})
 Use this option to request renormalization (see @ref{Regridding}) 
 and to specify the weight threshold.
 For example, @samp{-r 0.9} tells the regridder to renormalize

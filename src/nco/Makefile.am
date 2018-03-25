@@ -14,9 +14,7 @@ else
 bin_PROGRAMS = ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
 endif
 
-
 AM_YFLAGS = -d --name-prefix=nco_yy
-
 
 ncatted_SOURCES = ncatted.c
 ncatted_LDADD = libnco.la
@@ -57,14 +55,11 @@ mpncpdq_LDADD = libnco.la
 mpncra_SOURCES = mpncra.c
 mpncra_LDADD = libnco.la
 
-
 ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l 
 ncwa_LDADD = libnco.la
 
 mpncwa_SOURCES = mpncwa.c ncap_utl.c ncap_lex.l 
 mpncwa_LDADD = libnco.la
-
-
 
 HEADER_SRC = \
 libnco.h \
@@ -115,7 +110,6 @@ nco_var_lst.h \
 nco_var_rth.h \
 nco_var_scv.h \
 nco_var_utl.h
-
 
 lib_LTLIBRARIES = libnco.la
 

@@ -37,7 +37,7 @@ B. ncremap guesses unstructured dimension is first dimension with size
    http://nco.sf.net/nco.html#ncremap   
    Thanks to Philip Cameron-Smith for suggesting this feature.
 
-C. Whitelist asterisk and question mark characters.
+C. Whitelist asterisk and question mark characters '*' and '?'.
    Version 4.7.3 implemented sanitization of allowed filenames.
    The asterisk and question mark were not on the whitelist.
    This broke some common globbing patterns.
@@ -46,6 +46,7 @@ C. Whitelist asterisk and question mark characters.
    ncra in*.nc out.nc # Works in 4.7.4
    The workaround in 4.7.3 is to run with -D 73:
    ncra -D 73 in*.nc out.nc # Workaround in 4.7.3
+   NB: The workaround prints verbose output!
    http://nco.sf.net/nco.html#whitelist
 
 BUG FIXES:
