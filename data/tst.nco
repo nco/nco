@@ -1,10 +1,10 @@
 // $Header$ -*-C-*-
 
-// Purpose: ncap script for geophysical computations
+// Purpose: ncap2 script for geophysical computations
 
 /* Usage:
-   ncap -v -O -D 1 -S ${HOME}/nco/data/tst.nco ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncks -C -H -u -v mxdgr_lcl ${HOME}/nco/data/foo.nc */
+   ncap2 -v -O -D 1 -S ${HOME}/nco/data/tst.nco ${HOME}/nco/data/in.nc ~/foo.nc
+   ncks -C -H -u -v mxdgr_lcl ~/foo.nc */
 
 rds_earth=6.370e+06; // (6.370e+06) [m] Radius of sphere of same volume as Earth
 rds_earth@long_name="Radius of sphere of same volume as Earth";
@@ -51,8 +51,8 @@ dmt_max=10.0; // [m] Maximum diameter
 dmt_max@long_name="Maximum diameter";
 dmt_max@units="meter";
 
-// ncap -v -O -s "gsd=2.0;dmt_vma=2.5;dmt_min=5.0;dmt_max=10.0;ovr_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd))))));" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc;ncks -H -C -u ${HOME}/nco/data/foo.nc
-ovr_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd)))))); // [frc] Fraction of lognormal distribution between endpoints
+// ncap2 -v -O -s "gsd=2.0;dmt_vma=2.5;dmt_min=5.0;dmt_max=10.0;ovr_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd))))));" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc;ncks -H -C -u ${HOME}/nco/data/foo.nc
+ovr_frc=0.5*(erf(log(dmt_max/dmt_vma)/(sqrt(2.0)*log(gsd)))-erf(log(dmt_min/dmt_vma)/(sqrt(2.0)*log(gsd)))); // [frc] Fraction of lognormal distribution between endpoints
 ovr_frc@long_name="Fraction of lognormal distribution between endpoints";
 ovr_frc@units="fraction";
 

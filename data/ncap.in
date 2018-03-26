@@ -1,8 +1,9 @@
 // $Header$ -*-C-*-
 
-// Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
+// Purpose: ncap2 netCDF Arithmetic Processor Demonstration/Test Script
+// Adopted from an ncap (=ncap1) Demonstration/Test Script deprecated in 201803
 
-/* Format of valid ncap script:
+/* Format of valid ncap2 script:
    Syntax is C-like, and C++ comments also valid
    Mathematical expressions use forward algebraic notation
    Statements in scripts are terminated with semi-colons
@@ -12,82 +13,82 @@
 //#include ncap.in2
 
 /* Usage:
-   ncap -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -D 1 -d lat,0 -d lon,0 -d lev,0 -s "a9=three_dmn_var" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -D 1 -v -s "upk=pck*pck@scale_factor+pck@add_offset" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -D 1 -v -s "upk=pck" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -D 1 -v -s "pck=pack(three_dmn_var)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -D 1 -s "prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -O -D 1 -d lat,0 -d lon,0 -d lev,0 -s "a9=three_dmn_var" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -O -D 1 -v -s "upk=pck*pck@scale_factor+pck@add_offset" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -O -D 1 -v -s "upk=pck" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -O -D 1 -v -s "pck=pack(three_dmn_var)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -O -D 1 -s "prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncks -H -m ${HOME}/nco/data/foo.nc | m */
 
-/* ncap is a handy attribute editor:
+/* ncap2 is a handy attribute editor:
    Define new attribute:
-   ncap -O -v -s "one@new=2*att_var@double_att;one@test=two@long_name;" in.nc foo.nc
+   ncap2 -O -v -s "one@new=2*att_var@double_att;one@test=two@long_name;" in.nc foo.nc
 
    Re-define existing attribute in terms of itself:
-   ncap -O -v -s "att_var@double_att=att_var@double_att^2.0" in.nc foo.nc
+   ncap2 -O -v -s "att_var@double_att=att_var@double_att^2.0" in.nc foo.nc
 
    Computation is performed at highest precision of RHS expression:
-   ncap -O -v -s "one@new=att_var@short_att * att_var@double_att - att_var@double_att" in.nc foo.nc 
+   ncap2 -O -v -s "one@new=att_var@short_att * att_var@double_att - att_var@double_att" in.nc foo.nc 
 
    Use math functions (default result is of type double):
-   ncap -O -v -s "one@new=cos(1.0e-4) - 1" in.nc foo.nc
+   ncap2 -O -v -s "one@new=cos(1.0e-4) - 1" in.nc foo.nc
    Result is now of type float:
-   ncap -O -v -s "one@new=cos(1.0e-4f)^2+sin(1.0e-4f)^2" in.nc foo.nc
+   ncap2 -O -v -s "one@new=cos(1.0e-4f)^2+sin(1.0e-4f)^2" in.nc foo.nc
 
    Assign string to attribute (use \" to escape quote from shell):
-   ncap -O -v -s "one@new=\"hello world\"" in.nc foo.nc
+   ncap2 -O -v -s "one@new=\"hello world\"" in.nc foo.nc
 
    Add strings, and use C escape characters:
-   ncap -O -v -s "one@new=\"Hello\t\"+\"World\n\"" in.nc foo.nc
+   ncap2 -O -v -s "one@new=\"Hello\t\"+\"World\n\"" in.nc foo.nc
 
    Set an attribute equal to a 0-dimensional variable:
-   ncap -O -v -s "one@new=one" in.c foo.nc
+   ncap2 -O -v -s "one@new=one" in.c foo.nc
 
    Set an attribute equal to a 1-dimensional variable:
-   ncap -O -v -s "one@new=mss_val" in.nc foo.nc 
+   ncap2 -O -v -s "one@new=mss_val" in.nc foo.nc 
 
-/* The ncap operators works with netCDF variables and attributes
+/* The ncap2 operators works with netCDF variables and attributes
    Multiply an existing co-ordinate variable by 20:
-   ncap -O -v -s "lat=20*lat" in.nc foo.nc
+   ncap2 -O -v -s "lat=20*lat" in.nc foo.nc
 
    Average variables of mixed types (result is of type double):
-   ncap -O -v -s "average=(three_dmn_rec_var+three_dmn_var_dbl+three_dmn_var_int)/3" in.nc foo.nc
+   ncap2 -O -v -s "average=(three_dmn_rec_var+three_dmn_var_dbl+three_dmn_var_int)/3" in.nc foo.nc
 
    Take log (to base e) of absolute value of variable:
-   ncap -O -v -s "abslog=log(abs(three_dmn_var_dbl))" in.nc foo.nc
+   ncap2 -O -v -s "abslog=log(abs(three_dmn_var_dbl))" in.nc foo.nc
 
    The available maths functions are: 
    acos(), asin(), atan(), cos(), exp(), erf(), erfc(), gamma(), log(), log10(), sin(), sqrt(), tan();
    If argument precision is "less" than type float then result is type float
    If argument is type double then result is also double
    This also applies to pow() function, e.g, pow(var1,3.5) or var1^3.5, e.g.,
-   ncap -O -v -s "modulus=pow(sin(three_dmn_rec_var),2)+cos(three_dmn_rec_var)^2 - 1" in.nc foo.nc */
+   ncap2 -O -v -s "modulus=pow(sin(three_dmn_rec_var),2)+cos(three_dmn_rec_var)^2 - 1" in.nc foo.nc */
 
 /* Modulus operator % can also be used with attributes and variables
    Attributes are converted to variable's type prior to operation
    Result of modulus is of type float:
-   ncap -O -v -s "mod=three_dmn_rec_var % 4.0" in.nc foo.nc
+   ncap2 -O -v -s "mod=three_dmn_rec_var % 4.0" in.nc foo.nc
 
    Result of modulus is of type int:
-   ncap -O -v -s "testa=three_dmn_var_int % 1.0f" in.nc foo.nc
+   ncap2 -O -v -s "testa=three_dmn_var_int % 1.0f" in.nc foo.nc
 
    Unary +/- signs work intuitively with attributes and variables:
-   ncap -O -v -s "sign=-three_dmn_rec_var" in.nc foo.nc */
+   ncap2 -O -v -s "sign=-three_dmn_rec_var" in.nc foo.nc */
 
 /* Packing and unpacking:
    Manual unpacking is relatively straightforward but works only with -D 3
-   because automatic unpacking is now default on ncap. It is now broken
+   because automatic unpacking is now default on ncap2. It is now broken
    because ncap_var_write() tries to write bogus attributes automatically
    because pck_ram is set in pck_dsk_inq()
-   ncap -D 3 -O -v -s "upk=pck*pck@scale_factor+pck@add_offset" -s "upk_arr=pck_arr*pck_arr@scale_factor+pck_arr@add_offset" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -D 3 -O -v -s "upk=pck*pck@scale_factor+pck@add_offset" -s "upk_arr=pck_arr*pck_arr@scale_factor+pck_arr@add_offset" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    Automatic unpacking works for scalars, not for arrays
-   ncap -D 1 -O -v -s "upk=pck" -s "upk_arr=pck_arr" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -D 1 -O -v -s "upk=pck" -s "upk_arr=pck_arr" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    Automatic packing does not yet work
-   ncap -D 1 -O -v -s "pck=pack(ORO)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -D 1 -O -v -s "pck=pack(upk)" -s "pck_arr=pack(upk_arr)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -D 1 -O -v -s "pck=pack(pck)" -s "pck_arr=pack(pck_arr)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -D 1 -O -v -s "upk=unpack(pack(unpack(pack(pck))))" -s "upk_arr=unpack(pack(unpack(pack(pck_arr))))" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -D 1 -O -v -s "pck=pack(ORO)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -D 1 -O -v -s "pck=pack(upk)" -s "pck_arr=pack(upk_arr)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -D 1 -O -v -s "pck=pack(pck)" -s "pck_arr=pack(pck_arr)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap2 -D 1 -O -v -s "upk=unpack(pack(unpack(pack(pck))))" -s "upk_arr=unpack(pack(unpack(pack(pck_arr))))" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncks -H -m ${HOME}/nco/data/foo.nc | m
    ncks -H -v pck,pck_arr -m ${HOME}/nco/data/foo.nc | m
    ncks -H -v upk,upk_arr -m ${HOME}/nco/data/foo.nc | m

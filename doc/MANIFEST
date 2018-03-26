@@ -106,8 +106,8 @@ nco/data/in_rec_zero.cdl 	CDL file to test zero-record files
 nco/data/mdl_1.cdl 	CDL file to test ensemble operations
 nco/data/mdl_2.cdl 	CDL file to test ensemble operations
 nco/data/mrd.cdl 	CDL file to test multiple record dimensions
-nco/data/ncap.in	Sample ncap input script
-nco/data/ncap.in2	ncap script to demonstrate #include capabilities
+nco/data/ncap.in	Sample ncap2 input script
+nco/data/ncap.in2	ncap2 script to demonstrate #include capabilities
 nco/data/ncap2.in	Sample ncap2 input script
 nco/data/ncap2_tst.nco  ncap2 self-printing test script
 nco/data/ncl.ncl	NCL script to compare to NCO scripts for speed
@@ -120,7 +120,7 @@ nco/data/psd.nco	Sample ncap2 script that computes particle size distributions
 nco/data/psd_wrf.nco	Sample ncap2 script that computes WRF particle size distributions
 nco/data/sld_nco.sh	NCO script to process (regrid) Swath-Like Data (SLD)
 nco/data/swamp.sh	Demonstrate SWAMP usage
-nco/data/tst.nco	Sample ncap script that computes geophysical quantities
+nco/data/tst.nco	Sample ncap2 script that computes geophysical quantities
 nco/data/udunits.dat	UDUnits database for Debian compatibility
 nco/data/xmp_500mb_hgt.nco ncap2 script to compute 500 mb height field
 
@@ -174,7 +174,7 @@ Man-page Directory:
 nco/man/Makefile(v)	Autotools-generated Makefile
 nco/man/Makefile.am	Automake instructions
 nco/man/Makefile.in(v)	Autotools-generated Makefile
-nco/man/ncap.1		ncap man page
+nco/man/ncap2.1		ncap2 man page
 nco/man/ncatted.1	ncatted man page
 nco/man/ncbo.1		ncbo man page
 nco/man/ncclimo.1	ncclimo man page

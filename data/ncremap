@@ -423,8 +423,8 @@ fi # !gpfs
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
-    printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}$spt_nm -i in_fl -d dst_fl -o out_fl${fnt_nrm}\n"
-    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --input_file=in_fl --destination=dst_fl --output_file=out_fl${fnt_nrm}\n\n"
+    printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}$spt_nm -d dst_fl in_fl out_fl${fnt_nrm}\n"
+    printf "${fnt_nrm} ${fnt_bld}${spt_nm} --destination=dst_fl --input_file=in_fl --output_file=out_fl${fnt_nrm}\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
     echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
@@ -778,7 +778,7 @@ znl_fl=${znl_fl}${unq_sfx}
 # Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt
 if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bilin' ] || [ ${alg_typ} = 'bln' ]; then 
     alg_opt='bilinear'
-elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] || [ ${alg_typ} = 'aave' ]; then 
+elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] || [ ${alg_typ} = 'c1' ] || [ ${alg_typ} = 'aave' ]; then 
     alg_opt='conserve'
 elif [ ${alg_typ} = 'conserve2nd' ] || [ ${alg_typ} = 'conservative2nd' ] || [ ${alg_typ} = 'c2' ] || [ ${alg_typ} = 'c2nd' ]; then 
     alg_opt='conserve2nd'
@@ -835,7 +835,7 @@ elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_ty
     wgt_typ='tempest'
 else 
     echo "${spt_nm}: ERROR ${alg_typ} is not a valid remapping algorithm"
-    echo "${spt_nm}: HINT Valid ESMF remapping algorithms and synonyms are bilinear,bilin,bln | conserve,cns,aave | conserve2nd,c2,c2nd | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch"
+    echo "${spt_nm}: HINT Valid ESMF remapping algorithms and synonyms are bilinear,bilin,bln | conserve,cns,c1,aave | conserve2nd,c2,c2nd | nearestdtos,nds,dtos | neareststod,nsd,stod | patch,pch"
     echo "${spt_nm}: HINT Valid TempestRemap remapping options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se"
     exit 1
 fi # !alg_typ

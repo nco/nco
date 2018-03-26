@@ -1,12 +1,20 @@
-2018-03-24  Charlie Zender  <zender@uci.edu>
-
-	* ncremap add extrapolation flags xtr_typ, xtr_nsp, xtr_xpn to exploit ESMF 7.1.0r features
-
-2018-03-23  Charlie Zender  <zender@uci.edu>
+2018-03-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha04: Globber';git push
 	git tag -a 4.7.4-alpha04 -m 'ESMF conserve2nd';git push --tags
+
+	* remove ncap.1 man page, adapt some old ncap1 scripts to ncap2
+
+2018-03-24  Charlie Zender  <zender@uci.edu>
+
+	* ncremap document new features
+
+	* ncremap add --rnr synonym to --rnr_thr, c1 synonym to conserve
+
+	* ncremap add extrapolation flags xtr_typ, xtr_nsp, xtr_xpn to exploit ESMF 7.1.0r features
+
+2018-03-23  Charlie Zender  <zender@uci.edu>
 
 	* Build 85.nc--89.nc and h0001.nc--h0003.nc in autoconf
 

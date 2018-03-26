@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.4-alpha04
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 4 March 2018
+@set update-date 25 March 2018
 @set update-month March 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22341,6 +22341,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]]
+[--xtr_nsp=@var{xtr_nsp}] [--xtr_typ=@var{xtr_typ}] [--xtr_xpn=@var{xtr_xpn}] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -22466,6 +22467,7 @@ Features common to many operators are described in
 @cindex @code{bilin}
 @cindex @code{aave}
 @cindex @code{conserve}
+@cindex @code{conserve2nd}
 @item -a @var{alg_typ} (@code{--alg_typ}, @code{--algorithm}, @code{--regrid_algorithm})
 Specifies the interpolation algorithm for weight-generation for use by
 @command{ESMF_RegridWeightGen} (@acronym{ERWG}) and/or TempestRemap.
@@ -22476,7 +22478,8 @@ change interpolation algorithms than other options
 The @var{alg_typ} argument must be @code{tempest} or one of
 @acronym{ERWG}'s five interpolation algorithms:
 @code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{bln}), 
-@code{conserve} (or @code{conservative}, @code{cns}, or @code{aave}), 
+@code{conserve} (or @code{conservative}, @code{cns}, @code{c1}, or @code{aave}), 
+@code{conserve2nd} (or @code{conservative2nd}, @code{c2}, or @code{c2nd}), 
 @code{nearestdtos} (or @code{nds} or @code{dtos}), 
 @code{neareststod} (or @code{nds} or @code{stod}), 
 and @code{patch} (or @code{pch} or @code{ptc}). 
@@ -23726,6 +23729,57 @@ Support for extensive variables during regridding is nascent.
 Currently variables marked as extensive are summed, not regridded.
 We are interested in ``real-world'' situations that require regridding
 extensive variables, please contact us if you have one.
+
+@html
+<a name="xtr_nsp"></a> <!-- http://nco.sf.net/nco.html#xtr_nsp -->
+@end html
+@cindex extrapolation
+@cindex @code{--xtr_nsp=@var{xtr_nsp}}
+@cindex @var{xtr_nsp}
+@cindex @code{--xtr_nsp}
+@cindex @code{--xtr_pnt_src_nbr}
+@cindex @code{--extrap_num_src_pnts}
+@item --xtr_nsp=@var{xtr_nsp} (@code{--xtr_nsp}, @code{--xtr_pnt_src_nbr}, @code{--extrap_num_src_pnts})
+Specifies the number of source points to use in extrapolating unmapped
+destination point values with the @acronym{ERWG} weight generator.
+Default is @math{@var{xtr_nsp} = 8}.
+For more information on @acronym{ERWG} extrapolation, see documentation
+@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
+
+@html
+<a name="xtr_typ"></a> <!-- http://nco.sf.net/nco.html#xtr_typ -->
+@end html
+@cindex @code{--xtr_typ=@var{xtr_typ}}
+@cindex @var{xtr_typ}
+@cindex @code{--xtr_typ}
+@cindex @code{--xtr_mth}
+@cindex @code{--extrap_type}
+@cindex @code{--extrap_method}
+@item --xtr_typ=@var{xtr_typ} (@code{--xtr_typ}, @code{--xtr_mth}, @code{--extrap_type}, @code{--extrap_method})
+Specifies the extrapolation method used to compute unmapped
+destination point values with the @acronym{ERWG} weight generator.
+Valid values and their synonyms are
+@code{} (synonyms @code{}, @code{}, @code{}, and @code{}), 
+@code{} (synonyms @code{}, @code{}, @code{}, and @code{}), 
+@code{} (synonyms @code{}, @code{}, @code{}, and @code{}), 
+Default is @math{@var{xtr_typ} = @code{none}}.
+For more information on @acronym{ERWG} extrapolation, see documentation
+@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
+
+@html
+<a name="xtr_xpn"></a> <!-- http://nco.sf.net/nco.html#xtr_xpn -->
+@end html
+@cindex @code{--xtr_xpn=@var{xtr_xpn}}
+@cindex @var{xtr_xpn}
+@cindex @code{--xtr_xpn}
+@cindex @code{--xtr_pnt_src_nbr}
+@cindex @code{--extrap_num_src_pnts}
+@item --xtr_xpn=@var{xtr_xpn} (@code{--xtr_xpn}, @code{--xtr_pnt_src_nbr}, @code{--extrap_num_src_pnts})
+Specifies the number of source points to use in extrapolating unmapped
+destination point values with the @acronym{ERWG} weight generator.
+Default is @math{@var{xtr_xpn} = 2.0}.
+For more information on @acronym{ERWG} extrapolation, see documentation
+@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
 @end table
 
 @unnumberedsubsec Limitations to @command{ncremap}
