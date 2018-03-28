@@ -1,8 +1,12 @@
-2018-03-25  Charlie Zender  <zender@uci.edu>
+2018-03-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha04: Globber';git push
 	git tag -a 4.7.4-alpha04 -m 'ESMF conserve2nd';git push --tags
+
+	* ncremap add --ignore_degenerate to ERWG defaults (required for CICE regridding with ESMF >= 7.1.0r, breaks ERWG < 7.1.0r)?
+
+2018-03-25  Charlie Zender  <zender@uci.edu>
 
 	* remove ncap.1 man page, adapt some old ncap1 scripts to ncap2
 
