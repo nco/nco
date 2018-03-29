@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.4-alpha04
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 25 March 2018
+@set update-date 28 March 2018
 @set update-month March 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -14146,20 +14146,18 @@ ts="2017-08-11/envlog_netcdf_L1_ua-mac_2017-08-11.nc"
 @end verbatim
 @end example
 
-
-
-
+@html
+<a name="vpointer"></a> <!-- http://nco.sf.net/nco.html#vpointer -->
+<a name="vp"></a> <!-- http://nco.sf.net/nco.html#vp -->
+@end html
 @node Vpointer, Irregular grids, UDUnits script, ncap2 netCDF Arithmetic Processor
 @subsection Vpointer
 @cindex vpointer
 
 @noindent A variable-pointer or @emph{vpointer} is a pointer to a variable or attribute. It is most usefull when one needs to apply a set of operations on a list of variables. For example After regular processing one may wish to set the _FillVlaue of all NC_FLOAT variables to a particular value. Or say after processing,  create min/max attributes for all 3D variables of type NC_DOUBLE. A vpointer is not a 'pointer' to a memory location in the normal C/C++ sense. Rather the vpointer is a text attribute that contains the name of a variable. To use the pointer simply prefix the pointer with '*'. Most places where you use VAR_ID you can use *vpointer_nm. There is a variety of ways to maintain a list of strings in ncap2. The easiest method is to use a NC_STRING attribute.
 
-
 Below is a simple illustration using NC_CHAR as the vpointer.@*
 Remember an attribute starting with @@ implies 'global'. eg '@@vpx' is short for 'global@@vpx'
-
-
 @example
 @verbatim
 idx=9;
@@ -14168,7 +14166,7 @@ t2=time;
 
 global@vpx="idx";
 
-// lets increment idx by one
+// Increment idx by one
 *global@vpx++;  
 print(idx);
 
@@ -14176,13 +14174,13 @@ print(idx);
 *@vpx*=5;  // idx now 50
 print(idx);
 
-// lets add 200 (long method)
+// Add 200 (long method)
 *@vpx=*@vpx+200;  //idx now 250
 print(idx);
 
 @vpy="idy";
 
-// lets add together idx and idy
+// Add together idx and idy
 idz=*@vpx+*@vpy;  // idz == 270
 print(idz);
 
@@ -14197,9 +14195,14 @@ print(idz);
 @end verbatim
 @end example
 
-@noindent The following script writes to Output all vars that are of type   NC_DOUBLE and and have at least 2 dimesions; It then changes their _FillValue to '1.0 E-9'. 
-The function @code{get_vars_in()} creates an NC_STRING attribue that contains all the var names in Input. It is important to note that That a vpointer must a plain attribute and NOT an a attribute expression. So in the below script using @code{*all(idx)} would be a fundamental mistake. In the above example the vpointer @code{var_nm} is of type NC_STRING.
-
+@noindent The following script writes to Output all vars that are of type NC_DOUBLE and and have at least 2 dimesions. It then changes their _FillValue to '1.0 E-9'. 
+The function @code{get_vars_in()} creates an NC_STRING attribue that
+contains all the var names in Input.
+It is important to note that that a vpointer must be a plain attribute
+and NOT an a attribute expression.
+So in the below script using @code{*all(idx)} would be a fundamental
+mistake.
+In the above example the vpointer @code{var_nm} is of type NC_STRING.
 @example
 @verbatim
 @all=get_vars_in();
@@ -14207,13 +14210,11 @@ The function @code{get_vars_in()} creates an NC_STRING attribue that contains al
 *sz=@all.size();
 *idx=0;
 
-for(idx=0;idx<sz;idx++)
-{
-  // remember @var_nm is of type NC_STRING
+for(idx=0;idx<sz;idx++){
+  // @var_nm is of type NC_STRING
   @var_nm=@all(idx);
  
-  if( *@var_nm.type()==NC_DOUBLE && *@var_nm.ndims()>=2  )
-  {
+  if(*@var_nm.type() == NC_DOUBLE && *@var_nm.ndims() >= 2){
      *@var_nm=*@var_nm; 
      *@var_nm.change_miss(1e-9d);
   }
@@ -14221,22 +14222,15 @@ for(idx=0;idx<sz;idx++)
 @end verbatim
 @end example 
 
-
-
-@noindent The following script, writes to Output all 3D/4D vars as type NC_FLOAT. Then for each var it calculates a range att that contains min & max; and a total att that is the sum of all elements. Note that in this example vpointer are used to 'point' to attributes
-   
+@noindent The following script writes to Output all 3D/4D vars as type NC_FLOAT. Then for each var it calculates a range att that contains min & max; and a total att that is the sum of all elements. Note that in this example vpointer are used to 'point' to attributes
 @example
 @verbatim
-
 @all=get_vars_in();
 *sz=@all.size();
 
-for(*idx=0;idx<sz;idx++)
-{
+for(*idx=0;idx<sz;idx++){
   @var_nm=@all(idx);
-  if(*@var_nm.ndims()>=3 )
-  {
-
+  if(*@var_nm.ndims() >= 3){
     *@var_nm=*@var_nm.float();
     // The push function also takes a call-by-ref att -if it  doesnt already exist then it is created
     // the call below is pushing a NC_STRING to an att so the end result is a list of NC_STRINGS   
@@ -14246,8 +14240,7 @@ for(*idx=0;idx<sz;idx++)
 
 *sz=@prc.size();
 
-for(*idx=0;idx<sz;idx++)
-{
+for(*idx=0;idx<sz;idx++){
   @var_nm=@prc(idx);
 
   // we can work with att pointers as well 

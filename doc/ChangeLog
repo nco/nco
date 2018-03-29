@@ -1,10 +1,18 @@
-2018-03-28  Charlie Zender  <zender@uci.edu>
+2018-03-29  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.4 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.4: Globber';git push
+	git tag -a 4.7.4 -m 'ESMF conserve2nd, extrapolation, ignore_degenerate, ncks S5P L1B NTM';git push --tags
 
 	* NCO 4.7.4-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha04: Globber';git push
-	git tag -a 4.7.4-alpha04 -m 'ESMF conserve2nd';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha04: Non-Atomic Fireball';git push
+	git tag -a 4.7.4-alpha04 -m 'ESMF conserve2nd, extrapolation, ignore_degenerate, ncks S5P L1B NTM';git push --tags
 
-	* ncremap add --ignore_degenerate to ERWG defaults (required for CICE regridding with ESMF >= 7.1.0r, breaks ERWG < 7.1.0r)?
+	* Print functions ignore rather than die on non-atomic variables, fixes S5P L1B/L2 issues
+
+2018-03-28  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add --ignore_degenerate to ERWG defaults (required for CICE regridding with ESMF >= 7.1.0r, breaks ERWG < 7.1.0r)
 
 2018-03-25  Charlie Zender  <zender@uci.edu>
 
