@@ -2934,8 +2934,6 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in group */
   unsigned int obj_idx; /* [idx] Index over traversal table */
 
-  nc_type ntyp=NC_NAT;
-  
   /* Initialize */
   dmn_nbr=0; /* [nbr] Number of dimensions defined in group */
   var_nbr_xtr=0; /* [nbr] Number of variables to be extracted in group */
@@ -3014,13 +3012,6 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
     /* Get variable name */
     rcd+=nco_inq_varname(grp_id,var_idx,var_nm);
 
-    /* Get variable type */
-    rcd+=nco_inq_vartype(grp_id,var_idx, &ntyp);
-
-    /* skip NCO unhandled types */
-    if( ntyp==NC_VLEN || ntyp==NC_OPAQUE || ntyp==NC_ENUM  || ntyp==NC_COMPOUND)
-      continue;
-
     /* Allocate path buffer and include space for trailing NUL */ 
     var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2L);
 
@@ -3040,7 +3031,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is variable to be extracted? */
-    if(trv_tbl->lst[obj_idx].flg_xtr){
+    if( obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
 	 However, it is same type (int) as an ID so we re-use nm_id infrastructure */
       var_lst[var_nbr_xtr].id=obj_idx;
@@ -3272,7 +3263,7 @@ nco_prn_xml /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is variable to be extracted? */
-    if(trv_tbl->lst[obj_idx].flg_xtr){
+    if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
 	 However, it is same type (int) as an ID so we re-use nm_id infrastructure */
       var_lst[var_nbr_xtr].id=obj_idx;
@@ -3504,7 +3495,7 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is variable to be extracted? */
-    if(trv_tbl->lst[obj_idx].flg_xtr){
+    if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
 	 However, it is same type (int) as an ID so we re-use nm_id infrastructure */
       var_lst[var_nbr_xtr].id=obj_idx;
