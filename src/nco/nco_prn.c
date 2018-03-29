@@ -2934,6 +2934,8 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   unsigned int dmn_nbr; /* [nbr] Number of dimensions defined in group */
   unsigned int obj_idx; /* [idx] Index over traversal table */
 
+  nc_type ntyp=NC_NAT;
+  
   /* Initialize */
   dmn_nbr=0; /* [nbr] Number of dimensions defined in group */
   var_nbr_xtr=0; /* [nbr] Number of variables to be extracted in group */
@@ -3012,6 +3014,13 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
     /* Get variable name */
     rcd+=nco_inq_varname(grp_id,var_idx,var_nm);
 
+    /* Get variable type */
+    rcd+=nco_inq_vartype(grp_id,var_idx, &ntyp);
+
+    /* skip NCO unhandled types */
+    if( ntyp==NC_VLEN || ntyp==NC_OPAQUE || ntyp==NC_ENUM  || ntyp==NC_COMPOUND)
+      continue;
+
     /* Allocate path buffer and include space for trailing NUL */ 
     var_nm_fll=(char *)nco_malloc(strlen(grp_nm_fll)+strlen(var_nm)+2L);
 
@@ -3026,7 +3035,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
     /* Find variable in traversal table */
     for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
-      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var)
+      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var  )
 	if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
 	  break;
     
