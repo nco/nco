@@ -3026,12 +3026,12 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
     /* Find variable in traversal table */
     for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
-      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var)
+      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var  )
 	if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
 	  break;
     
     /* Is variable to be extracted? */
-    if(trv_tbl->lst[obj_idx].flg_xtr){
+    if( obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
 	 However, it is same type (int) as an ID so we re-use nm_id infrastructure */
       var_lst[var_nbr_xtr].id=obj_idx;
@@ -3263,7 +3263,7 @@ nco_prn_xml /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is variable to be extracted? */
-    if(trv_tbl->lst[obj_idx].flg_xtr){
+    if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
 	 However, it is same type (int) as an ID so we re-use nm_id infrastructure */
       var_lst[var_nbr_xtr].id=obj_idx;
@@ -3495,7 +3495,7 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
 	  break;
     
     /* Is variable to be extracted? */
-    if(trv_tbl->lst[obj_idx].flg_xtr){
+    if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
 	 However, it is same type (int) as an ID so we re-use nm_id infrastructure */
       var_lst[var_nbr_xtr].id=obj_idx;
