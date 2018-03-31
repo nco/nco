@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.4-alpha04
-@set doc-edition 4.7.4-alpha04
+@set nco-edition 4.7.4-alpha05
+@set doc-edition 4.7.4-alpha05
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 28 March 2018
+@set update-date 29 March 2018
 @set update-month March 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -140,8 +140,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 
 @c 20150616 Add version info as per
 @c http://www.gnu.org/software/automake/manual/html_node/Texinfo.html
-@c Seems to require running automake --add-missing on local maching
-@c Nightmare because it means clients must run autoconf
+@c Seems to require running automake --add-missing on local machine
+@c Nightmare because it means clients must run autoconf! Fuggetaboutit
 @c @include version.texi
 
 @c end of header

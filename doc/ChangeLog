@@ -1,8 +1,14 @@
-2018-03-29  Charlie Zender  <zender@uci.edu>
+2018-03-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.4: Globber';git push
-	git tag -a 4.7.4 -m 'ESMF conserve2nd, extrapolation, ignore_degenerate, ncks S5P L1B NTM';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.7.4: fxm';git push
+	git tag -a 4.7.4 -m 'CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2d, extrapolation; prn S5P L1B/L2; fix globbing whitelist';git push --tags
+
+	* NCO 4.7.4-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha05: Globber';git push
+	git tag -a 4.7.4-alpha05 -m 'fxm';git push --tags
+
+2018-03-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha04: Non-Atomic Fireball';git push
