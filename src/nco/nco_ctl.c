@@ -1036,7 +1036,7 @@ nco_usg_prn(void)
     else (void)fprintf(stdout,"-d, --dmn, --dimension dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n");
   } /* end if -d */
   if(strstr(opt_sng,"--dbl|flt")) (void)fprintf(stdout,"    --dbl, --flt, --rth_dbl|flt\tdbl: Always promote single- to double-precision b4 arithmetic (default). flt: OK with single-precision arithmetic.\n");
-  if(strstr(opt_sng,"--dt_fmt")) (void)fprintf(stdout,"    --dt_fmt,--date_format\tPrint UDUnits-compatible dates/times in short, regular, or ISO8601 calendar format (fmt=1,2,3)\n");
+  if(strstr(opt_sng,"--dt_fmt")) (void)fprintf(stdout,"    --dt_fmt, --date_format\tPrint UDUnits-compatible dates/times in short, regular, or ISO8601 calendar format (fmt=1,2,3)\n");
   if(strstr(opt_sng,"[-F]")) (void)fprintf(stdout,"-F, --ftn, --fortran\tFortran indexing conventions (1-based) for I/O\n");
   if(strstr(opt_sng,"[-f]")) (void)fprintf(stdout,"-f, --fnc_tbl, --prn_fnc_tbl\tPrint function table\n");
   if(strstr(opt_sng,"--fix_rec_crd")) (void)fprintf(stdout,"    --fix_rec_crd\tDo not interpolate/multiply record coordinate variables\n");

@@ -11,21 +11,21 @@ test_data_netCDF4 = in_4c.nc in_4.nc in_grp.nc in_grp_1.nc in_grp_2.nc in_grp_3.
 	-@PATH_TO_NCGEN@ -o $@ $< 
 
 85.nc : in.nc
-	-ln -s -f $< $@ || (rm -f $@ && ln -s -f $< $@)
-86.nc : $<
-	-ln -s -f $< $@ || (rm -f $@ && ln -s -f $< $@)
-87.nc : $<
-	-ln -s -f $< $@ || (rm -f $@ && ln -s -f $< $@)
-88.nc : $<
-	-ln -s -f $< $@ || (rm -f $@ && ln -s -f $< $@)
-89.nc : $<
-	-ln -s -f $< $@ || (rm -f $@ && ln -s -f $< $@)
+	-ln -s -f $< $@
+86.nc : in.nc
+	-ln -s -f $< $@
+87.nc : in.nc
+	-ln -s -f $< $@
+88.nc : in.nc
+	-ln -s -f $< $@
+89.nc : in.nc
+	-ln -s -f $< $@
 h0001.nc : in.nc
-	-ln -s -f $< $@ || (rm -f $@ && ln -s -f $< $@)
+	-ln -s -f $< $@
 h0002.nc : in.nc
-	-ln -s -f $< $@ || (rm -f $@ && ln -s -f $< $@)
+	-ln -s -f $< $@
 h0003.nc : in.nc
-	-ln -s -f $< $@ || (rm -f $@ && ln -s -f $< $@)
+	-ln -s -f $< $@
 
 in_4c.nc : in.cdl
 	-@abs_top_builddir@/src/nco/ncks -O -7 --cnk_dmn time,10 in.nc $@

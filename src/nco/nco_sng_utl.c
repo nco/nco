@@ -783,12 +783,13 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
      20180222: White-list percent sign (NCO regression test uses, e.g., %tmp_fl_00)
      20180227: White-list forward slash on Windows so URLs are acceptable (http://...)
      20180323: White-list question mark and asterisk so shell-globbing works (in*.nc, in?.nc)
+     20180401: Black-list question mark and asterisk again since shell-globbing now works ?
      Crucial characters that are currently implicitly blacklisted (and could be transformed into underscores) are:
      ";|<>[](),&" */
   static char wht_lst[]="abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "1234567890_-.@"
-    " :%/*?"
+    " :%/"
 #ifdef _MSC_VER
     "\\"
 #endif /* !_MSC_VER */
@@ -800,8 +801,11 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
   nco_bool flg_blk_lst=False;
   
   const char *sng_end=usr_dta+strlen(usr_dta);
+
+  if(nco_dbg_lvl_get() == 73) (void)fprintf(stderr,"%s: INFO %s reports input unsanitized user-input string \"%s\".\n",nco_prg_nm_get(),fnc_nm,usr_dta);
+
   for(cp+=strspn(cp,wht_lst);cp!=sng_end;cp+=strspn(cp,wht_lst)){
-    /* Uncomment next two lines to sanitize unsafe character with an underscore
+    /* Uncomment next two lines to sanitize unsafe character with an innocuous underscore
      *cp='_';
      if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stderr,"%s: DEBUG %s reports sanitized usr_dta = %s\n",nco_prg_nm_get(),fnc_nm,usr_dta); */
     flg_blk_lst=True;

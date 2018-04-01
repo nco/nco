@@ -1,4 +1,4 @@
-2018-03-30  Charlie Zender  <zender@uci.edu>
+2018-04-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4: fxm';git push
@@ -7,6 +7,12 @@
 	* NCO 4.7.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha05: Globber';git push
 	git tag -a 4.7.4-alpha05 -m 'fxm';git push --tags
+
+	* Add globbing diagnostic to nco_sng_sntz()
+
+	* Re-remove * and ? from whitelist
+
+	* Fix data/Makefile.am symlink generation
 
 2018-03-29  Charlie Zender  <zender@uci.edu>
 
