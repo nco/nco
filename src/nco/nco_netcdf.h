@@ -402,6 +402,22 @@ int nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm);
 int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult);
 /* End Dimension routines */
 
+/* Begin enum routines (_enum) */
+int nco_def_enum(const int nc_id,const nc_type bs_typ,const char * const typ_nm,nc_type * const var_typ);
+int nco_insert_enum(const int nc_id,const nc_type var_typ,const char * const mbr_nm,const void * const vp);
+int nco_inq_enum(const int nc_id,const nc_type var_typ,char * const typ_nm,nc_type * const bs_typ,size_t * const typ_sz,size_t * const typ_nbr);
+int nco_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char * const mbr_nm,void * const vp);
+int nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val,char * const mbr_nm);
+/* End enum routines */
+
+/* Begin vlen routines (_vlen) */
+int nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_type * const vlen_typ);
+int nco_inq_vlen(const int nc_id,const nc_type vlen_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ);
+int nco_free_vlen(nc_vlen_t * const vlenp);
+int nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz);
+int nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ);
+/* End vlen routines */
+
 /* Begin Variable routines (_var) */
 int nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id);
 int nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id);
@@ -503,6 +519,16 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
   int nc_get_chunk_cache(size_t * const sz_byt,size_t * const cnk_nbr_hsh,float * const pmp_fvr_frc);
   int nc_set_chunk_cache(const size_t sz_byt,const size_t cnk_nbr_hsh,const float pmp_fvr_frc);
+  int nc_def_enum(const int nc_id,const nc_type bs_typ,const char * const typ_nm,nc_type * const var_typ);
+  int nc_insert_enum(const int nc_id,const nc_type var_typ,const char * const mbr_nm,const void * const vp);
+  int nc_inq_enum(const int nc_id,const nc_type var_typ,char * const typ_nm,nc_type * const bs_typ,size_t * const typ_sz,size_t * const typ_nbr);
+  int nc_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char * const mbr_nm,void * const vp);
+  int nc_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val,char * const mbr_nm);
+  int nc_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_type * const var_typ);
+  int nc_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ);
+  int nc_free_vlen(nc_vlen_t * const vlenp);
+  int nc_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz);
+  int nc_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ);
 #endif /* HAVE_NETCDF4_H */
 #ifndef HAVE_NETCDF4_H
   int NCO_GET_VAR1_UBYTE(const int nc_id,const int var_id,const size_t *srt,nco_ubyte *ubp);

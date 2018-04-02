@@ -74,7 +74,7 @@ netcdf buggy {
  nan_val:note6 = "It is too troublesome to distribute in.cdl with references to NaNs because users always build with old netCDF versions that do not support it. So just comment out nan's for now.";
  nan_val:note7 = "20170505 For testing without missing values"; 
 
- float nan_val_dbl;
+ double nan_val_dbl;
  nan_val_dbl:long_name = "Intended for scalar representation of IEEE NaN without missing values";
  nan_val_dbl:note = "20120308 Apparently netCDF ncgen chokes on variable names of nan and NaN";
  nan_val_dbl:note2 = "20120330 netCDF ncgen on AIX/bluefire chokes on variable/attribute values of nan";

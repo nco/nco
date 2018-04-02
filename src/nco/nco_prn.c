@@ -1589,7 +1589,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 {
   /* Purpose: Print variable data
      
-     Descended from nco_prn_var_val_lmt() but uses limit information contained in GTT 
+     Descended from nco_prn_var_val_lmt(), and uses limit information contained in GTT 
      Modulo arrays: Changing subscript of first (least rapidly varying) dimension by one moves most quickly through 
      address space. Changing the subscript of the last (most rapidly varying) dimension by one moves exactly one location 
      (e.g., 8 bytes for a double) in address space. Each dimension has its own "stride" or length of RAM space between
@@ -1855,6 +1855,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         case NC_INT64: (void)fprintf(fp_out,dlm_sng,var->val.i64p[lmn]); break;
         case NC_UINT64: (void)fprintf(fp_out,dlm_sng,var->val.ui64p[lmn]); break;
         case NC_STRING: (void)fprintf(fp_out,dlm_sng,var->val.sngp[lmn]); break;
+        case NC_VLEN: (void)fprintf(fp_out,dlm_sng,var->val.ip[lmn]); break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
@@ -2053,6 +2054,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           if(lmn != var_szm1) (void)fprintf(fp_out,"%s",spr_sng); */
           sng_val_sng=(char *)nco_free(sng_val_sng);
           break;
+        case NC_VLEN: (void)sprintf(val_sng,fmt_sng,var->val.ip[lmn]); break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
@@ -2120,6 +2122,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         case NC_INT64: (void)fprintf(fp_out,var_sng,var_nm,var->val.i64p[lmn],unit_sng_var); break;
         case NC_UINT64: (void)fprintf(fp_out,var_sng,var_nm,var->val.ui64p[lmn],unit_sng_var); break;
         case NC_STRING: (void)fprintf(fp_out,var_sng,var_nm,var->val.sngp[lmn],unit_sng_var); break;
+        case NC_VLEN: (void)fprintf(fp_out,var_sng,var_nm,var->val.ip[lmn],unit_sng_var); break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       }else{ /* !PRN_DMN_VAR_NM */
@@ -2143,6 +2146,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         case NC_INT64: (void)fprintf(fp_out,var_sng,var->val.i64p[lmn]); break;
         case NC_UINT64: (void)fprintf(fp_out,var_sng,var->val.ui64p[lmn]); break;
         case NC_STRING: (void)fprintf(fp_out,var_sng,var->val.sngp[lmn]); break;
+        case NC_VLEN: (void)fprintf(fp_out,var_sng,var->val.ip[lmn]); break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !PRN_DMN_VAR_NM */
@@ -2308,6 +2312,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             case NC_INT64: (void)fprintf(fp_out,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.i64p[crd_idx_crr]); break;
             case NC_UINT64: (void)fprintf(fp_out,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ui64p[crd_idx_crr]); break;
             case NC_STRING: (void)fprintf(fp_out,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sngp[crd_idx_crr]); break;
+            case NC_VLEN: (void)fprintf(fp_out,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.ip[crd_idx_crr]); break;
             default: nco_dfl_case_nc_type_err(); break;
             } /* end switch */
           }else{ /* !PRN_DMN_VAR_NM */
@@ -2326,6 +2331,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             case NC_INT64: (void)fprintf(fp_out,dmn_sng,dim[dmn_idx].val.i64p[crd_idx_crr]); break;
             case NC_UINT64: (void)fprintf(fp_out,dmn_sng,dim[dmn_idx].val.ui64p[crd_idx_crr]); break;
             case NC_STRING: (void)fprintf(fp_out,dmn_sng,dim[dmn_idx].val.sngp[crd_idx_crr]); break;
+            case NC_VLEN: (void)fprintf(fp_out,dmn_sng,dim[dmn_idx].val.ip[crd_idx_crr]); break;
             default: nco_dfl_case_nc_type_err(); break;
             } /* end switch */
           } /* !PRN_DMN_VAR_NM */
@@ -2406,6 +2412,7 @@ lbl_chr_prn:
           case NC_INT64: (void)fprintf(fp_out,var_sng,var_nm,var_dsk,var->val.i64p[lmn],unit_sng_var); break;
           case NC_UINT64: (void)fprintf(fp_out,var_sng,var_nm,var_dsk,var->val.ui64p[lmn],unit_sng_var); break;
           case NC_STRING: (void)fprintf(fp_out,var_sng,var_nm,var_dsk,var->val.sngp[lmn],unit_sng_var); break;
+          case NC_VLEN: (void)fprintf(fp_out,var_sng,var_nm,var_dsk,var->val.ip[lmn],unit_sng_var); break;
           default: nco_dfl_case_nc_type_err(); break;
           } /* end switch */
         }else{ /* !PRN_DMN_VAR_NM */
@@ -2422,6 +2429,7 @@ lbl_chr_prn:
           case NC_INT64: (void)fprintf(fp_out,var_sng,var->val.i64p[lmn],unit_sng_var); break;
           case NC_UINT64: (void)fprintf(fp_out,var_sng,var->val.ui64p[lmn],unit_sng_var); break;
           case NC_STRING: (void)fprintf(fp_out,var_sng,var->val.sngp[lmn],unit_sng_var); break;
+          case NC_VLEN: (void)fprintf(fp_out,var_sng,var->val.ip[lmn],unit_sng_var); break;
           default: nco_dfl_case_nc_type_err(); break;
           } /* end switch */
         } /* !PRN_DMN_VAR_NM */
@@ -2443,12 +2451,11 @@ lbl_chr_prn:
 
   /* Free value buffer
   if(var->type == NC_STRING)
-     //nco_string_lst_free(var.val.sngp,var.sz);
+     // nco_string_lst_free(var.val.sngp,var.sz);
       for(lmn=0;lmn<var->sz;lmn++)
 	    if(var->val.sngp[lmn]) var->val.sngp[lmn]=(nco_string)nco_free(var->val.sngp[lmn]);
 
   var->val.vp=nco_free(var->val.vp);
-
   var->mss_val.vp=nco_free(var->mss_val.vp);
   var->nm=(char *)nco_free(var->nm); */
 
@@ -2482,8 +2489,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
      2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
-     ncks -5 ~/nco/data/in_grp.nc
-     ncks --cdl ~/nco/data/in_grp.nc */
+     ncks ~/nco/data/in_grp.nc */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
   const char spc_sng[]="";        /* [sng] Space string */
@@ -2895,8 +2901,8 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
      2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
-     ncks -5 ~/nco/data/in_grp.nc
-     ncks --cdl ~/nco/data/in_grp.nc */
+     ncks --cdl ~/nco/data/in_grp.nc
+     ncks --trd ~/nco/data/in_grp.nc */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
   const char spc_sng[]="";        /* [sng] Space string */
@@ -2992,12 +2998,10 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   if(CDL) prn_ndn+=prn_flg->var_fst;
 
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-     nm_cdl=nm2sng_cdl(dmn_lst[dmn_idx].nm);
-     if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(fp_out,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,nm_cdl,(CDL) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(fp_out,"%*s%s = %lu%s\n",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(CDL) ? " ;" : "");
-      nm_cdl=(char *)nco_free(nm_cdl);
-
-
-  } /* end loop over dimension */
+    nm_cdl=nm2sng_cdl(dmn_lst[dmn_idx].nm);
+    if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(fp_out,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,nm_cdl,(CDL) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(fp_out,"%*s%s = %lu%s\n",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(CDL) ? " ;" : "");
+    nm_cdl=(char *)nco_free(nm_cdl);
+  } /* !dmn_idx */
 
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,dmn_nbr);
@@ -3006,7 +3010,6 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
   /* Create array to hold names and indices of extracted variables in this group */
   var_lst=(nm_id_sct *)nco_malloc(nbr_var*(sizeof(nm_id_sct)));
-
       
   for(var_idx=0;var_idx<nbr_var;var_idx++){
     /* Get variable name */
@@ -3026,12 +3029,12 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
     /* Find variable in traversal table */
     for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
-      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var  )
+      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var)
 	if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
 	  break;
     
     /* Is variable to be extracted? */
-    if( obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
+    if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
       /* NB: ID here is actually index into trv_tbl->lst. It is NOT an ID. 
 	 However, it is same type (int) as an ID so we re-use nm_id infrastructure */
       var_lst[var_nbr_xtr].id=obj_idx;
@@ -3049,10 +3052,9 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
   /* Sort variables alphabetically */
   if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg->ALPHA_BY_STUB_GROUP);
-    
 
   /* Print variable information for group */
-  if(var_nbr_xtr > 0 ) (void)fprintf(fp_out,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
+  if(var_nbr_xtr > 0) (void)fprintf(fp_out,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
 
   for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
     trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];
@@ -3068,16 +3070,16 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
     /* nco_prn_att() prints final brace but no return, as we may need to add a comma */ 
     if(prn_flg->PRN_VAR_METADATA) (void)nco_prn_att(grp_id,prn_flg,var_id);
            
-    if( var_idx != var_nbr_xtr-1) (void)fprintf(fp_out,"\n"); 
+    if(var_idx != var_nbr_xtr-1) (void)fprintf(fp_out,"\n"); 
   } /* end loop over var_idx */
 
   if((nbr_att > 0 || (prn_flg->hdn && grp_dpt == 0)) && prn_flg->PRN_GLB_METADATA){
     (void)fprintf(fp_out,"\n%*s%s%sattributes:\n",prn_flg->ndn,spc_sng,(CDL) ? "// " : "",(grp_dpt == 0) ? "global " : "group ");
     nco_prn_att(grp_id,prn_flg,NC_GLOBAL);
-  }  
+  } /* !nbr_att */
 
-  /* Print data for group only CDL and TRD have a separate data block*/
-  if( var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
+  /* Print data for group. Only CDL and TRD have a separate data block */
+  if(var_nbr_xtr > 0 && prn_flg->PRN_VAR_DATA){
     (void)fprintf(fp_out,"\n%*sdata:\n",prn_flg->ndn,spc_sng);
     for(var_idx=0;var_idx<var_nbr_xtr;var_idx++) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
   } /* end if */
@@ -3141,8 +3143,7 @@ nco_prn_xml /* [fnc] Recursively print group contents */
      2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
-     ncks -5 ~/nco/data/in_grp.nc
-     ncks --cdl ~/nco/data/in_grp.nc */
+     ncks --xml ~/nco/data/in_grp.nc */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
   const char spc_sng[]="";        /* [sng] Space string */
@@ -3364,8 +3365,7 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
      2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
-     ncks -5 ~/nco/data/in_grp.nc
-     ncks --cdl ~/nco/data/in_grp.nc */
+     ncks --jsn ~/nco/data/in_grp.nc */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
   const char spc_sng[]="";        /* [sng] Space string */
@@ -3536,13 +3536,13 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
       (void)nco_prn_att(grp_id,prn_flg,var_id);
     } /* !prn_flg */
         
-    if( prn_flg->PRN_VAR_DATA){  
+    if(prn_flg->PRN_VAR_DATA){  
       (void)fprintf(fp_out,",\n");  
       // prn_flg->ndn=prn_ndn+2*prn_flg->spc_per_lvl;  
       (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);      
     }else{
       (void)fprintf(fp_out,"\n");        
-    }
+    } /* !PRN_VAR_DATA */
     /* Close JSON tag without carriage return since we may need to add comma later */
     (void)fprintf(fp_out,"%*s}%s",prn_flg->ndn,spc_sng, (var_idx<var_nbr_xtr-1 ?",\n":"\n"));
     
@@ -3601,15 +3601,15 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
     
     /* Is sub-group to be extracted? If so, recurse */
     if(trv_tbl->lst[obj_idx].flg_xtr){  
-      /* print groups tag for first extracted group */ 
+      /* Print groups tag for first extracted group */ 
       if(nbr_grp_xtr++ == 0){   
-         if(JSN_BLOCK) (void)fprintf(fp_out,",\n"); 
-         (void)fprintf(fp_out,"%*s\"groups\": {\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng);       
+	if(JSN_BLOCK) (void)fprintf(fp_out,",\n"); 
+	(void)fprintf(fp_out,"%*s\"groups\": {\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng);       
       }else{
-         (void)fprintf(fp_out,",\n"); 
-      }
+	(void)fprintf(fp_out,",\n"); 
+      } /* !nbr_grp_xtr */
       rcd+=nco_prn_jsn(nc_id,sub_grp_nm_fll,prn_flg,trv_tbl);        
-    }  
+    } /* !flg_xtr */
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);

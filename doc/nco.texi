@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.4-alpha05
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 29 March 2018
-@set update-month March 2018
+@set update-date 1 April 2018
+@set update-month April 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -2220,11 +2220,12 @@ When this occurs, use either the @code{stdin} method above, or the
 symbolic link presented next.
 
 @cindex symbolic links
+@cindex Perl
 Even when its internal limits have not been reached, the
 @command{xargs} technique may not be sophisticated enough to handle 
 all situations. 
-A full scripting language like Perl can handle any level of complexity
-of filtering input filenames, and any number of filenames.
+A full scripting language like Perl or Python can handle any level of
+complexity of filtering input filenames, and any number of filenames.
 The technique of last resort is to write a script that creates symbolic 
 links between the irregular input filenames and a set of regular,
 arithmetic filenames that the @samp{-n @var{loop}} switch understands. 
@@ -2246,7 +2247,7 @@ ncecat -n 999999,6,1 000001.nc foo.nc
 @end example
 The @samp{-n @var{loop}} option tells the @acronym{NCO} operator to
 automatically generate the filnames of the symbolic links.
-This circumvents any @acronym{OS} and shell limits on command line size.
+This circumvents any @acronym{OS} and shell limits on command-line size.
 The symbolic links are easily removed once @acronym{NCO} is finished.
 @cindex @code{history}
 @cindex provenance

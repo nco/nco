@@ -906,14 +906,14 @@ nco_xtr_mk                            /* [fnc] Check -v and -g input names and c
     /* Extract object if ... */
     if(
        /* No subsetting */
-      (trv_tbl->lst[obj_idx].flg_dfl) || /* ...user-specified no sub-setting... */
-      /* Intersection mode (default mode) */
-      (!flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch && trv_tbl->lst[obj_idx].flg_nsx) || /* ...intersection mode variable matches group... */
-      /* Union mode */
-      (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch) || /* ...union mode object matches user-specified string... */
-      (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_vsg) || /* ...union mode variable selected because group matches... */
-      (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_gcv) || /* ...union mode group contains matched variable... */
-      False) 
+       (trv_tbl->lst[obj_idx].flg_dfl) || /* ...user-specified no sub-setting... */
+       /* Intersection mode (default mode) */
+       (!flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch && trv_tbl->lst[obj_idx].flg_nsx) || /* ...intersection mode variable matches group... */
+       /* Union mode */
+       (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_mch) || /* ...union mode object matches user-specified string... */
+       (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_vsg) || /* ...union mode variable selected because group matches... */
+       (flg_unn_ffc && trv_tbl->lst[obj_idx].flg_gcv) || /* ...union mode group contains matched variable... */
+       False) 
       trv_tbl->lst[obj_idx].flg_xtr=True;
   } /* end loop over obj_idx */
 
@@ -2440,8 +2440,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     }else{ /* > NC_MAX_ATOMIC_TYPE */
       obj_typ=nco_obj_typ_nonatomic_var;
       if(nco_dbg_lvl_get() >= nco_dbg_var){
-        (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",
-          nco_prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
+        (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",nco_prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
       } /* endif */
     } /* > NC_MAX_ATOMIC_TYPE */
 
@@ -3368,9 +3367,7 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
     /* If object is an extracted variable... */ 
     if(var_trv.nco_typ == nco_obj_typ_var && flg_xtr){
 
-      if(nco_dbg_lvl_get() == nco_dbg_old){
-        (void)fprintf(stdout,"%s: INFO %s variable <%s>",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);        
-      } /* endif dbg */
+      if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s variable <%s>",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
 
       /* Obtain group ID where variable is located */
       (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
@@ -3515,14 +3512,10 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
 
   nbr_xtr=0;
 
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Filter variables to extract  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
-      nbr_xtr++;
-    } /* Filter variables  */
-  } /* Loop table */
-
+  /* Filter variables to extract  */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr) nbr_xtr++;
+  
   /* Fill-in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
 
@@ -5305,7 +5298,7 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
           ...and look for extracted variables only
           ...and look for variables with dimensions > 1 */
           if(rec_dmn_nm_out 
-            && strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 
+            && strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll)
             && var_trv_mrk.nco_typ == nco_obj_typ_var 
             && var_trv_mrk.flg_xtr
             && var_trv_mrk.nbr_dmn > 1){
@@ -5444,7 +5437,7 @@ nco_var_dmn_rdr_mtd_trv /* [fnc] Set new dimensionality in metadata of each re-o
         /* Avoid same variable ...
         ...and look for variables only
         ...and look for extracted variables only */
-        if(strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 && var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
+        if(strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) && var_trv_mrk.nco_typ == nco_obj_typ_var && var_trv_mrk.flg_xtr){
 
           /* Loop dimensions of to search variable  */
           for(int idx_dmn=0;idx_dmn<var_trv_mrk.nbr_dmn;idx_dmn++){
@@ -5522,7 +5515,7 @@ nco_rdf_dmn_trv                       /* [fnc] Re-define dimension ordering */
     ...and look for variables only
     ...and look for extracted variables only
     ...and look for variables with dimensions > 1 */
-    if(strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll) != 0 
+    if(strcmp(var_trv.nm_fll,var_trv_mrk.nm_fll)
       && var_trv_mrk.nco_typ == nco_obj_typ_var 
       && var_trv_mrk.flg_xtr
       && var_trv_mrk.nbr_dmn > 1){

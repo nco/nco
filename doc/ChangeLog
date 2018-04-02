@@ -8,6 +8,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha05: Globber';git push
 	git tag -a 4.7.4-alpha05 -m 'fxm';git push --tags
 
+	* Add wrappers for user-defined types enum and vlen to libnco
+
 	* Add globbing diagnostic to nco_sng_sntz()
 
 	* Re-remove * and ? from whitelist

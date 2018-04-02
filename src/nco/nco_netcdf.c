@@ -1494,6 +1494,134 @@ nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
 }  /* end nco_inq_rename_dim */
 /* End Dimension routines */
 
+/* Begin user-defined data type routines (_enum, _vlen) */
+/* Begin enum routines (_enum) */
+#ifdef HAVE_NETCDF4_H
+int
+nco_def_enum(const int nc_id,const nc_type bs_typ,const char * const typ_nm,nc_type * const var_typ)
+{
+  /* Purpose: Wrapper for nc_def_enum() */
+  const char fnc_nm[]="nco_def_enum()";
+  int rcd;
+  rcd=nc_def_enum(nc_id,bs_typ,typ_nm,var_typ);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_def_enum() type \"%s\"\n",fnc_nm,typ_nm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_enum()");
+  return rcd;
+} /* end nco_def_enum() */
+
+int
+nco_insert_enum(const int nc_id,const nc_type var_typ,const char * const mbr_nm,const void * const vp)
+{
+  /* Purpose: Wrapper for nc_insert_enum() */
+  const char fnc_nm[]="nco_insert_enum()";
+  int rcd;
+  rcd=nc_insert_enum(nc_id,var_typ,mbr_nm,vp);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_insert_enum() member \"%s\"\n",fnc_nm,mbr_nm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_insert_enum()");
+  return rcd;
+} /* end nco_insert_enum() */
+
+int
+nco_inq_enum(const int nc_id,const nc_type var_typ,char * const typ_nm,nc_type * const bs_typ,size_t * const typ_sz,size_t * const typ_nbr)
+{
+  /* Purpose: Wrapper for nc_inq_enum() */
+  const char fnc_nm[]="nco_inq_enum()";
+  int rcd;
+  rcd=nc_inq_enum(nc_id,var_typ,typ_nm,bs_typ,typ_sz,typ_nbr);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_enum() type %d\n",fnc_nm,var_typ);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_enum()");
+  return rcd;
+} /* end nco_inq_enum() */
+
+int
+nco_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char * const mbr_nm,void * const vp)
+{
+  /* Purpose: Wrapper for nc_inq_enum_member() */
+  const char fnc_nm[]="nco_inq_enum_member()";
+  int rcd;
+  rcd=nc_inq_enum_member(nc_id,var_typ,idx,mbr_nm,vp);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_enum_member() type %d\n",fnc_nm,var_typ);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_enum_member()");
+  return rcd;
+} /* end nco_inq_enum_member() */
+
+int
+nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val,char * const mbr_nm)
+{
+  /* Purpose: Wrapper for nc_inq_enum_ident() */
+  const char fnc_nm[]="nco_inq_enum_ident()";
+  int rcd;
+  rcd=nc_inq_enum_ident(nc_id,var_typ,val,mbr_nm);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_enum_ident() type %d\n",fnc_nm,var_typ);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_enum_ident()");
+  return rcd;
+} /* end nco_inq_enum_ident() */
+
+/* End enum routines */
+
+/* Begin vlen routines (_vlen) */
+int
+nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_type * const var_typ)
+{
+  /* Purpose: Wrapper for nc_def_vlen() */
+  const char fnc_nm[]="nco_def_vlen()";
+  int rcd;
+  rcd=nc_def_vlen(nc_id,typ_nm,bs_typ,var_typ);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_def_vlen() type \"%s\"\n",fnc_nm,typ_nm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_vlen()");
+  return rcd;
+} /* end nco_def_vlen() */
+
+int
+nco_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ)
+{
+  /* Purpose: Wrapper for nc_inq_vlen() */
+  const char fnc_nm[]="nco_inq_vlen()";
+  int rcd;
+  rcd=nc_inq_vlen(nc_id,var_typ,typ_nm,typ_sz,bs_typ);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_vlen() type %d\n",fnc_nm,var_typ);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_vlen()");
+  return rcd;
+} /* end nco_inq_vlen() */
+
+int
+nco_free_vlen(nc_vlen_t * const vlenp)
+{
+  /* Purpose: Wrapper for nc_free_vlen() */
+  const char fnc_nm[]="nco_free_vlen()";
+  int rcd;
+  rcd=nc_free_vlen(vlenp);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_free_vlen()");
+  return rcd;
+} /* end nco_free_vlen() */
+
+int
+nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz)
+{
+  /* Purpose: Wrapper for nc_inq_type() */
+  const char fnc_nm[]="nco_inq_type()";
+  int rcd;
+  rcd=nc_inq_type(nc_id,var_typ,typ_nm,typ_sz);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_type() type %d\n",fnc_nm,var_typ);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_type()");
+  return rcd;
+} /* end nco_inq_type() */
+
+int
+nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ)
+{
+  /* Purpose: Wrapper for nc_inq_user_type() */
+  const char fnc_nm[]="nco_inq_user_type()";
+  int rcd;
+  rcd=nc_inq_user_type(nc_id,var_typ,typ_nm,typ_sz,bs_typ,fld_nbr,cls_typ);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_user_type() type %d\n",fnc_nm,var_typ);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_user_type()");
+  return rcd;
+} /* end nco_inq_user_type() */
+/* End vlen routines */
+#endif /* !HAVE_NETCDF4_H */
+/* End user-defined data type routines (_enum, _vlen) */
+
 /* Begin Variable routines (_var) */
 int
 nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id)
@@ -1536,7 +1664,7 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var()");
   return rcd;
-} /* end nco_def_var */
+} /* end nco_def_var() */
 
 int nco_def_var_chunking
 (const int nc_id, /* [ID] netCDF ID */
@@ -2556,6 +2684,16 @@ int nc_set_chunk_cache(const size_t sz_byt,const size_t cnk_nbr_hsh,const float 
 /* Stubs thus present a fake library for manipulating netCDF3 files with the netCDF4 API
    These are only called when netCDF4 library is unavailable, thus I/O assumed to be netCDF3 */
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
+int nco_def_enum(const int nc_id,const nc_type bs_typ,const char * const typ_nm,nc_type * const var_typ){assert(0);return NC_NOERR;}
+int nco_insert_enum(const int nc_id,const nc_type var_typ,const char * const mbr_nm,const void * const vp){assert(0);return NC_NOERR;}
+int nco_inq_enum(const int nc_id,const nc_type var_typ,char * const typ_nm,nc_type * const bs_typ,size_t * const typ_sz,size_t * const typ_nbr){assert(0);return NC_NOERR;}
+int nco_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char * const mbr_nm,void * const vp){assert(0);return NC_NOERR;}
+int nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val,char * const mbr_nm){assert(0);return NC_NOERR;}
+int nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_type * const var_typ){assert(0);return NC_NOERR;}
+int nco_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ){assert(0);return NC_NOERR;}
+int nco_free_vlen(nc_vlen_t * const vlenp){assert(0);return NC_NOERR;}
+int nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz){assert(0);return NC_NOERR;}
+int nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ){assert(0);return NC_NOERR;}
 int nco_rename_grp(int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
 int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){assert(0);return NC_NOERR;}
