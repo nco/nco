@@ -1,12 +1,16 @@
-2018-04-01  Charlie Zender  <zender@uci.edu>
+2018-04-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4: fxm';git push
-	git tag -a 4.7.4 -m 'CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2d, extrapolation; prn S5P L1B/L2; fix globbing whitelist';git push --tags
+	git tag -a 4.7.4 -m 'CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2d, extrapolation; prn S5P L1B/L2; fix whitelist; enm/vln stubs';git push --tags
 
 	* NCO 4.7.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha05: Globber';git push
-	git tag -a 4.7.4-alpha05 -m 'fxm';git push --tags
+	git tag -a 4.7.4-alpha05 -m 'sanitization sanity, enum/vlen stubs, document whitelist';git push --tags
+
+	* Document whitelist
+
+2018-04-01  Charlie Zender  <zender@uci.edu>
 
 	* Add wrappers for user-defined types enum and vlen to libnco
 
@@ -60,7 +64,7 @@
 
 2018-03-21 Henry Butowsky  <henryb@hush.com>
 
-	* Modify where() statement to terminate script if it encounters an LHS var with indices
+	* Modify where() statement to terminate script if it encounters a LHS variable with indices
 
 2018-03-13  Charlie Zender  <zender@uci.edu>
 

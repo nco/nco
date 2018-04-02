@@ -772,9 +772,11 @@ char * /* O [sng] Sanitized string */
 nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous characters */
 (char * const sng_drt) /* I [sng] String to sanitize */
 {
-  const char fnc_nm[]="nco_sng_sntz()"; /* [sng] Function name */
-    
-  /* Whitelist algorithm based on:
+  /* Purpose: Ensure input string contains only white-listed innocuous characters 
+
+     Testing: ncra -D 73 -O ~/nco/data/8?.nc ~/foo.nc 2>&1 | grep sanitized
+
+     Whitelist algorithm based on:
      https://wiki.sei.cmu.edu/confluence/display/c/STR02-C.+Sanitize+data+passed+to+complex+subsystems 
      NCO modifications to CMU default whitelist:
      20180214: White-list colon (WRF filenames sometimes have timestamps with colons, Windows drive labels have colons) 
@@ -783,9 +785,9 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
      20180222: White-list percent sign (NCO regression test uses, e.g., %tmp_fl_00)
      20180227: White-list forward slash on Windows so URLs are acceptable (http://...)
      20180323: White-list question mark and asterisk so shell-globbing works (in*.nc, in?.nc)
-     20180401: Black-list question mark and asterisk again since shell-globbing now works ?
+     20180401: Black-list question mark and asterisk again since shell-globbing now works
      Crucial characters that are currently implicitly blacklisted (and could be transformed into underscores) are:
-     ";|<>[](),&" */
+     ";|<>[](),&*?" */
   static char wht_lst[]="abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "1234567890_-.@"
@@ -796,6 +798,8 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
     ;
   /* ": re-balance syntax highlighting */
 
+  const char fnc_nm[]="nco_sng_sntz()"; /* [sng] Function name */
+    
   char *usr_dta=sng_drt;
   char *cp=usr_dta; /* Cursor into string */
   nco_bool flg_blk_lst=False;

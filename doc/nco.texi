@@ -2635,6 +2635,7 @@ feature is automatic and cannot be controlled by the user.
 * Metadata Optimization::
 * OpenMP Threading::
 * Command Line Options::
+* Sanitization of Input::
 * Specifying Input Files::
 * Specifying Output Files::
 * Remote storage::
@@ -2859,7 +2860,7 @@ This information is also useful for benchmarking.
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
-@node Command Line Options, Specifying Input Files, OpenMP Threading, Shared features
+@node Command Line Options, Sanitization of Input, OpenMP Threading, Shared features
 @section Command Line Options
 @cindex command line options
 @cartouche
@@ -3090,11 +3091,69 @@ single or double-dashes to make the flags more visible, e.g.,
 @samp{--rgr latlon=129,256#--infer#-no_cll_msr}. 
 
 @html
+<a name="scr"></a> <!-- http://nco.sf.net/nco.html#scr -->
+<a name="sntz"></a> <!-- http://nco.sf.net/nco.html#sntz -->
+<a name="security"></a> <!-- http://nco.sf.net/nco.html#security -->
+<a name="sanitize"></a> <!-- http://nco.sf.net/nco.html#sanitize -->
+<a name="whitelist"></a> <!-- http://nco.sf.net/nco.html#whitelist -->
+<a name="wht_lst"></a> <!-- http://nco.sf.net/nco.html#wht_lst -->
+@end html
+@node Sanitization of Input, Specifying Input Files, Command Line Options, Shared features
+@section Sanitization of Input
+@cindex sanitize
+@cindex security
+@cindex whitelist
+@cindex blacklist
+@cartouche
+Availability: All operators@*
+@end cartouche
+@acronym{NCO} is often installed in system directories (although not
+with Conda), and on some production machines it may have escalated
+privileges. 
+Since @acronym{NCO} manipulates files by using system calls (e.g., to
+move and copy them) it makes sense to audit it for vulnerabilities and
+protect it from malicious users trying to exploit security gaps.
+Securing @acronym{NCO} against malicious attacks is multi-faceted, and
+involves careful memory management and auditing of user-input.
+As of version 4.7.3 (March, 2018), @acronym{NCO} implements a whitelist
+of characters allowed in user-specified filenames.
+The purpose of the whitelist is to prevent users from injecting
+malicious strings into filenames that could be used by attackers. 
+The whitelist allows only these characters:
+@example
+@verbatim
+abcdefghijklmnopqrstuvwxyz
+ABCDEFGHIJKLMNOPQRSTUVWXYZ
+1234567890_-.@ :%/
+@end verbatim
+@end example
+The backslash character @kbd{\} is also whitelisted (Windows only).
+This whitelist allows filenames to be @acronym{URL}s, include username
+prefixes, and standard non-alphabetic characters. 
+The implied blacklist includes these characters
+@example
+@verbatim
+;|<>[](),&*?'"
+@end verbatim
+@end example
+This blacklist rules-out strings that may contain dangerous commands and 
+injection attacks.
+If you would like any of these characters whitelisted, please contact
+us and include a compelling real-world use-case.
+
+The whitelist method is straightforward, and does not seem to interfere
+with @acronym{NCO}'s globbing feature.
+While the whitelist currently applies only to filenames (which are
+directly handled by @command{system()} calls, the method is applicable
+to other user-input such as variable lists, hyperslab arguments, etc.
+Hence, the whitelist may be applied to other user-input in the future.
+
+@html
 <a name="fl_in"></a> <!-- http://nco.sf.net/nco.html#fl_in -->
 <a name="in"></a> <!-- http://nco.sf.net/nco.html#in -->
 <a name="input"></a> <!-- http://nco.sf.net/nco.html#input -->
 @end html
-@node Specifying Input Files, Specifying Output Files, Command Line Options, Shared features
+@node Specifying Input Files, Specifying Output Files, Sanitization of Input, Shared features
 @section Specifying Input Files
 @cindex input files
 @cindex globbing

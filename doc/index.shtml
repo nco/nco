@@ -1394,15 +1394,12 @@ LAM installs easily with our own testing environment (latest Ubuntu).
   For more information on this nasty bug, see
   <a href="https://github.com/Unidata/netcdf-c/issues/463">here</a> and
   <a href="https://github.com/Unidata/netcdf-c/pull/478">here</a>.
-  YMMV. Unsupported.
-  Our understanding of this bug is still evolving and salient updates
-  will be posted here.
   <b>UPDATE</b>: Unidata released netCDF 4.5.0 on 20171020.
-  Unfortunately a patch to fix the CDF5 bug was not included.
+  Unfortunately the patch to fix the CDF5 bug was not included.
   <b>UPDATE</b>: Unidata released netCDF 4.6.0 on 20180124.
-  Unfortunately a patch to fix the CDF5 bug was not included.
+  Unfortunately the patch to fix the CDF5 bug was not included.
   <b>UPDATE</b>: Unidata released netCDF 4.6.1 on 20180319.
-  netCDF version 4.6.1 does fix the CDF5 bug.
+  netCDF version 4.6.1 was patched to fix the CDF5 bug. Yay!
 </li>
   
   <!-- http://nco.sf.net#bug_nc4_srd -->

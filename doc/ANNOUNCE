@@ -6,12 +6,14 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.4 contains
+Version 4.7.4 updates handling of the netCDF CDF5 bug, improves
+filename sanitization, supports ESMF 7.1.0r regridding features,
+handles non-atomic types more gracefully, and implements absolute
+and relative paths for CF2-Group compliance.
 
-Work on NCO 4.7.5 has commenced. Planned changes include
-better diagnosis and workarounds for the netCDF CDF5 bug,
-parallel weight generation by ncremap, and possibly workarounds for 
-using quotation marks with ncap2 in Windows.
+Work on NCO 4.7.5 has commenced. Goals include printing some user
+defined types, parallel weight generation by ncremap, and possibly
+workarounds for using quotation marks with ncap2 in Windows. 
 
 Enjoy,
 Charlie
@@ -19,12 +21,13 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. Support absolute and relative paths to out-of-group (OOG) variables
-   in CF attributes as per CF2 Group draft specification:
+   in CF attributes as per CF2-Group draft specification:
    https://docs.google.com/document/d/1KK6IZ2ZmpaUTVgrw-GlFd6almppjvGz6D7nxVTO3BtI/edit
    This feature completes NCO support for the CF2-Group extension.
    Sentinel-5P TROPOMI datasets, for example, require this feature.
    ncks -O -v aerosol_index_340_380 ~/S5P.nc
-   Thanks to ESA, KNMI, and NILU folks for reporting this issue.
+   Thanks to ESA, NILU, and KNMI folks, especially Maarten Schmidt,
+   for reporting this issue. 
 
 B. ncremap guesses unstructured dimension is first dimension with size
    n_a in input map file src_grid_dims[0]. Previously ncremap required
@@ -37,21 +40,44 @@ B. ncremap guesses unstructured dimension is first dimension with size
    http://nco.sf.net/nco.html#ncremap   
    Thanks to Philip Cameron-Smith for suggesting this feature.
 
-C. Whitelist asterisk and question mark characters '*' and '?'.
-   Version 4.7.3 implemented sanitization of allowed filenames.
-   The asterisk and question mark were not on the whitelist.
-   This broke some common globbing patterns.
-   Version 4.7.4 whitelists the ?* characters.
-   ncra in*.nc out.nc # Borken in 4.7.3
-   ncra in*.nc out.nc # Works in 4.7.4
-   The workaround in 4.7.3 is to run with -D 73:
-   ncra -D 73 in*.nc out.nc # Workaround in 4.7.3
-   NB: The workaround prints verbose output!
-   http://nco.sf.net/nco.html#whitelist
+A. Add "gridcell" to ncremap database of unstructured dimensions.
+   This can help when regridding some CMIP6 boundary datasets. 
+   This is a less elegant solution than, though comlementary to,
+   PJCS's suggestion above.
+
+A. ncap2 where() terminates if the LHS variable in the assignment
+   statement is a hyperslab.  Previously where() ignored LHS
+   hyperslabs and the results confused users. The manual now clarifies
+   how to use where() with hyperslabs:
+   http://nco.sf.net/nco.html#where
+
+A. ncremap support three new features of ESMF 7.1.0r: the second-order
+   conservative regridding algorithm conserve2nd, extrapolation
+   methods to unmapped gridcells, and degenerate gridcells. 
+   Each of these new features is documented in the manual.
+   Their forms are as expected:
+   ncremap -a conserve2nd  -d dst.nc in.nc out.nc
+   ncremap --xtr_mth=idavg -d dst.nc in.nc out.nc
+   ncremap sets the new ESMF_RegridWeightGen --ignore_degenerate
+   option by default, since it is required to successfully regrid some
+   datasets (e.g., CICE) that ERWG previously handled fine.
+   Hence ncremap 4.7.4 must be used with ESMF >= 7.1.0r, otherwise
+   it passes the older ERWG an unknown option (--ignore_degenerate).
+   The workaround (if you are stuck with ESMF < 7.1.0r) is to
+   explicitly pass the ERWG options using ncremap's --esmf_opt option:  
+   ncremap --esmf_opt='--ignore_unmapped' -d dst.nc in.nc out.nc
+   http://nco.sf.net/nco.html#ncremap
+
+A. netCDF 4.6.1 fixes the CDF5 bug described here:
+   http://nco.sf.net#bug_cdf5
+   We strongly recommend that all CDF5 users upgrade to netCDF 4.6.1. 
+   NCO error messages and HINTs have been updated to describe the
+   best practices to avoid this nasty bug.
 
 BUG FIXES:
 
-A. Hi
+A. Skip-over rather than fail when printing user-defined types.
+   Sentinel-5P TROPOMI datasets, for example, require this feature.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
