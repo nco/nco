@@ -4,6 +4,12 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.4: fxm';git push
 	git tag -a 4.7.4 -m 'CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2d, extrapolation; prn S5P L1B/L2; fix whitelist; enm/vln stubs';git push --tags
 
+	* NCO 4.7.4-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.4-beta01: Ireland';git push
+	git tag -a 4.7.4-beta01 -m 'sanitization sanity, enum/vlen stubs, document whitelist';git push --tags
+
+	* ncremap do not set --ignore_degenerate by default (it would break most workflows with ERWG < 7.1.0r)
+
 	* NCO 4.7.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha05: Globber';git push
 	git tag -a 4.7.4-alpha05 -m 'sanitization sanity, enum/vlen stubs, document whitelist';git push --tags

@@ -20,8 +20,14 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Support absolute and relative paths to out-of-group (OOG) variables
-   in CF attributes as per CF2-Group draft specification:
+A. netCDF 4.6.1 fixes the CDF5 bug. Yay!
+   We strongly recommend that all CDF5 users upgrade to netCDF 4.6.1.
+   NCO error messages and HINTs have been updated to better describe
+   the best practices to identify and avoid this nasty bug.
+   http://nco.sf.net#bug_cdf5
+
+B. NCO supports absolute and relative paths to out-of-group (OOG)
+   variables in CF attributes as per CF2-Group draft specification:
    https://docs.google.com/document/d/1KK6IZ2ZmpaUTVgrw-GlFd6almppjvGz6D7nxVTO3BtI/edit
    This feature completes NCO support for the CF2-Group extension.
    Sentinel-5P TROPOMI datasets, for example, require this feature.
@@ -29,50 +35,46 @@ A. Support absolute and relative paths to out-of-group (OOG) variables
    Thanks to ESA, NILU, and KNMI folks, especially Maarten Schmidt,
    for reporting this issue. 
 
-B. ncremap guesses unstructured dimension is first dimension with size
-   n_a in input map file src_grid_dims[0]. Previously ncremap required
-   that the unstructured dimension, if any, be pre-stored in an
-   internal database of common dimension names, or be specified on the
-   command line. Now, if neither of these is done, ncremap tries the
-   first dimension in the input data file with the same size that the
-   supplied input mapping file, if any, expects. 
+C. ncremap supports three new features of ESMF 7.1.0r: a second-order
+   conservative regridding algorithm, extrapolation methods for
+   unmapped gridcells, and degenerate source gridcells.
+   Each of these new features is documented in the manual.
+   Their invocation forms are as expected, e.g.:
+   ncremap -a conserve2nd  -d dst.nc in.nc out.nc
+   ncremap --xtr_mth=idavg -d dst.nc in.nc out.nc
+   These two options _require_ ESMF 7.1.0r or later.
+   ncremap does not set the ESMF_RegridWeightGen --ignore_degenerate  
+   option by default, since it is new and would break workflows on
+   installations that upgraded NCO but not ESMF (this is common). 
+   However, ERWG 7.1.0r requires --ignore_degenerate to successfully
+   regrid some datasets (e.g., CICE) that previous ERWG versions
+   handle fine. Hence ncremap 4.7.4 may error on such datasets. 
+   The workaround (with ESMF 7.1.0r) is to explicitly pass the base
+   ERWG options with ncremap's --esmf_opt option:    
+   ncremap --esmf_opt='--ignore_unmapped --ignore_degenerate' ...
+   http://nco.sf.net/nco.html#ncremap
+
+D. ncremap guesses the unstructured dimension is first dimension with
+   size n_a in input map file src_grid_dims[0]. Previously ncremap
+   required that the unstructured dimension, if any, be pre-stored in
+   an internal database of common dimension names, or be specified on
+   the command line. Now, if neither of these is done, ncremap tries
+   the first dimension in the input data file with the same size that
+   the supplied input mapping file, if any, expects. 
    ncremap -m map.nc unstructured.nc out.nc
    http://nco.sf.net/nco.html#ncremap   
    Thanks to Philip Cameron-Smith for suggesting this feature.
 
-A. Add "gridcell" to ncremap database of unstructured dimensions.
+E. Add "gridcell" to ncremap database of unstructured dimensions.
    This can help when regridding some CMIP6 boundary datasets. 
    This is a less elegant solution than, though comlementary to,
    PJCS's suggestion above.
 
-A. ncap2 where() terminates if the LHS variable in the assignment
+F. ncap2 where() terminates if the LHS variable in the assignment
    statement is a hyperslab.  Previously where() ignored LHS
-   hyperslabs and the results confused users. The manual now clarifies
+   hyperslabs and the results confused users. The manual now clarifies 
    how to use where() with hyperslabs:
    http://nco.sf.net/nco.html#where
-
-A. ncremap support three new features of ESMF 7.1.0r: the second-order
-   conservative regridding algorithm conserve2nd, extrapolation
-   methods to unmapped gridcells, and degenerate gridcells. 
-   Each of these new features is documented in the manual.
-   Their forms are as expected:
-   ncremap -a conserve2nd  -d dst.nc in.nc out.nc
-   ncremap --xtr_mth=idavg -d dst.nc in.nc out.nc
-   ncremap sets the new ESMF_RegridWeightGen --ignore_degenerate
-   option by default, since it is required to successfully regrid some
-   datasets (e.g., CICE) that ERWG previously handled fine.
-   Hence ncremap 4.7.4 must be used with ESMF >= 7.1.0r, otherwise
-   it passes the older ERWG an unknown option (--ignore_degenerate).
-   The workaround (if you are stuck with ESMF < 7.1.0r) is to
-   explicitly pass the ERWG options using ncremap's --esmf_opt option:  
-   ncremap --esmf_opt='--ignore_unmapped' -d dst.nc in.nc out.nc
-   http://nco.sf.net/nco.html#ncremap
-
-A. netCDF 4.6.1 fixes the CDF5 bug described here:
-   http://nco.sf.net#bug_cdf5
-   We strongly recommend that all CDF5 users upgrade to netCDF 4.6.1. 
-   NCO error messages and HINTs have been updated to describe the
-   best practices to avoid this nasty bug.
 
 BUG FIXES:
 
@@ -87,7 +89,7 @@ KNOWN PROBLEMS DUE TO NCO:
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.7.4 built/tested under
    MacOS 10.13.2 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
-   Linux with netCDF 4.6.1-development (20180110) on HDF5 1.8.19.
+   Linux with netCDF 4.6.2-development (20180315) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
