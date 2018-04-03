@@ -403,8 +403,8 @@ wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap executable
 wgt_typ='esmf' # [sng] Weight-generator program ('esmf' or 'tempest')
 wgt_opt='' # [sng] Weight-generator options
-#wgt_opt_esmf='--ignore_unmapped' # [sng] ESMF_RegridWeightGen options (ESMF < 7.1.0r)
-wgt_opt_esmf='--ignore_unmapped --ignore_degenerate' # [sng] ESMF_RegridWeightGen options (ignore_degenerate is required for CICE regridding with ESMF >= 7.1.0r, and is not supported or required with ESMF < 7.1.0r)
+wgt_opt_esmf='--ignore_unmapped' # [sng] ESMF_RegridWeightGen options (ESMF < 7.1.0r)
+#wgt_opt_esmf='--ignore_unmapped --ignore_degenerate' # [sng] ESMF_RegridWeightGen options (ESMF >= 7.1.0r) (ignore_degenerate is required for CICE regridding with ESMF >= 7.1.0r, and is not supported or required with ESMF < 7.1.0r)
 #wgt_opt_tps='--mono' # [sng] TempestRemap options
 wgt_opt_tps='' # [sng] TempestRemap options
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
