@@ -2,7 +2,7 @@
 
 	* NCO 4.7.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4: fxm';git push
-	git tag -a 4.7.4 -m 'CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2d, extrapolation; prn S5P L1B/L2; fix whitelist; enm/vln stubs';git push --tags
+	git tag -a 4.7.4 -m 'CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2nd, extrapolation; prn S5P L1B/L2; fix whitelist; enm/vln stubs';git push --tags
 
 	* NCO 4.7.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-alpha05: Globber';git push
