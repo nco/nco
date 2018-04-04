@@ -1,4 +1,4 @@
-2018-04-02  Charlie Zender  <zender@uci.edu>
+2018-04-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4: fxm';git push
@@ -6,7 +6,11 @@
 
 	* NCO 4.7.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-beta01: Ireland';git push
-	git tag -a 4.7.4-beta01 -m 'sanitization sanity, enum/vlen stubs, document whitelist';git push --tags
+	git tag -a 4.7.4-beta01 -m 'elm/ctsm synonyms, revert ignore_degenerate';git push --tags
+
+	* ncremap: add prc_typ='elm' and 'ctsm' as synonyms to 'clm' and 'alm'
+
+2018-04-02  Charlie Zender  <zender@uci.edu>
 
 	* ncremap do not set --ignore_degenerate by default (it would break most workflows with ERWG < 7.1.0r)
 

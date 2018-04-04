@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.4-alpha05
-@set doc-edition 4.7.4-alpha05
+@set nco-edition 4.7.4-beta01
+@set doc-edition 4.7.4-beta01
 @set copyright-years 1995--2018
 @set update-year 2018
 @set update-date 1 April 2018
@@ -17590,7 +17590,7 @@ of the input files, together with the model name @var{mdl_nm} (specified
 with @samp{-m}) and the date range.
 Use @samp{-h @var{hst_nm}} to specify alternative history volumes.
 Examples include @samp{h0} (default, works for @acronym{CAM},
-@acronym{ALM/CLM}), @samp{h1}, and @samp{h} (for @acronym{CISM}).
+@acronym{ALM/CLM/CTSM/ELM}), @samp{h1}, and @samp{h} (for @acronym{CISM}).
 
 @html
 <a name="drc_in"></a> <!-- http://nco.sf.net/nco.html#drc_in -->
@@ -23228,7 +23228,7 @@ Valid procedure types are @samp{airs} for @acronym{NASA AIRS} satellite data,
 @samp{mpas} for @acronym{MPAS} ocean/ice model data on unstructured grids,
 @samp{mod04} for @w{Level 2} @acronym{MODIS} @acronym{MOD04} product,
 @samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
-(such as @acronym{ALM/CLM} land model data or @acronym{CICE} sea-ice
+(such as @acronym{ALM/CLM/CTSM/ELM} land model data or @acronym{CICE} sea-ice
 model data), 
 and @samp{nil} (for none).
 The default @var{prc_typ} is @samp{nil}, which means @command{ncremap} 
@@ -23303,10 +23303,10 @@ automatically triggers @acronym{SGS}-mode, so that also invoking
 @samp{-P sgs} is redundant though legal.
 
 @command{ncremap} supports convenience options to recover most of the  
-original, model-specific idiosyncracies in raw @acronym{ALM/CLM} and
-@acronym{CICE} datasets.
+original, model-specific idiosyncracies in raw
+@acronym{ALM/CLM/CTSM/ELM} and @acronym{CICE} datasets.
 @example
-# Invocations for ALM/CLM data
+# Invocations for ALM/CLM/CTSM/ELM data
 ncremap -P alm -i in.nc -s src_grd.nc -d dst_data.nc -o out.nc
 ncremap -P sgs -i in.nc -s src_grd.nc -d dst_data.nc -o out.nc
 ncremap --sgs_frc=landfrac --sgs_msk=landmask ... 
