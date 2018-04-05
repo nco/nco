@@ -10,7 +10,7 @@
 #include "fmc_all_cls.hh"
 //Conversion Functions /***********************************/
  
-  cnv_cls::cnv_cls(bool flg_dbg){
+  cnv_cls::cnv_cls(bool){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("float" , this,(int)NC_FLOAT)); 
@@ -59,7 +59,7 @@
 		      
 //Aggregate Functions /************************************************/
 
-  agg_cls::agg_cls(bool flg_dbg){
+  agg_cls::agg_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("avg",this,(int)PAVG));
@@ -349,7 +349,7 @@
 
 //Utility Functions /******************************************/
 
-   utl_cls::utl_cls(bool flg_dbg){
+   utl_cls::utl_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("set_miss",this,(int)SET_MISS));
@@ -606,7 +606,7 @@
   }// end function
 
   
-var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct * utl_cls::is_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::is_fnd");
     // int nbr_args;
     int fdx=fmc_obj.fdx();
@@ -670,7 +670,7 @@ var_sct * utl_cls::is_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &
 
  
 // custom function for GET_MISS
-var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct * utl_cls::get_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::get_fnd");
     int nbr_args;
     // int fdx=fmc_obj.fdx();
@@ -749,7 +749,7 @@ var_sct * utl_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 }
 
-var_sct * utl_cls::linear_fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct * utl_cls::linear_fill_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::fill_linear_fnd");
   nco_bool do_permute=False;
   int idx;
@@ -889,7 +889,7 @@ var_sct * utl_cls::linear_fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, 
 
 /* fill_miss() method  assumes that the final two dims of the var are lat,lon */
 /* if type not double then converts to double for fill, then converts back to orginal type */
-var_sct * utl_cls::fill_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct * utl_cls::fill_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("utl_cls::fill_fnd");
   int idx;
   int nbr_dim;
@@ -1539,7 +1539,7 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
 }
   
 //Math Functions /******************************************/
-  mth_cls::mth_cls(bool flg_dbg){
+  mth_cls::mth_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
 
@@ -1660,7 +1660,7 @@ var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_
   }
 
 //Maths2 - Maths functions that take 2 args /*********/
-  mth2_cls::mth2_cls(bool flg_dbg){
+  mth2_cls::mth2_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("pow",this,(int)PPOW));
@@ -2091,7 +2091,7 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
 
 
 //PDQ Functions /******************************************/
-  pdq_cls::pdq_cls(bool flg_dbg){
+  pdq_cls::pdq_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("reverse",this,(int)PREVERSE));
@@ -2260,7 +2260,7 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
 
 //Mask Function /******************************************/
 
-  msk_cls::msk_cls(bool flg_dbg){
+  msk_cls::msk_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("mask",this,(int)PMASK1));
@@ -2432,7 +2432,7 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
 
 //Pack Function /******************************************/
 
-  pck_cls::pck_cls(bool flg_dbg){
+  pck_cls::pck_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("pack",this,(int)PPACK));
@@ -2562,7 +2562,7 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
 
 //Sort Functions /***********************************/
  
-srt_cls::srt_cls(bool flg_dbg){
+srt_cls::srt_cls(bool){
   //Populate only on  constructor call
   if(fmc_vtr.empty()){
     fmc_vtr.push_back( fmc_cls("sort" , this,PASORT)); 
@@ -2614,7 +2614,7 @@ var_sct *srt_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walke
 
 } // end gsl_fit_cls::fnd 
   
-var_sct * srt_cls::imap_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct * srt_cls::imap_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("srt_cls::imap_fnd");
     int nbr_args;
     // int fdx=fmc_obj.fdx();
@@ -2677,7 +2677,7 @@ var_sct * srt_cls::imap_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 
 
   
-var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct * srt_cls::srt_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("srt_cls::srt_fnd");
     int nbr_args;
     int fdx=fmc_obj.fdx();
@@ -2834,7 +2834,7 @@ var_sct * srt_cls::srt_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 
   
-var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct * srt_cls::mst_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("srt_cls::mst_fnd");
     int nbr_args;
     int fdx=fmc_obj.fdx();
@@ -2954,7 +2954,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 
 // MIN & MAX INDEX Functions /***********************************/
-  agg_idx_cls::agg_idx_cls(bool flg_dbg){
+  agg_idx_cls::agg_idx_cls(bool){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("min_index" , this,PMIN)); 
@@ -3176,7 +3176,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 //Unary Functions /***********************************/
  
-  unr_cls::unr_cls(bool flg_dbg){
+  unr_cls::unr_cls(bool){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("abs",this,PABS)); 
@@ -3249,7 +3249,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 
 //Array Functions /***********************************/ 
-  arr_cls::arr_cls(bool flg_dbg){
+  arr_cls::arr_cls(bool){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("array",this,PARRAY)); 
@@ -3439,7 +3439,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
   } 
 
 // Bounds function - calculates bounds of a 1D coordinate variable
-  bnds_cls::bnds_cls(bool flg_dbg){
+  bnds_cls::bnds_cls(bool){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("make_bounds",this,PBOUNDS)); 
@@ -3644,7 +3644,7 @@ var_sct * srt_cls::mst_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls 
 
 
 //Bilinear  Interpolation Functions /****************************************/
-bil_cls::bil_cls(bool flg_dbg){
+bil_cls::bil_cls(bool){
   //Populate only on  constructor call
   if(fmc_vtr.empty()){
     fmc_vtr.push_back( fmc_cls("bilinear_interp",this,PBIL_ALL)); 
@@ -4111,7 +4111,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
 
 //Coordinate Functions /***********************************/ 
-  cod_cls::cod_cls(bool flg_dbg){
+  cod_cls::cod_cls(bool){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("min_coords",this,PCOORD)); 
@@ -4275,7 +4275,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 // 
 //
 //
-  misc_cls::misc_cls(bool flg_dbg){
+  misc_cls::misc_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("imask",this,(int)PMISC1));
@@ -4637,7 +4637,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
 
 
 
-  vlist_cls::vlist_cls(bool flg_dbg){
+  vlist_cls::vlist_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("join",this,(int)PJOIN));
@@ -4705,7 +4705,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
   }
 
 
-var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker)
+var_sct *vlist_cls::push_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker)
   {
   const std::string fnc_nm("push_fnd::fnd");
   bool bret;
@@ -5250,7 +5250,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 
 //Derived Aggregate Functions /************************************************/
 
-  aggd_cls::aggd_cls(bool flg_dbg){
+  aggd_cls::aggd_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("ncap_stats_wvariance",this,(int)PWVARIANCE));
@@ -5400,7 +5400,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 
 //Print Function family /************************************************/
 
-  print_cls::print_cls(bool flg_dbg){
+  print_cls::print_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("print",this,(int)PPRINT));
@@ -5598,7 +5598,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 
 
 //udunits Functions /***********************************/ 
-  udunits_cls::udunits_cls(bool flg_dbg){
+  udunits_cls::udunits_cls(bool){
     //Populate only on  constructor call
     if(fmc_vtr.empty()){
           fmc_vtr.push_back( fmc_cls("udunits",this,PUNITS1)); 
@@ -5743,7 +5743,7 @@ var_sct *vlist_cls::push_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cl
 }
 
 
-var_sct *udunits_cls::strftime_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
+var_sct *udunits_cls::strftime_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
  {
     int nbr_args;
     //int fdx=fmc_obj.fdx();
@@ -5894,7 +5894,7 @@ var_sct *udunits_cls::strftime_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, 
  }
 
 
-var_sct *udunits_cls::regular_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
+var_sct *udunits_cls::regular_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
  {
     int nbr_args;
     // int fdx=fmc_obj.fdx();

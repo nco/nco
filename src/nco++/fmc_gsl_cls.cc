@@ -18,7 +18,7 @@ int  ncap_void(void){
   return 10;
 }
 
-gsl_cls::gsl_cls(bool flg_dbg){
+gsl_cls::gsl_cls(bool ){
     // populate gpr_vtr
   gsl_ini_sf();    // Special Functions 
   gsl_ini_cdf();   // Cumulative distribution Functions
@@ -2916,7 +2916,7 @@ var_sct *gsl_cls::hnd_fnc_uerx(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls
 } // end hnd_fnc_uerx
 
      
-var_sct *gsl_cls::hnd_fnc_stat1(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+var_sct *gsl_cls::hnd_fnc_stat1(bool&,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_stat1");
   int idx;
   int nbr_args;
@@ -3052,7 +3052,7 @@ var_sct *gsl_cls::hnd_fnc_stat1(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 }
 
 
-var_sct *gsl_cls::hnd_fnc_stat2(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+var_sct *gsl_cls::hnd_fnc_stat2(bool&,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_stat2");
   int idx;
   int args_nbr;
@@ -3186,7 +3186,7 @@ var_sct *gsl_cls::hnd_fnc_stat2(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 }
 
 
-var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+var_sct *gsl_cls::hnd_fnc_stat3(bool&,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_stat3");
   int idx;
   int nbr_args;
@@ -3477,7 +3477,7 @@ var_sct *gsl_cls::hnd_fnc_stat3(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
 
      
-var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
+var_sct *gsl_cls::hnd_fnc_stat4(bool&,std::vector<RefAST>&args_vtr,gpr_cls&gpr_obj,ncoTree&walker ){
   const std::string fnc_nm("hnd_fnc_stat4");
   int idx;
   int fdx=gpr_obj.type(); // very important
@@ -3732,7 +3732,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
 
 //GSL2 Class /******************************************/
-  gsl2_cls::gsl2_cls(bool  flg_dbg){
+  gsl2_cls::gsl2_cls(bool  ){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("gsl_rng_min",this,(int)PGSL_RNG_MIN));
@@ -3831,7 +3831,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
 //GSL STATISTICS 2  /****************************************/
 // gsl statistic functions for floating points only
-  gsl_stt2_cls::gsl_stt2_cls(bool  flg_dbg){
+  gsl_stt2_cls::gsl_stt2_cls(bool  ){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
      fmc_vtr.push_back( fmc_cls("gsl_stats_wmean",this,(int)PWMEAN));
@@ -4166,7 +4166,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
 
 //GSL  /****************************************/
 // gsl spline interpolation 
-  gsl_spl_cls::gsl_spl_cls(bool  flg_dbg){
+  gsl_spl_cls::gsl_spl_cls(bool  ){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
      fmc_vtr.push_back( fmc_cls("gsl_interp_linear",this,(int)PLINEAR));
@@ -4222,7 +4222,7 @@ var_sct *gsl_cls::hnd_fnc_stat4(bool& is_mtd,std::vector<RefAST>&args_vtr,gpr_cl
   }
 
 // nb this method is only call with fdx==PEVAL
-var_sct *gsl_spl_cls::eval_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct *gsl_spl_cls::eval_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("gsl_spl_cls::eval_fnd");
     // int fdx=fmc_obj.fdx();   //index
     int nbr_args;
@@ -4334,7 +4334,7 @@ var_sct *gsl_spl_cls::eval_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_
 } // end gsl_spl_cls::eval_fnd 
 
 
-var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){  
+var_sct *gsl_spl_cls::spl_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){  
   const std::string fnc_nm("gsl_spl_cls::spl_fnd");
     int fdx=fmc_obj.fdx();   //index
     int nbr_args;
@@ -4491,7 +4491,7 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
 
 //GSL  /****************************************/
 // gsl Least Squares Fitting
-  gsl_fit_cls::gsl_fit_cls(bool  flg_dbg){
+  gsl_fit_cls::gsl_fit_cls(bool  ){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
      fmc_vtr.push_back( fmc_cls("gsl_fit_linear",this,(int)PLIN));
@@ -4544,7 +4544,7 @@ var_sct *gsl_spl_cls::spl_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_c
 } // end gsl_fit_cls::fnd 
 
 
-var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct *gsl_fit_cls::fit_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("gsl_fit_cls::fit_fnd");
     int idx;
     int fdx=fmc_obj.fdx();   //index
@@ -4881,7 +4881,7 @@ var_sct *gsl_fit_cls::fit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_c
 } // end gsl_fit_cls::fit_fnd 
 
 
-var_sct *gsl_fit_cls::fit_est_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker){
+var_sct *gsl_fit_cls::fit_est_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("gsl_fit_cls::fit_est_fnd");
     bool has_mss_val; 
     int idx;
@@ -5038,7 +5038,7 @@ int gsl_dmm_stb(void){return 1;}
 
 #ifdef ENABLE_GSL
 // nco_gsl 
-nco_gsl_cls::nco_gsl_cls(bool  flg_dbg)
+nco_gsl_cls::nco_gsl_cls(bool)
 {
   //Populate only on first constructor call
   if(fmc_vtr.empty())
@@ -5090,7 +5090,7 @@ var_sct *nco_gsl_cls::fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &wal
 } // end nco_gsl_cls::fnd 
 
 
-var_sct *nco_gsl_cls::fit_fnd(bool &is_mtd,std::vector<RefAST> &vtr_args,fmc_cls &fmc_obj,ncoTree &walker)
+var_sct *nco_gsl_cls::fit_fnd(bool &,std::vector<RefAST> &vtr_args,fmc_cls &fmc_obj,ncoTree &walker)
 {
   const std::string fnc_nm("nco_gsl_cls::fit_fnd");
   int idx;
