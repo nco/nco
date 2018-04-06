@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.4-beta01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 1 April 2018
+@set update-date 4 April 2018
 @set update-month April 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -343,16 +343,17 @@ Texts. The license is available online at
 @sp 2
 We gratefully acknowledge support for @acronym{NCO} development and
 maintenance provided by these institutions and programs:
-@acronym{DOE} @acronym{ACME} DE-SC0012998, 
-@acronym{NASA} @acronym{ACCESS} NNX12AF48A and NNX14AH55A, and
-@acronym{NSF} @acronym{SEI} IIS-0431203 and AGS-1541031.
+@acronym{DOE} @acronym{ACME} @acronym{DE-SC0012998}, 
+@acronym{NASA} @acronym{ACCESS} @acronym{NNX12AF48A} and
+@acronym{NNX14AH55A}, and @acronym{NSF} @acronym{SEI}
+@acronym{IIS-0431203} and @acronym{AGS-1541031}. 
 This research was supported as part of the Energy Exascale Earth System
 Model (@acronym{E3SM}) project, formerly known as Accelerated Climate
 Modeling for Energy (@acronym{ACME}),
 funded by the U.S. Department of Energy, Office of Science, Office of
 Biological and Environmental Research.
 This material is based upon work supported by the National Science
-Foundation under Grants IIS-0431203 and AGS-1541031.
+Foundation.
 @sp 2
 The original author of this software, Charlie Zender, wants to improve it
 with the help of your suggestions, improvements, bug-reports, and patches.@*
@@ -22532,7 +22533,8 @@ The @var{alg_typ} argument must be @code{tempest} or one of
 @acronym{ERWG}'s five interpolation algorithms:
 @code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{bln}), 
 @code{conserve} (or @code{conservative}, @code{cns}, @code{c1}, or @code{aave}), 
-@code{conserve2nd} (or @code{conservative2nd}, @code{c2}, or @code{c2nd}), 
+@code{conserve2nd} (or @code{conservative2nd}, @code{c2}, or @code{c2nd})
+(@acronym{NCO} supports @code{conserve2nd} as of version 4.7.4 (April, 2018)), 
 @code{nearestdtos} (or @code{nds} or @code{dtos}), 
 @code{neareststod} (or @code{nds} or @code{stod}), 
 and @code{patch} (or @code{pch} or @code{ptc}). 
@@ -23719,6 +23721,44 @@ TempestRemap's @command{GenerateOfflineMap}) (and not to
 The user-specified contents of @var{wgt_opt}, if any, supercede the
 default contents for the weight-generator.
 The default option for @acronym{ERWG} is @samp{--ignore_unmapped}).
+@command{ncremap} does not set the @acronym{ERWG}
+@samp{--ignore_degenerate} option by default, since it is new
+as of @acronym{ERWG} version 7.1.0r (March, 2018) and would break
+workflows on installations that upgraded @acronym{NCO} but not
+@acronym{ESMF} (this is common).
+However, @acronym{ERWG} 7.1.0r and later require
+@samp{--ignore_degenerate} to successfully regrid some datasets (e.g.,
+@acronym{CICE}) that previous @acronym{ERWG} versions handle fine.
+Hence @command{ncremap} 4.7.4 and later may error on such datasets. 
+The workaround (with @acronym{ESMF} 7.1.0r and later) is to explicitly
+pass the base @acronym{ERWG} options with @command{ncremap}'s
+@samp{--esmf_opt} option:
+@example
+@verbatim
+ncremap --esmf_opt='--ignore_unmapped --ignore_degenerate' ...
+@end verbatim
+@end example
+We will make @samp{--ignore_degenerate} a default option to
+@acronym{ERWG} in a future @acronym{NCO} version, once more
+sites have installed @acronym{ERWG} version 7.1.0r or later.
+@ignore
+@acronym{ncremap} sets the new @acronym{ERWG} @samp{--ignore_degenerate} 
+option by default, since it is required to successfully regrid some
+datasets (e.g., @acronym{CICE}) that previous @acronym{ERWG} versions
+handled fine. 
+Hence @command{ncremap} 4.7.5 and later must be used with @acronym{ESMF}
+7.1.0r and later, otherwise it passes the older @acronym{ERWG} an
+unknown option (@code{--ignore_degenerate}). 
+The workaround (if you are stuck with @acronym{ESMF} < 7.1.0r) is to
+explicitly pass the @acronym{ERWG} options using @command{ncremap}'s
+@samp{--esmf_opt} option:   
+@example
+@verbatim
+ncremap --esmf_opt='--ignore_unmapped' -d dst.nc in.nc out.nc
+@end verbatim
+@end example
+@end ignore
+
 The @acronym{ERWG} and TempestRemap documentation shows all available
 options. 
 For example, to cause @acronym{ERWG} to output to a netCDF4 file,  
@@ -23798,6 +23838,7 @@ destination point values with the @acronym{ERWG} weight generator.
 Default is @math{@var{xtr_nsp} = 8}.
 For more information on @acronym{ERWG} extrapolation, see documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
+@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
 
 @html
 <a name="xtr_typ"></a> <!-- http://nco.sf.net/nco.html#xtr_typ -->
@@ -23818,6 +23859,7 @@ Valid values and their synonyms are
 Default is @math{@var{xtr_typ} = @code{none}}.
 For more information on @acronym{ERWG} extrapolation, see documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
+@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
 
 @html
 <a name="xtr_xpn"></a> <!-- http://nco.sf.net/nco.html#xtr_xpn -->
@@ -23833,6 +23875,7 @@ destination point values with the @acronym{ERWG} weight generator.
 Default is @math{@var{xtr_xpn} = 2.0}.
 For more information on @acronym{ERWG} extrapolation, see documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
+@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
 @end table
 
 @unnumberedsubsec Limitations to @command{ncremap}

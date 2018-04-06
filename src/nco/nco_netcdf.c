@@ -1580,7 +1580,7 @@ nco_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * 
   int rcd;
   rcd=nc_inq_vlen(nc_id,var_typ,typ_nm,typ_sz,bs_typ);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_vlen() type %d\n",fnc_nm,var_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_vlen()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_vlen() */
 

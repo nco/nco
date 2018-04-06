@@ -304,7 +304,22 @@ make install
 # netCDF4/HDF5 in /usr/local
 cd ~/nco/cmake
 cmake .. -DCMAKE_INSTALL_PREFIX=${HOME} -DNETCDF_INCLUDE:PATH=${NETCDF_INC} -DNETCDF_LIBRARY:FILE=${NETCDF_LIB}/libnetcdf.a -DHDF5_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a -DHDF5_HL_LIBRARY:FILE=${NETCDF_LIB}/libhdf5.a # Glace
-make install
+make install				
+
+# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on acme1:
+# Sysadmin upgrade request: 
+# Latest sysadmin-compiled module usage: 
+# Personal recipe last modified: 2016??
+# Personal recipe last used successfully: ?
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/uvcdat/2016-01-21/Externals' UDUNITS2_PATH='/usr/local/uvcdat/2016-01-21/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
+/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
+make clean;make > nco.make.${GNU_TRP}.foo 2>&1
+make check >> nco.make.${GNU_TRP}.foo 2>&1
+make install >> nco.make.${GNU_TRP}.foo 2>&1
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on aims4:
 # Sysadmin upgrade request: 

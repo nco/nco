@@ -21,7 +21,7 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. netCDF 4.6.1 fixes the CDF5 bug. Yay!
-   We strongly recommend that all CDF5 users upgrade to netCDF 4.6.1.
+   We STRONGLY recommend that CDF5 users upgrade to netCDF 4.6.1.
    NCO error messages and HINTs have been updated to better describe
    the best practices to identify and avoid this nasty bug.
    http://nco.sf.net#bug_cdf5
@@ -75,6 +75,9 @@ F. ncap2 where() terminates if the LHS variable in the assignment
    hyperslabs and the results confused users. The manual now clarifies 
    how to use where() with hyperslabs:
    http://nco.sf.net/nco.html#where
+
+G. Add "elm" and "ctsm" as prc_typ synonyms to "alm" and "clm" in 
+   processing type options passed to ncremap -P. 
 
 BUG FIXES:
 

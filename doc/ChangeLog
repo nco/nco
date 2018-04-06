@@ -1,8 +1,10 @@
-2018-04-04  Charlie Zender  <zender@uci.edu>
+2018-04-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.4: fxm';git push
+	cd ~/nco;git commit -a -m 'Version 4.7.4: CSSI';git push
 	git tag -a 4.7.4 -m 'CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2nd, extrapolation; prn S5P L1B/L2; fix whitelist; enm/vln stubs';git push --tags
+
+2018-04-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4-beta01: Ireland';git push

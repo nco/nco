@@ -357,7 +357,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
      Multi-file operators take input filenames from positional arguments, if any
      Otherwise, multi-file operators try to get input filenames from stdin */
 
-  const char fnc_nm[]="nco_fl_lst_mk()"; /* [sng] Function name */
+  //  const char fnc_nm[]="nco_fl_lst_mk()"; /* [sng] Function name */
 
   nco_bool FL_OUT_FROM_PSN_ARG=True; /* [flg] fl_out comes from positional argument */
 
