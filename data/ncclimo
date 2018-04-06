@@ -367,9 +367,9 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #          fml_nm_XX_YYYYMM_YYYYMM.nc (examples include '' (default), 'control', 'experiment')
 #          By default, fml_nm=$caseid. Use fml_nm instead of $caseid to simplify long names, avoid overlap, etc.
 # hst_nm:  History volume name referring to the $hst_nm character sequence used in history tape names:
-#          caseid.mdl_nm.hst_nm.YYYY-MM.nc (examples include 'h0' (default, works for cam, clm), 'h1', 'h' (for cism), 'hist' (for mpascice, mpaso)
+#          caseid.mdl_nm.hst_nm.YYYY-MM.nc (examples include 'h0' (default, works for cam, clm), 'h1', 'h' (for cism), 'hist' (for mpascice, mpasseaice, mpaso)
 # mdl_nm:  Model name referring to the character sequence $mdl_nm used in history tape names:
-#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'mpaso', 'mpascice', 'pop')
+#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'mpascice', 'mpasseaice', 'mpaso', 'pop')
 # nco_opt: String of options to pass-through to NCO, e.g.,
 #          '-D 2 -7 -L 1' for NCO debugging level 2, netCDF4-classic output, compression level 1
 #          '--no_tmp_fl -x' to skip temporary files, turn extraction into exclusion list
@@ -457,7 +457,7 @@ inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
 job_nbr=2 # [nbr] Job simultaneity for parallelism
 lnk_flg='Yes' # [sng] Link E3SM/ACME-climo to AMWG-climo filenames
-mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpaso', 'ocn')
+mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpasseaice', 'mpaso', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
@@ -537,7 +537,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "\n"
     printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate CAM climo\n"
     printf "${fnt_bld}${spt_nm} -c control -m clm2 -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate CLM climo\n"
-    printf "${fnt_bld}${spt_nm} -m mpascice  -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}# Generate MPAS-CICE climo\n"
+    printf "${fnt_bld}${spt_nm} -m mpascice -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}# Generate MPAS-CICE climo\n"
     printf "${fnt_bld}${spt_nm} -m mpaso -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}# Generate MPAS-Ocean climo\n"
     printf "${fnt_bld}cd output;ls *cam*19??-??*.nc | ${spt_nm} -v FSNT,TREFHT -s 1900 -e 1999 -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Split climo\n"
     printf "${fnt_bld}ncclimo -a sdd -c ${caseid_xmp} -m cam -S 41 -E 50 -x ${drc_rgr_xmp}/0041-0050 -s 51 -e 60 -i ${drc_rgr_xmp}/0051-0060 -X ${drc_rgr_xmp}/0041-0060 ${fnt_nrm}# Combine two climos\n\n"
@@ -862,7 +862,7 @@ let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
 
 # Derived variables
 out_nm=${caseid}
-if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpascice' ]; then
+if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ]; then
     mdl_typ='mpas'
     nm_typ='mpas'
 fi # !caseid
@@ -1102,7 +1102,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     fi # !fl_rmd
     if [ ${yr_sbs} -ne ${yr_nbr} ]; then
 	# Sanity check that number of files specified matches number expected from date switches
-	printf "${spt_nm}: ERROR ${fl_nbr} files specified (via stdin pipe, positional, or input directory) expected to contain ${yr_sbs} years of data but date options specified ${yr_nbr} years of data\n"
+	printf "${spt_nm}: ERROR ${fl_nbr} files specified (via stdin pipe, positional, or input directory) expected to contain ${yr_sbs} years of data but date options specify ${yr_nbr} years of data\n"
 	printf "${spt_nm}: HINT Number of files at ${fpy} files-per-year must match number of years implied by arguments to start- and end-year switches (--yr_srt=${yr_srt} and --yr_end=${yr_end}, respectively)\n"
 	exit 1
     fi # !yr_sbs

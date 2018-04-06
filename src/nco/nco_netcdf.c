@@ -1505,7 +1505,7 @@ nco_def_enum(const int nc_id,const nc_type bs_typ,const char * const typ_nm,nc_t
   int rcd;
   rcd=nc_def_enum(nc_id,bs_typ,typ_nm,var_typ);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_def_enum() type \"%s\"\n",fnc_nm,typ_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_enum()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_def_enum() */
 
@@ -1517,7 +1517,7 @@ nco_insert_enum(const int nc_id,const nc_type var_typ,const char * const mbr_nm,
   int rcd;
   rcd=nc_insert_enum(nc_id,var_typ,mbr_nm,vp);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_insert_enum() member \"%s\"\n",fnc_nm,mbr_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_insert_enum()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_insert_enum() */
 
@@ -1529,7 +1529,7 @@ nco_inq_enum(const int nc_id,const nc_type var_typ,char * const typ_nm,nc_type *
   int rcd;
   rcd=nc_inq_enum(nc_id,var_typ,typ_nm,bs_typ,typ_sz,typ_nbr);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_enum() type %d\n",fnc_nm,var_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_enum()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_enum() */
 
@@ -1541,7 +1541,7 @@ nco_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char * c
   int rcd;
   rcd=nc_inq_enum_member(nc_id,var_typ,idx,mbr_nm,vp);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_enum_member() type %d\n",fnc_nm,var_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_enum_member()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_enum_member() */
 
@@ -1553,7 +1553,7 @@ nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val,cha
   int rcd;
   rcd=nc_inq_enum_ident(nc_id,var_typ,val,mbr_nm);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_enum_ident() type %d\n",fnc_nm,var_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_enum_ident()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_enum_ident() */
 
@@ -1568,7 +1568,7 @@ nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_t
   int rcd;
   rcd=nc_def_vlen(nc_id,typ_nm,bs_typ,var_typ);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_def_vlen() type \"%s\"\n",fnc_nm,typ_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_vlen()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_def_vlen() */
 
@@ -1591,7 +1591,7 @@ nco_free_vlen(nc_vlen_t * const vlenp)
   const char fnc_nm[]="nco_free_vlen()";
   int rcd;
   rcd=nc_free_vlen(vlenp);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_free_vlen()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_free_vlen() */
 
@@ -1603,7 +1603,7 @@ nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * 
   int rcd;
   rcd=nc_inq_type(nc_id,var_typ,typ_nm,typ_sz);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_type() type %d\n",fnc_nm,var_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_type()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_type() */
 
@@ -1615,7 +1615,7 @@ nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size
   int rcd;
   rcd=nc_inq_user_type(nc_id,var_typ,typ_nm,typ_sz,bs_typ,fld_nbr,cls_typ);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_user_type() type %d\n",fnc_nm,var_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_user_type()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_user_type() */
 /* End vlen routines */

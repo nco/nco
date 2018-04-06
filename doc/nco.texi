@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.4-beta01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 4 April 2018
+@set update-date 5 April 2018
 @set update-month April 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17369,9 +17369,9 @@ In climatology generation mode, @command{ncclimo} ingests ``raw'' data
 consisting of a monthly or annual timeseries of files and from these
 produces climatological monthly means, seasonal means, and/or annual
 means.
-Alternatively, in timeseries reshaping mode, @command{ncclimo} will
-subset and temporally split the input raw data timeseries into
-per-variable files spanning the entire period. 
+Alternatively, in timeseries reshaping (aka ``splitter'') mode,
+@command{ncclimo} will subset and temporally split the input raw data
+timeseries into per-variable files spanning the entire period. 
 @command{ncclimo} can optionally regrid all output files in either mode.
 
 There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
@@ -17512,12 +17512,6 @@ filenames based on the specified @var{yr_srt} and @var{yr_end}.
 Please tell us any dataset filename regular expressions that you would
 like added to @command{ncclimo}'s internal database.
 
-In timeseries reshaping mode, @var{caseid} will be used, if supplied,
-as an additional string in the output filename.
-For example, specifying @samp{-c control} would cause
-@file{T_000101_000912.nc} to be instead named 
-@file{T_control_000101_000912.nc}.
-
 @cindex @code{-D @var{dbg_lvl}}
 @cindex @var{dbg_lvl}
 @cindex @code{--dbg_lvl}
@@ -17605,7 +17599,7 @@ Examples include @samp{h0} (default, works for @acronym{CAM},
 @item -i @var{drc_in} (@code{--drc_in}, @code{--in_drc}, @code{--dir_in}, @code{--input})
 Directory containing all monthly mean files to read as input to the
 climatology.
-The use of @var{drc_in} is mandatory in climate generation mode but is 
+The use of @var{drc_in} is mandatory in climate generation mode and is 
 optional in timeseries reshaping mode.
 In timeseries reshaping mode, @command{ncclimo} uses all netCDF files
 (meaning files with suffixes @code{.nc}, @code{.nc3}, @code{.nc4},
@@ -17640,7 +17634,7 @@ variables are large and/or the number of threads is large) that a
 single node can perform only one subsetting job at a time, then a
 reasonable value for @var{job_nbr} is the number of nodes,
 @var{node_nbr}. 
-Often, however, nodes can usually subset (and then regrid, if requested) 
+Often, however, nodes can usually subset (and then regrid, if requested)
 multiple variables simultaneously.
 
 By default @math{@var{job_nbr} = 2} in Background mode, and
@@ -18067,8 +18061,8 @@ executables that may be used by the script.
 @cindex @var{ypf_max}
 @cindex @code{--ypf_max}
 @item --ypf_max @var{ypf_max} (@code{--ypf}, @code{--years}, @code{--years_per_file})
-The maximum number of years-per-file output by @command{ncclimo}'s
-splitting operation. 
+Specifies the maximum number of years-per-file output by
+@command{ncclimo}'s splitting operation.  
 When @command{ncclimo} subsets and splits a collection of input files
 spanning a timerseries, it places each subset variable in its own output
 file. 
@@ -18077,7 +18071,12 @@ which defaults to @var{ypf_max}=50.
 If an input timeseries spans @w{237 years} and @var{ypf_max}=50, then
 @command{ncclimo} will generate four output files of length @w{50 years}  
 and one output file of length @w{37 years}.
-This option only takes effect in timeseries reshaping mode.
+Note that invoking this option @emph{causes} @command{ncclimo} to enter
+timeseries reshaping mode.
+In fact, one @emph{must} use @samp{--ypf} to turn-on splitter mode when
+the input files are specified by using the @samp{-i drc_in} method.
+Otherwise it would be ambiguous whether to generate a climatology from 
+or to split the input files. 
 @end table
 @noindent
 
