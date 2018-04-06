@@ -1235,7 +1235,7 @@ double alpha;
 }
 
 
-var_sct * utl_cls::mask_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker) {
+var_sct * utl_cls::mask_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker) {
   const std::string fnc_nm("utl_cls::mask_fnd");
   int nbr_args;
   var_sct *var = NULL_CEWI;
@@ -1301,7 +1301,7 @@ var_sct * utl_cls::mask_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
 
 //Basic Functions /******************************************/
 
-  bsc_cls::bsc_cls(bool  flg_dbg){
+  bsc_cls::bsc_cls(bool){
     //Populate only on first constructor call
     if(fmc_vtr.empty()){
       fmc_vtr.push_back( fmc_cls("size",this,(int)PSIZE));
@@ -1459,7 +1459,7 @@ var_sct * utl_cls::mask_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls
   }       
 
 
-var_sct * bsc_cls::getdims_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker)
+var_sct * bsc_cls::getdims_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker)
 {
   const std::string fnc_nm("bsc_cls::getndims_fnd");
     int nbr_args;
@@ -4873,12 +4873,11 @@ var_sct *vlist_cls::push_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &fmc
 
   }
 
-  var_sct *vlist_cls::get_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
+  var_sct *vlist_cls::get_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
   {
   const std::string fnc_nm("push_fnd::fnd");
   int fdx;
   int nbr_args;
-  int rcd;
   std::string susg;
   std::string sfnm=fmc_obj.fnm();
   std::string att_nm;
@@ -4944,7 +4943,7 @@ var_sct *vlist_cls::push_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &fmc
     else if(fdx==PGET_VARS_OUT)
       fl_id=prs_arg->out_id; 
 
-    rcd=nco_inq(fl_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
+    (void)nco_inq(fl_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
 
     if(vtype==NC_STRING)
     {  
@@ -5014,7 +5013,7 @@ var_sct *vlist_cls::push_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &fmc
 
   }
 
-  var_sct *vlist_cls::atoi_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
+  var_sct *vlist_cls::atoi_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
   {
   const std::string fnc_nm("push_fnd::fnd");
   int fdx;

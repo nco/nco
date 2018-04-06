@@ -5015,6 +5015,7 @@ var_sct *gsl_fit_cls::fit_est_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls
 
 } // end gsl_fit_cls::fit_est_fnd 
 
+/*
 int gsl_fit_cls::rm_miss_arr(
                 double *x_in, long long x_stride,
                 double *y_in, long long y_stride, 
@@ -5025,7 +5026,7 @@ int gsl_fit_cls::rm_miss_arr(
 
   return 0;
 }
-
+*/
 
 #else // !ENABLE_GSL
 
