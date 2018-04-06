@@ -22,7 +22,7 @@ BuildRequires:  automake, autoconf, libtool
 BuildRequires:  netcdf, netcdf-devel
 BuildRequires:  udunits, udunits-devel
 # Required for ncap:
-BuildRequires:  bison, flex
+BuildRequires:  flex
 # Required for ncap2:
 BuildRequires:  gsl, gsl-devel
 #BuildRequires:  antlr antlr-c++-devel
@@ -108,7 +108,7 @@ fi
 # %{_libdir}/libnco++.so
 
 %changelog
-* Fri Mar 03 2018 Charlie Zender <zender@uci.edu> - 4.7.4-1
+* Fri Apr 06 2018 Charlie Zender <zender@uci.edu> - 4.7.4-1
 - new upstream 4.7.4
 
 * Fri Mar 03 2018 Charlie Zender <zender@uci.edu> - 4.7.3-1

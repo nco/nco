@@ -79,6 +79,9 @@ F. ncap2 where() terminates if the LHS variable in the assignment
 G. Add "elm" and "ctsm" as prc_typ synonyms to "alm" and "clm" in 
    processing type options passed to ncremap -P. 
 
+H. Add "mpasseaice" as mdl_nm synonym to "mpascice" in model name
+   option passed to ncclimo -m. 
+
 BUG FIXES:
 
 A. Skip-over rather than fail when printing user-defined types.
