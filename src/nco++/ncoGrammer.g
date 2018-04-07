@@ -103,7 +103,7 @@ statement:
             #statement = #(#[EXPR,"EXPR"],#statement); 
         }
         
-        // Define DEFDIM statment 
+        // Define DEFDIM statement 
         // DEFDIMA (regular call - limited or unlimited ) DEFDIM(1)
         // DEFDIMU (explicitly unlimited)                 DEFDIM(0)
         | (def1:DEFDIMA^ |def2:DEFDIMU^  ) LPAREN! NSTRING COMMA! expr (COMMA! expr)?  RPAREN! SEMI! { 
@@ -1415,7 +1415,7 @@ static std::vector<std::string> lpp_vtr;
           bunlimited =true;
         } else    
         if(dCall==1 && var2){
-           // nb var2 is in upper scope - defined at statment action start
+           // nb var2 is in upper scope - defined at statement action start
            var2=nco_var_cnf_typ(NC_INT,var2);
            (void)cast_void_nctype(NC_INT,&var2->val);
            ityp=var2->val.ip[0]; 
@@ -3384,7 +3384,7 @@ var_sct *var_rhs;
    bret=false;
 
    if(vid->getType()==VAR_ID &&  vid->getFirstChild()  && vid->getFirstChild()->getType()==LMT_LIST )  
-     err_prn(fnc_nm, "the \"where statement\" cannot handle a variable with limits on the Left-Hand-Side of an assign statment. Please  remove the limts and try again\nThe variable involved is \""+ vid->getText()+"\"");
+     err_prn(fnc_nm, "the \"where statement\" cannot handle a variable with limits on the Left-Hand-Side of an assign statement. Please  remove the limts and try again\nThe variable involved is \""+ vid->getText()+"\"");
                      
    //var_lhs=prs_arg->ncap_var_init(var_nm,true);
    var_lhs=out(vid);

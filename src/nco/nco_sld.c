@@ -896,7 +896,7 @@ nco_rgr_esmf /* [fnc] Regrid using ESMF library */
        All of the following "abort()" statements could be replace "goto rgr_cln:" statements
        gcc is fine with this, but it triggers clang "sometimes uninitialized" warnings
        g++ (without -fpermissive) emits "jump to label" "crosses initialization" warnings 
-       when pointers are declared between the goto statment and the label statement 
+       when pointers are declared between the goto statement and the label statement 
        Hence we abandon the false premise of recovery after ESMC errors, and just abort() */
     abort();
   } /* endif */
@@ -1304,7 +1304,7 @@ nco_rgr_esmf2 /* [fnc] Regrid using ESMF library */
        All of the following "abort()" statements could be replace "goto rgr_cln:" statements
        gcc is fine with this, but it triggers clang "sometimes uninitialized" warnings
        g++ (without -fpermissive) emits "jump to label" "crosses initialization" warnings 
-       when pointers are declared between the goto statment and the label statement 
+       when pointers are declared between the goto statement and the label statement 
        Hence we abandon the false premise of recovery after ESMC errors, and just abort() */
     abort();
   } /* endif */

@@ -1425,7 +1425,7 @@
 
 2017-03-09 Henry Butowsky  <henryb@hush.com>
 
-	* Fix plain var NC_CHAR assign statment so if var exists in Input then shape is obtained from Input
+	* Fix plain var NC_CHAR assign statement so if var exists in Input then shape is obtained from Input
 
 2017-03-08  Charlie Zender  <zender@uci.edu>
 
@@ -2933,7 +2933,7 @@
 
 2015-12-04  Henry Butowsky  <henryb@hush.com>
 
-	* Modify where statment such that the assign statment in where body is NOT missing value aware
+	* Modify where statement such that the assign statement in where body is NOT missing value aware
 
 2015-12-04  Henry Butowsky  <henryb@hush.com>
 
