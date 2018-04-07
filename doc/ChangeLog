@@ -1,5 +1,9 @@
 2018-04-06  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.5-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha01: Giant\'s Causeway';git push
+	git tag -a 4.7.5-alpha01 -m 'Functionally identical to 4.7.4';git push --tags
+
 	* NCO 4.7.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.4: CSSI';git push
 	git tag -a 4.7.4 -m 'CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2nd, extrapolation; prn S5P L1B/L2; fix whitelist; enm/vln stubs';git push --tags

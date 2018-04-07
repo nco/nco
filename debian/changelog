@@ -1,12 +1,18 @@
+nco (4.7.5-1) unstable; urgency=low
+
+  * new upstream version fxm: hi
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 06 May 2018 12:25:31 -0700
+
 nco (4.7.4-1) unstable; urgency=low
 
-  * new upstream version CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2nd, extrapolation; prn S5P L1B/L2; fix whitelist; enm/vln stubs
+  * new upstream version CSSI: CF OOG; CDF5 fix; support ESMF 7.1.0r conserve2nd, extrapolation; prn S5P L1B/L2; fix whitelist; enm/vln stubs
 
  -- Charlie Zender <zender@uci.edu>  Fri, 06 Apr 2018 12:25:30 -0700
 
 nco (4.7.3-1) unstable; urgency=low
 
-  * new upstream version sanitize, --a2o, --nm_typ, --fmt_val, --fl_prn, deprecate ncap
+  * new upstream version Avid Poi: sanitize, --a2o, --nm_typ, --fmt_val, --fl_prn, deprecate ncap
 
  -- Charlie Zender <zender@uci.edu>  Fri, 03 Mar 2018 12:25:29 -0700
 
