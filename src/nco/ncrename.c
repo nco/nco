@@ -409,7 +409,7 @@ main(int argc,char **argv)
 	} /* endif */
 
     if(mch_nbr == 0 && !is_opt){
-      (void)fprintf(stdout,"%s: ERROR Required variable \'%s\' is not present in input file. HINT: If presence is intended to be optional, then prefix old variable name with the period character \'%c\', i.e., \'%s -v %c%s,%s\'. With this syntax %s would succeed even if no such variable is in the file.\n",nco_prg_nm_get(),var_rnm_lst[idx_var].old_nm,opt_chr,nco_prg_nm_get(),opt_chr,var_rnm_lst[idx_var].old_nm,var_rnm_lst[idx_var].new_nm,nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Required variable \'%s\' is not present in input file. HINT: If presence is intended to be optional, then prefix old variable name with the period character \'%c\', i.e., \'%s -v %c%s,%s\'. With this syntax %s would succeed even when no such variable is in the file.\n",nco_prg_nm_get(),var_rnm_lst[idx_var].old_nm,opt_chr,nco_prg_nm_get(),opt_chr,var_rnm_lst[idx_var].old_nm,var_rnm_lst[idx_var].new_nm,nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     }else if(mch_nbr == 0 && is_opt){
       (void)fprintf(stdout,"%s: INFO Optional variable \'%s\' not present in %s, skipping it\n",nco_prg_nm,var_rnm_lst[idx_var].old_nm+1L,fl_in);
@@ -444,7 +444,7 @@ main(int argc,char **argv)
 	} /* endif */
 
     if(mch_nbr == 0 && !is_opt){
-      (void)fprintf(stdout,"%s: ERROR Required group \'%s\' is not present in input file. HINT: If presence is intended to be optional, then prefix old group name with the period character \'%c\', i.e., \'%s -g %c%s,%s\'. With this syntax %s would succeed even if no such group is in the file.\n",nco_prg_nm_get(),grp_rnm_lst[idx_grp].old_nm,opt_chr,nco_prg_nm_get(),opt_chr,grp_rnm_lst[idx_grp].old_nm,grp_rnm_lst[idx_grp].new_nm,nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Required group \'%s\' is not present in input file. HINT: If presence is intended to be optional, then prefix old group name with the period character \'%c\', i.e., \'%s -g %c%s,%s\'. With this syntax %s would succeed even when no such group is in the file.\n",nco_prg_nm_get(),grp_rnm_lst[idx_grp].old_nm,opt_chr,nco_prg_nm_get(),opt_chr,grp_rnm_lst[idx_grp].old_nm,grp_rnm_lst[idx_grp].new_nm,nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     }else if(mch_nbr == 0 && is_opt){
       (void)fprintf(stdout,"%s: INFO Optional group \'%s\' not present in %s, skipping it\n",nco_prg_nm,grp_rnm_lst[idx_grp].old_nm+1L,fl_in);
@@ -480,7 +480,7 @@ main(int argc,char **argv)
       } /* endif */
 
     if(mch_nbr == 0 && !is_opt){
-      (void)fprintf(stdout,"%s: ERROR Required dimension \'%s\' is not present in input file. HINT: If presence is intended to be optional, then prefix old dimension name with the period character \'%c\', i.e., \'%s -d %c%s,%s\'. With this syntax %s would succeed even if no such dimension is in the file.\n",nco_prg_nm_get(),dmn_rnm_lst[idx_dmn].old_nm,opt_chr,nco_prg_nm_get(),opt_chr,dmn_rnm_lst[idx_dmn].old_nm,dmn_rnm_lst[idx_dmn].new_nm,nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Required dimension \'%s\' is not present in input file. HINT: If presence is intended to be optional, then prefix old dimension name with the period character \'%c\', i.e., \'%s -d %c%s,%s\'. With this syntax %s would succeed even when no such dimension is in the file.\n",nco_prg_nm_get(),dmn_rnm_lst[idx_dmn].old_nm,opt_chr,nco_prg_nm_get(),opt_chr,dmn_rnm_lst[idx_dmn].old_nm,dmn_rnm_lst[idx_dmn].new_nm,nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     }else if(mch_nbr == 0 && is_opt){
       (void)fprintf(stdout,"%s: INFO Optional dimension \'%s\' not present in %s, skipping it\n",nco_prg_nm,dmn_rnm_lst[idx_dmn].old_nm+1L,fl_in);
@@ -576,7 +576,7 @@ main(int argc,char **argv)
 	  continue;
 	} /* endif optional attribute */
 	if(!att_is_opt && rcd != NC_NOERR){
-	  (void)fprintf(stdout,"%s: ERROR Required attribute \'%s\' not present in %s \'%s\'.\nHINT: If attribute presence is intended to be optional, then prefix attribute name with the period character \'%c\', e.g., %c%s. With this syntax %s would succeed even if no variables or groups contained the attribute. If attribute is intended to be renamed only in a specific variable, then prepend the variable name plus an at-sign \'%c\' to the attribute name, e.g., var_nm%catt_nm. If attribute presence is required only for root group (i.e., a global attribute), then prefix attribute name with \"global\" and an at-sign, e.g., global%catt_nm. If attribute presence is required for all groups, then prefix attribute name with \"group\" and an at-sign, e.g., group%catt_nm.\n",nco_prg_nm_get(),att_rnm_lst[idx_att].old_nm,obj_is_var ? "variable" : "group",trv_tbl->lst[tbl_idx].nm_fll,opt_chr,opt_chr,att_rnm_lst[idx_att].old_nm,nco_prg_nm_get(),dlm_chr,dlm_chr,dlm_chr,dlm_chr);
+	  (void)fprintf(stdout,"%s: ERROR Required attribute \'%s\' not present in %s \'%s\'.\nHINT: If attribute presence is intended to be optional, then prefix attribute name with the period character \'%c\', e.g., %c%s. With this syntax %s would succeed even when no variables or groups contain the attribute. If the attribute is intended to be renamed only in a specific variable, then prepend the variable name plus an at-sign \'%c\' to the attribute name, e.g., var_nm%catt_nm. If attribute presence is required only for root group (i.e., a global attribute), then prefix attribute name with \"global\" and an at-sign, e.g., global%catt_nm. If attribute presence is required for all groups, then prefix attribute name with \"group\" and an at-sign, e.g., group%catt_nm.\n",nco_prg_nm_get(),att_rnm_lst[idx_att].old_nm,obj_is_var ? "variable" : "group",trv_tbl->lst[tbl_idx].nm_fll,opt_chr,opt_chr,att_rnm_lst[idx_att].old_nm,nco_prg_nm_get(),dlm_chr,dlm_chr,dlm_chr,dlm_chr);
 	  nco_err_exit(rcd,"main");
 	} /* endif required attribute */
 
