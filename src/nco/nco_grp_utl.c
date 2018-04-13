@@ -2447,7 +2447,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     /* Keep the old table objects size for insertion */
     idx=trv_tbl->nbr;
 
-    /* Add one more element to GTT (nco_realloc nicely handles first time/not first time insertions) */
+    /* Add new object to GTT (nco_realloc nicely handles first time/not first time insertions) */
     trv_tbl->nbr++;
     trv_tbl->lst=(trv_sct *)nco_realloc(trv_tbl->lst,trv_tbl->nbr*sizeof(trv_sct));
 

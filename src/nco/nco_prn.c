@@ -2901,8 +2901,11 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
      2. Input ID is netCDF file ID, not extracted group ID */
 
   /* Testing: 
+     ncks --cdl ~/nco/data/buggy.nc
      ncks --cdl ~/nco/data/in_grp.nc
      ncks --trd ~/nco/data/in_grp.nc */
+
+  const char fnc_nm[]="nco_prn_cdl_trd()"; /* [sng] Function name */
 
   const char sls_sng[]="/";        /* [sng] Slash string */
   const char spc_sng[]="";        /* [sng] Space string */
@@ -3040,6 +3043,8 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
       var_lst[var_nbr_xtr].id=obj_idx;
       var_lst[var_nbr_xtr].nm=strdup(var_nm);
       var_nbr_xtr++;
+    }else if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var){
+      (void)fprintf(stdout,"%s: DEBUG %s reports %s is non-atomic (e.g., compound, enum_t, opaque, vlen_t, or user-defined) variable type. Support is minimal.\n",nco_prg_nm_get(),fnc_nm,var_nm);
     } /* endif extracted */
 
     /* Free constructed name */
@@ -3127,7 +3132,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   /* Mark end of output */
   (void)fprintf(fp_out,"%*s} // group %s\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,(grp_dpt == 0) ? grp_nm_fll : nm2sng_cdl(nco_gpe_evl(prn_flg->gpe,grp_nm_fll)));
   return rcd;
-} /* end nco_grp_prn_cdl_trd() */
+} /* end nco_prn_cdl_trd() */
 
 int /* [rcd] Return code */
 nco_prn_xml /* [fnc] Recursively print group contents */
