@@ -8,7 +8,6 @@
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
 #include "nco_prn.h" /* Print variables, attributes, metadata */
-#include "nco.h"
 
 int 
 nco_att_nbr        /* [fnc] return number of atts in var or global atts in group */ 
@@ -2902,6 +2901,8 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
   /* Testing: 
      ncks --cdl ~/nco/data/buggy.nc
+     ncks --cdl ~/nco/data/vlen.nc
+     ncks --cdl ~/nco/data/enum.nc
      ncks --cdl ~/nco/data/in_grp.nc
      ncks --trd ~/nco/data/in_grp.nc */
 
@@ -3043,10 +3044,16 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
       var_lst[var_nbr_xtr].id=obj_idx;
       var_lst[var_nbr_xtr].nm=strdup(var_nm);
       var_nbr_xtr++;
-    }else if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var){
-      (void)fprintf(stdout,"%s: DEBUG %s reports %s is non-atomic (e.g., compound, enum_t, opaque, vlen_t, or user-defined) variable type. Support is minimal.\n",nco_prg_nm_get(),fnc_nm,var_nm);
     } /* endif extracted */
 
+    /* Is variable to be non-atomic? */
+    if(nco_dbg_lvl_get() == nco_dbg_std){
+      for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
+	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var){
+	  (void)fprintf(stdout,"%s: DEBUG %s reports %s is non-atomic (e.g., compound, enum, opaque, vlen, or user-defined) variable type. Support is minimal.\n",nco_prg_nm_get(),fnc_nm,var_nm);
+      } /* !ntm */
+    } /* !dbg */
+    
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
 
