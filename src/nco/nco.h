@@ -967,6 +967,7 @@ extern "C" {
     nco_bool jsn; /* [flg] Print JSON */
     nco_bool xml; /* [flg] Print XML (NcML) */
     nco_bool hdn; /* [flg] Print hidden attributes */
+    nco_bool ntm; /* [flg] Print non-atomic variables */
     nco_bool rad; /* [flg] Retain all dimensions */
     nco_bool xml_lcn; /* [flg] Print XML location tag */
     nco_bool nfo_xtr; /* [flg] Print extra information in CDL/XML mode */

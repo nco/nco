@@ -22,12 +22,12 @@ netcdf vlen {
 
  variables:
    vlen_t vlen_1D;
-   vlen_1D:_FillValue={-999};
+   vlen_1D:_FillValue={-999}; // vlen data MUST BE enclosed in braces
    vlen_t vlen_2D(lat);
-   vlen_2D:_FillValue={-999};
+   vlen_2D:_FillValue={-999}; // vlen data MUST BE enclosed in braces
 
  data:
-   vlen_1D={17,18,19};
-   vlen_2D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
+   vlen_1D={17,18,19}; // vlen data MUST BE enclosed in braces
+   vlen_2D={17,18,19},{1,2,3,4,5,6,7,_,9,_}; // vlen data MUST BE enclosed in braces
 
 } // end root group

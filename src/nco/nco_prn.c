@@ -1379,10 +1379,10 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 } /* end nco_prn_var_val_lmt() */
 
 void
-nco_prn_var_dfn                     /* [fnc] Print variable metadata */
-(const int nc_id,                   /* I [id] netCDF file ID */
+nco_prn_var_dfn /* [fnc] Print variable metadata */
+(const int nc_id, /* I [id] netCDF file ID */
  const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
- const trv_sct * const var_trv)     /* I [sct] Object to print (variable) */
+ const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata */
   const char spc_sng[]=""; /* [sng] Space string */
@@ -1439,8 +1439,8 @@ nco_prn_var_dfn                     /* [fnc] Print variable metadata */
   /* Loop over dimensions */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
 
-    /* Dimension has coordinate variable */
     if(var_trv->var_dmn[dmn_idx].is_crd_var){
+      /* Dimension has coordinate variable */
       /* Get coordinate from table */
       crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
       /* Use hyperslabbed size */
@@ -3032,10 +3032,28 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
     strcat(var_nm_fll,var_nm);
 
     /* Find variable in traversal table */
-    for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
-      if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var)
-	if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
-	  break;
+    if(!prn_flg->ntm){
+      /* Normal variable */
+      for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
+	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var)
+	  if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
+	    break;
+    }else{
+      for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
+	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var || trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var)
+	  if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
+	    break;
+
+      if(nco_dbg_lvl_get() >= nco_dbg_std){
+	if(obj_idx != obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var){
+	  (void)fprintf(stdout,"%s: DEBUG %s reports grp_nm_fll = %s, grp_dpt = %d, nbr_var = %d\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,grp_dpt,nbr_var);
+	  (void)fprintf(stdout,"%s: DEBUG %s reports %s is non-atomic (e.g., compound, enum, opaque, vlen, or user-defined) variable type. Support is minimal.\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	  (void)fprintf(stdout,"%s: DEBUG %s reports obj_nm = %s, var_nm = %s, flg_xtr = %d\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[obj_idx].nm_fll,var_nm_fll,trv_tbl->lst[obj_idx].flg_xtr);
+	  trv_sct var_trv=trv_tbl->lst[obj_idx];
+	  (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
+	} /* !ntm */
+      } /* !dbg */
+    } /* !ntm */
     
     /* Is variable to be extracted? */
     if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
@@ -3046,18 +3064,10 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
       var_nbr_xtr++;
     } /* endif extracted */
 
-    /* Is variable to be non-atomic? */
-    if(nco_dbg_lvl_get() == nco_dbg_std){
-      for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
-	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var){
-	  (void)fprintf(stdout,"%s: DEBUG %s reports %s is non-atomic (e.g., compound, enum, opaque, vlen, or user-defined) variable type. Support is minimal.\n",nco_prg_nm_get(),fnc_nm,var_nm);
-      } /* !ntm */
-    } /* !dbg */
-    
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
 
-  } /* end loop over variables */
+  } /* !var_idx */
 
   /* Compactify array to hold names and indices of extracted variables in this group */
   var_lst=(nm_id_sct *)nco_realloc(var_lst,var_nbr_xtr*(sizeof(nm_id_sct)));
