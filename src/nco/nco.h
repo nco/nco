@@ -1348,6 +1348,7 @@ extern "C" {
     nco_bool flg_mtd;                 /* [flg] Group contains only metadata */
     nco_bool flg_ncs;                 /* [flg] Group is ancestor of specified group or variable */
     nco_bool flg_nsx;                 /* [flg] Object matches intersection criteria */
+    nco_bool flg_ntm;                 /* [flg] Variable is non-atomic */
     nco_bool flg_rcr;                 /* [flg] Extract group recursively */
     nco_bool flg_rgr;                 /* [flg] Regrid variable */ 
     nco_bool flg_xtn;                 /* [flg] Extensive variable */ 
