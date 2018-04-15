@@ -1385,6 +1385,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
  const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata */
+  const char fnc_nm[]="nco_prn_var_dfn()";
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *dmn_sng=NULL;
@@ -1439,7 +1440,9 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   /* Loop over dimensions */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
 
-    if(var_trv->var_dmn[dmn_idx].is_crd_var){
+    if(var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1\n",nco_prg_nm_get(),fnc_nm);
+
+      if(var_trv->var_dmn[dmn_idx].is_crd_var){
       /* Dimension has coordinate variable */
       /* Get coordinate from table */
       crd_sct *crd=var_trv->var_dmn[dmn_idx].crd;
@@ -1456,6 +1459,8 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     } /* end else */
 
   } /* end loop over dimensions */
+
+  if(var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark2\n",nco_prg_nm_get(),fnc_nm);
 
   /* Print header for variable */
   if(prn_flg->new_fmt && !prn_flg->xml && !prn_flg->jsn) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
@@ -3043,17 +3048,19 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var || trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var)
 	  if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
 	    break;
-
-      if(nco_dbg_lvl_get() >= nco_dbg_std){
-	if(obj_idx != obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var){
+      
+      if(obj_idx != obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var){
+	/* Variable is non-atomic, print helpful information */
+	if(nco_dbg_lvl_get() >= nco_dbg_std){
 	  (void)fprintf(stdout,"%s: DEBUG %s reports grp_nm_fll = %s, grp_dpt = %d, nbr_var = %d\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,grp_dpt,nbr_var);
 	  (void)fprintf(stdout,"%s: DEBUG %s reports %s is non-atomic (e.g., compound, enum, opaque, vlen, or user-defined) variable type. Support is minimal.\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  (void)fprintf(stdout,"%s: DEBUG %s reports obj_nm = %s, var_nm = %s, flg_xtr = %d\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[obj_idx].nm_fll,var_nm_fll,trv_tbl->lst[obj_idx].flg_xtr);
 	  trv_sct var_trv=trv_tbl->lst[obj_idx];
 	  (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
-	} /* !ntm */
-      } /* !dbg */
-    } /* !ntm */
+	} /* !dbg */
+      } /* !ntm */
+
+    } /* ntm */
     
     /* Is variable to be extracted? */
     if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){

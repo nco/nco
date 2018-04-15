@@ -2444,10 +2444,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       } /* endif */
     } /* > NC_MAX_ATOMIC_TYPE */
 
-    /* Keep the old table objects size for insertion */
+    /* Keep old table objects size for insertion */
     idx=trv_tbl->nbr;
 
-    /* Add new object to GTT (nco_realloc nicely handles first time/not first time insertions) */
+    /* Add new object to GTT */
     trv_tbl->nbr++;
     trv_tbl->lst=(trv_sct *)nco_realloc(trv_tbl->lst,trv_tbl->nbr*sizeof(trv_sct));
 
@@ -2520,14 +2520,14 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].crd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].ncd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;
-      /* Assume dimension is to keep on output */
+      /* Assume dimension will be kept on output */
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg=False;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;  
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].lat_crd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].lon_crd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].nbr_lat_crd=0;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].nbr_lon_crd=0;
-    } /* endfor */
+    } /* !idx_dmn_var */
 
     /* Variable dimensions; store what we know at this time: relative name and ID */
     for(int idx_dmn_var=0;idx_dmn_var<nbr_dmn_var;idx_dmn_var++){
@@ -2540,23 +2540,23 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=dmn_id_var[idx_dmn_var];
-    } /* Variable dimensions; store what we know at this time: relative name and ID */
+    } /* !idx_dmn_var */
 
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
 
     /* Free dimension IDs array */
     dmn_id_var=(int *)nco_free(dmn_id_var);
-  } /* Iterate variables for this group */
+  } /* !idx_var */
 
   /* Add dimension objects */ 
 
   /* Iterate dimensions (for group; dimensions are defined *for* groups) */
   for(int idx_dmn=0;idx_dmn<nbr_dmn_grp;idx_dmn++){
-    /* Keep the old table dimension size for insertion */
+    /* Keep old table dimension size for insertion */
     idx=trv_tbl->nbr_dmn;
 
-    /* Add one more element to dimension list of GTT (nco_realloc nicely handles first time/not first time insertions) */
+    /* Add one more element to dimension list of GTT */
     trv_tbl->nbr_dmn++;
     trv_tbl->lst_dmn=(dmn_trv_sct *)nco_realloc(trv_tbl->lst_dmn,trv_tbl->nbr_dmn*sizeof(dmn_trv_sct));
 
@@ -2613,7 +2613,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
     /* Free constructed name */
     dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-  } /* end dimension loop */
+  } /* !idx_dmn */
 
   /* Go to sub-groups */ 
   grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
@@ -2622,7 +2622,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   /* Heart of traversal construction: 
      Construct new sub-group path and call function recursively with new name */
   for(int grp_idx=0;grp_idx<nbr_grp;grp_idx++){
-    char *sub_grp_nm_fll=NULL; /* [sng] Sub group path */
+    char *sub_grp_nm_fll=NULL; /* [sng] Sub-group path */
     int gid=grp_ids[grp_idx]; /* [id] Current group ID */  
 
     /* Get sub-group name */
@@ -2645,7 +2645,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
-  } /* end loop over groups */
+  } /* !grp_idx */
 
   grp_ids=(int *)nco_free(grp_ids); 
   dmn_ids_grp=(int *)nco_free(dmn_ids_grp);
@@ -10122,9 +10122,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
           if(rcd == NC_NOERR){
             *flg_nsm_att=True;
 
-            if(nco_dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: ATTRIBUTE ensemble_source in <%s>\n",nco_prg_nm_get(),trv.grp_nm_fll);
-            }
+            if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: ATTRIBUTE ensemble_source in <%s>\n",nco_prg_nm_get(),trv.grp_nm_fll);
      
             /* Add one more element to table */
             (*nsm_grp_nm_fll_prn)->lst=(nm_sct *)nco_realloc((*nsm_grp_nm_fll_prn)->lst,(nbr_nm+1)*sizeof(nm_sct));
