@@ -294,6 +294,11 @@ size_t /* O [B] Native type size */
 nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
 (const nc_type nco_typ); /* I [enm] netCDF type */
 
+size_t /* O [B] Native type size */
+nco_typ_lng_ntm /* [fnc] Convert netCDF type enum to native type size */
+(const int nc_id, /* I [ID] File ID */
+ const nc_type nco_typ); /* I [enm] netCDF type */
+
 const char * /* O [sng] String describing type */
 nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 (const nc_type type); /* I [enm] netCDF type */

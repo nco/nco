@@ -2278,10 +2278,11 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   const char fnc_nm[]="nco_grp_itr()"; /* [sng] Function name */
   const char sls_sng[]="/";        /* [sng] Slash string */
 
-  char grp_nm[NC_MAX_NAME+1];      /* [sng] Group name */
-  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name */ 
-  char dmn_nm[NC_MAX_NAME+1];      /* [sng] Dimension name */ 
-  char rec_nm[NC_MAX_NAME+1];      /* [sng] Record dimension name */ 
+  char grp_nm[NC_MAX_NAME+1L];     /* [sng] Group name */
+  char var_nm[NC_MAX_NAME+1L];     /* [sng] Variable name */ 
+  char dmn_nm[NC_MAX_NAME+1L];     /* [sng] Dimension name */ 
+  char rec_nm[NC_MAX_NAME+1L];     /* [sng] Record dimension name */ 
+  char typ_nm[NC_MAX_NAME+1L];     /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
   char *var_nm_fll;                /* [sng] Full path for variable */
   char *dmn_nm_fll;                /* [sng] Full path for dimension */
   char *sls_psn;                   /* [sng] Current position of group path search */
@@ -2292,6 +2293,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   int *dmn_ids_grp_ult=NULL;       /* [ID] Unlimited (record) dimensions IDs array for group */
   int *dmn_id_var=NULL;            /* [ID] Dimensions IDs array for variable */
   int *grp_ids;                    /* [ID] Sub-group IDs array */  
+  int cls_typ; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
   int grp_dpt=0;                   /* [nbr] Depth of group (root = 0) */
   int nbr_att;                     /* [nbr] Number of attributes */
   int nbr_dmn_grp;                 /* [nbr] Number of dimensions for group */
@@ -2304,9 +2306,13 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   long dmn_sz;                     /* [nbr] Dimension size */ 
   long rec_sz;                     /* [nbr] Record dimension size */ 
 
+  nc_type bs_typ; /* [enm] netCDF atomic type underlying vlen and enum types */
   nc_type var_typ;                 /* O [enm] NetCDF type */
 
   nco_obj_typ obj_typ;             /* [enm] Object type (group or variable) */
+
+  size_t fld_nbr; /* [nbr] Number of fields in enum and compound types */
+  size_t typ_sz; /* [B] Size of user-defined type */
 
   /* Get all information for this group */
 
@@ -2356,6 +2362,12 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].grp_nm_fll=strdup(grp_nm_fll);/* [sng] Full group name (for groups, same as nm_fll) */
   trv_tbl->lst[idx].nm_fll=strdup(grp_nm_fll);    /* [sng] Fully qualified name (path) */
   trv_tbl->lst[idx].nm_fll_lng=strlen(grp_nm_fll);/* [sng] Length of full name */
+
+  trv_tbl->lst[idx].typ_nm=NULL; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
+  trv_tbl->lst[idx].cls_typ=NC_NAT; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
+  trv_tbl->lst[idx].bs_typ=NC_NAT; /* [enm] netCDF atomic type underlying vlen and enum types */
+  trv_tbl->lst[idx].fld_nbr=0L; /* [nbr] Number of fields in enum and compound types */
+  trv_tbl->lst[idx].typ_sz=0L; /* [B] Size of user-defined type */
 
   trv_tbl->lst[idx].flg_cf=False;                 /* [flg] Object matches CF-metadata extraction criteria */
   trv_tbl->lst[idx].flg_crd=False;                /* [flg] Object matches coordinate extraction criteria */
@@ -2438,11 +2450,17 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
     if(var_typ <= NC_MAX_ATOMIC_TYPE){
       obj_typ=nco_obj_typ_var;
+      typ_nm[0]='\0'; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
+      cls_typ=NC_NAT; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
+      bs_typ=NC_NAT; /* [enm] netCDF atomic type underlying vlen and enum types */
+      fld_nbr=0L; /* [nbr] Number of fields in enum and compound types */
+      typ_sz=0L; /* [B] Size of user-defined type */
     }else{ /* > NC_MAX_ATOMIC_TYPE */
       obj_typ=nco_obj_typ_nonatomic_var;
       if(nco_dbg_lvl_get() >= nco_dbg_var){
         (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",nco_prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
       } /* endif */
+      rcd+=nco_inq_user_type(grp_id,var_typ,typ_nm,&typ_sz,&bs_typ,&fld_nbr,&cls_typ);
     } /* > NC_MAX_ATOMIC_TYPE */
 
     /* Keep old table objects size for insertion */
@@ -2462,6 +2480,13 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nm_fll=strdup(var_nm_fll);
     trv_tbl->lst[idx].nm_fll_lng=strlen(var_nm_fll);  
 
+    trv_tbl->lst[idx].flg_ntm=var_typ > NC_MAX_ATOMIC_TYPE ? True : False;
+    trv_tbl->lst[idx].typ_nm=var_typ > NC_MAX_ATOMIC_TYPE ? strdup(typ_nm) : NULL; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
+    trv_tbl->lst[idx].cls_typ=cls_typ; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
+    trv_tbl->lst[idx].bs_typ=bs_typ; /* [enm] netCDF atomic type underlying vlen and enum types */
+    trv_tbl->lst[idx].fld_nbr=fld_nbr; /* [nbr] Number of fields in enum and compound types */
+    trv_tbl->lst[idx].typ_sz=typ_sz; /* [B] Size of user-defined type */
+
     trv_tbl->lst[idx].flg_cf=False; 
     trv_tbl->lst[idx].flg_crd=False; 
     trv_tbl->lst[idx].flg_dfl=False; 
@@ -2470,7 +2495,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].flg_mtd=False; 
     trv_tbl->lst[idx].flg_ncs=False; 
     trv_tbl->lst[idx].flg_nsx=False; 
-    trv_tbl->lst[idx].flg_ntm=var_typ > NC_MAX_ATOMIC_TYPE ? True : False; 
     trv_tbl->lst[idx].flg_rcr=False; 
     trv_tbl->lst[idx].flg_rgr=False; 
     trv_tbl->lst[idx].flg_xtn=False; 
@@ -2501,7 +2525,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_typ=var_typ; 
     trv_tbl->lst[idx].enm_prc_typ=err_typ;
     trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; 
-    if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
+    trv_tbl->lst[idx].grp_nm_fll_prn=grp_nm_fll_prn ? strdup(grp_nm_fll_prn) : NULL;
     trv_tbl->lst[idx].flg_nsm_prn=False;
     trv_tbl->lst[idx].flg_nsm_mbr=False;
     trv_tbl->lst[idx].flg_nsm_tpl=False;

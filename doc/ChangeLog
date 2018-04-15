@@ -1,3 +1,9 @@
+2018-04-15  Charlie Zender  <zender@uci.edu>
+
+	* Correct total variable number printed in CDL debug comment
+
+	* Always read type information for non-atomic types
+
 2018-04-14  Charlie Zender  <zender@uci.edu>
 
 	* Add --ntm option to set prn_flg.ntm for development of non-atomic features

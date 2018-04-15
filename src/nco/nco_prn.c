@@ -2906,8 +2906,9 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
   /* Testing: 
      ncks --cdl ~/nco/data/buggy.nc
-     ncks --cdl ~/nco/data/vlen.nc
-     ncks --cdl ~/nco/data/enum.nc
+     ncks --ntm --cdl ~/nco/data/buggy.nc
+     ncks -D 1 --ntm ~/nco/data/vlen.nc
+     ncks -D 1 --ntm ~/nco/data/enum.nc
      ncks --cdl ~/nco/data/in_grp.nc
      ncks --trd ~/nco/data/in_grp.nc */
 
@@ -3045,7 +3046,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	    break;
     }else{
       for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
-	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var || trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var)
+	if(trv_tbl->lst[obj_idx].nco_typ != nco_obj_typ_grp)
 	  if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
 	    break;
       
@@ -3054,8 +3055,9 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	if(nco_dbg_lvl_get() >= nco_dbg_std){
 	  (void)fprintf(stdout,"%s: DEBUG %s reports grp_nm_fll = %s, grp_dpt = %d, nbr_var = %d\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,grp_dpt,nbr_var);
 	  (void)fprintf(stdout,"%s: DEBUG %s reports %s is non-atomic (e.g., compound, enum, opaque, vlen, or user-defined) variable type. Support is minimal.\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	  (void)fprintf(stdout,"%s: DEBUG %s reports obj_nm = %s, var_nm = %s, flg_xtr = %d\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[obj_idx].nm_fll,var_nm_fll,trv_tbl->lst[obj_idx].flg_xtr);
 	  trv_sct var_trv=trv_tbl->lst[obj_idx];
+	  (void)fprintf(stdout,"%s: DEBUG %s reports obj_nm = %s, var_nm = %s, var_typ = %d = %s, flg_xtr = %d\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,var_nm_fll,var_trv.var_typ,nco_typ_sng(var_trv.var_typ),var_trv.flg_xtr);
+	  (void)fprintf(stdout,"%s: DEBUG %s reports %s type %d = %s, typ_nm = %s, typ_sz = %lu, bs_typ = %d = %s, fld_nbr = %lu, cls_typ = %d = %s\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_typ,nco_typ_sng(var_trv.var_typ),var_trv.typ_nm,(unsigned long)var_trv.typ_sz,var_trv.bs_typ,nco_typ_sng(var_trv.bs_typ),(unsigned long)var_trv.fld_nbr,var_trv.cls_typ,nco_typ_sng(var_trv.cls_typ));
 	  (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
 	} /* !dbg */
       } /* !ntm */
