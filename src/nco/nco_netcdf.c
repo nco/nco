@@ -1659,7 +1659,9 @@ nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * 
 int
 nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ)
 {
-  /* Purpose: Wrapper for nc_inq_user_type() */
+  /* Purpose: Wrapper for nc_inq_user_type()
+     NB: nc_inq_user_type() returns NC_BADTYPE when var_typ < NC_MAX_ATOMIC_TYPE in 
+     nc_inq_user_type(grp_id,var_typ,typ_nm,&typ_sz,&bs_typ,&fld_nbr,&cls_typ); */
   const char fnc_nm[]="nco_inq_user_type()";
   int rcd;
   rcd=nc_inq_user_type(nc_id,var_typ,typ_nm,typ_sz,bs_typ,fld_nbr,cls_typ);
