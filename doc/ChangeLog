@@ -1,3 +1,19 @@
+2018-04-15  Charlie Zender  <zender@uci.edu>
+
+	* Correct total variable number printed in CDL debug comment
+
+	* Always read type information for non-atomic types
+
+2018-04-14  Charlie Zender  <zender@uci.edu>
+
+	* Add --ntm option to set prn_flg.ntm for development of non-atomic features
+
+2018-04-13  Charlie Zender  <zender@uci.edu>
+
+	* Find non-atomic types in nco_prn_cdl_trd()
+
+	* Create vlen.cdl and enum.cdl to test non-atomic types
+
 2018-04-12  Charlie Zender  <zender@uci.edu>
 
 	* Improve English usage in ncrename HINT

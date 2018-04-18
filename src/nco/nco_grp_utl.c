@@ -2278,10 +2278,11 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   const char fnc_nm[]="nco_grp_itr()"; /* [sng] Function name */
   const char sls_sng[]="/";        /* [sng] Slash string */
 
-  char grp_nm[NC_MAX_NAME+1];      /* [sng] Group name */
-  char var_nm[NC_MAX_NAME+1];      /* [sng] Variable name */ 
-  char dmn_nm[NC_MAX_NAME+1];      /* [sng] Dimension name */ 
-  char rec_nm[NC_MAX_NAME+1];      /* [sng] Record dimension name */ 
+  char grp_nm[NC_MAX_NAME+1L];     /* [sng] Group name */
+  char var_nm[NC_MAX_NAME+1L];     /* [sng] Variable name */ 
+  char dmn_nm[NC_MAX_NAME+1L];     /* [sng] Dimension name */ 
+  char rec_nm[NC_MAX_NAME+1L];     /* [sng] Record dimension name */ 
+  char typ_nm[NC_MAX_NAME+1L];     /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
   char *var_nm_fll;                /* [sng] Full path for variable */
   char *dmn_nm_fll;                /* [sng] Full path for dimension */
   char *sls_psn;                   /* [sng] Current position of group path search */
@@ -2292,6 +2293,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   int *dmn_ids_grp_ult=NULL;       /* [ID] Unlimited (record) dimensions IDs array for group */
   int *dmn_id_var=NULL;            /* [ID] Dimensions IDs array for variable */
   int *grp_ids;                    /* [ID] Sub-group IDs array */  
+  int cls_typ; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
   int grp_dpt=0;                   /* [nbr] Depth of group (root = 0) */
   int nbr_att;                     /* [nbr] Number of attributes */
   int nbr_dmn_grp;                 /* [nbr] Number of dimensions for group */
@@ -2304,9 +2306,13 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   long dmn_sz;                     /* [nbr] Dimension size */ 
   long rec_sz;                     /* [nbr] Record dimension size */ 
 
+  nc_type bs_typ; /* [enm] netCDF atomic type underlying vlen and enum types */
   nc_type var_typ;                 /* O [enm] NetCDF type */
 
   nco_obj_typ obj_typ;             /* [enm] Object type (group or variable) */
+
+  size_t fld_nbr; /* [nbr] Number of fields in enum and compound types */
+  size_t typ_sz; /* [B] Size of user-defined type */
 
   /* Get all information for this group */
 
@@ -2343,7 +2349,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   unsigned int idx;
   idx=trv_tbl->nbr;
 
-  /* Add one more element to GTT (nco_realloc nicely handles first time/not first time insertions) */
+  /* Add one more element to GTT */
   trv_tbl->nbr++;
   trv_tbl->lst=(trv_sct *)nco_realloc(trv_tbl->lst,trv_tbl->nbr*sizeof(trv_sct));
 
@@ -2357,6 +2363,12 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].nm_fll=strdup(grp_nm_fll);    /* [sng] Fully qualified name (path) */
   trv_tbl->lst[idx].nm_fll_lng=strlen(grp_nm_fll);/* [sng] Length of full name */
 
+  trv_tbl->lst[idx].typ_nm=NULL; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
+  trv_tbl->lst[idx].cls_typ=NC_NAT; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
+  trv_tbl->lst[idx].bs_typ=NC_NAT; /* [enm] netCDF atomic type underlying vlen and enum types */
+  trv_tbl->lst[idx].fld_nbr=0L; /* [nbr] Number of fields in enum and compound types */
+  trv_tbl->lst[idx].typ_sz=0L; /* [B] Size of user-defined type */
+
   trv_tbl->lst[idx].flg_cf=False;                 /* [flg] Object matches CF-metadata extraction criteria */
   trv_tbl->lst[idx].flg_crd=False;                /* [flg] Object matches coordinate extraction criteria */
   trv_tbl->lst[idx].flg_dfl=False;                /* [flg] Object meets default subsetting criteria */
@@ -2365,6 +2377,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_mtd=False;                /* [flg] Group contains only metadata */
   trv_tbl->lst[idx].flg_ncs=False;                /* [flg] Group is ancestor of specified group or variable */
   trv_tbl->lst[idx].flg_nsx=False;                /* [flg] Object matches intersection criteria */
+  trv_tbl->lst[idx].flg_ntm=False;                /* [flg] Variable is non-atomic */
   trv_tbl->lst[idx].flg_rgr=False;                /* [flg] Regrid variable */
   trv_tbl->lst[idx].flg_xtn=False;                /* [flg] Extensive variable */
   trv_tbl->lst[idx].flg_mrv=False;                /* [flg] Most-Rapidly-Varying horizontal dimensions variable */ 
@@ -2392,10 +2405,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].is_crd_lk_var=nco_obj_typ_err; /* [flg] Is a coordinate-like variable (same as var_sct is_crd_var: crd, 2D, bounds...) */
   trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;   /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in-scope) */
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
-  trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;/* [enm] (For variables only) NetCDF type  */  
-  trv_tbl->lst[idx].enm_prc_typ=err_typ;          /* [enm] (For variables only) Processing type enumerator  */  
-  trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; /* [enm] (For variables only) NetCDF type in output file (used by ncflint, ncpdq)  */
-  if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (ncge) Parent group full name */         
+  trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;/* [enm] (For variables only) NetCDF type */
+  trv_tbl->lst[idx].enm_prc_typ=err_typ;          /* [enm] (For variables only) Processing type enumerator */
+  trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; /* [enm] (For variables only) NetCDF type in output file (used by ncflint, ncpdq) */
+  if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (ncge) Parent group full name */
   else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
   trv_tbl->lst[idx].flg_nsm_prn=False;            /* [flg] (ncge) Group is, or variable is in, ensemble parent group */
   trv_tbl->lst[idx].flg_nsm_mbr=False;            /* [flg] (ncge) Group is, or variable is in, ensemble member group */  
@@ -2437,17 +2450,23 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
     if(var_typ <= NC_MAX_ATOMIC_TYPE){
       obj_typ=nco_obj_typ_var;
+      typ_nm[0]='\0'; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
+      cls_typ=NC_NAT; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
+      bs_typ=NC_NAT; /* [enm] netCDF atomic type underlying vlen and enum types */
+      fld_nbr=0L; /* [nbr] Number of fields in enum and compound types */
+      typ_sz=0L; /* [B] Size of user-defined type */
     }else{ /* > NC_MAX_ATOMIC_TYPE */
       obj_typ=nco_obj_typ_nonatomic_var;
       if(nco_dbg_lvl_get() >= nco_dbg_var){
         (void)fprintf(stderr,"%s: WARNING NCO only supports netCDF4 atomic-type variables. Variable %s is type %d = %s, and will be ignored in subsequent processing.\n",nco_prg_nm_get(),var_nm_fll,var_typ,nco_typ_sng(var_typ));
       } /* endif */
+      rcd+=nco_inq_user_type(grp_id,var_typ,typ_nm,&typ_sz,&bs_typ,&fld_nbr,&cls_typ);
     } /* > NC_MAX_ATOMIC_TYPE */
 
-    /* Keep the old table objects size for insertion */
+    /* Keep old table objects size for insertion */
     idx=trv_tbl->nbr;
 
-    /* Add one more element to GTT (nco_realloc nicely handles first time/not first time insertions) */
+    /* Add new object to GTT */
     trv_tbl->nbr++;
     trv_tbl->lst=(trv_sct *)nco_realloc(trv_tbl->lst,trv_tbl->nbr*sizeof(trv_sct));
 
@@ -2460,6 +2479,13 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].grp_nm=strdup(grp_nm);        
     trv_tbl->lst[idx].nm_fll=strdup(var_nm_fll);
     trv_tbl->lst[idx].nm_fll_lng=strlen(var_nm_fll);  
+
+    trv_tbl->lst[idx].flg_ntm=var_typ > NC_MAX_ATOMIC_TYPE ? True : False;
+    trv_tbl->lst[idx].typ_nm=var_typ > NC_MAX_ATOMIC_TYPE ? strdup(typ_nm) : NULL; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
+    trv_tbl->lst[idx].cls_typ=cls_typ; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
+    trv_tbl->lst[idx].bs_typ=bs_typ; /* [enm] netCDF atomic type underlying vlen and enum types */
+    trv_tbl->lst[idx].fld_nbr=fld_nbr; /* [nbr] Number of fields in enum and compound types */
+    trv_tbl->lst[idx].typ_sz=typ_sz; /* [B] Size of user-defined type */
 
     trv_tbl->lst[idx].flg_cf=False; 
     trv_tbl->lst[idx].flg_crd=False; 
@@ -2499,7 +2525,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].var_typ=var_typ; 
     trv_tbl->lst[idx].enm_prc_typ=err_typ;
     trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; 
-    if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); else trv_tbl->lst[idx].grp_nm_fll_prn=NULL;
+    trv_tbl->lst[idx].grp_nm_fll_prn=grp_nm_fll_prn ? strdup(grp_nm_fll_prn) : NULL;
     trv_tbl->lst[idx].flg_nsm_prn=False;
     trv_tbl->lst[idx].flg_nsm_mbr=False;
     trv_tbl->lst[idx].flg_nsm_tpl=False;
@@ -2520,14 +2546,14 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].crd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].ncd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=nco_obj_typ_err;
-      /* Assume dimension is to keep on output */
+      /* Assume dimension will be kept on output */
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_dmn_avg=False;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].flg_rdd=False;  
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].lat_crd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].lon_crd=NULL;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].nbr_lat_crd=0;
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].nbr_lon_crd=0;
-    } /* endfor */
+    } /* !idx_dmn_var */
 
     /* Variable dimensions; store what we know at this time: relative name and ID */
     for(int idx_dmn_var=0;idx_dmn_var<nbr_dmn_var;idx_dmn_var++){
@@ -2540,23 +2566,23 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_nm=strdup(dmn_nm_var);
       trv_tbl->lst[idx].var_dmn[idx_dmn_var].dmn_id=dmn_id_var[idx_dmn_var];
-    } /* Variable dimensions; store what we know at this time: relative name and ID */
+    } /* !idx_dmn_var */
 
     /* Free constructed name */
     var_nm_fll=(char *)nco_free(var_nm_fll);
 
     /* Free dimension IDs array */
     dmn_id_var=(int *)nco_free(dmn_id_var);
-  } /* Iterate variables for this group */
+  } /* !idx_var */
 
   /* Add dimension objects */ 
 
   /* Iterate dimensions (for group; dimensions are defined *for* groups) */
   for(int idx_dmn=0;idx_dmn<nbr_dmn_grp;idx_dmn++){
-    /* Keep the old table dimension size for insertion */
+    /* Keep old table dimension size for insertion */
     idx=trv_tbl->nbr_dmn;
 
-    /* Add one more element to dimension list of GTT (nco_realloc nicely handles first time/not first time insertions) */
+    /* Add one more element to dimension list of GTT */
     trv_tbl->nbr_dmn++;
     trv_tbl->lst_dmn=(dmn_trv_sct *)nco_realloc(trv_tbl->lst_dmn,trv_tbl->nbr_dmn*sizeof(dmn_trv_sct));
 
@@ -2613,7 +2639,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
     /* Free constructed name */
     dmn_nm_fll=(char *)nco_free(dmn_nm_fll);
-  } /* end dimension loop */
+  } /* !idx_dmn */
 
   /* Go to sub-groups */ 
   grp_ids=(int *)nco_malloc(nbr_grp*sizeof(int)); 
@@ -2622,7 +2648,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   /* Heart of traversal construction: 
      Construct new sub-group path and call function recursively with new name */
   for(int grp_idx=0;grp_idx<nbr_grp;grp_idx++){
-    char *sub_grp_nm_fll=NULL; /* [sng] Sub group path */
+    char *sub_grp_nm_fll=NULL; /* [sng] Sub-group path */
     int gid=grp_ids[grp_idx]; /* [id] Current group ID */  
 
     /* Get sub-group name */
@@ -2645,7 +2671,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
     /* Free constructed name */
     sub_grp_nm_fll=(char *)nco_free(sub_grp_nm_fll);
-  } /* end loop over groups */
+  } /* !grp_idx */
 
   grp_ids=(int *)nco_free(grp_ids); 
   dmn_ids_grp=(int *)nco_free(dmn_ids_grp);
@@ -3062,15 +3088,15 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
       if((*(sbs_end+1L) == sls_chr) || (*(sbs_end+1L) == '\0'))
         flg_pth_end_bnd=True;
     
-    /* If match is on both ends of '/' then it's a "real" name, not for example "lat_lon" as a variable looking for "lon" */
+    /* If '/' bounds both ends of match then it is "real", not for example "lat_lon" as a variable looking for "lon" */
     if(flg_pth_srt_bnd && flg_pth_end_bnd){
       
-      /* Absolute match (equality redundant); strcmp deals cases like /g3/rlev/ and /g5/rlev  */
-      if(var_nm_fll_lng == dmn_nm_fll_lng && strcmp(var_trv->nm_fll,dmn_trv->nm_fll) == 0){
+      /* Absolute match (equality redundant); strcmp() deals cases like /g3/rlev/ and /g5/rlev */
+      if(var_nm_fll_lng == dmn_nm_fll_lng && !strcmp(var_trv->nm_fll,dmn_trv->nm_fll)){
         if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s found absolute match of variable <%s> and dimension <%s>:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_trv->nm_fll);
         return True;
 	
-        /* Variable in-scope of dimension */
+	/* Variable in-scope of dimension */
       }else if(var_nm_fll_lng>dmn_nm_fll_lng){
 	
         /* NOTE: deal with cases like
@@ -3085,8 +3111,8 @@ nco_crd_var_dmn_scp                    /* [fnc] Is coordinate variable in dimens
           for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
             trv_sct var=trv_tbl->lst[idx_var];
             /* Interested in variables only */
-            if(var.nco_typ == nco_obj_typ_var){
-              /* Is there a *full* match already for the *input* dimension ?  */
+            if(var.nco_typ != nco_obj_typ_grp){
+              /* Is there a full match already for input dimension? */
               if(!strcmp(var_trv->nm_fll,dmn.nm_fll)){
                 if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s variable <%s> has another dimension full match <%s>:\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn.nm_fll);
                 return False;
@@ -3188,7 +3214,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
 
     /* Filter variables  */
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var){
+    if(trv_tbl->lst[idx_var].nco_typ != nco_obj_typ_grp){
       trv_sct var_trv=trv_tbl->lst[idx_var];   
 
       /* Loop dimensions for object (variable)  */
@@ -3325,7 +3351,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
 
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++)
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var)
+    if(trv_tbl->lst[idx_var].nco_typ != nco_obj_typ_grp)
       for(int idx_dmn_var=0;idx_dmn_var<trv_tbl->lst[idx_var].nbr_dmn;idx_dmn_var++)
         if(trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].is_crd_var == nco_obj_typ_err)
           if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: OOPSY %s reports variable <%s> with NOT filled dimension [%d]%s\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[idx_var].nm_fll,idx_dmn_var,trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].dmn_nm_fll);        
@@ -3333,7 +3359,7 @@ nco_bld_var_dmn                       /* [fnc] Assign variables dimensions to ei
   /* Check if bool array is all filled  */
   /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++)
-    if(trv_tbl->lst[idx_var].nco_typ == nco_obj_typ_var)
+    if(trv_tbl->lst[idx_var].nco_typ != nco_obj_typ_grp)
       for(int idx_dmn_var=0;idx_dmn_var<trv_tbl->lst[idx_var].nbr_dmn;idx_dmn_var++)
         assert(trv_tbl->lst[idx_var].var_dmn[idx_dmn_var].is_crd_var != nco_obj_typ_err);
 
@@ -3362,10 +3388,10 @@ nco_wrt_trv_tbl                      /* [fnc] Obtain file information from GTT (
 
     nco_bool flg_xtr;
     
-    if(use_flg_xtr)flg_xtr=var_trv.flg_xtr; else flg_xtr=True;
+    if(use_flg_xtr) flg_xtr=var_trv.flg_xtr; else flg_xtr=True;
 
     /* If object is an extracted variable... */ 
-    if(var_trv.nco_typ == nco_obj_typ_var && flg_xtr){
+    if(var_trv.nco_typ != nco_obj_typ_grp && flg_xtr){
 
       if(nco_dbg_lvl_get() == nco_dbg_old) (void)fprintf(stdout,"%s: INFO %s variable <%s>",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
 
@@ -3462,7 +3488,7 @@ nco_get_rec_dmn_nm                     /* [fnc] Return array of record names  */
 
   dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */  
 
-  assert(var_trv->nco_typ == nco_obj_typ_var);
+  assert(var_trv->nco_typ != nco_obj_typ_grp);
 
   if(*rec_dmn_nm){
     nbr_rec=(*rec_dmn_nm)->nbr;
@@ -3514,7 +3540,7 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
 
   /* Filter variables to extract  */
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr) nbr_xtr++;
+    if(trv_tbl->lst[tbl_idx].nco_typ != nco_obj_typ_grp && trv_tbl->lst[tbl_idx].flg_xtr) nbr_xtr++;
   
   /* Fill-in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -3525,7 +3551,7 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
     /* Filter variables  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && trv_tbl->lst[tbl_idx].flg_xtr){
+    if(trv_tbl->lst[tbl_idx].nco_typ != nco_obj_typ_grp && trv_tbl->lst[tbl_idx].flg_xtr){
       trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
 
       /* Obtain group ID from API */
@@ -3566,13 +3592,10 @@ nco_var_trv                           /* [fnc] Fill-in variable structure list f
 
   nbr_xtr=0;
 
-  /* Loop table */
-  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
-    /* Filter variables to extract  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
+  /* Filter variables to extract */
+  for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++)
+    if(trv_tbl->lst[tbl_idx].nco_typ != nco_obj_typ_grp && !strcmp(trv_tbl->lst[tbl_idx].nm,var_nm))
       nbr_xtr++;
-    } /* Filter variables  */
-  } /* Loop table */
 
   /* Fill-in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -3583,7 +3606,7 @@ nco_var_trv                           /* [fnc] Fill-in variable structure list f
   for(unsigned tbl_idx=0;tbl_idx<trv_tbl->nbr;tbl_idx++){
 
     /* Filter variables  */
-    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && (strcmp(trv_tbl->lst[tbl_idx].nm,var_nm) == 0) ){
+    if(trv_tbl->lst[tbl_idx].nco_typ == nco_obj_typ_var && !strcmp(trv_tbl->lst[tbl_idx].nm,var_nm)){
       trv_sct var_trv=trv_tbl->lst[tbl_idx]; 
 
       int grp_id; /* [ID] Group ID */
@@ -3599,13 +3622,11 @@ nco_var_trv                           /* [fnc] Fill-in variable structure list f
       var[idx_var]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
 
       idx_var++;
-
     } /* Filter variables  */
   } /* Loop table */
 
   *xtr_nbr=nbr_xtr;
   return var;
-
 } /* nco_var_trv() */
 
 void
@@ -10122,9 +10143,7 @@ nco_nsm_att                            /* [fnc] Inquire if ensemble parent group
           if(rcd == NC_NOERR){
             *flg_nsm_att=True;
 
-            if(nco_dbg_lvl_get() >= nco_dbg_dev){
-              (void)fprintf(stdout,"%s: ATTRIBUTE ensemble_source in <%s>\n",nco_prg_nm_get(),trv.grp_nm_fll);
-            }
+            if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: ATTRIBUTE ensemble_source in <%s>\n",nco_prg_nm_get(),trv.grp_nm_fll);
      
             /* Add one more element to table */
             (*nsm_grp_nm_fll_prn)->lst=(nm_sct *)nco_realloc((*nsm_grp_nm_fll_prn)->lst,(nbr_nm+1)*sizeof(nm_sct));

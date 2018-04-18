@@ -1,0 +1,31 @@
+// -*-C++-*-
+// Purpose: CDL file to generate netCDF4 test file for enum types
+
+// Created: 20180413 based on buggy.cdl
+
+// Usage:
+// NB: ncgen arguments depend on version:
+// "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
+// "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
+// ncgen -k netCDF-4 -b -o ~/nco/data/enum.nc ~/nco/data/enum.cdl
+// scp ~/nco/data/enum.cdl givre.ess.uci.edu:nco/data
+// scp ~/nco/data/enum.nc dust.ess.uci.edu:/var/www/html/nco
+// scp dust.ess.uci.edu:/var/www/html/nco/enum.nc ~/nco/data
+
+netcdf enum {
+
+ // 20180413: types declarations must be first element in group, and appear before everything else. Where is this documented?
+ types:
+   ubyte enum enum_t {Clear=0,Cumulonimbus=1,Stratus=2,Missing=128};
+
+ dimensions:
+   lon=4;
+
+ variables:
+   enum_t cld_flg(lon);
+   cld_flg:_FillValue=Missing;
+
+ data:
+   cld_flg=Stratus,_,Cumulonimbus,Clear;
+
+} // end root group

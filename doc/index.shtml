@@ -1371,8 +1371,9 @@ LAM installs easily with our own testing environment (latest Ubuntu).
 <a name="bug_cdf5"></a>
 <li><i>netCDF CDF5 corruption:</i>
   netCDF libraries 4.4.0+ supports the CDF5 binary format.
-  Unfortunately the CDF5 implementation is buggy for large (> 4 GiB)
+  Unfortunately the CDF5 implementation is buggy for large (> 4&nbsp;GiB)
   variables in library versions 4.4.0&ndash;4.6.0. 
+  We identified this netCDF CDF5 bug on 20170906. 
   Writing CDF5 files with large variables is buggy unless there is
   only one such &ldquo;large&rdquo; variable and it is the last to be defined.
   If the file is an input dataset (i.e., NCO <i>reads</i> it) written
@@ -1380,8 +1381,7 @@ LAM installs easily with our own testing environment (latest Ubuntu).
   through a different mechanism than serial programs like NCO's
   writer).
   And if the CDF5 dataset was originally written by any netCDF version
-  4.6.1 or greater, then it may be fine (It depends whether/when
-  Unidata patches the bug, see below, that we identified on 20170906.) 
+  4.6.1 or greater, then it is unaffected by this bug.
   However, a CDF5 input file with large variables written by any serial
   netCDF writer (like NCO) employing netCDF library 4.4.0&ndash;4.6.0, is likely
   corrupt and variables were silently truncated when writing it.
@@ -1403,7 +1403,7 @@ LAM installs easily with our own testing environment (latest Ubuntu).
   <b>UPDATE</b>: Unidata released netCDF 4.6.0 on 20180124.
   Unfortunately the patch to fix the CDF5 bug was not included.
   <b>UPDATE</b>: Unidata released netCDF 4.6.1 on 20180319.
-  netCDF version 4.6.1 was patched to fix the CDF5 bug. Yay!
+  netCDF version 4.6.1 includes the patch that fixes the CDF5 bug. Yay!
 </li>
   
   <!-- http://nco.sf.net#bug_nc4_srd -->

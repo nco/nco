@@ -1,0 +1,36 @@
+// -*-C++-*-
+// Purpose: CDL file to generate netCDF4 test file for vlen types
+
+// Created: 20180413 based on buggy.cdl
+
+// Usage:
+// NB: ncgen arguments depend on version:
+// "-k netCDF-4" for netCDF >= 3.6.3, "-k hdf5" for netCDF < 3.6.3
+// "-k netCDF-4 classic model" for netCDF >= 3.6.3, "-k hdf5-nc3" for netCDF < 3.6.3
+// ncgen -k netCDF-4 -b -o ~/nco/data/vlen.nc ~/nco/data/vlen.cdl
+// scp ~/nco/data/vlen.cdl givre.ess.uci.edu:nco/data
+// scp ~/nco/data/vlen.nc dust.ess.uci.edu:/var/www/html/nco
+// scp dust.ess.uci.edu:/var/www/html/nco/vlen.nc ~/nco/data
+
+netcdf vlen {
+
+ types:
+  int(*) vlen_t; // Declare "base-type" of vlen_t
+
+ dimensions:
+  lat=2;
+
+ variables:
+  int one;
+  
+  vlen_t vlen_1D;
+  vlen_1D:_FillValue={-999}; // vlen data MUST BE enclosed in braces
+  vlen_t vlen_2D(lat);
+  vlen_2D:_FillValue={-999};
+
+ data:
+  one=1;
+  vlen_1D={17,18,19};
+  vlen_2D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
+
+} // end root group

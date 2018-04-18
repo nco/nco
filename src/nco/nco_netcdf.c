@@ -137,6 +137,7 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
      Routine is used to determine memory required to store variables in RAM
      This is only routine in nco_netcdf which needs NCO opaque type definitions
      nco_byte, nco_char, and nco_int defined in nco_typ.h */
+
   switch(nco_typ){
   case NC_FLOAT:
     return sizeof(float);
@@ -168,6 +169,54 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return 0;
 } /* end nco_typ_lng() */
+
+size_t /* O [B] Native type size */
+nco_typ_lng_ntm /* [fnc] Convert netCDF type enum to native type size */
+(const int nc_id, /* I [ID] File ID */
+ const nc_type nco_typ) /* I [enm] netCDF type */
+{
+  /* Purpose: Return native size of specified netCDF type, including non-atomic types
+     Routine is used to determine memory required to store variables in RAM
+     This is only routine in nco_netcdf which needs NCO opaque type definitions
+     nco_byte, nco_char, and nco_int defined in nco_typ.h */
+
+  if(nco_typ <= NC_MAX_ATOMIC_TYPE){
+    switch(nco_typ){
+    case NC_FLOAT:
+      return sizeof(float);
+    case NC_DOUBLE:
+      return sizeof(double);
+    case NC_INT:
+      return sizeof(nco_int);
+    case NC_SHORT:
+      return sizeof(short int);
+    case NC_CHAR:
+      return sizeof(nco_char);
+    case NC_BYTE:
+      return sizeof(nco_byte);
+    case NC_UBYTE:
+      return sizeof(nco_ubyte);
+    case NC_USHORT:
+      return sizeof(nco_ushort);
+    case NC_UINT:
+      return sizeof(nco_uint);
+    case NC_INT64:
+      return sizeof(nco_int64);
+    case NC_UINT64:
+      return sizeof(nco_uint64);
+    case NC_STRING:
+      return sizeof(nco_string);
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+  }else{
+    size_t typ_sz;
+    (void)nco_inq_user_type(nc_id,nco_typ,NULL,&typ_sz,NULL,NULL,NULL);
+    return typ_sz;
+  } /* !ntm */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return 0;
+} /* end nco_typ_lng_ntm() */
 
 const char * /* O [sng] String describing type */
 nco_typ_sng /* [fnc] Convert netCDF type enum to string */
@@ -1610,7 +1659,9 @@ nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * 
 int
 nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ)
 {
-  /* Purpose: Wrapper for nc_inq_user_type() */
+  /* Purpose: Wrapper for nc_inq_user_type()
+     NB: nc_inq_user_type() returns NC_BADTYPE when var_typ < NC_MAX_ATOMIC_TYPE in 
+     nc_inq_user_type(grp_id,var_typ,typ_nm,&typ_sz,&bs_typ,&fld_nbr,&cls_typ); */
   const char fnc_nm[]="nco_inq_user_type()";
   int rcd;
   rcd=nc_inq_user_type(nc_id,var_typ,typ_nm,typ_sz,bs_typ,fld_nbr,cls_typ);

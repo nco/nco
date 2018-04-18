@@ -967,6 +967,7 @@ extern "C" {
     nco_bool jsn; /* [flg] Print JSON */
     nco_bool xml; /* [flg] Print XML (NcML) */
     nco_bool hdn; /* [flg] Print hidden attributes */
+    nco_bool ntm; /* [flg] Print non-atomic variables */
     nco_bool rad; /* [flg] Retain all dimensions */
     nco_bool xml_lcn; /* [flg] Print XML location tag */
     nco_bool nfo_xtr; /* [flg] Print extra information in CDL/XML mode */
@@ -1339,6 +1340,13 @@ extern "C" {
     int ppc;                          /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
     nco_bool flg_nsd;                 /* [flg] PPC is NSD */
 
+    /* Next five members introduced 20180415 for non-atomic variables */
+    char *typ_nm; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
+    int cls_typ; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
+    nc_type bs_typ; /* [enm] netCDF atomic type underlying vlen and enum types */
+    size_t fld_nbr; /* [nbr] Number of fields in enum and compound types */
+    size_t typ_sz; /* [B] Size of user-defined type */
+
     nco_bool flg_cf;                  /* [flg] Object matches CF-metadata extraction criteria */
     nco_bool flg_crd;                 /* [flg] Object matches coordinate extraction criteria */
     nco_bool flg_dfl;                 /* [flg] Object meets default subsetting criteria */
@@ -1347,6 +1355,7 @@ extern "C" {
     nco_bool flg_mtd;                 /* [flg] Group contains only metadata */
     nco_bool flg_ncs;                 /* [flg] Group is ancestor of specified group or variable */
     nco_bool flg_nsx;                 /* [flg] Object matches intersection criteria */
+    nco_bool flg_ntm;                 /* [flg] Variable is non-atomic */
     nco_bool flg_rcr;                 /* [flg] Extract group recursively */
     nco_bool flg_rgr;                 /* [flg] Regrid variable */ 
     nco_bool flg_xtn;                 /* [flg] Extensive variable */ 
@@ -1360,7 +1369,7 @@ extern "C" {
     nco_bool flg_std_att_lat;         /* [flg] Variable contains 'standard_name' attribute "latitude" */ 
     nco_bool flg_std_att_lon;         /* [flg] Variable contains 'standard_name' attribute "longitude" */ 
 
-    /* Following are members only used by transformation operators (non-ncks)  */
+    /* Following are members only used by transformation operators (non-ncks) */
     prc_typ_enm enm_prc_typ;          /* [enm] Processing type enumerator */
     nc_type var_typ_out;              /* [enm] NetCDF type in output file (ncflint) (ncpdq) */  
     int *dmn_idx_out_in;              /* [nbr] Dimension correspondence, output->input (ncpdq); output of nco_var_dmn_rdr_mtd() */
