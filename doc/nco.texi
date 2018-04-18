@@ -15134,8 +15134,6 @@ If any of the output variables don't exist prior to the call then they are creat
 
 @noindent This function calculates y values along the line Y=c0+c1*X @* @*
 
-
-
 @strong{Section B} @* @*
 @code{status=@strong{gsl_fit_mul}(data_x,stride_x,data_y,stride_y,n,&c1,&cov11,&sumsq) }
 
@@ -15145,11 +15143,9 @@ If data_x or data_y is less than type @code{double} then it is converted to type
 
 @noindent @strong{Output variables}: c1,cov11,sumsq @* 
 
-
 @code{status= @strong{gsl_fit_wmul}(data_x,stride_x,data_w,stride_w,data_y,stride_y,n,&c1,&cov11,&sumsq) }
 
 @noindent Similar to the above call except it creates an additional weighting vector from the variables data_w, stride_w, n  
-
 
 @code{ data_y_out=@strong{gsl_fit_mul_est}(data_x,c0,c1,cov11) }
 
@@ -15166,7 +15162,6 @@ gsl_fit_linear(xin,1,yin,1,$d1.size,&c0,&c1,&cov00,&cov01,&cov11,&sumsq);
 print(c0);  // 0.2
 print(c1);  // 2.98545454545
 
-
 defdim("e1",4);
 xout[e1]={1.0,3.0,4.0,11};
 yout[e1]=0.0;
@@ -15179,7 +15174,6 @@ print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
 
 @*@*
 @noindent The following code does linear regression of sst(time,lat,lon) for each time-step@* @*
-
 @example
 @verbatim
 // Declare variables
@@ -15201,14 +15195,11 @@ for (i=0;i<$lat.size;i++) // Loop over lat
       sdv(i,j) = gsl_stats_sd(sst(:,i,j), 1, $time.size); 
   }
  }
-
 // slope (c1) missing values are set to '0', change to -999. (variable c0 intercept value)
 where( c0 == -999 ) c1 = -999;
 @end verbatim
 @end example
 @* @*
-
-
 
 @html
 <a name="ncap_stat"></a> <!-- http://nco.sf.net/nco.html#ncap_stat -->

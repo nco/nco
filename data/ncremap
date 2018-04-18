@@ -216,7 +216,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
 # ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
-# ncremap -v TSurfAir -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2014.10.01.202.L2.RetStd.v6.0.11.0.G14275134307.hdf ~/foo.nc
+# ncremap -P airs -v TSurfAir -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2014.10.01.202.L2.RetStd.v6.0.11.0.G14275134307.hdf ~/airs_out.nc
 # ncremap -v CloudFrc_A -i ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
 # ncremap -i ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
 # ncremap -i ${DATA}/hdf/OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5 -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
