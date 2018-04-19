@@ -201,7 +201,13 @@ else()
   message("-- NetCDF diskless functionaliy not available, netcdf_mem.h or nc_open_mem not found")
 endif()
 
-
+#if nc_def_var_filter() is available, nc_inq_path(), nc_inq_format() and has_nc_open_mem() are too
+if (has_nc_def_var_filter)
+  message("-- Defining HAVE_NC_INQ_PATH, HAVE_NC_INQ_FORMAT, HAVE_NETCDF_MEM_H")
+  add_definitions(-DHAVE_NC_INQ_PATH)
+  add_definitions(-DHAVE_NC_INQ_FORMAT)
+  add_definitions(-DHAVE_NETCDF_MEM_H)
+endif()
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #HDF5

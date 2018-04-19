@@ -138,6 +138,13 @@ edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
 </Lib>
 ```
 
+add as "Additional Dependencies" the libraries
+
+```
+Ws2_32.lib;CRYPT32.LIB;Wldap32.lib;Normaliz.lib
+```
+
+and set "Link Library Dependencies" to Yes
 
 # List of dependencies
 
