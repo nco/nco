@@ -786,8 +786,10 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
      20180227: White-list forward slash on Windows so URLs are acceptable (http://...)
      20180323: White-list question mark and asterisk so shell-globbing works (in*.nc, in?.nc)
      20180401: Black-list question mark and asterisk again since shell-globbing now works
+     20180420: White-list DAP-constraint characters that follow protocol indicators (http://,https://,dap4://)
      Crucial characters that are currently implicitly blacklisted (and could be transformed into underscores) are:
-     ";|<>[](),&*?" */
+     "!#$^;|<>[](){},&*?<>" */
+  static char wht_lst_dap[]="#=:[];|{}/<>";
   static char wht_lst[]="abcdefghijklmnopqrstuvwxyz"
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     "1234567890_-.@"
@@ -799,6 +801,10 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
   /* ": re-balance syntax highlighting */
 
   const char fnc_nm[]="nco_sng_sntz()"; /* [sng] Function name */
+
+  const char dap4_url_sng[]="dap4://";
+  const char http_url_sng[]="http://";
+  const char https_url_sng[]="https://";
     
   char *usr_dta=sng_drt;
   char *cp=usr_dta; /* Cursor into string */
@@ -812,6 +818,17 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
     /* Uncomment next two lines to sanitize unsafe character with an innocuous underscore
      *cp='_';
      if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stderr,"%s: DEBUG %s reports sanitized usr_dta = %s\n",nco_prg_nm_get(),fnc_nm,usr_dta); */
+    
+#ifdef ENABLE_DAP
+    if((strstr(sng_drt,http_url_sng) == sng_drt) || (strstr(sng_drt,https_url_sng) == sng_drt) || (strstr(sng_drt,dap4_url_sng) == sng_drt)){
+      /* Filename starts with "http://" or "https://" or "dap4://" so allow DAP whitelist */
+      if(strchr(wht_lst_dap,*cp)){
+	(void)fprintf(stderr,"%s: INFO %s reports allowing black-listed character \'%c\' from unsanitized user-input string \"%s\" because DAP is enabled and \'%c\' is a valid DAP constraint character\n",nco_prg_nm_get(),fnc_nm,*cp,usr_dta,*cp);
+	break;
+      } /* !strchr() */
+    } /* !strstr */
+#endif /* !ENABLE_DAP */
+
     flg_blk_lst=True;
     break;
   } /* !cp */
