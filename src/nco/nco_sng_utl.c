@@ -823,7 +823,7 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
     if((strstr(sng_drt,http_url_sng) == sng_drt) || (strstr(sng_drt,https_url_sng) == sng_drt) || (strstr(sng_drt,dap4_url_sng) == sng_drt)){
       /* Filename starts with "http://" or "https://" or "dap4://" so allow DAP whitelist */
       if(strchr(wht_lst_dap,*cp)){
-	(void)fprintf(stderr,"%s: INFO %s reports allowing black-listed character \'%c\' from unsanitized user-input string \"%s\" because DAP is enabled and \'%c\' is a valid DAP constraint character\n",nco_prg_nm_get(),fnc_nm,*cp,usr_dta,*cp);
+	(void)fprintf(stderr,"%s: INFO %s reports allowing black-listed character \'%c\' from unsanitized user-input string \"%s\" because DAP is enabled and \'%c\' is a valid DAP parameter or constraint character\n",nco_prg_nm_get(),fnc_nm,*cp,usr_dta,*cp);
 	break;
       } /* !strchr() */
     } /* !strstr */
