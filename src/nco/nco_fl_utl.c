@@ -675,8 +675,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       (void)fprintf(stderr,"%s: INFO DAP-access to %s failed with error code %d. ",nco_prg_nm_get(),fl_nm_lcl,rcd);
       (void)fprintf(stderr,"Translation into English with nc_strerror(%d) is \"%s\"\n",rcd,nc_strerror(rcd));
       /* Error codes explained by Dennis Heimbigner in e-mail on 20110627 */
-      if(rcd == NC_ECANTREAD) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL does not exist. Is there a typo in the URL? Please verify that the file is accessible on the DAP-server at the specified location.\n",nco_prg_nm_get());
-      if(rcd == NC_EDAPSVC) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that URL _does_ exist, so error appears to be in DAP server. Reasons for this could include an aggregation server (e.g., GDS or THREDDS) that receives a URL that is valid according to the aggregation metadata but the implied back-end dataset may be temporarily unavailable.\n",nco_prg_nm_get());
+      if(rcd == NC_ECANTREAD) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that the URL does not exist. Is there a typo in the URL? Please verify that the file is accessible at the specified location on the DAP-server.\n",nco_prg_nm_get());
+      if(rcd == NC_EDAPSVC) (void)fprintf(stderr,"%s: HINT DAP-access error code indicates that the URL _does_ exist, so error appears to be in the DAP server. Reasons for this could include 1. an aggregation server (e.g., GDS or THREDDS) that receives a URL that is valid according to the aggregation metadata but the implied back-end dataset may be temporarily unavailable. 2. The DAP server does not support the requested protocol, e.g., the server may support the DAP2 protocol but the dataset was requested with the DAP4 protocol.\n",nco_prg_nm_get());
       /* Error codes NC_EDDS, NC_EDAS, etc. are self-explanatory with nc_strerror() */
     } /* DAP-access failed */
 
