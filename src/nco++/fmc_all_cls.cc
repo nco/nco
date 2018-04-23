@@ -4374,7 +4374,6 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
       // 2 - input Y   co-ordinate var
       long cnt=0l; 
       long ldx; 
-      long idx;
       long jdx;
       long v_sz;
       long iidx;
@@ -4433,7 +4432,7 @@ double bil_cls::clc_lin_ipl(double x1,double x2, double x, double Q0,double Q1){
        
      printf("misc_cls number of spots processed=%ld\n" ,cnt);
                        
-    } // end fdx
+    } // end MISC1
 
     if(fdx==PMISC2){
       // recall input arguments in order
