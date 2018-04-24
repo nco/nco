@@ -29,7 +29,6 @@ netcdf vlen {
   vlen_t vlen_2D(lat);
   vlen_2D:_FillValue={-999};
 
-  vlen_c  vlen_char(done);
   vlen_s  vlen_string(lat);
  data:
   one=1;
