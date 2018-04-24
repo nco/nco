@@ -456,8 +456,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 
 # gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
-# Latest ticket: 358890 on 20170526, 381695 on 20180413
-# Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170515
+# Latest ticket: 381695 on 20180413
+# Latest sysadmin-compiled module usage: module load netcdf/4.6.1 nco/4.7.4 # 20180423
 # Personal recipe last modified: 20170814
 # Personal recipe last used successfully: 20180406
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
