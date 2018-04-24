@@ -16,7 +16,8 @@ netcdf vlen {
 
  types:
   int(*) vlen_t; // Declare "base-type" of vlen_t
-
+  char(*)  vlen_c
+  string(*) vlen_s; 
  dimensions:
   lat=2;
 
@@ -28,9 +29,12 @@ netcdf vlen {
   vlen_t vlen_2D(lat);
   vlen_2D:_FillValue={-999};
 
+  vlen_c  vlen_char(done);
+  vlen_s  vlen_string(lat);
  data:
   one=1;
   vlen_1D={17,18,19};
   vlen_2D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
+  vlen_string={"one","two","three"},{"four,five"};
 
 } // end root group
