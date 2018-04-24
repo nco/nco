@@ -1,8 +1,10 @@
-2018-04-20  Charlie Zender  <zender@uci.edu>
+2018-04-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha02: Mad Max';git push
 	git tag -a 4.7.5-alpha02 -m 'dap4://;wht_lst_dap;';git push --tags
+
+2018-04-20  Charlie Zender  <zender@uci.edu>
 
 	* Allow separate whitelist of characters in DAP protocol constraints
 
