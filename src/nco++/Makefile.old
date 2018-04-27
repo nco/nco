@@ -82,7 +82,7 @@ ifndef MY_BLD_DIR
  MY_BLD_DIR := .
 endif
 ifndef MY_DOC_DIR
- MY_DOC_DIR := .
+ MY_DOC_DIR := ../../doc
 endif
 ifndef MY_DPN_DIR
  MY_DPN_DIR := ${MY_OBJ_DIR}
@@ -218,7 +218,8 @@ ifndef VRS_SNG
 # VRS_SNG := $(shell date +%Y%m%d)
 # 20150622
 # VRS_SNG := $(shell git describe --abbrev=7 --dirty --always --tags)
- VRS_SNG := $(shell cat ${MY_DOC_DIR}/VERSION)
+
+VRS_SNG := $(shell cat ${MY_DOC_DIR}/VERSION)
 endif # endif VRS_SNG
 # Derived-tokens based on primary tokens
 # These tokens should not be altered by hand

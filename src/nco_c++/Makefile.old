@@ -66,7 +66,7 @@ ifndef MY_BLD_DIR
  MY_BLD_DIR := .
 endif
 ifndef MY_DOC_DIR
- MY_DOC_DIR := .
+ MY_DOC_DIR := ../../doc
 endif
 ifndef MY_DPN_DIR
  MY_DPN_DIR := ${MY_OBJ_DIR}
