@@ -368,7 +368,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 module load nco/4.7.4 # 20180417
 # Personal recipe last modified: 20180427
-# Personal recipe last used successfully: 20180427 (except ncap2, which would require backporting to intel 16.0.3 to get gsl)
+# Personal recipe last used successfully: 20180427 (getopt errors were eliminated by removing ~/include/getopt*.h)
 module purge
 module load ncarenv intel ncarcompilers mpt netcdf
 module add intel
@@ -379,9 +379,7 @@ export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1/bin # needed 
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
-# test GSL
-# cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/include' SL_LIB='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib' NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/include' SL_LIB='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib' NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
 
 # 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
 # Sysadmin upgrade request: support@alcf.anl.gov # ALCF Maintainer = 

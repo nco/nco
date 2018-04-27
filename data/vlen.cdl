@@ -15,7 +15,7 @@
 netcdf vlen {
 
  types:
-  int(*) vlen_t; // Declare "base-type" of vlen_t
+  int(*) vlen_int; // Declare "base-type" of vlen_int
   char(*)  vlen_c
   string(*) vlen_s; 
  dimensions:
@@ -24,9 +24,9 @@ netcdf vlen {
  variables:
   int one;
   
-  vlen_t vlen_1D;
+  vlen_int vlen_1D;
   vlen_1D:_FillValue={-999}; // vlen data MUST BE enclosed in braces
-  vlen_t vlen_2D(lat);
+  vlen_int vlen_2D(lat);
   vlen_2D:_FillValue={-999};
 
   vlen_s  vlen_string(lat);
