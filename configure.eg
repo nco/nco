@@ -364,22 +364,24 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # icc/icpc 20171013 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cheyenne:
-# Sysadmin upgrade request: cislhelp@ucar.edu # NCAR Maintainer = Pat
+# Sysadmin upgrade request: cislhelp@ucar.edu # NCAR Maintainer = Pat Nichols
 # Latest ticket: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 module load nco/4.7.4 # 20180417
-# Personal recipe last modified: 20180112
-# Personal recipe last used successfully: 20180302 (except ncap2, which would require backporting to intel 16.0.3 to get gsl)
+# Personal recipe last modified: 20180427
+# Personal recipe last used successfully: 20180427 (except ncap2, which would require backporting to intel 16.0.3 to get gsl)
 module purge
 module load ncarenv intel ncarcompilers mpt netcdf
 module add intel
-module add netcdf
+module add netcdf/4.6.1
 module add mpt
 export PATH=${PATH}:/opt/pbs/bin # needed for qsub
-export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/bin # needed for ncgen
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
+export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1/bin # needed for ncgen
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
+# test GSL
+# cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_MAJOR_VERSION=2 GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/include' GSL_LIB='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib' NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
 
 # 20150901: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cooley:
 # Sysadmin upgrade request: support@alcf.anl.gov # ALCF Maintainer = 

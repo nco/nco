@@ -134,7 +134,7 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin"
 	    fi # !NCARG_ROOT
             export PATH='/glade/u/home/zender/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.4.1.1/intel/17.0.1/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	cori* )
 	    # 20160407: Separate cori from edison binary locations to allow for different system libraries
 	    # 20160420: module load gsl, udunits required for non-interactive batch submissions by Wuyin Lin
