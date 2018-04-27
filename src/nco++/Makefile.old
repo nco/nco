@@ -327,7 +327,7 @@ ifeq (${GSL},Y)
 # Build GSL-enabled NCO 
 # Place GSL block after DAP blocks for both to work together
 ifdef GSL_ROOT
- GSL_CONFIG := ${GSL_ROOT}/gsl-config
+ GSL_CONFIG := ${GSL_ROOT}/bin/gsl-config
 else
  GSL_CONFIG := gsl-config
 endif
