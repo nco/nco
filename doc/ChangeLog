@@ -1,3 +1,7 @@
+2018-05-01  Charlie Zender  <zender@uci.edu>
+
+	* Add lon/lat database method to nco_find_lat_lon() so auxiliary coordinates work on non-CF files
+
 2018-04-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.5-alpha02 release procedure:
