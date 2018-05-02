@@ -1460,8 +1460,6 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   } /* end loop over dimensions */
 
-  if(var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark2\n",nco_prg_nm_get(),fnc_nm);
-
   /* Print header for variable */
   if(prn_flg->new_fmt && !prn_flg->xml && !prn_flg->jsn) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
   if(prn_flg->xml) prn_ndn=prn_flg->sxn_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
@@ -1480,8 +1478,11 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   dmn_sng=(char *)nco_malloc((nbr_dim+1)*NC_MAX_NAME*sizeof(char));
   dmn_sng[0]='\0';
   sz_sng[0]='\0';
+
+  if(var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark2\n",nco_prg_nm_get(),fnc_nm);
+
   if(nbr_dim == 0){
-    ram_sz_crr=var_sz*nco_typ_lng(var_typ);
+    ram_sz_crr=var_sz*nco_typ_lng_ntm(nc_id,var_typ);
     if(prn_flg->trd) (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)ram_sz_crr);
     /* 20131122: Implement ugly NcML requirement that scalars have shape="" attribute */
     if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"\"");
@@ -1513,22 +1514,27 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     (void)strcat(sz_sng,sng_foo);
 
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) var_sz*=dmn_sz[dmn_idx];
-    ram_sz_crr=var_sz*nco_typ_lng(var_typ);
+    ram_sz_crr=var_sz*nco_typ_lng_ntm(nc_id,var_typ);
     if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 
     if(prn_flg->trd){
       if((nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) && deflate) (void)fprintf(fp_out,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
       if(nco_fmt_xtn_get() == nco_fmt_xtn_hdf4 && NC_LIB_VERSION < 433) (void)fprintf(fp_out,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
-      (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)ram_sz_crr);
+      (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,var_typ),(unsigned long)ram_sz_crr);
     } /* !prn_flg->trd */
 
   } /* end if variable is scalar */
   ram_sz_ttl+=ram_sz_crr;
 
+  if(var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark3\n",nco_prg_nm_get(),fnc_nm);
+
   if(prn_flg->cdl){
+    char *typ_nm;
+    typ_nm=cdl_typ_nm_ntm(nc_id,var_typ);
     nm_cdl=nm2sng_cdl(var_trv->nm);
-    (void)fprintf(fp_out,"%*s%s %s%s ;",prn_ndn,spc_sng,cdl_typ_nm(var_typ),nm_cdl,dmn_sng);
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_out," // RAM size = %s = %li*%lu = %lu bytes",sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)ram_sz_crr);
+    (void)fprintf(fp_out,"%*s%s %s%s ;",prn_ndn,spc_sng,typ_nm,nm_cdl,dmn_sng);
+    if(var_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_out," // RAM size = %s = %li*%lu = %lu bytes",sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,var_typ),(unsigned long)ram_sz_crr);
     /* 20170913: Typically users not interested in variable ID. However, ID helps diagnose susceptibility to CDF5 bug */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_out,", ID = %d",var_id);
     (void)fprintf(fp_out,"\n");

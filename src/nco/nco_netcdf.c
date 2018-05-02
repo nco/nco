@@ -301,6 +301,53 @@ cdl_typ_nm /* [fnc] Return string describing native CDL type */
   return (char *)NULL;
 } /* end cdl_typ_nm() */
 
+char * /* O [sng] Native CDL type */
+cdl_typ_nm_ntm /* [fnc] Return string describing native CDL type */
+(const int nc_id, /* I [ID] File ID */
+ const nc_type type) /* I [enm] netCDF type */
+{
+  /* Purpose: Divine CDL type string from netCDF external type enum, including non-atomic types */
+  char typ_nm[NC_MAX_NAME+1L];
+  if(type <= NC_MAX_ATOMIC_TYPE){
+    switch(type){
+    case NC_FLOAT:
+      return "float";
+    case NC_DOUBLE:
+      return "double";
+    case NC_INT:
+      return "int";
+    case NC_SHORT:
+      return "short";
+    case NC_CHAR:
+      return "char";
+    case NC_BYTE:
+      return "byte";
+    case NC_UBYTE:
+      return "ubyte";
+    case NC_USHORT:
+      return "ushort";
+    case NC_UINT:
+      return "uint";
+    case NC_INT64:
+      return "int64";
+    case NC_UINT64:
+      return "uint64";
+    case NC_STRING:
+      return "string";
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+  }else{
+    (void)nco_inq_user_type(nc_id,type,typ_nm,NULL,NULL,NULL,NULL);
+    //(void)fprintf(stdout,"DEBUG cdl_typ_nm_ntm() reports non-atomic type name is %s\n",typ_nm);
+    /* strdup(typ_nm) because typ_nm is local storage, eliminated after return()
+       NB: strdup() leads to memory leak unless it is free()'d by calling routine */
+    return strdup(typ_nm);
+  } /* !ntm */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end cdl_typ_nm_ntm() */
+
 const char * /* O [sng] Native XML type */
 xml_typ_nm /* [fnc] Return string describing native XML type */
 (const nc_type type) /* I [enm] netCDF type */

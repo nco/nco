@@ -243,6 +243,11 @@ const char * /* O [sng] Native CDL type */
 cdl_typ_nm /* [fnc] Return string describing native CDL type */
 (const nc_type type); /* I [enm] netCDF type */
 
+char * /* O [sng] Native CDL type */
+cdl_typ_nm_ntm /* [fnc] Return string describing native CDL type */
+(const int nc_id, /* I [ID] File ID */
+ const nc_type type); /* I [enm] netCDF type */
+
 const char * /* O [sng] Native CDL type suffix */
 cdl_typ_sfx /* [fnc] Return suffix string for CDL type */
 (const nc_type type); /* I [enm] netCDF type */

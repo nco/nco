@@ -15,25 +15,25 @@
 netcdf vlen {
 
  types:
-  int(*) vlen_int; // Declare "base-type" of vlen_int
-  char(*)  vlen_c
-  string(*) vlen_s; 
+  int(*) vlen_int_t; // Declare "base-type" of vlen_int
+  char(*) vlen_chr_t;
+  string(*) vlen_sng_t; 
  dimensions:
   lat=2;
 
  variables:
   int one;
   
-  vlen_int vlen_1D;
+  vlen_int_t vlen_1D;
   vlen_1D:_FillValue={-999}; // vlen data MUST BE enclosed in braces
-  vlen_int vlen_2D(lat);
+  vlen_int_t vlen_2D(lat);
   vlen_2D:_FillValue={-999};
 
-  vlen_s  vlen_string(lat);
+  vlen_sng_t vlen_sng(lat);
  data:
   one=1;
   vlen_1D={17,18,19};
   vlen_2D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
-  vlen_string={"one","two","three"},{"four,five"};
+  vlen_sng={"one","two","three"},{"four,five"};
 
 } // end root group
