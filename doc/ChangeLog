@@ -1,3 +1,7 @@
+2018-05-02  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo supports MPAS v2 names of form yyyy-mm-01-00000
+
 2018-05-01  Charlie Zender  <zender@uci.edu>
 
 	* Add lon/lat database method to nco_find_lat_lon() so auxiliary coordinates work on non-CF files

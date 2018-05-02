@@ -463,7 +463,7 @@ mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
 ncr_flg='No' # [sng] Incremental method
 nd_nbr=1 # [nbr] Number of nodes
-nm_typ='cesm' # [sng] Name type ('cesm', 'mpas', 'yyyymm', 'yyyy-mm', 'yyyy-mm-01') (for filenames)
+nm_typ='cesm' # [sng] Name type ('cesm', 'mpas', 'yyyymm', 'yyyy-mm', 'yyyy-mm-01', 'yyyy-mm-01-00000') (for filenames)
 no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ='bck' # [sng] Parallelism type
@@ -872,15 +872,17 @@ if [ "${mdl_typ}" = 'mpas' ]; then
 fi # !mdl_typ
 # http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
 # http://stackoverflow.com/questions/17420994/bash-regex-match-string
-# Order and 'elif' ensures name matches only fullest rx
+# NB: Order and 'elif' ensures name matches only fullest rx
 if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     nm_typ='yyyymm'
 elif [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9]-01.nc.?)$ ]]; then
     nm_typ='yyyy-mm-01'
+elif [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9]-01-00000.nc.?)$ ]]; then
+    nm_typ='yyyy-mm-01-00000'
 elif [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9].nc.?)$ ]]; then
     nm_typ='yyyy-mm'
 fi # !caseid
-if [ "${nm_typ}" = 'yyyymm' ] || [ "${nm_typ}" = 'yyyy-mm-01' ] || [ "${nm_typ}" = 'yyyy-mm' ]; then
+if [ "${nm_typ}" = 'yyyymm' ]  || [ "${nm_typ}" = 'yyyy-mm' ] || [ "${nm_typ}" = 'yyyy-mm-01' ] || [ "${nm_typ}" = 'yyyy-mm-01-00000' ]; then
     bs_nm="${BASH_REMATCH[1]}"
     bs_nm="$(basename ${bs_nm})"
     bs_nm="${bs_nm%.*}"
@@ -1543,6 +1545,8 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	printf "Filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM.${bs_sfx}\n"
     elif [ "${nm_typ}" = 'yyyy-mm-01' ]; then
 	printf "Filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01.${bs_sfx}\n"
+    elif [ "${nm_typ}" = 'yyyy-mm-01-00000' ]; then
+	printf "Filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01-00000.${bs_sfx}\n"
     elif [ ${inp_aut} = 'Yes' ]; then 
 	printf "Input filenames will be constructed with CESM'ish or E3SM/ACME'ish conventions\n"
     else # !nm_typ
@@ -1600,6 +1604,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 		fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
 	    elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
 		fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
+	    elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
+		fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 	    fi # !cesm
 	done # !yr
 	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
@@ -1616,6 +1622,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
 		elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
 		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
+		elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
+		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 		fi # !cesm
 	    done # !yr
 	    yyyy_clm_srt=${yyyy_clm_srt_dec}
