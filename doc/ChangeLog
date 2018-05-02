@@ -1,5 +1,7 @@
 2018-05-02  Charlie Zender  <zender@uci.edu>
 
+	* Cause ABORT_ON_ERROR to abort() not exit(), thus preserving memory for debugging
+
 	* ncclimo supports MPAS v2 names of form yyyy-mm-01-00000
 
 2018-05-01  Charlie Zender  <zender@uci.edu>

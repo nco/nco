@@ -491,7 +491,10 @@ void
 nco_exit /* [fnc] Wrapper for exit() */
 (int rcd) /* I [enm] Return code */
 {
-  /* Purpose: Wrapper for exit() */
+  /* Purpose: Wrapper for exit()
+     https://stackoverflow.com/questions/397075/what-is-the-difference-between-exit-and-abort
+     "abort() exits your program without calling functions registered using atexit() first, and without calling objects' destructors first. exit() does both before exiting your program. It does not call destructors for automatic objects though."
+     More to the point: abort() allows debuggers to access memory at time of error, exit() does not */
   const char fnc_nm[]="nco_exit()";
 #ifdef NCO_ABORT_ON_ERROR
   const char exit_nm[]="abort()";
@@ -504,8 +507,8 @@ nco_exit /* [fnc] Wrapper for exit() */
   }else{
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: ERROR Exiting through %s which will now call %s\n",nco_prg_nm_get(),fnc_nm,exit_nm);
 #ifdef NCO_ABORT_ON_ERROR
-    exit(rcd);
-//    abort();
+    //    exit(rcd);
+    abort();
 #else /* !NCO_ABORT_ON_ERROR */
     exit(rcd);
 #endif /* !NCO_ABORT_ON_ERROR */

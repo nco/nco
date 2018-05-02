@@ -359,8 +359,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
 
       /* Allocate enough space to hold attribute */
-      att[idx].val.vp = (void *) nco_malloc(att[idx].sz * nco_typ_lng(att[idx].type));
-      (void) nco_get_att(grp_id, var_id, att[idx].nm, att[idx].val.vp, att[idx].type);
+      att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng(att[idx].type));
+      (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 
       /* NC_CHAR can have zero length size maybe others? Create with a single FILL value */
       if(att[idx].sz == 0L){
@@ -1544,7 +1544,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     if(prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA) (void)fprintf(fp_out,"%s>\n",dmn_sng); else (void)fprintf(fp_out,"%s />\n",dmn_sng);
   } /* !xml */
 
-  /* Add comma as next in queue is the atts - NB: DONT LIKE THIS */
+  /* Add comma as next in queue is the attributes NB: DO NOT LIKE THIS */
   if(prn_flg->jsn){
     if(nbr_dim > 0) (void)fprintf(fp_out,"%s\n",dmn_sng); 
     /* Print netCDF type with same names as XML */ 
@@ -1588,6 +1588,9 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   } /* !prn_flg->trd */
 
   (void)fflush(fp_out);
+
+  if(var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark4\n",nco_prg_nm_get(),fnc_nm);
+
 } /* end nco_prn_var_dfn() */
 
 void
