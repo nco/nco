@@ -1,6 +1,8 @@
 2018-05-02  Charlie Zender  <zender@uci.edu>
 
-	* Cause ABORT_ON_ERROR to abort() not exit(), thus preserving memory for debugging
+	* Re-write nco_prn_att() to handle non-atomic types
+
+	* Cause ABORT_ON_ERROR to abort() not exit(), to preserve memory for debugging after crashes
 
 	* ncclimo supports MPAS v2 names of form yyyy-mm-01-00000
 

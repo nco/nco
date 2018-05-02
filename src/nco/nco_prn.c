@@ -359,8 +359,11 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
 
       /* Allocate enough space to hold attribute */
-      att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng(att[idx].type));
+      att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng_ntm(grp_id,att[idx].type));
+      if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark4.5\n",nco_prg_nm_get(),fnc_nm);
       (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+
+      if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark5\n",nco_prg_nm_get(),fnc_nm);
 
       /* NC_CHAR can have zero length size maybe others? Create with a single FILL value */
       if(att[idx].sz == 0L){
@@ -369,6 +372,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       } /* !att.sz */
     } /* idx == att_nbr */
     
+    if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark6\n",nco_prg_nm_get(),fnc_nm);
+
     /* Copy value to avoid indirection in loop over att_sz */
     att_sz=att[idx].sz;
     att_szm1=att_sz-1L;
@@ -448,12 +453,21 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       // if(!(int)strcasecmp(att[idx].nm,nco_mss_val_sng_get())) has_fll_val=True;
     } /* !xml */
     
-    /* Typecast pointer to values before access */
-    (void)cast_void_nctype(att[idx].type,&att[idx].val);
+    if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark7\n",nco_prg_nm_get(),fnc_nm);
 
-    (void)sprintf(att_sng_pln,"%s", CDL ? nco_typ_fmt_sng_att_cdl(att[idx].type) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
-    (void)sprintf(att_sng_dlm,"%s%%s", CDL ? nco_typ_fmt_sng_att_cdl(att[idx].type) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(att[idx].type) : nco_typ_fmt_sng(att[idx].type));
-    switch(att[idx].type){
+    nc_type bs_typ;
+    bs_typ=att[idx].type;
+    if(att[idx].type > NC_MAX_ATOMIC_TYPE) rcd=nc_inq_user_type(grp_id,att[idx].type,NULL,NULL,&bs_typ,NULL,NULL);
+    
+    /* Typecast pointer to values before access */
+    (void)cast_void_nctype(bs_typ,&att[idx].val);
+    
+    (void)sprintf(att_sng_pln,"%s", CDL ? nco_typ_fmt_sng_att_cdl(bs_typ) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
+    (void)sprintf(att_sng_dlm,"%s%%s", CDL ? nco_typ_fmt_sng_att_cdl(bs_typ) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
+    
+    if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark8\n",nco_prg_nm_get(),fnc_nm);
+
+    switch(bs_typ){
     case NC_FLOAT:
       for(lmn=0;lmn<att_sz;lmn++){
 	val_flt=att[idx].val.fp[lmn];
@@ -567,7 +581,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     if(CDL){
       if(nco_dbg_lvl_get() >= nco_dbg_std){
 	/* 20161129: Add netCDF attribute type as comment after semi-colon. Yes, "string" is redundant. */
-	(void)fprintf(fp_out," ; // %s\n",cdl_typ_nm(att[idx].type));
+	(void)fprintf(fp_out," ; // %s\n",cdl_typ_nm(bs_typ));
       }else{ /* !dbg */
 	(void)fprintf(fp_out," ;\n");
       } /* !dbg */
@@ -620,6 +634,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     // if(nco_xml_typ_rqr_flv_att(var_type) && !has_fll_val) (void)fprintf(fp_out,"%*s<attribute name=\"_FillValue\" type=\"%s\" value=\"%d\" />\n",prn_ndn,spc_sng,xml_typ_nm(var_type),(var_type == NC_UINT64) ? -2 : -1);
   } /* !xml */
 
+  if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark9\n",nco_prg_nm_get(),fnc_nm);
+
   /* Free space holding attribute values */
   for(idx=0;idx<att_nbr_ttl;idx++){
     att[idx].val.vp=nco_free(att[idx].val.vp);
@@ -628,6 +644,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   /* Free rest of space allocated for attribute information */
   if(att_nbr_ttl > 0) att=(att_sct *)nco_free(att);
+
+  if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark10\n",nco_prg_nm_get(),fnc_nm);
 
 } /* end nco_prn_att() */
 

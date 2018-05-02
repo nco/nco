@@ -2732,25 +2732,47 @@ int
 nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * const vp,const nc_type att_typ)
 {
   /* Purpose: Wrapper for nc_get_att_*() */
+  const char fnc_nm[]="nco_get_att()";
   int rcd=NC_NOERR;
-  switch(att_typ){
-  case NC_FLOAT: rcd=nc_get_att_float(nc_id,var_id,att_nm,(float *)vp); break;
-  case NC_DOUBLE: rcd=nc_get_att_double(nc_id,var_id,att_nm,(double *)vp); break;
-  case NC_INT: rcd=NCO_GET_ATT_INT(nc_id,var_id,att_nm,(nco_int *)vp); break;
-  case NC_SHORT: rcd=nc_get_att_short(nc_id,var_id,att_nm,(nco_short *)vp); break;
-  case NC_CHAR: rcd=NCO_GET_ATT_CHAR(nc_id,var_id,att_nm,(nco_char *)vp); break;
-  case NC_BYTE: rcd=NCO_GET_ATT_BYTE(nc_id,var_id,att_nm,(nco_byte *)vp); break;
+  if(att_typ <= NC_MAX_ATOMIC_TYPE){
+    switch(att_typ){
+    case NC_FLOAT: rcd=nc_get_att_float(nc_id,var_id,att_nm,(float *)vp); break;
+    case NC_DOUBLE: rcd=nc_get_att_double(nc_id,var_id,att_nm,(double *)vp); break;
+    case NC_INT: rcd=NCO_GET_ATT_INT(nc_id,var_id,att_nm,(nco_int *)vp); break;
+    case NC_SHORT: rcd=nc_get_att_short(nc_id,var_id,att_nm,(nco_short *)vp); break;
+    case NC_CHAR: rcd=NCO_GET_ATT_CHAR(nc_id,var_id,att_nm,(nco_char *)vp); break;
+    case NC_BYTE: rcd=NCO_GET_ATT_BYTE(nc_id,var_id,att_nm,(nco_byte *)vp); break;
 #ifdef ENABLE_NETCDF4
-    /* 20051119: netcdf4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
-  case NC_UBYTE: rcd=NCO_GET_ATT_UBYTE(nc_id,var_id,att_nm,(nco_ubyte *)vp); break;
-  case NC_USHORT: rcd=NCO_GET_ATT_USHORT(nc_id,var_id,att_nm,(nco_ushort *)vp); break;
-  case NC_UINT: rcd=NCO_GET_ATT_UINT(nc_id,var_id,att_nm,(nco_uint *)vp); break;
-  case NC_INT64: rcd=NCO_GET_ATT_INT64(nc_id,var_id,att_nm,(nco_int64 *)vp); break;
-  case NC_UINT64: rcd=NCO_GET_ATT_UINT64(nc_id,var_id,att_nm,(nco_uint64 *)vp); break;
-  case NC_STRING: rcd=NCO_GET_ATT_STRING(nc_id,var_id,att_nm,(nco_string *)vp); break;
+      /* 20051119: netCDF4 library did not support these until alpha10, still does not support nco_put/get_att_ubyte() */
+    case NC_UBYTE: rcd=NCO_GET_ATT_UBYTE(nc_id,var_id,att_nm,(nco_ubyte *)vp); break;
+    case NC_USHORT: rcd=NCO_GET_ATT_USHORT(nc_id,var_id,att_nm,(nco_ushort *)vp); break;
+    case NC_UINT: rcd=NCO_GET_ATT_UINT(nc_id,var_id,att_nm,(nco_uint *)vp); break;
+    case NC_INT64: rcd=NCO_GET_ATT_INT64(nc_id,var_id,att_nm,(nco_int64 *)vp); break;
+    case NC_UINT64: rcd=NCO_GET_ATT_UINT64(nc_id,var_id,att_nm,(nco_uint64 *)vp); break;
+    case NC_STRING: rcd=NCO_GET_ATT_STRING(nc_id,var_id,att_nm,(nco_string *)vp); break;
 #endif /* !ENABLE_NETCDF4 */
-  default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+  }else{
+    /* https://www.unidata.ucar.edu/software/netcdf/docs/group__attributes.html
+       "nc_get_att() works for any type of attribute, and must be used to get attributes of user-defined type.
+       We recommend that the type safe versions of this function be used for atomic data types." */
+    char typ_nm[NC_MAX_NAME+1L]; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
+    int cls_typ; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
+    nc_type bs_typ; /* [enm] netCDF atomic type underlying vlen and enum types */
+    nc_type var_typ; /* [enm] netCDF type */
+    size_t fld_nbr; /* [nbr] Number of fields in enum and compound types */
+    size_t typ_sz; /* [B] Size of user-defined type */
+    rcd=nc_inq_user_type(nc_id,att_typ,typ_nm,&typ_sz,&bs_typ,&fld_nbr,&cls_typ);
+    (void)fprintf(stdout,"%s: DEBUG %s reports attribute %s type %d = %s, typ_nm = %s, typ_sz = %lu, bs_typ = %d = %s, fld_nbr = %lu, cls_typ = %d = %s\n","nco_get_att",fnc_nm,att_nm,att_typ,nco_typ_sng(att_typ),typ_nm,(unsigned long)typ_sz,bs_typ,nco_typ_sng(bs_typ),(unsigned long)fld_nbr,cls_typ,nco_typ_sng(cls_typ));
+    rcd=nc_get_att(nc_id,var_id,att_nm,(void *)vp);
+    switch(bs_typ){
+    case NC_INT: 
+      (void)fprintf(stdout,"%s: DEBUG %s in bs_typ NC_INT switch\n","nco_get_att",fnc_nm);
+      break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end switch */
+  } /* !ntm */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_att()");
   return rcd;
 } /* end nco_get_att */
