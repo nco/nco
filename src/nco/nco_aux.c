@@ -60,7 +60,7 @@ nco_find_lat_lon
 
   /* Make sure CF tag exists. Currently require CF-1.X value */
   if(NCO_GET_ATT_CHAR(nc_id,NC_GLOBAL,"Conventions",att_val) || !strstr(att_val,"CF-1."))
-    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or is present but not of the form \"CF-1.X\". Auxiliary coordinate support (i.e., the -X option) cannot be expected to behave well file does not support CF-1.X metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: WARNING %s reports file \"Convention\" attribute is missing or is present but not of the form \"CF-1.X\". Auxiliary coordinate support (i.e., the -X option) works best when file complies with CF-1.X metadata conventions. Continuing anyway...\n",nco_prg_nm_get(),fnc_nm);
 
   /* Get number of variables */
   rcd=nco_inq_nvars(nc_id,&var_nbr);
@@ -90,7 +90,7 @@ nco_find_lat_lon
   
   /* Backup method, use "latitude" and "longitude", if they exist */
   if((*lat_id == NC_MIN_INT) || (*lon_id == NC_MIN_INT)){
-    (void)fprintf(stdout,"%s: INFO %s auxiliary coordinate variables with standard_name attributes of \"latitude\" and \"longitude\" do not exist. Attempting to use variables named \"latitude\" and \"longitude\" instead...\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: INFO %s auxiliary coordinate variables with standard_name attributes of \"latitude\" and \"longitude\" do not exist. Attempting to find latitude and longitude variables from pre-stored database instead...\n",nco_prg_nm_get(),fnc_nm);
     if(*lon_id == NC_MIN_INT){
       if((rcd=nco_inq_varid_flg(nc_id,"longitude",lon_id)) == NC_NOERR) var_nm_lon=strdup("longitude"); 
       else if((rcd=nco_inq_varid_flg(nc_id,"lon",lon_id)) == NC_NOERR) var_nm_lon=strdup("lon"); 
@@ -104,7 +104,7 @@ nco_find_lat_lon
   } /* !crd_nbr */
 
   if((*lat_id == NC_MIN_INT) || (*lon_id == NC_MIN_INT)){
-    if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: %s unable to identify lat/lon auxiliary coordinate variables.\n",nco_prg_nm_get(),fnc_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %s unable to identify lat/lon auxiliary coordinate variables.\n",nco_prg_nm_get(),fnc_nm);
     return False;
   } /* !lat_id, !lon_id */
 
@@ -165,8 +165,7 @@ nco_aux_evl
  int *lmt_nbr,
  char *nm_dmn)                     /* O [sng] Dimension name */ 
 {
-  /* Purpose: Create lmt structure of slabs of continguous cells that
-     match rectangular region specified by -X arguments.
+  /* Purpose: Create lmt structure of slabs of continguous cells that match rectangular region specified by -X arguments
      Intended for use with non-monotonic grids
      Requires CF-1.0 conventions
      Uses latitude/longitude centers rather than cell_bounds to detect matches
@@ -391,8 +390,7 @@ nco_aux_evl_trv
  const char * const units,           /* I [sng] Units of both "latitude" and "longitude" */
  int *aux_lmt_nbr)                   /* I/O [nbr] Number of coordinate limits */
 {
-  /* Purpose: Create lmt structure of slabs of continguous cells that
-     match rectangular region specified by -X arguments.
+  /* Purpose: Create lmt structure of slabs of continguous cells that match rectangular region specified by -X arguments
      Intended for use with non-monotonic grids
      Requires CF-1.0 conventions
      Uses latitude/longitude centers rather than cell_bounds to detect matches

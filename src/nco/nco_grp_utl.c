@@ -7790,15 +7790,14 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
 {
   const char fnc_nm[]="nco_prs_aux_crd()"; /* [sng] Function name */
 
-  /* Loop table  */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
-    /* Filter variables to extract */ 
+    /* Search extracted variables */ 
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].flg_xtr){
 
       trv_sct var_trv=trv_tbl->lst[idx_tbl];
 
-      /* Filter variables with auxiliary coordinates */ 
+      /* Search variables with auxiliary coordinates */ 
       if(var_trv.flg_aux){
 
         if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports variable with auxiliary coordinates %s\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[idx_tbl].nm_fll);
@@ -7810,29 +7809,27 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
         trv_sct *lat_trv=NULL;
         trv_sct *lon_trv=NULL;      
 
-        /* Loop dimensions, look for latitude */
+        /* Look for latitude dimension */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-          /* Has 'latitude' auxiliary coordinates */
           if(var_trv.var_dmn[idx_dmn].nbr_lat_crd){
             /* Use coordinate with lower group depth (index 0) (These were already sorted) */
             lat_trv=trv_tbl_var_nm_fll(var_trv.var_dmn[idx_dmn].lat_crd[0].nm_fll,trv_tbl);
             dmn_idx_fnd=idx_dmn;
             dmn_id_fnd_lat=var_trv.var_dmn[idx_dmn].lat_crd[0].dmn_id;
             break;
-          } /* Has 'latitude' auxiliary coordinates */
-        } /* Loop dimensions, look for latitude */
+          } /* !nbr_lat_crd */
+        } /* !idx_dmn */
 
-        /* Loop dimensions, look for longitude */
+        /* Look for longitude dimension */
         for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++){
-          /* Has 'longitude' auxiliary coordinates */
           if(var_trv.var_dmn[idx_dmn].nbr_lon_crd){
             /* Use coordinate with lower group depth (index 0) (These were already sorted) */
             lon_trv=trv_tbl_var_nm_fll(var_trv.var_dmn[idx_dmn].lon_crd[0].nm_fll,trv_tbl);
             dmn_idx_fnd=idx_dmn;
             dmn_id_fnd_lon=var_trv.var_dmn[idx_dmn].lon_crd[0].dmn_id;
             break;
-          } /* Has 'longitude' auxiliary coordinates */
-        } /* Loop dimensions, look for longitude */
+          } /* !nbr_lon_crd */
+        } /* !idx_dmn */
 
         /* Auxiliary coordinates found */
         if(lat_trv && lon_trv){
@@ -7852,7 +7849,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
           if(EXTRACT_ASSOCIATED_COORDINATES){
             (void)trv_tbl_mrk_xtr(lat_trv->nm_fll,True,trv_tbl);
             (void)trv_tbl_mrk_xtr(lon_trv->nm_fll,True,trv_tbl);
-          }
+          } /* !EXTRACT_ASSOCIATED_COORDINATES */
 
           /* Found limits */
           if(aux_lmt_nbr > 0){
@@ -7861,7 +7858,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             lmt_sct **lmt=aux;
             int lmt_dmn_nbr=aux_lmt_nbr;
 
-            /* Dimension IDs of both 'latitude' and 'longitude' must refer to same dimemsion (e.g., 'gds_crd) */
+            /* Dimension IDs of both 'latitude' and 'longitude' must refer to same dimemsion (e.g., 'gds_crd') */
             assert(dmn_id_fnd_lon == dmn_id_fnd_lat);
 	    CEWI_unused(dmn_id_fnd_lon);
 	    
@@ -7871,7 +7868,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             /* Apply limits to *all* 'latitude', 'longitude' variables that share same ID */
             (void)nco_lmt_std_att_lat_lon(nc_id,lmt,lmt_dmn_nbr,dmn_id_fnd_lat,FORTRAN_IDX_CNV,MSA_USR_RDR,trv_tbl);   
 
-            /* Get unique dimension object from unique dimension ID (e.g., 'gds_crd) */
+            /* Get unique dimension object from unique dimension ID (e.g., 'gds_crd') */
             dmn_trv_sct *dmn_trv=nco_dmn_trv_sct(dmn_id_fnd_lat,trv_tbl);
 
             /* Dimension IDs of both 'latitude' and 'longitude' must refer to same dimemsion (e.g., gds_crd) */
@@ -7886,15 +7883,15 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
                 nco_lmt_prt(lmt[idx_lmt]);
               }
             }
-          } /* Found limits */
+          } /* !aux_lmt_nbr */
 
           /* Free limits exported from nco_aux_evl_trv() */
           aux=(lmt_sct **)nco_free(aux);  
 
-        } /* Auxiliary coordinates found */
-      } /* Filter variables with auxiliary coordinates */ 
-    } /* Filter variables to extract */ 
-  } /* Loop table  */
+        } /* lat_trv && lon_trv */
+      } /* !flg_aux */ 
+    } /* !flg_xtr */ 
+  } /* !idx_tbl */
 
   return;
 } /* nco_prs_aux_crd() */
@@ -7910,20 +7907,15 @@ nco_lmt_aux_tbl                       /* [fnc] Apply limits to variable in table
  nco_bool MSA_USR_RDR,                /* I [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
-  /* Loop table  */
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
-    /* Match variable  */
+    /* Match variable */
     if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && !strcmp(var_nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
-
       trv_sct var_trv=trv_tbl->lst[idx_tbl];
-
-      /* Loop dimensions  */
       for(int idx_dmn=0;idx_dmn<var_trv.nbr_dmn;idx_dmn++)
         if(dmn_id == var_trv.var_dmn[idx_dmn].dmn_id)
           (void)nco_lmt_aux(nc_id,lmt,nbr_lmt,FORTRAN_IDX_CNV,MSA_USR_RDR,idx_tbl,idx_dmn,trv_tbl);    
-
-    } /* Match variable  */
-  } /* Loop table  */
+    } /* !strcmp() */
+  } /* !idx_tbl */
 
   return;
 } /* nco_lmt_aux_tbl() */
@@ -7963,12 +7955,11 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
  const int idx_dmn,                   /* I [nbr] Dimension index */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
-
   /* a) case where the dimension has coordinate variables */
   if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd){
 
     /* For this call (-X) the *same* limits are applied to all coordinates, and other variables might apply
-    them too, so make sure they are applied only once by setting -1 in lmt_crr */
+       them too, so make sure they are applied only once by setting -1 in lmt_crr */
 
     if (trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_crr == -1) return;
 
@@ -8025,21 +8016,17 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
       (void)nco_msa_wrp_splt_cpy(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);
 
       /* Wrapped hyperslabs are dimensions broken into the "wrong" order, e.g., from
-      -d time,8,2 broken into -d time,8,9 -d time,0,2 
-      WRP flag set only when list contains dimensions split as above */
+	 -d time,8,2 broken into -d time,8,9 -d time,0,2 
+	 WRP flag set only when list contains dimensions split as above */
       if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.WRP){
-
         /* Find and store size of output dim */  
         (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa); 
-
         continue;
       } /* End WRP flag set */
 
       /* Single slab---no analysis needed */  
       if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn_nbr == 1){
-
         (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);  
-
         continue;    
       } /* End Single slab */
 
@@ -8049,7 +8036,6 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
 
         /* Find and store size of output dimension */  
         (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].crd->lmt_msa);  
-
         continue;
       } /* End MSA_USR_RDR */
 
@@ -8073,7 +8059,7 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
   else if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd){
 
     /* For this call (-X) the *same* limits are applied to all coordinates, and other variables might apply
-    them too, so make sure they are applied only once by setting -1 in lmt_crr */
+       them too, so make sure they are applied only once by setting -1 in lmt_crr */
 
     if (trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa.lmt_crr == -1) return;
 
@@ -8131,10 +8117,8 @@ nco_lmt_aux                           /* [fnc] Apply auxiliary -X limits (Auxili
       -d time,8,2 broken into -d time,8,9 -d time,0,2 
       WRP flag set only when list contains dimensions split as above */
       if(trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa.WRP){
-
         /* Find and store size of output dim */  
         (void)nco_msa_clc_cnt(&trv_tbl->lst[idx_tbl].var_dmn[idx_dmn].ncd->lmt_msa); 
-
         continue;
       } /* End WRP flag set */
 
