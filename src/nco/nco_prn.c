@@ -455,19 +455,26 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     
     if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark7\n",nco_prg_nm_get(),fnc_nm);
 
+    int *vln_val_ip;
+    nc_vlen_t vln_val;
+    size_t vln_idx;
+    size_t vln_lng;
+    size_t vln_lngm1;
+    
     nc_type bs_typ;
-    bs_typ=att[idx].type;
-    if(att[idx].type > NC_MAX_ATOMIC_TYPE) rcd=nc_inq_user_type(grp_id,att[idx].type,NULL,NULL,&bs_typ,NULL,NULL);
+    nc_type cls_typ;
+    bs_typ=cls_typ=att[idx].type;
+    if(att[idx].type > NC_MAX_ATOMIC_TYPE) rcd=nc_inq_user_type(grp_id,att[idx].type,NULL,NULL,&bs_typ,NULL,&cls_typ);
     
     /* Typecast pointer to values before access */
-    (void)cast_void_nctype(bs_typ,&att[idx].val);
+    (void)cast_void_nctype(cls_typ,&att[idx].val);
     
     (void)sprintf(att_sng_pln,"%s", CDL ? nco_typ_fmt_sng_att_cdl(bs_typ) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
     (void)sprintf(att_sng_dlm,"%s%%s", CDL ? nco_typ_fmt_sng_att_cdl(bs_typ) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
     
     if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark8\n",nco_prg_nm_get(),fnc_nm);
 
-    switch(bs_typ){
+    switch(cls_typ){
     case NC_FLOAT:
       for(lmn=0;lmn<att_sz;lmn++){
 	val_flt=att[idx].val.fp[lmn];
@@ -575,6 +582,22 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* endelse CDL, XML, Traditional */
       } /* end loop over element */
       break;
+    case NC_VLEN:
+      switch(bs_typ){
+      case NC_INT:
+	for(lmn=0;lmn<att_sz;lmn++){
+	  vln_val=att[idx].val.vlnp[lmn];
+	  vln_lng=vln_val.len;
+	  vln_lngm1=vln_lng-1UL;
+	  vln_val_ip=(nco_int *)vln_val.p;
+	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,att_sng_dlm,(long)vln_val_ip[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : "");
+	} /* !lmn */
+	rcd=nco_free_vlens(att_sz,att[idx].val.vlnp);
+	break;
+      default: nco_dfl_case_nc_type_err();
+	break;
+    } /* end switch */
+      break;
     default: nco_dfl_case_nc_type_err();
       break;
     } /* end switch */
@@ -596,7 +619,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     } /* !JSN */
 
     rcd_prn+=0; /* CEWI */
-  } /* end loop over attributes */
+  } /* !idx */
 
   /* Omit comma and carriage-return for final attribute */
   if(JSN && att_nbr_ttl>0){
@@ -634,18 +657,18 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     // if(nco_xml_typ_rqr_flv_att(var_type) && !has_fll_val) (void)fprintf(fp_out,"%*s<attribute name=\"_FillValue\" type=\"%s\" value=\"%d\" />\n",prn_ndn,spc_sng,xml_typ_nm(var_type),(var_type == NC_UINT64) ? -2 : -1);
   } /* !xml */
 
-  if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark9\n",nco_prg_nm_get(),fnc_nm);
+  if(var_typ > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark9\n",nco_prg_nm_get(),fnc_nm);
 
   /* Free space holding attribute values */
   for(idx=0;idx<att_nbr_ttl;idx++){
-    att[idx].val.vp=nco_free(att[idx].val.vp);
+    if(att[idx].type <= NC_MAX_ATOMIC_TYPE) att[idx].val.vp=nco_free(att[idx].val.vp);
     att[idx].nm=(char *)nco_free(att[idx].nm);
   } /* end loop over attributes */
 
   /* Free rest of space allocated for attribute information */
   if(att_nbr_ttl > 0) att=(att_sct *)nco_free(att);
 
-  if(att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark10\n",nco_prg_nm_get(),fnc_nm);
+  if(var_typ > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark10\n",nco_prg_nm_get(),fnc_nm);
 
 } /* end nco_prn_att() */
 

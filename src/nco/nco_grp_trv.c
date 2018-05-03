@@ -212,7 +212,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
     if(trv_tbl->lst_dmn[idx_tbl].is_rec_dmn) dmn_rec_lcl++;
 
   if(var_ntm_lcl > 0){
-    (void)fprintf(stdout,"%s: WARNING File contains %d variables of non-atomic (i.e., compound, enum, opaque, vlen, or user-defined) type. NCO currently ignores non-atomic variables. %s will process only the atomic variables.\n",nco_prg_nm_get(),var_ntm_lcl,nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: WARNING File contains %d variables of non-atomic, user-defined type (i.e., compound, enum, opaque, or vlen). NCO currently ignores non-atomic variables. %s will process only the atomic variables.\n",nco_prg_nm_get(),var_ntm_lcl,nco_prg_nm_get());
   } /* !var_ntm_lcl */
 
   if(att_glb_all) *att_glb_all=att_glb_lcl;

@@ -23,9 +23,17 @@ netcdf vlen {
 
  variables:
   int one;
+  one:long_name="char attribute for one";
   
   vlen_int_t vlen_1D;
+  vlen_1D:long_name="vlen with base type integer";
+  vlen_1D:number73=73;
   vlen_1D:_FillValue={-999}; // vlen data MUST BE enclosed in braces
+  vlen_1D:number74=74;
+  vlen_int_t vlen_1D:vlen_att={1,2,3,4,5,6,7};
+  char vlen_1D:char_att="character attribute";
+  float vlen_1D:flt_att=1.0;
+
   vlen_int_t vlen_2D(lat);
   vlen_2D:_FillValue={-999};
 

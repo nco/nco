@@ -11,8 +11,8 @@
 
 void
 cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
-(const nc_type type, /* I [enm] netCDF type to cast void pointer to*/
- ptr_unn * const ptr) /* I/O [ptr] Pointer to pointer union whose vp element will be cast to type type*/
+(const nc_type type, /* I [enm] netCDF type to cast void pointer to */
+ ptr_unn * const ptr) /* I/O [ptr] Pointer to pointer union whose vp element will be cast to type type */
 {
   /* Purpose: Cast generic pointer in ptr_unn structure from type void to output netCDF type */
   switch(type){
@@ -51,6 +51,9 @@ cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
     break;
   case NC_STRING:
     ptr->sngp=(nco_string *)ptr->vp;
+    break;
+  case NC_VLEN:
+    ptr->vlnp=(nc_vlen_t *)ptr->vp;
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -98,6 +101,9 @@ cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type ty
     break;
   case NC_STRING:
     ptr->vp=(void *)ptr->sngp;
+    break;
+  case NC_VLEN:
+    ptr->vp=(void *)ptr->vlnp;
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */

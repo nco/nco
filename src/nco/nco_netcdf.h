@@ -424,6 +424,7 @@ int nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val
 int nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_type * const vlen_typ);
 int nco_inq_vlen(const int nc_id,const nc_type vlen_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ);
 int nco_free_vlen(nc_vlen_t * const vlenp);
+int nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp);
 int nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz);
 int nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ);
 /* End vlen routines */
@@ -537,6 +538,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_type * const var_typ);
   int nc_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ);
   int nc_free_vlen(nc_vlen_t * const vlenp);
+  int nc_free_vlens(const size_t sz,nc_vlen_t * const vlenp);
   int nc_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz);
   int nc_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ);
 #endif /* HAVE_NETCDF4_H */

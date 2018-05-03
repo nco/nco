@@ -1692,6 +1692,17 @@ nco_free_vlen(nc_vlen_t * const vlenp)
 } /* end nco_free_vlen() */
 
 int
+nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp)
+{
+  /* Purpose: Wrapper for nc_free_vlens() */
+  const char fnc_nm[]="nco_free_vlens()";
+  int rcd;
+  rcd=nc_free_vlens(sz,vlenp);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nco_free_vlens() */
+
+int
 nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz)
 {
   /* Purpose: Wrapper for nc_inq_type() */
@@ -2812,6 +2823,7 @@ int nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val
 int nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_type * const var_typ){assert(0);return NC_NOERR;}
 int nco_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ){assert(0);return NC_NOERR;}
 int nco_free_vlen(nc_vlen_t * const vlenp){assert(0);return NC_NOERR;}
+int nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp){assert(0);return NC_NOERR;}
 int nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz){assert(0);return NC_NOERR;}
 int nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ){assert(0);return NC_NOERR;}
 int nco_rename_grp(int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
