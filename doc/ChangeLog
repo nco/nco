@@ -1,3 +1,7 @@
+2018-05-03  Charlie Zender  <zender@uci.edu>
+
+	* Print correct type names for non-atomic attributes
+
 2018-05-02  Charlie Zender  <zender@uci.edu>
 
 	* nco_prn_att() now prints vlen attributes!

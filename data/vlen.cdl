@@ -33,6 +33,7 @@ netcdf vlen {
   vlen_int_t vlen_1D:vlen_att={1,2,3,4,5,6,7};
   char vlen_1D:char_att="character attribute";
   float vlen_1D:flt_att=1.0;
+  string vlen_1D:sng_att="string attribute";
 
   vlen_int_t vlen_2D(lat);
   vlen_2D:_FillValue={-999};
