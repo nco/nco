@@ -3343,6 +3343,8 @@ The third command concatenates three files (@file{198512.nc},
 @file{198612.nc}, @file{198712.nc}).
 
 @html
+<a name="-o"></a> <!-- http://nco.sf.net/nco.html#-o -->
+<a name="--output"></a> <!-- http://nco.sf.net/nco.html#--output -->
 <a name="fl_out"></a> <!-- http://nco.sf.net/nco.html#fl_out -->
 <a name="out"></a> <!-- http://nco.sf.net/nco.html#out -->
 <a name="output"></a> <!-- http://nco.sf.net/nco.html#output -->
@@ -14166,9 +14168,7 @@ print(tNew);
 @end example
 
 @noindent strftime()
-
-The @code{var_str=strtime(var_time, fmt_sng )} method take time based variable and a format string and returns a NC_STRING variable ( of the same shape as var_time) of time-stamps in the form specified by 'fmt_sng'. In order to run this command output type must be NetCDF-4  
-
+The @code{var_str=strtime(var_time,fmt_sng)} method takes a time-based variable and a format string and returns an NC_STRING variable (of the same shape as var_time) of time-stamps in the form specified by 'fmt_sng'. In order to run this command output type must be netCDF-4.
 @example 
 @verbatim
 ncap2 -4  -v -O -s 'time_str=strftime(time,"%Y-%m-%d");' in.nc foo.nc
@@ -14181,7 +14181,7 @@ time_str="1964-03-13", "1964-03-14", "1964-03-15", "1964-03-16",
 @end example
 
 Under the hood there are  a few steps invoved. @*
-First the method reads 'var_time@@units' and 'var_time@@calendar' (if present)  then  converts  var-time  to 'seconds since 1970-01-01'. @*
+First the method reads 'var_time@@units' and 'var_time@@calendar' (if present) then converts var_time to 'seconds since 1970-01-01'.@*
 It then converts these possibly UTC seconds to the standard struture @code{struct *tm}.@* 
 Finally strftime is called with fmt_sng and the *tm struct. @*
 The c-standard @code{strftime} is used as defined in 'time.h' @*
@@ -14195,7 +14195,6 @@ time_str = "1964-03-13 21:09:00", "1964-03-14 21:09:00", "1964-03-15 21:09:00",
            "1964-03-16 21:09:00", "1964-03-17 21:09:00", "1964-03-18 21:09:00", 
            "1964-03-19 21:09:00", "1964-03-20 21:09:00", "1964-03-21 21:09:00", 
            "1964-03-22 21:09:00" ;
-
 @end verbatim
 @end example
 

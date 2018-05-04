@@ -1,3 +1,7 @@
+2018-05-04  Charlie Zender  <zender@uci.edu>
+
+	* Add braces and support NC_VLEN attribute printing for base-types int, short, uint64, float
+
 2018-05-03  Charlie Zender  <zender@uci.edu>
 
 	* Print correct type names for non-atomic attributes

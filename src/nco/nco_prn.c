@@ -378,7 +378,10 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     att_sz=att[idx].sz;
     att_szm1=att_sz-1L;
 
-    int *vln_val_ip;
+    float *vln_val_fp;
+    nco_int *vln_val_ip;
+    nco_short *vln_val_sp;
+    nco_uint64 *vln_val_ui64p;
     nc_vlen_t vln_val;
     size_t vln_idx;
     size_t vln_lng;
@@ -390,9 +393,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     if(att[idx].type > NC_MAX_ATOMIC_TYPE) rcd=nco_inq_user_type(grp_id,att[idx].type,NULL,NULL,&bs_typ,NULL,&cls_typ);
     
     if(CDL){
-      nm_cdl=nm2sng_cdl(att[idx].nm);
-      //      (void)fprintf(fp_out,"%*s%s%s:%s = ",prn_ndn,spc_sng,(att[idx].type == NC_STRING) ? "string " : "",src_sng,nm_cdl); 
       char *typ_nm;
+      nm_cdl=nm2sng_cdl(att[idx].nm);
       typ_nm=cdl_typ_nm_ntm(grp_id,att[idx].type);
       if(cls_typ >= NC_MAX_ATOMIC_TYPE) (void)fprintf(fp_out,"%*s%s %s:%s = ",prn_ndn,spc_sng,typ_nm,src_sng,nm_cdl); else (void)fprintf(fp_out,"%*s%s:%s = ",prn_ndn,spc_sng,src_sng,nm_cdl); 
       if(cls_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
@@ -473,9 +475,15 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(cls_typ,&att[idx].val);
     
-    (void)sprintf(att_sng_pln,"%s", CDL ? nco_typ_fmt_sng_att_cdl(bs_typ) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
-    (void)sprintf(att_sng_dlm,"%s%%s", CDL ? nco_typ_fmt_sng_att_cdl(bs_typ) : (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
-    
+    if(CDL){
+      /* CDL attribute values of many types must have type-specific suffixes (e.g., s, u, ull) unless they are user-defined types that, like variables, can always be disambiguated by their explicit (not implicit) type specifier that resolves to a base atomic-type */
+      (void)sprintf(att_sng_pln,"%s", cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
+      (void)sprintf(att_sng_dlm,"%s%%s", cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
+    }else{
+      (void)sprintf(att_sng_pln,"%s", (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
+      (void)sprintf(att_sng_dlm,"%s%%s", (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
+    } /* !CDL */
+      
     if(nco_dbg_lvl_get() >= nco_dbg_std && att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark8\n",nco_prg_nm_get(),fnc_nm);
 
     switch(cls_typ){
@@ -588,23 +596,71 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       break;
     case NC_VLEN:
       switch(bs_typ){
+      case NC_FLOAT:
+	for(lmn=0;lmn<att_sz;lmn++){
+	  vln_val=att[idx].val.vlnp[lmn];
+	  vln_lng=vln_val.len;
+	  vln_lngm1=vln_lng-1UL;
+	  vln_val_fp=(float *)vln_val.p;
+	  if(CDL) (void)fprintf(fp_out,"{");
+	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++){
+	    val_flt=vln_val_fp[vln_idx];
+	    if(isfinite(val_flt)){
+	      rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_flt);
+	      (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
+	    }else{
+	      if(isnan(val_flt)) (void)sprintf(val_sng,(JSN) ? "null" : "NaNf");
+	      else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_flt < 0.0f) ? "-Infinityf" : "Infinityf");
+	    } /* endelse */
+	    (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
+	  } /* !vln_idx */
+	  if(CDL) (void)fprintf(fp_out,"}%s",(lmn != att_szm1) ? spr_sng : "");
+	} /* !lmn */
+	break;
+      case NC_SHORT:
+	for(lmn=0;lmn<att_sz;lmn++){
+	  vln_val=att[idx].val.vlnp[lmn];
+	  vln_lng=vln_val.len;
+	  vln_lngm1=vln_lng-1UL;
+	  vln_val_sp=(nco_short *)vln_val.p;
+	  if(CDL) (void)fprintf(fp_out,"{");
+	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,att_sng_dlm,vln_val_sp[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : "");
+	  if(CDL) (void)fprintf(fp_out,"}%s",(lmn != att_szm1) ? spr_sng : "");
+	} /* !lmn */
+	break;
       case NC_INT:
 	for(lmn=0;lmn<att_sz;lmn++){
 	  vln_val=att[idx].val.vlnp[lmn];
 	  vln_lng=vln_val.len;
 	  vln_lngm1=vln_lng-1UL;
 	  vln_val_ip=(nco_int *)vln_val.p;
+	  if(CDL) (void)fprintf(fp_out,"{");
 	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,att_sng_dlm,(long)vln_val_ip[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : "");
+	  if(CDL) (void)fprintf(fp_out,"}%s",(lmn != att_szm1) ? spr_sng : "");
 	} /* !lmn */
-	rcd=nco_free_vlens(att_sz,att[idx].val.vlnp);
+	break;
+      case NC_UINT64:
+	for(lmn=0;lmn<att_sz;lmn++){
+	  vln_val=att[idx].val.vlnp[lmn];
+	  vln_lng=vln_val.len;
+	  vln_lngm1=vln_lng-1UL;
+	  vln_val_ui64p=(nco_uint64 *)vln_val.p;
+	  if(CDL) (void)fprintf(fp_out,"{");
+	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,att_sng_dlm,vln_val_ui64p[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : "");
+	  if(CDL) (void)fprintf(fp_out,"}%s",(lmn != att_szm1) ? spr_sng : "");
+	} /* !lmn */
 	break;
       default: nco_dfl_case_nc_type_err();
 	break;
-    } /* end switch */
-      break;
+      } /* !bs_typ switch */
+      rcd=nco_free_vlens(att_sz,att[idx].val.vlnp);
+      break; /* !NC_VLEN */
+    case NC_COMPOUND:
+    case NC_ENUM:
+    case NC_OPAQUE:
     default: nco_dfl_case_nc_type_err();
       break;
-    } /* end switch */
+    } /* !cls_typ switch */
     if(CDL){
       if(nco_dbg_lvl_get() >= nco_dbg_std){
 	/* 20161129: Add netCDF attribute type as comment after semi-colon. Yes, "string" is redundant. */

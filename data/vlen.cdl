@@ -15,8 +15,12 @@
 netcdf vlen {
 
  types:
-  int(*) vlen_int_t; // Declare "base-type" of vlen_int
+  // Declare all base-types of vlen's stored in file
+  float(*) vlen_flt_t;
+  int(*) vlen_int_t;
+  short(*) vlen_sht_t;
   char(*) vlen_chr_t;
+  uint64(*) vlen_uint64_t;
   string(*) vlen_sng_t; 
  dimensions:
   lat=2;
@@ -25,24 +29,35 @@ netcdf vlen {
   int one;
   one:long_name="char attribute for one";
   
-  vlen_int_t vlen_1D;
-  vlen_1D:long_name="vlen with base type integer";
-  vlen_1D:number73=73;
-  vlen_1D:_FillValue={-999}; // vlen data MUST BE enclosed in braces
-  vlen_1D:number74=74;
-  vlen_int_t vlen_1D:vlen_att={1,2,3,4,5,6,7};
-  char vlen_1D:char_att="character attribute";
-  float vlen_1D:flt_att=1.0;
-  string vlen_1D:sng_att="string attribute";
+  vlen_int_t vlen_int_2D_mss_val_1D;
+  vlen_int_2D_mss_val_1D:_FillValue={-999,-999}; // vlen data MUST BE enclosed in braces
 
-  vlen_int_t vlen_2D(lat);
-  vlen_2D:_FillValue={-999};
+  vlen_int_t vlen_int_1D;
+  vlen_int_1D:long_name="vlen with base type integer";
+  vlen_int_1D:number73=73;
+  vlen_int_1D:_FillValue={-999}; // vlen data MUST BE enclosed in braces
+  vlen_int_1D:number74=74;
+  vlen_flt_t vlen_int_1D:vlen_att_flt_1D={1,2,3,4,5,6,7},{8,nanf,10};
+  vlen_int_1D:flt_att_1D=1.0f,2.0f,3.0f,4.0f,5.0f,6.0f,7.0f,8.0f,nanf,10.0f;
+  vlen_int_t vlen_int_1D:vlen_att_int_scl={1,2,3,4,5,6,7};
+  vlen_int_t vlen_int_1D:vlen_att_int_1D={1,2,3,4,5,6,7},{8,9,10};
+  vlen_sht_t vlen_int_1D:vlen_att_sht_1D={1,2,3,4,5,6,7},{8,9,10};
+  vlen_int_1D:sht_att_1D=1s,2s,3s,4s,5s,6s,7s,8s,9s,10s;
+  vlen_uint64_t vlen_int_1D:vlen_att_uint64_1D={1,2,3,4,5,6,7},{8,9,10};
+  vlen_int_1D:uint64_att_1D=1ull,2ull,3ull,4ull,5ull,6ull,7ull,8ull,9ull,10ull;
+  char vlen_int_1D:char_att="character attribute";
+  float vlen_int_1D:flt_att=1.0;
+  string vlen_int_1D:sng_att="string attribute";
+
+  vlen_int_t vlen_int_2D(lat);
+  vlen_int_2D:_FillValue={-999};
 
   vlen_sng_t vlen_sng(lat);
  data:
   one=1;
-  vlen_1D={17,18,19};
-  vlen_2D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
+  vlen_int_1D={17,18,19};
+  vlen_int_2D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
+  vlen_int_2D_mss_val_1D={_},{1,2,3,4,5,6,7,8,9,10};
   vlen_sng={"one","two","three"},{"four,five"};
 
 } // end root group
