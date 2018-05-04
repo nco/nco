@@ -43,7 +43,6 @@ void
 trv_tbl_free                           /* [fnc] GTT free memory */
 (trv_tbl_sct *tbl)                     /* I [sct] Traversal table */
 {
-  
   const char fnc_nm[]="trv_tbl_free()"; /* [sng] Function name  */
   
 #ifdef DEBUG_LEAKS
@@ -183,6 +182,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   int dmn_rec_lcl; /* [nbr] Number of record dimensions in file */
   int grp_dpt_lcl; /* [nbr] Maximum group depth (root = 0) */
   int grp_nbr_lcl; /* [nbr] Number of groups in file */
+  int typ_nbr_lcl; /* [nbr] Number of user-defined types in file */
   int var_ntm_lcl; /* [nbr] Number of non-atomic variables in file */
   int var_tmc_lcl; /* [nbr] Number of atomic-type variables in file */
 
@@ -193,6 +193,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   dmn_rec_lcl=0;
   grp_dpt_lcl=0;
   grp_nbr_lcl=0;
+  typ_nbr_lcl=0;
   var_ntm_lcl=0;
   var_tmc_lcl=0;
     
@@ -201,6 +202,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
     if(var_trv.nco_typ == nco_obj_typ_var) att_var_lcl+=var_trv.nbr_att;
     if(var_trv.nco_typ == nco_obj_typ_nonatomic_var) var_ntm_lcl++;
     if(var_trv.nco_typ == nco_obj_typ_grp){ 
+      typ_nbr_lcl+=var_trv.nbr_typ;
       grp_nbr_lcl+=var_trv.nbr_grp;
       var_tmc_lcl+=var_trv.nbr_var;
       if(grp_dpt_lcl < var_trv.grp_dpt) grp_dpt_lcl=var_trv.grp_dpt;
@@ -211,8 +213,8 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr_dmn;idx_tbl++)
     if(trv_tbl->lst_dmn[idx_tbl].is_rec_dmn) dmn_rec_lcl++;
 
-  if(var_ntm_lcl > 0){
-    (void)fprintf(stdout,"%s: WARNING File contains %d variables of non-atomic, user-defined type (i.e., compound, enum, opaque, or vlen). NCO currently ignores non-atomic variables. %s will process only the atomic variables.\n",nco_prg_nm_get(),var_ntm_lcl,nco_prg_nm_get());
+  if(typ_nbr_lcl > 0 || var_ntm_lcl > 0){
+    (void)fprintf(stdout,"%s: WARNING File contains %d user-defined types (i.e., compound, enum, opaque, or vlen) used to define %d non-atomic variables and their attributes. NCO currently ignores non-atomic variables. %s will process only the atomic variables.\n",nco_prg_nm_get(),typ_nbr_lcl,var_ntm_lcl,nco_prg_nm_get());
   } /* !var_ntm_lcl */
 
   if(att_glb_all) *att_glb_all=att_glb_lcl;
@@ -400,7 +402,6 @@ trv_tbl_mrk_prc_fix                    /* [fnc] Mark fixed/processed flag in tab
       return;
     }
   }
-
   assert(0);
 } /* end trv_tbl_mrk_prc_fix() */
 

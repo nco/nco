@@ -2596,6 +2596,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
+  /* NB: Deprecated--Do Not Modify
+     This is the original hierarchical, recursive, multi-plexed print routine used until ~2017
+     Henry de-multi-plexed it into routines nco_prn_jsn(), nco_prn_xml(), nco_prn_cdl_trd() */
+
   /* Purpose: Recursively print group contents
      Assumptions: 
      1. Input is a valid group name on extraction list (set in nco_xtr_dfn())
@@ -2793,7 +2797,6 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   /* Sort variables alphabetically */
   if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg->ALPHA_BY_STUB_GROUP);
-    
 
   // if(JSN) (void)fprintf(fp_out,"{\n");
 
@@ -3044,6 +3047,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   int nbr_att;                     /* [nbr] Number of attributes */
   int nbr_grp;                     /* [nbr] Number of sub-groups in this group */
   int nbr_var;                     /* [nbr] Number of variables */
+  int nbr_typ;                     /* [nbr] Number of types defined in group */
   int prn_ndn=0;                   /* [nbr] Indentation for printing */
   int rcd=NC_NOERR;                /* [rcd] Return code */
   int var_id;                      /* [id] Variable ID */
@@ -3061,6 +3065,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   unsigned int obj_idx; /* [idx] Index over traversal table */
 
   /* Initialize */
+  nbr_typ=0; /* [nbr] Number of types defined in group */
   dmn_nbr=0; /* [nbr] Number of dimensions defined in group */
   var_nbr_xtr=0; /* [nbr] Number of variables to be extracted in group */
 
@@ -3078,10 +3083,11 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   nbr_att=trv_tbl->lst[obj_idx].nbr_att;
   nbr_var=trv_tbl->lst[obj_idx].nbr_var;
   nbr_grp=trv_tbl->lst[obj_idx].nbr_grp;
+  nbr_typ=trv_tbl->lst[obj_idx].nbr_typ;
 
   /* Find dimension information for group */
   for(dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    /* Will dimension be extracted? (or are we printing all dimensions?)*/
+    /* Will dimension be extracted? (or are we printing all dimensions?) */
     if(trv_tbl->lst_dmn[dmn_idx].flg_xtr || prn_flg->rad){
       /* And was dimension defined in this group? */
       if(!strcmp(grp_nm_fll,trv_tbl->lst_dmn[dmn_idx].grp_nm_fll)){
@@ -3112,9 +3118,36 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   if(grp_dpt == 0 && prn_flg->nfo_xtr && prn_flg->PRN_GLB_METADATA && nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(fp_out,"%*s// %s\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_fl_sz_sng);
   if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %sncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file from this CDL: " : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
   
+  /* Print type information for group */
+  if(nco_dbg_lvl_get() >= nco_dbg_std && nbr_typ > 0) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark11\n",nco_prg_nm_get(),fnc_nm);
+  if(nbr_typ > 0){
+    char *typ_cdl;
+    char *bs_cdl;
+    char bs_nm[NC_MAX_NAME+1L]; /* [sng] Base name */
+    char typ_nm[NC_MAX_NAME+1L]; /* [sng] Type name */
+    nc_type *typ_ids;
+    nc_type bs_typ;
+
+    prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
+    (void)fprintf(fp_out,"%*stypes:\n",prn_flg->ndn,spc_sng); 
+    if(CDL) prn_ndn+=prn_flg->var_fst;
+    typ_ids=(nc_type *)nco_malloc(nbr_typ*(sizeof(nc_type)));
+    rcd+=nco_inq_typeids(grp_id,NULL,typ_ids);
+    for(int typ_idx=0;typ_idx<nbr_typ;typ_idx++){
+      rcd=nco_inq_user_type(grp_id,typ_ids[typ_idx],typ_nm,NULL,&bs_typ,NULL,NULL);
+      rcd=nco_inq_type(grp_id,bs_typ,bs_nm,NULL);
+      bs_cdl=nm2sng_cdl(bs_nm);
+      typ_cdl=nm2sng_cdl(typ_nm);
+      (void)fprintf(fp_out,"%*s%s(*) %s ;\n",prn_ndn,spc_sng,bs_cdl,typ_cdl);
+      bs_cdl=(char *)nco_free(bs_cdl);
+      typ_cdl=(char *)nco_free(typ_cdl);
+    } /* !typ_idx */
+    typ_ids=(nc_type *)nco_free(typ_ids);
+  } /* !nbr_typ */
+  
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
-  if(dmn_nbr > 0 ) (void)fprintf(fp_out,"%*sdimensions:\n",prn_flg->ndn,spc_sng); 
+  if(dmn_nbr > 0) (void)fprintf(fp_out,"%*sdimensions:\n",prn_flg->ndn,spc_sng); 
   if(CDL) prn_ndn+=prn_flg->var_fst;
 
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){

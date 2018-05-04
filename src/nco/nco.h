@@ -1334,9 +1334,10 @@ extern "C" {
     size_t nm_lng;                    /* [sng] Length of short name */
     int grp_dpt;                      /* [nbr] Depth of group (root = 0) */
     int nbr_att;                      /* [nbr] Number of attributes */
-    int nbr_dmn;                      /* [nbr] Number of dimensions  */
+    int nbr_dmn;                      /* [nbr] Number of dimensions */
     int nbr_rec;                      /* [nbr] Number of record dimensions */
-    int nbr_grp;                      /* [nbr] (For groups only) Number of sub-groups */   
+    int nbr_grp;                      /* [nbr] (For groups only) Number of sub-groups */
+    int nbr_typ;                      /* [nbr] (For groups only) Number of user-defined types defined in group */
     int nbr_var;                      /* [nbr] (For groups only) Number of variables */
     int ppc;                          /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
     nco_bool flg_nsd;                 /* [flg] PPC is NSD */

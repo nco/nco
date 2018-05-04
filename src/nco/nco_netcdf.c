@@ -1326,15 +1326,6 @@ nco_rename_grp(int grp_id,const char * const grp_nm)
   return rcd;
 } /* end nco_rename_grp() */
 
-int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn)
-{
-  /* Purpose: Wrapper for nc_inq_dimids() */
-  int rcd;
-  rcd=nc_inq_dimids(nc_id,dmn_nbr,dmn_ids,flg_prn);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimids()");
-  return rcd;
-} /* end nco_inq_dimids() */
-
 int nco_inq_grpname(const int nc_id,char * const grp_nm)
 {
   /* Purpose: Wrapper for nc_inq_grpname() */
@@ -1439,25 +1430,6 @@ int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_parent_flg()");
   return rcd;
 } /* end nco_inq_grp_parent_flg() */
-
-int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids)
-{
-  /* Purpose: Wrapper for nc_inq_varids() */
-  int rcd;
-  rcd=nc_inq_varids(nc_id,var_nbr,var_ids);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varids()");
-  return rcd;
-} /* end nco_inq_varids() */
-
-int
-nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult)
-{
-  /* Purpose: Wrapper for nc_inq_unlimdims() */
-  int rcd;
-  rcd=nc_inq_unlimdims(nc_id,nbr_dmn_ult,dmn_ids_ult);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_inq_unlimdims()");
-  return rcd;
-} /* end nco_inq_unlimdims() */
 #endif /* !HAVE_NETCDF4_H */
 /* End Group routines */
 
@@ -1588,7 +1560,75 @@ nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_dim()");
   return rcd;
 }  /* end nco_inq_rename_dim */
+
+#ifdef HAVE_NETCDF4_H
+int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn)
+{
+  /* Purpose: Wrapper for nc_inq_dimids() */
+  int rcd;
+  rcd=nc_inq_dimids(nc_id,dmn_nbr,dmn_ids,flg_prn);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimids()");
+  return rcd;
+} /* end nco_inq_dimids() */
+
+int
+nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult)
+{
+  /* Purpose: Wrapper for nc_inq_unlimdims() */
+  int rcd;
+  rcd=nc_inq_unlimdims(nc_id,nbr_dmn_ult,dmn_ids_ult);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_inq_unlimdims()");
+  return rcd;
+} /* end nco_inq_unlimdims() */
+#endif /* !HAVE_NETCDF4_H */
 /* End Dimension routines */
+
+/* Begin Type routines */
+#ifdef HAVE_NETCDF4_H
+int
+nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz)
+{
+  /* Purpose: Wrapper for nc_inq_type() 
+     NB: nc_inq_type() works on any type, including user-defined types */
+  const char fnc_nm[]="nco_inq_type()";
+  int rcd;
+  rcd=nc_inq_type(nc_id,var_typ,typ_nm,typ_sz);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_type() type %d\n",fnc_nm,var_typ);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nco_inq_type() */
+
+int
+nco_inq_typeids(const int nc_id,int * const typ_nbr,int * const typ_ids)
+{
+  /* Purpose: Wrapper for nc_inq_typeids() */
+  const char fnc_nm[]="nco_inq_typeids()";
+  int rcd;
+  rcd=nc_inq_typeids(nc_id,typ_nbr,typ_ids);
+  if(rcd != NC_NOERR){
+    char grp_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_grpname(nc_id,grp_nm);
+    (void)fprintf(stdout,"ERROR: %s failed to nc_inq_typeids() in group %s\n",fnc_nm,grp_nm);
+  } /* !rcd */
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nco_inq_typeids() */
+
+int
+nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ)
+{
+  /* Purpose: Wrapper for nc_inq_user_type()
+     NB: nc_inq_user_type() returns NC_BADTYPE when var_typ < NC_MAX_ATOMIC_TYPE in 
+     nc_inq_user_type(grp_id,var_typ,typ_nm,&typ_sz,&bs_typ,&fld_nbr,&cls_typ); */
+  const char fnc_nm[]="nco_inq_user_type()";
+  int rcd;
+  rcd=nc_inq_user_type(nc_id,var_typ,typ_nm,typ_sz,bs_typ,fld_nbr,cls_typ);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_user_type() type %d\n",fnc_nm,var_typ);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nco_inq_user_type() */
+#endif /* !HAVE_NETCDF4_H */
+/* End Type routines */
 
 /* Begin user-defined data type routines (_enum, _vlen) */
 /* Begin enum routines (_enum) */
@@ -1701,32 +1741,6 @@ nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp)
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_free_vlens() */
-
-int
-nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz)
-{
-  /* Purpose: Wrapper for nc_inq_type() */
-  const char fnc_nm[]="nco_inq_type()";
-  int rcd;
-  rcd=nc_inq_type(nc_id,var_typ,typ_nm,typ_sz);
-  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_type() type %d\n",fnc_nm,var_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
-  return rcd;
-} /* end nco_inq_type() */
-
-int
-nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ)
-{
-  /* Purpose: Wrapper for nc_inq_user_type()
-     NB: nc_inq_user_type() returns NC_BADTYPE when var_typ < NC_MAX_ATOMIC_TYPE in 
-     nc_inq_user_type(grp_id,var_typ,typ_nm,&typ_sz,&bs_typ,&fld_nbr,&cls_typ); */
-  const char fnc_nm[]="nco_inq_user_type()";
-  int rcd;
-  rcd=nc_inq_user_type(nc_id,var_typ,typ_nm,typ_sz,bs_typ,fld_nbr,cls_typ);
-  if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_user_type() type %d\n",fnc_nm,var_typ);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
-  return rcd;
-} /* end nco_inq_user_type() */
 /* End vlen routines */
 #endif /* !HAVE_NETCDF4_H */
 /* End user-defined data type routines (_enum, _vlen) */
@@ -2130,6 +2144,16 @@ nco_rename_var(const int nc_id,const int var_id,const char * const var_nm)
   return rcd;
 } /* end nco_rename_var */
 
+#ifdef HAVE_NETCDF4_H
+int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids)
+{
+  /* Purpose: Wrapper for nc_inq_varids() */
+  int rcd;
+  rcd=nc_inq_varids(nc_id,var_nbr,var_ids);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varids()");
+  return rcd;
+} /* end nco_inq_varids() */
+#endif /* !HAVE_NETCDF4_H */
 /* End _var */
 
 /* Start _get _put _var */
@@ -2820,8 +2844,6 @@ int nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,
 int nco_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ){assert(0);return NC_NOERR;}
 int nco_free_vlen(nc_vlen_t * const vlenp){assert(0);return NC_NOERR;}
 int nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp){assert(0);return NC_NOERR;}
-int nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz){assert(0);return NC_NOERR;}
-int nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ){assert(0);return NC_NOERR;}
 int nco_rename_grp(int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
 int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){assert(0);return NC_NOERR;}
@@ -2834,6 +2856,7 @@ int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_i
 int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
 int nco_inq_grpname(const int nc_id,char * const grp_nm){if(grp_nm) strcpy(grp_nm,"/");return NC_NOERR;}
 int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){
   int dmn_idx;
   int rcd;
@@ -2857,6 +2880,11 @@ int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult){
   } /* unlimid */
   return NC_NOERR;
 } /* end nco_inq_unlimdims() */
+
+int nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz){assert(0);return NC_NOERR;}
+int nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ){assert(0);return NC_NOERR;}
+int nco_inq_typeids(const int nc_id,int * const typ_nbr,int * const typ_ids){if(typ_nbr) *typ_nbr=0;return NC_NOERR;}
+
 int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids){
   int rcd;
   /* netCDF3 files have only the root group, with variable IDs 0..N-1 */

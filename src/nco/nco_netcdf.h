@@ -383,10 +383,8 @@ int nco_set_chunk_cache(const size_t sz_byt,const size_t cnk_nbr_hsh,const float
 /* End File routines */
 
 /* Begin Group routines (_grp) */
-int nco_rename_grp(int grp_id,const char * const grp_nm);
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id);
-int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn);
 int nco_inq_grpname(const int nc_id,char * const grp_nm);
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll);
 int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng);
@@ -397,20 +395,27 @@ int nco_inq_grp_ncid(const int nc_id,const char * const grp_nm,int * const grp_i
 int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id);
 int nco_inq_grp_parent(const int nc_id,int * const prn_id);
 int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id);
-int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids);
+int nco_rename_grp(int grp_id,const char * const grp_nm);
 /* End Group routines */
 
 /* Begin Dimension routines (_dim) */
 int nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * const dmn_id);
 int nco_inq_dimid(const int nc_id,const char * const dmn_nm,int * const dmn_id);
 int nco_inq_dimid_flg(const int nc_id,const char * const dmn_nm,int * const dmn_id);
+int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn);
 int nco_inq_dim(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz);
 int nco_inq_dim_flg(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz);
 int nco_inq_dimname(const int nc_id,const int dmn_id,char *dmn_nm);
 int nco_inq_dimlen(const int nc_id,const int dmn_id,long *dmn_sz);
-int nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm);
 int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult);
+int nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm);
 /* End Dimension routines */
+
+/* Begin Type routines (_type) */
+int nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz);
+int nco_inq_typeids(const int nc_id,int * const typ_nbr,int * const typ_ids);
+int nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ);
+/* End Type routines */
 
 /* Begin enum routines (_enum) */
 int nco_def_enum(const int nc_id,const nc_type bs_typ,const char * const typ_nm,nc_type * const var_typ);
@@ -425,8 +430,6 @@ int nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,
 int nco_inq_vlen(const int nc_id,const nc_type vlen_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ);
 int nco_free_vlen(nc_vlen_t * const vlenp);
 int nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp);
-int nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz);
-int nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ);
 /* End vlen routines */
 
 /* Begin Variable routines (_var) */
@@ -447,6 +450,7 @@ int nco_inq_var_packing(const int nc_id,const int var_id,int * const packing);
 int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);
 int nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id);
 int nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id);
+int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids);
 int nco_inq_varname(const int nc_id,const int var_id,char * const var_nm);
 int nco_inq_varnatts(const int nc_id,const int var_id,int * const att_nbr);
 int nco_inq_varndims(const int nc_id,const int var_id,int * const dmn_nbr);
@@ -540,6 +544,7 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_free_vlen(nc_vlen_t * const vlenp);
   int nc_free_vlens(const size_t sz,nc_vlen_t * const vlenp);
   int nc_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz);
+  int nc_inq_typeids(const int nc_id,int * const typ_nbr,int * const typ_ids);
   int nc_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ);
 #endif /* HAVE_NETCDF4_H */
 #ifndef HAVE_NETCDF4_H

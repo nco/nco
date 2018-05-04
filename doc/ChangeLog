@@ -1,5 +1,13 @@
 2018-05-04  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.5-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha03: fxm';git push
+	git tag -a 4.7.5-alpha03 -m 'vlen att; abort();	yyyy-mm-01-00000; CDL types';git push --tags
+
+	* Add CDL types: section
+
+	* Add nco_inq_typeids(), add typ_nbr to traversal table
+
 	* Add braces and support NC_VLEN attribute printing for base-types int, short, uint64, float
 
 2018-05-03  Charlie Zender  <zender@uci.edu>

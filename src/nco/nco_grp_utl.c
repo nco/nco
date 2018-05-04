@@ -2299,6 +2299,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   int nbr_dmn_grp;                 /* [nbr] Number of dimensions for group */
   int nbr_dmn_var;                 /* [nbr] Number of dimensions for variable */
   int nbr_grp;                     /* [nbr] Number of sub-groups in this group */
+  int nbr_typ;                     /* [nbr] Number of user-defined types defined in this group */
   int nbr_rec;                     /* [nbr] Number of record dimensions in this group */
   int nbr_var;                     /* [nbr] Number of variables */
   int rcd=NC_NOERR;                /* [rcd] Return code */
@@ -2321,6 +2322,10 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
   /* Get number of sub-groups */
   rcd+=nco_inq_grps(grp_id,&nbr_grp,(int *)NULL);
+
+  /* Get number of user-defined types defined in group */
+  rcd+=nco_inq_typeids(grp_id,&nbr_typ,(int *)NULL);
+  if(nco_dbg_lvl_get() >= nco_dbg_std && nbr_typ > 0) (void)fprintf(stdout,"%s: DEBUG %s quark12 reports nbr_typ = %d for group %s\n",nco_prg_nm_get(),fnc_nm,nbr_typ,grp_nm_fll);
 
   /* Obtain number of dimensions/variable/attributes for group; NB: ignore record dimension ID */
   rcd+=nco_inq(grp_id,&nbr_dmn_grp,&nbr_var,&nbr_att,(int *)NULL);
@@ -2345,7 +2350,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   while((sls_psn=strchr(sls_psn+1,'/'))) grp_dpt++;
   if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stderr,"%s: INFO %s found group %s at level %d\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,grp_dpt);
 
-  /* Keep the old table objects size for insertion */
+  /* Keep old table size for insertion */
   unsigned int idx;
   idx=trv_tbl->nbr;
 
@@ -2398,6 +2403,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].nbr_att=nbr_att;              /* [nbr] Number of attributes */
   trv_tbl->lst[idx].nbr_grp=nbr_grp;              /* [nbr] Number of sub-groups (for group) */
   trv_tbl->lst[idx].nbr_rec=nbr_rec;              /* [nbr] Number of record dimensions */
+  trv_tbl->lst[idx].nbr_typ=nbr_typ;              /* [nbr] Number of types (for group) */
   trv_tbl->lst[idx].nbr_var=nbr_var;              /* [nbr] Number of variables (for group) */
   trv_tbl->lst[idx].ppc=NC_MAX_INT;               /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
   trv_tbl->lst[idx].flg_nsd=True;                 /* [flg] PPC is NSD */
@@ -2470,7 +2476,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->nbr++;
     trv_tbl->lst=(trv_sct *)nco_realloc(trv_tbl->lst,trv_tbl->nbr*sizeof(trv_sct));
 
-    /* Add this element, a variable, to table. NB: nbr_var, nbr_grp, flg_rcr not valid here */
+    /* Add this element, a variable, to table. NB: nbr_var, nbr_grp, nbr_typ, flg_rcr not valid here */
     trv_tbl->lst[idx].nco_typ=obj_typ;
 
     trv_tbl->lst[idx].nm=strdup(var_nm); 
@@ -2515,6 +2521,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nbr_dmn=nbr_dmn_var;
     trv_tbl->lst[idx].nbr_grp=nco_obj_typ_err;
     trv_tbl->lst[idx].nbr_rec=nbr_rec; /* NB: broken fxm should be record dimensions used by this variable */
+    trv_tbl->lst[idx].nbr_typ=nco_obj_typ_err; /* NB: Could eventually be number of user-defined types in variable */
     trv_tbl->lst[idx].nbr_var=nco_obj_typ_err;
     trv_tbl->lst[idx].ppc=NC_MAX_INT; /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
     trv_tbl->lst[idx].flg_nsd=True; /* [flg] PPC is NSD */
