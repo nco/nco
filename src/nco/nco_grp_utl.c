@@ -2325,7 +2325,6 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
 
   /* Get number of user-defined types defined in group */
   rcd+=nco_inq_typeids(grp_id,&nbr_typ,(int *)NULL);
-  if(nco_dbg_lvl_get() >= nco_dbg_std && nbr_typ > 0) (void)fprintf(stdout,"%s: DEBUG %s quark12 reports nbr_typ = %d for group %s\n",nco_prg_nm_get(),fnc_nm,nbr_typ,grp_nm_fll);
 
   /* Obtain number of dimensions/variable/attributes for group; NB: ignore record dimension ID */
   rcd+=nco_inq(grp_id,&nbr_dmn_grp,&nbr_var,&nbr_att,(int *)NULL);

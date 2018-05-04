@@ -360,10 +360,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
       /* Allocate enough space to hold attribute */
       att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng_ntm(grp_id,att[idx].type));
-      if(nco_dbg_lvl_get() >= nco_dbg_std && att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark4.5\n",nco_prg_nm_get(),fnc_nm);
       (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
-
-      if(nco_dbg_lvl_get() >= nco_dbg_std && att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark5\n",nco_prg_nm_get(),fnc_nm);
 
       /* NC_CHAR can have zero length size maybe others? Create with a single FILL value */
       if(att[idx].sz == 0L){
@@ -372,8 +369,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       } /* !att.sz */
     } /* idx == att_nbr */
     
-    if(nco_dbg_lvl_get() >= nco_dbg_std && att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark6\n",nco_prg_nm_get(),fnc_nm);
-
     /* Copy value to avoid indirection in loop over att_sz */
     att_sz=att[idx].sz;
     att_szm1=att_sz-1L;
@@ -470,8 +465,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       // if(!(int)strcasecmp(att[idx].nm,nco_mss_val_sng_get())) has_fll_val=True;
     } /* !xml */
     
-    if(nco_dbg_lvl_get() >= nco_dbg_std && att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark7\n",nco_prg_nm_get(),fnc_nm);
-
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(cls_typ,&att[idx].val);
     
@@ -484,8 +477,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)sprintf(att_sng_dlm,"%s%%s", (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
     } /* !CDL */
       
-    if(nco_dbg_lvl_get() >= nco_dbg_std && att[idx].type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark8\n",nco_prg_nm_get(),fnc_nm);
-
     switch(cls_typ){
     case NC_FLOAT:
       for(lmn=0;lmn<att_sz;lmn++){
@@ -717,8 +708,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     // if(nco_xml_typ_rqr_flv_att(var_type) && !has_fll_val) (void)fprintf(fp_out,"%*s<attribute name=\"_FillValue\" type=\"%s\" value=\"%d\" />\n",prn_ndn,spc_sng,xml_typ_nm(var_type),(var_type == NC_UINT64) ? -2 : -1);
   } /* !xml */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std && var_typ > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark9\n",nco_prg_nm_get(),fnc_nm);
-
   /* Free space holding attribute values */
   for(idx=0;idx<att_nbr_ttl;idx++){
     if(att[idx].type <= NC_MAX_ATOMIC_TYPE) att[idx].val.vp=nco_free(att[idx].val.vp);
@@ -727,8 +716,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   /* Free rest of space allocated for attribute information */
   if(att_nbr_ttl > 0) att=(att_sct *)nco_free(att);
-
-  if(nco_dbg_lvl_get() >= nco_dbg_std && var_typ > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark10\n",nco_prg_nm_get(),fnc_nm);
 
 } /* end nco_prn_att() */
 
@@ -1541,7 +1528,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   /* Loop over dimensions */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
 
-    if(nco_dbg_lvl_get() >= nco_dbg_std && var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1\n",nco_prg_nm_get(),fnc_nm);
+    //    if(nco_dbg_lvl_get() >= nco_dbg_std && var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1\n",nco_prg_nm_get(),fnc_nm);
 
       if(var_trv->var_dmn[dmn_idx].is_crd_var){
       /* Dimension has coordinate variable */
@@ -1579,8 +1566,6 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   dmn_sng=(char *)nco_malloc((nbr_dim+1)*NC_MAX_NAME*sizeof(char));
   dmn_sng[0]='\0';
   sz_sng[0]='\0';
-
-  if(nco_dbg_lvl_get() >= nco_dbg_std && var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark2\n",nco_prg_nm_get(),fnc_nm);
 
   if(nbr_dim == 0){
     ram_sz_crr=var_sz*nco_typ_lng_ntm(nc_id,var_typ);
@@ -1626,8 +1611,6 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   } /* end if variable is scalar */
   ram_sz_ttl+=ram_sz_crr;
-
-  if(nco_dbg_lvl_get() >= nco_dbg_std && var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark3\n",nco_prg_nm_get(),fnc_nm);
 
   if(prn_flg->cdl){
     char *typ_nm;
@@ -1689,8 +1672,6 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   } /* !prn_flg->trd */
 
   (void)fflush(fp_out);
-
-  if(nco_dbg_lvl_get() >= nco_dbg_std && var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark4\n",nco_prg_nm_get(),fnc_nm);
 
 } /* end nco_prn_var_dfn() */
 
@@ -3119,7 +3100,6 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   if(grp_dpt == 0 && prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s// %sncgen -k %s -b -o %s.nc %s.cdl\n",prn_flg->sxn_fst,spc_sng,prn_flg->PRN_GLB_METADATA ? "Generate binary file from this CDL: " : "",nco_fmt_hdn_sng(prn_flg->fl_out_fmt),prn_flg->fl_stb,prn_flg->fl_stb);
   
   /* Print type information for group */
-  if(nco_dbg_lvl_get() >= nco_dbg_std && nbr_typ > 0) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark11\n",nco_prg_nm_get(),fnc_nm);
   if(nbr_typ > 0){
     char *typ_cdl;
     char *bs_cdl;
@@ -3195,7 +3175,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
       
       if(obj_idx != obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var){
 	/* Variable is non-atomic, print helpful information */
-	if(nco_dbg_lvl_get() >= nco_dbg_std){
+	if(nco_dbg_lvl_get() >= nco_dbg_var){
 	  (void)fprintf(stdout,"%s: DEBUG %s reports grp_nm_fll = %s, grp_dpt = %d, nbr_var = %d\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,grp_dpt,nbr_var);
 	  (void)fprintf(stdout,"%s: DEBUG %s reports %s is non-atomic (e.g., compound, enum, opaque, vlen, or user-defined) variable type. Support is minimal.\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  trv_sct var_trv=trv_tbl->lst[obj_idx];
