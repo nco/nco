@@ -644,6 +644,42 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       default: nco_dfl_case_nc_type_err();
 	break;
       } /* !bs_typ switch */
+      for(lmn=0;lmn<att_sz;lmn++){
+
+	vln_val=att[idx].val.vlnp[lmn];
+	vln_lng=vln_val.len;
+	vln_lngm1=vln_lng-1UL;
+
+	vln_val_fp=(float *)vln_val.p;
+	vln_val_sp=(nco_short *)vln_val.p;
+	vln_val_ip=(nco_int *)vln_val.p;
+	vln_val_ui64p=(nco_uint64 *)vln_val.p;
+
+	if(CDL) (void)fprintf(fp_out,"{");
+	switch(bs_typ){
+	case NC_FLOAT:
+	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++){
+	    val_flt=vln_val_fp[vln_idx];
+	    if(isfinite(val_flt)){
+	      rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_flt);
+	      (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
+	    }else{
+	      if(isnan(val_flt)) (void)sprintf(val_sng,(JSN) ? "null" : "NaNf");
+	      else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_flt < 0.0f) ? "-Infinityf" : "Infinityf");
+	    } /* endelse */
+	    (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
+	  } /* !vln_idx */
+	  break;
+	case NC_SHORT:
+	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,att_sng_dlm,vln_val_sp[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : ""); break;
+	case NC_INT:
+	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,att_sng_dlm,(long)vln_val_ip[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : ""); break;
+	case NC_UINT64:
+	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,att_sng_dlm,vln_val_ui64p[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : ""); break;
+	default: nco_dfl_case_nc_type_err(); break;
+	} /* !bs_typ switch */
+	if(CDL) (void)fprintf(fp_out,"}%s",(lmn != att_szm1) ? spr_sng : "");
+      } /* !lmn */
       rcd=nco_free_vlens(att_sz,att[idx].val.vlnp);
       break; /* !NC_VLEN */
     case NC_COMPOUND:
