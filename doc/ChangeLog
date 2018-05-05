@@ -1,3 +1,7 @@
+2018-05-05  Charlie Zender  <zender@uci.edu>
+
+	* Complete VLEN attribute CDL printing support for all base-types except NC_CHAR and NC_STRING
+
 2018-05-04  Charlie Zender  <zender@uci.edu>
 
 	* Re-order vlen attribute loop to distill common operations
