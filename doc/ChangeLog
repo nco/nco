@@ -1,5 +1,9 @@
 2018-05-06  Charlie Zender  <zender@uci.edu>
 
+	* Allow user-defined types in nco_prn_var_val_trv()
+
+	* Return from nco_val_cnf_typ() if typ_in == typ_out
+
 	* Support user-defined types and class types in nco_get_var*() functions
 
 2018-05-05  Charlie Zender  <zender@uci.edu>

@@ -299,14 +299,14 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
     if((int)strcasecmp(att_nm,nco_mss_val_sng_get())) continue;
     (void)nco_inq_att(nc_id,var->id,att_nm,&att_typ,&att_sz);
     if(att_sz != 1L && att_typ != NC_CHAR){
-      (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has %li elements and so will not be used\n",nco_prg_nm_get(),att_nm,var->nm,att_sz);
+      (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for %s has %li elements and so will not be used\n",nco_prg_nm_get(),att_nm,var->nm,att_sz);
       continue;
     } /* end if */
     /* if(att_typ != var->type) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s will be typecast from %s to %s for arithmetic purposes\n",nco_prg_nm_get(),att_nm,var->nm,nco_typ_sng(att_typ),nco_typ_sng(var->type)); */
     /* If we got this far then try to retrieve attribute and make sure it conforms to variable's type */
     var->has_mss_val=True;
     /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
-    att_lng=att_sz*nco_typ_lng(att_typ);
+    att_lng=att_sz*nco_typ_lng_ntm(nc_id,att_typ);
     mss_tmp.vp=(void *)nco_malloc(att_lng);
     (void)nco_get_att(nc_id,var->id,att_nm,mss_tmp.vp,att_typ);
     if(att_typ == NC_CHAR){
@@ -321,7 +321,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
     } /* end if */
     
     /* Ensure mss_val in memory is stored as same type as variable */
-    var->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var->type));
+    var->mss_val.vp=(void *)nco_malloc(nco_typ_lng_ntm(nc_id,var->type));
     (void)nco_val_cnf_typ(att_typ,mss_tmp,var->type,var->mss_val);
 
     /* Release temporary memory */

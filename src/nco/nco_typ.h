@@ -146,6 +146,10 @@ C code." */
 /* Tokens to give semantic compatibility between easy- and hard-to-handle types
    i.e., nco_short is always short and easy-to-handle */
 typedef short nco_short; /* [typ] NC_SHORT */
+typedef nc_vlen_t nco_vlen; /* [typ] NC_VLEN */
+typedef void nco_opaque; /* [typ] NC_OPAQUE */
+typedef void nco_enum; /* [typ] NC_ENUM */
+typedef void nco_compound; /* [typ] NC_COMPOUND */
 
 /* NC_BYTE handling */
 #ifndef NCO_BYTE

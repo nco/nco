@@ -891,7 +891,10 @@ extern "C" {
     nco_int64 * restrict i64p;
     nco_uint64 * restrict ui64p;
     nco_string * restrict sngp;
-    nc_vlen_t * restrict vlnp;
+    nco_vlen * restrict vlnp;
+    nco_opaque * restrict opqp;
+    nco_enum * restrict enmp;
+    nco_compound * restrict cpdp;
     void * restrict vp;
   } ptr_unn;
 
