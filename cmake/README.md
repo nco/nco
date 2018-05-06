@@ -31,25 +31,6 @@ Use static linking of the C Run-time Library (CRT)
 bld crt
 ```
 
-# Changes needed
-
-
-## hdf5
-
-edit CMakeLists.txt at root and add for case when static linking of the C Run-time Library (CRT)
-
-```
-INCLUDE(config/cmake/UserMacros/WINDOWS_MT.cmake)
-```
-
-## netcdf
-
-edit CMakeLists.txt and add an option to detect the HDF5 HL library
-
-```
-INCLUDE_DIRECTORIES(${HDF5_HL_INCLUDE_DIR})
-```
-
 # NCO CMake build
 
 NCO should detect the ZLIB dependency in HDF5 as
@@ -94,6 +75,14 @@ if (MSVC)
      endforeach()
   endif()
 endif()
+```
+
+## hdf5
+
+edit CMakeLists.txt at root and add for case when static linking of the C Run-time Library (CRT)
+
+```
+INCLUDE(config/cmake/UserMacros/WINDOWS_MT.cmake)
 ```
 
 ## zlib

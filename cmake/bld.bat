@@ -194,7 +194,7 @@ if exist %build%\hdf5\build\bin\Debug\h5dump.exe (
 :build_curl
 if exist %build%\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib (
  echo skipping curl build
- goto build_netcdf
+ goto build_expat
 ) else (
   echo building curl
   pushd curl
@@ -210,51 +210,6 @@ if exist %build%\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\
   popd
   popd
   if errorlevel 1 goto :eof
-)
-
-:: //////////////////////////////////////////////////////////
-:: netcdf
-:: //////////////////////////////////////////////////////////
-
-:build_netcdf
-if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
- echo skipping netcdf build
- goto test_netcdf
-) else (
-  echo building netcdf
-  pushd netcdf-c
-  mkdir build
-  pushd build
-  cmake .. -G %MSVC_VERSION% ^
-           -DNC_USE_STATIC_CRT=%STATIC_CRT% ^
-           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
-           -DENABLE_TESTS=OFF ^
-           -DBUILD_SHARED_LIBS=OFF ^
-           -DHDF5_HL_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
-           -DHDF5_C_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
-           -DHDF5_INCLUDE_DIR=%root%/hdf5/src ^
-           -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
-           -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/libszip_D.lib ^
-           -DZLIB_INCLUDE_DIR:PATH=%root%/zlib ^
-           -DHAVE_HDF5_H=%root%/hdf5/build ^
-           -DHDF5_HL_INCLUDE_DIR=%root%/hdf5/hl/src ^
-           -DCURL_LIBRARY=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
-           -DCURL_INCLUDE_DIR=%root%/curl/include
-  msbuild netcdf.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
-  popd
-  popd
-  if errorlevel 1 goto :eof
-)
-
-
-:test_netcdf
-if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
- echo testing netcdf build
- @echo on
- %build%\netcdf-c\build\ncdump\ncdump.exe -h http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
- @echo off
- @echo.
- goto build_expat
 )
 
 :: //////////////////////////////////////////////////////////
@@ -345,7 +300,7 @@ if exist %build%\GSL\build\GSL.sln (
 :build_antlr
 if exist %build%\antlr2\lib\cpp\build\antlr.sln (
  echo skipping antlr build
- goto build_nco
+ goto build_netcdf
 ) else (
   echo building antlr
   pushd antlr2
@@ -363,6 +318,50 @@ if exist %build%\antlr2\lib\cpp\build\antlr.sln (
   popd
   popd
   if errorlevel 1 goto :eof
+)
+
+:: //////////////////////////////////////////////////////////
+:: netcdf
+:: //////////////////////////////////////////////////////////
+
+:build_netcdf
+if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
+ echo skipping netcdf build
+ goto test_netcdf
+) else (
+  echo building netcdf
+  pushd netcdf-c
+  mkdir build
+  pushd build
+  cmake .. -G %MSVC_VERSION% ^
+           -DNC_USE_STATIC_CRT=%STATIC_CRT% ^
+           -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
+           -DENABLE_TESTS=OFF ^
+           -DBUILD_SHARED_LIBS=OFF ^
+           -DHDF5_HL_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
+           -DHDF5_C_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
+           -DHDF5_INCLUDE_DIR=%root%/hdf5/src ^
+           -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
+           -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/libszip_D.lib ^
+           -DZLIB_INCLUDE_DIR:PATH=%root%/zlib ^
+           -DHAVE_HDF5_H=%root%/hdf5/build ^
+           -DHDF5_HL_INCLUDE_DIR=%root%/hdf5/hl/src ^
+           -DCURL_LIBRARY=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
+           -DCURL_INCLUDE_DIR=%root%/curl/include
+  msbuild netcdf.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
+  popd
+  popd
+  if errorlevel 1 goto :eof
+)
+
+:test_netcdf
+if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
+ echo testing netcdf build
+ @echo on
+ %build%\netcdf-c\build\ncdump\ncdump.exe -h http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/precip.mon.mean.nc
+ @echo off
+ @echo.
+ goto build_nco
 )
 
 :: //////////////////////////////////////////////////////////
