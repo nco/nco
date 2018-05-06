@@ -364,7 +364,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     nco_int64 *vln_val_i64p;
     nco_uint64 *vln_val_ui64p;
     nco_string *vln_val_sngp;
-    nc_vlen_t vln_val;
+    nco_vlen vln_val;
     size_t vln_idx;
     size_t vln_lng;
     size_t vln_lngm1;
@@ -1819,10 +1819,16 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     var->val.vp=nco_msa_rcr_clc((int)0,var->nbr_dim,lmt,lmt_msa,var);
   } /* ! Scalars */
 
+  /* 20180506: got to here */
+  if(nco_dbg_lvl_get() >= nco_dbg_std && var->type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1, nco_mss_val_get() and nco_mss_val_cnf_typ() issue\n",nco_prg_nm_get(),fnc_nm);
+
   /* Refresh missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
-  /* Only TRD and CDL need units at this stage and have this flag set */
+  /* 20180506: got to here */
+  if(nco_dbg_lvl_get() >= nco_dbg_std && var->type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark2, past nco_mss_val_get() issue\n",nco_prg_nm_get(),fnc_nm);
+
+  /* Only TRD and CDL need units at this stage and might have this flag set */
   if(prn_flg->PRN_DMN_UNITS) {
     int cf_var_id;
     char *cln_sng=NULL;
@@ -1968,8 +1974,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
     long chr_idx;
-
-    if(nco_dbg_lvl_get() >= nco_dbg_std && var->type == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1\n",nco_prg_nm_get(),fnc_nm);
 
     if(CDL){     
       chr2sng_sf=chr2sng_cdl;

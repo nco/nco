@@ -53,7 +53,16 @@ cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
     ptr->sngp=(nco_string *)ptr->vp;
     break;
   case NC_VLEN:
-    ptr->vlnp=(nc_vlen_t *)ptr->vp;
+    ptr->vlnp=(nco_vlen *)ptr->vp;
+    break;
+  case NC_OPAQUE:
+    ptr->opqp=(nco_opaque *)ptr->vp;
+    break;
+  case NC_ENUM:
+    ptr->enmp=(nco_enum *)ptr->vp;
+    break;
+  case NC_COMPOUND:
+    ptr->cpdp=(nco_compound *)ptr->vp;
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -104,6 +113,15 @@ cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type ty
     break;
   case NC_VLEN:
     ptr->vp=(void *)ptr->vlnp;
+    break;
+  case NC_OPAQUE:
+    ptr->vp=(void *)ptr->opqp;
+    break;
+  case NC_ENUM:
+    ptr->vp=(void *)ptr->enmp;
+    break;
+  case NC_COMPOUND:
+    ptr->vp=(void *)ptr->cpdp;
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
@@ -853,6 +871,8 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
   /* val_in and val_out should not be same pointer union since
      val_out must hold enough space (one element of type typ_out) to hold output
      and output type may be larger than input type */
+
+  if(typ_in == typ_out) return;
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(typ_in,&val_in);
