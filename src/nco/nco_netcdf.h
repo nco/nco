@@ -458,16 +458,16 @@ int nco_inq_vartype(const int nc_id,const int var_id,nc_type * const var_typ);
 int nco_rename_var(const int nc_id,const int var_id,const char * const var_nm);
 
 /* Start _get _put _var */
-int nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type type);
-int nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type type);
+int nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type var_typ);
+int nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type var_typ);
 int nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * const vp,const nc_type var_typ);
-int nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void * const vp,const nc_type type);
-int nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,void * const vp,const nc_type type);
-int nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const void * const vp,const nc_type type);
-int nco_get_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,void * const vp,const nc_type type);
-int nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const void * const vp,const nc_type type);
-int nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const long * const map,void * const vp,const nc_type type);
-int nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const long * const map,const void * const vp,const nc_type type);
+int nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void * const vp,const nc_type var_typ);
+int nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,void * const vp,const nc_type var_typ);
+int nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const void * const vp,const nc_type var_typ);
+int nco_get_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,void * const vp,const nc_type var_typ);
+int nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const void * const vp,const nc_type var_typ);
+int nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const long * const map,void * const vp,const nc_type var_typ);
+int nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const long * const map,const void * const vp,const nc_type var_typ);
 /* End Variable routines */
 
 /* Begin Attribute routines (_att) */

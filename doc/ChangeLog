@@ -1,3 +1,7 @@
+2018-05-06  Charlie Zender  <zender@uci.edu>
+
+	* Support user-defined types and class types in nco_get_var*() functions
+
 2018-05-05  Charlie Zender  <zender@uci.edu>
 
 	* Complete VLEN attribute CDL printing support for all base-types except NC_CHAR and NC_STRING

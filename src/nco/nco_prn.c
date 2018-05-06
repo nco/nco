@@ -352,27 +352,6 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   /* Get attributes' names, types, lengths, and values */
   for(idx=0;idx<att_nbr_ttl;idx++){
 
-    if(idx <= att_nbr_vsb-1){
-      /* Visible attributes get standard treatment */
-      att[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
-      (void)nco_inq_attname(grp_id,var_id,idx,att[idx].nm);
-      (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
-
-      /* Allocate enough space to hold attribute */
-      att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng_ntm(grp_id,att[idx].type));
-      (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
-
-      /* NC_CHAR can have zero length size maybe others? Create with a single FILL value */
-      if(att[idx].sz == 0L){
-        att[idx].val=nco_mss_val_mk(att[idx].type);
-        att[idx].sz=1;
-      } /* !att.sz */
-    } /* idx == att_nbr */
-    
-    /* Copy value to avoid indirection in loop over att_sz */
-    att_sz=att[idx].sz;
-    att_szm1=att_sz-1L;
-
     double *vln_val_dp;
     float *vln_val_fp;
     nco_int *vln_val_ip;
@@ -392,9 +371,31 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     
     nc_type bs_typ;
     nc_type cls_typ;
+    
+    if(idx <= att_nbr_vsb-1){
+      /* Visible attributes get standard treatment */
+      att[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
+      (void)nco_inq_attname(grp_id,var_id,idx,att[idx].nm);
+      (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
+
+      /* Allocate enough space to hold attribute */
+      att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng_ntm(grp_id,att[idx].type));
+      (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
+
+      /* NC_CHAR can have zero length size maybe others? Create with a single FILL value */
+      if(att[idx].sz == 0L){
+        att[idx].val=nco_mss_val_mk(att[idx].type);
+        att[idx].sz=1;
+      } /* !att.sz */
+    } /* idx == att_nbr */
+    
     bs_typ=cls_typ=att[idx].type;
     if(att[idx].type > NC_MAX_ATOMIC_TYPE) rcd=nco_inq_user_type(grp_id,att[idx].type,NULL,NULL,&bs_typ,NULL,&cls_typ);
-    
+
+    /* Copy value to avoid indirection in loop over att_sz */
+    att_sz=att[idx].sz;
+    att_szm1=att_sz-1L;
+
     if(CDL){
       char *typ_nm;
       nm_cdl=nm2sng_cdl(att[idx].nm);
@@ -973,8 +974,6 @@ nco_prn_var_val_cmt /* Print variable values as CDL comment (delimited by comma)
 
   if(var->has_mss_val) val_sz_byt=nco_typ_lng(var->type);
 
-  // (void)fprintf(stdout,"nco_prn_var_val_cmt(): fmt_sng_mss_val=%s\n","hello" );
-
   /* Assume -s argument (dlm_sng) formats entire string
      Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var->type),
      and that user is only allowed to affect text between fields. 
@@ -993,7 +992,7 @@ nco_prn_var_val_cmt /* Print variable values as CDL comment (delimited by comma)
   for(lmn=0;lmn<sz;lmn++){
 
     if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
-      /* memcmp() triggers  pedantic warning unless pointer arithmetic is cast to type char */
+      /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char */
       if(var->type == NC_STRING) is_mss_val=!strcmp(var->val.sngp[lmn],var->mss_val.sngp[0]); else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
     } /* !PRN_MSS_VAL_BLANK */
       
@@ -1731,6 +1730,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   int dmn_idx; /* [idx] Counter over dimensions */
   int grp_id; /* [ID] Group ID where variable resides (passed to MSA) */
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rcd_prn;
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int val_sz_byt=int_CEWI; /* [nbr] Type size */
@@ -1789,15 +1789,20 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   /* Get type of variable (get also name and number of dimensions for validation against parameter object) */
   (void)nco_inq_var(grp_id,var->id,var_nm,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
 
+  nc_type bs_typ;
+  nc_type cls_typ;
+  bs_typ=cls_typ=var->type;
+  if(var->type > NC_MAX_ATOMIC_TYPE) rcd=nco_inq_user_type(nc_id,var->type,NULL,NULL,&bs_typ,NULL,&cls_typ);
+
   /* Ensure we have correct variable */
-  assert(var_trv->nco_typ == nco_obj_typ_var);
+  //assert(var_trv->nco_typ == nco_obj_typ_var);
   assert(var->nbr_dim == var_trv->nbr_dmn);
   assert(!strcmp(var_nm,var_trv->nm));
 
   /* Scalars */
   if(var->nbr_dim == 0){
     var->sz=1L;
-    var->val.vp=nco_malloc(nco_typ_lng(var->type));
+    var->val.vp=nco_malloc(nco_typ_lng_ntm(nc_id,var->type));
     /* Block is critical/thread-safe for identical/distinct grp_id's */
     { /* begin potential OpenMP critical */
       (void)nco_get_var1(grp_id,var->id,0L,var->val.vp,var->type);
@@ -1820,7 +1825,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   /* Only TRD and CDL need units at this stage and have this flag set */
   if(prn_flg->PRN_DMN_UNITS) {
     int cf_var_id;
-    char *cln_sng = (char *) NULL;
+    char *cln_sng=NULL;
     var_sct *var_tmp=NULL_CEWI;
     var_sct *var_swp=NULL_CEWI;
 
@@ -1860,7 +1865,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     unit_sng_var=&nul_chr;
   } /* !TRD */
 
-  if(var->has_mss_val) val_sz_byt=nco_typ_lng(var->type);
+  if(var->has_mss_val) val_sz_byt=nco_typ_lng_ntm(nc_id,var->type);
 
   if(var->nbr_dim){ 
     /* Allocate space for dimension information */
@@ -1893,7 +1898,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   /* Call also initializes var.sz with final size */
   if(prn_flg->md5)
-    if(prn_flg->md5->dgs) (void)nco_md5_chk(prn_flg->md5,var_nm,var->sz*nco_typ_lng(var->type),grp_id,(long *)NULL,(long *)NULL,var->val.vp);
+    if(prn_flg->md5->dgs) (void)nco_md5_chk(prn_flg->md5,var_nm,var->sz*nco_typ_lng_ntm(nc_id,var->type),grp_id,(long *)NULL,(long *)NULL,var->val.vp);
 
   /* Warn if variable is packed */
   if(nco_dbg_lvl_get() > 0)
@@ -1927,7 +1932,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
       /* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
       if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
-        if(var->type==NC_STRING) is_mss_val=!strcmp(var->val.sngp[lmn],var->mss_val.sngp[0]); else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
+        if(var->type == NC_STRING) is_mss_val=!strcmp(var->val.sngp[lmn],var->mss_val.sngp[0]); else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
       } /* !PRN_MSS_VAL_BLANK */
 	
       if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val &&  is_mss_val){
@@ -1958,23 +1963,25 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   spr_sng=cma_sng; /* [sng] Output separator string */
   if(CDL || JSN || XML){
+    char * (*chr2sng_sf)(const char chr_val, /* I [chr] Character to process */
+			 char * const val_sng); /* I/O [sng] String to stuff printable result into */
     char fmt_sng[NCO_MAX_LEN_FMT_SNG];
     dmn_trv_sct *dmn_trv; /* [sct] Unique dimension object */
     long chr_idx;
-    char * (*chr2sng_sf)(const char chr_val, /* I [chr] Character to process */
-    char * const val_sng); /* I/O [sng] String to stuff printable result into */
+
+    if(nco_dbg_lvl_get() >= nco_dbg_std && var->type == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1\n",nco_prg_nm_get(),fnc_nm);
 
     if(CDL){     
       chr2sng_sf=chr2sng_cdl;
-      if(fmt_val && (var->type == NC_FLOAT || var->type == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(var->type));
+      if(fmt_val && (bs_typ == NC_FLOAT || bs_typ == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_var_cdl(bs_typ));
     } /* !CDL */
     if(XML){     
       chr2sng_sf=chr2sng_xml;
-      if(fmt_val && (var->type == NC_FLOAT || var->type == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var->type));
+      if(fmt_val && (bs_typ == NC_FLOAT || bs_typ == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(bs_typ));
     } /* !XML */
     if(JSN){
       chr2sng_sf=chr2sng_jsn;
-      if(fmt_val && (var->type == NC_FLOAT || var->type == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(var->type));
+      if(fmt_val && (bs_typ == NC_FLOAT || bs_typ == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(bs_typ));
    
       (void)fprintf(fp_out,"%*s\"data\": ",prn_ndn,spc_sng);
 
@@ -1984,7 +1991,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	  mod_map_rv_cnt[dmn_idx]=0L;
 
       /* Switch-off final level braces for NC_CHAR as string is already quoted */      
-      if(var->nbr_dim >=1 && var->type==NC_CHAR) mod_map_rv_cnt[var->nbr_dim-1]=0L;
+      if(var->nbr_dim >= 1 && bs_typ == NC_CHAR) mod_map_rv_cnt[var->nbr_dim-1]=0L;
     } /* !JSN */
 
     nm_cdl=nm2sng_cdl(var_nm);
@@ -2039,7 +2046,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(CDL && var->nbr_dim >= 1){
       mod_map_rv_cnt[0]=0L;
       /* Create brace list here we simply modify mod_map_rv_cnt[idx]
-	 If dimensions is NOT unlimited we set mod_map_rv_cnt[idx] to zero */
+	 If dimension is NOT unlimited we set mod_map_rv_cnt[idx] to zero */
       for(dmn_idx=1;dmn_idx<var->nbr_dim;dmn_idx++){ /* NB: dimension index starts at 1 */
         dmn_trv=nco_dmn_trv_sct(var_trv->var_dmn[dmn_idx].dmn_id,trv_tbl);
         if(dmn_trv->is_rec_dmn == False) mod_map_rv_cnt[dmn_idx]=0L;
@@ -2164,7 +2171,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
       /* Pretty printing */
       if(CDL && var->nbr_dim && lmn< var_szm1 && (lmn+1) % lmt_msa[var->nbr_dim-1]->dmn_cnt == 0) (void)fprintf(fp_out,"\n%*s",prn_ndn,spc_sng);
-    } /* end loop over element */
+    } /* !lmn */
     rcd_prn+=0; /* CEWI */
 
     if(CDL){
@@ -2800,7 +2807,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
       if((CDL || TRD) && var_idx != var_nbr_xtr-1) (void)fprintf(fp_out,"\n"); 
     } /* !CDL_OR_TRD */
 
-    /* All options can toggle printing of data-  only JSN and XML place data "inside" var markup */ 
+    /* Options can toggle printing of data. Only JSN and XML place data "inside" variable markup */ 
     if(XML){
       (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv); 
       
