@@ -1788,7 +1788,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   nc_type bs_typ;
   nc_type cls_typ;
   bs_typ=cls_typ=var->type;
-  if(var->type > NC_MAX_ATOMIC_TYPE) rcd=nco_inq_user_type(nc_id,var->type,NULL,NULL,&bs_typ,NULL,&cls_typ);
+  if(var->type > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,var->type,NULL,NULL,&bs_typ,NULL,&cls_typ);
 
   /* Ensure we have correct variable */
   //assert(var_trv->nco_typ == nco_obj_typ_var);
@@ -2236,7 +2236,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	default: nco_dfl_case_nc_type_err();
 	  break;
 	} /* !cls_typ switch */
-	if(cls_typ == NC_VLEN) rcd=nco_free_vlens(var->sz,var->val.vlnp);
+	if(cls_typ == NC_VLEN) nco_free_vlens(var->sz,var->val.vlnp);
 
       } /* !is_mss_val */
 
