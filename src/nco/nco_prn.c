@@ -356,14 +356,12 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     float *vln_val_fp;
     nco_int *vln_val_ip;
     nco_short *vln_val_sp;
-    nco_char *vln_val_cp;
     nco_byte *vln_val_bp;
     nco_ubyte *vln_val_ubp;
     nco_ushort *vln_val_usp;
     nco_uint *vln_val_uip;
     nco_int64 *vln_val_i64p;
     nco_uint64 *vln_val_ui64p;
-    nco_string *vln_val_sngp;
     nco_vlen vln_val;
     size_t vln_idx;
     size_t vln_lng;
@@ -588,14 +586,12 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	vln_val_dp=(double *)vln_val.p;
 	vln_val_ip=(nco_int *)vln_val.p;
 	vln_val_sp=(nco_short *)vln_val.p;
-	vln_val_cp=(nco_char *)vln_val.p;
 	vln_val_bp=(nco_byte *)vln_val.p;
 	vln_val_ubp=(nco_ubyte *)vln_val.p;
 	vln_val_usp=(nco_ushort *)vln_val.p;
 	vln_val_uip=(nco_uint *)vln_val.p;
 	vln_val_i64p=(nco_int64 *)vln_val.p;
 	vln_val_ui64p=(nco_uint64 *)vln_val.p;
-	vln_val_sngp=(nco_string *)vln_val.p;
 
 	if(CDL) (void)fprintf(fp_out,"{");
 	switch(bs_typ){
@@ -2061,14 +2057,12 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     float *vln_val_fp;
     nco_int *vln_val_ip;
     nco_short *vln_val_sp;
-    nco_char *vln_val_cp;
     nco_byte *vln_val_bp;
     nco_ubyte *vln_val_ubp;
     nco_ushort *vln_val_usp;
     nco_uint *vln_val_uip;
     nco_int64 *vln_val_i64p;
     nco_uint64 *vln_val_ui64p;
-    nco_string *vln_val_sngp;
     nco_vlen vln_val;
     size_t vln_idx;
     size_t vln_lng;
@@ -2085,14 +2079,12 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	vln_val_dp=(double *)vln_val.p;
 	vln_val_ip=(nco_int *)vln_val.p;
 	vln_val_sp=(nco_short *)vln_val.p;
-	vln_val_cp=(nco_char *)vln_val.p;
 	vln_val_bp=(nco_byte *)vln_val.p;
 	vln_val_ubp=(nco_ubyte *)vln_val.p;
 	vln_val_usp=(nco_ushort *)vln_val.p;
 	vln_val_uip=(nco_uint *)vln_val.p;
 	vln_val_i64p=(nco_int64 *)vln_val.p;
 	vln_val_ui64p=(nco_uint64 *)vln_val.p;
-	vln_val_sngp=(nco_string *)vln_val.p;
       } /* !cls_typ */
       
       /* Bracket data if specified */
@@ -3267,7 +3259,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	  if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
 	    break;
       
-      if(obj_idx != obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var){
+      if((obj_idx != obj_idx<trv_tbl->nbr) && (trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var)){
 	/* Variable is non-atomic, print helpful information */
 	if(nco_dbg_lvl_get() >= nco_dbg_var){
 	  (void)fprintf(stdout,"%s: DEBUG %s reports grp_nm_fll = %s, grp_dpt = %d, nbr_var = %d\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,grp_dpt,nbr_var);
