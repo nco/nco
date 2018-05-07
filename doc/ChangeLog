@@ -1,5 +1,7 @@
 2018-05-06  Charlie Zender  <zender@uci.edu>
 
+	* CDL vlen variable printing works except for base type char and string
+
 	* Add first-draft VLEN printing to nco_prn_var_val_trv()
 
 	* Allow user-defined types in nco_prn_var_val_trv()
