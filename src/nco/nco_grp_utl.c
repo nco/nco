@@ -1654,7 +1654,7 @@ nco_xtr_dmn_mrk                      /* [fnc] Mark extracted dimensions */
     for(obj_idx=0;obj_idx<obj_nbr;obj_idx++){
       trv_sct var_trv=trv_tbl->lst[obj_idx];
       /* For each variable to be extracted ... */
-      if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
+      if(var_trv.nco_typ != nco_obj_typ_grp && var_trv.flg_xtr){
         dmn_var_nbr=var_trv.nbr_dmn;
         for(dmn_var_idx=0;dmn_var_idx<dmn_var_nbr;dmn_var_idx++){
           if(var_trv.var_dmn[dmn_var_idx].dmn_id == trv_tbl->lst_dmn[dmn_idx].dmn_id){
@@ -2917,7 +2917,7 @@ nco_prn_trv_tbl                      /* [fnc] Print GTT (Group Traversal Table) 
         (void)fprintf(stdout,"[%d]%s#%d ",idx_dmn_var,var_dmn.dmn_nm_fll,var_dmn.dmn_id); 
         if(var_dmn.is_crd_var) (void)fprintf(stdout," (coordinate) : ");
 
-        /*  Segregate limits into two cases */
+        /* Segregate limits into two cases */
         if(var_dmn.crd){
 	  /* Dimension has coordinate variables */
           for(int lmt_idx=0;lmt_idx<var_dmn.crd->lmt_msa.lmt_dmn_nbr;lmt_idx++)

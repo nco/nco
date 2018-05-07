@@ -1816,13 +1816,13 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   } /* ! Scalars */
 
   /* 20180506: got to here */
-  if(nco_dbg_lvl_get() >= nco_dbg_std && var->type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1, nco_mss_val_get() and nco_mss_val_cnf_typ() issue\n",nco_prg_nm_get(),fnc_nm);
+  //if(nco_dbg_lvl_get() >= nco_dbg_std && var->type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1, nco_mss_val_get() and nco_mss_val_cnf_typ() issue\n",nco_prg_nm_get(),fnc_nm);
 
   /* Refresh missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
   /* 20180506: got to here */
-  if(nco_dbg_lvl_get() >= nco_dbg_std && var->type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark2, past nco_mss_val_get() issue\n",nco_prg_nm_get(),fnc_nm);
+  //if(nco_dbg_lvl_get() >= nco_dbg_std && var->type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark2, past nco_mss_val_get() issue\n",nco_prg_nm_get(),fnc_nm);
 
   /* Only TRD and CDL need units at this stage and might have this flag set */
   if(prn_flg->PRN_DMN_UNITS) {
@@ -2068,7 +2068,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     size_t vln_lng;
     size_t vln_lngm1;
 
-    if(cls_typ == NC_VLEN) strcat(fmt_sng,"%s");
+    if((cls_typ == NC_VLEN) && (bs_typ != NC_FLOAT) && (bs_typ != NC_DOUBLE)) strcat(fmt_sng,"%s");
 
     for(lmn=0;lmn<var->sz;lmn++){
 
@@ -2743,7 +2743,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   /* Find dimension information for group */
   for(dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
-    /* Will dimension be extracted? (or are we printing all dimensions?)*/
+    /* Will dimension be extracted? (or are we printing all dimensions?) */
     if(trv_tbl->lst_dmn[dmn_idx].flg_xtr || prn_flg->rad){
       /* And was dimension defined in this group? */
       if(!strcmp(grp_nm_fll,trv_tbl->lst_dmn[dmn_idx].grp_nm_fll)){
@@ -3213,6 +3213,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
       typ_cdl=(char *)nco_free(typ_cdl);
     } /* !typ_idx */
     typ_ids=(nc_type *)nco_free(typ_ids);
+    (void)fprintf(fp_out,"\n"); 
   } /* !nbr_typ */
   
   /* Print dimension information for group */
