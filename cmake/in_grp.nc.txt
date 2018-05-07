@@ -141,7 +141,7 @@ netcdf in_grp {
 
     unique = 73 ;
 
-    val_one_mss = 1, _ ;
+    val_one_mss = 1, 1e+36 ;
 
   group: g1 {
 
