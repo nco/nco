@@ -1464,7 +1464,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
  const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata */
-  const char fnc_nm[]="nco_prn_var_dfn()";
+  //  const char fnc_nm[]="nco_prn_var_dfn()";
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *dmn_sng=NULL;
@@ -1726,7 +1726,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   int dmn_idx; /* [idx] Counter over dimensions */
   int grp_id; /* [ID] Group ID where variable resides (passed to MSA) */
-  int rcd=NC_NOERR; /* [rcd] Return code */
+
   int rcd_prn;
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int val_sz_byt=int_CEWI; /* [nbr] Type size */
@@ -3259,7 +3259,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	  if(!strcmp(trv_tbl->lst[obj_idx].nm_fll,var_nm_fll))
 	    break;
       
-      if((obj_idx != obj_idx<trv_tbl->nbr) && (trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var)){
+      if((obj_idx != trv_tbl->nbr) && (trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_nonatomic_var)){
 	/* Variable is non-atomic, print helpful information */
 	if(nco_dbg_lvl_get() >= nco_dbg_var){
 	  (void)fprintf(stdout,"%s: DEBUG %s reports grp_nm_fll = %s, grp_dpt = %d, nbr_var = %d\n",nco_prg_nm_get(),fnc_nm,grp_nm_fll,grp_dpt,nbr_var);
