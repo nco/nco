@@ -477,11 +477,11 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     
     if(CDL){
       /* CDL attribute values of many types must have type-specific suffixes (e.g., s, u, ull) unless they are user-defined types that, like variables, can always be disambiguated by their explicit (not implicit) type specifier that resolves to a base atomic-type */
-      (void)sprintf(att_sng_pln,"%s", cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
-      (void)sprintf(att_sng_dlm,"%s%%s", cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
+      (void)sprintf(att_sng_pln,"%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
+      (void)sprintf(att_sng_dlm,"%s%%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
     }else{
-      (void)sprintf(att_sng_pln,"%s", (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
-      (void)sprintf(att_sng_dlm,"%s%%s", (XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
+      (void)sprintf(att_sng_pln,"%s",(XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
+      (void)sprintf(att_sng_dlm,"%s%%s",(XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
     } /* !CDL */
       
     switch(cls_typ){
@@ -3194,21 +3194,50 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
     char *typ_cdl;
     char *bs_cdl;
     char bs_nm[NC_MAX_NAME+1L]; /* [sng] Base name */
+    char mbr_nm[NC_MAX_NAME+1L]; /* [sng] Member name */
     char typ_nm[NC_MAX_NAME+1L]; /* [sng] Type name */
+    int cls_typ;
     nc_type *typ_ids;
     nc_type bs_typ;
-
+    size_t fld_nbr;
     prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
     (void)fprintf(fp_out,"%*stypes:\n",prn_flg->ndn,spc_sng); 
     if(CDL) prn_ndn+=prn_flg->var_fst;
     typ_ids=(nc_type *)nco_malloc(nbr_typ*(sizeof(nc_type)));
     rcd+=nco_inq_typeids(grp_id,NULL,typ_ids);
     for(int typ_idx=0;typ_idx<nbr_typ;typ_idx++){
-      rcd=nco_inq_user_type(grp_id,typ_ids[typ_idx],typ_nm,NULL,&bs_typ,NULL,NULL);
+      rcd=nco_inq_user_type(grp_id,typ_ids[typ_idx],typ_nm,NULL,&bs_typ,&fld_nbr,&cls_typ);
       rcd=nco_inq_type(grp_id,bs_typ,bs_nm,NULL);
       bs_cdl=nm2sng_cdl(bs_nm);
       typ_cdl=nm2sng_cdl(typ_nm);
-      (void)fprintf(fp_out,"%*s%s(*) %s ;\n",prn_ndn,spc_sng,bs_cdl,typ_cdl);
+      if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s(*) %s ;\n",prn_ndn,spc_sng,bs_cdl,typ_cdl);
+      if(cls_typ == NC_ENUM){
+	char enm_fmt[NCO_MAX_LEN_FMT_SNG];
+	size_t mbr_nbr;
+	size_t mbr_nbrm1;
+	val_unn enm_val;
+	(void)sprintf(enm_fmt,"%%s = %s",nco_typ_fmt_sng_var_cdl(bs_typ));
+	(void)fprintf(fp_out,"%*s%s enum %s {",prn_ndn,spc_sng,bs_cdl,typ_cdl);
+	mbr_nbr=fld_nbr;
+	mbr_nbrm1=mbr_nbr-1L;
+	/* Typecast pointer to value before access */
+	(void)cast_void_nctype(bs_typ,(void *)&enm_val);
+	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
+	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
+	  switch(bs_typ){
+	  case NC_BYTE: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.b); break;
+	  case NC_UBYTE: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.ub); break;
+	  case NC_SHORT: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.s); break;
+	  case NC_USHORT: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.us); break;
+	  case NC_INT: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.i); break;
+	  case NC_UINT: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.ui); break;
+	  case NC_INT64: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.i64); break;
+	  case NC_UINT64: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.ui64); break;
+	  default: nco_dfl_case_nc_type_err(); break;
+	  } /* !bs_typ switch */
+	  if(mbr_idx < mbr_nbrm1) (void)fprintf(fp_out,", "); else (void)fprintf(fp_out,"} ;\n");
+	} /* !mbr_idx */
+      } /* !enm */
       bs_cdl=(char *)nco_free(bs_cdl);
       typ_cdl=(char *)nco_free(typ_cdl);
     } /* !typ_idx */

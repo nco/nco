@@ -1,3 +1,7 @@
+2018-05-07  Charlie Zender  <zender@uci.edu>
+
+	* CDL enum variable definition printing works
+
 2018-05-06  Charlie Zender  <zender@uci.edu>
 
 	* CDL vlen variable printing works except for base type char and string
