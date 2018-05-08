@@ -1,6 +1,6 @@
 2018-05-07  Charlie Zender  <zender@uci.edu>
 
-	* CDL enum variable definition printing works
+	* CDL enum printing works for all types
 
 2018-05-06  Charlie Zender  <zender@uci.edu>
 

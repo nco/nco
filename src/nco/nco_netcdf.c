@@ -307,6 +307,9 @@ cdl_typ_nm_ntm /* [fnc] Return string describing native CDL type */
  const nc_type type) /* I [enm] netCDF type */
 {
   /* Purpose: Divine CDL type string from netCDF external type enum, including non-atomic types */
+  /* 20180507: fxm Routine causes bevy of C++ warnings like thise:
+     nco_netcdf.c:314:14: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+     return "float"; */
   char typ_nm[NC_MAX_NAME+1L];
   if(type <= NC_MAX_ATOMIC_TYPE){
     switch(type){

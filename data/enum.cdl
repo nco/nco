@@ -16,16 +16,21 @@ netcdf enum {
 
  // 20180413: types declarations must be first element in group, and appear before everything else. Where is this documented?
  types:
-   ubyte enum enum_t {Clear=0,Cumulonimbus=1,Stratus=2,Missing=128};
+   ubyte enum enum_ubyte_t {Clear=0,Cumulonimbus=1,Stratus=2,Missing=128};
+   short enum enum_sht_t {Small=-32000,Medium=0,Large=32767,missing_value=-32768};
 
  dimensions:
    lon=4;
 
  variables:
-   enum_t cld_flg(lon);
-   cld_flg:_FillValue=Missing;
+   enum_ubyte_t cld_flg(lon);
+   enum_ubyte_t cld_flg:_FillValue=Missing;
+
+   enum_sht_t size(lon);
+   enum_sht_t size:_FillValue=missing_value;
 
  data:
    cld_flg=Stratus,_,Cumulonimbus,Clear;
-
+   size=_,Small,Medium,Large;
+ 
 } // end root group
