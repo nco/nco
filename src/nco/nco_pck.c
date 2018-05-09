@@ -701,7 +701,7 @@ var_sct * /* O [sct] Packed variable */
 nco_var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  const nc_type nc_typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
- nco_bool *PCK_VAR_WITH_NEW_PCK_ATT) /* O [flg] Routine generated new scale_factor/add_offset */
+ nco_bool *PCK_VAR_WITH_NEW_PCK_ATT) /* O [flg] Routine generated new scale_factor/add_offset -  if true in [I] then pre-existing scale_factor/add_offset is used */
 {
   /* Purpose: Pack variable 
      Routine is inverse of nco_var_upk(): nco_var_pck[nco_var_upk(var)]=var 
@@ -720,8 +720,8 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
   static nco_bool FIRST_WARNING=True;
 
-  /* Set flag true once new scale_factor/add_offset generated */
-  *PCK_VAR_WITH_NEW_PCK_ATT=False;
+  /* Set flag true once new scale_factor/add_offset generated  
+  *PCK_VAR_WITH_NEW_PCK_ATT=False; */
 
   /* Return if variable in memory is currently packed and should not be re-packed */
   if(var->pck_ram) return var;
@@ -746,7 +746,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
-  if(True){ /* Keep in own scope for eventual functionalization of core packing algorithm */
+  if(*PCK_VAR_WITH_NEW_PCK_ATT == False  ){ /* Keep in own scope for eventual functionalization of core packing algorithm */
     /* Compute packing parameters to apply to var
 
        Linear packing in a nutshell:
