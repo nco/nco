@@ -1423,7 +1423,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	  (void)sprintf(var_sng,"%%s%c%%ld--%%ld%c='%s' %%s",arr_lft_dlm,arr_rgt_dlm,dmn_sng);
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+dmn_cnt[var.nbr_dim-1]-1L,var.val.cp+lmn,unit_sng);
 	} /* endif */
-	if(nco_dbg_lvl_get() >= 6)(void)fprintf(stdout,"DEBUG: format string used for chars is dmn_sng = %s, var_sng = %s\n",dmn_sng,var_sng); 
+	if(nco_dbg_lvl_get() >= nco_dbg_var)(void)fprintf(stdout,"DEBUG: format string used for chars is dmn_sng = %s, var_sng = %s\n",dmn_sng,var_sng); 
 	/* Newline separates consecutive values within given variable */
 	(void)fprintf(stdout,"\n");
 	(void)fflush(stdout);
@@ -1485,7 +1485,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
  const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata */
-  //  const char fnc_nm[]="nco_prn_var_dfn()";
+  const char fnc_nm[]="nco_prn_var_dfn()";
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *dmn_sng=NULL;
@@ -1497,12 +1497,14 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   FILE *fp_out=prn_flg->fp_out; /* [fl] Formatted text output file handle */
 
+  float vln_lng_avg; /* [nbr] Mean vlen length */
+
   int deflate; /* [flg] Deflation is on */
   int dfl_lvl; /* [enm] Deflate level [0..9] */
   int dmn_idx;
   int grp_id;
   int nbr_att;
-  int nbr_dim;
+  int dmn_nbr;
   int packing; /* [flg] Variable is packed */
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int shuffle; /* [flg] Shuffling is on */
@@ -1511,6 +1513,8 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   long var_sz=1L;
 
+  nc_type bs_typ;
+  nc_type cls_typ;
   nc_type var_typ;
 
   nco_bool CRR_DMN_IS_REC_IN_INPUT[NC_MAX_DIMS]; /* [flg] Is record dimension */
@@ -1528,8 +1532,10 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
 
   /* Get number of dimensions, type, and number of attributes for variable */
-  (void)nco_inq_var(grp_id,var_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,&nbr_att);
-
+  (void)nco_inq_var(grp_id,var_id,(char *)NULL,&var_typ,&dmn_nbr,(int *)NULL,&nbr_att);
+  bs_typ=cls_typ=var_typ;
+  if(var_typ > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,var_typ,NULL,NULL,&bs_typ,NULL,&cls_typ);
+  
   /* Storage properties */
   if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433){
     (void)nco_inq_var_chunking(grp_id,var_id,&srg_typ,cnk_sz);
@@ -1537,8 +1543,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   } /* endif */
   (void)nco_inq_var_packing(grp_id,var_id,&packing);
 
-  /* Loop over dimensions */
-  for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 
     //    if(nco_dbg_lvl_get() >= nco_dbg_std && var_trv->nco_typ == nco_obj_typ_nonatomic_var) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1\n",nco_prg_nm_get(),fnc_nm);
 
@@ -1557,16 +1562,60 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
       dmn_sz[dmn_idx]=dmn_trv->lmt_msa.dmn_cnt;
       CRR_DMN_IS_REC_IN_INPUT[dmn_idx]=dmn_trv->is_rec_dmn;
     } /* end else */
+  } /* !dmn_idx */
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) var_sz*=dmn_sz[dmn_idx];
 
-  } /* end loop over dimensions */
+  if(cls_typ == NC_VLEN){
+    ptr_unn val;
+    long *dmn_srt; /* [nbr] Dimension start index */
+    long *dmn_cnt; /* [nbr] Dimension counts */
+    size_t vln_lng; /* [nbr] vlen length */
+    size_t vln_lng_ttl; /* [nbr] Total vlen length */
+    long lmn;
+    nco_vlen vln_val;
+    dmn_srt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+    dmn_cnt=(long *)nco_malloc(dmn_nbr*sizeof(long));
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+      /* No single start vector exists for variables retrieved through MSA
+	 Count vector is accurate even for variables retrieved through MSA
+	 Since MSA invocation is rare, approximate size by assuming start vector is zero */
+      if(var_trv->var_dmn[dmn_idx].is_crd_var){
+	dmn_srt[dmn_idx]=0L;
+	dmn_cnt[dmn_idx]=var_trv->var_dmn[dmn_idx].crd->lmt_msa.dmn_cnt;
+      }else{
+	dmn_srt[dmn_idx]=0L;
+	dmn_cnt[dmn_idx]=var_trv->var_dmn[dmn_idx].ncd->lmt_msa.dmn_cnt;
+      } /* !crd */
+	//if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_out,"%s: %s reports dmn_srt[%d]=%ld, dmn_cnt[%d]=%ld\n",nco_prg_nm_get(),fnc_nm,dmn_idx,dmn_srt[dmn_idx],dmn_idx,dmn_cnt[dmn_idx]);
+    } /* !dmn_idx */
+    val.vp=nco_malloc(var_sz*nco_typ_lng_ntm(nc_id,var_typ));
+    nco_get_vara(nc_id,var_id,dmn_srt,dmn_cnt,val.vp,var_typ);
+    vln_lng_ttl=0L;
+    /* Acquire and print mean vlen dimension size? */
+    for(lmn=0;lmn<var_sz;lmn++){
+      vln_val=val.vlnp[lmn];
+      vln_lng=vln_val.len;
+      vln_lng_ttl+=vln_lng;
+      //if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_out,"%s: %s reports len(vlen[%ld])=%ld\n",nco_prg_nm_get(),fnc_nm,lmn,vln_lng);
+    } /* !lmn */
+    vln_lng_avg=vln_lng_ttl/var_sz;
+    //if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_out,"%s: %s reports mean vlen size is %g\n",nco_prg_nm_get(),fnc_nm,vln_lng_avg);
+    nco_free_vlens(var_sz,val.vlnp);
+    if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+    if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
+    if(val.vp) val.vp=(void *)nco_free(val.vp);
+  } /* !vlen */
 
+  if(cls_typ == NC_VLEN) ram_sz_crr=var_sz*vln_lng_avg*nco_typ_lng_ntm(nc_id,bs_typ); else ram_sz_crr=var_sz*nco_typ_lng_ntm(nc_id,var_typ);
+  ram_sz_ttl+=ram_sz_crr;
+  
   /* Print header for variable */
   if(prn_flg->new_fmt && !prn_flg->xml && !prn_flg->jsn) prn_ndn=prn_flg->sxn_fst+prn_flg->var_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
   if(prn_flg->xml) prn_ndn=prn_flg->sxn_fst+var_trv->grp_dpt*prn_flg->spc_per_lvl;
   if(prn_flg->jsn) prn_ndn=prn_flg->ndn;
 
   if(prn_flg->trd){
-    if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) (void)fprintf(fp_out,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? %s, chunked? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(deflate) ? "yes" : "no",(srg_typ == NC_CHUNKED) ? "yes" : "no",(packing) ? "yes" : "no"); else (void)fprintf(fp_out,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? HDF4_UNKNOWN, chunked? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),nbr_dim,(nbr_dim == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
+    if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) (void)fprintf(fp_out,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? %s, chunked? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),dmn_nbr,(dmn_nbr == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(deflate) ? "yes" : "no",(srg_typ == NC_CHUNKED) ? "yes" : "no",(packing) ? "yes" : "no"); else (void)fprintf(fp_out,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? HDF4_UNKNOWN, chunked? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),dmn_nbr,(dmn_nbr == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
     /* 20170913: Typically users not interested in variable ID. However, ID helps diagnose susceptibility to CDF5 bug */
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_out,"%*s%s ID = netCDF define order = %d\n",prn_ndn,spc_sng,var_trv->nm,var_id);
   } /* !trd */
@@ -1574,55 +1623,51 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   if(prn_flg->jsn) (void)fprintf(fp_out,"%*s\"%s\": {\n",prn_ndn,spc_sng,var_trv->nm);
 
   /* Print type, shape, and total size of variable */
-  /* Use nbr_dmn+1 in malloc() to handle case when nbr_dim == 0 and allow for formatting characters */
-  dmn_sng=(char *)nco_malloc((nbr_dim+1)*NC_MAX_NAME*sizeof(char));
+  /* Use nbr_dmn+1 in malloc() to handle case when dmn_nbr == 0 and allow for formatting characters */
+  dmn_sng=(char *)nco_malloc((dmn_nbr+1)*NC_MAX_NAME*sizeof(char));
   dmn_sng[0]='\0';
   sz_sng[0]='\0';
 
-  if(nbr_dim == 0){
-    ram_sz_crr=var_sz*nco_typ_lng_ntm(nc_id,var_typ);
-    if(prn_flg->trd) (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)ram_sz_crr);
+  if(dmn_nbr == 0){
+    if(prn_flg->trd){
+      if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*mean_length(NC_VLEN)*sizeof(%s) = %ld*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(bs_typ),var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(cls_typ),var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
+    } /* !trd */
     /* 20131122: Implement ugly NcML requirement that scalars have shape="" attribute */
     if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"\"");
-    (void)sprintf(sng_foo,"1*sizeof(%s)",nco_typ_sng(var_typ));
+    (void)sprintf(sng_foo,"1*");
     (void)strcat(sz_sng,sng_foo);
   }else{
-    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
       if(prn_flg->xml){
-	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? " shape=\"" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < nbr_dim-1) ? " " : "\""); 
+	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? " shape=\"" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < dmn_nbr-1) ? " " : "\""); 
       }else if(prn_flg->jsn){
         /* indent content */ 
         nm_jsn=nm2sng_jsn(var_trv->var_dmn[dmn_idx].dmn_nm);
         if(dmn_idx==0) (void)sprintf(dmn_sng,"%*s\"shape\": [", prn_ndn+prn_flg->sxn_fst,spc_sng); 
-	(void)sprintf(sng_foo,"\"%s\"%s",nm_jsn,(dmn_idx < nbr_dim-1) ? ", " : "],"); 
+	(void)sprintf(sng_foo,"\"%s\"%s",nm_jsn,(dmn_idx < dmn_nbr-1) ? ", " : "],"); 
 	nm_jsn=(char *)nco_free(nm_jsn);
       }else{
 	nm_cdl=nm2sng_cdl(var_trv->var_dmn[dmn_idx].dmn_nm);
-	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? "(" : "",nm_cdl,(dmn_idx < nbr_dim-1) ? "," : ")");
+	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? "(" : "",nm_cdl,(dmn_idx < dmn_nbr-1) ? "," : ")");
 	nm_cdl=(char *)nco_free(nm_cdl);
       } /* !xml */
       (void)strcat(dmn_sng,sng_foo);
     } /* end loop over dim */
 
-    for(dmn_idx=0;dmn_idx<nbr_dim-1;dmn_idx++){
+    for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
       (void)sprintf(sng_foo,"%li*",(long)dmn_sz[dmn_idx]);
       (void)strcat(sz_sng,sng_foo);
     } /* end loop over dim */
-    (void)sprintf(sng_foo,"%li*sizeof(%s)",(long)dmn_sz[dmn_idx],nco_typ_sng(var_typ));
-    (void)strcat(sz_sng,sng_foo);
 
-    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) var_sz*=dmn_sz[dmn_idx];
-    ram_sz_crr=var_sz*nco_typ_lng_ntm(nc_id,var_typ);
     if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 
     if(prn_flg->trd){
       if((nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) && deflate) (void)fprintf(fp_out,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
       if(nco_fmt_xtn_get() == nco_fmt_xtn_hdf4 && NC_LIB_VERSION < 433) (void)fprintf(fp_out,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
-      (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,var_typ),(unsigned long)ram_sz_crr);
+      if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
     } /* !prn_flg->trd */
 
-  } /* end if variable is scalar */
-  ram_sz_ttl+=ram_sz_crr;
+  } /* !scalar */
 
   if(prn_flg->cdl){
     char *typ_nm;
@@ -1630,7 +1675,15 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     nm_cdl=nm2sng_cdl(var_trv->nm);
     (void)fprintf(fp_out,"%*s%s %s%s ;",prn_ndn,spc_sng,typ_nm,nm_cdl,dmn_sng);
     if(var_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_out," // RAM size = %s = %li*%lu = %lu bytes",sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,var_typ),(unsigned long)ram_sz_crr);
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
+      if(cls_typ == NC_VLEN){
+	(void)sprintf(sng_foo,"mean_length(NC_VLEN)*");
+	(void)strcat(sz_sng,sng_foo);
+      } /* !cls_typ */
+      (void)sprintf(sng_foo,"sizeof(%s)",nco_typ_sng(bs_typ));
+      (void)strcat(sz_sng,sng_foo);
+      if(cls_typ == NC_VLEN) (void)fprintf(fp_out," // RAM size = %s = %li*%g*%lu = %lu bytes",sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out," // RAM size = %s = %li*%lu = %lu bytes",sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
+    } /* !dbg */
     /* 20170913: Typically users not interested in variable ID. However, ID helps diagnose susceptibility to CDF5 bug */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_out,", ID = %d",var_id);
     (void)fprintf(fp_out,"\n");
@@ -1642,7 +1695,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   /* Add comma as next in queue is the attributes NB: DO NOT LIKE THIS */
   if(prn_flg->jsn){
-    if(nbr_dim > 0) (void)fprintf(fp_out,"%s\n",dmn_sng); 
+    if(dmn_nbr > 0) (void)fprintf(fp_out,"%s\n",dmn_sng); 
     /* Print netCDF type with same names as XML */ 
     (void)fprintf(fp_out,"%*s\"type\": \"%s\"",prn_ndn+prn_flg->sxn_fst,spc_sng,jsn_typ_nm(var_typ));
   } /* !xml */
@@ -1836,14 +1889,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     var->val.vp=nco_msa_rcr_clc((int)0,var->nbr_dim,lmt,lmt_msa,var);
   } /* ! Scalars */
 
-  /* 20180506: got to here */
-  //if(nco_dbg_lvl_get() >= nco_dbg_std && var->type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark1, nco_mss_val_get() and nco_mss_val_cnf_typ() issue\n",nco_prg_nm_get(),fnc_nm);
-
   /* Refresh missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
-
-  /* 20180506: got to here */
-  //if(nco_dbg_lvl_get() >= nco_dbg_std && var->type > NC_MAX_ATOMIC_TYPE) (void)fprintf(stdout,"%s: DEBUG %s reports non-atomic printing got to quark2, past nco_mss_val_get() issue\n",nco_prg_nm_get(),fnc_nm);
 
   /* Only TRD and CDL need units at this stage and might have this flag set */
   if(prn_flg->PRN_DMN_UNITS) {

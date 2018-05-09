@@ -1,7 +1,11 @@
+2018-05-09  Charlie Zender  <zender@uci.edu>
+
+	* Add correct memory diagnostics for VLEN printing
+
 2018-05-09  Henry Butowsky <henryb@hush.com>
 
 	* Add optional scale_factor/add_offset arguments to ncap2 packing routines
- 
+
 2018-05-07  Charlie Zender  <zender@uci.edu>
 
 	* CDL enum printing works for all types

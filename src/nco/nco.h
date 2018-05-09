@@ -1235,12 +1235,12 @@ extern "C" {
     char *dmn_nm;         /* [sng] Dimension name */
     long dmn_sz_org;      /* [nbr] Original size of dimension */
     long dmn_cnt;         /* [nbr] Hyperslabbed size of dimension */  
-    nco_bool NON_HYP_DMN;   /* [flg] Limit is same as dimension in input file */
+    nco_bool NON_HYP_DMN; /* [flg] Limit is same as dimension in input file */
     nco_bool WRP;         /* [flg] Limit is wrapped (true if wrapping, lmt_dmn_nbr==2) */ 
     nco_bool MSA_USR_RDR; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     int lmt_dmn_nbr;      /* [nbr] Number of lmt arguments */
     lmt_sct **lmt_dmn;    /* [sct] List of limit structures associated with each dimension */
-    int lmt_crr;          /* [nbr] Index of current limit structure being initialized (helper to initialze lmt_sct*) */
+    int lmt_crr;          /* [nbr] Index of current limit structure being initialized (helper to initialize lmt_sct *) */
   } lmt_msa_sct;
 
   /* GTT coordinate variable structure; it contains netCDF model fields and an MSA field */
