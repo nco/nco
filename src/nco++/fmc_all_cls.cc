@@ -2451,6 +2451,8 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
     prs_cls *prs_arg=walker.prs_arg;    
     var_sct *var_in=NULL_CEWI;
     var_sct *var_out=NULL_CEWI;
+    var_sct *var_scl_fct=NULL_CEWI;
+    var_sct *var_add_fst=NULL_CEWI; 
     nc_type typ;
     nco_bool PCK_VAR_WITH_NEW_PCK_ATT;
     
@@ -2460,7 +2462,7 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
     RefAST tr;
     std::vector<RefAST> vtr_args; 
 
-    susg="usage: var_out="+sfnm+"(var_in)";
+    susg="usage: var_out="+sfnm+"(var_in, var_scale_factor?, var_offset?)";
 
 
     if(expr)
@@ -2475,17 +2477,18 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
     nbr_args=vtr_args.size();  
 
 
-    if(nbr_args==0)
-      err_prn(sfnm,"Function has been called with no argument\n"+susg);
+    if(nbr_args==0 || nbr_args==2)
+      err_prn(sfnm,"Function has been called with incorrect number of arguments\n"+susg);
       
-
-
-    if(nbr_args>1 && !prs_arg->ntl_scn)
-      wrn_prn(sfnm,"Function has been called with more than one argument");
-
-
     var_in=walker.out(vtr_args[0]); 
 
+    if(nbr_args >=3)
+    {  
+      var_scl_fct=walker.out(vtr_args[1]);
+      var_add_fst=walker.out(vtr_args[2]);
+    }
+
+      
 
      switch(fdx) {
 	case PPACK:
@@ -2515,6 +2518,9 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
         case PPACK_BYTE:
         case PPACK_CHAR:
         case PPACK_INT:
+	  if(var_scl_fct) var_scl_fct=nco_var_free(var_scl_fct);
+	  if(var_add_fst) var_add_fst=nco_var_free(var_add_fst); 
+	     
 	  var_out=nco_var_cnf_typ(typ, var_in);  
           break;
 
@@ -2546,9 +2552,40 @@ void mth2_cls::solar_geometry(float latitude_rad, float calendar_day_of_year, in
         case PPACK_BYTE:
         case PPACK_CHAR:
         case PPACK_INT:
+          if(nbr_args>=3)
+	  {     
+	    var_add_fst=nco_var_cnf_typ(var_in->type,var_add_fst);
+	    var_in->has_add_fst=True;
+	    var_in->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var_in->type));
+	    (void)memcpy(var_in->add_fst.vp,var_add_fst->val.vp,nco_typ_lng(var_in->type));
+	    var_add_fst=nco_var_free(var_add_fst);
+	    
+	    var_scl_fct=nco_var_cnf_typ(var_in->type,var_scl_fct);
+	    var_in->has_scl_fct=True;
+	    var_in->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var_in->type));
+	    (void)memcpy(var_in->scl_fct.vp,var_scl_fct->val.vp,nco_typ_lng(var_in->type));	    
+	    var_scl_fct=nco_var_free(var_scl_fct);
+
+            PCK_VAR_WITH_NEW_PCK_ATT=True;   
+	  }  
+          else
+	   {  
+	      PCK_VAR_WITH_NEW_PCK_ATT=False;    
+              var_in->has_add_fst=False;     
+	      var_in->has_scl_fct=False;
+
+	      if(var_in->scl_fct.vp)  
+                  var_in->scl_fct.vp=nco_free(var_in->scl_fct.vp);
+                
+	      if(var_in->add_fst.vp)
+                  var_in->add_fst.vp=nco_free(var_in->add_fst.vp);
+ 	      
+	   }      
+	    
           var_out=nco_var_pck(var_in,typ,&PCK_VAR_WITH_NEW_PCK_ATT);	
           //var_in=nco_var_free(var_in); 
           break;
+	  
         case PUNPACK:
           // Unpacking variable does not create duplicate so DO NOT free var
           var_out=nco_var_upk(var_in); 
