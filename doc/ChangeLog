@@ -1,5 +1,7 @@
 2018-05-09  Charlie Zender  <zender@uci.edu>
 
+	* Attempt to fix C++ compiling error by avoiding calls to cast_nctype_void() and nco_val_cnf_typ() with user-defined argument types
+
 	* NCO 4.7.5-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha04: Carne Asada Tacos';git push
 	git tag -a 4.7.5-alpha04 -m 'vlen var; enum att, var; RAM diags; ncap2 pck';git push --tags

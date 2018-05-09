@@ -3300,15 +3300,12 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	size_t mbr_nbr;
 	size_t mbr_nbrm1;
 	val_unn enm_val;
-	void *vp;
 	(void)sprintf(enm_fmt,"%%s = %s",nco_typ_fmt_sng_var_cdl(bs_typ));
 	(void)fprintf(fp_out,"%*s%s enum %s {",prn_ndn,spc_sng,bs_cdl,typ_cdl);
 	mbr_nbr=fld_nbr;
 	mbr_nbrm1=mbr_nbr-1L;
-	vp=(void *)&enm_val;
-	(void)cast_void_nctype(bs_typ,vp);
 	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
-	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,vp);
+	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
 	  switch(bs_typ){
 	  case NC_BYTE: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.b); break;
 	  case NC_UBYTE: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.ub); break;
