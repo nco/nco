@@ -1,5 +1,11 @@
 2018-05-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.5-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha04: Carne Asada Tacos';git push
+	git tag -a 4.7.5-alpha04 -m 'vlen var; enum att, var; RAM diags; ncap2 pck';git push --tags
+
+	* Revert immediate return from nco_val_cnf_typ() if typ_in == typ_out to fix regressions
+
 	* Add correct memory diagnostics for VLEN printing
 
 2018-05-09  Henry Butowsky <henryb@hush.com>

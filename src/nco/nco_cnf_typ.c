@@ -872,7 +872,9 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
      val_out must hold enough space (one element of type typ_out) to hold output
      and output type may be larger than input type */
 
-  if(typ_in == typ_out) return;
+  /* 20180509: Unsure why it is not safe to return immediately when typ_in == typ_out
+     However, doing so causes dozens of regression failures */
+  //  if(typ_in == typ_out) return;
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(typ_in,&val_in);

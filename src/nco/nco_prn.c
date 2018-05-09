@@ -1661,13 +1661,20 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
     if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 
-    if(prn_flg->trd){
-      if((nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) && deflate) (void)fprintf(fp_out,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
-      if(nco_fmt_xtn_get() == nco_fmt_xtn_hdf4 && NC_LIB_VERSION < 433) (void)fprintf(fp_out,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
-      if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
-    } /* !prn_flg->trd */
-
   } /* !scalar */
+
+  if(cls_typ == NC_VLEN){
+    (void)sprintf(sng_foo,"mean_length(NC_VLEN)*");
+    (void)strcat(sz_sng,sng_foo);
+  } /* !cls_typ */
+  (void)sprintf(sng_foo,"sizeof(%s)",nco_typ_sng(bs_typ));
+  (void)strcat(sz_sng,sng_foo);
+  
+  if(dmn_nbr > 0 && prn_flg->trd){
+    if((nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) && deflate) (void)fprintf(fp_out,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
+    if(nco_fmt_xtn_get() == nco_fmt_xtn_hdf4 && NC_LIB_VERSION < 433) (void)fprintf(fp_out,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
+    if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
+  } /* !prn_flg->trd */
 
   if(prn_flg->cdl){
     char *typ_nm;
@@ -1676,12 +1683,6 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     (void)fprintf(fp_out,"%*s%s %s%s ;",prn_ndn,spc_sng,typ_nm,nm_cdl,dmn_sng);
     if(var_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
     if(nco_dbg_lvl_get() >= nco_dbg_std){
-      if(cls_typ == NC_VLEN){
-	(void)sprintf(sng_foo,"mean_length(NC_VLEN)*");
-	(void)strcat(sz_sng,sng_foo);
-      } /* !cls_typ */
-      (void)sprintf(sng_foo,"sizeof(%s)",nco_typ_sng(bs_typ));
-      (void)strcat(sz_sng,sng_foo);
       if(cls_typ == NC_VLEN) (void)fprintf(fp_out," // RAM size = %s = %li*%g*%lu = %lu bytes",sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out," // RAM size = %s = %li*%lu = %lu bytes",sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
     } /* !dbg */
     /* 20170913: Typically users not interested in variable ID. However, ID helps diagnose susceptibility to CDF5 bug */
@@ -1693,7 +1694,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     if(prn_flg->PRN_VAR_DATA || prn_flg->PRN_VAR_METADATA) (void)fprintf(fp_out,"%s>\n",dmn_sng); else (void)fprintf(fp_out,"%s />\n",dmn_sng);
   } /* !xml */
 
-  /* Add comma as next in queue is the attributes NB: DO NOT LIKE THIS */
+  /* Add comma as next in queue are the attributes NB: DO NOT LIKE THIS */
   if(prn_flg->jsn){
     if(dmn_nbr > 0) (void)fprintf(fp_out,"%s\n",dmn_sng); 
     /* Print netCDF type with same names as XML */ 
