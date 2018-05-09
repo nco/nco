@@ -6,7 +6,7 @@
 
 	* Revert immediate return from nco_val_cnf_typ() if typ_in == typ_out to fix regressions
 
-	* Add correct memory diagnostics for VLEN printing
+	* Adjust memory diagnostics for VLEN printing
 
 2018-05-09  Henry Butowsky <henryb@hush.com>
 
