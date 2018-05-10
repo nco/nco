@@ -18,6 +18,7 @@ netcdf enum {
  types:
    ubyte enum enum_ubyte_t {Clear=0,Cumulonimbus=1,Stratus=2,Missing=128};
    short enum enum_sht_t {Small=-32000,Medium=0,Large=32767,missing_value=-32768};
+   uint64 enum enum_uint64_t {Greek_Καλημέρα=0,Japanese_キャク=1,Chinese_龥=3};
 
  dimensions:
    lon=4;
@@ -29,8 +30,10 @@ netcdf enum {
    enum_sht_t size(lon);
    enum_sht_t size:_FillValue=missing_value;
 
+   enum_uint64_t language(lon);
+ 
  data:
    cld_flg=Stratus,_,Cumulonimbus,Clear;
    size=_,Small,Medium,Large;
- 
+   language=Chinese_龥,Japanese_キャク,Greek_Καλημέρα,Greek_Καλημέρα;
 } // end root group
