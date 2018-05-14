@@ -2302,7 +2302,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	    break;
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !bs_typ switch */
-	  if(CDL) (void)fprintf(fp_out,"}%s",(lmn != var_szm1) ? spr_sng : "");
+          if(CDL) (void)fprintf(fp_out,"}");
+	  
 	  break; /* !NC_VLEN */
 	case NC_ENUM:
 	  switch(bs_typ){
@@ -2317,7 +2318,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !bs_typ switch */
 	  nco_inq_enum_ident(nc_id,var->type,mbr_val,mbr_nm);
-	  (void)fprintf(fp_out,"%s%s",mbr_nm,(lmn != var_szm1) ? spr_sng : "");
+	  //(void)fprintf(fp_out,"%s%s",mbr_nm,(lmn != var_szm1) ? spr_sng : "");
+	  (void)fprintf(fp_out,"%s",mbr_nm);
 	  break; /* !NC_ENUM */
 	case NC_COMPOUND:
 	case NC_OPAQUE:
@@ -2335,7 +2337,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	    (void)fprintf(fp_out,"%c",(JSN ? ']' : '}'));
 
       if(lmn != var_szm1)
-        if((var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || (var->type != NC_CHAR && cls_typ <= NC_MAX_ATOMIC_TYPE))
+	if((var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || (var->type != NC_CHAR ))
           (void)fprintf(fp_out,"%s",spr_sng);
 
       /* Pretty printing */
