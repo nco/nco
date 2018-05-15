@@ -1,3 +1,7 @@
+2018-05-14  Charlie Zender  <zender@uci.edu>
+
+	* Ensure VLEN mss_val returned as scalar value of type bs_typ in nco_mss_val_get()
+
 2018-05-09  Charlie Zender  <zender@uci.edu>
 
 	* Fix C++ compiling error by avoiding calls to cast_nctype_void() and nco_val_cnf_typ() with user-defined argument types

@@ -322,7 +322,22 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
     
     /* Ensure mss_val in memory is stored as same type as variable */
     var->mss_val.vp=(void *)nco_malloc(nco_typ_lng_ntm(nc_id,var->type));
-    if((att_typ <= NC_MAX_ATOMIC_TYPE) && (var->type <= NC_MAX_ATOMIC_TYPE)) (void)nco_val_cnf_typ(att_typ,mss_tmp,var->type,var->mss_val);
+    if((att_typ <= NC_MAX_ATOMIC_TYPE) && (var->type <= NC_MAX_ATOMIC_TYPE)){
+      (void)nco_val_cnf_typ(att_typ,mss_tmp,var->type,var->mss_val);
+    }else{
+      nc_type bs_typ;
+      nc_type cls_typ;
+      if(att_typ > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,att_typ,NULL,NULL,&bs_typ,NULL,&cls_typ);
+      assert(bs_typ <= NC_MAX_ATOMIC_TYPE);
+      if(cls_typ == NC_VLEN){
+	/* 20180514: De-reference first element of missing value ragged array
+	   netCDF may require missing value to be same type as variable, but 
+	   NCO needs a single scalar missing value. 
+	   Hence VLEN in NCO will have var->mss_val point to single scalar 
+	   of same base type as actual VLEN on disk */
+	memcpy(var->mss_val.vp,mss_tmp.vp,nco_typ_lng(bs_typ));
+      } /* !NC_VLEN */
+    } /* !NC_MAX_ATOMIC_TYPE */
 
     /* Release temporary memory */
     mss_tmp.vp=nco_free(mss_tmp.vp);

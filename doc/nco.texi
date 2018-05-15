@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.5-alpha04
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 2 May 2018
+@set update-date 14 May 2018
 @set update-month May 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2159,8 +2159,9 @@ This method avoids all constraints on command line size imposed by
 the operating system. 
 A drawback to this method is that the @code{history} attribute
 (@pxref{History Attribute}) does not record the name of any input 
-files since the names were not passed on the command line.
-This makes determining the data provenance at a later date difficult.
+files since the names were not passed as positional arguments
+on the command line.
+This makes it difficult later to determine the data provenance.
 @cindex @code{nco_input_file_number}
 @cindex @code{nco_input_file_list}
 @cindex global attributes

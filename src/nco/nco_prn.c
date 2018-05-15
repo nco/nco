@@ -2022,7 +2022,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         case NC_INT64: (void)fprintf(fp_out,dlm_sng,var->val.i64p[lmn]); break;
         case NC_UINT64: (void)fprintf(fp_out,dlm_sng,var->val.ui64p[lmn]); break;
         case NC_STRING: (void)fprintf(fp_out,dlm_sng,var->val.sngp[lmn]); break;
-        case NC_VLEN: (void)fprintf(fp_out,dlm_sng,var->val.ip[lmn]); break;
         default: nco_dfl_case_nc_type_err(); break;
         } /* end switch */
       } /* !is_mss_val */
@@ -2267,6 +2266,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	      /* 20180514: fxm missing value printing not working for vlen, debug with bs_typ == NC_FLOAT */
 	      is_mss_val=False;
 	      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val)
+		/* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
+		(void)fprintf(fp_out,"val_sz_byt = %d, vln_val_fp+vln_idx*val_sz_byt = %g, var->mss_val.fp = %g\n",val_sz_byt,vln_val_fp[vln_idx],var->mss_val.fp[0]);
 		is_mss_val=!memcmp((char *)vln_val_fp+vln_idx*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
 	      if(is_mss_val){
 		(void)sprintf(val_sng,"%s",mss_val_sng);
