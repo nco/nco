@@ -19,6 +19,12 @@ netcdf enum {
    ubyte enum enum_ubyte_t {Clear=0,Cumulonimbus=1,Stratus=2,Missing=128};
    short enum enum_sht_t {Small=-32000,Medium=0,Large=32767,missing_value=-32768};
    uint64 enum enum_uint64_t {Greek_Καλημέρα=0,Japanese_キャク=1,Chinese_龥=3};
+   uint64 enum cargo {bags\ of\ the\ best\ Sligo\ rags = 1000000, 
+		      barrels\ of\ bones = 2000000, 
+		      bails\ of\ old\ nanny\ goats\'\ tails = 3000000, 
+		      barrels\ of\ stones = 4000000, dogs = 5000000, hogs = 6000000, 
+		      barrels\ of\ porter = 7000000, 
+		      sides\ of\ old\ blind\ horses\ hides = 8000000};
 
  dimensions:
    lon=4;
@@ -32,8 +38,13 @@ netcdf enum {
 
    enum_uint64_t language(lon);
  
+   cargo in_the_hold_of_the_Irish_Rover(lon);
+ // 20180515: netCDF bug _FillValue must be a member otherwise default does not work see https://github.com/Unidata/netcdf-c/issues/982
+   cargo in_the_hold_of_the_Irish_Rover:_FillValue=hogs;
+
  data:
    cld_flg=Stratus,_,Cumulonimbus,Clear;
    size=_,Small,Medium,Large;
    language=Chinese_龥,Japanese_キャク,Greek_Καλημέρα,Greek_Καλημέρα;
+   in_the_hold_of_the_Irish_Rover=bags\ of\ the\ best\ Sligo\ rags,_,_,_;
 } // end root group

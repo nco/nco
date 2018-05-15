@@ -353,6 +353,8 @@ main(int argc,char **argv)
     {"no_nm_prn",no_argument,0,0}, /* [flg] Omit variable and dimension names and indices but print all values */
     {"ntm",no_argument,0,0}, /* [flg] Print non-atomic variables */
     {"nonatomic",no_argument,0,0}, /* [flg] Print non-atomic variables */
+    {"udt",no_argument,0,0}, /* [flg] Print non-atomic variables */
+    {"user_defined_types",no_argument,0,0}, /* [flg] Print non-atomic variables */
     {"rad",no_argument,0,0}, /* [flg] Retain all dimensions */
     {"retain_all_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
     {"orphan_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
@@ -699,7 +701,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_blank") || !strcmp(opt_crr,"no-blank") || !strcmp(opt_crr,"noblank")) PRN_MSS_VAL_BLANK=!PRN_MSS_VAL_BLANK;
       if(!strcmp(opt_crr,"no_clb") || !strcmp(opt_crr,"no-clobber") || !strcmp(opt_crr,"no_clobber") || !strcmp(opt_crr,"noclobber")) FORCE_NOCLOBBER=!FORCE_NOCLOBBER;
       if(!strcmp(opt_crr,"no_nm_prn") || !strcmp(opt_crr,"no_dmn_var_nm")) PRN_DMN_VAR_NM=False; /* endif "no_nm_prn" */
-      if(!strcmp(opt_crr,"ntm") || !strcmp(opt_crr,"nonatomic")) PRN_NTM=True; /* [flg] Print non-atomic variables */
+      if(!strcmp(opt_crr,"ntm") || !strcmp(opt_crr,"nonatomic") || !strcmp(opt_crr,"udt") || !strcmp(opt_crr,"user_defined_types")) PRN_NTM=True; /* [flg] Print non-atomic variables */
       if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")) ppc_arg[ppc_nbr++]=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
