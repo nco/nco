@@ -7,6 +7,7 @@
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
+
 #include "nco_prn.h" /* Print variables, attributes, metadata */
 
 int 
@@ -430,6 +431,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	 http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/ncml/v2.2/AnnotatedSchema4.html // older
 	 http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd */
 
+      char *typ_nm;
+
+      if(att[idx].type <=NC_MAX_ATOMIC_TYPE)
+	typ_nm=xml_typ_nm(att[idx].type);
+      else
+        typ_nm=cdl_typ_nm_ntm(grp_id,att[idx].type);  			     
+      
       (void)fprintf(fp_out,"%*s<attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
 
       /* User may override default separator string for XML only */
@@ -442,7 +450,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	 toolsui NcML does not print "type=char" for for char attributes
 	 Hence neither does ncks */
       if(att[idx].type != NC_STRING && att[idx].type != NC_CHAR){
-	(void)fprintf(fp_out," type=\"%s\"",xml_typ_nm(att[idx].type));
+	(void)fprintf(fp_out," type=\"%s\"",typ_nm);
 	/* Print hidden attributes */
 	/* Until ~2014 toolsui showed no way to indicate unsigned types for attributes
 	   20151207 Aleksander Jelenak and Ed Armstrong request "_Unsigned" attributes to denote unsigned attribute types */
@@ -472,6 +480,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       } /* att[idx].sz */
       (void)fprintf(fp_out," value=\"");
 
+      if(att[idx].type >NC_MAX_ATOMIC_TYPE)  
+	typ_nm=(char*)nco_free(typ_nm);
+			   
       /* XML-mode if dataset defines its own _FillValue for this variable? */
       // if(!(int)strcasecmp(att[idx].nm,nco_mss_val_sng_get())) has_fll_val=True;
     } /* !xml */
@@ -3555,6 +3566,7 @@ nco_prn_xml /* [fnc] Recursively print group contents */
   int nbr_att;                     /* [nbr] Number of attributes */
   int nbr_grp;                     /* [nbr] Number of sub-groups in this group */
   int nbr_var;                     /* [nbr] Number of variables */
+  int nbr_typ;                     /* [nbr] Number of types */
   int prn_ndn=0;                   /* [nbr] Indentation for printing */
   int rcd=NC_NOERR;                /* [rcd] Return code */
   int var_id;                      /* [id] Variable ID */
@@ -3586,6 +3598,7 @@ nco_prn_xml /* [fnc] Recursively print group contents */
   nbr_att=trv_tbl->lst[obj_idx].nbr_att;
   nbr_var=trv_tbl->lst[obj_idx].nbr_var;
   nbr_grp=trv_tbl->lst[obj_idx].nbr_grp;
+  nbr_typ=trv_tbl->lst[obj_idx].nbr_typ;
 
   /* Find dimension information for group */
   for(dmn_idx=0;dmn_idx<trv_tbl->nbr_dmn;dmn_idx++){
@@ -3622,6 +3635,66 @@ nco_prn_xml /* [fnc] Recursively print group contents */
   /* Print dimension information for group */
   prn_ndn=prn_flg->ndn=prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl;
 
+  /* Print type information for group */
+  if(nbr_typ > 0){
+    char *typ_cdl;
+    char *bs_cdl;
+    char bs_nm[NC_MAX_NAME+1L]; /* [sng] Base name */
+    char mbr_nm[NC_MAX_NAME+1L]; /* [sng] Member name */
+    char typ_nm[NC_MAX_NAME+1L]; /* [sng] Type name */
+    int cls_typ;
+    nc_type *typ_ids;
+    nc_type bs_typ;
+    size_t fld_nbr;
+
+    typ_ids=(nc_type *)nco_malloc(nbr_typ*(sizeof(nc_type)));
+    rcd+=nco_inq_typeids(grp_id,NULL,typ_ids);
+    for(int typ_idx=0;typ_idx<nbr_typ;typ_idx++){
+      rcd=nco_inq_user_type(grp_id,typ_ids[typ_idx],typ_nm,NULL,&bs_typ,&fld_nbr,&cls_typ);
+      rcd=nco_inq_type(grp_id,bs_typ,bs_nm,NULL);
+      bs_cdl=nm2sng_cdl(bs_nm);
+      typ_cdl=nm2sng_cdl(typ_nm);
+      if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s<type name=\"%s\" value=\"%s(*)\" />\n", prn_ndn, spc_sng, typ_cdl, bs_cdl);
+      if(cls_typ == NC_ENUM){
+	char enm_fmt[NCO_MAX_LEN_FMT_SNG];
+	size_t mbr_nbr;
+	size_t mbr_nbrm1;
+	val_unn enm_val;
+
+	(void)fprintf(fp_out,"%*s<enumTypedef name=\"%s\" type=\"enum1\" >\n",prn_ndn,spc_sng,typ_cdl);
+	(void)sprintf(enm_fmt,"%*s<enum key=\"%s\">%%s</enum>\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng,nco_typ_fmt_sng_var_cdl(bs_typ));
+	mbr_nbr=fld_nbr;
+	mbr_nbrm1=mbr_nbr-1L;
+	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
+	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
+	  switch(bs_typ){
+	  case NC_BYTE: (void)fprintf(fp_out,enm_fmt,enm_val.b, mbr_nm); break;
+	  case NC_UBYTE: (void)fprintf(fp_out,enm_fmt,enm_val.ub, mbr_nm); break;
+	  case NC_SHORT: (void)fprintf(fp_out,enm_fmt,enm_val.s, mbr_nm); break;
+	  case NC_USHORT: (void)fprintf(fp_out,enm_fmt,enm_val.us, mbr_nm); break;
+	  case NC_INT: (void)fprintf(fp_out,enm_fmt,enm_val.i, mbr_nm); break;
+	  case NC_UINT: (void)fprintf(fp_out,enm_fmt,enm_val.ui, mbr_nm); break;
+	  case NC_INT64: (void)fprintf(fp_out,enm_fmt,enm_val.i64, mbr_nm); break;
+	  case NC_UINT64: (void)fprintf(fp_out,enm_fmt,enm_val.ui64, mbr_nm); break;
+	  default: nco_dfl_case_nc_type_err(); break;
+	  } /* !bs_typ switch */
+	 
+	} /* !mbr_idx */
+        (void)fprintf(fp_out,"%*s</enumTypedef>\n",prn_ndn,spc_sng);
+      } /* !enm */
+      /* close bracket  */
+
+      
+      bs_cdl=(char *)nco_free(bs_cdl);
+      typ_cdl=(char *)nco_free(typ_cdl);
+
+    } /* !typ_idx */
+    typ_ids=(nc_type *)nco_free(typ_ids);
+  } /* !nbr_typ */
+
+
+
+  
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(fp_out,"%*s<dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");
   
   /* Dimension list no longer needed */
