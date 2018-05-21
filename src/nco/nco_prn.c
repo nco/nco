@@ -482,7 +482,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
       if(att[idx].type >NC_MAX_ATOMIC_TYPE)  
 	typ_nm=(char*)nco_free(typ_nm);
-			   
+
       /* XML-mode if dataset defines its own _FillValue for this variable? */
       // if(!(int)strcasecmp(att[idx].nm,nco_mss_val_sng_get())) has_fll_val=True;
     } /* !xml */
@@ -498,7 +498,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)sprintf(att_sng_pln,"%s",(XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
       (void)sprintf(att_sng_dlm,"%s%%s",(XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
     } /* !CDL */
-      
+
     switch(cls_typ){
     case NC_FLOAT:
       for(lmn=0;lmn<att_sz;lmn++){
@@ -592,6 +592,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       } /* end loop over element */
       break;
     case NC_VLEN:
+
       for(lmn=0;lmn<att_sz;lmn++){
 	vln_val=att[idx].val.vlnp[lmn];
 	vln_lng=vln_val.len;
@@ -612,7 +613,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  (void)fprintf(fp_out,"{");
 	else if(JSN)
 	  (void)fprintf(fp_out,"[");
-	
+
 	switch(bs_typ){
 	case NC_FLOAT:
 	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++){
@@ -732,8 +733,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
        _Unsigned: http://www.unidata.ucar.edu/software/thredds/current/netcdf-java/CDM/
        "There are not separate unsigned integer types. The Variable and Array objects have isUnsigned() methods, and conversion to wider types is correctly done. Since Java does not have unsigned types, the alternative is to automatically widen unsigned data arrays, which would double the memory used. */
     nc_type var_type;
+    
     (void)nco_inq_vartype(grp_id,var_id,&var_type);
-    if(nco_xml_typ_rqr_nsg_att(var_type)) (void)fprintf(fp_out,"%*s<attribute name=\"_Unsigned\" value=\"true\" />\n",prn_ndn,spc_sng);
+    if(var_type<=NC_MAX_ATOMIC_TYPE &&  nco_xml_typ_rqr_nsg_att(var_type)) (void)fprintf(fp_out,"%*s<attribute name=\"_Unsigned\" value=\"true\" />\n",prn_ndn,spc_sng);
     /* 20131231: Emulate toolsUI 4.3 _FillValue behavior for unsigned types (present in NCO 4.3.7-4.3.9, deprecated in 4.4.0 */
     // if(nco_xml_typ_rqr_flv_att(var_type) && !has_fll_val) (void)fprintf(fp_out,"%*s<attribute name=\"_FillValue\" type=\"%s\" value=\"%d\" />\n",prn_ndn,spc_sng,xml_typ_nm(var_type),(var_type == NC_UINT64) ? -2 : -1);
   } /* !xml */
@@ -4182,6 +4184,11 @@ nco_xml_typ_rqr_nsg_att /* [fnc] Does type require hidden _Unsigned attribute fo
 {
   /* Purpose: Return boolean if netCDF type requires hidden _Unsigned attribute for XML representation
      Output of toolsui shows these attributes */
+
+  if(nco_typ>NC_MAX_ATOMIC_TYPE)
+    return False;
+
+  
   switch(nco_typ){
   case NC_FLOAT:
   case NC_DOUBLE:
