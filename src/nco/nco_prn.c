@@ -434,7 +434,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       char *typ_nm;
 
       if(att[idx].type <=NC_MAX_ATOMIC_TYPE)
-	typ_nm=xml_typ_nm(att[idx].type);
+	typ_nm=strdup(xml_typ_nm(att[idx].type));
       else
         typ_nm=cdl_typ_nm_ntm(grp_id,att[idx].type);  			     
       
@@ -480,8 +480,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       } /* att[idx].sz */
       (void)fprintf(fp_out," value=\"");
 
-      if(att[idx].type >NC_MAX_ATOMIC_TYPE)  
-	typ_nm=(char*)nco_free(typ_nm);
+      typ_nm=(char*)nco_free(typ_nm);
 
       /* XML-mode if dataset defines its own _FillValue for this variable? */
       // if(!(int)strcasecmp(att[idx].nm,nco_mss_val_sng_get())) has_fll_val=True;
