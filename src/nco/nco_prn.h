@@ -153,6 +153,19 @@ const char * /* O [sng] JSON file type */
 jsn_fmt_xtn_nm /* [fnc] Return string describing JSON filetype */
 (const int fl_fmt_xtn); /* I [enm] Extended filetype */
 
+void
+nco_prn_nonfinite_flt(
+char * const val_sng,		  
+const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
+float val_flt);
+
+void
+nco_prn_nonfinite_dbl(
+char * const val_sng,		  
+const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
+double val_dbl);
+  
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

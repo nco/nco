@@ -506,8 +506,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_flt);
 	  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	}else{
-	  if(isnan(val_flt)) (void)sprintf(val_sng,(JSN) ? "null" : "NaNf");
-	  else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_flt < 0.0f) ? "-Infinityf" : "Infinityf");
+          (void)nco_prn_nonfinite_flt(val_sng,prn_flg, val_flt);     
 	} /* endelse */
 	(void)fprintf(fp_out,"%s%s",val_sng,(lmn != att_szm1) ? spr_sng : "");
       } /* end loop */
@@ -519,8 +518,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_dbl);
 	  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	}else{
-	  if(isnan(val_dbl)) (void)sprintf(val_sng,(JSN) ? "null" : "NaN");
-	  else if(isinf(val_dbl)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");
+          (void)nco_prn_nonfinite_dbl(val_sng,prn_flg, val_dbl);           
 	} /* endelse */
 	(void)fprintf(fp_out,"%s%s",val_sng,(lmn != att_szm1) ? spr_sng : "");
       } /* end loop */
@@ -621,9 +619,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_flt);
 	      (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	    }else{
-	      if(isnan(val_flt)) (void)sprintf(val_sng,(JSN) ? "null" : "NaNf");
-	      else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_flt < 0.0f) ? "-Infinityf" : "Infinityf");
-	    } /* endelse */
+              (void)nco_prn_nonfinite_flt(val_sng,prn_flg, val_flt);     
+            }
+	    
 	    (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
 	  } /* !vln_idx */
 	  break;
@@ -634,8 +632,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_dbl);
 	      (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	    }else{
-	      if(isnan(val_dbl)) (void)sprintf(val_sng,(JSN) ? "null" : "NaN");
-	      else if(isinf(val_dbl)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");
+              (void)nco_prn_nonfinite_dbl(val_sng,prn_flg, val_dbl);        
 	    } /* endelse */
 	    (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
 	  } /* !vln_idx */
@@ -2210,8 +2207,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
             (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
           }else{
-	    if(isnan(val_flt)) (void)sprintf(val_sng,(JSN) ? "null" : "NaNf");
-	    else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_flt < 0.0f) ? "-Infinityf" : "Infinityf");
+            (void)nco_prn_nonfinite_flt(val_sng,prn_flg, val_flt);          
           } /* !isfinite() */
           break;
         case NC_DOUBLE:
@@ -2220,8 +2216,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_dbl);
             (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
           }else{
-	    if(isnan(val_dbl)) (void)sprintf(val_sng,(JSN) ? "null" : "NaN");
-	    else if(isinf(val_dbl)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");
+            (void)nco_prn_nonfinite_dbl(val_sng,prn_flg, val_dbl);             
           } /* !isfinite() */
           break;
         case NC_SHORT: (void)sprintf(val_sng,fmt_sng,var->val.sp[lmn]); break;
@@ -2305,8 +2300,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 		  rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
 		  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 		}else{
-		  if(isnan(val_flt)) (void)sprintf(val_sng,(JSN) ? "null" : "NaNf");
-		  else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_flt < 0.0f) ? "-Infinityf" : "Infinityf");
+                  (void)nco_prn_nonfinite_flt(val_sng,prn_flg, val_flt);            
 		} /* endelse */
 	      } /* !is_mss_val */
 	      (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
@@ -2319,8 +2313,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 		rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_dbl);
 		(void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	      }else{
-		if(isnan(val_dbl)) (void)sprintf(val_sng,(JSN) ? "null" : "NaN");
-		else if(isinf(val_dbl)) (void)sprintf(val_sng,"%s",(JSN) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");
+                (void)nco_prn_nonfinite_dbl(val_sng,prn_flg, val_dbl);                
 	      } /* endelse */
 	      (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
 	    } /* !vln_idx */
@@ -3658,11 +3651,15 @@ nco_prn_xml /* [fnc] Recursively print group contents */
       if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s<type name=\"%s\" value=\"%s(*)\" />\n", prn_ndn, spc_sng, typ_cdl, bs_cdl);
       if(cls_typ == NC_ENUM){
 	char enm_fmt[NCO_MAX_LEN_FMT_SNG];
+	int bs_sz;
 	size_t mbr_nbr;
 	size_t mbr_nbrm1;
 	val_unn enm_val;
-
-	(void)fprintf(fp_out,"%*s<enumTypedef name=\"%s\" type=\"enum1\" >\n",prn_ndn,spc_sng,typ_cdl);
+             
+        bs_sz=(int)nco_typ_lng(bs_typ);
+	bs_sz=( bs_sz >4 ? 4 : bs_sz );
+	
+	(void)fprintf(fp_out,"%*s<enumTypedef name=\"%s\" type=\"enum%d\" >\n",prn_ndn,spc_sng,typ_cdl, bs_sz );
 	(void)sprintf(enm_fmt,"%*s<enum key=\"%s\">%%s</enum>\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng,nco_typ_fmt_sng_var_cdl(bs_typ));
 	mbr_nbr=fld_nbr;
 	mbr_nbrm1=mbr_nbr-1L;
@@ -4277,3 +4274,37 @@ jsn_fmt_xtn_nm /* [fnc] Return string describing JSON filetype */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end jsn_fmt_xtn_nm() */
+
+
+void
+nco_prn_nonfinite_flt(
+char * const val_sng,		  
+const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
+float val_flt){
+
+  if(isnan(val_flt))
+     (void)sprintf(val_sng,(prn_flg->jsn) ? "null" : "NaN");
+  else if(isinf(val_flt))
+     (void)sprintf(val_sng,"%s",(prn_flg->jsn) ? "null" : (val_flt < 0.0f) ? "-Infinity" : "Infinity");    
+
+  /* add trailing "f" for just CDL */
+  if(prn_flg->cdl && !prn_flg->xml)
+     strcat(val_sng, "f");
+
+  return; 
+}  
+
+void
+nco_prn_nonfinite_dbl(
+char * const val_sng,		  
+const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
+double val_dbl){
+
+  if(isnan(val_dbl))
+     (void)sprintf(val_sng,(prn_flg->jsn) ? "null" : "NaN");
+  else if(isinf(val_dbl))
+     (void)sprintf(val_sng,"%s",(prn_flg->jsn) ? "null" : (val_dbl < 0.0f) ? "-Infinity" : "Infinity");    
+
+  return; 
+}  
+
