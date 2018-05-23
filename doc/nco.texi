@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.5-alpha04
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 14 May 2018
+@set update-date 22 May 2018
 @set update-month May 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13659,13 +13659,13 @@ to set its values less than 8 or greater than 80 @w{to 0}:
 where(RDM < 8 || RDM > 80) RDM=0;          
 @end example
 
-To use @command{where} on a variable subset, define and use a temporary
+To use @command{where} on a variable hyperslab, define and use a temporary
 variable, e.g., 
 @example
 @verbatim
 *var_tmp=var2(:,0,:,:); 
 where (var1 < 0.5) var_tmp=1234; 
-var2(;.0,:,;)=var_tmp;
+var2(;,0,:,;)=var_tmp;
 ram_delete(var_tmp);
 @end verbatim
 @end example

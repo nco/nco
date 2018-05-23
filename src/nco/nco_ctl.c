@@ -742,6 +742,7 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 
   (void)fprintf(stdout,"Homepage: http://nco.sf.net\n");
   (void)fprintf(stdout,"User Guide: http://nco.sf.net/nco.html\n");
+  (void)fprintf(stdout,"Code: http://github.com/nco/nco\n");
   (void)fprintf(stdout,"Build-engine: %s\n",bld_ngn);
   (void)fprintf(stderr,"%s\n",nco_nmn_get());
   /* fxm: TKN2YESNO breaks when TKN is undefined
