@@ -456,6 +456,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	   20151207 Aleksander Jelenak and Ed Armstrong request "_Unsigned" attributes to denote unsigned attribute types */
 	if(nco_xml_typ_rqr_nsg_att(att[idx].type)) (void)fprintf(fp_out," isUnsigned=\"true\"");
       } /* endif */
+
+      if(att[idx].type == NC_VLEN)
+	(void)fprintf(fp_out," shape=\"*\"" );
       
       /* Print separator element for non-whitespace separators */
       if((att[idx].sz == 1L && att[idx].type == NC_STRING) || att[idx].sz > 1L){ 
@@ -610,7 +613,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  (void)fprintf(fp_out,"{");
 	else if(JSN)
 	  (void)fprintf(fp_out,"[");
-
+	else if(XML)
+	  (void)fprintf(fp_out,",");
+	
 	switch(bs_typ){
 	case NC_FLOAT:
 	  for(vln_idx=0;vln_idx<vln_lng;vln_idx++){
@@ -651,8 +656,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  break;
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* !bs_typ switch */
-	if(CDL) (void)fprintf(fp_out,"}%s",(lmn != att_szm1) ? spr_sng : "");
-	if(JSN) (void)fprintf(fp_out,"]%s",(lmn != att_szm1) ? spr_sng : "");
+	if(CDL) (void)fprintf(fp_out,"}%s",(lmn != att_szm1) ? spr_sng : "")
+;	if(JSN) (void)fprintf(fp_out,"]%s",(lmn != att_szm1) ? spr_sng : "");
+	/* if(XML && lmn != att_szm1 ) (void)fprintf(fp_out," "); */
       } /* !lmn */
       rcd=nco_free_vlens(att_sz,att[idx].val.vlnp);
       break; /* !NC_VLEN */
@@ -1648,13 +1654,13 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
       if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*mean_length(NC_VLEN)*sizeof(%s) = %ld*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(bs_typ),var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(cls_typ),var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
     } /* !trd */
     /* 20131122: Implement ugly NcML requirement that scalars have shape="" attribute */
-    if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"\"");
+    if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"%s\"",(cls_typ == NC_VLEN ? "*" : "" ));
     (void)sprintf(sng_foo,"1*");
     (void)strcat(sz_sng,sng_foo);
   }else{
     for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
       if(prn_flg->xml){
-	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? " shape=\"" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < dmn_nbr-1) ? " " : "\""); 
+	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? " shape=\"" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < dmn_nbr-1) ? " " : (cls_typ == NC_VLEN ? " *\""  : "\"")); 
       }else if(prn_flg->jsn){
         /* indent content */ 
         nm_jsn=nm2sng_jsn(var_trv->var_dmn[dmn_idx].dmn_nm);
@@ -2166,7 +2172,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
       if(cls_typ == NC_VLEN){
 	vln_val=var->val.vlnp[lmn];
-	vln_lng=vln_val.len;
+    	vln_lng=vln_val.len;
 	vln_lngm1=vln_lng-1UL;
 	
 	vln_val_fp=(float *)vln_val.p;
@@ -2282,7 +2288,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	    (void)fprintf(fp_out,"{");
 	  else if(JSN)
 	    (void)fprintf(fp_out,"[");
-	    
+	  else if(XML)
+	    (void)fprintf(fp_out,",");
+
 	  switch(bs_typ){
 	  case NC_FLOAT:
 	    for(vln_idx=0;vln_idx<vln_lng;vln_idx++){
@@ -2313,7 +2321,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 		rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_dbl);
 		(void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	      }else{
-                (void)nco_prn_nonfinite_dbl(val_sng,prn_flg, val_dbl);                
+                (void)nco_prn_nonfinite_dbl(val_sng, prn_flg, val_dbl);                
 	      } /* endelse */
 	      (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
 	    } /* !vln_idx */
@@ -2337,6 +2345,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	     (void)fprintf(fp_out,"}");
 	  else if(JSN)
 	     (void)fprintf(fp_out,"]");
+
 	  
 	  break; /* !NC_VLEN */
 	case NC_ENUM:
@@ -4303,7 +4312,7 @@ double val_dbl){
   if(isnan(val_dbl))
      (void)sprintf(val_sng,(prn_flg->jsn) ? "null" : "NaN");
   else if(isinf(val_dbl))
-     (void)sprintf(val_sng,"%s",(prn_flg->jsn) ? "null" : (val_dbl < 0.0f) ? "-Infinity" : "Infinity");    
+     (void)sprintf(val_sng,"%s",(prn_flg->jsn) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");    
 
   return; 
 }  
