@@ -71,7 +71,12 @@ netcdf vlen {
   vlen_int_t three_dmn_var_vlen(tm,lat,lon);
   three_dmn_var_vlen:long_name = "three dimensional record variable of type int";
   three_dmn_var_vlen:units = "watt meter-2";
+<<<<<<< HEAD
   three_dmn_var_vlen:_FillValue ={-99};
+=======
+  // three_dmn_var_vlen:_FillValue ={ -99};
+
+>>>>>>> eb960a7424099594cb4fe289e0f15ec0cb8668b4
   
  data:
   one=1;
@@ -81,7 +86,7 @@ netcdf vlen {
   vlen_flt_1D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
   vlen_int_scl={17,18,19};
   vlen_int_1D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
-  vlen_int_1D_mss_val_scl={_},{1,2,3,4,5,6,7,8,9,10};
+  vlen_int_1D_mss_val_scl=_;
   vlen_sng={"one","two","three"},{"four,five"};
 
  three_dmn_var_vlen= {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8},
