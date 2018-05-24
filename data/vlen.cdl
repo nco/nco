@@ -69,14 +69,10 @@ netcdf vlen {
   vlen_sng_t vlen_sng(lat);
 
   vlen_int_t three_dmn_var_vlen(tm,lat,lon);
-  three_dmn_var_vlen:long_name = "three dimensional record variable of type int";
-  three_dmn_var_vlen:units = "watt meter-2";
-<<<<<<< HEAD
-  three_dmn_var_vlen:_FillValue ={-99};
-=======
-  // three_dmn_var_vlen:_FillValue ={ -99};
-
->>>>>>> eb960a7424099594cb4fe289e0f15ec0cb8668b4
+  three_dmn_var_vlen:long_name="three dimensional record variable of type int";
+  three_dmn_var_vlen:units="watt meter-2";
+  // 20180524: fxm Having a _FillValue breaks printing of three_dmn_var_vlen
+  // three_dmn_var_vlen:_FillValue={-99};
   
  data:
   one=1;
