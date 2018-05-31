@@ -1505,7 +1505,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
  const trv_sct * const var_trv) /* I [sct] Object to print (variable) */
 {
   /* Purpose: Print variable metadata */
-  const char fnc_nm[]="nco_prn_var_dfn()";
+  //const char fnc_nm[]="nco_prn_var_dfn()";
   const char spc_sng[]=""; /* [sng] Space string */
 
   char *dmn_sng=NULL;
@@ -2296,10 +2296,11 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	    for(vln_idx=0;vln_idx<vln_lng;vln_idx++){
 	      /* 20180514: fxm missing value printing not working for vlen, debug with bs_typ == NC_FLOAT */
 	      is_mss_val=False;
-	      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val)
-		/* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
+	      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
 		(void)fprintf(fp_out,"val_sz_byt = %d, vln_val_fp+vln_idx*val_sz_byt = %g, var->mss_val.fp = %g\n",val_sz_byt,vln_val_fp[vln_idx],var->mss_val.fp[0]);
+		/* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
 		is_mss_val=!memcmp((char *)vln_val_fp+vln_idx*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
+	      } /* !prn_flg */
 	      if(is_mss_val){
 		(void)sprintf(val_sng,"%s",mss_val_sng);
 	      }else{
@@ -3662,7 +3663,6 @@ nco_prn_xml /* [fnc] Recursively print group contents */
 	char enm_fmt[NCO_MAX_LEN_FMT_SNG];
 	int bs_sz;
 	size_t mbr_nbr;
-	size_t mbr_nbrm1;
 	val_unn enm_val;
              
         bs_sz=(int)nco_typ_lng(bs_typ);
@@ -3671,7 +3671,6 @@ nco_prn_xml /* [fnc] Recursively print group contents */
 	(void)fprintf(fp_out,"%*s<enumTypedef name=\"%s\" type=\"enum%d\" >\n",prn_ndn,spc_sng,typ_cdl, bs_sz );
 	(void)sprintf(enm_fmt,"%*s<enum key=\"%s\">%%s</enum>\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng,nco_typ_fmt_sng_var_cdl(bs_typ));
 	mbr_nbr=fld_nbr;
-	mbr_nbrm1=mbr_nbr-1L;
 	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
 	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
 	  switch(bs_typ){

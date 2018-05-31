@@ -2866,7 +2866,6 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
       char typ_nm[NC_MAX_NAME+1L]; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
       int cls_typ; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
       nc_type bs_typ; /* [enm] netCDF atomic type underlying vlen and enum types */
-      nc_type var_typ; /* [enm] netCDF type */
       size_t fld_nbr; /* [nbr] Number of fields in enum and compound types */
       size_t typ_sz; /* [B] Size of user-defined type */
       rcd=nc_inq_user_type(nc_id,att_typ,typ_nm,&typ_sz,&bs_typ,&fld_nbr,&cls_typ);
