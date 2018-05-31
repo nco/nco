@@ -1934,7 +1934,7 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version according to Git */
   char *vrs_sng; /* [sng] NCO version, numeric part only */
   char vrs_pfx[]="netCDF Operators version ";; /* [sng] NCO version attribute prefix */
-  char vrs_sfx[]=" (http://nco.sf.net)"; /* [sng] NCO version attribute suffix */
+  char vrs_sfx[]=" (Homepage = http://nco.sf.net, Code = http://github.com/nco/nco)"; /* [sng] NCO version attribute suffix */
   char *vrs_sng_xtn; /* [sng] NCO version value, with extended information */
   ptr_unn att_val;
   

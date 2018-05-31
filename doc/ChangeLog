@@ -1,3 +1,11 @@
+2018-05-31  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.5-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha05: SLOtime';git push
+	git tag -a 4.7.5-alpha05 -m 'rgr fix';git push --tags
+
+	* Add http://github.com/nco/nco to version attribute
+
 2018-05-14  Charlie Zender  <zender@uci.edu>
 
 	* Ensure VLEN mss_val returned as scalar value of type bs_typ in nco_mss_val_get()

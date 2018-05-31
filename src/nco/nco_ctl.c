@@ -838,7 +838,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always include terminal \n so mnemonic does not dangle */
-  return "Mnemonic: Carne Asada Tacos\n";
+  return "Mnemonic: SLOtime\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -1187,7 +1187,7 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"3. User Guide:   http://nco.sf.net#RTFM\n");
   (void)fprintf(stdout,"4. Manual pages: \'man %s\', \'man nco\', ...\n",nco_prg_nm_get());
   (void)fprintf(stdout,"5. Homepage:     http://nco.sf.net\n");
-  (void)fprintf(stdout,"6. FAQ:          http://nco.sf.net#FAQ\n");
+  (void)fprintf(stdout,"6. Code:         http://github.com/nco/nco\n");
   (void)fprintf(stdout,"7. Help Forum:   http://sf.net/p/nco/discussion/9830\n");
   (void)fprintf(stdout,"8. Publications: http://nco.sf.net#pub\n");
   (void)fprintf(stdout,"Post questions, suggestions, patches at http://sf.net/projects/nco\n");
