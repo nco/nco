@@ -61,7 +61,12 @@ netcdf vlen {
   vlen_int_1D:_FillValue={-999};
 
   vlen_flt_t vlen_flt_scl;
-  vlen_flt_scl:long_name="vlen with base type float";
+  // 20180603: Investigating three _FillValue cases:
+  // A. If _FillValue is not manually assigned, ncgen translates CDL underscores to default _FillValue of base type = 9.96921e+36 for floats, which is expected and seems correct 
+  // B. If _FillValue is manually assigned, ncgen translates CDL underscores to default _FillValue of base type = 9.96921e+36 for floats, which is unexpected and seems incorrect because library should use the manually assigned _FillValue. In this case, the netCDF library does not know the data values are _FillValue because they do not equal the explicitly assigned value
+  // C. If _FillValue is manually assigned, and data section uses it explicitly (rather than using underscore) then ncgen correctly uses the explicitly specified values, though ncdump will not print an underscore
+  // NCO treats case C incorrectly (quark2) because var->mss_val.fp[0] has unexpected value
+  vlen_flt_scl:_FillValue={-999};
 
   vlen_flt_t vlen_flt_1D(lat);
   vlen_flt_1D:long_name="vlen with base type float";
@@ -77,7 +82,8 @@ netcdf vlen {
  data:
   one=1;
   two=2;
-  vlen_flt_scl={17,18,19};
+  //  vlen_flt_scl={_,17,18,19};
+  vlen_flt_scl={-999,17,18,19};
   vlen_flt_2D={{1,2},{3,4}},{{5,6},{7,8}};
   vlen_flt_1D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
   vlen_int_scl={17,18,19};

@@ -7,11 +7,10 @@
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
 
-
 #include "nco_prn.h" /* Print variables, attributes, metadata */
 
 int 
-nco_att_nbr        /* [fnc] return number of atts in var or global atts in group */ 
+nco_att_nbr        /* [fnc] Return number of attributes in variable or group attributes in group */ 
 (const int grp_id, /* I [id] netCDF group ID */
  const int var_id) /* I [id] netCDF input variable ID */
 {
@@ -2297,7 +2296,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	      /* 20180514: fxm missing value printing not working for vlen, debug with bs_typ == NC_FLOAT */
 	      is_mss_val=False;
 	      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
-		(void)fprintf(fp_out,"val_sz_byt = %d, vln_val_fp+vln_idx*val_sz_byt = %g, var->mss_val.fp = %g\n",val_sz_byt,vln_val_fp[vln_idx],var->mss_val.fp[0]);
+		(void)fprintf(fp_out,"quark2: val_sz_byt = %d, vln_val_fp+vln_idx*val_sz_byt = %g, var->mss_val.fp = %g\n",val_sz_byt,vln_val_fp[vln_idx],var->mss_val.fp[0]);
 		/* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
 		is_mss_val=!memcmp((char *)vln_val_fp+vln_idx*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
 	      } /* !prn_flg */
@@ -3460,7 +3459,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   if(var_nbr_xtr > 1) var_lst=nco_lst_srt_nm_id(var_lst,var_nbr_xtr,prn_flg->ALPHA_BY_STUB_GROUP);
 
   /* Print variable information for group */
-  if(var_nbr_xtr > 0) (void)fprintf(fp_out,"\n%*svariables:\n",prn_flg->ndn,spc_sng);
+  if(var_nbr_xtr > 0) (void)fprintf(fp_out,"%s%*svariables:\n",(dmn_nbr > 0) ? "\n" : "",prn_flg->ndn,spc_sng);
 
   for(var_idx=0;var_idx<var_nbr_xtr;var_idx++){
     trv_sct var_trv=trv_tbl->lst[var_lst[var_idx].id];

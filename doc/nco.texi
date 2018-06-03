@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.5-alpha05
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 22 May 2018
-@set update-month May 2018
+@set update-date 01 June 2018
+@set update-month June 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -6054,7 +6054,7 @@ rotate the input file by @w{180 degrees} longitude:
 @example
 % ncks -O -v LatLon --msa -d Lon,0.,180. -d Lon,-180.,-1.0 in.nc out.nc
 % ncap2 -O -s 'where(Lon < 0) Lon=Lon+360' out.nc out.nc
-% ncks -C -H -v LatLon ~/nco/data/in.nc
+% ncks --trd -C -H -v LatLon ~/nco/data/in.nc
 Lat[0]=-45 Lon[0]=-180 LatLon[0]=0 
 Lat[0]=-45 Lon[1]=-90 LatLon[1]=1 
 Lat[0]=-45 Lon[2]=0 LatLon[2]=2 
@@ -6063,7 +6063,7 @@ Lat[1]=45 Lon[0]=-180 LatLon[4]=4
 Lat[1]=45 Lon[1]=-90 LatLon[5]=5 
 Lat[1]=45 Lon[2]=0 LatLon[6]=6 
 Lat[1]=45 Lon[3]=90 LatLon[7]=7 
-% ncks -C -H -v LatLon ~/out.nc
+% ncks --trd -C -H -v LatLon ~/out.nc
 Lat[0]=-45 Lon[0]=0 LatLon[0]=2 
 Lat[0]=-45 Lon[1]=90 LatLon[1]=3 
 Lat[0]=-45 Lon[2]=180 LatLon[2]=0 
@@ -7496,7 +7496,7 @@ In the following example, the user extracts all wavelengths
 in the visible portion of the spectrum in terms of the units
 very frequently used in visible spectroscopy, microns:
 @example
-% ncks -C -H -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
+% ncks --trd -C -H -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
 wvl[0]=5e-07 meter
 @end example
 @noindent
@@ -20216,7 +20216,7 @@ The dimension and variable indices refer to the location of the
 corresponding data element with respect to the variable as stored on
 disk (i.e., not the hyperslab).
 @example
-% ncks -C -v three_dmn_var in.nc
+% ncks --trd -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
 lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
@@ -20241,13 +20241,13 @@ However, if the hyperslab is saved to an output file and those values
 are printed, the indices will change:
 @c fxm: replace with new MSA output style
 @example
-% ncks -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
+% ncks --trd -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
 ...
 lat[1]=90 lev[2]=1000 lon[0]=0 three_dmn_var[20]=20 
 lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
 lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
-% ncks -C -v three_dmn_var out.nc
+% ncks --trd -C -v three_dmn_var out.nc
 lat[0]=90 lev[0]=1000 lon[0]=0 three_dmn_var[0]=20 
 lat[0]=90 lev[0]=1000 lon[1]=90 three_dmn_var[1]=21 
 lat[0]=90 lev[0]=1000 lon[2]=180 three_dmn_var[2]=22 
@@ -20257,6 +20257,7 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 @html
 <a name="jsn"></a> <!-- http://nco.sf.net/nco.html#jsn -->
 <a name="json"></a> <!-- http://nco.sf.net/nco.html#json -->
+<a name="json"></a> <!-- http://nco.sf.net/nco.html#JSON -->
 @end html
 @cindex @code{--jsn_fmt}
 @cindex @code{--jsn}
@@ -21237,7 +21238,7 @@ As of @acronym{NCO} version 4.2.2 (October, 2012), @acronym{NCO} prints
 missing values as blanks (i.e., the underscore character @samp{_}) by
 default: 
 @example
-% ncks -C -H -v mss_val in.nc
+% ncks --trd -C -H -v mss_val in.nc
 lon[0]=0 mss_val[0]=73 
 lon[1]=90 mss_val[1]=_ 
 lon[2]=180 mss_val[2]=73 
@@ -21854,10 +21855,10 @@ latitude values decrease monotonically from north to south.
 Accomplish this with
 @example
 % ncpdq -a -lat in.nc out.nc
-% ncks -C -v lat in.nc
+% ncks --trd -C -v lat in.nc
 lat[0]=-90
 lat[1]=90
-% ncks -C -v lat out.nc
+% ncks --trd -C -v lat out.nc
 lat[0]=90
 lat[1]=-90
 @end example
@@ -21887,7 +21888,7 @@ dimensions in the dimension re-order list in reversed order.
 This example creates the transpose of @code{three_dmn_var}: 
 @example
 % ncpdq -a lon,lev,lat -v three_dmn_var in.nc out.nc
-% ncks -C -v three_dmn_var in.nc
+% ncks --trd -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
 lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
@@ -21895,7 +21896,7 @@ lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2
 lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
 lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
-% ncks -C -v three_dmn_var out.nc
+% ncks --trd -C -v three_dmn_var out.nc
 lon[0]=0 lev[0]=100 lat[0]=-90 three_dmn_var[0]=0
 lon[0]=0 lev[0]=100 lat[1]=90 three_dmn_var[1]=12
 lon[0]=0 lev[1]=500 lat[0]=-90 three_dmn_var[2]=4
@@ -21912,7 +21913,7 @@ sign.
 This example reverses the storage order of @code{three_dmn_var}: 
 @example
 % ncpdq -a -lat,-lev,-lon -v three_dmn_var in.nc out.nc
-% ncks -C -v three_dmn_var in.nc
+% ncks --trd -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
 lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
@@ -21920,7 +21921,7 @@ lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2
 lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
 lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
-% ncks -C -v three_dmn_var out.nc
+% ncks --trd -C -v three_dmn_var out.nc
 lat[0]=90 lev[0]=1000 lon[0]=270 three_dmn_var[0]=23
 lat[0]=90 lev[0]=1000 lon[1]=180 three_dmn_var[1]=22
 lat[0]=90 lev[0]=1000 lon[2]=90 three_dmn_var[2]=21
@@ -24957,9 +24958,9 @@ ncwa -a lon -b in.nc out2.nc
 The first command turns @code{lon} into a scalar and the second retains 
 @code{lon} as a degenerate dimension in all variables.
 @example
-% ncks -C -H -v lon out1.nc
+% ncks --trd -C -H -v lon out1.nc
 lon = 135
-% ncks -C -H -v lon out2.nc
+% ncks --trd -C -H -v lon out2.nc
 lon[0] = 135
 @end example
 In either case the tally is simply the size of @code{lon}, i.e., 180

@@ -331,10 +331,8 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
       assert(bs_typ <= NC_MAX_ATOMIC_TYPE);
       if(cls_typ == NC_VLEN){
 	/* 20180514: De-reference first element of missing value ragged array
-	   netCDF may require missing value to be same type as variable, but 
-	   NCO needs a single scalar missing value. 
-	   Hence VLEN in NCO will have var->mss_val point to single scalar 
-	   of same base type as actual VLEN on disk */
+	   netCDF may require missing value to be same type as variable, but NCO needs a single scalar missing value
+	   Hence VLEN in NCO points var->mss_val to first single scalar of same base type as actual VLEN on disk */
 	memcpy(var->mss_val.vp,mss_tmp.vp,nco_typ_lng(bs_typ));
       } /* !NC_VLEN */
     } /* !NC_MAX_ATOMIC_TYPE */
