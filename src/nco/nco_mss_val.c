@@ -330,7 +330,12 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
     if((att_typ <= NC_MAX_ATOMIC_TYPE) && (var->type <= NC_MAX_ATOMIC_TYPE)){
       (void)nco_val_cnf_typ(att_typ,mss_tmp,var->type,var->mss_val);
     }else{
-      if(att_typ > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,att_typ,NULL,NULL,&bs_typ,NULL,&cls_typ);
+      /* Assume att_typ equals var_typ for user-defined types otherwise things get too hairy */
+      assert(att_typ == var->type);
+      nco_inq_user_type(nc_id,att_typ,NULL,NULL,&bs_typ,NULL,&cls_typ);
+      if(cls_typ == NC_ENUM){
+	memcpy(var->mss_val.vp,mss_tmp.vp,nco_typ_lng(bs_typ));
+      } /* !NC_ENUM */
       if(cls_typ == NC_VLEN){
 	/* 20180514: De-reference first element of missing value ragged array
 	   netCDF may require missing value to be same type as variable, but NCO needs a single scalar missing value

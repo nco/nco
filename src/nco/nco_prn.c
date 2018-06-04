@@ -2200,7 +2200,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	else if(var->type == NC_CHAR) is_mss_val=False;
 	/* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
 	else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
-	/* fxm: Missing value treatment must include a vln loop and be moved here for NC_VLEN so we know whether to print braces around value */
+	/* fxm: 20180604: NC_ENUM missing value test fails with above */
+	/* fxm: 20180604: NC_VLEN missing value test must be moved here (into a vln loop) so we can avoid printing braces around underscore */
       } /* !PRN_MSS_VAL_BLANK */
 	
       if(is_mss_val){
@@ -2374,9 +2375,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	} /* !cls_typ switch */
       } /* !is_mss_val */
       
-      if((var->type != NC_CHAR && var->type != NC_STRING && cls_typ <= NC_MAX_ATOMIC_TYPE) || (var->type == NC_STRING && is_mss_val)) (void)fprintf(fp_out,"%s",val_sng);
-
-      //      if(cls_typ == NC_ENUM) (void)fprintf(fp_out,"%s",val_sng);
+      if((cls_typ <= NC_MAX_ATOMIC_TYPE && var->type != NC_CHAR && var->type != NC_STRING) || (var->type == NC_STRING && is_mss_val) || (cls_typ == NC_ENUM && is_mss_val)) (void)fprintf(fp_out,"%s",val_sng);
 
       /* Bracket data if specified */
       if(JSN || CDL)

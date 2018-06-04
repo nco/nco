@@ -27,6 +27,10 @@ netcdf enum {
 		      barrels\ of\ porter = 7000000, 
 		      sides\ of\ old\ blind\ horses\ hides = 8000000};
    int enum daysofWeekType { Monday = 1, Tuesday = 2, Wednesday = 3, Thursday= 4, Friday = 5, Saturday = 6, Sunday = 7 } ;
+   ubyte enum special_characters_type {name\ with\ spaces=0,
+				       name1_\,_with_comma=1,
+				       name2\ \,\ with_comma=2,
+				       lost_value=128};
 
  dimensions:
    lat=2;
@@ -43,10 +47,13 @@ netcdf enum {
    enum_uint_t language(lon);
  
    cargo in_the_hold_of_the_Irish_Rover(lon);
-
-   daysofWeekType days(lat, lon, rec);
- // 20180515: netCDF bug _FillValue must be a member otherwise default does not work see https://github.com/Unidata/netcdf-c/issues/982
    cargo in_the_hold_of_the_Irish_Rover:_FillValue=hogs;
+
+   daysofWeekType days(lat,lon,rec);
+   // 20180515: netCDF bug _FillValue must be a member otherwise default does not work see https://github.com/Unidata/netcdf-c/issues/982
+
+   special_characters_type character_test(lon);
+   special_characters_type character_test:_FillValue=lost_value;
 
  data:
    cld_flg=Stratus,_,Cumulonimbus,Clear;
@@ -64,5 +71,7 @@ netcdf enum {
        Monday, Tuesday,  Wednesday,  Thursday, Friday,  Saturday, Sunday, Monday,
        Monday, Tuesday,  Wednesday,  Thursday, Friday,  Saturday, Sunday, Monday,
        Monday, Tuesday,  Wednesday,  Thursday, Friday,  Saturday, Sunday, Monday;
- 
+
+ character_test=name\ with\ spaces,name1_\,_with_comma,name2\ \,\ with_comma,_;
+
 } //end root group
