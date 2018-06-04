@@ -2,7 +2,7 @@
 
 	* NCO 4.7.5-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha06: Fire on the Mountain';git push
-	git tag -a 4.7.5-alpha06 -m 'VLEN _FillValue';git push --tags
+	git tag -a 4.7.5-alpha06 -m 'VLEN, ENUM _FillValue';git push --tags
 
 	* Support NC_ENUM missing values
 

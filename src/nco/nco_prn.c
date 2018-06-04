@@ -2252,11 +2252,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             } /* endif new string */
             if(chr_val != '\0') (void)fprintf(fp_out,"%s",(*chr2sng_sf)(chr_val,val_sng));
             if(chr_val == '\n' && lmn != var_szm1) (void)sprintf(sng_val_sng,"%s\",\n%*s\"",sng_val_sng_cpy,prn_ndn+prn_flg->var_fst,spc_sng);
-            if(lmn%sng_lng == sng_lngm1){
-              (void)fprintf(fp_out,"%s%s",sng_val_sng,(CDL||JSN) ? "\"" : "");
-              /* Print separator after non-final string 
-              //if(lmn != var_szm1) (void)fprintf(fp_out,"%s",spr_sng); */
-            } /* endif string end */
+            if(lmn%sng_lng == sng_lngm1) (void)fprintf(fp_out,"%s%s",sng_val_sng,(CDL||JSN) ? "\"" : "");
             if(lmn == var_szm1) sng_val_sng=(char *)nco_free(sng_val_sng);
           } /* var.nbr_dim > 0 */
           break;
@@ -2280,8 +2276,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	    (void)strcat(sng_val_sng,(*chr2sng_sf)(chr_val,val_sng));
           } /* end loop over character */
           (void)fprintf(fp_out,"%s%s",sng_val_sng,(XML) ? "" : "\"");
-          /* Print separator after non-final string nb with json bracketed no comma 
-          if(lmn != var_szm1) (void)fprintf(fp_out,"%s",spr_sng); */
           sng_val_sng=(char *)nco_free(sng_val_sng);
           break;
 	case NC_VLEN:
@@ -2365,7 +2359,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !bs_typ switch */
 	  nco_inq_enum_ident(nc_id,var->type,mbr_val,mbr_nm);
-	  //(void)fprintf(fp_out,"%s%s",mbr_nm,(lmn != var_szm1) ? spr_sng : "");
 	  if(JSN) (void)fprintf(fp_out,"\"%s\"",mbr_nm); else (void)fprintf(fp_out,"%s",mbr_nm);
 	  break; /* !NC_ENUM */
 	case NC_COMPOUND:
@@ -2383,6 +2376,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           if(mod_map_rv_cnt[bdz] && (lmn+1) % mod_map_rv_cnt[bdz] == 0)
 	    (void)fprintf(fp_out,"%c",(JSN ? ']' : '}'));
 
+      /* Print separator after non-final string */
       if(lmn != var_szm1)
 	if((var->type == NC_CHAR && lmn%sng_lng == sng_lngm1) || (var->type != NC_CHAR ))
           (void)fprintf(fp_out,"%s",spr_sng);
