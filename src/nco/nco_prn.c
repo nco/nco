@@ -2165,7 +2165,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     size_t vln_lng;
     size_t vln_lngm1;
 
-    if((cls_typ == NC_VLEN) && (bs_typ != NC_FLOAT) && (bs_typ != NC_DOUBLE)) strcat(fmt_sng,"%s");
+    /* 20180604 Catenate %s to VLEN types that do not yet check for missing values */
+    if((cls_typ == NC_VLEN) && (bs_typ != NC_FLOAT) && (bs_typ != NC_DOUBLE) && (bs_typ != NC_INT)) strcat(fmt_sng,"%s");
 
     for(lmn=0;lmn<var->sz;lmn++){
 

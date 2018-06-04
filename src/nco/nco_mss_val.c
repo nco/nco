@@ -280,6 +280,8 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
   nco_bool has_fll_val=False; /* [flg] Has _FillValue attribute */
 
   nc_type att_typ;
+  nc_type bs_typ;
+  nc_type cls_typ;
 
   ptr_unn mss_tmp;
   
@@ -300,6 +302,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
 
     if((int)strcasecmp(att_nm,nco_mss_val_sng_get())) continue;
     (void)nco_inq_att(nc_id,var->id,att_nm,&att_typ,&att_sz);
+    bs_typ=cls_typ=att_typ;
     if(att_sz != 1L && att_typ != NC_CHAR){
       (void)fprintf(stderr,"%s: WARNING \"%s\" attribute for %s has %li elements and so will not be used\n",nco_prg_nm_get(),att_nm,var->nm,att_sz);
       continue;
@@ -322,13 +325,11 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
       } /* end if */
     } /* end if */
     
-    /* Ensure mss_val in memory is stored as a scalar of same type as variable */
+    /* Store mss_val in memory as scalar of same type as variable */
     var->mss_val.vp=(void *)nco_malloc(1L*nco_typ_lng_ntm(nc_id,var->type));
     if((att_typ <= NC_MAX_ATOMIC_TYPE) && (var->type <= NC_MAX_ATOMIC_TYPE)){
       (void)nco_val_cnf_typ(att_typ,mss_tmp,var->type,var->mss_val);
     }else{
-      nc_type bs_typ;
-      nc_type cls_typ;
       if(att_typ > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,att_typ,NULL,NULL,&bs_typ,NULL,&cls_typ);
       if(cls_typ == NC_VLEN){
 	/* 20180514: De-reference first element of missing value ragged array
@@ -342,12 +343,13 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
     } /* !NC_MAX_ATOMIC_TYPE */
 
     /* Release temporary memory */
-    mss_tmp.vp=nco_free(mss_tmp.vp);
+    if(att_typ > NC_MAX_ATOMIC_TYPE && cls_typ == NC_VLEN) (void)nco_free_vlens(att_sz,mss_tmp.vlnp); else mss_tmp.vp=nco_free(mss_tmp.vp);
+      
     break;
   } /* end loop over att */
 
-  /* Always warn when NCO looks for _FillValue but file has missing_value, and/or
-     always warn when NCO looks for missing_value but file has _FillValue.
+  /* Warn when NCO looks for _FillValue and file has missing_value, and/or
+     warn when NCO looks for missing_value and file has _FillValue.
      20101129: This is a long warning, only print when nco_dbg_lvl > 0 */
   if(nco_dbg_lvl_get() >= nco_dbg_std && has_fll_val && !var->has_mss_val && WRN_FIRST){
     char sa[1000];

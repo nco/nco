@@ -64,10 +64,9 @@ netcdf vlen {
   vlen_flt_t vlen_flt_scl;
   // 20180603: Investigate three _FillValue cases:
   // A. If _FillValue is not manually assigned, ncgen translates CDL underscores to default _FillValue of base type = 9.96921e+36 for floats, which is expected and seems correct 
-  // B. If _FillValue is manually assigned, ncgen translates CDL underscores to default _FillValue of base type = 9.96921e+36 for floats, which is unexpected and seems incorrect because library should use the manually assigned _FillValue. In this case, the netCDF library does not know the data values are _FillValue because they do not equal the explicitly assigned value
-  // C. If _FillValue is manually assigned, and data section explicitly uses the numeric value(s) (rather than an underscore) then ncgen correctly uses explicitly specified values, though ncdump will not print an underscore on the resulting file. ncdump does not always print underscores for VLEN missing values. ncdump does correctly print underscore for vlen_int_scl_mss_val_1D, though not for vlen_flt_scl.
-  // D. If an underscore is (incorrectly) used in place of a single element within a VLEN, ncgen correctly uses default _FillValue of base type for the value of that element
- vlen_flt_scl:_FillValue={-999};
+  // B. If _FillValue is manually assigned, and data section explicitly uses the numeric value(s) (rather than an underscore) then ncgen correctly uses explicitly specified values.
+  // C. For an underscore used in place of a single element within a VLEN, ncgen correctly uses default _FillValue of base type for the value of that element
+  vlen_flt_scl:_FillValue={-999};
 
   vlen_flt_t vlen_flt_1D(lat);
   vlen_flt_1D:long_name="vlen with base type float";
@@ -77,7 +76,7 @@ netcdf vlen {
   vlen_int_t three_dmn_var_vlen(tm,lat,lon);
   three_dmn_var_vlen:long_name="three dimensional record variable of type int";
   three_dmn_var_vlen:units="watt meter-2";
-  //  three_dmn_var_vlen:_FillValue={-999};
+  three_dmn_var_vlen:_FillValue={-999};
   
  data:
   one=1;
@@ -93,16 +92,16 @@ netcdf vlen {
   vlen_int_scl_mss_val_1D=_;
   vlen_sng={"one","two","three"},{"four,five"};
 
-  three_dmn_var_vlen= {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8},
+  three_dmn_var_vlen= _, {2}, {3}, {4}, {5}, {6}, {7}, {8},
 		     {9,9}, {10}, {11}, {12}, {13}, {14}, {15}, {16},
 		     {17}, {18,18}, {19}, {20}, {21}, {22}, {23}, {24},
 		     {25}, {26}, {27,27}, {28}, {29}, {30}, {31}, {32},
 		     {33}, {34}, {35}, {36,36}, {37}, {38}, {39}, {40},
 		     {41}, {42}, {43}, {44}, {45,45}, {46}, {47}, {48},
 		     {49}, {50}, {51}, {52}, {53}, {54,54,54,54}, {55}, {56},
-		     {57}, {58}, {59}, {60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75}, {61}, {62}, {63}, {64},
+		     {57}, {58}, {59}, {60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75}, {61}, {62}, {63}, 
 		     {65}, {66}, {67}, {68}, {69}, {70}, {71,62,73,74}, {72},
-		     {73}, {74}, {75}, {76}, {77}, {78}, {79}, {80,81,82,83,84,85};
+		     _, {74}, {75}, {76}, {77}, {78}, {79}, {80,81,82,83,84,85};
 
 
 } // end root group
