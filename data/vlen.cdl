@@ -64,7 +64,7 @@ netcdf vlen {
   vlen_flt_t vlen_flt_scl;
   // 20180603: Investigate three _FillValue cases:
   // A. If _FillValue is not manually assigned, ncgen translates CDL underscores to default _FillValue of base type = 9.96921e+36 for floats, which is expected and seems correct 
-  // B. If _FillValue is manually assigned, and data section explicitly uses the numeric value(s) (rather than an underscore) then ncgen correctly uses explicitly specified values.
+  // B. If _FillValue is manually assigned, and CDL data section explicitly uses numeric value(s) (rather than an underscore) then ncgen correctly identifies that numeric values as the _FillValue.
   // C. For an underscore used in place of a single element within a VLEN, ncgen correctly uses default _FillValue of base type for the value of that element
   vlen_flt_scl:_FillValue={-999};
 

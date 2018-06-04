@@ -2904,6 +2904,8 @@ int nc_set_chunk_cache(const size_t sz_byt,const size_t cnk_nbr_hsh,const float 
    These are only called when netCDF4 library is unavailable, thus I/O assumed to be netCDF3 */
 int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
 int nco_def_enum(const int nc_id,const nc_type bs_typ,const char * const typ_nm,nc_type * const var_typ){assert(0);return NC_NOERR;}
+
+
 int nco_insert_enum(const int nc_id,const nc_type var_typ,const char * const mbr_nm,const void * const vp){assert(0);return NC_NOERR;}
 int nco_inq_enum(const int nc_id,const nc_type var_typ,char * const typ_nm,nc_type * const bs_typ,size_t * const typ_sz,size_t * const typ_nbr){assert(0);return NC_NOERR;}
 int nco_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char * const mbr_nm,void * const vp){assert(0);return NC_NOERR;}
