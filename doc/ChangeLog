@@ -10,7 +10,7 @@
 
 	* nco_free_vlens() temporary _FillValue VLEN memory
 
-	* Correct nco_mss_val_get() for VLEN, works
+	* Correct nco_mss_val_get() for VLEN
 
 2018-06-01  Charlie Zender  <zender@uci.edu>
 

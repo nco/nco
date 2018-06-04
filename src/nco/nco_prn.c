@@ -2032,7 +2032,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         if(var->type == NC_STRING) is_mss_val=!strcmp(var->val.sngp[lmn],var->mss_val.sngp[0]); else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
       } /* !PRN_MSS_VAL_BLANK */
 	
-      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val &&  is_mss_val){
+      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val && is_mss_val){
         if(strcmp(dlm_sng,fmt_sng_mss_val)) (void)fprintf(fp_out,fmt_sng_mss_val,mss_val_sng); else (void)fprintf(fp_out,"%s, ",mss_val_sng);
       }else{ /* !is_mss_val */
         switch(var->type){
@@ -2197,10 +2197,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
         if(var->type == NC_STRING) is_mss_val=!strcmp(var->val.sngp[lmn],var->mss_val.sngp[0]);
 	  /* In regular CDL format for NC_CHAR if _FillValue is NOT '\0' then the char is printed as is */
-	else if(var->type==NC_CHAR) is_mss_val=False;
+	else if(var->type == NC_CHAR) is_mss_val=False;
 	/* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
 	else is_mss_val=!memcmp((char *)var->val.vp+lmn*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
-	/* NB: This missing_value treatment must be implemented within vln loop for NC_VLEN */
+	/* fxm: Missing value treatment must include a vln loop and be moved here for NC_VLEN so we know whether to print braces around value */
       } /* !PRN_MSS_VAL_BLANK */
 	
       if(is_mss_val){
@@ -2284,12 +2284,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
           sng_val_sng=(char *)nco_free(sng_val_sng);
           break;
 	case NC_VLEN:
-	  if(CDL)
-	    (void)fprintf(fp_out,"{");
-	  else if(JSN)
-	    (void)fprintf(fp_out,"[");
-	  else if(XML)
-	    (void)fprintf(fp_out,",");
+	  if(CDL) (void)fprintf(fp_out,"{");
+	  else if(JSN) (void)fprintf(fp_out,"[");
+	  else if(XML) (void)fprintf(fp_out,",");
 
 	  switch(bs_typ){
 	  case NC_FLOAT:
@@ -2327,7 +2324,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	    } /* !vln_idx */
 	    break;
 	    //	  case NC_INT: for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,fmt_sng,(long)vln_val_ip[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : ""); break;
-	    // 20180603: Handl VLEN NC_INT _FillValue:
+	    // 20180603: Handle VLEN NC_INT _FillValue:
 	  case NC_INT:
 	    for(vln_idx=0;vln_idx<vln_lng;vln_idx++){
 	      is_mss_val=False;
@@ -2350,11 +2347,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !bs_typ switch */
 	  
-          if(CDL)
-	     (void)fprintf(fp_out,"}");
-	  else if(JSN)
-	     (void)fprintf(fp_out,"]");
-
+          if(CDL) (void)fprintf(fp_out,"}");
+	  else if(JSN) (void)fprintf(fp_out,"]");
 	  
 	  break; /* !NC_VLEN */
 	case NC_ENUM:
@@ -2371,11 +2365,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	  } /* !bs_typ switch */
 	  nco_inq_enum_ident(nc_id,var->type,mbr_val,mbr_nm);
 	  //(void)fprintf(fp_out,"%s%s",mbr_nm,(lmn != var_szm1) ? spr_sng : "");
-	  if(JSN)
-	     (void)fprintf(fp_out,"\"%s\"",mbr_nm);
-	  else
-	     (void)fprintf(fp_out,"%s",mbr_nm);
-	  
+	  if(JSN) (void)fprintf(fp_out,"\"%s\"",mbr_nm); else (void)fprintf(fp_out,"%s",mbr_nm);
 	  break; /* !NC_ENUM */
 	case NC_COMPOUND:
 	case NC_OPAQUE:
@@ -2385,6 +2375,8 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       } /* !is_mss_val */
       
       if((var->type != NC_CHAR && var->type != NC_STRING && cls_typ <= NC_MAX_ATOMIC_TYPE) || (var->type == NC_STRING && is_mss_val)) (void)fprintf(fp_out,"%s",val_sng);
+
+      //      if(cls_typ == NC_ENUM) (void)fprintf(fp_out,"%s",val_sng);
 
       /* Bracket data if specified */
       if(JSN || CDL)
