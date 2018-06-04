@@ -269,6 +269,8 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
 
   static nco_bool WRN_FIRST=True; /* [flg] No warnings yet for _FillValue/missing_value mismatch */
 
+  const char fnc_nm[]="nco_mss_val_get()";
+
   char att_nm[NC_MAX_NAME];
   
   int idx;
@@ -320,20 +322,22 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
       } /* end if */
     } /* end if */
     
-    /* Ensure mss_val in memory is stored as same type as variable */
-    var->mss_val.vp=(void *)nco_malloc(nco_typ_lng_ntm(nc_id,var->type));
+    /* Ensure mss_val in memory is stored as a scalar of same type as variable */
+    var->mss_val.vp=(void *)nco_malloc(1L*nco_typ_lng_ntm(nc_id,var->type));
     if((att_typ <= NC_MAX_ATOMIC_TYPE) && (var->type <= NC_MAX_ATOMIC_TYPE)){
       (void)nco_val_cnf_typ(att_typ,mss_tmp,var->type,var->mss_val);
     }else{
       nc_type bs_typ;
       nc_type cls_typ;
       if(att_typ > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,att_typ,NULL,NULL,&bs_typ,NULL,&cls_typ);
-      assert(bs_typ <= NC_MAX_ATOMIC_TYPE);
       if(cls_typ == NC_VLEN){
 	/* 20180514: De-reference first element of missing value ragged array
 	   netCDF may require missing value to be same type as variable, but NCO needs a single scalar missing value
-	   Hence VLEN in NCO points var->mss_val to first single scalar of same base type as actual VLEN on disk */
-	memcpy(var->mss_val.vp,mss_tmp.vp,nco_typ_lng(bs_typ));
+	   Hence NCO points var->mss_val to mss_tmp.vp.p[0], i.e., to first single scalar of same base type as actual VLEN on disk */
+	nco_vlen mss_tmp_vlen;
+	mss_tmp_vlen=mss_tmp.vlnp[0];
+	if(nco_dbg_lvl_get() >= nco_dbg_std && mss_tmp_vlen.len > 1L) (void)fprintf(stderr,"%s: WARNING %s reports VLEN %s attribute for variable %s has %lu elements. NCO assumes VLEN %s attributes have only a single element. Results of using this %s in arithmetic are unpredictable.\n",nco_prg_nm_get(),fnc_nm,nco_mss_val_sng_get(),var->nm,(unsigned long)mss_tmp_vlen.len,nco_mss_val_sng_get(),nco_mss_val_sng_get());
+	memcpy(var->mss_val.vp,mss_tmp_vlen.p,nco_typ_lng(bs_typ));
       } /* !NC_VLEN */
     } /* !NC_MAX_ATOMIC_TYPE */
 

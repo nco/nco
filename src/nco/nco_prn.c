@@ -2293,10 +2293,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	  switch(bs_typ){
 	  case NC_FLOAT:
 	    for(vln_idx=0;vln_idx<vln_lng;vln_idx++){
-	      /* 20180514: fxm missing value printing not working for vlen, debug with bs_typ == NC_FLOAT */
 	      is_mss_val=False;
 	      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val){
-		(void)fprintf(fp_out,"quark2: val_sz_byt = %d, vln_val_fp+vln_idx*val_sz_byt = %g, var->mss_val.fp = %g\n",val_sz_byt,vln_val_fp[vln_idx],var->mss_val.fp[0]);
+		// (void)fprintf(fp_out,"quark2: val_sz_byt = %d, vln_val_fp+vln_idx*val_sz_byt = %g, var->mss_val.fp = %g\n",val_sz_byt,vln_val_fp[vln_idx],var->mss_val.fp[0]);
 		/* memcmp() triggers pedantic warning unless pointer arithmetic is cast to type char * */
 		is_mss_val=!memcmp((char *)vln_val_fp+vln_idx*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
 	      } /* !prn_flg */
@@ -2326,7 +2325,16 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	      (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
 	    } /* !vln_idx */
 	    break;
-	  case NC_INT: for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,fmt_sng,(long)vln_val_ip[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : ""); break;
+	    //	  case NC_INT: for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,fmt_sng,(long)vln_val_ip[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : ""); break;
+	    // 20180603: Handl VLEN NC_INT _FillValue:
+	  case NC_INT:
+	    for(vln_idx=0;vln_idx<vln_lng;vln_idx++){
+	      is_mss_val=False;
+	      if(prn_flg->PRN_MSS_VAL_BLANK && var->has_mss_val) is_mss_val=!memcmp((char *)vln_val_ip+vln_idx*val_sz_byt,var->mss_val.vp,(size_t)val_sz_byt);
+	      if(is_mss_val) (void)sprintf(val_sng,"%s",mss_val_sng); else rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,(long)vln_val_ip[vln_idx]);
+	      (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
+	    } /* !vln_idx */
+	    break;
 	  case NC_SHORT: for(vln_idx=0;vln_idx<vln_lng;vln_idx++) (void)fprintf(fp_out,fmt_sng,vln_val_sp[vln_idx],(vln_idx != vln_lngm1) ? spr_sng : ""); break;
 	  case NC_CHAR:
 	    break;

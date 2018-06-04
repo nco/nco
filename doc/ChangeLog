@@ -1,3 +1,7 @@
+2018-06-03  Charlie Zender  <zender@uci.edu>
+
+	* Correct nco_mss_val_get() for VLEN, worked for floats, then broke, arrgh
+
 2018-06-01  Charlie Zender  <zender@uci.edu>
 
 	* Add --trd to more nco.texi printing examples

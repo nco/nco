@@ -37,9 +37,6 @@ netcdf vlen {
   
   vlen_flt_t vlen_flt_2D(lat,time);
   
-  vlen_int_t vlen_int_1D_mss_val_scl;
-  vlen_int_1D_mss_val_scl:_FillValue={-999,-999}; // vlen data MUST BE enclosed in braces
-
   vlen_int_t vlen_int_scl;
   vlen_int_scl:long_name="vlen with base type integer";
   vlen_int_scl:number73=73;
@@ -56,17 +53,21 @@ netcdf vlen {
   char vlen_int_scl:char_att="character attribute";
   float vlen_int_scl:flt_att=1.0;
   string vlen_int_scl:sng_att="string attribute";
+  vlen_int_scl:_FillValue={-999};
 
   vlen_int_t vlen_int_1D(lat);
   vlen_int_1D:_FillValue={-999};
 
+  vlen_int_t vlen_int_scl_mss_val_1D;
+  vlen_int_scl_mss_val_1D:_FillValue={-999,-999}; // vlen data MUST BE enclosed in braces
+
   vlen_flt_t vlen_flt_scl;
-  // 20180603: Investigating three _FillValue cases:
+  // 20180603: Investigate three _FillValue cases:
   // A. If _FillValue is not manually assigned, ncgen translates CDL underscores to default _FillValue of base type = 9.96921e+36 for floats, which is expected and seems correct 
   // B. If _FillValue is manually assigned, ncgen translates CDL underscores to default _FillValue of base type = 9.96921e+36 for floats, which is unexpected and seems incorrect because library should use the manually assigned _FillValue. In this case, the netCDF library does not know the data values are _FillValue because they do not equal the explicitly assigned value
-  // C. If _FillValue is manually assigned, and data section uses it explicitly (rather than using underscore) then ncgen correctly uses the explicitly specified values, though ncdump will not print an underscore
-  // NCO treats case C incorrectly (quark2) because var->mss_val.fp[0] has unexpected value
-  vlen_flt_scl:_FillValue={-999};
+  // C. If _FillValue is manually assigned, and data section explicitly uses the numeric value(s) (rather than an underscore) then ncgen correctly uses explicitly specified values, though ncdump will not print an underscore on the resulting file. ncdump does not always print underscores for VLEN missing values. ncdump does correctly print underscore for vlen_int_scl_mss_val_1D, though not for vlen_flt_scl.
+  // D. If an underscore is (incorrectly) used in place of a single element within a VLEN, ncgen correctly uses default _FillValue of base type for the value of that element
+ vlen_flt_scl:_FillValue={-999};
 
   vlen_flt_t vlen_flt_1D(lat);
   vlen_flt_1D:long_name="vlen with base type float";
@@ -76,22 +77,23 @@ netcdf vlen {
   vlen_int_t three_dmn_var_vlen(tm,lat,lon);
   three_dmn_var_vlen:long_name="three dimensional record variable of type int";
   three_dmn_var_vlen:units="watt meter-2";
-  // 20180524: fxm Having a _FillValue breaks printing of three_dmn_var_vlen
-  // three_dmn_var_vlen:_FillValue={-99};
+  //  three_dmn_var_vlen:_FillValue={-999};
   
  data:
   one=1;
   two=2;
-  //  vlen_flt_scl={_,17,18,19};
-  vlen_flt_scl={-999,17,18,19};
+  //  vlen_flt_scl={-999,17,18,19};
+  // vlen_flt_scl={17,18,19};
+  vlen_flt_scl=_;
   vlen_flt_2D={{1,2},{3,4}},{{5,6},{7,8}};
-  vlen_flt_1D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
-  vlen_int_scl={17,18,19};
-  vlen_int_1D={17,18,19},{1,2,3,4,5,6,7,_,9,_};
-  vlen_int_1D_mss_val_scl=_;
+  vlen_flt_1D={17,18,19},{1,2,3,4,5,6,7,8,9,10};
+  //vlen_int_scl={17,18,19};
+  vlen_int_scl=_;
+  vlen_int_1D=_,{1,2,3,4,5,6,7,8,9,10};
+  vlen_int_scl_mss_val_1D=_;
   vlen_sng={"one","two","three"},{"four,five"};
 
- three_dmn_var_vlen= {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8},
+  three_dmn_var_vlen= {1}, {2}, {3}, {4}, {5}, {6}, {7}, {8},
 		     {9,9}, {10}, {11}, {12}, {13}, {14}, {15}, {16},
 		     {17}, {18,18}, {19}, {20}, {21}, {22}, {23}, {24},
 		     {25}, {26}, {27,27}, {28}, {29}, {30}, {31}, {32},
