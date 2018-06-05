@@ -1,5 +1,7 @@
 2018-06-04  Charlie Zender  <zender@uci.edu>
 
+	* Remove "gridcell" from list of column dimensions in nco_rgr_wgt() to fix ELM SGS rgr problem encountered by Sterling
+
 	* NCO 4.7.5-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha06: Fire on the Mountain';git push
 	git tag -a 4.7.5-alpha06 -m 'VLEN, ENUM _FillValue';git push --tags

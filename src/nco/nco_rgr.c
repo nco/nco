@@ -1862,7 +1862,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
        20180313: fxm New PJCS algorithm is superior, should eliminate internal database for unstructured grids? 
        Database is necessary for 2D grids because otherwise no good way to disambiguate latitude from longitude */
     if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
-    else if((rcd=nco_inq_dimid_flg(in_id,"gridcell",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("gridcell"); /* surfdata */
+    // 20180604: revert PJCS mods
+    //else if((rcd=nco_inq_dimid_flg(in_id,"gridcell",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("gridcell"); /* surfdata */
     else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nCells",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nCells"); /* MPAS-O/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"nEdges",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nEdges"); /* MPAS-O/I */

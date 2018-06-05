@@ -2902,10 +2902,7 @@ int nc_set_chunk_cache(const size_t sz_byt,const size_t cnk_nbr_hsh,const float 
 #if !defined(HAVE_NETCDF4_H) 
 /* Stubs thus present a fake library for manipulating netCDF3 files with the netCDF4 API
    These are only called when netCDF4 library is unavailable, thus I/O assumed to be netCDF3 */
-int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
 int nco_def_enum(const int nc_id,const nc_type bs_typ,const char * const typ_nm,nc_type * const var_typ){assert(0);return NC_NOERR;}
-
-
 int nco_insert_enum(const int nc_id,const nc_type var_typ,const char * const mbr_nm,const void * const vp){assert(0);return NC_NOERR;}
 int nco_inq_enum(const int nc_id,const nc_type var_typ,char * const typ_nm,nc_type * const bs_typ,size_t * const typ_sz,size_t * const typ_nbr){assert(0);return NC_NOERR;}
 int nco_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char * const mbr_nm,void * const vp){assert(0);return NC_NOERR;}
@@ -2914,7 +2911,7 @@ int nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,
 int nco_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ){assert(0);return NC_NOERR;}
 int nco_free_vlen(nc_vlen_t * const vlenp){assert(0);return NC_NOERR;}
 int nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp){assert(0);return NC_NOERR;}
-int nco_rename_grp(int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
+int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id){assert(0);return NC_NOERR;}
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_fll){assert(0);return NC_NOERR;}
 int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng){assert(0);return NC_NOERR;}
 int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids){if(grp_nbr) *grp_nbr=0;return NC_NOERR;}
@@ -2926,6 +2923,7 @@ int nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_i
 int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
 int nco_inq_grpname(const int nc_id,char * const grp_nm){if(grp_nm) strcpy(grp_nm,"/");return NC_NOERR;}
 int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int * const grp_id){*grp_id=nc_id;return NC_NOERR;}
+int nco_rename_grp(int grp_id,const char * const grp_nm){assert(0);return NC_NOERR;}
 
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn){
   int dmn_idx;
