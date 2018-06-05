@@ -1,3 +1,10 @@
+2018-06-05  Charlie Zender  <zender@uci.edu>
+
+	* Fix algorithm to always check sizes of candidate unstructured	dimensions even if from database
+	Failures then fall-back to PJCS mechanism of searching for dimension with expected size
+
+	* CDL print dimension ID for dbg_lvl >= 2
+
 2018-06-04  Charlie Zender  <zender@uci.edu>
 
 	* Remove "gridcell" from list of column dimensions in nco_rgr_wgt() to fix ELM SGS rgr problem encountered by Sterling

@@ -2794,7 +2794,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
-  /* NB: Deprecated--Do Not Modify
+  /* NB: Deprecated--Do Not Modify!!!
      This is the original hierarchical, recursive, multi-plexed print routine used until ~2017
      Henry de-multi-plexed it into routines nco_prn_jsn(), nco_prn_xml(), nco_prn_cdl_trd() */
 
@@ -3209,6 +3209,8 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
  prn_fmt_sct * const prn_flg, /* I/O [sct] Print-format information */
  const trv_tbl_sct * const trv_tbl) /* I [sct] Traversal table */
 {
+  /* This and other per-Language backend routines replaced nco_grp_prn() in 2017 */
+
   /* Purpose: Recursively print group contents
      Assumptions: 
      1. Input is a valid group name on extraction list (set in nco_xtr_dfn())
@@ -3377,8 +3379,16 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     nm_cdl=nm2sng_cdl(dmn_lst[dmn_idx].nm);
-    if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(fp_out,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,nm_cdl,(CDL) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(fp_out,"%*s%s = %lu%s\n",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(CDL) ? " ;" : "");
+    if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(fp_out,"%*s%s = UNLIMITED%s// (%lu currently)",prn_ndn,spc_sng,nm_cdl,(CDL) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(fp_out,"%*s%s = %lu%s",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(CDL) ? " ;" : "");
     nm_cdl=(char *)nco_free(nm_cdl);
+    /* 20180605: Add dimension IDs */
+    if((nco_dbg_lvl_get() >= nco_dbg_fl) && CDL){
+      int dmn_id;
+      rcd+=nco_inq_dimid(grp_id,dmn_lst[dmn_idx].nm,&dmn_id);
+      (void)fprintf(fp_out," %sID = %d\n",(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) ? "" : "// ",dmn_id);
+    }else{ /* !dbg */
+      (void)fprintf(fp_out,"\n");
+    } /* !dbg */
   } /* !dmn_idx */
 
   /* Dimension list no longer needed */
