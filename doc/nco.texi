@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.5-alpha06
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 01 June 2018
+@set update-date 06 June 2018
 @set update-month June 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13882,10 +13882,9 @@ To apply the sort map with @command{remap()} the size of the variable
 must be exactly divisible by the size of the sort map. 
 
 The final function @command{invert_map()} returns the so-called
-de-sorting map @var{dsr_map} which is inverse map of the input map
+de-sorting map @var{dsr_map} which is the inverse of the input map
 @var{srt_map}. 
-This gives the user access to both the forward and inverse sorting maps
-which can be useful in special situations.
+This gives the user access to both the forward and inverse sorting maps: 
 @example
 @verbatim
 a1[$time]={10,2,3,4,6,5,7,3,4,1};
@@ -15494,7 +15493,7 @@ Values of @code{ORO} are only changed where @code{ORO_msk} is true,
 i.e., where @code{ORO} @w{equals 2.0} @*
 Using the @code{where} statement the above code simplifies to :
 @example
-ncap2 -s 'where(ORO==2.0) ORO=3.0;' in.nc foo.nc
+ncap2 -s 'where(ORO == 2.0) ORO=3.0;' in.nc foo.nc
 @end example
 
 @html
@@ -20257,7 +20256,7 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 @html
 <a name="jsn"></a> <!-- http://nco.sf.net/nco.html#jsn -->
 <a name="json"></a> <!-- http://nco.sf.net/nco.html#json -->
-<a name="json"></a> <!-- http://nco.sf.net/nco.html#JSON -->
+<a name="JSON"></a> <!-- http://nco.sf.net/nco.html#JSON -->
 @end html
 @cindex @code{--jsn_fmt}
 @cindex @code{--jsn}
