@@ -1,12 +1,12 @@
 2018-06-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.5-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha07: Habitual Liar';git push
+	git tag -a 4.7.5-alpha07 -m 'Fix ncremap ALM/CLM/CTSM/ELM bug introduced in 4.7.4;safe CDL ENUM';git push --tags
+
 	* CDL'ize ENUM types and values before printing. Round-trip dump/gen now works!
 
 2018-06-05  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.7.5-alpha07 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha07: Habitual Liar';git push
-	git tag -a 4.7.5-alpha07 -m 'Fix ncremap ALM/CLM/CTSM/ELM bug introduced in 4.7.4';git push --tags
 
 	* Fix algorithm to always check sizes of candidate unstructured	dimensions even if from database
 	Failures then fall-back to PJCS mechanism of searching for dimension with expected size

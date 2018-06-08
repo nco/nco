@@ -3673,42 +3673,33 @@ nco_prn_xml /* [fnc] Recursively print group contents */
 	int bs_sz;
 	size_t mbr_nbr;
 	val_unn enm_val;
-             
         bs_sz=(int)nco_typ_lng(bs_typ);
-	bs_sz=( bs_sz >4 ? 4 : bs_sz );
-	
-	(void)fprintf(fp_out,"%*s<enumTypedef name=\"%s\" type=\"enum%d\" >\n",prn_ndn,spc_sng,typ_cdl, bs_sz );
+	bs_sz=(bs_sz > 4 ? 4 : bs_sz); // 20180608: NcML 2.2 lacks enum8 type https://github.com/Unidata/thredds/issues/1098
+	(void)fprintf(fp_out,"%*s<enumTypedef name=\"%s\" type=\"enum%d\" >\n",prn_ndn,spc_sng,typ_cdl,bs_sz);
 	(void)sprintf(enm_fmt,"%*s<enum key=\"%s\">%%s</enum>\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng,nco_typ_fmt_sng_var_cdl(bs_typ));
 	mbr_nbr=fld_nbr;
 	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
 	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
 	  switch(bs_typ){
-	  case NC_BYTE: (void)fprintf(fp_out,enm_fmt,enm_val.b, mbr_nm); break;
-	  case NC_UBYTE: (void)fprintf(fp_out,enm_fmt,enm_val.ub, mbr_nm); break;
-	  case NC_SHORT: (void)fprintf(fp_out,enm_fmt,enm_val.s, mbr_nm); break;
-	  case NC_USHORT: (void)fprintf(fp_out,enm_fmt,enm_val.us, mbr_nm); break;
-	  case NC_INT: (void)fprintf(fp_out,enm_fmt,enm_val.i, mbr_nm); break;
-	  case NC_UINT: (void)fprintf(fp_out,enm_fmt,enm_val.ui, mbr_nm); break;
-	  case NC_INT64: (void)fprintf(fp_out,enm_fmt,enm_val.i64, mbr_nm); break;
-	  case NC_UINT64: (void)fprintf(fp_out,enm_fmt,enm_val.ui64, mbr_nm); break;
+	  case NC_BYTE: (void)fprintf(fp_out,enm_fmt,enm_val.b,mbr_nm); break;
+	  case NC_UBYTE: (void)fprintf(fp_out,enm_fmt,enm_val.ub,mbr_nm); break;
+	  case NC_SHORT: (void)fprintf(fp_out,enm_fmt,enm_val.s,mbr_nm); break;
+	  case NC_USHORT: (void)fprintf(fp_out,enm_fmt,enm_val.us,mbr_nm); break;
+	  case NC_INT: (void)fprintf(fp_out,enm_fmt,enm_val.i,mbr_nm); break;
+	  case NC_UINT: (void)fprintf(fp_out,enm_fmt,enm_val.ui,mbr_nm); break;
+	  case NC_INT64: (void)fprintf(fp_out,enm_fmt,enm_val.i64,mbr_nm); break;
+	  case NC_UINT64: (void)fprintf(fp_out,enm_fmt,enm_val.ui64,mbr_nm); break;
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !bs_typ switch */
-	 
 	} /* !mbr_idx */
         (void)fprintf(fp_out,"%*s</enumTypedef>\n",prn_ndn,spc_sng);
       } /* !enm */
       /* close bracket  */
-
-      
       bs_cdl=(char *)nco_free(bs_cdl);
       typ_cdl=(char *)nco_free(typ_cdl);
-
     } /* !typ_idx */
     typ_ids=(nc_type *)nco_free(typ_ids);
   } /* !nbr_typ */
-
-
-
   
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(fp_out,"%*s<dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");
   
