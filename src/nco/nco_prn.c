@@ -2147,6 +2147,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       } /* !dmn_idx */
     } /* !CDL */
 
+    char *mbr_nm_cdl;
     char mbr_nm[NC_MAX_NAME+1L]; /* [sng] Member name */
     long long mbr_val;
 
@@ -2359,7 +2360,9 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !bs_typ switch */
 	  nco_inq_enum_ident(nc_id,var->type,mbr_val,mbr_nm);
-	  if(JSN) (void)fprintf(fp_out,"\"%s\"",mbr_nm); else (void)fprintf(fp_out,"%s",mbr_nm);
+	  mbr_nm_cdl=nm2sng_cdl(mbr_nm);
+	  if(JSN) (void)fprintf(fp_out,"\"%s\"",mbr_nm_cdl); else (void)fprintf(fp_out,"%s",mbr_nm_cdl);
+	  mbr_nm_cdl=(char *)nco_free(mbr_nm_cdl);
 	  break; /* !NC_ENUM */
 	case NC_COMPOUND:
 	case NC_OPAQUE:
@@ -3320,8 +3323,9 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
   
   /* Print type information for group */
   if(nbr_typ > 0){
-    char *typ_cdl;
     char *bs_cdl;
+    char *mbr_nm_cdl;
+    char *typ_cdl;
     char bs_nm[NC_MAX_NAME+1L]; /* [sng] Base name */
     char mbr_nm[NC_MAX_NAME+1L]; /* [sng] Member name */
     char typ_nm[NC_MAX_NAME+1L]; /* [sng] Type name */
@@ -3351,17 +3355,19 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	mbr_nbrm1=mbr_nbr-1L;
 	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
 	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
+	  mbr_nm_cdl=nm2sng_cdl(mbr_nm);
 	  switch(bs_typ){
-	  case NC_BYTE: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.b); break;
-	  case NC_UBYTE: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.ub); break;
-	  case NC_SHORT: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.s); break;
-	  case NC_USHORT: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.us); break;
-	  case NC_INT: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.i); break;
-	  case NC_UINT: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.ui); break;
-	  case NC_INT64: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.i64); break;
-	  case NC_UINT64: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.ui64); break;
+	  case NC_BYTE: (void)fprintf(fp_out,enm_fmt,mbr_nm_cdl,enm_val.b); break;
+	  case NC_UBYTE: (void)fprintf(fp_out,enm_fmt,mbr_nm_cdl,enm_val.ub); break;
+	  case NC_SHORT: (void)fprintf(fp_out,enm_fmt,mbr_nm_cdl,enm_val.s); break;
+	  case NC_USHORT: (void)fprintf(fp_out,enm_fmt,mbr_nm_cdl,enm_val.us); break;
+	  case NC_INT: (void)fprintf(fp_out,enm_fmt,mbr_nm_cdl,enm_val.i); break;
+	  case NC_UINT: (void)fprintf(fp_out,enm_fmt,mbr_nm_cdl,enm_val.ui); break;
+	  case NC_INT64: (void)fprintf(fp_out,enm_fmt,mbr_nm_cdl,enm_val.i64); break;
+	  case NC_UINT64: (void)fprintf(fp_out,enm_fmt,mbr_nm_cdl,enm_val.ui64); break;
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !bs_typ switch */
+	  mbr_nm_cdl=(char *)nco_free(mbr_nm_cdl);
 	  if(mbr_idx < mbr_nbrm1) (void)fprintf(fp_out,", "); else (void)fprintf(fp_out,"} ;\n");
 	} /* !mbr_idx */
       } /* !enm */

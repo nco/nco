@@ -325,7 +325,7 @@ nm2sng_jsn /* [fnc] Turn variable/dimension/attribute name into legal JSON */
 (const char * const nm_sng) /* I [sng] Name to CDL-ize */
 {
   /* Valid JSON strings can be any selected set of control chars, any non-conrol chars from ASCII and Unicode 
-     Leave unicode for now see Reference: http://www.json.org */   
+     Leave Unicode as is for now see Reference: http://www.json.org */   
  
   char *chr_in_ptr; /* [sng] Pointer to current character in input name */
   char *chr_out_ptr; /* [sng] Pointer to current character in output name */
@@ -476,6 +476,35 @@ nm2sng_fl /* [fnc] Turn file name into legal string for shell commands */
 } /* end nm2sng_fl() */
 
 char * /* O [sng] String containing printable result */
+sng2sng_sf /* [fnc] Translate C language string to printable, visible ASCII bytes */
+(const char * const sng_val) /* I [sng] String to process */
+{
+  /* Purpose: Translate string to C-printable, visible ASCII bytes for CDL
+     Reference: netcdf-c/ncdump/ncdump.c:pr_att_string() */
+  char *sng_val_sng=NULL_CEWI; /* [sng] String of NC_CHAR */
+
+  char chr_val; /* [sng] Current character */
+  char val_sng[NCO_ATM_SNG_LNG];
+
+  long chr_idx;
+  long sng_lng=long_CEWI; /* [nbr] Length of NC_CHAR string */
+  long sng_lngm1=long_CEWI; /* [nbr] Length minus one of NC_CHAR string */
+
+  sng_lng=strlen(sng_val);
+
+  /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
+  sng_val_sng=(char *)nco_malloc(6*sng_lng+1UL);
+  sng_val_sng[0]='\0';
+  for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
+    val_sng[0]='\0';
+    chr_val=sng_val[chr_idx];
+    (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+  } /* end loop over character */
+  
+  return sng_val_sng;
+} /* end sng2sng_sf() */
+
+  char * /* O [sng] String containing printable result */
 chr2sng_cdl /* [fnc] Translate C language character to printable, visible ASCII bytes */
 (const char chr_val, /* I [chr] Character to process */
  char * const val_sng) /* I/O [sng] String to stuff printable result into */

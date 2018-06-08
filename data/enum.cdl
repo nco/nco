@@ -12,6 +12,9 @@
 // scp ~/nco/data/enum.nc dust.ess.uci.edu:/var/www/html/nco
 // scp dust.ess.uci.edu:/var/www/html/nco/enum.nc ~/nco/data
 
+// Round-trip test:
+// ncgen -k netCDF-4 -b -o ~/nco/data/enum.nc ~/nco/data/enum.cdl;ncks --ntm ~/nco/data/enum.nc > ~/foo.cdl;ncgen -k netCDF-4 -b -o ~/foo.nc ~/foo.cdl
+
 netcdf enum {
 
  // 20180413: types declarations must be first element in group, and appear before everything else. Where is this documented?

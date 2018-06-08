@@ -1,3 +1,7 @@
+2018-06-08  Charlie Zender  <zender@uci.edu>
+
+	* CDL'ize ENUM types and values before printing. Round-trip dump/gen now works!
+
 2018-06-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.5-alpha07 release procedure:
