@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.5-alpha06
-@set doc-edition 4.7.5-alpha06
+@set nco-edition 4.7.5-alpha07
+@set doc-edition 4.7.5-alpha07
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 06 June 2018
+@set update-date 09 June 2018
 @set update-month June 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13408,14 +13408,12 @@ regardless of whether it is packed in the input file, one uses, e.g.,
 ncap2 -s 'temperature=pack(temperature-273.15)' in.nc out.nc
 @end example
 
-All the above pack functions also take the  additional tow arguments @code{scale_factor, add_offset}. Both arguments 
-must be included for method to be parsed. 
+All the above pack functions also take the additional two arguments
+@code{scale_factor, add_offset}.
+Both arguments must be included:
 @example
-  ncap2 -v -O -s 'rec_pck=pack(three_dmn_rec_var, -0.001, 40.0);' in.nc foo.nc
+ncap2 -v -O -s 'rec_pck=pack(three_dmn_rec_var,-0.001,40.0);' in.nc foo.nc
 @end example
-
-
-
 
 @strong{Basic Methods @*}
 These methods work with variables and attributes. They have no arguments

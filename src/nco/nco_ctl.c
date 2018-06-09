@@ -741,9 +741,9 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
   const char bld_ngn[]=TKN2SNG(NCO_BUILDENGINE); // [sng] Build-engine
 
   (void)fprintf(stdout,"Homepage: http://nco.sf.net\n");
-  (void)fprintf(stdout,"User Guide: http://nco.sf.net/nco.html\n");
   (void)fprintf(stdout,"Code: http://github.com/nco/nco\n");
   (void)fprintf(stdout,"Build-engine: %s\n",bld_ngn);
+  (void)fprintf(stdout,"User Guide: http://nco.sf.net/nco.html\n");
   (void)fprintf(stderr,"%s\n",nco_nmn_get());
   /* fxm: TKN2YESNO breaks when TKN is undefined
      Full macro language like M4 might be useful here, though probably too much trouble */
@@ -838,7 +838,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always include terminal \n so mnemonic does not dangle */
-  return "Mnemonic: Habitual Liar\n";
+  return "Mnemonic: Ventura Paddle\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

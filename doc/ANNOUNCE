@@ -6,19 +6,53 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.5 updates fxm
+Version 4.7.5 is primarily a bugfix release for a single issue with
+ncremap. Version 4.7.4 inadvertently introduced a bug that mainly
+affects regridding of ALM/CLM/CTSM/ELM land model data that contains
+"hidden" (unused) dimensions. The other new feature is that ncclimo
+automatically handles MPAS Seaice model output named with the new
+names (mpassi) and new date convention, yyyy-mm-01-00000. If these
+fixes/features do not affect you there is probably no reason to
+upgrade, but see below in case you want some of the minor new
+features. 
 
-Work on NCO 4.7.6 has commenced. Goals include printing some user
-defined types, parallel weight generation by ncremap, and possibly
-workarounds for using quotation marks with ncap2 in Windows. 
+Work on NCO 4.8.0 has commenced "under the hood". Infrastructure
+to handle printing of netCDF4 user-defined types ENUM and VLEN.
+You can try it now (unsupported) with the --ntm flag. 4.8.0 will
+contain the finished version of that, progress on parallel weight
+generation by ncremap, and possibly a workaround for using quotation
+marks with ncap2 in Windows.  
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Hi
-   netCDF 4.6.1 fixes the CDF5 bug. Yay!
+A. ncclimo accepts mpassi in place of mpascice, mpasseaice:
+   ncclimo -s 2 -e 3 -m mpassi -i drc_in -o drc_out
+   http://nco.sf.net/nco.html#ncclimo
+
+A. ncap2 allows optional scale_factor/add_offset arguments to its
+   pack() method for those who wish to specify their own packing
+   parameters. This override can ensure that multiple files use the
+   same packing parameters.  
+   ncap2 -s 'var_pck=pack(var,-0.001,40.0)' in.nc out.nc
+   http://nco.sf.net/nco.html#ncap2_mth
+
+A. NCO's security whitelist allows an extended character set when the 
+   input file explicitly invokes the DAP4 protocol (e.g.,
+   dap4://foo.com/in.nc). This allows DAP4 input to utilize the full
+   set of constraint expressions.
+   http://nco.sf.net/nco.html#wht_lst
+
+A. XML printing now includes the "ncml:" prefix on most tags.
+   This aligns NCO XML with XML produced by toolsUI version 4.6.11,
+   the latest (AFAICT) netCDF Java library. If this change bothers
+   you or breaks your XML workflow, let us know and we can make it
+   optional.
+   http://nco.sf.net/nco.html#xml
+
+A. Repeated notice: netCDF 4.6.1 fixes the CDF5 bug. Yay!
    We STRONGLY recommend that CDF5 users upgrade to netCDF 4.6.1.
    NCO error messages and HINTs have been updated to better describe
    the best practices to identify and avoid this nasty bug.
@@ -26,7 +60,13 @@ A. Hi
 
 BUG FIXES:
 
-A. Hi
+A. ncremap fixes the algorithm that identifies unstructured dimensions
+   to now check that size of candidates matches the size expected by
+   the mapping file. Failures then fall-back to PJCS mechanism of
+   searching for dimension with expected size. This fixes a bug
+   introduced in 4.7.4 where "hidden" (unused) dimensions can
+   supercede "visible" dimensions and crash the regridder.
+   Thanks to Sterling Baldwin for reporting this issue.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -35,8 +75,8 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.7.5 built/tested under
-   MacOS 10.13.2 with netCDF 4.4.1.1 on HDF5 1.10.1 and with
-   Linux with netCDF 4.6.2-development (20180315) on HDF5 1.8.19.
+   MacOS 10.13.4 with netCDF 4.4.1.1 on HDF5 1.10.2 and with
+   Linux with netCDF 4.6.2-development (20180515) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
