@@ -437,7 +437,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       else
         typ_nm=cdl_typ_nm_ntm(grp_id,att[idx].type);  			     
       
-      (void)fprintf(fp_out,"%*s<attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
+      (void)fprintf(fp_out,"%*s<ncml:attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
 
       /* User may override default separator string for XML only */
       if(att[idx].type == NC_STRING || att[idx].type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
@@ -736,9 +736,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     nc_type var_type;
     
     (void)nco_inq_vartype(grp_id,var_id,&var_type);
-    if(var_type<=NC_MAX_ATOMIC_TYPE &&  nco_xml_typ_rqr_nsg_att(var_type)) (void)fprintf(fp_out,"%*s<attribute name=\"_Unsigned\" value=\"true\" />\n",prn_ndn,spc_sng);
+    if(var_type<=NC_MAX_ATOMIC_TYPE &&  nco_xml_typ_rqr_nsg_att(var_type)) (void)fprintf(fp_out,"%*s<ncml:attribute name=\"_Unsigned\" value=\"true\" />\n",prn_ndn,spc_sng);
     /* 20131231: Emulate toolsUI 4.3 _FillValue behavior for unsigned types (present in NCO 4.3.7-4.3.9, deprecated in 4.4.0 */
-    // if(nco_xml_typ_rqr_flv_att(var_type) && !has_fll_val) (void)fprintf(fp_out,"%*s<attribute name=\"_FillValue\" type=\"%s\" value=\"%d\" />\n",prn_ndn,spc_sng,xml_typ_nm(var_type),(var_type == NC_UINT64) ? -2 : -1);
+    // if(nco_xml_typ_rqr_flv_att(var_type) && !has_fll_val) (void)fprintf(fp_out,"%*s<ncml:attribute name=\"_FillValue\" type=\"%s\" value=\"%d\" />\n",prn_ndn,spc_sng,xml_typ_nm(var_type),(var_type == NC_UINT64) ? -2 : -1);
   } /* !xml */
 
   /* Free space holding attribute values */
@@ -1639,7 +1639,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_out,"%*s%s ID = netCDF define order = %d\n",prn_ndn,spc_sng,var_trv->nm,var_id);
   } /* !trd */
   if(prn_flg->xml){
-    (void)fprintf(fp_out,"%*s<variable name=\"%s\" ",prn_ndn,spc_sng,var_trv->nm);
+    (void)fprintf(fp_out,"%*s<ncml:variable name=\"%s\" ",prn_ndn,spc_sng,var_trv->nm);
     if(cls_typ == NC_ENUM){
       char *typ_nm;
       int bs_sz;
@@ -2911,10 +2911,10 @@ nco_grp_prn /* [fnc] Recursively print group contents */
 
   if(XML){
     if(grp_dpt == 0){
-      if(prn_flg->xml_lcn) (void)fprintf(fp_out,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"%s\">\n",prn_flg->fl_in); else (void)fprintf(fp_out,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
+      if(prn_flg->xml_lcn) (void)fprintf(fp_out,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ncml:netcdf xmlns:ncml=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"file:%s\">\n",prn_flg->fl_in); else (void)fprintf(fp_out,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ncml:netcdf xmlns:ncml=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
       if(prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s<!-- %s -->\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
     }else{ /* grp_dpt != 0 */
-      (void)fprintf(fp_out,"%*s<group name=\"%s\">\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
+      (void)fprintf(fp_out,"%*s<ncml:group name=\"%s\">\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
     } /* grp_dpt != 0 */
   }else if(SRM){ /* !xml */
     /* https://www.unidata.ucar.edu/software/thredds/current/netcdf-java/stream/NcStream.html */
@@ -2940,7 +2940,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   if(CDL||JSN) prn_ndn+=prn_flg->var_fst;
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
     if(XML){
-      (void)fprintf(fp_out,"%*s<dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");
+      (void)fprintf(fp_out,"%*s<ncml:dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");
     }else if(CDL_OR_TRD){ /* !XML */
       nm_cdl=nm2sng_cdl(dmn_lst[dmn_idx].nm);
       if(trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn) (void)fprintf(fp_out,"%*s%s = UNLIMITED%s// (%lu currently)\n",prn_ndn,spc_sng,nm_cdl,(CDL) ? " ; " : " ",(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt); else (void)fprintf(fp_out,"%*s%s = %lu%s\n",prn_ndn,spc_sng,nm_cdl,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,(CDL) ? " ;" : "");
@@ -3045,7 +3045,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
    
       if(prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
       /* XML close variable tag */
-      (void)fprintf(fp_out,"%*s</variable>\n",prn_ndn,spc_sng);
+      (void)fprintf(fp_out,"%*s</ncml:variable>\n",prn_ndn,spc_sng);
     } /* !XML */
 
     if(JSN){ 
@@ -3213,7 +3213,7 @@ nco_grp_prn /* [fnc] Recursively print group contents */
   // if(JSN && grp_dpt >0) (void)fprintf(fp_out,"\n%*s}",prn_ndn,spc_sng); 
   if(JSN && grp_dpt >0) (void)fprintf(fp_out,"\n%*s}", prn_flg->sxn_fst+grp_dpt*prn_flg->spc_per_lvl,spc_sng);
   if(XML && grp_dpt == 0) (void)fprintf(fp_out,"</netcdf>\n"); 
-  if(XML && grp_dpt != 0) (void)fprintf(fp_out,"%*s</group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
+  if(XML && grp_dpt != 0) (void)fprintf(fp_out,"%*s</ncml:group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
 
   return rcd;
 } /* end nco_grp_prn() */
@@ -3652,10 +3652,10 @@ nco_prn_xml /* [fnc] Recursively print group contents */
   if(dmn_nbr > 1) dmn_lst=nco_lst_srt_nm_id(dmn_lst,dmn_nbr,prn_flg->ALPHA_BY_STUB_GROUP);
 
   if(grp_dpt == 0){
-    if(prn_flg->xml_lcn) (void)fprintf(fp_out,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"%s\">\n",prn_flg->fl_in); else (void)fprintf(fp_out,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<netcdf xmlns=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
+    if(prn_flg->xml_lcn) (void)fprintf(fp_out,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ncml:netcdf xmlns:ncml=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\" location=\"file:%s\">\n",prn_flg->fl_in); else (void)fprintf(fp_out,"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ncml:netcdf xmlns:ncml=\"http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2\">\n");
     if(prn_flg->nfo_xtr) (void)fprintf(fp_out,"%*s<!-- %s -->\n",prn_flg->sxn_fst,spc_sng,prn_flg->smr_sng);
   }else{ /* grp_dpt != 0 */
-    (void)fprintf(fp_out,"%*s<group name=\"%s\">\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
+    (void)fprintf(fp_out,"%*s<ncml:group name=\"%s\">\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng,trv_tbl->lst[obj_idx].nm);
   } /* grp_dpt != 0 */
 
   /* Print dimension information for group */
@@ -3688,8 +3688,8 @@ nco_prn_xml /* [fnc] Recursively print group contents */
 	val_unn enm_val;
         bs_sz=(int)nco_typ_lng(bs_typ);
 	bs_sz=(bs_sz > 4 ? 4 : bs_sz); // 20180608: NcML 2.2 lacks enum8 type https://github.com/Unidata/thredds/issues/1098
-	(void)fprintf(fp_out,"%*s<enumTypedef name=\"%s\" type=\"enum%d\" >\n",prn_ndn,spc_sng,typ_cdl,bs_sz);
-	(void)sprintf(enm_fmt,"%*s<enum key=\"%s\">%%s</enum>\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng,nco_typ_fmt_sng_var_cdl(bs_typ));
+	(void)fprintf(fp_out,"%*s<ncml:enumTypedef name=\"%s\" type=\"enum%d\" >\n",prn_ndn,spc_sng,typ_cdl,bs_sz);
+	(void)sprintf(enm_fmt,"%*s<ncml:enum key=\"%s\">%%s</ncml:enum>\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng,nco_typ_fmt_sng_var_cdl(bs_typ));
 	mbr_nbr=fld_nbr;
 	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
 	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
@@ -3705,7 +3705,7 @@ nco_prn_xml /* [fnc] Recursively print group contents */
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !bs_typ switch */
 	} /* !mbr_idx */
-        (void)fprintf(fp_out,"%*s</enumTypedef>\n",prn_ndn,spc_sng);
+        (void)fprintf(fp_out,"%*s</ncml:enumTypedef>\n",prn_ndn,spc_sng);
       } /* !enm */
       /* close bracket  */
       bs_cdl=(char *)nco_free(bs_cdl);
@@ -3714,7 +3714,7 @@ nco_prn_xml /* [fnc] Recursively print group contents */
     typ_ids=(nc_type *)nco_free(typ_ids);
   } /* !nbr_typ */
   
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(fp_out,"%*s<dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) (void)fprintf(fp_out,"%*s<ncml:dimension name=\"%s\" length=\"%lu\" %s/>\n",prn_ndn,spc_sng,dmn_lst[dmn_idx].nm,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt,trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].is_rec_dmn ? "isUnlimited=\"true\" " : "");
   
   /* Dimension list no longer needed */
   dmn_lst=nco_nm_id_lst_free(dmn_lst,dmn_nbr);
@@ -3781,7 +3781,7 @@ nco_prn_xml /* [fnc] Recursively print group contents */
     if(prn_flg->PRN_VAR_DATA) (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);
 
     /* XML close variable tag */
-    (void)fprintf(fp_out,"%*s</variable>\n",prn_ndn,spc_sng);
+    (void)fprintf(fp_out,"%*s</ncml:variable>\n",prn_ndn,spc_sng);
   } /* end loop over var_idx */
 
   /* Print global metatdata */
@@ -3828,8 +3828,8 @@ nco_prn_xml /* [fnc] Recursively print group contents */
   } /* end loop over grp_idx */
 
   /* Mark end of output */
-  if(grp_dpt == 0) (void)fprintf(fp_out,"</netcdf>\n"); 
-  if(grp_dpt > 0) (void)fprintf(fp_out,"%*s</group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
+  if(grp_dpt == 0) (void)fprintf(fp_out,"</ncml:netcdf>\n"); 
+  if(grp_dpt > 0) (void)fprintf(fp_out,"%*s</ncml:group>\n",grp_dpt*prn_flg->spc_per_lvl,spc_sng); 
 
   return rcd;
 } /* end nco_grp_prn_xml() */

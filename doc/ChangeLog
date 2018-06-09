@@ -1,8 +1,14 @@
-2018-06-08  Charlie Zender  <zender@uci.edu>
+2018-06-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.5-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.5-alpha07: Habitual Liar';git push
-	git tag -a 4.7.5-alpha07 -m 'Fix ncremap ALM/CLM/CTSM/ELM bug introduced in 4.7.4;safe CDL ENUM';git push --tags
+	git tag -a 4.7.5-alpha07 -m 'Fix ncremap ALM/CLM/CTSM/ELM bug introduced in 4.7.4;ncml:XML;safe CDL ENUM;complete XML ENUM';git push --tags
+
+	* Prefix or postfix XML tags with ncml: and :ncml
+
+2018-06-08  Charlie Zender  <zender@uci.edu>
+
+	* Add enum type to XML variable definition as per toolsUI output
 
 	* CDL'ize ENUM types and values before printing. Round-trip dump/gen now works!
 
