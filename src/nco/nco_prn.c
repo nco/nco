@@ -1638,8 +1638,21 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     /* 20170913: Typically users not interested in variable ID. However, ID helps diagnose susceptibility to CDF5 bug */
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_out,"%*s%s ID = netCDF define order = %d\n",prn_ndn,spc_sng,var_trv->nm,var_id);
   } /* !trd */
-  //if(prn_flg->xml) (void)fprintf(fp_out,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,xml_typ_nm(var_typ));
-  if(prn_flg->xml) (void)fprintf(fp_out,"%*s<variable name=\"%s\" type=\"%s\"",prn_ndn,spc_sng,var_trv->nm,cdl_typ_nm_ntm(nc_id,var_typ));
+  if(prn_flg->xml){
+    (void)fprintf(fp_out,"%*s<variable name=\"%s\" ",prn_ndn,spc_sng,var_trv->nm);
+    if(cls_typ == NC_ENUM){
+      char *typ_nm;
+      int bs_sz;
+      bs_sz=(int)nco_typ_lng(bs_typ);
+      bs_sz=(bs_sz > 4 ? 4 : bs_sz); // 20180608: NcML 2.2 lacks enum8 type https://github.com/Unidata/thredds/issues/1098
+      typ_nm=cdl_typ_nm_ntm(grp_id,var_typ);
+      (void)fprintf(fp_out,"type=\"enum%d\" typedef=\"%s\"",bs_sz,typ_nm);
+      typ_nm=(char *)nco_free(typ_nm);
+    }else{ /* !NC_ENUM */
+      (void)fprintf(fp_out,"type=\"%s\"",cdl_typ_nm_ntm(nc_id,var_typ));
+    } /* !NC_ENUM */
+  } /* !XML */
+
   if(prn_flg->jsn) (void)fprintf(fp_out,"%*s\"%s\": {\n",prn_ndn,spc_sng,var_trv->nm);
 
   /* Print type, shape, and total size of variable */
@@ -1661,7 +1674,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
       if(prn_flg->xml){
 	(void)sprintf(sng_foo,"%s%s%s",(dmn_idx == 0) ? " shape=\"" : "",var_trv->var_dmn[dmn_idx].dmn_nm,(dmn_idx < dmn_nbr-1) ? " " : (cls_typ == NC_VLEN ? " *\""  : "\"")); 
       }else if(prn_flg->jsn){
-        /* indent content */ 
+        /* Indent content */ 
         nm_jsn=nm2sng_jsn(var_trv->var_dmn[dmn_idx].dmn_nm);
         if(dmn_idx==0) (void)sprintf(dmn_sng,"%*s\"shape\": [", prn_ndn+prn_flg->sxn_fst,spc_sng); 
 	(void)sprintf(sng_foo,"\"%s\"%s",nm_jsn,(dmn_idx < dmn_nbr-1) ? ", " : "],"); 
@@ -1724,14 +1737,14 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     
     // (void)fprintf(fp_out,"%*s\"type\": \"%s\"",prn_ndn+prn_flg->sxn_fst,spc_sng,jsn_typ_nm(var_typ));
     (void)fprintf(fp_out,"%*s\"type\": \"%s\"",prn_ndn+prn_flg->sxn_fst,spc_sng,typ_nm);
-     if(var_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
+    if(var_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
   } /* !xml */
 
   if(dmn_sng) dmn_sng=(char *)nco_free(dmn_sng);
 
   /* Print dimension sizes and names */
 
-  /* Loop dimensions for object (variable)  */
+  /* Loop dimensions for object (variable) */
   if(prn_flg->trd){
     for(dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
 
@@ -3920,7 +3933,7 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
      
   nm_jsn=nm2sng_jsn(nco_gpe_evl_stb(prn_flg->gpe,trv_tbl->lst[obj_idx].nm_fll));
  
- if(grp_dpt==0) (void)fprintf(fp_out,"{\n"); else (void)fprintf(fp_out,"%*s\"%s\": {\n",prn_ndn,spc_sng,nm_jsn);
+  if(grp_dpt==0) (void)fprintf(fp_out,"{\n"); else (void)fprintf(fp_out,"%*s\"%s\": {\n",prn_ndn,spc_sng,nm_jsn);
   nm_jsn=(char *)nco_free(nm_jsn);  
 
   /* Print type information for group */
@@ -3968,30 +3981,22 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* !bs_typ switch */
 	  if(mbr_idx < mbr_nbrm1) (void)fprintf(fp_out,", "); 
-	 
 	} /* !mbr_idx */
         (void)fprintf(fp_out," ]");
       } /* !enm */
       /* close bracket  */
-
-      
       bs_cdl=(char *)nco_free(bs_cdl);
       typ_cdl=(char *)nco_free(typ_cdl);
-
-      if(typ_idx< nbr_typ-1) fprintf(fp_out,",");      
-      fprintf(fp_out,"\n");
-      
+      if(typ_idx < nbr_typ-1) fprintf(fp_out,",");      
+      (void)fprintf(fp_out,"\n");
     } /* !typ_idx */
     typ_ids=(nc_type *)nco_free(typ_ids);
     (void)fprintf(fp_out,"%*s}\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng); 
   } /* !nbr_typ */
-
   
-  if(dmn_nbr > 0 ) 
-      (void)fprintf(fp_out,"%*s\"dimensions\": {\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng);
+  if(dmn_nbr > 0) (void)fprintf(fp_out,"%*s\"dimensions\": {\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng);
  
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-
     nm_jsn=nm2sng_jsn(dmn_lst[dmn_idx].nm);
     (void)fprintf(fp_out,"%*s\"%s\": %lu",prn_ndn+2*prn_flg->spc_per_lvl,spc_sng,nm_jsn,(unsigned long)trv_tbl->lst_dmn[dmn_lst[dmn_idx].id].lmt_msa.dmn_cnt);   
     /* Add comma and carriage-return unless last element */
