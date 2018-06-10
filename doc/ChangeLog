@@ -1,7 +1,7 @@
 2018-06-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.5 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.5: fxm';git push
+	cd ~/nco;git commit -a -m 'Version 4.7.5: Salient Detail';git push
 	git tag -a 4.7.5 -m 'Fix ncremap 4.7.4 CLM PJCS bug;ncml:XML;CDL/XML/JSN ENUM/VLEN;dap4://;ncap2 pack();mpassi';git push --tags
 
 2018-06-09  Charlie Zender  <zender@uci.edu>

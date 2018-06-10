@@ -627,15 +627,24 @@ continuity.
 You may retrieve the source of tagged versions directly with, e.g.,
 <tt>git clone -b 4.7.5 http://github.com/nco/nco.git nco-4.7.5</tt></a>.
 <ul>
-<li><b>NCO 4.7.6</b>: (<i>Future</i>)
-Chunking bytes not elements?;
+<li><b>NCO 4.8.1</b>: (<i>Future</i>)
+Chunk bytes not elements?;
 extensive hashing?;
 netCDF4 compound types?;
 <tt>ncclimo -v</tt> splitter support for regular expressions?;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncremap</tt> generate weights?;</li>
-<li><b>NCO 4.7.5</b>: (<i>In Progress, features in-progress or complete include</i>) 
-<li><b>NCO 4.7.4</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.8.0</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<tt>ncks</tt> ENUM, VLEN subsetting;
+<tt>ncks</tt> VLEN missing value braces;
+<li><b>NCO 4.7.5</b>: (<i>Current Stable Release</i>)
+<tt>ncclimo</tt> supports mpassi name and <tt>yyyy-mm-01-00000</tt> rx's;
+<tt>ncremap</tt> fix CLM PJCS bug;
+<tt>ncks</tt> XML <tt>ncml:</tt> prefixes;
+<tt>ncks</tt> ENUM, VLEN CDL/XML/JSON support;
+Sanitize exceptions for DAP4 protocol;
+<tt>ncap2</tt> pack() arguments;
+<li><b>NCO 4.7.4</b>: 
 <tt>ncks</tt> printing gracefully skips non-atomic types;
 <tt>ncremap</tt> supports ERWG 7.1.0r features conserve2nd, extrapolation;
 <tt>ncremap</tt> guesses column dimension for unstructured grids;

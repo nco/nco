@@ -12,47 +12,46 @@ affects regridding of ALM/CLM/CTSM/ELM land model data that contains
 "hidden" (unused) dimensions. The other new feature is that ncclimo
 automatically handles MPAS Seaice model output named with the new
 names (mpassi) and new date convention, yyyy-mm-01-00000. If these
-fixes/features do not affect you there is probably no reason to
-upgrade, but see below in case you want some of the minor new
-features. 
+fixes/features do not affect you there may be no reason to upgrade,
+yet see below for other minor new features you may want.
 
-Work on NCO 4.8.0 has commenced "under the hood". Infrastructure
-to handle printing of netCDF4 user-defined types ENUM and VLEN.
-You can try it now (unsupported) with the --ntm flag. 4.8.0 will
-contain the finished version of that, progress on parallel weight
-generation by ncremap, and possibly a workaround for using quotation
-marks with ncap2 in Windows.  
+Work on NCO 4.8.0 has commenced "under the hood". Printing of netCDF4
+user-defined types ENUM and VLEN is ready now (though unsupported)
+with the --ntm flag. 4.8.0 will contain the finished version of that,
+progress on parallel weight generation by ncremap, and possibly a
+workaround for using quotation marks with ncap2 in Windows.  
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo accepts mpassi in place of mpascice, mpasseaice:
+A. ncclimo accepts mpassi in place of mpascice, mpasseaice, and
+   accepts new MPAS output filenames of form yyyy-mm-01-00000
    ncclimo -s 2 -e 3 -m mpassi -i drc_in -o drc_out
    http://nco.sf.net/nco.html#ncclimo
 
-A. ncap2 allows optional scale_factor/add_offset arguments to its
+B. ncap2 allows optional scale_factor/add_offset arguments to its
    pack() method for those who wish to specify their own packing
    parameters. This override can ensure that multiple files use the
    same packing parameters.  
    ncap2 -s 'var_pck=pack(var,-0.001,40.0)' in.nc out.nc
    http://nco.sf.net/nco.html#ncap2_mth
 
-A. NCO's security whitelist allows an extended character set when the 
+C. NCO's security whitelist allows an extended character set when the 
    input file explicitly invokes the DAP4 protocol (e.g.,
    dap4://foo.com/in.nc). This allows DAP4 input to utilize the full
    set of constraint expressions.
    http://nco.sf.net/nco.html#wht_lst
 
-A. XML printing now includes the "ncml:" prefix on most tags.
+D. XML printing now includes the "ncml:" prefix on most tags.
    This aligns NCO XML with XML produced by toolsUI version 4.6.11,
    the latest (AFAICT) netCDF Java library. If this change bothers
    you or breaks your XML workflow, let us know and we can make it
    optional.
    http://nco.sf.net/nco.html#xml
 
-A. Repeated notice: netCDF 4.6.1 fixes the CDF5 bug. Yay!
+E. Repeated notice: netCDF 4.6.1 fixes the CDF5 bug. Yay!
    We STRONGLY recommend that CDF5 users upgrade to netCDF 4.6.1.
    NCO error messages and HINTs have been updated to better describe
    the best practices to identify and avoid this nasty bug.
