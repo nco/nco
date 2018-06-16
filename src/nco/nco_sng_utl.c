@@ -488,7 +488,6 @@ sng2sng_sf /* [fnc] Translate C language string to printable, visible ASCII byte
 
   long chr_idx;
   long sng_lng=long_CEWI; /* [nbr] Length of NC_CHAR string */
-  long sng_lngm1=long_CEWI; /* [nbr] Length minus one of NC_CHAR string */
 
   sng_lng=strlen(sng_val);
 
