@@ -171,7 +171,7 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
 } /* end nco_typ_lng() */
 
 size_t /* O [B] Native type size */
-nco_typ_lng_ntm /* [fnc] Convert netCDF type enum to native type size */
+nco_typ_lng_udt /* [fnc] Convert netCDF type enum to native type size */
 (const int nc_id, /* I [ID] File ID */
  const nc_type nco_typ) /* I [enm] netCDF type */
 {
@@ -212,11 +212,11 @@ nco_typ_lng_ntm /* [fnc] Convert netCDF type enum to native type size */
     size_t typ_sz;
     (void)nco_inq_user_type(nc_id,nco_typ,NULL,&typ_sz,NULL,NULL,NULL);
     return typ_sz;
-  } /* !ntm */
+  } /* !udt */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return 0;
-} /* end nco_typ_lng_ntm() */
+} /* end nco_typ_lng_udt() */
 
 const char * /* O [sng] String describing type */
 nco_typ_sng /* [fnc] Convert netCDF type enum to string */
@@ -302,7 +302,7 @@ cdl_typ_nm /* [fnc] Return string describing native CDL type */
 } /* end cdl_typ_nm() */
 
 char * /* O [sng] Native CDL type */
-cdl_typ_nm_ntm /* [fnc] Return string describing native CDL type */
+cdl_typ_nm_udt /* [fnc] Return string describing native CDL type */
 (const int nc_id, /* I [ID] File ID */
  const nc_type type) /* I [enm] netCDF type */
 {
@@ -341,15 +341,15 @@ cdl_typ_nm_ntm /* [fnc] Return string describing native CDL type */
     } /* end switch */
   }else{
     (void)nco_inq_user_type(nc_id,type,typ_nm,NULL,NULL,NULL,NULL);
-    //(void)fprintf(stdout,"DEBUG cdl_typ_nm_ntm() reports non-atomic type name is %s\n",typ_nm);
+    //(void)fprintf(stdout,"DEBUG cdl_typ_nm_udt() reports non-atomic type name is %s\n",typ_nm);
     /* strdup(typ_nm) because typ_nm is local storage, eliminated after return()
        NB: strdup() leads to memory leak unless it is free()'d by calling routine */
     return strdup(typ_nm);
-  } /* !ntm */
+  } /* !udt */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end cdl_typ_nm_ntm() */
+} /* end cdl_typ_nm_udt() */
 
 const char * /* O [sng] Native XML type */
 xml_typ_nm /* [fnc] Return string describing native XML type */
@@ -2192,7 +2192,7 @@ nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type var_t
     } /* end switch */
   }else{
     rcd=nc_get_var(nc_id,var_id,(void *)vp);
-  } /* !ntm */
+  } /* !udt */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
@@ -2272,7 +2272,7 @@ nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * cons
     } /* end switch */
   }else{
     rcd=nc_get_var1(nc_id,var_id,srt_sz_t,(void *)vp);
-  } /* !ntm */
+  } /* !udt */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
@@ -2376,7 +2376,7 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
     } /* end switch */
   }else{
     rcd=nc_get_vara(nc_id,var_id,srt_sz_t,cnt_sz_t,(void *)vp);
-  } /* !ntm */
+  } /* !udt */
 #if 0
   if(var_typ <= NC_MAX_ATOMIC_TYPE){
     switch(var_typ){
@@ -2404,7 +2404,7 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
     } /* end switch */
   }else{
     rcd=nc_get_vara(nc_id,var_id,(const size_t *)srt,(const size_t *)cnt,(void *)vp);
-  } /* !ntm */
+  } /* !udt */
 #endif /* !0 */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
@@ -2498,7 +2498,7 @@ nco_get_vars(const int nc_id,const int var_id,const long * const srt,const long 
     } /* end switch */
   }else{
     rcd=nc_get_vars(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,(void *)vp);
-  } /* !ntm */
+  } /* !udt */
   if(rcd != NC_NOERR){
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
@@ -2594,7 +2594,7 @@ nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long 
     } /* end switch */
   }else{
     rcd=nc_get_varm(nc_id,var_id,srt_sz_t,cnt_sz_t,srd_pd_t,map_pd_t,(void *)vp);
-  } /* !ntm */
+  } /* !udt */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_varm()");
   return rcd;
 } /* end nco_get_varm */
@@ -2871,7 +2871,7 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
       rcd=nc_inq_user_type(nc_id,att_typ,typ_nm,&typ_sz,&bs_typ,&fld_nbr,&cls_typ);
       (void)fprintf(stdout,"%s: DEBUG %s reports attribute %s type %d = %s, typ_nm = %s, typ_sz = %lu, bs_typ = %d = %s, fld_nbr = %lu, cls_typ = %d = %s\n","nco_get_att",fnc_nm,att_nm,att_typ,nco_typ_sng(att_typ),typ_nm,(unsigned long)typ_sz,bs_typ,nco_typ_sng(bs_typ),(unsigned long)fld_nbr,cls_typ,nco_typ_sng(cls_typ));
     } /* !0 */
-  } /* !ntm */
+  } /* !udt */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_att()");
   return rcd;
 } /* end nco_get_att */

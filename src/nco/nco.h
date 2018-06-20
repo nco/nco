@@ -344,17 +344,17 @@ extern "C" {
 # define NCO_VERSION_MINOR 7
 #endif /* !NCO_VERSION_MINOR */
 #ifndef NCO_VERSION_PATCH
-# define NCO_VERSION_PATCH 5
+# define NCO_VERSION_PATCH 6
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE "" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
+# define NCO_VERSION_NOTE "-alpha01" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.7.5"
+# define NCO_VERSION "4.7.6-alpha01"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -971,7 +971,7 @@ extern "C" {
     nco_bool jsn; /* [flg] Print JSON */
     nco_bool xml; /* [flg] Print XML (NcML) */
     nco_bool hdn; /* [flg] Print hidden attributes */
-    nco_bool ntm; /* [flg] Print non-atomic variables */
+    nco_bool udt; /* [flg] Print non-atomic variables */
     nco_bool rad; /* [flg] Retain all dimensions */
     nco_bool xml_lcn; /* [flg] Print XML location tag */
     nco_bool nfo_xtr; /* [flg] Print extra information in CDL/XML mode */
@@ -1360,7 +1360,7 @@ extern "C" {
     nco_bool flg_mtd;                 /* [flg] Group contains only metadata */
     nco_bool flg_ncs;                 /* [flg] Group is ancestor of specified group or variable */
     nco_bool flg_nsx;                 /* [flg] Object matches intersection criteria */
-    nco_bool flg_ntm;                 /* [flg] Variable is non-atomic */
+    nco_bool flg_udt;                 /* [flg] Variable is non-atomic */
     nco_bool flg_rcr;                 /* [flg] Extract group recursively */
     nco_bool flg_rgr;                 /* [flg] Regrid variable */ 
     nco_bool flg_xtn;                 /* [flg] Extensive variable */ 

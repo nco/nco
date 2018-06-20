@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.5
-@set doc-edition 4.7.5
+@set nco-edition 4.7.6-alpha01
+@set doc-edition 4.7.6-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
 @set update-date 10 June 2018
@@ -12278,10 +12278,10 @@ temperature[$time,$lat,$lon]=35.5;
 temp_avg=temperature.avg($time);
 @end example
 
-The @code{size} method allows the dimension size to be used in an
-arithmetic expression:
+The @code{size} method allows dimension sizes to be used in 
+arithmetic expressions:
 @example
-time_avg=time.total() / $time.size;
+time_avg=time.total()/$time.size;
 @end example
 
 Increase the size of a new variable by one and set new member to zero:
@@ -12291,11 +12291,10 @@ new_var[$cnt_new]=0.0;
 new_var(0:($cnt_new.size-2))=old_var;
 @end example
 
-To define an unlimited dimension simply set the size to zero
+To define an unlimited dimension, simply set the size to zero
 @example
 defdim("time2",0)
 @end example
-
 
 @noindent @strong{Dimension Abbreviations @*}
 It is possible to use dimension abbreviations as method arguments:@*
@@ -12496,20 +12495,21 @@ var_out=array(0,0,$time) // 0,0,0,0,0,0,0,0,0,0
 var_out=array(1.0,0.0,$lon) // 1.0,1.0,1.0,1.0 
 @end example
 
-@noindent @strong{ n-Dimensional Arrays@*}
+@noindent @strong{n-Dimensional Arrays@*}
 Use form (B) or (C) for creating n-D arrays.@* 
 NB: In (C) the final argument is a list of dimensions
 
 @example
 // These are equivalent
-var_out=array(1.0, 2.0, three_dmn_var)
-var_out=array(1.0, 2.0,/$lat, $lev, $lon/)
+var_out=array(1.0, 2.0, three_dmn_var);
+var_out=array(1.0, 2.0,/$lat, $lev, $lon/);
 
 // var_out is NC_BYTE
-var_out=array(20b, -4, /$lat,$lon/)  // 20,16,12,8,4,0,-4,-8  
+var_out=array(20b, -4, /$lat,$lon/); // 20,16,12,8,4,0,-4,-8  
 
-srt=3.14159f; inc=srt/2.0f
-var_out(srt,inc, var_2D_rrg)  
+srt=3.14159f;
+inc=srt/2.0f;
+var_out(srt,inc,var_2D_rrg);
 // 3.14159, 4.712385, 6.28318, 7.853975, 9.42477, 10.99557, 12.56636, 14.13716 ; 
 @end example
 
@@ -13146,8 +13146,7 @@ global@new_greeting=push(@h, " users !!!"); // "hello users!!!"
 @end verbatim
 @end example
 
-@noindent @strong{ get_vars_in() & get_vars_out() }
-
+@noindent @strong{get_vars_in() & get_vars_out()}
 @example
 att_lst=get_vars_in(att_regexp?) 
 att_lst=get_vars_out(att_regexp?) 
@@ -14221,10 +14220,29 @@ ts="2017-08-11/envlog_netcdf_L1_ua-mac_2017-08-11.nc"
 @subsection Vpointer
 @cindex vpointer
 
-@noindent A variable-pointer or @emph{vpointer} is a pointer to a variable or attribute. It is most usefull when one needs to apply a set of operations on a list of variables. For example After regular processing one may wish to set the _FillVlaue of all NC_FLOAT variables to a particular value. Or say after processing,  create min/max attributes for all 3D variables of type NC_DOUBLE. A vpointer is not a 'pointer' to a memory location in the normal C/C++ sense. Rather the vpointer is a text attribute that contains the name of a variable. To use the pointer simply prefix the pointer with '*'. Most places where you use VAR_ID you can use *vpointer_nm. There is a variety of ways to maintain a list of strings in ncap2. The easiest method is to use a NC_STRING attribute.
+@noindent A variable-pointer or @emph{vpointer} is a pointer to a
+variable or attribute.
+It is most useful when one needs to apply a set of operations on a list
+of variables.
+For example, after regular processing one may wish to set the
+@code{_FillVlaue} of all @code{NC_FLOAT} variables to a particular
+value, or to create min/max attributes for all 3D variables of type
+@code{NC_DOUBLE}.
+A vpointer is not a 'pointer' to a memory location in the C/C++
+sense.
+Rather the vpointer is a text attribute that contains the name of a
+variable.
+To use the pointer simply prefix the pointer with @code{*}.
+Then, most places where you use @code{VAR_ID} you can use
+*vpointer_nm.
+There are a variety of ways to maintain a list of strings in
+@command{ncap2}.
+The easiest method is to use an @code{NC_STRING} attribute.  
 
-Below is a simple illustration using NC_CHAR as the vpointer.@*
-Remember an attribute starting with @@ implies 'global'. eg '@@vpx' is short for 'global@@vpx'
+Below is a simple illustration that uses a vpointer of type
+@code{NC_CHAR}. 
+Remember an attribute starting with @code{@@} implies 'global', e.g.,  
+@code{@@vpx} is short for @code{global@@vpx}. 
 @example
 @verbatim
 idx=9;
@@ -14237,39 +14255,42 @@ global@vpx="idx";
 *global@vpx++;  
 print(idx);
 
-// multiply by 5
-*@vpx*=5;  // idx now 50
+// Multiply by 5
+*@vpx*=5; // idx now 50
 print(idx);
 
 // Add 200 (long method)
-*@vpx=*@vpx+200;  //idx now 250
+*@vpx=*@vpx+200; //idx now 250
 print(idx);
 
 @vpy="idy";
 
-// Add together idx and idy
-idz=*@vpx+*@vpy;  // idz == 270
+// Add idx idy to get idz
+idz=*@vpx+*@vpy; // idz == 270
 print(idz);
 
-// we can also reference variables in  the input file
-// can use an existing att pointer as atts are not written
-// to the netcdf file until after script has finished
+// We can also reference variables in the input file
+// Can use an existing attribute pointer since attributes are not written
+// to the netCDF file until after the script has finished.
 @vpx="three_dmn_var";
 
-// we can convert the above var to type NC_DOUBLE and 
-// write  it to ouptut all in one go 
+// We can convert this variable to type NC_DOUBLE and
+// write it to ouptut all at once
 *@vpx=*@vpx.double();
 @end verbatim
 @end example
 
-@noindent The following script writes to Output all vars that are of type NC_DOUBLE and and have at least 2 dimesions. It then changes their _FillValue to '1.0 E-9'. 
-The function @code{get_vars_in()} creates an NC_STRING attribue that
-contains all the var names in Input.
-It is important to note that that a vpointer must be a plain attribute
-and NOT an a attribute expression.
-So in the below script using @code{*all(idx)} would be a fundamental
+The following script writes to the output files all variables that are
+of type @code{NC_DOUBLE} and that have at least two dimensions.
+It then changes their @code{_FillValue} to @code{1.0E-9}.  
+The function @code{get_vars_in()} creates an @code{NC_STRING} attribute
+that contains all of the variable names in the input file.
+Note that a vpointer must be a plain attribute, NOT an a attribute
+expression. 
+Thus in the below script using @code{*all(idx)} would be a fundamental
 mistake.
-In the above example the vpointer @code{var_nm} is of type NC_STRING.
+In the below example the vpointer @code{var_nm} is of type
+@code{NC_STRING}. 
 @example
 @verbatim
 @all=get_vars_in();
@@ -14289,7 +14310,12 @@ for(idx=0;idx<sz;idx++){
 @end verbatim
 @end example 
 
-@noindent The following script writes to Output all 3D/4D vars as type NC_FLOAT. Then for each var it calculates a range att that contains min & max; and a total att that is the sum of all elements. Note that in this example vpointer are used to 'point' to attributes
+The following script writes to the output file all 3D/4D
+variables of type @code{NC_FLOAT}.
+Then for each variable it calculates a @code{range} attribute that 
+contains the maximum and minimum values, and a @code{total} attribute
+that is the sum of all the elements.
+In this example vpointers are used to 'point' to attributes.
 @example
 @verbatim
 @all=get_vars_in();
@@ -14474,7 +14500,7 @@ mask_var = (XLAT >= lat_min && XLAT <= lat_max) && (XLONG >= lon_min && XLONG <=
 @end example
 
 A few notes:
-Irregular regions are the union of arrays lat/lon_min/max's. 
+Irregular regions are the union of arrays of lat/lon min/max's. 
 The mask procedure is identical for all @var{R}.
 @c fxm need to edit rrg sxn down to here
 
@@ -19954,7 +19980,7 @@ UDUnits-compatible date units of the form time-since-basetime, e.g.,
 @samp{days since 2000-01-01} and a @acronym{CF} calendar attribute, if
 any. 
 Enact this with the @samp{--calendar} (also @samp{--cln},
-@samp{prn_lgb}, and @samp{datestamp}) option when printing in any mode.
+@samp{--prn_lgb}, and @samp{--datestamp}) option when printing in any mode.
 Invoking this option when @math{@var{dbg_lvl} >= 1} in @acronym{CDL}
 mode prints both the value and the calendar string (one in comments):
 @example
@@ -20937,10 +20963,11 @@ include an NcML formatting characters (e.g., commas, angles, quotes).
 
 @html
 <a name="ncattget"></a> <!-- http://nco.sf.net/nco.html#ncattget -->
-<a name="nclist"></a> <!-- http://nco.sf.net/nco.html#nclist -->
-<a name="ncdmnlist"></a> <!-- http://nco.sf.net/nco.html#ncdmnlist -->
+<a name="nclst"></a> <!-- http://nco.sf.net/nco.html#nclst -->
+<a name="ncvarlst"></a> <!-- http://nco.sf.net/nco.html#ncvarlst -->
+<a name="ncdmnlst"></a> <!-- http://nco.sf.net/nco.html#ncdmnlst -->
 <a name="ncdmnsz"></a> <!-- http://nco.sf.net/nco.html#ncdmnsz -->
-<a name="ncgrplist"></a> <!-- http://nco.sf.net/nco.html#ncgrplist -->
+<a name="ncgrplst"></a> <!-- http://nco.sf.net/nco.html#ncgrplst -->
 <a name="ncrecsz"></a> <!-- http://nco.sf.net/nco.html#ncrecsz -->
 <a name="ncmax"></a> <!-- http://nco.sf.net/nco.html#ncmax -->
 <a name="ncmdn"></a> <!-- http://nco.sf.net/nco.html#ncmdn -->
@@ -20961,10 +20988,11 @@ include an NcML formatting characters (e.g., commas, angles, quotes).
 @cindex @acronym{UNIX}
 @cindex @command{ncattget}
 @cindex @command{ncavg}
-@cindex @command{ncdmnlist}
+@cindex @command{ncdmnlst}
 @cindex @command{ncdmnsz}
-@cindex @command{ncgrplist}
-@cindex @command{nclist}
+@cindex @command{ncgrplst}
+@cindex @command{nclst}
+@cindex @command{nclst}
 @cindex @command{ncmax}
 @cindex @command{ncmdn}
 @cindex @command{ncmin}
@@ -20988,7 +21016,7 @@ try
 ncks --trd -m in.nc | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort
 @end example
 A Bash user could alias the previous filter to the shell command
-@command{nclist} as shown below.
+@command{ncvarlst} as shown below.
 More complex examples could involve command line arguments.
 For example, a user may frequently be interested in obtaining the value
 of an attribute, e.g., for textual file examination or for passing to
@@ -21068,14 +21096,14 @@ function ncunits { ncks --trd -m ${2} | grep -E -i " attribute [0-9]+: units.+ $
 function ncavg { ncwa -y avg -O -C -v ${1} ${2} ~/foo.nc ; ncks --trd -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncavg $var_nm $fl_nm : What is mean of variable?
 function ncavg { ncap2 -O -C -v -s "foo=${1}.avg();print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
-# ncdmnlist $fl_nm : What dimensions are in file?
-function ncdmnlist { ncks -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
+# ncdmnlst $fl_nm : What dimensions are in file?
+function ncdmnlst { ncks -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
 # ncdmnsz $dmn_nm $fl_nm : What is dimension size?
 function ncdmnsz { ncks --trd -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
-# ncgrplist $fl_nm : What groups are in file?
-function ncgrplist { ncks -m ${1} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ; }
-# nclist $fl_nm : What variables are in file?
-function nclist { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
+# ncgrplst $fl_nm : What groups are in file?
+function ncgrplst { ncks -m ${1} | grep 'group:' | cut -d ':' -f 2 | cut -d ' ' -f 2 | sort ; }
+# ncvarlst $fl_nm : What variables are in file?
+function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 # ncmax $var_nm $fl_nm : What is maximum of variable?
 function ncmax { ncwa -y max -O -C -v ${1} ${2} ~/foo.nc ; ncks --trd -H -C -v ${1} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncmax $var_nm $fl_nm : What is maximum of variable?
@@ -21096,13 +21124,13 @@ function nctypget { ncks --trd -m -v ${1} ${2} | grep -E -i "^${1}: type" | cut 
 # Csh shell (/bin/csh), .cshrc examples (derive others from Bash definitions):
 ncattget() { ncks --trd -M -m -v ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
 ncdmnsz() { ncks --trd -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
-nclist() { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
+ncvarlst() { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 ncrecsz() { ncks --trd -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
 
 # Sh shell (/bin/sh), .profile examples (derive others from Bash definitions):
 ncattget() { ncks --trd -M -m ${3} | grep -E -i "^${2} attribute [0-9]+: ${1}" | cut -f 11- -d ' ' | sort ; }
 ncdmnsz() { ncks --trd -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
-nclist() { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
+ncvarlst() { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 ncrecsz() { ncks --trd -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
 @end verbatim
 @end example

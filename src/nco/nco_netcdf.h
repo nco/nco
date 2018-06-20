@@ -244,7 +244,7 @@ cdl_typ_nm /* [fnc] Return string describing native CDL type */
 (const nc_type type); /* I [enm] netCDF type */
 
 char * /* O [sng] Native CDL type */
-cdl_typ_nm_ntm /* [fnc] Return string describing native CDL type */
+cdl_typ_nm_udt /* [fnc] Return string describing native CDL type */
 (const int nc_id, /* I [ID] File ID */
  const nc_type type); /* I [enm] netCDF type */
 
@@ -300,7 +300,7 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
 (const nc_type nco_typ); /* I [enm] netCDF type */
 
 size_t /* O [B] Native type size */
-nco_typ_lng_ntm /* [fnc] Convert netCDF type enum to native type size */
+nco_typ_lng_udt /* [fnc] Convert netCDF type enum to native type size */
 (const int nc_id, /* I [ID] File ID */
  const nc_type nco_typ); /* I [enm] netCDF type */
 

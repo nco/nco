@@ -58,14 +58,14 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 
     /* Used nco_callloc() for unknown reasons until 20140930 */
     /*    vp=(void *)nco_calloc((size_t)var_sz,nco_typ_lng(vara->type));*/
-    vp=(void *)nco_malloc(var_sz*nco_typ_lng_ntm(vara->nc_id,vara->type));
+    vp=(void *)nco_malloc(var_sz*nco_typ_lng_udt(vara->nc_id,vara->type));
 
-    lcnt=nco_typ_lng_ntm(vara->nc_id,vara->type);
+    lcnt=nco_typ_lng_udt(vara->nc_id,vara->type);
     for(idx=dpt_crr+1;idx<dpt_crr_max;idx++) 
        lcnt*=lmt_lst[idx]->dmn_cnt;
 
     cp_inc=(ptrdiff_t)(lcnt*lmt_lst[dpt_crr]->dmn_cnt);
-    cp_max=(ptrdiff_t)(var_sz*nco_typ_lng_ntm(vara->nc_id,vara->type));
+    cp_max=(ptrdiff_t)(var_sz*nco_typ_lng_udt(vara->nc_id,vara->type));
 
     cp_fst=0L;
 
@@ -122,13 +122,13 @@ nco_msa_rcr_clc /* [fnc] Multi-slab algorithm (recursive routine, returns a sing
 
     /* Used nco_callloc() for unknown reasons until 20140930 */
     /*    vp=(void *)nco_calloc((size_t)var_sz,nco_typ_lng(vara->type));*/
-    vp=(void *)nco_malloc(var_sz*nco_typ_lng_ntm(vara->nc_id,vara->type));
+    vp=(void *)nco_malloc(var_sz*nco_typ_lng_udt(vara->nc_id,vara->type));
 
-    lcnt=nco_typ_lng_ntm(vara->nc_id,vara->type);
+    lcnt=nco_typ_lng_udt(vara->nc_id,vara->type);
     for(idx=dpt_crr+1;idx<dpt_crr_max;idx++) lcnt*=lmt_lst[idx]->dmn_cnt;
 
     cp_inc=(ptrdiff_t)(lcnt*lmt_lst[dpt_crr]->dmn_cnt);
-    cp_max=(ptrdiff_t)(var_sz*nco_typ_lng_ntm(vara->nc_id,vara->type));
+    cp_max=(ptrdiff_t)(var_sz*nco_typ_lng_udt(vara->nc_id,vara->type));
 
     for(idx=0;idx<nbr_slb;idx++) indices[idx]=lmt_lst[dpt_crr]->lmt_dmn[idx]->srt;
 
@@ -187,7 +187,7 @@ read_lbl:
       if(lmt[idx]->srd > 1L) dmn_srd_nbr++;
     } /* end loop over idx */
 
-    vp=(void *)nco_malloc(var_sz*nco_typ_lng_ntm(vara->nc_id,vara->type));
+    vp=(void *)nco_malloc(var_sz*nco_typ_lng_udt(vara->nc_id,vara->type));
 
     /* Block is critical/thread-safe for identical/distinct in_id's */
     { /* begin potential OpenMP critical */
@@ -255,7 +255,7 @@ read_lbl:
 	      /* Point start vector to next stride on disk */
 	      if(srd_idx != 0) dmn_srt[idx_srd]+=dmn_srd[idx_srd];
 	      /* Place results in next portion of RAM */
-	      if(srd_idx != 0) cp_srd+=srd_sz*nco_typ_lng_ntm(vara->nc_id,vara->type);
+	      if(srd_idx != 0) cp_srd+=srd_sz*nco_typ_lng_udt(vara->nc_id,vara->type);
 	      (void)nco_get_vara(vara->nc_id,vara->id,dmn_srt,dmn_cnt,(void *)cp_srd,vara->type);
 	    } /* end loop over srd */
 	  } /* endif workaround */
@@ -601,7 +601,7 @@ nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multih
 
   /* Scalars */
   if(nbr_dim == 0){
-    var_in->val.vp=nco_malloc(nco_typ_lng_ntm(in_id,var_in->typ_dsk));
+    var_in->val.vp=nco_malloc(nco_typ_lng_udt(in_id,var_in->typ_dsk));
     (void)nco_get_var1(in_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
     goto do_upk;
   } /* end if scalar */
@@ -812,7 +812,7 @@ nco_msa_var_val_cpy /* [fnc] Copy variables data from input to output file */
 
     /* Scalars */
     if(nbr_dim==0){
-      var[idx]->val.vp=nco_malloc(nco_typ_lng_ntm(in_id,var[idx]->type));
+      var[idx]->val.vp=nco_malloc(nco_typ_lng_udt(in_id,var[idx]->type));
       (void)nco_get_var1(in_id,var[idx]->id,0L,var[idx]->val.vp,var[idx]->type);
     }else{
       lmt_msa_sct **lmt_msa;
@@ -1321,7 +1321,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   /* Scalar */
   if(nbr_dim == 0){
     var_in.sz=1L;
-    var_in.val.vp=nco_malloc(nco_typ_lng_ntm(in_id,var_typ_in));
+    var_in.val.vp=nco_malloc(nco_typ_lng_udt(in_id,var_typ_in));
     (void)nco_get_var1(in_id,var_in_id,0L,var_in.val.vp,var_typ_in);
     var_out=var_in;
   } /* !Scalar */
@@ -1414,7 +1414,7 @@ nco_cpy_var_val_mlt_lmt_trv         /* [fnc] Copy variable data from input to ou
   /* Perform MD5 digest of input and output data if requested */
   if(md5)
     if(md5->dgs)
-      (void)nco_md5_chk(md5,var_nm,var_out.sz*nco_typ_lng_ntm(out_id,var_typ_out),out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp);
+      (void)nco_md5_chk(md5,var_nm,var_out.sz*nco_typ_lng_udt(out_id,var_typ_out),out_id,dmn_map_srt,dmn_map_cnt,var_out.val.vp);
 
   /* Write unformatted binary data */
   if(fp_bnr) nco_bnr_wrt(fp_bnr,var_nm,var_out.sz,var_typ_in,var_out.val.vp);
@@ -1586,7 +1586,7 @@ nco_msa_var_get_trv                 /* [fnc] Define a 'var_sct' hyperslab fields
   
   /* Scalars */
   if(nbr_dim == 0){
-    var_in->val.vp=nco_malloc(nco_typ_lng_ntm(var_in->nc_id,var_in->typ_dsk));
+    var_in->val.vp=nco_malloc(nco_typ_lng_udt(var_in->nc_id,var_in->typ_dsk));
     (void)nco_get_var1(var_in->nc_id,var_in->id,0L,var_in->val.vp,var_in->typ_dsk);
     goto do_upk;
   } /* end if scalar */
@@ -1678,7 +1678,7 @@ nco_msa_var_get_sct                 /* [fnc] Define a 'var_sct' hyperslab fields
 
   /* Scalars */
   if (nbr_dim == 0) {
-    var_in->val.vp = nco_malloc(nco_typ_lng_ntm(var_in->nc_id,var_in->typ_dsk));
+    var_in->val.vp = nco_malloc(nco_typ_lng_udt(var_in->nc_id,var_in->typ_dsk));
     (void)nco_get_var1(var_in->nc_id, var_in->id, 0L, var_in->val.vp, var_in->typ_dsk);
     goto do_upk;
   } /* end if scalar */

@@ -1,8 +1,16 @@
-2018-06-12  Charlie Zender  <zender@uci.edu>
+2018-06-19  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.8.0 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.0: ESTO';git push
-	git tag -a 4.8.0 -m 'fxm';git push --tags
+	* NCO 4.7.6-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha01: Ybor';git push
+	git tag -a 4.7.6-alpha01 -m 'Nearly functionally identical to 4.7.5;ntm->udt;no lat/lon crd';git push --tags
+
+	* Remove self-referential "coordinates" attribute from unstructured lat/lon coordinates
+
+	* Tidy nco.texi
+
+2018-06-17  Charlie Zender  <zender@uci.edu>
+
+	* Change semantics from "ntm" for non-atomic types to "udt" for user-defined types
 
 2018-06-10  Charlie Zender  <zender@uci.edu>
 

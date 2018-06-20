@@ -169,7 +169,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
  int * const dmn_rec_all,            /* O [nbr] Number of record dimensions in file */
  int * const grp_dpt_all,            /* O [nbr] Maximum group depth (root = 0) */
  int * const grp_nbr_all,            /* O [nbr] Number of groups in file */
- int * const var_ntm_all,            /* O [nbr] Number of non-atomic variables in file */
+ int * const var_udt_all,            /* O [nbr] Number of non-atomic variables in file */
  int * const var_tmc_all,            /* O [nbr] Number of atomic-type variables in file */
  const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
@@ -183,7 +183,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   int grp_dpt_lcl; /* [nbr] Maximum group depth (root = 0) */
   int grp_nbr_lcl; /* [nbr] Number of groups in file */
   int typ_nbr_lcl; /* [nbr] Number of user-defined types in file */
-  int var_ntm_lcl; /* [nbr] Number of non-atomic variables in file */
+  int var_udt_lcl; /* [nbr] Number of non-atomic variables in file */
   int var_tmc_lcl; /* [nbr] Number of atomic-type variables in file */
 
   /* Initialize */
@@ -194,13 +194,13 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   grp_dpt_lcl=0;
   grp_nbr_lcl=0;
   typ_nbr_lcl=0;
-  var_ntm_lcl=0;
+  var_udt_lcl=0;
   var_tmc_lcl=0;
     
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
     trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
     if(var_trv.nco_typ == nco_obj_typ_var) att_var_lcl+=var_trv.nbr_att;
-    if(var_trv.nco_typ == nco_obj_typ_nonatomic_var) var_ntm_lcl++;
+    if(var_trv.nco_typ == nco_obj_typ_nonatomic_var) var_udt_lcl++;
     if(var_trv.nco_typ == nco_obj_typ_grp){ 
       typ_nbr_lcl+=var_trv.nbr_typ;
       grp_nbr_lcl+=var_trv.nbr_grp;
@@ -213,9 +213,9 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr_dmn;idx_tbl++)
     if(trv_tbl->lst_dmn[idx_tbl].is_rec_dmn) dmn_rec_lcl++;
 
-  if(typ_nbr_lcl > 0 || var_ntm_lcl > 0){
-    (void)fprintf(stderr,"%s: WARNING File contains %d user-defined types (i.e., compound, enum, opaque, or vlen) used to define %d non-atomic variables and their attributes. NCO currently ignores variables and attributes with user-defined types by default, although some preliminary features can be accessed with the --ntm flag. Nevertheless, most %s features will only work for atomic variables.\n",nco_prg_nm_get(),typ_nbr_lcl,var_ntm_lcl,nco_prg_nm_get());
-  } /* !var_ntm_lcl */
+  if(typ_nbr_lcl > 0 || var_udt_lcl > 0){
+    (void)fprintf(stderr,"%s: WARNING File contains %d user-defined types (i.e., compound, enum, opaque, or vlen) used to define %d non-atomic variables and their attributes. NCO currently ignores variables and attributes with user-defined types by default, although some preliminary features can be accessed with the --udt flag. Nevertheless, most %s features will only work for atomic variables.\n",nco_prg_nm_get(),typ_nbr_lcl,var_udt_lcl,nco_prg_nm_get());
+  } /* !var_udt_lcl */
 
   if(att_glb_all) *att_glb_all=att_glb_lcl;
   if(att_grp_all) *att_grp_all=att_grp_lcl;
@@ -224,7 +224,7 @@ trv_tbl_inq                          /* [fnc] Find and return global totals of d
   if(dmn_rec_all) *dmn_rec_all=dmn_rec_lcl;
   if(grp_dpt_all) *grp_dpt_all=grp_dpt_lcl;
   if(grp_nbr_all) *grp_nbr_all=grp_nbr_lcl;
-  if(var_ntm_all) *var_ntm_all=var_ntm_lcl;
+  if(var_udt_all) *var_udt_all=var_udt_lcl;
   if(var_tmc_all) *var_tmc_all=var_tmc_lcl;
 
   return;

@@ -49,7 +49,7 @@ trv_tbl_inq                            /* [fnc] Find and return global totals of
  int * const dmn_rec_all,              /* O [nbr] Number of record dimensions in file */
  int * const grp_dpt_all,              /* O [nbr] Maximum group depth (root = 0) */
  int * const grp_nbr_all,              /* O [nbr] Number of groups in file */
- int * const var_ntm_all,              /* O [nbr] Number of non-atomic variables in file */
+ int * const var_udt_all,              /* O [nbr] Number of non-atomic variables in file */
  int * const var_tmc_all,              /* O [nbr] Number of atomic-type variables in file */
  const trv_tbl_sct * const trv_tbl);   /* I [sct] Traversal table */
 

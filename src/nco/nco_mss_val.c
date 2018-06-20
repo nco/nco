@@ -311,7 +311,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
     /* If we got this far then try to retrieve attribute and make sure it conforms to variable's type */
     var->has_mss_val=True;
     /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
-    att_lng=att_sz*nco_typ_lng_ntm(nc_id,att_typ);
+    att_lng=att_sz*nco_typ_lng_udt(nc_id,att_typ);
     mss_tmp.vp=(void *)nco_malloc(att_lng);
     (void)nco_get_att(nc_id,var->id,att_nm,mss_tmp.vp,att_typ);
     if(att_typ == NC_CHAR){
@@ -326,7 +326,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing value of variable 
     } /* end if */
     
     /* Store mss_val in memory as scalar of same type as variable */
-    var->mss_val.vp=(void *)nco_malloc(1L*nco_typ_lng_ntm(nc_id,var->type));
+    var->mss_val.vp=(void *)nco_malloc(1L*nco_typ_lng_udt(nc_id,var->type));
     if((att_typ <= NC_MAX_ATOMIC_TYPE) && (var->type <= NC_MAX_ATOMIC_TYPE)){
       (void)nco_val_cnf_typ(att_typ,mss_tmp,var->type,var->mss_val);
     }else{

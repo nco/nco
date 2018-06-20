@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.7.5 have hatched.
+The netCDF Operators NCO version 4.7.6 have hatched.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.5 is primarily a bugfix release for a single issue with
+Version 4.7.6 is primarily a bugfix release for a single issue with
 ncremap. Version 4.7.4 inadvertently introduced a bug that mainly
 affects regridding of ALM/CLM/CTSM/ELM land model data that contains
 "hidden" (unused) dimensions. The other new feature is that ncclimo
@@ -17,7 +17,7 @@ yet see below for other minor new features you may want.
 
 Work on NCO 4.8.0 has commenced "under the hood". Printing of netCDF4
 user-defined types ENUM and VLEN is ready now (though unsupported)
-with the --ntm flag. 4.8.0 will contain the finished version of that,
+with the --udt flag. 4.8.0 will contain the finished version of that,
 progress on parallel weight generation by ncremap, and possibly a
 workaround for using quotation marks with ncap2 in Windows.  
 
@@ -73,7 +73,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.7.5 built/tested under
+   These problems occur with NCO 4.7.6 built/tested under
    MacOS 10.13.4 with netCDF 4.4.1.1 on HDF5 1.10.2 and with
    Linux with netCDF 4.6.2-development (20180515) on HDF5 1.8.19.
 

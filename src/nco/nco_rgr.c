@@ -1827,7 +1827,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     lon_nm_in=strdup(cf->dmn_nm[1]);
     //lat_nm_in=strdup(cf->crd_nm[idx_lat]);
     //lon_nm_in=strdup(cf->crd_nm[idx_lon]);
-    /* Next four lines unnecessary in nco_rgr_wgt() which only needs dimension names (it reads input coordinates from map- not data-file) */
+    /* Next four lines unnecessary in nco_rgr_wgt() which only needs dimension names (it reads input coordinates from map-file not data-file) */
     //lat_ctr_id=cf->crd_id[idx_lat];
     //lon_ctr_id=cf->crd_id[idx_lon];
     //lat_dmn_nm=strdup(cf->dmn_nm[0]);
@@ -3023,13 +3023,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       (void)nco_aed_prc(out_id,msk_out_id,aed_mtd_crd);
     } /* !flg_msk_out */
 
+    /* 20180620: Why add "coordinates" attribute to unstructured lat/lon coordinates? */
     aed_mtd_crd.var_nm=lat_nm_out;
     aed_mtd_crd.id=lat_out_id;
-    (void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
+    //(void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
     
     aed_mtd_crd.var_nm=lon_nm_out;
     aed_mtd_crd.id=lon_out_id;
-    (void)nco_aed_prc(out_id,lon_out_id,aed_mtd_crd);
+    //(void)nco_aed_prc(out_id,lon_out_id,aed_mtd_crd);
   } /* !flg_grd_out_1D */
   
   /* Persistent metadata */

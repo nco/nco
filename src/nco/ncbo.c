@@ -203,8 +203,8 @@ main(int argc,char **argv)
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
   int nbr_grp_fl_1;   /* [nbr] Number of groups in file */
   int nbr_grp_fl_2;   /* [nbr] Number of groups in file */
-  int var_ntm_fl_1;   /* [nbr] Number of non-atomic variables in file */
-  int var_ntm_fl_2;   /* [nbr] Number of non-atomic variables in file */
+  int var_udt_fl_1;   /* [nbr] Number of non-atomic variables in file */
+  int var_udt_fl_2;   /* [nbr] Number of non-atomic variables in file */
   int nbr_var_fl_1;   /* [nbr] Number of atomic-type variables in file */
   int nbr_var_fl_2;   /* [nbr] Number of atomic-type variables in file */
   int nbr_gpe_nm;     /* [nbr] Number of GPE entries */ 
@@ -638,8 +638,8 @@ main(int argc,char **argv)
   (void)nco_chk_dmn(lmt_nbr,flg_dne);
 
   /* Get number of variables, dimensions, and global attributes in file, file format */
-  (void)trv_tbl_inq(&nbr_glb_att_1,&nbr_grp_att_1,&nbr_att_var_1,&nbr_dmn_fl_1,&nbr_rec_fl_1,&grp_dpt_fl_1,&nbr_grp_fl_1,&var_ntm_fl_1,&nbr_var_fl_1,trv_tbl_1);
-  (void)trv_tbl_inq(&nbr_glb_att_2,&nbr_grp_att_2,&nbr_att_var_2,&nbr_dmn_fl_2,&nbr_rec_fl_2,&grp_dpt_fl_2,&nbr_grp_fl_2,&var_ntm_fl_2,&nbr_var_fl_2,trv_tbl_2);
+  (void)trv_tbl_inq(&nbr_glb_att_1,&nbr_grp_att_1,&nbr_att_var_1,&nbr_dmn_fl_1,&nbr_rec_fl_1,&grp_dpt_fl_1,&nbr_grp_fl_1,&var_udt_fl_1,&nbr_var_fl_1,trv_tbl_1);
+  (void)trv_tbl_inq(&nbr_glb_att_2,&nbr_grp_att_2,&nbr_att_var_2,&nbr_dmn_fl_2,&nbr_rec_fl_2,&grp_dpt_fl_2,&nbr_grp_fl_2,&var_udt_fl_2,&nbr_var_fl_2,trv_tbl_2);
 
   (void)nco_inq_format(in_id_1,&fl_in_fmt_1);
   (void)nco_inq_format(in_id_2,&fl_in_fmt_2);

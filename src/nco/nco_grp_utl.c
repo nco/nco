@@ -2381,7 +2381,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].flg_mtd=False;                /* [flg] Group contains only metadata */
   trv_tbl->lst[idx].flg_ncs=False;                /* [flg] Group is ancestor of specified group or variable */
   trv_tbl->lst[idx].flg_nsx=False;                /* [flg] Object matches intersection criteria */
-  trv_tbl->lst[idx].flg_ntm=False;                /* [flg] Variable is non-atomic */
+  trv_tbl->lst[idx].flg_udt=False;                /* [flg] Variable is non-atomic */
   trv_tbl->lst[idx].flg_rgr=False;                /* [flg] Regrid variable */
   trv_tbl->lst[idx].flg_xtn=False;                /* [flg] Extensive variable */
   trv_tbl->lst[idx].flg_mrv=False;                /* [flg] Most-Rapidly-Varying horizontal dimensions variable */ 
@@ -2485,7 +2485,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
     trv_tbl->lst[idx].nm_fll=strdup(var_nm_fll);
     trv_tbl->lst[idx].nm_fll_lng=strlen(var_nm_fll);  
 
-    trv_tbl->lst[idx].flg_ntm=var_typ > NC_MAX_ATOMIC_TYPE ? True : False;
+    trv_tbl->lst[idx].flg_udt=var_typ > NC_MAX_ATOMIC_TYPE ? True : False;
     trv_tbl->lst[idx].typ_nm=var_typ > NC_MAX_ATOMIC_TYPE ? strdup(typ_nm) : NULL; /* [sng] Type name used in CDL "types" declaration (e.g., "vlen_t") */
     trv_tbl->lst[idx].cls_typ=cls_typ; /* [enm] netCDF class type, same as var_typ except contiguous from 0..16 */
     trv_tbl->lst[idx].bs_typ=bs_typ; /* [enm] netCDF atomic type underlying vlen and enum types */

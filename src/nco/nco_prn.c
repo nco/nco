@@ -381,7 +381,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)nco_inq_att(grp_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
 
       /* Allocate enough space to hold attribute */
-      att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng_ntm(grp_id,att[idx].type));
+      att[idx].val.vp=(void *)nco_malloc(att[idx].sz*nco_typ_lng_udt(grp_id,att[idx].type));
       (void)nco_get_att(grp_id,var_id,att[idx].nm,att[idx].val.vp,att[idx].type);
 
       /* NC_CHAR can have zero length size maybe others? Create with a single FILL value */
@@ -401,7 +401,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     if(CDL){
       char *typ_nm;
       nm_cdl=nm2sng_cdl(att[idx].nm);
-      typ_nm=cdl_typ_nm_ntm(grp_id,att[idx].type);
+      typ_nm=cdl_typ_nm_udt(grp_id,att[idx].type);
       if(cls_typ >= NC_MAX_ATOMIC_TYPE) (void)fprintf(fp_out,"%*s%s %s:%s = ",prn_ndn,spc_sng,typ_nm,src_sng,nm_cdl); else (void)fprintf(fp_out,"%*s%s:%s = ",prn_ndn,spc_sng,src_sng,nm_cdl); 
       if(cls_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
       nm_cdl=(char *)nco_free(nm_cdl);
@@ -435,7 +435,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       if(att[idx].type <=NC_MAX_ATOMIC_TYPE)
 	typ_nm=strdup(xml_typ_nm(att[idx].type));
       else
-        typ_nm=cdl_typ_nm_ntm(grp_id,att[idx].type);  			     
+        typ_nm=cdl_typ_nm_udt(grp_id,att[idx].type);  			     
       
       (void)fprintf(fp_out,"%*s<ncml:attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
 
@@ -1607,7 +1607,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
       } /* !crd */
 	//if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_out,"%s: %s reports dmn_srt[%d]=%ld, dmn_cnt[%d]=%ld\n",nco_prg_nm_get(),fnc_nm,dmn_idx,dmn_srt[dmn_idx],dmn_idx,dmn_cnt[dmn_idx]);
     } /* !dmn_idx */
-    val.vp=nco_malloc(var_sz*nco_typ_lng_ntm(nc_id,var_typ));
+    val.vp=nco_malloc(var_sz*nco_typ_lng_udt(nc_id,var_typ));
     nco_get_vara(nc_id,var_id,dmn_srt,dmn_cnt,val.vp,var_typ);
     vln_lng_ttl=0L;
     /* Acquire and print mean vlen dimension size? */
@@ -1625,7 +1625,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     if(val.vp) val.vp=(void *)nco_free(val.vp);
   } /* !vlen */
 
-  if(cls_typ == NC_VLEN) ram_sz_crr=var_sz*vln_lng_avg*nco_typ_lng_ntm(nc_id,bs_typ); else ram_sz_crr=var_sz*nco_typ_lng_ntm(nc_id,var_typ);
+  if(cls_typ == NC_VLEN) ram_sz_crr=var_sz*vln_lng_avg*nco_typ_lng_udt(nc_id,bs_typ); else ram_sz_crr=var_sz*nco_typ_lng_udt(nc_id,var_typ);
   ram_sz_ttl+=ram_sz_crr;
   
   /* Print header for variable */
@@ -1645,11 +1645,11 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
       int bs_sz;
       bs_sz=(int)nco_typ_lng(bs_typ);
       bs_sz=(bs_sz > 4 ? 4 : bs_sz); // 20180608: NcML 2.2 lacks enum8 type https://github.com/Unidata/thredds/issues/1098
-      typ_nm=cdl_typ_nm_ntm(grp_id,var_typ);
+      typ_nm=cdl_typ_nm_udt(grp_id,var_typ);
       (void)fprintf(fp_out,"type=\"enum%d\" typedef=\"%s\"",bs_sz,typ_nm);
       typ_nm=(char *)nco_free(typ_nm);
     }else{ /* !NC_ENUM */
-      (void)fprintf(fp_out,"type=\"%s\"",cdl_typ_nm_ntm(nc_id,var_typ));
+      (void)fprintf(fp_out,"type=\"%s\"",cdl_typ_nm_udt(nc_id,var_typ));
     } /* !NC_ENUM */
   } /* !XML */
 
@@ -1663,7 +1663,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
 
   if(dmn_nbr == 0){
     if(prn_flg->trd){
-      if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*mean_length(NC_VLEN)*sizeof(%s) = %ld*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(bs_typ),var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(cls_typ),var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
+      if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*mean_length(NC_VLEN)*sizeof(%s) = %ld*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(bs_typ),var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %ld*sizeof(%s) = %ld*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,var_sz,nco_typ_sng(cls_typ),var_sz,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr);
     } /* !trd */
     /* 20131122: Implement ugly NcML requirement that scalars have shape="" attribute */
     if(prn_flg->xml) (void)sprintf(dmn_sng," shape=\"%s\"",(cls_typ == NC_VLEN ? "*" : "" ));
@@ -1706,17 +1706,17 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   if(dmn_nbr > 0 && prn_flg->trd){
     if((nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) && deflate) (void)fprintf(fp_out,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
     if(nco_fmt_xtn_get() == nco_fmt_xtn_hdf4 && NC_LIB_VERSION < 433) (void)fprintf(fp_out,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
-    if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
+    if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr);
   } /* !prn_flg->trd */
 
   if(prn_flg->cdl){
     char *typ_nm;
-    typ_nm=cdl_typ_nm_ntm(nc_id,var_typ);
+    typ_nm=cdl_typ_nm_udt(nc_id,var_typ);
     nm_cdl=nm2sng_cdl(var_trv->nm);
     (void)fprintf(fp_out,"%*s%s %s%s ;",prn_ndn,spc_sng,typ_nm,nm_cdl,dmn_sng);
     if(var_typ > NC_MAX_ATOMIC_TYPE) typ_nm=(char *)nco_free(typ_nm);
     if(nco_dbg_lvl_get() >= nco_dbg_std){
-      if(cls_typ == NC_VLEN) (void)fprintf(fp_out," // RAM size = %s = %li*%g*%lu = %lu bytes",sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out," // RAM size = %s = %li*%lu = %lu bytes",sz_sng,var_sz,(unsigned long)nco_typ_lng_ntm(nc_id,bs_typ),(unsigned long)ram_sz_crr);
+      if(cls_typ == NC_VLEN) (void)fprintf(fp_out," // RAM size = %s = %li*%g*%lu = %lu bytes",sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out," // RAM size = %s = %li*%lu = %lu bytes",sz_sng,var_sz,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr);
     } /* !dbg */
     /* 20170913: Typically users not interested in variable ID. However, ID helps diagnose susceptibility to CDF5 bug */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_out,", ID = %d",var_id);
@@ -1731,7 +1731,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   if(prn_flg->jsn){
     char *typ_nm;
     
-    typ_nm=cdl_typ_nm_ntm(nc_id,var_typ);
+    typ_nm=cdl_typ_nm_udt(nc_id,var_typ);
     if(dmn_nbr > 0) (void)fprintf(fp_out,"%s\n",dmn_sng); 
     /* Print netCDF type with same names as XML */
     
@@ -1912,7 +1912,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   /* Scalars */
   if(var->nbr_dim == 0){
     var->sz=1L;
-    var->val.vp=nco_malloc(nco_typ_lng_ntm(nc_id,var->type));
+    var->val.vp=nco_malloc(nco_typ_lng_udt(nc_id,var->type));
     /* Block is critical/thread-safe for identical/distinct grp_id's */
     { /* begin potential OpenMP critical */
       (void)nco_get_var1(grp_id,var->id,0L,var->val.vp,var->type);
@@ -1975,7 +1975,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     unit_sng_var=&nul_chr;
   } /* !TRD */
 
-  if(var->has_mss_val) val_sz_byt=nco_typ_lng_ntm(nc_id,bs_typ);
+  if(var->has_mss_val) val_sz_byt=nco_typ_lng_udt(nc_id,bs_typ);
 
   if(var->nbr_dim){ 
     /* Allocate space for dimension information */
@@ -2008,7 +2008,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   /* Call also initializes var.sz with final size */
   if(prn_flg->md5)
-    if(prn_flg->md5->dgs) (void)nco_md5_chk(prn_flg->md5,var_nm,var->sz*nco_typ_lng_ntm(nc_id,var->type),grp_id,(long *)NULL,(long *)NULL,var->val.vp);
+    if(prn_flg->md5->dgs) (void)nco_md5_chk(prn_flg->md5,var_nm,var->sz*nco_typ_lng_udt(nc_id,var->type),grp_id,(long *)NULL,(long *)NULL,var->val.vp);
 
   /* Warn if variable is packed */
   if(nco_dbg_lvl_get() > 0)
@@ -3235,9 +3235,9 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 
   /* Testing: 
      ncks --cdl ~/nco/data/buggy.nc
-     ncks --ntm --cdl ~/nco/data/buggy.nc
-     ncks -D 1 --ntm ~/nco/data/vlen.nc
-     ncks -D 1 --ntm ~/nco/data/enum.nc
+     ncks --udt --cdl ~/nco/data/buggy.nc
+     ncks -D 1 --udt ~/nco/data/vlen.nc
+     ncks -D 1 --udt ~/nco/data/enum.nc
      ncks --cdl ~/nco/data/in_grp.nc
      ncks --trd ~/nco/data/in_grp.nc */
 
@@ -3435,7 +3435,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
     strcat(var_nm_fll,var_nm);
 
     /* Find variable in traversal table */
-    if(!prn_flg->ntm){
+    if(!prn_flg->udt){
       /* Normal variable */
       for(obj_idx=0;obj_idx<trv_tbl->nbr;obj_idx++)
 	if(trv_tbl->lst[obj_idx].nco_typ == nco_obj_typ_var)
@@ -3457,9 +3457,9 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	  (void)fprintf(stdout,"%s: DEBUG %s reports %s type %d = %s, typ_nm = %s, typ_sz = %lu, bs_typ = %d = %s, fld_nbr = %lu, cls_typ = %d = %s\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,var_trv.var_typ,nco_typ_sng(var_trv.var_typ),var_trv.typ_nm,(unsigned long)var_trv.typ_sz,var_trv.bs_typ,nco_typ_sng(var_trv.bs_typ),(unsigned long)var_trv.fld_nbr,var_trv.cls_typ,nco_typ_sng(var_trv.cls_typ));
 	  (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
 	} /* !dbg */
-      } /* !ntm */
+      } /* !udt */
 
-    } /* ntm */
+    } /* udt */
     
     /* Is variable to be extracted? */
     if(obj_idx<trv_tbl->nbr && trv_tbl->lst[obj_idx].flg_xtr){
