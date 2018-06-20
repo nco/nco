@@ -500,6 +500,20 @@ if($USER eq 'zender'){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
+
+# ncap2 #18
+   $dsc_sng="Run script to test pack() function";
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -S '../data/pack.nco' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncpdq -O -U %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncap2 -O -h -C $fl_fmt $nco_D_flg -v -s 'n2=p_three_dmn_var_dbl.total();' %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -C -H --trd -v n2 -s '%.2f' %tmp_fl_02%";
+    $tst_cmd[4]="2802.00";
+    $tst_cmd[5]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+    
+
+
     
     if($dodap eq "FALSE"){
 ####################
