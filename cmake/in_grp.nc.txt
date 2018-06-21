@@ -141,10 +141,9 @@ netcdf in_grp {
 
     unique = 73 ;
 
-    val_one_mss = 1, 1e+36 ;
+    val_one_mss = 1, _ ;
 
   group: g1 {
-
     variables:
       int g1v1 ;
 
@@ -190,7 +189,6 @@ netcdf in_grp {
       v1 = 1 ;
 
     group: g1g1 {
-
       variables:
         double ppc_big(time) ;
 
@@ -231,7 +229,6 @@ netcdf in_grp {
     } // group /g1/g1\:g2
   } // group /g1
   group: g2 {
-
     variables:
       float lon(lon) ;
 
@@ -248,7 +245,6 @@ netcdf in_grp {
 
   } // group /g2
   group: g4 {
-
     variables:
       int one_dmn_rec_var(time) ;
         one_dmn_rec_var:long_name = "one dimensional record variable" ;
@@ -299,7 +295,6 @@ netcdf in_grp {
 
   } // group /g5
   group: g6 {
-
     variables:
       float area(lat) ;
 
@@ -311,7 +306,6 @@ netcdf in_grp {
       area1 = 21, 31 ;
 
     group: g6g1 {
-
       variables:
         float area(lat) ;
 
@@ -321,7 +315,6 @@ netcdf in_grp {
     } // group /g6/g6g1
   } // group /g6
   group: g7 {
-
     variables:
       float gds_crd(gds_crd) ;
         gds_crd:long_name = "Geodesic coordinate" ;
@@ -367,7 +360,6 @@ netcdf in_grp {
       ppc_flt = 0, 0.1, 0.12, 0.123, 0.1234, 0.12345, 0.123456, 0.1234567, 0.1234568, 0.1234568 ;
 
     group: g7g1 {
-
       variables:
         float gds_var(gds_crd) ;
           gds_var:units = "meter" ;
@@ -392,7 +384,6 @@ netcdf in_grp {
   } // group /g8
   group: g9 {
     group: g9g1 {
-
       variables:
         int v6 ;
 
@@ -407,7 +398,6 @@ netcdf in_grp {
           group: g9g1g1g1g1 {
             group: g9g1g1g1g1g1 {
               group: g9g1g1g1g1g1g1 {
-
                 variables:
                   double ppc_big(time) ;
 
@@ -440,7 +430,6 @@ netcdf in_grp {
     } // group /g9/g9g1
   } // group /g9
   group: g10 {
-
     variables:
       float three_dmn_rec_var(time,lat,lon) ;
         three_dmn_rec_var:units = "watt meter-2" ;
@@ -484,7 +473,6 @@ netcdf in_grp {
 
   } // group /g10
   group: g11 {
-
     variables:
       byte byte_var ;
         byte_var:long_name = "byte-type variable" ;

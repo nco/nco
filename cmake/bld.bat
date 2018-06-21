@@ -409,6 +409,9 @@ set data=%root_win%\..\data
 %build%\netcdf-c\build\ncgen\ncgen.exe -k netCDF-4 -b -o %data%\in.nc %data%\in.cdl
 %build%\Debug\ncks.exe --jsn_fmt 2 -C -g g10 -v two_dmn_rec_var %data%\in_grp.nc
 
+:: generation of comparison files in UNIX done with
+:: pvicente@glace:~/nco/data$ ../cmake/ncks in_grp.nc > in_grp.nc.txt
+:: pvicente@glace:~/nco/data$ ../cmake/ncks in.nc > in.nc.txt
 :: generate text files in_grp.nc.gen.txt from in_grp.nc and in.nc and use tool FC to compare contents 
 :: with pre-existing in_grp.nc.txt, in.nc.txt, generated in Linux
 :: generation of in_grp.nc.gen.txt must be done in 'data' folder so that paths match
