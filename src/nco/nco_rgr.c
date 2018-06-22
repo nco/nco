@@ -3023,13 +3023,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       (void)nco_aed_prc(out_id,msk_out_id,aed_mtd_crd);
     } /* !flg_msk_out */
 
-    /* 20180620: Why add "coordinates" attribute to unstructured lat/lon coordinates? */
-    aed_mtd_crd.var_nm=lat_nm_out;
-    aed_mtd_crd.id=lat_out_id;
+    /* 20180620: No reason to add "coordinates" attribute to unstructured lat/lon coordinates */
+    //aed_mtd_crd.var_nm=lat_nm_out;
+    //aed_mtd_crd.id=lat_out_id;
     //(void)nco_aed_prc(out_id,lat_out_id,aed_mtd_crd);
-    
-    aed_mtd_crd.var_nm=lon_nm_out;
-    aed_mtd_crd.id=lon_out_id;
+    //aed_mtd_crd.var_nm=lon_nm_out;
+    //aed_mtd_crd.id=lon_out_id;
     //(void)nco_aed_prc(out_id,lon_out_id,aed_mtd_crd);
   } /* !flg_grd_out_1D */
   
