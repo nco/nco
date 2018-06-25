@@ -1871,11 +1871,15 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   nco_bool flg_malloc_unit_var=False; /* [flg] Allocated memory for variable units string */
   nco_bool unit_cln_crd=False; /* [flg] Coordinate has calendar units */
 
+  
   nco_string sng_val; /* [sng] Current string */
 
   var_sct *var=NULL_CEWI; /* [sct] Variable structure */
   var_sct *var_aux=NULL_CEWI; /* Holds variable data printed as CDL comment AFTER regular variable data */
 
+  nc_type bs_typ;
+  nc_type cls_typ;
+  
   if(prn_flg->new_fmt && (CDL||TRD||JSN)) prn_ndn=prn_flg->ndn+prn_flg->var_fst;
   if(XML) prn_ndn=prn_flg->ndn;
 
@@ -1899,10 +1903,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   /* Get type of variable (get also name and number of dimensions for validation against parameter object) */
   (void)nco_inq_var(grp_id,var->id,var_nm,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
 
-  nc_type bs_typ;
-  nc_type cls_typ;
-  bs_typ=cls_typ=var->type;
-  if(var->type > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,var->type,NULL,NULL,&bs_typ,NULL,&cls_typ);
+
 
   /* Ensure we have correct variable */
   //assert(var_trv->nco_typ == nco_obj_typ_var);
@@ -1966,14 +1967,23 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         nco_var_cnf_typ(NC_STRING,var_aux);
 
         /* NB: nco_cln_var_prs() modifies var_tmp and var_aux */
-        if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_ERR) var_aux=nco_var_free(var_aux); else if(prn_flg->PRN_CLN_LGB){var_swp=var;var=var_aux;var_aux=var_swp;}
-        if(var_tmp) var_tmp=(var_sct*)nco_var_free(var_tmp);
+        if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_ERR)
+	    var_aux=nco_var_free(var_aux);
+	else if(prn_flg->PRN_CLN_LGB)
+	    {var_swp=var;var=var_aux;var_aux=var_swp;}
+
+        if(var_tmp)
+	    var_tmp=(var_sct*)nco_var_free(var_tmp);
+	
       } /* !PRN_CLN_LGB */
     } /* !CDL */
   }else{
     flg_malloc_unit_var=False;
     unit_sng_var=&nul_chr;
   } /* !TRD */
+
+  bs_typ=cls_typ=var->type;
+  if(var->type > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,var->type,NULL,NULL,&bs_typ,NULL,&cls_typ);
 
   if(var->has_mss_val) val_sz_byt=nco_typ_lng_udt(nc_id,bs_typ);
 
