@@ -1962,8 +1962,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         var_aux=nco_var_dpl(var);
         var_aux->val.vp=nco_free(var_aux->val.vp);
 
-        if(var_aux->has_mss_val) var_aux->mss_val.vp=nco_free(var_aux->mss_val.vp);
-        var_aux->has_mss_val=False;
+        if(var_aux->has_mss_val){
+	  var_aux->mss_val.vp=nco_free(var_aux->mss_val.vp);
+          var_aux->has_mss_val=False;
+	}
         nco_var_cnf_typ(NC_STRING,var_aux);
 
         /* NB: nco_cln_var_prs() modifies var_tmp and var_aux */
