@@ -156,7 +156,7 @@ trv_tbl_free                           /* [fnc] GTT free memory */
   tbl->nsm_sfx=(char *)nco_free(tbl->nsm_sfx);  
   tbl=(trv_tbl_sct *)nco_free(tbl);
 #ifdef DEBUG_LEAKS
-  if(nco_dbg_lvl_get() >= nco_dbg_sup)(void)fprintf(stdout,"%s: DEBUG %s %d crd",nco_prg_nm_get(),fnc_nm,crt_counter);
+  if(nco_dbg_lvl_get() >= nco_dbg_sup && nco_dbg_lvl_get() <= nco_dbg_nbr) (void)fprintf(stdout,"%s: DEBUG %s %d crd\n",nco_prg_nm_get(),fnc_nm,crt_counter);
 #endif
 } /* end trv_tbl_free() */
 

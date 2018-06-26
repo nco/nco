@@ -1459,17 +1459,17 @@ nco_xtr_crd_ass_add                   /* [fnc] Add to extraction list all coordi
       /* Get number of dimensions for *variable* */
       (void)nco_inq_varndims(grp_id,var_id,&nbr_dmn_var);
 
-      if(nco_dbg_lvl_get() >= nco_dbg_dev){
+      if(nco_dbg_lvl_get() >= nco_dbg_dev && nco_dbg_lvl_get() <= nco_dbg_nbr){
         (void)fprintf(stdout,"%s: DEBUG %s <%s> nbr_dmn_var=%d var_trv.nbr_dmn=%d\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nbr_dmn_var,var_trv.nbr_dmn); 
 
         if(nbr_dmn_var != var_trv.nbr_dmn){
           (void)fprintf(stdout,"%s: ERROR %s <%s> nbr_dmn_var=%d var_trv.nbr_dmn=%d\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,nbr_dmn_var,var_trv.nbr_dmn); 
           (void)nco_prn_dmn(nc_id,var_trv.grp_nm_fll,var_trv.nm,var_trv.nm_fll,trv_tbl);
-        }
+        } /* !nbr_dmn_var */
         (void)fflush(stdout);
-      }
+      } /* !dbg */
 
-      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)nco_prn_dmn(nc_id,var_trv.grp_nm_fll,var_trv.nm,var_trv.nm_fll,trv_tbl);
+      if(nco_dbg_lvl_get() >= nco_dbg_dev && nco_dbg_lvl_get() <= nco_dbg_nbr) (void)nco_prn_dmn(nc_id,var_trv.grp_nm_fll,var_trv.nm,var_trv.nm_fll,trv_tbl);
 
       assert(nbr_dmn_var == var_trv.nbr_dmn);
 
