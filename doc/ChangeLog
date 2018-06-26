@@ -1,3 +1,11 @@
+2018-06-24  Charlie Zender  <zender@uci.edu>
+
+	* Draft rgn_rnm.sh and rgn_rgr.sh to regrid regional ESM output
+
+2018-06-22  Charlie Zender  <zender@uci.edu>
+
+	* Add nVertLevelsP1 to ncremap MPAS permution list
+
 2018-06-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.6-alpha01 release procedure:
