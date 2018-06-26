@@ -3055,6 +3055,14 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+# ncks #124    
+    $dsc_sng="netCDF4 test --cal switch" ;
+    $tst_cmd[0]="ncks -H -C -O $fl_fmt $nco_D_flg --cal -d time,0 -v time $in_pth_arg in.nc|grep '\"1964-03-13 21:09:00\"'";
+    $tst_cmd[1]="    time = \"1964-03-13 21:09:00\" ;";
+    $tst_cmd[2]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
     
 #####################
 #### ncpdq tests #### -OK !
