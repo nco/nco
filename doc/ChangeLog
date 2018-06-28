@@ -1,3 +1,10 @@
+2018-06-28  Henry Butowsky <henryb@hush.com>
+
+	* Added a few regression tests for ncks --xml
+	using the tool 'xmllint'. At the moment  its simply parsing the xml.
+        but it can do much more. Will see how it beds down.	 
+
+
 2018-06-26  Charlie Zender  <zender@uci.edu>
 
 	* Clean-up debug messages co-printed with sanitize workaround -D 73
