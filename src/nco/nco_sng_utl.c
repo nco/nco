@@ -477,7 +477,8 @@ nm2sng_fl /* [fnc] Turn file name into legal string for shell commands */
 
 char * /* O [sng] String containing printable result */
 sng2sng_sf /* [fnc] Translate C language string to printable, visible ASCII bytes */
-(const char * const sng_val) /* I [sng] String to process */
+(const char * const sng_val,
+ int flg_sf) /* I [sng] String to process */
 {
   /* Purpose: Translate string to C-printable, visible ASCII bytes for CDL
      Reference: netcdf-c/ncdump/ncdump.c:pr_att_string() */
@@ -489,6 +490,28 @@ sng2sng_sf /* [fnc] Translate C language string to printable, visible ASCII byte
   long chr_idx;
   long sng_lng=long_CEWI; /* [nbr] Length of NC_CHAR string */
 
+  char * (*chr2sng_sf)(const char chr_val, char * const val_sng); 
+  
+  switch(flg_sf){
+
+    case 1:   
+       chr2sng_sf=chr2sng_cdl;
+       break;
+       
+    case 2:
+       chr2sng_sf=chr2sng_xml;
+       break;
+       
+    case 3:  
+       chr2sng_sf=chr2sng_jsn;
+       break;
+       
+    default:
+       chr2sng_sf=chr2sng_cdl;
+       break;
+  }
+
+      
   sng_lng=strlen(sng_val);
 
   /* Worst case is printable strings are six or four times longer than unformatted, i.e., '\"' == "&quot;" or '\\' == "\\\\" */
@@ -497,7 +520,7 @@ sng2sng_sf /* [fnc] Translate C language string to printable, visible ASCII byte
   for(chr_idx=0;chr_idx<sng_lng;chr_idx++){
     val_sng[0]='\0';
     chr_val=sng_val[chr_idx];
-    (void)strcat(sng_val_sng,chr2sng_cdl(chr_val,val_sng));
+    (void)strcat(sng_val_sng,chr2sng_sf(chr_val,val_sng));
   } /* end loop over character */
   
   return sng_val_sng;

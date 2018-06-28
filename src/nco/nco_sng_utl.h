@@ -135,9 +135,10 @@ extern "C" {
    char * const val_sng); /* I/O [sng] String to stuff printable result into */
   
   char * /* O [sng] String containing printable result */
-  sng2sng_sf /* [fnc] Translate C language string to printable, visible ASCII bytes */
-  (const char * const sng_val); /* I [sng] String to process */
-
+  sng2sng_sf /* [fnc] Translate C language string to valid  cdl, xml or jsn  */
+  (const char * const sng_val, /* I [sng] String to process */
+   int flg_typ);               /* I [flg] 1=cdl, 2=xml 3=jsn */ 
+  
   int /* O [nbr] Number of escape sequences translated */
   sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */
   (char * const sng); /* I/O [sng] String to process */
