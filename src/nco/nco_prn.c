@@ -431,13 +431,15 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	 http://www.unidata.ucar.edu/schemas/netcdf/ncml-2.2.xsd */
 
       char *typ_nm;
-
+      char *xml_att_nm;   
       if(att[idx].type <=NC_MAX_ATOMIC_TYPE)
 	typ_nm=strdup(xml_typ_nm(att[idx].type));
       else
         typ_nm=cdl_typ_nm_udt(grp_id,att[idx].type);  			     
+
+      xml_att_nm=sng2sng_sf(att[idx].nm,2);
       
-      (void)fprintf(fp_out,"%*s<ncml:attribute name=\"%s\"",prn_ndn,spc_sng,att[idx].nm);
+      (void)fprintf(fp_out,"%*s<ncml:attribute name=\"%s\"",prn_ndn,spc_sng,xml_att_nm);
 
       /* User may override default separator string for XML only */
       if(att[idx].type == NC_STRING || att[idx].type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
@@ -483,7 +485,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
       (void)fprintf(fp_out," value=\"");
 
       typ_nm=(char*)nco_free(typ_nm);
-
+      xml_att_nm=(char*)nco_free(xml_att_nm);
+      
       /* XML-mode if dataset defines its own _FillValue for this variable? */
       // if(!(int)strcasecmp(att[idx].nm,nco_mss_val_sng_get())) has_fll_val=True;
     } /* !xml */
