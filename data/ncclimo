@@ -872,7 +872,7 @@ if [ "${mdl_typ}" = 'mpas' ]; then
 fi # !mdl_typ
 # http://stackoverflow.com/questions/965053/extract-filename-and-extension-in-bash
 # http://stackoverflow.com/questions/17420994/bash-regex-match-string
-# NB: Order and 'elif' ensures name matches only fullest rx
+# NB: Order and 'elif' ensure name matches only fullest rx
 if [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
     nm_typ='yyyymm'
 elif [[ "${caseid}" =~ ^(.*)([0-9][0-9][0-9][0-9]-[01][0-9]-01.nc.?)$ ]]; then

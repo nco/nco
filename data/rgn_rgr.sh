@@ -11,28 +11,29 @@
 # rgn_rgr.sh lon_min lon_max lat_min lat_max dat_glb.nc grd_glb.nc grd_rgn.nc dat_rgn.nc dat_rgr.nc
 # where
 # dat_glb.nc is global output file from EAM containing at least one 2D variable (read-only)
-# grd_glb.nc is gridfile in SCRIP format of dat_glb.nc (i.e., the global dual-grid) (read-only)
+# grd_glb.nc is gridfile in SCRIP format of dat_glb.nc (i.e., global dual-grid) (read-only)
 # grd_rgn.nc is destination gridfile in SCRIP format for regional output (can be regional) (read-only)
 # dat_rgn.nc is regional output file from EAM containing at least one 2D variable (read-only)
 # dat_rgr.nc is regional output file regridded to destination grid (i.e., the answers)
 
 # Example:
 # 1. Generate regional destination grid SCRIP file as per http://nco.sf.net/nco.html#scrip
-# ncks --rgr grd_ttl='Test grid'#latlon=24,32#snwe=-16.0,-9.0,128.0,134.0#lat_typ=uni#lon_typ=grn_ctr --rgr scrip=${HOME}/grd_rgn.nc ~zender/nco/data/in.nc ~/foo.nc
+# ncks -O --rgr grd_ttl='Test grid'#latlon=24,32#snwe=-16.0,-9.0,128.0,134.0#lat_typ=uni#lon_typ=grn_ctr --rgr scrip=${HOME}/grd_rgn.nc ~zender/nco/data/in.nc ~/foo.nc
 # 2. Find or create data file with any 2D spatial variable on source grid on which (global) EAM ran
 # File dat_glb.nc will not be altered, and smaller is better/faster since it will be regridded:
 # ncks -O -v FSNT ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/dat_glb.nc
 # 3. Rename EAM output regional variables with rgn_rnm.sh:
-# ~/rgn_rnm.sh _128e_to_134e_9s_to_16s ~/rgn_in.nc ~/rgn_in_rnm.nc
+# ~/nco/data/rgn_rnm.sh _128e_to_134e_9s_to_16s ~/rgn_in.nc ~/rgn_in_rnm.nc
 # 4. Regrid file containing renamed variables with rgn_rgr.sh:
-# ~/rgn_rgr.sh 128.0 134.0 -16.0 -9.0 ~/dat_glb.nc ${DATA}/grids/ne30np4_pentagons.091226.nc ~/grd_rgn.nc ~/rgn_in_rnm.nc ~/dat_rgr.nc
+# ~/nco/data/rgn_rgr.sh 128.0 134.0 -16.0 -9.0 ~/dat_glb.nc ${DATA}/grids/ne30np4_pentagons.091226.nc ~/grd_rgn.nc ~/rgn_in_rnm.nc ~/dat_rgr.nc
 
-# Notes:
-# 1. lat/lon_min/max must be same format (degrees or radians, 0->360 or -180->+180) as in dat_rgn.nc
-# 2. Order of input bounding-box is WESN not WENS (may differ from EAM namelist-order)
-# 3. Script runs faster if dat_glb.nc contains only one 2D/3D variable (e.g., FSNT)
-# 4. dat_glb.nc need not have any data variable(s) in common with dat_rgn.nc
-# 5. grd_glb.nc is a dual-grid computed offline (it cannot be inferred) for all SE maps
+# Notes on input:
+# 1. lat/lon_min/max must be same format (degrees or radians, 0->360 or -180->+180) as dat_rgn.nc coordinates 
+# 2. lat/lon_min/max bounding-box need not exactly match, though it must overlap with, grd_rgn.nc
+# 3. Order of input bounding-box arguments is WESN not WENS (may differ from EAM namelist-order)
+# 4. Script runs faster if dat_glb.nc contains only one 2D/3D variable (e.g., FSNT)
+# 5. dat_glb.nc need not have any data variable(s) in common with dat_rgn.nc
+# 6. grd_glb.nc is a dual-grid computed offline (it cannot be inferred) for all SE maps
 
 alg_opt='conserve' # [sng] Weight-generation option
 dbg_lvl=0 # [enm] Debugging level
@@ -73,10 +74,10 @@ if [ ${dbg_lvl} -ne 2 ]; then
 fi # !dbg
 
 # Subset coordinates only to rectangular regional bounding box ("coordinate subset region")
-# NCO auxiliary hyperslabs grab all cells whose center lies in bounding-box
-# The vertices of these cells define the unstructured region to regrid
-# The specified bounding-box for cell centers must currently be lat/lon rectangular
-# The dual-grid of the regridded region will look "bumpy" at fine scales, due to non-rectangular SE weights
+# NCO auxiliary hyperslabs grab all cells whose centers lie in bounding-box
+# Vertices of these cells define unstructured region to regrid
+# Specified bounding-box for cell centers must currently be lat/lon rectangular
+# Dual-grid of regridded region will look "bumpy" at fine scales, due to non-rectangular SE weights
 # NCO <= 4.7.5 requires auxiliary coordinates (with -X) to have lat/lon standard_name attributes
 # NCO 4.7.6 may allow auxiliary coordinate hyperslabs without lat/lon standard_name attributes
 # For now, auxiliary coordinate hyperslabs only work on annotated data in dat_glb_nnt in NCO <= 4.7.5
@@ -91,8 +92,8 @@ if [ ${dbg_lvl} -ne 2 ]; then
     fi # !err
 fi # !dbg
 
-# Rename fields in regional input file
-# CAM SE namelist specifications/format for regional output are not crystal clear
+# Rename fields in EAM/CAM SE regional input file
+# Namelist specifications/format for regional output are not crystal clear
 # Multiple regions requested with namelist entries like (per Wuyin Lin)
 # fincl3 = 'T','PRECT','CLDTOT','LWCF'
 # fincl3lonlat = '120e_2n','262e_35n','120e:130e_2n:5n'
@@ -101,12 +102,15 @@ fi # !dbg
 # lat_128e_to_134e_9s_to_16s(ncol_128e_to_134e_9s_to_16s),
 # lon_128e_to_134e_9s_to_16s(ncol_128e_to_134e_9s_to_16s), 
 # PRECL_128e_to_134e_9s_to_16s(time,ncol_128e_to_134e_9s_to_16s)
-# NB: Same format applies to FV files
-# However, FV files may be directly regridded by using vertices on ncks-generated regional grid (http://nco.sf.net/nco.html#scrip)
-# FV output must be renamed as below, though does not require dual-grid gymnastics to obtain vertices
+# NB: Suffix-string coordinate order is (or can be) WENS (insanity!) while NCO prefers WESN (auxiliary hyperslab bounding-box (-X) format requires WESN though grid-generator also accepts SNWE)
+# NB: Same format applies to FV regional files and...
+# FV regional data may be directly regridded without dual-grid gymnastics!
+# 'ncremap -i dat_rgn_rnm -g grd_dst -o dat_rgr' approach works on FV regional files fxm: verify
+# because ncremap infers regional FV grids from rectangular data files (http://nco.sf.net/nco.html#infer) 
+# FV output must still be renamed first as below
 if [ 0 -eq 1 ] ; then
     dat_rgn_rnm="${dat_rgn}.rnm.tmp"
-    cmd_rnm[${fl_idx}]="~/rgn_rnm.sh ${rgn_sng} ${dat_rgn} ${dat_rgn_rnm}"
+    cmd_rnm[${fl_idx}]="~/rgn_rnm.sh ${rnm_sng} ${dat_rgn} ${dat_rgn_rnm}"
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_rnm[${fl_idx}]}
 	if [ $? -ne 0 ]; then
