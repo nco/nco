@@ -1,10 +1,12 @@
 2018-07-01  Charlie Zender  <zender@uci.edu>
 
-	* Designed API for merging rgn_rnm.sh and rgn_rgr.sh into ncremap
-
 	* NCO 4.7.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha02: Amsterdam';git push
-	git tag -a 4.7.6-alpha02 -m 'rgn_rnm.sh,rgn_rgr.sh;rgr XML,xmllint;nVertLevelsP1';git push --tags
+	git tag -a 4.7.6-alpha02 -m 'rgn_rnm.sh,rgn_rgr.sh;rgr XML,xmllint;nVertLevelsP1;ncremap --rnm,--bb_wesn';git push --tags
+
+	* Adopt RRG TLA for Regional Regridding syntax
+
+	* Designed API for merging rgn_rnm.sh and rgn_rgr.sh into ncremap
 
 	* Add original (Amsterdam) scripts for two-step regional regridding, rgn_rnm.sh + rgn_rgr.sh
 
