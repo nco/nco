@@ -1,3 +1,12 @@
+2018-07-02  Henry Butowsky <henryb@hush.com>
+	  
+	* validing the xml output against the schema ncml-2.2.xsd  revealed two issues that have now been fixed
+	In the element "ncml:variable" the child element "values" also required  the namespace prefix "ncml";
+	also the attribute "type" was incorrect for unsigned types.
+
+	* NOTE in the schema ncml-2.2.xsd - for ncml:attributes there is the xml att "isUnsigned" but this is not available for
+	ncml:variable ?
+
 2018-07-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.6-alpha02 release procedure:
