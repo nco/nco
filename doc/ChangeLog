@@ -1,5 +1,7 @@
 2018-07-01  Charlie Zender  <zender@uci.edu>
 
+	* Fix xmllint regression tests stdout
+
 	* NCO 4.7.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha02: Amsterdam';git push
 	git tag -a 4.7.6-alpha02 -m 'rgn_rnm.sh,rgn_rgr.sh;rgr XML,xmllint;nVertLevelsP1;ncremap --rrg_*';git push --tags

@@ -1027,23 +1027,23 @@ if [ "${prc_typ}" = 'mpas' ]; then
 fi # !mpas
 if [ "${prc_typ}" = 'rrg' ]; then 
     if [ -z "${bb_wesn}" ]; then 
-	echo "${spt_nm}: ERROR Regridding regional data requires --bb_wesn argument\n"
+	echo "${spt_nm}: ERROR Regional regridding requires --rrg_bb_wesn argument\n"
 	exit 1
     fi # !bb_wesn
     if [ -z "${dat_glb}" ]; then 
-	echo "${spt_nm}: ERROR Regridding regional data requires --dat_glb argument\n"
+	echo "${spt_nm}: ERROR Regional regridding requires --rrg_dat_glb argument\n"
 	exit 1
     fi # !dat_glb
     if [ -z "${grd_glb}" ]; then 
-	echo "${spt_nm}: ERROR Regridding regional data requires --grd_glb argument\n"
+	echo "${spt_nm}: ERROR Regional regridding requires --rrg_grd_glb argument\n"
 	exit 1
     fi # !grd_glb
     if [ -z "${grd_rgn}" ]; then 
-	echo "${spt_nm}: ERROR Regridding regional data requires --grd_rgn argument\n"
+	echo "${spt_nm}: ERROR Regional regridding requires --rrg_grd_rgn argument\n"
 	exit 1
     fi # !grd_rgn
     if [ -z "${rnm_sng}" ]; then 
-	echo "${spt_nm}: ERROR Regridding regional data requires --rnm_sng argument\n"
+	echo "${spt_nm}: ERROR Regional regridding requires --rrg_rnm_sng argument\n"
 	exit 1
     fi # !rnm_sng
 fi # !rrg
