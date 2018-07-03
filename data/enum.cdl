@@ -22,7 +22,7 @@ netcdf enum {
    ubyte enum enum_ubyte_t {Clear=0,Cumulonimbus=1,Stratus=2,Missing=128};
    short enum enum_sht_t {Small=-32000,Medium=0,Large=32767,missing_value=-32768};
    uint enum enum_uint_t {Greek_Καλημέρα=0,Japanese_キャク=1,Chinese_龥=3};
- // 20180522: Until today the base type of cargo was uint64. Changed it to uint because toolsUI 4.6.11 XML barfs on int64/uint64 enum because NcML lacks enum8 type. Once this changes can revert to uint64 (which works fine with C-library, NCO, and ncdump).
+    // 20180522: Until today the base type of cargo was uint64. Changed it to uint because toolsUI 4.6.11 XML barfs on int64/uint64 enum because NcML lacks enum8 type. Once this changes can revert to uint64 (which works fine with C-library, NCO, and ncdump).
    uint enum cargo {bags\ of\ the\ best\ Sligo\ rags = 1000000, 
 		      barrels\ of\ bones = 2000000, 
 		      bails\ of\ old\ nanny\ goats\'\ tails = 3000000, 
@@ -33,11 +33,14 @@ netcdf enum {
    ubyte enum special_characters_type {name\ with\ spaces=0,
 				       name1_\,_with_comma=1,
 				       name2\ \,\ with_comma=2,
-				       lost_value=128};
+   				       lost_value=128};
 
+   int64 enum Months {Jan=1, Feb=2, Mar=3, Apr=4, May=5, June=6, July=7, Aug=8, Sept=9, Oct=10, Nov=11, Dec=12, MISSING=9223372036854775807} ;
+ 
  dimensions:
    lat=2;
    lon=4;
+   sss=3;
    rec=8;
 
  variables:
@@ -58,7 +61,9 @@ netcdf enum {
    special_characters_type character_test(lon);
    special_characters_type character_test:_FillValue=lost_value;
 
- data:
+   Months Summer(sss);
+
+    data:
    cld_flg=Stratus,_,Cumulonimbus,Clear;
    size=_,Small,Medium,Large;
    language=Chinese_龥,Japanese_キャク,Greek_Καλημέρα,Greek_Καλημέρα;
@@ -77,4 +82,5 @@ netcdf enum {
 
  character_test=name\ with\ spaces,name1_\,_with_comma,name2\ \,\ with_comma,_;
 
+ Summer = June, July, Aug;
 } //end root group
