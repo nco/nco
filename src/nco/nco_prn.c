@@ -1642,18 +1642,28 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_out,"%*s%s ID = netCDF define order = %d\n",prn_ndn,spc_sng,var_trv->nm,var_id);
   } /* !trd */
   if(prn_flg->xml){
+    int bs_sz;
+    char *typ_nm=(char*)NULL;
+    
+    typ_nm=cdl_typ_nm_udt(grp_id,var_typ);
+    
     (void)fprintf(fp_out,"%*s<ncml:variable name=\"%s\" ",prn_ndn,spc_sng,var_trv->nm);
-    if(cls_typ == NC_ENUM){
-      char *typ_nm;
-      int bs_sz;
+    
+    if(cls_typ <= NC_MAX_ATOMIC_TYPE){
+      (void)fprintf(fp_out,"type=\"%s\"",xml_typ_nm(var_typ));    
+    }else if(cls_typ == NC_ENUM){
+
       bs_sz=(int)nco_typ_lng(bs_typ);
       bs_sz=(bs_sz > 4 ? 4 : bs_sz); // 20180608: NcML 2.2 lacks enum8 type https://github.com/Unidata/thredds/issues/1098
-      typ_nm=cdl_typ_nm_udt(grp_id,var_typ);
       (void)fprintf(fp_out,"type=\"enum%d\" typedef=\"%s\"",bs_sz,typ_nm);
-      typ_nm=(char *)nco_free(typ_nm);
-    }else{ /* !NC_ENUM */
-      (void)fprintf(fp_out,"type=\"%s\"",cdl_typ_nm_udt(nc_id,var_typ));
-    } /* !NC_ENUM */
+    }else if(cls_typ == NC_VLEN ){ /* ncml schema lacks a "type" relating to a VLEN so we will use the typedef instead. */ 
+      (void)fprintf(fp_out,"typedef=\"%s\"",typ_nm);
+    } else{
+      (void)fprintf(fp_out,"typedef=\"%s\"",typ_nm); /* for future use eg compound, opaque,  sequence */      
+    }
+      
+    if(typ_nm)
+      typ_nm=(char*)NULL;    
   } /* !XML */
 
   if(prn_flg->jsn) (void)fprintf(fp_out,"%*s\"%s\": {\n",prn_ndn,spc_sng,var_trv->nm);
@@ -2122,7 +2132,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       /* User may override default separator string for XML only */
       if(var->type == NC_STRING || var->type == NC_CHAR) spr_sng= (prn_flg->spr_chr) ? prn_flg->spr_chr : spr_xml_chr; else spr_sng= (prn_flg->spr_nmr) ? prn_flg->spr_nmr : spr_xml_nmr;
 
-      (void)fprintf(fp_out,"%*s<values",prn_ndn+prn_flg->var_fst,spc_sng);
+      (void)fprintf(fp_out,"%*s<ncml:values",prn_ndn+prn_flg->var_fst,spc_sng);
       /* Print non-whitespace separators between elements */
       if((var->sz == 1L && var->type == NC_STRING) || var->sz > 1L){
 	/* Ensure string variable value does not contain separator string */
@@ -2433,7 +2443,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
       } /* !dbg */
     } /* !CDL */
 
-    if(XML) (void)fprintf(fp_out,"</values>\n");
+    if(XML) (void)fprintf(fp_out,"</ncml:values>\n");
   } /* end if CDL_OR_JSN_OR_XML */
 
   if(var->nbr_dim == 0 && !dlm_sng && TRD){

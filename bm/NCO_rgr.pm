@@ -3073,6 +3073,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	$dsc_sng="ncks test --xml switch with groups" ;
 	$tst_cmd[0]="ncks --xml $fl_fmt $nco_D_flg $in_pth_arg in_grp.nc > %tmp_fl_00%";
 	$tst_cmd[1]="xmllint %tmp_fl_00% 2>&1 && echo xml_ok";
+	$tst_cmd[1]="xmllint --schema '../data/ncml-2.2.xsd' %tmp_fl_00% 1>: 2>&1 && echo xml_ok";
 	$tst_cmd[2]="xml_ok";   
 	$tst_cmd[3]="SS_OK";   
 	NCO_bm::tst_run(\@tst_cmd);
@@ -3082,6 +3083,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	$dsc_sng="ncks test --xml switch with regular in.nc" ;
 	$tst_cmd[0]="ncks --xml $fl_fmt $nco_D_flg $in_pth_arg in.nc > %tmp_fl_00%";
 	$tst_cmd[1]="xmllint %tmp_fl_00% 2>&1 && echo xml_ok";
+	$tst_cmd[1]="xmllint --schema '../data/ncml-2.2.xsd' %tmp_fl_00% 1>: 2>&1 && echo xml_ok";
 	$tst_cmd[2]="xml_ok";   
 	$tst_cmd[3]="SS_OK";   
 	NCO_bm::tst_run(\@tst_cmd);

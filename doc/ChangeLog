@@ -1,3 +1,11 @@
+2018-07-02  Henry Butowsky <henryb@hush.com>
+
+	* Validating XML output against ncml-2.2.xsd with xmllint revealed two issues now fixed:
+	1. In element "ncml:variable", child element "values" also requires namespace prefix "ncml"
+	2. Attribute "type" was incorrect for unsigned types
+
+	* NB: Schema ncml-2.2.xsd for ncml:attributes has XML attribute	"isUnsigned" and ncml:variable lacks this attribute
+
 2018-07-01  Charlie Zender  <zender@uci.edu>
 
 	* Fix xmllint regression tests stdout
