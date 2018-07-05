@@ -500,8 +500,8 @@ prs_cls::ncap_var_write_omp(
     
     /* Write/overwrite scale_factor and add_offset attributes */
     if(var->pck_ram){ /* Variable is packed in memory */
-      if(var->has_scl_fct) (void)nco_put_att(out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
-      if(var->has_add_fst) (void)nco_put_att(out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
+      if(var->has_scl_fct && var->scl_fct.vp) (void)nco_put_att(out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
+      if(var->has_add_fst && var->add_fst.vp) (void)nco_put_att(out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
     } /* endif pck_ram */
     
     /* Take output file out of define mode */
