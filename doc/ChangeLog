@@ -1,3 +1,8 @@
+2018-07-05  Henry Butowsky <henryb@hush.com>
+
+	* Fix  pack() function now working correctly when invoked in a code block that is double parsed.
+	  ncap2 pack regession test now works.
+	
 2018-07-02  Henry Butowsky <henryb@hush.com>
 
 	* Validating XML output against ncml-2.2.xsd with xmllint revealed two issues now fixed:
