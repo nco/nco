@@ -2024,6 +2024,28 @@ end0:         if(bret)
                    if(var_rhs->has_mss_val)
                         (void)nco_mss_val_cp(var_rhs,var_shp);
 
+                   if(var_rhs->has_add_fst)
+                   {
+                     var_shp->has_add_fst=1;  
+                     var_shp->add_fst.vp=var_rhs->add_fst.vp;
+                     var_rhs->has_add_fst=0;
+                     var_rhs->add_fst.vp=(void*)NULL;
+                   }
+
+                   if(var_rhs->has_scl_fct);
+                   {
+                     var_shp->has_scl_fct=1;  
+                     var_shp->scl_fct.vp=var_rhs->scl_fct.vp;
+                     var_rhs->has_scl_fct=0;
+                     var_rhs->scl_fct.vp=(void*)NULL;
+                   }
+                   var_rhs->pck_ram=False;
+                   
+                   if(var_shp->has_add_fst || var_shp->has_scl_fct)
+                       var_shp->pck_ram=True;
+                   else
+                       var_shp->pck_ram=False;
+                                            
                    var_rhs=nco_var_free(var_rhs);
                    var_rhs=var_shp;
 
