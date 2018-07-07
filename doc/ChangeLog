@@ -1,5 +1,9 @@
 2018-07-06  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.6-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha03: Repaint';git push
+	git tag -a 4.7.6-alpha03 -m 'ncremap RRG works;xmllint compliance;ncap2 pack() fix';git push --tags
+
 	* Implement rgn_rnm.sh and rgn_rgr.sh in ncremap
 
 2018-07-05  Henry Butowsky <henryb@hush.com>

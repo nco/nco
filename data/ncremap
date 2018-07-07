@@ -1570,7 +1570,7 @@ fi # !map_usr
 
 if [ "${prc_typ}" = 'rrg' ]; then 
     fl_idx=0
-    printf "Input assumed to be EAM/CAM-SE format regional data to regrid (aka RRG). RRG data are usually produced by explicitly requesting (sometimes multiple) regions from EAM/CAM-SE models with \"finclNlonlat\" namelist variable. Will first copy requested fields to new file with \"${rnm_sng}\" removed from dimension and variable names, and then create SCRIP-format regional source grid by cutting vertice information (originally from global dual-grid file ${grd_glb}) from rectangular WESN bounding box \"${bb_wesn}\" of identity-remapped (and thus vertice-annotated) copy of global data file ${dat_glb}.\n"
+    printf "Input assumed to be EAM/CAM-SE format regional data to regrid (aka RRG). RRG data are usually produced by explicitly requesting (sometimes multiple) regions from EAM/CAM-SE models with the \"finclNlonlat\" namelist variable. Will infer SCRIP-format regional source grid by cutting vertice information (originally from global dual-grid file ${grd_glb}) from rectangular WESN bounding box \"${bb_wesn}\" of identity-remapped (and thus vertice-annotated) copy of global data file ${dat_glb}. Will then create single map-file to regrid copy of requested fields with \"${rnm_sng}\" removed from dimension and variable names.\n"
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "RRG: Identity-remap global data file from/to dual-grid to annotate it with vertices...\n"
@@ -1617,23 +1617,6 @@ if [ "${prc_typ}" = 'rrg' ]; then
 	fi # !err
     fi # !dbg
 
-    if [ 0 -eq 1 ]; then
-	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "RRG: Use source grid inferral to regrid input regional data to desired output grid...\n"
-	fi # !vrb_lvl
-	cmd_rgn[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -g ${grd_dst} ${rgn_fl} ${fl_out[${fl_idx}]}"
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_rgn[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_rgn[${fl_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to regrid regional data. Debug this:\n${cmd_rgn[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    fi # !0
-    
     # Ensure map-generation uses RRG grid files
     grd_src=${grd_src_dfl}
     grd_dst=${grd_rgn}
@@ -1827,7 +1810,7 @@ fi # !sgs
 # Generate map-file once outside of file loop, and re-use it for every input file
 if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Source grid supplied by user as ${grd_src}\n"
+	printf "Source grid supplied by user (or derived from RRG or SGS procedures) as ${grd_src}\n"
     fi # !vrb_lvl
     fl_idx=0
     if [ "${wgt_typ}" = 'esmf' ]; then 
@@ -2149,20 +2132,20 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "RRG: Append renamed regional input data to annotated regional coordinate file...\n"
+	    printf "RRG: Append regional coordinates and vertices to renamed, annotated regional input data...\n"
 	fi # !vrb_lvl
-	cmd_apn[${fl_idx}]="ncks -A ${rnm_fl} ${rgn_fl}"
+	cmd_apn[${fl_idx}]="ncks -A ${rgn_fl} ${rnm_fl}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_apn[${fl_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_apn[${fl_idx}]}
 	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to append regional data to annotated regional coordinates. Debug this:\n${cmd_apn[${fl_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to append regional coordinates and vertices to annotated, regional input data. Debug this:\n${cmd_apn[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
-	in_fl=${rgn_fl}
+	in_fl=${rnm_fl}
     fi # !rrg
 
     # Block 5: Regrid
