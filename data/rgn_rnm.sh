@@ -5,10 +5,11 @@
 # Usage:
 # rgn_rnm.sh rnm_sng fl_in.nc fl_out.nc
 # where rnm_sng is region string that EAM constructs from namelist and appends to variables, e.g.,
-# ~/nco/data/rgn_rnm.sh _128e_to_134e_9s_to_16s ~/rgn_in.nc ~/rgn_in_rnm.nc
+# ~/nco/data/rgn_rnm.sh _128e_to_134e_9s_to_16s ~/dat_rgn.nc ~/dat_rgn_rnm.nc
+# Typically rgn_rnm.sh output (i.e., dat_rgn_rnm.nc) are used as input to rgn_rgr.sh
 
 # Namelist specifications/format for regional output are not crystal clear
-# Multiple regions requested with namelist entries like (per Wuyin Lin)
+# Multiple regions requested with finclNlonlat namelist entries like (per Wuyin Lin)
 # fincl3 = 'T','PRECT','CLDTOT','LWCF'
 # fincl3lonlat = '120e_2n','262e_35n','120e:130e_2n:5n'
 # Above example outputs variables for two single columns and one region
@@ -23,6 +24,9 @@
 # because ncremap infers regional FV grids from rectangular data files (http://nco.sf.net/nco.html#infer) 
 # FV output must still be renamed first as below
 
+# CAM namelist documentation on finclNlonlat (1 <= N <= 6):
+# "List of columns or contiguous columns at which the fincl1 fields will be output. Individual columns are specified as a string using a longitude degree (greater or equal to 0.) followed by a single character (e)ast/(w)est identifer, an underscore '_' , and a latitude degree followed by a single character (n)orth/(s)outh identifier.  For example, '10e_20n' would pick the model column closest to 10 degrees east longitude by 20 degrees north latitude.  A group of contiguous columns can be specified using bounding latitudes and longitudes separated by a colon.  For example, '10e:20e_15n:20n' would select the model columns which fall with in the longitude range from 10 east to 20 east and the latitude range from 15 north to 20 north."
+
 function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
 function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
 
@@ -34,9 +38,6 @@ fl_out=${3}
 
 var_lst=`ncvarlst ${fl_in} | grep ${rnm_sng}`
 dmn_lst=`ncdmnlst ${fl_in} | grep ${rnm_sng}`
-
-# Parse suffix for SNWE coordinates
-if [[ "${rnm_sng}" =~ ^(.*)([0-9][0-9][0-9][0-9][01][0-9].nc.?)$ ]]; then
 
 dmn_sng=''
 if [ -n "${dmn_lst}" ]; then

@@ -277,8 +277,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --dbg=1 --a2o -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # Debugging and Benchmarking:
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
-# RGN (201807):
-# ncremap -D 1 -a conserve -i ~/dat_rgn_rnm.nc --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_rgn=${HOME}/grd_rgn.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
+# RRG (201807):
+# ncremap -D 1 -a conserve -i ~/dat_rgn.nc --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_rgn=${HOME}/grd_rgn.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -515,11 +515,15 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     exit 1
 } # end fnc_usg_prn()
 
+# RRG processing needs NCO filters documented in http://nco.sf.net/nco.html#filter
+function ncvarlst { ncks --trd -m ${1} | grep -E ': type' | cut -f 1 -d ' ' | sed 's/://' | sort ; }
+function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
+
 function dst_is_grd {
     # Purpose: Is destination grid specified as SCRIP grid-file?
     # fxm: Not working yet
     # Figure-out whether data-file or grid-file and proceed accordingly
-    # Will allow ncremap to combine -d and -g switches
+    # Allow ncremap to combine -d and -g switches
     # Usage: dst_is_grd ${fl}
     fl=${1}
     flg='Yes'
@@ -763,7 +767,10 @@ grd_src_dfl="${drc_tmp}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) defau
 hnt_dst_fl="${drc_tmp}/ncremap_tmp_hnt_dst.txt" # [sng] Hint (for ERWG) destination
 hnt_src_fl="${drc_tmp}/ncremap_tmp_hnt_src.txt" # [sng] Hint (for ERWG) source
 ncwa_fl="${drc_tmp}/ncremap_tmp_ncwa.nc" # [sng] ncwa workflow (HIRDLS, MLS) default
+nnt_fl="${drc_tmp}/ncremap_tmp_nnt.nc" # [sng] Annotated global datafile (RRG) default
 pdq_fl="${drc_tmp}/ncremap_tmp_pdq.nc" # [sng] Permuted/Unpacked data default (AIRS, HIRDLS, MLS, MOD04, MPAS) 
+rgn_fl="${drc_tmp}/ncremap_tmp_rgn.nc" # [sng] Regional file with coordinates (RRG) default
+rnm_fl="${drc_tmp}/ncremap_tmp_rnm.nc" # [sng] Renamed regional (RRG) default
 tmp_out_fl="${drc_tmp}/${tmp_out_fl}" # [sng] Temporary output file
 znl_fl="${drc_tmp}/ncremap_tmp_znl.nc" # [sng] Zonal workflow (HIRDLS, MLS) default
 
@@ -779,12 +786,15 @@ if [ -n "${unq_usr}" ]; then
     fi # !unq_usr
 fi # !unq_sfx
 att_fl=${att_fl}${unq_sfx}
+rgn_fl=${rgn_fl}${unq_sfx}
 grd_dst_dfl=${grd_dst_dfl}${unq_sfx}
 grd_src_dfl=${grd_src_dfl}${unq_sfx}
 hnt_dst_fl=${hnt_dst_fl}${unq_sfx}
 hnt_src_fl=${hnt_src_fl}${unq_sfx}
 ncwa_fl=${ncwa_fl}${unq_sfx}
+nnt_fl=${nnt_fl}${unq_sfx}
 pdq_fl=${pdq_fl}${unq_sfx}
+rnm_fl=${rnm_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
@@ -1027,25 +1037,51 @@ if [ "${prc_typ}" = 'mpas' ]; then
 fi # !mpas
 if [ "${prc_typ}" = 'rrg' ]; then 
     if [ -z "${bb_wesn}" ]; then 
-	echo "${spt_nm}: ERROR Regional regridding requires --rrg_bb_wesn argument\n"
+	echo "${spt_nm}: ERROR Regional regridding requires comma-separated rectangular bounding box specified with --rrg_bb_wesn option\n"
 	exit 1
     fi # !bb_wesn
-    if [ -z "${dat_glb}" ]; then 
-	echo "${spt_nm}: ERROR Regional regridding requires --rrg_dat_glb argument\n"
-	exit 1
-    fi # !dat_glb
-    if [ -z "${grd_glb}" ]; then 
-	echo "${spt_nm}: ERROR Regional regridding requires --rrg_grd_glb argument\n"
-	exit 1
-    fi # !grd_glb
-    if [ -z "${grd_rgn}" ]; then 
-	echo "${spt_nm}: ERROR Regional regridding requires --rrg_grd_rgn argument\n"
-	exit 1
-    fi # !grd_rgn
     if [ -z "${rnm_sng}" ]; then 
-	echo "${spt_nm}: ERROR Regional regridding requires --rrg_rnm_sng argument\n"
+	echo "${spt_nm}: ERROR Regional regridding requires string suffix appended to variables in regional data file to be specified with --rrg_rnm_sng argument\n"
 	exit 1
     fi # !rnm_sng
+    if [ -n "${dat_rgn}" ]; then # NB: option currently not implemented, drop it?
+	fl_in[0]=${dat_rgn}
+    fi # !dat_glb
+    if [ -n "${dat_glb}" ]; then 
+	if [ ! -f "${dat_glb}" ]; then
+	    echo "ERROR: Unable to find specified global data file ${dat_glb}"
+	    exit 1
+	fi # ! -f
+    else
+	echo "${spt_nm}: ERROR Regional regridding requires global data coordinates in file specified with --rrg_dat_glb argument\n"
+	exit 1
+    fi # !dat_glb
+    if [ -n "${grd_glb}" ]; then 
+	if [ ! -f "${grd_glb}" ]; then
+	    echo "ERROR: Unable to find specified SCRIP-format global grid file ${grd_glb}"
+	    exit 1
+	fi # ! -f
+    else
+	echo "${spt_nm}: ERROR Regional regridding requires SCRIP-format grid for global data in file specified with --rrg_grd_glb argument\n"
+	exit 1
+    fi # !grd_glb
+    # User may specify final, regional destination grid with either -g or --rrg_grd_rgn
+    if [ -n "${grd_rgn}" ]; then 
+	grd_dst=${grd_rgn}
+    else
+	if [ -n "${grd_dst}" ]; then 
+	    grd_rgn=${grd_dst}
+	else
+	    echo "${spt_nm}: ERROR Regional regridding requires SCRIP-format destination grid for regional data in file specified with --rrg_grd_rgn or --grd_dst argument\n"
+	    exit 1
+	fi # !grd_dst
+    fi # !grd_rgn
+    if [ ! -f "${grd_rgn}" ]; then
+	echo "ERROR: Unable to find specified SCRIP-format regional grid file ${grd_rgn}"
+	exit 1
+    fi # ! -f
+    grd_dst_usr_flg='Yes'
+    hnt_dst='--dst_regional'
 fi # !rrg
 if [ "${prc_typ}" = 'alm' ] || [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'ctsm' ] || [ "${prc_typ}" = 'elm' ]; then 
     # Set ALM/CLM/ELM-specific options first, then change prc_typ to sgs
@@ -1329,6 +1365,11 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rnr_thr  = ${rnr_thr}\n"
+    printf "dbg: rrg_bb   = ${bb_wesn}\n"
+    printf "dbg: rrg_dat  = ${dat_glb}\n"
+    printf "dbg: rrg_glb  = ${grd_glb}\n"
+    printf "dbg: rrg_rgn  = ${grd_rgn}\n"
+    printf "dbg: rrg_rnm  = ${rnm_sng}\n"
     printf "dbg: sgs_frc  = ${sgs_frc}\n"
     printf "dbg: sgs_msk  = ${sgs_msk}\n"
     printf "dbg: sgs_nrm  = ${sgs_nrm}\n"
@@ -1435,7 +1476,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     fi # !mpas
     if [ "${prc_typ}" = 'sgs' ]; then 
 	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid for gridcell fraction specified by \"${sgs_frc}\" variable, not for entire gridcell_area (except where ${sgs_frc} = 1.0). Will first conservatively regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
-	if [ ${fl_nbr} -eq 0 ] || [ "${map_usr_flg}" = 'Yes' ]; then
+	if [ ${fl_nbr} -eq 0 ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires at least one data file (for the surface fractions of each gridcell)\n"
 	    echo "${spt_nm}: HINT Supply a data file with \"-i fl_in\""
 	    exit 1
@@ -1446,7 +1487,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    exit 1
 	fi # !wgt_typ
 	if [ "${grd_src_usr_flg}" != 'Yes' ]; then
-	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP source grid-file. Moreover, the source grid-file must include the (normally non-essential) grid_area field. It is infeasible to permit SGS source-grid inferral, because weight-generators assume great circle arcs but 2D-grids usually have small-circles in latitude, and this can lead to significant area mis-matches. Despite this, sub-gridscale handling is happy to infer destination (not source) grids.\n"
+	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP-format source grid-file. Moreover, the source grid-file must include the (normally non-essential) grid_area field. It is infeasible to permit SGS source-grid inferral, because weight-generators assume great circle arcs but 2D-grids usually have small-circles in latitude, and this can lead to significant area mis-matches. Despite this, sub-gridscale handling is happy to infer destination (not source) grids.\n"
 	    echo "${spt_nm}: HINT Supply source grid-file with \"-s grd_src\". If the source grid-file is unavailable, first multiply sub-grid fields by ${sgs_frc} (with, e.g., ncap2 -s \"foo*=${sgs_frc};\" in.nc out.nc) and then regrid as normal without invoking sub-gridscale handling, i.e., omit the '-P sgs' and '--sgs_*' options."
 	    exit 1
 	    # 20170511: Inferring source grids leads to ~2% biases with conservative regridding and 2D source grids
@@ -1526,6 +1567,77 @@ else # !map_usr_flg
 	fi # !fl_nbr
     fi # !vrb_lvl
 fi # !map_usr
+
+if [ "${prc_typ}" = 'rrg' ]; then 
+    fl_idx=0
+    printf "Input assumed to be EAM/CAM-SE format regional data to regrid (aka RRG). RRG data are usually produced by explicitly requesting (sometimes multiple) regions from EAM/CAM-SE models with \"finclNlonlat\" namelist variable. Will first copy requested fields to new file with \"${rnm_sng}\" removed from dimension and variable names, and then create SCRIP-format regional source grid by cutting vertice information (originally from global dual-grid file ${grd_glb}) from rectangular WESN bounding box \"${bb_wesn}\" of identity-remapped (and thus vertice-annotated) copy of global data file ${dat_glb}.\n"
+
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	printf "RRG: Identity-remap global data file from/to dual-grid to annotate it with vertices...\n"
+    fi # !vrb_lvl
+    cmd_nnt[${fl_idx}]="ncremap --vrb=0 -a bilin -s ${grd_glb} -g ${grd_glb} ${dat_glb} ${nnt_fl}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_nnt[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_nnt[${fl_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "${spt_nm}: ERROR Failed to identity-remap to annotate global data file. Debug this:\n${cmd_nnt[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	printf "RRG: Subset coordinates to rectangular WESN regional bounding box ${bb_wesn}...\n"
+    fi # !vrb_lvl
+    cmd_sbs[${fl_idx}]="ncks -O -v lat,lon -X ${bb_wesn} ${nnt_fl} ${rgn_fl}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_sbs[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_sbs[${fl_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "${spt_nm}: ERROR Failed to subset and hyperslab coordinates into regional file. Debug this:\n${cmd_sbs[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	printf "RRG: Infer source grid from subsetted, annotated, regional coordinate file...\n"
+    fi # !vrb_lvl
+    cmd_nfr[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src_dfl} ${rgn_fl} ${tmp_out_fl}"
+    if [ ${dbg_lvl} -ge 1 ]; then
+	echo ${cmd_nfr[${fl_idx}]}
+    fi # !dbg
+    if [ ${dbg_lvl} -ne 2 ]; then
+	eval ${cmd_nfr[${fl_idx}]}
+	if [ $? -ne 0 ]; then
+	    printf "${spt_nm}: ERROR Failed to infer source grid from subsetted, annotated, regional coordinate file. Debug this:\n${cmd_nfr[${fl_idx}]}\n"
+	    exit 1
+	fi # !err
+    fi # !dbg
+
+    if [ 0 -eq 1 ]; then
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	    printf "RRG: Use source grid inferral to regrid input regional data to desired output grid...\n"
+	fi # !vrb_lvl
+	cmd_rgn[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -g ${grd_dst} ${rgn_fl} ${fl_out[${fl_idx}]}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_rgn[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_rgn[${fl_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to regrid regional data. Debug this:\n${cmd_rgn[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    fi # !0
+    
+    # Ensure map-generation uses RRG grid files
+    grd_src=${grd_src_dfl}
+    grd_dst=${grd_rgn}
+fi # !rrg
 
 if [ "${prc_typ}" = 'sgs' ]; then 
 
@@ -1710,10 +1822,10 @@ if [ "${prc_typ}" = 'sgs' ]; then
     grd_dst=${grd_dst_sgs}
 fi # !sgs
 
-# If user provides source gridfile, or it was inferred in sub_grid mode, assume it applies to every input file
+# If user provides source gridfile, or it was inferred in RRG or SGS modes, assume it applies to every input file
 # Do not infer source gridfiles from input files within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
-if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'sgs' ]; then
+if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Source grid supplied by user as ${grd_src}\n"
     fi # !vrb_lvl
@@ -1793,7 +1905,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'sgs' ]; then
 	fi # !dbg
     fi # !trn_map
     # Set map_mk to something besides 'Yes' to avoid re-generating map within file loop
-    map_mk='Already made map once. Never again.'
+    map_mk='Already made map once. Never again!'
 fi # !grd_src_usr_flg
 
 # Begin loop over input files
@@ -1828,8 +1940,9 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fl_out[${fl_idx}]=${out_fl}
 
     # Generate new map unless map-file was supplied or already-generated
-    # NB: Sub-grid infers (if necessary) source grid outside file loop, and forbids multiple source grids
-    # Sub-grid also produces map before file loop, and will not make maps inside file loop
+    # NB: RRG infers source grid outside file loop, and forbids multiple source grids
+    # NB: SGS infers (if necessary) source grid outside file loop, and forbids multiple source grids
+    # RRG and SGS also produce map before file loop, and will not make maps inside file loop
     if [ "${map_mk}" = 'Yes' ]; then
 
 	# Block 1: Special cases
@@ -2001,6 +2114,57 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
     fi # !pdq_opt
 
+    # Block 4c: RRG
+    if [ "${prc_typ}" = 'rrg' ]; then 
+	rrg_var_lst=`ncvarlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
+	rrg_dmn_lst=`ncdmnlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
+	
+	dmn_sng=''
+	if [ -n "${rrg_dmn_lst}" ]; then
+	    for dmn in ${rrg_dmn_lst} ; do
+		dmn_sng="${dmn_sng} -d ${dmn},${dmn/${rnm_sng}/}"
+	    done # !dmn
+	fi # !rrg_dmn_lst
+	
+	var_sng=''
+	if [ -n "${rrg_var_lst}" ]; then
+	    for var in ${rrg_var_lst} ; do
+		var_sng="${var_sng} -v ${var},${var/${rnm_sng}/}"
+	    done # !rrg_var_lst
+	fi # !rrg_var_lst
+	
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	    printf "RRG: Remove \"${rnm_sng}\" from dimension and variable names...\n"
+	fi # !vrb_lvl
+	cmd_rnm[${fl_idx}]="ncrename -O ${dmn_sng} ${var_sng} ${fl_in[${fl_idx}]} ${rnm_fl}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_rnm[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_rnm[${fl_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to rename regional input file. Debug this:\n${cmd_rnm[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+	
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	    printf "RRG: Append renamed regional input data to annotated regional coordinate file...\n"
+	fi # !vrb_lvl
+	cmd_apn[${fl_idx}]="ncks -A ${rnm_fl} ${rgn_fl}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_apn[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_apn[${fl_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to append regional data to annotated regional coordinates. Debug this:\n${cmd_apn[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+	in_fl=${rgn_fl}
+    fi # !rrg
+
     # Block 5: Regrid
     if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	printf "Map/Wgt  : ${map_fl}\n"
@@ -2144,7 +2308,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Clean-up intermediate files...\n"
     fi # !vrb_lvl
-    /bin/rm -f ${att_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${pdq_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${att_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${pdq_fl} ${rgn_fl} ${rnm_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files.\n"

@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.6-alpha02
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 10 June 2018
-@set update-month June 2018
+@set update-date 6 July 2018
+@set update-month July 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -23514,6 +23514,11 @@ The sole effect of these flags is to add the arguments
 calls.
 Supplying regional grids without invoking these flags may dramatically 
 increase the map-file size and time to compute.
+According to @acronym{E3SM} @acronym{MPAS} documentation, @acronym{ERWG}
+``considers a mesh to be regional when the mesh is not a full sphere
+(including if it is planar and does not cover the full sphere).
+In other words, all @acronym{MPAS-O} and @acronym{MPAS-LI} grids are
+regional'' to @acronym{ERWG}.
 
 @html
 <a name="grd_src"></a> <!-- http://nco.sf.net/nco.html#grd_src -->

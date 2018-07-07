@@ -13,7 +13,7 @@
 # dat_glb.nc is global output file from EAM containing at least one 2D variable (read-only)
 # grd_glb.nc is gridfile in SCRIP format of dat_glb.nc (i.e., global dual-grid) (read-only)
 # grd_rgn.nc is destination gridfile in SCRIP format for regional output (can be regional) (read-only)
-# dat_rgn.nc is regional output file from EAM containing at least one 2D variable (read-only)
+# dat_rgn.nc is regional output file from EAM containing at least one (renamed) 2D variable (read-only)
 # dat_rgr.nc is regional output file regridded to destination grid (i.e., the answers)
 
 # Example:
@@ -23,9 +23,9 @@
 # File dat_glb.nc will not be altered, and smaller is better/faster since it will be regridded:
 # ncks -O -v FSNT ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/dat_glb.nc
 # 3. Rename EAM output regional variables with rgn_rnm.sh:
-# ~/nco/data/rgn_rnm.sh _128e_to_134e_9s_to_16s ~/rgn_in.nc ~/rgn_in_rnm.nc
+# ~/nco/data/rgn_rnm.sh _128e_to_134e_9s_to_16s ~/dat_rgn.nc ~/dat_rgn_rnm.nc
 # 4. Regrid file containing renamed variables with rgn_rgr.sh:
-# ~/nco/data/rgn_rgr.sh 128.0 134.0 -16.0 -9.0 ~/dat_glb.nc ${DATA}/grids/ne30np4_pentagons.091226.nc ~/grd_rgn.nc ~/rgn_in_rnm.nc ~/dat_rgr.nc
+# ~/nco/data/rgn_rgr.sh 128.0 134.0 -16.0 -9.0 ~/dat_glb.nc ${DATA}/grids/ne30np4_pentagons.091226.nc ~/grd_rgn.nc ~/dat_rgn_rnm.nc ~/dat_rgr.nc
 
 # Notes on input:
 # 1. lat/lon_min/max must be same format (degrees or radians, 0->360 or -180->+180) as dat_rgn.nc coordinates 
@@ -34,6 +34,7 @@
 # 4. Script runs faster if dat_glb.nc contains only one 2D/3D variable (e.g., FSNT)
 # 5. dat_glb.nc need not have any data variable(s) in common with dat_rgn.nc
 # 6. grd_glb.nc is a dual-grid computed offline (it cannot be inferred) for all SE maps
+# 7. dat_rgn.nc must contain renamed (e.g., with rgn_rnm.sh) dimensions/variables (not original names)
 
 alg_opt='conserve' # [sng] Weight-generation option
 dbg_lvl=0 # [enm] Debugging level
@@ -58,6 +59,7 @@ dat_rgr=${9}
 # Later we cull vertice information from dat_glb_nnt, to infer dual-grid of regional data in dat_rgn
 # ERWG cannot detect that this is an identity remapping and, sadly, recomputes area/weight information
 # Grid inferral only needs vertice (not area) information so this regrid is wasteful
+# Always use fastest regridding method (bilinear?) since weights not used or needed
 # Tempest intelligently identity-remaps SE grid (in .g format), yet emits no vertice information
 # Presumably this is because Tempest SE->SE algorithm is high-order, does not use vertices
 # Does Tempest output vertices when fed with dual-grid in SCRIP format? fxm: Probably. fxm: Test this
@@ -68,12 +70,12 @@ cmd_nnt[${fl_idx}]="ncremap --dbg=${dbg_lvl} --vrb=${vrb_lvl} -a bilin -s ${grd_
 if [ ${dbg_lvl} -ne 2 ]; then
     eval ${cmd_nnt[${fl_idx}]}
     if [ $? -ne 0 ]; then
-	printf "${spt_nm}: ERROR Failed to annotate global data file. Debug this:\n${cmd_nnt[${fl_idx}]}\n"
+	printf "${spt_nm}: ERROR Failed identity-remap to annotate global data file. Debug this:\n${cmd_nnt[${fl_idx}]}\n"
 	exit 1
     fi # !err
 fi # !dbg
 
-# Subset coordinates only to rectangular regional bounding box ("coordinate subset region")
+# Subset coordinates to rectangular regional bounding box ("coordinate subset region")
 # NCO auxiliary hyperslabs grab all cells whose centers lie in bounding-box
 # Vertices of these cells define unstructured region to regrid
 # Specified bounding-box for cell centers must currently be lat/lon rectangular
