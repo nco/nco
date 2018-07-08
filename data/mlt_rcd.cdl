@@ -1,0 +1,26 @@
+// -*-C++-*-
+// Purpose: CDL file to test multiple record dimensions
+
+// Usage:
+// ncgen -k netCDF-4 -b -o ~/nco/data/mlt_rcd.nc ~/nco/data/mlt_rcd.cdl
+// ncrcat -O -p ~/nco/data mlt_rcd.nc mlt_rcd.nc ~/foo.nc
+
+netcdf mlt_rcd {
+
+ dimensions:
+  time1=unlimited; 
+  time2=unlimited; 
+  time3=unlimited; 
+
+ variables:
+  int var1(time1);
+  int var2(time2);
+  int var3(time3);
+
+ data:
+  var1=1;
+  var2=2,2;
+  var3=3,3,3;
+
+} // end root group
+

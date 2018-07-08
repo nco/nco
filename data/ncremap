@@ -280,6 +280,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # RRG (201807):
 # ncremap -D 1 -a conserve -i ~/dat_rgn.nc --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_rgn=${HOME}/grd_rgn.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
 # ncremap -D 0 --vrb=1 -a conserve --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
+# ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
+# ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -1037,14 +1039,6 @@ if [ "${prc_typ}" = 'mpas' ]; then
     fi # !rnr_thr
 fi # !mpas
 if [ "${prc_typ}" = 'rrg' ]; then 
-    if [ -z "${bb_wesn}" ]; then 
-	echo "${spt_nm}: ERROR Regional regridding requires comma-separated rectangular bounding box specified with --rrg_bb_wesn option\n"
-	exit 1
-    fi # !bb_wesn
-    if [ -z "${rnm_sng}" ]; then 
-	echo "${spt_nm}: ERROR Regional regridding requires string suffix appended to variables in regional data file to be specified with --rrg_rnm_sng argument\n"
-	exit 1
-    fi # !rnm_sng
     if [ -n "${dat_rgn}" ]; then # NB: option currently not implemented, drop it?
 	fl_in[0]=${dat_rgn}
     fi # !dat_glb
@@ -1573,6 +1567,67 @@ fi # !map_usr
 
 if [ "${prc_typ}" = 'rrg' ]; then 
     fl_idx=0
+
+    if [ -z "${rnm_sng}" ]; then 
+	# Discern rename string from input file
+	rnm_sng=`ncks -m ${fl_in[${fl_idx}]} | cut -d ':' -f 1 | cut -d '=' -s -f 1 | grep ncol | sed 's/ncol//' | sed -e 's/^ *//' -e 's/ *$//'`
+	rgn_nbr=`echo ${rnm_sng} | wc -l`
+	if [ "${rgn_nbr}" -ne 1 ]; then
+	    echo "ERROR: Inferred regional regridding suffix '${rnm_sng}' indicates multiple regions present in input file. ncremap only works on one region at a time."
+	    echo "HINT: Give a single region string as the argument to --rrg_rnm_sng"
+	    exit 1
+	fi # !rgn_nbr
+	echo "${spt_nm}: INFO Parsed input file dimension list to obtain regional suffix string '${rnm_sng}'"
+    fi # !rnm_sng
+    if [ -n "${rnm_sng}" ]; then 
+	if [ -n "${bb_wesn}" ]; then 
+	    echo "${spt_nm}: INFO Will use explicitly specified comma-separated rectangular WESN bounding box string ${bb_west} instead of parsing string suffix ${rnm_sng}."
+	else # !bb_wesn
+	    rnm_rx='^_(.*)_to_(.*)_(.*)_to_(.*)$'
+	    if [[ "${rnm_sng}" =~ ${rnm_rx} ]]; then
+		lon1=${BASH_REMATCH[1]%?}
+		lon2=${BASH_REMATCH[2]%?}
+		if [ "${BASH_REMATCH[1]: -1}" = 'w' ]; then
+		    let lon1=360-${lon1}
+		fi # !w
+		if [ "${BASH_REMATCH[2]: -1}" = 'w' ]; then
+		    let lon2=360-${lon2}
+		fi # !w
+		if [ ${lon1} -lt ${lon2} ]; then
+		    lon_min=${lon1}
+		    lon_max=${lon2}
+		else
+		    lon_min=${lon2}
+		    lon_max=${lon1}
+		fi # !lon1
+		lat1=${BASH_REMATCH[3]%?}
+		lat2=${BASH_REMATCH[4]%?}
+		if [ "${BASH_REMATCH[3]: -1}" = 's' ]; then
+		    let lat1=-${lat1}
+		fi # !w
+		if [ "${BASH_REMATCH[4]: -1}" = 's' ]; then
+		    let lat2=-${lat2}
+		fi # !w
+		if [ ${lat1} -lt ${lat2} ]; then
+		    lat_min=${lat1}
+		    lat_max=${lat2}
+		else
+		    lat_min=${lat2}
+		    lat_max=${lat1}
+		fi # !lat1
+	    else # !rnm_sng
+		echo "ERROR: Regional regridding suffix string '${rnm_sng}' does not match regular expression '${rnm_rx}'"
+		echo "HINT: Regional regridding suffix string must have form like '_128e_to_134e_9s_to_16s' or '_20w_to_20e_10s_to_10n'"
+		exit 1
+	    fi # !rnm_sng
+	    bb_wesn="${lon_min},${lon_max},${lat_min},${lat_max}"
+	    echo "${spt_nm}: INFO Parsed suffix string ${rnm_sng} to obtain comma-separated rectangular WESN bounding box string ${bb_wesn}"
+	fi # !bb_wesn
+    else
+	echo "${spt_nm}: ERROR Regional regridding requires string suffix appended to variables in regional data file to be specified with --rrg_rnm_sng argument"
+	exit 1
+    fi # !rnm_sng
+
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Input assumed to be EAM/CAM-SE format regional data to regrid (aka RRG). RRG data are usually produced by explicitly requesting (sometimes multiple) regions from EAM/CAM-SE models with the \"finclNlonlat\" namelist variable. Will infer SCRIP-format regional source grid by cutting vertice information (originally from global dual-grid file ${grd_glb}) from rectangular WESN bounding box \"${bb_wesn}\" of identity-remapped (and thus vertice-annotated) copy of global data file ${dat_glb}. Will then create single map-file to regrid copy of requested fields with \"${rnm_sng}\" removed from dimension and variable names.\n"
     fi # !vrb_lvl
@@ -2104,14 +2159,20 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 
     # Block 4c: RRG
     if [ "${prc_typ}" = 'rrg' ]; then 
-	rrg_var_lst=`ncvarlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
 	rrg_dmn_lst=`ncdmnlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
+	rrg_var_lst=`ncvarlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
 	
 	dmn_sng=''
 	if [ -n "${rrg_dmn_lst}" ]; then
 	    for dmn in ${rrg_dmn_lst} ; do
 		dmn_sng="${dmn_sng} -d ${dmn},${dmn/${rnm_sng}/}"
 	    done # !dmn
+	else # !rrg_dmn_lst
+	    echo "ERROR: Regional regridding suffix string '${rnm_sng}' not found in any dimension names in ${fl_in[${fl_idx}]}"
+	    echo "HINT: Regional regridding input files must contain dimensions and variables whose names end with the ALM/CAM-SE created (from finclNlonlat namelist input) regional suffix string, e.g., '_128e_to_134e_9s_to_16s'. Valid regional suffix strings for this input file are:"
+	    eval "ncks -m ${fl_in[${fl_idx}]} | cut -d ':' -f 1 | cut -d '=' -s -f 1 | grep ncol | sed 's/ncol//' | sed -e 's/^ *//' -e 's/ *$//'"
+	    echo "Use exactly one of these strings as the argument to --rrg_rnm_sng"
+	    exit 1
 	fi # !rrg_dmn_lst
 	
 	var_sng=''
