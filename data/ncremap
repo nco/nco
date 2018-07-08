@@ -279,6 +279,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
 # RRG (201807):
 # ncremap -D 1 -a conserve -i ~/dat_rgn.nc --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_rgn=${HOME}/grd_rgn.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
+# ncremap -D 0 --vrb=1 -a conserve --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -1129,11 +1130,13 @@ else
     grd_dst=${grd_dst_dfl} # [sng] Grid-file default
 fi # !grd_dst
 if [ -n "${grd_src}" ]; then 
-    if [ ! -f "${grd_src}" ]; then
-	echo "ERROR: Unable to find specified source grid-file ${grd_src}"
-	exit 1
-    fi # ! -f
-    grd_src_usr_flg='Yes'
+    if [ "${prc_typ}" != 'rrg' ]; then 
+	if [ ! -f "${grd_src}" ]; then
+	    echo "ERROR: Unable to find specified source grid-file ${grd_src}"
+	    exit 1
+	fi # ! -f
+	grd_src_usr_flg='Yes'
+    fi # !rrg
 else
     grd_src=${grd_src_dfl} # [sng] Grid-file default
 fi # !grd_src
@@ -1570,7 +1573,9 @@ fi # !map_usr
 
 if [ "${prc_typ}" = 'rrg' ]; then 
     fl_idx=0
-    printf "Input assumed to be EAM/CAM-SE format regional data to regrid (aka RRG). RRG data are usually produced by explicitly requesting (sometimes multiple) regions from EAM/CAM-SE models with the \"finclNlonlat\" namelist variable. Will infer SCRIP-format regional source grid by cutting vertice information (originally from global dual-grid file ${grd_glb}) from rectangular WESN bounding box \"${bb_wesn}\" of identity-remapped (and thus vertice-annotated) copy of global data file ${dat_glb}. Will then create single map-file to regrid copy of requested fields with \"${rnm_sng}\" removed from dimension and variable names.\n"
+    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	printf "Input assumed to be EAM/CAM-SE format regional data to regrid (aka RRG). RRG data are usually produced by explicitly requesting (sometimes multiple) regions from EAM/CAM-SE models with the \"finclNlonlat\" namelist variable. Will infer SCRIP-format regional source grid by cutting vertice information (originally from global dual-grid file ${grd_glb}) from rectangular WESN bounding box \"${bb_wesn}\" of identity-remapped (and thus vertice-annotated) copy of global data file ${dat_glb}. Will then create single map-file to regrid copy of requested fields with \"${rnm_sng}\" removed from dimension and variable names.\n"
+    fi # !vrb_lvl
 
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "RRG: Identity-remap global data file from/to dual-grid to annotate it with vertices...\n"
@@ -1605,7 +1610,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "RRG: Infer source grid from subsetted, annotated, regional coordinate file...\n"
     fi # !vrb_lvl
-    cmd_nfr[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src_dfl} ${rgn_fl} ${tmp_out_fl}"
+    cmd_nfr[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${rgn_fl} ${tmp_out_fl}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_nfr[${fl_idx}]}
     fi # !dbg
@@ -1616,10 +1621,6 @@ if [ "${prc_typ}" = 'rrg' ]; then
 	    exit 1
 	fi # !err
     fi # !dbg
-
-    # Ensure map-generation uses RRG grid files
-    grd_src=${grd_src_dfl}
-    grd_dst=${grd_rgn}
 fi # !rrg
 
 if [ "${prc_typ}" = 'sgs' ]; then 
@@ -1813,6 +1814,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 	printf "Source grid supplied by user (or derived from RRG or SGS procedures) as ${grd_src}\n"
     fi # !vrb_lvl
     fl_idx=0
+    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
+	printf "Grid(src): ${grd_src}\n"
+	printf "Grid(dst): ${grd_dst}\n"
+    fi # !vrb_lvl
     if [ "${wgt_typ}" = 'esmf' ]; then 
 	rgn_opt=''
 	if [ -n "${hnt_src}" ]; then

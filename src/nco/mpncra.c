@@ -734,7 +734,7 @@ main(int argc,char **argv)
     if(prc_nbr > 0 && HISTORY_APPEND) (void)nco_mpi_att_cat(out_id,prc_nbr);
 #endif /* !ENABLE_MPI */
     
-    if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+    if(thr_nbr > 1 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
     
     /* Define dimensions in output file */
     (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);

@@ -286,7 +286,7 @@ nco612. ncks ncdump-like features for netCDF4 files structures
 nco616: netCDF4 breaks assumption that range/precision increases with nc_type enum
 nco622. NULL'ify opt_crr unless opt_lng detected?
 nco624. mpi: Document MPI in users guide/manual
-nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_att_cat()?
+nco630. Change if thr_nbr > 0 to if thr_nbr > 1 for nco_thr_att_cat()? Done 20180708
 nco631. Change usleep() to nanosleep()
 nco635. ncwa: MACOSX "regressions" caused by broken FREEBSD/MACOSX 'cut' binary
         Solution may be to install GNU textutils?

@@ -1134,7 +1134,7 @@ main(int argc,char **argv)
       if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
       if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
       if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
-      if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+      if(thr_nbr > 1 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
       /* Regrid fields or generate grids */
       rcd=nco_rgr_ctl(rgr_nfo,trv_tbl);
