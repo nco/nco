@@ -666,7 +666,7 @@ nco_check_nm_aux
   int var_att_nbr;          /* [nbr] Number of attributes */
   int var_dmn_nbr;          /* [nbr] Number of dimensions */
 
-  size_t att_lng;
+  long att_lng;
   nc_type var_typ;          /* [enm] variable type */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
