@@ -86,7 +86,17 @@ nco_find_lat_lon_trv
  nc_type *crd_typ,                   /* I/O [enm] netCDF type of both "latitude" and "longitude" */
  char units[]);                      /* I/O [sng] Units of both "latitude" and "longitude" */
 
+nco_bool 
+nco_check_nm_aux
+(const int nc_id,                    /* I [ID] netCDF file ID */
+ const trv_sct * const var_trv,      /* I [sct] Variable object that contains "standard_name" attribute */
+ int *dmn_id,                        /* I/O [id] Dimension ID of the diension of "latitude" and "longitude" */
+ nc_type *crd_typ,                   /* I/O [enm] netCDF type of both "latitude" and "longitude" */
+ char units[]);                      /* I/O [sng] Units of both "latitude" and "longitude" */
 
+
+
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

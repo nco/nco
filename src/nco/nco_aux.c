@@ -636,3 +636,79 @@ nco_find_lat_lon_trv
   return False;
 
 } /* end nco_find_lat_lon_trv() */
+
+
+
+nco_bool 
+nco_check_nm_aux
+(const int nc_id,                    /* I [ID] netCDF file ID */
+ const trv_sct * const var_trv,      /* I [sct] Variable to search for "standard_name" attribute */
+ int *dmn_id,                        /* I/O [id] Dimension ID of "latitude" and "longitude" */
+ nc_type *crd_typ,                   /* I/O [enm] netCDF type of both "latitude" and "longitude" */
+ char units[])                       /* I/O [sng] Units of both "latitude" and "longitude" */
+{
+  /* Purpose: Find auxiliary coordinate variables that map to latitude/longitude 
+     Find variables with standard_name = "latitude" and "longitude"
+     Return true if both latitude and longitude standard names are found
+     Also return needed information about these auxiliary coordinates
+     Assumes that units and types for latitude and longitude are identical
+     Caller responsible for memory management for variable names
+     Memory for unit strings must be freed by caller */
+  
+  const char fnc_nm[]="nco_check_nm_aux()";
+
+  char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
+  char var_nm[NC_MAX_NAME];
+  int rcd;
+  int grp_id;               /* [id] Group ID */
+  int var_id;               /* [id] Variable ID */
+  int var_dimid[NC_MAX_VAR_DIMS]; /* [enm] Dimension ID */
+  int var_att_nbr;          /* [nbr] Number of attributes */
+  int var_dmn_nbr;          /* [nbr] Number of dimensions */
+
+  size_t att_lng;
+  nc_type var_typ;          /* [enm] variable type */
+
+  assert(var_trv->nco_typ == nco_obj_typ_var);
+
+  if(var_trv->is_1D_crd || var_trv->is_1D_rec_crd ||  var_trv->is_crd_var) 
+    return False;
+
+  
+  /* Obtain group ID */
+  (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
+
+  /* Obtain variable ID */
+  (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
+
+  /* obtain variable meta-data  */
+  (void)nco_inq_var(grp_id,var_id,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
+
+  assert(var_att_nbr == var_trv->nbr_att);
+
+  /* Assume same units (degrees or radians) for both lat and lon */
+  rcd=nco_inq_attlen_flg(grp_id,var_id,"units",&att_lng);
+  
+  if(rcd != NC_NOERR){
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: %s reports CF convention requires \"%s\" to have units attribute\n",nco_prg_nm_get(),fnc_nm,var_nm);
+    return False;
+  } /* endif */
+  
+  NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
+  units[att_lng]='\0';
+
+  //if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
+  if(var_dmn_nbr >1 )
+    return False;
+  
+  
+  /* Copy values to export */
+  *crd_typ=var_typ;
+  *dmn_id=var_dimid[0];
+
+
+
+  return True;
+
+} /* end nco_check_nm_aux */
+
