@@ -22435,10 +22435,13 @@ When no @var{input-file} is provided, @command{ncremap} operates in
 ``map-only'' mode where it exits after producing an annotated map-file. 
 @command{ncremap} was introduced to @acronym{NCO} in version 4.5.4
 (December, 2015). 
-As a newer operator, its interface is evolving in response to user
-needs, feedback, and new features. 
+As a newer operator, we continuously improve it with new features in
+response to user needs and feedback, yet its interface is unchanged so
+older versions work as before and newer versions have more features,
+options, and robustness.
+
 @command{ncremap} orchestrates the regridding features of several
-different programs.
+different programs including other @acronym{NCO} operators.
 Under the hood @acronym{NCO} applies pre-computed remapping weights or, 
 when necessary, generates and infers grids, and calls external programs
 to generate the remapping weights that @acronym{NCO} then applies.  
@@ -22458,8 +22461,8 @@ external executables to produce a friendly interface to regridding.
 Without any external dependencies, @command{ncremap} applies weights
 from a pre-exisiting mapfile to a source data file to produce a
 regridded dataset. 
-Source and destination datasets may be on any Curvilinear, Rectangular,
-or Unstructured Data (@acronym{CRUD}) grid. 
+Source and destination datasets may be on any Swath, Curvilinear,
+Rectangular, or Unstructured Data (@acronym{SCRUD}) grid. 
 @command{ncremap} will also, when necessary, use external programs
 @acronym{ESMF}'s @command{ESMF_RegridWeightGen} (@acronym{ERWG}) or 
 TempestRemap's
