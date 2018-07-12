@@ -22524,10 +22524,18 @@ Features common to many operators are described in
 @html
 <a name="alg_typ"></a> <!-- http://nco.sf.net/nco.html#alg_typ -->
 <a name="neareststod"></a> <!-- http://nco.sf.net/nco.html#neareststod -->
+<a name="nstod"></a> <!-- http://nco.sf.net/nco.html#nstod -->
+<a name="stod"></a> <!-- http://nco.sf.net/nco.html#stod -->
 <a name="nearestdtos"></a> <!-- http://nco.sf.net/nco.html#nearestdtos -->
+<a name="ndtos"></a> <!-- http://nco.sf.net/nco.html#ndtos -->
+<a name="dtos"></a> <!-- http://nco.sf.net/nco.html#dtos -->
+<a name="nds"></a> <!-- http://nco.sf.net/nco.html#nds -->
 <a name="patch"></a> <!-- http://nco.sf.net/nco.html#patch -->
+<a name="patc"></a> <!-- http://nco.sf.net/nco.html#patc -->
+<a name="pch"></a> <!-- http://nco.sf.net/nco.html#pch -->
 <a name="bilinear"></a> <!-- http://nco.sf.net/nco.html#bilinear -->
 <a name="bilin"></a> <!-- http://nco.sf.net/nco.html#bilin -->
+<a name="blin"></a> <!-- http://nco.sf.net/nco.html#blin -->
 <a name="conserve"></a> <!-- http://nco.sf.net/nco.html#conserve -->
 <a name="aave"></a> <!-- http://nco.sf.net/nco.html#aave -->
 <a name="fv2se_flx"></a> <!-- http://nco.sf.net/nco.html#fv2se_flx -->
@@ -22543,10 +22551,19 @@ Features common to many operators are described in
 @cindex @code{--algorithm}
 @cindex @code{--regrid_algorithm}
 @cindex @code{neareststod}
+@cindex @code{nstod}
+@cindex @code{stod}
+@cindex @code{nsd}
 @cindex @code{nearestdtos}
+@cindex @code{ndtos}
+@cindex @code{dtos}
+@cindex @code{nds}
 @cindex @code{patch}
+@cindex @code{patc}
+@cindex @code{pch}
 @cindex @code{bilinear}
 @cindex @code{bilin}
+@cindex @code{blin}
 @cindex @code{aave}
 @cindex @code{conserve}
 @cindex @code{conserve2nd}
@@ -22559,13 +22576,13 @@ change interpolation algorithms than other options
 (that can be changed with @samp{-E @var{esmf_opt}}).
 The @var{alg_typ} argument must be @code{tempest} or one of
 @acronym{ERWG}'s five interpolation algorithms:
-@code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{bln}), 
+@code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{blin}, @code{bln}), 
 @code{conserve} (or @code{conservative}, @code{cns}, @code{c1}, or @code{aave}), 
 @code{conserve2nd} (or @code{conservative2nd}, @code{c2}, or @code{c2nd})
 (@acronym{NCO} supports @code{conserve2nd} as of version 4.7.4 (April, 2018)), 
-@code{nearestdtos} (or @code{nds} or @code{dtos}), 
-@code{neareststod} (or @code{nds} or @code{stod}), 
-and @code{patch} (or @code{pch} or @code{ptc}). 
+@code{nearestdtos} (or @code{nds} or @code{dtos} or @code{ndtos}), 
+@code{neareststod} (or @code{nsd} or @code{stod} or @code{nstod}), 
+and @code{patch} (or @code{pch} or @code{patc}). 
 See @acronym{ERWG} documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03020000000000000000, here}
 for detailed descriptions of @acronym{ERWG} algorithms.
@@ -22679,7 +22696,7 @@ grid with greater coverage to be the second, regardless of the mapping
 direction.
 By default, @command{ncremap} supplies the source grid first and the
 destination second, but this order causes @command{GenerateOverlapMesh}  
-(which is agnostic about ordering when the grids have the same coverage)
+(which is agnostic about ordering for grids of equal coverage)
 to fail when the source grid covers regions not in the destination grid.  
 For example, a global atmosphere grid has more coverage than a global
 ocean grid, so that remapping from atmosphere-to-ocean would require
