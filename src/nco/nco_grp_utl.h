@@ -647,12 +647,12 @@ nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by gro
 (const void *val_1,                    /* I [sct] aux_crd_sct * to compare */
  const void *val_2);                   /* I [sct] aux_crd_sct * to compare */
 
-int
+int                                    /* [flg] True if at least one standard_name="latitude/longitude" pair have been found  */      
 nco_bld_crd_aux                        /* [fnc] Build auxiliary coordinates information into table */
 (const int nc_id,                      /* I [ID] netCDF file ID */
  trv_tbl_sct *trv_tbl);                /* I [sct] GTT (Group Traversal Table) */
 
-int
+int                                    /* [flg] True if at least one nm_lat,nm_lon pair have been found  */            
 nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates information into table  using named latitude and longitude*/
 (const int nc_id,                      /* I [ID] netCDF file ID */
  const char * const nm_lat,            /* I [sng] name of "latitude" variable to find  */
