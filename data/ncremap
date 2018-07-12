@@ -282,6 +282,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a conserve --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
+# MWF (201807):
+# ncremap -D 2 -p mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -343,6 +345,7 @@ drc_out="${drc_pwd}" # [sng] Output file directory
 drc_out_xmp="~/rgr" # [sng] Output file directory for examples
 dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
+dt_sng=`date +%Y%m%d` # [sng] Date string for MWF map names
 fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to remap
 gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_command=\"'${cmd_ln}'\" --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
@@ -443,6 +446,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
+    echo " ${fnt_bld}--dt_sng${fnt_nrm}   Date string (for MWF map names) (default ${fnt_bld}${dt_sng}${fnt_nrm}) [${fnt_tlc}dt_sng, date_string${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation argument string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use grd_sng or map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dst_grd, dest_grid, destination_grid${fnt_nrm}]"
@@ -458,6 +462,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--msk_src${fnt_nrm}  Mask-template variable in source file (empty means none) (default ${fnt_bld}${msk_src}${fnt_nrm}) [${fnt_tlc}msk_src, src_msk, mask_source, mask_src${fnt_nrm}]"
     echo " ${fnt_bld}--mss_val${fnt_nrm}  Missing value for MPAS (empty means none) (default ${fnt_bld}${mss_val}${fnt_nrm}) [${fnt_tlc}mss_val, fll_val, missing_value, fill_value${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco_options${fnt_nrm}]"
+    echo " ${fnt_bld}--nm_dst${fnt_nrm}   Short name of destination grid (required for MWF, no default) [${fnt_tlc}nm_dst, name_dst, nm_sht_dst, short_name_destination${fnt_nrm}]"
+    echo " ${fnt_bld}--nm_src${fnt_nrm}   Short name of source grid (required for MWF, no default) [${fnt_tlc}nm_src, name_src, nm_sht_src, short_name_source${fnt_nrm}]"
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"
     echo " ${fnt_bld}--no_frm_trm${fnt_nrm}  Omit formula_terms variables (e.g., 'hyba', 'PS') [${fnt_tlc}no_frm_trm, no_formula_terms${fnt_nrm}]"
     echo " ${fnt_bld}--no_stg_grd${fnt_nrm}  Omit staggered grid variables ('slat, slon, w_stag') [${fnt_tlc}no_stg_grd, no_stg, no_stagger, no_staggered_grid${fnt_nrm}]"
@@ -594,6 +600,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       grd_dst=?* | grid_dest=?* | dst_grd=?* | dest_grid=?* | destination_grid=?* ) grd_dst="${LONG_OPTARG}" ;; # -g # Destination grid-file
 	       grd_sng=?* | grid_generation=?* | grid_gen=?* | grid_string=?* ) grd_sng="${LONG_OPTARG}" ;; # -G # Grid generation string
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
+	       dt_sng=?* | date_string=?* ) dt_sng="${LONG_OPTARG}" ;; # # Date string for MWF map names
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
 	       gll_fl=?* | gll_mtd=?* | se_gmt=?* | se_mtd=?* ) gll_fl="${LONG_OPTARG}" ;; # # GLL grid metadata (geometry+connectivity+Jacobian) file
 	       in_fl=?* | in_file=?* | input_file=?* ) in_fl="${LONG_OPTARG}" ;; # -i # Input file
@@ -606,6 +613,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       msk_src=?* | src_msk=?* | mask_source=?* | mask_src=?* ) msk_src="${LONG_OPTARG}" ;; # # Mask-template variable in source file
 	       mss_val=?* | fll_val=?* | missing_value=?* | fill_value=?* ) mss_val="${LONG_OPTARG}" ;; # # Missing value for MPAS
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_usr="${LONG_OPTARG}" ;; # -n # NCO options
+	       nm_dst=?* | name_dst=?* | nm_sht_dst=?* | short_name_destination=?* ) nm_dst="${LONG_OPTARG}" ;; # # Short name of destination grid
+	       nm_src=?* | name_src=?* | nm_sht_src=?* | short_name_source=?* ) nm_src="${LONG_OPTARG}" ;; # # Short name of source grid
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
 	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit cell_measures variables
 	       no_frm_trm | no_frm | no_formula_terms ) no_frm_trm='Yes' ;; # # Omit formula_terms variables
@@ -1005,9 +1014,9 @@ elif [ "${par_typ}" = 'mpi' ]; then
     par_opt=' &'
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] ; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] ; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'nil', 'rrg', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mwf', 'nil', 'rrg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -1038,6 +1047,37 @@ if [ "${prc_typ}" = 'mpas' ]; then
 	rgr_opt="${rgr_opt} --rnr_thr=0.0"
     fi # !rnr_thr
 fi # !mpas
+if [ "${prc_typ}" = 'mwf' ]; then 
+    if [ -n "${hnt_src}" ]; then 
+       hnt_src_sng="--hnt_src=${hnt_src}"
+    fi # !hnt_src
+    if [ -n "${hnt_dst}" ]; then
+       hnt_dst_sng="--hnt_dst=${hnt_dst}"
+    fi # !hnt_dst	
+for alg_typ in "aave blin ndtos nstod patc"; do
+    if [ -n "${hnt_src}" ]; then
+       hnt_src_sng="--hnt_src=${hnt_src}"
+    fi # !hnt_src	
+    if [ -n "${hnt_dst}" ]; then
+       hnt_dst_sng="--hnt_dst=${hnt_dst}"
+    fi # !hnt_dst	
+    for alg_typ in 'aave blin ndtos nstod patc'; do
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	    printf "MWF: Create ${alt_typ} map...\n"
+	fi # !vrb_lvl
+	cmd_mwf[${fl_idx}]="ncremap --alg_typ=${alg_typ} --grd_src=${grd_src} --grd_dst=${grd_dst} ${hnt_src_sng} ${hnt_dst_sng} --map=${HOME}/map_${nm_src}_to_${nm_dst}_${alg_typ}.${dt_sng}.nc"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_mwf[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_mwf[${fl_idx}]}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to append regional coordinates and vertices to annotated, regional input data. Debug this:\n${cmd_mwf[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    done # !alg_typ
+fi # !mwf
 if [ "${prc_typ}" = 'rrg' ]; then 
     if [ -n "${dat_rgn}" ]; then # NB: option currently not implemented, drop it?
 	fl_in[0]=${dat_rgn}

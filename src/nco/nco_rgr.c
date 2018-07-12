@@ -4375,6 +4375,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
      NCAR:
      yellowstone.ucar.edu:/glade/p/cesm/cseg/mapping/grids
+     yellowstone.ucar.edu:/glade/p_old/cesm/cseg/mapping/grids
 
      Global RLL grids:
      ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc

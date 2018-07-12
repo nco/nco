@@ -1,5 +1,7 @@
 2018-07-11  Charlie Zender  <zender@uci.edu>
 
+	* Add optional/required inputs for MWF mode: nm_src, nm_dst, dt_sng
+
 	* Add ncremap alg_typ synonyms patc, ndtos, nstod, blin to support MPAS make_weight_files (mwf) workflow
 
 2018-07-08  Charlie Zender  <zender@uci.edu>
