@@ -283,7 +283,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
 # MWF (201807):
-# ncremap -D 2 -p mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722
+# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -1054,29 +1054,48 @@ if [ "${prc_typ}" = 'mwf' ]; then
     if [ -n "${hnt_dst}" ]; then
        hnt_dst_sng="--hnt_dst=${hnt_dst}"
     fi # !hnt_dst	
-for alg_typ in "aave blin ndtos nstod patc"; do
-    if [ -n "${hnt_src}" ]; then
-       hnt_src_sng="--hnt_src=${hnt_src}"
-    fi # !hnt_src	
-    if [ -n "${hnt_dst}" ]; then
-       hnt_dst_sng="--hnt_dst=${hnt_dst}"
-    fi # !hnt_dst	
-    for alg_typ in 'aave blin ndtos nstod patc'; do
+    for alg_typ in aave blin ndtos nstod patc; do
+	map_nm="${drc_out}/map_${nm_src}_to_${nm_dst}_${alg_typ}.${dt_sng}.nc"
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "MWF: Create ${alt_typ} map...\n"
+	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
-	cmd_mwf[${fl_idx}]="ncremap --alg_typ=${alg_typ} --grd_src=${grd_src} --grd_dst=${grd_dst} ${hnt_src_sng} ${hnt_dst_sng} --map=${HOME}/map_${nm_src}_to_${nm_dst}_${alg_typ}.${dt_sng}.nc"
+	cmd_mwf="ncremap --alg_typ=${alg_typ} --grd_src=${grd_src} --grd_dst=${grd_dst} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
 	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_mwf[${fl_idx}]}
+	    echo ${cmd_mwf}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_mwf[${fl_idx}]}
+	    eval ${cmd_mwf}
 	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to append regional coordinates and vertices to annotated, regional input data. Debug this:\n${cmd_mwf[${fl_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to generate MWF map. Debug this:\n${cmd_mwf}\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
     done # !alg_typ
+    if [ -n "${hnt_src}" ]; then 
+       hnt_dst_sng="--hnt_dst=${hnt_src/src/dst}"
+    fi # !hnt_src
+    if [ -n "${hnt_dst}" ]; then
+       hnt_src_sng="--hnt_src=${hnt_dst/dst/src}"
+    fi # !hnt_dst	
+    for alg_typ in aave blin ndtos nstod patc; do
+	map_nm="${drc_out}/map_${nm_dst}_to_${nm_src}_${alg_typ}.${dt_sng}.nc"
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
+	fi # !vrb_lvl
+	cmd_fwm="ncremap --alg_typ=${alg_typ} --grd_src=${grd_dst} --grd_dst=${grd_src} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_fwm}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_fwm}
+	    if [ $? -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to generate FWM map. Debug this:\n${cmd_fwm}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    done # !alg_typ
+    echo "Finished MWF mode"
+    exit 0
 fi # !mwf
 if [ "${prc_typ}" = 'rrg' ]; then 
     if [ -n "${dat_rgn}" ]; then # NB: option currently not implemented, drop it?
