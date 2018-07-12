@@ -283,7 +283,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
 # MWF (201807):
-# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722
+# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722 --drc_out=$TMPDIR
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -1055,7 +1055,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
        hnt_dst_sng="--hnt_dst=${hnt_dst}"
     fi # !hnt_dst	
     for alg_typ in aave blin ndtos nstod patc; do
-	map_nm="${drc_out}/map_${nm_src}_to_${nm_dst}_${alg_typ}.${dt_sng}.nc"
+	map_nm="${drc_out}/map_${nm_src}_TO_${nm_dst}_${alg_typ}.${dt_sng}.nc"
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl

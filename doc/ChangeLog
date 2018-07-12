@@ -1,5 +1,9 @@
 2018-07-11  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.6-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha04: Blue';git push
+	git tag -a 4.7.6-alpha04 -m 'ncremap -P mwf;RRG prs dat_rgn';git push --tags
+
 	* Initial implementation of MWF mode
 
 	* Add optional/required inputs for MWF mode: nm_src, nm_dst, dt_sng
