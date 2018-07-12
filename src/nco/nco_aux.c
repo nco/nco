@@ -637,9 +637,7 @@ nco_find_lat_lon_trv
 
 } /* end nco_find_lat_lon_trv() */
 
-
-
-nco_bool 
+nco_bool                             /* O [flg] return True if all criteria met */  
 nco_check_nm_aux
 (const int nc_id,                    /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,      /* I [sct] Variable to search for "standard_name" attribute */
@@ -647,14 +645,12 @@ nco_check_nm_aux
  nc_type *crd_typ,                   /* I/O [enm] netCDF type of both "latitude" and "longitude" */
  char units[])                       /* I/O [sng] Units of both "latitude" and "longitude" */
 {
-  /* Purpose: Find auxiliary coordinate variables that map to latitude/longitude 
-     Find variables with standard_name = "latitude" and "longitude"
-     Return true if both latitude and longitude standard names are found
-     Also return needed information about these auxiliary coordinates
-     Assumes that units and types for latitude and longitude are identical
-     Caller responsible for memory management for variable names
-     Memory for unit strings must be freed by caller */
-  
+  /* Purpose: Check that variable var_trv fits the criteria for being an auxiliary coordinate  
+     Must be 1D and NOT a record var and NOT a standard coordinate var           
+     Also must have a "units" attribute   
+
+     if all critera met - then return some info about var */
+
   const char fnc_nm[]="nco_check_nm_aux()";
 
   char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
@@ -666,7 +662,7 @@ nco_check_nm_aux
   int var_att_nbr;          /* [nbr] Number of attributes */
   int var_dmn_nbr;          /* [nbr] Number of dimensions */
 
-  long att_lng;
+  long att_lng; 
   nc_type var_typ;          /* [enm] variable type */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
@@ -697,8 +693,11 @@ nco_check_nm_aux
   NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
   units[att_lng]='\0';
 
-  //if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
-  if(var_dmn_nbr >1 )
+  /* if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
+   */
+  
+  /* aux coord  MUST be 1D */
+  if(var_dmn_nbr ==0 || var_dmn_nbr >1 )
     return False;
   
   
