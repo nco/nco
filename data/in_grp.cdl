@@ -85,6 +85,7 @@ netcdf in_grp {
  non_coord:purpose = "Test whether netCDF4 supports renaming non-coordinates to coordinates";
   
   float one;
+ one:long_name = "one";
   
   float val_one_mss(lat);
   val_one_mss:long_name = "one regular value, one missing value";
