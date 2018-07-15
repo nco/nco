@@ -827,7 +827,7 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # 20171108 'tempest' invokes TempestRemap with no automatic options, suitable for RLL re-mapping?
     # 20171108 TempestRemap boutique options based on particular remapping type
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
-    # map_tag in comments is for E3SM naming convention map_src_to_dst_${map_tag}.20180301.nc
+    # map_tag in comments is for E3SM naming convention map_src_to_dst_${map_tag}.${dt_sng}.nc
     alg_opt='tempest'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # map_tag='mono'
@@ -1054,8 +1054,9 @@ if [ "${prc_typ}" = 'mwf' ]; then
     if [ -n "${hnt_dst}" ]; then
        hnt_dst_sng="--hnt_dst=${hnt_dst}"
     fi # !hnt_dst	
-    for alg_typ in aave blin ndtos nstod patc; do
-	map_nm="${drc_out}/map_${nm_src}_TO_${nm_dst}_${alg_typ}.${dt_sng}.nc"
+#    for alg_typ in aave blin ndtos nstod patc; do
+    for alg_typ in aave blin ndtos nstod patc fv2se_flx fv2se_stt fv2se_alt; do
+	map_nm="${drc_out}/map_${nm_src}_to_${nm_dst}_${alg_typ}.${dt_sng}.nc"
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
@@ -1077,12 +1078,19 @@ if [ "${prc_typ}" = 'mwf' ]; then
     if [ -n "${hnt_dst}" ]; then
        hnt_src_sng="--hnt_src=${hnt_dst/dst/src}"
     fi # !hnt_dst	
-    for alg_typ in aave blin ndtos nstod patc; do
+#    for alg_typ in aave blin ndtos nstod patc; do
+    for alg_typ in aave blin ndtos nstod patc ; do
+	# Require that MWF-mode be invoked with ocean as grd_src, atmosphere as grd_dst
+	if [ "${alg_typ}" = 'se2fv_flx' ] || [ "${alg_typ}" = 'se2fv_stt' ] || [ "${alg_typ}" = 'se2fv_alt' ]; then
+	    a2o_sng='--a2o'
+	else # !alg_typ
+	    a2o_sng=''
+	fi # !alg_typ
 	map_nm="${drc_out}/map_${nm_dst}_to_${nm_src}_${alg_typ}.${dt_sng}.nc"
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
-	cmd_fwm="ncremap --alg_typ=${alg_typ} --grd_src=${grd_dst} --grd_dst=${grd_src} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
+	cmd_fwm="ncremap ${a2o_sng} --alg_typ=${alg_typ} --grd_src=${grd_dst} --grd_dst=${grd_src} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_fwm}
 	fi # !dbg
