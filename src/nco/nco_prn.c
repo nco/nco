@@ -4016,7 +4016,7 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
       (void)fprintf(fp_out,"\n");
     } /* !typ_idx */
     typ_ids=(nc_type *)nco_free(typ_ids);
-    (void)fprintf(fp_out,"%*s}\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng); 
+    (void)fprintf(fp_out,"%*s},\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng); 
   } /* !nbr_typ */
   
   if(dmn_nbr > 0) (void)fprintf(fp_out,"%*s\"dimensions\": {\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng);
