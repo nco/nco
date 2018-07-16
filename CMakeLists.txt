@@ -151,6 +151,12 @@ endif()
 
 set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_LIBRARY})
 
+check_library_exists(${NETCDF_LIBRARY} nc_rename_grp "" has_nc_rename_grp)
+if (has_nc_rename_grp)
+  message("-- Found nc_rename_grp in: " ${NETCDF_LIBRARY})
+  add_definitions(-DNC_HAVE_RENAME_GRP)
+endif()
+
 check_library_exists(${NETCDF_LIBRARY} nc_inq_path "" has_nc_inq_path)
 if (has_nc_inq_path)
   message("-- Found nc_inq_path in: " ${NETCDF_LIBRARY})
@@ -536,7 +542,7 @@ target_link_libraries (ncwa ${nco_LIB} ${LIB_DEP})
 
 
 #//////////////////////////
-#ANLR
+#ANTLR
 #cmake can detect relative paths, e.g, antlr/AST.hpp
 #detect a user defined system environment variable ANTLR_ROOT
 #this sets the include path to ANTLR_INCLUDE directly

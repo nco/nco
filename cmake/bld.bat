@@ -1,4 +1,19 @@
-:: cmake build all NCO dependencies obtained with 'git clone'
+:: bld.bat
+:: Windows script to build NCO on the command line, using Visual Studio 
+:: 1) clones all NCO dependecies 
+:: 2) cmake builds all NCO dependencies obtained with 'git clone'
+:: 3) cmake builds NCO
+:: 4) tests the netcdf build by reading a remote file with the built ncdump
+:: 5) tests the NCO build by using the built ncks to read 2 files (in.nc, in_grp.nc)
+:: and dumping content to a text file; this text file is compared using the FC tool with pre-existing output (generated in Linux)
+:: Notes:
+:: 1) must be run from ~/nco/cmake
+:: 2) requires manual editing of the 'hdf5' and 'netcdf' generated Visual Studio projects,
+:: so that dependencies ZLIB and SZIP are detected. This is explained in ~/nco/cmake/README.md
+:: 3) the existence of a NCO build is tested with the existence of a built ncks with
+:: if exist %build%\Debug\ncks.exe
+:: to force another cmake build, '%build%\Debug\ncks.exe' can be deleted and retyping
+:: $bld.bat
 :: Pedro Vicente
 
 @echo off
