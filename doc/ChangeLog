@@ -1,3 +1,11 @@
+2018-07-15  Charlie Zender  <zender@uci.edu>
+
+	* Document nm_src, nm_dst, dt_sng
+
+	* Add Tempest v2 maps to ncremap MWF mode
+
+	* Add ending comma to JSON types block
+
 2018-07-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.6-alpha04 release procedure:

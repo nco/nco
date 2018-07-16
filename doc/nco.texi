@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.6-alpha04
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 6 July 2018
+@set update-date 15 July 2018
 @set update-month July 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22408,11 +22408,12 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 SYNTAX
 @example
 ncremap [-3] [-4] [-5] [-6] [-7] 
-[-a @var{alg_typ}] [--a2o] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--fl_fmt=@var{fl_fmt}] 
+[-a @var{alg_typ}] [--a2o] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--dt_sng=@var{dt_sng}]  [--fl_fmt=@var{fl_fmt}] 
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-L @var{dfl_lvl}] [-M] [-m @var{map_fl}]
 [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
-[-n @var{nco_opt}] [--no_cll_msr] [--no_frm_trm] [--no_stg_grd]
+[-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
+[--no_cll_msr] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]
 [-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
@@ -22688,7 +22689,7 @@ added as canonical options for @command{ncremap}.
 Use one of these flags (that take no arguments) to cause TempestRemap to
 generate mapping weights from a source grid that has more coverage than
 the destination grid, i.e., the destination grid is a subset of the
-source. 
+source.
 When computing the intersection of two meshes, TempestRemap uses an
 algorithm (in an executable named @command{GenerateOverlapMesh}) that
 expects the mesh with less coverage to be the first grid, and the
@@ -22780,6 +22781,25 @@ be interpolated or guessed-at.
 @acronym{NCO} only reads coordinate and grid data and metadata from
 @var{dst_fl}. 
 @var{dst_fl} is not modified, and may have read-only permissions.
+
+@html
+<a name="dt_sng"></a> <!-- http://nco.sf.net/nco.html#dt_sng -->
+@end html
+@cindex @code{--dt_sng=@var{dt_sng}}
+@cindex @var{dt_sng}
+@cindex @code{--dt_sng}
+@cindex @code{--date_string}
+@item --dt_sng=@var{dt_sng} (@code{--dt_sng}, @code{--date_string})
+Specifies the date-string use in the full name of map-files created in
+@acronym{MWF} mode.  
+Map-file names include, by convention, a string to indicate the
+approximate date (and thus algorithm versions employed) of weight
+generation. 
+@comment{ncremap} uses the @var{dt_sng} argument to encode the date into
+output map-file names of this format:  
+@code{map_@var{nm_src}_to_@var{nm_dst}_@var{alg_typ}.@var{dt_sng}.nc}.
+@acronym{MWF} mode defaults @var{dt_sng} to the current date in
+@code{YYYYMMDD}-format. 
 
 @html
 <a name="grd_dst"></a> <!-- http://nco.sf.net/nco.html#grd_dst -->
@@ -23167,6 +23187,44 @@ facilitate processing of @acronym{MPAS} land-ice datasets.
 Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
 @var{nco_opt} defaults to @samp{-O --no_tmp_fl}.
+
+@html
+<a name="nm_dst"></a> <!-- http://nco.sf.net/nco.html#nm_dst -->
+@end html
+@cindex @code{--nm_dst=@var{nm_dst}}
+@cindex @var{nm_dst}
+@cindex @code{--nm_dst}
+@cindex @code{--name_dst}
+@cindex @code{--nm_sht_dst}
+@cindex @code{--name_short_destination}
+@item --nm_dst=@var{nm_dst} (@code{--nm_dst}, @code{--name_dst}, @code{--name_short_destination}, @code{--nm_sht_dst})
+Specifies the short name for the destination grid to use in the full
+name of map-files created in @acronym{MWF} mode. 
+Map-file names include, by convention, shortened versions of both the
+source and destination grids.
+@comment{ncremap} uses the @var{nm_dst} argument to encode the
+destination grid name into the output map-file name of this format: 
+@code{map_@var{nm_src}_to_@var{nm_dst}_@var{alg_typ}.@var{dt_sng}.nc}.
+@acronym{MWF} mode requires this argument, there is no default.
+
+@html
+<a name="nm_src"></a> <!-- http://nco.sf.net/nco.html#nm_src -->
+@end html
+@cindex @code{--nm_src=@var{nm_src}}
+@cindex @var{nm_src}
+@cindex @code{--nm_src}
+@cindex @code{--name_src}
+@cindex @code{--nm_sht_src}
+@cindex @code{--name_short_source}
+@item --nm_src=@var{nm_src} (@code{--nm_src}, @code{--name_src}, @code{--name_short_source}, @code{--nm_sht_src})
+Specifies the short name for the source grid to use in the full
+name of map-files created in @acronym{MWF} mode. 
+Map-file names include, by convention, shortened versions of both the
+source and destination grids.
+@comment{ncremap} uses the @var{nm_dst} argument to encode the
+source grid name into the output map-file name of this format: 
+@code{map_@var{nm_src}_to_@var{nm_dst}_@var{alg_typ}.@var{dt_sng}.nc}.
+@acronym{MWF} mode requires this argument, there is no default.
 
 @cindex @code{--no_cll_msr}
 @cindex @code{--no_cll}
