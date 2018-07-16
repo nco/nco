@@ -1295,7 +1295,7 @@ int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id
   return rcd;
 } /* end nco_def_grp_flg() */
 
-#ifndef NC_HAVE_RENAME_GRP
+#ifndef HAVE_NC_RENAME_GRP
 int
 nc_rename_grp(int grp_id,const char * const grp_nm)
 {
@@ -1313,7 +1313,7 @@ nc_rename_grp(int grp_id,const char * const grp_nm)
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nc_rename_grp() */
-#endif /* NC_HAVE_RENAME_GRP */
+#endif /* HAVE_NC_RENAME_GRP */
 
 int
 nco_rename_grp(int grp_id,const char * const grp_nm)
