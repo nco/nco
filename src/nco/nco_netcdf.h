@@ -49,7 +49,7 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
 #ifdef NC_HAVE_META_H
-# include <netcdf_meta.h> /* NC_VERSION_..., NC_HAVE_RENAME_GRP */	 
+# include <netcdf_meta.h> /* NC_VERSION_..., HAVE_NC_RENAME_GRP */	 
 #endif /* !NC_HAVE_META_H */
 #ifdef ENABLE_MPI
 # include <mpi.h> /* MPI definitions */
@@ -487,9 +487,9 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 /* End Attribute routines */
 
 /* Begin libnetcdf prototypes (i.e., for completely new library routines not yet in netcdf.h */
-#ifndef NC_HAVE_RENAME_GRP
+#ifndef HAVE_NC_RENAME_GRP
   int nc_rename_grp(int grp_id,const char * const grp_nm);
-#endif /* NC_HAVE_RENAME_GRP */
+#endif /* HAVE_NC_RENAME_GRP */
   /* nc_open_mem() is defined in netCDF >= 4.4.0, however ...
      Ubuntu (Xenial at least) used broken netCDF CMake (not autoconf) to package 4.4.0, and it does not install netcdf_mem.h:
      https://github.com/nco/nco/issues/44

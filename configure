@@ -18406,6 +18406,20 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi
+ac_fn_c_check_func "$LINENO" "nc_rename_grp" "ac_cv_func_nc_rename_grp"
+if test "x$ac_cv_func_nc_rename_grp" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_NC_RENAME_GRP 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_NC_RENAME_GRP 1
+_ACEOF
+
+fi
 
 ac_fn_c_check_func "$LINENO" "getopt" "ac_cv_func_getopt"
 if test "x$ac_cv_func_getopt" = xyes; then :

@@ -154,7 +154,7 @@ set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_LIBRARY})
 check_library_exists(${NETCDF_LIBRARY} nc_rename_grp "" has_nc_rename_grp)
 if (has_nc_rename_grp)
   message("-- Found nc_rename_grp in: " ${NETCDF_LIBRARY})
-  add_definitions(-DNC_HAVE_RENAME_GRP)
+  add_definitions(-DHAVE_NC_RENAME_GRP)
 endif()
 
 check_library_exists(${NETCDF_LIBRARY} nc_inq_path "" has_nc_inq_path)

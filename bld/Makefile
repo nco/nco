@@ -42,7 +42,7 @@
 # Usage (Compilation):
 # cd ~/nco/qt;qmake;make;cd -        # Qt
 # cd ~/nco/bld;make;cd -             # Default build
-# cd ~/nco/bld;make USR_TKN='-DNC_HAVE_RENAME_GRP';cd - # New API
+# cd ~/nco/bld;make USR_TKN='-DHAVE_NC_RENAME_GRP';cd - # New API
 # cd ~/nco/bld;make UDUNITS_INC='/usr/include/udunits2';cd - # Fedora build
 # cd ~/nco/bld;make cln bin_cln;cd - # Clean all dependencies for fresh build
 # cd ~/nco/bld;make dir all; cd -    # Create target directories then build
