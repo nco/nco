@@ -1,3 +1,7 @@
+2018-07-18  Charlie Zender  <zender@aerosol>
+
+	* Implement E3SM v2 Tempest algorithm strings in ncremap MWF mode
+
 2018-07-16  Charlie Zender  <zender@uci.edu>
 
 	* Rename NC_HAVE_RENAME_GRP to HAVE_NC_RENAME_GRP
