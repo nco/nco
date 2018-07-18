@@ -283,7 +283,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
 # MWF (201807):
-# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722 --drc_out=$TMPDIR
+# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -827,28 +827,28 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # 20171108 'tempest' invokes TempestRemap with no automatic options, suitable for RLL re-mapping?
     # 20171108 TempestRemap boutique options based on particular remapping type
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
-    # map_tag in comments is for E3SM naming convention map_src_to_dst_${map_tag}.${dt_sng}.nc
+    # alg_sng in comments is for E3SM naming convention map_src_to_dst_${alg_sng}.${dt_sng}.nc
     alg_opt='tempest'
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # map_tag='mono'
+elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
     wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
     fi # !gll_fl
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # map_tag='highorder'
+elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # alg_sng='highorder'
     wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
     fi # !gll_fl
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # map_tag='intbilin'
+elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # alg_sng='intbilin'
     wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono3 --noconserve"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
     fi # !gll_fl
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # map_tag='monotr'
+elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # alg_sng='monotr'
     # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
     wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono"
     if [ -n "${gll_fl}" ]; then
@@ -856,13 +856,13 @@ elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_
     fi # !gll_fl
     wgt_typ='tempest'
     trn_map='Yes'
-elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # map_tag='highorder'
+elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # alg_sng='highorder'
     wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np 4 --out_double --volumetric"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
     fi # !gll_fl
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # map_tag='mono'
+elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # alg_sng='mono'
     wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np 4 --out_double --mono --volumetric"
     if [ -n "${gll_fl}" ]; then
 	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
@@ -1048,15 +1048,19 @@ if [ "${prc_typ}" = 'mpas' ]; then
     fi # !rnr_thr
 fi # !mpas
 if [ "${prc_typ}" = 'mwf' ]; then 
+    # Compute FV->SE maps
     if [ -n "${hnt_src}" ]; then 
        hnt_src_sng="--hnt_src=${hnt_src}"
     fi # !hnt_src
     if [ -n "${hnt_dst}" ]; then
        hnt_dst_sng="--hnt_dst=${hnt_dst}"
     fi # !hnt_dst	
-#    for alg_typ in aave blin ndtos nstod patc; do
     for alg_typ in aave blin ndtos nstod patc fv2se_flx fv2se_stt fv2se_alt; do
-	map_nm="${drc_out}/map_${nm_src}_to_${nm_dst}_${alg_typ}.${dt_sng}.nc"
+	alg_sng=${alg_typ}
+	[[ ${alg_typ} = 'fv2se_flx' ]] && alg_sng='monotr'
+	[[ ${alg_typ} = 'fv2se_stt' ]] && alg_sng='highorder'
+	[[ ${alg_typ} = 'fv2se_alt' ]] && alg_sng='mono'
+	map_nm="${drc_out}/map_${nm_src}_to_${nm_dst}_${alg_sng}.${dt_sng}.nc"
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
@@ -1072,21 +1076,25 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	    fi # !err
 	fi # !dbg
     done # !alg_typ
+    # Compute SE->FV maps
     if [ -n "${hnt_src}" ]; then 
        hnt_dst_sng="--hnt_dst=${hnt_src/src/dst}"
     fi # !hnt_src
     if [ -n "${hnt_dst}" ]; then
        hnt_src_sng="--hnt_src=${hnt_dst/dst/src}"
     fi # !hnt_dst	
-#    for alg_typ in aave blin ndtos nstod patc; do
-    for alg_typ in aave blin ndtos nstod patc ; do
-	# Require that MWF-mode be invoked with ocean as grd_src, atmosphere as grd_dst
+    for alg_typ in aave blin ndtos nstod patc se2fv_flx se2fv_stt se2fv_alt; do
+	# Swap grd_src with grd_dst
+	alg_sng=${alg_typ}
+	[[ ${alg_typ} = 'se2fv_flx' ]] && alg_sng='mono'
+	[[ ${alg_typ} = 'se2fv_stt' ]] && alg_sng='highorder'
+	[[ ${alg_typ} = 'se2fv_alt' ]] && alg_sng='intbilin'
+	map_nm="${drc_out}/map_${nm_dst}_to_${nm_src}_${alg_sng}.${dt_sng}.nc"
+	# MWF-mode must be invoked with ocean as grd_src, atmosphere as grd_dst
+	a2o_sng=''
 	if [ "${alg_typ}" = 'se2fv_flx' ] || [ "${alg_typ}" = 'se2fv_stt' ] || [ "${alg_typ}" = 'se2fv_alt' ]; then
 	    a2o_sng='--a2o'
-	else # !alg_typ
-	    a2o_sng=''
 	fi # !alg_typ
-	map_nm="${drc_out}/map_${nm_dst}_to_${nm_src}_${alg_typ}.${dt_sng}.nc"
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
