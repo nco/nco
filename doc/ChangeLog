@@ -1,3 +1,7 @@
+2018-07-23  Charlie Zender  <zender@uci.edu>
+
+	* Add 'Parallelism Mode = ${par_sng}' to output
+
 2018-07-18  Charlie Zender  <zender@aerosol>
 
 	* Implement E3SM v2 Tempest algorithm strings in ncremap MWF mode
