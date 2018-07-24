@@ -978,13 +978,17 @@ fi # !no_stg_grd
 if [ "${par_typ}" = 'bck' ]; then 
     par_opt=' &'
     par_opt_cf=''
+    par_sng='Background'
 elif [ "${par_typ}" = 'mpi' ]; then 
     mpi_flg='Yes'
     par_opt=' &'
     par_opt_cf=''
+    par_sng='MPI'
     if [ -n "${UVCDAT_SETUP_PATH}" ]; then
 	printf "${spt_nm}: UVCDAT has been initialized in the shell running this job, and MPI-mode parallelization of ${spt_nm} is requested. Unfortunately UVCDAT's environment and the MPI-mode of ${spt_nm} do not play well together. The Workflow group is working toward a solution. The current workarounds are 1) do not use MPI-mode when UVCDAT is loaded or 2) do not initialize UVCDAT when invoking MPI-mode.\n"
     fi # !UVCDAT_SETUP_PATH
+elif [ "${par_typ}" = 'nil' ] || [ -z "${par_typ}" ]; then 
+    par_sng='Serial'
 fi # !par_typ
 if [ -n "${rgr_map}" ]; then 
     if [ ! -f "${rgr_map}" ]; then
@@ -1488,6 +1492,7 @@ else
 fi # !caseid
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
+printf "Parallelism mode = ${par_sng}\n"
 if [ "${sbs_flg}" = 'Yes' ]; then
     if [ ${inp_std} = 'No' ]; then 
 	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
