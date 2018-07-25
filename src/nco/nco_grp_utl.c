@@ -8333,16 +8333,6 @@ nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates info
  const char * const nm_lon,            /* I [sng] name of "longitude" variable to find  */
  trv_tbl_sct *trv_tbl)                 /* I [sct] GTT (Group Traversal Table) */
 {
-
-  /*
-   Purpose: 
-      look for 'latitude' variable named  nm_lat, if it passes the criteria tests in nco_check_nm_aux() then flag it as an aux coord
-      look for 'longitude' variable named nm_lon, if it passes the criteria tests in nco_check_nm_aux() then flag it as an aux coord
-
-      if aux coords are "in scope" (at same depth or above) of a variable AND the var has the matching dim then add refs to the aux coods
-      in var_trv->var_dmn.
-  */
-
   const char fnc_nm[]="nco_bld_crd_nm_aux()"; /* [sng] Function name */
 
   /* Look for attributes 'standard_name' == 'latitude' and 'longitude' */
@@ -10626,7 +10616,7 @@ nco_get_crd_sct                       /* [fnc] Return a coordinate variable crd_
 
 
 void
-nco_srt_aux                          /* [fnc] sort auxiliary coordinates */  
+nco_srt_aux                           /* [fnc] sort auxiliary coordinates */  
 (const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
   char *fnc_nm="nco_srt_aux()";
@@ -10639,7 +10629,9 @@ nco_srt_aux                          /* [fnc] sort auxiliary coordinates */
     /* Filter variables with auxiliary coordinates */ 
     if(var_trv->flg_aux && var_trv->nco_typ == nco_obj_typ_var){
 
-       /* Loop dimensions */
+      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable with auxiliary coordinates <%s>\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll); 
+
+      /* Loop dimensions */
       for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
 	
         var_dmn_sct *lcl_dmn=&var_trv->var_dmn[idx_dmn];
