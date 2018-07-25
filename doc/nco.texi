@@ -3954,16 +3954,15 @@ format as the input netCDF file.)
 netCDF supports five types of files: @code{CLASSIC},
 @code{64BIT_OFFSET}, @code{64BIT_DATA}, @code{NETCDF4}, and
 @code{NETCDF4_CLASSIC}.
-The @code{CLASSIC} format is the traditional 32-bit offset written by
-netCDF2 and netCDF3.
+The @code{CLASSIC} (aka @code{CDF1}) format is the traditional 32-bit offset written by netCDF2 and netCDF3. 
 As of 2005, nearly all netCDF datasets were in @code{CLASSIC} format. 
 The @code{64BIT_OFFSET} (originally called plain old @code{64BIT})
-format was added in Fall, 2004. 
+(aka @code{CDF2}) format was added in Fall, 2004. 
 As of 2010, many netCDF datasets were in @code{64BIT_OFFSET} format. 
 As of 2013, an increasing number of netCDF datasets were in
 @code{NETCDF4_CLASSIC} format.
 The @code{64BIT_DATA} (aka @code{CDF5} or @code{PNETCDF})
-format was added in January, 2016. 
+format was added to netCDF in January, 2016. 
 
 The @code{NETCDF4} format uses @acronym{HDF5} as the file storage layer. 
 The files are (usually) created, accessed, and manipulated using the 
