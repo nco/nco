@@ -1,0 +1,53 @@
+
+// Purpose: Script to test subsetting with auxiliary coordinates 
+//  print("Test script for subsetting of auxiliary coordinates\n");
+
+// Count number of errors
+nbr_err=0;
+
+if( $ncol.size != 53 )
+{
+
+  print("ERROR: ncol dim wrong size\n");
+  nbr_err++;
+
+ }
+
+
+if( lat.type() != NC_DOUBLE || fabs(lat.min() + 15.9332368506)>1e-8d   || fabs(lat.max() + 9.0903891512)>1e-8d )
+{
+
+  print("ERROR: lat coord wrong\n");
+  nbr_err++;
+
+ }
+
+if( lon.type() != NC_DOUBLE || fabs( lon.min() - 128.17082039325d)>1e-8d || fabs(lon.max() - 132.82917960675d)>1e-8d )
+{
+
+  print("ERROR: lon coord wrong\n");
+  nbr_err++;
+
+}
+
+
+if( FSNT.type() != NC_FLOAT || FSNT.ndims() != 2 )
+{
+
+  print("ERROR: FSNT shape wrong\n");
+  nbr_err++;
+
+}
+
+
+if( fabs(FSNT.avg()-297.145)>1e-3  || fabs(FSNT.total() -  15748.7f)>0.1 )
+{
+
+  print("ERROR: FSNT values wrong\n");
+  nbr_err++;
+
+}
+
+
+// Results summany
+print("RESULTS SUMMARY: total errors=");print(nbr_err,"%d");
