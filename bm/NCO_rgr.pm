@@ -3087,7 +3087,18 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
     } # !XML
-    
+
+# ncks #127    
+    $dsc_sng="ncks test auxiliary coords WITH-OUT standard_name";
+    $tst_cmd[0]="ncatted -O $fl_fmt $nco_D_flg -a standard_name,,d,i,1 $in_pth_arg  in.nc  %tmp_fl_00%";
+    $tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg  -X 150.,210.,-15.,45. -v gds_var,gds_3dvar %tmp_fl_00%  %tmp_fl_01%";
+    $tst_cmd[2]="ncap2 -v -O $fl_fmt $nco_D_flg -S '../data/chk-aux-subset.nco' %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -O -C -H --trd -v nbr_err -s '%d' %tmp_fl_02%";
+    $tst_cmd[4]="0";
+    $tst_cmd[5]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
 #####################
 #### ncpdq tests #### -OK !
 #####################
