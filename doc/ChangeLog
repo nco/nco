@@ -1,3 +1,11 @@
+2018-07-27  Charlie Zender  <zender@aerosol>
+
+	* NCO 4.7.6-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha05: Roux';git push
+	git tag -a 4.7.6-alpha05 -m 'aux w/o std_nm; docs; Tempest in MWF';git push --tags
+
+	* Henry added -X support for auxiliary coordinates without standard_name attributes
+
 2018-07-23  Charlie Zender  <zender@uci.edu>
 
 	* Add 'Parallelism Mode = ${par_sng}' to output
