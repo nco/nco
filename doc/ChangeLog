@@ -1,5 +1,7 @@
 2018-07-27  Charlie Zender  <zender@aerosol>
 
+	* Support --wgt_cmd in ncremap MWF mode, e.g., 'mpirun -np 12 ESMF_RegridWeightGen'
+
 	* NCO 4.7.6-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha05: Roux';git push
 	git tag -a 4.7.6-alpha05 -m 'aux w/o std_nm; docs; Tempest in MWF';git push --tags

@@ -284,6 +284,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
 # MWF (201807):
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -1065,10 +1066,18 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	[[ ${alg_typ} = 'fv2se_stt' ]] && alg_sng='highorder'
 	[[ ${alg_typ} = 'fv2se_alt' ]] && alg_sng='mono'
 	map_nm="${drc_out}/map_${nm_src}_to_${nm_dst}_${alg_sng}.${dt_sng}.nc"
+	wgt_sng=''
+	if [ -n "${wgt_usr}" ]; then 
+	    erwg_alg_typ_rx='aave blin ndtos nstod patc'
+	    # https://stackoverflow.com/questions/229551/string-contains-a-substring-in-bash
+	    if [[ ${erwg_alg_typ_rx} = *"${alg_typ}"* ]]; then
+		wgt_sng="--wgt_cmd='${wgt_usr}'"
+	    fi # !ERWG
+	fi # !wgt_usr
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
-	cmd_mwf="ncremap --alg_typ=${alg_typ} --grd_src=${grd_src} --grd_dst=${grd_dst} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
+	cmd_mwf="ncremap ${wgt_sng} --alg_typ=${alg_typ} --grd_src=${grd_src} --grd_dst=${grd_dst} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_mwf}
 	fi # !dbg
@@ -1099,10 +1108,18 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	if [ "${alg_typ}" = 'se2fv_flx' ] || [ "${alg_typ}" = 'se2fv_stt' ] || [ "${alg_typ}" = 'se2fv_alt' ]; then
 	    a2o_sng='--a2o'
 	fi # !alg_typ
+	wgt_sng=''
+	if [ -n "${wgt_usr}" ]; then 
+	    erwg_alg_typ_rx='aave blin ndtos nstod patc'
+	    # https://stackoverflow.com/questions/229551/string-contains-a-substring-in-bash
+	    if [[ ${erwg_alg_typ_rx} = *"${alg_typ}"* ]]; then
+		wgt_sng="--wgt_cmd='${wgt_usr}'"
+	    fi # !ERWG
+	fi # !wgt_usr
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
-	cmd_fwm="ncremap ${a2o_sng} --alg_typ=${alg_typ} --grd_src=${grd_dst} --grd_dst=${grd_src} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
+	cmd_fwm="ncremap ${wgt_sng} ${a2o_sng} --alg_typ=${alg_typ} --grd_src=${grd_dst} --grd_dst=${grd_src} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_fwm}
 	fi # !dbg
