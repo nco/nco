@@ -1,5 +1,9 @@
 2018-07-27  Charlie Zender  <zender@aerosol>
 
+	* NCO 4.7.6-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha06: Drag';git push
+	git tag -a 4.7.6-alpha06 -m 'MWF MPI;cnk wrn';git push --tags
+
 	* NCO completes when chunking into non-netCDF4 files (previously it dumped core)
 
 	* Only print one WARNING about user-specified chunk size for record dimension being too big
