@@ -1649,7 +1649,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     fl_idx=0
 
     if [ -z "${rnm_sng}" ]; then 
-	# Discern rename string from input file
+	# Discern rename string from input file, assume dimension is 'ncol', strip whitespace
 	rnm_sng=`ncks -m ${fl_in[${fl_idx}]} | cut -d ':' -f 1 | cut -d '=' -s -f 1 | grep ncol | sed 's/ncol//' | sed -e 's/^ *//' -e 's/ *$//'`
 	rgn_nbr=`echo ${rnm_sng} | wc -l`
 	if [ "${rgn_nbr}" -ne 1 ]; then
