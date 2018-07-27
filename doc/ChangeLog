@@ -1,5 +1,7 @@
 2018-07-27  Charlie Zender  <zender@aerosol>
 
+	* NCO completes when chunking into non-netCDF4 files (previously it dumped core)
+
 	* Only print one WARNING about user-specified chunk size for record dimension being too big
 
 	* Support --wgt_cmd in ncremap MWF mode, e.g., 'mpirun -np 12 ESMF_RegridWeightGen'
