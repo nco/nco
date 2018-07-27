@@ -1,0 +1,73 @@
+
+// Purpose: Script to test subsetting with auxiliary coordinates 
+//  print("Test script for subsetting of auxiliary coordinates\n");
+
+// Count number of errors
+nbr_err=0;
+
+if( $gds_crd.size != 2 )
+{
+
+  print("ERROR: gds_crd dim wrong size\n");
+  nbr_err++;
+
+ }
+
+
+if( lat_gds.type() != NC_DOUBLE || lat_gds.min() != 0.0d   || lat_gds.max() != 30.0d)
+{
+
+  print("ERROR: lat_gds coord wrong\n");
+  nbr_err++;
+
+ }
+
+if( lon_gds.type() != NC_DOUBLE || lon_gds.min() !=180.0d || lon_gds.max() != 180.0d )
+{
+
+  print("ERROR: lon_gds coord wrong\n");
+  nbr_err++;
+
+}
+
+
+if( gds_var.type() != NC_FLOAT || gds_var.ndims() != 1 )
+{
+
+  print("ERROR: gds_var shape wrong\n");
+  nbr_err++;
+
+}
+
+
+if( fabs(gds_var.min() -  273.5d)>1e-1d || fabs(gds_var.total() -  547.2d)>1e-1d )
+{
+
+  print("ERROR: gds_var values wrong\n");
+  nbr_err++;
+
+}
+
+if( gds_3dvar.type() != NC_FLOAT || gds_3dvar.ndims() != 2 )
+{
+
+  print("ERROR: gds_3dvar shape wrong\n");
+  nbr_err++;
+
+}
+
+
+if( fabs(gds_3dvar.min() -  273.5d)>1e-1d || fabs(gds_3dvar.total() - 5562.0d)>1e-1d )
+{
+
+  print("ERROR: gds_3dvar values wrong\n");
+  nbr_err++;
+
+}
+
+
+
+
+
+// Results summany
+print("RESULTS SUMMARY: total errors=");print(nbr_err,"%d");
