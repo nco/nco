@@ -5,48 +5,68 @@
 // Count number of errors
 nbr_err=0;
 
-if( $ncol.size != 53 )
+if( $gds_crd.size != 2 )
 {
 
-  print("ERROR: ncol dim wrong size\n");
+  print("ERROR: gds_crd dim wrong size\n");
   nbr_err++;
 
  }
 
 
-if( lat.type() != NC_DOUBLE || fabs(lat.min() + 15.9332368506)>1e-8d   || fabs(lat.max() + 9.0903891512)>1e-8d )
+if( lat_gds.type() != NC_DOUBLE || lat_gds.min() != 0.0d   || lat_gds.max() != 30.0d)
 {
 
-  print("ERROR: lat coord wrong\n");
+  print("ERROR: lat_gds coord wrong\n");
   nbr_err++;
 
  }
 
-if( lon.type() != NC_DOUBLE || fabs( lon.min() - 128.17082039325d)>1e-8d || fabs(lon.max() - 132.82917960675d)>1e-8d )
+if( lon_gds.type() != NC_DOUBLE || lon_gds.min() !=180.0d || lon_gds.max() != 180.0d )
 {
 
-  print("ERROR: lon coord wrong\n");
+  print("ERROR: lon_gds coord wrong\n");
   nbr_err++;
 
 }
 
 
-if( FSNT.type() != NC_FLOAT || FSNT.ndims() != 2 )
+if( gds_var.type() != NC_FLOAT || gds_var.ndims() != 1 )
 {
 
-  print("ERROR: FSNT shape wrong\n");
+  print("ERROR: gds_var shape wrong\n");
   nbr_err++;
 
 }
 
 
-if( fabs(FSNT.avg()-297.145)>1e-3  || fabs(FSNT.total() -  15748.7f)>0.1 )
+if( fabs(gds_var.min() -  273.5d)>1e-1d || fabs(gds_var.total() -  547.2d)>1e-1d )
 {
 
-  print("ERROR: FSNT values wrong\n");
+  print("ERROR: gds_var values wrong\n");
   nbr_err++;
 
 }
+
+if( gds_3dvar.type() != NC_FLOAT || gds_3dvar.ndims() != 2 )
+{
+
+  print("ERROR: gds_3dvar shape wrong\n");
+  nbr_err++;
+
+}
+
+
+if( fabs(gds_3dvar.min() -  273.5d)>1e-1d || fabs(gds_3dvar.total() - 5562.0d)>1e-1d )
+{
+
+  print("ERROR: gds_3dvar values wrong\n");
+  nbr_err++;
+
+}
+
+
+
 
 
 // Results summany
