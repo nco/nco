@@ -284,6 +284,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
 # MWF (201807):
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/ne30.g --nm_src=oRRS30to10 --nm_dst=ne30np4 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=150722 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
@@ -1061,6 +1062,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
        hnt_dst_sng="--hnt_dst=${hnt_dst}"
     fi # !hnt_dst	
     for alg_typ in aave blin ndtos nstod patc fv2se_flx fv2se_stt fv2se_alt; do
+#    for alg_typ in fv2se_flx fv2se_stt fv2se_alt; do
 	alg_sng=${alg_typ}
 	[[ ${alg_typ} = 'fv2se_flx' ]] && alg_sng='monotr'
 	[[ ${alg_typ} = 'fv2se_stt' ]] && alg_sng='highorder'
@@ -1097,6 +1099,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
        hnt_src_sng="--hnt_src=${hnt_dst/dst/src}"
     fi # !hnt_dst	
     for alg_typ in aave blin ndtos nstod patc se2fv_flx se2fv_stt se2fv_alt; do
+#    for alg_typ in se2fv_flx se2fv_stt se2fv_alt; do
 	# Swap grd_src with grd_dst
 	alg_sng=${alg_typ}
 	[[ ${alg_typ} = 'se2fv_flx' ]] && alg_sng='mono'
