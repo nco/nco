@@ -1054,6 +1054,13 @@ if [ "${prc_typ}" = 'mpas' ]; then
     fi # !rnr_thr
 fi # !mpas
 if [ "${prc_typ}" = 'mwf' ]; then 
+    # Assume destination grids ending in .nc and .g are FV and SE, respectively
+    # https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
+    if [[ ${grd_dst} == *.g ]]; then 
+	alg_lst='fv2se_flx fv2se_stt fv2se_alt'
+    else
+	alg_lst='aave blin ndtos nstod patc tempest'
+    fi # !grd_dst
     # Compute FV->SE maps
     if [ -n "${hnt_src}" ]; then 
        hnt_src_sng="--hnt_src=${hnt_src}"
@@ -1061,8 +1068,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
     if [ -n "${hnt_dst}" ]; then
        hnt_dst_sng="--hnt_dst=${hnt_dst}"
     fi # !hnt_dst	
-    for alg_typ in aave blin ndtos nstod patc fv2se_flx fv2se_stt fv2se_alt; do
-#    for alg_typ in fv2se_flx fv2se_stt fv2se_alt; do
+    for alg_typ in ${alg_lst}; do
 	alg_sng=${alg_typ}
 	[[ ${alg_typ} = 'fv2se_flx' ]] && alg_sng='monotr'
 	[[ ${alg_typ} = 'fv2se_stt' ]] && alg_sng='highorder'
@@ -1092,14 +1098,18 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	fi # !dbg
     done # !alg_typ
     # Compute SE->FV maps
+    if [[ ${grd_dst} == *.g ]]; then 
+	alg_lst='se2fv_flx se2fv_stt se2fv_alt'
+    else
+	alg_lst='aave blin ndtos nstod patc tempest'
+    fi # !grd_dst
     if [ -n "${hnt_src}" ]; then 
        hnt_dst_sng="--hnt_dst=${hnt_src/src/dst}"
     fi # !hnt_src
     if [ -n "${hnt_dst}" ]; then
        hnt_src_sng="--hnt_src=${hnt_dst/dst/src}"
     fi # !hnt_dst	
-    for alg_typ in aave blin ndtos nstod patc se2fv_flx se2fv_stt se2fv_alt; do
-#    for alg_typ in se2fv_flx se2fv_stt se2fv_alt; do
+    for alg_typ in ${alg_lst}; do
 	# Swap grd_src with grd_dst
 	alg_sng=${alg_typ}
 	[[ ${alg_typ} = 'se2fv_flx' ]] && alg_sng='mono'
