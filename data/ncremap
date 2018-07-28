@@ -1054,6 +1054,7 @@ if [ "${prc_typ}" = 'mpas' ]; then
     fi # !rnr_thr
 fi # !mpas
 if [ "${prc_typ}" = 'mwf' ]; then 
+    [[ ${dbg_lvl} -ge 1 ]] && date_mwf=$(date +"%s")
     # Assume destination grids ending in .nc and .g are FV and SE, respectively
     # https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
     if [[ ${grd_dst} == *.g ]]; then 
@@ -1095,6 +1096,11 @@ if [ "${prc_typ}" = 'mwf' ]; then
 		printf "${spt_nm}: ERROR Failed to generate MWF map. Debug this:\n${cmd_mwf}\n"
 		exit 1
 	    fi # !err
+	fi # !dbg
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    date_crr=$(date +"%s")
+	    date_dff=$((date_crr-date_mwf))
+	    echo "Elapsed time to generate MWF ${alg_typ} map $((date_dff/60))m$((date_dff % 60))s"
 	fi # !dbg
     done # !alg_typ
     # Compute SE->FV maps
@@ -1142,6 +1148,11 @@ if [ "${prc_typ}" = 'mwf' ]; then
 		printf "${spt_nm}: ERROR Failed to generate FWM map. Debug this:\n${cmd_fwm}\n"
 		exit 1
 	    fi # !err
+	fi # !dbg
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    date_crr=$(date +"%s")
+	    date_dff=$((date_crr-date_mwf))
+	    echo "Elapsed time to generate MWF ${alg_typ} map $((date_dff/60))m$((date_dff % 60))s"
 	fi # !dbg
     done # !alg_typ
     echo "Finished MWF mode"
