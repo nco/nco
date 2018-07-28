@@ -1,5 +1,7 @@
 2018-07-28  Charlie Zender  <zender@aerosol>
 
+	* Add per-map timers to MWF output for dbg_lvl >= 1
+
 	* MWF mode calls appropriate algorithms for FVFV and FVSE requests, assumes SE file if grd_dst ends with .g
 
 2018-07-27  Charlie Zender  <zender@aerosol>
