@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.6-alpha05
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 27 July 2018
+@set update-date 28 July 2018
 @set update-month July 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3512,10 +3512,10 @@ be set accordingly on both local and remote machines.
 To access a file on a High Performance Storage System (@acronym{HPSS}) 
 (such as that at @acronym{NCAR}, @acronym{ECMWF}, @acronym{LANL},
 @acronym{DKRZ}, @acronym{LLNL}) specify the full @acronym{HPSS} pathname
-of the remote file.  
-@acronym{NCO} will attempt to detect whether the local machine has direct
+of the remote file and use the @samp{--hpss} flag.
+Then @acronym{NCO} will attempt to detect whether the local machine has direct 
 (synchronous) @acronym{HPSS} access. 
-In this case, @acronym{NCO} attempts to use the Hierarchical Storage
+If so, @acronym{NCO} attempts to use the Hierarchical Storage
 Interface (@acronym{HSI}) command @command{hsi get}
 @footnote{The @command{hsi} command must be in the user's path in one of
 the following directories: @code{/usr/local/bin}, @code{/opt/hpss/bin},
@@ -3533,7 +3533,7 @@ ncks -l . ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
 ncks -l . sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco/in.nc
 ncks -l . dust.ess.uci.edu:/home/zender/nco/data/in.nc
 ncks -l . /ZENDER/nco/in.nc # NCAR (broken old MSS path)
-ncks -l . /home/zender/nco/in.nc # NCAR
+ncks -l . --hpss /home/zender/nco/in.nc # NCAR HPSS
 ncks -l . http://thredds-test.ucar.edu/thredds/dodsC/testdods/in.nc 
 @end example
 @noindent
@@ -3570,7 +3570,7 @@ ncks -p ftp://dust.ess.uci.edu/pub/zender/nco -l . in.nc
 ncks -p sftp://dust.ess.uci.edu:/home/ftp/pub/zender/nco -l . in.nc
 ncks -p dust.ess.uci.edu:/home/zender/nco -l . in.nc
 ncks -p /ZENDER/nco -l . in.nc
-ncks -p /home/zender/nco -l . in.nc # HPSS
+ncks -p /home/zender/nco -l . --hpss in.nc # HPSS
 ncks -p http://thredds-test.ucar.edu/thredds/dodsC/testdods \ 
      -l . in.nc
 @end example
@@ -3593,8 +3593,8 @@ path on the local machine where you would like to store the file.
 If @samp{-l} is not specified then @acronym{NCO} internally generates an
 @var{output-path} by simply setting @var{output-path} equal to
 @var{input-path} stripped of any machine names.
-If @samp{-l} is not specified and the remote file resides on the
-@acronym{NCAR} @acronym{HPSS} system, then the leading character of
+If @samp{-l} is not specified and the remote file resides on a detected
+@acronym{HPSS} system, then the leading character of
 @var{input-path}, @samp{/}, is also stripped from @var{output-path}.
 Specifying @var{output-path} as @samp{-l ./} tells @acronym{NCO} to
 store the remotely retrieved file and the output file in the current

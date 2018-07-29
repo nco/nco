@@ -1,14 +1,16 @@
 2018-07-28  Charlie Zender  <zender@aerosol>
 
+	* NCO 4.7.6-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha06: Drag';git push
+	git tag -a 4.7.6-alpha06 -m 'MWF MPI fvfv fvse .g = SE;cnk wrn;ncremap timers;HPSS_TRY';git push --tags
+
+	* Add HPSS_TRY option
+
 	* Add per-map timers to MWF output for dbg_lvl >= 1
 
 	* MWF mode calls appropriate algorithms for FVFV and FVSE requests, assumes SE file if grd_dst ends with .g
 
 2018-07-27  Charlie Zender  <zender@aerosol>
-
-	* NCO 4.7.6-alpha06 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha06: Drag';git push
-	git tag -a 4.7.6-alpha06 -m 'MWF MPI;cnk wrn';git push --tags
 
 	* NCO completes when chunking into non-netCDF4 files (previously it dumped core)
 
