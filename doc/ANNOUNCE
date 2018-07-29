@@ -21,7 +21,11 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. 
+A. HPSS
+
+A. ncrename RRG
+
+A. ncrename MWF
 
 A. NCO now only prints one WARNING about user-specified chunk size for 
    record dimension being too big.

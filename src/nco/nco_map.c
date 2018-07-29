@@ -93,6 +93,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   nco_bool FL_RTR_RMT_LCN_DST;
   nco_bool FL_RTR_RMT_LCN_SRC;
+  nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
 
@@ -107,8 +108,8 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   fl_in_dst=(char *)strdup(rgr->fl_grd_dst);
   fl_in_src=(char *)strdup(rgr->fl_grd_src);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in_dst=nco_fl_mk_lcl(fl_in_dst,fl_pth_lcl,&FL_RTR_RMT_LCN_DST);
-  fl_in_src=nco_fl_mk_lcl(fl_in_src,fl_pth_lcl,&FL_RTR_RMT_LCN_SRC);
+  fl_in_dst=nco_fl_mk_lcl(fl_in_dst,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN_DST);
+  fl_in_src=nco_fl_mk_lcl(fl_in_src,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN_SRC);
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
 
