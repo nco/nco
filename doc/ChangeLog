@@ -1,3 +1,9 @@
+2018-07-29  Charlie Zender  <zender@aerosol>
+
+	* Use HPSS_TRY to create better hints for finding missing files
+
+	* Fix ncap2 build on aerosol/firn: discard MacPorts antlr, build antlr from scratch, eliminate getopt.h getopt_bds.h from ~/include (to fix undefined references to _my_getopt, _my_optind, etc.)
+
 2018-07-28  Charlie Zender  <zender@aerosol>
 
 	* NCO 4.7.6-alpha06 release procedure:

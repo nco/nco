@@ -6708,18 +6708,17 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Build auxiliary coordinates information into table */
   if(aux_nbr){
-
-    if( nco_bld_crd_aux(nc_id,trv_tbl)==0)
-       if( nco_bld_crd_nm_aux(nc_id,"lat","lon",trv_tbl)==0)
-         if( nco_bld_crd_nm_aux(nc_id,"latitude","longitude",trv_tbl)==0)
-           if( nco_bld_crd_nm_aux(nc_id,"Latitude","Longitude",trv_tbl)==0)
-	     if( nco_bld_crd_nm_aux(nc_id,"lat_gds","lon_gds",trv_tbl)==0){
-	     
-	        (void)fprintf(stderr,"%s:%s Unable to find standard_name latitude/longitude cooordinates\n Nor able to find appropriate auxilary coordinates named lat/lon, latitude/longitude or Latitude/Longitude\n",nco_prg_nm_get(),fnc_nm); 
+    if(!nco_bld_crd_aux(nc_id,trv_tbl))
+       if(!nco_bld_crd_nm_aux(nc_id,"lat","lon",trv_tbl))
+         if(!nco_bld_crd_nm_aux(nc_id,"latitude","longitude",trv_tbl))
+           if(!nco_bld_crd_nm_aux(nc_id,"Latitude","Longitude",trv_tbl))
+	     if(!nco_bld_crd_nm_aux(nc_id,"lat_gds","lon_gds",trv_tbl)){
+	        (void)fprintf(stderr,"%s: %s reports unable to find lat/lon coordinates with standard_name's = \"latitude/longitude\". Nor able to find appropriate auxiliary coordinates named \"lat/lon\", \"latitude/longitude\" or \"Latitude/Longitude\".\n",nco_prg_nm_get(),fnc_nm);
 	        nco_exit(EXIT_FAILURE);  
-	   }
-	
-  }  
+	     }
+    
+  } /* !aux_nbr */
+  
   /* Check -v and -g input names and create extraction list */
   (void)nco_xtr_mk(grp_lst_in,grp_lst_in_nbr,var_lst_in,var_xtr_nbr,EXCLUDE_INPUT_LIST,EXTRACT_ALL_COORDINATES,flg_unn,trv_tbl);
 
