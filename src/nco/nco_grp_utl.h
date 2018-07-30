@@ -647,20 +647,11 @@ nco_cmp_aux_crd_dpt                    /* [fnc] Compare two aux_crd_sct's by gro
 (const void *val_1,                    /* I [sct] aux_crd_sct * to compare */
  const void *val_2);                   /* I [sct] aux_crd_sct * to compare */
 
-int                                    /* [flg] True if at least one standard_name="latitude/longitude" pair have been found  */      
+void
 nco_bld_crd_aux                        /* [fnc] Build auxiliary coordinates information into table */
 (const int nc_id,                      /* I [ID] netCDF file ID */
  trv_tbl_sct *trv_tbl);                /* I [sct] GTT (Group Traversal Table) */
 
-int                                    /* [flg] True if at least one nm_lat,nm_lon pair have been found  */            
-nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates information into table  using named latitude and longitude*/
-(const int nc_id,                      /* I [ID] netCDF file ID */
- const char * const nm_lat,            /* I [sng] name of "latitude" variable to find  */
- const char * const nm_lon,            /* I [sng] name of "latitude" variable to find  */
- trv_tbl_sct *trv_tbl);                /* I [sct] GTT (Group Traversal Table) */
-
-
-  
 void
 nco_lmt_aux_tbl                       /* [fnc] Apply limits to variable in table */
 (const int nc_id,                     /* I [ID] netCDF file ID */
@@ -968,10 +959,6 @@ nco_get_crd_sct                       /* [fnc] Return a coordinate variable crd_
  int lmt_nbr,                         /* I [nbr] Number of user-specified dimension limits */
  lmt_sct **lmt);                      /* I [sct] Limit array. Structure comming from nco_lmt_prs() */
 
-void
-nco_srt_aux                           /* [fnc] sort auxiliary coordinates */  
-(const trv_tbl_sct * const trv_tbl);  /* I [sct] Traversal table */
-  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

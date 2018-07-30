@@ -287,6 +287,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/ne30.g --nm_src=oRRS30to10 --nm_dst=ne30np4 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 
+
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
 #          2 = As in dbg_lvl=1, but DO NOT EXECUTE COMMANDS (i.e., pretend to run but do not regrid anything)
@@ -1054,6 +1055,7 @@ if [ "${prc_typ}" = 'mpas' ]; then
     fi # !rnr_thr
 fi # !mpas
 if [ "${prc_typ}" = 'mwf' ]; then 
+<<<<<<< HEAD
     [[ ${dbg_lvl} -ge 1 ]] && date_mwf=$(date +"%s")
     # Assume destination grids ending in .nc and .g are FV and SE, respectively
     # https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
@@ -1062,6 +1064,8 @@ if [ "${prc_typ}" = 'mwf' ]; then
     else
 	alg_lst='aave blin ndtos nstod patc tempest'
     fi # !grd_dst
+=======
+>>>>>>> master
     # Compute FV->SE maps
     if [ -n "${hnt_src}" ]; then 
        hnt_src_sng="--hnt_src=${hnt_src}"
@@ -1069,12 +1073,17 @@ if [ "${prc_typ}" = 'mwf' ]; then
     if [ -n "${hnt_dst}" ]; then
        hnt_dst_sng="--hnt_dst=${hnt_dst}"
     fi # !hnt_dst	
+<<<<<<< HEAD
     for alg_typ in ${alg_lst}; do
+=======
+    for alg_typ in aave blin ndtos nstod patc fv2se_flx fv2se_stt fv2se_alt; do
+>>>>>>> master
 	alg_sng=${alg_typ}
 	[[ ${alg_typ} = 'fv2se_flx' ]] && alg_sng='monotr'
 	[[ ${alg_typ} = 'fv2se_stt' ]] && alg_sng='highorder'
 	[[ ${alg_typ} = 'fv2se_alt' ]] && alg_sng='mono'
 	map_nm="${drc_out}/map_${nm_src}_to_${nm_dst}_${alg_sng}.${dt_sng}.nc"
+<<<<<<< HEAD
 	wgt_sng=''
 	if [ -n "${wgt_usr}" ]; then 
 	    erwg_alg_typ_rx='aave blin ndtos nstod patc'
@@ -1083,6 +1092,8 @@ if [ "${prc_typ}" = 'mwf' ]; then
 		wgt_sng="--wgt_cmd='${wgt_usr}'"
 	    fi # !ERWG
 	fi # !wgt_usr
+=======
+>>>>>>> master
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
@@ -1104,18 +1115,25 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	fi # !dbg
     done # !alg_typ
     # Compute SE->FV maps
+<<<<<<< HEAD
     if [[ ${grd_dst} == *.g ]]; then 
 	alg_lst='se2fv_flx se2fv_stt se2fv_alt'
     else
 	alg_lst='aave blin ndtos nstod patc tempest'
     fi # !grd_dst
+=======
+>>>>>>> master
     if [ -n "${hnt_src}" ]; then 
        hnt_dst_sng="--hnt_dst=${hnt_src/src/dst}"
     fi # !hnt_src
     if [ -n "${hnt_dst}" ]; then
        hnt_src_sng="--hnt_src=${hnt_dst/dst/src}"
     fi # !hnt_dst	
+<<<<<<< HEAD
     for alg_typ in ${alg_lst}; do
+=======
+    for alg_typ in aave blin ndtos nstod patc se2fv_flx se2fv_stt se2fv_alt; do
+>>>>>>> master
 	# Swap grd_src with grd_dst
 	alg_sng=${alg_typ}
 	[[ ${alg_typ} = 'se2fv_flx' ]] && alg_sng='mono'
@@ -1124,6 +1142,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	map_nm="${drc_out}/map_${nm_dst}_to_${nm_src}_${alg_sng}.${dt_sng}.nc"
 	# MWF-mode must be invoked with ocean as grd_src, atmosphere as grd_dst
 	a2o_sng=''
+<<<<<<< HEAD
 	if [ "${alg_typ}" = 'se2fv_flx' ] || [ "${alg_typ}" = 'se2fv_stt' ] || [ "${alg_typ}" = 'se2fv_alt' ] || [ "${alg_typ}" = 'tempest' ]; then
 	    a2o_sng='--a2o'
 	fi # !alg_typ
@@ -1139,6 +1158,15 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
 	cmd_fwm="ncremap ${wgt_sng} ${a2o_sng} --alg_typ=${alg_typ} --grd_src=${grd_dst} --grd_dst=${grd_src} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
+=======
+	if [ "${alg_typ}" = 'se2fv_flx' ] || [ "${alg_typ}" = 'se2fv_stt' ] || [ "${alg_typ}" = 'se2fv_alt' ]; then
+	    a2o_sng='--a2o'
+	fi # !alg_typ
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
+	fi # !vrb_lvl
+	cmd_fwm="ncremap ${a2o_sng} --alg_typ=${alg_typ} --grd_src=${grd_dst} --grd_dst=${grd_src} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
+>>>>>>> master
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_fwm}
 	fi # !dbg
