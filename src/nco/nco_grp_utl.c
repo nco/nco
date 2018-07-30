@@ -6713,7 +6713,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
          if(!nco_bld_crd_nm_aux(nc_id,"latitude","longitude",trv_tbl))
            if(!nco_bld_crd_nm_aux(nc_id,"Latitude","Longitude",trv_tbl))
 	     if(!nco_bld_crd_nm_aux(nc_id,"lat_gds","lon_gds",trv_tbl)){
-	        (void)fprintf(stderr,"%s: %s reports unable to find lat/lon coordinates with standard_name's = \"latitude/longitude\". Nor able to find appropriate auxiliary coordinates named \"lat/lon\", \"latitude/longitude\" or \"Latitude/Longitude\".\n",nco_prg_nm_get(),fnc_nm);
+	        (void)fprintf(stderr,"%s: %s reports unable to find lat/lon coordinates with standard_name's = \"latitude/longitude\". Nor able to find appropriate auxiliary coordinates named \"lat/lon\", \"latitude/longitude\" or \"Latitude/Longitude\" or \"lat_gds/lon_gds\".\n",nco_prg_nm_get(),fnc_nm);
 	        nco_exit(EXIT_FAILURE);  
 	     }
     
@@ -8351,9 +8351,6 @@ nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates info
 
   const char fnc_nm[]="nco_bld_crd_nm_aux()"; /* [sng] Function name */
 
-  /* Look for attributes 'standard_name' == 'latitude' and 'longitude' */
-  char *var_nm_fll=NULL;
-
   int dmn_id; /* [id] Dimension ID for 'latitude' and 'longitude' coordinate variables, e.g., lat_gds(gds_crd) */
   int nbr_lat=0;
   int nbr_lon=0; 
@@ -8392,15 +8389,11 @@ nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates info
 
         for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
           /* Detect 'standard_name' attribute 'latitude' in the compared variable, to avoid inserting it */
-          nco_bool has_lat_lcl=False;
-          nco_bool has_lon_lcl=False;
-          int dmn_id_lcl;
-
 	  trv_sct *crd_trv=&trv_tbl->lst[idx_crd];
 
 	  /* check if var and is in scope */
           if(crd_trv->nco_typ == nco_obj_typ_var &&  nco_var_scp(crd_trv ,var_trv,trv_tbl)){
-
+	    /* Detect if nm_lat or nm_lon already in scope */
             if( !strcmp(crd_trv->nm, nm_lat) || !strcmp(crd_trv->nm, nm_lon))
 	      continue;
 	    
@@ -8441,16 +8434,13 @@ nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates info
         if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable %s with dimension ID = %d has been recognized as a auxiliary coordinate\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_id); 
 
         for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
-          /* Detect 'standard_name' attribute 'lonitude' in the compared variable, to avoid inserting it */
-          nco_bool has_lat_lcl=False;
-          nco_bool has_lon_lcl=False;
-          int dmn_id_lcl;
 
 	  trv_sct *crd_trv=&trv_tbl->lst[idx_crd];
 
 	  /* check if var and is in scope */
           if(crd_trv->nco_typ == nco_obj_typ_var &&  nco_var_scp(crd_trv ,var_trv,trv_tbl)){
 
+	    /* Detect if nm_lat or nm_lon already in scope */
             if( !strcmp(crd_trv->nm, nm_lat) || !strcmp(crd_trv->nm, nm_lon))
 	      continue;
 	    
