@@ -115,6 +115,7 @@ main(int argc,char **argv)
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
@@ -265,6 +266,7 @@ main(int argc,char **argv)
     {"hdf_unpack",no_argument,0,0}, /* [flg] HDF unpack convention: unpacked=scale_factor*(packed-add_offset) */
     {"help",no_argument,0,0},
     {"hlp",no_argument,0,0},
+    {"hpss_try",no_argument,0,0}, /* [flg] Search HPSS for unfound files */
     {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */	  
     {"msa_user_order",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
@@ -443,6 +445,7 @@ main(int argc,char **argv)
 	(void)nco_usg_prn();
 	nco_exit(EXIT_SUCCESS);
       } /* endif "help" */
+      if(!strcmp(opt_crr,"hpss_try")) HPSS_TRY=True; /* [flg] Search HPSS for unfound files */
       if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){nc_set_log_level(optarg);} /* [enm] netCDF library debugging verbosity [0..5] */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
@@ -603,7 +606,7 @@ main(int argc,char **argv)
   fl_in_1=nco_fl_nm_prs(fl_in_1,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",nco_prg_nm_get(),fl_idx,fl_in_1);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in_1=nco_fl_mk_lcl(fl_in_1,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in_1=nco_fl_mk_lcl(fl_in_1,fl_pth_lcl,HPSS_TRY,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
   if(nco_dbg_lvl >= nco_dbg_fl && FILE_1_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_1);
   if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   /* Open file once per thread to improve caching */
@@ -615,7 +618,7 @@ main(int argc,char **argv)
   fl_in_2=nco_fl_nm_prs(fl_in_2,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",nco_prg_nm_get(),fl_idx,fl_in_2);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in_2=nco_fl_mk_lcl(fl_in_2,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in_2=nco_fl_mk_lcl(fl_in_2,fl_pth_lcl,HPSS_TRY,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
   if(nco_dbg_lvl >= nco_dbg_fl && FILE_2_RETRIEVED_FROM_REMOTE_LOCATION) (void)fprintf(stderr,", local file is %s",fl_in_2);
   if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
   /* Open file once per thread to improve caching */
@@ -732,7 +735,7 @@ main(int argc,char **argv)
     for(idx=0;idx<ppc_nbr;idx++) ppc_arg[idx]=(char *)nco_free(ppc_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
+    if(cnk_nbr > 0 && (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     trv_tbl_free(trv_tbl_1);
     trv_tbl_free(trv_tbl_2);
     if(gpe) gpe=(gpe_sct *)nco_gpe_free(gpe);

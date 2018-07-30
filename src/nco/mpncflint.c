@@ -166,6 +166,7 @@ main(int argc,char **argv)
   nco_bool FORCE_OVERWRITE=False; /* Option O */
   nco_bool FORTRAN_IDX_CNV=False; /* Option F */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order*/
   nco_bool MUST_CONFORM=False; /* Must nco_var_cnf_dmn() find truly conforming variables? */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */

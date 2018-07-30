@@ -105,6 +105,7 @@ main(int argc,char **argv)
   nco_bool GROUP_AGGREGATE=False; /* Option G */
   nco_bool GRP_VAR_UNN=False; /* [flg] Select union of specified groups and variables */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
@@ -252,6 +253,7 @@ main(int argc,char **argv)
     {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
     {"help",no_argument,0,0},
     {"hlp",no_argument,0,0},
+    {"hpss_try",no_argument,0,0}, /* [flg] Search HPSS for unfound files */
     {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"mrd",no_argument,0,0}, /* [enm] Multiple Record Dimension convention */
@@ -438,6 +440,7 @@ main(int argc,char **argv)
 	(void)nco_usg_prn();
 	nco_exit(EXIT_SUCCESS);
       } /* endif "help" */
+      if(!strcmp(opt_crr,"hpss_try")) HPSS_TRY=True; /* [flg] Search HPSS for unfound files */
       if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){nc_set_log_level(optarg);} /* [enm] netCDF library debugging verbosity [0..5] */
       if(!strcmp(opt_crr,"md5_dgs") || !strcmp(opt_crr,"md5_digest")){
         if(!md5) md5=nco_md5_ini();
@@ -617,7 +620,7 @@ main(int argc,char **argv)
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
 
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
 
@@ -762,7 +765,7 @@ main(int argc,char **argv)
     if(fl_idx) fl_in=nco_fl_nm_prs(fl_in,fl_idx,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
     if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"%s: INFO Input file %d is %s",nco_prg_nm_get(),fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
-    if(fl_idx) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+    if(fl_idx) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
     if(nco_dbg_lvl >= nco_dbg_fl && FL_RTR_RMT_LCN) (void)fprintf(stderr,", local file is %s",fl_in);
     if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
@@ -1003,7 +1006,7 @@ main(int argc,char **argv)
     for(idx=0;idx<ppc_nbr;idx++) ppc_arg[idx]=(char *)nco_free(ppc_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
+    if(cnk_nbr > 0 && (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     if(RECORD_AGGREGATE){
       /* Free dimension lists */
       /* ncecat-specific memory cleanup */

@@ -689,6 +689,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   short int bnd_idx;
 
   nco_bool FL_RTR_RMT_LCN;
+  nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_dgn_area_out=False; /* [flg] Diagnose area_out from grid boundaries */
@@ -708,7 +709,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Duplicate (because nco_fl_mk_lcl() free()'s fl_in) */
   fl_in=(char *)strdup(rgr->fl_map);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
@@ -5725,6 +5726,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool FL_RTR_RMT_LCN;
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=True; /* Option O */
+  nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
@@ -5762,7 +5764,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Duplicate (because nco_fl_mk_lcl() free()'s fl_in) */
   fl_in=(char *)strdup(rgr->fl_in);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);

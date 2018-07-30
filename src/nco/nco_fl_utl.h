@@ -122,6 +122,7 @@ char * /* O [sng] Filename of locally available file */
 nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
  const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
+ const nco_bool HPSS_TRY, /* I [flg] Search HPSS for unfound files */
  nco_bool * const FL_RTR_RMT_LCN); /* O [flg] File was retrieved from remote location */
 
 void

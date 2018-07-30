@@ -562,6 +562,7 @@ char * /* O [sng] Filename of locally available file */
 nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
  const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
+ const nco_bool HPSS_TRY, /* I [flg] Search HPSS for unfound files */
  nco_bool * const FL_RTR_RMT_LCN) /* O [flg] File was retrieved from remote location */
 {
   /* Purpose: Locate input file, retrieve it from remote storage system if necessary,
@@ -1037,18 +1038,20 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
         /* NB: HPSS commands replaced MSS commands in NCO 4.0.8 in 201104 */
         if(!rmt_cmd){
-          /* Does hsi command exist on local system? */
-	  rcd_stt=system("which hsi"); /* Generic location on user's PATH */
-          if(rcd_stt != 0) rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire default */
-          if(rcd_stt != 0) rcd_stt=stat("/opt/hpss/bin/hsi",&stat_sct); /* CISL alternate */
-          if(rcd_stt != 0) rcd_stt=stat("/usr/common/mss/bin/hsi",&stat_sct); /* Cori/Edison */
-	  if(rcd_stt != 0) rcd_stt=stat("/ncar/opt/hpss/hsi",&stat_sct); /* Yellowstone default added to NCO 4.3.2 in 201306 */
-          if(rcd_stt == 0) rmt_cmd=&hsiget;
+	  if(HPSS_TRY){
+	    /* Does hsi command exist on local system? */
+	    rcd_stt=system("which hsi"); /* Generic location on user's PATH */
+	    if(rcd_stt != 0) rcd_stt=stat("/usr/local/bin/hsi",&stat_sct); /* CISL Bluefire default */
+	    if(rcd_stt != 0) rcd_stt=stat("/opt/hpss/bin/hsi",&stat_sct); /* CISL alternate */
+	    if(rcd_stt != 0) rcd_stt=stat("/usr/common/mss/bin/hsi",&stat_sct); /* Cori/Edison */
+	    if(rcd_stt != 0) rcd_stt=stat("/ncar/opt/hpss/hsi",&stat_sct); /* Yellowstone default added to NCO 4.3.2 in 201306 */
+	    if(rcd_stt == 0) rmt_cmd=&hsiget;
+	  } /* !HPSS_TRY */
         } /* end if */
 
         if(!rmt_cmd){
-          (void)fprintf(stderr,"%s: ERROR file %s not found. It does not exist on the local filesystem, nor does it match remote filename patterns (e.g., http://foo or foo.bar.edu:file), nor did NCO detect a remote High Performance Storage System (HPSS) accessible via the 'hsi' command.\n",nco_prg_nm_get(),fl_nm_rmt);
-	  (void)fprintf(stderr,"%s: HINT file-not-found errors usually arise from filename typos, incorrect paths, missing files, or capricious gods. Please verify spelling and location of requested file.\n",nco_prg_nm_get());
+          (void)fprintf(stderr,"%s: ERROR file %s not found. It does not exist on the local filesystem, nor does it match remote filename patterns (e.g., http://foo or foo.bar.edu:file)%s\n",nco_prg_nm_get(),fl_nm_rmt,(HPSS_TRY) ? ", nor did NCO detect a remote High Performance Storage System (HPSS) accessible via the 'hsi' command." : ".");
+	  (void)fprintf(stderr,"%s: HINT file-not-found errors usually arise from filename typos, incorrect paths, missing files, or capricious gods. Please verify spelling and location of requested file.%s\n",nco_prg_nm_get(),(HPSS_TRY) ? "" : " If the file resides on a High Performance Storage System (HPSS) accessible via the 'hsi' command, add the --hpss option and re-try command.");
           nco_exit(EXIT_FAILURE);
         } /* end if */
 

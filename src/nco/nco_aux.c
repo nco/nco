@@ -88,20 +88,6 @@ nco_find_lat_lon
 
   } /* !idx */
   
-  /* Backup method, use "latitude" and "longitude", if they exist */
-  if((*lat_id == NC_MIN_INT) || (*lon_id == NC_MIN_INT)){
-    (void)fprintf(stdout,"%s: INFO %s auxiliary coordinate variables with standard_name attributes of \"latitude\" and \"longitude\" do not exist. Attempting to find latitude and longitude variables from pre-stored database instead...\n",nco_prg_nm_get(),fnc_nm);
-    if(*lon_id == NC_MIN_INT){
-      if((rcd=nco_inq_varid_flg(nc_id,"longitude",lon_id)) == NC_NOERR) var_nm_lon=strdup("longitude"); 
-      else if((rcd=nco_inq_varid_flg(nc_id,"lon",lon_id)) == NC_NOERR) var_nm_lon=strdup("lon"); 
-      else if((rcd=nco_inq_varid_flg(nc_id,"Longitude",lon_id)) == NC_NOERR) var_nm_lon=strdup("Longitude"); 
-    } /* !lon_id */
-    if(*lat_id == NC_MIN_INT){
-      if((rcd=nco_inq_varid_flg(nc_id,"latitude",lat_id)) == NC_NOERR) var_nm_lat=strdup("latitude"); 
-      else if((rcd=nco_inq_varid_flg(nc_id,"lat",lat_id)) == NC_NOERR) var_nm_lat=strdup("lat"); 
-      else if((rcd=nco_inq_varid_flg(nc_id,"Latitude",lat_id)) == NC_NOERR) var_nm_lat=strdup("Latitude"); 
-    } /* !lon_id */
-  } /* !crd_nbr */
 
   if((*lat_id == NC_MIN_INT) || (*lon_id == NC_MIN_INT)){
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: %s unable to identify lat/lon auxiliary coordinate variables.\n",nco_prg_nm_get(),fnc_nm);

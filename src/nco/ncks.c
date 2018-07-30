@@ -241,6 +241,7 @@ main(int argc,char **argv)
   nco_bool GRP_XTR_VAR_XCL=False; /* [flg] Extract matching groups, exclude matching variables */
   nco_bool HAVE_LIMITS=False; /* [flg] Are there user limits? (-d) */
   nco_bool HISTORY_APPEND=True; /* Option h */
+  nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool LST_RNK_GE2=False; /* [flg] Print extraction list of rank >= 2 variables */
   nco_bool LST_XTR=False; /* [flg] Print extraction list */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
@@ -326,6 +327,7 @@ main(int argc,char **argv)
     {"hidden",no_argument,0,0}, /* [flg] Print hidden attributes */
     {"help",no_argument,0,0},
     {"hlp",no_argument,0,0},
+    {"hpss_try",no_argument,0,0}, /* [flg] Search HPSS for unfound files */
     {"id",no_argument,0,0}, /* [flg] Print normally hidden information, like file, group, and variable IDs */
     {"lbr",no_argument,0,0},
     {"library",no_argument,0,0},
@@ -665,6 +667,7 @@ main(int argc,char **argv)
 	(void)nco_usg_prn();
 	nco_exit(EXIT_SUCCESS);
       } /* endif "help" */
+      if(!strcmp(opt_crr,"hpss_try")) HPSS_TRY=True; /* [flg] Search HPSS for unfound files */
       if(!strcmp(opt_crr,"lbr") || !strcmp(opt_crr,"library")){
         (void)nco_lbr_vrs_prn();
         nco_exit(EXIT_SUCCESS);
@@ -1004,7 +1007,7 @@ main(int argc,char **argv)
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FL_RTR_RMT_LCN);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
@@ -1413,7 +1416,7 @@ close_and_free:
     for(idx=0;idx<ppc_nbr;idx++) ppc_arg[idx]=(char *)nco_free(ppc_arg[idx]);
     /* Free chunking information */
     for(idx=0;idx<cnk_nbr;idx++) cnk_arg[idx]=(char *)nco_free(cnk_arg[idx]);
-    if(cnk_nbr > 0) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
+    if(cnk_nbr > 0 && (fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)) cnk.cnk_dmn=(cnk_dmn_sct **)nco_cnk_lst_free(cnk.cnk_dmn,cnk_nbr);
     trv_tbl_free(trv_tbl);
     for(idx=0;idx<lmt_nbr;idx++) flg_dne[idx].dim_nm=(char *)nco_free(flg_dne[idx].dim_nm);
     if(flg_dne) flg_dne=(nco_dmn_dne_t *)nco_free(flg_dne);

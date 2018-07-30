@@ -604,6 +604,8 @@ nco_cnk_sz_set /* [fnc] Set chunksize parameters */
   size_t *cnk_sz; /* [nbr] Chunksize list */
   size_t cnk_sz_dfl; /* [nbr] Chunksize default */
 
+  static nco_bool FIRST_WARNING=True;
+
   /* Did user explicitly request chunking? */
   if(cnk_nbr > 0 || cnk_sz_scl > 0UL || *cnk_map_ptr != nco_cnk_map_nil || *cnk_plc_ptr != nco_cnk_plc_nil) flg_cnk=True;
 
@@ -804,11 +806,13 @@ cnk_xpl_override: /* end goto */
           if(dmn_id[dmn_idx] == rcd_dmn_id){
             if(lmt_all_lst[lmt_idx_rec]->NON_HYP_DMN){
               if(cnk_sz[dmn_idx] > (size_t)lmt_all_lst[lmt_idx_rec]->dmn_sz_org){
-                (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed record dimension size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,(unsigned long)cnk_dmn[cnk_idx]->sz,dmn_nm,lmt_all_lst[lmt_idx_rec]->dmn_sz_org);
+                if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed record dimension size in input file = %lu. May fail if output file is not concatenated from multiple inputs. Will only print this WARNING once.\n",nco_prg_nm_get(),fnc_nm,(unsigned long)cnk_dmn[cnk_idx]->sz,dmn_nm,lmt_all_lst[lmt_idx_rec]->dmn_sz_org);
+		FIRST_WARNING=False;
               } /* endif too big */
             }else{ /* !NON_HYP_DMN */
               if(cnk_sz[dmn_idx] > (size_t)lmt_all_lst[lmt_idx_rec]->dmn_cnt){
-                (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed user-specified record dimension hyperslab size in input file = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,(unsigned long)cnk_dmn[cnk_idx]->sz,dmn_nm,lmt_all_lst[lmt_idx_rec]->dmn_cnt);
+		if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension chunksize = %lu for %s to exceed user-specified record dimension hyperslab size in input file = %lu. May fail if output file is not concatenated from multiple inputs. Will only print this WARNING once.\n",nco_prg_nm_get(),fnc_nm,(unsigned long)cnk_dmn[cnk_idx]->sz,dmn_nm,lmt_all_lst[lmt_idx_rec]->dmn_cnt);
+		FIRST_WARNING=False;
               } /* endif too big */
             } /* !NON_HYP_DMN */
           }else{ /* !rcd_dmn_id */
@@ -907,6 +911,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   size_t var_sz_byt; /* [B] Size of variable in output file */
 
   static short FIRST_CALL=True;
+  static nco_bool FIRST_WARNING=True;
 
   unsigned long long cnk_sz_byt; /* [B] Desired bytes per chunk (e.g., system blocksize) */
 
@@ -1409,11 +1414,13 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
       if(dmn_cmn[dmn_idx].NON_HYP_DMN){
 	if(dmn_cmn[dmn_idx].sz > 0 && /* Warn only after records have been written */
 	   cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].sz){
-	  (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds current output file record dimension size = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
+	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize %lu which exceeds current output file record dimension size = %lu. May fail if output file is not concatenated from multiple inputs. Will only print this WARNING once.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].sz);
+	  FIRST_WARNING=False;
 	} /* endif too big */
       }else{ /* !NON_HYP_DMN */
 	if(cnk_sz[dmn_idx] > (size_t)dmn_cmn[dmn_idx].dmn_cnt){
-	  (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize = %lu which exceeds user-specified record dimension input hyperslab size = %lu. May fail if output file is not concatenated from multiple inputs.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].dmn_cnt);
+	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: WARNING %s allowing user-specified record dimension %s chunksize = %lu which exceeds user-specified record dimension input hyperslab size = %lu. May fail if output file is not concatenated from multiple inputs. Will only print this WARNING once.\n",nco_prg_nm_get(),fnc_nm,dmn_cmn[dmn_idx].nm,(unsigned long)cnk_dmn[cnk_idx]->sz,(unsigned long)dmn_cmn[dmn_idx].dmn_cnt);
+	  FIRST_WARNING=False;
 	} /* endif too big */
       } /* !NON_HYP_DMN */
     }else{ /* !rcd_dmn_id */

@@ -3087,7 +3087,22 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	NCO_bm::tst_run(\@tst_cmd);
 	$#tst_cmd=0; # Reset array
     } # !XML
-    
+
+# ncks #127    
+# ncatted -O -a standard_name,,d,i,1 ~/nco/data/in.nc ~/foo.nc
+# ncks -O -X 150.,210.,-15.,45. -v gds_var,gds_3dvar ~/foo.nc ~/foo1.nc
+# ncap2 -v -O -S '../data/chk-aux-subset.nco' ~/foo1.nc ~/foo2.nc
+# ncks -O -C -H --trd -v nbr_err -s '%d' ~/foo2.nc;
+    $dsc_sng="ncks test auxiliary coords WITHOUT standard_name";
+    $tst_cmd[0]="ncatted -O $fl_fmt $nco_D_flg -a standard_name,,d,i,1 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -X 150.,210.,-15.,45. -v gds_var,gds_3dvar %tmp_fl_00% %tmp_fl_01%";
+    $tst_cmd[2]="ncap2 -v -O $fl_fmt $nco_D_flg -S '../data/chk-aux-subset.nco' %tmp_fl_01% %tmp_fl_02%";
+    $tst_cmd[3]="ncks -O -C -H --trd -v nbr_err -s '%d' %tmp_fl_02%";
+    $tst_cmd[4]="0";
+    $tst_cmd[5]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
 #####################
 #### ncpdq tests #### -OK !
 #####################
@@ -5061,7 +5076,7 @@ if(0){
     $dsc_sng="test wrapped ttl with dbl_prc patch (harmless failure expected/OK on all chips since wrap behavior is not IEEE-specified)";
     $tst_cmd[0]="ncwa $omp_flg -h -O $fl_fmt $nco_D_flg -y ttl -v val_max_max_sht $in_pth_arg in.nc %tmp_fl_00% 2> %tmp_fl_02%";
     $tst_cmd[1]="ncks -C -H --trd -s '%d' -v val_max_max_sht %tmp_fl_00%";
-#    $nsr_xpc= -31536 ; # Expected on Pentium IV GCC Debian 3.4.3-13, PowerPC xlc
+#    $nsr_xpc= -31536 ; # Expected on Pentium IV GCC Debian 3.4.3-13, PowerPC xlmlc
 #    $nsr_xpc= -32768 ; # Expected on Xeon GCC Fedora 3.4.2-6.fc3
 #    $nsr_xpc= -32768 ; # Expected on Opteron
 #    $nsr_xpc= -32768 ; # Expected on PentiumIII (Coppermine) gcc 3.4 MEPIS

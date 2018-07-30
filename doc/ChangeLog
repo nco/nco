@@ -1,3 +1,35 @@
+2018-07-29  Charlie Zender  <zender@aerosol>
+
+	* Use HPSS_TRY to create better hints for finding missing files
+
+	* Fix ncap2 build on aerosol/firn: discard MacPorts antlr, build antlr from scratch, eliminate getopt.h getopt_bds.h from ~/include (to fix undefined references to _my_getopt, _my_optind, etc.)
+
+2018-07-28  Charlie Zender  <zender@aerosol>
+
+	* NCO 4.7.6-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha06: Drag';git push
+	git tag -a 4.7.6-alpha06 -m 'MWF MPI fvfv fvse .g = SE;cnk wrn;ncremap timers;HPSS_TRY';git push --tags
+
+	* Add HPSS_TRY option
+
+	* Add per-map timers to MWF output for dbg_lvl >= 1
+
+	* MWF mode calls appropriate algorithms for FVFV and FVSE requests, assumes SE file if grd_dst ends with .g
+
+2018-07-27  Charlie Zender  <zender@aerosol>
+
+	* NCO completes when chunking into non-netCDF4 files (previously it dumped core)
+
+	* Only print one WARNING about user-specified chunk size for record dimension being too big
+
+	* Support --wgt_cmd in ncremap MWF mode, e.g., 'mpirun -np 12 ESMF_RegridWeightGen'
+
+	* NCO 4.7.6-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.6-alpha05: Roux';git push
+	git tag -a 4.7.6-alpha05 -m 'aux w/o std_nm; docs; Tempest in MWF';git push --tags
+
+	* Henry added -X support for auxiliary coordinates without standard_name attributes
+
 2018-07-23  Charlie Zender  <zender@uci.edu>
 
 	* Add 'Parallelism Mode = ${par_sng}' to output
