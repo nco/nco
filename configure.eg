@@ -726,7 +726,15 @@ To build NCO with netCDF4, we require changes from the default process:
 ************************************************************************
 End NETCDF4
 ************************************************************************
-
+cd
+/bin/rm -r -f nco
+git clone git@github.com:nco/nco.git
+cd nco
+<configure>
+make install
+cd ~/nco/data
+make
+cd ~/nco
 ************************************************************************
 Start LINUXAMD64
 Status: Appears to work. Make sure to compile netCDF and DAP with CFLAGS+='-fPIC'
@@ -786,7 +794,7 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
-# gcc/g++ Zender uses this to debug NCO with pre-built netCDF binaries in /usr (frazil, skyglow)
+# gcc/g++ Zender uses this to debug NCO with pre-built netCDF binaries in /usr (skyglow)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 # Pre-20170810 GCC7 dies on nco_yyget_leng() prototype with --enable-debug-custom option

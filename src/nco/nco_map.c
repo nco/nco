@@ -431,7 +431,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   fl_out=rgr->fl_map;
 
   /* Define overlap mesh vertices, count links, compute overlap weights
-     This includes Mohammed Abouali code to create triangle list and Zender code to compute triangle areas */
+     This includes Mohammad Abouali code to create triangle list and Zender code to compute triangle areas */
   (void)nco_msh_mk
     (rgr,
      area_in,msk_in,lat_ctr_in,lon_ctr_in,lat_crn_in,lon_crn_in,grd_sz_in,mpf.src_grid_corners,
