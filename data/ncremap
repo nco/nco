@@ -434,7 +434,7 @@ fi # !gpfs
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
-    printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}$spt_nm -d dst_fl in_fl out_fl${fnt_nrm}\n"
+    printf "${fnt_rvr}Basic usage:\n${fnt_nrm} ${fnt_bld}${spt_nm} -d dst_fl in_fl out_fl${fnt_nrm}\n"
     printf "${fnt_nrm} ${fnt_bld}${spt_nm} --destination=dst_fl --input_file=in_fl --output_file=out_fl${fnt_nrm}\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
@@ -1234,10 +1234,14 @@ if [ -n "${dst_fl}" ]; then
     dst_usr_flg='Yes'
 fi # !dst_fl
 if [ -n "${grd_dst}" ]; then 
-    if [ ! -f "${grd_dst}" ]; then
-	echo "ERROR: Unable to find specified destination grid-file ${grd_dst}"
-	echo "HINT: Supply the full path-name for the destination grid, or generate one automatically with -G"
-	exit 1
+    if [ -f "${grd_dst}" ]; then
+	if [ "${dst_usr_flg}" = 'Yes' ]; then
+	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by grid-inferral procedure\n"
+	else
+	    echo "ERROR: Unable to find specified destination grid-file ${grd_dst}"
+	    echo "HINT: Supply full path-name for destination grid, or generate it with -G option and arguments"
+	    exit 1
+	fi # !dst_usr_flg
     fi # ! -f
     grd_dst_usr_flg='Yes'
 else
@@ -1558,12 +1562,11 @@ fi # wgt_usr
     
 if [ "${dst_usr_flg}" = 'Yes' ]; then 
     if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
-	printf "${spt_nm}: ERROR Specify either '-d dst_fl' or '-g grd_dst', not both\n"
-	exit 1
+	printf "${spt_nm}: INFO Both '-d dst_fl' and '-g grd_dst' were specified so ${spt_nm} will infer ${grd_dst} from ${dst_fl}\n"
     fi # !grd_dst_usr_flg
 fi # !dst_usr_flg
 if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
-    printf "${spt_nm}: ERROR Must use one of '-d dst_fl', '-g grd_dst', '-G grd_sng', or '-m map_fl'\n"
+    printf "${spt_nm}: ERROR Must use at least one of '-d dst_fl', '-g grd_dst', '-G grd_sng', or '-m map_fl'\n"
     exit 1
 fi # !dst_usr_flg
 
