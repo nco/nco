@@ -445,12 +445,12 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "            ESMF algorithms: bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch"
     echo "            Tempest algorithms: tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt"
-    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
+    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng, or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo " ${fnt_bld}--dt_sng${fnt_nrm}   Date string (for MWF map names) (default ${fnt_bld}${dt_sng}${fnt_nrm}) [${fnt_tlc}dt_sng, date_string${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
-    echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation argument string (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
+    echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation arguments (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
     echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use grd_sng or map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dst_grd, dest_grid, destination_grid${fnt_nrm}]"
     echo " ${fnt_bld}--gll_fl${fnt_nrm}   GLL metadata (SE grid geometry+connectivity+Jacobian) file (default ${fnt_bld}${gll_fl}${fnt_nrm}) [${fnt_tlc}gll_fl, gll_mtd, se_gmt, se_mtd${fnt_nrm}]"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
@@ -501,9 +501,9 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-W${fnt_nrm} ${fnt_bld}wgt_opt${fnt_nrm}  Weight-generator options (default ${fnt_bld}${wgt_opt_esmf}${fnt_nrm}) [${fnt_tlc}wgt_opt, esmf_opt, esmf_options, tempest_opt, tps_opt${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_cmd${fnt_nrm}  Weight-generator command (default ${fnt_bld}${wgt_exe_esmf}${fnt_nrm}) [${fnt_tlc}wgt_cmd, wgt_gnr, weight_command, weight_generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
-    echo " ${fnt_bld}--xtr_nsp${fnt_nrm}  Extrapolation number of source points (default ${fnt_bld}${xtr_nsp}${fnt_nrm}) [${fnt_tlc}xtr_nsp, xtr_pnt_src_nbr, extrap_num_src_pnts${fnt_nrm}]"
-    echo " ${fnt_bld}--xtr_typ${fnt_nrm}  Extrapolation type (empty means none) (default ${fnt_bld}${xtr_typ}${fnt_nrm}) [${fnt_tlc}xtr_typ, xtr_mth, extrap_type, extrap_method${fnt_nrm}]"
-    echo " ${fnt_bld}--xtr_xpn${fnt_nrm}  Extrapolation distance exponent (default ${fnt_bld}${xtr_xpn}${fnt_nrm}) [${fnt_tlc}xtr_xpn, xtr_dst_xpn, extrap_dist_exponent${fnt_nrm}]"
+    echo " ${fnt_bld}--xtr_typ${fnt_nrm}  ESMF Extrapolation type (empty means none) (default ${fnt_bld}${xtr_typ}${fnt_nrm}) [${fnt_tlc}xtr_typ, xtr_mth, extrap_type, extrap_method${fnt_nrm}]"
+    echo " ${fnt_bld}--xtr_nsp${fnt_nrm}  ESMF Extrapolation number of source points (default ${fnt_bld}${xtr_nsp}${fnt_nrm}) [${fnt_tlc}xtr_nsp, xtr_pnt_src_nbr, extrap_num_src_pnts${fnt_nrm}]"
+    echo " ${fnt_bld}--xtr_xpn${fnt_nrm}  ESMF Extrapolation distance exponent (default ${fnt_bld}${xtr_xpn}${fnt_nrm}) [${fnt_tlc}xtr_xpn, xtr_dst_xpn, extrap_dist_exponent${fnt_nrm}]"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -i ${in_xmp} -m ${map_xmp} -o ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
@@ -1566,7 +1566,7 @@ if [ "${dst_usr_flg}" = 'Yes' ]; then
     fi # !grd_dst_usr_flg
 fi # !dst_usr_flg
 if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
-    printf "${spt_nm}: ERROR Must use at least one of '-d dst_fl', '-g grd_dst', '-G grd_sng', or '-m map_fl'\n"
+    printf "${spt_nm}: ERROR Must specify at least one of '-d dst_fl', '-g grd_dst', '-G grd_sng', or '-m map_fl'\n"
     exit 1
 fi # !dst_usr_flg
 
@@ -1638,20 +1638,23 @@ else # !map_usr_flg
 	fi # !vrb_lvl
 	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_dst=${hnt_dst_fl} ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} --rgr scrip=${grd_dst} ${dst_fl} ${tmp_out_fl}"
     else # !dst_usr_flg
-	if [ "${grd_dst_usr_flg}" = 'Yes' ]; then 
+	if [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "Destination grid supplied by user\n"
 	    fi # !vrb_lvl
+	fi # !grd_dst_usr_flg
+	if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
+	    cmd_dst[${fl_idx}]="ncks ${nco_opt} ${grd_sng} ${fl_in[0]} ${tmp_out_fl}"
+	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+		if [ "${grd_dst_usr_flg}" = 'Yes' ]; then
+		    printf "Destination grid will be generated from NCO grid string ${grd_sng} and stored in ${grd_dst}\n"
+		else
+		    printf "Destination grid will be generated from NCO grid string ${grd_sng} and stored in a temporary, internal location\n"
+		fi # !grd_sng_usr_flg
+	    fi # !vrb_lvl
 	else
-	    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
-		if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-		    printf "Destination grid will be generated from NCO grid string ${grd_sng}\n"
-		fi # !vrb_lvl
-		cmd_dst[${fl_idx}]="ncks ${nco_opt} ${grd_sng} ${fl_in[0]} ${tmp_out_fl}"
-	    else
-		printf "${spt_nm}: ERROR Grid string grd_sng not provided\n"
-		exit 1
-	    fi # !grd_sng_usr_flg
+	    printf "${spt_nm}: ERROR No destination grid specified with -g, inferral file specified with -d, or grid string specified with -G\n"
+	    exit 1
 	fi # !grd_dst_usr_flg
     fi # !dst_usr_flg
     if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_dst_usr_flg}" != 'Yes' ]; then 
@@ -1662,7 +1665,11 @@ else # !map_usr_flg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_dst[${fl_idx}]}
 	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to infer destination grid. Debug this:\n${cmd_dst[${fl_idx}]}\n"
+		if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
+		    printf "${spt_nm}: ERROR Failed to generate destination grid from user-supplied grid-string. Debug this:\n${cmd_dst[${fl_idx}]}\n"
+		else # !grd_sng_usr_flg
+		    printf "${spt_nm}: ERROR Failed to infer destination grid. Debug this:\n${cmd_dst[${fl_idx}]}\n"
+		fi # !grd_sng_usr_flg
 		exit 1
 	    fi # !err
 	    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then 

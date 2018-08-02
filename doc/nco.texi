@@ -6340,8 +6340,8 @@ Long options:
 
 As of @acronym{NCO} version 4.5.2 (August, 2015), @command{ncks}
 generates accurate and complete SCRIP-format gridfiles for select grid 
-types, including uniform, capped and Gaussian rectangular
-latitude/longitude grids.  
+types, including uniform, capped and Gaussian rectangular,
+latitude/longitude grids, global or regional.
 The grids are stored in an external @var{grid-file}.
 
 All options pertinent to the grid geometry and metadata are passed to
@@ -6615,7 +6615,7 @@ ncks --rgr grd_ttl='CAM-FV scalar grid 25x48'#latlon=25,48#lat_typ=fv#lon_typ=gr
      --rgr scrip=${DATA}/grids/25x48_SCRIP.20170401.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # 128x256 Equi-Angular grid, Greenwich west edge of first longitude
-# This is the CAM-FV offset grid for the 129x256 CAM-FV scalar grid above
+# CAM-FV offset grid for 129x256 CAM-FV scalar grid above
 ncks --rgr grd_ttl='Equi-Angular grid 128x256'#latlon=128,256#lat_typ=uni#lon_typ=grn_wst \
      --rgr scrip=${DATA}/grids/128x256_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 

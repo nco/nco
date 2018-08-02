@@ -1,5 +1,7 @@
 2018-08-02  Charlie Zender  <zender@uci.edu>
 
+	* Work on getting "ncremap -g grd_dst.nc -G grd_sng" to work
+
 	* When ncremap receives both -d dat_dst and -g grd_dst, then infer grd_dst from dat_dst
 
 2018-07-29  Charlie Zender  <zender@aerosol>
