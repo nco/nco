@@ -113,6 +113,10 @@ extern "C" {
    double * const bsl_zro); /* O [frc] Bessel zero */
 
   int /* O [enm] Return code */
+  nco_fl_dmm_mk /* Create dummy file */
+  (const char * const fl_out); /* I [sng] Dummy file */
+
+  int /* O [enm] Return code */
   nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   (rgr_sct * const rgr); /* I/O [sct] Regridding structure */
 

@@ -1,3 +1,7 @@
+2018-08-02  Charlie Zender  <zender@aerosol>
+
+	* Add --fl_dmm to create dummy filename
+
 2018-08-02  Charlie Zender  <zender@uci.edu>
 
 	* Work on getting "ncremap -g grd_dst.nc -G grd_sng" to work

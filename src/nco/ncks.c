@@ -126,6 +126,7 @@ main(int argc,char **argv)
   char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
   char *dlm_sng=NULL;
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
+  char *fl_dmm=NULL; /* [sng] Dummy input file */
   char *fl_in=NULL;
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
@@ -410,6 +411,8 @@ main(int argc,char **argv)
     {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
     {"dt_fmt",required_argument,0,0}, /* [enm] Date format for CDL output with --cal */
     {"date_format",required_argument,0,0}, /* [enm] Date format for CDL output with --cal */
+    {"dmm_inp_mk",required_argument,0,0}, /* [sng] Dummy input file */
+    {"fl_dmm",required_argument,0,0}, /* [sng] Dummy input file */
     {"fl_fmt",required_argument,0,0},
     {"file_format",required_argument,0,0},
     {"fix_rec_dmn",required_argument,0,0}, /* [sng] Fix record dimension */
@@ -643,6 +646,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"trd") || !strcmp(opt_crr,"traditional")) PRN_TRD=True; /* [flg] Print traditional */
       if(!strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
+      if(!strcmp(opt_crr,"dmm_inp_mk") || !strcmp(opt_crr,"fl_dmm")) fl_dmm=(char *)strdup(optarg); /* [sng] Dummy input file */
       if(!strcmp(opt_crr,"fix_rec_dmn") || !strcmp(opt_crr,"no_rec_dmn")){
         const char fix_pfx[]="fix_"; /* [sng] Prefix string to fix dimension */
         rec_dmn_nm=(char *)nco_malloc((strlen(fix_pfx)+strlen(optarg)+1L)*sizeof(char));
@@ -995,6 +999,9 @@ main(int argc,char **argv)
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);
  
+  /* Create dummy file */
+  if(fl_dmm) nco_fl_dmm_mk(fl_dmm);
+  
   /* Process positional arguments and fill-in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
