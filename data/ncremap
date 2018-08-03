@@ -394,7 +394,6 @@ sgs_msk='landmask' # [sng] Sub-grid mask variable
 sgs_nrm='1.0' # [frc] Sub-grid normalization
 std_flg='No' # [sng] Input available from pipe to stdin
 thr_nbr=2 # [nbr] Thread number for regridder
-tmp_out_fl='ncremap_grd_tmp.nc' # [sng] Temporary output file
 trn_map='No' # [flg] Tempest transpose map (i.e., fv2se_flx == monotr)
 ugrid_fl='' # [sng] UGRID file
 unq_sfx=".pid${spt_pid}" # [sng] Unique suffix
@@ -451,7 +450,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--dt_sng${fnt_nrm}   Date string (for MWF map names) (default ${fnt_bld}${dt_sng}${fnt_nrm}) [${fnt_tlc}dt_sng, date_string${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation arguments (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
-    echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use grd_sng or map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dst_grd, dest_grid, destination_grid${fnt_nrm}]"
+    echo "${fnt_rvr}-g${fnt_nrm} ${fnt_bld}grd_dst${fnt_nrm}  Grid-file (destination) (empty means none, i.e., infer from dst_fl or use map_fl) (default ${fnt_bld}${grd_dst}${fnt_nrm}) [${fnt_tlc}grd_dst, grid_dest, dst_grd, dest_grid, destination_grid${fnt_nrm}]"
     echo " ${fnt_bld}--gll_fl${fnt_nrm}   GLL metadata (SE grid geometry+connectivity+Jacobian) file (default ${fnt_bld}${gll_fl}${fnt_nrm}) [${fnt_tlc}gll_fl, gll_mtd, se_gmt, se_mtd${fnt_nrm}]"
     echo "${fnt_rvr}-I${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (empty means none) (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}in_fl${fnt_nrm}    Input file (empty means pipe to stdin or drc_in) (default ${fnt_bld}${in_fl}${fnt_nrm}) [${fnt_tlc}in_fl, in_file, input_file${fnt_nrm}]"
@@ -776,6 +775,7 @@ if [ -n "${tmp_usr}" ]; then
     drc_tmp=${tmp_usr%/}
 fi # !out_fl
 att_fl="${drc_tmp}/ncremap_tmp_att.nc" # [sng] Missing value workflow (MPAS) default
+dmm_fl="${drc_tmp}/ncremap_tmp_dmm.nc" # [sng] Dummy input file
 grd_dst_dfl="${drc_tmp}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
 grd_src_dfl="${drc_tmp}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
 hnt_dst_fl="${drc_tmp}/ncremap_tmp_hnt_dst.txt" # [sng] Hint (for ERWG) destination
@@ -785,7 +785,7 @@ nnt_fl="${drc_tmp}/ncremap_tmp_nnt.nc" # [sng] Annotated global datafile (RRG) d
 pdq_fl="${drc_tmp}/ncremap_tmp_pdq.nc" # [sng] Permuted/Unpacked data default (AIRS, HIRDLS, MLS, MOD04, MPAS) 
 rgn_fl="${drc_tmp}/ncremap_tmp_rgn.nc" # [sng] Regional file with coordinates (RRG) default
 rnm_fl="${drc_tmp}/ncremap_tmp_rnm.nc" # [sng] Renamed regional (RRG) default
-tmp_out_fl="${drc_tmp}/${tmp_out_fl}" # [sng] Temporary output file
+tmp_out_fl="${drc_tmp}/ncremap_tmp_out.nc" # [sng] Temporary output file
 znl_fl="${drc_tmp}/ncremap_tmp_znl.nc" # [sng] Zonal workflow (HIRDLS, MLS) default
 
 if [ -n "${unq_usr}" ]; then
@@ -800,7 +800,7 @@ if [ -n "${unq_usr}" ]; then
     fi # !unq_usr
 fi # !unq_sfx
 att_fl=${att_fl}${unq_sfx}
-rgn_fl=${rgn_fl}${unq_sfx}
+dmm_fl=${dmm_fl}${unq_sfx}
 grd_dst_dfl=${grd_dst_dfl}${unq_sfx}
 grd_src_dfl=${grd_src_dfl}${unq_sfx}
 hnt_dst_fl=${hnt_dst_fl}${unq_sfx}
@@ -808,6 +808,7 @@ hnt_src_fl=${hnt_src_fl}${unq_sfx}
 ncwa_fl=${ncwa_fl}${unq_sfx}
 nnt_fl=${nnt_fl}${unq_sfx}
 pdq_fl=${pdq_fl}${unq_sfx}
+rgn_fl=${rgn_fl}${unq_sfx}
 rnm_fl=${rnm_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
@@ -1233,14 +1234,25 @@ if [ -n "${dst_fl}" ]; then
     fi # ! -f
     dst_usr_flg='Yes'
 fi # !dst_fl
+if [ -z "${grd_sng}" ]; then 
+    grd_sng_dfl="grd_ttl='Default internally-generated grid'#latlon=10,10#lat_typ=uni#lon_typ=Grn_ctr" # [sng] Grid string default
+    grd_sng="${grd_sng_dfl}"
+else
+    grd_sng_usr_flg='Yes'
+fi # !grd_sng
 if [ -n "${grd_dst}" ]; then 
     if [ -f "${grd_dst}" ]; then
 	if [ "${dst_usr_flg}" = 'Yes' ]; then
 	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by grid-inferral procedure\n"
-	else
+	fi # !dst_usr_flg
+	if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
+	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by grid-creation procedure\n"
+	fi # !grd_sng_usr_flg
+    else
+	if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then
 	    echo "ERROR: Unable to find specified destination grid-file ${grd_dst}"
 	    echo "HINT: Supply full path-name for destination grid, or generate it with -G option and arguments"
-	    exit 1
+	exit 1
 	fi # !dst_usr_flg
     fi # ! -f
     grd_dst_usr_flg='Yes'
@@ -1258,12 +1270,6 @@ if [ -n "${grd_src}" ]; then
 else
     grd_src=${grd_src_dfl} # [sng] Grid-file default
 fi # !grd_src
-if [ -z "${grd_sng}" ]; then 
-    grd_sng_dfl="--rgr grd_ttl='Default internally-generated grid' --rgr scrip=${grd_dst_dfl} --rgr latlon=100,100 --rgr snwe=30.0,70.0,-130.0,-90.0" # [sng] Grid string default
-    grd_sng="${grd_sng_dfl}"
-else
-    grd_sng_usr_flg='Yes'
-fi # !grd_sng
 if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ] || [ "${grd_dst_usr_flg}" = 'Yes' ] || [ "${grd_src_usr_flg}" = 'Yes' ]; then
     # Specified map-file will be created if -d, -G, -g, or -s was specified
     map_mk='Yes'
@@ -1569,6 +1575,9 @@ if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${ma
     printf "${spt_nm}: ERROR Must specify at least one of '-d dst_fl', '-g grd_dst', '-G grd_sng', or '-m map_fl'\n"
     exit 1
 fi # !dst_usr_flg
+if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" = 'Yes' ]; then
+    flg_grd_only='Yes'
+fi # !flg_grd_only
 
 # Generate destination grid, if necessary, once (only) before loop over input files
 # Block 1: Destination grid
@@ -1577,7 +1586,7 @@ fi # !dst_usr_flg
 # Currently we require user to know (and specify) means by which destination grid is provided
 if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ ${fl_nbr} -eq 0 ]; then
-	printf "Map-only run: no input data detected therefore will exit after generating map\n"
+	printf "Map/grid-only run: no input data detected therefore will exit after generating map and/or grid\n"
     fi # !fl_nbr
     if [ -n "${pdq_opt}" ] && [ -n "${pdq_typ}" ]; then 
 	printf "Input data shaped in \"${prc_typ}\"-order, will permute with \"ncpdq ${pdq_opt}\"\n"
@@ -1644,12 +1653,12 @@ else # !map_usr_flg
 	    fi # !vrb_lvl
 	fi # !grd_dst_usr_flg
 	if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
-	    cmd_dst[${fl_idx}]="ncks ${nco_opt} ${grd_sng} ${fl_in[0]} ${tmp_out_fl}"
+	    cmd_dst[${fl_idx}]="ncks --dmm_in_mk ${nco_opt} --rgr scrip=${grd_dst} --rgr ${grd_sng} ${dmm_fl} ${tmp_out_fl}"
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		if [ "${grd_dst_usr_flg}" = 'Yes' ]; then
-		    printf "Destination grid will be generated from NCO grid string ${grd_sng} and stored in ${grd_dst}\n"
+		    printf "Destination grid will be generated from NCO grid-formula ${grd_sng} and stored in ${grd_dst}\n"
 		else
-		    printf "Destination grid will be generated from NCO grid string ${grd_sng} and stored in a temporary, internal location\n"
+		    printf "Destination grid will be generated from NCO grid-formula ${grd_sng} and stored in a temporary, internal location\n"
 		fi # !grd_sng_usr_flg
 	    fi # !vrb_lvl
 	else
@@ -1657,7 +1666,7 @@ else # !map_usr_flg
 	    exit 1
 	fi # !grd_dst_usr_flg
     fi # !dst_usr_flg
-    if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_dst_usr_flg}" != 'Yes' ]; then 
+    if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
 	# Block 1 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_dst[${fl_idx}]}
@@ -1666,7 +1675,7 @@ else # !map_usr_flg
 	    eval ${cmd_dst[${fl_idx}]}
 	    if [ $? -ne 0 ]; then
 		if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
-		    printf "${spt_nm}: ERROR Failed to generate destination grid from user-supplied grid-string. Debug this:\n${cmd_dst[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to generate grid from user-supplied grid-string. Debug this:\n${cmd_dst[${fl_idx}]}\n"
 		else # !grd_sng_usr_flg
 		    printf "${spt_nm}: ERROR Failed to infer destination grid. Debug this:\n${cmd_dst[${fl_idx}]}\n"
 		fi # !grd_sng_usr_flg
@@ -1677,10 +1686,8 @@ else # !map_usr_flg
 	    fi # !grd_sng_usr_flg
 	fi # !dbg
     fi # !dst_usr_flg || grd_dst_usr_flg
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+    if [ ${vrb_lvl} -ge ${vrb_3} ] && [	${flg_grd_only} != 'Yes' ]; then
 	printf "Weight-generation type: ${wgt_typ}\n"
-    fi # !vrb_lvl
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Algorithm used to generate weights in map-file is: ${alg_opt}\n"
 	printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
     fi # !vrb_lvl
@@ -2488,7 +2495,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Clean-up intermediate files...\n"
     fi # !vrb_lvl
-    /bin/rm -f ${att_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${pdq_fl} ${rgn_fl} ${rnm_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${att_fl} ${dmm_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${pdq_fl} ${rgn_fl} ${rnm_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files.\n"
@@ -2498,7 +2505,7 @@ fi # !cln_flg
 date_end=$(date +"%s")
 if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ ${fl_nbr} -eq 0 ]; then
-	printf "Completed generating map-file(s) at `date`.\n"
+	printf "Completed generating map/grid-file(s) at `date`.\n"
     else # !fl_nbr
 	echo "Quick plots of results from last regridded file:"
 	echo "ncview  ${out_fl} &"

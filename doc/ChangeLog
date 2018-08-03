@@ -1,10 +1,12 @@
+2018-08-03  Charlie Zender  <zender@uci.edu>
+
+	* ncremap -g grd_dst.nc -G grd_sng now works in "grid-only" mode
+
 2018-08-02  Charlie Zender  <zender@aerosol>
 
-	* Add --fl_dmm to create dummy filename
+	* Add --dmm_fl_mk, --fl_dmm to create dummy input file fl_in before ncks opens it
 
 2018-08-02  Charlie Zender  <zender@uci.edu>
-
-	* Work on getting "ncremap -g grd_dst.nc -G grd_sng" to work
 
 	* When ncremap receives both -d dat_dst and -g grd_dst, then infer grd_dst from dat_dst
 

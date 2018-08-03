@@ -381,7 +381,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_stg=False;
       continue;
     } /* !stagger */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"grd_ttl")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"grd_ttl") || !strcmp(rgr_lst[rgr_var_idx].key,"ttl")){
       if(rgr->grd_ttl) rgr->grd_ttl=(char *)nco_free(rgr->grd_ttl);
       rgr->grd_ttl=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -4180,8 +4180,8 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
   case nco_grd_2D_unk: return "Unknown, unclassified, or unrepresentable 2D grid type (e.g., unstructured, curvilinear, POP displaced-pole)";
   case nco_grd_2D_gss: return "Gaussian latitude grid. Used by spectral transform models, e.g., CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM.";
-  case nco_grd_2D_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). Poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90.0). Polar gridcells span half the equi-angular latitude increment of the rest of the grid. Used by CAM FV (i.e., CAM 4-6), GEOS-CHEM, UCICTM, UKMO.";
-  case nco_grd_2D_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (i.e., lat_ctr[0]=-89.xxx). When global forms valid FV-staggered AKA FV velocity grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
+  case nco_grd_2D_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). When global (not regional) in extent and with odd number of latitudes, poles are considered at (and labeled as) centers of first and last gridcells. For example lat_ctr=-90,-89,-88,... and lat_crn=-89.5,-88.5,-87.5,... Thus pole-gridcells span half the equi-angular latitude increment of the rest of the grid. Used by CAM FV (i.e., CAM 4-6), GEOS-CHEM, UCICTM, UKMO.";
+  case nco_grd_2D_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent and with even number of latitudes, poles are at corners/edges of first and last gridcells. For example lat_ctr=-89.5,-88.5,-87.5,... and lat_crn=-90,-89,-88,.... When global, forms valid FV-staggered (aka FV-velocity) grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -4197,8 +4197,8 @@ nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
   switch(nco_grd_lat_typ){
   case nco_grd_lat_unk: return "Unknown, unclassified, or unrepresentable latitude grid type (e.g., unstructured, curvilinear, POP3)";
   case nco_grd_lat_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM.";
-  case nco_grd_lat_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). Poles are considered at (and labeled as) centers of first and last gridcells (i.e., lat_ctr[0]=-90). Polar gridcells span half the equi-angular latitude increment of the rest of the grid. Used by: CAM FV (i.e., CAM 4-6), GEOS-CHEM, UCICTM, UKMO";
-  case nco_grd_lat_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent, poles are at edges of first and last gridcells (e.g., lat_ctr[0]=-89.xxx). When global can be latitude-component of an FV-staggered grid AKA FV velocity grid (for Lin-Rood representation). Used by: CIESIN/SEDAC, IGBP-DIS, TOMS AAI";
+  case nco_grd_lat_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). When global (not regional) in extent and with odd number of latitudes, poles are considered at (and labeled as) centers of first and last gridcells. For example lat_ctr=-90,-89,-88,... and lat_crn=-89.5,-88.5,-87.5,... Thus pole-gridcells span half the equi-angular latitude increment of the rest of the grid. Used by CAM FV (i.e., CAM 4-6), GEOS-CHEM, UCICTM, UKMO.";
+  case nco_grd_lat_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent and with even number of latitudes, poles are at corners/edges of first and last gridcells. For example lat_ctr=-89.5,-88.5,-87.5,... and lat_crn=-90,-89,-88,.... When global, forms valid FV-staggered (aka FV-velocity) grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI.";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
@@ -4407,17 +4407,17 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      yellowstone.ucar.edu:/glade/p_old/cesm/cseg/mapping/grids
 
      Global RLL grids:
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150901.nc --rgr latlon=90,180 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='Equiangular grid 180x360' --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='Equiangular grid 90x180' --rgr grid=${DATA}/grids/90x180_SCRIP.20150901.nc --rgr latlon=90,180 --rgr lat_typ=eqa --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
      Maps for global RLL grids:
      ESMF_RegridWeightGen -s ${DATA}/grids/180x360_SCRIP.20150901.nc -d ${DATA}/grids/90x180_SCRIP.20150901.nc -w ${DATA}/maps/map_180x360_to_90x180.20150901.nc --method conserve
      ESMF_RegridWeightGen -s ${DATA}/grids/90x180_SCRIP.20150901.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/maps/map_90x180_to_180x360.20150901.nc --method conserve
 
      ACME grids:
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150910.nc --rgr latlon=129,256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150910.nc --rgr latlon=257,512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150910.nc --rgr latlon=801,1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='FV-scalar grid 129x256' --rgr grid=${DATA}/grids/129x256_SCRIP.20150910.nc --rgr latlon=129,256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='FV-scalar grid 257x512' --rgr grid=${DATA}/grids/257x512_SCRIP.20150910.nc --rgr latlon=257,512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='FV-scalar grid 801x1600' --rgr grid=${DATA}/grids/801x1600_SCRIP.20150910.nc --rgr latlon=801,1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr  ~/nco/data/in.nc ~/foo.nc
 
      ACME maps:
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/129x256_SCRIP.20150910.nc -w ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150910.nc --method conserve
@@ -4426,12 +4426,12 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ESMF_RegridWeightGen -s ${DATA}/grids/ne120np4_pentagons.100310.nc -d ${DATA}/grids/801x1600_SCRIP.20150910.nc -w ${DATA}/maps/map_ne120np4_to_fv801x1600_bilin.20150910.nc --method bilinear
 
      AMWG grids: AMWG diagnostics (until ~2016) mis-diagnose FV grids with odd numbers of latitudes as Gaussian Grids
-     ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 96x144 for horizontal resolution 1.9x2.5 degrees' --rgr grid=${DATA}/grids/96x144_SCRIP.20160301.nc --rgr latlon=96,144 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 192x288 for horizontal resolution 0.9x1.25 degrees' --rgr grid=${DATA}/grids/192x288_SCRIP.20160301.nc --rgr latlon=192,288 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 128x256 for horizontal resolution 1.4x1.4 degrees' --rgr grid=${DATA}/grids/128x256_SCRIP.20160301.nc --rgr latlon=128,256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 256x512 for horizontal resolution 0.7x0.7 degrees' --rgr grid=${DATA}/grids/256x512_SCRIP.20160301.nc --rgr latlon=256,512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='CAM FV-scalar grid 800x1600 for horizontal resolution 0.225x0.225 degrees' --rgr grid=${DATA}/grids/800x1600_SCRIP.20160301.nc --rgr latlon=800,1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 360x720 produced by RTM' --rgr grid=${DATA}/grids/360x720rtm_SCRIP.20160301.nc --rgr latlon=360,720 --rgr lat_typ=eqa --rgr lon_typ=180_wst ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='CAM FV-scalar grid 96x144 for horizontal resolution 1.9x2.5 degrees' --rgr grid=${DATA}/grids/96x144_SCRIP.20160301.nc --rgr latlon=96,144 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='CAM FV-scalar grid 192x288 for horizontal resolution 0.9x1.25 degrees' --rgr grid=${DATA}/grids/192x288_SCRIP.20160301.nc --rgr latlon=192,288 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='CAM FV-scalar grid 128x256 for horizontal resolution 1.4x1.4 degrees' --rgr grid=${DATA}/grids/128x256_SCRIP.20160301.nc --rgr latlon=128,256 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='CAM FV-scalar grid 256x512 for horizontal resolution 0.7x0.7 degrees' --rgr grid=${DATA}/grids/256x512_SCRIP.20160301.nc --rgr latlon=256,512 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='CAM FV-scalar grid 800x1600 for horizontal resolution 0.225x0.225 degrees' --rgr grid=${DATA}/grids/800x1600_SCRIP.20160301.nc --rgr latlon=800,1600 --rgr lat_typ=cap --rgr lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='Equiangular grid 360x720 produced by RTM' --rgr grid=${DATA}/grids/360x720rtm_SCRIP.20160301.nc --rgr latlon=360,720 --rgr lat_typ=eqa --rgr lon_typ=180_wst ~/nco/data/in.nc ~/foo.nc
 
      AMWG maps old method (no provenance archived):
      ESMF_RegridWeightGen -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/grids/128x256_SCRIP.20160301.nc -w ${DATA}/maps/map_ne30np4_to_fv128x256_aave.20160301.nc --method conserve
@@ -4453,18 +4453,18 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      ncremap -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -w esmf -a bilinear
 
      Regional RLL grids:
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-120.0,-90.0 ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='Equiangular grid 180x360' --rgr grid=${DATA}/sld/rgr/grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-120.0,-90.0 ~/nco/data/in.nc ~/foo.nc
 
      Global RLL skeleton:
-     ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='Equiangular grid 180x360' --rgr skl=${DATA}/sld/rgr/skl_180x360.nc --rgr grid=${DATA}/grids/180x360_SCRIP.20150901.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
 
      Curvilinear grids:
-     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Degenerate case.' --rgr crv --rgr lon_crv=0.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='Curvilinear grid 10x20. Curvilinearity = 1.0 lon' --rgr lon_crv=1.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='Curvilinear grid 10x20. Degenerate case.' --rgr crv --rgr lon_crv=0.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='Curvilinear grid 10x20. Curvilinearity = 1.0 lon' --rgr lon_crv=1.0 --rgr skl=${DATA}/sld/rgr/skl_crv.nc --rgr grid=${DATA}/sld/rgr/grd_crv.nc --rgr latlon=10,20 --rgr snwe=-5.0,5.0,-10.0,10.0 ~/nco/data/in.nc ~/foo.nc
 
      1-D Latitude (no longitude) grids:
-     ncks -O -D 1 --rgr grd_ttl='Latitude-only zonal grid' --rgr skl=${DATA}/sld/rgr/skl_lat_10dgr_uni.nc --rgr grid=${DATA}/sld/rgr/grd_lat_10dgr_uni.nc --rgr latlon=18,1 --rgr snwe=-90,90,0,360  ~/nco/data/in.nc ~/foo.nc
-     ncks -O -D 1 --rgr grd_ttl='Latitude-only zonal grid' --rgr skl=${DATA}/sld/rgr/skl_lat_05dgr_cap.nc --rgr grid=${DATA}/sld/rgr/grd_lat_05dgr_cap.nc --rgr latlon=37,1 --rgr snwe=-90,90,0,360  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='Latitude-only zonal grid' --rgr skl=${DATA}/sld/rgr/skl_lat_10dgr_uni.nc --rgr grid=${DATA}/sld/rgr/grd_lat_10dgr_uni.nc --rgr latlon=18,1 --rgr snwe=-90,90,0,360  ~/nco/data/in.nc ~/foo.nc
+     ncks -O -D 1 --rgr ttl='Latitude-only zonal grid' --rgr skl=${DATA}/sld/rgr/skl_lat_05dgr_cap.nc --rgr grid=${DATA}/sld/rgr/grd_lat_05dgr_cap.nc --rgr latlon=37,1 --rgr snwe=-90,90,0,360  ~/nco/data/in.nc ~/foo.nc
      ncremap -i ${DATA}/sld/rgr/skl_lat_10dgr_uni.nc -d ${DATA}/sld/rgr/skl_lat_05dgr_cap.nc -m ${DATA}/maps/map_lat10uni_to_lat05cap_aave.nc -o ~/rgr/lat10to05.nc
      ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_lat_10dgr_uni.nc -d ${DATA}/sld/rgr/grd_lat_05dgr_cap.nc -w ${DATA}/maps/map_lat10uni_to_lat05cap_aave.nc --method conserve */
 
@@ -7686,8 +7686,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Test UGRID:
        Documentation: https://github.com/ugrid-conventions/ugrid-conventions
        Procedure: Create 1x1 skeleton file, infer UGRID and SCRIP grids from it
-       ncks -O -D 1 --rgr grd_ttl='Equiangular grid 180x360' --rgr skl=${HOME}/skl_180x360.nc --rgr grid=${HOME}/grd_180x360_SCRIP.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
-       ncks -O -D 1 --rgr infer --rgr ugrid=${HOME}/grd_ugrid.nc --rgr grid=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
+       ncks -O -D 1 --rgr ttl='Equiangular grid 180x360' --rgr skl=${HOME}/skl_180x360.nc --rgr scrip=${HOME}/grd_180x360_SCRIP.nc --rgr latlon=180,360#lat_typ=eqa#lon_typ=Grn_ctr ~/nco/data/in.nc ~/foo.nc
+       ncks -O -D 1 --rgr infer --rgr ugrid=${HOME}/grd_ugrid.nc --rgr scrip=${HOME}/grd_scrip.nc ~/skl_180x360.nc ~/foo.nc
        ncks --cdl -v mesh_node_y ~/grd_ugrid.nc
        ncks --cdl -v mesh_face_nodes,mesh_face_x,mesh_face_y -d nFaces,0 ~/grd_ugrid.nc
        ncks --cdl -v mesh_edge_nodes,mesh_edge_x,mesh_edge_y -d nEdges,0 ~/grd_ugrid.nc

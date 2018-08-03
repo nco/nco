@@ -6586,59 +6586,64 @@ The third example uses a convenience switch introduced to reduce typing.
 Generating common grids:
 @example
 @verbatim
+# Through version 4.7.5 (August, 2018), grid-generation was performed through ncks:
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
+ncks --rgr ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
      --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
+# As of version 4.7.6 (August, 2018), ncremap supports more concise commands:
+ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
+        -g ${DATA}/grids/180x360_SCRIP.20150901.nc
+
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude west edge at Greenwich
-ncks --rgr grd_ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_wst \
-     --rgr scrip=${DATA}/grids/180x360wst_SCRIP.20180301.nc ~zender/nco/data/in.nc ~/foo.nc
+ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_wst \
+        -g ${DATA}/grids/180x360wst_SCRIP.20180301.nc
 
 # 129x256 CAM-FV grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='CAM-FV scalar grid 129x256'#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr \
-     --rgr scrip=${DATA}/grids/129x256_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
+ncremap -G ttl='CAM-FV scalar grid 129x256'#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr \
+        -g ${DATA}/grids/129x256_SCRIP.20150901.nc
 
 # 192x288 CAM-FV grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='CAM-FV scalar grid 192x288'#latlon=192,288#lat_typ=fv#lon_typ=grn_ctr \
-     --rgr scrip=${DATA}/grids/192x288_SCRIP.20160301.nc ~zender/nco/data/in.nc ~/foo.nc
+ncremap -G ttl='CAM-FV scalar grid 192x288'#latlon=192,288#lat_typ=fv#lon_typ=grn_ctr \
+        -g ${DATA}/grids/192x288_SCRIP.20160301.nc
 
 # 1441x2880 CAM-FV grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='CAM-FV scalar grid 1441x2880'#latlon=1441,2880#lat_typ=fv#lon_typ=grn_ctr \
-     --rgr scrip=${DATA}/grids/1441x2880_SCRIP.20170901.nc ~zender/nco/data/in.nc ~/foo.nc
+ncremap -G ttl='CAM-FV scalar grid 1441x2880'#latlon=1441,2880#lat_typ=fv#lon_typ=grn_ctr \
+        -g ${DATA}/grids/1441x2880_SCRIP.20170901.nc
 
 # 91x180 CAM-FV grid, first longitude centered at Greenwich (2 degree grid)
-ncks --rgr grd_ttl='CAM-FV scalar grid 91x180'#latlon=91,180#lat_typ=fv#lon_typ=grn_ctr \
-     --rgr scrip=${DATA}/grids/91x180_SCRIP.20170401.nc ~zender/nco/data/in.nc ~/foo.nc
+ncremap -G ttl='CAM-FV scalar grid 91x180'#latlon=91,180#lat_typ=fv#lon_typ=grn_ctr \
+        -g ${DATA}/grids/91x180_SCRIP.20170401.nc
 
 # 25x48 CAM-FV grid, first longitude centered at Greenwich (7.5 degree grid)
-ncks --rgr grd_ttl='CAM-FV scalar grid 25x48'#latlon=25,48#lat_typ=fv#lon_typ=grn_ctr \
-     --rgr scrip=${DATA}/grids/25x48_SCRIP.20170401.nc ~zender/nco/data/in.nc ~/foo.nc
+ncremap -G ttl='CAM-FV scalar grid 25x48'#latlon=25,48#lat_typ=fv#lon_typ=grn_ctr \
+        -g ${DATA}/grids/25x48_SCRIP.20170401.nc
 
 # 128x256 Equi-Angular grid, Greenwich west edge of first longitude
 # CAM-FV offset grid for 129x256 CAM-FV scalar grid above
-ncks --rgr grd_ttl='Equi-Angular grid 128x256'#latlon=128,256#lat_typ=uni#lon_typ=grn_wst \
-     --rgr scrip=${DATA}/grids/128x256_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
+ncremap -G ttl='Equi-Angular grid 128x256'#latlon=128,256#lat_typ=uni#lon_typ=grn_wst \
+        -g ${DATA}/grids/128x256_SCRIP.20150901.nc
 
 # T42 Gaussian grid, first longitude centered at Greenwich
-ncks --rgr grd_ttl='T42 Gaussian grid'#latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
-     --rgr scrip=${DATA}/grids/t42_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
+ncremap -G ttl='T42 Gaussian grid'#latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
+        -g ${DATA}/grids/t42_SCRIP.20150901.nc
 
 # NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree) Equi-Angular grid
 # Date-line west edge of first longitude, east edge of last longitude
 # Write to compressed netCDF4-classic file to reduce filesize ~140x from 2.2 GB to 16 MB
-ncks -7 -L 1 \
-     --rgr grd_ttl='Equi-Angular grid 3600x7200 (NASA CMG)'#latlon=3600,7200#lat_typ=uni#lon_typ=180_wst \
-     --rgr scrip=${DATA}/grids/3600x7200_SCRIP.20160301.nc ~zender/nco/data/in.nc ~/foo.nc
+ncks -O -7 -L 1 \
+     -G ttl='Equi-Angular grid 3600x7200 (NASA CMG)'#latlon=3600,7200#lat_typ=uni#lon_typ=180_wst \
+     -g ${DATA}/grids/3600x7200_SCRIP.20160301.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # DOE E3SM/ACME High Resolution Topography (1 x 1 km grid) for Elevation Classes
 # Write to compressed netCDF4-classic file to reduce filesize from ~85 GB to 607 MB
 ncks -O -7 -L 1 \
-     --rgr grd_ttl='Global latxlon = 18000x36000 ~ 1 x 1 km'#latlon=18000,36000#lat_typ=uni#lon_typ=grn_ctr \
-     --rgr scrip=${DATA}/grids/grd_18000x36000_SCRIP.nc ~zender/nco/data/in.nc ~/foo.nc
+     --rgr ttl='Global latxlon = 18000x36000 ~ 1 x 1 km'#latlon=18000,36000#lat_typ=uni#lon_typ=grn_ctr \
+     -g ${DATA}/grids/grd_18000x36000_SCRIP.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # 1x1 degree Equi-Angular Regional grid over Greenland, centered longitudes
-ncks --rgr grd_ttl='Equi-Angular Greenland grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
-     --rgr scrip=${HOME}/greenland_SCRIP.nc ~zender/nco/data/in.nc ~/foo.nc
+ncremap -G ttl='Equi-Angular Greenland grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
+        -g ${HOME}/greenland_SCRIP.nc
 @end verbatim
 @end example
 
@@ -23943,23 +23948,6 @@ We are interested in ``real-world'' situations that require regridding
 extensive variables, please contact us if you have one.
 
 @html
-<a name="xtr_nsp"></a> <!-- http://nco.sf.net/nco.html#xtr_nsp -->
-@end html
-@cindex extrapolation
-@cindex @code{--xtr_nsp=@var{xtr_nsp}}
-@cindex @var{xtr_nsp}
-@cindex @code{--xtr_nsp}
-@cindex @code{--xtr_pnt_src_nbr}
-@cindex @code{--extrap_num_src_pnts}
-@item --xtr_nsp=@var{xtr_nsp} (@code{--xtr_nsp}, @code{--xtr_pnt_src_nbr}, @code{--extrap_num_src_pnts})
-Specifies the number of source points to use in extrapolating unmapped
-destination point values with the @acronym{ERWG} weight generator.
-Default is @math{@var{xtr_nsp} = 8}.
-For more information on @acronym{ERWG} extrapolation, see documentation
-@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
-@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
-
-@html
 <a name="xtr_typ"></a> <!-- http://nco.sf.net/nco.html#xtr_typ -->
 @end html
 @cindex @code{--xtr_typ=@var{xtr_typ}}
@@ -23972,10 +23960,33 @@ For more information on @acronym{ERWG} extrapolation, see documentation
 Specifies the extrapolation method used to compute unmapped
 destination point values with the @acronym{ERWG} weight generator.
 Valid values and their synonyms are
-@code{} (synonyms @code{}, @code{}, @code{}, and @code{}), 
-@code{} (synonyms @code{}, @code{}, @code{}, and @code{}), 
-@code{} (synonyms @code{}, @code{}, @code{}, and @code{}), 
+@code{neareststod} (synonyms @code{stod} and @code{nsd}),
+@code{nearestidavg} (synonyms @code{idavg} and @code{id}), and
+@code{none} (synonyms @code{nil} and @code{nowaydude}).
 Default is @math{@var{xtr_typ} = @code{none}}.
+The arguments to options @samp{--xtr_xpn=@var{xtr_xpn}} and
+@samp{--xtr_nsp=@var{xtr_nsp}} provide parameters that control the
+extrapolation @code{neareststod} and @code{nearestidavg} algorithms. 
+For more information on @acronym{ERWG} extrapolation, see documentation
+@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
+@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
+
+@html
+<a name="xtr_nsp"></a> <!-- http://nco.sf.net/nco.html#xtr_nsp -->
+@end html
+@cindex extrapolation
+@cindex @code{--xtr_nsp=@var{xtr_nsp}}
+@cindex @var{xtr_nsp}
+@cindex @code{--xtr_nsp}
+@cindex @code{--xtr_pnt_src_nbr}
+@cindex @code{--extrap_num_src_pnts}
+@item --xtr_nsp=@var{xtr_nsp} (@code{--xtr_nsp}, @code{--xtr_pnt_src_nbr}, @code{--extrap_num_src_pnts})
+Specifies the number of source points to use in extrapolating unmapped
+destination point values with the @acronym{ERWG} weight generator.
+This option is only useful in conjunction with explicitly requested
+extrapolation types @math{@var{xtr_typ} = @code{neareststod}} and
+@math{@var{xtr_typ} = @code{nearestidavg}}. 
+Default is @math{@var{xtr_nsp} = 8}.
 For more information on @acronym{ERWG} extrapolation, see documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
 @acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
@@ -23991,6 +24002,9 @@ For more information on @acronym{ERWG} extrapolation, see documentation
 @item --xtr_xpn=@var{xtr_xpn} (@code{--xtr_xpn}, @code{--xtr_pnt_src_nbr}, @code{--extrap_num_src_pnts})
 Specifies the number of source points to use in extrapolating unmapped
 destination point values with the @acronym{ERWG} weight generator.
+This option is only useful in conjunction with explicitly requested
+extrapolation types @math{@var{xtr_typ} = @code{neareststod}} and
+@math{@var{xtr_typ} = @code{nearestidavg}}. 
 Default is @math{@var{xtr_xpn} = 2.0}.
 For more information on @acronym{ERWG} extrapolation, see documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
