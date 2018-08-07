@@ -1,3 +1,7 @@
+2018-08-06  Charlie Zender  <zender@uci.edu>
+
+	* Fix logic of grid arguments diagnostic errors
+
 2018-08-03  Charlie Zender  <zender@uci.edu>
 
 	* ncremap -g grd_dst.nc -G grd_sng now works in "grid-only" mode

@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.6-alpha06
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 28 July 2018
-@set update-month July 2018
+@set update-date 6 August 2018
+@set update-month August 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -18171,9 +18171,9 @@ for fl in `ls hist.*` ; do
 done
 @end verbatim
 @end example
-If/when @acronym{MPAS-O/I} generates the @code{_FillValue} attributes itself,
-this step can and should be skipped. 
-All other @command{ncclimo} features like regridding (below) are invoked
+If/when @acronym{MPAS-O/I} generates the @code{_FillValue} attributes
+itself, this step can and should be skipped. 
+All other @command{ncclimo} features like regridding (below) are invoked 
 identically for @acronym{MPAS} as for @acronym{CAM}/@acronym{CLM} users
 although under-the-hood @command{ncclimo} does do some special
 pre-processing (dimension permutation, metadata annotation) for
@@ -22637,7 +22637,7 @@ the boutique options
 @samp{--in_type cgll --in_np 4 --out_type fv --out_double --mono}
 that are recommended by @acronym{E3SM} for conservative and monotone
 remapping of fluxes.
-It is equivalent to, yet simpler to remember and invoke than 
+It is equivalent to, yet simpler to remember and to invoke than 
 @example
 @verbatim
 ncremap -a tempest --src_grd=se.g --dst_grd=fv.nc -m map.nc \

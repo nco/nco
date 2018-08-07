@@ -1652,6 +1652,9 @@ else # !map_usr_flg
 		printf "Destination grid supplied by user\n"
 	    fi # !vrb_lvl
 	fi # !grd_dst_usr_flg
+	if [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
+	    printf "${spt_nm}: ERROR No destination grid specified with -g, inferral file specified with -d, or grid string specified with -G\n"
+	fi # !grd_dst_usr_flg
 	if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
 	    cmd_dst[${fl_idx}]="ncks --dmm_in_mk ${nco_opt} --rgr scrip=${grd_dst} --rgr ${grd_sng} ${dmm_fl} ${tmp_out_fl}"
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -1661,10 +1664,7 @@ else # !map_usr_flg
 		    printf "Destination grid will be generated from NCO grid-formula ${grd_sng} and stored in a temporary, internal location\n"
 		fi # !grd_sng_usr_flg
 	    fi # !vrb_lvl
-	else
-	    printf "${spt_nm}: ERROR No destination grid specified with -g, inferral file specified with -d, or grid string specified with -G\n"
-	    exit 1
-	fi # !grd_dst_usr_flg
+	fi # !grd_sng_usr_flg
     fi # !dst_usr_flg
     if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
 	# Block 1 Loop 2: Execute and/or echo commands
