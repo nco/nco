@@ -22708,10 +22708,10 @@ ocean grid, so that remapping from atmosphere-to-ocean would require
 invoking the @samp{--atm2ocn} switch:
 @example
 # Use --a2o to generate weights for "big" to "little" remaps:
-ncremap --a2o -a se2fv_flx --src_grd=atm.nc --dst_grd=ocn.nc -m map.nc
+ncremap --a2o -a se2fv_flx --src_grd=atm_se_grd.nc --dst_grd=ocn_fv_grd.nc -m map.nc
 # Otherwise, omit it:
-ncremap       -a se2fv_flx --src_grd=ocn.nc --dst_grd=atm.nc -m map.nc
-ncremap       -a se2fv_flx --src_grd=atm1.nc --dst_grd=atm2.nc -m map.nc
+ncremap       -a fv2se_flx --src_grd=ocn_fv_grd.nc --dst_grd=atm_se_grd.nc -m map.nc
+ncremap       -a se2fv_flx --src_grd=atm_se_grd.nc --dst_grd=atm_fv_grd.nc -m map.nc
 # Only necessary when generating, not applying, weights:
 ncremap -m atm2ocn.nc in.nc out.nc
 @end example
