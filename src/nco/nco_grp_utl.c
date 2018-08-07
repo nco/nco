@@ -8331,7 +8331,6 @@ nco_bld_crd_aux /* [fnc] Build auxiliary coordinates information into table */
   return (nbr_lat && nbr_lon);
 } /* nco_bld_crd_aux() */
 
-
 int
 nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates information into table using named latitude and longitude*/
 (const int nc_id,                      /* I [ID] netCDF file ID */
@@ -8339,15 +8338,12 @@ nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates info
  const char * const nm_lon,            /* I [sng] name of "longitude" variable to find  */
  trv_tbl_sct *trv_tbl)                 /* I [sct] GTT (Group Traversal Table) */
 {
-
   /*
    Purpose: 
-      look for 'latitude' variable named  nm_lat, if it passes the criteria tests in nco_check_nm_aux() then flag it as an aux coord
-      look for 'longitude' variable named nm_lon, if it passes the criteria tests in nco_check_nm_aux() then flag it as an aux coord
-
-      if aux coords are "in scope" (at same depth or above) of a variable AND the var has the matching dim then add refs to the aux coods
-      in var_trv->var_dmn.
-  */
+   Look for 'latitude' variable named  nm_lat, if it passes criteria in nco_check_nm_aux() then flag it as an auxiliary coordinate
+   look for 'longitude' variable named nm_lon, if it passes criteria in nco_check_nm_aux() then flag it as an auxiliary coordinate
+   If auxiliary coordinates are "in scope" (at same depth or above) of a variable AND the variable has the matching dimension,
+   then add references to the auxiliary coordinates in var_trv->var_dmn. */
 
   const char fnc_nm[]="nco_bld_crd_nm_aux()"; /* [sng] Function name */
 
@@ -8366,123 +8362,108 @@ nco_bld_crd_nm_aux                     /* [fnc] Build auxiliary coordinates info
     char units_lon[NC_MAX_NAME+1L];
 
     trv_sct *var_trv=&trv_tbl->lst[idx_var];
-
     
-    if(var_trv->nco_typ != nco_obj_typ_var)
-      continue;
+    if(var_trv->nco_typ != nco_obj_typ_var) continue;
 
-      if(!strcmp(var_trv->nm, nm_lat)) 
-	 has_lat=nco_check_nm_aux(nc_id,var_trv,&dmn_id,&crd_typ,units_lat);
-               
-      /* has_lat and has_lon mutually exclusive */
-      if(!has_lat && !strcmp(var_trv->nm, nm_lon))
-	 has_lon=nco_check_nm_aux(nc_id,var_trv,&dmn_id,&crd_typ,units_lon);
+    if(!strcmp(var_trv->nm, nm_lat)) has_lat=nco_check_nm_aux(nc_id,var_trv,&dmn_id,&crd_typ,units_lat);
+    
+    /* has_lat and has_lon are mutually exclusive */
+    if(!has_lat && !strcmp(var_trv->nm, nm_lon)) has_lon=nco_check_nm_aux(nc_id,var_trv,&dmn_id,&crd_typ,units_lon);
+    
+    if(has_lat){
+      nbr_lat++;
+      /* Variable contains 'standard_name' attribute 'latitude' */ 
+      var_trv->flg_std_att_lat=True; 
+      
+      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable %s with dimension ID = %d has been recognized as a auxiliary coordinate\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_id); 
 
-
-      if(has_lat){
+      for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
+	/* Detect 'standard_name' attribute 'latitude' in the compared variable, to avoid inserting it */
+	trv_sct *crd_trv=&trv_tbl->lst[idx_crd];
 	
-	nbr_lat++;
-        /* Variable contains 'standard_name' attribute 'latitude' */ 
-        var_trv->flg_std_att_lat=True; 
-
-        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable %s with dimension ID = %d has been recognized as a auxiliary coordinate\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_id); 
-
-        for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
-          /* Detect 'standard_name' attribute 'latitude' in the compared variable, to avoid inserting it */
-	  trv_sct *crd_trv=&trv_tbl->lst[idx_crd];
-
-	  /* check if var and is in scope */
-          if(crd_trv->nco_typ == nco_obj_typ_var &&  nco_var_scp(crd_trv ,var_trv,trv_tbl)){
-	    /* Detect if nm_lat or nm_lon already in scope */
-            if( !strcmp(crd_trv->nm, nm_lat) || !strcmp(crd_trv->nm, nm_lon))
-	      continue;
-	    
+	/* check if var and is in scope */
+	if(crd_trv->nco_typ == nco_obj_typ_var &&  nco_var_scp(crd_trv ,var_trv,trv_tbl)){
+	  /* Detect if nm_lat or nm_lon already in scope */
+	  if(!strcmp(crd_trv->nm, nm_lat) || !strcmp(crd_trv->nm, nm_lon)) continue;
+	  
 	  for(int idx_dmn=0;idx_dmn<crd_trv->nbr_dmn;idx_dmn++){
-	      int nbr_lat_crd=0;
-	      /* Match dimension */
-	      if(crd_trv->var_dmn[idx_dmn].dmn_id == dmn_id){
+	    int nbr_lat_crd=0;
+	    /* Match dimension */
+	    if(crd_trv->var_dmn[idx_dmn].dmn_id == dmn_id){
+	      
+	      /* Mark variable (e.g., gds_var, gds_3dvar) as containing auxiliary coordinates */
+	      crd_trv->flg_aux=True;
+	      
+	      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has auxiliary dimension ID = %d\n",nco_prg_nm_get(),fnc_nm,crd_trv->nm_fll,dmn_id); 
 		
-		  /* Mark variable (e.g., gds_var, gds_3dvar) as containing auxiliary coordinates */
-		  crd_trv->flg_aux=True;
-		  
-		  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has auxiliary dimension ID = %d\n",nco_prg_nm_get(),fnc_nm,crd_trv->nm_fll,dmn_id); 
-
-		  /* Insert item into list */
-		  crd_trv->var_dmn[idx_dmn].nbr_lat_crd++;
-		  nbr_lat_crd=crd_trv->var_dmn[idx_dmn].nbr_lat_crd;
-		  crd_trv->var_dmn[idx_dmn].lat_crd=(aux_crd_sct *)nco_realloc(crd_trv->var_dmn[idx_dmn].lat_crd,nbr_lat_crd*sizeof(aux_crd_sct));
-		  crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].nm_fll=strdup(var_trv->nm_fll);
-		  crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].dmn_id=dmn_id;
-		  crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].grp_dpt=var_trv->grp_dpt;
-		  crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].crd_typ=crd_typ;
-		  strcpy(crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].units,units_lat);
-		  
-	      } /* Match dimension */
+	      /* Insert item into list */
+	      crd_trv->var_dmn[idx_dmn].nbr_lat_crd++;
+	      nbr_lat_crd=crd_trv->var_dmn[idx_dmn].nbr_lat_crd;
+	      crd_trv->var_dmn[idx_dmn].lat_crd=(aux_crd_sct *)nco_realloc(crd_trv->var_dmn[idx_dmn].lat_crd,nbr_lat_crd*sizeof(aux_crd_sct));
+	      crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].nm_fll=strdup(var_trv->nm_fll);
+	      crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].dmn_id=dmn_id;
+	      crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].grp_dpt=var_trv->grp_dpt;
+	      crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].crd_typ=crd_typ;
+	      strcpy(crd_trv->var_dmn[idx_dmn].lat_crd[nbr_lat_crd-1].units,units_lat);
+	      
+	    } /* Match dimension */
 	  } /* Loop dimensions  */
-	  } /* variables only */
-
-	} /* !has_lat */
-      }
-
-
-      if(has_lon){
+	} /* variables only */
+      } /* !has_lat */
+    }
+    
+    if(has_lon){
+      
+      nbr_lon++;
+      /* Variable contains 'standard_name' attribute 'latitude' */ 
+      var_trv->flg_std_att_lon=True; 
+      
+      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable %s with dimension ID = %d has been recognized as a auxiliary coordinate\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_id); 
+      
+      for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
 	
-	nbr_lon++;
-        /* Variable contains 'standard_name' attribute 'latitude' */ 
-        var_trv->flg_std_att_lon=True; 
-
-        if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s variable %s with dimension ID = %d has been recognized as a auxiliary coordinate\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,dmn_id); 
-
-        for(unsigned idx_crd=0;idx_crd<trv_tbl->nbr;idx_crd++){
-
-	  trv_sct *crd_trv=&trv_tbl->lst[idx_crd];
-
-	  /* check if var and is in scope */
-          if(crd_trv->nco_typ == nco_obj_typ_var &&  nco_var_scp(crd_trv ,var_trv,trv_tbl)){
-
-	    /* Detect if nm_lat or nm_lon already in scope */
-            if( !strcmp(crd_trv->nm, nm_lat) || !strcmp(crd_trv->nm, nm_lon))
-	      continue;
-	    
+	trv_sct *crd_trv=&trv_tbl->lst[idx_crd];
+	
+	/* check if var and is in scope */
+	if(crd_trv->nco_typ == nco_obj_typ_var && nco_var_scp(crd_trv ,var_trv,trv_tbl)){
+	  
+	  /* Detect if nm_lat or nm_lon already in scope */
+	  if(!strcmp(crd_trv->nm, nm_lat) || !strcmp(crd_trv->nm, nm_lon)) continue;
+	  
 	  for(int idx_dmn=0;idx_dmn<crd_trv->nbr_dmn;idx_dmn++){
-	      int nbr_lon_crd=0;
-	      /* Match dimension */
-	      if( crd_trv->var_dmn[idx_dmn].dmn_id == dmn_id){
-		
-		  /* Mark variable (e.g., gds_var, gds_3dvar) as containing auxiliary coordinates */
-		  crd_trv->flg_aux=True;
+	    int nbr_lon_crd=0;
+	    /* Match dimension */
+	    if(crd_trv->var_dmn[idx_dmn].dmn_id == dmn_id){
+	      
+	      /* Mark variable (e.g., gds_var, gds_3dvar) as containing auxiliary coordinates */
+	      crd_trv->flg_aux=True;
+	      
+	      if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has auxiliary dimension ID = %d\n",nco_prg_nm_get(),fnc_nm,crd_trv->nm_fll,dmn_id); 
 		  
-		  if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has auxiliary dimension ID = %d\n",nco_prg_nm_get(),fnc_nm,crd_trv->nm_fll,dmn_id); 
-		  
-		  /* Insert item into list */
-		  crd_trv->var_dmn[idx_dmn].nbr_lon_crd++;
-		  nbr_lon_crd=crd_trv->var_dmn[idx_dmn].nbr_lon_crd;
-		  
-		  crd_trv->var_dmn[idx_dmn].lon_crd=(aux_crd_sct *)nco_realloc(crd_trv->var_dmn[idx_dmn].lon_crd,nbr_lon_crd*sizeof(aux_crd_sct));
-		  crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].nm_fll=strdup(var_trv->nm_fll);
-		  crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].dmn_id=dmn_id;
-		  crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].grp_dpt=var_trv->grp_dpt;
-		  crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].crd_typ=crd_typ;
-		  strcpy(crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].units,units_lon);
-		  
-	      } /* Match dimension */
+	      /* Insert item into list */
+	      crd_trv->var_dmn[idx_dmn].nbr_lon_crd++;
+	      nbr_lon_crd=crd_trv->var_dmn[idx_dmn].nbr_lon_crd;
+	      
+	      crd_trv->var_dmn[idx_dmn].lon_crd=(aux_crd_sct *)nco_realloc(crd_trv->var_dmn[idx_dmn].lon_crd,nbr_lon_crd*sizeof(aux_crd_sct));
+	      crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].nm_fll=strdup(var_trv->nm_fll);
+	      crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].dmn_id=dmn_id;
+	      crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].grp_dpt=var_trv->grp_dpt;
+	      crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].crd_typ=crd_typ;
+	      strcpy(crd_trv->var_dmn[idx_dmn].lon_crd[nbr_lon_crd-1].units,units_lon);
+	      
+	    } /* Match dimension */
 	  } /* Loop dimensions  */
-	  } /* variables only */
-
-	} /* !has_lon */
-      }	
-
+	} /* variables only */
+      } /* !has_lon */
+    }	
   }
   
   /* Sort array of 'latitude' and 'longitude' coordinate variables by group depth and choose the most in-scope variables */
-  if(nbr_lat && nbr_lon)
-    nco_srt_aux(trv_tbl);
-
+  if(nbr_lat && nbr_lon) nco_srt_aux(trv_tbl);
+  
   /* return True if only latitude and longitude found */ 
   return (nbr_lat && nbr_lon);
-}     /* nco_bld_crd_nm_aux() */
-
-
+} /* !nco_bld_crd_nm_aux() */
 
 nco_bool                               /* O [flg] True if variable 1 is in-scope of variable 2 */
 nco_var_scp                            /* [fnc] Is variable 1 is in-scope of variable 2 */
@@ -8490,26 +8471,26 @@ nco_var_scp                            /* [fnc] Is variable 1 is in-scope of var
  const trv_sct * const var_trv_2,      /* I [sct] Variable 2 (use case , find 'latitude in-scope)*/
  const trv_tbl_sct * const trv_tbl)    /* I [sct] Traversal table */
 {
-
+  
   /* Same group */
   if(!strcmp(var_trv_1->grp_nm_fll,var_trv_2->grp_nm_fll)) return True;
-
+  
   /* Different groups: traverse down the higher and look for a group match name */  
   if(var_trv_2->grp_dpt > var_trv_1->grp_dpt){
-
+    
     char *grp_nm_fll_prn_2=var_trv_2->grp_nm_fll_prn; /* [sct] Parent group */
     trv_sct *grp_prn_2;
-
+    
     grp_prn_2=trv_tbl_grp_nm_fll(grp_nm_fll_prn_2,trv_tbl);
-
+    
     /* Look for same group name in hierarchy */
     while (grp_nm_fll_prn_2){
       /* Same group in hierarchy */
       if(!strcmp(grp_prn_2->grp_nm,var_trv_1->grp_nm)) return True;
-
+      
       /* Exit loop when root reached */
       if(grp_prn_2->grp_dpt == 0) break; 
-
+      
       grp_nm_fll_prn_2=grp_prn_2->grp_nm_fll_prn;
       grp_prn_2=trv_tbl_grp_nm_fll(grp_nm_fll_prn_2,trv_tbl);
     } /* end while */
