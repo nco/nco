@@ -638,7 +638,6 @@ nco_check_nm_aux
 
   const char fnc_nm[]="nco_check_nm_aux()";
 
-  char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
   char var_nm[NC_MAX_NAME];
 
   int rcd;
