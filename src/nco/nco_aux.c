@@ -664,7 +664,7 @@ nco_check_nm_aux
   /* Obtain variable ID */
   (void)nco_inq_varid(grp_id,var_trv->nm,&var_id);
 
-  /* obtain variable meta-data  */
+  /* Obtain variable meta-data  */
   (void)nco_inq_var(grp_id,var_id,var_nm,&var_typ,&var_dmn_nbr,var_dimid,&var_att_nbr);
 
   assert(var_att_nbr == var_trv->nbr_att);
@@ -680,21 +680,14 @@ nco_check_nm_aux
   NCO_GET_ATT_CHAR(grp_id,var_id,"units",units);
   units[att_lng]='\0';
 
-  /* if(var_dmn_nbr > 1) (void)fprintf(stderr,"%s: WARNING %s reports latitude variable %s has %d dimensions. NCO only supports hyperslabbing of auxiliary coordinate variables with a single dimension. Continuing with unpredictable results...\n",nco_prg_nm_get(),fnc_nm,var_nm,var_dmn_nbr);
-   */
-  
-  /* aux coord  MUST be 1D */
-  if(var_dmn_nbr ==0 || var_dmn_nbr >1 )
-    return False;
-  
+  /* Auxiliary coordinates MUST be 1D */
+  if(var_dmn_nbr != 1) return False;
   
   /* Copy values to export */
   *crd_typ=var_typ;
   *dmn_id=var_dimid[0];
 
-
-
   return True;
 
-} /* end nco_check_nm_aux */
+} /* !nco_check_nm_aux() */
 
