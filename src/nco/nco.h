@@ -1325,8 +1325,8 @@ extern "C" {
     var_dmn_sct *var_dmn;             /* [sct] Dimensions for variable object */
     nco_bool is_crd_lk_var;           /* [flg] Is a coordinate-like variable (same as var_sct is_crd_var: crd, 2D, bounds...) */
     nco_bool is_rec_lk_var;           /* [flg] Is a record variable of any dimension (same as var_sct is_rec_var) */
-    nco_bool is_1D_crd;               /* [flg] Is a 1D coordinate variable? (unique dimension exists in scope) */
-    nco_bool is_1D_rec_crd;           /* [flg] Is a 1D record coordinate (e.g., time)? */
+    nco_bool is_1D_crd;               /* [flg] Is a 1D coordinate variable? (unique dimension exists in scope) WARNING: Not yet defined */
+    nco_bool is_1D_rec_crd;           /* [flg] Is a 1D record coordinate (e.g., time)? WARNING: Not yet defined */
     nco_bool is_crd_var;              /* [flg] Is a coordinate variable? (OLD incompatible definition meant is_1D_crd, new definition identical with is_crd_var in var_sct, i.e., coordinate-like variables, 2D, bounds...) */
     nco_bool is_rec_var;              /* [flg] Is a record variable? (OLD incorrect definition meant is_1D_rec_crd, new definition identical with is_rec_var in var_sct, i.e., any variable with a record dimension) */
     nc_type var_typ;                  /* [enm] netCDF type */

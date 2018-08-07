@@ -653,8 +653,9 @@ nco_check_nm_aux
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
-  if(var_trv->is_1D_crd ||
-     var_trv->is_1D_rec_crd ||
+  if(False ||
+     //     var_trv->is_1D_crd || /* 20180807: Not yet defined */
+     //     var_trv->is_1D_rec_crd || /* 20180807: Not yet defined */
      var_trv->is_crd_var)
     return False;
   
