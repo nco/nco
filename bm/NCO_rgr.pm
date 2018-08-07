@@ -3089,12 +3089,12 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     } # !XML
 
 # ncks #127    
-# ncatted -O -a standard_name,,d,i,1 ~/nco/data/in.nc ~/foo.nc
+# ncatted -O -a standard_name,,d,, ~/nco/data/in.nc ~/foo.nc
 # ncks -O -X 150.,210.,-15.,45. -v gds_var,gds_3dvar ~/foo.nc ~/foo1.nc
 # ncap2 -v -O -S '../data/chk-aux-subset.nco' ~/foo1.nc ~/foo2.nc
 # ncks -O -C -H --trd -v nbr_err -s '%d' ~/foo2.nc;
     $dsc_sng="ncks test auxiliary coords WITHOUT standard_name";
-    $tst_cmd[0]="ncatted -O $fl_fmt $nco_D_flg -a standard_name,,d,i,1 $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[0]="ncatted -O $fl_fmt $nco_D_flg -a standard_name,,d,, $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -O $fl_fmt $nco_D_flg -X 150.,210.,-15.,45. -v gds_var,gds_3dvar %tmp_fl_00% %tmp_fl_01%";
     $tst_cmd[2]="ncap2 -v -O $fl_fmt $nco_D_flg -S '../data/chk-aux-subset.nco' %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[3]="ncks -O -C -H --trd -v nbr_err -s '%d' %tmp_fl_02%";

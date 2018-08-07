@@ -1,3 +1,7 @@
+2018-08-07  Charlie Zender  <zender@uci.edu>
+
+	* Document RRG, TempestRemap, and MWF in confluence
+
 2018-08-06  Charlie Zender  <zender@uci.edu>
 
 	* Fix logic of grid arguments diagnostic errors

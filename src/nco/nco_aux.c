@@ -623,7 +623,7 @@ nco_find_lat_lon_trv
 
 } /* end nco_find_lat_lon_trv() */
 
-nco_bool                             /* O [flg] return True if all criteria met */  
+nco_bool                             /* O [flg] True if all criteria met */  
 nco_check_nm_aux
 (const int nc_id,                    /* I [ID] netCDF file ID */
  const trv_sct * const var_trv,      /* I [sct] Variable to search for "standard_name" attribute */
@@ -632,15 +632,15 @@ nco_check_nm_aux
  char units[])                       /* I/O [sng] Units of both "latitude" and "longitude" */
 {
   /* Purpose: Check that variable var_trv fits the criteria for being an auxiliary coordinate  
-     Must be 1D and NOT a record var and NOT a standard coordinate var           
+     Must be 1D and NOT a record var and NOT a standard coordinate variable
      Also must have a "units" attribute   
-
-     if all critera met - then return some info about var */
+     If all critera met - then return some information about variable */
 
   const char fnc_nm[]="nco_check_nm_aux()";
 
   char att_nm[NC_MAX_NAME]; /* [sng] Attribute name */
   char var_nm[NC_MAX_NAME];
+
   int rcd;
   int grp_id;               /* [id] Group ID */
   int var_id;               /* [id] Variable ID */
@@ -649,13 +649,15 @@ nco_check_nm_aux
   int var_dmn_nbr;          /* [nbr] Number of dimensions */
 
   long att_lng; 
+
   nc_type var_typ;          /* [enm] variable type */
 
   assert(var_trv->nco_typ == nco_obj_typ_var);
 
-  if(var_trv->is_1D_crd || var_trv->is_1D_rec_crd ||  var_trv->is_crd_var) 
+  if(var_trv->is_1D_crd ||
+     var_trv->is_1D_rec_crd ||
+     var_trv->is_crd_var)
     return False;
-
   
   /* Obtain group ID */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
