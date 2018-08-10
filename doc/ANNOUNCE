@@ -8,9 +8,12 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 What's new?
 Version 4.7.6 is primarily a feature release for ncremap.
 There are two new processing modes, one for regridding regional data,
-and one for generating all mapfile permutations with all interpolation algorithms. 
+and one for generating all mapfile permutations with all interpolation
+algorithms. There is also improved support for auxiliary coordinates
+that lack coordinaes/standard_name conventions, and less intrusive
+support for HPSS file systems.
 
-Work on NCO 4.8.0 has commenced "under the hood". Printing of netCDF4
+Work on NCO 4.8.0 has commenced "under the hood". Printing of netCDF4 
 user-defined types ENUM and VLEN is ready now (though unsupported)
 with the --udt flag. 4.8.0 will contain the finished version of that,
 progress on parallel weight generation by ncremap, and possibly a
@@ -21,7 +24,12 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. HPSS
+A. Since version 4.6.6 (April, 2017), NCO looked for files on an HPSS
+   filesystem when it could not find them elsewhere. This produced
+   intrusive messages for most users, who do not have HPSS. Now users
+   must opt-in to HPSS searches by adding the --hpss flage, e.g.,
+   ncks -l . --hpss /home/zender/nco/in.nc
+   http://nco.sf.net#hpss
 
 A. ncrename RRG
 

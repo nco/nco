@@ -1,8 +1,10 @@
-2018-08-07  Charlie Zender  <zender@uci.edu>
+2018-08-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.6 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.6: Sawdust';git push
-	git tag -a 4.7.6 -m 'ncremap RRG, MWF, -d + -g, -g + -G;aux w/o std_nm;HPSS_TRY';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.7.6: Honaunau';git push
+	git tag -a 4.7.6 -m 'ncremap RRG, MWF, -d&-g, -g&-G;aux w/o std_nm;HPSS_TRY';git push --tags
+
+2018-08-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.6-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.6-beta01: Sawdust';git push
