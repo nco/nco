@@ -503,6 +503,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   /* Define global and "units" attributes */
   aed_sct aed_mtd;
   char *att_nm;
+  char var_nm[NC_MAX_NAME];
 
   att_nm=strdup("title");
   att_val=strdup(rgr->grd_ttl);
@@ -556,16 +557,19 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   aed_mtd.val.cp=att_val;
   aed_mtd.mode=aed_create;
 
-  strcpy(aed_mtd.var_nm,"yc_a");
+  /* Re-use space in var_nm */
+  aed_mtd.var_nm=var_nm;
+
+  strcpy(var_nm,"yc_a");
   aed_mtd.id=src_grd_ctr_lat_id;
   (void)nco_aed_prc(out_id,src_grd_ctr_lat_id,aed_mtd);
-  strcpy(aed_mtd.var_nm,"yv_a");
+  strcpy(var_nm,"yv_a");
   aed_mtd.id=src_grd_crn_lat_id;
   (void)nco_aed_prc(out_id,src_grd_crn_lat_id,aed_mtd);
-  strcpy(aed_mtd.var_nm,"yc_b");
+  strcpy(var_nm,"yc_b");
   aed_mtd.id=dst_grd_ctr_lat_id;
   (void)nco_aed_prc(out_id,dst_grd_ctr_lat_id,aed_mtd);
-  strcpy(aed_mtd.var_nm,"yv_b");
+  strcpy(var_nm,"yv_b");
   aed_mtd.id=dst_grd_crn_lat_id;
   (void)nco_aed_prc(out_id,dst_grd_crn_lat_id,aed_mtd);
 
@@ -581,16 +585,16 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   aed_mtd.val.cp=att_val;
   aed_mtd.mode=aed_create;
 
-  strcpy(aed_mtd.var_nm,"xc_a");
+  strcpy(var_nm,"xc_a");
   aed_mtd.id=src_grd_ctr_lon_id;
   (void)nco_aed_prc(out_id,src_grd_ctr_lon_id,aed_mtd);
-  strcpy(aed_mtd.var_nm,"xv_a");
+  strcpy(var_nm,"xv_a");
   aed_mtd.id=src_grd_crn_lon_id;
   (void)nco_aed_prc(out_id,src_grd_crn_lon_id,aed_mtd);
-  strcpy(aed_mtd.var_nm,"xc_b");
+  strcpy(var_nm,"xc_b");
   aed_mtd.id=dst_grd_ctr_lon_id;
   (void)nco_aed_prc(out_id,dst_grd_ctr_lon_id,aed_mtd);
-  strcpy(aed_mtd.var_nm,"xv_b");
+  strcpy(var_nm,"xv_b");
   aed_mtd.id=dst_grd_crn_lon_id;
   (void)nco_aed_prc(out_id,dst_grd_crn_lon_id,aed_mtd);
 
@@ -606,16 +610,16 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   aed_mtd.val.cp=att_val;
   aed_mtd.mode=aed_create;
 
-  strcpy(aed_mtd.var_nm,"frac_a");
+  strcpy(var_nm,"frac_a");
   aed_mtd.id=frc_in_id;
   (void)nco_aed_prc(out_id,frc_in_id,aed_mtd);
-  strcpy(aed_mtd.var_nm,"mask_a");
+  strcpy(var_nm,"mask_a");
   aed_mtd.id=msk_in_id;
   (void)nco_aed_prc(out_id,msk_in_id,aed_mtd);
-  strcpy(aed_mtd.var_nm,"frac_b");
+  strcpy(var_nm,"frac_b");
   aed_mtd.id=frc_out_id;
   (void)nco_aed_prc(out_id,frc_out_id,aed_mtd);
-  strcpy(aed_mtd.var_nm,"mask_b");
+  strcpy(var_nm,"mask_b");
   aed_mtd.id=msk_out_id;
   (void)nco_aed_prc(out_id,msk_out_id,aed_mtd);
 
@@ -625,7 +629,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   att_nm=strdup("units");
   att_val=strdup("steradian");
   aed_mtd.att_nm=att_nm;
-  strcpy(aed_mtd.var_nm,"area_a");
+  strcpy(var_nm,"area_a");
   aed_mtd.id=area_in_id;
   aed_mtd.sz=strlen(att_val);
   aed_mtd.type=NC_CHAR;
@@ -638,7 +642,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   att_nm=strdup("units");
   att_val=strdup("steradian");
   aed_mtd.att_nm=att_nm;
-  strcpy(aed_mtd.var_nm,"area_b");
+  strcpy(var_nm,"area_b");
   aed_mtd.id=area_out_id;
   aed_mtd.sz=strlen(att_val);
   aed_mtd.type=NC_CHAR;
@@ -758,7 +762,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
  double *frc_out, /* O [frc] Fraction of destination grid */
  int **col_src_adr_ptr, /* O [idx] Source address (col) */
  int **row_dst_adr_ptr, /* O [idx] Destination address (row) */
- double **wgt_raw_ptr, /* O [frc] Remapping weights */ 
+ double **wgt_raw_ptr, /* O [frc] Remapping weights */
  size_t *lnk_nbr_ptr) /* O [nbr] Number of links */
 {
   /* Purpose: Compute overlap mesh and weights */

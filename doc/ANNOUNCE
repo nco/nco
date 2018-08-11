@@ -8,47 +8,70 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 What's new?
 Version 4.7.6 is primarily a feature release for ncremap.
 There are two new processing modes, one for regridding regional data,
-and one for generating all mapfile permutations with all interpolation
+and one for generating all mapfile permutations with all interpolation 
 algorithms. There is also improved support for auxiliary coordinates
-that lack coordinaes/standard_name conventions, and less intrusive
-support for HPSS file systems.
+that lack coordinaes/standard_name conventions, improved ncap2
+command-line script handling in Windows, and less intrusive HPSS file
+system support. 
 
-Work on NCO 4.8.0 has commenced "under the hood". Printing of netCDF4 
-user-defined types ENUM and VLEN is ready now (though unsupported)
-with the --udt flag. 4.8.0 will contain the finished version of that,
-progress on parallel weight generation by ncremap, and possibly a
-workaround for using quotation marks with ncap2 in Windows.  
+Work on NCO 5.0.0 has commenced "under the hood". The key leap in that
+release will be support for netCDF4 user-defined types. Printing of
+netCDF4 user-defined types ENUM and VLEN is ready now (though
+unsupported) with the --udt flag. 5.0.0 will contain the finished
+version of that, and progress on weight generation by ncremap. 
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Since version 4.6.6 (April, 2017), NCO looked for files on an HPSS
-   filesystem when it could not find them elsewhere. This produced
-   intrusive messages for most users, who do not have HPSS. Now users
-   must opt-in to HPSS searches by adding the --hpss flage, e.g.,
+A. NCO versions 4.6.6+ (April, 2017) has looked for files on an HPSS
+   filesystem when it could not find them elsewhere. This produces
+   messages considered intrusive by many users, who do not have HPSS.
+   Now users must opt-in to HPSS searches by adding the --hpss flag:
    ncks -l . --hpss /home/zender/nco/in.nc
    http://nco.sf.net#hpss
 
-A. ncrename RRG
+A. ncremap now regrids regional output produced by CESM CAM-SE and
+   E3SM EAM models. Models output these RRG (for "regional
+   regridding" format) files if requested by the finclNlonlat
+   namelist parameter. RRG files from FV-dycore simulations were
+   already regriddable, and now SE-dycore RRG files are too:
+   ncremap --dat_glb=dat_glb.nc --grd_glb=grd_glb.nc -g grd_rgn.nc dat_rgn.nc dat_rgr.nc
+   Documentation is currently available to E3SM users at
+   https://acme-climate.atlassian.net/wiki/spaces/SIM/pages/754286611/Regridding+E3SM+Data+with+ncremap
+   and to others via email request (it will be in Users Guide soon).
 
-A. ncrename MWF
+A. ncremap includes an MWF-mode (for "Make All Weight Files") that
+   generates and names, with one command and in a self-consistent
+   manner, all combinations of E3SM global atmosphere<->ocean maps
+   with both ERWG and Tempest. MWF-mode automates the laborious and
+   error-prone process of generating numerous map-files with various
+   switches. Its chief use occurs when developing and testing new
+   global grid-pairs for the E3SM atmosphere and ocean components:   
+   ncremap -P mwf -s grd_ocn -g grd_atm --nm_src=ocn_nm --nm_dst=atm_nm --dt_sng=date
+   Documentation is currently available to E3SM users at
+   https://acme-climate.atlassian.net/wiki/spaces/SIM/pages/754286611/Regridding+E3SM+Data+with+ncremap
+   and to others via email request (it will be in Users Guide soon).
 
-A. NCO now only prints one WARNING about user-specified chunk size for 
-   record dimension being too big.
-
-A. Repeated notice: netCDF 4.6.1 fixes the CDF5 bug. Yay!
-   We STRONGLY recommend that CDF5 users upgrade to netCDF 4.6.1.
-   NCO error messages and HINTs have been updated to better describe
-   the best practices to identify and avoid this nasty bug.
-   http://nco.sf.net#bug_cdf5
+A. ncap2 string-handling is now more compatible between Windows and
+   better OSs. Previously, some ncap2 scripts could behave differently
+   due to the Windows definition of the C++ c_str() function.
 
 BUG FIXES:
 
-A. NCO completes when chunking into non-netCDF4 files.
-   (of course it ignores the chunking request).
-   Previous NCO tried to complete but dumped-core.
+A. NCO completes when chunking into non-netCDF4 files (of course it
+   ignores the chunking request). Previous NCO tried to complete but
+   dumped-core. 
+
+A. NCO now only prints one WARNING about user-specified chunk size for  
+   record dimension being too big.
+
+A. Repeated notice: netCDF 4.6.1 fixes the CDF5 bug described here
+   http://nco.sf.net#bug_cdf5
+   We STRONGLY recommend that CDF5 users upgrade to netCDF 4.6.1.
+   NCO error messages and HINTs have been updated to better describe
+   the best practices to identify and avoid this nasty bug.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -57,7 +80,7 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.7.6 built/tested under
-   MacOS 10.13.4 with netCDF 4.4.1.1 on HDF5 1.10.2 and with
+   MacOS 10.13.6 with netCDF 4.4.1.1 on HDF5 1.10.2 and with
    Linux with netCDF 4.6.2-development (20180515) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
