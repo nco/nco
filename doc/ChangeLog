@@ -1,10 +1,10 @@
 2018-08-11  Charlie Zender  <zender@aerosol>
 
 	* NCO 4.7.7-alpha01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha01: TopBoat';git push
-	git tag -a 4.7.7-alpha01 -m 'Functionally identical to 4.7.6;HAVE_NC_RENAME_GRP,nco_map_mk() changes';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha01: Dana TopBoat';git push
+	git tag -a 4.7.7-alpha01 -m 'Functionally identical to 4.7.6;HAVE_NC_RENAME_GRP,nco_map_mk() changes,CEWI';git push --tags
 
-	* Fix gcc 4.8.2 compiler warnings on rhea
+	* Fix gcc 4.8.2 compiler warnings on rhea, and 4.9.0 on titan
 
 	* Traditional build engine assume netCDF >= 4.3.1 CPP_TKN_OS += -DHAVE_NC_RENAME_GRP
 

@@ -1,12 +1,12 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.7.6 have hatched.
+The netCDF Operators NCO version 4.7.7 have hatched.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.6 is primarily a feature release for ncremap.
+Version 4.7.7 is primarily a feature release for ncremap.
 There are two new processing modes, one for regridding regional data,
 and one for generating all mapfile permutations with all interpolation 
 algorithms. There is also improved support for auxiliary coordinates
@@ -79,7 +79,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.7.6 built/tested under
+   These problems occur with NCO 4.7.7 built/tested under
    MacOS 10.13.6 with netCDF 4.4.1.1 on HDF5 1.10.2 and with
    Linux with netCDF 4.6.2-development (20180515) on HDF5 1.8.19.
 

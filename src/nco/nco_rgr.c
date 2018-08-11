@@ -44,6 +44,8 @@ nco_fl_dmm_mk /* Create dummy file */
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
+  return NCO_NOERR;
+
 } /* !nco_fl_dmm_mk() */
 
 int /* O [enm] Return code */
