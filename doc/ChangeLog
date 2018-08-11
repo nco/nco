@@ -1,5 +1,11 @@
 2018-08-11  Charlie Zender  <zender@aerosol>
 
+	* NCO 4.7.7-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha01: TopBoat';git push
+	git tag -a 4.7.7-alpha01 -m 'Functionally identical to 4.7.6';git push --tags
+
+	* Traditional build engine assume netCDF >= 4.3.1 CPP_TKN_OS += -DHAVE_NC_RENAME_GRP
+
 	* NCO 4.7.6 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.6: Honaunau';git push
 	git tag -a 4.7.6 -m 'ncremap RRG, MWF, -d&-g, -g&-G;aux w/o std_nm;HPSS_TRY';git push --tags

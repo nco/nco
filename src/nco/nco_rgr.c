@@ -13,11 +13,14 @@ int /* O [enm] Return code */
 nco_fl_dmm_mk /* Create dummy file */
 (const char * const fl_out) /* I [sng] Dummy file */
 {
+  /* Purpose: Create dummy file for use by ncremap/ncks */
+
   const char fnc_nm[]="nco_fl_dmm_mk()"; /* [sng] Function name */
 
   char *fl_out_tmp=NULL_CEWI;
 
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
+  int dmn_id; /* [id] Dimension ID */
   int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;
 
@@ -32,6 +35,12 @@ nco_fl_dmm_mk /* Create dummy file */
   /* Open dummy file */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
+  rcd=nco_def_dim(out_id,"dummy",1L,&dmn_id);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"%s: ERROR %s unable to open dummy file\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !rcd */
+  
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 

@@ -273,7 +273,7 @@ ifndef UNAMES
  UNAMES := $(shell uname -s)
 endif
 ifndef USR_TKN
- USR_TKN :=
+ USR_TKN := 
 endif # endif USR_TKN
 ifndef VRS_SNG
 # VRS_SNG := $(shell date +%Y%m%d)
@@ -639,6 +639,8 @@ ${MY_DPN_DIR}/%.d : %.cc
 CPP_TKN_OS := -DHAVE_REGEX_H -DNCO_HAVE_REGEX_FUNCTIONALITY -DHAVE_GETPAGESIZE -DHAVE_GETRUSAGE -DNEED_STRCASESTR
 # Assume netCDF >= 3.6.1
 CPP_TKN_OS += -DHAVE_NC_INQ_FORMAT
+# Assume netCDF >= 4.3.1
+CPP_TKN_OS += -DHAVE_NC_RENAME_GRP
 # Assume netCDF >= 4.3.2
 CPP_TKN_OS += -DHAVE_NC_INQ_PATH
 # Assume netCDF >= 4.4.0, but Ubuntu 4.4.0 (e.g., on grele) fumbled netcdf_mem.h header
