@@ -3391,7 +3391,7 @@ nco_prn_cdl_trd /* [fnc] Recursively print group contents */
 	(void)fprintf(fp_out,"%*s%s enum %s {",prn_ndn,spc_sng,bs_cdl,typ_cdl);
 	mbr_nbr=fld_nbr;
 	mbr_nbrm1=mbr_nbr-1L;
-	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
+	for(unsigned int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
 	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
 	  mbr_nm_cdl=nm2sng_cdl(mbr_nm);
 	  switch(bs_typ){
@@ -3716,7 +3716,7 @@ nco_prn_xml /* [fnc] Recursively print group contents */
 	(void)fprintf(fp_out,"%*s<ncml:enumTypedef name=\"%s\" type=\"enum%d\" >\n",prn_ndn,spc_sng,typ_cdl,bs_sz);
 	(void)sprintf(enm_fmt,"%*s<ncml:enum key=\"%s\">%%s</ncml:enum>\n",prn_ndn+prn_flg->spc_per_lvl,spc_sng,nco_typ_fmt_sng_var_cdl(bs_typ));
 	mbr_nbr=fld_nbr;
-	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
+	for(unsigned int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
 	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
 	  switch(bs_typ){
 	  case NC_BYTE: (void)fprintf(fp_out,enm_fmt,enm_val.b,mbr_nm); break;
@@ -3992,7 +3992,7 @@ nco_prn_jsn /* [fnc] Recursively print group contents */
 	(void)fprintf(fp_out,"%*s\"%s\": [ ",prn_ndn+2*prn_flg->spc_per_lvl,spc_sng,typ_cdl);
 	mbr_nbr=fld_nbr;
 	mbr_nbrm1=mbr_nbr-1L;
-	for(int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
+	for(unsigned int mbr_idx=0;mbr_idx<mbr_nbr;mbr_idx++){
 	  rcd=nco_inq_enum_member(grp_id,typ_ids[typ_idx],mbr_idx,mbr_nm,(void *)&enm_val);
 	  switch(bs_typ){
 	  case NC_BYTE: (void)fprintf(fp_out,enm_fmt,mbr_nm,enm_val.b); break;

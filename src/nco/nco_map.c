@@ -89,8 +89,6 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   long *dmn_cnt=NULL;
   long *dmn_srt=NULL;
 
-  long idx; /* [idx] Counting index for unrolled grids */
-
   nco_bool FL_RTR_RMT_LCN_DST;
   nco_bool FL_RTR_RMT_LCN_SRC;
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
@@ -100,7 +98,8 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   nco_mpf_sct mpf;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-  
+  size_t idx; /* [idx] Counting index for unrolled grids */
+
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining source grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_src);
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining destination grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_dst);
 
@@ -780,9 +779,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   int rcd=NCO_NOERR;
 
-  long idx; /* [idx] Counting index for unrolled grids */
   long grd_crn_nbr_vrl; /* [nbr] Maximum number of corners in overlap polygon */
 
+  size_t idx; /* [idx] Counting index for unrolled grids */
   size_t lnk_nbr; /* [nbr] Number of links */
   //size_t lnk_idx; /* [idx] Link index */
 

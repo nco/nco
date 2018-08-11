@@ -10599,16 +10599,14 @@ nco_get_crd_sct                       /* [fnc] Return a coordinate variable crd_
     }
   }
   return NULL;
-}
-
+} /* !nco_get_crd_sct() */
 
 void
-nco_srt_aux                          /* [fnc] sort auxiliary coordinates */  
+nco_srt_aux /* [fnc] Sort auxiliary coordinates */
 (const trv_tbl_sct * const trv_tbl)  /* I [sct] Traversal table */
 {
-  char *fnc_nm="nco_srt_aux()";
+  const char fnc_nm[]="nco_srt_aux()"; /* [sng] Function name  */
    
-  /* Loop table */
   for(unsigned idx_var=0;idx_var<trv_tbl->nbr;idx_var++){
     
     trv_sct *var_trv=&trv_tbl->lst[idx_var];
@@ -10616,7 +10614,6 @@ nco_srt_aux                          /* [fnc] sort auxiliary coordinates */
     /* Filter variables with auxiliary coordinates */ 
     if(var_trv->flg_aux && var_trv->nco_typ == nco_obj_typ_var){
 
-       /* Loop dimensions */
       for(int idx_dmn=0;idx_dmn<var_trv->nbr_dmn;idx_dmn++){
 	
         var_dmn_sct *lcl_dmn=&var_trv->var_dmn[idx_dmn];
@@ -10624,29 +10621,25 @@ nco_srt_aux                          /* [fnc] sort auxiliary coordinates */
         int nbr_lon_crd=lcl_dmn->nbr_lon_crd;	
         int nbr_lat_crd=lcl_dmn->nbr_lat_crd;	
 
-        if(nbr_lat_crd>1)
-          /* Sort by group depth */
-          qsort(lcl_dmn->lat_crd,(size_t)nbr_lat_crd,sizeof(lcl_dmn->lat_crd[0]),nco_cmp_aux_crd_dpt);
+	/* Sort by group depth */
+        if(nbr_lat_crd > 1) qsort(lcl_dmn->lat_crd,(size_t)nbr_lat_crd,sizeof(lcl_dmn->lat_crd[0]),nco_cmp_aux_crd_dpt);
 
         if(nco_dbg_lvl_get() >= nco_dbg_dev && nbr_lat_crd ){ 
           (void)fprintf(stdout,"%s: DEBUG %s 'latitude' auxiliary coordinates %s: %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,lcl_dmn->dmn_nm_fll); 
-          for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++)
-            (void)fprintf(stdout,"%s: DEBUG %s %s dpt=%d\n",nco_prg_nm_get(),fnc_nm,lcl_dmn->lat_crd[idx_crd].nm_fll,lcl_dmn->lat_crd[idx_crd].grp_dpt);
+          for(int idx_crd=0;idx_crd<nbr_lat_crd;idx_crd++) (void)fprintf(stdout,"%s: DEBUG %s %s dpt=%d\n",nco_prg_nm_get(),fnc_nm,lcl_dmn->lat_crd[idx_crd].nm_fll,lcl_dmn->lat_crd[idx_crd].grp_dpt);
         } /* endif dbg */
 
-        if(nbr_lon_crd >1 )
-          /* Sort them by group depth */
-          qsort(lcl_dmn->lon_crd,(size_t)nbr_lon_crd,sizeof(lcl_dmn->lon_crd[0]),nco_cmp_aux_crd_dpt);
+        /* Sort them by group depth */
+        if(nbr_lon_crd >1 ) qsort(lcl_dmn->lon_crd,(size_t)nbr_lon_crd,sizeof(lcl_dmn->lon_crd[0]),nco_cmp_aux_crd_dpt);
 
-        if(nco_dbg_lvl_get() >= nco_dbg_dev && nbr_lon_crd ){ 
+        if(nco_dbg_lvl_get() >= nco_dbg_dev && nbr_lon_crd){ 
           (void)fprintf(stdout,"%s: DEBUG %s 'longitude' auxiliary coordinates %s: %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm_fll,lcl_dmn->dmn_nm_fll); 
-          for(int idx_crd=0;idx_crd<nbr_lon_crd;idx_crd++)
-            (void)fprintf(stdout,"%s: DEBUG %s %s dpt=%d\n",nco_prg_nm_get(),fnc_nm,lcl_dmn->lon_crd[idx_crd].nm_fll,lcl_dmn->lon_crd[idx_crd].grp_dpt);
+          for(int idx_crd=0;idx_crd<nbr_lon_crd;idx_crd++) (void)fprintf(stdout,"%s: DEBUG %s %s dpt=%d\n",nco_prg_nm_get(),fnc_nm,lcl_dmn->lon_crd[idx_crd].nm_fll,lcl_dmn->lon_crd[idx_crd].grp_dpt);
         } /* endif dbg */
 
-      } /* Loop dimensions */
-    } /* Filter variables with auxiliary coordinates */ 
-  } /* Loop table */
+      } /* !idx_dmn */
+    } /* !flg_aux */ 
+  } /* !idx */
 
-}  
+} /* !nco_srt_aux() */
 
