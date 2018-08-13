@@ -9,34 +9,33 @@ source:
 
 build:
   number: 0
-  features:
-    - vc14
+  skip: True  # [win and vc<14]
 
 requirements:
   build:
-    - python
     - cmake
-    - antlr >=2.7.7,<3
-    - curl >=7.44.0,<8
-    - expat 2.2.*
-    - gsl >=2.2,<2.3
-    - hdf5 1.10.1
-    - libnetcdf 4.4.*
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+  host:
+    - antlr 2.7.7
+    - curl
+    - expat
+    - gsl
+    - hdf5
+    - libnetcdf
     - udunits2
-    - zlib 1.2.11
-    - vc 14
+    - zlib
   run:
-    - curl >=7.44.0,<8
-    - expat 2.2.*
-    - gsl >=2.2,<2.3
-    - hdf5 1.10.1
-    - libnetcdf 4.4.*
+    - curl
+    - expat
+    - gsl
+    - hdf5
+    - libnetcdf
     - udunits2
-    - vc 14
 
 test:
   source_files:
-    - data/in.cdl
+    - data
   commands:
     - ncks --help
     - ncap2 --help
