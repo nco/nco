@@ -217,9 +217,9 @@ if exist %build%\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\
   pushd winbuild
   @echo on
   if %STATIC_CRT% == ON (
-   nmake /f Makefile.vc mode=static vc=14 debug=yes gen_pdb=yes MACHINE=x64 RTLIBCFG=static
+   nmake /f Makefile.vc mode=static vc=14 debug=yes gen_pdb=yes MACHINE=x64 ENABLE_WINSSL=yes RTLIBCFG=static
   ) else (
-   nmake /f Makefile.vc mode=static vc=14 debug=yes gen_pdb=yes MACHINE=x64
+   nmake /f Makefile.vc mode=static vc=14 debug=yes gen_pdb=yes MACHINE=x64 ENABLE_WINSSL=yes
   )
   @echo off
   popd

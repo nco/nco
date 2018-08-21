@@ -57,33 +57,40 @@ ncks.exe -v lat http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/cmap/enh/pre
 
 it requires curl built with WinSSL (default)
 
-# Changes needed for static CRT
+# Changes needed for ZLIB and SZIP detection in NCO
 
-To static linking of the C Run-time Library (CRT), these changes must be made for the following libraries,
-in the CMakeLists.txt file
-
-```
-set(MSVC_USE_STATIC_CRT off CACHE BOOL "Use MT flags when compiling in MSVC")
-if (MSVC)
-  if (MSVC_USE_STATIC_CRT)
-     message("-- Using static CRT ${MSVC_USE_STATIC_CRT}")
-     foreach(flag_var CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-                          CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
-                          CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
-                          CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
-       string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-     endforeach()
-  endif()
-endif()
-```
 
 ## hdf5
 
-edit CMakeLists.txt at root and add for case when static linking of the C Run-time Library (CRT)
+edit hdf5-static.vcxproj and add full path of ZLIB and SZIP libraries as dependencies
 
 ```
-INCLUDE(config/cmake/UserMacros/WINDOWS_MT.cmake)
+<Lib>
+<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+<AdditionalDependencies>E:\nco\cmake\build\zlib\build\Debug\zlibstaticd.lib;E:\nco\cmake\build\szip\build\bin\Debug\libszip_D.lib</AdditionalDependencies>
+</Lib>
 ```
+
+## netcdf
+
+1) edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
+
+```
+<Lib>
+<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+<AdditionalDependencies>E:\nco\cmake\build\hdf5\build\bin\Debug\libhdf5_hl_D.lib;E:\nco\cmake\build\hdf5\build\bin\Debug\libhdf5_D.lib;E:\nco\cmake\build\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+</Lib>
+```
+
+2) add as "Additional Dependencies" the libraries
+
+```
+Ws2_32.lib;CRYPT32.LIB;Wldap32.lib;Normaliz.lib
+```
+
+3) set "Link Library Dependencies" to Yes
+
+
 
 ## zlib
 
@@ -102,38 +109,7 @@ git clone https://github.com/libexpat/libexpat
 git clone https://github.com/Unidata/UDUNITS-2
 
 
-# Changes needed for ZLIB and SZIP detection in NCO
 
-
-## hdf5
-
-edit hdf5-static.vcxproj and add full path of ZLIB and SZIP libraries as dependencies
-
-```
-<Lib>
-<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>E:\nco\cmake\build\zlib\build\Debug\zlibstaticd.lib;E:\nco\cmake\build\szip\build\bin\Debug\libszip_D.lib</AdditionalDependencies>
-</Lib>
-```
-
-## netcdf
-
-edit netcdf.vcxproj and add full path of HDF5 and curl libraries as dependencies
-
-```
-<Lib>
-<AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
-<AdditionalDependencies>E:\nco\cmake\build\hdf5\build\bin\Debug\libhdf5_hl_D.lib;E:\nco\cmake\build\hdf5\build\bin\Debug\libhdf5_D.lib;E:\nco\cmake\build\curl\builds\libcurl-vc14-x64-debug-static-ipv6-sspi-winssl\lib\libcurl_a_debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
-</Lib>
-```
-
-add as "Additional Dependencies" the libraries
-
-```
-Ws2_32.lib;CRYPT32.LIB;Wldap32.lib;Normaliz.lib
-```
-
-and set "Link Library Dependencies" to Yes
 
 # List of dependencies
 
@@ -152,6 +128,33 @@ git clone https://github.com/ampl/gsl
 git clone https://github.com/nco/antlr
 ```
 
+## Changes needed for static CRT
+
+## hdf5
+
+edit CMakeLists.txt at root and add for case when static linking of the C Run-time Library (CRT)
+
+```
+INCLUDE(config/cmake/UserMacros/WINDOWS_MT.cmake)
+```
+
+To static linking of the C Run-time Library (CRT), these changes must be made for the following libraries,
+in the CMakeLists.txt file
+
+```
+set(MSVC_USE_STATIC_CRT off CACHE BOOL "Use MT flags when compiling in MSVC")
+if (MSVC)
+  if (MSVC_USE_STATIC_CRT)
+     message("-- Using static CRT ${MSVC_USE_STATIC_CRT}")
+     foreach(flag_var CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+                          CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO
+                          CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
+                          CMAKE_C_FLAGS_MINSIZEREL CMAKE_C_FLAGS_RELWITHDEBINFO)
+       string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+     endforeach()
+  endif()
+endif()
+```
 
 ## Changes needed for libcurl if building with CMake
 
