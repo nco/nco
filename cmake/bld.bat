@@ -94,8 +94,12 @@ if not exist %build%\hdf5 (
  echo skipping hdf5 git clone
 )
 
+:: use tag version that builds
 if not exist %build%\UDUNITS-2 (
  git clone https://github.com/Unidata/UDUNITS-2
+ pushd UDUNITS-2
+ git checkout tags/v2.2.27.6
+ popd
 ) else (
  echo skipping UDUNITS-2 git clone
 )
@@ -258,7 +262,7 @@ if exist %build%\libexpat\expat\build\expat.sln (
 :: //////////////////////////////////////////////////////////
 
 :build_udunits
-if exist %build%\UDUNITS-2\build\udunits.sln (
+if exist %build%\UDUNITS-2\build\lib\Debug\udunits2.lib (
  echo skipping udunits build
  goto build_gsl
 ) else (

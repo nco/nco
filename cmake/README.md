@@ -59,7 +59,6 @@ it requires curl built with WinSSL (default)
 
 # Changes needed for ZLIB and SZIP detection in NCO
 
-
 ## hdf5
 
 edit hdf5-static.vcxproj and add full path of ZLIB and SZIP libraries as dependencies
@@ -90,7 +89,7 @@ Ws2_32.lib;CRYPT32.LIB;Wldap32.lib;Normaliz.lib
 
 3) set "Link Library Dependencies" to Yes
 
-
+4) build ncgen and ncdump whitin Visual Studio (needed for NCO tests)
 
 ## zlib
 
@@ -107,8 +106,6 @@ git clone https://github.com/libexpat/libexpat
 ## UDUNITS-2
 
 git clone https://github.com/Unidata/UDUNITS-2
-
-
 
 
 # List of dependencies
