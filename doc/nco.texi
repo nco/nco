@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.7
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 11 August 2018
+@set update-date 22 August 2018
 @set update-month August 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3143,11 +3143,25 @@ injection attacks.
 If you would like any of these characters whitelisted, please contact
 us and include a compelling real-world use-case.
 
+The @acronym{DAP} protocol supports accessing files with so-called
+``constraint expressions''.
+@acronym{NCO} allows access to a wider set of whitelisted characters
+for files whose names indicate the @acronym{DAP} protocol.
+Currently this is defined as any filename beginning with the string @samp{http://}, @samp{https://}, 
+or @samp{dap4://}.
+The whitelist for these files is expanded to include these characters:
+@example
+@verbatim
+#=:[];|{}/<>
+@end verbatim
+@end example
+
 The whitelist method is straightforward, and does not seem to interfere
 with @acronym{NCO}'s globbing feature.
-While the whitelist currently applies only to filenames (which are
-directly handled by @command{system()} calls, the method is applicable
-to other user-input such as variable lists, hyperslab arguments, etc.
+The whitelist currently applies only to filenames because they are
+handled by shell commands passed to the @command{system()} function. 
+However, the whitelist method is applicable to other user-input such as variable lists,
+hyperslab arguments, etc.
 Hence, the whitelist may be applied to other user-input in the future.
 
 @html
@@ -6593,7 +6607,7 @@ ncks --rgr ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=gr
 
 # As of version 4.7.6 (August, 2018), ncremap supports more concise commands:
 ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
-        -g ${DATA}/grids/180x360_SCRIP.20150901.nc
+        -g ${DATA}/grids/180x360_SCRIP.20180901.nc
 
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude west edge at Greenwich
 ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_wst \

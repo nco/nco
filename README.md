@@ -71,6 +71,7 @@ techniques for climate data analysis:
 | `ncap2` | netCDF Arithmetic Processor | [here](http://nco.sf.net/nco.html#ncap2) |
 | `ncatted` | netCDF ATTribute EDitor   | [here](http://nco.sf.net/nco.html#ncatted) |
 | `ncbo` | netCDF Binary Operator       | [here](http://nco.sf.net/nco.html#ncbo) |
+| `ncclimo` | netCDF CLIMatOlogy Generator | [here](http://nco.sf.net/nco.html#ncclimo) |
 | `nces` | netCDF Ensemble Statistics   | [here](http://nco.sf.net/nco.html#nces) |
 | `ncecat` | netCDF Ensemble conCATenator | [here](http://nco.sf.net/nco.html#ncecat) |
 | `ncflint` | netCDF FiLe INTerpolator  | [here](http://nco.sf.net/nco.html#ncflint) |

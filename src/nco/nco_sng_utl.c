@@ -829,6 +829,13 @@ nco_sng_sntz /* [fnc] Ensure input string contains only white-listed innocuous c
 
      Whitelist algorithm based on:
      https://wiki.sei.cmu.edu/confluence/display/c/STR02-C.+Sanitize+data+passed+to+complex+subsystems 
+
+     Whitelist alternatives suggested at:
+     https://github.com/nco/nco/issues/104
+
+     Other resources:
+     https://en.wikipedia.org/wiki/Filename#Reserved_characters_and_words
+
      NCO modifications to CMU default whitelist:
      20180214: White-list colon (WRF filenames sometimes have timestamps with colons, Windows drive labels have colons) 
      20180214: White-list space (Methinks some Windows people do have data files with spaces)
