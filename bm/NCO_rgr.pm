@@ -3065,7 +3065,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
     
     # Check that xmllint exists  
-    my $xmllint_code=system("xmllint --version 1>: 2>&1");
+    my $xmllint_code=system("xmllint --version > /dev/null 2>&1");
 
     if($xmllint_code == 0){
 	# 20180701: csz xmllint produces more false negatives than Emacs XML-validator, only catches egregious mistakes

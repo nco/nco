@@ -46,6 +46,7 @@
 # scp ~/nco/data/ncclimo edison.nersc.gov:bin_edison
 # scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
+# scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:nco/data/ncclimo ~/bin
 
 # Set script name, directory, PID, run directory
@@ -177,6 +178,9 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    fi # !NCARG_ROOT
             export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
 	    export LD_LIBRARY_PATH='/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
+	theta* )
+	    export PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin'\:${PATH}
+	    export LD_LIBRARY_PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib'\:${LD_LIBRARY_PATH} ; ;;
 	titan* )
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
 	    module load gcc

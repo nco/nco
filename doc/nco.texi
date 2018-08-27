@@ -3112,15 +3112,15 @@ Availability: All operators@*
 @acronym{NCO} is often installed in system directories (although not
 with Conda), and on some production machines it may have escalated
 privileges. 
-Since @acronym{NCO} manipulates files by using system calls (e.g., to
-move and copy them) it makes sense to audit it for vulnerabilities and
+Since @acronym{NCO} manipulates files by using @code{system()} calls (e.g., to 
+move and copy them with @code{mv} and @code{cp}) it makes sense to audit it for vulnerabilities and 
 protect it from malicious users trying to exploit security gaps.
 Securing @acronym{NCO} against malicious attacks is multi-faceted, and
 involves careful memory management and auditing of user-input.
 As of version 4.7.3 (March, 2018), @acronym{NCO} implements a whitelist
 of characters allowed in user-specified filenames.
-The purpose of the whitelist is to prevent users from injecting
-malicious strings into filenames that could be used by attackers. 
+The purpose of the whitelist is to prevent malicious users from injecting
+filename strings that could be used for attacks. 
 The whitelist allows only these characters:
 @example
 @verbatim
@@ -3129,7 +3129,7 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 1234567890_-.@ :%/
 @end verbatim
 @end example
-The backslash character @kbd{\} is also whitelisted (Windows only).
+The backslash character @kbd{\} is also whitelisted for Windows only.
 This whitelist allows filenames to be @acronym{URL}s, include username
 prefixes, and standard non-alphabetic characters. 
 The implied blacklist includes these characters
@@ -18918,12 +18918,15 @@ Then call @command{ncclimo} with @file{merra2_200903.nc4} as
 ncclimo -c merra2_200903.nc4 -s 1980 -e 2016 -i $drc_in -o $drc_out
 @end example
 
+@html
+<a name="ecmwf_ifs"></a> <!-- http://nco.sf.net/nco.html#ecmwf_ifs -->
+@end html
 In the default monthly climo generation mode, @command{ncclimo} expects 
 each input file to contain one single record that is the monthly average 
 of all fields.
 Another example of of wrangling observed datasets into a
 @acronym{CESM}ish format is @acronym{ECMWF} Integrated Forecasting
-System (@acronym{IFS}) data that contains twelve months per file,
+System (@acronym{IFS}) output that contains twelve months per file,
 rather than the one month per file that @command{ncclimo} expects.
 @example
 @verbatim
@@ -18959,7 +18962,7 @@ ncclimo -v FSNT -f FSNT -c amip_xpt -s 1980 -e 1983 -i drc_in -o drc_out
 ncclimo -v FLNT -f FLNT -c amip_xpt -s 1980 -e 1983 -i drc_in -o drc_out
 @end verbatim
 @end example
-These climos use the @samp{-f} option and so there output files will
+These climos use the @samp{-f} option and so their output files will
 have no namespace conflicts. 
 Moreover, the climatologies can be generated in parallel.
 

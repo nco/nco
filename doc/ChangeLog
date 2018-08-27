@@ -1,4 +1,12 @@
+2018-08-23  Charlie Zender  <zender@aerosol>
+
+	* Keep xmllint regression test from writing a file named ":"
+
+	* Include theta.alcf.anl.gov in ncclimo/ncremap paths
+
 2018-08-22  Charlie Zender  <zender@aerosol>
+
+	* Noticed that ncremap -G cannot support whitespace in ttl argument
 
 	* Document DAP whitelist
 

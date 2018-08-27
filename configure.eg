@@ -231,7 +231,7 @@ Status: Works
 Commands for LINUX are the only ones "regularly" used after ~2010
 ************************************************************************
 # Post upgrade requests to sysadmins at ALCF, LCRC, LLNL, NCAR, NCSA, NERSC, OLCF
-# support@alcf.anl.gov # ALCF Maintainer = 
+# support@alcf.anl.gov # ALCF Maintainer = Robert Scott <scott@alcf.anl.gov> 
 # conda update nco # Anaconda Maintainer = Filipe Fernandes (github: ocefpaf)
 # support@lcrc.anl.gov # LCRC Maintainer = Adam
 # Tony Hoang <hoang1@llnl.gov> # LLNL
@@ -494,11 +494,12 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # 20180124: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on theta:
-# Sysadmin upgrade request: 
+# Sysadmin upgrade request: support@alcf.anl.gov
+# Latest ticket: 368436 on 20180502
 # Latest sysadmin-compiled module usage:  # fxm
-# Personal recipe last modified: 20180124
+# Personal recipe last modified: 20180823
 # Problem is that .bashrc resets PATH so cannot find icc/gcc ...
-# Personal recipe last used successfully: fxm
+# Personal recipe last used successfully: 20180823 (Traditional build only)
 # module unload python
 # module use /projects/ClimateEnergy_2/software/modulefiles/all
 # module load e3sm-unified/1.1.2
@@ -515,6 +516,18 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+# 20180823 Attempt with bld/Makefile:
+export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
+export LINUX_CXX='g++ -std=c++11'
+export LINUX_FC='gfortran'
+module unload PrgEnv-intel # CSZ 
+module load PrgEnv-gnu # CSZ 
+module load cray-netcdf
+export LD_LIBRARY_PATH=/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib:${LD_LIBRARY_PATH}
+export NETCDF_ROOT=/opt/cray/pe/netcdf/4.6.1.2
+export PATH=/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin:${PATH}
+cd ~/nco;git reset --hard origin/master
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL=N NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib' NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.2' UDUNITS=N OPTS=D OMP=Y allinone;cd -
 
 # gcc/g++ 20160420 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on titan:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
