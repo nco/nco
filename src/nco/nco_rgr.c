@@ -395,6 +395,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"grd_ttl") || !strcmp(rgr_lst[rgr_var_idx].key,"ttl")){
       if(rgr->grd_ttl) rgr->grd_ttl=(char *)nco_free(rgr->grd_ttl);
       rgr->grd_ttl=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      /* 20180828 Replace carats with spaces so ncremap users can put carats in place of spaces in ttl */
+      size_t ttl_lng=strlen(rgr->grd_ttl);
+      for(size_t ttl_idx=0L;ttl_idx<ttl_lng;ttl_idx++)
+	if(rgr->grd_ttl[ttl_idx] == '^') rgr->grd_ttl[ttl_idx]=' ';
       continue;
     } /* !grd_ttl */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"idx_dbg")){
