@@ -64,7 +64,6 @@ mpncwa_LDADD = libnco.la
 HEADER_SRC = \
 libnco.h \
 ${NCO_GETOPT_H} \
-ncap.h \
 nco_att_utl.h \
 nco_aux.h \
 nco_bnr.h \

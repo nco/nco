@@ -1,5 +1,11 @@
 2018-08-30  Charlie Zender  <zender@aerosol>
 
+	* NCO 4.7.7-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha02: K\'ya Party of 8';git push
+	git tag -a 4.7.7-alpha02 -m 'ttl carats;--ignore_degenerate;theta;tags';git push --tags
+
+	* Eliminate ncap.h from nco/src/nco/Makefile.am to fix Tags generation
+
 	* Add ncremap ERWG ignore_degenerate HINT/option for ESMF >= 7.1.0r
 
 2018-08-28  Charlie Zender  <zender@uci.edu>
