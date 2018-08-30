@@ -678,6 +678,20 @@ psn_nbr=$#
 if [ ${psn_nbr} -ge 1 ]; then
     inp_psn='Yes'
 fi # !psn_nbr
+# 
+cmd_wgt_esmf=`command -v ${wgt_exe_esmf} 2> /dev/null`
+if [ $? -eq 0 ]; then
+    # 20180830 Add --ignore_degenerate to default ERWG options for ESMF >= 7.1.0r
+    erwg_vrs_sng=`ESMF_RegridWeightGen --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':'`
+    # Remove whitespace, answer should be something like "7.1.0r" or "6.3.0rp1"
+    erwg_vrs_sng="${erwg_vrs_sng#"${erwg_vrs_sng%%[![:space:]]*}"}"
+    # Extract first character
+    erwg_vrs_mjr="${erwg_vrs_sng:0:1}"
+    if [ "${erwg_vrs_mjr}" -ge 7 ]; then
+	wgt_opt_esmf="${wgt_opt_esmf} --ignore_degenerate"
+    fi # !erwg_vrs_mjr
+fi # !err
+cmd_wgt_tps=`command -v ${wgt_exe_tps} 2> /dev/null`
 if [ ${vrs_prn} = 'Yes' ]; then
     printf "${spt_nm}, the NCO regridder and map- and grid-generator, version ${nco_vrs}\n"
     printf "Copyright (C) 2016--2018 Charlie Zender\n"
@@ -696,19 +710,15 @@ if [ ${vrs_prn} = 'Yes' ]; then
     else
 	printf "Config: No hardcoded path/module overrides\n"
     fi # !hrd_pth_fnd
-    tst_cmd=${wgt_exe_esmf}
-    cmd_wgt=`command -v ${tst_cmd} 2> /dev/null`
-    if [ $? -eq 0 ]; then
-	printf "Config: ESMF weight-generation command ${tst_cmd} found as ${cmd_wgt}\n"
+    if [ -n "${cmd_wgt_esmf}" ]; then
+	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} version ${erwg_vrs_sng} found as ${cmd_wgt_esmf}\n"
     else
-	printf "Config: ESMF weight-generation command ${tst_cmd} not found\n"
+	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} not found\n"
     fi # !err
-    tst_cmd=${wgt_exe_tps}
-    cmd_wgt=`command -v ${tst_cmd} 2> /dev/null`
-    if [ $? -eq 0 ]; then
-	printf "Config: Tempest weight-generation command ${tst_cmd} found as ${cmd_wgt}\n"
+    if [ -n "${cmd_wgt_tps}" ]; then
+	printf "Config: Tempest weight-generation command ${wgt_exe_tps} found as ${cmd_wgt_tps}\n"
     else
-	printf "Config: Tempest weight-generation command ${tst_cmd} not found\n"
+	printf "Config: Tempest weight-generation command ${wgt_exe_tps} not found\n"
     fi # !err
     exit 0
 fi # !vrs_prn
@@ -1468,6 +1478,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: drc_out  = ${drc_out}\n"
     printf "dbg: drc_tmp  = ${drc_tmp}\n"
     printf "dbg: dst_fl   = ${dst_fl}\n"
+    printf "dbg: erwg_vrs = ${erwg_vrs_mjr}\n"
     printf "dbg: fl_fmt   = ${fl_fmt}\n"
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"

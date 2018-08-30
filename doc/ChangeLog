@@ -1,3 +1,7 @@
+2018-08-30  Charlie Zender  <zender@aerosol>
+
+	* Add ncremap ERWG ignore_degenerate HINT/option for ESMF >= 7.1.0r
+
 2018-08-28  Charlie Zender  <zender@uci.edu>
 
 	* Replace carats with spaces so ncremap users can put carats in place of spaces in ttl
