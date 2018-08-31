@@ -1021,6 +1021,12 @@ extern "C" {
     nco_grd_2D_unk, /* Unknown or unclassified, POP displaced-pole */
   } nco_grd_2D_typ_enm;
 
+  typedef enum nco_grd_lat_drc_enm{ /* [enm] Latitude direction enum */
+    nco_grd_lat_drc_nil=0,
+    nco_grd_lat_drc_s2n, /* South-to-North: Everything but ERAI, ERA5 */ 
+    nco_grd_lat_drc_n2s, /* North-to-South: Used by ERAI, ERA5 */
+  } nco_grd_lat_drc_enm;
+
   typedef enum nco_grd_lat_typ_enm{ /* [enm] Latitude grid-type enum */
     nco_grd_lat_nil=0,
     nco_grd_lat_unk, /* Unknown or unclassified latitude grid type (e.g., curvilinear) */ 
@@ -1157,6 +1163,7 @@ extern "C" {
     long lat_nbr; /* [nbr] Number of latitudes in destination grid */
     long lon_nbr; /* [nbr] Number of longitudes in destination grid */
     nco_grd_2D_typ_enm grd_typ; /* [enm] Destination grid-type enum */
+    nco_grd_lat_drc_enm lat_drc; /* [enm] Latitude grid-direction enum */
     nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
     nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
     // Other internal data and metadata 

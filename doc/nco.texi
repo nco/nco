@@ -6653,12 +6653,12 @@ ncremap -O -7 -L 1 \
 
 # DOE E3SM/ACME High Resolution Topography (1 x 1 km grid) for Elevation Classes
 # Write to compressed netCDF4-classic file to reduce filesize from ~85 GB to 607 MB
-ncks -O -7 -L 1 \
-     -G ttl='Global~latxlon~=~18000x36000~1 x~1~km'#latlon=18000,36000#lat_typ=uni#lon_typ=grn_ctr \
+ncremap -O -7 -L 1 \
+     -G ttl='Global~latxlon~=~18000x36000~\~1~x~1~km'#latlon=18000,36000#lat_typ=uni#lon_typ=grn_ctr \
      -g ${DATA}/grids/grd_18000x36000_SCRIP.nc
 
 # 1x1 degree Equi-Angular Regional grid over Greenland, centered longitudes
-ncremap -G ttl='Equi-Angular~Greenland grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
+ncremap -G ttl='Equi-Angular~Greenland~grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
         -g ${HOME}/greenland_SCRIP.nc
 @end verbatim
 @end example

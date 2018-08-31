@@ -1,5 +1,7 @@
 2018-08-31  Charlie Zender  <zender@uci.edu>
 
+	* Add stubs for lat_drc=n2s option for ERAI, ERA5
+
 	* Allow backslash to quote tilde in ttl strings
 
 2018-08-30  Charlie Zender  <zender@uci.edu>

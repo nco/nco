@@ -308,6 +308,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
   rgr->grd_typ=nco_grd_2D_eqa; /* [enm] Grid type */
   rgr->idx_dbg=0; /* [idx] Index of gridcell for debugging */
+  rgr->lat_drc=nco_grd_lat_drc_s2n; /* [enm] Latitude grid direction */
   rgr->lat_typ=nco_grd_lat_eqa; /* [enm] Latitude grid type */
   rgr->lon_typ=nco_grd_lon_Grn_ctr; /* [enm] Longitude grid type */
   rgr->lat_nbr=180; /* [nbr] Number of latitudes in destination grid */
@@ -475,6 +476,17 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->lon_typ=nco_grd_lon_bb;
       continue;
     } /* !lon_est */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_drc")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"s2n") || !strcasecmp(rgr_lst[rgr_var_idx].val,"south2north") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ston") || !strcasecmp(rgr_lst[rgr_var_idx].val,"southnorth")){
+	rgr->lat_drc=nco_grd_lat_drc_s2n;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"n2s") || !strcasecmp(rgr_lst[rgr_var_idx].val,"north2south") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ntos") || !strcasecmp(rgr_lst[rgr_var_idx].val,"northsouth")){
+	rgr->lat_drc=nco_grd_lat_drc_n2s;
+      }else{
+	(void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
+	abort();
+      } /* !val */
+      continue;
+    } /* !lat_drc */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_typ")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"cap") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fv") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fix") || !strcasecmp(rgr_lst[rgr_var_idx].val,"yarmulke")){
 	rgr->lat_typ=nco_grd_lat_fv;
@@ -4592,6 +4604,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   nco_bool flg_grd_crv=False;
 
   nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
+  nco_grd_lat_drc_enm lat_drc; /* [enm] Latitude grid-direction enum */
   nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
   nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
 
@@ -4601,6 +4614,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   grd_typ=rgr->grd_typ; /* [enm] Grid type */
   fl_out=rgr->fl_grd;
   fl_out_fmt=rgr->fl_out_fmt;
+  lat_drc=rgr->lat_drc; /* [enm] Latitude grid direction */
   lat_typ=rgr->lat_typ; /* [enm] Latitude grid type */
   lon_typ=rgr->lon_typ; /* [enm] Longitude grid type */
   lat_nbr=rgr->lat_nbr; /* [nbr] Number of latitudes in grid */
@@ -4865,6 +4879,13 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     nco_exit(EXIT_FAILURE);
   } /* !imprecise */
 
+  /* 20180831 Code above assume grids run S->N
+     User can request N->S grids with --rgr lat_drc=n2s
+     If so, flip grid before unrolling into output arrays */
+  if(lat_drc == nco_grd_lat_drc_n2s){
+    (void)fprintf(stdout,"%s: ERROR %s does not yet support N->S latitude grids\n",nco_prg_nm_get(),fnc_nm);
+  } /* !n2s */
+  
   assert(grd_crn_nbr == 4);
   for(lon_idx=0;lon_idx<lon_nbr;lon_idx++){
     idx=grd_crn_nbr*lon_idx;

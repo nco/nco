@@ -1258,10 +1258,10 @@ fi # !grd_sng
 if [ -n "${grd_dst}" ]; then 
     if [ -f "${grd_dst}" ]; then
 	if [ "${dst_usr_flg}" = 'Yes' ]; then
-	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by grid-inferral procedure\n"
+	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by inferred grid\n"
 	fi # !dst_usr_flg
 	if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
-	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by grid-creation procedure\n"
+	    printf "${spt_nm}: WARNING ${grd_dst} already exists and will be overwritten by created grid\n"
 	fi # !grd_sng_usr_flg
     else
 	if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then
