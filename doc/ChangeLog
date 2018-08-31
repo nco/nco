@@ -1,3 +1,7 @@
+2018-08-31  Charlie Zender  <zender@uci.edu>
+
+	* Allow backslash to quote tilde in ttl strings
+
 2018-08-30  Charlie Zender  <zender@uci.edu>
 
 	* Change special grd ttl character from carat to tilde, like LaTeX and NCL
