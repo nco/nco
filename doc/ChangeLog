@@ -1,6 +1,6 @@
 2018-08-31  Charlie Zender  <zender@uci.edu>
 
-	* Add stubs for lat_drc=n2s option for ERAI, ERA5
+	* Implement lat_drc=n2s option for ERAI, ERA5 grids
 
 	* Allow backslash to quote tilde in ttl strings
 
