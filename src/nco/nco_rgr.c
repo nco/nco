@@ -1474,7 +1474,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       slon_ctr_out=(double *)nco_malloc(slon_nbr_out*nco_typ_lng(crd_typ_out));
       for(idx=0;idx<slat_nbr_out;idx++){
 	slat_ctr_out[idx]=lat_ntf_out[idx+1];
-	slat_wgt_out[idx]=sin(dgr2rdn*lat_ctr_out[idx+1])-sin(dgr2rdn*lat_ctr_out[idx]);
+	slat_wgt_out[idx]=fabs(sin(dgr2rdn*lat_ctr_out[idx+1])-sin(dgr2rdn*lat_ctr_out[idx])); /* fabs() ensures positive area in n2s grids */
       } /* !lat_nbr_out */
       for(idx=0;idx<slon_nbr_out;idx++){
 	slon_ctr_out[idx]=lon_ntf_out[idx];
@@ -1484,7 +1484,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     switch(nco_grd_lat_typ){
     case nco_grd_lat_eqa:
     case nco_grd_lat_fv:
-      for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx]);
+      for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=fabs(sin(dgr2rdn*lat_bnd_out[2*idx+1])-sin(dgr2rdn*lat_bnd_out[2*idx])); /* fabs() ensures positive area in n2s grids */
       break;
     case nco_grd_lat_gss:
       for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_out[idx]=wgt_Gss_out[idx];
@@ -1502,7 +1502,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
     lat_wgt_ttl=0.0;
     for(idx=0;idx<lat_nbr_out;idx++) lat_wgt_ttl+=lat_wgt_out[idx];
-    lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0]);
+    lat_wgt_ttl_xpc=fabs(sin(dgr2rdn*lat_bnd_out[2*(lat_nbr_out-1)+1])-sin(dgr2rdn*lat_bnd_out[0])); /* fabs() ensures positive area in n2s grids */
     if(nco_grd_lat_typ != nco_grd_lat_unk){
       assert(1.0-lat_wgt_ttl/lat_wgt_ttl_xpc < eps_rlt);
       if(lat_wgt_ttl_xpc < 0.0) abort(); /* CEWI Use lat_wgt_ttl_xpc at least once outside of assert() to avoid gcc 4.8.2 set-but-not-used warning */
@@ -1559,7 +1559,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	 fxm: Distinguish spherical zone shapes (e.g., equi-angular) from great circle arcs (e.g., unstructured polygons) */
       for(lat_idx=0;lat_idx<lat_nbr_out;lat_idx++)
 	for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
-	  area_out[lat_idx*lon_nbr_out+lon_idx]=dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]));
+	  area_out[lat_idx*lon_nbr_out+lon_idx]=fabs(dgr2rdn*(lon_bnd_out[2*lon_idx+1]-lon_bnd_out[2*lon_idx])*(sin(dgr2rdn*lat_bnd_out[2*lat_idx+1])-sin(dgr2rdn*lat_bnd_out[2*lat_idx]))); /* fabs() ensures positive area in n2s grids */
     } /* !spherical zones */
   } /* !flg_dgn_area_out */
 
@@ -4998,7 +4998,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
        Gain not worth the extra complexity */
     for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++)
       for(lon_idx=0L;lon_idx<lon_nbr;lon_idx++)
-	/* NB: fabs() ensures positive area in n2s grids */
+	/* fabs() ensures positive area in n2s grids */
 	area[lat_idx*lon_nbr+lon_idx]=fabs(dgr2rdn*(lon_bnd[2*lon_idx+1L]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1L])-sin(dgr2rdn*lat_bnd[2*lat_idx])));
   } /* !flg_grd_2D */
 
