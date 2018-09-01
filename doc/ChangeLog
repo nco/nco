@@ -1,6 +1,8 @@
 2018-08-31  Charlie Zender  <zender@uci.edu>
 
-	* Implement lat_drc=n2s option for ERAI, ERA5 grids
+	* Implement lat_drc=n2s inferral in nco_grd_nfr()
+
+	* Implement lat_drc=n2s option in nco_grd_mk() for ERAI, ERA5 grids
 
 	* Allow backslash to quote tilde in ttl strings
 
