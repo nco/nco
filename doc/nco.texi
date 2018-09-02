@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.7
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 27 August 2018
-@set update-month August 2018
+@set update-date 2 September 2018
+@set update-month September 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -6606,59 +6606,57 @@ ncks --rgr ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=gr
      --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
 
 # As of version 4.7.6 (August, 2018), ncremap supports more concise commands
-# Use tildes instead of spaces to avoid shell-quoting issues
-# NCO automatically replaces the tildes with spaces in the output files
-ncremap -G ttl='Equi-Angular~grid~180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
+ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
         -g ${DATA}/grids/180x360_SCRIP.20180901.nc
 
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude west edge at Greenwich
-ncremap -G ttl='Equi-Angular~grid~180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_wst \
+ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_wst \
         -g ${DATA}/grids/180x360wst_SCRIP.20180301.nc
 
 # 129x256 CAM-FV grid, first longitude centered at Greenwich
-ncremap -G ttl='CAM-FV~scalar~grid~129x256'#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr \
+ncremap -G ttl='CAM-FV scalar grid 129x256'#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr \
         -g ${DATA}/grids/129x256_SCRIP.20150901.nc
 
 # 192x288 CAM-FV grid, first longitude centered at Greenwich
-ncremap -G ttl='CAM-FV~scalar~grid~192x288'#latlon=192,288#lat_typ=fv#lon_typ=grn_ctr \
+ncremap -G ttl='CAM-FV scalar grid 192x288'#latlon=192,288#lat_typ=fv#lon_typ=grn_ctr \
         -g ${DATA}/grids/192x288_SCRIP.20160301.nc
 
 # 1441x2880 CAM-FV grid, first longitude centered at Greenwich
-ncremap -G ttl='CAM-FV~scalar~grid~1441x2880'#latlon=1441,2880#lat_typ=fv#lon_typ=grn_ctr \
+ncremap -G ttl='CAM-FV scalar grid 1441x2880'#latlon=1441,2880#lat_typ=fv#lon_typ=grn_ctr \
         -g ${DATA}/grids/1441x2880_SCRIP.20170901.nc
 
 # 91x180 CAM-FV grid, first longitude centered at Greenwich (2 degree grid)
-ncremap -G ttl='CAM-FV~scalar~grid~91x180'#latlon=91,180#lat_typ=fv#lon_typ=grn_ctr \
+ncremap -G ttl='CAM-FV scalar grid 91x180'#latlon=91,180#lat_typ=fv#lon_typ=grn_ctr \
         -g ${DATA}/grids/91x180_SCRIP.20170401.nc
 
 # 25x48 CAM-FV grid, first longitude centered at Greenwich (7.5 degree grid)
-ncremap -G ttl='CAM-FV~scalar~grid~25x48'#latlon=25,48#lat_typ=fv#lon_typ=grn_ctr \
+ncremap -G ttl='CAM-FV scalar grid 25x48'#latlon=25,48#lat_typ=fv#lon_typ=grn_ctr \
         -g ${DATA}/grids/25x48_SCRIP.20170401.nc
 
 # 128x256 Equi-Angular grid, Greenwich west edge of first longitude
 # CAM-FV offset grid for 129x256 CAM-FV scalar grid above
-ncremap -G ttl='Equi-Angular~grid~128x256'#latlon=128,256#lat_typ=uni#lon_typ=grn_wst \
+ncremap -G ttl='Equi-Angular grid 128x256'#latlon=128,256#lat_typ=uni#lon_typ=grn_wst \
         -g ${DATA}/grids/128x256_SCRIP.20150901.nc
 
 # T42 Gaussian grid, first longitude centered at Greenwich
-ncremap -G ttl='T42~Gaussian~grid'#latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
+ncremap -G ttl='T42 Gaussian grid'#latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
         -g ${DATA}/grids/t42_SCRIP.20150901.nc
 
 # NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree) Equi-Angular grid
 # Date-line west edge of first longitude, east edge of last longitude
 # Write to compressed netCDF4-classic file to reduce filesize ~140x from 2.2 GB to 16 MB
 ncremap -O -7 -L 1 \
-     -G ttl='Equi-Angular~grid~3600x7200~(NASA~CMG)'#latlon=3600,7200#lat_typ=uni#lon_typ=180_wst \
+     -G ttl='Equi-Angular grid 3600x7200 (NASA CMG)'#latlon=3600,7200#lat_typ=uni#lon_typ=180_wst \
      -g ${DATA}/grids/3600x7200_SCRIP.20160301.nc
 
 # DOE E3SM/ACME High Resolution Topography (1 x 1 km grid) for Elevation Classes
 # Write to compressed netCDF4-classic file to reduce filesize from ~85 GB to 607 MB
 ncremap -O -7 -L 1 \
-     -G ttl='Global~latxlon~=~18000x36000~\~1~x~1~km'#latlon=18000,36000#lat_typ=uni#lon_typ=grn_ctr \
+     -G ttl='Global latxlon = 18000x36000 \ 1 x 1 km'#latlon=18000,36000#lat_typ=uni#lon_typ=grn_ctr \
      -g ${DATA}/grids/grd_18000x36000_SCRIP.nc
 
 # 1x1 degree Equi-Angular Regional grid over Greenland, centered longitudes
-ncremap -G ttl='Equi-Angular~Greenland~grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
+ncremap -G ttl='Equi-Angular Greenland grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
         -g ${HOME}/greenland_SCRIP.nc
 @end verbatim
 @end example

@@ -1253,6 +1253,8 @@ if [ -z "${grd_sng}" ]; then
     grd_sng_dfl="grd_ttl='Default internally-generated grid'#latlon=10,10#lat_typ=uni#lon_typ=Grn_ctr" # [sng] Grid string default
     grd_sng="${grd_sng_dfl}"
 else
+    # 20180902 Replace spaces in user-defined grid strings (e.g., ttl) with tildes
+    grd_sng=${grd_sng// /\~}
     grd_sng_usr_flg='Yes'
 fi # !grd_sng
 if [ -n "${grd_dst}" ]; then 

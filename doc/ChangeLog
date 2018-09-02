@@ -1,3 +1,9 @@
+2018-09-02  Charlie Zender  <zender@uci.edu>
+
+	* ncremap replace spaces in user-defined grid strings (e.g., ttl) with tildes
+
+	* Fix lat_typ for n2s in nco_grd_nfr()
+
 2018-08-31  Charlie Zender  <zender@uci.edu>
 
 	* Implement lat_drc=n2s inferral in nco_grd_nfr()
