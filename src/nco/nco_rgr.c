@@ -752,6 +752,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_dgn_area_out=False; /* [flg] Diagnose area_out from grid boundaries */
   nco_bool flg_bnd_1D_usable=False; /* [flg] Usable 1D cell vertices exist */
+  nco_bool flg_s2n=True; /* I [enm] Latitude grid-direction is South-to-North */
   nco_bool flg_stg=rgr->flg_stg; /* [flg] Write staggered grid with FV output */
   
   nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
@@ -1330,6 +1331,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       for(idx=0;idx<lon_nbr_out*mpf.dst_grid_corners;idx++) lon_crn_out[idx]*=rdn2dgr;
       for(idx=0;idx<lat_nbr_out*mpf.dst_grid_corners;idx++) lat_crn_out[idx]*=rdn2dgr;
     } /* !rdn */
+    if(lat_ctr_out[1] < lat_ctr_out[0]) flg_s2n=False;
   } /* !flg_grd_out_rct */
     
   if(flg_grd_out_crv){
@@ -1430,7 +1432,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       double *lat_sin_out; // [frc] Sine of Gaussian latitudes double precision
       lat_sin_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
       wgt_Gss_out=(double *)nco_malloc(lat_nbr_out*sizeof(double));
-      (void)nco_lat_wgt_gss(lat_nbr_out,lat_sin_out,wgt_Gss_out);
+      (void)nco_lat_wgt_gss(lat_nbr_out,flg_s2n,lat_sin_out,wgt_Gss_out);
       lat_ctr_tst_gss=rdn2dgr*asin(lat_sin_out[1]);
       /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
@@ -3690,10 +3692,12 @@ nco_bsl_zro /* Return Bessel function zeros */
 void
 nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their weights */
 (const int lat_nbr, /* I [nbr] Latitude number */
+ const nco_bool flg_s2n, /* I [enm] Latitude grid-direction is South-to-North */
  double * const lat_sin, /* O [frc] Sine of latitudes */
  double * const wgt_Gss) /* O [frc] Gaussian weights */
 {  
   /* Purpose: Compute and return sine of Gaussian latitudes and their weights
+     Returned arrays are ordered south-to-north (S->N), not (N->S)
      Source: CCM /fs/cgd/csm/models/atm/ccm3.5.8/src/ccmlsm_share/gauaw.F
      Calculate sine of latitudes lat_sin(lat_nbr) and weights wgt_Gss(lat_nbr) for Gaussian quadrature
      Algorithm described in Davis and Rabinowitz, Journal of Research of the NBS, V 56, Jan 1956
@@ -3799,11 +3803,18 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   
   /* Reverse and shift arrays because original CCM code algorithm computes latitudes from north-to-south
      Shift by one to remove Fortran offset in p1 arrays */
-  for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
-    lat_sin[lat_idx]=lat_sin_p1[lat_nbr-lat_idx];
-    wgt_Gss[lat_idx]=wgt_Gss_p1[lat_nbr-lat_idx];
-  } /* end loop over lat */
-
+  if(flg_s2n){
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+      lat_sin[lat_idx]=lat_sin_p1[lat_nbr-lat_idx];
+      wgt_Gss[lat_idx]=wgt_Gss_p1[lat_nbr-lat_idx];
+    } /* end loop over lat */
+  }else{
+    for(lat_idx=0;lat_idx<lat_nbr;lat_idx++){
+      lat_sin[lat_idx]=lat_sin_p1[lat_idx+1];
+      wgt_Gss[lat_idx]=wgt_Gss_p1[lat_idx+1];
+    } /* end loop over lat */
+  } /* !flg_s2n */
+    
   if(nco_dbg_lvl_get() == nco_dbg_old){
     (void)fprintf(stdout,"%s: DEBUG %s reports lat_nbr = %d\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
     (void)fprintf(stdout,"idx\tasin\tngl_rad\tngl_dgr\tgw\n");
@@ -4602,6 +4613,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   nco_bool flg_grd_1D=False;
   nco_bool flg_grd_2D=False;
   nco_bool flg_grd_crv=False;
+  nco_bool flg_s2n=True; /* I [enm] Latitude grid-direction is South-to-North */
 
   nco_grd_2D_typ_enm grd_typ; /* [enm] Grid-type enum */
   nco_grd_lat_drc_enm lat_drc; /* [enm] Latitude grid-direction enum */
@@ -4628,6 +4640,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
   /* Use curvilinear coordinates (lat and lon are 2D arrays) if flg_crv already set or it lat_crv or lon_crv set */
   if(lat_crv != 0.0 || lon_crv != 0.0 || rgr->flg_crv) flg_grd_crv=True;
+  if(lat_drc == nco_grd_lat_drc_n2s) flg_s2n=False;
 
   /* Assume 2D grid */
   flg_grd_2D=True;
@@ -4780,7 +4793,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     break;
   case nco_grd_lat_gss:
     lat_sin=(double *)nco_malloc(lat_nbr*sizeof(double));
-    (void)nco_lat_wgt_gss(lat_nbr,lat_sin,wgt_Gss);
+    (void)nco_lat_wgt_gss(lat_nbr,flg_s2n,lat_sin,wgt_Gss);
     for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++)
       lat_ctr[lat_idx]=rdn2dgr*asin(lat_sin[lat_idx]);
     /* First guess for lat_ntf is midway between Gaussian abscissae */
@@ -4792,7 +4805,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
       const double eps_rlt_cnv=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
       itr_cnt=0;
-      lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]);
+      lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
       fofx_at_x0=wgt_Gss[lat_idx-1L]-lat_wgt_gss;
       while(fabs(fofx_at_x0) > eps_rlt_cnv){
 	/* Newton-Raphson iteration:
@@ -4802,7 +4815,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 	   x_better=x0-f(x0)/f'(x0) */
 	dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
 	lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0; /* NB: not sure why this is minus not plus but it works :) */
-	lat_wgt_gss=sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]);
+	lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
 	fofx_at_x0=wgt_Gss[lat_idx-1L]-lat_wgt_gss;
 	if(++itr_cnt > itr_nbr_max){
 	  (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
@@ -7119,7 +7132,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        20150526: T42 grid from SCRIP and related maps are only accurate to ~eight digits
        20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006
        20170521: T62 grid from NCEP-NCAR Reanalysis 1 worse than single precision, has yc_[192]=-86.6531 not expected exact value lat_ctr[1]=-86.6532 */
-    if(nco_dbg_lvl_get() >= nco_dbg_std && lat_ctr[0] > lat_ctr[lat_nbr-1L]) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr[0] = %g > %g = lat_ctr[%ld]. Grid inferral detects 2D grid that runs from north-to-south, not south-to-north. Support for 2D N-to-S grids was added in NCO 4.7.7 (September, 2018) and may be imperfect.\nHINT: If present command fails, re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm,lat_ctr[0],lat_ctr[lat_nbr-1L],lat_nbr-1L);
+    if(nco_dbg_lvl_get() >= nco_dbg_std && lat_ctr[0] > lat_ctr[lat_nbr-1L]) (void)fprintf(stderr,"%s: INFO %s reports that grid inferral has detected a 2D grid that runs from north-to-south, not south-to-north. Support for 2D N-to-S grids was added in NCO 4.7.7 (September, 2018) and may be imperfect.\nHINT: If present command fails, re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm);
     if((float)lat_ctr[1] == (float)lat_ctr_tst_eqa) lat_typ=nco_grd_lat_eqa;
     if((float)lat_ctr[1] == (float)lat_ctr_tst_fv) lat_typ=nco_grd_lat_fv;
     double *lat_sin=NULL_CEWI; // [frc] Sine of Gaussian latitudes double precision
@@ -7128,7 +7141,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       /* Check for Gaussian grid */
       lat_sin=(double *)nco_malloc(lat_nbr*sizeof(double));
       wgt_Gss=(double *)nco_malloc(lat_nbr*sizeof(double));
-      (void)nco_lat_wgt_gss(lat_nbr,lat_sin,wgt_Gss);
+      (void)nco_lat_wgt_gss(lat_nbr,flg_s2n,lat_sin,wgt_Gss);
       lat_ctr_tst_gss=rdn2dgr*asin(lat_sin[1]);
       /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */

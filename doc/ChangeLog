@@ -1,4 +1,12 @@
+2018-09-03  Charlie Zender  <zender@uci.edu>
+
+	* ncremap revert tilde replacement in favor of re-quoting grd_sng
+
 2018-09-02  Charlie Zender  <zender@uci.edu>
+
+	* Expose skl_fl functionality to ncremap
+
+	* Pass flg_s2n to nco_lat_wgt_gss() to allow N->S Gaussian grids
 
 	* ncremap replace spaces in user-defined grid strings (e.g., ttl) with tildes
 

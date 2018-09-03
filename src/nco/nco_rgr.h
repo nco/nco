@@ -135,6 +135,7 @@ extern "C" {
   void
   nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their weights */
   (const int lat_nbr, /* I [nbr] Latitude number */
+   const nco_bool flg_s2n, /* I [enm] Latitude grid-direction is South-to-North */
    double * const lat_sin, /* O [frc] Sine of latitudes */
    double * const wgt_Gss); /* O [frc] Gaussian weights */
 
