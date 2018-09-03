@@ -4221,7 +4221,7 @@ nco_grd_2D_sng /* [fnc] Convert two-dimensional grid-type enum to string */
   switch(nco_grd_2D_typ){
   case nco_grd_2D_unk: return "Unknown, unclassified, or unrepresentable 2D grid type (e.g., unstructured, curvilinear, POP displaced-pole)";
   case nco_grd_2D_gss: return "Gaussian latitude grid. Used by spectral transform models, e.g., CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM.";
-  case nco_grd_2D_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). When global (not regional) in extent and with odd number of latitudes, poles are considered at (and labeled as) centers of first and last gridcells. For example lat_ctr=-90,-89,-88,... and lat_crn=-89.5,-88.5,-87.5,... Thus pole-gridcells span half the equi-angular latitude increment of the rest of the grid. Used by CAM FV (i.e., CAM 4-6), ECMWF ERA-I, ECMWF ERA5, GEOS-CHEM, UCICTM, UKMO.";
+  case nco_grd_2D_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). When global (not regional) in extent and with odd number of latitudes, poles are considered at (and labeled as) centers of first and last gridcells. For example lat_ctr=-90,-89,-88,... and lat_crn=-89.5,-88.5,-87.5,... Thus pole-gridcells span half the equi-angular latitude increment of the rest of the grid. Used by CAM FV (i.e., CAM 4-6), ECMWF (ERA-I, ERA40, ERA5), GEOS-CHEM, UCICTM, UKMO.";
   case nco_grd_2D_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent and with even number of latitudes, poles are at corners/edges of first and last gridcells. For example lat_ctr=-89.5,-88.5,-87.5,... and lat_crn=-90,-89,-88,.... When global, forms valid FV-staggered (aka FV-velocity) grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI, WOCE.";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
@@ -4238,7 +4238,7 @@ nco_grd_lat_sng /* [fnc] Convert latitude grid-type enum to string */
   switch(nco_grd_lat_typ){
   case nco_grd_lat_unk: return "Unknown, unclassified, or unrepresentable latitude grid type (e.g., unstructured, curvilinear, POP3)";
   case nco_grd_lat_gss: return "Gaussian latitude grid used by global spectral models: CCM 1-3, CAM 1-3, LSM, MATCH, UCICTM.";
-  case nco_grd_lat_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). When global (not regional) in extent and with odd number of latitudes, poles are considered at (and labeled as) centers of first and last gridcells. For example lat_ctr=-90,-89,-88,... and lat_crn=-89.5,-88.5,-87.5,... Thus pole-gridcells span half the equi-angular latitude increment of the rest of the grid. Used by CAM FV (i.e., CAM 4-6), ECMWF ERA-I, ECMWF ERA5, GEOS-CHEM, UCICTM, UKMO.";
+  case nco_grd_lat_fv: return "Cap-latitude grid, aka FV-scalar grid (in Lin-Rood representation). When global (not regional) in extent and with odd number of latitudes, poles are considered at (and labeled as) centers of first and last gridcells. For example lat_ctr=-90,-89,-88,... and lat_crn=-89.5,-88.5,-87.5,... Thus pole-gridcells span half the equi-angular latitude increment of the rest of the grid. Used by CAM FV (i.e., CAM 4-6), ECMWF (ERA-I, ERA40, ERA5), GEOS-CHEM, UCICTM, UKMO.";
   case nco_grd_lat_eqa: return "Uniform/Equi-Angular latitude grid. Uniform/Equi-angle (everywhere) latitude grid. When global (not regional) in extent and with even number of latitudes, poles are at corners/edges of first and last gridcells. For example lat_ctr=-89.5,-88.5,-87.5,... and lat_crn=-90,-89,-88,.... When global, forms valid FV-staggered (aka FV-velocity) grid (for Lin-Rood representation). Used by CIESIN/SEDAC, IGBP-DIS, TOMS AAI, WOCE.";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
@@ -4777,7 +4777,10 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   lat_spn=lat_nrt-lat_sth;
   lat_ncr=lat_spn/lat_nbr;
 
+  const long lat_nbr_hlf=lat_nbr/2; // [nbr] Half number of latitudes (e.g., lat_nbr_hlf=32 for lat_nbr=64 and 65)
   double *lat_sin=NULL; // [frc] Sine of Gaussian latitudes double precision
+  /* Create S->N grid. If user requested N->S, flip grid at end */
+  //  if(flg_s2n) lat_ntf[0L]=lat_sth; else lat_ntf[0L]=lat_nrt;
   lat_ntf[0L]=lat_sth;
   switch(lat_typ){
   case nco_grd_lat_fv:
@@ -4793,14 +4796,14 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     break;
   case nco_grd_lat_gss:
     lat_sin=(double *)nco_malloc(lat_nbr*sizeof(double));
-    (void)nco_lat_wgt_gss(lat_nbr,flg_s2n,lat_sin,wgt_Gss);
+    (void)nco_lat_wgt_gss(lat_nbr,True,lat_sin,wgt_Gss);
     for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++)
       lat_ctr[lat_idx]=rdn2dgr*asin(lat_sin[lat_idx]);
     /* First guess for lat_ntf is midway between Gaussian abscissae */
     for(lat_idx=1L;lat_idx<lat_nbr;lat_idx++)
       lat_ntf[lat_idx]=0.5*(lat_ctr[lat_idx-1L]+lat_ctr[lat_idx]);
-    /* Iterate guess until area between interfaces matches Gaussian weight */
-    for(lat_idx=1L;lat_idx<lat_nbr;lat_idx++){
+    /* Iterate guess until area between interfaces matches Gaussian weight (compute for one hemisphere, make other symmetric) */
+    for(lat_idx=1L;lat_idx<lat_nbr_hlf;lat_idx++){
       double fofx_at_x0; /* [frc] Function to iterate evaluated at current guess */
       double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
       const double eps_rlt_cnv=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
@@ -4822,7 +4825,15 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 	  nco_exit(EXIT_FAILURE);
 	} /* endif */
       } /* !while */
-    } /* !lat */
+    } /* !lat_idx */
+    /* Use Gaussian grid symmetry to obtain same interfaces in both hemispheres (avoids cumulative rounding errors) */
+    if(lat_nbr%2){
+      /* lat_nbr is odd */
+      for(lat_idx=1L;lat_idx<=lat_nbr_hlf+1L;lat_idx++) lat_ntf[lat_nbr_hlf+lat_idx]=-lat_ntf[lat_nbr_hlf-lat_idx+1L];
+    }else{
+      /* lat_nbr is even */
+      for(lat_idx=1L;lat_idx<lat_nbr_hlf;lat_idx++) lat_ntf[lat_nbr_hlf+lat_idx]=-lat_ntf[lat_nbr_hlf-lat_idx];
+    } /* !flg_lat_evn */
     break;
   default:
     nco_dfl_case_generic_err(); break;
@@ -4830,14 +4841,24 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   /* Ensure rounding errors do not produce unphysical grid */
   lat_ntf[lat_nbr]=lat_nrt;
   
+  if(nco_dbg_lvl_get() > nco_dbg_old){
+    (void)fprintf(stderr,"%s: DEBUG %s Gaussian abscissae/interfaces for lat_nbr=%ld\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
+    (void)fprintf(stderr,"idx\tlat_ctr\tlat_ntf\tntf_p1\n");
+    for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++){
+      (void)fprintf(stderr,"%d\t%20.15f\t%20.15f\t%20.15f\n",lat_idx,lat_ctr[lat_idx],lat_ntf[lat_idx],lat_ntf[lat_idx+1L]);
+    } /* !lat_idx */
+  } /* !dbg */
+  
   /* Always define longitude centers midway between interfaces */
   for(lon_idx=0L;lon_idx<=lon_nbr-1L;lon_idx++)
     lon_ctr[lon_idx]=0.5*(lon_ntf[lon_idx]+lon_ntf[lon_idx+1L]);
 
   /* Many grids have center latitude equally spaced between interfaces */
-  for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++)
-    lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1L]);
-
+  if(lat_typ != nco_grd_lat_fv && lat_typ != nco_grd_lat_gss){
+    for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++)
+      lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1L]);
+  } /* !lat_typ */
+  
   /* Cap grids excepted---they place centers of first/last gridcells at poles */
   if(lat_typ == nco_grd_lat_fv){
     lat_ctr[0L]=lat_ntf[0L];
@@ -4872,7 +4893,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   switch(lat_typ){
   case nco_grd_lat_eqa:
   case nco_grd_lat_fv:
-    for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=sin(dgr2rdn*lat_ntf[lat_idx+1L])-sin(dgr2rdn*lat_ntf[lat_idx]);
+    for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=fabs(sin(dgr2rdn*lat_ntf[lat_idx+1L])-sin(dgr2rdn*lat_ntf[lat_idx]));
     break;
   case nco_grd_lat_gss:
     for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++) lat_wgt[lat_idx]=wgt_Gss[lat_idx];
@@ -4881,12 +4902,15 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     nco_dfl_case_generic_err(); break;
   } /* !lat_typ */
 
-  /* Fuzzy test of latitude weight normalization */
+  /* Fuzzy test of latitude weight normalization
+     20180903 Tolerance threshold of eps_rlt_ma=1.0e-14 is too strict for Gaussian grids somewhere lat_nbr >~ 150
+     Newton-Raphson method of interface determination may need improvement to fix that
+     Tolerance threshold of 1.0e-14 works for all relevant Uniform and Cap grids */
   const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance */
   double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
   lat_wgt_ttl=0.0;
   for(idx=0L;idx<lat_nbr;idx++) lat_wgt_ttl+=lat_wgt[idx];
-  lat_wgt_ttl_xpc=sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1L])-sin(dgr2rdn*lat_bnd[0L]);
+  lat_wgt_ttl_xpc=fabs(sin(dgr2rdn*lat_bnd[2*(lat_nbr-1)+1L])-sin(dgr2rdn*lat_bnd[0L]));
   if(grd_typ != nco_grd_2D_unk && 1.0-lat_wgt_ttl/lat_wgt_ttl_xpc > eps_rlt_max){
     (void)fprintf(stdout,"%s: ERROR %s reports grid normalization does not meet precision tolerance eps_rlt_max = %20.15f\nlat_wgt_ttl = %20.15f, lat_wgt_ttl_xpc = %20.15f, lat_wgt_frc = %20.15f, eps_rlt = %20.15f\n",nco_prg_nm_get(),fnc_nm,eps_rlt_max,lat_wgt_ttl,lat_wgt_ttl_xpc,lat_wgt_ttl/lat_wgt_ttl_xpc,1.0-lat_wgt_ttl/lat_wgt_ttl_xpc);
     nco_exit(EXIT_FAILURE);

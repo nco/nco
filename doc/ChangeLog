@@ -1,5 +1,7 @@
 2018-09-03  Charlie Zender  <zender@uci.edu>
 
+	* Re-implement Gaussian iteration loops so all Gaussian interfaces are symmetric
+
 	* ncremap revert tilde replacement in favor of re-quoting grd_sng
 
 2018-09-02  Charlie Zender  <zender@uci.edu>
