@@ -493,7 +493,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--sgs_frc${fnt_nrm}  Sub-grid fraction variable (empty means none) (default ${fnt_bld}${sgs_frc}${fnt_nrm}) [${fnt_tlc}sgs_frc, ice_frc, lnd_frc, ocn_frc, subgrid_fraction${fnt_nrm}]"
     echo " ${fnt_bld}--sgs_msk${fnt_nrm}  Sub-grid mask variable (empty means none) (default ${fnt_bld}${sgs_msk}${fnt_nrm}) [${fnt_tlc}sgs_msk, ice_msk, lnd_msk, ocn_msk, subgrid_mask${fnt_nrm}]"
     echo " ${fnt_bld}--sgs_nrm${fnt_nrm}  Sub-grid fraction normalization (empty means none) (default ${fnt_bld}${sgs_nrm}${fnt_nrm}) [${fnt_tlc}sgs_nrm, subgrid_normalization${fnt_nrm}]"
-    echo " ${fnt_bld}--skl_fl${fnt_nrm}  Skeleton file (empty means none) (default ${fnt_bld}${skl_fl}${fnt_nrm}) [${fnt_tlc}skl_fl, skl, skeleton, skeleton_file${fnt_nrm}]"
+    echo " ${fnt_bld}--skl_fl${fnt_nrm}   Skeleton file (empty means none) (default ${fnt_bld}${skl_fl}${fnt_nrm}) [${fnt_tlc}skl_fl, skl, skeleton, skeleton_file${fnt_nrm}]"
     echo " ${fnt_bld}--std_flg${fnt_nrm}  Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, std_flg, inp_std, redirect, standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-T${fnt_nrm} ${fnt_bld}drc_tmp${fnt_nrm}  Temporary directory (for intermediate files) (default ${fnt_bld}${drc_tmp}${fnt_nrm}) [${fnt_tlc}drc_tmp, tmp_drc, dir_tmp, tmp_dir, tmp${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thread_number, thread, threads${fnt_nrm}]"

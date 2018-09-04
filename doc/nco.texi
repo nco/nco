@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.7-alpha02
+@set nco-edition 4.7.7-alpha03
 @set doc-edition 4.7.7
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 2 September 2018
+@set update-date 4 September 2018
 @set update-month September 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6559,6 +6559,21 @@ As of @acronym{NCO} @w{version 4.5.3}, released in October, 2015,
 the @samp{--rgr latlon=@var{lat_nbr},@var{lon_nbr}} switch may be
 used to simultaneously specify both latitude and longitude, e.g., 
 @samp{--rgr latlon=180,360}.
+
+@cindex @var{lat_drc}
+@cindex @samp{--rgr lat_drc=@var{lat_drc}}
+@item Latitude Direction: @var{grd_ttl}
+The @var{lat_drc} option is specifies whether latitudes monotonically
+increase or decrease in rectangular grids.
+The two possible values are
+@samp{s2n} for grids that begin with the most southerly latitude and end
+with the most northerly, and 
+@samp{n2s} for grids that begin with the most northerly latitude and end
+with the most southerly.
+By default @acronym{NCO} creates grids whose latitudes run
+south-to-north.
+Hence this option is only necessary to create a grid whose latitudes run
+north-to-south.
 
 @cindex @var{lat_nrt}
 @cindex @var{lat_sth}
@@ -22446,7 +22461,7 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]
 [-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
-[--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
+[--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]]
@@ -22839,13 +22854,18 @@ output map-file names of this format:
 @cindex @code{--grid_dest}
 @cindex @code{--dest_grid}
 @cindex @code{--destination_grid}
+@cindex infer
 @item -g @var{grd_dst} (@code{--grd_dst}, @code{--grid_dest}, @code{--dest_grid}, @code{--destination_grid})
-Specifies the destination gridfile in @acronym{SCRIP} format. 
+Specifies the destination gridfile.
+An existing gridfile may be in any format accepted by the weight generator.
 @acronym{NCO} will use @acronym{ERWG} or TempestRemap to combine
 @var{grd_dst} with a source gridfile (either inferred from
 @var{input-file}, supplied with @samp{-s @var{grd_src}}, or generated
 from @samp{-G @var{grd_sng}}) to produce remapping weights. 
-@var{grd_dst} is not modified, and may have read-only permissions.
+When @var{grd_dst} is used as input, it is not modified,
+and may have read-only permissions.
+When @var{grd_dst} is inferred from @var{input-file} or created
+from @var{grd_sng}, it will be generated in @acronym{SCRIP} format. 
 
 @html
 <a name="fl_fmt_ncremap"></a> <!-- http://nco.sf.net/nco.html#fl_fmt_ncremap -->
@@ -23666,6 +23686,27 @@ dataset is stored when that grid is not known @emph{@w{a priori}}.
 This functionality is only available for @acronym{SCRIP}-format grids. 
 
 @html
+<a name="skl_fl"></a> <!-- http://nco.sf.net/nco.html#skl_fl -->
+@end html
+@cindex @code{--skl_fl=@var{skl_fl}}
+@cindex @var{skl_fl}
+@cindex @code{--skl_fl}
+@cindex @code{--skl}
+@cindex @code{--skeleton}
+@cindex @code{--skeleton_file}
+@cindex skeleton
+@item --skl_fl=@var{skl_fl} (@code{--skl_fl}, @code{--skl}, @code{--skl_fl})
+Normally @command{ncremap} only creates a @acronym{SCRIP}-format
+gridfile named @var{grd_dst} when it receives the @code{grd_sng}
+option.
+The @samp{--skl} option instructs @command{ncremap} to also produce a  
+``skeleton'' file based on the @code{grd_sng} argument.
+A skeleton file is a bare-bones datafile on the specified grid.
+It contains the complete latitude/longitude grid and an area field.
+Skeleton files are useful for validating that the grid-creation
+instructions in @var{grd_sng} perform as expected.
+
+@html
 <a name="tmp_drc"></a> <!-- http://nco.sf.net/nco.html#tmp_drc -->
 @end html
 @cindex @code{-T @var{tmp_drc}}
@@ -23698,6 +23739,24 @@ or else it uses the current working director (@code{$PWD}).
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
 The @acronym{NCO} regridder scales well up to 8--16 threads.
+
+@html
+<a name="ugrid_fl"></a> <!-- http://nco.sf.net/nco.html#ugrid_fl -->
+@end html
+@cindex @code{--ugrid_fl=@var{ugrid_fl}}
+@cindex @var{ugrid_fl}
+@cindex @code{--ugrid_fl}
+@cindex @code{--ugrid}
+@cindex @code{--ugrid_file}
+@cindex infer
+@item --ugrid_fl=@var{ugrid_fl} (@code{--ugrid_fl}, @code{--ugrid}, @code{--ugrid_fl})
+Normally @command{ncremap} only infers a gridfile named @var{grd_dst} in 
+@acronym{SCRIP}-format.
+The @samp{ugrd_fl} option instructs @command{ncremap} to infer both a 
+@acronym{SCRIP}-format gridfile named @var{grd_dst} and a
+@acronym{UGRID}-format gridfile named @var{ugrid_fl}.
+This is an experimental feature and the @acronym{UGRID} file is
+only expected to be valid for global rectangular (logically 2D) grids. 
 
 @html
 <a name="unq_sfx"></a> <!-- http://nco.sf.net/nco.html#unq_sfx -->
