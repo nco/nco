@@ -1,3 +1,9 @@
+2018-09-04  Charlie Zender  <zender@uci.edu>
+
+	* Grid diagnosis in nco_rgr_wgt() assumes s2n for all rectangular grids
+
+	* Verified nco_grd_nfr() and nco_grd_mk() produce symmetric Gaussian interfaces for s2n and n2s
+
 2018-09-03  Charlie Zender  <zender@uci.edu>
 
 	* Re-implement Gaussian iteration loops so all Gaussian interfaces are symmetric
