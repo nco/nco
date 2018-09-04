@@ -1,6 +1,6 @@
 2018-09-04  Charlie Zender  <zender@uci.edu>
 
-	* Grid diagnosis in nco_rgr_wgt() assumes s2n for all rectangular grids
+	* Grid diagnosis in nco_rgr_wgt() now recognizes n2s for all rectangular grids
 
 	* Verified nco_grd_nfr() and nco_grd_mk() produce symmetric Gaussian interfaces for s2n and n2s
 

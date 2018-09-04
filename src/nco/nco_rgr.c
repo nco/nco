@@ -752,7 +752,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool flg_dgn_area_out=False; /* [flg] Diagnose area_out from grid boundaries */
   nco_bool flg_bnd_1D_usable=False; /* [flg] Usable 1D cell vertices exist */
-  nco_bool flg_s2n=True; /* I [enm] Latitude grid-direction is South-to-North */
   nco_bool flg_stg=rgr->flg_stg; /* [flg] Write staggered grid with FV output */
   
   nco_grd_2D_typ_enm nco_grd_2D_typ=nco_grd_2D_nil; /* [enm] Two-dimensional grid-type enum */
@@ -1331,7 +1330,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       for(idx=0L;idx<lon_nbr_out*mpf.dst_grid_corners;idx++) lon_crn_out[idx]*=rdn2dgr;
       for(idx=0L;idx<lat_nbr_out*mpf.dst_grid_corners;idx++) lat_crn_out[idx]*=rdn2dgr;
     } /* !rdn */
-    if(lat_ctr_out[1L] < lat_ctr_out[0L]) flg_s2n=False;
   } /* !flg_grd_out_rct */
     
   if(flg_grd_out_crv){
@@ -1387,6 +1385,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(flg_grd_out_rct){
     double lon_spn; /* [dgr] Longitude span */
     double lat_spn; /* [dgr] Latitude span */
+    nco_bool flg_s2n=True; /* I [enm] Latitude grid-direction is South-to-North */
+    if(lat_ctr_out[1L] < lat_ctr_out[0L]) flg_s2n=False;
 
     /* Obtain 1-D rectangular interfaces from unrolled 1-D vertice arrays */
     for(idx=0L;idx<lon_nbr_out;idx++) lon_ntf_out[idx]=lon_crn_out[mpf.dst_grid_corners*idx];
@@ -1394,7 +1394,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     lon_spn=lon_ntf_out[lon_nbr_out]-lon_ntf_out[0L];
     for(idx=0L;idx<lat_nbr_out;idx++) lat_ntf_out[idx]=lat_crn_out[mpf.dst_grid_corners*idx];
     lat_ntf_out[lat_nbr_out]=lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-1L];
-    lat_spn=lat_ntf_out[lat_nbr_out]-lat_ntf_out[0L];
+    lat_spn=fabs(lat_ntf_out[lat_nbr_out]-lat_ntf_out[0L]);
 
     /* Place 1-D rectangular interfaces into 2-D coordinate boundaries */
     for(idx=0L;idx<lon_nbr_out;idx++){
@@ -1415,8 +1415,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     nco_grd_xtn_enm nco_grd_xtn; /* [enm] Extent of grid */
     if((float)lon_spn == 360.0f && (float)lat_spn == 180.0f) nco_grd_xtn=nco_grd_xtn_glb; else nco_grd_xtn=nco_grd_xtn_rgn;
     /* Diagnose type of latitude output grid by testing second latitude center against formulae */
-    const double lat_ctr_tst_eqa=lat_ntf_out[0L]+lat_spn*1.5/lat_nbr_out;
-    const double lat_ctr_tst_fv=lat_ntf_out[0L]+lat_spn/(lat_nbr_out-1L);
+    double lat_ctr_tst_eqa;
+    double lat_ctr_tst_fv;
+    if(flg_s2n) lat_ctr_tst_eqa=lat_ntf_out[0L]+lat_spn*1.5/lat_nbr_out; else lat_ctr_tst_eqa=lat_ntf_out[0L]-lat_spn*1.5/lat_nbr_out;
+    if(flg_s2n) lat_ctr_tst_fv=lat_ntf_out[0L]+lat_spn/(lat_nbr_out-1L); else lat_ctr_tst_fv=lat_ntf_out[0L]-lat_spn/(lat_nbr_out-1L);
     double lat_ctr_tst_gss;
     /* In diagnosing grids, agreement to slightly worse than single-precision is "good enough for government work"
        Hence some comparisons cast from double to float before comparison
@@ -6527,13 +6529,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     int tpl_id=NC_MIN_INT; /* [id] ID of template field */
 
     /* Obtain fields that must be present in input file */
-    dmn_srt[0]=0L;
-    dmn_cnt[0]=lat_nbr;
+    dmn_srt[0L]=0L;
+    dmn_cnt[0L]=lat_nbr;
     rcd=nco_get_vara(in_id,lat_ctr_id,dmn_srt,dmn_cnt,lat_ctr,crd_typ);
-    dmn_srt[0]=0L;
-    dmn_cnt[0]=lon_nbr;
+    dmn_srt[0L]=0L;
+    dmn_cnt[0L]=lon_nbr;
     rcd=nco_get_vara(in_id,lon_ctr_id,dmn_srt,dmn_cnt,lon_ctr,crd_typ);
-    if(lat_ctr[1] < lat_ctr[0]) flg_s2n=False;
+    if(lat_ctr[1L] < lat_ctr[0L]) flg_s2n=False;
 
     /* Use fields that may be present in input file to override, if necessary, default lon/lat order
        area and mask are both suitable templates for determining input lat/lon ordering
@@ -7157,7 +7159,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        20150526: T42 grid from SCRIP and related maps are only accurate to ~eight digits
        20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1L]=-89.775000000000006
        20170521: T62 grid from NCEP-NCAR Reanalysis 1 worse than single precision, has yc_[192]=-86.6531 not expected exact value lat_ctr[1L]=-86.6532 */
-    if(nco_dbg_lvl_get() >= nco_dbg_std && lat_ctr[0L] > lat_ctr[lat_nbr-1L]) (void)fprintf(stderr,"%s: INFO %s reports that grid inferral has detected a 2D grid that runs from north-to-south, not south-to-north. Support for 2D N-to-S grids was added in NCO 4.7.7 (September, 2018) and may be imperfect.\nHINT: If present command fails, re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl && !flg_s2n) (void)fprintf(stderr,"%s: INFO %s reports that grid inferral has detected a 2D grid that runs from north-to-south, not south-to-north. Support for creating/inferring 2D N-to-S grids was added in NCO 4.7.7 (September, 2018) and may be imperfect.\nHINT: If present command fails, re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm);
     if((float)lat_ctr[1L] == (float)lat_ctr_tst_eqa) lat_typ=nco_grd_lat_eqa;
     if((float)lat_ctr[1L] == (float)lat_ctr_tst_fv) lat_typ=nco_grd_lat_fv;
     double *lat_sin=NULL_CEWI; // [frc] Sine of Gaussian latitudes double precision
