@@ -4815,7 +4815,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       while(fabs(fofx_at_x0) > eps_rlt_cnv){
 	/* Newton-Raphson iteration:
 	   Let x=lat_ntf[lat_idx], y0=lat_ntf[lat_idx-1L], gw = Gaussian weight (exact solution)
-	   f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0 
+	   f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0
 	   dfdx(x)=dgr2rdn*(dgr2rdn*x)
 	   x_better=x0-f(x0)/f'(x0) */
 	dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
@@ -4905,10 +4905,12 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   } /* !lat_typ */
 
   /* Fuzzy test of latitude weight normalization
-     20180903 Tolerance threshold of eps_rlt_ma=1.0e-14 is too strict for Gaussian grids somewhere lat_nbr >~ 150
+     20180903 Tolerance threshold of eps_rlt_max=1.0e-14 is too strict for Gaussian grids somewhere lat_nbr >~ 150
+     20180904 Tolerance threshold of eps_rlt_max=1.0e-12 allows Gaussian grids like ECMWF O1280
      Newton-Raphson method of interface determination may need improvement to fix that
-     Tolerance threshold of 1.0e-14 works for all relevant Uniform and Cap grids */
-  const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance */
+     Tolerance threshold of 1.0e-14 works for all relevant E3SM Uniform and Cap grids */
+  //const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance: Used 1.0e-14 until 20180904 */
+  const double eps_rlt_max=1.0e-12; /* [frc] Round-off error tolerance: Used 1.0e-12 since 20180904 */
   double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
   lat_wgt_ttl=0.0;
   for(idx=0L;idx<lat_nbr;idx++) lat_wgt_ttl+=lat_wgt[idx];
@@ -7317,7 +7319,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     } /* endif dbg */
     
     /* Fuzzy test of latitude weight normalization */
-    const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance */
+    //const double eps_rlt_max=1.0e-14; /* [frc] Round-off error tolerance: Used 1.0e-14 until 20180904 */
+    const double eps_rlt_max=1.0e-12; /* [frc] Round-off error tolerance: Used 1.0e-12 since 20180904 */
     double lat_wgt_ttl_xpc; /* [frc] Expected sum of latitude weights */
     lat_wgt_ttl=0.0;
     for(idx=0;idx<lat_nbr;idx++) lat_wgt_ttl+=lat_wgt[idx];

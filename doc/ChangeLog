@@ -1,5 +1,7 @@
 2018-09-04  Charlie Zender  <zender@uci.edu>
 
+	* Increase round-off error tolerance from 1.0e-14 to 1.0e-12 to	accomodate highrez Gaussian grids like ECMWF O1280
+
 	* NCO 4.7.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha03: Sober September';git push
 	git tag -a 4.7.7-alpha03 -m 's2n/n2s, gss ntf symmetric, obviate ttl tilde';git push --tags
