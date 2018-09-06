@@ -1,3 +1,7 @@
+2018-09-05  Charlie Zender  <zender@uci.edu>
+
+	* Increase debugging threshold to print info like prm_nbr for netCDF dynamic compression filters
+
 2018-09-04  Charlie Zender  <zender@uci.edu>
 
 	* Increase round-off error tolerance from 1.0e-14 to 1.0e-12 to	accomodate highrez Gaussian grids like ECMWF O1280

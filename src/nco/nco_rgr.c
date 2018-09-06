@@ -396,13 +396,16 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"grd_ttl") || !strcmp(rgr_lst[rgr_var_idx].key,"ttl")){
       if(rgr->grd_ttl) rgr->grd_ttl=(char *)nco_free(rgr->grd_ttl);
       rgr->grd_ttl=(char *)strdup(rgr_lst[rgr_var_idx].val);
-      /* 20180828 Replace unquoted tildes with spaces (like LaTeX, NCL) so ncremap users can put tildes in place of spaces in ttl */
-      size_t ttl_lng=strlen(rgr->grd_ttl);
-      for(size_t ttl_idx=0L;ttl_idx<ttl_lng;ttl_idx++)
-	if(rgr->grd_ttl[ttl_idx] == '~'){
-	  if(ttl_idx == 0L) rgr->grd_ttl[ttl_idx]=' '; // Always convert tilde to space if first character
-	  else if(rgr->grd_ttl[ttl_idx-1L] != '\\') rgr->grd_ttl[ttl_idx]=' '; // Convert tilde in other locations unless backslash-quoted
-	} /* !tilde */
+      /* 20180828 Replace unquoted tildes with spaces (like LaTeX, NCL) so ncremap users can put tildes in place of spaces in ttl
+	 20180905 Reverted this since quoting command in ncremap is superior solution */
+      if(False){
+	size_t ttl_lng=strlen(rgr->grd_ttl);
+	for(size_t ttl_idx=0L;ttl_idx<ttl_lng;ttl_idx++)
+	  if(rgr->grd_ttl[ttl_idx] == '~'){
+	    if(ttl_idx == 0L) rgr->grd_ttl[ttl_idx]=' '; // Always convert tilde to space if first character
+	    else if(rgr->grd_ttl[ttl_idx-1L] != '\\') rgr->grd_ttl[ttl_idx]=' '; // Convert tilde in other locations unless backslash-quoted
+	  } /* !tilde */
+      } /* !0 */
       continue;
     } /* !grd_ttl */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"idx_dbg")){
@@ -4709,7 +4712,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
      --lon_nbr=10 --lon_wst=-5.0 --lon_est=5.0 */
   
   /* Were east/west longitude bounds set explicitly or implicitly?
-     NB: This is redundant since it was done in nco_rgr_ini(), but better safe than sorry */
+     NB: This is redundant since it was done in nco_rgr_ini(), yet better safe than sorry */
   if(lon_wst != NC_MAX_DOUBLE || lon_est != NC_MAX_DOUBLE) lon_typ=rgr->lon_typ=nco_grd_lon_bb;
   
   if(lon_wst == NC_MAX_DOUBLE){

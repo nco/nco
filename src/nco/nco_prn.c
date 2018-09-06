@@ -257,13 +257,13 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  if(!XML){
 	    if(srg_typ == NC_CHUNKED){
 	      /* Support dynamic compression filters as of netCDF 4.6.0 (January, 2018)
-		 Unfortunately, I don't have an actual file or dynamic filter library for testing:
+		 Unfortunately, I do not yet have an actual file or dynamic filter library for testing:
 		 https://www.unidata.ucar.edu/software/netcdf/docs/filters_8md_source.html */
 	      unsigned int flt_id;
 	      size_t prm_nbr;
 	      //unsigned int *prm_lst=NULL;
 	      rcd=nco_inq_var_filter(grp_id,var_id,&flt_id,&prm_nbr,NULL);
-	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
+	      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
 	      if(flt_id){
 		/* Print _Filter for filtered variables */
 		idx=att_nbr_ttl++;
