@@ -49,6 +49,8 @@ nco_pck_map_sng_get /* [fnc] Convert packing map enum to string */
     return "flt_chr";
   case nco_pck_map_flt_byt:
     return "flt_byt";
+  case nco_pck_map_dbl_flt:
+    return "dbl_flt";
   default: nco_dfl_case_pck_map_err(); break;
   } /* end switch */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
@@ -171,6 +173,8 @@ nco_pck_map_get /* [fnc] Convert user-specified packing map to key */
   if(!strcmp(nco_pck_map_sng,"pck_map_flt_chr")) return nco_pck_map_flt_chr;
   if(!strcmp(nco_pck_map_sng,"flt_byt")) return nco_pck_map_flt_byt;
   if(!strcmp(nco_pck_map_sng,"pck_map_flt_byt")) return nco_pck_map_flt_byt;
+  if(!strcmp(nco_pck_map_sng,"dbl_flt")) return nco_pck_map_dbl_flt;
+  if(!strcmp(nco_pck_map_sng,"pck_map_dbl_flt")) return nco_pck_map_dbl_flt;
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified packing map %s\n",nco_prg_nm_get(),fnc_nm,nco_pck_map_sng);
   nco_exit(EXIT_FAILURE);
@@ -361,6 +365,25 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     case NC_DOUBLE: 
     case NC_FLOAT: 
       nc_typ_pck_out_tmp=NC_BYTE; nco_pck_plc_alw=True; break;
+    case NC_INT64: 
+    case NC_UINT64: 
+    case NC_INT: 
+    case NC_UINT: 
+    case NC_SHORT: 
+    case NC_USHORT: 
+    case NC_BYTE: 
+    case NC_UBYTE: 
+    case NC_CHAR: 
+    case NC_STRING: 
+      nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end nc_type switch */ 
+    break;
+  case nco_pck_map_dbl_flt:
+    switch(nc_typ_in){ 
+    case NC_DOUBLE: 
+      nc_typ_pck_out_tmp=NC_FLOAT; nco_pck_plc_alw=True; break;
+    case NC_FLOAT: 
     case NC_INT64: 
     case NC_UINT64: 
     case NC_INT: 
@@ -642,8 +665,7 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
     aed_lst_add_fst->id=aed_lst_scl_fct->id=var_out->id;
     aed_lst_add_fst->sz=aed_lst_scl_fct->sz=1L;
     aed_lst_add_fst->type=aed_lst_scl_fct->type=var_out->typ_upk;
-    /* Packing generates at least one of scale_factor or add_offset,
-       but not necessarily both.
+    /* Packing generates at least one of scale_factor or add_offset, though not necessarily both.
        Delete pre-defined attributes for those which were not created */
     if(var_out->has_add_fst) aed_lst_add_fst->mode=aed_overwrite; else aed_lst_add_fst->mode=aed_delete;
     if(var_out->has_scl_fct) aed_lst_scl_fct->mode=aed_overwrite; else aed_lst_scl_fct->mode=aed_delete;
@@ -655,53 +677,10 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
 } /* end nco_pck_val() */
 
 var_sct * /* O [sct] Packed variable */
-nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
-(const int out_id, /* I [id] netCDF output file ID */
- var_sct *var, /* I/O [sct] Variable to be packed */
- const int nco_pck_plc) /* [enm] Packing operation type */
-{
-  /* Purpose: Pack variable in memory and write packing attributes to disk
-     NB: Routine is not complete, debugged, or currently used 
-     ncpdq breaks up writing packed variables into multiple tasks, i.e.,
-     ncpdq separates variable value writes from packing attribute value writes.
-     This routine is intended to write a packed variable in one routine */
-  nco_bool PCK_VAR_WITH_NEW_PCK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
-  
-  switch(nco_pck_plc){
-  case nco_pck_plc_all_xst_att:
-    break;
-  case nco_pck_plc_xst_new_att:
-    break;
-  case nco_pck_plc_all_new_att:
-    break;
-  case nco_pck_plc_upk:
-    break;
-  case nco_pck_plc_nil:
-  default: nco_dfl_case_pck_plc_err(); break;
-  } /* end switch */
-
-  /* Pack variable */
-  if(var->xrf->pck_dsk && !var->xrf->pck_ram) var=nco_var_pck(var,var->typ_pck,&PCK_VAR_WITH_NEW_PCK_ATT);
-
-  /* Write/overwrite scale_factor and add_offset attributes */
-  if(var->pck_ram){ /* [flg] Variable is packed in memory */
-    if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
-      (void)nco_put_att(out_id,var->id,"scale_factor",var->typ_upk,1,var->scl_fct.vp);
-    } /* endif has_scl_fct */
-    if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
-      (void)nco_put_att(out_id,var->id,"add_offset",var->typ_upk,1,var->add_fst.vp);
-    } /* endif has_add_fst */
-  } /* endif pck_ram */
-  
-  return var;
-  
-} /* end nco_put_var_pck() */
-
-var_sct * /* O [sct] Packed variable */
 nco_var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  const nc_type nc_typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
- nco_bool *PCK_VAR_WITH_NEW_PCK_ATT) /* O [flg] Routine generated new scale_factor/add_offset -  if true in [I] then pre-existing scale_factor/add_offset is used */
+ nco_bool *PCK_VAR_WITH_NEW_PCK_ATT) /* I/O [flg] Routine generated new scale_factor/add_offset - if true in [I] then pre-existing scale_factor/add_offset is used */
 {
   /* Purpose: Pack variable 
      Routine is inverse of nco_var_upk(): nco_var_pck[nco_var_upk(var)]=var 
@@ -746,7 +725,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
-  if(*PCK_VAR_WITH_NEW_PCK_ATT == False  ){ /* Keep in own scope for eventual functionalization of core packing algorithm */
+  if(*PCK_VAR_WITH_NEW_PCK_ATT == False){ /* Keep in own scope for eventual functionalization of core packing algorithm */
     /* Compute packing parameters to apply to var
 
        Linear packing in a nutshell:
@@ -1253,3 +1232,46 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
   var_tmp->val.vp=NULL;
   if(var_tmp) var_tmp=nco_var_free(var_tmp);
 } /* end nco_var_upk_swp() */
+
+var_sct * /* O [sct] Packed variable */
+nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
+(const int out_id, /* I [id] netCDF output file ID */
+ var_sct *var, /* I/O [sct] Variable to be packed */
+ const int nco_pck_plc) /* [enm] Packing operation type */
+{
+  /* Purpose: Pack variable in memory and write packing attributes to disk
+     NB: Routine is not complete, debugged, or currently used 
+     ncpdq breaks up writing packed variables into multiple tasks, i.e.,
+     ncpdq separates variable value writes from packing attribute value writes.
+     This routine is intended to write a packed variable in one routine */
+  nco_bool PCK_VAR_WITH_NEW_PCK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
+  
+  switch(nco_pck_plc){
+  case nco_pck_plc_all_xst_att:
+    break;
+  case nco_pck_plc_xst_new_att:
+    break;
+  case nco_pck_plc_all_new_att:
+    break;
+  case nco_pck_plc_upk:
+    break;
+  case nco_pck_plc_nil:
+  default: nco_dfl_case_pck_plc_err(); break;
+  } /* end switch */
+
+  /* Pack variable */
+  if(var->xrf->pck_dsk && !var->xrf->pck_ram) var=nco_var_pck(var,var->typ_pck,&PCK_VAR_WITH_NEW_PCK_ATT);
+
+  /* Write/overwrite scale_factor and add_offset attributes */
+  if(var->pck_ram){ /* [flg] Variable is packed in memory */
+    if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
+      (void)nco_put_att(out_id,var->id,"scale_factor",var->typ_upk,1,var->scl_fct.vp);
+    } /* endif has_scl_fct */
+    if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
+      (void)nco_put_att(out_id,var->id,"add_offset",var->typ_upk,1,var->add_fst.vp);
+    } /* endif has_add_fst */
+  } /* endif pck_ram */
+  
+  return var;
+  
+} /* end nco_put_var_pck() */

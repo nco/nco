@@ -1668,7 +1668,7 @@ else # !map_usr_flg
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Destination grid will be inferred from data-file\n"
 	fi # !vrb_lvl
-	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_dst=${hnt_dst_fl} ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} --rgr scrip=${grd_dst} ${dst_fl} ${tmp_out_fl}"
+	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_dst=${hnt_dst_fl} ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=${grd_dst} ${dst_fl} ${tmp_out_fl}"
     else # !dst_usr_flg
 	if [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -1827,7 +1827,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "RRG: Infer source grid from subsetted, annotated, regional coordinate file...\n"
     fi # !vrb_lvl
-    cmd_nfr[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${rgn_fl} ${tmp_out_fl}"
+    cmd_nfr[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_var_rgr} --rgr scrip=${grd_src} ${rgn_fl} ${tmp_out_fl}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_nfr[${fl_idx}]}
     fi # !dbg

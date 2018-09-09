@@ -759,7 +759,7 @@ main(int argc,char **argv)
       } /* endif packing */
     } /* end loop over var_prc */
 
-    /* Transfer variable type to table. NB: Use processed variables set with new type. MUST be done before definition */
+    /* Transfer variable type to table. NB: Use processed variables set with new type. MUST be done before definition. */
     (void)nco_var_typ_trv(nbr_var_prc,var_prc_out,trv_tbl);    
   } /* nco_pck_plc == nco_pck_plc_nil */
 

@@ -569,15 +569,18 @@ Irvine, California@*
 @ignore
 The @acronym{DOE} Energy Exascale Earth System Model (@acronym{E3SM})
 project (formerly @acronym{ACME}) has generously supported @acronym{NCO}
-development in support of high-performance climate modeling research.  
-This allowed Henry Butowsky to re-join our efforts.
+development.
+Tying our support to high-performance climate model development has
+accelerated feature introduction and bolstered @acronym{NCO}'s
+robustness. 
+It has also allowed Henry Butowsky to re-join our efforts.
 Without him, @command{ncap2} development would cease, new @acronym{NCO}
-features would slacken, and our user-support would greatly suffer.
+features would slacken, and user-support would suffer.
 
 @sp 1
 @noindent
 Charlie Zender@*
-August, 2017@*
+August, 2018@*
 Laguna Beach, California@*
 @end ignore
 
@@ -23752,11 +23755,11 @@ The @acronym{NCO} regridder scales well up to 8--16 threads.
 @item --ugrid_fl=@var{ugrid_fl} (@code{--ugrid_fl}, @code{--ugrid}, @code{--ugrid_fl})
 Normally @command{ncremap} only infers a gridfile named @var{grd_dst} in 
 @acronym{SCRIP}-format.
-The @samp{ugrd_fl} option instructs @command{ncremap} to infer both a 
+The @samp{ugrid_fl} option instructs @command{ncremap} to infer both a 
 @acronym{SCRIP}-format gridfile named @var{grd_dst} and a
 @acronym{UGRID}-format gridfile named @var{ugrid_fl}.
 This is an experimental feature and the @acronym{UGRID} file is
-only expected to be valid for global rectangular (logically 2D) grids. 
+only expected to be valid for global rectangular grids. 
 
 @html
 <a name="unq_sfx"></a> <!-- http://nco.sf.net/nco.html#unq_sfx -->

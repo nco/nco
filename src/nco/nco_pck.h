@@ -60,8 +60,10 @@ enum nco_pck_map{ /* [enm] Packing conversion map */
 			  [NC_DOUBLE,NC_FLOAT]->NC_SHORT, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->unaltered */
   nco_pck_map_flt_chr, /* 6 [enm] Pack floating precision types to NC_CHAR, pack nothing else
 			  [NC_DOUBLE,NC_FLOAT]->NC_CHAR, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->unaltered */
-  nco_pck_map_flt_byt /* 7 [enm] Pack floating precision types to NC_BYTE, pack nothing else
+  nco_pck_map_flt_byt, /* 7 [enm] Pack floating precision types to NC_BYTE, pack nothing else
 			  [NC_DOUBLE,NC_FLOAT]->NC_BYTE, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->unaltered */
+  nco_pck_map_dbl_flt  /* 8 [enm] Convert (do not pack) floating precision type NC_DOUBLE to NC_FLOAT, pack nothing
+			  [NC_DOUBLE]->NC_FLOAT, [NC_FLOAT,NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->unaltered */
 }; /* end nco_pck_map enum */
 
 #ifdef __cplusplus
