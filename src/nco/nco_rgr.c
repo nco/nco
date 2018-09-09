@@ -7179,7 +7179,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
       if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr[1] = %g, lat_ctr_tst_gss = %g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1L],lat_ctr_tst_gss);
       const double eps_rlt_cnv_gss=1.0e-7; // Convergence criterion (1.0e-7 fails for NCEP NCAR Reanalysis 1!)
-      if(fabs(1.0-fabs(lat_ctr[1])/lat_ctr_tst_gss) < eps_rlt_cnv_gss) lat_typ=nco_grd_lat_gss;
+      if(fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss)) < eps_rlt_cnv_gss) lat_typ=nco_grd_lat_gss;
     } /* !Gaussian */
     if(lat_typ == nco_grd_lat_nil){
       /* If still of unknown type, this 2D grid may be weird
