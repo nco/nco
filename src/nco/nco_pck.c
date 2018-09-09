@@ -533,8 +533,13 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
     } /* endelse */
     break;
   case nco_pck_plc_all_new_att:
+    /* 20180909: Never re-pack when simply trying to convert double->float */
     if(var_in->pck_ram){
-      goto var_pck_try_to_rpk;
+      if(nco_pck_map == nco_pck_map_dbl_flt){
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s leaving variable %s of type %s as packed\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck));
+      }else{
+	goto var_pck_try_to_rpk;
+      } /* !dbl_flt */
     }else{
       goto var_upk_try_to_pck;
     } /* endif */
@@ -644,7 +649,12 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   /* Variable is not yet packed---try to pack it */
   if(nco_pck_plc_typ_get(nco_pck_map,var_out->type,(nc_type *)NULL)){
     if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stdout,"%s: INFO %s packing variable %s values from %s to %s\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
-    var_out=nco_var_pck(var_out,typ_out,&PCK_VAR_WITH_NEW_PCK_ATT);
+    /* 20180909: Implement dbl_flt separately */
+    if(nco_pck_map == nco_pck_map_dbl_flt){
+      var_out=nco_var_cnf_typ((nc_type)NC_FLOAT,var_out);
+    }else{
+      var_out=nco_var_pck(var_out,typ_out,&PCK_VAR_WITH_NEW_PCK_ATT);
+    } /* !dbl_flt */
   }else{
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s packing policy %s with packing map %s does not allow packing variable %s of type %s, skipping...\n",nco_prg_nm_get(),fnc_nm,nco_pck_plc_sng_get(nco_pck_plc),nco_pck_map_sng_get(nco_pck_map),var_in->nm,nco_typ_sng(var_out->typ_upk));
   } /* !nco_pck_plc_alw */ 

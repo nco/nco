@@ -132,7 +132,7 @@ nco_var_lst_mrg /* [fnc] Merge two variable lists into same order */
  int * const var_nbr_2); /* I/O [nbr] Number of variables in list 2 */
 
 void
-nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into output lists (ncbo only) */
+nco_var_lst_dvd_ncbo                         /* [fnc] Divide input lists into output lists (ncbo only) */
 (var_sct * const var,                        /* I [sct] Variable list (input file) */
  var_sct * const var_out,                    /* I [sct] Variable list (output file) */
  const nco_bool CNV_CCM_CCSM_CF,             /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
@@ -148,8 +148,6 @@ nco_var_is_fix                               /* [fnc] Variable should be treated
 (const char * const var_nm,                  /* I [sng] Variable name */
  const int nco_prg_id,                       /* I [enm] Program key */
  const int nco_pck_plc);                     /* I [enm] Packing policy */
-
-
 
 #ifdef __cplusplus
 } /* end extern "C" */

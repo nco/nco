@@ -910,9 +910,11 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     if((var_typ == NC_CHAR) || (var_typ == NC_STRING)) var_typ_fnk=True; else var_typ_fnk=False;
 
     /* Many operators should not process coordinate variables, or auxiliary coordinate variables (lat, lon, time, latixy, longxy, ...) and bounds (lat_bnds, lon_bnds, ...)
-       20130112: As of today set is_crd_var true in nco_var_fll() when either of these conditions is true so no longer need to specify these conditions separately. 
+       20130112: As of today set is_crd_var true in nco_var_fll() when any of these conditions are true so no longer need to specify these conditions separately. 
        20150519: Add nco_is_spc_in_clm_att() to this list
+       20160420: Add nco_is_spc_in_grd_att() to this list
        Keep this old code here as a reminder that is_crd_var also incorporates these conditions
+       is_spc_in_grd_att=nco_is_spc_in_grd_att(var[idx]->nc_id,var[idx]->id);
        is_spc_in_clm_att=nco_is_spc_in_clm_att(var[idx]->nc_id,var[idx]->id);
        is_spc_in_crd_att=nco_is_spc_in_crd_att(var[idx]->nc_id,var[idx]->id);
        is_spc_in_bnd_att=nco_is_spc_in_bnd_att(var[idx]->nc_id,var[idx]->id); */
@@ -965,9 +967,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	   Variables are processed for packing/unpacking operator unless... */
         if(
 	   /* ...packing coordinate variables has few benefits... */
-	   (var[idx]->is_crd_var && !(nco_pck_plc == nco_pck_plc_upk) ) ||
+	   (var[idx]->is_crd_var && (nco_pck_plc != nco_pck_plc_upk)) ||
 	   /* unless if it's NOT a record variable and the policy is unpack 
-	      20120711. nco: ncpdq unpack coordinate variables */     
+	      20120711. ncpdq OK to unpack coordinate variables */     
 	   /* ...unpacking requested for unpacked variable... */
 	   (nco_pck_plc == nco_pck_plc_upk && !var[idx]->pck_ram) ||
 	   /* ...or packing unpacked requested and variable is already packed... */
@@ -982,7 +984,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	     nco_pck_plc == nco_pck_plc_xst_new_att) &&
 	    /* ...yet map does not allow (re-)packing... */
 	    !nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)
-	    )
+	    ) ||
+	   /* ...or double->float conversion requested and input is not double, or input is coordinate... */ 
+	   (nco_pck_map == nco_pck_map_dbl_flt && ((var[idx]->type != NC_DOUBLE) || var[idx]->is_crd_var))
 	   )
           var_op_typ[idx]=fix_typ;
       }else{ /* endif packing operation requested */
@@ -1092,10 +1096,10 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   *var_prc_ptr=(var_sct **)nco_realloc(var_prc,*nbr_var_prc*sizeof(var_sct *));
   *var_prc_out_ptr=(var_sct **)nco_realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *));
 
-} /* end nco_var_lst_dvd */
+} /* end nco_var_lst_dvd() */
 
 void
-nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into output lists (ncbo only)  */
+nco_var_lst_dvd_ncbo                          /* [fnc] Divide input lists into output lists (ncbo only)  */
 (var_sct * const var,                        /* I [sct] Variable list (input file) */
  var_sct * const var_out,                    /* I [sct] Variable list (output file) */
  const nco_bool CNV_CCM_CCSM_CF,             /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
@@ -1181,7 +1185,7 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
         /* ...packing coordinate variables has few benefits... */
         (var->is_crd_var && !(nco_pck_plc == nco_pck_plc_upk) ) ||
         /* unless if it's NOT a record variable and the policy is unpack 
-        20120711. nco: ncpdq unpack coordinate variables */     
+        20120711. nco: ncpdq OK to unpack coordinate variables */     
         /* ...unpacking requested for unpacked variable... */
         (nco_pck_plc == nco_pck_plc_upk && !var->pck_ram) ||
         /* ...or packing unpacked requested and variable is already packed... */
@@ -1190,14 +1194,16 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
         (nco_pck_plc == nco_pck_plc_xst_new_att && !var->pck_ram) ||
         /* ...or... */
         (
-        /* ...any type of packing requested... */
-        (nco_pck_plc == nco_pck_plc_all_new_att || 
-        nco_pck_plc == nco_pck_plc_all_xst_att || 
-        nco_pck_plc == nco_pck_plc_xst_new_att) &&
-        /* ...yet map does not allow (re-)packing... */
-        !nco_pck_plc_typ_get(nco_pck_map,var->typ_upk,(nc_type *)NULL)
-        )
-        )
+	 /* ...any type of packing requested... */
+	 (nco_pck_plc == nco_pck_plc_all_new_att || 
+	  nco_pck_plc == nco_pck_plc_all_xst_att || 
+	  nco_pck_plc == nco_pck_plc_xst_new_att) &&
+	 /* ...yet map does not allow (re-)packing... */
+	 !nco_pck_plc_typ_get(nco_pck_map,var->typ_upk,(nc_type *)NULL)
+	 ) ||
+	/* ...or double->float conversion requested and input is not double, or input is coordinate... */ 
+	(nco_pck_map == nco_pck_map_dbl_flt && ((var->type != NC_DOUBLE) || var->is_crd_var))
+	 )
         var_op_typ=fix_typ;
     }else{ /* endif packing operation requested */
       /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
@@ -1237,18 +1243,20 @@ nco_var_lst_dvd_trv                          /* [fnc] Divide input lists into ou
     } /* end if */
   } /* end if prc */
 
+  if(nco_prg_id == ncpdq && nco_dbg_lvl_get() >= nco_dbg_std && !strcmp(var_nm,"lat")) (void)fprintf(stderr,"%s: DEBUG Variable %s is of type %s and %s be processed\n",nco_prg_nm_get(),var->nm,nco_typ_sng(var->type),(var_op_typ == fix_typ) ? "will not" : "will");
+
   if(var_op_typ == fix_typ){
     var->is_fix_var=True;
     var_out->is_fix_var=True;
   }else{
     var_out->is_fix_var=False;
     var->is_fix_var=False;
-  } 
+  } /* !fix_typ */
 
   /* Export */
   *prc=var_op_typ;
 
-} /* end nco_var_lst_dvd_trv */
+} /* end nco_var_lst_dvd_ncbo() */
 
 nco_bool
 nco_var_is_fix                               /* [fnc] Variable should be treated as a fixed variable */

@@ -1,5 +1,7 @@
 2018-09-09  Charlie Zender  <zender@uci.edu>
 
+	* Finish ncpdq implementation of nco_pck_map_typ == nco_pck_map_dbl_flt
+
 	* Fix relative convergence test for Gaussian grids in nco_grd_nfr()
 
 	* Add stubs for ncpdq dbl_flt conversion

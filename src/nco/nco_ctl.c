@@ -649,16 +649,15 @@ nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmeti
      Concatenators (ncrcat, ncecat) are not arithmetic because they just glue data
      Permutor (ncpdq) _is not_ arithmetic because it only re-arranges values
      Packer (ncpdq) _is_ arithmetic because it uses floating point arithmetic to re-represent values
-     nco_pck_plc flag is required as input and used only to distinguish between ncpdq packing and permuting.
+     nco_pck_plc flag is required as input and used only to distinguish between ncpdq packing and permuting
      Attributors (ncrename, ncatted) are not arithmetic because they change metadata, not data
      Averager ncwa is clearly not size or rank-preserving
-     Averager ncra preserves numeric rank though not record-dimension size and so is so is not size and rank-preserving.
-     One use of nco_is_sz_rnk_prv_rth_opr() is to tell which operators should
-     not process multidimensional coordinate values.
+     Averager ncra preserves numeric rank though not record-dimension size and so is so is not size and rank-preserving
+     One use of nco_is_sz_rnk_prv_rth_opr() is to tell which operators should not process multidimensional coordinate values
      For example, we want ncwa to act on coordinates that are reduced 
-     However, we do not want ncfe, ncbo, or ncflint, for example, to load and process single or multi-dimensional coordinate variables.
-     Nor do we want ncpdq to pack variables like gaussian weights, or area since that causes a significant loss of arithmetic precision when those are used as weights in re-inflated files.
-     Such variables to these operators are best treated as "fixed" variables to be copied directly from the input to the output file. */ 
+     However, we do not want ncfe, ncbo, or ncflint, for example, to load and process single or multi-dimensional coordinate variables
+     Nor do we want ncpdq to pack variables like gaussian weights, or area since that causes a significant loss of arithmetic precision when those are used as weights in re-inflated files
+     Such variables to these operators are best treated as "fixed" variables to be copied directly from the input to the output file */ 
   switch(nco_prg_id){
   case ncap: 
   case ncbo:
@@ -838,7 +837,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version
      Always include terminal \n so mnemonic does not dangle */
-  return "Mnemonic: Sober September\n";
+  return "Mnemonic: Mailbox\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 

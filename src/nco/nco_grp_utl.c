@@ -3773,8 +3773,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   var_prc_out= (RNK_1_GTR) ? nco_var_dpl(var_prc_1) : nco_var_dpl(var_prc_2);
 
   /* Get processing type */
-  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
-  (void)nco_var_lst_dvd_trv(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
+  (void)nco_var_lst_dvd_ncbo(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+  (void)nco_var_lst_dvd_ncbo(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
 
   /* Conform type and rank for processed variables */
   if(prc_typ_1 == prc_typ && prc_typ_2 == prc_typ){
@@ -4008,7 +4008,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
   var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1,trv_tbl_1);     
 
   var_prc_out=nco_var_dpl(var_prc_1);
-  (void)nco_var_lst_dvd_trv(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+  (void)nco_var_lst_dvd_ncbo(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
 
   if(prc_typ_1 != fix_typ){
     var_prc_1=(var_sct *)nco_var_free(var_prc_1);
