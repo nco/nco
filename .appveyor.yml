@@ -1,0 +1,57 @@
+environment:
+  CONDA_INSTALL_LOCN: C:\\Miniconda36-x64
+  TARGET_ARCH: x64
+  CONDA_PY: 36
+  SRC_DIR: C:\projects\nco
+
+platform:
+  - x64
+
+image:
+  - Visual Studio 2015
+
+init:
+  # We need to define these b/c we are not using conda-build.
+  - "ECHO %MINICONDA%"
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" set VCVARPATH="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" set VCARGUMENT=%PLATFORM%
+  - if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Previous Visual Studio 2017" if "%PLATFORM%" == "x64" set VCVARPATH="C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Auxiliary\Build\vcvars64.bat"
+  - echo "%VCVARPATH% %VCARGUMENT%"
+  - "%VCVARPATH% %VCARGUMENT%"
+
+install:
+  # If there is a newer build queued for the same PR, cancel this one.
+  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:APPVEYOR_BUILD_NUMBER -ne ((Invoke-RestMethod `
+        https://ci.appveyor.com/api/projects/$env:APPVEYOR_ACCOUNT_NAME/$env:APPVEYOR_PROJECT_SLUG/history?recordsNumber=50).builds | `
+        Where-Object pullRequestId -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)[0].buildNumber) { `
+        throw "There are newer queued builds for this pull request, failing early." }
+
+  # Add path, activate `conda` and update conda.
+  - cmd: call %CONDA_INSTALL_LOCN%\Scripts\activate.bat
+  - cmd: conda.exe config --set always_yes yes --set changeps1 no --set show_channel_urls true
+  - cmd: conda.exe update conda
+  - cmd: conda.exe config --remove channels defaults --force
+  - cmd: conda.exe config --add channels conda-forge --force
+  - cmd: set PYTHONUNBUFFERED=1
+
+  - cmd: conda.exe create --name TEST python=%PY% cmake antlr=2.7.7 curl expat gsl hdf5 libnetcdf udunits2 zlib
+  - cmd: conda activate TEST
+
+  - cmd: conda.exe info --all
+  - cmd: conda.exe list
+
+# Skip .NET project specific build phase.
+build: off
+
+test_script:
+  # Build 
+  - build.cmd
+  # Tests
+  - ncks --help
+  - ncap2 --help
+  - ncks -M "http://tds.marine.rutgers.edu/thredds/dodsC/roms/espresso/2013_da/his/ESPRESSO_Real-Time_v2_History_Best"  || exit 1
+  - cd %SRC_DIR%\data
+  - ncgen -o in.nc in.cdl || exit 1
+  - ncks -H --trd -v one in.nc || exit 1
+  - ncap2 -O -v -s "erf_one=float(gsl_sf_erf(1.0f));" in.nc foo.nc || exit 1
+  - ncks -v erf_one foo.nc || exit 1
