@@ -1,3 +1,11 @@
+2018-09-10  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.7-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha04: Mailbox';git push
+	git tag -a 4.7.7-alpha04 -m 'ncpdq dbl_flt, gss grd';git push --tags
+
+	* Relax assumption that ERWG always has --netcdf4 option
+
 2018-09-09  Charlie Zender  <zender@uci.edu>
 
 	* Finish ncpdq implementation of nco_pck_map_typ == nco_pck_map_dbl_flt (still needs MPAS exception list)

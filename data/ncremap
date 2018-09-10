@@ -901,11 +901,15 @@ if [ -n "${fl_fmt}" ]; then
     fi # !fl_fmt
     if [ "${fl_fmt}" = '4' ] || [ "${fl_fmt}" = 'netcdf4' ] || [ "${fl_fmt}" = 'hdf5' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4'
-	wgt_opt_esmf="${wgt_opt_esmf} --netcdf4"
+	if [ -n "${erwg_vrs_mjr}" ]; then
+	    if [ "${erwg_vrs_mjr}" -ge 6 ]; then
+		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4"
+	    fi # !erwg_vrs_mjr
+	fi # !erwg_vrs_mjr
     fi # !fl_fmt
     if [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_data'
-	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset" # Change when ERWG supports CDF5
+#	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset" # Change when ERWG supports CDF5
     fi # !fl_fmt
     if [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
@@ -913,7 +917,11 @@ if [ -n "${fl_fmt}" ]; then
     fi # !fl_fmt
     if [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4_classic'
-	wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports netCDF7
+	if [ -n "${erwg_vrs_mjr}" ]; then
+	    if [ "${erwg_vrs_mjr}" -ge 6 ]; then
+		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports netCDF7
+	    fi # !erwg_vrs_mjr
+	fi # !erwg_vrs_mjr
     fi # !fl_fmt
     nco_opt="${nco_opt} ${nco_fl_fmt}"
 fi # !fl_fmt
@@ -1484,7 +1492,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: drc_out  = ${drc_out}\n"
     printf "dbg: drc_tmp  = ${drc_tmp}\n"
     printf "dbg: dst_fl   = ${dst_fl}\n"
-    printf "dbg: erwg_vrs = ${erwg_vrs_mjr}\n"
+    printf "dbg: erwg_vrs = ${erwg_vrs_sng}\n"
     printf "dbg: fl_fmt   = ${fl_fmt}\n"
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
