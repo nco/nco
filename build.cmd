@@ -4,6 +4,12 @@ cd %SRC_DIR%\build
 set "CFLAGS=%CFLAGS% -DWIN32 -DGSL_DLL"
 set "CXXFLAGS=%CXXFLAGS% -DWIN32 -DGSL_DLL"
 
+:: We need to define these b/c we are not using conda-build.
+set LIBRARY_PREFIX=%CONDA_PREFIX%\Library
+set LIBRARY_INC=%CONDA_PREFIX%\Library\include
+set LIBRARY_LIB=%CONDA_PREFIX%\Library\lib
+set LIBRARY_BIN=%CONDA_PREFIX%\Library\bin
+
 cmake -G "NMake Makefiles" ^
       -D CMAKE_INSTALL_PREFIX=%LIBRARY_PREFIX% ^
       -D CMAKE_BUILD_TYPE=Release ^
@@ -25,10 +31,7 @@ cmake -G "NMake Makefiles" ^
 if errorlevel 1 exit 1
 
 
-nmake
-if errorlevel 1 exit 1
-
-nmake install
-if errorlevel 1 exit 1
+nmake || exit 1
+nmake install || exit 1
 
 move %LIBRARY_PREFIX%\*.exe %LIBRARY_BIN% || exit 1
