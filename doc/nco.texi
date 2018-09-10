@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.7
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 4 September 2018
+@set update-date 9 September 2018
 @set update-month September 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -21606,12 +21606,13 @@ packed type, is called the @dfn{packing map}.
 The user specifies the desired packing map with the @samp{-M} switch
 (or its long option equivalents, @samp{--pck_map} and
 @samp{--map}) and its @var{pck_map} argument.
-Five packing maps are currently implemented:@*
+Six packing maps are currently implemented:@*
 @cindex @samp{hgh_sht}
 @cindex @samp{hgh_byt}
 @cindex @samp{flt_sht}
 @cindex @samp{flt_byt}
 @cindex @samp{nxt_lsr}
+@cindex @samp{dbl_flt}
 @cindex @code{NC_DOUBLE}
 @cindex @code{NC_FLOAT}
 @cindex @code{NC_INT64}
@@ -21648,18 +21649,30 @@ Types copied instead of packed: [@code{NC_CHAR},@code{NC_BYTE},@code{NC_UBYTE}]@
 @var{pck_map} key values: @samp{hgh_byt}, @samp{pck_map_hgh_byt}@*
 @item Pack to Next Lesser Precision
 Definition: Pack each type to type of next lesser size@*
-Map: Pack [@code{NC_DOUBLE},@code{NC_INT64},@code{NC_UINT64}], to @code{NC_INT}. 
+Map: Pack [@code{NC_DOUBLE},@code{NC_INT64},@code{NC_UINT64}] to @code{NC_INT}. 
 Pack [@code{NC_FLOAT},@code{NC_INT},@code{NC_UINT}] to @code{NC_SHORT}.
 Pack [@code{NC_SHORT},@code{NC_USHORT}] to @code{NC_BYTE}.@*
 Types copied instead of packed: [@code{NC_CHAR},@code{NC_BYTE},@code{NC_UBYTE}]@*
 @var{pck_map} key values: @samp{nxt_lsr}, @samp{pck_map_nxt_lsr}@*
+@item Pack Doubles to Floats
+Definition: Demote (via type-conversion, @emph{not packing}) double-precision variables to single-precision@*
+Map: Demote @code{NC_DOUBLE} to @code{NC_FLOAT}. 
+Types copied instead of packed: All except @code{NC_DOUBLE}@*
+@var{pck_map} key values: @samp{dbl_flt}, @samp{pck_map_dbl_flt}, @samp{dbl_sgl}, @samp{pck_map_dbl_sgl}@*
 @end table
 @noindent
 The default @samp{all_new} packing policy with the default
 @samp{flt_sht} packing map reduces the typical @code{NC_FLOAT}-dominated
 file size by @w{about 50%.}
 @samp{flt_byt} packing reduces an @code{NC_DOUBLE}-dominated file by
-@w{about 87%.} 
+@w{about 87%.}
+
+The final packing map, @samp{pck_map_dbl_flt}, does a pure
+type-conversion from @code{NC_DOUBLE} to @code{NC_FLOAT}. 
+The resulting variables are not packed, they are just single-precision
+floating point instead of double-precision floating point.
+This operation is irreversible, and no attributes are created, modified,
+or deleted for these variables.
 
 @cindex @var{_FillValue}
 @cindex @code{_FillValue}

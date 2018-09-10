@@ -1243,8 +1243,6 @@ nco_var_lst_dvd_ncbo                          /* [fnc] Divide input lists into o
     } /* end if */
   } /* end if prc */
 
-  if(nco_prg_id == ncpdq && nco_dbg_lvl_get() >= nco_dbg_std && !strcmp(var_nm,"lat")) (void)fprintf(stderr,"%s: DEBUG Variable %s is of type %s and %s be processed\n",nco_prg_nm_get(),var->nm,nco_typ_sng(var->type),(var_op_typ == fix_typ) ? "will not" : "will");
-
   if(var_op_typ == fix_typ){
     var->is_fix_var=True;
     var_out->is_fix_var=True;

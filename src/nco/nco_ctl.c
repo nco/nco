@@ -1080,7 +1080,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-M")){
     if(prg_lcl == ncecat) (void)fprintf(stdout,"-M, --no_glb_mtd\tSuppress (do not copy) global metadata\n");
     if(prg_lcl == ncks) (void)fprintf(stdout,"-M, --Mtd, --Metadata\tToggle printing global metadata\n");
-    if(prg_lcl == ncpdq) (void)fprintf(stdout,"-M, --pck_map, --pack_map, --map pck_map\tPack map [flt_sht,flt_byt,hgh_sht,hgh_byt,nxt_lsr]\n");
+    if(prg_lcl == ncpdq) (void)fprintf(stdout,"-M, --pck_map, --pack_map, --map pck_map\tPack map [flt_sht,flt_byt,hgh_sht,hgh_byt,nxt_lsr,dbl_flt]\n");
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-M, --msk_val, --mask-value, --mask_value mask_val\tMasking value (default is 1.0)\n");
   } /* end if */
   if(strstr(opt_sng,"[-m")){
