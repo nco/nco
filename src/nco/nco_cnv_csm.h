@@ -32,6 +32,10 @@
 extern "C" {
 #endif /* __cplusplus */
 
+nco_bool /* O [flg] File obeys MPAS conventions */
+nco_cnv_mpas_inq /* O [fnc] Check if file obeys MPAS conventions */
+(const int nc_id); /* I [id] netCDF file ID */
+
 nco_bool /* O [flg] File obeys CCM/CCSM/CF conventions */
 nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions */
 (const int nc_id); /* I [id] netCDF file ID */

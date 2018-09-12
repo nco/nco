@@ -9,6 +9,58 @@
 
 #include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */
 
+nco_bool /* O [flg] File obeys MPAS conventions */
+nco_cnv_mpas_inq /* O [fnc] Check if file obeys MPAS conventions */
+(const int nc_id) /* I [id] netCDF file ID */
+{
+  /* Purpose: Check if file adheres to MPAS history tape format
+     20180912: Based on nco_cnv_ccm_ccsm_cf_inq() */
+
+  nco_bool CNV_MPAS=False;
+
+  char *att_val;
+  char *cnv_sng=NULL_CEWI;
+
+  /* netCDF standard is uppercase Conventions, though some models user lowercase */
+  char cnv_sng_UC[]="Conventions"; /* Unidata standard     string (uppercase) */
+  char cnv_sng_LC[]="conventions"; /* Unidata non-standard string (lowercase) */
+  
+  int rcd; /* [rcd] Return code */
+  
+  long att_sz;
+
+  nc_type att_typ;
+
+  /* Look for signature of a MPAS-format file */
+  cnv_sng=cnv_sng_UC;
+  rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
+  if(rcd != NC_NOERR){
+    /* Re-try with lowercase string because some models, e.g., CLM, user lowercase "conventions" */
+    cnv_sng=cnv_sng_LC;
+    rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
+  } /* endif lowercase */
+  
+  if(rcd == NC_NOERR && att_typ == NC_CHAR){
+    /* Add one for NUL byte */
+    att_val=(char *)nco_malloc(att_sz*nco_typ_lng(att_typ)+1L);
+    (void)nco_get_att(nc_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
+    /* NUL-terminate convention attribute before using strcmp() */
+    att_val[att_sz]='\0';
+    /* MPAS conventions */
+    if(strstr(att_val,"MPAS")) CNV_MPAS=True; /* Backwards compatibility */
+    if(CNV_MPAS && nco_dbg_lvl_get() >= nco_dbg_fl){
+      (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\"\n",nco_prg_nm_get(),cnv_sng,att_val);
+      if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",nco_prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
+      /* Only warn in arithmetic operators where conventions change behavior */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl && nco_dbg_lvl_get() != nco_dbg_dev && nco_is_rth_opr(nco_prg_id_get())) (void)fprintf(stderr,"%s: INFO NCO attempts to abide by many official and unofficial metadata conventions including ARM, CCM, CCSM, CF, and MPAS. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"areaCell\" or \"edgesOnCell\", and many operators will always leave coordinate variables unchanged. The full list of exceptions is in the manual http://nco.sf.net/nco.html#MPAS\n",nco_prg_nm_get());
+    } /* endif dbg */
+    att_val=(char *)nco_free(att_val);
+  } /* endif */
+
+  return CNV_MPAS;
+  
+} /* end nco_cnv_mpas_inq() */
+
 nco_bool /* O [flg] File obeys CCM/CCSM/CF conventions */
 nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions */
 (const int nc_id) /* I [id] netCDF file ID */
@@ -62,7 +114,7 @@ nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions *
 
   return CNV_CCM_CCSM_CF;
   
-} /* end nco_cnv_ccm_ccsm_cf_inq */
+} /* end nco_cnv_ccm_ccsm_cf_inq() */
 
 void
 nco_cnv_ccm_ccsm_cf_date /* [fnc] Fix date variable in averaged CCM/CCSM/CF files */

@@ -1011,7 +1011,12 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     if(nco_is_rth_opr(nco_prg_id))
       if(var[idx]->sz == 0L) var_op_typ[idx]=fix_typ;
 
-    if(CNV_CCM_CCSM_CF){
+    int in_id;  
+    nco_bool CNV_MPAS=False;
+    in_id=trv_tbl->in_id_arr[0];
+    if(False) CNV_MPAS=nco_cnv_mpas_inq(in_id);
+
+    if(CNV_CCM_CCSM_CF || CNV_MPAS){
       nco_bool var_is_fix;  /* [fnc] Variable should be treated as a fixed variable */
       var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc);  
       if(var_is_fix) var_op_typ[idx]=fix_typ;
@@ -1262,6 +1267,8 @@ nco_var_is_fix                               /* [fnc] Variable should be treated
  const int nco_prg_id,                       /* I [enm] Program key */
  const int nco_pck_plc)                      /* I [enm] Packing policy */
 {
+  const char fnc_nm[]="nco_var_is_fix()"; /* [sng] Function name */
+
   nco_bool var_is_fix;            /* [fnc] Variable should be treated as a fixed variable (return value) */
   nco_bool is_sz_rnk_prv_rth_opr; /* [flg] Size- and rank-preserving operator */
 
@@ -1270,6 +1277,9 @@ nco_var_is_fix                               /* [fnc] Variable should be treated
   var_is_fix=False;
 
   if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_is_fix=True;
+
+  if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports %s %s use stored lists of fixed variables for size- and rank-preserving operators\n",nco_prg_nm_get(),fnc_nm,nco_prg_nm_get(),is_sz_rnk_prv_rth_opr ? "will" : "will not");
+
   /* NB: all !strcmp()'s except "msk_" and "wgt_" which use strstr() */
   if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm) || (strstr(var_nm,"wgt_") == var_nm))) var_is_fix=True;
   /* Known "multi-dimensional coordinates" in CCSM-like model output:
@@ -1302,6 +1312,10 @@ nco_var_is_fix                               /* [fnc] Variable should be treated
   /* Conditions #1 and #2 are already implemented above in the case() statement */
   /* Check condition #4 above: */
   if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") || !strcmp(var_nm,"latitude") || !strcmp(var_nm,"longitude") )) var_is_fix=True;
+
+  /* 20180912: MPAS */
+  /* NB: all !strcmp()'s except "msk_" and "wgt_" which use strstr() */
+  if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"lon_bnds") || !strcmp(var_nm,"lat_bnds") || !strcmp(var_nm,"area") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec") || (strstr(var_nm,"msk_") == var_nm) || (strstr(var_nm,"wgt_") == var_nm))) var_is_fix=True;
 
   return var_is_fix;
 
