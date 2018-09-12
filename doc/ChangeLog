@@ -1,8 +1,12 @@
-2018-09-10  Charlie Zender  <zender@uci.edu>
+2018-09-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.7-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha04: Mailbox';git push
 	git tag -a 4.7.7-alpha04 -m 'ncpdq dbl_flt, gss grd';git push --tags
+
+	* Add stubs to implement CNV_MPAS exceptions
+
+2018-09-10  Charlie Zender  <zender@uci.edu>
 
 	* Relax assumption that ERWG always has --netcdf4 option
 
