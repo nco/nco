@@ -309,14 +309,15 @@ make install
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on acme1:
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last modified: 20180405
-# Personal recipe last used successfully: 20180811
+# Personal recipe last modified: 20180912
+# Personal recipe last used successfully: 20180912
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-export PATH=/usr/local/uvcdat/2016-01-21/Externals/bin:${PATH}
-export LD_LIBRARY_PATH=/usr/local/uvcdat/2016-01-21/Externals/lib64:${LD_LIBRARY_PATH}
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/uvcdat/2016-01-21/Externals' UDUNITS2_PATH='/usr/local/uvcdat/2016-01-21/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+export PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox/bin':${PATH}
+export LD_LIBRARY_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox/lib':${LD_LIBRARY_PATH}
+# NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
@@ -332,7 +333,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/uvcdat/2016-01-21/Externals' UDUNITS2_PATH='/usr/local/uvcdat/2016-01-21/Externals' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+# NB: Necessary to explicitly specify NETCDF_BIN and NETCDF_LIB. NETCDF_ROOT may be borken.
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox' NETCDF_INC='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox/include' NETCDF_LIB='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox/lib' UDUNITS2_PATH='/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.2_py2.7_nox' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
