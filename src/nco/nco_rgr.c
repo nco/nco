@@ -739,7 +739,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   int dst_grid_rank_id; /* [id] Destination grid rank dimension ID */
   int dst_grid_size_id; /* [id] Destination grid size dimension ID */
   int num_links_id; /* [id] Number of links dimension ID */
-  int num_wgts_id; /* [id] Number of weights dimension ID */
+  int num_wgts_id=NC_MIN_INT; /* [id] Number of weights dimension ID */
   int src_grid_corners_id; /* [id] Source grid corners dimension ID */
   int src_grid_rank_id; /* [id] Source grid rank dimension ID */
   int src_grid_size_id; /* [id] Source grid size dimension ID */
@@ -853,7 +853,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimid(in_id,"nv_b",&dst_grid_corners_id);
     rcd+=nco_inq_dimid(in_id,"src_grid_rank",&src_grid_rank_id);
     rcd+=nco_inq_dimid(in_id,"dst_grid_rank",&dst_grid_rank_id);
-    if(nco_rgr_mpf_typ != nco_rgr_mpf_Tempest) rcd+=nco_inq_dimid(in_id,"num_wgts",&num_wgts_id);
+    if(nco_rgr_mpf_typ != nco_rgr_mpf_Tempest){
+      rcd+=nco_inq_dimid_flg(in_id,"num_wgts",&num_wgts_id);
+      if(rcd != NC_NOERR){
+	(void)fprintf(stderr,"%s: INFO %s reports ESMF map-file does not contain \"num_wgts\" dimension. ERWG always produces this as an orphan dimension, so post-processing could have removed it without harming other map-file fields. No harm, no foul.\n",nco_prg_nm_get(),fnc_nm);
+	rcd=NC_NOERR;
+      } /* !rcd */
+    } /* !nco_rgr_mpf_Tempest */
     rcd+=nco_inq_dimid(in_id,"n_s",&num_links_id);
     break;
   default:
@@ -876,7 +882,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimlen(in_id,src_grid_rank_id,&mpf.src_grid_rank);
     rcd+=nco_inq_dimlen(in_id,dst_grid_rank_id,&mpf.dst_grid_rank);
     /* TempestRemap does not generate num_wgts */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) mpf.num_wgts=int_CEWI; else rcd+=nco_inq_dimlen(in_id,num_wgts_id,&mpf.num_wgts); 
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || num_wgts_id == NC_MIN_INT){
+      mpf.num_wgts=int_CEWI;
+    }else{
+      rcd+=nco_inq_dimlen(in_id,num_wgts_id,&mpf.num_wgts);
+    } /* !num_wgts_id */
     assert(mpf.src_grid_size < INT_MAX && mpf.dst_grid_size < INT_MAX);
   }else{
     mpf.src_grid_size=long_CEWI;

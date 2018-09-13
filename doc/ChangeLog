@@ -1,5 +1,7 @@
 2018-09-13  Charlie Zender  <zender@uci.edu>
 
+	* Tolerate ESMF map-files that lack num_wgts dimension due to post-processing
+
 	* NCO 4.7.7-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha04: Mailbox';git push
 	git tag -a 4.7.7-alpha04 -m 'ncpdq dbl_flt, gss grd';git push --tags
