@@ -856,7 +856,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(nco_rgr_mpf_typ != nco_rgr_mpf_Tempest){
       rcd+=nco_inq_dimid_flg(in_id,"num_wgts",&num_wgts_id);
       if(rcd != NC_NOERR){
-	(void)fprintf(stderr,"%s: INFO %s reports ESMF map-file does not contain \"num_wgts\" dimension. ERWG always produces this as an orphan dimension, so post-processing could have removed it without harming other map-file fields. No harm, no foul.\n",nco_prg_nm_get(),fnc_nm);
+	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports ESMF map-file does not contain \"num_wgts\" dimension. ERWG always produces this as an orphan dimension, so post-processing could have removed it without harming other map-file fields. No harm, no foul.\n",nco_prg_nm_get(),fnc_nm);
 	rcd=NC_NOERR;
       } /* !rcd */
     } /* !nco_rgr_mpf_Tempest */
@@ -4860,7 +4860,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     (void)fprintf(stderr,"%s: DEBUG %s Gaussian abscissae/interfaces for lat_nbr=%ld\n",nco_prg_nm_get(),fnc_nm,lat_nbr);
     (void)fprintf(stderr,"idx\tlat_ctr\tlat_ntf\tntf_p1\n");
     for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++){
-      (void)fprintf(stderr,"%d\t%20.15f\t%20.15f\t%20.15f\n",lat_idx,lat_ctr[lat_idx],lat_ntf[lat_idx],lat_ntf[lat_idx+1L]);
+      (void)fprintf(stderr,"%ld\t%20.15f\t%20.15f\t%20.15f\n",lat_idx,lat_ctr[lat_idx],lat_ntf[lat_idx],lat_ntf[lat_idx+1L]);
     } /* !lat_idx */
   } /* !dbg */
   
@@ -4936,7 +4936,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   /* 20180831 Code above assumes grids run S->N
      User can request N->S grids with --rgr lat_drc=n2s
      If so, flip grid before unrolling into output arrays */
-  if(lat_drc == nco_grd_lat_drc_n2s){
+  if(!flg_s2n){
     double *lat_ctr_tmp=NULL_CEWI; /* [dgr] Temporary Latitude centers of rectangular grid */
     double *lat_wgt_tmp=NULL; /* [dgr] Temporary Latitude weights of rectangular grid */
     double *lat_ntf_tmp=NULL; /* [dgr] Temporary Latitude interfaces of rectangular grid */
@@ -4967,7 +4967,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     if(lat_ctr_tmp) lat_ctr_tmp=(double *)nco_free(lat_ctr_tmp);
     if(lat_ntf_tmp) lat_ntf_tmp=(double *)nco_free(lat_ntf_tmp);
     if(lat_wgt_tmp) lat_wgt_tmp=(double *)nco_free(lat_wgt_tmp);
-  } /* !n2s */
+  } /* !flg_s2n */
   
   assert(grd_crn_nbr == 4);
   for(lon_idx=0L;lon_idx<lon_nbr;lon_idx++){
