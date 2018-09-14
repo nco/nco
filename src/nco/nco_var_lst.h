@@ -69,14 +69,14 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
  int * const xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF); /* I [flg] file obeys CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv); /* I [flg] file obeys CCM/CCSM/CF conventions */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associated with extracted variables */
 (const int nc_id, /* I netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
  int * const xtr_nbr, /* I/O number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF); /* I [flg] file obeys CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv); /* I [flg] file obeys CCM/CCSM/CF conventions */
 
 nm_id_sct * /* O [sct] List with coordinate excluded */
 nco_var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
@@ -110,7 +110,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 (var_sct * const * const var, /* I [sct] Variable list (input file) */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
- const nco_bool CNV_CCM_CCSM_CF, /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv, /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD, /* [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_pck_map, /* I [enm] Packing map */
  const int nco_pck_plc, /* I [enm] Packing policy */
@@ -135,7 +135,7 @@ void
 nco_var_lst_dvd_ncbo                         /* [fnc] Divide input lists into output lists (ncbo only) */
 (var_sct * const var,                        /* I [sct] Variable list (input file) */
  var_sct * const var_out,                    /* I [sct] Variable list (output file) */
- const nco_bool CNV_CCM_CCSM_CF,             /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,                  /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,                 /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_pck_map,                      /* I [enm] Packing map */
  const int nco_pck_plc,                      /* I [enm] Packing policy */

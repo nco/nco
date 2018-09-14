@@ -180,7 +180,7 @@ main(int argc,char **argv)
   lmt_sct **lmt=NULL_CEWI;
   lmt_all_sct **lmt_all_lst=NULL_CEWI; /* List of *lmt_all structures */
   
-  nco_bool CNV_CCM_CCSM_CF;
+  cnv_sct *cnv; /* [sct] Convention structure */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -592,16 +592,16 @@ main(int argc,char **argv)
   if(EXCLUDE_INPUT_LIST) xtr_lst_1=nco_var_lst_xcl(in_id_1,nbr_var_fl_1,xtr_lst_1,&xtr_nbr_1);
   if(EXCLUDE_INPUT_LIST) xtr_lst_2=nco_var_lst_xcl(in_id_2,nbr_var_fl_2,xtr_lst_2,&xtr_nbr_2);
   
-  /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
+  /* Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
+  cnv=nco_cnv_ini(in_id_1);
 
   /* Add all coordinate variables to extraction list */
-  if(EXTRACT_ALL_COORDINATES) xtr_lst_1=nco_var_lst_crd_add(in_id_1,nbr_dmn_fl_1,nbr_var_fl_1,xtr_lst_1,&xtr_nbr_1,CNV_CCM_CCSM_CF);
-  if(EXTRACT_ALL_COORDINATES) xtr_lst_2=nco_var_lst_crd_add(in_id_2,nbr_dmn_fl_2,nbr_var_fl_2,xtr_lst_2,&xtr_nbr_2,CNV_CCM_CCSM_CF);
+  if(EXTRACT_ALL_COORDINATES) xtr_lst_1=nco_var_lst_crd_add(in_id_1,nbr_dmn_fl_1,nbr_var_fl_1,xtr_lst_1,&xtr_nbr_1,cnv);
+  if(EXTRACT_ALL_COORDINATES) xtr_lst_2=nco_var_lst_crd_add(in_id_2,nbr_dmn_fl_2,nbr_var_fl_2,xtr_lst_2,&xtr_nbr_2,cnv);
   
   /* Extract coordinates associated with extracted variables */
-  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst_1=nco_var_lst_crd_ass_add(in_id_1,xtr_lst_1,&xtr_nbr_1,CNV_CCM_CCSM_CF);
-  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst_2=nco_var_lst_crd_ass_add(in_id_2,xtr_lst_2,&xtr_nbr_2,CNV_CCM_CCSM_CF);
+  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst_1=nco_var_lst_crd_ass_add(in_id_1,xtr_lst_1,&xtr_nbr_1,cnv);
+  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst_2=nco_var_lst_crd_ass_add(in_id_2,xtr_lst_2,&xtr_nbr_2,cnv);
   
   /* With fully symmetric 1<->2 ordering, may occasionally find xtr_nbr_2 > xtr_nbr_1 
      This occurs, e.g., when fl_in_1 contains reduced variables and full coordinates
@@ -697,11 +697,11 @@ main(int argc,char **argv)
    
   /* Divide variable lists into lists of fixed variables and variables to be processed
      Create lists from file_1 last so those values remain in *_out arrays */
-  (void)nco_var_lst_dvd(var_2,var_out,xtr_nbr_2,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_2,&var_fix_out,&nbr_var_fix_2,&var_prc_2,&var_prc_out,&nbr_var_prc_2);
+  (void)nco_var_lst_dvd(var_2,var_out,xtr_nbr_2,cnv,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_2,&var_fix_out,&nbr_var_fix_2,&var_prc_2,&var_prc_out,&nbr_var_prc_2);
   /* Avoid double-free() condition */
   var_fix_out=(var_sct **)nco_free(var_fix_out);
   var_prc_out=(var_sct **)nco_free(var_prc_out);
-  (void)nco_var_lst_dvd(var_1,var_out,xtr_nbr_1,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_1,&var_fix_out,&nbr_var_fix_1,&var_prc_1,&var_prc_out,&nbr_var_prc_1);
+  (void)nco_var_lst_dvd(var_1,var_out,xtr_nbr_1,cnv,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix_1,&var_fix_out,&nbr_var_fix_1,&var_prc_1,&var_prc_out,&nbr_var_prc_1);
   
   /* Die gracefully on unsupported features... */
   if(nbr_var_fix_1 < nbr_var_fix_2){

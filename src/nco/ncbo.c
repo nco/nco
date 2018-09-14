@@ -101,7 +101,6 @@
 int 
 main(int argc,char **argv)
 {
-  nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -154,6 +153,8 @@ main(int argc,char **argv)
   const char * const opt_sht_lst="34567ACcD:d:FG:g:hL:l:Oo:p:rRt:v:X:xzy:-:";
 
   cnk_sct cnk; /* [sct] Chunking structure */
+
+  cnv_sct *cnv; /* [sct] Convention structure */
 
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
@@ -669,11 +670,11 @@ main(int argc,char **argv)
     if(fl_out_fmt != NC_FORMAT_NETCDF4) (void)fprintf(stderr,"%s: WARNING Group Path Edit (GPE) requires netCDF4 output format in most cases (except flattening) but user explicitly requested output format = %s. This command will fail if the output file requires netCDF4 features like groups or netCDF4 atomic types (e.g., NC_STRING, NC_UBYTE...).\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt));
   } /* !gpe */
 
-  /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id_1);
+  /* Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
+  cnv=nco_cnv_ini(in_id_1);
 
   /* Group broadcating (DEFINE mode, True as flg_dfn parameter) */
-  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
+  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)True);
 
   /* Copy global attributes from file 1 */
   (void)nco_att_cpy(in_id_1,out_id,NC_GLOBAL,NC_GLOBAL,(nco_bool)True);
@@ -695,7 +696,7 @@ main(int argc,char **argv)
   } /* hdr_pad */
 
   /* Group broadcating (WRITE mode, False as flg_dfn parameter) */
-  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
+  (void)nco_grp_brd(in_id_1,in_id_2,out_id,&cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,(nco_bool)False);
 
   /* Close input netCDF files */
   for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) nco_close(in_id_1_arr[thr_idx]);

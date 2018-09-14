@@ -1,8 +1,12 @@
-2018-09-13  Charlie Zender  <zender@uci.edu>
+2018-09-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.7-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha05: Field Marshall Von Stoldt';git push
 	git tag -a 4.7.7-alpha05 -m 'rgr num_wgts fix';git push --tags
+
+	* Replace CNV_CCM_CCSM_CF with convention structure cnv
+
+2018-09-13  Charlie Zender  <zender@uci.edu>
 
 	* Tolerate ESMF map-files that lack num_wgts dimension due to post-processing
 

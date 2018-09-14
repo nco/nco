@@ -845,6 +845,14 @@ extern "C" {
 
   } lmt_sct;
   
+  /* Convention structure */
+  typedef struct{ /* cnv_sct */
+    nco_bool CCM_CCSM_CF; /* "CF" in "Conventions" attribute */
+    nco_bool MPAS; /* "MPAS" in "Conventions" attribute */
+    nco_bool Group; /* "Groups" in "Conventions" attribute */
+    float cf_vrs; /* [enm] CF-Version */
+  } cnv_sct;
+  
   /* Name ID structure */
   typedef struct{ /* nm_id_sct */
     char *nm; /* Variable (stub name) */

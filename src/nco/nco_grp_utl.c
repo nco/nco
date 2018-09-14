@@ -3699,7 +3699,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
@@ -3773,8 +3773,8 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
   var_prc_out= (RNK_1_GTR) ? nco_var_dpl(var_prc_1) : nco_var_dpl(var_prc_2);
 
   /* Get processing type */
-  (void)nco_var_lst_dvd_ncbo(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
-  (void)nco_var_lst_dvd_ncbo(var_prc_2,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
+  (void)nco_var_lst_dvd_ncbo(var_prc_1,var_prc_out,cnv,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+  (void)nco_var_lst_dvd_ncbo(var_prc_2,var_prc_out,cnv,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_2); 
 
   /* Conform type and rank for processed variables */
   if(prc_typ_1 == prc_typ && prc_typ_2 == prc_typ){
@@ -3962,7 +3962,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,           /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl),   /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl,                /* I [nbr] Number of altered dimensions */
@@ -4008,7 +4008,7 @@ nco_cpy_fix                            /* [fnc] Copy fixed object (ncbo only) */
   var_prc_1=nco_var_fll_trv(grp_id_1,var_id_1,trv_1,trv_tbl_1);     
 
   var_prc_out=nco_var_dpl(var_prc_1);
-  (void)nco_var_lst_dvd_ncbo(var_prc_1,var_prc_out,CNV_CCM_CCSM_CF,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
+  (void)nco_var_lst_dvd_ncbo(var_prc_1,var_prc_out,cnv,FIX_REC_CRD,nco_pck_map_nil,nco_pck_plc_nil,dmn_xcl,nbr_dmn_xcl,&prc_typ_1); 
 
   if(prc_typ_1 != fix_typ){
     var_prc_1=(var_sct *)nco_var_free(var_prc_1);
@@ -6678,7 +6678,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   
   const char fnc_nm[]="nco_bld_trv_tbl()"; /* [sng] Function name  */
 
-  nco_bool CNV_CCM_CCSM_CF; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+  cnv_sct *cnv; /* [flg] File adheres to NCAR CCM/CCSM/CF conventions */
 
   lmt_sct **lmt=NULL_CEWI;  /* [sct] User defined limits */
 
@@ -6731,13 +6731,13 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   /* Extract coordinates associated with extracted variables */
   if(EXTRACT_ASSOCIATED_COORDINATES) (void)nco_xtr_crd_ass_add(nc_id,trv_tbl);
 
-  /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(nc_id);
-  if(!CNV_CCM_CCSM_CF && aux_nbr){
+  /* Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
+  cnv=nco_cnv_ini(nc_id);
+  if(!cnv->CCM_CCSM_CF && aux_nbr){
     (void)fprintf(stderr,"%s: WARNING -X option selected on input lacking global \"Conventions=CF-1.X\" attribute. Assuming CF-compliance intended in order to exploit -X. HINT: To fix this warning, add conformant Conventions attribute with, e.g., \"ncatted -a Conventions,global,c,c,CF-1.0 in.nc\"\n",nco_prg_nm_get());
-    CNV_CCM_CCSM_CF=True;
+    cnv->CCM_CCSM_CF=True;
   } /* endif */
-  if(CNV_CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+  if(cnv->CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
     /* Implement CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" */
     if(EXTRACT_CLL_MSR) (void)nco_xtr_cf_add(nc_id,"cell_measures",trv_tbl);
     if(EXTRACT_FRM_TRM) (void)nco_xtr_cf_add(nc_id,"formula_terms",trv_tbl);
@@ -6754,7 +6754,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     (void)nco_xtr_cf_add(nc_id,"coordinates",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"bounds",trv_tbl);
     (void)nco_xtr_cf_add(nc_id,"grid_mapping",trv_tbl);
-  } /* CNV_CCM_CCSM_CF */
+  } /* cnv->CCM_CCSM_CF */
 
   /* Mark extracted dimensions */
   (void)nco_xtr_dmn_mrk(trv_tbl);
@@ -6772,8 +6772,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   } /* !lmt_nbr */
 
   /* Build ensembles */
-  if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,True,CNV_CCM_CCSM_CF,nco_pck_plc,trv_tbl);
-  if(nco_prg_id_get() == ncbo) (void)nco_bld_nsm(nc_id,False,CNV_CCM_CCSM_CF,nco_pck_plc,trv_tbl);
+  if(nco_prg_id_get() == ncge) (void)nco_bld_nsm(nc_id,True,cnv,nco_pck_plc,trv_tbl);
+  if(nco_prg_id_get() == ncbo) (void)nco_bld_nsm(nc_id,False,cnv,nco_pck_plc,trv_tbl);
 
    /* Check valid input (limits) */
   if(lmt_nbr) (void)nco_chk_dmn_in(lmt_nbr,lmt,flg_dne,trv_tbl);
@@ -8592,7 +8592,7 @@ void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const nco_bool flg_fix_xtr,          /* I [flg] Mark fized variables as extracted  */
- const nco_bool CNV_CCM_CCSM_CF,      /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,      /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_pck_plc,               /* I [enm] Packing policy */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
@@ -8678,7 +8678,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
                 nco_bool var_is_fix=False;  /* [fnc] Variable should be treated as a fixed variable */
 
-                if(CNV_CCM_CCSM_CF) var_is_fix=nco_var_is_fix(var_trv->nm,nco_prg_id,nco_pck_plc);  
+                if(cnv->CCM_CCSM_CF) var_is_fix=nco_var_is_fix(var_trv->nm,nco_prg_id,nco_pck_plc);  
 
                 /* Define as either fixed template or template  */
                 if(var_trv->is_crd_var || var_trv->is_rec_var || var_is_fix){
@@ -9031,7 +9031,7 @@ nco_prc_rel_mch                        /* [fnc] Relative match of object in tabl
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_sct * var_trv,                    /* I [sct] Table variable object (can be from table 1 or 2) */
  const nco_bool flg_tbl_1,             /* I [flg] Table variable object is from table1 for True, otherwise is from table 2 */
@@ -9053,7 +9053,7 @@ nco_prc_rel_mch                        /* [fnc] Relative match of object in tabl
      
         if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),var_trv->nm_fll,trv_2->nm_fll);
 
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,var_trv,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table  */
 
@@ -9066,7 +9066,7 @@ nco_prc_rel_mch                        /* [fnc] Relative match of object in tabl
 
         if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO processing <%s> (file 1) and <%s> (file 2)\n",nco_prg_nm_get(),trv_1->nm_fll,var_trv->nm_fll);
 
-        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+        (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,var_trv,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
       } /* A relative match was found */
     } /* Loop table  */
   } /* !flg_tbl_1 */
@@ -9136,7 +9136,7 @@ nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
@@ -9164,7 +9164,7 @@ nco_prc_cmn_var_nm_fll                 /* [fnc] Process (define, write) absolute
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
 
       /* Process common object */
-      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+      (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
     } /* Both variables exist in same location, both are to extract */
   } /* Process objects in list */
@@ -9260,7 +9260,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
@@ -9307,7 +9307,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
   (void)nco_nsm_att(nc_id_2,trv_tbl_2,&flg_nsm_att_2,&nsm_grp_nm_fll_prn_2);
 
   /* Process variables with same absolute path in both files. Do them and return */
-  if(flg_cmn_abs) (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
+  if(flg_cmn_abs) (void)nco_prc_cmn_var_nm_fll(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);           
 
   /* Inquire about group broadcasting (ensembles and not ensembles) */
 
@@ -9346,7 +9346,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           flg_grp_1=True;
 
           /* Process (define, write) variables belonging to ensembles in *both* files (special attribute version)   */
-          (void)nco_prc_cmn_nsm_att(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn,nsm_grp_nm_fll_prn_2);              
+          (void)nco_prc_cmn_nsm_att(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn,nsm_grp_nm_fll_prn_2);              
 
           /* File 2 has ensembles in the expected places */
         }else{
@@ -9354,7 +9354,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           /* Use table 1 as template for group creation */
           flg_grp_1=True;
           /* Process (define, write) variables belonging to ensembles in *both* files  */
-          (void)nco_prc_cmn_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+          (void)nco_prc_cmn_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
         } /* File 2 has ensembles in the expected places */
 
       }else if(!flg_nsm_fl_2){
@@ -9370,14 +9370,14 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           flg_grp_1=True;
 
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
-          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
+          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
           /* Common variables not at root */
         }else if(flg_var_cmn){
           /* Use table 1 as template for group creation */
           flg_grp_1=True;
 
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
-          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm,flg_grp_1,flg_dfn);              
+          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm,flg_grp_1,flg_dfn);              
         }else{
           /* file 2 has no common objects   */
           (void)fprintf(stdout,"%s: ERROR no common variables found. HINT: %s expects to find at least one variable of the same name in similar locations in both input files. When such variables are not found in identical locations (i.e., on the same path) then %s attempts group broadcasting to find comparable variables in sub-groups and ensembles. This search for comparable variables has failed. Read more about group broadcasting at http://nco.sf.net/nco.html#grp_brd\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
@@ -9407,7 +9407,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           flg_grp_1=False;
 
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
-          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
+          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm_rth,flg_grp_1,flg_dfn);              
           /* Common variables not at root */
         }else if(flg_var_cmn){
           /* file 1 has a common object not at root  */
@@ -9418,7 +9418,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
           flg_grp_1=False;
 
           /* Process (define, write) variables belonging to ensembles only in 1 file  */
-          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm,flg_grp_1,flg_dfn);              
+          (void)nco_prc_nsm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,var_nm,flg_grp_1,flg_dfn);              
         }else{
           /* file 1 has no common objects */
           (void)fprintf(stdout,"%s: ERROR no common variables found. HINT: %s expects to find at least one variable of the same name in similar locations in both input files. When such variables are not found in identical locations (i.e., on the same path) then %s attempts group broadcasting to find comparable variables in sub-groups and ensembles. This search for comparable variables has failed. Read more about group broadcasting at http://nco.sf.net/nco.html#grp_brd\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get());
@@ -9433,7 +9433,7 @@ nco_grp_brd                            /* [fnc] Group broadcasting (ncbo only) *
     if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stdout,"%s: DEBUG %s Processing relative matches\n",nco_prg_nm_get(),fnc_nm);
 
     /* Process relative common objects (define or write) */
-    (void)nco_prc_rel_cmn_nm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);
+    (void)nco_prc_rel_cmn_nm(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_tbl_1,trv_tbl_2,cmn_lst,nbr_cmn_nm,flg_dfn);
   } /* There are NOT ensembles anywhere, but there are relative matches */
 
   /* Memory management for common names list */
@@ -9469,7 +9469,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
@@ -9534,7 +9534,7 @@ nco_prc_cmn_nsm                        /* [fnc] Process (define, write) variable
             if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
 
             /* Process common object */
-            (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+            (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
           } /* Both variables exist */
 
@@ -9576,7 +9576,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
@@ -9660,7 +9660,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
               if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
 
               /* Process common object */
-              (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+              (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
               break;
             } /* Match name  */
@@ -9743,7 +9743,7 @@ nco_prc_nsm                            /* [fnc] Process (define, write) variable
               if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_2->nm_fll); 
 
               /* Process common object */
-              (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+              (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
 
               break;
             } /* Match name  */
@@ -9870,7 +9870,7 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
@@ -9931,10 +9931,10 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
         flg_grp_1=True;
 
         /* Try relative match in file 2 */
-        has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_1,flg_tbl_1,flg_grp_1,trv_tbl_1,trv_tbl_2,flg_dfn);
+        has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_1,flg_tbl_1,flg_grp_1,trv_tbl_1,trv_tbl_2,flg_dfn);
 
         /* Match not found in file 2, copy instead object from file 1 as fixed to output */
-        if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
+        if(!has_mch) (void)nco_cpy_fix(nc_id_1,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_1,trv_tbl_1,flg_dfn);
 
       } /* Object exists and is flagged for extraction only in file 1 */
     }/* Process objects in list */
@@ -9970,10 +9970,10 @@ nco_prc_rel_cmn_nm                     /* [fnc] Process common relative objects 
         flg_grp_1=False;
 
         /* Try relative match in file 1 */
-        has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,nco_op_typ,trv_2,flg_tbl_1,flg_grp_1,trv_tbl_1,trv_tbl_2,flg_dfn);
+        has_mch=nco_prc_rel_mch(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,nco_op_typ,trv_2,flg_tbl_1,flg_grp_1,trv_tbl_1,trv_tbl_2,flg_dfn);
 
         /* Match not found in file 2, copy instead object from file 2 as fixed to output */
-        if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
+        if(!has_mch) (void)nco_cpy_fix(nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,(nco_bool)False,(dmn_sct **)NULL,(int)0,trv_2,trv_tbl_2,flg_dfn);
 
       } /* Object exists and is flagged for extraction only in file 2 */
     } /* Process objects in list */
@@ -10332,7 +10332,7 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
  const gpe_sct * const gpe,            /* I [sct] GPE structure */
  gpe_nm_sct *gpe_nm,                   /* I/O [sct] GPE name duplicate check array */
  int nbr_gpe_nm,                       /* I/O [nbr] Number of GPE entries */  
- const nco_bool CNV_CCM_CCSM_CF,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,       /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_op_typ,                 /* I [enm] Operation type (command line -y) */
  trv_tbl_sct * const trv_tbl_1,        /* I/O [sct] GTT (Group Traversal Table) */
  trv_tbl_sct * const trv_tbl_2,        /* I/O [sct] GTT (Group Traversal Table) */
@@ -10389,7 +10389,7 @@ nco_prc_cmn_nsm_att                    /* [fnc] Process (define, write) variable
               if(trv_1 && trv_2){
                 if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO common variable to output <%s>\n",nco_prg_nm_get(),trv_1->nm_fll); 
                 /* Process common object */
-                (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,CNV_CCM_CCSM_CF,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
+                (void)nco_prc_cmn(nc_id_1,nc_id_2,nc_out_id,cnk,dfl_lvl,gpe,gpe_nm,nbr_gpe_nm,cnv,(nco_bool)False,(dmn_sct **)NULL,(int)0,nco_op_typ,trv_1,trv_2,trv_tbl_1,trv_tbl_2,flg_grp_1,flg_dfn);
               } /* Both variables exist */
 
               break;

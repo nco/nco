@@ -235,7 +235,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
  int * const xtr_nbr, /* I/O [nbr] Number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF) /* I [flg] file obeys CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv) /* I [flg] file obeys CCM/CCSM/CF conventions */
 {
   /* Purpose: Add all coordinates to extraction list
      Find all coordinates (dimensions which are also variables) and
@@ -274,7 +274,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
 
   /* Detect associated coordinates specified by CF "coordinates" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.1/cf-conventions.html#coordinate-system */
-  if(CNV_CCM_CCSM_CF){
+  if(cnv->CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_add()"; /* [sng] Function name */
     char **crd_lst; /* [sng] 1D array of list elements */
@@ -358,12 +358,12 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
         } /* !coordinates */
       } /* end loop over attributes */
     } /* end loop over idx_var */
-  } /* !CNV_CCM_CCSM_CF for "coordinates" */
+  } /* !cnv->CCM_CCSM_CF for "coordinates" */
 
   /* Detect coordinate boundaries specified by CF "bounds" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
   Algorithm copied with modification from "coordinates" algorithm above */
-  if(CNV_CCM_CCSM_CF){
+  if(cnv->CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_add()"; /* [sng] Function name */
     char **bnd_lst; /* [sng] 1D array of list elements */
@@ -441,7 +441,7 @@ nco_var_lst_crd_add /* [fnc] Add all coordinates to extraction list */
         } /* !coordinates */
       } /* end loop over attributes */
     } /* end loop over idx_var */
-  } /* !CNV_CCM_CCSM_CF for "bounds" */
+  } /* !cnv->CCM_CCSM_CF for "bounds" */
 
   return xtr_lst;
 } /* end nco_var_lst_crd_add() */
@@ -451,7 +451,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
 (const int nc_id, /* I netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
  int * const xtr_nbr, /* I/O number of variables in current extraction list */
- const nco_bool CNV_CCM_CCSM_CF) /* I [flg] file obeys CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv) /* I [flg] file obeys CCM/CCSM/CF conventions */
 {
   /* Purpose: Add coordinates associated with variables to extraction list */
 
@@ -511,7 +511,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
 
   /* Detect associated coordinates specified by CF "coordinates" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#coordinate-system */
-  if(CNV_CCM_CCSM_CF){
+  if(cnv->CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_ass_add()"; /* [sng] Function name */
     char **crd_lst; /* [sng] 1D array of list elements */
@@ -586,12 +586,12 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
         } /* !coordinates */
       } /* end loop over attributes */
     } /* end loop over idx_var */
-  } /* !CNV_CCM_CCSM_CF for "coordinates" */
+  } /* !cnv->CCM_CCSM_CF for "coordinates" */
 
   /* Detect coordinate boundaries specified by CF "bounds" convention
   http://cf-pcmdi.llnl.gov/documents/cf-conventions/1.5/cf-conventions.html#cell-boundaries
   Algorithm copied with modification from "coordinates" algorithm above */
-  if(CNV_CCM_CCSM_CF){
+  if(cnv->CCM_CCSM_CF){
     const char dlm_sng[]=" "; /* [sng] Delimiter string */
     const char fnc_nm[]="nco_var_lst_crd_ass_add()"; /* [sng] Function name */
     char **bnd_lst; /* [sng] 1D array of list elements */
@@ -663,7 +663,7 @@ nco_var_lst_crd_ass_add /* [fnc] Add to extraction list all coordinates associat
         } /* !coordinates */
       } /* end loop over attributes */
     } /* end loop over idx_var */
-  } /* !CNV_CCM_CCSM_CF for "bounds" */
+  } /* !cnv->CCM_CCSM_CF for "bounds" */
 
   return xtr_lst;
   
@@ -845,7 +845,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 (var_sct * const * const var, /* I [sct] Variable list (input file) */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
- const nco_bool CNV_CCM_CCSM_CF, /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv, /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD, /* [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_pck_map, /* I [enm] Packing map */
  const int nco_pck_plc, /* I [enm] Packing policy */
@@ -1011,18 +1011,11 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     if(nco_is_rth_opr(nco_prg_id))
       if(var[idx]->sz == 0L) var_op_typ[idx]=fix_typ;
 
-#if 0
-    int in_id;  
-    nco_bool CNV_MPAS=False;
-    in_id=trv_tbl->in_id_arr[0]; // NB: only defined in ncks???
-    if(False) CNV_MPAS=nco_cnv_mpas_inq(in_id);
-#endif /* !0 */
-
-    if(CNV_CCM_CCSM_CF){
+    if(cnv->CCM_CCSM_CF){
       nco_bool var_is_fix;  /* [fnc] Variable should be treated as a fixed variable */
       var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc);  
       if(var_is_fix) var_op_typ[idx]=fix_typ;
-    } /* end if CNV_CCM_CCSM_CF */
+    } /* end if cnv->CCM_CCSM_CF */
 
     /* Warn about any expected weird behavior */
     if(var_op_typ[idx] == prc_typ){
@@ -1109,7 +1102,7 @@ void
 nco_var_lst_dvd_ncbo                          /* [fnc] Divide input lists into output lists (ncbo only)  */
 (var_sct * const var,                        /* I [sct] Variable list (input file) */
  var_sct * const var_out,                    /* I [sct] Variable list (output file) */
- const nco_bool CNV_CCM_CCSM_CF,             /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,             /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const nco_bool FIX_REC_CRD,                 /* I [flg] Do not interpolate/multiply record coordinate variables (ncflint only) */
  const int nco_pck_map,                      /* I [enm] Packing map */
  const int nco_pck_plc,                      /* I [enm] Packing policy */
@@ -1237,11 +1230,11 @@ nco_var_lst_dvd_ncbo                          /* [fnc] Divide input lists into o
     if(var->sz == 0L)
       var_op_typ=fix_typ;
 
-  if(CNV_CCM_CCSM_CF){
+  if(cnv->CCM_CCSM_CF){
     nco_bool var_is_fix;  /* [fnc] Treat variable as a fixed variable */
     var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc);  
     if(var_is_fix) var_op_typ=fix_typ;
-  } /* end if CNV_CCM_CCSM_CF */
+  } /* end if cnv->CCM_CCSM_CF */
 
   /* Warn about any expected weird behavior */
   if(var_op_typ == prc_typ){

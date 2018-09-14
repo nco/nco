@@ -9,14 +9,13 @@
 
 #include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */
 
-nco_bool /* O [flg] File obeys MPAS conventions */
-nco_cnv_mpas_inq /* O [fnc] Check if file obeys MPAS conventions */
+cnv_sct * /* O [sct] Convention structure */
+nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
 (const int nc_id) /* I [id] netCDF file ID */
 {
-  /* Purpose: Check if file adheres to MPAS history tape format
-     20180912: Based on nco_cnv_ccm_ccsm_cf_inq() */
+  /* Purpose: Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
 
-  nco_bool CNV_MPAS=False;
+  const char fnc_nm[]="nco_cnv_inq()"; /* [sng] Function name */
 
   char *att_val;
   char *cnv_sng=NULL_CEWI;
@@ -25,13 +24,18 @@ nco_cnv_mpas_inq /* O [fnc] Check if file obeys MPAS conventions */
   char cnv_sng_UC[]="Conventions"; /* Unidata standard     string (uppercase) */
   char cnv_sng_LC[]="conventions"; /* Unidata non-standard string (lowercase) */
   
+  cnv_sct *cnv; /* [sct] Conventions structure */
+
   int rcd; /* [rcd] Return code */
   
   long att_sz;
 
   nc_type att_typ;
 
-  /* Look for signature of a MPAS-format file */
+  /* Allocate */
+  cnv=(cnv_sct *)nco_malloc(sizeof(cnv_sct));
+    
+  /* Look for signature of a CCM/CCSM/CF-format file */
   cnv_sng=cnv_sng_UC;
   rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
   if(rcd != NC_NOERR){
@@ -46,20 +50,25 @@ nco_cnv_mpas_inq /* O [fnc] Check if file obeys MPAS conventions */
     (void)nco_get_att(nc_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';
-    /* MPAS conventions */
-    if(strstr(att_val,"MPAS")) CNV_MPAS=True; /* Backwards compatibility */
-    if(CNV_MPAS && nco_dbg_lvl_get() >= nco_dbg_fl){
+    /* CCM3, CCSM1 conventions */
+    if(strstr(att_val,"NCAR-CSM")) cnv->CCM_CCSM_CF=True; /* Backwards compatibility */
+    /* Climate-Forecast conventions */
+    if(strstr(att_val,"CF-1.")) cnv->CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
+    /* As of 20060514, CLM 3.0 uses CF1.0 not CF-1.0 (CAM gets it right) */
+    if(strstr(att_val,"CF1.")) cnv->CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
+    if(strstr(att_val,"MPAS")) cnv->MPAS=True; /* This works for all known MPAS versions */
+    if(nco_dbg_lvl_get() >= nco_dbg_fl && (cnv->CCM_CCSM_CF || cnv->MPAS)){
       (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\"\n",nco_prg_nm_get(),cnv_sng,att_val);
       if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",nco_prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
       /* Only warn in arithmetic operators where conventions change behavior */
-      if(nco_dbg_lvl_get() >= nco_dbg_fl && nco_dbg_lvl_get() != nco_dbg_dev && nco_is_rth_opr(nco_prg_id_get())) (void)fprintf(stderr,"%s: INFO NCO attempts to abide by many official and unofficial metadata conventions including ARM, CCM, CCSM, CF, and MPAS. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"areaCell\" or \"edgesOnCell\", and many operators will always leave coordinate variables unchanged. The full list of exceptions is in the manual http://nco.sf.net/nco.html#MPAS\n",nco_prg_nm_get());
+      if(nco_dbg_lvl_get() >= nco_dbg_fl && nco_dbg_lvl_get() != nco_dbg_dev && nco_is_rth_opr(nco_prg_id_get())) (void)fprintf(stderr,"%s: INFO NCO attempts to abide by many official and unofficial metadata conventions including ARM, CCM, CCSM, CF, and MPAS. To adhere to these conventions, NCO implements variable-specific exceptions in certain operators, e.g., ncbo will not subtract variables named \"date\" or \"gw\" (for CCM/CCSM files) or \"areaCell\" or \"edgesOnCell\" (for MPAS files), and many operators will always leave coordinate variables unchanged. The full list of exceptions is in the manual http://nco.sf.net/nco.html#CF\n",nco_prg_nm_get());
     } /* endif dbg */
     att_val=(char *)nco_free(att_val);
   } /* endif */
 
-  return CNV_MPAS;
+  return cnv;
   
-} /* end nco_cnv_mpas_inq() */
+} /* end nco_cnv_inq() */
 
 nco_bool /* O [flg] File obeys CCM/CCSM/CF conventions */
 nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions */

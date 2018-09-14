@@ -89,7 +89,7 @@
 int 
 main(int argc,char **argv)
 {
-  nco_bool CNV_CCM_CCSM_CF;
+  cnv_sct *cnv; /* [sct] Convention structure */
   nco_bool CPY_GLB_METADATA=True; /* Option M */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
@@ -650,11 +650,11 @@ main(int argc,char **argv)
     var_out=(var_sct **)nco_malloc(xtr_nbr*sizeof(var_sct *));
     for(var_idx=0;var_idx<xtr_nbr;var_idx++) var_out[var_idx]=nco_var_dpl(var[var_idx]);
 
-    /* Is this a CCM/CCSM/CF-format history tape? */
-    CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+    /* Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
+    cnv=nco_cnv_ini(in_id);
 
     /* Divide variable lists into lists of fixed variables and variables to be processed */
-    (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc,trv_tbl);
+    (void)nco_var_lst_dvd(var,var_out,xtr_nbr,cnv,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc,trv_tbl);
 
     /* Store processed and fixed variables info into GTT */
     (void)nco_var_prc_fix_trv(nbr_var_prc,var_prc,nbr_var_fix,var_fix,trv_tbl);

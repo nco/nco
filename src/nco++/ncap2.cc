@@ -135,6 +135,8 @@ main(int argc,char **argv)
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
+  cnv_sct *cnv; /* [sct] Convention structure */
+
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct *dmn_new;
   dmn_sct *dmn_item;
@@ -192,7 +194,6 @@ main(int argc,char **argv)
   
   nco_bool ATT_INHERIT=True;          
   nco_bool ATT_PROPAGATE=True;        
-  nco_bool CNV_CCM_CCSM_CF;
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   nco_bool FL_RTR_RMT_LCN;
@@ -211,7 +212,6 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_mmr_cln=True;  /* [flg] Clean memory prior to exit */
   nco_bool flg_cll_mth=False;  /* [flg] Add/modify cell_methods attributes */
-
   
   nm_id_sct *dmn_lst=NULL_CEWI;
   nm_id_sct *xtr_lst=NULL_CEWI; /* Non-processed variables to copy to OUTPUT */
@@ -939,11 +939,11 @@ main(int argc,char **argv)
     } /* end loop over idx */	      
   } /* end if */ 
 
-  /* Is this a CCM/CCSM/CF-format history tape? */
-  CNV_CCM_CCSM_CF=nco_cnv_ccm_ccsm_cf_inq(in_id);
+  /* Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
+  cnv=nco_cnv_ini(in_id);
 
   /* Add coordinates defined by CF convention */
-  if(CNV_CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&xtr_nbr);
+  if(cnv->CCM_CCSM_CF && (EXTRACT_ALL_COORDINATES || EXTRACT_ASSOCIATED_COORDINATES)) xtr_lst=nco_cnv_cf_crd_add(in_id,xtr_lst,&xtr_nbr);
 
   /* Subtract list A again (it may contain re-defined coordinates) */
   if(xtr_nbr > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&xtr_nbr,xtr_lst_a,nbr_lst_a);
@@ -963,7 +963,7 @@ main(int argc,char **argv)
 
   /* NB: ncap is not well-suited for nco_var_lst_dvd() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,CNV_CCM_CCSM_CF,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc,NULL);
+  (void)nco_var_lst_dvd(var,var_out,xtr_nbr,cnv,True,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc,NULL);
   
   /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */
