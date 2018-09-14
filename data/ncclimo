@@ -37,7 +37,8 @@
 # E3SM/ACME Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
 
 # Insta-install:
-# scp ~/nco/data/ncclimo aims4.llnl.gov:bin
+# scp ~/nco/data/ncremap zender1@acme1.llnl.gov:bin
+# scp ~/nco/data/ncremap zender1@aims4.llnl.gov:bin
 # scp ~/nco/data/ncclimo blues.lcrc.anl.gov:bin
 # scp ~/nco/data/ncclimo cheyenne.ucar.edu:bin
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin

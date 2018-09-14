@@ -1011,9 +1011,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     if(nco_is_rth_opr(nco_prg_id))
       if(var[idx]->sz == 0L) var_op_typ[idx]=fix_typ;
 
-    if(cnv->CCM_CCSM_CF){
+    if(cnv->CCM_CCSM_CF || cnv->MPAS){
       nco_bool var_is_fix;  /* [fnc] Variable should be treated as a fixed variable */
-      var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc);  
+      var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc,cnv);  
       if(var_is_fix) var_op_typ[idx]=fix_typ;
     } /* end if cnv->CCM_CCSM_CF */
 
@@ -1230,9 +1230,9 @@ nco_var_lst_dvd_ncbo                          /* [fnc] Divide input lists into o
     if(var->sz == 0L)
       var_op_typ=fix_typ;
 
-  if(cnv->CCM_CCSM_CF){
+  if(cnv->CCM_CCSM_CF || cnv->MPAS){
     nco_bool var_is_fix;  /* [fnc] Treat variable as a fixed variable */
-    var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc);  
+    var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc,cnv);  
     if(var_is_fix) var_op_typ=fix_typ;
   } /* end if cnv->CCM_CCSM_CF */
 
@@ -1257,10 +1257,11 @@ nco_var_lst_dvd_ncbo                          /* [fnc] Divide input lists into o
 } /* end nco_var_lst_dvd_ncbo() */
 
 nco_bool
-nco_var_is_fix                               /* [fnc] Variable should be treated as a fixed variable */
-(const char * const var_nm,                  /* I [sng] Variable name */
- const int nco_prg_id,                       /* I [enm] Program key */
- const int nco_pck_plc)                      /* I [enm] Packing policy */
+nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
+(const char * const var_nm, /* I [sng] Variable name */
+ const int nco_prg_id, /* I [enm] Program key */
+ const int nco_pck_plc, /* I [enm] Packing policy */
+ const cnv_sct * const cnv) /* I [sct] Convention structure */
 {
   const char fnc_nm[]="nco_var_is_fix()"; /* [sng] Function name */
 
@@ -1308,21 +1309,25 @@ nco_var_is_fix                               /* [fnc] Variable should be treated
   /* Check condition #4 above: */
   if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") || !strcmp(var_nm,"latitude") || !strcmp(var_nm,"longitude") )) var_is_fix=True;
 
-  /* 20180912: Do not process MPAS grid variables */
-  if(False){
-    const int var_xcl_lst_nbr=33; /* [nbr] Number of objects on exclusion list */
-    const char *var_xcl_lst[]={"areaCell","areaTriangle","cellsonCell","cellsOnEdge","cellsOnVertex","dcEdge","dvEdge","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","kiteAreasOnVertex","latCell","latEdge","latVertex","lonCell","lonEdge","lonVertex","nEdgesOnCell","nEdgesOnEdge","verticesOnCell","verticesOnEdge","xCell","xEdge","xVertex","yCell","yEdge","yVertex","zCell","zEdge","zVertex"};
-    int idx;
-    int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
-    for(idx=0;idx<var_xcl_lst_nbr;idx++)
-      if(!strcmp(var_nm,var_xcl_lst[idx])) break;
-    if(idx < var_xcl_lst_nbr){
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically fixing pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),var_nm);
-      var_xcl_nbr++;
-      var_is_fix=True;
-    } /* endif */
-  } /* !False */
+  if(cnv->MPAS){
+    
+    /* 20180912: Do not process MPAS grid variables? */
+    if(False){
+      const int var_xcl_lst_nbr=33; /* [nbr] Number of objects on exclusion list */
+      const char *var_xcl_lst[]={"areaCell","areaTriangle","cellsonCell","cellsOnEdge","cellsOnVertex","dcEdge","dvEdge","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","kiteAreasOnVertex","latCell","latEdge","latVertex","lonCell","lonEdge","lonVertex","nEdgesOnCell","nEdgesOnEdge","verticesOnCell","verticesOnEdge","xCell","xEdge","xVertex","yCell","yEdge","yVertex","zCell","zEdge","zVertex"};
+      int idx;
+      int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
+      for(idx=0;idx<var_xcl_lst_nbr;idx++)
+	if(!strcmp(var_nm,var_xcl_lst[idx])) break;
+      if(idx < var_xcl_lst_nbr){
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically fixing pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),var_nm);
+	var_xcl_nbr++;
+	var_is_fix=True;
+      } /* endif */
+    } /* !False */
   
+  } /* !MPAS */
+
   return var_is_fix;
 
 } /* nco_var_is_fix() */

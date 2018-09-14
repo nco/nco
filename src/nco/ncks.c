@@ -1022,12 +1022,6 @@ main(int argc,char **argv)
   /* Construct GTT (Group Traversal Table), check -v and -g input names and create extraction list */
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,EXTRACT_CLL_MSR,EXTRACT_FRM_TRM,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
-  /* 20170914: Workaround CDF5 bug for MPAS MOC */
-  if(var_lst_in_nbr == 2 && (!strcmp(var_lst_in[0],"timeMonthly_avg_normalVelocity") || !strcmp(var_lst_in[1],"timeMonthly_avg_normalVelocity"))){
-    srt_mth=0; // fxm: Set to 1 to activate workaround. Currently broken, seems to produce invalid trv_tbl
-    if(srt_mth == 1) (void)fprintf(stderr,"%s: INFO Activating CDF5 bug workaround: define output in reverse-alphabetical (instead of alphabetical) order when two fields are requested and one is timeMonthly_avg_normalVelocity\n",nco_prg_nm_get());
-  } /* !CDF5 */
-
   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(srt_mth,trv_tbl);
 
   /* [fnc] Print extraction list and exit */

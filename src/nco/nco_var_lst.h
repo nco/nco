@@ -144,10 +144,11 @@ nco_var_lst_dvd_ncbo                         /* [fnc] Divide input lists into ou
  prc_typ_enm *prc);                          /* O [enm] Processing type */
 
 nco_bool
-nco_var_is_fix                               /* [fnc] Variable should be treated as a fixed variable */
-(const char * const var_nm,                  /* I [sng] Variable name */
- const int nco_prg_id,                       /* I [enm] Program key */
- const int nco_pck_plc);                     /* I [enm] Packing policy */
+nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
+(const char * const var_nm, /* I [sng] Variable name */
+ const int nco_prg_id, /* I [enm] Program key */
+ const int nco_pck_plc, /* I [enm] Packing policy */
+ const cnv_sct * const cnv); /* I [sct] Convention structure */
 
 #ifdef __cplusplus
 } /* end extern "C" */

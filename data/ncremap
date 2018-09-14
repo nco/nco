@@ -46,7 +46,8 @@
 # Use Pre-Destination mode to post-process models or analyses where all files are converted from the same source grid to the same destination grid so the map-file can be pre-generated and never change
 
 # Insta-install:
-# scp ~/nco/data/ncremap aims4.llnl.gov:bin
+# scp ~/nco/data/ncremap zender1@acme1.llnl.gov:bin
+# scp ~/nco/data/ncremap zender1@aims4.llnl.gov:bin
 # scp ~/nco/data/ncremap blues.lcrc.anl.gov:bin
 # scp ~/nco/data/ncremap cheyenne.ucar.edu:bin
 # scp ~/nco/data/ncremap cooley.alcf.anl.gov:bin
@@ -2287,27 +2288,8 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !map_mk
     
     # Block 4: Special cases
-    # Block 4a: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then annotate here, so assume ncclimo is working with annotated files)
-    if [ "${prc_typ}" = 'mpas' ] && [ "${clm_flg}" = 'No' ]; then
-	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,${mss_val} ${in_fl} ${att_fl};"
-	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
-	    printf "att(in)  : ${in_fl}\n"
-	    printf "att(out) : ${att_fl}\n"
-	fi # !vrb_lvl
-	in_fl="${att_fl}"
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_att[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_att[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f "${att_fl}" ]; then
-		printf "${spt_nm}: ERROR Failed to annotate MPAS file with _FillValue. Debug this:\n${cmd_att[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    fi # !mpas
-	
-    # Block 4b: Generic Permutation/Unpacking (AIRS, HIRDLS, MLS, MOD04, MPAS)
+    # Block 4a: Generic Permutation/Unpacking (AIRS, HIRDLS, MLS, MOD04, MPAS)
+    # Do sub-setting operation (like PDQ) first so cmd_att works on smaller, sub-set files
     if [ -n "${pdq_opt}" ]; then
 	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
 	    printf "PDQ(in)  : ${in_fl}\n"
@@ -2327,6 +2309,26 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
     fi # !pdq_opt
 
+    # Block 4b: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then annotate here, so assume ncclimo is working with annotated files)
+    if [ "${prc_typ}" = 'mpas' ] && [ "${clm_flg}" = 'No' ]; then
+	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,${mss_val} ${in_fl} ${att_fl};"
+	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
+	    printf "att(in)  : ${in_fl}\n"
+	    printf "att(out) : ${att_fl}\n"
+	fi # !vrb_lvl
+	in_fl="${att_fl}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_att[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_att[${fl_idx}]}
+	    if [ $? -ne 0 ] || [ ! -f "${att_fl}" ]; then
+		printf "${spt_nm}: ERROR Failed to annotate MPAS file with _FillValue. Debug this:\n${cmd_att[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    fi # !mpas
+	
     # Block 4c: RRG
     if [ "${prc_typ}" = 'rrg' ]; then 
 	rrg_dmn_lst=`ncdmnlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`

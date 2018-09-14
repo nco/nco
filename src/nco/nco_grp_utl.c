@@ -6641,8 +6641,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
  const nco_bool GRP_XTR_VAR_XCL,      /* I [flg] Extract matching groups, exclude matching variables */
  const nco_bool EXCLUDE_INPUT_LIST,   /* I [flg] Exclude rather than extract groups and variables specified with -v */ 
  const nco_bool EXTRACT_ASSOCIATED_COORDINATES, /* I [flg] Extract all coordinates associated with extracted variables? */
- const nco_bool EXTRACT_CLL_MSR, /* I [flg] Extract cell_measures variables */
- const nco_bool EXTRACT_FRM_TRM, /* I [flg] Extract formula_terms variables */
+ const nco_bool EXTRACT_CLL_MSR,      /* I [flg] Extract cell_measures variables */
+ const nco_bool EXTRACT_FRM_TRM,      /* I [flg] Extract formula_terms variables */
  const int nco_pck_plc,               /* I [enm] Packing policy */
  nco_dmn_dne_t **flg_dne,             /* I/O [lst] Flag to check if input dimension -d "does not exist" */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
@@ -8592,7 +8592,7 @@ void
 nco_bld_nsm                           /* [fnc] Build ensembles */
 (const int nc_id,                     /* I [id] netCDF file ID */
  const nco_bool flg_fix_xtr,          /* I [flg] Mark fized variables as extracted  */
- const cnv_sct * const cnv,      /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
+ const cnv_sct * const cnv,           /* I [flg] File adheres to NCAR CCM/CCSM/CF conventions */
  const int nco_pck_plc,               /* I [enm] Packing policy */
  trv_tbl_sct * const trv_tbl)         /* I/O [sct] Traversal table */
 {
@@ -8678,7 +8678,7 @@ nco_bld_nsm                           /* [fnc] Build ensembles */
 
                 nco_bool var_is_fix=False;  /* [fnc] Variable should be treated as a fixed variable */
 
-                if(cnv->CCM_CCSM_CF) var_is_fix=nco_var_is_fix(var_trv->nm,nco_prg_id,nco_pck_plc);  
+                if(cnv->CCM_CCSM_CF || cnv->MPAS) var_is_fix=nco_var_is_fix(var_trv->nm,nco_prg_id,nco_pck_plc,cnv);
 
                 /* Define as either fixed template or template  */
                 if(var_trv->is_crd_var || var_trv->is_rec_var || var_is_fix){
