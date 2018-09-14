@@ -124,6 +124,8 @@ main(int argc,char **argv)
 
   cnk_sct cnk; /* [sct] Chunking structure */
 
+  cnv_sct *cnv; /* [sct] Convention structure */
+
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
   ddra_info.flg_ddra=False;
@@ -184,7 +186,6 @@ main(int argc,char **argv)
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
   nco_bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimensions */
-  cnv_sct *cnv; /* [sct] Convention structure */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */

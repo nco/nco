@@ -2071,7 +2071,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      HIRDLS: Latitude
      MAR/RACMO: LAT, LON
      MLS: CO_Latitude
-     MPAS-O/I/LI: areaCell, latCell, lonCell
+     MPAS-O/I/LI: areaCell, latCell, lonCell and numerous, numerous, others...
      NCO: lat_vertices, lon_vertices
      NEMO: nav_lat, nav_lon
      OCO2: latitude_bnds, longitude_bnds
@@ -2103,9 +2103,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     } /* endif */
   } /* !idx */
 
-  if(False){
-    /* 20160228: MPAS has a host of mysterious grid and extensive variables that should probably not be regridded */
-    /* 20180206: Add from MPAS-LI xCell, yCell, zCell, and [xyz]Edge, and [xyz]Vertex */
+  cnv_sct *cnv; /* [sct] Convention structure */
+  /* Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
+  cnv=nco_cnv_ini(in_id);
+  if(cnv->MPAS){
+    /* 20160228: MPAS has a host of mysterious grid and extensive variables that should probably not be regridded
+       20180206: Add from MPAS-LI xCell, yCell, zCell, and [xyz]Edge, and [xyz]Vertex */
     const int mpas_xcl_lst_nbr=27;
     const char *mpas_xcl_lst[]={"cellMask,cellsOnCell,cellsOnEdge,cellsOnVertex,edgeMask,edgesOnCell,edgesOnEdge,edgesOnVertex,indexToCellID,indexToEdgeID,indexToVertexID,maxLevelCell,maxLevelEdgeTop,nEdgesOnCell,nEdgesOnEdge,vertexMask,verticesOnCell,verticesOnEdge,xCell,yCell,zCell,xEdge,yEdge,zEdge,xVertex,yVertex,zVertex"};
     for(idx=0;idx<mpas_xcl_lst_nbr;idx++){
@@ -2119,7 +2122,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	trv_tbl->lst[idx_tbl].flg_xtr=False;
       } /* endif */
     } /* !idx */
-  } /* !False */
+  } /* !MPAS */
   
   char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input variable */
