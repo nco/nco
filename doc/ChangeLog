@@ -2,7 +2,7 @@
 
 	* NCO 4.7.7-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha05: Field Marshall Von Stoldt';git push
-	git tag -a 4.7.7-alpha05 -m 'rgr num_wgts fix;mpas xcl;cnv sct;';git push --tags
+	git tag -a 4.7.7-alpha05 -m 'rgr num_wgts fix;mpas xcl;cnv sct;rgr xcl_lst mpas;cmd_pdq<->cmd_att';git push --tags
 
 	* Improve NC_ENOTBUILT error to explain CDF5 support
 
