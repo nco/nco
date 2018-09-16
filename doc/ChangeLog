@@ -1,3 +1,7 @@
+2018-09-16  Charlie Zender  <zender@uci.edu>
+
+	* Improve NC_ENOTBUILT error to explain CDF5 support
+
 2018-09-14  Charlie Zender  <zender@uci.edu>
 
 	* Perform cmd_pdq before cmd_att in ncremap so any sub-setting reduces cmd_att time
