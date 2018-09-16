@@ -2110,7 +2110,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     /* 20160228: MPAS has a host of mysterious grid and extensive variables that should probably not be regridded
        20180206: Add from MPAS-LI xCell, yCell, zCell, and [xyz]Edge, and [xyz]Vertex */
     const int mpas_xcl_lst_nbr=27;
-    const char *mpas_xcl_lst[]={"cellMask,cellsOnCell,cellsOnEdge,cellsOnVertex,edgeMask,edgesOnCell,edgesOnEdge,edgesOnVertex,indexToCellID,indexToEdgeID,indexToVertexID,maxLevelCell,maxLevelEdgeTop,nEdgesOnCell,nEdgesOnEdge,vertexMask,verticesOnCell,verticesOnEdge,xCell,yCell,zCell,xEdge,yEdge,zEdge,xVertex,yVertex,zVertex"};
+    const char *mpas_xcl_lst[]={"cellMask","cellsOnCell","cellsOnEdge","cellsOnVertex","edgeMask","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","maxLevelCell","maxLevelEdgeTop","nEdgesOnCell","nEdgesOnEdge","vertexMask","verticesOnCell","verticesOnEdge","xCell","yCell","zCell","xEdge","yEdge","zEdge","xVertex","yVertex","zVertex"};
     for(idx=0;idx<mpas_xcl_lst_nbr;idx++){
       for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
 	if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,mpas_xcl_lst[idx])) break;
