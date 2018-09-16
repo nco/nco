@@ -272,10 +272,10 @@ echo "#################################"
 echo "#  Test for netCDF4 support     #"
 echo "#################################"
 
-AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4 features (same as enable-netcdf-4) [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=yes)
+AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4 features (same as enable-netcdf-4) [default=yes]]),enable_netcdf4=${enableval},enable_netcdf4=yes)
 # 20100105: make --enable-netcdf-4 synonym for --enable-netcdf4
 if test "x${enable_netcdf4}" = 'xno' ; then
-    AC_ARG_ENABLE(netcdf-4,AS_HELP_STRING([--enable-netcdf-4],[Enable netCDF Version 4 features (same as enable-netcdf4) [[default=yes]]]),enable_netcdf4=${enableval},enable_netcdf4=yes)  
+    AC_ARG_ENABLE(netcdf-4,AS_HELP_STRING([--enable-netcdf-4],[Enable netCDF Version 4 features (same as enable-netcdf4) [default=yes]]),enable_netcdf4=${enableval},enable_netcdf4=yes)  
 fi # !netCDF4
 AC_ARG_VAR([NETCDF_ROOT],[Root of netCDF4 installation] (compile-time))
 
@@ -325,7 +325,7 @@ fi
 AC_CHECK_HEADER([netcdf_mem.h],AC_DEFINE([HAVE_NETCDF_MEM_H],1,[Define to 1 if <netcdf_mem.h> is present]),nco_have_netcdf_mem_h=no)
 
 # Begin OpenMP
-AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [[default=yes]]]),enable_openmp=${enableval},enable_openmp=yes)
+AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [default=yes]]),enable_openmp=${enableval},enable_openmp=yes)
 # Enable OpenMP unless told not to
 if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
     AC_OPENMP
@@ -343,7 +343,7 @@ fi
 echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
 nco_LIBS_no_DAP="${LIBS}"
-AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build DAP-enabled NCO with netCDF-provided DAP [[default=yes]]]),enable_dap=${enableval},enable_dap=yes)
+AC_ARG_ENABLE(dap,AS_HELP_STRING([--enable-dap],[Build DAP-enabled NCO with netCDF-provided DAP [default=yes]]),enable_dap=${enableval},enable_dap=yes)
 # Check for DAP in netCDF library unless told not to
 if test "${enable_dap}" != 'no'; then
     echo "Testing for DAP-netCDF support (is DAP in libnetcdf.a?)..."
@@ -417,8 +417,8 @@ echo "#  Testing for ANTLR support    #"
 echo "#################################"
 
 AC_ARG_VAR(ANTLR_ROOT,Location of ANTLR version 2.7.x installation (compile-time))
-AC_ARG_ENABLE(ncoxx,AS_HELP_STRING([--enable-ncoxx],[Build libnco++ and ncap2 (same as enable-ncap2) [[default=yes]]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
-AC_ARG_ENABLE(ncap2,AS_HELP_STRING([--enable-ncap2],[Build ncap2 and libnco++ (same as enable-ncoxx) [[default=yes]]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
+AC_ARG_ENABLE(ncoxx,AS_HELP_STRING([--enable-ncoxx],[Build libnco++ and ncap2 (same as enable-ncap2) [default=yes]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
+AC_ARG_ENABLE(ncap2,AS_HELP_STRING([--enable-ncap2],[Build ncap2 and libnco++ (same as enable-ncoxx) [default=yes]]),enable_ncoxx=${enableval},[enable_ncoxx=yes])
 if test "${C_INC}"; then
 # Prepend ${C_INC} to search path if present
 # C_INC refers to a directory that is guaranteed to be searched first
@@ -484,13 +484,13 @@ AC_LANG_POP([C++])
 # end ANTLR
 
 # Begin MPI (deprecated)
-AC_ARG_ENABLE(mpi,AS_HELP_STRING([--enable-mpi],[Build NCO for Message Passing Interface (NB: Do not use, this is not yet supported) [[default=no]]]),enable_mpi=${enableval},enable_mpi=no)
+AC_ARG_ENABLE(mpi,AS_HELP_STRING([--enable-mpi],[Build NCO for Message Passing Interface (NB: Do not use, this is not yet supported) [default=no]]),enable_mpi=${enableval},enable_mpi=no)
 AM_CONDITIONAL(ENABLE_MPI,[test "${enable_mpi}" = 'yes'])
 # End MPI
 
 # Begin Fortran (obsolete)
 # If --enable-fortran define USE_FORTRAN_ARITHMETIC
-AC_ARG_ENABLE(fortran,AS_HELP_STRING([--enable-fortran],[Use Fortran arithmetic (deprecated) [[default=no]]]),enable_fortran=${enableval},enable_fortran=no)
+AC_ARG_ENABLE(fortran,AS_HELP_STRING([--enable-fortran],[Use Fortran arithmetic (deprecated) [default=no]]),enable_fortran=${enableval},enable_fortran=no)
 if test "${enable_fortran}" = 'yes'; then
     AC_DEFINE(USE_FORTRAN_ARITHMETIC,1,Use Fortran arithmetic)
 fi
@@ -511,7 +511,7 @@ else
 	I18N_SHARE='/usr/share/locale'
     fi
 fi
-AC_ARG_ENABLE(i18n,AS_HELP_STRING([--enable-i18n],[Internationalization (i18n) support (WARNING: Experimental, for future use) [[default=no]]]),enable_i18n=${enableval},enable_i18n=no)
+AC_ARG_ENABLE(i18n,AS_HELP_STRING([--enable-i18n],[Internationalization (i18n) support (WARNING: Experimental, for future use) [default=no]]),enable_i18n=${enableval},enable_i18n=no)
 
 # Check for i18n libraries unless told otherwise
 if test "${enable_i18n}" != 'no'; then
@@ -538,7 +538,7 @@ fi
 
 # Begin nco_c++
 # If --enable-nco_cplusplus, compile NCO C++ interface library
-AC_ARG_ENABLE(nco_cplusplus,AS_HELP_STRING([--enable-nco_cplusplus],[Build NCO C++ interface library [[default=yes]]]),enable_nco_cxx=${enableval},enable_nco_cxx=yes)
+AC_ARG_ENABLE(nco_cplusplus,AS_HELP_STRING([--enable-nco_cplusplus],[Build NCO C++ interface library [default=yes]]),enable_nco_cxx=${enableval},enable_nco_cxx=yes)
 # End nco_c++
 
 echo "##################################################"
@@ -555,7 +555,7 @@ AC_ARG_VAR(ESMF_LIB,Location of ESMF library (compile-time))
 # Store pre-ESMF LIBS value to restore from later
 nco_LIBS_no_ESMF="${LIBS}"
 nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
-AC_ARG_ENABLE(esmf,AS_HELP_STRING([--enable-esmf],[Build-in ESMF support for integrated (instead of off-line) regridding. WARNING: Development code = Unsupported (and not necessary for regridding! Dragons lurk here.) [[default=no]]]),enable_esmf=${enableval},enable_esmf=no)
+AC_ARG_ENABLE(esmf,AS_HELP_STRING([--enable-esmf],[Build-in ESMF support for integrated (instead of off-line) regridding. WARNING: Development code = Unsupported (and not necessary for regridding! Dragons lurk here.) [default=no]]),enable_esmf=${enableval},enable_esmf=no)
 if test "${enable_esmf}" != 'yes'; then
     enable_esmf='no'
 fi
@@ -622,7 +622,7 @@ echo "########################################"
 # Store pre-GSL LIBS value to restore from later
 nco_LIBS_no_GSL="${LIBS}"
 nco_CPPFLAGS_no_GSL="${CPPFLAGS}"
-AC_ARG_ENABLE(gsl,AS_HELP_STRING([--enable-gsl],[Build-in GSL support if possible [[default=yes]]]),enable_gsl=${enableval},enable_gsl=yes)
+AC_ARG_ENABLE(gsl,AS_HELP_STRING([--enable-gsl],[Build-in GSL support if possible [default=yes]]),enable_gsl=${enableval},enable_gsl=yes)
 if test "${enable_gsl}" = 'yes'; then
 
     if test "${GSL_ROOT}"; then
@@ -697,7 +697,7 @@ AM_CONDITIONAL(ENABLE_GSL,[test "${enable_gsl}" = 'yes'])
 
 # Begin rx
 # Check to enable regular expression stuff, allow user to override
-AC_ARG_ENABLE(regex,AS_HELP_STRING([--enable-regex],[Allow extended regular expressions [[default=yes]]]),nco_have_regex=${enableval},nco_have_regex=yes)
+AC_ARG_ENABLE(regex,AS_HELP_STRING([--enable-regex],[Allow extended regular expressions [default=yes]]),nco_have_regex=${enableval},nco_have_regex=yes)
 if test "x${nco_have_regex}" = 'xyes'; then
     AC_CHECK_HEADER([regex.h],AC_DEFINE([HAVE_REGEX_H],1,[Define to 1 if <regex.h> is present]),nco_have_regex=no)
     AC_CHECK_HEADER([sys/types.h],AC_DEFINE([HAVE_SYS_TYPES_H],1,[Define to 1 if <sys/types.h> is present]),nco_have_regex=no)
@@ -721,8 +721,8 @@ echo "########################################"
 echo "#     Testing for UDUNITS support      #"
 echo "########################################"
 
-AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [[default=no]]]),enable_udunits=${enableval},enable_udunits=yes)
-AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 support if possible [[default=yes]]]),enable_udunits2=${enableval},enable_udunits2=yes)
+AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [default=no]]),enable_udunits=${enableval},enable_udunits=yes)
+AC_ARG_ENABLE(udunits2,AS_HELP_STRING([--enable-udunits2],[Build-in UDUnits2 support if possible [default=yes]]),enable_udunits2=${enableval},enable_udunits2=yes)
 # Are both UDUnits and UDUnits2 requested?
 if (test "${enable_udunits}" != 'no' && test "${enable_udunits2}" != 'no'); then
 # Override UDUnits request
@@ -928,7 +928,7 @@ fi
 
 # Begin enable_debug_custom
 # Custom debug: Activate all known, helpful compile-time and run-time debugging checks
-AC_ARG_ENABLE(debug-custom,AS_HELP_STRING([--enable-debug-custom],[Activate all known, helpful compile-time and run-time debugging checks such as pedantic warnings, bounds checking (slowest execution). Automatically activates --enable-debug-symbols. [[default=no]]]),enable_debug_custom=${enableval},enable_debug_custom=no)
+AC_ARG_ENABLE(debug-custom,AS_HELP_STRING([--enable-debug-custom],[Activate all known, helpful compile-time and run-time debugging checks such as pedantic warnings, bounds checking (slowest execution). Automatically activates --enable-debug-symbols. NB: This option may interact unfavorably with some versions of Flex. De-activate this if building fails with with errors involving "yyget_leng()". [default=no]]),enable_debug_custom=${enableval},enable_debug_custom=no)
 if test "${enable_debug_custom}" = 'yes'; then
     AC_DEFINE(ENABLE_DEBUG_CUSTOM,1,[Custom debugging: Pedantic, bounds checking (slowest execution)])
     if (test "x${GCC}" = 'xyes'); then
@@ -1006,7 +1006,7 @@ fi
 
 # Begin enable_debug_symbols
 # If --enable-debug-symbols, add these compiler flags
-AC_ARG_ENABLE(debug-symbols,AS_HELP_STRING([--enable-debug-symbols],[Debugging symbols: Produce symbols for debuggers (e.g., dbx, gdb) [[default=no]]]),enable_debug_symbols=${enableval},enable_debug_symbols=no)
+AC_ARG_ENABLE(debug-symbols,AS_HELP_STRING([--enable-debug-symbols],[Debugging symbols: Produce symbols for debuggers (e.g., dbx, gdb) [default=no]]),enable_debug_symbols=${enableval},enable_debug_symbols=no)
 # Custom debug automatically invokes debugging symbols
 if test "${enable_debug_custom}" = 'yes'; then
     enable_debug_symbols='yes';
@@ -1022,7 +1022,7 @@ fi
 # Activate all known, helpful switches for fastest possible run-time performance
 # These switches are highly compiler and architecture dependent
 # Settings should improve performance relative to default ./configure setttings
-AC_ARG_ENABLE(optimize-custom,AS_HELP_STRING([--enable-optimize-custom],[Activate all known, helpful switches for fastest possible run-time performance (slowest compilation) [[default=no]]]),enable_optimize_custom=${enableval},enable_optimize_custom=no)
+AC_ARG_ENABLE(optimize-custom,AS_HELP_STRING([--enable-optimize-custom],[Activate compiler switches for potentially faster run-time performance (slower compilation). NB: This option may interact unfavorably with some versions of Flex. De-activate this if building fails with with errors involving "yyget_leng()". [default=no]]),enable_optimize_custom=${enableval},enable_optimize_custom=no)
 if test "${enable_optimize_custom}" = 'yes'; then
     AC_DEFINE(ENABLE_OPTIMIZE_CUSTOM,1,Fastest possible execution (slowest compilation))
     #echo "DEBUG: x\$CC=x${CC},  x\$GCC=x${GCC}"
@@ -1238,7 +1238,7 @@ AC_SUBST(NCOXX)
 # Begin Doc
 # Mac OS X has outdated TeXInfo, and fails build docs (unless MacPorts is installed)
 # Enable doc-building by default (subject to later checks) unless told otherwise
-AC_ARG_ENABLE(doc,AS_HELP_STRING([--enable-doc],[Build/install NCO TexInfo-based documentation (info hierarchy and PDF/HTML Users Guide)[[default=yes]]]),enable_doc=${enableval},enable_doc=yes)
+AC_ARG_ENABLE(doc,AS_HELP_STRING([--enable-doc],[Build/install NCO TexInfo-based documentation (info hierarchy and PDF/HTML Users Guide) [default=yes]]),enable_doc=${enableval},enable_doc=yes)
 # End Doc
 
 # Conditional build of doc/Makefile
