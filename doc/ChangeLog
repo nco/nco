@@ -1,20 +1,20 @@
 2018-09-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.7-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha05: Field Marshall Von Stoldt';git push
+	git tag -a 4.7.7-alpha05 -m 'rgr num_wgts fix;mpas xcl;cnv sct;';git push --tags
+
 	* Improve NC_ENOTBUILT error to explain CDF5 support
 
 2018-09-14  Charlie Zender  <zender@uci.edu>
 
 	* Perform cmd_pdq before cmd_att in ncremap so any sub-setting reduces cmd_att time
 
-	* NCO 4.7.7-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha05: Field Marshall Von Stoldt';git push
-	git tag -a 4.7.7-alpha05 -m 'rgr num_wgts fix;mpas xcl;cnv sct;';git push --tags
-
 	* Remove MPAS MOC exception from ncks.c
 
 	* Hook-up MPAS exclusion list for regridder
 
-	* Finally deleted ncap.c
+	* Finally delete ncap.c
 
 	* Replace CNV_CCM_CCSM_CF with convention structure cnv
 
