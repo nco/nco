@@ -797,7 +797,12 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 		"No",
 #endif /* !NC_64BIT_OFFSET */
 #if defined(NC_LIB_VERSION) && (NC_LIB_VERSION >= 440)
+# if defined(NC_HAS_CDF5) && (NC_HAS_CDF5 != 0)
+		/* 20180916: Simple version test is insufficient since --enable-cdf5 required for netCDF 4.5.x-4.6.1 */
 		"Yes",
+# else /* !NC_HAS_CDF5 */
+		"No",
+# endif /* !NC_HAS_CDF5 */
 #else /* !NC_64BIT_DATA */
 		"No",
 #endif /* !NC_64BIT_DATA */

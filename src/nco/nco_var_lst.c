@@ -1320,7 +1320,7 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
       for(idx=0;idx<var_xcl_lst_nbr;idx++)
 	if(!strcmp(var_nm,var_xcl_lst[idx])) break;
       if(idx < var_xcl_lst_nbr){
-	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically fixing pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),var_nm);
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s preventing arithmetic processing of MPAS grid-like variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	var_xcl_nbr++;
 	var_is_fix=True;
       } /* endif */
