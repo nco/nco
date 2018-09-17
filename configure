@@ -17521,44 +17521,8 @@ echo "################################"
 # sudo port install netcdf
 # installs to /opt/local/include, /opt/local/lib
 # Add this path to CPPFLAGS if it exists, otherwise do nothing
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/include/netcdf.h" >&5
-$as_echo_n "checking for /opt/local/include/netcdf.h... " >&6; }
-if ${ac_cv_file__opt_local_include_netcdf_h+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/opt/local/include/netcdf.h"; then
-  ac_cv_file__opt_local_include_netcdf_h=yes
-else
-  ac_cv_file__opt_local_include_netcdf_h=no
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_include_netcdf_h" >&5
-$as_echo "$ac_cv_file__opt_local_include_netcdf_h" >&6; }
-if test "x$ac_cv_file__opt_local_include_netcdf_h" = xyes; then :
-  CPPFLAGS="$CPPFLAGS -I/opt/local/include"
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/lib/libnetcdf.a" >&5
-$as_echo_n "checking for /opt/local/lib/libnetcdf.a... " >&6; }
-if ${ac_cv_file__opt_local_lib_libnetcdf_a+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/opt/local/lib/libnetcdf.a"; then
-  ac_cv_file__opt_local_lib_libnetcdf_a=yes
-else
-  ac_cv_file__opt_local_lib_libnetcdf_a=no
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_lib_libnetcdf_a" >&5
-$as_echo "$ac_cv_file__opt_local_lib_libnetcdf_a" >&6; }
-if test "x$ac_cv_file__opt_local_lib_libnetcdf_a" = xyes; then :
-  LDFLAGS="$LDFLAGS -L/opt/local/lib -lnetcdf"
-fi
-
+#AC_CHECK_FILE([/opt/local/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include"], [])
+#AC_CHECK_FILE([/opt/local/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib -lnetcdf"], [])
 
 # Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
@@ -17566,7 +17530,7 @@ fi
 
 
 # User-specified netCDF locations, if any, take precedence
-if test "${NETCDF_ROOT}" != ''; then
+if test "${NETCDF_ROOT}"; then
     if test -d "${NETCDF_ROOT}"; then
 	CPPFLAGS="-I${NETCDF_ROOT}/include ${CPPFLAGS}";
 	LDFLAGS="-L${NETCDF_ROOT}/lib ${LDFLAGS}";
@@ -19997,13 +19961,11 @@ fi
 	if test -d "${UDUNITS2_PATH}"; then
 	    # NB: Use ${UDUNITS2_PATH} not ${UDUNITS2_ROOT} because UDUnits software looks for ${UDUNITS2_PATH}
 	    # Add ${UDUNITS2_PATH}/lib to search path if present
-      # Some systems install 64bit libraries into $prefix/lib64 instead of
-      #  $prefix/lib. If NCO libraries are installed into $prefix/lib64,
-      #  UDUNITS presumably was installed in $UDUNITS2_PATH/lib64 as well.
-      #  Therefore, we take `basename $libdir` (libdir=$prefix/lib|lib64),
-      #  which is 'lib' or 'lib64', and append it to UDUNITS2_PATH. If this
-      #  directory does not exist, we append 'lib' to UDUNITS2_PATH.
-      #   (Daniel Neumann, 3rd June 2017)
+	    # Some systems install 64bit libraries into $prefix/lib64 instead of $prefix/lib
+	    # If NCO libraries were installed in $prefix/lib64, then UDUNITS presumably was installed in $UDUNITS2_PATH/lib64
+	    # Therefore, we take `basename $libdir` (libdir=$prefix/lib|lib64), which is 'lib' or 'lib64', and append it to UDUNITS2_PATH
+	    # If this directory does not exist, we append 'lib' to UDUNITS2_PATH
+	    # (Daniel Neumann, 3rd June 2017)
       nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
       if test -d "${UDUNITS2_PATH}/`basename $libdir`"; then
         LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/`basename $libdir`"
@@ -20148,7 +20110,7 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_lib_libudunits2_a" >&5
 $as_echo "$ac_cv_file__opt_local_lib_libudunits2_a" >&6; }
 if test "x$ac_cv_file__opt_local_lib_libudunits2_a" = xyes; then :
-  LDFLAGS="$LDFLAGS -L/opt/local/lib/"
+  LDFLAGS="$LDFLAGS -L/opt/local/lib"
 fi
 
 	# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2

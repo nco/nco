@@ -231,8 +231,8 @@ echo "################################"
 # sudo port install netcdf
 # installs to /opt/local/include, /opt/local/lib
 # Add this path to CPPFLAGS if it exists, otherwise do nothing
-AC_CHECK_FILE([/opt/local/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include"], [])
-AC_CHECK_FILE([/opt/local/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib -lnetcdf"], [])
+#AC_CHECK_FILE([/opt/local/include/netcdf.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include"], [])
+#AC_CHECK_FILE([/opt/local/lib/libnetcdf.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib -lnetcdf"], [])
 
 # Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
@@ -240,7 +240,7 @@ AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
 AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 
 # User-specified netCDF locations, if any, take precedence
-if test "${NETCDF_ROOT}" != ''; then
+if test "${NETCDF_ROOT}"; then
     if test -d "${NETCDF_ROOT}"; then
 	CPPFLAGS="-I${NETCDF_ROOT}/include ${CPPFLAGS}";
 	LDFLAGS="-L${NETCDF_ROOT}/lib ${LDFLAGS}";
@@ -739,13 +739,11 @@ if test "${enable_udunits2}" != 'no'; then
 	if test -d "${UDUNITS2_PATH}"; then
 	    # NB: Use ${UDUNITS2_PATH} not ${UDUNITS2_ROOT} because UDUnits software looks for ${UDUNITS2_PATH}
 	    # Add ${UDUNITS2_PATH}/lib to search path if present
-      # Some systems install 64bit libraries into $prefix/lib64 instead of 
-      #  $prefix/lib. If NCO libraries are installed into $prefix/lib64, 
-      #  UDUNITS presumably was installed in $UDUNITS2_PATH/lib64 as well.
-      #  Therefore, we take `basename $libdir` (libdir=$prefix/lib|lib64),
-      #  which is 'lib' or 'lib64', and append it to UDUNITS2_PATH. If this
-      #  directory does not exist, we append 'lib' to UDUNITS2_PATH.
-      #   (Daniel Neumann, 3rd June 2017)
+	    # Some systems install 64bit libraries into $prefix/lib64 instead of $prefix/lib
+	    # If NCO libraries were installed in $prefix/lib64, then UDUNITS presumably was installed in $UDUNITS2_PATH/lib64
+	    # Therefore, we take `basename $libdir` (libdir=$prefix/lib|lib64), which is 'lib' or 'lib64', and append it to UDUNITS2_PATH
+	    # If this directory does not exist, we append 'lib' to UDUNITS2_PATH
+	    # (Daniel Neumann, 3rd June 2017)
       nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
       if test -d "${UDUNITS2_PATH}/`basename $libdir`"; then
         LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/`basename $libdir`"
@@ -784,7 +782,7 @@ if test "${enable_udunits2}" != 'no'; then
 	# Add this path to CPPFLAGS if it exists, otherwise do nothing
 	AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
 	#/opt/local/lib/libudunits2.a
-	AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib/"], [])
+	AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib"], [])
 	# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
 	# NB: 20100729 udunits2.xml location seems to have changed from 
 	# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml
