@@ -1,3 +1,7 @@
+2018-09-17  Charlie Zender  <zender@uci.edu>
+
+	* Designate MPAS grid variables "fixed" not "processed" variables for arithmetic operators
+
 2018-09-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.7-alpha05 release procedure:

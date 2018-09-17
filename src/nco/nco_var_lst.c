@@ -1312,19 +1312,17 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
   if(cnv->MPAS){
     
     /* 20180912: Do not process MPAS grid variables? */
-    if(False){
-      const int var_xcl_lst_nbr=33; /* [nbr] Number of objects on exclusion list */
-      const char *var_xcl_lst[]={"areaCell","areaTriangle","cellsonCell","cellsOnEdge","cellsOnVertex","dcEdge","dvEdge","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","kiteAreasOnVertex","latCell","latEdge","latVertex","lonCell","lonEdge","lonVertex","nEdgesOnCell","nEdgesOnEdge","verticesOnCell","verticesOnEdge","xCell","xEdge","xVertex","yCell","yEdge","yVertex","zCell","zEdge","zVertex"};
-      int idx;
-      int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
-      for(idx=0;idx<var_xcl_lst_nbr;idx++)
-	if(!strcmp(var_nm,var_xcl_lst[idx])) break;
-      if(idx < var_xcl_lst_nbr){
-	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s preventing arithmetic processing of MPAS grid-like variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	var_xcl_nbr++;
-	var_is_fix=True;
-      } /* endif */
-    } /* !False */
+    const int var_xcl_lst_nbr=33; /* [nbr] Number of objects on exclusion list */
+    const char *var_xcl_lst[]={"areaCell","areaTriangle","cellsonCell","cellsOnEdge","cellsOnVertex","dcEdge","dvEdge","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","kiteAreasOnVertex","latCell","latEdge","latVertex","lonCell","lonEdge","lonVertex","nEdgesOnCell","nEdgesOnEdge","verticesOnCell","verticesOnEdge","xCell","xEdge","xVertex","yCell","yEdge","yVertex","zCell","zEdge","zVertex"};
+    int idx;
+    int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
+    for(idx=0;idx<var_xcl_lst_nbr;idx++)
+      if(!strcmp(var_nm,var_xcl_lst[idx])) break;
+    if(idx < var_xcl_lst_nbr){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s preventing arithmetic processing of MPAS grid-like variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+      var_xcl_nbr++;
+      var_is_fix=True;
+    } /* endif */
   
   } /* !MPAS */
 
