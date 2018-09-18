@@ -1,6 +1,10 @@
+2018-09-18  Charlie Zender  <zender@uci.edu>
+
+	* Tweak MPAS "fixed" list to apply only to size and rank preserving arithmetic operators
+
 2018-09-17  Charlie Zender  <zender@uci.edu>
 
-	* Designate MPAS grid variables as "fixed" not "processed" for arithmetic operators
+	* Designate MPAS grid variables as "fixed" not "processed"
 
 2018-09-16  Charlie Zender  <zender@uci.edu>
 

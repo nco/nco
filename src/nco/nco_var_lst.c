@@ -1309,7 +1309,7 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
   /* Check condition #4 above: */
   if(is_sz_rnk_prv_rth_opr && (!strcmp(var_nm,"lat") || !strcmp(var_nm,"lon") || !strcmp(var_nm,"lev") || !strcmp(var_nm,"longxy") || !strcmp(var_nm,"latixy") || !strcmp(var_nm,"latitude") || !strcmp(var_nm,"longitude") )) var_is_fix=True;
 
-  if(cnv->MPAS){
+  if(is_sz_rnk_prv_rth_opr && cnv->MPAS){
     
     /* 20180912: Do not process MPAS grid variables? */
     const int var_xcl_lst_nbr=33; /* [nbr] Number of objects on exclusion list */
