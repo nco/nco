@@ -1,5 +1,13 @@
 2018-09-19  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.7-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha06: Vacuum Leak';git push
+	git tag -a 4.7.7-alpha06 -m 'MPAS exception harmony';git push --tags
+
+	* Convert ncremap usg_prn() and nco.texi to use canonical argument format in.nc out.nc
+
+	* nco.texi document MPAS fixed variable lists
+
 	* Harmonize MPAS lists between nco_rgr_wgt() and nco_var_is_fix()
 
 2018-09-18  Charlie Zender  <zender@uci.edu>
