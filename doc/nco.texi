@@ -22663,6 +22663,146 @@ mapfile by combining the supplied and inferred grid information.
 A generated mapfile is given a default name unless a user-specified name
 is supplied with @samp{-m @var{map_fl}}. 
 
+@unnumberedsubsec Fields not regridded by @command{ncremap}
+
+Most people ultimately use @command{ncremap} to regrid data, yet not all
+data can or should be regridded in the sense of applying a sparse-matrix
+of weights to an input field to produce and output field.
+Certain fields (e.g., the longitude coordinate) specify the grid.
+These fields must be provided in order to compute the weights that are
+used to regrid. 
+The regridded usually copies these fields ``as is'' directly into
+regridded files, where they describe the destination grid, and replace
+or supercede the source grid information.
+Other fields are extensive grid properties (e.g., the number of cells
+adjacent to a given cell) that may apply only to the source (not the
+destination) grid, or be too difficult to re-compute for the destination
+grid. 
+@command{ncremap} contains an internal database of fields that it will
+not propagate or regrid.
+First are variables with names identical to the coordinate names found
+in an ever-growing collection of publicly available geoscience datasets
+(@acronym{CMIP}, @acronym{NASA}, etc.):@*
+
+@cindex @code{CO_Latitude}
+@cindex @code{CO_Longitude}
+@cindex @code{LAT}
+@cindex @code{LON}
+@cindex @code{LatitudeCornerpoints}
+@cindex @code{Latitude}
+@cindex @code{LongitudeCornerpoints}
+@cindex @code{Longitude}
+@cindex @code{S1_Latitude}
+@cindex @code{S1_Longitude}
+@cindex @code{TLAT}
+@cindex @code{TLONG}
+@cindex @code{TLON}
+@cindex @code{ULAT}
+@cindex @code{ULONG}
+@cindex @code{ULON}
+@cindex @code{XLAT_M}
+@cindex @code{XLAT}
+@cindex @code{XLONG_M}
+@cindex @code{XLONG}
+@cindex @code{area}
+@cindex @code{bounds_lat}
+@cindex @code{bounds_lon}
+@cindex @code{global_latitude0}
+@cindex @code{global_longitude0}
+@cindex @code{gridcell_area}
+@cindex @code{gw}
+@cindex @code{lat_bnds}
+@cindex @code{lat_vertices}
+@cindex @code{latitude0}
+@cindex @code{latitude_bnds}
+@cindex @code{latitude}
+@cindex @code{latt_bounds}
+@cindex @code{latu_bounds}
+@cindex @code{lat}
+@cindex @code{lon_bnds}
+@cindex @code{lon_vertices}
+@cindex @code{longitude0}
+@cindex @code{longitude_bnds}
+@cindex @code{longitude}
+@cindex @code{lont_bounds}
+@cindex @code{lonu_bounds}
+@cindex @code{lon}
+@cindex @code{nav_lat}
+@cindex @code{nav_lon}
+@cindex @code{slat}
+@cindex @code{slon}
+@cindex @code{w_stag}
+
+@code{area}, @code{gridcell_area}, @code{gw}, @code{LAT}, @code{lat},
+@code{Latitude}, @code{latitude}, @code{nav_lat},
+@code{global_latitude0}, @code{latitude0}, @code{slat}, @code{TLAT},
+@code{ULAT}, @code{XLAT}, @code{XLAT_M}, @code{CO_Latitude},
+@code{S1_Latitude}, @code{lat_bnds}, @code{lat_vertices},
+@code{latt_bounds}, @code{latu_bounds}, @code{latitude_bnds},
+@code{LatitudeCornerpoints}, @code{bounds_lat}, @code{LON}, @code{lon},
+@code{Longitude}, @code{longitude}, @code{nav_lon},
+@code{global_longitude0}, @code{longitude0}, @code{slon}, @code{TLON},
+@code{TLONG}, @code{ULON}, @code{ULONG}, @code{XLONG}, @code{XLONG_M},
+@code{CO_Longitude}, @code{S1_Longitude}, @code{lon_bnds},
+@code{lon_vertices}, @code{lont_bounds}, @code{lonu_bounds},
+@code{longitude_bnds}, @code{LongitudeCornerpoints}, @code{bounds_lon},
+and @code{w_stag}.
+
+Files produced by @acronym{MPAS} models may contain these variables that
+will not be regridded:@*
+
+@cindex @code{angleEdge}
+@cindex @code{areaTriangle}
+@cindex @code{cellsOnCell}
+@cindex @code{cellsOnEdge}
+@cindex @code{cellsOnVertex}
+@cindex @code{dcEdge}
+@cindex @code{dvEdge}
+@cindex @code{edgeMask}
+@cindex @code{edgesOnCell}
+@cindex @code{edgesOnEdge}
+@cindex @code{edgesOnVertex}
+@cindex @code{indexToCellID}
+@cindex @code{indexToEdgeID}
+@cindex @code{indexToVertexID}
+@cindex @code{kiteAreasOnVertex}
+@cindex @code{latCell}
+@cindex @code{latEdge}
+@cindex @code{latVertex}
+@cindex @code{lonCell}
+@cindex @code{lonEdge}
+@cindex @code{lonVertex}
+@cindex @code{maxLevelEdgeTop}
+@cindex @code{meshDensity}
+@cindex @code{nEdgesOnCell}
+@cindex @code{nEdgesOnEdge}
+@cindex @code{vertexMask}
+@cindex @code{verticesOnCell}
+@cindex @code{verticesOnEdge}
+@cindex @code{weightsOnEdge}
+@cindex @code{xEdge}
+@cindex @code{yEdge}
+@cindex @code{zEdge}
+@cindex @code{xVertex}
+@cindex @code{yVertex}
+@cindex @code{zVertex}
+
+@code{angleEdge}, @code{areaTriangle}, @code{cellsOnCell},
+@code{cellsOnEdge}, @code{cellsOnVertex}, @code{dcEdge}, @code{dvEdge},
+@code{edgeMask}, @code{edgesOnCell}, @code{edgesOnEdge},
+@code{edgesOnVertex}, @code{indexToCellID}, @code{indexToEdgeID},
+@code{indexToVertexID}, @code{kiteAreasOnVertex}, @code{latCell},
+@code{latEdge}, @code{latVertex}, @code{lonCell}, @code{lonEdge},
+@code{lonVertex}, @code{maxLevelEdgeTop}, @code{meshDensity},
+@code{nEdgesOnCell}, @code{nEdgesOnEdge}, @code{vertexMask},
+@code{verticesOnCell}, @code{verticesOnEdge}, @code{weightsOnEdge},
+@code{xEdge}, @code{yEdge}, @code{zEdge}, @code{xVertex},
+@code{yVertex}, and @code{zVertex}.
+
+Most of these fields that @command{ncremap} are also fields that
+@acronym{NCO} size-and-rank-preserving operators will not modify as
+described in @ref{CF Conventions}. 
+
 @unnumberedsubsec Options specific to @command{ncremap}
 
 The following summarizes features unique to @command{ncremap}.  
