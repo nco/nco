@@ -1311,9 +1311,15 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
 
   if(is_sz_rnk_prv_rth_opr && cnv->MPAS){
     
-    /* 20180912: Do not process MPAS grid variables? */
-    const int var_xcl_lst_nbr=36; /* [nbr] Number of objects on exclusion list */
-    const char *var_xcl_lst[]={"angleEdge","areaCell","areaTriangle","cellsOnCell","cellsOnEdge","cellsOnVertex","dcEdge","dvEdge","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","kiteAreasOnVertex","latCell","latEdge","latVertex","lonCell","lonEdge","lonVertex","meshDensity","nEdgesOnCell","nEdgesOnEdge","verticesOnCell","verticesOnEdge","weightsOnEdge","xCell","xEdge","xVertex","yCell","yEdge","yVertex","zCell","zEdge","zVertex"};
+    /* 20180912: Do not process MPAS grid variables
+       Six nCells-variables may be valuable when regridded to lat/lon
+       mpas_xcl_lst in nco_rgr_wgt() and MPAS var_xcl_lst in nco_var_is_fix() differ by these six variables:
+       areaCell for comparison to area(lat,lon)
+       cellMask for area-weighted mask
+       maxLevelCell for area-weighted underwater topographic mask
+       xCell, yCell, zCell for area-weighted cartesian coordinates */
+    const int var_xcl_lst_nbr=39; /* [nbr] Number of objects on exclusion list */
+    const char *var_xcl_lst[]={"angleEdge","areaCell","areaTriangle","cellMask","cellsOnCell","cellsOnEdge","cellsOnVertex","dcEdge","dvEdge","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","kiteAreasOnVertex","latCell","latEdge","latVertex","lonCell","lonEdge","lonVertex","maxLevelCell","meshDensity","nEdgesOnCell","nEdgesOnEdge","vertexMask","verticesOnCell","verticesOnEdge","weightsOnEdge","xCell","xEdge","xVertex","yCell","yEdge","yVertex","zCell","zEdge","zVertex"};
     int idx;
     int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
     for(idx=0;idx<var_xcl_lst_nbr;idx++)

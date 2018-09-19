@@ -2071,7 +2071,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      HIRDLS: Latitude
      MAR/RACMO: LAT, LON
      MLS: CO_Latitude
-     MPAS-O/I/LI: areaCell, latCell, lonCell and numerous, numerous, others...
+     MPAS-O/I/LI: areaCell, latCell, lonCell and others that are all handled by separated MPAS convention implementation below
      NCO: lat_vertices, lon_vertices
      NEMO: nav_lat, nav_lon
      OCO2: latitude_bnds, longitude_bnds
@@ -2082,8 +2082,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      UV-CDAT regridder: bounds_lat, bounds_lon
      Unknown: XLAT_M, XLONG_M
      WRF: XLAT, XLONG */
-  const int var_xcl_lst_nbr=50; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/area","/areaCell","/gridcell_area","/gw","/LAT","/lat","/latCell","/Latitude","/latitude","/nav_lat","/global_latitude0","/latitude0","/slat","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/lonCell","/Longitude","/longitude","/nav_lon","/global_longitude0","/longitude0","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
+  const int var_xcl_lst_nbr=47; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LAT","/lat","/Latitude","/latitude","/nav_lat","/global_latitude0","/latitude0","/slat","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/Longitude","/longitude","/nav_lon","/global_longitude0","/longitude0","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -2110,12 +2110,22 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     /* 20160228: MPAS has a host of mysterious grid and extensive variables that should probably not be regridded
        20180206: Add from MPAS-LI xCell, yCell, zCell, and [xyz]Edge, and [xyz]Vertex
        20180917: Restrict exclusion list to a subset of variables with nCells-dimension
-                 nCells-variables that may be valuable when regridded to lat/lon include:
+                 Six nCells-variables may be valuable when regridded to lat/lon
+		 mpas_xcl_lst in nco_rgr_wgt() and MPAS var_xcl_lst in nco_var_is_fix() differ by these six variables:
 		 areaCell for comparison to area(lat,lon)
+		 cellMask for area-weighted mask
 		 maxLevelCell for area-weighted underwater topographic mask
-		 xCell, yCell, zCell for area-weighted cartesian coordinates */
-    const int mpas_xcl_lst_nbr=23;
-    const char *mpas_xcl_lst[]={"cellMask","cellsOnCell","cellsOnEdge","cellsOnVertex","edgeMask","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","maxLevelEdgeTop","nEdgesOnCell","nEdgesOnEdge","vertexMask","verticesOnCell","verticesOnEdge","xEdge","yEdge","zEdge","xVertex","yVertex","zVertex"};
+		 xCell, yCell, zCell for area-weighted cartesian coordinates
+       20180918: Regridder currently only works on cell-based coordinates
+		 Decided regridder will omit not copy fields on vertex- or edge-based coordinates until it can regrid them
+		 Regridding vertex- or edge-based fields would require new sparse matrix for vertices or edges
+		 How would ERWG or TempestRemap handle that?
+                 MPAS geophysical variables on vertex-based (not cell-based) coordinates include:
+                 avg_airStressVertexUGeo_1, avg_airStressVertexVGeo_1, uOceanVelocityVertexGeo_1, uVelocityGeo_1, vOceanVelocityVertexGeo_1, vVelocityGeo_1
+		 MPAS geophysical variables on edge-based (not cell-based) coordinates include:
+		 principalStress1Var_1, principalStress2Var_1 */
+    const int mpas_xcl_lst_nbr=35;
+    const char *mpas_xcl_lst[]={"/angleEdge","/areaTriangle","/cellsOnCell","/cellsOnEdge","/cellsOnVertex","/dcEdge","/dvEdge","/edgeMask","/edgesOnCell","/edgesOnEdge","/edgesOnVertex","/indexToCellID","/indexToEdgeID","/indexToVertexID","/kiteAreasOnVertex","/latCell","/latEdge","/latVertex","/lonCell","/lonEdge","/lonVertex","/maxLevelEdgeTop","/meshDensity","/nEdgesOnCell","/nEdgesOnEdge","/vertexMask","/verticesOnCell","/verticesOnEdge","/weightsOnEdge","/xEdge","/yEdge","/zEdge","/xVertex","/yVertex","/zVertex"};
     for(idx=0;idx<mpas_xcl_lst_nbr;idx++){
       for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
 	if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,mpas_xcl_lst[idx])) break;

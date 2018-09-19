@@ -1,3 +1,7 @@
+2018-09-19  Charlie Zender  <zender@uci.edu>
+
+	* Harmonize MPAS lists between nco_rgr_wgt() and nco_var_is_fix()
+
 2018-09-18  Charlie Zender  <zender@uci.edu>
 
 	* Reduce MPAS exclusion list to allow regridding areaCell, maxLevelCell, xCell, yCell, zCell
