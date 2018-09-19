@@ -1,8 +1,18 @@
 2018-09-19  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.7 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.7: Bravura';git push
+	git tag -a 4.7.7 -m 'theta; doc dap wht_lst; ignore_degenerate; rgr n2s, doc, gss sym ntf; ncpdq dbl_flt; ncremap skl_fl cnv_mpas';git push --tags
+
+	* NCO 4.7.7-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.7-beta01: BC Tanager';git push
+	git tag -a 4.7.7-beta01 -m 'theta; doc dap wht_lst; ignore_degenerate; rgr n2s, doc, gss sym ntf; ncpdq dbl_flt; ncremap skl_fl cnv_mpas';git push --tags
+
 	* NCO 4.7.7-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha06: Vacuum Leak';git push
-	git tag -a 4.7.7-alpha06 -m 'MPAS exception harmony';git push --tags
+	git tag -a 4.7.7-alpha06 -m 'MPAS exception harmony; docs; ';git push --tags
+
+	* nco.texi document regridder omitted variable lists
 
 	* Convert ncremap usg_prn() and nco.texi to use canonical argument format in.nc out.nc
 

@@ -119,7 +119,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.7-alpha05
+@set nco-edition 4.7.7-alpha06
 @set doc-edition 4.7.7
 @set copyright-years 1995--2018
 @set update-year 2018
@@ -22799,9 +22799,9 @@ will not be regridded:@*
 @code{xEdge}, @code{yEdge}, @code{zEdge}, @code{xVertex},
 @code{yVertex}, and @code{zVertex}.
 
-Most of these fields that @command{ncremap} are also fields that
-@acronym{NCO} size-and-rank-preserving operators will not modify as
-described in @ref{CF Conventions}. 
+Most of these fields that @command{ncremap} will not regrid are also
+fields that @acronym{NCO} size-and-rank-preserving operators will not
+modify, as described in @ref{CF Conventions}. 
 
 @unnumberedsubsec Options specific to @command{ncremap}
 
