@@ -220,71 +220,71 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 1 -s ${DATA}/grids/128x256_SCRIP.20160301.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
 # Regrid:
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
-# ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
+# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw  -O ~/rgr
 # ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
-# ncremap -a conserve -v FSNT -I ${DATA}/ne30/raw -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
+# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ~/rgr
 # ncremap -P airs -v TSurfAir -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2014.10.01.202.L2.RetStd.v6.0.11.0.G14275134307.hdf ~/airs_out.nc
-# ncremap -v CloudFrc_A -i ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -i ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -i ${DATA}/hdf/OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5 -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -v T -i ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -v StepTwoO3 -i ${DATA}/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc -d ${DATA}/hdf/cam_time.nc -o ~/foo.nc
-# ncremap -v TSurfStd -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -G "--rgr grd_ttl='Default internally-generated grid' --rgr grid=~/rgr/ncremap_tmp_grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-130.0,-90.0" -o ~/foo.nc
-# ncremap -x TSurfStd_ct -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -i ${DATA}/hdf/cice_hi_flt.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -i ${DATA}/hdf/cam_time.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
+# ncremap -v CloudFrc_A -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf ~/foo.nc
+# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf ~/foo.nc
+# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/OMI-Aura_L2-OMIAuraSO2_2012m1222-o44888_v01-00-2014m0107t114720.h5 ~/foo.nc
+# ncremap -v T -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc
+# ncremap -v StepTwoO3 -d ${DATA}/hdf/cam_time.nc ${DATA}/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc ~/foo.nc
+# ncremap -v TSurfStd -G "--rgr grd_ttl='Default internally-generated grid' --rgr grid=~/rgr/ncremap_tmp_grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-130.0,-90.0" ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc
+# ncremap -x TSurfStd_ct -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc
+# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/cice_hi_flt.nc ~/foo.nc
+# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/cam_time.nc ~/foo.nc
 # CESM & E3SM/ACME:
-# ncremap -s ${DATA}/grids/ne120np4_pentagons.100310.nc -i ${DATA}/ne120/raw/b1850c5_m2a.cam.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -s ${DATA}/grids/ne120np4_pentagons.100310.nc -i ${DATA}/ne120/raw/b1850c5_m2a.clm2.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.cice.h.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.pop.h.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -i ${DATA}/ne120/raw/b1850c5_m2a.rtm.h0.0060-01.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ~/foo.nc
+# ncremap -s ${DATA}/grids/ne120np4_pentagons.100310.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.cam.h0.0060-01.nc ~/foo.nc
+# ncremap -s ${DATA}/grids/ne120np4_pentagons.100310.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.clm2.h0.0060-01.nc ~/foo.nc
+# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.cice.h.0060-01.nc ~/foo.nc
+# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.pop.h.0060-01.nc ~/foo.nc
+# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.rtm.h0.0060-01.nc ~/foo.nc
 # Old MPAS filename conventions (until ~201609)::
-# ncremap -P mpas -i ${DATA}/hdf/hist.ocn.0003-12-01_00.00.00.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ~/foo.nc
-# ncremap -P mpas -i ${DATA}/hdf/hist.ice.0003-12-01_00.00.00.nc -m ${DATA}/maps/map_mpas120_TO_T62_aave.121116.nc -o ~/foo.nc
+# ncremap -P mpas -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${DATA}/hdf/hist.ocn.0003-12-01_00.00.00.nc ~/foo.nc
+# ncremap -P mpas -m ${DATA}/maps/map_mpas120_TO_T62_aave.121116.nc ${DATA}/hdf/hist.ice.0003-12-01_00.00.00.nc ~/foo.nc
 # New MPAS filename conventions (as of ~201612):
-# ncremap -P mpas -i ${DATA}/hdf/mpaso.hist.am.timeSeriesStatsMonthly.0001-01-01.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ~/foo.nc
-# ncremap -P mpas -i ${DATA}/hdf/mpascice.hist.am.timeSeriesStatsMonthly.0251-01-01.nc -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ~/foo.nc
-# ncremap -P mpas --mss_val=-1.0e36 -s ${DATA}/grids/ais20km.150910.SCRIP.nc -i ${DATA}/hdf/ais20km.20180117.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
+# ncremap -P mpas -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${DATA}/hdf/mpaso.hist.am.timeSeriesStatsMonthly.0001-01-01.nc ~/foo.nc
+# ncremap -P mpas -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${DATA}/hdf/mpascice.hist.am.timeSeriesStatsMonthly.0251-01-01.nc ~/foo.nc
+# ncremap -P mpas --mss_val=-1.0e36 -s ${DATA}/grids/ais20km.150910.SCRIP.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ais20km.20180117.nc ~/foo.nc
 # E3SM/ACME benchmarks:
-# ncremap -v FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -o ~/foo.nc
-# ncremap -v FSNT,AODVIS -a conserve -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -v FSNT,AODVIS -a conserve2nd -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -v FSNT,AODVIS --rnr=0.99 --xtr_mth=idavg -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
-# ncremap -v FSNT,AODVIS -a tempest -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/foo.nc
+# ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -a conserve -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -a conserve2nd -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS --rnr=0.99 --xtr_mth=idavg -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -a tempest -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # Positional arguments:
 # ncremap --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Omit cell_measures:
 # ncremap --no_cll_msr --var=FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -o ~/foo.nc
 # SGS (201705):
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/alm_rgr.nc # 20170510 1D->2D works conserve and bilinear, no inferral
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/t42_rgr.nc # 20170510 2D->2D works conserve and bilinear, no inferral
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -s ${DATA}/grids/t42_SCRIP.20150901.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve, infer D not S
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc -d ${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc -o ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -d ${DATA}/essgcm14/essgcm14.cam2.h0.0000-01.nc -o ~/fv09_rgr.nc # 20170510 2D->2D bilinear works and conserve ~2% wrong, infer S and D
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -i ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc -d ${HOME}/skl_t42.nc -o ~/fv09_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/alm_rgr.nc # 20170510 1D->2D works conserve and bilinear, no inferral
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works conserve and bilinear, no inferral
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/t42_SCRIP.20150901.nc -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve, infer D not S
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/essgcm14/essgcm14.cam2.h0.0000-01.nc ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/fv09_rgr.nc # 20170510 2D->2D bilinear works and conserve ~2% wrong, infer S and D
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${HOME}/skl_t42.nc ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/fv09_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
 # ncremap --vrb=3 -p nil -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
-# ncremap --vrb=3 -a conserve --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170525 normalization required to get mask right
-# ncremap --vrb=3 -P cice -a conserve --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/cice_rgr.nc # 20170525 cice short-cut
+# ncremap --vrb=3 -a conserve --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/cice_rgr.nc # 20170525 normalization required to get mask right
+# ncremap --vrb=3 -P cice -a conserve --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/cice_rgr.nc # 20170525 cice short-cut
 # CICE/CESM on POP grid: full grid inferral (and thus conservative remapping) fails because masked vertices/cells missing, must use bilinear or supply grid-file for conservative
-# ncremap -a bilinear -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/wenshan.nc # 20170515: grid centers/bounds in non-masked regions suffice for bilinear interpolation
-# ncremap -a conserve -i ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -o ~/wenshan.nc # 20170521: conservative requires supplied tri-pole grid for centers/bounds in masked regions
+# ncremap -a bilinear -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/wenshan.nc # 20170515: grid centers/bounds in non-masked regions suffice for bilinear interpolation
+# ncremap -a conserve -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/wenshan.nc # 20170521: conservative requires supplied tri-pole grid for centers/bounds in masked regions
 # File-format
-# ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.091226.nc -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc
+# ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # TempestRemap boutique:
 # GenerateCSMesh --alt --res 30 --file ${DATA}/grids/ne30.g
 # ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
-# ncremap --dbg=1 -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc -o ~/foo_fv129x256.nc
+# ncremap --dbg=1 -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo_fv129x256.nc
 # ncremap --dbg=1 -a fv2se_stt --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc
-# ncremap --dbg=1 -i ~/foo_fv129x256.nc -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc -o ~/foo_ne30.nc
+# ncremap --dbg=1 -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc ~/foo_fv129x256.nc ~/foo_ne30.nc
 # ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --se_mtd=${DATA}/grids/ne30np4_latlon.091226.nc --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # Atmosphere->Ocean:
 # ncremap --dbg=1 --a2o -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # Debugging and Benchmarking:
-# ncremap -D 1 -i ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
+# ncremap -D 1 -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc > ~/ncremap.out 2>&1 &
 # RRG (201807):
-# ncremap -D 1 -a conserve -i ~/dat_rgn.nc --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_rgn=${HOME}/grd_rgn.nc -o ~/foo.nc > ~/ncremap.out 2>&1 &
+# ncremap -D 1 -a conserve --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_rgn=${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc > ~/ncremap.out 2>&1 &
 # ncremap -D 0 --vrb=1 -a conserve --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128.0,134.0,-16.0,-9.0' --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc --grd_dst=${HOME}/grd_rgn.nc --grd_src=${HOME}/grd_src.nc --map=${HOME}/map.nc ~/dat_rgn.nc ~/foo.nc
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
@@ -512,21 +512,21 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--xtr_nsp${fnt_nrm}  ESMF Extrapolation number of source points (default ${fnt_bld}${xtr_nsp}${fnt_nrm}) [${fnt_tlc}xtr_nsp, xtr_pnt_src_nbr, extrap_num_src_pnts${fnt_nrm}]"
     echo " ${fnt_bld}--xtr_xpn${fnt_nrm}  ESMF Extrapolation distance exponent (default ${fnt_bld}${xtr_xpn}${fnt_nrm}) [${fnt_tlc}xtr_xpn, xtr_dst_xpn, extrap_dist_exponent${fnt_nrm}]"
     printf "\n"
-    printf "Examples: ${fnt_bld}$spt_nm -i ${in_xmp} -m ${map_xmp} -o ${out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -i ${in_xmp} -g ${grd_dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
+    printf "Examples: ${fnt_bld}$spt_nm -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -g ${grd_dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -s ${grd_src_xmp} -g ${grd_dst_xmp} -m ${map_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -a bilinear -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -a conserve -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -a tempest  -i ${in_xmp} -d ${dst_xmp} -o ${out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -v ${var_xmp} -i ${in_xmp} -m ${map_xmp} -o ${out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -I ${drc_in_xmp} -m ${map_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -M -I ${drc_in_xmp} -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -M -I ${drc_in_xmp} -g ${grd_dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -I ${drc_in_xmp} -s ${grd_src_xmp} -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -I ${drc_in_xmp} -s ${grd_src_xmp} -g ${grd_dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -I ${drc_in_xmp} -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -I ${drc_in_xmp} -g ${grd_dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a bilinear -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a conserve -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a tempest  -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -v ${var_xmp} -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -m ${map_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -M -d ${dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -M -g ${grd_dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -s ${grd_src_xmp} -d ${dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -s ${grd_src_xmp} -g ${grd_dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -d ${dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -g ${grd_dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}ls mdl*2005*nc | $spt_nm -m ${map_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}ls mdl*2005*nc | $spt_nm -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"

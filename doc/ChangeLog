@@ -1,6 +1,10 @@
 2018-09-18  Charlie Zender  <zender@uci.edu>
 
-	* Tweak MPAS "fixed" list to apply only to size and rank preserving arithmetic operators
+	* Reduce MPAS exclusion list to allow regridding areaCell, maxLevelCell, xCell, yCell, zCell
+
+	* Add angleEdge, meshDensity, weightsOnEdge to MPAS fix list
+
+	* Tweak MPAS "fixed" list to apply only to size and rank preserving arithmetic operators and to cellsOnCell
 
 2018-09-17  Charlie Zender  <zender@uci.edu>
 

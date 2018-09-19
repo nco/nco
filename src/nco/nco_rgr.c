@@ -2108,9 +2108,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   cnv=nco_cnv_ini(in_id);
   if(cnv->MPAS){
     /* 20160228: MPAS has a host of mysterious grid and extensive variables that should probably not be regridded
-       20180206: Add from MPAS-LI xCell, yCell, zCell, and [xyz]Edge, and [xyz]Vertex */
-    const int mpas_xcl_lst_nbr=27;
-    const char *mpas_xcl_lst[]={"cellMask","cellsOnCell","cellsOnEdge","cellsOnVertex","edgeMask","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","maxLevelCell","maxLevelEdgeTop","nEdgesOnCell","nEdgesOnEdge","vertexMask","verticesOnCell","verticesOnEdge","xCell","yCell","zCell","xEdge","yEdge","zEdge","xVertex","yVertex","zVertex"};
+       20180206: Add from MPAS-LI xCell, yCell, zCell, and [xyz]Edge, and [xyz]Vertex
+       20180917: Restrict exclusion list to a subset of variables with nCells-dimension
+                 nCells-variables that may be valuable when regridded to lat/lon include:
+		 areaCell for comparison to area(lat,lon)
+		 maxLevelCell for area-weighted underwater topographic mask
+		 xCell, yCell, zCell for area-weighted cartesian coordinates */
+    const int mpas_xcl_lst_nbr=23;
+    const char *mpas_xcl_lst[]={"cellMask","cellsOnCell","cellsOnEdge","cellsOnVertex","edgeMask","edgesOnCell","edgesOnEdge","edgesOnVertex","indexToCellID","indexToEdgeID","indexToVertexID","maxLevelEdgeTop","nEdgesOnCell","nEdgesOnEdge","vertexMask","verticesOnCell","verticesOnEdge","xEdge","yEdge","zEdge","xVertex","yVertex","zVertex"};
     for(idx=0;idx<mpas_xcl_lst_nbr;idx++){
       for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
 	if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,mpas_xcl_lst[idx])) break;
