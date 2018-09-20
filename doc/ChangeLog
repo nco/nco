@@ -1,4 +1,4 @@
-2018-09-19  Charlie Zender  <zender@uci.edu>
+2018-09-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.7 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7: Bravura';git push
@@ -7,6 +7,10 @@
 	* NCO 4.7.7-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7-beta01: BC Tanager';git push
 	git tag -a 4.7.7-beta01 -m 'theta; doc dap wht_lst; ignore_degenerate; rgr n2s, doc, gss sym ntf; ncpdq dbl_flt; ncremap skl_fl cnv_mpas';git push --tags
+
+	* Add nco_xtr_ilev_add() to extract ilev, when present, whenever lev is extracted (requested by Qi Tang)
+
+2018-09-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.7-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7-alpha06: Vacuum Leak';git push

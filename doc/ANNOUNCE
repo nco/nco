@@ -6,29 +6,27 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.7.7 is primarily a feature release for ncremap.
-There are two new processing modes, one for regridding regional data,
-and one for generating all mapfile permutations with all interpolation 
-algorithms. There is also improved support for auxiliary coordinates
-that lack coordinates/standard_name conventions, improved ncap2
-command-line script handling in Windows, and less intrusive HPSS file
-system support. 
+Version 4.7.7 has modest new features everywhere:
+Improved forward and backward compatibility with newer and older
+versions of ESMF_RegridWeightGen; Generation and inferral of
+grids running north->south (à la ECMWF); perfect symmetry for
+Gaussian grid interfaces; an ncpdq compression map that converts
+doubles to floats; production of "skeleton files" for new grids;
+equivalent treatment of MPAS and CESM grid variables in arithmetic;
+and reversion of the filename whitelist security.
 
-Work on NCO 5.0.0 has commenced "under the hood". The key leap in that
-release will be support for netCDF4 user-defined types. Printing of
-netCDF4 user-defined types ENUM and VLEN is ready now (though
-unsupported) with the --udt flag. 5.0.0 will contain the finished
-version of that, and progress on weight generation by ncremap. 
+Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
+release is support for netCDF4 user-defined types. Printing of netCDF4
+user-defined types ENUM and VLEN is ready now (though unsupported)
+with the --udt flag. 5.0.0 will contain the finished version of that,
+and progress on weight generation by ncremap.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. NCO versions 4.6.6+ (April, 2017) has looked for files on an HPSS
-   filesystem when it could not find them elsewhere. This produces
-   messages considered intrusive by many users, who do not have HPSS.
-   Now users must opt-in to HPSS searches by adding the --hpss flag:
+A. 
    ncks -l . --hpss /home/zender/nco/in.nc
    http://nco.sf.net#hpss
 

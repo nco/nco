@@ -1039,6 +1039,44 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 } /* end nco_xtr_crd_add() */
 
 void
+nco_xtr_ilev_add                      /* [fnc] Add ilev coordinate to extraction list */
+(const int nc_id,                     /* I [ID] netCDF file ID */
+trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+{
+  /* Purpose: Add ilev coordinate to extraction list if lev coordinate is already there
+     20180920: CESM-family models forgot to add lev:bounds="ilev" attribute
+     This workaround ensures extraction of ilev occurs in tandem with lev */
+
+  const char fnc_nm[]="nco_xtr_ilev_add()"; /* [sng] Function name */
+
+  int tbl_nbr=trv_tbl->nbr; 
+
+  nco_bool xtr_lev;
+  
+  /* Does extraction list contain lev? */
+  xtr_lev=False;
+  for(unsigned tbl_idx=0;tbl_idx<tbl_nbr;tbl_idx++){
+    trv_sct var_trv=trv_tbl->lst[tbl_idx];
+    if(var_trv.nco_typ == nco_obj_typ_var)
+      if(var_trv.flg_xtr)
+	if(!strcmp("lev",var_trv.nm))
+	  xtr_lev=True;
+  } /* !tbl_idx */
+  
+  /* If so, and ilev is in file, then extract ilev */
+  if(xtr_lev){
+    for(unsigned tbl_idx=0;tbl_idx<tbl_nbr;tbl_idx++){
+      trv_sct var_trv=trv_tbl->lst[tbl_idx];
+      if(var_trv.nco_typ == nco_obj_typ_var)
+	if(!strcmp("ilev",var_trv.nm))
+	  var_trv.flg_xtr=True;
+    } /* !tbl_idx */
+  } /*  !xtr_lev */
+	
+  return;
+} /* end nco_xtr_ilev_add() */
+
+void
 nco_xtr_lst /* [fnc] Print extraction list and exit */
 (trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
 {
@@ -1386,7 +1424,7 @@ nco_trv_tbl_nm_id                     /* [fnc] Create extraction list of nm_id_s
 
   int nbr_tbl=0; 
   for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++)
-  if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].flg_xtr) nbr_tbl++;
+    if(trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].flg_xtr) nbr_tbl++;
 
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_tbl*sizeof(nm_id_sct));
 
@@ -6738,6 +6776,8 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     cnv->CCM_CCSM_CF=True;
   } /* endif */
   if(cnv->CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
+    /* Workaround CCSM "feature" that lev lacks bounds="ilev" attribute */
+    (void)nco_xtr_ilev_add(nc_id,trv_tbl);
     /* Implement CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" */
     if(EXTRACT_CLL_MSR) (void)nco_xtr_cf_add(nc_id,"cell_measures",trv_tbl);
     if(EXTRACT_FRM_TRM) (void)nco_xtr_cf_add(nc_id,"formula_terms",trv_tbl);
