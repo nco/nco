@@ -119,7 +119,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.7-alpha06
+@set nco-edition 4.7.7-beta01
 @set doc-edition 4.7.7
 @set copyright-years 1995--2018
 @set update-year 2018
@@ -6445,7 +6445,19 @@ The @var{lat_typ} options for global grids are @samp{uni} for
 Uniform, @samp{cap} (or @samp{fv}) for Capped (equivalent to
 @acronym{FV}), and @samp{gss} for Gaussian.  
 These values are all case-independent, so @samp{Gss} and @samp{gss} both
-work. 
+work.
+As of version 4.7.7 (September, 2018), @acronym{NCO} generates perfectly
+symmetric interface latitudes for Gaussian grids.
+Previously the interface latitude generation mechanism could accumulate
+small rounding errors (~1.0e-14).
+Now symmetry properties are used to ensure perfect symmetry.
+All other Gaussian grids we have seen compute interfaces as the
+arithmetic mean of the adjacent Gaussian latitudes, which is patently
+wrong. 
+To our knowledge @acronym{NCO} is the only map software that generates
+accurate interface latitudes for a Gaussian grid.
+We use a Newton-Raphson iteration technique to identify the interface
+latitudes that enclose the area indicated by the Gaussian weight.
 
 As its name suggests, the latitudes in a Uniform-latitude grid are
 uniformly spaced  
@@ -6528,10 +6540,13 @@ the range of a single polar gridcell (which has half the normal width).
 @acronym{NCL} uses the term ``Fixed grid'' for a Cap grid.
 The ``Fixed'' terminology seems broken.
 
+@html
+<a name="gss"></a> <!-- http://nco.sf.net/nco.html#gss -->
+@end html
 Finally, Gaussian grids are the Cartesian representation of global
 spectral transform models. 
-Gaussian grids do not have points at the poles, and typically have an
-even number of latitudes. 
+Gaussian grids typically have an even number of latitudes and so  
+do not have points at the poles.
 All three latitude grid-type supported by @acronym{NCO} (Uniform, Cap, 
 and Gaussian) are Regular grids in that they are monotonic. 
 
@@ -6563,9 +6578,16 @@ the @samp{--rgr latlon=@var{lat_nbr},@var{lon_nbr}} switch may be
 used to simultaneously specify both latitude and longitude, e.g., 
 @samp{--rgr latlon=180,360}.
 
+@html
+<a name="lat_drc"></a> <!-- http://nco.sf.net/nco.html#lat_drc -->
+<a name="lat_drc"></a> <!-- http://nco.sf.net/nco.html#n2s -->
+<a name="lat_drc"></a> <!-- http://nco.sf.net/nco.html#s2n -->
+@end html
+@cindex @code{n2s}
+@cindex @code{s2n}
 @cindex @var{lat_drc}
 @cindex @samp{--rgr lat_drc=@var{lat_drc}}
-@item Latitude Direction: @var{grd_ttl}
+@item Latitude Direction: @var{lat_drc}
 The @var{lat_drc} option is specifies whether latitudes monotonically
 increase or decrease in rectangular grids.
 The two possible values are
@@ -11617,6 +11639,19 @@ Hence the subsets will themselves be @acronym{CF}-compliant.
 Bounds are subject to the user-specified override switches
 (including @samp{-c} and @samp{-C}) described in 
 @ref{Subsetting Coordinate Variables}. 
+
+@cindex @code{lev}
+@cindex @code{ilev}
+@cindex @code{hyai}
+@cindex @code{hybi}
+The @acronym{CAM}/@acronym{EAM} family of atmospheric models does not
+output a @code{bounds} variable or attribute corresponding to the
+@code{lev} coordinate.
+This prevents @acronym{NCO} from activating its @acronym{CF} bounds
+machinery when @code{lev} is extracted.
+As of version 4.7.7 (September, 2018), @acronym{NCO} works around this
+by outputting the @code{ilev} coordinate (and @code{hyai}, @code{hybi})
+whenever the @code{lev} coordinate is also output. 
 
 @html
 <a name="cnv_CF_clm"></a> <!-- http://nco.sf.net/nco.html#cnv_CF_clm -->
@@ -24174,43 +24209,22 @@ TempestRemap's @command{GenerateOfflineMap}) (and not to
 The user-specified contents of @var{wgt_opt}, if any, supercede the
 default contents for the weight-generator.
 The default option for @acronym{ERWG} is @samp{--ignore_unmapped}).
-@command{ncremap} does not set the @acronym{ERWG}
-@samp{--ignore_degenerate} option by default, since it is new
-as of @acronym{ERWG} version 7.1.0r (March, 2018) and would break
-workflows on installations that upgraded @acronym{NCO} but not
-@acronym{ESMF} (this is common).
-However, @acronym{ERWG} 7.1.0r and later require
-@samp{--ignore_degenerate} to successfully regrid some datasets (e.g.,
-@acronym{CICE}) that previous @acronym{ERWG} versions handle fine.
-Hence @command{ncremap} 4.7.4 and later may error on such datasets. 
-The workaround (with @acronym{ESMF} 7.1.0r and later) is to explicitly
-pass the base @acronym{ERWG} options with @command{ncremap}'s
-@samp{--esmf_opt} option:
+@command{ncremap} 4.7.7 and later additionally set the @acronym{ERWG}
+@samp{--ignore_degenerate} option, though if the run-time @acronym{ERWG}
+reports its version is 7.0 (March, 2018) or later. 
+This is done to preserve backwards compatibility since, @acronym{ERWG}
+7.1.0r and later require @samp{--ignore_degenerate} to successfully
+regrid some datasets (e.g., @acronym{CICE}) that previous @acronym{ERWG}
+versions handle fine. 
+Users of earlier versions of @command{ncremap} that call @acronym{ESMF}
+7.1.0r and later can explicitly pass the base @acronym{ERWG} options
+with @command{ncremap}'s @samp{--esmf_opt} option:
 @example
 @verbatim
+# Use when NCO <= 4.7.6 and ERWG >= 7.1.0r
 ncremap --esmf_opt='--ignore_unmapped --ignore_degenerate' ...
 @end verbatim
 @end example
-We will make @samp{--ignore_degenerate} a default option to
-@acronym{ERWG} in a future @acronym{NCO} version, once more
-sites have installed @acronym{ERWG} version 7.1.0r or later.
-@ignore
-@acronym{ncremap} sets the new @acronym{ERWG} @samp{--ignore_degenerate} 
-option by default, since it is required to successfully regrid some
-datasets (e.g., @acronym{CICE}) that previous @acronym{ERWG} versions
-handled fine. 
-Hence @command{ncremap} 4.7.5 and later must be used with @acronym{ESMF}
-7.1.0r and later, otherwise it passes the older @acronym{ERWG} an
-unknown option (@code{--ignore_degenerate}). 
-The workaround (if you are stuck with @acronym{ESMF} < 7.1.0r) is to
-explicitly pass the @acronym{ERWG} options using @command{ncremap}'s
-@samp{--esmf_opt} option:   
-@example
-@verbatim
-ncremap --esmf_opt='--ignore_unmapped' -d dst.nc in.nc out.nc
-@end verbatim
-@end example
-@end ignore
 
 The @acronym{ERWG} and TempestRemap documentation shows all available
 options. 
