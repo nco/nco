@@ -1,3 +1,9 @@
+nco (4.7.8-1) unstable; urgency=low
+
+  * new upstream version fxm
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 21 Oct 2018 12:25:34 -0700
+
 nco (4.7.7-1) unstable; urgency=low
 
   * new upstream version Bravura: theta;ilev;doc dap dep wht_lst;ignore_degenerate;rgr n2s, doc, gss sym ntf;ncpdq dbl_flt;ncremap skl_fl cnv_mpas

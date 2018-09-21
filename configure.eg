@@ -310,7 +310,7 @@ make install
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20180912
-# Personal recipe last used successfully: 20180912
+# Personal recipe last used successfully: 20180921
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
@@ -329,7 +329,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 2016??
-# Personal recipe last used successfully: 20180811
+# Personal recipe last used successfully: 20180921
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
@@ -349,7 +349,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: soft add +netcdf-4.6.1 soft add +nco-4.7.4 # 20180417
 # Personal recipe last modified: 20180729
-# Personal recipe last used successfully: 20180811 (up to ncap2 linking with antlr)
+# Personal recipe last used successfully: 20180921 (up to ncap2 linking with antlr)
 # Fails to link to system-installed udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 # soft add +antlr-2.7.7 # 20161223 this ANTLR appears to be stock and not NCO-compatible
@@ -391,7 +391,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket: alcf-support #367012 on 20180413
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.8, soft add +netcdf-4.4.1.1
 # Personal recipe last modified: 20170825
-# Personal recipe last used successfully: 20171221
+# Personal recipe last used successfully: 20180921
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 cd ~/nco;git reset --hard origin/master
@@ -408,7 +408,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: module load nco/4.7.4 # 20180430 (without ncap2)
 # Personal recipe last modified: 20180125
-# Personal recipe last used successfully: 20180811
+# Personal recipe last used successfully: 20180921
 module load szip
 module load gsl
 module load udunits
@@ -429,7 +429,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: module load nco/4.7.4 # 20180430 (without ncap2)
 # Personal recipe last modified: 20170807
-# Personal recipe last used successfully: 20180811 (but must manually link to -L${HOME}/lib_edison to find antlr)
+# Personal recipe last used successfully: 20180921 (but must manually link to -L${HOME}/lib_edison to find antlr)
 module load szip
 module load gsl
 module load udunits2
@@ -464,7 +464,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 nco/4.7.4 # 20180423
 # Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20180811
+# Personal recipe last used successfully: 20180921
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -536,7 +536,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL=N NETCDF_INC='/opt/cray/pe/netcdf/4.6.1
 # Latest ticket: 347675 on 20170316, 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load nco/4.6.6 # 20170411
 # Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20180811 (except ncap2 error with antlr link)
+# Personal recipe last used successfully: 20180921 (except ncap2 error with antlr link)
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 module add gcc # change GCC from v 4.3.4 to 4.9.0
 #module add gsl # not used yet
