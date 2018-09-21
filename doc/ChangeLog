@@ -1,5 +1,7 @@
 2018-09-21  Charlie Zender  <zender@uci.edu>
 
+	* Allow USE_NC4_SRD_WORKAROUND only for netCDF <= 4.6.1 since 4.6.2 fixes issue https://github.com/Unidata/netcdf-c/pull/1001
+
 	* Convert log_lvl to int before passing to nc_set_log_level() to fix breakage with netCDF 4.6.2-RC1
 
 	* NCO 4.7.8-alpha01 release procedure:

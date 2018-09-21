@@ -203,9 +203,11 @@ read_lbl:
 	}else{
 	  /* 20140926: nc_get_vars() performs poorly on netCDF4 files
 	     Long investigation sparked by Parker Norton on 20140718 revealed nc_get_vars() calls nc_get_vara() once 
-	     per element in the strided hyperslab. This quickly become unusable for large hyperslabs.
+	     per element in the strided hyperslab. This quickly becomes unusable for large hyperslabs.
 	     Ultimate fix may be using HDF5 algorithm H5S_set_hyperslab() as described in Jira NCF-301
-	     Until then, should decompose a single-stride request into a loop over contiguous non-stride requests */
+	     Until then, should decompose a single-stride request into a loop over contiguous non-stride requests
+	     20180921: netCDF 4.6.2 appears to have the necessary fix
+	     https://github.com/Unidata/netcdf-c/pull/1001 */
 
 	  int fl_in_fmt; /* [enm] Input file format */
 
@@ -213,8 +215,9 @@ read_lbl:
 
 	  (void)nco_inq_format(vara->nc_id,&fl_in_fmt);
 
-	  /* 20170207: Turn-off USE_NC4_SRD_WORKAROUND unless non-unity stride is only in first dimension */
-	  if((fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC) && (dmn_srd_nbr == 1) && (dmn_srd[0] != 1L)) USE_NC4_SRD_WORKAROUND=True;
+	  /* 20170207: Turn-off USE_NC4_SRD_WORKAROUND unless non-unity stride is only in first dimension
+	     20180921: Allow USE_NC4_SRD_WORKAROUND only for netCDF <= 4.6.1 */
+	  if(NC_LIB_VERSION <= 461 && (fl_in_fmt == NC_FORMAT_NETCDF4 || fl_in_fmt == NC_FORMAT_NETCDF4_CLASSIC) && (dmn_srd_nbr == 1) && (dmn_srd[0] != 1L)) USE_NC4_SRD_WORKAROUND=True;
 
 	  if(!USE_NC4_SRD_WORKAROUND){
 	    if(nco_dbg_lvl_get() >= nco_dbg_var && srd_prd > 1L) (void)fprintf(stderr,"%s: INFO %s reports calling nco_get_vars() for strided hyperslab access. In case of slow response, please ask NCO developers to extend USE_NC4_SRD_WORKAROUND to handle your use-case.\n",nco_prg_nm_get(),fnc_nm);
