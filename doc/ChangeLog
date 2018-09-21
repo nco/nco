@@ -1,5 +1,7 @@
 2018-09-21  Charlie Zender  <zender@uci.edu>
 
+	* Convert log_lvl to int before passing to nc_set_log_level() to fix breakage with netCDF 4.6.2-RC1
+
 	* NCO 4.7.8-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha01: Nitrous';git push
 	git tag -a 4.7.8-alpha01 -m 'Functionally identical to 4.7.7;';git push --tags

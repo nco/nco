@@ -207,6 +207,7 @@ main(int argc,char **argv)
   int idx;
   int in_id;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int log_lvl=0; /* [enm] netCDF library debugging verbosity [0..5] */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int opt;
   int ppc_nbr=0; /* [nbr] Number of PPC arguments */
@@ -677,7 +678,11 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "lbr" */
       if(!strcmp(opt_crr,"lbr_rcd")) nco_exit_lbr_rcd();
-      if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){nc_set_log_level(optarg);} /* [enm] netCDF library debugging verbosity [0..5] */
+      if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){
+	log_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+	nc_set_log_level(log_lvl);
+      } /* !log_lvl */
       if(!strcmp(opt_crr,"lst_rnk_ge2") || !strcmp(opt_crr,"rank_ge2"))	LST_RNK_GE2=True; /* [flg] Print extraction list of rank >= 2 variables */
       if(!strcmp(opt_crr,"lst_xtr") || !strcmp(opt_crr,"xtr_lst")) LST_XTR=True; /* [flg] Print extraction list */
       if(!strcmp(opt_crr,"mk_rec_dmn") || !strcmp(opt_crr,"mk_rec_dim")){

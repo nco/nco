@@ -188,29 +188,29 @@ main(int argc,char **argv)
   int in_id_1;  
   int in_id_2;  
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
+  int log_lvl=0; /* [enm] netCDF library debugging verbosity [0..5] */
   int md_open; /* [enm] Mode flag for nc_open() call */
-
-  int nbr_glb_att_1;  /* [nbr] Number of global attributes in file */
-  int nbr_glb_att_2;  /* [nbr] Number of global attributes in file */
-  int nbr_grp_att_1;  /* [nbr] Number of group attributes in file */
-  int nbr_grp_att_2;  /* [nbr] Number of group attributes in file */
-  int nbr_att_var_1;  /* [nbr] Number of variable attributes in file */
-  int nbr_att_var_2;  /* [nbr] Number of variable attributes in file */
-  int nbr_dmn_fl_1;   /* [nbr] Number of dimensions in file */
-  int nbr_dmn_fl_2;   /* [nbr] Number of dimensions in file */
-  int nbr_rec_fl_1;   /* [nbr] Number of record dimensions in file */
-  int nbr_rec_fl_2;   /* [nbr] Number of record dimensions in file */
-  int grp_dpt_fl_1;   /* [nbr] Maximum group depth (root = 0) */
-  int grp_dpt_fl_2;   /* [nbr] Maximum group depth (root = 0) */ 
+  int nbr_glb_att_1; /* [nbr] Number of global attributes in file */
+  int nbr_glb_att_2; /* [nbr] Number of global attributes in file */
+  int nbr_grp_att_1; /* [nbr] Number of group attributes in file */
+  int nbr_grp_att_2; /* [nbr] Number of group attributes in file */
+  int nbr_att_var_1; /* [nbr] Number of variable attributes in file */
+  int nbr_att_var_2; /* [nbr] Number of variable attributes in file */
+  int nbr_dmn_fl_1; /* [nbr] Number of dimensions in file */
+  int nbr_dmn_fl_2; /* [nbr] Number of dimensions in file */
+  int nbr_rec_fl_1; /* [nbr] Number of record dimensions in file */
+  int nbr_rec_fl_2; /* [nbr] Number of record dimensions in file */
+  int grp_dpt_fl_1; /* [nbr] Maximum group depth (root = 0) */
+  int grp_dpt_fl_2; /* [nbr] Maximum group depth (root = 0) */ 
   int grp_lst_in_nbr=0; /* [nbr] Number of groups explicitly specified by user */
-  int nbr_grp_fl_1;   /* [nbr] Number of groups in file */
-  int nbr_grp_fl_2;   /* [nbr] Number of groups in file */
-  int var_udt_fl_1;   /* [nbr] Number of non-atomic variables in file */
-  int var_udt_fl_2;   /* [nbr] Number of non-atomic variables in file */
-  int nbr_var_fl_1;   /* [nbr] Number of atomic-type variables in file */
-  int nbr_var_fl_2;   /* [nbr] Number of atomic-type variables in file */
-  int nbr_gpe_nm;     /* [nbr] Number of GPE entries */ 
-  int nbr_cmn_nm=0;     /* [nbr] Number of common entries */
+  int nbr_grp_fl_1; /* [nbr] Number of groups in file */
+  int nbr_grp_fl_2; /* [nbr] Number of groups in file */
+  int var_udt_fl_1; /* [nbr] Number of non-atomic variables in file */
+  int var_udt_fl_2; /* [nbr] Number of non-atomic variables in file */
+  int nbr_var_fl_1; /* [nbr] Number of atomic-type variables in file */
+  int nbr_var_fl_2; /* [nbr] Number of atomic-type variables in file */
+  int nbr_gpe_nm; /* [nbr] Number of GPE entries */ 
+  int nbr_cmn_nm=0; /* [nbr] Number of common entries */
   int nco_op_typ=nco_op_nil; /* [enm] Operation type */
   int opt;
   int out_id;  
@@ -447,7 +447,11 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "help" */
       if(!strcmp(opt_crr,"hpss_try")) HPSS_TRY=True; /* [flg] Search HPSS for unfound files */
-      if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){nc_set_log_level(optarg);} /* [enm] netCDF library debugging verbosity [0..5] */
+      if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){
+	log_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+	nc_set_log_level(log_lvl);
+      } /* !log_lvl */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
         ppc_arg[ppc_nbr]=(char *)strdup(optarg);
