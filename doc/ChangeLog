@@ -1,8 +1,10 @@
-2018-09-20  Charlie Zender  <zender@uci.edu>
+2018-09-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.7 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7: Bravura';git push
 	git tag -a 4.7.7 -m 'theta;ilev;doc dap dep wht_lst;ignore_degenerate;rgr n2s, doc, gss sym ntf;ncpdq dbl_flt;ncremap skl_fl cnv_mpas';git push --tags
+
+2018-09-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.7-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.7-beta01: BC Tanager';git push

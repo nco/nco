@@ -5,82 +5,56 @@ The netCDF Operators NCO version 4.7.7 have hatched.
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
-What's new?
-Version 4.7.7 has modest new features everywhere:
+What's new? Version 4.7.7 has modest new features everywhere:
 Improved forward and backward compatibility with newer and older
-versions of ESMF_RegridWeightGen; Generation and inferral of
-grids running north->south (à la ECMWF); perfect symmetry for
-Gaussian grid interfaces; an ncpdq compression map that converts
-doubles to floats; production of "skeleton files" for new grids;
-equivalent treatment of MPAS and CESM grid variables in arithmetic;
-and reversion of the filename whitelist security.
+versions of ESMF_RegridWeightGen; Generation and inferral of grids
+running north->south (à la ECMWF); exact symmetry for Gaussian grid
+interfaces; an ncpdq compression map that converts doubles to floats;
+production of "skeleton files" for new grids; equivalent treatment of
+MPAS and CESM grid variables in arithmetic; and reversion of the
+filename whitelist security. 
 
 Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
-release is support for netCDF4 user-defined types. Printing of netCDF4
-user-defined types ENUM and VLEN is ready now (though unsupported)
-with the --udt flag. 5.0.0 will contain the finished version of that,
-and progress on weight generation by ncremap.
+release will be support for netCDF4 user-defined types. Printing of
+netCDF4 user-defined types ENUM and VLEN is ready now (though
+unsupported) with the --udt flag. 5.0.0 will contain the finished
+version of that, and progress on native weight generation by ncremap.
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap adds --ignore_degenerate to default ESMF_RegridWeightGen
-   (ERWG) options when ERWG version >= 7.0. This is done to preserve
-   backwards compatibility since ERWG 7.1.0r and later require
-   --ignore_degenerate to successfully regrid some datasets (e.g.,
-   CICE) that previous ERWG versions handle fine.  
-   ncremap -m map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#wgt_opt
+A. ncpdq has a new packing map: dbl_flt
+   The map converts to double-precision to single-precision,
+   so it is technically a precision change, not packing.
+   It is in ncpdq because it reduces space by ~50%, like packing.  
+   Like packing the precision loss is irreversible.
+   Unlike packing, no attributes are created, modified, or deleted.
+   ncpdq -M dbl_flt in.nc out.nc
+   http://nco.sf.net/nco.html#dbl_flt
+   http://nco.sf.net/nco.html#ncpdq
 
-A. Filename sanitization via character whitelists, first introduced in
+B. Filename sanitization via character whitelists, first introduced in
    NCO 4.7.3 to increase security against malicious filenames, has
-   been temporarily turned-off. Points passionately raised by a user
-   led us to turn-off this feature unless and until a known exploit
-   is reported.
+   been turned-off, possibly permanently. Points passionately raised
+   by a user led us to turn-off this feature until lack of it is shown
+   to lead to a real-world exploit.
    https://github.com/nco/nco/issues/104
    http://nco.sf.net/nco.html#wht_lst
 
-A. I greatly expanded the field manual to regridding with ncremap.
-   The documentation is currently available to E3SM users at
-   https://acme-climate.atlassian.net/wiki/spaces/SIM/pages/754286611/Regridding+E3SM+Data+with+ncremap
-   and to others via email request (it will be in Users Guide soon).
-
-A. The CCM/CAM/EAM family of atmospheric models does not output a
-   "bounds" variable or attribute corresponding to the "lev"
+C. The CCM/CAM/EAM family of atmospheric models does not output a
+   "bounds" variable or attribute corresponding to its "lev"
    coordinate. This prevents NCO from activating some desirable CF
    machinery. To workaround this, NCO now outputs the ilev coordinate
    (and hyai, hybi) whenever the lev coordinate is also output.
    ncks -v T in.nc out.nc
    http://nco.sf.net/nco.html#bnd   
    
-A. Not only do the British drive on the wrong side of the road, they
-   prefer North-to-South (n2s) grids over South-to-North (s2n) grids. 
-   NCO now implements a latitude direction keyword lat_drc.
-   Grid generation implements n2s ordering via --rgr lat_drc=n2s.
-   Grid diagnosis now recognizes n2s ordering for all rectangular grids.
-   http://nco.sf.net/nco.html#lat_drc
-
-A. ncremap now generates perfectly symmetric interface latitudes for
-   Gaussian grids. Previously the interface latitudes could accumulate
-   rounding errors of ~1.0e-14. Now symmetry properties are used to
-   ensure perfect symmetry. BTW, to our knowledge only NCO generates
-   accurate Gaussian interfaces (via a Newton-Raphson iteration of
-   boundaries to enclose the area indicated by the Gaussian weight,
-   which all reputable grid makers do get correctly).
-   http://nco.sf.net/nco.html#gss
-
-A. ncremap now produces a "skeleton file" of grids it generates
-   when requested with --skl_fl.
-   ncremap -G latlon=2560,5136#lat_typ=gss#lon_typ=grn_ctr#lat_drc=n2s -g grd_ecmwf.nc --skl=skl_ecmwf.nc
-   http://nco.sf.net/nco.html#skl_fl
-   http://nco.sf.net/nco.html#skeleton
-
-A. Equivalent treatment of MPAS and CESM grid variables.
+D. Equivalent treatment of MPAS and CESM grid variables.
    NCO does not arithmetically alter grid-related variables.
    Who wants to subtract latitude coordinates from eachother?
-   Previously it only skipped arithmetic on CESMish grid variables.
+   Previously it only skipped arithmetic on CESM'ish grid variables.
    Now NCO has an extensive (pun intended!) list of MPAS and other
    grid variables that it will not subtract. For the most part,
    ncremap will not regrid these variables either.
@@ -88,16 +62,53 @@ A. Equivalent treatment of MPAS and CESM grid variables.
    http://nco.sf.net/nco.html#cnv_MPAS
    http://nco.sf.net/nco.html#ncremap
 
+E. I greatly expanded the field manual to regridding with ncremap.
+   The documentation is currently available to E3SM users at
+   https://acme-climate.atlassian.net/wiki/spaces/SIM/pages/754286611/Regridding+E3SM+Data+with+ncremap
+   and to others via email request (it will be in Users Guide soon).
+
+F. ncremap adds --ignore_degenerate to default ESMF_RegridWeightGen
+   (ERWG) options when ERWG version >= 7.0. This is done to preserve
+   backwards compatibility since ERWG 7.1.0r and later require
+   --ignore_degenerate to successfully regrid some datasets (e.g.,
+   CICE) that previous ERWG versions handle fine.  
+   ncremap -m map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#wgt_opt
+
+G. Not only do the British drive on the wrong side of the road, they
+   prefer North-to-South (n2s) grids over South-to-North (s2n) grids. 
+   NCO now implements a latitude direction keyword lat_drc.
+   Grid generation implements n2s ordering via --rgr lat_drc=n2s.
+   Grid diagnosis now recognizes n2s ordering for all rectangular grids.
+   http://nco.sf.net/nco.html#lat_drc
+
+H. ncremap now generates exactly symmetric interface latitudes for
+   Gaussian grids. To our knowledge only NCO generates accurate
+   Gaussian interfaces (via a Newton-Raphson iteration of boundaries 
+   to enclose the area indicated by the Gaussian weight). However,
+   previously the interface latitudes could accumulate rounding errors
+   during Newton-Raphson iteration differ between the hemispheres by
+   ~1.0e-14. Now symmetry properties are used to ensure exact symmetry. 
+   http://nco.sf.net/nco.html#gss
+
+I. ncremap now produces a "skeleton file" of grids it generates
+   when requested with --skl_fl.
+   ncremap -G latlon=2560,5136#lat_typ=gss#lon_typ=grn_ctr#lat_drc=n2s -g grd_ecmwf.nc --skl=skl_ecmwf.nc
+   http://nco.sf.net/nco.html#skl_fl
+   http://nco.sf.net/nco.html#skeleton
+
 BUG FIXES:
 
-A. ncks -r could incorrect report that CDF5 was enabled when
-   in fact it was not. This occurred when linked to netCDF
-   4.5.x-4.6.1. This has been fixed.
+A. ncks -r could incorrectly report that CDF5 was enabled.
+   This occurred when linked to netCDF 4.5.x-4.6.1.
+   This has been fixed.
 
-A. ncremap would break on weight files that lacked a num_wgts
-   dimension, even if that dimension was unused. This has been fixed. 
+B. ncremap previously broke on weight files that lacked a num_wgts
+   dimension, even if that dimension was unused (orphaned). 
+   Dependence on num_wgts has been eliminated and fixes this.
+   This also enables compressed maps to work correctly.
 
-A. Fixed a bug in the convergence test to detect Gaussian grids
+C. Fixed a bug in the convergence test to detect Gaussian grids
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

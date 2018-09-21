@@ -119,7 +119,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.7-beta01
+@set nco-edition 4.7.7
 @set doc-edition 4.7.7
 @set copyright-years 1995--2018
 @set update-year 2018
@@ -21718,6 +21718,14 @@ and recommendations discussed in the secion on @command{ncbo} synonyms
 That is, symbolic links must exist from the synonym to @command{ncpdq},
 or else the user must define an @command{alias}.
 
+@html
+<a name="pck_map"></a> <!-- http://nco.sf.net/nco.html#pck_map -->
+<a name="hgh_sht"></a> <!-- http://nco.sf.net/nco.html#hgh_sht -->
+<a name="hgh_byt"></a> <!-- http://nco.sf.net/nco.html#hgh_byt -->
+<a name="flt_byt"></a> <!-- http://nco.sf.net/nco.html#flt_byt -->
+<a name="nxt_lsr"></a> <!-- http://nco.sf.net/nco.html#nxt_lsr -->
+<a name="dbl_flt"></a> <!-- http://nco.sf.net/nco.html#dbl_flt -->
+@end html
 @cindex packing map
 @cindex @var{pck_map}
 @cindex @code{-M @var{pck_map}}
