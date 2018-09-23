@@ -13,9 +13,10 @@ cnv_sct * /* O [sct] Convention structure */
 nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
 (const int nc_id) /* I [id] netCDF file ID */
 {
-  /* Purpose: Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
+  /* Purpose: Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file
+     Based-on and supercedes nco_cnv_ccm_ccsm_cf_inq() */
 
-  const char fnc_nm[]="nco_cnv_inq()"; /* [sng] Function name */
+  //  const char fnc_nm[]="nco_cnv_ini()"; /* [sng] Function name */
 
   char *att_val;
   char *cnv_sng=NULL_CEWI;

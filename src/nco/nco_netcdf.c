@@ -935,7 +935,7 @@ nco_close_memio(const int nc_id,NC_memio * const info)
   int rcd;
   rcd=nc_close_memio(nc_id,info);
   if(rcd != NC_NOERR){
-    (void)fprintf(stdout,"ERROR: %s unable to close_memio() file \"%s\" with nc_id=%d\n",fnc_nm,nc_id);
+    (void)fprintf(stdout,"ERROR: %s unable to close_memio() with nc_id=%d\n",fnc_nm,nc_id);
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;

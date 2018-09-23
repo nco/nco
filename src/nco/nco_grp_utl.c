@@ -1047,16 +1047,13 @@ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
      20180920: CESM-family models forgot to add lev:bounds="ilev" attribute
      This workaround ensures extraction of ilev occurs in tandem with lev */
 
-  const char fnc_nm[]="nco_xtr_ilev_add()"; /* [sng] Function name */
+  //  const char fnc_nm[]="nco_xtr_ilev_add()"; /* [sng] Function name */
 
   int tbl_nbr=trv_tbl->nbr; 
 
-  nco_bool xtr_lev;
-  
   unsigned int tbl_idx;
 
   /* Does extraction list contain lev? */
-  xtr_lev=False;
   for(tbl_idx=0;tbl_idx<tbl_nbr;tbl_idx++){
     trv_sct var_trv=trv_tbl->lst[tbl_idx];
     if(var_trv.nco_typ == nco_obj_typ_var)

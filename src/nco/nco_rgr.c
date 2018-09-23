@@ -730,7 +730,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int in_id; /* I [id] Input netCDF file ID */
-  int log_lvl=0; /* [enm] netCDF library debugging verbosity [0..5] */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;
@@ -5835,7 +5834,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int dmn_idx; /* [idx] Dimension index */
   int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int in_id; /* I [id] Input netCDF file ID */
-  int log_lvl=0; /* [enm] netCDF library debugging verbosity [0..5] */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;

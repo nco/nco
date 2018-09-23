@@ -339,6 +339,8 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
 # endif /* !PNETCDF_EXPOSED_API */
 #endif /* !ENABLE_MPI */
 
+  /* This bunch of pre-processor definitions is ugly
+     NC_LIB_VERSION could be replaced by an autoconf-generated token that checked for existance of, e.g., nc_open_memio() */
 #if NC_LIB_VERSION >= 462 
 # include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
 #else /* 4.6.2 */
