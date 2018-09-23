@@ -51,6 +51,16 @@
 #ifdef NC_HAVE_META_H
 # include <netcdf_meta.h> /* NC_VERSION_..., HAVE_NC_RENAME_GRP */	 
 #endif /* !NC_HAVE_META_H */
+#if NC_LIB_VERSION >= 462 
+# include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
+#else /* 4.6.2 */
+typedef struct NC_memio {
+  size_t size;
+  void* memory;
+  int flags;
+# define NC_MEMIO_LOCKED 1    /* Do not try to realloc or free provided memory */
+} NC_memio;
+#endif /* 4.6.2 */
 #ifdef ENABLE_MPI
 # include <mpi.h> /* MPI definitions */
 # include <netcdf_par.h> /* Parallel netCDF definitions */
@@ -341,10 +351,12 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
 
 /* Begin file-level routines */
 int nco_create(const char * const fl_nm,const int cmode,int * const nc_id);
+int nco_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id);
 int nco__create(const char * const fl_nm,const int cmode,const size_t sz_ntl,size_t * const bfr_sz_hnt,int * const nc_id);
 int nco_open(const char * const fl_nm,const int mode,int * const nc_id);
 int nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id);
 int nco_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id);
+int nco_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int * const nc_id);
 int nco__open(const char * const fl_nm,const int mode,size_t * const bfr_sz_hnt,int * const nc_id);
 int nco_redef(const int nc_id);
 int nco_set_fill(const int nc_id,const int fill_mode,int * const old_mode);
@@ -353,6 +365,7 @@ int nco__enddef(const int nc_id,const size_t hdr_pad);
 int nco_sync(const int nc_id);
 int nco_abort(const int nc_id);
 int nco_close(const int nc_id);
+int nco_close_memio(const int nc_id,NC_memio * const info);
 int nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * const att_glb_nbr,int * const rec_dmn_id);
   /* NB: nc_inq_path() introduced in netCDF 4.3.2, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #ifndef HAVE_NC_INQ_PATH
@@ -508,6 +521,14 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 #else /* 4.4.0 */
   int nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id);
 #endif /* 4.4.0 */
+
+  /* 20180923: netcdf_mem.h always contains nc_open_mem()
+     nco_create_mem(), nco_open_memio(), nco_close_memio(), NC_memio, and NC_MEMIO_LOCKED introduced in netcdf_mem.h versions 4.6.2 */
+# if NC_LIB_VERSION < 462 
+  int nc_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id);
+  int nc_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int * const nc_id);
+  int nc_close_memio(const int nc_id,NC_memio * const info);
+# endif /* 4.6.2 */
 
 #if NC_LIB_VERSION < 460 
   int nc_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm_lst);

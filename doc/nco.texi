@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.8-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 19 September 2018
+@set update-date 23 September 2018
 @set update-month September 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9691,7 +9691,7 @@ access time delays caused by disk-head movement.
 Usually input data is read at most once so it is unlikely that
 requesting input files be stored in @acronym{RAM} will save much time.
 The likeliest exceptions are files that are accessed numerous times,
-such as those analyzed extensively analyzed by @command{ncap2}. 
+such as those repeatedly analyzed by @command{ncap2}. 
 
 Invoking @samp{--open_ram}, @samp{--ram_all}, or @samp{--diskless_all}
 uses much more system memory.
@@ -9706,15 +9706,15 @@ of four) smaller than your available system @acronym{RAM}.
 See @ref{Memory Requirements} for further details. 
 
 @cindex @acronym{RAM} variables
-The @samp{--create_ram} switch causes output files to be created in @acronym{RAM},
-rather than on disk. 
+The @samp{--create_ram} switch causes output files to be created in
+@acronym{RAM}, rather than on disk. 
 These files are copied to disk only when closed, i.e., when the
 operator completes.
-Creating files in @acronym{RAM} may save time, especially with @command{ncap2}
-computations that are iterative, e.g., loops, and for multi-file
-operators that write output every record (timestep) or file.
-@acronym{RAM} files provide many of the same benefits as @acronym{RAM} variables in such
-cases (@pxref{RAM variables}). 
+Creating files in @acronym{RAM} may save time, especially with
+@command{ncap2} computations that are iterative, e.g., loops, and for
+multi-file operators that write output every record (timestep) or file. 
+@acronym{RAM} files provide many of the same benefits as @acronym{RAM}
+variables in such cases (@pxref{RAM variables}). 
 
 Two switches, @samp{--ram_all} and @samp{--diskless_all}, are convenient
 shortcuts for specifying both @samp{--create_ram} and
@@ -9730,8 +9730,9 @@ ncks --ram_all in.nc out.nc # Same as above
 ncks --diskless_all in.nc out.nc # Same as above
 @end example
 
-It is straightforward to demonstrate the efficacy of @acronym{RAM} disks.
-For @acronym{NASA} we constructed a test that employs @command{ncecat}
+It is straightforward to demonstrate the efficacy of @acronym{RAM}
+disks.
+For @acronym{NASA} we constructed a test that employs @command{ncecat} 
 an arbitrary number (set to one hundred thousand) of files are all
 symbolically linked to the same file. 
 Everything is on the local filesystem (not @acronym{DAP}).
@@ -9753,8 +9754,9 @@ Run normally on a laptop in 201303, this completes in @w{21 seconds}.
 The @samp{--create_ram} reduces the elapsed time to @w{9 seconds}.
 Some of this speed may be due to using symlinks and caching.
 However, the efficacy of @samp{--create_ram} is clear.
-Placing the output file in @acronym{RAM} avoids thousands of disk writes.
-It is not unreasonable to for @acronym{NCO} to process a million files
+Placing the output file in @acronym{RAM} avoids thousands of disk
+writes.
+It is not unreasonable to for @acronym{NCO} to process a million files 
 like this in a few minutes. 
 However, there is no substitute for benchmarking with real files.
 

@@ -831,8 +831,7 @@ int
 nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id)
 {
   /* Purpose: Pseudo-library stub function to open a netCDF file stored in RAM
-     This particular stub routine is only called by netCDF4-enabled code
-     when built against a netCDF library that it too old to have the nc_open_mem() function. */
+     Only called by NCO built against a netCDF library that pre-dates nc_open_mem() */
   int rcd;
   const char fnc_nm[]="nc_open_mem()";
   rcd=strlen(fl_nm)+mode+sz;
@@ -843,6 +842,49 @@ nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const
 } /* end nc_open_mem() */
 #endif /* 4.4.0 */
 
+# if NC_LIB_VERSION < 462 
+int
+nc_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id)
+{
+  /* Purpose: Pseudo-library stub function to create a netCDF file stored in RAM
+     Only called by NCO built against a netCDF library that pre-dates nc_create_mem() */
+  const char fnc_nm[]="nc_create_mem()";
+  int rcd;
+  rcd=strlen(fl_nm)+mode+sz_ntl;
+  (void)fprintf(stdout,"ERROR: %s reports attempt to create file in memory was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.6.2 (released ~201810) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  *nc_id+=mode*0;
+  return rcd;
+} /* !nc_create_mem() */
+
+int
+nc_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int * const nc_id)
+{
+  /* Purpose: Pseudo-library stub function to open a netCDF file stored in RAM
+     Only called by NCO built against a netCDF library that pre-dates nc_open_memio() */
+  int rcd;
+  const char fnc_nm[]="nc_open_memio()";
+  rcd=strlen(fl_nm)+mode;
+  (void)fprintf(stdout,"ERROR: %s reports attempt to open file memory was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.6.2 (released ~201810) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  *nc_id+=mode*0;
+  return rcd;
+} /* end nc_open_memio() */
+
+int
+nc_close_memio(const int nc_id,NC_memio * const info)
+{
+  /* Purpose: Pseudo-library stub function to close a netCDF file stored in RAM
+     Only called by NCO built against a netCDF library that pre-dates nc_close_memio() */
+  int rcd;
+  const char fnc_nm[]="nc_close_memio()";
+  (void)fprintf(stdout,"ERROR: %s reports attempt to close file memory was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.6.2 (released ~201810) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  info->size+=0L;
+  return rcd;
+} /* end nc_close_memio() */
+# endif /* 4.6.2 */
+
 int
 nco_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id)
 {
@@ -851,11 +893,53 @@ nco_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * cons
   int rcd;
   rcd=nc_open_mem(fl_nm,mode,sz,void_ptr,nc_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stdout,"ERROR: %s unable to open_mem file \"%s\"\n",fnc_nm,fl_nm);
+    (void)fprintf(stdout,"ERROR: %s unable to open_mem() file \"%s\"\n",fnc_nm,fl_nm);
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
 } /* end nco_open_mem() */
+
+int
+nco_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id)
+{
+  /* Purpose: Wrapper for nc_create_mem() */
+  const char fnc_nm[]="nco_create_mem()";
+  int rcd;
+  rcd=nc_create_mem(fl_nm,mode,sz_ntl,nc_id);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s unable to create_mem() file \"%s\"\n",fnc_nm,fl_nm);
+    nco_err_exit(rcd,fnc_nm);
+  } /* endif */
+  return rcd;
+} /* end nco_create_mem() */
+
+int
+nco_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int * const nc_id)
+{
+  /* Purpose: Wrapper for nc_open_memio() */
+  const char fnc_nm[]="nco_open_memio()";
+  int rcd;
+  rcd=nc_open_memio(fl_nm,mode,info,nc_id);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s unable to open_memio() file \"%s\"\n",fnc_nm,fl_nm);
+    nco_err_exit(rcd,fnc_nm);
+  } /* endif */
+  return rcd;
+} /* end nco_open_memio() */
+
+int
+nco_close_memio(const int nc_id,NC_memio * const info)
+{
+  /* Purpose: Wrapper for nc_close_memio() */
+  const char fnc_nm[]="nco_close_memio()";
+  int rcd;
+  rcd=nc_close_memio(nc_id,info);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"ERROR: %s unable to close_memio() file \"%s\" with nc_id=%d\n",fnc_nm,nc_id);
+    nco_err_exit(rcd,fnc_nm);
+  } /* endif */
+  return rcd;
+} /* end nco_close_memio() */
 
 #if NC_LIB_VERSION < 460
 int nc_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm_lst)

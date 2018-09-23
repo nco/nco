@@ -93,6 +93,7 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
 
   return rcd; /* [rcd] Return code */
 } /* end nco_create_mode_prs() */
+
 void
 nco_fl_sz_est /* [fnc] Estimate RAM size == uncompressed file size */
 (char *smr_fl_sz_sng, /* I/O [sng] String describing estimated file size */
