@@ -51,16 +51,6 @@
 #ifdef NC_HAVE_META_H
 # include <netcdf_meta.h> /* NC_VERSION_..., HAVE_NC_RENAME_GRP */	 
 #endif /* !NC_HAVE_META_H */
-#if NC_LIB_VERSION >= 462 
-# include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
-#else /* 4.6.2 */
-typedef struct NC_memio {
-  size_t size;
-  void* memory;
-  int flags;
-# define NC_MEMIO_LOCKED 1    /* Do not try to realloc or free provided memory */
-} NC_memio;
-#endif /* 4.6.2 */
 #ifdef ENABLE_MPI
 # include <mpi.h> /* MPI definitions */
 # include <netcdf_par.h> /* Parallel netCDF definitions */
@@ -349,7 +339,18 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
 # endif /* !PNETCDF_EXPOSED_API */
 #endif /* !ENABLE_MPI */
 
-/* Begin file-level routines */
+#if NC_LIB_VERSION >= 462 
+# include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
+#else /* 4.6.2 */
+typedef struct NC_memio {
+  size_t size;
+  void* memory;
+  int flags;
+# define NC_MEMIO_LOCKED 1    /* Do not try to realloc or free provided memory */
+} NC_memio;
+#endif /* 4.6.2 */
+
+  /* Begin file-level routines */
 int nco_create(const char * const fl_nm,const int cmode,int * const nc_id);
 int nco_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id);
 int nco__create(const char * const fl_nm,const int cmode,const size_t sz_ntl,size_t * const bfr_sz_hnt,int * const nc_id);
@@ -518,17 +519,17 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
      netcdf_mem.h and symbol nc_open_mem() in the netCDF library and defining HAVE_NETCDF_MEM_H only when both exist */
 #ifdef HAVE_NETCDF_MEM_H
 # include <netcdf_mem.h> /* nc_open_mem() defined in netCDF >= 4.4.0 */
-#else /* 4.4.0 */
+#else /* !HAVE_NETCDF_MEM_H */
   int nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id);
-#endif /* 4.4.0 */
+#endif /* !HAVE_NETCDF_MEM_H */
 
   /* 20180923: netcdf_mem.h always contains nc_open_mem()
      nco_create_mem(), nco_open_memio(), nco_close_memio(), NC_memio, and NC_MEMIO_LOCKED introduced in netcdf_mem.h versions 4.6.2 */
-# if NC_LIB_VERSION < 462 
+#if NC_LIB_VERSION < 462 
   int nc_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id);
   int nc_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int * const nc_id);
   int nc_close_memio(const int nc_id,NC_memio * const info);
-# endif /* 4.6.2 */
+#endif /* 4.6.2 */
 
 #if NC_LIB_VERSION < 460 
   int nc_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm_lst);

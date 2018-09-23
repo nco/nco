@@ -840,9 +840,9 @@ nc_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const
   *nc_id=*((int *)void_ptr);
   return rcd;
 } /* end nc_open_mem() */
-#endif /* 4.4.0 */
+#endif /* !HAVE_NETCDF_MEM_H */
 
-# if NC_LIB_VERSION < 462 
+#if NC_LIB_VERSION < 462 
 int
 nc_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id)
 {
@@ -883,7 +883,7 @@ nc_close_memio(const int nc_id,NC_memio * const info)
   info->size+=0L;
   return rcd;
 } /* end nc_close_memio() */
-# endif /* 4.6.2 */
+#endif /* 4.6.2 */
 
 int
 nco_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * const void_ptr,int * const nc_id)
