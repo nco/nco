@@ -218,7 +218,7 @@ main(int argc,char **argv)
   
   static struct option opt_lng[]={ /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
-        {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
+    {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
