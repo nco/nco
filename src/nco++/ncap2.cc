@@ -1144,15 +1144,15 @@ main(int argc,char **argv)
 
     /* Clear vectors */
     /* fmc_vtr.clear();
-    cnv_obj.fmc_vtr.clear();
-    agg_obj.fmc_vtr.clear();
-    utl_obj.fmc_vtr.clear();
-    mth_obj.fmc_vtr.clear();
-    mth2_obj.fmc_vtr.clear();
-    bsc_obj.fmc_vtr.clear();
-    pdq_obj.fmc_vtr.clear();
-    msk_obj.fmc_vtr.clear();
-    pck_obj.fmc_vtr.clear(); */
+       cnv_obj.fmc_vtr.clear();
+       agg_obj.fmc_vtr.clear();
+       utl_obj.fmc_vtr.clear();
+       mth_obj.fmc_vtr.clear();
+       mth2_obj.fmc_vtr.clear();
+       bsc_obj.fmc_vtr.clear();
+       pdq_obj.fmc_vtr.clear();
+       msk_obj.fmc_vtr.clear();
+       pck_obj.fmc_vtr.clear(); */
     /* Free variable lists */
     if(xtr_nbr > 0) var=nco_var_lst_free(var,xtr_nbr);
     if(xtr_nbr > 0) var_out=nco_var_lst_free(var_out,xtr_nbr);
@@ -1179,7 +1179,7 @@ pop_fmc_vtr
 {
   // De-reference
   std::vector<fmc_cls> &lcl_vtr=*vfnc->lst_vtr();
-  std::copy(lcl_vtr.begin(),lcl_vtr.end(),inserter(fmc_vtr,fmc_vtr.end())  );
+  std::copy(lcl_vtr.begin(),lcl_vtr.end(),inserter(fmc_vtr,fmc_vtr.end()));
 }
 
 // Add some useful constants as RAM variables 

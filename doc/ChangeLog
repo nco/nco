@@ -1,3 +1,13 @@
+2018-09-25  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.8-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha02: Imua MVB';git push
+	git tag -a 4.7.8-alpha02 -m 'Deprecate USE_NC4_SRD_WORKAROUND for netCDF >= 4.6.2;Add nc_*_memio() functions; Fix nc_set_log_level(); ncatted allow --typ_mch searches to fail; ncremap add mss_val to NC_FLOAT';git push --tags
+
+	* ncremap add missing values to single-precision MPAS variables as well as double
+
+	* ncatted do not return error when -t specified and no matching	variables found
+
 2018-09-23  Charlie Zender  <zender@uci.edu>
 
 	* Define NC_LIB_VERSION prior to using in #include <netcdf_mem.h>

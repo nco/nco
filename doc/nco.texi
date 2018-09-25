@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.8-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 23 September 2018
+@set update-date 24 September 2018
 @set update-month September 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9678,11 +9678,12 @@ Diskless access does not change this, but it does add an extra
 read-from/write-to @acronym{RAM}. 
 However this extra @acronym{RAM} write/read does avoid contention for limited
 system resources like disk-head access.
-Operators which may benefit from @acronym{RAM} disks include @command{ncwa}, which
-may need to read weighting variables multiple times, the multi-file 
-operators @command{ncra}, @command{ncrcat}, and @command{ncecat},
-which may try to write output at least once per input file, and
-@command{ncap2} scripts which may be arbitrarily long and convoluted. 
+Operators which may benefit from @acronym{RAM} disks include
+@command{ncwa}, which may need to read weighting variables multiple
+times, the multi-file  operators @command{ncra}, @command{ncrcat}, and
+@command{ncecat}, which may try to write output at least once per input
+file, and @command{ncap2} scripts which may be arbitrarily long and
+convoluted.  
 
 The @samp{--open_ram} switch causes input files to copied to @acronym{RAM} when
 opened. 
@@ -9733,7 +9734,7 @@ ncks --diskless_all in.nc out.nc # Same as above
 It is straightforward to demonstrate the efficacy of @acronym{RAM}
 disks.
 For @acronym{NASA} we constructed a test that employs @command{ncecat} 
-an arbitrary number (set to one hundred thousand) of files are all
+an arbitrary number (set to one hundred thousand) of files that are all 
 symbolically linked to the same file. 
 Everything is on the local filesystem (not @acronym{DAP}).
 @example

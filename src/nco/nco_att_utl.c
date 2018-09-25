@@ -542,15 +542,19 @@ nco_aed_prc_var_all /* [fnc] Process attributes in all variables */
       if((flg_typ_mch && trv_tbl->lst[tbl_idx].var_typ == aed.type) || !flg_typ_mch){
 	(void)nco_inq_grp_full_ncid(nc_id,trv_tbl->lst[tbl_idx].grp_nm_fll,&grp_id);
 	(void)nco_inq_varid(grp_id,trv_tbl->lst[tbl_idx].nm,&var_id);
-	flg_chg|=nco_aed_prc_wrp(grp_id,var_id,aed);
 	var_fnd=True;
+	flg_chg|=nco_aed_prc_wrp(grp_id,var_id,aed);
       } /* !typ */
     } /* !var */
   } /* !tbl */ 
 
   if(!var_fnd){
-    (void)fprintf(stderr,"%s: ERROR File contains no variables so variable attributes cannot be changed\n",nco_prg_nm_get());
-    nco_exit(EXIT_FAILURE);
+    if(flg_typ_mch){
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO File contains no variables of same type (%s) as attribute so no attributes were changed\n",nco_prg_nm_get(),nco_typ_sng(aed.type));
+    }else{
+      (void)fprintf(stderr,"%s: ERROR File contains no variables so variable attributes cannot be changed\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* !flg_typ_mch */
   } /* var_fnd */
   if(nco_dbg_lvl_get() >= nco_dbg_var && !flg_chg) (void)fprintf(stderr,"%s: INFO %s reports attribute %s was not changed in any variable\n",fnc_nm,nco_prg_nm_get(),aed.att_nm);
 
