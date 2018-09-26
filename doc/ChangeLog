@@ -1,5 +1,9 @@
 2018-09-25  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.8-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha03: Ohana Fest';git push
+	git tag -a 4.7.8-alpha03 -m '';git push --tags
+
 	* NCO 4.7.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha02: Imua MVB';git push
 	git tag -a 4.7.8-alpha02 -m 'Deprecate USE_NC4_SRD_WORKAROUND for netCDF >= 4.6.2;Add nc_*_memio() functions; Fix nc_set_log_level(); ncatted allow --typ_mch searches to fail; ncremap add mss_val to NC_FLOAT';git push --tags
