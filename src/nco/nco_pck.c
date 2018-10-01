@@ -533,7 +533,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
     } /* endelse */
     break;
   case nco_pck_plc_all_new_att:
-    /* 20180909: Never re-pack when simply trying to convert double->float */
+    /* 20180909: Never re-pack when simply converting double->float */
     if(var_in->pck_ram){
       if(nco_pck_map == nco_pck_map_dbl_flt){
 	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s leaving variable %s of type %s as packed\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck));

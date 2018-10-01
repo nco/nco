@@ -1,12 +1,12 @@
 2018-09-27  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.8-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha03: Ohana Fest';git push
+	git tag -a 4.7.8-alpha03 -m 'ncremap --d2f';git push --tags
+
 	* Add --d2f option to ncremap to convert double-precision to single-precision
 
 2018-09-25  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.7.8-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha03: Ohana Fest';git push
-	git tag -a 4.7.8-alpha03 -m '';git push --tags
 
 	* NCO 4.7.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha02: Imua MVB';git push

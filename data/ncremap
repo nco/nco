@@ -345,9 +345,9 @@ bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
 clm_flg='No' # [flg] Invoked by ncclimo script
-dbg_lvl=0 # [nbr] Debugging level
 d2f_flg='No' # [flg] Convert double-precision fields to single-precision
 d2f_opt='-M dbl_flt' # [sng] Option string to convert double-precision fields to single-precision
+dbg_lvl=0 # [nbr] Debugging level
 dfl_lvl=0 # [enm] Deflate level
 #drc_in="${drc_pwd}" # [sng] Input file directory
 drc_in='' # [sng] Input file directory
@@ -456,8 +456,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "            Tempest algorithms: tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng, or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
-    echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
+    echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
     echo " ${fnt_bld}--dt_sng${fnt_nrm}   Date string (for MWF map names) (default ${fnt_bld}${dt_sng}${fnt_nrm}) [${fnt_tlc}dt_sng, date_string${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation arguments (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
