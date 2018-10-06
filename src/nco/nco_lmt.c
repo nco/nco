@@ -1377,7 +1377,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
   monotonic_direction_enm monotonic_direction=not_checked; /* CEWI */
 
-  long dmn_sz;                     /* [nbr] Dimension size */
+  size_t dmn_sz;                   /* [nbr] Dimension size */
   long cnt_rmn_crr=-1L;            /* [nbr] Records to extract from current file */
   long cnt_rmn_ttl=-1L;            /* [nbr] Total records to be read from this and all remaining files */
   long rec_skp_vld_prv_dgn=-1L;    /* [nbr] Records skipped at end of previous valid file, if any (diagnostic only) */
@@ -1558,7 +1558,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     long max_idx;
     long min_idx;
     long tmp_idx;
-    long dmn_srt=0L;    
+    size_t dmn_srt=0L;
 
     /* Warn when coordinate type is weird */
     if(var_typ == NC_BYTE || var_typ == NC_UBYTE || var_typ == NC_CHAR || var_typ == NC_STRING) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",nco_prg_nm_get(),lmt.nm,nco_typ_sng(var_typ));
@@ -1575,7 +1575,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       /* 20110221: replace nco_get_vara() with nc_get_vara_double() */
       /* Retrieve this coordinate */
       int rcd;
-      rcd=nc_get_vara_double(grp_id,var_id,(const size_t *)&dmn_srt,(const size_t *)&dmn_sz,dmn_val_dp);
+      rcd=nc_get_vara_double(grp_id,var_id,&dmn_srt,&dmn_sz,dmn_val_dp);
       if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: ERROR %s unable to read user-specified coordinate %s. Ensure this coordinate variable is in file and is a 1-D array.\n",nco_prg_nm_get(),fnc_nm,lmt.nm);
       if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_get_vara_double()");
     } /* end OpenMP critical */
