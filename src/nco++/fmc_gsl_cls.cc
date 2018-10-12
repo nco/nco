@@ -757,7 +757,7 @@ void gsl_cls::gsl_ini_stats(void){
 
   gpr_vtr.push_back(gpr_cls("gsl_stats_covariance",f_unn(ncap_void),hnd_fnc_stat4,PS_COV));
 
-# if NCO_GSLVERSION >= 110
+# if NCO_GSL_VERSION >= 110
   gpr_vtr.push_back(gpr_cls("gsl_stats_correlation",f_unn(ncap_void),hnd_fnc_stat4,PS_COR));
 # endif // NCO_GSL_VERSION < 110
 

@@ -1,6 +1,10 @@
+2018-10-11  Charlie Zender  <zender@uci.edu>
+
+	* Fix typo so we have NCO_GSL_VERSION >= 110 in fmc_gsl_cls.cc
+
 2018-10-06  Charlie Zender  <zender@uci.edu>
 
-	* Pedro Vicente corrected a WIN64 size_t issue by replacin “long” with “size_t” in nco_lmt_evl_dmn_crd()
+	* Pedro Vicente corrected a WIN64 size_t issue by replacing “long” with “size_t” in nco_lmt_evl_dmn_crd()
 
 2018-09-27  Charlie Zender  <zender@uci.edu>
 
