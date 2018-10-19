@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.8-alpha02
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 24 September 2018
-@set update-month September 2018
+@set update-date 16 October 2018
+@set update-month October 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -20059,7 +20059,7 @@ whether to overwrite existing data.
 For example, batch scripts will fail if @command{ncks} does not receive 
 responses to its queries. 
 Options @samp{-O} and @samp{-A} are available to force overwriting
-existing files and variables, respectively. 
+existing files, and appending existing variables, respectively. 
 
 @unnumberedsubsec Options specific to @command{ncks}
 
