@@ -57,13 +57,15 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
      ncks -O -D 3 -b ~/foo.bnr ~/nco/data/in.nc ~/foo.nc */
   nco_bool flg_byt_swp=False;
   void *vp_bs; /* [ptr] Byte-swapped copy of input data */
+  size_t wrd_sz;
   size_t mmr_sz;
   size_t idx;
   
   long wrt_nbr; /* [nbr] Number of elements successfully written */
   /* Write unformatted data to binary output file */
   if(flg_byt_swp){
-    mmr_sz=var_sz*nco_typ_lng(var_typ);
+    wrd_sz=nco_typ_lng(var_typ);
+    mmr_sz=var_sz*wrd_sz;
     vp_bs=(void *)nco_malloc(mmr_sz);
     vp_bs=memcpy(vp_bs,vp,mmr_sz);
     for(idx=0;idx<var_sz;idx++){
