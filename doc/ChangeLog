@@ -1,3 +1,7 @@
+2018-10-24  Charlie Zender  <zender@uci.edu>
+
+	* Finish byte-swap function
+
 2018-10-23  Charlie Zender  <zender@uci.edu>
 
 	* Add byte-swap option infrastructure

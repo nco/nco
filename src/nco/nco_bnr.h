@@ -15,6 +15,11 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
+#ifdef _MSC_VER
+# include <stdlib.h> /* _byteswap_ulong() */
+#else /* !_MSC_VER */
+# include <inttypes.h> /* __builtin_bswap32() */
+#endif /* !_MSC_VER */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */

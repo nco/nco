@@ -53,28 +53,77 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
  const void * const vp) /* I [ptr] Data to write */
 {
   /* Purpose: Write unformatted binary data */
+
   /* Testing:
      ncks -O -D 3 -b ~/foo.bnr ~/nco/data/in.nc ~/foo.nc */
-  nco_bool flg_byt_swp=False;
-  void *vp_bs; /* [ptr] Byte-swapped copy of input data */
+
+  const char fnc_nm[]="nco_bnr_wrt()"; /* [sng] Function name */
+
+  long wrt_nbr; /* [nbr] Number of elements successfully written */
+
+  nco_bool flg_byt_swp=True;
+  
   size_t wrd_sz;
   size_t mmr_sz;
   size_t idx;
-  
-  long wrt_nbr; /* [nbr] Number of elements successfully written */
+
+  unsigned short *u16_ptr=NULL;
+  unsigned int *u32_ptr=NULL;
+  unsigned long int *u64_ptr=NULL;
+
+  void *vp_bs; /* [ptr] CEWI Byte-swapped copy of input data */
+
+  wrd_sz=nco_typ_lng(var_typ);
+  vp_bs=NULL; /* CEWI */
+
   /* Write unformatted data to binary output file */
-  if(flg_byt_swp){
-    wrd_sz=nco_typ_lng(var_typ);
+  if(flg_byt_swp && wrd_sz > 1L){
     mmr_sz=var_sz*wrd_sz;
     vp_bs=(void *)nco_malloc(mmr_sz);
     vp_bs=memcpy(vp_bs,vp,mmr_sz);
-    for(idx=0;idx<var_sz;idx++){
-      ;
-    } /* !idx */
-    wrt_nbr=fwrite(vp_bs,(size_t)nco_typ_lng(var_typ),(size_t)var_sz,fp_bnr);
+
+    switch(wrd_sz){
+#ifdef _MSC_VER
+    case 8:
+      u64_ptr=(unsigned long int *)vp_bs;
+      for(idx=0;idx<var_sz;idx++) u64_ptr[idx]=_byteswap_uint64(u64_ptr[idx]);
+      break;
+    case 4:
+      u32_ptr=(unsigned int *)vp_bs;
+      for(idx=0;idx<var_sz;idx++) u32_ptr[idx]=_byteswap_ulong(u32_ptr[idx]);
+      break;
+    case 2:
+      u16_ptr=(unsigned short *)vp_bs;
+      for(idx=0;idx<var_sz;idx++) u16_ptr[idx]=_byteswap_ushort(u16_ptr[idx]);
+      break;
+#else /* !_MSC_VER */
+    case 8:
+      u64_ptr=(unsigned long int *)vp_bs;
+      for(idx=0;idx<var_sz;idx++) u64_ptr[idx]=__builtin_bswap64(u64_ptr[idx]);
+      break;
+    case 4:
+      u32_ptr=(unsigned int *)vp_bs;
+      for(idx=0;idx<var_sz;idx++) u32_ptr[idx]=__builtin_bswap32(u32_ptr[idx]);
+      break;
+    case 2:
+      u16_ptr=(unsigned short *)vp_bs;
+      for(idx=0;idx<var_sz;idx++) u16_ptr[idx]=__builtin_bswap16(u16_ptr[idx]);
+      break;
+#endif /* !_MSC_VER */
+    case 1:
+    default:
+      (void)fprintf(stderr,"%s: ERROR %s reports variable %s of type %s has unexpected word-size = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_typ_sng(var_typ),(unsigned long)wrd_sz);
+      nco_exit(EXIT_FAILURE);
+      break;
+    } /* end switch */
+
+    wrt_nbr=fwrite(vp_bs,wrd_sz,(size_t)var_sz,fp_bnr);
+
     if(vp_bs) vp_bs=nco_free(vp_bs);
+
   }else{
-    wrt_nbr=fwrite(vp,(size_t)nco_typ_lng(var_typ),(size_t)var_sz,fp_bnr);
+    /* Write data in native machine ordering. Easy Peasy! */
+    wrt_nbr=fwrite(vp,wrd_sz,(size_t)var_sz,fp_bnr);
   } /* !flg_byt_swp */
   
   if(wrt_nbr != var_sz){
