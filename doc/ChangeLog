@@ -1,3 +1,9 @@
+2018-10-23  Charlie Zender  <zender@uci.edu>
+
+	* Add byte-swap option infrastructure
+
+	* Successfully built/tested on GCC 8.2 on MacOS 10.14
+
 2018-10-11  Charlie Zender  <zender@uci.edu>
 
 	* Fix typo so we have NCO_GSL_VERSION >= 110 in fmc_gsl_cls.cc
@@ -254,7 +260,7 @@
 
 	* Use HPSS_TRY to create better hints for finding missing files
 
-	* Fix ncap2 build on aerosol/firn: discard MacPorts antlr, build antlr from scratch, eliminate getopt.h getopt_bds.h from ~/include (to fix undefined references to _my_getopt, _my_optind, etc.)
+	* Fix ncap2 build on aerosol/firn: discard MacPorts antlr, build antlr from scratch, eliminate getopt.h getopt_bsd.h from ~/include (to fix undefined references to _my_getopt, _my_optind, etc.)
 
 2018-07-28  Charlie Zender  <zender@aerosol>
 

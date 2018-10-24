@@ -44,7 +44,7 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
  const char * const var_nm, /* I [sng] Variable name */
  const long var_sz, /* I [nbr] Variable size */
  const nc_type var_typ, /* I [enm] Variable type */
- const void * const void_ptr); /* I [ptr] Data to write */
+ const void * const vp); /* I [ptr] Data to write */
 
 size_t /* O [nbr] Number of elements successfully read */
 nco_bnr_rd /* [fnc] Read unformatted binary data */

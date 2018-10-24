@@ -50,20 +50,36 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
  const char * const var_nm, /* I [sng] Variable name */
  const long var_sz, /* I [nbr] Variable size */
  const nc_type var_typ, /* I [enm] Variable type */
- const void * const void_ptr) /* I [ptr] Data to write */
+ const void * const vp) /* I [ptr] Data to write */
 {
   /* Purpose: Write unformatted binary data */
   /* Testing:
-     ncks -O -D 3 -B -b foo.bnr ~/nco/data/in.nc ~/foo.nc */
-
+     ncks -O -D 3 -b ~/foo.bnr ~/nco/data/in.nc ~/foo.nc */
+  nco_bool flg_byt_swp=False;
+  void *vp_bs; /* [ptr] Byte-swapped copy of input data */
+  size_t mmr_sz;
+  size_t idx;
+  
   long wrt_nbr; /* [nbr] Number of elements successfully written */
   /* Write unformatted data to binary output file */
-  wrt_nbr=fwrite(void_ptr,(size_t)nco_typ_lng(var_typ),(size_t)var_sz,fp_bnr);
+  if(flg_byt_swp){
+    mmr_sz=var_sz*nco_typ_lng(var_typ);
+    vp_bs=(void *)nco_malloc(mmr_sz);
+    vp_bs=memcpy(vp_bs,vp,mmr_sz);
+    for(idx=0;idx<var_sz;idx++){
+      ;
+    } /* !idx */
+    wrt_nbr=fwrite(vp_bs,(size_t)nco_typ_lng(var_typ),(size_t)var_sz,fp_bnr);
+    if(vp_bs) vp_bs=nco_free(vp_bs);
+  }else{
+    wrt_nbr=fwrite(vp,(size_t)nco_typ_lng(var_typ),(size_t)var_sz,fp_bnr);
+  } /* !flg_byt_swp */
+  
   if(wrt_nbr != var_sz){
     (void)fprintf(stderr,"%s: ERROR only succeeded in writing %ld of %ld elements of variable %s\n",nco_prg_nm_get(),wrt_nbr,var_sz,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s (%s, %ld x %lu b), ",var_nm,c_typ_nm(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ));
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s (%s, %ld x %lu B), ",var_nm,c_typ_nm(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ));
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fflush(stderr);
   return wrt_nbr; /* O [nbr] Number of elements successfully written */
 } /* end nco_bnr_wrt() */
