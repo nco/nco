@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha03: Ohana Fest';git push
 	git tag -a 4.7.8-alpha03 -m 'ncremap --d2f;ncks byte-swap ordering option;ncbo conformity clarity';git push --tags
 
+	* Add variable uint32_var to in_grp.nc to test byte-swapping
+
 	* Fix c_typ_nm() to return correct C-language type of netCDF type based on nco_typ.h tokens
 
 	* Clarify dimension ordering issue when ncbo's variable conformity checks fail

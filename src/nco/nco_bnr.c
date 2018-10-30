@@ -66,7 +66,10 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
      ncks -O -D 3 --bsa=0 -b ~/foo.bnr ~/nco/data/in.nc ~/foo.nc # Write binary in native order
      ncks -O -D 3 --bsa=1 -b ~/foo.bnr ~/nco/data/in.nc ~/foo.nc # Write binary in byte-swapped (non-native) order
      ncks -O -D 3 -v uint32_var --bsa=0 -b ~/foo.bnr ~/nco/data/in_grp.nc ~/foo.nc # Write binary in native order
-     ncks -O -D 3 -v uint32_var --bsa=1 -b ~/foo.bnr ~/nco/data/in_grp.nc ~/foo.nc # Write binary in byte-swapped (non-native) order */
+     ncks -O -D 3 -v uint32_var --bsa=1 -b ~/foo.bnr ~/nco/data/in_grp.nc ~/foo.nc # Write binary in byte-swapped (non-native) order
+     Examine input and output:
+     ncks --hdn -v uint32_var ~/nco/data/in_grp.nc
+     od -An -X -N 4 ~/foo.bnr */
 
   const char fnc_nm[]="nco_bnr_wrt()"; /* [sng] Function name */
 

@@ -499,7 +499,7 @@ netcdf in_grp {
   uint_arr:long_name = "uint-type array variable";
     
     uint uint32_var;
-  uint32_var:purpose = "Native uint32 with value 0x12345678 so that byte-swapped value should be 0x78563412";
+  uint32_var:purpose = "uint32 with big-endian value 0x12345678 = 2018915346 so that byte-swapped (little-endian) value should be 0x78563412";
 
  uint64 uint64_var;
   uint64_var:long_name = "uint64-type variable";
