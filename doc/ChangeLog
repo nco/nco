@@ -1,3 +1,7 @@
+2018-10-30  Charlie Zender  <zender@uci.edu>
+
+	* Clarify dimension ordering issue when ncbo's variable conformity checks fail
+
 2018-10-24  Charlie Zender  <zender@uci.edu>
 
 	* Finish byte-swap function

@@ -3846,7 +3846,7 @@ nco_prc_cmn                            /* [fnc] Process objects (ncbo only) */
 	 Or re-code ncap_var_cnf_dmn() so that it understands how to broadcast degenerate dimensions */
       for(int idx_dmn=0;idx_dmn<var_prc_1->nbr_dim;idx_dmn++){
         if(var_prc_1->dim[idx_dmn]->sz != var_prc_2->dim[idx_dmn]->sz){
-          (void)fprintf(stdout,"%s: ERROR Variables do not conform: variable %s has dimension %s with sizes %ld and %ld in input files one and two, respectively\n",nco_prg_nm_get(),var_prc_1->nm_fll,var_prc_1->dim[idx_dmn]->nm,var_prc_1->dim[idx_dmn]->sz,var_prc_2->dim[idx_dmn]->sz);
+          (void)fprintf(stdout,"%s: ERROR Variables do not conform: Variable \"%s\" has C-based dimension #%d name and size of \"%s\" and %ld in file one, and name and size of \"%s\" and %ld in file two. One of these dimensions is not like the other. HINT: Be sure the variable's dimensions are not permuted in one file relative to the other. If they are, first use ncpdq to order the dimensions the same way in both input files, then re-try command.\n",nco_prg_nm_get(),var_prc_1->nm_fll,idx_dmn,var_prc_1->dim[idx_dmn]->nm,var_prc_1->dim[idx_dmn]->sz,var_prc_2->dim[idx_dmn]->nm,var_prc_2->dim[idx_dmn]->sz);
           nco_exit(EXIT_FAILURE);
         } /* endif error */
       } /* end loop over idx_dmn */
