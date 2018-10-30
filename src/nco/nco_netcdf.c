@@ -476,25 +476,25 @@ c_typ_nm /* [fnc] Return string describing native C type */
   case NC_DOUBLE:
     return "double";
   case NC_INT:
-    return "NCO_INT_SNG";
+    return NCO_INT_SNG;
   case NC_SHORT:
     return "signed short int";
   case NC_CHAR:
-    return "NCO_CHAR_SNG";
+    return NCO_CHAR_SNG;
   case NC_BYTE:
-    return "NCO_BYTE_SNG";
+    return NCO_BYTE_SNG;
   case NC_UBYTE:
-    return "NCO_UBYTE_SNG";
+    return NCO_UBYTE_SNG;
   case NC_USHORT:
-    return "NCO_USHORT_SNG";
+    return NCO_USHORT_SNG;
   case NC_UINT:
-    return "NCO_UINT_SNG";
+    return NCO_UINT_SNG;
   case NC_INT64:
-    return "NCO_INT64_SNG";
+    return NCO_INT64_SNG;
   case NC_UINT64:
-    return "NCO_UINT64_SNG";
+    return NCO_UINT64_SNG;
   case NC_STRING:
-    return "NCO_STRING_SNG";
+    return NCO_STRING_SNG;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 

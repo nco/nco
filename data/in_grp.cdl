@@ -498,7 +498,10 @@ netcdf in_grp {
     uint uint_arr(lat);
   uint_arr:long_name = "uint-type array variable";
     
-    uint64 uint64_var;
+    uint uint32_var;
+  uint32_var:purpose = "Native uint32 with value 0x12345678 so that byte-swapped value should be 0x78563412";
+
+ uint64 uint64_var;
   uint64_var:long_name = "uint64-type variable";
     
     ushort ushort_var;
@@ -524,6 +527,7 @@ netcdf in_grp {
     // uint_var=4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
     uint_var=0; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
     uint_arr=4294967295,4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
+    uint32_var=0x12345678; // Byte-swapped value should be 0x78563412
     //    uint64_var=18446744073709551615; // ULLONG_MAX = 18446744073709551615, NC_FILL_UINT is 18446744073709551614ULL, 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maxium ubyte, ushort, and uint values)
     uint64_var = 0ul; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes, 
     ushort_var=65535; // USHRT_MAX = 65535, NC_FILL_USHORT = 65535

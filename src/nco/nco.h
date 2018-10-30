@@ -238,6 +238,7 @@ extern "C" {
   char *nco_prg_nm_get(void);
   int nco_prg_id_get(void);
   unsigned short nco_baa_cnv_get(void);
+  unsigned short nco_bnr_cnv_get(void);
   unsigned short nco_dbg_lvl_get(void);
   unsigned short nco_fmt_xtn_get(void);
   unsigned short nco_mrd_cnv_get(void);
@@ -263,6 +264,9 @@ extern "C" {
   
   unsigned short nco_baa_cnv=0; /* [enm] Bit-Adjustment Algorithm */
   unsigned short nco_baa_cnv_get(void){return nco_baa_cnv;} /* [enm] Bit-Adjustment Algorithm */
+
+  unsigned short nco_bnr_cnv=0; /* [enm] Binary byte-ordering convention to produce (native or byte-swapped) */
+  unsigned short nco_bnr_cnv_get(void){return nco_bnr_cnv;} /* [enm] Binary byte-ordering convention to employ */
 
   unsigned short nco_dbg_lvl=0; /* [enm] Debugging level */
   unsigned short nco_dbg_lvl_get(void){return nco_dbg_lvl;} /* [enm] Debugging level */
@@ -716,6 +720,11 @@ extern "C" {
     nco_baa_shv, /* 1 Bit Shave (option since 20160117) */
     nco_baa_set, /* 2 Bit Set (option since 20160117) */
   }; /* end nco_baa_cnv */
+
+  enum nco_bnr_cnv{ /* [enm] Binary byte-ordering convention to employ (native or byte-swapped) */
+    nco_bnr_ntv, /* 0 Write native byte-order of host machine (write big- and little-endian on big- and little-endian machines, respectively) */
+    nco_bnr_bsa, /* 1 Use byte-swap algorithm and write non-native order (write little- and big-endian on big- and little-endian machines, respectively) */
+  }; /* end nco_bnr_cnv */
 
   enum nco_upk_cnv{ /* [enm] Unpacking convention to utilize */
     /* netCDF convention  : http://www.unidata.ucar.edu/software/netcdf/docs/netcdf/Attribute-Conventions.html

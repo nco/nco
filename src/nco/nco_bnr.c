@@ -54,14 +54,25 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
 {
   /* Purpose: Write unformatted binary data */
 
+  /* Background:
+     Best algorithmic resource is:
+     https://stackoverflow.com/questions/19275955/convert-little-endian-to-big-endian     
+     POSIX requires functions host-to-network and network-to-host functions for short (16-bit) and long (32-bit) types: htons(), ntohs(), htonl(), ntohl()
+     These functions just implement __builtin_bswapXX() under-the-hood if necessary */
+
   /* Testing:
-     ncks -O -D 3 -b ~/foo.bnr ~/nco/data/in.nc ~/foo.nc */
+     ncks -O -D 3 -b ~/foo.bnr ~/nco/data/in.nc ~/foo.nc # Write binary in native order
+     20181029: Implement global --nco_bnr_cnv
+     ncks -O -D 3 --bsa=0 -b ~/foo.bnr ~/nco/data/in.nc ~/foo.nc # Write binary in native order
+     ncks -O -D 3 --bsa=1 -b ~/foo.bnr ~/nco/data/in.nc ~/foo.nc # Write binary in byte-swapped (non-native) order
+     ncks -O -D 3 -v uint32_var --bsa=0 -b ~/foo.bnr ~/nco/data/in_grp.nc ~/foo.nc # Write binary in native order
+     ncks -O -D 3 -v uint32_var --bsa=1 -b ~/foo.bnr ~/nco/data/in_grp.nc ~/foo.nc # Write binary in byte-swapped (non-native) order */
 
   const char fnc_nm[]="nco_bnr_wrt()"; /* [sng] Function name */
 
   long wrt_nbr; /* [nbr] Number of elements successfully written */
 
-  nco_bool flg_byt_swp=True;
+  nco_bool flg_byt_swp; /* [flg] Use byte-swap algorithm and write non-native order (write little- and big-endian on big- and little-endian machines, respectively) */
   
   size_t wrd_sz;
   size_t mmr_sz;
@@ -75,6 +86,8 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
 
   wrd_sz=nco_typ_lng(var_typ);
   vp_bs=NULL; /* CEWI */
+
+  flg_byt_swp=nco_bnr_cnv_get();
 
   /* Write unformatted data to binary output file */
   if(flg_byt_swp && wrd_sz > 1L){

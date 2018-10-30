@@ -1,10 +1,16 @@
 2018-10-30  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.8-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha03: Ohana Fest';git push
+	git tag -a 4.7.8-alpha03 -m 'ncremap --d2f;ncks byte-swap ordering option;ncbo conformity clarity';git push --tags
+
+	* Fix c_typ_nm() to return correct C-language type of netCDF type based on nco_typ.h tokens
+
 	* Clarify dimension ordering issue when ncbo's variable conformity checks fail
 
 2018-10-24  Charlie Zender  <zender@uci.edu>
 
-	* Finish byte-swap function
+	* Finish byte-swap function. Still need front-end option invocation mechanism.
 
 2018-10-23  Charlie Zender  <zender@uci.edu>
 
@@ -21,10 +27,6 @@
 	* Pedro Vicente corrected a WIN64 size_t issue by replacing “long” with “size_t” in nco_lmt_evl_dmn_crd()
 
 2018-09-27  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.7.8-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha03: Ohana Fest';git push
-	git tag -a 4.7.8-alpha03 -m 'ncremap --d2f';git push --tags
 
 	* Add --d2f option to ncremap to convert double-precision to single-precision
 
