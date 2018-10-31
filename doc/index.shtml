@@ -635,6 +635,7 @@ netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <li><b>NCO 4.7.8</b>: (<i>In Progress, features in-progress or complete include</i>) 
 <tt>ncremap</tt> weight generation;</li>
+<tt>ncks --bnr</tt> Byte-swap option;</li>
 <li><b>NCO 4.7.7</b>: (<i>Current Stable Release</i>)
 <tt>ncpdq -M dbl_flt</tt> Double->Float map;
 <tt>ncremap --skl</tt> skeleton files;
