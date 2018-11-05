@@ -504,7 +504,13 @@ netcdf in_grp {
     uint uint32_var_bs;
   uint32_var_bs:purpose = "uint32 with big-endian value 0x78563412 = fxm so that byte-swapped (little-endian) value is 0x12345678";
 
- uint64 uint64_var;
+ uint64 uint64_tst;
+  uint64_tst:long_name = "uint64 with big-endian value 0x12345678 = 2018915346 so that byte-swapped (little-endian) value is 0x78563412";
+    
+    uint uint64_tst_bs;
+  uint64_tst_bs:purpose = "uint64 with big-endian value 0x78563412 = fxm so that byte-swapped (little-endian) value is 0x12345678";
+
+    uint64 uint64_var;
   uint64_var:long_name = "uint64-type variable";
     
     ushort ushort_var;
@@ -532,6 +538,8 @@ netcdf in_grp {
     uint_arr=4294967295,4294967295; // UINT_MAX = 4294967295, NC_FILL_UINT is 4294967295U
     uint32_var=0x12345678; // netCDF assumes hexadecimal input is Big-endian, could be stored as little-endian with byte-swapped value = 0x78563412
     uint32_var_bs=0x78563412; // netCDF assumes hexadecimal input is Big-endian, could be stored as little-endian with byte-swapped value = 0x12345678
+    uint64_tst=0x12345678; // netCDF assumes hexadecimal input is Big-endian, could be stored as little-endian with byte-swapped value = 0x78563412
+    uint64_tst_bs=0x78563412; // netCDF assumes hexadecimal input is Big-endian, could be stored as little-endian with byte-swapped value = 0x12345678
     //    uint64_var=18446744073709551615; // ULLONG_MAX = 18446744073709551615, NC_FILL_UINT is 18446744073709551614ULL, 20131120: XML treats unsigned as signed types, so toolsui produces errors when reading maximum uint64 values (though not when reading maxium ubyte, ushort, and uint values)
     uint64_var = 0ul; // 20130712: ncgen 4.3.0 chokes on ull, ULL suffix for uint64 attributes, 
     ushort_var=65535; // USHRT_MAX = 65535, NC_FILL_USHORT = 65535

@@ -399,6 +399,7 @@ NCO_CHECK_FUNCS([nearbyint rint round trunc])
 NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
 NCO_CHECK_FUNCS([getopt_long])
 NCO_CHECK_FUNCS([strdup strcasecmp strsep strcasestr])
+NCO_CHECK_FUNCS([htonl htons ntohl ntohs __builtin_bswap16 __builtin_bswap32 __builtin_bswap64])
 
 echo "##########################################################"
 echo "#     Sorting out MacOSX build parameters                #"

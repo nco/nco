@@ -18973,6 +18973,105 @@ _ACEOF
 
 fi
 
+ac_fn_c_check_func "$LINENO" "htonl" "ac_cv_func_htonl"
+if test "x$ac_cv_func_htonl" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_HTONL 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_HTONL 1
+_ACEOF
+
+fi
+ac_fn_c_check_func "$LINENO" "htons" "ac_cv_func_htons"
+if test "x$ac_cv_func_htons" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_HTONS 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_HTONS 1
+_ACEOF
+
+fi
+ac_fn_c_check_func "$LINENO" "ntohl" "ac_cv_func_ntohl"
+if test "x$ac_cv_func_ntohl" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_NTOHL 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_NTOHL 1
+_ACEOF
+
+fi
+ac_fn_c_check_func "$LINENO" "ntohs" "ac_cv_func_ntohs"
+if test "x$ac_cv_func_ntohs" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_NTOHS 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED_NTOHS 1
+_ACEOF
+
+fi
+ac_fn_c_check_func "$LINENO" "__builtin_bswap16" "ac_cv_func___builtin_bswap16"
+if test "x$ac_cv_func___builtin_bswap16" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE___BUILTIN_BSWAP16 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED___BUILTIN_BSWAP16 1
+_ACEOF
+
+fi
+ac_fn_c_check_func "$LINENO" "__builtin_bswap32" "ac_cv_func___builtin_bswap32"
+if test "x$ac_cv_func___builtin_bswap32" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE___BUILTIN_BSWAP32 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED___BUILTIN_BSWAP32 1
+_ACEOF
+
+fi
+ac_fn_c_check_func "$LINENO" "__builtin_bswap64" "ac_cv_func___builtin_bswap64"
+if test "x$ac_cv_func___builtin_bswap64" = xyes; then :
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE___BUILTIN_BSWAP64 1
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define NEED___BUILTIN_BSWAP64 1
+_ACEOF
+
+fi
+
 
 echo "##########################################################"
 echo "#     Sorting out MacOSX build parameters                #"

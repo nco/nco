@@ -115,15 +115,28 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
 #else /* !_MSC_VER */
     case 8:
       u64_ptr=(unsigned long int *)vp_bs;
+# ifdef HAVE_BSWAP64
       for(idx=0;idx<var_sz;idx++) u64_ptr[idx]=__builtin_bswap64(u64_ptr[idx]);
+# else /* !HAVE_BSWAP64 */
+      /* fxm: Swap first half of 8-byte words? then offset by four and swap second half? */
+      for(idx=0;idx<var_sz;idx++) u64_ptr[idx]=htonl(u64_ptr[idx]);
+# endif /* !HAVE_BSWAP64 */
       break;
     case 4:
       u32_ptr=(unsigned int *)vp_bs;
+# ifdef HAVE_BSWAP32
       for(idx=0;idx<var_sz;idx++) u32_ptr[idx]=__builtin_bswap32(u32_ptr[idx]);
+# else /* !HAVE_BSWAP32 */
+      for(idx=0;idx<var_sz;idx++) u32_ptr[idx]=htonl(u32_ptr[idx]);
+# endif /* !HAVE_BSWAP32 */
       break;
     case 2:
       u16_ptr=(unsigned short *)vp_bs;
+# ifdef HAVE_BSWAP16
       for(idx=0;idx<var_sz;idx++) u16_ptr[idx]=__builtin_bswap16(u16_ptr[idx]);
+# else /* !HAVE_BSWAP16 */
+      for(idx=0;idx<var_sz;idx++) u16_ptr[idx]=htons(u16_ptr[idx]);
+# endif /* !HAVE_BSWAP16 */
       break;
 #endif /* !_MSC_VER */
     case 1:

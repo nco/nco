@@ -142,6 +142,12 @@
 /* Define to 1 if <gsl_sf_gamma.h> is present */
 #undef HAVE_GSL_H
 
+/* Define to 1 if compiler finds external `htonl' function */
+#undef HAVE_HTONL
+
+/* Define to 1 if compiler finds external `htons' function */
+#undef HAVE_HTONS
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -264,6 +270,12 @@
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
 #undef HAVE_NETINET_IN_H
+
+/* Define to 1 if compiler finds external `ntohl' function */
+#undef HAVE_NTOHL
+
+/* Define to 1 if compiler finds external `ntohs' function */
+#undef HAVE_NTOHS
 
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
@@ -392,6 +404,15 @@
 /* Define if C++ compiler has working valarray<T> */
 #undef HAVE_VALARRAY
 
+/* Define to 1 if compiler finds external `__builtin_bswap16' function */
+#undef HAVE___BUILTIN_BSWAP16
+
+/* Define to 1 if compiler finds external `__builtin_bswap32' function */
+#undef HAVE___BUILTIN_BSWAP32
+
+/* Define to 1 if compiler finds external `__builtin_bswap64' function */
+#undef HAVE___BUILTIN_BSWAP64
+
 /* Hostname */
 #undef HOST
 
@@ -511,6 +532,12 @@
 /* Define to 1 if compiler needs external `getopt_long' function */
 #undef NEED_GETOPT_LONG
 
+/* Define to 1 if compiler needs external `htonl' function */
+#undef NEED_HTONL
+
+/* Define to 1 if compiler needs external `htons' function */
+#undef NEED_HTONS
+
 /* Define to 1 if compiler needs external `log10f' function */
 #undef NEED_LOG10F
 
@@ -534,6 +561,12 @@
 
 /* Define to 1 if compiler needs external `nearbyintf' function */
 #undef NEED_NEARBYINTF
+
+/* Define to 1 if compiler needs external `ntohl' function */
+#undef NEED_NTOHL
+
+/* Define to 1 if compiler needs external `ntohs' function */
+#undef NEED_NTOHS
 
 /* Define to 1 if compiler needs external `powf' function */
 #undef NEED_POWF
@@ -582,6 +615,15 @@
 
 /* Define to 1 if compiler needs external `truncf' function */
 #undef NEED_TRUNCF
+
+/* Define to 1 if compiler needs external `__builtin_bswap16' function */
+#undef NEED___BUILTIN_BSWAP16
+
+/* Define to 1 if compiler needs external `__builtin_bswap32' function */
+#undef NEED___BUILTIN_BSWAP32
+
+/* Define to 1 if compiler needs external `__builtin_bswap64' function */
+#undef NEED___BUILTIN_BSWAP64
 
 /* No netCDF version 2.x API */
 #undef NO_NETCDF_2
