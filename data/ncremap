@@ -688,7 +688,10 @@ psn_nbr=$#
 if [ ${psn_nbr} -ge 1 ]; then
     inp_psn='Yes'
 fi # !psn_nbr
-# 
+if [ "${d2f_flg}" != 'Yes' ]; then
+    d2f_opt=''
+fi # !d2f_flg
+
 cmd_wgt_esmf=`command -v ${wgt_exe_esmf} 2> /dev/null`
 if [ $? -eq 0 ]; then
     # 20180830 Add --ignore_degenerate to default ERWG options for ESMF >= 7.1.0r
@@ -1496,6 +1499,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: alg_opt  = ${alg_opt}\n"
     printf "dbg: cln_flg  = ${cln_flg}\n"
     printf "dbg: d2f_flg  = ${d2f_flg}\n"
+    printf "dbg: d2f_opt  = ${d2f_opt}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
     printf "dbg: dfl_lvl  = ${dfl_lvl}\n"
     printf "dbg: drc_in   = ${drc_in}\n"

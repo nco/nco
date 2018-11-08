@@ -434,6 +434,8 @@ clm_flg='Yes' # [sng] Generate climatology
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', or 'mth')
 csn_flg='No' # [flg] Trigger season-processing code
 csn_lst='mam,jja,son,djf' # [sng] Seasons to output (subset of mam,jja,son,djf,jfm,amj,jas,ond,fm,on)
+d2f_flg='No' # [flg] Convert double-precision fields to single-precision
+d2f_opt='--d2f' # [sng] Option string to convert double-precision fields to single-precision
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
 dfl_lvl=0 # [enm] Deflate level
@@ -505,6 +507,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}]"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
+    echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
     echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year previous climo (empty means none) (default ${fnt_bld}${yr_end_prv}${fnt_nrm}) [${fnt_tlc}yr_end_prv, prv_yr_end, previous_end${fnt_nrm}]"
     echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm}) [${fnt_tlc}yr_end, end_yr, year_end, end_year, end${fnt_nrm}]"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm}) [${fnt_tlc}fml_nm, family_name${fnt_nrm}]"
@@ -648,6 +651,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       dec_md=?* | december_mode=?* | dec_mode=?* ) dec_md="${LONG_OPTARG}" ;; # -a # December mode
 	       clm_md=?* | climatology_mode=?* | climo_mode=?* ) clm_md_usr="${LONG_OPTARG}" ;; # -C # Climatology mode
 	       caseid=?* | case_id=?* | case=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
+	       d2f | d2s | dbl_flt | dbl_sgl | double_float ) d2f_flg='Yes' ;; # # Convert double-precision fields to single-precision
+	       d2f=?* | d2s=?* | dbl_flt=?* | dbl_sgl=?* | double_float=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # D2F
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
 	       dfl_lvl=?* | deflate=?* | dfl=?* ) dfl_lvl="${LONG_OPTARG}" ;; # -L # Deflate level
 	       yr_end_prv=?* | prv_yr_end=?* | previous_end=?* ) yr_end_prv="${LONG_OPTARG}" ;; # -E # End year previous
@@ -702,6 +707,10 @@ psn_nbr=$#
 if [ ${psn_nbr} -ge 1 ]; then
     inp_psn='Yes'
 fi # !psn_nbr
+if [ "${d2f_flg}" != 'Yes' ]; then
+    d2f_opt=''
+fi # !d2f_flg
+
 if [ ${vrs_prn} = 'Yes' ]; then
     printf "${spt_nm}, the NCO climatology operator, version ${nco_vrs}\n"
     printf "Copyright (C) 2016--2018 Charlie Zender\n"
@@ -1405,6 +1414,8 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: clm_nbr  = ${clm_nbr}\n"
     printf "dbg: csn_lst  = ${csn_lst}\n"
     printf "dbg: csn_nbr  = ${csn_nbr}\n"
+    printf "dbg: d2f_flg  = ${d2f_flg}\n"
+    printf "dbg: d2f_opt  = ${d2f_opt}\n"
     printf "dbg: dec_md   = ${dec_md}\n"
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
     printf "dbg: dfl_lvl  = ${dfl_lvl}\n"
@@ -1870,7 +1881,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		fl_rgr[${var_idx}]="${fl_rgr_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
 		cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${spl_opt} ${spl_rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
-		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -C -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
+		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -C -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
 		fi # !mdl_typ
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr[${var_idx}]}
@@ -2142,7 +2153,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${clm_idx}]}
@@ -2264,7 +2275,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    fi # !nd
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${clm_idx}]}
@@ -2373,7 +2384,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		fi # !nd
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
-		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr[${clm_idx}]}
@@ -2459,7 +2470,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${clm_idx}]}
