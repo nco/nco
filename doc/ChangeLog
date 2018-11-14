@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha05: Paradise Lost';git push
 	git tag -a 4.7.8-alpha05 -m 'ncclimo mdl_nm=mpas, pass ${nco_opt} not -C; ncremap explicit -O, ERWG --no_log';git push --tags
 
+	* ncremap/ncclimo initialize dfl_lvl to '' not '0'
+
 	* ncremap --no_log to prevent ERWG write attempts to (possibly write-protected) working directory
 
 	* ncclimo pass ${nco_opt} through to ncremap so, e.g., --no_tmp_fl -7 --dfl_lvl=2
