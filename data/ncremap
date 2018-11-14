@@ -388,7 +388,7 @@ msk_out='' # [sng] Mask variable in regridded file
 msk_src='' # [sng] Mask-template variable in source file
 mss_val='-9.99999979021476795361e+33' # [frc] Missing value for MPAS (ocean+seaice)
 #mss_val='-1.0e36' # [frc] Missing value for MPAS (landice)
-nco_opt='-O --no_tmp_fl' # [sng] NCO defaults (e.g., '-O -6 -t 1')
+nco_opt='--no_tmp_fl' # [sng] NCO defaults (e.g., '-6 -t 1')
 nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 nd_nbr=1 # [nbr] Number of nodes
 out_fl='' # [sng] Output file
@@ -422,7 +422,7 @@ wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap executable
 wgt_typ='esmf' # [sng] Weight-generator program ('esmf' or 'tempest')
 wgt_opt='' # [sng] Weight-generator options
-wgt_opt_esmf='--ignore_unmapped' # [sng] ESMF_RegridWeightGen options (ESMF < 7.1.0r)
+wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen options (ESMF < 7.1.0r)
 #wgt_opt_esmf='--ignore_unmapped --ignore_degenerate' # [sng] ESMF_RegridWeightGen options (ESMF >= 7.1.0r) (ignore_degenerate is required for CICE regridding with ESMF >= 7.1.0r, and is not supported or required with ESMF < 7.1.0r)
 #wgt_opt_tps='--mono' # [sng] TempestRemap options
 wgt_opt_tps='' # [sng] TempestRemap options
@@ -692,10 +692,11 @@ if [ "${d2f_flg}" != 'Yes' ]; then
     d2f_opt=''
 fi # !d2f_flg
 
-cmd_wgt_esmf=`command -v ${wgt_exe_esmf} 2> /dev/null`
+cmd_wgt_esmf=`command -v ${wgt_exe_esmf} --no_log 2> /dev/null`
 if [ $? -eq 0 ]; then
     # 20180830 Add --ignore_degenerate to default ERWG options for ESMF >= 7.1.0r
-    erwg_vrs_sng=`ESMF_RegridWeightGen --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':'`
+    # 20181114 Add --no_log so ERWG does not try to write logfile into current (possibly write-protected) directory 
+    erwg_vrs_sng=`ESMF_RegridWeightGen --no_log --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':'`
     # Remove whitespace, answer should be something like "7.1.0r" or "6.3.0rp1"
     erwg_vrs_sng="${erwg_vrs_sng#"${erwg_vrs_sng%%[![:space:]]*}"}"
     # Extract first character
@@ -984,6 +985,9 @@ fi # !in_fl
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
+if [ -n "${nco_usr}" ]; then 
+    nco_opt="${nco_usr}"
+fi # !var_lst
 if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="-D ${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
@@ -993,9 +997,6 @@ fi # !ppc_prc
 if [ -n "${dfl_lvl}" ]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
 fi # !dfl_lvl
-if [ -n "${nco_usr}" ]; then 
-    nco_opt="${nco_usr} ${nco_opt}"
-fi # !var_lst
 if [ -n "${gaa_sng}" ]; then 
     nco_opt="${nco_opt} ${gaa_sng}"
 fi # !gaa_sng
@@ -1690,7 +1691,7 @@ else # !map_usr_flg
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Destination grid will be inferred from data-file\n"
 	fi # !vrb_lvl
-	cmd_dst[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_dst=${hnt_dst_fl} ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=${grd_dst} ${dst_fl} ${tmp_out_fl}"
+	cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=${hnt_dst_fl} ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=${grd_dst} ${dst_fl} ${tmp_out_fl}"
     else # !dst_usr_flg
 	if [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -1702,7 +1703,7 @@ else # !map_usr_flg
 	fi # !grd_dst_usr_flg
 	if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
 	    # 20180903 Must quote grd_sng otherwise whitespace and shell redirection characters (e.g., in ttl argument) will confuse interpreter
-	    cmd_dst[${fl_idx}]="ncks --dmm_in_mk ${nco_opt} --rgr scrip=${grd_dst} ${nco_skl_fl} --rgr '${grd_sng}' ${dmm_fl} ${tmp_out_fl}"
+	    cmd_dst[${fl_idx}]="ncks -O --dmm_in_mk ${nco_opt} --rgr scrip=${grd_dst} ${nco_skl_fl} --rgr '${grd_sng}' ${dmm_fl} ${tmp_out_fl}"
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		if [ "${grd_dst_usr_flg}" = 'Yes' ]; then
 		    printf "Destination grid will be generated in SCRIP format from NCO grid-formula ${grd_sng} and stored in ${grd_dst}\n"
@@ -1849,7 +1850,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "RRG: Infer source grid from subsetted, annotated, regional coordinate file...\n"
     fi # !vrb_lvl
-    cmd_nfr[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_var_rgr} --rgr scrip=${grd_src} ${rgn_fl} ${tmp_out_fl}"
+    cmd_nfr[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_var_rgr} --rgr scrip=${grd_src} ${rgn_fl} ${tmp_out_fl}"
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_nfr[${fl_idx}]}
     fi # !dbg
@@ -1880,7 +1881,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Infer source grid-file from input data file...\n"
 	fi # !vrb_lvl
-	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_dgn_area} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${fl_in[${fl_idx}]} ${tmp_out_fl}"
+	cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_dgn_area} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${fl_in[${fl_idx}]} ${tmp_out_fl}"
 	
 	# Block 2 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -2176,7 +2177,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
 	    # Pre-process zonal input files so grid inferral works
 	    # 20160214: fix record variable to work around ncpdq problem
-	    cmd_znl[${fl_idx}]="ncecat -u lon ${nco_opt} ${nco_var_lst} ${in_fl} ${in_fl} ${in_fl} ${in_fl} ${znl_fl/znl/znl1};ncap2 ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}"
+	    cmd_znl[${fl_idx}]="ncecat -O -u lon ${nco_opt} ${nco_var_lst} ${in_fl} ${in_fl} ${in_fl} ${in_fl} ${znl_fl/znl/znl1};ncap2 -O ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}"
 	    in_fl="${znl_fl/znl/znl2}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_znl[${fl_idx}]}
@@ -2198,7 +2199,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 		exit 1
 	fi # ! -f
 	# Infer source grid-file from input data file
-	cmd_src[${fl_idx}]="ncks ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${in_fl} ${tmp_out_fl}"
+	cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${in_fl} ${tmp_out_fl}"
 	
 	# Block 2 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -2308,7 +2309,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    printf "PDQ(in)  : ${in_fl}\n"
 	    printf "PDQ(out) : ${pdq_fl}\n"
 	fi # !vrb_lvl
-	cmd_pdq[${fl_idx}]="ncpdq ${nco_opt} ${nco_var_lst} ${pdq_opt} ${in_fl} ${pdq_fl}"
+	cmd_pdq[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${pdq_opt} ${in_fl} ${pdq_fl}"
 	in_fl=${pdq_fl}
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_pdq[${fl_idx}]}
@@ -2328,7 +2329,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    printf "D2F(in)  : ${in_fl}\n"
 	    printf "D2F(out) : ${d2f_fl}\n"
 	fi # !vrb_lvl
-	cmd_d2f[${fl_idx}]="ncpdq ${nco_opt} ${nco_var_lst} ${d2f_opt} ${in_fl} ${d2f_fl}"
+	cmd_d2f[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${d2f_opt} ${in_fl} ${d2f_fl}"
 	in_fl=${d2f_fl}
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_d2f[${fl_idx}]}
@@ -2342,7 +2343,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
     fi # !d2f_flg
 
-    # Block 4c: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then annotate here, so assume ncclimo is working with annotated files)
+    # Block 4c: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then to annotate them here, so assume ncclimo is working with annotated files)
     if [ "${prc_typ}" = 'mpas' ] && [ "${clm_flg}" = 'No' ]; then
 	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} ${in_fl} ${att_fl};"
 	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
@@ -2424,7 +2425,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	printf "Map/Wgt  : ${map_fl}\n"
 	printf "Regridded: ${out_fl}\n"
     fi # !vrb_lvl
-    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
+    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
     
     # Block 5 Loop 2: Execute and/or echo commands
     if [ ${dbg_lvl} -ge 1 ]; then
@@ -2469,7 +2470,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     # Block 7: Special case post-processing
     if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
 	# NB: Move file to avert problem with --no_tmp_fl causing self-overwrite
-	cmd_znl[${fl_idx}]="/bin/mv ${out_fl} ${ncwa_fl};ncwa -a lon ${nco_opt} ${nco_var_lst} ${ncwa_fl} ${out_fl}"
+	cmd_znl[${fl_idx}]="/bin/mv ${out_fl} ${ncwa_fl};ncwa -O -a lon ${nco_opt} ${nco_var_lst} ${ncwa_fl} ${out_fl}"
 	# Block 7 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_znl[${fl_idx}]}

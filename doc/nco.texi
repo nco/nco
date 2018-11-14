@@ -12764,7 +12764,7 @@ The above can be calculated by using a LHS cast with
 @code{$lon_nw} as replacement dim for @code{$lon}: 
 @example
 defdim("lon_nw",2);
-th_nw[$lat,$lon_nw]=th(0,:,0:1) +th(9,:,0:1);
+th_nw[$lat,$lon_nw]=th(0,:,0:1)+th(9,:,0:1);
 @end example
 
 @noindent @strong{Hyperslabs on the Left Hand Side of an assign@*}
@@ -12790,7 +12790,7 @@ Then it is possible to insert these hyperslabs into the records
 @example
 prs[$time,$height,$lat,$lon]=0.0;
 prs(:,0,:,:)=th0;
-prs(:,1,:,:)=th1
+prs(:,1,:,:)=th1;
 @end example
 
 @noindent @strong{Reverse method}@*
@@ -17898,7 +17898,12 @@ Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @item -n @var{nco_opt} (@code{nco_opt}, @code{nco}, @code{nco_options})
 Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
-@var{nco_opt} defaults to @samp{-O --no_tmp_fl}.
+@var{nco_opt} defaults to @samp{--no_tmp_fl}.
+Note that @command{ncclimo} passes its @var{nco_opt} to
+@command{ncremap}.
+This can cause unexpected results, so use the front-end options to
+@command{ncclimo} when possible, rather than attempting to subvert
+them with @var{nco_opt}.
 
 @html
 <a name="drc_rgr"></a> <!-- http://nco.sf.net/nco.html#drc_rgr -->

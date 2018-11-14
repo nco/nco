@@ -37,8 +37,8 @@
 # E3SM/ACME Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
 
 # Insta-install:
-# scp ~/nco/data/ncremap zender1@acme1.llnl.gov:bin
-# scp ~/nco/data/ncremap zender1@aims4.llnl.gov:bin
+# scp ~/nco/data/ncclimo zender1@acme1.llnl.gov:bin
+# scp ~/nco/data/ncclimo zender1@aims4.llnl.gov:bin
 # scp ~/nco/data/ncclimo blues.lcrc.anl.gov:bin
 # scp ~/nco/data/ncclimo cheyenne.ucar.edu:bin
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
@@ -465,6 +465,7 @@ inp_std='No' # [sng] Input file list from stdin
 job_nbr=2 # [nbr] Job simultaneity for parallelism
 lnk_flg='Yes' # [sng] Link E3SM/ACME-climo to AMWG-climo filenames
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
+mdl_nm_usr='' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
@@ -626,7 +627,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	j) job_usr="${OPTARG}" ;; # Job simultaneity
 	L) dfl_lvl="${OPTARG}" ;; # Deflate level
 	l) lnk_flg="${OPTARG}" ;; # Link E3SM/ACME to AMWG name
-	m) mdl_nm="${OPTARG}" ;; # Model name
+	m) mdl_nm_usr="${OPTARG}" ;; # Model name
 	n) nco_opt="${OPTARG}" ;; # NCO options
 	o) drc_out_usr="${OPTARG}" ;; # Output directory
 	O) drc_rgr_usr="${OPTARG}" ;; # Regridded directory
@@ -664,7 +665,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       lnk_flg | link_flag | no_amwg_link | no_amwg_links | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # -l # Link E3SM/ACME to AMWG name
 	       lnk_flg=?* | link_flag=?* | no_amwg_link=?* | no_amwg_links=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM/ACME to AMWG name
-	       mdl_nm=?* | model_name=?* | model=?* ) mdl_nm="${LONG_OPTARG}" ;; # -m # Model name
+	       mdl_nm=?* | model_name=?* | model=?* ) mdl_nm_usr="${LONG_OPTARG}" ;; # -m # Model name
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
 	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit cell_measures variables
@@ -796,6 +797,10 @@ if [ -n "${yr_srt_prv}" ]; then
 	ncr_flg='Yes'
     fi # !yr_end_prv binary method
 fi # !yr_srt_prv extended climo
+# Utilize user-specified model name, if any
+if [ -n "${mdl_nm_usr}" ]; then 
+    mdl_nm="${mdl_nm_usr}"
+fi # !mdl_nm_usr
 if [ -n "${clm_md_usr}" ]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are piped or positional
     if [ "${clm_md_usr}" = 'daily' ] || [ "${clm_md_usr}" = 'doy' ] || [ "${clm_md_usr}" = 'day' ] ; then
@@ -812,7 +817,9 @@ else
 	sbs_flg='Yes'
 	clm_flg='No'
 	dec_md='sdd'
-	mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
+	if [ -z "${mdl_nm_usr}" ]; then 
+	    mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
+	fi # !mdl_nm_usr
     fi # !stdin || !psn
     if [ -n "${ypf_max_usr}" ]; then 
 	# fxm: Must specify --ypf to turn-on splitter mode when input files are specified by -i drc_in
@@ -821,7 +828,9 @@ else
 	sbs_flg='Yes'
 	clm_flg='No'
 	dec_md='sdd'
-	mdl_nm='nil'
+	if [ -z "${mdl_nm_usr}" ]; then 
+	    mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
+	fi # !mdl_nm_usr
     fi # !ypf_max
 fi # !clm_md_usr
 
@@ -876,7 +885,7 @@ let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
 
 # Derived variables
 out_nm=${caseid}
-if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ] || [ "${mdl_nm}" = 'mpassi' ]; then
+if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mpas' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ] || [ "${mdl_nm}" = 'mpassi' ]; then
     mdl_typ='mpas'
     nm_typ='mpas'
 fi # !caseid
@@ -1881,7 +1890,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		fl_rgr[${var_idx}]="${fl_rgr_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
 		cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${spl_opt} ${spl_rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
-		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -C -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
+		    # 20181114: Remove '-C' argument from ncremap invocation for MPAS splitter only
+		    # This ensures CMIP6 MPAS timeseries will have _FillValue
+		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
 		fi # !mdl_typ
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr[${var_idx}]}
@@ -2153,7 +2164,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas ${d2f_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${clm_idx}]}
@@ -2275,7 +2286,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    fi # !nd
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${clm_idx}]}
@@ -2384,7 +2395,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		fi # !nd
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
-		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr[${clm_idx}]}
@@ -2470,7 +2481,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${clm_idx}]}

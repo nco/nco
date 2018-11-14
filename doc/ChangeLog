@@ -1,5 +1,21 @@
 2018-11-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.8-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha05: Paradise Lost';git push
+	git tag -a 4.7.8-alpha05 -m 'ncclimo mdl_nm=mpas, pass ${nco_opt} not -C; ncremap explicit -O, ERWG --no_log';git push --tags
+
+	* ncremap --no_log to prevent ERWG write attempts to (possibly write-protected) working directory
+
+	* ncclimo pass ${nco_opt} through to ncremap so, e.g., --no_tmp_fl -7 --dfl_lvl=2
+
+	* ncremap move -O outside of ${nco_opt} and make it explicit in all commands
+	Reduces chances that overriding ncremap default nco_opt with nco_opt from ncclimo causes disaster
+
+	* ncclimo remove '-C' argument from ncremap invocation for MPAS splitter only
+	  This ensures CMIP6 MPAS timeseries will have _FillValue
+
+	* ncclimo add 'mpas' as valid model name mdl_nm (it was already a valid mdl_typ)
+
 	* NCO 4.7.8-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha04: Potomac';git push
 	git tag -a 4.7.8-alpha04 -m 'CMIP6 tweaks: no frac_b, ncclimo --d2f';git push --tags
