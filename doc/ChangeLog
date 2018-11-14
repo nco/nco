@@ -1,12 +1,18 @@
+2018-11-14  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.8-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha04: Potomac';git push
+	git tag -a 4.7.8-alpha04 -m 'CMIP6 tweaks: no frac_b, ncclimo --d2f';git push --tags
+
 2018-11-08  Charlie Zender  <zender@uci.edu>
 
-	* Implment --d2f in ncclimo to pass to ncremap
+	* Implement --d2f in ncclimo to pass to ncremap
 
 2018-11-04  Charlie Zender  <zender@uci.edu>
 
 	* Use htonl(), htons() instead of __builtin_bswap??() when unavailable
 
-	* Add frac_b exceedance diagnostic
+	* Add frac_b exceedance diagnostic to stdout but remove frac_b from netCDF output (for CMIP6)
 
 2018-10-30  Charlie Zender  <zender@uci.edu>
 

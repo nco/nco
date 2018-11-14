@@ -119,12 +119,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.8-alpha03
-@set doc-edition 4.7.8-alpha03
+@set nco-edition 4.7.8-alpha04
+@set doc-edition 4.7.8-alpha04
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 16 October 2018
-@set update-month October 2018
+@set update-date 14 November 2018
+@set update-month November 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -16364,8 +16364,11 @@ This page lists the @command{ncap2} operators in order of precedence (highest to
 @node ID Quoting, create_bounds() function, Operator precedence and associativity , ncap2 netCDF Arithmetic Processor
 @subsection ID Quoting
 @cindex ID Quoting
-In this section when I refer to a name I mean a variable name, attribute name or a dimension name
-The allowed characters in a valid netCDF name vary from release to release. (See end section). If you want to use metacharacters in a name or use a method name as a variable name then the name has to be quoted wherever it occurs. 
+In this section a name refers to a variable, attribute, or dimension name.
+The allowed characters in a valid netCDF name vary from release to
+release. (See end section).
+To use metacharacters in a name, or to use a method name as a variable
+name, the name must be quoted wherever it occurs. 
 
 @noindent The default @acronym{NCO} name is specified by the regular expressions:
 
@@ -16444,8 +16447,8 @@ The @command{ncap2} custom function 'create_bounds()' takes any monotonic 1D coo
 The name of the input coordinate variable.
 @item 2nd Argument
 The dimension name of the second dimension of the output variable. 
-The size of this dimension should always be 2.
-If the dimension does not exist create it using @code{defdim()}. 
+The size of this dimension should always @w{be 2}.
+If the dimension does not yet exist create it first using @code{defdim()}. 
 @item 3rd Argument
 The string value of a "bounds" attribute that is created in the input
 coordinate variable. 
