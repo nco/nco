@@ -1892,7 +1892,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		if [ "${mdl_typ}" = 'mpas' ]; then
 		    # 20181114: Remove '-C' argument from ncremap invocation for MPAS splitter only
 		    # This ensures CMIP6 MPAS timeseries will have _FillValue
-		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
+		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} --nco_opt=\"${nco_opt}\" ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
 		fi # !mdl_typ
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr[${var_idx}]}
