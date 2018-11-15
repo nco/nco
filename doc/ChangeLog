@@ -1,3 +1,7 @@
+2018-11-15  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add ${unq_sfx} to ${d2f_fl}
+
 2018-11-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.8-beta01 release procedure:
