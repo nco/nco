@@ -1,8 +1,8 @@
 2018-11-14  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.7.8-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha05: Paradise Lost';git push
-	git tag -a 4.7.8-alpha05 -m 'ncclimo mdl_nm=mpas, pass ${nco_opt} not -C; ncremap explicit -O, ERWG --no_log';git push --tags
+	* NCO 4.7.8-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8-beta01: Paradise Lost';git push
+	git tag -a 4.7.8-beta01 -m 'ncclimo mdl_nm=mpas, pass ${nco_opt}, ${spl_opt}, ${spl_rgr_opt} not -C, pass; ncremap explicit -O, ERWG --no_log, ntl dfl nil not 0';git push --tags
 
 	* ncclimo add ${spl_opt} and ${spl_rgr_opt} to MPAS ncremap call
 
