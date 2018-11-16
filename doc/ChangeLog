@@ -1,5 +1,9 @@
 2018-11-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.8 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8: Paradise Lost';git push
+	git tag -a 4.7.8 -m 'ncremap/ncclimo CMIP6 features, d2f, no frac_b, deprecate USE_NC4_SRD_WORKAROUND; ERWG no_log; ncks byte-swap; ncatted typ_mch fix';git push --tags
+
 	* ncremap annotate map-file after cmd_trn for monotr transpose maps
 	NB: GenerateTransposeMap does not propagate metadata from input map
 
@@ -25,7 +29,7 @@
 	Reduces chances that overriding ncremap default nco_opt with nco_opt from ncclimo causes disaster
 
 	* ncclimo remove '-C' argument from ncremap invocation for MPAS splitter only
-	  This ensures CMIP6 MPAS timeseries will have _FillValue
+	This ensures CMIP6 MPAS timeseries will have _FillValue
 
 	* ncclimo add 'mpas' as valid model name mdl_nm (it was already a valid mdl_typ)
 
