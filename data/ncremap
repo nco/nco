@@ -278,8 +278,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # ncremap --dbg=1 -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo_fv129x256.nc
 # ncremap --dbg=1 -a fv2se_stt --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc
+# ncremap --dbg=1 -a fv2se_flx --src_grd=${DATA}/grids/129x256_SCRIP.20150901.nc --dst_grd=${DATA}/grids/ne30.g -m ~/map_fv129x256_to_ne30np4_monotr.20180301.nc
 # ncremap --dbg=1 -m ~/map_fv129x256_to_ne30np4_highorder.20180301.nc ~/foo_fv129x256.nc ~/foo_ne30.nc
-# ncremap --dbg=1 -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --se_mtd=${DATA}/grids/ne30np4_latlon.091226.nc --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # Atmosphere->Ocean:
 # ncremap --dbg=1 --a2o -a se2fv_flx --src_grd=${DATA}/grids/ne30.g --dst_grd=${DATA}/grids/129x256_SCRIP.20150901.nc -m ~/map_ne30np4_to_fv129x256_mono.20180301.nc
 # Debugging and Benchmarking:
@@ -379,6 +379,8 @@ job_nbr=2 # [nbr] Job simultaneity for parallelism
 map_fl='' # [sng] Map-file
 map_rsl_fl='' # [sng] File containing results of weight-generation command (i.e., map_fl or map_trn_fl for monotr)
 map_trn_fl='' # [sng] Map-file transpose (for Tempest)
+map_mk='No' # [flg] Generate map-file (i.e., map does not yet exist)
+map_usr_flg='No' # [flg] User supplied argument to --map option
 map_xmp='map.nc' # [sng] Map-file for examples
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
@@ -1313,7 +1315,7 @@ else
     grd_src=${grd_src_dfl} # [sng] Grid-file default
 fi # !grd_src
 if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ] || [ "${grd_dst_usr_flg}" = 'Yes' ] || [ "${grd_src_usr_flg}" = 'Yes' ]; then
-    # Specified map-file will be created if -d, -G, -g, or -s was specified
+    # Map-file will be created if -d, -G, -g, or -s was specified
     map_mk='Yes'
 fi # !map_mk
 if [ -n "${map_fl}" ]; then 
@@ -1609,7 +1611,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     printf "Output files to directory ${drc_out}\n"
 fi # !vrb_lvl
 if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ] && [ -n "${wgt_usr}" ]; then
-    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_cmd' is only allowed when creating a map (weight generator is superfluous when user supplies map)\n"
+    printf "${spt_nm}: ERROR Specifying both '-m map_fl' and '-w wgt_cmd' is only allowed when creating a map (weight-generator is superfluous when user supplies map)\n"
     exit 1
 fi # wgt_usr
     
@@ -2108,19 +2110,10 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 	    fi # !esmf
 	    exit 1
 	fi # !err
-	if [ "${map_usr_flg}" = 'Yes' ]; then
-	    hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
-	    if [ "${wgt_typ}" = 'tempest' ]; then 
-		hst_att="${hst_att};${cmd_msh[${fl_idx}]}"
-	    fi # !tempest
-	    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_rsl_fl}"
-	    eval ${cmd_att[${fl_idx}]}
-	    if [ $? -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !map_usr_flg
     fi # !dbg
+    # 20181116: GenerateTransposeMap does not propagate global attributes from input map
+    # Moreover, it does not generate any metadata of its own except "Title"
+    # Hence monotr maps are naked of usual Tempest map metadata
     if [ "${trn_map}" = 'Yes' ]; then 
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_trn[${fl_idx}]}
@@ -2133,6 +2126,26 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 	    fi # !err
 	fi # !dbg
     fi # !trn_map
+    if [ "${map_usr_flg}" = 'Yes' ]; then
+	hst_att="`date`: ${cmd_ln}; ${cmd_map[${fl_idx}]}"
+	if [ "${wgt_typ}" = 'tempest' ]; then 
+	    hst_att="${hst_att}; ${cmd_msh[${fl_idx}]}"
+	    if [ "${trn_map}" = 'Yes' ]; then 
+		hst_att="${hst_att}; ${cmd_trn[${fl_idx}]}"
+	    fi # !trn_map
+	fi # !tempest
+	cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_fl}"
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_att[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    eval ${cmd_att[${fl_idx}]}
+	    if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
+		printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	fi # !dbg
+    fi # !map_usr_flg
     # Set map_mk to something besides 'Yes' to avoid re-generating map within file loop
     map_mk='Already made map once. Never again!'
 fi # !grd_src_usr_flg

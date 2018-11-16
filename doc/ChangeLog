@@ -1,3 +1,8 @@
+2018-11-16  Charlie Zender  <zender@uci.edu>
+
+	* ncremap annotate map-file after cmd_trn for monotr transpose maps
+	NB: GenerateTransposeMap does not propagate metadata from input map
+
 2018-11-15  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add ${unq_sfx} to ${d2f_fl}

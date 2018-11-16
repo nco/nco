@@ -1760,7 +1760,7 @@ to be the same as the @var{input-file} without any danger of
 @cindex @acronym{RAM} disks
 @cindex @acronym{RAM} files
 Over time many ``power users'' have requested a way to turn-off the
-fault-tolerance safety feature of automatically creating a temporary
+fault-tolerance safety feature that automatically creates a temporary
 file. 
 Often these users build and execute production data analysis scripts
 that are repeated frequently on large datasets.
