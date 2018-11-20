@@ -872,12 +872,12 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
 <ul>
 <!-- 
-# Mac OS X 10.13 (High Sierra) systems (aerosol):
+# Mac OS X 10.14 (Mojave) systems (firn, sastrugi):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-4.7.8.macosx.10.13.tar.gz nc*;scp ${DATA}/nco-4.7.8.macosx.10.13.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.7.8.macosx.10.14.tar.gz nc*;scp ${DATA}/nco-4.7.8.macosx.10.14.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
-<li><a href="src/nco-4.7.8.macosx.10.13.tar.gz">nco-4.7.8.macosx.10.13.tar.gz</a> (<!--#fsize file="src/nco-4.7.8.macosx.10.13.tar.gz"-->): Executables MacOSX 10.13-compatible (last updated <!--#flastmod file="src/nco-4.7.8.macosx.10.13.tar.gz"-->). 
+<li><a href="src/nco-4.7.8.macosx.10.14.tar.gz">nco-4.7.8.macosx.10.14.tar.gz</a> (<!--#fsize file="src/nco-4.7.8.macosx.10.14.tar.gz"-->): Executables MacOSX 10.14-compatible (last updated <!--#flastmod file="src/nco-4.7.8.macosx.10.14.tar.gz"-->). 
 (NB: These executables require
   the <a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a>
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>

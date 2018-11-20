@@ -1,16 +1,16 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.7.8 have hatched.
+The netCDF Operators NCO version 4.7.9 have hatched.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
-What's new? Version 4.7.8 contains many improvements to help convert
+What's new? Version 4.7.9 contains many improvements to help convert
 ESM output into CMIP6 timeseries format. In particular, ncclimo
 coordinates better with ncremap when processing MPAS data and
-regridding. ncpdq has a new feature to convert doubles to floats,
-and raw binary output can now be byte-swapped to ease creation of
-offline datasets for some models like WRF and CICE.
+regridding. They can use ncpdq's new feature to convert doubles to
+floats, and raw binary output can now be byte-swapped to ease creation
+of offline datasets for some models like WRF and CICE.
 
 Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
@@ -66,7 +66,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.7.8 built/tested under
+   These problems occur with NCO 4.7.9 built/tested under
    MacOS 10.14.1 with netCDF 4.6.1 on HDF5 1.10.2 and with
    Linux with netCDF 4.6.2-development (20180515) on HDF5 1.8.19.
 

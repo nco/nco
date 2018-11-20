@@ -2129,7 +2129,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
     if [ "${map_usr_flg}" = 'Yes' ]; then
 	hst_att="`date`: ${cmd_ln}; ${cmd_map[${fl_idx}]}"
 	if [ "${wgt_typ}" = 'tempest' ]; then 
-	    hst_att="${hst_att}; ${cmd_msh[${fl_idx}]}"
+	    hst_att="`date`: ${cmd_ln}; ${cmd_msh[${fl_idx}]}; ${cmd_map[${fl_idx}]}"
 	    if [ "${trn_map}" = 'Yes' ]; then 
 		hst_att="${hst_att}; ${cmd_trn[${fl_idx}]}"
 	    fi # !trn_map
