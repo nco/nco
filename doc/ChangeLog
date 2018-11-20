@@ -1,3 +1,7 @@
+2018-11-20  Charlie Zender  <zender@uci.edu>
+
+	* Correctly dereference pointer zero (i.e., NULL) passed as value of srt argument to nco_get/put_var1()
+
 2018-11-19  Charlie Zender  <zender@uci.edu>
 
 	* ncremap order shell commands in tempest history attribute cmd_msh, cmd_map not cmd_map, cmd_msh
