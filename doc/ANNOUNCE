@@ -5,12 +5,7 @@ The netCDF Operators NCO version 4.7.9 have hatched.
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
-What's new? Version 4.7.9 contains many improvements to help convert
-ESM output into CMIP6 timeseries format. In particular, ncclimo
-coordinates better with ncremap when processing MPAS data and
-regridding. They can use ncpdq's new feature to convert doubles to
-floats, and raw binary output can now be byte-swapped to ease creation
-of offline datasets for some models like WRF and CICE.
+What's new?
 
 Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
@@ -23,42 +18,18 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo and ncremap accept the --d2f flag to turn-on the dbl_flt
-   packing map that converts double-precision to single-precision.
-   ncclimo --d2f ...
-   ncremap --d2f ...
-   http://nco.sf.net/nco.html#dbl_flt
-   http://nco.sf.net/nco.html#ncpdq
-
-B. ncremap adds missing values to single-precision MPAS variables as
-   well as double. Previously it only added _FillValue to doubles.
-   http://nco.sf.net/nco.html#ncremap
-
-C. NCO takes advantage of faster stride access in netCDF 4.6.2.
-   Previously NCO used its own workaround to accelerate strides.
-   It will continue to do so with older version of netCDF.
-
-D. ncremap improves metadata annotation for Tempest monotr maps.
-
-E. ncks provides the --bsa flag to invoke a byte-swap algorithm.
-   Setting this option causes unformatted binary output (with --bnr)
-   to be output in byte-swapped order relative to the host machine:
-   ncks -O -v uint32_var.? --bsa=1 -b foo.bnr in_grp.nc foo.nc
-   http://nco.sf.net/nco.html#bnr
+A. Hi
 
 BUG FIXES:
 
-A. ncatted would exit when the -t option yielded no matches.
-   This has been fixed.
+A. ncremap orders Tempest remap commands in execution-order in the
+   history attribute. Previously they were recorded in an ad hoc
+   order.
 
-B. NCO could fail to build with netCDF 4.6.2 snapshots due to a
-   new way of handling the log_lvl option.
-   This has been fixed.
-
-C  ncremap could fail to execute ERWG commands when started in
-   a directory in which it had no write access. Now ncremap
-   invokes ERWG with --no_log to prevent ERWG write attempts
-   to a (possibly write-protected) working directory.
+B. Fix a bug exposed in NCO 4.7.1 that could attempt to dereference
+   a NULL pointer, resulting in a core dump. The solution is to
+   install 4.7.9. The workaround to that is to run a version of NCO
+   prior to 4.7.1.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

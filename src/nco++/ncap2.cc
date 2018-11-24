@@ -509,7 +509,7 @@ main(int argc,char **argv)
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=(char *)strdup(optarg);
-      if(nbr_spt == NCAP_SPT_NBR_MAX-1) wrn_prn(fnc_nm,"No more than " +nbr2sng(NCAP_SPT_NBR_MAX) + " allowed. TODO# 24.");
+      if(nbr_spt == NCAP_SPT_NBR_MAX-1) wrn_prn(fnc_nm,"No more than "+nbr2sng(NCAP_SPT_NBR_MAX)+" scripts allowed. TODO #24.");
       break;
     case 'S': /* Read command script from file rather than from command line */
       fl_spt_usr=(char *)strdup(optarg);
@@ -539,6 +539,11 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
+  if(!nbr_spt && !fl_spt_usr){
+    (void)fprintf(stdout,"%s: ERROR Must give %s work to do with at least one command string (e.g., -s \"one=1\") or file-based script of commands (e.g., \"-S script.nco\"). Please reformulate command accordingly and try again.\n",nco_prg_nm_get(),nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* !nbr_spt */
+
   /* Set/report global chunk cache */
   rcd+=nco_cnk_csh_ini(cnk_csh_byt);
 
@@ -725,6 +730,10 @@ main(int argc,char **argv)
     /* ncap2, like ncrename and ncatted, directly modifies fl_in if fl_out is omitted
        If fl_out resolves to _same name_ as fl_in, method above is employed */
     fl_out_tmp=(char *)strdup(fl_out);
+    if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+      (void)fprintf(stdout,"%s: ERROR No output file specified with netCDF4 input file. When no output file is specified, %s tries to write directly to the input file but this can only work with netCDF3 not netCDF4 input files. Please specify an output file distinct from the input file and re-try.\n",nco_prg_nm_get(),nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* !netCDF4 */
     if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
     rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt,&out_id);
     (void)nco_redef(out_id);
