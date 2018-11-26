@@ -1,12 +1,69 @@
+2018-11-24  Charlie Zender  <zender@uci.edu>
+
+	* ncap2 exit gracefully when no output file specified with netCDF4 input file
+
+	* ncap2 exit gracefully when no -s or -S argument given
+
+2018-11-20  Charlie Zender  <zender@uci.edu>
+
+	* Correctly dereference pointer zero (i.e., NULL) passed as value of srt argument to nco_get/put_var1()
+
+2018-11-19  Charlie Zender  <zender@uci.edu>
+
+	* ncremap order shell commands in tempest history attribute cmd_msh, cmd_map not cmd_map, cmd_msh
+
+2018-11-16  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.9-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha01: Palm Desert';git push
+	git tag -a 4.7.9-alpha01 -m 'Functionally identical to 4.7.8';git push --tags
+
+	* NCO 4.7.8 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8: Paradise Lost';git push
+	git tag -a 4.7.8 -m 'ncremap/ncclimo CMIP6 features, d2f, no frac_b, deprecate USE_NC4_SRD_WORKAROUND; ERWG no_log; ncks byte-swap; ncatted typ_mch fix';git push --tags
+
+	* ncremap annotate map-file after cmd_trn for monotr transpose maps
+	NB: GenerateTransposeMap does not propagate metadata from input map
+
+2018-11-15  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add ${unq_sfx} to ${d2f_fl}
+
+2018-11-14  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.8-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8-beta01: Paradise Lost';git push
+	git tag -a 4.7.8-beta01 -m 'ncclimo mdl_nm=mpas, pass ${nco_opt}, ${spl_opt}, ${spl_rgr_opt} not -C, pass; ncremap explicit -O, ERWG --no_log, ntl dfl nil not 0';git push --tags
+
+	* ncclimo add ${spl_opt} and ${spl_rgr_opt} to MPAS ncremap call
+
+	* ncremap/ncclimo initialize dfl_lvl to '' not '0'
+
+	* ncremap --no_log to prevent ERWG write attempts to (possibly write-protected) working directory
+
+	* ncclimo pass ${nco_opt} through to ncremap so, e.g., --no_tmp_fl -7 --dfl_lvl=2
+
+	* ncremap move -O outside of ${nco_opt} and make it explicit in all commands
+	Reduces chances that overriding ncremap default nco_opt with nco_opt from ncclimo causes disaster
+
+	* ncclimo remove '-C' argument from ncremap invocation for MPAS splitter only
+	This ensures CMIP6 MPAS timeseries will have _FillValue
+
+	* ncclimo add 'mpas' as valid model name mdl_nm (it was already a valid mdl_typ)
+
+	* NCO 4.7.8-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.8-alpha04: Potomac';git push
+	git tag -a 4.7.8-alpha04 -m 'CMIP6 tweaks: no frac_b, ncclimo --d2f';git push --tags
+
 2018-11-08  Charlie Zender  <zender@uci.edu>
 
-	* Implment --d2f in ncclimo to pass to ncremap
+	* Implement --d2f in ncclimo to pass to ncremap
 
 2018-11-04  Charlie Zender  <zender@uci.edu>
 
 	* Use htonl(), htons() instead of __builtin_bswap??() when unavailable
 
-	* Add frac_b exceedance diagnostic
+	* Add frac_b exceedance diagnostic to stdout but remove frac_b from netCDF output (for CMIP6)
 
 2018-10-30  Charlie Zender  <zender@uci.edu>
 

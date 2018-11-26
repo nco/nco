@@ -2329,7 +2329,11 @@ nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * cons
   int dmn_nbr; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
   size_t srt_sz_t[NC_MAX_VAR_DIMS];
   rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
-  for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) srt_sz_t[dmn_idx]=srt[dmn_idx];
+  if(srt){
+    for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) srt_sz_t[dmn_idx]=srt[dmn_idx];
+  }else{
+    for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) srt_sz_t[dmn_idx]=0L;
+  } /* !srt */
   if(var_typ <= NC_MAX_ATOMIC_TYPE){
     switch(var_typ){
     case NC_FLOAT: rcd=nc_get_var1_float(nc_id,var_id,srt_sz_t,(float *)vp); break;
@@ -2375,7 +2379,11 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
   int dmn_nbr; /* 20171115: WIN64 workaround: sizeof(long) = 4 != 8 = sizeof(size_t) */
   size_t srt_sz_t[NC_MAX_VAR_DIMS];
   rcd=nc_inq_varndims(nc_id,var_id,&dmn_nbr);
-  for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) srt_sz_t[dmn_idx]=srt[dmn_idx];
+  if(srt){
+    for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) srt_sz_t[dmn_idx]=srt[dmn_idx];
+  }else{
+    for(int dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) srt_sz_t[dmn_idx]=0L;
+  } /* !srt */
   switch(var_typ){
   case NC_FLOAT: rcd=nc_put_var1_float(nc_id,var_id,srt_sz_t,(const float *)vp); break;
   case NC_DOUBLE: rcd=nc_put_var1_double(nc_id,var_id,srt_sz_t,(const double *)vp); break;

@@ -119,12 +119,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.8-alpha03
-@set doc-edition 4.7.8-alpha03
+@set nco-edition 4.7.9-alpha01
+@set doc-edition 4.7.9-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 16 October 2018
-@set update-month October 2018
+@set update-date 24 November 2018
+@set update-month November 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -1760,7 +1760,7 @@ to be the same as the @var{input-file} without any danger of
 @cindex @acronym{RAM} disks
 @cindex @acronym{RAM} files
 Over time many ``power users'' have requested a way to turn-off the
-fault-tolerance safety feature of automatically creating a temporary
+fault-tolerance safety feature that automatically creates a temporary
 file. 
 Often these users build and execute production data analysis scripts
 that are repeated frequently on large datasets.
@@ -12062,13 +12062,13 @@ ncap2 [-3] [-4] [-5] [-6] [-7] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [
 @noindent
 DESCRIPTION
 
-@command{ncap2} arithmetically processes netCDF files
-@footnote{@command{ncap2} is the successor to @command{ncap} which was
-put into maintenance mode in November, 2006. 
-This documentation refers to @command{ncap2}, which has a superset of
-the @command{ncap} functionality. 
-Eventually @command{ncap} will be deprecated in favor @command{ncap2}.
-@command{ncap2} may be renamed @command{ncap} in 2013.}.
+@command{ncap2} arithmetically processes netCDF files.
+@command{ncap2} is the successor to @command{ncap} which was put into
+maintenance mode in November, 2006, and completely removed from
+@acronym{NCO} in March, 2018. 
+This documentation refers to @command{ncap2}, which contains a
+powerful superset of the original @command{ncap} functionality. 
+@command{ncap2} may be renamed @command{ncap} one day!
 @cindex script file
 @cindex @code{--script-file}
 @cindex @code{--fl_spt}
@@ -12096,6 +12096,15 @@ that @command{ncap2} should output @emph{only} user-defined variables.
 @cindex appending variables
 NB: As of 20120515, @command{ncap2} is unable to append to files that
 already contain the appended dimensions. 
+
+Providing a name for @var{output-file} is optional if @var{input-file}
+is a netCDF3 format, and mandatory if @var{input-file} is a netCDF3
+format.
+When @var{output-file} is not given, then @command{ncap2} attempts to
+write directly to @var{output-file}.
+This can be risky and lead to unexpected consequences (since the file
+is being both read and written), so in normal usage we recommend
+providing @var{output-file}. 
 
 @c @subsection Scripting Mathematical Processing with @command{ncap2}
 
@@ -12764,7 +12773,7 @@ The above can be calculated by using a LHS cast with
 @code{$lon_nw} as replacement dim for @code{$lon}: 
 @example
 defdim("lon_nw",2);
-th_nw[$lat,$lon_nw]=th(0,:,0:1) +th(9,:,0:1);
+th_nw[$lat,$lon_nw]=th(0,:,0:1)+th(9,:,0:1);
 @end example
 
 @noindent @strong{Hyperslabs on the Left Hand Side of an assign@*}
@@ -12790,7 +12799,7 @@ Then it is possible to insert these hyperslabs into the records
 @example
 prs[$time,$height,$lat,$lon]=0.0;
 prs(:,0,:,:)=th0;
-prs(:,1,:,:)=th1
+prs(:,1,:,:)=th1;
 @end example
 
 @noindent @strong{Reverse method}@*
@@ -16364,8 +16373,11 @@ This page lists the @command{ncap2} operators in order of precedence (highest to
 @node ID Quoting, create_bounds() function, Operator precedence and associativity , ncap2 netCDF Arithmetic Processor
 @subsection ID Quoting
 @cindex ID Quoting
-In this section when I refer to a name I mean a variable name, attribute name or a dimension name
-The allowed characters in a valid netCDF name vary from release to release. (See end section). If you want to use metacharacters in a name or use a method name as a variable name then the name has to be quoted wherever it occurs. 
+In this section a name refers to a variable, attribute, or dimension name.
+The allowed characters in a valid netCDF name vary from release to
+release. (See end section).
+To use metacharacters in a name, or to use a method name as a variable
+name, the name must be quoted wherever it occurs. 
 
 @noindent The default @acronym{NCO} name is specified by the regular expressions:
 
@@ -16444,8 +16456,8 @@ The @command{ncap2} custom function 'create_bounds()' takes any monotonic 1D coo
 The name of the input coordinate variable.
 @item 2nd Argument
 The dimension name of the second dimension of the output variable. 
-The size of this dimension should always be 2.
-If the dimension does not exist create it using @code{defdim()}. 
+The size of this dimension should always @w{be 2}.
+If the dimension does not yet exist create it first using @code{defdim()}. 
 @item 3rd Argument
 The string value of a "bounds" attribute that is created in the input
 coordinate variable. 
@@ -17895,7 +17907,12 @@ Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @item -n @var{nco_opt} (@code{nco_opt}, @code{nco}, @code{nco_options})
 Specifies a string of options to pass-through unaltered to
 @command{ncks}. 
-@var{nco_opt} defaults to @samp{-O --no_tmp_fl}.
+@var{nco_opt} defaults to @samp{--no_tmp_fl}.
+Note that @command{ncclimo} passes its @var{nco_opt} to
+@command{ncremap}.
+This can cause unexpected results, so use the front-end options to
+@command{ncclimo} when possible, rather than attempting to subvert
+them with @var{nco_opt}.
 
 @html
 <a name="drc_rgr"></a> <!-- http://nco.sf.net/nco.html#drc_rgr -->
