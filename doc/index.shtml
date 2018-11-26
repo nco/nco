@@ -1633,16 +1633,16 @@ Computer Science
 2.&nbsp;Extend empirically verified analytic model
 (described <a href="http://www.ess.uci.edu/~zender#ZeM07">here</a>)
 for terascale data reduction of gridded datasets to account for
-cluster- and network-effects.  
+cluster- and network-effects.
 3.&nbsp;Enable and optimize NCO for intra-file-level parallelism using   
 netCDF4/HDF5 parallel filesystem features.
-<i>Other Interests</i>: Atmospheric Physics, Climate Change.
+<i>Other Interests</i>: Atmospheric Physics, Climate Change
 </li>
 
 <li><dt>
 <a name="butowsky"></a><a name="Butowsky"></a> <!-- http://nco.sf.net#butowsky -->
 <a href="http://dust.ess.uci.edu/hbutowsk">Henry Butowsky</a>, 
-software engineer.
+software engineer
 <i>Roles</i>: Scientific programmer
 <i>Current Research</i>: 
 1.&nbsp;Efficient complex data analysis with storage-layer constraints.
@@ -1650,14 +1650,17 @@ software engineer.
 <i>Other Interests</i>: Compilers and interpreters.
 </li>
 
-<li><dt>
-<a name="wenshan"></a><a name="Wenshan"></a> <!-- http://nco.sf.net#wenshan -->
-<a href="http://dust.ess.uci.edu/wenshanw">Wenshan Wang</a>, 
-<i>Roles</i>: PhD Candidate
+<li>
+<a name="vicente"></a><a name="Vicente"></a> <!-- http://nco.sf.net#vicente -->
+<a href="http://dust.ess.uci.edu/pvicente">Pedro Vicente</a>, 
+software engineer, 201206&mdash;201405, then NOAA, continues as volunteer contributor
+<!--
+<i>Roles</i>: Scientific programmer
 <i>Current Research</i>: 
-1.&nbsp;Causes and implications of Greenland snowmelt.
-2.&nbsp;Rapid evaluation and exploitation of multi-model datasets.
-<i>Other Interests</i>: Advancing to candidacy.
+1.&nbsp;Support for hierarchical datasets.
+2.&nbsp;Optimization of hierarchical access.
+<i>Other Interests</i>: HDF and netCDF data visualization.
+-->
 </li>
 
 </ul>
@@ -1669,7 +1672,7 @@ software engineer.
 <a name="capps"></a><a name="Capps"></a> <!-- http://nco.sf.net#capps -->
 <a href="http://dust.ess.uci.edu/scapps/web">Dr.&nbsp;Scott Capps</a>, 
 earned Earth System Science Ph.D. (2009) with Zender at UCI, then
-postdoc at UCLA, now at Vertum Partners.
+postdoc at UCLA, then Vertum Partners, now founder/CEO Atmospheric Data Solutions 
 <!--
 <i>Related Research</i>: 
 1.&nbsp;Test NCO on real tera-scale geoscience analysis problems and
@@ -1684,7 +1687,7 @@ on air-surface exchange.
 <a name="jenks"></a><a name="Jenks"></a> <!-- http://nco.sf.net#jenks -->
 <a href="http://spds.ece.uci.edu/~sjenks">Stephen Jenks</a>,
 former Assistant Professor of Electrical Engineering and Computer Science
-(<a href="http://www.eecs.uci.edu">EECS</a>).
+(<a href="http://www.eecs.uci.edu">EECS</a>)
 <!--
 <i>Roles</i>: Collaborator. Thesis advisor.
 <i>Related Research</i>: 
@@ -1694,22 +1697,9 @@ former Assistant Professor of Electrical Engineering and Computer Science
 </li>
 
 <li>
-<a name="vicente"></a><a name="Vicente"></a> <!-- http://nco.sf.net#vicente -->
-<a href="http://dust.ess.uci.edu/pvicente">Pedro Vicente</a>, 
-software engineer, 201206&mdash;201405, and continuing as volunteer
-<!--
-<i>Roles</i>: Scientific programmer
-<i>Current Research</i>: 
-1.&nbsp;Support for hierarchical datasets.
-2.&nbsp;Optimization of hierarchical access.
-<i>Other Interests</i>: HDF and netCDF data visualization.
--->
-</li>
-
-<li>
 <a name="wang"></a><a name="Wang"></a> <!-- http://nco.sf.net#wang -->
 <a href="http://dust.ess.uci.edu/~wangd">Dr.&nbsp;Daniel Wang</a>:
-earned EECS Ph.D. (2008) with Jenks and Zender at UCI, now at SLAC.
+earned EECS Ph.D. (2008) with Jenks and Zender at UCI, now at SLAC
 <!--
 <i>Role</i>: Architect distributed data reduction and analysis
 solutions for geoscience workflows
@@ -1725,8 +1715,18 @@ community.
 -->
 </li>
 
+<li><dt>
+<a name="wenshan"></a><a name="Wenshan"></a> <!-- http://nco.sf.net#wenshan -->
+<a href="http://dust.ess.uci.edu/wenshanw">Wenshan Wang</a>, 
+<i>Roles</i>: Postdoc
+<i>Current Research</i>: 
+1.&nbsp;Causes and implications of Greenland snowmelt.
+2.&nbsp;Rapid evaluation and exploitation of multi-model datasets.
+<i>Other Interests</i>: Automated Weather Station workflows
+</li>
+
 <p>Thanks also to 
-<a href="http://nco.sf.net/nco.html#ppl">past NCO contributors</a>.
+<a href="http://nco.sf.net/nco.html#ppl">past NCO contributors</a>
 
 </ul>
 <hr></p>
