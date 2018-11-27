@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.9-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 24 November 2018
+@set update-date 27 November 2018
 @set update-month November 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7338,12 +7338,18 @@ These annotations include
     Owing to its heritage as an early @acronym{CCM} analysis tool,
     @acronym{NCO} tries to create output interoperable with other
     @acronym{CESM} analysis tools. 
-    Like many models, @acronym{CAM} computes and archives thermodynamic
-    state variables on gridcell centers, while dynamics variables
-    (@var{U}, @var{V}) are on gridcell edges (interfaces).
+    Like many models, @acronym{CAM-FV} computes and archives thermodynamic
+    state variables on gridcell centers, and computes dynamics variables
+    (zonal and meridional winds @var{U} and @var{V}, respectively) on
+    gridcell edges (interfaces). 
     The dual-grid, sometimes called the ``staggered grid'', formed
     by connecting edge centers is thus the natural location for 
     storing output dynamics variables.
+    Most dynamical cores of @acronym{CAM} archives horizontal winds at
+    gridcell centers under the names @code{U}, and @code{V}.
+    For @acronym{CAM-FV}, these are interpolated from the computed
+    interface winds archived as @code{US}, and @code{VS} (which are
+    on the staggered grid coordinate system). 
     Some analysis packages, such as the @acronym{AMWG} diagnostics, 
     require access to these dual-grid coordinates with the names
     @code{slat} and @code{slon} (for ``staggered'' latitude and
