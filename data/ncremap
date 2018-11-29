@@ -125,9 +125,6 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
             export PBS_NUM_PPN=12 # Spoof PBS on Soft (which knows nothing about node capabilities)
 	    export PATH='/home/zender/bin_cooley'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_cooley'\:${LD_LIBRARY_PATH} ; ;;
-	mira* )
-	    export PATH='/home/zender/bin_mira'\:${PATH}
-	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
 	*cheyenne* )
 	    # 20180112: Cheyenne support not yet tested in batch mode
 	    if [ ${spt_nm} = 'ncremap' ]; then
@@ -168,6 +165,9 @@ if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    fi # !NCARG_ROOT
 	    export PATH='/global/homes/z/zender/bin_edison'\:${PATH}
             export LD_LIBRARY_PATH='/global/homes/z/zender/lib_edison'\:${LD_LIBRARY_PATH} ; ;;
+	mira* )
+	    export PATH='/home/zender/bin_mira'\:${PATH}
+	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
 	pileus* )
 	    export PATH='/home/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/ACME/uvcdat-2.2-build/install/Externals/lib:/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -1013,7 +1013,7 @@ fi # !no_cll_msr
 if [ "${no_frm_trm}" = 'Yes' ]; then 
     nco_opt="${nco_opt} --no_frm_trm"
 fi # !no_frm_trm
-if [ "${no_stg_grd}" = 'Yes' ]; then 
+if [ "${no_stg_grd}" = 'Yes' ] || [ "${prc_typ}" = 'mpas' ]; then 
     rgr_opt="${rgr_opt} --rgr no_stagger"
 fi # !no_stg_grd
 if [ -n "${rnr_thr}" ]; then 
