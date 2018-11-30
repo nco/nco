@@ -93,11 +93,11 @@ fi # DATA
 
 # Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library
 # 20170914 Entire block is identical between ncclimo and ncremap---keep it that way!
-# hrd_pth is a placeholder no-op that could be a command-line option to control environment
+# hrd_pth could be a command-line option to control environment if this block placed below getopt() block (not trivial)
 # Set NCO_PATH_OVERRIDE to 'No' to prevent NCO from executing next block that overrides PATH:
 # export NCO_PATH_OVERRIDE='No'
 hrd_pth='Yes' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
-if [ "${hrd_pth}" != 'No' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
+if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
