@@ -1,3 +1,7 @@
+2018-12-04  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo: Add timestamped notices aftter completing all full batches and partial batch if any
+
 2018-11-30  Charlie Zender  <zender@uci.edu>
 
 	* Synchronize ncremap and ncclimo host-specific blocks

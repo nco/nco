@@ -1857,6 +1857,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			    exit 1
 			fi # !err
 		    done # !pid_idx
+		    printf "`date`: Generated final full batch timeseries for segment ${sgm_idx}, ${fl_out[${var_idx}]}\n"
 		    let idx_srt=$((idx_srt + job_nbr))
 		    let idx_end=$((idx_end + job_nbr))
 		fi # !bch_flg
@@ -1879,6 +1880,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			exit 1
 		    fi # !err
 		done # !pid_idx
+		printf "`date`: Generated final partial batch timeseries for segment ${sgm_idx}, ${fl_out[${var_idx}]}\n"
 	    fi # !bch_flg
 	fi # !par_typ
 	
@@ -1928,6 +1930,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 				exit 1
 			    fi # !err
 			done # !pid_idx
+			printf "`date`: Regridded final full batch timeseries for segment ${sgm_idx}, ${fl_rgr[${var_idx}]}\n"
 			let idx_srt=$((idx_srt + job_nbr))
 			let idx_end=$((idx_end + job_nbr))
 		    fi # !bch_flg
@@ -1950,13 +1953,15 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			    exit 1
 			fi # !err
 		    done # !pid_idx
+		    printf "`date`: Regridded final partial batch timeseries for segment ${sgm_idx}, ${fl_rgr[${var_idx}]}\n"
 		fi # !bch_flg
 	    fi # !par_typ
 
 	    if [ "${no_ntv_tms}" = 'Yes' ]; then
-		# Omit native-grid split timeseries by moving fl_rgr to fl_out
+		# Omit native-grid split timeseries by overwriting fl_out with fl_rgr
 		for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 		    /bin/mv -f ${fl_rgr[${var_idx}]} ${fl_out[${var_idx}]}
+		    printf "`date`: Overwrote native timeseries with regridded for ${var_sbs[${var_idx}]}\n"
 		done # !var_idx
 	    fi # !no_ntv_tms
 
