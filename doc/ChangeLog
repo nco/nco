@@ -1,6 +1,8 @@
 2018-12-04  Charlie Zender  <zender@uci.edu>
 
-	* ncclimo: Add timestamped notices aftter completing all full batches and partial batch if any
+	* ncclimo: Add timestamped notices after each timeseries segment completes
+
+	* ncclimo: Add timestamped notices after completing all full batches and partial batch if any
 
 2018-11-30  Charlie Zender  <zender@uci.edu>
 
