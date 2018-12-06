@@ -1,0 +1,35 @@
+// test the function gsl_multifit_linear
+// usage: ncap2 -v -O -S nco_gsl_multifit_tst.nco in.nc out.nc 
+
+defdim("cols",3);
+defdim("rows",4);
+
+matrix_x[$cols,$rows]={3.1, 4.2, 5.1, 6.2,
+		       8.1, 9.2, 10.1, 11.4,
+                       20.1, 22.3, 24.6, 26.8};
+
+vector_y[$rows]={0.5, 0.51, 0.52,0.53};
+
+status=gsl_multifit_linear(matrix_x,vector_y, &vector_c, &cov, &chisq);
+ 
+print(status);
+
+
+if(status == 0 )
+{
+  // shape of this variable is [cols]
+  print(vector_c);
+
+  /* shape of this variable is [cols, cols] */
+  print(cov);
+
+  // scalar variable  
+  print(chisq);
+  
+ }  
+ else
+ {
+   print("Call to gsl_multifit_linear statusurned witht the error ");
+   print(status,"%d\n"); 
+
+ }  
