@@ -5262,7 +5262,7 @@ int gsl_fit_cls::rm_miss_arr(
       gsl_matrix *mat_x = gsl_matrix_alloc(rows, cols);
       gsl_vector *vec_y = gsl_vector_alloc(rows);
       gsl_vector *vec_c = gsl_vector_alloc(cols);
-      gsl_matrix *mat_cov = gsl_matrix_alloc(rows, cols); 
+      gsl_matrix *mat_cov = gsl_matrix_alloc(cols, cols); 
       gsl_multifit_linear_workspace *my_workspace=gsl_multifit_linear_alloc (rows, cols);
 
       // stuff first arg into matrix
