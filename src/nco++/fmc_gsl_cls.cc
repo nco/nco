@@ -5028,6 +5028,302 @@ int gsl_fit_cls::rm_miss_arr(
 }
 */
 
+  gsl_mfit_cls::gsl_mfit_cls(bool){
+    //Populate only on first constructor call
+    if(fmc_vtr.empty()){
+     fmc_vtr.push_back( fmc_cls("gsl_multifit_linear",this,(int)PMLIN));
+     fmc_vtr.push_back( fmc_cls("gsl_multifit_wlinear",this,(int)PMWLIN));
+     fmc_vtr.push_back( fmc_cls("gsl_multifit_linear_est",this,(int)PMLIN_EST));
+
+    }
+  }
+
+  var_sct * gsl_mfit_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+
+  const std::string fnc_nm("gsl_mfit_cls::fnd");
+    bool is_mtd;
+    int fdx=fmc_obj.fdx();   //index
+    RefAST tr;    
+    std::vector<RefAST> vtr_args; 
+       
+
+    if(expr)
+      vtr_args.push_back(expr);
+
+    if((tr=fargs->getFirstChild())) {
+      do  
+	vtr_args.push_back(tr);
+      while((tr=tr->getNextSibling()));    
+    }
+ 
+
+    is_mtd=(expr ? true: false);
+
+    switch(fdx){
+      case PMLIN:
+      case PMWLIN:
+        return mfit_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+        break;
+      case PMLIN_EST:
+        return mfit_est_fnd(is_mtd,vtr_args,fmc_obj,walker);  
+        break;
+	// 20161205: Always return value to non-void functions: good practice and required by rpmlint
+    default:
+      return (var_sct*)NULL;
+      break;
+    }
+
+
+    
+}
+  
+  var_sct *gsl_mfit_cls::mfit_fnd(bool &is_mtd, std::vector<RefAST> &vtr_args, fmc_cls &fmc_obj, ncoTree &walker){
+
+  const std::string fnc_nm("gsl_mfit_cls::mfit_fnd");
+    int idx;
+    int jdx;
+    int fdx=fmc_obj.fdx();   //index
+    int nbr_args;    // actual nunber of args
+    int in_nbr_args=0; // target number of args
+    int in_val_nbr_args=0; // number of expressions
+    int ret; 
+    prs_cls* prs_arg=walker.prs_arg;
+    std::string sfnm =fmc_obj.fnm(); //method name
+    std::string susg;
+    std::string serr;    
+    vtl_typ lcl_typ;
+    
+    var_sct *var_in[13];  
+       
+    ret=NCO_GSL_SUCCESS;
+    
+    nbr_args=vtr_args.size();  
+
+    switch(fdx){
+      case PMLIN:
+	in_nbr_args=5;
+        in_val_nbr_args=2;
+        susg="usage: status="+sfnm+"(matrix_X, vector_y, &vector_c, &matrix_cov, &chisq)"; 
+	break;   
+      case PMWLIN:
+	in_nbr_args=6;
+        in_val_nbr_args=3;
+        susg="usage: status="+sfnm+"(matrix_X, vector_w, vector_y, &vector_c, &matrix_cov, &chisq)"; 
+	break; 
+    }   
+
+
+    if(nbr_args<in_nbr_args){   
+      serr="function requires "+ nbr2sng(in_nbr_args)+" arguments. You have only supplied "+nbr2sng(nbr_args)+ " arguments\n"; 
+      err_prn(sfnm,serr+susg);
+    }
+
+
+    // deal with regular arguments
+    for(idx=0; idx<in_val_nbr_args  ; idx++){
+
+       lcl_typ=expr_typ(vtr_args[idx]);  
+
+       if(lcl_typ == VCALL_REF || lcl_typ == VDIM ){
+           serr="function requires that arg " + nbr2sng(idx+1)+ " be a variable name or an expression\n";
+           err_prn(sfnm,serr+susg);
+       }
+                 
+       var_in[idx] = walker.out(vtr_args[idx]);
+       // convert up
+       var_in[idx]=nco_var_cnf_typ(NC_DOUBLE,var_in[idx]);
+     
+    }
+
+
+    // deal with call-by-ref args
+    for(idx=in_val_nbr_args; idx<in_nbr_args; idx++) 
+    {
+
+         var_sct *var_tmp;
+	 std::string var_nm;
+         NcapVar  *Nvar;
+
+	 
+	 lcl_typ=expr_typ(vtr_args[idx]);  
+         var_nm=vtr_args[idx]->getFirstChild()->getText();
+         Nvar=prs_arg->var_vtr.find(var_nm);
+	 
+	 if(lcl_typ != VCALL_REF) {
+           serr="function requires that arg" + nbr2sng(idx+1)+ " be a call by reference variable\n";
+           err_prn(sfnm,serr+susg);
+         }
+
+	 
+	 // see if var already defined
+         if(prs_arg->ncap_var_init_chk(var_nm))
+	 {
+	   if(Nvar && Nvar->flg_stt==1)
+              var_tmp=Nvar->cpyVarNoData();
+	   else
+	      var_tmp=prs_arg->ncap_var_init(var_nm, !(prs_arg->ntl_scn));
+	 }
+	 else
+	 {
+           switch(idx-in_val_nbr_args)
+	   {  
+
+	     // vector_y
+	     case 0:
+	       {
+		 // make a 1 D var using first dim from first arg
+		 std::vector<std::string> str_vtr;
+		 str_vtr.push_back( var_in[0]->dim[0]->nm );   
+	         var_tmp=ncap_cst_mk(str_vtr,prs_arg);
+                     
+               } 
+	       var_tmp->nm=(char*)nco_free(var_tmp->nm);
+	       var_tmp->nm=strdup(var_nm.c_str());
+	       break;
+
+	     // cov   
+	     case 1:
+	       {
+		 // make a 2 D var using first dim from first arg twice !!
+		 std::vector<std::string> str_vtr;
+		 str_vtr.push_back( var_in[0]->dim[0]->nm );
+		 str_vtr.push_back( var_in[0]->dim[0]->nm );   
+	         var_tmp=ncap_cst_mk(str_vtr,prs_arg);
+                     
+               }
+       	       var_tmp->nm=(char*)nco_free(var_tmp->nm);
+	       var_tmp->nm=strdup(var_nm.c_str());
+
+               break;
+
+	     // chisq  
+	     case 2:   
+               var_tmp=ncap_sclr_var_mk(var_nm,NC_DOUBLE, !(prs_arg->ntl_scn) );
+	       break;
+	   }
+	   
+	 } //  end switch  
+
+        // remember ncap_cst_mk doesnt create vp 
+	if(!prs_arg->ntl_scn && var_tmp->val.vp == NULL)
+	   var_tmp->val.vp=(void *)nco_malloc_flg(var_tmp->sz*nco_typ_lng(var_tmp->type));
+ 
+	 
+	 var_tmp=nco_var_cnf_typ(NC_DOUBLE,var_tmp);
+         var_in[idx]=var_tmp;      
+    }     
+
+ 
+    // inital scan --free up  vars and return 
+    if(prs_arg->ntl_scn){
+      for(idx=0 ; idx<in_nbr_args ;idx++)
+        if(idx<in_val_nbr_args) 
+	  var_in[idx]=nco_var_free(var_in[idx]);
+        else
+          // write newly defined call by ref args
+          // nb this call frees up var_in[idx] 
+          prs_arg->ncap_var_write(var_in[idx],false);
+            
+      return ncap_sclr_var_mk("~gsl_mfit_cls",NC_INT,false);   
+    }
+
+
+     // all vars should now be of type NC_DOUBLE, so cast them  
+    for(idx=0; idx<in_nbr_args; idx++)  
+      (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
+    
+    // start with PMLIN
+    if( fdx == PMLIN)
+    {
+      // summary of args
+      // I arg 0 matrix X
+      // I arg 1 vector y
+      // O arg 2 vector c  
+      // O arg 3 matrix cov
+      // O arg 4 scalar double chisq
+
+      int rows;
+      int cols;
+
+      // first arg must be a 2D matrix
+      if(var_in[0]->nbr_dim !=2)
+	err_prn(sfnm, "The first argument must be a 2D variable - representing a matrix\n"); 
+
+      
+      cols=var_in[0]->dim[0]->sz;
+      rows=var_in[0]->dim[1]->sz;
+
+      // check that second arg has right number elements
+      if( var_in[1]->sz != rows)
+	err_prn(sfnm, "Size mismatch the size of the second arg must be equal to the number columns in the first arg\n"); 
+
+
+
+      gsl_matrix *mat_x = gsl_matrix_alloc(rows, cols);
+      gsl_vector *vec_y = gsl_vector_alloc(rows);
+      gsl_vector *vec_c = gsl_vector_alloc(cols);
+      gsl_matrix *mat_cov = gsl_matrix_alloc(rows, cols); 
+      gsl_multifit_linear_workspace *my_workspace=gsl_multifit_linear_alloc (rows, cols);
+
+      // stuff first arg into matrix
+      for(idx=0; idx<cols ; idx++)
+        for(jdx=0;jdx<rows;jdx++)   
+          gsl_matrix_set(mat_x, idx,jdx, var_in[0]->val.dp[ idx*rows+jdx]);
+
+      // stuff second arg into vector
+      for(jdx=0; jdx<rows ; jdx++)
+	gsl_vector_set(vec_y, jdx, var_in[1]->val.dp[jdx]);  
+
+      // finally make the big call  
+      ret=gsl_multifit_linear(mat_x, vec_y, vec_c, mat_cov,var_in[4]->val.dp, my_workspace );       
+
+      // extract values from vector
+      for(jdx=0; jdx<cols ; jdx++){
+        var_in[2]->val.dp[jdx]= gsl_vector_get(vec_c, jdx);
+      }
+      
+      // extract values from matrix
+      for(idx=0; idx<cols ; idx++)
+        for(jdx=0;jdx<cols;jdx++)
+	      var_in[3]->val.dp[ idx*cols+jdx] = gsl_matrix_get(mat_cov, idx,jdx); 
+
+      
+
+      gsl_matrix_free(mat_x);
+      gsl_vector_free(vec_y);
+      gsl_vector_free(vec_c);
+      gsl_matrix_free(mat_cov);
+
+      gsl_multifit_linear_free (my_workspace);
+      
+
+    }  
+
+    for(idx=0 ; idx< in_nbr_args ;idx++){
+      //cast pointers to void
+      (void)cast_nctype_void(var_in[idx]->type,&var_in[idx]->val);
+      
+      if(idx<in_val_nbr_args)
+        nco_var_free(var_in[idx]);
+      else
+        // nb this write call also frees up pointer  
+        prs_arg->ncap_var_write(var_in[idx],false);
+    }
+
+    return ncap_sclr_var_mk("~gsl_mfit_cls",(nco_int)ret);   
+    
+}
+  
+  var_sct *gsl_mfit_cls::mfit_est_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
+
+}
+
+
+
+
+
+
+
 #else // !ENABLE_GSL
 
 /* Dummy stub function so fmc_gsl_cls.o is not empty when GSL unavailable
@@ -5286,6 +5582,7 @@ var_sct *nco_gsl_cls::fit_fnd(bool &,std::vector<RefAST> &vtr_args,fmc_cls &fmc_
   // return status flag
   return ncap_sclr_var_mk("~nco_gsl_cls",(nco_int)ret);   
 } // end nco_gsl_cls::fit_fnd 
+
 #endif // !ENABLE_GSL
 
 

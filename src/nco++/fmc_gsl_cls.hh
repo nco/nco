@@ -36,6 +36,10 @@
 #include <gsl/gsl_spline.h>
 #include <gsl/gsl_fit.h>
 
+#include <gsl/gsl_vector.h>
+#include <gsl/gsl_matrix.h>
+#include <gsl/gsl_multifit.h>
+
 #include "ncoTree.hpp"
 #include "ncap2_utl.hh"
 #include "vtl_cls.hh"
@@ -448,6 +452,25 @@ public:
   var_sct *fit_est_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);  
   // int rm_miss_arr(double *x_in,long long x_stride,double *y_in, long long y_stride, double *w_in,long long w_stride,long long n);
 };
+
+
+//GSL  /****************************************/
+// gsl multi-parameter Least Square Fitting 
+class gsl_mfit_cls: public vtl_cls {
+private:
+  enum { PMLIN, PMWLIN, PMLIN_EST};
+   bool _flg_dbg;
+public:
+   gsl_mfit_cls(bool flg_dbg);
+  var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+  var_sct *mfit_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
+  var_sct *mfit_est_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);    
+
+};
+
+
+
+
 
 #endif // !ENABLE_GSL
 
