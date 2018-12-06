@@ -539,10 +539,6 @@ main(int argc,char **argv)
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
   
-  if(!nbr_spt && !fl_spt_usr){
-    (void)fprintf(stdout,"%s: ERROR Must give %s work to do with at least one command string (e.g., -s \"one=1\") or file-based script of commands (e.g., \"-S script.nco\"). Please reformulate command accordingly and try again.\n",nco_prg_nm_get(),nco_prg_nm_get());
-    nco_exit(EXIT_FAILURE);
-  } /* !nbr_spt */
 
   /* Set/report global chunk cache */
   rcd+=nco_cnk_csh_ini(cnk_csh_byt);
@@ -655,12 +651,14 @@ main(int argc,char **argv)
   gsl_stt2_cls gsl_stt2_obj(true);
   gsl_spl_cls gsl_spl_obj(true);
   gsl_fit_cls gsl_fit_obj(true);
+  gsl_mfit_cls gsl_mfit_obj(true);
  
   (void)pop_fmc_vtr(fmc_vtr,&gsl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&gsl2_obj);
   (void)pop_fmc_vtr(fmc_vtr,&gsl_stt2_obj);
   (void)pop_fmc_vtr(fmc_vtr,&gsl_spl_obj);
   (void)pop_fmc_vtr(fmc_vtr,&gsl_fit_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&gsl_mfit_obj);
 
   /* Set GSL error handler */
   gsl_set_error_handler_off(); 
@@ -683,6 +681,14 @@ main(int argc,char **argv)
       std::cout<< fmc_vtr[idx].fnm()<<"()"<<std::endl; 
     nco_exit(EXIT_SUCCESS);
   } /* !PRN_FNC_TBL */
+
+
+  
+  if(!nbr_spt && !fl_spt_usr){
+    (void)fprintf(stdout,"%s: ERROR Must give %s work to do with at least one command string (e.g., -s \"one=1\") or file-based script of commands (e.g., \"-S script.nco\"). Please reformulate command accordingly and try again.\n",nco_prg_nm_get(),nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* !nbr_spt */
+
   
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
