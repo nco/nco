@@ -344,12 +344,16 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
 #if NC_LIB_VERSION >= 462 
 # include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
 #else /* 4.6.2 */
-typedef struct NC_memio {
+  /* 20181206: Appveyor on Windows fails due to redefinition of NC_memio
+     Unsure exactly why it is defined twice for netCDF library <= 4.6.1 */
+# ifndef NETCDF_MEM_H
+  typedef struct NC_memio {
   size_t size;
   void* memory;
   int flags;
 # define NC_MEMIO_LOCKED 1    /* Do not try to realloc or free provided memory */
 } NC_memio;
+# endif /* NETCDF_MEM_H */
 #endif /* 4.6.2 */
 
   /* Begin file-level routines */

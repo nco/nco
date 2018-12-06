@@ -204,7 +204,7 @@ if (has_nc_open_mem AND path_netcdf_mem_h)
   add_definitions(-DHAVE_NETCDF_MEM_H)
   message("-- NetCDF diskless functionaliy enabled")
 else()
-  message("-- NetCDF diskless functionaliy not available, netcdf_mem.h or nc_open_mem not found")
+  message("-- NetCDF diskless functionaliy not available, netcdf_mem.h or nc_open_mem() not found")
 endif()
 
 #if nc_def_var_filter() is available, nc_inq_path(), nc_inq_format() and has_nc_open_mem() are too

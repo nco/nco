@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha02: Cannibalism';git push
 	git tag -a 4.7.9-alpha02 -m 'splitter timestamps;mpas no_stg_grd;ncap2 exit_gracefully;get/put_var1 fix';git push --tags
 
+	* Prevent redefinition of struct NC_memio on Windows
+
 	* Add --msa to man pages, reformat long-options after first in nco_usg_prn()
 
 2018-12-04  Charlie Zender  <zender@uci.edu>
