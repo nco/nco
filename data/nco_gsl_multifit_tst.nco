@@ -29,7 +29,7 @@ if(status == 0 )
  }  
  else
  {
-   print("Call to gsl_multifit_linear statusurned witht the error ");
+   print("Call to gsl_multifit_linear status returned witht the error ");
    print(status,"%d\n"); 
 
  }  
