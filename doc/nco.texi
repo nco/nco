@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.9-alpha01
 @set copyright-years 1995--2018
 @set update-year 2018
-@set update-date 27 November 2018
-@set update-month November 2018
+@set update-date 12 December 2018
+@set update-month December 2018
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -5786,6 +5786,21 @@ This avoids creating an intermediate file, and copies only the
 minimal amount of data (i.e., all of @file{fl_2.nc}). 
 Hence, it is fast.
 We recommend users try to understand the safety trade-offs involved. 
+
+One side-effect of @samp{--rec_apn} to be aware of is how attributes
+are handled.
+When appending files, @acronym{NCO} typically overwrites attributes
+for existing variables in the destination file with the corresponding
+attributes from the same variable in the source file.
+The exception to this rule is when @samp{--rec_apn} is invoked.
+As of version 4.7.9 (January, 2019), @acronym{NCO} leaves unchanged
+the attributes for existing variables in the destination file.
+This is primarily to ensure that calendar attributes (e.g.,
+@code{units}, @code{calendar}) of the record coordinate, if any, are
+maintained, so that the data appended to them can be re-based to the
+existing units.
+Otherwise rebasing would fail or require rewriting the entire file
+which is counter to the purpose of @samp{--rec_apn}.
 
 @html
 <a name="subcycle"></a> <!-- http://nco.sf.net/nco.html#subcycle -->

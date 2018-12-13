@@ -870,7 +870,7 @@ main(int argc,char **argv)
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_csh_byt,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Define dimensions, extracted groups, variables, and attributes in output file */
-  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,True,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
+  (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,!REC_APN,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 
   /* Define ensemble fixed variables (True parameter) */
   if(nco_prg_id_get() == ncge) (void)nco_nsm_dfn_wrt(in_id,out_id,&cnk,dfl_lvl,gpe,True,trv_tbl); 
@@ -1240,11 +1240,20 @@ main(int argc,char **argv)
           int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
           /* Get group ID using record group full name */
           (void)nco_inq_grp_full_ncid(out_id,lmt_rec[idx_rec]->grp_nm_fll,&grp_out_id);
-          /* Get the dimension ID (rec_dmn_out_id) of the current record, from its name */
+          /* Get dimension ID (rec_dmn_out_id) of current record from its name */
           (void)nco_inq_dimid(grp_out_id,lmt_rec[idx_rec]->nm,&rec_dmn_out_id);
-          /* Get the size of the record  */
+          /* Get current size of record dimension */
           (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
-        } /* !REC_APN */
+	  if(REC_APN){
+	    /* 20181212: In rec_apn mode re-base relative to calendar units in output file, not first input file */
+	    int rec_var_out_id;
+	    if(nco_inq_varid_flg(grp_out_id,lmt_rec[idx_rec]->nm,&rec_var_out_id) == NC_NOERR){
+	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: DEBUG changing re-base units string of variable \"%s\" from input units \"%s\" ",nco_prg_nm_get(),lmt_rec[idx_rec]->nm,lmt_rec[idx_rec]->rbs_sng);
+	      lmt_rec[idx_rec]->rbs_sng=nco_lmt_get_udu_att(grp_out_id,rec_var_out_id,"units"); 
+	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"to output units \"%s\"\n",lmt_rec[idx_rec]->rbs_sng);
+	    } /* endif record coordinate exists in output file */
+	  } /* !REC_APN */
+	} /* !REC_APN */
 
         if(nco_dbg_lvl_get() >= nco_dbg_crr)  (void)fprintf(fp_stdout,"%s: DEBUG record %d id %d name %s rec_dmn_sz %ld units=\"%s\"\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz,fl_udu_sng);
         /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
@@ -1350,10 +1359,9 @@ main(int argc,char **argv)
 		 ra_lst_chk(ra_bnds_lst,ra_bnds_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm) ||
 		 ra_lst_chk(ra_climo_lst,ra_climo_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm))
 		do_rebase=True;
-              //(void)fprintf(fp_stderr,"%s: converting variable \"%s\" from units \"%s\" to \" %s\"\n",nco_prg_nm_get(),var_prc[idx]->nm,fl_udu_sng,lmt_rec[idx_rec]->rbs_sng);
               if(do_rebase && fl_udu_sng && lmt_rec[idx_rec]->rbs_sng){
                 if(nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng,lmt_rec[idx_rec]->lmt_cln,(double*)NULL,var_prc[idx]) != NCO_NOERR){
-                  (void)fprintf(fp_stderr,"%s: problem converting variable \"%s\" from units \"%s\" to \" %s\"\n",nco_prg_nm_get(), var_prc[idx]->nm, fl_udu_sng, lmt_rec[idx_rec]->rbs_sng);
+                  (void)fprintf(fp_stderr,"%s: ERROR in nco_cln_clc_dbl_var_dff() when attempting to re-base variable \"%s\" from units \"%s\" to \"%s\"\n",nco_prg_nm_get(),var_prc[idx]->nm,fl_udu_sng,lmt_rec[idx_rec]->rbs_sng);
                   nco_exit(EXIT_FAILURE);
                 } /* !nco_cln_clc_dbl_var_dff() */
                 //nco_free(fl_udu_sng);
@@ -1937,44 +1945,39 @@ main(int argc,char **argv)
   return EXIT_SUCCESS;
 } /* end main() */
 
-
-/* remember ra_lst is a list of ragged arrays */
-/* the first element the is var_nm
-   the second element the cf_nm
-   the rest of the elements are the var names mentioned in attribute var_nm@cf_nm
-*/
+/* ra_lst is a list of ragged arrays
+   First element is var_nm, second element is the cf_nm, and the remaining elements are variable names mentioned in attribute var_nm@cf_nm */
 nco_bool
-ra_lst_chk(char ***ra_lst, int nbr_lst, char *var_nm, char *bnds_nm)
+ra_lst_chk(char ***ra_lst,int nbr_lst,char *var_nm,char *bnds_nm)
 {
   int idx=0;
   int jdx=0;
 
-  for( idx=0;idx<nbr_lst;idx++)
+  for(idx=0;idx<nbr_lst;idx++)
     if(!strcmp(var_nm, ra_lst[idx][0]))
       break;
 
-  if(idx==nbr_lst)
-      return False;
+  if(idx == nbr_lst)
+    return False;
 
   jdx=2;
-  while( strlen(ra_lst[idx][jdx])>0 )
-     if(!strcmp(ra_lst[idx][jdx++], bnds_nm ))
-       return True;
+  while(strlen(ra_lst[idx][jdx]) > 0)
+    if(!strcmp(ra_lst[idx][jdx++],bnds_nm))
+      return True;
 
   return False;
-
-}
+} /* !ra_lst_chk() */
 
 /* remember ra_lst is a list of ragged arrays */
 /* the end of the ragged array is indicated by a zero-length (not null) string */
-void ra_lst_free(char ***ra_lst, int nbr_lst){
+void ra_lst_free(char ***ra_lst,int nbr_lst){
   int sz=1;
   int fdx;
-    for (fdx = 0; fdx < nbr_lst; fdx++) {
-      while (strlen(ra_lst[fdx][sz]) > 0) sz++;
-      ra_lst[fdx] = nco_sng_lst_free(ra_lst[fdx], sz);
-    }
-}
+  for(fdx=0;fdx<nbr_lst;fdx++){
+    while(strlen(ra_lst[fdx][sz]) > 0) sz++;
+    ra_lst[fdx]=nco_sng_lst_free(ra_lst[fdx],sz);
+  } /* !fdx */
+} /* !ra_lst_free() */
 
 
 

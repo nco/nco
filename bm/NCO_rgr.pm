@@ -4035,7 +4035,6 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-
 #ncrcat #22	
 
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time\@units=\"hours since 1970-01-01\"' $in_pth_arg in.nc %tmp_fl_00%";

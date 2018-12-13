@@ -6476,7 +6476,6 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
   /* Used only by record operators ncra,ncrcat */
   assert(nco_prg_id_get() == ncra || nco_prg_id_get() == ncrcat);
 
-  /* Loop table */
   for(unsigned int idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
 
     trv_sct var_trv=trv_tbl->lst[idx_tbl];
@@ -6484,7 +6483,6 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
     /* Filter extracted variables  */
     if(var_trv.nco_typ == nco_obj_typ_var && var_trv.flg_xtr){
 
-      /* Loop variable dimensions */
       for(int idx_var_dmn=0;idx_var_dmn<var_trv.nbr_dmn;idx_var_dmn++){
 
         /* Assume dimension is not yet inserted in array */
@@ -6496,10 +6494,10 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
         /* Get unique dimension object from unique dimension ID, in input list */
         dmn_trv=nco_dmn_trv_sct(dmn_id,trv_tbl);
 
-        /* Is record */
+        /* Is this a record dimension? */
         if(dmn_trv->is_rec_dmn){
 
-          /* Loop constructed array of output dimensions to see if already inserted  */
+          /* Has this record dimension already been inserted in the array of output dimensions? */
           for(int idx_dmn_out=0;idx_dmn_out<rec_nbr;idx_dmn_out++){
 
             /* Match by ID */
@@ -6508,7 +6506,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               flg_dmn_ins=True;
               break;
             } /* Match by ID */
-          } /* Loop constructed array of output dimensions to see if already inserted  */ 
+          } /* !idx_dmn_out */
 
           /* If this dimension is not in output array */
           if(!flg_dmn_ins){

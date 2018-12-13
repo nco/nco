@@ -1,3 +1,11 @@
+2018-12-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.9-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha03: Unconventional Diner';git push
+	git tag -a 4.7.9-alpha03 -m 'splitter timestamps;mpas no_stg_grd;ncap2 exit_gracefully;get/put_var1 fix';git push --tags
+
+	* ncra/ncrcat: Rebasing in rec_apn mode uses calendar units from destination not source file
+
 2018-12-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9-alpha02 release procedure:
