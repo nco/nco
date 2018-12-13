@@ -1236,6 +1236,7 @@ main(int argc,char **argv)
         } /* !is_rec_dmn */
 
         if(REC_APN){
+	  int rec_var_out_id;
           /* Append records directly to output file */
           int rec_dmn_out_id=NCO_REC_DMN_UNDEFINED;
           /* Get group ID using record group full name */
@@ -1244,15 +1245,12 @@ main(int argc,char **argv)
           (void)nco_inq_dimid(grp_out_id,lmt_rec[idx_rec]->nm,&rec_dmn_out_id);
           /* Get current size of record dimension */
           (void)nco_inq_dimlen(grp_out_id,rec_dmn_out_id,&idx_rec_out[idx_rec]);
-	  if(REC_APN){
-	    /* 20181212: In rec_apn mode re-base relative to calendar units in output file, not first input file */
-	    int rec_var_out_id;
-	    if(nco_inq_varid_flg(grp_out_id,lmt_rec[idx_rec]->nm,&rec_var_out_id) == NC_NOERR){
-	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"%s: DEBUG changing re-base units string of variable \"%s\" from input units \"%s\" ",nco_prg_nm_get(),lmt_rec[idx_rec]->nm,lmt_rec[idx_rec]->rbs_sng);
-	      lmt_rec[idx_rec]->rbs_sng=nco_lmt_get_udu_att(grp_out_id,rec_var_out_id,"units"); 
-	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stderr,"to output units \"%s\"\n",lmt_rec[idx_rec]->rbs_sng);
-	    } /* endif record coordinate exists in output file */
-	  } /* !REC_APN */
+	  /* 20181212: Re-base relative to calendar units in output file, not first input file */
+	  if(nco_inq_varid_flg(grp_out_id,lmt_rec[idx_rec]->nm,&rec_var_out_id) == NC_NOERR){
+	    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stderr,"%s: DEBUG REC_APN mode changing re-base units string of variable \"%s\" from input units \"%s\" ",nco_prg_nm_get(),lmt_rec[idx_rec]->nm,lmt_rec[idx_rec]->rbs_sng);
+	    lmt_rec[idx_rec]->rbs_sng=nco_lmt_get_udu_att(grp_out_id,rec_var_out_id,"units"); 
+	    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(fp_stderr,"to output units \"%s\"\n",lmt_rec[idx_rec]->rbs_sng);
+	  } /* endif record coordinate exists in output file */
 	} /* !REC_APN */
 
         if(nco_dbg_lvl_get() >= nco_dbg_crr)  (void)fprintf(fp_stdout,"%s: DEBUG record %d id %d name %s rec_dmn_sz %ld units=\"%s\"\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz,fl_udu_sng);
