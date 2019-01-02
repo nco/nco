@@ -1040,14 +1040,13 @@ Please read the Guide's suggestions for productive
 <a href="./nco.html#help">Help Requests and Bug Reports</a>.
 <ul>
 <li><i>Where should I ask my questions on how to use NCO?</i>
-On the <a href="http://sf.net/p/nco/discussion/9830">Help</a> site.
-</li>
+On the <a href="http://sf.net/p/nco/discussion/9830">Help</a> site.</li>
 <li><i>Where should I post suggestions/comments on NCO features and usage?</i>
-On the <a href="http://sf.net/p/nco/discussion/9829">Discussion</a> site.
-</li>
-<li><i>Where are NCO development and bug-squashing discussed?</i>
-At the <a href="http://sf.net/p/nco/discussion/9831">Developer</a>
-site.</li>
+On the <a href="http://sf.net/p/nco/discussion/9829">Discussion</a> site.</li>
+<li><i>Where are NCO development and new features discussed?</i>
+On the <a href="http://sf.net/p/nco/discussion/9831">Developer</a> site.</li>
+<li><i>Where do I file an NCO bug-report?</i>
+On the <a href="https://sourceforge.net/p/nco/bugs">Bug Tickets</a> site.</li>
 </ul>
 <hr></p>
 <!-- End Support -->

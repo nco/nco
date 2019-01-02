@@ -3,7 +3,7 @@
 # Purpose: Climatology script tailored to CESM'ish monthly input and E3SM/ACME output guidelines
 # Produces and optionally regrids climatological monthly means, seasonal means, annual mean
 
-# Copyright (C) 2015--2018 Charlie Zender
+# Copyright (C) 2015--present Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.
 # You may redistribute and/or modify NCO under the terms of the 
 # GNU General Public License (GPL) Version 3.
@@ -714,7 +714,7 @@ fi # !d2f_flg
 
 if [ ${vrs_prn} = 'Yes' ]; then
     printf "${spt_nm}, the NCO climatology operator, version ${nco_vrs}\n"
-    printf "Copyright (C) 2016--2018 Charlie Zender\n"
+    printf "Copyright (C) 2016--2019 Charlie Zender\n"
     printf "This program is part of NCO, the netCDF Operators\n"
     printf "NCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\n"
     printf "You may redistribute and/or modify NCO under the terms of the\n"

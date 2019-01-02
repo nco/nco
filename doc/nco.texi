@@ -12,7 +12,7 @@ Purpose: TeXInfo documentation for netCDF Operators (NCO)
 
 URL: http://nco.sf.net/nco.texi
 
-Copyright (C) 1995--2018 Charlie Zender
+Copyright (C) 1995--present Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3
 or any later version published by the Free Software Foundation;
@@ -121,10 +121,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 4.7.9-alpha02
 @set doc-edition 4.7.9-alpha02
-@set copyright-years 1995--2018
-@set update-year 2018
-@set update-date 12 December 2018
-@set update-month December 2018
+@set copyright-years 1995--2019
+@set update-year 2019
+@set update-date 2 January 2019
+@set update-month January 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
