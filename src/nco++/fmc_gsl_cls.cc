@@ -5316,6 +5316,9 @@ int gsl_fit_cls::rm_miss_arr(
   
   var_sct *gsl_mfit_cls::mfit_est_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker){
 
+
+
+  return (var_sct*)NULL;
 }
 
 
@@ -5384,6 +5387,9 @@ var_sct *nco_gsl_cls::fnd(RefAST expr,RefAST fargs,fmc_cls &fmc_obj,ncoTree &wal
     assert(0);
     break;
   }
+  
+  return (var_sct*)NULL;
+
 } // end nco_gsl_cls::fnd 
 
 
