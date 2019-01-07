@@ -1087,7 +1087,7 @@ if [ "${prc_typ}" = 'mpas' ]; then
 #    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean
 #    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # SeaIce
 #    pdq_opt='-a Time,nCategories,TWO,nEdges,nCells' # LandIce
-    pdq_opt='-a Time,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
+    pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
     if [ -n "${rnr_thr}" ]; then 
 	# Setting rnr_thr='off' in MPAS mode turns-off renormalization
 	if [ "${rnr_thr}" != 'off' ]; then 
