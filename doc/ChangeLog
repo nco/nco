@@ -1,3 +1,12 @@
+2019-01-12  Charlie Zender  <zender@uci.edu>
+
+
+	* NCO 4.7.9-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha04: Shutdown';git push
+	git tag -a 4.7.9-alpha04 -m 'ncremap add_depth.py';git push --tags
+
+	* Finish infrastructure for add_depth.py. ncremap --add_depth appears to work.
+
 2019-01-11  Charlie Zender  <zender@uci.edu>
 
 	* Add stubs for MPAS depth coordinate option
