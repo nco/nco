@@ -1,3 +1,7 @@
+2019-01-11  Charlie Zender  <zender@uci.edu>
+
+	* Add stubs for MPAS depth coordinate option
+
 2019-01-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9-alpha03 release procedure:
