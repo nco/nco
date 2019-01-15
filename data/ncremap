@@ -1283,7 +1283,7 @@ if [ "${prc_typ}" = 'alm' ] || [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'cts
     sgs_frc='landfrac'
     sgs_msk='landmask'
     sgs_nrm='1.0'
-    prc_alm='Yes'
+    prc_elm='Yes'
     prc_typ='sgs'
 fi # !alm, !clm
 if [ "${prc_typ}" = 'cice' ]; then 
@@ -2586,7 +2586,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "SGS: Append full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask to regridded file...\n"
 	fi # !vrb_lvl
-	# These replace user-areas area, user-areas sub-grid fraction, and naïvely regridded (rather than accurately re-derived) sub-grid mask, respectively
+	# Replace user-areas area, user-areas sub-grid fraction, and naïvely regridded (rather than accurately re-derived) sub-grid mask, respectively
 	cmd_grd_rpl[${fl_idx}]="ncks -A -C -v area,${sgs_frc},${sgs_msk} ${frc_out_sgs} ${fl_out[${fl_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_grd_rpl[${fl_idx}]}
@@ -2598,23 +2598,23 @@ if [ "${prc_typ}" = 'sgs' ]; then
 		exit 1
 	    fi # !err
 	fi # !dbg
-	if [ -n "${prc_alm}" ]; then
+	if [ -n "${prc_elm}" ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "SGS: Implement idiosyncratic ALM/CLM/CTSM/ELM characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [km2]
-	    cmd_alm[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@long_name=\"Gridcell area\";area@units=\"km^2\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
+	    cmd_elm[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@long_name=\"Gridcell area\";area@units=\"km^2\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_alm[${fl_idx}]}
+		echo ${cmd_elm[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_alm[${fl_idx}]}
+		eval ${cmd_elm[${fl_idx}]}
 		if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		    printf "${spt_nm}: ERROR Failed to replace convert output area from [sr] to [km2]. Debug this:\n${cmd_alm[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to replace convert output area from [sr] to [km2]. Debug this:\n${cmd_elm[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
-	fi # !prc_alm
+	fi # !prc_elm
 	if [ -n "${prc_cice}" ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "SGS: Implement idiosyncratic CICE characteristics in regridded file...\n"
