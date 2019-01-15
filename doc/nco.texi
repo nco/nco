@@ -23711,8 +23711,8 @@ Valid procedure types are @samp{airs} for @acronym{NASA AIRS} satellite data,
 @samp{mpas} for @acronym{MPAS} ocean/ice model data on unstructured grids,
 @samp{mod04} for @w{Level 2} @acronym{MODIS} @acronym{MOD04} product,
 @samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
-(such as @acronym{ALM/CLM/CTSM/ELM} land model data or @acronym{CICE} sea-ice
-model data), 
+(such as @acronym{ALM/CLM/CTSM/ELM} land model data or @acronym{CICE}
+sea-ice model data), 
 and @samp{nil} (for none).
 The default @var{prc_typ} is @samp{nil}, which means @command{ncremap} 
 does not perform any special procedure prior to regridding.
