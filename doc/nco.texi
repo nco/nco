@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.7.9-alpha03
-@set doc-edition 4.7.9-alpha03
+@set nco-edition 4.7.9-alpha04
+@set doc-edition 4.7.9-alpha04
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 6 January 2019
+@set update-date 19 January 2019
 @set update-month January 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17632,10 +17632,11 @@ of all options and some examples.
 @end html
 @cindex @code{-a @var{dec_md}}
 @cindex @code{--dec_md}
+@cindex @code{--dcm_md}
 @cindex @code{--dec_mode}
 @cindex @code{--december_mode}
 @cindex @var{dec_md}
-@item -a @var{dec_md} (@code{--dec_md}, @code{--december_mode}, @code{--dec_mode})
+@item -a @var{dec_md} (@code{--dec_md}, @code{--dcm_md}, @code{--december_mode}, @code{--dec_mode})
 December mode determines the type of @acronym{DJF} average.
 The two valid options are @code{scd} (default) and @code{sdd}.
 @acronym{SCD}-mode stands for ``Seasonally Continuous December''. 
@@ -17910,9 +17911,10 @@ proliferation if you do not need @acronym{AMWG} filenames.
 @cindex @code{-m @var{mdl_nm}}
 @cindex @var{mdl_nm}
 @cindex @code{--model_name}
+@cindex @code{--mdl}
 @cindex @code{--model}
 @cindex @code{--mdl_nm}
-@item -m @var{mdl_nm} (@code{--mdl_nm}, @code{--model_name}, @code{--model})
+@item -m @var{mdl_nm} (@code{--mdl_nm}, @code{--mdl}, @code{--model_name}, @code{--model})
 Model name (as embedded in monthly input filenames). 
 Default is @samp{cam}. Other options are @samp{clm2}, @samp{ocn},
 @samp{ice}, @samp{cism}, @samp{cice}, @samp{pop}. 

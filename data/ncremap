@@ -350,6 +350,7 @@ dbg_lvl=0 # [nbr] Debugging level
 dfl_lvl='' # [enm] Deflate level
 dpt_exe_mpas='add_depth.py' # [sng] Depth coordinate addition command for MPAS
 dpt_flg='No' # [flg] Add depth coordinate to MPAS files
+dpt_fl='' # [sng] Depth file with refBottomDepth for MPAS ocean
 #drc_in="${drc_pwd}" # [sng] Input file directory
 drc_in='' # [sng] Input file directory
 drc_in_xmp='~/drc_in' # [sng] Input file directory for examples
@@ -386,7 +387,6 @@ map_usr_flg='No' # [flg] User supplied argument to --map option
 map_xmp='map.nc' # [sng] Map-file for examples
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
-mpas_fl='' # [sng] MPAS ocean file with refBottomDepth
 msh_fl='' # [sng] Mesh-file (for Tempest)
 msk_dst='' # [sng] Mask-template variable in destination file
 msk_out='' # [sng] Mask variable in regridded file
@@ -464,6 +464,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
     echo " ${fnt_bld}--dpt${fnt_nrm}      Add depth coordinate to MPAS files (default ${fnt_bld}${dpt_flg}${fnt_nrm}) [${fnt_tlc}dpt | depth | add_dpt | add_depth${fnt_nrm}]"
+    echo " ${fnt_bld}--dpt_fl${fnt_nrm}   Depth file with refBottomDepth for MPAS ocean (empty means none) (default ${fnt_bld}${dpt_fl}${fnt_nrm}) [${fnt_tlc}dpt_fl, mpas_fl, mpas_depth, depth_file${fnt_nrm}]"
     echo " ${fnt_bld}--dt_sng${fnt_nrm}   Date string (for MWF map names) (default ${fnt_bld}${dt_sng}${fnt_nrm}) [${fnt_tlc}dt_sng, date_string${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo "${fnt_rvr}-G${fnt_nrm} ${fnt_bld}grd_sng${fnt_nrm}  Grid generation arguments (empty means none) (default ${fnt_bld}${grd_sng}${fnt_nrm}) [${fnt_tlc}grd_sng, grid_generation, grid_gen, grid_string${fnt_nrm}]"
@@ -476,7 +477,6 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file) [${fnt_tlc}mlt_map, no_multimap${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
-    echo " ${fnt_bld}--mpas_fl${fnt_nrm}  MPAS ocean file with refBottomDepth (empty means none) (default ${fnt_bld}${mpas_fl}${fnt_nrm}) [${fnt_tlc}mpas_fl, dpt_fl, mpas_depth, depth_file${fnt_nrm}]"
     echo " ${fnt_bld}--msk_dst${fnt_nrm}  Mask-template variable in destination file (empty means none) (default ${fnt_bld}${msk_dst}${fnt_nrm}) [${fnt_tlc}msk_dst, dst_msk, mask_destination, mask_dst${fnt_nrm}]"
     echo " ${fnt_bld}--msk_out${fnt_nrm}  Mask variable in regridded file (empty means none) (default ${fnt_bld}${msk_out}${fnt_nrm}) [${fnt_tlc}msk_out, out_msk, mask_output, mask_rgr${fnt_nrm}]"
     echo " ${fnt_bld}--msk_src${fnt_nrm}  Mask-template variable in source file (empty means none) (default ${fnt_bld}${msk_src}${fnt_nrm}) [${fnt_tlc}msk_src, src_msk, mask_source, mask_src${fnt_nrm}]"
@@ -621,6 +621,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       dfl_lvl=?* | deflate=?* | dfl=?* ) dfl_lvl="${LONG_OPTARG}" ;; # -L # Deflate level
 	       dpt | depth | add_dpt | add_depth ) dpt_flg='Yes' ;; # # Add depth coordinate to MPAS files
 	       dpt=?* | depth=?* | add_dpt=?* | add_depth=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # DPT
+	       dpt_fl=?* | mpas_fl=?* | mpas_file=?* | depth_file=?* ) dpt_fl="${LONG_OPTARG}" ;; # # Depth file with refBottomDepth for MPAS ocean
 	       dst_fl=?* | destination_file=?* | template_file=?* | template=?* ) dst_fl="${LONG_OPTARG}" ;; # -d # Destination file
 	       grd_dst=?* | grid_dest=?* | dst_grd=?* | dest_grid=?* | destination_grid=?* ) grd_dst="${LONG_OPTARG}" ;; # -g # Destination grid-file
 	       grd_sng=?* | grid_generation=?* | grid_gen=?* | grid_string=?* ) grd_sng="${LONG_OPTARG}" ;; # -G # Grid generation string
@@ -634,7 +635,6 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
 	       map_fl=?* | map=?* | map_file=?* | rgr_map=?* | regrid_map=?* ) map_fl="${LONG_OPTARG}" ;; # -m # Map-file
-	       mpas_fl=?* | dpt_fl=?* | mpas_file=?* | depth_file=?* ) mpas_fl="${LONG_OPTARG}" ;; # # MPAS ocean file with refBottomDepth
 	       msk_dst=?* | dst_msk=?* | mask_destination=?* | mask_dst=?* ) msk_dst="${LONG_OPTARG}" ;; # # Mask-template variable in destination file
 	       msk_out=?* | out_msk=?* | mask_output=?* | mask_out=?* ) msk_out="${LONG_OPTARG}" ;; # # Mask variable in regridded file
 	       msk_src=?* | src_msk=?* | mask_source=?* | mask_src=?* ) msk_src="${LONG_OPTARG}" ;; # # Mask-template variable in source file
@@ -824,7 +824,7 @@ fi # !out_fl
 att_fl="${drc_tmp}/ncremap_tmp_att.nc" # [sng] Missing value workflow (MPAS) default
 d2f_fl="${drc_tmp}/ncremap_tmp_d2f.nc" # [sng] File with doubles converted to float
 dmm_fl="${drc_tmp}/ncremap_tmp_dmm.nc" # [sng] Dummy input file
-dpt_fl="${drc_tmp}/ncremap_tmp_dpt.nc" # [sng] File with depth coordinate added
+dpt_tmp_fl="${drc_tmp}/ncremap_tmp_dpt.nc" # [sng] File with depth coordinate added
 grd_dst_dfl="${drc_tmp}/ncremap_tmp_grd_dst.nc" # [sng] Grid-file (destination) default
 grd_src_dfl="${drc_tmp}/ncremap_tmp_grd_src.nc" # [sng] Grid-file (source) default
 hnt_dst_fl="${drc_tmp}/ncremap_tmp_hnt_dst.txt" # [sng] Hint (for ERWG) destination
@@ -851,7 +851,7 @@ fi # !unq_sfx
 att_fl=${att_fl}${unq_sfx}
 d2f_fl=${d2f_fl}${unq_sfx}
 dmm_fl=${dmm_fl}${unq_sfx}
-dpt_fl=${dpt_fl}${unq_sfx}
+dpt_tmp_fl=${dpt_tmp_fl}${unq_sfx}
 grd_dst_dfl=${grd_dst_dfl}${unq_sfx}
 grd_src_dfl=${grd_src_dfl}${unq_sfx}
 hnt_dst_fl=${hnt_dst_fl}${unq_sfx}
@@ -1104,19 +1104,19 @@ if [ "${prc_typ}" = 'mod04' ]; then
 fi # !mod04
 if [ "${prc_typ}" = 'mpas' ]; then 
     # Add depth coordinate to MPAS file when requested to by specifying coordinate file, that file exists, and commmand is found
-    if [ -n "${mpas_fl}" ] || [ "${dpt_flg}" = 'Yes' ]; then
-	if [ -n "${mpas_fl}" ]; then
-	    if [ ! -f "${mpas_fl}" ]; then
-		echo "ERROR: Unable to find specified MPAS depth coordinate file ${mpas_fl}"
+    if [ -n "${dpt_fl}" ] || [ "${dpt_flg}" = 'Yes' ]; then
+	if [ -n "${dpt_fl}" ]; then
+	    if [ ! -f "${dpt_fl}" ]; then
+		echo "ERROR: Unable to find specified MPAS depth coordinate file ${dpt_fl}"
 		exit 1
 	    fi # ! -f
-	    cmd_dpt_opt="-c ${mpas_fl}"
-	fi # !mpas_fl
+	    cmd_dpt_opt="-c ${dpt_fl}"
+	fi # !dpt_fl
 	if [ -z "${cmd_dpt_mpas}" ]; then
 	    printf "${spt_nm}: ERROR MPAS depth coordinate addition requested but command ${dpt_exe_mpas} not found\n"
 	fi # !err
 	dpt_flg='Yes'
-    fi # !mpas_fl
+    fi # !dpt_fl
 #    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean
 #    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # SeaIce
 #    pdq_opt='-a Time,nCategories,TWO,nEdges,nCells' # LandIce
@@ -1541,6 +1541,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: dbg_lvl  = ${dbg_lvl}\n"
     printf "dbg: dfl_lvl  = ${dfl_lvl}\n"
     printf "dbg: dpt_flg  = ${dpt_flg}\n"
+    printf "dbg: dpt_fl   = ${dpt_fl}\n"
     printf "dbg: drc_in   = ${drc_in}\n"
     printf "dbg: drc_out  = ${drc_out}\n"
     printf "dbg: drc_tmp  = ${drc_tmp}\n"
@@ -1564,7 +1565,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: map_fl   = ${map_fl}\n"
     printf "dbg: map_mk   = ${map_mk}\n"
     printf "dbg: mlt_map  = ${mlt_map_flg}\n"
-    printf "dbg: mpas_fl  = ${mpas_fl}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: msk_dst  = ${msk_dst}\n"
     printf "dbg: msk_out  = ${msk_out}\n"
@@ -2362,17 +2362,17 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     if [ "${dpt_flg}" = 'Yes' ]; then
 	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
 	    printf "DPT(in)  : ${in_fl}\n"
-	    printf "DPT(out) : ${dpt_fl}\n"
+	    printf "DPT(out) : ${dpt_tmp_fl}\n"
 	fi # !vrb_lvl
-	cmd_dpt[${fl_idx}]="${cmd_dpt_mpas} ${cmd_dpt_opt} -i ${in_fl} -o ${dpt_fl}"
-	in_fl=${dpt_fl}
+	cmd_dpt[${fl_idx}]="${cmd_dpt_mpas} ${cmd_dpt_opt} -i ${in_fl} -o ${dpt_tmp_fl}"
+	in_fl=${dpt_tmp_fl}
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_dpt[${fl_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_dpt[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${dpt_fl} ]; then
-		printf "${spt_nm}: ERROR Failed to add depth coordinate to MPAS file. Debug this:\n${cmd_dpt[${fl_idx}]}\nHINTS: 1) Verify that ${dpt_exe_mpas} is executable from the command-line, it requires Python and the xarray package to succeed. 2) Verify that ${mpas_fl} or ${in_fl} contains variable \"refBottomDepth\".\n"
+	    if [ $? -ne 0 ] || [ ! -f ${dpt_tmp_fl} ]; then
+		printf "${spt_nm}: ERROR Failed to add depth coordinate to MPAS file. Debug this:\n${cmd_dpt[${fl_idx}]}\nHINTS: 1) Verify that ${dpt_exe_mpas} is executable from the command-line, it requires Python and the xarray package to succeed. 2) Verify that ${dpt_fl} or ${in_fl} contains variable \"refBottomDepth\".\n"
 		exit 1
 	    fi # !err
 	fi # !dbg
@@ -2639,7 +2639,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Clean-up intermediate files...\n"
     fi # !vrb_lvl
-    /bin/rm -f ${att_fl} ${d2f_fl} ${dmm_fl} ${dpt_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${pdq_fl} ${rgn_fl} ${rnm_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${att_fl} ${d2f_fl} ${dmm_fl} ${dpt_tmp_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${pdq_fl} ${rgn_fl} ${rnm_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files.\n"
