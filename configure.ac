@@ -745,19 +745,19 @@ if test "${enable_udunits2}" != 'no'; then
 	    # Therefore, we take `basename $libdir` (libdir=$prefix/lib|lib64), which is 'lib' or 'lib64', and append it to UDUNITS2_PATH
 	    # If this directory does not exist, we append 'lib' to UDUNITS2_PATH
 	    # (Daniel Neumann, 3rd June 2017)
-      nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
-      if test -d "${UDUNITS2_PATH}/`basename $libdir`"; then
-        LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/`basename $libdir`"
-      else
-        LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
-      fi
+	    nco_udunits2_xml=${UDUNITS2_PATH}/share/udunits/udunits2.xml
+	    if test -d "${UDUNITS2_PATH}/`basename $libdir`"; then
+		LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/`basename $libdir`"
+	    else
+		LDFLAGS="${LDFLAGS} -L${UDUNITS2_PATH}/lib"
+	    fi
 	    CPPFLAGS="${CPPFLAGS} -I${UDUNITS2_PATH}/include"
 	else
 	    echo "WARNING: UDUNITS2_PATH location \"${UDUNITS2_PATH}\" does not exist!"
-	fi
+	fi # !UDUNITS2_PATH
     elif test "${NETCDF_INC}"; then
 	nco_udunits2_xml="${NETCDF_INC}/../share/udunits/udunits2.xml"
-    fi
+    fi # !UDUNITS2_PATH
     if test "${UDUNITS2_PATH}" = ''; then
 	# NO UDUNITS2_PATH section
 	# Fedora 1.7 has /usr/include/udunits2/udunits2.h

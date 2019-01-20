@@ -291,7 +291,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/ne30.g --nm_src=oRRS30to10 --nm_dst=ne30np4 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # Add depth (201901):
-# ncremap -P mpas --dpt_fl=${DATA}/hdf/mpas_refBottomDepth_60lyr.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
+# ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -1709,9 +1709,9 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	fi # !wgt_typ
 	if [ "${grd_src_usr_flg}" != 'Yes' ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP-format source grid-file. Moreover, the source grid-file must include the (normally non-essential) grid_area field. It is infeasible to permit SGS source-grid inferral, because weight-generators assume great circle arcs but 2D-grids usually have small-circles in latitude, and this can lead to significant area mis-matches. Despite this, sub-gridscale handling is happy to infer destination (not source) grids.\n"
-	    echo "${spt_nm}: HINT Supply source grid-file with \"-s grd_src\". If the source grid-file is unavailable, first multiply sub-grid fields by ${sgs_frc} (with, e.g., ncap2 -s \"foo*=${sgs_frc};\" in.nc out.nc) and then regrid as normal without invoking sub-gridscale handling, i.e., omit the '-P sgs' and '--sgs_*' options."
+	    echo "${spt_nm}: HINT Supply source grid-file with \"-s grd_src\".\nALTERNATIVE TO SGS: If the source grid-file is unavailable, first multiply sub-grid fields by ${sgs_frc} (with, e.g., ncap2 -s \"foo*=${sgs_frc};\" in.nc out.nc) and then regrid as normal without invoking sub-gridscale handling, i.e., omit the '-P sgs' and '--sgs_*' options."
 	    exit 1
-	    # 20170511: Inferring source grids leads to ~2% biases with conservative regridding and 2D source grids
+	    # 20170511: fxm Inferring source grids leads to ~2% biases with conservative regridding and 2D source grids. Not sure why. 
 	    # printf "${spt_nm}: Sub-gridscale handling will attempt to infer the source SCRIP grid-file from the input data file. This will only work for rectangular 2D data files, because SGS requires the source grid-file to contain the (normally non-essential) grid_area field for the input grid.\n"
 	fi # !grd_src_usr_flg
 	if [ "${grd_dst_usr_flg}" != 'Yes' ]; then
@@ -2089,11 +2089,21 @@ if [ "${prc_typ}" = 'sgs' ]; then
     # Ensure map-generation uses modified grid files
     grd_src=${grd_src_sgs}
     grd_dst=${grd_dst_sgs}
+
+    if [ "${prc_cice}" = 'Yes' ] && [ ${fl_nbr} -gt 1 ]; then
+	printf "WARNING: SGS mode invoked for multiple sea-ice datasets. SGS mode regrids all data files using the sub-grid fraction from the first datafile it receives. This is usually appropriate for land timeseries since land sub-grid fractions generally do not change with time, and highly inappropriate for sea-ice timeseries since sea-ice area changes rapidly with time.\nHINT: Invoke ${spt_nm} once per discrete time interval for sea-ice data. Doublecheck with Charlie if you are unsure what to do.\n"
+    fi # !prc_cice
+    
 fi # !sgs
 
 # If user provides source gridfile, or it was inferred in RRG or SGS modes, assume it applies to every input file
 # Do not infer source gridfiles from input files within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
+# This paradigm suits ELM/ALM and CTSM/CLM timeseries since (until at least 201901) land fractions do not change
+# A single instance of ncremap efficiently handles (creates/applies one SGS map for) all land datafiles from a single land simulation
+# This paradigm is inappropriate for CICE timeseries since ice fractions change dramatically
+# Invoke ncremap separately for each discrete time interval from a single sea-ice simulation
+# Hence SGS regridding of land compared to sea-ice is fundamentally more efficient
 if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Source grid supplied by user (or derived from RRG or SGS procedures) as ${grd_src}\n"

@@ -1,3 +1,7 @@
+2019-01-20  Charlie Zender  <zender@uci.edu>
+
+	* Audit ncremap and add comments on treatment of land vs. sea-ice data
+
 2019-01-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9-alpha04 release procedure:
