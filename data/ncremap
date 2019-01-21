@@ -262,11 +262,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/essgcm14/essgcm14.cam2.h0.0000-01.nc ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/fv09_rgr.nc # 20170510 2D->2D bilinear works and conserve ~2% wrong, infer S and D
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${HOME}/skl_t42.nc ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/fv09_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
 # ncremap --vrb=3 -p nil -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
-# ncremap --vrb=3 -a conserve --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/cice_rgr.nc # 20170525 normalization required to get mask right
-# ncremap --vrb=3 -P cice -a conserve --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/cice_rgr.nc # 20170525 cice short-cut
+# ncremap --vrb=3 -a conserve --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 normalization required to get mask right
+# ncremap --vrb=3 -P cice -a conserve --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 cice short-cut
 # CICE/CESM on POP grid: full grid inferral (and thus conservative remapping) fails because masked vertices/cells missing, must use bilinear or supply grid-file for conservative
-# ncremap -a bilinear -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/wenshan.nc # 20170515: grid centers/bounds in non-masked regions suffice for bilinear interpolation
-# ncremap -a conserve -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/wenshan.nc # 20170521: conservative requires supplied tri-pole grid for centers/bounds in masked regions
+# ncremap -a bilinear -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170515: grid centers/bounds in non-masked regions suffice for bilinear interpolation
+# ncremap -a conserve -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170521: conservative requires supplied tri-pole grid for centers/bounds in masked regions
 # File-format
 # ncremap -v FSNT,AODVIS -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # TempestRemap boutique:
@@ -492,7 +492,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, pdq_typ, prm_typ, procedure${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
 # 20171101: Implement but do not yet advertise PPC in ncremap
-#    echo " ${fnt_bld}--ppc${fnt_nrm} ${fnt_bld}ppc_prc${fnt_nrm} Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, precision, quantize${fnt_nrm}]"
+    echo " ${fnt_bld}--ppc_prc${fnt_nrm}  Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, ppc_prc, precision, quantize${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, thr_rnr, rnr, renormalize_threshold${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_dst${fnt_nrm}  Regional destination grid [${fnt_tlc}rgn_dst, dst_rgn, regional_destination${fnt_nrm}]"
@@ -1083,9 +1083,9 @@ elif [ "${par_typ}" = 'nil' ] || [ -z "${par_typ}" ]; then
     par_sng='Serial'
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] ; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] ; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mwf', 'nil', 'rrg', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mwf', 'nil', 'rrg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -1102,7 +1102,10 @@ if [ "${prc_typ}" = 'mod04' ]; then
     pdq_opt='-U'
     hnt_dst='--dst_regional'
 fi # !mod04
-if [ "${prc_typ}" = 'mpas' ]; then 
+if [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpascice' ]; then 
+    prc_mpas='Yes'
+fi # !mpas, !mpascice
+if [ "${prc_mpas}" = 'Yes' ]; then 
     # Add depth coordinate to MPAS file when requested to by specifying coordinate file, that file exists, and commmand is found
     if [ -n "${dpt_fl}" ] || [ "${dpt_flg}" = 'Yes' ]; then
 	if [ -n "${dpt_fl}" ]; then
@@ -1285,7 +1288,7 @@ if [ "${prc_typ}" = 'alm' ] || [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'cts
     sgs_nrm='1.0'
     prc_elm='Yes'
     prc_typ='sgs'
-fi # !alm, !clm
+fi # !alm, !clm, !ctsm, !elm
 if [ "${prc_typ}" = 'cice' ]; then 
     # Set CICE-specific options first, then change prc_typ to sgs
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-CICE (global attribute sphere_radius)
@@ -1294,7 +1297,18 @@ if [ "${prc_typ}" = 'cice' ]; then
     sgs_nrm='100.0'
     prc_cice='Yes'
     prc_typ='sgs'
-fi # !alm
+fi # !cice
+if [ "${prc_typ}" = 'mpascice' ]; then 
+    # Set MPAS-CICE-specific options first, then change prc_typ to sgs
+    # MPAS-CICE requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'
+    rds_rth='6371229.0' # [m] Radius of Earth in MPAS-CICE (global attribute sphere_radius)
+    sgs_frc='timeMonthly_avg_iceAreaCell'
+    sgs_msk='timeMonthly_avg_icePresent'
+    sgs_nrm='1.0'
+    prc_mpas='Yes'
+    prc_mpascice='Yes'
+    prc_typ='sgs'
+fi # !mpascice
 if [ "${prc_typ}" = 'sgs' ]; then 
     nco_dgn_area='--rgr diagnose_area'
     wgt_opt_esmf='--user_areas --ignore_unmapped'
@@ -1683,7 +1697,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Input assumed to contain packed data, will first unpack with \"ncpdq ${pdq_opt}\"\n"
 	fi # !pdq_typ
     fi # !pdq_opt
-    if [ "${prc_typ}" = 'mpas' ]; then
+    if [ "${prc_mpas}" = 'Yes' ]; then
 	printf "MPAS input specified: will renormalize (with --rnr=0.0) regridding\n"
 	if [ "${clm_flg}" = 'No' ]; then
  	    printf "MPAS input specified: will annotate NC_DOUBLE variables with _FillValue = ${mss_val} prior to regridding\n"
@@ -2090,9 +2104,10 @@ if [ "${prc_typ}" = 'sgs' ]; then
     grd_src=${grd_src_sgs}
     grd_dst=${grd_dst_sgs}
 
-    if [ "${prc_cice}" = 'Yes' ] && [ ${fl_nbr} -gt 1 ]; then
-	printf "WARNING: SGS mode invoked for multiple sea-ice datasets. SGS mode regrids all data files using the sub-grid fraction from the first datafile it receives. This is usually appropriate for land timeseries since land sub-grid fractions generally do not change with time, and highly inappropriate for sea-ice timeseries since sea-ice area changes rapidly with time.\nHINT: Invoke ${spt_nm} once per discrete time interval for sea-ice data. Doublecheck with Charlie if you are unsure what to do.\n"
-    fi # !prc_cice
+    if [ "${prc_cice}" = 'Yes' ] || [ "${prc_mpascice}" = 'Yes' ] && [ ${fl_nbr} -gt 1 ]; then
+	# Convey spirit of SGS implementation assumptions described below
+	printf "WARNING: SGS-mode invoked for multiple sea-ice datasets. SGS-mode regrids all data files using the sub-grid fraction from the first datafile. This is usually appropriate for land timeseries since land sub-grid fractions generally do not change with time, yet highly inappropriate for sea-ice timeseries since sea-ice area changes rapidly with time.\nHINT: Invoke ${spt_nm} once per discrete time interval for sea-ice data. Doublecheck with Charlie if you are unsure what to do.\n"
+    fi # !prc_cice, !prc_mpascice
     
 fi # !sgs
 
@@ -2430,7 +2445,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !d2f_flg
 
     # Block 4d: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then to annotate them here, so assume ncclimo is working with annotated files)
-    if [ "${prc_typ}" = 'mpas' ] && [ "${clm_flg}" = 'No' ]; then
+    if [ "${prc_mpas}" = 'Yes' ] && [ "${clm_flg}" = 'No' ]; then
 	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} ${in_fl} ${att_fl};"
 	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
 	    printf "att(in)  : ${in_fl}\n"
@@ -2447,7 +2462,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 		exit 1
 	    fi # !err
 	fi # !dbg
-    fi # !mpas
+    fi # !prc_mpas
 	
     # Block 4e: RRG
     if [ "${prc_typ}" = 'rrg' ]; then 
@@ -2620,7 +2635,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_elm[${fl_idx}]}
 		if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		    printf "${spt_nm}: ERROR Failed to replace convert output area from [sr] to [km2]. Debug this:\n${cmd_elm[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to convert output area from [sr] to [km2]. Debug this:\n${cmd_elm[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
@@ -2637,11 +2652,28 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_cice[${fl_idx}]}
 		if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		    printf "${spt_nm}: ERROR Failed to replace convert output area from [sr] to [m2] and ${sgs_frc} from [frc] to [%]. Debug this:\n${cmd_cice[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to convert output area from [sr] to [m2] and ${sgs_frc} from [frc] to [%]. Debug this:\n${cmd_cice[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
 	fi # !prc_cice
+	if [ -n "${prc_mpascice}" ]; then
+	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+		printf "SGS: Implement idiosyncratic MPAS-CICE characteristics in regridded file...\n"
+	    fi # !vrb_lvl
+	    # Add units to sgs_frc
+	    cmd_mpascice[${fl_idx}]="ncap2 -O -s '${sgs_frc}@units=\"1.0\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_mpascice[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_mpascice[${fl_idx}]}
+		if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+		    printf "${spt_nm}: ERROR Failed to add units to ${sgs_frc}. Debug this:\n${cmd_mpascice[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !prc_mpascice
     done # !fl_idx
 fi # !sgs
 

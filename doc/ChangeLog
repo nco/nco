@@ -1,3 +1,9 @@
+2019-01-21  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add SGS procedures for mpascice, change prc_typ='mpas' to prc_mpas='Yes'
+
+	* ncremap advertise PPC in usage
+
 2019-01-20  Charlie Zender  <zender@uci.edu>
 
 	* Audit ncremap and add comments on treatment of land vs. sea-ice data
