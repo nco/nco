@@ -1,3 +1,7 @@
+2019-01-22  Charlie Zender  <zender@uci.edu>
+
+	* Document --d2f in manual and man pages
+
 2019-01-21  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add SGS procedures for mpascice, change prc_typ='mpas' to prc_mpas='Yes'

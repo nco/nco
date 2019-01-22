@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.9-alpha04
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 19 January 2019
+@set update-date 22 January 2019
 @set update-month January 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17571,7 +17571,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 SYNTAX
 @example
 ncclimo [-3] [-4] [-5] [-6] [-7] 
-[-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}]
+[-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}] [-d @var{dbg_lvl}] [--d2f]
 [-E @var{yr_prv}] [-e @var{yr_end}] [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
 [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd]
@@ -17748,6 +17748,23 @@ not execute these commands.
 If @math{@var{dbg_lvl} > 2}, @command{ncclimo} prints the diagnostic
 information, executes all commands, and passes-through the debugging
 level to the regridder (@command{ncks}) for additional diagnostics.
+
+@cindex @code{d2f}
+@cindex @code{--d2f}
+@cindex @code{--d2s}
+@cindex @code{--dbl_flt}
+@cindex @code{--dbl_sgl}
+@cindex @code{--double_float}
+@cindex @code{ncpdq}
+@cindex Precision
+@item --d2f (@code{--d2f}, @code{--d2s}, @code{--dbl_flt}, @code{--dbl_sgl}, @code{--double_float})
+This switch (which takes no argument) causes @command{ncclimo}
+to invoke @command{ncremap} with the same switch, so that
+@command{ncremap} converts all double precision non-coordinate
+variables to single precision in the regridded file.
+This switch has no effect on files that are not regridded.
+To demote the precision in such files, use @command{ncpdq} to apply
+the @code{dbl_flt} packing map to the file directly.
 
 @html
 <a name="end_yr"></a> <!-- http://nco.sf.net/nco.html#end_yr -->
@@ -21842,6 +21859,7 @@ file size by @w{about 50%.}
 @samp{flt_byt} packing reduces an @code{NC_DOUBLE}-dominated file by
 @w{about 87%.}
 
+@cindex @code{d2f}
 The final packing map, @samp{pck_map_dbl_flt}, does a pure
 type-conversion from @code{NC_DOUBLE} to @code{NC_FLOAT}. 
 The resulting variables are not packed, they are just single-precision
@@ -22643,7 +22661,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 SYNTAX
 @example
 ncremap [-3] [-4] [-5] [-6] [-7] 
-[-a @var{alg_typ}] [--a2o] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--dt_sng=@var{dt_sng}]  [--fl_fmt=@var{fl_fmt}] 
+[-a @var{alg_typ}] [--a2o] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dt_sng=@var{dt_sng}]  [--fl_fmt=@var{fl_fmt}] 
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-L @var{dfl_lvl}] [-M] [-m @var{map_fl}]
 [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
@@ -23110,6 +23128,24 @@ Currently (January, 2018) @code{ncremap} has no means of transmitting
 options (like @samp{--allow_no_overlap} to
 @command{GenerateOverlapMesh}.
 Please let us know if this capability is important to you.
+
+@html
+<a name="d2f"></a> <!-- http://nco.sf.net/nco.html#d2f -->
+@end html
+@cindex @code{d2f}
+@cindex @code{--d2f}
+@cindex @code{--d2s}
+@cindex @code{--dbl_flt}
+@cindex @code{--dbl_sgl}
+@cindex @code{--double_float}
+@cindex @code{ncpdq}
+@cindex Precision
+@item --d2f (@code{--d2f}, @code{--d2s}, @code{--dbl_flt}, @code{--dbl_sgl}, @code{--double_float})
+This switch (which takes no argument) demotes all double precision
+non-coordinate variables to single precision.
+Internally @command{ncremap} invokes @command{ncpdq} to apply the
+@code{dbl_flt} packing map to an intermediate version of the input
+file before regridding it.
 
 @html
 <a name="dbg_lvl"></a> <!-- http://nco.sf.net/nco.html#dbg_lvl -->
