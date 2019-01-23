@@ -1,5 +1,7 @@
 2019-01-22  Charlie Zender  <zender@uci.edu>
 
+	* Add stubs for PPC BG2, Bit Grooming version 2 which features dynamic masks
+
 	* Document --d2f in manual and man pages
 
 2019-01-21  Charlie Zender  <zender@uci.edu>

@@ -719,6 +719,7 @@ extern "C" {
     nco_baa_grm, /* 0 Bit Groom (NCO default since inception) */
     nco_baa_shv, /* 1 Bit Shave (option since 20160117) */
     nco_baa_set, /* 2 Bit Set (option since 20160117) */
+    nco_baa_bg2, /* 3 Bit Groom version 2 dynamic masks (option since 20190121) */
   }; /* end nco_baa_cnv */
 
   enum nco_bnr_cnv{ /* [enm] Binary byte-ordering convention to employ (native or byte-swapped) */
