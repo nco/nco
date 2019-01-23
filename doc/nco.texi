@@ -23146,6 +23146,10 @@ non-coordinate variables to single precision.
 Internally @command{ncremap} invokes @command{ncpdq} to apply the
 @code{dbl_flt} packing map to an intermediate version of the input
 file before regridding it.
+This switch has no effect on files that are not regridded.
+To demote the precision in such files, use @command{ncpdq} to apply 
+the @code{dbl_flt} packing map to the file directly.
+Files without any double precision fields will be unaltered.
 
 @html
 <a name="dbg_lvl"></a> <!-- http://nco.sf.net/nco.html#dbg_lvl -->
