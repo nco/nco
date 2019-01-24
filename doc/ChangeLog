@@ -4,9 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha05: Kubasek';git push
 	git tag -a 4.7.9-alpha05 -m 'd2f doc, ncremap prc_mpas';git push --tags
 
-	* ncremap SGS mode fails conservation tests per Min Xu
-
 	* Add ncra SSC MRO regression test to NCO_rgr.pm
+
+	* ncremap SGS mode fails conservation tests at 10^-4 level
+	  Min Xu warns that conv_remap conserves values while ncremap SGS conserves area
 
 2019-01-22  Charlie Zender  <zender@uci.edu>
 
