@@ -1,3 +1,13 @@
+2019-01-23  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.9-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha05: Kubasek';git push
+	git tag -a 4.7.9-alpha05 -m 'd2f doc, ncremap prc_mpas';git push --tags
+
+	* ncremap SGS mode fails conservation tests per Min Xu
+
+	* Add ncra SSC MRO regression test to NCO_rgr.pm
+
 2019-01-22  Charlie Zender  <zender@uci.edu>
 
 	* Add stubs for PPC BG2, Bit Grooming version 2 which features dynamic masks

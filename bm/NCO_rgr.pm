@@ -4696,6 +4696,18 @@ if(0){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 	
 
+# ncra #40
+# Test SSC MRO running averages
+# ncra -O -C --mro -v one_dmn_rec_var_flt -d time,0,,2,2 ~/nco/data/in.nc ~/foo.nc
+# ncks -C -H --trd -s '%g, ' -v one_dmn_rec_var_flt ~/foo.nc
+    $dsc_sng="Test SSC MRO running average";
+    $tst_cmd[0]="ncra -h -O $fl_fmt $nco_D_flg -C --mro -d time,0,,2,2 -v one_dmn_rec_var_flt $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncks -C -H --trd -s '%g, ' -v one_dmn_rec_var_flt %tmp_fl_00%";
+    $tst_cmd[2]="1.5, 3.5, 5.5, 7.5, 9.5,";
+    $tst_cmd[3]="SS_OK";   
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array 	
+    
 ####################
 #### ncwa tests #### OK!
 ####################

@@ -2071,7 +2071,8 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Append regridded sub-grid fraction to destination fractional grid-file...\n"
     fi # !vrb_lvl
-    cmd_lnd_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${frc_out_sgs} ${grd_dst_sgs}"
+#    cmd_lnd_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${frc_out_sgs} ${grd_dst_sgs}" # CSZ until 20190123
+    cmd_lnd_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc},area ${frc_out_sgs} ${grd_dst_sgs}" # Min Xu 20190123
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_lnd_dst[${fl_idx}]}
     fi # !dbg
@@ -2088,7 +2089,9 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !vrb_lvl
     # 1. Set 0 sub-grid fraction to 0 imask
     # 2. Compute active grid area
-    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}"
+    # 20190123: Min Xu says following line agrees BFB with conv_remap, but that it does not conserve grid area
+    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area=grid_center_lon;grid_area=area*${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}" # Min Xu 20190123
+    #cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}" # CSZ until 20190123
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_wheredst[${fl_idx}]}
     fi # !dbg
@@ -2106,7 +2109,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 
     if [ "${prc_cice}" = 'Yes' ] || [ "${prc_mpascice}" = 'Yes' ] && [ ${fl_nbr} -gt 1 ]; then
 	# Convey spirit of SGS implementation assumptions described below
-	printf "WARNING: SGS-mode invoked for multiple sea-ice datasets. SGS-mode regrids all data files using the sub-grid fraction from the first datafile. This is usually appropriate for land timeseries since land sub-grid fractions generally do not change with time, yet highly inappropriate for sea-ice timeseries since sea-ice area changes rapidly with time.\nHINT: Invoke ${spt_nm} once per discrete time interval for sea-ice data. Doublecheck with Charlie if you are unsure what to do.\n"
+	printf "WARNING: SGS-mode invoked for multiple sea-ice datasets. SGS-mode regrids all data files using the sub-grid fraction from the first datafile. This is usually appropriate for land timeseries since land sub-grid fractions generally do not change with time, yet inappropriate for sea-ice timeseries since sea-ice area generally changes with time.\nHINT: Invoke ${spt_nm} once per discrete time interval for sea-ice data. Doublecheck with Charlie if you are unsure what to do.\n"
     fi # !prc_cice, !prc_mpascice
     
 fi # !sgs

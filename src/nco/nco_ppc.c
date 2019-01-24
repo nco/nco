@@ -662,6 +662,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
     u32_ptr=op1.uip;
+    unsigned char *u8_ptr; /* bg2 */
+    u8_ptr=op1.ubp; /* bg2 */
     /* Create mask */
     msk_f32_u32_zro=0u; /* Zero all bits */
     msk_f32_u32_zro=~msk_f32_u32_zro; /* Turn all bits to ones */
@@ -704,12 +706,22 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]|=msk_f32_u32_one;
       } /* end else */
     }else if(nco_baa_cnv_get() == nco_baa_bg2){
-      /* Bit-Groom2: alternately shave and set LSBs with dynamic masks */
+      /* Bit-Groom2: alternately shave and set LSBs with dynamic masks
+	 Test BG2:
+	 ncks -O -C -D 1 --baa=3 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
+      unsigned char u8_xpn; /* bg2 */
       if(!has_mss_val){
-	for(idx=0L;idx<sz;idx+=2L) u32_ptr[idx]&=msk_f32_u32_zro;
-	for(idx=1L;idx<sz;idx+=2L)
+	for(idx=0L;idx<sz;idx+=2L){
+	  u8_xpn=u8_ptr[idx*4]<<1; /* Left shift by one bit so u8_xpn contains full exponent */
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u8_xpn = %hhu\n",nco_prg_nm_get(),op1.fp[idx],u8_xpn);
+	  u32_ptr[idx]&=msk_f32_u32_zro;
+	} /* !idx */
+	for(idx=1L;idx<sz;idx+=2L){
+	  u8_xpn=u8_ptr[idx*4]<<1; /* Left shift by one bit so u8_xpn contains full exponent */
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u8_xpn_nbr = %hhu\n",nco_prg_nm_get(),op1.fp[idx],u8_xpn);
 	  if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	    u32_ptr[idx]|=msk_f32_u32_one;
+	} /* !idx */
       }else{
 	const float mss_val_flt=*mss_val.fp;
 	for(idx=0L;idx<sz;idx+=2L)
