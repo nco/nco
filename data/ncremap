@@ -1988,14 +1988,14 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Append sub-grid fraction from data-file to fractional source grid-file\n"
     fi # !vrb_lvl
-    cmd_lnd_src[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${fl_in[${fl_idx}]} ${grd_src_sgs}"
+    cmd_sgs_src[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${fl_in[${fl_idx}]} ${grd_src_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_lnd_src[${fl_idx}]}
+	echo ${cmd_sgs_src[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_lnd_src[${fl_idx}]}
+	eval ${cmd_sgs_src[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to append sub-grid fraction from data file to fractional source grid-file. Debug this:\n${cmd_lnd_src[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to append sub-grid fraction from data file to fractional source grid-file. Debug this:\n${cmd_sgs_src[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -2023,14 +2023,14 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Create sub-grid fraction ${sgs_frc} data file for regridding...\n"
     fi # !vrb_lvl
-    cmd_lnd_in[${fl_idx}]="ncks -O -v ${sgs_frc} ${grd_src_sgs} ${frc_in_sgs}"
+    cmd_sgs_in[${fl_idx}]="ncks -O -v ${sgs_frc} ${grd_src_sgs} ${frc_in_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_lnd_in[${fl_idx}]}
+	echo ${cmd_sgs_in[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_lnd_in[${fl_idx}]}
+	eval ${cmd_sgs_in[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${frc_in_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to extract sub-grid fraction from fractional source grid-file. Debug this:\n${cmd_lnd_in[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to extract sub-grid fraction from fractional source grid-file. Debug this:\n${cmd_sgs_in[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -2038,15 +2038,15 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Regrid sub-grid fraction ${sgs_frc} to destination grid...\n"
     fi # !vrb_lvl
-    # NB: Do not regrid sub-grid mask as it is extensive and may contain _FillValue (ALM/CLM/CTSM/ELM landmask does)
-    cmd_lnd_rmp[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -v ${sgs_frc} -i ${frc_in_sgs} -s ${grd_src} -g ${grd_dst} -o ${frc_out_sgs}"
+    # NB: Sub-grid mask is extensive and may contain _FillValue (as does ALM/CLM/CTSM/ELM landmask), so do not regrid it
+    cmd_sgs_rmp[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -v ${sgs_frc} -i ${frc_in_sgs} -s ${grd_src} -g ${grd_dst} -o ${frc_out_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_lnd_rmp[${fl_idx}]}
+	echo ${cmd_sgs_rmp[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_lnd_rmp[${fl_idx}]}
+	eval ${cmd_sgs_rmp[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to regrid sub-grid fraction. Debug this:\n${cmd_lnd_rmp[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to regrid sub-grid fraction. Debug this:\n${cmd_sgs_rmp[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -2056,14 +2056,14 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !vrb_lvl
     # Allow for possibility that sgs_frc is 3D (time,lat,lon) as in CICE
     # And be CAREFUL changing this
-    cmd_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"surface mask (0=invalid and 1=valid)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' ${frc_out_sgs} ${frc_out_sgs}"
+    cmd_sgs_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"surface mask (0=invalid and 1=valid)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' ${frc_out_sgs} ${frc_out_sgs}"
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_msk[${fl_idx}]}
+	echo ${cmd_sgs_msk[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_msk[${fl_idx}]}
+	eval ${cmd_sgs_msk[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to derive mask from regridded sub-grid fraction. Debug this:\n${cmd_msk[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to derive mask from regridded sub-grid fraction. Debug this:\n${cmd_sgs_msk[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -2071,15 +2071,15 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Append regridded sub-grid fraction to destination fractional grid-file...\n"
     fi # !vrb_lvl
-#    cmd_lnd_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${frc_out_sgs} ${grd_dst_sgs}" # CSZ until 20190123
-    cmd_lnd_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc},area ${frc_out_sgs} ${grd_dst_sgs}" # Min Xu 20190123
+#    cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${frc_out_sgs} ${grd_dst_sgs}" # CSZ until 20190123
+    cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc},area ${frc_out_sgs} ${grd_dst_sgs}" # Min Xu 20190123
     if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_lnd_dst[${fl_idx}]}
+	echo ${cmd_sgs_dst[${fl_idx}]}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_lnd_dst[${fl_idx}]}
+	eval ${cmd_sgs_dst[${fl_idx}]}
 	if [ $? -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to append regridded sub-grid fraction to destination fractional grid-file. Debug this:\n${cmd_lnd_dst[${fl_idx}]}\n"
+	    printf "${spt_nm}: ERROR Failed to append regridded sub-grid fraction to destination fractional grid-file. Debug this:\n${cmd_sgs_dst[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
     fi # !dbg
@@ -2615,14 +2615,14 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	    printf "SGS: Append full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask to regridded file...\n"
 	fi # !vrb_lvl
 	# Replace user-areas area, user-areas sub-grid fraction, and naïvely regridded (rather than accurately re-derived) sub-grid mask, respectively
-	cmd_grd_rpl[${fl_idx}]="ncks -A -C -v area,${sgs_frc},${sgs_msk} ${frc_out_sgs} ${fl_out[${fl_idx}]}"
+	cmd_sgs_rpl[${fl_idx}]="ncks -A -C -v area,${sgs_frc},${sgs_msk} ${frc_out_sgs} ${fl_out[${fl_idx}]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_grd_rpl[${fl_idx}]}
+	    echo ${cmd_sgs_rpl[${fl_idx}]}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_grd_rpl[${fl_idx}]}
+	    eval ${cmd_sgs_rpl[${fl_idx}]}
 	    if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		printf "${spt_nm}: ERROR Failed to replace area, ${sgs_frc}, and ${sgs_msk} with full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask in output data file. Debug this:\n${cmd_grd_rpl[${fl_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to replace area, ${sgs_frc}, and ${sgs_msk} with full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask in output data file. Debug this:\n${cmd_sgs_rpl[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
 	fi # !dbg

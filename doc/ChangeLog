@@ -1,5 +1,7 @@
 2019-01-25  Charlie Zender  <zender@uci.edu>
 
+	* ncremap rename internal variables as with 'sgs' instead of 'lnd'
+
 	* NCO 4.7.9-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha05: Kubasek';git push
 	git tag -a 4.7.9-alpha05 -m 'd2f doc, ncremap prc_mpas';git push --tags
