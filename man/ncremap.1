@@ -7,13 +7,17 @@
 ncremap \- netCDF Remapper
 .SH SYNTAX
 ncremap
-[\-3] [\-4] [\-5] [\-6] [\-7] [\-a
-.IR alg_typ ] [\--a2o ]
+[\-3] [\-4] [\-5] [\-6] [\-7]
+[\-a
+.IR alg_typ ]
+[\--a2o ]
 [\-D
 .IR dbg_lvl ] 
 [\-d
-.IR dst_fl ] [\--dt_sng =
-.IR dt_sng ] [\--fl_fmt =
+.IR dst_fl ]
+[\--dt_sng=
+.IR dt_sng ]
+[\--fl_fmt=
 .IR fmt]
 [\--d2f ]
 [\-G
@@ -29,15 +33,24 @@ ncremap
 [\-L
 .IR dfl_lvl ] 
 [\-M] [\-m
-.IR map_fl ] [\--msk_dst =
-.IR msk_dst ] [\--msk_out =
-.IR msk_out ] [\--msk_src =
-.IR msk_src ] [\--mss_val =
-.IR mss_val ] [\-n
-.IR nco_usr ] [\--nm_dst =
-.IR nm_dst ] [\--nm_src =
+.IR map_fl ]
+[\--msk_dst=
+.IR msk_dst ]
+[\--msk_out=
+.IR msk_out ]
+[\--msk_src=
+.IR msk_src ]
+[\--mss_val=
+.IR mss_val ]
+[\-n
+.IR nco_usr ]
+[\--nm_dst=
+.IR nm_dst ]
+[\--nm_src=
 .IR nm_src ] 
-[\--no_cll_msr ] [\--no_frm_trm] [\--no_stg_grd]
+[\--no_cll_msr ]
+[\--no_frm_trm]
+[\--no_stg_grd]
 [\-O
 .IR out_drc ] 
 [\-o
@@ -45,30 +58,56 @@ ncremap
 [\-P
 .IR pdq_typ ] 
 [\-p
-.IR par_typ ] [\-R
-.IR rgr_opt ] 
+.IR par_typ ]
+[\-R
+.IR rgr_opt ]
+[\--rrg_bb_wesn=
+.IR bb_wesn ]
+[\--rrg_dat_glb=
+.IR dat_glb ]
+[\--rrg_grd_glb=
+.IR grd_glb ]
+[\--rrg_grd_rgn=
+.IR grd_rgn ]
+[\--rrg_rnm_sng=
+.IR rnm_sng ]
 [\-s
-.IR grd_src ] [\--skl_fl =
-.IR skl_fl] [\--stdin ]
+.IR grd_src ]
+[\--sgs_frc=
+.IR sgs_frc ]
+[\--sgs_msk=
+.IR sgs_msk ]
+[\--sgs_nrm=
+.IR sgs_nrm ]
+[\--skl_fl =
+.IR skl_fl]
+[\--stdin ]
 [\-T
 .IR drc_tmp ] 
 [\-t
 .IR thr_nbr ] 
 [\-U] [\-u
-.IR unq_sfx ] [\--ugrid_fl =
+.IR unq_sfx ]
+[\--ugrid_fl=
 .IR ugrid_fl] 
 [\-V
 .IR rgr_var ] 
 [\-v
 .IR var_lst ] 
-[\--vrb_lvl = 
-.IR vrb_lvl ] [\--version ] [\-W
-.IR wgt_opt ] [\-w
+[\--vrb_lvl= 
+.IR vrb_lvl ]
+[\--version ]
+[\-W
+.IR wgt_opt ]
+[\-w
 .IR wgt_cmd ] 
 [\-x
-.IR xtn_lst ] [\--xtr_nsp
-.IR xtr_nsp ] [\--xtr_typ
-.IR xtr_typ ] [\--xtr_xpn
+.IR xtn_lst ]
+[\--xtr_nsp=
+.IR xtr_nsp ]
+[\--xtr_typ=
+.IR xtr_typ ]
+[\--xtr_xpn=
 .IR xtr_xpn ]
 
 .SH DESCRIPTION
@@ -137,6 +176,7 @@ TeX-intensive portions.
 .BR ncap2 (1), 
 .BR ncatted (1), 
 .BR ncbo (1), 
+.BR ncclimo (1), 
 .BR nces (1), 
 .BR ncecat (1), 
 .BR ncflint (1), 

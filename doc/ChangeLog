@@ -1,8 +1,14 @@
-2019-01-23  Charlie Zender  <zender@uci.edu>
+2019-01-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha05: Kubasek';git push
 	git tag -a 4.7.9-alpha05 -m 'd2f doc, ncremap prc_mpas';git push --tags
+
+	* Add E3SM material on Manual Grid Generation to ncremap documentation
+
+	* Add E3SM material on SGS and RRG options to ncremap documentation
+
+2019-01-23  Charlie Zender  <zender@uci.edu>
 
 	* Add ncra SSC MRO regression test to NCO_rgr.pm
 

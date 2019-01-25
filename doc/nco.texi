@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.7.9-alpha04
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 22 January 2019
+@set update-date 25 January 2019
 @set update-month January 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1684,7 +1684,7 @@ The arithmetic operators are extremely efficient; their exact memory
 usage is detailed in @ref{Memory Requirements}.
 
 @html
-<a name="clm"></a> <!-- http://nco.sf.net/nco.html#clm -->
+<a name="clm_mdl"></a> <!-- http://nco.sf.net/nco.html#clm_mdl -->
 @end html
 @node Climate Model Paradigm, Temporary Output Files, Philosophy, Strategies
 @section Climate Model Paradigm
@@ -22660,8 +22660,8 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncremap [-3] [-4] [-5] [-6] [-7] 
-[-a @var{alg_typ}] [--a2o] [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dt_sng=@var{dt_sng}]  [--fl_fmt=@var{fl_fmt}] 
+ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
+[-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dt_sng=@var{dt_sng}] [--fl_fmt=@var{fl_fmt}] 
 [-G @var{grd_sng}] [-g @var{grd_dst}] [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}]
 [-L @var{dfl_lvl}] [-M] [-m @var{map_fl}]
 [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
@@ -22669,6 +22669,8 @@ ncremap [-3] [-4] [-5] [-6] [-7]
 [--no_cll_msr] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
 [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src]
+[--rrg_bb_wesn=@var{bb_wesn}] [--rrg_dat_glb=@var{dat_glb}] [--rrg_grd_glb=@var{grd_glb}]
+[--rrg_grd_rgn=@var{grd_rgn}] [--rrg_rnm_sng=@var{rnm_sng}]
 [-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
@@ -23030,7 +23032,8 @@ It is equivalent to, yet simpler to remember and to invoke than
 @example
 @verbatim
 ncremap -a tempest --src_grd=se.g --dst_grd=fv.nc -m map.nc \
-        -W '--in_type cgll --in_np 4 --out_type fv --out_double --mono'
+        -W '--in_type cgll --in_np 4 --out_type fv \
+        --out_double --mono'
 @end verbatim
 @end example
 
@@ -23097,10 +23100,13 @@ ocean grid, so that remapping from atmosphere-to-ocean would require
 invoking the @samp{--atm2ocn} switch:
 @example
 # Use --a2o to generate weights for "big" to "little" remaps:
-ncremap --a2o -a se2fv_flx --src_grd=atm_se_grd.nc --dst_grd=ocn_fv_grd.nc -m map.nc
+ncremap --a2o -a se2fv_flx --src_grd=atm_se_grd.nc \
+              --dst_grd=ocn_fv_grd.nc -m map.nc
 # Otherwise, omit it:
-ncremap       -a fv2se_flx --src_grd=ocn_fv_grd.nc --dst_grd=atm_se_grd.nc -m map.nc
-ncremap       -a se2fv_flx --src_grd=atm_se_grd.nc --dst_grd=atm_fv_grd.nc -m map.nc
+ncremap       -a fv2se_flx --src_grd=ocn_fv_grd.nc \
+              --dst_grd=atm_se_grd.nc -m map.nc
+ncremap       -a se2fv_flx --src_grd=atm_se_grd.nc \
+              --dst_grd=atm_fv_grd.nc -m map.nc
 # Only necessary when generating, not applying, weights:
 ncremap -m atm2ocn.nc in.nc out.nc
 @end example
@@ -23119,7 +23125,8 @@ an error (and a potential workaround) like this:
 ....Nearest target face 130767
 ....ERROR: No overlapping face found
 ....This may be caused by mesh B being a subset of mesh A
-....Try swapping order of mesh A and B, or override with --allow_no_overlap
+....Try swapping order of mesh A and B, or override with \
+    --allow_no_overlap
 ....EXCEPTION (../src/OverlapMesh.cpp, Line 1738) Exiting
 @end example
 The @samp{--a2o} switch and its synonyms are available in @acronym{NCO}
@@ -23277,21 +23284,97 @@ map-files.
 @cindex @code{--grid_gen}
 @cindex @code{--grid_string}
 @item -G @var{grd_sng} (@code{--grd_sng}, @code{--grid_generation}, @code{--grid_gen}, @code{--grid_string})
-Specifies, with @acronym{NCO} options (@pxref{Grid Generation}), 
-a source gridfile to create.
-(Warning: @acronym{NCO}'s syntax for gridfile generations is ugly
-and needs streamlining. 
-It does, however, work well and produces finer rectangular grids
-than any other software we know of.)
-@acronym{NCO} creates the gridfile in @acronym{SCRIP} format, and then
-uses @acronym{ERWG} to combine that with the destination grid (either
-inferred from @var{input-file} or supplied with @samp{-g @var{grd_dst}}
-and generate mapping weights.
-This option is seldom used since @acronym{NCO} can infer the input 
-grid directly from @var{input-file}.
-However, there may be no easier way to visually tune the choice of
-destination grid than by rapidly generating candidates with this option
-and inspecting the results.
+Specifies, with together with other options, a source gridfile to 
+create@footnote{ 
+As of version 4.7.6 (August, 2018)), @acronym{NCO}'s syntax for
+gridfile generation is much improved and streamlined, and is the
+syntax described here.
+This is also called ``Manual Grid-file Generation''.
+An earlier syntax (described at @pxref{Grid Generation}) accessed
+through @command{ncks} options still underlies the new syntax, though 
+it is less user-friendly. 
+Both old and new syntax work well and produce finer rectangular
+grids than any other software we know of.}.
+@command{ncremap} creates the gridfile in @acronym{SCRIP} format by
+default, and then, should the requisite options for regridding
+be present, combines that with the destination grid (either
+inferred from @var{input-file} or supplied with
+@samp{-g @var{grd_dst}} and generates mapping weights.
+Manual grid-file generation is not frequently used since
+@command{ncremap} can infer many grids directly from the
+@var{input-file}, and few users wish to keep track of @acronym{SCRIP}
+grids when they can be easily regenerated as intermediate files.
+This option also allows one to visually tune a grid by rapidly
+generating candidates and inspecting the results.
+
+If a desired grid-file is unavailable, and no dataset on that grid is
+available (so inferral cannot be used), then one must manually create
+a new grid. 
+Users create new grids for many reasons including dataset
+intercomparisons, regional studies, and fine-tuned graphics.
+@acronym{NCO} and @command{ncremap} support manual generation of the
+most common rectangular grids as @acronym{SCRIP}-format grid-files.
+Create a grid by supplying @command{ncremap} with a grid-file name and
+``grid-formula'' (@var{grd_sng}) that contains, at a minimum, the
+grid-resolution.
+The grid-formula is a hash-separated string of name-value pairs each
+representing a grid parameter.
+All parameters except grid resolution have reasonable defaults, so a
+grid-formula can be as simple as @samp{latlon=180,360}: 
+@example
+@verbatim
+ncremap -g grd.nc -G latlon=180,360
+@end verbatim
+@end example
+The @acronym{SCRIP}-format grid-file @file{grd.nc} is a valid source
+or destination grid for @command{ncremap} and other regridders. 
+
+Grid-file generation documentation in the @acronym{NCO} Users Guide at
+@url{http://nco.sf.net/nco.html#grid} describes all the grid
+parameters and contains many examples.
+Note that the examples in this section use grid generation
+@acronym{API} for @command{ncremap} version 4.7.6 (August, 2018) and
+later.
+Earlier versions can use the @command{ncks} @acronym{API} explained
+at @ref{Grid Generation} in the the Users Guide.  
+
+The most useful grid parameters (besides resolution) are latitude type
+(@var{lat_typ}), longitude type (@var{lon_typ}), title (@var{ttl}),
+and, for regional grids, the @acronym{SNWE} bounding box
+(@var{snwe}).
+The three supported varieties of global rectangular grids are
+Uniform/equiangular (@math{@var{lat_typ}=@code{uni}}), Cap/FV
+(@math{@var{lat_typ}=@code{cap}}), and Gaussian 
+(@math{@var{lat_typ}=@code{gss}}).
+The four supported varieties of longitude types are the first
+(westernmost) gridcell centered at Greenwich
+(@math{@var{lon_typ}=@code{grn_ctr}}), western edge at Greenwish
+(@code{grn_wst}), or at the Dateline
+(@math{@var{lon_typ}=@code{180_ctr}} and
+@math{@var{lon_typ}=@code{180_wst}}, respectively).
+Grids are global, uniform, and have their first longitude centered at 
+Greenwich by default.
+The grid-formula for this is @samp{lat_typ=uni#lon_typ=grn_ctr}. 
+Some examples (remember, this @acronym{API} requires @acronym{NCO}
+4.7.6+): 
+@example
+@verbatim
+ncremap -g grd.nc -G latlon=180,360                 # 1x1 Uniform grid
+ncremap -g grd.nc -G latlon=180,360#lat_drc=n2s     # 1x1 Uniform grid, N->S not S->N
+ncremap -g grd.nc -G latlon=180,360#lon_typ=grn_wst # 1x1 Uniform grid, Greenwich-west edge
+ncremap -g grd.nc -G latlon=129,256#lat_typ=cap     # 1.4x1.4  FV grid
+ncremap -g grd.nc -G latlon=94,192#lat_typ=gss      # T62 Gaussian grid
+@end verbatim
+@end example
+Regional grids are a powerful tool in regional process analyses, and
+can be much smaller in size than global datasets.
+Regional grids are always uniform. Specify the rectangular bounding
+box, i.e., the outside edges of the region, in @acronym{SNWE} order:
+@example
+@verbatim
+ncremap -g grd.nc -G ttl="Equi-Angular 1x1 Greenland grid"#latlon=30,90#snwe=55.0,85.0,-90.0,0.0
+@end verbatim
+@end example
 
 @html
 <a name="in_drc"></a> <!-- http://nco.sf.net/nco.html#in_drc -->
@@ -23722,14 +23805,21 @@ Two positional arguments are interpreted as a single @var{input-file}
 and its corresponding @var{output-file}.
 
 @html
-<a name="prc_typ"></a> <!-- http://nco.sf.net/nco.html#prc_typ -->
-<a name="pdq_typ"></a> <!-- http://nco.sf.net/nco.html#pdq_typ -->
-<a name="sgs"></a> <!-- http://nco.sf.net/nco.html#sgs -->
 <a name="alm"></a> <!-- http://nco.sf.net/nco.html#alm -->
+<a name="cice"></a> <!-- http://nco.sf.net/nco.html#cice -->
+<a name="clm"></a> <!-- http://nco.sf.net/nco.html#clm -->
+<a name="ctsm"></a> <!-- http://nco.sf.net/nco.html#ctsm -->
+<a name="elm"></a> <!-- http://nco.sf.net/nco.html#elm -->
+<a name="mpas"></a> <!-- http://nco.sf.net/nco.html#mpas -->
+<a name="mpascice"></a> <!-- http://nco.sf.net/nco.html#mpascice -->
+<a name="pdq_typ"></a> <!-- http://nco.sf.net/nco.html#pdq_typ -->
+<a name="prc_typ"></a> <!-- http://nco.sf.net/nco.html#prc_typ -->
+<a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
+<a name="sgs"></a> <!-- http://nco.sf.net/nco.html#sgs -->
 <a name="sgs_frc"></a> <!-- http://nco.sf.net/nco.html#sgs_frc -->
 <a name="sgs_msk"></a> <!-- http://nco.sf.net/nco.html#sgs_msk -->
-<a name="sub-gridscale"></a> <!-- http://nco.sf.net/nco.html#sub-gridscale -->
 <a name="sub-grid"></a> <!-- http://nco.sf.net/nco.html#sub-grid -->
+<a name="sub-gridscale"></a> <!-- http://nco.sf.net/nco.html#sub-gridscale -->
 <a name="subgrid"></a> <!-- http://nco.sf.net/nco.html#subgrid -->
 @end html
 @cindex @code{-P @var{prc_typ}}
@@ -23768,6 +23858,124 @@ The @acronym{MOD04} procedure unpacks input data.
 The @acronym{MPAS} procedure permutes input data into this order:
 @code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}, and invokes
 renormalization.  
+
+@cindex Regridding ReGional Data (@acronym{RRG}) 
+@cindex @acronym{RRG}-mode
+@cindex @code{rrg_bb_wesn}
+@cindex @code{rrg_dat_glb}
+@cindex @code{rrg_grd_glb}
+@cindex @code{rrg_grd_rgn}
+@cindex @code{rrg_rnm_sng}
+@cindex @var{bb_wesn}
+@cindex @var{dat_glb}
+@cindex @var{grd_glb}
+@cindex @var{grd_rgn}
+@cindex @var{rnm_sng}
+@cindex @code{--rrg_bb_wesn=@var{bb_wesn}}
+@cindex @code{--rrg_dat_glb=@var{dat_glb}}
+@cindex @code{--rrg_grd_glb=@var{grd_glb}}
+@cindex @code{--rrg_grd_rgn=@var{grd_rgn}}
+@cindex @code{--rrg_rnm_sng=@var{rnm_sng}}
+
+@acronym{EAM} and @acronym{CAM-SE} will produce regional output if
+requested to with the @code{finclNlonlat} namelist parameter.
+Output for a single region can be higher temporal resolution than the
+host global simulation.
+This facilitates detailed yet economical regional process studies.
+Regional output files are in a special format that we call
+@acronym{RRG} (for ``regional regridding'').
+An @acronym{RRG} file may contain any number of rectangular regions.
+The coordinates and variables for one region do not interfere with
+other (possibly overlapping) regions because all variables and
+dimensions are named with a per-region suffix string, e.g.,
+@code{lat_128e_to_134e_9s_to_16s}.
+@command{ncremap} can easily regrid @acronym{RRG} output from an
+atmospheric @acronym{FV}-dycore because @command{ncremap} can infer
+(as discussed above) the regional grid from any rectangular
+@acronym{FV} data file.
+Regridding regional @acronym{SE} data, however, is more complex
+because @acronym{SE} gridcells are essentially weights without
+vertices and @acronym{SE} weight-generators are not yet flexible
+enough to output regional weights.
+To summarize, regridding @acronym{RRG} data leads to three
+@acronym{SE}-specific difficulties (#1--3 below) and two difficulties 
+(#4--5) shared with @acronym{FV} @acronym{RRG} files: 
+
+@enumerate
+@item @acronym{RRG} files contain only regional gridcell center
+locations, not weights 
+@item Global @acronym{SE} grids have well-defined weights not vertices
+for each gridpoint 
+@item Grid generation software (@acronym{ESMF} and TempestRemap) only create
+global not regional @acronym{SE} grid files 
+@item Non-standard variable names and dimension names
+@item Regional files can contain multiple regions
+@end enumerate
+
+@command{ncremap}'s @acronym{RRG} mode resolves these issues to allow
+trouble-free regridding of @acronym{SE} @acronym{RRG} files. The user
+must provide two additional input arguments,
+@samp{--dat_glb=@var{dat_glb}} (or synonynms @samp{--rrg_dat_glb},
+@samp{--data_global}, or @samp{--global_data}) and
+@samp{--grd_glb=@var{grd_glb}} (or synonyms @samp{--rrg_grd_glb},
+@samp{--grid_global}, or @samp{global_grid}) that point to a global
+@acronym{SE} dataset and grid, respectively, of the same resolution as
+the model that generated the @acronym{RRG} datasets.
+Hence a typical @acronym{RRG} regridding invocation is: 
+@example
+@verbatim
+ncremap --dat_glb=dat_glb.nc --grd_glb=grd_glb.nc -g grd_rgn.nc dat_rgn.nc dat_rgr.nc
+@end verbatim
+@end example
+Here @file{grd_rgn.nc} is a regional destination grid-file,
+@file{dat_rgn.nc} is the @acronym{RRG} file to regrid, and
+@file{dat_rgr.nc} is the regridded output.
+Typically @file{grd_rgn.nc} is a uniform rectangular grid covering the
+same region as the @acronym{RRG} file.
+Generate this as described in the last example in the section that
+describes Manual Grid-file Generation with the @samp{-G} option.
+@file{grd_glb.nc} is the standard dual-grid grid-file for the
+@acronym{SE} resolution, e.g.,
+@file{ne30np4_pentagons.091226.nc}.
+@command{ncremap} regrids the
+global data file @file{dat_glb.nc} to the global dual-grid in order to 
+produce a intermediate global file annotated with gridcell
+vertices.
+Then it hyperslabs the lat/lon coordinates (and vertices) from the
+regional domain to use with regridding the @acronym{RRG} file.
+A @file{grd_glb.nc} file with only one 2D field suffices (and is
+fastest) for producing the information needed by the @acronym{RRG} 
+procedure.
+One can prepare an optimal @file{dat_glb.nc} file by subsetting any 2D
+variable from any full global @acronym{SE} output dataset with, 
+e.g., @samp{ncks -v FSNT in.nc dat_glb.nc}. 
+
+@command{ncremap} @acronym{RRG} mode supports two additional options
+to override internal parameters.
+First, the per-region suffix string
+may be set with @samp{--rnm_sng=rnm_sng} (or synonyms
+@samp{--rrg_rnm_sng} or @samp{--rename_string}).
+@acronym{RRG} mode will, by default, regrid the first region it finds
+in an @acronym{RRG} file.
+Explicitly set the desired region with @var{rnm_sng} for files with
+multiple regions, e.g., @samp{--rnm_sng=_128e_to_134e_9s_to_16s}.
+Second, the regional bounding-box may be explicitly set with
+@samp{--bb_wesn=lon_wst,lon_est,lat_sth,lat_nrt}.
+The normal parsing of the bounding-box string from the suffix string
+may fail in (as yet undiscovered) corner cases, and the
+@samp{--bb_wesn} option provides a workaround should that occur.
+The bounding-box string must include the entire @acronym{RRG} region,
+specified in WESN order.
+The two override options may be used independently or together, as in:
+@example
+@verbatim
+ncremap --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128,134,-16,-9' \
+        --dat_glb=dat_glb.nc --grd_glb=grd_glb.nc -g grd_rgn.nc dat_rgn.nc dat_rgr.nc
+@end verbatim
+@end example
+
+@acronym{RRG}-mode supports most normal @command{ncremap} options,
+including input and output methods and regridding algorithms. 
 
 @cindex Sub-gridscale (@acronym{SGS}) data
 @cindex @acronym{SGS}-mode
@@ -24168,7 +24376,7 @@ If @var{unq_sfx} is @samp{noclean} then @command{ncremap} retains
 @item -v @var{var_lst} (@code{--var_lst}, @code{--var}, @code{--vars}, @code{--variables}, @code{--variable_list})
 The @samp{-v} option causes @command{ncremap} to regrid only the
 variables in @var{var_lst}. 
-It behaves like subsetting (@pxref{Subsetting Files}) in the rest of
+3<It behaves like subsetting (@pxref{Subsetting Files}) in the rest of
 @acronym{NCO}.   
 
 @html
