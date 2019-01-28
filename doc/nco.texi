@@ -6655,10 +6655,11 @@ The third example uses a convenience switch introduced to reduce typing.
 Generating common grids:
 @example
 @verbatim
-# Through version 4.7.5 (August, 2018), grid-generation was performed through ncks:
+# Through version 4.7.5 (August, 2018), ncks performed grid-generation
 # 180x360 (1x1 degree) Equi-Angular grid, first longitude centered at Greenwich
 ncks --rgr ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \
-     --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc ~zender/nco/data/in.nc ~/foo.nc
+     --rgr scrip=${DATA}/grids/180x360_SCRIP.20150901.nc \
+     ~zender/nco/data/in.nc ~/foo.nc
 
 # As of version 4.7.6 (August, 2018), ncremap supports more concise commands
 ncremap -G ttl='Equi-Angular grid 180x360'#latlon=180,360#lat_typ=uni#lon_typ=grn_ctr \

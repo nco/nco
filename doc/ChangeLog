@@ -1,10 +1,14 @@
-2019-01-25  Charlie Zender  <zender@uci.edu>
-
-	* ncremap rename internal variables as with 'sgs' instead of 'lnd'
+2019-01-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha05: Kubasek';git push
 	git tag -a 4.7.9-alpha05 -m 'd2f doc, ncremap prc_mpas';git push --tags
+
+	* Add stubs for PPC Digit Rounding algorithm of DCG19 and/or Bit Grooming 2 (BG2)
+
+2019-01-25  Charlie Zender  <zender@uci.edu>
+
+	* ncremap rename internal variables as with 'sgs' instead of 'lnd'
 
 	* Add E3SM material on Manual Grid Generation to ncremap documentation
 
