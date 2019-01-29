@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha05: Kubasek';git push
 	git tag -a 4.7.9-alpha05 -m 'd2f doc, ncremap prc_mpas';git push --tags
 
+	* Investigate _FillValue behavior described by John Wilkin
+
 	* Add stubs for PPC Digit Rounding algorithm of DCG19 and/or Bit Grooming 2 (BG2)
 
 2019-01-25  Charlie Zender  <zender@uci.edu>

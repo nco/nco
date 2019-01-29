@@ -2071,8 +2071,8 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Append regridded sub-grid fraction to destination fractional grid-file...\n"
     fi # !vrb_lvl
-#    cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${frc_out_sgs} ${grd_dst_sgs}" # CSZ until 20190123
-    cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc},area ${frc_out_sgs} ${grd_dst_sgs}" # Min Xu 20190123
+    #cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc},area ${frc_out_sgs} ${grd_dst_sgs}" # Min Xu 20190123
+    cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${frc_out_sgs} ${grd_dst_sgs}" # CSZ until 20190123
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_sgs_dst[${fl_idx}]}
     fi # !dbg
@@ -2090,8 +2090,8 @@ if [ "${prc_typ}" = 'sgs' ]; then
     # 1. Set 0 sub-grid fraction to 0 imask
     # 2. Compute active grid area
     # 20190123: Min Xu says following line agrees BFB with conv_remap, but that it does not conserve grid area
-    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area=grid_center_lon;grid_area=area*${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}" # Min Xu 20190123
-    #cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}" # CSZ until 20190123
+    #cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area=grid_center_lon;grid_area=area*${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}" # Min Xu 20190123
+    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}" # CSZ until 20190123
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_wheredst[${fl_idx}]}
     fi # !dbg
