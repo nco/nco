@@ -347,7 +347,9 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
   /* 20181206: Appveyor on Windows fails due to redefinition of NC_memio
      Unsure exactly why it is defined twice for netCDF library <= 4.6.1 */
 # ifndef NETCDF_MEM_H
-  typedef struct NC_memio {
+  /* 20190130: struct NC_memio first defined in netcdf_mem.h in 4.6.2
+     Define it here to use in stub functions compiled against earlier netCDF libraries */
+typedef struct NC_memio {
   size_t size;
   void* memory;
   int flags;

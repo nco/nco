@@ -1,8 +1,19 @@
-2019-01-28  Charlie Zender  <zender@uci.edu>
+2019-01-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha05: Kubasek';git push
-	git tag -a 4.7.9-alpha05 -m 'd2f doc, ncremap prc_mpas';git push --tags
+	git tag -a 4.7.9-alpha05 -m 'd2f doc, ncremap SGS ELM fix';git push --tags
+
+2019-01-30  Charlie Zender  <zender@uci.edu>
+
+	* ncremap implement and verify that Min Xu's modification conserves fields not land area
+	Previous ncremap SGS implementation conserved land area not fields
+	Conserving fields (slightly) more important so changing to that
+	Expect most non-conservation of area will disappear once ELM archives area/landfrac in DP
+	My original conservation diagnostic for raw files used an unreliable identity remap
+	Dianostic conservation tests should be turned into regression tests
+
+2019-01-28  Charlie Zender  <zender@uci.edu>
 
 	* Investigate _FillValue behavior described by John Wilkin
 
