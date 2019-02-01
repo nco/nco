@@ -1,3 +1,7 @@
+2019-02-01  Charlie Zender  <zender@uci.edu>
+
+	* Add more verbose information for NC_EBADCHUNK errors
+
 2019-01-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9-alpha05 release procedure:

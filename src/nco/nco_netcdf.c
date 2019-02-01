@@ -1884,7 +1884,7 @@ int nco_def_var_chunking
 {
   /* Purpose: Wrapper for nc_def_var_chunking() */
   int rcd;
-
+  const char fnc_nm[]="nco_def_var_chunking()";
 
   /* NB: 20090713: netCDF4 API for nc_def_var_chunking() changed ~200906 
      Before that a weak netCDF4 prototype did not make cnk_sz const
@@ -1897,32 +1897,26 @@ int nco_def_var_chunking
      Finding one-size-fits-all method is difficult! */
   /*  rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,cnk_sz);*/
 
-
   rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,(size_t *)cnk_sz);
-
-  if(rcd == NC_EBADCHUNK )
-  {
+  if(rcd == NC_EBADCHUNK){
     int idx;
     int dmn_nbr;
-
+    nc_type var_typ;
     size_t sz;
-    nc_type ntyp;
 
-    (void)nco_inq_varndims(nc_id, var_id, &dmn_nbr);
-    (void)nco_inq_vartype(nc_id, var_id, &ntyp);
+    (void)nco_inq_varndims(nc_id,var_id,&dmn_nbr);
+    (void)nco_inq_vartype(nc_id,var_id,&var_typ);
 
-    sz=nco_typ_lng(ntyp);
-
-    for(idx=0;idx<dmn_nbr;idx++)
+    sz=nco_typ_lng(var_typ);
+    for(idx=0;idx<dmn_nbr;idx++){
+      if(cnk_sz[idx] < 1L) (void)fprintf(stderr, "%s: ERROR Chunk sizes must exceed zero and requested chunk size cnk_sz[%d] = %ld.\n",fnc_nm,idx,cnk_sz[idx],NCO_MAX_CHUNK_SIZE);
       sz*=cnk_sz[idx];
+    } /* !idx */
 
-    if(sz > NCO_MAX_CHUNK_SIZE )
-      fprintf(stderr, "nco_def_var_chunking(): total requested chunk size(%ld) exceeds NetCDF maximium(%ld)\n", sz, NCO_MAX_CHUNK_SIZE  );
+    if(sz > NCO_MAX_CHUNK_SIZE) (void)fprintf(stderr, "%s: ERROR Total requested chunk size = %ld exceeds netCDF maximium-supported chunk size = %ld\n",fnc_nm,sz,NCO_MAX_CHUNK_SIZE);
+  } /* !rcd */
 
-  }
-
-  if(rcd != NC_NOERR)
-    nco_err_exit(rcd, "nco_def_var_chunking()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
 
   return rcd;
 } /* end nco_def_var_chunking() */
