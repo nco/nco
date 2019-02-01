@@ -37,6 +37,7 @@
    variables which are supposed to be valid on input. */
 
 #ifndef NCO_NETCDF_H /* Contents have not yet been inserted in current source file */
+#define NCO_NETCDF_H
 
 /* Standard header files */
 #include <ctype.h> /* isalnum(), isdigit(), tolower() */
