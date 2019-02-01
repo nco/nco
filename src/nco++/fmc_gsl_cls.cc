@@ -4888,7 +4888,7 @@ var_sct *gsl_fit_cls::fit_est_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls
     int fdx=fmc_obj.fdx();   //index
     int nbr_args=0;    // actual nunber of args
     int in_nbr_args=0; // target number of args
-    double mss_val_dbl;
+    double mss_val_dbl=0.0;
 
     prs_cls* prs_arg=walker.prs_arg;
     std::string sfnm =fmc_obj.fnm(); //method name
@@ -5073,7 +5073,7 @@ int gsl_fit_cls::rm_miss_arr(
       break;
     }
 
-
+    return (var_sct*)NULL;
     
 }
   
@@ -5444,7 +5444,7 @@ var_sct *nco_gsl_cls::fit_fnd(bool &,std::vector<RefAST> &vtr_args,fmc_cls &fmc_
     }
     else // deal with call-by-ref variables      
     {
-      var_sct *var_tmp;
+      var_sct *var_tmp=NULL_CEWI;
       std::string var_nm;
       NcapVar  *Nvar;
       var_nm=vtr_args[idx]->getFirstChild()->getText();
