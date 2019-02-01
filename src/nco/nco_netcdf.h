@@ -37,7 +37,6 @@
    variables which are supposed to be valid on input. */
 
 #ifndef NCO_NETCDF_H /* Contents have not yet been inserted in current source file */
-#define NCO_NETCDF_H
 
 /* Standard header files */
 #include <ctype.h> /* isalnum(), isdigit(), tolower() */
@@ -227,6 +226,9 @@
 # define NC_ELATEFILL     (-122)    /**< Attempt to define fill value when data already exists. */
 # define NC_EFILLVALUE    (-122)    /**< Attempt to define fill value when data already exists. */
 #endif /* !HAVE_NETCDF4_H */
+
+/* define MAX CHUNK SIZE here as its not present in netcdf.h */
+#define NCO_MAX_CHUNK_SIZE (0xFFFFFFFF)
 
 #ifdef __cplusplus
 extern "C" {

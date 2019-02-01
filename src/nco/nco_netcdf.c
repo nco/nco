@@ -1884,6 +1884,8 @@ int nco_def_var_chunking
 {
   /* Purpose: Wrapper for nc_def_var_chunking() */
   int rcd;
+
+
   /* NB: 20090713: netCDF4 API for nc_def_var_chunking() changed ~200906 
      Before that a weak netCDF4 prototype did not make cnk_sz const
      After I notified Unidata of this, they changed prototype to 
@@ -1894,8 +1896,34 @@ int nco_def_var_chunking
      netcdf-4.1-beta1-snapshot2009071200 has new behavior.
      Finding one-size-fits-all method is difficult! */
   /*  rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,cnk_sz);*/
+
+
   rcd=nc_def_var_chunking(nc_id,var_id,srg_typ,(size_t *)cnk_sz);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_chunking()");
+
+  if(rcd == NC_EBADCHUNK )
+  {
+    int idx;
+    int dmn_nbr;
+
+    size_t sz;
+    nc_type ntyp;
+
+    (void)nco_inq_varndims(nc_id, var_id, &dmn_nbr);
+    (void)nco_inq_vartype(nc_id, var_id, &ntyp);
+
+    sz=nco_typ_lng(ntyp);
+
+    for(idx=0;idx<dmn_nbr;idx++)
+      sz*=cnk_sz[idx];
+
+    if(sz > NCO_MAX_CHUNK_SIZE )
+      fprintf(stderr, "nco_def_var_chunking(): total requested chunk size(%ld) exceeds NetCDF maximium(%ld)\n", sz, NCO_MAX_CHUNK_SIZE  );
+
+  }
+
+  if(rcd != NC_NOERR)
+    nco_err_exit(rcd, "nco_def_var_chunking()");
+
   return rcd;
 } /* end nco_def_var_chunking() */
 
