@@ -1,5 +1,7 @@
 2019-02-03  Charlie Zender  <zender@uci.edu>
 
+	* Differentiate Digit Rounding (DGR, baa=3) from Bit Grooming 2	(BG2, baa=4)
+
 	* Remove default(none) clause to prevent GCC9 errors on missing declaration for fp_stderr
 
 2019-02-02  Charlie Zender  <zender@uci.edu>
