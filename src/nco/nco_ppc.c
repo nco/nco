@@ -710,6 +710,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* Bit-Groom2: alternately shave and set LSBs with dynamic masks
 	 Test BG2:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
+	 ncks -O -C -D 1 --baa=3 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=3 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
       unsigned char u8_xpn; /* bg2 */
       unsigned int u32_xpn; /* bg2 */
@@ -719,6 +720,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       int dgt_nbr_pre_dcm; /* Number of decimal digits before decimal point d_i in DCG19 (7) */
       int qnt_pwr_xpn; /* Quantization power exponent p_i in DCG19 (6) */
       float qnt_fct_flt; /* Quantization factor in DCG19 (5) */
+      float val_qnt; /* Quantized value DCG19 (1) */
       int sgn_val; /* Sign of  DCG19 (5) */
       /* Create mask */
       msk_u32_xpn=0u; /* Zero all bits */
@@ -731,12 +733,23 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  u32_xpn&=msk_u32_xpn; // Mask to elimnate sign bit
 	  i32_xpn=(int)u32_xpn-ieee_xpn_fst_flt; // Subtract 127 to compensate for IEEE SP exponent bias
 	  /* Number of decimal digits before decimal point */
-	  dgt_nbr_pre_dcm=(i32_xpn > 0) ? (int)((i32_xpn-1)*dcm_per_bit_dgt_prc)+1 : 0; /* DCG19 (7) */
+	  //	  dgt_nbr_pre_dcm=(i32_xpn > 0) ? (int)((i32_xpn-1)*dcm_per_bit_dgt_prc)+1 : 0; /* d_i DCG19 (7) */
+	  dgt_nbr_pre_dcm=(int)((i32_xpn-1)*dcm_per_bit_dgt_prc)+1; /* d_i DCG19 (7) */
 	  qnt_pwr_xpn=(dgt_nbr_pre_dcm > nsd) ? (int)((dgt_nbr_pre_dcm-nsd)*bit_per_dcm_dgt_prc) : 0; /* p_i DCG19 (6) */
 	  qnt_fct_flt=pow(2,qnt_pwr_xpn); /* Quantization factor q_i DCG19 (5) (as floating point) */
 	  /* Quantize value */
+	  val_qnt=op1.fp[idx];
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt1 = %g\n",nco_prg_nm_get(),val_qnt);
+	  val_qnt=(int)(fabs(val_qnt)/qnt_fct_flt);
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt2 = %g\n",nco_prg_nm_get(),val_qnt);
+	  val_qnt+=0.5f;
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt3 = %g\n",nco_prg_nm_get(),val_qnt);
+	  val_qnt*=qnt_fct_flt;
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt4 = %g\n",nco_prg_nm_get(),val_qnt);
+	  val_qnt*=(op1.fp[idx] > 0) ? 1 : -1;
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt5 = %g\n",nco_prg_nm_get(),val_qnt);
 	  u32_dpl=u32_ptr[idx];
-	  u32_dpl= /* Take absolute value by placing 0 in sign bit */
+	  // u32_dpl= /* Take absolute value by placing 0 in sign bit */
 	  u32_dpl>>=qnt_pwr_xpn; /* Divide by q_i same as right-shifting by p_i */
 	  	  
 	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u32_xpn = %u, i32_xpn=%d, dgt_nbr_pre_dcm = %d, qnt_pwr_xpn = %d, qnt_fct_flt = %g\n",nco_prg_nm_get(),op1.fp[idx],u32_xpn,i32_xpn,dgt_nbr_pre_dcm,qnt_pwr_xpn,qnt_fct_flt);

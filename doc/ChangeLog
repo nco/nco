@@ -1,3 +1,11 @@
+2019-02-03  Charlie Zender  <zender@uci.edu>
+
+	* Remove default(none) clause to prevent GCC9 errors on missing declaration for fp_stderr
+
+2019-02-02  Charlie Zender  <zender@uci.edu>
+
+	* Add more verbose information for NC_EHDFERR errors
+
 2019-02-01  Charlie Zender  <zender@uci.edu>
 
 	* Add more verbose information for NC_EBADCHUNK errors

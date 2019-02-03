@@ -202,7 +202,9 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d thread(s)\n",nco_prg_nm_get(),thr_nbr_act);
 #ifdef _OPENMP
   if(nco_dbg_lvl_get() >= nco_dbg_scl){
-# pragma omp parallel default(none) shared(thr_nbr_act)
+    // 20190203: Remove default(none) clause to prevent GCC9 errors on missing declaration for fp_stderr
+    //# pragma omp parallel default(none) shared(thr_nbr_act)
+# pragma omp parallel shared(thr_nbr_act)
     { /* begin OpenMP parallel */
 # pragma omp single nowait
       { /* begin OpenMP single */
