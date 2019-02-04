@@ -712,14 +712,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -C -D 1 --baa=3 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=3 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
-      unsigned char u8_xpn; /* bg2 */
-      unsigned int u32_xpn; /* bg2 */
-      unsigned int u32_dpl; /* bg2 */
+      unsigned char u8_xpn; /* dgr */
+      unsigned int u32_xpn; /* dgr */
+      unsigned int u32_dpl; /* dgr */
       unsigned int msk_u32_xpn;
-      int i32_xpn; /* bg2 */
+      int i32_xpn; /* dgr */
       int dgt_nbr_pre_dcm; /* Number of decimal digits before decimal point d_i in DCG19 (7) */
       int qnt_pwr_xpn; /* Quantization power exponent p_i in DCG19 (6) */
-      float qnt_fct_flt; /* Quantization factor in DCG19 (5) */
+      float qnt_fct_flt; /* Quantization factor q_i in DCG19 (5) */
       float val_qnt; /* Quantized value DCG19 (1) */
       int sgn_val; /* Sign of  DCG19 (5) */
       /* Create mask */
@@ -752,7 +752,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  // u32_dpl= /* Take absolute value by placing 0 in sign bit */
 	  u32_dpl>>=qnt_pwr_xpn; /* Divide by q_i same as right-shifting by p_i */
 	  	  
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u32_xpn = %u, i32_xpn=%d, dgt_nbr_pre_dcm = %d, qnt_pwr_xpn = %d, qnt_fct_flt = %g\n",nco_prg_nm_get(),op1.fp[idx],u32_xpn,i32_xpn,dgt_nbr_pre_dcm,qnt_pwr_xpn,qnt_fct_flt);
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u32_xpn = %u, i32_xpn=%d, dgt_nbr_pre_dcm = d_i = %d, qnt_pwr_xpn = p_i = %d, qnt_fct_flt = q_i = %g\n",nco_prg_nm_get(),op1.fp[idx],u32_xpn,i32_xpn,dgt_nbr_pre_dcm,qnt_pwr_xpn,qnt_fct_flt);
 	} /* !idx */
 	for(idx=1L;idx<sz;idx+=2L){
 	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u8_xpn_nbr = %hhu\n",nco_prg_nm_get(),op1.fp[idx],u8_xpn);
@@ -772,60 +772,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
-      unsigned char u8_xpn; /* bg2 */
-      unsigned int u32_xpn; /* bg2 */
-      unsigned int u32_dpl; /* bg2 */
-      unsigned int msk_u32_xpn;
-      int i32_xpn; /* bg2 */
-      int dgt_nbr_pre_dcm; /* Number of decimal digits before decimal point d_i in DCG19 (7) */
-      int qnt_pwr_xpn; /* Quantization power exponent p_i in DCG19 (6) */
-      float qnt_fct_flt; /* Quantization factor in DCG19 (5) */
-      float val_qnt; /* Quantized value DCG19 (1) */
-      int sgn_val; /* Sign of  DCG19 (5) */
-      /* Create mask */
-      msk_u32_xpn=0u; /* Zero all bits */
-      msk_u32_xpn=~msk_u32_xpn; /* Turn all bits to ones */
-      msk_u32_xpn>>=24; /* Right-shift zeros into bits to be zerod, leave ones in exponent bits */
-      if(!has_mss_val){
-	for(idx=0L;idx<sz;idx+=2L){
-	  u32_xpn=u32_ptr[idx]; // Copy memory so bitshifting exponent to byte boundary does not corrupt original
-	  u32_xpn>>=bit_xpl_nbr_sgn_flt; // Bit-shift exponent to end of word
-	  u32_xpn&=msk_u32_xpn; // Mask to elimnate sign bit
-	  i32_xpn=(int)u32_xpn-ieee_xpn_fst_flt; // Subtract 127 to compensate for IEEE SP exponent bias
-	  /* Number of decimal digits before decimal point */
-	  //	  dgt_nbr_pre_dcm=(i32_xpn > 0) ? (int)((i32_xpn-1)*dcm_per_bit_dgt_prc)+1 : 0; /* d_i DCG19 (7) */
-	  dgt_nbr_pre_dcm=(int)((i32_xpn-1)*dcm_per_bit_dgt_prc)+1; /* d_i DCG19 (7) */
-	  qnt_pwr_xpn=(dgt_nbr_pre_dcm > nsd) ? (int)((dgt_nbr_pre_dcm-nsd)*bit_per_dcm_dgt_prc) : 0; /* p_i DCG19 (6) */
-	  qnt_fct_flt=pow(2,qnt_pwr_xpn); /* Quantization factor q_i DCG19 (5) (as floating point) */
-	  /* Quantize value */
-	  val_qnt=op1.fp[idx];
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt1 = %g\n",nco_prg_nm_get(),val_qnt);
-	  val_qnt=(int)(fabs(val_qnt)/qnt_fct_flt);
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt2 = %g\n",nco_prg_nm_get(),val_qnt);
-	  val_qnt+=0.5f;
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt3 = %g\n",nco_prg_nm_get(),val_qnt);
-	  val_qnt*=qnt_fct_flt;
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt4 = %g\n",nco_prg_nm_get(),val_qnt);
-	  val_qnt*=(op1.fp[idx] > 0) ? 1 : -1;
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val_qnt5 = %g\n",nco_prg_nm_get(),val_qnt);
-	  u32_dpl=u32_ptr[idx];
-	  // u32_dpl= /* Take absolute value by placing 0 in sign bit */
-	  u32_dpl>>=qnt_pwr_xpn; /* Divide by q_i same as right-shifting by p_i */
-	  	  
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u32_xpn = %u, i32_xpn=%d, dgt_nbr_pre_dcm = %d, qnt_pwr_xpn = %d, qnt_fct_flt = %g\n",nco_prg_nm_get(),op1.fp[idx],u32_xpn,i32_xpn,dgt_nbr_pre_dcm,qnt_pwr_xpn,qnt_fct_flt);
-	} /* !idx */
-	for(idx=1L;idx<sz;idx+=2L){
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u8_xpn_nbr = %hhu\n",nco_prg_nm_get(),op1.fp[idx],u8_xpn);
-	  if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
-	    u32_ptr[idx]|=msk_f32_u32_one;
-	} /* !idx */
-      }else{
-	const float mss_val_flt=*mss_val.fp;
-	for(idx=0L;idx<sz;idx+=2L)
-	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]&=msk_f32_u32_zro;
-	for(idx=1L;idx<sz;idx+=2L)
-	  if(op1.fp[idx] != mss_val_flt && u32_ptr[idx] != 0U) u32_ptr[idx]|=msk_f32_u32_one;
-      } /* end else */
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g\n",nco_prg_nm_get(),op1.fp[idx]);
     }else abort();
     break;
   case NC_DOUBLE:
