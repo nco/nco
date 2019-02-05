@@ -1521,6 +1521,16 @@ printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
 printf "Parallelism mode = ${par_sng}\n"
 if [ "${sbs_flg}" = 'Yes' ]; then
+    if [ ${var_nbr} -gt 1 ]; then
+	printf "Timeseries will be created for each of ${var_nbr} variables\n"
+	if [ "${par_typ}" = 'bck' ]; then
+	    printf "Background parallelism processing variables in batches of job_nbr = ${job_nbr} variables simultaneously\n"
+	elif [ "${par_typ}" = 'mpi' ]; then
+	    printf "MPI parallelism dividing processing of ${var_nbr} variables onto nd_nbr = ${nd_nbr} nodes simultaneously\n"
+	fi # !par_typ
+    else # !var_nbr
+	printf "Timeseries will be created for only one variable\n"
+    fi # !var_nbr
     if [ ${inp_std} = 'No' ]; then 
 	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
 	    printf "Splitting climatology from ${fl_nbr} raw input files in directory ${drc_in}\n"
@@ -1537,7 +1547,6 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
-    printf "Input to split comprises ${yr_sbs} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     if [ ${sgm_nbr} -gt 1 ]; then
 	if [ ${sgm_flg} = 'Yes' ]; then 
 	    printf "Will split data into ${sgm_nbrm1} timeseries segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s)\n"
