@@ -1890,7 +1890,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    wait ${sbs_pid[${pid_idx}]}
 		    if [ $? -eq 0 ]; then
 			# https://stackoverflow.com/questions/12426659/how-extract-last-part-of-string-in-bash
-			printf "`date`: Generated ${cmd_rgr[${pid_idx}]##* }\n"
+			printf "`date`: Generated ${cmd_sbs[${pid_idx}]##* }\n"
 		    else
 			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
 			exit 1
