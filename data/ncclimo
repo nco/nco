@@ -1357,6 +1357,10 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    let nd_idx=${nd_idx}+1
 	done # !nd
 	nd_nbr=${#nd_nm[@]}
+	if [ "${nd_nbr}" -eq 0 ]; then
+	    echo "${spt_nm}: ERROR MPI-mode node number nd_nbr = ${nd_nbr}"
+	    exit 1
+	fi # !nd_nbr
 	for ((mpi_idx_zro=0;mpi_idx_zro<mpi_nbr;mpi_idx_zro++)); do
 	    mpi_idx=${mpi_idx_zro}
 	    if [ "${clm_flg}" = 'Yes' ] && [ ${clm_md} = 'mth' ] ; then 

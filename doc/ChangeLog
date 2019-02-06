@@ -1,5 +1,7 @@
 2019-02-05  Charlie Zender  <zender@uci.edu>
 
+	* Cause ncclimo MPI-mode to exit when nd_nbr=0
+
 	* Ensure ncclimo writes nd_fl to writable directory
 
 	* ncclimo print cmd_sbs not cmd_rgr for generated files
