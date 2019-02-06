@@ -1333,7 +1333,8 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	# SLURM returns compressed lists (e.g., "nid00[076-078,559-567]")
 	# Convert this to file with uncompressed list (like Cobalt, PBS)
 	# http://www.ceci-hpc.be/slurm_faq.html#Q12
-	nd_fl='ncclimo.slurm_nodelist'
+	# Save file in writable directory
+	nd_fl="${drc_out}/ncclimo.slurm_nodelist.pid${spt_pid}.tmp"
 	nd_lst=`scontrol show hostname ${SLURM_NODELIST}`
 	echo ${nd_lst} > ${nd_fl}
     else
@@ -1576,7 +1577,6 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	printf "Producing extended climatology in incremental mode: Pre-computed climatology in directory ${drc_prv} will be incremented by raw input files in directory ${drc_in}\n"
 	printf "Output files to directory ${drc_xtn}\n"
     fi # !ncr_flg
-    #printf "Intermediate/temporary files written to directory ${drc_tmp}\n"
     if [ "${bnr_flg}" = 'No' ]; then
 	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     fi # !bnr_flg

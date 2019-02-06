@@ -1,5 +1,7 @@
 2019-02-05  Charlie Zender  <zender@uci.edu>
 
+	* Ensure ncclimo writes nd_fl to writable directory
+
 	* ncclimo print cmd_sbs not cmd_rgr for generated files
 
 	* ncclimo output more explicit information about parallelism job_nbr, var_nbr, nd_nbr
