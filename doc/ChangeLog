@@ -1,3 +1,11 @@
+2019-02-06  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.7.9-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha06: SOTU';git push
+	git tag -a 4.7.9-alpha06 -m 'ncclimo fine-tune for ELM;GCC9 fix;clarify NC_EHDFERR, NC_EBADCHUNK erroros;DGR, BG2 progress';git push --tags
+
+	* ncremap prevent spurious exit when computing named SGS maps when vrb_lvl >= 3
+
 2019-02-05  Charlie Zender  <zender@uci.edu>
 
 	* Cause ncclimo MPI-mode to exit when nd_nbr=0

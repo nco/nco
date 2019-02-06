@@ -1731,9 +1731,9 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	if [ "${grd_dst_usr_flg}" != 'Yes' ]; then
 	    printf "${spt_nm}: Sub-gridscale handling will attempt to infer the destination SCRIP grid-file from the provided output data file template (which will not be touched).\n"
 	fi # !grd_dst_usr_flg
-	if [ "${map_usr_flg}" = 'Yes' ]; then
-	    printf "${spt_nm}: ERROR Sub-grid handling forbids specification of a precomputed map-file. Sub-grid handling must generate map-files from specially pre-processed SCRIP grid-files. Allowing pre-computed map-files risks users inadvertently supplying incorrect map-files. The supplied or inferred SCRIP grid-files must include the (normally non-essential) grid_area field, which ${spt_nm} can normally infer from rectangular 2-D datafiles, though not from 1-D (unstructured) datafiles.\n"
-	    echo "${spt_nm}: HINT Remove map-file specification by eliminating the \"-m map_fl\" option"
+	if [ "${map_usr_flg}" = 'Yes' ] && [ "${map_mk}" != 'Yes' ]; then
+	    printf "${spt_nm}: WARNING Sub-grid handling (SGS-mode) forbids specification of a precomputed map-file. Sub-grid handling must generate map-files from specially pre-processed SCRIP grid-files. Allowing pre-computed map-files risks users inadvertently supplying incorrect map-files. The supplied or inferred SCRIP grid-files must include the (normally non-essential) grid_area field, which ${spt_nm} can normally infer from rectangular 2-D datafiles, though not from 1-D (unstructured) datafiles.\n"
+	    echo "${spt_nm}: HINT Either remove map-file specification by eliminating the \"-m map_fl\" option, or use this pre-computed map but not in SGS mode (eliminate the \"-P sgs\" option)"
 	    exit 1
 	fi # !fl_nbr
     fi # !sgs

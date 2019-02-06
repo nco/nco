@@ -1554,12 +1554,12 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     fi # !mth
     if [ ${sgm_nbr} -gt 1 ]; then
 	if [ ${sgm_flg} = 'Yes' ]; then 
-	    printf "Will split data into ${sgm_nbrm1} timeseries segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s)\n"
+	    printf "Will split data for each variable into ${sgm_nbrm1} timeseries segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s)\n"
 	else
-	    printf "Will split data into ${sgm_nbr} timeseries segment(s) of length ${ypf_max} years\n"
+	    printf "Will split data for each variable into ${sgm_nbr} timeseries segment(s) of length ${ypf_max} years\n"
 	fi # !sgm_flg
     else # !sgm_nbr
-	printf "Will split data into one timeseries of length ${yr_sbs} years\n"
+	printf "Will split data for each variable into one timeseries of length ${yr_sbs} years\n"
     fi # !sgm_nbr
     printf "Native-grid split files to directory ${drc_out}\n"
     if [ -n "${rgr_map}" ]; then 
