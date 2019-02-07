@@ -215,7 +215,11 @@ variables:
 	float climatology_bounds(time,vrt_nbr);
 	climatology_bounds:purpose = "Variable containing CF-compliant climatology bounds for time dimension";
 
-	double lon_cal(lon_cal);
+	double time_rpt(time);
+	time_rpt:long_name = "A repeating sequence to check compliance of MRO";
+	time_rpt:purpose = "Sequence is 1,2,3,1,2,3,1,2,3,1. Average of every third element should be the same as the element, e.g., ncra -O --mro -d time,,,3,3 ~/nco/data/in.nc ~/foo.nc;ncks -C -v time_rpt ~/foo.nc";
+
+        double lon_cal(lon_cal);
 	lon_cal:long_name = "lon_cal";
 	lon_cal:units = "days since 1964-2-28"; 
 	lon_cal:calendar = "365_day";
@@ -1709,6 +1713,7 @@ data:
 	three_dmn_var_cf=0.,1.,2.,3.,12.,13.,14.,15.,4.,5.,6.,7.,16.,17.,18.,19.,8.,9.,10.,11.,20.,21.,22.,23.;
 	three_dmn_var_cf2=0.,1.,2.,3.,12.,13.,14.,15.,4.,5.,6.,7.,16.,17.,18.,19.,8.,9.,10.,11.,20.,21.,22.,23.;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+        time_rpt=1.,2.,3.,1.,2.,3.,1.,2.,3.,1.;
 	time_bnds=0.5,1.5,1.5,2.5,2.5,3.5,3.5,4.5,4.5,5.5,5.5,6.5,6.5,7.5,7.5,8.5,8.5,9.5,9.5,10.5;
 	climatology_bounds=0.5,1.5,1.5,2.5,2.5,3.5,3.5,4.5,4.5,5.5,5.5,6.5,6.5,7.5,7.5,8.5,8.5,9.5,9.5,10.5;
 	tm_scn=59;

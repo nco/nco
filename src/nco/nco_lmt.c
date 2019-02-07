@@ -675,17 +675,17 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 
   if(lmt.ssc_sng){
     if(strchr(lmt.ssc_sng,'.') || strchr(lmt.ssc_sng,'e') || strchr(lmt.ssc_sng,'E') || strchr(lmt.ssc_sng,'d') || strchr(lmt.ssc_sng,'D')){
-      (void)fprintf(stdout,"%s: ERROR Requested subcycle for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.ssc_sng);
+      (void)fprintf(stdout,"%s: ERROR Requested subcycle argument for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.ssc_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.ssc=strtol(lmt.ssc_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.ssc_sng,"strtol",sng_cnv_rcd);
     if(lmt.ssc < 1L){
-      (void)fprintf(stdout,"%s: ERROR Subcycle for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.ssc);
+      (void)fprintf(stdout,"%s: ERROR Subcycle argument for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.ssc);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     if(nco_prg_id != ncra && nco_prg_id != ncrcat){
-      (void)fprintf(stdout,"%s: ERROR Subcycle only implemented for ncra and ncrcat\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Subcycle hypserslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end ncra */
   } /* !lmt.ssc_sng */
@@ -1456,17 +1456,17 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
   if(lmt.ssc_sng){
     if(strchr(lmt.ssc_sng,'.') || strchr(lmt.ssc_sng,'e') || strchr(lmt.ssc_sng,'E') || strchr(lmt.ssc_sng,'d') || strchr(lmt.ssc_sng,'D')){
-      (void)fprintf(stdout,"%s: ERROR Requested subcycle for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.ssc_sng);
+      (void)fprintf(stdout,"%s: ERROR Requested subcycle argument for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.ssc_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.ssc=strtol(lmt.ssc_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
     if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.ssc_sng,"strtol",sng_cnv_rcd);
     if(lmt.ssc < 1L){
-      (void)fprintf(stdout,"%s: ERROR Subcycle for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.ssc);
+      (void)fprintf(stdout,"%s: ERROR Subcycle argument for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.ssc);
       nco_exit(EXIT_FAILURE);
     } /* end if */
     if(nco_prg_id != ncra && nco_prg_id != ncrcat){
-      (void)fprintf(stdout,"%s: ERROR Subcycle only implemented for ncra and ncrcat\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Subcycle hyperslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end ncra */
   } /* !lmt.ssc_sng */
