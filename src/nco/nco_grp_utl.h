@@ -165,8 +165,7 @@ nco_xtr_ND_lst /* [fnc] Print extraction list of N>=D variables and exit */
 
 void
 nco_xtr_ilev_add                      /* [fnc] Add ilev coordinate to extraction list */
-(const int nc_id,                     /* I [ID] netCDF file ID */
-trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
+(trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 void
 nco_xtr_cf_add                        /* [fnc] Add to extraction list variable associated with CF convention */

@@ -1040,8 +1040,7 @@ nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction
 
 void
 nco_xtr_ilev_add                      /* [fnc] Add ilev coordinate to extraction list */
-(const int nc_id,                     /* I [ID] netCDF file ID */
-trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
+(trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
   /* Purpose: Add ilev coordinate to extraction list if lev coordinate is already there
      20180920: CESM-family models forgot to add lev:bounds="ilev" attribute
@@ -1049,9 +1048,11 @@ trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 
   //  const char fnc_nm[]="nco_xtr_ilev_add()"; /* [sng] Function name */
 
-  int tbl_nbr=trv_tbl->nbr; 
+  unsigned int tbl_nbr;
 
   unsigned int tbl_idx;
+
+  tbl_nbr=(unsigned int)trv_tbl->nbr;
 
   /* Does extraction list contain lev? */
   for(tbl_idx=0;tbl_idx<tbl_nbr;tbl_idx++){
@@ -6767,7 +6768,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
   } /* endif */
   if(cnv->CCM_CCSM_CF && EXTRACT_ASSOCIATED_COORDINATES){
     /* Workaround CCSM "feature" that lev lacks bounds="ilev" attribute */
-    (void)nco_xtr_ilev_add(nc_id,trv_tbl);
+    (void)nco_xtr_ilev_add(trv_tbl);
     /* Implement CF "ancillary_variables", "bounds", "climatology", "coordinates", and "grid_mapping" */
     if(EXTRACT_CLL_MSR) (void)nco_xtr_cf_add(nc_id,"cell_measures",trv_tbl);
     if(EXTRACT_FRM_TRM) (void)nco_xtr_cf_add(nc_id,"formula_terms",trv_tbl);
