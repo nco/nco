@@ -909,7 +909,7 @@ main(int argc,char **argv)
 
       /* OpenMP with threading over variables, not files */
 #ifdef _OPENMP
-# pragma omp parallel for default(none) private(in_id) shared(nco_dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,nbr_dmn_fl,md5,trv_tbl)
+# pragma omp parallel for private(in_id) shared(nco_dbg_lvl,fl_nbr,idx_rec_out,in_id_arr,nbr_var_prc,out_id,var_prc,var_prc_out,nbr_dmn_fl,md5,trv_tbl)
 #endif /* !_OPENMP */
       /* Process all variables in current file */
       for(idx=0;idx<nbr_var_prc;idx++){

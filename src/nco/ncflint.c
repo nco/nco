@@ -834,7 +834,7 @@ main(int argc,char **argv)
   /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-# pragma omp parallel for default(none) firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,nco_dbg_lvl,fl_in_1,fl_in_2,fl_out,gpe,in_id_1_arr,in_id_2_arr,nbr_var_prc,out_id,nco_prg_nm,var_prc_1,var_prc_2,var_prc_out,nbr_dmn_fl,trv_tbl)
+# pragma omp parallel for firstprivate(wgt_1,wgt_2,wgt_out_1,wgt_out_2) private(DO_CONFORM,idx,in_id_1,in_id_2,has_mss_val) shared(MUST_CONFORM,nco_dbg_lvl,fl_in_1,fl_in_2,fl_out,gpe,in_id_1_arr,in_id_2_arr,nbr_var_prc,out_id,nco_prg_nm,var_prc_1,var_prc_2,var_prc_out,nbr_dmn_fl,trv_tbl)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
     
