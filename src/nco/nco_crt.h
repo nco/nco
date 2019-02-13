@@ -13,7 +13,7 @@
 #include "nco_rgr.h"     /* Regridding */
 #include "nco_sld.h"     /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
-#include "nco_poly.h"    /* poly sct stuff */
+#include "nco_ply.h"    /* poly sct stuff */
 
 
 /* Dimension of points */
