@@ -55,7 +55,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
   nbr_var_prc_cpy=nbr_var_prc;
 
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(nbr_var_prc_cpy,nco_op_typ_cpy,var_prc,var_prc_out)
+#pragma omp parallel for private(idx) shared(nbr_var_prc_cpy,nco_op_typ_cpy,var_prc,var_prc_out)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc_cpy;idx++){
 
