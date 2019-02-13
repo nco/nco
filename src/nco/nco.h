@@ -1581,6 +1581,31 @@ extern "C" {
     size_t sz; /* [nbr] Size (non-hyperslabbed) of dimension */
   } dmn_cmn_sct;
 
+
+  typedef enum {
+     poly_none=0,
+     poly_sph=1,
+     poly_crt=2
+  } poly_typ_enm;
+
+  typedef struct{
+    poly_typ_enm pl_typ;
+    double *dp_x;    /* x  vertices */
+    double *dp_y;    /* y vertices */
+    double *dp_xyz;  /* maybe useful for 3D stuff */ 
+    double area;  
+    double **shp;    /* array of points size [crn_nbr][2] or [crn_nbr][50 */
+    double dp_x_minmax[2];
+    double dp_y_minmax[2];
+    int  stat;     
+    int crn_nbr; /* number of vertices */
+    int mem_flg; /* [flg]    */ 
+  } poly_sct;   
+
+
+
+
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* !__cplusplus */
