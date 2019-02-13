@@ -1,7 +1,5 @@
 #include "nco_ply.h"
 
-#include "nco_crt.c"
-#include "nco_sph.c"
 
 int
 nco_poly_typ_sz(poly_typ_enm pl_typ)
