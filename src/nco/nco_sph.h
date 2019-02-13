@@ -1,0 +1,127 @@
+#ifndef NCO_SPH_H /* Contents have not yet been inserted in current source file */
+#define NCO_SPH_H
+
+
+#include        <stdlib.h>
+#include        <stdio.h>
+#include        <math.h>
+
+/* Personal headers */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_mmr.h"     /* Memory management */
+#include "nco_omp.h"     /* OpenMP utilities */
+#include "nco_rgr.h"     /* Regridding */
+#include "nco_sld.h"     /* Swath-Like Data */
+#include "nco_sng_utl.h" /* String utilities */
+#include "nco_ply.h"    /* poly sct stuff */
+
+#define NBR_SPH (5)
+
+#define VP_MAX    1000            /* Max # of pts in polygon */
+
+
+/* this is 1.0e-20 * PI / 180.0 */
+#define ARC_MIN_LENGTH_RAD (1.0e-15)
+
+/* if true then longitude 0-360 */
+/* we need this to convert 3D back to 2D */
+#define IS_LON_360 (1)
+
+#define DEBUG_SPH (0)
+
+
+#ifdef __cplusplus
+/* Use C-bindings so C++-compiled and C-compiled libraries are compatible */
+extern "C" {
+#endif /* !__cplusplus */
+
+
+
+//typedef double  tPointds[5];    /* type spherical double point */
+
+//typedef tPointds tPolygonds[VP_MAX]; /* 3D sperical coords */
+
+
+/*---------------------------------------------------------------------
+Function prototypes.
+---------------------------------------------------------------------*/
+
+
+int
+nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r);
+
+char
+nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q);
+
+int
+nco_sph_lhs(double *Pi, double *Qi);
+
+nco_bool
+nco_sph_face(int iLHS, int iRHS, int jRHS);
+
+double
+nco_sph_dot(double *a, double *b);
+
+double
+nco_sph_cross(double *a, double *b, double *c);
+
+double
+nco_sph_rad(double *a);
+
+double
+nco_sph_sxcross(double *a, double *b, double *c);
+
+void
+nco_sph_adi(double *a, double *b);
+
+void
+nco_sph_add_pnt(double **R, int *r, double *P);
+
+nco_bool
+nco_sph_between(double a, double b, double x);
+
+nco_bool
+nco_sph_lonlat_between(double *a, double *b, double *x);
+
+char
+nco_sph_parallel(double *a, double *b, double *c, double *d, double *p, double *q);
+
+void
+nco_sph_prn_pnt(const char *sMsg, double *p, int style, nco_bool bRet);
+
+nco_bool
+nco_sph_is_convex(double **sP, int np);
+
+void
+nco_sph_prn(double **sR, int r, int istyle);
+
+nco_bool
+nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVertex);
+
+void
+nco_sph_set_limits(double lon_min_rad, double lon_max_rad, double lat_min_rad, double lat_max_rad   );
+
+
+/*------------------------ nco_geo functions these manimpulate lat & lon  ----------------------------------*/
+void
+nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg);
+
+void
+nco_geo_lonlat_2_sph(double lon, double lat, double *b);
+
+void
+nco_sph_add_lonlat(double *ds);
+
+
+double
+nco_geo_lat_correct(double lat1, double lon1, double lon2);
+
+void
+nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2, double *dp_min, double *dp_max, nco_bool bDeg);
+
+
+#ifdef __cplusplus
+} /* end extern "C" */
+#endif /* !__cplusplus */
+
+#endif /* NCO_SPH_H */
