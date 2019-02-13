@@ -18,7 +18,8 @@ nco_bnr_open /* [fnc] Open unformatted binary data file */
   FILE *fp_bnr; /* [fl] Unformatted binary output file handle */
   /* Open output file */
   if((fp_bnr=fopen(fl_bnr,fl_mode)) == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to open binary output file %s\n",nco_prg_nm_get(),fl_bnr);
+    (void)fprintf(stderr,"%s: ERROR unable to open for writing the binary output file %s\n",nco_prg_nm_get(),fl_bnr);
+    (void)fprintf(stderr,"%s: HINT All components of the filepath must exist before file can be opened\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end if */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: Opened binary file %s\n",nco_prg_nm_get(),fl_bnr);
