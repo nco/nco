@@ -426,6 +426,18 @@ const char * prnInFlag(tInFlag in)
 }
 
 
+void
+nco_crt_set_domain(double lon_min, double lon_max, double lat_min, double lat_max)
+{
+
+  LON_MIN=lon_min;
+  LON_MAX=lon_max;
+
+  LAT_MIN=lat_min;
+  LAT_MAX=lat_max;
+
+  return;
+}
 
 
 
