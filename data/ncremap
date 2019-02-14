@@ -1051,10 +1051,10 @@ if [ -n "${msk_src}" ]; then
     nco_msk_src="--rgr msk_var=${msk_src}"
 fi # !msk_src
 if [ -n "${skl_fl}" ]; then 
-    nco_skl_fl="--rgr skl=${skl_fl}"
+    nco_skl_fl="--rgr skl=\"${skl_fl}\""
 fi # !skl_fl
 if [ -n "${ugrid_fl}" ]; then 
-    nco_ugrid_fl="--rgr ugrid=${ugrid_fl}"
+    nco_ugrid_fl="--rgr ugrid=\"${ugrid_fl}\""
 fi # !ugrid_fl
 if [ -n "${var_rgr}" ]; then 
     nco_var_rgr="--rgr_var=${var_rgr}"
@@ -1113,7 +1113,7 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 		echo "ERROR: Unable to find specified MPAS depth coordinate file ${dpt_fl}"
 		exit 1
 	    fi # ! -f
-	    cmd_dpt_opt="-c ${dpt_fl}"
+	    cmd_dpt_opt="-c \"${dpt_fl}\""
 	fi # !dpt_fl
 	if [ -z "${cmd_dpt_mpas}" ]; then
 	    printf "${spt_nm}: ERROR MPAS depth coordinate addition requested but command ${dpt_exe_mpas} not found\n"
@@ -1168,7 +1168,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
-	cmd_mwf="ncremap ${wgt_sng} --alg_typ=${alg_typ} --grd_src=${grd_src} --grd_dst=${grd_dst} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
+	cmd_mwf="ncremap ${wgt_sng} --alg_typ=${alg_typ} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" ${hnt_src_sng} ${hnt_dst_sng} --map=\"${map_nm}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_mwf}
 	fi # !dbg
@@ -1220,7 +1220,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
-	cmd_fwm="ncremap ${wgt_sng} ${a2o_sng} --alg_typ=${alg_typ} --grd_src=${grd_dst} --grd_dst=${grd_src} ${hnt_src_sng} ${hnt_dst_sng} --map=${map_nm}"
+	cmd_fwm="ncremap ${wgt_sng} ${a2o_sng} --alg_typ=${alg_typ} --grd_src=\"${grd_dst}\" --grd_dst=\"${grd_src}\" ${hnt_src_sng} ${hnt_dst_sng} --map=\"${map_nm}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_fwm}
 	fi # !dbg
@@ -1751,7 +1751,7 @@ else # !map_usr_flg
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Destination grid will be inferred from data-file\n"
 	fi # !vrb_lvl
-	cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=${hnt_dst_fl} ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=${grd_dst} ${dst_fl} ${tmp_out_fl}"
+	cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_dst_fl}\" ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=\"${grd_dst}\" \"${dst_fl}\" \"${tmp_out_fl}\""
     else # !dst_usr_flg
 	if [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -1763,7 +1763,7 @@ else # !map_usr_flg
 	fi # !grd_dst_usr_flg
 	if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
 	    # 20180903 Must quote grd_sng otherwise whitespace and shell redirection characters (e.g., in ttl argument) will confuse interpreter
-	    cmd_dst[${fl_idx}]="ncks -O --dmm_in_mk ${nco_opt} --rgr scrip=${grd_dst} ${nco_skl_fl} --rgr '${grd_sng}' ${dmm_fl} ${tmp_out_fl}"
+	    cmd_dst[${fl_idx}]="ncks -O --dmm_in_mk ${nco_opt} --rgr scrip=\"${grd_dst}\" ${nco_skl_fl} --rgr '${grd_sng}' \"${dmm_fl}\" \"${tmp_out_fl}\""
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		if [ "${grd_dst_usr_flg}" = 'Yes' ]; then
 		    printf "Destination grid will be generated in SCRIP format from NCO grid-formula ${grd_sng} and stored in ${grd_dst}\n"
@@ -1880,7 +1880,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "RRG: Identity-remap global data file from/to dual-grid to annotate it with vertices...\n"
     fi # !vrb_lvl
-    cmd_nnt[${fl_idx}]="ncremap --vrb=0 -a bilin -s ${grd_glb} -g ${grd_glb} ${dat_glb} ${nnt_fl}"
+    cmd_nnt[${fl_idx}]="ncremap --vrb=0 -a bilin -s \"${grd_glb}\" -g \"${grd_glb}\" \"${dat_glb}\" \"${nnt_fl}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_nnt[${fl_idx}]}
     fi # !dbg
@@ -1895,7 +1895,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "RRG: Subset coordinates to rectangular WESN regional bounding box ${bb_wesn}...\n"
     fi # !vrb_lvl
-    cmd_sbs[${fl_idx}]="ncks -O -v lat,lon -X ${bb_wesn} ${nnt_fl} ${rgn_fl}"
+    cmd_sbs[${fl_idx}]="ncks -O -v lat,lon -X ${bb_wesn} \"${nnt_fl}\" \"${rgn_fl}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_sbs[${fl_idx}]}
     fi # !dbg
@@ -1910,7 +1910,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "RRG: Infer source grid from subsetted, annotated, regional coordinate file...\n"
     fi # !vrb_lvl
-    cmd_nfr[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_var_rgr} --rgr scrip=${grd_src} ${rgn_fl} ${tmp_out_fl}"
+    cmd_nfr[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_msk_src} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${rgn_fl}\" \"${tmp_out_fl}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_nfr[${fl_idx}]}
     fi # !dbg
@@ -1941,7 +1941,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Infer source grid-file from input data file...\n"
 	fi # !vrb_lvl
-	cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_dgn_area} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${fl_in[${fl_idx}]} ${tmp_out_fl}"
+	cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_dgn_area} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${fl_in[${fl_idx}]}\" \"${tmp_out_fl}\""
 	
 	# Block 2 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -1959,7 +1959,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Duplicate destination grid-file for modification into fractional destination grid-file...\n"
     fi # !vrb_lvl
-    cmd_cp_dst[${fl_idx}]="/bin/cp -f ${grd_dst} ${grd_dst_sgs}"
+    cmd_cp_dst[${fl_idx}]="/bin/cp -f \"${grd_dst}\" \"${grd_dst_sgs}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_cp_dst[${fl_idx}]}
     fi # !dbg
@@ -1974,7 +1974,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Duplicate source grid for modification into fractional source grid-file...\n"
     fi # !vrb_lvl
-    cmd_cp_src[${fl_idx}]="/bin/cp -f ${grd_src} ${grd_src_sgs}"
+    cmd_cp_src[${fl_idx}]="/bin/cp -f \"${grd_src}\" \"${grd_src_sgs}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_cp_src[${fl_idx}]}
     fi # !dbg
@@ -1989,7 +1989,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Append sub-grid fraction from data-file to fractional source grid-file\n"
     fi # !vrb_lvl
-    cmd_sgs_src[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${fl_in[${fl_idx}]} ${grd_src_sgs}"
+    cmd_sgs_src[${fl_idx}]="ncks -A -C -v ${sgs_frc} \"${fl_in[${fl_idx}]}\" \"${grd_src_sgs}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_sgs_src[${fl_idx}]}
     fi # !dbg
@@ -2009,7 +2009,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     # 2. Set (formerly) missing values to 0 sub-grid fraction
     # 3. Set 0 sub-grid fraction to 0 imask
     # 4. Compute active grid area
-    cmd_wheresrc[${fl_idx}]="ncap2 -O -s '${sgs_frc}=${sgs_frc}; if(${sgs_nrm} != 1.0){${sgs_frc}/=${sgs_nrm}; ${sgs_frc}@units=\"1\";} if(${sgs_frc}@missing_value.exists()) ram_delete(${sgs_frc}@missing_value); delete_miss(${sgs_frc}); where(${sgs_frc} > 1.0f) ${sgs_frc}=0.0f; where(${sgs_frc} == 0.0f) grid_imask=0; grid_area*=${sgs_frc}' ${grd_src_sgs} ${grd_src_sgs}"
+    cmd_wheresrc[${fl_idx}]="ncap2 -O -s '${sgs_frc}=${sgs_frc}; if(${sgs_nrm} != 1.0){${sgs_frc}/=${sgs_nrm}; ${sgs_frc}@units=\"1\";} if(${sgs_frc}@missing_value.exists()) ram_delete(${sgs_frc}@missing_value); delete_miss(${sgs_frc}); where(${sgs_frc} > 1.0f) ${sgs_frc}=0.0f; where(${sgs_frc} == 0.0f) grid_imask=0; grid_area*=${sgs_frc}' \"${grd_src_sgs}\" \"${grd_src_sgs}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_wheresrc[${fl_idx}]}
     fi # !dbg
@@ -2024,7 +2024,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Create sub-grid fraction ${sgs_frc} data file for regridding...\n"
     fi # !vrb_lvl
-    cmd_sgs_in[${fl_idx}]="ncks -O -v ${sgs_frc} ${grd_src_sgs} ${frc_in_sgs}"
+    cmd_sgs_in[${fl_idx}]="ncks -O -v ${sgs_frc} \"${grd_src_sgs}\" \"${frc_in_sgs}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_sgs_in[${fl_idx}]}
     fi # !dbg
@@ -2040,7 +2040,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	printf "SGS: Regrid sub-grid fraction ${sgs_frc} to destination grid...\n"
     fi # !vrb_lvl
     # NB: Sub-grid mask is extensive and may contain _FillValue (as does ALM/CLM/CTSM/ELM landmask), so do not regrid it
-    cmd_sgs_rmp[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -v ${sgs_frc} -i ${frc_in_sgs} -s ${grd_src} -g ${grd_dst} -o ${frc_out_sgs}"
+    cmd_sgs_rmp[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -v ${sgs_frc} -i \"${frc_in_sgs}\" -s \"${grd_src}\" -g \"${grd_dst}\" -o \"${frc_out_sgs}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_sgs_rmp[${fl_idx}]}
     fi # !dbg
@@ -2057,7 +2057,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !vrb_lvl
     # Allow for possibility that sgs_frc is 3D (time,lat,lon) as in CICE
     # And be CAREFUL changing this
-    cmd_sgs_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"surface mask (0=invalid and 1=valid)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' ${frc_out_sgs} ${frc_out_sgs}"
+    cmd_sgs_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"surface mask (0=invalid and 1=valid)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' \"${frc_out_sgs}\" \"${frc_out_sgs}\""
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_sgs_msk[${fl_idx}]}
     fi # !dbg
@@ -2072,8 +2072,8 @@ if [ "${prc_typ}" = 'sgs' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "SGS: Append regridded sub-grid fraction to destination fractional grid-file...\n"
     fi # !vrb_lvl
-    cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc},area ${frc_out_sgs} ${grd_dst_sgs}" # Min Xu 20190123
-    #cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} ${frc_out_sgs} ${grd_dst_sgs}" # CSZ until 20190123 uses area directly from destination grid rather than copying remapped area from input grid
+    cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc},area \"${frc_out_sgs}\" \"${grd_dst_sgs}\"" # Min Xu 20190123
+    #cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} \"${frc_out_sgs}\" \"${grd_dst_sgs}\"" # CSZ until 20190123 uses area directly from destination grid rather than copying remapped area from input grid
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_sgs_dst[${fl_idx}]}
     fi # !dbg
@@ -2095,8 +2095,8 @@ if [ "${prc_typ}" = 'sgs' ]; then
     # CSZ's original lines disagree with conv_remap2: conserve area not physical fields 
     # Min Xu defines grid_area using area from remapped source grid
     # CSZ uses area grid_area taken directly from destination grid
-    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area=grid_center_lon;grid_area=area*${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}" # Min Xu 20190123
-    #cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${sgs_frc}' ${grd_dst_sgs} ${grd_dst_sgs}" # CSZ until 20190123
+    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area=grid_center_lon;grid_area=area*${sgs_frc}' \"${grd_dst_sgs}\" \"${grd_dst_sgs}\"" # Min Xu 20190123
+    #cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${sgs_frc}' \"${grd_dst_sgs}\" \"${grd_dst_sgs}\"" # CSZ until 20190123
     if [ ${dbg_lvl} -ge 1 ]; then
 	echo ${cmd_wheredst[${fl_idx}]}
     fi # !dbg
@@ -2148,18 +2148,18 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 	elif [ -f "${hnt_dst_fl}" ]; then
 	    rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
 	fi # !hnt_dst_fl
-	cmd_map[${fl_idx}]="${wgt_cmd} -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${wgt_opt} ${rgn_opt} > /dev/null"
+	cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt} > /dev/null"
     fi # !esmf
     if [ "${wgt_typ}" = 'tempest' ]; then 
-	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} > /dev/null"
+	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
 	if [ "${a2o_flg}" = 'Yes' ]; then 
-	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --b ${grd_src} --a ${grd_dst} --out ${msh_fl} > /dev/null"
+	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
 	fi # !a2o_flg
-	cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
+	cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_src}\" --out_mesh \"${grd_dst}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_fl}\" ${wgt_opt} > /dev/null"
 	if [ "${trn_map}" = 'Yes' ]; then 
 	    # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_dst} --out_mesh ${grd_src} --ov_mesh ${msh_fl} --out_map ${map_trn_fl} ${wgt_opt} > /dev/null"
-	    cmd_trn[${fl_idx}]="GenerateTransposeMap --in ${map_trn_fl} --out ${map_fl} > /dev/null"
+	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_dst}\" --out_mesh \"${grd_src}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_trn_fl}\" ${wgt_opt} > /dev/null"
+	    cmd_trn[${fl_idx}]="GenerateTransposeMap --in \"${map_trn_fl}\" --out \"${map_fl}\" > /dev/null"
 	fi # !trn_map
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_msh[${fl_idx}]}
@@ -2209,7 +2209,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 		hst_att="${hst_att}; ${cmd_trn[${fl_idx}]}"
 	    fi # !trn_map
 	fi # !tempest
-	cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_fl}"
+	cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' \"${map_fl}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_att[${fl_idx}]}
 	fi # !dbg
@@ -2230,7 +2230,7 @@ idx_srt=0
 let idx_end=$((job_nbr-1))
 for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     in_fl=${fl_in[${fl_idx}]}
-    if [ "$(basename ${in_fl})" = "${in_fl}" ]; then
+    if [ "$(basename "${in_fl}")" = "${in_fl}" ]; then
 	in_fl="${drc_pwd}/${in_fl}"
     fi # !basename
     idx_prn=`printf "%02d" ${fl_idx}`
@@ -2247,7 +2247,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    out_fl="${drc_out}/${out_fl}"
 	fi # !drc_usr
     else # !out_usr_flg
-	out_fl="${drc_out}/$(basename ${in_fl})"
+	out_fl="${drc_out}/$(basename "${in_fl}")"
     fi # !out_fl
     if [ "${in_fl}" = "${out_fl}" ]; then
 	echo "ERROR: Input file = Output file = ${in_fl}"
@@ -2266,7 +2266,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
 	    # Pre-process zonal input files so grid inferral works
 	    # 20160214: fix record variable to work around ncpdq problem
-	    cmd_znl[${fl_idx}]="ncecat -O -u lon ${nco_opt} ${nco_var_lst} ${in_fl} ${in_fl} ${in_fl} ${in_fl} ${znl_fl/znl/znl1};ncap2 -O ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}"
+	    cmd_znl[${fl_idx}]="ncecat -O -u lon ${nco_opt} ${nco_var_lst} \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${znl_fl/znl/znl1}\";ncap2 -O ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' \"${znl_fl/znl/znl1}\" \"${znl_fl/znl/znl2}\""
 	    in_fl="${znl_fl/znl/znl2}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_znl[${fl_idx}]}
@@ -2288,7 +2288,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 		exit 1
 	fi # ! -f
 	# Infer source grid-file from input data file
-	cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=${hnt_src_fl} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=${grd_src} ${in_fl} ${tmp_out_fl}"
+	cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${in_fl}\" \"${tmp_out_fl}\""
 	
 	# Block 2 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -2320,19 +2320,19 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    elif [ -f "${hnt_dst_fl}" ]; then
 		rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
 	    fi # !hnt_dst_fl
-	    cmd_map[${fl_idx}]="${wgt_cmd} -s ${grd_src} -d ${grd_dst} -w ${map_fl} --method ${alg_opt} ${wgt_opt} ${rgn_opt} > /dev/null"
+	    cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt} > /dev/null"
 	fi # !esmf
 	if [ "${wgt_typ}" = 'tempest' ]; then 
 	    printf "Mesh-File: ${msh_fl}\n"
-	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a ${grd_src} --b ${grd_dst} --out ${msh_fl} > /dev/null"
+	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
 	    if [ "${a2o_flg}" = 'Yes' ]; then 
-		cmd_msh[${fl_idx}]="GenerateOverlapMesh --b ${grd_src} --a ${grd_dst} --out ${msh_fl} > /dev/null"
+		cmd_msh[${fl_idx}]="GenerateOverlapMesh --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
 	    fi # !a2o_flg
-	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_src} --out_mesh ${grd_dst} --ov_mesh ${msh_fl} --out_map ${map_fl} ${wgt_opt} > /dev/null"
+	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_src}\" --out_mesh \"${grd_dst}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_fl}\" ${wgt_opt} > /dev/null"
 	    if [ "${trn_map}" = 'Yes' ]; then 
 		# NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-		cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh ${grd_dst} --out_mesh ${grd_src} --ov_mesh ${msh_fl} --out_map ${map_trn_fl} ${wgt_opt} > /dev/null"
-		cmd_trn[${fl_idx}]="GenerateTransposeMap --in ${map_trn_fl} --out ${map_fl} > /dev/null"
+		cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_dst}\" --out_mesh \"${grd_src}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_trn_fl}\" ${wgt_opt} > /dev/null"
+		cmd_trn[${fl_idx}]="GenerateTransposeMap --in \"${map_trn_fl}\" --out \"${map_fl}\" > /dev/null"
 	    fi # !trn_map
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_msh[${fl_idx}]}
@@ -2362,7 +2362,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    fi # !err
 	    if [ "${map_usr_flg}" = 'Yes' ]; then
 		hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
-		cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' ${map_rsl_fl}"
+		cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' \"${map_rsl_fl}\""
 		eval ${cmd_att[${fl_idx}]}
 		if [ $? -ne 0 ]; then
 		    printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
@@ -2397,7 +2397,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    printf "DPT(in)  : ${in_fl}\n"
 	    printf "DPT(out) : ${dpt_tmp_fl}\n"
 	fi # !vrb_lvl
-	cmd_dpt[${fl_idx}]="${cmd_dpt_mpas} ${cmd_dpt_opt} -i ${in_fl} -o ${dpt_tmp_fl}"
+	cmd_dpt[${fl_idx}]="${cmd_dpt_mpas} ${cmd_dpt_opt} -i \"${in_fl}\" -o \"${dpt_tmp_fl}\""
 	in_fl=${dpt_tmp_fl}
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_dpt[${fl_idx}]}
@@ -2418,7 +2418,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    printf "PDQ(in)  : ${in_fl}\n"
 	    printf "PDQ(out) : ${pdq_fl}\n"
 	fi # !vrb_lvl
-	cmd_pdq[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${pdq_opt} ${in_fl} ${pdq_fl}"
+	cmd_pdq[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${pdq_opt} \"${in_fl}\" \"${pdq_fl}\""
 	in_fl=${pdq_fl}
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_pdq[${fl_idx}]}
@@ -2438,7 +2438,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    printf "D2F(in)  : ${in_fl}\n"
 	    printf "D2F(out) : ${d2f_fl}\n"
 	fi # !vrb_lvl
-	cmd_d2f[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${d2f_opt} ${in_fl} ${d2f_fl}"
+	cmd_d2f[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${d2f_opt} \"${in_fl}\" \"${d2f_fl}\""
 	in_fl=${d2f_fl}
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_d2f[${fl_idx}]}
@@ -2454,7 +2454,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 
     # Block 4d: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then to annotate them here, so assume ncclimo is working with annotated files)
     if [ "${prc_mpas}" = 'Yes' ] && [ "${clm_flg}" = 'No' ]; then
-	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} ${in_fl} ${att_fl};"
+	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} \"${in_fl}\" \"${att_fl}\";"
 	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
 	    printf "att(in)  : ${in_fl}\n"
 	    printf "att(out) : ${att_fl}\n"
@@ -2500,7 +2500,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "RRG: Remove \"${rnm_sng}\" from dimension and variable names...\n"
 	fi # !vrb_lvl
-	cmd_rnm[${fl_idx}]="ncrename -O ${dmn_sng} ${var_sng} ${fl_in[${fl_idx}]} ${rnm_fl}"
+	cmd_rnm[${fl_idx}]="ncrename -O ${dmn_sng} ${var_sng} \"${fl_in[${fl_idx}]}\" \"${rnm_fl}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_rnm[${fl_idx}]}
 	fi # !dbg
@@ -2515,7 +2515,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "RRG: Append regional coordinates and vertices to renamed, annotated regional input data...\n"
 	fi # !vrb_lvl
-	cmd_apn[${fl_idx}]="ncks -A ${rgn_fl} ${rnm_fl}"
+	cmd_apn[${fl_idx}]="ncks -A \"${rgn_fl}\" \"${rnm_fl}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_apn[${fl_idx}]}
 	fi # !dbg
@@ -2579,7 +2579,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     # Block 7: Special case post-processing
     if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
 	# NB: Move file to avert problem with --no_tmp_fl causing self-overwrite
-	cmd_znl[${fl_idx}]="/bin/mv ${out_fl} ${ncwa_fl};ncwa -O -a lon ${nco_opt} ${nco_var_lst} ${ncwa_fl} ${out_fl}"
+	cmd_znl[${fl_idx}]="/bin/mv \"${out_fl}\" \"${ncwa_fl}\";ncwa -O -a lon ${nco_opt} ${nco_var_lst} \"${ncwa_fl}\" \"${out_fl}\""
 	# Block 7 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_znl[${fl_idx}]}
@@ -2620,7 +2620,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	    printf "SGS: Append full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask to regridded file...\n"
 	fi # !vrb_lvl
 	# Replace user-areas area, user-areas sub-grid fraction, and naïvely regridded (rather than accurately re-derived) sub-grid mask, respectively
-	cmd_sgs_rpl[${fl_idx}]="ncks -A -C -v area,${sgs_frc},${sgs_msk} ${frc_out_sgs} ${fl_out[${fl_idx}]}"
+	cmd_sgs_rpl[${fl_idx}]="ncks -A -C -v area,${sgs_frc},${sgs_msk} \"${frc_out_sgs}\" \"${fl_out[${fl_idx}]}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_sgs_rpl[${fl_idx}]}
 	fi # !dbg
@@ -2636,7 +2636,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 		printf "SGS: Implement idiosyncratic ALM/CLM/CTSM/ELM characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [km2]
-	    cmd_elm[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@long_name=\"Gridcell area\";area@units=\"km^2\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
+	    cmd_elm[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@long_name=\"Gridcell area\";area@units=\"km^2\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_elm[${fl_idx}]}
 	    fi # !dbg
@@ -2653,7 +2653,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 		printf "SGS: Implement idiosyncratic CICE characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [m2], and aice from [frc] to [%]
-	    cmd_cice[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2;area@long_name=\"Gridcell area\";area@units=\"m^2\";${sgs_frc}*=100;${sgs_frc}@units=\"%\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
+	    cmd_cice[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2;area@long_name=\"Gridcell area\";area@units=\"m^2\";${sgs_frc}*=100;${sgs_frc}@units=\"%\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_cice[${fl_idx}]}
 	    fi # !dbg
@@ -2670,7 +2670,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 		printf "SGS: Implement idiosyncratic MPAS-CICE characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Add units to sgs_frc
-	    cmd_mpascice[${fl_idx}]="ncap2 -O -s '${sgs_frc}@units=\"1.0\"' ${fl_out[${fl_idx}]} ${fl_out[${fl_idx}]}"
+	    cmd_mpascice[${fl_idx}]="ncap2 -O -s '${sgs_frc}@units=\"1.0\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_mpascice[${fl_idx}]}
 	    fi # !dbg
