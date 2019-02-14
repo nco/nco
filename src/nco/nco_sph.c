@@ -17,7 +17,7 @@ not removed.
 
 /* global variables for latitude, longitude in RADIANS
    these may be set in nco_poly.c or
-   should be safe with OPenMP  ? */
+   should be safe with OPenMP   */
 
 static double LAT_MIN_RAD;
 static double LAT_MAX_RAD;
@@ -785,7 +785,7 @@ nco_bool nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVert
 
 
 /* set static globals */
-void nco_sph_set_limits(double lon_min_rad, double lon_max_rad, double lat_min_rad, double lat_max_rad   )
+void nco_sph_set_domain(double lon_min_rad, double lon_max_rad, double lat_min_rad, double lat_max_rad)
 {
 
   LON_MIN_RAD=lon_min_rad;
@@ -812,6 +812,26 @@ nco_sph_add_lonlat(double *ds)
 
 /*------------------------ nco_geo functions manipulate lat & lon  ----------------------------------*/
 
+/* assume latitude -90,90 */
+double nco_geo_lat_correct(double lat1, double lon1, double lon2)
+{
+
+   double dp;
+
+   if( fabs(lon1 - lon2) <= SIGMA_RAD || fabs(lat1) <= SIGMA_RAD || lat1 >= LAT_MAX_RAD - SIGMA_RAD   || lat1 <= LAT_MIN_RAD + SIGMA_RAD  )
+      return lat1;
+
+   //lat1=lat1*M_PI / 180.0;
+
+   dp= tan(lat1) / cos ( lon2-lon1 ) ;
+
+   dp=atan(dp);
+
+
+   return dp;
+
+
+}
 
 
 
@@ -882,26 +902,6 @@ void nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2,
 }
 
 
-/* assume latitude -90,90 */
-double nco_geo_lat_correct(double lat1, double lon1, double lon2)
-{
-
-   double dp;
-
-   if( lon1 == lon2  || lat1==0.0 || lat1 == M_PI /2.0   || lat1 == -M_PI/2.0  )
-      return lat1;
-
-   //lat1=lat1*M_PI / 180.0;
-
-   dp= tan(lat1) / cos ( lon2-lon1 ) ;
-
-   dp=atan(dp);
-
-
-   return dp;
-
-
-}
 
 void nco_geo_lonlat_2_sph(double lon, double lat, double *b)
 {
@@ -925,8 +925,9 @@ void  nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg)
 
    /* nb this returns range (-180, 180) */
    *lon = atan2(a[1],a[0]) ;
-   if( *lon < 0.0 && IS_LON_360)
-      *lon+= (M_PI*2);
+
+   if( *lon < 0.0 &&  LON_MIN_RAD >=0.0  )
+      *lon+= (LON_MAX_RAD);
 
    // b[1]= asin(a[2]) * 180.0 /M_PI;
    *lat=atan2( a[2], sqrt( a[0]*a[0]+a[1]*a[1] ) ) ;
