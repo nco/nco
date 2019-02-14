@@ -2,9 +2,9 @@
 #define NCO_PLY_LST_H
 
 
-#include        <stdlib.h>
-#include        <stdio.h>
-#include        <math.h>
+#include  <stdlib.h>
+#include  <stdio.h>
+#include  <math.h>
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
@@ -22,9 +22,50 @@
 extern "C" {
 #endif /* !__cplusplus */
 
-int
-hello(char *msg);
 
+
+/************************ functions that manipulate lists of polygons ****************************************************/
+
+void
+nco_poly_re_org_lst(  /* for each poly_sct*  in list re-order points so that first point is the leftermost point */
+poly_sct **pl_lst,
+int arr_nbr);
+
+poly_sct**             /* [O] [nbr] Array of poly_sct */
+nco_poly_lst_mk(
+double *area, /* I [sr] Area of source grid */
+int *msk, /* I [flg] Mask on source grid */
+double *lat_ctr, /* I [dgr] Latitude  centers of source grid */
+double *lon_ctr, /* I [dgr] Longitude centers of source grid */
+double *lat_crn, /* I [dgr] Latitude  corners of source grid */
+double *lon_crn, /* I [dgr] Longitude corners of source grid */
+size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
+long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
+nco_grd_lon_typ_enm grd_lon_typ, /* I [num] if not nil then split cells that straddle Greenwich or Dateline  */
+poly_typ_enm pl_typ,
+int *pl_nbr);    /* O [nbr] size  poly_sct */
+
+poly_sct **
+nco_poly_lst_free(
+poly_sct **pl_lst,
+int arr_nbr);
+
+
+poly_sct **
+nco_poly_lst_mk_vrl(   /* create overlap mesh  for crt */
+poly_sct **pl_lst_in,
+int pl_cnt_in,
+poly_sct **pl_lst_out,
+int pl_cnt_out,
+int *pl_cnt_vrl_ret);
+
+poly_sct **
+nco_poly_lst_mk_vrl_sph(   /* create overlap mesh  for sph */
+poly_sct **pl_lst_in,
+int pl_cnt_in,
+poly_sct **pl_lst_out,
+int pl_cnt_out,
+int *pl_cnt_vrl_ret);
 
 
 
