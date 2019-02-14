@@ -1562,6 +1562,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: dst_fl   = ${dst_fl}\n"
     printf "dbg: erwg_vrs = ${erwg_vrs_sng}\n"
     printf "dbg: fl_fmt   = ${fl_fmt}\n"
+    printf "dbg: fl_in[0] = ${fl_in[0]}\n"
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: gll_fl   = ${gll_fl}\n"
@@ -2533,7 +2534,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	printf "Map/Wgt  : ${map_fl}\n"
 	printf "Regridded: ${out_fl}\n"
     fi # !vrb_lvl
-    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=${map_fl} ${in_fl} ${out_fl}"
+    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
     
     # Block 5 Loop 2: Execute and/or echo commands
     if [ ${dbg_lvl} -ge 1 ]; then

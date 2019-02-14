@@ -1,3 +1,7 @@
+2019-02-14  Charlie Zender  <zender@uci.edu>
+
+	* ncremap double-quote input, output, and map-file names to allow white-space in filepaths
+
 2019-02-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9-alpha06 release procedure:
