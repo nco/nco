@@ -23,6 +23,10 @@
 /* this is 1.0e-20 * PI / 180.0 */
 #define ARC_MIN_LENGTH_RAD (1.0e-15)
 
+/* smallest RADIAN */
+#define SIGMA_RAD (1.0e-20)
+
+
 /* if true then longitude 0-360 */
 /* we need this to convert 3D back to 2D */
 #define IS_LON_360 (1)
@@ -99,7 +103,10 @@ nco_bool
 nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVertex);
 
 void
-nco_sph_set_limits(double lon_min_rad, double lon_max_rad, double lat_min_rad, double lat_max_rad   );
+nco_sph_set_domain(double lon_min_rad, double lon_max_rad, double lat_min_rad, double lat_max_rad);
+
+void
+nco_sph_add_lonlat(double *ds);
 
 
 /*------------------------ nco_geo functions these manimpulate lat & lon  ----------------------------------*/
@@ -108,10 +115,6 @@ nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg);
 
 void
 nco_geo_lonlat_2_sph(double lon, double lat, double *b);
-
-void
-nco_sph_add_lonlat(double *ds);
-
 
 double
 nco_geo_lat_correct(double lat1, double lon1, double lon2);
