@@ -792,6 +792,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   //size_t lnk_idx; /* [idx] Link index */
   
   int pl_cnt_vrl;
+
+  poly_sct *pl_glb_in=NULL_CEWI;
+  poly_sct *pl_glb_out=NULL_CEWI;
   poly_sct **pl_lst_vrl=(poly_sct**)NULL_CEWI;
 
   
@@ -802,7 +805,22 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s:%s Just entered function- test msh_wrt()\n",nco_prg_nm_get(),fnc_nm);
 
-  
+
+  /* create some statistics on grid in and grid out */
+  pl_glb_in=nco_msh_stats(area_in,msk_in,lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in,grd_sz_in, grd_crn_nbr_in);
+  pl_glb_out=nco_msh_stats(area_out,msk_out,lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out,grd_sz_out, grd_crn_nbr_out);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+    (void)fprintf(stderr,"%s:%s mesh in statistics\n",nco_prg_nm_get(),fnc_nm);
+    nco_poly_prn(pl_glb_in,0);
+
+    (void)fprintf(stderr,"\n%s:%s mesh out statistics\n",nco_prg_nm_get(),fnc_nm);
+    nco_poly_prn(pl_glb_out,0);
+
+  }
+
+
+
   nco_msh_wrt("tst-wrt-in.nc", grd_sz_in, grd_crn_nbr_in, lat_crn_in, lon_crn_in);
   nco_msh_wrt("tst-wrt-out.nc", grd_sz_out, grd_crn_nbr_out, lat_crn_out, lon_crn_out);
 
@@ -824,9 +842,35 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     } else
     {
       pl_typ = poly_sph;
-      grd_lon_typ_in = nco_grd_lon_nil ;
-      grd_lon_typ_out = nco_grd_lon_nil;
+      grd_lon_typ_in = nco_grd_lon_Grn_ctr ;
+      grd_lon_typ_out = nco_grd_lon_Grn_ctr;
 
+    }
+
+    /* set domain in nco_crt - nb all in degree's */
+    if(pl_typ == poly_crt ){
+      if(grd_lon_typ_out == nco_grd_lon_Grn_ctr || grd_lon_typ_out == nco_grd_lon_Grn_wst )
+      {
+        nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
+      }
+      else if(grd_lon_typ_out == nco_grd_lon_180_ctr || grd_lon_typ_out == nco_grd_lon_180_wst )
+      {
+        nco_crt_set_domain(-180.0, 180.0, -90.0, 90.0);
+
+      }
+    }
+
+    /* set domain in nco_sph - nb all in radians */
+    if(pl_typ == poly_sph ){
+       if(grd_lon_typ_out == nco_grd_lon_Grn_ctr || grd_lon_typ_out == nco_grd_lon_Grn_wst )
+       {
+         nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
+       }
+       else if(grd_lon_typ_out == nco_grd_lon_180_ctr || grd_lon_typ_out == nco_grd_lon_180_wst )
+       {
+         nco_sph_set_domain(-M_PI, M_PI, -M_PI_2, M_PI_2);
+
+       }
     }
 
 
@@ -925,6 +969,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *col_src_adr_ptr=col_src_adr;
   *row_dst_adr_ptr=row_dst_adr;
   *lnk_nbr_ptr=lnk_nbr;
+
+  pl_glb_in=nco_poly_free(pl_glb_in);
+  pl_glb_out=nco_poly_free(pl_glb_out);
+
 
   if(pl_cnt_vrl)
     pl_lst_vrl=nco_poly_lst_free(pl_lst_vrl,pl_cnt_vrl);
@@ -1045,11 +1093,84 @@ nco_msh_wrt
 
   area=(double*)nco_free(area);
   grd_ctr_lat=(double*)nco_free(grd_ctr_lat);
-  grd_ctr_lon=(double*)nco_free(grd_ctr_lon);
+
+}
+
+poly_sct *           /* return a ply_sct with lat/lon minmax and total area */
+nco_msh_stats
+(double *area,       /* I [sr] Area of  grid */
+ int *msk,           /* I [flg] Mask on  grid */
+ double *lat_ctr,    /* I [dgr] Latitude  centers of  grid */
+ double *lon_ctr,    /* I [dgr] Longitude centers of  grid */
+ double *lat_crn,    /* I [dgr] Latitude  corners of  grid */
+ double *lon_crn,    /* I [dgr] Longitude corners of  grid */
+ size_t grd_sz,      /* I [nbr] Number of elements in single layer of  grid */
+ long grd_crn_nbr){
 
 
-  
 
-}  
+ size_t idx;
+ long jdx;
+ long ixt;
+
+ int umsk_cnt=0;
+ 
+ double tot_area=0.0;
+ 
+ poly_sct *pl;
+ 
+ pl=nco_poly_init_crn(poly_crt, 4);
+ 
+ pl->dp_x_minmax[0]=DBL_MAX;
+ pl->dp_x_minmax[1]=-DBL_MAX;
+
+ pl->dp_y_minmax[0]=DBL_MAX;
+ pl->dp_y_minmax[1]=-DBL_MAX;
+
+
+
+  for(idx=0; idx< grd_sz;idx++ ) {
+    if(msk[idx]) {
+      tot_area += area[idx];
+      umsk_cnt++;
+    }
+
+    for (jdx = 0; jdx < grd_crn_nbr; jdx++)
+    {
+      ixt=idx*grd_crn_nbr + jdx;
+      
+      /* lon min max */
+      if(lon_crn[ixt]  < pl->dp_x_minmax[0]  )
+        pl->dp_x_minmax[0]=lon_crn[ixt];
+      else if(lon_crn[ixt] > pl->dp_x_minmax[1])
+        pl->dp_x_minmax[1]=lon_crn[ixt];
+
+      /* lat min max */
+      if(lat_crn[ixt]  < pl->dp_y_minmax[0]  )
+        pl->dp_y_minmax[0]=lat_crn[ixt];
+      else if(lat_crn[ixt] > pl->dp_y_minmax[1])
+        pl->dp_y_minmax[1]=lat_crn[ixt];
+
+
+    }       
+
+ }    
+
+ /* all masked return NULL */
+ if(umsk_cnt==0)
+ {
+   pl=nco_poly_free(pl);
+   return pl;
+ }
+
+
+ pl->area=tot_area;
+ nco_poly_use_minmax_crn(pl);
+
+
+ return pl;
+}
+
+
 
 
