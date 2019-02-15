@@ -1,6 +1,8 @@
 2019-02-15  Charlie Zender  <zender@uci.edu>
 
-	* ncremap refactor to always define algorithm diagnostic alg_opt for six tempest-types
+	* ncremap make --clm_flg a true flag with same meaning as -C
+
+	* ncremap refactor to always define algorithm diagnostic alg_opt for six Tempest-types
 
 2019-02-14  Charlie Zender  <zender@uci.edu>
 

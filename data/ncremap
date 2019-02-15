@@ -614,7 +614,8 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       a2o | atm2ocn | b2l | big2ltl | l2s | lrg2sml ) a2o_flg='Yes' ;; # # Atmosphere-to-ocean
 	       a2o=?* | atm2ocn=?* | b2l=?* | big2ltl=?* | l2s=?* | lrg2sml=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Atmosphere-to-ocean
 	       alg_typ=?* | algorithm=?* | regrid_algorithm=?* ) alg_typ="${LONG_OPTARG}" ;; # -a # Algorithm
-	       clm_flg=?* | climatology_flag=?* ) clm_flg='Yes' ;; # -C # Climo flag (undocumented)
+	       clm_flg | climatology_flag ) clm_flg='Yes' ;; # -C # Climo flag (undocumented)
+	       clm_flg=?* | climatology_flag=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # clm_flg
 	       d2f | d2s | dbl_flt | dbl_sgl | double_float ) d2f_flg='Yes' ;; # # Convert double-precision fields to single-precision
 	       d2f=?* | d2s=?* | dbl_flt=?* | dbl_sgl=?* | double_float=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # D2F
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
@@ -2163,7 +2164,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_msh[${fl_idx}]}
 	    if [ $? -ne 0 ] || [ ! -f ${msh_fl} ]; then
-		printf "${spt_nm}: ERROR Failed to generate mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to generate intersection mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
 		printf "${spt_nm}: HINT GenerateOverlapMesh requires that grids of unequal area be given as arguments in the order smaller first, larger second. ncremap supplies the grid arguments in the order source first, destination second unless explicitly told otherwise. A source grid that is a superset of the destination would violate the GenerateOverlapMesh rule. The solution is to add the \"--a2o\" switch (documented at http://nco.sf.net/nco.html#a2o) that tells ncremap to swap the grid argument order.\n"
 		exit 1
 	    fi # !err
@@ -2336,7 +2337,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_msh[${fl_idx}]}
 		if [ $? -ne 0 ] || [ ! -f ${msh_fl} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed to generate intersection mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT GenerateOverlapMesh requires that grids of unequal area be given as arguments in the order smaller first, larger second. ncremap supplies the grid arguments in the order source first, destination second unless explicitly told otherwise. A source grid that is a superset of the destination would violate the GenerateOverlapMesh rule. The solution is to add the \"--a2o\" switch (documented at http://nco.sf.net/nco.html#a2o) that tells ncremap to swap the grid argument order.\n"
 		    exit 1
 		fi # !err
