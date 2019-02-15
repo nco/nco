@@ -452,10 +452,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_nrm} ${fnt_bld}${spt_nm} --destination=dst_fl --input_file=in_fl --output_file=out_fl${fnt_nrm}\n\n"
     echo "Command-line options [long-option synonyms in ${fnt_tlc}italics${fnt_nrm}]:"
     echo "${fnt_rvr}-3${fnt_nrm}          Output file format CLASSIC (netCDF3 classic CDF1) [${fnt_tlc}fl_fmt, file_format=classic${fnt_nrm}]"
-    echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
+    echo "${fnt_rvr}-4${fnt_nrm}          Output file format NETCDF4 (netCDF4 extended HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4${fnt_nrm}]"
     echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
-    echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
+    echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "            ESMF algorithms: bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch"
     echo "            Tempest algorithms: tempest|se2fv_flx|se2fv_stt|se2fv_alt|fv2se_flx|fv2se_stt|fv2se_alt"
@@ -885,42 +885,30 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     alg_opt='tempest'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
-    wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono"
-    if [ -n "${gll_fl}" ]; then
-	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
-    fi # !gll_fl
+    wgt_opt_tps='--in_type cgll --in_np 4 --out_type fv --out_double --mono'
+    alg_opt='se2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # alg_sng='highorder'
-    wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double"
-    if [ -n "${gll_fl}" ]; then
-	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
-    fi # !gll_fl
+    wgt_opt_tps='--in_type cgll --in_np 4 --out_type fv --out_double'
+    alg_opt='se2fv_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # alg_sng='intbilin'
-    wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono3 --noconserve"
-    if [ -n "${gll_fl}" ]; then
-	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
-    fi # !gll_fl
+    wgt_opt_tps='--in_type cgll --in_np 4 --out_type fv --out_double --mono3 --noconserve'
+    alg_opt='se2fv_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # alg_sng='monotr'
     # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-    wgt_opt_tps="--in_type cgll --in_np 4 --out_type fv --out_double --mono"
-    if [ -n "${gll_fl}" ]; then
-	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
-    fi # !gll_fl
+    wgt_opt_tps='--in_type cgll --in_np 4 --out_type fv --out_double --mono'
+    alg_opt='fv2se_flx'
     wgt_typ='tempest'
     trn_map='Yes'
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # alg_sng='highorder'
-    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np 4 --out_double --volumetric"
-    if [ -n "${gll_fl}" ]; then
-	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
-    fi # !gll_fl
+    wgt_opt_tps='--in_type fv --in_np 2 --out_type cgll --out_np 4 --out_double --volumetric'
+    alg_opt='fv2se_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # alg_sng='mono'
-    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np 4 --out_double --mono --volumetric"
-    if [ -n "${gll_fl}" ]; then
-	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
-    fi # !gll_fl
+    wgt_opt_tps='--in_type fv --in_np 1 --out_type cgll --out_np 4 --out_double --mono --volumetric'
+    alg_opt='fv2se_alt'
     wgt_typ='tempest'
 else 
     echo "${spt_nm}: ERROR ${alg_typ} is not a valid remapping algorithm"
@@ -928,6 +916,14 @@ else
     echo "${spt_nm}: HINT Valid TempestRemap remapping options and synonyms are tempest | se2fv_flx,mono_se2fv | se2fv_stt,highorder_se2fv | se2fv_alt,intbilin | fv2se_flx,monotr_fv2se | fv2se_stt,highorder_fv2se | fv2se_alt,mono_fv2se"
     exit 1
 fi # !alg_typ
+# NB: As of 20190215 ncremap has never used gll_fl for E3SM, though I think Tempest does support it
+if [ -n "${gll_fl}" ]; then
+    if [ "${alg_opt}" = 'se2fv_flx' ] || [ "${alg_opt}" = 'se2fv_stt' ] || [ "${alg_opt}" = 'se2fv_alt' ] || [ "${alg_opt}" = 'fv2se_flx' ]; then
+	wgt_opt_tps="--in_meta ${gll_fl} ${wgt_opt_tps}"
+    elif [ "${alg_opt}" = 'fv2se_stt' ] || [ "${alg_opt}" = 'fv2se_alt' ]; then
+	wgt_opt_tps="${wgt_opt_tps} --out_meta ${gll_fl}"
+    fi # !se2fv || fv2se_flx
+fi # !gll_fl
 if [ -n "${fl_fmt}" ]; then
     if [ "${fl_fmt}" = '3' ] || [ "${fl_fmt}" = 'classic' ] || [ "${fl_fmt}" = 'netcdf3' ]; then
 	nco_fl_fmt='--fl_fmt=classic'
@@ -1166,7 +1162,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	    fi # !ERWG
 	fi # !wgt_usr
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
+	    printf "MWF: Create ${alg_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
 	cmd_mwf="ncremap ${wgt_sng} --alg_typ=${alg_typ} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" ${hnt_src_sng} ${hnt_dst_sng} --map=\"${map_nm}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -1795,7 +1791,7 @@ else # !map_usr_flg
     fi # !dst_usr_flg || grd_dst_usr_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ] && [	${flg_grd_only} != 'Yes' ]; then
 	printf "Weight-generation type: ${wgt_typ}\n"
-	printf "Algorithm used to generate weights in map-file is: ${alg_opt}\n"
+	printf "Algorithm selected to generate weights in map-file is: ${alg_opt}\n"
 	printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
     fi # !vrb_lvl
     command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is often provided in NCL packages. Tempest executables must be installed from source (https://github.com/ClimateGlobalChange/tempestremap).\n"; exit 1; }
