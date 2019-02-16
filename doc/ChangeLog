@@ -1,5 +1,11 @@
 2019-02-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.7.9-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha07: Ed';git push
+	git tag -a 4.7.9-alpha07 -m 'ncremap lat/lon_dmn_nm, clm_flg, alg_opt';git push --tags
+
+	* Update ncremap documentation accordingly
+
 	* ncremap use lat_dmn_nm/lon_dmn_nm for lat_dmn_nm_out/lon_dmn_nm_out
 
 2019-02-15  Charlie Zender  <zender@uci.edu>
@@ -11,7 +17,7 @@
 2019-02-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9-alpha06 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha06: Ed';git push
+	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha06: Trash bags';git push
 	git tag -a 4.7.9-alpha06 -m 'ncclimo nd_fl, nd_nbr fix;ncremap sgs --map, whitespace ok;GCC9 default(none) removal;clarify NC_EHDFERR, NC_EBADCHUNK errors;DGR, BG2 progress';git push --tags
 
 	* ncremap double-quote all filenames used in command strings and verify whitespace works
