@@ -2222,9 +2222,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   char *col_nm_out;
   char *frc_nm_out;
   char *lat_bnd_nm_out;
+  char *lat_dmn_nm_out;
   char *lat_nm_out;
   char *lat_wgt_nm;
   char *lon_bnd_nm_out;
+  char *lon_dmn_nm_out;
   char *lon_nm_out;
   char *msk_nm_out;
   char *slat_nm_out=NULL;
@@ -2259,6 +2261,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   msk_nm_out=rgr->msk_nm;
   /* Use explicitly specified output names, if any, otherwise use input names (either explicitly specified or discovered by fuzzing) */
   if(rgr->col_nm_out) col_nm_out=rgr->col_nm_out; else col_nm_out=col_nm_in;
+  if(rgr->lat_dmn_nm) lat_dmn_nm_out=rgr->lat_dmn_nm; else lat_dmn_nm_out=lat_nm_in;
+  if(rgr->lon_dmn_nm) lon_dmn_nm_out=rgr->lon_dmn_nm; else lon_dmn_nm_out=lon_nm_in;
   if(rgr->lat_nm_out) lat_nm_out=rgr->lat_nm_out; else lat_nm_out=lat_nm_in;
   if(rgr->lon_nm_out) lon_nm_out=rgr->lon_nm_out; else lon_nm_out=lon_nm_in;
   if(flg_grd_out_1D){
@@ -2327,8 +2331,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_def_dim(out_id,col_nm_out,col_nbr_out,&dmn_id_col);
   } /* !flg_grd_out_1D */
   if(flg_grd_out_2D){
-    rcd+=nco_def_dim(out_id,lat_nm_out,lat_nbr_out,&dmn_id_lat);
-    rcd+=nco_def_dim(out_id,lon_nm_out,lon_nbr_out,&dmn_id_lon);
+    rcd+=nco_def_dim(out_id,lat_dmn_nm_out,lat_nbr_out,&dmn_id_lat);
+    rcd+=nco_def_dim(out_id,lon_dmn_nm_out,lon_nbr_out,&dmn_id_lon);
     if(nco_grd_lat_typ == nco_grd_lat_fv && flg_stg){
       rcd+=nco_def_dim(out_id,slat_nm_out,slat_nbr_out,&dmn_id_slat);
       rcd+=nco_def_dim(out_id,slon_nm_out,slon_nbr_out,&dmn_id_slon);
@@ -2583,8 +2587,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		if(!trv_tbl->lst[idx_tbl].flg_mrv) dmn_in_fst=1; 
 	      }else{
 		/* Dimensions lat/lon_nm_in have already been defined as lat/lon_nm_out, replicate all other dimensions */
-		if(!strcmp(dmn_nm,lat_nm_in)) rcd=nco_inq_dimid_flg(out_id,lat_nm_out,dmn_id_out+dmn_idx);
-		else if(!strcmp(dmn_nm,lon_nm_in)) rcd=nco_inq_dimid_flg(out_id,lon_nm_out,dmn_id_out+dmn_idx);
+		if(!strcmp(dmn_nm,lat_nm_in)) rcd=nco_inq_dimid_flg(out_id,lat_dmn_nm_out,dmn_id_out+dmn_idx);
+		else if(!strcmp(dmn_nm,lon_nm_in)) rcd=nco_inq_dimid_flg(out_id,lon_dmn_nm_out,dmn_id_out+dmn_idx);
 		else rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx+dmn_in_fst);
 		if(rcd != NC_NOERR){
 		  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx+dmn_in_fst);
@@ -2697,8 +2701,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
     
     att_nm=strdup("cell_methods");
-    att_val=(char *)nco_calloc((strlen(lat_nm_out)+strlen(lon_nm_out)+8L),sizeof(char));
-    (void)sprintf(att_val,"%s, %s: sum",lat_nm_out,lon_nm_out);
+    att_val=(char *)nco_calloc((strlen(lat_dmn_nm_out)+strlen(lon_dmn_nm_out)+8L),sizeof(char));
+    (void)sprintf(att_val,"%s, %s: sum",lat_dmn_nm_out,lon_dmn_nm_out);
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=area_nm_out;
     aed_mtd.id=area_out_id;
@@ -2726,8 +2730,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
     
     att_nm=strdup("cell_methods");
-    att_val=(char *)nco_calloc((strlen(lat_nm_out)+strlen(lon_nm_out)+8L),sizeof(char));
-    (void)sprintf(att_val,"%s, %s: sum",lat_nm_out,lon_nm_out);
+    att_val=(char *)nco_calloc((strlen(lat_dmn_nm_out)+strlen(lon_dmn_nm_out)+8L),sizeof(char));
+    (void)sprintf(att_val,"%s, %s: sum",lat_dmn_nm_out,lon_dmn_nm_out);
     aed_mtd.att_nm=att_nm;
     aed_mtd.var_nm=frc_nm_out;
     aed_mtd.id=frc_out_id;

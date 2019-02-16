@@ -24167,6 +24167,8 @@ provided by or derived from input data.
 The default value is @samp{--rgr lat_nm_out=lat --rgr lon_nm_out=lon},
 i.e., by default @command{ncremap} always names latitude and longitude
 ``lat'' and ``lon'', respectively, regardless of their input names.
+Users might use this option to set different canonical axes names,
+e.g., @samp{--rgr lat_nm_out=y --rgr lon_nm_out=x}.
 
 @html
 <a name="rnr_thr"></a> <!-- http://nco.sf.net/nco.html#rnr_thr -->

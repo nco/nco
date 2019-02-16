@@ -1,3 +1,7 @@
+2019-02-16  Charlie Zender  <zender@uci.edu>
+
+	* ncremap use lat_dmn_nm/lon_dmn_nm for lat_dmn_nm_out/lon_dmn_nm_out
+
 2019-02-15  Charlie Zender  <zender@uci.edu>
 
 	* ncremap make --clm_flg a true flag with same meaning as -C
