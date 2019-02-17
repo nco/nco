@@ -214,20 +214,26 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	/* _NOFILL */
 	rcd=nco_inq_var_fill(grp_id,var_id,&fll_nil,(int *)NULL);
 	if(fll_nil){
-	  /* Print _NOFILL for variables that are not pre-filled */
+	  /* Print _NOFILL for variables that are not pre-filled
+	     20190217: netCDF 4.4+ ncdump prints _NoFill = "true" not _NOFILL = 1 like ncks
+	     Behavior has changed since first implemented, yet seem backwards compatible 
+	     Nevertheless should emulate newer behavior... */
 	  idx=att_nbr_ttl++;
 	  att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
-	  att[idx].nm=(char *)strdup("_NOFILL");
-	  att[idx].type=NC_INT;
-	  att_sz=att[idx].sz=1L;
+	  // att[idx].nm=(char *)strdup("_NOFILL"); /* Deprecated 20190217 */
+	  att[idx].nm=(char *)strdup("_NoFill");
+	  att[idx].type=NC_CHAR;
+	  val_hdn_sng= (fll_nil == 1) ? (char *)strdup("true") : (char *)strdup("false");
+	  att_sz=att[idx].sz=strlen(val_hdn_sng);
 	  att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
-	  att[idx].val.ip[0]=fll_nil;
+	  strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
+	  if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
 	} /* !fll_nil */
 	/* _Storage */
 	rcd=nco_inq_var_chunking(grp_id,var_id,&srg_typ,cnk_sz);
 	if(!XML){
 	  if(dmn_nbr > 0){
-	    /* Print _Storage for arrays */
+	    /* Print _Storage for all arrays (not for any scalars) */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	    att[idx].nm=(char *)strdup("_Storage");
@@ -326,8 +332,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* !xml */
 	/* _Endianness */
 	if(!XML){
-	  if((var_typ == NC_USHORT) || (var_typ == NC_SHORT) || (var_typ == NC_UINT) || (var_typ == NC_INT) || (var_typ == NC_UINT64) || (var_typ == NC_INT64)){
-	    /* _Endianness variable attribute always printed for integer types */
+	  if((var_typ == NC_USHORT) || (var_typ == NC_SHORT) || (var_typ == NC_UINT) || (var_typ == NC_INT) || (var_typ == NC_UINT64) || (var_typ == NC_INT64) || (var_typ == NC_FLOAT) || (var_typ == NC_DOUBLE)){
+	    /* _Endianness variable attribute has always been printed for integer types
+	       Beginning at some unknown time, _Endianness is also printed for floating point types */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	    att[idx].nm=(char *)strdup("_Endianness");

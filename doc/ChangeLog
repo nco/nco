@@ -1,5 +1,7 @@
 2019-02-17  Charlie Zender  <zender@uci.edu>
 
+	* Emulate changes to netCDF and print _NoFill (not _NOFILL) values as true or false not 1 or 0
+
 	* NCO 4.7.9-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.9-beta01: Waterfalls';git push
 	git tag -a 4.7.9-beta01 -m 'ncremap sgs fix, sgs --map, lat/lon_dmn_nm,	whitespace ok, mpas depth, add_depth.py;ncclimo	nd_fl, nd_nbr fix;ncrcat rec_apn rbs';git push --tags
