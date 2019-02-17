@@ -17622,12 +17622,22 @@ DESCRIPTION
 
 In climatology generation mode, @command{ncclimo} ingests ``raw'' data
 consisting of a monthly or annual timeseries of files and from these
-produces climatological monthly means, seasonal means, and/or annual
-means.
+produces climatological daily, monthly, seasonal, and/or annual
+means. 
 Alternatively, in timeseries reshaping (aka ``splitter'') mode,
 @command{ncclimo} will subset and temporally split the input raw data
 timeseries into per-variable files spanning the entire period. 
-@command{ncclimo} can optionally regrid all output files in either mode.
+@command{ncclimo} can optionally (call @command{ncremap} to) regrid
+all output files in either mode.
+Unlike the rest of @acronym{NCO}, @command{ncclimo} and
+@command{ncremap} are shell scripts, not compiled binaries@footnote{ 
+This means that newer (including user-modified) versions of
+@command{ncclimo} work fine without re-compiling @acronym{NCO}.
+Re-compiling is only necessary to take advantage of new features or
+fixes in the @acronym{NCO} binaries, not to improve @command{ncclimo}.
+One may download and give executable permissions to the latest source 
+at @url{https://github.com/nco/nco/tree/master/data/ncclimo} without
+re-installing the rest of @acronym{NCO}.}. 
 
 There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
 @samp{-i}, and @samp{-o})) to generate climatologies, and many more
@@ -22762,8 +22772,15 @@ to generate the remapping weights that @acronym{NCO} then applies.
 @cindex TempestRemap
 @cindex @acronym{NCL}
 @cindex Conda
-Unlike the rest of @acronym{NCO}, @command{ncremap} is a shell script,
-not a compiled binary. 
+Unlike the rest of @acronym{NCO}, @command{ncremap} and
+@command{ncclimo} are shell scripts, not compiled binaries@footnote{ 
+This means that newer (including user-modified) versions of
+@command{ncremap} work fine without re-compiling @acronym{NCO}.
+Re-compiling is only necessary to take advantage of new features or
+fixes in the @acronym{NCO} binaries, not to improve @command{ncremap}.
+One may download and give executable permissions to the latest source 
+at @url{https://github.com/nco/nco/tree/master/data/ncremap} without
+re-installing the rest of @acronym{NCO}.}. 
 @command{ncremap} wraps the underlying regridder (@command{ncks}) and
 external executables to produce a friendly interface to regridding.
 Without any external dependencies, @command{ncremap} applies weights
