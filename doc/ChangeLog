@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.7.9-beta01: Waterfalls';git push
 	git tag -a 4.7.9-beta01 -m 'ncremap sgs fix, sgs --map, lat/lon_dmn_nm,	whitespace ok, mpas depth, add_depth.py;ncclimo	nd_fl, nd_nbr fix;ncrcat rec_apn rbs';git push --tags
 
+	* Add bzip2.cdl for filter testing
+
 	* ncclimo exit with error if --dpt_fl invoked without regridder
 
 2019-02-16  Charlie Zender  <zender@uci.edu>
