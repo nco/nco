@@ -41,7 +41,7 @@ NCO should detect the ZLIB dependency in HDF5 as
 -- ZLIB library is needed...
 ```
 
-the netcdf function detection should be
+the netCDF function detection should be
 
 ```
 -- Found netcdf library at: I:/nco/cmake/build/netcdf-c/build/liblib/Debug/netcdf.lib

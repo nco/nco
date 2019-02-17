@@ -10,7 +10,7 @@
 /* Usage:
 #include "nco_netcdf.h" *//* NCO wrappers for netCDF C library */
 
-/* nco_netcdf.h is (nearly) independent of NCO and does not depend on nco.h
+/* nco_netcdf.h is (nearly) independent of NCO and does NOT depend on nco.h
    nco_netcdf.h is an abstraction layer for netcdf.h, plus a few convenience routines
    A similar abstraction layer must exist for each NCO storage backend, e.g., nco_hdf.h
 
@@ -343,7 +343,8 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
 #endif /* !ENABLE_MPI */
 
   /* This bunch of pre-processor definitions is ugly
-     NC_LIB_VERSION could be replaced by an autoconf-generated token that checked for existance of, e.g., nc_open_memio() */
+     NC_LIB_VERSION should be replaced by an autoconf-generated token that checked for existance of, e.g., nc_open_memio()
+     However netCDF 4.6.2 netcdf_mem.h has EXTERNL without a definition so autoconf checks fail */
 #if NC_LIB_VERSION >= 462 
 # include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
 #else /* 4.6.2 */

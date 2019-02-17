@@ -789,12 +789,17 @@ if (HAVE_STRINGS_H)
   add_definitions(-DHAVE_STRINGS_H)
 endif()
 
-check_include_file(netcdf_meta.h NC_HAVE_META_H)
-if (NC_HAVE_META_H)
+check_include_file(netcdf_meta.h HAVE_NC_META_H)
+if (HAVE_NC_META_H)
   message("-- Found header netcdf_meta.h")
-  add_definitions(-DNC_HAVE_META_H)
+  add_definitions(-DHAVE_NC_META_H)
 endif()
 
+check_include_file(netcdf_mem.h HAVE_NC_MEM_H)
+if (HAVE_NC_MEM_H)
+  message("-- Found header netcdf_mem.h")
+  add_definitions(-DHAVE_NC_MEM_H)
+endif()
 
 #//////////////////////////
 # regex

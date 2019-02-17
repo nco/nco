@@ -402,6 +402,7 @@ par_typ='nil' # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression number of significant digits
 prc_typ='' # [sng] Procedure type
 rgr_opt='--rgr lat_nm_out=lat#lon_nm_out=lon' # [sng] Regridding options
+#rgr_opt='--rgr lat_dnm_nm=x#lon_dmn_nm=y' # [sng] Regridding options for projection grid
 rnr_thr='' # [frc] Renormalization option
 sgs_frc='landfrac' # [sng] Sub-grid fraction variable
 sgs_msk='landmask' # [sng] Sub-grid mask variable

@@ -1027,6 +1027,12 @@ if [ -n "${rgr_map}" ]; then
 	exit 1
     fi # !mdl_nm
     rgr_opt="${rgr_opt} --map ${rgr_map}"
+else # !rgr_map
+    if [ -n "${dpt_opt}" ]; then
+	echo "${spt_nm}: ERROR Cannot add depth coordinate unless regridding is invoked"
+	echo "${spt_nm}: HINT Specify a regridding map or run add_depth.py on these files yourself. To request that add_depth.py work directly in ncclimo, contact Charlie."
+	exit 1
+    fi # !dpt_opt
 fi # !rgr_map
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"

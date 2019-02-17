@@ -1921,7 +1921,7 @@ int nco_def_var_chunking
 
     sz=nco_typ_lng(var_typ);
     for(idx=0;idx<dmn_nbr;idx++){
-      if(cnk_sz[idx] < 1L) (void)fprintf(stderr, "%s: ERROR Chunk sizes must exceed zero and requested chunk size cnk_sz[%d] = %ld.\n",fnc_nm,idx,cnk_sz[idx],NCO_MAX_CHUNK_SIZE);
+      if(cnk_sz[idx] < 1L) (void)fprintf(stderr, "%s: ERROR Chunk sizes must exceed zero and requested chunk size cnk_sz[%d] = %ld.\n",fnc_nm,idx,cnk_sz[idx]);
       sz*=cnk_sz[idx];
     } /* !idx */
 

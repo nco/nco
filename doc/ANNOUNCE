@@ -7,6 +7,13 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
+Producing data for submission to CMIP6 has revealed a number of areas
+to optimize the two workflow tools ncclimo and ncremap. Dozens of
+small changes have made both tools more robust, produce clearer
+messages, and better documented. 
+The most notably new features include support for GCC9 and OpenMP 5.0.0
+
+
 Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
 netCDF4 user-defined types ENUM and VLEN is ready now (though
@@ -18,7 +25,57 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Hi
+A. ncremap now names the SGS map as per the -m map_fl option.
+   Previously there was no was to name SGS maps.
+   This capability eases the generation of SGS maps for CMIP6,
+   since models (like ELM, CTSM) with time-invariant land units can
+   regrid all variables with the same SGS map.
+   http://nco.sf.net/nco.html#sgs
+
+A. The regridder utilizes the lat_dmn_nm and lon_dmn_nm options, when 
+   specified, to name the dimensions for regridded logically
+   rectangular files. Previously these options were only used to
+   specify horizontal dimension names in input file. Consistent
+   with this, lat_nm_out and lon_nm_out now specify only the
+   horizontal variable names, not the dimension names as before.
+   The indepdendent configurability of dimension and variable names
+   allows ncremap to regrid files with map projections as expected
+   by Panoply and other software.
+   ncremap --rgr_opt='--rgr lat_dnm_nm=x#lon_dmn_nm=y'
+   http://nco.sf.net/nco.html#rgr_opt
+
+A. ncclimo write more explicit information about parallelism,
+   including job_nbr, var_nbr, and nd_nbr. This will help users
+   tune throughput for large climatology and splitting jobs.
+   http://nco.sf.net/nco.html#ncclimo
+
+A. NCO now writes more intelligible error messages with HINTS for
+   NC_EHDFERR and NC_EBADCHUNK errors.
+
+A. ncremap supports SGS procedures for MPAS-Seaice (fxm)
+   Previously ncremap only had SGS support the CICE sea-ice model.
+   CICE and MPAS-Seaice produce significantly different files,
+   so new SGS routines were necessary. Access this by specifying
+   ncremap -P mpascice 
+   This automatically invokes both SGS mode and MPAS mode.
+   http://nco.sf.net/nco.html#sgs
+   
+A. ncremap and ncclimo support MPAS files with a 'depth' dimension,
+   and also adding a depth coordinate to raw MPAS output files.
+   Both add 'depth' to MPAS files with the new option --dpt_fl:
+   ncremap -P mpas --dpt_fl=refBottomDepth_60lyr.nc ...
+   ncremap -m mpaso --dpt_fl=refBottomDepth_60lyr.nc ...
+   To work, the Python code add_depth.py must be on the PATH
+   http://nco.sf.net/nco.html#dpt
+
+A. ncra/ncrcat now perform time-reebasing in rec_apn mode using
+   calendar units from the destination not the source file.
+   This makes more sense when you think about it.
+   http://nco.sf.net/nco.html#rbs
+
+A. The splitter in ncclimo now outputs progress more clearly,
+   and shows the elapsed time to split each timeseries.
+   http://nco.sf.net/nco.html#split
 
 BUG FIXES:
 
@@ -26,10 +83,25 @@ A. ncremap orders Tempest remap commands in execution-order in the
    history attribute. Previously they were recorded in an ad hoc
    order.
 
-B. Fix a bug exposed in NCO 4.7.1 that could attempt to dereference
+A. Fix a bug exposed in NCO 4.7.1 that could attempt to dereference
    a NULL pointer, resulting in a core dump. The solution is to
    install 4.7.9. The workaround to that is to run a version of NCO
    prior to 4.7.1.
+
+A. ncremap used an inappropriate area to weight SGS variables.
+   Min Xu of ORNL noticed this and provided a fix.
+   SGS regridding is once again BFB with global means.
+
+A. Cause ncclimo in MPI mode to exit when no nodes are available.
+
+A. Ensure ncclimo writes nd_fl to writable directory
+
+A. ncremap now logically orders shell commands from TempesRemap
+   in history attribute.
+
+A. ncap2 exits gracefully when no output file is specified
+
+A. ncap2 exits gracefully when no -s or -S argument given
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
