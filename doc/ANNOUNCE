@@ -83,6 +83,9 @@ A. The splitter in ncclimo now outputs progress more clearly,
    and shows the elapsed time to split each timeseries.
    http://nco.sf.net/nco.html#split
 
+A. ncks emulates ncdump more closely and prints _NoFill (not 
+   _NOFILL) values as "true" or "false" not 1 or 0.
+
 BUG FIXES:
 
 A. ncremap orders Tempest remap commands in execution-order in the

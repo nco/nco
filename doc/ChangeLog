@@ -1,5 +1,7 @@
 2019-02-17  Charlie Zender  <zender@uci.edu>
 
+	* Print _Filter filter ID
+
 	* Emulate changes to netCDF and print _NoFill (not _NOFILL) values as true or false not 1 or 0
 
 	* NCO 4.7.9-beta01 release procedure:

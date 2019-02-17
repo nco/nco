@@ -275,10 +275,18 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		idx=att_nbr_ttl++;
 		att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 		att[idx].nm=(char *)strdup("_Filter");
-		att[idx].type=NC_UINT;
-		att_sz=att[idx].sz=prm_nbr;
+		att[idx].type=NC_CHAR;
+		val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
+		sprintf(val_hdn_sng,"%u,%lu",flt_id,prm_nbr);
+		att_sz=att[idx].sz=strlen(val_hdn_sng);
 		att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
-		rcd=nco_inq_var_filter(grp_id,var_id,NULL,NULL,att[idx].val.uip);
+		strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
+		if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
+		/* Deprecated 20190217 
+		   att[idx].type=NC_UINT;
+		   att_sz=att[idx].sz=prm_nbr;
+		   att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
+		   rcd=nco_inq_var_filter(grp_id,var_id,NULL,NULL,att[idx].val.uip); */
 		/* prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 		   if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst); */
 	      } /* !flt_id */
