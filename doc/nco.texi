@@ -11289,7 +11289,7 @@ precede it with a backslash.
 
 The global attribution addition feature helps to avoid the performance
 penalty incurred by using @command{ncatted} separately to annotate large files. 
-Should users emit a loud hue and cry, we will consider ading the the
+Should users emit a loud hue and cry, we will consider ading the
 functionality of ncatted to the front-end of all operators, i.e.,
 accepting valid @command{ncatted} arguments to modify attributes of any
 type and to apply regular expressions.
@@ -12970,7 +12970,7 @@ It comes in two forms
 @noindent In form (A) The first argument should be an attribute
 identifier or an expression that evaluates to an attribute. 
 The second argument can evalute to an attribute or a variable. 
-The second argument is then converted to the the type of @var{att_exp}; 
+The second argument is then converted to the type of @var{att_exp}; 
 and appended to @var{att_exp} ; and the resulting attribute is returned.@*
 
 @noindent In form (B) the first argument is a call-by-reference
@@ -17800,15 +17800,15 @@ This switch has no effect on files that are not regridded.
 To demote the precision in such files, use @command{ncpdq} to apply
 the @code{dbl_flt} packing map to the file directly.
 
-@cindex @code{dpt_fl}
-@cindex @code{--dpt_fl}
+@cindex @code{--dpt_fl=@var{dpt_fl}}
+@cindex @var{dpt_fl}
 @cindex @code{--mpas_fl}
 @cindex @code{--mpas_depth}
 @cindex @code{--depth_file}
 @cindex @command{add_depth.py}
 @cindex Depth
 @cindex @acronym{MPAS}
-@item --dpt_fl (@code{--dpt_fl}, @code{--depth_file}, @code{--mpas_fl}, @code{--mpas_depth})
+@item --dpt_fl=@var{dpt_fl} (@code{--dpt_fl}, @code{--depth_file}, @code{--mpas_fl}, @code{--mpas_depth})
 The @samp{--dpt_fl=@var{dpt_fl}} triggers the addition of a depth
 coordinate to @acronym{MPAS} ocean datasets that will undergo
 regridding.
@@ -23235,12 +23235,12 @@ level to the regridder (@command{ncks}) for additional diagnostics.
 <a name="dpt_fl"></a> <!-- http://nco.sf.net/nco.html#dpt_fl -->
 @end html
 @cindex @code{dpt}
-@cindex @code{dpt_fl}
 @cindex @code{--dpt}
 @cindex @code{--add_dpt}
 @cindex @code{--depth}
 @cindex @code{--add_depth}
-@cindex @code{--dpt_fl}
+@cindex @code{--dpt_fl=@var{dpt_fl}}
+@cindex @var{dpt_fl}
 @cindex @code{--mpas_fl}
 @cindex @code{--mpas_depth}
 @cindex @code{--depth_file}
@@ -23248,29 +23248,34 @@ level to the regridder (@command{ncks}) for additional diagnostics.
 @cindex Depth
 @cindex @acronym{MPAS}
 @item --dpt (@code{--dpt}, @code{--add_dpt}, @code{--depth}, @code{--add_depth})
-@item --dpt_fl (@code{--dpt_fl}, @code{--depth_file}, @code{--mpas_fl}, @code{--mpas_depth})
+@item --dpt_fl=@var{dpt_fl} (@code{--dpt_fl}, @code{--depth_file}, @code{--mpas_fl}, @code{--mpas_depth})
 The @samp{--dpt} switch (which takes no argument) and the
-The @samp{--dpt_fl=@var{dpt_fl}} option which automatically sets the
+@samp{--dpt_fl=@var{dpt_fl}} option which automatically sets the
 switch and also takes a filename argument, both control the addition
 of a depth coordinate to @acronym{MPAS} ocean datasets.
 Depth is the vertical distance below sea surface and, like pressure
-in the atmosphere, is an important vertical coordinate that is often
-omitted from datasets.
-Obtain and place the @command{add_depth.py} command on the executable
-path (i.e., @code{$PATH}), and use @command{ncremap --config} to check
-that it is found before invoking either of these options.
-These options cause @command{ncremap} to invoke @command{add_depth.py}
+in the atmosphere, is an important vertical coordinate whose explicit
+values are often omitted from datasets yet may be computed from other
+variables (gridbox thickness, pressure difference) and grid information.
+Moreover, users are often more interested in the approximate depth,
+aka reference depth, of a given ocean layer independent of its
+horizontal position.
+To invoke either of these options first obtain and place the
+@command{add_depth.py} command on the executable path (i.e.,
+@code{$PATH}), and use @command{ncremap --config} to verify that it is
+found.
+These options tell @command{ncremap} to invoke @command{add_depth.py}
 which uses the @code{refBottomDepth} variable in the current data file
 or, if specified, the @var{dpt_fl}, to create and add a depth
 coordinate to the current file (before regridding).
 
 As of @acronym{NCO} version 4.7.9 (February, 2019), the depth
-coordinate is an approximate, one-dimensional, globally uniform
+coordinate is an approximate, one-dimensional, globally uniform 
 coordinate that neglects horizontal variations in depth that can occur
 near strong bathymetry or under ice shelves.
-Like its atmospheric counterpart in many models the
-@code{lev} pressure-coordinate, @code{depth} is useful for plotting
-purposes and global studies.
+Like its atmospheric counterpart in many models, the @code{lev}
+pressure-coordinate, @code{depth} is useful for plotting purposes and
+global studies. 
 It would not be difficult to modify these options to add other depth
 information based on the 3D cell-thickness field to ocean files
 (please ask Charlie if interested in this).
@@ -23433,7 +23438,7 @@ Note that the examples in this section use grid generation
 @acronym{API} for @command{ncremap} version 4.7.6 (August, 2018) and
 later.
 Earlier versions can use the @command{ncks} @acronym{API} explained
-at @ref{Grid Generation} in the the Users Guide.  
+at @ref{Grid Generation} in the Users Guide.  
 
 The most useful grid parameters (besides resolution) are latitude type
 (@var{lat_typ}), longitude type (@var{lon_typ}), title (@var{ttl}),

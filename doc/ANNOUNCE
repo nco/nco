@@ -41,7 +41,10 @@ A. The regridder utilizes the lat_dmn_nm and lon_dmn_nm options, when
    The indepdendent configurability of dimension and variable names
    allows ncremap to regrid files with map projections as expected
    by Panoply and other software.
-   ncremap --rgr_opt='--rgr lat_dnm_nm=x#lon_dmn_nm=y'
+   ncremap --rgr_opt='--rgr lat_dmn_nm=x#lon_dmn_nm=y'
+   We realize this API is ugly and will create more aesthetic options
+   like ncremap --lat_dmn=x --lon_dmn=y if enough users lovingly
+   petition our representatives now standing-by at call centers.
    http://nco.sf.net/nco.html#rgr_opt
 
 A. ncclimo write more explicit information about parallelism,
@@ -55,9 +58,11 @@ A. NCO now writes more intelligible error messages with HINTS for
 A. ncremap supports SGS procedures for MPAS-Seaice (fxm)
    Previously ncremap only had SGS support the CICE sea-ice model.
    CICE and MPAS-Seaice produce significantly different files,
-   so new SGS routines were necessary. Access this by specifying
-   ncremap -P mpascice 
-   This automatically invokes both SGS mode and MPAS mode.
+   so new SGS routines were necessary. Access this with:
+   ncremap -P mpascice ...
+   This automatically invokes both SGS mode and MPAS mode but is
+   not equivalent to separately specifying those options because
+   MPAS-Seaice requires its own handling procedures.
    http://nco.sf.net/nco.html#sgs
    
 A. ncremap and ncclimo support MPAS files with a 'depth' dimension,
@@ -65,8 +70,9 @@ A. ncremap and ncclimo support MPAS files with a 'depth' dimension,
    Both add 'depth' to MPAS files with the new option --dpt_fl:
    ncremap -P mpas --dpt_fl=refBottomDepth_60lyr.nc ...
    ncremap -m mpaso --dpt_fl=refBottomDepth_60lyr.nc ...
-   To work, the Python code add_depth.py must be on the PATH
+   To work, the Python code add_depth.py must be on the $PATH.
    http://nco.sf.net/nco.html#dpt
+   http://nco.sf.net/nco.html#dpt_fl
 
 A. ncra/ncrcat now perform time-reebasing in rec_apn mode using
    calendar units from the destination not the source file.
