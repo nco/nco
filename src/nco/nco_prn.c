@@ -266,29 +266,31 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		 Unfortunately, I do not yet have an actual file or dynamic filter library for testing:
 		 https://www.unidata.ucar.edu/software/netcdf/docs/filters_8md_source.html */
 	      unsigned int flt_id;
+	      size_t prm_idx;
 	      size_t prm_nbr;
-	      //unsigned int *prm_lst=NULL;
+	      unsigned int *prm_lst=NULL;
+	      char sng_foo[11]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 */
 	      rcd=nco_inq_var_filter(grp_id,var_id,&flt_id,&prm_nbr,NULL);
 	      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
 	      if(flt_id){
 		/* Print _Filter for filtered variables */
+		prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
+		rcd=nco_inq_var_filter(grp_id,var_id,NULL,NULL,prm_lst);
 		idx=att_nbr_ttl++;
 		att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 		att[idx].nm=(char *)strdup("_Filter");
 		att[idx].type=NC_CHAR;
 		val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
-		sprintf(val_hdn_sng,"%u,%lu",flt_id,prm_nbr);
+		sprintf(val_hdn_sng,"%u,",flt_id,prm_nbr);
+		for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
+		  (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],prm_idx == prm_nbr ? "," : "");
+		  strcat(val_hdn_sng,sng_foo);
+		} /* !prm_idx */
 		att_sz=att[idx].sz=strlen(val_hdn_sng);
 		att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
 		strncpy(att[idx].val.cp,val_hdn_sng,att_sz);
 		if(val_hdn_sng) val_hdn_sng=(char *)nco_free(val_hdn_sng);
-		/* Deprecated 20190217 
-		   att[idx].type=NC_UINT;
-		   att_sz=att[idx].sz=prm_nbr;
-		   att[idx].val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(att[idx].type));
-		   rcd=nco_inq_var_filter(grp_id,var_id,NULL,NULL,att[idx].val.uip); */
-		/* prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
-		   if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst); */
+		if(prm_lst) prm_lst=(unsigned int *)nco_free(prm_lst);
 	      } /* !flt_id */
 	    } /* srg_typ != NC_CHUNKED */
 	  } /* !xml */
