@@ -342,9 +342,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	} /* !xml */
 	/* _Endianness */
 	if(!XML){
-	  if((var_typ == NC_USHORT) || (var_typ == NC_SHORT) || (var_typ == NC_UINT) || (var_typ == NC_INT) || (var_typ == NC_UINT64) || (var_typ == NC_INT64) || (var_typ == NC_FLOAT) || (var_typ == NC_DOUBLE)){
-	    /* _Endianness variable attribute has always been printed for integer types
-	       Beginning at some unknown time, _Endianness is also printed for floating point types */
+	  if((var_typ != NC_CHAR) && (var_typ != NC_UBYTE) && (var_typ != NC_BYTE) && (var_typ != NC_STRING)){
+	    /* ncdump has always printed _Endianness variable attribute for integer types
+	       ncdump started printing _Endianness for floating point types at some unknown date < 2019 */
 	    idx=att_nbr_ttl++;
 	    att=(att_sct *)nco_realloc(att,att_nbr_ttl*sizeof(att_sct));
 	    att[idx].nm=(char *)strdup("_Endianness");

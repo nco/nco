@@ -707,7 +707,7 @@ if [ "${d2f_flg}" != 'Yes' ]; then
 fi # !d2f_flg
 
 cmd_wgt_esmf=`command -v ${wgt_exe_esmf} --no_log 2> /dev/null`
-if [ $? -eq 0 ]; then
+if [ "$?" -eq 0 ]; then
     # 20180830 Add --ignore_degenerate to default ERWG options for ESMF >= 7.1.0r
     # 20181114 Add --no_log so ERWG does not try to write logfile into current (possibly write-protected) directory 
     erwg_vrs_sng=`ESMF_RegridWeightGen --no_log --version | grep ESMF_VERSION_STRING | cut -f 2 -d ':'`
@@ -1172,7 +1172,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_mwf}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to generate MWF map. Debug this:\n${cmd_mwf}\n"
 		exit 1
 	    fi # !err
@@ -1224,7 +1224,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_fwm}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to generate FWM map. Debug this:\n${cmd_fwm}\n"
 		exit 1
 	    fi # !err
@@ -1778,7 +1778,7 @@ else # !map_usr_flg
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_dst[${fl_idx}]}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
 		    printf "${spt_nm}: ERROR Failed to generate grid from user-supplied grid-string. Debug this:\n${cmd_dst[${fl_idx}]}\n"
 		else # !grd_sng_usr_flg
@@ -1884,7 +1884,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_nnt[${fl_idx}]}
-	if [ $? -ne 0 ]; then
+	if [ "$?" -ne 0 ]; then
 	    printf "${spt_nm}: ERROR Failed to identity-remap to annotate global data file. Debug this:\n${cmd_nnt[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -1899,7 +1899,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_sbs[${fl_idx}]}
-	if [ $? -ne 0 ]; then
+	if [ "$?" -ne 0 ]; then
 	    printf "${spt_nm}: ERROR Failed to subset and hyperslab coordinates into regional file. Debug this:\n${cmd_sbs[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -1914,7 +1914,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_nfr[${fl_idx}]}
-	if [ $? -ne 0 ]; then
+	if [ "$?" -ne 0 ]; then
 	    printf "${spt_nm}: ERROR Failed to infer source grid from subsetted, annotated, regional coordinate file. Debug this:\n${cmd_nfr[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -1947,7 +1947,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_src[${fl_idx}]}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to infer source grid. Debug this:\n${cmd_src[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -1963,7 +1963,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_cp_dst[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
 	    printf "${spt_nm}: ERROR Failed to duplicate destination grid-file to fractional destination grid-file. Debug this:\n${cmd_cp_dst[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -1978,7 +1978,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_cp_src[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
 	    printf "${spt_nm}: ERROR Failed to duplicate source grid to fractional source grid-file. Debug this:\n${cmd_cp_src[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -1993,7 +1993,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_sgs_src[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
 	    printf "${spt_nm}: ERROR Failed to append sub-grid fraction from data file to fractional source grid-file. Debug this:\n${cmd_sgs_src[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -2013,7 +2013,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_wheresrc[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
 	    printf "${spt_nm}: ERROR Failed to derive fraction, mask, and area in fractional source grid-file. Debug this:\n${cmd_wheresrc[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -2028,7 +2028,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_sgs_in[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${frc_in_sgs} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${frc_in_sgs} ]; then
 	    printf "${spt_nm}: ERROR Failed to extract sub-grid fraction from fractional source grid-file. Debug this:\n${cmd_sgs_in[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -2044,7 +2044,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_sgs_rmp[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
 	    printf "${spt_nm}: ERROR Failed to regrid sub-grid fraction. Debug this:\n${cmd_sgs_rmp[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -2061,7 +2061,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_sgs_msk[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
 	    printf "${spt_nm}: ERROR Failed to derive mask from regridded sub-grid fraction. Debug this:\n${cmd_sgs_msk[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -2077,7 +2077,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_sgs_dst[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
 	    printf "${spt_nm}: ERROR Failed to append regridded sub-grid fraction to destination fractional grid-file. Debug this:\n${cmd_sgs_dst[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -2100,7 +2100,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_wheredst[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
 	    printf "${spt_nm}: ERROR Failed to derive mask and area in fractional destination grid-file. Debug this:\n${cmd_wheredst[${fl_idx}]}\n"
 	    exit 1
 	fi # !err
@@ -2164,7 +2164,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_msh[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${msh_fl} ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f ${msh_fl} ]; then
 		printf "${spt_nm}: ERROR Failed to generate intersection mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
 		printf "${spt_nm}: HINT GenerateOverlapMesh requires that grids of unequal area be given as arguments in the order smaller first, larger second. ncremap supplies the grid arguments in the order source first, destination second unless explicitly told otherwise. A source grid that is a superset of the destination would violate the GenerateOverlapMesh rule. The solution is to add the \"--a2o\" switch (documented at http://nco.sf.net/nco.html#a2o) that tells ncremap to swap the grid argument order.\n"
 		exit 1
@@ -2176,7 +2176,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
     fi # !dbg
     if [ ${dbg_lvl} -ne 2 ]; then
 	eval ${cmd_map[${fl_idx}]}
-	if [ $? -ne 0 ] || [ ! -f ${map_rsl_fl} ]; then
+	if [ "$?" -ne 0 ] || [ ! -f ${map_rsl_fl} ]; then
 	    printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
 	    if [ "${wgt_typ}" = 'esmf' ]; then 
 		printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
@@ -2193,7 +2193,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_trn[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f ${map_fl} ]; then
 		printf "${spt_nm}: ERROR Failed to transpose map-file. Debug this:\n${cmd_trn[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2213,7 +2213,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_att[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f ${map_fl} ]; then
 		printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2271,7 +2271,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_znl[${fl_idx}]}
-		if [ $? -ne 0 ] || [ ! -f "${znl_fl/znl/znl2}" ]; then
+		if [ "$?" -ne 0 ] || [ ! -f "${znl_fl/znl/znl2}" ]; then
 		    printf "${spt_nm}: ERROR Failed to generate lat-lon file from zonal file. Debug this:\n${cmd_znl[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2294,7 +2294,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_src[${fl_idx}]}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to infer source grid. Debug this:\n${cmd_src[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2337,7 +2337,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_msh[${fl_idx}]}
-		if [ $? -ne 0 ] || [ ! -f ${msh_fl} ]; then
+		if [ "$?" -ne 0 ] || [ ! -f ${msh_fl} ]; then
 		    printf "${spt_nm}: ERROR Failed to generate intersection mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
 		    printf "${spt_nm}: HINT GenerateOverlapMesh requires that grids of unequal area be given as arguments in the order smaller first, larger second. ncremap supplies the grid arguments in the order source first, destination second unless explicitly told otherwise. A source grid that is a superset of the destination would violate the GenerateOverlapMesh rule. The solution is to add the \"--a2o\" switch (documented at http://nco.sf.net/nco.html#a2o) that tells ncremap to swap the grid argument order.\n"
 		    exit 1
@@ -2351,7 +2351,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_map[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${map_rsl_fl} ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f ${map_rsl_fl} ]; then
 		printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
 		if [ "${wgt_typ}" = 'esmf' ]; then 
 		    printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
@@ -2362,7 +2362,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 		hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
 		cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' \"${map_rsl_fl}\""
 		eval ${cmd_att[${fl_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2374,7 +2374,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_trn[${fl_idx}]}
-		if [ $? -ne 0 ] || [ ! -f ${map_fl} ]; then
+		if [ "$?" -ne 0 ] || [ ! -f ${map_fl} ]; then
 		    printf "${spt_nm}: ERROR Failed to transpose map-file. Debug this:\n${cmd_trn[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2402,7 +2402,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_dpt[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${dpt_tmp_fl} ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f ${dpt_tmp_fl} ]; then
 		printf "${spt_nm}: ERROR Failed to add depth coordinate to MPAS file. Debug this:\n${cmd_dpt[${fl_idx}]}\nHINTS: 1) Verify that ${dpt_exe_mpas} is executable from the command-line, it requires Python and the xarray package to succeed. 2) Verify that ${dpt_fl} or ${in_fl} contains variable \"refBottomDepth\".\n"
 		exit 1
 	    fi # !err
@@ -2423,7 +2423,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_pdq[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${pdq_fl} ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f ${pdq_fl} ]; then
 		printf "${spt_nm}: ERROR Failed to generate pdq-file. Debug this:\n${cmd_pdq[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2443,7 +2443,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_d2f[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${d2f_fl} ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f ${d2f_fl} ]; then
 		printf "${spt_nm}: ERROR Failed to convert double-precision to single-precision. Debug this:\n${cmd_d2f[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2463,7 +2463,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_att[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f "${att_fl}" ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f "${att_fl}" ]; then
 		printf "${spt_nm}: ERROR Failed to annotate MPAS file with _FillValue. Debug this:\n${cmd_att[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2504,7 +2504,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_rnm[${fl_idx}]}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to rename regional input file. Debug this:\n${cmd_rnm[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2519,7 +2519,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_apn[${fl_idx}]}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to append regional coordinates and vertices to annotated, regional input data. Debug this:\n${cmd_apn[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2541,7 +2541,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     if [ ${dbg_lvl} -ne 2 ]; then
 	if [ -z "${par_opt}" ]; then
 	    eval ${cmd_rgr[${fl_idx}]}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2564,7 +2564,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    fi # !dbg
 	    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
 		wait ${rgr_pid[${pid_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2584,7 +2584,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_znl[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f "${out_fl}" ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f "${out_fl}" ]; then
 		printf "${spt_nm}: ERROR Failed to generate zonal file from lat-lon file. Debug this:\n${cmd_znl[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2603,7 +2603,7 @@ if [ -n "${par_opt}" ]; then
 	fi # !idx_srt
 	for ((pid_idx=${idx_srt};pid_idx<${fl_nbr};pid_idx++)); do
 	    wait ${rgr_pid[${pid_idx}]}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2624,7 +2624,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	fi # !dbg
 	if [ ${dbg_lvl} -ne 2 ]; then
 	    eval ${cmd_sgs_rpl[${fl_idx}]}
-	    if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+	    if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
 		printf "${spt_nm}: ERROR Failed to replace area, ${sgs_frc}, and ${sgs_msk} with full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask in output data file. Debug this:\n${cmd_sgs_rpl[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2640,7 +2640,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_elm[${fl_idx}]}
-		if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+		if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
 		    printf "${spt_nm}: ERROR Failed to convert output area from [sr] to [km2]. Debug this:\n${cmd_elm[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2657,7 +2657,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_cice[${fl_idx}]}
-		if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+		if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
 		    printf "${spt_nm}: ERROR Failed to convert output area from [sr] to [m2] and ${sgs_frc} from [frc] to [%]. Debug this:\n${cmd_cice[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2674,7 +2674,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_mpascice[${fl_idx}]}
-		if [ $? -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+		if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
 		    printf "${spt_nm}: ERROR Failed to add units to ${sgs_frc}. Debug this:\n${cmd_mpascice[${fl_idx}]}\n"
 		    exit 1
 		fi # !err

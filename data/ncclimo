@@ -385,7 +385,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Set NCO version and directory
 nco_exe=`which ncks`
 if [ -z "${nco_exe}" ]; then
-    echo "${spt_nm}: ERROR Unable to find NCO, nco_exe = ${nco_exe}"
+    echo "${spt_nm}: ERROR Unable to find NCO, \${nco_exe} = ${nco_exe}"
     exit 1
 fi # !nco_exe
 # StackOverflow method finds NCO directory
@@ -396,6 +396,11 @@ while [ -h "${nco_exe}" ]; do
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
+if [ -z "${nco_vrs}" ]; then
+    echo "${spt_nm}: ERROR Running ${nco_exe} dies with error message on next line:"
+    $(ncks --version)
+    exit 1
+fi # !nco_vrs
 lbr_vrs=$(ncks --library 2>&1 > /dev/null | awk '{print $6}')
 
 # Detect and warn about mixed modules (for Qi Tang 20170531)
@@ -1850,7 +1855,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    if [ ${dbg_lvl} -le 1 ]; then
 		if [ -z "${par_opt}" ]; then
 		    eval ${cmd_sbs[${var_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR subset cmd_sbs[${var_idx}] failed. Debug this:\n${cmd_sbs[${var_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -1873,7 +1878,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    fi # !dbg
 		    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
 			wait ${sbs_pid[${pid_idx}]}
-			if [ $? -eq 0 ]; then
+			if [ "$?" -eq 0 ]; then
 			    # https://stackoverflow.com/questions/12426659/how-extract-last-part-of-string-in-bash
 			    printf "`date`: Generated ${cmd_sbs[${pid_idx}]##* }\n"
 			else
@@ -1898,7 +1903,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		fi # !dbg
 		for ((pid_idx=${idx_srt};pid_idx<${var_nbr};pid_idx++)); do
 		    wait ${sbs_pid[${pid_idx}]}
-		    if [ $? -eq 0 ]; then
+		    if [ "$?" -eq 0 ]; then
 			# https://stackoverflow.com/questions/12426659/how-extract-last-part-of-string-in-bash
 			printf "`date`: Generated ${cmd_sbs[${pid_idx}]##* }\n"
 		    else
@@ -1927,7 +1932,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		if [ ${dbg_lvl} -le 1 ]; then
 		    if [ -z "${par_opt}" ]; then
 			eval ${cmd_rgr[${var_idx}]}
-			if [ $? -ne 0 ]; then
+			if [ "$?" -ne 0 ]; then
 			    printf "${spt_nm}: ERROR regrid cmd_rgr[${var_idx}] failed. Debug this:\n${cmd_rgr[${var_idx}]}\n"
 			    exit 1
 			fi # !err
@@ -1950,7 +1955,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			fi # !dbg
 			for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
 			    wait ${rgr_pid[${pid_idx}]}
-			    if [ $? -eq 0 ]; then
+			    if [ "$?" -eq 0 ]; then
 				# https://stackoverflow.com/questions/12426659/how-extract-last-part-of-string-in-bash
 				printf "`date`: Regridded ${cmd_rgr[${pid_idx}]##* }\n"
 			    else
@@ -1975,7 +1980,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    fi # !dbg
 		    for ((pid_idx=${idx_srt};pid_idx<${var_nbr};pid_idx++)); do
 			wait ${rgr_pid[${pid_idx}]}
-			if [ $? -eq 0 ]; then
+			if [ "$?" -eq 0 ]; then
 			    # https://stackoverflow.com/questions/12426659/how-extract-last-part-of-string-in-bash
 			    printf "`date`: Regridded ${cmd_rgr[${pid_idx}]##* }\n"
 			else
@@ -2031,7 +2036,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
     fi # !dbg
     if [ ${dbg_lvl} -le 1 ]; then
 	eval ${cmd_clm[${clm_idx}]}
-	if [ $? -ne 0 ]; then
+	if [ "$?" -ne 0 ]; then
 	    printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_idx}] failed\n"
 	    exit 1
 	fi # !err
@@ -2047,7 +2052,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
 	fi # !dbg
 	if [ ${dbg_lvl} -le 1 ]; then
 	    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR annual regrid cmd_rgr[${clm_idx}] failed\n"
 		exit 1
 	    fi # !err
@@ -2138,7 +2143,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	if [ ${dbg_lvl} -le 1 ]; then
 	    if [ -z "${par_opt}" ]; then
 		eval ${cmd_clm[${clm_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR daily cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2161,7 +2166,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 		fi # !dbg
 		for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
 		    wait ${clm_pid[${pid_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR Failed daily average. cmd_clm[${pid_idx}] failed. Debug this:\n${cmd_clm[${pid_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -2183,7 +2188,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    fi # !dbg
 	    for ((pid_idx=${idx_srt};pid_idx<${clm_nbr};pid_idx++)); do
 		wait ${clm_pid[${pid_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR Failed daily average. cmd_clm[${pid_idx}] failed. Debug this:\n${cmd_clm[${pid_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2206,7 +2211,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    if [ ${dbg_lvl} -le 1 ]; then
 		if [ -z "${par_opt}" ]; then
 		    eval ${cmd_rgr[${clm_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -2229,7 +2234,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 		    fi # !dbg
 		    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
 			wait ${rgr_pid[${pid_idx}]}
-			if [ $? -ne 0 ]; then
+			if [ "$?" -ne 0 ]; then
 			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
 			    exit 1
 			fi # !err
@@ -2251,7 +2256,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 		fi # !dbg
 		for ((pid_idx=${idx_srt};pid_idx<${clm_nbr};pid_idx++)); do
 		    wait ${rgr_pid[${pid_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -2276,7 +2281,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	if [ ${dbg_lvl} -le 1 ]; then
 	    if [ -z "${par_opt}" ]; then
 		eval ${cmd_clm[${clm_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR monthly climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2296,7 +2301,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     if [ -n "${par_opt}" ]; then
 	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 	    wait ${clm_pid[${clm_idx}]}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR monthly climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2328,7 +2333,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    if [ ${dbg_lvl} -le 1 ]; then
 		if [ -z "${par_opt}" ]; then
 		    eval ${cmd_rgr[${clm_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR monthly regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -2371,7 +2376,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    if [ ${dbg_lvl} -le 1 ]; then
 		if [ -z "${par_opt}" ]; then
 		    eval ${cmd_clm[${clm_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -2387,7 +2392,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	if [ -n "${par_opt}" ]; then
 	    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 		wait ${rgr_pid[${clm_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR monthly regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2404,7 +2409,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	if [ -n "${par_opt}" ]; then
 	    for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
 		wait ${clm_pid[${clm_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2437,7 +2442,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		if [ ${dbg_lvl} -le 1 ]; then
 		    if [ -z "${par_opt}" ]; then
 			eval ${cmd_rgr[${clm_idx}]}
-			if [ $? -ne 0 ]; then
+			if [ "$?" -ne 0 ]; then
 			    printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 			    exit 1
 			fi # !err
@@ -2464,7 +2469,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	if [ ${dbg_lvl} -le 1 ]; then
 	    if [ -z "${par_opt}" ]; then
 		eval ${cmd_clm[${clm_nbr}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_nbr}] failed. Debug this:\n${cmd_clm[${clm_nbr}]}\n"
 		    exit 1
 		fi # !err
@@ -2480,7 +2485,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    if [ -n "${par_opt}" ]; then
 		for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
 		    wait ${rgr_pid[${clm_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR seasonal regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -2498,7 +2503,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	# wait() for annual climatology to finish
 	if [ -n "${par_opt}" ]; then
 	    wait ${clm_pid[${clm_idx}]}
-	    if [ $? -ne 0 ]; then
+	    if [ "$?" -ne 0 ]; then
 		printf "${spt_nm}: ERROR annual climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		exit 1
 	    fi # !err
@@ -2523,7 +2528,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    if [ ${dbg_lvl} -le 1 ]; then
 		# NB: Do not background climatological mean regridding since it is last step
 		eval ${cmd_rgr[${clm_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR annual regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2552,7 +2557,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    fi # !dbg
 	    if [ ${dbg_lvl} -le 1 ]; then
 		eval ${cmd_lnk[${clm_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR linking E3SM/ACME to AMWG filename cmd_lnk[${clm_idx}] failed. Debug this:\n${cmd_lnk[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2695,7 +2700,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	    if [ ${dbg_lvl} -le 1 ]; then
 		if [ -z "${par_opt}" ]; then
 		    eval ${cmd_xtn[${clm_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -2708,7 +2713,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	if [ -n "${par_opt}" ]; then
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		wait ${xtn_pid[${clm_idx}]}
-		if [ $? -ne 0 ]; then
+		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR extended climo cmd_xtn[${clm_idx}] failed. Debug this:\n${cmd_xtn[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
@@ -2726,7 +2731,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 		if [ ${dbg_lvl} -le 1 ]; then
 		    if [ -z "${par_opt}" ]; then
 			eval ${cmd_rgr_xtn[${clm_idx}]}
-			if [ $? -ne 0 ]; then
+			if [ "$?" -ne 0 ]; then
 			    printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
 			    exit 1
 			fi # !err
@@ -2739,7 +2744,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	    if [ -n "${par_opt}" ]; then
 		for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		    wait ${rgr_xtn_pid[${clm_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR extended climo cmd_rgr_xtn[${clm_idx}] failed. Debug this:\n${cmd_rgr_xtn[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
@@ -2764,7 +2769,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 		fi # !dbg
 		if [ ${dbg_lvl} -le 1 ]; then
 		    eval ${cmd_lnk_xtn[${clm_idx}]}
-		    if [ $? -ne 0 ]; then
+		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR linking E3SM/ACME to AMWG filename cmd_lnk_xtn[${clm_idx}] failed. Debug this:\n${cmd_lnk_xtn[${clm_idx}]}\n"
 			exit 1
 		    fi # !err

@@ -1,18 +1,18 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.7.9 have hatched.
+The netCDF Operators NCO version 4.7.9 art b'rn
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Producing data for submission to CMIP6 has revealed a number of areas
-to optimize the two workflow tools ncclimo and ncremap. Dozens of
-small changes have made both tools more robust, produce clearer
-messages, and better documented. 
-The most notably new features include support for GCC9 and OpenMP 5.0.0
-
+Producing data for submission to CMIP6 has resulted in many
+improvemnts to the two workflow tools ncclimo and ncremap. Dozens of 
+changes have made both tools more robust, clearer, and better
+documented. Notable changes include include improved sub-gridscale
+remapping, adding depth coordinates, CDL updates for hidden
+attributes, and support for GCC9 and OpenMP 5.0.0.
 
 Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
@@ -53,7 +53,8 @@ A. ncclimo write more explicit information about parallelism,
    http://nco.sf.net/nco.html#ncclimo
 
 A. NCO now writes more intelligible error messages with HINTS for
-   NC_EHDFERR and NC_EBADCHUNK errors.
+   likely causes of and responses to NC_EHDFERR and NC_EBADCHUNK
+   errors. 
 
 A. ncremap supports SGS procedures for MPAS-Seaice (fxm)
    Previously ncremap only had SGS support the CICE sea-ice model.
@@ -74,7 +75,7 @@ A. ncremap and ncclimo support MPAS files with a 'depth' dimension,
    http://nco.sf.net/nco.html#dpt
    http://nco.sf.net/nco.html#dpt_fl
 
-A. ncra/ncrcat now perform time-reebasing in rec_apn mode using
+A. ncra/ncrcat now perform time-rebasing in rec_apn mode using
    calendar units from the destination not the source file.
    This makes more sense when you think about it.
    http://nco.sf.net/nco.html#rbs
@@ -85,6 +86,15 @@ A. The splitter in ncclimo now outputs progress more clearly,
 
 A. ncks emulates ncdump more closely and prints _NoFill (not 
    _NOFILL) values as "true" or "false" not 1 or 0.
+   http://nco.sf.net/nco.html#cdl
+
+A. ncks prints CDL for hidden _Filters attribute, if any, with 
+   all filter values.
+   http://nco.sf.net/nco.html#cdl
+
+A. ncks prints _Endianness for floating point types not just integers
+   as before.
+   http://nco.sf.net/nco.html#cdl
 
 BUG FIXES:
 
