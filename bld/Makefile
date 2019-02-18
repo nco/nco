@@ -1871,6 +1871,8 @@ ${MY_DAT_DIR}/snc.nc: ${MY_DAT_DIR}/snc.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
 ${MY_DAT_DIR}/snd.nc: ${MY_DAT_DIR}/snd.cdl
 	-ncgen -k netCDF-4 -b -o $@ $<
+${MY_DAT_DIR}/split.nc: ${MY_DAT_DIR}/split.cdl
+	-ncgen -b -o $@ $<
 dataclean: dat_cln
 dat_cln:
 	rm -f ${MDL_DAT}

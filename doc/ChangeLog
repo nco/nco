@@ -6,7 +6,9 @@
 
 	* NCO 4.7.9-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.9-alpha08: Ed';git push
-	git tag -a 4.7.9-alpha08 -m 'CDL _NoFill, _Filter, _Endianness fixes';git push --tags
+	git tag -a 4.7.9-alpha08 -m 'CDL _NoFill, _Filter, _Endianness fixes;ncremap/ncclimo die+report linker errors';git push --tags
+
+	* Always build split.nc so ncks regression test #120 can pass
 
 	* ncremap/ncclimo die sooner when NCO is found but cannot run due to, e.g., dynamic linking errors
 

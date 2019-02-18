@@ -952,6 +952,10 @@ if (PATH_TO_NCGEN)
   add_custom_target(data
   COMMENT "${color_green}Creating sample netCDF data files for self-tests in ${PATH_DATA}${color_reset}"
   COMMAND ${PATH_TO_NCGEN} -b -o ${PATH_DATA}/in.nc ${PATH_DATA}/in.cdl
+  COMMAND ${PATH_TO_NCGEN} -b -o ${PATH_DATA}/split.nc ${PATH_DATA}/split.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/cmip5.nc ${PATH_DATA}/cmip5.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_1.nc ${PATH_DATA}/in_1.cdl
+  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_2.nc ${PATH_DATA}/in_2.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp.nc ${PATH_DATA}/in_grp.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_1.nc ${PATH_DATA}/in_grp_1.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_2.nc ${PATH_DATA}/in_grp_2.cdl
@@ -960,13 +964,9 @@ if (PATH_TO_NCGEN)
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_5.nc ${PATH_DATA}/in_grp_5.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_6.nc ${PATH_DATA}/in_grp_6.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_grp_7.nc ${PATH_DATA}/in_grp_7.cdl
-  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_1.nc ${PATH_DATA}/in_1.cdl
-  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/in_2.nc ${PATH_DATA}/in_2.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_1.nc ${PATH_DATA}/mdl_1.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_2.nc ${PATH_DATA}/mdl_2.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/mdl_3.nc ${PATH_DATA}/mdl_3.cdl
-  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/cmip5.nc ${PATH_DATA}/cmip5.cdl
-  COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/split.nc ${PATH_DATA}/split.cdl
   COMMAND ${PATH_TO_NCGEN} -k netCDF-4 -b -o ${PATH_DATA}/obs.nc ${PATH_DATA}/obs.cdl)
 
 #//////////////////////////
