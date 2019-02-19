@@ -1590,15 +1590,19 @@ extern "C" {
 
   typedef struct{
     poly_typ_enm pl_typ;
+    int crn_nbr; /* number of vertices */
     double *dp_x;    /* x  vertices */
     double *dp_y;    /* y vertices */
-    double *dp_xyz;  /* maybe useful for 3D stuff */ 
-    double area;  
-    double **shp;    /* array of points size [crn_nbr][NBR] */
     double dp_x_minmax[2];
     double dp_y_minmax[2];
-    int  stat;     
-    int crn_nbr; /* number of vertices */
+    double area;
+    double **shp;    /* array of points size [crn_nbr][NBR] */
+    double *dp_xyz;  /* maybe useful for 3D stuff */
+
+    int src_id;     /* used in map file as  "row" or "col" id of polygon   */
+    int dst_id;     /* used in map file - initialized only in overlap polygon */
+
+    int  stat;
     int mem_flg; /* [flg]    */ 
   } poly_sct;   
 
