@@ -26,6 +26,12 @@
 /* smallest RADIAN */
 #define SIGMA_RAD (1.0e-20)
 
+/* convert Degrees to Radians */
+#define D2R(x)  ((x) * M_PI /180.0)
+/* convert Radians to degrees */
+#define R2D(x)  ((x) * 180.0 / M_PI)
+
+
 
 /* if true then longitude 0-360 */
 /* we need this to convert 3D back to 2D */
@@ -39,11 +45,6 @@
 extern "C" {
 #endif /* !__cplusplus */
 
-
-
-//typedef double  tPointds[5];    /* type spherical double point */
-
-//typedef tPointds tPolygonds[VP_MAX]; /* 3D sperical coords */
 
 
 /*---------------------------------------------------------------------
@@ -108,13 +109,16 @@ nco_sph_set_domain(double lon_min_rad, double lon_max_rad, double lat_min_rad, d
 void
 nco_sph_add_lonlat(double *ds);
 
+int
+nco_sph_mk_control(poly_sct *sP, double* pControl  ); /* make a control point that is outside polygon */
+
 
 /*------------------------ nco_geo functions these manimpulate lat & lon  ----------------------------------*/
 void
 nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg);
 
 void
-nco_geo_lonlat_2_sph(double lon, double lat, double *b);
+nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg);
 
 double
 nco_geo_lat_correct(double lat1, double lon1, double lon2);

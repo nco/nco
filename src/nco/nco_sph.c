@@ -441,19 +441,28 @@ double nco_sph_rad(double *a){
 /* new method for calculating cross product */
 double nco_sph_sxcross(double *a, double *b, double *c)
 {
-   double n1;
-   double lon1;
-   double lon2;
+  nco_bool bDeg = False;
+  double n1;
+  double lon1;
+  double lon2;
 
-   double lat1;
-   double lat2;
+  double lat1;
+  double lat2;
 
-   lon1=a[3] * M_PI /180.0;
-   lat1=a[4] * M_PI /180.0;
+  if (bDeg) {
+    lon1 = a[3] * M_PI / 180.0;
+    lat1 = a[4] * M_PI / 180.0;
 
-   lon2=b[3] * M_PI /180.0;
-   lat2=b[4] * M_PI /180.0;
+    lon2 = b[3] * M_PI / 180.0;
+    lat2 = b[4] * M_PI / 180.0;
+  } else{
+    lon1 = a[3];
+    lat1 = a[4];
 
+    lon2 = b[3];
+    lat2 = b[4];
+
+  }
 
 
    c[0] =   sin(lat1+lat2) * cos( (lon1+lon2) / 2.0) * sin( (lon1-lon2)/2.0)
@@ -697,6 +706,9 @@ void nco_sph_prn_pnt(const char *sMsg, double *p, int style, nco_bool bRet)
 nco_bool nco_sph_is_convex(double **sP, int np)
 {
 
+
+nco_bool flg_sx=0;
+
 int idx;
 int idx_pre;
 int idx_nex;
@@ -718,8 +730,15 @@ for(idx=0; idx<np;idx++)
   idx_pre=(idx + np -1)% np;
   idx_nex=(idx + np +1)% np;
 
-  n1= nco_sph_sxcross(sP[idx], sP[idx_pre], aCross);
-  n2= nco_sph_sxcross(sP[idx], sP[idx_nex], bCross);
+  if(flg_sx) {
+    n1 = nco_sph_sxcross(sP[idx], sP[idx_pre], aCross);
+    n2 = nco_sph_sxcross(sP[idx], sP[idx_nex], bCross);
+  } else {
+    n1 = nco_sph_cross(sP[idx], sP[idx_pre], aCross);
+    n2 = nco_sph_cross(sP[idx], sP[idx_nex], bCross);
+
+
+  }
 
   //rad1 = sRadius(aCross);
   //rad  = sRadius(bCross);
@@ -730,10 +749,12 @@ for(idx=0; idx<np;idx++)
   theta=acos(dp);
 
   if(DEBUG_SPH)
-    printf("sConvex():, %d angle=%f n1=%.15g n2=%.15g\n", idx, theta*180.0/M_PI, n1, n2);
+    printf("%s():, %d angle=%f n1=%.15g n2=%.15g\n", __FUNCTION__, idx, theta*180.0/M_PI, n1, n2);
 
+  /*
   if(theta > 2.0*M_PI   )
      return False;
+   */
 
 }
 
@@ -742,8 +763,61 @@ return True;
 
 }
 
+/* make a control point that is Outside of polygon */
+int nco_sph_mk_control(poly_sct *sP, double* pControl  )
+{
+   /* do stuff in radians */
+   nco_bool bDeg=False;
 
-/* works by counting the number of intersections of the
+   double clat=0.0;
+   double clon=0.0;
+
+   /* convert limits to radians */
+   double lon_min=D2R( sP->dp_x_minmax[0]);
+   double lon_max=D2R( sP->dp_x_minmax[1]);
+   double lat_min=D2R( sP->dp_y_minmax[0]);
+   double lat_max=D2R( sP->dp_y_minmax[1]);
+
+   double xbnd=D2R(8.0);
+
+   /* choose left or right hand size */
+   if(  lon_min - LON_MIN_RAD  >  xbnd  )
+   {
+      clon=lon_min- xbnd/2,0;
+      clat=(lat_min+lat_max)/2.0;
+   }
+   else if(LON_MAX_RAD - lon_max > xbnd  ) {
+
+      clon = lon_max + xbnd/2.0;
+      clat = (lat_min + lat_max) / 2.0;
+   }
+   /* choose below or above */
+   else if( lat_min- LAT_MIN_RAD > xbnd )
+   {
+      clat=lat_min - xbnd/2.0;
+      /* choose centre */
+      clon=( lon_min+lon_max) /2.0;
+
+   }
+   else if( LAT_MAX_RAD -lat_max > xbnd) {
+      clat = lat_max + xbnd / 2.0;
+      clon =(lon_min+lon_max) / 2.0;
+   }
+   else {
+      return NCO_ERR;
+   }
+
+   /* remember clat, clon in radians */
+   nco_geo_lonlat_2_sph(clon, clat, pControl, bDeg );
+
+   return NCO_NOERR;
+
+
+}
+
+
+/* nb doesnt work if polygon spans more than 180.0
+ * works by counting the number of intersections of the
    line (pControl, pVertex) and each edge in sP
    pControl is chosen so that it is OUTSIDE sP
  */
@@ -902,12 +976,14 @@ void nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2,
 }
 
 
-
-void nco_geo_lonlat_2_sph(double lon, double lat, double *b)
+/* assumes lon, lat in degrees */
+void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg)
 {
-   lon *= M_PI / 180.0;
-   lat *= M_PI / 180.0;
 
+   if(bDeg) {
+      lon *= M_PI / 180.0;
+      lat *= M_PI / 180.0;
+   }
 
    b[0] = cos(lat) * cos(lon);
    b[1] = cos(lat) * sin(lon);
