@@ -153,7 +153,7 @@ int *pl_nbr)
       continue;
 
 
-    pl=nco_poly_init_lst(pl_typ, grd_crn_nbr,0, lon_ptr, lat_ptr);
+    pl=nco_poly_init_lst(pl_typ, grd_crn_nbr,0, idx, lon_ptr, lat_ptr);
     lon_ptr+=(size_t)grd_crn_nbr;
     lat_ptr+=(size_t)grd_crn_nbr;
 
@@ -166,6 +166,9 @@ int *pl_nbr)
     nco_poly_add_minmax(pl);
 
     nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
+
+    /* use Charlie's formula */
+    nco_poly_add_area(pl);
 
 
     if(pl->dp_x_minmax[0] <0.0 || (pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) > 30  )

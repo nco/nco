@@ -46,13 +46,15 @@ extern "C" {
   (poly_typ_enm pl_typ,
    int arr_nbr,
    int mem_flg,
+   int src_id,
    double *dp_x_in,
    double *dp_y_in);
 
   poly_sct *
   nco_poly_init_crn
   (poly_typ_enm pl_typ,
-  int crn_nbr_in);
+  int crn_nbr_in,
+  int src_id);
 
   void
   nco_poly_init_crn_re  /* re malloc crn_nbr to a new size */

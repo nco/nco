@@ -69,6 +69,11 @@ nco_poly_init
   pl->crn_nbr=0;
   pl->mem_flg=0;
 
+  pl->src_id=-1;
+  pl->dst_id=-1;
+
+
+
   return pl;
 }
 
@@ -90,6 +95,9 @@ nco_poly_dpl
   pl_cpy->pl_typ=pl->pl_typ;
 
   crn_nbr_in=pl->crn_nbr;
+
+  pl_cpy->src_id=pl->src_id;
+  pl_cpy->dst_id=pl->dst_id;
 
 
   pl_cpy->stat=pl->stat;
@@ -143,15 +151,17 @@ nco_poly_dpl
 poly_sct *
 nco_poly_init_crn
 (poly_typ_enm pl_typ,
-int crn_nbr_in)
+int crn_nbr_in,
+int src_id)
 {
   poly_sct *pl;
 
   pl=nco_poly_init();
 
   pl->pl_typ=pl_typ;
-
   pl->crn_nbr=crn_nbr_in;
+  pl->src_id=src_id;
+  pl->dst_id=-1;
 
   pl->dp_x=(double*)nco_calloc((size_t)crn_nbr_in, sizeof(double));
   pl->dp_y=(double*)nco_calloc((size_t)crn_nbr_in, sizeof(double));
@@ -222,6 +232,7 @@ nco_poly_init_lst
 (poly_typ_enm pl_typ,
  int arr_nbr,
  int mem_flg,
+ int src_id,
  double *dp_x_in,
  double *dp_y_in)
 {
@@ -259,16 +270,21 @@ nco_poly_init_lst
  
    pl->dp_x=dp_x_in;
    pl->dp_y=dp_y_in;
+
+   pl->src_id=src_id;
  
  }
  else
  {
-   pl=nco_poly_init_crn(pl_typ, idx);
+   pl=nco_poly_init_crn(pl_typ, idx, src_id);
    memcpy(pl->dp_x, dp_x_in, sizeof(double) *idx);
    memcpy(pl->dp_y, dp_y_in, sizeof(double) *idx);   
    
  }    
- 
+
+
+
+
  return pl;
  
 
@@ -477,7 +493,7 @@ nco_poly_prn
   switch(style){ 
 
     case 0:
-      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d stat=%d mem_flg=%d area=%.20e\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->stat, pl->mem_flg, pl->area);
+      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d stat=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->stat, pl->mem_flg, pl->area, pl->src_id, pl->dst_id);
       (void)fprintf(stdout,"dp_x ");
       for(idx=0; idx<pl->crn_nbr; idx++)
 	(void)fprintf(stdout,"%20.14f, ",pl->dp_x[idx]);
@@ -554,7 +570,10 @@ poly_sct *pl_out){
  nco_poly_shp_pop(pl_out);
 
 
- pl_vrl=nco_poly_init_crn(pl_in->pl_typ,  ( nbr_p>=nbr_q ? 2*nbr_p: 2*nbr_q ) +1       );
+ pl_vrl=nco_poly_init_crn(pl_in->pl_typ,  ( nbr_p>=nbr_q ? 2*nbr_p: 2*nbr_q ) +1, pl_in->src_id      );
+ /* manually set dst_id in struct */
+ pl_vrl->dst_id=pl_out->src_id;
+
  nco_poly_shp_init(pl_vrl);
 
 
@@ -643,7 +662,7 @@ poly_sct ** pl_wrp_right)
  
   
   /*  create right intersection polygon */
-  pl_bnds=nco_poly_init_crn(pl->pl_typ, 4);
+  pl_bnds=nco_poly_init_crn(pl->pl_typ, 4, pl->src_id );
 
   pl_bnds->dp_x_minmax[0]=180.0;
   pl_bnds->dp_x_minmax[1]=pl_in->dp_x_minmax[1];
@@ -743,7 +762,7 @@ poly_sct ** pl_wrp_right)
  
   
   /*  create left intersection polygon */
-  pl_bnds=nco_poly_init_crn(pl->pl_typ, 4);
+  pl_bnds=nco_poly_init_crn(pl->pl_typ, 4, pl->src_id);
 
   pl_bnds->dp_x_minmax[0]=pl_in->dp_x_minmax[0];
   pl_bnds->dp_x_minmax[1]=-1.0e-13;
@@ -859,7 +878,7 @@ poly_sct ** pl_wrp_right)
  
   
   /*  create left intersection polygon */
-  pl_bnds=nco_poly_init_crn(pl->pl_typ, 4);
+  pl_bnds=nco_poly_init_crn(pl->pl_typ, 4, pl->src_id);
 
   pl_bnds->dp_x_minmax[0]=pl_in->dp_x_minmax[0];
   pl_bnds->dp_x_minmax[1]=-1.0e-13;
