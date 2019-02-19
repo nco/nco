@@ -928,12 +928,14 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   col_src_adr=(int *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
   row_dst_adr=(int *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
 
+
+
   /* Initialize arguments before they are actually computed */
-  for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=0.0;
-  for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=-1;
-  for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=-1;
-  for(idx=0;idx<grd_sz_in;idx++) frc_in[idx]=0.0;
-  for(idx=0;idx<grd_sz_out;idx++) frc_out[idx]=0.0;
+  for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=pl_lst_vrl[idx]->area;
+  for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=pl_lst_vrl[idx]->src_id;
+  for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id;
+  for(idx=0;idx<grd_sz_in;idx++) frc_in[idx]=1.0;
+  for(idx=0;idx<grd_sz_out;idx++) frc_out[idx]=1.0;
 
   /* populate lat_crn_vrl and lon_crn_vrl from polygon list */
   for(idx=0; idx< pl_cnt_vrl; idx++){
@@ -1119,7 +1121,7 @@ nco_msh_stats
  
  poly_sct *pl;
  
- pl=nco_poly_init_crn(poly_crt, 4);
+ pl=nco_poly_init_crn(poly_crt, 4, -1);
  
  pl->dp_x_minmax[0]=DBL_MAX;
  pl->dp_x_minmax[1]=-DBL_MAX;
