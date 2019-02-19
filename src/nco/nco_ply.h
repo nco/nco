@@ -68,6 +68,11 @@ extern "C" {
   (poly_sct *pl);
 
   void
+  nco_poly_add_area(
+  poly_sct *pl);
+
+
+  void
   nco_poly_use_minmax_crn /* use the values of minmax box as dp_x, dp_y  */
   (poly_sct *pl);
   
@@ -129,6 +134,8 @@ extern "C" {
   nco_poly_dp_pop_shp(  /* fill out dp_x, dp_y with values from shp */
   poly_sct *pl
   );
+
+
 
 
 

@@ -272,7 +272,22 @@ nco_poly_init_lst
  return pl;
  
 
-}  
+}
+
+void
+nco_poly_add_area(
+poly_sct *pl){
+
+  if(pl->crn_nbr <3)
+    pl->area=0.0;
+
+  nco_sph_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
+
+
+
+}
+
+
 
 void nco_poly_add_minmax
 (poly_sct *pl)
@@ -462,7 +477,7 @@ nco_poly_prn
   switch(style){ 
 
     case 0:
-      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d stat=%d mem_flg=%d area=%.20f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->stat, pl->mem_flg, pl->area);
+      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d stat=%d mem_flg=%d area=%.20e\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->stat, pl->mem_flg, pl->area);
       (void)fprintf(stdout,"dp_x ");
       for(idx=0; idx<pl->crn_nbr; idx++)
 	(void)fprintf(stdout,"%20.14f, ",pl->dp_x[idx]);
@@ -1055,8 +1070,9 @@ poly_sct *pl)
 
   if( pl->pl_typ == poly_sph )
   {
+    nco_bool bDeg=True;
     for (idx = 0; idx < pl->crn_nbr; idx++)
-      nco_geo_lonlat_2_sph(pl->dp_x[idx], pl->dp_y[idx] , pl->shp[idx]);
+      nco_geo_lonlat_2_sph(pl->dp_x[idx], pl->dp_y[idx], pl->shp[idx], bDeg );
 
   }
 
