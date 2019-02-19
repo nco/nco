@@ -407,6 +407,11 @@ int *pl_cnt_vrl_ret){
 
       if(pl_vrl){
         nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
+        /* add area */
+        nco_poly_add_area(pl_vrl);
+        /* shp not needed */
+        nco_poly_shp_free(pl_vrl);
+
         pl_lst_vrl=(poly_sct**)nco_realloc(pl_lst_vrl, sizeof(poly_sct*) * (pl_cnt_vrl+1));
         pl_lst_vrl[pl_cnt_vrl]=pl_vrl;
         pl_cnt_vrl++;
@@ -550,6 +555,13 @@ int *pl_cnt_vrl_ret){
 
       if(pl_vrl){
         // nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
+
+        /* add area */
+        nco_poly_add_area(pl_vrl);
+        /* shp not needed */
+        nco_poly_shp_free(pl_vrl);
+
+
         pl_lst_vrl=(poly_sct**)nco_realloc(pl_lst_vrl, sizeof(poly_sct*) * (pl_cnt_vrl+1));
         pl_lst_vrl[pl_cnt_vrl]=pl_vrl;
         pl_cnt_vrl++;
