@@ -7,12 +7,12 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Producing data for submission to CMIP6 has resulted in many
-improvemnts to the two workflow tools ncclimo and ncremap. Dozens of 
-changes have made both tools more robust, clearer, and better
-documented. Notable changes include include improved sub-gridscale
-remapping, adding depth coordinates, CDL updates for hidden
-attributes, and support for GCC9 and OpenMP 5.0.0.
+Producing data for submission to CMIP6 has led to many improvemnts to
+the two workflow tools ncclimo and ncremap. Dozens of changes have
+made both tools more robust, clearer, and better documented. Notable
+changes include include improved sub-gridscale remapping, adding depth
+coordinates, CDL updates for hidden attributes, and support for GCC9
+and OpenMP 5.0.0. 
 
 Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
@@ -26,13 +26,25 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. ncremap now names the SGS map as per the -m map_fl option.
-   Previously there was no was to name SGS maps.
+   Previously there was no way to name SGS maps for archival.
    This capability eases the generation of SGS maps for CMIP6,
    since models (like ELM, CTSM) with time-invariant land units can
    regrid all variables with the same SGS map.
    http://nco.sf.net/nco.html#sgs
 
-A. The regridder utilizes the lat_dmn_nm and lon_dmn_nm options, when 
+B. ncremap and ncclimo support MPAS files with a 'depth' dimension,
+   and also adding a depth coordinate to raw MPAS output files.
+   Both add 'depth' to MPAS files with the new option --dpt_fl:
+   ncremap -P mpas --dpt_fl=refBottomDepth_60lyr.nc ...
+   ncremap -m mpaso --dpt_fl=refBottomDepth_60lyr.nc ...
+   To work, the Python code add_depth.py must be on the $PATH, and
+   dpt_fl must contain the MPAS-Ocean field refBottomDepth.
+   Thanks to Xylar Asay-Davis of LANL for creating a robust
+   add_depth.py. 
+   http://nco.sf.net/nco.html#dpt
+   http://nco.sf.net/nco.html#dpt_fl
+
+C. The regridder utilizes the lat_dmn_nm and lon_dmn_nm options, when 
    specified, to name the dimensions for regridded logically
    rectangular files. Previously these options were only used to
    specify horizontal dimension names in input file. Consistent
@@ -40,89 +52,68 @@ A. The regridder utilizes the lat_dmn_nm and lon_dmn_nm options, when
    horizontal variable names, not the dimension names as before.
    The indepdendent configurability of dimension and variable names
    allows ncremap to regrid files with map projections as expected
-   by Panoply and other software.
+   by Panoply and other software. Thanks to Xylar Asay-Davis of LANL
+   for suggesting this feature.
    ncremap --rgr_opt='--rgr lat_dmn_nm=x#lon_dmn_nm=y'
    We realize this API is ugly and will create more aesthetic options
    like ncremap --lat_dmn=x --lon_dmn=y if enough users lovingly
    petition our representatives now standing-by at call centers.
    http://nco.sf.net/nco.html#rgr_opt
 
-A. ncclimo write more explicit information about parallelism,
+D. ncclimo writes more explicit information about parallelism,
    including job_nbr, var_nbr, and nd_nbr. This will help users
    tune throughput for large climatology and splitting jobs.
    http://nco.sf.net/nco.html#ncclimo
 
-A. NCO now writes more intelligible error messages with HINTS for
+E. The splitter in ncclimo now outputs progress more clearly,
+   and shows the elapsed time to split each timeseries.
+   http://nco.sf.net/nco.html#split
+
+F. ncra/ncrcat now perform time-rebasing in rec_apn mode using
+   calendar units from the destination not the source file.
+   This makes more sense when you think about it.
+   Thanks to Ian McHugh of Monash University for prompting this. 
+   http://nco.sf.net/nco.html#rbs
+
+G. NCO now writes more intelligible error messages with HINTS for
    likely causes of and responses to NC_EHDFERR and NC_EBADCHUNK
    errors. 
    http://nco.sf.net/nco.html#hdf
    http://nco.sf.net/nco.html#cnk
 
-A. ncremap supports SGS procedures for MPAS-Seaice (fxm)
-   Previously ncremap only had SGS support the CICE sea-ice model.
-   CICE and MPAS-Seaice produce significantly different files,
-   so new SGS routines were necessary. Access this with:
-   ncremap -P mpascice ...
-   This automatically invokes both SGS mode and MPAS mode but is
-   not equivalent to separately specifying those options because
-   MPAS-Seaice requires its own handling procedures.
-   http://nco.sf.net/nco.html#sgs
-   
-A. ncremap and ncclimo support MPAS files with a 'depth' dimension,
-   and also adding a depth coordinate to raw MPAS output files.
-   Both add 'depth' to MPAS files with the new option --dpt_fl:
-   ncremap -P mpas --dpt_fl=refBottomDepth_60lyr.nc ...
-   ncremap -m mpaso --dpt_fl=refBottomDepth_60lyr.nc ...
-   To work, the Python code add_depth.py must be on the $PATH, and
-   dpt_fl must contain the MPAS-Ocean field refBottomDepth.
-   http://nco.sf.net/nco.html#dpt
-   http://nco.sf.net/nco.html#dpt_fl
-
-A. ncra/ncrcat now perform time-rebasing in rec_apn mode using
-   calendar units from the destination not the source file.
-   This makes more sense when you think about it.
-   http://nco.sf.net/nco.html#rbs
-
-A. The splitter in ncclimo now outputs progress more clearly,
-   and shows the elapsed time to split each timeseries.
-   http://nco.sf.net/nco.html#split
-
-A. ncks emulates ncdump more closely and prints hidden attribute
+H. ncks emulates ncdump more closely and prints hidden attribute
    _NoFill (not _NOFILL) values as "true" or "false" not 1 or 0.
    ncks --hidden -m in.nc
    http://nco.sf.net/nco.html#cdl
 
-A. ncks prints CDL for hidden _Filters attribute, if any, with 
+I. ncks prints CDL for hidden _Filters attribute, if any, with 
    all filter values.
    ncks --hidden -m in.nc
    http://nco.sf.net/nco.html#cdl
 
-A. ncks prints hidden _Endianness attribute for floating point types
+J. ncks prints hidden _Endianness attribute for floating point types
    not just multi-byte integers as before.
    ncks --hidden -m in.nc
    http://nco.sf.net/nco.html#cdl
 
 BUG FIXES:
 
-A. ncremap orders Tempest remap commands in execution-order in the
-   history attribute. Previously they were recorded in an ad hoc
-   order.
-
 A. Fix a bug exposed in NCO 4.7.1 that could attempt to dereference
    a NULL pointer, resulting in a core dump. The solution is to
    install 4.7.9. The workaround to that is to run a version of NCO
    prior to 4.7.1.
 
-A. ncremap used an inappropriate area to weight SGS variables.
-   Min Xu of ORNL noticed this and provided a fix.
+B. ncremap used an inappropriate area to weight SGS variables.
+   Thanks to Min Xu of ORNL for reporting and providing the fix.
    SGS regridding is once again BFB with global means.
+
+C. ncremap orders Tempest remap commands in execution-order in the
+   history attribute. Previously they were recorded in an ad hoc
+   order. Thanks to Ben Hilman of SNL for suggesting this.
 
 A. Cause ncclimo in MPI mode to exit when no nodes are available.
 
 A. Ensure ncclimo writes nd_fl to writable directory
-
-A. ncremap now logically orders shell commands from TempesRemap
-   in history attribute.
 
 A. ncap2 exits gracefully when no output file is specified
 

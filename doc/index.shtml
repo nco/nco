@@ -807,13 +807,12 @@ This bypasses the normal headache of relying on system-administrators to install
 Miniconda (rather than the full Anaconda install) suffices for most purposes.
 Up-to-date Anaconda-compatible versions of NCO for Linux, MacOS, and Windows are maintained at <a href="https://github.com/conda-forge/nco-feedstock">conda-forge</a>.
 Install NCO in your Anaconda framework with one command &lsquo;<tt>conda install -c conda-forge nco</tt>&rsquo;.
-Or, alternatively, permanently add conda-forge (which teems with
-goodies besides NCO) to your automatically-searched channels with
+Or, alternatively, permanently add conda-forge (which teems with goodies besides NCO) to your automatically-searched channels with
 &lsquo;<tt>conda config --add channels conda-forge</tt>&rsquo;, then
 install NCO with &lsquo;<tt>conda install nco</tt>&rsquo;.
 The default NCO installed by <tt>conda</tt> is generally within a month of the latest release. 
 <li><a href="https://github.com/conda-forge/nco-feedstock">nco-4.7.8</a> Executables Anaconda-compatible. Maintained by Filipe Fernandes.</li>
-Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, and others for developing and maintaining the NCO package for conda.
+Thanks to Rich Signell, Filipe Fernandes, Pedro Vicente, Xylar Asay-Davis and others for developing and maintaining the NCO package for conda.
 </ul>
 
 <a name="debian"></a><a name="dbn"></a> <!-- http://nco.sf.net#debian -->
