@@ -1,7 +1,8 @@
 2019-02-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.9: Guru Benji';git push git tag -a 4.7.9 -m 'ncremap sgs fix, sgs --map, lat/lon_dmn_nm, whitespace ok, mpas depth, add_depth.py;ncclimo nd_fl, nd_nbr fix;ncrcat rec_apn rbs;ncatted --hdn';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.7.9: Guru Benji';git push
+	git tag -a 4.7.9 -m 'ncremap sgs fix, sgs --map, lat/lon_dmn_nm, whitespace ok, mpas depth, add_depth.py;ncclimo nd_fl, nd_nbr fix;ncrcat rec_apn rbs;ncatted --hdn';git push --tags
 
 	* Update release metadata
 
