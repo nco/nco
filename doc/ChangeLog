@@ -1,11 +1,15 @@
-2019-02-18  Charlie Zender  <zender@uci.edu>
+2019-02-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.7.9 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.7.9: Guru Benji';git push git tag -a 4.7.9 -m 'ncremap sgs fix, sgs --map, lat/lon_dmn_nm, whitespace ok, mpas depth, add_depth.py;ncclimo nd_fl, nd_nbr fix;ncrcat rec_apn rbs';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.7.9: Guru Benji';git push git tag -a 4.7.9 -m 'ncremap sgs fix, sgs --map, lat/lon_dmn_nm, whitespace ok, mpas depth, add_depth.py;ncclimo nd_fl, nd_nbr fix;ncrcat rec_apn rbs;ncatted --hdn';git push --tags
+
+	* Update release metadata
 
 	* NCO 4.7.9-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.7.9-beta01: Waterfalls';git push
 	git tag -a 4.7.9-beta01 -m 'CDL _NoFill, _Filter, _Endianness fixes;ncremap/ncclimo die+report linker errors';git push --tags
+
+2019-02-18  Charlie Zender  <zender@uci.edu>
 
 	* Always build split.nc so ncks regression test #120 can pass
 

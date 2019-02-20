@@ -111,13 +111,13 @@ C. ncremap orders Tempest remap commands in execution-order in the
    history attribute. Previously they were recorded in an ad hoc
    order. Thanks to Ben Hilman of SNL for suggesting this.
 
-A. Cause ncclimo in MPI mode to exit when no nodes are available.
+D. Cause ncclimo in MPI mode to exit when no nodes are available.
 
-A. Ensure ncclimo writes nd_fl to writable directory
+E. Ensure ncclimo writes nd_fl to writable directory
 
-A. ncap2 exits gracefully when no output file is specified
+F. ncap2 exits gracefully when no output file is specified
 
-A. ncap2 exits gracefully when no -s or -S argument given
+G. ncap2 exits gracefully when no -s or -S argument given
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
