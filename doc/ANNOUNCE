@@ -55,6 +55,8 @@ A. ncclimo write more explicit information about parallelism,
 A. NCO now writes more intelligible error messages with HINTS for
    likely causes of and responses to NC_EHDFERR and NC_EBADCHUNK
    errors. 
+   http://nco.sf.net/nco.html#hdf
+   http://nco.sf.net/nco.html#cnk
 
 A. ncremap supports SGS procedures for MPAS-Seaice (fxm)
    Previously ncremap only had SGS support the CICE sea-ice model.
@@ -71,7 +73,8 @@ A. ncremap and ncclimo support MPAS files with a 'depth' dimension,
    Both add 'depth' to MPAS files with the new option --dpt_fl:
    ncremap -P mpas --dpt_fl=refBottomDepth_60lyr.nc ...
    ncremap -m mpaso --dpt_fl=refBottomDepth_60lyr.nc ...
-   To work, the Python code add_depth.py must be on the $PATH.
+   To work, the Python code add_depth.py must be on the $PATH, and
+   dpt_fl must contain the MPAS-Ocean field refBottomDepth.
    http://nco.sf.net/nco.html#dpt
    http://nco.sf.net/nco.html#dpt_fl
 
@@ -84,16 +87,19 @@ A. The splitter in ncclimo now outputs progress more clearly,
    and shows the elapsed time to split each timeseries.
    http://nco.sf.net/nco.html#split
 
-A. ncks emulates ncdump more closely and prints _NoFill (not 
-   _NOFILL) values as "true" or "false" not 1 or 0.
+A. ncks emulates ncdump more closely and prints hidden attribute
+   _NoFill (not _NOFILL) values as "true" or "false" not 1 or 0.
+   ncks --hidden -m in.nc
    http://nco.sf.net/nco.html#cdl
 
 A. ncks prints CDL for hidden _Filters attribute, if any, with 
    all filter values.
+   ncks --hidden -m in.nc
    http://nco.sf.net/nco.html#cdl
 
-A. ncks prints _Endianness for floating point types not just integers
-   as before.
+A. ncks prints hidden _Endianness attribute for floating point types
+   not just multi-byte integers as before.
+   ncks --hidden -m in.nc
    http://nco.sf.net/nco.html#cdl
 
 BUG FIXES:
