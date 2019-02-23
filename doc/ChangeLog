@@ -1,6 +1,10 @@
 2019-02-22  Charlie Zender  <zender@uci.edu>
 
-	* Add Tempest alg_typ se2se'cs2cs for spectral element cube-sphere to cube-sphere
+	* NCO 4.8.0-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha01: Thin Mints';git push
+	git tag -a 4.8.0-alpha01 -m 'Functionally identical to 4.7.9;ncremap se2se';git push --tags
+
+	* ncremap add Tempest alg_typ se2se/cs2cs for spectral element cube-sphere to cube-sphere
 
 2019-02-20  Charlie Zender  <zender@uci.edu>
 
