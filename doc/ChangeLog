@@ -1,5 +1,7 @@
 2019-02-24  Charlie Zender  <zender@uci.edu>
 
+	* Explain how EHDFERR can be caused by un/mis-configured HDF5_PLUGIN_PATH
+
 	* ncremap add Tempest alg_typ fv2fv/rll2rll for finite volume to finite volume
 
 2019-02-22  Charlie Zender  <zender@uci.edu>
