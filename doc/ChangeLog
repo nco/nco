@@ -1,3 +1,7 @@
+2019-02-24  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add Tempest alg_typ fv2fv/rll2rll for finite volume to finite volume
+
 2019-02-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.0-alpha01 release procedure:
