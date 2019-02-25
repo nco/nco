@@ -932,8 +932,11 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   /* Initialize arguments before they are actually computed */
   for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=pl_lst_vrl[idx]->area;
-  for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=pl_lst_vrl[idx]->src_id;
-  for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id;
+
+  /* looks like "col" and "row" are ONE-BASED in the map file */
+  for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
+  for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
+  
   for(idx=0;idx<grd_sz_in;idx++) frc_in[idx]=1.0;
   for(idx=0;idx<grd_sz_out;idx++) frc_out[idx]=1.0;
 
