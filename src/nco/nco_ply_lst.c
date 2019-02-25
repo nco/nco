@@ -171,15 +171,20 @@ int *pl_nbr)
     nco_poly_add_area(pl);
 
 
-    if(pl->dp_x_minmax[0] <0.0 || (pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) > 30  )
+    //if(pl->dp_x_minmax[0] <0.0 || (pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) > 30  )
+    if( !(pl->dp_x_minmax[1] - pl->dp_x_minmax[0] < 180.0
+             &&  lon_ctr[idx] >= pl->dp_x_minmax[0] && lon_ctr[idx] <= pl->dp_x_minmax[1] ))
+
     {
+      (void)fprintf(stdout, "/***%s:%s(): invalid polygon to follow *******?", nco_prg_nm_get(), __FUNCTION__);
+      nco_poly_prn(pl, 0);
       pl=nco_poly_free(pl);
       continue;
 
     }
 
-    fprintf(stdout,"/***** input polygon pl lon center=%f   convex=%s\n    ********************/\n", lon_ctr[idx],   (nco_poly_is_convex(pl) ? "True": "False") );
-    nco_poly_prn(pl, 0);
+    //fprintf(stdout,"/***** input polygon pl lon center=%f   convex=%s\n    ********************/\n", lon_ctr[idx],   (nco_poly_is_convex(pl) ? "True": "False") );
+    //nco_poly_prn(pl, 0);
 
 
 
@@ -460,7 +465,14 @@ int pl_cnt_in,
 poly_sct **pl_lst_out,
 int pl_cnt_out,
 int *pl_cnt_vrl_ret){
-
+  
+  
+  nco_bool bDirtyRats=True;
+  
+  int pl_cnt_dbg=0;
+  poly_sct **pl_lst_dbg=(poly_sct**)NULL_CEWI;
+  
+  
 /* just duplicate output list to overlap */
 
   size_t idx;
@@ -519,41 +531,91 @@ int *pl_cnt_vrl_ret){
   /* kd_print(rtree); */
 
 /* start main loop over input polygons */
-  for(idx=0 ; idx<pl_cnt_in ;idx++ )
-  {
-    int cnt_vrl=0;
-    int cnt_vrl_on=0;
+  for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
 
-    (void)nco_poly_set_priority(max_nbr_vrl,list);
+
+    int cnt_vrl = 0;
+    int cnt_vrl_on = 0;
+
+    double tot_area = 0.0;
+
+    (void) nco_poly_set_priority(max_nbr_vrl, list);
     /* get bounds of polygon in */
-    size[KD_LEFT]  =  pl_lst_in[idx]->dp_x_minmax[0];
-    size[KD_RIGHT] =  pl_lst_in[idx]->dp_x_minmax[1];
+    size[KD_LEFT] = pl_lst_in[idx]->dp_x_minmax[0];
+    size[KD_RIGHT] = pl_lst_in[idx]->dp_x_minmax[1];
 
     size[KD_BOTTOM] = pl_lst_in[idx]->dp_y_minmax[0];
-    size[KD_TOP]    = pl_lst_in[idx]->dp_y_minmax[1];
+    size[KD_TOP] = pl_lst_in[idx]->dp_y_minmax[1];
 
     /* find overlapping polygons */
 
-    cnt_vrl=kd_nearest_intersect(rtree, size, max_nbr_vrl,list );
+    cnt_vrl = kd_nearest_intersect(rtree, size, max_nbr_vrl, list);
 
 
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
 
 
-    for(jdx=0; jdx <cnt_vrl ;jdx++){
+    for (jdx = 0; jdx < cnt_vrl; jdx++) {
 
-      poly_sct *pl_vrl=(poly_sct*)NULL_CEWI;
-      poly_sct *pl_out=(poly_sct*)list[jdx].elem->item;           ;
+      poly_sct *pl_vrl = (poly_sct *) NULL_CEWI;
+      poly_sct *pl_out = (poly_sct *) list[jdx].elem->item;;
 
-      if(pl_lst_in[idx]->pl_typ != pl_out->pl_typ)
-      {
-        fprintf(stdout,"poly type mismatch\n", fnc_nm);
+      if (pl_lst_in[idx]->pl_typ != pl_out->pl_typ) {
+        fprintf(stdout, "%s:%s(): poly type mismatch\n", nco_prg_nm_get(), fnc_nm);
         continue;
       }
 
-      pl_vrl=nco_poly_do_vrl(pl_lst_in[idx], pl_out);
 
-      if(pl_vrl){
+
+      pl_vrl = nco_poly_do_vrl(pl_lst_in[idx], pl_out);
+
+      /* if pl_vrl is NULL from,  nco_poly_do_vrl()  then there are 3 possible senario's
+       *
+       *  1) pl_lst_in[idx] and pl_out are seperate and  distinct
+       *
+       *  2) pl_lst_in[idx] is entirely inside pl_out.
+       *     to check for this it is sufficent to check the
+       *     the minmax bounds and then also  check that a single vertex
+       *     from pl_lst_in[idx] is inside pl_out
+       *
+       *  3) pl_out is entirely inside pl_lst_in[idx]
+       *     check minmax bounds then check a single vertex from
+       *     pl_out
+       */
+
+      if (pl_vrl == (poly_sct *)NULL_CEWI) {
+
+        double pControl[NBR_SPH];
+
+        /* see if pl_out completly inside pl_lst_in[idx] */
+        if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out) )
+        {
+          if(nco_sph_mk_control( pl_lst_in[idx], pControl  ) &&
+            nco_sph_pnt_in_poly(pl_lst_in[idx]->shp, pl_lst_in[idx]->crn_nbr,pControl, pl_out->shp[0] ) )
+              pl_vrl = nco_poly_dpl(pl_out);
+        }
+          /* see if  pl_lst_in[idx] completly inside pl_out   */
+        else if ( nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
+        {
+          if(nco_sph_mk_control( pl_out, pControl  ) &&
+            nco_sph_pnt_in_poly(pl_out->shp, pl_out->crn_nbr,pControl, pl_lst_in[idx]->shp[0] ) )
+              pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
+        }
+
+
+        /* add aprropriate id's */
+        if(pl_vrl)
+        {
+          pl_vrl->src_id = pl_lst_in[idx]->src_id;
+          pl_vrl->dst_id = pl_out->src_id;
+        }
+
+
+
+      }
+
+
+      if (pl_vrl) {
         // nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
 
         /* add area */
@@ -561,42 +623,71 @@ int *pl_cnt_vrl_ret){
         /* shp not needed */
         nco_poly_shp_free(pl_vrl);
 
+        tot_area += pl_vrl->area;
 
-        pl_lst_vrl=(poly_sct**)nco_realloc(pl_lst_vrl, sizeof(poly_sct*) * (pl_cnt_vrl+1));
-        pl_lst_vrl[pl_cnt_vrl]=pl_vrl;
+        pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * (pl_cnt_vrl + 1));
+        pl_lst_vrl[pl_cnt_vrl] = pl_vrl;
         pl_cnt_vrl++;
         cnt_vrl_on++;
 
-        if(0 && nco_poly_is_convex(pl_vrl) == False )
-        {
-          fprintf(stdout,"%s:%s vrl polygon convex=0  vrl ,in convex=%d ,out convex=%d\n", nco_prg_nm_get(), fnc_nm, nco_poly_is_convex(pl_lst_in[idx]), nco_poly_is_convex(pl_out) );
-          nco_poly_prn(pl_vrl, 2);
-          nco_poly_prn(pl_lst_in[idx], 2);
-          nco_poly_prn(pl_out, 2);
-
-        }
-
-        //fprintf(stdout,"Overlap polygon to follow\n");
-        //nco_poly_prn(2, pl_vrl);
 
       }
 
 
+    } /* end jdx */
+
+    if (nco_dbg_lvl_get() >= nco_dbg_dev) {
+      /* area diff by more than 10% */
+      double frc = tot_area / pl_lst_in[idx]->area;
+      if (frc < 0.9) {
+        (void) fprintf(stdout,
+                       "%s: total overlaps=%d for polygon %d - potential overlaps=%d actual overlaps=%d area_in=%.10e area_vrl=%.10e\n",
+                       nco_prg_nm_get(), pl_cnt_vrl, idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, tot_area);
+
+        if (bDirtyRats && frc < 0.9) {
+          pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
+          pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
+          pl_cnt_dbg++;
+
+          if (0) {
+            (void) fprintf(stdout, "/** following pl_lst_in[%d]  **/\n", idx);
+            nco_poly_prn(pl_lst_in[idx], 1);
+            (void) fprintf(stdout, "/** potential overlaps to  follow  **/\n");
+            for (jdx = 0; jdx < cnt_vrl; jdx++)
+              nco_poly_prn((poly_sct *) list[jdx].elem->item, 1);
+
+            (void) fprintf(stdout, "/************* end dirty rats ***************/");
+          }
+
+
+        }
+
+      }
+
     }
-
-    if( nco_dbg_lvl_get() >= nco_dbg_dev )
-      (void) fprintf(stdout, "%s: total overlaps=%d for polygon %d - potential overlaps=%d actual overlaps=%d\n", nco_prg_nm_get(), pl_cnt_vrl,  idx, cnt_vrl, cnt_vrl_on);
-
-
   }
-
 
   kd_destroy(rtree,NULL);
 
   list = (KDPriority *)nco_free(list);
 
+
+  /* Instead of returning polygons - return  source polygons  for wwhich area used is less that 90% */
+  if(bDirtyRats)
+  {
+    pl_lst_vrl=(poly_sct**)nco_poly_lst_free(pl_lst_vrl, pl_cnt_vrl);
+    *pl_cnt_vrl_ret=pl_cnt_dbg;
+    (void)fprintf(stdout, "%s:%s(): dirty rats - pl_cnt_dbg=%d\n ", nco_prg_nm_get(),__FUNCTION__, pl_cnt_dbg);
+
+    return pl_lst_dbg;
+  }
+
+
+
+
   /* return size of list */
   *pl_cnt_vrl_ret=pl_cnt_vrl;
+
 
 
   return pl_lst_vrl;
