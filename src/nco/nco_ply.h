@@ -102,6 +102,12 @@ extern "C" {
   poly_sct *pl_in,
   poly_sct *pl_out); 		     
 
+  nco_bool                  /* [flg] return True if pl_out inside pl_in */
+  nco_poly_in_poly_minmax(  /* uses minmax limits only no serious polygon stuff */
+  poly_sct *pl_in,
+  poly_sct *pl_out
+  );
+
   
   nco_bool
   nco_poly_wrp_splt( 
