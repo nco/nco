@@ -2550,7 +2550,7 @@ int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority
 	        break;
              }	  
 
-	     if(idx==m)
+	   if(idx==m)
                  return 0;
      }
    
