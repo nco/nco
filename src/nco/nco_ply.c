@@ -47,9 +47,9 @@ nco_poly_init
 
   poly_sct *pl;
 
-  pl->pl_typ=poly_none;
-
   pl=(poly_sct*)nco_malloc( sizeof(poly_sct));
+
+  pl->pl_typ=poly_none;
 
   pl->dp_x=(double*)NULL_CEWI;
   pl->dp_y=(double*)NULL_CEWI;
@@ -481,6 +481,26 @@ poly_sct *pl_out)
 }
 
 
+/* Uses min-max limits only no serious polygon stuff */
+/* should really only be used after nco_sph_intersect */
+/* remember that for polY_sph - dp_y_minmax[0,1] a latitude correction has been added */
+
+nco_bool                  /* [flg] return True if pl_out inside pl_in */
+nco_poly_in_poly_minmax(
+poly_sct *pl_in,
+poly_sct *pl_out)
+{
+  if( pl_out->dp_x_minmax[0] >= pl_in->dp_x_minmax[0] &&
+      pl_out->dp_x_minmax[1] <= pl_in->dp_x_minmax[1] &&
+      pl_out->dp_y_minmax[0] >= pl_in->dp_y_minmax[0] &&
+      pl_out->dp_y_minmax[1] <= pl_in->dp_y_minmax[1]
+  )
+    return True;
+
+  return False;
+}
+
+
 void
 nco_poly_prn
 (poly_sct *pl, int style)
@@ -510,10 +530,10 @@ nco_poly_prn
 
    case 1:  
    default:
-     (void)fprintf(stdout,"%s: crn_nbr=%d\n", nco_prg_nm_get(), pl->crn_nbr);
+     (void)fprintf(stdout,"%s: crn_nbr=%d src_id=%d\n", nco_prg_nm_get(), pl->crn_nbr, pl->src_id);
      
      for(idx=0; idx<pl->crn_nbr; idx++)
-        (void)fprintf(stdout,"{ %20.14f, %20.14f }\n",pl->dp_x[idx], pl->dp_y[idx]);
+        (void)fprintf(stdout,"%20.14f %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
 
      break;
 
