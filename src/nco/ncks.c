@@ -182,6 +182,7 @@ main(int argc,char **argv)
   int *in_id_arr; /* [id] netCDF file IDs used by OpenMP code */
 
   int JSN_ATT_FMT=0; /* [enm] JSON format for netCDF attributes: 0 (no object, only data), 1 (data only for string, char, int, and floating-point types, otherwise object), 2 (always object) */
+  int JSN_VAR_FMT=2; /* [flg] JSON format for netCDF variables: 0 (no type except for user-defined types), 1 (type for non-default types), 2 (always type) */
   nco_bool JSN_DATA_BRK=True; /* [flg] JSON format for netCDF variables: 0 (no brackets), 1 (bracket inner dimensions of multi-dimensional data) */
 
   int abb_arg_nbr=0;
@@ -800,6 +801,7 @@ main(int argc,char **argv)
 	if(JSN_ATT_FMT >= 4) JSN_DATA_BRK=False; /* [flg] Print JSON with bracket data */
 	JSN_ATT_FMT%=4; /* 20161221: Valid values are 0,1,2 */
 	if(JSN_ATT_FMT == 3) JSN_ATT_FMT=2;
+	JSN_VAR_FMT=JSN_ATT_FMT;
       } /* !jsn_att_fmt */
       if(!strcmp(opt_crr,"jsn") || !strcmp(opt_crr,"json") || !strcmp(opt_crr,"w10") || !strcmp(opt_crr,"w10n")) PRN_JSN=True; /* [flg] Print JSON */
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
@@ -1297,15 +1299,17 @@ main(int argc,char **argv)
     } /* endif */
 
     if(prn_flg.jsn){
-      /* In JSON, notation 0. or 20. is invalid---correct is 0.0, 20.0 */
+      /* In JSON numeric notation, a terminal decimal place, like 0. and 20., is invalid---correct is 0.0, 20.0 */
       prn_flg.nbr_zro=1;
       /* JSON numerical arrays have no notion of missing values */
       prn_flg.PRN_MSS_VAL_BLANK=False;
       prn_flg.jsn_att_fmt=JSN_ATT_FMT;  
       prn_flg.jsn_data_brk=JSN_DATA_BRK;  
+      prn_flg.jsn_var_fmt=JSN_VAR_FMT;  
     }else { /* endif JSON */
       prn_flg.jsn_att_fmt=0;
       prn_flg.jsn_data_brk=False;
+      prn_flg.jsn_var_fmt=2;
     } /* !JSON */
       
     if(prn_flg.xml) prn_flg.PRN_MSS_VAL_BLANK=False;

@@ -1758,7 +1758,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   } /* !xml */
 
   /* Add comma as next in queue are the attributes NB: DO NOT LIKE THIS */
-  if(prn_flg->jsn){
+  if(prn_flg->jsn && prn_flg->jsn_var_fmt >= 1){
     char *typ_nm;
     
     typ_nm=cdl_typ_nm_udt(nc_id,var_typ);
@@ -1773,9 +1773,8 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   if(dmn_sng) dmn_sng=(char *)nco_free(dmn_sng);
 
   /* Print dimension sizes and names */
-
-  /* Loop dimensions for object (variable) */
   if(prn_flg->trd){
+    /* Loop over dimensions for object (variable) */
     for(dmn_idx=0;dmn_idx<var_trv->nbr_dmn;dmn_idx++){
 
       /* Casting from "size_t" to "unsigned long" necessary since %zu format only available in C99 */
@@ -3097,18 +3096,20 @@ nco_grp_prn /* [fnc] Recursively print group contents */
         (void)fprintf(fp_out,"%*s\"variables\": {\n",prn_flg->ndn,spc_sng);
       } /* !var_idx */
         
-      /* DOES NOT include a return as we may wanna add a COMMA */
+      /* Variable definition section does not print a final CR since as we may need to insert a comma before the CR */
       (void)nco_prn_var_dfn(nc_id,prn_flg,&var_trv);
       prn_flg->ndn+=prn_flg->sxn_fst;  
 
-      /* nco_prn_att() prints final brace though not return, as we may need to add a comma */ 
+      /* nco_prn_att() prints final brace though not return, as we may need to insert a comma before the CR */ 
       if(prn_flg->PRN_VAR_METADATA  && nco_att_nbr(grp_id,var_id) > 0){
-        (void)fprintf(fp_out,",\n");            
+	/* Print comma+CR preceding "attributes" section */
+	(void)fprintf(fp_out,",\n");            
         (void)nco_prn_att(grp_id,prn_flg,var_id);
       } /* !nco_att_nbr */
         
       if(prn_flg->PRN_VAR_DATA){  
-        (void)fprintf(fp_out,",\n");  
+	/* Print comma+CR preceding "data" section */
+        if(prn_flg->jsn_var_fmt >= 1) (void)fprintf(fp_out,",\n");
         (void)nco_prn_var_val_trv(nc_id,prn_flg,&trv_tbl->lst[var_lst[var_idx].id],trv_tbl);      
       }else{
         (void)fprintf(fp_out,"\n");        

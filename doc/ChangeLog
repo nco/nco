@@ -1,3 +1,9 @@
+2019-02-26  Charlie Zender  <zender@uci.edu>
+
+	* Omit JSON variable "type" clause when jsn_var_fmt=0
+
+	* Add JSON stubs to distinguish between attribute and variable format levels
+
 2019-02-24  Charlie Zender  <zender@uci.edu>
 
 	* Explain how EHDFERR can be caused by un/mis-configured HDF5_PLUGIN_PATH
