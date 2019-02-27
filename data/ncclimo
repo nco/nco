@@ -1350,8 +1350,10 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_lst=`scontrol show hostname ${SLURM_NODELIST}`
 	echo ${nd_lst} > ${nd_fl}
     else
-	echo "${spt_nm}: ERROR MPI job unable to find node list"
-	echo "${spt_nm}: HINT ${spt_nm} uses first node list found in \$COBALT_NODEFILE (= \"${COBALT_NODEFILE}\"), \$PBS_NODEFILE (= \"${PBS_NODEFILE}\"), \$SLURM_NODELIST (= \"${SLURM_NODELIST}\")"
+	echo "${spt_nm}: ERROR MPI master process unable to find node-list for distributing jobs"
+	echo "${spt_nm}: ${spt_nm} uses first node-list found in \$COBALT_NODEFILE, \$PBS_NODEFILE, or \$SLURM_NODELIST"
+	echo "${spt_nm}: However, none of these environment variables are set so there is no node-list for distributing MPI jobs"
+	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
 	exit 1
     fi # !PBS
     if [ "${sbs_flg}" = 'Yes' ]; then 
