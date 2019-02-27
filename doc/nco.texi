@@ -23132,10 +23132,10 @@ Options: @samp{--in_type fv --in_np 2 --out_type cgll --out_np 4 --out_double --
 Options: @samp{--in_type cgll --in_np 4 --out_type fv --out_double --mono3 --noconserve}
 @item @code{fv2se_alt} (synonyms @code{mono_fv2se}, @code{conservative_monotone_fv2se_alt}).
 Options: @samp{--in_type fv --in_np 1 --out_type cgll --out_np 4 --out_double --mono --volumetric}
-@item @code{se2se} (synonyms @code{cs2cs}, @code{accurate_conservative_nonmonotone_se2se}),
-Options: @samp{--in_type cgll --in_np 4 --out_type cgll --out_np 4 --out_double}
-@item @code{fv2fv} (synonyms @code{rll2rll}, @code{accurate_conservative_nonmonotone_fv2fv}),
-Options: @samp{--in_type fv --in_np 2 --out_type fv --out_np 2 --out_double}
+@item @code{se2se} (synonyms @code{cs2cs}, @code{conservative_monotone_se2se}),
+Options: @samp{--in_type cgll --in_np 4 --out_type cgll --out_np 4 --out_double --mono}
+@item @code{fv2fv} (synonyms @code{rll2rll}, @code{accurate_monotone_nonconservative_fv2fv}),
+Options: @samp{--in_type fv --in_np 2 --out_type fv --out_np 2 --out_double --mono3 --noconserve}
 @end table
 Thus these boutique options are specialized for @acronym{SE} grids with
 fourth order resolution (@math{@var{np} = 4}).

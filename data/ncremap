@@ -906,8 +906,9 @@ elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${al
     wgt_opt_tps='--in_type cgll --in_np 4 --out_type fv --out_double --mono3 --noconserve'
     alg_opt='se2fv_alt'
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2se' ]; then # alg_sng='se2se'
-    wgt_opt_tps='--in_type cgll --in_np 4 --out_type cgll --out_np 4 --out_double'
+elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'conservative_monotone_se2se' ]; then # alg_sng='se2se'
+    # 20190227: Added mono for se2se per recommendation of Mark Taylor
+    wgt_opt_tps='--in_type cgll --in_np 4 --out_type cgll --out_np 4 --out_double --mono'
     alg_opt='se2se'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # alg_sng='monotr'
@@ -924,8 +925,9 @@ elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_ty
     wgt_opt_tps='--in_type fv --in_np 1 --out_type cgll --out_np 4 --out_double --mono --volumetric'
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2fv' ]; then # alg_sng='fv2fv'
-    wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --out_np 2 --out_double'
+elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_fv2fv' ]; then # alg_sng='fv2fv'
+    # 20190227: Added --mono3 --noconserve for fv2fv per recommendation of Mark Taylor
+    wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --out_np 2 --out_double --mono3 --noconserve'
     alg_opt='fv2fv'
     wgt_typ='tempest'
 else 
