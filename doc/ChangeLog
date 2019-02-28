@@ -1,6 +1,6 @@
 2019-02-27  Charlie Zender  <zender@uci.edu>
 
-	* Add HINT to parallelism error in ncclimo
+	* Add HINT to parallelism error in ncclimo/ncremap
 
 	* Add --mono to se2se and --mono3 --nonconserve to fv2fv
 

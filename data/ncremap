@@ -445,7 +445,7 @@ xtr_nsp=8 # [nbr] Extrapolation number of source points
 xtr_typ='' # [sng] Extrapolation type
 xtr_xpn=2.0 # [frc] Extrapolation exponent
 
-# Set temporary-file directory
+# Set temporary-file directory (must be writable by user)
 if [ -d "${TMPDIR}" ]; then
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
     drc_tmp="${TMPDIR%/}"
