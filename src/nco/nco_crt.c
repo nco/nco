@@ -176,7 +176,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     /* Quit when both adv. indices have cycled, or one has cycled twice. */
   } while ( ((aa < n) || (ba < m)) && (aa < 2*n) && (ba < 2*m) );
 
-  if ( !FirstPoint )
+  if ( FirstPoint )
   {
     if(DEBUG_CRT)
       (void)fprintf(stdout, "%s: no points output\n", nco_prg_nm_get());
