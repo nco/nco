@@ -19,6 +19,8 @@ not removed.
    these may be set in nco_poly.c or
    should be safe with OPenMP   */
 
+int DEBUG_SPH=0;
+
 static double LAT_MIN_RAD;
 static double LAT_MAX_RAD;
 
@@ -422,7 +424,7 @@ double  nco_sph_cross(double *a, double *b, double *c)
       c[2] /= n1;
    }
 
-   if(DEBUG_SPH)
+   if(0 && DEBUG_SPH)
       printf("%s(): n1=%f (%f, %f %f)\n",__FUNCTION__, n1, c[0],c[1], c[2]);
 
    return n1;
@@ -531,27 +533,53 @@ void nco_sph_add_pnt(double **R, int *r, double *P)
 nco_bool nco_sph_between(double a, double b, double x)
 {
 
-   nco_bool sdiff=False;
+   nco_bool bd=False;
+   nco_bool bret=False;
 
-   if(DEBUG_SPH)
-      printf("iBetween(): a=%.20f, b=%.20f, x=%.20f\n", a, b, x);
+   double diff;
 
-   if(fabs(b-a) < DSIGMA  )
-      sdiff=True;
-   else
-      sdiff=False;
+   diff=fabs(b-a);
 
-   if(sdiff) {
-      if (fabs(x - a) < DSIGMA || fabs(x - b) < DSIGMA)
-         return True;
-      else
-         return False;
+
+
+   if(diff==0.0 )
+   {
+
+
+     if( fabs(x-a)<= SIGMA_RAD )
+        bret=True;
+   }
+   else if( diff <= SIGMA_RAD )
+   {
+
+      if(  b >a &&  x>= a && x<=b  || b<a && x>=b && x<=a    )
+         bret= True;
+
+   }
+   else if( diff < M_PI )
+   {
+
+      if(  b >a &&  x>= a && x<=b  || b<a && x>=b && x<=a    )
+         bret=True;
+
+   }
+   /* this indicates a wrapped cell (or edge )
+    * this same code works for domains (0-360) and (-180,180) */
+   else if( diff >  M_PI )
+   {
+
+     if( (b>a && (x>=b || x<=a)) || ( b<a && (x<=b ||  x>=a)) )
+        bret= True;
    }
 
-   if(  b >a &&  x>= a && x<=b  || b<a && x>=b && x<=a    )
-      return True;
-   else
-      return False;
+
+
+
+  if(DEBUG_SPH)
+    printf("%s(): a=%.20f, b=%.20f, x=%.20f %s \n",__PRETTY_FUNCTION__, a, b, x, (bret==True ? "True":"False"));
+
+   return bret;
+
 
 }
 
@@ -565,6 +593,7 @@ nco_bool nco_sph_lonlat_between(double *a, double *b, double *x)
 
    /* working in radians here */
    nco_bool bDeg=False;
+   nco_bool bRet=False;
 
    double lat_min;
    double lat_max;
@@ -577,15 +606,20 @@ nco_bool nco_sph_lonlat_between(double *a, double *b, double *x)
   nco_geo_get_lat_correct(a[3], a[4], b[3], b[4], &lat_min, &lat_max, bDeg);
 
 
-   if(DEBUG_SPH)
-      printf("sBetween(): lat_min=%f lat_max=%f lat=%f\n", lat_min, lat_max, x[4]);
 
    if( x[4]>=lat_min && x[4]<=lat_max )
-      return True;
+      bRet=True;
    else
-      return False;
+      bRet=False;
 
-   return False;
+  if(DEBUG_SPH)
+    printf("%s(): lat_min=%.20f lat_max=%.20f lat=%.20f %s\n",__FUNCTION__, lat_min, lat_max, x[4],
+           (bRet ? "True" : "False") );
+
+
+
+
+  return bRet;
 
 
 }
@@ -751,10 +785,10 @@ for(idx=0; idx<np;idx++)
   if(DEBUG_SPH)
     printf("%s():, %d angle=%f n1=%.15g n2=%.15g\n", __FUNCTION__, idx, theta*180.0/M_PI, n1, n2);
 
-  /*
-  if(theta > 2.0*M_PI   )
-     return False;
-   */
+
+  //if( fabs(theta - M_PI) >SIGMA_RAD )
+  //   return False;
+
 
 }
 
@@ -819,7 +853,7 @@ int nco_sph_mk_control(poly_sct *sP, double* pControl  )
 /* nb doesnt work if polygon spans more than 180.0
  * works by counting the number of intersections of the
    line (pControl, pVertex) and each edge in sP
-   pControl is chosen so that it is OUTSIDE sP
+   pControl is chosen so that it is OUTSIDE of sP
  */
 nco_bool nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVertex)
 {

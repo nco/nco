@@ -24,10 +24,10 @@
 #define ARC_MIN_LENGTH_RAD (1.0e-15)
 
 /* smallest RADIAN */
-#define SIGMA_RAD (1.0e-20)
+#define SIGMA_RAD (1.0e-12)
 
 /* convert Degrees to Radians */
-#define D2R(x)  ((x) * M_PI /180.0)
+#define D2R(x)  ((x) * M_PI / 180.0)
 /* convert Radians to degrees */
 #define R2D(x)  ((x) * 180.0 / M_PI)
 
@@ -37,7 +37,7 @@
 /* we need this to convert 3D back to 2D */
 #define IS_LON_360 (1)
 
-#define DEBUG_SPH (0)
+// #define DEBUG_SPH (1)
 
 
 #ifdef __cplusplus
