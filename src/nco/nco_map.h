@@ -81,7 +81,18 @@ extern "C" {
     size_t grd_sz,      /* I [nbr] Number of elements in single layer of  grid */
     long grd_crn_nbr); /* I [nbr] Maximum number of corners in  gridcell */
 
-    
+
+    void
+    nco_msh_lon_crr(
+    double *lon_crn,      /* I/O longitude to be corrected */
+    size_t grd_sz_in,     /* I [nbr] Number of elements in single layer of source grid */
+    long grd_crn_nbr_in,  /* I [nbr] Maximum number of corners in source gridcell */
+    nco_grd_lon_typ_enm typ_in,
+    nco_grd_lon_typ_enm typ_out);
+
+
+
+
 
 
    
