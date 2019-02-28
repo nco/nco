@@ -1,7 +1,7 @@
 2019-02-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.0-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha02: Kavli';git push
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha02: 300-degree Club';git push
 	git tag -a 4.8.0-alpha02 -m 'ncremap fv2fv MPI;ncks JSON deprecate type;ncclimo fix drc_out nd_fl bug';git push --tags
 
 	* Insert MPI parallelism commands for cheyenne, constance, theta from ncclimo into ncremap
