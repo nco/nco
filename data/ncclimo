@@ -879,6 +879,26 @@ else
     drc_rgr_xtn="${drc_xtn%/}"
 fi # !drc_rgr_xtn
 
+# Create output directories
+if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ]; then 
+    cmd_mkd="mkdir -p ${drc_out}"
+    eval ${cmd_mkd}
+    if [ "$?" -ne 0 ]; then
+	printf "${spt_nm}: ERROR Failed to create output directory. Debug this:\n${cmd_mkd}\n"
+	printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
+	exit 1
+    fi # !err
+fi # !drc_out
+if [ -n "${drc_rgr}" ] && [ ! -d "${drc_rgr}" ]; then 
+    cmd_mkd="mkdir -p ${drc_rgr}"
+    eval ${cmd_mkd}
+    if [ "$?" -ne 0 ]; then
+	printf "${spt_nm}: ERROR Attempt to create regrid directory. Debug this:\n${cmd_mkd}\n"
+	printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
+	exit 1
+    fi # !err
+fi # !drc_rgr
+
 # Determine first full year
 trim_leading_zeros ${yr_srt}
 yr_srt_rth=${sng_trm}
@@ -1373,6 +1393,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	nd_nbr=${#nd_nm[@]}
 	if [ "${nd_nbr}" -eq 0 ]; then
 	    echo "${spt_nm}: ERROR MPI-mode node number nd_nbr = ${nd_nbr}"
+	    echo "${spt_nm}: HINT Parsing the node-list for distributing MPI jobs failed"
 	    exit 1
 	fi # !nd_nbr
 	for ((mpi_idx_zro=0;mpi_idx_zro<mpi_nbr;mpi_idx_zro++)); do
@@ -1516,14 +1537,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
 	printf "dbg: psn_arg[${psn_idx}] = ${!psn_idx}\n"
     done # !psn_idx
 fi # !dbg
-
-# Create output directory
-if [ -n "${drc_out}" ] && [ ! -d "${drc_out}" ]; then 
-    mkdir -p ${drc_out}
-fi # !drc_out
-if [ -n "${drc_rgr}" ] && [ ! -d "${drc_rgr}" ]; then 
-    mkdir -p ${drc_rgr}
-fi # !drc_rgr
 
 # Human-readable summary
 date_srt=$(date +"%s")
@@ -2572,9 +2585,25 @@ fi # !clm_md !bnr_flg
 
 # Extended climos
 if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
-    mkdir -p ${drc_prv}
-    mkdir -p ${drc_xtn}
-
+    if [ -n "${drc_prv}" ] && [ ! -d "${drc_prv}" ]; then 
+	cmd_mkd="mkdir -p ${drc_prv}"
+	eval ${cmd_mkd}
+	if [ "$?" -ne 0 ]; then
+	    printf "${spt_nm}: ERROR Failed to create previous climatology directory. Debug this:\n${cmd_mkd}\n"
+	    printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
+	    exit 1
+	fi # !err
+    fi # !drc_prv
+    if [ -n "${drc_xtn}" ] && [ ! -d "${drc_xtn}" ]; then 
+	cmd_mkd="mkdir -p ${drc_xtn}"
+	eval ${cmd_mkd}
+	if [ "$?" -ne 0 ]; then
+	    printf "${spt_nm}: ERROR Failed to create extended climatology directory. Debug this:\n${cmd_mkd}\n"
+	    printf "${spt_nm}: HINT Creating a directory requires proper write permissions\n"
+	    exit 1
+	fi # !err
+    fi # !drc_xtn
+    
     trim_leading_zeros ${yr_srt_prv}
     yr_srt_rth_prv=${sng_trm}
     yyyy_srt_prv=`printf "%04d" ${yr_srt_rth_prv}`

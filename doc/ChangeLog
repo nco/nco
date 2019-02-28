@@ -1,3 +1,15 @@
+2019-02-28  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.0-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha02: Kavli';git push
+	git tag -a 4.8.0-alpha02 -m 'ncremap fv2fv MPI;ncks JSON deprecate type;ncclimo fix drc_out nd_fl bug';git push --tags
+
+	* Insert MPI parallelism commands for cheyenne, constance, theta from ncclimo into ncremap
+
+	* ncclimo/ncremap Add proper error diagnostics to mkdir failures
+
+	* ncclimo create drc_out before using for nd_fl, fixes bug introduced in 4.7.9
+
 2019-02-27  Charlie Zender  <zender@uci.edu>
 
 	* Add HINT to parallelism error in ncclimo/ncremap
