@@ -272,6 +272,116 @@ int *pl_nbr)
 }
 
 
+poly_sct **             /* [O] [nbr]  size of array */
+nco_poly_lst_mk_sph(
+double *area, /* I [sr] Area of source grid */
+int *msk, /* I [flg] Mask on source grid */
+double *lat_ctr, /* I [dgr] Latitude  centers of source grid */
+double *lon_ctr, /* I [dgr] Longitude centers of source grid */
+double *lat_crn, /* I [dgr] Latitude  corners of source grid */
+double *lon_crn, /* I [dgr] Longitude corners of source grid */
+size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
+long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
+nco_grd_lon_typ_enm grd_lon_typ, /* I [num]  */
+poly_typ_enm pl_typ,
+int *pl_nbr)
+{
+
+  int idx=0;
+  int idx_cnt=0;
+
+  char *fnc_nm="nco_poly_lst_mk()";
+
+  nco_bool bwrp;
+  double tot_area=0.0;
+
+  double *lat_ptr=lat_crn;
+  double *lon_ptr=lon_crn;
+
+  /* buffers  used in nco-poly_re_org() */
+  double lcl_dp_x[VP_MAX]={0};
+  double lcl_dp_y[VP_MAX]={0};
+
+  poly_sct *pl=(poly_sct*)NULL_CEWI;
+
+  poly_sct **pl_lst;
+
+  /* start with twice the grid size as we may be splitting the cells along the Greenwich meridian or dateline */
+  /* realloc at the end */
+  pl_lst=(poly_sct**)nco_malloc( sizeof (poly_sct*) * grd_sz  *2 );
+
+
+  /* filter out wrapped lon cells */
+  if( grd_lon_typ == nco_grd_lon_nil || grd_lon_typ == nco_grd_lon_unk || grd_lon_typ == nco_grd_lon_bb )
+   bwrp=False;
+
+  // printf("About to print poly sct   grd_sz=%d grd_crn_nbr=%d\n", grd_sz, grd_crn_nbr);
+  for(idx=0;idx<grd_sz; idx++)
+  {
+    /* check mask and area */
+    if( msk[idx]==0 || area[idx] == 0.0)
+      continue;
+
+
+    pl=nco_poly_init_lst(pl_typ, grd_crn_nbr,0, idx, lon_ptr, lat_ptr);
+    lon_ptr+=(size_t)grd_crn_nbr;
+    lat_ptr+=(size_t)grd_crn_nbr;
+
+    /* if poly is less  than a triangle then  null is returned*/
+    if(!pl)
+      continue;
+
+
+    /* add min max */
+    nco_poly_add_minmax(pl);
+
+    if(bwrp &&  fabs(pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) >= 180.0 )
+    {
+      pl=nco_poly_free(pl);
+      continue;
+    }
+
+    /* make leftermost vertex first in array */
+    nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
+    /* use Charlie's formula */
+    nco_poly_add_area(pl);
+
+    /* for debugging */
+    tot_area+=pl->area;
+
+
+    pl_lst[idx_cnt]=pl;
+    idx_cnt++;
+
+
+  }
+
+  if(nco_dbg_lvl_get() >=  nco_dbg_std )
+    (void)fprintf(stdout, "%s:%s: size input list(%d), size output list(%d)  total area=%.15e\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area);
+
+  pl_lst=(poly_sct**)nco_realloc( pl_lst, (size_t)idx_cnt * sizeof (poly_sct*) );
+
+  *pl_nbr=idx_cnt;
+
+  return pl_lst;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 poly_sct **
 nco_poly_lst_free(
 poly_sct **pl_lst,
@@ -508,14 +618,15 @@ int *pl_cnt_vrl_ret){
   /* populate kd_tree */
   for(idx=0 ; idx<pl_cnt_out;idx++){
 
+    double df=pl_lst_out[idx]->dp_x_minmax[1] - pl_lst_out[idx]->dp_x_minmax[0];
 
     my_elem=(KDElem*)nco_calloc((size_t)1,sizeof (KDElem) );
 
-    size[KD_LEFT]  =  pl_lst_out[idx]->dp_x_minmax[0];
-    size[KD_RIGHT] =  pl_lst_out[idx]->dp_x_minmax[1];
+      size[KD_LEFT] = pl_lst_out[idx]->dp_x_minmax[0];
+      size[KD_RIGHT] = pl_lst_out[idx]->dp_x_minmax[1];
 
-    size[KD_BOTTOM] = pl_lst_out[idx]->dp_y_minmax[0];
-    size[KD_TOP]    = pl_lst_out[idx]->dp_y_minmax[1];
+      size[KD_BOTTOM] = pl_lst_out[idx]->dp_y_minmax[0];
+      size[KD_TOP]    = pl_lst_out[idx]->dp_y_minmax[1];
 
     //chr_ptr=(char*)pl_lst_out[idx];
 
@@ -539,11 +650,14 @@ int *pl_cnt_vrl_ret){
 
     double tot_area = 0.0;
 
+    double df=pl_lst_in[idx]->dp_x_minmax[1] - pl_lst_in[idx]->dp_x_minmax[0];
+
     (void) nco_poly_set_priority(max_nbr_vrl, list);
     /* get bounds of polygon in */
+
+
     size[KD_LEFT] = pl_lst_in[idx]->dp_x_minmax[0];
     size[KD_RIGHT] = pl_lst_in[idx]->dp_x_minmax[1];
-
     size[KD_BOTTOM] = pl_lst_in[idx]->dp_y_minmax[0];
     size[KD_TOP] = pl_lst_in[idx]->dp_y_minmax[1];
 
@@ -644,12 +758,12 @@ int *pl_cnt_vrl_ret){
                        "%s: total overlaps=%d for polygon %d - potential overlaps=%d actual overlaps=%d area_in=%.10e area_vrl=%.10e\n",
                        nco_prg_nm_get(), pl_cnt_vrl, idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, tot_area);
 
-        if (bDirtyRats && frc < 0.9) {
+        if (bDirtyRats && frc <0.1 ) {
           pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
           pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
           pl_cnt_dbg++;
 
-          if (0) {
+          if (1) {
             (void) fprintf(stdout, "/** following pl_lst_in[%d]  **/\n", idx);
             nco_poly_prn(pl_lst_in[idx], 1);
             (void) fprintf(stdout, "/** potential overlaps to  follow  **/\n");
