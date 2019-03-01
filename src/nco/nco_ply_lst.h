@@ -82,6 +82,7 @@ poly_sct **pl_lst_in,
 int pl_cnt_in,
 poly_sct **pl_lst_out,
 int pl_cnt_out,
+nco_grd_lon_typ_enm grd_lon_typ,
 int *pl_cnt_vrl_ret);
 
 
