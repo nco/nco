@@ -2763,16 +2763,15 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list)
 	int idx;
 	int node_cnt;
 	int ret_cnt=0;
-	
-        kd_box Bp,Bn;
 
-    
-        Bp[0]=realTree->extent[0];
+	/*
+	kd_box Bp,Bn;
+	Bp[0]=realTree->extent[0];
 	Bp[1]=realTree->extent[1];
 
-        Bn[0]=realTree->extent[2];
+	Bn[0]=realTree->extent[2];
 	Bn[1]=realTree->extent[3];
-
+    */
 	
 	/* old routine visits evry node */
 	// node_cnt= kd_neighbour_intersect(realTree->tree,Xq,m,list,Bp,Bn);
