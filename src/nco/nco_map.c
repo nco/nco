@@ -873,12 +873,17 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
        }
     }
 
+    /* correct lon will sort this out later */
+    nco_msh_lon_crr(lon_crn_out,grd_sz_out,grd_crn_nbr_out, grd_lon_typ_out, grd_lon_typ_out );
+    nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in, grd_lon_typ_in, grd_lon_typ_in );
+
+
 
     pl_lst_out = nco_poly_lst_mk_sph(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out,
                                  (size_t) grd_crn_nbr_out, grd_lon_typ_out, pl_typ, &pl_cnt_out);
 
     pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,
-                                (size_t) grd_crn_nbr_in, grd_lon_typ_in, pl_typ, &pl_cnt_in);
+                                (size_t) grd_crn_nbr_in, grd_lon_typ_in, pl_typ,&pl_cnt_in);
 
 
     /* call the overlap routine */
@@ -886,7 +891,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
        if( pl_typ == poly_crt  )
           pl_lst_vrl= nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, &pl_cnt_vrl);
        else if( pl_typ == poly_sph )
-          pl_lst_vrl= nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, &pl_cnt_vrl);
+          pl_lst_vrl= nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, grd_lon_typ_out, &pl_cnt_vrl);
 
     if(nco_dbg_lvl_get() >= nco_dbg_std)
       fprintf(stdout, "%s: INFO: num input polygons=%d, num output polygons=%d num overlap polygons=%d\n", nco_prg_nm_get(),pl_cnt_in, pl_cnt_out, pl_cnt_vrl);
@@ -1203,9 +1208,10 @@ nco_grd_lon_typ_enm typ_out)
   typ_in_sng=nco_grd_lon_sng(typ_in);
   typ_out_sng=nco_grd_lon_sng(typ_out);
 
-  /* do nothing */
+  /* do nothing
   if(typ_in == typ_out)
     return;
+  */
 
   /* check type out */
   if(typ_out == nco_grd_lon_bb || typ_out == nco_grd_lon_unk ) {
