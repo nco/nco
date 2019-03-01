@@ -143,7 +143,12 @@ extern "C" {
   poly_sct *pl
   );
 
-
+  nco_bool
+  nco_poly_minmax_split(
+  poly_sct *pl,
+  nco_grd_lon_typ_enm nco_grd_typ,
+  kd_box size1,
+  kd_box size2);
 
 
 

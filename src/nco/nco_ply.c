@@ -72,7 +72,7 @@ nco_poly_init
   pl->src_id=-1;
   pl->dst_id=-1;
 
-
+  pl->bwrp=False;
 
   return pl;
 }
@@ -106,6 +106,8 @@ nco_poly_dpl
 
   /* mem flag is ALWAYS 0 for a copy  */
   pl_cpy->mem_flg=0;
+
+  pl_cpy->bwrp=pl->bwrp;
 
   pl_cpy->dp_x=(double*)nco_malloc((size_t)crn_nbr_in* sizeof(double));
   pl_cpy->dp_y=(double*)nco_malloc((size_t)crn_nbr_in* sizeof(double));
@@ -167,7 +169,8 @@ int src_id)
   pl->dp_y=(double*)nco_calloc((size_t)crn_nbr_in, sizeof(double));
 
   pl->mem_flg=0;
-  
+  pl->bwrp=False;
+
   return pl;
 }
 
@@ -299,6 +302,9 @@ poly_sct *pl){
 
   nco_sph_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
 
+  /* charlies function can sometimes return a NaN */
+  if(isnan(pl->area))
+    pl->area=0.0;
 
 
 }
@@ -490,14 +496,29 @@ nco_poly_in_poly_minmax(
 poly_sct *pl_in,
 poly_sct *pl_out)
 {
-  if( pl_out->dp_x_minmax[0] >= pl_in->dp_x_minmax[0] &&
-      pl_out->dp_x_minmax[1] <= pl_in->dp_x_minmax[1] &&
-      pl_out->dp_y_minmax[0] >= pl_in->dp_y_minmax[0] &&
-      pl_out->dp_y_minmax[1] <= pl_in->dp_y_minmax[1]
-  )
-    return True;
+  /* y/lon first */
+  if( !(pl_out->dp_y_minmax[0] >= pl_in->dp_y_minmax[0] &&
+        pl_out->dp_y_minmax[1] <= pl_in->dp_y_minmax[1])
+    )
+    return False;
 
-  return False;
+  /* no wrapping */
+  if(pl_in->bwrp == False && pl_out->bwrp == False)
+    return  (pl_out->dp_x_minmax[0] >= pl_in->dp_x_minmax[0] && pl_out->dp_x_minmax[1] <= pl_in->dp_x_minmax[1]);
+
+  /* either all of pl_out is to left of GM or all of polygon is to the right of GM */
+  if(pl_in->bwrp == True && pl_out->bwrp == False)
+    return (  pl_out->dp_x_minmax[0] >= pl_in->dp_x_minmax[1] && pl_out->dp_x_minmax[1] >= pl_in->dp_x_minmax[1] ||
+              pl_out->dp_x_minmax[0] <= pl_in->dp_x_minmax[0] && pl_out->dp_x_minmax[1] <= pl_in->dp_x_minmax[0] );
+
+  /* obviously a wrapped polygon cannot be withing the limits of an un-wrapped plolygon */
+  if(pl_in->bwrp == False && pl_out->bwrp== True)
+    return False;
+
+
+  if(pl_in->bwrp == True && pl_out->bwrp == True )
+    return (  pl_out->dp_x_minmax[1] >= pl_in->dp_x_minmax[1] && pl_out->dp_x_minmax[0] <= pl_in->dp_x_minmax[0] );
+
 }
 
 
@@ -513,7 +534,7 @@ nco_poly_prn
   switch(style){ 
 
     case 0:
-      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d stat=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->stat, pl->mem_flg, pl->area, pl->src_id, pl->dst_id);
+      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->mem_flg, pl->area, pl->src_id, pl->dst_id);
       (void)fprintf(stdout,"dp_x ");
       for(idx=0; idx<pl->crn_nbr; idx++)
 	(void)fprintf(stdout,"%20.14f, ",pl->dp_x[idx]);
@@ -1148,6 +1169,62 @@ poly_sct *pl
 }
 
 
+nco_bool
+nco_poly_minmax_split(
+poly_sct *pl,
+nco_grd_lon_typ_enm nco_grd_typ,
+kd_box size1,
+kd_box size2)
+{
+
+  /* regular limits */
+  if (pl->bwrp == False) {
+    size1[KD_LEFT] = pl->dp_x_minmax[0];
+    size1[KD_RIGHT] = pl->dp_x_minmax[1];
+    size1[KD_BOTTOM] = pl->dp_y_minmax[0];
+    size1[KD_TOP] = pl->dp_y_minmax[1];
+
+    return False;
+  }
+
+  /* regular limits */
+  if (pl->bwrp == True) {
+
+
+    switch (nco_grd_typ) {
+
+      case nco_grd_lon_180_ctr:
+      case nco_grd_lon_180_wst:
+        size1[KD_LEFT] = pl->dp_x_minmax[1];
+        size1[KD_RIGHT] = 180.0;
+
+        size2[KD_LEFT] = -180.0 + 1.0e-20;
+        size2[KD_RIGHT] = pl->dp_x_minmax[0];
+
+        break;
+
+      case nco_grd_lon_Grn_ctr:
+      case nco_grd_lon_Grn_wst:
+        size1[KD_LEFT] = pl->dp_x_minmax[1];
+        size1[KD_RIGHT] = (360.0 - 1e-20);
+
+        size2[KD_LEFT] = 0.0;
+        size2[KD_RIGHT] = pl->dp_x_minmax[0];
+
+        break;
+
+    } /* end switch */
+
+    /* regulat limits for lat */
+    size1[KD_BOTTOM] = pl->dp_y_minmax[0];
+    size1[KD_TOP] = pl->dp_y_minmax[1];
+
+    size2[KD_BOTTOM] = pl->dp_y_minmax[0];
+    size2[KD_TOP] = pl->dp_y_minmax[1];
+
+    return True;
+  }
+}
 
 
 
