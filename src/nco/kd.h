@@ -60,6 +60,10 @@
 #define DBL_MAX         (1.79769313486232e+30) 
 
 
+/* The minmax kd_box limits of a wrapped polgon are split in two and both are inserted into the kd tree
+   They both have the same poly_sct pointer as elem->item.  We need a minor change in find_item() to allow
+   this duplicatation of item */
+#define ALLOW_DUPLICATE_ITEM 1
 
 
 /* define macros */
@@ -209,6 +213,7 @@ KDTree* kd_rebuild ( KDTree* );
 
 int kd_nearest (KDTree* tree, double x, double y, int m, KDPriority **alist);
 int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *alist);
+int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq,kd_box Xr, int m, KDPriority *list);
 void kd_print_nearest (KDTree* tree, double x, double y, int m);
 
 

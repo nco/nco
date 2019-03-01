@@ -910,7 +910,7 @@ KDElem *find_item(KDElem *elem, int disc, kd_generic item, kd_box size, int sear
     KDElem *result;
     
     /* Compare current element against the one we are looking for */
-    if (item == elem->item)
+    if ( !ALLOW_DUPLICATE_ITEM &&  item == elem->item)
 	{
 		if (search_p)
 		{
@@ -2714,6 +2714,48 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	
 	
 	return kd_neighbour(realTree->tree,Xq,m,*alist,Bp,Bn);
+}
+
+int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq, kd_box Xr, int m, KDPriority *list)
+{
+   int idx;
+   int jdx;
+   int ret_cnt;
+   int ret_cnt1=0;
+   int ret_cnt2=0;
+
+
+   KDPriority *list2;
+
+   list2 = (KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)m);
+
+
+   ret_cnt1=kd_nearest_intersect(realTree,Xq, m,list);
+
+   if(ret_cnt1 == m)
+   	 return ret_cnt1;
+
+   /* search for second box */
+   ret_cnt2=kd_nearest_intersect(realTree,Xr, m - ret_cnt1  ,list2);
+
+
+    ret_cnt=ret_cnt1;
+
+    /* add second list to first checking for duplicates */
+	for(idx=0; idx<ret_cnt2;idx++)
+	{
+		for (jdx = 0; jdx < ret_cnt1; jdx++)
+			if (list[jdx].elem->item == list2[idx].elem->item)
+				break;
+
+			if( jdx== ret_cnt1 )
+			  list[ret_cnt++]=list2[idx];
+
+	}
+
+	list2 = (KDPriority *)nco_free(list2);
+
+	return ret_cnt;
 }
 
 int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list)
