@@ -404,7 +404,7 @@ mss_val='-9.99999979021476795361e+33' # [frc] Missing value for MPAS (ocean+seai
 nco_opt='--no_tmp_fl' # [sng] NCO defaults (e.g., '-6 -t 1')
 nco_usr='' # [sng] NCO user-configurable options (e.g., '-D 1')
 nd_nbr=1 # [nbr] Number of nodes
-np_nbr=4 # [nbr] Polynomial order for TempestRemap SE maps
+np_se_nbr=4 # [nbr] Polynomial order for TempestRemap SE maps
 out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ='nil' # [sng] Parallelism type
@@ -900,34 +900,34 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     alg_opt='tempest'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
-    wgt_opt_tps='--in_type cgll --in_np 4 --out_type fv --out_double --mono'
+    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --out_double --mono"
     alg_opt='se2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # alg_sng='highorder'
-    wgt_opt_tps='--in_type cgll --in_np 4 --out_type fv --out_double'
+    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --out_double"
     alg_opt='se2fv_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # alg_sng='intbilin'
-    wgt_opt_tps='--in_type cgll --in_np 4 --out_type fv --out_double --mono3 --noconserve'
+    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --out_double --mono3 --noconserve"
     alg_opt='se2fv_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'conservative_monotone_se2se' ]; then # alg_sng='se2se'
     # 20190227: Added mono for se2se per recommendation of Mark Taylor
-    wgt_opt_tps='--in_type cgll --in_np 4 --out_type cgll --out_np 4 --out_double --mono'
+    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type cgll --out_np ${np_se_nbr} --out_double --mono"
     alg_opt='se2se'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # alg_sng='monotr'
     # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-    wgt_opt_tps='--in_type cgll --in_np 4 --out_type fv --out_double --mono'
+    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --out_double --mono"
     alg_opt='fv2se_flx'
     wgt_typ='tempest'
     trn_map='Yes'
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # alg_sng='highorder'
-    wgt_opt_tps='--in_type fv --in_np 2 --out_type cgll --out_np 4 --out_double --volumetric'
+    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np ${np_se_nbr} --out_double --volumetric"
     alg_opt='fv2se_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # alg_sng='mono'
-    wgt_opt_tps='--in_type fv --in_np 1 --out_type cgll --out_np 4 --out_double --mono --volumetric'
+    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${np_se_nbr} --out_double --mono --volumetric"
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_fv2fv' ]; then # alg_sng='fv2fv'
@@ -1627,7 +1627,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: msk_src  = ${msk_src}\n"
     printf "dbg: nco_opt  = ${nco_opt}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
-    printf "dbg: np_nbr   = ${np_nbr}\n"
+    printf "dbg: np_se_nbr= ${np_se_nbr}\n"
     printf "dbg: out_fl   = ${out_fl}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
