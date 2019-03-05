@@ -18,7 +18,7 @@
 
 /* Dimension of points */
 
-#define DSIGMA 1.0e-14d
+#define DSIGMA (1.0e-14)
 
 /* define minimium area in AreaSign (cross-product) */
 #define DAREA  1.0e-28d  
