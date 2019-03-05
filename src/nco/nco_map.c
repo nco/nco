@@ -793,10 +793,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   
   int pl_cnt_vrl;
 
+
   poly_sct *pl_glb_in=NULL_CEWI;
   poly_sct *pl_glb_out=NULL_CEWI;
   poly_sct **pl_lst_vrl=(poly_sct**)NULL_CEWI;
 
+  poly_typ_enm pl_typ=poly_sph;
   
   /* Construct overlap mesh here
      NB: Parallelize loop with OpenMP and/or MPI
@@ -819,7 +821,18 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   }
 
+  /* determin lon_typ  nb temporary */
+  grd_lon_typ_in=nco_poly_minmax_2_lon_typ(pl_glb_in);
+  grd_lon_typ_out=nco_poly_minmax_2_lon_typ(pl_glb_out);
 
+  /* run though just to check - some (0-360) SCRIP files have a negative lon for wrapped cells ??*/
+  nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in, grd_lon_typ_in, grd_lon_typ_in );
+  nco_msh_lon_crr(lon_crn_out,grd_sz_out,grd_crn_nbr_out, grd_lon_typ_out, grd_lon_typ_out );
+
+  /* now convert corners */
+  nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in, grd_lon_typ_in, grd_lon_typ_out);
+  /* now convert centers */
+  nco_msh_lon_crr(lon_ctr_in,grd_sz_in,1 , grd_lon_typ_in, grd_lon_typ_out);
 
   nco_msh_wrt("tst-wrt-in.nc", grd_sz_in, grd_crn_nbr_in, lat_crn_in, lon_crn_in);
   nco_msh_wrt("tst-wrt-out.nc", grd_sz_out, grd_crn_nbr_out, lat_crn_out, lon_crn_out);
@@ -829,53 +842,46 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     int pl_cnt_in=0;
     int pl_cnt_out=0;
 
-    poly_typ_enm pl_typ;
+
 
     poly_sct **pl_lst_in;
     poly_sct **pl_lst_out;
 
-    /* assume for now both input grids 360 */
-    if(0) {
-      pl_typ = poly_crt;
-      grd_lon_typ_in = nco_grd_lon_Grn_ctr;
-      grd_lon_typ_out = nco_grd_lon_Grn_ctr;
-    } else
-    {
-      pl_typ = poly_sph;
-      grd_lon_typ_in = nco_grd_lon_Grn_ctr ;
-      grd_lon_typ_out = nco_grd_lon_Grn_ctr;
+
+    switch(grd_lon_typ_out){
+
+      case nco_grd_lon_nil:
+      case nco_grd_lon_unk:
+      case nco_grd_lon_bb:
+        if(pl_typ == poly_crt)
+          nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
+        else if(pl_typ == poly_sph)
+          nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
+
+        break;
+
+
+      case nco_grd_lon_180_ctr:
+      case nco_grd_lon_180_wst:
+        if(pl_typ == poly_crt)
+          nco_crt_set_domain(-180.0, 180.0, -90.0, 90.0);
+        else if(pl_typ == poly_sph)
+          nco_sph_set_domain(-M_PI, M_PI, -M_PI_2, M_PI_2);
+
+        break;
+
+
+      case nco_grd_lon_Grn_ctr:
+      case nco_grd_lon_Grn_wst:
+        if(pl_typ == poly_crt)
+          nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
+        else if(pl_typ == poly_sph)
+          nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
+
+        break;
 
     }
 
-    /* set domain in nco_crt - nb all in degree's */
-    if(pl_typ == poly_crt ){
-      if(grd_lon_typ_out == nco_grd_lon_Grn_ctr || grd_lon_typ_out == nco_grd_lon_Grn_wst )
-      {
-        nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
-      }
-      else if(grd_lon_typ_out == nco_grd_lon_180_ctr || grd_lon_typ_out == nco_grd_lon_180_wst )
-      {
-        nco_crt_set_domain(-180.0, 180.0, -90.0, 90.0);
-
-      }
-    }
-
-    /* set domain in nco_sph - nb all in radians */
-    if(pl_typ == poly_sph ){
-       if(grd_lon_typ_out == nco_grd_lon_Grn_ctr || grd_lon_typ_out == nco_grd_lon_Grn_wst )
-       {
-         nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
-       }
-       else if(grd_lon_typ_out == nco_grd_lon_180_ctr || grd_lon_typ_out == nco_grd_lon_180_wst )
-       {
-         nco_sph_set_domain(-M_PI, M_PI, -M_PI_2, M_PI_2);
-
-       }
-    }
-
-    /* correct lon will sort this out later */
-    nco_msh_lon_crr(lon_crn_out,grd_sz_out,grd_crn_nbr_out, grd_lon_typ_out, grd_lon_typ_out );
-    nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in, grd_lon_typ_in, grd_lon_typ_in );
 
 
 
