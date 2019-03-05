@@ -3879,9 +3879,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
      Girard's formula depends on pi-minus-angle and angle is usually quite small in our applications so precision would be lost
      L'Huilier's theorem depends only on angles (a,b,c) and semi-perimeter (s) and is well-conditioned for small angles
      semi-perimeter = half-perimeter of triangle = 0.5*(a+b+c)
-     Spherical Excess (SE) difference between the sum of the angles of a spherical triangle area and a planar triangle area with same interior angles (which has sum equal to pi)
+     Spherical Excess (SE) difference between the sum of the angles of a spherical triangle area and a planar triangle area with same interior angles (that sum to pi)
      SE is also the solid angle subtended by the spherical triangle and that's, well, astonishing and pretty cool
-     Wikipedia shows a better SE formula for triangles which are ill-conditioned for L'Huilier's formula because a = b ~ 0.5c
+     Wikipedia shows a better SE formula for triangles that are ill-conditioned for L'Huilier's formula because a = b ~ 0.5c
      https://en.wikipedia.org/wiki/Spherical_trigonometry#Area_and_spherical_excess 
      See also interesting discussion of L'Huilier by Charles Karney who suggests his own alternative:
      http://osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html
@@ -3973,10 +3973,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   double ngl_ltr_c; /* [rdn] Interior angle/great circle arc c, canonical latitude-triangle geometry */
   double prm_smi; /* [rdn] Semi-perimeter of triangle */
   double sin_hlf_tht; /* [frc] Sine of half angle/great circle arc theta connecting two points */
-  double tan_hlf_a_tan_hlf_b; /* [frc] Product of tangents of one-half of nearly equal canoncal sides */
   double xcs_sph; /* [sr] Spherical excess */
-  double xcs_sph_hlf_tan; /* [frc] Tangent of one-half the spherical excess */
-  double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
   int tri_nbr; /* [nbr] Number of triangles in polygon */
   long idx_a; /* [idx] Point A 1-D index */
   long idx_b; /* [idx] Point B 1-D index */
@@ -4071,6 +4068,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       lat_dlt=fabs(lat_bnd_rdn[idx_c]-lat_bnd_rdn[idx_a]);
       sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*pow(sin(0.5*lon_dlt),2));
       ngl_c=2.0*asin(sin_hlf_tht);
+      /* Semi-perimeter */
+      prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
       /* Ill-conditioned? */
       flg_sas=False;
       if(((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) || /* c is half a and b */
@@ -4085,6 +4084,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	nco_bool flg_sas_hlf_a=False; /* [flg] Ill-conditioned for angle a */
 	nco_bool flg_sas_hlf_b=False; /* [flg] Ill-conditioned for angle b */
 	nco_bool flg_sas_hlf_c=False; /* [flg] Ill-conditioned for angle c */
+	double cos_hlf_C; /* [frc] Cosine of canoncal surface angle C */
+	double ngl_sfc_ltr_C; /* [rdn] Canonical surface angle/great circle arc C */
+	double tan_hlf_a_tan_hlf_b; /* [frc] Product of tangents of one-half of nearly equal canoncal sides */
+	double xcs_sph_hlf_tan; /* [frc] Tangent of one-half the spherical excess */
 	/* Compute area using SAS formula */
 	if((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) flg_sas_hlf_c=True;
 	else if((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) flg_sas_hlf_a=True;
@@ -4107,15 +4110,19 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  ngl_ltr_b=ngl_a;
 	  ngl_ltr_c=ngl_b;
 	} /* !flg_sas_hlf_b */
+	/* Determine canonical surface angle C
+	   To find any angle given three spherical triangle sides, Wikipedia opines: 
+	   "The cosine rule may be used to give the angles A, B, and C but, to avoid ambiguities, the half-angle formulae are preferred."
+	   For this ill-conditioned case, use half-angle cosine formula because RHS of half-angle sine formula is near 1, where arcsin() is imprecise, whereas RHS of cosine formula is near 0, where arccos() is well-conditioned. */
+	cos_hlf_C=sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)));
+	ngl_sfc_ltr_C=2.0*acos(cos_hlf_C);
 	/* SAS formula */
 	tan_hlf_a_tan_hlf_b=tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b);
-	xcs_sph_hlf_tan=tan_hlf_a_tan_hlf_b*sin(ngl_ltr_c)/(1.0+tan_hlf_a_tan_hlf_b*cos(ngl_ltr_c));
+	xcs_sph_hlf_tan=tan_hlf_a_tan_hlf_b*sin(ngl_sfc_ltr_C)/(1.0+tan_hlf_a_tan_hlf_b*cos(ngl_sfc_ltr_C));
 	xcs_sph=2.0*atan(xcs_sph_hlf_tan);
       }else{
+	double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
 	/* Triangle is well-conditioned, apply L'Huilier's formula */
-	/* Semi-perimeter */
-	prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
-	/* L'Huilier's formula */
 	xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
 	xcs_sph=4.0*atan(xcs_sph_qtr_tan);
       } /* !flg_sas */
