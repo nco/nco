@@ -1,3 +1,7 @@
+2019-03-05  Charlie Zender  <zender@uci.edu>
+
+	* Implemented SAS formula where L'Huilier's formula is ill-conditioned
+
 2019-03-03  Charlie Zender  <zender@uci.edu>
 
 	* Add stubs for TR quasi-equal-area mode

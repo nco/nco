@@ -3968,14 +3968,20 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   double ngl_a; /* [rdn] Interior angle/great circle arc a */
   double ngl_b; /* [rdn] Interior angle/great circle arc b */
   double ngl_c; /* [rdn] Interior angle/great circle arc c */
+  double ngl_ltr_a; /* [rdn] Interior angle/small circle arc a, canonical latitude-triangle geometry */
+  double ngl_ltr_b; /* [rdn] Interior angle/great circle arc b, canonical latitude-triangle geometry */
+  double ngl_ltr_c; /* [rdn] Interior angle/great circle arc c, canonical latitude-triangle geometry */
   double prm_smi; /* [rdn] Semi-perimeter of triangle */
   double sin_hlf_tht; /* [frc] Sine of half angle/great circle arc theta connecting two points */
+  double tan_hlf_a_tan_hlf_b; /* [frc] Product of tangents of one-half of nearly equal canoncal sides */
   double xcs_sph; /* [sr] Spherical excess */
+  double xcs_sph_hlf_tan; /* [frc] Tangent of one-half the spherical excess */
   double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
   int tri_nbr; /* [nbr] Number of triangles in polygon */
   long idx_a; /* [idx] Point A 1-D index */
   long idx_b; /* [idx] Point B 1-D index */
   long idx_c; /* [idx] Point C 1-D index */
+  nco_bool flg_sas; /* [flg] L'Huilier's formula is ill-conditioned for this triangle */
   nco_bool flg_ltr_cll; /* [flg] Any triangle in cell is latitude-triangle */
   nco_bool flg_ltr_crr; /* [flg] Current triangle is latitude-triangle */
   area_ttl=0.0;
@@ -4066,16 +4072,53 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*pow(sin(0.5*lon_dlt),2));
       ngl_c=2.0*asin(sin_hlf_tht);
       /* Ill-conditioned? */
+      flg_sas=False;
       if(((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) || /* c is half a and b */
 	 ((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) || /* a is half b and c */
 	 ((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b))){  /* b is half c and a */
-	(void)fprintf(stdout,"%s: WARNING %s reports col_idx = %li triangle %d is ill-conditioned. Spherical excess and thus cell area are likely inaccurate. Ask Charlie to implement SAS formula...\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+	/* L'Huilier's formula is ill-conditioned when two sides are both nearly one half the third side
+	   In this case Wikipedia recommends a Side-Angle-Side (SAS) formula
+	   https://en.wikipedia.org/wiki/Spherical_trigonometry */
+	flg_sas=True;
       } /* !ill */
-      /* Semi-perimeter */
-      prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
-      /* L'Huilier's formula */
-      xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
-      xcs_sph=4.0*atan(xcs_sph_qtr_tan);
+      if(flg_sas){
+	nco_bool flg_sas_hlf_a=False; /* [flg] Ill-conditioned for angle a */
+	nco_bool flg_sas_hlf_b=False; /* [flg] Ill-conditioned for angle b */
+	nco_bool flg_sas_hlf_c=False; /* [flg] Ill-conditioned for angle c */
+	/* Compute area using SAS formula */
+	if((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) flg_sas_hlf_c=True;
+	else if((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) flg_sas_hlf_a=True;
+	else if((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b)) flg_sas_hlf_b=True;
+	else abort();
+	(void)fprintf(stdout,"%s: WARNING %s reports col_idx = %li triangle %d is ill-conditioned. Using SAS formula instead L'Huilier's formula for spherical excess (and cell area) to avoid low precision.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+	/* Transform sides into canonical order for formula */
+	if(flg_sas_hlf_c){
+	  ngl_ltr_a=ngl_a;
+	  ngl_ltr_b=ngl_b;
+	  ngl_ltr_c=ngl_c;
+	} /* !flg_sas_hlf_c */
+	if(flg_sas_hlf_a){
+	  ngl_ltr_a=ngl_b;
+	  ngl_ltr_b=ngl_c;
+	  ngl_ltr_c=ngl_a;
+	} /* !flg_sas_hlf_a */
+	if(flg_sas_hlf_b){
+	  ngl_ltr_a=ngl_c;
+	  ngl_ltr_b=ngl_a;
+	  ngl_ltr_c=ngl_b;
+	} /* !flg_sas_hlf_b */
+	/* SAS formula */
+	tan_hlf_a_tan_hlf_b=tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b);
+	xcs_sph_hlf_tan=tan_hlf_a_tan_hlf_b*sin(ngl_ltr_c)/(1.0+tan_hlf_a_tan_hlf_b*cos(ngl_ltr_c));
+	xcs_sph=2.0*atan(xcs_sph_hlf_tan);
+      }else{
+	/* Triangle is well-conditioned, apply L'Huilier's formula */
+	/* Semi-perimeter */
+	prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
+	/* L'Huilier's formula */
+	xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
+	xcs_sph=4.0*atan(xcs_sph_qtr_tan);
+      } /* !flg_sas */
       area[col_idx]+=xcs_sph;
       area_ltr+=xcs_sph;
       area_ttl+=xcs_sph;
@@ -4097,9 +4140,6 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       /* 20170217: Temporarily turn-off latitude circle diagnostics because Sungduk's POP case breaks them */
       flg_ltr_cll=flg_ltr_crr=False;
       if(flg_ltr_crr){
-	double ngl_ltr_a; /* [rdn] Interior angle/small circle arc a, canonical latitude-triangle geometry */
-	double ngl_ltr_b; /* [rdn] Interior angle/great circle arc b, canonical latitude-triangle geometry */
-	double ngl_ltr_c; /* [rdn] Interior angle/great circle arc c, canonical latitude-triangle geometry */
 	double ngl_plr; /* [rdn] Polar angle (co-latitude) */
 	long idx_ltr_a; /* [idx] Point A (apex) of canonical latitude-triangle geometry, 1-D index */
 	long idx_ltr_b; /* [idx] Point B (base) of canonical latitude-triangle geometry, 1-D index */
