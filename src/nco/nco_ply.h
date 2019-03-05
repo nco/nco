@@ -150,6 +150,9 @@ extern "C" {
   kd_box size1,
   kd_box size2);
 
+  nco_grd_lon_typ_enm
+  nco_poly_minmax_2_lon_typ
+  (poly_sct *pl);
 
 
 

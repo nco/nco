@@ -1226,6 +1226,28 @@ kd_box size2)
   }
 }
 
+/* simple temporary - function unless charlie has something better
+ * looks at minmax and determin's domain (0,360) or (-180,80)
+ */
+nco_grd_lon_typ_enm
+nco_poly_minmax_2_lon_typ
+(poly_sct *pl)
+{
+  double lon_min;
+  double lon_max;
+
+  lon_min=pl->dp_x_minmax[0];
+  lon_max=pl->dp_x_minmax[1];
+
+  if( lon_max >180.0 )
+    return nco_grd_lon_Grn_ctr;
+
+  if(lon_max >0.0 && lon_max <=180.0 )
+    return nco_grd_lon_180_ctr;
+
+
+
+}
 
 
 
