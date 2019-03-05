@@ -1,5 +1,7 @@
 2019-03-05  Charlie Zender  <zender@uci.edu>
 
+	* Use surface angle not interior angle in SAS formula
+
 	* Implemented SAS formula where L'Huilier's formula is ill-conditioned
 
 2019-03-03  Charlie Zender  <zender@uci.edu>
