@@ -63,7 +63,9 @@ nco_poly_init
   pl->dp_y_minmax[0]=0.0;
   pl->dp_y_minmax[1]=0.0;
 
-  
+  pl->dp_x_ctr=DBL_MAX;
+  pl->dp_y_ctr=DBL_MAX;
+
   pl->stat=0;
   pl->area=0.0;
   pl->crn_nbr=0;
@@ -128,6 +130,10 @@ nco_poly_dpl
 
   pl_cpy->dp_y_minmax[0] = pl->dp_y_minmax[0];
   pl_cpy->dp_y_minmax[1] = pl->dp_y_minmax[1];
+
+  pl_cpy->dp_x_ctr=pl->dp_x_ctr;
+  pl_cpy->dp_y_ctr=pl->dp_y_ctr;
+
 
   /* do a deep copy of this list */
   if(pl->shp)
@@ -534,7 +540,7 @@ nco_poly_prn
   switch(style){ 
 
     case 0:
-      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->mem_flg, pl->area, pl->src_id, pl->dst_id);
+      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
       (void)fprintf(stdout,"dp_x ");
       for(idx=0; idx<pl->crn_nbr; idx++)
 	(void)fprintf(stdout,"%20.14f, ",pl->dp_x[idx]);
@@ -1249,6 +1255,127 @@ nco_poly_minmax_2_lon_typ
 
 }
 
+void
+nco_poly_ctr_add
+(poly_sct *pl,
+ nco_grd_lon_typ_enm lon_typ)
+ {
+   int idx;
+   int sz;
+
+
+   sz=pl->crn_nbr;
+
+   double tot_lon=0.0;
+   double tot_lat=0.0;
+   double tmp_lon_ctr=0.0;
+
+
+   for(idx=0; idx<sz; idx++)
+   {
+     tot_lon += pl->dp_x[idx];
+     tot_lat += pl->dp_y[idx];
+
+   }
+
+   pl->dp_y_ctr=tot_lat / sz;
+
+   tmp_lon_ctr=tot_lon / sz;
+
+   /* no wrapping so use value of lon total above and return */
+   if( !pl->bwrp )
+   {
+     pl->dp_x_ctr= tmp_lon_ctr;
+     return;
+   }
+
+   /* here now so lon is wrapped */
+   switch(lon_typ)
+   {
+     case nco_grd_lon_nil:
+     case nco_grd_lon_bb:
+     case nco_grd_lon_unk:
+       pl->dp_x_ctr=tmp_lon_ctr;
+
+     case nco_grd_lon_Grn_ctr:
+     case nco_grd_lon_Grn_wst:
+     /* create two averages one for lon(180,359.999) another for lon(0,179.99999) */
+     {
+       int cnt_0=0;
+       int cnt_180=0;
+       double tot_0=0.0;
+       double tot_180=0.0;
+
+       for(idx=0;idx<sz;idx++) {
+         if (pl->dp_x[idx] >= 180.0) {
+           tot_180 += pl->dp_x[idx];
+           cnt_180++;
+         } else if (pl->dp_x[idx] >= 0.0) {
+           tot_0 += pl->dp_x[idx];
+           cnt_0++;
+         }
+       }
+
+       /* now do averages of average */
+       if(cnt_0 || cnt_180)
+         tmp_lon_ctr= (cnt_0 ? tot_0 / cnt_0 : 0.0 )  +  (cnt_180 ? tot_180/ cnt_180 -360.0 :0.0 ) ;
+
+       if(cnt_0 && cnt_180)
+         tmp_lon_ctr /= 2.0;
+
+       if(tmp_lon_ctr <=0.0)
+         tmp_lon_ctr+=360.0;
+
+       }
+       pl->dp_x_ctr=tmp_lon_ctr;
+       break;
+
+     case nco_grd_lon_180_ctr:
+     case nco_grd_lon_180_wst:
+       /* create two averages one for lon(180,359.999) another for lon(0,179.99999) */
+     {
+       int cnt_0=0;
+       int cnt_180=0;
+       double tot_0=0.0;
+       double tot_180=0.0;
+
+       for(idx=0;idx<sz;idx++) {
+         if (pl->dp_x[idx] >= 0.0) {
+           tot_0 += pl->dp_x[idx];
+           cnt_0++;
+         } else if (pl->dp_x[idx] < 0.0) {
+           tot_180 += pl->dp_x[idx];
+           cnt_180++;
+         }
+       }
+
+       /* now do averages of average */
+       if(cnt_0 || cnt_180)
+         tmp_lon_ctr= (cnt_0 ? tot_0 / cnt_0 : 0.0 )  +  (cnt_180 ? tot_180/ cnt_180 + 360.0 :0.0 ) ;
+
+       if(cnt_0 && cnt_180)
+         tmp_lon_ctr /= 2.0;
+
+       if(tmp_lon_ctr >180.0)
+         tmp_lon_ctr-=360.0;
+
+     }
+       pl->dp_x_ctr=tmp_lon_ctr;
+       break;
+
+
+
+
+       break;
+
+
+
+   }
+
+
+
+
+}
 
 
 

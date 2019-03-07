@@ -154,6 +154,12 @@ extern "C" {
   nco_poly_minmax_2_lon_typ
   (poly_sct *pl);
 
+  void
+  nco_poly_ctr_add
+  (poly_sct *pl,
+   nco_grd_lon_typ_enm lon_typ);
+
+
 
 
 #ifdef __cplusplus
