@@ -163,12 +163,12 @@ int *pl_nbr)
 
 
     /* add min max */
-    nco_poly_add_minmax(pl);
+    nco_poly_minmax_add(pl);
 
     nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
 
     /* use Charlie's formula */
-    nco_poly_add_area(pl);
+    nco_poly_area_add(pl);
 
 
     //if(pl->dp_x_minmax[0] <0.0 || (pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) > 30  )
@@ -336,7 +336,7 @@ int *pl_nbr)
 
 
     /* add min max */
-    nco_poly_add_minmax(pl);
+    nco_poly_minmax_add(pl);
 
     /* manually add wrap flag */
     pl->bwrp= (fabs(pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) >= 180.0);
@@ -356,6 +356,12 @@ int *pl_nbr)
     nco_poly_add_area(pl);
     */
     pl->area=area[idx];
+
+    /* add centers
+    nco_poly_ctr_add(pl, grd_lon_typ);
+    if(pl->bwrp)
+      (void)fprintf(stdout,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  __FUNCTION__, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
+    */
 
     /* for debugging */
     tot_area+=pl->area;
@@ -531,12 +537,12 @@ int *pl_cnt_vrl_ret){
         pl_vrl=nco_poly_dpl(pl_out);
       }
       else
-        pl_vrl=nco_poly_do_vrl(pl_lst_in[idx], pl_out);
+        pl_vrl= nco_poly_vrl_do(pl_lst_in[idx], pl_out);
 
       if(pl_vrl){
         nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
         /* add area */
-        nco_poly_add_area(pl_vrl);
+        nco_poly_area_add(pl_vrl);
         /* shp not needed */
         nco_poly_shp_free(pl_vrl);
 
@@ -701,7 +707,7 @@ int *pl_cnt_vrl_ret){
 
 
 
-      pl_vrl = nco_poly_do_vrl(pl_lst_in[idx], pl_out);
+      pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out);
 
       /* if pl_vrl is NULL from,  nco_poly_do_vrl()  then there are 3 possible senario's
        *
@@ -753,17 +759,20 @@ int *pl_cnt_vrl_ret){
         // nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
 
         /* add area */
-        nco_poly_add_area(pl_vrl);
+        nco_poly_area_add(pl_vrl);
 
         /* shp not needed */
         nco_poly_shp_free(pl_vrl);
 
-        nco_poly_add_minmax(pl_vrl);
+        nco_poly_minmax_add(pl_vrl);
         /* manually add wrap */
         if(pl_vrl->dp_x_minmax[1] - pl_vrl->dp_x_minmax[0] >=180.0 )
           pl_vrl->bwrp=True;
         else
           pl_vrl->bwrp=False;
+
+        /* add lat/lon centers */
+        nco_poly_ctr_add(pl_vrl, grd_lon_typ);
 
         wrp_cnt+=pl_vrl->bwrp;
 
@@ -793,8 +802,8 @@ int *pl_cnt_vrl_ret){
                        "%s: polygon %d - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e\n",
                        nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area);
 
-        //if (bDirtyRats && frc <0.1 ) {
-        if (pl_lst_in[idx]->bwrp ) {
+        if (bDirtyRats && frc <0.9 ) {
+        //if (pl_lst_in[idx]->bwrp ) {
           pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
           pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
           pl_cnt_dbg++;
