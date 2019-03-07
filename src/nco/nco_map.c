@@ -1181,7 +1181,7 @@ nco_msh_stats
 
 
  pl->area=tot_area;
- nco_poly_use_minmax_crn(pl);
+  nco_poly_minmax_use_crn(pl);
 
 
  return pl;
