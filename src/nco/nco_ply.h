@@ -66,16 +66,16 @@ extern "C" {
   (poly_sct *pl);
 
   void
-  nco_poly_add_minmax
+  nco_poly_minmax_add
   (poly_sct *pl);
 
   void
-  nco_poly_add_area(
+  nco_poly_area_add(
   poly_sct *pl);
 
 
   void
-  nco_poly_use_minmax_crn /* use the values of minmax box as dp_x, dp_y  */
+  nco_poly_minmax_use_crn /* use the values of minmax box as dp_x, dp_y  */
   (poly_sct *pl);
   
   void
@@ -84,7 +84,7 @@ extern "C" {
 
   
   poly_sct*
-  nco_poly_do_vrl(
+  nco_poly_vrl_do(
   poly_sct *pl_in,
   poly_sct *pl_out);
 

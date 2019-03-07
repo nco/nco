@@ -300,7 +300,7 @@ nco_poly_init_lst
 }
 
 void
-nco_poly_add_area(
+nco_poly_area_add(
 poly_sct *pl){
 
   if(pl->crn_nbr <3)
@@ -317,7 +317,7 @@ poly_sct *pl){
 
 
 
-void nco_poly_add_minmax
+void nco_poly_minmax_add
 (poly_sct *pl)
 {  
   
@@ -597,7 +597,7 @@ nco_poly_prn
 
 
 poly_sct*
-nco_poly_do_vrl(
+nco_poly_vrl_do(
 poly_sct *pl_in,
 poly_sct *pl_out){
 
@@ -609,7 +609,7 @@ poly_sct *pl_out){
  int nbr_r=0;
 
 
- char fnc_nm[]="nco_poly_do_vrl()";
+ char fnc_nm[]="nco_poly_vrl_do()";
   
  poly_sct *pl_vrl;
 
@@ -646,7 +646,7 @@ poly_sct *pl_out){
 }
 
 void
-nco_poly_use_minmax_crn /* use the values of minmax box as dp_x, dp_y  */
+nco_poly_minmax_use_crn /* use the values of minmax box as dp_x, dp_y  */
 (poly_sct *pl){
 
   pl->dp_x[0]=pl->dp_x_minmax[0];
@@ -699,7 +699,7 @@ poly_sct ** pl_wrp_right)
     }
   }
 
-  nco_poly_add_minmax(pl_in);     
+  nco_poly_minmax_add(pl_in);
   
   if( cnt_right == pl_in->crn_nbr || cnt_right==0 ) 
   {
@@ -716,10 +716,10 @@ poly_sct ** pl_wrp_right)
   pl_bnds->dp_y_minmax[0]=pl_in->dp_y_minmax[0];
   pl_bnds->dp_y_minmax[1]=pl_in->dp_y_minmax[1];
 
-  nco_poly_use_minmax_crn(pl_bnds);
+  nco_poly_minmax_use_crn(pl_bnds);
 
   /* do overlap */
-  *pl_wrp_left=nco_poly_do_vrl(pl_in, pl_bnds);
+  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds);
 
   /* must subtract  back the 360.0 we subtracted earlier */ 
   if(*pl_wrp_left){
@@ -727,8 +727,8 @@ poly_sct ** pl_wrp_right)
     for(idx=0;idx< (*pl_wrp_left)->crn_nbr;idx++)
       (*pl_wrp_left)->dp_x[idx]-=360.0;
 
-    
-    nco_poly_add_minmax(*pl_wrp_left);
+
+    nco_poly_minmax_add(*pl_wrp_left);
 
     
     
@@ -740,15 +740,15 @@ poly_sct ** pl_wrp_right)
   pl_bnds->dp_y_minmax[0]=pl_in->dp_y_minmax[0];
   pl_bnds->dp_y_minmax[1]=pl_in->dp_y_minmax[1];
 
-  nco_poly_use_minmax_crn(pl_bnds);
+  nco_poly_minmax_use_crn(pl_bnds);
   
   /* do overlap */
-  *pl_wrp_right=nco_poly_do_vrl(pl_in, pl_bnds);
+  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds);
 
   if(*pl_wrp_right)
   {
-    
-     nco_poly_add_minmax(*pl_wrp_right);
+
+    nco_poly_minmax_add(*pl_wrp_right);
      
 
   }
@@ -799,7 +799,7 @@ poly_sct ** pl_wrp_right)
     }
   }
 
-  nco_poly_add_minmax(pl_in);     
+  nco_poly_minmax_add(pl_in);
   
   if( cnt_left == pl_in->crn_nbr || cnt_left==0 ) 
   {
@@ -816,10 +816,10 @@ poly_sct ** pl_wrp_right)
   pl_bnds->dp_y_minmax[0]=pl_in->dp_y_minmax[0];
   pl_bnds->dp_y_minmax[1]=pl_in->dp_y_minmax[1];
 
-  nco_poly_use_minmax_crn(pl_bnds);
+  nco_poly_minmax_use_crn(pl_bnds);
 
   /* do overlap */
-  *pl_wrp_left=nco_poly_do_vrl(pl_in, pl_bnds);
+  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds);
 
   /* must add back the 360.0 we subtracted earlier */ 
   if(*pl_wrp_left){
@@ -827,8 +827,8 @@ poly_sct ** pl_wrp_right)
     for(idx=0;idx< (*pl_wrp_left)->crn_nbr;idx++)
       (*pl_wrp_left)->dp_x[idx]+=360.0;
 
-    
-    nco_poly_add_minmax(*pl_wrp_left);
+
+    nco_poly_minmax_add(*pl_wrp_left);
 
     /*
     if(  (*pl_wrp_left)->dp_x_minmax[1] - (*pl_wrp_left)->dp_x_minmax[0] > CELL_LONGITUDE_MAX )
@@ -843,15 +843,15 @@ poly_sct ** pl_wrp_right)
   pl_bnds->dp_y_minmax[0]=pl_in->dp_y_minmax[0];
   pl_bnds->dp_y_minmax[1]=pl_in->dp_y_minmax[1];
 
-  nco_poly_use_minmax_crn(pl_bnds);
+  nco_poly_minmax_use_crn(pl_bnds);
   
   /* do overlap */
-  *pl_wrp_right=nco_poly_do_vrl(pl_in, pl_bnds);
+  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds);
 
   if(*pl_wrp_right)
   {
-    
-     nco_poly_add_minmax(*pl_wrp_right);
+
+    nco_poly_minmax_add(*pl_wrp_right);
      
     /* 
     if(  (*pl_wrp_right)->dp_x_minmax[1] - (*pl_wrp_right)->dp_x_minmax[0] > CELL_LONGITUDE_MAX )
@@ -915,7 +915,7 @@ poly_sct ** pl_wrp_right)
     }
   }
 
-  nco_poly_add_minmax(pl_in);     
+  nco_poly_minmax_add(pl_in);
   
   if( cnt_left == pl_in->crn_nbr || cnt_left==0 ) 
   {
@@ -932,10 +932,10 @@ poly_sct ** pl_wrp_right)
   pl_bnds->dp_y_minmax[0]=pl_in->dp_y_minmax[0];
   pl_bnds->dp_y_minmax[1]=pl_in->dp_y_minmax[1];
 
-  nco_poly_use_minmax_crn(pl_bnds);
+  nco_poly_minmax_use_crn(pl_bnds);
 
   /* do overlap */
-  *pl_wrp_left=nco_poly_do_vrl(pl_in, pl_bnds);
+  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds);
 
   /* must add back the 360.0 we subtracted earlier */ 
   if(*pl_wrp_left){
@@ -943,8 +943,8 @@ poly_sct ** pl_wrp_right)
     for(idx=0;idx< (*pl_wrp_left)->crn_nbr;idx++)
       (*pl_wrp_left)->dp_x[idx]+=360.0;
 
-    
-    nco_poly_add_minmax(*pl_wrp_left);
+
+    nco_poly_minmax_add(*pl_wrp_left);
 
     /* check overall-extent */
     if(  (*pl_wrp_left)->dp_x_minmax[1] - (*pl_wrp_left)->dp_x_minmax[0] > CELL_LONGITUDE_MAX )
@@ -959,15 +959,15 @@ poly_sct ** pl_wrp_right)
   pl_bnds->dp_y_minmax[0]=pl_in->dp_y_minmax[0];
   pl_bnds->dp_y_minmax[1]=pl_in->dp_y_minmax[1];
 
-  nco_poly_use_minmax_crn(pl_bnds);
+  nco_poly_minmax_use_crn(pl_bnds);
   
   /* do overlap */
-  *pl_wrp_right=nco_poly_do_vrl(pl_in, pl_bnds);
+  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds);
 
   if(*pl_wrp_right)
   {
-    
-     nco_poly_add_minmax(*pl_wrp_right);
+
+    nco_poly_minmax_add(*pl_wrp_right);
      
     /* check overall-extent */
     if(  (*pl_wrp_right)->dp_x_minmax[1] - (*pl_wrp_right)->dp_x_minmax[0] > CELL_LONGITUDE_MAX )
@@ -1255,6 +1255,8 @@ nco_poly_minmax_2_lon_typ
 
 }
 
+/* simple evaluation of lat/lon centroid using averages  of dp_x and dp_y */
+/* OK for now 20190307 */
 void
 nco_poly_ctr_add
 (poly_sct *pl,
