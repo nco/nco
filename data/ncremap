@@ -1853,7 +1853,7 @@ else # !map_usr_flg
 	printf "Algorithm selected to generate weights in map-file is: ${alg_opt}\n"
 	printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
     fi # !vrb_lvl
-    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is often provided in NCL packages. Tempest executables must be installed from source (https://github.com/ClimateGlobalChange/tempestremap).\n"; exit 1; }
+    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is provide with the NCO Conda package, and is often provided in NCL packages. Tempest executables must currently be installed from source (https://github.com/ClimateGlobalChange/tempestremap) until its Conda package is finished, and then it will also be provided with the NCO Conda package, probably in Q2 2019.\n"; exit 1; }
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	if [ ${fl_nbr} -ge 2 ]; then 
 	    if [ "${mlt_map_flg}" = 'Yes' ]; then 
