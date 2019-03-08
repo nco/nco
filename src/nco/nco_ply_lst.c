@@ -334,6 +334,9 @@ int *pl_nbr)
     if(!pl)
       continue;
 
+    /* add centroid from input  */
+    pl->dp_x_ctr=lon_ctr[idx];
+    pl->dp_y_ctr=lat_ctr[idx];
 
     /* add min max */
     nco_poly_minmax_add(pl);
@@ -375,7 +378,7 @@ int *pl_nbr)
 
   }
 
-  if(nco_dbg_lvl_get() >=  nco_dbg_std )
+  if(nco_dbg_lvl_get() >=  nco_dbg_dev )
     (void)fprintf(stdout, "%s:%s: size input list(%d), size output list(%d)  total area=%.15e  num of wrapped=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt);
 
   pl_lst=(poly_sct**)nco_realloc( pl_lst, (size_t)idx_cnt * sizeof (poly_sct*) );
@@ -595,22 +598,17 @@ poly_sct **pl_lst_out,
 int pl_cnt_out,
 nco_grd_lon_typ_enm grd_lon_typ,
 int *pl_cnt_vrl_ret){
-  
-  
-  nco_bool bDirtyRats=False;
-  
-  int pl_cnt_dbg=0;
-  poly_sct **pl_lst_dbg=(poly_sct**)NULL_CEWI;
-  
-  
-/* just duplicate output list to overlap */
 
+
+/* just duplicate output list to overlap */
+  nco_bool bDirtyRats=True;
   nco_bool bSplit=False;
 
   int sz;
   int max_nbr_vrl=1000;
   int pl_cnt_vrl=0;
   int wrp_cnt=0;
+  int pl_cnt_dbg=0;
 
   size_t idx;
   size_t jdx;
@@ -628,6 +626,7 @@ int *pl_cnt_vrl_ret){
   kd_box size2;
 
   poly_sct ** pl_lst_vrl=NULL_CEWI;
+  poly_sct **pl_lst_dbg=NULL_CEWI;
 
   KDElem *my_elem1;
   KDElem *my_elem2;
@@ -636,8 +635,6 @@ int *pl_cnt_vrl_ret){
   KDPriority *list;
 
   list = (KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)max_nbr_vrl);
-
-  printf("INFO - entered function nco_poly_mk_vrl\n");
 
   /* create kd_tree from output polygons */
   rtree=kd_create();
@@ -701,7 +698,7 @@ int *pl_cnt_vrl_ret){
       poly_sct *pl_out = (poly_sct *) list[jdx].elem->item;;
 
       if (pl_lst_in[idx]->pl_typ != pl_out->pl_typ) {
-        fprintf(stdout, "%s:%s(): poly type mismatch\n", nco_prg_nm_get(), fnc_nm);
+        fprintf(stderr, "%s:%s(): poly type mismatch\n", nco_prg_nm_get(), fnc_nm);
         continue;
       }
 
@@ -839,14 +836,12 @@ int *pl_cnt_vrl_ret){
   list = (KDPriority *)nco_free(list);
 
 
-  /* Instead of returning polygons - return  source polygons  for wwhich area used is less that 90% */
-  if(bDirtyRats)
+  /* write filtered polygons to file */
+  if(bDirtyRats && pl_cnt_dbg)
   {
-    pl_lst_vrl=(poly_sct**)nco_poly_lst_free(pl_lst_vrl, pl_cnt_vrl);
-    *pl_cnt_vrl_ret=pl_cnt_dbg;
-    (void)fprintf(stdout, "%s:%s(): dirty rats - pl_cnt_dbg=%d\n ", nco_prg_nm_get(),__FUNCTION__, pl_cnt_dbg);
+    nco_msh_poly_lst_wrt("tst-wrt-dbg.nc", pl_lst_dbg, pl_cnt_dbg, grd_lon_typ);
 
-    return pl_lst_dbg;
+    pl_lst_dbg=(poly_sct**)nco_poly_lst_free(pl_lst_dbg, pl_cnt_dbg);
   }
 
 
