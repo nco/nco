@@ -91,6 +91,23 @@ extern "C" {
     nco_grd_lon_typ_enm typ_out);
 
 
+    void
+    nco_msh_poly_lst_wrt
+    (const char *fl_out,
+     poly_sct ** pl_lst,
+     int pl_nbr,
+     nco_grd_lon_typ_enm grd_lon_typ
+    );
+
+    int
+    nco_msh_att_char(
+    int out_id,
+    int var_id,
+    const char *var_nm,
+    const char *att_nm,
+    const char *att_val
+    );
+
 
 
 
