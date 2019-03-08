@@ -601,7 +601,7 @@ int *pl_cnt_vrl_ret){
 
 
 /* just duplicate output list to overlap */
-  nco_bool bDirtyRats=True;
+  nco_bool bDirtyRats=False;
   nco_bool bSplit=False;
 
   int sz;
