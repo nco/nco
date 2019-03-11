@@ -83,10 +83,10 @@ if [ -z "${DATA}" ]; then
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ALCF blues compute nodes named bNNN, 36|64 cores|GB/node 
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
-	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/HiRes_EarthSys_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
+	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/ClimateEnergy_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* | edison* ) DATA="${SCRATCH}" ; ;; # NERSC cori/edison compute nodes all named nidNNNNN, edison 24|64 cores|GB/node; cori 32|(96/128) cores|GB/node (knl/haswell) (cori login nodes 512 GB)
 	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
-	theta* ) DATA="/projects/ClimateEnergy_2/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
+	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
 fi # DATA
@@ -305,7 +305,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s; difference 5 requires -C argument on Cori only
 #   Blues a):  echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Cheyenne a) echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
-#   Cooley a): /bin/rm -f ~/ncclimo.err  ~/ncclimo.out
+#   Cooley a): /bin/rm -f ~/ncclimo.err ~/ncclimo.out
 #              echo '#!/bin/bash' > ~/ncclimo.cobalt
 #              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 55 -e 58 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
 #   Cori,Edison a): echo '#!/bin/bash' > ~/ncclimo.slurm
@@ -1422,12 +1422,15 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		hopper* )
 		    # NB: NERSC migrated from aprun to srun in 201601. Hopper commands will soon be deprecated.
 		    cmd_mpi[${mpi_idx}]="aprun -L ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # NERSC
+		cooley* | cc[0123456789][0123456789][0123456789] | mira* ) 
+		    # 20190310: Cooley mpirun now uses -hosts instead of -H for hostname option
+		    cmd_mpi[${mpi_idx}]="mpirun -hosts ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # ALCF
 		theta* )
 		    # NB: ALCF Theta (not cooley or mira) uses aprun:
 		    # https://www.alcf.anl.gov/user-guides/example-program-and-makefile-xc40
 		    cmd_mpi[${mpi_idx}]="aprun -L ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # ALCF Theta
 		* )
-		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
+		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS) for, e.g., Rhea
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	done # !mpi_idx_zro

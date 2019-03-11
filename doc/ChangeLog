@@ -1,3 +1,7 @@
+2019-03-10  Charlie Zender  <zender@uci.edu>
+
+	* Cooley mpirun now uses -hosts instead of -H for hostname option
+
 2019-03-05  Charlie Zender  <zender@uci.edu>
 
 	* Use surface angle not interior angle in SAS formula
