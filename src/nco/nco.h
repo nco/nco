@@ -1599,6 +1599,7 @@ extern "C" {
     double dp_y_ctr;       /* x/lat center */
     double area;
     double **shp;    /* array of points size [crn_nbr][NBR] */
+    double wgt;      /* fraction of dst  area cell in overlap polygon */
     double *dp_xyz;  /* maybe useful for 3D stuff */
 
     nco_bool bwrp;   /* if true then whole polygon is wrapped - at Greenwich or Dateline */
