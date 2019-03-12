@@ -54,7 +54,7 @@ void nco_sph_prn(double **sR, int r, int istyle)
 int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 {
 
-   nco_bool flg_dbg=True;
+
 
    nco_bool qpFace = False;
    nco_bool pqFace = False;
@@ -139,7 +139,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
 
       /* Xcross product near zero !! so make it zero*/
-      if(nx3< 1.0e-10)
+      if(0 && nx3< 1.0e-10)
       {
          ip1qLHS=0;
          ipqLHS=0;
@@ -533,7 +533,7 @@ void nco_sph_add_pnt(double **R, int *r, double *P)
 nco_bool nco_sph_between(double a, double b, double x)
 {
 
-   nco_bool bd=False;
+
    nco_bool bret=False;
 
    double diff;
@@ -552,14 +552,14 @@ nco_bool nco_sph_between(double a, double b, double x)
    else if( diff <= SIGMA_RAD )
    {
 
-      if(  b >a &&  x>= a && x<=b  || b<a && x>=b && x<=a    )
+      if(  ( b >a &&  x>= a && x<=b ) || ( b<a && x>=b && x<=a )   )
          bret= True;
 
    }
    else if( diff < M_PI )
    {
 
-      if(  b >a &&  x>= a && x<=b  || b<a && x>=b && x<=a    )
+      if(  ( b >a &&  x>= a && x<=b ) || ( b<a && x>=b && x<=a )   )
          bret=True;
 
    }
@@ -628,9 +628,9 @@ nco_bool sxBetween(double *a, double *b, double *c)
 {
 
    if ( a[3] != b[3] )
-      return (  c[3] >= a[3] && c[3] <=b[3] ||  c[3] <= a[3] && c[3] >= b[3] ) ;
+      return (  ( c[3] >= a[3] && c[3] <=b[3] ) || ( c[3] <= a[3] && c[3] >= b[3] )) ;
    else
-      return (  c[4] >= a[4] && c[4] <=b[4] ||  c[4] <= a[4] && c[4] >= b[4] ) ;
+      return (  ( c[4] >= a[4] && c[4] <=b[4] ) || ( c[4] <= a[4] && c[4] >= b[4] )) ;
 
 
    /*
@@ -643,11 +643,32 @@ nco_bool sxBetween(double *a, double *b, double *c)
 }
 
 
-char nco_sph_parallel(double *a, double *b, double *c, double *d, double *p, double *q)
+int
+nco_sph_parallel_lat(double *p1, double *p2, double *q1, double *q2, double *a, double *b)
+{
+  bool bdir=False;
+
+  /* check sense of direction */
+  bdir=( p2[4] - p1[4] >0.0);
+
+  if( (q2[4] - q1[4] >0.0) != bdir  )
+     return 0;
+
+
+  // if( nco_sph_between(p1[4], p2[4], q1[4]) && nco_sph_between(p1[4], p2[4], q2[4])  )
+
+
+
+}
+
+
+
+
+int nco_sph_parallel(double *a, double *b, double *c, double *d, double *p, double *q)
 {
 
    char code='0';
-   char *ptype="none";
+   const char *ptype="none";
 
    if( sxBetween( a, b, c ) && sxBetween( a, b, d ) ) {
       nco_sph_adi(p, c);
@@ -817,7 +838,7 @@ int nco_sph_mk_control(poly_sct *sP, double* pControl  )
    /* choose left or right hand size */
    if(  lon_min - LON_MIN_RAD  >  xbnd  )
    {
-      clon=lon_min- xbnd/2,0;
+      clon=lon_min- xbnd/2.0;
       clat=(lat_min+lat_max)/2.0;
    }
    else if(LON_MAX_RAD - lon_max > xbnd  ) {

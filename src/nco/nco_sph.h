@@ -14,6 +14,7 @@
 #include "nco_sld.h"     /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
 #include "nco_ply.h"    /* poly sct stuff */
+#include "nco_crt.h"
 
 #define NBR_SPH (5)
 
@@ -88,8 +89,12 @@ nco_sph_between(double a, double b, double x);
 nco_bool
 nco_sph_lonlat_between(double *a, double *b, double *x);
 
-char
+int
 nco_sph_parallel(double *a, double *b, double *c, double *d, double *p, double *q);
+
+int
+nco_sph_parallel_lat(double *a, double *b, double *c, double *d, double *p, double *q);
+
 
 void
 nco_sph_prn_pnt(const char *sMsg, double *p, int style, nco_bool bRet);
