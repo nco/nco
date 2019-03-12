@@ -116,6 +116,19 @@ extern "C" {
   poly_sct **pl_wrp_left,
   poly_sct ** pl_wrp_right);
 
+  nco_bool
+  nco_poly_wrp_splt180(
+  poly_sct  *pl,
+  poly_sct **pl_wrp_left,
+  poly_sct ** pl_wrp_right);
+
+  nco_bool
+  nco_poly_wrp_splt360(
+  poly_sct  *pl,
+  poly_sct **pl_wrp_left,
+  poly_sct ** pl_wrp_right);
+
+
   void
   nco_poly_re_org(
   poly_sct *pl, 		  
