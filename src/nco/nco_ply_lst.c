@@ -723,6 +723,9 @@ int *pl_cnt_vrl_ret){
         /* shp not needed */
         nco_poly_shp_free(pl_vrl);
 
+        /* calculate weight -simple ratio of areas */
+        pl_vrl->wgt=pl_vrl->area / pl_out->area;
+
         nco_poly_minmax_add(pl_vrl);
         /* manually add wrap */
         if(pl_vrl->dp_x_minmax[1] - pl_vrl->dp_x_minmax[0] >=180.0 )
