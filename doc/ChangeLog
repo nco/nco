@@ -1,3 +1,7 @@
+2019-03-11  Charlie Zender  <zender@uci.edu>
+
+	* Change Cooley DATA from ClimateEnergy_2 to OceanClimate_2
+
 2019-03-10  Charlie Zender  <zender@uci.edu>
 
 	* Cooley mpirun now uses -hosts instead of -H for hostname option
