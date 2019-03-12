@@ -914,9 +914,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
 
 
-  wgt_raw=(double *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_DOUBLE),fnc_nm,"Unable to malloc() value buffer for remapping weights");
-  col_src_adr=(int *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
-  row_dst_adr=(int *)nco_malloc_dbg(lnk_nbr*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() value buffer for remapping addresses");
+  wgt_raw=(double *)nco_malloc(lnk_nbr*nco_typ_lng(NC_DOUBLE));
+  col_src_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
+  row_dst_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
 
 
 
@@ -1064,6 +1064,8 @@ nco_msh_wrt
   area=(double*)nco_free(area);
   grd_ctr_lat=(double*)nco_free(grd_ctr_lat);
 
+  return True;
+
 }
 
 poly_sct *           /* return a ply_sct with lat/lon minmax and total area */
@@ -1194,12 +1196,15 @@ nco_grd_lon_typ_enm typ_out)
         case nco_grd_lon_180_wst:
         case nco_grd_lon_180_ctr:
           for(idx=0;idx<sz;idx++)
-            if(lon_crn[idx] >180.0  ) lon_crn[idx]-=360.0;
+             if(lon_crn[idx] >180.0  ) lon_crn[idx]-=360.0;
 
             break;
 
+
         case nco_grd_lon_Grn_wst:
         case nco_grd_lon_Grn_ctr:
+        default:
+
           for(idx=0;idx<sz;idx++)
             if(lon_crn[idx] <0.0  ) lon_crn[idx]+=360.0;
 
@@ -1223,6 +1228,7 @@ nco_grd_lon_typ_enm typ_out)
 
         case nco_grd_lon_Grn_wst:
         case nco_grd_lon_Grn_ctr:
+        default:
           for(idx=0;idx<sz;idx++)
             if(lon_crn[idx] <0.0  )
               lon_crn[idx]+=360.0;
@@ -1240,14 +1246,18 @@ nco_grd_lon_typ_enm typ_out)
         case nco_grd_lon_180_wst:
         case nco_grd_lon_180_ctr:
           for(idx=0;idx<sz;idx++)
-            if(lon_crn[idx] >180.0) lon_crn[idx]-=360.0;
+            if(lon_crn[idx] >180.0)
+              lon_crn[idx]-=360.0;
           break;
 
         /* additional check for lon<0 as some generated  grids have this horrible wrapping */
         case nco_grd_lon_Grn_wst:
         case nco_grd_lon_Grn_ctr:
+        default:
           for(idx=0;idx<sz;idx++)
-            if(lon_crn[idx] <0.0  ) lon_crn[idx]+=360.0;
+            if(lon_crn[idx] <0.0  )
+              lon_crn[idx]+=360.0;
+
           break;
 
       }
@@ -1451,6 +1461,7 @@ const char *var_nm,
 const char *att_nm,
 const char *att_val
 ){
+  int iret;
 
   aed_sct aed_mtd;
   aed_mtd.att_nm=att_nm;
@@ -1460,7 +1471,10 @@ const char *att_val
   aed_mtd.type=NC_CHAR;
   aed_mtd.val.cp=att_val;
   aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,var_id,aed_mtd);
+
+  iret=nco_aed_prc(out_id,var_id,aed_mtd);
+
+  return iret;
 
 }
 
