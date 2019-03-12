@@ -824,6 +824,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     att_val[att_sz]='\0';
     /* ESMF conventions */
     if(strstr(att_val,"NCAR-CSM")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF;
+    else if(strstr(att_val,"netCDF Operators")) nco_rgr_mpf_typ=nco_rgr_mpf_NCO;
     else if(strstr(att_val,"SCRIP")) nco_rgr_mpf_typ=nco_rgr_mpf_SCRIP;
     else if(strstr(att_val,"Tempest")) nco_rgr_mpf_typ=nco_rgr_mpf_Tempest;
     else if(strstr(att_val,"ESMF Regrid Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF_weight_only;
@@ -846,6 +847,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimid(in_id,"n_s",&num_links_id);
     break;
   case nco_rgr_mpf_ESMF:
+  case nco_rgr_mpf_NCO:
   case nco_rgr_mpf_Tempest:
     rcd+=nco_inq_dimid(in_id,"n_a",&src_grid_size_id);
     rcd+=nco_inq_dimid(in_id,"n_b",&dst_grid_size_id);
@@ -913,8 +915,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
   }else{
     /* 20150712: Tempest does not store a normalization attribute
-       20170620: ESMF weight_only does not store a normalization attribute */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_ESMF_weight_only) nco_rgr_nrm_typ=nco_rgr_nrm_unknown;
+       20170620: ESMF weight_only does not store a normalization attribute
+       20190312: NCO does not yet store a normalization attribute */
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_ESMF_weight_only) nco_rgr_nrm_typ=nco_rgr_nrm_unknown;
   } /* endif normalization */
   assert(nco_rgr_nrm_typ != nco_rgr_nrm_nil);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
@@ -933,8 +936,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(strstr(att_val,"none")) nco_rgr_mth_typ=nco_rgr_mth_none;
     if(att_val) att_val=(char *)nco_free(att_val);
   }else{
-    /* Tempest does not store a map_method attribute */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) nco_rgr_mth_typ=nco_rgr_mth_unknown;
+    /* NCO and Tempest do not store a map_method attribute */
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_NCO) nco_rgr_mth_typ=nco_rgr_mth_unknown;
   } /* endif */
   assert(nco_rgr_mth_typ != nco_rgr_mth_nil);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
@@ -999,6 +1002,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     break;
   case nco_rgr_mpf_ESMF:
   case nco_rgr_mpf_ESMF_weight_only:
+  case nco_rgr_mpf_NCO:
   case nco_rgr_mpf_Tempest:
     if(nco_rgr_mpf_typ != nco_rgr_mpf_ESMF_weight_only){
       rcd+=nco_inq_varid(in_id,"area_b",&area_dst_id); /* SCRIP: dst_grid_area */
@@ -1025,7 +1029,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Obtain fields whose presence depends on mapfile type */
   nco_bool flg_msk_out=rgr->flg_msk_out; /* [flg] Add mask to output */
   if(flg_msk_out){
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_ESMF){
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_ESMF || nco_rgr_mpf_typ == nco_rgr_mpf_NCO){
       rcd+=nco_inq_varid(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
     }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
       rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
@@ -4411,6 +4415,7 @@ nco_rgr_mpf_sng /* [fnc] Convert mapfile generator enum to string */
   case nco_rgr_mpf_SCRIP: return "SCRIP (original LANL package)";
   case nco_rgr_mpf_Tempest: return "TempestRemap (GenerateOfflineMap)";
   case nco_rgr_mpf_ESMF_weight_only: return "ESMF Offline Regridding Weight Generator (ERWG), either from ESMF_RegridWeightGen directly or via NCL, with --weight_only option from ERWG 7.1+";
+  case nco_rgr_mpf_NCO: return "netCDF Operators (NCO) Offline Regridding Weight Generator";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 

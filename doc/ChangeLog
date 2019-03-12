@@ -1,3 +1,7 @@
+2019-03-12  Charlie Zender  <zender@uci.edu>
+
+	* Add NCO map-file type to nco_rgr_mpf_typ in nco_rgr.c so we can eat our own dogfood
+
 2019-03-11  Charlie Zender  <zender@uci.edu>
 
 	* Change Cooley DATA from ClimateEnergy_2 to OceanClimate_2
@@ -10,7 +14,7 @@
 
 	* Use surface angle not interior angle in SAS formula
 
-	* Implemented SAS formula where L'Huilier's formula is ill-conditioned
+	* Implement SAS formula where L'Huilier's formula is ill-conditioned
 
 2019-03-03  Charlie Zender  <zender@uci.edu>
 
