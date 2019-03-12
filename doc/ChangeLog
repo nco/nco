@@ -1,5 +1,9 @@
 2019-03-12  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.0-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha03: 55';git push
+	git tag -a 4.8.0-alpha03 -m 'nco_mpf_typ_nco, mpirun -hosts cooley, SAS formula';git push --tags
+
 	* Add NCO map-file type to nco_rgr_mpf_typ in nco_rgr.c so we can eat our own dogfood
 
 2019-03-11  Charlie Zender  <zender@uci.edu>
