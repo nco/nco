@@ -68,6 +68,7 @@ nco_poly_init
   pl->dp_x_ctr=DBL_MAX;
   pl->dp_y_ctr=DBL_MAX;
 
+  pl->wgt=0.0;
   pl->stat=0;
   pl->area=0.0;
   pl->crn_nbr=0;
@@ -135,7 +136,7 @@ nco_poly_dpl
 
   pl_cpy->dp_x_ctr=pl->dp_x_ctr;
   pl_cpy->dp_y_ctr=pl->dp_y_ctr;
-
+  pl_cpy->wgt=pl->wgt;
 
   /* do a deep copy of this list */
   if(pl->shp)
