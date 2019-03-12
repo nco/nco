@@ -46,7 +46,7 @@ static int path_alloc = 0;
 static int path_reset = 1;
 static KDElem **path_to_item = (KDElem **) NULL;
 
-static char *kd_pkg_name = "ncks-kd_tree";
+static const char *kd_pkg_name = "ncks-kd_tree";
 
 
 static int kd_data_tries;
@@ -104,7 +104,7 @@ KDElem *cmv (KDElem * list1, KDElem* list2)
 */
 
 
-void errRaise(char *pkg, int code, char *format)
+void errRaise(char *pkg, int code, const char *format)
 {
 
   (void)fprintf(stderr,"%s: %s (%d)\n", pkg, format, code);
@@ -212,11 +212,14 @@ KDTree * kd_create(void)
 
 KDElem *kd_tmp_ptr;
 
-// #define NIL			(KDElem *) NULL
-// #define CAR(list)		(list)->item
-// #define CDR(list)		(list ? (list)->sons[0] : (KDElem *) NULL )
-//#define CONS(Item, list)						\
-//   (kd_tmp_ptr = Item,  kd_tmp_ptr->sons[0] = (list), kd_tmp_ptr)
+/*
+#define NIL			(KDElem *) NULL
+#define CAR(list)		(list)->item
+#define CDR(list)		(list ? (list)->sons[0] : (KDElem *) NULL )
+#define CONS(Item, list)						\
+(kd_tmp_ptr = Item,  kd_tmp_ptr->sons[0] = (list), kd_tmp_ptr)
+*/
+
 /*
  * The following moves the front of `list1' to the front of `list2' and
  * returns `list1'.  This is a destructive operation: both `list1' and
@@ -256,7 +259,7 @@ KDTree* kd_build(int (*itemfunc)(kd_generic arg, kd_generic *val, kd_box size), 
     KDTree *newTree = (KDTree *) kd_create();
     KDElem *items, *spares = (KDElem *)NULL;
     kd_box extent;
-    int count = 0;
+
     int item_count = 0;
     double mean;
 
@@ -288,8 +291,6 @@ KDTree* kd_build(int (*itemfunc)(kd_generic arg, kd_generic *val, kd_box size), 
 	newTree->extent[1] = extent[1];
 	newTree->extent[2] = extent[2];
 	newTree->extent[3] = extent[3];
-
-	count = 0;
 	
 	while( spares )
 	{
@@ -2298,187 +2299,6 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 }
 
 
-int kd_neighbour_intersect_try(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn)
-{
-    int d;
-    short hort,vert;
-    double p;
-    
-    KDState *realGen;
-    register KDSave *top_elem;
-    register KDElem *top_item;
-
-    
-    realGen = (KDState*)nco_malloc( sizeof(KDState));
-	
-    kd_data_tries = 0;
-	
-    realGen->stack_size = KD_INIT_STACK;
-    realGen->top_index = 0;
-    realGen->stk = (KDSave*)nco_malloc(sizeof(KDSave)* KD_INIT_STACK);
-
-    /* Initialize search state */
-    if (node)
-	{
-		kd_pushb(realGen, node, 0,Bn,Bp);
-    }
-	else
-	{
-		realGen->top_index = -1;
-    }
-
-	while (realGen->top_index > 0)
-	{
-
-		
-		top_elem = &(realGen->stk[realGen->top_index-1]);
-		top_item = top_elem->item;
-		d = top_elem->disc;
-		p = top_item->size[d];
-		hort = d & 1;
-		vert = d & 2;
-		
-		switch (top_elem->state)
-		{
-		case KD_THIS_ONE:
-			/* Check this one */
-			kd_data_tries++;
-			if( top_item->item ) /* really shouldn't add dead nodes to the list! */
-				add_priority_intersect(m,list,Xq,top_item);
-			top_elem->state += 1;
-			break;
-		case KD_LOSON:
-			/* calc bounds */
-			/* See if we push on the loson */
-			if( Xq[d] <= p )
-			{
-				if( top_item->sons[KD_LOSON])
-				{
-					if (vert)
-					{
-						top_elem->Bp[hort] = top_item->size[d];
-						top_elem->Bn[hort] = top_item->lo_min_bound;
-					}
-					else
-					{
-						top_elem->Bp[hort] = top_item->other_bound;
-						top_elem->Bn[hort] = top_item->lo_min_bound;
-					}
-					
-					if( bounds_intersect(Xq,top_elem->Bp,top_elem->Bn))
-					{
-						top_elem->state += 1;
-						kd_pushb(realGen, top_item->sons[KD_LOSON], (d+1)%4,top_elem->Bn,top_elem->Bp);
-					}
-					else
-						top_elem->state++;
-				}
-				else
-					top_elem->state += 1;
-			}
-			else
-			{
-				if( top_item->sons[KD_HISON] )
-				{
-					if (vert)
-					{
-						top_elem->Bp[hort] = top_item->hi_max_bound;
-						top_elem->Bn[hort] = top_item->other_bound;
-					}
-					else
-					{
-						top_elem->Bp[hort] = top_item->hi_max_bound;
-						top_elem->Bn[hort] = top_item->size[d];
-					}
-					
-					if( bounds_intersect(Xq,top_elem->Bp,top_elem->Bn))
-					{
-						top_elem->state += 1;
-						kd_pushb(realGen, top_item->sons[KD_HISON], (d+1)%4,top_elem->Bn,top_elem->Bp);
-					}
-					else
-						top_elem->state++;
-				}
-				else
-					top_elem->state += 1;
-			}
-			break;
-		case KD_HISON:
-			/* See if we push on the hison */
-			if( Xq[d] <= p )
-			{
-				if( top_item->sons[KD_HISON] )
-				{
-					if (vert)
-					{
-						top_elem->Bp[hort] = top_item->hi_max_bound;
-						top_elem->Bn[hort] = top_item->other_bound;
-					}
-					else
-					{
-						top_elem->Bp[hort] = top_item->hi_max_bound;
-						top_elem->Bn[hort] = top_item->size[d];
-					}
-					//if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
-					if( bounds_intersect(Xq,top_elem->Bp,top_elem->Bn))
-					{
-						top_elem->state += 1;
-						kd_pushb(realGen, top_item->sons[KD_HISON], (d+1)%4,top_elem->Bn,top_elem->Bp);
-					}
-					else
-						top_elem->state++;
-				}
-				else
-					top_elem->state += 1;
-			}
-			else
-			{
-				if( top_item->sons[KD_LOSON] )
-				{
-					if (vert)
-					{
-						top_elem->Bp[hort] = top_item->size[d];
-						top_elem->Bn[hort] = top_item->lo_min_bound;
-					}
-					else
-					{
-						top_elem->Bp[hort] = top_item->other_bound;
-						top_elem->Bn[hort] = top_item->lo_min_bound;
-					}
-					// if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
-					if( bounds_intersect(Xq,top_elem->Bp,top_elem->Bn))
-					{
-						top_elem->state += 1;
-						kd_pushb(realGen, top_item->sons[KD_LOSON], (d+1)%4,top_elem->Bn,top_elem->Bp);
-					}
-					else
-						top_elem->state++;
-				}
-				else
-					top_elem->state += 1;
-			}
-			break;
-		default:
-			/* We have exhausted this node -- pop off the next one */
-			realGen->top_index -= 1;
-			break;
-		}
-	}
-	nco_free(realGen->stk);
-	nco_free(realGen);
-
-	/* we have to change KDElem * to kd_generic and give the user something back
-	 he can 'identify' with. */
-
-	/* this is rubbish   
-	for(p=0;p<m;p++)
-	{
-		list[p].elem = (KDElem *)list[p].elem->item;
-	}
-        */
-
-	return kd_data_tries;
-}
 
 
 int kd_neighbour_intersect(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn)
@@ -2683,9 +2503,6 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	int idx;
         kd_box Bp,Bn,Xq;
 
-        //KDTree *realTree = (KDTree *) tree;
-	
-	//KDPriority **list = (KDPriority **)alist;
 	Xq[KD_LEFT] = x;
 	Xq[KD_BOTTOM] = y;
 	Xq[KD_RIGHT] = x;
@@ -2693,26 +2510,18 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	*alist = (KDPriority *)nco_calloc(sizeof(KDPriority),m);
 	for(idx=0;idx<m;idx++)
 	{
-	  // (*alist)[idx].dist = 1.79769313486231470e+308;
 	  (*alist)[idx].dist = DBL_MAX;
-	  //(*alist)[idx].dist = 4.0;
 	  (*alist)[idx].elem = (KDElem*)NULL;
 	}
-	/*
-	for(idx=0;idx<KD_BOX_MAX;idx++)
-	{
-	        Bp[idx] = DBL_MAX;
-		Bn[idx] = DBL_MAX;
-	}
-        */
-        Bp[0]=realTree->extent[0];
+
+
+	Bp[0]=realTree->extent[0];
 	Bp[1]=realTree->extent[1];
 
-        Bn[0]=realTree->extent[2];
+	Bn[0]=realTree->extent[2];
 	Bn[1]=realTree->extent[3];
 
-	
-	
+
 	return kd_neighbour(realTree->tree,Xq,m,*alist,Bp,Bn);
 }
 
@@ -2773,32 +2582,35 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list)
 	Bn[1]=realTree->extent[3];
     */
 	
-	/* old routine visits evry node */
-	// node_cnt= kd_neighbour_intersect(realTree->tree,Xq,m,list,Bp,Bn);
+	/* old routine visits evry node
+	  node_cnt= kd_neighbour_intersect(realTree->tree,Xq,m,list,Bp,Bn);
+    */
 
-	/* new routine -checks low_min_bound and hi_min_bound  */
-	//node_cnt= kd_neighbour_intersect2(realTree->tree,0,Xq,m,list);
+	/* new routine -checks low_min_bound and hi_min_bound
+	  node_cnt= kd_neighbour_intersect2(realTree->tree,0,Xq,m,list);
+	*/
 
 	node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq,m,list,0,0);
 
         for(idx=0; idx<m;idx++)
-          if(list[idx].elem ) ret_cnt++;
+          if(list[idx].elem )
+            ret_cnt++;
 
-	
-        if(0  && nco_dbg_lvl_get() >= nco_dbg_dev  ) {
-	  
-	  for(idx=0;idx<ret_cnt;idx++)
-	  {
-	       (void)fprintf(stderr," dist to center: %f units. elem=%ld. item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
-				list[idx].dist,
-			        list[idx].elem,
-			        list[idx].elem->item,
-				list[idx].elem->size[KD_LEFT],
-				list[idx].elem->size[KD_RIGHT],
-				list[idx].elem->size[KD_BOTTOM],
-				list[idx].elem->size[KD_TOP]);
-	  }
-        }
+
+          if(0 && nco_dbg_lvl_get() >= nco_dbg_dev  )
+          {
+              for(idx=0;idx<ret_cnt;idx++)
+              {
+                   (void)fprintf(stderr," dist to center: %f units. elem=%p item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
+                        list[idx].dist,
+                        list[idx].elem,
+                        list[idx].elem->item,
+                        list[idx].elem->size[KD_LEFT],
+                        list[idx].elem->size[KD_RIGHT],
+                        list[idx].elem->size[KD_BOTTOM],
+                        list[idx].elem->size[KD_TOP]);
+              }
+          }
         return ret_cnt;
 	
 }

@@ -166,9 +166,13 @@ typedef struct KDPpriority
 	KDElem *elem;
 } KDPriority;
 
+char *kd_fault(int t);
 
+void errRaise(char *pkg, int code, const char *format);
 
-void errRaise(char *pkg, int code, char *format);
+KDElem *kd_new_node(kd_generic item, kd_box size, double lomin, double himax, double other, KDElem *loson, KDElem *hison);
+
+int kd_set_build_depth(int depth);
 
 char *kd_err_string(void);
   /* Returns a textual description of a k-d error */
