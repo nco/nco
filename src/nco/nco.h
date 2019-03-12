@@ -1595,6 +1595,8 @@ extern "C" {
     double *dp_y;          /* y vertices */
     double dp_x_minmax[2]; /* x/lon minmax */
     double dp_y_minmax[2]; /* y/lat minmax */
+    double dp_x_ctr;       /* x/lon center */
+    double dp_y_ctr;       /* x/lat center */
     double area;
     double **shp;    /* array of points size [crn_nbr][NBR] */
     double *dp_xyz;  /* maybe useful for 3D stuff */
