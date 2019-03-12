@@ -65,44 +65,6 @@ int arr_nbr)
 
 
 
-void
-nco_poly_re_org_lst_old(  /* for each poly_sct*  in list re-order points so that first point is the leftermost point */
-poly_sct **pl_lst,
-int arr_nbr)
-{
-  int idx=0;
-  int jdx=0;
-  int max_crn_nbr=0;
-
-  double *lcl_dp_x;
-  double *lcl_dp_y;
-
-
-  if( arr_nbr==0)
-    return;
-
-  /* max crn_nbr */
-  for(idx=0 ; idx<arr_nbr ;idx++)
-    if( pl_lst[idx]->crn_nbr > max_crn_nbr )
-      max_crn_nbr = pl_lst[idx]->crn_nbr;
-
-  lcl_dp_x=(double*)nco_calloc(max_crn_nbr, sizeof(double));
-  lcl_dp_y=(double*)nco_calloc(max_crn_nbr, sizeof(double));
-
-
-  for(idx=0; idx<arr_nbr;idx++)
-    nco_poly_re_org(pl_lst[idx], lcl_dp_x, lcl_dp_y);
-
-
-
-  lcl_dp_x=(double*)nco_free(lcl_dp_x);
-  lcl_dp_y=(double*)nco_free(lcl_dp_y);
-
-  return;
-
-}
-
-
 
 
 poly_sct **             /* [O] [nbr]  size of array */
@@ -124,11 +86,11 @@ int *pl_nbr)
   int idx_cnt=0;
   int cnt_wrp_good=0;
 
-  char *fnc_nm="nco_poly_lst_mk()";
+  const char *fnc_nm="nco_poly_lst_mk()";
 
   nco_bool bwrp;
 
-  double lon_wdt;
+
   double *lat_ptr=lat_crn;
   double *lon_ptr=lon_crn;
 
@@ -261,7 +223,7 @@ int *pl_nbr)
   }
 
   if(nco_dbg_lvl_get() >=  nco_dbg_std )
-    (void)fprintf(stdout, "%s:%s: size input list(%d), size output list(%d), num of split polygons(%d)\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, cnt_wrp_good, cnt_wrp_good);
+    (void)fprintf(stdout, "%s:%s: size input list(%lu), size output list(%d), num of split polygons(%d)\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, cnt_wrp_good);
 
   pl_lst=(poly_sct**)nco_realloc( pl_lst, (size_t)idx_cnt * sizeof (poly_sct*) );
 
@@ -291,7 +253,7 @@ int *pl_nbr)
   int idx_cnt=0;
   int wrp_cnt=0;
 
-  char *fnc_nm="nco_poly_lst_mk()";
+  const char *fnc_nm="nco_poly_lst_mk()";
 
   nco_bool bwrp;
   double tot_area=0.0;
@@ -379,7 +341,7 @@ int *pl_nbr)
   }
 
   if(nco_dbg_lvl_get() >=  nco_dbg_dev )
-    (void)fprintf(stdout, "%s:%s: size input list(%d), size output list(%d)  total area=%.15e  num of wrapped=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt);
+    (void)fprintf(stdout, "%s:%s: size input list(%lu), size output list(%d)  total area=%.15e  num of wrapped=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt);
 
   pl_lst=(poly_sct**)nco_realloc( pl_lst, (size_t)idx_cnt * sizeof (poly_sct*) );
 
@@ -450,11 +412,11 @@ int *pl_cnt_vrl_ret){
 
   size_t idx;
   size_t jdx;
-  int sz;
+
   int max_nbr_vrl=1000;
   int pl_cnt_vrl=0;
 
-  char *chr_ptr;
+
   char fnc_nm[]="nco_poly_mk_vrl()";
 
   /* buffers  used in nco-poly_re_org() */
@@ -572,7 +534,7 @@ int *pl_cnt_vrl_ret){
     }
 
     if( nco_dbg_lvl_get() >= nco_dbg_dev )
-      (void) fprintf(stdout, "%s: total overlaps=%d for polygon %d - potential overlaps=%d actual overlaps=%d\n", nco_prg_nm_get(), pl_cnt_vrl,  idx, cnt_vrl, cnt_vrl_on);
+      (void) fprintf(stdout, "%s: total overlaps=%d for polygon %lu - potential overlaps=%d actual overlaps=%d\n", nco_prg_nm_get(), pl_cnt_vrl,  idx, cnt_vrl, cnt_vrl_on);
 
 
   }
@@ -603,8 +565,7 @@ int *pl_cnt_vrl_ret){
 /* just duplicate output list to overlap */
   nco_bool bDirtyRats=False;
   nco_bool bSplit=False;
-
-  int sz;
+  
   int max_nbr_vrl=1000;
   int pl_cnt_vrl=0;
   int wrp_cnt=0;
@@ -613,12 +574,13 @@ int *pl_cnt_vrl_ret){
   size_t idx;
   size_t jdx;
 
-  char *chr_ptr;
-  char fnc_nm[]="nco_poly_mk_vrl()";
 
-  /* buffers  used in nco-poly_re_org() */
+  const char fnc_nm[]="nco_poly_mk_vrl()";
+
+  /* buffers  used in nco-poly_re_org()
   double lcl_dp_x[VP_MAX]={0};
   double lcl_dp_y[VP_MAX]={0};
+  */
 
   double tot_area=0.0;
 
@@ -796,7 +758,7 @@ int *pl_cnt_vrl_ret){
       double frc = vrl_area / pl_lst_in[idx]->area;
       if (frc < 0.9) {
         (void) fprintf(stdout,
-                       "%s: polygon %d - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e\n",
+                       "%s: polygon %lu - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e\n",
                        nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area);
 
         if (bDirtyRats && frc <0.9 ) {
@@ -806,7 +768,7 @@ int *pl_cnt_vrl_ret){
           pl_cnt_dbg++;
 
           if (1) {
-            (void) fprintf(stdout, "/** following pl_lst_in[%d]  **/\n", idx);
+            (void) fprintf(stdout, "/** following pl_lst_in[%lu]  **/\n", idx);
             nco_poly_prn(pl_lst_in[idx], 1);
             (void) fprintf(stdout, "/** potential overlaps to  follow  **/\n");
             for (jdx = 0; jdx < cnt_vrl; jdx++)

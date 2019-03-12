@@ -14,6 +14,7 @@
 #include "nco_sld.h"     /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
 #include "nco_ply.h"    /* poly sct stuff */
+#include "kd.h"
 
 
 
@@ -84,6 +85,11 @@ poly_sct **pl_lst_out,
 int pl_cnt_out,
 nco_grd_lon_typ_enm grd_lon_typ,
 int *pl_cnt_vrl_ret);
+
+void
+nco_poly_set_priority(
+int nbr_lst,
+KDPriority *list);
 
 
 
