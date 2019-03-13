@@ -1463,13 +1463,16 @@ const char *att_val
 ){
   int iret;
 
+  char *av;
+
+  av=strdup(att_val);
   aed_sct aed_mtd;
   aed_mtd.att_nm=strdup(att_nm);
   aed_mtd.var_nm=strdup(var_nm);
   aed_mtd.id=var_id;
-  aed_mtd.sz=strlen(att_val);
+  aed_mtd.sz=strlen(av);
   aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
+  aed_mtd.val.cp=av;
   aed_mtd.mode=aed_create;
 
 
