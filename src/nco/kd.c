@@ -1578,8 +1578,8 @@ void kd_badness(KDTree *realTree)
 	double a1,a2,a3,a4,a5;
 	kd_tree_badness(realTree, &a1,&a2,&a3,&lev);
 
-        a4 = 100.00d * a3 / (double)realTree->item_count ;
-	a5 = 100.00d * (double)realTree->dead_count / (double)realTree->item_count;
+        a4 = 100.00 * a3 / (double)realTree->item_count ;
+	a5 = 100.00 * (double)realTree->dead_count / (double)realTree->item_count;
 	
 	fprintf(stdout,"balance ratio=%g (the closer to 1.0, the better), #of nodes with only one branch=%g (%g), max depth=%d, dead=%d (%g)\n",
 		        a2,a3,a4,lev, realTree->dead_count, a5);
