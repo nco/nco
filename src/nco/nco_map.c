@@ -1464,15 +1464,20 @@ const char *att_val
   int iret;
 
   aed_sct aed_mtd;
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=var_nm;
+  aed_mtd.att_nm=strdup(att_nm);
+  aed_mtd.var_nm=strdup(var_nm);
   aed_mtd.id=var_id;
   aed_mtd.sz=strlen(att_val);
   aed_mtd.type=NC_CHAR;
   aed_mtd.val.cp=att_val;
   aed_mtd.mode=aed_create;
 
+
+
   iret=nco_aed_prc(out_id,var_id,aed_mtd);
+
+  aed_mtd.att_nm=(char*)nco_free(aed_mtd.att_nm);
+  aed_mtd.var_nm=(char*)nco_free(aed_mtd.var_nm);
 
   return iret;
 
