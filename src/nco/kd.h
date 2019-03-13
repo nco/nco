@@ -166,60 +166,70 @@ typedef struct KDPpriority
 	KDElem *elem;
 } KDPriority;
 
-char *kd_fault(int t);
 
-void errRaise(char *pkg, int code, const char *format);
-
+void add_priority(int m, KDPriority *P, kd_box Xq, KDElem *elem);
+int add_priority_intersect(int m, KDPriority *P, kd_box Xq, KDElem *elem);
+int bounds_intersect(kd_box Xq, kd_box Bp, kd_box Bn);
+int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list);
+void bounds_update(KDElem *elem, int disc, kd_box size);
+KDElem *build_node(KDElem *items, int num, kd_box extent, int disc, int level, int max_level, KDElem **spares, int *treecount, double mean);
+void collect_nodes(KDTree*, KDElem *, KDElem **, kd_box, long *, double *);
+double coord_dist(double x, double y);
+void del_elem(KDElem *elem, void (*delfunc)(kd_generic item));
+kd_status del_element(KDTree *tree, KDElem *elem, int spot);
+KDElem *find_item(KDElem *elem, int disc, kd_generic item, kd_box size, int search_p, KDElem *items_elem);
+int get_min_max(KDElem *list, int disc, double *b_min, double *b_max);
 KDElem *kd_new_node(kd_generic item, kd_box size, double lomin, double himax, double other, KDElem *loson, KDElem *hison);
+char *kd_fault(int t);
+KDElem *load_items(int (*itemfunc)(kd_generic arg, kd_generic *val, kd_box size), kd_generic arg, kd_box extent, int *length, double *mean);
+int nodecmp(KDElem *a, KDElem *b, int disc);
+void pr_tree(KDElem *elem, int disc, int depth);
+void resolve(register KDElem **lo, register KDElem **eq, register KDElem **hi, int disc, double *lomean, double *himean, long *locount, long *hicount);
+void sel_k(KDElem *items, double k, int disc, KDElem **lo, KDElem **eq, KDElem **hi, double *lomean, double *himean, long *locount, long *hicount);
+void unload_items(KDTree*, KDElem **, kd_box, long *, double *);
 
-int kd_set_build_depth(int depth);
+void errRaise(const char *pkg, int code, const char *format);
+void NEW_PATH(KDElem *elem);
 
-char *kd_err_string(void);
-  /* Returns a textual description of a k-d error */
 
-KDTree* kd_create(void);
-  /* Creates a new empty kd-tree */
 
+/* Returns a textual description of a k-d error */
+
+
+double KDdist(kd_box Xq, KDElem *elem);
+
+
+void kd_badness(KDTree *realTree);
 KDTree* kd_build(int (*itemfunc)(), kd_generic );
-  /* Makes a new kd-tree from a given set of items */
-
-void kd_destroy(KDTree *this_one, void (*delfunc)());
-  /* Destroys an existing k-d tree */
-
-kd_status kd_is_member(KDTree* , kd_generic , kd_box );
-  /* Tries to find a specific item in a tree */
-
-void kd_insert(KDTree* , kd_generic , kd_box, kd_generic );
-  /* Inserts a new node into a k-d tree */
-
-kd_status kd_delete(KDTree* , kd_generic , kd_box );
-  /* Deletes a node from a k-d tree */
-
-kd_status kd_really_delete (KDTree* theTree, kd_generic data, kd_box old_size, int *num_tries, int *num_del);
-
-kd_gen kd_start (KDTree* tree, kd_box size);
-  /* Initializes a generation of items in a region */
-
-kd_status kd_next (kd_gen , kd_generic *, kd_box);
-  /* Generates the next item in a region */
-
-int kd_finish (kd_gen);
-  /* Ends generation of items in a region */
-
+void kd_tree_badness_level(KDElem *elem, int level);
 int kd_count (KDTree* tree);
-  /* Returns the number of objects stored in tree */
-
-void kd_print (KDTree*);
-
-void kd_badness (KDTree*);
-
-KDTree* kd_rebuild ( KDTree* );
-
+KDTree* kd_create(void);
+kd_status kd_delete(KDTree* , kd_generic , kd_box );
+void kd_delete_stats(int *tries,int *levs);
+void kd_destroy(KDTree *this_one, void (*delfunc)());
+char *kd_err_string(void);
+int kd_finish (kd_gen);
+void kd_insert(KDTree* , kd_generic , kd_box, kd_generic );
+int kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn);
+int kd_neighbour_intersect(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn);
+int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
+int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
+int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list, int stateH, int stateV );
 int kd_nearest (KDTree* tree, double x, double y, int m, KDPriority **alist);
 int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *alist);
 int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq,kd_box Xr, int m, KDPriority *list);
+kd_status kd_next (kd_gen , kd_generic *, kd_box);
+void kd_print (KDTree*);
+void kd_print_path(void);
 void kd_print_nearest (KDTree* tree, double x, double y, int m);
-
+void kd_push(KDState *gen, KDElem *elem, short disc);
+void kd_pushb(KDState *gen, KDElem* elem, short dk, kd_box Bxn, kd_box Bxp);
+kd_status kd_really_delete (KDTree* theTree, kd_generic data, kd_box old_size, int *num_tries, int *num_del);
+KDTree* kd_rebuild ( KDTree* );
+int kd_set_build_depth(int depth);
+kd_gen kd_start (KDTree* tree, kd_box size);
+kd_status kd_is_member(KDTree* , kd_generic , kd_box );
+void kd_tree_badness(KDTree *tree, double *fact1, double *fact2, double *fact3, int *levs);
 
 #ifdef __cplusplus
 } /* end extern "C" */

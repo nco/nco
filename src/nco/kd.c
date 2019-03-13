@@ -64,7 +64,7 @@ static int kd_tree_max_levels = 0;
 
 
 
-/* Forward declarations */
+/* Forward declarations
 void sel_k();
 void resolve();
 int get_min_max();
@@ -75,7 +75,7 @@ KDElem *load_items();
 KDElem *build_node();
 KDElem *find_item();
 void bounds_update();
-
+*/
 
 /*
  * The following moves the front of `list1' to the front of `list2' and
@@ -104,7 +104,7 @@ KDElem *cmv (KDElem * list1, KDElem* list2)
 */
 
 
-void errRaise(char *pkg, int code, const char *format)
+void errRaise(const char *pkg, int code, const char *format)
 {
 
   (void)fprintf(stderr,"%s: %s (%d)\n", pkg, format, code);
@@ -1502,7 +1502,7 @@ void pr_tree(KDElem *elem, int disc, int depth)
     for (i = 0;  i < depth;  i++)
       putchar(' ');
     
-    printf("%p: %.14f %.14f %.14f (", (long) elem->item, elem->lo_min_bound, elem->other_bound, elem->hi_max_bound);
+    printf("%ld: %.14f %.14f %.14f (", (long) elem->item, elem->lo_min_bound, elem->other_bound, elem->hi_max_bound);
     
     for (i = 0;  i < KD_BOX_MAX;  i++) {
 	if (i == disc) putchar('*');
@@ -1575,18 +1575,17 @@ void kd_tree_badness(KDTree *tree, double *fact1, double *fact2, double *fact3, 
 void kd_badness(KDTree *realTree)
 {
 	int lev;
-	double a1,a2,a3,a4,a5;
-	kd_tree_badness(realTree, &a1,&a2,&a3,&lev);
+	double a2,a3,a4,a5;
 
-        a4 = 100.00 * a3 / (double)realTree->item_count ;
+
+	a4 = 100.00 * a3 / (double)realTree->item_count ;
 	a5 = 100.00 * (double)realTree->dead_count / (double)realTree->item_count;
 	
 	fprintf(stdout,"balance ratio=%g (the closer to 1.0, the better), #of nodes with only one branch=%g (%g), max depth=%d, dead=%d (%g)\n",
 		        a2,a3,a4,lev, realTree->dead_count, a5);
 }
 
-void unload_items(KDTree*, KDElem **, kd_box, long *, double *);
-void collect_nodes(KDTree*, KDElem *, KDElem **, kd_box, long *, double *);
+
 
 /* ************** kd_rebuild -- functions to rebuild a tree       ********************************** */
 /* Coded by Steve Murphy, Sept 1990                                                  */
@@ -1599,8 +1598,7 @@ KDTree* kd_rebuild(KDTree* newTree)
     KDElem *items =  (KDElem *)NULL;
     KDElem *spares = (KDElem *)NULL;
     kd_box extent;
-    
-    long count = 0;
+
     long item_count = 0;
     
     double mean=0.0;
@@ -1626,8 +1624,7 @@ KDTree* kd_rebuild(KDTree* newTree)
 	{
 		spares = items;
 	}
-	
-	count = 0;
+
 	
 	while( spares )
 	{
