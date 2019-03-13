@@ -409,6 +409,9 @@ void nco_crt_add_pnt(double **R, int *r, double *P)
     R[*r][1] = P[1];
     (*r)++;
 
+    if(DEBUG_CRT)
+      fprintf(stdout, "%s(): (%f, %f)\n", __FUNCTION__,P[0], P[1]);
+
   }
 
 }
