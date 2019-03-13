@@ -318,8 +318,9 @@ int *pl_nbr)
     nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
 
     /* use Charlie's formula
-    nco_poly_add_area(pl);
+    nco_poly_area_add(pl);
     */
+
     pl->area=area[idx];
 
     /* add centers
@@ -656,7 +657,7 @@ int *pl_cnt_vrl_ret){
 
     for (jdx = 0; jdx < cnt_vrl; jdx++) {
 
-      poly_sct *pl_vrl = (poly_sct *) NULL_CEWI;
+      poly_sct *pl_vrl = NULL_CEWI;
       poly_sct *pl_out = (poly_sct *) list[jdx].elem->item;;
 
       if (pl_lst_in[idx]->pl_typ != pl_out->pl_typ) {
@@ -764,7 +765,7 @@ int *pl_cnt_vrl_ret){
                        "%s: polygon %lu - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e\n",
                        nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area);
 
-        if (bDirtyRats && frc <0.9 ) {
+        if (bDirtyRats && cnt_vrl_on==0 ) {
         //if (pl_lst_in[idx]->bwrp ) {
           pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
           pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
