@@ -6145,8 +6145,8 @@ var_sct *polygon_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &w
     for(idx=0;idx<grid_size;idx++){
       bool brep=false
       ;
-      double pdlon=1e10d;
-      double pdlat=1e10d;
+      double pdlon=1e10;
+      double pdlat=1e10;
       double dlon;
       double dlat;
 
