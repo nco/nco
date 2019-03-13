@@ -21,11 +21,11 @@
 #define DSIGMA (1.0e-14)
 
 /* define minimium area in AreaSign (cross-product) */
-#define DAREA  1.0e-28d  
+#define DAREA  1.0e-28  
 
 #define VP_MAX    1000            /* Max # of pts in polygon */
 
-#define ARC_MIN_LENGTH (1.0e-20d)
+#define ARC_MIN_LENGTH (1.0e-20)
 
 
 /* if true then longitude 0-360 */
