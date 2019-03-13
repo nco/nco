@@ -111,7 +111,7 @@ int *pl_nbr)
   for(idx=0;idx<grd_sz; idx++)
   {
     /* check mask and area */
-    if( msk[idx]==0 || area[idx] == 0.0d)
+    if( msk[idx]==0 || area[idx] == 0.0)
       continue;
 
 
