@@ -203,8 +203,8 @@ nco_poly_init_crn_re  /* re malloc crn_nbr to a new size */
   if(new_crn_nbr> pl->crn_nbr)
     for(idx=pl->crn_nbr;idx<new_crn_nbr;idx++ )
     {
-      pl->dp_x[idx]=0.0d;
-      pl->dp_y[idx]=0.0d;
+      pl->dp_x[idx]=0.0;
+      pl->dp_y[idx]=0.0;
     }
 
 
