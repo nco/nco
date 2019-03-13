@@ -1481,7 +1481,7 @@ const char *att_val
 
   aed_mtd.att_nm=(char*)nco_free(aed_mtd.att_nm);
   aed_mtd.var_nm=(char*)nco_free(aed_mtd.var_nm);
-
+  av=(char*)nco_free(av);
   return iret;
 
 }
