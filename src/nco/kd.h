@@ -206,7 +206,7 @@ int kd_count (KDTree* tree);
 KDTree* kd_create(void);
 kd_status kd_delete(KDTree* , kd_generic , kd_box );
 void kd_delete_stats(int *tries,int *levs);
-void kd_destroy(KDTree *this_one, void (*delfunc)());
+void kd_destroy(KDTree *this_one, void (*delfunc)(kd_generic item));
 char *kd_err_string(void);
 int kd_finish (kd_gen);
 void kd_insert(KDTree* , kd_generic , kd_box, kd_generic );
