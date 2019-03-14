@@ -1581,6 +1581,39 @@ extern "C" {
     size_t sz; /* [nbr] Size (non-hyperslabbed) of dimension */
   } dmn_cmn_sct;
 
+
+  typedef enum {
+     poly_none=0,
+     poly_sph=1,
+     poly_crt=2
+  } poly_typ_enm;
+
+  typedef struct{
+    poly_typ_enm pl_typ;
+    int crn_nbr;           /* number of vertices */
+    double *dp_x;          /* x  vertices */
+    double *dp_y;          /* y vertices */
+    double dp_x_minmax[2]; /* x/lon minmax */
+    double dp_y_minmax[2]; /* y/lat minmax */
+    double dp_x_ctr;       /* x/lon center */
+    double dp_y_ctr;       /* x/lat center */
+    double area;
+    double **shp;    /* array of points size [crn_nbr][NBR] */
+    double wgt;      /* fraction of dst  area cell in overlap polygon */
+    double *dp_xyz;  /* maybe useful for 3D stuff */
+
+    nco_bool bwrp;   /* if true then whole polygon is wrapped - at Greenwich or Dateline */
+    int src_id;      /* used in map file as  "row" or "col" id of polygon   */
+    int dst_id;     /* used in map file - used only in overlap polygon */
+
+    int  stat;
+    int mem_flg; /* [flg]    */ 
+  } poly_sct;   
+
+
+
+
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* !__cplusplus */

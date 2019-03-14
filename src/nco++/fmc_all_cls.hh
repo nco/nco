@@ -318,6 +318,18 @@ public:
   var_sct *regular_fnd(bool &is_mtd, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker);
 };
 
+// polygon  Function family    /***************************************/
+class polygon_cls: public vtl_cls {
+private:
+    enum{ PKML, PKMLFILTER };
+    bool _flg_dbg;
+public:
+    polygon_cls(bool flg_dbg);
+    var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
+    bool chk_polygon_convex(double *dp_x,  double *dp_y, int grid_corners);
+    void get_minmax_polygon(double *dp_x, int grid_corners, double *x_min, double *xmax);
+
+};
 
 
 

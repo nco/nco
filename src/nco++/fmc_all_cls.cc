@@ -6039,6 +6039,267 @@ var_sct *udunits_cls::regular_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
  }
 
 
+//Polygon Function family /************************************************/
+polygon_cls::polygon_cls(bool){
+  //Populate only on first constructor call
+  if(fmc_vtr.empty()){
+    fmc_vtr.push_back( fmc_cls("print_kml",this,(int)PKML));
+    fmc_vtr.push_back( fmc_cls("print_kml_filter",this,(int)PKMLFILTER));
+
+  }
+}
+
+var_sct *polygon_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
+  const std::string fnc_nm("polygon_cls::fnd");
+  int fdx=fmc_obj.fdx();   //index
+  int nbr_args;
+
+
+  prs_cls* prs_arg=walker.prs_arg;
+
+  var_sct *var_ret=NULL_CEWI;
+  var_sct *var_lat=NULL_CEWI;
+  var_sct *var_lon=NULL_CEWI;
+  var_sct *var_filter=NULL_CEWI;
+
+  RefAST tr;
+  nc_type in_typ;
+  std::string susg;
+  std::string serr;
+  std::string sfnm =fmc_obj.fnm(); //method name
+  std::vector<RefAST> vtr_args;
+  NcapVector<dmn_sct*> dmn_vtr;
+
+
+  susg="ret_code="+sfnm+"(grid_corner_lat, grid_corner_lon)";
+
+  if(expr)
+    vtr_args.push_back(expr);
+
+  if((tr=fargs->getFirstChild())) {
+    do
+      vtr_args.push_back(tr);
+    while((tr=tr->getNextSibling()));
+  }
+
+  nbr_args=vtr_args.size();
+
+
+  if(nbr_args < 2)
+    err_prn(fnc_nm, "function must be called with at least 2 arguments\n"  + susg);
+
+  var_lat=walker.out(vtr_args[0]);
+  var_lon=walker.out(vtr_args[1]);
+
+  if(nbr_args>2)
+    var_filter=walker.out(vtr_args[2]);
+
+
+
+
+  if(prs_arg->ntl_scn) {
+    var_lat=nco_var_free(var_lat);
+    var_lon=nco_var_free(var_lon);
+
+    if(var_filter)
+      var_filter=nco_var_free(var_filter);
+
+
+    var_ret=ncap_sclr_var_mk(SCS("~dot_methods"),NC_INT,false);
+    return var_ret;
+  }
+
+
+  // print out kml
+  {
+    bool is_convex;  /* true if polygon is convex */
+    int idx;
+    int jdx;
+    int grid_corners;
+    int grid_size;
+
+    char *prn_str="%.14f,%.14f,0\n";
+
+
+    if( var_lat->nbr_dim != 2 || var_lon->nbr_dim !=2 || var_lat->type != NC_DOUBLE || var_lon->type != NC_DOUBLE )
+      err_prn(fnc_nm, "both input vars( "+  SCS(var_lat->nm)+","+ SCS(var_lon->nm) + ") must have 2 dims,  and be of type NC_DOUBLE\n");
+
+    grid_size=var_lat->dim[0]->cnt;
+    grid_corners=var_lat->dim[1]->cnt;
+
+    if( var_lon->dim[0]->cnt != grid_size || var_lon->dim[1]->cnt != grid_corners)
+      err_prn(fnc_nm, "var " + SCS(var_lon->nm) + " must be same shape as " + SCS(var_lat->nm) + ".\n");
+
+
+    (void)cast_void_nctype(NC_DOUBLE,&var_lon->val);
+    (void)cast_void_nctype(NC_DOUBLE,&var_lat->val);
+
+    if(var_filter)
+      (void)cast_void_nctype(NC_DOUBLE,&var_filter->val);
+
+
+    (void)fprintf(stdout, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+    (void)fprintf(stdout, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
+
+    (void)fprintf(stdout,"\n<Document>\n");
+    for(idx=0;idx<grid_size;idx++){
+      bool brep=false
+      ;
+      double pdlon=1e10;
+      double pdlat=1e10;
+      double dlon;
+      double dlat;
+
+
+
+
+      is_convex=chk_polygon_convex( &var_lon->val.dp[ idx*grid_corners ], &var_lat->val.dp[ idx*grid_corners ], grid_corners );
+
+
+      // filter grids by x width (longitude)
+      if( fdx== PKMLFILTER)
+
+      {
+        double minmax[2];
+
+        /* longitude */
+        (void)get_minmax_polygon( &var_lon->val.dp[ idx*grid_corners ], grid_corners, &minmax[0], &minmax[1] );
+
+        if(minmax[1]-minmax[0] > var_filter->val.dp[0] )
+          continue;
+
+
+        (void)get_minmax_polygon( &var_lat->val.dp[ idx*grid_corners ], grid_corners,  &minmax[0], &minmax[1] );
+        if(minmax[1]-minmax[0] > var_filter->val.dp[0] )
+          continue;
+
+
+      }
+
+
+      if(!is_convex)
+      {
+        fprintf(stderr, "WARNING: polygon %d not convex\n",idx );
+        /* we can identify Concave polygon because  Polygon TAG is on its own line  */
+        (void)fprintf(stdout, "<Placemark>\n<Polygon>\n<outerBoundaryIs> <LinearRing>\n<coordinates>\n");
+      }
+      else
+        (void)fprintf(stdout, "<Placemark>\n<Polygon><outerBoundaryIs> <LinearRing>\n<coordinates>\n");
+
+      for(jdx=0;jdx<grid_corners;jdx++){
+        /// assume input range 0-360.0
+        // KML google world -180.0 /  180.0
+        // check repeat of final values
+
+        dlon=var_lon->val.dp[ idx*grid_corners+jdx ] ;
+        dlat=var_lat->val.dp[ idx*grid_corners+jdx ];
+
+        (void)fprintf(stdout,prn_str, dlon, dlat);
+        /*
+        if( pdlon != dlon &&  pdlat != dlat ){
+           (void)fprintf(stdout,prn_str, dlon, dlat);
+           pdlon=dlon; pdlat=dlat;
+        }
+            */
+      }
+
+      // output first point again KML demand this ? (only output if not alreaady repeated
+      (void)fprintf(stdout, prn_str, var_lon->val.dp[ idx*grid_corners] ,var_lat->val.dp[ idx*grid_corners]);
+      (void)fprintf(stdout, "</coordinates>\n</LinearRing></outerBoundaryIs></Polygon>\n</Placemark>\n");
+
+    }
+    (void)fprintf(stdout,"</Document>\n</kml>");
+
+
+
+    (void)cast_nctype_void(NC_DOUBLE,&var_lon->val);
+    (void)cast_nctype_void(NC_DOUBLE,&var_lat->val);
+    if(var_filter)
+      (void)cast_nctype_void(NC_DOUBLE,&var_filter->val);
+
+
+
+
+
+  }
+  var_lat=nco_var_free(var_lat);
+  var_lon=nco_var_free(var_lon);
+
+  if(var_filter)
+    var_filter=nco_var_free(var_filter);
+
+  var_ret=ncap_sclr_var_mk(SCS("~dot_methods"),1);
+
+  return var_ret;
+
+}
+
+bool polygon_cls::chk_polygon_convex(double *dp_x,  double *dp_y, int grid_corners){
+
+  bool sign;
+  bool sign_init;
+
+  int idx;
+  int idx1;
+  int idx2;
+  int srt;
+  int sz=grid_corners;
+
+  double area;
+
+
+  sign_init=false;
+
+  for(idx=0;idx<sz;idx++)
+  {
+    idx1=(idx+1)%sz;
+    idx2=(idx+2)%sz;
+    area= ( dp_x[idx1] -dp_x[idx] )  *  (dp_y[idx2] -dp_y[idx1] )  -  (dp_x[idx2] - dp_x[idx1]) * (dp_y[idx1] -dp_y[idx]) ;
+
+    /* skip contiguous identical vertex */
+    if(area==0.0)
+      continue;
+
+
+    if(!sign_init)
+    {
+      sign=(area>0.0);
+      sign_init=true;
+    }
+
+    if(sign != (area>0.0))
+      return false;
+
+
+  }
+  return true;
+
+}
+
+
+void polygon_cls::get_minmax_polygon(double *dp, int grid_corners, double *xmin, double *xmax)
+{
+  int idx;
+
+  *xmin=1.0e30;
+  *xmax=-1.0e30;
+
+  for(idx=0;idx<grid_corners;idx++)
+  {
+    if(dp[idx]< *xmin )
+      *xmin=dp[idx];
+
+    if(dp[idx]>  *xmax )
+      *xmax=dp[idx];
+
+
+
+  }
+
+  return;
+
+}
+
 
 
 

@@ -601,7 +601,8 @@ main(int argc,char **argv)
   print_cls print_obj(true);
   // string list functions
   bnds_cls bnds_obj(true);
-
+  // polygon print functions
+  polygon_cls poly_obj(true);
 
   // Populate vector
   (void)pop_fmc_vtr(fmc_vtr,&cnv_obj);
@@ -624,6 +625,8 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&vlist_obj);
   (void)pop_fmc_vtr(fmc_vtr,&print_obj);
   (void)pop_fmc_vtr(fmc_vtr,&bnds_obj);
+  (void)pop_fmc_vtr(fmc_vtr,&poly_obj);
+
   
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H

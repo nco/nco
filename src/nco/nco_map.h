@@ -30,6 +30,8 @@
 #include "nco_rgr.h" /* Regridding */
 #include "nco_sld.h" /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
+#include "nco_ply_lst.h"  /* polygon list functions */
+#include "nco_ply.h"     /* polygon functions */
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,6 +69,52 @@ extern "C" {
    int **row_dst_adr_ptr, /* O [idx] Destination address (row) */
    double **wgt_raw_ptr, /* O [frc] Remapping weights */ 
    size_t *lnk_nbr_ptr); /* O [nbr] Number of links */
+   
+   poly_sct *           /* return a ply_sct with lat/lon minmax and total area */
+   nco_msh_stats
+   (double *area,       /* I [sr] Area of  grid */
+    int *msk,           /* I [flg] Mask on  grid */
+    double *lat_ctr,    /* I [dgr] Latitude  centers of  grid */
+    double *lon_ctr,    /* I [dgr] Longitude centers of  grid */
+    double *lat_crn,    /* I [dgr] Latitude  corners of  grid */
+    double *lon_crn,    /* I [dgr] Longitude corners of  grid */
+    size_t grd_sz,      /* I [nbr] Number of elements in single layer of  grid */
+    long grd_crn_nbr); /* I [nbr] Maximum number of corners in  gridcell */
+
+
+    void
+    nco_msh_lon_crr(
+    double *lon_crn,      /* I/O longitude to be corrected */
+    size_t grd_sz_in,     /* I [nbr] Number of elements in single layer of source grid */
+    long grd_crn_nbr_in,  /* I [nbr] Maximum number of corners in source gridcell */
+    nco_grd_lon_typ_enm typ_in,
+    nco_grd_lon_typ_enm typ_out);
+
+
+    void
+    nco_msh_poly_lst_wrt
+    (const char *fl_out,
+     poly_sct ** pl_lst,
+     int pl_nbr,
+     nco_grd_lon_typ_enm grd_lon_typ
+    );
+
+    int
+    nco_msh_att_char(
+    int out_id,
+    int var_id,
+    const char *var_nm,
+    const char *att_nm,
+    const char *att_val
+    );
+
+
+
+
+
+   
+   
+   
   
 #ifdef __cplusplus
 } /* end extern "C" */
