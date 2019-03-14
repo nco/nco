@@ -505,7 +505,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest sysadmin-compiled module usage:  # fxm
 # Personal recipe last modified: 20180823
 # Problem is that .bashrc resets PATH so cannot find icc/gcc ...
-# Personal recipe last used successfully: 20180823 (Traditional build only)
+# Personal recipe last used successfully: 20190313 (Traditional build only, no ncap2)
 # module unload python
 # module use /projects/ClimateEnergy_2/software/modulefiles/all
 # module load e3sm-unified/1.1.2
