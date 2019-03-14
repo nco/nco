@@ -117,7 +117,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    soft add @openmpi-gcc
 	    export PATH='/home/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
-	cooley* )
+	cooley* | cc[0123456789][0123456789][0123456789] )
 	    # 20160421: Split cooley from mira binary locations to allow for different system libraries
 	    # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
 	    soft add +mvapich2 

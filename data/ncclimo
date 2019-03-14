@@ -108,7 +108,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
 	    soft add @openmpi-gcc
 	    export PATH='/home/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
-	cooley* )
+	cooley* | cc[0123456789][0123456789][0123456789] )
 	    # 20160421: Split cooley from mira binary locations to allow for different system libraries
 	    # http://www.mcs.anl.gov/hs/software/systems/softenv/softenv-intro.html
 	    soft add +mvapich2 
@@ -291,7 +291,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
 #   Blues:  qsub -I -A ACME -q acme -l nodes=12 -l walltime=00:30:00 -N ncclimo
 #   Cheyenne: qsub -I -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
-#   Cooley: qsub -I -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname=ncclimo
+#   Cooley: qsub -I -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A acme --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit, Edison too
 #   Hopper: qsub -I -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q debug -N ncclimo # deprecated, old Edison
 #   Rhea:   qsub -I -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
@@ -313,7 +313,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
-#   Cooley b): qsub -A HiRes_EarthSys --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
+#   Cooley b): qsub -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
 #   Cori b): sbatch -A acme -C haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Edison b): sbatch -A acme --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Hopper b): qsub -A acme -V -l mppwidth=288 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs

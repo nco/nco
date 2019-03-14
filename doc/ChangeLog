@@ -1,5 +1,7 @@
 2019-03-13  Charlie Zender  <zender@uci.edu>
 
+	* Use correct home bin/lib path when on cooley compute nodes
+
 	* ncclimo fine-grain parallelism in monthly loop of regular monthly climos
 
 	* Deprecate ACME from ncclimo/ncremap
