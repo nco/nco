@@ -1,5 +1,7 @@
 2019-03-14  Charlie Zender  <zender@uci.edu>
 
+	* Diagnose and explain when ERWG is found yet cannot run due to, e.g., dynamic linking errors
+
 	* NCO 4.8.0-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha04: Sand';git push
 	git tag -a 4.8.0-alpha04 -m 'ncclimo --job_nbr, cooley, Henry regridding';git push --tags
