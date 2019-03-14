@@ -1,3 +1,9 @@
+2019-03-14  Charlie Zender  <zender@uci.edu>
+
+	* Clean-up compiler warnings
+
+	* Merge Henry's regridding code
+
 2019-03-13  Charlie Zender  <zender@uci.edu>
 
 	* Use correct home bin/lib path when on cooley compute nodes

@@ -53,8 +53,7 @@ void nco_sph_prn(double **sR, int r, int istyle)
 /* spherical functions */
 int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 {
-
-
+  const char fnc_nm[]="nco_sph_intersect()";
 
    nco_bool qpFace = False;
    nco_bool pqFace = False;
@@ -94,7 +93,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
    m=Q->crn_nbr;
 
    if(DEBUG_SPH)
-      fprintf(stdout, "%s: just entered %s()\n", nco_prg_nm_get(), __FUNCTION__ );
+      fprintf(stdout, "%s: just entered %s\n", nco_prg_nm_get(), fnc_nm);
 
 
    do{
@@ -271,7 +270,9 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
 char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q)
 {
-   int flg_sx=0;
+  const char fnc_nm[]="nco_shp_seg_int()";
+
+  int flg_sx=0;
 
    double nx1;
    double nx2;
@@ -308,7 +309,7 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
    if(DEBUG_SPH) {
       nco_sph_prn_pnt("nco_sph_seg_int(): intersection", Icross, 3, True);
-      printf("%s(): ||Pcross||=%.20g ||Qcross||=%.20g ||Icross||=%.20g arc=%.20g\n",__FUNCTION__,  nx1, nx2, nx3, darc);
+      printf("%s: ||Pcross||=%.20g ||Qcross||=%.20g ||Icross||=%.20g arc=%.20g\n",fnc_nm,  nx1, nx2, nx3, darc);
    }
 
    /* Icross is zero, should really have a range rather than an explicit zero */
@@ -407,6 +408,7 @@ double  nco_sph_dot(double *a, double *b)
 
 double  nco_sph_cross(double *a, double *b, double *c)
 {
+  const char fnc_nm[]="nco_sph_cross()";
    //
    double n1;
 
@@ -425,7 +427,7 @@ double  nco_sph_cross(double *a, double *b, double *c)
    }
 
    if(0 && DEBUG_SPH)
-      printf("%s(): n1=%f (%f, %f %f)\n",__FUNCTION__, n1, c[0],c[1], c[2]);
+      printf("%s: n1=%f (%f, %f %f)\n",fnc_nm, n1, c[0],c[1], c[2]);
 
    return n1;
 
@@ -532,6 +534,7 @@ void nco_sph_add_pnt(double **R, int *r, double *P)
 
 nco_bool nco_sph_between(double a, double b, double x)
 {
+  const char fnc_nm[]="nco_sph_between()";
 
 
    nco_bool bret=False;
@@ -576,7 +579,7 @@ nco_bool nco_sph_between(double a, double b, double x)
 
 
   if(DEBUG_SPH)
-    printf("%s(): a=%.20f, b=%.20f, x=%.20f %s \n",__PRETTY_FUNCTION__, a, b, x, (bret==True ? "True":"False"));
+    printf("%s: a=%.20f, b=%.20f, x=%.20f %s \n",fnc_nm, a, b, x, (bret==True ? "True":"False"));
 
    return bret;
 
@@ -590,6 +593,7 @@ nco_bool nco_sph_between(double a, double b, double x)
 /* use crt coords to check bounds */
 nco_bool nco_sph_lonlat_between(double *a, double *b, double *x)
 {
+  const char fnc_nm[]="nco_sph_lonlat_between()";
 
    /* working in radians here */
    nco_bool bDeg=False;
@@ -613,7 +617,7 @@ nco_bool nco_sph_lonlat_between(double *a, double *b, double *x)
       bRet=False;
 
   if(DEBUG_SPH)
-    printf("%s(): lat_min=%.20f lat_max=%.20f lat=%.20f %s\n",__FUNCTION__, lat_min, lat_max, x[4],
+    printf("%s: lat_min=%.20f lat_max=%.20f lat=%.20f %s\n",fnc_nm, lat_min, lat_max, x[4],
            (bRet ? "True" : "False") );
 
 
@@ -760,6 +764,7 @@ void nco_sph_prn_pnt(const char *sMsg, double *p, int style, nco_bool bRet)
 
 nco_bool nco_sph_is_convex(double **sP, int np)
 {
+  const char fnc_nm[]="nco_sph_is_convex()";
 
 
 nco_bool flg_sx=0;
@@ -804,7 +809,7 @@ for(idx=0; idx<np;idx++)
   theta=acos(dp);
 
   if(DEBUG_SPH)
-    printf("%s():, %d angle=%f n1=%.15g n2=%.15g\n", __FUNCTION__, idx, theta*180.0/M_PI, n1, n2);
+    printf("%s():, %d angle=%f n1=%.15g n2=%.15g\n", fnc_nm, idx, theta*180.0/M_PI, n1, n2);
 
 
   //if( fabs(theta - M_PI) >SIGMA_RAD )

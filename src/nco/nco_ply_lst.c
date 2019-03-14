@@ -81,12 +81,11 @@ nco_grd_lon_typ_enm grd_lon_typ, /* I [num] if not nil then split cells that str
 poly_typ_enm pl_typ,
 int *pl_nbr)
 {
+  const char fnc_nm[]="nco_poly_lst_mk()";
 
   int idx=0;
   int idx_cnt=0;
   int cnt_wrp_good=0;
-
-  const char *fnc_nm="nco_poly_lst_mk()";
 
   nco_bool bwrp;
 
@@ -138,7 +137,7 @@ int *pl_nbr)
              &&  lon_ctr[idx] >= pl->dp_x_minmax[0] && lon_ctr[idx] <= pl->dp_x_minmax[1] ))
 
     {
-      (void)fprintf(stdout, "/***%s:%s(): invalid polygon to follow *******?", nco_prg_nm_get(), __FUNCTION__);
+      (void)fprintf(stdout, "/***%s: %s: invalid polygon to follow *******?", nco_prg_nm_get(), fnc_nm);
       nco_poly_prn(pl, 0);
       pl=nco_poly_free(pl);
       continue;
@@ -223,7 +222,7 @@ int *pl_nbr)
   }
 
   if(nco_dbg_lvl_get() >=  nco_dbg_std )
-    (void)fprintf(stdout, "%s:%s: size input list(%lu), size output list(%d), num of split polygons(%d)\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, cnt_wrp_good);
+    (void)fprintf(stdout, "%s: %s size input list(%lu), size output list(%d), num of split polygons(%d)\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, cnt_wrp_good);
 
   pl_lst=(poly_sct**)nco_realloc( pl_lst, (size_t)idx_cnt * sizeof (poly_sct*) );
 
@@ -253,7 +252,7 @@ int *pl_nbr)
   int idx_cnt=0;
   int wrp_cnt=0;
 
-  const char *fnc_nm="nco_poly_lst_mk()";
+  const char fnc_nm[]="nco_poly_lst_mk()";
 
   nco_bool bwrp;
   double tot_area=0.0;
@@ -342,7 +341,7 @@ int *pl_nbr)
   }
 
   if(nco_dbg_lvl_get() >=  nco_dbg_dev )
-    (void)fprintf(stdout, "%s:%s: size input list(%lu), size output list(%d)  total area=%.15e  num of wrapped=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt);
+    (void)fprintf(stdout, "%s: %s size input list(%lu), size output list(%d)  total area=%.15e  num of wrapped=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt);
 
   pl_lst=(poly_sct**)nco_realloc( pl_lst, (size_t)idx_cnt * sizeof (poly_sct*) );
 
@@ -418,7 +417,7 @@ int *pl_cnt_vrl_ret){
   int pl_cnt_vrl=0;
 
 
-  char fnc_nm[]="nco_poly_mk_vrl()";
+  const char fnc_nm[]="nco_poly_mk_vrl()";
 
   /* buffers  used in nco-poly_re_org() */
   double lcl_dp_x[VP_MAX]={0};
@@ -519,7 +518,7 @@ int *pl_cnt_vrl_ret){
 
         if(nco_poly_is_convex(pl_vrl) == False )
         {
-          fprintf(stdout,"%s:%s vrl polygon convex=0  vrl ,in convex=%d ,out convex=%d\n", nco_prg_nm_get(), fnc_nm, nco_poly_is_convex(pl_lst_in[idx]), nco_poly_is_convex(pl_out) );
+          fprintf(stdout,"%s: %s vrl polygon convex=0  vrl ,in convex=%d ,out convex=%d\n", nco_prg_nm_get(), fnc_nm, nco_poly_is_convex(pl_lst_in[idx]), nco_poly_is_convex(pl_out) );
           nco_poly_prn(pl_vrl, 2);
           nco_poly_prn(pl_lst_in[idx], 2);
           nco_poly_prn(pl_out, 2);
@@ -661,7 +660,7 @@ int *pl_cnt_vrl_ret){
       poly_sct *pl_out = (poly_sct *) list[jdx].elem->item;;
 
       if (pl_lst_in[idx]->pl_typ != pl_out->pl_typ) {
-        fprintf(stderr, "%s:%s(): poly type mismatch\n", nco_prg_nm_get(), fnc_nm);
+        fprintf(stderr, "%s: %s poly type mismatch\n", nco_prg_nm_get(), fnc_nm);
         continue;
       }
 

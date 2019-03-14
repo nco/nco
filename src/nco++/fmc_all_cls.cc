@@ -6118,7 +6118,7 @@ var_sct *polygon_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &w
     int grid_corners;
     int grid_size;
 
-    char *prn_str="%.14f,%.14f,0\n";
+    const char prn_str[]="%.14f,%.14f,0\n";
 
 
     if( var_lat->nbr_dim != 2 || var_lon->nbr_dim !=2 || var_lat->type != NC_DOUBLE || var_lon->type != NC_DOUBLE )

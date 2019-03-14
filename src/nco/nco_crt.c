@@ -399,7 +399,7 @@ nco_bool nco_crt_between(double *a, double *b, double *c)
 
 void nco_crt_add_pnt(double **R, int *r, double *P)
 {
-
+  const char fnc_nm[]="nco_crt_add_pnt()";
 
   /* only add  point if its distance from  from previous point is more than DSIGMA */
   if ( *r == 0  ||  (  pow( (R[*r-1][0] - P[0]),2.0 )  + pow( (R[*r-1][1] - P[1]),2.0) > DAREA  ) )
@@ -410,7 +410,7 @@ void nco_crt_add_pnt(double **R, int *r, double *P)
     (*r)++;
 
     if(DEBUG_CRT)
-      fprintf(stdout, "%s(): (%f, %f)\n", __FUNCTION__,P[0], P[1]);
+      fprintf(stdout, "%s: (%f, %f)\n", fnc_nm,P[0], P[1]);
 
   }
 

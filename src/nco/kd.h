@@ -57,7 +57,9 @@
 #define PATH_INIT	50
 #define PATH_INCR	10
 
-#define DBL_MAX         (1.79769313486232e+30) 
+#ifndef DBL_MAX
+# define DBL_MAX         (1.79769313486232e+30) 
+#endif
 
 
 /* The minmax kd_box limits of a wrapped polgon are split in two and both are inserted into the kd tree

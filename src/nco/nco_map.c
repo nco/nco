@@ -1153,6 +1153,7 @@ long grd_crn_nbr,  /* I [nbr] Maximum number of corners in source gridcell */
 nco_grd_lon_typ_enm typ_in,
 nco_grd_lon_typ_enm typ_out)
 {
+  const char fnc_nm[]="nco_msh_lon_crr()";
 
   int idx;
   int sz;
@@ -1177,12 +1178,12 @@ nco_grd_lon_typ_enm typ_out)
 
   /* check type out */
   if(typ_out == nco_grd_lon_bb || typ_out == nco_grd_lon_unk ) {
-    (void) fprintf(stderr, "%s(): INFO %s function reports cannot convert grd_lon to \"%s\"\n", nco_prg_nm_get(), __FUNCTION__, typ_out_sng );
+    (void) fprintf(stderr, "%s(): INFO %s function reports cannot convert grd_lon to \"%s\"\n", nco_prg_nm_get(), fnc_nm, typ_out_sng );
     exit(EXIT_FAILURE);
   }
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr)
-    (void)fprintf(stderr,"%s: INFO %s converting lon coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),__FUNCTION__, typ_in_sng, typ_out_sng );
+    (void)fprintf(stderr,"%s: INFO %s converting lon coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),fnc_nm, typ_in_sng, typ_out_sng );
 
 
 
