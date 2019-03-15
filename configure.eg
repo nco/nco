@@ -395,7 +395,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket: alcf-support #367012 on 20180413
 # Latest sysadmin-compiled module usage: soft add +nco-4.6.8, soft add +netcdf-4.4.1.1
 # Personal recipe last modified: 20170825
-# Personal recipe last used successfully: 20180921
+# Personal recipe last used successfully: 20190315
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 cd ~/nco;git reset --hard origin/master

@@ -858,7 +858,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(nco_rgr_mpf_typ != nco_rgr_mpf_Tempest){
       rcd+=nco_inq_dimid_flg(in_id,"num_wgts",&num_wgts_id);
       if(rcd != NC_NOERR){
-	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports ESMF map-file does not contain \"num_wgts\" dimension. ERWG always produces this as an orphan dimension, so post-processing could have removed it without harming other map-file fields. No harm, no foul.\n",nco_prg_nm_get(),fnc_nm);
+	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO %s reports map-file does not contain \"num_wgts\" dimension. ERWG always produces this as an orphan dimension, so post-processing could have removed it without harming other map-file fields. No harm, no foul.\n",nco_prg_nm_get(),fnc_nm);
 	rcd=NC_NOERR;
       } /* !rcd */
     } /* !nco_rgr_mpf_Tempest */
@@ -1028,15 +1028,21 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
   /* Obtain fields whose presence depends on mapfile type */
   nco_bool flg_msk_out=rgr->flg_msk_out; /* [flg] Add mask to output */
+  msk_dst_id=NC_MIN_INT;
   if(flg_msk_out){
     if(nco_rgr_mpf_typ == nco_rgr_mpf_ESMF || nco_rgr_mpf_typ == nco_rgr_mpf_NCO){
       rcd+=nco_inq_varid(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
+    }else if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
+      /* 20190315: TempestRemap did not propagate mask_b (or mask_a) until ~201902 */
+      rcd+=nco_inq_varid_flg(in_id,"mask_b",&msk_dst_id);
+      if(rcd == NC_ENOTVAR){
+	(void)fprintf(stderr,"%s: INFO %s reports TempestRemap map-file lacks mask_b. Probably this map was created before ~201902 when TR began to propagate mask_a/b variables. Continuing anyway without masks.\n",nco_prg_nm_get(),fnc_nm);
+      } /* !rcd */
+      rcd=NC_NOERR;
     }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
       rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
-    }else{ /* !SCRIP */
-      msk_dst_id=NC_MIN_INT;
-      flg_msk_out=False;
-    } /* !Tempest */
+    } /* !nco_rgr_mpf_typ */
+    if(msk_dst_id == NC_MIN_INT) flg_msk_out=False;
   } /* !flg_msk_out */
   /* Obtain fields whose names are independent of mapfile type */
   rcd+=nco_inq_varid(in_id,"src_grid_dims",&dmn_sz_in_int_id);
