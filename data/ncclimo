@@ -1467,6 +1467,27 @@ if [ "${mpi_flg}" = 'Yes' ]; then
     fi # !thr_usr
 fi # !mpi
 
+if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
+    # For regular monthly climos, override default job_nbr (2) with months-per-year
+    # If user does not explicitly set job number then, for monthly climos, base it on parallelism type
+    if [ -z "${job_usr}" ]; then 
+	if [ "${par_typ}" = 'bck' ]; then 
+	    # Background mode will run one batch with all twelve months
+	    job_nbr=12
+	elif [ "${par_typ}" = 'mpi' ]; then 
+	    # MPI mode will round-robin all twelve months to all available nodes
+	    job_nbr=12
+	elif [ "${par_typ}" = 'nil' ] || [ -z "${par_typ}" ]; then 
+	    # Serial mode equates to job_nbr=1, full serial
+	    job_nbr=1
+	fi # !job_usr
+    fi # !job_usr
+    if [ "${par_typ}" = 'mpi' ] && [ -n "${job_usr}" ]; then
+	# This needs more thought so reset to default old way
+	job_nbr=12
+    fi # !mpi && job_usr
+fi # !clm_md !bnr_flg
+
 # Print initial state
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: bnr_flg  = ${bnr_flg}\n"
@@ -1571,7 +1592,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     if [ ${var_nbr} -gt 1 ]; then
 	printf "Timeseries will be created for each of ${var_nbr} variables\n"
 	if [ "${par_typ}" = 'bck' ]; then
-	    printf "Background parallelism processing variables in batches of job_nbr = ${job_nbr} variables simultaneously\n"
+	    printf "Background parallelism processing variables in var_nbr/job_nbr = ${var_nbr}/${job_nbr} = $((var_nbr / job_nbr)) batches of job_nbr = ${job_nbr} variables simultaneously\n"
 	elif [ "${par_typ}" = 'mpi' ]; then
 	    printf "MPI parallelism dividing processing of ${var_nbr} variables onto nd_nbr = ${nd_nbr} nodes simultaneously\n"
 	fi # !par_typ
@@ -1611,6 +1632,13 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     fi # !rgr
 fi # !sbs_flg
 if [ "${clm_flg}" = 'Yes' ]; then
+    if [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
+	if [ "${par_typ}" = 'bck' ]; then
+	    printf "Background parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) batches of job_nbr = ${job_nbr} months simultaneously\n"
+	elif [ "${par_typ}" = 'mpi' ]; then
+	    printf "MPI parallelism distributing monthly and then seasonal climos to ${nd_nbr} nodes simultaneously, and load-balancing with unused nodes, if any\n"
+	fi # !par_typ
+    fi # !clm_md
     if [ "${xtn_flg}" = 'No' ]; then
 	printf "Producing standard climatology from raw input files in directory ${drc_in}\n"
 	printf "Output files to directory ${drc_out}\n"
@@ -2301,25 +2329,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     printf "Generating climatology...\n"
     [[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
 
-    # For regular monthly climos, override default job_nbr (2) with months-per-year
-    # If user does not explicitly set job number then, for monthly climos, base it on parallelism type
-    if [ -z "${job_usr}" ]; then 
-	if [ "${par_typ}" = 'bck' ]; then 
-	    # Background mode will run one batch with all twelve months
-	    job_nbr=12
-	elif [ "${par_typ}" = 'mpi' ]; then 
-	    # MPI mode will round-robin all twelve months to all available nodes
-	    job_nbr=12
-	elif [ "${par_typ}" = 'nil' ] || [ -z "${par_typ}" ]; then 
-	    # Serial mode equates to job_nbr=1, full serial
-	    job_nbr=1
-	fi # !job_usr
-    fi # !job_usr
-    if [ "${par_typ}" = 'mpi' ] && [ -n "${job_usr}" ]; then
-	# This needs more thought so reset to default old way
-	job_nbr=12
-    fi # !mpi && job_usr
-
     if [ ${job_nbr} -eq 1 ] || [ ${job_nbr} -eq 2 ] || [ ${job_nbr} -eq 3 ] || [ ${job_nbr} -eq 4 ] || [ ${job_nbr} -eq 6 ] || [ ${job_nbr} -eq 12 ]; then
 	echo "Successful match of job_nbr to list of permissible values" > /dev/null
     else
@@ -2384,7 +2393,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    let nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
 	    if [ ${nd_idx} -lt ${csn_nbr} ]; then
 		let nd_idx=${nd_idx}+${csn_nbr}
-		# 20190315: Not necessary to modulo final result by nd_nbr to handle, e.g., csn_nbr > nd_nbr
+		# 20190315: Not necessary to modulo final result by nd_nbr to handle csn_nbr > nd_nbr
 		# because (1-based) cmd_mpi array is always at least 13 elements long and each element is
 		# already round-robin'ed onto existing nodes
 	    fi # !nd

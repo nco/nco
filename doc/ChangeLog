@@ -1,5 +1,7 @@
 2019-03-15  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo/ncremap print details of parallelism strategy in header
+
 	* Re-learn and document in code ncclimo and ncremap node-allocation rules
 
 	* ncremap fix cmd_mpi assignment on cooley
