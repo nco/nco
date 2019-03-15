@@ -1542,6 +1542,13 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    exit 1
 	fi # !nd_nbr
 	for ((fl_idx=0;fl_idx<fl_nbr;fl_idx++)); do
+	    # NB: ncclimo and ncremap employ different node-allocation algorithms:
+	    # ncclimo (monthly climatology mode) assigns monthly regridding and seasonal climos to different nodes (i.e., load-balances), and likewise for seasonal-regridding and annual climo
+	    # ncclimo (splitter mode) uses simple round robin based on position in variable list
+	    # ncremap uses simple round-robin allocation based on position in input file list
+	    # Only ncclimo monthly climatology-mode uses 1-based cmd_mpi array
+	    # ncclimo splitter-mode, and daily and annual climatology-mode, and ncremap all use 0-based cmd_mpi array
+	    # Copy host-specific mpirun syntax but not node-allocation algorithms between ncclimo and ncremap
 	    case "${HOSTNAME}" in 
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 		*cheyenne* )
@@ -1551,8 +1558,8 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # mpirun from SGI MPT does not accept '-H nd_nm', unlike regular PBS
 		    # PBSPro considers ncclimo a 'non-MPT application' so must set MPI_SHEPHERD=true
 		    export MPI_SHEPHERD=true
-#		    cmd_mpi[${mpi_idx}]="mpiexec_mpt dplace ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
-		    cmd_mpi[${mpi_idx}]="mpirun ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
+#		    cmd_mpi[${fl_idx}]="mpiexec_mpt dplace ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
+		    cmd_mpi[${fl_idx}]="mpirun ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		constance* | cori* | edison* | nid* | node* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori* or edison*
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
@@ -1563,7 +1570,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    cmd_mpi[${fl_idx}]="aprun -L ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # NERSC
 		cooley* | cc[0123456789][0123456789][0123456789] | mira* ) 
 		    # 20190310: Cooley mpirun now uses -hosts instead of -H for hostname option
-		    cmd_mpi[${mpi_idx}]="mpirun -hosts ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # ALCF
+		    cmd_mpi[${fl_idx}]="mpirun -hosts ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # ALCF
 		theta* )
 		    # NB: ALCF Theta (not cooley or mira) uses aprun:
 		    # https://www.alcf.anl.gov/user-guides/example-program-and-makefile-xc40

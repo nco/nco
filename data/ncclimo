@@ -1408,6 +1408,13 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		let mpi_idx=${mpi_idx_zro}+1
 	    fi # !sbs_flg
 	    case "${HOSTNAME}" in 
+		# NB: ncclimo and ncremap employ different node-allocation algorithms:
+		# ncclimo (monthly climatology mode) assigns monthly regridding and seasonal climos to different nodes (i.e., load-balances), and likewise for seasonal-regridding and annual climo
+		# ncclimo (splitter mode) uses simple round robin based on position in variable list
+		# ncremap uses simple round-robin allocation based on position in input file list
+		# Only ncclimo monthly climatology-mode uses 1-based cmd_mpi array
+		# ncclimo splitter-mode, and daily and annual climatology-mode, and ncremap all use 0-based cmd_mpi array
+		# Copy host-specific mpirun syntax but not node-allocation algorithms between ncclimo and ncremap
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
 		*cheyenne* )
 		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as cheyenne?
@@ -2377,7 +2384,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    let nd_idx=$(((clm_idx-1+csn_nbr) % nd_nbr))
 	    if [ ${nd_idx} -lt ${csn_nbr} ]; then
 		let nd_idx=${nd_idx}+${csn_nbr}
+		# 20190315: Not necessary to modulo final result by nd_nbr to handle, e.g., csn_nbr > nd_nbr
+		# because (1-based) cmd_mpi array is always at least 13 elements long and each element is
+		# already round-robin'ed onto existing nodes
 	    fi # !nd
+	    # printf "dbg: clm_idx = ${clm_idx}, nd_idx = ${nd_idx}, csn_nbr = ${csn_nbr}, nd_nbr = ${nd_nbr}\n"
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"

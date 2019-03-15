@@ -1,3 +1,9 @@
+2019-03-15  Charlie Zender  <zender@uci.edu>
+
+	* Re-learn and document in code ncclimo and ncremap node-allocation rules
+
+	* ncremap fix cmd_mpi assignment on cooley
+
 2019-03-14  Charlie Zender  <zender@uci.edu>
 
 	* Diagnose and explain when ERWG is found yet cannot run due to, e.g., dynamic linking errors
