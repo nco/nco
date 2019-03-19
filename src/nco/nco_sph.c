@@ -138,7 +138,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
 
       /* Xcross product near zero !! so make it zero*/
-      if(0 && nx3< 1.0e-10)
+      if(nx3< 1.0e-10)
       {
          ip1qLHS=0;
          ipqLHS=0;
@@ -957,7 +957,8 @@ double nco_geo_lat_correct(double lat1, double lon1, double lon2)
 
    //lat1=lat1*M_PI / 180.0;
 
-   dp= tan(lat1) / cos ( lon2-lon1 ) ;
+   /* exact constant is  is 2.0 but lets be a bit generous */
+   dp= tan(lat1) / cos ( fabs(lon2-lon1) / 2.0 ) ;
 
    dp=atan(dp);
 
@@ -975,16 +976,24 @@ void nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2,
                              nco_bool bDeg)
 {
 
+  double dswp;
 
    if( lat2 >lat1 )
    {
-      double dswp;
-
       dswp=lat1;
       lat1=lat2;
       lat2=dswp;
+   }
+
+   if(lon1>lon2)
+   {
+
+     dswp=lon1;
+     lon1=lon2;
+     lon2=dswp;
 
    }
+
 
    if(bDeg)
    {
@@ -994,10 +1003,13 @@ void nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2,
       lon2 *= M_PI / 180.0;
    }
 
+  /* deal with wrpping . nb this code works for (-180, 180 ) ( 0 - 360) */
+  if(lon2-lon1 >= M_PI)
+    lon2-=2*M_PI;
 
 
 
-   /* lat1 & lat2 >0.0 */
+  /* lat1 & lat2 >0.0 */
    if( lat1>0.0 && lat2 >=0.0)
    {
       *dp_max = nco_geo_lat_correct(lat1, lon1, lon2);
