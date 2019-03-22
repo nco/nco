@@ -78,6 +78,7 @@ nco_poly_init
   pl->dst_id=-1;
 
   pl->bwrp=False;
+  pl->bwrp_y=False;
 
   return pl;
 }
@@ -113,6 +114,8 @@ nco_poly_dpl
   pl_cpy->mem_flg=0;
 
   pl_cpy->bwrp=pl->bwrp;
+  pl_cpy->bwrp_y=pl->bwrp_y;
+
 
   pl_cpy->dp_x=(double*)nco_malloc((size_t)crn_nbr_in* sizeof(double));
   pl_cpy->dp_y=(double*)nco_malloc((size_t)crn_nbr_in* sizeof(double));
@@ -179,6 +182,8 @@ int src_id)
 
   pl->mem_flg=0;
   pl->bwrp=False;
+  pl->bwrp_y =False;
+
 
   return pl;
 }
@@ -374,6 +379,12 @@ void nco_poly_minmax_add
     pl->dp_y_minmax[0]=lat_min;
     pl->dp_y_minmax[1]=lat_max;
 
+    /* add wrap flag */
+    if( pl->dp_x_minmax[1] - pl->dp_x_minmax[0] >= 180.0  )
+      pl->bwrp=True;
+    else
+      pl->bwrp=False;
+
 
 
   }
@@ -547,16 +558,16 @@ nco_poly_prn
 
     case 0:
       (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
-      (void)fprintf(stdout,"dp_x ");
       for(idx=0; idx<pl->crn_nbr; idx++)
-	(void)fprintf(stdout,"%20.14f, ",pl->dp_x[idx]);
+	(void)fprintf(stdout,"%20.14f, %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
       (void)fprintf(stdout,"\n");		  
 
+      /*
       (void)fprintf(stdout,"dp_y ");
       for(idx=0; idx<pl->crn_nbr; idx++)
 	(void)fprintf(stdout,"%20.14f, ",pl->dp_y[idx]);
       (void)fprintf(stdout,"\n");
-
+       */
       (void)fprintf(stdout,"min/max x( %g, %g) y(%g %g)\n", pl->dp_x_minmax[0], pl->dp_x_minmax[1], pl->dp_y_minmax[0], pl->dp_y_minmax[1]);       
       
       break;
