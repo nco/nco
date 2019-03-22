@@ -1603,6 +1603,7 @@ extern "C" {
     double *dp_xyz;  /* maybe useful for 3D stuff */
 
     nco_bool bwrp;   /* if true then whole polygon is wrapped - at Greenwich or Dateline */
+    nco_bool bwrp_y;
     int src_id;      /* used in map file as  "row" or "col" id of polygon   */
     int dst_id;     /* used in map file - used only in overlap polygon */
 
