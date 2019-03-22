@@ -52,12 +52,13 @@ extern "C" {
   } nco_rgr_tps_cmd;
 
   typedef enum nco_rgr_mpf_typ_enm{ /* [enm] Mapfile type enum */
-    nco_rgr_mpf_nil=0,
+    nco_rgr_mpf_nil=0, /* Map-file type is nil until set to a definite (including unknown) type listed below */
     nco_rgr_mpf_ESMF,
     nco_rgr_mpf_SCRIP,
     nco_rgr_mpf_Tempest,
     nco_rgr_mpf_ESMF_weight_only,
-    nco_rgr_mpf_NCO
+    nco_rgr_mpf_NCO, 
+    nco_rgr_mpf_unknown /* e.g., CDO */
   } nco_rgr_mpf_typ_enm;
 
   typedef enum nco_rgr_typ_enm{ /* [enm] Regrid type enum */

@@ -828,7 +828,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if(strstr(att_val,"SCRIP")) nco_rgr_mpf_typ=nco_rgr_mpf_SCRIP;
     else if(strstr(att_val,"Tempest")) nco_rgr_mpf_typ=nco_rgr_mpf_Tempest;
     else if(strstr(att_val,"ESMF Regrid Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF_weight_only;
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_nil) (void)fprintf(stderr,"%s: ERROR %s unrecognized map-type specified in attribute Conventions = %s\n",nco_prg_nm_get(),fnc_nm,att_val);
+    else{
+      (void)fprintf(stderr,"%s: WARNING %s map-file Conventions = \"%s\" does not indicate a known map-file type\n",nco_prg_nm_get(),fnc_nm,att_val);
+      nco_rgr_mpf_typ=nco_rgr_mpf_unknown;
+    } /* !rcd */
     if(att_val) att_val=(char *)nco_free(att_val);
   } /* end rcd && att_typ */
 
@@ -849,6 +852,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   case nco_rgr_mpf_ESMF:
   case nco_rgr_mpf_NCO:
   case nco_rgr_mpf_Tempest:
+  case nco_rgr_mpf_unknown:
     rcd+=nco_inq_dimid(in_id,"n_a",&src_grid_size_id);
     rcd+=nco_inq_dimid(in_id,"n_b",&dst_grid_size_id);
     rcd+=nco_inq_dimid(in_id,"nv_a",&src_grid_corners_id);
@@ -917,7 +921,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     /* 20150712: Tempest does not store a normalization attribute
        20170620: ESMF weight_only does not store a normalization attribute
        20190312: NCO does not yet store a normalization attribute */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_ESMF_weight_only) nco_rgr_nrm_typ=nco_rgr_nrm_unknown;
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_unknown || nco_rgr_mpf_typ == nco_rgr_mpf_ESMF_weight_only) nco_rgr_nrm_typ=nco_rgr_nrm_unknown;
   } /* endif normalization */
   assert(nco_rgr_nrm_typ != nco_rgr_nrm_nil);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
@@ -937,7 +941,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(att_val) att_val=(char *)nco_free(att_val);
   }else{
     /* NCO and Tempest do not store a map_method attribute */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_NCO) nco_rgr_mth_typ=nco_rgr_mth_unknown;
+    if(nco_rgr_mpf_typ == nco_rgr_mpf_NCO || nco_rgr_mpf_typ == nco_rgr_mpf_Tempest || nco_rgr_mpf_typ == nco_rgr_mpf_unknown) nco_rgr_mth_typ=nco_rgr_mth_unknown;
   } /* endif */
   assert(nco_rgr_mth_typ != nco_rgr_mth_nil);
   if(cnv_sng) cnv_sng=(char *)nco_free(cnv_sng);
@@ -1004,6 +1008,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   case nco_rgr_mpf_ESMF_weight_only:
   case nco_rgr_mpf_NCO:
   case nco_rgr_mpf_Tempest:
+  case nco_rgr_mpf_unknown:
     if(nco_rgr_mpf_typ != nco_rgr_mpf_ESMF_weight_only){
       rcd+=nco_inq_varid(in_id,"area_b",&area_dst_id); /* SCRIP: dst_grid_area */
       rcd+=nco_inq_varid(in_id,"xc_b",&dst_grd_ctr_lon_id); /* SCRIP: dst_grid_center_lon */
@@ -1030,17 +1035,26 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nco_bool flg_msk_out=rgr->flg_msk_out; /* [flg] Add mask to output */
   msk_dst_id=NC_MIN_INT;
   if(flg_msk_out){
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_ESMF || nco_rgr_mpf_typ == nco_rgr_mpf_NCO){
+    switch(nco_rgr_mpf_typ){
+    case nco_rgr_mpf_ESMF:
+    case nco_rgr_mpf_NCO:
       rcd+=nco_inq_varid(in_id,"mask_b",&msk_dst_id); /* SCRIP: dst_grid_imask */
-    }else if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
+      break;
+    case nco_rgr_mpf_SCRIP:
+      rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
+      break;
+    case nco_rgr_mpf_Tempest:
+    case nco_rgr_mpf_unknown:
       /* 20190315: TempestRemap did not propagate mask_b (or mask_a) until ~201902 */
       rcd+=nco_inq_varid_flg(in_id,"mask_b",&msk_dst_id);
       if(rcd == NC_ENOTVAR){
-	(void)fprintf(stderr,"%s: INFO %s reports TempestRemap map-file lacks mask_b. Probably this map was created before ~201902 when TR began to propagate mask_a/b variables. Continuing anyway without masks.\n",nco_prg_nm_get(),fnc_nm);
+	(void)fprintf(stderr,"%s: INFO %s reports map-file lacks mask_b. %sContinuing anyway without masks...\n",nco_prg_nm_get(),fnc_nm,(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) ? "Probably this TempestRemap map-file was created before ~201902 when TR began to propagate mask_a/b variables. " : "");
       } /* !rcd */
       rcd=NC_NOERR;
-    }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
-      rcd+=nco_inq_varid(in_id,"dst_grid_imask",&msk_dst_id); /* ESMF: mask_b */
+      break;
+    default:
+      (void)fprintf(stderr,"%s: ERROR %s unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
+      nco_dfl_case_generic_err();
     } /* !nco_rgr_mpf_typ */
     if(msk_dst_id == NC_MIN_INT) flg_msk_out=False;
   } /* !flg_msk_out */
@@ -1688,7 +1702,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   dmn_cnt[0]=mpf.num_links;
   if(nco_rgr_mpf_typ != nco_rgr_mpf_SCRIP){
     rcd=nco_get_vara(in_id,wgt_raw_id,dmn_srt,dmn_cnt,wgt_raw,NC_DOUBLE);
-  }else if(nco_rgr_mpf_typ == nco_rgr_mpf_SCRIP){
+  }else{
     /* SCRIP mapfiles store 2D weight array remap_matrix[num_links,num_wgts]
        Apply only first weight for first-order conservative accuracy (i.e., area overlap)
        Apply all three weights for second-order conservative accuracy (by including gradients from centroid to vertices) */
@@ -4433,6 +4447,7 @@ nco_rgr_mpf_sng /* [fnc] Convert mapfile generator enum to string */
   case nco_rgr_mpf_Tempest: return "TempestRemap (GenerateOfflineMap)";
   case nco_rgr_mpf_ESMF_weight_only: return "ESMF Offline Regridding Weight Generator (ERWG), either from ESMF_RegridWeightGen directly or via NCL, with --weight_only option from ERWG 7.1+";
   case nco_rgr_mpf_NCO: return "netCDF Operators (NCO) Offline Regridding Weight Generator";
+  case nco_rgr_mpf_unknown: return "Unknown Weight Generator";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
