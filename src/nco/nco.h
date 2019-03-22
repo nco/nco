@@ -1167,6 +1167,8 @@ extern "C" {
     char *lon_nm_out; /* [sng] Name of output dimension for longitude */
     char *lon_vrt_nm; /* [sng] Name of non-rectangular boundary variable for longitude */
     char *msk_nm; /* [sng] Name of variable containing destination mask */
+    char *sgs_frc_nm; /* [sng] Name of variable containing sub-gridscale fraction */
+    char *sgs_msk_nm; /* [sng] Name of variable containing sub-gridscale mask */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */
     // User-specified grid properties
     char *fl_grd; /* [sng] Name of SCRIP grid file to create */
@@ -1180,6 +1182,7 @@ extern "C" {
     double lon_wst; /* [dgr] Longitude of western edge of grid */
     double lat_nrt; /* [dgr] Latitude of northern edge of grid */
     double lon_est; /* [dgr] Longitude of eastern edge of grid */
+    double sgs_nrm; /* [frc] Sub-gridscale normalization */
     long lat_nbr; /* [nbr] Number of latitudes in destination grid */
     long lon_nbr; /* [nbr] Number of longitudes in destination grid */
     nco_grd_2D_typ_enm grd_typ; /* [enm] Destination grid-type enum */

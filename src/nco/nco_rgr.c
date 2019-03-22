@@ -288,6 +288,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_nm_out=NULL; /* [sng] Name of output dimension for longitude */
   rgr->lon_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for longitude */
   rgr->msk_nm=NULL; /* [sng] Name of variable containing destination mask */
+  rgr->sgs_frc_nm=NULL; /* [sng] Name of variable sub-gridscale fraction */
+  rgr->sgs_msk_nm=NULL; /* [sng] Name of variable sub-gridscale mask */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
   /* Initialize key-value properties used in grid generation */
@@ -320,6 +322,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lat_nrt=NC_MAX_DOUBLE; /* [dgr] Latitude of northern edge of grid */
   rgr->lon_est=NC_MAX_DOUBLE; /* [dgr] Longitude of eastern edge of grid */
   rgr->msk_var=NULL; /* [sng] Mask-template variable */
+  rgr->sgs_nrm=1.0; /* [sng] Sub-gridscale normalization */
   rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
   
   /* Parse key-value properties */
@@ -589,6 +592,19 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->lon_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lon_vrt_nm */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"sgs_frc_nm")){
+      rgr->sgs_frc_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !sgs_frc */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"sgs_msk_nm")){
+      rgr->sgs_msk_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !sgs_msk */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"sgs_nrm")){
+      rgr->sgs_nrm=strtod(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
+      continue;
+    } /* !sgs_nrm */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"tst")){
       rgr->tst=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
@@ -3272,6 +3288,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Regrid or copy variable values */
   const double wgt_vld_thr=rgr->wgt_vld_thr; /* [frc] Weight threshold for valid destination value */
   const nco_bool flg_rnr=rgr->flg_rnr; /* [flg] Renormalize destination values by valid area */
+  double *sgs_frc=NULL;
   double *var_val_dbl_in=NULL;
   double *var_val_dbl_out=NULL;
   double *wgt_vld_out=NULL;
@@ -3288,6 +3305,30 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
   size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
   
+  /* 20190322: Prior to entering OpenMP loop, collect specified SGS information */
+  const double sgs_nrm=rgr->sgs_nrm; /* [frc] Sub-gridscale normalization */
+  if(rgr->sgs_frc_nm){
+    var_nm=rgr->sgs_frc_nm;
+    var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
+    var_sz_in=1L;
+    rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
+    rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
+    dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+    dmn_srt=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
+    dmn_cnt_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
+    rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+    for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_in+dmn_idx);
+      var_sz_in*=dmn_cnt_in[dmn_idx];
+      dmn_srt[dmn_idx]=0L;
+    } /* end loop over dimensions */
+    sgs_frc=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() SGS input value buffer");
+    rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,sgs_frc,var_typ_rgr);
+    if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);
+    if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+    if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
+  } /* !sgs_frc_nm */
+
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: # means regridded, ~ means copied\n");
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning
@@ -3309,12 +3350,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc,wgt_raw,wgt_vld_thr)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc,wgt_raw)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,wgt_raw)
+#  pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc,wgt_raw)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -3686,6 +3727,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(lon_ntf_out) lon_ntf_out=(double *)nco_free(lon_ntf_out);
   if(msk_out) msk_out=(int *)nco_free(msk_out);
   if(row_dst_adr) row_dst_adr=(int *)nco_free(row_dst_adr);
+  if(sgs_frc) sgs_frc=(double *)nco_free(sgs_frc);
   if(wgt_raw) wgt_raw=(double *)nco_free(wgt_raw);
   
   if(False && flg_grd_out_crv){

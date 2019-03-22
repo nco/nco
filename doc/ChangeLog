@@ -1,5 +1,7 @@
 2019-03-22  Charlie Zender  <zender@uci.edu>
 
+	* Add stubs to read sgs_frc in nco_rgr.c
+
 	* Allow nco_rgr_wgt() to work with nco_rgr_mpf_typ=unknown
 
 2019-03-21  Charlie Zender  <zender@uci.edu>
