@@ -2694,6 +2694,27 @@ if [ -n "${par_opt}" ]; then
 fi # !par_typ
 
 # fxm: Parallelize post-processing, if any
+if [ "${prc_typ}" = 'sgs2' ]; then 
+    for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	    printf "SGS2: Re-normalize by regridded sub-grid fraction...\n"
+	fi # !vrb_lvl
+	if [ -n "${prc_elm}" ]; then
+	    # Re-normalize
+	    cmd_elm[${fl_idx}]="ncap2 -O -s 'area*=1' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_elm[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_elm[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+		    printf "${spt_nm}: ERROR Failed to convert output area from [sr] to [km2]. Debug this:\n${cmd_elm[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !prc_elm
+    done # !fl_idx
+fi # !sgs2
 if [ "${prc_typ}" = 'sgs' ]; then 
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then

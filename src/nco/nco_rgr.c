@@ -3471,11 +3471,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Apply weights */
 	if(!has_mss_val){
 	  if(lvl_nbr == 1){
+	    /* Primary re-gridding loop for single-level fields without missing values */
 	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 	      var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 	  }else{
 	    val_in_fst=0L;
 	    val_out_fst=0L;
+	    /* Primary re-gridding loop for multiple-level fields without missing values */
 	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 	      //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
@@ -3498,6 +3500,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		} /* endif */
 	      } /* end loop over link */
 	    }else{
+	      /* Primary re-gridding loop for single-level fields with missing values */
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		idx_in=col_src_adr[lnk_idx];
 		idx_out=row_dst_adr[lnk_idx];
@@ -3512,6 +3515,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    val_in_fst=0L;
 	    val_out_fst=0L;
 	    if(trv.flg_mrv){
+	      /* Primary re-gridding loop for multiple-level fields with missing values */
 	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx]+val_in_fst;
@@ -3561,15 +3565,17 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	       When this occurs for conservative remapping, follow "destarea" normalization procedure
 	       See SCRIP manual p. 11 and http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03028000000000000000
 	       NB: Non-conservative interpolation methods (e.g., bilinear) should NOT apply this normalization (theoretically there is no danger in doing so because frc_out == 1 always for all gridcells that participate in bilinear remapping and frc_out == 0 otherwise, but still, best not to tempt the Fates)
-	       NB: Both frc_out and NCO's renormalization (below) could serve the same purpose
+	       NB: Both frc_out and NCO's valid weight renormalization (below) could serve the same purpose
 	       Applying both could lead to double-normalizing by missing values!
-	       20151018: Be sure this does not occur! currently this is done by only executing flg_frc_nrm block when !has_mss_val
-	       and having a separate normalization block for has_mss_val
+	       20151018: Avoid double-normalizing by only executing fractional normalization 
+	       (flg_frc_nrm) block when !has_mss_val, and valid area normalization when has_mss_val
 	       fxm: Use better logic and more metadata information to determine code path */
 	    if(lvl_nbr == 1){
+	      /* Primary fractional renormalization loop for single-level fields without missing values */
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
 	    }else{
+	      /* Primary fractional renormalization loop for multiple-level fields without missing values */
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		if(frc_out[dst_idx] != 0.0){
 		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
@@ -3593,13 +3599,18 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	     This returns "reasonable" values, i.e., the mean of the valid input values
 	     However, renormalization is equivalent to extrapolating valid data to missing regions
 	     Hence the input and output integrals are unequal and the regridding is not conservative */
+
+	  /* In fields with missing value, destination cells with no accumulated weight are missing value */
 	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
+
 	  if(flg_rnr){
 	    if(wgt_vld_thr == 0.0){
+	      /* Renormalize cells with no threshold by valid accumlated weight */
 	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 		if(tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
 	    }else{
+	      /* Renormalize cells with threshold by valid accumlated weight if weight exceeds threshold */
 	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 		if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
 	    } /* !wgt_vld_thr */
