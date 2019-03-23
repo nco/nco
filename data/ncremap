@@ -256,8 +256,10 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Omit cell_measures:
 # ncremap --no_cll_msr --var=FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -o ~/foo.nc
+# GSG (201903):
+# ncremap -P gsg -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc
 # SGS (201705):
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/alm_rgr.nc # 20170510 1D->2D works conserve and bilinear, no inferral
+# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/elm_rgr.nc # 20170510 1D->2D works conserve and bilinear, no inferral
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works conserve and bilinear, no inferral
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/t42_SCRIP.20150901.nc -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve, infer D not S
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
@@ -1112,9 +1114,9 @@ elif [ "${par_typ}" = 'nil' ] || [ -z "${par_typ}" ]; then
     par_sng='Serial'
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] ; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] && [ "${prc_typ}" != 'gsg' ]; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mwf', 'nil', 'rrg', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mwf', 'nil', 'rrg', 'gsg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -1790,6 +1792,9 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ "${d2f_flg}" = 'Yes' ]; then
 	printf "Will convert all non-coordinate double precision input fields to single precision\n"
     fi # !d2f_flg
+    if [ "${prc_typ}" = 'gsg' ]; then 
+	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid for gridcell fraction specified by \"${sgs_frc}\" variable, not for entire gridcell_area (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
+    fi # !gsg
     if [ "${prc_typ}" = 'sgs' ]; then 
 	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid for gridcell fraction specified by \"${sgs_frc}\" variable, not for entire gridcell_area (except where ${sgs_frc} = 1.0). Will first conservatively regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
 	if [ ${fl_nbr} -eq 0 ]; then
@@ -2609,6 +2614,11 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	in_fl=${rnm_fl}
     fi # !rrg
 
+    if [ "${prc_typ}" = 'gsg' ]; then 
+	printf "DEBUG: 20190322 Using new GSG method\n"
+	rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
+    fi # !gsg
+
     # Block 5: Regrid
     if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	printf "Map/Wgt  : ${map_fl}\n"
@@ -2694,10 +2704,10 @@ if [ -n "${par_opt}" ]; then
 fi # !par_typ
 
 # fxm: Parallelize post-processing, if any
-if [ "${prc_typ}" = 'sgs2' ]; then 
+if [ "${prc_typ}" = 'gsg' ]; then 
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "SGS2: Re-normalize by regridded sub-grid fraction...\n"
+	    printf "GSG: Re-normalize by regridded sub-grid fraction...\n"
 	fi # !vrb_lvl
 	if [ -n "${prc_elm}" ]; then
 	    # Re-normalize
@@ -2714,7 +2724,7 @@ if [ "${prc_typ}" = 'sgs2' ]; then
 	    fi # !dbg
 	fi # !prc_elm
     done # !fl_idx
-fi # !sgs2
+fi # !gsg
 if [ "${prc_typ}" = 'sgs' ]; then 
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then

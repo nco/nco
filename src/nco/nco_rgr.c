@@ -3308,6 +3308,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* 20190322: Prior to entering OpenMP loop, collect specified SGS information */
   const double sgs_nrm=rgr->sgs_nrm; /* [frc] Sub-gridscale normalization */
   if(rgr->sgs_frc_nm){
+    /* Normalization test:
+       fl_in=20181217.CNTL_CNPCTC1850_OIBGC.ne30_oECv3.edison.clm2.h0.2000-12.nc
+       /bin/cp -f ${DATA}/hdf/${fl_in} ~/elm_raw.nc
+       ncremap -P sgs -v FSDS,TBOT,GPP -a aave -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/cmip6_180x360_scrip.20181001.nc ~/elm_raw.nc ~/elm_sgs.nc # Original SGS method
+       ncks -A -v grid_area ${DATA}/grids/ne30np4_pentagons.091226.nc ~/elm_sgs.nc
+       ncremap -P gsg -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc # New SGS method */
     var_nm=rgr->sgs_frc_nm;
     var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
     var_sz_in=1L;
