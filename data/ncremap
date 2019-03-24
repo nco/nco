@@ -1771,28 +1771,21 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ ${fl_nbr} -eq 0 ]; then
 	printf "Map/grid-only run: no input data detected therefore will exit after generating map and/or grid\n"
     fi # !fl_nbr
-    if [ -n "${pdq_opt}" ] && [ -n "${pdq_typ}" ]; then 
-	printf "Input data shaped in \"${prc_typ}\"-order, will permute with \"ncpdq ${pdq_opt}\"\n"
+    if [ -n "${pdq_opt}" ]; then 
+	printf "Input data shaped in \"${prc_typ}\"-order, will first permute with \"ncpdq ${pdq_opt}\"\n"
     fi # !pdq_opt
-    if [ -n "${pdq_opt}" ]; then
-	if [ -n "${pdq_typ}" ]; then 
-	    printf "Input data shaped in \"${prc_typ}\"-order, will first permute with \"ncpdq ${pdq_opt}\"\n"
-	else
-	    printf "Input assumed to contain packed data, will first unpack with \"ncpdq ${pdq_opt}\"\n"
-	fi # !pdq_typ
-    fi # !pdq_opt
+    if [ "${d2f_flg}" = 'Yes' ]; then
+	printf "Will convert all non-coordinate double precision input fields to single precision with \"ncpdq ${d2f_opt}\"\n"
+    fi # !d2f_flg
     if [ "${prc_mpas}" = 'Yes' ]; then
-	printf "MPAS input specified: will renormalize (with --rnr=0.0) regridding\n"
+	printf "MPAS input specified: will automatically renormalize (with --rnr=0.0) regridding\n"
 	if [ "${clm_flg}" = 'No' ]; then
- 	    printf "MPAS input specified: will annotate NC_DOUBLE variables with _FillValue = ${mss_val} prior to regridding\n"
+ 	    printf "MPAS input specified: will automatically annotate NC_DOUBLE variables with _FillValue = ${mss_val} prior to regridding\n"
 	fi # !clm_flg
 	if [ "${dpt_flg}" = 'Yes' ]; then
  	    printf "MPAS input specified: will add depth coordinate to all 3D variables prior to regridding\n"
 	fi # !clm_flg
     fi # !mpas
-    if [ "${d2f_flg}" = 'Yes' ]; then
-	printf "Will convert all non-coordinate double precision input fields to single precision\n"
-    fi # !d2f_flg
     if [ "${prc_typ}" = 'gsg' ]; then 
 	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid for gridcell fraction specified by \"${sgs_frc}\" variable, not for entire gridcell_area (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
     fi # !gsg

@@ -1,5 +1,7 @@
 2019-03-24  Charlie Zender  <zender@uci.edu>
 
+	* ncremap print more accurate description of pre-processing
+
 	* Splitter prints more explicit description of parallelism/looping
 
 2019-03-23  Charlie Zender  <zender@uci.edu>
