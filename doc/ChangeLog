@@ -1,3 +1,13 @@
+2019-03-24  Charlie Zender  <zender@uci.edu>
+
+	* Splitter prints more explicit description of parallelism/looping
+
+2019-03-23  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo when parent dies, kill instead of orphan or reap children
+
+	* Simplify sgs_frc_out regridding, add has_mss_val branch to sgs_frc normalization
+
 2019-03-22  Charlie Zender  <zender@uci.edu>
 
 	* Add stubs to read sgs_frc in nco_rgr.c

@@ -1592,13 +1592,23 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     if [ ${var_nbr} -gt 1 ]; then
 	printf "Timeseries will be created for each of ${var_nbr} variables\n"
 	if [ "${par_typ}" = 'bck' ]; then
-	    printf "Background parallelism processing variables in var_nbr/job_nbr = ${var_nbr}/${job_nbr} = $((var_nbr / job_nbr)) batches of job_nbr = ${job_nbr} variables simultaneously\n"
+	    printf "Background parallelism processing variables in var_nbr/job_nbr = ${var_nbr}/${job_nbr} = $((var_nbr / job_nbr)) sequential batches of job_nbr = ${job_nbr} simultaneous jobs (1 per variable), then remaining $((var_nbr % job_nbr)) jobs/variables simultaneously\n"
 	elif [ "${par_typ}" = 'mpi' ]; then
 	    printf "MPI parallelism dividing processing of ${var_nbr} variables onto nd_nbr = ${nd_nbr} nodes simultaneously\n"
 	fi # !par_typ
     else # !var_nbr
 	printf "Timeseries will be created for only one variable\n"
     fi # !var_nbr
+    if [ ${sgm_nbr} -gt 1 ]; then
+	printf "All this occurs within an outer loop of (yr_sbs/ypf_max) = ${yr_sbs}/${ypf_max} = ${sgm_nbr} time segments\n"
+	if [ ${sgm_flg} = 'Yes' ]; then 
+	    printf "Will split data for each variable into ${sgm_nbrm1} timeseries segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s)\n"
+	else
+	    printf "Will split data for each variable into ${sgm_nbr} timeseries segment(s) of length ${ypf_max} years\n"
+	fi # !sgm_flg
+    else # !sgm_nbr
+	printf "Will split data for each variable into one timeseries of length ${yr_sbs} years\n"
+    fi # !sgm_nbr
     if [ ${inp_std} = 'No' ]; then 
 	if [ "${drc_in_usr_flg}" = 'Yes' ]; then
 	    printf "Splitting climatology from ${fl_nbr} raw input files in directory ${drc_in}\n"
@@ -1615,15 +1625,6 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
-    if [ ${sgm_nbr} -gt 1 ]; then
-	if [ ${sgm_flg} = 'Yes' ]; then 
-	    printf "Will split data for each variable into ${sgm_nbrm1} timeseries segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s)\n"
-	else
-	    printf "Will split data for each variable into ${sgm_nbr} timeseries segment(s) of length ${ypf_max} years\n"
-	fi # !sgm_flg
-    else # !sgm_nbr
-	printf "Will split data for each variable into one timeseries of length ${yr_sbs} years\n"
-    fi # !sgm_nbr
     printf "Native-grid split files to directory ${drc_out}\n"
     if [ -n "${rgr_map}" ]; then 
 	printf "Regridded split files to directory ${drc_rgr}\n"
@@ -1941,6 +1942,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			    printf "`date`: Generated ${cmd_sbs[${pid_idx}]##* }\n"
 			else
 			    printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
+			    # 20190323: exiting parent here orphans children, kill live children then exit
+			    for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
+				kill -9 ${sbs_pid[${kid_idx}]}
+			    done # !kid_idx
 			    exit 1
 			fi # !err
 		    done # !pid_idx
@@ -1965,6 +1970,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			printf "`date`: Generated ${cmd_sbs[${pid_idx}]##* }\n"
 		    else
 			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
+			# 20190323: exiting parent here orphans children, kill live children then exit
+			for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
+			    kill -9 ${sbs_pid[${kid_idx}]}
+			done # !kid_idx
 			exit 1
 		    fi # !err
 		done # !pid_idx
@@ -2016,6 +2025,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 				printf "`date`: Regridded ${cmd_rgr[${pid_idx}]##* }\n"
 			    else
 				printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+				# 20190323: exiting parent here orphans children, kill live children then exit
+				for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
+				    kill -9 ${sbs_pid[${kid_idx}]}
+				done # !kid_idx
 				exit 1
 			    fi # !err
 			done # !pid_idx
@@ -2040,6 +2053,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			    printf "`date`: Regridded ${cmd_rgr[${pid_idx}]##* }\n"
 			else
 			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+			    # 20190323: exiting parent here orphans children, kill live children then exit
+			    for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
+				kill -9 ${sbs_pid[${kid_idx}]}
+			    done # !kid_idx
 			    exit 1
 			fi # !err
 		    done # !pid_idx

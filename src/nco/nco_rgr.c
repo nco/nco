@@ -3288,6 +3288,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Regrid or copy variable values */
   const double wgt_vld_thr=rgr->wgt_vld_thr; /* [frc] Weight threshold for valid destination value */
   const nco_bool flg_rnr=rgr->flg_rnr; /* [flg] Renormalize destination values by valid area */
+  char *sgs_frc_nm=NULL;
   double *sgs_frc_in=NULL;
   double *sgs_frc_out=NULL;
   double *var_val_dbl_in=NULL;
@@ -3315,6 +3316,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
        ncremap -P sgs -v FSDS,TBOT,GPP -a aave -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/cmip6_180x360_scrip.20181001.nc ~/elm_raw.nc ~/elm_sgs.nc # Original SGS method
        ncks -A -v grid_area ${DATA}/grids/ne30np4_pentagons.091226.nc ~/elm_sgs.nc
        ncremap -P gsg -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc # New SGS method */
+    sgs_frc_nm=(char *)strdup(rgr->sgs_frc_nm);
     var_nm=rgr->sgs_frc_nm;
     var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
     var_typ_out=NC_DOUBLE; /* NB: sgs_frc_out must be double precision */
@@ -3374,12 +3376,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_out,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_out,wgt_raw,wgt_vld_thr)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_out,wgt_raw)
+#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_out,wgt_raw)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_out,wgt_raw)
+#  pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_out,wgt_raw)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -3707,20 +3709,22 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
 	} /* !has_mss_val */
 	
-	/* Sub-gridscale normalization */
-	if(sgs_frc_out){
-	  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"DEBUG: SGS renormalization for %s\n");
+	/* Sub-gridscale normalization (careful not to normalize sgs_frc itself) */
+	if(sgs_frc_out && strcmp(var_nm,sgs_frc_nm)){
+	  const double sgs_frc_thr=1.0e-3;
 	  /* fxm: 20190323 normalization blocks may contain too many conditions, masks may help */
 	  if(has_mss_val){
 	    if(lvl_nbr == 1){
 	      /* Primary SGS renormalization loop for single-level fields with missing values */
+	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG SGS renormalization for %s uses single-level with missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(var_val_dbl_out[dst_idx] != mss_val_dbl)
 		  if(sgs_frc_out[dst_idx] != mss_val_dbl)
-		    if(sgs_frc_out[dst_idx] != 0.0)
-		      var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
+		    if(sgs_frc_out[dst_idx] >= sgs_frc_thr)
+		      var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx]; else var_val_dbl_out[dst_idx]=mss_val_dbl;
 	    }else{
 	      /* Primary SGS renormalization loop for multi-level fields with missing values */
+	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG SGS renormalization for %s uses multi-level with missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		if(sgs_frc_out[dst_idx] != 0.0 && sgs_frc_out[dst_idx] != mss_val_dbl){
 		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
@@ -3734,10 +3738,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  }else{ /* !has_mss_val */
 	    if(lvl_nbr == 1){
 	      /* Primary SGS renormalization loop for single-level fields without missing values */
+	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG SGS renormalization for %s uses single-level without missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
 	    }else{
 	      /* Primary SGS renormalization loop for multi-level fields without missing values */
+	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG SGS renormalization for %s uses multi-level without missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		if(sgs_frc_out[dst_idx] != 0.0){
 		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
