@@ -3716,7 +3716,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  if(has_mss_val){
 	    if(lvl_nbr == 1){
 	      /* Primary SGS renormalization loop for single-level fields with missing values */
-	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG SGS renormalization for %s uses single-level with missing values\n",nco_prg_nm_get(),var_nm);
+	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses single-level with missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(var_val_dbl_out[dst_idx] != mss_val_dbl)
 		  if(sgs_frc_out[dst_idx] != mss_val_dbl)
@@ -3724,7 +3724,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		      var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx]; else var_val_dbl_out[dst_idx]=mss_val_dbl;
 	    }else{
 	      /* Primary SGS renormalization loop for multi-level fields with missing values */
-	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG SGS renormalization for %s uses multi-level with missing values\n",nco_prg_nm_get(),var_nm);
+	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level with missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		if(sgs_frc_out[dst_idx] != 0.0 && sgs_frc_out[dst_idx] != mss_val_dbl){
 		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
@@ -3738,12 +3738,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  }else{ /* !has_mss_val */
 	    if(lvl_nbr == 1){
 	      /* Primary SGS renormalization loop for single-level fields without missing values */
-	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG SGS renormalization for %s uses single-level without missing values\n",nco_prg_nm_get(),var_nm);
+	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses single-level without missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
 	    }else{
 	      /* Primary SGS renormalization loop for multi-level fields without missing values */
-	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG SGS renormalization for %s uses multi-level without missing values\n",nco_prg_nm_get(),var_nm);
+	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level without missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		if(sgs_frc_out[dst_idx] != 0.0){
 		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
