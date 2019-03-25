@@ -1942,7 +1942,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			    printf "`date`: Generated ${cmd_sbs[${pid_idx}]##* }\n"
 			else
 			    printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
-			    # 20190323: exiting parent here orphans children, kill live children then exit
+			    # 20190323: exiting parent here creates orphans, kill live children then exit
 			    for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
 				kill -9 ${sbs_pid[${kid_idx}]}
 			    done # !kid_idx
@@ -1970,7 +1970,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			printf "`date`: Generated ${cmd_sbs[${pid_idx}]##* }\n"
 		    else
 			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
-			# 20190323: exiting parent here orphans children, kill live children then exit
+			# 20190323: exiting parent here creates orphans, kill live children then exit
 			for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
 			    kill -9 ${sbs_pid[${kid_idx}]}
 			done # !kid_idx
@@ -2025,7 +2025,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 				printf "`date`: Regridded ${cmd_rgr[${pid_idx}]##* }\n"
 			    else
 				printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
-				# 20190323: exiting parent here orphans children, kill live children then exit
+				# 20190323: exiting parent here creates orphans, kill live children then exit
 				for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
 				    kill -9 ${sbs_pid[${kid_idx}]}
 				done # !kid_idx
@@ -2053,7 +2053,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			    printf "`date`: Regridded ${cmd_rgr[${pid_idx}]##* }\n"
 			else
 			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
-			    # 20190323: exiting parent here orphans children, kill live children then exit
+			    # 20190323: exiting parent here creates orphans, kill live children then exit
 			    for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
 				kill -9 ${sbs_pid[${kid_idx}]}
 			    done # !kid_idx
