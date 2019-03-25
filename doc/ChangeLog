@@ -1,5 +1,7 @@
 2019-03-24  Charlie Zender  <zender@uci.edu>
 
+	* ncremap -P mpascice now invokes sgs_frc normalization
+
 	* ncremap print more accurate description of pre-processing
 
 	* Splitter prints more explicit description of parallelism/looping

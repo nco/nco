@@ -257,8 +257,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Omit cell_measures:
 # ncremap --no_cll_msr --var=FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -o ~/foo.nc
 # GSG (201903):
-# ncremap -P gsg -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc
-# ncremap -P mpas -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc mpascice.hist.am.timeSeriesStatsMonthly.0500-12-01.nc ~/foo.nc
+# ncremap -P gsg --sgs_frc=landfrac -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc
+# ncremap -P mpascice --sgs_frc=timeMonthly_avg_iceAreaCell -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ~/msi_raw.nc ~/msi_gsg.nc
 # SGS (201705):
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/elm_sgs.nc # 20170510 1D->2D works conserve and bilinear, no inferral
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works conserve and bilinear, no inferral
@@ -686,9 +686,9 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       rrg_grd_rgn=?* | grd_rgn=?* | grid_regional=?* | regional_grid=?* ) grd_rgn="${LONG_OPTARG}" ; prc_typ='rrg' ; ;; # # Regional regridding regional grid file
 	       rrg_rnm_sng=?* | rnm_sng=?* | rename_string=?* ) rnm_sng="${LONG_OPTARG}" ; prc_typ='rrg' ; ;; # # Regional regridding rename string
 	       grd_src=?* | grid_source=?* | source_grid=?* | src_grd=?* ) grd_src="${LONG_OPTARG}" ;; # -s # Source grid-file
-	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc="${LONG_OPTARG}" ; prc_typ='sgs' ; ;; # # Sub-grid fraction variable
-	       sgs_msk=?* | ice_msk=?* | lnd_msk=?* | ocn_msk=?* | subgrid_mask=?* ) sgs_msk="${LONG_OPTARG}" ; prc_typ='sgs' ; ;; # # Sub-grid mask variable
-	       sgs_nrm=?* | subgrid_normalization=?* ) sgs_nrm="${LONG_OPTARG}" ; prc_typ='sgs' ; ;; # # Sub-grid fraction normalization
+	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
+	       sgs_msk=?* | ice_msk=?* | lnd_msk=?* | ocn_msk=?* | subgrid_mask=?* ) sgs_msk="${LONG_OPTARG}" ;; # # Sub-grid mask variable
+	       sgs_nrm=?* | subgrid_normalization=?* ) sgs_nrm="${LONG_OPTARG}" ;; # # Sub-grid fraction normalization
 	       skl_fl=?* | skl=?* | skeleton=?* | skeleton_file=?* ) skl_fl="${LONG_OPTARG}" ;; # # Skeleton file
 	       stdin | inp_std | std_flg | redirect | standard_input ) inp_std='Yes' ;; # # Input file list from stdin
 	       stdin=?* | inp_std=?* | std_flg=?* | redirect=?* | standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Input file list from stdin
@@ -1339,8 +1339,11 @@ if [ "${prc_typ}" = 'mpascice' ]; then
     sgs_nrm='1.0'
     prc_mpas='Yes'
     prc_mpascice='Yes'
-    prc_typ='sgs'
+    prc_gsg='Yes'
 fi # !mpascice
+if [ "${prc_typ}" = 'gsg' ]; then 
+    prc_gsg='Yes'
+fi # !gsg
 if [ "${prc_typ}" = 'sgs' ]; then 
     nco_dgn_area='--rgr diagnose_area'
     wgt_opt_esmf='--user_areas --ignore_unmapped'
@@ -1786,7 +1789,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
  	    printf "MPAS input specified: will add depth coordinate to all 3D variables prior to regridding\n"
 	fi # !clm_flg
     fi # !mpas
-    if [ "${prc_typ}" = 'gsg' ]; then 
+    if [ "${prc_gsg}" = 'Yes' ]; then 
 	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid for gridcell fraction specified by \"${sgs_frc}\" variable, not for entire gridcell_area (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
     fi # !gsg
     if [ "${prc_typ}" = 'sgs' ]; then 
@@ -1803,7 +1806,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	fi # !wgt_typ
 	if [ "${grd_src_usr_flg}" != 'Yes' ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP-format source grid-file. Moreover, the source grid-file must include the (normally non-essential) grid_area field. It is infeasible to permit SGS source-grid inferral, because weight-generators assume great circle arcs but 2D-grids usually have small-circles in latitude, and this can lead to significant area mis-matches. Despite this, sub-gridscale handling is happy to infer destination (not source) grids.\n"
-	    echo "${spt_nm}: HINT Supply source grid-file with \"-s grd_src\".\nALTERNATIVE TO SGS: If the source grid-file is unavailable, first multiply sub-grid fields by ${sgs_frc} (with, e.g., ncap2 -s \"foo*=${sgs_frc};\" in.nc out.nc) and then regrid as normal without invoking sub-gridscale handling, i.e., omit the '-P sgs' and '--sgs_*' options."
+	    printf "${spt_nm}: HINT Supply source grid-file with \"-s grd_src\".\nALTERNATIVE TO SGS: If the source grid-file is unavailable, first multiply sub-grid fields by ${sgs_frc} (with, e.g., ncap2 -s \"foo*=${sgs_frc};\" in.nc out.nc) and then regrid as normal without invoking sub-gridscale handling, i.e., omit the '-P sgs' and '--sgs_*' options.\n"
 	    exit 1
 	    # 20170511: fxm Inferring source grids leads to ~2% biases with conservative regridding and 2D source grids. Not sure why. 
 	    # printf "${spt_nm}: Sub-gridscale handling will attempt to infer the source SCRIP grid-file from the input data file. This will only work for rectangular 2D data files, because SGS requires the source grid-file to contain the (normally non-essential) grid_area field for the input grid.\n"
@@ -2608,7 +2611,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	in_fl=${rnm_fl}
     fi # !rrg
 
-    if [ "${prc_typ}" = 'gsg' ]; then 
+    if [ "${prc_gsg}" = 'Yes' ]; then 
 	printf "${spt_nm}: DEBUG 20190322 Using new GSG method\n"
 	rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
     fi # !gsg
@@ -2698,7 +2701,7 @@ if [ -n "${par_opt}" ]; then
 fi # !par_typ
 
 # fxm: Parallelize post-processing, if any
-if [ "${prc_typ}" = 'gsg' ]; then 
+if [ "${prc_gsg}" = 'Yes' ]; then 
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "GSG: Re-normalize by regridded sub-grid fraction...\n"
