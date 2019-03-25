@@ -740,7 +740,7 @@ main(int argc,char **argv)
        If fl_out resolves to _same name_ as fl_in, method above is employed */
     fl_out_tmp=(char *)strdup(fl_out);
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
-      (void)fprintf(stdout,"%s: ERROR No output file specified with netCDF4 input file. When no output file is specified, %s tries to write directly to the input file but this can only work with netCDF3 not netCDF4 input files. Please specify an output file distinct from the input file and re-try.\n",nco_prg_nm_get(),nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR No output file specified with netCDF4 input file. When no output file is specified, %s tries to write directly to the input file but this can only work with netCDF3 not netCDF4 input files. Please explicitly specify an output file argument and re-try.\n",nco_prg_nm_get(),nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* !netCDF4 */
     if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;

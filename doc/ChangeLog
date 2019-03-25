@@ -1,5 +1,7 @@
 2019-03-25  Charlie Zender  <zender@uci.edu>
 
+	* ncap2 more precise ERROR message that allows output filename to equal input filename
+
 	* Use fp_stdout not stdout in OpenMP regions
 
 2019-03-24  Charlie Zender  <zender@uci.edu>

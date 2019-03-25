@@ -3348,7 +3348,16 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     /* Regrid sgs_frc */
     for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
       sgs_frc_out[row_dst_adr[lnk_idx]]+=sgs_frc_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
-    
+
+    /* Evaluate sgs_frc_out regridding */
+    if(nco_dbg_lvl_get() >= nco_dbg_fl){
+      double sgs_frc_ttl=0.0;
+      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+	if(sgs_frc_out[dst_idx] > 1.0) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_ltr,100.0*(area_ltr-area[col_idx])/area[col_idx]);
+	sgs_frc_ttl+=sgs_frc_out[dst_idx];
+      } /* !dst_idx */
+    } /* !dbg */
+
     if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
     if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
     if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
