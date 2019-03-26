@@ -131,6 +131,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_hnt_src) rgr->fl_hnt_src=(char *)nco_free(rgr->fl_hnt_src);
   if(rgr->fl_skl) rgr->fl_skl=(char *)nco_free(rgr->fl_skl);
   if(rgr->fl_ugrid) rgr->fl_ugrid=(char *)nco_free(rgr->fl_ugrid);
+  if(rgr->fl_vrt) rgr->fl_vrt=(char *)nco_free(rgr->fl_vrt);
 
   /* Tempest */
   if(rgr->drc_tps) rgr->drc_tps=(char *)nco_free(rgr->drc_tps);
@@ -298,6 +299,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_hnt_src=NULL; /* [sng] ERWG hint source */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
+  rgr->fl_vrt=NULL; /* [sng] Vertical coordinate file */
   rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_dgn_area=False; /* [flg] Diagnose rather than copy inferred area */
@@ -356,6 +358,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_nfr=True;
       continue;
     } /* !ugrid */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"fl_vrt") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt")){
+      rgr->fl_vrt=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !vrt */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"no_area") || !strcmp(rgr_lst[rgr_var_idx].key,"no_area_out")){
       rgr->flg_area_out=False;
       continue;
@@ -657,6 +663,56 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   return rgr;
 } /* end nco_rgr_ini() */
   
+int /* O [enm] Return code */
+nco_ntp_vrt /* [fnc] Interpolate vertically */
+(rgr_sct * const rgr, /* I/O [sct] Regridding structure */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */
+{
+  /* Purpose: Regrid fields using external weights contained in a mapfile */
+
+  const char fnc_nm[]="nco_ntp_vrt()"; /* [sng] Function name */
+
+  char *fl_in;
+  char *fl_pth_lcl=NULL;
+
+  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
+  int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
+  int fll_md_old; /* [enm] Old fill mode */
+  int in_id; /* I [id] Input netCDF file ID */
+  int md_open; /* [enm] Mode flag for nc_open() call */
+  int out_id; /* I [id] Output netCDF file ID */
+  int rcd=NC_NOERR;
+
+  int dmn_idx; /* [idx] Dimension index */
+
+  nco_bool FL_RTR_RMT_LCN;
+  nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
+
+  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+  
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining vertical grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_vrt);
+
+  /* Duplicate (because nco_fl_mk_lcl() free()'s fl_in) */
+  fl_in=(char *)strdup(rgr->fl_vrt);
+  /* Make sure file is on local system and is readable or die trying */
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
+  /* Open file using appropriate buffer size hints and verbosity */
+  if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+  rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
+
+  /* Close input netCDF file */
+  nco_close(in_id);
+
+  /* Remove local copy of file */
+  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
+
+  /* Above this line, fl_in and in_id refer to vertical coordinate file
+     Below this line, fl_in and in_id refer to input file to be vertically regridded */
+
+} /* end nco_rgr_vrt() */
+
 int /* O [enm] Return code */
 nco_rgr_wgt /* [fnc] Regrid with external weights */
 (rgr_sct * const rgr, /* I/O [sct] Regridding structure */

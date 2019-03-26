@@ -1,5 +1,9 @@
 2019-03-26  Charlie Zender  <zender@uci.edu>
 
+	* ncremap call vertical OR horizontal interpolation routines. ncks add skeleton nco_ntp_vrt().
+
+	* ncremap add stubs for vertical coordinate file
+
 	* NCO 4.8.0-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha05: Dawn Wall';git push
 	git tag -a 4.8.0-alpha05 -m 'ncemap SGS MPAS-SeaIce, GSG protoype; ncclimo Cori KNL bms, orphans';git push --tags

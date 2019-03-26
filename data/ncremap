@@ -300,6 +300,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 2 -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # Add depth (201901):
 # ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
+# Vertical interpolation (201903):
+# ncremap --vrt_fl=${DATA}/grids/eam_vrt_crd_L30.nc -m dummy_argument_not_used.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
@@ -440,6 +442,7 @@ vrb_2=2 # [enm] Verbosity level: All file I/O
 vrb_3=3 # [enm] Verbosity level: English
 vrb_4=4 # [enm] Verbosity level: Pedantic
 vrs_prn='No' # [sng] Print version information
+vrt_fl='' # [sng] Vertical coordinate file
 wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap executable
 wgt_typ='esmf' # [sng] Weight-generator program ('esmf' or 'tempest')
@@ -535,6 +538,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
     echo " ${fnt_bld}--vrb_lvl${fnt_nrm}  Verbosity level (default ${fnt_bld}${vrb_lvl}${fnt_nrm}) [${fnt_tlc}vrb_lvl, vrb, verbosity, print_verbosity${fnt_nrm}]"
+    echo " ${fnt_bld}--vrt_fl${fnt_nrm}   Vertical coordinate file (empty means none) (default ${fnt_bld}${vrt_fl}${fnt_nrm}) [${fnt_tlc}vrt_fl, vrt, vrt_crd, vertical_coordinate${fnt_nrm}]"
     echo "${fnt_rvr}-W${fnt_nrm} ${fnt_bld}wgt_opt${fnt_nrm}  Weight-generator options (default ${fnt_bld}${wgt_opt_esmf}${fnt_nrm}) [${fnt_tlc}wgt_opt, esmf_opt, esmf_options, tempest_opt, tps_opt${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_cmd${fnt_nrm}  Weight-generator command (default ${fnt_bld}${wgt_exe_esmf}${fnt_nrm}) [${fnt_tlc}wgt_cmd, wgt_gnr, weight_command, weight_generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
@@ -700,8 +704,10 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       unq_sfx=?* | unique_suffix=?* | suffix=?* ) unq_usr="${LONG_OPTARG}" ;; # -u # Unique suffix
 	       var_rgr=?* | rgr_var=?* | var_cf=?* | cf_var=?* | cf_variable=?* ) var_rgr="${LONG_OPTARG}" ;; # -V # CF template variable 
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
-	       vrb_lvl=?* | vrb=?* | verbosity=?* | print_verbosity=?* ) vrb_lvl="${LONG_OPTARG}" ;; # # Print verbosity
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
+	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
+	       vrb_lvl=?* | vrb=?* | verbosity=?* | print_verbosity=?* ) vrb_lvl="${LONG_OPTARG}" ;; # # Print verbosity
+	       vrt_fl=?* | vrt=?* | vrt_crd=?* | vertical_coordinate=?* ) vrt_fl="${LONG_OPTARG}" ;; # # Vertical coordinate file
 	       wgt_opt=?* | esmf_opt=?* | esmf_options=?* | tps_opt=?* | tempest_opt=?* | tempest_options=?* ) wgt_opt_usr="${LONG_OPTARG}" ;; # -W # Weight-generator options
 	       wgt_cmd=?* | weight_command=?* | wgt_gnr=?* | weight_generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator command
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
@@ -1360,6 +1366,15 @@ fi # !sgs
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"
 fi # !thr_usr
+if [ -n "${vrt_fl}" ]; then
+    if [ ! -f "${vrt_fl}" ]; then
+	echo "ERROR: Unable to find specified vertical coordinate file ${vrt_fl}"
+	exit 1
+    fi # ! -f
+    vrt_usr_flg='Yes'
+    # Prevent attempts at horizontal regridding
+    flg_vrt_only='Yes' 
+fi # !vrt_fl
 
 if [ -n "${dst_fl}" ]; then 
     if [ ! -f "${dst_fl}" ]; then
@@ -1681,6 +1696,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: unq_sfx  = ${unq_sfx}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: var_rgr  = ${var_rgr}\n"
+    printf "dbg: vrt_fl   = ${vrt_fl}\n"
     printf "dbg: wgt_cmd  = ${wgt_cmd}\n"
     printf "dbg: wgt_opt  = ${wgt_opt}\n"
     printf "dbg: wgt_usr  = ${wgt_usr}\n"
@@ -1765,11 +1781,11 @@ if [ "${dst_usr_flg}" = 'Yes' ]; then
 	printf "${spt_nm}: INFO Both '-d dst_fl' and '-g grd_dst' were specified so ${spt_nm} will infer ${grd_dst} from ${dst_fl}\n"
     fi # !grd_dst_usr_flg
 fi # !dst_usr_flg
-if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
-    printf "${spt_nm}: ERROR Must specify at least one of '-d dst_fl', '-g grd_dst', '-G grd_sng', or '-m map_fl'\n"
+if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ] && [ "${vrt_usr_flg}" != 'Yes' ]; then 
+    printf "${spt_nm}: ERROR Must specify at least one of '-d dst_fl', '-g grd_dst', '-G grd_sng', '-m map_fl', or --vrt_fl=vrt_fl\n"
     exit 1
 fi # !dst_usr_flg
-if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" = 'Yes' ]; then
+if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" = 'Yes' ] && [ "${vrt_usr_flg}" != 'Yes' ]; then
     flg_grd_only='Yes'
 fi # !flg_grd_only
 
@@ -1829,76 +1845,78 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	fi # !fl_nbr
     fi # !sgs
 fi # !vrb_lvl
-if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ]; then 
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Source and destination grids will both be read from supplied map-file\n"
-    fi # !vrb_lvl
-else # !map_usr_flg
-    fl_idx=0 # [idx] Current file index
-    if [ "${dst_usr_flg}" = 'Yes' ]; then 
-	# Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
-	# Infer destination grid-file from data file
+if [ "${flg_vrt_only}" != 'Yes' ]; then
+    if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ]; then 
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "Destination grid will be inferred from data-file\n"
+	    printf "Source and destination grids will both be read from supplied map-file\n"
 	fi # !vrb_lvl
-	cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_dst_fl}\" ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=\"${grd_dst}\" \"${dst_fl}\" \"${tmp_out_fl}\""
-    else # !dst_usr_flg
-	if [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
+    else # !map_usr_flg
+	fl_idx=0 # [idx] Current file index
+	if [ "${dst_usr_flg}" = 'Yes' ]; then 
+	    # Block 1 Loop 1: Generate, check, and store (but do not yet execute) commands
+	    # Infer destination grid-file from data file
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-		printf "Destination grid supplied by user\n"
+		printf "Destination grid will be inferred from data-file\n"
 	    fi # !vrb_lvl
-	fi # !grd_dst_usr_flg
-	if [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
-	    printf "${spt_nm}: ERROR No destination grid specified with -g, inferral file specified with -d, or grid string specified with -G\n"
-	fi # !grd_dst_usr_flg
-	if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
-	    # 20180903 Must quote grd_sng otherwise whitespace and shell redirection characters (e.g., in ttl argument) will confuse interpreter
-	    cmd_dst[${fl_idx}]="ncks -O --dmm_in_mk ${nco_opt} --rgr scrip=\"${grd_dst}\" ${nco_skl_fl} --rgr '${grd_sng}' \"${dmm_fl}\" \"${tmp_out_fl}\""
-	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-		if [ "${grd_dst_usr_flg}" = 'Yes' ]; then
-		    printf "Destination grid will be generated in SCRIP format from NCO grid-formula ${grd_sng} and stored in ${grd_dst}\n"
-		else
-		    printf "Destination grid will be generated in SCRIP format from NCO grid-formula ${grd_sng} and stored in a temporary, internal location\n"
-		fi # !grd_sng_usr_flg
-	    fi # !vrb_lvl
-	fi # !grd_sng_usr_flg
-    fi # !dst_usr_flg
-    if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
-	# Block 1 Loop 2: Execute and/or echo commands
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_dst[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_dst[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
-		    printf "${spt_nm}: ERROR Failed to generate grid from user-supplied grid-string. Debug this:\n${cmd_dst[${fl_idx}]}\n"
-		else # !grd_sng_usr_flg
-		    printf "${spt_nm}: ERROR Failed to infer destination grid. Debug this:\n${cmd_dst[${fl_idx}]}\n"
-		fi # !grd_sng_usr_flg
-		exit 1
-	    fi # !err
-	    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
-		/bin/rm -f ${tmp_out_fl}
+	    cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_dst_fl}\" ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=\"${grd_dst}\" \"${dst_fl}\" \"${tmp_out_fl}\""
+	else # !dst_usr_flg
+	    if [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
+		if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+		    printf "Destination grid supplied by user\n"
+		fi # !vrb_lvl
+	    fi # !grd_dst_usr_flg
+	    if [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
+		printf "${spt_nm}: ERROR No destination grid specified with -g, inferral file specified with -d, or grid string specified with -G\n"
+	    fi # !grd_dst_usr_flg
+	    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
+		# 20180903 Must quote grd_sng otherwise whitespace and shell redirection characters (e.g., in ttl argument) will confuse interpreter
+		cmd_dst[${fl_idx}]="ncks -O --dmm_in_mk ${nco_opt} --rgr scrip=\"${grd_dst}\" ${nco_skl_fl} --rgr '${grd_sng}' \"${dmm_fl}\" \"${tmp_out_fl}\""
+		if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+		    if [ "${grd_dst_usr_flg}" = 'Yes' ]; then
+			printf "Destination grid will be generated in SCRIP format from NCO grid-formula ${grd_sng} and stored in ${grd_dst}\n"
+		    else
+			printf "Destination grid will be generated in SCRIP format from NCO grid-formula ${grd_sng} and stored in a temporary, internal location\n"
+		    fi # !grd_sng_usr_flg
+		fi # !vrb_lvl
 	    fi # !grd_sng_usr_flg
-	fi # !dbg
-    fi # !dst_usr_flg || grd_dst_usr_flg
-    if [ ${vrb_lvl} -ge ${vrb_3} ] && [	${flg_grd_only} != 'Yes' ]; then
-	printf "Weight-generation type: ${wgt_typ}\n"
-	printf "Algorithm selected to generate weights in map-file is: ${alg_opt}\n"
-	printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
-    fi # !vrb_lvl
-    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is provide with the NCO Conda package, and is often provided in NCL packages. Tempest executables must currently be installed from source (https://github.com/ClimateGlobalChange/tempestremap) until its Conda package is finished, and then it will also be provided with the NCO Conda package, probably in Q2 2019.\n"; exit 1; }
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	if [ ${fl_nbr} -ge 2 ]; then 
-	    if [ "${mlt_map_flg}" = 'Yes' ]; then 
-		printf "Input files assumed to use unique input grids\nOne source grid-file will be inferred and one map-file generated per input file\n"
-	    else # !mlt_map_flg
-		printf "Input files assumed to use same input grid\nOnly one source grid-file and one map-file will be generated\n"
-	    fi # !mlt_map_flg
-	fi # !fl_nbr
-    fi # !vrb_lvl
-fi # !map_usr
+	fi # !dst_usr_flg
+	if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
+	    # Block 1 Loop 2: Execute and/or echo commands
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_dst[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_dst[${fl_idx}]}
+		if [ "$?" -ne 0 ]; then
+		    if [ "${grd_sng_usr_flg}" = 'Yes' ]; then
+			printf "${spt_nm}: ERROR Failed to generate grid from user-supplied grid-string. Debug this:\n${cmd_dst[${fl_idx}]}\n"
+		    else # !grd_sng_usr_flg
+			printf "${spt_nm}: ERROR Failed to infer destination grid. Debug this:\n${cmd_dst[${fl_idx}]}\n"
+		    fi # !grd_sng_usr_flg
+		    exit 1
+		fi # !err
+		if [ "${grd_sng_usr_flg}" = 'Yes' ]; then 
+		    /bin/rm -f ${tmp_out_fl}
+		fi # !grd_sng_usr_flg
+	    fi # !dbg
+	fi # !dst_usr_flg || grd_dst_usr_flg
+	if [ ${vrb_lvl} -ge ${vrb_3} ] && [	${flg_grd_only} != 'Yes' ]; then
+	    printf "Weight-generation type: ${wgt_typ}\n"
+	    printf "Algorithm selected to generate weights in map-file is: ${alg_opt}\n"
+	    printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
+	fi # !vrb_lvl
+	command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is provide with the NCO Conda package, and is often provided in NCL packages. Tempest executables must currently be installed from source (https://github.com/ClimateGlobalChange/tempestremap) until its Conda package is finished, and then it will also be provided with the NCO Conda package, probably in Q2 2019.\n"; exit 1; }
+	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+	    if [ ${fl_nbr} -ge 2 ]; then 
+		if [ "${mlt_map_flg}" = 'Yes' ]; then 
+		    printf "Input files assumed to use unique input grids\nOne source grid-file will be inferred and one map-file generated per input file\n"
+		else # !mlt_map_flg
+		    printf "Input files assumed to use same input grid\nOnly one source grid-file and one map-file will be generated\n"
+		fi # !mlt_map_flg
+	    fi # !fl_nbr
+	fi # !vrb_lvl
+    fi # !map_usr
+fi # !flg_vrt_only
 
 if [ "${prc_typ}" = 'rrg' ]; then 
     fl_idx=0
@@ -2626,10 +2644,15 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 
     # Block 5: Regrid
     if [ ${vrb_lvl} -ge ${vrb_1} ]; then
-	printf "Map/Wgt  : ${map_fl}\n"
+	if [ -n "${vrt_fl}" ]; then
+	    printf "Vertical : ${vrt_fl}\n"
+	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} --rgr fl_vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
+	else
+	    printf "Map/Wgt  : ${map_fl}\n"
+	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
+	fi # !vrt_fl
 	printf "Regridded: ${out_fl}\n"
     fi # !vrb_lvl
-    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
     
     # Block 5 Loop 2: Execute and/or echo commands
     if [ ${dbg_lvl} -ge 1 ]; then
@@ -2639,7 +2662,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ -z "${par_opt}" ]; then
 	    eval ${cmd_rgr[${fl_idx}]}
 	    if [ "$?" -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to regrid or interpolate. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
 	else # !par_typ

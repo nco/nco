@@ -1154,6 +1154,7 @@ extern "C" {
     char *col_nm_out; /* [sng] Name of horizontal spatial output dimension on unstructured grid */
     char *fl_hnt_dst; /* [sng] ERWG hint destination */
     char *fl_hnt_src; /* [sng] ERWG hint source */
+    char *fl_vrt; /* [sng] File containing vertical coordinate information */
     char *frc_nm; /* [sng] Name of variable containing gridcell fraction */
     char *lat_bnd_nm; /* [sng] Name of rectangular boundary variable for latitude */
     char *lat_dmn_nm; /* [sng] Name of latitude dimension in inferred grid */
