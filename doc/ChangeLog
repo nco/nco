@@ -1,3 +1,7 @@
+2019-03-26  Charlie Zender  <zender@uci.edu>
+
+	* ncremap nco_rgr_wgt() remove extraneous test on sum total of sgs_frc_out
+
 2019-03-25  Charlie Zender  <zender@uci.edu>
 
 	* ncap2 more precise ERROR message that allows output filename to equal input filename

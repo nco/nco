@@ -2800,7 +2800,7 @@ if [ "${cln_flg}" = 'Yes' ]; then
     /bin/rm -f ${att_fl} ${d2f_fl} ${dmm_fl} ${dpt_tmp_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${pdq_fl} ${rgn_fl} ${rnm_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Explicitly instructed not to clean-up intermediate files.\n"
+	printf "Explicitly instructed not to clean-up intermediate files\n"
     fi # !vrb_lvl
 fi # !cln_flg
 

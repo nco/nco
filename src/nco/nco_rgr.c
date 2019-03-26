@@ -3349,14 +3349,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
       sgs_frc_out[row_dst_adr[lnk_idx]]+=sgs_frc_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 
-    /* Evaluate sgs_frc_out regridding */
+    /* Evaluate sgs_frc_out */
     if(nco_dbg_lvl_get() >= nco_dbg_fl){
-      double sgs_frc_ttl=0.0;
+      /* 20190326: sgs_frc expressed as a fraction must be <= 1.0 and in general should never exceed sgs_nrm 
+	 CLM/ELM express sgs_frc (landfrac) in percent, i.e., sgs_nrm=100.0
+	 Sum total value of sgs_frc array depends on grid resolution */
+      double sgs_nrm=1.0;
       for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-	if(sgs_frc_out[dst_idx] > 1.0) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,sgs_frc_out[dst_idx]);
-	sgs_frc_ttl+=sgs_frc_out[dst_idx];
+	if(sgs_frc_out[dst_idx] > sgs_nrm) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %g > %g = sgs_nrm\n",nco_prg_nm_get(),fnc_nm,sgs_frc_out[dst_idx],sgs_nrm);
       } /* !dst_idx */
-      if(sgs_frc_ttl > 4.0*M_PI) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_ttl = %g > %g\n",nco_prg_nm_get(),fnc_nm,sgs_frc_ttl,4.0*M_PI);
     } /* !dbg */
 
     if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
@@ -3719,8 +3720,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
 	} /* !has_mss_val */
 	
-	/* Sub-gridscale normalization (careful not to normalize sgs_frc itself) */
+	/* Sub-gridscale normalize variables except sgs_frc itself */
 	if(sgs_frc_out && strcmp(var_nm,sgs_frc_nm)){
+	  /* fxm: 20190326 Adjust threshold to vanishingly small epsilon */
 	  const double sgs_frc_thr=1.0e-3;
 	  /* fxm: 20190323 normalization blocks may contain too many conditions, masks may help */
 	  if(has_mss_val){
