@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.0-alpha04
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 14 March 2019
+@set update-date 25 March 2019
 @set update-month March 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -12152,13 +12152,14 @@ NB: As of 20120515, @command{ncap2} is unable to append to files that
 already contain the appended dimensions. 
 
 Providing a name for @var{output-file} is optional if @var{input-file}
-is a netCDF3 format, and mandatory if @var{input-file} is a netCDF3
+is a netCDF3 format, and mandatory if @var{input-file} is a netCDF4
 format.
 When @var{output-file} is not given, then @command{ncap2} attempts to
 write directly to @var{output-file}.
 This can be risky and lead to unexpected consequences (since the file
 is being both read and written), so in normal usage we recommend
-providing @var{output-file}. 
+providing @var{output-file} (which can be the same as @var{input-file}
+since the changes are first written to an intermediate file). 
 
 @c @subsection Scripting Mathematical Processing with @command{ncap2}
 

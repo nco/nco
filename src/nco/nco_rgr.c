@@ -3353,9 +3353,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_fl){
       double sgs_frc_ttl=0.0;
       for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-	if(sgs_frc_out[dst_idx] > 1.0) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_ltr,100.0*(area_ltr-area[col_idx])/area[col_idx]);
+	if(sgs_frc_out[dst_idx] > 1.0) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,sgs_frc_out[dst_idx]);
 	sgs_frc_ttl+=sgs_frc_out[dst_idx];
       } /* !dst_idx */
+      if(sgs_frc_ttl > 4.0*M_PI) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_ttl = %g > %g\n",nco_prg_nm_get(),fnc_nm,sgs_frc_ttl,4.0*M_PI);
     } /* !dbg */
 
     if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
