@@ -1321,9 +1321,13 @@ if [ "${prc_typ}" = 'alm' ] || [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'cts
     prc_elm='Yes'
     prc_typ='sgs'
 fi # !alm, !clm, !ctsm, !elm
+# fxm: 20190326 kludge explicit specifications of this variable automatically invoke GSG mode
+if [ "${sgs_frc}" = 'timeMonthly_avg_iceAreaCell' ]; then 
+    prc_gsg='Yes'
+fi # !gsg
 if [ "${prc_typ}" = 'cice' ]; then 
     # Set CICE-specific options first, then change prc_typ to sgs
-    rds_rth='6371229.0' # [m] Radius of Earth in MPAS-CICE (global attribute sphere_radius)
+    rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
     sgs_frc='aice'
     sgs_msk='tmask'
     sgs_nrm='100.0'
@@ -1331,15 +1335,19 @@ if [ "${prc_typ}" = 'cice' ]; then
     prc_typ='sgs'
 fi # !cice
 if [ "${prc_typ}" = 'mpascice' ]; then 
-    # Set MPAS-CICE-specific options first, then change prc_typ to sgs
-    # MPAS-CICE requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'
-    rds_rth='6371229.0' # [m] Radius of Earth in MPAS-CICE (global attribute sphere_radius)
+    # Set MPAS-SeaIce-specific options first, then change prc_typ to sgs
+    # MPAS-SeaIce requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'
+    rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
     sgs_frc='timeMonthly_avg_iceAreaCell'
-    sgs_msk='timeMonthly_avg_icePresent'
+    # 20190326 timeMonthly_avg_icePresent contains fraction of time in averaging interval when any ice was present
+    # Thus timeMonthly_avg_icePresent is a floating point fraction, not a traditional integer mask
+    # Add traditional integer mask with a closely related, unambiguous name, to output
+    #sgs_msk='timeMonthly_avg_icePresent'
+    sgs_msk='timeMonthly_avg_icePresentIntMask'
     sgs_nrm='1.0'
     prc_mpas='Yes'
     prc_mpascice='Yes'
-    prc_gsg='Yes'
+    prc_typ='sgs'
 fi # !mpascice
 if [ "${prc_typ}" = 'gsg' ]; then 
     prc_gsg='Yes'
@@ -2775,7 +2783,7 @@ if [ "${prc_typ}" = 'sgs' ]; then
 	fi # !prc_cice
 	if [ -n "${prc_mpascice}" ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-		printf "SGS: Implement idiosyncratic MPAS-CICE characteristics in regridded file...\n"
+		printf "SGS: Implement idiosyncratic MPAS-SeaIce characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Add units to sgs_frc
 	    cmd_mpascice[${fl_idx}]="ncap2 -O -s '${sgs_frc}@units=\"1.0\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""

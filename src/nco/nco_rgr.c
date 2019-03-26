@@ -3793,7 +3793,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     } /* !xtr */
   } /* end (OpenMP parallel for) loop over idx_tbl */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report. Variables regridded = %d (%d extensive), copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_xtn_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables regridded = %d (%d extensive), copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_xtn_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
   
   /* Free memory allocated for grid reading/writing */
   if(area_out) area_out=(double *)nco_free(area_out);

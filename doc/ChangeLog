@@ -1,5 +1,7 @@
 2019-03-26  Charlie Zender  <zender@uci.edu>
 
+	* ncremap -P mpascice can employ old SGS mode to evaluate new GSG mode
+
 	* ncremap nco_rgr_wgt() remove extraneous test on sum total of sgs_frc_out
 
 2019-03-25  Charlie Zender  <zender@uci.edu>
