@@ -127,6 +127,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
       /* imply rules facing if 0 */
 
+
       if(iqpLHS == 0 && iq1pLHS != 0)
          iqpLHS=iq1pLHS*-1;
       else if(iqpLHS != 0 && iq1pLHS == 0)
@@ -140,6 +141,9 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       /* Xcross product near zero !! so make it zero*/
       if(nx3< 1.0e-10)
       {
+
+
+
          ip1qLHS=0;
          ipqLHS=0;
          iq1pLHS=0;
@@ -167,7 +171,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
 
          if (code == '1' || code == 'e') {
-            if(DEBUG_SPH)
+            if(0 && DEBUG_SPH)
                nco_sph_prn_pnt("(): intersect", p, 3, True);
 
             nco_sph_add_pnt(R->shp, r, p);
@@ -265,10 +269,155 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 }
 
 
-
-
-
 char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q)
+{
+  const char fnc_nm[]="nco_shp_seg_int()";
+
+  int flg_sx=0;
+
+  double nx1;
+  double nx2;
+  double nx3;
+  double nx_ai;
+  double nx_ci;
+
+  double dx_ab;
+  double dx_ai;
+  double dx_ib;
+
+  double dx_cd;
+  double dx_ci;
+  double dx_id;
+
+  double darc;
+
+  double  Pcross[NBR_SPH]={0};
+  double  Qcross[NBR_SPH]={0};
+  double  Icross[NBR_SPH]={0};
+  double   ai[NBR_SPH]={0};
+  double   ci[NBR_SPH]={0};
+
+
+
+  if(flg_sx) {
+    nx1= nco_sph_sxcross(a, b, Pcross);
+    nx2= nco_sph_sxcross(c, d, Qcross);
+
+    nco_sph_add_lonlat(Pcross);
+    nco_sph_add_lonlat(Qcross);
+
+    nx3= nco_sph_cross(Pcross, Qcross, Icross);
+    nco_sph_add_lonlat(Icross);
+  }
+  else
+  {
+    nx1= nco_sph_cross(a, b, Pcross);
+    nx2= nco_sph_cross(c, d, Qcross);
+
+    nx3= nco_sph_cross(Pcross, Qcross, Icross);
+    nco_sph_add_lonlat(Icross);
+  }
+
+  darc=atan(nx3);
+
+  /*
+  if(DEBUG_SPH) {
+    nco_sph_prn_pnt("nco_sph_seg_int(): intersection", Icross, 3, True);
+    printf("%s: ||Pcross||=%.20g ||Qcross||=%.20g ||Icross||=%.20g arc=%.20g\n",fnc_nm,  nx1, nx2, nx3, darc);
+  }
+  */
+
+  /* Icross is zero, should really have a range rather than an explicit zero */
+  if( nx3 < 1.0e-15)
+    //return nco_sph_parallel(a, b, c, d, p, q);
+    return '0';
+
+
+
+  dx_ab=1.0 - nco_sph_dot_nm(a,b);
+
+
+  dx_cd=1.0 - nco_sph_dot_nm(c,d);
+
+  dx_ai=1.0-  nco_sph_dot_nm(a,Icross);
+
+  if(dx_ai !=0.0 )
+     nx_ai=nco_sph_cross(a, Icross, ai);
+
+  dx_ci= 1.0- nco_sph_dot_nm(c,Icross);
+
+  if(dx_ci !=0.0 )
+    nx_ci=nco_sph_cross(c, Icross, ci);
+
+
+
+  if(0 && DEBUG_SPH)
+    fprintf(stderr,"%s(): dx_ab=%2.10f dx_ai=%2.10f  nx1=%2.20f nx_ai=%2.10f   \n",__FUNCTION__, dx_ab, dx_ai, nx1, nx_ai );
+
+  if(  ( dx_ai==0.0 ||  (  nco_sph_dot_nm(ai, Pcross) >0.99 && dx_ai>= 0.0 && dx_ai<=dx_ab  )) &&
+       ( dx_ci==0.0 ||  (  nco_sph_dot_nm(ci, Qcross) >0.99 && dx_ci>0.0 && dx_ci <= dx_cd  ) )
+    )
+  {
+    nco_sph_add_lonlat(Icross);
+
+    if(DEBUG_SPH)
+      nco_sph_prn_pnt("nco_sph_seg_int(): intersection", Icross, 3, True);
+
+    memcpy(p,Icross, sizeof(double)*NBR_SPH);
+    return '1';
+
+  }
+
+
+  /* try antipodal point */
+  Icross[0]*= -1.0;
+  Icross[1]*= -1.0;
+  Icross[2]*= -1.0;
+
+
+  dx_ai=1.0-  nco_sph_dot_nm(a,Icross);
+
+  if(dx_ai !=0.0 )
+    nx_ai=nco_sph_cross(a, Icross, ai);
+
+  dx_ci= 1.0- nco_sph_dot_nm(c,Icross);
+
+  if(dx_ci !=0.0 )
+    nx_ci=nco_sph_cross(c, Icross, ci);
+
+
+
+  if(0 && DEBUG_SPH)
+    fprintf(stderr,"%s(): dx_ab=%2.10f dx_ai=%2.10f  nx1=%2.20f nx_ai=%2.10f   \n",__FUNCTION__, dx_ab, dx_ai, nx1, nx_ai );
+
+  if(  ( dx_ai==0.0 ||  (  nco_sph_dot_nm(ai, Pcross) >0.99 && dx_ai>= 0.0 && dx_ai<=dx_ab  )) &&
+       ( dx_ci==0.0 ||  (  nco_sph_dot_nm(ci, Qcross) >0.99 && dx_ci>0.0 && dx_ci <= dx_cd  ) )
+  )
+  {
+    nco_sph_add_lonlat(Icross);
+    if(DEBUG_SPH)
+      nco_sph_prn_pnt("nco_sph_seg_int(): intersect-antipodal", Icross, 3, True);
+
+    memcpy(p,Icross, sizeof(double)*NBR_SPH);
+    return '1';
+
+  }
+
+
+
+
+
+  return '0';
+
+
+}
+
+
+
+
+
+
+char  nco_sph_seg_int_1(double *a, double *b, double *c, double *d, double *p, double *q)
 {
   const char fnc_nm[]="nco_shp_seg_int()";
 
@@ -346,6 +495,10 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 }
 
 
+
+
+
+
 /* takes a point and a cross product representing the normal to the arc plane */
 /* returns 1 if point on LHS of arc plane */
 /* returns -1 if point on RHS of arc plane */
@@ -405,6 +558,34 @@ double  nco_sph_dot(double *a, double *b)
 
 
 }
+
+/* dot product normalized */
+double  nco_sph_dot_nm(double *a, double *b)
+{
+  int idx;
+  double sum=0.0;
+  double n1;
+  double n2;
+
+  for(idx=0; idx<3; idx++)
+    sum+=a[idx]*b[idx];
+
+  n1=sqrt( a[0]*a[0]+a[1]*a[1] + a[2]*a[2] );
+  n2=sqrt( b[0]*b[0]+b[1]*b[1] + b[2]*b[2] );
+
+   sum= (sum / n1) / n2;
+
+  if(0 && DEBUG_SPH)
+    fprintf(stderr,"%s() dt=%f n1=%f %f\n",__FUNCTION__, sum, n1, n2 );
+
+
+  return sum;
+
+
+}
+
+
+
 
 double  nco_sph_cross(double *a, double *b, double *c)
 {
@@ -808,8 +989,8 @@ for(idx=0; idx<np;idx++)
   // dp=sDot(sP[idx1], sP[idx]) / rad1_nco /rad;
   theta=acos(dp);
 
-  if(DEBUG_SPH)
-    printf("%s():, %d angle=%f n1=%.15g n2=%.15g\n", fnc_nm, idx, theta*180.0/M_PI, n1, n2);
+  if(DEBUG_SPH || 1)
+    printf("%s():, %d angle=%f, dp=%f, n1=%.15g n2=%.15g\n", fnc_nm, idx, theta*180.0/M_PI, dp, n1, n2);
 
 
   //if( fabs(theta - M_PI) >SIGMA_RAD )

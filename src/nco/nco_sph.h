@@ -69,6 +69,9 @@ double
 nco_sph_dot(double *a, double *b);
 
 double
+nco_sph_dot_nm(double *a, double *b);
+
+double
 nco_sph_cross(double *a, double *b, double *c);
 
 double
