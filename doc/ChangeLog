@@ -1,5 +1,7 @@
 2019-03-26  Charlie Zender  <zender@uci.edu>
 
+	* nco_ntp_vrt() computes midpoint and interface pressures on input and output grids
+
 	* ncremap call vertical OR horizontal interpolation routines. ncks add skeleton nco_ntp_vrt().
 
 	* ncremap add stubs for vertical coordinate file

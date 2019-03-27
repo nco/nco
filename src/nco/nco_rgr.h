@@ -142,6 +142,11 @@ extern "C" {
    double * const wgt_Gss); /* O [frc] Gaussian weights */
 
   int /* O [enm] Return code */
+  nco_ntp_vrt /* [fnc] Interpolate vertically */
+  (rgr_sct * const rgr, /* I/O [sct] Regridding structure */
+   trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal Table */
+
+  int /* O [enm] Return code */
   nco_rgr_wgt /* [fnc] Regrid with external weights */
   (rgr_sct * const rgr_nfo, /* I/O [sct] Regridding structure */
    trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal Table */
