@@ -1,5 +1,7 @@
 2019-03-27  Charlie Zender  <zender@uci.edu>
 
+	* nco_ntp_vrt() defines all variables and copies their metadata to output file
+
 	* nco_ntp_vrt() fills-in output file with hybrid coordinate vertical grid data and metadata
 
 2019-03-26  Charlie Zender  <zender@uci.edu>

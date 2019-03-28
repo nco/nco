@@ -776,9 +776,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int dmn_id_ilev=NC_MIN_INT; /* [id] Dimension ID for interface level */
   int dmn_id_lev=NC_MIN_INT; /* [id] Dimension ID for midpoint level */
   long *dmn_cnt_in=NULL;
-  long *dmn_cnt_out=NULL;
-  long *dmn_srt_in=NULL;
-  long *dmn_srt_out=NULL;
+  long *dmn_srt=NULL;
   long ilev_nbr_in;
   long lev_nbr_in;
   long ilev_nbr_out;
@@ -790,8 +788,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_ps);
   dmn_nbr_in=dmn_nbr_ps;
   dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
-  dmn_cnt_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
-  dmn_srt_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
+  dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
+  dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
   rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_in);
   rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev);
   rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev);
@@ -804,7 +802,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
     rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
     grd_sz_in*=dmn_cnt_in[dmn_idx];
-    dmn_srt_in[dmn_idx]=0L;
+    dmn_srt[dmn_idx]=0L;
   } /* !dmn_idx */
 
   double *hyai_in=NULL; /* [frc] Hybrid A coefficient at layer interfaces on input grid */
@@ -887,17 +885,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_out);
   dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
-  dmn_cnt_out=(long *)nco_malloc(dmn_nbr_out*sizeof(long));
-  dmn_srt_out=(long *)nco_malloc(dmn_nbr_out*sizeof(long));
   rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_out);
   rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev);
   rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev);
   rcd=nco_inq_dimlen(in_id,dmn_id_lev,&lev_nbr_out);
   rcd=nco_inq_dimlen(in_id,dmn_id_ilev,&ilev_nbr_out);
   for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-    rcd=nco_inq_dimlen(in_id,dmn_ids_out[dmn_idx],dmn_cnt_out+dmn_idx);
-    grd_sz_out*=dmn_cnt_out[dmn_idx];
-    dmn_srt_out[dmn_idx]=0L;
+    rcd=nco_inq_dimlen(in_id,dmn_ids_out[dmn_idx],dmn_cnt_in+dmn_idx);
+    grd_sz_out*=dmn_cnt_in[dmn_idx];
+    dmn_srt[dmn_idx]=0L;
   } /* !dmn_idx */
 
   double *hyai_out=NULL; /* [frc] Hybrid A coefficient at layer interfaces on output grid */
@@ -1074,8 +1070,109 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* end idx_tbl */
   } /* end dbg */
 
-  /* Define all non-grid variables */
+  /* Pre-allocate dimension ID and cnt/srt space */
+  int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
+  int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
+  int *dmn_ids_rec=NULL; /* [id] Unlimited dimension IDs */
+  long *dmn_cnt=NULL;
+  rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
+  dmn_id_in=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
+  dmn_id_out=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
+  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+  dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+  dmn_cnt=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
 
+  /* Identify all record-dimensions in input file */
+  rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
+  if(dmn_nbr_rec > 0){
+    dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
+    rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
+  } /* !dmn_nbr_rec */
+  
+  int flg_pck; /* [flg] Variable is packed on disk  */
+  nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
+  double mss_val_dbl;
+  /* Define interpolated and copied variables in output file */
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv=trv_tbl->lst[idx_tbl];
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      var_nm=trv.nm;
+      /* Preserve input type in output type */
+      var_typ_out=trv.var_typ;
+      dmn_nbr_in=trv.nbr_dmn;
+      dmn_nbr_out=trv.nbr_dmn;
+      rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
+      rcd=nco_inq_varid_flg(out_id,var_nm,&var_id_out);
+      /* If variable has not been defined, define it */
+      if(rcd != NC_NOERR){
+	if(trv.flg_rgr){
+	  /* Interpolate */
+	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	  rcd=nco_inq_var_packing(in_id,var_id_in,&flg_pck);
+	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,(double *)NULL);
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
+	    if(!strcmp(dmn_nm,ilev_nm_in)){
+	      /* Change ilev dimension */
+	      dmn_id_out[dmn_idx]=dmn_id_ilev;
+	      dmn_cnt[dmn_idx]=ilev_nbr_out;
+	    }else if(!strcmp(dmn_nm,lev_nm_in)){
+	      /* Change lev dimension */
+	      dmn_id_out[dmn_idx]=dmn_id_lev;
+	      dmn_cnt[dmn_idx]=lev_nbr_out;
+	    }else{
+	      /* Dimensions ilev/lev_nm_in have already been defined as lev/ilev_nm_out, replicate all other dimensions */
+	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
+	    } /* !ilev */
+	    if(rcd != NC_NOERR){
+	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+	      /* Check-for and, if found, retain record dimension property */
+	      for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
+		if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
+		  dmn_cnt[dmn_idx]=NC_UNLIMITED;
+	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+	    } /* !rcd */
+	  } /* !dmn_idx */
+	}else{ /* !flg_rgr */
+	  /* Replicate non-interpolated variables */
+	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
+	    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
+	    if(rcd != NC_NOERR){
+	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+	      /* Check-for and, if found, retain record dimension property */
+	      for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
+		if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
+		  dmn_cnt[dmn_idx]=NC_UNLIMITED;
+	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+	    } /* !rcd */
+	  } /* !dmn_idx */
+	} /* !flg_rgr */
+	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
+	/* Duplicate netCDF4 settings when possible */
+	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
+	  /* Deflation */
+	  if(dmn_nbr_out > 0){
+	    int dfl_lvl_in; /* [enm] Deflate level [0..9] */
+	    rcd=nco_inq_var_deflate(in_id,var_id_in,&shuffle,&deflate,&dfl_lvl_in);
+	    /* Copy original deflation settings */
+	    if(deflate || shuffle) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl_in);
+	    /* Overwrite HDF Lempel-Ziv compression level, if requested */
+	    if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
+	    /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
+	    if(dfl_lvl == 0) shuffle=NC_NOSHUFFLE;
+	    /* Shuffle never, to my knowledge, increases filesize, so shuffle by default when manually deflating */
+	    if(dfl_lvl >= 0) shuffle=NC_SHUFFLE;
+	    if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl);
+	  } /* !dmn_nbr_out */
+	} /* !NC_FORMAT_NETCDF4 */ 
+	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
+      } /* !rcd */
+    } /* !var */
+  } /* end idx_tbl */
+  
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
       
@@ -1097,13 +1194,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   
   /* Do interpolation */
   
+  if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
   if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
-  if(dmn_srt_in) dmn_srt_in=(long *)nco_free(dmn_srt_in);
-
-  if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
   if(dmn_ids_out) dmn_ids_out=(int *)nco_free(dmn_ids_out);
-  if(dmn_srt_out) dmn_srt_out=(long *)nco_free(dmn_srt_out);
+  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
 
   if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
   if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in);
@@ -2996,7 +3091,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   int dmn_in_fst; /* [idx] Offset of input- relative to output-dimension due to non-MRV dimension insertion */
   int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
   int *dmn_ids_rec=NULL; /* [id] Unlimited dimension IDs */
-  //int dmn_idx_in_out_pre_rgr[dmn_nbr_max];
   rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
   dmn_nbr_max++; /* Safety in case regridding adds dimension */
   dmn_id_in=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
@@ -3039,7 +3133,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,(double *)NULL);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
-	    //dmn_idx_in_out_pre_rgr[dmn_idx]=dmn_idx;
 	    /* Is horizontal dimension last, i.e., most-rapidly-varying? */
 	    if(flg_grd_in_1D && !strcmp(dmn_nm,col_nm_in)){
 	      if(dmn_idx != dmn_nbr_in-1){
