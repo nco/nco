@@ -885,6 +885,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_in);
   dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+  dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
   rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_in);
   rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev_in);
   rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev_in);
@@ -1081,6 +1082,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   dmn_id_out=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
   dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+  if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
+  if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
+  dmn_cnt_in=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
   dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
 
   /* Identify all record-dimensions in input file */
@@ -1178,6 +1182,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
   if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+  if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
   if(dmn_ids_rec) dmn_ids_rec=(int *)nco_free(dmn_ids_rec);
 
