@@ -1239,12 +1239,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-# pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_idx,dmn_nbr,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+# pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,ilev_idx,in_id,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_sz_in,grd_sz_out,ilev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_idx,dmn_nbr,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,ilev_idx,in_id,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_sz_in,grd_sz_out,ilev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(has_ilev,has_lev,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_idx,dmn_nbr,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for firstprivate(has_ilev,has_lev,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,ilev_idx,in_id,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,grd_sz_in,grd_sz_out,ilev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -1283,7 +1283,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(dmn_id_in[dmn_idx] == dmn_id_ilev_in) has_ilev=True;
 	  if(dmn_id_in[dmn_idx] == dmn_id_lev_in) has_lev=True;
 	} /* !dmn_idx */
-	assert(has_ilev || has_lev);
+	if(has_ilev || has_lev) exit;
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
 	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
 
@@ -4091,7 +4091,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	 Sum total value of sgs_frc array depends on grid resolution */
       double sgs_nrm=1.0;
       for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-	if(sgs_frc_out[dst_idx] > sgs_nrm) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %g > %g = sgs_nrm\n",nco_prg_nm_get(),fnc_nm,sgs_frc_out[dst_idx],sgs_nrm);
+	if(sgs_frc_out[dst_idx] > sgs_nrm) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %g > %g = sgs_nrm\n",nco_prg_nm_get(),fnc_nm,dst_idx,sgs_frc_out[dst_idx],sgs_nrm);
       } /* !dst_idx */
     } /* !dbg */
 
@@ -4114,7 +4114,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      shared(): uggh...shared clause depends on both compiler and compiler-version
      1. All const variables are default shared for gcc >= 4.9.2,
      2. fnc_nm (only!) must be explicit shared for g++ 4.6.3 (travis)
-     3. flg_rnr,fnc_nm,wgt_vld_thr must be explicit shared for icc 13.1.3 (rhea) */
+     3. flg_rnr,fnc_nm,wgt_vld_thr must be explicit shared for icc 13.1.3 (rhea)
+     4. assert() cannot be used in OpenMP blocks */
 #ifdef __GNUG__
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
 # if GCC_LIB_VERSION < 490

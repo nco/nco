@@ -1,5 +1,7 @@
 2019-03-28  Charlie Zender  <zender@uci.edu>
 
+	* nco_ntp_vrt() adjust OpenMP pragmas to work on old compilers
+
 	* nco_ntp_vrt() swap _in and _out from file-based to grid-based meanings to increase code clarity
 
 2019-03-27  Charlie Zender  <zender@uci.edu>
