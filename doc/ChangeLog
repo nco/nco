@@ -1,3 +1,7 @@
+2019-03-27  Charlie Zender  <zender@uci.edu>
+
+	* nco_ntp_vrt() starts to fill-in output file with new vertical grid
+
 2019-03-26  Charlie Zender  <zender@uci.edu>
 
 	* nco_ntp_vrt() computes midpoint and interface pressures on input and output grids

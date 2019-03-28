@@ -1156,12 +1156,16 @@ extern "C" {
     char *fl_hnt_src; /* [sng] ERWG hint source */
     char *fl_vrt; /* [sng] File containing vertical coordinate information */
     char *frc_nm; /* [sng] Name of variable containing gridcell fraction */
+    char *ilev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces */
+    char *ilev_nm_out; /* [sng] Name of output vertical dimension at layer interfaces */
     char *lat_bnd_nm; /* [sng] Name of rectangular boundary variable for latitude */
     char *lat_dmn_nm; /* [sng] Name of latitude dimension in inferred grid */
     char *lat_nm_in; /* [sng] Name of input dimension to recognize as latitude */
     char *lat_nm_out; /* [sng] Name of output dimension for latitude */
     char *lat_vrt_nm; /* [sng] Name of non-rectangular boundary variable for latitude */
     char *lat_wgt_nm; /* [sng] Name of variable containing latitude weights */
+    char *lev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension at layer midpoints */
+    char *lev_nm_out; /* [sng] Name of output vertical dimension at layer midpoints */
     char *lon_bnd_nm; /* [sng] Name of rectangular boundary variable for longitude */
     char *lon_dmn_nm; /* [sng] Name of longitude dimension in inferred grid */
     char *lon_nm_in; /* [sng] Name of dimension to recognize as longitude */

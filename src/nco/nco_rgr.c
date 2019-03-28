@@ -151,11 +151,15 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->col_nm_in) rgr->col_nm_in=(char *)nco_free(rgr->col_nm_in);
   if(rgr->col_nm_out) rgr->col_nm_out=(char *)nco_free(rgr->col_nm_out);
   if(rgr->frc_nm) rgr->frc_nm=(char *)nco_free(rgr->frc_nm);
+  if(rgr->ilev_nm_in) rgr->ilev_nm_in=(char *)nco_free(rgr->ilev_nm_in);
+  if(rgr->ilev_nm_out) rgr->ilev_nm_out=(char *)nco_free(rgr->ilev_nm_out);
   if(rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)nco_free(rgr->lat_bnd_nm);
   if(rgr->lat_nm_in) rgr->lat_nm_in=(char *)nco_free(rgr->lat_nm_in);
   if(rgr->lat_nm_out) rgr->lat_nm_out=(char *)nco_free(rgr->lat_nm_out);
   if(rgr->lat_vrt_nm) rgr->lat_vrt_nm=(char *)nco_free(rgr->lat_vrt_nm);
   if(rgr->lat_wgt_nm) rgr->lat_wgt_nm=(char *)nco_free(rgr->lat_wgt_nm);
+  if(rgr->lev_nm_in) rgr->lev_nm_in=(char *)nco_free(rgr->lev_nm_in);
+  if(rgr->lev_nm_out) rgr->lev_nm_out=(char *)nco_free(rgr->lev_nm_out);
   if(rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)nco_free(rgr->lon_bnd_nm);
   if(rgr->lon_nm_in) rgr->lon_nm_in=(char *)nco_free(rgr->lon_nm_in);
   if(rgr->lon_nm_out) rgr->lon_nm_out=(char *)nco_free(rgr->lon_nm_out);
@@ -282,12 +286,16 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->col_nm_in=NULL; /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
   rgr->col_nm_out=NULL; /* [sng] Name of horizontal spatial output dimension on unstructured grid */
   rgr->frc_nm=NULL; /* [sng] Name of variable containing gridcell fraction */
+  rgr->ilev_nm_in=NULL; /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces */
+  rgr->ilev_nm_out=NULL; /* [sng] Name of output vertical dimension at layer interfaces */
   rgr->lat_bnd_nm=NULL; /* [sng] Name of rectangular boundary variable for latitude */
   rgr->lat_dmn_nm=NULL; /* [sng] Name of latitude dimension in inferred grid */
   rgr->lat_nm_in=NULL; /* [sng] Name of input dimension to recognize as latitude */
   rgr->lat_nm_out=NULL; /* [sng] Name of output dimension for latitude */
   rgr->lat_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for latitude */
   rgr->lat_wgt_nm=NULL; /* [sng] Name of variable containing latitude weights */
+  rgr->lev_nm_in=NULL; /* [sng] Name of input dimension to recognize as vertical dimension at layer midpoints */
+  rgr->lev_nm_out=NULL; /* [sng] Name of output vertical dimension at layer midpoints */
   rgr->lon_bnd_nm=NULL; /* [sng] Name of rectangular boundary variable for longitude */
   rgr->lon_dmn_nm=NULL; /* [sng] Name of longitude dimension in inferred grid */
   rgr->lon_nm_in=NULL; /* [sng] Name of dimension to recognize as longitude */
@@ -559,6 +567,14 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->frc_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !frc_nm */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"ilev_nm_in") || !strcmp(rgr_lst[rgr_var_idx].key,"ilev_nm")){
+      rgr->ilev_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !ilev_nm_in */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"ilev_nm_out")){
+      rgr->ilev_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !ilev_nm_out */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_bnd_nm")){
       rgr->lat_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -583,6 +599,14 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->lat_wgt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lat_wgt_nm */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lev_nm_in") || !strcmp(rgr_lst[rgr_var_idx].key,"lev_nm")){
+      rgr->lev_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !lev_nm_in */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lev_nm_out")){
+      rgr->lev_nm_out=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !lev_nm_out */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_bnd_nm")){
       rgr->lon_bnd_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -644,8 +668,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(!rgr->bnd_tm_nm) rgr->bnd_tm_nm=(char *)strdup("nbnd"); /* [sng] Name of dimension to employ for temporal bounds */
   if(!rgr->col_nm_in) rgr->col_nm_in=(char *)strdup("ncol"); /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
   if(!rgr->frc_nm) rgr->frc_nm=(char *)strdup("frac_b"); /* [sng] Name of variable containing gridcell fraction */
+  if(!rgr->ilev_nm_in) rgr->ilev_nm_in=(char *)strdup("ilev"); /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces */
   if(!rgr->lat_bnd_nm) rgr->lat_bnd_nm=(char *)strdup("lat_bnds"); /* [sng] Name of rectangular boundary variable for latitude */
   if(!rgr->lat_nm_in) rgr->lat_nm_in=(char *)strdup("lat"); /* [sng] Name of input dimension to recognize as latitude */
+  if(!rgr->lev_nm_in) rgr->lev_nm_in=(char *)strdup("lev"); /* [sng] Name of input dimension to recognize as vertical dimension at layer midpoints */
   if(!rgr->lat_vrt_nm) rgr->lat_vrt_nm=(char *)strdup("lat_vertices"); /* [sng] Name of non-rectangular boundary variable for latitude */
   if(!rgr->lat_wgt_nm) rgr->lat_wgt_nm=(char *)strdup("gw"); /* [sng] Name of variable containing latitude weights */
   if(!rgr->lon_bnd_nm) rgr->lon_bnd_nm=(char *)strdup("lon_bnds"); /* [sng] Name of rectangular boundary variable for longitude */
@@ -655,7 +681,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(!rgr->vrt_nm) rgr->vrt_nm=(char *)strdup("nv"); /* [sng] Name of dimension to employ for vertices */
 
   /* Derived from defaults and command-line arguments */
-  // On second thought, do no strdup() these here. This way, NULL means user never specified lon/lat-out names
+  // On second thought, do not strdup() these here. This way, NULL means user never specified lon/lat-out names
   //  if(!rgr->col_nm_out) rgr->col_nm_out=(char *)strdup("ncol"); /* [sng] Name of dimension to output as horizontal spatial dimension on unstructured grid */
   //  if(!rgr->lat_nm_out) rgr->lat_nm_out=(char *)strdup("lat"); /* [sng] Name of dimension to output as latitude */
   //  if(!rgr->lon_nm_out) rgr->lon_nm_out=(char *)strdup("lon"); /* [sng] Name of dimension to output as longitude */
@@ -711,6 +737,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int hyam_id; /* [id] Hybrid A coefficient at layer midpoints ID */
   int hybi_id; /* [id] Hybrid B coefficient at layer interfaces ID */
   int hybm_id; /* [id] Hybrid B coefficient at layer midpoints ID */
+  int ilev_id; /* [id] Interface pressure ID */
+  int lev_id; /* [id] Midpoint pressure ID */
   int p0_id; /* [id] Reference pressure ID */
   int ps_id; /* [id] Surface pressure ID */
 
@@ -718,6 +746,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   rcd+=nco_inq_varid(in_id,"hyam",&hyam_id);
   rcd+=nco_inq_varid(in_id,"hybi",&hybi_id);
   rcd+=nco_inq_varid(in_id,"hybm",&hybm_id);
+  rcd+=nco_inq_varid(in_id,"ilev",&ilev_id);
+  rcd+=nco_inq_varid(in_id,"lev",&lev_id);
   rcd+=nco_inq_varid(in_id,"P0",&p0_id);
   rcd+=nco_inq_varid(in_id,"PS",&ps_id);
 
@@ -725,6 +755,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      prs_mdp[time,col,lev]=P0*hyam[lev]+PS[time,col]*hybm[lev]
      prs_ntf[time,col,lev]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
 
+  char *ilev_nm_in=rgr->ilev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces */
+  char *lev_nm_in=rgr->lev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension at layer midpoints */
+  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   int *dmn_ids_in=NULL; /* [nbr] Input file dimension IDs */
   int *dmn_ids_out=NULL; /* [nbr] Output file dimension IDs */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input file */
@@ -750,8 +783,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_in);
   rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev);
   rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev);
-  rcd=nco_inq_dimlen(in_id,dmn_id_lev,&lev_nbr_in);
   rcd=nco_inq_dimlen(in_id,dmn_id_ilev,&ilev_nbr_in);
+  rcd=nco_inq_dimlen(in_id,dmn_id_lev,&lev_nbr_in);
+  rcd=nco_inq_dimname(in_id,dmn_id_ilev,dmn_nm);
+  ilev_nm_in=strdup(dmn_nm);
+  rcd=nco_inq_dimname(in_id,dmn_id_lev,dmn_nm);
+  lev_nm_in=strdup(dmn_nm);
   for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
     rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
     grd_sz_in*=dmn_cnt_in[dmn_idx];
@@ -762,6 +799,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   double *hyam_in=NULL; /* [frc] Hybrid A coefficient at layer midpoints on input grid */
   double *hybi_in=NULL; /* [frc] Hybrid B coefficient at layer interfaces on input grid */
   double *hybm_in=NULL; /* [frc] Hybrid B coefficient at layer midpoints on input grid */
+  double *ilev_in=NULL; /* [hPa] Interface pressure on input grid */
+  double *lev_in=NULL; /* [hPa] Midpoint pressure on input grid */
   double *ps_in=NULL; /* [Pa] Surface pressure on input grid */
   double *prs_mdp_in=NULL; /* [Pa] Midpoint pressure on input grid */
   double *prs_ntf_in=NULL; /* [Pa] Interface pressure on input grid */
@@ -775,6 +814,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   hyam_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
   hybi_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
   hybm_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
+  ilev_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
+  lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
   ps_in=(double *)nco_malloc_dbg(grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
   prs_mdp_in=(double *)nco_malloc_dbg(grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_in value buffer");
   prs_ntf_in=(double *)nco_malloc_dbg(grd_sz_in*ilev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_in value buffer");
@@ -783,6 +824,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   rcd=nco_get_var(in_id,hyam_id,hyam_in,crd_typ_out);
   rcd=nco_get_var(in_id,hybi_id,hybi_in,crd_typ_out);
   rcd=nco_get_var(in_id,hybm_id,hybm_in,crd_typ_out);
+  rcd=nco_get_var(in_id,ilev_id,&ilev_in,crd_typ_out);
+  rcd=nco_get_var(in_id,lev_id,&lev_in,crd_typ_out);
   rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
   rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
 
@@ -863,8 +906,107 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[grd_idx]*hybi_out[ilev_idx];
   } /* !grd_idx */
 
-  /* Do work */
+  /* Lay-out regridded file */
+  char *ilev_nm_out;
+  char *lev_nm_out;
 
+  /* Use explicitly specified output names, if any, otherwise use input names (either explicitly specified or discovered by fuzzing) */
+  if(rgr->ilev_nm_out) ilev_nm_out=rgr->ilev_nm_out; else ilev_nm_out=ilev_nm_in;
+  if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out; else lev_nm_out=lev_nm_in;
+
+  /* Define new vertical dimensions before all else */
+  rcd+=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev);
+  rcd+=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev);
+  
+  /* Do not extract grid variables (that are also extensive variables) like ilev, lev, hyai, hyam, hybi, hybm */ 
+  /* Exception list source:
+     CAM: hyai, hyam, hybi, hybm, ilev, lev, 
+     EAM: hyai, hyam, hybi, hybm, ilev, lev */
+  const int var_xcl_lst_nbr=6; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/hyai", "/hyam", "/hybi", "/hybm", "/ilev", "/lev"};
+  int var_cpy_nbr=0; /* [nbr] Number of copied variables */
+  int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
+  int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
+  int var_crt_nbr=0; /* [nbr] Number of created variables */
+  long idx; /* [idx] Generic index */
+  unsigned int idx_tbl; /* [idx] Counter for traversal table */
+  const unsigned int trv_nbr=trv_tbl->nbr; /* [idx] Number of traversal table entries */
+  for(idx=0;idx<var_xcl_lst_nbr;idx++){
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
+      if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,var_xcl_lst[idx])) break;
+    if(idx_tbl < trv_nbr){
+      if(trv_tbl->lst[idx_tbl].flg_xtr){
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
+	var_xcl_nbr++;
+      } /* endif */
+      trv_tbl->lst[idx_tbl].flg_xtr=False;
+    } /* endif */
+  } /* !idx */
+
+  char *var_nm; /* [sng] Variable name */
+  int *dmn_id_in=NULL; /* [id] Dimension IDs */
+  int *dmn_id_out=NULL; /* [id] Dimension IDs */
+  int var_id_in; /* [id] Variable ID */
+  int var_id_out; /* [id] Variable ID */
+  nc_type var_typ_out; /* [enm] Variable type to write to disk */
+  nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
+
+  int shuffle; /* [flg] Turn-on shuffle filter */
+  int deflate; /* [flg] Turn-on deflate filter */
+  deflate=(int)True;
+  shuffle=NC_SHUFFLE;
+  dfl_lvl=rgr->dfl_lvl;
+  fl_out_fmt=rgr->fl_out_fmt;
+
+  /* Define new coordinates and grid variables in regridded file */
+  const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
+  const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
+  const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
+  const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
+  nco_bool flg_grd_out_hyb=True; /* [flg] Output hybrid coordinate vertical grid */
+  if(flg_grd_out_hyb){
+    rcd+=nco_def_var(out_id,ilev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ilev,&ilev_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ilev_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
+    rcd+=nco_def_var(out_id,lev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lev,&lev_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lev_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
+  } /* !flg_grd_out_hyb */
+
+  char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
+  nco_bool has_ilev; /* [flg] Contains interface level dimension */
+  nco_bool has_lev; /* [flg] Contains midpoint level dimension */
+  trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
+  /* Define regridding flag for each variable */
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv=trv_tbl->lst[idx_tbl];
+    dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      has_ilev=False;
+      has_lev=False;
+      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	/* Pre-determine flags necessary during next loop */
+	dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
+	/* fxm: Generalize to include any variable containing coordinates with "standard_name" = "atmosphere_hybrid_sigma_pressure_coordinate" */
+	if(!has_ilev) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
+	if(!has_lev) has_lev=!strcmp(dmn_nm_cp,lev_nm_in);
+      } /* end loop over dimensions */
+      /* Regrid variables containing either vertical dimension */
+      if(has_ilev || has_lev){
+	trv_tbl->lst[idx_tbl].flg_rgr=True;
+	var_rgr_nbr++;
+      } /* endif */
+      assert(!(has_ilev && has_lev));
+      /* Copy all variables that are not regridded or omitted */
+      if(!trv_tbl->lst[idx_tbl].flg_rgr){
+	  var_cpy_nbr++;
+      } /* endif not regridded */
+    } /* end nco_obj_typ_var */
+  } /* end idx_tbl */
+  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit interpolation criteria. The vertical interpolator expects something to interpolate, and variables not interpolated are copied straight to output. HINT: If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\" and \"lev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr ilev=interface_level --rgr lev=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\".\n",nco_prg_nm_get(),fnc_nm);
+
+  /* Do work */
+  
   if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
   if(dmn_srt_in) dmn_srt_in=(long *)nco_free(dmn_srt_in);
@@ -873,10 +1015,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(dmn_ids_out) dmn_ids_out=(int *)nco_free(dmn_ids_out);
   if(dmn_srt_out) dmn_srt_out=(long *)nco_free(dmn_srt_out);
 
+  if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
+  if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in);
+
   if(hyai_in) hyai_in=(double *)nco_free(hyai_in);
   if(hyam_in) hyam_in=(double *)nco_free(hyam_in);
   if(hybi_in) hybi_in=(double *)nco_free(hybi_in);
   if(hybm_in) hybm_in=(double *)nco_free(hybm_in);
+  if(ilev_in) ilev_in=(double *)nco_free(ilev_in);
+  if(lev_in) lev_in=(double *)nco_free(lev_in);
   if(ps_in) ps_in=(double *)nco_free(ps_in);
   if(prs_mdp_in) prs_mdp_in=(double *)nco_free(prs_mdp_in);
   if(prs_ntf_in) prs_ntf_in=(double *)nco_free(prs_ntf_in);
@@ -889,7 +1036,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(prs_mdp_out) prs_mdp_out=(double *)nco_free(prs_mdp_out);
   if(prs_ntf_out) prs_ntf_out=(double *)nco_free(prs_ntf_out);
   
-} /* end nco_ntp_vrt() */
+} /* !nco_ntp_vrt() */
 
 int /* O [enm] Return code */
 nco_rgr_wgt /* [fnc] Regrid with external weights */
@@ -2338,7 +2485,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      CAM, CERES, CMIP5: lat, lon
      CAM, CMIP5: gw, lat_bnds, lon_bnds
      CAM-FV: slon, slat, w_stag (w_stag is weights for slat grid, analagous to gw for lat grid)
-     CAM-SE: area
+     CAM-SE, EAM: area
      CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (NB: CICE uses ?LON and POP uses ?LONG) (aice is ice area, tmask is state-variable mask, both not currently excluded, although all binary masks like tmask should be recomputed on new grid)
      DSCOVR L2: latitude, longitude
      ESMF: gridcell_area
@@ -2431,7 +2578,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	  /* Pre-determine flags necessary during next loop */
 	  dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
-	  /* fxm: generalize to include any variable containing two coordinates with "standard_name" = "latitude" and "longitude" */
+	  /* fxm: Generalize to include any variable containing two coordinates with "standard_name" = "latitude" and "longitude" */
 	  if(!has_lon) has_lon=!strcmp(dmn_nm_cp,lon_nm_in);
 	  if(!has_lat) has_lat=!strcmp(dmn_nm_cp,lat_nm_in);
 	} /* end loop over dimensions */
@@ -2636,7 +2783,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   dfl_lvl=rgr->dfl_lvl;
   fl_out_fmt=rgr->fl_out_fmt;
 
-  /* Define new coordinates and variables in regridded file */
+  /* Define new coordinates and grid variables in regridded file */
   if(flg_grd_out_1D){
     rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&lat_out_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_out_id,shuffle,deflate,dfl_lvl);
