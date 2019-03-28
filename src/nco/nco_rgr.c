@@ -703,13 +703,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   const char fnc_nm[]="nco_ntp_vrt()"; /* [sng] Function name */
 
-  char *fl_in;
+  char *fl_tpl;
   char *fl_pth_lcl=NULL;
 
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
   int in_id; /* I [id] Input netCDF file ID */
+  int tpl_id; /* [id] Input netCDF file ID (for vertical grid template) */
   int md_open; /* [enm] Mode flag for nc_open() call */
   int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;
@@ -725,13 +726,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining vertical grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_vrt);
 
-  /* Duplicate (because nco_fl_mk_lcl() free()'s fl_in) */
-  fl_in=(char *)strdup(rgr->fl_vrt);
+  /* Duplicate (because nco_fl_mk_lcl() free()'s its fl_in) */
+  fl_tpl=(char *)strdup(rgr->fl_vrt);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
+  fl_tpl=nco_fl_mk_lcl(fl_tpl,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
-  rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
+  rcd+=nco_fl_open(fl_tpl,md_open,&bfr_sz_hnt,&tpl_id);
 
   int hyai_id; /* [id] Hybrid A coefficient at layer interfaces ID */
   int hyam_id; /* [id] Hybrid A coefficient at layer midpoints ID */
@@ -742,14 +743,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int p0_id; /* [id] Reference pressure ID */
   int ps_id; /* [id] Surface pressure ID */
 
-  rcd+=nco_inq_varid(in_id,"hyai",&hyai_id);
-  rcd+=nco_inq_varid(in_id,"hyam",&hyam_id);
-  rcd+=nco_inq_varid(in_id,"hybi",&hybi_id);
-  rcd+=nco_inq_varid(in_id,"hybm",&hybm_id);
-  rcd+=nco_inq_varid(in_id,"ilev",&ilev_id);
-  rcd+=nco_inq_varid(in_id,"lev",&lev_id);
-  rcd+=nco_inq_varid(in_id,"P0",&p0_id);
-  rcd+=nco_inq_varid(in_id,"PS",&ps_id);
+  rcd+=nco_inq_varid(tpl_id,"hyai",&hyai_id);
+  rcd+=nco_inq_varid(tpl_id,"hyam",&hyam_id);
+  rcd+=nco_inq_varid(tpl_id,"hybi",&hybi_id);
+  rcd+=nco_inq_varid(tpl_id,"hybm",&hybm_id);
+  rcd+=nco_inq_varid(tpl_id,"ilev",&ilev_id);
+  rcd+=nco_inq_varid(tpl_id,"lev",&lev_id);
+  rcd+=nco_inq_varid(tpl_id,"P0",&p0_id);
+  rcd+=nco_inq_varid(tpl_id,"PS",&ps_id);
 
   /* Prepare for name swap for "_in" file */
   const int hyai_id_tpl=hyai_id; /* [id] Hybrid A coefficient at layer interfaces ID */
@@ -765,17 +766,22 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      prs_mdp[time,col,lev]=P0*hyam[lev]+PS[time,col]*hybm[lev]
      prs_ntf[time,col,lev]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
 
-  char *ilev_nm_in=rgr->ilev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces */
-  char *lev_nm_in=rgr->lev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension at layer midpoints */
+  char *ilev_nm_in;
+  char *lev_nm_in;
+  char *ilev_nm_out;
+  char *lev_nm_out;
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   int *dmn_ids_in=NULL; /* [nbr] Input file dimension IDs */
   int *dmn_ids_out=NULL; /* [nbr] Output file dimension IDs */
   int dmn_nbr_ps; /* [nbr] Number of dimensions in PS variable */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input file */
   int dmn_nbr_out; /* [nbr] Number of dimensions in output file */
-  int dmn_id_ilev=NC_MIN_INT; /* [id] Dimension ID for interface level */
-  int dmn_id_lev=NC_MIN_INT; /* [id] Dimension ID for midpoint level */
+  int dmn_id_ilev_out; /* [id] Dimension ID for interface level */
+  int dmn_id_lev_out; /* [id] Dimension ID for midpoint level */
+  int dmn_id_ilev_in; /* [id] Dimension ID for interface level in file to be interpolated */
+  int dmn_id_lev_in; /* [id] Dimension ID for midpoint level in file to be interpolated */
   long *dmn_cnt_in=NULL;
+  long *dmn_cnt_out=NULL;
   long *dmn_srt=NULL;
   long ilev_nbr_in;
   long lev_nbr_in;
@@ -785,19 +791,108 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   size_t grd_sz_out=1L; /* [nbr] Number of elements in single layer of output grid */
 
   /* Interrogate ps for horizontal dimensions and hyai/hyam to obtain ilev/lev dimensions */
-  rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_ps);
-  dmn_nbr_in=dmn_nbr_ps;
+  rcd=nco_inq_varndims(tpl_id,ps_id,&dmn_nbr_ps);
+  dmn_nbr_out=dmn_nbr_ps;
+  dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
+  dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
+  dmn_srt=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
+  rcd=nco_inq_vardimid(tpl_id,ps_id,dmn_ids_out);
+  rcd=nco_inq_vardimid(tpl_id,hyai_id,&dmn_id_ilev_out);
+  rcd=nco_inq_vardimid(tpl_id,hyam_id,&dmn_id_lev_out);
+  rcd=nco_inq_dimlen(tpl_id,dmn_id_ilev_out,&ilev_nbr_out);
+  rcd=nco_inq_dimlen(tpl_id,dmn_id_lev_out,&lev_nbr_out);
+  rcd=nco_inq_dimname(tpl_id,dmn_id_ilev_out,dmn_nm);
+  ilev_nm_out=strdup(dmn_nm);
+  rcd=nco_inq_dimname(tpl_id,dmn_id_lev_out,dmn_nm);
+  lev_nm_out=strdup(dmn_nm);
+  for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+    rcd=nco_inq_dimlen(tpl_id,dmn_ids_out[dmn_idx],dmn_cnt_out+dmn_idx);
+    /* 20190327: fxm breaks when PS has time dimension > 1 */
+    grd_sz_out*=dmn_cnt_out[dmn_idx];
+    dmn_srt[dmn_idx]=0L;
+  } /* !dmn_idx */
+
+  double *hyai_out=NULL; /* [frc] Hybrid A coefficient at layer interfaces on output grid */
+  double *hyam_out=NULL; /* [frc] Hybrid A coefficient at layer midpoints on output grid */
+  double *hybi_out=NULL; /* [frc] Hybrid B coefficient at layer interfaces on output grid */
+  double *hybm_out=NULL; /* [frc] Hybrid B coefficient at layer midpoints on output grid */
+  double *ilev_out=NULL; /* [hPa] Interface pressure on output grid */
+  double *lev_out=NULL; /* [hPa] Midpoint pressure on output grid */
+  double *ps_out=NULL; /* [Pa] Surface pressure on output grid */
+  double *prs_mdp_out=NULL; /* [Pa] Midpoint pressure on output grid */
+  double *prs_ntf_out=NULL; /* [Pa] Interface pressure on output grid */
+  double p0_out; /* [Pa] Reference pressure on output grid */
+
+  const nc_type crd_typ_out=NC_DOUBLE;
+  nc_type var_typ_rgr; /* [enm] Variable type used during regridding */
+  var_typ_rgr=NC_DOUBLE; /* NB: Perform interpolation in double precision */
+
+  hyai_out=(double *)nco_malloc(ilev_nbr_out*nco_typ_lng(var_typ_rgr));
+  hyam_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
+  hybi_out=(double *)nco_malloc(ilev_nbr_out*nco_typ_lng(var_typ_rgr));
+  hybm_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
+  ilev_out=(double *)nco_malloc(ilev_nbr_out*nco_typ_lng(var_typ_rgr));
+  lev_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
+  ps_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
+  prs_mdp_out=(double *)nco_malloc_dbg(grd_sz_out*lev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_out value buffer");
+  prs_ntf_out=(double *)nco_malloc_dbg(grd_sz_out*ilev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_out value buffer");
+
+  rcd=nco_get_var(tpl_id,hyai_id,hyai_out,crd_typ_out);
+  rcd=nco_get_var(tpl_id,hyam_id,hyam_out,crd_typ_out);
+  rcd=nco_get_var(tpl_id,hybi_id,hybi_out,crd_typ_out);
+  rcd=nco_get_var(tpl_id,hybm_id,hybm_out,crd_typ_out);
+  rcd=nco_get_var(tpl_id,ilev_id,ilev_out,crd_typ_out);
+  rcd=nco_get_var(tpl_id,lev_id,lev_out,crd_typ_out);
+  rcd=nco_get_var(tpl_id,ps_id,ps_out,crd_typ_out);
+  rcd=nco_get_var(tpl_id,p0_id,&p0_out,crd_typ_out);
+
+  long grd_idx; /* [idx] Gridcell index */
+  long ilev_idx; /* [idx] Interface level index */
+  long lev_idx; /* [idx] Level index */
+  /* Nomenclature: Template pressures are destination pressures on output grid so name them _out */
+  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++){
+    for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+      prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=p0_out*hyam_out[lev_idx]+ps_out[grd_idx]*hybm_out[lev_idx];
+    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
+      prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[grd_idx]*hybi_out[ilev_idx];
+  } /* !grd_idx */
+
+  /* For vertical interpolation (unlike horizontal regridding), the destination grid is known a priori
+     Straightforward copy all variables and attributes that define grid from fl_tpl to output
+     would work in theory, but not allow dynamic identification and relabeling of names */
+  nco_bool flg_grd_out_hyb=True; /* [flg] Output hybrid coordinate vertical grid */
+  if(flg_grd_out_hyb){
+    const int vrt_grd_lst_nbr=8; /* [nbr] Number of variables that define vertical grid */
+    const char *vtr_grd_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/PS"};
+  } /* !flg_grd_out_hyb */
+
+  /* Above this line, fl_tpl and tpl_id refer to vertical coordinate file (i.e., template file)
+     Below this line, fl_in and in_id refer to input file to be vertically regridded
+     We do not close template file until after copying all grid variables
+     For maximum efficiency, we do this just after defining all interpolated variables in output
+     That way no file needs to exit define mode or enter data mode more than once
+     However this requires keeping template file, input data file, and output file simulataneously open */
+  in_id=rgr->in_id;
+  out_id=rgr->out_id;
+
+  /* Variables on input grid, i.e., on grid in data file to be interpolated */
+  rcd+=nco_inq_varid(in_id,"hyai",&hyai_id);
+  rcd+=nco_inq_varid(in_id,"hyam",&hyam_id);
+  rcd+=nco_inq_varid(in_id,"hybi",&hybi_id);
+  rcd+=nco_inq_varid(in_id,"hybm",&hybm_id);
+  rcd+=nco_inq_varid(in_id,"P0",&p0_id);
+  rcd+=nco_inq_varid(in_id,"PS",&ps_id);
+
+  rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_in);
   dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
-  dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
-  dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
   rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_in);
-  rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev);
-  rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev);
-  rcd=nco_inq_dimlen(in_id,dmn_id_ilev,&ilev_nbr_in);
-  rcd=nco_inq_dimlen(in_id,dmn_id_lev,&lev_nbr_in);
-  rcd=nco_inq_dimname(in_id,dmn_id_ilev,dmn_nm);
+  rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev_in);
+  rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev_in);
+  rcd=nco_inq_dimlen(in_id,dmn_id_lev_in,&lev_nbr_in);
+  rcd=nco_inq_dimlen(in_id,dmn_id_ilev_in,&ilev_nbr_in);
+  rcd=nco_inq_dimname(in_id,dmn_id_ilev_in,dmn_nm);
   ilev_nm_in=strdup(dmn_nm);
-  rcd=nco_inq_dimname(in_id,dmn_id_lev,dmn_nm);
+  rcd=nco_inq_dimname(in_id,dmn_id_lev_in,dmn_nm);
   lev_nm_in=strdup(dmn_nm);
   for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
     rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
@@ -809,23 +904,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   double *hyam_in=NULL; /* [frc] Hybrid A coefficient at layer midpoints on input grid */
   double *hybi_in=NULL; /* [frc] Hybrid B coefficient at layer interfaces on input grid */
   double *hybm_in=NULL; /* [frc] Hybrid B coefficient at layer midpoints on input grid */
-  double *ilev_in=NULL; /* [hPa] Interface pressure on input grid */
-  double *lev_in=NULL; /* [hPa] Midpoint pressure on input grid */
   double *ps_in=NULL; /* [Pa] Surface pressure on input grid */
   double *prs_mdp_in=NULL; /* [Pa] Midpoint pressure on input grid */
   double *prs_ntf_in=NULL; /* [Pa] Interface pressure on input grid */
   double p0_in; /* [Pa] Reference pressure on input grid */
 
-  const nc_type crd_typ_out=NC_DOUBLE;
-  nc_type var_typ_rgr; /* [enm] Variable type used during regridding */
-  var_typ_rgr=NC_DOUBLE; /* NB: Perform interpolation in double precision */
-
   hyai_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
   hyam_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
   hybi_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
   hybm_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
-  ilev_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
-  lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
   ps_in=(double *)nco_malloc_dbg(grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
   prs_mdp_in=(double *)nco_malloc_dbg(grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_in value buffer");
   prs_ntf_in=(double *)nco_malloc_dbg(grd_sz_in*ilev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_in value buffer");
@@ -834,14 +921,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   rcd=nco_get_var(in_id,hyam_id,hyam_in,crd_typ_out);
   rcd=nco_get_var(in_id,hybi_id,hybi_in,crd_typ_out);
   rcd=nco_get_var(in_id,hybm_id,hybm_in,crd_typ_out);
-  rcd=nco_get_var(in_id,ilev_id,ilev_in,crd_typ_out);
-  rcd=nco_get_var(in_id,lev_id,lev_in,crd_typ_out);
-  rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
   rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
+  rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
 
-  long grd_idx; /* [idx] Gridcell index */
-  long ilev_idx; /* [idx] Interface level index */
-  long lev_idx; /* [idx] Level index */
   for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
     for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
       prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=p0_in*hyam_in[lev_idx]+ps_in[grd_idx]*hybm_in[lev_idx];
@@ -849,99 +931,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=p0_in*hyai_in[ilev_idx]+ps_in[grd_idx]*hybi_in[ilev_idx];
   } /* !grd_idx */
 
-  /* For vertical interpolation (unlike horizontal regridding), the destination grid is known a priori
-     Straightforward copy all variables and attributes that define grid from fl_vrt to output
-     would work in theory, but not allow dynamic identification and relabeling of names */
-  nco_bool flg_grd_out_hyb=True; /* [flg] Output hybrid coordinate vertical grid */
-  if(flg_grd_out_hyb){
-    const int vrt_grd_lst_nbr=8; /* [nbr] Number of variables that define vertical grid */
-    const char *vtr_grd_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/PS"};
-  } /* !flg_grd_out_hyb */
-
-  /* Above this line, fl_in and in_id refer to vertical coordinate file (i.e., template file)
-     Below this line, fl_in and in_id refer to input file to be vertically regridded
-     Below this line, fl_tpl and tpl_id refer to vertical coordinate file (i.e., template file)
-     We do not close template file until after copying all grid variables
-     For maximum efficiency, we do this just after defining all interpolated variables in output
-     That way no file needs to exit define or enter data mode more than once
-     However this requires keeping template file, input data file, and output file simulataneously open 
-     To keep the nomenclature straight, after this line we use _tpl to refer to grid template file */
-
-  /* Commence name swap for "_in" file */
-  char *fl_tpl;
-  int tpl_id; /* [id] Input netCDF file ID (for vertical grid template) */
-  tpl_id=in_id;
-  fl_tpl=fl_in;
-  in_id=rgr->in_id;
-  out_id=rgr->out_id;
-
-  /* Variables on output grid */
-  rcd+=nco_inq_varid(in_id,"hyai",&hyai_id);
-  rcd+=nco_inq_varid(in_id,"hyam",&hyam_id);
-  rcd+=nco_inq_varid(in_id,"hybi",&hybi_id);
-  rcd+=nco_inq_varid(in_id,"hybm",&hybm_id);
-  rcd+=nco_inq_varid(in_id,"P0",&p0_id);
-  rcd+=nco_inq_varid(in_id,"PS",&ps_id);
-
-  rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_out);
-  dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
-  rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_out);
-  rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev);
-  rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev);
-  rcd=nco_inq_dimlen(in_id,dmn_id_lev,&lev_nbr_out);
-  rcd=nco_inq_dimlen(in_id,dmn_id_ilev,&ilev_nbr_out);
-  for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-    rcd=nco_inq_dimlen(in_id,dmn_ids_out[dmn_idx],dmn_cnt_in+dmn_idx);
-    grd_sz_out*=dmn_cnt_in[dmn_idx];
-    dmn_srt[dmn_idx]=0L;
-  } /* !dmn_idx */
-
-  double *hyai_out=NULL; /* [frc] Hybrid A coefficient at layer interfaces on output grid */
-  double *hyam_out=NULL; /* [frc] Hybrid A coefficient at layer midpoints on output grid */
-  double *hybi_out=NULL; /* [frc] Hybrid B coefficient at layer interfaces on output grid */
-  double *hybm_out=NULL; /* [frc] Hybrid B coefficient at layer midpoints on output grid */
-  double *ps_out=NULL; /* [Pa] Surface pressure on output grid */
-  double *prs_mdp_out=NULL; /* [Pa] Midpoint pressure on output grid */
-  double *prs_ntf_out=NULL; /* [Pa] Interface pressure on output grid */
-  double p0_out; /* [Pa] Reference pressure on output grid */
-
-  hyai_out=(double *)nco_malloc(ilev_nbr_out*nco_typ_lng(var_typ_rgr));
-  hyam_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
-  hybi_out=(double *)nco_malloc(ilev_nbr_out*nco_typ_lng(var_typ_rgr));
-  hybm_out=(double *)nco_malloc(lev_nbr_out*nco_typ_lng(var_typ_rgr));
-  ps_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
-  prs_mdp_out=(double *)nco_malloc_dbg(grd_sz_out*lev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_out value buffer");
-  prs_ntf_out=(double *)nco_malloc_dbg(grd_sz_out*ilev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_out value buffer");
-
-  rcd=nco_get_var(in_id,hyai_id,hyai_out,crd_typ_out);
-  rcd=nco_get_var(in_id,hyam_id,hyam_out,crd_typ_out);
-  rcd=nco_get_var(in_id,hybi_id,hybi_out,crd_typ_out);
-  rcd=nco_get_var(in_id,hybm_id,hybm_out,crd_typ_out);
-  rcd=nco_get_var(in_id,p0_id,&p0_out,crd_typ_out);
-  rcd=nco_get_var(in_id,ps_id,ps_out,crd_typ_out);
-
-  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++){
-    for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
-      prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=p0_out*hyam_out[lev_idx]+ps_out[grd_idx]*hybm_out[lev_idx];
-    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
-      prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[grd_idx]*hybi_out[ilev_idx];
-  } /* !grd_idx */
-
   /* Lay-out regridded file */
-  char *ilev_nm_out;
-  char *lev_nm_out;
 
-  /* Use explicitly specified output names, if any, otherwise use input names (either explicitly specified or discovered by fuzzing) */
-  if(rgr->ilev_nm_out) ilev_nm_out=rgr->ilev_nm_out; else ilev_nm_out=ilev_nm_in;
-  if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out; else lev_nm_out=lev_nm_in;
+  /* Use explicitly specified output names, if any, otherwise use template names (either explicitly specified or discovered by fuzzing) */
+  if(rgr->ilev_nm_out) ilev_nm_out=rgr->ilev_nm_out;
+  if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out;
 
   /* Define new vertical dimensions before all else */
-  rcd+=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev);
-  rcd+=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev);
+  rcd+=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev_out);
+  rcd+=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
   /* Horizontal dimensions necessary to define PS variable */
-  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
-    rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
-    rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_in[dmn_idx],dmn_ids_out+dmn_idx);
+  for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+    rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
+    rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
   } /* !dmn_idx */
   
   /* Do not extract grid variables (that are also extensive variables) like ilev, lev, hyai, hyam, hybi, hybm */ 
@@ -991,22 +993,22 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
   if(flg_grd_out_hyb){
-    rcd+=nco_def_var(out_id,"hyai",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev,&hyai_id);
+    rcd+=nco_def_var(out_id,"hyai",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hyai_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,hyai_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    rcd+=nco_def_var(out_id,"hyam",crd_typ_out,dmn_nbr_1D,&dmn_id_lev,&hyam_id);
+    rcd+=nco_def_var(out_id,"hyam",crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&hyam_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,hyam_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    rcd+=nco_def_var(out_id,"hybi",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev,&hybi_id);
+    rcd+=nco_def_var(out_id,"hybi",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hybi_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,hybi_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    rcd+=nco_def_var(out_id,"hybm",crd_typ_out,dmn_nbr_1D,&dmn_id_lev,&hybm_id);
+    rcd+=nco_def_var(out_id,"hybm",crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&hybm_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,hybm_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    rcd+=nco_def_var(out_id,ilev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ilev,&ilev_id);
+    rcd+=nco_def_var(out_id,ilev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&ilev_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ilev_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    rcd+=nco_def_var(out_id,lev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lev,&lev_id);
+    rcd+=nco_def_var(out_id,lev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lev_out,&lev_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lev_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,"P0",crd_typ_out,dmn_nbr_0D,(int *)NULL,&p0_id);
@@ -1018,14 +1020,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)nco_att_cpy(tpl_id,out_id,hyai_id_tpl,hyai_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,hyam_id_tpl,hyam_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,hybi_id_tpl,hybi_id,PCK_ATT_CPY);
-    (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybi_id,PCK_ATT_CPY);
+    (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybm_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
 
-  /* No further access to fl_tpl (the old fl_in) */
+  /* No further access to fl_tpl */
   
   /* Close input netCDF file */
   nco_close(tpl_id);
@@ -1074,13 +1076,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
   int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
   int *dmn_ids_rec=NULL; /* [id] Unlimited dimension IDs */
-  long *dmn_cnt=NULL;
   rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
   dmn_id_in=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
   dmn_id_out=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
   dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
-  dmn_cnt=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+  dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
 
   /* Identify all record-dimensions in input file */
   rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
@@ -1115,23 +1116,23 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    if(!strcmp(dmn_nm,ilev_nm_in)){
 	      /* Change ilev dimension */
-	      dmn_id_out[dmn_idx]=dmn_id_ilev;
-	      dmn_cnt[dmn_idx]=ilev_nbr_out;
+	      dmn_id_out[dmn_idx]=dmn_id_ilev_out;
+	      dmn_cnt_out[dmn_idx]=ilev_nbr_out;
 	    }else if(!strcmp(dmn_nm,lev_nm_in)){
 	      /* Change lev dimension */
-	      dmn_id_out[dmn_idx]=dmn_id_lev;
-	      dmn_cnt[dmn_idx]=lev_nbr_out;
+	      dmn_id_out[dmn_idx]=dmn_id_lev_out;
+	      dmn_cnt_out[dmn_idx]=lev_nbr_out;
 	    }else{
 	      /* Dimensions ilev/lev_nm_in have already been defined as lev/ilev_nm_out, replicate all other dimensions */
 	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
 	    } /* !ilev */
 	    if(rcd != NC_NOERR){
-	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_out+dmn_idx);
 	      /* Check-for and, if found, retain record dimension property */
 	      for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
 		if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
-		  dmn_cnt[dmn_idx]=NC_UNLIMITED;
-	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+		  dmn_cnt_out[dmn_idx]=NC_UNLIMITED;
+	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_id_out+dmn_idx);
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	}else{ /* !flg_rgr */
@@ -1141,12 +1142,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
 	    if(rcd != NC_NOERR){
-	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt+dmn_idx);
+	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_out+dmn_idx);
 	      /* Check-for and, if found, retain record dimension property */
 	      for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
 		if(dmn_id_in[dmn_idx] == dmn_ids_rec[dmn_rec_idx])
-		  dmn_cnt[dmn_idx]=NC_UNLIMITED;
-	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt[dmn_idx],dmn_id_out+dmn_idx);
+		  dmn_cnt_out[dmn_idx]=NC_UNLIMITED;
+	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_id_out+dmn_idx);
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	} /* !flg_rgr */
@@ -1173,6 +1174,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !var */
   } /* end idx_tbl */
   
+  /* Free pre-allocated array space */
+  if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
+  if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
+  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+  if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
+  if(dmn_ids_rec) dmn_ids_rec=(int *)nco_free(dmn_ids_rec);
+
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
       
@@ -1181,24 +1189,181 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   /* Copy all grid variables */
   if(flg_grd_out_hyb){
-    /* Remember, for grid variables _in refers to values in grid template file */
-    (void)nco_put_var(out_id,hyai_id,hyai_in,crd_typ_out);
-    (void)nco_put_var(out_id,hyam_id,hyam_in,crd_typ_out);
-    (void)nco_put_var(out_id,hybi_id,hybi_in,crd_typ_out);
-    (void)nco_put_var(out_id,hybm_id,hybm_in,crd_typ_out);
-    (void)nco_put_var(out_id,ilev_id,ilev_in,crd_typ_out);
-    (void)nco_put_var(out_id,lev_id,lev_in,crd_typ_out);
-    (void)nco_put_var(out_id,p0_id,&p0_in,crd_typ_out);
-    (void)nco_put_var(out_id,ps_id,ps_in,crd_typ_out);
+    (void)nco_put_var(out_id,hyai_id,hyai_out,crd_typ_out);
+    (void)nco_put_var(out_id,hyam_id,hyam_out,crd_typ_out);
+    (void)nco_put_var(out_id,hybi_id,hybi_out,crd_typ_out);
+    (void)nco_put_var(out_id,hybm_id,hybm_out,crd_typ_out);
+    (void)nco_put_var(out_id,ilev_id,ilev_out,crd_typ_out);
+    (void)nco_put_var(out_id,lev_id,lev_out,crd_typ_out);
+    (void)nco_put_var(out_id,p0_id,&p0_out,crd_typ_out);
+    (void)nco_put_var(out_id,ps_id,ps_out,crd_typ_out);
   } /* !flg_grd_out_hyb */
   
-  /* Do interpolation */
+  /* Interpolate or copy variable values */
+  double *var_val_dbl_in=NULL;
+  double *var_val_dbl_out=NULL;
+  double *wgt_vld_out=NULL;
+  double var_val_crr;
+  int *tally=NULL; /* [nbr] Number of valid (non-missing) values */
+  int dmn_nbr; /* [nbr] Number of dimensions */
+  int lvl_idx; /* [idx] Level index */
+  int lvl_nbr; /* [nbr] Number of levels */
+  int thr_idx; /* [idx] Thread index */
+  size_t dst_idx; 
+  size_t idx_in; /* [idx] Input grid index */
+  size_t idx_out; /* [idx] Output grid index */
+  size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  size_t val_in_fst; /* [nbr] Number of elements by which current N-D slab input values are offset from origin */
+  size_t val_out_fst; /* [nbr] Number of elements by which current N-D slab output values are offset from origin */
   
-  if(dmn_cnt) dmn_cnt=(long *)nco_free(dmn_cnt);
+  /* Set firstprivate variables to initial values */
+  has_ilev=False;
+  has_lev=False;
+  
+  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Interpolation progress: # means interpolated, ~ means copied\n");
+
+  /* Using naked stdin/stdout/stderr in parallel region generates warning
+     Copy appropriate filehandle to variable scoped as shared in parallel clause */
+  FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
+
+#ifdef __GNUG__
+# define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
+# if GCC_LIB_VERSION < 490
+#  define GXX_OLD_OPENMP_SHARED_TREATMENT 1
+# endif /* 480 */
+#endif /* !__GNUC__ */
+#if defined( __INTEL_COMPILER)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_out,wgt_raw,wgt_vld_thr)
+#else /* !__INTEL_COMPILER */
+# ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
+#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_out,wgt_raw)
+# else /* !old g++ */
+#  pragma omp parallel for firstprivate(has_ilev,has_lev,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_idx,dmn_nbr,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+# endif /* !old g++ */
+#endif /* !__INTEL_COMPILER */
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv=trv_tbl->lst[idx_tbl];
+    thr_idx=omp_get_thread_num();
+    in_id=trv_tbl->in_id_arr[thr_idx];
+#ifdef _OPENMP
+    if(nco_dbg_lvl_get() >= nco_dbg_var && !thr_idx && !idx_tbl) (void)fprintf(fp_stdout,"%s: %s reports regrid loop uses %d thread%s\n",nco_prg_nm_get(),fnc_nm,omp_get_num_threads(),(omp_get_num_threads() > 1) ? "s" : "");
+    if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, nm = %s\n",nco_prg_nm_get(),thr_idx,idx_tbl,trv.nm);
+#endif /* !_OPENMP */
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
+      if(trv.flg_rgr){
+	/* Interpolate variable */
+	var_nm=trv.nm;
+	var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
+	var_typ_out=trv.var_typ; /* NB: Output type in file is same as input type */
+	var_sz_in=1L;
+	var_sz_out=1L;
+	rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
+	rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
+	rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
+	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr_out);
+	dmn_nbr_max= dmn_nbr_in > dmn_nbr_out ? dmn_nbr_in : dmn_nbr_out;
+	dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+	dmn_id_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
+	dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long)); /* max() for both input and output grids */
+	dmn_cnt_in=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+	dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+	rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_id_out);
+	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_in+dmn_idx);
+	  var_sz_in*=dmn_cnt_in[dmn_idx];
+	  dmn_srt[dmn_idx]=0L;
+	  if(dmn_id_in[dmn_idx] == dmn_id_ilev_in) has_ilev=True;
+	  if(dmn_id_in[dmn_idx] == dmn_id_lev_in) has_lev=True;
+	} /* !dmn_idx */
+	assert(has_ilev || has_lev);
+	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
+	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
+
+	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt_out+dmn_idx);
+	  if(dmn_cnt_out[dmn_idx] == 0L){
+	    /* No records have been written, so overwrite zero output record size with input record size */
+	    char dmn_rec_nm[NC_MAX_NAME]; /* [sng] Record dimension name */
+	    int dmn_rec_id_in;
+	    rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_rec_nm);
+	    rcd=nco_inq_dimid(in_id,dmn_rec_nm,&dmn_rec_id_in);
+	    rcd=nco_inq_dimlen(in_id,dmn_rec_id_in,dmn_cnt_out+dmn_idx);
+	  } /* !dmn_cnt_out */
+	  var_sz_out*=dmn_cnt_out[dmn_idx];
+	  dmn_srt[dmn_idx]=0L;
+	} /* end loop over dimensions */
+	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
+
+	/* Initialize output */
+	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
+	/* Missing value setup */
+	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
+	if(has_mss_val) tally=(int *)nco_calloc(var_sz_out,nco_typ_lng(NC_INT));
+	
+	/* Interpolate */
+	if(!has_mss_val){
+	  val_in_fst=0L;
+	  val_out_fst=0L;
+	  /* Primary regridding loop for multi-level fields without missing values */
+	  if(has_ilev){
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++){
+	      //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
+	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
+	      var_val_dbl_out[val_out_fst]+=var_val_dbl_in[val_in_fst];
+	    val_in_fst+=grd_sz_in;
+	    val_out_fst+=grd_sz_out;
+	    } /* end loop over ilev */
+	  } /* !has_ilev */
+	  }else{ /* has_mss_val */
+	    val_in_fst=0L;
+	    val_out_fst=0L;
+	    /* Primary regridding loop for multi-level fields with missing values */
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++){
+	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+		idx_in=dst_idx+val_in_fst;
+		idx_out=dst_idx+val_out_fst;
+		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		  var_val_dbl_out[idx_out]+=var_val_crr;
+		  tally[idx_out]++;
+		} /* endif */
+	      } /* end loop over link */
+	      val_in_fst+=grd_sz_in;
+	      val_out_fst+=grd_sz_out;
+	  } /* end loop over lvl */
+	} /* !has_mss_val */
+
+#pragma omp critical
+	{ /* begin OpenMP critical */
+	  //	  rcd=nco_put_var(out_id,var_id_out,var_val_dbl_out,var_typ_rgr);
+	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
+	} /* end OpenMP critical */
+	
+	if(dmn_id_in) dmn_id_out=(int *)nco_free(dmn_id_in);
+	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
+	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+	if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
+	if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
+	if(tally) tally=(int *)nco_free(tally);
+	if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
+	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
+      }else{ /* !trv.flg_rgr */
+	/* Use standard NCO copy routine for variables that are not regridded */
+#pragma omp critical
+	{ /* begin OpenMP critical */
+	  (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+	} /* end OpenMP critical */
+      } /* !flg_rgr */
+    } /* !xtr */
+  } /* end (OpenMP parallel for) loop over idx_tbl */
+  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables interpolated = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
+
   if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
   if(dmn_ids_out) dmn_ids_out=(int *)nco_free(dmn_ids_out);
-  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
 
   if(ilev_nm_in) ilev_nm_in=(char *)nco_free(ilev_nm_in);
   if(lev_nm_in) lev_nm_in=(char *)nco_free(lev_nm_in);
@@ -1207,8 +1372,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(hyam_in) hyam_in=(double *)nco_free(hyam_in);
   if(hybi_in) hybi_in=(double *)nco_free(hybi_in);
   if(hybm_in) hybm_in=(double *)nco_free(hybm_in);
-  if(ilev_in) ilev_in=(double *)nco_free(ilev_in);
-  if(lev_in) lev_in=(double *)nco_free(lev_in);
   if(ps_in) ps_in=(double *)nco_free(ps_in);
   if(prs_mdp_in) prs_mdp_in=(double *)nco_free(prs_mdp_in);
   if(prs_ntf_in) prs_ntf_in=(double *)nco_free(prs_ntf_in);
@@ -1217,10 +1380,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(hyam_out) hyam_out=(double *)nco_free(hyam_out);
   if(hybi_out) hybi_out=(double *)nco_free(hybi_out);
   if(hybm_out) hybm_out=(double *)nco_free(hybm_out);
+  if(ilev_out) ilev_out=(double *)nco_free(ilev_out);
+  if(lev_out) lev_out=(double *)nco_free(lev_out);
   if(ps_out) ps_out=(double *)nco_free(ps_out);
   if(prs_mdp_out) prs_mdp_out=(double *)nco_free(prs_mdp_out);
   if(prs_ntf_out) prs_ntf_out=(double *)nco_free(prs_ntf_out);
   
+  return rcd;
 } /* !nco_ntp_vrt() */
 
 int /* O [enm] Return code */
@@ -4127,13 +4293,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Apply weights */
 	if(!has_mss_val){
 	  if(lvl_nbr == 1){
-	    /* Primary re-gridding loop for single-level fields without missing values */
+	    /* Primary regridding loop for single-level fields without missing values */
 	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 	      var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 	  }else{
 	    val_in_fst=0L;
 	    val_out_fst=0L;
-	    /* Primary re-gridding loop for multi-level fields without missing values */
+	    /* Primary regridding loop for multi-level fields without missing values */
 	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 	      //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
@@ -4156,7 +4322,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		} /* endif */
 	      } /* end loop over link */
 	    }else{
-	      /* Primary re-gridding loop for single-level fields with missing values */
+	      /* Primary regridding loop for single-level fields with missing values */
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		idx_in=col_src_adr[lnk_idx];
 		idx_out=row_dst_adr[lnk_idx];
@@ -4171,7 +4337,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    val_in_fst=0L;
 	    val_out_fst=0L;
 	    if(trv.flg_mrv){
-	      /* Primary re-gridding loop for multi-level fields with missing values */
+	      /* Primary regridding loop for multi-level fields with missing values */
 	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx]+val_in_fst;
@@ -4347,7 +4513,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
 	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
 	if(wgt_vld_out) wgt_vld_out=(double *)nco_free(wgt_vld_out);
-      }else{
+      }else{ /* !trv.flg_rgr */
 	/* Use standard NCO copy routine for variables that are not regridded */
 #pragma omp critical
 	{ /* begin OpenMP critical */
