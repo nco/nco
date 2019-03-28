@@ -281,7 +281,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		att[idx].nm=(char *)strdup("_Filter");
 		att[idx].type=NC_CHAR;
 		val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
-		sprintf(val_hdn_sng,"%u,",flt_id,prm_nbr);
+		sprintf(val_hdn_sng,"%u,",flt_id);
 		for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
 		  (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],prm_idx == prm_nbr ? "," : "");
 		  strcat(val_hdn_sng,sng_foo);
