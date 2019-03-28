@@ -751,6 +751,16 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   rcd+=nco_inq_varid(in_id,"P0",&p0_id);
   rcd+=nco_inq_varid(in_id,"PS",&ps_id);
 
+  /* Prepare for name swap for "_in" file */
+  const int hyai_id_tpl=hyai_id; /* [id] Hybrid A coefficient at layer interfaces ID */
+  const int hyam_id_tpl=hyam_id; /* [id] Hybrid A coefficient at layer midpoints ID */
+  const int hybi_id_tpl=hybi_id; /* [id] Hybrid B coefficient at layer interfaces ID */
+  const int hybm_id_tpl=hybm_id; /* [id] Hybrid B coefficient at layer midpoints ID */
+  const int ilev_id_tpl=ilev_id; /* [id] Interface pressure ID */
+  const int lev_id_tpl=lev_id; /* [id] Midpoint pressure ID */
+  const int p0_id_tpl=p0_id; /* [id] Reference pressure ID */
+  const int ps_id_tpl=ps_id; /* [id] Surface pressure ID */
+
   /* Formula-terms:
      prs_mdp[time,col,lev]=P0*hyam[lev]+PS[time,col]*hybm[lev]
      prs_ntf[time,col,lev]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
@@ -760,6 +770,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   int *dmn_ids_in=NULL; /* [nbr] Input file dimension IDs */
   int *dmn_ids_out=NULL; /* [nbr] Output file dimension IDs */
+  int dmn_nbr_ps; /* [nbr] Number of dimensions in PS variable */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input file */
   int dmn_nbr_out; /* [nbr] Number of dimensions in output file */
   int dmn_id_ilev=NC_MIN_INT; /* [id] Dimension ID for interface level */
@@ -776,7 +787,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   size_t grd_sz_out=1L; /* [nbr] Number of elements in single layer of output grid */
 
   /* Interrogate ps for horizontal dimensions and hyai/hyam to obtain ilev/lev dimensions */
-  rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_in);
+  rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_ps);
+  dmn_nbr_in=dmn_nbr_ps;
   dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
   dmn_cnt_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
   dmn_srt_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
@@ -824,10 +836,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   rcd=nco_get_var(in_id,hyam_id,hyam_in,crd_typ_out);
   rcd=nco_get_var(in_id,hybi_id,hybi_in,crd_typ_out);
   rcd=nco_get_var(in_id,hybm_id,hybm_in,crd_typ_out);
-  rcd=nco_get_var(in_id,ilev_id,&ilev_in,crd_typ_out);
-  rcd=nco_get_var(in_id,lev_id,&lev_in,crd_typ_out);
-  rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
+  rcd=nco_get_var(in_id,ilev_id,ilev_in,crd_typ_out);
+  rcd=nco_get_var(in_id,lev_id,lev_in,crd_typ_out);
   rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
+  rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
 
   long grd_idx; /* [idx] Gridcell index */
   long ilev_idx; /* [idx] Interface level index */
@@ -839,16 +851,29 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=p0_in*hyai_in[ilev_idx]+ps_in[grd_idx]*hybi_in[ilev_idx];
   } /* !grd_idx */
 
-  /* Close input netCDF file */
-  nco_close(in_id);
+  /* For vertical interpolation (unlike horizontal regridding), the destination grid is known a priori
+     Straightforward copy all variables and attributes that define grid from fl_vrt to output
+     would work in theory, but not allow dynamic identification and relabeling of names */
+  nco_bool flg_grd_out_hyb=True; /* [flg] Output hybrid coordinate vertical grid */
+  if(flg_grd_out_hyb){
+    const int vrt_grd_lst_nbr=8; /* [nbr] Number of variables that define vertical grid */
+    const char *vtr_grd_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/PS"};
+  } /* !flg_grd_out_hyb */
 
-  /* Remove local copy of file */
-  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
+  /* Above this line, fl_in and in_id refer to vertical coordinate file (i.e., template file)
+     Below this line, fl_in and in_id refer to input file to be vertically regridded
+     Below this line, fl_tpl and tpl_id refer to vertical coordinate file (i.e., template file)
+     We do not close template file until after copying all grid variables
+     For maximum efficiency, we do this just after defining all interpolated variables in output
+     That way no file needs to exit define or enter data mode more than once
+     However this requires keeping template file, input data file, and output file simulataneously open 
+     To keep the nomenclature straight, after this line we use _tpl to refer to grid template file */
 
-  /* Above this line, fl_in and in_id refer to vertical coordinate file
-     Below this line, fl_in and in_id refer to input file to be vertically regridded */
-
-  /* Initialize */
+  /* Commence name swap for "_in" file */
+  char *fl_tpl;
+  int tpl_id; /* [id] Input netCDF file ID (for vertical grid template) */
+  tpl_id=in_id;
+  fl_tpl=fl_in;
   in_id=rgr->in_id;
   out_id=rgr->out_id;
 
@@ -917,13 +942,18 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Define new vertical dimensions before all else */
   rcd+=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev);
   rcd+=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev);
+  /* Horizontal dimensions necessary to define PS variable */
+  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+    rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
+    rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_in[dmn_idx],dmn_ids_out+dmn_idx);
+  } /* !dmn_idx */
   
   /* Do not extract grid variables (that are also extensive variables) like ilev, lev, hyai, hyam, hybi, hybm */ 
   /* Exception list source:
      CAM: hyai, hyam, hybi, hybm, ilev, lev, 
      EAM: hyai, hyam, hybi, hybm, ilev, lev */
-  const int var_xcl_lst_nbr=6; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/hyai", "/hyam", "/hybi", "/hybm", "/ilev", "/lev"};
+  const int var_xcl_lst_nbr=8; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/PS"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -959,19 +989,53 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   fl_out_fmt=rgr->fl_out_fmt;
 
   /* Define new coordinates and grid variables in regridded file */
+  const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables (scalars) */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
-  nco_bool flg_grd_out_hyb=True; /* [flg] Output hybrid coordinate vertical grid */
   if(flg_grd_out_hyb){
+    rcd+=nco_def_var(out_id,"hyai",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev,&hyai_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,hyai_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
+    rcd+=nco_def_var(out_id,"hyam",crd_typ_out,dmn_nbr_1D,&dmn_id_lev,&hyam_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,hyam_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
+    rcd+=nco_def_var(out_id,"hybi",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev,&hybi_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,hybi_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
+    rcd+=nco_def_var(out_id,"hybm",crd_typ_out,dmn_nbr_1D,&dmn_id_lev,&hybm_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,hybm_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
     rcd+=nco_def_var(out_id,ilev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_ilev,&ilev_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ilev_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,lev_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lev,&lev_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lev_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
+    rcd+=nco_def_var(out_id,"P0",crd_typ_out,dmn_nbr_0D,(int *)NULL,&p0_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,p0_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
+    rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ps_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
+    (void)nco_att_cpy(tpl_id,out_id,hyai_id_tpl,hyai_id,PCK_ATT_CPY);
+    (void)nco_att_cpy(tpl_id,out_id,hyam_id_tpl,hyam_id,PCK_ATT_CPY);
+    (void)nco_att_cpy(tpl_id,out_id,hybi_id_tpl,hybi_id,PCK_ATT_CPY);
+    (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybi_id,PCK_ATT_CPY);
+    (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY);
+    (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
+    (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY);
+    (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
+
+  /* No further access to fl_tpl (the old fl_in) */
+  
+  /* Close input netCDF file */
+  nco_close(tpl_id);
+
+  /* Remove local copy of file */
+  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_tpl);
 
   char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
   nco_bool has_ilev; /* [flg] Contains interface level dimension */
@@ -998,14 +1062,40 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       } /* endif */
       assert(!(has_ilev && has_lev));
       /* Copy all variables that are not regridded or omitted */
-      if(!trv_tbl->lst[idx_tbl].flg_rgr){
-	  var_cpy_nbr++;
-      } /* endif not regridded */
+      if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;
     } /* end nco_obj_typ_var */
   } /* end idx_tbl */
   if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit interpolation criteria. The vertical interpolator expects something to interpolate, and variables not interpolated are copied straight to output. HINT: If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\" and \"lev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr ilev=interface_level --rgr lev=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\".\n",nco_prg_nm_get(),fnc_nm);
 
-  /* Do work */
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+      trv=trv_tbl->lst[idx_tbl];
+      if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Interpolate %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
+    } /* end idx_tbl */
+  } /* end dbg */
+
+  /* Define all non-grid variables */
+
+  /* Turn-off default filling behavior to enhance efficiency */
+  nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+      
+  /* Begin data mode */
+  (void)nco_enddef(out_id);
+
+  /* Copy all grid variables */
+  if(flg_grd_out_hyb){
+    /* Remember, for grid variables _in refers to values in grid template file */
+    (void)nco_put_var(out_id,hyai_id,hyai_in,crd_typ_out);
+    (void)nco_put_var(out_id,hyam_id,hyam_in,crd_typ_out);
+    (void)nco_put_var(out_id,hybi_id,hybi_in,crd_typ_out);
+    (void)nco_put_var(out_id,hybm_id,hybm_in,crd_typ_out);
+    (void)nco_put_var(out_id,ilev_id,ilev_in,crd_typ_out);
+    (void)nco_put_var(out_id,lev_id,lev_in,crd_typ_out);
+    (void)nco_put_var(out_id,p0_id,&p0_in,crd_typ_out);
+    (void)nco_put_var(out_id,ps_id,ps_in,crd_typ_out);
+  } /* !flg_grd_out_hyb */
+  
+  /* Do interpolation */
   
   if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);

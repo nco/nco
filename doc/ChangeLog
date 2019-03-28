@@ -1,6 +1,6 @@
 2019-03-27  Charlie Zender  <zender@uci.edu>
 
-	* nco_ntp_vrt() starts to fill-in output file with new vertical grid
+	* nco_ntp_vrt() fills-in output file with hybrid coordinate vertical grid data and metadata
 
 2019-03-26  Charlie Zender  <zender@uci.edu>
 
