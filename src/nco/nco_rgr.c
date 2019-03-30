@@ -765,9 +765,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int hybi_id_tpl=hybi_id; /* [id] Hybrid B coefficient at layer interfaces ID */
   const int hybm_id_tpl=hybm_id; /* [id] Hybrid B coefficient at layer midpoints ID */
   const int p0_id_tpl=p0_id; /* [id] Reference pressure ID */
-  int ilev_id_tpl=ilev_id; /* [id] Interface pressure ID */
-  int lev_id_tpl=lev_id; /* [id] Midpoint pressure ID */
-  int ps_id_tpl=ps_id; /* [id] Surface pressure ID */
+  const int ilev_id_tpl=ilev_id; /* [id] Interface pressure ID */
+  const int lev_id_tpl=lev_id; /* [id] Midpoint pressure ID */
+  const int ps_id_tpl=ps_id; /* [id] Surface pressure ID */
 
   char *ilev_nm_in;
   char *lev_nm_in;
@@ -886,6 +886,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   rcd=nco_inq_varid(in_id,"hybm",&hybm_id);
   rcd=nco_inq_varid(in_id,"P0",&p0_id);
   rcd=nco_inq_varid(in_id,"PS",&ps_id);
+  if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"ilev",&ilev_id);
+  if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"lev",&lev_id);
+  const int ilev_id_in=ilev_id; /* [id] Interface pressure ID */
+  const int lev_id_in=lev_id; /* [id] Midpoint pressure ID */
+  const int ps_id_in=ps_id; /* [id] Surface pressure ID */
 
   rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_in);
   dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
@@ -941,8 +946,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   if(ps_id_tpl == NC_MIN_INT){
     /* Copy horizontal grid information from input file */
-    dmn_nbr_ps=dmn_nbr_in;
-    dmn_nbr_out=dmn_nbr_in;
+    dmn_nbr_ps=dmn_nbr_out=dmn_nbr_in;
     dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
     dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
     memcpy(dmn_ids_out,dmn_ids_in,dmn_nbr_in*sizeof(int));
@@ -1038,6 +1042,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
+  
   if(flg_grd_out_hyb){
     rcd+=nco_def_var(out_id,"hyai",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hyai_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,hyai_id,shuffle,deflate,dfl_lvl);
@@ -1068,14 +1073,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)nco_att_cpy(tpl_id,out_id,hybi_id_tpl,hybi_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybm_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY);
-    if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY);
-    if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
-    if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY);
+    if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
+    if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else (void)nco_att_cpy(tpl_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
+    if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
 
-  /* No further access to fl_tpl */
-  
-  /* Close input netCDF file */
+  /* No further access to template file, close it */
   nco_close(tpl_id);
 
   /* Remove local copy of file */
