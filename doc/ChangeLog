@@ -1,3 +1,7 @@
+2019-03-30  Charlie Zender  <zender@uci.edu>
+
+	* nco_ntp_vrt() lift 1D interpolation code from CSZ's libcsz.a library source code ~/sw/c++/vec.hh
+
 2019-03-29  Charlie Zender  <zender@uci.edu>
 
 	* nco_ntp_vrt() compute ilev_out and lev_out if not supplied in	vertical grid file
