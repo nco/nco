@@ -1,3 +1,9 @@
+2019-03-29  Charlie Zender  <zender@uci.edu>
+
+	* nco_ntp_vrt() compute ilev_out and lev_out if not supplied in	vertical grid file
+
+	* nco_ntp_vrt() use horizontal grid from input dataset if vertical grid file does not have horizontal grid
+
 2019-03-28  Charlie Zender  <zender@uci.edu>
 
 	* nco_ntp_vrt() adjust OpenMP pragmas to work on old compilers
