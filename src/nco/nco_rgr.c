@@ -890,6 +890,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_in);
   dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
   dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
+  if(!dmn_srt) dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long)); /* NB: Only allocate dmn_srt once  */
   rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_in);
   rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev_in);
   rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev_in);
@@ -905,9 +906,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     dmn_srt[dmn_idx]=0L;
   } /* !dmn_idx */
 
-  /* Sanity check */
-  assert(grd_sz_in==grd_sz_out);
-  
   double *hyai_in=NULL; /* [frc] Hybrid A coefficient at layer interfaces on input grid */
   double *hyam_in=NULL; /* [frc] Hybrid A coefficient at layer midpoints on input grid */
   double *hybi_in=NULL; /* [frc] Hybrid B coefficient at layer interfaces on input grid */
@@ -952,6 +950,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     grd_sz_out=grd_sz_in;
   } /* !ps_id_tpl */
 
+  /* Sanity check */
+  assert(grd_sz_in==grd_sz_out);
+  
   /* Finally have enough information to allocate output pressure grid */
   ps_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
   prs_mdp_out=(double *)nco_malloc_dbg(grd_sz_out*lev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_out value buffer");
