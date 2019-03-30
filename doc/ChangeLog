@@ -1,6 +1,16 @@
 2019-03-30  Charlie Zender  <zender@uci.edu>
 
-	* nco_ntp_vrt() lift 1D interpolation code from CSZ's libcsz.a library source code ~/sw/c++/vec.hh
+	* NCO 4.8.0-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha06: Marathon Man';git push
+	git tag -a 4.8.0-alpha06 -m 'ncremap --vrt_fl';git push --tags
+
+	* nco_ntp_vrt() verify interpolation works on cami dataset
+
+	* nco_ntp_vrt() verify interpolation looks OK (i.e., nearest neighbor above model top) on EAM L30->L72
+
+	* nco_ntp_vrt() verify identity interpolation is BFB on EAM L30->L30
+
+	* nco_ntp_vrt() use 1D interpolation code from CSZ's libcsz.a library source code ~/sw/c++/vec.hh
 
 2019-03-29  Charlie Zender  <zender@uci.edu>
 

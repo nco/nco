@@ -1264,6 +1264,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int lvl_nbr_out; /* [nbr] Number of levels for current interpolated variable on output grid */
   int thr_idx; /* [idx] Thread index */
   size_t grd_nbr; /* [nbr] Horizonal grid size */
+  size_t idx_dbg=rgr->idx_dbg;
   size_t idx_in; /* [idx] Input grid index */
   size_t idx_out; /* [idx] Output grid index */
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
@@ -1287,12 +1288,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,grd_nbr,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -1510,7 +1511,21 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  } // !out_idx
 	  // End of vec.hh code
 	  
+	  /* Copy answers into output array */
+	  for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
+	    idx_out=grd_idx+lvl_idx_out*grd_nbr;
+	    var_val_dbl_out[idx_out]=dat_out[lvl_idx_out];
+	  } /* !lvl_idx_out */
+
+	  if(nco_dbg_lvl_get() >= nco_dbg_io && grd_idx == idx_dbg){
+	    (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s at idx_dbg = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,idx_dbg);
+	    for(out_idx=0;out_idx<out_nbr;out_idx++){
+	      (void)fprintf(fp_stdout,"out_idx = %lu dat_out = %g\n",out_idx,dat_out[out_idx]);
+	    } /* !out_idx */
+	  } /* !dbg */
+
 	} /* !grd_idx */
+
 	if(crd_in) crd_in=(double *)nco_free(crd_in);
 	if(crd_out) crd_out=(double *)nco_free(crd_out);
 	if(dat_in) dat_in=(double *)nco_free(dat_in);
