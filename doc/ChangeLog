@@ -14,11 +14,11 @@
 
 	* nco_ntp_vrt() defines all variables and copies their metadata to output file
 
-	* nco_ntp_vrt() fills-in output file with hybrid coordinate vertical grid data and metadata
+	* nco_ntp_vrt() fill-in output file with hybrid coordinate vertical grid data and metadata
 
 2019-03-26  Charlie Zender  <zender@uci.edu>
 
-	* nco_ntp_vrt() computes midpoint and interface pressures on input and output grids
+	* nco_ntp_vrt() compute midpoint and interface pressures on input and output grids
 
 	* ncremap call vertical OR horizontal interpolation routines. ncks add skeleton nco_ntp_vrt().
 

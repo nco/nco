@@ -851,14 +851,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(ilev_id_tpl != NC_MIN_INT){
     rcd=nco_get_var(tpl_id,ilev_id,ilev_out,crd_typ_out);
   }else{
-    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
-      ilev_out[ilev_idx]=p0_out*(hyai_out[ilev_idx]+hybi_out[ilev_idx]);
+    /* p0 is in Pa but ilev traditionally given in hPa */
+    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++) ilev_out[ilev_idx]=p0_out*(hyai_out[ilev_idx]+hybi_out[ilev_idx])/100.0;
   } /* !ilev_id_tpl */
   if(lev_id_tpl != NC_MIN_INT){
     rcd=nco_get_var(tpl_id,lev_id,lev_out,crd_typ_out);
   }else{
-    for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
-      lev_out[lev_idx]=p0_out*(hyam_out[lev_idx]+hybm_out[lev_idx]);
+    /* p0 is in Pa but ilev traditionally given in hPa */
+    for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++) lev_out[lev_idx]=p0_out*(hyam_out[lev_idx]+hybm_out[lev_idx]/100.0);
   } /* !ilev_id_tpl */
 
   /* For vertical interpolation (unlike horizontal regridding), the destination grid is known a priori
@@ -1297,12 +1297,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-# pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,lvl_bnd_a,lvl_bnd_b,lvl_bnd_btm,lvl_bnd_top,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,frc_wgt_btm,frc_wgt_top,has_mss_val,idx,idx_in,idx_out,idx_tbl,ilev_idx,in_id,lvl_idx,lvl_idx_in,lvl_idx_out,lvl_nbr,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,ilev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+# pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,lvl_bnd_a,lvl_bnd_b,lvl_bnd_btm,lvl_bnd_top,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,frc_wgt_btm,frc_wgt_top,grd_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,ilev_idx,ilev_nbr_in,in_id,lev_nbr_in,lev_nbr_out,lvl_idx,lvl_idx_in,lvl_idx_out,lvl_nbr,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,ilev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,lvl_bnd_a,lvl_bnd_b,lvl_bnd_btm,lvl_bnd_top,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,frc_wgt_btm,frc_wgt_top,has_mss_val,idx,idx_in,idx_out,idx_tbl,ilev_idx,in_id,lvl_idx,lvl_idx_in,lvl_idx_out,lvl_nbr,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,ilev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,lvl_bnd_a,lvl_bnd_b,lvl_bnd_btm,lvl_bnd_top,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,frc_wgt_btm,frc_wgt_top,grd_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,ilev_idx,ilev_nbr_in,in_id,lev_nbr_in,lev_nbr_out,lvl_idx,lvl_idx_in,lvl_idx_out,lvl_nbr,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,ilev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(has_ilev,has_lev,lvl_bnd_a,lvl_bnd_b,lvl_bnd_btm,lvl_bnd_top,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,frc_wgt_btm,frc_wgt_top,has_mss_val,idx,idx_in,idx_out,idx_tbl,ilev_idx,in_id,lvl_idx,lvl_idx_in,lvl_idx_out,lvl_nbr,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,grd_nbr,ilev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for firstprivate(has_ilev,has_lev,lvl_bnd_a,lvl_bnd_b,lvl_bnd_btm,lvl_bnd_top,tally,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,frc_wgt_btm,frc_wgt_top,grd_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,ilev_idx,ilev_nbr_in,in_id,lev_nbr_in,lev_nbr_out,lvl_idx,lvl_idx_in,lvl_idx_out,lvl_nbr,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(dmn_id_ilev_in,dmn_id_lev_in,grd_nbr,ilev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
