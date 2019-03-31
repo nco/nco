@@ -716,6 +716,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int rcd=NC_NOERR;
 
   int dmn_idx; /* [idx] Dimension index */
+  int rec_idx; /* [idx] Record dimension index */
 
   nco_bool FL_RTR_RMT_LCN;
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
@@ -733,9 +734,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_tpl,md_open,&bfr_sz_hnt,&tpl_id);
-
-  /* Interpolation control parameters (mainly for future use with non-hybrid coordinates) */
-  //nco_bool flg_ntp_log=True; /* [flg] Interpolate in log(vertical_coordinate) */
 
   /* Formula-terms for Hybrid Grid:
      prs_mdp[time,col,lev]=P0*hyam[lev]+PS[time,col]*hybm[lev]
@@ -776,6 +774,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   int *dmn_ids_in=NULL; /* [nbr] Input file dimension IDs */
   int *dmn_ids_out=NULL; /* [nbr] Output file dimension IDs */
+  int *dmn_ids_rec=NULL; /* [id] Unlimited dimension IDs */
   int dmn_nbr_ps; /* [nbr] Number of dimensions in PS variable */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input file */
   int dmn_nbr_out; /* [nbr] Number of dimensions in output file */
@@ -783,6 +782,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int dmn_id_lev_out; /* [id] Dimension ID for midpoint level */
   int dmn_id_ilev_in; /* [id] Dimension ID for interface level in file to be interpolated */
   int dmn_id_lev_in; /* [id] Dimension ID for midpoint level in file to be interpolated */
+  int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
   long *dmn_cnt_in=NULL;
   long *dmn_cnt_out=NULL;
   long *dmn_srt=NULL;
@@ -811,12 +811,26 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
     dmn_srt=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
     rcd=nco_inq_vardimid(tpl_id,ps_id,dmn_ids_out);
+    rcd=nco_inq_unlimdims(tpl_id,&dmn_nbr_rec,(int *)NULL);
+    if(dmn_nbr_rec > 0){
+      dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
+      rcd=nco_inq_unlimdims(tpl_id,&dmn_nbr_rec,dmn_ids_rec);
+    } /* !dmn_nbr_rec */
     for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
       rcd=nco_inq_dimlen(tpl_id,dmn_ids_out[dmn_idx],dmn_cnt_out+dmn_idx);
-      /* 20190327: fxm breaks when PS has time dimension > 1 */
-      grd_sz_out*=dmn_cnt_out[dmn_idx];
+      /* 20190330: Allow possibility that PS has time dimension > 1 
+	 We want spatial not temporal dimensions to contribute to grd_sz 
+	 Temporal dimension is usually unlimited 
+	 Only multiply grd_sz by fixed (non-unlimited) dimension sizes
+	 Corner-case exception when PS spatial dimension on unstructured grid is unlimited */
+      for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
+	if(dmn_ids_out[dmn_idx] == dmn_ids_rec[rec_idx])
+	  break; 
+      if(rec_idx == dmn_nbr_rec || dmn_nbr_out == 1) grd_sz_out*=dmn_cnt_out[dmn_idx];
+      if(rec_idx != dmn_nbr_rec && dmn_nbr_out > 1 && dmn_cnt_out[dmn_idx] > 1L) (void)fprintf(stderr,"%s: WARNING %s reports PS variable in vertical grid file has unlimited dimension of size %lu. Interpolation only tested for fixed or single-timestep PS. Expect breakage...\n",nco_prg_nm_get(),fnc_nm,dmn_cnt_out[dmn_idx]);
       dmn_srt[dmn_idx]=0L;
     } /* !dmn_idx */
+    if(dmn_ids_rec) dmn_ids_rec=(int *)nco_free(dmn_ids_rec);
   } /* !ps_id_tpl */
   
   double *hyai_out=NULL; /* [frc] Hybrid A coefficient at layer interfaces on output grid */
@@ -905,9 +919,24 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   ilev_nm_in=strdup(dmn_nm);
   rcd=nco_inq_dimname(in_id,dmn_id_lev_in,dmn_nm);
   lev_nm_in=strdup(dmn_nm);
+  /* Identify all record-dimensions in input file */
+  rcd=nco_inq_unlimdims(in_id,&dmn_nbr_rec,(int *)NULL);
+  if(dmn_nbr_rec > 0){
+    dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
+    rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
+  } /* !dmn_nbr_rec */
   for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
     rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
-    grd_sz_in*=dmn_cnt_in[dmn_idx];
+    /* 20190330: Allow possibility that PS has time dimension > 1 
+       We want spatial not temporal dimensions to contribute to grd_sz 
+       Temporal dimension is usually unlimited 
+       Only multiply grd_sz by fixed (non-unlimited) dimension sizes
+       Corner-case exception when PS spatial dimension on unstructured grid is unlimited */
+    for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
+      if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
+	break; 
+    if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1) grd_sz_in*=dmn_cnt_in[dmn_idx];
+    if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L) (void)fprintf(stderr,"%s: WARNING %s reports PS variable in input file has unlimited dimension of size %lu. Interpolation only tested for fixed or single-timestep PS. Expect breakage...\n",nco_prg_nm_get(),fnc_nm,dmn_cnt_in[dmn_idx]);
     dmn_srt[dmn_idx]=0L;
   } /* !dmn_idx */
 
@@ -939,9 +968,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Nomenclature: Input pressures are source pressures on input grid so name them _in */
   for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
     for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
-      prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=log(p0_in*hyam_in[lev_idx]+ps_in[grd_idx]*hybm_in[lev_idx]);
+      prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=p0_in*hyam_in[lev_idx]+ps_in[grd_idx]*hybm_in[lev_idx];
     for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
-      prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=log(p0_in*hyai_in[ilev_idx]+ps_in[grd_idx]*hybi_in[ilev_idx]);
+      prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=p0_in*hyai_in[ilev_idx]+ps_in[grd_idx]*hybi_in[ilev_idx];
   } /* !grd_idx */
 
   if(ps_id_tpl == NC_MIN_INT){
@@ -972,10 +1001,27 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Output pressures */
   for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++){
     for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
-      prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=log(p0_out*hyam_out[lev_idx]+ps_out[grd_idx]*hybm_out[lev_idx]);
+      prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=p0_out*hyam_out[lev_idx]+ps_out[grd_idx]*hybm_out[lev_idx];
     for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
-      prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=log(p0_out*hyai_out[ilev_idx]+ps_out[grd_idx]*hybi_out[ilev_idx]);
+      prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[grd_idx]*hybi_out[ilev_idx];
   } /* !grd_idx */
+
+  /* Interpolation control parameters (mainly for future use with non-pressure coordinates) */
+  nco_bool flg_ntp_log=True; /* [flg] Interpolate in log(vertical_coordinate) */
+  size_t idx_in; /* [idx] Input grid index */
+  size_t idx_out; /* [idx] Output grid index */
+  size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  if(flg_ntp_log){
+    var_sz_out=grd_sz_out*lev_nbr_out;
+    for(idx_out=0;idx_out<var_sz_out;idx_out++)	prs_mdp_out[idx_out]=log(prs_mdp_out[idx_out]);
+    var_sz_out=grd_sz_out*ilev_nbr_out;
+    for(idx_out=0;idx_out<var_sz_out;idx_out++)	prs_ntf_out[idx_out]=log(prs_ntf_out[idx_out]);
+    var_sz_in=grd_sz_in*lev_nbr_in;
+    for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_mdp_in[idx_in]=log(prs_mdp_in[idx_in]);
+    var_sz_in=grd_sz_in*ilev_nbr_in;
+    for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_ntf_in[idx_in]=log(prs_ntf_in[idx_in]);
+  } /* !flg_ntp_log */
 
   /* Lay-out regridded file */
 
@@ -1123,8 +1169,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
-  int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
-  int *dmn_ids_rec=NULL; /* [id] Unlimited dimension IDs */
   rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
   dmn_id_in=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
   dmn_id_out=(int *)nco_malloc(dmn_nbr_max*sizeof(int));
@@ -1135,13 +1179,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   dmn_cnt_in=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
   dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
 
-  /* Identify all record-dimensions in input file */
-  rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
-  if(dmn_nbr_rec > 0){
-    dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
-    rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
-  } /* !dmn_nbr_rec */
-  
   int flg_pck; /* [flg] Variable is packed on disk  */
   nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
   double mss_val_dbl;
@@ -1265,10 +1302,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int thr_idx; /* [idx] Thread index */
   size_t grd_nbr; /* [nbr] Horizonal grid size */
   size_t idx_dbg=rgr->idx_dbg;
-  size_t idx_in; /* [idx] Input grid index */
-  size_t idx_out; /* [idx] Output grid index */
-  size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
-  size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
   
   /* Set firstprivate variables to initial values */
   grd_nbr=grd_sz_in;
@@ -1351,8 +1384,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	} /* end loop over dimensions */
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 
-	/* Initialize output */
-	for(idx_out=0;idx_out<var_sz_out;idx_out++) var_val_dbl_out[idx_out]=0.0;
 	/* Missing value setup */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 
