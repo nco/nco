@@ -1008,8 +1008,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   /* Interpolation control parameters (mainly for future use with non-pressure coordinates) */
   nco_bool flg_ntp_log=True; /* [flg] Interpolate in log(vertical_coordinate) */
-  size_t idx_in; /* [idx] Input grid index */
-  size_t idx_out; /* [idx] Output grid index */
+  size_t idx_in; /* [idx] Index into 3D input variables */
+  size_t idx_out; /* [idx] Index into 3D output variables */
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
   size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
   if(flg_ntp_log){
@@ -1321,12 +1321,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -1418,24 +1418,31 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	size_t in_nbr;
 	size_t out_nbr;
 	size_t out_idx;
+	/* Default extrapolation uses nearest valid neighbor */
 	xtr_LHS.xtr_fll=True;
-	xtr_LHS.xtr_fll_lnr=False;
-	xtr_LHS.xtr_fll_ngh=True;
-	xtr_LHS.xtr_fll_nil=False;
 	xtr_LHS.xtr_vrb=False;
+	xtr_LHS.typ_fll=nco_xtr_fll_ngh;
 	xtr_RHS.xtr_fll=True;
-	xtr_RHS.xtr_fll_lnr=False;
-	xtr_RHS.xtr_fll_ngh=True;
-	xtr_RHS.xtr_fll_nil=False;
 	xtr_RHS.xtr_vrb=False;
+	xtr_RHS.typ_fll=nco_xtr_fll_ngh;
+	/* Special cases to extrapolate beneath terrain */
+	if(!strcmp(var_nm,"T")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
+	else if(!strcmp(var_nm,"Z3")) xtr_RHS.typ_fll=nco_xtr_fll_gph;
+	else xtr_RHS.typ_fll=nco_xtr_fll_ngh;
 	crd_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
 	crd_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
 	dat_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
 	dat_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
-
+	
+	const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assuming constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(10000 Pa) */
+	const double R_rcp_g=287.0/9.81; /* [K/Pa] Geopotential height extrapolation assuming hydrostatic equation dZ/dp=-RT/pg */
+	double prs_avg; /* [Pa] Pressure used in geopotential height extrapolation */
+	const double tpt_avg=288.0; /* [K] Mean temperature assumed for geopotential height extrapolation */
+	nco_bool FIRST_WARNING=True; /* [flg] */
+	
 	/* Outer loop over columns */
 	for(grd_idx=0;grd_idx<grd_nbr;grd_idx++){
-
+	  
 	  /* Initialize pseudo-1D variables with consecutive memory addresses to avoid indirection */
 	  for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
 	    idx_out=grd_idx+lvl_idx_out*grd_nbr;
@@ -1446,7 +1453,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    crd_in[lvl_idx_in]=prs_ntp_in[idx_in];
 	    dat_in[lvl_idx_in]=var_val_dbl_in[idx_in];
 	  } /* !lvl_idx_in */
-
+	  
 	  /* Assume crd_in and crd_out both monotonically increase
 	     To relax this assumption, insert code here to check monotonicity and reverse array(s) if necessary
 	     Following code uses crd_in_mnt, dat_in_mnt, crd_out_mnt where "_mnt" reminds of "monotonically increasing" assumption
@@ -1485,18 +1492,24 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	      if(!xtr_LHS.xtr_fll){
 		(void)fprintf(fp_stdout,"%s: ERROR %s Full LHS extrapolation required but not permitted\n",nco_prg_nm_get(),fnc_nm);
 		// return NCO_ERR;
-	      }else if(xtr_LHS.xtr_fll_nil){
+	      } /* !xtr_LHS.xtr_fll */
+	      switch(xtr_LHS.typ_fll){
+              case nco_xtr_fll_nil:
 		dat_out[out_idx]=0.0;
-	      }else if(xtr_LHS.xtr_fll_ngh){
+		break;
+              case nco_xtr_fll_ngh:
 		dat_out[out_idx]=dat_in_mnt[0];
-	      }else if(xtr_LHS.xtr_fll_lnr){
+		break;
+              case nco_xtr_fll_lnr:
 		dat_out[out_idx]=dat_in_mnt[0]-
 		  (crd_in_mnt[0]-crd_out_mnt[out_idx])*
 		  (dat_in_mnt[1]-dat_in_mnt[0])/(crd_in_mnt[1]-crd_in_mnt[0]);
-	      }else{
-		(void)fprintf(fp_stdout,"%s: ERROR %s Unknown xtr_LHS\n",nco_prg_nm_get(),fnc_nm);
+		break;
+	      default:
+		(void)fprintf(fp_stdout,"%s: ERROR %s Unknown xtr_LHS.typ_fll\n",nco_prg_nm_get(),fnc_nm);
 		// return NCO_ERR;
-	      } // endif xtr_LHS
+		break;
+	      } // !xtr_LHS.typ_fll
 	      if(xtr_LHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s LHS extrapolation yields dat_out[%lu] = \n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out[out_idx]);
 	    }else if(brk_lft_idx < in_nbr-1){
 	      // Normal case: crd_out_mnt is interpolable
@@ -1521,21 +1534,50 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	      if(!xtr_RHS.xtr_fll){
 		(void)fprintf(fp_stdout,"%s: ERROR %s Full RHS extrapolation required but not permitted\n",nco_prg_nm_get(),fnc_nm);
 		// return NCO_ERR;
-	      }else if(xtr_RHS.xtr_fll_nil){
-		dat_out[out_idx]=0.0;
-	      }else if(xtr_RHS.xtr_fll_ngh){
-		dat_out[out_idx]=dat_in_mnt[in_nbr-1];
-	      }else if(xtr_RHS.xtr_fll_lnr){
-		dat_out[out_idx]=dat_in_mnt[in_nbr-1]+
-		  (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*
-		  (dat_in_mnt[in_nbr-1]-dat_in_mnt[in_nbr-2])/
-		  (crd_in_mnt[in_nbr-1]-crd_in_mnt[in_nbr-2]);
-	      }else{
-		(void)fprintf(fp_stdout,"%s: ERROR %s Unknown xtr_RHS\n",nco_prg_nm_get(),fnc_nm);
-		// return NCO_ERR;
-	      } // !xtr_RHS
+	      } /* !xtr_RHS.xtr_fll */
+	      switch(xtr_RHS.typ_fll){
+		case nco_xtr_fll_nil:
+		  dat_out[out_idx]=0.0;
+		  break;
+		case nco_xtr_fll_ngh:
+		  dat_out[out_idx]=dat_in_mnt[in_nbr-1];
+		  break;
+		case nco_xtr_fll_lnr:
+		  dat_out[out_idx]=dat_in_mnt[in_nbr-1]+
+		    (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*
+		    (dat_in_mnt[in_nbr-1]-dat_in_mnt[in_nbr-2])/
+		    (crd_in_mnt[in_nbr-1]-crd_in_mnt[in_nbr-2]);
+		  break;
+		case nco_xtr_fll_tpt:
+		  if(flg_ntp_log)
+		    dat_out[out_idx]=dat_in_mnt[in_nbr-1]+
+		      (exp(crd_out_mnt[out_idx])-exp(crd_in_mnt[in_nbr-1]))*gamma_moist;
+		  else
+		    dat_out[out_idx]=dat_in_mnt[in_nbr-1]+
+		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*gamma_moist;
+		  if(FIRST_WARNING) (void)fprintf(fp_stdout,"%s: INFO %s sub-surface temperature extrapolation applied for variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+		  FIRST_WARNING=False;
+		  break;
+	      case nco_xtr_fll_gph:
+		  if(flg_ntp_log){
+		    prs_avg=exp(crd_out_mnt[out_idx]*crd_in_mnt[in_nbr-1])/2.0;
+		    dat_out[out_idx]=dat_in_mnt[in_nbr-1]-
+		      exp(crd_out_mnt[out_idx]/crd_in_mnt[in_nbr-1])*R_rcp_g*tpt_avg/prs_avg;
+		  }else{
+		    prs_avg=(crd_out_mnt[out_idx]+crd_in_mnt[in_nbr-1])/2.0;
+		    dat_out[out_idx]=dat_in_mnt[in_nbr-1]-
+		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*R_rcp_g*tpt_avg/prs_avg;
+		  } /* !flg_ntp_log */
+		  if(FIRST_WARNING) (void)fprintf(fp_stdout,"%s: WARNING %s Unvalidated sub-surface geopotential height extrapolation applied for variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+		  FIRST_WARNING=False;
+		  break;
+		default:
+		  (void)fprintf(fp_stdout,"%s: ERROR %s Unknown xtr_RHS\n",nco_prg_nm_get(),fnc_nm);
+		  // return NCO_ERR;
+		  break;
+	      } // !xtr_RHS.typ_fll
 	      if(xtr_RHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s RHS extrapolation yields dat_out[%lu] = \n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out[out_idx]);
-	    }else{
+	      }else{
 	      (void)fprintf(fp_stdout,"%s: ERROR %s Unforeseen value of brk_lft_idx\n",nco_prg_nm_get(),fnc_nm);
 	      // return NCO_ERR;
 	    } // !RHS

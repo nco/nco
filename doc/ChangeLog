@@ -1,5 +1,11 @@
 2019-03-31  Charlie Zender  <zender@uci.edu>
 
+	* nco_ntp_vrt() implement poor subterranean geopotential extrapolation for variables named Z3
+
+	* nco_ntp_vrt() implement and validate subterranean temperature extrapolation for variables named T
+
+	* nco_ntp_vrt() re-factor extrapolation flags into structures with an enumerated constant for each type
+
 	* nco_ntp_vrt() isolate log(pressure) assumption
 
 	* nco_ntp_vrt() allow possibility that PS has time dimension > 1
