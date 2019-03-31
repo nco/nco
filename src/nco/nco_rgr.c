@@ -1427,7 +1427,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	xtr_RHS.typ_fll=nco_xtr_fll_ngh;
 	/* Special cases to extrapolate beneath terrain */
 	if(!strcmp(var_nm,"T")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
-	else if(!strcmp(var_nm,"Z3")) xtr_RHS.typ_fll=nco_xtr_fll_gph;
+	else if(!strcmp(var_nm,"Z3")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
 	else xtr_RHS.typ_fll=nco_xtr_fll_ngh;
 	crd_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
 	crd_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
@@ -1438,7 +1438,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	const double Rd_rcp_g0=287.0/9.81; /* [K/Pa] Geopotential height extrapolation uses hydrostatic equation dZ/dp=-RT/pg */
 	const double tpt_vrt_avg=288.0; /* [K] Mean virtual temperature assumed for geopotential height extrapolation */
 	double prs_avg; /* [Pa] Pressure used in geopotential height extrapolation */
-	nco_bool FIRST_WARNING=True; /* [flg] */
+	nco_bool FIRST_WARNING_LHS=True; /* [flg] */
+	nco_bool FIRST_WARNING_RHS=True; /* [flg] */
 	
 	/* Outer loop over columns */
 	for(grd_idx=0;grd_idx<grd_nbr;grd_idx++){
@@ -1505,6 +1506,16 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  (crd_in_mnt[0]-crd_out_mnt[out_idx])*
 		  (dat_in_mnt[1]-dat_in_mnt[0])/(crd_in_mnt[1]-crd_in_mnt[0]);
 		break;
+	      case nco_xtr_fll_gph:
+		  if(flg_ntp_log)
+		    dat_out[out_idx]=dat_in_mnt[0]+
+		      Rd_rcp_g0*tpt_vrt_avg*(crd_in_mnt[0]-crd_out_mnt[out_idx]);
+		  else
+		    dat_out[out_idx]=dat_in_mnt[0]+
+		      Rd_rcp_g0*tpt_vrt_avg*log(crd_in_mnt[0]/crd_out_mnt[out_idx]);
+		  if(FIRST_WARNING_LHS) (void)fprintf(fp_stdout,"%s: INFO %s geopotential height extrapolated upward towards space using hypsometric equation with constant global mean virtual temperature = %g for variable %s\n",nco_prg_nm_get(),fnc_nm,tpt_vrt_avg,var_nm);
+		  FIRST_WARNING_LHS=False;
+		  break;
 	      default:
 		(void)fprintf(fp_stdout,"%s: ERROR %s Unknown xtr_LHS.typ_fll\n",nco_prg_nm_get(),fnc_nm);
 		// return NCO_ERR;
@@ -1555,19 +1566,18 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  else
 		    dat_out[out_idx]=dat_in_mnt[in_nbr-1]+
 		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*gamma_moist;
-		  if(FIRST_WARNING) (void)fprintf(fp_stdout,"%s: INFO %s sub-surface temperature extrapolation applied for variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-		  FIRST_WARNING=False;
+		  if(FIRST_WARNING_RHS) (void)fprintf(fp_stdout,"%s: INFO %s temperature extrapolated toward/into surface assuming constant moist adiabatic lapse rate = %g K/(100 mb) for variable %s\n",nco_prg_nm_get(),fnc_nm,gamma_moist*10000.0,var_nm);
+		  FIRST_WARNING_RHS=False;
 		  break;
 	      case nco_xtr_fll_gph:
-		  if(flg_ntp_log){
+		  if(flg_ntp_log)
 		    dat_out[out_idx]=dat_in_mnt[in_nbr-1]-
 		      Rd_rcp_g0*tpt_vrt_avg*(crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1]);
-		  }else{
+		  else
 		    dat_out[out_idx]=dat_in_mnt[in_nbr-1]-
 		      Rd_rcp_g0*tpt_vrt_avg*log(crd_out_mnt[out_idx]/crd_in_mnt[in_nbr-1]);
-		  } /* !flg_ntp_log */
-		  if(FIRST_WARNING) (void)fprintf(fp_stdout,"%s: WARNING %s Unvalidated sub-surface geopotential height extrapolation applied for variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-		  FIRST_WARNING=False;
+		  if(FIRST_WARNING_RHS) (void)fprintf(fp_stdout,"%s: INFO %s geopotential height extrapolated toward/into surface using hypsometric equation with constant global mean virtual temperature = %g for variable %s\n",nco_prg_nm_get(),fnc_nm,tpt_vrt_avg,var_nm);
+		  FIRST_WARNING_RHS=False;
 		  break;
 		default:
 		  (void)fprintf(fp_stdout,"%s: ERROR %s Unknown xtr_RHS\n",nco_prg_nm_get(),fnc_nm);
