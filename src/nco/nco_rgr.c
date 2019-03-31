@@ -1435,9 +1435,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	dat_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
 	
 	const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assuming constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(10000 Pa) */
-	const double R_rcp_g=287.0/9.81; /* [K/Pa] Geopotential height extrapolation assuming hydrostatic equation dZ/dp=-RT/pg */
+	const double Rd_rcp_g0=287.0/9.81; /* [K/Pa] Geopotential height extrapolation uses hydrostatic equation dZ/dp=-RT/pg */
+	const double tpt_vrt_avg=288.0; /* [K] Mean virtual temperature assumed for geopotential height extrapolation */
 	double prs_avg; /* [Pa] Pressure used in geopotential height extrapolation */
-	const double tpt_avg=288.0; /* [K] Mean temperature assumed for geopotential height extrapolation */
 	nco_bool FIRST_WARNING=True; /* [flg] */
 	
 	/* Outer loop over columns */
@@ -1510,7 +1510,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		// return NCO_ERR;
 		break;
 	      } // !xtr_LHS.typ_fll
-	      if(xtr_LHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s LHS extrapolation yields dat_out[%lu] = \n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out[out_idx]);
+	      if(xtr_LHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s LHS extrapolation yields dat_out[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out[out_idx]);
 	    }else if(brk_lft_idx < in_nbr-1){
 	      // Normal case: crd_out_mnt is interpolable
 	      brk_rgt_idx=brk_lft_idx+1; 
@@ -1560,13 +1560,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  break;
 	      case nco_xtr_fll_gph:
 		  if(flg_ntp_log){
-		    prs_avg=exp(crd_out_mnt[out_idx]*crd_in_mnt[in_nbr-1])/2.0;
 		    dat_out[out_idx]=dat_in_mnt[in_nbr-1]-
-		      exp(crd_out_mnt[out_idx]/crd_in_mnt[in_nbr-1])*R_rcp_g*tpt_avg/prs_avg;
+		      Rd_rcp_g0*tpt_vrt_avg*(crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1]);
 		  }else{
-		    prs_avg=(crd_out_mnt[out_idx]+crd_in_mnt[in_nbr-1])/2.0;
 		    dat_out[out_idx]=dat_in_mnt[in_nbr-1]-
-		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*R_rcp_g*tpt_avg/prs_avg;
+		      Rd_rcp_g0*tpt_vrt_avg*log(crd_out_mnt[out_idx]/crd_in_mnt[in_nbr-1]);
 		  } /* !flg_ntp_log */
 		  if(FIRST_WARNING) (void)fprintf(fp_stdout,"%s: WARNING %s Unvalidated sub-surface geopotential height extrapolation applied for variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 		  FIRST_WARNING=False;
@@ -1576,7 +1574,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  // return NCO_ERR;
 		  break;
 	      } // !xtr_RHS.typ_fll
-	      if(xtr_RHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s RHS extrapolation yields dat_out[%lu] = \n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out[out_idx]);
+	      if(xtr_RHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s RHS extrapolation yields dat_out[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out[out_idx]);
 	      }else{
 	      (void)fprintf(fp_stdout,"%s: ERROR %s Unforeseen value of brk_lft_idx\n",nco_prg_nm_get(),fnc_nm);
 	      // return NCO_ERR;

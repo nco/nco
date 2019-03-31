@@ -1,5 +1,7 @@
 2019-03-31  Charlie Zender  <zender@uci.edu>
 
+	* nco_ntp_vrt() extrapolate geopotential height using hypsometric equation, fixes Z3
+
 	* nco_ntp_vrt() implement poor subterranean geopotential extrapolation for variables named Z3
 
 	* nco_ntp_vrt() implement and validate subterranean temperature extrapolation for variables named T
