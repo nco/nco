@@ -255,7 +255,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
          fprintf(stdout, "\ndebug isGeared=%d a=%d aa=%d b=%d bb=%d \n",isGeared, a, aa, b, bb);
 
       /* quick exit if current point is same a First point  - nb an exact match ?*/
-      if( *r >3 &&  R->shp[0][3]==R->shp[*r-1][3] && R->shp[0][4]==R->shp[*r-1][4] )
+      //if( *r >3 &&  R->shp[0][3]==R->shp[*r-1][3] && R->shp[0][4]==R->shp[*r-1][4] )
+      if( *r >3 &&  1.0 - nco_sph_dot_nm(R->shp[0], R->shp[*r-1]) < 1.0e-10   )
       {
          --*r;
          break;
@@ -408,6 +409,39 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
 
   return '0';
+
+
+}
+
+
+/* returns true if vertex is on edge (a,b) */
+nco_bool
+nco_sph_seg_vrt_int(double *a, double *b, double *vtx)
+{
+  double nx_ab;
+  double nx_av;
+
+  double dx_ab;
+  double dx_av;
+
+  double  Pcross[NBR_SPH]={0};
+  double  Vcross[NBR_SPH]={0};
+
+
+  nx_ab=nco_sph_sxcross(a, b, Pcross);
+
+  dx_ab=1.0 - nco_sph_dot_nm(a,b);
+
+  dx_av=1.0 - nco_sph_dot_nm(a,vtx);
+
+  if(dx_av >0.0  )
+    nx_av=nco_sph_cross(a, vtx, Vcross );
+
+
+  if( nco_sph_dot_nm(Pcross, Vcross) >0.9999 && dx_av >=0.0 && dx_av <= dx_ab )
+    return True;
+
+  return False;
 
 
 }
@@ -694,7 +728,9 @@ void nco_sph_add_pnt(double **R, int *r, double *P)
 
    double delta;
 
-   delta = ( *r==0 ? 0.0 :   2.0 *asin(    sqrt( pow( R[*r-1][0] - P[0],2 ) + pow( R[*r-1][1] - P[1],2 ) + pow( R[*r-1][2] - P[2],2 )  ) /2.0) );
+   //delta = ( *r==0 ? 0.0 :   2.0 *asin(    sqrt( pow( R[*r-1][0] - P[0],2 ) + pow( R[*r-1][1] - P[1],2 ) + pow( R[*r-1][2] - P[2],2 )  ) /2.0) );
+   if(*r >0 )
+      delta = 1.0 - nco_sph_dot(R[*r-1], P );
 
    if(DEBUG_SPH)
       nco_sph_prn_pnt("aAddPoint():", P, 3, True);
@@ -702,7 +738,7 @@ void nco_sph_add_pnt(double **R, int *r, double *P)
 
 
    /* only add  point if its distinct from previous point */
-   if ( *r==0 ||  delta > ARC_MIN_LENGTH_RAD )
+   if ( *r==0 ||  delta > 1.0e-10 )
    {
 
       memcpy(R[*r], P, sizeof(double)*NBR_SPH);
@@ -1270,4 +1306,223 @@ void  nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg)
    }
 
    return;
+}
+
+
+/* spherical functions */
+int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
+{
+  const char fnc_nm[]="nco_sph_intersect()";
+
+  nco_bool qpFace = False;
+  nco_bool pqFace = False;
+  nco_bool isGeared = False;
+
+  int numIntersect=0;
+
+  int n;
+  int m;
+
+  int a = 0, a1 = 0, aa=0;
+  int b = 0, b1 = 0, bb=0;
+
+
+  int ipqLHS = 0;
+  int ip1qLHS = 0 ;
+  int iqpLHS = 0;
+  int iq1pLHS = 0 ;
+
+  double nx1;
+  double nx2;
+  double nx3;
+
+
+  char code='0';
+
+  double Pcross[NBR_SPH];
+  double Qcross[NBR_SPH];
+  double Xcross[NBR_SPH];
+
+  double p[NBR_SPH];
+  double q[NBR_SPH];
+
+  tInFlag inflag= Unknown;
+
+  n=P->crn_nbr;
+  m=Q->crn_nbr;
+
+  if(DEBUG_SPH)
+    fprintf(stdout, "%s: just entered %s\n", nco_prg_nm_get(), fnc_nm);
+
+
+  do{
+
+
+    a1 = (a + n - 1) % n;
+    b1 = (b + m - 1) % m;
+
+
+
+    nx1= nco_sph_cross(P->shp[a1], P->shp[a], Pcross);
+    nx2= nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross);
+
+    nx3= nco_sph_cross(Pcross, Qcross, Xcross);
+
+
+    ipqLHS = nco_sph_lhs(P->shp[a], Qcross);
+    ip1qLHS = nco_sph_lhs(P->shp[a1], Qcross);
+
+
+    /* imply rules facing if 0 */
+
+    if(ipqLHS==0 && ip1qLHS!=0)
+      ipqLHS=ip1qLHS*-1;
+    else if( ipqLHS != 0 && ip1qLHS == 0 )
+      ip1qLHS=ipqLHS*-1;
+
+
+    iqpLHS = nco_sph_lhs(Q->shp[b], Pcross);
+    iq1pLHS = nco_sph_lhs(Q->shp[b1], Pcross);
+
+    /* imply rules facing if 0 */
+
+
+    if(iqpLHS == 0 && iq1pLHS != 0)
+      iqpLHS=iq1pLHS*-1;
+    else if(iqpLHS != 0 && iq1pLHS == 0)
+      iq1pLHS=iqpLHS*-1;
+
+
+    /* now calculate face rules */
+    qpFace = nco_sph_face(ip1qLHS, ipqLHS, iqpLHS);
+    pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
+
+    /* Xcross product near zero !! so make it zero*/
+    if(nx3< 1.0e-10)
+    {
+
+
+
+      ip1qLHS=0;
+      ipqLHS=0;
+      iq1pLHS=0;
+      iqpLHS=0;
+      qpFace=0;
+      pqFace=0;
+    }
+
+
+
+    if( isGeared == False)
+    {
+      if(  (ipqLHS == 1 && iqpLHS == 1) ||  ( qpFace && pqFace )     )
+      {
+        aa++;a++;
+      }
+      else
+      {
+        isGeared = True;
+      }
+    }
+
+    if(isGeared) {
+      code = nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q);
+
+
+      if (code == '1' || code == 'e') {
+        if(0 && DEBUG_SPH)
+          nco_sph_prn_pnt("(): intersect", p, 3, True);
+
+        nco_sph_add_pnt(R->shp, r, p);
+
+        /*
+        if(code=='e')
+          sAddPoint(R, r, q);
+        */
+
+        if (numIntersect++ == 0) {
+          /* reset counters */
+          aa = 0;
+          bb = 0;
+        }
+
+
+
+        inflag = ( ipqLHS ==1 ? Pin : iqpLHS ==1 ? Qin : inflag );
+
+
+        if(DEBUG_SPH)
+          printf("%%InOut sets inflag=%s\n", prnInFlag(inflag));
+
+      }
+
+      if(DEBUG_SPH)
+        printf("numIntersect=%d code=%c (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d)\n",numIntersect, code, ipqLHS, ip1qLHS,  iqpLHS,iq1pLHS, qpFace,pqFace);
+
+
+
+      if (qpFace && pqFace)  {
+
+        /* Advance either P or Q which has previously arrived ? */
+        if(inflag == Pin) nco_sph_add_pnt(R->shp,r, P->shp[a]);
+
+        aa++;a++;
+
+
+      } else if (qpFace) {
+        if(inflag == Qin) nco_sph_add_pnt(R->shp,r, Q->shp[b]);
+
+        bb++;b++;
+
+
+        /* advance q */
+      } else if (pqFace) {
+        /* advance p */
+        if(inflag == Pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
+
+        aa++;a++;
+
+      } else if (iqpLHS == -1) {
+        /* advance q */
+        //if(inflag== Qin) sAddPoint(R,r,Q->shp[b]);
+        bb++;b++;
+
+        /* cross product zero  */
+      } else if( ipqLHS==0 && ip1qLHS==0 && iq1pLHS ==0 && iqpLHS ==0   ){
+        if(inflag==Pin)
+        {bb++;b++;}
+        else
+        {aa++;a++;}
+
+      }
+
+
+
+      else {
+        /* catch all */
+        if(inflag==Pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
+        aa++;a++;
+
+      }
+
+    }
+
+    a%=n;
+    b%=m;
+
+    if(DEBUG_SPH)
+      fprintf(stdout, "\ndebug isGeared=%d a=%d aa=%d b=%d bb=%d \n",isGeared, a, aa, b, bb);
+
+    /* quick exit if current point is same a First point  - nb an exact match ?*/
+    if( *r >3 &&  R->shp[0][3]==R->shp[*r-1][3] && R->shp[0][4]==R->shp[*r-1][4] )
+    {
+      --*r;
+      break;
+    }
+
+
+  } while ( ((aa < n) || (bb < m)) && (aa < 2*n) && (bb < 2*m) );
+
+  return EXIT_SUCCESS;
+
 }
