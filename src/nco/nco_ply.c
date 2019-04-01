@@ -329,6 +329,7 @@ void nco_poly_minmax_add
 {  
   
   int idx;
+  int idx0;
   int sz;
 
 
@@ -365,32 +366,67 @@ void nco_poly_minmax_add
   }
 
   /* add correction to latitude bounding box */
-  if(pl->pl_typ == poly_sph)
-  {
+  if(pl->pl_typ == poly_sph) {
     double lat_min;
     double lat_max;
-    nco_bool bDeg=1;
+    nco_bool bDeg = 1;
 
     /* do it in degrees for now */
+    /* add wrap flag */
+    if (pl->dp_x_minmax[1] - pl->dp_x_minmax[0] >= 180.0)
+      pl->bwrp = True;
+    else
+      pl->bwrp = False;
+
+
+    /* detect a specific type of polar cap -temporary code */
+    if( pl->dp_y_minmax[0] == pl->dp_y_minmax[1] )
+    {
+
+      if(pl->dp_y_minmax[0] >0.0)
+        pl->dp_y_minmax[1]=90.0;
+      else
+        pl->dp_y_minmax[1]=-90.0;
+
+      /* change longitude limits so they include the whole range */
+
+      pl->dp_x_minmax[0]=0.0;
+      pl->dp_x_minmax[1]= 359.99999999999;
+
+      pl->bwrp_y=True;
+
+    }
+    else
+    {
+
+
+
 
     nco_geo_get_lat_correct(pl->dp_x_minmax[0], pl->dp_y_minmax[1], pl->dp_x_minmax[1], pl->dp_y_minmax[0], &lat_min,
                             &lat_max, bDeg);
 
-    pl->dp_y_minmax[0]=lat_min;
-    pl->dp_y_minmax[1]=lat_max;
-
-    /* add wrap flag */
-    if( pl->dp_x_minmax[1] - pl->dp_x_minmax[0] >= 180.0  )
-      pl->bwrp=True;
-    else
-      pl->bwrp=False;
+    pl->dp_y_minmax[0] = lat_min;
+    pl->dp_y_minmax[1] = lat_max;
 
 
 
+
+    }
+
+    /* if we have a polar cap then modify lat/lon limits accordingly */
+    /*
+    if (pl->bwrp_y) {
+      pl->dp_x_minmax[0] = 0.0;
+      pl->dp_x_minmax[1] = 360.0;
+
+      if (pl->dp_y_minmax[0] > 0.0)
+        pl->dp_y_minmax[1] = 90.0;
+      else
+        pl->dp_y_minmax[1] = -90.0;
+
+    }
+   */
   }
-
-
-
   return; 
   
 
@@ -557,49 +593,49 @@ nco_poly_prn
   switch(style){ 
 
     case 0:
-      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
+      (void)fprintf(stderr,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d bwrp_y=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->bwrp_y, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
       for(idx=0; idx<pl->crn_nbr; idx++)
-	(void)fprintf(stdout,"%20.14f, %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
-      (void)fprintf(stdout,"\n");		  
+	(void)fprintf(stderr,"%20.20f, %20.20f\n",pl->dp_x[idx], pl->dp_y[idx]);
+      (void)fprintf(stderr,"\n");
 
       /*
-      (void)fprintf(stdout,"dp_y ");
+      (void)fprintf(stderr,"dp_y ");
       for(idx=0; idx<pl->crn_nbr; idx++)
-	(void)fprintf(stdout,"%20.14f, ",pl->dp_y[idx]);
-      (void)fprintf(stdout,"\n");
+	(void)fprintf(stderr,"%20.14f, ",pl->dp_y[idx]);
+      (void)fprintf(stderr,"\n");
        */
-      (void)fprintf(stdout,"min/max x( %g, %g) y(%g %g)\n", pl->dp_x_minmax[0], pl->dp_x_minmax[1], pl->dp_y_minmax[0], pl->dp_y_minmax[1]);       
+      (void)fprintf(stderr,"min/max x( %g, %g) y(%g %g)\n", pl->dp_x_minmax[0], pl->dp_x_minmax[1], pl->dp_y_minmax[0], pl->dp_y_minmax[1]);
       
       break;
 
    case 1:  
    default:
-     (void)fprintf(stdout,"%s: crn_nbr=%d src_id=%d\n", nco_prg_nm_get(), pl->crn_nbr, pl->src_id);
+     (void)fprintf(stderr,"%s: crn_nbr=%d src_id=%d\n", nco_prg_nm_get(), pl->crn_nbr, pl->src_id);
      
      for(idx=0; idx<pl->crn_nbr; idx++)
-        (void)fprintf(stdout,"%20.14f %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
+        (void)fprintf(stderr,"%20.14f %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
 
      break;
 
    case 2:  
-     (void)fprintf(stdout,"%s: crn_nbr=%d\n", nco_prg_nm_get(), pl->crn_nbr);
+     (void)fprintf(stderr,"%s: crn_nbr=%d\n", nco_prg_nm_get(), pl->crn_nbr);
      
      for(idx=0; idx<pl->crn_nbr; idx++)
-        (void)fprintf(stdout,"%20.16f %20.16f\n",pl->dp_x[idx], pl->dp_y[idx]);
+        (void)fprintf(stderr,"%20.16f %20.16f\n",pl->dp_x[idx], pl->dp_y[idx]);
 
      break;
 
 
     case 3:
-      (void)fprintf(stdout,"%s: crn_nbr=%d shp follows \n", nco_prg_nm_get(), pl->crn_nbr);
+      (void)fprintf(stderr,"%s: crn_nbr=%d shp follows \n", nco_prg_nm_get(), pl->crn_nbr);
 
       if(pl->pl_typ == poly_sph)
         for(idx=0; idx<pl->crn_nbr; idx++)
-           (void)fprintf(stdout,"x=%f y=%f z=%f lon=%f lat=%f\n",pl->shp[idx][0], pl->shp[idx][1], pl->shp[idx][2], pl->shp[idx][3]*180.0 / M_PI, pl->shp[idx][4]*180.0 /M_PI );
+           (void)fprintf(stderr,"x=%f y=%f z=%f lon=%f lat=%f\n",pl->shp[idx][0], pl->shp[idx][1], pl->shp[idx][2], pl->shp[idx][3]*180.0 / M_PI, pl->shp[idx][4]*180.0 /M_PI );
 
       if(pl->pl_typ == poly_crt)
         for(idx=0; idx<pl->crn_nbr; idx++)
-          (void)fprintf(stdout,"x=%f y=%f\n",pl->shp[idx][0], pl->shp[idx][1]);
+          (void)fprintf(stderr,"x=%f y=%f\n",pl->shp[idx][0], pl->shp[idx][1]);
 
 
   }
@@ -1195,8 +1231,12 @@ kd_box size1,
 kd_box size2)
 {
 
+
+
+
+
   /* regular limits */
-  if (pl->bwrp == False) {
+  if (pl->bwrp == False ) {
     size1[KD_LEFT] = pl->dp_x_minmax[0];
     size1[KD_RIGHT] = pl->dp_x_minmax[1];
     size1[KD_BOTTOM] = pl->dp_y_minmax[0];
@@ -1204,6 +1244,19 @@ kd_box size2)
 
     return False;
   }
+
+  if(pl->bwrp==True && pl->bwrp_y==True)
+  {
+    size1[KD_LEFT] = pl->dp_x_minmax[0];
+    size1[KD_RIGHT] = pl->dp_x_minmax[1];
+    size1[KD_BOTTOM] = pl->dp_y_minmax[0];
+    size1[KD_TOP] = pl->dp_y_minmax[1];
+
+    return False;
+  }
+
+
+
 
   /* regular limits */
   if (pl->bwrp == True) {
