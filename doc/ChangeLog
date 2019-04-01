@@ -1,5 +1,7 @@
 2019-03-31  Charlie Zender  <zender@uci.edu>
 
+	* nco_ntp_vrt() allocate and define only needed pressure grids,	reduce memory consumption by 2x if ilev not needed
+
 	* nco_ntp_vrt() extrapolate geopotential height using hypsometric equation on LHS and RHS, fixes Z3
 
 	* nco_ntp_vrt() implement poor subterranean geopotential extrapolation for variables named Z3
