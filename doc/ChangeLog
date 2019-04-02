@@ -2,7 +2,7 @@
 
 	* NCO 4.8.0-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha07: Bond-o';git push
-	git tag -a 4.8.0-alpha07 -m 'ncremap --vrt_fl';git push --tags
+	git tag -a 4.8.0-alpha07 -m 'ncremap --vrt_fl features and optimizations';git push --tags
 
 2019-03-31  Charlie Zender  <zender@uci.edu>
 

@@ -512,9 +512,6 @@ if($USER eq 'zender'){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
     
-
-
-    
     if($dodap eq "FALSE"){
 ####################
 #### ncatted tests #
