@@ -1,5 +1,7 @@
 2019-04-03  Charlie Zender  <zender@uci.edu>
 
+	* nco_ntp_vrt() Add plumbing for pure pressure grids
+
 	* nco_ntp_vrt() Treat variables named "ta" and "zg" with temperature and geopotential height extrapolation rules, respectively
 
 2019-04-01  Charlie Zender  <zender@uci.edu>
