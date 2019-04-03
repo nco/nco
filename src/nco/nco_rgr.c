@@ -1529,8 +1529,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	xtr_RHS.xtr_vrb=False;
 	xtr_RHS.typ_fll=nco_xtr_fll_ngh;
 	/* Special cases to extrapolate beneath terrain */
-	if(!strcmp(var_nm,"T")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
-	else if(!strcmp(var_nm,"Z3")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
+	if(!strcmp(var_nm,"T") || !strcmp(var_nm,"ta")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
+	else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
 	else xtr_RHS.typ_fll=nco_xtr_fll_ngh;
 	crd_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
 	crd_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
