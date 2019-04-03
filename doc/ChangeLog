@@ -1,6 +1,10 @@
 2019-04-03  Charlie Zender  <zender@uci.edu>
 
-	* nco_ntp_vrt() Add plumbing for pure pressure grids
+	* NCO 4.8.0-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha08: Teach';git push
+	git tag -a 4.8.0-alpha08 -m 'ncremap --vrt_fl pure pressure grids, CMIP ta & zg';git push --tags
+
+	* nco_ntp_vrt() Plumb for pure pressure grids
 
 	* nco_ntp_vrt() Treat variables named "ta" and "zg" with temperature and geopotential height extrapolation rules, respectively
 

@@ -1618,7 +1618,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	     To relax this assumption, insert code here to check monotonicity and reverse array(s) if necessary
 	     Following code uses crd_in_mnt, dat_in_mnt, crd_out_mnt where "_mnt" reminds of "monotonically increasing" assumption
 	     Allowing monotonically decreasing coordinates would be useful to interpolate from pressure to height
-	     KISS for now and just assume monotonic increasing (log) pressure coordinates
+	     KISS for now and just assume monotonic increasing coordinates
 	     Following code lifted from CSZ's libcsz.a library source code ~/sw/c++/vec.hh */
 	  crd_in_mnt=crd_in;
 	  crd_out_mnt=crd_out;
