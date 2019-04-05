@@ -1,3 +1,7 @@
+2019-04-04  Charlie Zender  <zender@uci.edu>
+
+	* nco_ntp_vrt() allow monotonically decreasing input or output grids
+
 2019-04-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.0-alpha08 release procedure:
