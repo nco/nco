@@ -306,6 +306,202 @@ nco_poly_init_lst
 
 }
 
+
+
+
+void nco_poly_minmax_add
+(poly_sct *pl,
+ nco_grd_lon_typ_enm grd_lon_typ,
+ nco_bool bchk_caps)
+{
+
+  int idx;
+  int sz;
+
+
+  sz=pl->crn_nbr;
+
+  pl->dp_x_minmax[0]=DBL_MAX;
+  pl->dp_x_minmax[1]=-DBL_MAX;
+
+  pl->dp_y_minmax[0]=DBL_MAX;
+  pl->dp_y_minmax[1]=-DBL_MAX;
+
+
+
+  for(idx=0; idx<sz;idx++)
+  {
+    /* min */
+    if( pl->dp_x[idx] < pl->dp_x_minmax[0] )
+      pl->dp_x_minmax[0] = pl->dp_x[idx];
+
+    /* max */
+    if( pl->dp_x[idx] > pl->dp_x_minmax[1] )
+      pl->dp_x_minmax[1] = pl->dp_x[idx];
+
+    /* min */
+    if( pl->dp_y[idx] < pl->dp_y_minmax[0] )
+      pl->dp_y_minmax[0] = pl->dp_y[idx];
+
+    /* max */
+    if( pl->dp_y[idx] > pl->dp_y_minmax[1] )
+      pl->dp_y_minmax[1] = pl->dp_y[idx];
+
+
+
+  }
+
+  /* nothing else to do */
+  if(pl->pl_typ == poly_crt )
+    return;
+
+
+  /* add correction to latitude bounding box */
+  if(pl->pl_typ == poly_sph){
+
+    double lat_min;
+    double lat_max;
+    nco_bool bDeg = 1;
+    nco_bool is_caps=False;
+
+    /* add wrap flag */
+    pl->bwrp=(pl->dp_x_minmax[1] - pl->dp_x_minmax[0] >= 180.0);
+
+
+
+    if (pl->bwrp &&  bchk_caps)
+    {
+
+        /* code that detecta a polar cap */
+        if (pl->dp_y_minmax[0] == pl->dp_y_minmax[1])
+          is_caps = True;
+
+    }
+
+
+    /* deal with a polar cap here */
+    if ( pl->bwrp && is_caps) {
+
+        if (pl->dp_y_minmax[0] > 0.0)
+          pl->dp_y_minmax[1] = 90.0;
+        else
+          pl->dp_y_minmax[0] = -90.0;
+
+
+        /* change longitude limits so they include the whole range */
+        switch (grd_lon_typ) {
+
+          case nco_grd_lon_Grn_ctr:
+          case nco_grd_lon_Grn_wst:
+            pl->dp_x_minmax[0] = 0.0;
+            pl->dp_x_minmax[1] = 360.0;
+            break;
+
+          case nco_grd_lon_180_ctr:
+          case nco_grd_lon_180_wst:
+            pl->dp_x_minmax[0] = -180.0;
+            pl->dp_x_minmax[1] = 180.0;
+
+        }
+        pl->bwrp_y = True;
+
+
+    }else{
+
+      pl->bwrp_y=False;
+    }
+
+
+    if(pl->bwrp && is_caps == False)
+    {
+
+        double *lcl_dp_x = NULL_CEWI;
+
+        lcl_dp_x = (double *) nco_malloc(sizeof(double) * sz);
+
+        /* make local copy of longitudes */
+        memcpy(lcl_dp_x, pl->dp_x, sizeof(double) * sz);
+
+        /* convert from  (-180,180) to (0,360) or (0, 360)-> (-180, 180) */
+        switch (grd_lon_typ) {
+
+          case nco_grd_lon_Grn_wst:
+          case nco_grd_lon_Grn_ctr:
+            nco_msh_lon_crr(lcl_dp_x, sz, 1, grd_lon_typ, nco_grd_lon_180_ctr);
+
+            pl->dp_x_minmax[0] = DBL_MAX;
+            pl->dp_x_minmax[1] = -DBL_MAX;
+
+            /* find new min-max */
+            for (idx = 0; idx < sz; idx++) {
+              if (lcl_dp_x[idx] < pl->dp_x_minmax[0])
+                pl->dp_x_minmax[0] = lcl_dp_x[idx];
+
+              if (lcl_dp_x[idx] > pl->dp_x_minmax[1])
+                pl->dp_x_minmax[1] = lcl_dp_x[idx];
+            }
+
+            /* convert back to original lon typ */
+            nco_msh_lon_crr(pl->dp_x_minmax, 2, 1, nco_grd_lon_180_ctr, grd_lon_typ);
+
+            break;
+
+
+          case nco_grd_lon_180_wst:
+          case nco_grd_lon_180_ctr:
+            nco_msh_lon_crr(lcl_dp_x, sz, 1, grd_lon_typ, nco_grd_lon_Grn_ctr);
+            pl->dp_x_minmax[0] = DBL_MAX;
+            pl->dp_x_minmax[1] = -DBL_MAX;
+
+            /* find new min-max */
+            for (idx = 0; idx < sz; idx++) {
+              if (lcl_dp_x[idx] < pl->dp_x_minmax[0])
+                pl->dp_x_minmax[0] = lcl_dp_x[idx];
+
+              if (lcl_dp_x[idx] > pl->dp_x_minmax[1])
+                pl->dp_x_minmax[1] = lcl_dp_x[idx];
+            }
+
+            nco_msh_lon_crr(pl->dp_x_minmax, 2, 1, nco_grd_lon_Grn_ctr, grd_lon_typ);
+
+            break;
+
+        }
+        /* swap values if necessaary */
+        if (pl->dp_x_minmax[0] > pl->dp_x_minmax[1]) {
+          double stmp;
+          stmp = pl->dp_x_minmax[0];
+          pl->dp_x_minmax[0] = pl->dp_x_minmax[1];
+
+          pl->dp_x_minmax[1] = stmp;
+
+        }
+
+
+        lcl_dp_x = (double *) nco_free(lcl_dp_x);
+
+
+      }
+
+
+
+      nco_geo_get_lat_correct(pl->dp_x_minmax[0], pl->dp_y_minmax[1], pl->dp_x_minmax[1], pl->dp_y_minmax[0],
+                            &lat_min,
+                            &lat_max, bDeg);
+
+      pl->dp_y_minmax[0] = lat_min;
+      pl->dp_y_minmax[1] = lat_max;
+
+
+  } /* end nco_sph */
+
+  return;
+
+
+}
+
+
+
 void
 nco_poly_area_add(
 poly_sct *pl){
@@ -321,116 +517,7 @@ poly_sct *pl){
 
 
 }
-void
-nco_poly_minmax_add
-(poly_sct *pl,
- nco_grd_lon_typ_enm grd_lon_typ,
- nco_bool bchk_caps)
-{
-  
-  int idx;
-  int idx0;
-  int sz;
 
-
-  sz=pl->crn_nbr; 
-  
-  pl->dp_x_minmax[0]=DBL_MAX;
-  pl->dp_x_minmax[1]=-DBL_MAX;
-
-  pl->dp_y_minmax[0]=DBL_MAX;
-  pl->dp_y_minmax[1]=-DBL_MAX;
-
-
-  
-  for(idx=0; idx<sz;idx++)
-  {
-    /* min */
-    if( pl->dp_x[idx] < pl->dp_x_minmax[0] )
-      pl->dp_x_minmax[0] = pl->dp_x[idx]; 
-
-    /* max */
-    if( pl->dp_x[idx] > pl->dp_x_minmax[1] )
-          pl->dp_x_minmax[1] = pl->dp_x[idx];  
-
-    /* min */
-    if( pl->dp_y[idx] < pl->dp_y_minmax[0] )
-      pl->dp_y_minmax[0] = pl->dp_y[idx]; 
-
-    /* max */
-    if( pl->dp_y[idx] > pl->dp_y_minmax[1] )
-          pl->dp_y_minmax[1] = pl->dp_y[idx];  
-
-    
-    
-  }
-
-  /* add correction to latitude bounding box */
-  if(pl->pl_typ == poly_sph) {
-    double lat_min;
-    double lat_max;
-    nco_bool bDeg = 1;
-
-    /* do it in degrees for now */
-    /* add wrap flag */
-    if (pl->dp_x_minmax[1] - pl->dp_x_minmax[0] >= 180.0)
-      pl->bwrp = True;
-    else
-      pl->bwrp = False;
-
-
-    /* detect a specific type of polar cap -temporary code */
-    if( pl->dp_y_minmax[0] == pl->dp_y_minmax[1] )
-    {
-
-      if(pl->dp_y_minmax[0] >0.0)
-        pl->dp_y_minmax[1]=90.0;
-      else
-        pl->dp_y_minmax[1]=-90.0;
-
-      /* change longitude limits so they include the whole range */
-
-      pl->dp_x_minmax[0]=0.0;
-      pl->dp_x_minmax[1]= 359.99999999999;
-
-      pl->bwrp_y=True;
-
-    }
-    else
-    {
-
-
-
-
-    nco_geo_get_lat_correct(pl->dp_x_minmax[0], pl->dp_y_minmax[1], pl->dp_x_minmax[1], pl->dp_y_minmax[0], &lat_min,
-                            &lat_max, bDeg);
-
-    pl->dp_y_minmax[0] = lat_min;
-    pl->dp_y_minmax[1] = lat_max;
-
-
-
-
-    }
-
-    /* if we have a polar cap then modify lat/lon limits accordingly */
-    /*
-    if (pl->bwrp_y) {
-      pl->dp_x_minmax[0] = 0.0;
-      pl->dp_x_minmax[1] = 360.0;
-
-      if (pl->dp_y_minmax[0] > 0.0)
-        pl->dp_y_minmax[1] = 90.0;
-      else
-        pl->dp_y_minmax[1] = -90.0;
-
-    }
-   */
-  }
-  return; 
-  
-
-}  
 
 /*******************************************************************************************************/ 
    /*
