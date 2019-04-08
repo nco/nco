@@ -124,7 +124,7 @@ int *pl_nbr)
 
 
     /* add min max */
-    nco_poly_minmax_add(pl);
+    nco_poly_minmax_add(pl, grd_lon_typ, False);
 
     nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
 
@@ -300,10 +300,10 @@ int *pl_nbr)
     pl->dp_y_ctr=lat_ctr[idx];
 
     /* add min max */
-    nco_poly_minmax_add(pl);
+    nco_poly_minmax_add(pl, grd_lon_typ, True);
 
     /* manually add wrap flag */
-    pl->bwrp= (fabs(pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) >= 180.0);
+    // pl->bwrp= (fabs(pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) >= 180.0);
 
     /* if coords cannot deal with wrapping */
     if( pl->bwrp  && bwrp==False   )
@@ -726,12 +726,14 @@ int *pl_cnt_vrl_ret){
         /* calculate weight -simple ratio of areas */
         pl_vrl->wgt=pl_vrl->area / pl_out->area;
 
-        nco_poly_minmax_add(pl_vrl);
+        nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
         /* manually add wrap */
+        /*
         if(pl_vrl->dp_x_minmax[1] - pl_vrl->dp_x_minmax[0] >=180.0 )
           pl_vrl->bwrp=True;
         else
           pl_vrl->bwrp=False;
+        */
 
         /* add lat/lon centers */
         nco_poly_ctr_add(pl_vrl, grd_lon_typ);
