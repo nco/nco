@@ -2643,16 +2643,17 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
     fi # !gsg
 
     # Block 5: Regrid
-    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
-	if [ -n "${vrt_fl}" ]; then
+    if [ -n "${vrt_fl}" ]; then
+	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	    printf "Vertical : ${vrt_fl}\n"
-	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} --rgr fl_vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
-	else
+	fi # !vrb_lvl
+	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} --rgr fl_vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
+    else # !vrt_fl
+	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	    printf "Map/Wgt  : ${map_fl}\n"
-	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
-	fi # !vrt_fl
-	printf "Regridded: ${out_fl}\n"
-    fi # !vrb_lvl
+	fi # !vrb_lvl
+	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
+    fi # !vrt_fl
     
     # Block 5 Loop 2: Execute and/or echo commands
     if [ ${dbg_lvl} -ge 1 ]; then

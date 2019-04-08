@@ -1,3 +1,7 @@
+2019-04-08  Charlie Zender  <zender@uci.edu>
+
+	* ncremap: Correct bug introduced in 4.8.0-alpha08 that only regrids when dbg_lvl > 1 (DOH!) noticed by Min Xu
+
 2019-04-04  Charlie Zender  <zender@uci.edu>
 
 	* nco_ntp_vrt() allow monotonically decreasing input or output grids
