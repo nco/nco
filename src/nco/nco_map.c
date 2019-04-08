@@ -769,7 +769,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   /* Purpose: Compute overlap mesh and weights */
   const char fnc_nm[]="nco_msh_mk()";
 
+
+
   double *wgt_raw; /* [frc] Remapping weights */
+
+  int pl_cnt_in=0;
+  int pl_cnt_out=0;
 
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
@@ -833,8 +838,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   //  test nco_poly functions
   {
-    int pl_cnt_in=0;
-    int pl_cnt_out=0;
 
 
 
@@ -944,6 +947,33 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *col_src_adr_ptr=col_src_adr;
   *row_dst_adr_ptr=row_dst_adr;
   *lnk_nbr_ptr=lnk_nbr;
+
+  /* tally up weights see if they sum to number of dst grid cells */
+  if(nco_dbg_lvl_get() >= nco_dbg_dev)
+  {
+    double sum=0.0;
+    double *tally;
+
+    tally=(double*)nco_calloc( sizeof(double), pl_cnt_out);
+
+    for(idx=0;idx<lnk_nbr;idx++)
+    {
+      tally[row_dst_adr[idx] - 1] += wgt_raw[idx];
+      sum+=wgt_raw[idx];
+    }
+
+    fprintf(stderr, "%s(): S.total=%.10f  WARNING following is list of incomplete dst cells, by src_id no\n",sum);
+    for(idx=0; idx< pl_cnt_out;idx++)
+      if(tally[idx]<1.0 || tally[idx]>1.0 )
+        fprintf(stderr,"%d-%f ", idx, tally[idx]);
+
+    fprintf(stderr,"\n sum=%.10f\n", idx, sum);
+
+    tally=(double*)nco_free(tally);
+
+  }
+
+
 
   pl_glb_in=nco_poly_free(pl_glb_in);
   pl_glb_out=nco_poly_free(pl_glb_out);
@@ -1187,7 +1217,7 @@ nco_grd_lon_typ_enm typ_out)
     exit(EXIT_FAILURE);
   }
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr)
+  if(0 & nco_dbg_lvl_get() >= nco_dbg_crr)
     (void)fprintf(stdout,"%s: INFO %s converting lon coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),fnc_nm, typ_in_sng, typ_out_sng );
 
 
