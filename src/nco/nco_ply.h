@@ -67,7 +67,9 @@ extern "C" {
 
   void
   nco_poly_minmax_add
-  (poly_sct *pl);
+  (poly_sct *pl,
+   nco_grd_lon_typ_enm grd_lon_typ,
+   nco_bool bchk_caps);
 
   void
   nco_poly_area_add(
