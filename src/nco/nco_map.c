@@ -804,7 +804,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
      Final lnk_nbr and grd_crn_nbr_vrl are known only after a full loop through input grids */
 
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s:%s Just entered function- test msh_wrt()\n",nco_prg_nm_get(),fnc_nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s:%s Just entered function- test msh_wrt()\n",nco_prg_nm_get(),fnc_nm);
 
 
   /* create some statistics on grid in and grid out */
@@ -812,10 +812,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   pl_glb_out=nco_msh_stats(area_out,msk_out,lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out,grd_sz_out, grd_crn_nbr_out);
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
-    (void)fprintf(stdout,"%s:%s mesh in statistics\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"%s:%s mesh in statistics\n",nco_prg_nm_get(),fnc_nm);
     nco_poly_prn(pl_glb_in,0);
 
-    (void)fprintf(stdout,"\n%s:%s mesh out statistics\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"\n%s:%s mesh out statistics\n",nco_prg_nm_get(),fnc_nm);
     nco_poly_prn(pl_glb_out,0);
 
   }
@@ -902,7 +902,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
           pl_lst_vrl= nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, grd_lon_typ_out, &pl_cnt_vrl);
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev)
-      fprintf(stdout, "%s: INFO: num input polygons=%d, num output polygons=%d num overlap polygons=%d\n", nco_prg_nm_get(),pl_cnt_in, pl_cnt_out, pl_cnt_vrl);
+      fprintf(stderr, "%s: INFO: num input polygons=%d, num output polygons=%d num overlap polygons=%d\n", nco_prg_nm_get(),pl_cnt_in, pl_cnt_out, pl_cnt_vrl);
 
 
     /*we can safely free these  lists */
@@ -1213,12 +1213,12 @@ nco_grd_lon_typ_enm typ_out)
 
   /* check type out */
   if(typ_out == nco_grd_lon_bb || typ_out == nco_grd_lon_unk ) {
-    (void) fprintf(stdout, "%s(): INFO %s function reports cannot convert grd_lon to \"%s\"\n", nco_prg_nm_get(), fnc_nm, typ_out_sng );
+    (void) fprintf(stderr, "%s(): INFO %s function reports cannot convert grd_lon to \"%s\"\n", nco_prg_nm_get(), fnc_nm, typ_out_sng );
     exit(EXIT_FAILURE);
   }
 
   if(0 & nco_dbg_lvl_get() >= nco_dbg_crr)
-    (void)fprintf(stdout,"%s: INFO %s converting lon coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),fnc_nm, typ_in_sng, typ_out_sng );
+    (void)fprintf(stderr,"%s: INFO %s converting lon coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),fnc_nm, typ_in_sng, typ_out_sng );
 
 
 
