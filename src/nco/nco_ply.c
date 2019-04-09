@@ -253,24 +253,49 @@ nco_poly_init_lst
  double *dp_x_in,
  double *dp_y_in)
 {
+
+
  int idx;
+ int lcl_crn_nbr=0;
+
+ double *lcl_x_in=NULL_CEWI;
+ double *lcl_y_in=NULL_CEWI;
 
  poly_sct *pl;
 
 
+
  /* less than a triangle */
  if (arr_nbr <3 )
-   return (poly_sct*)NULL_CEWI;   
+   return (poly_sct*)NULL_CEWI;
+
+ lcl_x_in=(double*)nco_malloc(sizeof(double)*arr_nbr);
+ lcl_y_in=(double*)nco_malloc(sizeof(double)*arr_nbr);
 
 
- /* check repeated points at end of arrray - nb must be an exact match */
- for(idx=1; idx<arr_nbr; idx++ )
-   if( dp_x_in[idx] == dp_x_in[idx-1] && dp_y_in[idx] == dp_y_in[idx-1] )
-     break;
 
- if(idx < 3 )
-     return (poly_sct*)NULL_CEWI;   
+ /* ignore repeated vertex in X and Y  */
+ for(idx=0; idx<arr_nbr; idx++ )
+ {
+   /* ignore repeated vertex */
+   if (idx > 0 && dp_x_in[idx] == dp_x_in[idx - 1] && dp_y_in[idx] == dp_y_in[idx - 1])
+     continue;
 
+   lcl_x_in[lcl_crn_nbr] = dp_x_in[idx];
+   lcl_y_in[lcl_crn_nbr] = dp_y_in[idx];
+   lcl_crn_nbr++;
+ }
+
+
+
+
+ if( lcl_crn_nbr < 3 ) {
+
+   lcl_x_in=(double*)nco_free(lcl_x_in);
+   lcl_y_in=(double*)nco_free(lcl_y_in);
+   return (poly_sct *) NULL_CEWI;
+
+ }
  /* we have at least a triangle */ 
 
  
@@ -282,7 +307,7 @@ nco_poly_init_lst
    pl->pl_typ=pl_typ;
 
    pl->mem_flg=1;
-   pl->crn_nbr=idx;
+   pl->crn_nbr=lcl_crn_nbr;
  
    pl->dp_x=dp_x_in;
    pl->dp_y=dp_y_in;
@@ -292,20 +317,19 @@ nco_poly_init_lst
  }
  else
  {
-   pl=nco_poly_init_crn(pl_typ, idx, src_id);
-   memcpy(pl->dp_x, dp_x_in, sizeof(double) *idx);
-   memcpy(pl->dp_y, dp_y_in, sizeof(double) *idx);   
+   pl=nco_poly_init_crn(pl_typ, lcl_crn_nbr, src_id);
+   memcpy(pl->dp_x, lcl_x_in, sizeof(double) * lcl_crn_nbr);
+   memcpy(pl->dp_y, lcl_y_in, sizeof(double) * lcl_crn_nbr);
    
- }    
+ }
 
+ lcl_x_in=(double*)nco_free(lcl_x_in);
+ lcl_y_in=(double*)nco_free(lcl_y_in);
 
-
-
- return pl;
+  return pl;
  
 
 }
-
 
 
 
