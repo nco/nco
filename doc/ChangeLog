@@ -1,5 +1,9 @@
 2019-04-10  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.0-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha08: Whiskey Ginger Beer';git push
+	git tag -a 4.8.0-alpha08 -m 'ncremap --vrt_fl pure pressure, CMIP ta & zg, mnt ncr/dcr';git push --tags
+
 	* nco_ntp_vrt() Fix and validate increasing and decreasing input/output vertical grids
 
 2019-04-08  Charlie Zender  <zender@uci.edu>
@@ -11,10 +15,6 @@
 	* nco_ntp_vrt() allow monotonically decreasing input or output grids
 
 2019-04-03  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.8.0-alpha08 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha08: Teach';git push
-	git tag -a 4.8.0-alpha08 -m 'ncremap --vrt_fl pure pressure grids, CMIP ta & zg';git push --tags
 
 	* nco_ntp_vrt() Plumb for pure pressure grids
 
