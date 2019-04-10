@@ -1597,11 +1597,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	in_nbr=lvl_nbr_in;
 	out_nbr=lvl_nbr_out;
 	  
-	nco_bool allow_dcr=True;
 	nco_bool in_ncr; /* [flg] Input coordinate monotonically increases */
 	nco_bool out_ncr; /* [flg] Output coordinate monotonically increases */
 
-	if(allow_dcr){
 	/* Determine monotonicity direction only once, based on first vertical column */
 	if(prs_ntp_in[grd_nbr]-prs_ntp_in[0] > 0.0) in_ncr=True; else in_ncr=False;
 	out_ncr=True;
@@ -1618,8 +1616,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  crd_out_mnt=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
 	  dat_out_mnt=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
 	} /* !out_ncr */
-	} /* !allow_dcr */
 	
+	/* Constants and parameters for extrapolation */
 	const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assumes constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(10000 Pa) */
 	const double Rd_rcp_g0=287.0/9.81; /* [K/Pa] Geopotential height extrapolation uses hypsometric equation Z2-Z1=(Rd*Tv_avg/g0)*ln(p1/p2)=(Rd*Tv_avg/g0)*(ln(p1)-ln(p2)) */
 	const double tpt_vrt_avg=288.0; /* [K] Mean virtual temperature assumed for geopotential height extrapolation */
@@ -1648,7 +1646,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	     Code uses crd_in_mnt, dat_in_mnt, crd_out_mnt where "_mnt" reminds of "monotonically increasing" assumption
 	     Following code lifted from CSZ's libcsz.a library source code ~/sw/c++/vec.hh */
 
-	if(allow_dcr){
 	  if(in_ncr){
 	    crd_in_mnt=crd_in;
 	    dat_in_mnt=dat_in;
@@ -1666,12 +1663,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    for(out_idx=0;out_idx<out_nbr;out_idx++)
 	      crd_out_mnt[out_idx]=crd_out[out_nbr-out_idx-1];
 	  } /* !out_ncr */
-	}else{ /* !allow_dcr */
-	    crd_in_mnt=crd_in;
-	    dat_in_mnt=dat_in;
-	    crd_out_mnt=crd_out;
-	    dat_out_mnt=dat_out;
-	} /* !allow_dcr */
 	    
 	  // Initialize bracketing index
 	  brk_lft_idx=0;
@@ -1797,13 +1788,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    } // !RHS
 	  } // !out_idx
 
-	if(allow_dcr){
 	  /* Un-reverse output data to be on original grid */
 	  if(!out_ncr)
 	    for(out_idx=0;out_idx<out_nbr;out_idx++)
 	      dat_out[out_idx]=dat_out_mnt[out_nbr-out_idx-1];
 	  // End of vec.hh code
-	} /* !allow_dcr */
 	  
 	  /* Copy answers into output array */
 	  for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
@@ -1825,7 +1814,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	if(dat_in) dat_in=(double *)nco_free(dat_in);
 	if(dat_out) dat_out=(double *)nco_free(dat_out);
 
-	if(allow_dcr){
 	if(!in_ncr){
 	  if(crd_in_mnt) crd_in_mnt=(double *)nco_free(crd_in_mnt);
 	  if(dat_in_mnt) dat_in_mnt=(double *)nco_free(dat_in_mnt);
@@ -1834,7 +1822,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(crd_out_mnt) crd_out_mnt=(double *)nco_free(crd_out_mnt);
 	  if(dat_out_mnt) dat_out_mnt=(double *)nco_free(dat_out_mnt);
 	} /* !out_ncr */
-	} /* !allow_dcr */
 
 #pragma omp critical
 	{ /* begin OpenMP critical */
