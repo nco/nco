@@ -1,3 +1,7 @@
+2019-04-10  Charlie Zender  <zender@uci.edu>
+
+	* nco_ntp_vrt() Fix and validate increasing and decreasing input/output vertical grids
+
 2019-04-08  Charlie Zender  <zender@uci.edu>
 
 	* ncremap: Correct bug introduced in 4.8.0-alpha08 that only regrids when dbg_lvl > 1 (DOH!) noticed by Min Xu

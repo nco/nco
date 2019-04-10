@@ -1547,13 +1547,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 
 	if(has_ilev){
-	  /* Interpolate variables from input interface pressure grid to output interface pressure grid */
+	  /* Interpolate current variable from input interface pressure grid to output interface pressure grid */
 	  lvl_nbr_in=ilev_nbr_in;
 	  lvl_nbr_out=ilev_nbr_out;
 	  prs_ntp_in=prs_ntf_in;
 	  prs_ntp_out=prs_ntf_out;
 	}else{
-	  /* Interpolate variables from input midpoint pressure grid to output midpoint pressure grid */
+	  /* Interpolate current variable from input midpoint pressure grid to output midpoint pressure grid */
 	  lvl_nbr_in=lev_nbr_in;
 	  lvl_nbr_out=lev_nbr_out;
 	  prs_ntp_in=prs_mdp_in;
@@ -1563,14 +1563,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* Procedure: Extract input/output coordinate/data arrays into 1D column order
 	   This enables actual interpolation code to be written for, or take advantage of, 1D interpolation routines 
 	   After interpolating into 1D sequential memory, copy back to ND output and repeat */
-	double *crd_in=NULL;
-	double *crd_out=NULL;
-	double *dat_in=NULL;
-	double *dat_out=NULL;
-	double *crd_in_mnt;
-	double *crd_out_mnt;
-	double *dat_in_mnt;
-	double *dat_out_mnt;
+	double *crd_in=NULL; /* Input vertical coordinate (must be monotonic) */
+	double *crd_out=NULL; /* Output vertical coordinate (must be monotonic) */
+	double *dat_in=NULL; /* Input data (to be interpolated) on input vertical coordinate grid */
+	double *dat_out=NULL; /* Output data (interpolated) output vertical coordinate grid (i.e., the answer) */
+	double *crd_in_mnt; /* Input vertical coordinate reversed if necessary to be monotonically increasing */
+	double *crd_out_mnt; /* Output vertical coordinate reversed if necessary to be monotonically increasing */
+	double *dat_in_mnt; /* Input data (to be interpolated) reversed if necessary along with input grid */
+	double *dat_out_mnt; /* Output data (interpolated) reversed if necessary along with output grid */
 	nco_xtr_sct xtr_LHS;
 	nco_xtr_sct xtr_RHS;
 	size_t brk_lft_idx;
@@ -1597,19 +1597,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	in_nbr=lvl_nbr_in;
 	out_nbr=lvl_nbr_out;
 	  
-	nco_bool allow_dcr=False;
-	nco_bool in_ncr; /* [flg] Input data monotonically increases */
-	nco_bool out_ncr; /* [flg] Output data monotonically increases */
+	nco_bool allow_dcr=True;
+	nco_bool in_ncr; /* [flg] Input coordinate monotonically increases */
+	nco_bool out_ncr; /* [flg] Output coordinate monotonically increases */
 
 	if(allow_dcr){
-	/* Determine monotonicity, assumed to be constant throughout grid */
-	if(crd_in[1]-crd_in[0] > 0.0) in_ncr=True; else in_ncr=False;
+	/* Determine monotonicity direction only once, based on first vertical column */
+	if(prs_ntp_in[grd_nbr]-prs_ntp_in[0] > 0.0) in_ncr=True; else in_ncr=False;
 	out_ncr=True;
 	if(out_nbr > 1)
-	  if(crd_out[1]-crd_out[0] < 0.0)
+	  if(prs_ntp_out[grd_nbr]-prs_ntp_out[0] < 0.0)
 	    out_ncr=False;
 
-	/* Additional memory to hold reversed arrays allocated only once and re-used */
+	/* If necessary, allocate (once, and re-use it) additional memory to hold reversed arrays */
 	if(!in_ncr){
 	  crd_in_mnt=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
 	  dat_in_mnt=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
@@ -1631,15 +1631,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	for(grd_idx=0;grd_idx<grd_nbr;grd_idx++){
 	  
 	  /* Initialize pseudo-1D variables with consecutive memory addresses to avoid indirection */
-	  for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
-	    idx_out=grd_idx+lvl_idx_out*grd_nbr;
-	    crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
-	  } /* !lvl_idx_out */
 	  for(lvl_idx_in=0;lvl_idx_in<lvl_nbr_in;lvl_idx_in++){
 	    idx_in=grd_idx+lvl_idx_in*grd_nbr;
 	    crd_in[lvl_idx_in]=prs_ntp_in[idx_in];
 	    dat_in[lvl_idx_in]=var_val_dbl_in[idx_in];
 	  } /* !lvl_idx_in */
+	  for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
+	    idx_out=grd_idx+lvl_idx_out*grd_nbr;
+	    crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
+	  } /* !lvl_idx_out */
 	  
 	  /* Interpolation code easier to write/debug if crd_in and crd_out both monotonically increase
 	     However, monotonically decreasing coordinates useful in many cases, such as depth coordinate, 
