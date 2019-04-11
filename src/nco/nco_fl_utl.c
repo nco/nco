@@ -94,6 +94,45 @@ nco_create_mode_prs /* [fnc] Parse user-specified file format */
   return rcd; /* [rcd] Return code */
 } /* end nco_create_mode_prs() */
 
+int /* O [enm] Return code */
+nco_fl_dmm_mk /* Create dummy file */
+(const char * const fl_out) /* I [sng] Dummy file */
+{
+  /* Purpose: Create dummy file for use by ncremap/ncks */
+
+  const char fnc_nm[]="nco_fl_dmm_mk()"; /* [sng] Function name */
+
+  char *fl_out_tmp=NULL_CEWI;
+
+  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
+  int dmn_id; /* [id] Dimension ID */
+  int out_id; /* I [id] Output netCDF file ID */
+  int rcd=NC_NOERR;
+
+  nco_bool FORCE_APPEND=False; /* Option A */
+  nco_bool FORCE_OVERWRITE=True; /* Option O */
+  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
+  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
+
+  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
+
+  /* Open dummy file */
+  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+
+  rcd=nco_def_dim(out_id,"dummy",1L,&dmn_id);
+  if(rcd != NC_NOERR){
+    (void)fprintf(stdout,"%s: ERROR %s unable to open dummy file\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !rcd */
+  
+  /* Close output file and move it from temporary to permanent location */
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
+
+  return NCO_NOERR;
+
+} /* !nco_fl_dmm_mk() */
+
 void
 nco_fl_sz_est /* [fnc] Estimate RAM size == uncompressed file size */
 (char *smr_fl_sz_sng, /* I/O [sng] String describing estimated file size */
@@ -358,7 +397,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
      Multi-file operators take input filenames from positional arguments, if any
      Otherwise, multi-file operators try to get input filenames from stdin */
 
-  //  const char fnc_nm[]="nco_fl_lst_mk()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_fl_lst_mk()"; /* [sng] Function name */
 
   nco_bool FL_OUT_FROM_PSN_ARG=True; /* [flg] fl_out comes from positional argument */
 
@@ -383,7 +422,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
   /* Might there be problems with any specified files? */
   for(idx=arg_crr;idx<argc;idx++){
-    if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not be portable to older operating systems\n",nco_prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
+    if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not play well with older operating systems\n",nco_prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
   } /* end loop over idx */
 
   /* All operators except multi-file operators must have at least one positional argument */
@@ -393,8 +432,32 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
+  /* ncap2 dummy file */
+  char *fl_dmm;
+  long fl_dmm_lng; /* [nbr] Length of dummy file name */
+  pid_t pid; /* Process ID */
+
   switch(nco_prg_id){
+    //#if 0
   case ncap:
+    /* Operators with optional fl_in and required fl_out */
+    pid=getpid();
+    /* ncap2 dummy file name is "ncap2" + "_tmp_dmm.nc." + PID + NUL */
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG %s reports fl_dmm_lng=%ld",nco_prg_nm_get(),fnc_nm,fl_dmm_lng);
+    fl_dmm_lng=strlen(nco_prg_nm_get())+strlen("_tmp_dmm.nc")+8UL+1UL;
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG %s reports fl_dmm_lng=%ld",nco_prg_nm_get(),fnc_nm,fl_dmm_lng);
+    /* NB: Calling routine has responsibility to free() this memory */
+    fl_dmm=(char *)nco_malloc(fl_dmm_lng*sizeof(char));
+    (void)sprintf(fl_dmm,"%s_tmp_dmm.nc.%ld",nco_prg_nm_get(),(long)pid);
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG %s reports fl_dmm=%s",nco_prg_nm_get(),fnc_nm,fl_dmm);
+    
+    if(psn_arg_nbr == 1){
+      nco_fl_dmm_mk(fl_dmm);
+    } /* !psn_arg_nbr */
+    return fl_lst_in;
+    /* break; *//* NB: break after return in case statement causes SGI cc warning */
+    //#endif /* !0 */
+    //  case ncap:
   case ncatted:
   case ncks:
   case ncrename:

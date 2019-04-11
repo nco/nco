@@ -10,45 +10,6 @@
 #include "nco_rgr.h" /* Regridding */
 
 int /* O [enm] Return code */
-nco_fl_dmm_mk /* Create dummy file */
-(const char * const fl_out) /* I [sng] Dummy file */
-{
-  /* Purpose: Create dummy file for use by ncremap/ncks */
-
-  const char fnc_nm[]="nco_fl_dmm_mk()"; /* [sng] Function name */
-
-  char *fl_out_tmp=NULL_CEWI;
-
-  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
-  int dmn_id; /* [id] Dimension ID */
-  int out_id; /* I [id] Output netCDF file ID */
-  int rcd=NC_NOERR;
-
-  nco_bool FORCE_APPEND=False; /* Option A */
-  nco_bool FORCE_OVERWRITE=True; /* Option O */
-  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
-  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
-  nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
-
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-
-  /* Open dummy file */
-  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
-
-  rcd=nco_def_dim(out_id,"dummy",1L,&dmn_id);
-  if(rcd != NC_NOERR){
-    (void)fprintf(stdout,"%s: ERROR %s unable to open dummy file\n",nco_prg_nm_get(),fnc_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* !rcd */
-  
-  /* Close output file and move it from temporary to permanent location */
-  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
-
-  return NCO_NOERR;
-
-} /* !nco_fl_dmm_mk() */
-
-int /* O [enm] Return code */
 nco_rgr_ctl /* [fnc] Control regridding logic */
 (rgr_sct * const rgr, /* I/O [sct] Regridding structure */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal Table */

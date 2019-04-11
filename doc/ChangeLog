@@ -1,5 +1,7 @@
 2019-04-10  Charlie Zender  <zender@uci.edu>
 
+	* Add stubs for ncap2 to use nco_fl_dmm_mk() to circumvent required input file argument
+
 	* NCO 4.8.0-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha08: Whiskey Ginger Beer';git push
 	git tag -a 4.8.0-alpha08 -m 'ncremap --vrt_fl pure pressure, CMIP ta & zg, mnt ncr/dcr';git push --tags

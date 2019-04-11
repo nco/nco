@@ -25,6 +25,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_fl_utl.h" /* File manipulation */
 #include "nco_map.h" /* Map generation */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_omp.h" /* OpenMP utilities */
@@ -151,10 +152,6 @@ extern "C" {
   nco_bsl_zro /*  Return Bessel function zeros */
   (const int bsl_zro_nbr, /* O [nbr] Order of Bessel function */
    double * const bsl_zro); /* O [frc] Bessel zero */
-
-  int /* O [enm] Return code */
-  nco_fl_dmm_mk /* Create dummy file */
-  (const char * const fl_out); /* I [sng] Dummy file */
 
   int /* O [enm] Return code */
   nco_grd_mk /* [fnc] Create SCRIP-format grid file */

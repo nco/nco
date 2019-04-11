@@ -423,15 +423,11 @@ main(int argc,char **argv)
 	(void)nco_vrs_prn(CVS_Id,CVS_Revision);
 	nco_exit(EXIT_SUCCESS);
       } /* endif "vrs" */
-
       if(!strcmp(opt_crr,"wrt_tmp_fl") || !strcmp(opt_crr,"write_tmp_fl")) WRT_TMP_FL=True;
       if(!strcmp(opt_crr,"no_tmp_fl")) WRT_TMP_FL=False;
       if(!strcmp(opt_crr,"cll_mth") || !strcmp(opt_crr,"cell_methods")) flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
-
       if(!strcmp(opt_crr,"cll_mth") || !strcmp(opt_crr,"cell_methods")) flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
       if(!strcmp(opt_crr,"no_cll_mth") || !strcmp(opt_crr,"no_cell_methods")) flg_cll_mth=False; /* [flg] Add/modify cell_methods attributes */
-
-
     } /* opt != 0 */
     /* Process short options */
     switch(opt){
@@ -538,7 +534,6 @@ main(int argc,char **argv)
     } /* end switch */
     if(opt_crr) opt_crr=(char *)nco_free(opt_crr);
   } /* end while loop */
-  
 
   /* Set/report global chunk cache */
   rcd+=nco_cnk_csh_ini(cnk_csh_byt);
@@ -627,7 +622,6 @@ main(int argc,char **argv)
   (void)pop_fmc_vtr(fmc_vtr,&bnds_obj);
   (void)pop_fmc_vtr(fmc_vtr,&poly_obj);
 
-  
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H
   udunits_cls udunits_obj(true);
@@ -684,14 +678,11 @@ main(int argc,char **argv)
       std::cout<< fmc_vtr[idx].fnm()<<"()"<<std::endl; 
     nco_exit(EXIT_SUCCESS);
   } /* !PRN_FNC_TBL */
-
-
   
   if(!nbr_spt && !fl_spt_usr){
     (void)fprintf(stdout,"%s: ERROR Must give %s work to do with at least one command string (e.g., -s \"one=1\") or file-based script of commands (e.g., \"-S script.nco\"). Please reformulate command accordingly and try again.\n",nco_prg_nm_get(),nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* !nbr_spt */
-
   
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
