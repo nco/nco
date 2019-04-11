@@ -438,7 +438,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   pid_t pid; /* Process ID */
 
   switch(nco_prg_id){
-    //#if 0
+#if 0
   case ncap:
     /* Operators with optional fl_in and required fl_out */
     pid=getpid();
@@ -456,8 +456,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     } /* !psn_arg_nbr */
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */
-    //#endif /* !0 */
-    //  case ncap:
+#endif /* !0 */
+  case ncap:
   case ncatted:
   case ncks:
   case ncrename:
