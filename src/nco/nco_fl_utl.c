@@ -461,7 +461,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       (void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
       nco_fl_dmm_mk(fl_dmm);
       fl_lst_in[(*fl_nbr)++]=fl_dmm;
-    }else{
+    }else if(psn_arg_nbr == 2){
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     } /* !psn_arg_nbr */
 
@@ -469,7 +469,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
     /* Output file is mandatory for ncap2
        If positional (not specified with -o), create here */
-    if(arg_crr == argc-1){
+    if(arg_crr == argc-1 && FL_OUT_FROM_PSN_ARG){
       *fl_out=(char *)strdup(argv[arg_crr]);
       //*fl_out=nco_sng_sntz(*fl_out);
     } /* !arg_crr */
