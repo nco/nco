@@ -454,7 +454,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     /* ncap2 always has one input file, whether dummy or real */
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 
-    if(psn_arg_nbr == 1){
+    if((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1)){
       /* ncap2 was called with one positional argument */
       pid=getpid();
       /* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
