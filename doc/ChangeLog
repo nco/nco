@@ -1,3 +1,7 @@
+2019-04-14  Charlie Zender  <zender@uci.edu>
+
+	* Allow ncap2 to have no positional arguments when no input filename and output specified by -o fl_out
+
 2019-04-10  Charlie Zender  <zender@uci.edu>
 
 	* Add stubs for ncap2 to use nco_fl_dmm_mk() to circumvent required input file argument

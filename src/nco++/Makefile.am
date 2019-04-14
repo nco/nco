@@ -37,6 +37,9 @@ ncoParser.cpp \
 ncoTree.cpp \
 nco_gsl.c
 
+# 20190414 ncap2 on MacOS relink when libnco.a changes
+#ncap2_LDADD = -lnco
+
 # 20150108 Be sure that netCDF in /usr/local takes precedence over GSL libraries in /usr
 # AKA be sure GSL in /usr does not cause ncap2 linker to search /usr before /usr/local
 NCO_AND_ANTLR_STUFF = -L../nco -lnco -lantlr
@@ -68,7 +71,7 @@ endif
 DISTCLEANFILES=ncoParserTokenTypes.txt
 CLEANFILES=ncap2 ncoParserTokenTypes.txt
 
-# Configure automatigically includes following libraries as requested:
+# Configure automagically includes following libraries as requested:
 # Keep list here as reminder:
 # ncap2:
 # -lnco++ -lnco -lnco_c++ -lantlr

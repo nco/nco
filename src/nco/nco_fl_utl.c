@@ -426,7 +426,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   } /* end loop over idx */
 
   /* All operators except multi-file operators must have at least one positional argument */
-  if(!nco_is_mfo(nco_prg_id) && psn_arg_nbr == 0){
+  if(!nco_is_mfo(nco_prg_id) && FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0){
     (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least one\n",nco_prg_nm_get(),psn_arg_nbr);
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
@@ -436,28 +436,47 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   char *fl_dmm;
   long fl_dmm_lng; /* [nbr] Length of dummy file name */
   pid_t pid; /* Process ID */
+  const char tmp_sng_1[]="_tmp_dmm.nc.pid"; /* Extra string appended to temporary filenames */
 
   switch(nco_prg_id){
-#if 0
+    //#if 0
   case ncap:
     /* Operators with optional fl_in and required fl_out */
-    pid=getpid();
-    /* ncap2 dummy file name is "ncap2" + "_tmp_dmm.nc." + PID + NUL */
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG %s reports fl_dmm_lng=%ld",nco_prg_nm_get(),fnc_nm,fl_dmm_lng);
-    fl_dmm_lng=strlen(nco_prg_nm_get())+strlen("_tmp_dmm.nc")+8UL+1UL;
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG %s reports fl_dmm_lng=%ld",nco_prg_nm_get(),fnc_nm,fl_dmm_lng);
-    /* NB: Calling routine has responsibility to free() this memory */
-    fl_dmm=(char *)nco_malloc(fl_dmm_lng*sizeof(char));
-    (void)sprintf(fl_dmm,"%s_tmp_dmm.nc.%ld",nco_prg_nm_get(),(long)pid);
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG %s reports fl_dmm=%s",nco_prg_nm_get(),fnc_nm,fl_dmm);
-    
+    if(psn_arg_nbr > 2-psn_arg_fst){
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than two\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need no more than one (output file was specified with -o switch)\n",nco_prg_nm_get(),psn_arg_nbr);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+
+    fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
+
     if(psn_arg_nbr == 1){
+      /* ncap2 was called with one positional argument */
+      pid=getpid();
+      /* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
+      fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
+      /* NB: Calling routine has responsibility to free() this memory */
+      fl_dmm=(char *)nco_malloc(fl_dmm_lng*sizeof(char));
+      (void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
       nco_fl_dmm_mk(fl_dmm);
+      fl_lst_in[(*fl_nbr)++]=fl_dmm;
+    }else{
+      fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     } /* !psn_arg_nbr */
+
+    /* Output file is mandatory for ncap2
+       If positional (not specified with -o), create here */
+    if(arg_crr == argc-1){
+      *fl_out=(char *)strdup(argv[arg_crr]);
+      //*fl_out=nco_sng_sntz(*fl_out);
+    } /* !arg_crr */
+
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
+
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */
-#endif /* !0 */
-  case ncap:
+    //#endif /* !0 */
+    //  case ncap:
   case ncatted:
   case ncks:
   case ncrename:

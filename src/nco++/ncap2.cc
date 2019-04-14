@@ -1076,8 +1076,8 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_fix;idx++){
       prs_arg.ncap_pop_var_dmn_cmn(var_fix[idx], cmn);
       (void)nco_cnk_sz_set_trv(in_id,out_id,&cnk,var_fix[idx]->nm,cmn);
-    }
-  }
+    } /* !idx */
+  } /* !fl_out_fmt */
 
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -1097,8 +1097,8 @@ main(int argc,char **argv)
     rcd=nco_close(prs_vtr[idx].out_id_readonly);
   } /* end loop over threads */
   
-  /* Remove local copy of file */
-  if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_in);
+  /* Remove local copy of file, if any, or dummy file, if any */
+  if((FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) || strstr("ncap2_tmp_dmm",fl_in)) (void)nco_fl_rm(fl_in);
 
   nco_close(prs_arg.out_id_readonly);
   

@@ -210,8 +210,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases (for Charlie's machines)
 # Map-only:
-# ncremap -D 1 -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -a bilinear
-# ncremap -D 1 -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_SCRIP.20150901.nc -m ~/map.nc -a tempest
+# ncremap -D 1 -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_scrip.20181001.nc -m ~/map.nc -a bilinear
+# ncremap -D 1 -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_scrip.20181001.nc -m ~/map.nc -a tempest
 # ncremap -D 1 -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
 # ncremap -D 1 -s ${DATA}/grids/128x256_SCRIP.20160301.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
 # Regrid:
