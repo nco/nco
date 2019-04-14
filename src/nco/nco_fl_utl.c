@@ -448,6 +448,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
+    /* ncap2 always has one input file, whether dummy or real */
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 
     if(psn_arg_nbr == 1){
@@ -463,6 +464,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     }else{
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     } /* !psn_arg_nbr */
+
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
 
     /* Output file is mandatory for ncap2
        If positional (not specified with -o), create here */
