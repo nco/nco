@@ -14,7 +14,9 @@
 
 #include <math.h>
 
-#include <sys/param.h>
+#ifndef _MSC_VER
+# include <sys/param.h>
+#endif
 
 #include "nco.h"
 #include "nco_mmr.h" /* Memory management */
