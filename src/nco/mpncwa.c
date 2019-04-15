@@ -624,7 +624,7 @@ main(int argc,char **argv)
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;
   
   /* Process positional arguments and fill-in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN,FORCE_OVERWRITE);
   
   /* Make uniform list of user-specified chunksizes */
   if(cnk_nbr > 0) cnk_dmn=nco_cnk_prs(cnk_nbr,cnk_arg);

@@ -385,7 +385,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
  int arg_crr, /* I [idx] Index of current argument */
  int * const fl_nbr, /* O [nbr] Number of files in input file list */
  char ** const fl_out, /* I/O [sng] Name of output file */
- nco_bool *FL_LST_IN_FROM_STDIN) /* O [flg] fl_lst_in comes from stdin */
+ nco_bool *FL_LST_IN_FROM_STDIN, /* O [flg] fl_lst_in comes from stdin */
+ const nco_bool FORCE_OVERWRITE) /* I [flg] Overwrite existing file, if any */
 {
   /* Purpose: Parse positional arguments on command line
      Name of calling program plays a role in this */
@@ -462,11 +463,12 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	 If that file exists, treat it as both input and output file
 	 Otherwise, treat it as output file and create dummy input file */
       rcd_stt=stat(argv[arg_crr],&stat_sct);
-      if(rcd_stt == 0){
+      if(rcd_stt == 0 && !FORCE_OVERWRITE){
 	/* Single file exists, use it as input file */
 	fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
-      }else if(rcd_stt == -1){
-	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"\n%s: INFO stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
+      }else if((rcd_stt == -1) || (rcd_stt == 0 && FORCE_OVERWRITE)){
+	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == -1)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
+	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == 0)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 succeeded: %s exists but FORCE_OVERWRITE is true so will overwrite existing %s and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
 	pid=getpid();
 	/* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
 	fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;

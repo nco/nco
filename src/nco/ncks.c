@@ -1013,7 +1013,7 @@ main(int argc,char **argv)
   (void)trv_tbl_init(&trv_tbl);
  
   /* Process positional arguments and fill-in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN,FORCE_OVERWRITE);
   
   /* Initialize thread information */
   if(flg_rgr) thr_nbr=nco_openmp_ini(thr_nbr); else thr_nbr=nco_openmp_ini((int)1);

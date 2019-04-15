@@ -1,12 +1,17 @@
-2019-04-14  Charlie Zender  <zender@uci.edu>
+2019-04-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.0-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha09: Boulder Bay Proposal';git push
 	git tag -a 4.8.0-alpha09 -m 'ncap2 no input file;ncremap --no_stdin';git push --tags
 
+	* ncap2 uses FORCE_OVERWRITE to decide on append mode vs. dummy	input file in nco_fl_lst_mk()
+
+2019-04-14  Charlie Zender  <zender@uci.edu>
+
 	* Changes to kd.h and nco_crt.h suggested by Pedro for Windows compatibility
 
-	* ncremap add option --no_stdin flag to explicitly turn-off checking stdin for input file list
+	* ncremap add option --no_stdin flag to explicitly turn-off checking stdin for input file list.
+	Xylar realized this is necessary for ncremap to work in build environments that co-opt stdin for other purposes.
 
 	* Allow ncap2 to have no positional arguments when no input filename and output specified by -o fl_out
 
