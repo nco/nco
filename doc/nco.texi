@@ -343,7 +343,8 @@ Texts. The license is available online at
 @sp 2
 We gratefully acknowledge support for @acronym{NCO} development and
 maintenance provided by these institutions and programs:
-@acronym{DOE} @acronym{ACME} @acronym{DE-SC0012998}, 
+@acronym{DOE} @acronym{ACME} @acronym{DE-SC0012998},
+@acronym{LLNL-B625903}, @acronym{LLNL-B632442}, 
 @acronym{NASA} @acronym{ACCESS} @acronym{NNX12AF48A} and
 @acronym{NNX14AH55A}, and @acronym{NSF} @acronym{SEI}
 @acronym{IIS-0431203} and @acronym{AGS-1541031}. 
@@ -566,23 +567,20 @@ Charlie Zender@*
 June, 2015@*
 Irvine, California@*
 
-@ignore
 The @acronym{DOE} Energy Exascale Earth System Model (@acronym{E3SM})
 project (formerly @acronym{ACME}) has generously supported @acronym{NCO}
-development.
-Tying our support to high-performance climate model development has
-accelerated feature introduction and bolstered @acronym{NCO}'s
-robustness. 
-It has also allowed Henry Butowsky to re-join our efforts.
-Without him, @command{ncap2} development would cease, new @acronym{NCO}
-features would slacken, and user-support would suffer.
+development for the past four years.
+Providing @acronym{NCO} support to a mission-driven, high-performance 
+climate model development effort has brought unprecedented challenges
+and opportunity.
+After so many years of staid progress, the recent development speed
+has been both exhilirating and terrifying.
 
 @sp 1
 @noindent
 Charlie Zender@*
-August, 2018@*
+April, 2019@*
 Laguna Beach, California@*
-@end ignore
 
 @html
 <a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->

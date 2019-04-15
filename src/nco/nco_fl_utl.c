@@ -420,18 +420,21 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     psn_arg_fst=1;
   } /* end if */
 
-  /* Might there be problems with any specified files? */
-  for(idx=arg_crr;idx<argc;idx++){
-    if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not play well with older operating systems\n",nco_prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
-  } /* end loop over idx */
-
-  /* All operators except multi-file operators must have at least one positional argument */
+  /* All operators except multi-file operators and possibly must have at least one positional argument */
   if(!nco_is_mfo(nco_prg_id) && FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0){
     (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least one\n",nco_prg_nm_get(),psn_arg_nbr);
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
+  /* psn_arg_nbr can be 0 for ncap2 */
+  if(psn_arg_nbr > 0){
+    /* Might there be problems with any specified files? */
+    for(idx=arg_crr;idx<argc;idx++){
+      if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not play well with older operating systems\n",nco_prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
+    } /* end loop over idx */
+  } /* !psn_arg_nbr */
+  
   /* ncap2 dummy file */
   char *fl_dmm;
   long fl_dmm_lng; /* [nbr] Length of dummy file name */
@@ -451,7 +454,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     /* ncap2 always has one input file, whether dummy or real */
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 
-    if(psn_arg_nbr == 1){
+    if((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1)){
       /* ncap2 was called with one positional argument */
       pid=getpid();
       /* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
@@ -464,8 +467,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     }else if(psn_arg_nbr == 2){
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     } /* !psn_arg_nbr */
-
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
 
     /* Output file is mandatory for ncap2
        If positional (not specified with -o), create here */
