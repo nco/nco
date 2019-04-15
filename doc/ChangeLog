@@ -2,7 +2,7 @@
 
 	* NCO 4.8.0-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha09: Boulder Bay Proposal';git push
-	git tag -a 4.8.0-alpha09 -m 'ncap2 no input file;ncremap --no_stdin';git push --tags
+	git tag -a 4.8.0-alpha09 -m 'ncap2 allows no input file;ncremap --no_stdin';git push --tags
 
 	* ncap2 uses FORCE_OVERWRITE to decide on append mode vs. dummy	input file in nco_fl_lst_mk()
 
