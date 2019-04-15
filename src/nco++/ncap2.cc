@@ -737,7 +737,7 @@ main(int argc,char **argv)
     if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
     rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt,&out_id);
     (void)nco_redef(out_id);
-  } /* Existing file */
+  } /* !FL_OUT_NEW */
   
   /* Initialize chunking from user-specified inputs */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC)
@@ -856,8 +856,8 @@ main(int argc,char **argv)
     xtr_lst_a=nco_nm_id_lst_free(xtr_lst_a,nbr_xtr);
   } /* !FORCE_APPEND */
 
-  // execute in ANTLR command-line script(s)
-  if(nbr_spt >0){
+  // Execute in ANTLR command-line script(s)
+  if(nbr_spt > 0){
     char *fl_cmd_usr=(char *)strdup("Command-line script");
     /* Print all command-line scripts */
     if(nco_dbg_lvl_get() >= nco_dbg_std){
@@ -866,17 +866,16 @@ main(int argc,char **argv)
     } /* endif debug */
      /* Invoke ANTLR parser */
     antlr_ret=parse_antlr(prs_vtr,fl_cmd_usr,spt_arg_cat);
-  }
+  } /* !nbr_spt */
   
-  // execute in ANTLR user specified script 
+  // Execute in ANTLR user specified script 
   if(fl_spt_usr){
     if((yyin=fopen(fl_spt_usr,"r")) == NULL_CEWI)
       err_prn(fnc_nm,"Unable to open script file "+std::string(fl_spt_usr));
     fclose(yyin); 
     /* Invoke ANTLR parser */
     antlr_ret=parse_antlr(prs_vtr,fl_spt_usr,(char *)NULL);
-  }
-
+  } /* !fl_spt_usr */
 
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
@@ -1098,7 +1097,7 @@ main(int argc,char **argv)
   } /* end loop over threads */
   
   /* Remove local copy of file, if any, or dummy file, if any */
-  if((FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) || strstr("ncap2_tmp_dmm",fl_in)) (void)nco_fl_rm(fl_in);
+  if((FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) || strstr(fl_in,"ncap2_tmp_dmm")) (void)nco_fl_rm(fl_in);
 
   nco_close(prs_arg.out_id_readonly);
   

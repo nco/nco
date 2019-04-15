@@ -436,10 +436,12 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   } /* !psn_arg_nbr */
   
   /* ncap2 dummy file */
+  const char tmp_sng_1[]="_tmp_dmm.nc.pid"; /* Extra string appended to temporary filenames */
   char *fl_dmm;
+  int rcd_stt=NC_MIN_INT; /* [rcd] Return code from stat() */
   long fl_dmm_lng; /* [nbr] Length of dummy file name */
   pid_t pid; /* Process ID */
-  const char tmp_sng_1[]="_tmp_dmm.nc.pid"; /* Extra string appended to temporary filenames */
+  struct stat stat_sct;
 
   switch(nco_prg_id){
     /* 20190414 Given ncap2 its own block so it can have no input files 
@@ -456,22 +458,33 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 
     if((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1)){
-      /* ncap2 was called with one positional argument */
-      pid=getpid();
-      /* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
-      fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
-      /* NB: Calling routine has responsibility to free() this memory */
-      fl_dmm=(char *)nco_malloc(fl_dmm_lng*sizeof(char));
-      (void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
-      nco_fl_dmm_mk(fl_dmm);
-      fl_lst_in[(*fl_nbr)++]=fl_dmm;
+      /* ncap2 was called with a single filename argument
+	 If that file exists, treat it as both input and output file
+	 Otherwise, treat it as output file and create dummy input file */
+      rcd_stt=stat(argv[arg_crr],&stat_sct);
+      if(rcd_stt == 0){
+	/* Single file exists, use it as input file */
+	fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+      }else if(rcd_stt == -1){
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"\n%s: INFO stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
+	pid=getpid();
+	/* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
+	fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
+	/* NB: Calling routine has responsibility to free() this memory */
+	fl_dmm=(char *)nco_malloc(fl_dmm_lng*sizeof(char));
+	(void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
+	nco_fl_dmm_mk(fl_dmm);
+	fl_lst_in[(*fl_nbr)++]=fl_dmm;
+      } /* !rcd_stt */
     }else if(psn_arg_nbr == 2){
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     } /* !psn_arg_nbr */
 
     /* Output file is mandatory for ncap2
-       If positional (not specified with -o), create here */
-    if(arg_crr == argc-1 && FL_OUT_FROM_PSN_ARG){
+       If positional (not specified with -o), create here unless single file is both input and output (like ncatted/ncrename)
+       Last clause prevents prevents using results of stat() check
+       When rcd_stt == 0, calling routine (ncap2 main()) does special file open procedure */
+    if((arg_crr == argc-1) && FL_OUT_FROM_PSN_ARG && (rcd_stt != 0)){
       *fl_out=(char *)strdup(argv[arg_crr]);
       //*fl_out=nco_sng_sntz(*fl_out);
     } /* !arg_crr */

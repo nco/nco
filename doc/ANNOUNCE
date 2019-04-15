@@ -20,13 +20,26 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap now accepts new Tempest map algorithms named se2se
+A. ncremap now accepts a new Tempest map algorithm named se2se
    http://nco.sf.net/nco.html#ncremap
 
+B. ncap2 now allows creating brand-new files without specifying and
+   input filename. Previously, users had to specify an input file for
+   ncap2 even if nothing in that file was to appear in or be used to
+   construct the output file. 
+   ncap2 -s 'quark=1' ~/foo.nc
+   http://nco.sf.net/nco.html#ncap2
+
+C. ncremap has a new flag, --no_stdin, that disables checking stdin
+   for input files. This is a flag that takes no argument, not a
+   key-value option. Add --no_stdin to any command that might run in
+   an environment, like Azure CI, that uses stdin for other purposes.
+   ncremap --no_stdin --map=map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#ncremap
 
 BUG FIXES:
 
-A. Hi
+A. ncremap a
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
