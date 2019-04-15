@@ -1,5 +1,7 @@
 2019-04-14  Charlie Zender  <zender@uci.edu>
 
+	* ncremap add option --no_stdin flag to explicitly turn-off checking stdin for input file list
+
 	* Allow ncap2 to have no positional arguments when no input filename and output specified by -o fl_out
 
 2019-04-10  Charlie Zender  <zender@uci.edu>

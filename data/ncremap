@@ -426,6 +426,7 @@ sgs_frc='landfrac' # [sng] Sub-grid fraction variable
 sgs_msk='landmask' # [sng] Sub-grid mask variable
 sgs_nrm='1.0' # [frc] Sub-grid normalization
 skl_fl='' # [sng] Skeleton file
+std_chk='Yes' # [sng] Check stdin for input file list
 std_flg='No' # [sng] Input available from pipe to stdin
 thr_nbr=2 # [nbr] Thread number for regridder
 trn_map='No' # [flg] Tempest transpose map (i.e., fv2se_flx == monotr)
@@ -506,6 +507,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--nm_src${fnt_nrm}   Short name of source grid (required for MWF, no default) [${fnt_tlc}nm_src, name_src, nm_sht_src, short_name_source${fnt_nrm}]"
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"
     echo " ${fnt_bld}--no_frm_trm${fnt_nrm}  Omit formula_terms variables (e.g., 'hyba', 'PS') [${fnt_tlc}no_frm_trm, no_formula_terms${fnt_nrm}]"
+    echo " ${fnt_bld}--no_stdin${fnt_nrm}  Check stdin for input file list (default ${fnt_bld}${std_chk}${fnt_nrm}) [${fnt_tlc}no_stdin, no_inp_std, no_redirect, no_standard_input${fnt_nrm}]"
     echo " ${fnt_bld}--no_stg_grd${fnt_nrm}  Omit staggered grid variables ('slat, slon, w_stag') [${fnt_tlc}no_stg_grd, no_stg, no_stagger, no_staggered_grid${fnt_nrm}]"
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}out_fl${fnt_nrm}   Output-file (regridded file) (empty copies Input filename) (default ${fnt_bld}${out_fl}${fnt_nrm}) [${fnt_tlc}out_fl, out_file, output_file${fnt_nrm}]"
@@ -513,7 +515,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
 # 20171101: Implement but do not yet advertise PPC in ncremap
     echo " ${fnt_bld}--ppc_prc${fnt_nrm}  Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, ppc_prc, precision, quantize${fnt_nrm}]"
-    echo " ${fnt_bld}--qea_flg${fnt_nrm}  Quasi-equal area mode for TempestRemap (default ${fnt_bld}${qea_flg}${fnt_nrm}) [${fnt_tlc}qea, qea_flg, np2, quasi-equal-area${fnt_nrm}]"
+#    echo " ${fnt_bld}--qea_flg${fnt_nrm}  Quasi-equal area mode for TempestRemap (default ${fnt_bld}${qea_flg}${fnt_nrm}) [${fnt_tlc}qea, qea_flg, np2, quasi-equal-area${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, thr_rnr, rnr, renormalize_threshold${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_dst${fnt_nrm}  Regional destination grid [${fnt_tlc}rgn_dst, dst_rgn, regional_destination${fnt_nrm}]"
@@ -677,7 +679,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       ppc=?* | ppc_prc=?* | precision=?* | quantize=?* ) ppc_prc="${LONG_OPTARG}" ;; # # Precision-preserving compression
 	       qea | qea_flg | np2 | quasi-equal-area ) qea_flg='Yes' ;; # # Quasi-equal area mode for TempestRemap
-	       qea=?* | inp_std=?* | std_flg=?* | redirect=?* | standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Quasi-equal area mode for TempestRemap
+	       qea=?* | qea_flg=?* | np2=?* | quasi-equal-area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Quasi-equal area mode for TempestRemap
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
 	       rnr_thr=?* | thr_rnr=?* | rnr=?* | renormalization_threshold=?* ) rnr_thr="${LONG_OPTARG}" ;; # -r # Renormalization threshold
 	       rgn_dst=?* | dst_rgn=?* | regional_destination=?* ) hnt_dst='--dst_regional' ;; # # Regional destination grid
@@ -696,6 +698,10 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       skl_fl=?* | skl=?* | skeleton=?* | skeleton_file=?* ) skl_fl="${LONG_OPTARG}" ;; # # Skeleton file
 	       stdin | inp_std | std_flg | redirect | standard_input ) inp_std='Yes' ;; # # Input file list from stdin
 	       stdin=?* | inp_std=?* | std_flg=?* | redirect=?* | standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Input file list from stdin
+
+	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Check stdin for input file list
+	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Check stdin for input file list
+
 	       drc_tmp=?* | tmp_drc=?* | dir_tmp=?* | tmp_dir=?* | tmp=?* ) tmp_usr="${LONG_OPTARG}" ;; # -T # Temporary directory
 	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
 	       unpack=?* | upk=?* | upk_inp=?* ) pdq_opt='-U' ;; # -U # Unpack input
@@ -797,48 +803,51 @@ fi # !vrs_prn
 # Non-interactive batch mode (e.g., qsub) always returns true for -p /dev/stdin on PBS, leads to FALSE POSITIVES!
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
-if [ -n "${PBS_ENVIRONMENT}" ]; then
-    if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
-	# PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
-	bch_pbs='Yes'
-    fi # !PBS_ENVIRONMENT
-fi # !PBS
-if [ -n "${SLURM_JOBID}" ] && [ -z "${SLURM_PTY_PORT}" ]; then
-    # SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
-    bch_slr='Yes'
-fi # !SLURM
-if [ ${bch_pbs} = 'Yes' ] || [ ${bch_slr} = 'Yes' ]; then
-    # Batch environment
-    if [ ${bch_pbs} = 'Yes' ]; then
-	if [ ! -p /dev/stdin ]; then
-	    # PBS batch jobs cause -p to return true except for stdin redirection 
-	    # When -p returns true we do not know whether stdin pipe contains any input
-	    # User must explicitly indicate use of stdin pipes with --stdin option
-	    # Redirection in PBS batch jobs unambiguously causes -p to return false
+# Check stdin if user has not explicitly disallowed it with --no_stdin
+if [ "${std_chk}" = 'Yes' ]; then
+    if [ -n "${PBS_ENVIRONMENT}" ]; then
+	if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
+	    # PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
+	    bch_pbs='Yes'
+	fi # !PBS_ENVIRONMENT
+    fi # !PBS
+    if [ -n "${SLURM_JOBID}" ] && [ -z "${SLURM_PTY_PORT}" ]; then
+	# SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
+	bch_slr='Yes'
+    fi # !SLURM
+    if [ ${bch_pbs} = 'Yes' ] || [ ${bch_slr} = 'Yes' ]; then
+	# Batch environment
+	if [ ${bch_pbs} = 'Yes' ]; then
+	    if [ ! -p /dev/stdin ]; then
+		# PBS batch jobs cause -p to return true except for stdin redirection 
+		# When -p returns true we do not know whether stdin pipe contains any input
+		# User must explicitly indicate use of stdin pipes with --stdin option
+		# Redirection in PBS batch jobs unambiguously causes -p to return false
+		inp_std='Yes'
+	    fi # !stdin
+	fi # !bch_slr
+	if [ ${bch_slr} = 'Yes' ]; then
+	    if [ -p /dev/stdin ]; then
+		# SLURM batch jobs cause -p to return true for stdin pipes
+		# When -p returns false we do not know whether output was redirectd
+		# User must explicitly indicate use of redirection with --stdin option
+		# Stdin pipes in SLURM batch jobs unambiguously cause -p to return true
+		inp_std='Yes'
+	    fi # !stdin
+	fi # !bch_slr
+    else # !bch
+	# Interactive environment
+	if [ -p /dev/stdin ] || [ ! -t 0 ]; then
+	    # Interactive environments unambiguously cause -p to return true for stdin pipes
+	    # Interactive environments unambiguously cause -t 0 to return false for stdin redirection
 	    inp_std='Yes'
 	fi # !stdin
-    fi # !bch_slr
-    if [ ${bch_slr} = 'Yes' ]; then
-	if [ -p /dev/stdin ]; then
-	    # SLURM batch jobs cause -p to return true for stdin pipes
-	    # When -p returns false we do not know whether output was redirectd
-	    # User must explicitly indicate use of redirection with --stdin option
-	    # Stdin pipes in SLURM batch jobs unambiguously cause -p to return true
-	    inp_std='Yes'
-	fi # !stdin
-    fi # !bch_slr
-else # !bch
-    # Interactive environment
-    if [ -p /dev/stdin ] || [ ! -t 0 ]; then
-	# Interactive environments unambiguously cause -p to return true for stdin pipes
-	# Interactive environments unambiguously cause -t 0 to return false for stdin redirection
-	inp_std='Yes'
-    fi # !stdin
-fi # !bch
-if [ ${inp_std} = 'Yes' ] && [ ${inp_psn} = 'Yes' ]; then
-    echo "${spt_nm}: ERROR expecting input both from stdin and positional command-line arguments\n"
-    exit 1
-fi # !inp_std
+    fi # !bch
+    if [ ${inp_std} = 'Yes' ] && [ ${inp_psn} = 'Yes' ]; then
+	echo "${spt_nm}: ERROR expecting input both from stdin and positional command-line arguments\n"
+	exit 1
+    fi # !inp_std
+fi # !std_chk
 
 # Derived variables
 if [ -n "${drc_usr}" ]; then
@@ -852,7 +861,7 @@ fi # !drc_usr
 if [ -n "${tmp_usr}" ]; then
     # Fancy %/ syntax removes trailing slash (e.g., from $TMPDIR)
     drc_tmp=${tmp_usr%/}
-fi # !out_fl
+fi # !tmp_usr
 att_fl="${drc_tmp}/ncremap_tmp_att.nc" # [sng] Missing value workflow (MPAS) default
 d2f_fl="${drc_tmp}/ncremap_tmp_d2f.nc" # [sng] File with doubles converted to float
 dmm_fl="${drc_tmp}/ncremap_tmp_dmm.nc" # [sng] Dummy input file

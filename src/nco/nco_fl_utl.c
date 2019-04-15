@@ -442,7 +442,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   const char tmp_sng_1[]="_tmp_dmm.nc.pid"; /* Extra string appended to temporary filenames */
 
   switch(nco_prg_id){
-    //#if 0
+    /* 20190414 Given ncap2 its own block so it can have no input files 
+       Previously, ncap2 used ncatted/ncks/ncrename code block below, but this often required supplying dummy filenames */
   case ncap:
     /* Operators with optional fl_in and required fl_out */
     if(psn_arg_nbr > 2-psn_arg_fst){
@@ -479,8 +480,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */
-    //#endif /* !0 */
-    //  case ncap:
   case ncatted:
   case ncks:
   case ncrename:
