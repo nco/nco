@@ -36,7 +36,7 @@ echo using %MSVC_VERSION%
 :: git clone https://github.com/Unidata/netcdf-c
 :: git clone https://github.com/curl/curl
 :: git clone https://github.com/madler/zlib
-:: git clone https://github.com/soumagne/szip
+:: git clone https://github.com/nextgis-borsch/lib_szip szip
 :: git clone https://github.com/live-clones/hdf5
 :: git clone https://github.com/Unidata/UDUNITS-2
 :: git clone https://github.com/libexpat/libexpat
@@ -83,7 +83,7 @@ if not exist %build%\zlib (
 )
 
 if not exist %build%\szip (
- git clone https://github.com/soumagne/szip
+ git clone https://github.com/nextgis-borsch/lib_szip szip
 ) else (
  echo skipping szip git clone
 )
@@ -198,7 +198,7 @@ if exist %build%\hdf5\build\bin\Debug\h5dump.exe (
            -DHDF5_ENABLE_SZIP_SUPPORT=ON ^
            -DSZIP_USE_EXTERNAL=ON ^
            -DSZIP_FOUND=ON ^
-           -DSZIP_STATIC_LIBRARY:FILEPATH=%root%/szip/build/bin/Debug/libszip_D.lib ^
+           -DSZIP_STATIC_LIBRARY:FILEPATH=%root%/szip/build/bin/Debug/szip.lib ^
            -DSZIP_INCLUDE_DIRS:PATH=%root%/szip/src
   msbuild HDF5.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   popd
@@ -361,7 +361,7 @@ if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
            -DHDF5_C_LIBRARY=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
            -DHDF5_INCLUDE_DIR=%root%/hdf5/src ^
            -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
-           -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/libszip_D.lib ^
+           -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/szip.lib ^
            -DZLIB_INCLUDE_DIR:PATH=%root%/zlib ^
            -DHAVE_HDF5_H=%root%/hdf5/build ^
            -DHDF5_HL_INCLUDE_DIR=%root%/hdf5/hl/src ^
@@ -406,7 +406,7 @@ if exist %build%\Debug\ncks.exe (
   -DHDF5_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_D.lib ^
   -DHDF5_HL_LIBRARY:FILE=%root%/hdf5/build/bin/Debug/libhdf5_hl_D.lib ^
   -DZLIB_LIBRARY:FILE=%root%/zlib/build/Debug/zlibstaticd.lib ^
-  -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/libszip_D.lib ^
+  -DSZIP_LIBRARY:FILE=%root%/szip/build/bin/Debug/szip.lib ^
   -DCURL_LIBRARY:FILE=%root%/curl/builds/libcurl-vc14-x64-debug-static-ipv6-sspi-winssl/lib/libcurl_a_debug.lib ^
   -DUDUNITS2_INCLUDE:PATH=%root%/UDUNITS-2/lib ^
   -DUDUNITS2_LIBRARY:FILE=%root%/UDUNITS-2/build/lib/Debug/udunits2.lib ^
