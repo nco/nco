@@ -26,6 +26,7 @@
 
 /* smallest RADIAN */
 #define SIGMA_RAD (1.0e-12)
+#define DOT_TOLERANCE (1.0e-12)
 
 /* convert Degrees to Radians */
 #define D2R(x)  ((x) * M_PI / 180.0)

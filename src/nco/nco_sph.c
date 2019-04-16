@@ -256,7 +256,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
       /* quick exit if current point is same a First point  - nb an exact match ?*/
       //if( *r >3 &&  R->shp[0][3]==R->shp[*r-1][3] && R->shp[0][4]==R->shp[*r-1][4] )
-      if( *r >3 &&  1.0 - nco_sph_dot_nm(R->shp[0], R->shp[*r-1]) < 1.0e-10   )
+      if( *r >3 &&  1.0 - nco_sph_dot_nm(R->shp[0], R->shp[*r-1]) < DOT_TOLERANCE  )
       {
          --*r;
          break;
@@ -738,7 +738,7 @@ void nco_sph_add_pnt(double **R, int *r, double *P)
 
 
    /* only add  point if its distinct from previous point */
-   if ( *r==0 ||  delta > 1.0e-10 )
+   if ( *r==0 ||  delta > DOT_TOLERANCE )
    {
 
       memcpy(R[*r], P, sizeof(double)*NBR_SPH);
