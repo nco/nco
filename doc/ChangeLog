@@ -1,3 +1,7 @@
+2019-04-16  Charlie Zender  <zender@uci.edu>
+
+	* Attempt to solve Appveyor errors on Windows by never defining NC_memio for Windows for netCDF <= 4.6.1
+
 2019-04-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.0-alpha09 release procedure:
