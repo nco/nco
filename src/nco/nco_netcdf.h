@@ -345,6 +345,23 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
   /* This bunch of pre-processor definitions is ugly
      NC_LIB_VERSION should be replaced by an autoconf-generated token that checked for existance of, e.g., nc_open_memio()
      However netCDF 4.6.2 netcdf_mem.h has EXTERNL without a definition so autoconf checks fail */
+#ifdef _MSC_VER
+  /* 20190416: Kludge to prevent inexplicable Windows AppVeyor errors caused by apparent redefinition of NC_memio
+     Solution attempt #1 is to never define NC_memio for Windows for netCDF <= 4.6.1: Failed because NC_memio never defined
+     Solution attempt #2 is to assume netCDF 4.6.1 defines NC_memio Windows only */
+# if NC_LIB_VERSION >= 461 
+#  include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
+# else /* 4.6.1 */
+  typedef struct NC_memio {
+  size_t size;
+  void* memory;
+  int flags;
+#  define NC_MEMIO_LOCKED 1    /* Do not try to realloc or free provided memory */
+} NC_memio;
+# endif /* 4.6.1 */
+#endif /* _MSC_VER */
+
+#ifndef _MSC_VER
 #if NC_LIB_VERSION >= 462 
 # include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
 #else /* 4.6.2 */
@@ -353,18 +370,15 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
 # ifndef NETCDF_MEM_H
   /* 20190130: struct NC_memio first defined in netcdf_mem.h in 4.6.2
      Define it here to use in stub functions compiled against earlier netCDF libraries */
-#  ifndef _MSC_VER
-  /* 20190416: Kludge to prevent inexplicable Windows AppVeyor errors caused by apparent redefinition of NC_memio
-     Solution attempt #1 is to never define NC_memio for Windows for netCDF <= 4.6.1 */
   typedef struct NC_memio {
   size_t size;
   void* memory;
   int flags;
 # define NC_MEMIO_LOCKED 1    /* Do not try to realloc or free provided memory */
 } NC_memio;
-#  endif /* _MSC_VER */
 # endif /* NETCDF_MEM_H */
 #endif /* 4.6.2 */
+#endif /* _MSC_VER */
 
   /* Begin file-level routines */
 int nco_create(const char * const fl_nm,const int cmode,int * const nc_id);
