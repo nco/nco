@@ -1272,6 +1272,8 @@ kd_box size2)
     return False;
   }
 
+  /* This is a polar cap - remember the longitudes have been set to the WHOLE RANGE of Longitude in
+   * nco_poly_minmax_add() */
   if(pl->bwrp==True && pl->bwrp_y==True)
   {
     size1[KD_LEFT] = pl->dp_x_minmax[0];
