@@ -38,6 +38,7 @@
  */
 
 
+#include <stddef.h>
 #include "kd.h"
 
 
@@ -2493,6 +2494,67 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
   
 }
 
+int kd_priority_cmp( const void *vp1, const void *vp2)
+{
+
+  const KDPriority * const kd1=((const KDPriority * const )vp1);
+  const KDPriority * const kd2=((const KDPriority * const )vp2);
+
+  //ptrdiff_t df= (char*)kd1->elem->item - (char*)kd2->elem->item;
+  ptrdiff_t df= kd1->elem->item - kd2->elem->item;
+
+  return ( df < 0 ? -1 :  df >0 ? 1 : 0   );
+}
+
+
+
+/* Sorts input list
+ * if duplicates then copy new list over to old and True returned
+ * no duplicates then sorted list remains and False is retuned
+ */
+nco_bool  kd_sort_priority_list(int m, KDPriority *list, int fll_nbr, int *out_fll_nbr){
+
+
+  int idx;
+  int nw_fll_nbr;
+
+  nco_bool bret=False;
+
+  KDPriority *lcl_list=NULL_CEWI;
+
+  lcl_list=(KDPriority*)nco_calloc(m, sizeof(KDPriority));
+
+
+  /* use stdlib sort  */
+  qsort((void *)list, fll_nbr, sizeof(KDPriority), kd_priority_cmp);
+
+  lcl_list[0]=list[0];
+  nw_fll_nbr=1;
+
+  for (idx = 1; idx < fll_nbr; idx++)
+    if(list[idx].elem->item != list[idx - 1].elem->item )
+        lcl_list[nw_fll_nbr++] = list[idx];
+
+
+
+
+  /* deal with duplicates */
+  if(  nw_fll_nbr < fll_nbr  ){
+     /* copy new local list over to old one */
+     memcpy(list, lcl_list, sizeof(KDPriority)*m );
+     bret=True;
+
+  } else
+     bret=False;
+
+  *out_fll_nbr=nw_fll_nbr;
+
+  lcl_list=(KDPriority*)nco_free(lcl_list);
+
+
+  return bret;
+
+}
 
 
 int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
@@ -2522,27 +2584,35 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	return kd_neighbour(realTree->tree,Xq,m,*alist,Bp,Bn);
 }
 
+
 int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq, kd_box Xr, int m, KDPriority *list)
 {
    int idx;
    int jdx;
-   int ret_cnt;
+   /* count duplicates for dbg */
+   int dup_cnt=0;
+   int ret_cnt=0;
    int ret_cnt1=0;
    int ret_cnt2=0;
 
+   nco_bool bSort=False;
 
-   KDPriority *list2;
+  if(nco_dbg_lvl_get() > nco_dbg_dev)
+    fprintf(stderr,"%s(): Just entered the function\n",__FUNCTION__);
+
+
+  KDPriority *list2;
 
    list2 = (KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)m);
 
 
-   ret_cnt1=kd_nearest_intersect(realTree,Xq, m,list);
+   ret_cnt1=kd_nearest_intersect(realTree,Xq, m,list, bSort);
 
    if(ret_cnt1 == m)
    	 return ret_cnt1;
 
    /* search for second box */
-   ret_cnt2=kd_nearest_intersect(realTree,Xr, m - ret_cnt1  ,list2);
+   ret_cnt2=kd_nearest_intersect(realTree,Xr, m - ret_cnt1  ,list2, bSort);
 
 
     ret_cnt=ret_cnt1;
@@ -2550,64 +2620,74 @@ int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq, kd_box Xr, int m, KDPr
     /* add second list to first checking for duplicates */
 	for(idx=0; idx<ret_cnt2;idx++)
 	{
-		for (jdx = 0; jdx < ret_cnt1; jdx++)
+		for (jdx = 0; jdx < ret_cnt1; jdx++) {
 			if (list[jdx].elem->item == list2[idx].elem->item)
-				break;
+			  { dup_cnt++; break; }
+		}
 
-			if( jdx== ret_cnt1 )
-			  list[ret_cnt++]=list2[idx];
+		if( jdx== ret_cnt1 )
+			list[ret_cnt++] = list2[idx];
+
 
 	}
 
 	list2 = (KDPriority *)nco_free(list2);
 
+	if(nco_dbg_lvl_get() > nco_dbg_dev)
+		fprintf(stderr,"%s(): num of duplicates detected=%d\n",__FUNCTION__, dup_cnt);
+
 	return ret_cnt;
 }
 
-int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list)
+
+
+
+int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, int bSort)
 {
 	int idx;
 	int node_cnt;
+	int lcl_cnt=0;
+    int nw_lcl_cnt=0;
 	int ret_cnt=0;
-
-	/*
-	kd_box Bp,Bn;
-	Bp[0]=realTree->extent[0];
-	Bp[1]=realTree->extent[1];
-
-	Bn[0]=realTree->extent[2];
-	Bn[1]=realTree->extent[3];
-    */
-	
-	/* old routine visits evry node
-	  node_cnt= kd_neighbour_intersect(realTree->tree,Xq,m,list,Bp,Bn);
-    */
-
-	/* new routine -checks low_min_bound and hi_min_bound
-	  node_cnt= kd_neighbour_intersect2(realTree->tree,0,Xq,m,list);
-	*/
 
 	node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq,m,list,0,0);
 
-        for(idx=0; idx<m;idx++)
-          if(list[idx].elem )
-            ret_cnt++;
+
+	for(idx=0; idx<m;idx++)
+	  if(list[idx].elem )
+	    ret_cnt++;
+      else
+        break;
+
+    /* sort list and remove duplicates */
+    if(ret_cnt >1 && bSort &&  kd_sort_priority_list(m, list, ret_cnt, &nw_lcl_cnt ) )
+    {
+       ret_cnt=nw_lcl_cnt;
+
+    }
 
 
-          if(0 && nco_dbg_lvl_get() >= nco_dbg_dev  )
-          {
-              for(idx=0;idx<ret_cnt;idx++)
-              {
-                   (void)fprintf(stderr," dist to center: %f units. elem=%p item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
-                        list[idx].dist,
-                        list[idx].elem,
-                        list[idx].elem->item,
-                        list[idx].elem->size[KD_LEFT],
-                        list[idx].elem->size[KD_RIGHT],
-                        list[idx].elem->size[KD_BOTTOM],
-                        list[idx].elem->size[KD_TOP]);
-              }
-          }
-        return ret_cnt;
+
+
+
+    if(0 && nco_dbg_lvl_get() >= nco_dbg_dev  )
+    {
+      (void)fprintf(stderr,"ret_cnt=%d\n", ret_cnt);
+
+      for(idx=0;idx<ret_cnt;idx++)
+      {
+        (void)fprintf(stderr," dist to center: %f units. elem=%p item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
+                      list[idx].dist,
+                      list[idx].elem,
+                      list[idx].elem->item,
+                      list[idx].elem->size[KD_LEFT],
+                      list[idx].elem->size[KD_RIGHT],
+                      list[idx].elem->size[KD_BOTTOM],
+                      list[idx].elem->size[KD_TOP]);
+      }
+    }
+
+
+  return ret_cnt;
 	
 }
