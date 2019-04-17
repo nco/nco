@@ -392,14 +392,52 @@ void nco_poly_minmax_add
     pl->bwrp=(pl->dp_x_minmax[1] - pl->dp_x_minmax[0] >= 180.0);
 
 
-
+    /* check for a polar cap */
     if (pl->bwrp &&  bchk_caps)
     {
 
-        /* code that detecta a polar cap */
-        if (pl->dp_y_minmax[0] == pl->dp_y_minmax[1])
-          is_caps = True;
+      /* polar cap must all be northern or southern hemisphere */
+      if(  ! ( pl->dp_y_minmax[0] > 0.0 && pl->dp_y_minmax[1] > 0.0  ||
+               pl->dp_y_minmax[0] < 0.0 && pl->dp_y_minmax[1] < 0.0 ) )
+        is_caps=False;
+      /* see if its a polar triangle */
+      else if(pl->dp_y_minmax[0] == -90.0 || pl->dp_y_minmax[1] == 90.0  )
+         is_caps=False;
+        /* this  works for some corner cases  */
+      else if (pl->dp_y_minmax[0] == pl->dp_y_minmax[1])
+        is_caps = True;
+      else
+      {
 
+        nco_bool bDeg=True;
+        nco_bool haveControl=False;
+        double pControl[NBR_SPH];
+        double pPole[NBR_SPH];
+
+        /* for a polar must all be in nothern or souther hemisphere */
+        if( pl->dp_y_minmax[1] >0.0 ) {
+          pControl[0]=20.0;
+          pControl[1]=pl->dp_y_minmax[0]-2.0;
+          pPole[0] = 0.0;
+          pPole[1] = 90.0;
+        }else{
+          pControl[0]=20.0;
+          pControl[1]=pl->dp_y_minmax[1]+2.0;
+          pPole[0] = 0.0;
+          pPole[1] = -90.0;
+        }
+
+
+
+        nco_geo_lonlat_2_sph(pPole[0],pPole[1],pPole, bDeg);
+        nco_geo_lonlat_2_sph(pControl[0],pControl[1],pControl, bDeg);
+
+        /* see if pole is inside polygon */
+        is_caps=nco_sph_pnt_in_poly(pl->shp, pl->crn_nbr,pControl, pPole );
+
+
+
+        }
     }
 
 
@@ -771,10 +809,6 @@ poly_sct *pl_out){
  int nbr_r=0;
 
  poly_sct *pl_vrl;
-
- nco_poly_shp_pop(pl_in);
- nco_poly_shp_pop(pl_out);
-
 
  pl_vrl=nco_poly_init_crn(pl_in->pl_typ,  ( nbr_p>=nbr_q ? 2*nbr_p: 2*nbr_q ) +1, pl_in->src_id      );
  /* manually set dst_id in struct */
