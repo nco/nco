@@ -1044,10 +1044,13 @@ return True;
 int nco_sph_mk_control(poly_sct *sP, double* pControl  )
 {
    /* do stuff in radians */
-   nco_bool bDeg=False;
 
+
+   int iret=NCO_ERR;
    double clat=0.0;
    double clon=0.0;
+
+   nco_bool bDeg=False;
 
    /* convert limits to radians */
    double lon_min=D2R( sP->dp_x_minmax[0]);
@@ -1057,31 +1060,63 @@ int nco_sph_mk_control(poly_sct *sP, double* pControl  )
 
    double xbnd=D2R(8.0);
 
-   /* choose left or right hand size */
-   if(  lon_min - LON_MIN_RAD  >  xbnd  )
-   {
-      clon=lon_min- xbnd/2.0;
-      clat=(lat_min+lat_max)/2.0;
-   }
-   else if(LON_MAX_RAD - lon_max > xbnd  ) {
 
-      clon = lon_max + xbnd/2.0;
-      clat = (lat_min + lat_max) / 2.0;
-   }
-   /* choose below or above */
-   else if( lat_min- LAT_MIN_RAD > xbnd )
+   /* polar cap */
+   if( sP->bwrp && sP->bwrp_y )
    {
-      clat=lat_min - xbnd/2.0;
-      /* choose centre */
-      clon=( lon_min+lon_max) /2.0;
+     /* get latitude of equator */
+     double lat_eq= (LAT_MAX_RAD-LAT_MIN_RAD) /2.0;
+
+     /* choose an arbitary lon  */
+     clon=D2R(20);
+
+     /* check if we have an north or south pole *
+      * nb a north polar cap - all points in nothern hemisphere
+      *    a south polar cap all point in southern hemisphere */
+
+     if(lat_min >=lat_eq && lat_max > lat_eq  )
+       clat=lon_min-xbnd / 2.0;
+     else if( lat_min < lat_eq && lat_max <= lat_eq  )
+       clat=lon_max+xbnd / 2.0;
+     else
+       return NCO_ERR;
 
    }
-   else if( LAT_MAX_RAD -lat_max > xbnd) {
-      clat = lat_max + xbnd / 2.0;
-      clon =(lon_min+lon_max) / 2.0;
+
+   /* just longitude wrapping */
+   else if(sP->bwrp)
+   {
+      /* nb distance between lmin and lmax  >180.0 */
+      clon=lon_min+xbnd / 2.0;
+      clat=( lat_min+lat_max ) /2.0;
    }
+   /* no wrapping x */
    else {
-      return NCO_ERR;
+       /* choose left or right hand size */
+       if (lon_min - LON_MIN_RAD > xbnd) {
+         clon = lon_min - xbnd / 2.0;
+         clat = (lat_min + lat_max) / 2.0;
+
+       } else if (LON_MAX_RAD - lon_max > xbnd) {
+
+         clon = lon_max + xbnd / 2.0;
+         clat = (lat_min + lat_max) / 2.0;
+
+       }
+         /* choose below or above */
+       else if (lat_min - LAT_MIN_RAD > xbnd) {
+         clat = lat_min - xbnd / 2.0;
+         /* choose centre */
+         clon = (lon_min + lon_max) / 2.0;
+
+       } else if (LAT_MAX_RAD - lat_max > xbnd) {
+         clat = lat_max + xbnd / 2.0;
+         clon = (lon_min + lon_max) / 2.0;
+
+
+       } else {
+         return NCO_ERR;
+       }
    }
 
    /* remember clat, clon in radians */
