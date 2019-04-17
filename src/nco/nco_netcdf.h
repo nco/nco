@@ -349,16 +349,16 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
   /* 20190416: Kludge to prevent inexplicable Windows AppVeyor errors caused by apparent redefinition of NC_memio
      Solution attempt #1 is to never define NC_memio for Windows for netCDF <= 4.6.1: Failed because NC_memio never defined
      Solution attempt #2 is to assume netCDF 4.6.1 defines NC_memio Windows only */
-# if NC_LIB_VERSION >= 461 
+# if NC_LIB_VERSION >= 462
 #  include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
-# else /* 4.6.1 */
+# else /* 4.6.2 */
+#  define NC_MEMIO_LOCKED 1    /* Do not try to realloc or free provided memory */
   typedef struct NC_memio {
   size_t size;
   void* memory;
   int flags;
-#  define NC_MEMIO_LOCKED 1    /* Do not try to realloc or free provided memory */
 } NC_memio;
-# endif /* 4.6.1 */
+# endif /* 4.6.2 */
 #endif /* _MSC_VER */
 
 #ifndef _MSC_VER
