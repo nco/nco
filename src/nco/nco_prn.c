@@ -528,7 +528,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_flt);
 	  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	}else{
-          (void)nco_prn_nonfinite_flt(val_sng,prn_flg, val_flt);     
+          (void)nco_prn_nonfinite_flt(val_sng,prn_flg,val_flt);
 	} /* endelse */
 	(void)fprintf(fp_out,"%s%s",val_sng,(lmn != att_szm1) ? spr_sng : "");
       } /* end loop */
@@ -540,7 +540,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_dbl);
 	  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	}else{
-          (void)nco_prn_nonfinite_dbl(val_sng,prn_flg, val_dbl);           
+          (void)nco_prn_nonfinite_dbl(val_sng,prn_flg,val_dbl);
 	} /* endelse */
 	(void)fprintf(fp_out,"%s%s",val_sng,(lmn != att_szm1) ? spr_sng : "");
       } /* end loop */
@@ -643,7 +643,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_flt);
 	      (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	    }else{
-              (void)nco_prn_nonfinite_flt(val_sng,prn_flg, val_flt);     
+              (void)nco_prn_nonfinite_flt(val_sng,prn_flg,val_flt);
             }
 	    
 	    (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
@@ -656,7 +656,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,att_sng_pln,val_dbl);
 	      (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	    }else{
-              (void)nco_prn_nonfinite_dbl(val_sng,prn_flg, val_dbl);        
+              (void)nco_prn_nonfinite_dbl(val_sng,prn_flg,val_dbl);
 	    } /* endelse */
 	    (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
 	  } /* !vln_idx */
@@ -2269,7 +2269,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
             (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
           }else{
-            (void)nco_prn_nonfinite_flt(val_sng,prn_flg, val_flt);          
+            (void)nco_prn_nonfinite_flt(val_sng,prn_flg,val_flt);
           } /* !isfinite() */
           break;
         case NC_DOUBLE:
@@ -2278,7 +2278,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
             rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_dbl);
             (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
           }else{
-            (void)nco_prn_nonfinite_dbl(val_sng,prn_flg, val_dbl);             
+            (void)nco_prn_nonfinite_dbl(val_sng,prn_flg,val_dbl);
           } /* !isfinite() */
           break;
         case NC_SHORT: (void)sprintf(val_sng,fmt_sng,var->val.sp[lmn]); break;
@@ -2355,7 +2355,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 		  rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_flt);
 		  (void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 		}else{
-                  (void)nco_prn_nonfinite_flt(val_sng,prn_flg, val_flt);            
+                  (void)nco_prn_nonfinite_flt(val_sng,prn_flg, val_flt);
 		} /* endelse */
 	      } /* !is_mss_val */
 	      (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
@@ -2368,7 +2368,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 		rcd_prn=snprintf(val_sng,(size_t)NCO_ATM_SNG_LNG,fmt_sng,val_dbl);
 		(void)sng_trm_trl_zro(val_sng,prn_flg->nbr_zro);
 	      }else{
-                (void)nco_prn_nonfinite_dbl(val_sng, prn_flg, val_dbl);                
+                (void)nco_prn_nonfinite_dbl(val_sng, prn_flg, val_dbl);
 	      } /* endelse */
 	      (void)fprintf(fp_out,"%s%s",val_sng,(vln_idx != vln_lngm1) ? spr_sng : "");
 	    } /* !vln_idx */
@@ -4331,7 +4331,6 @@ jsn_fmt_xtn_nm /* [fnc] Return string describing JSON filetype */
   return (char *)NULL;
 } /* end jsn_fmt_xtn_nm() */
 
-
 void
 nco_prn_nonfinite_flt(
 char * const val_sng,		  
@@ -4343,7 +4342,7 @@ float val_flt){
   else if(isinf(val_flt))
      (void)sprintf(val_sng,"%s",(prn_flg->jsn) ? "null" : (val_flt < 0.0f) ? "-Infinity" : "Infinity");    
 
-  /* add trailing "f" for just CDL */
+  /* Add trailing "f" for just CDL */
   if(prn_flg->cdl && !prn_flg->xml)
      strcat(val_sng, "f");
 
@@ -4363,4 +4362,3 @@ double val_dbl){
 
   return; 
 }  
-

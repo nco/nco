@@ -1,6 +1,10 @@
+2019-04-17  Charlie Zender  <zender@uci.edu>
+
+	* Noel Keen solves Cori-KNL slowness issue, reduces Min Xu's benchmark time from ~27m30s to ~2m30s
+
 2019-04-16  Charlie Zender  <zender@uci.edu>
 
-	* Attempt to solve Appveyor errors on Windows by never defining NC_memio for Windows for netCDF <= 4.6.1
+	* Fail to solve Appveyor errors on Windows by never defining NC_memio for Windows for netCDF <= 4.6.1
 
 2019-04-15  Charlie Zender  <zender@uci.edu>
 
