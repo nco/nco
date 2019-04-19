@@ -1,6 +1,8 @@
 2019-04-19  Charlie Zender  <zender@uci.edu>
 
-	* 
+	* Re-unify Windows/UNIX block in nco_netcdf.h to #include <netcdf_mem.h> and define ncmemio struct
+
+	* Deprecate NC_HAVE_META_H from CMakeLists.txt
 
 2019-04-18  Charlie Zender  <zender@uci.edu>
 
