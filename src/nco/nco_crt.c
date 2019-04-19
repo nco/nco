@@ -52,7 +52,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
 
 
-  tInFlag inflag = Unknown; /* {Pin, Qin, Unknown}: which inside */
+  tInFlag inflag = Unknown_nco; /* {Pin, Qin, Unknown}: which inside */
 
   n=P->crn_nbr;
   m=Q->crn_nbr;
