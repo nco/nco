@@ -87,7 +87,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
    double p[NBR_SPH];
    double q[NBR_SPH];
 
-   tInFlag inflag= Unknown;
+   tInFlag inflag= Unknown_nco;
 
    n=P->crn_nbr;
    m=Q->crn_nbr;
@@ -779,7 +779,7 @@ double n2;
 
 double dp;
 double theta;
-double rad1=1.0;
+double rad1_nco=1.0;
 double rad=1.0;
 
 double  aCross[NBR_SPH];
@@ -800,12 +800,12 @@ for(idx=0; idx<np;idx++)
 
   }
 
-  //rad1 = sRadius(aCross);
+  //rad1_nco = sRadius(aCross);
   //rad  = sRadius(bCross);
   dp= nco_sph_dot(aCross, bCross);
 
 
-  // dp=sDot(sP[idx1], sP[idx]) / rad1 /rad;
+  // dp=sDot(sP[idx1], sP[idx]) / rad1_nco /rad;
   theta=acos(dp);
 
   if(DEBUG_SPH)
