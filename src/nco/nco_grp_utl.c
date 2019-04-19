@@ -2063,10 +2063,6 @@ nco_chk_nan                           /* [fnc] Check file for NaNs */
 
   char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name (used for validation only) */ 
 
-  double val_dbl;
-
-  float val_flt;
-
   int grp_id; /* [ID] Group ID where variable resides (passed to MSA) */
 
   lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          

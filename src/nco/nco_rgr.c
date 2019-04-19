@@ -1415,7 +1415,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   double *var_val_dbl_out=NULL;
   double *prs_ntp_in; /* [Pa] Interpolated pressure array on input grid */
   double *prs_ntp_out; /* [Pa] Interpolated pressure array on output grid */
-  int dmn_nbr; /* [nbr] Number of dimensions */
   int lvl_idx_in; /* [idx] Level index on input grid */
   int lvl_idx_out; /* [idx] Level index on output grid */
   int lvl_nbr_in; /* [nbr] Number of levels for current interpolated variable on input grid */
@@ -1442,12 +1441,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
+#  pragma omp parallel for firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -1579,10 +1578,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	} /* !out_ncr */
 	
 	/* Constants and parameters for extrapolation */
-	const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assumes constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(10000 Pa) */
+	const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assumes constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(100 mb) = (6.5 K)/(10000 Pa) */
 	const double Rd_rcp_g0=287.0/9.81; /* [K/Pa] Geopotential height extrapolation uses hypsometric equation Z2-Z1=(Rd*Tv_avg/g0)*ln(p1/p2)=(Rd*Tv_avg/g0)*(ln(p1)-ln(p2)) */
 	const double tpt_vrt_avg=288.0; /* [K] Mean virtual temperature assumed for geopotential height extrapolation */
-	double prs_avg; /* [Pa] Pressure used in geopotential height extrapolation */
 	nco_bool FIRST_WARNING_LHS=True; /* [flg] */
 	nco_bool FIRST_WARNING_RHS=True; /* [flg] */
 	

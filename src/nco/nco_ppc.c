@@ -721,7 +721,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       int qnt_pwr_xpn; /* Quantization power exponent p_i in DCG19 (6) */
       float qnt_fct_flt; /* Quantization factor q_i in DCG19 (5) */
       float val_qnt; /* Quantized value DCG19 (1) */
-      int sgn_val; /* Sign of  DCG19 (5) */
+      //int sgn_val; /* Sign of  DCG19 (5) */
       /* Create mask */
       msk_u32_xpn=0u; /* Zero all bits */
       msk_u32_xpn=~msk_u32_xpn; /* Turn all bits to ones */
