@@ -694,8 +694,6 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       seasons=?* | csn_lst=?* | csn=?* | season=?* ) csn_lst="${LONG_OPTARG}" ;; # # Seasons to output
-	       stdin | inp_std | std_flg | redirect | standard_input ) inp_std='Yes' ;; # # Input file list from stdin
-	       stdin=?* | inp_std=?* | std_flg=?* | redirect=?* | standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Input file list from stdin
 	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
 	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_out="${LONG_OPTARG}" ;; # # Timesteps-per-day in output
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
@@ -1691,6 +1689,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
     fi # !cf
     if [ -n "${rgr_map}" ]; then 
 	printf "This climatology will also be regridded\n"
+	printf "Regridder will request ${thr_nbr} OpenMP threads to parallelize weight application across variables\n"
     else
 	printf "This climatology will not be regridded\n"
     fi # !rgr

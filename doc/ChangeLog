@@ -1,5 +1,7 @@
 2019-04-19  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo print OpenMP thread request in output header
+
 	* Re-unify Windows/UNIX block in nco_netcdf.h to #include <netcdf_mem.h> and define ncmemio struct
 
 	* Deprecate NC_HAVE_META_H from CMakeLists.txt

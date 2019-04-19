@@ -775,15 +775,16 @@ if [ ${vrs_prn} = 'Yes' ]; then
     else
 	printf "Config: No hardcoded path/module overrides\n"
     fi # !hrd_pth_fnd
+    printf "Config: External (non-NCO) program availability:\n"
     if [ -n "${cmd_wgt_esmf}" ]; then
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} version ${erwg_vrs_sng} found as ${cmd_wgt_esmf}\n"
     else
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} not found\n"
     fi # !err
     if [ -n "${cmd_wgt_tps}" ]; then
-	printf "Config: Tempest weight-generation command ${wgt_exe_tps} found as ${cmd_wgt_tps}\n"
+	printf "Config: TempestRemap weight-generation command ${wgt_exe_tps} found as ${cmd_wgt_tps}\n"
     else
-	printf "Config: Tempest weight-generation command ${wgt_exe_tps} not found\n"
+	printf "Config: TempestRemap weight-generation command ${wgt_exe_tps} not found\n"
     fi # !err
     if [ -n "${cmd_dpt_mpas}" ]; then
 	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} found as ${cmd_dpt_mpas}\n"
