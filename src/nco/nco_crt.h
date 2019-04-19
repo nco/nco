@@ -43,7 +43,7 @@ extern "C" {
 
 
 
-typedef enum { Pin, Qin, Unknown } tInFlag;
+typedef enum { Pin, Qin, Unknown_nco } tInFlag;
 
 
 /*---------------------------------------------------------------------
