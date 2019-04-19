@@ -1,6 +1,10 @@
+2019-04-19  Charlie Zender  <zender@uci.edu>
+
+	* 
+
 2019-04-18  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.8.0-alpha09 release procedure:
+	* NCO 4.8.0-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha10: Hanna';git push
 	git tag -a 4.8.0-alpha10 -m 'ncks --chk_nan;';git push --tags
 

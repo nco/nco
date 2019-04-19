@@ -342,24 +342,7 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
 # endif /* !PNETCDF_EXPOSED_API */
 #endif /* !ENABLE_MPI */
 
-  /* 20190417: Separate MSC block from other to cleanly test Appveyor solutions without breaking Linux/MacOS */
-#ifdef _MSC_VER
-# if NC_LIB_VERSION >= 462
-#  include <netcdf_mem.h> /* NC_memio, nc_open_mem(), nc_open_memio()... */
-# else /* 4.6.2 */
-  /* 20181206: Appveyor on Windows fails due to redefinition of NC_memio for netCDF >= 4.6.1
-     Problem should go away once CMakeLists.txt patched */
-#  define NC_MEMIO_LOCKED 1    /* Do not try to realloc or free provided memory */
-  typedef struct NC_memio {
-  size_t size;
-  void* memory;
-  int flags;
-} NC_memio;
-# endif /* 4.6.2 */
-#endif /* _MSC_VER */
-
-#ifndef _MSC_VER
-  /* This pre-processor block is ugly
+  /* This pre-processor block is ugly but was even uglier due to an unfortunate series of events 201812-201904
      NC_LIB_VERSION should be replaced by an autoconf-generated token that checks for existance of 
      the modern netcdf_mem.h header, e.g., nc_open_memio()
      However netCDF 4.6.2 netcdf_mem.h has EXTERNL without a definition so autoconf checks fail with 4.6.2
@@ -379,7 +362,6 @@ int ncompi_open  (MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_
   int flags;
 } NC_memio;
 #endif /* 4.6.2 */
-#endif /* _MSC_VER */
 
   /* Begin file-level routines */
 int nco_create(const char * const fl_nm,const int cmode,int * const nc_id);
