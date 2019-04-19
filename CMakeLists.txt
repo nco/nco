@@ -170,25 +170,19 @@ if (has_nc_inq_format)
 endif()
 
 #/////////////////////////////////////////////////////////////////////////////////////
-#netCDF 4.6.0 
-#nc_def_var_filter , has_inq_var_filter, define NC_LIB_VERSION=460 if both found 
+#netcdf_meta.h defines NC_VERSION_MAJOR NC_VERSION_MINOR NC_VERSION_PATCH 
+#NCO defines NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH ) 
 #/////////////////////////////////////////////////////////////////////////////////////
 
-check_library_exists(${NETCDF_LIBRARY} nc_def_var_filter "" has_nc_def_var_filter)
-if (has_nc_def_var_filter)
-  message("-- Found nc_def_var_filter in: " ${NETCDF_LIBRARY})
-  add_definitions(-DHAVE_NC_DEF_VAR_FILTER)
+find_path(path_netcdf_meta_h netcdf_meta.h PATHS ${NETCDF_INCLUDE})
+if(path_netcdf_meta_h)
+  message("-- Found netcdf_meta.h in " ${path_netcdf_meta_h})
+  add_definitions(-DNC_HAVE_META_H)
+else()
+  message("-- netcdf_meta.h was not found; defining NC_LIB_VERSION=360")
+  add_definitions(-DNC_LIB_VERSION=360)
 endif()
 
-check_library_exists(${NETCDF_LIBRARY} nc_inq_var_filter "" has_inq_var_filter)
-if (has_inq_var_filter)
-  message("-- Found has_inq_var_filter in: " ${NETCDF_LIBRARY})
-  add_definitions(-DHAVE_NC_INQ_VAR_FILTER)
-endif()
-
-if (has_nc_def_var_filter AND has_inq_var_filter)
-  add_definitions(-DNC_LIB_VERSION=460)
-endif ()
 
 find_path(path_netcdf_mem_h netcdf_mem.h PATHS ${NETCDF_INCLUDE})
 if (path_netcdf_mem_h)
@@ -793,18 +787,6 @@ check_include_file(strings.h HAVE_STRINGS_H)
 if (HAVE_STRINGS_H)
   message("-- Found header strings.h")
   add_definitions(-DHAVE_STRINGS_H)
-endif()
-
-check_include_file(netcdf_meta.h HAVE_NC_META_H)
-if (HAVE_NC_META_H)
-  message("-- Found header netcdf_meta.h")
-  add_definitions(-DHAVE_NC_META_H)
-endif()
-
-check_include_file(netcdf_mem.h HAVE_NC_MEM_H)
-if (HAVE_NC_MEM_H)
-  message("-- Found header netcdf_mem.h")
-  add_definitions(-DHAVE_NC_MEM_H)
 endif()
 
 #//////////////////////////
