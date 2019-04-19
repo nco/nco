@@ -1899,7 +1899,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   nco_bool flg_malloc_unit_crd=False; /* [flg] Allocated memory for coordinate units string */
   nco_bool flg_malloc_unit_var=False; /* [flg] Allocated memory for variable units string */
   nco_bool unit_cln_crd=False; /* [flg] Coordinate has calendar units */
-
   
   nco_string sng_val; /* [sng] Current string */
 
@@ -1916,7 +1915,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   (void)nco_inq_grp_full_ncid(nc_id,var_trv->grp_nm_fll,&grp_id);
 
   /* malloc space */
-  var=(var_sct*)nco_malloc(sizeof (var_sct));
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
 
   /* Set defaults */
   (void)var_dfl_set(var);
@@ -1931,8 +1930,6 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
 
   /* Get type of variable (get also name and number of dimensions for validation against parameter object) */
   (void)nco_inq_var(grp_id,var->id,var_nm,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
-
-
 
   /* Ensure we have correct variable */
   //assert(var_trv->nco_typ == nco_obj_typ_var);
@@ -1998,13 +1995,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         nco_var_cnf_typ(NC_STRING,var_aux);
 
         /* NB: nco_cln_var_prs() modifies var_tmp and var_aux */
-        if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_ERR)
-	    var_aux=nco_var_free(var_aux);
-	else if(prn_flg->PRN_CLN_LGB)
-	    {var_swp=var;var=var_aux;var_aux=var_swp;}
+	if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_ERR) var_aux=nco_var_free(var_aux);
+	else if(prn_flg->PRN_CLN_LGB){var_swp=var;var=var_aux;var_aux=var_swp;}
 
-        if(var_tmp)
-	    var_tmp=(var_sct*)nco_var_free(var_tmp);
+        if(var_tmp) var_tmp=(var_sct*)nco_var_free(var_tmp);
 	
       } /* !PRN_CLN_LGB */
     } /* !CDL */
@@ -4332,33 +4326,29 @@ jsn_fmt_xtn_nm /* [fnc] Return string describing JSON filetype */
 } /* end jsn_fmt_xtn_nm() */
 
 void
-nco_prn_nonfinite_flt(
-char * const val_sng,		  
-const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
-float val_flt){
-
-  if(isnan(val_flt))
-     (void)sprintf(val_sng,(prn_flg->jsn) ? "null" : "NaN");
-  else if(isinf(val_flt))
-     (void)sprintf(val_sng,"%s",(prn_flg->jsn) ? "null" : (val_flt < 0.0f) ? "-Infinity" : "Infinity");    
+nco_prn_nonfinite_flt
+(char * const val_sng,		  
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
+ float val_flt)
+{
+  if(isnan(val_flt)) (void)sprintf(val_sng,(prn_flg->jsn) ? "null" : "NaN");
+  else if(isinf(val_flt)) (void)sprintf(val_sng,"%s",(prn_flg->jsn) ? "null" : (val_flt < 0.0f) ? "-Infinity" : "Infinity");    
 
   /* Add trailing "f" for just CDL */
-  if(prn_flg->cdl && !prn_flg->xml)
-     strcat(val_sng, "f");
+  if(prn_flg->cdl && !prn_flg->xml) strcat(val_sng, "f");
 
   return; 
-}  
+} /* !nco_prn_nonfinite_flt() */
 
 void
-nco_prn_nonfinite_dbl(
-char * const val_sng,		  
-const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
-double val_dbl){
+nco_prn_nonfinite_dbl
+(char * const val_sng,		  
+ const prn_fmt_sct * const prn_flg, /* I [sct] Print-format information */
+ double val_dbl)
+{
 
-  if(isnan(val_dbl))
-     (void)sprintf(val_sng,(prn_flg->jsn) ? "null" : "NaN");
-  else if(isinf(val_dbl))
-     (void)sprintf(val_sng,"%s",(prn_flg->jsn) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");    
+  if(isnan(val_dbl)) (void)sprintf(val_sng,(prn_flg->jsn) ? "null" : "NaN");
+  else if(isinf(val_dbl)) (void)sprintf(val_sng,"%s",(prn_flg->jsn) ? "null" : (val_dbl < 0.0) ? "-Infinity" : "Infinity");    
 
   return; 
-}  
+} /* !nco_prn_nonfinite_dbl() */
