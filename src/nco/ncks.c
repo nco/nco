@@ -227,6 +227,7 @@ main(int argc,char **argv)
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
  
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
+  nco_bool CHK_NAN=False; /* [flg] Check for NaNs */
   nco_bool CPY_GRP_METADATA; /* [flg] Copy group metadata (attributes) */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
@@ -315,6 +316,9 @@ main(int argc,char **argv)
     {"formula_terms",no_argument,0,0}, /* [flg] Extract formula_terms variables */
     {"no_frm_trm",no_argument,0,0}, /* [flg] Do not extract formula_terms variables */
     {"no_formula_terms",no_argument,0,0}, /* [flg] Do not extract formula_terms variables */
+    {"chk_nan",no_argument,0,0}, /* [flg] Check file for NaNs */
+    {"nan",no_argument,0,0}, /* [flg] Check file for NaNs */
+    {"NaN",no_argument,0,0}, /* [flg] Check file for NaNs */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
@@ -607,6 +611,7 @@ main(int argc,char **argv)
 	PRN_CLN_LGB=True;
 	PRN_CDL=True;
       } /* !dt_fmt */
+      if(!strcmp(opt_crr,"chk_nan") || !strcmp(opt_crr,"nan") || !strcmp(opt_crr,"NaN")) CHK_NAN=True; /* [flg] Check for NaNs */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -1359,6 +1364,12 @@ main(int argc,char **argv)
       if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
       
     }else{ 
+
+      if(CHK_NAN){
+	/* Check floating-point fields for NaNs */
+        nco_chk_nan(in_id,trv_tbl);
+        goto close_and_free;
+      } /* !CHK_NAN */
 
       /* New file dump format(s) developed 201307 for CDL, JSN, SRM, TRD, XML */
       if(PRN_SRM){

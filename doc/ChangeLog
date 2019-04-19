@@ -1,6 +1,17 @@
+2019-04-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.0-alpha09 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha10: Hanna';git push
+	git tag -a 4.8.0-alpha10 -m 'ncks --chk_nan;';git push --tags
+
+	* ncks add --chk_nan option to check input file for NaNs and exit(EXIT_FAILURE) if found
+	Feature requested by Matthew Thompson of NASA
+
 2019-04-17  Charlie Zender  <zender@uci.edu>
 
 	* Noel Keen solves Cori-KNL slowness issue, reduces Min Xu's benchmark time from ~27m30s to ~2m30s
+
+	* Appveyor errors are due to CMakeLists.txt flaw that overrides	correct NC_LIB_VERSION
 
 2019-04-16  Charlie Zender  <zender@uci.edu>
 

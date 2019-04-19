@@ -2052,6 +2052,93 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 } /* end nco_xtr_dfn() */
 
 void
+nco_chk_nan                           /* [fnc] Check file for NaNs */
+(const int nc_id,                     /* I [ID] netCDF input file ID */
+ const trv_tbl_sct * const trv_tbl)   /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Check file for NaNs 
+     ncks --chk_nan ~/nco/data/in.nc */
+
+  const char fnc_nm[]="nco_chk_nan()"; /* [sng] Function name */
+
+  char var_nm[NC_MAX_NAME+1]; /* [sng] Variable name (used for validation only) */ 
+
+  double val_dbl;
+
+  float val_flt;
+
+  int grp_id; /* [ID] Group ID where variable resides (passed to MSA) */
+
+  lmt_msa_sct **lmt_msa=NULL_CEWI; /* [sct] MSA Limits for only for variable dimensions  */          
+  lmt_sct **lmt=NULL_CEWI; /* [sct] Auxiliary Limit used in MSA */
+
+  long lmn; /* [nbr] Index to print variable data */
+
+  var_sct *var=NULL_CEWI; /* [sct] Variable structure */
+
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_sct var_trv=trv_tbl->lst[idx_tbl]; 
+    if(var_trv.flg_xtr && var_trv.nco_typ == nco_obj_typ_var && (var_trv.var_typ == NC_FLOAT || var_trv.var_typ == NC_DOUBLE)){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s checking variable %s for NaNs...\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll);
+
+      /* NB: Following block to get variable copied from nco_prn_var_val_trv() */
+      /* Obtain group ID where variable is located */
+      (void)nco_inq_grp_full_ncid(nc_id,var_trv.grp_nm_fll,&grp_id);
+      /* malloc space */
+      var=(var_sct *)nco_malloc(sizeof(var_sct));
+      /* Set defaults */
+      (void)var_dfl_set(var);
+      /* Get ID for requested variable */
+      var->nm=(char *)strdup(var_trv.nm);
+      var->nc_id=grp_id;
+      (void)nco_inq_varid(grp_id,var_trv.nm,&var->id);
+      /* Get type of variable (get also name and number of dimensions for validation against parameter object) */
+      (void)nco_inq_var(grp_id,var->id,var_nm,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
+      /* Scalars */
+      if(var->nbr_dim == 0){
+	var->sz=1L;
+	var->val.vp=nco_malloc(nco_typ_lng_udt(nc_id,var->type));
+	/* Block is critical/thread-safe for identical/distinct grp_id's */
+	{ /* begin potential OpenMP critical */
+	  (void)nco_get_var1(grp_id,var->id,0L,var->val.vp,var->type);
+	} /* end potential OpenMP critical */
+      }else{ /* ! Scalars */
+	/* Allocate local MSA */
+	lmt_msa=(lmt_msa_sct **)nco_malloc(var_trv.nbr_dmn*sizeof(lmt_msa_sct *));
+	lmt=(lmt_sct **)nco_malloc(var_trv.nbr_dmn*sizeof(lmt_sct *));
+	/* Copy from table to local MSA */
+	(void)nco_cpy_msa_lmt(&var_trv,&lmt_msa);
+	/* Call super-dooper recursive routine */
+	var->val.vp=nco_msa_rcr_clc((int)0,var->nbr_dim,lmt,lmt_msa,var);
+      } /* ! Scalars */
+      /* Refresh missing value attribute, if any */
+      var->has_mss_val=nco_mss_val_get(var->nc_id,var);
+      
+      switch(var->type){
+      case NC_FLOAT:
+	for(lmn=0;lmn<var->sz;lmn++){
+	  if(isnan(var->val.fp[lmn])){
+	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s variable %s has NaNf at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
+	    exit(EXIT_FAILURE);
+	  } /* !isnan */
+	} /* !lmn */
+	    break;
+      case NC_DOUBLE:
+	for(lmn=0;lmn<var->sz;lmn++){
+	  if(isnan(var->val.dp[lmn])){
+	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s variable %s has NaN at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
+	    exit(EXIT_FAILURE);
+	  } /* !isnan */
+      } /* !lmn */
+	  break;
+      } /* end switch */
+      var=nco_var_free(var);
+    } /* !var */
+  } /* !idx_tbl */
+  return;
+} /* end nco_chk_nan() */
+
+void
 nco_xtr_wrt                           /* [fnc] Write extracted data to output file */
 (const int nc_id_in,                  /* I [ID] netCDF input file ID */
  const int nc_id_out,                 /* I [ID] netCDF output file ID */
