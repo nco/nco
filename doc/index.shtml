@@ -636,9 +636,12 @@ netCDF4 user-defined types support;
 <tt>ncremap</tt> weight generation;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncclimo -v</tt> splitter support for regular expressions?;</li>
-<li><b>NCO 4.8.0</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<li><b>NCO 4.8.1</b>: (<i>In Progress, features in-progress or complete include</i>) 
 <tt>ncks --bsa</tt> Byte-swap algoritm;</li>
-<li><b>NCO 4.7.9</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.8.0</b>: (<i>Current Stable Release</i>)
+<tt>ncks --chk_nan</tt> Check file for NaNs;</li>
+<tt>ncremap --vrt_fl</tt> Vertical interpolation/regridding;</li>
+<li><b>NCO 4.7.9</b>: 
 <tt>ncatted --hdn</tt> Improved compliance;
 <tt>ncrcat --rec_apn</tt> Re-basing;
 <tt>ncclimo --dpt_fl</tt> depth-coordinates;

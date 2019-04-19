@@ -77,7 +77,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       (void)fprintf(stdout, "%s: cross=%d, aHB=%d, bHA=%d code = %c\n", nco_prg_nm_get(),cross, aHB, bHA, code );
 
     if ( code == '1' || code == 'v' ) {
-      if ( inflag == Unknown && FirstPoint ) {
+      if ( inflag == Unknown_nco && FirstPoint ) {
         aa = 0;
         ba = 0;
         FirstPoint = False ;
@@ -186,7 +186,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   }
 
   /* Deal with special cases: not implemented. */
-  if ( inflag == Unknown)
+  if ( inflag == Unknown_nco)
   {
 
     if(DEBUG_CRT)
@@ -424,7 +424,7 @@ const char * prnInFlag(tInFlag in)
     return "Pin";
   else if(in == Qin)
     return "Qin";
-  else if(in == Unknown)
+  else if(in == Unknown_nco)
     return "Unknown";
 }
 
