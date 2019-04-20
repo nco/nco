@@ -775,8 +775,8 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN,FORCE_OVERWRITE);
 
   /* Initialize thread information */
-  if(thr_nbr == 0) thr_nbr=1;
-  if(thr_nbr > 1) thr_nbr=nco_openmp_ini(thr_nbr);
+  //  if(thr_nbr == 0) thr_nbr=1;
+  thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
 
   /* Parse filename */
