@@ -4636,7 +4636,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Memory requirements (excluding wgt_raw) are ~7*sizeof(uncompressed var) for NC_FLOAT and 3.5*sizeof(uncompressed var) for NC_DOUBLE */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
-	if(has_mss_val) tally=(int *)nco_malloc_dbg(var_sz_out,nco_typ_lng(NC_INT),"Unable to malloc() tally buffer");
+	if(has_mss_val) tally=(int *)nco_malloc_dbg(var_sz_out*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() tally buffer");
 	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output renormalization weight buffer");
 
 	/* Initialize output */
