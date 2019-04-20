@@ -1,5 +1,7 @@
 2019-04-19  Charlie Zender  <zender@uci.edu>
 
+	* ncra.c only call nco_omp_ini() when thr_nbr > 1
+
 	* ncclimo splitter defaults to 0 OpenMP threads
 
 	* ncclimo print OpenMP thread request in output header
