@@ -1063,7 +1063,14 @@ else # !rgr_map
 	exit 1
     fi # !dpt_opt
 fi # !rgr_map
-if [ -n "${thr_usr}" ]; then 
+if [ "${sbs_flg}" = 'Yes' ]; then
+    # 20190419: Splitter typically writes 1-3 multi-dimensional fields into each output file
+    # OpenMP incurs significant RAM overhead that may not be worthwhile
+    # New default is 1 regridding thread for splitter 
+    # Users can override this splitter-only default by explicitly requesting multiple threads
+    thr_nbr=1 # [nbr] Thread number for regridder
+fi # !sbs_flg
+if [ -n "${thr_usr}" ]; then
     thr_nbr="${thr_usr}"
 fi # !thr_usr
 yyyy_clm_srt=${yyyy_srt}
@@ -1138,6 +1145,7 @@ fi # !inp_std
 
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${sbs_flg}" = 'Yes' ]; then
+
     if [ -z "${var_lst}" ]; then
 	echo "${spt_nm}: WARNING Splitter mode without explicitly specified variable list (i.e., -v var_lst) splits all variables of rank >= 2 into separate files, thus doubling the on-disk data amount"
 	var_lst=`ncks --lst_rnk_ge2 ${fl_in[0]}`
@@ -1626,6 +1634,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     printf "Native-grid split files to directory ${drc_out}\n"
     if [ -n "${rgr_map}" ]; then 
 	printf "Regridded split files to directory ${drc_rgr}\n"
+	if [ "${thr_nbr}" -ne 1 ]; then 
+	    printf "Regridder will request ${thr_nbr} OpenMP threads to parallelize weight application across variables\n"
+	fi # !thr_nbr
     else
 	printf "Split files will not be regridded\n"
     fi # !rgr
