@@ -639,7 +639,14 @@ netCDF4 user-defined types support;
 <li><b>NCO 4.8.1</b>: (<i>In Progress, features in-progress or complete include</i>) 
 <tt>ncks --bsa</tt> Byte-swap algoritm;</li>
 <li><b>NCO 4.8.0</b>: (<i>Current Stable Release</i>)
-<tt>ncks --chk_nan</tt> Check file for NaNs;</li>
+<tt>ncap2</tt> allows no input file;
+<tt>ncclimo --job_nbr</tt> climo granularity;
+<tt>ncclimo</tt> ~20x faster on Cori;
+<tt>ncclimo</tt> kill not orphan children;
+<tt>ncks --rgr</tt> intersection meshes and weight-generation;
+<tt>ncks --chk_nan</tt> Check file for NaNs;
+<tt>ncremap</tt> invokes NCO weight-generator;
+<tt>ncremap --no_stdin</tt> for Conda-feedstock tests;
 <tt>ncremap --vrt_fl</tt> Vertical interpolation/regridding;</li>
 <li><b>NCO 4.7.9</b>: 
 <tt>ncatted --hdn</tt> Improved compliance;

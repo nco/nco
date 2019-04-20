@@ -117,7 +117,7 @@ am_ncap2_OBJECTS = Invoke.$(OBJEXT) ncap2.$(OBJEXT) \
 	NcapVarVector.$(OBJEXT) ncoLexer.$(OBJEXT) ncoParser.$(OBJEXT) \
 	ncoTree.$(OBJEXT) nco_gsl.$(OBJEXT)
 ncap2_OBJECTS = $(am_ncap2_OBJECTS)
-ncap2_DEPENDENCIES =
+ncap2_LDADD = $(LDADD)
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
 am__v_lt_0 = --silent
@@ -390,7 +390,9 @@ ncoParser.cpp \
 ncoTree.cpp \
 nco_gsl.c
 
-ncap2_LDADD = -lnco
+
+# 20190414 ncap2 on MacOS relink when libnco.a changes
+#ncap2_LDADD = -lnco
 
 # 20150108 Be sure that netCDF in /usr/local takes precedence over GSL libraries in /usr
 # AKA be sure GSL in /usr does not cause ncap2 linker to search /usr before /usr/local

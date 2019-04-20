@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.0-alpha09
-@set doc-edition 4.8.0-alpha09
+@set nco-edition 4.8.0-alpha10
+@set doc-edition 4.8.0-alpha10
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 14 April 2019
+@set update-date 19 April 2019
 @set update-month April 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -12108,7 +12108,7 @@ ncap2 [-3] [-4] [-5] [-6] [-7] [@uref{http://nco.sf.net/nco.html#-A,,-A}] [-C] [
 [-L @var{dfl_lvl}] [-l @var{path}] [--no_tmp_fl] [-O] [-o @var{output-file}]
 [-p @var{path}] [-R] [-r] [--ram_all]
 [-s @var{algebra}] [-S @var{fl.nco}] [-t @var{thr_nbr}] [-v]
-@var{input-file} [@var{output-file}]  
+[@var{input-file}] [@var{output-file}]  
 @end example
  
 @noindent
@@ -12118,8 +12118,9 @@ DESCRIPTION
 @command{ncap2} is the successor to @command{ncap} which was put into
 maintenance mode in November, 2006, and completely removed from
 @acronym{NCO} in March, 2018. 
-This documentation refers to @command{ncap2}, which contains a
-powerful superset of the original @command{ncap} functionality. 
+This documentation refers to @command{ncap2} implements its own
+domain-specific language to produc a powerful superset
+@command{ncap}-functionality.
 @command{ncap2} may be renamed @command{ncap} one day!
 @cindex script file
 @cindex @code{--script-file}
@@ -12133,7 +12134,8 @@ are used for in-line scripts and @samp{-S} (or long options
 @samp{--fl_spt} or @samp{--script-file}) are used to provide the
 filename where (usually multiple) scripting commands are pre-stored.   
 @command{ncap2} was written to perform arbitrary algebraic
-transformations of data and archive the results as easily as possible.
+transformations of data and archive the results as easily as
+possible. 
 @cindex derived fields
 @xref{Missing Values}, for treatment of missing values.
 The results of the algebraic manipulations are called 
@@ -12150,14 +12152,30 @@ NB: As of 20120515, @command{ncap2} is unable to append to files that
 already contain the appended dimensions. 
 
 Providing a name for @var{output-file} is optional if @var{input-file}
-is a netCDF3 format, and mandatory if @var{input-file} is a netCDF4
-format.
-When @var{output-file} is not given, then @command{ncap2} attempts to
-write directly to @var{output-file}.
-This can be risky and lead to unexpected consequences (since the file
-is being both read and written), so in normal usage we recommend
-providing @var{output-file} (which can be the same as @var{input-file}
-since the changes are first written to an intermediate file). 
+is a netCDF3 format, in which case @command{ncap2} attempts to write
+modifications directly to @var{input-file} (similar to the behavior of
+@command{ncrename} and @command{ncatted}).
+Format-constraints prevent this type of appending from working on a
+netCDF4 format @var{input-file}.
+In any case, reading and writing the same file can be risky and lead
+to unexpected consequences (since the file is being both read and
+written), so in normal usage we recommend providing @var{output-file}
+(which can be the same as @var{input-file} since the changes are first
+written to an intermediate file).
+
+As of @acronym{NCO} version 4.8.0 (released May, 2019),
+@command{ncap2} does not require that @var{input-file} be specified
+when @var{output-file} has no dependency on it.
+Prior to this, @command{ncap2} required users to specify a dummy,
+unused @var{input-file} even if it was not used to construct
+@var{output-file}.
+@example
+@verbatim
+ncap2 -s 'quark=1' ~/foo.nc # Create new foo.nc
+ncap2 -O -s 'quark=1' ~/foo.nc # Overwrite old with new foo.nc
+ncap2 -s 'quark=1' ~/foo.nc ~/foo.nc # Add to old foo.nc
+@end verbatim
+@end example
 
 @c @subsection Scripting Mathematical Processing with @command{ncap2}
 
@@ -18609,7 +18627,7 @@ performed, then the subset must remain the same, and if nicknames (i.e.,
 @samp{-f fml_nm}) are employed, then the nickname must remain the same. 
 
 As of 20161129, the @code{climatology_bounds} attributes of extended
-climo are incorrect. 
+climos are incorrect. 
 This is a work in progress...
 
 Options:

@@ -1,12 +1,16 @@
 2019-04-19  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.0-alpha10 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha10: Hanna';git push
+	git tag -a 4.8.0-alpha10 -m 'ncks --chk_nan;OMP_PROC_BIND ncclimo';git push --tags
+
 	* ncclimo set OMP_PROC_BIND=false when calling ncrcat to fix Cori slowness reported by Min Xu
 
 	* Pass thr_nbr into OpenMP loops as shared variable, avoid omp_get_thread_num() when thr_nbr < 2
 
 	* ncra.c only call nco_omp_ini() when thr_nbr > 1
 
-	* ncclimo splitter defaults to 0 OpenMP threads
+	* ncclimo splitter defaults to 1 OpenMP thread
 
 	* ncclimo print OpenMP thread request in output header
 
@@ -15,10 +19,6 @@
 	* Deprecate NC_HAVE_META_H from CMakeLists.txt
 
 2019-04-18  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.8.0-alpha10 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha10: Hanna';git push
-	git tag -a 4.8.0-alpha10 -m 'ncks --chk_nan;';git push --tags
 
 	* ncks add --chk_nan option to check input file for NaNs and exit(EXIT_FAILURE) if found
 	Feature requested by Matthew Thompson of NASA

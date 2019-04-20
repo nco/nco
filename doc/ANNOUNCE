@@ -23,11 +23,12 @@ NEW FEATURES (full details always in ChangeLog):
 A. ncremap now accepts a new Tempest map algorithm named se2se
    http://nco.sf.net/nco.html#ncremap
 
-B. ncap2 now allows creating brand-new files without specifying and
-   input filename. Previously, users had to specify an input file for
-   ncap2 even if nothing in that file was to appear in or be used to
-   construct the output file. 
-   ncap2 -s 'quark=1' ~/foo.nc
+B. ncap2 now allows creating brand-new files without specifying an
+   input filename. Previously, users had to specify an input file 
+   even if the output file had no dependency on it.
+   ncap2 -s 'quark=1' ~/foo.nc # Create new file foo.nc
+   ncap2 -O -s 'quark=1' ~/foo.nc # Overwrite old with new foo.nc
+   ncap2 -s 'quark=1' ~/foo.nc ~/foo.nc # Add to old file foo.nc
    http://nco.sf.net/nco.html#ncap2
 
 C. ncremap has a new flag, --no_stdin, that disables checking stdin
