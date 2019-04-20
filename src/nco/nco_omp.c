@@ -31,8 +31,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
 (const int thr_nbr) /* I [nbr] User-requested thread number */
 {
   /* Purpose: Initialize OpenMP multi-threading environment
-     Honor user-requested thread number, balance against known code efficiency,
-     print diagnostics
+     Honor user-requested thread number, balance against known code efficiency, print diagnostics
      Returns thr_nbr=1 in three situations:
      1. UP codes (not threaded)
      2. SMP codes compiled with compilers which lack OpenMP support

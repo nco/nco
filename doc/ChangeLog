@@ -1,5 +1,7 @@
 2019-04-19  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo set OMP_PROC_BIND=false when calling ncrcat to fix Cori slowness reported by Min Xu
+
 	* Pass thr_nbr into OpenMP loops as shared variable, avoid omp_get_thread_num() when thr_nbr < 2
 
 	* ncra.c only call nco_omp_ini() when thr_nbr > 1
