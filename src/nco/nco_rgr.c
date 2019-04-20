@@ -4607,8 +4607,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  var_sz_in*=dmn_cnt_in[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* !dmn_idx */
-	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
-	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
 
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt_out+dmn_idx);
@@ -4623,17 +4621,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  var_sz_out*=dmn_cnt_out[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
 	} /* end loop over dimensions */
-	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
-	
-	/* Initialize output */
-	for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) var_val_dbl_out[dst_idx]=0.0;
-	/* Missing value setup */
-	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
-	if(has_mss_val) tally=(int *)nco_calloc(var_sz_out,nco_typ_lng(NC_INT));
-	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input weight buffer");
-	if(has_mss_val && flg_rnr) 
-	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) wgt_vld_out[dst_idx]=0.0;
-	      
+
 	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, species, wavelength)
 	   Denote their convolution by level or 'lvl' for shorthand
 	   There are lvl_nbr elements for each lat/lon or col position
@@ -4642,13 +4630,30 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	lvl_nbr=1;
 	/* Simple prescription of lvl_nbr works when horizontal dimension(s) is/are MRV */
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
+	/* Missing value setup */
+	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
+
+	/* Memory requirements (excluding wgt_raw) are ~7*sizeof(uncompressed var) for NC_FLOAT and 3.5*sizeof(uncompressed var) for NC_DOUBLE */
+	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
+	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
+	if(has_mss_val) tally=(int *)nco_malloc_dbg(var_sz_out,nco_typ_lng(NC_INT),"Unable to malloc() tally buffer");
+	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output renormalization weight buffer");
+
+	/* Initialize output */
+	(void)memset(var_val_dbl_out,0,var_sz_out*nco_typ_lng(var_typ_rgr));
+	if(has_mss_val) (void)memset(tally,0,var_sz_out*nco_typ_lng(NC_INT));
+	if(has_mss_val && flg_rnr) (void)memset(wgt_vld_out,0,var_sz_out*nco_typ_lng(var_typ_rgr));
+	      
+	/* Obtain input variable */
+	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
 	
 	/* 20150914: Intensive variables require normalization, extensive do not
 	   Intensive variables (temperature, wind speed, mixing ratio) do not depend on gridcell boundaries
 	   Extensive variables (population, counts, numbers of things) depend on gridcell boundaries
 	   Extensive variables are the exception in models, yet are commonly used for sampling information, e.g., 
 	   number of photons, number of overpasses 
-	   Pass extensive variable list to NCO with, e.g., --xtn=TSurfStd_ct,... */
+	   Pass extensive variable list to NCO with, e.g., --xtn=TSurfStd_ct,...
+	   20190420: Remove languishing and unfinished intensive variable code */
 	  
 	/* Apply weights */
 	if(!has_mss_val){
@@ -4670,33 +4675,33 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* lvl_nbr > 1 */
 	}else{ /* has_mss_val */
 	  if(lvl_nbr == 1){
-	      /* Primary regridding loop for single-level fields with missing values */
+	    /* Primary regridding loop for single-level fields with missing values */
+	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+	      idx_in=col_src_adr[lnk_idx];
+	      idx_out=row_dst_adr[lnk_idx];
+	      if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
+		tally[idx_out]++;
+	      } /* endif */
+	    } /* end loop over link */
+	  }else{ /* lvl_nbr > 1 */
+	    val_in_fst=0L;
+	    val_out_fst=0L;
+	    /* Primary regridding loop for multi-level fields with missing values */
+	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-		idx_in=col_src_adr[lnk_idx];
-		idx_out=row_dst_adr[lnk_idx];
+		idx_in=col_src_adr[lnk_idx]+val_in_fst;
+		idx_out=row_dst_adr[lnk_idx]+val_out_fst;
 		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
 		  var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
 		  if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		  tally[idx_out]++;
 		} /* endif */
 	      } /* end loop over link */
-	  }else{ /* lvl_nbr > 1 */
-	    val_in_fst=0L;
-	    val_out_fst=0L;
-	      /* Primary regridding loop for multi-level fields with missing values */
-	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-		  idx_in=col_src_adr[lnk_idx]+val_in_fst;
-		  idx_out=row_dst_adr[lnk_idx]+val_out_fst;
-		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
-		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
-		    if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
-		    tally[idx_out]++;
-		  } /* endif */
-		} /* end loop over link */
-		val_in_fst+=grd_sz_in;
-		val_out_fst+=grd_sz_out;
-	      } /* end loop over lvl */
+	      val_in_fst+=grd_sz_in;
+	      val_out_fst+=grd_sz_out;
+	    } /* end loop over lvl */
 	  } /* lvl_nbr > 1 */
 	} /* !has_mss_val */
 	

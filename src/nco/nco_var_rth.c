@@ -2720,7 +2720,7 @@ nco_var_zero /* [fnc] Zero value of first operand */
      Confirm this with 
      ccc --tst=bnr --int_foo=0 
      ccc --dbg=0 --tst=gsl --gsl_a=0.0 
-     Hence, it is fast to use memset() rather than explicit loop to zero memory
+     Hence, it is faster to use memset() rather than explicit loop to zero memory
      calloc() would also work if interactions with NC_CHAR and NC_STRING were predictable
      Same approach is used in nco_zero_long() */
   

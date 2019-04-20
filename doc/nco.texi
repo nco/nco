@@ -884,7 +884,7 @@ compilers.
 The most time-intensive portion of @acronym{NCO} execution is spent in
 arithmetic operations, e.g., multiplication, averaging, subtraction.
 These operations were performed in Fortran by default until August,
-1999.  
+1999.
 This was a design decision based on the relative speed of Fortran-based
 object code vs.@: C-based object code in late 1994.
 @w{C compiler} vectorization capabilities have dramatically improved 
@@ -24845,9 +24845,9 @@ datafiles is relatively easy to extend with new @var{prc_typ} options.
 If you work with common datasets that could benefit from their own
 pre-processing options, contact us and we will try to implement them.  
 
-The second limitation is that @command{ncremap} currently must read
-weights from an on-disk mapfile, it cannot yet compute weights itself 
-and use them directly from @acronym{RAM}.
+The second limitation is that @command{ncremap} must read weights from
+an on-disk mapfile, and cannot yet compute weights itself and use them
+directly from @acronym{RAM}. 
 This makes @command{ncremap} an ``offline regridder'' and unnecessarily
 slow compared to an ``integrated regridder'' that computes weights and
 immediately applies them in @acronym{RAM} without any disk-access.
@@ -24859,6 +24859,11 @@ weight-application, at which @command{ncremap} is quite fast.
 To circumvent this limitation, build @command{ESMF_RegridWeightGen} 
 with parallel capabilities and ask me to enhance @command{ncremap} 
 to call @acronym{ERWG} with the options to exploit those capabilities. 
+As of @acronym{NCO} @w{version 4.8.0}, released in August, 2019, the
+regridder can generate intersection grids and overlap weights for all
+finite volume grid combinations.
+However these weights are first stored in an offline mapfile, are not
+usable otherwise.
 
 A side-effect of @command{ncremap} being an offline regridder is that,
 when necessary, it generates intermediate files to store grids and maps.  
