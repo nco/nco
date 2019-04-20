@@ -4658,24 +4658,24 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Apply weights */
 	if(!has_mss_val){
 	  if(lvl_nbr == 1){
-	    /* Primary regridding loop for single-level fields without missing values */
+	    /* Weight single-level fields without missing values */
 	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 	      var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 	  }else{
 	    val_in_fst=0L;
 	    val_out_fst=0L;
-	    /* Primary regridding loop for multi-level fields without missing values */
+	    /* Weight multi-level fields without missing values */
 	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 	      //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 		var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
 	      val_in_fst+=grd_sz_in;
 	      val_out_fst+=grd_sz_out;
-	    } /* end loop over lvl */
+	    } /* !lvl_idx */
 	  } /* lvl_nbr > 1 */
 	}else{ /* has_mss_val */
 	  if(lvl_nbr == 1){
-	    /* Primary regridding loop for single-level fields with missing values */
+	    /* Weight single-level fields with missing values */
 	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 	      idx_in=col_src_adr[lnk_idx];
 	      idx_out=row_dst_adr[lnk_idx];
@@ -4684,11 +4684,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		tally[idx_out]++;
 	      } /* endif */
-	    } /* end loop over link */
+	    } /* !lnk_idx */
 	  }else{ /* lvl_nbr > 1 */
 	    val_in_fst=0L;
 	    val_out_fst=0L;
-	    /* Primary regridding loop for multi-level fields with missing values */
+	    /* Weight multi-level fields with missing values */
 	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		idx_in=col_src_adr[lnk_idx]+val_in_fst;
@@ -4698,10 +4698,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		  tally[idx_out]++;
 		} /* endif */
-	      } /* end loop over link */
+	      } /* !lnk_idx */
 	      val_in_fst+=grd_sz_in;
 	      val_out_fst+=grd_sz_out;
-	    } /* end loop over lvl */
+	    } /* !lvl_idx */
 	  } /* lvl_nbr > 1 */
 	} /* !has_mss_val */
 	
@@ -4717,11 +4717,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	       (flg_frc_nrm) block when !has_mss_val, and valid area normalization when has_mss_val
 	       fxm: Use better logic and more metadata information to determine code path */
 	    if(lvl_nbr == 1){
-	      /* Primary fractional renormalization loop for single-level fields without missing values */
+	      /* Fractionally renormalize single-level fields without missing values */
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
 	    }else{
-	      /* Primary fractional renormalization loop for multi-level fields without missing values */
+	      /* Fractionally renormalize multi-level fields without missing values */
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		if(frc_out[dst_idx] != 0.0){
 		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
@@ -4752,11 +4752,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
 	  if(flg_rnr){
 	    if(wgt_vld_thr == 0.0){
-	      /* Renormalize cells with no threshold by valid accumlated weight */
+	      /* Renormalize cells with no threshold by valid accumulated weight */
 	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 		if(tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
 	    }else{
-	      /* Renormalize cells with threshold by valid accumlated weight if weight exceeds threshold */
+	      /* Renormalize cells with threshold by valid accumulated weight if weight exceeds threshold */
 	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
 		if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
 	    } /* !wgt_vld_thr */
@@ -4766,12 +4766,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	
 	/* Sub-gridscale normalize variables except sgs_frc itself */
 	if(sgs_frc_out && strcmp(var_nm,sgs_frc_nm)){
-	  /* fxm: 20190326 Adjust threshold to vanishingly small epsilon */
+	  /* fxm: 20190326 Adjust threshold to small epsilon */
 	  const double sgs_frc_thr=1.0e-3;
 	  /* fxm: 20190323 normalization blocks may contain too many conditions, masks may help */
 	  if(has_mss_val){
 	    if(lvl_nbr == 1){
-	      /* Primary SGS renormalization loop for single-level fields with missing values */
+	      /* SGS-renormalize single-level fields with missing values */
 	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses single-level with missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(var_val_dbl_out[dst_idx] != mss_val_dbl)
@@ -4779,7 +4779,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    if(sgs_frc_out[dst_idx] >= sgs_frc_thr)
 		      var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx]; else var_val_dbl_out[dst_idx]=mss_val_dbl;
 	    }else{
-	      /* Primary SGS renormalization loop for multi-level fields with missing values */
+	      /* SGS-renormalize multi-level fields with missing values */
 	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level with missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		if(sgs_frc_out[dst_idx] != 0.0 && sgs_frc_out[dst_idx] != mss_val_dbl){
@@ -4793,12 +4793,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    } /* lvl_nbr > 1 */
 	  }else{ /* !has_mss_val */
 	    if(lvl_nbr == 1){
-	      /* Primary SGS renormalization loop for single-level fields without missing values */
+	      /* SGS-renormalize single-level fields without missing values */
 	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses single-level without missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
 	    }else{
-	      /* Primary SGS renormalization loop for multi-level fields without missing values */
+	      /* SGS-renormalize multi-level fields without missing values */
 	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level without missing values\n",nco_prg_nm_get(),var_nm);
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		if(sgs_frc_out[dst_idx] != 0.0){

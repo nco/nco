@@ -1,5 +1,7 @@
 2019-04-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO_rgr.pm, nco_exit_lbr_rcd() handle netCDF libraries 4.6.3,	4.6.4, 4.7.0
+
 	* nco_rgr_wgt() re-arrange initialization code to suit layer-by-layer regridding, use memset()
 
 	* nco_rgr_wgt() remove ~150 lines of unused/unfinished !flg_mrv, flg_xtn code
