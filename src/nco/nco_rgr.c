@@ -4633,43 +4633,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input weight buffer");
 	if(has_mss_val && flg_rnr) 
 	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++) wgt_vld_out[dst_idx]=0.0;
-
-	int dmn_idx_in; /* [idx] Index to input dimensions */
-	int dmn_idx_out; /* [idx] Index to output dimensions */
-	int *dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input */
-	long *dmn_map_in=NULL; /* [idx] Map for each dimension of input variable */
-	long *dmn_map_out=NULL; /* [idx] Map for each dimension of output variable */
-	long *dmn_sbs_in=NULL; /* [idx] Dimension subscripts into N-D input array */
-	long *dmn_sbs_out=NULL; /* [idx] Dimension subscripts into N-D output array */
-
-	const int dmn_nbr_in_m1=dmn_nbr_in-1; /* [nbr] Number of input dimensions less one (fast) */
-	const int dmn_nbr_out_m1=dmn_nbr_out-1; /* [nbr] Number of output dimensions less one (fast) */
-	char *var_val_cp_in=NULL; /* [] Non-MRV input values permuted into MRV order */
-	char *var_val_cp_out=NULL; /* [] Non-MRV output values permuted into MRV order */
-	
-	if(!trv.flg_mrv){
-	  dmn_idx_out_in=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
-	  dmn_map_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
-	  dmn_map_out=(long *)nco_malloc(dmn_nbr_out*sizeof(long));
-	  dmn_sbs_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
-	  dmn_sbs_out=(long *)nco_malloc(dmn_nbr_out*sizeof(long));
-
-	  /* 20151012: Juggle indices to extent possible before main weight loop */
-	  for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++)
-	    dmn_idx_out_in[dmn_idx_out]=-73;
-	  
-	  /* Map for each dimension of input variable */
-	  for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in;dmn_idx_in++) dmn_map_in[dmn_idx_in]=1L;
-	  for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in-1;dmn_idx_in++)
-	    for(dmn_idx=dmn_idx_in+1;dmn_idx<dmn_nbr_in;dmn_idx++)
-	      dmn_map_in[dmn_idx_in]*=dmn_cnt_in[dmn_idx];
-  
-	  /* Map for each dimension of output variable */
-	  for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++) dmn_map_out[dmn_idx_out]=1L;
-	  for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out-1;dmn_idx_out++)
-	    for(dmn_idx=dmn_idx_out+1;dmn_idx<dmn_nbr_out;dmn_idx++)
-	      dmn_map_out[dmn_idx_out]*=dmn_cnt_out[dmn_idx];
-	} /* !flg_mrv */
 	      
 	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, species, wavelength)
 	   Denote their convolution by level or 'lvl' for shorthand
@@ -4679,57 +4642,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	lvl_nbr=1;
 	/* Simple prescription of lvl_nbr works when horizontal dimension(s) is/are MRV */
 	for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
-	if(!trv.flg_mrv){
-	  /* fxm: 20151011 generalize for non-MRV input */
-	  for(dmn_idx=0;dmn_idx<dmn_nbr_out-dmn_nbr_hrz_crd;dmn_idx++) lvl_nbr*=dmn_cnt_out[dmn_idx];
-	} /* !flg_mrv */
-	
-	if(!trv.flg_mrv){
-	  /* Nomenclature for var_val_cp buffers is confusing because _in and _out both refer to pre- and post-permutation */
-	  var_val_cp_in=(char *)var_val_dbl_in;
-	  var_val_cp_out=(char *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() permuted output value buffer");
-	
-	  for(idx_in=0;idx_in<var_sz_in;idx_in++){
-
-	    /* fxm CEWI fixes uninitialized warning */
-	    idx_out=73;
-	    
-	    /* dmn_sbs_in are corresponding indices (subscripts) into N-D array */
-	    dmn_sbs_in[dmn_nbr_in_m1]=idx_in%dmn_cnt_in[dmn_nbr_in_m1];
-	    for(dmn_idx_in=0;dmn_idx_in<dmn_nbr_in_m1;dmn_idx_in++){
-	      dmn_sbs_in[dmn_idx_in]=(long int)(idx_in/dmn_map_in[dmn_idx_in]);
-	      dmn_sbs_in[dmn_idx_in]%=dmn_cnt_in[dmn_idx_in];
-	    } /* end loop over dimensions */
-	    
-	    /* dmn_sbs_out are corresponding indices (subscripts) into N-D array */
-	    dmn_sbs_out[dmn_nbr_out_m1]=idx_out%dmn_cnt_out[dmn_nbr_out_m1];
-	    for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out_m1;dmn_idx_out++){
-	      dmn_sbs_out[dmn_idx_out]=(long int)(idx_out/dmn_map_out[dmn_idx_out]);
-	      dmn_sbs_out[dmn_idx_out]%=dmn_cnt_out[dmn_idx_out];
-	    } /* end loop over dimensions */
-	    
-	    /* Map variable's N-D array indices to get 1-D index into output data */
-	    idx_out=0L;
-	    for(dmn_idx_out=0;dmn_idx_out<dmn_nbr_out;dmn_idx_out++) 
-	      // fxm
-	      idx_out+=0*(dmn_sbs_in[dmn_idx_out_in[dmn_idx_out]]*dmn_map_out[dmn_idx_out]);
-	    
-	    /* Copy current input element into its slot in output array */
-	    (void)memcpy(var_val_cp_out+idx_out*sizeof(double),var_val_cp_in+idx_in*sizeof(double),(size_t)sizeof(double));
-	  } /* end loop over idx_in */
-
-	  /* Free non-MRV input buffer */
-	  if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
-	  /* Point input buffer to MRV var_val_cp_out, then regrid that */
-	  var_val_dbl_in=(double *)var_val_cp_out;
-
-	  if(dmn_idx_out_in) dmn_idx_out_in=(int *)nco_free(dmn_idx_out_in);
-	  if(dmn_map_in) dmn_map_in=(long *)nco_free(dmn_map_in);
-	  if(dmn_map_out) dmn_map_out=(long *)nco_free(dmn_map_out);
-	  if(dmn_sbs_in) dmn_sbs_in=(long *)nco_free(dmn_sbs_in);
-	  if(dmn_sbs_out) dmn_sbs_out=(long *)nco_free(dmn_sbs_out);
-
-	} /* !flg_mrv */
 	
 	/* 20150914: Intensive variables require normalization, extensive do not
 	   Intensive variables (temperature, wind speed, mixing ratio) do not depend on gridcell boundaries
@@ -4758,18 +4670,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* lvl_nbr > 1 */
 	}else{ /* has_mss_val */
 	  if(lvl_nbr == 1){
-	    if(trv.flg_xtn){
-	      /* 20150914: fxm extensive block needs work and once debugged, must be implemented in !has_mss_val branch and in lvl_nbr > 1 branch */
-	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-		idx_in=col_src_adr[lnk_idx];
-		idx_out=row_dst_adr[lnk_idx];
-		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
-		  var_val_dbl_out[idx_out]+=var_val_crr;
-		  if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
-		  tally[idx_out]++;
-		} /* endif */
-	      } /* end loop over link */
-	    }else{
 	      /* Primary regridding loop for single-level fields with missing values */
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		idx_in=col_src_adr[lnk_idx];
@@ -4780,11 +4680,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  tally[idx_out]++;
 		} /* endif */
 	      } /* end loop over link */
-	    } /* !flg_xtn */
 	  }else{ /* lvl_nbr > 1 */
 	    val_in_fst=0L;
 	    val_out_fst=0L;
-	    if(trv.flg_mrv){
 	      /* Primary regridding loop for multi-level fields with missing values */
 	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
@@ -4799,36 +4697,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		val_in_fst+=grd_sz_in;
 		val_out_fst+=grd_sz_out;
 	      } /* end loop over lvl */
-	    }else{ /* !flg_mrv */
-	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"INFO: Non-MRV variable %s: lvl_nbr = %d\n",trv.nm,lvl_nbr);
-	      /* Algorithm to regrid non-MRV variables:
-		 Permute input data until horizontal coordinates are MRV
-		 Regrid as usual
-		 Permute output data into original non-MRV order */
-
-	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-		/* Translate col_src/row_dst addresses (which are 1-D offsets) into lon/lat/col indices in src/dst arrays */
-		idx_in=col_src_adr[lnk_idx];
-		idx_out=row_dst_adr[lnk_idx];
-
-	      } /* end loop over link */
-	    } /* !flg_mrv */
 	  } /* lvl_nbr > 1 */
 	} /* !has_mss_val */
 	
-	/* Rounding can be important for integer-type extensive variables */
-	if(trv.flg_xtn){
-	  if(nco_typ_ntg(var_typ_out)){
-	    if(!has_mss_val){
-	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-		var_val_dbl_out[dst_idx]=round(var_val_dbl_out[dst_idx]);
-	    }else{ /* has_mss_val */
-	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-		if(tally[dst_idx]) var_val_dbl_out[dst_idx]=round(var_val_dbl_out[dst_idx]);
-	    } /* !has_mss_val */
-	  } /* !nco_typ_ntg */
-	} /* !flg_xtn */
-	  
 	if(!has_mss_val){
 	  if(flg_frc_nrm){
 	    /* frc_dst = frc_out = dst_frac = frac_b contains non-unity elements and normalization type is "destarea" or "none"
@@ -4885,16 +4756,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
 	    } /* !wgt_vld_thr */
 	  } /* !flg_rnr */
-
-	  /* 20150914: fxm extensive block */
-	  if(flg_rnr && trv.flg_xtn){
-	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++){
-	      if(tally[dst_idx] > 0){
-		if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"Extensive variable %s: dst_idx = %li, tally = %d, val_out_b4 = %g, wgt_vld_out = %g, val_out_after = %g\n",trv.nm,dst_idx,tally[dst_idx],var_val_dbl_out[dst_idx],wgt_vld_out[dst_idx],var_val_dbl_out[dst_idx]*wgt_vld_out[dst_idx]);
-		var_val_dbl_out[dst_idx]*=wgt_vld_out[dst_idx];
-	      } /* !tally */
-	    } /* !dst_idx */
-	  } /* !flg_xtn */
 
 	} /* !has_mss_val */
 	
@@ -4993,20 +4854,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(sgs_frc_out) sgs_frc_out=(double *)nco_free(sgs_frc_out);
   if(wgt_raw) wgt_raw=(double *)nco_free(wgt_raw);
   
-  if(False && flg_grd_out_crv){
-    /* WRF curvilinear grid: 
-       ncks -C -m -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert.nc # Interrogate file
-       ncwa -O -a Time ${DATA}/hdf/wrfout_v2_Lambert.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Create simpler input
-       ncks -C -d south_north,0 -d west_east,0 -v XLAT,XLONG ${DATA}/hdf/wrfout_v2_Lambert_notime.nc # Interrogate file
-       ncks -O -D 1 -t 1 -v T --rgr infer --rgr idx_dbg=0 --rgr grid=${DATA}/sld/rgr/grd_wrf.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Infer grid
-       ESMF_RegridWeightGen -s ${DATA}/sld/rgr/grd_wrf.nc -d ${DATA}/grids/180x360_SCRIP.20150901.nc -w ${DATA}/sld/rgr/map_wrf_to_dst_aave.nc --method conserve --src_regional --ignore_unmapped # Template map
-       ncks -O -D 1 -t 1 -v T --map=${DATA}/sld/rgr/map_wrf_to_dst_aave.nc ${DATA}/hdf/wrfout_v2_Lambert_notime.nc ~/foo.nc # Regrid manually
-       ncremap -v T -i ${DATA}/hdf/wrfout_v2_Lambert_notime.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc -o ${DATA}/sld/rgr # Regrid automatically
-       GenerateOverlapMesh --a ${DATA}/sld/rgr/grd_wrf.nc --b ${DATA}/grids/180x360_SCRIP.20150901.nc --out ${DATA}/sld/rgr/msh_ovr_wrf_to_180x360.g */
-    if(False) (void)fprintf(stderr,"%s: INFO %s reports curvilinear grid reached end-of-the-line\n",nco_prg_nm_get(),fnc_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* !flg_grd_out_crv */
-
   return rcd;
 } /* end nco_rgr_wgt() */
 
