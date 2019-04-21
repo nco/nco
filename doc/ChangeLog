@@ -1,5 +1,7 @@
 2019-04-20  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo set OMP_PROC_BIND=false when calling ncra to speed-up Cori KNL Intel builds
+
 	* NCO_rgr.pm, nco_exit_lbr_rcd() handle netCDF libraries 4.6.3,	4.6.4, 4.7.0
 
 	* nco_rgr_wgt() re-arrange initialization code to suit layer-by-layer regridding, use memset()
@@ -10,9 +12,9 @@
 
 	* NCO 4.8.0-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha10: Hanna';git push
-	git tag -a 4.8.0-alpha10 -m 'ncks --chk_nan;OMP_PROC_BIND ncclimo';git push --tags
+	git tag -a 4.8.0-alpha10 -m 'ncks --chk_nan;OMP_PROC_BIND=false ncrcat';git push --tags
 
-	* ncclimo set OMP_PROC_BIND=false when calling ncrcat to fix Cori slowness reported by Min Xu
+	* ncclimo set OMP_PROC_BIND=false when calling ncrcat to speed-up Cori KNL Intel builds
 
 	* Pass thr_nbr into OpenMP loops as shared variable, avoid omp_get_thread_num() when thr_nbr < 2
 
