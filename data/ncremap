@@ -2657,12 +2657,12 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	    printf "Vertical : ${vrt_fl}\n"
 	fi # !vrb_lvl
-	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} --rgr fl_vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
+	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} OMP_PROC_BIND=false ncks -O -t ${thr_nbr} ${nco_opt} --rgr fl_vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
     else # !vrt_fl
 	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	    printf "Map/Wgt  : ${map_fl}\n"
 	fi # !vrb_lvl
-	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
+	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} OMP_PROC_BIND=false ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
     fi # !vrt_fl
     
     # Block 5 Loop 2: Execute and/or echo commands
