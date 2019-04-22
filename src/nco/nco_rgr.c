@@ -4633,7 +4633,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Missing value setup */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 
-	/* Memory requirements (excluding wgt_raw) are ~7*sizeof(uncompressed var) for NC_FLOAT and 3.5*sizeof(uncompressed var) for NC_DOUBLE */
+	/* Memory requirements of next four malloc's (i.e., exclusive of wgt_raw) add up to ~7*sizeof(uncompressed var) for NC_FLOAT and ~3.5*sizeof(uncompressed var) for NC_DOUBLE */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 	if(has_mss_val) tally=(int *)nco_malloc_dbg(var_sz_out*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() tally buffer");
@@ -4653,7 +4653,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	   Extensive variables are the exception in models, yet are commonly used for sampling information, e.g., 
 	   number of photons, number of overpasses 
 	   Pass extensive variable list to NCO with, e.g., --xtn=TSurfStd_ct,...
-	   20190420: Remove languishing and unfinished intensive variable code */
+	   20190420: Remove languishing, unfinished intensive variable code */
 	  
 	/* Apply weights */
 	if(!has_mss_val){
@@ -4683,7 +4683,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
 		if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		tally[idx_out]++;
-	      } /* endif */
+	      } /* !mss_val_dbl */
 	    } /* !lnk_idx */
 	  }else{ /* lvl_nbr > 1 */
 	    val_in_fst=0L;
@@ -4697,7 +4697,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
 		  if(flg_rnr) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		  tally[idx_out]++;
-		} /* endif */
+		} /* !mss_val_dbl */
 	      } /* !lnk_idx */
 	      val_in_fst+=grd_sz_in;
 	      val_out_fst+=grd_sz_out;

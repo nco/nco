@@ -103,10 +103,12 @@ fi # DATA
 # Ensure batch jobs access correct 'mpirun' (or, with SLURM, 'srun') command, netCDF library, and NCO executables and library
 # 20170914 Entire block is identical between ncclimo and ncremap---keep it that way!
 # hrd_pth could be a command-line option to control environment if this block placed below getopt() block (not trivial)
-# Set NCO_PATH_OVERRIDE to 'No' to prevent NCO from executing next block that overrides PATH:
-# export NCO_PATH_OVERRIDE='No'
+# 20190421 Change override default from opt-out to opt-in
+# Leave NCO_PATH_OVERRIDE unset or set to 'No' to prevent NCO from executing next block that overrides PATH
+# Set NCO_PATH_OVERRIDE to 'Yes' in environment to cause NCO to execute next block and to override PATH:
+# export NCO_PATH_OVERRIDE='Yes'
 hrd_pth='Yes' # [sng] Hard-code machine-dependent paths/modules if HOSTNAME in database
-if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" != 'No' ]; then
+if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
@@ -767,13 +769,14 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "GPL: http://www.gnu.org/copyleft/gpl.html\n"
     printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
     printf "Config: ${spt_nm} running from directory ${drc_spt}\n"
-    printf "Config: Calling NCO binaries in directory ${drc_nco}\n"
+    printf "Config: Call NCO binaries in directory ${drc_nco}\n"
     printf "Config: Binaries linked to netCDF library version ${lbr_vrs}\n"
     if [ "${hrd_pth_fnd}" = 'Yes' ]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}\n"
 	printf "Config: (Turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\")\n"
     else
 	printf "Config: No hardcoded path/module overrides\n"
+	printf "Config: (If desired, turn-on NCO hardcoded paths for HPCs at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\")\n"
     fi # !hrd_pth_fnd
     printf "Config: External (non-NCO) program availability:\n"
     if [ -n "${cmd_wgt_esmf}" ]; then

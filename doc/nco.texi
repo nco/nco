@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.0-alpha10
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 19 April 2019
+@set update-date 21 April 2019
 @set update-month April 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -12166,12 +12166,16 @@ written to an intermediate file).
 As of @acronym{NCO} version 4.8.0 (released May, 2019),
 @command{ncap2} does not require that @var{input-file} be specified
 when @var{output-file} has no dependency on it.
-Prior to this, @command{ncap2} required users to specify a dummy,
-unused @var{input-file} even if it was not used to construct
+Prior to this, @command{ncap2} required users to specify a dummy
+@var{input-file} even if it was not used to construct
 @var{output-file}.
+Input files are always read by @command{ncap2}, and dummy input
+files were read though not used for anything nor modified.
+Now 
 @example
 @verbatim
 ncap2 -s 'quark=1' ~/foo.nc # Create new foo.nc
+ncap2 -s 'print(quark)' ~/foo.nc # Print existing foo.nc
 ncap2 -O -s 'quark=1' ~/foo.nc # Overwrite old with new foo.nc
 ncap2 -s 'quark=1' ~/foo.nc ~/foo.nc # Add to old foo.nc
 @end verbatim
@@ -22754,7 +22758,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]]
+[--vrt_fl=@var{vrt_fl}] [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]]
 [--xtr_nsp=@var{xtr_nsp}] [--xtr_typ=@var{xtr_typ}] [--xtr_xpn=@var{xtr_xpn}] 
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -23233,6 +23237,23 @@ Currently (January, 2018) @code{ncremap} has no means of transmitting
 options (like @samp{--allow_no_overlap} to
 @command{GenerateOverlapMesh}.
 Please let us know if this capability is important to you.
+
+@html
+<a name="config"></a> <!-- http://nco.sf.net/nco.html#config -->
+<a name="cnf"></a> <!-- http://nco.sf.net/nco.html#cnf -->
+@end html
+@cindex @code{--version}
+@cindex @code{--vrs}
+@cindex @code{--config}
+@cindex @code{--configuration}
+@cindex @code{--cnf}
+@item --version (@code{--version}, @code{--vrs}, @code{--config}, @code{--configuration}, @code{--cnf})
+This switch (which takes no argument) causes the operator to print
+its version and configuration.
+This includes the copyright notice, @acronym{URL}s to the @acronym{GPL}
+and @acronym{NCO} license, directories from which the @acronym{NCO}
+scripts and binaries are running, and the locations of any separate 
+executables that may be used by the script.
 
 @html
 <a name="d2f"></a> <!-- http://nco.sf.net/nco.html#d2f -->
@@ -24470,6 +24491,37 @@ Specifies the number of threads used per regridding process
 The @acronym{NCO} regridder scales well up to 8--16 threads.
 
 @html
+<a name="upk_inp"></a> <!-- http://nco.sf.net/nco.html#upk_inp -->
+@end html
+@cindex @code{-U}
+@cindex @code{--unpack}
+@cindex @code{--upk}
+@cindex @code{--upk_inp}
+@item -U (@code{--unpack}, @code{--upk}, @code{--upk_inp})
+This switch (which takes no argument) causes @command{ncremap} to
+unpack (see @ref{Packed data}) input data before regridding it.
+This switch causes unpacking at the regridding stage that occurs
+after map generation.
+Hence this switch does not benefit grid inferral.
+Grid inferral examines only the coordinate variables in a dataset.
+If coordinates are packed (a terrible practice) in a file from which a
+grid will be inferred, users should first manually unpack the file (this
+option will not help). 
+Fortunately, coordinate variables are usually not packed, even in files
+with other packed data.
+
+Many institutions (like @acronym{NASA}) pack datasets to conserve space
+before distributing them. 
+This option allows one to regrid input data without having
+to manually unpack it first.
+Beware that @acronym{NASA} uses at least three different and
+incompatible versions of packing in its @acronym{L2} datasets.
+The unpacking algorithm employed by this option is the default netCDF
+algorithm, which is appropriate for @acronym{MOD04} and is inappropriate
+for @acronym{MOD08} and @acronym{MOD13}. 
+See @ref{Packed data} for more details and workarounds.
+
+@html
 <a name="ugrid_fl"></a> <!-- http://nco.sf.net/nco.html#ugrid_fl -->
 @end html
 @cindex @code{--ugrid_fl=@var{ugrid_fl}}
@@ -24571,53 +24623,6 @@ ncremap -R "--rgr lat_nm=xq --rgr lon_nm=zj" -d dst.nc -O ~/rgr in.nc # Manual
 @noindent
 
 @html
-<a name="upk_inp"></a> <!-- http://nco.sf.net/nco.html#upk_inp -->
-@end html
-@cindex @code{-U}
-@cindex @code{--unpack}
-@cindex @code{--upk}
-@cindex @code{--upk_inp}
-@item -U (@code{--unpack}, @code{--upk}, @code{--upk_inp})
-This switch (which takes no argument) causes @command{ncremap} to
-unpack (see @ref{Packed data}) input data before regridding it.
-This switch causes unpacking at the regridding stage that occurs
-after map generation.
-Hence this switch does not benefit grid inferral.
-Grid inferral examines only the coordinate variables in a dataset.
-If coordinates are packed (a terrible practice) in a file from which a
-grid will be inferred, users should first manually unpack the file (this
-option will not help). 
-Fortunately, coordinate variables are usually not packed, even in files
-with other packed data.
-
-Many institutions (like @acronym{NASA}) pack datasets to conserve space
-before distributing them. 
-This option allows one to regrid input data without having
-to manually unpack it first.
-Beware that @acronym{NASA} uses at least three different and
-incompatible versions of packing in its @acronym{L2} datasets.
-The unpacking algorithm employed by this option is the default netCDF
-algorithm, which is appropriate for @acronym{MOD04} and is inappropriate
-for @acronym{MOD08} and @acronym{MOD13}. 
-See @ref{Packed data} for more details and workarounds.
-
-@html
-<a name="cnf"></a> <!-- http://nco.sf.net/nco.html#cnf -->
-@end html
-@cindex @code{--version}
-@cindex @code{--vrs}
-@cindex @code{--config}
-@cindex @code{--configuration}
-@cindex @code{--cnf}
-@item --version (@code{--version}, @code{--vrs}, @code{--config}, @code{--configuration}, @code{--cnf})
-This switch (which takes no argument) causes the operator to print
-its version and configuration.
-This includes the copyright notice, @acronym{URL}s to the @acronym{GPL}
-and @acronym{NCO} license, directories from which the @acronym{NCO}
-scripts and binaries are running, and the locations of any separate 
-executables that may be used by the script.
-
-@html
 <a name="vrb_lvl"></a> <!-- http://nco.sf.net/nco.html#vrb_lvl -->
 @end html
 @cindex @code{--vrb=@var{vrb_lvl}}
@@ -24638,6 +24643,165 @@ If @math{@var{vrb_lvl} > 2}, @command{ncremap} prints even more detailed
 information.
 Note that @var{vrb_lvl} is distinct from @var{dbg_lvl} which is
 passed to the regridder (@command{ncks}) for additional diagnostics.
+
+@html
+<a name="vrt"></a> <!-- http://nco.sf.net/nco.html#vrt -->
+<a name="vrt_fl"></a> <!-- http://nco.sf.net/nco.html#vrt_fl -->
+@end html
+@cindex @code{vrt}
+@cindex @code{--vrt}
+@cindex @code{--vrt_crd}
+@cindex @code{--vertical_file}
+@cindex @code{--vrt_fl=@var{vrt_fl}}
+@cindex @var{vrt_fl}
+@cindex Vertical coordinate
+@cindex @acronym{MPAS}
+@item --vrt_fl=@var{vrt_fl} (@code{--vrt_fl}, @code{--vrt}, @code{--vrt_crd}, @code{--vertical_file})
+The @samp{--vrt_fl=@var{vrt_fl}} option instructs @command{ncremap}
+to vertically interpolate the input file to the vertical coordinate
+grid contained in the file @var{vrt_fl}.
+This option first appeared in @acronym{NCO} @w{version 4.8.0},
+released in May, 2019.
+The vertical gridfile @var{vrt_fl} must specify one of the two
+vertical gridtypes that @command{ncremap} currently understands, 
+pure-pressure or hybrid-coordinate pressure.
+The simplest vertical grid-type, a pure-pressure grid, contains
+the horizontally uniform vertical pressure levels in a one-dimensional 
+coordinate array named @code{plev}. 
+The @code{plev} dimension may have any number of levels and the values 
+must monotonically increase or decrease.
+A 17-level NCEP pressure grid, for example, is easy to create:
+@example
+@verbatim
+# Construct monotonically decreasing 17-level NCEP pressure grid
+ncap2 -O -v -s 'defdim("plev",17);plev[$plev]={100000,92500,85000, \
+  70000,60000,50000,40000,30000,25000,20000,15000,10000,7000,5000, \
+  3000,2000,1000};' vrt_prs_ncep_L17.nc
+@end verbatim
+@end example
+
+Hybrid-coordinate grids are a hybrid between a sigma-coordinate
+grid (where pressure is a fraction of the surface pressure) and
+a pure-pressure grid (as above). 
+The so-called hybrid ``A'' and ``B'' coefficients specify the
+fractional weight of the pure-pressure and sigma-grids, respectively,
+at each level.
+@cindex @code{P0}
+@cindex @code{PS}
+@cindex @code{hyai}
+@cindex @code{hyam}
+@cindex @code{hybi}
+@cindex @code{hybm}
+@cindex @code{formula_terms} attribute
+The hybrid gridfile must specify A and B coefficients for
+both layer midpoints and interfaces with these standard
+(as employed by @acronym{CESM} and @acronym{E3SM}) names and
+dimensions: @code{hyai(ilev)}, @code{hybi(ilev)}, @code{hyam(lev)},
+and @code{hybm(lev)}.
+The reference pressure and surface pressure must be named
+@code{P0} and @code{PS}, respectively.
+The pressures at all midpoints and interfaces are then defined as 
+@example
+@verbatim
+prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS; # Midlayer
+prs_ntf[time,lat,lon,ilev]=P0*hyai+hybi*PS; # Interface
+@end verbatim
+@end example
+The scalar reference pressure @code{P0} is typically @w{100000 Pa}
+(or @w{1000 mb}) while the surface pressure @code{PS} is a (possibly
+time-varying) array with one or two spatial dimensions, and its values 
+are in the same dimensional units (e.g., Pa or mb) as @code{P0}.
+
+Note that a hybrid-coordinate grid defines a pure-sigma or
+pure-pressure grid when either its A or B coefficients are zero, 
+respectively.
+For example, the following creates the hybrid-coordinate
+representation of a pure-pressure grid with midpoints every @w{100 mb}
+from @w{100 mb} to @w{1000 mb}:
+@example
+@verbatim
+ncap2 -O -v -s 'defdim("ilev",11);defdim("lev",10);P0=100000.0; \
+  hyai=array(0.05,0.1,$ilev);hyam=array(0.1,0.1,$lev); \
+  hybi=0.0*hyai;hybm=0.0*hyam;' vrt_hyb_prs_L10.nc
+@end verbatim
+@end example
+The @code{lev} and @code{ilev} coordinates of a hybrid grid are
+defined by the hybrid coefficients and reference pressure, and are
+by convention stored in millibars as follows:
+@example
+@verbatim
+ilev[ilev]=P0*(hyai+hybi)/100.0;
+lev[lev]=P0*(hyam+hybm)/100.0;
+@end verbatim
+@end example
+
+A vertical hybrid grid file @var{vrt_fl} must contain at least
+@code{hyai}, @code{hybi}, @code{hyam}, @code{hybm(lev)} and
+@code{P0}; @code{PS}, @code{lev}, and @code{ilev} are optional. 
+If @var{vrt_fl} does not contain @code{PS}, then @code{PS} will
+be taken from the file to be interpolated.
+In all cases @code{lev} and @code{ilev} are optional and will be
+diagnosed from the other parameters using the above definitions.
+The minimal requirements---a @code{plev} coordinate for a
+pure-pressure grid or five parameters for a hybrid grid---allow 
+vertical gridfiles to be much smaller than horizontal gridfiles
+such as @acronym{SCRIP} files.
+Moreover, data files from @acronym{ESM}s or analyses (@acronym{NCEP},
+@acronym{MERRA2}, @acronym{ERA5}) are also valid gridfiles.
+The flexibility in gridfile structure makes it easy to intercompare
+data from the same or different sources.
+
+@command{ncremap} supports vertical interpolation between all
+combinations of pure-pressure and hybrid-pressure grids.
+The input and output (aka source and destination) pressure grids may
+monotonically increase or decrease independently of eachother (i.e.,
+one may increase and the other may decrease). 
+When an output pressure level is outside the input pressure range
+for that column, then all variables must be extrapolated (not
+interpolated) to that/those level(s).
+By default @command{ncremap} sets all extrapolated values to the
+nearest valid value.
+
+Temperature and geopotential height are exceptions to this rule.
+Temperature variables (those named @code{T} or @code{ta}, anyway) are
+extrapolated upwards and downwards towards space using the nearest
+neighbor assumption, and beneath the surface assuming a moist
+adiabatic lapse rate of 6.5 degrees centigrade per 100 millibars.
+Geopotential variables (those named @code{Z3} or @code{zg}, anyway)
+are extrapolated upwards and downwards using the hypsometric equation
+@footnote{@math{Z_2-Z_1=(R_d*T_v/g_0)*ln(p_1/p_2)=(R_d*T_v/g_0)*(ln(p_1)-ln(p_2))}}
+@c Z2-Z1=(Rd*Tv/g0)*ln(p1/p2)=(Rd*Tv/g0)*(ln(p1)-ln(p2))} 
+with constant global mean virtual temperature @w{288 Kelvin}.
+
+Interpolation to and from hybrid coordinate grids works on both
+midpoint and interface fields (i.e., on variables with @code{lev} or
+@code{ilev} dimensions), while interpolation to and from pure-pressure
+grids applies to fields with, or places output of fields on, a
+@code{plev} dimension.  
+All other fields pass through the interpolation procedure unscathed.
+Input can be RLL, curvilinear, or unstructured. 
+Vertical interpolation is split from horizontal so that changing both
+horizontal and vertical grids "simultaneously" currently requires two
+successive invocations of @command{ncremap}, one horizontal and one
+vertical. 
+
+The main assumptions and limitation of vertical interpolation are:
+@enumerate
+@item Input datasets have netCDF (and thus C-based) dimension-ordering  
+      @var{other,vertical,horizontal} so that the horizontal
+      dimension(s) vary more rapidly than the vertical.
+@item Interpolation is linear in log(pressure).
+      This assumption is more natural for gases (like the atmosphere)
+      than for condensed media (like the ocean or Earth's interior).
+      This behavior is internally controlled by a single flag.
+      Please let Charlie know if you would like this flag to be
+      user-accessible.
+@item Extrapolation uses nearest neighbor except as noted above.
+      Other extrapolation options in the code, yet not exposed to
+      users, include: dying, setting @w{to 0.0}, and linear
+      extrapolation. 
+@item Missing values are not (yet) treated specially
+@end enumerate
 
 @html
 <a name="wgt_opt"></a> <!-- http://nco.sf.net/nco.html#wgt_opt -->
@@ -24859,7 +25023,7 @@ weight-application, at which @command{ncremap} is quite fast.
 To circumvent this limitation, build @command{ESMF_RegridWeightGen} 
 with parallel capabilities and ask me to enhance @command{ncremap} 
 to call @acronym{ERWG} with the options to exploit those capabilities. 
-As of @acronym{NCO} @w{version 4.8.0}, released in August, 2019, the
+As of @acronym{NCO} @w{version 4.8.0}, released in May, 2019, the
 regridder can generate intersection grids and overlap weights for all
 finite volume grid combinations.
 However these weights are first stored in an offline mapfile, are not
