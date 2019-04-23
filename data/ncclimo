@@ -1929,7 +1929,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	let idx_end=$((job_nbr-1))
 	for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 	    fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
-	    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+	    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_sbs[${var_idx}]}
 	    fi # !dbg
@@ -2196,7 +2196,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},1 ${ppn_opt} ${fl_all} ${fl_out[${clm_idx}]}"
 	    else
 		# 20170619: Diurnal mode is really slow on MacOSX (UDUnits parsing sluggishness?)
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${ppn_opt} ${fl_all} ${fl_cat[${clm_idx}]};/bin/rm -f ${fl_out[${clm_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${gaa_sng} ${fl_cat[${clm_idx}]} ${fl_out[${clm_idx}]};done;/bin/rm -f ${fl_cat[${clm_idx}]}"
 	    fi # !tpd
 	    let clm_idx=${clm_idx}+1
 	done # !day
