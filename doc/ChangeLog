@@ -1,5 +1,13 @@
 2019-04-22  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.0-alpha11 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha11: Hanna';git push
+	git tag -a 4.8.0-alpha11 -m 'NCO_PATH_OVERRIDE opt-in;job_nbr=12,OMP_PROC_BIND ncks,ncra';git push --tags
+
+	* Change default job_nbr from 2 to var_nbr in splitter
+
+	* Document --job_nbr in nco.texi
+
 	* Document --vrt_fl in nco.texi
 
 2019-04-21  Charlie Zender  <zender@uci.edu>

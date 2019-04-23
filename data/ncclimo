@@ -472,7 +472,7 @@ inp_aut='No' # [sng] Input file list automatically generated
 inp_glb='No' # [sng] Input file list from globbing directory 
 inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
-job_nbr=2 # [nbr] Job simultaneity for parallelism
+job_nbr=12 # [nbr] Job simultaneity for parallelism
 lnk_flg='Yes' # [sng] Link E3SM-climo to AMWG-climo filenames
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
 mdl_nm_usr='' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
@@ -1160,6 +1160,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	var_sbs[${var_nbr}]=${var}
 	let var_nbr=${var_nbr}+1
     done # !var_lst
+
+    if [ -z "${job_usr}" ]; then 
+	job_nbr=${var_nbr}
+    fi # !job_usr
 
     # Input files per year
     if [ "${clm_md}" = 'ann' ]; then

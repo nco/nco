@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.0-alpha10
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 21 April 2019
+@set update-date 22 April 2019
 @set update-month April 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17940,39 +17940,63 @@ create the list of input files when no list is provided through
 @cindex @code{--job_number}
 @cindex @code{--jobs}
 @item -j @var{job_nbr} (@code{--job_nbr}, @code{--job_number}, @code{--jobs})
-Specifies the number of simultaneous subsetting processes to spawn  
-during parallel execution for both Background and @acronym{MPI} modes. 
-This applies to timeseries reshaping mode only, and has no effect in 
-climatology generation mode.
+The @var{job_nbr} parameter controls the parallelism granularity of
+both timeseries reshaping (aka splitting) and climatology generation.
+These modes are parallelized over different types of tasks, so we
+describe the effects of @var{job_nbr} separately for splitting and
+climatologies.
+However, for both modes, @var{job_nbr} specifies the number of
+simultaneous processes to spawn during parallel execution for both
+Background and @acronym{MPI} modes.  
+
+For splitting, @var{job_nbr} specifies the number of simultaneous
+subsetting processes to spawn during parallel execution for both
+Background and @acronym{MPI} modes.  
 In both parallel modes @command{ncclimo} spawns processes in batches 
 of @var{job_nbr} jobs, then waits for those processes to complete.
 Once a batch finishes, @command{ncclimo} spawns the next batch.
 In Background mode, all jobs are spawned to the local node.
 In @acronym{MPI} mode, all jobs are spawned in round-robin fashion
 to all available nodes until @var{job_nbr} jobs are running.
+The default value of @var{job_nbr} in splitter mode depends on the
+parallelism option.
+For Background parallelism, @var{job_nbr} defaults to the number of
+variables to be split, so that not specifying @var{job_nbr} results 
+launching @var{var_nbr} splitter tasks at once.
+This scales well to over a hundred variables in our tests
+@footnote{At least one known environment (the @acronym{E3SM-Unified}
+Anaconda environment at @acronym{NERSC}) prevents users from spawning
+scores of processes and may report @acronym{OpenBLAS/pthread} or
+@code{RLIMIT_NPROC}-related errors.
+A solution seems to be executing @samp{ulimit -u unlimited}}.
+In practice, splitting timeseries consumes minimal memory, since
+@command{ncrcat} (which underlies the splitter) only holds one
+record (timestep) of a variable in memory @ref{Memory Requirements}.
 
-If subsetting consumes so much @acronym{RAM} (e.g., because
-variables are large and/or the number of threads is large) that a
-single node can perform only one subsetting job at a time, then a
-reasonable value for @var{job_nbr} is the number of nodes,
-@var{node_nbr}. 
-Often, however, nodes can usually subset (and then regrid, if requested)
-multiple variables simultaneously.
-
-By default @math{@var{job_nbr} = 2} in Background mode, and
-@math{@var{job_nbr} = @var{node_nbr}} in @acronym{MPI} mode.
+However, if subsetting consumes so much @acronym{RAM} (e.g., because 
+variables are large and/or the number of jobs is large) that a
+single node can perform only one subsetting job at a time, then it
+is reasonable value to employ @acronym{MPI} to split the dataset.
+For @acronym{MPI} mode parallelism, @var{job_nbr} defaults to the
+number of nodes requested.
 This helps prevent users from overloading nodes with too many jobs.
+Usually, however, nodes can usually subset (and then regrid, if
+requested) multiple variables simultaneously.
+In summary, by default @math{@var{job_nbr} = @var{var_nbr}} in
+Background mode, and @math{@var{job_nbr} = @var{node_nbr}} in
+@acronym{MPI} mode. 
 Subject to the availability of adequate @acronym{RAM},
 expand the number of jobs per node by increasing @var{job_nbr}
 until, ideally, each core on the node is used. 
 
 The main throughput bottleneck in timeseries reshaping mode is I/O. 
-It is possible that each node can write to only one file at a time,
-in which case increasing @var{job_nbr} may have little effect.
+Increasing @var{job_nbr} may reduce throughput once the maximum I/O
+bandwidth of the node is reached, due to contention for I/O
+resources. 
 Regridding requires math that can relieve some I/O contention and
 allows for some throughput gains with increasing @var{job_nbr}.
-In general, though, increasing @var{job_nbr} is expected to improve
-throughput much more in @command{ncremap} than in @command{ncclimo}. 
+In general a sensible strategy is to increase @var{job_nbr} until
+throughput begins to decline.
 
 @cindex @code{-L}
 @cindex @code{--dfl_lvl}
