@@ -73,11 +73,22 @@
 /* define macros */
 #define KD_SIZE(val)	(val)->size
 
+/*
 #define BOXINTERSECT(b1, b2) \
   (((b1)[KD_RIGHT] >= (b2)[KD_LEFT]) && \
    ((b2)[KD_RIGHT] >= (b1)[KD_LEFT]) && \
    ((b1)[KD_TOP] >= (b2)[KD_BOTTOM]) && \
    ((b2)[KD_TOP] >= (b1)[KD_BOTTOM]))
+*/
+
+
+#define BOXINTERSECT(b1, b2) \
+  (((b1)[KD_RIGHT] >= (b2)[KD_LEFT]) && \
+   ((b1)[KD_LEFT] <= (b2)[KD_RIGHT]) && \
+   ((b1)[KD_TOP] >= (b2)[KD_BOTTOM]) && \
+   ((b1)[KD_BOTTOM] <= (b2)[KD_TOP]))
+
+
 
 /*
  * Destructively replaces the next item of list1 with list2.
