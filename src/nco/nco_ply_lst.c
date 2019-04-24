@@ -251,6 +251,7 @@ int *pl_nbr)
   int idx=0;
   int idx_cnt=0;
   int wrp_cnt=0;
+  int wrp_y_cnt=0;
 
   const char fnc_nm[]="nco_poly_lst_mk()";
 
@@ -302,6 +303,10 @@ int *pl_nbr)
     pl->dp_x_ctr=lon_ctr[idx];
     pl->dp_y_ctr=lat_ctr[idx];
 
+
+    /* pop shp */
+    nco_poly_shp_pop(pl);
+
     /* add min max */
     nco_poly_minmax_add(pl, grd_lon_typ, True);
 
@@ -333,6 +338,7 @@ int *pl_nbr)
       (void)fprintf(stderr,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  __FUNCTION__, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
     */
 
+
     if(pl->bwrp)
       nco_poly_prn(pl,0);
 
@@ -341,6 +347,7 @@ int *pl_nbr)
 
     /* for debugging total number of wrapped cells */
     wrp_cnt+=pl->bwrp;
+    wrp_y_cnt+=pl->bwrp_y;
 
     pl_lst[idx_cnt]=pl;
     idx_cnt++;
@@ -349,7 +356,7 @@ int *pl_nbr)
   }
 
   if(nco_dbg_lvl_get() >=  nco_dbg_dev )
-    (void)fprintf(stderr, "%s: %s size input list(%lu), size output list(%d)  total area=%.15e  num of wrapped=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt);
+    (void)fprintf(stderr, "%s: %s size input list(%lu), size output list(%d)  total area=%.15e  num wrapped= %d num caps=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt, wrp_y_cnt);
 
   pl_lst=(poly_sct**)nco_realloc( pl_lst, (size_t)idx_cnt * sizeof (poly_sct*) );
 
@@ -358,21 +365,6 @@ int *pl_nbr)
   return pl_lst;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 poly_sct **
 nco_poly_lst_free(
@@ -470,7 +462,6 @@ int *pl_cnt_vrl_ret){
   /* rebuild tree for faster access */
   kd_rebuild(rtree);
   kd_rebuild(rtree);
-
 
   /* kd_print(rtree); */
 
@@ -630,12 +621,13 @@ int *pl_cnt_vrl_ret){
 
   }
 
-  /* rebuild tree for faster access */
+  /*  2019-04-24  rebuild NOT_WORKING correctly with repsect to extents */
+  /* rebuild tree for faster access
   kd_rebuild(rtree);
   kd_rebuild(rtree);
+ */
 
-
-  /* kd_print(rtree); */
+ /* kd_print(rtree); */
 
 /* start main loop over input polygons */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
@@ -646,7 +638,7 @@ int *pl_cnt_vrl_ret){
 
     double vrl_area = 0.0;
 
-    double df=pl_lst_in[idx]->dp_x_minmax[1] - pl_lst_in[idx]->dp_x_minmax[0];
+    //double df=pl_lst_in[idx]->dp_x_minmax[1] - pl_lst_in[idx]->dp_x_minmax[0];
 
     (void) nco_poly_set_priority(max_nbr_vrl, list);
 
@@ -771,14 +763,14 @@ int *pl_cnt_vrl_ret){
     if (nco_dbg_lvl_get() >= nco_dbg_dev) {
       /* area diff by more than 10% */
       double frc = vrl_area / pl_lst_in[idx]->area;
-      if ( frc <0.95 || frc >1.05 ) {
+      if ( 1 ||  frc <0.95 || frc >1.05 ) {
         (void) fprintf(stderr,
                        "%s: polygon %lu - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e\n",
                        nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area);
 
 
 
-        if (bDirtyRats && pl_lst_in[idx]->bwrp_y ) {
+        if (bDirtyRats && pl_lst_in[idx]->dp_y_minmax[1] == 90.0  ) {
           //if (pl_lst_in[idx]->bwrp ) {
           pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
           pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
