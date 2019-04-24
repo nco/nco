@@ -545,15 +545,16 @@ void nco_poly_minmax_add
 
       }
 
+      if(!pl->bwrp_y)
+      {
+        nco_geo_get_lat_correct(pl->dp_x_minmax[0], pl->dp_y_minmax[1], pl->dp_x_minmax[1], pl->dp_y_minmax[0],
+                                &lat_min,
+                                &lat_max, bDeg);
 
+        pl->dp_y_minmax[0] = lat_min;
+        pl->dp_y_minmax[1] = lat_max;
 
-      nco_geo_get_lat_correct(pl->dp_x_minmax[0], pl->dp_y_minmax[1], pl->dp_x_minmax[1], pl->dp_y_minmax[0],
-                            &lat_min,
-                            &lat_max, bDeg);
-
-      pl->dp_y_minmax[0] = lat_min;
-      pl->dp_y_minmax[1] = lat_max;
-
+      }
 
   } /* end nco_sph */
 
@@ -704,6 +705,12 @@ poly_sct *pl_out)
   if( !(pl_out->dp_y_minmax[0] >= pl_in->dp_y_minmax[0] &&
         pl_out->dp_y_minmax[1] <= pl_in->dp_y_minmax[1])
     )
+    return False;
+
+  if(pl_in->bwrp_y )
+    return True;
+
+  if(!pl_in->bwrp_y && pl_out->bwrp_y )
     return False;
 
   /* no wrapping */
@@ -1293,21 +1300,20 @@ kd_box size2)
 {
 
 
-
-
-
   /* regular limits */
   if (pl->bwrp == False ) {
-    size1[KD_LEFT] = pl->dp_x_minmax[0];
-    size1[KD_RIGHT] = pl->dp_x_minmax[1];
-    size1[KD_BOTTOM] = pl->dp_y_minmax[0];
-    size1[KD_TOP] = pl->dp_y_minmax[1];
+    /* choose whole range for a "polar triange " */
+      size1[KD_LEFT] = pl->dp_x_minmax[0];
+      size1[KD_RIGHT] = pl->dp_x_minmax[1];
+      size1[KD_BOTTOM] = pl->dp_y_minmax[0];
+      size1[KD_TOP] = pl->dp_y_minmax[1];
 
     return False;
   }
 
   /* This is a polar cap - remember the longitudes have been set to the WHOLE RANGE of Longitude in
    * nco_poly_minmax_add() */
+
   if(pl->bwrp==True && pl->bwrp_y==True)
   {
     size1[KD_LEFT] = pl->dp_x_minmax[0];
@@ -1317,6 +1323,7 @@ kd_box size2)
 
     return False;
   }
+
 
 
 
