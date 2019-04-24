@@ -769,12 +769,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   /* Purpose: Compute overlap mesh and weights */
   const char fnc_nm[]="nco_msh_mk()";
 
-
-
   double *wgt_raw; /* [frc] Remapping weights */
-
-  int pl_cnt_in=0;
-  int pl_cnt_out=0;
 
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
@@ -795,10 +790,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   poly_sct *pl_glb_in=NULL_CEWI;
   poly_sct *pl_glb_out=NULL_CEWI;
-
-  poly_sct **pl_lst_in=NULL_CEWI;
-  poly_sct **pl_lst_out=NULL_CEWI;
-
   poly_sct **pl_lst_vrl=(poly_sct**)NULL_CEWI;
 
   poly_typ_enm pl_typ=poly_sph;
@@ -842,6 +833,14 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   //  test nco_poly functions
   {
+    int pl_cnt_in=0;
+    int pl_cnt_out=0;
+
+
+
+    poly_sct **pl_lst_in;
+    poly_sct **pl_lst_out;
+
 
     switch(grd_lon_typ_out){
 
@@ -886,11 +885,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     /* test new write func */
     nco_msh_poly_lst_wrt("tst-wrt-out.nc", pl_lst_out, pl_cnt_out, grd_lon_typ_out  );
 
-    /* debug output all
-    for(idx=0;idx<pl_cnt_out  ;idx++)
-      nco_poly_prn(pl_lst_out[idx],1);
-    */
-
 
     /* call the overlap routine */
     if( pl_cnt_in && pl_cnt_out  )
@@ -900,8 +894,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
           pl_lst_vrl= nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, grd_lon_typ_out, &pl_cnt_vrl);
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev)
-      fprintf(stderr, "%s: INFO: num input polygons=%d, num output polygons=%d num overlap polygons=%d\n", nco_prg_nm_get(),pl_cnt_in, pl_cnt_out, pl_cnt_vrl);
+      fprintf(stdout, "%s: INFO: num input polygons=%d, num output polygons=%d num overlap polygons=%d\n", nco_prg_nm_get(),pl_cnt_in, pl_cnt_out, pl_cnt_vrl);
 
+
+    /*we can safely free these  lists */
+    pl_lst_in=nco_poly_lst_free(pl_lst_in,pl_cnt_in);
+    pl_lst_out=nco_poly_lst_free(pl_lst_out,pl_cnt_out);
 
   }
 
@@ -942,82 +940,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *row_dst_adr_ptr=row_dst_adr;
   *lnk_nbr_ptr=lnk_nbr;
 
-  /* tally up weights see if they sum to number of dst grid cells */
-  if(nco_dbg_lvl_get() >= nco_dbg_dev)
-  {
-    size_t irow;
-    size_t sz;
-    double sum=0.0;
-    double *tally;
-
-    sz=lnk_nbr;
-
-    tally=(double*)nco_malloc( sizeof(double)*sz);
-    for(idx=0;idx<sz;idx++)
-      tally[idx]=0.0;
-
-
-
-    for(idx=0;idx<sz;idx++)
-    {
-      irow=row_dst_adr[idx] - 1;
-
-      if( irow < sz )
-         tally[irow] += wgt_raw[idx];
-
-      sum+=wgt_raw[idx];
-    }
-
-    fprintf(stderr, "%s(): S.total=%.10f  WARNING following is list of incomplete dst cells, by src_id no\n",__FUNCTION__,sum);
-    for(idx=0; idx< pl_cnt_out;idx++)
-      if(  fabs(tally[idx]-1.0) >1e-8  )
-        fprintf(stderr,"%d(%.20f)\n", idx, tally[idx]);
-
-    // fprintf(stderr,"\n sum=%.20f\n", idx, sum);
-
-    tally=(double*)nco_free(tally);
-
-  }
-
-  if(nco_dbg_lvl_get() >= nco_dbg_dev)
-  {
-    int io_flg=1;
-    int pl_nbr=0;
-    poly_sct **pl_lst_dbg=NULL_CEWI;
-
-    /* find area mismatch between dst and overlap */
-    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out, pl_cnt_out, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
-
-    if(pl_nbr) {
-      nco_msh_poly_lst_wrt("tst-wrt-out-dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
-      pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg, pl_nbr);
-    }
-
-
-    pl_nbr=0;
-    io_flg=0;
-
-    /* find area mismatch between src and overlap */
-    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in, pl_cnt_in, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
-
-    if(pl_nbr) {
-      nco_msh_poly_lst_wrt("tst-wrt-in-dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
-      pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg, pl_nbr);
-    }
-
-
-  }
-
-
   pl_glb_in=nco_poly_free(pl_glb_in);
   pl_glb_out=nco_poly_free(pl_glb_out);
-
-  if(pl_cnt_in)
-     pl_lst_in=nco_poly_lst_free(pl_lst_in,pl_cnt_in);
-
-  if(pl_cnt_out)
-     pl_lst_out=nco_poly_lst_free(pl_lst_out,pl_cnt_out);
-
 
 
   if(pl_cnt_vrl)
@@ -1258,7 +1182,7 @@ nco_grd_lon_typ_enm typ_out)
     exit(EXIT_FAILURE);
   }
 
-  if(0 & nco_dbg_lvl_get() >= nco_dbg_crr)
+  if(nco_dbg_lvl_get() >= nco_dbg_crr)
     (void)fprintf(stderr,"%s: INFO %s converting lon coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),fnc_nm, typ_in_sng, typ_out_sng );
 
 

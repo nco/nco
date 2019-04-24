@@ -74,7 +74,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     code = nco_crt_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q);
 
     if(DEBUG_CRT)
-      (void)fprintf(stderr, "%s: cross=%d, aHB=%d, bHA=%d code = %c\n", nco_prg_nm_get(),cross, aHB, bHA, code );
+      (void)fprintf(stdout, "%s: cross=%d, aHB=%d, bHA=%d code = %c\n", nco_prg_nm_get(),cross, aHB, bHA, code );
 
     if ( code == '1' || code == 'v' ) {
       if ( inflag == Unknown_nco && FirstPoint ) {
@@ -90,7 +90,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       nco_crt_add_pnt(R->shp, r, p);
 
       if(DEBUG_CRT)
-        (void)fprintf(stderr, "%s: InOut sets inflag=%s\n", nco_prg_nm_get(),  prnInFlag(inflag));
+        (void)fprintf(stdout, "%s: InOut sets inflag=%d\n", nco_prg_nm_get(),  inflag);
     }
 
     /*-----Advance rules-----*/
@@ -108,7 +108,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     {
 
       if(DEBUG_CRT)
-        (void)fprintf(stderr, "%s: P and Q are disjoint\n", nco_prg_nm_get());
+        (void)fprintf(stdout, "%s: P and Q are disjoint\n", nco_prg_nm_get());
 
       return EXIT_FAILURE;
     }
@@ -170,7 +170,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     b%=m;
 
     if(DEBUG_CRT)
-      (void)fprintf(stderr, "%s: Before Advances:a=%d, b=%d; aa=%d, ba=%d; inflag=%s\n", nco_prg_nm_get(),   a, b, aa, ba, prnInFlag(inflag));
+      (void)fprintf(stdout, "%s: Before Advances:a=%d, b=%d; aa=%d, ba=%d; inflag=%d\n", nco_prg_nm_get(),   a, b, aa, ba, inflag);
 
 
     /* Quit when both adv. indices have cycled, or one has cycled twice. */
@@ -179,7 +179,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   if ( FirstPoint )
   {
     if(DEBUG_CRT)
-      (void)fprintf(stderr, "%s: no points output\n", nco_prg_nm_get());
+      (void)fprintf(stdout, "%s: no points output\n", nco_prg_nm_get());
 
     return EXIT_FAILURE;
 
@@ -190,7 +190,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   {
 
     if(DEBUG_CRT)
-      (void)fprintf(stderr, "The boundaries of P and Q do not cross.\n", nco_prg_nm_get());
+      (void)fprintf(stdout, "%s: The boundaries of P and Q do not cross.\n",nco_prg_nm_get());
 
     return EXIT_FAILURE;
 
@@ -409,12 +409,10 @@ void nco_crt_add_pnt(double **R, int *r, double *P)
     R[*r][1] = P[1];
     (*r)++;
 
+    if(DEBUG_CRT)
+      fprintf(stdout, "%s: (%f, %f)\n", fnc_nm,P[0], P[1]);
 
   }
-  if(DEBUG_CRT)
-    fprintf(stderr, "%s: (%f, %f)\n", fnc_nm,P[0], P[1]);
-
-
 
 }
 

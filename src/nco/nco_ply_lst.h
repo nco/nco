@@ -92,27 +92,6 @@ int nbr_lst,
 KDPriority *list);
 
 
-/* create list for debugging */
-poly_sct **
-nco_poly_lst_chk_dbg(
-poly_sct **pl_lst,
-int pl_cnt,
-poly_sct **pl_lst_vrl,
-int pl_cnt_vrl,
-int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
-int *pl_cnt_dbg); /* size of output dbg grid */
-
-
-/* check areas */
-void nco_poly_lst_chk(
-poly_sct **pl_lst_in,
-int pl_cnt_in,
-poly_sct **pl_lst_out,
-int pl_cnt_out,
-poly_sct **pl_lst_vrl,
-int pl_cnt_vrl);
-
-
 
 
 #ifdef __cplusplus
