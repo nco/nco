@@ -338,9 +338,9 @@ int *pl_nbr)
       (void)fprintf(stderr,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  __FUNCTION__, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
     */
 
-
-    if(pl->bwrp)
-      nco_poly_prn(pl,0);
+    if(nco_dbg_lvl_get()>= nco_dbg_dev  )
+      if(pl->bwrp)
+        nco_poly_prn(pl,0);
 
     /* for debugging */
     tot_area+=pl->area;
@@ -763,7 +763,7 @@ int *pl_cnt_vrl_ret){
     if (nco_dbg_lvl_get() >= nco_dbg_dev) {
       /* area diff by more than 10% */
       double frc = vrl_area / pl_lst_in[idx]->area;
-      if ( 1 ||  frc <0.95 || frc >1.05 ) {
+      if ( frc <0.95 || frc >1.05 ) {
         (void) fprintf(stderr,
                        "%s: polygon %lu - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e\n",
                        nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area);
