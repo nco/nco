@@ -1381,7 +1381,7 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   double p[NBR_SPH];
   double q[NBR_SPH];
 
-  tInFlag inflag= Unknown;
+  tInFlag inflag= Unknown_nco;
 
   n=P->crn_nbr;
   m=Q->crn_nbr;
