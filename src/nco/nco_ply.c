@@ -253,49 +253,24 @@ nco_poly_init_lst
  double *dp_x_in,
  double *dp_y_in)
 {
-
-
  int idx;
- int lcl_crn_nbr=0;
-
- double *lcl_x_in=NULL_CEWI;
- double *lcl_y_in=NULL_CEWI;
 
  poly_sct *pl;
 
 
-
  /* less than a triangle */
  if (arr_nbr <3 )
-   return (poly_sct*)NULL_CEWI;
-
- lcl_x_in=(double*)nco_malloc(sizeof(double)*arr_nbr);
- lcl_y_in=(double*)nco_malloc(sizeof(double)*arr_nbr);
+   return (poly_sct*)NULL_CEWI;   
 
 
+ /* check repeated points at end of arrray - nb must be an exact match */
+ for(idx=1; idx<arr_nbr; idx++ )
+   if( dp_x_in[idx] == dp_x_in[idx-1] && dp_y_in[idx] == dp_y_in[idx-1] )
+     break;
 
- /* ignore repeated vertex in X and Y  */
- for(idx=0; idx<arr_nbr; idx++ )
- {
-   /* ignore repeated vertex */
-   if (idx > 0 && dp_x_in[idx] == dp_x_in[idx - 1] && dp_y_in[idx] == dp_y_in[idx - 1])
-     continue;
+ if(idx < 3 )
+     return (poly_sct*)NULL_CEWI;   
 
-   lcl_x_in[lcl_crn_nbr] = dp_x_in[idx];
-   lcl_y_in[lcl_crn_nbr] = dp_y_in[idx];
-   lcl_crn_nbr++;
- }
-
-
-
-
- if( lcl_crn_nbr < 3 ) {
-
-   lcl_x_in=(double*)nco_free(lcl_x_in);
-   lcl_y_in=(double*)nco_free(lcl_y_in);
-   return (poly_sct *) NULL_CEWI;
-
- }
  /* we have at least a triangle */ 
 
  
@@ -307,7 +282,7 @@ nco_poly_init_lst
    pl->pl_typ=pl_typ;
 
    pl->mem_flg=1;
-   pl->crn_nbr=lcl_crn_nbr;
+   pl->crn_nbr=idx;
  
    pl->dp_x=dp_x_in;
    pl->dp_y=dp_y_in;
@@ -317,253 +292,19 @@ nco_poly_init_lst
  }
  else
  {
-   pl=nco_poly_init_crn(pl_typ, lcl_crn_nbr, src_id);
-   memcpy(pl->dp_x, lcl_x_in, sizeof(double) * lcl_crn_nbr);
-   memcpy(pl->dp_y, lcl_y_in, sizeof(double) * lcl_crn_nbr);
+   pl=nco_poly_init_crn(pl_typ, idx, src_id);
+   memcpy(pl->dp_x, dp_x_in, sizeof(double) *idx);
+   memcpy(pl->dp_y, dp_y_in, sizeof(double) *idx);   
    
- }
+ }    
 
- lcl_x_in=(double*)nco_free(lcl_x_in);
- lcl_y_in=(double*)nco_free(lcl_y_in);
 
-  return pl;
+
+
+ return pl;
  
 
 }
-
-
-
-void nco_poly_minmax_add
-(poly_sct *pl,
- nco_grd_lon_typ_enm grd_lon_typ,
- nco_bool bchk_caps)
-{
-
-  int idx;
-  int sz;
-
-
-  sz=pl->crn_nbr;
-
-  pl->dp_x_minmax[0]=DBL_MAX;
-  pl->dp_x_minmax[1]=-DBL_MAX;
-
-  pl->dp_y_minmax[0]=DBL_MAX;
-  pl->dp_y_minmax[1]=-DBL_MAX;
-
-
-
-  for(idx=0; idx<sz;idx++)
-  {
-    /* min */
-    if( pl->dp_x[idx] < pl->dp_x_minmax[0] )
-      pl->dp_x_minmax[0] = pl->dp_x[idx];
-
-    /* max */
-    if( pl->dp_x[idx] > pl->dp_x_minmax[1] )
-      pl->dp_x_minmax[1] = pl->dp_x[idx];
-
-    /* min */
-    if( pl->dp_y[idx] < pl->dp_y_minmax[0] )
-      pl->dp_y_minmax[0] = pl->dp_y[idx];
-
-    /* max */
-    if( pl->dp_y[idx] > pl->dp_y_minmax[1] )
-      pl->dp_y_minmax[1] = pl->dp_y[idx];
-
-
-
-  }
-
-  /* nothing else to do */
-  if(pl->pl_typ == poly_crt )
-    return;
-
-
-  /* add correction to latitude bounding box */
-  if(pl->pl_typ == poly_sph){
-
-    double lat_min;
-    double lat_max;
-    nco_bool bDeg = 1;
-    nco_bool is_caps=False;
-
-    /* add wrap flag */
-    pl->bwrp=(pl->dp_x_minmax[1] - pl->dp_x_minmax[0] >= 180.0);
-
-
-    /* check for a polar cap */
-    if (pl->bwrp &&  bchk_caps)
-    {
-
-      /* polar cap must all be northern or southern hemisphere */
-      if(  ! ( pl->dp_y_minmax[0] > 0.0 && pl->dp_y_minmax[1] > 0.0  ||
-               pl->dp_y_minmax[0] < 0.0 && pl->dp_y_minmax[1] < 0.0 ) )
-        is_caps=False;
-      /* see if its a polar triangle */
-      else if(pl->dp_y_minmax[0] == -90.0 || pl->dp_y_minmax[1] == 90.0  )
-         is_caps=False;
-        /* this  works for some corner cases  */
-      else if (pl->dp_y_minmax[0] == pl->dp_y_minmax[1])
-        is_caps = True;
-      else
-      {
-
-        nco_bool bDeg=True;
-        nco_bool haveControl=False;
-        double pControl[NBR_SPH];
-        double pPole[NBR_SPH];
-
-        /* for a polar must all be in nothern or souther hemisphere */
-        if( pl->dp_y_minmax[1] >0.0 ) {
-          pControl[0]=20.0;
-          pControl[1]=pl->dp_y_minmax[0]-2.0;
-          pPole[0] = 0.0;
-          pPole[1] = 90.0;
-        }else{
-          pControl[0]=20.0;
-          pControl[1]=pl->dp_y_minmax[1]+2.0;
-          pPole[0] = 0.0;
-          pPole[1] = -90.0;
-        }
-
-
-
-        nco_geo_lonlat_2_sph(pPole[0],pPole[1],pPole, bDeg);
-        nco_geo_lonlat_2_sph(pControl[0],pControl[1],pControl, bDeg);
-
-        /* see if pole is inside polygon */
-        is_caps=nco_sph_pnt_in_poly(pl->shp, pl->crn_nbr,pControl, pPole );
-
-
-
-        }
-    }
-
-
-    /* deal with a polar cap here */
-    if ( pl->bwrp && is_caps) {
-
-        if (pl->dp_y_minmax[0] > 0.0)
-          pl->dp_y_minmax[1] = 90.0;
-        else
-          pl->dp_y_minmax[0] = -90.0;
-
-
-        /* change longitude limits so they include the whole range */
-        switch (grd_lon_typ) {
-
-          case nco_grd_lon_Grn_ctr:
-          case nco_grd_lon_Grn_wst:
-            pl->dp_x_minmax[0] = 0.0;
-            pl->dp_x_minmax[1] = 360.0;
-            break;
-
-          case nco_grd_lon_180_ctr:
-          case nco_grd_lon_180_wst:
-            pl->dp_x_minmax[0] = -180.0;
-            pl->dp_x_minmax[1] = 180.0;
-
-        }
-        pl->bwrp_y = True;
-
-
-    }else{
-
-      pl->bwrp_y=False;
-    }
-
-
-    if(pl->bwrp && is_caps == False)
-    {
-
-        double *lcl_dp_x = NULL_CEWI;
-
-        lcl_dp_x = (double *) nco_malloc(sizeof(double) * sz);
-
-        /* make local copy of longitudes */
-        memcpy(lcl_dp_x, pl->dp_x, sizeof(double) * sz);
-
-        /* convert from  (-180,180) to (0,360) or (0, 360)-> (-180, 180) */
-        switch (grd_lon_typ) {
-
-          case nco_grd_lon_Grn_wst:
-          case nco_grd_lon_Grn_ctr:
-            nco_msh_lon_crr(lcl_dp_x, sz, 1, grd_lon_typ, nco_grd_lon_180_ctr);
-
-            pl->dp_x_minmax[0] = DBL_MAX;
-            pl->dp_x_minmax[1] = -DBL_MAX;
-
-            /* find new min-max */
-            for (idx = 0; idx < sz; idx++) {
-              if (lcl_dp_x[idx] < pl->dp_x_minmax[0])
-                pl->dp_x_minmax[0] = lcl_dp_x[idx];
-
-              if (lcl_dp_x[idx] > pl->dp_x_minmax[1])
-                pl->dp_x_minmax[1] = lcl_dp_x[idx];
-            }
-
-            /* convert back to original lon typ */
-            nco_msh_lon_crr(pl->dp_x_minmax, 2, 1, nco_grd_lon_180_ctr, grd_lon_typ);
-
-            break;
-
-
-          case nco_grd_lon_180_wst:
-          case nco_grd_lon_180_ctr:
-            nco_msh_lon_crr(lcl_dp_x, sz, 1, grd_lon_typ, nco_grd_lon_Grn_ctr);
-            pl->dp_x_minmax[0] = DBL_MAX;
-            pl->dp_x_minmax[1] = -DBL_MAX;
-
-            /* find new min-max */
-            for (idx = 0; idx < sz; idx++) {
-              if (lcl_dp_x[idx] < pl->dp_x_minmax[0])
-                pl->dp_x_minmax[0] = lcl_dp_x[idx];
-
-              if (lcl_dp_x[idx] > pl->dp_x_minmax[1])
-                pl->dp_x_minmax[1] = lcl_dp_x[idx];
-            }
-
-            nco_msh_lon_crr(pl->dp_x_minmax, 2, 1, nco_grd_lon_Grn_ctr, grd_lon_typ);
-
-            break;
-
-        }
-        /* swap values if necessaary */
-        if (pl->dp_x_minmax[0] > pl->dp_x_minmax[1]) {
-          double stmp;
-          stmp = pl->dp_x_minmax[0];
-          pl->dp_x_minmax[0] = pl->dp_x_minmax[1];
-
-          pl->dp_x_minmax[1] = stmp;
-
-        }
-
-
-        lcl_dp_x = (double *) nco_free(lcl_dp_x);
-
-
-      }
-
-      if(!pl->bwrp_y)
-      {
-        nco_geo_get_lat_correct(pl->dp_x_minmax[0], pl->dp_y_minmax[1], pl->dp_x_minmax[1], pl->dp_y_minmax[0],
-                                &lat_min,
-                                &lat_max, bDeg);
-
-        pl->dp_y_minmax[0] = lat_min;
-        pl->dp_y_minmax[1] = lat_max;
-
-      }
-
-  } /* end nco_sph */
-
-  return;
-
-
-}
-
-
 
 void
 nco_poly_area_add(
@@ -581,6 +322,79 @@ poly_sct *pl){
 
 }
 
+
+
+void nco_poly_minmax_add
+(poly_sct *pl)
+{  
+  
+  int idx;
+  int sz;
+
+
+  sz=pl->crn_nbr; 
+  
+  pl->dp_x_minmax[0]=DBL_MAX;
+  pl->dp_x_minmax[1]=-DBL_MAX;
+
+  pl->dp_y_minmax[0]=DBL_MAX;
+  pl->dp_y_minmax[1]=-DBL_MAX;
+
+
+  
+  for(idx=0; idx<sz;idx++)
+  {
+    /* min */
+    if( pl->dp_x[idx] < pl->dp_x_minmax[0] )
+      pl->dp_x_minmax[0] = pl->dp_x[idx]; 
+
+    /* max */
+    if( pl->dp_x[idx] > pl->dp_x_minmax[1] )
+          pl->dp_x_minmax[1] = pl->dp_x[idx];  
+
+    /* min */
+    if( pl->dp_y[idx] < pl->dp_y_minmax[0] )
+      pl->dp_y_minmax[0] = pl->dp_y[idx]; 
+
+    /* max */
+    if( pl->dp_y[idx] > pl->dp_y_minmax[1] )
+          pl->dp_y_minmax[1] = pl->dp_y[idx];  
+
+    
+    
+  }
+
+  /* add correction to latitude bounding box */
+  if(pl->pl_typ == poly_sph)
+  {
+    double lat_min;
+    double lat_max;
+    nco_bool bDeg=1;
+
+    /* do it in degrees for now */
+
+    nco_geo_get_lat_correct(pl->dp_x_minmax[0], pl->dp_y_minmax[1], pl->dp_x_minmax[1], pl->dp_y_minmax[0], &lat_min,
+                            &lat_max, bDeg);
+
+    pl->dp_y_minmax[0]=lat_min;
+    pl->dp_y_minmax[1]=lat_max;
+
+    /* add wrap flag */
+    if( pl->dp_x_minmax[1] - pl->dp_x_minmax[0] >= 180.0  )
+      pl->bwrp=True;
+    else
+      pl->bwrp=False;
+
+
+
+  }
+
+
+
+  return; 
+  
+
+}  
 
 /*******************************************************************************************************/ 
    /*
@@ -707,12 +521,6 @@ poly_sct *pl_out)
     )
     return False;
 
-  if(pl_in->bwrp_y )
-    return True;
-
-  if(!pl_in->bwrp_y && pl_out->bwrp_y )
-    return False;
-
   /* no wrapping */
   if(pl_in->bwrp == False && pl_out->bwrp == False)
     return  (pl_out->dp_x_minmax[0] >= pl_in->dp_x_minmax[0] && pl_out->dp_x_minmax[1] <= pl_in->dp_x_minmax[1]);
@@ -749,49 +557,49 @@ nco_poly_prn
   switch(style){ 
 
     case 0:
-      (void)fprintf(stderr,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d bwrp_y=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->bwrp_y, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
+      (void)fprintf(stdout,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
       for(idx=0; idx<pl->crn_nbr; idx++)
-	(void)fprintf(stderr,"%20.20f, %20.20f\n",pl->dp_x[idx], pl->dp_y[idx]);
-      (void)fprintf(stderr,"\n");
+	(void)fprintf(stdout,"%20.14f, %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
+      (void)fprintf(stdout,"\n");		  
 
       /*
-      (void)fprintf(stderr,"dp_y ");
+      (void)fprintf(stdout,"dp_y ");
       for(idx=0; idx<pl->crn_nbr; idx++)
-	(void)fprintf(stderr,"%20.14f, ",pl->dp_y[idx]);
-      (void)fprintf(stderr,"\n");
+	(void)fprintf(stdout,"%20.14f, ",pl->dp_y[idx]);
+      (void)fprintf(stdout,"\n");
        */
-      (void)fprintf(stderr,"min/max x( %g, %g) y(%g %g)\n", pl->dp_x_minmax[0], pl->dp_x_minmax[1], pl->dp_y_minmax[0], pl->dp_y_minmax[1]);
+      (void)fprintf(stdout,"min/max x( %g, %g) y(%g %g)\n", pl->dp_x_minmax[0], pl->dp_x_minmax[1], pl->dp_y_minmax[0], pl->dp_y_minmax[1]);       
       
       break;
 
    case 1:  
    default:
-     (void)fprintf(stderr,"%s: crn_nbr=%d src_id=%d\n", nco_prg_nm_get(), pl->crn_nbr, pl->src_id);
+     (void)fprintf(stdout,"%s: crn_nbr=%d src_id=%d\n", nco_prg_nm_get(), pl->crn_nbr, pl->src_id);
      
      for(idx=0; idx<pl->crn_nbr; idx++)
-        (void)fprintf(stderr,"%20.14f %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
+        (void)fprintf(stdout,"%20.14f %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
 
      break;
 
    case 2:  
-     (void)fprintf(stderr,"%s: crn_nbr=%d\n", nco_prg_nm_get(), pl->crn_nbr);
+     (void)fprintf(stdout,"%s: crn_nbr=%d\n", nco_prg_nm_get(), pl->crn_nbr);
      
      for(idx=0; idx<pl->crn_nbr; idx++)
-        (void)fprintf(stderr,"%20.16f %20.16f\n",pl->dp_x[idx], pl->dp_y[idx]);
+        (void)fprintf(stdout,"%20.16f %20.16f\n",pl->dp_x[idx], pl->dp_y[idx]);
 
      break;
 
 
     case 3:
-      (void)fprintf(stderr,"%s: crn_nbr=%d shp follows \n", nco_prg_nm_get(), pl->crn_nbr);
+      (void)fprintf(stdout,"%s: crn_nbr=%d shp follows \n", nco_prg_nm_get(), pl->crn_nbr);
 
       if(pl->pl_typ == poly_sph)
         for(idx=0; idx<pl->crn_nbr; idx++)
-           (void)fprintf(stderr,"x=%f y=%f z=%f lon=%f lat=%f\n",pl->shp[idx][0], pl->shp[idx][1], pl->shp[idx][2], pl->shp[idx][3]*180.0 / M_PI, pl->shp[idx][4]*180.0 /M_PI );
+           (void)fprintf(stdout,"x=%f y=%f z=%f lon=%f lat=%f\n",pl->shp[idx][0], pl->shp[idx][1], pl->shp[idx][2], pl->shp[idx][3]*180.0 / M_PI, pl->shp[idx][4]*180.0 /M_PI );
 
       if(pl->pl_typ == poly_crt)
         for(idx=0; idx<pl->crn_nbr; idx++)
-          (void)fprintf(stderr,"x=%f y=%f\n",pl->shp[idx][0], pl->shp[idx][1]);
+          (void)fprintf(stdout,"x=%f y=%f\n",pl->shp[idx][0], pl->shp[idx][1]);
 
 
   }
@@ -816,6 +624,10 @@ poly_sct *pl_out){
  int nbr_r=0;
 
  poly_sct *pl_vrl;
+
+ nco_poly_shp_pop(pl_in);
+ nco_poly_shp_pop(pl_out);
+
 
  pl_vrl=nco_poly_init_crn(pl_in->pl_typ,  ( nbr_p>=nbr_q ? 2*nbr_p: 2*nbr_q ) +1, pl_in->src_id      );
  /* manually set dst_id in struct */
@@ -899,7 +711,7 @@ poly_sct ** pl_wrp_right)
     }
   }
 
-  nco_poly_minmax_add(pl_in, nco_grd_lon_180_ctr, False);
+  nco_poly_minmax_add(pl_in);
   
   if( cnt_right == pl_in->crn_nbr || cnt_right==0 ) 
   {
@@ -928,7 +740,7 @@ poly_sct ** pl_wrp_right)
       (*pl_wrp_left)->dp_x[idx]-=360.0;
 
 
-    nco_poly_minmax_add(*pl_wrp_left, nco_grd_lon_180_ctr, False);
+    nco_poly_minmax_add(*pl_wrp_left);
 
     
     
@@ -948,7 +760,7 @@ poly_sct ** pl_wrp_right)
   if(*pl_wrp_right)
   {
 
-    nco_poly_minmax_add(*pl_wrp_right, nco_grd_lon_180_ctr, False);
+    nco_poly_minmax_add(*pl_wrp_right);
      
 
   }
@@ -999,7 +811,7 @@ poly_sct ** pl_wrp_right)
     }
   }
 
-  nco_poly_minmax_add(pl_in, nco_grd_lon_Grn_ctr, True);
+  nco_poly_minmax_add(pl_in);
   
   if( cnt_left == pl_in->crn_nbr || cnt_left==0 ) 
   {
@@ -1028,7 +840,7 @@ poly_sct ** pl_wrp_right)
       (*pl_wrp_left)->dp_x[idx]+=360.0;
 
 
-    nco_poly_minmax_add(*pl_wrp_left, nco_grd_lon_Grn_ctr, True);
+    nco_poly_minmax_add(*pl_wrp_left);
 
     /*
     if(  (*pl_wrp_left)->dp_x_minmax[1] - (*pl_wrp_left)->dp_x_minmax[0] > CELL_LONGITUDE_MAX )
@@ -1051,7 +863,7 @@ poly_sct ** pl_wrp_right)
   if(*pl_wrp_right)
   {
 
-    nco_poly_minmax_add(*pl_wrp_right, nco_grd_lon_Grn_ctr, True);
+    nco_poly_minmax_add(*pl_wrp_right);
      
     /* 
     if(  (*pl_wrp_right)->dp_x_minmax[1] - (*pl_wrp_right)->dp_x_minmax[0] > CELL_LONGITUDE_MAX )
@@ -1102,7 +914,91 @@ poly_sct ** pl_wrp_right)
     return NCO_ERR;
   
   
+  /* deal with 0-360 grid for starters */
+  pl_in=nco_poly_dpl(pl);
 
+  /* make longitudes on LHS of GMT negative */
+  for(idx=0; idx<pl_in->crn_nbr; idx++)
+  {
+    if(pl_in->dp_x[idx] > 180.0){
+
+      pl_in->dp_x[idx]-=360.0;
+      cnt_left++;
+    }
+  }
+
+  nco_poly_minmax_add(pl_in);
+  
+  if( cnt_left == pl_in->crn_nbr || cnt_left==0 ) 
+  {
+    pl_in=nco_poly_free(pl_in);   
+    return NCO_ERR;
+  }
+ 
+  
+  /*  create left intersection polygon */
+  pl_bnds=nco_poly_init_crn(pl->pl_typ, 4, pl->src_id);
+
+  pl_bnds->dp_x_minmax[0]=pl_in->dp_x_minmax[0];
+  pl_bnds->dp_x_minmax[1]=-1.0e-13;
+  pl_bnds->dp_y_minmax[0]=pl_in->dp_y_minmax[0];
+  pl_bnds->dp_y_minmax[1]=pl_in->dp_y_minmax[1];
+
+  nco_poly_minmax_use_crn(pl_bnds);
+
+  /* do overlap */
+  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds);
+
+  /* must add back the 360.0 we subtracted earlier */ 
+  if(*pl_wrp_left){
+    
+    for(idx=0;idx< (*pl_wrp_left)->crn_nbr;idx++)
+      (*pl_wrp_left)->dp_x[idx]+=360.0;
+
+
+    nco_poly_minmax_add(*pl_wrp_left);
+
+    /* check overall-extent */
+    if(  (*pl_wrp_left)->dp_x_minmax[1] - (*pl_wrp_left)->dp_x_minmax[0] > CELL_LONGITUDE_MAX )
+      *pl_wrp_left=nco_poly_free(*pl_wrp_left);
+    
+    
+  }
+
+  /* now create bound for right polygon */
+  pl_bnds->dp_x_minmax[0]=0.0;
+  pl_bnds->dp_x_minmax[1]=pl_in->dp_x_minmax[1];
+  pl_bnds->dp_y_minmax[0]=pl_in->dp_y_minmax[0];
+  pl_bnds->dp_y_minmax[1]=pl_in->dp_y_minmax[1];
+
+  nco_poly_minmax_use_crn(pl_bnds);
+  
+  /* do overlap */
+  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds);
+
+  if(*pl_wrp_right)
+  {
+
+    nco_poly_minmax_add(*pl_wrp_right);
+     
+    /* check overall-extent */
+    if(  (*pl_wrp_right)->dp_x_minmax[1] - (*pl_wrp_right)->dp_x_minmax[0] > CELL_LONGITUDE_MAX )
+      *pl_wrp_right=nco_poly_free(*pl_wrp_right);
+
+  }
+     
+  
+
+  pl_in=nco_poly_free(pl_in);
+  pl_bnds=nco_poly_free(pl_bnds);
+
+
+
+  if( *pl_wrp_left ||  *pl_wrp_right )
+    return NCO_NOERR;
+  else
+    return NCO_ERR;
+  
 }
   
 
@@ -1299,23 +1195,8 @@ kd_box size1,
 kd_box size2)
 {
 
-
   /* regular limits */
-  if (pl->bwrp == False ) {
-    /* choose whole range for a "polar triange " */
-      size1[KD_LEFT] = pl->dp_x_minmax[0];
-      size1[KD_RIGHT] = pl->dp_x_minmax[1];
-      size1[KD_BOTTOM] = pl->dp_y_minmax[0];
-      size1[KD_TOP] = pl->dp_y_minmax[1];
-
-    return False;
-  }
-
-  /* This is a polar cap - remember the longitudes have been set to the WHOLE RANGE of Longitude in
-   * nco_poly_minmax_add() */
-
-  if(pl->bwrp==True && pl->bwrp_y==True)
-  {
+  if (pl->bwrp == False) {
     size1[KD_LEFT] = pl->dp_x_minmax[0];
     size1[KD_RIGHT] = pl->dp_x_minmax[1];
     size1[KD_BOTTOM] = pl->dp_y_minmax[0];
@@ -1323,10 +1204,6 @@ kd_box size2)
 
     return False;
   }
-
-
-
-
 
   /* regular limits */
   if (pl->bwrp == True) {

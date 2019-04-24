@@ -73,22 +73,11 @@
 /* define macros */
 #define KD_SIZE(val)	(val)->size
 
-/*
 #define BOXINTERSECT(b1, b2) \
   (((b1)[KD_RIGHT] >= (b2)[KD_LEFT]) && \
    ((b2)[KD_RIGHT] >= (b1)[KD_LEFT]) && \
    ((b1)[KD_TOP] >= (b2)[KD_BOTTOM]) && \
    ((b2)[KD_TOP] >= (b1)[KD_BOTTOM]))
-*/
-
-
-#define BOXINTERSECT(b1, b2) \
-  (((b1)[KD_RIGHT] >= (b2)[KD_LEFT]) && \
-   ((b1)[KD_LEFT] <= (b2)[KD_RIGHT]) && \
-   ((b1)[KD_TOP] >= (b2)[KD_BOTTOM]) && \
-   ((b1)[KD_BOTTOM] <= (b2)[KD_TOP]))
-
-
 
 /*
  * Destructively replaces the next item of list1 with list2.
@@ -231,8 +220,7 @@ int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority
 int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
 int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list, int stateH, int stateV );
 int kd_nearest (KDTree* tree, double x, double y, int m, KDPriority **alist);
-
-int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *alist, int bSort);
+int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *alist);
 int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq,kd_box Xr, int m, KDPriority *list);
 kd_status kd_next (kd_gen , kd_generic *, kd_box);
 void kd_print (KDTree*);
@@ -243,8 +231,6 @@ void kd_pushb(KDState *gen, KDElem* elem, short dk, kd_box Bxn, kd_box Bxp);
 kd_status kd_really_delete (KDTree* theTree, kd_generic data, kd_box old_size, int *num_tries, int *num_del);
 KDTree* kd_rebuild ( KDTree* );
 int kd_set_build_depth(int depth);
-int kd_priority_cmp( const void *vp1, const void *vp2);
-nco_bool  kd_sort_priority_list(int m, KDPriority *list, int fll_nbr, int *out_fll_nbr);
 kd_gen kd_start (KDTree* tree, kd_box size);
 kd_status kd_is_member(KDTree* , kd_generic , kd_box );
 void kd_tree_badness(KDTree *tree, double *fact1, double *fact2, double *fact3, int *levs);

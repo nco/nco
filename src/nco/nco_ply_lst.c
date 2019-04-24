@@ -124,7 +124,7 @@ int *pl_nbr)
 
 
     /* add min max */
-    nco_poly_minmax_add(pl, grd_lon_typ, False);
+    nco_poly_minmax_add(pl);
 
     nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
 
@@ -251,7 +251,6 @@ int *pl_nbr)
   int idx=0;
   int idx_cnt=0;
   int wrp_cnt=0;
-  int wrp_y_cnt=0;
 
   const char fnc_nm[]="nco_poly_lst_mk()";
 
@@ -284,34 +283,27 @@ int *pl_nbr)
   for(idx=0;idx<grd_sz; idx++)
   {
     /* check mask and area */
-    if( msk[idx]==0 || area[idx] == 0.0 )
+    if( msk[idx]==0 || area[idx] == 0.0)
       continue;
+
 
     pl=nco_poly_init_lst(pl_typ, grd_crn_nbr,0, idx, lon_ptr, lat_ptr);
     lon_ptr+=(size_t)grd_crn_nbr;
     lat_ptr+=(size_t)grd_crn_nbr;
 
     /* if poly is less  than a triangle then  null is returned*/
-    if(!pl) {
-
-      if(nco_dbg_lvl_get()>= nco_dbg_dev)
-         fprintf(stderr, "%s(): WARNING cell(id=%d) less than a triange\n", __FUNCTION__, idx);
-
+    if(!pl)
       continue;
-    }
+
     /* add centroid from input  */
     pl->dp_x_ctr=lon_ctr[idx];
     pl->dp_y_ctr=lat_ctr[idx];
 
-
-    /* pop shp */
-    nco_poly_shp_pop(pl);
-
     /* add min max */
-    nco_poly_minmax_add(pl, grd_lon_typ, True);
+    nco_poly_minmax_add(pl);
 
     /* manually add wrap flag */
-    // pl->bwrp= (fabs(pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) >= 180.0);
+    pl->bwrp= (fabs(pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) >= 180.0);
 
     /* if coords cannot deal with wrapping */
     if( pl->bwrp  && bwrp==False   )
@@ -324,30 +316,23 @@ int *pl_nbr)
 
     nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
 
-    pl->area=area[idx];
-
-    /* use Charlie's formula */
+    /* use Charlie's formula
     nco_poly_area_add(pl);
+    */
 
-
-
+    pl->area=area[idx];
 
     /* add centers
     nco_poly_ctr_add(pl, grd_lon_typ);
     if(pl->bwrp)
-      (void)fprintf(stderr,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  __FUNCTION__, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
+      (void)fprintf(stdout,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  __FUNCTION__, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
     */
-
-    if(nco_dbg_lvl_get()>= nco_dbg_dev  )
-      if(pl->bwrp)
-        nco_poly_prn(pl,0);
 
     /* for debugging */
     tot_area+=pl->area;
 
     /* for debugging total number of wrapped cells */
     wrp_cnt+=pl->bwrp;
-    wrp_y_cnt+=pl->bwrp_y;
 
     pl_lst[idx_cnt]=pl;
     idx_cnt++;
@@ -356,7 +341,7 @@ int *pl_nbr)
   }
 
   if(nco_dbg_lvl_get() >=  nco_dbg_dev )
-    (void)fprintf(stderr, "%s: %s size input list(%lu), size output list(%d)  total area=%.15e  num wrapped= %d num caps=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt, wrp_y_cnt);
+    (void)fprintf(stdout, "%s: %s size input list(%lu), size output list(%d)  total area=%.15e  num of wrapped=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt);
 
   pl_lst=(poly_sct**)nco_realloc( pl_lst, (size_t)idx_cnt * sizeof (poly_sct*) );
 
@@ -365,6 +350,21 @@ int *pl_nbr)
   return pl_lst;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 poly_sct **
 nco_poly_lst_free(
@@ -416,7 +416,6 @@ int *pl_cnt_vrl_ret){
   int max_nbr_vrl=1000;
   int pl_cnt_vrl=0;
 
-  nco_bool bSort=True;
 
   const char fnc_nm[]="nco_poly_mk_vrl()";
 
@@ -463,6 +462,7 @@ int *pl_cnt_vrl_ret){
   kd_rebuild(rtree);
   kd_rebuild(rtree);
 
+
   /* kd_print(rtree); */
 
 /* start main loop over input polygons */
@@ -481,7 +481,7 @@ int *pl_cnt_vrl_ret){
 
     /* find overlapping polygons */
 
-    cnt_vrl=kd_nearest_intersect(rtree, size, max_nbr_vrl,list,bSort );
+    cnt_vrl=kd_nearest_intersect(rtree, size, max_nbr_vrl,list );
 
 
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
@@ -498,7 +498,7 @@ int *pl_cnt_vrl_ret){
       /* check for polygon in polygon first */
       if( nco_poly_poly_in_poly(pl_lst_in[idx], pl_out) == pl_out->crn_nbr )
       {
-        //fprintf(stderr,"%s: using poly_in_poly()\n", fnc_nm);
+        //fprintf(stdout,"%s: using poly_in_poly()\n", fnc_nm);
         pl_vrl=nco_poly_dpl(pl_out);
       }
       else
@@ -518,14 +518,14 @@ int *pl_cnt_vrl_ret){
 
         if(nco_poly_is_convex(pl_vrl) == False )
         {
-          fprintf(stderr,"%s: %s vrl polygon convex=0  vrl ,in convex=%d ,out convex=%d\n", nco_prg_nm_get(), fnc_nm, nco_poly_is_convex(pl_lst_in[idx]), nco_poly_is_convex(pl_out) );
+          fprintf(stdout,"%s: %s vrl polygon convex=0  vrl ,in convex=%d ,out convex=%d\n", nco_prg_nm_get(), fnc_nm, nco_poly_is_convex(pl_lst_in[idx]), nco_poly_is_convex(pl_out) );
           nco_poly_prn(pl_vrl, 2);
           nco_poly_prn(pl_lst_in[idx], 2);
           nco_poly_prn(pl_out, 2);
 
         }
 
-        //fprintf(stderr,"Overlap polygon to follow\n");
+        //fprintf(stdout,"Overlap polygon to follow\n");
         //nco_poly_prn(2, pl_vrl);
 
       }
@@ -534,7 +534,7 @@ int *pl_cnt_vrl_ret){
     }
 
     if( nco_dbg_lvl_get() >= nco_dbg_dev )
-      (void) fprintf(stderr, "%s: total overlaps=%d for polygon %lu - potential overlaps=%d actual overlaps=%d\n", nco_prg_nm_get(), pl_cnt_vrl,  idx, cnt_vrl, cnt_vrl_on);
+      (void) fprintf(stdout, "%s: total overlaps=%d for polygon %lu - potential overlaps=%d actual overlaps=%d\n", nco_prg_nm_get(), pl_cnt_vrl,  idx, cnt_vrl, cnt_vrl_on);
 
 
   }
@@ -565,7 +565,6 @@ int *pl_cnt_vrl_ret){
 /* just duplicate output list to overlap */
   nco_bool bDirtyRats=False;
   nco_bool bSplit=False;
-  nco_bool bSort=True;
   
   int max_nbr_vrl=1000;
   int pl_cnt_vrl=0;
@@ -621,13 +620,12 @@ int *pl_cnt_vrl_ret){
 
   }
 
-  /*  2019-04-24  rebuild NOT_WORKING correctly with repsect to extents */
-  /* rebuild tree for faster access
+  /* rebuild tree for faster access */
   kd_rebuild(rtree);
   kd_rebuild(rtree);
- */
 
- /* kd_print(rtree); */
+
+  /* kd_print(rtree); */
 
 /* start main loop over input polygons */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
@@ -638,11 +636,12 @@ int *pl_cnt_vrl_ret){
 
     double vrl_area = 0.0;
 
-    //double df=pl_lst_in[idx]->dp_x_minmax[1] - pl_lst_in[idx]->dp_x_minmax[0];
+    double df=pl_lst_in[idx]->dp_x_minmax[1] - pl_lst_in[idx]->dp_x_minmax[0];
 
     (void) nco_poly_set_priority(max_nbr_vrl, list);
-
     /* get bounds of polygon in */
+
+
     bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 );
 
 
@@ -650,7 +649,7 @@ int *pl_cnt_vrl_ret){
     if(bSplit)
       cnt_vrl = kd_nearest_intersect_wrp(rtree, size1, size2, max_nbr_vrl, list);
     else
-      cnt_vrl = kd_nearest_intersect(rtree, size1, max_nbr_vrl, list, bSort);
+      cnt_vrl = kd_nearest_intersect(rtree, size1, max_nbr_vrl, list);
 
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
 
@@ -727,14 +726,12 @@ int *pl_cnt_vrl_ret){
         /* calculate weight -simple ratio of areas */
         pl_vrl->wgt=pl_vrl->area / pl_out->area;
 
-        nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
+        nco_poly_minmax_add(pl_vrl);
         /* manually add wrap */
-        /*
         if(pl_vrl->dp_x_minmax[1] - pl_vrl->dp_x_minmax[0] >=180.0 )
           pl_vrl->bwrp=True;
         else
           pl_vrl->bwrp=False;
-        */
 
         /* add lat/lon centers */
         nco_poly_ctr_add(pl_vrl, grd_lon_typ);
@@ -747,7 +744,6 @@ int *pl_cnt_vrl_ret){
         pl_lst_vrl[pl_cnt_vrl] = pl_vrl;
         pl_cnt_vrl++;
         cnt_vrl_on++;
-
 
 
       }
@@ -763,27 +759,25 @@ int *pl_cnt_vrl_ret){
     if (nco_dbg_lvl_get() >= nco_dbg_dev) {
       /* area diff by more than 10% */
       double frc = vrl_area / pl_lst_in[idx]->area;
-      if ( frc <0.95 || frc >1.05 ) {
-        (void) fprintf(stderr,
+      if (frc < 0.9) {
+        (void) fprintf(stdout,
                        "%s: polygon %lu - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e\n",
                        nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area);
 
-
-
-        if (bDirtyRats && pl_lst_in[idx]->dp_y_minmax[1] == 90.0  ) {
-          //if (pl_lst_in[idx]->bwrp ) {
+        if (bDirtyRats && cnt_vrl_on==0 ) {
+        //if (pl_lst_in[idx]->bwrp ) {
           pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
           pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
           pl_cnt_dbg++;
 
           if (1) {
-            (void) fprintf(stderr, "/** following pl_lst_in[%lu]  **/\n", idx);
+            (void) fprintf(stdout, "/** following pl_lst_in[%lu]  **/\n", idx);
             nco_poly_prn(pl_lst_in[idx], 1);
-            (void) fprintf(stderr, "/** potential overlaps to  follow  **/\n");
+            (void) fprintf(stdout, "/** potential overlaps to  follow  **/\n");
             for (jdx = 0; jdx < cnt_vrl; jdx++)
               nco_poly_prn((poly_sct *) list[jdx].elem->item, 1);
 
-            (void) fprintf(stderr, "/************* end dirty rats ***************/\n");
+            (void) fprintf(stdout, "/************* end dirty rats ***************/\n");
           }
 
 
@@ -799,7 +793,7 @@ int *pl_cnt_vrl_ret){
 
   /* final report */
   if (nco_dbg_lvl_get() >= nco_dbg_dev)
-      (void) fprintf(stderr, "%s: total overlaps=%d, total_area(sphere)=%3.10f total num wrapped=%d\n", nco_prg_nm_get(), pl_cnt_vrl, tot_area  , wrp_cnt);
+      (void) fprintf(stdout, "%s: total overlaps=%d, total_area(sphere)=%3.10f total num wrapped=%d\n", nco_prg_nm_get(), pl_cnt_vrl, tot_area  , wrp_cnt);
 
 
   kd_destroy(rtree,NULL);
@@ -827,119 +821,3 @@ int *pl_cnt_vrl_ret){
 
 }
 
-poly_sct ** 
-nco_poly_lst_chk_dbg(
-poly_sct **pl_lst,
-int pl_cnt,
-poly_sct **pl_lst_vrl,
-int pl_cnt_vrl,
-int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
-int *pl_cnt_dbg) /* size of output dbg grid */
-{
-  int id;
-  int idx;
-  int jdx;
-
-  int pl_nbr_dbg=0;
-  double epsilon=1.0e-8;
-  double *area=NULL_CEWI;
-
-  poly_sct **pl_lst_dbg=NULL_CEWI;
-
-  area=(double*)nco_malloc(sizeof(double)*pl_cnt);
-  for(idx=0;idx<pl_cnt;idx++)
-    area[idx]=pl_lst[idx]->area;
-
-
-  for(idx=0;idx<pl_cnt_vrl;idx++)
-  {
-    id= ( io_flg ? pl_lst_vrl[idx]->dst_id : pl_lst_vrl[idx]->src_id );
-    for(jdx=0;jdx<pl_cnt;jdx++)
-      if(pl_lst[jdx]->src_id==id)
-        break;
-
-    if(jdx < pl_cnt )
-      area[jdx]-=pl_lst_vrl[idx]->area;
-
-  }
-
-
-  for(idx=0;idx<pl_cnt;idx++) {
-    if (fabs(area[idx]) > epsilon) {
-
-      if (nco_dbg_lvl_get() >= nco_dbg_dev)
-        fprintf(stderr, "%s() src_id=%d area=%.10f\n", __FUNCTION__, pl_lst[idx]->src_id, area[idx]);
-
-      pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct*) * (pl_nbr_dbg + 1));
-      pl_lst_dbg[pl_nbr_dbg] = nco_poly_dpl(pl_lst[idx]);
-      pl_nbr_dbg++;
-    }
-  }
-
-
-  *pl_cnt_dbg=pl_nbr_dbg;
-
-  return pl_lst_dbg;
-
-
-}
-
-
-
-/* check areas - nb WARNING modifies area in pl_lst_in and pl_lst_out */
-void nco_poly_lst_chk(
-poly_sct **pl_lst_in,
-int pl_cnt_in,
-poly_sct **pl_lst_out,
-int pl_cnt_out,
-poly_sct **pl_lst_vrl,
-int pl_cnt_vrl)
-{
-  int id;
-  int idx;
-  int jdx;
-
-  double sum=0.0;
-  double epsilon=1.0e-8;
-
-  for(idx=0;idx<pl_cnt_vrl;idx++)
-  {
-    id=pl_lst_vrl[idx]->src_id;
-    for(jdx=0;jdx<pl_cnt_in;jdx++)
-      if(pl_lst_in[jdx]->src_id==id)
-        break;
-
-    if(jdx < pl_cnt_in )
-      pl_lst_in[jdx]->area-=pl_lst_vrl[idx]->area;
-
-  }
-
-  fprintf(stderr, "%s():WARNING following is list of incomplete src cells, by src_id no\n",__FUNCTION__);
-  for(idx=0;idx<pl_cnt_in;idx++)
-    if( fabs(  pl_lst_in[idx]->area) > epsilon)
-      fprintf(stderr, "src_id=%d area=%.10f\n", pl_lst_in[idx]->src_id, pl_lst_in[idx]->area );
-
-
-  for(idx=0;idx<pl_cnt_vrl;idx++)
-  {
-    id=pl_lst_vrl[idx]->dst_id;
-    for(jdx=0;jdx<pl_cnt_out;jdx++)
-      if(pl_lst_out[jdx]->src_id==id)
-        break;
-
-    if(jdx < pl_cnt_out )
-      pl_lst_out[jdx]->area-=pl_lst_vrl[idx]->area;
-
-  }
-
-  fprintf(stderr, "%s():WARNING following is list of incomplete dst cells, by src_id no\n",__FUNCTION__);
-  for(idx=0;idx<pl_cnt_out;idx++)
-    if( fabs(  pl_lst_out[idx]->area) > epsilon)
-      fprintf(stderr, "src_id=%d area=%.10f\n", pl_lst_out[idx]->src_id, pl_lst_out[idx]->area );
-
-
-
-
-
-   return;
-}
