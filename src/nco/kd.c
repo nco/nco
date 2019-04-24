@@ -2484,7 +2484,7 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
      
   if( node->sons[1] )
   {  
-    kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq,  m,  list, stateH, stateV);
+    iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq,  m,  list, stateH, stateV);
     if(iret==0) return iret;
        
   }
