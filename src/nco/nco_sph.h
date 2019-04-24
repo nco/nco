@@ -26,6 +26,7 @@
 
 /* smallest RADIAN */
 #define SIGMA_RAD (1.0e-12)
+#define DOT_TOLERANCE (1.0e-12)
 
 /* convert Degrees to Radians */
 #define D2R(x)  ((x) * M_PI / 180.0)
@@ -59,6 +60,9 @@ nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r);
 char
 nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q);
 
+nco_bool
+nco_sph_seg_vrt_int(double *a, double *b, double *c);
+
 int
 nco_sph_lhs(double *Pi, double *Qi);
 
@@ -67,6 +71,9 @@ nco_sph_face(int iLHS, int iRHS, int jRHS);
 
 double
 nco_sph_dot(double *a, double *b);
+
+double
+nco_sph_dot_nm(double *a, double *b);
 
 double
 nco_sph_cross(double *a, double *b, double *c);
