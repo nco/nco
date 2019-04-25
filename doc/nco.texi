@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.0-alpha10
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 22 April 2019
+@set update-date 24 April 2019
 @set update-month April 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17634,7 +17634,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--stdin] 
 [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [-v @var{var_lst}] [--version] 
-[-x @var{cf_flg}] [-X @var{drc_xtn}] [-x @var{drc_prv}] 
+[-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
 @end example
 
@@ -18405,6 +18405,24 @@ This includes the copyright notice, @acronym{URL}s to the @acronym{GPL}
 and @acronym{NCO} license, directories from which the @acronym{NCO}
 scripts and binaries are running, and the locations of any separate 
 executables that may be used by the script.
+
+@html
+<a name="xcl_var"></a> <!-- http://nco.sf.net/nco.html#xcl_var -->
+@end html
+@cindex @code{--xcl_var}
+@cindex @code{--xcl}
+@cindex @code{--exclude}
+@cindex @code{--exclude_variables}
+@item --xcl_var (@code{--xcl_var}, @code{--xcl}, @code{--exclude}, @code{--exclude_variables})
+This flag (which takes no argument) changes @var{var_lst},
+as set by the @code{--var_lst} option, from an extraction list to an
+exclusion list so that variables in @var{var_lst} will not be
+processed, and variables not in @var{var_lst} will be processed.
+Thus the option @samp{-v @var{var_lst}} must also be present for this
+flag to take effect.
+Variables explicitly specified for exclusion by
+@samp{--xcl --vars=@var{var_lst}[,@dots{}]} need not be present in the
+input file.
 
 @html
 <a name="ypf"></a> <!-- http://nco.sf.net/nco.html#ypf -->
@@ -22783,7 +22801,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [--vrt_fl=@var{vrt_fl}] [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]]
-[--xtr_nsp=@var{xtr_nsp}] [--xtr_typ=@var{xtr_typ}] [--xtr_xpn=@var{xtr_xpn}] 
+[--xcl_var] [--xtr_nsp=@var{xtr_nsp}] [--xtr_typ=@var{xtr_typ}] [--xtr_xpn=@var{xtr_xpn}] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -24907,6 +24925,24 @@ Examples include @samp{mpirun -np 24 ESMF_RegridWeightGen},
 ways of exploiting parallelism that are system-dependent.
 Specifying @var{wgt_cmd} and supplying (with @samp{-m}) a map-file
 is not permitted (since the weight-generator would not be used).
+
+@html
+<a name="xcl_var"></a> <!-- http://nco.sf.net/nco.html#xcl_var -->
+@end html
+@cindex @code{--xcl_var}
+@cindex @code{--xcl}
+@cindex @code{--exclude}
+@cindex @code{--exclude_variables}
+@item --xcl_var (@code{--xcl_var}, @code{--xcl}, @code{--exclude}, @code{--exclude_variables})
+This flag (which takes no argument) changes @var{var_lst},
+as set by the @code{--var_lst} option, from an extraction list to an
+exclusion list so that variables in @var{var_lst} will not be
+processed, and variables not in @var{var_lst} will be processed.
+Thus the option @samp{-v @var{var_lst}} must also be present for this
+flag to take effect.
+Variables explicitly specified for exclusion by
+@samp{--xcl --vars=@var{var_lst}[,@dots{}]} need not be present in the
+input file.
 
 @html
 <a name="xtn_lst"></a> <!-- http://nco.sf.net/nco.html#xtn_lst -->

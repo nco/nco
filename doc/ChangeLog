@@ -2,11 +2,13 @@
 
 	* NCO 4.8.0-alpha11 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha11: Hanna';git push
-	git tag -a 4.8.0-alpha11 -m 'NCO_PATH_OVERRIDE opt-in;job_nbr=12,OMP_PROC_BIND ncks,ncra';git push --tags
+	git tag -a 4.8.0-alpha11 -m 'NCO_PATH_OVERRIDE opt-in;job_nbr=12,OMP_PROC_BIND ncks,ncra;ncclimo/ncremap --xcl_var';git push --tags
+
+	* Document --xcl_var
 
 	* ncremap/ncclimo Fix --nco_opt to not overwrite filetype choice
 
-	* ncremap/ncclimo --xcl toggles extraction list to exclusion list
+	* ncremap/ncclimo --xcl_var toggles extraction list to exclusion list
 
 2019-04-23  Charlie Zender  <zender@uci.edu>
 

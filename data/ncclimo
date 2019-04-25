@@ -502,7 +502,7 @@ tpd_out=1 # [nbr] Timesteps-per-day in ouput
 var_lst='' # [sng] Variables to process (empty means all)
 var_lst_rx_xtr='No' # [sng] Process var_lst to expand rx
 vrs_prn='No' # [sng] Print version information
-xcl_var='No' # [sng] Exclude rather than extract variable list
+xcl_flg='No' # [sng] Exclude rather than extract variable list
 xtn_flg='No' # [sng] Produce extended climatology
 ypf_max=50 # [yr] Years-per-output-file
 yr_end='1983' # [yr] End year
@@ -1013,10 +1013,10 @@ if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="-D ${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
 if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
-    # 20170825: Use nco_xtr_lst() to parse regular expressions for monthly climos
-    # if [ ${clm_flg} != 'Yes' ] && [ ${clm_md} != 'mth' ]; then
+    if [ "${xcl_flg}" = 'Yes' ]; then
+	nco_opt="${nco_opt} -x"
+    fi # !xcl_flg
     nco_opt="${nco_opt} -v ${var_lst}"
-    # fi # !mth
 fi # !var_lst
 if [ -n "${ppc_prc}" ]; then
     nco_opt="${nco_opt} --ppc default=${ppc_prc}"
