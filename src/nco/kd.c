@@ -2597,8 +2597,10 @@ int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq, kd_box Xr, int m, KDPr
 
    nco_bool bSort=False;
 
+   const char fnc_nm[]="kd_nearest_intersect_wrp():";
+
   if(nco_dbg_lvl_get() > nco_dbg_dev)
-    fprintf(stderr,"%s(): Just entered the function\n",__FUNCTION__);
+    fprintf(stderr,"%s(): Just entered the function\n", fnc_nm);
 
 
   KDPriority *list2;
@@ -2634,7 +2636,7 @@ int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq, kd_box Xr, int m, KDPr
 	list2 = (KDPriority *)nco_free(list2);
 
 	if(nco_dbg_lvl_get() > nco_dbg_dev)
-		fprintf(stderr,"%s(): num of duplicates detected=%d\n",__FUNCTION__, dup_cnt);
+		fprintf(stderr,"%s(): num of duplicates detected=%d\n",fnc_nm, dup_cnt);
 
 	return ret_cnt;
 }

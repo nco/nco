@@ -295,7 +295,7 @@ int *pl_nbr)
     if(!pl) {
 
       if(nco_dbg_lvl_get()>= nco_dbg_dev)
-         fprintf(stderr, "%s(): WARNING cell(id=%d) less than a triange\n", __FUNCTION__, idx);
+         fprintf(stderr, "%s(): WARNING cell(id=%d) less than a triange\n", fnc_nm, idx);
 
       continue;
     }
@@ -335,7 +335,7 @@ int *pl_nbr)
     /* add centers
     nco_poly_ctr_add(pl, grd_lon_typ);
     if(pl->bwrp)
-      (void)fprintf(stderr,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  __FUNCTION__, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
+      (void)fprintf(stderr,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  fnc_nm, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
     */
 
     if(nco_dbg_lvl_get()>= nco_dbg_dev  )
@@ -576,7 +576,7 @@ int *pl_cnt_vrl_ret){
   size_t jdx;
 
 
-  const char fnc_nm[]="nco_poly_mk_vrl()";
+  const char fnc_nm[]="nco_poly_mk_vrl_sph()";
 
   /* buffers  used in nco-poly_re_org()
   double lcl_dp_x[VP_MAX]={0};
@@ -846,6 +846,8 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
   poly_sct **pl_lst_dbg=NULL_CEWI;
 
+  const char fnc_nm[]="nco_poly_lst_chk_dbg()";
+
   area=(double*)nco_malloc(sizeof(double)*pl_cnt);
   for(idx=0;idx<pl_cnt;idx++)
     area[idx]=pl_lst[idx]->area;
@@ -868,7 +870,7 @@ int *pl_cnt_dbg) /* size of output dbg grid */
     if (fabs(area[idx]) > epsilon) {
 
       if (nco_dbg_lvl_get() >= nco_dbg_dev)
-        fprintf(stderr, "%s() src_id=%d area=%.10f\n", __FUNCTION__, pl_lst[idx]->src_id, area[idx]);
+        fprintf(stderr, "%s() src_id=%d area=%.10f\n", fnc_nm, pl_lst[idx]->src_id, area[idx]);
 
       pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct*) * (pl_nbr_dbg + 1));
       pl_lst_dbg[pl_nbr_dbg] = nco_poly_dpl(pl_lst[idx]);
@@ -902,6 +904,8 @@ int pl_cnt_vrl)
   double sum=0.0;
   double epsilon=1.0e-8;
 
+  const char fnc_nm[]="nco_poly_lst_chk()";
+
   for(idx=0;idx<pl_cnt_vrl;idx++)
   {
     id=pl_lst_vrl[idx]->src_id;
@@ -914,7 +918,7 @@ int pl_cnt_vrl)
 
   }
 
-  fprintf(stderr, "%s():WARNING following is list of incomplete src cells, by src_id no\n",__FUNCTION__);
+  fprintf(stderr, "%s():WARNING following is list of incomplete src cells, by src_id no\n",fnc_nm);
   for(idx=0;idx<pl_cnt_in;idx++)
     if( fabs(  pl_lst_in[idx]->area) > epsilon)
       fprintf(stderr, "src_id=%d area=%.10f\n", pl_lst_in[idx]->src_id, pl_lst_in[idx]->area );
@@ -932,7 +936,7 @@ int pl_cnt_vrl)
 
   }
 
-  fprintf(stderr, "%s():WARNING following is list of incomplete dst cells, by src_id no\n",__FUNCTION__);
+  fprintf(stderr, "%s():WARNING following is list of incomplete dst cells, by src_id no\n",fnc_nm);
   for(idx=0;idx<pl_cnt_out;idx++)
     if( fabs(  pl_lst_out[idx]->area) > epsilon)
       fprintf(stderr, "src_id=%d area=%.10f\n", pl_lst_out[idx]->src_id, pl_lst_out[idx]->area );

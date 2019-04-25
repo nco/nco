@@ -272,7 +272,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
 char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q)
 {
-  const char fnc_nm[]="nco_shp_seg_int()";
+  const char fnc_nm[]="nco_sph_seg_int()";
 
   int flg_sx=0;
 
@@ -353,7 +353,7 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
 
   if(0 && DEBUG_SPH)
-    fprintf(stderr,"%s(): dx_ab=%2.10f dx_ai=%2.10f  nx1=%2.20f nx_ai=%2.10f   \n",__FUNCTION__, dx_ab, dx_ai, nx1, nx_ai );
+    fprintf(stderr,"%s(): dx_ab=%2.10f dx_ai=%2.10f  nx1=%2.20f nx_ai=%2.10f   \n", fnc_nm, dx_ab, dx_ai, nx1, nx_ai );
 
   if(  ( dx_ai==0.0 ||  (  nco_sph_dot_nm(ai, Pcross) >0.99 && dx_ai>= 0.0 && dx_ai<=dx_ab  )) &&
        ( dx_ci==0.0 ||  (  nco_sph_dot_nm(ci, Qcross) >0.99 && dx_ci>0.0 && dx_ci <= dx_cd  ) )
@@ -389,7 +389,7 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
 
   if(0 && DEBUG_SPH)
-    fprintf(stderr,"%s(): dx_ab=%2.10f dx_ai=%2.10f  nx1=%2.20f nx_ai=%2.10f   \n",__FUNCTION__, dx_ab, dx_ai, nx1, nx_ai );
+    fprintf(stderr,"%s(): dx_ab=%2.10f dx_ai=%2.10f  nx1=%2.20f nx_ai=%2.10f   \n", fnc_nm, dx_ab, dx_ai, nx1, nx_ai );
 
   if(  ( dx_ai==0.0 ||  (  nco_sph_dot_nm(ai, Pcross) >0.99 && dx_ai>= 0.0 && dx_ai<=dx_ab  )) &&
        ( dx_ci==0.0 ||  (  nco_sph_dot_nm(ci, Qcross) >0.99 && dx_ci>0.0 && dx_ci <= dx_cd  ) )
@@ -601,6 +601,8 @@ double  nco_sph_dot_nm(double *a, double *b)
   double n1;
   double n2;
 
+  const char fnc_nm[]="nco_sph_dot_nm()";
+
   for(idx=0; idx<3; idx++)
     sum+=a[idx]*b[idx];
 
@@ -610,7 +612,7 @@ double  nco_sph_dot_nm(double *a, double *b)
    sum= (sum / n1) / n2;
 
   if(0 && DEBUG_SPH)
-    fprintf(stderr,"%s() dt=%f n1=%f %f\n",__FUNCTION__, sum, n1, n2 );
+    fprintf(stderr,"%s() dt=%f n1=%f %f\n", fnc_nm, sum, n1, n2 );
 
 
   return sum;
