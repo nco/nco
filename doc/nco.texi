@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.0-alpha10
-@set doc-edition 4.8.0-alpha10
+@set nco-edition 4.8.0-alpha11
+@set doc-edition 4.8.0-alpha11
 @set copyright-years 1995--2019
 @set update-year 2019
 @set update-date 24 April 2019
@@ -24755,18 +24755,23 @@ of vertical regridding are:
       This behavior is internally controlled by a single flag.
       Please let Charlie know if you would like this flag to be
       user-accessible.
+      Eliminating this constraint is a high priority.
 @item Extrapolation uses nearest neighbor except as noted above.
       Other extrapolation options in the code, yet not exposed to
       users, include: dying, setting @w{to 0.0}, and linear
       extrapolation. 
 @item Missing values are not (yet) treated specially
-@item The source and destination vertical grids must be
-      time-invariant.
-      In particular, the surface pressure field in a hybrid grid may 
-      have a time dimension no larger than one.
-      Essentially the vertical regridder only works on single-timestep
-      files.
+@item Source and destination vertical grids must be time-invariant
+      and have at most one-timestep.
+      In particular, hybrid grids allow the surface pressure field
+      to be time-varying but the regridder will fail if the time
+      dimension of the surface pressure field is larger than one.
       Eliminating this constraint is a high priority.
+@item Vertical interpolation is split from horizontal so that changing
+      both horizontal and vertical grids "simultaneously" currently
+      requires two successive invocations of @command{ncremap}, one
+      horizontal and one vertical. 
+      Eliminating this constraint is also a high priority.
 @end enumerate
 
 The simplest vertical grid-type, a pure-pressure grid, contains
@@ -24884,10 +24889,6 @@ grids applies to fields with, or places output of fields on, a
 @code{plev} dimension.  
 All other fields pass through the interpolation procedure unscathed.
 Input can be RLL, curvilinear, or unstructured. 
-Vertical interpolation is split from horizontal so that changing both
-horizontal and vertical grids "simultaneously" currently requires two
-successive invocations of @command{ncremap}, one horizontal and one
-vertical. 
 
 @html
 <a name="wgt_opt"></a> <!-- http://nco.sf.net/nco.html#wgt_opt -->

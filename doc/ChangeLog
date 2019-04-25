@@ -1,8 +1,8 @@
 2019-04-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.0-alpha11 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha11: Hanna';git push
-	git tag -a 4.8.0-alpha11 -m 'NCO_PATH_OVERRIDE opt-in;job_nbr=12,OMP_PROC_BIND ncks,ncra;ncclimo/ncremap --xcl_var';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha11: Jazz Fest';git push
+	git tag -a 4.8.0-alpha11 -m 'NCO_PATH_OVERRIDE opt-in;job_nbr=12,OMP_PROC_BIND ncks,ncra;ncclimo/ncremap --xcl_var;documentation';git push --tags
 
 	* ncremap --vrt_fl now obeys --vars=var_lst
 
