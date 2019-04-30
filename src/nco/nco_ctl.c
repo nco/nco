@@ -558,15 +558,18 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
   /* NB: Same return values for 4.4.1 and 4.4.1.1, which simply fixes an ncgen bug in 4.4.1 */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '4' && lbr_sng[3] == '.' && lbr_sng[4] == '1'){rcd=441;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '5' && lbr_sng[3] == '.' && lbr_sng[4] == '0'){rcd=450;}
-  /* NB: 4.5.1 was never released, though some development branches employed this version number */
+  /* NB: 4.5.1 was never released, though some development branches employ this version number */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '5' && lbr_sng[3] == '.' && lbr_sng[4] == '1'){rcd=451;}
   /* NB: Same return values for 4.6.0 and 4.6.0.1, which appeared quickly after 4.6.0 */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '6' && lbr_sng[3] == '.' && lbr_sng[4] == '0'){rcd=460;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '6' && lbr_sng[3] == '.' && lbr_sng[4] == '1'){rcd=461;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '6' && lbr_sng[3] == '.' && lbr_sng[4] == '2'){rcd=462;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '6' && lbr_sng[3] == '.' && lbr_sng[4] == '3'){rcd=463;}
+  /* NB: 4.6.4 was never released, though some development branches employ this version number */
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '6' && lbr_sng[3] == '.' && lbr_sng[4] == '4'){rcd=464;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '7' && lbr_sng[3] == '.' && lbr_sng[4] == '0'){rcd=470;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '7' && lbr_sng[3] == '.' && lbr_sng[4] == '1'){rcd=471;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '7' && lbr_sng[3] == '.' && lbr_sng[4] == '2'){rcd=472;}
 #endif /* HAVE_NETCDF4_H */
   /* exit() with custom rcd for use by Perl regression tester nco_bm.pl/NCO_rgr.pm */
   rcd-=300;
