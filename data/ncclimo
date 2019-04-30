@@ -107,7 +107,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     # If HOSTNAME is not in database, change hrd_pth_fnd to 'No' in case-statement default fall-through
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
-	aims* )
+	acme1* | aims4* )
 	    export PATH='/export/zender1/bin'\:${PATH}
             export LD_LIBRARY_PATH='/export/zender1/lib'\:${LD_LIBRARY_PATH} ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
@@ -741,11 +741,9 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "Config: Call NCO binaries in directory ${drc_nco}\n"
     printf "Config: Binaries linked to netCDF library version ${lbr_vrs}\n"
     if [ "${hrd_pth_fnd}" = 'Yes' ]; then
-	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}\n"
-	printf "Config: (Turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\")\n"
+	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else
-	printf "Config: No hardcoded path/module overrides\n"
-	printf "Config: (If desired, turn-on NCO hardcoded paths for HPCs at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\")\n"
+	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths for HPCs at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
     fi # !hrd_pth_fnd
     exit 0
 fi # !vrs_prn

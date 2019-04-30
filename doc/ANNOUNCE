@@ -33,6 +33,7 @@ B. ncap2 now allows creating brand-new files without specifying an
    ncap2 -s 'quark=1' ~/foo.nc ~/foo.nc # Add to old file foo.nc
    http://nco.sf.net/nco.html#ncap2
 
+fxm: document this
 C. ncremap has a new flag, --no_stdin, that disables checking stdin
    for input files. This is a flag that takes no argument, not a
    key-value option. Add --no_stdin to any command that might run in
