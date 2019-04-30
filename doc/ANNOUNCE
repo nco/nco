@@ -20,7 +20,9 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap now accepts a new Tempest map algorithm named se2se
+A. ncremap now accepts two new Tempest map configurations, "se2se" and 
+   "fv2fv". Use them to regrid one spectral element grid to another,
+   or one finite volume grid to another.
    http://nco.sf.net/nco.html#ncremap
 
 B. ncap2 now allows creating brand-new files without specifying an
@@ -38,9 +40,54 @@ C. ncremap has a new flag, --no_stdin, that disables checking stdin
    ncremap --no_stdin --map=map.nc in.nc out.nc
    http://nco.sf.net/nco.html#ncremap
 
+D. ncremap can now interpolate files in the vertical dimension.
+   The --vrt_fl=vrt_fl option points to a vertical grid file
+   that specifies the desired vertical grid for the output file.
+   Currently supported grids include the hybrid vertical coordinate
+   employed by E3SM and CESM, and pure pressure coordinates.
+   ncremap --vrt_fl=vrt_fl in.nc out.nc
+   http://nco.sf.net/nco.html#ncremap
+
+E. ncremap now accepts the --xcl_var switch. This switch changes
+   the extraction list (specified with -v vars or --vars=vars) into an
+   exclusion list. Behavior is identical to the common NCO -x option.
+   ncremap --xcl_var --vars=excluded,from,output in.nc out.nc
+   http://nco.sf.net/nco.html#ncremap
+
+F. ncremap and ncclimo now alter paths on certain supercomputers at
+   DOE HPC centers only when requested to. Previously, these commands
+   used pre-defined paths, when available, to ensure users could
+   easily run the executables in CZ's directories. Users could opt-out
+   of these paths by exporting NCO_PATH_OVERRIDE=No in their
+   environment. Thanks to inclusion of external (non-NCO) executables
+   such as ESMF_RegridWeightGen and TempestRemap in Anaconda
+   environments widely used at DOE labs, this is no longer necessary.
+   Now users must opt-in to the preset paths by exporting 
+   NCO_PATH_OVERRIDE=Yes in their environments.
+   export NCO_PATH_OVERRIDE=Yes # Use CZ's ESMF, TR, and NCO
+   ncremap -a conserve --map=map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#ncremap   
+
+G. ncclimo adopts a default job_nbr of var_nbr in splitter mode.
+   Previusly the default was 2. However, the splitter is extremely
+   memory efficient and scales well up to over a hundred variables on
+   all HPCs tested. Hence this change.
+   http://nco.sf.net/nco.html#ncclimo
+   
+H. ncks has a new --chk_nan option. This option invokes a special
+   checker that looks for NaN of NaNf in double- and single-precision
+   floating-point variables, respectively. If a NaN is encountered,
+   NCO prints its location and then exits with an error code. Thanks
+   to Matthew Thompson of NASA for this suggestion.
+   ncks --chk_nan in.nc
+   http://nco.sf.net/nco.html#ncks
+
 BUG FIXES:
 
-A. ncremap a
+A. ncremap runs 20-30x faster on Cori KNL than before.
+   Cori KNL has an unusual default setting for OMP_PROC_BIND that
+   causes hardware thread contention with NCO. Thanks to Noel Keen of
+   NERSC for help diagnosing this problem.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

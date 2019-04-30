@@ -20411,6 +20411,19 @@ Note that @samp{--dt_fmt} automatically implies @samp{--cal}
 makes that options superfluous.
 
 @html
+<a name="chk_nan"></a> <!-- http://nco.sf.net/nco.html#chk_nan -->
+@end html
+@cindex @code{--chk_nan}
+@cindex @code{NaN}
+@cindex @code{NaNf}
+@item --chk_nan
+As of @acronym{NCO} version 4.8.0 (May, 2019), @command{ncks} can
+locate @code{NaN} of NaNf in double- and single-precision
+   floating-point variables, respectively. If a NaN is encountered,
+   NCO prints its location and then exits with an error code. Thanks
+   to Matthew Thompson of NASA for this suggestion.
+
+@html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->
 <a name="fix_rec_dmn"></a> <!-- http://nco.sf.net/nco.html#fix_rec_dmn -->
 @end html
