@@ -60,6 +60,9 @@ nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r);
 char
 nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q);
 
+char
+nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, tInFlag *inflag );
+
 nco_bool
 nco_sph_seg_vrt_int(double *a, double *b, double *c);
 
