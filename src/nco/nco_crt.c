@@ -190,7 +190,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   {
 
     if(DEBUG_CRT)
-      (void)fprintf(stderr, "The boundaries of P and Q do not cross.\n", nco_prg_nm_get());
+      (void)fprintf(stderr, "%s():The boundaries of P and Q do not cross.\n", nco_prg_nm_get());
 
     return EXIT_FAILURE;
 
