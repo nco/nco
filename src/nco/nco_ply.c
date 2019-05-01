@@ -571,8 +571,8 @@ poly_sct *pl){
 
   if(pl->crn_nbr <3)
     pl->area=0.0;
-
-  nco_sph_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
+  else
+    nco_sph_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
 
   /* charlies function can sometimes return a NaN */
   if(isnan(pl->area))
