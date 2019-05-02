@@ -13,6 +13,7 @@
 #include "nco_rgr.h"     /* Regridding */
 #include "nco_sld.h"     /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
+#include "nco_crt.h"
 #include "nco_ply.h"    /* poly sct stuff */
 #include "kd.h"
 
@@ -100,6 +101,7 @@ int pl_cnt,
 poly_sct **pl_lst_vrl,
 int pl_cnt_vrl,
 int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
+nco_bool is_lst_cnt,
 int *pl_cnt_dbg); /* size of output dbg grid */
 
 

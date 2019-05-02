@@ -834,6 +834,7 @@ int pl_cnt,
 poly_sct **pl_lst_vrl,
 int pl_cnt_vrl,
 int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
+nco_bool is_lst_cnt, /* if true then position in list matches the  src_id of each member */
 int *pl_cnt_dbg) /* size of output dbg grid */
 {
   int id;
@@ -841,7 +842,7 @@ int *pl_cnt_dbg) /* size of output dbg grid */
   int jdx;
 
   int pl_nbr_dbg=0;
-  double epsilon=1.0e-8;
+  double epsilon=1.0e-12;
   double *area=NULL_CEWI;
 
   poly_sct **pl_lst_dbg=NULL_CEWI;
@@ -855,13 +856,20 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
   for(idx=0;idx<pl_cnt_vrl;idx++)
   {
-    id= ( io_flg ? pl_lst_vrl[idx]->dst_id : pl_lst_vrl[idx]->src_id );
-    for(jdx=0;jdx<pl_cnt;jdx++)
-      if(pl_lst[jdx]->src_id==id)
-        break;
 
-    if(jdx < pl_cnt )
-      area[jdx]-=pl_lst_vrl[idx]->area;
+      id = (io_flg ? pl_lst_vrl[idx]->dst_id : pl_lst_vrl[idx]->src_id);
+
+      if(is_lst_cnt )
+        area[id] -= pl_lst_vrl[idx]->area;
+      else
+      {
+      for (jdx = 0; jdx < pl_cnt; jdx++)
+        if (pl_lst[jdx]->src_id == id)
+          break;
+
+      if (jdx < pl_cnt)
+        area[jdx] -= pl_lst_vrl[idx]->area;
+     }
 
   }
 
