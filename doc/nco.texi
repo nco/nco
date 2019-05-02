@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.0-alpha11
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 24 April 2019
-@set update-month April 2019
+@set update-date 1 May 2019
+@set update-month May 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -24751,40 +24751,62 @@ to vertically interpolate the input file to the vertical coordinate
 grid contained in the file @var{vrt_fl}.
 This option first appeared in @acronym{NCO} @w{version 4.8.0},
 released in May, 2019.
-The vertical gridfile @var{vrt_fl} must specify one of the two
-vertical gridtypes that @command{ncremap} currently understands, 
-pure-pressure or hybrid-coordinate pressure.
+The vertical gridfile @var{vrt_fl} must specify a vertical gridtypes
+that @command{ncremap} understands, currently either pure-pressure or
+hybrid-coordinate pressure.
 We plan to add pure-sigma coordinates in the future.
-Besides the vertical grid-type, the main assumptions and constraints
-of vertical regridding are:
+
+Besides the vertical grid-type, the main assumptions, constraints, and
+priorities for future development of vertical regridding are:
 @enumerate
 @item Input datasets must have netCDF (and thus C-based)
-      dimension-ordering @var{all other dimensions, vertical
-      dimension, horizontal dimension(s)} so that the horizontal
-      dimension(s) vary more rapidly than the vertical.
+      dimension-ordering @var{all other dimensions, a single vertical 
+      dimension, then one or two horizontal dimensions} so that the
+      horizontal dimension(s) vary more rapidly than the vertical.
+      Eliminating this constraint will remain low priority until we
+      are lobbied with compelling use-cases.
 @item Interpolation is linear in log(pressure).
       This assumption is more natural for gases (like the atmosphere)
-      than for condensed media (like the ocean or Earth's interior).
+      than for condensed media (like oceans or Earth's interior).
       This behavior is internally controlled by a single flag.
       Please let Charlie know if you would like this flag to be
       user-accessible.
-      Eliminating this constraint is a high priority.
-@item Extrapolation uses nearest neighbor except as noted above.
+      Eliminating this constraint is a medium priority for regridding 
+      to/from depth coordinates.
+@item Extrapolation uses nearest neighbor except as noted below.
       Other extrapolation options in the code, yet not exposed to
       users, include: dying, setting @w{to 0.0}, and linear
       extrapolation. 
+      Eliminating this constraint will remain low priority until we
+      are lobbied with compelling use-cases for other algorithms. 
 @item Missing values are not (yet) treated specially
+      Eliminating this constraint is not a priority, though it could
+      be if ocean modelers show interest in employing this tool to
+      regrid to/from depth coordinates where missing values indicate
+      bathymetry.
 @item Source and destination vertical grids must be time-invariant
       and have at most one-timestep.
       In particular, hybrid grids allow the surface pressure field
-      to be time-varying but the regridder will fail if the time
-      dimension of the surface pressure field is larger than one.
-      Eliminating this constraint is a high priority.
+      (often @code{PS}) to time-dependent but the regridder will fail
+      if the time dimension of the surface pressure field is larger
+      than one.
+      Eliminating this constraint is a high priority, so that entire
+      hybrid timeseries can be regridded to pure pressure coordinates.
 @item Vertical interpolation is split from horizontal so that changing
-      both horizontal and vertical grids "simultaneously" currently
+      both horizontal and vertical grids ``simultaneously'' currently
       requires two successive invocations of @command{ncremap}, one
       horizontal and one vertical. 
-      Eliminating this constraint is also a high priority.
+      Eliminating this constraint is a high priority because it would
+      be cool. 
+@item Variable names for input and output vertical grids must match
+      @acronym{E3SM/CESM} and @acronym{NCEP} implementations.
+      These names include @code{hyai}, @code{hyam}, @code{hybi},
+      @code{hybm}, @code{ilev}, @code{lev}, @code{P0}, @code{PS}, and
+      @code{plev}.
+      The infrastructure to provide alternate names for any of these
+      input/output variables names is straightforward.
+      Allowing this functionality will not be a priority until we are 
+      presented with a compelling use-case.
 @end enumerate
 
 The simplest vertical grid-type, a pure-pressure grid, contains
@@ -24805,8 +24827,8 @@ ncap2 -O -v -s 'defdim("plev",17);plev[$plev]={100000,92500,85000, \
 Hybrid-coordinate grids are a hybrid between a sigma-coordinate
 grid (where pressure is a fraction of the surface pressure) and
 a pure-pressure grid (as above). 
-The so-called hybrid ``A'' and ``B'' coefficients specify the
-fractional weight of the pure-pressure and sigma-grids, respectively,
+The so-called hybrid @var{A} and @var{B} coefficients specify the
+fractional weight of the pure-pressure and sigma-grids, respectively, 
 at each level.
 @cindex @code{P0}
 @cindex @code{PS}
@@ -24815,7 +24837,7 @@ at each level.
 @cindex @code{hybi}
 @cindex @code{hybm}
 @cindex @code{formula_terms} attribute
-The hybrid gridfile must specify A and B coefficients for
+The hybrid gridfile must specify @var{A} and @var{B} coefficients for
 both layer midpoints and interfaces with these standard
 (as employed by @acronym{CESM} and @acronym{E3SM}) names and
 dimensions: @code{hyai(ilev)}, @code{hybi(ilev)}, @code{hyam(lev)},
@@ -24825,8 +24847,8 @@ The reference pressure and surface pressure must be named
 The pressures at all midpoints and interfaces are then defined as 
 @example
 @verbatim
-prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS; # Midlayer
-prs_ntf[time,lat,lon,ilev]=P0*hyai+hybi*PS; # Interface
+prs_mdp[time,lat,lon,lev] =P0*hyam+hybm*PS # Midlayer
+prs_ntf[time,lat,lon,ilev]=P0*hyai+hybi*PS # Interface
 @end verbatim
 @end example
 The scalar reference pressure @code{P0} is typically @w{100000 Pa}
@@ -24835,8 +24857,8 @@ time-varying) array with one or two spatial dimensions, and its values
 are in the same dimensional units (e.g., Pa or mb) as @code{P0}.
 
 Note that a hybrid-coordinate grid defines a pure-sigma or
-pure-pressure grid when either its A or B coefficients are zero, 
-respectively.
+pure-pressure grid when either its @var{A} or @var{B} coefficients are
+zero, respectively.
 For example, the following creates the hybrid-coordinate
 representation of a pure-pressure grid with midpoints every @w{100 mb}
 from @w{100 mb} to @w{1000 mb}:
@@ -24901,7 +24923,8 @@ midpoint and interface fields (i.e., on variables with @code{lev} or
 grids applies to fields with, or places output of fields on, a
 @code{plev} dimension.  
 All other fields pass through the interpolation procedure unscathed.
-Input can be RLL, curvilinear, or unstructured. 
+Input can be rectangular (aka @acronym{RLL}), curvilinear, or
+unstructured.  
 
 @html
 <a name="wgt_opt"></a> <!-- http://nco.sf.net/nco.html#wgt_opt -->
