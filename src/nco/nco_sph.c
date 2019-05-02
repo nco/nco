@@ -141,10 +141,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
 
       /* Xcross product near zero !! so make it zero*/
-      if(nx3< 1.0e-10)
+      if( 1.0- nco_sph_dot_nm(Pcross,Qcross )  <DOT_TOLERANCE )
       {
-
-
 
          ip1qLHS=0;
          ipqLHS=0;
@@ -366,7 +364,8 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
   */
 
   /* Icross is zero, should really have a range rather than an explicit zero */
-  if( nx3 < 1.0e-10)
+  /* use dot product to se if Pcross and QCross parallel */
+  if(  1.0- nco_sph_dot_nm(Pcross,Qcross )  <DOT_TOLERANCE  )
     //return nco_sph_parallel(a, b, c, d, p, q);
     return '0';
 
@@ -379,12 +378,16 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
   dx_ai=1.0-  nco_sph_dot_nm(a,Icross);
 
-  if(dx_ai !=0.0 )
+  if(dx_ai < DOT_TOLERANCE )
+     dx_ai=0.0;
+  else
      nx_ai=nco_sph_cross(a, Icross, ai);
 
   dx_ci= 1.0- nco_sph_dot_nm(c,Icross);
 
-  if(dx_ci !=0.0 )
+  if(dx_ci <DOT_TOLERANCE )
+    dx_ci=0.0;
+  else
     nx_ci=nco_sph_cross(c, Icross, ci);
 
 
@@ -576,6 +579,17 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   } else{
     code='0';
   }
+
+  if(DEBUG_SPH )
+  {
+    if (code >= '1')
+      nco_sph_prn_pnt("nco_sph_seg_parallel(): intersect1", r0, 3, True);
+
+    if (code == '2')
+      nco_sph_prn_pnt("nco_sph_seg_parallel(): intersect2", r1, 3, True);
+
+  }
+
 
   return code;
 }
