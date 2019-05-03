@@ -2427,6 +2427,8 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
   int idx;
   int iret;
 
+  nco_bool bAddPnt=False;
+
   /* horizonal */
   if( stateH <2  &&   (disc == 0 || disc==2 ) )
   {
@@ -2436,7 +2438,8 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
 
     if( node->lo_min_bound >= Xq[KD_LEFT] &&  node->hi_max_bound <= Xq[KD_RIGHT] )
 	 stateH=2;
-
+    else
+      stateH=1;
     
    
   }
@@ -2450,15 +2453,24 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
 
     if( node->lo_min_bound >=  Xq[KD_BOTTOM] &&   node->hi_max_bound <= Xq[KD_TOP] )
 	 stateV=2;
-
+	else
+     stateV=1;
     
 
 
   }
 
+  if( stateH==2 && stateV==2 )
+  	bAddPnt=True;
+  else if(stateH==2 && stateV==1  && node->size[KD_TOP] >= Xq[KD_BOTTOM]  && node->size[KD_BOTTOM] <= Xq[KD_TOP] )
+     bAddPnt=True;
+  else if(stateH==1 && stateV==2 &&  node->size[KD_RIGHT] >= Xq[KD_LEFT]  && node->size[KD_LEFT] <= Xq[KD_RIGHT]  )
+  	bAddPnt=True;
+  else  if(BOXINTERSECT(node->size, Xq))
+	  bAddPnt=True;
 
-  /* add node as necessary */
-  if( (stateH == 2  && stateV == 2 ) || BOXINTERSECT(node->size, Xq)) 
+	/* add node as necessary */
+  if(bAddPnt)
   { 
 
     for(idx=0 ; idx<m ;idx++)
