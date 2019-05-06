@@ -1,0 +1,99 @@
+// -*-C++-*-
+// Generate netCDF file with:
+// ncgen -k netCDF-4 -b -o ~/nco/data/cf_grp.nc ~/nco/data/cf_grp.cdl
+
+netcdf cf_grp {
+
+ :Conventions = "CF-1.8";
+ :history = "Global history attribute";
+
+ dimensions:
+ lat=180;
+ lon=360;
+
+  group: e3sm {
+
+    dimensions:
+      lat=2;
+      lon=3;
+      time=unlimited;
+
+    variables:
+    double lat(lat);
+    lat:long_name = "latitude" ;
+    lat:standard_name = "latitude" ;
+    lat:units = "degrees_north" ;
+    lat:axis = "Y" ;
+    double lon(lon) ;
+    lon:long_name = "longitude" ;
+    lon:standard_name = "longitude" ;
+    lon:units = "degrees_east" ;
+    lat:axis = "X" ;
+    double time(time) ;
+    time:long_name = "time of measurement" ;
+    time:standard_name = "time" ;
+    time:units = "days since 1964-03-12 12:09:00 -9:00"; 
+    time:calendar = "leap" ;
+    data:
+      lat=-90,90;
+      lon=0,120,240;
+      time=1.,2.,3.,4.;
+
+  group: e3sm_01 {
+      :Realization = "1";
+      :history = "Group history attributes are OK too";
+
+    variables:
+    float tas(time,lat,lon);
+    tas:long_name = "surface air temperature";
+    tas:standard_name = "air_temperature" ;
+    tas:units = "kelvin" ;
+    tas:coordinates = "time lat lon";
+    data:
+      tas=272.1,272.1,272.1,272.1,272.1,272.1,
+	272.1,272.1,272.1,272.1,272.1,272.1,
+	272.1,272.1,272.1,272.1,272.1,272.1,
+	272.1,272.1,272.1,272.1,272.1,272.1;
+ 
+    } // e3sm_01
+
+  group: e3sm_02 {
+      :Realization = "2";
+      
+    variables:
+    float tas(time,lat,lon);
+    tas:long_name = "surface air temperature";
+    tas:standard_name = "air_temperature" ;
+    tas:coordinates = "time lat lon";
+    data:
+      tas=273.1,273.1,273.1,273.1,273.1,273.1,
+	273.1,273.1,273.1,273.1,273.1,273.1,
+	273.1,273.1,273.1,273.1,273.1,273.1,
+	273.1,273.1,273.1,273.1,273.1,273.1;
+      
+    } // e3sm_02
+    
+  } // e3sm
+  
+ group: ecmwf {
+    
+  dimensions:
+    time=unlimited;
+
+  group: ecmwf {
+      
+    variables:
+      float tas(time);
+    tas:long_name = "surface air temperature";
+      double time(time);
+    time:long_name = "time";
+    time:units = "days since 1964-03-12 12:09:00 -9:00"; 
+    data:
+      tas=274.1,274.1,274.1,274.1,274.1;
+      time=1.,2.,3.,4.,5.;
+      
+    } // ecmwf
+
+  } // ecmwf
+
+} // root group

@@ -1,3 +1,7 @@
+2019-05-06  Charlie Zender  <zender@uci.edu>
+
+	* Add cf_grp.cdl as template/test file for CF Conventions
+
 2019-04-30  Charlie Zender  <zender@uci.edu>
 
 	* ncremap/ncclimo add paths for aims4/acme1 to NCO_PATH_OVERRIDE section
