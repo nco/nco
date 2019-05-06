@@ -94,12 +94,85 @@ netcdf cf_grp {
     
   } // e3sm
   
- group: ecmwf {
+  group: nasa {
+
+   dimensions:
+   lat=2;
+   lon=3;
+   time=unlimited;
+
+   group: nasa_data {
+      :history = "Group-level history attributes are OK too";
+
+    variables:
+    float tas(time,lat,lon);
+    tas:long_name = "surface air temperature";
+    tas:standard_name = "air_temperature" ;
+    tas:units = "kelvin" ;
+    tas:coordinates = "time lat lon";
+
+    float sic(time,lat,lon);
+    sic:long_name = "sea-ice concentration";
+    sic:standard_name = "sea_ice_area_fraction" ;
+    sic:units = "1" ;
+    sic:coordinates = "/nasa/nasa_geo/time /nasa/nasa_geo/lat /nasa/nasa_geo/lon";
+
+    float sit(time,lat,lon);
+    sit:long_name = "sea-ice thickness";
+    sit:standard_name = "sea_ice_thickness" ;
+    sit:units = "meter" ;
+    sit:coordinates = "../nasa_geo/time ../nasa_geo/lat ../nasa_geo/lon";
+
+    data:
+      tas=271.15,271.15,271.15,271.15,271.15,271.15,
+	271.15,271.15,271.15,271.15,271.15,271.15,
+	271.15,271.15,271.15,271.15,271.15,271.15,
+	271.15,271.15,271.15,271.15,271.15,271.15;
+
+      sic=0.73,0.73,0.73,0.73,0.73,0.73,
+	0.73,0.73,0.73,0.73,0.73,0.73,
+	0.73,0.73,0.73,0.73,0.73,0.73,
+	0.73,0.73,0.73,0.73,0.73,0.73;
+
+      sit=3.7,3.7,3.7,3.7,3.7,3.7,
+	3.7,3.7,3.7,3.7,3.7,3.7,
+	3.7,3.7,3.7,3.7,3.7,3.7,
+	3.7,3.7,3.7,3.7,3.7,3.7;
+      
+   } // nasa_data
+
+   group: nasa_geo {
+      
+    variables:
+      double lat(lat);
+    lat:long_name = "latitude" ;
+    lat:standard_name = "latitude" ;
+    lat:units = "degrees_north" ;
+    lat:axis = "Y" ;
+      double lon(lon) ;
+    lon:long_name = "longitude" ;
+    lon:standard_name = "longitude" ;
+    lon:units = "degrees_east" ;
+    lat:axis = "X" ;
+      double time(time) ;
+    time:long_name = "time of measurement" ;
+    time:standard_name = "time" ;
+    time:units = "days since 1964-03-12 12:09:00 -9:00"; 
+    time:calendar = "leap" ;
+    data:
+      lat=-90,90;
+      lon=0,120,240;
+      time=1.,2.,3.,4.;
+    } // nasa_geo
+    
+  } // nasa
+  
+ group: nsidc {
     
   dimensions:
     time=unlimited;
 
-  group: ecmwf {
+  group: nsidc {
       
     variables:
       float tas(time);
@@ -115,8 +188,8 @@ netcdf cf_grp {
       tas=274.15,274.15,274.15,274.15,274.15;
       time=1.,2.,3.,4.,5.;
       
-    } // ecmwf
+    } // nsidc
 
-  } // ecmwf
+  } // nsidc
 
 } // root group
