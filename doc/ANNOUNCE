@@ -28,9 +28,9 @@ A. ncremap now accepts two new Tempest map configurations, "se2se" and
 B. ncap2 now allows creating brand-new files without specifying an
    input filename. Previously, users had to specify an input file 
    even if the output file had no dependency on it.
-   ncap2 -s 'quark=1' ~/foo.nc # Create new file foo.nc
-   ncap2 -O -s 'quark=1' ~/foo.nc # Overwrite old with new foo.nc
-   ncap2 -s 'quark=1' ~/foo.nc ~/foo.nc # Add to old file foo.nc
+   ncap2 -s 'foo=1' ~/foo.nc # Create new or modify existing foo.nc
+   ncap2 -O -s 'foo=1' ~/foo.nc # Overwrite old with new foo.nc
+   ncap2 -s 'foo=1' ~/foo.nc ~/foo.nc # Add to old foo.nc
    http://nco.sf.net/nco.html#ncap2
 
 fxm: document this
