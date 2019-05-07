@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.0-alpha11
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 1 May 2019
+@set update-date 6 May 2019
 @set update-month May 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -24769,7 +24769,7 @@ priorities for future development of vertical regridding are:
       This assumption is more natural for gases (like the atmosphere)
       than for condensed media (like oceans or Earth's interior).
       This behavior is internally controlled by a single flag.
-      Please let Charlie know if you would like this flag to be
+      Please let us know if you would like this flag to be
       user-accessible.
       Eliminating this constraint is a medium priority for regridding 
       to/from depth coordinates.
@@ -24780,16 +24780,19 @@ priorities for future development of vertical regridding are:
       Eliminating this constraint will remain low priority until we
       are lobbied with compelling use-cases for other algorithms. 
 @item Missing values are not (yet) treated specially
-      Eliminating this constraint is not a priority, though it could
-      be if ocean modelers show interest in employing this tool to
-      regrid to/from depth coordinates where missing values indicate
-      bathymetry.
+      Eliminating this constraint is not a priority because
+      atmospheric datasets often contain no missing data.
+      This could become a high priority issue if ocean modelers show
+      interest in employing this tool to regrid to/from depth
+      coordinates where missing values indicate bathymetry.
 @item Source and destination vertical grids must be time-invariant
       and have at most one-timestep.
       In particular, hybrid grids allow the surface pressure field
-      (often @code{PS}) to time-dependent but the regridder will fail
-      if the time dimension of the surface pressure field is larger
-      than one.
+      (often @code{PS}) to be time-dependent but the regridder will
+      only read and use the first surface pressure in the timeseries. 
+      All subsequent timesteps will utilize the vertical grid from the
+      first timestep (this incorrect behavior is arguably better than
+      failing outright, and warnings are amply displayed). 
       Eliminating this constraint is a high priority, so that entire
       hybrid timeseries can be regridded to pure pressure coordinates.
 @item Vertical interpolation is split from horizontal so that changing
@@ -24804,7 +24807,8 @@ priorities for future development of vertical regridding are:
       @code{hybm}, @code{ilev}, @code{lev}, @code{P0}, @code{PS}, and
       @code{plev}.
       The infrastructure to provide alternate names for any of these
-      input/output variables names is straightforward.
+      input/output variables names is straightforward, and is heavily 
+      used for horizontal spatial regridding.
       Allowing this functionality will not be a priority until we are 
       presented with a compelling use-case.
 @end enumerate

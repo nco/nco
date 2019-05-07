@@ -774,6 +774,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int dmn_id_lev_in=NC_MIN_INT; /* [id] Dimension ID for midpoint level in file to be interpolated */
   int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
   int dmn_idx_tm_in=NC_MIN_INT; /* [idx] Index of record coordinate in input hybrid coordinate PS field */
+  int dmn_idx_tm_out=NC_MIN_INT; /* [idx] Index of record coordinate in output hybrid coordinate PS field */
   long *dmn_cnt_in=NULL;
   long *dmn_cnt_out=NULL;
   long *dmn_srt=NULL;
