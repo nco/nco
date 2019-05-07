@@ -773,6 +773,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int dmn_id_ilev_in=NC_MIN_INT; /* [id] Dimension ID for interface level in file to be interpolated */
   int dmn_id_lev_in=NC_MIN_INT; /* [id] Dimension ID for midpoint level in file to be interpolated */
   int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
+  int dmn_idx_tm_in=NC_MIN_INT; /* [idx] Index of record coordinate in input hybrid coordinate PS field */
   long *dmn_cnt_in=NULL;
   long *dmn_cnt_out=NULL;
   long *dmn_srt=NULL;
@@ -780,6 +781,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   long lev_nbr_in;
   long ilev_nbr_out;
   long lev_nbr_out;
+  long tm_idx_in=0L; /* [idx] Current timestep in input file */
+  long tm_nbr_in=1L; /* [nbr] Number of timesteps in input vertical grid */
+  long tm_nbr_out=1L; /* [nbr] Number of timesetps in output vertical grid */
   size_t grd_sz_in=1L; /* [nbr] Number of elements in single layer of input grid */
   size_t grd_sz_out=1L; /* [nbr] Number of elements in single layer of output grid */
 
@@ -794,7 +798,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimname(tpl_id,dmn_id_lev_out,dmn_nm);
     lev_nm_out=strdup(dmn_nm);
     
-    /* Interrogate ps, if any, for horizontal dimensions */ 
+    /* Interrogate PS, if any, for horizontal dimensions */ 
     if(ps_id_tpl != NC_MIN_INT){
       rcd=nco_inq_varndims(tpl_id,ps_id,&dmn_nbr_ps);
       dmn_nbr_out=dmn_nbr_ps;
@@ -818,7 +822,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(dmn_ids_out[dmn_idx] == dmn_ids_rec[rec_idx])
 	    break; 
 	if(rec_idx == dmn_nbr_rec || dmn_nbr_out == 1) grd_sz_out*=dmn_cnt_out[dmn_idx];
-	if(rec_idx != dmn_nbr_rec && dmn_nbr_out > 1 && dmn_cnt_out[dmn_idx] > 1L) (void)fprintf(stderr,"%s: WARNING %s reports PS variable in vertical grid file has unlimited dimension of size %lu. Interpolation only tested for fixed or single-timestep PS. Expect breakage...\n",nco_prg_nm_get(),fnc_nm,dmn_cnt_out[dmn_idx]);
+	if(rec_idx != dmn_nbr_rec && dmn_nbr_out > 1 && dmn_cnt_out[dmn_idx] > 1L){
+	  (void)fprintf(stderr,"%s: WARNING %s reports PS variable in vertical grid file has unlimited dimension of size %lu. Interpolation only tested for fixed or single-timestep PS. Expect breakage...\n",nco_prg_nm_get(),fnc_nm,dmn_cnt_out[dmn_idx]);
+	  tm_nbr_out=dmn_cnt_out[dmn_idx];
+	} /* tm_nbr_out > 1 */
 	dmn_srt[dmn_idx]=0L;
       } /* !dmn_idx */
       if(dmn_ids_rec) dmn_ids_rec=(int *)nco_free(dmn_ids_rec);
@@ -973,7 +980,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
 	  break; 
       if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1) grd_sz_in*=dmn_cnt_in[dmn_idx];
-      if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L) (void)fprintf(stderr,"%s: WARNING %s reports PS variable in input file has unlimited dimension of size %lu. Interpolation only tested for fixed or single-timestep PS. Expect breakage...\n",nco_prg_nm_get(),fnc_nm,dmn_cnt_in[dmn_idx]);
+      if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
+	(void)fprintf(stderr,"%s: WARNING %s reports PS variable in input file has unlimited dimension of size %lu. Interpolation only tested for fixed or single-timestep PS. Expect breakage...\n",nco_prg_nm_get(),fnc_nm,dmn_cnt_in[dmn_idx]);
+	dmn_idx_tm_in=dmn_idx;
+	tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
+      } /* tm_nbr_in > 1 */
       dmn_srt[dmn_idx]=0L;
     } /* !dmn_idx */
   } /* !flg_grd_in_hyb */
@@ -986,7 +997,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     lev_nm_in=strdup(dmn_nm);
     /* Problem: What is horizontal grid size of pressure grid file?
        Algorithm: 
-       Examine first multidimensional variable that includes plev dimension 
+       Examine first multi-dimensional variable that includes plev dimension 
        Assume horizontal dimensions vary more rapidly than (i.e., follow) plev
        Compute horizontal grid size accordingly
        Set output horizontal size to input horizontal size */
@@ -1038,8 +1049,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_get_var(in_id,hybi_id,hybi_in,crd_typ_out);
     rcd=nco_get_var(in_id,hybm_id,hybm_in,crd_typ_out);
     rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
-    rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
-    
+    if(tm_nbr_in == 1L){
+      rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
+    }else{
+      dmn_srt[dmn_idx_tm_in]=tm_idx_in;
+      dmn_cnt_in[dmn_idx_tm_in]=1L;
+      rcd=nco_get_vara(in_id,ps_id,dmn_srt,dmn_cnt_in,ps_in,crd_typ_out);
+      (void)fprintf(stderr,"%s: DEBUG %s reading input file PS variable timestep #%ld of %ld\n",nco_prg_nm_get(),fnc_nm,tm_idx_in,tm_nbr_in);
+    } /* !tm_nbr_in */
+      
     if(ps_id_tpl == NC_MIN_INT){
       /* Copy horizontal grid information from input file */
       dmn_nbr_ps=dmn_nbr_out=dmn_nbr_in;
