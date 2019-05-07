@@ -2422,7 +2422,7 @@ int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority
   
 }
 
-int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list, int stateH, int stateV )
+int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head , KDPriority *list_end, int stateH, int stateV )
 {
   int idx;
   int iret;
@@ -2473,6 +2473,15 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
   if(bAddPnt)
   { 
 
+	  (*list_head)->elem=node;
+	  (*list_head)->dist=1.1;
+
+      (*list_head)++;
+
+	  if(*list_head == list_end)
+	  	return 0;
+
+  	/*
     for(idx=0 ; idx<m ;idx++)
       if(!list[idx].elem)
       {
@@ -2483,20 +2492,22 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
     
      if(idx==m)
        return 0;
+
+    */
   }
      
   
 
   if( node->sons[0] )
   {
-    iret= kd_neighbour_intersect3(node->sons[0], (disc+1)%4, Xq,  m,  list, stateH, stateV);
+    iret= kd_neighbour_intersect3(node->sons[0], (disc+1)%4, Xq, list_head,  list_end, stateH, stateV);
     if(iret==0) return iret;
       
   }
      
   if( node->sons[1] )
   {  
-    iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq,  m,  list, stateH, stateV);
+    iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq, list_head,  list_end, stateH, stateV);
     if(iret==0) return iret;
        
   }
@@ -2664,15 +2675,25 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, i
     int nw_lcl_cnt=0;
 	int ret_cnt=0;
 
-	node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq,m,list,0,0);
+	KDPriority *list_srt;
+	KDPriority *list_end;
 
 
+	list_srt=list;
+	list_end=list;
+
+	list_end+=m;
+
+	node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
+
+    ret_cnt= ( list_srt - list);
+	/*
 	for(idx=0; idx<m;idx++)
 	  if(list[idx].elem )
 	    ret_cnt++;
       else
         break;
-
+    */
     /* sort list and remove duplicates */
     if(ret_cnt >1 && bSort &&  kd_sort_priority_list(m, list, ret_cnt, &nw_lcl_cnt ) )
     {
