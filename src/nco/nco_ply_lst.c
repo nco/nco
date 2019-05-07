@@ -770,7 +770,7 @@ int *pl_cnt_vrl_ret){
 
 
 
-        if (bDirtyRats && pl_lst_in[idx]->dp_y_minmax[1] == 90.0  ) {
+        if (bDirtyRats ) {
           //if (pl_lst_in[idx]->bwrp ) {
           pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
           pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
@@ -834,7 +834,6 @@ int pl_cnt,
 poly_sct **pl_lst_vrl,
 int pl_cnt_vrl,
 int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
-nco_bool is_lst_cnt, /* if true then position in list matches the  src_id of each member */
 int *pl_cnt_dbg) /* size of output dbg grid */
 {
   int id;
@@ -844,6 +843,10 @@ int *pl_cnt_dbg) /* size of output dbg grid */
   int pl_nbr_dbg=0;
   double epsilon=1.0e-12;
   double *area=NULL_CEWI;
+
+  nco_bool is_lst_cnt=False;
+
+  is_lst_cnt=( pl_cnt== pl_lst[pl_cnt-1]->src_id +1);
 
   poly_sct **pl_lst_dbg=NULL_CEWI;
 

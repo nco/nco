@@ -101,7 +101,6 @@ int pl_cnt,
 poly_sct **pl_lst_vrl,
 int pl_cnt_vrl,
 int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
-nco_bool is_lst_cnt,
 int *pl_cnt_dbg); /* size of output dbg grid */
 
 

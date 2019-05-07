@@ -983,14 +983,13 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   {
     int io_flg=1;
     int pl_nbr=0;
-    nco_bool is_lst_cnt=False;
+
     poly_sct **pl_lst_dbg=NULL_CEWI;
 
 
-    is_lst_cnt=( pl_cnt_out== pl_lst_out[pl_cnt_out-1]->src_id +1);
     /* find area mismatch between dst and overlap */
     fprintf(stderr,"%s(): Comparing dst areas with overlap areas\n",fnc_nm);
-    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out, pl_cnt_out, pl_lst_vrl, pl_cnt_vrl, io_flg, is_lst_cnt, &pl_nbr);
+    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out, pl_cnt_out, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
     if(pl_nbr) {
       nco_msh_poly_lst_wrt("tst-wrt-out-dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
@@ -1001,10 +1000,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     pl_nbr=0;
     io_flg=0;
 
-    is_lst_cnt=( pl_cnt_in== pl_lst_in[pl_cnt_in-1]->src_id +1);
     /* find area mismatch between src and overlap */
     fprintf(stderr,"%s(): Comparing src areas with overlap areas\n",fnc_nm);
-    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in, pl_cnt_in, pl_lst_vrl, pl_cnt_vrl, io_flg,is_lst_cnt, &pl_nbr);
+    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in, pl_cnt_in, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
     if(pl_nbr) {
       nco_msh_poly_lst_wrt("tst-wrt-in-dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
