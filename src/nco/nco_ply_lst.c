@@ -575,6 +575,9 @@ int *pl_cnt_vrl_ret){
   size_t idx;
   size_t jdx;
 
+  /* used in realloc */
+  size_t nbr_vrl_blocks=0;
+
 
   const char fnc_nm[]="nco_poly_mk_vrl_sph()";
 
@@ -648,7 +651,7 @@ int *pl_cnt_vrl_ret){
 
     /* if a wrapped polygon then do two searches */
     if(bSplit)
-      cnt_vrl = kd_nearest_intersect_wrp(rtree, size1, size2, max_nbr_vrl, list);
+      cnt_vrl = kd_nearest_intersect_wrp(rtree, size1, size2, list, max_nbr_vrl);
     else
       cnt_vrl = kd_nearest_intersect(rtree, size1, max_nbr_vrl, list, bSort);
 
@@ -743,7 +746,11 @@ int *pl_cnt_vrl_ret){
 
         vrl_area += pl_vrl->area;
 
-        pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * (pl_cnt_vrl + 1));
+        if( nbr_vrl_blocks * NCO_VRL_BLOCKSIZE  <  pl_cnt_vrl+1  )
+          pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * ++nbr_vrl_blocks * NCO_VRL_BLOCKSIZE );
+
+
+
         pl_lst_vrl[pl_cnt_vrl] = pl_vrl;
         pl_cnt_vrl++;
         cnt_vrl_on++;
@@ -815,6 +822,9 @@ int *pl_cnt_vrl_ret){
     pl_lst_dbg=(poly_sct**)nco_poly_lst_free(pl_lst_dbg, pl_cnt_dbg);
   }
 
+  /* reduce size */
+  if( nbr_vrl_blocks * NCO_VRL_BLOCKSIZE > pl_cnt_vrl  )
+    pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * pl_cnt_vrl);
 
 
 
@@ -846,6 +856,7 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
   nco_bool is_lst_cnt=False;
 
+  /* if true then pl_cnt matches max src_id There are no missing records from NetCDF SCRIP input */
   is_lst_cnt=( pl_cnt== pl_lst[pl_cnt-1]->src_id +1);
 
   poly_sct **pl_lst_dbg=NULL_CEWI;

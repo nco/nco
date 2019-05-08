@@ -25,6 +25,9 @@ extern "C" {
 #endif /* !__cplusplus */
 
 
+/* used in nco_ply_lst_vrl - for realloc to expand */
+#define NCO_VRL_BLOCKSIZE 4000
+
 
 /************************ functions that manipulate lists of polygons ****************************************************/
 
