@@ -1596,6 +1596,13 @@ extern "C" {
      poly_crt=2
   } poly_typ_enm;
 
+
+  typedef enum {
+      poly_vrl_pin,
+      poly_vrl_qin,
+      poly_vrl_unk
+  } poly_vrl_flg_enm;
+
   typedef struct{
     poly_typ_enm pl_typ;
     int crn_nbr;           /* number of vertices */

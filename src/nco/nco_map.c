@@ -943,7 +943,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *lnk_nbr_ptr=lnk_nbr;
 
   /* tally up weights see if they sum to number of dst grid cells */
-  if(nco_dbg_lvl_get() >= nco_dbg_dev)
+  if(0 && nco_dbg_lvl_get() >= nco_dbg_dev)
   {
     size_t irow;
     size_t sz;
@@ -983,9 +983,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   {
     int io_flg=1;
     int pl_nbr=0;
+
     poly_sct **pl_lst_dbg=NULL_CEWI;
 
+
     /* find area mismatch between dst and overlap */
+    fprintf(stderr,"%s(): Comparing dst areas with overlap areas\n",fnc_nm);
     pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out, pl_cnt_out, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
     if(pl_nbr) {
@@ -998,6 +1001,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     io_flg=0;
 
     /* find area mismatch between src and overlap */
+    fprintf(stderr,"%s(): Comparing src areas with overlap areas\n",fnc_nm);
     pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in, pl_cnt_in, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
     if(pl_nbr) {

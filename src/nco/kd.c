@@ -2422,10 +2422,12 @@ int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority
   
 }
 
-int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list, int stateH, int stateV )
+int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head , KDPriority *list_end, int stateH, int stateV )
 {
   int idx;
   int iret;
+
+  nco_bool bAddPnt=False;
 
   /* horizonal */
   if( stateH <2  &&   (disc == 0 || disc==2 ) )
@@ -2436,7 +2438,8 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
 
     if( node->lo_min_bound >= Xq[KD_LEFT] &&  node->hi_max_bound <= Xq[KD_RIGHT] )
 	 stateH=2;
-
+    else
+      stateH=1;
     
    
   }
@@ -2450,17 +2453,35 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
 
     if( node->lo_min_bound >=  Xq[KD_BOTTOM] &&   node->hi_max_bound <= Xq[KD_TOP] )
 	 stateV=2;
-
+	else
+     stateV=1;
     
 
 
   }
 
+  if( stateH==2 && stateV==2 )
+  	bAddPnt=True;
+  else if(stateH==2 && stateV==1  && node->size[KD_TOP] >= Xq[KD_BOTTOM]  && node->size[KD_BOTTOM] <= Xq[KD_TOP] )
+     bAddPnt=True;
+  else if(stateH==1 && stateV==2 &&  node->size[KD_RIGHT] >= Xq[KD_LEFT]  && node->size[KD_LEFT] <= Xq[KD_RIGHT]  )
+  	bAddPnt=True;
+  else  if(BOXINTERSECT(node->size, Xq))
+	  bAddPnt=True;
 
-  /* add node as necessary */
-  if( (stateH == 2  && stateV == 2 ) || BOXINTERSECT(node->size, Xq)) 
+	/* add node as necessary */
+  if(bAddPnt)
   { 
 
+	  (*list_head)->elem=node;
+	  (*list_head)->dist=1.1;
+
+      (*list_head)++;
+
+	  if(*list_head == list_end)
+	  	return 0;
+
+  	/*
     for(idx=0 ; idx<m ;idx++)
       if(!list[idx].elem)
       {
@@ -2471,20 +2492,22 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, int m, KDPriority
     
      if(idx==m)
        return 0;
+
+    */
   }
      
   
 
   if( node->sons[0] )
   {
-    iret= kd_neighbour_intersect3(node->sons[0], (disc+1)%4, Xq,  m,  list, stateH, stateV);
+    iret= kd_neighbour_intersect3(node->sons[0], (disc+1)%4, Xq, list_head,  list_end, stateH, stateV);
     if(iret==0) return iret;
       
   }
      
   if( node->sons[1] )
   {  
-    iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq,  m,  list, stateH, stateV);
+    iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq, list_head,  list_end, stateH, stateV);
     if(iret==0) return iret;
        
   }
@@ -2510,9 +2533,9 @@ int kd_priority_cmp( const void *vp1, const void *vp2)
 
 /* Sorts input list
  * if duplicates then copy new list over to old and True returned
- * no duplicates then sorted list remains and False is retuned
+ * no duplicates then sorted list remains and False is returned
  */
-nco_bool  kd_sort_priority_list(int m, KDPriority *list, int fll_nbr, int *out_fll_nbr){
+nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *out_fll_nbr) {
 
 
   int idx;
@@ -2522,7 +2545,7 @@ nco_bool  kd_sort_priority_list(int m, KDPriority *list, int fll_nbr, int *out_f
 
   KDPriority *lcl_list=NULL_CEWI;
 
-  lcl_list=(KDPriority*)nco_calloc(m, sizeof(KDPriority));
+  lcl_list=(KDPriority*)nco_calloc(nbr_lst, sizeof(KDPriority));
 
 
   /* use stdlib sort  */
@@ -2541,7 +2564,7 @@ nco_bool  kd_sort_priority_list(int m, KDPriority *list, int fll_nbr, int *out_f
   /* deal with duplicates */
   if(  nw_fll_nbr < fll_nbr  ){
      /* copy new local list over to old one */
-     memcpy(list, lcl_list, sizeof(KDPriority)*m );
+     memcpy(list, lcl_list, sizeof(KDPriority)*nbr_lst );
      bret=True;
 
   } else
@@ -2585,60 +2608,39 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 }
 
 
-int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq, kd_box Xr, int m, KDPriority *list)
+int kd_nearest_intersect_wrp(KDTree *realTree, kd_box Xq, kd_box Xr, KDPriority *list, int nbr_lst)
 {
-   int idx;
-   int jdx;
+
+
    /* count duplicates for dbg */
-   int dup_cnt=0;
-   int ret_cnt=0;
+   int ret_cnt;
+   int ret_cnt_nw=0;
    int ret_cnt1=0;
-   int ret_cnt2=0;
 
    nco_bool bSort=False;
 
    const char fnc_nm[]="kd_nearest_intersect_wrp():";
 
-  if(nco_dbg_lvl_get() > nco_dbg_dev)
-    fprintf(stderr,"%s(): Just entered the function\n", fnc_nm);
 
 
-  KDPriority *list2;
+   ret_cnt=kd_nearest_intersect(realTree,Xq, nbr_lst,list, bSort);
 
-   list2 = (KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)m);
-
-
-   ret_cnt1=kd_nearest_intersect(realTree,Xq, m,list, bSort);
-
-   if(ret_cnt1 == m)
-   	 return ret_cnt1;
 
    /* search for second box */
-   ret_cnt2=kd_nearest_intersect(realTree,Xr, m - ret_cnt1  ,list2, bSort);
+   if( ret_cnt <nbr_lst  )
+      ret_cnt1=kd_nearest_intersect(realTree,Xr, nbr_lst - ret_cnt, list+ret_cnt, bSort);
 
 
-    ret_cnt=ret_cnt1;
-
-    /* add second list to first checking for duplicates */
-	for(idx=0; idx<ret_cnt2;idx++)
-	{
-		for (jdx = 0; jdx < ret_cnt1; jdx++) {
-			if (list[jdx].elem->item == list2[idx].elem->item)
-			  { dup_cnt++; break; }
-		}
-
-		if( jdx== ret_cnt1 )
-			list[ret_cnt++] = list2[idx];
+    ret_cnt+=ret_cnt1;
 
 
-	}
+    kd_priority_list_sort(list,nbr_lst,ret_cnt, &ret_cnt_nw  );
 
-	list2 = (KDPriority *)nco_free(list2);
 
-	if(nco_dbg_lvl_get() > nco_dbg_dev)
-		fprintf(stderr,"%s(): num of duplicates detected=%d\n",fnc_nm, dup_cnt);
+	if(nco_dbg_lvl_get() >= nco_dbg_dev && ret_cnt_nw > ret_cnt)
+		fprintf(stderr,"%s(): num of duplicates detected=%d\n",fnc_nm,  ret_cnt_nw-ret_cnt   );
 
-	return ret_cnt;
+	return ret_cnt_nw;
 }
 
 
@@ -2652,17 +2654,27 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, i
     int nw_lcl_cnt=0;
 	int ret_cnt=0;
 
-	node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq,m,list,0,0);
+	KDPriority *list_srt;
+	KDPriority *list_end;
 
 
+	list_srt=list;
+	list_end=list;
+
+	list_end+=m;
+
+	node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
+
+    ret_cnt= ( list_srt - list);
+	/*
 	for(idx=0; idx<m;idx++)
 	  if(list[idx].elem )
 	    ret_cnt++;
       else
         break;
-
+    */
     /* sort list and remove duplicates */
-    if(ret_cnt >1 && bSort &&  kd_sort_priority_list(m, list, ret_cnt, &nw_lcl_cnt ) )
+    if(ret_cnt >1 && bSort && kd_priority_list_sort(list, m, ret_cnt, &nw_lcl_cnt))
     {
        ret_cnt=nw_lcl_cnt;
 

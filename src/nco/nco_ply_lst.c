@@ -575,6 +575,9 @@ int *pl_cnt_vrl_ret){
   size_t idx;
   size_t jdx;
 
+  /* used in realloc */
+  size_t nbr_vrl_blocks=0;
+
 
   const char fnc_nm[]="nco_poly_mk_vrl_sph()";
 
@@ -648,7 +651,7 @@ int *pl_cnt_vrl_ret){
 
     /* if a wrapped polygon then do two searches */
     if(bSplit)
-      cnt_vrl = kd_nearest_intersect_wrp(rtree, size1, size2, max_nbr_vrl, list);
+      cnt_vrl = kd_nearest_intersect_wrp(rtree, size1, size2, list, max_nbr_vrl);
     else
       cnt_vrl = kd_nearest_intersect(rtree, size1, max_nbr_vrl, list, bSort);
 
@@ -743,7 +746,11 @@ int *pl_cnt_vrl_ret){
 
         vrl_area += pl_vrl->area;
 
-        pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * (pl_cnt_vrl + 1));
+        if( nbr_vrl_blocks * NCO_VRL_BLOCKSIZE  <  pl_cnt_vrl+1  )
+          pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * ++nbr_vrl_blocks * NCO_VRL_BLOCKSIZE );
+
+
+
         pl_lst_vrl[pl_cnt_vrl] = pl_vrl;
         pl_cnt_vrl++;
         cnt_vrl_on++;
@@ -770,7 +777,7 @@ int *pl_cnt_vrl_ret){
 
 
 
-        if (bDirtyRats && pl_lst_in[idx]->dp_y_minmax[1] == 90.0  ) {
+        if (bDirtyRats ) {
           //if (pl_lst_in[idx]->bwrp ) {
           pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
           pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
@@ -815,6 +822,9 @@ int *pl_cnt_vrl_ret){
     pl_lst_dbg=(poly_sct**)nco_poly_lst_free(pl_lst_dbg, pl_cnt_dbg);
   }
 
+  /* reduce size */
+  if( nbr_vrl_blocks * NCO_VRL_BLOCKSIZE > pl_cnt_vrl  )
+    pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * pl_cnt_vrl);
 
 
 
@@ -841,8 +851,13 @@ int *pl_cnt_dbg) /* size of output dbg grid */
   int jdx;
 
   int pl_nbr_dbg=0;
-  double epsilon=1.0e-8;
+  double epsilon=1.0e-12;
   double *area=NULL_CEWI;
+
+  nco_bool is_lst_cnt=False;
+
+  /* if true then pl_cnt matches max src_id There are no missing records from NetCDF SCRIP input */
+  is_lst_cnt=( pl_cnt== pl_lst[pl_cnt-1]->src_id +1);
 
   poly_sct **pl_lst_dbg=NULL_CEWI;
 
@@ -855,13 +870,20 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
   for(idx=0;idx<pl_cnt_vrl;idx++)
   {
-    id= ( io_flg ? pl_lst_vrl[idx]->dst_id : pl_lst_vrl[idx]->src_id );
-    for(jdx=0;jdx<pl_cnt;jdx++)
-      if(pl_lst[jdx]->src_id==id)
-        break;
 
-    if(jdx < pl_cnt )
-      area[jdx]-=pl_lst_vrl[idx]->area;
+      id = (io_flg ? pl_lst_vrl[idx]->dst_id : pl_lst_vrl[idx]->src_id);
+
+      if(is_lst_cnt )
+        area[id] -= pl_lst_vrl[idx]->area;
+      else
+      {
+      for (jdx = 0; jdx < pl_cnt; jdx++)
+        if (pl_lst[jdx]->src_id == id)
+          break;
+
+      if (jdx < pl_cnt)
+        area[jdx] -= pl_lst_vrl[idx]->area;
+     }
 
   }
 
