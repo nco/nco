@@ -52,7 +52,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
 
 
-  tInFlag inflag = Unknown_nco; /* {Pin, Qin, Unknown}: which inside */
+  poly_vrl_flg_enm inflag = poly_vrl_unk; /* {Pin, Qin, Unknown}: which inside */
 
   n=P->crn_nbr;
   m=Q->crn_nbr;
@@ -77,7 +77,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       (void)fprintf(stderr, "%s: cross=%d, aHB=%d, bHA=%d code = %c\n", nco_prg_nm_get(),cross, aHB, bHA, code );
 
     if ( code == '1' || code == 'v' ) {
-      if ( inflag == Unknown_nco && FirstPoint ) {
+      if ( inflag == poly_vrl_unk && FirstPoint ) {
         aa = 0;
         ba = 0;
         FirstPoint = False ;
@@ -85,12 +85,12 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
         nco_crt_add_pnt(R->shp, r, p0);
       }
 
-      inflag = ( aHB >0 ? Pin : bHA >0 ? Qin : inflag );
+      inflag = ( aHB >0 ? poly_vrl_pin : bHA >0 ? poly_vrl_qin : inflag );
 
       nco_crt_add_pnt(R->shp, r, p);
 
       if(DEBUG_CRT)
-        (void)fprintf(stderr, "%s: InOut sets inflag=%s\n", nco_prg_nm_get(),  prnInFlag(inflag));
+        (void)fprintf(stderr, "%s: InOut sets inflag=%s\n", nco_prg_nm_get(), nco_poly_vrl_flg_sng_get(inflag));
     }
 
     /*-----Advance rules-----*/
@@ -116,7 +116,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     else if ( (cross == 0) && ( aHB == 0) && ( bHA == 0 ) )
     {
       /* Advance but do not output point. */
-      if ( inflag == Pin )
+      if ( inflag == poly_vrl_pin )
       {
         // b = Advance( b, &ba, m, inflag == Qin, Q[b] );
         b++; ba++;
@@ -132,7 +132,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     {
       if ( bHA > 0)
       {   //a = Advance( a, &aa, n, inflag == Pin, P[a] );
-        if( inflag == Pin ) nco_crt_add_pnt(R->shp, r, P->shp[a]);
+        if( inflag == poly_vrl_pin ) nco_crt_add_pnt(R->shp, r, P->shp[a]);
 
         a++; aa++;
 
@@ -140,7 +140,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       else
       {
         // b = Advance( b, &ba, m, inflag == Qin, Q[b] );
-        if( inflag == Qin) nco_crt_add_pnt(R->shp, r, Q->shp[b]);
+        if( inflag == poly_vrl_qin) nco_crt_add_pnt(R->shp, r, Q->shp[b]);
 
         b++; ba++;
       }
@@ -151,14 +151,14 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       if ( aHB > 0)
       {
         //b = Advance( b, &ba, m, inflag == Qin, Q[b] );
-        if(inflag == Qin ) nco_crt_add_pnt(R->shp, r, Q->shp[b]);
+        if(inflag == poly_vrl_qin ) nco_crt_add_pnt(R->shp, r, Q->shp[b]);
 
         b++; ba++;
       }
       else
       {
         //a = Advance( a, &aa, n, inflag == Pin, P[a] );
-        if( inflag == Pin ) nco_crt_add_pnt(R->shp, r, P->shp[a]);
+        if( inflag == poly_vrl_pin ) nco_crt_add_pnt(R->shp, r, P->shp[a]);
 
         a++; aa++;
       }
@@ -170,7 +170,8 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     b%=m;
 
     if(DEBUG_CRT)
-      (void)fprintf(stderr, "%s: Before Advances:a=%d, b=%d; aa=%d, ba=%d; inflag=%s\n", nco_prg_nm_get(),   a, b, aa, ba, prnInFlag(inflag));
+      (void)fprintf(stderr, "%s: Before Advances:a=%d, b=%d; aa=%d, ba=%d; inflag=%s\n", nco_prg_nm_get(),   a, b, aa, ba,
+                    nco_poly_vrl_flg_sng_get(inflag));
 
 
     /* Quit when both adv. indices have cycled, or one has cycled twice. */
@@ -186,7 +187,7 @@ int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   }
 
   /* Deal with special cases: not implemented. */
-  if ( inflag == Unknown_nco)
+  if ( inflag == poly_vrl_unk)
   {
 
     if(DEBUG_CRT)
@@ -420,13 +421,13 @@ void nco_crt_add_pnt(double **R, int *r, double *P)
 
 
 
-const char * prnInFlag(tInFlag in)
+const char * nco_poly_vrl_flg_sng_get(poly_vrl_flg_enm in)
 {
-  if(in == Pin)
+  if(in == poly_vrl_pin)
     return "Pin";
-  else if(in == Qin)
+  else if(in == poly_vrl_qin)
     return "Qin";
-  else if(in == Unknown_nco)
+  else if(in == poly_vrl_unk)
     return "Unknown";
 }
 

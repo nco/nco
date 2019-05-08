@@ -89,7 +89,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
    double p[NBR_SPH];
    double q[NBR_SPH];
 
-   tInFlag inflag= Unknown_nco;
+   poly_vrl_flg_enm inflag= poly_vrl_unk;
 
    n=P->crn_nbr;
    m=Q->crn_nbr;
@@ -178,11 +178,11 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
         if(isParallel)
         {
-          tInFlag lcl_inflag = Unknown_nco;
+          poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
 
           code = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
 
-          if (lcl_inflag != Unknown_nco ) {
+          if (lcl_inflag != poly_vrl_unk ) {
 
             inflag = lcl_inflag;
 
@@ -190,11 +190,11 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
             if (code == '2')
               nco_sph_add_pnt(R->shp, r, p);
 
-            if (inflag == Pin) {
+            if (inflag == poly_vrl_pin) {
               pqFace = 1;
               qpFace = 0;
 
-            } else if (inflag == Qin) {
+            } else if (inflag == poly_vrl_qin) {
               pqFace = 0;
               qpFace = 1;
             }
@@ -223,11 +223,11 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
               bb = 0;
             }
 
-            inflag = (ipqLHS == 1 ? Pin : iqpLHS == 1 ? Qin : inflag);
+            inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
 
 
             if (DEBUG_SPH)
-              printf("%%InOut sets inflag=%s\n", prnInFlag(inflag));
+              printf("%%InOut sets inflag=%s\n", nco_poly_vrl_flg_sng_get(inflag));
 
           }
         }
@@ -240,13 +240,13 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
          if (qpFace && pqFace)  {
 
             /* Advance either P or Q which has previously arrived ? */
-            if(inflag == Pin) nco_sph_add_pnt(R->shp,r, P->shp[a]);
+            if(inflag == poly_vrl_pin) nco_sph_add_pnt(R->shp,r, P->shp[a]);
 
             aa++;a++;
 
 
          } else if (qpFace) {
-            if(inflag == Qin) nco_sph_add_pnt(R->shp,r, Q->shp[b]);
+            if(inflag == poly_vrl_qin) nco_sph_add_pnt(R->shp,r, Q->shp[b]);
 
             bb++;b++;
 
@@ -254,7 +254,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
             /* advance q */
          } else if (pqFace) {
             /* advance p */
-            if(inflag == Pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
+            if(inflag == poly_vrl_pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
 
             aa++;a++;
 
@@ -265,7 +265,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
             /* cross product zero  */
          } else if( ipqLHS==0 && ip1qLHS==0 && iq1pLHS ==0 && iqpLHS ==0   ){
-            if(inflag==Pin)
+            if(inflag==poly_vrl_pin)
             {bb++;b++;}
             else
             {aa++;a++;}
@@ -276,7 +276,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
          else {
             /* catch all */
-            if(inflag==Pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
+            if(inflag==poly_vrl_pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
             aa++;a++;
 
          }
@@ -455,7 +455,7 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
 
 char
-nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, tInFlag *inflag )
+nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag )
 {
 
   const char fnc_nm[] = "nco_sph_seg_parallel()";
@@ -539,20 +539,20 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     code='1';
     nco_sph_adi(r0,p0);
     /* not sure which flag to set here */
-    *inflag=Qin;
+    *inflag=poly_vrl_qin;
   }
   else if( dx_q0 == dx_p1 && dx_q1 > dx_p1  )
   {
     code='1';
     nco_sph_adi(r0,p1);
-    *inflag=Pin;
+    *inflag=poly_vrl_pin;
   }
     /* LHS overlap */
   else if (dx_q0 <0.0 &&  (dx_q1 >0.0 && dx_q1 < dx_p1)  ) {
     code= '2';
     nco_sph_adi(r0, p0);
     nco_sph_adi(r1, q1);
-    *inflag=Qin;
+    *inflag=poly_vrl_qin;
 
   }
     /* RHS overlap */
@@ -561,21 +561,21 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     code= '2';
     nco_sph_adi(r0, q0);
     nco_sph_adi(r1, p1);
-    *inflag=Pin;
+    *inflag=poly_vrl_pin;
 
   }
   else if(  dx_q0 >=0.0 && dx_q1 <= dx_p1    ) {
     code= '2';
     nco_sph_adi(r0, q0);
     nco_sph_adi(r1, q1);
-    *inflag=Qin;
+    *inflag=poly_vrl_qin;
   }
   else if( dx_q0 <0.0 && dx_q1 > dx_p1    )
   {
     code='2';
     nco_sph_adi(r0,p0 );
     nco_sph_adi(r0,p1 );
-    *inflag=Pin;
+    *inflag=poly_vrl_pin;
   } else{
     code='0';
   }
@@ -1565,7 +1565,7 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   double p[NBR_SPH];
   double q[NBR_SPH];
 
-  tInFlag inflag= Unknown_nco;
+  poly_vrl_flg_enm inflag= poly_vrl_unk;
 
   n=P->crn_nbr;
   m=Q->crn_nbr;
@@ -1667,11 +1667,11 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
 
 
-        inflag = ( ipqLHS ==1 ? Pin : iqpLHS ==1 ? Qin : inflag );
+        inflag = ( ipqLHS ==1 ? poly_vrl_pin : iqpLHS ==1 ? poly_vrl_qin : inflag );
 
 
         if(DEBUG_SPH)
-          printf("%%InOut sets inflag=%s\n", prnInFlag(inflag));
+          printf("%%InOut sets inflag=%s\n", nco_poly_vrl_flg_sng_get(inflag));
 
       }
 
@@ -1683,13 +1683,13 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       if (qpFace && pqFace)  {
 
         /* Advance either P or Q which has previously arrived ? */
-        if(inflag == Pin) nco_sph_add_pnt(R->shp,r, P->shp[a]);
+        if(inflag == poly_vrl_pin) nco_sph_add_pnt(R->shp,r, P->shp[a]);
 
         aa++;a++;
 
 
       } else if (qpFace) {
-        if(inflag == Qin) nco_sph_add_pnt(R->shp,r, Q->shp[b]);
+        if(inflag == poly_vrl_qin) nco_sph_add_pnt(R->shp,r, Q->shp[b]);
 
         bb++;b++;
 
@@ -1697,7 +1697,7 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
         /* advance q */
       } else if (pqFace) {
         /* advance p */
-        if(inflag == Pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
+        if(inflag == poly_vrl_pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
 
         aa++;a++;
 
@@ -1708,7 +1708,7 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
         /* cross product zero  */
       } else if( ipqLHS==0 && ip1qLHS==0 && iq1pLHS ==0 && iqpLHS ==0   ){
-        if(inflag==Pin)
+        if(inflag==poly_vrl_pin)
         {bb++;b++;}
         else
         {aa++;a++;}
@@ -1719,7 +1719,7 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
       else {
         /* catch all */
-        if(inflag==Pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
+        if(inflag==poly_vrl_pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
         aa++;a++;
 
       }

@@ -67,7 +67,7 @@ nco_bool  nco_crt_linear(double *a, double *b, double *c);
 nco_bool  nco_crt_left_on(double *a, double *b, double *c);
 nco_bool  nco_crt_left(double *a, double *b, double *c);
 
-const char * prnInFlag(tInFlag in);
+const char * nco_poly_vrl_flg_sng_get(poly_vrl_flg_enm in);
 
 void
 nco_crt_set_domain(double lon_min, double lon_max, double lat_min, double lat_max);

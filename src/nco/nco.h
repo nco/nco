@@ -1598,10 +1598,10 @@ extern "C" {
 
 
   typedef enum {
-      Pin,
-      Qin,
-      Unknown_nco
-  } tInFlag;
+      poly_vrl_pin,
+      poly_vrl_qin,
+      poly_vrl_unk
+  } poly_vrl_flg_enm;
 
   typedef struct{
     poly_typ_enm pl_typ;
