@@ -2533,9 +2533,9 @@ int kd_priority_cmp( const void *vp1, const void *vp2)
 
 /* Sorts input list
  * if duplicates then copy new list over to old and True returned
- * no duplicates then sorted list remains and False is retuned
+ * no duplicates then sorted list remains and False is returned
  */
-nco_bool  kd_sort_priority_list(int m, KDPriority *list, int fll_nbr, int *out_fll_nbr){
+nco_bool kd_priority_list_sort(KDPriority *list, int m, int fll_nbr, int *out_fll_nbr) {
 
 
   int idx;
@@ -2622,7 +2622,7 @@ int kd_nearest_intersect_wrp(KDTree* realTree, kd_box Xq, kd_box Xr, int m, KDPr
 
    const char fnc_nm[]="kd_nearest_intersect_wrp():";
 
-  if(nco_dbg_lvl_get() > nco_dbg_dev)
+  if(nco_dbg_lvl_get() >= nco_dbg_dev)
     fprintf(stderr,"%s(): Just entered the function\n", fnc_nm);
 
 
@@ -2695,7 +2695,7 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, i
         break;
     */
     /* sort list and remove duplicates */
-    if(ret_cnt >1 && bSort &&  kd_sort_priority_list(m, list, ret_cnt, &nw_lcl_cnt ) )
+    if(ret_cnt >1 && bSort && kd_priority_list_sort(list, m, ret_cnt, &nw_lcl_cnt))
     {
        ret_cnt=nw_lcl_cnt;
 
