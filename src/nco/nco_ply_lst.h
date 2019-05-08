@@ -13,6 +13,7 @@
 #include "nco_rgr.h"     /* Regridding */
 #include "nco_sld.h"     /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
+#include "nco_crt.h"
 #include "nco_ply.h"    /* poly sct stuff */
 #include "kd.h"
 
@@ -23,6 +24,9 @@
 extern "C" {
 #endif /* !__cplusplus */
 
+
+/* used in nco_ply_lst_vrl - for realloc to expand */
+#define NCO_VRL_BLOCKSIZE 4000
 
 
 /************************ functions that manipulate lists of polygons ****************************************************/
