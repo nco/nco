@@ -1,5 +1,9 @@
 2019-05-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.0-alpha12 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-alpha12: Jazz Fest';git push
+	git tag -a 4.8.0-alpha12 -m 'ncclimo no_stdin, aims4/acme1 NCO_PATH_OVERRIDE';git push --tags
+
 	* Document --no_stdin
 
 	* Add --no_stdin to ncclimo to prevent false-positive stdin detection in CWL code
