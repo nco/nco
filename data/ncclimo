@@ -496,6 +496,7 @@ rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
 spl_rgr_opt='--rgr no_stagger' # [sng] Splitter regridding options
 sbs_flg='No' # [sng] Split (subset) climatologies
+std_chk='Yes' # [sng] Check stdin for input file list
 thr_nbr=2 # [nbr] Thread number for regridder
 tpd_out=1 # [nbr] Timesteps-per-day in ouput
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
@@ -540,6 +541,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--no_frm_trm${fnt_nrm}  Omit formula_terms variables (e.g., 'hyba', 'PS') [${fnt_tlc}no_frm_trm, no_frm, no_formula_terms${fnt_nrm}]"
     echo " ${fnt_bld}--no_ntv_tms${fnt_nrm}  Omit native-grid timeseries (splitter only) [${fnt_tlc}no_ntv_tms, no_ntv, no_native${fnt_nrm}]"
     echo " ${fnt_bld}--no_stg_grd${fnt_nrm}  Omit staggered grid variables ('slat, slon, w_stag') [${fnt_tlc}no_stg_grd, no_stg, no_stagger, no_staggered_grid${fnt_nrm}]"
+    echo " ${fnt_bld}--no_stdin${fnt_nrm} Do not check stdin for input file list [${fnt_tlc}no_stdin, no_inp_std, no_redirect, no_standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_rgr${fnt_nrm}  Regridded directory (default ${fnt_bld}${drc_rgr}${fnt_nrm}) [${fnt_tlc}drc_rgr, rgr_drc, dir_regrid, regrid${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
@@ -549,7 +551,6 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
     echo " ${fnt_bld}--seasons${fnt_nrm}  Seasons to output ('none' means none) (default ${fnt_bld}${csn_lst}${fnt_nrm}) [${fnt_tlc}csn_lst, csn, seasons${fnt_nrm}]"
-    echo " ${fnt_bld}--std_flg${fnt_nrm}  Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, std_flg, inp_std, redirect, standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thread_number, thread, threads${fnt_nrm}]"
     echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
@@ -702,6 +703,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       seasons=?* | csn_lst=?* | csn=?* | season=?* ) csn_lst="${LONG_OPTARG}" ;; # # Seasons to output
+	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Check stdin for input file list
+	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Check stdin for input file list
 	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
 	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_out="${LONG_OPTARG}" ;; # # Timesteps-per-day in output
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
@@ -758,48 +761,51 @@ fi # !vrs_prn
 # Non-interactive batch mode (e.g., qsub) always returns true for -p /dev/stdin on PBS, leads to FALSE POSITIVES!
 # This is because PBS uses stdin to set the job name
 # Hence -p /dev/stdin test works everywhere tested except PBS non-interactive batch environment
-if [ -n "${PBS_ENVIRONMENT}" ]; then
-    if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
-	# PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
-	bch_pbs='Yes'
-    fi # !PBS_ENVIRONMENT
-fi # !PBS
-if [ -n "${SLURM_JOBID}" ] && [ -z "${SLURM_PTY_PORT}" ]; then
-    # SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
-    bch_slr='Yes'
-fi # !SLURM
-if [ ${bch_pbs} = 'Yes' ] || [ ${bch_slr} = 'Yes' ]; then
-    # Batch environment
-    if [ ${bch_pbs} = 'Yes' ]; then
-	if [ ! -p /dev/stdin ]; then
-	    # PBS batch jobs cause -p to return true except for stdin redirection 
-	    # When -p returns true we do not know whether stdin pipe contains any input
-	    # User must explicitly indicate use of stdin pipes with --stdin option
-	    # Redirection in PBS batch jobs unambiguously causes -p to return false
+# Check stdin if user has not explicitly disallowed it with --no_stdin
+if [ "${std_chk}" = 'Yes' ]; then
+    if [ -n "${PBS_ENVIRONMENT}" ]; then
+	if [ "${PBS_ENVIRONMENT}" = 'PBS_BATCH' ]; then
+	    # PBS batch detection suggested by OLCF ticket CCS #338970 on 20170127
+	    bch_pbs='Yes'
+	fi # !PBS_ENVIRONMENT
+    fi # !PBS
+    if [ -n "${SLURM_JOBID}" ] && [ -z "${SLURM_PTY_PORT}" ]; then
+	# SLURM batch detection suggested by NERSC ticket INC0096873 on 20170127
+	bch_slr='Yes'
+    fi # !SLURM
+    if [ ${bch_pbs} = 'Yes' ] || [ ${bch_slr} = 'Yes' ]; then
+	# Batch environment
+	if [ ${bch_pbs} = 'Yes' ]; then
+	    if [ ! -p /dev/stdin ]; then
+		# PBS batch jobs cause -p to return true except for stdin redirection 
+		# When -p returns true we do not know whether stdin pipe contains any input
+		# User must explicitly indicate use of stdin pipes with --stdin option
+		# Redirection in PBS batch jobs unambiguously causes -p to return false
+		inp_std='Yes'
+	    fi # !stdin
+	fi # !bch_slr
+	if [ ${bch_slr} = 'Yes' ]; then
+	    if [ -p /dev/stdin ]; then
+		# SLURM batch jobs cause -p to return true for stdin pipes
+		# When -p returns false we do not know whether output was redirectd
+		# User must explicitly indicate use of redirection with --stdin option
+		# Stdin pipes in SLURM batch jobs unambiguously cause -p to return true
+		inp_std='Yes'
+	    fi # !stdin
+	fi # !bch_slr
+    else # !bch
+	# Interactive environment
+	if [ -p /dev/stdin ] || [ ! -t 0 ]; then
+	    # Interactive environments unambiguously cause -p to return true for stdin pipes
+	    # Interactive environments unambiguously cause -t 0 to return false for stdin redirection
 	    inp_std='Yes'
 	fi # !stdin
-    fi # !bch_slr
-    if [ ${bch_slr} = 'Yes' ]; then
-	if [ -p /dev/stdin ]; then
-	    # SLURM batch jobs cause -p to return true for stdin pipes
-	    # When -p returns false we do not know whether output was redirectd
-	    # User must explicitly indicate use of redirection with --stdin option
-	    # Stdin pipes in SLURM batch jobs unambiguously cause -p to return true
-	    inp_std='Yes'
-	fi # !stdin
-    fi # !bch_slr
-else # !bch
-    # Interactive environment
-    if [ -p /dev/stdin ] || [ ! -t 0 ]; then
-	# Interactive environments unambiguously cause -p to return true for stdin pipes
-	# Interactive environments unambiguously cause -t 0 to return false for stdin redirection
-	inp_std='Yes'
-    fi # !stdin
-fi # !bch
-if [ ${inp_std} = 'Yes' ] && [ ${inp_psn} = 'Yes' ]; then
-    echo "${spt_nm}: ERROR expecting input both from stdin and positional command-line arguments"
-    exit 1
-fi # !inp_std
+    fi # !bch
+    if [ ${inp_std} = 'Yes' ] && [ ${inp_psn} = 'Yes' ]; then
+	echo "${spt_nm}: ERROR expecting input both from stdin and positional command-line arguments"
+	exit 1
+    fi # !inp_std
+fi # !std_chk
 
 # Determine mode first (this helps determine other defaults)
 if [ -n "${yr_srt_prv}" ]; then

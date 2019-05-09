@@ -23,7 +23,8 @@ NEW FEATURES (full details always in ChangeLog):
 A. ncremap now accepts two new Tempest map configurations, "se2se" and 
    "fv2fv". Use them to regrid one spectral element grid to another,
    or one finite volume grid to another.
-   http://nco.sf.net/nco.html#ncremap
+   http://nco.sf.net/nco.html#se2se
+   http://nco.sf.net/nco.html#fv2fv
 
 B. ncap2 now allows creating brand-new files without specifying an
    input filename. Previously, users had to specify an input file 
@@ -33,13 +34,14 @@ B. ncap2 now allows creating brand-new files without specifying an
    ncap2 -s 'foo=1' ~/foo.nc ~/foo.nc # Add to old foo.nc
    http://nco.sf.net/nco.html#ncap2
 
-fxm: document this
-C. ncremap has a new flag, --no_stdin, that disables checking stdin
-   for input files. This is a flag that takes no argument, not a
-   key-value option. Add --no_stdin to any command that might run in
-   an environment, like Azure CI, that uses stdin for other purposes.
+C. ncremap and ncclimo have a new flag, --no_stdin, that disables
+   checking stdin for input files. This is a flag that takes no
+   argument, not a key-value option. Add --no_stdin to any command
+   that might run in an environment, like Azure CI or CWL, that uses
+   stdin for other purposes. 
+   ncclimo --no_stdin --caseid=foo ...
    ncremap --no_stdin --map=map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#ncremap
+   http://nco.sf.net/nco.html#no_stdin
 
 D. ncremap can now interpolate files in the vertical dimension.
    The --vrt_fl=vrt_fl option points to a vertical grid file
@@ -47,13 +49,13 @@ D. ncremap can now interpolate files in the vertical dimension.
    Currently supported grids include the hybrid vertical coordinate
    employed by E3SM and CESM, and pure pressure coordinates.
    ncremap --vrt_fl=vrt_fl in.nc out.nc
-   http://nco.sf.net/nco.html#ncremap
+   http://nco.sf.net/nco.html#vrt
 
 E. ncremap now accepts the --xcl_var switch. This switch changes
    the extraction list (specified with -v vars or --vars=vars) into an
    exclusion list. Behavior is identical to the common NCO -x option.
    ncremap --xcl_var --vars=excluded,from,output in.nc out.nc
-   http://nco.sf.net/nco.html#ncremap
+   http://nco.sf.net/nco.html#xcl_var
 
 F. ncremap and ncclimo now alter paths on certain supercomputers at
    DOE HPC centers only when requested to. Previously, these commands
@@ -73,7 +75,7 @@ G. ncclimo adopts a default job_nbr of var_nbr in splitter mode.
    Previusly the default was 2. However, the splitter is extremely
    memory efficient and scales well up to over a hundred variables on
    all HPCs tested. Hence this change.
-   http://nco.sf.net/nco.html#ncclimo
+   http://nco.sf.net/nco.html#job_nbr
    
 H. ncks has a new --chk_nan option. This option invokes a special
    checker that looks for NaN of NaNf in double- and single-precision
@@ -81,7 +83,7 @@ H. ncks has a new --chk_nan option. This option invokes a special
    NCO prints its location and then exits with an error code. Thanks
    to Matthew Thompson of NASA for this suggestion.
    ncks --chk_nan in.nc
-   http://nco.sf.net/nco.html#ncks
+   http://nco.sf.net/nco.html#chk_nan
 
 BUG FIXES:
 

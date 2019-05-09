@@ -17629,10 +17629,10 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-d @var{dbg_lvl}] [--d2f]  [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
 [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
-[--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd]
+[--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
-[-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--stdin] 
+[-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}]
 [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [-v @var{var_lst}] [--version] 
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
@@ -18343,9 +18343,9 @@ ncclimo --seasons=fm,on ...           # Monthly + FM,ON
 @item --stdin (@code{--stdin}, @code{--inp_std}, @code{--std_flg}, @code{--redirect}, @code{--standard_input})
 This switch (which takes no argument) explicitly indicates that 
 input file lists are provided via @code{stdin}, i.e., standard input.
-In interactive environments, @command{ncclimo} can automatically 
-(i.e., without any switch) detect whether input is provided via
-@code{stdin}. 
+In interactive environments, @command{ncclimo} and @command{ncremap}
+can automatically (i.e., without any switch) detect whether input is
+provided via @code{stdin}. 
 This switch is never required for jobs run in an interactive shell. 
 However, non-interactive batch jobs (such as those submitted to the 
 @acronym{SLURM} and @acronym{PBS} schedulers) make it impossible to 
@@ -18359,12 +18359,37 @@ Using this switch in any other context (e.g., interactive shells) is
 optional.
 
 In some other non-interactive environments (e.g., @command{crontab},
-@code{nohup}), @command{ncclimo} may mistakenly expect input to be
-provided on @code{stdin} simply because the environment is using
-@code{stdin} for other purposes.
-In such cases users may persuade @command{ncclimo} to @emph{ignore}
-@code{stdin} by explicitly invoking the @samp{--clm_md} option
-(described above).
+@code{nohup}, Azure @acronym{CI}, @acronym{CWL}), @command{ncclimo}
+and @command{ncremap} may mistakenly expect input to be provided on
+@code{stdin} simply because the environment is using @code{stdin} for
+other purposes. 
+In such cases users may disable checking @code{stdin} by explicitly
+invoking the @samp{--clm_md} option (this works, as described above,
+only for @command{ncclimo}), or by invoking the @samp{--no_stdin} flag
+(described next), which works for both @command{ncclimo} and
+@command{ncremap}. 
+
+@html
+<a name="no_stdin"></a> <!-- http://nco.sf.net/nco.html#no_stdin -->
+@end html
+@cindex Azure @acronym{CI}
+@cindex @acronym{CWL}
+@cindex @code{--no_stdin}
+@item --no_stdin (@code{--no_stdin}, @code{--no_inp_std}, @code{--no_redirect}, @code{--no_standard_input})
+First introduced in @acronym{NCO} version 4.8.0 (released May, 2019),
+this switch (which takes no argument) disables checking standard input
+(aka @code{stdin}) for input files. 
+This is useful because @command{ncclimo} and @command{ncremap} may
+mistakenly expect input to be provided on @code{stdin} in environments
+that use @code{stdin} for other purposes. 
+Some non-interactive environments (e.g., @command{crontab},
+@code{nohup}, Azure @acronym{CI}, @acronym{CWL}), use standard input 
+for their own purposes, and thus confuse @acronym{NCO} into thinking
+that you provided the input files names via the @code{stdin}
+mechanism. 
+In such cases users may disable the automatic checks for standard
+input by explicitly invoking the @samp{--no_stdin} flag.
+This switch is never required for jobs run in an interactive shell. 
 
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
@@ -24544,6 +24569,28 @@ A skeleton file is a bare-bones datafile on the specified grid.
 It contains the complete latitude/longitude grid and an area field.
 Skeleton files are useful for validating that the grid-creation
 instructions in @var{grd_sng} perform as expected.
+
+@html
+<a name="no_stdin"></a> <!-- http://nco.sf.net/nco.html#no_stdin -->
+@end html
+@cindex Azure @acronym{CI}
+@cindex @acronym{CWL}
+@cindex @code{--no_stdin}
+@item --no_stdin (@code{--no_stdin}, @code{--no_inp_std}, @code{--no_redirect}, @code{--no_standard_input})
+First introduced in @acronym{NCO} version 4.8.0 (released May, 2019),
+this switch (which takes no argument) disables checking standard input
+(aka @code{stdin}) for input files. 
+This is useful because @command{ncclimo} and @command{ncremap} may
+mistakenly expect input to be provided on @code{stdin} in environments
+that use @code{stdin} for other purposes. 
+Some non-interactive environments (e.g., @command{crontab},
+@code{nohup}, Azure @acronym{CI}, @acronym{CWL}), use standard input 
+for their own purposes, and thus confuse @acronym{NCO} into thinking
+that you provided the input files names via the @code{stdin}
+mechanism. 
+In such cases users may disable the automatic checks for standard
+input by explicitly invoking the @samp{--no_stdin} flag.
+This switch is never required for jobs run in an interactive shell. 
 
 @html
 <a name="tmp_drc"></a> <!-- http://nco.sf.net/nco.html#tmp_drc -->

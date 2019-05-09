@@ -517,7 +517,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"
     echo " ${fnt_bld}--no_frm_trm${fnt_nrm}  Omit formula_terms variables (e.g., 'hyba', 'PS') [${fnt_tlc}no_frm_trm, no_formula_terms${fnt_nrm}]"
     echo " ${fnt_bld}--no_stg_grd${fnt_nrm}  Omit staggered grid variables ('slat, slon, w_stag') [${fnt_tlc}no_stg_grd, no_stg, no_stagger, no_staggered_grid${fnt_nrm}]"
-    echo " ${fnt_bld}--no_stdin${fnt_nrm} Check stdin for input file list (default ${fnt_bld}${std_chk}${fnt_nrm}) [${fnt_tlc}no_stdin, no_inp_std, no_redirect, no_standard_input${fnt_nrm}]"
+    echo " ${fnt_bld}--no_stdin${fnt_nrm} Do not check stdin for input file list [${fnt_tlc}no_stdin, no_inp_std, no_redirect, no_standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-O${fnt_nrm} ${fnt_bld}drc_out${fnt_nrm}  Output directory (default ${fnt_bld}${drc_out}${fnt_nrm}) [${fnt_tlc}drc_out, out_drc, dir_out, out_dir, output${fnt_nrm}]"
     echo "${fnt_rvr}-o${fnt_nrm} ${fnt_bld}out_fl${fnt_nrm}   Output-file (regridded file) (empty copies Input filename) (default ${fnt_bld}${out_fl}${fnt_nrm}) [${fnt_tlc}out_fl, out_file, output_file${fnt_nrm}]"
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, pdq_typ, prm_typ, procedure${fnt_nrm}]"
