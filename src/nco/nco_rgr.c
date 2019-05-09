@@ -782,7 +782,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   long lev_nbr_in;
   long ilev_nbr_out;
   long lev_nbr_out;
+  long tm_idx=0L; /* [idx] Current timestep */
   long tm_idx_in=0L; /* [idx] Current timestep in input file */
+  long tm_idx_out=0L; /* [idx] Current timestep in output file */
+  long tm_nbr=0L; /* [idx] Number of timesteps */
   long tm_nbr_in=1L; /* [nbr] Number of timesteps in input vertical grid */
   long tm_nbr_out=1L; /* [nbr] Number of timesetps in output vertical grid */
   size_t grd_sz_in=1L; /* [nbr] Number of elements in single layer of input grid */
@@ -1027,6 +1030,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !var_idx */
     grd_sz_out=grd_sz_in;
   } /* !flg_grd_in_prs */
+
+  /* Timestep sequencing */
+  if(tm_nbr_in > 1L || tm_nbr_out > 1L)
+    if(tm_nbr_in > tm_nbr_out)
+      assert((float)tm_nbr_in/(float)tm_nbr_out == tm_nbr_in%tm_nbr_out);
+    else
+      assert((float)tm_nbr_out/(float)tm_nbr_in == tm_nbr_out%tm_nbr_in);
+  tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
 
   double *hyai_in=NULL; /* [frc] Hybrid A coefficient at layer interfaces on input grid */
   double *hyam_in=NULL; /* [frc] Hybrid A coefficient at layer midpoints on input grid */
@@ -1442,16 +1453,18 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   size_t grd_nbr; /* [nbr] Horizonal grid size */
   size_t idx_dbg=rgr->idx_dbg;
   
-  /* Set firstprivate variables to initial values */
-  grd_nbr=grd_sz_in;
-  has_ilev=False;
-  has_lev=False;
-  
-  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Interpolation progress: # means interpolated, ~ means copied\n");
-
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped as shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
+
+  for(tm_idx=0;tm_idx<1;tm_idx++){ // fxm: use dynamic tm_nbr to end loop
+    
+    /* Set firstprivate variables to initial values */
+    grd_nbr=grd_sz_in;
+    has_ilev=False;
+    has_lev=False;
+    
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Interpolation progress: # means interpolated, ~ means copied\n");
 
 #ifdef __GNUG__
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
@@ -1468,220 +1481,220 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 #  pragma omp parallel for firstprivate(has_ilev,has_lev,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,flg_ntp_log,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
-  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
-    trv=trv_tbl->lst[idx_tbl];
-    thr_idx=omp_get_thread_num();
-    in_id=trv_tbl->in_id_arr[thr_idx];
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+      trv=trv_tbl->lst[idx_tbl];
+      thr_idx=omp_get_thread_num();
+      in_id=trv_tbl->in_id_arr[thr_idx];
 #ifdef _OPENMP
-    if(nco_dbg_lvl_get() >= nco_dbg_var && !thr_idx && !idx_tbl) (void)fprintf(fp_stdout,"%s: %s reports regrid loop uses %d thread%s\n",nco_prg_nm_get(),fnc_nm,omp_get_num_threads(),(omp_get_num_threads() > 1) ? "s" : "");
-    if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, nm = %s\n",nco_prg_nm_get(),thr_idx,idx_tbl,trv.nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_var && !thr_idx && !idx_tbl) (void)fprintf(fp_stdout,"%s: %s reports regrid loop uses %d thread%s\n",nco_prg_nm_get(),fnc_nm,omp_get_num_threads(),(omp_get_num_threads() > 1) ? "s" : "");
+      if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(fp_stdout,"%s: thread = %d, idx_tbl = %d, nm = %s\n",nco_prg_nm_get(),thr_idx,idx_tbl,trv.nm);
 #endif /* !_OPENMP */
-    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
-      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
-      if(trv.flg_rgr){
-	/* Interpolate variable */
-	var_nm=trv.nm;
-	var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
-	var_typ_out=trv.var_typ; /* NB: Output type in file is same as input type */
-	var_sz_in=1L;
-	var_sz_out=1L;
-	rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
-	rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
-	rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
-	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr_out);
-	dmn_nbr_max= dmn_nbr_in > dmn_nbr_out ? dmn_nbr_in : dmn_nbr_out;
-	dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
-	dmn_id_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
-	dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long)); /* max() for both input and output grids */
-	dmn_cnt_in=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
-	dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
-	rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
-	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_id_out);
-	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
-	  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_in+dmn_idx);
-	  var_sz_in*=dmn_cnt_in[dmn_idx];
-	  dmn_srt[dmn_idx]=0L;
-	  if(dmn_id_in[dmn_idx] == dmn_id_ilev_in) has_ilev=True;
-	  if(dmn_id_in[dmn_idx] == dmn_id_lev_in) has_lev=True;
-	} /* !dmn_idx */
-	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
-	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
+      if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
+	if(trv.flg_rgr){
+	  /* Interpolate variable */
+	  var_nm=trv.nm;
+	  var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
+	  var_typ_out=trv.var_typ; /* NB: Output type in file is same as input type */
+	  var_sz_in=1L;
+	  var_sz_out=1L;
+	  rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
+	  rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
+	  rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
+	  rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr_out);
+	  dmn_nbr_max= dmn_nbr_in > dmn_nbr_out ? dmn_nbr_in : dmn_nbr_out;
+	  dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+	  dmn_id_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
+	  dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long)); /* max() for both input and output grids */
+	  dmn_cnt_in=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+	  dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	  rcd=nco_inq_vardimid(out_id,var_id_out,dmn_id_out);
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	    rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_in+dmn_idx);
+	    var_sz_in*=dmn_cnt_in[dmn_idx];
+	    dmn_srt[dmn_idx]=0L;
+	    if(dmn_id_in[dmn_idx] == dmn_id_ilev_in) has_ilev=True;
+	    if(dmn_id_in[dmn_idx] == dmn_id_lev_in) has_lev=True;
+	  } /* !dmn_idx */
+	  var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
+	  rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
 
-	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt_out+dmn_idx);
-	  if(dmn_cnt_out[dmn_idx] == 0L){
-	    /* No records have been written, so overwrite zero output record size with input record size */
-	    char dmn_rec_nm[NC_MAX_NAME]; /* [sng] Record dimension name */
-	    int dmn_rec_id_in;
-	    rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_rec_nm);
-	    rcd=nco_inq_dimid(in_id,dmn_rec_nm,&dmn_rec_id_in);
-	    rcd=nco_inq_dimlen(in_id,dmn_rec_id_in,dmn_cnt_out+dmn_idx);
-	  } /* !dmn_cnt_out */
-	  var_sz_out*=dmn_cnt_out[dmn_idx];
-	  dmn_srt[dmn_idx]=0L;
-	} /* end loop over dimensions */
-	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
+	  for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+	    rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt_out+dmn_idx);
+	    if(dmn_cnt_out[dmn_idx] == 0L){
+	      /* No records have been written, so overwrite zero output record size with input record size */
+	      char dmn_rec_nm[NC_MAX_NAME]; /* [sng] Record dimension name */
+	      int dmn_rec_id_in;
+	      rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_rec_nm);
+	      rcd=nco_inq_dimid(in_id,dmn_rec_nm,&dmn_rec_id_in);
+	      rcd=nco_inq_dimlen(in_id,dmn_rec_id_in,dmn_cnt_out+dmn_idx);
+	    } /* !dmn_cnt_out */
+	    var_sz_out*=dmn_cnt_out[dmn_idx];
+	    dmn_srt[dmn_idx]=0L;
+	  } /* end loop over dimensions */
+	  var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 
-	/* Missing value setup */
-	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
-
-	if(has_ilev){
-	  /* Interpolate current variable from input interface pressure grid to output interface pressure grid */
-	  lvl_nbr_in=ilev_nbr_in;
-	  lvl_nbr_out=ilev_nbr_out;
-	  prs_ntp_in=prs_ntf_in;
-	  prs_ntp_out=prs_ntf_out;
-	}else{
-	  /* Interpolate current variable from input midpoint pressure grid to output midpoint pressure grid */
-	  lvl_nbr_in=lev_nbr_in;
-	  lvl_nbr_out=lev_nbr_out;
-	  prs_ntp_in=prs_mdp_in;
-	  prs_ntp_out=prs_mdp_out;
-	} /* !ilev */	  
-
-	/* Procedure: Extract input/output coordinate/data arrays into 1D column order
-	   This enables actual interpolation code to be written for, or take advantage of, 1D interpolation routines 
-	   After interpolating into 1D sequential memory, copy back to ND output and repeat */
-	double *crd_in=NULL; /* Input vertical coordinate (must be monotonic) */
-	double *crd_out=NULL; /* Output vertical coordinate (must be monotonic) */
-	double *dat_in=NULL; /* Input data (to be interpolated) on input vertical coordinate grid */
-	double *dat_out=NULL; /* Output data (interpolated) output vertical coordinate grid (i.e., the answer) */
-	double *crd_in_mnt; /* Input vertical coordinate reversed if necessary to be monotonically increasing */
-	double *crd_out_mnt; /* Output vertical coordinate reversed if necessary to be monotonically increasing */
-	double *dat_in_mnt; /* Input data (to be interpolated) reversed if necessary along with input grid */
-	double *dat_out_mnt; /* Output data (interpolated) reversed if necessary along with output grid */
-	nco_xtr_sct xtr_LHS;
-	nco_xtr_sct xtr_RHS;
-	size_t brk_lft_idx;
-	size_t brk_rgt_idx;
-	size_t in_idx;
-	size_t in_nbr;
-	size_t out_nbr;
-	size_t out_idx;
-	/* Default extrapolation uses nearest valid neighbor */
-	xtr_LHS.xtr_fll=True;
-	xtr_LHS.xtr_vrb=False;
-	xtr_LHS.typ_fll=nco_xtr_fll_ngh;
-	xtr_RHS.xtr_fll=True;
-	xtr_RHS.xtr_vrb=False;
-	xtr_RHS.typ_fll=nco_xtr_fll_ngh;
-	/* Special cases to extrapolate beneath terrain */
-	if(!strcmp(var_nm,"T") || !strcmp(var_nm,"ta")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
-	else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
-	else xtr_RHS.typ_fll=nco_xtr_fll_ngh;
-	crd_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
-	crd_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
-	dat_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
-	dat_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
-	in_nbr=lvl_nbr_in;
-	out_nbr=lvl_nbr_out;
+	  /* Missing value setup */
+	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 	  
-	nco_bool in_ncr; /* [flg] Input coordinate monotonically increases */
-	nco_bool out_ncr; /* [flg] Output coordinate monotonically increases */
-
-	/* Determine monotonicity direction only once, based on first vertical column */
-	if(prs_ntp_in[grd_nbr]-prs_ntp_in[0] > 0.0) in_ncr=True; else in_ncr=False;
-	out_ncr=True;
-	if(out_nbr > 1)
-	  if(prs_ntp_out[grd_nbr]-prs_ntp_out[0] < 0.0)
-	    out_ncr=False;
-
-	/* If necessary, allocate (once, and re-use it) additional memory to hold reversed arrays */
-	if(!in_ncr){
-	  crd_in_mnt=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
-	  dat_in_mnt=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
-	} /* !in_ncr */
-	if(!out_ncr){
-	  crd_out_mnt=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
-	  dat_out_mnt=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
-	} /* !out_ncr */
-	
-	/* Constants and parameters for extrapolation */
-	const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assumes constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(100 mb) = (6.5 K)/(10000 Pa) */
-	const double Rd_rcp_g0=287.0/9.81; /* [K/Pa] Geopotential height extrapolation uses hypsometric equation Z2-Z1=(Rd*Tv_avg/g0)*ln(p1/p2)=(Rd*Tv_avg/g0)*(ln(p1)-ln(p2)) */
-	const double tpt_vrt_avg=288.0; /* [K] Mean virtual temperature assumed for geopotential height extrapolation */
-	nco_bool FIRST_WARNING_LHS=True; /* [flg] */
-	nco_bool FIRST_WARNING_RHS=True; /* [flg] */
-	
-	/* Outer loop over columns */
-	for(grd_idx=0;grd_idx<grd_nbr;grd_idx++){
-	  
-	  /* Initialize pseudo-1D variables with consecutive memory addresses to avoid indirection */
-	  for(lvl_idx_in=0;lvl_idx_in<lvl_nbr_in;lvl_idx_in++){
-	    idx_in=grd_idx+lvl_idx_in*grd_nbr;
-	    crd_in[lvl_idx_in]=prs_ntp_in[idx_in];
-	    dat_in[lvl_idx_in]=var_val_dbl_in[idx_in];
-	  } /* !lvl_idx_in */
-	  for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
-	    idx_out=grd_idx+lvl_idx_out*grd_nbr;
-	    crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
-	  } /* !lvl_idx_out */
-	  
-	  /* Interpolation code easier to write/debug if crd_in and crd_out both monotonically increase
-	     However, monotonically decreasing coordinates useful in many cases, such as depth coordinate, 
-	     and pressure levels arranged largest to smallest (favored by CMIP)
-	     Next code block reverses array(s) if necessary so coordinates monotonically increase
-	     Code uses crd_in_mnt, dat_in_mnt, crd_out_mnt where "_mnt" reminds of "monotonically increasing" assumption
-	     Following code lifted from CSZ's libcsz.a library source code ~/sw/c++/vec.hh */
-
-	  if(in_ncr){
-	    crd_in_mnt=crd_in;
-	    dat_in_mnt=dat_in;
+	  if(has_ilev){
+	    /* Interpolate current variable from input interface pressure grid to output interface pressure grid */
+	    lvl_nbr_in=ilev_nbr_in;
+	    lvl_nbr_out=ilev_nbr_out;
+	    prs_ntp_in=prs_ntf_in;
+	    prs_ntp_out=prs_ntf_out;
 	  }else{
-	    for(in_idx=0;in_idx<in_nbr;in_idx++){
-	      crd_in_mnt[in_idx]=crd_in[in_nbr-in_idx-1];
-	      dat_in_mnt[in_idx]=dat_in[in_nbr-in_idx-1];
-	    } /* !in_idx */
+	    /* Interpolate current variable from input midpoint pressure grid to output midpoint pressure grid */
+	    lvl_nbr_in=lev_nbr_in;
+	    lvl_nbr_out=lev_nbr_out;
+	    prs_ntp_in=prs_mdp_in;
+	    prs_ntp_out=prs_mdp_out;
+	  } /* !ilev */	  
+	  
+	  /* Procedure: Extract input/output coordinate/data arrays into 1D column order
+	     This enables actual interpolation code to be written for, or take advantage of, 1D interpolation routines 
+	     After interpolating into 1D sequential memory, copy back to ND output and repeat */
+	  double *crd_in=NULL; /* Input vertical coordinate (must be monotonic) */
+	  double *crd_out=NULL; /* Output vertical coordinate (must be monotonic) */
+	  double *dat_in=NULL; /* Input data (to be interpolated) on input vertical coordinate grid */
+	  double *dat_out=NULL; /* Output data (interpolated) output vertical coordinate grid (i.e., the answer) */
+	  double *crd_in_mnt; /* Input vertical coordinate reversed if necessary to be monotonically increasing */
+	  double *crd_out_mnt; /* Output vertical coordinate reversed if necessary to be monotonically increasing */
+	  double *dat_in_mnt; /* Input data (to be interpolated) reversed if necessary along with input grid */
+	  double *dat_out_mnt; /* Output data (interpolated) reversed if necessary along with output grid */
+	  nco_xtr_sct xtr_LHS;
+	  nco_xtr_sct xtr_RHS;
+	  size_t brk_lft_idx;
+	  size_t brk_rgt_idx;
+	  size_t in_idx;
+	  size_t in_nbr;
+	  size_t out_nbr;
+	  size_t out_idx;
+	  /* Default extrapolation uses nearest valid neighbor */
+	  xtr_LHS.xtr_fll=True;
+	  xtr_LHS.xtr_vrb=False;
+	  xtr_LHS.typ_fll=nco_xtr_fll_ngh;
+	  xtr_RHS.xtr_fll=True;
+	  xtr_RHS.xtr_vrb=False;
+	  xtr_RHS.typ_fll=nco_xtr_fll_ngh;
+	  /* Special cases to extrapolate beneath terrain */
+	  if(!strcmp(var_nm,"T") || !strcmp(var_nm,"ta")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
+	  else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
+	  else xtr_RHS.typ_fll=nco_xtr_fll_ngh;
+	  crd_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
+	  crd_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
+	  dat_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
+	  dat_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
+	  in_nbr=lvl_nbr_in;
+	  out_nbr=lvl_nbr_out;
+	  
+	  nco_bool in_ncr; /* [flg] Input coordinate monotonically increases */
+	  nco_bool out_ncr; /* [flg] Output coordinate monotonically increases */
+	  
+	  /* Determine monotonicity direction only once, based on first vertical column */
+	  if(prs_ntp_in[grd_nbr]-prs_ntp_in[0] > 0.0) in_ncr=True; else in_ncr=False;
+	  out_ncr=True;
+	  if(out_nbr > 1)
+	    if(prs_ntp_out[grd_nbr]-prs_ntp_out[0] < 0.0)
+	      out_ncr=False;
+	  
+	  /* If necessary, allocate (once, and re-use it) additional memory to hold reversed arrays */
+	  if(!in_ncr){
+	    crd_in_mnt=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
+	    dat_in_mnt=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
 	  } /* !in_ncr */
-
-	  if(out_ncr){
-	    crd_out_mnt=crd_out;
-	    dat_out_mnt=dat_out;
-	  }else{
-	    for(out_idx=0;out_idx<out_nbr;out_idx++)
-	      crd_out_mnt[out_idx]=crd_out[out_nbr-out_idx-1];
+	  if(!out_ncr){
+	    crd_out_mnt=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
+	    dat_out_mnt=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
 	  } /* !out_ncr */
+	  
+	  /* Constants and parameters for extrapolation */
+	  const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assumes constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(100 mb) = (6.5 K)/(10000 Pa) */
+	  const double Rd_rcp_g0=287.0/9.81; /* [K/Pa] Geopotential height extrapolation uses hypsometric equation Z2-Z1=(Rd*Tv_avg/g0)*ln(p1/p2)=(Rd*Tv_avg/g0)*(ln(p1)-ln(p2)) */
+	  const double tpt_vrt_avg=288.0; /* [K] Mean virtual temperature assumed for geopotential height extrapolation */
+	  nco_bool FIRST_WARNING_LHS=True; /* [flg] */
+	  nco_bool FIRST_WARNING_RHS=True; /* [flg] */
+	  
+	  /* Outer loop over columns */
+	  for(grd_idx=0;grd_idx<grd_nbr;grd_idx++){
 	    
-	  // Initialize bracketing index
-	  brk_lft_idx=0;
-	  // Loop over desired output coordinates
-	  for(out_idx=0;out_idx<out_nbr;out_idx++){
-	    // Order of conditions is important since second condition is illegal if brk_lft_idx >= in_nbr
-	    while((brk_lft_idx < in_nbr) && (crd_in_mnt[brk_lft_idx] < crd_out_mnt[out_idx])){
-	      brk_lft_idx++;
-	    } // !while
-	    brk_lft_idx--;
-	    // Handle identity interpolation separately to preserve symmetry in extrapolation code 
-	    if(brk_lft_idx != in_nbr-1){
-	      if(crd_in_mnt[brk_lft_idx+1] == crd_out_mnt[out_idx]){
-		dat_out_mnt[out_idx]=dat_in_mnt[brk_lft_idx+1];
-		if(brk_lft_idx == -1) brk_lft_idx=0; // Reset brk_lft_idx to 0 so next while loop works
-		continue; // Jump to next iteration
-	      } // !crd_in_mnt
-	    } // !brk_lft_idx
-	    if(brk_lft_idx == -1){
-	      // LHS Extrapolation required
-	      // Degenerate case: crd_out_mnt[out_idx] < crd_in_mnt[0]
-	      brk_lft_idx=0; // Reset brk_lft_idx to 0 so next while loop works
-	      if(xtr_LHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: WARNING %s reports variable %s column %lu output value dat_out_mnt[%lu] at coordinate crd_out_mnt[%lu] = %g requires LHS extrapolation beyond leftmost valid coordinate at crd_in_mnt[%lu] = %g. Nearest valid datum is dat_in_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,grd_idx,out_idx,out_idx,crd_out_mnt[out_idx],brk_lft_idx,crd_in_mnt[brk_lft_idx],brk_lft_idx,dat_in_mnt[brk_lft_idx]);
-	      // Extrapolation options are presented in decreasing order of preference
-	      if(!xtr_LHS.xtr_fll){
-		(void)fprintf(fp_stdout,"%s: ERROR %s Full LHS extrapolation required but not permitted\n",nco_prg_nm_get(),fnc_nm);
-		// return NCO_ERR;
-	      } /* !xtr_LHS.xtr_fll */
-	      switch(xtr_LHS.typ_fll){
-              case nco_xtr_fll_nil:
-		dat_out_mnt[out_idx]=0.0;
-		break;
-              case nco_xtr_fll_ngh:
-		dat_out_mnt[out_idx]=dat_in_mnt[0];
-		break;
-              case nco_xtr_fll_lnr:
-		dat_out_mnt[out_idx]=dat_in_mnt[0]-
-		  (crd_in_mnt[0]-crd_out_mnt[out_idx])*
-		  (dat_in_mnt[1]-dat_in_mnt[0])/(crd_in_mnt[1]-crd_in_mnt[0]);
-		break;
-	      case nco_xtr_fll_gph:
+	    /* Initialize pseudo-1D variables with consecutive memory addresses to avoid indirection */
+	    for(lvl_idx_in=0;lvl_idx_in<lvl_nbr_in;lvl_idx_in++){
+	      idx_in=grd_idx+lvl_idx_in*grd_nbr;
+	      crd_in[lvl_idx_in]=prs_ntp_in[idx_in];
+	      dat_in[lvl_idx_in]=var_val_dbl_in[idx_in];
+	    } /* !lvl_idx_in */
+	    for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
+	      idx_out=grd_idx+lvl_idx_out*grd_nbr;
+	      crd_out[lvl_idx_out]=prs_ntp_out[idx_out];
+	    } /* !lvl_idx_out */
+	    
+	    /* Interpolation code easier to write/debug if crd_in and crd_out both monotonically increase
+	       However, monotonically decreasing coordinates useful in many cases, such as depth coordinate, 
+	       and pressure levels arranged largest to smallest (favored by CMIP)
+	       Next code block reverses array(s) if necessary so coordinates monotonically increase
+	       Code uses crd_in_mnt, dat_in_mnt, crd_out_mnt where "_mnt" reminds of "monotonically increasing" assumption
+	       Following code lifted from CSZ's libcsz.a library source code ~/sw/c++/vec.hh */
+
+	    if(in_ncr){
+	      crd_in_mnt=crd_in;
+	      dat_in_mnt=dat_in;
+	    }else{
+	      for(in_idx=0;in_idx<in_nbr;in_idx++){
+		crd_in_mnt[in_idx]=crd_in[in_nbr-in_idx-1];
+		dat_in_mnt[in_idx]=dat_in[in_nbr-in_idx-1];
+	      } /* !in_idx */
+	    } /* !in_ncr */
+	    
+	    if(out_ncr){
+	      crd_out_mnt=crd_out;
+	      dat_out_mnt=dat_out;
+	    }else{
+	      for(out_idx=0;out_idx<out_nbr;out_idx++)
+		crd_out_mnt[out_idx]=crd_out[out_nbr-out_idx-1];
+	    } /* !out_ncr */
+	    
+	    // Initialize bracketing index
+	    brk_lft_idx=0;
+	    // Loop over desired output coordinates
+	    for(out_idx=0;out_idx<out_nbr;out_idx++){
+	      // Order of conditions is important since second condition is illegal if brk_lft_idx >= in_nbr
+	      while((brk_lft_idx < in_nbr) && (crd_in_mnt[brk_lft_idx] < crd_out_mnt[out_idx])){
+		brk_lft_idx++;
+	      } // !while
+	      brk_lft_idx--;
+	      // Handle identity interpolation separately to preserve symmetry in extrapolation code 
+	      if(brk_lft_idx != in_nbr-1){
+		if(crd_in_mnt[brk_lft_idx+1] == crd_out_mnt[out_idx]){
+		  dat_out_mnt[out_idx]=dat_in_mnt[brk_lft_idx+1];
+		  if(brk_lft_idx == -1) brk_lft_idx=0; // Reset brk_lft_idx to 0 so next while loop works
+		  continue; // Jump to next iteration
+		} // !crd_in_mnt
+	      } // !brk_lft_idx
+	      if(brk_lft_idx == -1){
+		// LHS Extrapolation required
+		// Degenerate case: crd_out_mnt[out_idx] < crd_in_mnt[0]
+		brk_lft_idx=0; // Reset brk_lft_idx to 0 so next while loop works
+		if(xtr_LHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: WARNING %s reports variable %s column %lu output value dat_out_mnt[%lu] at coordinate crd_out_mnt[%lu] = %g requires LHS extrapolation beyond leftmost valid coordinate at crd_in_mnt[%lu] = %g. Nearest valid datum is dat_in_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,grd_idx,out_idx,out_idx,crd_out_mnt[out_idx],brk_lft_idx,crd_in_mnt[brk_lft_idx],brk_lft_idx,dat_in_mnt[brk_lft_idx]);
+		// Extrapolation options are presented in decreasing order of preference
+		if(!xtr_LHS.xtr_fll){
+		  (void)fprintf(fp_stdout,"%s: ERROR %s Full LHS extrapolation required but not permitted\n",nco_prg_nm_get(),fnc_nm);
+		  // return NCO_ERR;
+		} /* !xtr_LHS.xtr_fll */
+		switch(xtr_LHS.typ_fll){
+		case nco_xtr_fll_nil:
+		  dat_out_mnt[out_idx]=0.0;
+		  break;
+		case nco_xtr_fll_ngh:
+		  dat_out_mnt[out_idx]=dat_in_mnt[0];
+		  break;
+		case nco_xtr_fll_lnr:
+		  dat_out_mnt[out_idx]=dat_in_mnt[0]-
+		    (crd_in_mnt[0]-crd_out_mnt[out_idx])*
+		    (dat_in_mnt[1]-dat_in_mnt[0])/(crd_in_mnt[1]-crd_in_mnt[0]);
+		  break;
+		case nco_xtr_fll_gph:
 		  if(flg_ntp_log)
 		    dat_out_mnt[out_idx]=dat_in_mnt[0]+
 		      Rd_rcp_g0*tpt_vrt_avg*(crd_in_mnt[0]-crd_out_mnt[out_idx]);
@@ -1691,37 +1704,37 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  if(FIRST_WARNING_LHS) (void)fprintf(fp_stdout,"%s: INFO %s geopotential height extrapolated upward towards space using hypsometric equation with constant global mean virtual temperature = %g for variable %s\n",nco_prg_nm_get(),fnc_nm,tpt_vrt_avg,var_nm);
 		  FIRST_WARNING_LHS=False;
 		  break;
-	      default:
-		(void)fprintf(fp_stdout,"%s: ERROR %s Unknown xtr_LHS.typ_fll\n",nco_prg_nm_get(),fnc_nm);
+		default:
+		  (void)fprintf(fp_stdout,"%s: ERROR %s Unknown xtr_LHS.typ_fll\n",nco_prg_nm_get(),fnc_nm);
+		  // return NCO_ERR;
+		  break;
+		} // !xtr_LHS.typ_fll
+		if(xtr_LHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s LHS extrapolation yields dat_out_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out_mnt[out_idx]);
+	      }else if(brk_lft_idx < in_nbr-1){
+		// Normal case: crd_out_mnt is interpolable
+		brk_rgt_idx=brk_lft_idx+1; 
+		// NB: brk_rgt_idx is ALWAYS greater than brk_lft_idx
+		// This simulaneously meets two criteria:
+		// 1. Divide by zero errors are impossible in the next step
+		// 2. The identity interpolation is satisfied since crd_dlt == 0.0: 
+		// i.e., If crd_out_mnt[idx] == crd_in_mnt[brk_lft_idx] then dat_out_mnt[out_idx] := dat_in_mnt[brk_lft_idx]
+		// Linearly interpolate
+		dat_out_mnt[out_idx]=
+		  dat_in_mnt[brk_lft_idx]+
+		  (crd_out_mnt[out_idx]-crd_in_mnt[brk_lft_idx])*
+		  (dat_in_mnt[brk_rgt_idx]-dat_in_mnt[brk_lft_idx])/
+		  (crd_in_mnt[brk_rgt_idx]-crd_in_mnt[brk_lft_idx]);
+	      }else if(brk_lft_idx == in_nbr-1){
+		// RHS Extrapolation required
+		// Degenerate case: brk_lft_idx is last element of crd_in_mnt 
+		brk_rgt_idx=brk_lft_idx;
+		if(xtr_RHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: WARNING %s reports variable %s column %lu output value dat_out_mnt[%lu] at coordinate crd_out_mnt[%lu] = %g requires RHS extrapolation beyond rightmost valid coordinate at crd_in_mnt[%lu] = %g. Nearest valid datum is dat_in_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,grd_idx,out_idx,out_idx,crd_out_mnt[out_idx],brk_rgt_idx,crd_in_mnt[brk_rgt_idx],brk_rgt_idx,dat_in_mnt[brk_rgt_idx]);
+		// Extrapolation options are presented in decreasing order of preference
+		if(!xtr_RHS.xtr_fll){
+		  (void)fprintf(fp_stdout,"%s: ERROR %s Full RHS extrapolation required but not permitted\n",nco_prg_nm_get(),fnc_nm);
 		// return NCO_ERR;
-		break;
-	      } // !xtr_LHS.typ_fll
-	      if(xtr_LHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s LHS extrapolation yields dat_out_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out_mnt[out_idx]);
-	    }else if(brk_lft_idx < in_nbr-1){
-	      // Normal case: crd_out_mnt is interpolable
-	      brk_rgt_idx=brk_lft_idx+1; 
-	      // NB: brk_rgt_idx is ALWAYS greater than brk_lft_idx
-	      // This simulaneously meets two criteria:
-	      // 1. Divide by zero errors are impossible in the next step
-	      // 2. The identity interpolation is satisfied since crd_dlt == 0.0: 
-	      // i.e., If crd_out_mnt[idx] == crd_in_mnt[brk_lft_idx] then dat_out_mnt[out_idx] := dat_in_mnt[brk_lft_idx]
-	      // Linearly interpolate
-	      dat_out_mnt[out_idx]=
-		dat_in_mnt[brk_lft_idx]+
-		(crd_out_mnt[out_idx]-crd_in_mnt[brk_lft_idx])*
-		(dat_in_mnt[brk_rgt_idx]-dat_in_mnt[brk_lft_idx])/
-		(crd_in_mnt[brk_rgt_idx]-crd_in_mnt[brk_lft_idx]);
-	    }else if(brk_lft_idx == in_nbr-1){
-	      // RHS Extrapolation required
-	      // Degenerate case: brk_lft_idx is last element of crd_in_mnt 
-	      brk_rgt_idx=brk_lft_idx;
-	      if(xtr_RHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: WARNING %s reports variable %s column %lu output value dat_out_mnt[%lu] at coordinate crd_out_mnt[%lu] = %g requires RHS extrapolation beyond rightmost valid coordinate at crd_in_mnt[%lu] = %g. Nearest valid datum is dat_in_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,var_nm,grd_idx,out_idx,out_idx,crd_out_mnt[out_idx],brk_rgt_idx,crd_in_mnt[brk_rgt_idx],brk_rgt_idx,dat_in_mnt[brk_rgt_idx]);
-	      // Extrapolation options are presented in decreasing order of preference
-	      if(!xtr_RHS.xtr_fll){
-		(void)fprintf(fp_stdout,"%s: ERROR %s Full RHS extrapolation required but not permitted\n",nco_prg_nm_get(),fnc_nm);
-		// return NCO_ERR;
-	      } /* !xtr_RHS.xtr_fll */
-	      switch(xtr_RHS.typ_fll){
+		} /* !xtr_RHS.xtr_fll */
+		switch(xtr_RHS.typ_fll){
 		case nco_xtr_fll_nil:
 		  dat_out_mnt[out_idx]=0.0;
 		  break;
@@ -1744,7 +1757,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  if(FIRST_WARNING_RHS) (void)fprintf(fp_stdout,"%s: INFO %s temperature extrapolated toward/into surface assuming constant moist adiabatic lapse rate = %g K/(100 mb) for variable %s\n",nco_prg_nm_get(),fnc_nm,gamma_moist*10000.0,var_nm);
 		  FIRST_WARNING_RHS=False;
 		  break;
-	      case nco_xtr_fll_gph:
+		case nco_xtr_fll_gph:
 		  if(flg_ntp_log)
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]-
 		      Rd_rcp_g0*tpt_vrt_avg*(crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1]);
@@ -1758,73 +1771,75 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		  (void)fprintf(fp_stdout,"%s: ERROR %s Unknown xtr_RHS\n",nco_prg_nm_get(),fnc_nm);
 		  // return NCO_ERR;
 		  break;
-	      } // !xtr_RHS.typ_fll
-	      if(xtr_RHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s RHS extrapolation yields dat_out_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out_mnt[out_idx]);
+		} // !xtr_RHS.typ_fll
+		if(xtr_RHS.xtr_vrb) (void)fprintf(fp_stdout,"%s: INFO %s RHS extrapolation yields dat_out_mnt[%lu] = %g\n",nco_prg_nm_get(),fnc_nm,out_idx,dat_out_mnt[out_idx]);
 	      }else{
-	      (void)fprintf(fp_stdout,"%s: ERROR %s Unforeseen value of brk_lft_idx\n",nco_prg_nm_get(),fnc_nm);
-	      // return NCO_ERR;
-	    } // !RHS
-	  } // !out_idx
-
-	  /* Un-reverse output data to be on original grid */
-	  if(!out_ncr)
-	    for(out_idx=0;out_idx<out_nbr;out_idx++)
-	      dat_out[out_idx]=dat_out_mnt[out_nbr-out_idx-1];
-	  // End of vec.hh code
+		(void)fprintf(fp_stdout,"%s: ERROR %s Unforeseen value of brk_lft_idx\n",nco_prg_nm_get(),fnc_nm);
+		// return NCO_ERR;
+	      } // !RHS
+	    } // !out_idx
+	    
+	    /* Un-reverse output data to be on original grid */
+	    if(!out_ncr)
+	      for(out_idx=0;out_idx<out_nbr;out_idx++)
+		dat_out[out_idx]=dat_out_mnt[out_nbr-out_idx-1];
+	    // End of vec.hh code
+	    
+	    /* Copy answers into output array */
+	    for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
+	      idx_out=grd_idx+lvl_idx_out*grd_nbr;
+	      var_val_dbl_out[idx_out]=dat_out[lvl_idx_out];
+	    } /* !lvl_idx_out */
+	    
+	    if(nco_dbg_lvl_get() >= nco_dbg_io && grd_idx == idx_dbg){
+	      (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s at idx_dbg = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,idx_dbg);
+	      for(out_idx=0;out_idx<out_nbr;out_idx++){
+		(void)fprintf(fp_stdout,"out_idx = %lu dat_out = %g\n",out_idx,dat_out[out_idx]);
+	      } /* !out_idx */
+	    } /* !dbg */
+	    
+	  } /* !grd_idx */
 	  
-	  /* Copy answers into output array */
-	  for(lvl_idx_out=0;lvl_idx_out<lvl_nbr_out;lvl_idx_out++){
-	    idx_out=grd_idx+lvl_idx_out*grd_nbr;
-	    var_val_dbl_out[idx_out]=dat_out[lvl_idx_out];
-	  } /* !lvl_idx_out */
-
-	  if(nco_dbg_lvl_get() >= nco_dbg_io && grd_idx == idx_dbg){
-	    (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s at idx_dbg = %lu\n",nco_prg_nm_get(),fnc_nm,var_nm,idx_dbg);
-	    for(out_idx=0;out_idx<out_nbr;out_idx++){
-	      (void)fprintf(fp_stdout,"out_idx = %lu dat_out = %g\n",out_idx,dat_out[out_idx]);
-	    } /* !out_idx */
-	  } /* !dbg */
-
-	} /* !grd_idx */
-
-	if(crd_in) crd_in=(double *)nco_free(crd_in);
-	if(crd_out) crd_out=(double *)nco_free(crd_out);
-	if(dat_in) dat_in=(double *)nco_free(dat_in);
-	if(dat_out) dat_out=(double *)nco_free(dat_out);
-
-	if(!in_ncr){
-	  if(crd_in_mnt) crd_in_mnt=(double *)nco_free(crd_in_mnt);
-	  if(dat_in_mnt) dat_in_mnt=(double *)nco_free(dat_in_mnt);
-	} /* !in_ncr */
-	if(!out_ncr){
-	  if(crd_out_mnt) crd_out_mnt=(double *)nco_free(crd_out_mnt);
-	  if(dat_out_mnt) dat_out_mnt=(double *)nco_free(dat_out_mnt);
-	} /* !out_ncr */
-
+	  if(crd_in) crd_in=(double *)nco_free(crd_in);
+	  if(crd_out) crd_out=(double *)nco_free(crd_out);
+	  if(dat_in) dat_in=(double *)nco_free(dat_in);
+	  if(dat_out) dat_out=(double *)nco_free(dat_out);
+	  
+	  if(!in_ncr){
+	    if(crd_in_mnt) crd_in_mnt=(double *)nco_free(crd_in_mnt);
+	    if(dat_in_mnt) dat_in_mnt=(double *)nco_free(dat_in_mnt);
+	  } /* !in_ncr */
+	  if(!out_ncr){
+	    if(crd_out_mnt) crd_out_mnt=(double *)nco_free(crd_out_mnt);
+	    if(dat_out_mnt) dat_out_mnt=(double *)nco_free(dat_out_mnt);
+	  } /* !out_ncr */
+	  
 #pragma omp critical
-	{ /* begin OpenMP critical */
-	  //	  rcd=nco_put_var(out_id,var_id_out,var_val_dbl_out,var_typ_rgr);
-	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
-	} /* end OpenMP critical */
-	
-	if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
-	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
-	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
-	if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
-	if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
-	if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
-	if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
-      }else{ /* !trv.flg_rgr */
-	/* Use standard NCO copy routine for variables that are not regridded */
+	  { /* begin OpenMP critical */
+	    //	  rcd=nco_put_var(out_id,var_id_out,var_val_dbl_out,var_typ_rgr);
+	    rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
+	  } /* end OpenMP critical */
+	  
+	  if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
+	  if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
+	  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+	  if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
+	  if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
+	  if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
+	  if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
+	}else{ /* !trv.flg_rgr */
+	  /* Use standard NCO copy routine for variables that are not regridded */
 #pragma omp critical
-	{ /* begin OpenMP critical */
-	  (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
-	} /* end OpenMP critical */
-      } /* !flg_rgr */
-    } /* !xtr */
-  } /* end (OpenMP parallel for) loop over idx_tbl */
-  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
-  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables interpolated = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
+	  { /* begin OpenMP critical */
+	    (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+	  } /* end OpenMP critical */
+	} /* !flg_rgr */
+      } /* !xtr */
+    } /* end (OpenMP parallel for) loop over idx_tbl */
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
+    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables interpolated = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
+
+  } /* !tm_idx */
 
   if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
