@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.0-alpha12
-@set doc-edition 4.8.0-alpha12
+@set nco-edition 4.8.0-beta01
+@set doc-edition 4.8.0-beta01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 6 May 2019
+@set update-date 10 May 2019
 @set update-month May 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18372,6 +18372,7 @@ only for @command{ncclimo}), or by invoking the @samp{--no_stdin} flag
 @html
 <a name="no_stdin"></a> <!-- http://nco.sf.net/nco.html#no_stdin -->
 @end html
+@cindex Common Workflow Language
 @cindex Azure @acronym{CI}
 @cindex @acronym{CWL}
 @cindex @code{--no_stdin}
@@ -24842,6 +24843,10 @@ priorities for future development of vertical regridding are:
       failing outright, and warnings are amply displayed). 
       Eliminating this constraint is a high priority, so that entire
       hybrid timeseries can be regridded to pure pressure coordinates.
+@item Time-varying vertical grids (once supported) must store the time
+      dimension as a record dimension.
+      Eliminating this constraint will not be a high priority
+      unless/until an important use-case is identified. 
 @item Vertical interpolation is split from horizontal so that changing
       both horizontal and vertical grids ``simultaneously'' currently
       requires two successive invocations of @command{ncremap}, one

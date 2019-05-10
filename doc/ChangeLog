@@ -1,3 +1,11 @@
+2019-05-10  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.0-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.0-beta01: Becoming';git push
+	git tag -a 4.8.0-beta01	-m 'ncremap se2se/fv2fv, no_stdin, vrt_fl, xcl_var, ;ncclimo job_nbr, OMP_PROC_BIND;ncap2 no foo.nc;ncks chk_nan';git push --tags
+
+	* Read/write vertical variables one timestep at a time when output vertical grid is time-varying
+
 2019-05-09  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.0-alpha12 release procedure:
