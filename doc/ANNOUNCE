@@ -7,7 +7,18 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-fxm
+Version 4.8.0 contains, as usual, numerous enhancements to ncremap
+and ncclimo. The most significant is vertical interpolation, which
+is useful to create new initial conditions for models, and to convert 
+data to/from any desired hybrid coordinate or pure pressure vertical
+grid. Also we have changed NCO_PATH_OVERRIDE from opt-out to opt-in
+due to the increased maturity and use of the Conda NCO package which
+now pulls-in both ESMF_RegridWeightGen and TempestRemap.
+
+ncap2 now allows creating brand-new files without specifying an
+existing input file, which eliminates an indefensible and annoying
+requirement. ncks can now easily detect and identify NaNs in datasets.
+See below for a fuller list of new features and pointers to more info.
 
 Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
