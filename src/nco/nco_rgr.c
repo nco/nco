@@ -1060,13 +1060,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     hyam_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
     hybi_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
     hybm_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
-    ps_in=(double *)nco_malloc_dbg(grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
+    ps_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
     
     rcd=nco_get_var(in_id,hyai_id,hyai_in,crd_typ_out);
     rcd=nco_get_var(in_id,hyam_id,hyam_in,crd_typ_out);
     rcd=nco_get_var(in_id,hybi_id,hybi_in,crd_typ_out);
     rcd=nco_get_var(in_id,hybm_id,hybm_in,crd_typ_out);
     rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
+    rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
     if(tm_nbr_in == 1L){
       rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
     }else{
@@ -1222,7 +1223,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
   } /* !flg_grd_out_prs */
 
-    /* No further access to template file, close it */
+  /* No further access to template file, close it */
   nco_close(tpl_id);
 
   /* Remove local copy of file */
@@ -1468,6 +1469,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   for(tm_idx=0;tm_idx<1;tm_idx++){ // fxm: use dynamic tm_nbr to end loop
     
+    /* Offset 4D-pressure field to current 3D pressure timeslice */
+    if(need_prs_mdp){
+    } /* !need_prs_mdp */
+    if(need_prs_ntf){
+    } /* !need_prs_ntf */
+
     /* Set firstprivate variables to initial values */
     grd_nbr=grd_sz_in;
     has_ilev=False;
@@ -1848,11 +1855,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
 	  if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
 	}else{ /* !trv.flg_rgr */
-	  /* Use standard NCO copy routine for variables that are not regridded */
+	  /* Use standard NCO copy routine for variables that are not regridded
+	     20190511: Copy them only once */
+	  if(tm_idx == 0){
 #pragma omp critical
-	  { /* begin OpenMP critical */
-	    (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
-	  } /* end OpenMP critical */
+	    { /* begin OpenMP critical */
+	      (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+	    } /* end OpenMP critical */
+	  } /* !tm_idx */
 	} /* !flg_rgr */
       } /* !xtr */
     } /* end (OpenMP parallel for) loop over idx_tbl */

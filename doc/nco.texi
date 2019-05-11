@@ -162,6 +162,10 @@ u
 @macro xxx {}
 x
 @end macro
+@c [K] Temperature
+@macro tpt {}
+T
+@end macro
 @c TeX macros may appear anywhere after line 1
 @tex
 % Define TeX macros to roughly correspond to LaTeX style files
@@ -24821,12 +24825,17 @@ priorities for future development of vertical regridding are:
       user-accessible.
       Eliminating this constraint is a medium priority for regridding 
       to/from depth coordinates.
-@item Extrapolation uses nearest neighbor except as noted below.
+@item Extrapolation uses nearest neighbor except for temperature and
+      geopotential (those extrapolation methods are described below). 
       Other extrapolation options in the code, yet not exposed to
       users, include: dying, setting @w{to 0.0}, and linear
       extrapolation. 
-      Eliminating this constraint will remain low priority until we
-      are lobbied with compelling use-cases for other algorithms. 
+      Note that the approximation used for geopotential is inaccurate
+      in cold regions.
+      Eliminating this constraint, or improving the existing
+      special-case approximations for temperature or geopotential,
+      will remain low priority until we are lobbied with compelling
+      use-cases for other algorithms.  
 @item Missing values are not (yet) treated specially
       Eliminating this constraint is not a priority because
       atmospheric datasets often contain no missing data.
@@ -24964,14 +24973,21 @@ nearest valid value.
 
 Temperature and geopotential height are exceptions to this rule.
 Temperature variables (those named @code{T} or @code{ta}, anyway) are
-extrapolated upwards and downwards towards space using the nearest
-neighbor assumption, and beneath the surface assuming a moist
+extrapolated upwards towards space using the nearest neighbor
+assumption, and downwards beneath the surface assuming a moist 
 adiabatic lapse rate of 6.5 degrees centigrade per 100 millibars.
 Geopotential variables (those named @code{Z3} or @code{zg}, anyway)
 are extrapolated upwards and downwards using the hypsometric equation
 @footnote{@math{Z_2-Z_1=(R_d*T_v/g_0)*ln(p_1/p_2)=(R_d*T_v/g_0)*(ln(p_1)-ln(p_2))}}
 @c Z2-Z1=(Rd*Tv/g0)*ln(p1/p2)=(Rd*Tv/g0)*(ln(p1)-ln(p2))} 
-with constant global mean virtual temperature @w{288 Kelvin}.
+with constant global mean virtual temperature
+@math{@var{tpt{}} = @w{288 K}}.
+This assumption leads to unrealistic values where @tpt{} differs
+significantly from the global mean surface temperature.
+Using the local @tpt{} itself would be a much better approximation,
+yet would require a time-consuming implementation.
+Please let us know if accurate surface geopotential extrapolation in
+cold regions is important to you.
 
 Interpolation to and from hybrid coordinate grids works on both
 midpoint and interface fields (i.e., on variables with @code{lev} or
