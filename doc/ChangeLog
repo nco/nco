@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.0-beta01: Becoming';git push
 	git tag -a 4.8.0-beta01	-m 'ncremap se2se/fv2fv, no_stdin, vrt_fl, xcl_var, ;ncclimo job_nbr, OMP_PROC_BIND;ncap2 no foo.nc;ncks chk_nan';git push --tags
 
+	* nco_ntp_vrt() Move pressure calcuations into time loop
+
 	* nco_ntp_vrt() Copy non-vertical variables only once (on first timestep)
 
 2019-05-10  Charlie Zender  <zender@uci.edu>

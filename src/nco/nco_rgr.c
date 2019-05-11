@@ -718,6 +718,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_grd_in_prs=False; /* [flg] Input pressure coordinate vertical grid */
   nco_bool flg_grd_out_hyb=False; /* [flg] Output hybrid coordinate vertical grid */
   nco_bool flg_grd_out_prs=False; /* [flg] Output pressure coordinate vertical grid */
+  nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* Vertical grid type for input grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* Vertical grid type for output grid */
 
@@ -832,6 +833,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  (void)fprintf(stderr,"%s: WARNING %s reports PS variable in vertical grid file has unlimited dimension of size %lu. Interpolation only tested for fixed or single-timestep PS. Expect breakage...\n",nco_prg_nm_get(),fnc_nm,dmn_cnt_out[dmn_idx]);
 	  dmn_idx_tm_out=dmn_idx;
 	  tm_nbr_out=dmn_cnt_out[dmn_idx];
+	  if(tm_nbr_out > 1L) flg_vrt_tm=True;
 	} /* tm_nbr_out > 1 */
 	dmn_srt[dmn_idx]=0L;
       } /* !dmn_idx */
@@ -992,6 +994,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	dmn_id_tm_in=dmn_ids_in[dmn_idx];
 	dmn_idx_tm_in=dmn_idx;
 	tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
+	if(tm_nbr_in > 1L) flg_vrt_tm=True;
       } /* tm_nbr_in > 1 */
       dmn_srt[dmn_idx]=0L;
     } /* !dmn_idx */
@@ -1035,16 +1038,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     grd_sz_out=grd_sz_in;
   } /* !flg_grd_in_prs */
 
-  /* Timestep sequencing */
-  nco_bool flg_vrt_tm; /* [flg] Output depends on time-varying vertical grid */
-  if(tm_nbr_in > 1L || tm_nbr_out > 1L)
-    if(tm_nbr_in > tm_nbr_out)
-      assert((float)tm_nbr_in/(float)tm_nbr_out == tm_nbr_in/tm_nbr_out);
-    else
-      assert((float)tm_nbr_out/(float)tm_nbr_in == tm_nbr_out/tm_nbr_in);
-  tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
-  if(tm_nbr > 1L) flg_vrt_tm=True;
-  
   double *hyai_in=NULL; /* [frc] Hybrid A coefficient at layer interfaces on input grid */
   double *hyam_in=NULL; /* [frc] Hybrid A coefficient at layer midpoints on input grid */
   double *hybi_in=NULL; /* [frc] Hybrid B coefficient at layer interfaces on input grid */
@@ -1068,14 +1061,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_get_var(in_id,hybm_id,hybm_in,crd_typ_out);
     rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
     rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
-    if(tm_nbr_in == 1L){
-      rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
-    }else{
-      dmn_srt[dmn_idx_tm_in]=tm_idx_in;
-      dmn_cnt_in[dmn_idx_tm_in]=1L;
-      rcd=nco_get_vara(in_id,ps_id,dmn_srt,dmn_cnt_in,ps_in,crd_typ_out);
-      (void)fprintf(stderr,"%s: DEBUG %s reading input file PS variable timestep #%ld of %ld\n",nco_prg_nm_get(),fnc_nm,tm_idx_in,tm_nbr_in);
-    } /* !tm_nbr_in */
       
     if(ps_id_tpl == NC_MIN_INT){
       /* Copy horizontal grid information from input file */
@@ -1086,13 +1071,23 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       memcpy(dmn_cnt_out,dmn_cnt_in,dmn_nbr_in*sizeof(long));
       dmn_idx_tm_out=dmn_idx_tm_in;
       grd_sz_out=grd_sz_in;
+      tm_nbr_out=tm_nbr_in;
     } /* !ps_id_tpl */
     
-    /* Sanity check */
+    /* Timestep sequencing */
+    if(tm_nbr_in > 1L || tm_nbr_out > 1L)
+      if(tm_nbr_in > tm_nbr_out)
+	assert((float)tm_nbr_in/(float)tm_nbr_out == tm_nbr_in/tm_nbr_out);
+      else
+	assert((float)tm_nbr_out/(float)tm_nbr_in == tm_nbr_out/tm_nbr_in);
+    tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
+  
+    /* Sanity checks */
     assert(grd_sz_in==grd_sz_out);
+    assert(tm_nbr_in==tm_nbr_out);
     
     /* Finally have enough information to allocate output pressure grid */
-    ps_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
+    ps_out=(double *)nco_malloc_dbg(tm_nbr_out*grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
     
     /* Get PS from output horizontal grid, if available, otherwise copy from input horizontal grid */
     if(ps_id_tpl != NC_MIN_INT){
@@ -1271,60 +1266,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* end idx_tbl */
   } /* end dbg */
 
-  /* Interpolation control parameters (mainly for future use with non-pressure coordinates) */
-  nco_bool flg_ntp_log=True; /* [flg] Interpolate in log(vertical_coordinate) */
-  long grd_idx; /* [idx] Gridcell index */
-  size_t idx_in; /* [idx] Index into 3D input variables */
-  size_t idx_out; /* [idx] Index into 3D output variables */
-  size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
-  size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
-
-  if(need_prs_mdp){
-    /* Allocated and define midpoint pressures */
-    prs_mdp_in=(double *)nco_malloc_dbg(grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_in value buffer");
-    prs_mdp_out=(double *)nco_malloc_dbg(grd_sz_out*lev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_out value buffer");
-    if(flg_grd_in_hyb)
-      for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
-	for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
-	  prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=p0_in*hyam_in[lev_idx]+ps_in[grd_idx]*hybm_in[lev_idx];
-    if(flg_grd_out_hyb)
-      for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
-	for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
-	  prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=p0_out*hyam_out[lev_idx]+ps_out[grd_idx]*hybm_out[lev_idx];
-    if(flg_grd_in_prs)
-      for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
-	for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
-	  prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=lev_in[lev_idx];
-    if(flg_grd_out_prs)
-      for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
-	for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
-	  prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=lev_out[lev_idx];
-    if(flg_ntp_log){
-      var_sz_in=grd_sz_in*lev_nbr_in;
-      for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_mdp_in[idx_in]=log(prs_mdp_in[idx_in]);
-      var_sz_out=grd_sz_out*lev_nbr_out;
-      for(idx_out=0;idx_out<var_sz_out;idx_out++) prs_mdp_out[idx_out]=log(prs_mdp_out[idx_out]);
-    } /* !flg_ntp_log */
-  } /* !need_prs_mdp */
-
-  if(need_prs_ntf){
-    /* Allocate and define interface pressures (only used for hybrid grids) */
-    prs_ntf_in=(double *)nco_malloc_dbg(grd_sz_in*ilev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_in value buffer");
-    prs_ntf_out=(double *)nco_malloc_dbg(grd_sz_out*ilev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_out value buffer");
-    for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
-      for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
-	prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=p0_in*hyai_in[ilev_idx]+ps_in[grd_idx]*hybi_in[ilev_idx];
-    for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
-      for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
-	prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[grd_idx]*hybi_out[ilev_idx];
-    if(flg_ntp_log){
-      var_sz_in=grd_sz_in*ilev_nbr_in;
-      for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_ntf_in[idx_in]=log(prs_ntf_in[idx_in]);
-      var_sz_out=grd_sz_out*ilev_nbr_out;
-      for(idx_out=0;idx_out<var_sz_out;idx_out++) prs_ntf_out[idx_out]=log(prs_ntf_out[idx_out]);
-    } /* !flg_ntp_log */
-  } /* !need_prs_ntf */
-
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
   rcd+=nco_inq_ndims(in_id,&dmn_nbr_max);
@@ -1450,6 +1391,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)nco_put_var(out_id,lev_id,lev_out,crd_typ_out);
   } /* !flg_grd_out_prs */
 
+  nco_bool flg_ntp_log=True; /* [flg] Interpolate in log(vertical_coordinate) */
+  long grd_idx; /* [idx] Gridcell index */
+  size_t idx_fst; /* [idx] Index-offset to current surface pressure timeslice */
+  size_t idx_in; /* [idx] Index into 3D input variables */
+  size_t idx_out; /* [idx] Index into 3D output variables */
+  size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
+
   /* Interpolate or copy variable values */
   double *var_val_dbl_in=NULL;
   double *var_val_dbl_out=NULL;
@@ -1468,11 +1417,54 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
   for(tm_idx=0;tm_idx<1;tm_idx++){ // fxm: use dynamic tm_nbr to end loop
+
+    /* Index-offset to current surface pressure timeslice */
+    idx_fst=tm_idx*grd_sz_in;
     
-    /* Offset 4D-pressure field to current 3D pressure timeslice */
     if(need_prs_mdp){
+      /* Allocated and define midpoint pressures */
+      if(tm_idx == 0) prs_mdp_in=(double *)nco_malloc_dbg(grd_sz_in*lev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_in value buffer");
+      if(tm_idx == 0) prs_mdp_out=(double *)nco_malloc_dbg(grd_sz_out*lev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_mdp_out value buffer");
+      if(flg_grd_in_hyb)
+	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	  for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
+	    prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=p0_in*hyam_in[lev_idx]+ps_in[idx_fst+grd_idx]*hybm_in[lev_idx];
+      if(flg_grd_out_hyb)
+	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	  for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	    prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=p0_out*hyam_out[lev_idx]+ps_out[idx_fst+grd_idx]*hybm_out[lev_idx];
+      if(flg_grd_in_prs)
+	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	  for(lev_idx=0;lev_idx<lev_nbr_in;lev_idx++)
+	    prs_mdp_in[grd_idx+lev_idx*grd_sz_in]=lev_in[lev_idx];
+      if(flg_grd_out_prs)
+	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	  for(lev_idx=0;lev_idx<lev_nbr_out;lev_idx++)
+	    prs_mdp_out[grd_idx+lev_idx*grd_sz_out]=lev_out[lev_idx];
+      if(flg_ntp_log){
+	var_sz_in=grd_sz_in*lev_nbr_in;
+	for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_mdp_in[idx_in]=log(prs_mdp_in[idx_in]);
+	var_sz_out=grd_sz_out*lev_nbr_out;
+	for(idx_out=0;idx_out<var_sz_out;idx_out++) prs_mdp_out[idx_out]=log(prs_mdp_out[idx_out]);
+      } /* !flg_ntp_log */
     } /* !need_prs_mdp */
+
     if(need_prs_ntf){
+      /* Allocate and define interface pressures (only used for hybrid grids) */
+      if(tm_idx == 0) prs_ntf_in=(double *)nco_malloc_dbg(grd_sz_in*ilev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_in value buffer");
+      if(tm_idx == 0) prs_ntf_out=(double *)nco_malloc_dbg(grd_sz_out*ilev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_out value buffer");
+      for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
+	  prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=p0_in*hyai_in[ilev_idx]+ps_in[idx_fst+grd_idx]*hybi_in[ilev_idx];
+      for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
+	  prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[idx_fst+grd_idx]*hybi_out[ilev_idx];
+      if(flg_ntp_log){
+	var_sz_in=grd_sz_in*ilev_nbr_in;
+	for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_ntf_in[idx_in]=log(prs_ntf_in[idx_in]);
+	var_sz_out=grd_sz_out*ilev_nbr_out;
+	for(idx_out=0;idx_out<var_sz_out;idx_out++) prs_ntf_out[idx_out]=log(prs_ntf_out[idx_out]);
+      } /* !flg_ntp_log */
     } /* !need_prs_ntf */
 
     /* Set firstprivate variables to initial values */
