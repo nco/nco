@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.0-beta01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 10 May 2019
+@set update-date 11 May 2019
 @set update-month May 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -24842,20 +24842,18 @@ priorities for future development of vertical regridding are:
       This could become a high priority issue if ocean modelers show
       interest in employing this tool to regrid to/from depth
       coordinates where missing values indicate bathymetry.
-@item Source and destination vertical grids must be time-invariant
-      and have at most one-timestep.
-      In particular, hybrid grids allow the surface pressure field
-      (often @code{PS}) to be time-dependent but the regridder will
-      only read and use the first surface pressure in the timeseries. 
-      All subsequent timesteps will utilize the vertical grid from the
-      first timestep (this incorrect behavior is arguably better than
-      failing outright, and warnings are amply displayed). 
-      Eliminating this constraint is a high priority, so that entire
-      hybrid timeseries can be regridded to pure pressure coordinates.
-@item Time-varying vertical grids (once supported) must store the time
+@item Time-varying vertical grids are only allowed for hybrid grids
+      (not pure pressure grids), and these must store the time
       dimension as a record dimension.
-      Eliminating this constraint will not be a high priority
-      unless/until an important use-case is identified. 
+      This constraint applies to the vertical grid only, not to the
+      other fields in the dataset.
+      Hence this does not preclude interpolating timeseries to/from
+      time-invariant vertical grids.
+      For example, time-varying hybrid grid data such as temperature
+      may be interpolated to timeseries on a time-invariant pressure
+      grid.
+      Eliminating this constraint will not be a priority unless/until
+      an important use-case is identified.  
 @item Vertical interpolation is split from horizontal so that changing
       both horizontal and vertical grids ``simultaneously'' currently
       requires two successive invocations of @command{ncremap}, one

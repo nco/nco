@@ -8,6 +8,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.0-beta01: Spaghetti';git push
 	git tag -a 4.8.0-beta01	-m 'vrt ntp timeseries';git push --tags
 
+	* Update documentation for time-varying vertical grids
+
 	* nco_ntp_vrt() Verify that time-series interpolation works for	hybrid grids
 
 	* nco_ntp_vrt() Move pressure calcuations into time loop
