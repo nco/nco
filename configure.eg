@@ -314,7 +314,7 @@ make install
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20180912
-# Personal recipe last used successfully: 20190216
+# Personal recipe last used successfully: 20190511
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
@@ -333,7 +333,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 2016??
-# Personal recipe last used successfully: 20190216
+# Personal recipe last used successfully: 20190216 (aims4 access stopped working ~201904)
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
@@ -353,7 +353,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: soft add +netcdf-4.6.1 soft add +nco-4.7.4 # 20180417
 # Personal recipe last modified: 20180729
-# Personal recipe last used successfully: 20190216 (up to ncap2 linking with antlr)
+# Personal recipe last used successfully: 20190510
 # Fails to link to system-installed udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
 # soft add +antlr-2.7.7 # 20161223 this ANTLR appears to be stock and not NCO-compatible

@@ -22901,8 +22901,9 @@ options, and robustness.
 @command{ncremap} orchestrates the regridding features of several
 different programs including other @acronym{NCO} operators.
 Under the hood @acronym{NCO} applies pre-computed remapping weights or, 
-when necessary, generates and infers grids, and calls external programs
-to generate the remapping weights that @acronym{NCO} then applies.  
+when necessary, generates and infers grids, generates remapping
+weights itsefl or calls external programs to generate the weights,
+and then applies the weights (i.e., regrids).
 
 @cindex @command{ncremap}
 @cindex @command{ESMF_RegridWeightGen}
@@ -22924,20 +22925,21 @@ re-installing the rest of @acronym{NCO}.}.
 @command{ncremap} wraps the underlying regridder (@command{ncks}) and
 external executables to produce a friendly interface to regridding.
 Without any external dependencies, @command{ncremap} applies weights
-from a pre-exisiting mapfile to a source data file to produce a
+from a pre-exisiting map-file to a source data file to produce a
 regridded dataset. 
 Source and destination datasets may be on any Swath, Curvilinear,
 Rectangular, or Unstructured Data (@acronym{SCRUD}) grid. 
-@command{ncremap} will also, when necessary, use external programs
-@acronym{ESMF}'s @command{ESMF_RegridWeightGen} (@acronym{ERWG}) or 
-TempestRemap's
+@command{ncremap} will also use its own algorithms or, when necessary,
+external programs @acronym{ESMF}'s @command{ESMF_RegridWeightGen}
+(@acronym{ERWG}) or TempestRemap's
 @command{GenerateOverlapMesh}/@command{GenerateOfflineMap}) to
 generate weights and mapfiles.
-In order to use the weight-generation options, ensure that one or both
-of the weight-generation packages is installed and on your
-@code{$PATH}. 
-The recommended way to obtain @acronym{ERWG} is as distributed in binary 
-format.  
+In order to use the weight-generation options, either invoke an
+internal @acronym{NCO} weight-generation algorithm (e.g.,
+@samp{--alg_typ=nco}), or ensure that one or both of the external
+weight-generation packages is installed and on your @code{$PATH}. 
+The recommended way to obtain @acronym{ERWG} is as distributed in
+binary format.  
 Many (most?) @acronym{NCO} users already have @acronym{NCL} on their
 system(s), and @acronym{NCL} usually comes with @acronym{ERWG}.
 Since about June, 2016, the Conda @acronym{NCO} package will also
@@ -22952,8 +22954,11 @@ As a fallback, @acronym{ERWG} may also be installed from source:
 @command{ncremap} can also generate and utilize mapfiles created by
 TempestRemap, 
 @url{https://github.com/ClimateGlobalChange/tempestremap}.
-As far as we know TempestRemap must be built from source because there
-are no binary distributions of it. 
+Until about April, 2019, TempestRemap had to be built from source
+because there were no binary distributions of it.
+As of @acronym{NCO} @w{version 4.8.0}, released in May, 2019, the
+Conda @acronym{NCO} package automatically installs the new
+TempestRemap Conda package so building from source is not necessary.
 Please contact those projects for support on building and installing
 their software, which makes @command{ncremap} more functional and
 user-friendly.
@@ -23153,6 +23158,7 @@ Features common to many operators are described in
 <a name="cs2cs"></a> <!-- http://nco.sf.net/nco.html#cs2cs -->
 <a name="fv2fv"></a> <!-- http://nco.sf.net/nco.html#fv2fv -->
 <a name="rll2rll"></a> <!-- http://nco.sf.net/nco.html#rll2rll -->
+<a name="nco_con"></a> <!-- http://nco.sf.net/nco.html#nco_con -->
 @end html
 @cindex @code{-a @var{alg_typ}}
 @cindex @var{alg_typ}
@@ -23195,8 +23201,25 @@ and @code{patch} (or @code{pch} or @code{patc}).
 See @acronym{ERWG} documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03020000000000000000, here}
 for detailed descriptions of @acronym{ERWG} algorithms.
-Specifying @code{tempest} invokes TempestRemap weight-generation.
 
+@cindex @code{nco_con}
+@cindex @code{nco_cns}
+@cindex @code{nco_conserve}
+@cindex @code{nco}
+As of @acronym{NCO} version 4.8.0 (May, 2019), @command{ncremap}
+implements its own internal weight-generation algorithms.
+The first and only @acronym{NCO}-native algorithm is a first-order
+conservative algorithm and is still somewhat experimental.
+Invoke this with @code{nco_con} (or @code{nco_cns},
+@code{nco_conservative}, or simply @code{nco}).
+This algorithm is under active development and promises to free users
+from the bondage of spherically-connected cell edges.
+We are working to make it geometrically exact for gridcells with
+small-circle edges, such as the latitude circles in @acronym{RLL}
+grids. 
+
+Specifying @code{tempest} invokes TempestRemap weight-generation
+with default options.
 @cindex TempestRemap
 @cindex Tempest2
 @cindex @code{se2fv_flx}
@@ -24979,7 +25002,7 @@ are extrapolated upwards and downwards using the hypsometric equation
 @footnote{@math{Z_2-Z_1=(R_d*T_v/g_0)*ln(p_1/p_2)=(R_d*T_v/g_0)*(ln(p_1)-ln(p_2))}}
 @c Z2-Z1=(Rd*Tv/g0)*ln(p1/p2)=(Rd*Tv/g0)*(ln(p1)-ln(p2))} 
 with constant global mean virtual temperature
-@math{@var{tpt{}} = @w{288 K}}.
+@math{@var{tpt{}} = 288}K.
 This assumption leads to unrealistic values where @tpt{} differs
 significantly from the global mean surface temperature.
 Using the local @tpt{} itself would be a much better approximation,

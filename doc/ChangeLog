@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.0: Becoming';git push
 	git tag -a 4.8.0 -m 'ncremap se2se/fv2fv, no_stdin, vrt_fl, xcl_var;ncclimo job_nbr, OMP_PROC_BIND;ncap2 no foo.nc;ncks chk_nan';git push --tags
 
+	* Document NCO regridding algorithm
+
+	* ncremap invoke NCO weight-generation with alg_typ=nco_xxx :)
+
 	* NCO 4.8.0-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0-beta01: Spaghetti';git push
 	git tag -a 4.8.0-beta01 -m 'vrt ntp timeseries';git push --tags
