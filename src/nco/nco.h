@@ -1589,13 +1589,11 @@ extern "C" {
     size_t sz; /* [nbr] Size (non-hyperslabbed) of dimension */
   } dmn_cmn_sct;
 
-
   typedef enum {
      poly_none=0,
      poly_sph=1,
      poly_crt=2
   } poly_typ_enm;
-
 
   typedef enum {
       poly_vrl_pin,
@@ -1625,10 +1623,6 @@ extern "C" {
     int  stat;
     int mem_flg; /* [flg]    */ 
   } poly_sct;   
-
-
-
-
   
 #ifdef __cplusplus
 } /* end extern "C" */

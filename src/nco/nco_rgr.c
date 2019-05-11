@@ -769,15 +769,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int dmn_nbr_ps; /* [nbr] Number of dimensions in PS variable */
   int dmn_nbr_in; /* [nbr] Number of dimensions in input file */
   int dmn_nbr_out; /* [nbr] Number of dimensions in output file */
-  int dmn_id_ilev_out; /* [id] Dimension ID for interface level in output file */
-  int dmn_id_lev_out; /* [id] Dimension ID for midpoint level in output file */
+  int dmn_id_ilev_out=NC_MIN_INT; /* [id] Dimension ID for interface level in output file */
+  int dmn_id_lev_out=NC_MIN_INT; /* [id] Dimension ID for midpoint level in output file */
   int dmn_id_ilev_in=NC_MIN_INT; /* [id] Dimension ID for interface level in file to be interpolated */
   int dmn_id_lev_in=NC_MIN_INT; /* [id] Dimension ID for midpoint level in file to be interpolated */
   int dmn_id_tm_in=NC_MIN_INT; /* [id] Dimension ID for time in file to be interpolated */
-  int dmn_id_tm_out=NC_MIN_INT; /* [id] Dimension ID for time in output file */
   int dmn_nbr_rec; /* [nbr] Number of unlimited dimensions */
   int dmn_idx_tm_in=NC_MIN_INT; /* [idx] Index of record coordinate in input hybrid coordinate PS field */
-  int dmn_idx_tm_out=NC_MIN_INT; /* [idx] Index of record coordinate in output hybrid coordinate PS field */
   long *dmn_cnt_in=NULL;
   long *dmn_cnt_out=NULL;
   long *dmn_srt=NULL;
@@ -830,8 +828,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    break; 
 	if(rec_idx == dmn_nbr_rec || dmn_nbr_out == 1) grd_sz_out*=dmn_cnt_out[dmn_idx];
 	if(rec_idx != dmn_nbr_rec && dmn_nbr_out > 1 && dmn_cnt_out[dmn_idx] > 1L){
-	  (void)fprintf(stderr,"%s: WARNING %s reports PS variable in vertical grid file has unlimited dimension of size %lu. Interpolation only tested for fixed or single-timestep PS. Expect breakage...\n",nco_prg_nm_get(),fnc_nm,dmn_cnt_out[dmn_idx]);
-	  dmn_idx_tm_out=dmn_idx;
 	  tm_nbr_out=dmn_cnt_out[dmn_idx];
 	  if(tm_nbr_out > 1L) flg_vrt_tm=True;
 	} /* tm_nbr_out > 1 */
@@ -990,7 +986,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  break; 
       if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1) grd_sz_in*=dmn_cnt_in[dmn_idx];
       if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
-	(void)fprintf(stderr,"%s: WARNING %s reports PS variable in input file has unlimited dimension of size %lu. Interpolation only tested for fixed or single-timestep PS. Expect breakage...\n",nco_prg_nm_get(),fnc_nm,dmn_cnt_in[dmn_idx]);
 	dmn_id_tm_in=dmn_ids_in[dmn_idx];
 	dmn_idx_tm_in=dmn_idx;
 	tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
@@ -1069,7 +1064,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
       memcpy(dmn_ids_out,dmn_ids_in,dmn_nbr_in*sizeof(int));
       memcpy(dmn_cnt_out,dmn_cnt_in,dmn_nbr_in*sizeof(long));
-      dmn_idx_tm_out=dmn_idx_tm_in;
       grd_sz_out=grd_sz_in;
       tm_nbr_out=tm_nbr_in;
     } /* !ps_id_tpl */
@@ -1121,7 +1115,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       } /* !ps_id_tpl */
       rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
     } /* !dmn_idx */
-    if(flg_vrt_tm) dmn_id_tm_out=dmn_ids_out[dmn_idx_tm_out];
   } /* !flg_grd_out_hyb */
 
   if(flg_grd_out_prs){
@@ -1409,14 +1402,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int lvl_nbr_in; /* [nbr] Number of levels for current interpolated variable on input grid */
   int lvl_nbr_out; /* [nbr] Number of levels for current interpolated variable on output grid */
   int thr_idx; /* [idx] Thread index */
-  size_t grd_nbr; /* [nbr] Horizonal grid size */
+  size_t grd_nbr=grd_sz_in; /* [nbr] Horizonal grid size */
   size_t idx_dbg=rgr->idx_dbg;
   
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped as shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-  for(tm_idx=0;tm_idx<1;tm_idx++){ // fxm: use dynamic tm_nbr to end loop
+  for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
 
     /* Index-offset to current surface pressure timeslice */
     idx_fst=tm_idx*grd_sz_in;
@@ -1468,7 +1461,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !need_prs_ntf */
 
     /* Set firstprivate variables to initial values */
-    grd_nbr=grd_sz_in;
     has_ilev=False;
     has_lev=False;
     has_tm=False;
@@ -1482,12 +1474,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,dmn_id_tm_in,dmn_id_tm_out,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,dmn_id_tm_in,dmn_id_tm_out,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_lev_in,dmn_id_tm_in,dmn_id_tm_out,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
+#  pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -1536,21 +1528,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_dbl_in,var_typ_rgr);
 
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-	    rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt_out+dmn_idx);
-	    if(dmn_cnt_out[dmn_idx] == 0L){
-	      /* No records have been written, so overwrite zero output record size with input record size */
-	      char dmn_rec_nm[NC_MAX_NAME]; /* [sng] Record dimension name */
-	      int dmn_rec_id_in;
-	      rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_rec_nm);
-	      rcd=nco_inq_dimid(in_id,dmn_rec_nm,&dmn_rec_id_in);
-	      rcd=nco_inq_dimlen(in_id,dmn_rec_id_in,dmn_cnt_out+dmn_idx);
-	    } /* !dmn_cnt_out */
-	    if(flg_vrt_tm && has_tm && dmn_id_out[dmn_idx] == dmn_id_tm_out){
-	      dmn_cnt_out[dmn_idx]=1L;
-	      dmn_srt[dmn_idx]=tm_idx;
-	    }else{
-	      dmn_srt[dmn_idx]=0L;
-	    } /* !flg_vrt_tm */
+	    /* Dimension count vector is same as input except for lvl dimension */
+	    dmn_cnt_out[dmn_idx]=dmn_cnt_in[dmn_idx];
+	    if(has_ilev && dmn_id_out[dmn_idx] == dmn_id_ilev_out) dmn_cnt_out[dmn_idx]=ilev_nbr_out;
+	    if(has_lev && dmn_id_out[dmn_idx] == dmn_id_lev_out) dmn_cnt_out[dmn_idx]=lev_nbr_out;
 	    var_sz_out*=dmn_cnt_out[dmn_idx];
 	  } /* end loop over dimensions */
 	  var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
@@ -1633,8 +1614,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  const double gamma_moist=6.5/10000.0; /* [K/Pa] Temperature extrapolation assumes constant moist adiabatic lower atmosphere lapse rate dT/dp=constant=(6.5 K)/(100 mb) = (6.5 K)/(10000 Pa) */
 	  const double Rd_rcp_g0=287.0/9.81; /* [K/Pa] Geopotential height extrapolation uses hypsometric equation Z2-Z1=(Rd*Tv_avg/g0)*ln(p1/p2)=(Rd*Tv_avg/g0)*(ln(p1)-ln(p2)) */
 	  const double tpt_vrt_avg=288.0; /* [K] Mean virtual temperature assumed for geopotential height extrapolation */
-	  nco_bool FIRST_WARNING_LHS=True; /* [flg] */
-	  nco_bool FIRST_WARNING_RHS=True; /* [flg] */
+	  nco_bool FIRST_WARNING_LHS; /* [flg] First warning for LHS extrapolation */
+	  nco_bool FIRST_WARNING_RHS; /* [flg] First warning for RHS extrapolation */
+	  if(tm_idx == 0){
+	    /* Only print extrapolation warnings for first timestep to prevent noisy output
+	       NB: Algorithm prevents any warnings for extrapolations that appear after first timestep */
+	    FIRST_WARNING_LHS=True;
+	    FIRST_WARNING_RHS=True;
+	  } /* !tm_idx */
 	  
 	  /* Outer loop over columns */
 	  for(grd_idx=0;grd_idx<grd_nbr;grd_idx++){
