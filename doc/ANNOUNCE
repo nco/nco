@@ -96,6 +96,17 @@ H. ncks has a new --chk_nan option. This option invokes a special
    ncks --chk_nan in.nc
    http://nco.sf.net/nco.html#chk_nan
 
+I. New synonyms --xtr_ass_var and --xcl_ass_var, which stand for
+   "exclude associated variables" and "extract associated variables",
+   have been added to the -C and -c switches, respectively.
+   Simultaneously, the --no-coords and --no-crd synonyms have been
+   renamed --no_coords and --no_crd because NCO is standardizing on
+   underscores not dashes for multi-component option names.
+   ncks --xcl_ass_var lat in.nc
+   ncks --xtr_ass_var lat in.nc
+   http://nco.sf.net/nco.html#xcl_ass_var
+   http://nco.sf.net/nco.html#xtr_ass_var
+
 BUG FIXES:
 
 A. ncremap runs 20-30x faster on Cori KNL than before.

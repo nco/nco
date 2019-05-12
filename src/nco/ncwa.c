@@ -344,8 +344,10 @@ main(int argc,char **argv)
     {"msk_cnd_sng",required_argument,0,'B'},
     {"retain-degenerate-dimensions",no_argument,0,'b'}, /* [flg] Retain degenerate dimensions */
     {"rdd",no_argument,0,'b'}, /* [flg] Retain degenerate dimensions */
-    {"no-coords",no_argument,0,'C'},
-    {"no-crd",no_argument,0,'C'},
+    {"xtr_ass_var",no_argument,0,'c'},
+    {"xcl_ass_var",no_argument,0,'C'},
+    {"no_coords",no_argument,0,'C'},
+    {"no_crd",no_argument,0,'C'},
     {"coords",no_argument,0,'c'},
     {"crd",no_argument,0,'c'},
     {"debug",required_argument,0,'D'},

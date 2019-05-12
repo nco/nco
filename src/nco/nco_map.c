@@ -837,8 +837,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   /* now convert centers */
   nco_msh_lon_crr(lon_ctr_in,grd_sz_in,1 , grd_lon_typ_in, grd_lon_typ_out);
 
-  //nco_msh_wrt("tst-wrt-in.nc", grd_sz_in, grd_crn_nbr_in, lat_crn_in, lon_crn_in);
-  //nco_msh_wrt("tst-wrt-out.nc", grd_sz_out, grd_crn_nbr_out, lat_crn_out, lon_crn_out);
+  //nco_msh_wrt("nco_map_tst_in.nc", grd_sz_in, grd_crn_nbr_in, lat_crn_in, lon_crn_in);
+  //nco_msh_wrt("nco_map_tst_out.nc", grd_sz_out, grd_crn_nbr_out, lat_crn_out, lon_crn_out);
 
   //  test nco_poly functions
   {
@@ -884,7 +884,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
                                 (size_t) grd_crn_nbr_in, grd_lon_typ_out, pl_typ,&pl_cnt_in);
 
     /* test new write func */
-    nco_msh_poly_lst_wrt("tst-wrt-out.nc", pl_lst_out, pl_cnt_out, grd_lon_typ_out  );
+    nco_msh_poly_lst_wrt("nco_map_tst_out.nc", pl_lst_out, pl_cnt_out, grd_lon_typ_out  );
 
     /* debug output all
     for(idx=0;idx<pl_cnt_out  ;idx++)
@@ -935,7 +935,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   /* write out overlap mesh for debugging purposes */
   if(nco_dbg_lvl_get() >= nco_dbg_dev)
-       nco_msh_poly_lst_wrt("tst-wrt-vrl.nc",pl_lst_vrl, pl_cnt_vrl, grd_lon_typ_out );
+       nco_msh_poly_lst_wrt("nco_map_tst_vrl.nc",pl_lst_vrl, pl_cnt_vrl, grd_lon_typ_out );
 
   *wgt_raw_ptr=wgt_raw;
   *col_src_adr_ptr=col_src_adr;
@@ -992,7 +992,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out, pl_cnt_out, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
     if(pl_nbr) {
-      nco_msh_poly_lst_wrt("tst-wrt-out-dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
+      nco_msh_poly_lst_wrt("nco_map_tst_out_dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
       pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg, pl_nbr);
     }
 
@@ -1005,7 +1005,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in, pl_cnt_in, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
     if(pl_nbr) {
-      nco_msh_poly_lst_wrt("tst-wrt-in-dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
+      nco_msh_poly_lst_wrt("nco_map_tst_in_dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
       pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg, pl_nbr);
     }
 

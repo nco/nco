@@ -786,9 +786,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   long tm_idx=0L; /* [idx] Current timestep */
   long tm_idx_in=0L; /* [idx] Current timestep in input file */
   long tm_idx_out=0L; /* [idx] Current timestep in output file */
-  long tm_nbr=0L; /* [idx] Number of timesteps */
-  long tm_nbr_in=1L; /* [nbr] Number of timesteps in input vertical grid */
-  long tm_nbr_out=1L; /* [nbr] Number of timesetps in output vertical grid */
+  long tm_nbr=0L; /* [idx] Number of timesteps in vertical grid */
+  long tm_nbr_in=1L; /* [nbr] Number of timesteps in input vertical grid definition */
+  long tm_nbr_out=1L; /* [nbr] Number of timesetps in output vertical grid definition */
   size_t grd_sz_in=1L; /* [nbr] Number of elements in single layer of input grid */
   size_t grd_sz_out=1L; /* [nbr] Number of elements in single layer of output grid */
 
@@ -1068,7 +1068,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       tm_nbr_out=tm_nbr_in;
     } /* !ps_id_tpl */
     
-    /* Timestep sequencing */
+    /* Timestep sequencing
+       NB: tm_nbr_??? variables count timesteps in vertical grid definitions
+       These are not necessarily the same as the number of timesteps in either file
+       Time-invariant hybrid or pure-pressure coordinates are valid vertical grids for timeseries
+       Usually hybrid grids have as many timesteps in the grids as in the timeseries 
+       Usually pressure grids are time-invariant (as of 20190511 time-varying pure pressure grids are still not supported)
+       This implementation interpolates timeseries to/from time-invariant vertical grids in one OpenMP call! */
     if(tm_nbr_in > 1L || tm_nbr_out > 1L)
       if(tm_nbr_in > tm_nbr_out)
 	assert((float)tm_nbr_in/(float)tm_nbr_out == tm_nbr_in/tm_nbr_out);
@@ -1409,6 +1415,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      Copy appropriate filehandle to variable scoped as shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
+  /* Repeating above documentation for the forgetful:
+     NB: tm_nbr is max(timesteps) in vertical grid definitions, not number of records in either file
+     This implementation interpolates timeseries to/from time-invariant vertical grids in one OpenMP call! */
   for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
 
     /* Index-offset to current surface pressure timeslice */

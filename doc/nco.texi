@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.0-beta01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 11 May 2019
+@set update-date 12 May 2019
 @set update-month May 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -574,16 +574,16 @@ Irvine, California@*
 The @acronym{DOE} Energy Exascale Earth System Model (@acronym{E3SM})
 project (formerly @acronym{ACME}) has generously supported @acronym{NCO}
 development for the past four years.
-Providing @acronym{NCO} support to a mission-driven, high-performance 
-climate model development effort has brought unprecedented challenges
-and opportunity.
+Supporting @acronym{NCO} for a mission-driven, high-performance
+climate model development effort has brought unprecedented challenges 
+and opportunities.
 After so many years of staid progress, the recent development speed
 has been both exhilirating and terrifying.
 
 @sp 1
 @noindent
 Charlie Zender@*
-April, 2019@*
+May, 2019@*
 Laguna Beach, California@*
 
 @html
@@ -4759,17 +4759,23 @@ Documentation for @command{bash} and @command{csh} describe the rules of
 filename expansion (globbing).
 
 @html
+<a name="no_coord"></a> <!-- http://nco.sf.net/nco.html#no_coord -->
+<a name="no_crd"></a> <!-- http://nco.sf.net/nco.html#no_crd -->
 <a name="crd"></a> <!-- http://nco.sf.net/nco.html#crd -->
 <a name="-C"></a> <!-- http://nco.sf.net/nco.html#-C -->
 <a name="-c"></a> <!-- http://nco.sf.net/nco.html#-c -->
+<a name="xcl_ass_var"></a> <!-- http://nco.sf.net/nco.html#xcl_ass_var -->
+<a name="xtr_ass_var"></a> <!-- http://nco.sf.net/nco.html#xtr_ass_var -->
 @end html
 @node Subsetting Coordinate Variables, Group Path Editing, Subsetting Files, Shared features
 @section Subsetting Coordinate Variables
 @cindex subsetting
 @cindex @code{-C}
 @cindex @code{-c}
-@cindex @code{--no-coords}
-@cindex @code{--no-crd}
+@cindex @code{--xcl_ass_var}
+@cindex @code{--xtr_ass_var}
+@cindex @code{--no_coords}
+@cindex @code{--no_crd}
 @cindex @code{--coords}
 @cindex @code{--crd}
 @cartouche
@@ -4777,24 +4783,33 @@ Availability: @command{ncap2}, @command{ncbo}, @command{nces},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
 @command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-C}, @samp{-c}@*
-Long options: @samp{--no-coords}, @samp{--no-crd}, @samp{--crd}, @samp{--coords}@*
+Long options: @samp{--no_coords}, @samp{--no_crd}, @samp{--xcl_ass_var}, 
+@samp{--crd}, @samp{--coords}, @samp{--xtr_ass_var}@*
 @end cartouche
 By default, coordinates variables associated with any variable appearing
 in the @var{input-file} will be placed in the @var{output-file}, even
 if they are not explicitly specified, e.g., with the @samp{-v} switch.
 Thus variables with a latitude coordinate @code{lat} always carry the
 values of @code{lat} with them into the @var{output-file}.
-This feature can be disabled with @samp{-C}, which causes @acronym{NCO}
-to not automatically add coordinates to the variables appearing in the
-@var{output-file}. 
+This automatic inclusion feature can be disabled with @samp{-C}, which
+causes @acronym{NCO} to exclude (or, more precisely, not to
+automatically include) coordinates and associated variables from the
+extraction list.
 However, using @samp{-C} does not preclude the user from including some
 coordinates in the output files simply by explicitly selecting the
-coordinates with the @var{-v} option.
+coordinates and associated variables with the @var{-v} option.
 The @samp{-c} option, on the other hand, is a shorthand way of
-automatically specifying that @emph{all} coordinate variables in the
-@var{input-files} should appear in the @var{output-file}.
-Thus @samp{-c} allows the user to select all the coordinate variables
-without having to know their names.
+automatically specifying that @emph{all} coordinate and associated
+variables in @var{input-files} should appear in @var{output-file}.
+The user can thereby select all coordinate variables without even
+knowing their names.  
+
+The meaning of ``coordinates'' in these two options has expanded since
+about 2009 from simple one dimensional coordinates (per the
+@acronym{NUG}) definition) to any and all associated variables.
+This includes multi-dimensional coordinates as well as a menagerie
+of associated variables defined by the @acronym{CF} metadata
+conventions: 
 @cindex @acronym{CF} conventions
 As of @acronym{NCO} version 4.4.5 (July, 2014) 
 both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{ancillary_variables}
@@ -4817,6 +4832,13 @@ convention described in @ref{CF Conventions}.
 As of @acronym{NCO} version 4.6.0 (May, 2016) 
 both @samp{-c} and @samp{-C} honor the @acronym{CF} @code{grid_mapping}
 convention described in @ref{CF Conventions}. 
+
+The expanded categories of variables controlled by @samp{-c} and
+@samp{-C} justified adding a more descriptive switch.
+As of @acronym{NCO} version 4.8.0 (May, 2019) the switch
+@samp{--xcl_ass_var}, which stands for ``exclude associated variables'', 
+is synonymous with @samp{-C} and @samp{--xtr_ass_var}, which stands
+for ``extract associated variables'', is synonymous with @samp{-c}.
 
 @html
 <a name="gpe"></a> <!-- http://nco.sf.net/nco.html#gpe -->
@@ -11880,8 +11902,8 @@ switches (including @samp{-c} and @samp{-C}) described in
 @cindex subsetting
 @cindex @code{-C}
 @cindex @code{-c}
-@cindex @code{--no-coords}
-@cindex @code{--no-crd}
+@cindex @code{--no_coords}
+@cindex @code{--no_crd}
 @cindex @code{--coords}
 @cindex @code{--crd}
 As of @acronym{NCO} version 3.9.6 (January, 2009), @acronym{NCO}

@@ -1,8 +1,16 @@
-2019-05-11  Charlie Zender  <zender@uci.edu>
+2019-05-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.0 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.0: Becoming';git push
 	git tag -a 4.8.0 -m 'ncremap se2se/fv2fv, no_stdin, vrt_fl, xcl_var;ncclimo job_nbr, OMP_PROC_BIND;ncap2 no foo.nc;ncks chk_nan';git push --tags
+
+	* Change tst-wrt-map*.nc to nco_map_tst*.nc
+
+	* Change --no-crd, --no-coords to --no_crd, --no_coords
+
+	* Add synonyms --xcl_ass_var, --xtr_ass_var
+
+2019-05-11  Charlie Zender  <zender@uci.edu>
 
 	* Document NCO regridding algorithm
 

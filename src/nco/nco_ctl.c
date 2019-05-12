@@ -1032,8 +1032,8 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-b ")) (void)fprintf(stdout,"-b, --fl_bnr, binary-file fl_bnr\tUnformatted binary file to write\n");
   if(strstr(opt_sng,"[-b]")) (void)fprintf(stdout,"-b, --rdd, retain-degenerate-dimensions\tRetain degenerate dimensions\n");
   if(strstr(opt_sng,"--bfr")) (void)fprintf(stdout,"    --bfr_sz, buffer_size sz\tBuffer size to open files with\n");
-  if(strstr(opt_sng,"[-C]")) (void)fprintf(stdout,"-C, --nocoords\t\tAssociated coordinate variables should not be processed\n");
-  if(strstr(opt_sng,"[-c]")) (void)fprintf(stdout,"-c, --crd, coords\tCoordinate variables will all be processed\n");
+  if(strstr(opt_sng,"[-C]")) (void)fprintf(stdout,"-C, --no_crd, xcl_ass_\tExclude coordinates, CF-associated variables (ancillary, bounds, ...)\n");
+  if(strstr(opt_sng,"[-c]")) (void)fprintf(stdout,"-c, --crd, xtr_ass_var\tExtract coordinates, CF-associated variables (ancillary, bounds, ...)\n");
   if(strstr(opt_sng,"--cb")) (void)fprintf(stdout,"    --cb, clm_bnd\tCF Climatology bounds will be processed (see also --c2b)\n");
   if(strstr(opt_sng,"--cal")) (void)fprintf(stdout,"    --cal,--cln\tPrint UDUnits-compatible dates/times in human-legible calendar format\n");
   if(strstr(opt_sng,"--cdl")) (void)fprintf(stdout,"    --cdl\t\tPrint CDL (netCDF lingua franca used by ncdump/ncgen)\n");
