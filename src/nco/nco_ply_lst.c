@@ -256,6 +256,9 @@ int *pl_nbr)
   const char fnc_nm[]="nco_poly_lst_mk()";
 
   nco_bool bwrp;
+  /* check to see if cell is a polar cap */
+  nco_bool bchk_caps=False;
+
   double tot_area=0.0;
 
   double *lat_ptr=lat_crn;
@@ -279,6 +282,12 @@ int *pl_nbr)
    bwrp=False;
   else
     bwrp=True;
+
+
+  if(pl_typ== poly_sph)
+    bchk_caps=True;
+  else if( pl_typ==poly_rll)
+    bchk_caps=False;
 
   // printf("About to print poly sct   grd_sz=%d grd_crn_nbr=%d\n", grd_sz, grd_crn_nbr);
   for(idx=0;idx<grd_sz; idx++)
@@ -308,7 +317,7 @@ int *pl_nbr)
     nco_poly_shp_pop(pl);
 
     /* add min max */
-    nco_poly_minmax_add(pl, grd_lon_typ, True);
+    nco_poly_minmax_add(pl, grd_lon_typ, bchk_caps);
 
     /* manually add wrap flag */
     // pl->bwrp= (fabs(pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) >= 180.0);
@@ -690,7 +699,7 @@ int *pl_cnt_vrl_ret){
 
         double pControl[NBR_SPH];
 
-        /* see if pl_out completly inside pl_lst_in[idx] */
+        /* see if pl_out completley inside pl_lst_in[idx] */
         if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out) )
         {
           if(nco_sph_mk_control( pl_lst_in[idx], pControl  ) &&
