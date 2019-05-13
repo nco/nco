@@ -8,6 +8,8 @@ nco_poly_typ_sz(poly_typ_enm pl_typ)
     return NBR_CRT;
   else if(pl_typ == poly_sph)
     return NBR_SPH;
+  else if(pl_typ == poly_rll)
+    return NBR_RLL;
 
   return 0;
 }
@@ -381,7 +383,7 @@ void nco_poly_minmax_add
 
 
   /* add correction to latitude bounding box */
-  if(pl->pl_typ == poly_sph){
+  if(pl->pl_typ == poly_sph || pl->pl_typ == poly_rll ){
 
     double lat_min;
     double lat_max;
@@ -391,6 +393,9 @@ void nco_poly_minmax_add
     /* add wrap flag */
     pl->bwrp=(pl->dp_x_minmax[1] - pl->dp_x_minmax[0] >= 180.0);
 
+    /* rll grid no polar cap */
+    if( pl->pl_typ == poly_rll )
+      bchk_caps=False;
 
     /* check for a polar cap */
     if (pl->bwrp &&  bchk_caps)
@@ -545,7 +550,8 @@ void nco_poly_minmax_add
 
       }
 
-      if(!pl->bwrp_y)
+      /* nb no need to add correction for Rll grid */
+      if( pl->pl_typ == poly_sph &&  !pl->bwrp_y)
       {
         nco_geo_get_lat_correct(pl->dp_x_minmax[0], pl->dp_y_minmax[1], pl->dp_x_minmax[1], pl->dp_y_minmax[0],
                                 &lat_min,
@@ -571,125 +577,42 @@ poly_sct *pl){
 
   if(pl->crn_nbr <3)
     pl->area=0.0;
-  else
+
+
+  if(pl->pl_typ == poly_sph )
+  {
     nco_sph_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
 
-  /* charlies function can sometimes return a NaN */
-  if(isnan(pl->area))
-    pl->area=0.0;
-
-
-}
-
-
-/*******************************************************************************************************/ 
-   /*
-     Algorithm  to check that point is in polygon.
-     for full details please see :
-      http://demonstrations.wolfram.com/AnEfficientTestForAPointToBeInAConvexPolygon 
-   
-     It assumes that the polygon is convex and point order can be clockwise or counterclockwise.
-     If area is almost zero then  the point is on a vertex or an edge or in line with an edge but outside polygon.
-     Please note that if two contiguous vertices are identical  then this will also make the area zero 
-   */ 
-
-/********************************************************************************************************/
-
-nco_bool            /* O [flg] True if point in inside (or on boundary ) of polygon */ 
-nco_poly_pnt_in_poly( 
-int crn_nbr,
-double x_in,
-double y_in,
-double *lcl_dp_x,
-double *lcl_dp_y)
-{  
-  int idx;
-  int idx1;
-  nco_bool bret=False;
-  nco_bool sign=False;
-  nco_bool dsign=False;
-
-  double area=0.0;
-  
-  
-  
-  /* make (x_in,y_in) as origin */
-  for(idx=0 ; idx < crn_nbr ; idx++)
-  {  
-    lcl_dp_x[idx]-=x_in;
-    lcl_dp_y[idx]-=y_in;
+    /* charlies function can sometimes return a NaN */
+    if (isnan(pl->area))
+      pl->area = 0.0;
 
   }
 
-  for(idx=0 ; idx < crn_nbr ; idx++)
-  {
-    /* for full explanation of algo please 
-     
-    */
-    idx1=(idx+1)%crn_nbr;
-    area=lcl_dp_x[idx1] * lcl_dp_y[idx] - lcl_dp_x[idx] * lcl_dp_y[idx1];
+  /* rll poly polygon should only have 3 or 4 vertex */
+  if(pl->pl_typ == poly_rll){
+    /* full formula area=(lon1-lon0)*(sin(lat1)-sin(lat0) ) */
+    double dp_tmp=sin(D2R( pl->dp_y_minmax[1] )) - sin(D2R(pl->dp_y_minmax[0]) );
 
-    /* check betweeness need some fabs and limits here */
-    if( fabs(area) <= DAREA ){
-      if( lcl_dp_x[idx] != lcl_dp_x[idx1] )
-	bret = (  (lcl_dp_x[idx]<=0.0 &&  lcl_dp_x[idx1] >=0.0) ||  (lcl_dp_x[idx]>=0.0 && lcl_dp_x[idx1]<=0.0)  );
-      else
-        bret = (  (lcl_dp_y[idx]<=0.0 &&  lcl_dp_y[idx1] >=0.0) ||  (lcl_dp_y[idx]>=0.0 && lcl_dp_y[idx1]<=0.0)  );
+    double dff=pl->dp_x_minmax[1] - pl->dp_x_minmax[0];
 
-     break;	  
-    }  
+    if(pl->bwrp )
+      dp_tmp *= D2R(360.0 - dff );
+    else
+      dp_tmp*=D2R(dff);
 
-    
 
-    dsign=(area>0.0);
+    pl->area = fabs(dp_tmp);
 
-    if(idx==0)
-      sign=dsign;
 
-    /* we have a sign change so point NOT in Polygon */ 
-    if(dsign != sign)
-      { bret=False; break; }
 
-    bret=True;
-    
   }
+    //nco_rll_area(pl);
 
-  return bret;
-  
+
+
 }
 
-int             /* O [nbr] returns number of points of pl_out that are inside pl_in */
-nco_poly_poly_in_poly( 
-poly_sct *pl_in,
-poly_sct *pl_out)
-{  
-  int idx=0;
-  int sz;
-  int cnt_in=0;
-
-  double *lcl_dp_x;
-  double *lcl_dp_y;
-
-  lcl_dp_x=(double*)nco_malloc( sizeof(double)*pl_in->crn_nbr);
-  lcl_dp_y=(double*)nco_malloc( sizeof(double)*pl_in->crn_nbr);
-  
-    
-  sz= pl_out->crn_nbr;
-  
-  for(idx=0; idx < sz ; idx++){
-
-    memcpy(lcl_dp_x, pl_in->dp_x, sizeof(double) * pl_in->crn_nbr);
-    memcpy(lcl_dp_y, pl_in->dp_y, sizeof(double) * pl_in->crn_nbr);  
-
-    if( nco_poly_pnt_in_poly(pl_in->crn_nbr, pl_out->dp_x[idx], pl_out->dp_y[idx], lcl_dp_x, lcl_dp_y)  )
-      cnt_in++;
-  } 
-  lcl_dp_x=(double*)nco_free(lcl_dp_x);
-  lcl_dp_y=(double*)nco_free(lcl_dp_y);
-  
-
-  return cnt_in;
-}
 
 
 /* Uses min-max limits only no serious polygon stuff */
@@ -751,7 +674,7 @@ nco_poly_prn
     case 0:
       (void)fprintf(stderr,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d bwrp_y=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->bwrp_y, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
       for(idx=0; idx<pl->crn_nbr; idx++)
-	(void)fprintf(stderr,"%20.20f, %20.20f\n",pl->dp_x[idx], pl->dp_y[idx]);
+	    (void)fprintf(stderr,"%20.20f, %20.20f\n",pl->dp_x[idx], pl->dp_y[idx]);
       (void)fprintf(stderr,"\n");
 
       /*
@@ -788,6 +711,11 @@ nco_poly_prn
       if(pl->pl_typ == poly_sph)
         for(idx=0; idx<pl->crn_nbr; idx++)
            (void)fprintf(stderr,"x=%f y=%f z=%f lon=%f lat=%f\n",pl->shp[idx][0], pl->shp[idx][1], pl->shp[idx][2], pl->shp[idx][3]*180.0 / M_PI, pl->shp[idx][4]*180.0 /M_PI );
+
+      if(pl->pl_typ == poly_rll)
+        for(idx=0; idx<pl->crn_nbr; idx++)
+          (void)fprintf(stderr,"x=%f y=%f z=%f lon=%f lat=%f\n",pl->shp[idx][0], pl->shp[idx][1], pl->shp[idx][2], pl->shp[idx][3]*180.0 / M_PI, pl->shp[idx][4]*180.0 /M_PI );
+
 
       if(pl->pl_typ == poly_crt)
         for(idx=0; idx<pl->crn_nbr; idx++)
@@ -1250,7 +1178,7 @@ poly_sct *pl)
   }
 
 
-  if( pl->pl_typ == poly_sph )
+  if( pl->pl_typ == poly_sph || pl->pl_typ == poly_rll)
   {
     nco_bool bDeg=True;
     for (idx = 0; idx < pl->crn_nbr; idx++)
@@ -1278,7 +1206,7 @@ poly_sct *pl
   }
 
   /* convert from vector to (lon,lat) - degrees */
-  if( pl->pl_typ == poly_sph )
+  if( pl->pl_typ == poly_sph || pl->pl_typ==poly_rll )
   {
     for (idx = 0; idx < pl->crn_nbr; idx++)
       nco_geo_sph_2_lonlat(pl->shp[idx], &pl->dp_x[idx], &pl->dp_y[idx], bDeg);
