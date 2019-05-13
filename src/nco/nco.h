@@ -1592,7 +1592,8 @@ extern "C" {
   typedef enum {
      poly_none=0,
      poly_sph=1,
-     poly_crt=2
+     poly_crt=2,
+     poly_rll=3
   } poly_typ_enm;
 
   typedef enum {
