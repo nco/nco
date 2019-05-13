@@ -850,7 +850,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       case nco_grd_lon_bb:
         if(pl_typ == poly_crt)
           nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
-        else if(pl_typ == poly_sph)
+        else if(pl_typ == poly_sph || pl_typ == poly_rll )
           nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
 
         break;
@@ -860,7 +860,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       case nco_grd_lon_180_wst:
         if(pl_typ == poly_crt)
           nco_crt_set_domain(-180.0, 180.0, -90.0, 90.0);
-        else if(pl_typ == poly_sph)
+        else if(pl_typ == poly_sph || pl_typ == poly_rll)
           nco_sph_set_domain(-M_PI, M_PI, -M_PI_2, M_PI_2);
 
         break;
@@ -870,7 +870,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       case nco_grd_lon_Grn_wst:
         if(pl_typ == poly_crt)
           nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
-        else if(pl_typ == poly_sph)
+        else if(pl_typ == poly_sph || pl_typ == poly_rll)
           nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
 
         break;
