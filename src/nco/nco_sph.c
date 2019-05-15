@@ -78,6 +78,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
    double nx1;
    double nx2;
    double nx3;
+   double dx1;
 
 
    char code='0';
@@ -141,7 +142,13 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
 
       /* Xcross product near zero !! so make it zero*/
-      if( 1.0- nco_sph_dot_nm(Pcross,Qcross )  <DOT_TOLERANCE )
+      dx1=1.0- nco_sph_dot_nm(Pcross,Qcross );
+
+      /* spans parallel but in oposite directions */
+      if( fabs(dx1-2.0) < DOT_TOLERANCE )
+        return EXIT_FAILURE;
+
+      if( dx1  <DOT_TOLERANCE )
       {
 
          ip1qLHS=0;
@@ -548,7 +555,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     *inflag=poly_vrl_pin;
   }
     /* LHS overlap */
-  else if (dx_q0 <0.0 &&  (dx_q1 >0.0 && dx_q1 < dx_p1)  ) {
+  else if (dx_q0 <0.0 &&  (dx_q1 >0.0 && dx_q1 <= dx_p1)  ) {
     code= '2';
     nco_sph_adi(r0, p0);
     nco_sph_adi(r1, q1);
@@ -556,7 +563,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   }
     /* RHS overlap */
-  else if( dx_q0 >0.0 &&  dx_q0 < dx_p1 && dx_q1 > dx_p1    )
+  else if( dx_q0 >=0.0 &&  dx_q0 < dx_p1 && dx_q1 > dx_p1    )
   {
     code= '2';
     nco_sph_adi(r0, q0);
@@ -725,7 +732,9 @@ int nco_sph_lhs(double *Pi, double *Qi)
 
    ds= nco_sph_dot(Pi, Qi);
 
-   if(ds  > 0.0)
+
+
+   if(ds  > 0.0 )
       return 1;
    else if(ds <0.0)
       return -1;
@@ -734,7 +743,7 @@ int nco_sph_lhs(double *Pi, double *Qi)
 
 
    /*
-   ds=acos( sDot(Pi,Qcross) );
+   ds=acos( nco_sph_dot(Pi,Qi) );
 
    if( ds < M_PI_2 - ARC_MIN_LENGTH )
      return 1;
@@ -742,8 +751,8 @@ int nco_sph_lhs(double *Pi, double *Qi)
      return -1;
    else
      return 0;
+  */
 
-   */
 }
 
 /* implement face rules */
@@ -1745,3 +1754,4 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   return EXIT_SUCCESS;
 
 }
+
