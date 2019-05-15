@@ -162,6 +162,13 @@ extern "C" {
   (poly_sct *pl,
    nco_grd_lon_typ_enm lon_typ);
 
+  int
+  nco_poly_intersect(
+   poly_sct *pl_in,
+   poly_sct *pl_out,
+   poly_sct *pl_vrl,
+   int *r);
+
 
 
 

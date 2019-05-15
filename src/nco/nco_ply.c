@@ -752,22 +752,21 @@ poly_sct *pl_out){
  nco_poly_shp_init(pl_vrl);
 
 
+ iret=nco_poly_intersect(pl_in, pl_out, pl_vrl, &nbr_r);
 
- if(pl_in->pl_typ == poly_crt ) {
-   iret = nco_crt_intersect(pl_in, pl_out, pl_vrl, &nbr_r);
- }
-   else if( pl_in->pl_typ== poly_sph)
+ if(iret!=EXIT_SUCCESS || nbr_r <3  )
  {
-   iret = nco_sph_intersect(pl_in, pl_out, pl_vrl, &nbr_r);
+   pl_vrl = nco_poly_free(pl_vrl);
+
+   return pl_vrl;
 
  }
 
-   nco_poly_init_crn_re(pl_vrl, nbr_r);
-   nco_poly_dp_pop_shp(pl_vrl);
 
-  if (nbr_r < 3)
-    pl_vrl = nco_poly_free(pl_vrl);
+ nco_poly_init_crn_re(pl_vrl, nbr_r);
 
+ /* for production this should not be needed */
+ nco_poly_dp_pop_shp(pl_vrl);
 
  return pl_vrl;
   
@@ -1445,6 +1444,40 @@ nco_poly_ctr_add
 
 }
 
+int
+nco_poly_intersect(
+poly_sct *pl_in,
+poly_sct *pl_out,
+poly_sct *pl_vrl,
+int *nbr_r){
+
+
+  int iret;
+
+  switch(pl_in->pl_typ)
+  {
+
+    case poly_crt:
+      iret = nco_crt_intersect(pl_in, pl_out, pl_vrl, nbr_r);
+      break;
+
+    case poly_rll:
+      iret = nco_rll_intersect(pl_in, pl_out, pl_vrl, nbr_r);
+      break;
+
+    default:
+    case poly_sph:
+      iret = nco_sph_intersect(pl_in, pl_out, pl_vrl, nbr_r);
+      break;
+
+  }
+
+  return iret;
+
+
+
+
+}
 
 
 
