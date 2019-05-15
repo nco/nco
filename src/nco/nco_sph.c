@@ -1985,7 +1985,7 @@ nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     nco_sph_adi(r0, q0);
     nco_sph_adi(r1, p1);
     *inflag=poly_vrl_pin;
-    code = '2;';
+    code = '2';
 
   } else if ( nco_sph_between(p0[id], p1[id], q0[id]) && nco_sph_between(p0[id], p1[id], q1[id])) {
     nco_sph_adi(r0, q0);
