@@ -446,7 +446,7 @@ nco_crt_set_domain(double lon_min, double lon_max, double lat_min, double lat_ma
 }
 
 int             /* O [nbr] returns number of points of pl_out that are inside pl_in */
-nco_poly_poly_in_poly(
+nco_crt_poly_in_poly(
 poly_sct *pl_in,
 poly_sct *pl_out)
 {
