@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.0-beta01
-@set doc-edition 4.8.0-beta01
+@set nco-edition 4.8.0
+@set doc-edition 4.8.0
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 12 May 2019
+@set update-date 14 May 2019
 @set update-month May 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17708,15 +17708,16 @@ if neither of these is done and no @var{caseid} is specified, in which
 case it assumes all @code{*.nc} files in @var{drc_in} constitute the
 input file list. 
 
-Options come in both short (single-letter) and long forms.
+Options for @command{ncclimo} and @command{ncremap} come in both short
+(single-letter) and long forms. 
 The handful of long-option synonyms for each option allows the user 
 to imbue the commands with a level of verbosity and precision that suits
 her taste. 
 A complete description of all options is given below, in alphabetical
 order of the short option letter.
 Long option synonyms are given just after the letter.
-When invoked without options, @command{ncclimo} prints a succinct table
-of all options and some examples.
+When invoked without options, @command{ncclimo} and @command{ncremap}
+print a succinct table of all options and some examples.
 @table @option
 @html
 <a name="dec_md"></a> <!-- http://nco.sf.net/nco.html#dec_md -->

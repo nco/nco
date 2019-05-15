@@ -639,7 +639,9 @@ netCDF4 user-defined types support;
 <tt>ncclimo -v</tt> splitter support for regular expressions?;</li>
 <li><b>NCO 4.8.1</b>: (<i>In Progress, features in-progress or complete include</i>) 
 <tt>ncks --bsa</tt> Byte-swap algoritm;</li>
+<tt>ncremap</tt> simulaneous horizontal and vertical regridding;
 <tt>ncremap</tt> invokes NCO weight-generator;
+<tt>ncclimo</tt> allows vertical interpolation;
 <li><b>NCO 4.8.0</b>: (<i>Current Stable Release</i>)
 <tt>ncap2</tt> allows no input file;
 <tt>ncclimo --job_nbr</tt> climo granularity;
