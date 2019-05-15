@@ -433,9 +433,9 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   /* Define overlap mesh vertices, count links, compute overlap weights
      This includes Mohammad Abouali code to create triangle list and Zender code to compute triangle areas */
   (void)nco_msh_mk
-    (rgr,
-     area_in,msk_in,lat_ctr_in,lon_ctr_in,lat_crn_in,lon_crn_in,grd_sz_in,mpf.src_grid_corners,
-     area_out,msk_out,lat_ctr_out,lon_ctr_out,lat_crn_out,lon_crn_out,grd_sz_out,mpf.dst_grid_corners,
+    (rgr, &mpf,
+     area_in,msk_in,lat_ctr_in,lon_ctr_in,lat_crn_in,lon_crn_in,
+     area_out,msk_out,lat_ctr_out,lon_ctr_out,lat_crn_out,lon_crn_out,
      frc_in,frc_out,&col_src_adr,&row_dst_adr,&wgt_raw,&lnk_nbr);
 
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile based on %li links\n",nco_prg_nm_get(),lnk_nbr);
@@ -740,15 +740,15 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 int /* O [enm] Return code */
 nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 (rgr_sct * const rgr, /* I [sct] Regridding structure */
-
+ nco_mpf_sct *mpf,
  double *area_in, /* I [sr] Area of source grid */
  int *msk_in, /* I [flg] Mask on source grid */
  double *lat_ctr_in, /* I [dgr] Latitude  centers of source grid */
  double *lon_ctr_in, /* I [dgr] Longitude centers of source grid */
  double *lat_crn_in, /* I [dgr] Latitude  corners of source grid */
  double *lon_crn_in, /* I [dgr] Longitude corners of source grid */
- size_t grd_sz_in, /* I [nbr] Number of elements in single layer of source grid */
- long grd_crn_nbr_in, /* I [nbr] Maximum number of corners in source gridcell */
+ //size_t grd_sz_in, /* I [nbr] Number of elements in single layer of source grid */
+ //long grd_crn_nbr_in, /* I [nbr] Maximum number of corners in source gridcell */
 
  double *area_out, /* I [sr] Area of destination grid */
  int *msk_out, /* I [flg] Mask on destination grid */
@@ -756,8 +756,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
  double *lon_ctr_out, /* I [dgr] Longitude centers of destination grid */
  double *lat_crn_out, /* I [dgr] Latitude  corners of destination grid */
  double *lon_crn_out, /* I [dgr] Longitude corners of destination grid */
- size_t grd_sz_out, /* I [nbr] Number of elements in single layer of destination grid */
- long grd_crn_nbr_out, /* I [nbr] Maximum number of corners in destination gridcell */
+ //size_t grd_sz_out, /* I [nbr] Number of elements in single layer of destination grid */
+ //long grd_crn_nbr_out, /* I [nbr] Maximum number of corners in destination gridcell */
 
  double *frc_in, /* O [frc] Fraction of source grid */
  double *frc_out, /* O [frc] Fraction of destination grid */
@@ -775,6 +775,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   int pl_cnt_in=0;
   int pl_cnt_out=0;
+
+
+  long grd_crn_nbr_in;    /* [nbr] Maximum number of corners in source gridcell */
+  long grd_crn_nbr_out;  /*  [nbr] Maximum number of corners in destination gridcell */
+  size_t grd_sz_in;       /* [nbr] Number of elements in single layer of source grid */
+  size_t grd_sz_out;     /*  [nbr] Number of elements in single layer of destination grid */
 
   int *col_src_adr; /* [idx] Source address (col) */
   int *row_dst_adr; /* [idx] Destination address (row) */
@@ -801,14 +807,27 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   poly_sct **pl_lst_vrl=(poly_sct**)NULL_CEWI;
 
-  poly_typ_enm pl_typ=poly_sph;
+  poly_typ_enm pl_typ=poly_none  ;
+
+  grd_crn_nbr_in=mpf->src_grid_corners;
+  grd_crn_nbr_out=mpf->dst_grid_corners;
+
+  grd_sz_in=mpf->src_grid_size;
+  grd_sz_out=mpf->dst_grid_size;
+
 
   /* Construct overlap mesh here
      NB: Parallelize loop with OpenMP and/or MPI
      Final lnk_nbr and grd_crn_nbr_vrl are known only after a full loop through input grids */
 
+  /* choose mesh overlap type based on rank of src and dst */
+  if(mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
+    pl_typ=poly_rll;
+  else
+    pl_typ=poly_sph;
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s:%s Just entered function- test msh_wrt()\n",nco_prg_nm_get(),fnc_nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr)
+     (void)fprintf(stderr,"%s:%s(): Interpolation type=%s\n",nco_prg_nm_get(),fnc_nm, nco_poly_typ_sng_get(pl_typ)  );
 
 
   /* create some statistics on grid in and grid out */
@@ -850,7 +869,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       case nco_grd_lon_bb:
         if(pl_typ == poly_crt)
           nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
-        else if(pl_typ == poly_sph)
+        else if(pl_typ == poly_sph || pl_typ == poly_rll )
           nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
 
         break;
@@ -860,7 +879,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       case nco_grd_lon_180_wst:
         if(pl_typ == poly_crt)
           nco_crt_set_domain(-180.0, 180.0, -90.0, 90.0);
-        else if(pl_typ == poly_sph)
+        else if(pl_typ == poly_sph || pl_typ == poly_rll)
           nco_sph_set_domain(-M_PI, M_PI, -M_PI_2, M_PI_2);
 
         break;
@@ -870,7 +889,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       case nco_grd_lon_Grn_wst:
         if(pl_typ == poly_crt)
           nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
-        else if(pl_typ == poly_sph)
+        else if(pl_typ == poly_sph || pl_typ == poly_rll)
           nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
 
         break;
@@ -896,7 +915,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     if( pl_cnt_in && pl_cnt_out  )
        if( pl_typ == poly_crt  )
           pl_lst_vrl= nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, &pl_cnt_vrl);
-       else if( pl_typ == poly_sph )
+       else if( pl_typ == poly_sph || pl_typ == poly_rll )
           pl_lst_vrl= nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, grd_lon_typ_out, &pl_cnt_vrl);
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev)

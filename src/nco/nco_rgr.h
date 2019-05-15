@@ -26,7 +26,6 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_fl_utl.h" /* File manipulation */
-#include "nco_map.h" /* Map generation */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_sld.h" /* Swath-Like Data */
@@ -283,5 +282,8 @@ extern "C" {
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
+
+/* its here temporarily as a func prototype uses nco_mf_sct */
+#include "nco_map.h" /* Map generation */
 
 #endif /* NCO_RGR_H */

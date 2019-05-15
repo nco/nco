@@ -445,6 +445,115 @@ nco_crt_set_domain(double lon_min, double lon_max, double lat_min, double lat_ma
   return;
 }
 
+int             /* O [nbr] returns number of points of pl_out that are inside pl_in */
+nco_crt_poly_in_poly(
+poly_sct *pl_in,
+poly_sct *pl_out)
+{
+  int idx=0;
+  int sz;
+  int cnt_in=0;
+
+  double *lcl_dp_x;
+  double *lcl_dp_y;
+
+  lcl_dp_x=(double*)nco_malloc( sizeof(double)*pl_in->crn_nbr);
+  lcl_dp_y=(double*)nco_malloc( sizeof(double)*pl_in->crn_nbr);
+
+
+  sz= pl_out->crn_nbr;
+
+  for(idx=0; idx < sz ; idx++){
+
+    memcpy(lcl_dp_x, pl_in->dp_x, sizeof(double) * pl_in->crn_nbr);
+    memcpy(lcl_dp_y, pl_in->dp_y, sizeof(double) * pl_in->crn_nbr);
+
+    if( nco_crt_pnt_in_poly(pl_in->crn_nbr, pl_out->dp_x[idx], pl_out->dp_y[idx], lcl_dp_x, lcl_dp_y)  )
+      cnt_in++;
+  }
+  lcl_dp_x=(double*)nco_free(lcl_dp_x);
+  lcl_dp_y=(double*)nco_free(lcl_dp_y);
+
+
+  return cnt_in;
+}
+
+
+/*******************************************************************************************************/
+/*
+  Algorithm  to check that point is in polygon.
+  for full details please see :
+   http://demonstrations.wolfram.com/AnEfficientTestForAPointToBeInAConvexPolygon
+
+  It assumes that the polygon is convex and point order can be clockwise or counterclockwise.
+  If area is almost zero then  the point is on a vertex or an edge or in line with an edge but outside polygon.
+  Please note that if two contiguous vertices are identical  then this will also make the area zero
+*/
+
+/********************************************************************************************************/
+
+nco_bool            /* O [flg] True if point in inside (or on boundary ) of polygon */
+nco_crt_pnt_in_poly(
+int crn_nbr,
+double x_in,
+double y_in,
+double *lcl_dp_x,
+double *lcl_dp_y)
+{
+  int idx;
+  int idx1;
+  nco_bool bret=False;
+  nco_bool sign=False;
+  nco_bool dsign=False;
+
+  double area=0.0;
+
+
+
+  /* make (x_in,y_in) as origin */
+  for(idx=0 ; idx < crn_nbr ; idx++)
+  {
+    lcl_dp_x[idx]-=x_in;
+    lcl_dp_y[idx]-=y_in;
+
+  }
+
+  for(idx=0 ; idx < crn_nbr ; idx++)
+  {
+    /* for full explanation of algo please
+
+    */
+    idx1=(idx+1)%crn_nbr;
+    area=lcl_dp_x[idx1] * lcl_dp_y[idx] - lcl_dp_x[idx] * lcl_dp_y[idx1];
+
+    /* check betweeness need some fabs and limits here */
+    if( fabs(area) <= DAREA ){
+      if( lcl_dp_x[idx] != lcl_dp_x[idx1] )
+        bret = (  (lcl_dp_x[idx]<=0.0 &&  lcl_dp_x[idx1] >=0.0) ||  (lcl_dp_x[idx]>=0.0 && lcl_dp_x[idx1]<=0.0)  );
+      else
+        bret = (  (lcl_dp_y[idx]<=0.0 &&  lcl_dp_y[idx1] >=0.0) ||  (lcl_dp_y[idx]>=0.0 && lcl_dp_y[idx1]<=0.0)  );
+
+      break;
+    }
+
+
+
+    dsign=(area>0.0);
+
+    if(idx==0)
+      sign=dsign;
+
+    /* we have a sign change so point NOT in Polygon */
+    if(dsign != sign)
+    { bret=False; break; }
+
+    bret=True;
+
+  }
+
+  return bret;
+
+}
 
 
 

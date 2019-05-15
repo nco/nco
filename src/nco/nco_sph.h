@@ -14,9 +14,11 @@
 #include "nco_sld.h"     /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
 #include "nco_ply.h"    /* poly sct stuff */
+
 #include "nco_crt.h"
 
 #define NBR_SPH (5)
+#define NBR_RLL (5)
 
 #define VP_MAX    1000            /* Max # of pts in polygon */
 
@@ -130,7 +132,7 @@ int
 nco_sph_mk_control(poly_sct *sP, double* pControl  ); /* make a control point that is outside polygon */
 
 
-/*------------------------ nco_geo functions these manimpulate lat & lon  ----------------------------------*/
+/***************** nco_geo functions these manimpulate lat & lon  ***************************/
 void
 nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg);
 
@@ -143,6 +145,28 @@ nco_geo_lat_correct(double lat1, double lon1, double lon2);
 void
 nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2, double *dp_min, double *dp_max, nco_bool bDeg);
 
+
+
+/**************** functions for RLL grids ***************************************************/
+int
+nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r);
+
+char
+nco_rll_seg_int(double *a, double *b, double *c, double *d, double *p, double *q);
+
+char
+nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag );
+
+void
+nco_rll_area(poly_sct *pl);
+
+nco_bool
+nco_rll_is_lat_circle(double *p0, double *p1);
+
+int
+nco_rll_lhs(double *p0, double *q0, double *q1);
+
+/*********************************************************************************************/
 
 #ifdef __cplusplus
 } /* end extern "C" */

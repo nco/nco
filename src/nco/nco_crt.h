@@ -73,6 +73,18 @@ void
 nco_crt_set_domain(double lon_min, double lon_max, double lat_min, double lat_max);
 
 
+nco_bool            /* O [flg] True if point in inside (or on boundary ) of polygon */
+nco_crt_pnt_in_poly(
+int crn_nbr,
+double x_in,
+double y_in,
+double *lcl_dp_x,
+double *lcl_dp_y);
+
+int             /* O [nbr] returns number of points of pl_out that are inside pl_in */
+nco_crt_poly_in_poly(
+poly_sct *pl_in,
+poly_sct *pl_out);
 
 
 /*-------------------------------------------------------------------*/

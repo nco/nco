@@ -253,9 +253,12 @@ int *pl_nbr)
   int wrp_cnt=0;
   int wrp_y_cnt=0;
 
-  const char fnc_nm[]="nco_poly_lst_mk()";
+  const char fnc_nm[]="nco_poly_lst_mk_sph()";
 
   nco_bool bwrp;
+  /* check to see if cell is a polar cap */
+  nco_bool bchk_caps=False;
+
   double tot_area=0.0;
 
   double *lat_ptr=lat_crn;
@@ -279,6 +282,12 @@ int *pl_nbr)
    bwrp=False;
   else
     bwrp=True;
+
+
+  if(pl_typ== poly_sph)
+    bchk_caps=True;
+  else if( pl_typ==poly_rll)
+    bchk_caps=False;
 
   // printf("About to print poly sct   grd_sz=%d grd_crn_nbr=%d\n", grd_sz, grd_crn_nbr);
   for(idx=0;idx<grd_sz; idx++)
@@ -308,7 +317,7 @@ int *pl_nbr)
     nco_poly_shp_pop(pl);
 
     /* add min max */
-    nco_poly_minmax_add(pl, grd_lon_typ, True);
+    nco_poly_minmax_add(pl, grd_lon_typ, bchk_caps);
 
     /* manually add wrap flag */
     // pl->bwrp= (fabs(pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) >= 180.0);
@@ -496,7 +505,7 @@ int *pl_cnt_vrl_ret){
       // nco_poly_prn(2, pl_out);
 
       /* check for polygon in polygon first */
-      if( nco_poly_poly_in_poly(pl_lst_in[idx], pl_out) == pl_out->crn_nbr )
+      if( nco_crt_poly_in_poly(pl_lst_in[idx], pl_out) == pl_out->crn_nbr )
       {
         //fprintf(stderr,"%s: using poly_in_poly()\n", fnc_nm);
         pl_vrl=nco_poly_dpl(pl_out);
@@ -572,6 +581,8 @@ int *pl_cnt_vrl_ret){
   int wrp_cnt=0;
   int pl_cnt_dbg=0;
 
+
+  poly_typ_enm pl_typ;
   size_t idx;
   size_t jdx;
 
@@ -599,6 +610,8 @@ int *pl_cnt_vrl_ret){
   KDTree *rtree;
 
   KDPriority *list;
+
+  pl_typ=pl_lst_in[0]->pl_typ;
 
   list = (KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)max_nbr_vrl);
 
@@ -630,7 +643,7 @@ int *pl_cnt_vrl_ret){
   kd_rebuild(rtree);
  */
 
- /* kd_print(rtree); */
+  /* kd_print(rtree); */
 
 /* start main loop over input polygons */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
@@ -688,22 +701,34 @@ int *pl_cnt_vrl_ret){
 
       if (pl_vrl == (poly_sct *)NULL_CEWI) {
 
-        double pControl[NBR_SPH];
 
-        /* see if pl_out completly inside pl_lst_in[idx] */
-        if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out) )
-        {
-          if(nco_sph_mk_control( pl_lst_in[idx], pControl  ) &&
-            nco_sph_pnt_in_poly(pl_lst_in[idx]->shp, pl_lst_in[idx]->crn_nbr,pControl, pl_out->shp[0] ) )
-              pl_vrl = nco_poly_dpl(pl_out);
-        }
-          /* see if  pl_lst_in[idx] completly inside pl_out   */
-        else if ( nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
-        {
-          if(nco_sph_mk_control( pl_out, pControl  ) &&
-            nco_sph_pnt_in_poly(pl_out->shp, pl_out->crn_nbr,pControl, pl_lst_in[idx]->shp[0] ) )
-              pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
-        }
+
+       if(pl_typ== poly_sph ) {
+           double pControl[NBR_SPH];
+
+           /* see if pl_out completley inside pl_lst_in[idx] */
+           if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out)) {
+             if (nco_sph_mk_control(pl_lst_in[idx], pControl) &&
+                 nco_sph_pnt_in_poly(pl_lst_in[idx]->shp, pl_lst_in[idx]->crn_nbr, pControl, pl_out->shp[0]))
+               pl_vrl = nco_poly_dpl(pl_out);
+           }
+             /* see if  pl_lst_in[idx] completly inside pl_out   */
+           else if (nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx])) {
+             if (nco_sph_mk_control(pl_out, pControl) &&
+                 nco_sph_pnt_in_poly(pl_out->shp, pl_out->crn_nbr, pControl, pl_lst_in[idx]->shp[0]))
+               pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
+           }
+       }
+
+
+       if(pl_typ== poly_rll)
+       {
+         if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out))
+           pl_vrl= nco_poly_dpl(pl_out);
+         else if(nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
+           pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
+
+       }
 
 
         /* add aprropriate id's */
@@ -722,6 +747,9 @@ int *pl_cnt_vrl_ret){
         // nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
 
         /* add area */
+        nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
+
+        /* REMEMEBER  poly_rll area uses minmax limits AND NOT VERTEX's */
         nco_poly_area_add(pl_vrl);
 
         /* shp not needed */
@@ -730,7 +758,7 @@ int *pl_cnt_vrl_ret){
         /* calculate weight -simple ratio of areas */
         pl_vrl->wgt=pl_vrl->area / pl_out->area;
 
-        nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
+
         /* manually add wrap */
         /*
         if(pl_vrl->dp_x_minmax[1] - pl_vrl->dp_x_minmax[0] >=180.0 )

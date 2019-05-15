@@ -91,18 +91,6 @@ extern "C" {
   poly_sct *pl_out);
 
 
-  nco_bool            /* O [flg] True if point in inside (or on boundary ) of polygon */ 
-  nco_poly_pnt_in_poly( 
-  int crn_nbr,
-  double x_in,
-  double y_in,
-  double *lcl_dp_x,
-  double *lcl_dp_y);	
-
-  int             /* O [nbr] returns number of points of pl_out that are inside pl_in */
-  nco_poly_poly_in_poly( 
-  poly_sct *pl_in,
-  poly_sct *pl_out); 		     
 
   nco_bool                  /* [flg] return True if pl_out inside pl_in */
   nco_poly_in_poly_minmax(  /* uses minmax limits only no serious polygon stuff */
@@ -174,7 +162,17 @@ extern "C" {
   (poly_sct *pl,
    nco_grd_lon_typ_enm lon_typ);
 
+  int
+  nco_poly_intersect(
+   poly_sct *pl_in,
+   poly_sct *pl_out,
+   poly_sct *pl_vrl,
+   int *r);
 
+  const char *
+  nco_poly_typ_sng_get(
+  poly_typ_enm pl_typ
+  );
 
 
 #ifdef __cplusplus

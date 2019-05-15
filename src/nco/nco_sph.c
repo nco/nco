@@ -78,6 +78,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
    double nx1;
    double nx2;
    double nx3;
+   double dx1;
 
 
    char code='0';
@@ -141,7 +142,13 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
 
       /* Xcross product near zero !! so make it zero*/
-      if( 1.0- nco_sph_dot_nm(Pcross,Qcross )  <DOT_TOLERANCE )
+      dx1=1.0- nco_sph_dot_nm(Pcross,Qcross );
+
+      /* spans parallel but in oposite directions */
+      if( fabs(dx1-2.0) < DOT_TOLERANCE )
+        return EXIT_FAILURE;
+
+      if( dx1  <DOT_TOLERANCE )
       {
 
          ip1qLHS=0;
@@ -548,7 +555,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     *inflag=poly_vrl_pin;
   }
     /* LHS overlap */
-  else if (dx_q0 <0.0 &&  (dx_q1 >0.0 && dx_q1 < dx_p1)  ) {
+  else if (dx_q0 <0.0 &&  (dx_q1 >0.0 && dx_q1 <= dx_p1)  ) {
     code= '2';
     nco_sph_adi(r0, p0);
     nco_sph_adi(r1, q1);
@@ -556,7 +563,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   }
     /* RHS overlap */
-  else if( dx_q0 >0.0 &&  dx_q0 < dx_p1 && dx_q1 > dx_p1    )
+  else if( dx_q0 >=0.0 &&  dx_q0 < dx_p1 && dx_q1 > dx_p1    )
   {
     code= '2';
     nco_sph_adi(r0, q0);
@@ -725,7 +732,9 @@ int nco_sph_lhs(double *Pi, double *Qi)
 
    ds= nco_sph_dot(Pi, Qi);
 
-   if(ds  > 0.0)
+
+
+   if(ds  > 0.0 )
       return 1;
    else if(ds <0.0)
       return -1;
@@ -734,7 +743,7 @@ int nco_sph_lhs(double *Pi, double *Qi)
 
 
    /*
-   ds=acos( sDot(Pi,Qcross) );
+   ds=acos( nco_sph_dot(Pi,Qi) );
 
    if( ds < M_PI_2 - ARC_MIN_LENGTH )
      return 1;
@@ -742,8 +751,8 @@ int nco_sph_lhs(double *Pi, double *Qi)
      return -1;
    else
      return 0;
+  */
 
-   */
 }
 
 /* implement face rules */
@@ -1528,10 +1537,12 @@ void  nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg)
 }
 
 
-/* spherical functions */
-int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
+
+/****************  functions for RLL grids *******************************************/
+
+int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 {
-  const char fnc_nm[]="nco_sph_intersect()";
+  const char fnc_nm[]="nco_rll_intersect()";
 
   nco_bool qpFace = False;
   nco_bool pqFace = False;
@@ -1550,6 +1561,10 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   int ip1qLHS = 0 ;
   int iqpLHS = 0;
   int iq1pLHS = 0 ;
+
+  nco_bool isParallel=False;
+  nco_bool isP_LatCircle=False;
+  nco_bool isQ_LatCircle=False;
 
   double nx1;
   double nx2;
@@ -1574,62 +1589,92 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     fprintf(stdout, "%s: just entered %s\n", nco_prg_nm_get(), fnc_nm);
 
 
-  do{
+  do {
 
 
     a1 = (a + n - 1) % n;
     b1 = (b + m - 1) % m;
 
+    isP_LatCircle = nco_rll_is_lat_circle(P->shp[a1], P->shp[a]);
+    isQ_LatCircle = nco_rll_is_lat_circle(Q->shp[b1], Q->shp[b]);
 
+    nx1 = nco_sph_cross(P->shp[a1], P->shp[a], Pcross);
+    nx2 = nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross);
 
-    nx1= nco_sph_cross(P->shp[a1], P->shp[a], Pcross);
-    nx2= nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross);
+    //nx3= nco_sph_cross(Pcross, Qcross, Xcross);
 
-    nx3= nco_sph_cross(Pcross, Qcross, Xcross);
+    if (isQ_LatCircle) {
 
+      ip1qLHS = nco_rll_lhs(P->shp[a1], Q->shp[b1], Q->shp[b] );
+      ipqLHS = nco_rll_lhs(P->shp[a], Q->shp[b1],   Q->shp[b]);
+    } else {
+      ip1qLHS = nco_sph_lhs(P->shp[a1], Qcross);
+      ipqLHS = nco_sph_lhs(P->shp[a], Qcross);
 
-    ipqLHS = nco_sph_lhs(P->shp[a], Qcross);
-    ip1qLHS = nco_sph_lhs(P->shp[a1], Qcross);
-
-
-    /* imply rules facing if 0 */
-
-    if(ipqLHS==0 && ip1qLHS!=0)
-      ipqLHS=ip1qLHS*-1;
-    else if( ipqLHS != 0 && ip1qLHS == 0 )
-      ip1qLHS=ipqLHS*-1;
-
-
-    iqpLHS = nco_sph_lhs(Q->shp[b], Pcross);
-    iq1pLHS = nco_sph_lhs(Q->shp[b1], Pcross);
+    }
 
     /* imply rules facing if 0 */
 
+    if (ipqLHS == 0 && ip1qLHS != 0)
+      ipqLHS = ip1qLHS * -1;
+    else if (ipqLHS != 0 && ip1qLHS == 0)
+      ip1qLHS = ipqLHS * -1;
 
-    if(iqpLHS == 0 && iq1pLHS != 0)
-      iqpLHS=iq1pLHS*-1;
-    else if(iqpLHS != 0 && iq1pLHS == 0)
-      iq1pLHS=iqpLHS*-1;
+
+    if (isP_LatCircle) {
+      iq1pLHS = nco_rll_lhs(Q->shp[b1], P->shp[a1],  P->shp[a]);
+      iqpLHS = nco_rll_lhs(Q->shp[b], P->shp[a1], P->shp[a]);
+
+
+    } else {
+
+      iq1pLHS = nco_sph_lhs(Q->shp[b1], Pcross);
+      iqpLHS = nco_sph_lhs(Q->shp[b], Pcross);
+
+    }
+
+    /* imply rules facing if 0 */
+    if (iqpLHS == 0 && iq1pLHS != 0)
+      iqpLHS = iq1pLHS * -1;
+    else if (iqpLHS != 0 && iq1pLHS == 0)
+      iq1pLHS = iqpLHS * -1;
 
 
     /* now calculate face rules */
     qpFace = nco_sph_face(ip1qLHS, ipqLHS, iqpLHS);
     pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
 
-    /* Xcross product near zero !! so make it zero*/
-    if(nx3< 1.0e-10)
+
+    /* check for parallel segments */
+
+
+    /* see if arcs are parallel */
+    if (isP_LatCircle && isQ_LatCircle && P->shp[a1][4] == Q->shp[b1][4])
     {
-
-
-
-      ip1qLHS=0;
-      ipqLHS=0;
-      iq1pLHS=0;
-      iqpLHS=0;
-      qpFace=0;
-      pqFace=0;
+      isParallel = True;
     }
+    else if (!isP_LatCircle && !isQ_LatCircle && P->shp[a1][3] == Q->shp[b1][3])
+    {
+      /* check arc both in same "direction" */
+      if (  (P->shp[a][4] > P->shp[a1][4]) != (Q->shp[b][4] > P->shp[b1][4])   )
+        return EXIT_FAILURE;
+      else
+        isParallel = True;
+    }
+    else
+      isParallel = False;
 
+    if (isParallel) {
+
+      ip1qLHS = 0;
+      ipqLHS = 0;
+      iq1pLHS = 0;
+      iqpLHS = 0;
+      qpFace = 0;
+      pqFace = 0;
+
+
+    }
 
 
     if( isGeared == False)
@@ -1644,35 +1689,79 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       }
     }
 
-    if(isGeared) {
-      code = nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q);
 
 
-      if (code == '1' || code == 'e') {
-        if(0 && DEBUG_SPH)
-          nco_sph_prn_pnt("(): intersect", p, 3, True);
 
-        nco_sph_add_pnt(R->shp, r, p);
 
-        /*
-        if(code=='e')
-          sAddPoint(R, r, q);
-        */
+    if(isGeared)
+    {
 
-        if (numIntersect++ == 0) {
-          /* reset counters */
-          aa = 0;
-          bb = 0;
+      if(isParallel)
+      {
+        poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
+
+
+
+        code = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
+
+        if(code=='X')
+        {
+
+          if(nco_dbg_lvl_get() >= nco_dbg_dev )
+            fprintf(stderr, "%s:%s()\n", nco_prg_nm_get(), fnc_nm, "parallel edges in opposite directions\n");
+          return EXIT_FAILURE;
         }
 
 
 
-        inflag = ( ipqLHS ==1 ? poly_vrl_pin : iqpLHS ==1 ? poly_vrl_qin : inflag );
+        if (lcl_inflag != poly_vrl_unk ) {
+
+          inflag = lcl_inflag;
+
+          /* there is a subtle  trick here - a point is "force added" by setting the flags pqFace and qpFace */
+          if (code == '2')
+            nco_sph_add_pnt(R->shp, r, p);
+
+          if (inflag == poly_vrl_pin) {
+            pqFace = 1;
+            qpFace = 0;
+
+          } else if (inflag == poly_vrl_qin) {
+            pqFace = 0;
+            qpFace = 1;
+          }
+
+          if (numIntersect++ == 0) {
+            /* reset counters */
+            aa = 0;
+            bb = 0;
+          }
+        }
 
 
-        if(DEBUG_SPH)
-          printf("%%InOut sets inflag=%s\n", nco_poly_vrl_flg_sng_get(inflag));
+      }
 
+      if(!isParallel) {
+        code = nco_rll_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q);
+
+
+        if (code == '1' || code == 'e') {
+
+          nco_sph_add_pnt(R->shp, r, p);
+
+          if (numIntersect++ == 0) {
+            /* reset counters */
+            aa = 0;
+            bb = 0;
+          }
+
+          inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
+
+
+          if (DEBUG_SPH)
+            printf("%%InOut sets inflag=%s\n", nco_poly_vrl_flg_sng_get(inflag));
+
+        }
       }
 
       if(DEBUG_SPH)
@@ -1733,7 +1822,8 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       fprintf(stdout, "\ndebug isGeared=%d a=%d aa=%d b=%d bb=%d \n",isGeared, a, aa, b, bb);
 
     /* quick exit if current point is same a First point  - nb an exact match ?*/
-    if( *r >3 &&  R->shp[0][3]==R->shp[*r-1][3] && R->shp[0][4]==R->shp[*r-1][4] )
+    //if( *r >3 &&  R->shp[0][3]==R->shp[*r-1][3] && R->shp[0][4]==R->shp[*r-1][4] )
+    if( *r >3 &&  1.0 - nco_sph_dot_nm(R->shp[0], R->shp[*r-1]) < DOT_TOLERANCE  )
     {
       --*r;
       break;
@@ -1745,3 +1835,191 @@ int nco_sph_intersect_1(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   return EXIT_SUCCESS;
 
 }
+
+nco_bool
+nco_rll_is_lat_circle(double *p0, double *p1) {
+
+  if (p0[3] != p1[3] && p0[4] == p1[4])
+    return True;
+
+  return False;
+
+}
+
+int
+nco_rll_lhs(double *p0, double *q0, double *q1)
+{
+
+  int iret;
+  double nx=1;
+
+
+
+  if(q0[3] > q1[3] )
+    nx=-1;
+
+  if(fabs(q0[3] - q1[3]) > M_PI)
+    nx*=-1.0;
+
+  if(p0[4] > q0[4])
+    iret=1;
+  else if(p0[4] < q0[4] )
+    iret=-1;
+  else
+    iret=0;
+
+  /* reverse direction maybe*/
+  return iret*nx;
+
+}
+
+
+char
+nco_rll_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1)
+{
+
+  char code='0';
+  nco_bool bDeg=False;
+  nco_bool isP_LatCircle=False;
+  nco_bool isQ_LatCircle=False;
+
+  isP_LatCircle=nco_rll_is_lat_circle(p0, p1);
+  isQ_LatCircle=nco_rll_is_lat_circle(q0, q1);
+
+
+  /* longitude P may hit small ciricle Q */
+  if(!isP_LatCircle && isQ_LatCircle )
+  {
+    /* Check longitude range */
+    if( nco_sph_between(q0[3], q1[3], p0[3] )  &&  nco_sph_between(p0[4], p1[4], q0[4] ) ) {
+      r0[3] = p0[3];
+      r0[4] = q0[4];
+      code ='1';
+    }
+
+  }
+    /* longitude Q may hit small circle P */
+  else if(isP_LatCircle && !isQ_LatCircle)
+  {
+    /* Check range range */
+    if( nco_sph_between(p0[3], p1[3], q0[3] )  &&  nco_sph_between(q0[4], q1[4], p0[4] ) ) {
+      r0[3] = q0[3];
+      r0[4] = p0[4];
+      code='1';
+    }
+
+  }
+
+  if(code =='1')
+    nco_geo_lonlat_2_sph(r0[3], r0[4], r0, bDeg);
+
+
+  return code;
+
+
+}
+
+char
+nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag ) {
+
+  int id;
+
+  char code = '0';
+
+  int p_sgn=1;
+  int q_sgn=1;
+
+  nco_bool isP_LatCircle = False;
+  nco_bool isQ_LatCircle = False;
+
+
+  isP_LatCircle = nco_rll_is_lat_circle(p0, p1);
+  isQ_LatCircle = nco_rll_is_lat_circle(q0, q1);
+
+  /* check for brain dead call */
+  if (isP_LatCircle != isQ_LatCircle)
+    return code;
+
+
+  if (isP_LatCircle)
+    id = 3;
+  else
+    id = 4;
+
+  /* check sense of direction - they must be the same for both spans */
+  /* check a longitude span
+  if(!isP_LatCircle){
+
+     if( ! (p0[id] > p1[id] != q0[id] > q1[id]) )
+       return 'X';
+
+  }
+  else{
+
+     if(p0[id] < p1[id])
+        p_sgn*=-1;
+
+     if(fabs(p1[id] - p0[id]) > M_PI)
+        p_sgn*=-1.0;
+
+     if(q0[id] < p1[id] )
+        q_sgn*=-1.0;
+
+    if(fabs(q1[id] - q0[id]) > M_PI)
+      p_sgn*=-1.0;
+
+
+    if(p_sgn != q_sgn )
+      return 'X';
+
+  }
+  */
+
+
+  if ( !nco_sph_between(p0[id], p1[id], q0[id]) && nco_sph_between(p0[id], p1[id], q1[id]) ) {
+    nco_sph_adi(r0, p0);
+    nco_sph_adi(r1, q1);
+    *inflag=poly_vrl_qin;
+    code = '2';
+  } else if ( nco_sph_between(p0[id], p1[id], q0[id]) && !nco_sph_between(p0[id], p1[id], q1[id]) ) {
+    nco_sph_adi(r0, q0);
+    nco_sph_adi(r1, p1);
+    *inflag=poly_vrl_pin;
+    code = '2;';
+
+  } else if ( nco_sph_between(p0[id], p1[id], q0[id]) && nco_sph_between(p0[id], p1[id], q1[id])) {
+    nco_sph_adi(r0, q0);
+    nco_sph_adi(r0, q1);
+    *inflag=poly_vrl_qin;
+    code = '2';
+  } else if (nco_sph_between(q0[id], q1[id], p0[id]) && nco_sph_between(q0[id], q1[id], p1[id])) {
+    nco_sph_adi(r0, p0);
+    nco_sph_adi(r1, p1);
+    *inflag=poly_vrl_pin;
+    code = '2';
+
+  } else
+    code = '0';
+
+  return code;
+
+}
+
+
+void nco_rll_add_pnt(double **R, int *r, double *P)
+{
+
+
+  if(DEBUG_SPH)
+    nco_sph_prn_pnt("nco_rll_add_pnt()", P, 3, True);
+
+
+  memcpy(R[*r], P, sizeof(double)*NBR_SPH);
+  (*r)++;
+
+
+
+
+}
+
+/*****************************************************************************************/
