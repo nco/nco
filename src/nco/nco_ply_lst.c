@@ -505,7 +505,7 @@ int *pl_cnt_vrl_ret){
       // nco_poly_prn(2, pl_out);
 
       /* check for polygon in polygon first */
-      if( nco_poly_poly_in_poly(pl_lst_in[idx], pl_out) == pl_out->crn_nbr )
+      if( nco_crt_poly_in_poly(pl_lst_in[idx], pl_out) == pl_out->crn_nbr )
       {
         //fprintf(stderr,"%s: using poly_in_poly()\n", fnc_nm);
         pl_vrl=nco_poly_dpl(pl_out);
