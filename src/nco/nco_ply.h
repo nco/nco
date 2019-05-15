@@ -169,7 +169,7 @@ extern "C" {
    poly_sct *pl_vrl,
    int *r);
 
-  char *
+  const char *
   nco_poly_typ_sng_get(
   poly_typ_enm pl_typ
   );
