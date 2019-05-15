@@ -1480,6 +1480,39 @@ int *nbr_r){
 }
 
 
+char *
+nco_poly_typ_sng_get(
+poly_typ_enm pl_typ
+)
+{
+
+  const char *sng=NULL;
+
+  switch(pl_typ) {
+
+    case poly_none:
+      sng="poly_none";
+      break;
+
+    case poly_sph:
+      sng="poly_sph";
+      break;
+
+    case poly_crt:
+      sng="poly_crt";
+      break;
+
+    case poly_rll:
+      sng="poly_rll";
+      break;
+
+
+  }
+
+  return sng;
+
+
+}
 
 
 
