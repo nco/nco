@@ -1,5 +1,7 @@
 2019-05-18  Charlie Zender  <zender@uci.edu>
 
+	* Insert copyright for Joseph O'Rourke and BSD License into nco_crt.c and nco_sph.c
+
 	* NCO 4.8.1-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha01: Salted Pig';git push
 	git tag -a 4.8.1-alpha01 -m 'Nearly functionally identical to 4.8.0;ncclimo/ncremap -p serial';git push --tags

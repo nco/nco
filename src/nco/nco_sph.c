@@ -1,17 +1,50 @@
-/*
-This code is described in "Computational Geometry in C" (Second Edition),
-Chapter 7.  It is not written to be comprehensible without the
-explanation in that book.
+/* $Header$ */
 
-Written by Joseph O'Rourke.
-Last modified: December 1997
-Questions to orourke@cs.smith.edu.
---------------------------------------------------------------------
-This code is Copyright 1997 by Joseph O'Rourke.  It may be freely
-redistributed in its entirety provided that this copyright notice is
-not removed.
---------------------------------------------------------------------
-*/
+/* Purpose: Spherical polygon coordinates and intersections */
+
+/* This file includes BSD-licensed code whose copyright is held by another author
+   The copyright owner and license terms for the NCO modifications are
+   Copyright (C) 2019--present Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You may redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+
+/* This copyright statement and license terms for modification and redistribution 
+   of the original code were agreed to by the original author, Joseph O'Rourke, on 20190517:
+
+   This code is described in "Computational Geometry in C" (Second Edition),
+   Chapter 7.  It is not written to be comprehensible without the
+   explanation in that book.
+   
+   Written by Joseph O'Rourke.
+   Last modified: December 1997
+   Questions to jorourke@smith.edu.
+   -------------------------------------------------------------------------
+   Copyright 1997 by Joseph O'Rourke <jorourke@smith.edu>
+   
+   Redistribution and use in source and binary forms, with or without
+   modification, are permitted provided that the following conditions are
+   met:
+   
+   1. Redistributions of source code must retain the above copyright notice,
+   this list of conditions and the following disclaimer.
+   
+   2. Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
+   
+   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+   "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+   TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+   PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER
+   OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+   EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+   PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+   PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+   LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+   NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+   ------------------------------------------------------------------------- */
 
 #include "nco_sph.h"
 
@@ -26,11 +59,6 @@ static double LAT_MAX_RAD;
 
 static double LON_MIN_RAD;
 static double LON_MAX_RAD;
-
-
-
-
-
 
 void nco_sph_prn(double **sR, int r, int istyle)
 {
