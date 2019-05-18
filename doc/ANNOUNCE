@@ -7,22 +7,10 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.8.0 contains, as usual, numerous enhancements to ncremap
-and ncclimo. The most significant is vertical interpolation, which
-is useful to create new initial conditions for models, and to convert 
-data to/from any desired hybrid coordinate or pure pressure vertical
-grid. Also we have changed NCO_PATH_OVERRIDE from opt-out to opt-in
-due to the increased maturity and use of the Conda NCO package which
-now pulls-in both ESMF_RegridWeightGen and TempestRemap.
+Version 4.8.1 contains, as usual, numerous enhancements to ncremap
+and ncclimo. 
 
-ncap2 now allows creating brand-new files without specifying an
-existing input file, which eliminates an indefensible and annoying
-requirement. ncks can now easily detect and identify NaNs in datasets.
-See below for a fuller list of new features and pointers to more info.
-
-Work on NCO 4.8.1 has commenced. This will include plumbing work that
-allows simultaneous horizontal and vertical regridding, and that
-allows ncclimo to invoke the vertical regridding features.
+Work on NCO 4.8.2 has commenced...
 
 Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
@@ -35,89 +23,20 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap now accepts two new Tempest map configurations, "se2se" and 
-   "fv2fv". Use them to regrid one spectral element grid to another,
-   or one finite volume grid to another with TempestRemap.
-   http://nco.sf.net/nco.html#se2se
-   http://nco.sf.net/nco.html#fv2fv
+A. When selecting parallelism mode with the -p optionm both ncremap
+   and ncclimo now accept the synonyms "serial", "srl", and "nil" for
+   Serial mode, "background" and "bck" for Background mode, and "MPI"
+   and "mpi" for MPI mode. The validity of "serial" was inadvertently
+   revoked in 4.8.0, but it is now accepted again.
+   ncremap -p serial in.nc out.nc
+   ncclimo -p serial -i drc_in -o drc_out
+   http://nco.sf.net/nco.html#par_typ
 
-B. ncap2 now allows creating brand-new files without specifying an
-   input filename. Previously, users had to specify an input file 
-   even if the output file had no dependency on it.
-   ncap2 -s 'foo=1' ~/foo.nc # Create new or modify existing foo.nc
-   ncap2 -O -s 'foo=1' ~/foo.nc # Overwrite old with new foo.nc
-   ncap2 -s 'foo=1' ~/foo.nc ~/foo.nc # Add to old foo.nc
-   http://nco.sf.net/nco.html#ncap2
-
-C. ncremap and ncclimo have a new flag, --no_stdin, that disables
-   checking stdin for input files. This is a flag that takes no
-   argument, not a key-value option. Add --no_stdin to any command
-   that might run in an environment, like Azure CI or CWL, that uses
-   stdin for other purposes. 
-   ncclimo --no_stdin --caseid=foo ...
-   ncremap --no_stdin --map=map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#no_stdin
-
-D. ncremap can now interpolate files in the vertical dimension.
-   The --vrt_fl=vrt_fl option points to a vertical grid file
-   that specifies the desired vertical grid for the output file.
-   Currently supported grids include the hybrid vertical coordinate
-   employed by E3SM and CESM, and pure pressure coordinates.
-   ncremap --vrt_fl=vrt_fl in.nc out.nc
-   http://nco.sf.net/nco.html#vrt
-
-E. ncremap and ncclimo now accept the --xcl_var switch. This switch
-   changes the extraction list (specified with -v vars or --vars=vars)
-   into an exclusion list. Behavior is identical to the common NCO -x
-   option:
-   ncremap --xcl_var --vars=excluded,from,output in.nc out.nc
-   http://nco.sf.net/nco.html#xcl_var
-
-F. ncremap and ncclimo now alter paths on certain supercomputers at
-   DOE HPC centers only when requested to. Previously, these commands
-   used pre-defined paths, when available, to ensure users could
-   easily run the executables in CZ's directories. Users could opt-out
-   of these paths by exporting NCO_PATH_OVERRIDE=No in their
-   environment. Thanks to inclusion of external (non-NCO) executables
-   such as ESMF_RegridWeightGen and TempestRemap in Anaconda
-   environments widely used at DOE labs, this is no longer necessary.
-   Now users must opt-in to the preset paths by exporting 
-   NCO_PATH_OVERRIDE=Yes in their environments.
-   export NCO_PATH_OVERRIDE=Yes # Use CZ's ESMF, TR, and NCO
-   ncremap -a conserve --map=map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#ncremap   
-
-G. ncclimo adopts a default job_nbr of var_nbr in splitter mode.
-   Previusly the default was 2. However, the splitter is extremely
-   memory efficient and scales well up to over a hundred variables on
-   all HPCs tested. Hence this change.
-   http://nco.sf.net/nco.html#job_nbr
-   
-H. ncks has a new --chk_nan option. This option invokes a special
-   checker that looks for NaN of NaNf in double- and single-precision
-   floating-point variables, respectively. If a NaN is encountered,
-   NCO prints its location and then exits with an error code. Thanks
-   to Matthew Thompson of NASA for this suggestion.
-   ncks --chk_nan in.nc
-   http://nco.sf.net/nco.html#chk_nan
-
-I. New synonyms --xtr_ass_var and --xcl_ass_var, which stand for
-   "exclude associated variables" and "extract associated variables",
-   have been added to the -C and -c switches, respectively.
-   Simultaneously, the --no-coords and --no-crd synonyms have been
-   renamed --no_coords and --no_crd because NCO is standardizing on
-   underscores not dashes for multi-component option names.
-   ncks --xcl_ass_var lat in.nc
-   ncks --xtr_ass_var lat in.nc
-   http://nco.sf.net/nco.html#xcl_ass_var
-   http://nco.sf.net/nco.html#xtr_ass_var
+B. 
 
 BUG FIXES:
 
-A. ncremap runs 20-30x faster on Cori KNL than before.
-   Cori KNL has an unusual default setting for OMP_PROC_BIND that
-   causes hardware thread contention with NCO. Thanks to Noel Keen of
-   NERSC for help diagnosing this problem.
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
