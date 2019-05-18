@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.0
-@set doc-edition 4.8.0
+@set nco-edition 4.8.1-alpha01
+@set doc-edition 4.8.1-alpha01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 14 May 2019
+@set update-date 18 May 2019
 @set update-month May 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18229,12 +18229,13 @@ for them is specified with @samp{-O} (NB: capital ``O'').
 @cindex @code{--parallel}
 @item -p @var{par_typ} (@code{--par_typ}, @code{--par_md}, @code{--parallel_type}, @code{--parallel_mode}, @code{--parallel})
 Specifies the parallelism mode desired.
-The options are serial mode (@samp{-p nil} or @samp{-p serial}), 
-background mode parallelism (@samp{-p bck}), and @acronym{MPI}
-parallelism @samp{-p mpi}. 
+The options are serial mode (@samp{-p srl}, @samp{-p serial}, or @samp{-p nil}), 
+background mode parallelism (@samp{-p bck} or @samp{-p background})),
+and @acronym{MPI} parallelism (@samp{-p mpi} or @samp{-p MPI}). 
 The default is background-mode parallelism.
-The default @var{par_typ} is @samp{bck}, which means @command{ncclimo} 
-runs spawns up to twelve (one for each month) parallel processes at a time.
+The default @var{par_typ} is @samp{background}, which means
+@command{ncclimo} spawns up to twelve (one for each month) parallel
+processes at a time.
 See discussion below under Memory Considerations.
 
 @html
@@ -24858,7 +24859,7 @@ Besides the vertical grid-type, the main assumptions, constraints, and
 priorities for future development of vertical regridding are:
 @enumerate
 @item Input datasets must have netCDF (and thus C-based)
-      dimension-ordering @var{all other dimensions, a single vertical 
+      dimension-ordering @emph{all other dimensions, a single vertical 
       dimension, then one or two horizontal dimensions} so that the
       horizontal dimension(s) vary more rapidly than the vertical.
       Eliminating this constraint will remain low priority until we
@@ -25025,7 +25026,7 @@ are extrapolated upwards and downwards using the hypsometric equation
 @footnote{@math{Z_2-Z_1=(R_d*T_v/g_0)*ln(p_1/p_2)=(R_d*T_v/g_0)*(ln(p_1)-ln(p_2))}}
 @c Z2-Z1=(Rd*Tv/g0)*ln(p1/p2)=(Rd*Tv/g0)*(ln(p1)-ln(p2))} 
 with constant global mean virtual temperature
-@math{@var{tpt{}} = 288}K.
+@math{@var{@tpt{}} = 288}K.
 This assumption leads to unrealistic values where @tpt{} differs
 significantly from the global mean surface temperature.
 Using the local @tpt{} itself would be a much better approximation,

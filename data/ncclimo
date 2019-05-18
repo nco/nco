@@ -357,14 +357,14 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #          AMWG omits the YYYYMM components of climo filenames, resulting in shorter names
 #          This switch (on by default) symbolically links the full (E3SM) filename to the shorter (AMWG) name
 #          AMWG diagnostics scripts can produce plots directly from these linked filenames
-# par_typ: Parallelism type---all values _except_ exact matches to "bck" and "mpi" are interpreted as "nil" (and invoke serial mode)
+# par_typ: Parallelism type
 #          bck = Background: Spawn children (basic blocks) as background processes on control node then wait()
 #                Works best when available RAM > 12*4*sizeof(monthly input file), otherwise jobs swap-to-disk
 #          mpi = MPI: Spawn children (basic blocks) as MPI processes (one per node in batch environment) then wait()
 #                Requires batch system with PBS and MPI. Use when available RAM/node < 12*2.5*sizeof(monthly input file).
 #                Optimized for batch with 12 nodes. Factors thereof (6, 4, 3, 2 nodes) should also work.
 #                Remember to request 12 nodes if possible!
-#          nil = None: Execute script in serial mode on single node
+#          srl = Serial: Execute script in serial mode on single node
 #                Works best when available RAM < 12*4*sizeof(monthly input file), otherwise jobs swap-to-disk
 # var_lst: Variables to include, or, with nco_opt='-x', to exclude, in comma-separated list format, e.g.,
 #          'FSNT,AODVIS'. Regular expressions work, too: 'AOD.?'
@@ -433,6 +433,11 @@ if [ -n "${TERM}" ]; then
     fi # !tput
 fi # !TERM
     
+# Pre-define enumerated types used in defaults
+par_bck='background' # [sng] Parallelism: background
+par_mpi='mpi' # [sng] Parallelism: MPI
+par_srl='serial' # [sng] Parallelism: serial
+
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 ann_sfx='01-01-00000' # [sng] Annual file suffix (MPAS, e.g., uses '01-01-00000')
@@ -488,7 +493,7 @@ nd_nbr=1 # [nbr] Number of nodes
 nm_typ='cesm' # [sng] Name type ('cesm', 'mpas', 'yyyymm', 'yyyy-mm', 'yyyy-mm-01', 'yyyy-mm-01-00000') (for filenames)
 no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
-par_typ='bck' # [sng] Parallelism type
+par_typ="${par_bck}" # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression precision
 rgr_map='' # [sng] Regridding (horizontal) map
 #rgr_map="${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc"
@@ -1043,23 +1048,18 @@ fi # !no_frm_trm
 if [ "${no_stg_grd}" = 'Yes' ]; then 
     spl_rgr_opt=''
 fi # !no_stg_grd
-if [ "${par_typ}" = 'bck' ]; then 
+if [ "${par_typ}" = ${par_bck} ] || [ "${par_typ}" = 'bck' ] || [ "${par_typ}" = 'Background' ]; then 
+    par_typ=${par_bck}
     par_opt=' &'
-    par_opt_cf=''
-    par_sng='Background'
-elif [ "${par_typ}" = 'mpi' ]; then 
+elif [ "${par_typ}" = ${par_mpi} ] || [ "${par_typ}" = 'MPI' ]; then 
+    par_typ=${par_mpi}
+    par_opt=' &'
     mpi_flg='Yes'
-    par_opt=' &'
-    par_opt_cf=''
-    par_sng='MPI'
-    if [ -n "${UVCDAT_SETUP_PATH}" ]; then
-	printf "${spt_nm}: UVCDAT has been initialized in the shell running this job, and MPI-mode parallelization of ${spt_nm} is requested. Unfortunately UVCDAT's environment and the MPI-mode of ${spt_nm} do not play well together. The Workflow group is working toward a solution. The current workarounds are 1) do not use MPI-mode when UVCDAT is loaded or 2) do not initialize UVCDAT when invoking MPI-mode.\n"
-    fi # !UVCDAT_SETUP_PATH
-elif [ "${par_typ}" = 'nil' ] || [ -z "${par_typ}" ]; then 
-    par_sng='Serial'
-else
+elif [ "${par_typ}" = ${par_srl} ] || [ "${par_typ}" = 'srl' ] || [ "${par_typ}" = 'Serial' ] || [ "${par_typ}" = 'nil' ]; then 
+    par_typ=${par_srl}
+else 
     echo "ERROR: Invalid -p par_typ option = ${par_typ}"
-    echo "HINT: Valid par_typ arguments are 'bck', 'mpi', and 'nil'. For background parallelism, select 'bck' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select 'mpi' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism, select 'nil', which causes ${spt_nm} to spawn all processes serially on a single compute node."
+    echo "HINT: Valid par_typ arguments are \'${par_bck}\' (or 'bck'), \'${par_mpi}\' (or 'MPI'), and \'${par_srl}\' (or 'srl' or 'nil'). For background parallelism, select \'${par_bck}\' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select \'${par_mpi}\' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select \'${par_srl}\', which causes ${spt_nm} to spawn all processes serially on a single compute node."
     exit 1
 fi # !par_typ
 if [ -n "${rgr_map}" ]; then 
@@ -1416,7 +1416,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	echo "${spt_nm}: ERROR MPI master process unable to find node-list for distributing jobs"
 	echo "${spt_nm}: ${spt_nm} uses first node-list found in \$COBALT_NODEFILE, \$PBS_NODEFILE, or \$SLURM_NODELIST"
 	echo "${spt_nm}: However, none of these environment variables are set so there is no node-list for distributing MPI jobs"
-	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
+	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or use serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
 	exit 1
     fi # !PBS
     if [ "${sbs_flg}" = 'Yes' ]; then 
@@ -1509,10 +1509,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     # For regular monthly climos, override default job_nbr (2) with months-per-year
     # If user does not explicitly set job number then, for monthly climos, base it on parallelism type
     if [ -z "${job_usr}" ]; then 
-	if [ "${par_typ}" = 'bck' ]; then 
+	if [ "${par_typ}" = ${par_bck} ]; then 
 	    # Background mode will run one batch with all twelve months
 	    job_nbr=12
-	elif [ "${par_typ}" = 'mpi' ]; then 
+	elif [ "${par_typ}" = ${par_mpi} ]; then 
 	    # MPI mode will round-robin all twelve months to all available nodes
 	    job_nbr=12
 	elif [ "${par_typ}" = 'nil' ] || [ -z "${par_typ}" ]; then 
@@ -1520,7 +1520,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    job_nbr=1
 	fi # !job_usr
     fi # !job_usr
-    if [ "${par_typ}" = 'mpi' ] && [ -n "${job_usr}" ]; then
+    if [ "${par_typ}" = ${par_mpi} ] && [ -n "${job_usr}" ]; then
 	# This needs more thought so reset to default old way
 	job_nbr=12
     fi # !mpi && job_usr
@@ -1625,13 +1625,13 @@ else
 fi # !caseid
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
-printf "Parallelism mode = ${par_sng}\n"
+printf "Parallelism mode = ${par_typ}\n"
 if [ "${sbs_flg}" = 'Yes' ]; then
     if [ ${var_nbr} -gt 1 ]; then
 	printf "Timeseries will be created for each of ${var_nbr} variables\n"
-	if [ "${par_typ}" = 'bck' ]; then
+	if [ "${par_typ}" = ${par_bck} ]; then
 	    printf "Background parallelism processing variables in var_nbr/job_nbr = ${var_nbr}/${job_nbr} = $((var_nbr / job_nbr)) sequential batches of job_nbr = ${job_nbr} simultaneous jobs (1 per variable), then remaining $((var_nbr % job_nbr)) jobs/variables simultaneously\n"
-	elif [ "${par_typ}" = 'mpi' ]; then
+	elif [ "${par_typ}" = ${par_mpi} ]; then
 	    printf "MPI parallelism dividing processing of ${var_nbr} variables onto nd_nbr = ${nd_nbr} nodes simultaneously\n"
 	fi # !par_typ
     else # !var_nbr
@@ -1675,9 +1675,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 fi # !sbs_flg
 if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
-	if [ "${par_typ}" = 'bck' ]; then
+	if [ "${par_typ}" = ${par_bck} ]; then
 	    printf "Background parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) batches of job_nbr = ${job_nbr} months simultaneously\n"
-	elif [ "${par_typ}" = 'mpi' ]; then
+	elif [ "${par_typ}" = ${par_mpi} ]; then
 	    printf "MPI parallelism distributing monthly and then seasonal climos to ${nd_nbr} nodes simultaneously, and load-balancing with unused nodes, if any\n"
 	fi # !par_typ
     fi # !clm_md

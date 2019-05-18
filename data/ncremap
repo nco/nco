@@ -274,7 +274,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/essgcm14/essgcm14.cam2.h0.0000-01.nc ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/fv09_rgr.nc # 20170510 2D->2D bilinear works and conserve ~2% wrong, infer S and D
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${HOME}/skl_t42.nc ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/fv09_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
-# ncremap --vrb=3 -p nil -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
+# ncremap --vrb=3 -p serial -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
 # ncremap --vrb=3 -a conserve --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 normalization required to get mask right
 # ncremap --vrb=3 -P cice -a conserve --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 cice short-cut
 # CICE/CESM on POP grid: full grid inferral (and thus conservative remapping) fails because masked vertices/cells missing, must use bilinear or supply grid-file for conservative
@@ -362,6 +362,16 @@ if [ -n "${TERM}" ]; then
     fi # !tput
 fi # !TERM
 
+# Pre-define enumerated types used in defaults
+par_bck='background' # [sng] Parallelism: background
+par_mpi='mpi' # [sng] Parallelism: MPI
+par_srl='serial' # [sng] Parallelism: serial
+vrb_0=0 # [enm] Verbosity level: Quiet
+vrb_1=1 # [enm] Verbosity level: Standard, minimal file I/O
+vrb_2=2 # [enm] Verbosity level: All file I/O
+vrb_3=3 # [enm] Verbosity level: English
+vrb_4=4 # [enm] Verbosity level: Pedantic
+
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
@@ -424,7 +434,7 @@ nd_nbr=1 # [nbr] Number of nodes
 np_se_nbr=4 # [nbr] Polynomial order for TempestRemap SE maps
 out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
-par_typ='nil' # [sng] Parallelism type
+par_typ="${par_bck}" # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression number of significant digits
 prc_typ='' # [sng] Procedure type
 qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
@@ -445,12 +455,7 @@ unq_sfx=".pid${spt_pid}" # [sng] Unique suffix
 var_lst='' # [sng] Variables to process (empty means all)
 var_rgr='' # [sng] CF template variable
 var_xmp='FSNT' # [sng] Variable list for examples
-vrb_lvl=2 # [sng] Verbosity level
-vrb_0=0 # [enm] Verbosity level: Quiet
-vrb_1=1 # [enm] Verbosity level: Standard, minimal file I/O
-vrb_2=2 # [enm] Verbosity level: All file I/O
-vrb_3=3 # [enm] Verbosity level: English
-vrb_4=4 # [enm] Verbosity level: Pedantic
+vrb_lvl=${vrb_2} # [enm] Verbosity level
 vrs_prn='No' # [sng] Print version information
 vrt_fl='' # [sng] Vertical coordinate file
 wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable
@@ -1139,22 +1144,19 @@ fi # !var_lst
 if [ -n "${out_fl}" ]; then 
     out_usr_flg='Yes'
 fi # !out_fl
-if [ -n "${par_typ}" ]; then
-    if [ "${par_typ}" != 'bck' ] && [ "${par_typ}" != 'mpi' ] && [ "${par_typ}" != 'nil' ]; then 
-	    echo "ERROR: Invalid -p par_typ option = ${par_typ}"
-	    echo "HINT: Valid par_typ arguments are 'bck', 'mpi', and 'nil'. For background parallelism, select 'bck' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select 'mpi' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism, select 'nil', which causes ${spt_nm} to spawn all processes serially on a single compute node."
-	    exit 1
-    fi # !par_typ
-fi # !par_typ
-if [ "${par_typ}" = 'bck' ]; then 
+if [ "${par_typ}" = ${par_bck} ] || [ "${par_typ}" = 'bck' ] || [ "${par_typ}" = 'Background' ]; then 
+    par_typ=${par_bck}
     par_opt=' &'
-    par_sng='Background'
-elif [ "${par_typ}" = 'mpi' ]; then 
+elif [ "${par_typ}" = ${par_mpi} ] || [ "${par_typ}" = 'MPI' ]; then 
+    par_typ=${par_mpi}
+    par_opt=' &'
     mpi_flg='Yes'
-    par_opt=' &'
-    par_sng='MPI'
-elif [ "${par_typ}" = 'nil' ] || [ -z "${par_typ}" ]; then 
-    par_sng='Serial'
+elif [ "${par_typ}" = ${par_srl} ] || [ "${par_typ}" = 'srl' ] || [ "${par_typ}" = 'Serial' ] || [ "${par_typ}" = 'nil' ]; then 
+    par_typ=${par_srl}
+else 
+    echo "ERROR: Invalid -p par_typ option = ${par_typ}"
+    echo "HINT: Valid par_typ arguments are \'${par_bck}\' (or 'bck'), \'${par_mpi}\' (or 'MPI'), and \'${par_srl}\' (or 'srl' or 'nil'). For background parallelism, select \'${par_bck}\' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select \'${par_mpi}\' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select \'${par_srl}\', which causes ${spt_nm} to spawn all processes serially on a single compute node."
+    exit 1
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
     if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] && [ "${prc_typ}" != 'gsg' ]; then 
@@ -1588,7 +1590,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	echo "${spt_nm}: ERROR MPI master process unable to find node-list for distributing jobs"
 	echo "${spt_nm}: ${spt_nm} uses first node-list found in \$COBALT_NODEFILE, \$PBS_NODEFILE, or \$SLURM_NODELIST"
 	echo "${spt_nm}: However, none of these environment variables are set so there is no node-list for distributing MPI jobs"
-	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
+	echo "${spt_nm}: HINT: Requesting MPI-parallelism (i.e., invoking ${spt_nm} with \"-p mpi\") in a non-MPI environment will trigger this error. Use \"-p mpi\" only when one of the preceding schedulers has allocated (for interactive use) or will allocate (for non-interactive use) the compute nodes. Otherwise use the default background parallelism (use \"-p bck\" or omit the option completely) or use serial mode (use \"-p serial\"). See http://nco.sf.net/nco.html#par_typ for more information on parallelism."
 	exit 1
     fi # !PBS
     if [ -n "${nd_fl}" ]; then 
@@ -1790,12 +1792,14 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     printf "Started processing at `date`.\n"
     printf "Running remap script ${spt_nm} from directory ${drc_spt}\n"
     printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
-    printf "Parallelism mode = ${par_sng}\n"
+    printf "Parallelism mode = ${par_typ}\n"
     if [ ${fl_nbr} -gt 1 ]; then
-	if [ "${par_typ}" = 'bck' ]; then
+	if [ "${par_typ}" = ${par_bck} ]; then
 	    printf "Background parallelism regridding files in fl_nbr/job_nbr = ${fl_nbr}/${job_nbr} = $((fl_nbr / job_nbr)) batches of job_nbr = ${job_nbr} files simultaneously using round-robin scheduling\n"
-	elif [ "${par_typ}" = 'mpi' ]; then
+	elif [ "${par_typ}" = ${par_mpi} ]; then
 	    printf "MPI parallelism dividing processing of ${fl_nbr} files onto nd_nbr = ${nd_nbr} nodes simultaneously using round-robin scheduling\n"
+	else
+	    printf "No parallelism--processes will be executed serially on a single node.\n"
 	fi # !par_typ
     fi # !fl_nbr
     printf "Input files in or relative to directory ${drc_in}\n"

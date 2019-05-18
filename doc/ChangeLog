@@ -1,3 +1,11 @@
+2019-05-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.1-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha01: Salted Pig';git push
+	git tag -a 4.8.1-alpha01 -m 'Functionally identical to 4.8.0';git push --tags
+
+	* ncclimo/ncremap -p serial is synonym for -p nil
+
 2019-05-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.0 release procedure:
