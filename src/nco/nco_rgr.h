@@ -202,6 +202,7 @@ extern "C" {
    char * const rgr_grd_dst, /* I [sng] File containing destination grid */
    char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
    char * const rgr_var, /* I [sng] Variable for special regridding treatment */
+   char * const rgr_vrt, /* I [sng] File containing vertical coordinate grid */
    const double wgt_vld_thr, /* I [frc] Weight threshold for valid destination value */
    char **xtn_var, /* I [sng] Extensive variables */
    const int xtn_nbr); /* I [nbr] Number of extensive variables */

@@ -88,6 +88,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_out) rgr->fl_out=(char *)nco_free(rgr->fl_out);
   if(rgr->fl_out_tmp) rgr->fl_out_tmp=(char *)nco_free(rgr->fl_out_tmp);
   if(rgr->fl_map) rgr->fl_map=(char *)nco_free(rgr->fl_map);
+  if(rgr->fl_vrt) rgr->fl_vrt=(char *)nco_free(rgr->fl_vrt);
   if(rgr->var_nm) rgr->var_nm=(char *)nco_free(rgr->var_nm);
   if(rgr->xtn_var) rgr->xtn_var=(char **)nco_sng_lst_free(rgr->xtn_var,rgr->xtn_nbr);
 
@@ -97,7 +98,6 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_hnt_src) rgr->fl_hnt_src=(char *)nco_free(rgr->fl_hnt_src);
   if(rgr->fl_skl) rgr->fl_skl=(char *)nco_free(rgr->fl_skl);
   if(rgr->fl_ugrid) rgr->fl_ugrid=(char *)nco_free(rgr->fl_ugrid);
-  if(rgr->fl_vrt) rgr->fl_vrt=(char *)nco_free(rgr->fl_vrt);
 
   /* Tempest */
   if(rgr->drc_tps) rgr->drc_tps=(char *)nco_free(rgr->drc_tps);
@@ -146,6 +146,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
  char * const rgr_grd_dst, /* I [sng] File containing destination grid */
  char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
  char * const rgr_var, /* I [sng] Variable for special regridding treatment */
+ char * const rgr_vrt, /* I [sng] File containing vertical coordinate grid */
  const double wgt_vld_thr, /* I [frc] Weight threshold for valid destination value */
  char **xtn_var, /* [sng] I Extensive variables */
  const int xtn_nbr) /* [nbr] I Number of extensive variables */
@@ -184,13 +185,15 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_wgt= rgr_map ? True : False; /* [flg] User-specified mapping weights */
   rgr->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
 
+  rgr->fl_vrt=rgr_vrt; /* [sng] [sng] File containing vertical coordinate grid */
+
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
   
   rgr->xtn_var=xtn_var; /* [sng] Extensive variables */
   rgr->xtn_nbr=xtn_nbr; /* [nbr] Number of extensive variables */
 
   /* Did user explicitly request regridding? */
-  if(rgr_arg_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL) rgr->flg_usr_rqs=True;
+  if(rgr_arg_nbr > 0 || rgr_grd_src != NULL || rgr_grd_dst != NULL || rgr_map != NULL || rgr_vrt != NULL) rgr->flg_usr_rqs=True;
 
   /* Initialize arguments after copying */
   if(!rgr->fl_out) rgr->fl_out=(char *)strdup("/data/zender/rgr/rgr_out.nc");
@@ -207,6 +210,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"fl_out = %s, ",rgr->fl_out ? rgr->fl_out : "NULL");
     (void)fprintf(stderr,"fl_out_tmp = %s, ",rgr->fl_out_tmp ? rgr->fl_out_tmp : "NULL");
     (void)fprintf(stderr,"fl_map = %s, ",rgr->fl_map ? rgr->fl_map : "NULL");
+    (void)fprintf(stderr,"fl_vrt = %s, ",rgr->fl_vrt ? rgr->fl_vrt : "NULL");
     (void)fprintf(stderr,"\n");
   } /* endif dbg */
   
@@ -273,7 +277,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_hnt_src=NULL; /* [sng] ERWG hint source */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
-  rgr->fl_vrt=NULL; /* [sng] Vertical coordinate file */
   rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_dgn_area=False; /* [flg] Diagnose rather than copy inferred area */
@@ -730,7 +733,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     nco_vrt_grd_out=nco_vrt_grd_prs; /* NCEP */
     flg_grd_out_prs=True;
   }else{ /* !hyai */
-    (void)fprintf(stdout,"%s: ERROR %s Unable to determine output vertical grid type\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid or pure-pressure vertical grid coordinate information in vertical grid file\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: HINT ensure vertical grid coordinate file contains a valid vertical grid coordinate\n",nco_prg_nm_get(),fnc_nm);
     return NCO_ERR;
   } /* !hyai */
     
@@ -923,7 +927,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP */
     flg_grd_in_prs=True;
   }else{ /* !hyai */
-    (void)fprintf(stdout,"%s: ERROR %s Unable to determine input vertical grid type\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid or pure-pressure vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions\n",nco_prg_nm_get(),fnc_nm);
     return NCO_ERR;
   } /* !hyai */
     

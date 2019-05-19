@@ -3,7 +3,7 @@
 /* Purpose: Cartesian polygon coordinates and intersections */
 
 /* This file includes BSD-licensed code whose copyright is held by another author
-   The copyright owner and license terms for the NCO modifications are
+   The copyright owner and license terms for the NCO modifications to that code are
    Copyright (C) 2019--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 

@@ -255,6 +255,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
 # Split ALM:
 # ncclimo --dbg=1 -s 2000 -e 2000 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc
+# Split vertical:
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS,T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
 # Split production:
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
@@ -496,7 +498,6 @@ par_opt='' # [sng] Parallel options to shell
 par_typ="${par_bck}" # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression precision
 rgr_map='' # [sng] Regridding (horizontal) map
-#rgr_map="${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc"
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
 spl_rgr_opt='--rgr no_stagger' # [sng] Splitter regridding options
@@ -509,6 +510,7 @@ var_lst='' # [sng] Variables to process (empty means all)
 var_lst_rx_xtr='No' # [sng] Process var_lst to expand rx
 vrs_prn='No' # [sng] Print version information
 vrt_fl='' # [sng] Vertical coordinate file
+vrt_opt='' # [sng] Vertical interpolation options (e.g., '--vrt_fl=vrt_grd.nc')
 xcl_flg='No' # [sng] Exclude rather than extract variable list
 xtn_flg='No' # [sng] Produce extended climatology
 ypf_max=50 # [yr] Years-per-output-file
@@ -561,7 +563,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
-#    echo " ${fnt_bld}--vrt_fl${fnt_nrm}   Vertical coordinate file (empty means none) (default ${fnt_bld}${vrt_fl}${fnt_nrm}) [${fnt_tlc}vrt_fl, vrt, vrt_crd, vertical_coordinate${fnt_nrm}]"
+    echo " ${fnt_bld}--vrt_fl${fnt_nrm}   Vertical coordinate file (empty means none) (default ${fnt_bld}${vrt_fl}${fnt_nrm}) [${fnt_tlc}vrt_fl, vrt, vrt_crd, vertical_coordinate${fnt_nrm}]"
     echo "${fnt_rvr}-X${fnt_nrm} ${fnt_bld}drc_xtn${fnt_nrm}  Extended climo directory (default ${fnt_bld}${drc_xtn}${fnt_nrm}) [${fnt_tlc}drc_xtn, xtn_drc, extended_dir, extended_climo, extended${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}drc_prv${fnt_nrm}  Previous climo directory (default ${fnt_bld}${drc_prv}${fnt_nrm}) [${fnt_tlc}drc_prv, prv_drc, previous_dir, previous_climo, previous${fnt_nrm}]"
     echo " ${fnt_bld}--xcl_var${fnt_nrm}  Exclude rather than extract var_lst [${fnt_tlc}xcl_var, xcl, exclude, exclude_variables${fnt_nrm}]"
@@ -1074,7 +1076,7 @@ if [ -n "${rgr_map}" ]; then
 	printf "${spt_nm}: INFO This restriction prevents users from inadvertently generating regridded output that is up to a few percent wrong. Naively regridding sub-gridscale output will generate inaccurate results in all destination gridcells that contain contributions gridcells whose surface fraction (e.g., landfrac) is less than 1.0 on the source grid. Using ncremap ensures that values from sub-gridcell features like coastlines and islands are treated correctly. For more information, contact Charlie.\n"
 	exit 1
     fi # !mdl_nm
-    rgr_opt="${rgr_opt} --map ${rgr_map}"
+    rgr_opt="${rgr_opt} --map=${rgr_map}"
 else # !rgr_map
     if [ -n "${dpt_opt}" ]; then
 	echo "${spt_nm}: ERROR Cannot add depth coordinate unless horizontal regridding is invoked"
@@ -1097,9 +1099,8 @@ if [ -n "${vrt_fl}" ]; then
 	echo "ERROR: Unable to find specified vertical coordinate file ${vrt_fl}"
 	exit 1
     fi # ! -f
-    vrt_usr_flg='Yes'
-    # Prevent attempts at horizontal regridding
-    flg_vrt_only='Yes' 
+    vrt_opt="--vrt_fl=${vrt_fl}"
+    rgr_opt="${rgr_opt} ${vrt_opt}"
 fi # !vrt_fl
 yyyy_clm_srt=${yyyy_srt}
 yyyy_clm_end=${yyyy_end}
@@ -1577,11 +1578,13 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
     printf "dbg: rgr_map  = ${rgr_map}\n"
+    printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
     printf "dbg: no_ntv   = ${no_ntv_tms}\n"
     printf "dbg: sbs_flg  = ${sbs_flg}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
+    printf "dbg: vrt_fl   = ${vrt_fl}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"
     printf "dbg: ypf_max  = ${ypf_max}\n"
     printf "dbg: yr_sbs   = ${yr_sbs}\n"
@@ -1664,7 +1667,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
     printf "Native-grid split files to directory ${drc_out}\n"
-    if [ -n "${rgr_map}" ]; then 
+    if [ -n "${rgr_opt}" ]; then 
 	printf "Regridded split files to directory ${drc_rgr}\n"
 	if [ "${thr_nbr}" -ne 1 ]; then 
 	    printf "Regridder will request ${thr_nbr} OpenMP threads to parallelize weight application across variables\n"
@@ -1730,7 +1733,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
     else
 	printf "Annotation for CF climatology attribute and climatology_bounds variable will not be performed\n"
     fi # !cf
-    if [ -n "${rgr_map}" ]; then 
+    if [ -n "${rgr_opt}" ]; then 
 	printf "This climatology will also be regridded\n"
 	printf "Regridder will request ${thr_nbr} OpenMP threads to parallelize weight application across variables\n"
     else
@@ -1840,7 +1843,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 	fl_amwg[${clm_idx}]=`expr match "${fl_out[${clm_idx}]}" '\(.*\)_.*_.*_climo.nc'` # Prune _YYYYYMM_YYYYMM_climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]}_climo.nc" # Replace with _climo.nc
 	fl_amwg[${clm_idx}]="${fl_amwg[${clm_idx}]/${drc_out}\//}" # Delete prepended path to ease symlinking
-	if [ -n "${rgr_map}" ]; then
+	if [ -n "${rgr_opt}" ]; then
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
 	    if [ "${drc_out}" = "${drc_rgr}" ]; then 
 		# Append geometry suffix to regridded files in same directory as native climo
@@ -1859,7 +1862,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 		#    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
 		fl_rgr[${clm_idx}]="${fl_rgr[${clm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
-	fi # !rgr_map
+	fi # !rgr_opt
     done # !clm_idx
 fi # !clm_md
 
@@ -1920,7 +1923,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	else # !fml_nm_usr
 	    fl_out_tpl[${sgm_idx}]="${drc_out}/var_nm_tpl_${fml_nm}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12.nc"
 	fi # !fml_nm_usr
-	if [ -n "${rgr_map}" ]; then
+	if [ -n "${rgr_opt}" ]; then
 	    fl_rgr_tpl[${sgm_idx}]="${fl_out_tpl[${sgm_idx}]/${drc_out}/${drc_rgr}}"
 	    if [ "${drc_out}" = "${drc_rgr}" ]; then 
 		# Append geometry suffix to regridded files in same directory as native climo
@@ -1939,7 +1942,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		#    rgr_sfx=`expr match "${rgr_sfx}" '\(.*\)\.[0-9][0-9][0-9][0-9][0-9][0-9]'` # 
 		fl_rgr_tpl[${sgm_idx}]="${fl_rgr_tpl[${sgm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
-	fi # !rgr_map
+	fi # !rgr_opt
     done # !sgm_idx
 
     # Begin outer loop over time segments
@@ -2023,7 +2026,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	fi # !par_typ
 	
 	# Begin loop over variables to regrid
-	if [ -n "${rgr_map}" ]; then 
+	if [ -n "${rgr_opt}" ]; then 
 	    idx_srt=0
 	    let idx_end=$((job_nbr-1))
 	    for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
@@ -2032,7 +2035,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		if [ "${mdl_typ}" = 'mpas' ]; then
 		    # 20181114: Remove '-C' argument from ncremap invocation for MPAS splitter only
 		    # This ensures CMIP6 MPAS timeseries will have _FillValue
-		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
+		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} -m ${rgr_map} ${vrt_opt} -i ${fl_out[${var_idx}]} -o ${fl_rgr[${var_idx}]}"
 		fi # !mdl_typ
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr[${var_idx}]}
@@ -2113,7 +2116,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		done # !var_idx
 	    fi # !no_ntv_tms
 
-	fi # !rgr_map
+	fi # !rgr_opt
 	
     done # !sgm_idx
     
@@ -2158,7 +2161,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
     wait
     
     # Block 2: Regrid climatological annual mean
-    if [ -n "${rgr_map}" ]; then 
+    if [ -n "${rgr_opt}" ]; then 
 	printf "Regrid annual data...\n"
 	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]/.nc/.rgr.nc}"
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -2173,7 +2176,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
 	fi # !dbg
 	wait
 	printf "Done with regridding\n"
-    fi # !rgr_map
+    fi # !rgr_opt
     
 fi # !ann
 
@@ -2223,7 +2226,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	done # !day
     done # !mth
 
-    if [ -n "${rgr_map}" ]; then
+    if [ -n "${rgr_opt}" ]; then
 	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
 	    fl_rgr[${clm_idx}]="${fl_out[${clm_idx}]/${drc_out}/${drc_rgr}}"
 	    if [ "${drc_out}" = "${drc_rgr}" ]; then 
@@ -2244,7 +2247,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 		fl_rgr[${clm_idx}]="${fl_rgr[${clm_idx}]/.nc/_${rgr_sfx}.nc}"
 	    fi # !drc_rgr
 	done # !clm_idx
-    fi # !rgr_map
+    fi # !rgr_opt
     
     # Begin loop over days to climatologize
     printf "Climatological daily mean...\n"
@@ -2311,13 +2314,13 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
     fi # !par_typ
 
     # Begin loop over days to regrid
-    if [ -n "${rgr_map}" ]; then 
+    if [ -n "${rgr_opt}" ]; then 
 	idx_srt=0
 	let idx_end=$((job_nbr-1))
 	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} ${vrt_opt} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${clm_idx}]}
@@ -2377,7 +2380,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 		done # !pid_idx
 	    fi # !bch_flg
 	fi # !par_typ
-    fi # !rgr_map
+    fi # !rgr_opt
     
 fi # !dly
 
@@ -2444,7 +2447,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     fi # !dbg
     
     # Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).
-    if [ -n "${rgr_map}" ]; then 
+    if [ -n "${rgr_opt}" ]; then 
 	printf "Regrid monthly data...\n"
 	[[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
 	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
@@ -2459,7 +2462,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    # printf "dbg: clm_idx = ${clm_idx}, nd_idx = ${nd_idx}, csn_nbr = ${csn_nbr}, nd_nbr = ${nd_nbr}\n"
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} ${vrt_opt} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${clm_idx}]}
@@ -2478,7 +2481,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    fi # !dbg
 	done # !clm_idx
 	# Start seasonal means first, then wait() for monthly regridding to finish
-    fi # !rgr_map
+    fi # !rgr_opt
     
     # Block 2: Climatological seasonal means
     if [ "${csn_flg}" = 'Yes' ]; then
@@ -2522,7 +2525,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	done # !clm_idx
     fi # !csn_flg
     # wait() for monthly regridding, if any, to finish
-    if [ -n "${rgr_map}" ]; then 
+    if [ -n "${rgr_opt}" ]; then 
 	if [ -n "${par_opt}" ]; then
 	    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
 		wait ${rgr_pid[${clm_idx}]}
@@ -2537,7 +2540,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    date_dff=$((date_crr-date_rgr))
 	    echo "Elapsed time to regrid monthly climos $((date_dff/60))m$((date_dff % 60))s"
 	fi # !dbg
-    fi # !rgr_map
+    fi # !rgr_opt
     # wait() for seasonal climatologies to finish
     if [ "${csn_flg}" = 'Yes' ]; then
 	if [ -n "${par_opt}" ]; then
@@ -2558,7 +2561,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     
     # Block 2: Loop 4: Regrid seasonal files. Load-balance by using idle nodes (nodes not used for annual mean).
     if [ "${csn_flg}" = 'Yes' ]; then
-	if [ -n "${rgr_map}" ]; then 
+	if [ -n "${rgr_opt}" ]; then 
 	    printf "Regrid seasonal data...\n"
 	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
 	    for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
@@ -2568,7 +2571,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		fi # !nd
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
-		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} ${vrt_opt} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr[${clm_idx}]}
@@ -2587,7 +2590,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		fi # !dbg
 	    done # !clm_idx
 	    # Start annual mean first, then wait() for seasonal regridding to finish
-	fi # !rgr_map
+	fi # !rgr_opt
     fi # !csn_flg
     
     # Block 3: Climatological annual mean
@@ -2615,7 +2618,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     fi # !ann_flg
     # wait() for seasonal regridding, if any, to finish
     if [ "${csn_flg}" = 'Yes' ]; then
-	if [ -n "${rgr_map}" ]; then 
+	if [ -n "${rgr_opt}" ]; then 
 	    if [ -n "${par_opt}" ]; then
 		for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
 		    wait ${rgr_pid[${clm_idx}]}
@@ -2630,7 +2633,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		date_dff=$((date_crr-date_rgr))
 		echo "Elapsed time to regrid seasonal climos $((date_dff/60))m$((date_dff % 60))s"
 	    fi # !dbg
-	fi # !rgr_map
+	fi # !rgr_opt
     fi # !csn_flg
     if [ "${ann_flg}" = 'Yes' ]; then
 	clm_idx=${clm_nbr}
@@ -2649,12 +2652,12 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	fi # !dbg
 	
 	# Block 5: Regrid climatological annual mean
-	if [ -n "${rgr_map}" ]; then 
+	if [ -n "${rgr_opt}" ]; then 
 	    printf "Regrid annual data...\n"
 	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
 	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} -m ${rgr_map} ${vrt_opt} -i ${fl_out[${clm_idx}]} -o ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${clm_idx}]}
@@ -2672,7 +2675,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 		date_dff=$((date_crr-date_rgr))
 		echo "Elapsed time to regrid annual climo $((date_dff/60))m$((date_dff % 60))s"
 	    fi # !dbg
-	fi # !rgr_map
+	fi # !rgr_opt
     fi # !ann_flg
     
     # Link E3SM-climo to AMWG-climo filenames
@@ -2681,11 +2684,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
     if [ ${lnk_flg} = 'Yes' ]; then
 	printf "Link E3SM-climo to AMWG-climo filenames...\n"
 	for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-	    if [ -n "${rgr_map}" ]; then 
+	    if [ -n "${rgr_opt}" ]; then 
 		cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr};ln -s -f ${fl_rgr[${clm_idx}]/${drc_rgr}\//} ${fl_amwg[${clm_idx}]/${drc_rgr}\//}"
 	    else
 		cmd_lnk[${clm_idx}]="cd ${drc_pwd};cd ${drc_out};ln -s -f ${fl_out[${clm_idx}]/${drc_out}\//} ${fl_amwg[${clm_idx}]/${drc_out}\//}"
-	    fi # !rgr_map
+	    fi # !rgr_opt
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_lnk[${clm_idx}]}
 	    fi # !dbg
@@ -2871,7 +2874,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	fi # !par_opt
 	wait
 	
-	if [ -n "${rgr_map}" ]; then 
+	if [ -n "${rgr_opt}" ]; then 
 	    printf "Weight input climos to produce extended regridded climo...\n"
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
 		cmd_rgr_xtn[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncflint -O ${nco_opt} -w ${wgt_prv},${wgt_crr} ${fl_rgr_prv[${clm_idx}]} ${fl_rgr[${clm_idx}]} ${fl_rgr_xtn[${clm_idx}]}"
@@ -2901,7 +2904,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 		done # !clm_idx
 	    fi # !par_opt
 	    wait
-	fi # !rgr_map
+	fi # !rgr_opt
 	
 	# Link E3SM-climo to AMWG-climo filenames
 	# drc_pwd is always fully qualified path but drc_out and drc_rgr may be relative paths
@@ -2909,11 +2912,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${xtn_flg}" = 'Yes' ]; then
 	if [ ${lnk_flg} = 'Yes' ]; then
 	    printf "Link extended E3SM-climo to AMWG-climo filenames...\n"
 	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-		if [ -n "${rgr_map}" ]; then 
+		if [ -n "${rgr_opt}" ]; then 
 		    cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_rgr_xtn};ln -s -f ${fl_rgr_xtn[${clm_idx}]/${drc_rgr_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_rgr_xtn}\//}"
 		else
 		    cmd_lnk_xtn[${clm_idx}]="cd ${drc_pwd};cd ${drc_xtn};ln -s -f ${fl_xtn[${clm_idx}]/${drc_xtn}\//} ${fl_amwg[${clm_idx}]/${drc_xtn}\//}"
-		fi # !rgr_map
+		fi # !rgr_opt
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_lnk_xtn[${clm_idx}]}
 		fi # !dbg
@@ -2945,33 +2948,33 @@ if [ "${clm_flg}" = 'Yes' ]; then
     fi # !dly
     
     if [ -n "${yr_srt_prv}" ]; then
-	if [ -n "${rgr_map}" ]; then 
+	if [ -n "${rgr_opt}" ]; then 
 	    echo "ncview ${fl_rgr_xtn[${idx_lst}]} &"
 	    echo "panoply ${fl_rgr_xtn[${idx_lst}]} &"
 	else
 	    echo "ncview ${fl_xtn[${idx_lst}]} &"
 	    echo "panoply ${fl_xtn[${idx_lst}]} &"
-	fi # !rgr_map    
+	fi # !rgr_opt    
     else
-	if [ -n "${rgr_map}" ]; then 
+	if [ -n "${rgr_opt}" ]; then 
 	    echo "ncview ${fl_rgr[${idx_lst}]} &"
 	    echo "panoply ${fl_rgr[${idx_lst}]} &"
 	else
 	    echo "ncview ${fl_out[${idx_lst}]} &"
 	    echo "panoply ${fl_out[${idx_lst}]} &"
-	fi # !rgr_map    
+	fi # !rgr_opt    
     fi # !yr_srt_prv
 fi # !clm_flg
 if [ "${sbs_flg}" = 'Yes' ]; then
     echo "Quick plots of last variable split in last segment:"
     let idx_lst=${var_nbr}-1
-    if [ -n "${rgr_map}" ]; then 
+    if [ -n "${rgr_opt}" ]; then 
 	echo "ncview ${fl_rgr[${idx_lst}]} &"
 	echo "panoply ${fl_rgr[${idx_lst}]} &"
     else
 	echo "ncview ${fl_out[${idx_lst}]} &"
 	echo "panoply ${fl_out[${idx_lst}]} &"
-    fi # !rgr_map    
+    fi # !rgr_opt    
 fi # !sbs_flg
 date_end=$(date +"%s")
 if [ -n "${caseid}" ]; then

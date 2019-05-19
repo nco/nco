@@ -1,5 +1,13 @@
 2019-05-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.1-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha02: fxm';git push
+	git tag -a 4.8.1-alpha02 -m 'ORourke BSD license/copyright;';git push --tags
+
+	* Plumb ncks and nco_rgr_ini() to accecpt vrt_fl directly
+
+	* Pass vertical interpolation arguments from ncclimo to ncremap
+
 	* Insert copyright for Joseph O'Rourke and BSD License into nco_crt.c and nco_sph.c
 
 	* NCO 4.8.1-alpha01 release procedure:

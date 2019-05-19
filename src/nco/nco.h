@@ -1144,6 +1144,7 @@ extern "C" {
     char *fl_out; /* [sng] File containing regridded fields */
     char *fl_out_tmp; /* [sng] Temporary file containing regridded fields */
     char *fl_map; /* [sng] File containing mapping weights from source to destination grid */
+    char *fl_vrt; /* [sng] File containing vertical coordinate grid */
     char *var_nm; /* [sng] Variable for special regridding treatment */
     // Grid names specifiable with key-value syntax
     char **rgr_arg; /* [sng] Regridding arguments */
@@ -1154,7 +1155,6 @@ extern "C" {
     char *col_nm_out; /* [sng] Name of horizontal spatial output dimension on unstructured grid */
     char *fl_hnt_dst; /* [sng] ERWG hint destination */
     char *fl_hnt_src; /* [sng] ERWG hint source */
-    char *fl_vrt; /* [sng] File containing vertical coordinate information */
     char *frc_nm; /* [sng] Name of variable containing gridcell fraction */
     char *ilev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension at layer interfaces */
     char *ilev_nm_out; /* [sng] Name of output vertical dimension at layer interfaces */

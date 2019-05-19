@@ -1410,7 +1410,7 @@ if [ -n "${vrt_fl}" ]; then
 	exit 1
     fi # ! -f
     vrt_usr_flg='Yes'
-    # Prevent attempts at horizontal regridding
+    # Prevent attempts at simultaneous vertical and horizontal regridding
     flg_vrt_only='Yes' 
 fi # !vrt_fl
 
@@ -1817,7 +1817,7 @@ if [ "${dst_usr_flg}" = 'Yes' ]; then
     fi # !grd_dst_usr_flg
 fi # !dst_usr_flg
 if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" != 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ] && [ "${vrt_usr_flg}" != 'Yes' ]; then 
-    printf "${spt_nm}: ERROR Must specify at least one of '-d dst_fl', '-g grd_dst', '-G grd_sng', '-m map_fl', or --vrt_fl=vrt_fl\n"
+    printf "${spt_nm}: ERROR Unable to determine remapping procedure\nHINT: Specify the type of remapping to perform with at least one of the following options: 1) A data/template file, '-d dst_fl'; 2) A destination grid-file, '-g grd_dst'; 3) A grid-construction command, '-G grd_sng'; 4) A map-file with weights to apply, '-m map_fl'; 5) A vertical grid to interpolate to, --vrt_fl=vrt_fl\n"
     exit 1
 fi # !dst_usr_flg
 if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" = 'Yes' ] && [ "${vrt_usr_flg}" != 'Yes' ]; then
@@ -2684,7 +2684,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	    printf "Vertical : ${vrt_fl}\n"
 	fi # !vrb_lvl
-	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} --rgr fl_vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
+	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} --vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
     else # !vrt_fl
 	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	    printf "Map/Wgt  : ${map_fl}\n"
