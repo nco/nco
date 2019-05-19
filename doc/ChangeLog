@@ -2,7 +2,7 @@
 
 	* NCO 4.8.1-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha02: Knee Wrench';git push
-	git tag -a 4.8.1-alpha02 -m 'ORourke BSD license/copyright;';git push --tags
+	git tag -a 4.8.1-alpha02 -m 'ORourke BSD license/copyright;ncclimo vrt_fl';git push --tags
 
 	* ncclimo MPAS branch passes vertical interpolation arguments
 
