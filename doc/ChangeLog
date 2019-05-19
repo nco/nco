@@ -1,8 +1,12 @@
-2019-05-18  Charlie Zender  <zender@uci.edu>
+2019-05-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.1-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha02: fxm';git push
+	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha02: Knee Wrench';git push
 	git tag -a 4.8.1-alpha02 -m 'ORourke BSD license/copyright;';git push --tags
+
+	* ncclimo MPAS branch passes vertical interpolation arguments
+
+2019-05-18  Charlie Zender  <zender@uci.edu>
 
 	* Plumb ncks and nco_rgr_ini() to accecpt vrt_fl directly
 
