@@ -17660,7 +17660,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}]
 [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [-v @var{var_lst}] [--version] 
-[-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
+[--vrt_fl=@var{vrt_fl}] [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
 @end example
 
@@ -18928,9 +18928,9 @@ It is important to employ the optimal @command{ncclimo}  parallelization
 strategy for your computer hardware resources. 
 Select from the three available choices with the 
 @option{-p @var{par_typ}} switch.
-The options are serial mode (@samp{-p nil} or @samp{-p serial}), 
-background mode parallelism (@samp{-p bck}), and @acronym{MPI}
-parallelism @samp{-p mpi}. 
+The options are serial mode (@samp{-p srl}, @samp{-p serial}, or @samp{-p nil}), 
+background mode parallelism (@samp{-p bck}, or @samp{-p background}),
+and @acronym{MPI} parallelism (@samp{-p mpi} or @samp{-p MPI}).
 The default is background-mode parallelism.
 This is appropriate for lower resolution (e.g., ne30L30) simulations on
 most nodes at high-performance computer centers. 
@@ -20201,8 +20201,8 @@ ncks [-3] [-4] [-5] [-6] [-7] [-A] [-a] [-b @var{fl_bnr}] [-C] [-c] [--cdl]
 [--no_blank] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] 
 [-O] [-o @var{output-file}] [-P] [-p @var{path}] [--ppc ...] [--prn_fl @var{print-file}]
 [-Q] [-q] [-R] [-r] [--rad] [--ram_all] [--rgr ...] [--rnr=wgt]
-[-s @var{format}] [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [-X ...] [-x] [--xml]
-@var{input-file} [[@var{output-file}]]
+[-s @var{format}] [-u] [--unn] [-V] [-v @var{var}[,@dots{}]] [--vrt @var{vrt-file}] 
+[-X ...] [-x] [--xml] @var{input-file} [[@var{output-file}]]
 @end example
 
 @noindent
