@@ -134,15 +134,18 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       b1 = (b + m - 1) % m;
 
 
-
       nx1= nco_sph_cross(P->shp[a1], P->shp[a], Pcross);
-      nx2= nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross);
-
-      nx3= nco_sph_cross(Pcross, Qcross, Xcross);
 
 
-      ipqLHS = nco_sph_lhs(P->shp[a], Qcross);
-      ip1qLHS = nco_sph_lhs(P->shp[a1], Qcross);
+
+     nx2= nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross);
+
+
+     nx3= nco_sph_cross(Pcross, Qcross, Xcross);
+
+
+     ipqLHS = nco_sph_lhs(P->shp[a], Qcross);
+     ip1qLHS = nco_sph_lhs(P->shp[a1], Qcross);
 
 
       /* imply rules facing if 0 */
@@ -173,8 +176,15 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       dx1=1.0- nco_sph_dot_nm(Pcross,Qcross );
 
       /* spans parallel but in oposite directions */
-      if( fabs(dx1-2.0) < DOT_TOLERANCE )
+      if( fabs(dx1-2.0) < SIGMA_TOLERANCE )
+      {
+        if(nco_dbg_lvl_get() >= nco_dbg_dev)
+          (void)fprintf(stderr, "%s:%s() PARALLEL edges in oposite direction\n", nco_prg_nm_get(), fnc_nm );
+
         return EXIT_FAILURE;
+
+      }
+
 
       if( dx1  <DOT_TOLERANCE )
       {
@@ -217,7 +227,9 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
           code = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
 
-          if (lcl_inflag != poly_vrl_unk ) {
+
+
+          if (  !(code=='1' && inflag== poly_vrl_unk)  &&   lcl_inflag != poly_vrl_unk   ) {
 
             inflag = lcl_inflag;
 
@@ -247,8 +259,10 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
         if(!isParallel) {
           code = nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q);
 
-
-          if (code == '1' || code == 'e') {
+          /* if  a vertex is found before the first intersection  this does NOT
+           * imply that there is an intersection - this avoid senarios where
+           * P And Q share a vertex band nothing else */
+          if (code == '1' || code == 'v' && inflag != poly_vrl_unk) {
 
             nco_sph_add_pnt(R->shp, r, p);
 
@@ -257,6 +271,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
               aa = 0;
               bb = 0;
             }
+
 
             inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
 
@@ -413,14 +428,14 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
   dx_ai=1.0-  nco_sph_dot_nm(a,Icross);
 
-  if(dx_ai < DOT_TOLERANCE )
+  if(dx_ai <= DOT_TOLERANCE )
      dx_ai=0.0;
   else
      nx_ai=nco_sph_cross(a, Icross, ai);
 
   dx_ci= 1.0- nco_sph_dot_nm(c,Icross);
 
-  if(dx_ci <DOT_TOLERANCE )
+  if(dx_ci <= DOT_TOLERANCE )
     dx_ci=0.0;
   else
     nx_ci=nco_sph_cross(c, Icross, ci);
@@ -440,7 +455,11 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
       nco_sph_prn_pnt("nco_sph_seg_int(): intersection", Icross, 3, True);
 
     memcpy(p,Icross, sizeof(double)*NBR_SPH);
-    return '1';
+
+    if(dx_ai==0 || fabs(dx_ai-dx_ab)<=DOT_TOLERANCE ||  dx_ci==0.0 || fabs(dx_ci-dx_cd)<=DOT_TOLERANCE )
+      return 'v';
+    else
+      return '1';
 
   }
 
@@ -453,12 +472,16 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
   dx_ai=1.0-  nco_sph_dot_nm(a,Icross);
 
-  if(dx_ai !=0.0 )
+  if(dx_ai <=DOT_TOLERANCE )
+    dx_ai=0.0;
+  else
     nx_ai=nco_sph_cross(a, Icross, ai);
 
   dx_ci= 1.0- nco_sph_dot_nm(c,Icross);
 
-  if(dx_ci !=0.0 )
+  if(dx_ci <=DOT_TOLERANCE )
+    dx_ci=0.0;
+  else
     nx_ci=nco_sph_cross(c, Icross, ci);
 
 
@@ -475,7 +498,11 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
       nco_sph_prn_pnt("nco_sph_seg_int(): intersect-antipodal", Icross, 3, True);
 
     memcpy(p,Icross, sizeof(double)*NBR_SPH);
-    return '1';
+
+    if(dx_ai==0 || fabs(dx_ai-dx_ab)<=DOT_TOLERANCE ||  dx_ci==0.0 || fabs(dx_ci-dx_cd)<=DOT_TOLERANCE )
+      return 'v';
+    else
+      return '1';
 
   }
 
@@ -566,10 +593,9 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   /* no overlap so return */
   if( (dx_q0 < 0.0  && dx_q1 < 0.0) || ( dx_q0 > dx_p1 && dx_q1 > dx_p1  )) {
     code = '0';
-    return code;
   }
 
-  if(dx_q0 <0.0 &&  dx_q1 == 0.0   )
+  else if(dx_q0 <0.0 &&  dx_q1 == 0.0   )
   {
     code='1';
     nco_sph_adi(r0,p0);
