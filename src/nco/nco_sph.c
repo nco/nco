@@ -849,6 +849,19 @@ int nco_sph_lhs(double *Pi, double *Qi)
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* implement face rules */
 nco_bool nco_sph_face(int iLHS, int iRHS, int jRHS)
 {
@@ -1700,11 +1713,11 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
     if (isQ_LatCircle) {
 
-      ip1qLHS = nco_rll_lhs(P->shp[a1], Q->shp[b1], Q->shp[b] );
-      ipqLHS = nco_rll_lhs(P->shp[a], Q->shp[b1],   Q->shp[b]);
+      ip1qLHS = nco_rll_lhs_lat(P->shp[a1], Q->shp[b1], Q->shp[b]);
+      ipqLHS = nco_rll_lhs_lat(P->shp[a], Q->shp[b1], Q->shp[b]);
     } else {
-      ip1qLHS = nco_sph_lhs(P->shp[a1], Qcross);
-      ipqLHS = nco_sph_lhs(P->shp[a], Qcross);
+      ip1qLHS = nco_rll_lhs(P->shp[a1], Qcross);
+      ipqLHS = nco_rll_lhs(P->shp[a], Qcross);
 
     }
 
@@ -1717,14 +1730,14 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
 
     if (isP_LatCircle) {
-      iq1pLHS = nco_rll_lhs(Q->shp[b1], P->shp[a1],  P->shp[a]);
-      iqpLHS = nco_rll_lhs(Q->shp[b], P->shp[a1], P->shp[a]);
+      iq1pLHS = nco_rll_lhs_lat(Q->shp[b1], P->shp[a1], P->shp[a]);
+      iqpLHS = nco_rll_lhs_lat(Q->shp[b], P->shp[a1], P->shp[a]);
 
 
     } else {
 
-      iq1pLHS = nco_sph_lhs(Q->shp[b1], Pcross);
-      iqpLHS = nco_sph_lhs(Q->shp[b], Pcross);
+      iq1pLHS = nco_rll_lhs(Q->shp[b1], Pcross);
+      iqpLHS = nco_rll_lhs(Q->shp[b], Pcross);
 
     }
 
@@ -1941,8 +1954,33 @@ nco_rll_is_lat_circle(double *p0, double *p1) {
 
 }
 
+
+/* this function is really superflous but nco_sph_lhs
+ * breaks nco_rll_interesect */
+int nco_rll_lhs(double *Pi, double *Qi)
+{
+  double ds;
+
+  ds= nco_sph_dot_nm(Pi, Qi);
+
+
+
+  if(ds  > 0.0 )
+    return 1;
+  else if(ds <0.0)
+    return -1;
+  else
+    return 0;
+
+
+
+}
+
+
+
+
 int
-nco_rll_lhs(double *p0, double *q0, double *q1)
+nco_rll_lhs_lat(double *p0, double *q0, double *q1)
 {
 
   int iret;
@@ -1967,6 +2005,9 @@ nco_rll_lhs(double *p0, double *q0, double *q1)
   return iret*nx;
 
 }
+
+
+
 
 
 char

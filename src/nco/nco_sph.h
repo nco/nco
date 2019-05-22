@@ -29,7 +29,7 @@
 /* smallest RADIAN */
 #define SIGMA_RAD (1.0e-12)
 
-// #define DOT_TOLERANCE (1.0e-12)
+#define SIGMA_TOLERANCE (1.0e-12)
 #define DOT_TOLERANCE (1.0e-14)
 
 /* convert Degrees to Radians */
@@ -164,7 +164,12 @@ nco_bool
 nco_rll_is_lat_circle(double *p0, double *p1);
 
 int
-nco_rll_lhs(double *p0, double *q0, double *q1);
+nco_rll_lhs(double *p0, double *QCross);
+
+int
+nco_rll_lhs_lat(double *p0, double *q0, double *q1);
+
+
 
 /*********************************************************************************************/
 
