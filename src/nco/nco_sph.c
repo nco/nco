@@ -1341,8 +1341,8 @@ return True;
 
 }
 
-/* make a control point that is Outside of polygon */
-int nco_sph_mk_control(poly_sct *sP, double* pControl  )
+/* make a control point that is Inside or Outside of polygon */
+int nco_sph_mk_control(poly_sct *sP, nco_bool bInside,  double* pControl  )
 {
    /* do stuff in radians */
 
@@ -1352,6 +1352,16 @@ int nco_sph_mk_control(poly_sct *sP, double* pControl  )
    double clon=0.0;
 
    nco_bool bDeg=False;
+
+   /* use Center as point inside polygon */
+   if(bInside)
+   {
+     bDeg=True;
+     nco_geo_lonlat_2_sph(sP->dp_x_ctr,sP->dp_y_ctr , pControl, bDeg);
+     return NCO_NOERR;
+   }
+
+
 
    /* convert limits to radians */
    double lon_min=D2R( sP->dp_x_minmax[0]);
@@ -1434,7 +1444,7 @@ int nco_sph_mk_control(poly_sct *sP, double* pControl  )
    line (pControl, pVertex) and each edge in sP
    pControl is chosen so that it is OUTSIDE of sP
  */
-nco_bool nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVertex)
+int nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVertex)
 {
 
   char code;
@@ -1445,6 +1455,7 @@ nco_bool nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVert
   double  p[NBR_SPH];
   double  q[NBR_SPH];
 
+  const char *fnc_nm="nco_sph_pnt_in_poly()";
 
   /* count number of intersections */
   for(idx=0; idx< n ; idx++)
@@ -1463,7 +1474,11 @@ nco_bool nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVert
     an odd  number of crossings means that the point is inside
     while an even number means that it is outside */
 
-  return (numIntersect % 2  );
+  if(DEBUG_SPH)
+     fprintf(stderr,"%s:%s: num intersections=%d\n ",nco_prg_nm_get(),fnc_nm, numIntersect );
+
+  //return (numIntersect % 2  );
+  return numIntersect;
 
 
 }

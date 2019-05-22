@@ -119,7 +119,7 @@ nco_sph_is_convex(double **sP, int np);
 void
 nco_sph_prn(double **sR, int r, int istyle);
 
-nco_bool
+int
 nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVertex);
 
 void
@@ -129,7 +129,7 @@ void
 nco_sph_add_lonlat(double *ds);
 
 int
-nco_sph_mk_control(poly_sct *sP, double* pControl  ); /* make a control point that is outside polygon */
+nco_sph_mk_control(poly_sct *sP, nco_bool bInside,  double* pControl  ); /* make a control point that is outside polygon */
 
 
 /***************** nco_geo functions these manimpulate lat & lon  ***************************/
