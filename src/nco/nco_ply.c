@@ -416,6 +416,7 @@ void nco_poly_minmax_add
 
         nco_bool bDeg=True;
         nco_bool haveControl=False;
+        nco_bool bInside=False;
         double pControl[NBR_SPH];
         double pPole[NBR_SPH];
 
@@ -438,7 +439,7 @@ void nco_poly_minmax_add
         nco_geo_lonlat_2_sph(pControl[0],pControl[1],pControl, bDeg);
 
         /* see if pole is inside polygon */
-        is_caps=nco_sph_pnt_in_poly(pl->shp, pl->crn_nbr,pControl, pPole );
+        is_caps=( nco_sph_pnt_in_poly(pl->shp, pl->crn_nbr,pControl, pPole ) %2);
 
 
 
