@@ -29,7 +29,7 @@
 /* smallest RADIAN */
 #define SIGMA_RAD (1.0e-12)
 
-// #define DOT_TOLERANCE (1.0e-12)
+#define SIGMA_TOLERANCE (1.0e-12)
 #define DOT_TOLERANCE (1.0e-14)
 
 /* convert Degrees to Radians */
@@ -119,7 +119,7 @@ nco_sph_is_convex(double **sP, int np);
 void
 nco_sph_prn(double **sR, int r, int istyle);
 
-nco_bool
+int
 nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVertex);
 
 void
@@ -129,7 +129,7 @@ void
 nco_sph_add_lonlat(double *ds);
 
 int
-nco_sph_mk_control(poly_sct *sP, double* pControl  ); /* make a control point that is outside polygon */
+nco_sph_mk_control(poly_sct *sP, nco_bool bInside,  double* pControl  ); /* make a control point that is outside polygon */
 
 
 /***************** nco_geo functions these manimpulate lat & lon  ***************************/
@@ -164,7 +164,12 @@ nco_bool
 nco_rll_is_lat_circle(double *p0, double *p1);
 
 int
-nco_rll_lhs(double *p0, double *q0, double *q1);
+nco_rll_lhs(double *p0, double *QCross);
+
+int
+nco_rll_lhs_lat(double *p0, double *q0, double *q1);
+
+
 
 /*********************************************************************************************/
 

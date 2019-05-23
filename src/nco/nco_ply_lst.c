@@ -572,9 +572,12 @@ int *pl_cnt_vrl_ret){
 
 
 /* just duplicate output list to overlap */
-  nco_bool bDirtyRats=False;
+  nco_bool bDirtyRats=True;
   nco_bool bSplit=False;
   nco_bool bSort=True;
+
+  /* used by nco_sph_mk_control point */
+  nco_bool bInside=True;
   
   int max_nbr_vrl=1000;
   int pl_cnt_vrl=0;
@@ -708,14 +711,14 @@ int *pl_cnt_vrl_ret){
 
            /* see if pl_out completley inside pl_lst_in[idx] */
            if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out)) {
-             if (nco_sph_mk_control(pl_lst_in[idx], pControl) &&
-                 nco_sph_pnt_in_poly(pl_lst_in[idx]->shp, pl_lst_in[idx]->crn_nbr, pControl, pl_out->shp[0]))
+             if (nco_sph_mk_control(pl_lst_in[idx], bInside, pControl) &&
+                 nco_sph_pnt_in_poly(pl_lst_in[idx]->shp, pl_lst_in[idx]->crn_nbr, pControl, pl_out->shp[0]) % 2 == 0  )
                pl_vrl = nco_poly_dpl(pl_out);
            }
              /* see if  pl_lst_in[idx] completly inside pl_out   */
            else if (nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx])) {
-             if (nco_sph_mk_control(pl_out, pControl) &&
-                 nco_sph_pnt_in_poly(pl_out->shp, pl_out->crn_nbr, pControl, pl_lst_in[idx]->shp[0]))
+             if (nco_sph_mk_control(pl_out, bInside, pControl) &&
+                 nco_sph_pnt_in_poly(pl_out->shp, pl_out->crn_nbr, pControl, pl_lst_in[idx]->shp[0]) %2 == 0  )
                pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
            }
        }
@@ -798,10 +801,10 @@ int *pl_cnt_vrl_ret){
     if (nco_dbg_lvl_get() >= nco_dbg_dev) {
       /* area diff by more than 10% */
       double frc = vrl_area / pl_lst_in[idx]->area;
-      if ( frc <0.95 || frc >1.05 ) {
+      if ( frc <0.98 || frc >1.02 ) {
         (void) fprintf(stderr,
-                       "%s: polygon %lu - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e\n",
-                       nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area);
+                       "%s: polygon %lu - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e bSplit=%d\n",
+                       nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area, bSplit);
 
 
 

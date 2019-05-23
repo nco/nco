@@ -1324,6 +1324,8 @@ nco_grd_lon_typ_enm typ_out)
           for(idx=0;idx<sz;idx++)
             if(lon_crn[idx] >180.0  )
               lon_crn[idx]-=360.0;
+            else if(lon_crn[idx] < -180.0 )
+              lon_crn[idx]+=360.0;
         break;
 
         case nco_grd_lon_Grn_wst:
