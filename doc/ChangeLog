@@ -1,3 +1,7 @@
+2019-05-22  Charlie Zender  <zender@uci.edu>
+
+	* Expand HINT when GenerateOverlapMesh fails
+
 2019-05-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.1-alpha02 release procedure:
