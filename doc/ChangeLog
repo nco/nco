@@ -1,3 +1,7 @@
+2019-05-25  Charlie Zender  <zender@uci.edu>
+
+	* Add compy to ncremap/ncclimo HPC database
+
 2019-05-22  Charlie Zender  <zender@uci.edu>
 
 	* Expand HINT when GenerateOverlapMesh fails
@@ -12,7 +16,7 @@
 
 2019-05-18  Charlie Zender  <zender@uci.edu>
 
-	* Plumb ncks and nco_rgr_ini() to accecpt vrt_fl directly
+	* Plumb ncks and nco_rgr_ini() to accept vrt_fl directly
 
 	* Pass vertical interpolation arguments from ncclimo to ncremap
 
