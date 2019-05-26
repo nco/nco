@@ -1,7 +1,7 @@
 # $Header$ -*-Shell-script-*-
 
-# Purpose: Template autoconf uses to generate NCO configure script
-# Newer convention names this file configure.ac, rather than configure.in
+# Purpose: Generate NCO configure script using autoconf build-engine
+# Newer autoconf convention names this file configure.ac, formerly configure.in
 
 # Copyright (C) 2003--present Charlie Zender
 # License: GNU General Public License (GPL) Version 3
@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[4.8.1-alpha02],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.8.1-alpha03],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT

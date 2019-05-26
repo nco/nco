@@ -1355,14 +1355,12 @@ is usually untagged.
 <li>ANL ALCF Cooley <tt>cooley.alcf.anl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>ANL ALCF Mira <tt>mira.alcf.anl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>ANL LCRC Blues <tt>blues.lcrc.anl.gov</tt>: <tt>~zender/bin</tt></li>
-<li>LLNL <tt>aims4.llnl.gov</tt>: <tt>~zender1/bin</tt></li>
-<li>NCAR CISL <tt>yellowstone.ucar.edu</tt>: <tt>~zender/bin</tt></li>
-<li>NCAR CISL <tt>mirage0.ucar.edu</tt>: <tt>~zender/bin</tt></li>
+<li>LLNL <tt>acme1.llnl.gov</tt>: <tt>~zender1/bin</tt></li>
+<li>NCAR CISL <tt>cheyenne.ucar.edu</tt>: <tt>~zender/bin</tt></li>
 <li>NERSC Cori <tt>cori.nersc.gov</tt>: <tt>~zender/bin_cori</tt></li>
-<li>NERSC Edison <tt>edison.nersc.gov</tt>: <tt>~zender/bin_edison</tt></li>
-<li>ORNL OLCF Pileus <tt>pileus-login01.ornl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>ORNL OLCF Rhea <tt>rhea.ccs.ornl.gov</tt>: <tt>~zender/bin_rhea</tt></li>
 <li>ORNL OLCF Titan <tt>titan.ccs.ornl.gov</tt>: <tt>~zender/bin_titan</tt></li>
+<li>PNNL Compy <tt>compy.pnl.gov</tt>: <tt>~zender/bin</tt></li>
 <li>UCI ESS <tt>greenplanet.ps.uci.edu</tt>: <tt>~zender/bin</tt></li>
 </ul>
 <hr></p>
