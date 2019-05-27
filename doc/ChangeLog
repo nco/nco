@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha03: Compy';git push
 	git tag -a 4.8.1-alpha03 -m 'ncremap/ncclimo compy';git push --tags
 
-	* Do not write output grid to nco_map_tst_out.nc by default
+	* ncclimo use job_nbr in seasonal climos
+
+	* Prevent automatic writing of output grid to nco_map_tst_out.nc
 
 	* Ensure compy MPI mode uses srun
 

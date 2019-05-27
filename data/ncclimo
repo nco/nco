@@ -2480,7 +2480,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	# Block 2 Loop 1: Generate seasonal commands
 	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
-	    printf "Climatological seasonal mean for ${csn_abb[${map_r2d[${csn_idx}]}]} ...\n"
 	    let clm_idx=1+12+${csn_idx}
 	    fl_lst=''
 	    for ((mth_idx=${csn_srt_idx[${map_r2d[${csn_idx}]}]};mth_idx<=${csn_end_idx[${map_r2d[${csn_idx}]}]};mth_idx++)); do
@@ -2498,23 +2497,57 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	# cmd_clm[16]="${cmd_mpi[16]} ncra --cb -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[16]}"
 
 	# Block 2 Loop 2: Execute and/or echo seasonal climatology commands
-	for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_clm[${clm_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -le 1 ]; then
-		if [ -z "${par_opt}" ]; then
-		    eval ${cmd_clm[${clm_idx}]}
+	let bch_nbr=$((csn_nbr / job_nbr))
+	let bch_flg=$((csn_nbr % job_nbr))
+	if [ ${bch_nbr} -eq 0 ]; then
+	    let bch_nbr=$((bch_nbr+1))
+	elif [ ${bch_flg} -ne 0 ]; then
+	    let bch_nbr=$((bch_nbr+1))
+	fi # !bch_flg
+	let bch_nbrm1=$((bch_nbr-1))
+	for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
+	    # clm_idx is 1-based, bch_idx is 0-based
+	    let clm_idx_srt=$((12 + (bch_idx * job_nbr) + 1))
+	    let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
+	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+		let clm_idx_srt=$((12 + (bch_idx * job_nbr) + 1))
+		let clm_idx_end=${clm_csn_end_idx}
+	    fi # !bch_flg
+	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+		let csn_idx=$((clm_idx - 12 - 1))
+		printf "Climatological seasonal mean for ${csn_abb[${map_r2d[${csn_idx}]}]} ...\n"
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_clm[${clm_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -le 1 ]; then
+		    if [ -z "${par_opt}" ]; then
+			eval ${cmd_clm[${clm_idx}]}
+			if [ "$?" -ne 0 ]; then
+			    printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
+			    exit 1
+			fi # !err
+		    else # !par_opt
+			eval ${cmd_clm[${clm_idx}]} ${par_opt}
+			clm_pid[${clm_idx}]=$!
+		    fi # !par_opt
+		fi # !dbg
+	    done # !clm_idx
+	    if [ -n "${par_opt}" ]; then
+		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+		    wait ${clm_pid[${clm_idx}]}
 		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
-		else # !par_opt
-		    eval ${cmd_clm[${clm_idx}]} ${par_opt}
-		    clm_pid[${clm_idx}]=$!
-		fi # !par_opt
-	    fi # !dbg
-	done # !clm_idx
+		done # !clm_idx
+	    fi # !par_opt
+	done # !bch_idx
+	# wait() for seasonal climatologies to finish
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    date_crr=$(date +"%s")
+	    date_dff=$((date_crr-date_clm))
+	    echo "Elapsed time to generate seasonal climos $((date_dff/60))m$((date_dff % 60))s"
+	fi # !dbg
     fi # !csn_flg
     # wait() for monthly regridding, if any, to finish
     if [ -n "${rgr_opt}" ]; then 
@@ -2533,23 +2566,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	    echo "Elapsed time to regrid monthly climos $((date_dff/60))m$((date_dff % 60))s"
 	fi # !dbg
     fi # !rgr_opt
-    # wait() for seasonal climatologies to finish
-    if [ "${csn_flg}" = 'Yes' ]; then
-	if [ -n "${par_opt}" ]; then
-	    for ((clm_idx=${clm_csn_srt_idx};clm_idx<=${clm_csn_end_idx};clm_idx++)); do
-		wait ${clm_pid[${clm_idx}]}
-		if [ "$?" -ne 0 ]; then
-		    printf "${spt_nm}: ERROR seasonal climo cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-		    exit 1
-		fi # !err
-	    done # !clm_idx
-	fi # !par_opt
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    date_crr=$(date +"%s")
-	    date_dff=$((date_crr-date_clm))
-	    echo "Elapsed time to generate seasonal climos $((date_dff/60))m$((date_dff % 60))s"
-	fi # !dbg
-    fi # !csn_flg
     
     # Block 2: Loop 4: Regrid seasonal files. Load-balance by using idle nodes (nodes not used for annual mean).
     if [ "${csn_flg}" = 'Yes' ]; then
