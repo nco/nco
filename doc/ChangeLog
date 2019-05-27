@@ -2,7 +2,7 @@
 
 	* NCO 4.8.1-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha03: Compy';git push
-	git tag -a 4.8.1-alpha03 -m 'ncremap/ncclimo compy';git push --tags
+	git tag -a 4.8.1-alpha03 -m 'ncremap/ncclimo compy, job_nbr csn;';git push --tags
 
 	* nco_ntp_vrt() add stubs for depth coordinate
 
