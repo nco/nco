@@ -1088,8 +1088,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
   
     /* Sanity checks */
-    assert(grd_sz_in==grd_sz_out);
-    assert(tm_nbr_in==tm_nbr_out);
+    assert(grd_sz_in == grd_sz_out);
+    assert(tm_nbr_in == tm_nbr_out);
     
     /* Finally have enough information to allocate output pressure grid */
     ps_out=(double *)nco_malloc_dbg(tm_nbr_out*grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
@@ -1716,10 +1716,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		    (dat_in_mnt[1]-dat_in_mnt[0])/(crd_in_mnt[1]-crd_in_mnt[0]);
 		  break;
 		case nco_xtr_fll_gph:
-		  if(flg_ntp_log)
+		  if(flg_ntp_log) /* Coordinates are already logarithmic in pressure */
 		    dat_out_mnt[out_idx]=dat_in_mnt[0]+
 		      Rd_rcp_g0*tpt_vrt_avg*(crd_in_mnt[0]-crd_out_mnt[out_idx]);
-		  else
+		  else /* Interpolate with logarithm of pressure coordinates */
 		    dat_out_mnt[out_idx]=dat_in_mnt[0]+
 		      Rd_rcp_g0*tpt_vrt_avg*log(crd_in_mnt[0]/crd_out_mnt[out_idx]);
 		  if(FIRST_WARNING_LHS) (void)fprintf(fp_stdout,"%s: INFO %s geopotential height extrapolated upward towards space using hypsometric equation with constant global mean virtual temperature = %g for variable %s\n",nco_prg_nm_get(),fnc_nm,tpt_vrt_avg,var_nm);
@@ -1769,20 +1769,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		    (crd_in_mnt[in_nbr-1]-crd_in_mnt[in_nbr-2]);
 		  break;
 		case nco_xtr_fll_tpt:
-		  if(flg_ntp_log)
+		  if(flg_ntp_log) /* Exponentiate so coordinates are linear in pressure */
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
 		      (exp(crd_out_mnt[out_idx])-exp(crd_in_mnt[in_nbr-1]))*gamma_moist;
-		  else
+		  else /* Coordinates are already linear in pressure */
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]+
 		      (crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1])*gamma_moist;
 		  if(FIRST_WARNING_RHS) (void)fprintf(fp_stdout,"%s: INFO %s temperature extrapolated toward/into surface assuming constant moist adiabatic lapse rate = %g K/(100 mb) for variable %s\n",nco_prg_nm_get(),fnc_nm,gamma_moist*10000.0,var_nm);
 		  FIRST_WARNING_RHS=False;
 		  break;
 		case nco_xtr_fll_gph:
-		  if(flg_ntp_log)
+		  if(flg_ntp_log) /* Coordinates are already logarithmic in pressure */
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]-
 		      Rd_rcp_g0*tpt_vrt_avg*(crd_out_mnt[out_idx]-crd_in_mnt[in_nbr-1]);
-		  else
+		  else /* Interpolate with logarithm of pressure coordinates */
 		    dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1]-
 		      Rd_rcp_g0*tpt_vrt_avg*log(crd_out_mnt[out_idx]/crd_in_mnt[in_nbr-1]);
 		  if(FIRST_WARNING_RHS) (void)fprintf(fp_stdout,"%s: INFO %s geopotential height extrapolated toward/into surface using hypsometric equation with constant global mean virtual temperature = %g for variable %s\n",nco_prg_nm_get(),fnc_nm,tpt_vrt_avg,var_nm);

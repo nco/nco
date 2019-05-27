@@ -903,7 +903,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
                                 (size_t) grd_crn_nbr_in, grd_lon_typ_out, pl_typ,&pl_cnt_in);
 
     /* test new write func */
-    nco_msh_poly_lst_wrt("nco_map_tst_out.nc", pl_lst_out, pl_cnt_out, grd_lon_typ_out  );
+    // 20190526: Stop writing this file (the output grid) by default.
+    //    nco_msh_poly_lst_wrt("nco_map_tst_out.nc", pl_lst_out, pl_cnt_out, grd_lon_typ_out  );
 
     /* debug output all
     for(idx=0;idx<pl_cnt_out  ;idx++)
@@ -953,6 +954,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
 
   /* write out overlap mesh for debugging purposes */
+  /* 20190526: Allow users to output mesh file with --rgr msh_fl=msh.nc instead. https://github.com/nco/nco/issues/135 */
   if(nco_dbg_lvl_get() >= nco_dbg_dev)
        nco_msh_poly_lst_wrt("nco_map_tst_vrl.nc",pl_lst_vrl, pl_cnt_vrl, grd_lon_typ_out );
 
