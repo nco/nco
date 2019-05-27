@@ -1,8 +1,12 @@
-2019-05-26  Charlie Zender  <zender@uci.edu>
+2019-05-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.1-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha03: Compy';git push
 	git tag -a 4.8.1-alpha03 -m 'ncremap/ncclimo compy';git push --tags
+
+	* nco_ntp_vrt() add stubs for depth coordinate
+
+2019-05-26  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo use job_nbr in seasonal climos
 

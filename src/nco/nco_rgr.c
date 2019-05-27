@@ -708,6 +708,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      Only hybrid coordinates will refer to the "ilev" levels and indices
      All single coordinate systems will refer to "lev" levels and indices */
 
+  int dpt_id; /* [id] Ocean depth ID */
   int hyai_id; /* [id] Hybrid A coefficient at layer interfaces ID */
   int hyam_id; /* [id] Hybrid A coefficient at layer midpoints ID */
   int hybi_id; /* [id] Hybrid B coefficient at layer interfaces ID */
@@ -717,8 +718,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int p0_id; /* [id] Reference pressure ID */
   int ps_id=NC_MIN_INT; /* [id] Surface pressure ID */
   int plev_id; /* [id] Air pressure ID */
+  nco_bool flg_grd_in_dpt=False; /* [flg] Input depth coordinate vertical grid */
   nco_bool flg_grd_in_hyb=False; /* [flg] Input hybrid coordinate vertical grid */
   nco_bool flg_grd_in_prs=False; /* [flg] Input pressure coordinate vertical grid */
+  nco_bool flg_grd_out_dpt=False; /* [flg] Output depth coordinate vertical grid */
   nco_bool flg_grd_out_hyb=False; /* [flg] Output hybrid coordinate vertical grid */
   nco_bool flg_grd_out_prs=False; /* [flg] Output pressure coordinate vertical grid */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
@@ -732,6 +735,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   }else if((rcd=nco_inq_varid_flg(tpl_id,"plev",&plev_id)) == NC_NOERR){
     nco_vrt_grd_out=nco_vrt_grd_prs; /* NCEP */
     flg_grd_out_prs=True;
+  }else if((rcd=nco_inq_varid_flg(tpl_id,"depth",&dpt_id)) == NC_NOERR){
+    nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
+    flg_grd_out_dpt=True;
   }else{ /* !hyai */
     (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid or pure-pressure vertical grid coordinate information in vertical grid file\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT ensure vertical grid coordinate file contains a valid vertical grid coordinate\n",nco_prg_nm_get(),fnc_nm);
@@ -752,6 +758,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(flg_grd_out_prs){
     rcd=nco_inq_varid(tpl_id,"plev",&lev_id);
   } /* !flg_grd_out_prs */
+
+  if(flg_grd_out_dpt){
+    rcd=nco_inq_varid(tpl_id,"depth",&lev_id);
+  } /* !flg_grd_out_dpt */
 
   const int hyai_id_tpl=hyai_id; /* [id] Hybrid A coefficient at layer interfaces ID */
   const int hyam_id_tpl=hyam_id; /* [id] Hybrid A coefficient at layer midpoints ID */
@@ -926,6 +936,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   }else if((rcd=nco_inq_varid_flg(in_id,"plev",&plev_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP */
     flg_grd_in_prs=True;
+  }else if((rcd=nco_inq_varid_flg(in_id,"depth",&dpt_id)) == NC_NOERR){
+    nco_vrt_grd_in=nco_vrt_grd_dpt; /* NCEP */
+    flg_grd_in_dpt=True;
   }else{ /* !hyai */
     (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid or pure-pressure vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions\n",nco_prg_nm_get(),fnc_nm);
@@ -953,6 +966,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(flg_grd_in_prs){
     rcd=nco_inq_varid(in_id,"plev",&lev_id);
   } /* !flg_grd_in_prs */
+
+  if(flg_grd_in_dpt){
+    rcd=nco_inq_varid(in_id,"depth",&lev_id);
+  } /* !flg_grd_in_dpt */
 
   const int ilev_id_in=ilev_id; /* [id] Interface pressure ID */
   const int lev_id_in=lev_id; /* [id] Midpoint pressure ID */

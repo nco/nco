@@ -47,6 +47,9 @@ extern "C" {
     nco_vrt_grd_nil=0,
     nco_vrt_grd_hyb, /* Hybrid coordinate */
     nco_vrt_grd_prs, /* Pressure coordinate */
+    nco_vrt_grd_sgm, /* Sigma coordinate */
+    nco_vrt_grd_dpt, /* Depth coordinate */
+    nco_vrt_grd_hgt, /* Height coordinate */
   } nco_grd_vrt_typ_enm;
 
   typedef enum nco_rgr_tps_cmd_enm{ /* [enm] Tempest remap type enum */
