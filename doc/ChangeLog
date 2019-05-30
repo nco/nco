@@ -1,3 +1,8 @@
+2019-05-30 Henry Butowsky  <henryb@hush.com>
+
+     * new --rgr key that defines output filename of SCRIP formatted NetCDF overlap mesh.
+     * usage  --rgr msh_fl="netcdf filename".
+
 2019-05-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.1-alpha03 release procedure:
