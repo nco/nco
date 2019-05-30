@@ -256,12 +256,18 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Daily pipe:
 # cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Diurnal pipe:
-# cd ${DATA}/ne30/raw;ls *h4*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly --tpd=8 -s 2001 -e 2002 --var=PRECT,TS,FSDS --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd ${DATA}/ne30/raw;ls *h4*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly --tpd=8 -s 2001 -e 2002 --var=PREC<T,TS,FSDS --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # SGS:
 # ncclimo -d 1 -v TBOT -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ~/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150621.nc
 # Seasons:
 # ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 # ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
+# Compy Jobs or MPI:
+# ncclimo -a sdd -c 20180215.DECKv1b_H1.ne30_oEC.edison -s 2010 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc # ne30 climo on 1 node in full-background (12 jobs) mode
+# ncclimo -a sdd --jobs=3 -c 20180410.A_WCYCL1950_HR.ne120_oRRS18v3_ICG.theta -s 1 -e 5 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_cmip6_720x1440_aave.20181001.nc # ne120 climo on 1 node in background mode with 3-jobs (to stay under 192 GB RAM limit)
+# echo '#!/bin/bash' > ~/ncclimo.slurm
+# echo "ncclimo -a sdd -p mpi -c 20180410.A_WCYCL1950_HR.ne120_oRRS18v3_ICG.theta -s 1 -e 5 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -O ${DATA}/ne120/rgr -r ${DATA}/maps/map_ne120np4_to_cmip6_720x1440_aave.20181001.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm # ne120 climo on 4 nodes, MPI mode:
+# sbatch -A e3sm --nodes=4 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
 # Cobalt (cooley), SLURM (compy,cori), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs

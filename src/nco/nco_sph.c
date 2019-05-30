@@ -1823,19 +1823,12 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       {
         poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
 
-
-
         code = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
 
-        if(code=='X')
-        {
-
-          if(nco_dbg_lvl_get() >= nco_dbg_dev )
-            fprintf(stderr, "%s:%s()\n", nco_prg_nm_get(), fnc_nm, "parallel edges in opposite directions\n");
+        if(code == 'X'){
+          if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: ERROR %s() reports %s\n",nco_prg_nm_get(),fnc_nm,"parallel edges in opposite directions\n");
           return EXIT_FAILURE;
         }
-
-
 
         if (lcl_inflag != poly_vrl_unk ) {
 

@@ -434,15 +434,16 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # Latest ticket: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: module load nco/4.7.4 # 20180430 (without ncap2)
-# Personal recipe last modified: 20190417 (updated from 4.4.1.1.3 to 4.6.1.3)
-# Personal recipe last used successfully: 20190227
+# Personal recipe last modified: 20190529 (updated from 4.4.1.1.3 to 4.6.1.3)
+# Personal recipe last used successfully: 20190529
+module load PrgEnv-intel
 module load szip
 module load gsl
 module load udunits
 module load cray-netcdf
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='icc' CXX='icpc' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.4.1.1.3' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='icc' CXX='icpc' GSL_ROOT='/usr/common/software/gsl/2.1/intel' NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.6.1.3/intel/16.0/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.6.1.3' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/intel' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
