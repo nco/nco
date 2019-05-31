@@ -122,6 +122,9 @@ nco_sph_prn(double **sR, int r, int istyle);
 int
 nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVertex);
 
+nco_bool
+nco_sph_poly_in_poly(poly_sct *sP,poly_sct *sQ);
+
 void
 nco_sph_set_domain(double lon_min_rad, double lon_max_rad, double lat_min_rad, double lat_max_rad);
 

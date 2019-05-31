@@ -280,6 +280,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
            * imply that there is an intersection - this avoid senarios where
            * P And Q share a vertex and nothing else */
           if (code == '1' || code == 'v' && inflag != poly_vrl_unk) {
+          //if (code == '1' || code == 'v' ) {
 
             nco_sph_add_pnt(R->shp, r, p);
 
@@ -304,7 +305,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
               }
 
-
+            //if(  !(code == 'v' && inflag == poly_vrl_unk)  )
             inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
 
 
@@ -1479,6 +1480,85 @@ int nco_sph_pnt_in_poly(double **sP, int n, double *pControl, double *pVertex)
 
   //return (numIntersect % 2  );
   return numIntersect;
+
+
+}
+
+/* This function is normally called AFTER nco_sph_intersect()
+ * So We KNOW now that there are no PROPER INTERSECTIONS
+ * So maybe P Inside Q or Q inside of P
+ * It is possible that some vertex are on edge's - so were count them */
+nco_bool
+nco_sph_poly_in_poly(
+poly_sct *sP,
+poly_sct *sQ
+)
+{
+  int n;
+  int m;
+  int idx=0;
+  int jdx;
+  int jdx1;
+  int numIntersect;
+  int numVertex=0;
+
+  nco_bool bVertex=False;
+
+  char code='0';
+
+  double p[NBR_SPH];
+  double q[NBR_SPH];
+
+  double pControl[NBR_SPH];
+
+
+  /* make control point center of sP */
+  nco_sph_mk_control(sP, True, pControl);
+
+  n=sP->crn_nbr;
+  m=sQ->crn_nbr;
+
+
+  for(idx=0; idx<m ; idx++ )
+  {
+    bVertex=False;
+    numIntersect=0;
+
+    for (jdx = 0; jdx < n; jdx++)
+    {
+      jdx1 = (jdx + n - 1) % n;
+      code = nco_sph_seg_int(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx], p, q);
+
+      if (code == '1')
+        numIntersect++;
+
+      if (code == 'v')
+        bVertex=True;
+
+    }
+
+    numVertex+=bVertex;
+
+    if(numVertex >= 3 )
+      return True;
+
+
+    if(!bVertex  )
+    {
+      if(numIntersect==0)
+        return True;
+
+
+      if( numIntersect > 0)
+        return False;
+
+    }
+
+
+
+  }
+
+  return False;
 
 
 }
