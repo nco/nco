@@ -1145,6 +1145,7 @@ extern "C" {
     char *fl_out_tmp; /* [sng] Temporary file containing regridded fields */
     char *fl_map; /* [sng] File containing mapping weights from source to destination grid */
     char *fl_vrt; /* [sng] File containing vertical coordinate grid */
+    char *fl_msh;  /* [sng] File that contains SCRIP formatted overlap mesh */
     char *var_nm; /* [sng] Variable for special regridding treatment */
     // Grid names specifiable with key-value syntax
     char **rgr_arg; /* [sng] Regridding arguments */

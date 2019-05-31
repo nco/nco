@@ -1,3 +1,7 @@
+2019-05-30 Henry Butowsky  <henryb@hush.com>
+
+        * ncks --rgr msh_fl=msh.nc for SCRIP-formatted netCDF overlap mesh
+
 2019-05-29  Charlie Zender  <zender@uci.edu>
 
 	* Fix mis-formatted fprintf() statements

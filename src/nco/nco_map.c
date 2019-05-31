@@ -955,8 +955,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   /* write out overlap mesh for debugging purposes */
   /* 20190526: Allow users to output mesh file with --rgr msh_fl=msh.nc instead. https://github.com/nco/nco/issues/135 */
-  if(nco_dbg_lvl_get() >= nco_dbg_dev)
-       nco_msh_poly_lst_wrt("nco_map_tst_vrl.nc",pl_lst_vrl, pl_cnt_vrl, grd_lon_typ_out );
+  if(rgr->fl_msh)
+    nco_msh_poly_lst_wrt(rgr->fl_msh, pl_lst_vrl, pl_cnt_vrl, grd_lon_typ_out );
 
   *wgt_raw_ptr=wgt_raw;
   *col_src_adr_ptr=col_src_adr;
