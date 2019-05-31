@@ -328,7 +328,7 @@ drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
 # 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
 if [ -z "${nco_vrs}" ]; then
-    echo "${spt_nm}: ERROR Running ${nco_exe} dies with error message on next line:"
+    echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
     $(ncks --version)
     exit 1
 fi # !nco_vrs
@@ -1928,12 +1928,14 @@ if [ "${flg_vrt_only}" != 'Yes' ]; then
 		fi # !grd_sng_usr_flg
 	    fi # !dbg
 	fi # !dst_usr_flg || grd_dst_usr_flg
-	if [ ${vrb_lvl} -ge ${vrb_3} ] && [	${flg_grd_only} != 'Yes' ]; then
+	if [ ${vrb_lvl} -ge ${vrb_3} ] && [ ${flg_grd_only} != 'Yes' ]; then
 	    printf "Weight-generation type: ${wgt_typ}\n"
 	    printf "Algorithm selected to generate weights in map-file is: ${alg_opt}\n"
 	    printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
 	fi # !vrb_lvl
-	command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is provide with the NCO Conda package, and is often provided in NCL packages. Tempest executables must currently be installed from source (https://github.com/ClimateGlobalChange/tempestremap) until its Conda package is finished, and then it will also be provided with the NCO Conda package, probably in Q2 2019.\n"; exit 1; }
+	if [ ${flg_grd_only} != 'Yes' ]; then
+	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is provide with the NCO Conda package, and is often provided in NCL packages. Tempest executables must currently be installed from source (https://github.com/ClimateGlobalChange/tempestremap) until its Conda package is finished, and then it will also be provided with the NCO Conda package, probably in Q2 2019.\n"; exit 1; }
+	fi # !flg_grd_only
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    if [ ${fl_nbr} -ge 2 ]; then 
 		if [ "${mlt_map_flg}" = 'Yes' ]; then 

@@ -8579,7 +8579,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	for(lat_idx=1L;lat_idx<lat_nbr_hlf;lat_idx++){
 	  double fofx_at_x0; /* [frc] Function to iterate evaluated at current guess */
 	  double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
+	  // 20190531: Wuyin Lin reports this convergence criterion fails on ECMWF O25
 	  const double eps_rlt_cnv=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
+	  // const double eps_rlt_cnv=1.0e-14; // Convergence criterion (1.0e-16 pushes double precision to the brink)
 	  itr_cnt=0;
 	  lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
 	  fofx_at_x0=wgt_Gss[lat_idx-1L]-lat_wgt_gss;
