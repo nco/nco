@@ -18,18 +18,18 @@
 
 @echo off
 if not defined DevEnvDir (
- call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
+ call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
  if errorlevel 1 goto :eof
 )
+set MSVC_VERSION="Visual Studio 16 2019"
+echo using %MSVC_VERSION%
 
 if "%~1" == "crt" (
   set STATIC_CRT=ON
 ) else (
   set STATIC_CRT=OFF
 )
-set MSVC_VERSION="Visual Studio 14 2015 Win64"
 echo using static crt %STATIC_CRT%
-echo using %MSVC_VERSION%
 
 :: 'git clone' all the dependencies
 :: the build folder is 'build'
@@ -136,6 +136,7 @@ if exist %build%\zlib\build\zlib.sln (
   mkdir build
   pushd build
   cmake .. -G %MSVC_VERSION% ^
+           -A x64 ^
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF
@@ -160,6 +161,7 @@ if exist %build%\szip\build\SZIP.sln (
   mkdir build
   pushd build
   cmake .. -G %MSVC_VERSION% ^
+           -A x64 ^
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF ^
@@ -184,6 +186,7 @@ if exist %build%\hdf5\build\bin\Debug\h5dump.exe (
   mkdir build
   pushd build
   cmake .. -G %MSVC_VERSION% ^
+           -A x64 ^
            -DBUILD_STATIC_CRT_LIBS=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF ^
@@ -246,6 +249,7 @@ if exist %build%\libexpat\expat\build\expat.sln (
   mkdir build
   pushd build
   cmake .. -G %MSVC_VERSION% ^
+           -A x64 ^
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF ^
@@ -271,6 +275,7 @@ if exist %build%\UDUNITS-2\build\lib\Debug\udunits2.lib (
   mkdir build
   pushd build
   cmake .. -G %MSVC_VERSION% ^
+           -A x64 ^
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF ^
@@ -302,6 +307,7 @@ if exist %build%\GSL\build\GSL.sln (
   )
   echo using dynamic CRT %DYNAMIC_CRT%
   cmake .. -G %MSVC_VERSION% ^
+           -A x64 ^
            -DMSVC_RUNTIME_DYNAMIC=%DYNAMIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF ^
@@ -328,6 +334,7 @@ if exist %build%\antlr2\lib\cpp\build\antlr.sln (
   mkdir build
   pushd build
   cmake .. -G %MSVC_VERSION% ^
+           -A x64 ^
            -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF
@@ -353,6 +360,7 @@ if exist %build%\netcdf-c\build\ncdump\ncdump.exe (
   mkdir build
   pushd build
   cmake .. -G %MSVC_VERSION% ^
+           -A x64 ^
            -DNC_USE_STATIC_CRT=%STATIC_CRT% ^
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DENABLE_TESTS=OFF ^
@@ -398,6 +406,7 @@ if exist %build%\Debug\ncks.exe (
   rm -rf CMakeCache.txt CMakeFiles
   cmake .. -H..\.. ^
    -G %MSVC_VERSION% ^
+  -A x64 ^
   -DMSVC_DEVELOPER=ON ^
   -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
   -DMSVC_USE_STATIC_CRT=%STATIC_CRT% ^
