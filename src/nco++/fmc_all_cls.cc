@@ -6063,7 +6063,6 @@ var_sct *polygon_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &w
   var_sct *var_filter=NULL_CEWI;
 
   RefAST tr;
-  nc_type in_typ;
   std::string susg;
   std::string serr;
   std::string sfnm =fmc_obj.fnm(); //method name
@@ -6242,7 +6241,6 @@ bool polygon_cls::chk_polygon_convex(double *dp_x,  double *dp_y, int grid_corne
   int idx;
   int idx1;
   int idx2;
-  int srt;
   int sz=grid_corners;
 
   double area;

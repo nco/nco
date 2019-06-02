@@ -952,11 +952,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   for(idx=0;idx<grd_sz_in;idx++) frc_in[idx]=1.0;
   for(idx=0;idx<grd_sz_out;idx++) frc_out[idx]=1.0;
 
-
-  /* write out overlap mesh for debugging purposes */
-  /* 20190526: Allow users to output mesh file with --rgr msh_fl=msh.nc instead. https://github.com/nco/nco/issues/135 */
-  if(rgr->fl_msh)
-    nco_msh_poly_lst_wrt(rgr->fl_msh, pl_lst_vrl, pl_cnt_vrl, grd_lon_typ_out );
+  /* Write-out overlap mesh
+     20190526: Allow users to name and output mesh-file with --rgr msh_fl=msh.nc. https://github.com/nco/nco/issues/135 */
+  if(rgr->fl_msh) nco_msh_poly_lst_wrt(rgr->fl_msh,pl_lst_vrl,pl_cnt_vrl,grd_lon_typ_out);
 
   *wgt_raw_ptr=wgt_raw;
   *col_src_adr_ptr=col_src_adr;
@@ -1244,8 +1242,6 @@ nco_msh_stats
  return pl;
 }
 
-
-
 void
 nco_msh_lon_crr(
 double *lon_crn,      /* I/O longitude to be corrected */
@@ -1262,12 +1258,10 @@ nco_grd_lon_typ_enm typ_out)
   const char * typ_in_sng;
   const char * typ_out_sng;
 
-
   sz=grd_sz*grd_crn_nbr;
 
   /* do nothing */
-  if(typ_in== nco_grd_lon_nil || typ_out == nco_grd_lon_nil)
-    return;
+  if(typ_in== nco_grd_lon_nil || typ_out == nco_grd_lon_nil) return;
 
   typ_in_sng=nco_grd_lon_sng(typ_in);
   typ_out_sng=nco_grd_lon_sng(typ_out);
@@ -1277,20 +1271,15 @@ nco_grd_lon_typ_enm typ_out)
     return;
   */
 
-  /* check type out */
-  if(typ_out == nco_grd_lon_bb || typ_out == nco_grd_lon_unk ) {
-    (void) fprintf(stderr, "%s(): INFO %s function reports cannot convert grd_lon to \"%s\"\n", nco_prg_nm_get(), fnc_nm, typ_out_sng );
+  /* Check type out */
+  if(typ_out == nco_grd_lon_bb || typ_out == nco_grd_lon_unk){
+    (void)fprintf(stderr,"%s(): ERROR %s cannot convert grd_lon to \"%s\"\n",nco_prg_nm_get(),fnc_nm,typ_out_sng);
     exit(EXIT_FAILURE);
   }
 
-  if(0 & nco_dbg_lvl_get() >= nco_dbg_crr)
-    (void)fprintf(stderr,"%s: INFO %s converting lon coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),fnc_nm, typ_in_sng, typ_out_sng );
-
-
+  if(False && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s converting lon coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),fnc_nm,typ_in_sng,typ_out_sng);
 
   switch(typ_in){
-
-
     case nco_grd_lon_unk:
     case nco_grd_lon_bb:
       switch(typ_out){

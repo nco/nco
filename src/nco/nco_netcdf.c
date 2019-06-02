@@ -888,7 +888,7 @@ nc_close_memio(const int nc_id,NC_memio * const info)
 {
   /* Purpose: Pseudo-library stub function to close a netCDF file stored in RAM
      Only called by NCO built against a netCDF library that pre-dates nc_close_memio() */
-  int rcd;
+  int rcd=NC_NOERR; /* CEWI */
   const char fnc_nm[]="nc_close_memio()";
   (void)fprintf(stdout,"ERROR: %s reports attempt to close file memory was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.6.2 (released ~201810) or later.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);

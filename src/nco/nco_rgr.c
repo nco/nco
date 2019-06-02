@@ -709,7 +709,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_tpl,md_open,&bfr_sz_hnt,&tpl_id);
 
-  /* Formula-terms for Hybrid Grid:
+  /* Formula-terms for hybrid pressure vertical grid on unstructured horizontal grid:
      prs_mdp[time,col,lev]=P0*hyam[lev]+PS[time,col]*hybm[lev]
      prs_ntf[time,col,lev]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
 
@@ -725,9 +725,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   int hybm_id; /* [id] Hybrid B coefficient at layer midpoints ID */
   int ilev_id=NC_MIN_INT; /* [id] Interface pressure ID */
   int lev_id=NC_MIN_INT; /* [id] Midpoint pressure ID */
-  int p0_id; /* [id] Reference pressure ID */
+  int p0_id=NC_MIN_INT; /* [id] Reference pressure ID */
   int ps_id=NC_MIN_INT; /* [id] Surface pressure ID */
   int plev_id; /* [id] Air pressure ID */
+  nco_bool flg_grd_hyb_cameam=False; /* [flg] Hybrid coordinate vertical grid uses CAM/EAM conventions */
+  nco_bool flg_grd_hyb_ecmwf=False; /* [flg] Hybrid coordinate vertical grid uses ECMWF conventions */
   nco_bool flg_grd_in_dpt=False; /* [flg] Input depth coordinate vertical grid */
   nco_bool flg_grd_in_hyb=False; /* [flg] Input hybrid coordinate vertical grid */
   nco_bool flg_grd_in_prs=False; /* [flg] Input pressure coordinate vertical grid */
@@ -967,8 +969,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_varid(in_id,"hyam",&hyam_id);
     rcd=nco_inq_varid(in_id,"hybi",&hybi_id);
     rcd=nco_inq_varid(in_id,"hybm",&hybm_id);
-    rcd=nco_inq_varid(in_id,"P0",&p0_id);
-    rcd=nco_inq_varid(in_id,"PS",&ps_id);
+    /* 20190602: ECMWF hybrid grid parameters and dimensions differ from CAM/EAM:
+       ECMWF uses dimensions "nhym" and "nhyi" whereas CAM/EAM uses dimensions "lev" and "ilev", respectively
+       ECMWF vertical coefficients "hya?" and "hyb?" provided in Pa whereas CAM/EAM provides them in hPa
+       ECMWF provides "lev" and "lev_2" with midpoint and surface pressure indices (not values), respectively, whereas CAM/EAM provides "lev" and "ilev" in hPa
+       ECMWF provides "lnsp" for log(surface pressure) whereas CAM/EAM provides "PS" for surface pressure 
+       ECMWF "lnsp" has degenerate level dimension "lev_2" whereas CAM/EAM "PS" has no level dimension
+       ECMWF omits reference pressure whereas CAM/EAM provides "P0" in hPa */
+    if((rcd=nco_inq_varid_flg(in_id,"lnsp",&ps_id)) == NC_NOERR) flg_grd_hyb_ecmwf=True;
+    else if((rcd=nco_inq_varid_flg(in_id,"PS",&ps_id)) == NC_NOERR) flg_grd_hyb_cameam=True;
+    else{
+      (void)fprintf(stderr,"%s: ERROR %s Unable to find surface pressure variable required for hybrid grid in input file\n",nco_prg_nm_get(),fnc_nm);
+      abort();
+    } /* !rcd */
+    if(flg_grd_hyb_cameam) rcd=nco_inq_varid(in_id,"P0",&p0_id);
     if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"ilev",&ilev_id);
     if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"lev",&lev_id);
   } /* !flg_grd_in_hyb */
@@ -8579,9 +8593,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	for(lat_idx=1L;lat_idx<lat_nbr_hlf;lat_idx++){
 	  double fofx_at_x0; /* [frc] Function to iterate evaluated at current guess */
 	  double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
-	  // 20190531: Wuyin Lin reports this convergence criterion fails on ECMWF O25
+	  // 20190531: Wuyin Lin reports this convergence criterion fails on ECMWF F640 grid
+	  // Probably because latitude coordinates are stored in single precision
+	  // Implement precision-dependent convergence criterion, e.g., 1.0e-15 and 1.0e-7 for double- and single-precision, respectively?
 	  const double eps_rlt_cnv=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
-	  // const double eps_rlt_cnv=1.0e-14; // Convergence criterion (1.0e-16 pushes double precision to the brink)
 	  itr_cnt=0;
 	  lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
 	  fofx_at_x0=wgt_Gss[lat_idx-1L]-lat_wgt_gss;

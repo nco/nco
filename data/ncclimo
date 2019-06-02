@@ -45,6 +45,7 @@
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
 # scp ~/nco/data/ncclimo dust.ess.uci.edu:bin
+# scp ~/nco/data/ncclimo e3sm.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta

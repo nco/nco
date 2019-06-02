@@ -1,3 +1,9 @@
+2019-06-02  Charlie Zender  <zender@uci.edu>
+
+	* Add stubs to understand and interpolate hybrid grids from ECMWF IFS input files
+
+	* Address warnings found by Pedro with MSVC Studio Version 19
+
 2019-05-31  Charlie Zender  <zender@uci.edu>
 
 	* Allow ncremap to work when ERWG is not found and not needed

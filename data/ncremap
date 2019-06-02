@@ -54,6 +54,7 @@
 # scp ~/nco/data/ncremap cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncremap cori.nersc.gov:bin_cori
 # scp ~/nco/data/ncremap dust.ess.uci.edu:bin
+# scp ~/nco/data/ncremap e3sm.ess.uci.edu:bin
 # scp ~/nco/data/ncremap rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncremap skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncremap theta.alcf.anl.gov:bin_theta
@@ -1934,7 +1935,7 @@ if [ "${flg_vrt_only}" != 'Yes' ]; then
 	    printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
 	fi # !vrb_lvl
 	if [ ${flg_grd_only} != 'Yes' ]; then
-	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT ESMF_RegridWeightGen is provide with the NCO Conda package, and is often provided in NCL packages. Tempest executables must currently be installed from source (https://github.com/ClimateGlobalChange/tempestremap) until its Conda package is finished, and then it will also be provided with the NCO Conda package, probably in Q2 2019.\n"; exit 1; }
+	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT The NCO Conda package and some NCL packages provide ESMF_RegridWeightGen. Tempest executables must currently be installed from source (https://github.com/ClimateGlobalChange/tempestremap) until its Conda package is finished, and then the NCO Conda package will provide them, probably in Q2 2019.\n"; exit 1; }
 	fi # !flg_grd_only
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    if [ ${fl_nbr} -ge 2 ]; then 

@@ -6723,6 +6723,11 @@ ncremap -G ttl='Equi-Angular grid 128x256'#latlon=128,256#lat_typ=uni#lon_typ=gr
 ncremap -G ttl='T42 Gaussian grid'#latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
         -g ${DATA}/grids/t42_SCRIP.20180901.nc
 
+# F640 Full Gaussian grid, first longitude centered at Greenwich
+ncremap -O -7 -L 1 \
+     -G ttl='ECMWF IFS F640 Full Gaussian grid 1280x2560'#latlon=1280,2560#lat_typ=gss#lon_typ=grn_ctr#lat_drc=n2s \
+     -g ${DATA}/grids/f640_scrip.20190601.nc
+
 # NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree) Equi-Angular grid
 # Date-line west edge of first longitude, east edge of last longitude
 # Write to compressed netCDF4-classic file to reduce filesize ~140x from 2.2 GB to 16 MB
