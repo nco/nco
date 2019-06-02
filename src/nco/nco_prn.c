@@ -77,7 +77,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
   int idx;
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rcd_prn;
+  int rcd_prn = 0;
 
   long att_sz;
   long att_szm1;
@@ -1870,7 +1870,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   int dmn_idx; /* [idx] Counter over dimensions */
   int grp_id; /* [ID] Group ID where variable resides (passed to MSA) */
 
-  int rcd_prn;
+  int rcd_prn = 0;
   int prn_ndn=0; /* [nbr] Indentation for printing */
   int val_sz_byt=int_CEWI; /* [nbr] Type size */
 
