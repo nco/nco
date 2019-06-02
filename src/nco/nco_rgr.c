@@ -845,7 +845,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	rcd=nco_inq_dimlen(tpl_id,dmn_ids_out[dmn_idx],dmn_cnt_out+dmn_idx);
 	/* 20190330: Allow possibility that PS has time dimension > 1 
-	   We want spatial not temporal dimensions to contribute to grd_sz 
+	   We want horizontal not temporal dimensions to contribute to grd_sz 
 	   Temporal dimension is usually unlimited 
 	   Only multiply grd_sz by fixed (non-unlimited) dimension sizes
 	   Corner-case exception when PS spatial dimension on unstructured grid is unlimited */
@@ -982,9 +982,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       (void)fprintf(stderr,"%s: ERROR %s Unable to find surface pressure variable required for hybrid grid in input file\n",nco_prg_nm_get(),fnc_nm);
       abort();
     } /* !rcd */
-    if(flg_grd_hyb_cameam) rcd=nco_inq_varid(in_id,"P0",&p0_id);
-    if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"ilev",&ilev_id);
-    if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"lev",&lev_id);
+    if(flg_grd_hyb_cameam){
+      rcd=nco_inq_varid(in_id,"P0",&p0_id);
+      if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"ilev",&ilev_id);
+      if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"lev",&lev_id);
+    } /* !flg_grd_hyb_cameam */
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
@@ -1023,7 +1025,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
       rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
       /* 20190330: Allow possibility that PS has time dimension > 1 
-	 We want spatial not temporal dimensions to contribute to grd_sz 
+	 We want horizontal not temporal dimensions to contribute to grd_sz 
 	 Temporal dimension is usually unlimited 
 	 Only multiply grd_sz by fixed (non-unlimited) dimension sizes
 	 Corner-case exception when PS spatial dimension on unstructured grid is unlimited */
@@ -1088,7 +1090,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   double *prs_mdp_in=NULL; /* [Pa] Midpoint pressure on input grid */
   double *prs_ntf_in=NULL; /* [Pa] Interface pressure on input grid */
   double p0_in; /* [Pa] Reference pressure on input grid */
-
+  
   if(flg_grd_in_hyb){
     hyai_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
     hyam_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
@@ -1100,9 +1102,16 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_get_var(in_id,hyam_id,hyam_in,crd_typ_out);
     rcd=nco_get_var(in_id,hybi_id,hybi_in,crd_typ_out);
     rcd=nco_get_var(in_id,hybm_id,hybm_in,crd_typ_out);
-    rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
+    if(flg_grd_hyb_cameam) rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
     rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
-      
+    /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
+    if(flg_grd_hyb_ecmwf){
+      p0_in=100000.0;
+      const size_t ps_sz_in=tm_nbr_in*grd_sz_in; /* [nbr] Number of elements in ps_in */
+      for(size_t idx=0;idx<ps_sz_in;idx++)
+	ps_in[idx]=exp(ps_in[idx]);
+    } /* flg_grd_hyb_ecmwf */
+    
     if(ps_id_tpl == NC_MIN_INT){
       /* Copy horizontal grid information from input file */
       dmn_nbr_ps=dmn_nbr_out=dmn_nbr_in;
@@ -1139,7 +1148,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(ps_id_tpl != NC_MIN_INT){
       rcd=nco_get_var(tpl_id,ps_id_tpl,ps_out,crd_typ_out); /* NB: Here we read from tpl_id one last time */
     }else{
-      memcpy(ps_out,ps_in,grd_sz_in*nco_typ_lng(var_typ_rgr));
+      memcpy(ps_out,ps_in,tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr));
     } /* !ps_id_tpl */
   } /* !flg_grd_in_hyb */
 
