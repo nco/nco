@@ -763,7 +763,7 @@ if [ "$?" -eq 0 ]; then
     erwg_vrs_mjr="${erwg_vrs_sng:0:1}"
     if [ -z "${erwg_vrs_mjr}" ]; then
 	# Version can fail when ERWG fails, e.g., due to dynamic link issues
-	printf "${spt_nm}: WARNING ${wgt_exe_esmf} found but does not run as expected. Possible dynamic linking issue due, e.g., to LD_LIBRARY_PATH configuration. Unable to determine ERWG version and continuing anyway.\n"
+	printf "${spt_nm}: WARNING ${wgt_exe_esmf} found but does not run as expected. Possible dynamic linking issue due, e.g., to LD_LIBRARY_PATH configuration. Unable to determine ERWG version. Continuing anyway...\n"
 	erwg_vrs_sng='ERWG_VERSION_NOT_FOUND'
 	erwg_vrs_mjr=7
     elif [ "${erwg_vrs_mjr}" -ge 7 ]; then

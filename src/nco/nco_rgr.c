@@ -970,10 +970,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_varid(in_id,"hybi",&hybi_id);
     rcd=nco_inq_varid(in_id,"hybm",&hybm_id);
     /* 20190602: ECMWF hybrid grid parameters and dimensions differ from CAM/EAM:
-       ECMWF uses dimensions "nhym" and "nhyi" whereas CAM/EAM uses dimensions "lev" and "ilev", respectively
-       ECMWF vertical coefficients "hya?" and "hyb?" provided in Pa whereas CAM/EAM provides them in hPa
-       ECMWF provides "lev" and "lev_2" with midpoint and surface pressure indices (not values), respectively, whereas CAM/EAM provides "lev" and "ilev" in hPa
-       ECMWF provides "lnsp" for log(surface pressure) whereas CAM/EAM provides "PS" for surface pressure 
+       ECMWF defines vertical dimensions "nhym" and "nhyi" specifically for hy[ab][im] whereas CAM/EAM re-uses dimensions "lev" and "ilev" for hybrid coefficients and for all other vertical variables
+       ECMWF provides vertical coefficients "hya?" and "hyb?" in Pa whereas CAM/EAM provides "hya?" and "hyb?" in hPa
+       ECMWF provides "lev" and "lev_2" with midpoint and surface pressure indices (not values), respectively, whereas CAM/EAM provides "lev" and "ilev" values in hPa
+       ECMWF provides dimensionless "lnsp" for log(surface pressure) whereas CAM/EAM provides "PS" for surface pressure in Pa
        ECMWF "lnsp" has degenerate level dimension "lev_2" whereas CAM/EAM "PS" has no level dimension
        ECMWF omits reference pressure whereas CAM/EAM provides "P0" in hPa */
     if((rcd=nco_inq_varid_flg(in_id,"lnsp",&ps_id)) == NC_NOERR) flg_grd_hyb_ecmwf=True;
@@ -984,6 +984,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !rcd */
     if(flg_grd_hyb_cameam){
       rcd=nco_inq_varid(in_id,"P0",&p0_id);
+      ilev_id=NC_MIN_INT;
+      lev_id=NC_MIN_INT;
       if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"ilev",&ilev_id);
       if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"lev",&lev_id);
     } /* !flg_grd_hyb_cameam */
@@ -1174,7 +1176,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       }else{
 	rcd=nco_inq_dimname(in_id,dmn_ids_out[dmn_idx],dmn_nm);
       } /* !ps_id_tpl */
-      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
+      // (void)fprintf(stderr,"%s: %s quark1\n",nco_prg_nm_get(),fnc_nm);
+      if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
+      /* 20190602: ECMWF IFS PS variable has degenerate vertical dimension (lev_2). Avoid re-definition */
+      if(flg_grd_hyb_ecmwf)
+	if(strcmp(dmn_nm,ilev_nm_out))
+	  if(strcmp(dmn_nm,lev_nm_out))
+	    rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
     } /* !dmn_idx */
   } /* !flg_grd_out_hyb */
 
@@ -1252,16 +1260,28 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd+=nco_def_var(out_id,"P0",crd_typ_out,dmn_nbr_0D,(int *)NULL,&p0_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,p0_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
+    if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
+    if(flg_grd_hyb_ecmwf){
+      /* Remove degenerate ECMWF vertical dimension before defining surface pressure */
+      int dmn_ids_out_ecmwf[dmn_nbr_ps-1];
+      int dmn_nbr_out_ecmwf=0;
+      for(dmn_idx=0;dmn_idx<dmn_nbr_ps;dmn_idx++){
+	rcd=nco_inq_dimname(in_id,dmn_ids_out[dmn_idx],dmn_nm);
+	if(strcmp(dmn_nm,ilev_nm_out) && strcmp(dmn_nm,lev_nm_out))
+	  dmn_ids_out_ecmwf[dmn_nbr_out_ecmwf++]=dmn_ids_out[dmn_idx];
+      } /* !dmn_idx */
+      rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out_ecmwf,&ps_id);
+    } /* !flg_grd_hyb_ecmwf */
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ps_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
     (void)nco_att_cpy(tpl_id,out_id,hyai_id_tpl,hyai_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,hyam_id_tpl,hyam_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,hybi_id_tpl,hybi_id,PCK_ATT_CPY);
     (void)nco_att_cpy(tpl_id,out_id,hybm_id_tpl,hybm_id,PCK_ATT_CPY);
-    (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY);
-    if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
-    if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
+
+    if(p0_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY); /* p0 not expected to be in ECMWF grids */
+    if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
+    if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
 
@@ -1298,6 +1318,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* fxm: Generalize to include any variable containing coordinates with "standard_name" = "atmosphere_hybrid_sigma_pressure_coordinate" */
 	if(!has_ilev) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
 	if(!has_lev) has_lev=!strcmp(dmn_nm_cp,lev_nm_in);
+	if(flg_grd_hyb_ecmwf){
+	  if(!has_ilev) has_ilev=!strcmp(dmn_nm_cp,rgr->ilev_nm_in);
+	  if(!has_lev) has_lev=!strcmp(dmn_nm_cp,rgr->lev_nm_in);
+	} /* !flg_grd_hyb_ecmwf */
       } /* end loop over dimensions */
       /* Regrid variables containing either vertical dimension */
       if(has_ilev || has_lev){
@@ -1311,7 +1335,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;
     } /* end nco_obj_typ_var */
   } /* end idx_tbl */
-  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit interpolation criteria. The vertical interpolator expects something to interpolate, and variables not interpolated are copied straight to output. HINT: If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\" and \"lev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr ilev=interface_level --rgr lev=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\".\n",nco_prg_nm_get(),fnc_nm);
+  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit interpolation criteria. The vertical interpolator expects something to interpolate, and variables not interpolated are copied straight to output. HINT: If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\" and \"lev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr ilev_nm=interface_level --rgr lev_nm=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\".\n",nco_prg_nm_get(),fnc_nm);
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -1364,7 +1388,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	      dmn_id_out[dmn_idx]=dmn_id_lev_out;
 	      dmn_cnt_out[dmn_idx]=lev_nbr_out;
 	    }else{
-	      /* Dimensions ilev/lev_nm_in have already been defined as lev/ilev_nm_out, replicate all other dimensions */
+	      /* Dimensions ilev/lev_nm_in have already been defined as ilev/lev_nm_out, replicate all other dimensions */
 	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
 	    } /* !ilev */
 	    if(rcd != NC_NOERR){
@@ -1885,6 +1909,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    if(dat_out_mnt) dat_out_mnt=(double *)nco_free(dat_out_mnt);
 	  } /* !out_ncr */
 	  
+	  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+	    (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+	      rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_nm);
+	      (void)fprintf(fp_stdout,"dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %d\n",dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx]);
+	    } /* !dmn_idx */
+	  } /* !dbg */
+
 #pragma omp critical
 	  { /* begin OpenMP critical */
 	    rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
