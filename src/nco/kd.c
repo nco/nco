@@ -875,12 +875,12 @@ void kd_print_path(void) /* this routine is for debug */
 	{
 		KDElem *elem;
 		elem = path_to_item[i];
-		printf("%d: \tElem: %ld [%lx] lo=%f hi=%f, other=%f, size= \t(%f\t%f\t%f\t%f)  Loson:%lx[%ld]  HiSon:%lx[%ld]\n",
-			   i,(long)elem->item, (unsigned long)elem,
+		printf("%d: \tElem: %p [%p] lo=%f hi=%f, other=%f, size= \t(%f\t%f\t%f\t%f)  Loson:%p[%p]  HiSon:%p[%p]\n",
+			   i,(void*)elem->item, (void*)elem,
 			   elem->lo_min_bound, elem->hi_max_bound, elem->other_bound,
 			   elem->size[0],elem->size[1],elem->size[2],elem->size[3],
-			   (long)elem->sons[0],elem->sons[0]?(long)elem->sons[0]->item:0,
-			   (long)elem->sons[1],elem->sons[1]?(long)elem->sons[1]->item:0);
+               (void*)elem->sons[0], (void*)(elem->sons[0]?elem->sons[0]->item:NULL),
+               (void*)elem->sons[1], (void*)(elem->sons[1]?elem->sons[1]->item:NULL));
 	}
 }
 
@@ -1503,7 +1503,7 @@ void pr_tree(KDElem *elem, int disc, int depth)
     for (i = 0;  i < depth;  i++)
       putchar(' ');
     
-    printf("%ld: %.14f %.14f %.14f (", (long) elem->item, elem->lo_min_bound, elem->other_bound, elem->hi_max_bound);
+    printf("%p: %.14f %.14f %.14f (", (void*)elem->item, elem->lo_min_bound, elem->other_bound, elem->hi_max_bound);
     
     for (i = 0;  i < KD_BOX_MAX;  i++) {
 	if (i == disc) putchar('*');
@@ -1575,8 +1575,8 @@ void kd_tree_badness(KDTree *tree, double *fact1, double *fact2, double *fact3, 
 
 void kd_badness(KDTree *realTree)
 {
-	int lev;
-	double a2,a3,a4,a5;
+	int lev=0;
+	double a2=0.0,a3=0.0,a4=0.0,a5=0.0;
 
 
 	a4 = 100.00 * a3 / (double)realTree->item_count ;
@@ -2048,10 +2048,10 @@ void kd_print_nearest(KDTree* tree, double x, double y, int m)
 	for(i=0;i<m;i++)
 	{
 	  if(list[i].elem && list[i].elem->size)
-	      (void)fprintf(stdout,"Nearest Neighbor: dist to center: %f units. elem=%ld. item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
+	      (void)fprintf(stdout,"Nearest Neighbor: dist to center: %f units. elem=%p. item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
 				list[i].dist,
-			        (unsigned long)list[i].elem,
-			        list[i].elem->item,
+				(void*)list[i].elem,
+				(void*)list[i].elem->item,
 				list[i].elem->size[KD_LEFT],
 				list[i].elem->size[KD_RIGHT],
 				list[i].elem->size[KD_BOTTOM],
@@ -2424,7 +2424,7 @@ int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority
 
 int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head , KDPriority *list_end, int stateH, int stateV )
 {
-  int idx;
+  
   int iret;
 
   nco_bool bAddPnt=False;

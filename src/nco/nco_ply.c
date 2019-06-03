@@ -1012,13 +1012,8 @@ poly_sct **pl_wrp_left,
 poly_sct ** pl_wrp_right)
 {
 
-  int idx;
+
   int cnt_left=0;
-
-  poly_sct *pl_in;
-  poly_sct *pl_bnds;
-
-
 
   if( grd_lon_typ ==  nco_grd_lon_Grn_wst || grd_lon_typ == nco_grd_lon_Grn_ctr)
     return nco_poly_wrp_splt360(pl, pl_wrp_left, pl_wrp_right); 
