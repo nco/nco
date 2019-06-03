@@ -18083,17 +18083,29 @@ Specify deflation level @var{dfl_lvl} on a scale from no deflation
 @cindex @code{--lnk_flg}
 @cindex @code{--link_flag}
 @cindex @code{--no_amwg_links}
-@item -l (@code{--lnk_flg}, @code{--link_flag}, @code{--no_amwg_links})
-This switch (which takes no argument) turns-off the default linking of
-@acronym{E3SM/ACME}-climo to @acronym{AMWG}-climo filenames.   
+@cindex @code{--amwg_links}
+@item -l (@code{--lnk_flg}, @code{--link_flag})
+@item --no_amwg_link (@code{--no_amwg_link}, @code{--no_amwg_links}, @code{--no_AMWG_link}, @code{--no_AMWG_links})
+@item --amwg_link (@code{--amwg_link}, @code{--amwg_links}, @code{--AMWG_link}, @code{--AMWG_links})
+These options turn-on or turn-off the linking of
+@acronym{E3SM/ACME}-climo to @acronym{AMWG}-climo filenames.
 @acronym{AMWG} omits the @acronym{YYYYMM} components of climo filenames,
 resulting in shorter names.
 By default @command{ncclimo} symbolically links the full
-(@acronym{E3SM/ACME}) filename to the shorter (@acronym{AMWG}) name.
+@acronym{E3SM/ACME} filename (which is always) created to a file with
+the shorter (@acronym{AMWG}) name whose creation is optional. 
 @acronym{AMWG} diagnostics scripts can produce plots directly from
-these linked filenames. 
-Use this switch to turn-off that linking and reduce filename
-proliferation if you do not need @acronym{AMWG} filenames.
+the linked @acronym{AMWG} filenames. 
+The @samp{-l} (and @samp{--lnk_flg} and @samp{--link_flag} long-option
+synonmyms) are true options that require an argument of either
+@samp{Yes} or @samp{No}.
+The remaining synonyms are switches that take no arguments.
+The @samp{--amwg_link} switch and its synonyms cause the creation
+of symbolic links with @acronym{AMWG} filenames.
+The @samp{--no_amwg_link} switch and its synonyms prevent the creation
+of symbolic links with @acronym{AMWG} filenames.
+If you do not need @acronym{AMWG} filenames, turn-off linking to
+reduce file proliferation in the output directories.
 
 @html
 <a name="mdl_nm"></a> <!-- http://nco.sf.net/nco.html#mdl_nm -->

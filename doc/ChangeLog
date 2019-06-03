@@ -1,5 +1,7 @@
 2019-06-02  Charlie Zender  <zender@uci.edu>
 
+	* nco_rgr.c print absolute convergence at last iteration step for failed Gaussian calculations
+
 	* Add stubs to understand and interpolate hybrid grids from ECMWF IFS input files
 
 	* Address warnings found by Pedro with MSVC Studio Version 19

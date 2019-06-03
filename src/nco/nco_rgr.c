@@ -5129,7 +5129,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     pkm2=1.0;
     pkm1=xz;
     if(++itr_cnt > itr_nbr_max){
-      (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %d\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
+      (void)fprintf(stdout,"%s: ERROR %s reports convergence only %g after %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,fabs(sp),itr_nbr_max,lat_idx);
       nco_exit(EXIT_FAILURE);
     } /* endif */
     /* Compute Legendre polynomial */
@@ -6239,7 +6239,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 	lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
 	fofx_at_x0=wgt_Gss[lat_idx-1L]-lat_wgt_gss;
 	if(++itr_cnt > itr_nbr_max){
-	  (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
+	  (void)fprintf(stdout,"%s: ERROR %s reports convergence only %g after %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,fabs(fofx_at_x0),itr_nbr_max,lat_idx);
 	  nco_exit(EXIT_FAILURE);
 	} /* endif */
       } /* !while */
@@ -8652,7 +8652,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	    lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
 	    fofx_at_x0=wgt_Gss[lat_idx-1L]-lat_wgt_gss;
 	    if(++itr_cnt > itr_nbr_max){
-	      (void)fprintf(stdout,"%s: ERROR %s reports no convergence in %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,itr_nbr_max,lat_idx);
+	      (void)fprintf(stdout,"%s: ERROR %s reports convergence only %g after %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,fabs(fofx_at_x0),itr_nbr_max,lat_idx);
 	      nco_exit(EXIT_FAILURE);
 	    } /* endif */
 	  } /* !while */
