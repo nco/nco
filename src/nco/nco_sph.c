@@ -405,11 +405,9 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
   double dx_ab;
   double dx_ai;
-  double dx_ib;
 
   double dx_cd;
   double dx_ci;
-  double dx_id;
 
   double darc;
 
@@ -837,6 +835,8 @@ int nco_sph_lhs(double *Pi, double *Qi)
 
 
 
+   return 1;
+
    /*
    ds=acos( nco_sph_dot(Pi,Qi) );
 
@@ -1178,7 +1178,7 @@ nco_sph_parallel_lat(double *p1, double *p2, double *q1, double *q2, double *a, 
      return 0;
 
 
-  // if( nco_sph_between(p1[4], p2[4], q1[4]) && nco_sph_between(p1[4], p2[4], q2[4])  )
+  return 0;
 
 
 

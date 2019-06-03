@@ -462,6 +462,9 @@ const char * nco_poly_vrl_flg_sng_get(poly_vrl_flg_enm in)
     return "Qin";
   else if(in == poly_vrl_unk)
     return "Unknown";
+
+  return "UnKnown";
+
 }
 
 
