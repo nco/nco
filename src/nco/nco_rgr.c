@@ -922,14 +922,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   /* For vertical interpolation (unlike horizontal regridding), the destination grid is known a priori
      Straightforward copy all variables and attributes that define grid from fl_tpl to output
-     would work in theory, but not allow dynamic identification and relabeling of names */
+     would work in theory, but would not allow dynamic identification and relabeling of names */
   if(flg_grd_out_hyb){
     const int vrt_grd_lst_nbr=8; /* [nbr] Number of variables that define vertical grid */
-    const char *vtr_grd_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/PS"};
+    const char *vrt_grd_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/PS"};
   } /* !flg_grd_out_hyb */
   if(flg_grd_out_prs){
     const int vrt_grd_lst_nbr=1; /* [nbr] Number of variables that define vertical grid */
-    const char *vtr_grd_lst[]={"/plev"};
+    const char *vrt_grd_lst[]={"/plev"};
   } /* !flg_grd_out_hyb */
 
   /* Above this line, fl_tpl and tpl_id refer to vertical coordinate file (i.e., template file)
@@ -989,6 +989,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"ilev",&ilev_id);
       if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"lev",&lev_id);
     } /* !flg_grd_hyb_cameam */
+    /* 20190603: We require ECMWF IFS to have a "lev" coordinate so we can use "lev" dimension not "nhyb" */
+    if(flg_grd_hyb_ecmwf)
+      if(lev_id_tpl == NC_MIN_INT)
+	rcd=nco_inq_varid(in_id,"lev",&lev_id);
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
@@ -1017,9 +1021,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(!dmn_srt) dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long)); /* NB: Only allocate dmn_srt once  */
     rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_in);
     rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev_in);
-    rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev_in);
-    rcd=nco_inq_dimlen(in_id,dmn_id_lev_in,&lev_nbr_in);
+    if(flg_grd_hyb_cameam) rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev_in);
+    if(flg_grd_hyb_ecmwf) rcd=nco_inq_vardimid(in_id,lev_id,&dmn_id_lev_in);
     rcd=nco_inq_dimlen(in_id,dmn_id_ilev_in,&ilev_nbr_in);
+    rcd=nco_inq_dimlen(in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimname(in_id,dmn_id_ilev_in,dmn_nm);
     ilev_nm_in=strdup(dmn_nm);
     rcd=nco_inq_dimname(in_id,dmn_id_lev_in,dmn_nm);
@@ -1093,6 +1098,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   double *prs_ntf_in=NULL; /* [Pa] Interface pressure on input grid */
   double p0_in; /* [Pa] Reference pressure on input grid */
   
+  //(void)fprintf(stderr,"%s: %s quark1\n",nco_prg_nm_get(),fnc_nm);
   if(flg_grd_in_hyb){
     hyai_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
     hyam_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
@@ -1176,7 +1182,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       }else{
 	rcd=nco_inq_dimname(in_id,dmn_ids_out[dmn_idx],dmn_nm);
       } /* !ps_id_tpl */
-      // (void)fprintf(stderr,"%s: %s quark1\n",nco_prg_nm_get(),fnc_nm);
       if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
       /* 20190602: ECMWF IFS PS variable has degenerate vertical dimension (lev_2). Avoid re-definition */
       if(flg_grd_hyb_ecmwf)
@@ -1194,9 +1199,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Exception list source:
      CAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
      EAM: hyai, hyam, hybi, hybm, ilev, lev, P0, PS
+     ECMWF: hyai, hyam, hybi, hybm, lev, lnsp
      NCEP: plev */
-  const int var_xcl_lst_nbr=9; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/plev","/PS"};
+  const int var_xcl_lst_nbr=10; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/plev","/PS","/lnsp"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
@@ -1266,9 +1272,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       int dmn_ids_out_ecmwf[dmn_nbr_ps-1];
       int dmn_nbr_out_ecmwf=0;
       for(dmn_idx=0;dmn_idx<dmn_nbr_ps;dmn_idx++){
-	rcd=nco_inq_dimname(in_id,dmn_ids_out[dmn_idx],dmn_nm);
-	if(strcmp(dmn_nm,ilev_nm_out) && strcmp(dmn_nm,lev_nm_out))
-	  dmn_ids_out_ecmwf[dmn_nbr_out_ecmwf++]=dmn_ids_out[dmn_idx];
+	rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
+	if(strcmp(dmn_nm,ilev_nm_out) && strcmp(dmn_nm,lev_nm_out) && strcmp(dmn_nm,"lev_2"))
+	  rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out_ecmwf+dmn_nbr_out_ecmwf++);
       } /* !dmn_idx */
       rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out_ecmwf,&ps_id);
     } /* !flg_grd_hyb_ecmwf */
@@ -1911,6 +1917,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  
 	  if(nco_dbg_lvl_get() >= nco_dbg_fl){
 	    (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	    (void)fprintf(fp_stdout,"ilev_nbr_out = %d, lev_nbr_out = %d\n",ilev_nbr_out,lev_nbr_out);
 	    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	      rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_nm);
 	      (void)fprintf(fp_stdout,"dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %d\n",dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx]);

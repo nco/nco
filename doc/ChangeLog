@@ -1,3 +1,7 @@
+2019-06-03  Charlie Zender  <zender@uci.edu>
+
+	* Interpolation of hybrid grids from ECMWF IFS input files appears to work!
+
 2019-06-02  Charlie Zender  <zender@uci.edu>
 
 	* nco_rgr.c print absolute convergence at last iteration step for failed Gaussian calculations
