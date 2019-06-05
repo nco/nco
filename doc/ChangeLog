@@ -1,6 +1,10 @@
+2019-06-04  Charlie Zender  <zender@uci.edu>
+
+	* Fix Newton-Raphson computation of Gaussian grid interfaces for n2s grids (including ECMWF)
+
 2019-06-03  Charlie Zender  <zender@uci.edu>
 
-	* Interpolation of hybrid grids from ECMWF IFS input files appears to work!
+	* Interpolation of hybrid grids from ECMWF IFS input files appears to work
 
 2019-06-02  Charlie Zender  <zender@uci.edu>
 

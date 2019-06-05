@@ -1568,12 +1568,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
+#  pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -1917,10 +1917,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  
 	  if(nco_dbg_lvl_get() >= nco_dbg_fl){
 	    (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	    (void)fprintf(fp_stdout,"ilev_nbr_out = %d, lev_nbr_out = %d\n",ilev_nbr_out,lev_nbr_out);
+	    (void)fprintf(fp_stdout,"ilev_nbr_out = %ld, lev_nbr_out = %ld\n",ilev_nbr_out,lev_nbr_out);
 	    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	      rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_nm);
-	      (void)fprintf(fp_stdout,"dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %d\n",dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx]);
+	      (void)fprintf(fp_stdout,"dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %ld\n",dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx]);
 	    } /* !dmn_idx */
 	  } /* !dbg */
 
@@ -5136,7 +5136,7 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
     pkm2=1.0;
     pkm1=xz;
     if(++itr_cnt > itr_nbr_max){
-      (void)fprintf(stdout,"%s: ERROR %s reports convergence only %g after %d iterations for lat_idx = %ld\n",nco_prg_nm_get(),fnc_nm,fabs(sp),itr_nbr_max,lat_idx);
+      (void)fprintf(stdout,"%s: ERROR %s reports convergence only %g after %d iterations for lat_idx = %d\n",nco_prg_nm_get(),fnc_nm,fabs(sp),itr_nbr_max,lat_idx);
       nco_exit(EXIT_FAILURE);
     } /* endif */
     /* Compute Legendre polynomial */
@@ -6230,7 +6230,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     /* Iterate guess until area between interfaces matches Gaussian weight (compute for one hemisphere, make other symmetric) */
     for(lat_idx=1L;lat_idx<lat_nbr_hlf;lat_idx++){
       double fofx_at_x0; /* [frc] Function to iterate evaluated at current guess */
-      double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
+      double dfdx_at_x0; /* [frc] Derivative of equation evaluated at current guess */
       const double eps_rlt_cnv=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
       itr_cnt=0;
       lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
@@ -6238,10 +6238,13 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       while(fabs(fofx_at_x0) > eps_rlt_cnv){
 	/* Newton-Raphson iteration:
 	   Let x=lat_ntf[lat_idx], y0=lat_ntf[lat_idx-1L], gw = Gaussian weight (exact solution)
-	   f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0
-	   dfdx(x)=dgr2rdn*(dgr2rdn*x)
-	   x_better=x0-f(x0)/f'(x0) */
+	       f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0 # s2n grid
+	       f(x)=sin(dgr2rdn*y0)-sin(dgr2rdn*x)-gw=0 # n2s grid
+	       dfdx(x)= dgr2rdn*cos(dgr2rdn*x) # s2n grid
+	       dfdx(x)=-dgr2rdn*cos(dgr2rdn*x) # n2s grid
+	       x_better=x0-f(x0)/f'(x0) */
 	dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
+	if(!flg_s2n) dfdx_at_x0=-dfdx_at_x0;
 	lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0; /* NB: not sure why this is minus not plus but it works :) */
 	lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
 	fofx_at_x0=wgt_Gss[lat_idx-1L]-lat_wgt_gss;
@@ -8640,9 +8643,10 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	/* Iterate guess until area between interfaces matches Gaussian weight */
 	for(lat_idx=1L;lat_idx<lat_nbr_hlf;lat_idx++){
 	  double fofx_at_x0; /* [frc] Function to iterate evaluated at current guess */
-	  double dfdx_at_x0; /* [frc] Derivation of equation evaluated at current guess */
+	  double dfdx_at_x0; /* [frc] Derivative of equation evaluated at current guess */
 	  // 20190531: Wuyin Lin reports this convergence criterion fails on ECMWF F640 grid
-	  // Probably because latitude coordinates are stored in single precision
+	  // Probably because latitude iterations assume s2n grid and ECMWF is n2s
+	  // Possibly also because latitude coordinates are stored in single precision
 	  // Implement precision-dependent convergence criterion, e.g., 1.0e-15 and 1.0e-7 for double- and single-precision, respectively?
 	  const double eps_rlt_cnv=1.0e-15; // Convergence criterion (1.0e-16 pushes double precision to the brink)
 	  itr_cnt=0;
@@ -8651,10 +8655,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  while(fabs(fofx_at_x0) > eps_rlt_cnv){
 	    /* Newton-Raphson iteration:
 	       Let x=lat_ntf[lat_idx], y0=lat_ntf[lat_idx-1], gw = Gaussian weight (exact solution)
-	       f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0 
-	       dfdx(x)=dgr2rdn*(dgr2rdn*x)
+	       f(x)=sin(dgr2rdn*x)-sin(dgr2rdn*y0)-gw=0 # s2n grid
+	       f(x)=sin(dgr2rdn*y0)-sin(dgr2rdn*x)-gw=0 # n2s grid
+	       dfdx(x)= dgr2rdn*cos(dgr2rdn*x) # s2n grid
+	       dfdx(x)=-dgr2rdn*cos(dgr2rdn*x) # n2s grid
 	       x_better=x0-f(x0)/f'(x0) */
 	    dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
+	    if(!flg_s2n) dfdx_at_x0=-dfdx_at_x0;
 	    lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0; /* NB: not sure why this is minus not plus but it works :) */
 	    lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
 	    fofx_at_x0=wgt_Gss[lat_idx-1L]-lat_wgt_gss;

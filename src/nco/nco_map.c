@@ -990,7 +990,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     fprintf(stderr, "%s(): S.total=%.10f  WARNING following is list of incomplete dst cells, by src_id no\n", fnc_nm,sum);
     for(idx=0; idx< pl_cnt_out;idx++)
       if(  fabs(tally[idx]-1.0) >1e-8  )
-        fprintf(stderr,"%d(%.20f)\n", idx, tally[idx]);
+        fprintf(stderr,"%lu(%.20f)\n", idx, tally[idx]);
 
     // fprintf(stderr,"\n sum=%.20f\n", idx, sum);
 
