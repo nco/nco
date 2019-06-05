@@ -30,13 +30,13 @@ install:
   - cmd: call %CONDA_INSTALL_LOCN%\Scripts\activate.bat
   - cmd: conda config --set always_yes yes --set changeps1 no --set show_channel_urls true
   - cmd: conda update conda
-  - cmd: conda config --remove channels defaults --force
   - cmd: conda config --add channels conda-forge --force
+  - cmd: conda config --set channel_priority strict
   - cmd: set PYTHONUNBUFFERED=1
 
   - cmd: conda info --all
 
-  - cmd: conda create --name TEST python=%PY% cmake antlr=2.7.7 curl expat gsl hdf5 libnetcdf udunits2 zlib
+  - cmd: conda create --name TEST python=%PY% cmake antlr=2.7 curl expat gsl hdf5 libnetcdf udunits2 zlib
   - cmd: conda activate TEST
 
 # Skip .NET project specific build phase.
