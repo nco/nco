@@ -2,7 +2,7 @@
 
 	* NCO 4.8.1-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha04: Taco Al Pastor';git push
-	git tag -a 4.8.1-alpha04 -m 'ncremap --amwg_links, gss ntf n2s,	ECMWF IFS vrt ntp, --msh_fl';git push --tags
+	git tag -a 4.8.1-alpha04 -m 'ncremap --amwg_links, gss ntf n2s,	ECMWF IFS vrt ntp;ncks msh_fl';git push --tags
 
 	* Verify vertical interpolation of ECMWF now works
 
