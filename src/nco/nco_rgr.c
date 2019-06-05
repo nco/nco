@@ -1277,15 +1277,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     var_crt_nbr++;
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
     if(flg_grd_hyb_ecmwf){
-      /* Remove degenerate ECMWF vertical dimension before defining surface pressure */
-      int dmn_ids_out_ecmwf[dmn_nbr_ps-1];
+      /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
       int dmn_nbr_out_ecmwf=0;
       for(dmn_idx=0;dmn_idx<dmn_nbr_ps;dmn_idx++){
 	rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
 	if(strcmp(dmn_nm,ilev_nm_out) && strcmp(dmn_nm,lev_nm_out) && strcmp(dmn_nm,"lev_2"))
-	  rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out_ecmwf+dmn_nbr_out_ecmwf++);
+	  rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out+dmn_nbr_out_ecmwf++);
       } /* !dmn_idx */
-      rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out_ecmwf,&ps_id);
+      rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out,&ps_id);
     } /* !flg_grd_hyb_ecmwf */
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ps_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
