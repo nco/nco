@@ -397,6 +397,7 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
   int flg_sx=0;
 
+  
   double nx1;
   double nx2;
   double nx3;
@@ -490,6 +491,7 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
     memcpy(p,Icross, sizeof(double)*NBR_SPH);
 
+
     if(dx_ai==0 || fabs(dx_ai-dx_ab)<=DOT_TOLERANCE ||  dx_ci==0.0 || fabs(dx_ci-dx_cd)<=DOT_TOLERANCE )
       return 'v';
     else
@@ -532,6 +534,8 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
       nco_sph_prn_pnt("nco_sph_seg_int(): intersect-antipodal", Icross, 3, True);
 
     memcpy(p,Icross, sizeof(double)*NBR_SPH);
+    
+
 
     if(dx_ai==0 || fabs(dx_ai-dx_ab)<=DOT_TOLERANCE ||  dx_ci==0.0 || fabs(dx_ci-dx_cd)<=DOT_TOLERANCE )
       return 'v';
@@ -548,6 +552,254 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
 
 }
+
+
+nco_bool
+nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double *q, char *ps, char *qs)
+{
+  const char fnc_nm[]="nco_sph_seg_int_nw()";
+
+  int flg_sx=0;
+
+  int DEBUG_LCL=1;
+
+  double nx1;
+  double nx2;
+  double nx3;
+  double nx_ai;
+  double nx_ci;
+
+  double dx_ab;
+  double dx_ai;
+
+  double dx_cd;
+  double dx_ci;
+
+  double  Pcross[NBR_SPH]={0};
+  double  Qcross[NBR_SPH]={0};
+  double  Icross[NBR_SPH]={0};
+  double   ai[NBR_SPH]={0};
+  double   ci[NBR_SPH]={0};
+
+
+  if(flg_sx) {
+    nx1= nco_sph_sxcross(a, b, Pcross);
+    nx2= nco_sph_sxcross(c, d, Qcross);
+
+    nco_sph_add_lonlat(Pcross);
+    nco_sph_add_lonlat(Qcross);
+
+    nx3= nco_sph_cross(Pcross, Qcross, Icross);
+    nco_sph_add_lonlat(Icross);
+  }
+  else
+  {
+    nx1= nco_sph_cross(a, b, Pcross);
+    nx2= nco_sph_cross(c, d, Qcross);
+
+    nx3= nco_sph_cross(Pcross, Qcross, Icross);
+    nco_sph_add_lonlat(Icross);
+  }
+
+
+  *ps='0';
+  *qs='0';
+
+
+  /* Icross is zero, should really have a range rather than an explicit zero */
+  /* use dot product to se if Pcross and QCross parallel */
+  if(  1.0- nco_sph_dot_nm(Pcross,Qcross )  <DOT_TOLERANCE  )
+    //return nco_sph_parallel(a, b, c, d, p, q);
+    return False;
+
+
+
+  dx_ab=1.0 - nco_sph_dot_nm(a,b);
+
+
+  dx_cd=1.0 - nco_sph_dot_nm(c,d);
+
+  dx_ai=1.0-  nco_sph_dot_nm(a,Icross);
+
+  if(dx_ai <= DOT_TOLERANCE )
+    dx_ai=0.0;
+  else
+    nx_ai=nco_sph_cross(a, Icross, ai);
+
+  dx_ci= 1.0- nco_sph_dot_nm(c,Icross);
+
+  if(dx_ci <= DOT_TOLERANCE )
+    dx_ci=0.0;
+  else
+    nx_ci=nco_sph_cross(c, Icross, ci);
+
+
+  if(DEBUG_SPH)
+    nco_sph_prn_pnt("nco_sph_seg_int_nw(): possible: ", Icross, 3, True);
+
+
+  if(DEBUG_LCL) {
+    fprintf(stderr, "%s(): dx_ab=%2.15f dx_ai=%2.15f  dx_cd=%2.15f dx_ci=%2.15f\n", fnc_nm, dx_ab, dx_ai, dx_cd, dx_ci);
+    fprintf(stderr,"%s: diff ab=%.15f   cd=%.15e\n", fnc_nm, dx_ab-dx_ai,  dx_cd-dx_ci);
+  }
+
+
+  if(  ( dx_ai==0.0 ||  (  nco_sph_dot_nm(ai, Pcross) >0.99 && dx_ai>= 0.0 && dx_ai<=dx_ab +DOT_TOLERANCE)) &&
+       ( dx_ci==0.0 ||  (  nco_sph_dot_nm(ci, Qcross) >0.99 && dx_ci>= 0.0 && dx_ci <= dx_cd + DOT_TOLERANCE ) )
+  )
+  {
+
+
+
+    /* determine if head or tail is intersection point */
+    if(dx_ai==0.0)
+    {
+      *ps = 't';
+      memcpy(p,a, sizeof(double)*NBR_SPH);
+
+    }
+    else if( fabs(dx_ai-dx_ab)<=DOT_TOLERANCE  ) {
+      *ps = 'h';
+      memcpy(p,b, sizeof(double)*NBR_SPH);
+    }
+    else {
+      *ps = '1';
+      //nco_sph_add_lonlat(Icross);
+      memcpy(p,Icross, sizeof(double)*NBR_SPH);
+
+    }
+
+    /* determine if head or tail is intersection point */
+    if(dx_ci==0.0)
+    {
+      *qs = 't';
+      memcpy(p,c, sizeof(double)*NBR_SPH);
+    }
+    else if(fabs(dx_ci-dx_cd)<=DOT_TOLERANCE) {
+      *qs = 'h';
+      memcpy(p,d, sizeof(double)*NBR_SPH);
+    }
+    else
+      {
+      *qs = '1';
+      /*  not needed !?
+      nco_sph_add_lonlat(Icross);
+      memcpy(p,Icross, sizeof(double)*NBR_SPH);
+       */
+
+    }
+    if(DEBUG_LCL)
+      fprintf(stderr,"%s(): code=%c%c\n", fnc_nm, *ps, *qs);
+
+    /*
+    if(dx_ai==0 || fabs(dx_ai-dx_ab)<=DOT_TOLERANCE ||  dx_ci==0.0 || fabs(dx_ci-dx_cd)<=DOT_TOLERANCE )
+      return 'v';
+    else
+      return '1';
+    */
+
+    return True;
+  }
+
+
+  /* try antipodal point */
+  Icross[0]*= -1.0;
+  Icross[1]*= -1.0;
+  Icross[2]*= -1.0;
+  nco_sph_add_lonlat(Icross);
+
+  dx_ai=1.0-  nco_sph_dot_nm(a,Icross);
+
+  if(dx_ai <=DOT_TOLERANCE )
+    dx_ai=0.0;
+  else
+    nx_ai=nco_sph_cross(a, Icross, ai);
+
+  dx_ci= 1.0- nco_sph_dot_nm(c,Icross);
+
+  if(dx_ci <=DOT_TOLERANCE )
+    dx_ci=0.0;
+  else
+    nx_ci=nco_sph_cross(c, Icross, ci);
+
+  if(DEBUG_SPH)
+    nco_sph_prn_pnt("nco_sph_seg_int_nw(): poss-antipodal", Icross, 3, True);
+
+  if(DEBUG_LCL){
+    fprintf(stderr,"%s(): dx_ab=%2.15f dx_ai=%2.15f  dx_cd=%2.15f dx_ci=%2.15f   \n", fnc_nm, dx_ab, dx_ai, dx_cd, dx_ci );
+    fprintf(stderr,"%s: diff ab=%.15f   cd=%.15e\n", fnc_nm, dx_ab-dx_ai,  dx_cd-dx_ci);
+  }
+
+  if(  ( dx_ai==0.0 ||  (  nco_sph_dot_nm(ai, Pcross) >0.99 && dx_ai>= 0.0 && dx_ai<= dx_ab + DOT_TOLERANCE  )) &&
+       ( dx_ci==0.0 ||  (  nco_sph_dot_nm(ci, Qcross) >0.99 && dx_ci>0.0 && dx_ci <= dx_cd  + DOT_TOLERANCE ) )
+  )
+  {
+
+
+
+
+    /* determine if head or tail is intersection point */
+    if(dx_ai==0.0)
+    {
+      *ps = 't';
+      memcpy(p,a, sizeof(double)*NBR_SPH);
+
+    }
+    else if( fabs(dx_ai-dx_ab)<=DOT_TOLERANCE  ) {
+      *ps = 'h';
+      memcpy(p,b, sizeof(double)*NBR_SPH);
+    }
+    else {
+      *ps = '1';
+      // nco_sph_add_lonlat(Icross);
+      memcpy(p,Icross, sizeof(double)*NBR_SPH);
+
+    }
+
+    /* determine if head or tail is intersection point */
+    if(dx_ci==0.0)
+    {
+      *qs = 't';
+      memcpy(p,c, sizeof(double)*NBR_SPH);
+    }
+    else if(fabs(dx_ci-dx_cd)<=DOT_TOLERANCE) {
+      *qs = 'h';
+      memcpy(p,d, sizeof(double)*NBR_SPH);
+    }
+    else
+    {
+      *qs = '1';
+      /*  not needed !?
+      nco_sph_add_lonlat(Icross);
+      memcpy(p,Icross, sizeof(double)*NBR_SPH);
+       */
+    }
+
+    if(DEBUG_LCL)
+      fprintf(stderr,"%s(): code=%c%c\n", fnc_nm, *ps, *qs);
+
+    /*
+    if(dx_ai==0 || fabs(dx_ai-dx_ab)<=DOT_TOLERANCE ||  dx_ci==0.0 || fabs(dx_ci-dx_cd)<=DOT_TOLERANCE )
+      return 'v';
+    else
+      return '1';
+    */
+
+    return True;
+
+  }
+
+  fprintf(stderr,"%s(): code=%c%c\n", fnc_nm, *ps, *qs);
+
+
+
+  return False;
+
+
+}
+
+
+
 
 
 char
@@ -690,6 +942,81 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 }
 
 
+nco_bool
+nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char *sq_sng  ) {
+
+  int n;
+  int m;
+  int idx = 0;
+  int jdx;
+  int jdx1;
+  int numIntersect;
+  int numVertex = 0;
+
+  char ps='0';
+  char qs='0';
+
+  nco_bool bComplex = False;
+
+  char code = '0';
+
+  double p[NBR_SPH];
+  double q[NBR_SPH];
+
+  double pControl[NBR_SPH];
+
+
+  /* make control point center of sP */
+  nco_sph_mk_control(sP, True, pControl);
+
+  nco_sph_prn_pnt("nco_sph_intersect_pre()/control pnt", pControl,3,True);
+
+  n = sP->crn_nbr;
+  m = sQ->crn_nbr;
+
+
+
+  for (idx = 0; idx < m; idx++) {
+    bComplex = False;
+    numIntersect = 0;
+
+    for (jdx = 0; jdx < n; jdx++) {
+      jdx1 = (jdx + n - 1) % n;
+      (void)nco_sph_seg_int_nw(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx], p, q, &ps, &qs);
+
+      if(qs != '0' && qs != '1') {
+        bComplex = True;
+        break;
+      }
+
+      if ( qs == '1')
+        numIntersect++;
+
+
+    }
+
+    if(bComplex)
+    {
+      /* head of q is on an edge of p */
+      if(ps=='1' && (qs=='h'|| qs=='t') )
+        sq_sng[idx]='e';
+      /* head of q is on vertex of p */
+      else if( (ps == 'h' || ps== 't') && qs=='h' )
+        sq_sng[idx]='v';
+
+    } else if(numIntersect==0)
+      sq_sng[idx]='i';
+    else if(numIntersect>0)
+      sq_sng[idx]='o';
+
+  }
+
+  return True;
+
+}
+
+
+
 
 /* returns true if vertex is on edge (a,b) */
 nco_bool
@@ -722,92 +1049,6 @@ nco_sph_seg_vrt_int(double *a, double *b, double *vtx)
 
 
 }
-
-
-
-
-
-
-char  nco_sph_seg_int_1(double *a, double *b, double *c, double *d, double *p, double *q)
-{
-  const char fnc_nm[]="nco_shp_seg_int()";
-
-  int flg_sx=0;
-
-   double nx1;
-   double nx2;
-   double nx3;
-
-   double darc;
-
-   double  Pcross[NBR_SPH]={0};
-   double  Qcross[NBR_SPH]={0};
-   double  Icross[NBR_SPH]={0};
-
-
-
-   if(flg_sx) {
-      nx1= nco_sph_sxcross(a, b, Pcross);
-      nx2= nco_sph_sxcross(c, d, Qcross);
-
-     nco_sph_add_lonlat(Pcross);
-     nco_sph_add_lonlat(Qcross);
-
-      nx3= nco_sph_cross(Pcross, Qcross, Icross);
-     nco_sph_add_lonlat(Icross);
-   }
-   else
-   {
-      nx1= nco_sph_cross(a, b, Pcross);
-      nx2= nco_sph_cross(c, d, Qcross);
-
-      nx3= nco_sph_cross(Pcross, Qcross, Icross);
-     nco_sph_add_lonlat(Icross);
-   }
-
-   darc=atan(nx3);
-
-   if(DEBUG_SPH) {
-      nco_sph_prn_pnt("nco_sph_seg_int(): intersection", Icross, 3, True);
-      printf("%s: ||Pcross||=%.20g ||Qcross||=%.20g ||Icross||=%.20g arc=%.20g\n",fnc_nm,  nx1, nx2, nx3, darc);
-   }
-
-   /* Icross is zero, should really have a range rather than an explicit zero */
-   if( nx3 < 1.0e-15)
-      return nco_sph_parallel(a, b, c, d, p, q);
-
-
-   if(nco_sph_lonlat_between(a, b, Icross) && nco_sph_lonlat_between(c, d, Icross) )
-   {
-      memcpy(p,Icross, sizeof(double)*NBR_SPH);
-      return '1';
-   }
-
-   /* try antipodal point */
-   Icross[0]*= -1.0;
-   Icross[1]*= -1.0;
-   Icross[2]*= -1.0;
-
-   nco_sph_add_lonlat(Icross);
-
-   if(nco_sph_lonlat_between(a, b, Icross) && nco_sph_lonlat_between(c, d, Icross) )
-   {
-
-      memcpy(p,Icross, sizeof(double)*NBR_SPH);
-      return '1';
-   }
-
-   return '0';
-
-
-
-
-
-}
-
-
-
-
 
 
 /* takes a point and a cross product representing the normal to the arc plane */
@@ -1259,15 +1500,15 @@ void nco_sph_prn_pnt(const char *sMsg, double *p, int style, nco_bool bRet)
        break;
 
       case 3:
-         fprintf(stderr,  "(lon=%.20f,lat=%.20f)",p[3] *180.0/M_PI,  p[4]*180/M_PI );
+         fprintf(stderr,  "(lon=%.20f,lat=%.20f)",p[3] *180.0/M_PI,  p[4]*180.0/M_PI );
        break;
 
       case 4:
-         fprintf(stderr,  "(dx=%.20f, dy=%.20f, dz=%.20f), (lon=%.20f,lat=%.20f)",p[0], p[1], p[2], p[3] *180.0/M_PI,  p[4]*180/M_PI);
+         fprintf(stderr,  "(dx=%.20f, dy=%.20f, dz=%.20f), (lon=%.20f,lat=%.20f)",p[0], p[1], p[2], p[3] *180.0/M_PI,  p[4]*180.0/M_PI);
        break;
 
       case 5:
-         fprintf(stderr,  "(dx=%f, dy=%f, dz=%f), (lon=%f,lat=%f)",p[0], p[1], p[2], p[3] *180.0/M_PI,  p[4]*180/M_PI);
+         fprintf(stderr,  "(dx=%f, dy=%f, dz=%f), (lon=%f,lat=%f)",p[0], p[1], p[2], p[3] *180.0/M_PI,  p[4]*180.0/M_PI);
        break;
 
 
