@@ -709,9 +709,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
   rcd+=nco_fl_open(fl_tpl,md_open,&bfr_sz_hnt,&tpl_id);
 
-  /* Formula-terms for hybrid pressure vertical grid on unstructured horizontal grid:
-     prs_mdp[time,col,lev]=P0*hyam[lev]+PS[time,col]*hybm[lev]
-     prs_ntf[time,col,lev]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
+  /* Formula-terms for hybrid pressure vertical grid on unstructured CAM/EAM horizontal grid:
+     prs_mdp[time,lev,col]=P0*hyam[lev] +PS[time,col]*hybm[lev]
+     prs_ntf[time,lev,col]=P0*hyai[ilev]+PS[time,col]*hybi[ilev] */
+
+  /* Formula-terms for hybrid pressure vertical grid on ECMWF RLL horizontal grid:
+     prs_mdp[time,lev,lat,lon]=hyam[lev] +exp(lnsp[time,lat,lon])*hybm[lev]
+     prs_ntf[time,lev,lat,lon]=hyai[ilev]+exp(lnsp[time,lat,lon])*hybi[ilev] */
 
   /* For simplicity and code re-use, all single-variable (not hybrid-variable) coordinate systems adopt "lev" semantics
      This includes pure pressure coordinates and eventually will include sigma, depth, and height coordinates
@@ -969,13 +973,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_varid(in_id,"hyam",&hyam_id);
     rcd=nco_inq_varid(in_id,"hybi",&hybi_id);
     rcd=nco_inq_varid(in_id,"hybm",&hybm_id);
-    /* 20190602: ECMWF hybrid grid parameters and dimensions differ from CAM/EAM:
-       ECMWF defines vertical dimensions "nhym" and "nhyi" specifically for hy[ab][im] whereas CAM/EAM re-uses dimensions "lev" and "ilev" for hybrid coefficients and for all other vertical variables
-       ECMWF provides vertical coefficients "hya?" and "hyb?" in Pa whereas CAM/EAM provides "hya?" and "hyb?" in hPa
-       ECMWF provides "lev" and "lev_2" with midpoint and surface pressure indices (not values), respectively, whereas CAM/EAM provides "lev" and "ilev" values in hPa
+    /* 20190602: ECMWF hybrid vertical grid parameters and dimensions differ from CAM/EAM:
+       ECMWF defines vertical dimensions "nhym" and "nhyi" specifically for hy[ab][im] and uses "lev" and "lev_2" for all other variables, whereas CAM/EAM uses same dimensions "lev" and "ilev" for all vertical variables including hybrid coefficients
+       ECMWF provides "hya?" as a constant in Pa and "hyb?" as a dimensionless coefficient of PS, whereas CAM/EAM provides "hya?" and "hyb?" both as dimensionless coefficients of P0 and PS
+       ECMWF provides "lev" and "lev_2" with midpoint and surface pressure indices (not values), respectively, whereas CAM/EAM provides "lev" and "ilev" coordinate values in hPa
        ECMWF provides dimensionless "lnsp" for log(surface pressure) whereas CAM/EAM provides "PS" for surface pressure in Pa
-       ECMWF "lnsp" has degenerate level dimension "lev_2" whereas CAM/EAM "PS" has no level dimension
-       ECMWF omits reference pressure whereas CAM/EAM provides "P0" in hPa */
+       ECMWF "lnsp" has degenerate level dimension "lev_2" whereas CAM/EAM "PS" has no "ilev" dimension
+       ECMWF uses hya? instead of reference pressure whereas CAM/EAM provides "P0" in hPa */
     if((rcd=nco_inq_varid_flg(in_id,"lnsp",&ps_id)) == NC_NOERR) flg_grd_hyb_ecmwf=True;
     else if((rcd=nco_inq_varid_flg(in_id,"PS",&ps_id)) == NC_NOERR) flg_grd_hyb_cameam=True;
     else{
@@ -1114,10 +1118,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
     /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
     if(flg_grd_hyb_ecmwf){
-      p0_in=100000.0;
+      /* Convert ECMWF-provided log(surface_pressure) to surface_pressure */
       const size_t ps_sz_in=tm_nbr_in*grd_sz_in; /* [nbr] Number of elements in ps_in */
-      for(size_t idx=0;idx<ps_sz_in;idx++)
-	ps_in[idx]=exp(ps_in[idx]);
+      for(size_t idx=0;idx<ps_sz_in;idx++) ps_in[idx]=exp(ps_in[idx]); 
+      /* Decompose ECMWF hya? convention into CAM/EAM-like product of P0 and hya? */
+      p0_in=100000.0;
+      for(size_t idx=0;idx<lev_nbr_in;idx++){
+	hyai_in[idx]/=p0_in;
+	hyam_in[idx]/=p0_in;
+      } /* !idx */
     } /* flg_grd_hyb_ecmwf */
     
     if(ps_id_tpl == NC_MIN_INT){

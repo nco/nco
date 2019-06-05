@@ -1,5 +1,13 @@
 2019-06-04  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.1-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha04: Taco Al Pastor';git push
+	git tag -a 4.8.1-alpha04 -m 'ncremap --amwg_links, gss ntf n2s,	ECMWF IFS vrt ntp, --msh_fl';git push --tags
+
+	* Verify vertical interpolation of ECMWF now works
+
+	* Compensate for different definitions of hya? between ECMWF and CAM/EAM
+
 	* Fix Newton-Raphson computation of Gaussian grid interfaces for n2s grids (including ECMWF)
 
 2019-06-03  Charlie Zender  <zender@uci.edu>
@@ -7,6 +15,8 @@
 	* Interpolation of hybrid grids from ECMWF IFS input files appears to work
 
 2019-06-02  Charlie Zender  <zender@uci.edu>
+
+	* Change --lnk_flg to true option with argument, add --amwg_links antonym flag to --no_amwg_links
 
 	* nco_rgr.c print absolute convergence at last iteration step for failed Gaussian calculations
 
