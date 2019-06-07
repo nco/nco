@@ -743,7 +743,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* [enm] Vertical grid type for input grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* [enm] Vertical grid type for output grid */
-  nco_xtr_typ_enm xtr_mth=nco_xtr_fll_ngh; /* [enm] Extrapolation method */
+  //  nco_xtr_typ_enm xtr_mth=nco_xtr_fll_ngh; /* [enm] Extrapolation method */
+  nco_xtr_typ_enm xtr_mth=nco_xtr_fll_msv; /* [enm] Extrapolation method */
 
   /* Determine output grid type */
   if((rcd=nco_inq_varid_flg(tpl_id,"hyai",&hyai_id)) == NC_NOERR){
@@ -1686,10 +1687,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  xtr_RHS.xtr_fll=True;
 	  xtr_RHS.xtr_vrb=False;
 	  xtr_RHS.typ_fll=xtr_mth;
-	  /* Special cases to extrapolate beneath terrain */
-	  if(!strcmp(var_nm,"T") || !strcmp(var_nm,"ta")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
-	  else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
-	  else xtr_RHS.typ_fll=nco_xtr_fll_ngh;
+	  /* Special-case extrapolation methods allowed for all except missing-value extrapolation types */
+	  if(xtr_mth != nco_xtr_fll_msv){
+	    if(!strcmp(var_nm,"T") || !strcmp(var_nm,"ta")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
+	    else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
+	  } /* !xtr_mth */
 	  crd_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
 	  crd_out=(double *)nco_malloc(lvl_nbr_out*sizeof(double));
 	  dat_in=(double *)nco_malloc(lvl_nbr_in*sizeof(double));
