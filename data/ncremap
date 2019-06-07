@@ -1260,7 +1260,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
     if [[ ${grd_dst} == *.g ]]; then 
 	alg_lst='se2fv_flx se2fv_stt se2fv_alt'
     else
-	alg_lst='aave blin ndtos nstod patc tempest'
+	alg_lst='aave blin ndtos nstod patc'
     fi # !grd_dst
     if [ -n "${hnt_src}" ]; then 
        hnt_dst_sng="--hnt_dst=${hnt_src/src/dst}"
