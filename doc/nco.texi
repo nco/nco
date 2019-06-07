@@ -24867,7 +24867,7 @@ to vertically interpolate the input file to the vertical coordinate
 grid contained in the file @var{vrt_fl}.
 This option first appeared in @acronym{NCO} @w{version 4.8.0},
 released in May, 2019.
-The vertical gridfile @var{vrt_fl} must specify a vertical gridtypes
+The vertical gridfile @var{vrt_fl} must specify a vertical gridtype
 that @command{ncremap} understands, currently either pure-pressure or
 hybrid-coordinate pressure.
 We plan to add pure-sigma coordinates in the future.
@@ -24925,10 +24925,13 @@ priorities for future development of vertical regridding are:
       Eliminating this constraint is a high priority because it would
       be cool. 
 @item Variable names for input and output vertical grids must match
-      @acronym{E3SM/CESM} and @acronym{NCEP} implementations.
+      @acronym{E3SM/CESM}, @acronym{ECMWF}, and @acronym{NCEP}
+      implementations. 
       These names include @code{hyai}, @code{hyam}, @code{hybi},
-      @code{hybm}, @code{ilev}, @code{lev}, @code{P0}, @code{PS}, and
-      @code{plev}.
+      @code{hybm}, @code{ilev}, @code{lev}, @code{P0}, and @code{PS}
+      (for @acronym{E3SM/CESM} hybrid grids), @code{lev},
+      @code{lev_2}, and @code{lnsp} (for @acronym{ECMWF} hybrid grids
+      only), and @code{plev} (for pure-pressure grids). 
       The infrastructure to provide alternate names for any of these
       input/output variables names is straightforward, and is heavily 
       used for horizontal spatial regridding.
@@ -24952,8 +24955,9 @@ ncap2 -O -v -s 'defdim("plev",17);plev[$plev]={100000,92500,85000, \
 @end example
 
 Hybrid-coordinate grids are a hybrid between a sigma-coordinate
-grid (where pressure is a fraction of the surface pressure) and
-a pure-pressure grid (as above). 
+grid (where each pressure level is a fixed fraction of a
+spatiotemporally varying surface pressure) and a pure-pressure grid
+that is spatially invariant (as described above). 
 The so-called hybrid @var{A} and @var{B} coefficients specify the
 fractional weight of the pure-pressure and sigma-grids, respectively, 
 at each level.
@@ -24964,24 +24968,47 @@ at each level.
 @cindex @code{hybi}
 @cindex @code{hybm}
 @cindex @code{formula_terms} attribute
-The hybrid gridfile must specify @var{A} and @var{B} coefficients for
+The hybrid gridfile must specify @var{A} and @var{B} coefficients for 
 both layer midpoints and interfaces with these standard
 (as employed by @acronym{CESM} and @acronym{E3SM}) names and
-dimensions: @code{hyai(ilev)}, @code{hybi(ilev)}, @code{hyam(lev)},
+dimensions: @code{hyai(ilev)}, @code{hybi(ilev)}, @code{hyam(lev)}, 
 and @code{hybm(lev)}.
 The reference pressure and surface pressure must be named
 @code{P0} and @code{PS}, respectively.
 The pressures at all midpoints and interfaces are then defined as 
 @example
 @verbatim
-prs_mdp[time,lat,lon,lev] =P0*hyam+hybm*PS # Midlayer
-prs_ntf[time,lat,lon,ilev]=P0*hyai+hybi*PS # Interface
+prs_mdp[time,lev, lat,lon]=hyam*P0+hybm*PS # Midlayer
+prs_ntf[time,ilev,lat,lon]=hyai*P0+hybi*PS # Interface
 @end verbatim
 @end example
 The scalar reference pressure @code{P0} is typically @w{100000 Pa}
 (or @w{1000 mb}) while the surface pressure @code{PS} is a (possibly
 time-varying) array with one or two spatial dimensions, and its values 
-are in the same dimensional units (e.g., Pa or mb) as @code{P0}.
+are in the same dimensional units (e.g., Pa or hPa) as @code{P0}.
+
+As of July 2019 and @acronym{NCO} @w{version 4.8.1}, @acronym{NCO} 
+supports regridding @acronym{ECMWF} datasets in @acronym{IFS} hybrid
+vertical coordinate format to @acronym{CESM}/@acronym{E3SM}-format
+hybrid vertical grids. 
+The native @acronym{IFS} hybrid datasets that we have seen store
+pressure coordinates in terms of a slightly different formula that
+employs the log of pressure (@code{lnsp}) instead of @code{PS},
+that redefines @code{hyai} and @code{hyam} to be pure-pressure offsets
+(rather than coefficients), and that omits @code{P0}:
+@example
+@verbatim
+prs_mdp[time,lev,  lat,lon]=hyam+hybm*exp(lnsp) # Midlayer
+prs_ntf[time,lev_2,lat,lon]=hyai+hybi*exp(lnsp) # Interface
+@end verbatim
+@end example
+Note that @acronym{ECMWF} also alters the names of the vertical
+half-layer coordinate and employs distinct dimensions (@code{nhym} and
+@code{nhyi}) for the hybrid variables @code{hyai(nhyi)},
+@code{hybi(nhyi)}, @code{hyam(nhym)}, and @code{hybm(nhym)}.
+@acronym{ECMWF} uses the vertical coordinates @code{lev} and
+@code{lev_2} for full-layer (i.e., midlayer) and  half-layer
+(i.e., interface) for all other variables.
 
 Note that a hybrid-coordinate grid defines a pure-sigma or
 pure-pressure grid when either its @var{A} or @var{B} coefficients are
@@ -25009,7 +25036,8 @@ lev[lev]=P0*(hyam+hybm)/100.0;
 A vertical hybrid grid file @var{vrt_fl} must contain at least
 @code{hyai}, @code{hybi}, @code{hyam}, @code{hybm(lev)} and
 @code{P0}; @code{PS}, @code{lev}, and @code{ilev} are optional. 
-If @var{vrt_fl} does not contain @code{PS}, then @code{PS} will
+(Exceptions for @acronym{ECMWF} grids are noted above).
+If @var{vrt_fl} does not contain @code{PS} then @code{PS} will
 be taken from the file to be interpolated.
 In all cases @code{lev} and @code{ilev} are optional and will be
 diagnosed from the other parameters using the above definitions.

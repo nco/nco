@@ -741,8 +741,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_grd_out_hyb=False; /* [flg] Output hybrid coordinate vertical grid */
   nco_bool flg_grd_out_prs=False; /* [flg] Output pressure coordinate vertical grid */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
-  nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* Vertical grid type for input grid */
-  nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* Vertical grid type for output grid */
+  nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* [enm] Vertical grid type for input grid */
+  nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* [enm] Vertical grid type for output grid */
+  nco_xtr_typ_enm xtr_mth=nco_xtr_fll_ngh; /* [enm] Extrapolation method */
 
   /* Determine output grid type */
   if((rcd=nco_inq_varid_flg(tpl_id,"hyai",&hyai_id)) == NC_NOERR){
@@ -1508,6 +1509,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      Copy appropriate filehandle to variable scoped as shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
+  /* Extrapolation type xtr_fll_msv may cause need to create _FillValue attributes */
+  char *att_nm_fll_val=strdup("_FillValue");
+
   /* Repeating above documentation for the forgetful:
      NB: tm_nbr is max(timesteps) in vertical grid definitions, not number of records in either file
      This implementation interpolates timeseries to/from time-invariant vertical grids in one OpenMP call! */
@@ -1576,12 +1580,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(att_nm_fll_val,dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
+#  pragma omp parallel for default(none) firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(att_nm_fll_val,dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,fnc_nm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 # else /* !old g++ */
-#  pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx)
+#  pragma omp parallel for firstprivate(has_ilev,has_lev,has_tm,var_val_dbl_in,var_val_dbl_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,prs_ntp_in,prs_ntp_out,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(att_nm_fll_val,dmn_id_ilev_in,dmn_id_ilev_out,dmn_id_lev_in,dmn_id_lev_out,dmn_id_tm_in,flg_ntp_log,flg_vrt_tm,grd_nbr,idx_dbg,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out,out_id,prs_mdp_in,prs_mdp_out,prs_ntf_in,prs_ntf_out,tm_idx,xtr_mth)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -1640,6 +1644,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
 	  /* Missing value setup */
 	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
+	  if(!has_mss_val) mss_val_dbl=NC_FILL_DOUBLE;
 	  
 	  if(has_ilev){
 	    /* Interpolate current variable from input interface pressure grid to output interface pressure grid */
@@ -1677,10 +1682,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  /* Default extrapolation uses nearest valid neighbor */
 	  xtr_LHS.xtr_fll=True;
 	  xtr_LHS.xtr_vrb=False;
-	  xtr_LHS.typ_fll=nco_xtr_fll_ngh;
+	  xtr_LHS.typ_fll=xtr_mth;
 	  xtr_RHS.xtr_fll=True;
 	  xtr_RHS.xtr_vrb=False;
-	  xtr_RHS.typ_fll=nco_xtr_fll_ngh;
+	  xtr_RHS.typ_fll=xtr_mth;
 	  /* Special cases to extrapolate beneath terrain */
 	  if(!strcmp(var_nm,"T") || !strcmp(var_nm,"ta")) xtr_RHS.typ_fll=nco_xtr_fll_tpt;
 	  else if(!strcmp(var_nm,"Z3") || !strcmp(var_nm,"zg")) xtr_LHS.typ_fll=xtr_RHS.typ_fll=nco_xtr_fll_gph;
@@ -1718,11 +1723,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  const double tpt_vrt_avg=288.0; /* [K] Mean virtual temperature assumed for geopotential height extrapolation */
 	  nco_bool FIRST_WARNING_LHS; /* [flg] First warning for LHS extrapolation */
 	  nco_bool FIRST_WARNING_RHS; /* [flg] First warning for RHS extrapolation */
+	  nco_bool XTR_MSS_VAL; /* [flg] Extrapolation used _FillValue */
 	  if(tm_idx == 0){
 	    /* Only print extrapolation warnings for first timestep to prevent noisy output
 	       NB: Algorithm prevents any warnings for extrapolations that appear after first timestep */
 	    FIRST_WARNING_LHS=True;
 	    FIRST_WARNING_RHS=True;
+	    XTR_MSS_VAL=False;
 	  } /* !tm_idx */
 	  
 	  /* Outer loop over columns */
@@ -1795,6 +1802,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		case nco_xtr_fll_nil:
 		  dat_out_mnt[out_idx]=0.0;
 		  break;
+		case nco_xtr_fll_msv:
+		  dat_out_mnt[out_idx]=mss_val_dbl;
+		  XTR_MSS_VAL=True;
+		  break;
 		case nco_xtr_fll_ngh:
 		  dat_out_mnt[out_idx]=dat_in_mnt[0];
 		  break;
@@ -1824,7 +1835,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		brk_rgt_idx=brk_lft_idx+1; 
 		// NB: brk_rgt_idx is ALWAYS greater than brk_lft_idx
 		// This simulaneously meets two criteria:
-		// 1. Divide by zero errors are impossible in the next step
+		// 1. Divide-by-zero errors are impossible in the next step
 		// 2. The identity interpolation is satisfied since crd_dlt == 0.0: 
 		// i.e., If crd_out_mnt[idx] == crd_in_mnt[brk_lft_idx] then dat_out_mnt[out_idx] := dat_in_mnt[brk_lft_idx]
 		// Linearly interpolate
@@ -1846,6 +1857,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		switch(xtr_RHS.typ_fll){
 		case nco_xtr_fll_nil:
 		  dat_out_mnt[out_idx]=0.0;
+		  break;
+		case nco_xtr_fll_msv:
+		  dat_out_mnt[out_idx]=mss_val_dbl;
+		  XTR_MSS_VAL=True;
 		  break;
 		case nco_xtr_fll_ngh:
 		  dat_out_mnt[out_idx]=dat_in_mnt[in_nbr-1];
@@ -1937,6 +1952,21 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
 	  } /* end OpenMP critical */
 	  
+	  if(False && XTR_MSS_VAL && !has_mss_val){
+	    /* Add _FillValue attribute if necessary */
+	    aed_sct aed_mtd_fll_val;
+	    float mss_val_flt;
+	    aed_mtd_fll_val.var_nm=var_nm;
+	    aed_mtd_fll_val.id=var_id_out;
+	    aed_mtd_fll_val.att_nm=att_nm_fll_val;
+	    aed_mtd_fll_val.mode=aed_create;
+	    aed_mtd_fll_val.type=var_typ_out;
+	    aed_mtd_fll_val.sz=1L;
+	    if(var_typ_out == NC_FLOAT) aed_mtd_fll_val.val.fp=&mss_val_flt;
+	    else if(var_typ_out == NC_DOUBLE) aed_mtd_fll_val.val.dp=&mss_val_dbl;
+	    (void)nco_aed_prc(out_id,var_id_out,aed_mtd_fll_val);
+	  } /* !XTR_MSS_VAL */
+
 	  if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
 	  if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
 	  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
@@ -1960,6 +1990,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables interpolated = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
 
   } /* !tm_idx */
+
+  if(att_nm_fll_val) att_nm_fll_val=(char *)nco_free(att_nm_fll_val);
 
   if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
