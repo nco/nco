@@ -743,8 +743,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* [enm] Vertical grid type for input grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* [enm] Vertical grid type for output grid */
-  //  nco_xtr_typ_enm xtr_mth=nco_xtr_fll_ngh; /* [enm] Extrapolation method */
-  nco_xtr_typ_enm xtr_mth=nco_xtr_fll_msv; /* [enm] Extrapolation method */
+  nco_xtr_typ_enm xtr_mth=nco_xtr_fll_ngh; /* [enm] Extrapolation method */
+  //nco_xtr_typ_enm xtr_mth=nco_xtr_fll_msv; /* [enm] Extrapolation method */
 
   /* Determine output grid type */
   if((rcd=nco_inq_varid_flg(tpl_id,"hyai",&hyai_id)) == NC_NOERR){
