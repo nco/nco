@@ -1461,6 +1461,13 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		# ncclimo splitter-mode, and daily and annual climatology-mode, and ncremap all use 0-based cmd_mpi array
 		# Copy host-specific mpirun syntax but not node-allocation algorithms between ncclimo and ncremap
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
+		blues* | blogin* | b[0123456789][0123456789][0123456789] | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* )
+		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
+		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
+		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
+		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
+ 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
+# 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
 		*cheyenne* )
 		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as cheyenne?
 		    # Cheyenne prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'
@@ -1470,13 +1477,6 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    export MPI_SHEPHERD=true
 #		    cmd_mpi[${mpi_idx}]="mpiexec_mpt dplace ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
 		    cmd_mpi[${mpi_idx}]="mpirun ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # PBSPro
-		compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* )
-		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
-		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
-		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
-		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
- 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
-# 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
 		cooley* | cc[0123456789][0123456789][0123456789] | mira* ) 
 		    # 20190310: Cooley mpirun now uses -hosts instead of -H for hostname option
 		    cmd_mpi[${mpi_idx}]="mpirun -hosts ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # ALCF

@@ -1,5 +1,7 @@
 2019-06-07  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo/ncremap choose correct batch and MPI type for blues/anvil
+
 	* nco_ntp_vrt() missing value extrapolation works, still need to add _FillValue attribute and option
 
 	* nco_ntp_vrt() add hooks to create _FillValue attribute after extrapolating to missing values
