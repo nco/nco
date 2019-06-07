@@ -1,5 +1,9 @@
 2019-06-07  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.1-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha05: Tampa Mockingbird';git push
+	git tag -a 4.8.1-alpha05 -m 'ncremap MWF w/o tempest, MPI for blues, xtr_fll_msv, AppVeyor fix';git push --tags
+
 	* ncremap skip Tempest alg_typ 'tempest' in MWF mode when called with .nc grids
 
 	* ncclimo/ncremap choose correct batch and MPI type for	blues/anvil, requested by Balwinder Singh
