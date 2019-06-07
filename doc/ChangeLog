@@ -1,6 +1,8 @@
 2019-06-07  Charlie Zender  <zender@uci.edu>
 
-	* ncclimo/ncremap choose correct batch and MPI type for blues/anvil
+	* ncremap skip Tempest alg_typ 'tempest' in MWF mode when called with .nc grids
+
+	* ncclimo/ncremap choose correct batch and MPI type for	blues/anvil, requested by Balwinder Singh
 
 	* nco_ntp_vrt() missing value extrapolation works, still need to add _FillValue attribute and option
 

@@ -1213,7 +1213,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
     if [[ ${grd_dst} == *.g ]]; then 
 	alg_lst='fv2se_flx fv2se_stt fv2se_alt'
     else
-	alg_lst='aave blin ndtos nstod patc tempest'
+	alg_lst='aave blin ndtos nstod patc'
     fi # !grd_dst
     # Compute FV->SE maps
     if [ -n "${hnt_src}" ]; then 
@@ -1289,7 +1289,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	    fi # !ERWG
 	fi # !wgt_usr
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "MWF: Create ${alt_typ} map ${map_nm}\n"
+	    printf "MWF: Create ${alg_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
 	cmd_fwm="ncremap ${wgt_sng} ${a2o_sng} --alg_typ=${alg_typ} --grd_src=\"${grd_dst}\" --grd_dst=\"${grd_src}\" ${hnt_src_sng} ${hnt_dst_sng} --map=\"${map_nm}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
