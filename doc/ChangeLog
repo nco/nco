@@ -1,5 +1,7 @@
 2019-06-07  Charlie Zender  <zender@uci.edu>
 
+	* ncremap outputs intersection meshfile with --msh_fl
+
 	* Cori add '-C knl' to interactive queue requests
 
 	* Remove gsl and udunits modules from NCO_PATH_OVERRIDE actions on Cori

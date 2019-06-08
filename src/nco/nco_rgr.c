@@ -85,11 +85,11 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->fl_grd_src) rgr->fl_grd_src=(char *)nco_free(rgr->fl_grd_src);
   if(rgr->fl_grd_dst) rgr->fl_grd_dst=(char *)nco_free(rgr->fl_grd_dst);
   if(rgr->fl_in) rgr->fl_in=(char *)nco_free(rgr->fl_in);
+  if(rgr->fl_map) rgr->fl_map=(char *)nco_free(rgr->fl_map);
+  if(rgr->fl_msh) rgr->fl_msh=(char *)nco_free(rgr->fl_msh);
   if(rgr->fl_out) rgr->fl_out=(char *)nco_free(rgr->fl_out);
   if(rgr->fl_out_tmp) rgr->fl_out_tmp=(char *)nco_free(rgr->fl_out_tmp);
-  if(rgr->fl_map) rgr->fl_map=(char *)nco_free(rgr->fl_map);
   if(rgr->fl_vrt) rgr->fl_vrt=(char *)nco_free(rgr->fl_vrt);
-  if(rgr->fl_msh) rgr->fl_msh=(char *)nco_free(rgr->fl_msh);
 
   if(rgr->var_nm) rgr->var_nm=(char *)nco_free(rgr->var_nm);
   if(rgr->xtn_var) rgr->xtn_var=(char **)nco_sng_lst_free(rgr->xtn_var,rgr->xtn_nbr);
@@ -277,9 +277,9 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_grd=NULL; /* [sng] Name of SCRIP grid file to create */
   rgr->fl_hnt_dst=NULL; /* [sng] ERWG hint destination */
   rgr->fl_hnt_src=NULL; /* [sng] ERWG hint source */
+  rgr->fl_msh=NULL; /* [sng] Name of SCRIP intersection mesh file to create */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
-  rgr->fl_msh=NULL;   /* [sng] Name of SCRIP  overlap  file to create */
   rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_dgn_area=False; /* [flg] Diagnose rather than copy inferred area */
@@ -328,6 +328,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_msk_out=True;
       continue;
     } /* !msk_var */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"msh") || !strcmp(rgr_lst[rgr_var_idx].key,"mesh")){
+      rgr->fl_msh=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !msh */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"skl")){
       rgr->fl_skl=(char *)strdup(rgr_lst[rgr_var_idx].val);
       rgr->flg_grd=True;
@@ -621,13 +625,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !vrt_nm */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"msh_fl")){
-      rgr->fl_msh=(char *)strdup(rgr_lst[rgr_var_idx].val);
-      continue;
-    } /* !msh_fl */
-
-
-
     (void)fprintf(stderr,"%s: ERROR %s reports unrecognized key-value option to --rgr switch: %s\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key);
     nco_exit(EXIT_FAILURE);
   } /* end for */

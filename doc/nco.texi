@@ -22906,7 +22906,8 @@ SYNTAX
 ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dpt] [--dpt_fl=@var{dpt_fl}]
 [--dt_sng=@var{dt_sng}] [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]
-[-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-M] [-m @var{map_fl}]
+[-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}]
+[-M] [-m @var{map_fl}] [--msh_fl=@var{msh_fl}]
 [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
 [--no_cll_msr] [--no_frm_trm] [--no_stg_grd]
@@ -23849,6 +23850,30 @@ Nodes with only one I/O channel to disk may be better exploited
 by utilizing more threads per process.
 
 @html
+<a name="map_mlt"></a> <!-- http://nco.sf.net/nco.html#map_mlt -->
+@end html
+@cindex @code{-M}
+@cindex @code{--mlt_map}
+@cindex @code{--multimap}
+@cindex @code{--no_multimap}
+@cindex @code{--nomultimap}
+@item -M (@code{--mlt_map}, @code{--multimap}, @code{--no_multimap}, @code{--nomultimap})
+@command{ncremap} assumes that every input file is on a unique grid
+unless a source gridfile is specified (with @samp{-s @var{grd_src}})
+or multiple-mapfile generation is explicitly turned-off (with
+@samp{-M}). 
+The @samp{-M} switch is toggled, it requires and accepts no argument. 
+Toggling @samp{-M} tells @command{ncremap} to generate at most one
+mapfile regardless of the number of input files. 
+If @samp{-M} is not toggled (and neither 
+@samp{-m @var{map_fl}} nor @samp{-s @var{grd_src}} is invoked)   
+then @command{ncremap} will use @acronym{ERWG} to generate a new mapfile
+for each input file. 
+Generating new mapfiles for each input file is necessary for processing
+batches of data on different grids (e.g., swath-like data), and slow,
+tedious, and unnecessary when batch processing data on the same grids.
+
+@html
 <a name="map_fl"></a> <!-- http://nco.sf.net/nco.html#map_fl -->
 @end html
 @cindex @code{-m @var{map_fl}}
@@ -23883,28 +23908,30 @@ the command invoking @command{ncremap}, and the map-generating command
 invoked by @command{ncremap}.
 
 @html
-<a name="map_mlt"></a> <!-- http://nco.sf.net/nco.html#map_mlt -->
+<a name="msh_fl"></a> <!-- http://nco.sf.net/nco.html#msh_fl -->
 @end html
-@cindex @code{-M}
-@cindex @code{--mlt_map}
-@cindex @code{--multimap}
-@cindex @code{--no_multimap}
-@cindex @code{--nomultimap}
-@item -M (@code{--mlt_map}, @code{--multimap}, @code{--no_multimap}, @code{--nomultimap})
-@command{ncremap} assumes that every input file is on a unique grid
-unless a source gridfile is specified (with @samp{-s @var{grd_src}})
-or multiple-mapfile generation is explicitly turned-off (with
-@samp{-M}). 
-The @samp{-M} switch is toggled, it requires and accepts no argument. 
-Toggling @samp{-M} tells @command{ncremap} to generate at most one
-mapfile regardless of the number of input files. 
-If @samp{-M} is not toggled (and neither 
-@samp{-m @var{map_fl}} nor @samp{-s @var{grd_src}} is invoked)   
-then @command{ncremap} will use @acronym{ERWG} to generate a new mapfile
-for each input file. 
-Generating new mapfiles for each input file is necessary for processing
-batches of data on different grids (e.g., swath-like data), and slow,
-tedious, and unnecessary when batch processing data on the same grids.
+@cindex @code{--msh_fl=@var{msh_fl}}
+@cindex @var{msh_fl}
+@cindex @code{--msh_fl}
+@cindex @code{--msh}
+@cindex @code{--mesh}
+@cindex @code{--mesh_file}
+@item -m @var{msh_fl} (@code{--msh_fl}, @code{--msh}, @code{--mesh}, @code{--mesh_file})
+Specifies a meshfile (aka intersection mesh, aka overlap mesh) that
+stores the grid formed by the intersection of the source and 
+destination grids.
+If not specified then @command{ncremap} will name any internally
+generated meshfile with a temporary name and delete the file prior
+to exiting.
+@acronym{NCO} and TempestRemap support archiving the meshfile,
+and @acronym{ERWG} does not.
+@acronym{NCO} stores the meshfile in @acronym{SCRIP} format, while
+TempestRemap stores it in Exodus format (with a @samp{.g} suffix).
+@command{ncremap} adds provenance information to any newly generated
+mesh-file whose name was specified with @samp{--msh_fl=@var{msh_fl}}.
+This provenance includes a @code{history} attribute that contains
+the command invoking @command{ncremap}, and the map-generating command
+invoked by @command{ncremap}.
 
 @html
 <a name="msk_dst"></a> <!-- http://nco.sf.net/nco.html#msk_dst -->
