@@ -145,8 +145,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    # Loading gsl and udunits seems to do no harm, so always do it
 	    # This is equivalent to LD_LIBRARY_PATH method used for netCDF and SZIP on rhea
 	    # Why do cori and rhea require workarounds for different packages?
-	    module load gsl
-	    module load udunits
 	    if [ ${spt_nm} = 'ncremap' ]; then
 		module load ncl # 20170916 OK
 	    fi # !ncremap

@@ -1,5 +1,7 @@
 2019-06-07  Charlie Zender  <zender@uci.edu>
 
+	* Remove gsl and udunits modules from NCO_PATH_OVERRIDE actions on Cori
+
 	* NCO 4.8.1-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha05: Tampa Mockingbird';git push
 	git tag -a 4.8.1-alpha05 -m 'ncremap MWF w/o tempest, MPI for blues, xtr_fll_msv, AppVeyor fix';git push --tags
