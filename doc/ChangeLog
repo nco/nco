@@ -1,5 +1,7 @@
 2019-06-07  Charlie Zender  <zender@uci.edu>
 
+	* Cori add '-C knl' to interactive queue requests
+
 	* Remove gsl and udunits modules from NCO_PATH_OVERRIDE actions on Cori
 
 	* NCO 4.8.1-alpha05 release procedure:

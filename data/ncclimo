@@ -297,7 +297,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cheyenne: qsub -I -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
 #   Compy:  salloc  -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo
 #   Cooley: qsub -I -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname=ncclimo
-#   Cori:   salloc  -A acme --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
+#   Cori:   salloc  -A acme -C knl --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
 #   Rhea:   qsub -I -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs|slurm] b) qsub ncclimo.[cobalt|pbs|slurm]
 # Non-interactive batch queue differences (besides argument syntax):
@@ -582,7 +582,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
     printf "compy : salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
-    printf "cori  : salloc  -A acme --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
+    printf "cori  : salloc  -A acme -C knl --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
     printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
     printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -lpartition=gpu -N ncclimo # Bigmem\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
