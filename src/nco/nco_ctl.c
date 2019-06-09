@@ -690,56 +690,6 @@ nco_is_sz_rnk_prv_rth_opr /* [fnc] Is program size and rank-preserving arithmeti
 } /* end nco_is_sz_rnk_prv_rth_opr() */
 
 void
-nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
-{
-  /* Purpose: Print netCDF library version */
-
-  char *cmp_dat_sng;
-  char *dlr_ptr;
-  char *lbr_sng;
-  char *lbr_vrs_sng;
-  char *of_ptr;
-
-  size_t cmp_dat_sng_lng;
-  size_t lbr_vrs_sng_lng;
-
-  /* Behavior of nc_inq_libvers() depends on library versions. Return values are:
-     netCDF 3.4--3.6.x: "3.4 of May 16 1998 14:06:16 $"
-     netCDF 4.0-alpha1--4.0-alpha10: NULL
-     netCDF 4.0-alpha11--4.0-alpha16: "4.0-alpha11"
-     netCDF 4.0-beta1--4.4: "4.0-beta1"
-     netCDF 4.4--present: "4.5.0-development" */  
-  lbr_sng=(char *)strdup(nc_inq_libvers());
-  /* (void)fprintf(stderr,"%s: nco_lbr_vrs_prn() returns %s\n",nco_prg_nm_get(),lbr_sng);*/
-  of_ptr=strstr(lbr_sng," of ");
-  if(of_ptr == NULL){
-    (void)fprintf(stderr,"%s: WARNING nco_lbr_vrs_prn() reports of_ptr == NULL\n",nco_prg_nm_get());
-    lbr_vrs_sng_lng=(size_t)strlen(lbr_sng);
-  }else{
-    lbr_vrs_sng_lng=(size_t)(of_ptr-lbr_sng);
-  } /* endif */
-  lbr_vrs_sng=(char *)nco_malloc(lbr_vrs_sng_lng+1ul);
-  strncpy(lbr_vrs_sng,lbr_sng,lbr_vrs_sng_lng);
-  lbr_vrs_sng[lbr_vrs_sng_lng]='\0'; /* NUL-terminate */
-
-  dlr_ptr=strstr(lbr_sng," $");
-  if(of_ptr && dlr_ptr){
-    cmp_dat_sng_lng=(size_t)(dlr_ptr-of_ptr-4ul); /* 4 is the length of " of " */
-    cmp_dat_sng=(char *)nco_malloc(cmp_dat_sng_lng+1ul);
-    strncpy(cmp_dat_sng,of_ptr+4ul,cmp_dat_sng_lng); /* 4 is the length of " of " */
-    cmp_dat_sng[cmp_dat_sng_lng]='\0'; /* NUL-terminate */
-  }else{
-    cmp_dat_sng=(char *)strdup("Unknown");
-  } /* endif */
-
-  (void)fprintf(stderr,"Linked to netCDF library version %s compiled %s\n",lbr_vrs_sng,cmp_dat_sng);
-
-  cmp_dat_sng=(char *)nco_free(cmp_dat_sng);
-  lbr_vrs_sng=(char *)nco_free(lbr_vrs_sng);
-  lbr_sng=(char *)nco_free(lbr_sng);
-} /* end nco_lbr_vrs_prn() */
-
-void
 nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 {
   /* Purpose: Print NCO configuration and help text */
@@ -749,7 +699,6 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
   (void)fprintf(stdout,"Code: http://github.com/nco/nco\n");
   (void)fprintf(stdout,"Build-engine: %s\n",bld_ngn);
   (void)fprintf(stdout,"User Guide: http://nco.sf.net/nco.html\n");
-  (void)fprintf(stderr,"%s\n",nco_nmn_get());
   /* fxm: TKN2YESNO breaks when TKN is undefined
      Full macro language like M4 might be useful here, though probably too much trouble */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
@@ -842,14 +791,6 @@ nco_cnf_prn(void) /* [fnc] Print NCO configuration and help text */
 #endif /* !ENABLE_UDUNITS */
 		"\n"); /* End of print statement marker */
 } /* end nco_cnf_prn() */
-
-const char * /* O [sng] Mnemonic that describes current NCO version */
-nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
-{ 
-  /* Purpose: Return mnemonic describing current NCO version
-     Always include terminal \n so mnemonic does not dangle */
-  return "Mnemonic: School of Rock\n";
-} /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
 nco_prg_prs /* [fnc] Strip program name to stub and set program ID */

@@ -2,7 +2,9 @@
 
 	* NCO 4.8.1-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha06: School of Rock';git push
-	git tag -a 4.8.1-alpha06 -m 'ncremap --msh_fl;Cori tweaks';git push --tags
+	git tag -a 4.8.1-alpha06 -m 'ncremap --msh_fl;Cori tweaks;ncks xtr_mth mss_val';git push --tags
+
+	* Move nco_nmn_get() and nco_lbr_vrs_prn/() from nco_ctl.c to nco_scm.c, re-jigger version banner
 
 	* nco_ntp_vrt() handle xtr_mth option with rgr parameter database
 

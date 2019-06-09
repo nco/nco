@@ -81,14 +81,8 @@ nco_dfl_case_tmr_typ_err(void); /* [fnc] Print error and exit for illegal switch
 void
 nco_cnf_prn(void); /* [fnc] Print NCO configuration and help text */
 
-void
-nco_lbr_vrs_prn(void); /* [fnc] Print netCDF library version */
-
 const char * /* O [sng] MPI implementation */
 nco_mpi_get(void); /* [fnc] Return MPI implementation */
-
-const char * /* O [sng] Mnemonic that describes current NCO version */
-nco_nmn_get(void); /* [fnc] Return mnemonic that describes current NCO version */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
 nco_prg_prs /* [fnc] Strip program name to stub and set program ID */

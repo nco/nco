@@ -35,12 +35,18 @@ char * /* O [sng] CVS version string */
 cvs_vrs_prs(void); /* [fnc] Return CVS version string */
 
 void
+nco_cpy_prn(void); /* [fnc] Print copyright notice */
+
+void
+nco_lbr_vrs_prn(void); /* [fnc] Print netCDF library version */
+
+const char * /* O [sng] Mnemonic that describes current NCO version */
+nco_nmn_get(void); /* [fnc] Return mnemonic that describes current NCO version */
+
+void
 nco_vrs_prn /* [fnc] Print NCO version */
 (const char * const CVS_Id, /* I [sng] CVS identification string */
  const char * const CVS_Revision); /* I [sng] CVS revision string */
-
-void
-nco_cpy_prn(void); /* [fnc] Print copyright notice */
 
 #ifdef __cplusplus
 } /* end extern "C" */
