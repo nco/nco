@@ -1065,6 +1065,21 @@ extern "C" {
     nco_grd_lon_bb, /* Longitude grid determined by bounding box (lon_wst/lon_est) and gridcell number (lon_nbr) */
   } nco_grd_lon_typ_enm;
 
+  typedef enum nco_xtr_typ_enm 
+    { /* [enm] Extrapolation type enum */
+     nco_xtr_fll_lnr=0, // Perform linear extrapolation using two nearest valid neighbors
+     nco_xtr_fll_ngh, // Set extrapolated value to value of nearest valid neighbor
+     nco_xtr_fll_nil, // Set extrapolated value to 0.0
+     nco_xtr_fll_tpt, // Temperature extrapolation assuming moist adiabatic lapse rate dT/dp=constant=(6.5 K)/(10000 Pa)
+     nco_xtr_fll_gph, // Geopotential height extrapolation assuming hydrostatic equation dZ/dp=-RT/pg
+     nco_xtr_fll_msv, // Set extrapolated value to missing value
+     nco_xtr_prt_frc, // Use average value of overlap region
+     nco_xtr_prt_lnr, // Perform linear extrapolation using two nearest valid neighbors
+     nco_xtr_prt_ngh, // Set extrapolated value to value of nearest valid neighbor
+     nco_xtr_prt_nil, // Set extrapolated value to 0.0
+     nco_xtr_prt_wgt // Set extrapolated value to average value of overlap region weighted by size of overlap region plus 0.0 weighted by size of non overlap region (implies xtr_frc)
+    } nco_xtr_typ_enm;
+
   /* CF Coordinates structure (20160503: Used only in ncks.c for to infer grids from CF coordinates convention) */
   typedef struct{ /* clm_bnd_sct */
     char *crd_nm[2]; /* [sng] Coordinate names */
@@ -1195,6 +1210,7 @@ extern "C" {
     nco_grd_lat_drc_enm lat_drc; /* [enm] Latitude grid-direction enum */
     nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
     nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
+    nco_xtr_typ_enm xtr_mth; /* [enm] Extrapolation method */
     // Other internal data and metadata 
     char **xtn_var; /* [sng] Extensive variables */
     char *cmd_ln; /* [sng] Command-line */
@@ -1220,7 +1236,7 @@ extern "C" {
     nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
     nco_bool flg_stg; /* [flg] Write staggered grid with FV output */
-    nco_bool flg_usr_rqs; /* [flg] User requested regridding */
+    nco_bool flg_usr_rqs; /* [flg] User-requested regridding */
   } rgr_sct; /* end Regrid structure */
 
   /* Key-value structure */

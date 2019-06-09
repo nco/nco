@@ -1,3 +1,15 @@
+2019-06-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.1-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha06: School of Rock';git push
+	git tag -a 4.8.1-alpha06 -m 'ncremap --msh_fl;Cori tweaks';git push --tags
+
+	* nco_ntp_vrt() handle xtr_mth option with rgr parameter database
+
+	* nco_ntp_vrt() add _FillValue attributes if necessary when missing value extrapolation requested
+
+	* nco_ntp_vrt() pre-screen to determine whether extrapolation necessary
+
 2019-06-07  Charlie Zender  <zender@uci.edu>
 
 	* ncremap outputs intersection meshfile with --msh_fl
@@ -8,7 +20,7 @@
 
 	* NCO 4.8.1-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha05: Tampa Mockingbird';git push
-	git tag -a 4.8.1-alpha05 -m 'ncremap MWF w/o tempest, MPI for blues, xtr_fll_msv, AppVeyor fix';git push --tags
+	git tag -a 4.8.1-alpha05 -m 'ncremap MWF w/o tempest, blues MPI, xtr_fll_msv, AppVeyor fix';git push --tags
 
 	* ncremap skip Tempest alg_typ 'tempest' in MWF mode when called with .nc grids
 

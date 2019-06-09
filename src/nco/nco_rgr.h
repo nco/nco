@@ -126,21 +126,6 @@ extern "C" {
     char *dest_grid; /* [sng] Destination grid */
   } nco_mpf_sct;
   
-  typedef enum nco_xtr_typ_enm
-    { /* [enm] Extrapolation type enum */
-     nco_xtr_fll_lnr=0, // Perform linear extrapolation using two nearest valid neighbors
-     nco_xtr_fll_ngh, // Set extrapolated value to value of nearest valid neighbor
-     nco_xtr_fll_nil, // Set extrapolated value to 0.0
-     nco_xtr_fll_tpt, // Temperature extrapolation assuming moist adiabatic lapse rate dT/dp=constant=(6.5 K)/(10000 Pa)
-     nco_xtr_fll_gph, // Geopotential height extrapolation assuming hydrostatic equation dZ/dp=-RT/pg
-     nco_xtr_fll_msv, // Set extrapolated value to missing value
-     nco_xtr_prt_frc, // Use average value of overlap region
-     nco_xtr_prt_lnr, // Perform linear extrapolation using two nearest valid neighbors
-     nco_xtr_prt_ngh, // Set extrapolated value to value of nearest valid neighbor
-     nco_xtr_prt_nil, // Set extrapolated value to 0.0
-     nco_xtr_prt_wgt // Set extrapolated value to average value of overlap region weighted by size of overlap region plus 0.0 weighted by size of non overlap region (implies xtr_frc)
-    } nco_xtr_typ_enm;
-
   typedef struct{ /* nco_xtr_sct */
     /* NCO extrapolation structure */
     bool xtr_fll; // Full extrapolation is allowed (implies xtr_prt)
