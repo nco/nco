@@ -315,10 +315,14 @@ int *pl_nbr)
 
       continue;
     }
+    
     /* add centroid from input  */
     pl->dp_x_ctr=lon_ctr[idx];
     pl->dp_y_ctr=lat_ctr[idx];
 
+    
+    
+    
 
     /* pop shp */
     nco_poly_shp_pop(pl);
@@ -345,10 +349,9 @@ int *pl_nbr)
     /* use Charlie's formula */
     nco_poly_area_add(pl);
 
-
-
-
-    /* add centers
+    /* fxm:2019-06-07 - there is a problem using the polygon center  as a control point as
+     * for some RLL grids the center of a polar triangle can be the pole */
+    /*
     nco_poly_ctr_add(pl, grd_lon_typ);
     if(pl->bwrp)
       (void)fprintf(stderr,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  fnc_nm, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
@@ -475,9 +478,11 @@ int *pl_cnt_vrl_ret){
 
   }
 
-  /* rebuild tree for faster access */
+  /* rebuild not working
+   * rebuild tree for faster access
   kd_rebuild(rtree);
   kd_rebuild(rtree);
+   */
 
   /* kd_print(rtree); */
 
@@ -518,7 +523,7 @@ int *pl_cnt_vrl_ret){
         pl_vrl=nco_poly_dpl(pl_out);
       }
       else
-        pl_vrl= nco_poly_vrl_do(pl_lst_in[idx], pl_out);
+        pl_vrl= nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
 
       if(pl_vrl){
         nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
@@ -590,6 +595,7 @@ int *pl_cnt_vrl_ret){
   int pl_cnt_vrl=0;
   int wrp_cnt=0;
   int pl_cnt_dbg=0;
+  int nan_cnt=0;
 
 
   poly_typ_enm pl_typ;
@@ -695,63 +701,103 @@ int *pl_cnt_vrl_ret){
 
 
 
-      pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out);
-
-      /* if pl_vrl is NULL from,  nco_poly_do_vrl()  then there are 3 possible senario's
-       *
-       *  1) pl_lst_in[idx] and pl_out are seperate and  distinct
-       *
-       *  2) pl_lst_in[idx] is entirely inside pl_out.
-       *     to check for this it is sufficent to check the
-       *     the minmax bounds and then also  check that a single vertex
-       *     from pl_lst_in[idx] is inside pl_out
-       *
-       *  3) pl_out is entirely inside pl_lst_in[idx]
-       *     check minmax bounds then check a single vertex from
-       *     pl_out
-       */
-
-      if (pl_vrl == (poly_sct *)NULL_CEWI) {
 
 
+      if(pl_typ== poly_rll)
+      {
 
-       if(pl_typ== poly_sph ) {
+        pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
 
-         /* see if pl_out completley inside pl_lst_in[idx] */
-           if(nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out)) {
-             if (nco_sph_poly_in_poly(pl_lst_in[idx], pl_out))
-               pl_vrl = nco_poly_dpl(pl_out);
-           }
-           else if(nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
-             if(nco_sph_poly_in_poly(pl_out, pl_lst_in[idx]))
-               pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
-
-
-           /*
-           if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out)) {
-             if (nco_sph_mk_control(pl_lst_in[idx], bInside, pControl) &&
-                 nco_sph_pnt_in_poly(pl_lst_in[idx]->shp, pl_lst_in[idx]->crn_nbr, pControl, pl_out->shp[0]) % 2 == 0  )
-               pl_vrl = nco_poly_dpl(pl_out);
-           }
-
-           else if (nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx])) {
-             if (nco_sph_mk_control(pl_out, bInside, pControl) &&
-                 nco_sph_pnt_in_poly(pl_out->shp, pl_out->crn_nbr, pControl, pl_lst_in[idx]->shp[0]) %2 == 0  )
-               pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
-           }
-           */
-
-       }
+        /* if pl_vrl is NULL from,  nco_poly_do_vrl()  then there are 3 possible senario's
+         *
+         *  1) pl_lst_in[idx] and pl_out are seperate and  distinct
+         *
+         *  2) pl_lst_in[idx] is entirely inside pl_out.
+         *     to check for this it is sufficent to check the
+         *     the minmax bounds and then also  check that a single vertex
+         *     from pl_lst_in[idx] is inside pl_out
+         *
+         *  3) pl_out is entirely inside pl_lst_in[idx]
+         *     check minmax bounds then check a single vertex from
+         *     pl_out
+         */
 
 
-       if(pl_typ== poly_rll)
-       {
-         if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out))
-           pl_vrl= nco_poly_dpl(pl_out);
-         else if(nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
-           pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
 
-       }
+        if(!pl_vrl)
+        {
+          if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out))
+            pl_vrl = nco_poly_dpl(pl_out);
+          else if (nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
+            pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
+
+        }
+      }
+
+      if(pl_typ== poly_sph ) {
+        int lret = 0;
+        char sp_sng[VP_MAX];
+
+        sp_sng[0]='\0';
+
+
+        nco_sph_intersect_pre(pl_lst_in[idx], pl_out, sp_sng);
+
+        if(0 && nco_dbg_lvl_get() >= nco_dbg_dev)
+          (void)fprintf(stderr,"%s:%s(): sp_sng=%s \n",nco_prg_nm_get(),fnc_nm, sp_sng  );
+
+
+        lret = nco_sph_process_pre(pl_out, sp_sng);
+
+        /* all vertex/edges for pl_out are inside pl_lst_in[idx]  */
+        if (lret == 1)
+          pl_vrl = nco_poly_dpl(pl_out);
+
+        /* all vertex from pl_lst_in[idx] are outside pl_out */
+        if(lret==2) {
+          pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char *) NULL);
+          if(!pl_vrl) {
+          /* try reverse */
+          sp_sng[0]='\0';
+            nco_sph_intersect_pre(pl_out, pl_lst_in[idx], sp_sng);
+            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out,sp_sng );
+
+          }
+
+        }
+        /* mixed with only a single 'e' 'i' */
+        if(lret==3)
+          pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
+
+        if (lret == 4)
+          pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, sp_sng);
+
+
+       if (!pl_vrl && nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
+        if (nco_sph_poly_in_poly(pl_out, pl_lst_in[idx]))
+          pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
+
+
+       /*
+
+       pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
+
+       if (!pl_vrl) {
+
+
+        double pControl[NBR_SPH];
+
+        if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out)) {
+          if (nco_sph_poly_in_poly(pl_lst_in[idx], pl_out))
+            pl_vrl = nco_poly_dpl(pl_out);
+        } else if (nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
+          if (nco_sph_poly_in_poly(pl_out, pl_lst_in[idx]))
+            pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
+
+
+      }
+      */
+      }
 
 
         /* add aprropriate id's */
@@ -763,7 +809,7 @@ int *pl_cnt_vrl_ret){
 
 
 
-      }
+
 
 
       if (pl_vrl) {
@@ -795,6 +841,9 @@ int *pl_cnt_vrl_ret){
 
         wrp_cnt+=pl_vrl->bwrp;
 
+        if( isnan(pl_vrl->area) )
+          { nan_cnt++; pl_vrl->area=0.0; }
+
         vrl_area += pl_vrl->area;
 
         if( nbr_vrl_blocks * NCO_VRL_BLOCKSIZE  <  pl_cnt_vrl+1  )
@@ -814,15 +863,15 @@ int *pl_cnt_vrl_ret){
     } /* end jdx */
 
     /* charlies area function sometimes returns Nan */
-    if( !isnan(vrl_area) )
-       tot_area+=vrl_area;
+    //if( isnan(vrl_area) )
+    tot_area+=vrl_area;
 
 
     if (nco_dbg_lvl_get() >= nco_dbg_dev) {
       /* area diff by more than 10% */
-      double eps=1e-10;
+      double eps=1e-5;
       double frc = vrl_area / pl_lst_in[idx]->area;
-      if (  frc< (1.0-eps)  || frc >1.0+eps) {
+      if (  frc< (1-eps)  || frc >1+eps) {
         (void) fprintf(stderr,
                        "%s: polygon %lu - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e  adiff=%.15e bSplit=%d\n",
                        nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area, ( pl_lst_in[idx]->area - vrl_area), bSplit);
@@ -837,10 +886,10 @@ int *pl_cnt_vrl_ret){
 
           if (1) {
             (void) fprintf(stderr, "/** following pl_lst_in[%lu]  **/\n", idx);
-            nco_poly_prn(pl_lst_in[idx], 1);
+            nco_poly_prn(pl_lst_in[idx], 0);
             (void) fprintf(stderr, "/** potential overlaps to  follow  **/\n");
             for (jdx = 0; jdx < cnt_vrl; jdx++)
-              nco_poly_prn((poly_sct *) list[jdx].elem->item, 1);
+              nco_poly_prn((poly_sct *) list[jdx].elem->item, 0);
 
             (void) fprintf(stderr, "/************* end dirty rats ***************/\n");
           }
@@ -858,7 +907,7 @@ int *pl_cnt_vrl_ret){
 
   /* final report */
   if (nco_dbg_lvl_get() >= nco_dbg_dev)
-      (void) fprintf(stderr, "%s: total overlaps=%d, total_area(sphere)=%3.10f total num wrapped=%d\n", nco_prg_nm_get(), pl_cnt_vrl, tot_area  , wrp_cnt);
+      (void) fprintf(stderr, "%s: total overlaps=%d, total_area(sphere)=%3.10f total num wrapped= %d nan nbr=%d \n", nco_prg_nm_get(), pl_cnt_vrl, tot_area  , wrp_cnt, nan_cnt);
 
 
   kd_destroy(rtree,NULL);
