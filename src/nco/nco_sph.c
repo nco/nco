@@ -79,7 +79,7 @@ void nco_sph_prn(double **sR, int r, int istyle)
 
 
 /* spherical functions */
-int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
+int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, const char *pq_pre)
 {
   const char fnc_nm[]="nco_sph_intersect()";
 
@@ -109,7 +109,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
    double dx1;
 
 
-   char code='0';
+   char codes[]="00";
 
    double Pcross[NBR_SPH];
    double Qcross[NBR_SPH];
@@ -234,21 +234,34 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       if(isGeared)
       {
 
+        if(inflag==poly_vrl_unk && pq_pre)
+        {
+          if(pq_pre[b]=='i')
+            inflag=poly_vrl_qin;
+          else if(  (pq_pre[b]=='e' || pq_pre[b]=='v') && pq_pre[b1]=='i'  )
+            inflag=poly_vrl_qin;
+
+
+        }
+
+
+
         //if(isParallel)
         if(ipqLHS==0 && ip1qLHS==0 && iqpLHS==0 && iq1pLHS==0)
         {
+          char pcode='0';
           poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
 
-          code = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
+          pcode = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
 
 
 
-          if (  !(code=='1' && inflag== poly_vrl_unk)  &&   lcl_inflag != poly_vrl_unk   ) {
+          if (  !(pcode=='1' && inflag== poly_vrl_unk)  &&   lcl_inflag != poly_vrl_unk   ) {
 
             inflag = lcl_inflag;
 
             /* there is a subtle  trick here - a point is "force added" by setting the flags pqFace and qpFace */
-            if (code == '2')
+            if (pcode == '2')
               nco_sph_add_pnt(R->shp, r, p);
 
             if (inflag == poly_vrl_pin) {
@@ -267,21 +280,49 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
             }
           }
 
+          if(pcode=='1')
+            strcpy(codes,"p0");
+          if(pcode=='2')
+            strcpy(codes,"pp");
 
         }
 
-        if(ip1qLHS*ipqLHS==-1 && iq1pLHS*iqpLHS==-1){
-        //if(!isParallel){
+        if(ip1qLHS*ipqLHS==-1 && iq1pLHS*iqpLHS==-1  && nco_sph_seg_int_nw(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q,codes) )
+        {
+          /* if here then there is some kind of intersection */
 
 
-          code = nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q);
+          if(inflag== poly_vrl_unk )
+          {
+            /* no problem with genuine intersection */
+            if(codes[0]=='1' && codes[1]=='1' )
+              inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
 
-          /* if  a vertex is found before the first intersection  this does NOT
-           * imply that there is an intersection - this avoid senarios where
-           * P And Q share a vertex and nothing else */
-          if (code == '1' || code == 'v' && inflag != poly_vrl_unk) {
-          //if (code == '1' || code == 'v' ) {
+            /*
+            else if(  pq_pre &&  (codes[0]=='h' || codes[0] =='t'  ))
+            {
 
+              if(pq_pre[b]=='v' || pq_pre[b] == 'e')
+                inflag=poly_vrl_pin;
+
+            }
+
+            else if(  pq_pre && codes[0]=='1')
+            {
+
+             if(  codes[1]=='h' &&  ( pq_pre[b1]=='v' ||  pq_pre[b1]=='i'  ) )
+               inflag=poly_vrl_pin;
+
+            }
+            */
+
+
+          }
+          else
+            inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
+
+          if(inflag != poly_vrl_unk)
+          {
             nco_sph_add_pnt(R->shp, r, p);
 
             if (numIntersect++ == 0) {
@@ -291,34 +332,18 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
             }
 
 
-            if( (code=='1' || code=='v' )  &&  !(ip1qLHS*ipqLHS==-1 ||   iq1pLHS*iqpLHS==-1))
-              if( nco_dbg_lvl_get() >= nco_dbg_dev ) {
-                (void) fprintf(stderr, "%s:%s( code=%c ip1qLHS*ipqLHS=%d  iq1pLHS*iqpLHS=%d ) non standard intersect\n",
-                               nco_prg_nm_get(), fnc_nm, code, ip1qLHS * ipqLHS, iq1pLHS * iqpLHS);
-
-                nco_sph_prn_pnt("a1", P->shp[a1], 3, True);
-                nco_sph_prn_pnt("a", P->shp[a], 3, True);
-                nco_sph_prn_pnt("b1", Q->shp[b1], 3, True);
-                nco_sph_prn_pnt("b", Q->shp[b], 3, True);
-
-
-
-              }
-
-            //if(  !(code == 'v' && inflag == poly_vrl_unk)  )
-            inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
-
-
-
-
-            if (DEBUG_SPH)
-              printf("%%InOut sets inflag=%s\n", nco_poly_vrl_flg_sng_get(inflag));
 
           }
+
+
+          if (DEBUG_SPH)
+              printf("%%InOut sets inflag=%s\n", nco_poly_vrl_flg_sng_get(inflag));
+
+
         }
 
          if(DEBUG_SPH)
-            printf("numIntersect=%d code=%c (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d)\n",numIntersect, code, ipqLHS, ip1qLHS,  iqpLHS,iq1pLHS, qpFace,pqFace);
+            printf("numIntersect=%d codes=%s (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d)\n",numIntersect, codes, ipqLHS, ip1qLHS,  iqpLHS,iq1pLHS, qpFace,pqFace);
 
 
 
@@ -370,7 +395,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
       a%=n;
       b%=m;
-      code='0';
+      strcpy(codes,"00");
 
       if(DEBUG_SPH)
          fprintf(stdout, "\ndebug isGeared=%d a=%d aa=%d b=%d bb=%d \n",isGeared, a, aa, b, bb);
@@ -555,13 +580,13 @@ char  nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, dou
 
 
 nco_bool
-nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double *q, char *ps, char *qs)
+nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double *q, char codes[])
 {
   const char fnc_nm[]="nco_sph_seg_int_nw()";
 
   int flg_sx=0;
 
-  int DEBUG_LCL=1;
+  int DEBUG_LCL=0;
 
   double nx1;
   double nx2;
@@ -602,8 +627,8 @@ nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double
   }
 
 
-  *ps='0';
-  *qs='0';
+  codes[0]='0';
+  codes[1]='0';
 
 
   /* Icross is zero, should really have a range rather than an explicit zero */
@@ -654,16 +679,16 @@ nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double
     /* determine if head or tail is intersection point */
     if(dx_ai==0.0)
     {
-      *ps = 't';
+      codes[0] = 't';
       memcpy(p,a, sizeof(double)*NBR_SPH);
 
     }
     else if( fabs(dx_ai-dx_ab)<=DOT_TOLERANCE  ) {
-      *ps = 'h';
+      codes[0] = 'h';
       memcpy(p,b, sizeof(double)*NBR_SPH);
     }
     else {
-      *ps = '1';
+      codes[0] = '1';
       //nco_sph_add_lonlat(Icross);
       memcpy(p,Icross, sizeof(double)*NBR_SPH);
 
@@ -672,24 +697,22 @@ nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double
     /* determine if head or tail is intersection point */
     if(dx_ci==0.0)
     {
-      *qs = 't';
+      codes[1] = 't';
       memcpy(p,c, sizeof(double)*NBR_SPH);
     }
     else if(fabs(dx_ci-dx_cd)<=DOT_TOLERANCE) {
-      *qs = 'h';
+      codes[1] = 'h';
       memcpy(p,d, sizeof(double)*NBR_SPH);
     }
     else
       {
-      *qs = '1';
-      /*  not needed !?
-      nco_sph_add_lonlat(Icross);
+      codes[1] = '1';
+      /*  not needed */
       memcpy(p,Icross, sizeof(double)*NBR_SPH);
-       */
 
     }
     if(DEBUG_LCL)
-      fprintf(stderr,"%s(): code=%c%c\n", fnc_nm, *ps, *qs);
+      fprintf(stderr,"%s(): code=%sn", fnc_nm, codes);
 
     /*
     if(dx_ai==0 || fabs(dx_ai-dx_ab)<=DOT_TOLERANCE ||  dx_ci==0.0 || fabs(dx_ci-dx_cd)<=DOT_TOLERANCE )
@@ -741,16 +764,16 @@ nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double
     /* determine if head or tail is intersection point */
     if(dx_ai==0.0)
     {
-      *ps = 't';
+      codes[0] = 't';
       memcpy(p,a, sizeof(double)*NBR_SPH);
 
     }
     else if( fabs(dx_ai-dx_ab)<=DOT_TOLERANCE  ) {
-      *ps = 'h';
+      codes[0] = 'h';
       memcpy(p,b, sizeof(double)*NBR_SPH);
     }
     else {
-      *ps = '1';
+      codes[0] = '1';
       // nco_sph_add_lonlat(Icross);
       memcpy(p,Icross, sizeof(double)*NBR_SPH);
 
@@ -759,16 +782,16 @@ nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double
     /* determine if head or tail is intersection point */
     if(dx_ci==0.0)
     {
-      *qs = 't';
+      codes[1] = 't';
       memcpy(p,c, sizeof(double)*NBR_SPH);
     }
     else if(fabs(dx_ci-dx_cd)<=DOT_TOLERANCE) {
-      *qs = 'h';
+      codes[1] = 'h';
       memcpy(p,d, sizeof(double)*NBR_SPH);
     }
     else
     {
-      *qs = '1';
+      codes[1] = '1';
       /*  not needed !?
       nco_sph_add_lonlat(Icross);
       memcpy(p,Icross, sizeof(double)*NBR_SPH);
@@ -776,7 +799,7 @@ nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double
     }
 
     if(DEBUG_LCL)
-      fprintf(stderr,"%s(): code=%c%c\n", fnc_nm, *ps, *qs);
+      fprintf(stderr,"%s(): code=%s\n", fnc_nm, codes);
 
     /*
     if(dx_ai==0 || fabs(dx_ai-dx_ab)<=DOT_TOLERANCE ||  dx_ci==0.0 || fabs(dx_ci-dx_cd)<=DOT_TOLERANCE )
@@ -789,7 +812,8 @@ nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double
 
   }
 
-  fprintf(stderr,"%s(): code=%c%c\n", fnc_nm, *ps, *qs);
+  if(DEBUG_LCL)
+    fprintf(stderr,"%s(): code=%s\n", fnc_nm, codes);
 
 
 
@@ -943,7 +967,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
 
 nco_bool
-nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char *sq_sng  ) {
+nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]  ) {
 
   int n;
   int m;
@@ -953,12 +977,13 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char *sq_sng  ) {
   int numIntersect;
   int numVertex = 0;
 
-  char ps='0';
-  char qs='0';
-
   nco_bool bComplex = False;
 
-  char code = '0';
+  /* if true make control point INSIDE polygon
+   * else make OUTSIDE polygon */
+  nco_bool bInside=False;
+
+  char codes[2] ="00";
 
   double p[NBR_SPH];
   double q[NBR_SPH];
@@ -966,10 +991,17 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char *sq_sng  ) {
   double pControl[NBR_SPH];
 
 
-  /* make control point center of sP */
-  nco_sph_mk_control(sP, True, pControl);
+  /* fxm:2019-06-07 - there is a problem using the polygon center as
+   * for some RLL grids the center of a polar triangle can be the pole itself
+   * also there is a situation where for some polygons the center maybe outside polygon ?
+   * Also if we use a point outide we dont have to bother (re)calculating the center
+   */
 
-  nco_sph_prn_pnt("nco_sph_intersect_pre()/control pnt", pControl,3,True);
+  nco_sph_mk_control(sP, bInside, pControl);
+
+
+
+  // nco_sph_prn_pnt("nco_sph_intersect_pre()/control pnt", pControl,3,True);
 
   n = sP->crn_nbr;
   m = sQ->crn_nbr;
@@ -982,38 +1014,150 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char *sq_sng  ) {
 
     for (jdx = 0; jdx < n; jdx++) {
       jdx1 = (jdx + n - 1) % n;
-      (void)nco_sph_seg_int_nw(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx], p, q, &ps, &qs);
+      (void) nco_sph_seg_int_nw(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx], p, q, codes);
 
-      if(qs != '0' && qs != '1') {
+      if (codes[1] != '0' && codes[1] != '1') {
         bComplex = True;
         break;
       }
 
-      if ( qs == '1')
+      if (codes[1] == '1')
         numIntersect++;
 
 
     }
 
-    if(bComplex)
-    {
+    if (bComplex) {
       /* head of q is on an edge of p */
-      if(ps=='1' && (qs=='h'|| qs=='t') )
-        sq_sng[idx]='e';
-      /* head of q is on vertex of p */
-      else if( (ps == 'h' || ps== 't') && qs=='h' )
-        sq_sng[idx]='v';
+      if (codes[0] == '1' && (codes[1] == 'h' || codes[1] == 't'))
+        sq_sng[idx] = 'e';
+        /* head of q is on vertex of p */
+      else if ((codes[0] == 'h' || codes[0] == 't') && codes[1] == 'h')
+        sq_sng[idx] = 'v';
 
-    } else if(numIntersect==0)
+    } else
+      if(bInside)
+        sq_sng[idx]= ( numIntersect==0 ? 'i': 'o' );
+      else
+        sq_sng[idx]= ( numIntersect %2 ? 'i' : 'o' );
+
+    /*
+    if(numIntersect==0)
       sq_sng[idx]='i';
     else if(numIntersect>0)
       sq_sng[idx]='o';
+    */
+
+
+
 
   }
+
+  sq_sng[m]='\0';
 
   return True;
 
 }
+
+int
+nco_sph_process_pre(poly_sct *sQ, char *sq_sng)
+{
+  int idx=0;
+  int sz;
+  int srt;
+
+  int numInside=0;
+  int numOutSide=0;
+  int numEdges=0;
+  int numVertex=0;
+
+  char *sq=NULL_CEWI;
+
+  sz=sQ->crn_nbr;
+
+  for(idx=0;idx<sz;idx++)
+  {
+    switch(sq_sng[idx])
+    {
+      case 'i':
+        numInside++;
+        break;
+
+      case 'o':
+        numOutSide++;
+        break;
+
+      case 'e':
+        numEdges++;
+        break;
+
+      case 'v':
+        numVertex++;
+        break;
+
+
+    }
+
+  }
+
+  /* all of Q is inside of P  or on vertex/edges  */
+  if(numOutSide==0 )
+     return 1;
+
+
+  if(numOutSide &&  !numInside  &&  !numEdges && !numEdges)
+     return 2;
+
+  /* need to do overlap  func but dont process sq_sng */
+  if(numOutSide && !numInside &&  (  (!numEdges && !numVertex ) ||  numEdges==1 && !numVertex || !numEdges && numVertex==1  ) )
+    return 3;
+
+
+  /* process sng */
+  /* find first outside point */
+  for(idx=0;idx<sz; idx++)
+    if( sq_sng[idx]=='o'   )
+      { srt=idx;break;   }
+
+
+   sq=strdup(sq_sng);
+
+   for(idx=0; idx<sz;idx++ )
+   {
+     int lx=(srt+idx)%sz;
+     char trg=sq[lx];
+     /* next char */
+     char trgN=sq[(lx+1)%sz];
+     /* previous char */
+     char trgP=sq[(srt+idx+sz-1) %sz];
+
+     if( trg == 'i'|| trg == 'o'  )
+       continue;
+
+     /*
+     if( ( trgP=='i' || trgP=='e' || trgP=='v') &&  (trg=='e' || trg=='v')  &&  ( trgN=='i' || trgN=='e' || trgN=='v')  )
+       sq[lx]='i';
+     */
+     if(  trgP !='o'   &&  (trg=='e' || trg=='v')  &&  trgN != 'o'  )
+       sq[lx]='i';
+
+
+
+   }
+
+   strcpy(sq_sng, sq);
+
+   if(sq)
+     sq=(char*)nco_free(sq);
+
+
+   return 4;
+
+
+}
+
+
+
 
 
 
@@ -1548,7 +1692,7 @@ double  bCross[NBR_SPH];
 for(idx=0; idx<np;idx++)
 {
   idx_pre=(idx + np -1)% np;
-  idx_nex=(idx + np +1)% np;
+  idx_nex=(idx +1)% np;
 
   if(flg_sx) {
     n1 = nco_sph_sxcross(sP[idx], sP[idx_pre], aCross);
@@ -1571,7 +1715,8 @@ for(idx=0; idx<np;idx++)
   if(DEBUG_SPH)
     printf("%s():, %d angle=%f, dp=%f, n1=%.15g n2=%.15g\n", fnc_nm, idx, theta*180.0/M_PI, dp, n1, n2);
 
-
+   if(dp<0.0)
+     return False;
   //if( fabs(theta - M_PI) >SIGMA_RAD )
   //   return False;
 

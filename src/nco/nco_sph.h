@@ -102,13 +102,13 @@ Function prototypes.
 ---------------------------------------------------------------------*/
 
 int
-nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r);
+nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, const char *pq_pre);
 
 char
 nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q);
 
 nco_bool
-nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double *q, char *ps, char *qs);
+nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double *q, char codes[]);
 
 char
 nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag );
@@ -182,6 +182,9 @@ nco_sph_mk_control(poly_sct *sP, nco_bool bInside,  double* pControl  ); /* make
 
 nco_bool
 nco_sph_intersect_pre(poly_sct *sP,poly_sct *sQ, char *sq_sng  );
+
+int
+nco_sph_process_pre(poly_sct *sQ, char *sq_sng);
 
 
 /***************** nco_geo functions these manimpulate lat & lon  ***************************/
