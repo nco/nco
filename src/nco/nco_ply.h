@@ -98,7 +98,8 @@ extern "C" {
   poly_sct*
   nco_poly_vrl_do(
   poly_sct *pl_in,
-  poly_sct *pl_out);
+  poly_sct *pl_out,
+  char *sp_sng);
 
 
 
