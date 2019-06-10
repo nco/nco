@@ -29,11 +29,11 @@
 
 /* Usage:
    ncflint -O -D 2 in.nc in.nc ~/foo.nc
-   ncflint -O -i lcl_time_hr,9.0 -v lcl_time_hr /data/zender/arese/clm/951030_0800_arese_clm.nc /data/zender/arese/clm/951030_1100_arese_clm.nc ~/foo.nc; ncks -H ~/foo.nc
-   ncflint -O -w 0.66666,0.33333 -v lcl_time_hr /data/zender/arese/clm/951030_0800_arese_clm.nc /data/zender/arese/clm/951030_1100_arese_clm.nc ~/foo.nc; ncks -H ~/foo.nc
-   ncflint -O -w 0.66666 -v lcl_time_hr /data/zender/arese/clm/951030_0800_arese_clm.nc /data/zender/arese/clm/951030_1100_arese_clm.nc ~/foo.nc; ncks -H ~/foo.nc
+   ncflint -O -i lcl_time_hr,9.0 -v lcl_time_hr ${DATA}/arese/clm/951030_0800_arese_clm.nc ${DATA}/arese/clm/951030_1100_arese_clm.nc ~/foo.nc; ncks -H ~/foo.nc
+   ncflint -O -w 0.66666,0.33333 -v lcl_time_hr ${DATA}/arese/clm/951030_0800_arese_clm.nc ${DATA}/arese/clm/951030_1100_arese_clm.nc ~/foo.nc; ncks -H ~/foo.nc
+   ncflint -O -w 0.66666 -v lcl_time_hr ${DATA}/arese/clm/951030_0800_arese_clm.nc ${DATA}/arese/clm/951030_1100_arese_clm.nc ~/foo.nc; ncks -H ~/foo.nc
 
-   ncdiff -O ~/foo.nc /data/zender/arese/clm/951030_0900_arese_clm.nc foo2.nc;ncks -H foo2.nc | m */
+   ncdiff -O ~/foo.nc ${DATA}/arese/clm/951030_0900_arese_clm.nc foo2.nc;ncks -H foo2.nc | m */
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */

@@ -1194,7 +1194,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(flg_grd_in_prs){
       double lev_in_max;
       if(lev_in[0] < lev_in[1]) lev_in_max=lev_in[lev_nbr_in-1]; else lev_in_max=lev_in[0];
-      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG %s lev_in_max = %g Pa\n",nco_prg_nm_get(),fnc_nm,lev_in_max);
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s lev_in_max = %g Pa\n",nco_prg_nm_get(),fnc_nm,lev_in_max);
       ps_in=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
       for(size_t idx_in=0;idx_in<ps_sz;idx_in++) ps_in[idx_in]=lev_in_max;
     } /* !flg_grd_in_prs */
@@ -1203,7 +1203,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(lev_out[0] < lev_out[1]) lev_out_max=lev_out[lev_nbr_out-1]; else lev_out_max=lev_out[0];
       ps_out=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
       for(size_t idx_out=0;idx_out<ps_sz;idx_out++) ps_out[idx_out]=lev_out_max;
-      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG %s lev_out_max = %g Pa\n",nco_prg_nm_get(),fnc_nm,lev_out_max);
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s lev_out_max = %g Pa\n",nco_prg_nm_get(),fnc_nm,lev_out_max);
     } /* !flg_grd_out_prs */
     for(idx=0;idx<ps_sz;idx++)
       if(ps_out[idx] > ps_in[idx]) break;
