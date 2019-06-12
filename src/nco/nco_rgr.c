@@ -1003,10 +1003,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(ilev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"ilev",&ilev_id);
       if(lev_id_tpl == NC_MIN_INT) rcd=nco_inq_varid_flg(in_id,"lev",&lev_id);
     } /* !flg_grd_hyb_cameam */
-    /* 20190603: We require ECMWF IFS to have a "lev" coordinate so we can use "lev" dimension not "nhyb" */
+    /* 20190603: We require ECMWF IFS input to have a "lev" coordinate so we can use "lev" dimension not "nhyb" */
     if(flg_grd_hyb_ecmwf)
-      if(lev_id_tpl == NC_MIN_INT)
-	rcd=nco_inq_varid(in_id,"lev",&lev_id);
+      rcd=nco_inq_varid(in_id,"lev",&lev_id);
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
@@ -1184,7 +1183,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_in_prs */
   
   /* Compare input and output surface pressure fields to determine whether subterranean extrapolation required */
-  //(void)fprintf(stderr,"%s: %s quark1\n",nco_prg_nm_get(),fnc_nm);
   nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
   flg_add_msv_att=False;
   /* Extrapolation type xtr_fll_msv may cause need to create _FillValue attributes */
@@ -1371,18 +1369,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* fxm: Generalize to include any variable containing coordinates with "standard_name" = "atmosphere_hybrid_sigma_pressure_coordinate" */
 	if(!has_ilev) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
 	if(!has_lev) has_lev=!strcmp(dmn_nm_cp,lev_nm_in);
-	if(flg_grd_hyb_ecmwf){
-	  if(!has_ilev) has_ilev=!strcmp(dmn_nm_cp,rgr->ilev_nm_in);
-	  if(!has_lev) has_lev=!strcmp(dmn_nm_cp,rgr->lev_nm_in);
-	} /* !flg_grd_hyb_ecmwf */
+	//if(flg_grd_hyb_ecmwf){
+	//if(!has_ilev) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
+	//if(!has_lev) has_lev=!strcmp(dmn_nm_cp,lev_nm_in);
+	//} /* !flg_grd_hyb_ecmwf */
       } /* end loop over dimensions */
-      /* Regrid variables containing either vertical dimension */
+      /* Regrid variables that contain either vertical dimension */
       if(has_ilev || has_lev){
 	trv_tbl->lst[idx_tbl].flg_rgr=True;
 	var_rgr_nbr++;
 	if(has_ilev) need_prs_ntf=True;
 	if(has_lev) need_prs_mdp=True;
       } /* endif */
+      //(void)fprintf(stderr,"%s: %s quark1\n",nco_prg_nm_get(),fnc_nm);
+      //(void)fprintf(stderr,"%s: %s var_nm = %s, lev_nm_in = %s, ilev_nm_in = %s\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[idx_tbl].nm,lev_nm_in,ilev_nm_in);
       assert(!(has_ilev && has_lev));
       /* Copy all variables that are not regridded or omitted */
       if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;

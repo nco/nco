@@ -1,8 +1,12 @@
-2019-06-08  Charlie Zender  <zender@uci.edu>
+2019-06-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.1-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha06: School of Rock';git push
 	git tag -a 4.8.1-alpha06 -m 'ncremap --msh_fl;Cori tweaks;ncks xtr_mth mss_val';git push --tags
+
+	* Correctly read lev dimension name from vrt_fl during ECMWF IFS processing
+
+2019-06-08  Charlie Zender  <zender@uci.edu>
 
 	* Move nco_nmn_get() and nco_lbr_vrs_prn/() from nco_ctl.c to nco_scm.c, re-jigger version banner
 
