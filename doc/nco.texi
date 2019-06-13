@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.1-alpha05
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 7 June 2019
+@set update-date 11 June 2019
 @set update-month June 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -21910,8 +21910,13 @@ ncpdq [-3] [-4] [-5] [-6] [-7] [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c]
 @noindent
 DESCRIPTION
 
-@command{ncpdq} performs one (not both) of two distinct functions:
-packing or dimension permutation.
+@command{ncpdq} performs one (not both) of two distinct functions
+per invocation: packing or dimension permutation.
+Without any options, @command{ncpdq} will pack data with default
+parameters.
+The @samp{-a} option tells @command{ncpdq} to permute dimensions
+accordingly, otherwise @command{ncpdq} will pack data as
+instructed/controlled by the @samp{-M} and @samp{-P} options.
 @command{ncpdq} is optimized to perform these actions in a parallel
 fashion with a minimum of time and memory.
 The @dfn{pdq} may stand for ``Permute Dimensions Quickly'', 
@@ -22905,7 +22910,8 @@ SYNTAX
 @example
 ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dpt] [--dpt_fl=@var{dpt_fl}]
-[--dt_sng=@var{dt_sng}] [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]
+[--dt_sng=@var{dt_sng}] [--esmf_nsp=@var{esmf_nsp}] [--esmf_typ=@var{esmf_typ}] [--esmf_xpn=@var{esmf_xpn}] 
+[--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]
 [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}]
 [-M] [-m @var{map_fl}] [--msh_fl=@var{msh_fl}]
 [--msk_dst=@var{msk_dst}] [--msk_out=@var{msk_out}] [--msk_src=@var{msk_src}] [--mss_val=@var{mss_val}]
@@ -22920,7 +22926,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [--vrt_fl=@var{vrt_fl}] [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]]
-[--xcl_var] [--xtr_nsp=@var{xtr_nsp}] [--xtr_typ=@var{xtr_typ}] [--xtr_xpn=@var{xtr_xpn}] 
+[--xcl_var] [--xtr_typ=@var{xtr_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -23575,6 +23581,69 @@ output map-file names of this format:
 @code{map_@var{nm_src}_to_@var{nm_dst}_@var{alg_typ}.@var{dt_sng}.nc}.
 @acronym{MWF} mode defaults @var{dt_sng} to the current date in
 @code{YYYYMMDD}-format. 
+
+@html
+<a name="esmf_typ"></a> <!-- http://nco.sf.net/nco.html#esmf_typ -->
+@end html
+@cindex @code{--esmf_typ=@var{esmf_typ}}
+@cindex @var{esmf_typ}
+@cindex @code{--esmf_typ}
+@cindex @code{--esmf_mth}
+@cindex @code{--esmf_extrap_type}
+@cindex @code{--esmf_extrap_method}
+@item --esmf_typ=@var{esmf_typ} (@code{--esmf_typ}, @code{--esmf_mth}, @code{--esmf_extrap_type}, @code{--esmf_extrap_method})
+Specifies the extrapolation method used to compute unmapped
+destination point values with the @acronym{ERWG} weight generator.
+Valid values and their synonyms are
+@code{neareststod} (synonyms @code{stod} and @code{nsd}),
+@code{nearestidavg} (synonyms @code{idavg} and @code{id}), and
+@code{none} (synonyms @code{nil} and @code{nowaydude}).
+Default is @math{@var{esmf_typ} = @code{none}}.
+The arguments to options @samp{--esmf_xpn=@var{esmf_xpn}} and
+@samp{--esmf_nsp=@var{esmf_nsp}} provide parameters that control the
+extrapolation @code{neareststod} and @code{nearestidavg} algorithms. 
+For more information on @acronym{ERWG} extrapolation, see documentation
+@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
+@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
+
+@html
+<a name="esmf_nsp"></a> <!-- http://nco.sf.net/nco.html#esmf_nsp -->
+@end html
+@cindex extrapolation
+@cindex @code{--esmf_nsp=@var{esmf_nsp}}
+@cindex @var{esmf_nsp}
+@cindex @code{--esmf_nsp}
+@cindex @code{--esmf_pnt_src_nbr}
+@cindex @code{--esmf_extrap_num_src_pnts}
+@item --esmf_nsp=@var{esmf_nsp} (@code{--esmf_nsp}, @code{--esmf_pnt_src_nbr}, @code{--esmf_extrap_num_src_pnts})
+Specifies the number of source points to use in extrapolating unmapped
+destination point values with the @acronym{ERWG} weight generator.
+This option is only useful in conjunction with explicitly requested
+extrapolation types @math{@var{esmf_typ} = @code{neareststod}} and
+@math{@var{esmf_typ} = @code{nearestidavg}}. 
+Default is @math{@var{esmf_nsp} = 8}.
+For more information on @acronym{ERWG} extrapolation, see documentation
+@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
+@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
+
+@html
+<a name="esmf_xpn"></a> <!-- http://nco.sf.net/nco.html#esmf_xpn -->
+@end html
+@cindex @code{--esmf_xpn=@var{esmf_xpn}}
+@cindex @var{esmf_xpn}
+@cindex @code{--esmf_xpn}
+@cindex @code{--esmf_pnt_src_nbr}
+@cindex @code{--esmf_extrap_num_src_pnts}
+@item --esmf_xpn=@var{esmf_xpn} (@code{--esmf_xpn}, @code{--esmf_pnt_src_nbr}, @code{--esmf_extrap_num_src_pnts})
+Specifies the number of source points to use in extrapolating unmapped
+destination point values with the @acronym{ERWG} weight generator.
+This option is only useful in conjunction with explicitly requested
+extrapolation types @math{@var{esmf_typ} = @code{neareststod}} and
+@math{@var{esmf_typ} = @code{nearestidavg}}. 
+Default is @math{@var{esmf_xpn} = 2.0}.
+For more information on @acronym{ERWG} extrapolation, see documentation
+@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
+@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
 
 @html
 <a name="grd_dst"></a> <!-- http://nco.sf.net/nco.html#grd_dst -->
@@ -25240,61 +25309,18 @@ extensive variables, please contact us if you have one.
 @cindex @var{xtr_typ}
 @cindex @code{--xtr_typ}
 @cindex @code{--xtr_mth}
-@cindex @code{--extrap_type}
-@cindex @code{--extrap_method}
+@cindex @code{--extrapolation_type}
+@cindex @code{--extrapolation_method}
 @item --xtr_typ=@var{xtr_typ} (@code{--xtr_typ}, @code{--xtr_mth}, @code{--extrap_type}, @code{--extrap_method})
-Specifies the extrapolation method used to compute unmapped
-destination point values with the @acronym{ERWG} weight generator.
+Specifies the extrapolation method for destination points outside the
+vertical range of the input data during vertical interpolation.a
 Valid values and their synonyms are
-@code{neareststod} (synonyms @code{stod} and @code{nsd}),
-@code{nearestidavg} (synonyms @code{idavg} and @code{id}), and
+@code{mss_val} (synonyms @code{msv} and @code{missing_value}), 
+@code{nrs_ngh} (synonyms @code{nn} and @code{nearest_neighbor}), and
 @code{none} (synonyms @code{nil} and @code{nowaydude}).
-Default is @math{@var{xtr_typ} = @code{none}}.
-The arguments to options @samp{--xtr_xpn=@var{xtr_xpn}} and
-@samp{--xtr_nsp=@var{xtr_nsp}} provide parameters that control the
-extrapolation @code{neareststod} and @code{nearestidavg} algorithms. 
-For more information on @acronym{ERWG} extrapolation, see documentation
-@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
-@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
+Default is @math{@var{xtr_typ} = @code{nrs_ngh}}.
+@acronym{NCO} supports this feature as of version 4.8.1 (June, 2019).
 
-@html
-<a name="xtr_nsp"></a> <!-- http://nco.sf.net/nco.html#xtr_nsp -->
-@end html
-@cindex extrapolation
-@cindex @code{--xtr_nsp=@var{xtr_nsp}}
-@cindex @var{xtr_nsp}
-@cindex @code{--xtr_nsp}
-@cindex @code{--xtr_pnt_src_nbr}
-@cindex @code{--extrap_num_src_pnts}
-@item --xtr_nsp=@var{xtr_nsp} (@code{--xtr_nsp}, @code{--xtr_pnt_src_nbr}, @code{--extrap_num_src_pnts})
-Specifies the number of source points to use in extrapolating unmapped
-destination point values with the @acronym{ERWG} weight generator.
-This option is only useful in conjunction with explicitly requested
-extrapolation types @math{@var{xtr_typ} = @code{neareststod}} and
-@math{@var{xtr_typ} = @code{nearestidavg}}. 
-Default is @math{@var{xtr_nsp} = 8}.
-For more information on @acronym{ERWG} extrapolation, see documentation
-@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
-@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
-
-@html
-<a name="xtr_xpn"></a> <!-- http://nco.sf.net/nco.html#xtr_xpn -->
-@end html
-@cindex @code{--xtr_xpn=@var{xtr_xpn}}
-@cindex @var{xtr_xpn}
-@cindex @code{--xtr_xpn}
-@cindex @code{--xtr_pnt_src_nbr}
-@cindex @code{--extrap_num_src_pnts}
-@item --xtr_xpn=@var{xtr_xpn} (@code{--xtr_xpn}, @code{--xtr_pnt_src_nbr}, @code{--extrap_num_src_pnts})
-Specifies the number of source points to use in extrapolating unmapped
-destination point values with the @acronym{ERWG} weight generator.
-This option is only useful in conjunction with explicitly requested
-extrapolation types @math{@var{xtr_typ} = @code{neareststod}} and
-@math{@var{xtr_typ} = @code{nearestidavg}}. 
-Default is @math{@var{xtr_xpn} = 2.0}.
-For more information on @acronym{ERWG} extrapolation, see documentation
-@uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
-@acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
 @end table
 
 @unnumberedsubsec Limitations to @command{ncremap}

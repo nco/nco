@@ -1369,10 +1369,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* fxm: Generalize to include any variable containing coordinates with "standard_name" = "atmosphere_hybrid_sigma_pressure_coordinate" */
 	if(!has_ilev) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
 	if(!has_lev) has_lev=!strcmp(dmn_nm_cp,lev_nm_in);
-	//if(flg_grd_hyb_ecmwf){
-	//if(!has_ilev) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
-	//if(!has_lev) has_lev=!strcmp(dmn_nm_cp,lev_nm_in);
-	//} /* !flg_grd_hyb_ecmwf */
       } /* end loop over dimensions */
       /* Regrid variables that contain either vertical dimension */
       if(has_ilev || has_lev){
@@ -1381,8 +1377,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	if(has_ilev) need_prs_ntf=True;
 	if(has_lev) need_prs_mdp=True;
       } /* endif */
-      //(void)fprintf(stderr,"%s: %s quark1\n",nco_prg_nm_get(),fnc_nm);
-      //(void)fprintf(stderr,"%s: %s var_nm = %s, lev_nm_in = %s, ilev_nm_in = %s\n",nco_prg_nm_get(),fnc_nm,trv_tbl->lst[idx_tbl].nm,lev_nm_in,ilev_nm_in);
       assert(!(has_ilev && has_lev));
       /* Copy all variables that are not regridded or omitted */
       if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;
@@ -6520,6 +6514,18 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     } /* !lat */
   } /* !flg_grd_crv */
 
+  /* 20190613: Convert CW quadrilaterals to CCW quadrilaterals so TempestRemap accepts grids
+     Default construction/inferral method orders corners CCW and CW for s2n and n2s grids, respectively */
+  if(!flg_s2n){
+    nco_bool flg_ccw; /* [flg] Gridcell is CCW */
+    const int rcr_lvl=1; /* [nbr] Recursion level (1 is top level, 2 and greater are recursed */
+    const int idx_ccw=0; /* [idx] Index of starting vertice for CCW check (Point A = tail side AB) */
+    for(idx=0L;idx<grd_sz_nbr;idx++){
+      idx2=grd_crn_nbr*idx;
+      flg_ccw=nco_ccw_chk(grd_crn_lat+idx2,grd_crn_lon+idx2,grd_crn_nbr,idx_ccw,rcr_lvl);
+    } /* !idx */
+  } /* !flg_s2n */
+ 
   if(nco_dbg_lvl_get() >= nco_dbg_std){
     long int idx_crn_ll;
     long int idx_crn_lr;
@@ -7376,6 +7382,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   nco_bool flg_1D_psd_rct_bnd=False; /* [flg] Unstructured input grid with pseudo-rectangular bounds */
+  nco_bool flg_ccw; /* [flg] Gridcell is CCW */
   nco_bool flg_grd_1D=False;
   nco_bool flg_grd_2D=False;
   nco_bool flg_grd_crv=False;
@@ -8397,7 +8404,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       long int idx_fk_crn_ul_ctr_lr;
       long int idx_fk_crn_ul_ctr_ur;
       long int idx_fk_crn_ul_ctr_ul;
-      nco_bool flg_ccw; /* [flg] Gridcell is CCW */
       double *crn_lat;
       double *crn_lon;
       crn_lat=(double *)nco_malloc(grd_crn_nbr*sizeof(double));
@@ -8667,7 +8673,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        20150526: T42 grid from SCRIP and related maps are only accurate to ~eight digits
        20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006
        20170521: T62 grid from NCEP-NCAR Reanalysis 1 worse than single precision, has yc_[192]=-86.6531 not expected exact value lat_ctr[1]=-86.6532 */
-    if(nco_dbg_lvl_get() >= nco_dbg_scl && !flg_s2n) (void)fprintf(stderr,"%s: INFO %s reports that grid inferral has detected a 2D grid that runs from north-to-south, not south-to-north. Support for creating/inferring 2D N-to-S grids was added in NCO 4.7.7 (September, 2018) and may be imperfect.\nHINT: If present command fails, re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl && !flg_s2n) (void)fprintf(stderr,"%s: INFO %s reports that grid inferral has detected a 2D grid that runs from north-to-south, not south-to-north. Support for creating/inferring 2D N-to-S grids was added in NCO 4.7.7 (September, 2018) and should work fine.\nHINT: If present command fails, report problem to developers and then re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm);
     if((float)lat_ctr[1L] == (float)lat_ctr_tst_eqa) lat_typ=nco_grd_lat_eqa;
     if((float)lat_ctr[1L] == (float)lat_ctr_tst_fv) lat_typ=nco_grd_lat_fv;
     double *lat_sin=NULL_CEWI; // [frc] Sine of Gaussian latitudes double precision
@@ -8917,6 +8923,20 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	} /* !crn */
       } /* !lon */
     } /* !lat */
+
+    /* 20190613: Convert CW quadrilaterals to CCW quadrilaterals so TempestRemap accepts grids
+       Default construction/inferral method orders corners CCW and CW for s2n and n2s grids, respectively */
+    if(!flg_s2n){
+      for(idx=0L;idx<grd_sz_nbr;idx++){
+	idx2=grd_crn_nbr*idx;
+	flg_ccw=nco_ccw_chk(grd_crn_lat+idx2,grd_crn_lon+idx2,grd_crn_nbr,idx_ccw,rcr_lvl);
+      } /* !idx */
+    } /* !flg_s2n */
+    
+    //(void)fprintf(stderr,"%s: %s DEBUG quark1\n",nco_prg_nm_get(),fnc_nm);
+    //(void)fprintf(stderr,"%s: %s DEBUG flg_s2n = %d, idx_ccw = %d, rcr_lvl = %d, grd_crn_nbr = %ld\n",nco_prg_nm_get(),fnc_nm,flg_s2n,idx_ccw,rcr_lvl,grd_crn_nbr);
+    //(void)fprintf(stderr,"%s: %s DEBUG calling nco_ccw_chk()\n",nco_prg_nm_get(),fnc_nm);
+
   } /* !flg_grd_2D */
   
   /* Find span of all grids */
