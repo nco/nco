@@ -1,6 +1,43 @@
 /*
- * Headers for k-d tree geometric data structure
+ * K-d tree geometric data structure
+ *
+ * David Harrison
+ * University of California,  Berkeley
+ * 1988
+ *
+ * This is an implementation of k-d trees as described by Rosenberg
+ * in "Geographical Data Structures", IEEE Transactions on CAD, Vol. CAD-4,
+ * No. 1, January 1985.  His work is based on that of Jon Bentley in
+ * "Multidimensional Binary Search Trees used for Associative Searching",
+ * CACM, Vol. 18, No. 9, pp. 509-517, Sept. 1975.
+ *
  */
+
+/* Original, unmodified COPYRIGHT: */
+
+/*
+* Oct Tools Distribution 5.1
+*
+* Copyright (c) 1988, 1989, 1990, 1991 Regents of the University of California.
+* All rights reserved.
+*
+* Use and copying of this software and preparation of derivative works
+* based upon this software are permitted.  However, any distribution of
+* this software or derivative works must include the above copyright
+* notice.
+*
+* This software is made available AS IS, and neither the Electronics
+* Research Laboratory or the University of California make any
+* warranty about the software, its performance or its conformity to
+* any specification.
+*
+* Suggestions, comments, or improvements are welcome and should be
+* addressed to:
+*
+*   octtools@ic.berkeley.edu
+*   ..!ucbvax!ic!octtools
+*/
+
 
 #ifndef KD_HEADER
 #define KD_HEADER
