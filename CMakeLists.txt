@@ -491,7 +491,7 @@ set(nco_SOURCES ${nco_SOURCES} src/nco/nco_ply_lst.c src/nco/nco_ply_lst.h)
 set(nco_SOURCES ${nco_SOURCES} src/nco/nco_map.c src/nco/nco_map.h)
 set(nco_SOURCES ${nco_SOURCES} src/nco/nco_sph.c src/nco/nco_sph.h)
 set(nco_SOURCES ${nco_SOURCES} src/nco/nco_crt.c src/nco/nco_crt.h)
-set(nco_SOURCES ${nco_SOURCES} src/nco/kd.c src/nco/kd.h)
+set(nco_SOURCES ${nco_SOURCES} src/nco/nco_kd.c src/nco/nco_kd.h)
 
 # Type of library (SHARED, STATIC) is configured using BUILD_SHARED_LIBS
 add_library(nco ${nco_SOURCES})
