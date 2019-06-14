@@ -2,7 +2,7 @@
 
 	* NCO 4.8.1-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha06: School of Rock';git push
-	git tag -a 4.8.1-alpha06 -m 'ncremap --msh_fl;Cori tweaks;ncks xtr_mth mss_val';git push --tags
+	git tag -a 4.8.1-alpha06 -m 'ncremap --msh_fl, rename ESMF xtr_* to esmf_*, IFS vrt_fl w/lev, n2s CCW;Cori GCC not Intel;ncks xtr_mth mss_val;update Makefile/libnco.h; add copyright/license to msh code';git push --tags
 
 	* Add copyright/license to new regridding files nco_ply.c/h, nco_crt.c/h, nco_sph.c/h, nco_ply_lst.c/h, nco_kd.c/h
 
@@ -14,7 +14,7 @@
 
 2019-06-12  Charlie Zender  <zender@uci.edu>
 
-	* Rename ESMF extrpolation options from "xtr_xyz" to "esmf_xyz"
+	* Rename ESMF extrapolation options from "xtr_xyz" to "esmf_xyz"
 
 	* Correctly read lev dimension name from vrt_fl during ECMWF IFS processing
 

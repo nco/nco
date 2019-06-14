@@ -62,7 +62,6 @@ static double LON_MAX;
 ---------------------------------------------------------------------*/
 int  nco_crt_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 {
-  int lcl_dbg=0;
   nco_bool FirstPoint=True;    /*s this the first point? (used to initialize).*/
   int     a=0, b=0;            /* indices on P and Q (resp.) */
   int     a1, b1;              /* a-1, b-1 (resp.) */

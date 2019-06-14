@@ -132,7 +132,6 @@ libnco_la_LDFLAGS = -release @VERSION@
 libnco_la_SOURCES = \
 ${HEADER_SRC} \
 ${NCO_GETOPT_C} \
-nco_kd.c \
 nco_att_utl.c \
 nco_aux.c \
 nco_bnr.c \
@@ -149,6 +148,7 @@ nco_dmn_utl.c \
 nco_fl_utl.c \
 nco_grp_utl.c \
 nco_grp_trv.c \
+nco_kd.c \
 nco_lmt.c \
 nco_lst_utl.c \
 nco_map.c \
