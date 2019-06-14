@@ -6318,7 +6318,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 	       dfdx(x)=-dgr2rdn*cos(dgr2rdn*x) # n2s grid
 	       x_better=x0-f(x0)/f'(x0) */
 	dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
-	if(!flg_s2n) dfdx_at_x0=-dfdx_at_x0;
+	// 20190613: Latitudes are constructed s2n and only flipped to n2s later 
+	// if(!flg_s2n) dfdx_at_x0=-dfdx_at_x0;
 	lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0; /* NB: not sure why this is minus not plus but it works :) */
 	lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));
 	fofx_at_x0=wgt_Gss[lat_idx-1L]-lat_wgt_gss;
@@ -6368,7 +6369,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
       lat_ctr[lat_idx]=0.5*(lat_ntf[lat_idx]+lat_ntf[lat_idx+1L]);
     lat_ctr[lat_nbr-1L]=lat_ntf[lat_nbr];
   } /* !cap */
-  /* Gaussian grids centerpoints are defined by solutions to Legendre polynomials */
+  /* Gaussian grid centerpoints are defined by solutions to Legendre polynomials */
   if(lat_typ == nco_grd_lat_gss){
     for(lat_idx=0L;lat_idx<lat_nbr;lat_idx++)
       lat_ctr[lat_idx]=rdn2dgr*asin(lat_sin[lat_idx]);

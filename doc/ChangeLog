@@ -1,8 +1,12 @@
-2019-06-13  Charlie Zender  <zender@uci.edu>
+2019-06-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.1-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha06: School of Rock';git push
 	git tag -a 4.8.1-alpha06 -m 'ncremap --msh_fl;Cori tweaks;ncks xtr_mth mss_val';git push --tags
+
+	* Always use n2s algorithm during Newton-Raphson construction of s2n latitudes (later flipped to n2s)
+
+2019-06-13  Charlie Zender  <zender@uci.edu>
 
 	* Add CW->CCW filter to nco_grd_mk() and nco_grd_nfr() so n2s grids work with TR
 
