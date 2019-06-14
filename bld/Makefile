@@ -1939,12 +1939,14 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_cnk.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_cnv_arm.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_cnv_csm.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_crt.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_ctl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_dbg.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_dmn_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_fl_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_grp_trv.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_grp_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_kd.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_lmt.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_lst_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_map.o) \
@@ -1956,6 +1958,8 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_netcdf.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_omp.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_pck.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_ply.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_ply_lst.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_ppc.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_prn.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_rec_var.o) \
@@ -1966,6 +1970,7 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_scm.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_sld.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_sng_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_sph.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_srm.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_var_avg.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_var_lst.o) \

@@ -1,3 +1,14 @@
+/* $Header$ */
+
+/* K-d tree code originated in OctTools software from UC Berkeley
+   It is distributed under the BSD-like license below
+   Modifications:
+   2019: Obtain source from https://github.com/WyoMurf/kdtree project by Steve Murphy
+   201901--201905: Modify, enhance for C99, NCO, and regridding
+   201905: Attempts to contact Steve Murphy go unanswered
+   201905: None of SM's modifications are necessary/utilized so far as we can tell
+   20190614: Rename kd.h, kd.c to nco_kd.h, nco_kd.c */
+
 /*
  * K-d tree geometric data structure
  *
@@ -16,28 +27,30 @@
 /* Original, unmodified COPYRIGHT: */
 
 /*
-* Oct Tools Distribution 5.1
-*
-* Copyright (c) 1988, 1989, 1990, 1991 Regents of the University of California.
-* All rights reserved.
-*
-* Use and copying of this software and preparation of derivative works
-* based upon this software are permitted.  However, any distribution of
-* this software or derivative works must include the above copyright
-* notice.
-*
-* This software is made available AS IS, and neither the Electronics
-* Research Laboratory or the University of California make any
-* warranty about the software, its performance or its conformity to
-* any specification.
-*
-* Suggestions, comments, or improvements are welcome and should be
-* addressed to:
-*
-*   octtools@ic.berkeley.edu
-*   ..!ucbvax!ic!octtools
-*/
+ * Oct Tools Distribution 5.1
+ *
+ * Copyright (c) 1988, 1989, 1990, 1991 Regents of the University of California.
+ * All rights reserved.
+ *
+ * Use and copying of this software and preparation of derivative works
+ * based upon this software are permitted.  However, any distribution of
+ * this software or derivative works must include the above copyright
+ * notice.
+ *
+ * This software is made available AS IS, and neither the Electronics
+ * Research Laboratory or the University of California make any
+ * warranty about the software, its performance or its conformity to
+ * any specification.
+ *
+ * Suggestions, comments, or improvements are welcome and should be
+ * addressed to:
+ *
+ *   octtools@ic.berkeley.edu
+ *   ..!ucbvax!ic!octtools
+ */
 
+/* Usage:
+   #include "nco_kd.h" *//* K-d tree geometric data structure */
 
 #ifndef KD_HEADER
 #define KD_HEADER
@@ -111,7 +124,7 @@
 #define KD_SIZE(val)	(val)->size
 
 /*
-#define BOXINTERSECT(b1, b2) \
+  #define BOXINTERSECT(b1, b2)		\
   (((b1)[KD_RIGHT] >= (b2)[KD_LEFT]) && \
    ((b2)[KD_RIGHT] >= (b1)[KD_LEFT]) && \
    ((b1)[KD_TOP] >= (b2)[KD_BOTTOM]) && \

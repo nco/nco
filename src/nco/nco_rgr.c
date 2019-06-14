@@ -6318,7 +6318,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 	       dfdx(x)=-dgr2rdn*cos(dgr2rdn*x) # n2s grid
 	       x_better=x0-f(x0)/f'(x0) */
 	dfdx_at_x0=dgr2rdn*cos(dgr2rdn*lat_ntf[lat_idx]);
-	// 20190613: Latitudes are constructed s2n and only flipped to n2s later 
+	/* 20190613: n2s latitudes are constructed s2n and flipped to n2s later
+	   Hence next line is commented-out in construction mode but used in infer mode */
 	// if(!flg_s2n) dfdx_at_x0=-dfdx_at_x0;
 	lat_ntf[lat_idx]+=fofx_at_x0/dfdx_at_x0; /* NB: not sure why this is minus not plus but it works :) */
 	lat_wgt_gss=fabs(sin(dgr2rdn*lat_ntf[lat_idx])-sin(dgr2rdn*lat_ntf[lat_idx-1L]));

@@ -1,3 +1,14 @@
+/* $Header$ */
+
+/* K-d tree code originated in OctTools software from UC Berkeley
+   It is distributed under the BSD-like license below
+   Modifications:
+   2018: Obtain source from https://github.com/WyoMurf/kdtree project by Steve Murphy
+   201901--201905: Modify, enhance for C99, NCO, and regridding
+   201905: Attempts to contact Steve Murphy go unanswered
+   201905: None of SM's modifications are necessary/utilized so far as we can tell
+   20190614: Rename kd.h, kd.c to nco_kd.h, nco_kd.c */
+
 /*
  * K-d tree geometric data structure
  *
@@ -13,56 +24,52 @@
  *
  */
 
- /* Original, unmodified COPYRIGHT: */
+/* Original, unmodified COPYRIGHT: */
+/*
+ * Oct Tools Distribution 5.1
+ *
+ * Copyright (c) 1988, 1989, 1990, 1991 Regents of the University of California.
+ * All rights reserved.
+ *
+ * Use and copying of this software and preparation of derivative works
+ * based upon this software are permitted.  However, any distribution of
+ * this software or derivative works must include the above copyright
+ * notice.
+ *
+ * This software is made available AS IS, and neither the Electronics
+ * Research Laboratory or the University of California make any
+ * warranty about the software, its performance or its conformity to
+ * any specification.
+ *
+ * Suggestions, comments, or improvements are welcome and should be
+ * addressed to:
+ *
+ *   octtools@ic.berkeley.edu
+ *   ..!ucbvax!ic!octtools
+ */
 
 /*
-* Oct Tools Distribution 5.1
-*
-* Copyright (c) 1988, 1989, 1990, 1991 Regents of the University of California.
-* All rights reserved.
-*
-* Use and copying of this software and preparation of derivative works
-* based upon this software are permitted.  However, any distribution of
-* this software or derivative works must include the above copyright
-* notice.
-*
-* This software is made available AS IS, and neither the Electronics
-* Research Laboratory or the University of California make any
-* warranty about the software, its performance or its conformity to
-* any specification.
-*
-* Suggestions, comments, or improvements are welcome and should be
-* addressed to:
-*
-*   octtools@ic.berkeley.edu
-*   ..!ucbvax!ic!octtools
-*/
-
-
-/*
-* extensive upgrades, enhancements, fixes, and optimizations made by
-* Steve Murphy. See Documentation in kd.c for information
-* on the routines contained herein:
-* A list of my changes:
-* + build used the nodes son's links to form lists, rather than the list package.
-*   This saves time in that malloc is called much less often.
-* + build uses the geometric mean criteria for finding central nodes, rather than
-*   the centroid of the bounding box. This, on the average, halves the depth of the
-*   tree. Research on random boxes shows that halving the depth of the tree decreases
-*   search traversal 15% Thus are kd trees resilient to degradation.
-* + Added nearest neighbor search routine. TODO: allow the user to pass in pointer
-*   to distance function.
-* + Added rebuild routine. Faster than a build from scratch.
-* + Added node deletion routine. For those purists who hate dead nodes in the tree.
-* + Some routines to give stats on tree health, info about tree, etc.
-* + I may even have inserted some comments to explain some tricky stuff happening
-*   in the code...
-*/
-
+ * extensive upgrades, enhancements, fixes, and optimizations made by
+ * Steve Murphy. See Documentation in kd.c for information
+ * on the routines contained herein:
+ * A list of my changes:
+ * + build used the nodes son's links to form lists, rather than the list package.
+ *   This saves time in that malloc is called much less often.
+ * + build uses the geometric mean criteria for finding central nodes, rather than
+ *   the centroid of the bounding box. This, on the average, halves the depth of the
+ *   tree. Research on random boxes shows that halving the depth of the tree decreases
+ *   search traversal 15% Thus are kd trees resilient to degradation.
+ * + Added nearest neighbor search routine. TODO: allow the user to pass in pointer
+ *   to distance function.
+ * + Added rebuild routine. Faster than a build from scratch.
+ * + Added node deletion routine. For those purists who hate dead nodes in the tree.
+ * + Some routines to give stats on tree health, info about tree, etc.
+ * + I may even have inserted some comments to explain some tricky stuff happening
+ *   in the code...
+ */
 
 #include <stddef.h>
-#include "nco_kd.h"
-
+#include "nco_kd.h" /* K-d tree geometric data structure */
 
 static int path_length = 0;
 static int path_alloc = 0;

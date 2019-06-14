@@ -1,10 +1,21 @@
+/* $Header$ */
+
+/* Purpose: Description (definition) of polygon functions */
+
+/* Copyright (C) 2018--present Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You may redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+
+/* Usage:
+   #include "nco_ply.h" *//* Polygon structure & utilities */
+
 #ifndef NCO_PLY_H
 #define NCO_PLY_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
@@ -14,10 +25,9 @@
 #include "nco_sld.h" /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
 
-#include "nco_kd.h"
-#include "nco_crt.h"
-#include "nco_sph.h"
-
+#include "nco_crt.h" /* Cartesian geometry intersections */
+#include "nco_kd.h" /* K-d tree geometric data structure */
+#include "nco_sph.h" /* Spherical geometry intersections */
 
 #ifdef __cplusplus
 extern "C" {

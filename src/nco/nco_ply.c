@@ -1,5 +1,13 @@
-#include "nco_ply.h"
+/* $Header$ */
 
+/* Purpose: Polygon structure & utilities */
+
+/* Copyright (C) 2019--present Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You may redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+
+#include "nco_ply.h" /* Polygon structure & utilities */
 
 int
 nco_poly_typ_sz(poly_typ_enm pl_typ)

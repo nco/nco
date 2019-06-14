@@ -29,12 +29,14 @@
 #include "nco_cnk.h" /* Chunking */
 #include "nco_cnv_arm.h" /* ARM conventions */
 #include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */
+#include "nco_crt.h" /* Cartesian geometry intersections */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_dbg.h" /* Debugging */
 #include "nco_dmn_utl.h" /* Dimension utilities */
 #include "nco_fl_utl.h" /* File manipulation */
 #include "nco_grp_trv.h" /* Group traversal */
 #include "nco_grp_utl.h" /* Group utilities */
+#include "nco_kd.h" /* K-d tree geometric data structure */
 #include "nco_lmt.h" /* Hyperslab limits */
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_map.h" /* Map generation */
@@ -45,6 +47,8 @@
 #include "nco_mta.h" /* Multi-argument parsing */
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_pck.h" /* Packing and unpacking variables */
+#include "nco_ply.h" /* Polygon structure & utilities */
+#include "nco_ply_lst.h" /* Polygon list manipulation */
 #include "nco_ppc.h" /* Precision-Preserving Compression */
 #include "nco_prn.h" /* Print variables, attributes, metadata */
 #include "nco_rec_var.h" /* Record variable utilities */
@@ -55,6 +59,7 @@
 #include "nco_scm.h" /* Software configuration management */
 #include "nco_sld.h" /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
+#include "nco_sph.h" /* Spherical geometry intersections */
 #include "nco_srm.h" /* Streams */
 #include "nco_var_avg.h" /* Average variables */
 #include "nco_uthash.h" /* Hash table functionality */

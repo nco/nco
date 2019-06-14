@@ -1,6 +1,13 @@
+/* $Header$ */
 
-#include "nco_ply_lst.h"
+/* Purpose: Polygon list manipulation functions */
 
+/* Copyright (C) 2018--present Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You may redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+
+#include "nco_ply_lst.h" /* Polygon list manipulation */
 
 /************************ functions that manipulate lists of polygons ****************************************************/
 void

@@ -1,6 +1,17 @@
+/* $Header$ */
+
+/* Purpose: Description (definition) of polygon list manipulation functions */
+
+/* Copyright (C) 2018--present Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You may redistribute and/or modify NCO under the terms of the 
+   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+
+/* Usage:
+   #include "nco_ply_lst.h" *//* Polygon list manipulation */
+
 #ifndef NCO_PLY_LST_H /* Contents have not yet been inserted in current source file */
 #define NCO_PLY_LST_H
-
 
 #include  <stdlib.h>
 #include  <stdio.h>
@@ -13,21 +24,18 @@
 #include "nco_rgr.h"     /* Regridding */
 #include "nco_sld.h"     /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
-#include "nco_crt.h"
-#include "nco_ply.h"    /* poly sct stuff */
-#include "nco_kd.h"
 
-
+#include "nco_crt.h" /* Cartesian geometry intersections */
+#include "nco_kd.h" /* K-d tree geometric data structure */
+#include "nco_ply.h" /* Polygon structure & utilities */
 
 #ifdef __cplusplus
 /* Use C-bindings so C++-compiled and C-compiled libraries are compatible */
 extern "C" {
 #endif /* !__cplusplus */
 
-
 /* used in nco_ply_lst_vrl - for realloc to expand */
 #define NCO_VRL_BLOCKSIZE 4000
-
 
 /************************ functions that manipulate lists of polygons ****************************************************/
 

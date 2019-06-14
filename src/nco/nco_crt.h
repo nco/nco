@@ -4,7 +4,7 @@
 
 /* This file includes BSD-licensed code whose copyright is held by another author
    The copyright owner and license terms for the NCO modifications are
-   Copyright (C) 2019--present Charlie Zender
+   Copyright (C) 2018--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
@@ -45,6 +45,9 @@
    NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    ------------------------------------------------------------------------- */
+
+/* Usage:
+   #include "nco_crt.h" *//* Cartesian geometry intersections */
 
 #ifndef NCO_CRT_H /* Contents have not yet been inserted in current source file */
 #define NCO_CRT_H

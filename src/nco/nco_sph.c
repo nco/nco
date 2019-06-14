@@ -4,7 +4,7 @@
 
 /* This file includes BSD-licensed code whose copyright is held by another author
    The copyright owner and license terms for the NCO modifications to that code are
-   Copyright (C) 2019--present Charlie Zender
+   Copyright (C) 2018--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
@@ -46,7 +46,7 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    ------------------------------------------------------------------------- */
 
-#include "nco_sph.h"
+#include "nco_sph.h" /* Spherical geometry intersections */
 
 /* global variables for latitude, longitude in RADIANS
    these may be set in nco_poly.c or

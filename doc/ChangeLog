@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha06: School of Rock';git push
 	git tag -a 4.8.1-alpha06 -m 'ncremap --msh_fl;Cori tweaks;ncks xtr_mth mss_val';git push --tags
 
+	* Add copyright/license to new regridding files nco_ply.c/h, nco_crt.c/h, nco_sph.c/h, nco_ply_lst.c/h, nco_kd.c/h
+
 	* Always use n2s algorithm during Newton-Raphson construction of s2n latitudes (later flipped to n2s)
 
 2019-06-13  Charlie Zender  <zender@uci.edu>
