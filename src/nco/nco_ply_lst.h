@@ -15,7 +15,7 @@
 #include "nco_sng_utl.h" /* String utilities */
 #include "nco_crt.h"
 #include "nco_ply.h"    /* poly sct stuff */
-#include "kd.h"
+#include "nco_kd.h"
 
 
 

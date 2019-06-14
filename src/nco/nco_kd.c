@@ -39,7 +39,7 @@
 
 
 #include <stddef.h>
-#include "kd.h"
+#include "nco_kd.h"
 
 
 static int path_length = 0;
