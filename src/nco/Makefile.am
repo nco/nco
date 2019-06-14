@@ -64,7 +64,7 @@ mpncwa_LDADD = libnco.la
 HEADER_SRC = \
 libnco.h \
 ${NCO_GETOPT_H} \
-kd.h \
+nco_kd.h \
 nco_att_utl.h \
 nco_aux.h \
 nco_bnr.h \
@@ -132,7 +132,7 @@ libnco_la_LDFLAGS = -release @VERSION@
 libnco_la_SOURCES = \
 ${HEADER_SRC} \
 ${NCO_GETOPT_C} \
-kd.c \
+nco_kd.c \
 nco_att_utl.c \
 nco_aux.c \
 nco_bnr.c \

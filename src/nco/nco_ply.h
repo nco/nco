@@ -14,7 +14,7 @@
 #include "nco_sld.h" /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
 
-#include "kd.h"
+#include "nco_kd.h"
 #include "nco_crt.h"
 #include "nco_sph.h"
 

@@ -62,7 +62,7 @@
 #include "nco_var_rth.h" /* Variable arithmetic */
 #include "nco_var_scv.h" /* Arithmetic between variables and scalar values */
 #include "nco_var_utl.h" /* Variable utilities */
-#include "kd.h"
+#include "nco_kd.h"
 #include "nco_ply.h"
 #include "nco_ply_lst.h"
 #include "nco_crt.h"
