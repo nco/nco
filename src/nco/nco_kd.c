@@ -11,31 +11,53 @@
  * "Multidimensional Binary Search Trees used for Associative Searching",
  * CACM, Vol. 18, No. 9, pp. 509-517, Sept. 1975.
  *
- *
- * extensive upgrades, enhancements, fixes, and optimizations made by
- * Steve Murphy. See Documentation in kd.c for information
- * on the routines contained herein:
- * A list of my changes:
- * + build used the nodes son's links to form lists, rather than the list package.
- *   This saves time in that malloc is called much less often.
- * + build uses the geometric mean criteria for finding central nodes, rather than
- *   the centroid of the bounding box. This, on the average, halves the depth of the
- *   tree. Research on random boxes shows that halving the depth of the tree decreases
- *   search traversal 15% Thus are kd trees resilient to degradation.
- * + Added nearest neighbor search routine. TODO: allow the user to pass in pointer
- *   to distance function.
- * + Added rebuild routine. Faster than a build from scratch.
- * + Added node deletion routine. For those purists who hate dead nodes in the tree.
- * + Some routines to give stats on tree health, info about tree, etc.
- * + I may even have inserted some comments to explain some tricky stuff happening
- *   in the code...
-
- TODO:
- generate a version that uses "buckets", to cut tree depth and make the in-memory rep more
- suitable for disk databasing and caching.
- Do a 3-d version --- NOTE: Done. available now. Oops, then lost!
- Do some disk read/write routines to make the data "persistent".
  */
+
+ /* Original, unmodified COPYRIGHT: */
+
+/*
+* Oct Tools Distribution 5.1
+*
+* Copyright (c) 1988, 1989, 1990, 1991 Regents of the University of California.
+* All rights reserved.
+*
+* Use and copying of this software and preparation of derivative works
+* based upon this software are permitted.  However, any distribution of
+* this software or derivative works must include the above copyright
+* notice.
+*
+* This software is made available AS IS, and neither the Electronics
+* Research Laboratory or the University of California make any
+* warranty about the software, its performance or its conformity to
+* any specification.
+*
+* Suggestions, comments, or improvements are welcome and should be
+* addressed to:
+*
+*   octtools@ic.berkeley.edu
+*   ..!ucbvax!ic!octtools
+*/
+
+
+/*
+* extensive upgrades, enhancements, fixes, and optimizations made by
+* Steve Murphy. See Documentation in kd.c for information
+* on the routines contained herein:
+* A list of my changes:
+* + build used the nodes son's links to form lists, rather than the list package.
+*   This saves time in that malloc is called much less often.
+* + build uses the geometric mean criteria for finding central nodes, rather than
+*   the centroid of the bounding box. This, on the average, halves the depth of the
+*   tree. Research on random boxes shows that halving the depth of the tree decreases
+*   search traversal 15% Thus are kd trees resilient to degradation.
+* + Added nearest neighbor search routine. TODO: allow the user to pass in pointer
+*   to distance function.
+* + Added rebuild routine. Faster than a build from scratch.
+* + Added node deletion routine. For those purists who hate dead nodes in the tree.
+* + Some routines to give stats on tree health, info about tree, etc.
+* + I may even have inserted some comments to explain some tricky stuff happening
+*   in the code...
+*/
 
 
 #include <stddef.h>
