@@ -206,7 +206,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "Fin d'êcole";
+  return "Kahakai";
 } /* end nco_nmn_get() */
 
 void
