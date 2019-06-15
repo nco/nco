@@ -1208,8 +1208,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
 	idx_fst=tm_idx*grd_sz_in;
 	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
-	  prs_max_in[grd_idx+idx_lev_max*grd_sz_in]=p0_in*hyam_in[idx_lev_max]+ps_in[idx_fst+grd_idx]*hybm_in[idx_lev_max];
-	  prs_min_in[grd_idx+idx_lev_min*grd_sz_in]=p0_in*hyam_in[idx_lev_min]+ps_in[idx_fst+grd_idx]*hybm_in[idx_lev_min];
+	  prs_max_in[grd_idx+idx_fst]=p0_in*hyam_in[idx_lev_max]+ps_in[idx_fst+grd_idx]*hybm_in[idx_lev_max];
+	  prs_min_in[grd_idx+idx_fst]=p0_in*hyam_in[idx_lev_min]+ps_in[idx_fst+grd_idx]*hybm_in[idx_lev_min];
 	} /* !grd_idx */
       } /* !tm_idx */
     } /* !flg_grd_in_hyb */
@@ -1220,8 +1220,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
 	idx_fst=tm_idx*grd_sz_out;
 	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++){
-	  prs_max_out[grd_idx+idx_lev_max*grd_sz_out]=p0_out*hyam_out[idx_lev_max]+ps_out[idx_fst+grd_idx]*hybm_out[idx_lev_max];
-	  prs_min_out[grd_idx+idx_lev_min*grd_sz_out]=p0_out*hyam_out[idx_lev_min]+ps_out[idx_fst+grd_idx]*hybm_out[idx_lev_min];
+	  prs_max_out[grd_idx+idx_fst]=p0_out*hyam_out[idx_lev_max]+ps_out[idx_fst+grd_idx]*hybm_out[idx_lev_max];
+	  prs_min_out[grd_idx+idx_fst]=p0_out*hyam_out[idx_lev_min]+ps_out[idx_fst+grd_idx]*hybm_out[idx_lev_min];
 	} /* !grd_idx */
       } /* !tm_idx */
     } /* !flg_grd_out_hyb */

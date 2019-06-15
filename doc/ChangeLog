@@ -1,5 +1,11 @@
 2019-06-15  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.1-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha08: Sunburn';git push
+	git tag -a 4.8.1-alpha08 -m 'ntp_vrt mss_val fix';git push --tags
+
+	* nco_ntp_vrt() correct prs_min/max_in/out idx_fst when detecting extrapolation
+
 	* NCO 4.8.1-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha07: Kahakai';git push
 	git tag -a 4.8.1-alpha07 -m 'ncremap/ncclimo vrt_xtr;ntp_vrt mss_val min max';git push --tags
