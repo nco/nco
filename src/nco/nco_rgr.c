@@ -829,8 +829,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   long tm_nbr=0L; /* [idx] Number of timesteps in vertical grid */
   long tm_nbr_in=1L; /* [nbr] Number of timesteps in input vertical grid definition */
   long tm_nbr_out=1L; /* [nbr] Number of timesetps in output vertical grid definition */
+  size_t grd_idx; /* [idx] Gridcell index */
   size_t grd_sz_in=1L; /* [nbr] Number of elements in single layer of input grid */
   size_t grd_sz_out=1L; /* [nbr] Number of elements in single layer of output grid */
+  size_t idx_fst; /* [idx] Index-offset to current surface pressure timeslice */
 
   if(flg_grd_out_hyb){
     /* Interrogate hyai/hyam to obtain ilev/lev dimensions */
@@ -1188,27 +1190,69 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Extrapolation type xtr_fll_msv may cause need to create _FillValue attributes */
   if(xtr_mth == nco_xtr_fll_msv){
     const double ps_sz=tm_nbr*grd_sz_in; // [nbr] Size of surface-pressure field
+    double *prs_max_in=NULL; /* [Pa] Maximum midpoint pressure on input grid */
+    double *prs_max_out=NULL; /* [Pa] Maximum midpoint pressure on output grid */
+    double *prs_min_in=NULL; /* [Pa] Minimum midpoint pressure on input grid */
+    double *prs_min_out=NULL; /* [Pa] Minimum midpoint pressure on output grid */
+    long idx_lev_max; // [idx] Index of midpoint level with greatest pressure
+    long idx_lev_min; // [idx] Index of midpoint level with lowest pressure
     size_t idx; // [idx] Counting index
+    prs_max_in=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_max_in value buffer");
+    prs_max_out=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_max_out value buffer");
+    prs_min_in=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_in value buffer");
+    prs_min_out=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_out value buffer");
+    if(flg_grd_in_hyb){
+      // fxm: assumes hybrid grid has lowest/greatest pressure at top/bottom level
+      idx_lev_max=lev_nbr_in-1;
+      idx_lev_min=0L;
+      for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
+	idx_fst=tm_idx*grd_sz_in;
+	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++){
+	  prs_max_in[grd_idx+idx_lev_max*grd_sz_in]=p0_in*hyam_in[idx_lev_max]+ps_in[idx_fst+grd_idx]*hybm_in[idx_lev_max];
+	  prs_min_in[grd_idx+idx_lev_min*grd_sz_in]=p0_in*hyam_in[idx_lev_min]+ps_in[idx_fst+grd_idx]*hybm_in[idx_lev_min];
+	} /* !grd_idx */
+      } /* !tm_idx */
+    } /* !flg_grd_in_hyb */
+    if(flg_grd_out_hyb){
+      // fxm: assumes hybrid grid has lowest/greatest pressure at top/bottom level
+      idx_lev_max=lev_nbr_out-1;
+      idx_lev_min=0L;
+      for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
+	idx_fst=tm_idx*grd_sz_out;
+	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++){
+	  prs_max_out[grd_idx+idx_lev_max*grd_sz_out]=p0_out*hyam_out[idx_lev_max]+ps_out[idx_fst+grd_idx]*hybm_out[idx_lev_max];
+	  prs_min_out[grd_idx+idx_lev_min*grd_sz_out]=p0_out*hyam_out[idx_lev_min]+ps_out[idx_fst+grd_idx]*hybm_out[idx_lev_min];
+	} /* !grd_idx */
+      } /* !tm_idx */
+    } /* !flg_grd_out_hyb */
     if(flg_grd_in_prs){
       double lev_in_max;
+      double lev_in_min;
       if(lev_in[0] < lev_in[1]) lev_in_max=lev_in[lev_nbr_in-1]; else lev_in_max=lev_in[0];
-      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s lev_in_max = %g Pa\n",nco_prg_nm_get(),fnc_nm,lev_in_max);
-      ps_in=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
-      for(size_t idx_in=0;idx_in<ps_sz;idx_in++) ps_in[idx_in]=lev_in_max;
+      if(lev_in[0] < lev_in[1]) lev_in_min=lev_in[0]; else lev_in_max=lev_in[lev_nbr_in-1];
+      for(size_t idx_in=0;idx_in<ps_sz;idx_in++) prs_max_in[idx_in]=lev_in_max;
+      for(size_t idx_in=0;idx_in<ps_sz;idx_in++) prs_min_in[idx_in]=lev_in_min;
     } /* !flg_grd_in_prs */
     if(flg_grd_out_prs){
       double lev_out_max;
+      double lev_out_min;
       if(lev_out[0] < lev_out[1]) lev_out_max=lev_out[lev_nbr_out-1]; else lev_out_max=lev_out[0];
-      ps_out=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
-      for(size_t idx_out=0;idx_out<ps_sz;idx_out++) ps_out[idx_out]=lev_out_max;
-      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s lev_out_max = %g Pa\n",nco_prg_nm_get(),fnc_nm,lev_out_max);
+      if(lev_out[0] < lev_out[1]) lev_out_min=lev_out[0]; else lev_out_max=lev_out[lev_nbr_out-1];
+      for(size_t idx_out=0;idx_out<ps_sz;idx_out++) prs_max_out[idx_out]=lev_out_max;
+      for(size_t idx_out=0;idx_out<ps_sz;idx_out++) prs_min_out[idx_out]=lev_out_min;
     } /* !flg_grd_out_prs */
     for(idx=0;idx<ps_sz;idx++)
-      if(ps_out[idx] > ps_in[idx]) break;
+      if(prs_max_out[idx] > prs_max_in[idx]) break;
     if(idx < ps_sz) flg_add_msv_att=True;
+    for(idx=0;idx<ps_sz;idx++)
+      if(prs_min_out[idx] < prs_min_in[idx]) break;
+    if(idx < ps_sz) flg_add_msv_att=True;
+    //(void)fprintf(stderr,"%s: %s DEBUG quark1\n",nco_prg_nm_get(),fnc_nm);
     if(flg_add_msv_att && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one point in at least one output level requires extrapolation (not interpolation). Will ensure that all interpolated fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm);
-    if(flg_grd_in_prs && ps_in) ps_in=(double *)nco_free(ps_in);
-    if(flg_grd_out_prs && ps_out) ps_out=(double *)nco_free(ps_out);
+    if(prs_max_in) prs_max_in=(double *)nco_free(prs_max_in);
+    if(prs_max_out) prs_max_out=(double *)nco_free(prs_max_out);
+    if(prs_min_in) prs_min_in=(double *)nco_free(prs_min_in);
+    if(prs_min_out) prs_min_out=(double *)nco_free(prs_min_out);
   } /* !xtr_mth */
   
   /* Lay-out regridded file */
@@ -1540,8 +1584,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_out_prs */
 
   nco_bool flg_ntp_log=True; /* [flg] Interpolate in log(vertical_coordinate) */
-  long grd_idx; /* [idx] Gridcell index */
-  size_t idx_fst; /* [idx] Index-offset to current surface pressure timeslice */
   size_t idx_in; /* [idx] Index into 3D input variables */
   size_t idx_out; /* [idx] Index into 3D output variables */
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
@@ -8934,11 +8976,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	flg_ccw=nco_ccw_chk(grd_crn_lat+idx2,grd_crn_lon+idx2,grd_crn_nbr,idx_ccw,rcr_lvl);
       } /* !idx */
     } /* !flg_s2n */
-    
-    //(void)fprintf(stderr,"%s: %s DEBUG quark1\n",nco_prg_nm_get(),fnc_nm);
-    //(void)fprintf(stderr,"%s: %s DEBUG flg_s2n = %d, idx_ccw = %d, rcr_lvl = %d, grd_crn_nbr = %ld\n",nco_prg_nm_get(),fnc_nm,flg_s2n,idx_ccw,rcr_lvl,grd_crn_nbr);
-    //(void)fprintf(stderr,"%s: %s DEBUG calling nco_ccw_chk()\n",nco_prg_nm_get(),fnc_nm);
-
   } /* !flg_grd_2D */
   
   /* Find span of all grids */

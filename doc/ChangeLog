@@ -1,3 +1,15 @@
+2019-06-15  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.1-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha07: Fin d'êcole';git push
+	git tag -a 4.8.1-alpha07 -m 'ncremap xtr_typ';git push --tags
+
+	* nco_ntp_vrt() set flag to add _FillValue based on both maximum and minimum midpoint pressure
+
+	* nco_ntp_vrt() set flag to add _FillValue based on maximum midpoint pressure not surface pressure
+
+	* ncremap incorporate vertical extrapolation type vrt_xtr option
+
 2019-06-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.1-alpha06 release procedure:

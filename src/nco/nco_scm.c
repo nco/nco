@@ -205,9 +205,8 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
-  /* Purpose: Return mnemonic describing current NCO version
-     Always include terminal \n so mnemonic does not dangle */
-  return "Mnemonic: School of Rock\n";
+  /* Purpose: Return mnemonic describing current NCO version */
+  return "Fin d'êcole";
 } /* end nco_nmn_get() */
 
 void

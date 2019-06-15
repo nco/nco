@@ -23,20 +23,34 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. When selecting parallelism mode with the -p optionm both ncremap
-   and ncclimo now accept the synonyms "serial", "srl", and "nil" for
-   Serial mode, "background" and "bck" for Background mode, and "MPI"
-   and "mpi" for MPI mode. The validity of "serial" was inadvertently
-   revoked in 4.8.0, but it is now accepted again.
-   ncremap -p serial in.nc out.nc
-   ncclimo -p serial -i drc_in -o drc_out
-   http://nco.sf.net/nco.html#par_typ
+A. ncremap/ncks now always creates/infers north-to-south grids with
+   polygons in counter-clockwise (CCW) orientation. Formerly, polygons in
+   south-to-north grids had CCW orientation while those in north-to-south
+   grids had CW orientation. 
+   ncremap -G latlon=1280,2560#lat_typ=gss#lat_drc=n2s -g $HOME/grd_n2s.nc
+   ncremap -d ecmwf_ifs.nc -g grd_n2s.nc
+   http://nco.sf.net/nco.html#n2s
+   http://nco.sf.net/nco.html#ncremap
 
-B. 
+B. ncremap now vertically interpolates data from ECMWF IFS hybrid
+   vertical grid format to CAM/E3SM hybrid format and to pure-pressure
+   format. ECMWF archives and serves IFS data in a hybrid
+   sigma-pressure grid format significantly different from CAM/E3SM.
+   ECMWF supplies lnsp (log surface pressure) not PS (surface
+   pressure). There are numerous other metadata differences.
+   NCO now automatically takes care of these.
+   ncremap --vrt=vrt_hyb_L72.nc ecmwf_ifs_f640L137.nc foo.nc
+   http://nco.sf.net/nco.html#vrt_fl
+   http://nco.sf.net/nco.html#ncremap
 
 BUG FIXES:
 
-A. Hi
+B. ncremap now infers north-to-south Gaussian grids correctly.
+   Previously such grids, like ECMWF IFS grids, failed to converge
+   in the Newton-Raphson iteration for latitude interfaces.
+   ncremap -d ecmwf_ifs.nc -g grd_n2s.nc
+   http://nco.sf.net/nco.html#n2s
+   http://nco.sf.net/nco.html#gss
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

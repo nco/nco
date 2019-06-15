@@ -248,7 +248,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_intbilin.20190401.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -a conserve -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -a conserve2nd -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
-# ncremap -v FSNT,AODVIS --rnr=0.99 --xtr_mth=idavg -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS --rnr=0.99 --esmf_mth=idavg -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -a nco -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -a tempest -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # Positional arguments:
@@ -300,7 +300,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Add depth (201901):
 # ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
 # Vertical interpolation (201903):
-# ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc # Missing-value extrapolation (mss_val|nrs_ngh)
 # Time-varying hybrid input
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-0[123].nc 
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-0[123].nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.197901_197903.nc
@@ -389,7 +390,7 @@ dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
 dt_sng=`date +%Y%m%d` # [sng] Date string for MWF map names
 esmf_nsp=8 # [nbr] ESMF extrapolation number of source points
-esmf_typ='' # [sng] ESMF extrapolation type
+esmf_typ='' # [sng] ESMF extrapolation type (nearestidavg|neareststod|none)
 esmf_xpn=2.0 # [frc] ESMF extrapolation exponent
 fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to remap
@@ -454,6 +455,8 @@ var_xmp='FSNT' # [sng] Variable list for examples
 vrb_lvl=${vrb_2} # [enm] Verbosity level
 vrs_prn='No' # [sng] Print version information
 vrt_fl='' # [sng] Vertical coordinate file
+vrt_opt='' # [sng] Vertical options (e.g., '--rgr xtr_mth=mss_val')
+vrt_xtr='' # [sng] Vertical extrapolation type (mss_val|nrs_ngh)
 wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable
 wgt_exe_nco='ncks' # [sng] NCO executable
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap executable
@@ -465,7 +468,6 @@ wgt_opt_nco='-O --dmm_in_mk' # [sng] NCO weight-generation options
 wgt_opt_tps='' # [sng] TempestRemap weight-generation options
 xcl_flg='No' # [sng] Exclude rather than extract variable list
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
-xtr_typ='' # [sng] Extrapolation type
 
 # Set temporary-file directory (must be writable by user)
 if [ -d "${TMPDIR}" ]; then
@@ -498,7 +500,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--dpt${fnt_nrm}      Add depth coordinate to MPAS files (default ${fnt_bld}${dpt_flg}${fnt_nrm}) [${fnt_tlc}dpt | depth | add_dpt | add_depth${fnt_nrm}]"
     echo " ${fnt_bld}--dpt_fl${fnt_nrm}   Depth file with refBottomDepth for MPAS ocean (empty means none) (default ${fnt_bld}${dpt_fl}${fnt_nrm}) [${fnt_tlc}dpt_fl, mpas_fl, mpas_depth, depth_file${fnt_nrm}]"
     echo " ${fnt_bld}--dt_sng${fnt_nrm}   Date string (for MWF map names) (default ${fnt_bld}${dt_sng}${fnt_nrm}) [${fnt_tlc}dt_sng, date_string${fnt_nrm}]"
-    echo " ${fnt_bld}--esmf_typ${fnt_nrm} ESMF Extrapolation type (empty means none) (default ${fnt_bld}${esmf_typ}${fnt_nrm}) [${fnt_tlc}esmf_typ, esmf_mth, esmf_extrapolation_type, esmf_extrapolation_method${fnt_nrm}]"
+    echo " ${fnt_bld}--esmf_typ${fnt_nrm} ESMF Extrapolation type (empty means none) (default ${fnt_bld}${esmf_typ}${fnt_nrm}) [${fnt_tlc}esmf_typ, esmf_mth, esmf_extrapolation_type, esmf_extrapolation_method${fnt_nrm}] (nearestidavg|neareststod|none)"
     echo " ${fnt_bld}--esmf_nsp${fnt_nrm} ESMF Extrapolation number of source points (default ${fnt_bld}${esmf_nsp}${fnt_nrm}) [${fnt_tlc}esmf_nsp, xtr_pnt_src_nbr, extrap_num_src_pnts${fnt_nrm}]"
     echo " ${fnt_bld}--esmf_xpn${fnt_nrm} ESMF Extrapolation distance exponent (default ${fnt_bld}${esmf_xpn}${fnt_nrm}) [${fnt_tlc}esmf_xpn, xtr_dst_xpn, extrap_dist_exponent${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is netCDF3 64bit CDF2) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
@@ -556,12 +558,11 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
     echo " ${fnt_bld}--vrb_lvl${fnt_nrm}  Verbosity level (default ${fnt_bld}${vrb_lvl}${fnt_nrm}) [${fnt_tlc}vrb_lvl, vrb, verbosity, print_verbosity${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_fl${fnt_nrm}   Vertical coordinate file (empty means none) (default ${fnt_bld}${vrt_fl}${fnt_nrm}) [${fnt_tlc}vrt_fl, vrt, vrt_crd, vertical_coordinate${fnt_nrm}]"
-    echo " ${fnt_bld}--vrt_xtr${fnt_nrm}  Vertical extrapolation type (empty means none) (default ${fnt_bld}${vrt_xtr}${fnt_nrm}) [${fnt_tlc}vrt_xtr${fnt_nrm}] (mss_val|nrs_ngh)"
+    echo " ${fnt_bld}--vrt_xtr${fnt_nrm}  Vertical extrapolation type (empty means none) (default ${fnt_bld}${vrt_xtr}${fnt_nrm}) [${fnt_tlc}vrt_xtr, xtr_mth, extrapolation_type, extrapolation_method${fnt_nrm}] (mss_val|nrs_ngh)"
     echo "${fnt_rvr}-W${fnt_nrm} ${fnt_bld}wgt_opt${fnt_nrm}  Weight-generator options (default ${fnt_bld}${wgt_opt_esmf}${fnt_nrm}) [${fnt_tlc}wgt_opt, esmf_opt, esmf_options, tempest_opt, tps_opt${fnt_nrm}]"
     echo "${fnt_rvr}-w${fnt_nrm} ${fnt_bld}wgt_cmd${fnt_nrm}  Weight-generator command (default ${fnt_bld}${wgt_exe_esmf}${fnt_nrm}) [${fnt_tlc}wgt_cmd, wgt_gnr, weight_command, weight_generator${fnt_nrm}]"
     echo "${fnt_rvr}-x${fnt_nrm} ${fnt_bld}xtn_var${fnt_nrm}  Extensive variables (empty means none) (default ${fnt_bld}${xtn_var}${fnt_nrm}) [${fnt_tlc}xtn_var, xtn_lst, extensive, var_xtn, extensive_variables${fnt_nrm}]"
     echo " ${fnt_bld}--xcl_var${fnt_nrm}  Exclude rather than extract var_lst [${fnt_tlc}xcl_var, xcl, exclude, exclude_variables${fnt_nrm}]"
-    echo " ${fnt_bld}--xtr_typ${fnt_nrm}  Extrapolation type (empty means none) (default ${fnt_bld}${xtr_typ}${fnt_nrm}) [${fnt_tlc}xtr_typ, xtr_mth, extrapolation_type, extrapolation_method${fnt_nrm}]"
     printf "\n"
     printf "Examples: ${fnt_bld}$spt_nm -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
@@ -668,7 +669,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       dt_sng=?* | date_string=?* ) dt_sng="${LONG_OPTARG}" ;; # # Date string for MWF map names
 	       esmf_nsp=?* | esmf_pnt_src_nbr=?* | esmf_extrap_num_src_pts=?* ) esmf_nsp_usr="${LONG_OPTARG}" ;; # # ESMF extrapolation number of source points
-	       esmf_typ=?* | esmf_mth=?* | esmf_extrap_type=?* | esmf_extrap_method=?* ) esmf_typ="${LONG_OPTARG}" ;; # # ESMF extrapolation type
+	       esmf_typ=?* | esmf_mth=?* | esmf_extrap_type=?* | esmf_extrap_method=?* ) esmf_typ="${LONG_OPTARG}" ;; # # ESMF extrapolation type (nearestidavg|neareststod|none)
 	       esmf_xpn=?* | esmf_dst_xpn=?* | esmf_extrap_dist_exponent=?* ) esmf_xpn_usr="${LONG_OPTARG}" ;; # # ESMF extrapolation exponent
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
 	       gll_fl=?* | gll_mtd=?* | se_gmt=?* | se_mtd=?* ) gll_fl="${LONG_OPTARG}" ;; # # GLL grid metadata (geometry+connectivity+Jacobian) file
@@ -733,12 +734,12 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
 	       vrb_lvl=?* | vrb=?* | verbosity=?* | print_verbosity=?* ) vrb_lvl="${LONG_OPTARG}" ;; # # Print verbosity
 	       vrt_fl=?* | vrt=?* | vrt_crd=?* | vertical_coordinate=?* ) vrt_fl="${LONG_OPTARG}" ;; # # Vertical coordinate file
+	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Extrapolation type (mss_val|nrs_ngh)
 	       wgt_opt=?* | esmf_opt=?* | esmf_options=?* | tps_opt=?* | tempest_opt=?* | tempest_options=?* ) wgt_opt_usr="${LONG_OPTARG}" ;; # -W # Weight-generator options
 	       wgt_cmd=?* | weight_command=?* | wgt_gnr=?* | weight_generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator command
 	       xcl_var | xcl | exclude | exclude_variables ) xcl_flg='Yes' ;; # # Exclude rather than extract variable list
 	       xcl_var=?* | xcl=?* | exclude=?* | exclude_variables=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Exclude rather than extract variable list
 	       xtn_var=?* | extensive=?* | var_xtn=?* | extensive_variables=?* ) xtn_var="${LONG_OPTARG}" ;; # -x # Extensive variables
-	       xtr_typ=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) xtr_typ="${LONG_OPTARG}" ;; # # Extrapolation type
                '' ) break ;; # "--" terminates argument processing
                * ) printf "\nERROR: Unrecognized option ${fnt_bld}--${OPTARG}${fnt_nrm}\n" >&2; fnc_usg_prn ;;
 	   esac ;; # !OPTARG
@@ -1036,17 +1037,17 @@ if [ -n "${esmf_xpn_usr}" ]; then
 fi # !esmf_xpn_usr
 if [ -n "${esmf_typ}" ]; then
     if [ ${esmf_typ} = 'neareststod' ] || [ ${esmf_typ} = 'stod' ] || [ ${esmf_typ} = 'nsd' ]; then 
-	xtr_opt='neareststod'
+	esmf_opt='neareststod'
     elif [ ${esmf_typ} = 'nearestidavg' ] || [ ${esmf_typ} = 'idavg' ] || [ ${esmf_typ} = 'id' ]; then 
-	xtr_opt='nearestidavg'
+	esmf_opt='nearestidavg'
     elif [ ${esmf_typ} = 'none' ] || [ ${esmf_typ} = 'nil' ] || [ ${esmf_typ} = 'nowaydude' ]; then 
-	xtr_opt='none'
+	esmf_opt='none'
     else 
 	echo "${spt_nm}: ERROR ${esmf_typ} is not a valid extrapolation method"
 	echo "${spt_nm}: HINT Valid ESMF extrapolation methods and synonyms are neareststod,stod,nsd | nearestidavg,idavg,id | none,nil"
 	exit 1
     fi # !esmf_typ
-    wgt_opt_esmf="${wgt_opt_esmf} --extrap_method ${xtr_opt} --extrap_num_src_pnts ${esmf_nsp} --extrap_dist_exponent ${esmf_xpn}"
+    wgt_opt_esmf="${wgt_opt_esmf} --extrap_method ${esmf_opt} --extrap_num_src_pnts ${esmf_nsp} --extrap_dist_exponent ${esmf_xpn}"
 fi # !esmf_typ
 if [ ${wgt_typ} = 'esmf' ]; then
     wgt_cmd="${wgt_exe_esmf}"
@@ -1411,6 +1412,17 @@ if [ -n "${vrt_fl}" ]; then
     vrt_usr_flg='Yes'
     # Prevent attempts at simultaneous vertical and horizontal regridding
     flg_vrt_only='Yes' 
+    if [ -n "${vrt_xtr}" ]; then
+	if [ ${vrt_xtr} = 'mss_val' ] || [ ${vrt_xtr} = 'missing_value' ] || [ ${vrt_xtr} = 'msv' ]; then 
+	    vrt_opt='--rgr xtr_mth=mss_val'
+	elif [ ${vrt_xtr} = 'nrs_ngh' ] || [ ${vrt_xtr} = 'nearest_neighbor' ] || [ ${vrt_xtr} = 'nn' ]; then 
+	    vrt_opt='--rgr xtr_mth=nrs_ngh'
+	else 
+	    echo "${spt_nm}: ERROR ${vrt_xtr} is not a valid extrapolation method"
+	    echo "${spt_nm}: HINT Valid vertical extrapolation methods and synonyms are mss_val,missing_value,msv | nrs_ngh,nearest_neighbor,nn"
+	    exit 1
+	fi # !vrt_xtr
+    fi # !vrt_xtr
 fi # !vrt_fl
 
 if [ -n "${dst_fl}" ]; then 
@@ -1688,6 +1700,9 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: drc_tmp  = ${drc_tmp}\n"
     printf "dbg: dst_fl   = ${dst_fl}\n"
     printf "dbg: erwg_vrs = ${erwg_vrs_sng}\n"
+    printf "dbg: esmf_typ = ${esmf_typ}\n"
+    printf "dbg: esmf_nsp = ${esmf_nsp}\n"
+    printf "dbg: esmf_xpn = ${esmf_xpn}\n"
     printf "dbg: fl_fmt   = ${fl_fmt}\n"
     printf "dbg: fl_in[0] = ${fl_in[0]}\n"
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
@@ -1737,12 +1752,10 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: var_rgr  = ${var_rgr}\n"
     printf "dbg: vrt_fl   = ${vrt_fl}\n"
+    printf "dbg: vrt_xtr  = ${vrt_xtr}\n"
     printf "dbg: wgt_cmd  = ${wgt_cmd}\n"
     printf "dbg: wgt_opt  = ${wgt_opt}\n"
     printf "dbg: wgt_usr  = ${wgt_usr}\n"
-    printf "dbg: esmf_typ  = ${esmf_typ}\n"
-    printf "dbg: esmf_nsp  = ${esmf_nsp}\n"
-    printf "dbg: esmf_xpn  = ${esmf_xpn}\n"
     printf "dbg: Will regrid ${fl_nbr} files:\n"
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	printf "${fl_in[${fl_idx}]}\n"
@@ -2700,7 +2713,7 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	    printf "Vertical : ${vrt_fl}\n"
 	fi # !vrb_lvl
-	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} --vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
+	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
     else # !vrt_fl
 	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 	    printf "Map/Wgt  : ${map_fl}\n"

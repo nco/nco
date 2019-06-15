@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.1-alpha06
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 14 June 2019
+@set update-date 15 June 2019
 @set update-month June 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22925,8 +22925,8 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[--vrt_fl=@var{vrt_fl}] [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]]
-[--xcl_var] [--xtr_typ=@var{xtr_typ}]
+[--vrt_fl=@var{vrt_fl}]  [--vrt_xtr=@var{vrt_xtr}] [-W @var{wgt_opt}] [-w @var{wgt_cmd}]
+[-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -23594,14 +23594,19 @@ output map-file names of this format:
 @item --esmf_typ=@var{esmf_typ} (@code{--esmf_typ}, @code{--esmf_mth}, @code{--esmf_extrap_type}, @code{--esmf_extrap_method})
 Specifies the extrapolation method used to compute unmapped
 destination point values with the @acronym{ERWG} weight generator.
-Valid values and their synonyms are
-@code{neareststod} (synonyms @code{stod} and @code{nsd}),
-@code{nearestidavg} (synonyms @code{idavg} and @code{id}), and
-@code{none} (synonyms @code{nil} and @code{nowaydude}).
+Valid values, their synonyms, and their meanings are
+@code{neareststod} (synonyms @code{stod} and @code{nsd}) which
+uses the nearest valid source value,
+@code{nearestidavg} (synonyms @code{idavg} and @code{id}) which
+uses an inverse distance-weighted (with an exponent of @var{esmf_xpn})
+average of the nearest @var{esmf_nsp} valid source values, and 
+@code{none} (synonyms @code{nil} and @code{nowaydude}) which forbids 
+extrapolation. 
 Default is @math{@var{esmf_typ} = @code{none}}.
-The arguments to options @samp{--esmf_xpn=@var{esmf_xpn}} and
-@samp{--esmf_nsp=@var{esmf_nsp}} provide parameters that control the
-extrapolation @code{neareststod} and @code{nearestidavg} algorithms. 
+The arguments to options @samp{--esmf_xpn=@var{esmf_xpn}} (which
+defaults to 2.0) and @samp{--esmf_nsp=@var{esmf_nsp}} (which defaults
+to 8) set the parameters that control the extrapolation
+@code{nearestidavg} algorithm.   
 For more information on @acronym{ERWG} extrapolation, see documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
 @acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
@@ -25303,22 +25308,21 @@ We are interested in ``real-world'' situations that require regridding
 extensive variables, please contact us if you have one.
 
 @html
-<a name="xtr_typ"></a> <!-- http://nco.sf.net/nco.html#xtr_typ -->
+<a name="vrt_xtr"></a> <!-- http://nco.sf.net/nco.html#vrt_xtr -->
 @end html
-@cindex @code{--xtr_typ=@var{xtr_typ}}
-@cindex @var{xtr_typ}
-@cindex @code{--xtr_typ}
+@cindex @code{--vrt_xtr=@var{vrt_xtr}}
+@cindex @var{vrt_xtr}
+@cindex @code{--vrt_xtr}
 @cindex @code{--xtr_mth}
 @cindex @code{--extrapolation_type}
 @cindex @code{--extrapolation_method}
-@item --xtr_typ=@var{xtr_typ} (@code{--xtr_typ}, @code{--xtr_mth}, @code{--extrap_type}, @code{--extrap_method})
+@item --vrt_xtr=@var{vrt_xtr} (@code{--vrt_xtr}, @code{--xtr_mth}, @code{--extrapolation_type}, @code{--extrapolation_method})
 Specifies the extrapolation method for destination points outside the
-vertical range of the input data during vertical interpolation.a
+vertical range of the input data during vertical interpolation.
 Valid values and their synonyms are
-@code{mss_val} (synonyms @code{msv} and @code{missing_value}), 
-@code{nrs_ngh} (synonyms @code{nn} and @code{nearest_neighbor}), and
-@code{none} (synonyms @code{nil} and @code{nowaydude}).
-Default is @math{@var{xtr_typ} = @code{nrs_ngh}}.
+@code{mss_val} (synonyms @code{msv} and @code{missing_value}), and
+@code{nrs_ngh} (synonyms @code{nn} and @code{nearest_neighbor}).
+Default is @math{@var{vrt_xtr} = @code{nrs_ngh}}.
 @acronym{NCO} supports this feature as of version 4.8.1 (June, 2019).
 
 @end table
