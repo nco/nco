@@ -43,6 +43,8 @@ B. ncremap now vertically interpolates data from ECMWF IFS hybrid
    http://nco.sf.net/nco.html#vrt_fl
    http://nco.sf.net/nco.html#ncremap
 
+C. ncremap/ncclimo mss_val/nrs_ngh fxm
+
 BUG FIXES:
 
 B. ncremap now infers north-to-south Gaussian grids correctly.
