@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha07: Fin d'êcole';git push
 	git tag -a 4.8.1-alpha07 -m 'ncremap xtr_typ';git push --tags
 
+	* ncclimo print correct regridded filename at end when no_ntv_tms requested
+
+	* ncclimo incorporate vertical extrapolation type vrt_xtr option
+
 	* nco_ntp_vrt() set flag to add _FillValue based on both maximum and minimum midpoint pressure
 
 	* nco_ntp_vrt() set flag to add _FillValue based on maximum midpoint pressure not surface pressure

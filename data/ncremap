@@ -734,7 +734,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
 	       vrb_lvl=?* | vrb=?* | verbosity=?* | print_verbosity=?* ) vrb_lvl="${LONG_OPTARG}" ;; # # Print verbosity
 	       vrt_fl=?* | vrt=?* | vrt_crd=?* | vertical_coordinate=?* ) vrt_fl="${LONG_OPTARG}" ;; # # Vertical coordinate file
-	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Extrapolation type (mss_val|nrs_ngh)
+	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Vertical extrapolation type (mss_val|nrs_ngh)
 	       wgt_opt=?* | esmf_opt=?* | esmf_options=?* | tps_opt=?* | tempest_opt=?* | tempest_options=?* ) wgt_opt_usr="${LONG_OPTARG}" ;; # -W # Weight-generator options
 	       wgt_cmd=?* | weight_command=?* | wgt_gnr=?* | weight_generator=?* ) wgt_usr="${LONG_OPTARG}" ;; # -w # Weight-generator command
 	       xcl_var | xcl | exclude | exclude_variables ) xcl_flg='Yes' ;; # # Exclude rather than extract variable list

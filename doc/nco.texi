@@ -17665,7 +17665,8 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}]
 [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [-v @var{var_lst}] [--version] 
-[--vrt_fl=@var{vrt_fl}] [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
+[--vrt_fl=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
+[-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
 @end example
 
@@ -17723,6 +17724,10 @@ order of the short option letter.
 Long option synonyms are given just after the letter.
 When invoked without options, @command{ncclimo} and @command{ncremap}
 print a succinct table of all options and some examples.
+All valid options for both operators are listed in their command
+syntax above but, for brevity, options that @command{ncclimo} passes
+straight through to @command{ncremap} are only fully described in the
+table of @command{ncremap} options.
 @table @option
 @html
 <a name="dec_md"></a> <!-- http://nco.sf.net/nco.html#dec_md -->
@@ -22925,7 +22930,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[--vrt_fl=@var{vrt_fl}]  [--vrt_xtr=@var{vrt_xtr}] [-W @var{wgt_opt}] [-w @var{wgt_cmd}]
+[--vrt_fl=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}] [-W @var{wgt_opt}] [-w @var{wgt_cmd}]
 [-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
 [@var{input-files}] [@var{output-file}]
 @end example
