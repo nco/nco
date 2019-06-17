@@ -331,7 +331,7 @@ if [ -z "${nco_vrs}" ]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
     $(ncks --version)
     if [ "${NCO_PATH_OVERRIDE}" != 'Yes' ]; then
-	printf "HINT: If error might be due to link issues (e.g., libraries missing or not found) and if ${HOSTNAME} is at a supported national lab, try employing NCO machine-dependent hardcoded paths/modules by re-running command after setting \"export NCO_PATH_OVERRIDE=Yes\".\n"
+	printf "HINT: Run-time errors due to link issues (e.g., libraries missing or not found) might be solved at supported national labs (ALCF, NCAR, NERSC, OLCF, PNNL) by employing NCO machine-dependent hardcoded paths/modules. To try this, re-run command after setting \"export NCO_PATH_OVERRIDE=Yes\".\n"
     fi # !NCO_PATH_OVERRIDE
     exit 1
 fi # !nco_vrs

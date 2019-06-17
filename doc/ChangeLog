@@ -1,10 +1,10 @@
 2019-06-15  Charlie Zender  <zender@uci.edu>
 
-	* ncremap/ncclimo print NCO_PATH_OVERRIDE HINT when ncks fails due to link error
-
 	* NCO 4.8.1-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.1-alpha08: Sunburn';git push
-	git tag -a 4.8.1-alpha08 -m 'ntp_vrt mss_val fix';git push --tags
+	git tag -a 4.8.1-alpha08 -m 'ntp_vrt mss_val idx fix';git push --tags
+
+	* ncremap/ncclimo print NCO_PATH_OVERRIDE HINT when ncks fails due to link error
 
 	* nco_ntp_vrt() correct prs_min/max_in/out idx_fst when detecting extrapolation
 
