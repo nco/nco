@@ -653,7 +653,9 @@ int *pl_cnt_vrl_ret){
   kd_rebuild(rtree);
  */
 
+  /*
   kd_print(rtree);
+  */
 
 /* start main loop over input polygons */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
