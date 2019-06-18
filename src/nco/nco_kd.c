@@ -1758,7 +1758,7 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 // KDElem **kd_minval_node,**kd_minval_nodesdad; /* q is the maximum loson, or the minimum hison, depending on dir, and qdad is q's dad. */
 // int j,*dir,*newj; /* j is the discriminator index (0-3), dir is HISON or LOSON (qdad[dir]==q. newj is minval_node's disc*/
 {
-    double kd_minval = (*kd_minval_node)->size[j];
+
     KDState *realGen;
 	
     realGen = (KDState*)nco_malloc(sizeof(KDState));
@@ -1784,14 +1784,14 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 		register KDSave *top_elem;
 		register KDElem *top_item;
 		short m;
-		short hort;
+
 
 
 		while (realGen->top_index > 0)
 		{
 			top_elem = &(realGen->stk[realGen->top_index-1]);
 			top_item = top_elem->item;
-			hort = top_elem->disc & 0x01;/* zero: vertical, one: horizontal */
+
 			m = top_elem->disc;
 				
 			switch (top_elem->state)
@@ -1809,7 +1809,7 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 					else
 						*dir = KD_HISON;
 					*newj = m;
-					kd_minval = top_item->size[j];
+
 					top_elem->state += 1;
 				} else
 				{
@@ -1858,13 +1858,13 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 		register KDSave *top_elem;
 		register KDElem *top_item;
 		short m;
-		short hort;
+
 
 		while (realGen->top_index > 0)
 		{
 			top_elem = &(realGen->stk[realGen->top_index-1]);
 			top_item = top_elem->item;
-			hort = top_elem->disc & 0x01;/* zero: vertical, one: horizontal */
+
 			m = top_elem->disc;
 			
 			switch (top_elem->state)
@@ -1877,7 +1877,7 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 				{				/* when items have equal discriminators, choose the deepest to the right */
 					*kd_minval_node = top_item;
 					*kd_minval_nodesdad = realGen->stk[realGen->top_index-2].item;
-					kd_minval = top_item->size[j];
+
 					if( *kd_minval_node == (*kd_minval_nodesdad)->sons[KD_LOSON] )
 						*dir = KD_LOSON;
 					else
@@ -2679,7 +2679,7 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, i
 {
 	int idx;
 	int node_cnt;
-	int lcl_cnt=0;
+
     int nw_lcl_cnt=0;
 	int ret_cnt=0;
 

@@ -410,8 +410,8 @@ void nco_poly_minmax_add
     {
 
       /* polar cap must all be northern or southern hemisphere */
-      if(  ! ( pl->dp_y_minmax[0] > 0.0 && pl->dp_y_minmax[1] > 0.0  ||
-               pl->dp_y_minmax[0] < 0.0 && pl->dp_y_minmax[1] < 0.0 ) )
+      if(  ! ( ( pl->dp_y_minmax[0] > 0.0 && pl->dp_y_minmax[1] > 0.0 )  ||
+                (pl->dp_y_minmax[0] < 0.0 && pl->dp_y_minmax[1] < 0.0 ) ) )
         is_caps=False;
       /* see if its a polar triangle */
       else if(pl->dp_y_minmax[0] == -90.0 || pl->dp_y_minmax[1] == 90.0  )
@@ -423,8 +423,8 @@ void nco_poly_minmax_add
       {
 
         nco_bool bDeg=True;
-        nco_bool haveControl=False;
-        nco_bool bInside=False;
+
+
         double pControl[NBR_SPH];
         double pPole[NBR_SPH];
 
@@ -467,8 +467,10 @@ void nco_poly_minmax_add
         /* change longitude limits so they include the whole range */
         switch (grd_lon_typ) {
 
+          default:
           case nco_grd_lon_Grn_ctr:
           case nco_grd_lon_Grn_wst:
+
             pl->dp_x_minmax[0] = 0.0;
             pl->dp_x_minmax[1] = 360.0;
             break;
@@ -501,6 +503,7 @@ void nco_poly_minmax_add
         /* convert from  (-180,180) to (0,360) or (0, 360)-> (-180, 180) */
         switch (grd_lon_typ) {
 
+          default:
           case nco_grd_lon_Grn_wst:
           case nco_grd_lon_Grn_ctr:
             nco_msh_lon_crr(lcl_dp_x, sz, 1, grd_lon_typ, nco_grd_lon_180_ctr);
@@ -1021,7 +1024,7 @@ poly_sct ** pl_wrp_right)
 {
 
 
-  int cnt_left=0;
+
 
   if( grd_lon_typ ==  nco_grd_lon_Grn_wst || grd_lon_typ == nco_grd_lon_Grn_ctr)
     return nco_poly_wrp_splt360(pl, pl_wrp_left, pl_wrp_right); 
@@ -1308,10 +1311,10 @@ nco_grd_lon_typ_enm
 nco_poly_minmax_2_lon_typ
 (poly_sct *pl)
 {
-  double lon_min;
+  /* double lon_min=pl->dp_x_minmax[0]; */
   double lon_max;
 
-  lon_min=pl->dp_x_minmax[0];
+
   lon_max=pl->dp_x_minmax[1];
 
   if( lon_max >180.0 )
@@ -1323,6 +1326,7 @@ nco_poly_minmax_2_lon_typ
   return nco_grd_lon_nil;
 
 }
+
 
 /* simple evaluation of lat/lon centroid using averages  of dp_x and dp_y */
 /* OK for now 20190307 */

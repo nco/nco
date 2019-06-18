@@ -90,7 +90,7 @@ int *pl_nbr)
 {
   const char fnc_nm[]="nco_poly_lst_mk()";
 
-  int idx=0;
+  size_t idx=0;
   int idx_cnt=0;
   int cnt_wrp_good=0;
 
@@ -170,7 +170,7 @@ int *pl_nbr)
       }
       else
       {
-        (void)fprintf(stdout, "%s:  polygon(%d) wrapped - but grd_lon_typ not specified \n", nco_prg_nm_get(), idx);
+        (void)fprintf(stdout, "%s:  polygon(%lu) wrapped - but grd_lon_typ not specified \n", nco_prg_nm_get(), idx);
         (void)fprintf(stdout, "/*******************************************/\n");
 
         pl=nco_poly_free(pl);
@@ -218,7 +218,7 @@ int *pl_nbr)
     else
     {
       if(nco_dbg_lvl_get() >=  nco_dbg_std ){
-        (void)fprintf(stdout, "%s: split wrapping didnt work on this polygon(%d)\n", nco_prg_nm_get(), idx );
+        (void)fprintf(stdout, "%s: split wrapping didnt work on this polygon(%lu)\n", nco_prg_nm_get(), idx );
         (void)fprintf(stdout, "/********************************/\n");
       }
 
@@ -255,7 +255,7 @@ poly_typ_enm pl_typ,
 int *pl_nbr)
 {
 
-  int idx=0;
+  size_t idx=0;
   int idx_cnt=0;
   int wrp_cnt=0;
   int wrp_y_cnt=0;
@@ -311,7 +311,7 @@ int *pl_nbr)
     if(!pl) {
 
       if(nco_dbg_lvl_get()>= nco_dbg_dev)
-         fprintf(stderr, "%s(): WARNING cell(id=%d) less than a triange\n", fnc_nm, idx);
+         fprintf(stderr, "%s(): WARNING cell(id=%lu) less than a triange\n", fnc_nm, idx);
 
       continue;
     }
@@ -426,8 +426,8 @@ int *pl_cnt_vrl_ret){
 
 /* just duplicate output list to overlap */
 
-  size_t idx;
-  size_t jdx;
+  int idx;
+  int jdx;
 
   int max_nbr_vrl=1000;
   int pl_cnt_vrl=0;
@@ -550,7 +550,7 @@ int *pl_cnt_vrl_ret){
     }
 
     if( nco_dbg_lvl_get() >= nco_dbg_dev )
-      (void) fprintf(stderr, "%s: total overlaps=%d for polygon %lu - potential overlaps=%d actual overlaps=%d\n", nco_prg_nm_get(), pl_cnt_vrl,  idx, cnt_vrl, cnt_vrl_on);
+      (void) fprintf(stderr, "%s: total overlaps=%d for polygon %d - potential overlaps=%d actual overlaps=%d\n", nco_prg_nm_get(), pl_cnt_vrl,  idx, cnt_vrl, cnt_vrl_on);
 
 
   }
@@ -583,8 +583,8 @@ int *pl_cnt_vrl_ret){
   nco_bool bSplit=False;
   nco_bool bSort=True;
 
-  /* used by nco_sph_mk_control point */
-  nco_bool bInside=True;
+  /* used by nco_sph_mk_control point
+  nco_bool bInside=True; */
   
   int max_nbr_vrl=2000;
   int pl_cnt_vrl=0;
@@ -593,8 +593,8 @@ int *pl_cnt_vrl_ret){
 
 
   poly_typ_enm pl_typ;
-  size_t idx;
-  size_t jdx;
+  int idx;
+  int jdx;
 
   /* used in realloc */
   size_t nbr_vrl_blocks=0;
@@ -631,7 +631,7 @@ int *pl_cnt_vrl_ret){
   /* populate kd_tree */
   for(idx=0 ; idx<pl_cnt_out;idx++){
 
-    double df=pl_lst_out[idx]->dp_x_minmax[1] - pl_lst_out[idx]->dp_x_minmax[0];
+    /* double df=pl_lst_out[idx]->dp_x_minmax[1] - pl_lst_out[idx]->dp_x_minmax[0]; */
 
     my_elem1=(KDElem*)nco_calloc((size_t)1,sizeof (KDElem) );
 
@@ -714,7 +714,6 @@ int *pl_cnt_vrl_ret){
 
 
        if(pl_typ== poly_sph ) {
-           double pControl[NBR_SPH];
 
          /* see if pl_out completley inside pl_lst_in[idx] */
            if(nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out)) {
@@ -977,7 +976,7 @@ int pl_cnt_vrl)
   int idx;
   int jdx;
 
-  double sum=0.0;
+
   double epsilon=1.0e-8;
 
   const char fnc_nm[]="nco_poly_lst_chk()";
