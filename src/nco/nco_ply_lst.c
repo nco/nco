@@ -321,8 +321,6 @@ int *pl_nbr)
     pl->dp_y_ctr=lat_ctr[idx];
 
     
-    
-    
 
     /* pop shp */
     nco_poly_shp_pop(pl);
@@ -356,6 +354,9 @@ int *pl_nbr)
     if(pl->bwrp)
       (void)fprintf(stderr,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  fnc_nm, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
     */
+
+    if(pl->dp_y_minmax[0]==-90.0 || pl->dp_y_minmax[1]==90.0)
+      nco_poly_ctr_add(pl, grd_lon_typ);
 
     if(nco_dbg_lvl_get()>= nco_dbg_dev  )
       if(pl->bwrp)
@@ -584,7 +585,7 @@ int *pl_cnt_vrl_ret){
 
 
 /* just duplicate output list to overlap */
-  nco_bool bDirtyRats=False;
+  nco_bool bDirtyRats=True;
   nco_bool bSplit=False;
   nco_bool bSort=True;
 
@@ -735,29 +736,112 @@ int *pl_cnt_vrl_ret){
       }
 
       if(pl_typ== poly_sph ) {
+
+
         int lret = 0;
-        char sp_sng[VP_MAX];
 
-        sp_sng[0]='\0';
+        /* [flg] set by nco_sph_intersect_pre - if True it means that scan hase detected a genuine intersection so
+         * so no need to do further processing */
+        nco_bool bGenuine=False;
+        char in_sng[VP_MAX];
+        char out_sng[VP_MAX]; 
 
 
-        nco_sph_intersect_pre(pl_lst_in[idx], pl_out, sp_sng);
+        in_sng[0]='\0';
+        out_sng[0]='\0';  
+
+        nco_sph_intersect_pre(pl_lst_in[idx], pl_out, in_sng);
 
         if(0 && nco_dbg_lvl_get() >= nco_dbg_dev)
-          (void)fprintf(stderr,"%s:%s(): sp_sng=%s \n",nco_prg_nm_get(),fnc_nm, sp_sng  );
+          (void)fprintf(stderr,"%s:%s(): sp_sng=%s \n",nco_prg_nm_get(),fnc_nm, in_sng  );
 
 
-        lret = nco_sph_process_pre(pl_out, sp_sng);
+        lret = nco_sph_process_pre(pl_out, in_sng, &bGenuine);
 
-        /* all vertex/edges for pl_out are inside pl_lst_in[idx]  */
+        switch(lret)
+        {
+
+          case 1:
+            pl_vrl = nco_poly_dpl(pl_out);
+            break;
+
+
+          case 2:
+            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char *)NULL);
+            break;
+
+          case 3:
+            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, in_sng);
+            break;
+
+
+          case 4:
+            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
+            break;
+
+          case 5:
+            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, in_sng);
+            break;
+
+
+        }
+
+        /* swap arg around and try again */
+        if(!pl_vrl && bGenuine==False && lret !=1  )
+        {
+          
+
+          nco_sph_intersect_pre(pl_out, pl_lst_in[idx], out_sng);
+          lret = nco_sph_process_pre(pl_lst_in[idx], out_sng, &bGenuine);
+
+          switch(lret)
+          {
+
+            case 1:
+              pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
+              break;
+
+
+            case 2:
+              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], (char *)NULL);
+              break;
+
+            case 3:
+              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], out_sng);
+              break;
+
+
+            case 4:
+              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], (char*)NULL);
+              break;
+
+            case 5:
+              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], out_sng);
+              break;
+
+
+          }
+          if(0 && !pl_vrl)
+            fprintf(stderr,"%s: overlap failed in_sng=%s out_sng=%s\n", nco_prg_nm_get(), in_sng, out_sng);
+
+
+
+        }
+
+
+
+
+
+        /*
+
         if (lret == 1)
           pl_vrl = nco_poly_dpl(pl_out);
 
-        /* all vertex from pl_lst_in[idx] are outside pl_out */
+
         if(lret==2) {
           pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char *) NULL);
           if(!pl_vrl) {
-          /* try reverse */
+
           sp_sng[0]='\0';
             nco_sph_intersect_pre(pl_out, pl_lst_in[idx], sp_sng);
             pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out,sp_sng );
@@ -765,7 +849,7 @@ int *pl_cnt_vrl_ret){
           }
 
         }
-        /* mixed with only a single 'e' 'i' */
+
         if(lret==3)
           pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
 
@@ -776,7 +860,6 @@ int *pl_cnt_vrl_ret){
        if (!pl_vrl && nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
         if (nco_sph_poly_in_poly(pl_out, pl_lst_in[idx]))
           pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
-
 
        /*
 
