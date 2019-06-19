@@ -988,7 +988,7 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
 
   /* if true make control point INSIDE polygon
    * else make OUTSIDE polygon */
-  nco_bool bInside=False;
+  nco_bool bInside=True;
 
   char codes[] ="00";
 
@@ -1010,9 +1010,7 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
    * also there is a situation where for some polygons the center maybe outside polygon ?
    * Also if we use a point outide we dont have to bother (re)calculating the center
    */
-
-
-  nco_sph_mk_control(sP, bInside, pControl);
+    nco_sph_mk_control(sP, bInside, pControl);
 
 
   if(DEBUG_LCL)
@@ -1477,6 +1475,22 @@ nco_sph_mlt(double *a, double m)
   a[2]*=m;
 
   return;
+
+
+}
+
+double
+nco_sph_dist(double *p0, double *p1)
+{
+
+  double r0[NBR_SPH];
+
+  r0[0]=p0[0]-p1[0];
+  r0[1]=p0[1]-p1[1];
+  r0[2]=p0[2]-p1[2];
+
+  return r0[0]*r0[0]+ r0[1]*r0[1]+ r0[2]*r0[2];
+
 
 
 }
@@ -2070,14 +2084,24 @@ nco_sph_add_lonlat(double *ds)
 }
 
 
-/* this function add a "posible" center or point that is INSIDE of poolygon */
+/* calculates "centroid of a polygon using "average of vertex(s) */
 /* we need a center inside so that  nco_sph_intersect_pre() can work corectly */
 void
-nco_sph_ctr_inside_add(poly_sct *sP)
+nco_sph_centroid_mk(poly_sct *sP, double *pControl)
 {
   int idx;
+  int idx1;
   int sz;
-  const char fnc_nm="nco_sph_ctr_inside_add()";
+  int min_idx=0;
+  int max_idx=0;
+
+  nco_bool bDeg=False;
+
+  double pC[NBR_SPH];
+
+  double pMidPoint[NBR_SPH];
+
+  const char fnc_nm="nco_sph_centroid_mk()";
 
   if(!sP->shp) {
     (void) fprintf(stderr, "%s:%s func has been called with sP->sph as null\n", nco_prg_nm_get(), fnc_nm);
@@ -2085,32 +2109,126 @@ nco_sph_ctr_inside_add(poly_sct *sP)
   }
 
 
-  sz=sP->crn_nbr;
 
-  /* triangle */
-  if(sz==3)
-  {
 
-    double p1[NBR_SPH];
-    double p2[NBR_SPH];
+  pMidPoint[0]=0.0;
+  pMidPoint[1]=0.0;
+  pMidPoint[2]=0.0;
 
-    /* find midpoint of First 2 points */
-    nco_sph_add(sP->shp[0], sP->shp[1], p1 );
-    nco_sph_mlt(p1,0.5);
+  /* sum vertx(s) and do "average" */
+  for(idx=0;idx<sP->crn_nbr;idx++)
+    nco_sph_add(sP->shp[idx],pMidPoint,pMidPoint);
 
-    /* find midpoint of p1 and third Vertex */
-    nco_sph_add(p1, sP->shp[2], p2);
 
-    nco_sph_mlt(p2, 0.5);
+  /* normalize pMidPoint */
+  nco_sph_mlt( pMidPoint, 1.0/sqrt( pMidPoint[0]*pMidPoint[0]+ pMidPoint[1]*pMidPoint[1] + pMidPoint[2]*pMidPoint[2]  ) );
 
-    /* p2 now contains midpoint */
+  if(DEBUG_SPH)
+    nco_sph_prn_pnt("nco_sph_centroid_mk - Centroid",pMidPoint,3,True );
 
-  }
 
+
+  nco_geo_sph_2_lonlat(pMidPoint, &pMidPoint[3], &pMidPoint[4], bDeg);
+
+  nco_sph_adi(pControl, pMidPoint);
+
+  return;
 
 
 
 }
+
+
+/* creates a point that is guaranteed to be inside ANY polygon */
+/* it may break down if there are multiple coincident vertex  */
+nco_bool
+nco_sph_inside_mk(poly_sct *sP, double *pControl)
+{
+  int idx;
+  int sz;
+  int mid_idx=-1;
+  int mid_idx1=-1;
+  int max_idx=-1;
+
+  nco_bool bDeg=False;
+
+
+  double max_dp = -(DBL_MAX);
+  double length = 0.0;
+
+  double pMidPoint[NBR_SPH]={0.0};
+
+
+  const char fnc_nm="nco_sph_inside_mk()";
+
+  sz=sP->crn_nbr;
+
+  if(!sP->shp) {
+    (void) fprintf(stderr, "%s:%s func has been called with sP->sph as null\n", nco_prg_nm_get(), fnc_nm);
+    nco_err_exit(1, fnc_nm);
+  }
+
+
+  for (idx = 0; idx < sz; idx++)
+  {
+    length = nco_sph_dist(sP->shp[(idx + sz - 1) % sz], sP->shp[idx]);
+    if (length > max_dp) {
+      max_dp = length;
+      mid_idx = idx;
+    }
+
+  }
+
+  mid_idx1=(mid_idx+sz-1)%sz;
+  /* start VECTOR MID-Point */
+  nco_sph_add( sP->shp[mid_idx1], sP->shp[mid_idx], pMidPoint);
+  /* half of vector */
+  nco_sph_mlt(pMidPoint,0.5);
+
+  /* normalize vector (we are on a sphere) */
+  nco_sph_mlt( pMidPoint, 1.0/sqrt( pMidPoint[0]*pMidPoint[0]+ pMidPoint[1]*pMidPoint[1] + pMidPoint[2]*pMidPoint[2]  ) );
+
+
+
+  length=0.0;
+  max_dp=0.0;
+
+  /* find vertex with greatest distance from pC */
+  for(idx=0;idx<sz;idx++)
+  {
+
+    if(idx==mid_idx || (idx + sz - 1) % sz == mid_idx1   )
+      continue;
+
+    length=nco_sph_dist(sP->shp[idx],pMidPoint);
+    if(length>max_dp){
+      max_dp=length;
+      max_idx=idx;
+
+    }
+
+
+  }
+
+  if(length==0.0 || max_idx==-1)
+    return False;
+
+  /* find midpoint between pMidPoint an Vertex of interest */
+  nco_sph_add(pMidPoint, sP->shp[max_idx], pControl );
+  /* divide by two */
+  nco_sph_mlt(pControl,0.5);
+  /*normalize */
+  nco_sph_mlt( pControl, 1.0/sqrt( pControl[0]*pControl[0]+ pControl[1]*pControl[1] + pControl[2]*pControl[2]  ) );
+
+  /* add lat/lon */
+  nco_sph_add_lonlat(pControl);
+
+
+  return True;
+
+}
+
+
 
 
 /*------------------------ nco_geo functions manipulate lat & lon  ----------------------------------*/

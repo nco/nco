@@ -140,6 +140,8 @@ nco_sph_sub(double *a, double *b, double *c);
 void
 nco_sph_mlt(double *a, double m);
 
+double
+nco_sph_dist(double *a, double *b);
 
 double
 nco_sph_rad(double *a);
@@ -197,7 +199,10 @@ int
 nco_sph_process_pre(poly_sct *sQ, char *sq_sng, nco_bool *bGenuine);
 
 void
-nco_sph_ctr_inside_add(poly_sct *SP);
+nco_sph_centroid_mk(poly_sct *sP, double *pControl);
+
+nco_bool
+nco_sph_inside_mk(poly_sct *sP, double *pControl);
 
 /***************** nco_geo functions these manimpulate lat & lon  ***************************/
 void
