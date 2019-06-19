@@ -275,6 +275,8 @@ int *pl_nbr)
   double lcl_dp_x[VP_MAX]={0};
   double lcl_dp_y[VP_MAX]={0};
 
+  double pControl[NBR_SPH];
+
   poly_sct *pl=(poly_sct*)NULL_CEWI;
 
   poly_sct **pl_lst;
@@ -338,25 +340,34 @@ int *pl_nbr)
       continue;
     }
 
-    /* make leftermost vertex first in array */
-
+    /* make leftermost vertex first in array
     nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
+    */
 
     pl->area=area[idx];
 
-    /* use Charlie's formula */
+    /* The area of an RLL grid needs to be re-calculated  as we have to take account of lines of latitude as great circles */
     nco_poly_area_add(pl);
 
     /* fxm:2019-06-07 - there is a problem using the polygon center  as a control point as
      * for some RLL grids the center of a polar triangle can be the pole */
-    /*
-    nco_poly_ctr_add(pl, grd_lon_typ);
-    if(pl->bwrp)
-      (void)fprintf(stderr,"%s:%s(): comp_center  pl(%f,%f) in(%f, %f)\n", nco_prg_nm_get(),  fnc_nm, pl->dp_x_ctr, pl->dp_y_ctr, lon_ctr[idx], lat_ctr[idx] );
-    */
 
-    if(pl->dp_y_minmax[0]==-90.0 || pl->dp_y_minmax[1]==90.0)
-      nco_poly_ctr_add(pl, grd_lon_typ);
+    /* The centroid can be outside of a convex polygon
+     * for nco_sph_intersect_pre() to work correctly it requires a point INSIDE the convex polygon
+     * So we use a custom function :
+     * just remember FROM HERE on that the pl->dp_x_ctr, pl->dp_y_ctr iS NOT the Centroid
+     * */
+
+     if(nco_sph_inside_mk(pl,pControl ))
+     {
+       pl->dp_x_ctr=R2D(pControl[3]);
+       pl->dp_y_ctr=R2D(pControl[4]);
+     }
+     else
+       nco_poly_ctr_add(pl, grd_lon_typ);
+
+
+
 
     if(nco_dbg_lvl_get()>= nco_dbg_dev  )
       if(pl->bwrp)
