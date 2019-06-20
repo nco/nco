@@ -2101,7 +2101,7 @@ nco_sph_centroid_mk(poly_sct *sP, double *pControl)
 
   double pMidPoint[NBR_SPH];
 
-  const char fnc_nm="nco_sph_centroid_mk()";
+  const char fnc_nm[]="nco_sph_centroid_mk()";
 
   if(!sP->shp) {
     (void) fprintf(stderr, "%s:%s func has been called with sP->sph as null\n", nco_prg_nm_get(), fnc_nm);
@@ -2159,7 +2159,7 @@ nco_sph_inside_mk(poly_sct *sP, double *pControl)
   double pMidPoint[NBR_SPH]={0.0};
 
 
-  const char fnc_nm="nco_sph_inside_mk()";
+  const char fnc_nm[]="nco_sph_inside_mk()";
 
   sz=sP->crn_nbr;
 
