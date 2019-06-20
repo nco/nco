@@ -236,11 +236,11 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, const char 
 
         if(inflag==poly_vrl_unk && pq_pre)
         {
-          if(pq_pre[b]=='i')
-            inflag=poly_vrl_qin;
-          else if(  (pq_pre[b]=='e' || pq_pre[b]=='v') && pq_pre[b1]=='i'  )
-            inflag=poly_vrl_qin;
 
+          if(pq_pre[b]=='i')
+            { inflag=poly_vrl_qin; bb=0; }
+          else if(  (pq_pre[b]=='e' || pq_pre[b]=='v') && pq_pre[b1]=='i'  )
+          { inflag=poly_vrl_qin; bb=0; }
 
         }
 
@@ -343,7 +343,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, const char 
         }
 
          if(DEBUG_SPH)
-            printf("numIntersect=%d codes=%s (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d)\n",numIntersect, codes, ipqLHS, ip1qLHS,  iqpLHS,iq1pLHS, qpFace,pqFace);
+            printf("numIntersect=%d codes=%s (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d) inflag=%s\n",numIntersect, codes, ipqLHS, ip1qLHS,  iqpLHS,iq1pLHS, qpFace,pqFace, nco_poly_vrl_flg_sng_get(inflag));
 
 
 
