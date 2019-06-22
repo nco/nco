@@ -463,35 +463,40 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	 If that file exists, treat it as both input and output file
 	 Otherwise, treat it as output file and create dummy input file */
       rcd_stt=stat(argv[arg_crr],&stat_sct);
+      (void)fprintf(stderr,"%s: %s DEBUG quark1\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stderr,"%s: %s DEBUG rcd_stt=%d\n",nco_prg_nm_get(),fnc_nm,rcd_stt);
       if(rcd_stt == 0 && !FORCE_OVERWRITE){
 	/* Single file exists, use it as input file */
 	fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
       }else if((rcd_stt == -1) || (rcd_stt == 0 && FORCE_OVERWRITE)){
-	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == -1)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
-	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == 0)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 succeeded: %s exists but FORCE_OVERWRITE is true so will overwrite existing %s and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
+	if((nco_dbg_lvl_get() >= nco_dbg_std) && (rcd_stt == -1)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
+	if((nco_dbg_lvl_get() >= nco_dbg_std) && (rcd_stt == 0)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 succeeded: %s exists but FORCE_OVERWRITE is true so will overwrite existing %s and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
 	pid=getpid();
 	/* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
 	fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
 	/* NB: Calling routine has responsibility to free() this memory */
 	fl_dmm=(char *)nco_malloc(fl_dmm_lng*sizeof(char));
 	(void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
-	nco_fl_dmm_mk(fl_dmm);
+	(void)nco_fl_dmm_mk(fl_dmm);
 	fl_lst_in[(*fl_nbr)++]=fl_dmm;
       } /* !rcd_stt */
     }else if(psn_arg_nbr == 2){
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     } /* !psn_arg_nbr */
 
-    /* Output file is mandatory for ncap2
+    (void)fprintf(stdout,"%s: %s DEBUG quark2\n",nco_prg_nm_get(),fnc_nm);
+
+      /* Output file is mandatory for ncap2
        If positional (not specified with -o), create here unless single file is both input and output (like ncatted/ncrename)
        Last clause prevents prevents using results of stat() check
        When rcd_stt == 0, calling routine (ncap2 main()) does special file open procedure */
-    if((arg_crr == argc-1) && FL_OUT_FROM_PSN_ARG && (rcd_stt != 0)){
+    if((arg_crr == argc-1) && FL_OUT_FROM_PSN_ARG && (rcd_stt != 0 || FORCE_OVERWRITE)){
       *fl_out=(char *)strdup(argv[arg_crr]);
       //*fl_out=nco_sng_sntz(*fl_out);
     } /* !arg_crr */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stderr,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
+    (void)fprintf(stdout,"%s: %s DEBUG quark3\n",nco_prg_nm_get(),fnc_nm);
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
 
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */

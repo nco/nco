@@ -5328,7 +5328,13 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
  double * const area) /* [sr] Gridcell area */
 {
   /* Purpose: Compute area of spherical polygon */
-  /* In general, prefer L'Huilier's Theorem to Girard's Formula
+
+  /* Computing triangular area accurately is hard in corner cases
+     Spherical triangle suffer from at least as many issues as planar, which are described by
+     "Miscalculating Area and Angles of a Needle-like Triangle" by W. Kahan, UC Berkeley
+     In particular, the Law of Cosines and Heron's formula can be ill-conditioned
+
+     For spherical triangles L'Huilier's Theorem is superior to Girard's Formula:
      http://mathworld.wolfram.com/LHuiliersTheorem.html
      Girard's formula depends on pi-minus-angle and angle is usually quite small in our applications so precision would be lost
      L'Huilier's theorem depends only on angles (a,b,c) and semi-perimeter (s) and is well-conditioned for small angles

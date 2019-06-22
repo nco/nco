@@ -1216,7 +1216,7 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 fi # !mpas
 if [ "${prc_typ}" = 'mwf' ]; then 
     [[ ${dbg_lvl} -ge 1 ]] && date_mwf=$(date +"%s")
-    # Assume destination grids ending in .nc and .g are FV and SE, respectively
+    # Assume destination grids ending in .nc and .g are SCRIP (and thus FV) and Exodus (and thus SE), respectively
     # https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
     if [[ ${grd_dst} == *.g ]]; then 
 	alg_lst='fv2se_flx fv2se_stt fv2se_alt'
@@ -1224,7 +1224,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	alg_lst='aave blin ndtos nstod patc'
     fi # !grd_dst
     # Compute FV->SE maps
-    if [ -n "${hnt_src}" ]; then 
+    if [ -n "${hnt_src}" ]; then
        hnt_src_sng="--hnt_src=${hnt_src}"
     fi # !hnt_src
     if [ -n "${hnt_dst}" ]; then

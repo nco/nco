@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.1-alpha07
-@set doc-edition 4.8.1-alpha07
+@set nco-edition 4.8.1-beta01
+@set doc-edition 4.8.1-beta01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 15 June 2019
+@set update-date 22 June 2019
 @set update-month June 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6449,9 +6449,8 @@ corresponding keys, is:
 @cindex @var{grd_ttl}
 @cindex @samp{--rgr grd_ttl=@var{grd_ttl}}
 @item Grid Title: @var{grd_ttl}
-It is surprisingly difficult to discern the geometric
-configuration of a grid from the coordinates of a @acronym{SCRIP}-format
-gridfile.  
+It is surprisingly difficult to discern the geometric configuration of
+a grid from the coordinates of a @acronym{SCRIP}-format gridfile.  
 A human-readable grid description should be placed in @var{grd_ttl}.
 Examples include ``CAM-FV scalar grid 129x256'' and ``T42 Gaussian grid''. 
 
@@ -24270,6 +24269,8 @@ and its corresponding @var{output-file}.
 <a name="elm"></a> <!-- http://nco.sf.net/nco.html#elm -->
 <a name="mpas"></a> <!-- http://nco.sf.net/nco.html#mpas -->
 <a name="mpascice"></a> <!-- http://nco.sf.net/nco.html#mpascice -->
+<a name="mwf"></a> <!-- http://nco.sf.net/nco.html#mwf-->
+<a name="MWF"></a> <!-- http://nco.sf.net/nco.html#MWF-->
 <a name="pdq_typ"></a> <!-- http://nco.sf.net/nco.html#pdq_typ -->
 <a name="prc_typ"></a> <!-- http://nco.sf.net/nco.html#prc_typ -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
@@ -24300,6 +24301,7 @@ Valid procedure types are @samp{airs} for @acronym{NASA AIRS} satellite data,
 @samp{cice} for @acronym{CICE} ice model data on 2D grids,
 @samp{mpas} for @acronym{MPAS} ocean/ice model data on unstructured grids,
 @samp{mod04} for @w{Level 2} @acronym{MODIS} @acronym{MOD04} product,
+@samp{mwf} for making all weight-files for a pair of grids, 
 @samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
 (such as @acronym{ALM/CLM/CTSM/ELM} land model data or @acronym{CICE}
 sea-ice model data), 
@@ -24316,6 +24318,106 @@ The @acronym{MOD04} procedure unpacks input data.
 The @acronym{MPAS} procedure permutes input data into this order:
 @code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}, and invokes
 renormalization.  
+
+@cindex Make-Weight-Files (@acronym{MWF}) 
+@cindex @acronym{MWF}-mode
+
+As mentioned above in other options, @command{ncremap} includes an
+@acronym{MWF}-mode (for ``Make All Weight Files'') that generates and
+names, with one command and in a self-consistent manner, all
+combinations of (for instance, @acronym{E3SM} or @acronym{CESM})
+global atmosphere<->ocean maps with both @acronym{ERWG} and Tempest.
+@acronym{MWF}-mode automates the laborious and error-prone process of
+generating numerous map-files with various switches.
+Its chief use occurs when developing and testing new global grid-pairs
+for the @acronym{E3SM} atmosphere and ocean components.
+Invoke @acronym{MWF}-mode with a number of specialized options to
+control the naming of the output map-files: 
+@example
+@verbatim
+ncremap -P mwf -s grd_ocn -g grd_atm --nm_src=ocn_nm --nm_dst=atm_nm --dt_sng=date
+@end verbatim
+@end example
+where @var{grd_ocn} is the "global" ocean grid, @var{grd_atm}, is the
+global atmosphere grid, @var{nm_src} sets the shortened name for the
+source (ocean) grid as it will appear in the output map-files,
+@var{nm_dst} sets, similarly, the shortend named for the destination
+(atmosphere) grid, and @var{dt_sng} sets the date-stamp in the output
+map-file name
+@file{map_$@{@var{nm_src}@}_to_$@{@var{nm_dst}@}_$@{@var{alg_typ}@}.$@{@var{dt_sng}@}.nc}.
+Setting @var{nm_src}, @var{nm_dst}, and @var{dt_sng}, is optional
+though highly recommended.
+For example,  
+@example
+@verbatim
+ncremap -P mwf -s ocean.RRS.30-10km_scrip_150722.nc \
+  -g t62_SCRIP.20150901.nc --nm_src=oRRS30to10 --nm_dst=T62 \
+  --dt_sng=20180901 
+@end verbatim
+@end example
+produces the 10 @acronym{ERWG} map-files:
+@enumerate
+@item @file{map_oRRS30to10_to_T62_aave.20180901.nc}
+@item @file{map_oRRS30to10_to_T62_blin.20180901.nc}
+@item @file{map_oRRS30to10_to_T62_ndtos.20180901.nc}
+@item @file{map_oRRS30to10_to_T62_nstod.20180901.nc}
+@item @file{map_oRRS30to10_to_T62_patc.20180901.nc}
+@item @file{map_T62_to_oRRS30to10_aave.20180901.nc}
+@item @file{map_T62_to_oRRS30to10_blin.20180901.nc}
+@item @file{map_T62_to_oRRS30to10_ndtos.20180901.nc}
+@item @file{map_T62_to_oRRS30to10_nstod.20180901.nc}
+@item @file{map_T62_to_oRRS30to10_patc.20180901.nc}
+@end enumerate
+The ordering of source and destination grids is immaterial for
+@acronym{ERWG} maps since @acronym{MWF}-mode produces all map
+combinations.
+However, as described above in the TempestRemap section, the Tempest
+overlap-mesh generator must be called with the smaller grid preceding
+the larger grid.
+For this reason, always invoke @acronym{MWF}-mode with the smaller
+grid (i.e., the ocean) as the source, otherwise some Tempest map-file
+will fail to generate.
+The six optimized @acronym{SE}<->@acronym{FV} Tempest maps described
+above in the TempestRemap section will be generated when the
+destination grid has a @samp{.g} suffix which @command{ncremap}
+interprets as indicating an Exodus-format @acronym{SE} grid (NB: this
+assumption is an implementation convenience that can be modified if
+necessary).
+For example,  
+@example
+@verbatim
+ncremap -P mwf -s ocean.RRS.30-10km_scrip_150722.nc -g ne30.g \
+        --nm_src=oRRS30to10 --nm_dst=ne30np4 --dt_sng=20180901
+@end verbatim
+@end example
+produces the @w{6 TempestRemap} map-files:
+@enumerate
+@item @file{map_oRRS30to10_to_T62_aave.20180901.nc}
+@item @file{map_oRRS30to10_to_ne30np4_monotr.20180901.nc}
+@item @file{map_oRRS30to10_to_ne30np4_highorder.20180901.nc}
+@item @file{map_oRRS30to10_to_ne30np4_mono.20180901.nc}
+@item @file{map_ne30np4_to_oRRS30to10_mono.20180901.nc}
+@item @file{map_ne30np4_to_oRRS30to10_highorder.20180901.nc}
+@item @file{map_ne30np4_to_oRRS30to10_intbilin.20180901.nc}
+@end enumerate
+@acronym{MWF}-mode takes significant time to complete (~20 minutes on
+my MacBookPro) for the above grids.
+To accelerate this, consider installing the @acronym{MPI}-enabled
+instead of the serial version of @acronym{ERWG}.
+Then use the @samp{--wgt_cmd} option to tell @command{ncremap} the
+@acronym{MPI} configuration to invoke @acronym{ERWG} with, for
+example:  
+@example
+@verbatim
+ncremap -P mwf --wgt_cmd='mpirun -np 12 ESMF_RegridWeightGen' \
+  -s ocean.RRS.30-10km_scrip_150722.nc -g t62_SCRIP.20150901.nc \
+  --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=20180901
+@end verbatim
+@end example
+Background and distributed node parallelism (as described above in the
+the Parallelism section) of @acronym{MWF}-mode are possible though not
+yet implemented.
+Please let us know if this feature is desired. 
 
 @cindex Regridding ReGional Data (@acronym{RRG}) 
 @cindex @acronym{RRG}-mode
@@ -24382,7 +24484,8 @@ the model that generated the @acronym{RRG} datasets.
 Hence a typical @acronym{RRG} regridding invocation is: 
 @example
 @verbatim
-ncremap --dat_glb=dat_glb.nc --grd_glb=grd_glb.nc -g grd_rgn.nc dat_rgn.nc dat_rgr.nc
+ncremap --dat_glb=dat_glb.nc --grd_glb=grd_glb.nc -g grd_rgn.nc \
+  dat_rgn.nc dat_rgr.nc
 @end verbatim
 @end example
 Here @file{grd_rgn.nc} is a regional destination grid-file,
@@ -24428,7 +24531,8 @@ The two override options may be used independently or together, as in:
 @example
 @verbatim
 ncremap --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128,134,-16,-9' \
-        --dat_glb=dat_glb.nc --grd_glb=grd_glb.nc -g grd_rgn.nc dat_rgn.nc dat_rgr.nc
+        --dat_glb=dat_glb.nc --grd_glb=grd_glb.nc -g grd_rgn.nc \
+        dat_rgn.nc dat_rgr.nc
 @end verbatim
 @end example
 
@@ -25093,6 +25197,21 @@ The scalar reference pressure @code{P0} is typically @w{100000 Pa}
 time-varying) array with one or two spatial dimensions, and its values 
 are in the same dimensional units (e.g., Pa or hPa) as @code{P0}.
 
+Hybrid-coordinate grids define a pure-sigma or pure-pressure grid when
+either their @var{A} or @var{B} coefficients are zero, respectively.
+For example, the following creates the hybrid-coordinate
+representation of a pure-pressure grid with midpoints every @w{100 mb}
+from @w{100 mb} to @w{1000 mb}:
+@example
+@verbatim
+ncap2 -O -v -s 'defdim("ilev",11);defdim("lev",10);P0=100000.0; \
+  hyai=array(0.05,0.1,$ilev);hyam=array(0.1,0.1,$lev); \
+  hybi=0.0*hyai;hybm=0.0*hyam;' vrt_hyb_prs_L10.nc
+@end verbatim
+@end example
+@acronym{NCO} currently has no other means of representing pure sigma
+vertical grids (as opposed to pure pressure grids).
+
 As of July 2019 and @acronym{NCO} @w{version 4.8.1}, @acronym{NCO} 
 supports regridding @acronym{ECMWF} datasets in @acronym{IFS} hybrid
 vertical coordinate format to @acronym{CESM}/@acronym{E3SM}-format
@@ -25116,19 +25235,6 @@ half-layer coordinate and employs distinct dimensions (@code{nhym} and
 @code{lev_2} for full-layer (i.e., midlayer) and  half-layer
 (i.e., interface) for all other variables.
 
-Note that a hybrid-coordinate grid defines a pure-sigma or
-pure-pressure grid when either its @var{A} or @var{B} coefficients are
-zero, respectively.
-For example, the following creates the hybrid-coordinate
-representation of a pure-pressure grid with midpoints every @w{100 mb}
-from @w{100 mb} to @w{1000 mb}:
-@example
-@verbatim
-ncap2 -O -v -s 'defdim("ilev",11);defdim("lev",10);P0=100000.0; \
-  hyai=array(0.05,0.1,$ilev);hyam=array(0.1,0.1,$lev); \
-  hybi=0.0*hyai;hybm=0.0*hyam;' vrt_hyb_prs_L10.nc
-@end verbatim
-@end example
 The @code{lev} and @code{ilev} coordinates of a hybrid grid are
 defined by the hybrid coefficients and reference pressure, and are
 by convention stored in millibars as follows:
