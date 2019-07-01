@@ -100,6 +100,16 @@ B. North-to-south grids are now output in counterclockwise order.
    Thanks to Wuyin Lin of BNL for highlighting this issue.
    http://nco.sf.net/nco.html#n2s
 
+C. ncap2 correctly overwrites output-files in single-file mode.
+   4.8.0 introduced the single-file feature where ncap2 does
+   not need two file arguments, but instead can construct the
+   output file purely from scratch. In the case where an output
+   file of the same name already existed, ncap2 would fail to
+   overwrite it when given the -O argument:
+   ncap2 -O -s 'one=1' ~/foo.nc # now works
+   ncap2    -s 'one=1' ~/foo.nc # always worked
+   http://nco.sf.net/nco.html#ncap2
+
 Full release statement at http://nco.sf.net/ANNOUNCE
 
 KNOWN PROBLEMS DUE TO NCO:

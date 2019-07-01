@@ -1,3 +1,13 @@
+2019-07-01  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.1: INDICES';git push
+	git tag -a 4.8.1 -m 'ncclimo job_nbr csn;ncremap msh_fl, n2s CCW gss nfr, IFS, vrt_xtr mss_val;ncap2 -O;copyright';git push --tags
+
+	* Fix ncap2 use of single-file with -O if file already exists
+
+	* Add --no_amwg synonym
+
 2019-06-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.1-beta01 release procedure:

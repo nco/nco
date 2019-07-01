@@ -691,9 +691,10 @@ main(int argc,char **argv)
   
   /* Process positional arguments and fill-in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN,FORCE_OVERWRITE);
-  (void)fprintf(stderr,"%s: DEBUG quark1\n",nco_prg_nm_get());
-  (void)fprintf(stderr,"%s: DEBUG fl_nbr=%d, fl_lst_in[0]=%s, fl_out=%s\n",nco_prg_nm_get(),fl_nbr,fl_lst_in[0],fl_out);
+  //(void)fprintf(stderr,"%s: DEBUG quark1\n",nco_prg_nm_get());
+  //(void)fprintf(stderr,"%s: DEBUG fl_nbr=%d, fl_lst_in[0]=%s, fl_out=%s\n",nco_prg_nm_get(),fl_nbr,fl_lst_in[0],fl_out);
   if(fl_out) FL_OUT_NEW=True; else fl_out=(char *)strdup(fl_lst_in[0]);
+  if(fl_nbr == 1 && !FL_OUT_NEW) FORCE_APPEND=True;
   
   /* Make uniform list of user-specified dimension limits */
   if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
@@ -733,7 +734,6 @@ main(int argc,char **argv)
   }else{ /* Existing file */
     /* ncap2, like ncrename and ncatted, directly modifies fl_in if fl_out is omitted
        If fl_out resolves to _same name_ as fl_in, method above is employed */
-    (void)fprintf(stderr,"%s: DEBUG quark4\n",nco_prg_nm_get());
     fl_out_tmp=(char *)strdup(fl_out);
     if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
       (void)fprintf(stdout,"%s: ERROR No output file specified with netCDF4 input file. When no output file is specified, %s tries to write directly to the input file but this can only work with netCDF3 not netCDF4 input files. Please explicitly specify an output file argument and re-try.\n",nco_prg_nm_get(),nco_prg_nm_get());
@@ -753,7 +753,7 @@ main(int argc,char **argv)
 
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-  if(HISTORY_APPEND && FORCE_APPEND) (void)nco_prv_att_cat(fl_in,in_id,out_id);
+  if(HISTORY_APPEND && FORCE_APPEND && fl_nbr > 1) (void)nco_prv_att_cat(fl_in,in_id,out_id);
   if(gaa_nbr > 0) (void)nco_glb_att_add(out_id,gaa_arg,gaa_nbr);
   if(HISTORY_APPEND) (void)nco_vrs_att_cat(out_id);
   if(thr_nbr > 1 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);

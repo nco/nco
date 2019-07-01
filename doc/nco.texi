@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.1-beta01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 22 June 2019
+@set update-date 30 June 2019
 @set update-month June 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18087,9 +18087,10 @@ Specify deflation level @var{dfl_lvl} on a scale from no deflation
 @cindex @code{--lnk_flg}
 @cindex @code{--link_flag}
 @cindex @code{--no_amwg_links}
+@cindex @code{--no_amwg}
 @cindex @code{--amwg_links}
 @item -l (@code{--lnk_flg}, @code{--link_flag})
-@item --no_amwg_link (@code{--no_amwg_link}, @code{--no_amwg_links}, @code{--no_AMWG_link}, @code{--no_AMWG_links})
+@item --no_amwg_link (@code{--no_amwg_link}, @code{--no_amwg_links}, @code{--no_amwg}, @code{--no_AMWG_link}, @code{--no_AMWG_links})
 @item --amwg_link (@code{--amwg_link}, @code{--amwg_links}, @code{--AMWG_link}, @code{--AMWG_links})
 These options turn-on or turn-off the linking of
 @acronym{E3SM/ACME}-climo to @acronym{AMWG}-climo filenames.
@@ -24318,10 +24319,11 @@ The @acronym{MOD04} procedure unpacks input data.
 The @acronym{MPAS} procedure permutes input data into this order:
 @code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}, and invokes
 renormalization.  
-
+@*
+@*
+@b{@acronym{MWF}-mode}:@*
 @cindex Make-Weight-Files (@acronym{MWF}) 
 @cindex @acronym{MWF}-mode
-
 As mentioned above in other options, @command{ncremap} includes an
 @acronym{MWF}-mode (for ``Make All Weight Files'') that generates and
 names, with one command and in a self-consistent manner, all
@@ -24335,7 +24337,8 @@ Invoke @acronym{MWF}-mode with a number of specialized options to
 control the naming of the output map-files: 
 @example
 @verbatim
-ncremap -P mwf -s grd_ocn -g grd_atm --nm_src=ocn_nm --nm_dst=atm_nm --dt_sng=date
+ncremap -P mwf -s grd_ocn -g grd_atm --nm_src=ocn_nm \
+        --nm_dst=atm_nm --dt_sng=date
 @end verbatim
 @end example
 where @var{grd_ocn} is the "global" ocean grid, @var{grd_atm}, is the
@@ -24392,7 +24395,6 @@ ncremap -P mwf -s ocean.RRS.30-10km_scrip_150722.nc -g ne30.g \
 @end example
 produces the @w{6 TempestRemap} map-files:
 @enumerate
-@item @file{map_oRRS30to10_to_T62_aave.20180901.nc}
 @item @file{map_oRRS30to10_to_ne30np4_monotr.20180901.nc}
 @item @file{map_oRRS30to10_to_ne30np4_highorder.20180901.nc}
 @item @file{map_oRRS30to10_to_ne30np4_mono.20180901.nc}
@@ -24418,7 +24420,9 @@ Background and distributed node parallelism (as described above in the
 the Parallelism section) of @acronym{MWF}-mode are possible though not
 yet implemented.
 Please let us know if this feature is desired. 
-
+@*
+@*
+@b{@acronym{RRG}-mode}:@*
 @cindex Regridding ReGional Data (@acronym{RRG}) 
 @cindex @acronym{RRG}-mode
 @cindex @code{rrg_bb_wesn}
@@ -24436,7 +24440,6 @@ Please let us know if this feature is desired.
 @cindex @code{--rrg_grd_glb=@var{grd_glb}}
 @cindex @code{--rrg_grd_rgn=@var{grd_rgn}}
 @cindex @code{--rrg_rnm_sng=@var{rnm_sng}}
-
 @acronym{EAM} and @acronym{CAM-SE} will produce regional output if
 requested to with the @code{finclNlonlat} namelist parameter.
 Output for a single region can be higher temporal resolution than the
@@ -24485,7 +24488,7 @@ Hence a typical @acronym{RRG} regridding invocation is:
 @example
 @verbatim
 ncremap --dat_glb=dat_glb.nc --grd_glb=grd_glb.nc -g grd_rgn.nc \
-  dat_rgn.nc dat_rgr.nc
+        dat_rgn.nc dat_rgr.nc
 @end verbatim
 @end example
 Here @file{grd_rgn.nc} is a regional destination grid-file,
@@ -24538,7 +24541,9 @@ ncremap --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128,134,-16,-9' \
 
 @acronym{RRG}-mode supports most normal @command{ncremap} options,
 including input and output methods and regridding algorithms. 
-
+@*
+@*
+@b{@acronym{SGS}-mode}:@*
 @cindex Sub-gridscale (@acronym{SGS}) data
 @cindex @acronym{SGS}-mode
 @cindex @var{sgs_frc}
@@ -25099,14 +25104,19 @@ priorities for future development of vertical regridding are:
       user-accessible.
       Eliminating this constraint is a medium priority for regridding 
       to/from depth coordinates.
-@item Extrapolation uses nearest neighbor except for temperature and
-      geopotential (those extrapolation methods are described below). 
-      Other extrapolation options in the code, yet not exposed to
-      users, include: dying, setting @w{to 0.0}, and linear
-      extrapolation. 
-      Note that the approximation used for geopotential is inaccurate
-      in cold regions.
-      Eliminating this constraint, or improving the existing
+@item The default extrapolation method uses nearest neighbor except
+      for temperature and geopotential (those extrapolation methods are
+      described below).
+      These defaults are well-suited to extrapolate valid initial
+      conditions from data on older vertical grids.
+      Note that the default approximation used for geopotential is
+      inaccurate in cold regions.
+      As of July 2019 and @acronym{NCO} @w{version 4.8.1}, one may
+      instead set points outside the input domain to missing-values
+      with the @samp{--xtr_opt=mss_val} option.
+      Other extrapolation options, not yet exposed to user-access,
+      include: dying, setting @w{to 0.0}, and linear extrapolation.
+      Supporting these other methods, or improving the existing
       special-case approximations for temperature or geopotential,
       will remain low priority until we are lobbied with compelling
       use-cases for other algorithms.  
@@ -25196,6 +25206,37 @@ The scalar reference pressure @code{P0} is typically @w{100000 Pa}
 (or @w{1000 mb}) while the surface pressure @code{PS} is a (possibly
 time-varying) array with one or two spatial dimensions, and its values 
 are in the same dimensional units (e.g., Pa or hPa) as @code{P0}.
+
+It is often useful to create a vertical grid file from existing
+model or reanalysis output.
+We call vertical grid files ``skinny'' if they contain only the
+vertical information.
+Skinny grid-files are easy to create with @command{ncks}, e.g.,
+@example
+@verbatim
+ncks -C -v hyai,hyam,hybi,hybm,P0 in_L128.nc vrt_hyb_L128.nc
+@end verbatim
+@end example
+Such files are extremely small and portable, and represent
+all the hybrid files created by the model because the vertical
+grid parameters are time-invariant.
+A ``fat'' vertical grid file would also include the time-varying
+grid information, i.e., the surface pressure field.
+Fat grid-files are also easy to create with @command{ncks}, e.g.,
+@example
+@verbatim
+ncks -C -v hyai,hyam,hybi,hybm,P0,PS in_L128.nc vrt_hyb_L128.nc
+@end verbatim
+@end example
+The full (layer-midpoint) and half (layer-interface) pressure fields
+@code{prs_mdp} and @code{prs_ntf}, respectively, can be reconstructed
+from any fat grid-file with an @command{ncap2} command:
+@example
+@verbatim
+ncap2 -s 'prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm' \
+      -s 'prs_ntf[time,lat,lon,ilev]=P0*hyai+PS*hybi' in.nc out.nc
+@end verbatim
+@end example
 
 Hybrid-coordinate grids define a pure-sigma or pure-pressure grid when
 either their @var{A} or @var{B} coefficients are zero, respectively.

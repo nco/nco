@@ -463,8 +463,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	 If that file exists, treat it as both input and output file
 	 Otherwise, treat it as output file and create dummy input file */
       rcd_stt=stat(argv[arg_crr],&stat_sct);
-      (void)fprintf(stderr,"%s: %s DEBUG quark1\n",nco_prg_nm_get(),fnc_nm);
-      (void)fprintf(stderr,"%s: %s DEBUG rcd_stt=%d\n",nco_prg_nm_get(),fnc_nm,rcd_stt);
       if(rcd_stt == 0 && !FORCE_OVERWRITE){
 	/* Single file exists, use it as input file */
 	fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
@@ -484,8 +482,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
     } /* !psn_arg_nbr */
 
-    (void)fprintf(stdout,"%s: %s DEBUG quark2\n",nco_prg_nm_get(),fnc_nm);
-
       /* Output file is mandatory for ncap2
        If positional (not specified with -o), create here unless single file is both input and output (like ncatted/ncrename)
        Last clause prevents prevents using results of stat() check
@@ -495,8 +491,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       //*fl_out=nco_sng_sntz(*fl_out);
     } /* !arg_crr */
 
-    (void)fprintf(stdout,"%s: %s DEBUG quark3\n",nco_prg_nm_get(),fnc_nm);
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
 
     return fl_lst_in;
     /* break; *//* NB: break after return in case statement causes SGI cc warning */
