@@ -467,8 +467,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	/* Single file exists, use it as input file */
 	fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
       }else if((rcd_stt == -1) || (rcd_stt == 0 && FORCE_OVERWRITE)){
-	if((nco_dbg_lvl_get() >= nco_dbg_std) && (rcd_stt == -1)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
-	if((nco_dbg_lvl_get() >= nco_dbg_std) && (rcd_stt == 0)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 succeeded: %s exists but FORCE_OVERWRITE is true so will overwrite existing %s and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
+	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == -1)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
+	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == 0)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 succeeded: %s exists but FORCE_OVERWRITE is true so will overwrite existing %s and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
 	pid=getpid();
 	/* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
 	fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
