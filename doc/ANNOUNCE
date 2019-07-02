@@ -1,22 +1,15 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.8.1 sont nés
+The netCDF Operators NCO version 4.8.2 sont nés
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.8.1 primarily contains enhancements to the vertical
-interpolation feature of ncremap, ncclimo, and ncks. Two extrapolation
-options are now supported (nearest neighbor and missing value), and
-the entire procedure now works with the ECMWF IFS hybrid sigma
-pressure grid as input. Other changes include better support for
-north-to-south (n2s) Gaussian grid inferral and output, and ncclimo
-updates and improvements for finer-grained MPI parallelism.
-See below for full details.
+Version 4.8.2 primarily contains enhancements to the ...
 
-Work on NCO 4.8.2 has commenced and will expose more powerful options
+Work on NCO 4.8.3 has commenced and will expose more powerful options
 for vertical interpolation and, hopefully, the debut of the NCO
 weight-generator for regridding.
 
@@ -31,84 +24,15 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap/ncks now always creates/infers north-to-south grids with
-   polygons in counter-clockwise (CCW) orientation. Formerly, polygons in
-   south-to-north grids had CCW orientation while those in north-to-south
-   grids had CW orientation. 
+A. ncremap/ncks now fxm
    ncremap -G latlon=1280,2560#lat_typ=gss#lat_drc=n2s -g $HOME/grd_n2s.nc
    ncremap -d ecmwf_ifs.nc -g grd_n2s.nc
    http://nco.sf.net/nco.html#n2s
    http://nco.sf.net/nco.html#ncremap
 
-B. ncremap now vertically interpolates data from ECMWF IFS hybrid
-   vertical grid format to CAM/E3SM hybrid format and to pure-pressure
-   format. ECMWF archives and serves IFS data in a hybrid
-   sigma-pressure grid format significantly different from CAM/E3SM.
-   ECMWF supplies lnsp (log surface pressure) not PS (surface
-   pressure). There are numerous other metadata differences.
-   NCO now automatically takes care of these.
-   ncremap --vrt=vrt_hyb_L72.nc ecmwf_ifs_f640L137.nc out.nc
-   http://nco.sf.net/nco.html#vrt_fl
-   http://nco.sf.net/nco.html#ncremap
-
-C. ncks, ncremap, and ncclimo now support two different extrapolation
-   algorithms for vertical regridding. The original and default
-   extrapolation algorithm uses the nearest valid neighbor.
-   This is now explicitly selectable with --vrt_xtr=nrs_ngh.
-   The second supported algorithm extrapolates to missing values.
-   This is now explicitly selectable with --vrt_xtr=mss_val.
-   ncremap --vrt=vrt.nc --vrt_xtr=mss_val in.nc out.nc
-   ncremap --vrt=vrt.nc --vrt_xtr=nrg_ngh in.nc out.nc
-   ncclimo --vrt=vrt.nc --vrt_xtr=mss_val -i drc_raw -O drc_rgr
-   ncks --vrt=vrt.nc --rgr vrt_xtr=mss_val in.nc out.nc
-   http://nco.sf.net/nco.html#vrt_xtr
-   http://nco.sf.net/nco.html#ncremap
-
-D. The former ncremap ESMF extrapolation options xtr_nsp, xtr_typ, and 
-   xtr_xpn have been renamed xtr_nsp, xtr_typ, and esmf_xpn,
-   respectively. This was done to make them easier to find and to
-   segregate regridder-specific from regridder-generic options.
-   http://nco.sf.net/nco.html#esmf_typ
-   http://nco.sf.net/nco.html#ncremap
-
-E. ncremap accepts a new option, --msh_fl=msh.nc, to specify the name
-   of the intersection mesh-file. This option only works with the
-   TempestRemap and NCO weight-generators. (The NCO weight-generator
-   is still in development and is not yet supported. Interested beta
-   testers can access it with --alg_typ=nco).
-
-F. ncremap MWF mode now only generates TempestRemap maps when one or
-   both input grids are Exodus-format (and end with a .g suffix).
-   This was done to keep ERWG and TR map-generation from being
-   interdependent in case a grid-pair breaks one or the other. 
-
 BUG FIXES:
 
-A. ncremap now infers north-to-south Gaussian grids correctly.
-   Previously such grids, like ECMWF IFS grids, failed to converge
-   in the Newton-Raphson iteration for latitude interfaces.
-   ncremap -d ecmwf_ifs.nc -g grd_n2s.nc
-   The solution is to upgrade to 4.8.1, and the workaround is to use
-   ncpdq to reorder the grids from n2s to s2n.
-   Thanks to Wuyin Lin of BNL for highlighting this issue.
-   http://nco.sf.net/nco.html#n2s
-   http://nco.sf.net/nco.html#gss
-
-B. North-to-south grids are now output in counterclockwise order.
-   Previously s2n and n2s grids were output in CCW and CW order,
-   respectively. Now all grids are CCW.
-   Thanks to Wuyin Lin of BNL for highlighting this issue.
-   http://nco.sf.net/nco.html#n2s
-
-C. ncap2 correctly overwrites output-files in single-file mode.
-   4.8.0 introduced the single-file feature where ncap2 does
-   not need two file arguments, but instead can construct the
-   output file purely from scratch. In the case where an output
-   file of the same name already existed, ncap2 would fail to
-   overwrite it when given the -O argument:
-   ncap2 -O -s 'one=1' ~/foo.nc # now works
-   ncap2    -s 'one=1' ~/foo.nc # always worked
-   http://nco.sf.net/nco.html#ncap2
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

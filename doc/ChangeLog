@@ -1,3 +1,9 @@
+2019-07-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.2-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha01: ';git push
+	git tag -a 4.8.2-alpha01 -m 'Functionally identical to 4.8.1';git push --tags
+
 2019-07-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.1 release procedure:
