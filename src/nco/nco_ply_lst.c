@@ -218,7 +218,7 @@ int *pl_nbr)
     else
     {
       if(nco_dbg_lvl_get() >=  nco_dbg_std ){
-        (void)fprintf(stdout, "%s: split wrapping didnt work on this polygon(%lu)\n", nco_prg_nm_get(), idx );
+        (void)fprintf(stdout, "%s: split wrapping didn't work on this polygon(%lu)\n", nco_prg_nm_get(), idx );
         (void)fprintf(stdout, "/********************************/\n");
       }
 
