@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 2 July 2019
+@set update-date 9 July 2019
 @set update-month July 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -25342,6 +25342,24 @@ Input can be rectangular (aka @acronym{RLL}), curvilinear, or
 unstructured.  
 
 @html
+<a name="vrt_xtr"></a> <!-- http://nco.sf.net/nco.html#vrt_xtr -->
+@end html
+@cindex @code{--vrt_xtr=@var{vrt_xtr}}
+@cindex @var{vrt_xtr}
+@cindex @code{--vrt_xtr}
+@cindex @code{--xtr_mth}
+@cindex @code{--extrapolation_type}
+@cindex @code{--extrapolation_method}
+@item --vrt_xtr=@var{vrt_xtr} (@code{--vrt_xtr}, @code{--xtr_mth}, @code{--extrapolation_type}, @code{--extrapolation_method})
+Specifies the extrapolation method for destination points outside the
+vertical range of the input data during vertical interpolation.
+Valid values and their synonyms are
+@code{mss_val} (synonyms @code{msv} and @code{missing_value}), and
+@code{nrs_ngh} (synonyms @code{nn} and @code{nearest_neighbor}).
+Default is @math{@var{vrt_xtr} = @code{nrs_ngh}}.
+@acronym{NCO} supports this feature as of version 4.8.1 (July, 2019).
+
+@html
 <a name="wgt_opt"></a> <!-- http://nco.sf.net/nco.html#wgt_opt -->
 @end html
 @cindex @code{-W @var{wgt_opt}}
@@ -25458,24 +25476,6 @@ Support for extensive variables during regridding is nascent.
 Currently variables marked as extensive are summed, not regridded.
 We are interested in ``real-world'' situations that require regridding
 extensive variables, please contact us if you have one.
-
-@html
-<a name="vrt_xtr"></a> <!-- http://nco.sf.net/nco.html#vrt_xtr -->
-@end html
-@cindex @code{--vrt_xtr=@var{vrt_xtr}}
-@cindex @var{vrt_xtr}
-@cindex @code{--vrt_xtr}
-@cindex @code{--xtr_mth}
-@cindex @code{--extrapolation_type}
-@cindex @code{--extrapolation_method}
-@item --vrt_xtr=@var{vrt_xtr} (@code{--vrt_xtr}, @code{--xtr_mth}, @code{--extrapolation_type}, @code{--extrapolation_method})
-Specifies the extrapolation method for destination points outside the
-vertical range of the input data during vertical interpolation.
-Valid values and their synonyms are
-@code{mss_val} (synonyms @code{msv} and @code{missing_value}), and
-@code{nrs_ngh} (synonyms @code{nn} and @code{nearest_neighbor}).
-Default is @math{@var{vrt_xtr} = @code{nrs_ngh}}.
-@acronym{NCO} supports this feature as of version 4.8.1 (June, 2019).
 
 @end table
 
