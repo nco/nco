@@ -809,6 +809,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   poly_typ_enm pl_typ=poly_none  ;
 
+  KDTree *rtree=NULL_CEWI;
+
+
   grd_crn_nbr_in=mpf->src_grid_corners;
   grd_crn_nbr_out=mpf->dst_grid_corners;
 
@@ -822,7 +825,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   /* choose mesh overlap type based on rank of src and dst */
   if(mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
-    pl_typ=poly_rll;
+    // pl_typ=poly_rll;
+    pl_typ=poly_sph;
   else
     pl_typ=poly_sph;
 
@@ -911,13 +915,44 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       nco_poly_prn(pl_lst_out[idx],1);
     */
 
+    /* create tree */
+    rtree=kd_create();
+    {
+      nco_bool bSplit = False;
+
+      kd_box size1;
+      kd_box size2;
+
+      KDElem* my_elem1=NULL_CEWI;
+      KDElem* my_elem2=NULL_CEWI;
+
+      for (idx = 0; idx < pl_cnt_out; idx++) {
+
+
+        my_elem1 = (KDElem *) nco_calloc((size_t) 1, sizeof(KDElem));
+
+        /* kd tree cannot handle wrapped coordinates so split minmax if needed*/
+        bSplit = nco_poly_minmax_split(pl_lst_out[idx], grd_lon_typ_out, size1, size2);
+
+        kd_insert(rtree, (kd_generic) pl_lst_out[idx], size1, (char *) my_elem1);
+
+        if (bSplit) {
+          my_elem2 = (KDElem *) nco_calloc((size_t) 1, sizeof(KDElem));
+          kd_insert(rtree, (kd_generic) pl_lst_out[idx], size2, (char *) my_elem2);
+        }
+
+      }
+
+
+    }
+
 
     /* call the overlap routine */
     if( pl_cnt_in && pl_cnt_out  )
        if( pl_typ == poly_crt  )
           pl_lst_vrl= nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, &pl_cnt_vrl);
        else if( pl_typ == poly_sph || pl_typ == poly_rll )
-          pl_lst_vrl= nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, grd_lon_typ_out, &pl_cnt_vrl);
+          pl_lst_vrl= nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, grd_lon_typ_out, rtree, &pl_cnt_vrl);
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(stderr, "%s: INFO: num input polygons=%d, num output polygons=%d num overlap polygons=%d\n", nco_prg_nm_get(),pl_cnt_in, pl_cnt_out, pl_cnt_vrl);
@@ -1031,6 +1066,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   }
 
+  /* destory kdtree */
+  if(rtree)
+     kd_destroy(rtree,NULL);
 
   pl_glb_in=nco_poly_free(pl_glb_in);
   pl_glb_out=nco_poly_free(pl_glb_out);
