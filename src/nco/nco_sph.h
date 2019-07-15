@@ -102,13 +102,13 @@ Function prototypes.
 ---------------------------------------------------------------------*/
 
 int
-nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, const char *pq_pre);
+nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp_to, const char *pq_pre);
 
 char
-nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q);
+nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p, double *q);
 
 nco_bool
-nco_sph_seg_int_nw(double *a, double *b, double *c, double *d, double *p, double *q, char codes[]);
+nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q, int flg_snp_to, char *codes);
 
 char
 nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag );
@@ -130,6 +130,10 @@ nco_sph_dot_nm(double *a, double *b);
 
 double
 nco_sph_cross(double *a, double *b, double *c);
+
+double
+nco_sph_cross2(double *a, double *b, double *c);
+
 
 void
 nco_sph_add(double *a, double *b, double *c);
