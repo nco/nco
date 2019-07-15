@@ -528,7 +528,7 @@ int *pl_cnt_vrl_ret){
         pl_vrl=nco_poly_dpl(pl_out);
       }
       else
-        pl_vrl= nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
+        pl_vrl= nco_poly_vrl_do(pl_lst_in[idx], pl_out, 0,  (char*)NULL);
 
       if(pl_vrl){
         nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
@@ -589,7 +589,7 @@ int *pl_cnt_vrl_ret){
 
 
 /* just duplicate output list to overlap */
-  nco_bool bDirtyRats=True;
+  nco_bool bDirtyRats=False;
   nco_bool bSplit=False;
   nco_bool bSort=True;
 
@@ -711,7 +711,7 @@ int *pl_cnt_vrl_ret){
       if(pl_typ== poly_rll)
       {
 
-        pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
+        pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, 0, (char*)NULL);
 
         /* if pl_vrl is NULL from,  nco_poly_do_vrl()  then there are 3 possible senario's
          *
@@ -750,6 +750,7 @@ int *pl_cnt_vrl_ret){
         char in_sng[VP_MAX];
         char out_sng[VP_MAX]; 
 
+        int flg_snp_to=2;
 
         in_sng[0]='\0';
         out_sng[0]='\0';  
@@ -771,20 +772,20 @@ int *pl_cnt_vrl_ret){
 
 
           case 2:
-            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char *)NULL);
+            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, flg_snp_to, (char *)NULL);
             break;
 
           case 3:
-            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, in_sng);
+            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, flg_snp_to, in_sng);
             break;
 
 
           case 4:
-            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
+            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, flg_snp_to,  (char*)NULL);
             break;
 
           case 5:
-            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, in_sng);
+            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, flg_snp_to, in_sng);
             break;
 
 
@@ -793,10 +794,12 @@ int *pl_cnt_vrl_ret){
         /* swap arg around and try again */
         if(!pl_vrl && bGenuine==False && lret !=1  )
         {
-          
+
+          flg_snp_to=1;
 
           nco_sph_intersect_pre(pl_out, pl_lst_in[idx], out_sng);
           lret = nco_sph_process_pre(pl_lst_in[idx], out_sng, &bGenuine);
+
 
           switch(lret)
           {
@@ -807,26 +810,26 @@ int *pl_cnt_vrl_ret){
 
 
             case 2:
-              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], (char *)NULL);
+              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to, (char *)NULL);
               break;
 
             case 3:
-              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], out_sng);
+              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to, out_sng);
               break;
 
 
             case 4:
-              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], (char*)NULL);
+              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to, (char*)NULL);
               break;
 
             case 5:
-              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], out_sng);
+              pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to,  out_sng);
               break;
 
 
           }
-          if(0 && !pl_vrl)
-            fprintf(stderr,"%s: overlap failed in_sng=%s out_sng=%s\n", nco_prg_nm_get(), in_sng, out_sng);
+          // if(!pl_vrl)
+          // fprintf(stderr,"%s: overlap failed in_sng=%s out_sng=%s\n", nco_prg_nm_get(), in_sng, out_sng);
 
 
 
@@ -929,12 +932,19 @@ int *pl_cnt_vrl_ret){
 
         wrp_cnt+=pl_vrl->bwrp;
 
-        if( isnan(pl_vrl->area) )
-          { nan_cnt++; pl_vrl->area=0.0; }
+        if( isnan(pl_vrl->area) || pl_vrl->area ==0.0 )
+        { nan_cnt++;
+          pl_vrl->area=0.0;
+
+          /* temporary
+          pl_vrl=nco_poly_free(pl_vrl);
+          continue;
+          */
+        }
 
         vrl_area += pl_vrl->area;
 
-        if( nbr_vrl_blocks * NCO_VRL_BLOCKSIZE  <  pl_cnt_vrl+1  )
+        if(  nbr_vrl_blocks * NCO_VRL_BLOCKSIZE  <  pl_cnt_vrl+1  )
           pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * ++nbr_vrl_blocks * NCO_VRL_BLOCKSIZE );
 
 
@@ -966,7 +976,7 @@ int *pl_cnt_vrl_ret){
 
 
 
-        if (bDirtyRats ) {
+        if (bDirtyRats  ) {
           //if (pl_lst_in[idx]->bwrp ) {
           pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
           pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
