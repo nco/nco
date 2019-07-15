@@ -595,10 +595,10 @@ poly_sct *pl){
   {
     nco_sph_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
 
-    /* charlies function can sometimes return a NaN
+    /* charlies function can sometimes return a NaN */
     if (isnan(pl->area))
       pl->area = 0.0;
-    */
+
   }
 
   /* rll poly polygon should only have 3 or 4 vertex */
@@ -686,7 +686,7 @@ nco_poly_prn
     case 0:
       (void)fprintf(stderr,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d bwrp_y=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->bwrp_y, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
       for(idx=0; idx<pl->crn_nbr; idx++)
-	    (void)fprintf(stderr,"%20.20f, %20.20f\n",pl->dp_x[idx], pl->dp_y[idx]);
+	    (void)fprintf(stderr,"%3.15f %3.15f\n",pl->dp_x[idx], pl->dp_y[idx]);
       (void)fprintf(stderr,"\n");
 
       /*
@@ -704,7 +704,7 @@ nco_poly_prn
      (void)fprintf(stderr,"%s: crn_nbr=%d src_id=%d\n", nco_prg_nm_get(), pl->crn_nbr, pl->src_id);
      
      for(idx=0; idx<pl->crn_nbr; idx++)
-        (void)fprintf(stderr,"%20.14f %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
+        (void)fprintf(stderr,"%3.15f %3.15f\n",pl->dp_x[idx], pl->dp_y[idx]);
 
      break;
 
@@ -712,7 +712,7 @@ nco_poly_prn
      (void)fprintf(stderr,"%s: crn_nbr=%d\n", nco_prg_nm_get(), pl->crn_nbr);
      
      for(idx=0; idx<pl->crn_nbr; idx++)
-        (void)fprintf(stderr,"%20.16f %20.16f\n",pl->dp_x[idx], pl->dp_y[idx]);
+        (void)fprintf(stderr,"%20.15f %20.15f\n",pl->dp_x[idx], pl->dp_y[idx]);
 
      break;
 
@@ -749,6 +749,7 @@ poly_sct*
 nco_poly_vrl_do(
 poly_sct *pl_in,
 poly_sct *pl_out,
+int flg_snp_to,
 char *sp_sng){
 
  int iret;
@@ -780,7 +781,7 @@ char *sp_sng){
 
     default:
     case poly_sph:
-      iret = nco_sph_intersect(pl_in, pl_out, pl_vrl, &nbr_r, sp_sng );
+      iret = nco_sph_intersect(pl_in, pl_out, pl_vrl, &nbr_r, flg_snp_to, sp_sng );
       break;
 
   }
@@ -880,7 +881,7 @@ poly_sct ** pl_wrp_right)
   nco_poly_minmax_use_crn(pl_bnds);
 
   /* do overlap */
-  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds, (char*)NULL);
+  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds, 0, (char*)NULL);
 
   /* must subtract  back the 360.0 we subtracted earlier */ 
   if(*pl_wrp_left){
@@ -904,7 +905,7 @@ poly_sct ** pl_wrp_right)
   nco_poly_minmax_use_crn(pl_bnds);
   
   /* do overlap */
-  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds, (char*)NULL);
+  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds, 0, (char*)NULL);
 
   if(*pl_wrp_right)
   {
@@ -980,7 +981,7 @@ poly_sct ** pl_wrp_right)
   nco_poly_minmax_use_crn(pl_bnds);
 
   /* do overlap */
-  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds, (char*)NULL);
+  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds, 0,  (char*)NULL);
 
   /* must add back the 360.0 we subtracted earlier */ 
   if(*pl_wrp_left){
@@ -1007,7 +1008,7 @@ poly_sct ** pl_wrp_right)
   nco_poly_minmax_use_crn(pl_bnds);
   
   /* do overlap */
-  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds, (char*)NULL);
+  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds, 0, (char*)NULL);
 
   if(*pl_wrp_right)
   {
@@ -1497,7 +1498,7 @@ int *nbr_r){
 
     default:
     case poly_sph:
-      iret = nco_sph_intersect(pl_in, pl_out, pl_vrl, nbr_r, (char*)NULL );
+      iret = nco_sph_intersect(pl_in, pl_out, pl_vrl, nbr_r,0, (char*)NULL );
       break;
 
   }
