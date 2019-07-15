@@ -85,8 +85,7 @@ poly_sct **
 nco_poly_lst_mk_vrl(   /* create overlap mesh  for crt */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
-poly_sct **pl_lst_out,
-int pl_cnt_out,
+KDTree *rtree,
 int *pl_cnt_vrl_ret);
 
 

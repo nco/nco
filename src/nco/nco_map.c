@@ -950,7 +950,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     /* call the overlap routine */
     if( pl_cnt_in && pl_cnt_out  )
        if( pl_typ == poly_crt  )
-          pl_lst_vrl= nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, pl_lst_out, pl_cnt_out, &pl_cnt_vrl);
+          pl_lst_vrl= nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl);
        else if( pl_typ == poly_sph || pl_typ == poly_rll )
           pl_lst_vrl= nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, grd_lon_typ_out, rtree, &pl_cnt_vrl);
 

@@ -428,8 +428,7 @@ poly_sct **
 nco_poly_lst_mk_vrl(   /* create overlap mesh  for crt polygons */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
-poly_sct **pl_lst_out,
-int pl_cnt_out,
+KDTree *rtree,
 int *pl_cnt_vrl_ret){
 
 /* just duplicate output list to overlap */
@@ -453,43 +452,12 @@ int *pl_cnt_vrl_ret){
 
   poly_sct ** pl_lst_vrl=NULL_CEWI;
 
-  KDElem *my_elem;
-  KDTree *rtree;
-
   KDPriority *list;
 
   list = (KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)max_nbr_vrl);
 
   printf("INFO - entered function nco_poly_mk_vrl\n");
 
-  /* create kd_tree from output polygons */
-  rtree=kd_create();
-
-  /* populate kd_tree */
-  for(idx=0 ; idx<pl_cnt_out;idx++){
-
-
-    my_elem=(KDElem*)nco_calloc((size_t)1,sizeof (KDElem) );
-
-    size[KD_LEFT]  =  pl_lst_out[idx]->dp_x_minmax[0];
-    size[KD_RIGHT] =  pl_lst_out[idx]->dp_x_minmax[1];
-
-    size[KD_BOTTOM] = pl_lst_out[idx]->dp_y_minmax[0];
-    size[KD_TOP]    = pl_lst_out[idx]->dp_y_minmax[1];
-
-    //chr_ptr=(char*)pl_lst_out[idx];
-
-    kd_insert(rtree, (kd_generic)pl_lst_out[idx], size, (char*)my_elem);
-
-  }
-
-  /* rebuild not working
-   * rebuild tree for faster access
-  kd_rebuild(rtree);
-  kd_rebuild(rtree);
-   */
-
-  /* kd_print(rtree); */
 
 /* start main loop over input polygons */
   for(idx=0 ; idx<pl_cnt_in ;idx++ )
@@ -566,7 +534,7 @@ int *pl_cnt_vrl_ret){
   }
 
 
-  kd_destroy(rtree,NULL);
+
 
   list = (KDPriority *)nco_free(list);
 
