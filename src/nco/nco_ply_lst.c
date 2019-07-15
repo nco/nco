@@ -557,12 +557,9 @@ int *pl_cnt_vrl_ret){
 
 /* just duplicate output list to overlap */
   nco_bool bDirtyRats=False;
-  nco_bool bSplit=False;
   nco_bool bSort=True;
 
-  /* used by nco_sph_mk_control point */
-  nco_bool bInside=True;
-  
+
   int max_nbr_vrl=2000;
   int pl_cnt_vrl=0;
   int wrp_cnt=0;
@@ -587,8 +584,6 @@ int *pl_cnt_vrl_ret){
 
   double tot_area=0.0;
 
-  kd_box size1;
-  kd_box size2;
 
   poly_sct ** pl_lst_vrl=NULL_CEWI;
   poly_sct **pl_lst_dbg=NULL_CEWI;
@@ -605,10 +600,17 @@ int *pl_cnt_vrl_ret){
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
 
 
+    nco_bool bSplit=False;
+
+
     int cnt_vrl = 0;
     int cnt_vrl_on = 0;
 
     double vrl_area = 0.0;
+
+    kd_box size1;
+    kd_box size2;
+
 
     //double df=pl_lst_in[idx]->dp_x_minmax[1] - pl_lst_in[idx]->dp_x_minmax[0];
 
@@ -724,7 +726,7 @@ int *pl_cnt_vrl_ret){
 
         }
 
-        /* swap arg around and try again */
+        /* swap args around and try again */
         if(!pl_vrl && bGenuine==False && lret !=1  )
         {
 
@@ -761,77 +763,13 @@ int *pl_cnt_vrl_ret){
 
 
           }
-          // if(!pl_vrl)
-          // fprintf(stderr,"%s: overlap failed in_sng=%s out_sng=%s\n", nco_prg_nm_get(), in_sng, out_sng);
-
 
 
         }
 
 
 
-
-
-        /*
-
-        if (lret == 1)
-          pl_vrl = nco_poly_dpl(pl_out);
-
-
-        if(lret==2) {
-          pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char *) NULL);
-          if(!pl_vrl) {
-
-          sp_sng[0]='\0';
-            nco_sph_intersect_pre(pl_out, pl_lst_in[idx], sp_sng);
-            pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out,sp_sng );
-
-          }
-
-        }
-
-        if(lret==3)
-          pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
-
-        if (lret == 4)
-          pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, sp_sng);
-
-
-       if (!pl_vrl && nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
-        if (nco_sph_poly_in_poly(pl_out, pl_lst_in[idx]))
-          pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
-
-        */
-       /*
-
-       pl_vrl = nco_poly_vrl_do(pl_lst_in[idx], pl_out, (char*)NULL);
-
-       if (!pl_vrl) {
-
-
-        double pControl[NBR_SPH];
-
-        if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out)) {
-          if (nco_sph_poly_in_poly(pl_lst_in[idx], pl_out))
-            pl_vrl = nco_poly_dpl(pl_out);
-        } else if (nco_poly_in_poly_minmax(pl_out, pl_lst_in[idx]))
-          if (nco_sph_poly_in_poly(pl_out, pl_lst_in[idx]))
-            pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
-
-
-      }
-      */
-      }
-
-
-        /* add aprropriate id's */
-        if(pl_vrl)
-        {
-          pl_vrl->src_id = pl_lst_in[idx]->src_id;
-          pl_vrl->dst_id = pl_out->src_id;
-        }
-
-
+      } /* end if poly_sph */
 
 
 
@@ -839,7 +777,14 @@ int *pl_cnt_vrl_ret){
       if (pl_vrl) {
         // nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
 
-        /* add area */
+        /* add aprropriate id's */
+        pl_vrl->src_id = pl_lst_in[idx]->src_id;
+        pl_vrl->dst_id = pl_out->src_id;
+
+
+
+
+        /* add area nb also sets wrapping */
         nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
 
         /* REMEMEBER  poly_rll area uses minmax limits AND NOT VERTEX's */
@@ -851,15 +796,6 @@ int *pl_cnt_vrl_ret){
         /* calculate weight -simple ratio of areas */
         pl_vrl->wgt=pl_vrl->area / pl_out->area;
 
-
-        /* manually add wrap */
-        /*
-        if(pl_vrl->dp_x_minmax[1] - pl_vrl->dp_x_minmax[0] >=180.0 )
-          pl_vrl->bwrp=True;
-        else
-          pl_vrl->bwrp=False;
-        */
-
         /* add lat/lon centers */
         nco_poly_ctr_add(pl_vrl, grd_lon_typ);
 
@@ -869,10 +805,7 @@ int *pl_cnt_vrl_ret){
         { nan_cnt++;
           pl_vrl->area=0.0;
 
-          /* temporary
-          pl_vrl=nco_poly_free(pl_vrl);
           continue;
-          */
         }
 
         vrl_area += pl_vrl->area;
@@ -885,7 +818,6 @@ int *pl_cnt_vrl_ret){
         pl_lst_vrl[pl_cnt_vrl] = pl_vrl;
         pl_cnt_vrl++;
         cnt_vrl_on++;
-
 
 
       }
@@ -930,8 +862,8 @@ int *pl_cnt_vrl_ret){
 
       }
 
-    }
-  }
+    } /* end dbg */
+  } /* end for idx */
 
   /* turn tot_area into a % of 4*PI */
   tot_area = tot_area / 4.0 / M_PI *100.0;
