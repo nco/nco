@@ -582,9 +582,8 @@ poly_sct **
 nco_poly_lst_mk_vrl_sph(  /* create overlap mesh  for sph polygons */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
-poly_sct **pl_lst_out,
-int pl_cnt_out,
 nco_grd_lon_typ_enm grd_lon_typ,
+KDTree *rtree,
 int *pl_cnt_vrl_ret){
 
 
@@ -626,9 +625,6 @@ int *pl_cnt_vrl_ret){
   poly_sct ** pl_lst_vrl=NULL_CEWI;
   poly_sct **pl_lst_dbg=NULL_CEWI;
 
-  KDElem *my_elem1;
-  KDElem *my_elem2;
-  KDTree *rtree;
 
   KDPriority *list;
 
@@ -636,37 +632,6 @@ int *pl_cnt_vrl_ret){
 
   list = (KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)max_nbr_vrl);
 
-  /* create kd_tree from output polygons */
-  rtree=kd_create();
-
-  /* populate kd_tree */
-  for(idx=0 ; idx<pl_cnt_out;idx++){
-
-    double df=pl_lst_out[idx]->dp_x_minmax[1] - pl_lst_out[idx]->dp_x_minmax[0];
-
-    my_elem1=(KDElem*)nco_calloc((size_t)1,sizeof (KDElem) );
-
-    /* kd tree cannot handle wrapped coordinates so split minmax if needed*/
-    bSplit=nco_poly_minmax_split(pl_lst_out[idx], grd_lon_typ, size1, size2 );
-
-    kd_insert(rtree, (kd_generic)pl_lst_out[idx], size1, (char*)my_elem1);
-
-    if(bSplit){
-      my_elem2=(KDElem*)nco_calloc((size_t)1,sizeof (KDElem) );
-      kd_insert(rtree, (kd_generic)pl_lst_out[idx], size2, (char*)my_elem2);
-    }
-
-  }
-
-  /*  2019-04-24  rebuild NOT_WORKING correctly with repsect to extents */
-  /* rebuild tree for faster access
-  kd_rebuild(rtree);
-  kd_rebuild(rtree);
- */
-
-  /*
-  kd_print(rtree);
-  */
 
 /* start main loop over input polygons */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
@@ -1007,8 +972,6 @@ int *pl_cnt_vrl_ret){
   if (nco_dbg_lvl_get() >= nco_dbg_dev)
       (void) fprintf(stderr, "%s: total overlaps=%d, total_area(sphere)=%3.10f total num wrapped= %d nan nbr=%d \n", nco_prg_nm_get(), pl_cnt_vrl, tot_area  , wrp_cnt, nan_cnt);
 
-
-  kd_destroy(rtree,NULL);
 
   list = (KDPriority *)nco_free(list);
 
