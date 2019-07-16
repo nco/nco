@@ -825,8 +825,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   /* choose mesh overlap type based on rank of src and dst */
   if(mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
-    // pl_typ=poly_rll;
-    pl_typ=poly_sph;
+    pl_typ=poly_rll;
   else
     pl_typ=poly_sph;
 
