@@ -972,7 +972,8 @@ elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_
     wgt_typ='tempest'
     trn_map='Yes'
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # alg_sng='highorder'
-    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np ${np_se_nbr} --out_double --volumetric"
+    # 20190716: Remove "--volumetric" from fv2se_stt per Mark Taylor and Paul Ullrich
+    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np ${np_se_nbr} --out_double"
     alg_opt='fv2se_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # alg_sng='mono'

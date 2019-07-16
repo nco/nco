@@ -1,3 +1,7 @@
+2019-07-16  Charlie Zender  <zender@uci.edu>
+
+	* Remove "--volumetric" from fv2se_stt per Mark Taylor and Paul Ullrich
+
 2019-07-09  Charlie Zender  <zender@uci.edu>
 
 	* Update to GCC9 on MacOS X
