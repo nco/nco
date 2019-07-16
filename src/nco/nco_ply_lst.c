@@ -556,16 +556,16 @@ int *pl_cnt_vrl_ret){
 
 
 /* just duplicate output list to overlap */
-  nco_bool bDirtyRats=False;
+  nco_bool bDirtyRats=True;
   nco_bool bSort=True;
 
 
   int max_nbr_vrl=2000;
   int pl_cnt_vrl=0;
-  int wrp_cnt=0;
+  
   int pl_cnt_dbg=0;
-  int nan_cnt=0;
-
+  int tot_nan_cnt=0;
+  int tot_wrp_cnt=0;
 
   poly_typ_enm pl_typ;
   size_t idx;
@@ -603,18 +603,18 @@ int *pl_cnt_vrl_ret){
     nco_bool bSplit=False;
 
 
-    int cnt_vrl = 0;
-    int cnt_vrl_on = 0;
-
+    int vrl_cnt = 0;
+    int vrl_cnt_on = 0;
+    int nan_cnt=0;
+    int wrp_cnt=0;
+    
     double vrl_area = 0.0;
 
     kd_box size1;
     kd_box size2;
 
 
-    //double df=pl_lst_in[idx]->dp_x_minmax[1] - pl_lst_in[idx]->dp_x_minmax[0];
-
-    (void) nco_poly_set_priority(max_nbr_vrl, list);
+    // (void) nco_poly_set_priority(max_nbr_vrl, list);
 
     /* get bounds of polygon in */
     bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 );
@@ -622,14 +622,14 @@ int *pl_cnt_vrl_ret){
 
     /* if a wrapped polygon then do two searches */
     if(bSplit)
-      cnt_vrl = kd_nearest_intersect_wrp(rtree, size1, size2, list, max_nbr_vrl);
+      vrl_cnt = kd_nearest_intersect_wrp(rtree, size1, size2, list, max_nbr_vrl);
     else
-      cnt_vrl = kd_nearest_intersect(rtree, size1, max_nbr_vrl, list, bSort);
+      vrl_cnt = kd_nearest_intersect(rtree, size1, max_nbr_vrl, list, bSort);
 
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
 
 
-    for (jdx = 0; jdx < cnt_vrl; jdx++) {
+    for (jdx = 0; jdx < vrl_cnt; jdx++) {
 
       poly_sct *pl_vrl = NULL_CEWI;
       poly_sct *pl_out = (poly_sct *) list[jdx].elem->item;;
@@ -787,7 +787,7 @@ int *pl_cnt_vrl_ret){
         /* add area nb also sets wrapping */
         nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
 
-        /* REMEMEBER  poly_rll area uses minmax limits AND NOT VERTEX's */
+        /* REMEMBER  poly_rll area uses minmax limits AND NOT VERTEX's */
         nco_poly_area_add(pl_vrl);
 
         /* shp not needed */
@@ -805,6 +805,7 @@ int *pl_cnt_vrl_ret){
         { nan_cnt++;
           pl_vrl->area=0.0;
 
+          pl_vrl=nco_poly_free(pl_vrl);
           continue;
         }
 
@@ -817,7 +818,7 @@ int *pl_cnt_vrl_ret){
 
         pl_lst_vrl[pl_cnt_vrl] = pl_vrl;
         pl_cnt_vrl++;
-        cnt_vrl_on++;
+        vrl_cnt_on++;
 
 
       }
@@ -825,19 +826,25 @@ int *pl_cnt_vrl_ret){
 
     } /* end jdx */
 
-    /* charlies area function sometimes returns Nan */
-    //if( isnan(vrl_area) )
+
+
+    tot_nan_cnt+=nan_cnt;
+    tot_wrp_cnt+=wrp_cnt;
     tot_area+=vrl_area;
+    
+    
+    
+    
 
-
-    if (nco_dbg_lvl_get() >= nco_dbg_dev) {
+    if (nco_dbg_lvl_get() >= nco_dbg_dev)
+    {
       /* area diff by more than 10% */
       double eps=1e-5;
       double frc = vrl_area / pl_lst_in[idx]->area;
       if (  frc< (1-eps)  || frc >1+eps) {
         (void) fprintf(stderr,
                        "%s: polygon %lu - potential overlaps=%d actual overlaps=%d area_in=%.10e vrl_area=%.10e  adiff=%.15e bSplit=%d\n",
-                       nco_prg_nm_get(), idx, cnt_vrl, cnt_vrl_on, pl_lst_in[idx]->area, vrl_area, ( pl_lst_in[idx]->area - vrl_area), bSplit);
+                       nco_prg_nm_get(), idx, vrl_cnt, vrl_cnt_on, pl_lst_in[idx]->area, vrl_area, ( pl_lst_in[idx]->area - vrl_area), bSplit);
 
 
 
@@ -848,11 +855,12 @@ int *pl_cnt_vrl_ret){
           pl_cnt_dbg++;
 
           if (1) {
+            int kdx;
             (void) fprintf(stderr, "/** following pl_lst_in[%lu]  **/\n", idx);
             nco_poly_prn(pl_lst_in[idx], 0);
             (void) fprintf(stderr, "/** potential overlaps to  follow  **/\n");
-            for (jdx = 0; jdx < cnt_vrl; jdx++)
-              nco_poly_prn((poly_sct *) list[jdx].elem->item, 0);
+            for (kdx = 0; kdx < vrl_cnt; kdx++)
+              nco_poly_prn((poly_sct *) list[kdx].elem->item, 0);
 
             (void) fprintf(stderr, "/************* end dirty rats ***************/\n");
           }
@@ -870,7 +878,7 @@ int *pl_cnt_vrl_ret){
 
   /* final report */
   if (nco_dbg_lvl_get() >= nco_dbg_dev)
-      (void) fprintf(stderr, "%s: total overlaps=%d, total_area(sphere)=%3.10f total num wrapped= %d nan nbr=%d \n", nco_prg_nm_get(), pl_cnt_vrl, tot_area  , wrp_cnt, nan_cnt);
+      (void) fprintf(stderr, "%s: total overlaps=%d, total_area(sphere)=%3.10f total num wrapped= %d nan nbr=%d \n", nco_prg_nm_get(), pl_cnt_vrl, tot_area  , tot_wrp_cnt, tot_nan_cnt);
 
 
   list = (KDPriority *)nco_free(list);
