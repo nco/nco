@@ -61,6 +61,12 @@ nco_var_prc_crr_prn /* [fnc] Print name of current variable */
 (const int idx, /* I [idx] Index of current variable */
  const char * const var_nm); /* I [sng] Variable name */
 
+
+ void
+ nco_omp_chk(int thr_nbr, const char *smsg);
+
+void nco_omp_for_chk(int thr_nbr,const char *smsg);
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
