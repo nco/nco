@@ -1,3 +1,7 @@
+2019-07-18  Charlie Zender  <zender@uci.edu>
+
+	* Propagate "--out_format offset64bits" when netCDF 64BIT_OFFSET format selected
+
 2019-07-16  Charlie Zender  <zender@uci.edu>
 
 	* Remove "--volumetric" from fv2se_stt per Mark Taylor and Paul Ullrich
