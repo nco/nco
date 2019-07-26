@@ -12244,7 +12244,7 @@ ncap2 -s 'quark=1' ~/foo.nc ~/foo.nc # Add to old foo.nc
 * Intrinsic mathematical methods::
 * Operator precedence and associativity ::
 * ID Quoting::
-* create_bounds() function::
+* make_bounds() function::
 * solar_zenith_angle function::
 @end menu
 
@@ -16475,7 +16475,7 @@ This page lists the @command{ncap2} operators in order of precedence (highest to
 @html
 <a name="ncap_nmc"></a> <!-- http://nco.sf.net/nco.html#ncap_nmc -->
 @end html
-@node ID Quoting, create_bounds() function, Operator precedence and associativity , ncap2 netCDF Arithmetic Processor
+@node ID Quoting, make_bounds() function, Operator precedence and associativity , ncap2 netCDF Arithmetic Processor
 @subsection ID Quoting
 @cindex ID Quoting
 In this section a name refers to a variable, attribute, or dimension name.
@@ -16549,12 +16549,12 @@ netcdf-4.0 Final  2008/08/28@*
 @end example
 @c End HMB documentation
 
-@node create_bounds() function, solar_zenith_angle function, ID Quoting, ncap2 netCDF Arithmetic Processor
-@subsection create_bounds() function
-@cindex create_bounds() function
-The @command{ncap2} custom function 'create_bounds()' takes any monotonic 1D coordinate variable with regular or irregular (e.g., Gaussian) spacing and creates a bounds variable.
+@node make_bounds() function, solar_zenith_angle function, ID Quoting, ncap2 netCDF Arithmetic Processor
+@subsection make_bounds() function
+@cindex make_bounds() function
+The @command{ncap2} custom function 'make_bounds()' takes any monotonic 1D coordinate variable with regular or irregular (e.g., Gaussian) spacing and creates a bounds variable.
 
-@emph{<bounds_var_out>=create_bounds( <coordinate_var_in>, <dim in>, <string>)}  
+@emph{<bounds_var_out>=make_bounds( <coordinate_var_in>, <dim in>, <string>)}
 
 @table @var
 @item 1st Argument
@@ -16571,16 +16571,16 @@ This must be the variable name to contain the bounds.
 Typical usage:
 @example
 defdim("nv",2);
-longitude_bounds=create_bounds(longitude,$nv,"longitude_bounds");
+longitude_bounds=make_bounds(longitude,$nv,"longitude_bounds");
 @end example
 
 Another common CF convention:
 @example
 defdim("nv",2);
-climatology_bounds=create_bounds(time,$nv,"climatology_bounds");
+climatology_bounds=make_bounds(time,$nv,"climatology_bounds");
 @end example
 
-@node solar_zenith_angle function,  , create_bounds() function, ncap2 netCDF Arithmetic Processor
+@node solar_zenith_angle function,  , make_bounds() function, ncap2 netCDF Arithmetic Processor
 @subsection solar_zenith_angle function
 @cindex solar_zenith_angle function
 
