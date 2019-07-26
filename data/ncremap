@@ -469,6 +469,7 @@ wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen weight-ge
 #wgt_opt_esmf='--ignore_unmapped --ignore_degenerate' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF >= 7.1.0r) (ignore_degenerate is required for CICE regridding with ESMF >= 7.1.0r, and is not supported or required with ESMF < 7.1.0r)
 wgt_opt_nco='-O --dmm_in_mk' # [sng] NCO weight-generation options
 wgt_opt_tps='' # [sng] TempestRemap weight-generation options
+msh_opt_tps='' # [sng] TempestRemap mesh-generation options
 xcl_flg='No' # [sng] Exclude rather than extract variable list
 xtn_var='' # [sng] Extensive variables (e.g., 'TSurfStd_ct')
 
@@ -1023,6 +1024,7 @@ if [ -n "${fl_fmt}" ]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
 	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset"
 	wgt_opt_tps="${wgt_opt_tps} --out_format offset64bits"
+	msh_opt_tps="${msh_opt_tps} --out_format offset64bits"
     fi # !fl_fmt
     if [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4_classic'
@@ -2322,9 +2324,9 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
     elif [ "${wgt_typ}" = 'nco' ]; then 
 	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\" > /dev/null"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
-	cmd_msh[${fl_idx}]="GenerateOverlapMesh --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
+	cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
 	if [ "${a2o_flg}" = 'Yes' ]; then 
-	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
+	    cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
 	fi # !a2o_flg
 	cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_src}\" --out_mesh \"${grd_dst}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_fl}\" ${wgt_opt} > /dev/null"
 	if [ "${trn_map}" = 'Yes' ]; then 
@@ -2503,9 +2505,9 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		printf "Mesh-File: ${msh_fl}\n"
 	    fi # !vrb_lvl
-	    cmd_msh[${fl_idx}]="GenerateOverlapMesh --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
+	    cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
 	    if [ "${a2o_flg}" = 'Yes' ]; then 
-		cmd_msh[${fl_idx}]="GenerateOverlapMesh --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
+		cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
 	    fi # !a2o_flg
 	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_src}\" --out_mesh \"${grd_dst}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_fl}\" ${wgt_opt} > /dev/null"
 	    if [ "${trn_map}" = 'Yes' ]; then 

@@ -2407,7 +2407,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     (void)fprintf(stderr,"%s: INFO %s regridding input metadata and grid sizes: ",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stderr,"mapfile_generator = %s, map_method = %s, normalization = %s, src_grid_size = n_a = %li, dst_grid_size = n_b = %li, src_grid_corners = nv_a = %li, dst_grid_corners = nv_b = %li, src_grid_rank = %li, dst_grid_rank = %li, num_links = n_s = %li, num_wgts = %li\n",nco_rgr_mpf_sng(nco_rgr_mpf_typ),nco_rgr_mth_sng(nco_rgr_mth_typ),nco_rgr_nrm_sng(nco_rgr_nrm_typ),mpf.src_grid_size,mpf.dst_grid_size,mpf.src_grid_corners,mpf.dst_grid_corners,mpf.src_grid_rank,mpf.dst_grid_rank,mpf.num_links,mpf.num_wgts);
   } /* endif dbg */
-  if(nco_rgr_nrm_typ == nco_rgr_nrm_none){
+  /* 20190726: Allow normalization type to be "none" for bilinear regridding which UKMO SCRIP files set to "none"*/
+  if(nco_rgr_mth_typ == nco_rgr_mth_conservative && nco_rgr_nrm_typ == nco_rgr_nrm_none){
     (void)fprintf(stdout,"%s: ERROR %s reports requested normalization type = %s is not yet supported. Specifically, masks specified by a mask variable (dst_grid_imask,mask_b) are ignored. More specifically, any destination mask information is assumed to be built into the weight array so that no source points will contribute to masked locations. Talk to Charlie if you want this changed.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
     nco_exit(EXIT_FAILURE);
   } /* !msk */
