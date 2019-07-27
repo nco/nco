@@ -443,76 +443,61 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   long fl_dmm_lng; /* [nbr] Length of dummy file name */
   pid_t pid; /* Process ID */
   struct stat stat_sct;
-
+  
   switch(nco_prg_id) {
     /* 20190414 Given ncap2 its own block so it can have no input files 
        Previously, ncap2 used ncatted/ncks/ncrename code block below, but this often required supplying dummy filenames */
 
+  case ncap:
+    /* Operators with optional fl_in and required fl_out */
+    if(psn_arg_nbr > 2-psn_arg_fst){
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than two\n",nco_prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need no more than one (output file was specified with -o switch)\n",nco_prg_nm_get(),psn_arg_nbr);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* !psn_arg_nbr */
+    
+    /* ncap2 always has one input file, whether dummy or real */
+    fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 
-    case ncap:
-      /* Operators with optional fl_in and required fl_out */
-      if (psn_arg_nbr > 2 - psn_arg_fst) {
-        if (FL_OUT_FROM_PSN_ARG)
-          (void) fprintf(stdout, "%s: ERROR received %d filenames; need no more than two\n", nco_prg_nm_get(),
-                         psn_arg_nbr);
-        else
-          (void) fprintf(stdout,
-                         "%s: ERROR received %d input filenames; need no more than one (output file was specified with -o switch)\n",
-                         nco_prg_nm_get(), psn_arg_nbr);
-        (void) nco_usg_prn();
-        nco_exit(EXIT_FAILURE);
-      } /* end if */
+    /* two regular file arguments */
+    if(FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 2){
+      fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+      *fl_out=(char *)strdup(argv[arg_crr]);
+    } /* !FL_OUT_FROM_PSN_ARG */
 
-      /* ncap2 always has one input file, whether dummy or real */
-      fl_lst_in = (char **) nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
+    /* two files, output file from --output option argument */
+    if(!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1){
+      fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+    } /* !FL_OUT_FROM_PSN_ARG */
+    
+    /* ncap2 was called with a single filename argument
+       If that file exists, treat it as both input and output file
+       Otherwise, treat it as output file and create dummy input file */
+    if((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1)){
 
+      rcd_stt = stat(argv[arg_crr], &stat_sct);
 
+      if(rcd_stt == 0 && !FORCE_OVERWRITE){
+	/* Single file exists, use it as input file */
+	fl_lst_in[(*fl_nbr)++] = (char *) strdup(argv[arg_crr++]);
+      }else if((rcd_stt == -1) || (rcd_stt == 0 && FORCE_OVERWRITE)){
+	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == -1)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
+	if((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == 0)) (void)fprintf(stderr,"\n%s: DEBUG stat() #1 succeeded: %s exists but FORCE_OVERWRITE is true so will overwrite existing %s and will create dummy input file...\n",nco_prg_nm_get(),argv[arg_crr],argv[arg_crr]);
+	pid = getpid();
+	/* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
+	fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
+	/* NB: Calling routine has responsibility to free() this memory */
+	fl_dmm=(char *)d nco_malloc(fl_dmm_lng*sizeof(char));
+	(void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
+	(void) nco_fl_dmm_mk(fl_dmm);
+	fl_lst_in[(*fl_nbr)++] = fl_dmm;
+      } /* !rcd_stt */
 
-      /* two regular file args */
-      if (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 2) {
-        fl_lst_in[(*fl_nbr)++] = (char *) strdup(argv[arg_crr++]);
-        *fl_out = (char *) strdup(argv[arg_crr]);
-      }
-
-      /* two files - Output from arg  */
-      if (!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1) {
-        fl_lst_in[(*fl_nbr)++] = (char *) strdup(argv[arg_crr++]);
-      }
-
-      /* ncap2 was called with a single filename argument
-         If that file exists, treat it as both input and output file
-         Otherwise, treat it as output file and create dummy input file */
-      if ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1)) {
-
-        rcd_stt = stat(argv[arg_crr], &stat_sct);
-
-        if (rcd_stt == 0 && !FORCE_OVERWRITE) {
-          /* Single file exists, use it as input file */
-          fl_lst_in[(*fl_nbr)++] = (char *) strdup(argv[arg_crr++]);
-        } else if ((rcd_stt == -1) || (rcd_stt == 0 && FORCE_OVERWRITE)) {
-          if ((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == -1))
-            (void) fprintf(stderr,
-                           "\n%s: DEBUG stat() #1 failed: %s does not exist. Will assume %s will be brand-new output file and will create dummy input file...\n",
-                           nco_prg_nm_get(), argv[arg_crr], argv[arg_crr]);
-          if ((nco_dbg_lvl_get() >= nco_dbg_fl) && (rcd_stt == 0))
-            (void) fprintf(stderr,
-                           "\n%s: DEBUG stat() #1 succeeded: %s exists but FORCE_OVERWRITE is true so will overwrite existing %s and will create dummy input file...\n",
-                           nco_prg_nm_get(), argv[arg_crr], argv[arg_crr]);
-          pid = getpid();
-          /* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
-          fl_dmm_lng = strlen(nco_prg_nm_get()) + strlen(tmp_sng_1) + 8UL + 1UL;
-          /* NB: Calling routine has responsibility to free() this memory */
-          fl_dmm = (char *) nco_malloc(fl_dmm_lng * sizeof(char));
-          (void) sprintf(fl_dmm, "%s%s%ld", nco_prg_nm_get(), tmp_sng_1, (long) pid);
-          (void) nco_fl_dmm_mk(fl_dmm);
-          fl_lst_in[(*fl_nbr)++] = fl_dmm;
-        }
-
-        if (FL_OUT_FROM_PSN_ARG && (rcd_stt != 0 || FORCE_OVERWRITE))
-          *fl_out = (char *) strdup(argv[arg_crr]);
-
-      }
-
+      if(FL_OUT_FROM_PSN_ARG && (rcd_stt != 0 || FORCE_OVERWRITE)){
+	*fl_out = (char *) strdup(argv[arg_crr]);
+	//*fl_out=nco_sng_sntz(*fl_out);
+      } /* !FL_OUT_FROM_PSN_ARG */
+    } /* !FL_OUT_FROM_PSN_ARG */
 
     if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s reports psn_arg_nbr = %d, psn_arg_fst = %d, arg_crr = %d,argc = %d, fl_lst_in[0]=%s, *fl_nbr=%d, *fl_out = %s\n",nco_prg_nm_get(),fnc_nm,psn_arg_nbr,psn_arg_fst,arg_crr,argc,fl_lst_in[0],*fl_nbr,*fl_out);
 

@@ -1,5 +1,11 @@
 2019-07-26  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.2-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha02: Molokini';git push
+	git tag -a 4.8.2-alpha02 -m 'ncremap bilin UKMO, TR output formats, drop --volumetric from fv2se_stt;ncap2 --output fix';git push --tags
+
+	* Reformat Henry's changes, restore nco_sntz_sng() comment for possible reactivation
+
 	* Allow "none" normalization type for bilinear regridding which	UKMO SCRIP files set to "none" as per Craig MacLachlan
 
 2019-07-18  Charlie Zender  <zender@uci.edu>
@@ -17,7 +23,7 @@
 2019-07-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha01: ';git push
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha01: Giant Baby Step';git push
 	git tag -a 4.8.2-alpha01 -m 'Functionally identical to 4.8.1';git push --tags
 
 2019-07-01  Charlie Zender  <zender@uci.edu>

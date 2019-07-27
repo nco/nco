@@ -2608,7 +2608,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncks #85
 #ncks -O -L 0 --cnk_min=1 --cnk_dmn lat,1 -v one ~/nco/data/hdn.nc ~/foo.nc
 #ncks -C -m --trd --hdn -v one -g g13 ~/foo.nc | grep _ChunkSizes
-    $dsc_sng="(Groups) Imposing zero deflation (-L 0) on already-chunked variable keeps uses specified not netCDF-default chunksizes (expect failure with netCDF 4.1.1-)";
+    $dsc_sng="(Groups) Imposing zero deflation (-L 0) on already-chunked variable keeps/uses specified chunksizes not netCDF-default chunksizes (expect failure with netCDF 4.1.1-)";
     $tst_cmd[0]="ncks -O -4 -L 0 --cnk_min=1 --cnk_dmn lat,1 -v one $nco_D_flg $in_pth_arg hdn.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m --trd --hdn -v one -g g13 %tmp_fl_00% | grep _ChunkSizes";
     $tst_cmd[2]="one attribute 2: _ChunkSizes, size = 1 NC_INT, value = 1";
