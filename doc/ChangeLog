@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha02: Molokini';git push
 	git tag -a 4.8.2-alpha02 -m 'ncremap bilin UKMO, TR output formats, drop --volumetric from fv2se_stt;ncap2 --output fix';git push --tags
 
+	* Propagate format flags to TR for Classic|Offset64Bits|Netcdf4|Netcdf4Classic
+
 	* Reformat Henry's changes, restore nco_sntz_sng() comment for possible reactivation
 
 	* Allow "none" normalization type for bilinear regridding which	UKMO SCRIP files set to "none" as per Craig MacLachlan

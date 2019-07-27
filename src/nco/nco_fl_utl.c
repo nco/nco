@@ -487,7 +487,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	/* ncap2 dummy file name is "ncap2" + tmp_sng_1 + PID + NUL */
 	fl_dmm_lng=strlen(nco_prg_nm_get())+strlen(tmp_sng_1)+8UL+1UL;
 	/* NB: Calling routine has responsibility to free() this memory */
-	fl_dmm=(char *)d nco_malloc(fl_dmm_lng*sizeof(char));
+	fl_dmm=(char *) nco_malloc(fl_dmm_lng*sizeof(char));
 	(void)sprintf(fl_dmm,"%s%s%ld",nco_prg_nm_get(),tmp_sng_1,(long)pid);
 	(void) nco_fl_dmm_mk(fl_dmm);
 	fl_lst_in[(*fl_nbr)++] = fl_dmm;

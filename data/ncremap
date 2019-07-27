@@ -1007,6 +1007,8 @@ fi # !gll_fl
 if [ -n "${fl_fmt}" ]; then
     if [ "${fl_fmt}" = '3' ] || [ "${fl_fmt}" = 'classic' ] || [ "${fl_fmt}" = 'netcdf3' ]; then
 	nco_fl_fmt='--fl_fmt=classic'
+	wgt_opt_tps="${wgt_opt_tps} --out_format Classic"
+	msh_opt_tps="${msh_opt_tps} --out_format Classic"
     fi # !fl_fmt
     if [ "${fl_fmt}" = '4' ] || [ "${fl_fmt}" = 'netcdf4' ] || [ "${fl_fmt}" = 'hdf5' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4'
@@ -1015,6 +1017,8 @@ if [ -n "${fl_fmt}" ]; then
 		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4"
 	    fi # !erwg_vrs_mjr
 	fi # !erwg_vrs_mjr
+	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4"
+	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4"
     fi # !fl_fmt
     if [ "${fl_fmt}" = '5' ] || [ "${fl_fmt}" = '64bit_data' ] || [ "${fl_fmt}" = 'cdf5' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_data'
@@ -1023,8 +1027,8 @@ if [ -n "${fl_fmt}" ]; then
     if [ "${fl_fmt}" = '6' ] || [ "${fl_fmt}" = '64bit_offset' ] || [ "${fl_fmt}" = '64' ]; then
 	nco_fl_fmt='--fl_fmt=64bit_offset'
 	wgt_opt_esmf="${wgt_opt_esmf} --64bit_offset"
-	wgt_opt_tps="${wgt_opt_tps} --out_format offset64bits"
-	msh_opt_tps="${msh_opt_tps} --out_format offset64bits"
+	wgt_opt_tps="${wgt_opt_tps} --out_format Offset64Bits"
+	msh_opt_tps="${msh_opt_tps} --out_format Offset64Bits"
     fi # !fl_fmt
     if [ "${fl_fmt}" = '7' ] || [ "${fl_fmt}" = 'netcdf4_classic' ]; then
 	nco_fl_fmt='--fl_fmt=netcdf4_classic'
@@ -1033,6 +1037,8 @@ if [ -n "${fl_fmt}" ]; then
 		wgt_opt_esmf="${wgt_opt_esmf} --netcdf4" # Change when ERWG supports netCDF7
 	    fi # !erwg_vrs_mjr
 	fi # !erwg_vrs_mjr
+	wgt_opt_tps="${wgt_opt_tps} --out_format Netcdf4Classic"
+	msh_opt_tps="${msh_opt_tps} --out_format Netcdf4Classic"
     fi # !fl_fmt
     nco_opt="${nco_fl_fmt} ${nco_opt}"
 fi # !fl_fmt
