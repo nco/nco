@@ -14470,7 +14470,7 @@ It then converts these possibly UTC seconds to the standard struture @code{struc
 Finally strftime is called with fmt_sng and the *tm struct. @*
 The c-standard @code{strftime} is used as defined in 'time.h' @*
 If the method is called without fmt_sng then the following default is used: @code{"%Y-%m-%d %H:%M:%S"} @*
-The method @code(regular) takes a single var argument and  uses the above default string @*
+The method @code{regular} takes a single var argument and  uses the above default string @*
 
 @example 
 @verbatim
