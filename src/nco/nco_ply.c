@@ -734,6 +734,23 @@ nco_poly_prn
           (void)fprintf(stderr,"x=%f y=%f\n",pl->shp[idx][0], pl->shp[idx][1]);
 
 
+       break;
+
+      /* output kml polygon */
+      case 10:
+
+        (void)fprintf(stderr, "<Placemark>\n<Polygon><outerBoundaryIs> <LinearRing>\n<coordinates>\n" );
+
+        for(idx=0; idx<pl->crn_nbr; idx++)
+          //(void)fprintf(stderr,"%2.15f,%2.15f,0\n",pl->shp[idx][0]*180.0 / M_PI, pl->shp[idx][1]*180.0  / M_PI);
+          (void)fprintf(stderr,"%2.15f,%2.15f,0\n",pl->dp_x[idx] , pl->dp_y[idx]);
+
+       /* repeat first point */
+       (void)fprintf(stderr,"%2.15f,%2.15f,0\n",pl->dp_x[0] , pl->dp_y[0]);
+        (void)fprintf(stderr, "</coordinates>\n</LinearRing></outerBoundaryIs></Polygon>\n</Placemark>\n");
+
+      break;
+
   }
 
 
