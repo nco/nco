@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.2-alpha02
-@set doc-edition 4.8.2-alpha02
+@set nco-edition 4.8.2-alpha01
+@set doc-edition 4.8.2-alpha01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 26 July 2019
+@set update-date 9 July 2019
 @set update-month July 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -14470,10 +14470,11 @@ It then converts these possibly UTC seconds to the standard struture @code{struc
 Finally strftime is called with fmt_sng and the *tm struct. @*
 The c-standard @code{strftime} is used as defined in 'time.h' @*
 If the method is called without fmt_sng then the following default is used: @code{"%Y-%m-%d %H:%M:%S"} @*
-     
+The method @code(regular) takes a single var argument and  uses the above default string @*
+
 @example 
 @verbatim
-ncap2 -4  -v -O -s 'time_str=strftime(time);' in.nc foo.nc
+ncap2 -4  -v -O -s 'time_str=regular(time);' in.nc foo.nc
 
 time_str = "1964-03-13 21:09:00", "1964-03-14 21:09:00", "1964-03-15 21:09:00", 
            "1964-03-16 21:09:00", "1964-03-17 21:09:00", "1964-03-18 21:09:00", 
