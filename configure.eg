@@ -439,7 +439,10 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 module load gcc
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+# Old GCC 7.1
 ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/usr/common/software/gsl/2.1/gnu' NETCDF_INC='/opt/cray/pe/netcdf/4.6.1.3/gnu/7.1/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.6.1.3/gnu/7.1/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.6.1.3' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/gnu' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
+# New GCC 8.2.0
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/usr/common/software/gsl/2.1/gnu' NETCDF_INC='/opt/cray/pe/netcdf/4.6.3.0/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.6.3.0/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.6.3.0' UDUNITS2_PATH='/usr/common/software/udunits/2.2.19/hsw/gnu' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
