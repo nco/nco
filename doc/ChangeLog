@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha03: Kanaka';git push
 	git tag -a 4.8.2-alpha03 -m 'ncremap MPAS BGC';git push --tags
 
+	* nco.texi update ncremap -P mpas documentation for PDQ issues
+
 	* ncremap improve error message when spatial dimensions are not most-rapidly-varying (MRV)
 
 	* Tweak Cori build to find UDUnits
