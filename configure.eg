@@ -399,6 +399,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Personal recipe last modified: 20190525
 # Personal recipe last used successfully: 20190525
 # 20190526: DAP functionality is present in libnetcdf but missing in my NCO because configure does not find libcurl although it is definitely in /lib64/libcurl.so.*
+# 20190806: Must load modules prior to (re-)building otherwise system GCC 4.8.5 C++ compiler will not link to g++ 8.1.0 Antlr library
 module purge
 module load gcc/8.1.0
 module load mvapich2/2.3.1 # Required for ncclimo/ncremap in MPI-mode
