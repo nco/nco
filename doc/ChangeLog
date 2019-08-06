@@ -1,3 +1,19 @@
+2019-08-06  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.2-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha03: Kanaka';git push
+	git tag -a 4.8.2-alpha03 -m 'ncremap MPAS BGC';git push --tags
+
+	* ncremap improve error message when spatial dimensions are not most-rapidly-varying (MRV)
+
+	* Tweak Cori build to find UDUnits
+
+	* Patch ncremap to work with MPAS Ocean files that contain BGC dimensions: R3, FOUR
+
+2019-08-01  Charlie Zender  <zender@uci.edu>
+
+	* Revamp Cori build script to work with GCC 8.2
+
 2019-07-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha02 release procedure:
@@ -6,7 +22,9 @@
 
 	* Propagate format flags to TR for Classic|Offset64Bits|Netcdf4|Netcdf4Classic
 
-	* Reformat Henry's changes, restore nco_sntz_sng() comment for possible reactivation
+	* Reformat Henry's changes to nco_fl_utl.c, restore nco_sntz_sng() comment for possible reactivation
+
+	* Henry fixed ncap2 --output to once again work with single command-line files
 
 	* Allow "none" normalization type for bilinear regridding which	UKMO SCRIP files set to "none" as per Craig MacLachlan
 

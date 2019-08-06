@@ -1209,10 +1209,11 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 	fi # !err
 	dpt_flg='Yes'
     fi # !dpt_fl
-#    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # Ocean
-#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # SeaIce
-#    pdq_opt='-a Time,nCategories,TWO,nEdges,nCells' # LandIce
-    pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,nEdges,nCells' # Ocean and Ice in one swell foop
+#    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # MPAS-Ocean
+#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # MPAS-SeaIce
+#    pdq_opt='-a Time,nCategories,TWO,nEdges,nCells' # MPAS-LandIce
+#    pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,TWO,nEdges,nCells' # MPAS O,SI,LI and depth
+    pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20190806: MPAS O,SI,LI,depth and BGC in one swell foop
     if [ -n "${rnr_thr}" ]; then 
 	# rnr_thr='off' in MPAS mode turns-off renormalization
 	if [ "${rnr_thr}" != 'off' ]; then 

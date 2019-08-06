@@ -119,12 +119,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.2-alpha01
-@set doc-edition 4.8.2-alpha01
+@set nco-edition 4.8.2-alpha03
+@set doc-edition 4.8.2-alpha03
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 9 July 2019
-@set update-month July 2019
+@set update-date 6 August 2019
+@set update-month August 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -24317,9 +24317,13 @@ The @acronym{ALM}, @acronym{CLM}, and @acronym{CICE} procedures set
 idiosyncratic model values and then invoke the Sub-gridscale
 (@acronym{SGS}) procedure (see below). 
 The @acronym{MOD04} procedure unpacks input data.
-The @acronym{MPAS} procedure permutes input data into this order:
-@code{Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells}, and invokes
-renormalization.  
+The @acronym{MPAS} procedure permutes input data dimensions into this
+order: 
+@code{Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells},
+and invokes renormalization.
+An @acronym{MPAS} dataset that contains any other dimensions will fail
+to regrid until/unless those dimensions are added to the
+@command{ncremap} dimension permutation option.
 @*
 @*
 @b{@acronym{MWF}-mode}:@*
