@@ -668,7 +668,7 @@ nco_sph_metric( double *p, double *q)
   /* this is pythagoean  distance */
   dist=sqrt( (p[0]-q[0]) * (p[0]-q[0]) + (p[1]-q[1])*(p[1]-q[1]) + (p[2]-q[2])*(p[2]-q[2]))  ;
 
-  if( dist > DOT_TOLERANCE)
+  if( dist > DIST_TOLERANCE)
     return True;
 
   return False;
