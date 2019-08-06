@@ -81,6 +81,8 @@
 #define SIGMA_TOLERANCE (1.0e-12)
 #define DOT_TOLERANCE (1.0e-14)
 
+#define DIST_TOLERANCE (1.0e-15)
+
 /* convert Degrees to Radians */
 #define D2R(x)  ((x) * M_PI / 180.0)
 /* convert Radians to degrees */
@@ -207,6 +209,13 @@ nco_sph_centroid_mk(poly_sct *sP, double *pControl);
 
 nco_bool
 nco_sph_inside_mk(poly_sct *sP, double *pControl);
+
+nco_bool
+nco_sph_metric( double *p, double *q);
+
+int
+nco_sph_metric_int(double *c, double *d, double *Icross);
+
 
 /***************** nco_geo functions these manimpulate lat & lon  ***************************/
 void
