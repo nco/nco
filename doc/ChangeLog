@@ -1,3 +1,7 @@
+2019-08-08  Charlie Zender  <zender@uci.edu>
+
+	* Clarify in nco.texi when msk_src/msk_dst/msk_out are used
+
 2019-08-07  Charlie Zender  <zender@uci.edu>
 
 	* Use libnetcdf11 instead of libnetcdfc7 in .travis.yml to fix TravisCI breakage

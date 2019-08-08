@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha03
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 6 August 2019
+@set update-date 8 August 2019
 @set update-month August 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -24037,15 +24037,18 @@ A typical example of this option would be to use Sea-surface Temperature
 (SST) as a template variable for an ocean mask because SST is often
 defined only over ocean, and missing values might denote locations to
 which regridded quantities should never be placed.
-@var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
-@var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
-@var{msk_out} is the name to give the destination mask in any regridded file, and
-@var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
 The special value @math{@var{msk_dst} = @code{none}} prevents the
 regridder from inferring and treating any variable (even one named,
 e.g., @code{mask}) in a source file as a mask variable.
 This guarantees that all points in the inferred destination grid will be 
 unmasked.  
+@var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
+@var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
+@var{msk_out} is the name to give the destination mask in any regridded file, and
+@var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
+@var{msk_src} and @var{msk_dst} only affect inferred grid files for
+the source and destination grids, respectively, whereas @var{msk_out}
+only affects regridded files.
 
 @html
 <a name="msk_out"></a> <!-- http://nco.sf.net/nco.html#msk_out -->
@@ -24082,6 +24085,9 @@ files that Tempest regrids.
 @var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
 @var{msk_out} is the name to give the destination mask in any regridded file, and
 @var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
+@var{msk_src} and @var{msk_dst} only affect inferred grid files for
+the source and destination grids, respectively, whereas @var{msk_out}
+only affects regridded files.
 
 @html
 <a name="msk_src"></a> <!-- http://nco.sf.net/nco.html#msk_src -->
@@ -24107,15 +24113,18 @@ A typical example of this option would be to use Sea-surface Temperature
 (SST) as a template variable for an ocean mask because SST is often
 defined only over ocean, and missing values might denote locations from
 which regridded quantities should emanate.
-@var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
-@var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
-@var{msk_out} is the name to give the destination mask in any regridded file, and
-@var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
 The special value @math{@var{msk_src} = @code{none}} prevents the
 regridder from inferring and treating any variable (even one named,
 e.g., @code{mask}) in a source file as a mask variable.
 This guarantees that all points in the inferred source grid will be 
 unmasked.  
+@var{msk_dst}, @var{msk_out}, and @var{msk_src} are related yet distinct:
+@var{msk_dst} is the mask template variable in the destination file (whose grid will be inferred),
+@var{msk_out} is the name to give the destination mask in any regridded file, and
+@var{msk_src} is the mask template variable in the source file (whose grid will be inferred).
+@var{msk_src} and @var{msk_dst} only affect inferred grid files for
+the source and destination grids, respectively, whereas @var{msk_out}
+only affects regridded files.
 
 @html
 <a name="--mss_val"></a> <!-- http://nco.sf.net/nco.html#--mss_val -->

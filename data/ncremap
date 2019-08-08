@@ -1484,7 +1484,7 @@ else
     grd_src=${grd_src_dfl} # [sng] Grid-file default
 fi # !grd_src
 if [ "${dst_usr_flg}" = 'Yes' ] || [ "${grd_sng_usr_flg}" = 'Yes' ] || [ "${grd_dst_usr_flg}" = 'Yes' ] || [ "${grd_src_usr_flg}" = 'Yes' ]; then
-    # Map-file will be created if -d, -G, -g, or -s was specified
+    # Create map-file if -d, -G, -g, or -s was specified
     map_mk='Yes'
 fi # !map_mk
 if [ -n "${map_fl}" ]; then 
