@@ -610,11 +610,21 @@ int *pl_cnt_vrl_ret){
   }
 
 
-
-
-#ifdef _OPENMP
-#pragma omp parallel for private(idx, thr_idx) schedule(nonmonotonic: guided,20) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
-#endif /* !_OPENMP */
+#ifdef __GNUG__
+  # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
+# if GCC_LIB_VERSION < 490
+#  define GXX_OLD_OPENMP_SHARED_TREATMENT 1
+# endif /* 480 */
+#endif /* !__GNUC__ */
+#if defined( __INTEL_COMPILER)
+#  pragma omp parallel for default(none) private(idx, thr_idx) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
+#else /* !__INTEL_COMPILER */
+# ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
+#  pragma omp parallel for default(none) private(idx, thr_idx) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
+# else /* !old g++ */
+#  pragma omp parallel for private(idx, thr_idx) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
+# endif /* !old g++ */
+#endif /* !__INTEL_COMPILER */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
 
 
