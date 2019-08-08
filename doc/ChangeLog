@@ -1,3 +1,7 @@
+2019-08-07  Charlie Zender  <zender@uci.edu>
+
+	* Use libnetcdf11 instead of libnetcdfc7 in .travis.yml to fix TravisCI breakage
+
 2019-08-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha03 release procedure:
