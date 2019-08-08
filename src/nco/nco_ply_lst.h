@@ -37,6 +37,13 @@ extern "C" {
 /* used in nco_ply_lst_vrl - for realloc to expand */
 #define NCO_VRL_BLOCKSIZE 4000
 
+typedef struct {
+    poly_sct **pl_lst;
+    size_t pl_cnt;
+    size_t blk_nbr;
+    KDPriority *kd_list;
+} omp_mem_sct;
+
 /************************ functions that manipulate lists of polygons ****************************************************/
 
 void
@@ -124,6 +131,15 @@ int pl_cnt_out,
 poly_sct **pl_lst_vrl,
 int pl_cnt_vrl);
 
+
+poly_sct **
+nco_poly_lst_chk_dbg(
+poly_sct **pl_lst,
+int pl_cnt,
+poly_sct **pl_lst_vrl,
+int pl_cnt_vrl,
+int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
+int *pl_cnt_dbg); /* size of output dbg grid */
 
 
 
