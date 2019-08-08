@@ -733,6 +733,7 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
 
 }
 
+nco_bool
 nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q, int flg_snp_to, char *codes)
 {
   const char fnc_nm[]="nco_sph_seg_int()";
