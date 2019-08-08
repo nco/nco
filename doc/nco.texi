@@ -3249,7 +3249,7 @@ the entire set of filenames
 The @acronym{CCM} Processor was custom-written Fortran code maintained
 for many years by Lawrence Buja at @acronym{NCAR}, and phased-out in 
 the late 1990s.
-@acronym{NCO} stole some ideas, like @code{NINTAP}-functionality,
+@acronym{NCO} copied some ideas, like @code{NINTAP}-functionality,
 from @acronym{CCM} Processor capabilities.}.
 @cindex multi-file operators
 @cindex files, multiple
@@ -3344,16 +3344,16 @@ When present, @samp{yyyymm} string causes @acronym{NCO} to automatically
 generate series of filenames whose right-most two digits increment from
 @var{min_month} by @var{month_increment} up to @var{max_month} and then
 the leftmost digits (i.e., the year) increment by one, and the whole
-process is reapeated until the @var{file_number} filenames are
+process is repeated until the @var{file_number} filenames are
 generated. 
 @example
 ncrcat -n 3,6,1,12,1         198512.nc 198512_198502.nc
 ncrcat -n 3,6,1,12,1,yyyymm  198512.nc 198512_198602.nc
 ncrcat -n 3,6,1,12,12,yyyymm 198512.nc 198512_198712.nc
 @end example
-The first command concatenates three files (@file{198512.nc},
+The first command above concatenates three files (@file{198512.nc}, 
 @file{198501.nc}, @file{198502.nc}) into the output file.
-The second command concatenates three files (@file{198512.nc},
+The second command above concatenates three files (@file{198512.nc}, 
 @file{198601.nc}, @file{198602.nc}).
 The @samp{yyyymm}-indicator causes the left-most digits to
 increment each time the right-most two digits reach their

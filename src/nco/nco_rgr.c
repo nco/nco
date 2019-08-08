@@ -5039,8 +5039,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		if(var_val_dbl_out[dst_idx] != mss_val_dbl)
 		  if(sgs_frc_out[dst_idx] != mss_val_dbl)
-		    if(sgs_frc_out[dst_idx] >= sgs_frc_thr)
-		      var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx]; else var_val_dbl_out[dst_idx]=mss_val_dbl;
+		    if(sgs_frc_out[dst_idx] >= sgs_frc_thr){
+		      var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
 	    }else{
 	      /* SGS-renormalize multi-level fields with missing values */
 	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level with missing values\n",nco_prg_nm_get(),var_nm);

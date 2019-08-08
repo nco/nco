@@ -1925,7 +1925,7 @@ int nco_def_var_chunking
       sz*=cnk_sz[idx];
     } /* !idx */
 
-    if(sz > NCO_MAX_CHUNK_SIZE) (void)fprintf(stderr, "%s: ERROR Total requested chunk size = %lu exceeds netCDF maximium-supported chunk size = %lu\n",fnc_nm,sz,NCO_MAX_CHUNK_SIZE);
+    if(sz > NCO_MAX_CHUNK_SIZE) (void)fprintf(stderr, "%s: ERROR Total requested chunk size = %lu exceeds netCDF maximium-supported chunk size = %u\n",fnc_nm,sz,NCO_MAX_CHUNK_SIZE);
   } /* !rcd */
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
