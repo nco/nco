@@ -287,6 +287,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
         }
 
+
         if(ip1qLHS*ipqLHS==-1 && iq1pLHS*iqpLHS==-1  &&
         nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, flg_snp_to, codes) )
         {
@@ -1481,12 +1482,12 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
   double p[NBR_SPH];
   double q[NBR_SPH];
 
-  double nx1;
+
   double pi[NBR_SPH]={0.0};
 
   double pControl[NBR_SPH];
 
-  double Pcross[NBR_SPH];
+
 
 
 
@@ -1576,9 +1577,10 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
 int
 nco_sph_process_pre(poly_sct *sQ, char *sq_sng, nco_bool *bGenuine)
 {
-  int idx=0;
+
   int sz;
-  int srt;
+  int srt=0;
+  int idx=0;
 
   int numInside=0;
   int numOutSide=0;
@@ -2299,9 +2301,8 @@ double n1;
 double n2;
 
 double dp;
-double theta;
-double rad1_nco=1.0;
-double rad=1.0;
+double theta=0.0;
+
 
 double  aCross[NBR_SPH];
 double  bCross[NBR_SPH];
@@ -2608,14 +2609,10 @@ void
 nco_sph_centroid_mk(poly_sct *sP, double *pControl)
 {
   int idx;
-  int idx1;
-  int sz;
-  int min_idx=0;
-  int max_idx=0;
 
   nco_bool bDeg=False;
 
-  double pC[NBR_SPH];
+
 
   double pMidPoint[NBR_SPH];
 
@@ -2928,14 +2925,13 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
   double nx1;
   double nx2;
-  double nx3;
+
 
 
   char code='0';
 
   double Pcross[NBR_SPH];
   double Qcross[NBR_SPH];
-  double Xcross[NBR_SPH];
 
   double p[NBR_SPH];
   double q[NBR_SPH];
@@ -3307,8 +3303,6 @@ nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   char code = '0';
 
-  int p_sgn=1;
-  int q_sgn=1;
 
   nco_bool isP_LatCircle = False;
   nco_bool isQ_LatCircle = False;
