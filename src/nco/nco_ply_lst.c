@@ -211,7 +211,7 @@ int *pl_nbr)
     else
     {
       if(nco_dbg_lvl_get() >=  nco_dbg_std ){
-        (void)fprintf(stdout, "%s: split wrapping didn't work on this polygon(%lu)\n", nco_prg_nm_get(), idx );
+        (void)fprintf(stdout, "%s: split wrapping didn't work on this polygon(%d)\n", nco_prg_nm_get(), idx );
         (void)fprintf(stdout, "/********************************/\n");
       }
 
@@ -646,7 +646,10 @@ int *pl_cnt_vrl_ret){
     // (void) nco_poly_set_priority(max_nbr_vrl, list);
 
     thr_idx=omp_get_thread_num();
-    fprintf(fp_stderr, "%s(): idx=%u thr=%d\n",fnc_nm,  idx, thr_idx);
+
+
+    if (nco_dbg_lvl_get() >= nco_dbg_dev)
+      fprintf(fp_stderr, "%s(): idx=%u thr=%d\n",fnc_nm,  idx, thr_idx);
 
     /* get bounds of polygon in */
     bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 );
