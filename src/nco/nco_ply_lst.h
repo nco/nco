@@ -37,6 +37,13 @@ extern "C" {
 /* used in nco_ply_lst_vrl - for realloc to expand */
 #define NCO_VRL_BLOCKSIZE 4000
 
+typedef struct {
+    poly_sct **pl_lst;
+    size_t pl_cnt;
+    size_t blk_nbr;
+    KDPriority *kd_list;
+} omp_mem_sct;
+
 /************************ functions that manipulate lists of polygons ****************************************************/
 
 void
@@ -85,18 +92,18 @@ poly_sct **
 nco_poly_lst_mk_vrl(   /* create overlap mesh  for crt */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
-poly_sct **pl_lst_out,
-int pl_cnt_out,
+KDTree *rtree,
 int *pl_cnt_vrl_ret);
 
+
 poly_sct **
-nco_poly_lst_mk_vrl_sph(   /* create overlap mesh  for sph */
+nco_poly_lst_mk_vrl_sph(  /* create overlap mesh  for sph polygons */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
-poly_sct **pl_lst_out,
-int pl_cnt_out,
 nco_grd_lon_typ_enm grd_lon_typ,
+KDTree *rtree,
 int *pl_cnt_vrl_ret);
+
 
 void
 nco_poly_set_priority(
@@ -123,7 +130,6 @@ poly_sct **pl_lst_out,
 int pl_cnt_out,
 poly_sct **pl_lst_vrl,
 int pl_cnt_vrl);
-
 
 
 

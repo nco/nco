@@ -249,7 +249,7 @@ char *kd_fault(int t);
 KDElem *load_items(int (*itemfunc)(kd_generic arg, kd_generic *val, kd_box size), kd_generic arg, kd_box extent, int *length, double *mean);
 int nodecmp(KDElem *a, KDElem *b, int disc);
 void pr_tree(KDElem *elem, int disc, int depth);
-void resolve(register KDElem **lo, register KDElem **eq, register KDElem **hi, int disc, double *lomean, double *himean, long *locount, long *hicount);
+void resolve(KDElem **lo, KDElem **eq, KDElem **hi, int disc, double *lomean, double *himean, long *locount, long *hicount);
 void sel_k(KDElem *items, double k, int disc, KDElem **lo, KDElem **eq, KDElem **hi, double *lomean, double *himean, long *locount, long *hicount);
 void unload_items(KDTree*, KDElem **, kd_box, long *, double *);
 

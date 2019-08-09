@@ -686,7 +686,7 @@ nco_poly_prn
     case 0:
       (void)fprintf(stderr,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d bwrp_y=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->bwrp_y, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
       for(idx=0; idx<pl->crn_nbr; idx++)
-	    (void)fprintf(stderr,"%20.20f, %20.20f\n",pl->dp_x[idx], pl->dp_y[idx]);
+	    (void)fprintf(stderr,"%3.15f %3.15f\n",pl->dp_x[idx], pl->dp_y[idx]);
       (void)fprintf(stderr,"\n");
 
       /*
@@ -704,7 +704,7 @@ nco_poly_prn
      (void)fprintf(stderr,"%s: crn_nbr=%d src_id=%d\n", nco_prg_nm_get(), pl->crn_nbr, pl->src_id);
      
      for(idx=0; idx<pl->crn_nbr; idx++)
-        (void)fprintf(stderr,"%20.14f %20.14f\n",pl->dp_x[idx], pl->dp_y[idx]);
+        (void)fprintf(stderr,"%3.15f %3.15f\n",pl->dp_x[idx], pl->dp_y[idx]);
 
      break;
 
@@ -712,7 +712,7 @@ nco_poly_prn
      (void)fprintf(stderr,"%s: crn_nbr=%d\n", nco_prg_nm_get(), pl->crn_nbr);
      
      for(idx=0; idx<pl->crn_nbr; idx++)
-        (void)fprintf(stderr,"%20.16f %20.16f\n",pl->dp_x[idx], pl->dp_y[idx]);
+        (void)fprintf(stderr,"%20.15f %20.15f\n",pl->dp_x[idx], pl->dp_y[idx]);
 
      break;
 
@@ -734,6 +734,23 @@ nco_poly_prn
           (void)fprintf(stderr,"x=%f y=%f\n",pl->shp[idx][0], pl->shp[idx][1]);
 
 
+       break;
+
+      /* output kml polygon */
+      case 10:
+
+        (void)fprintf(stderr, "<Placemark>\n<Polygon><outerBoundaryIs> <LinearRing>\n<coordinates>\n" );
+
+        for(idx=0; idx<pl->crn_nbr; idx++)
+          //(void)fprintf(stderr,"%2.15f,%2.15f,0\n",pl->shp[idx][0]*180.0 / M_PI, pl->shp[idx][1]*180.0  / M_PI);
+          (void)fprintf(stderr,"%2.15f,%2.15f,0\n",pl->dp_x[idx] , pl->dp_y[idx]);
+
+       /* repeat first point */
+       (void)fprintf(stderr,"%2.15f,%2.15f,0\n",pl->dp_x[0] , pl->dp_y[0]);
+        (void)fprintf(stderr, "</coordinates>\n</LinearRing></outerBoundaryIs></Polygon>\n</Placemark>\n");
+
+      break;
+
   }
 
 
@@ -748,7 +765,9 @@ nco_poly_prn
 poly_sct*
 nco_poly_vrl_do(
 poly_sct *pl_in,
-poly_sct *pl_out){
+poly_sct *pl_out,
+int flg_snp_to,
+char *sp_sng){
 
  int iret;
  int nbr_p=pl_in->crn_nbr;
@@ -764,9 +783,30 @@ poly_sct *pl_out){
  nco_poly_shp_init(pl_vrl);
 
 
- iret=nco_poly_intersect(pl_in, pl_out, pl_vrl, &nbr_r);
+ // iret=nco_poly_intersect(pl_in, pl_out, pl_vrl, &nbr_r);
 
- if(iret!=EXIT_SUCCESS || nbr_r <3  )
+  switch(pl_in->pl_typ)
+  {
+
+    case poly_crt:
+      iret = nco_crt_intersect(pl_in, pl_out, pl_vrl, &nbr_r);
+      break;
+
+    case poly_rll:
+      iret = nco_rll_intersect(pl_in, pl_out, pl_vrl, &nbr_r);
+      break;
+
+    default:
+    case poly_sph:
+      iret = nco_sph_intersect(pl_in, pl_out, pl_vrl, &nbr_r, flg_snp_to, sp_sng );
+      break;
+
+  }
+
+
+
+
+  if(iret!=EXIT_SUCCESS || nbr_r <3  )
  {
    pl_vrl = nco_poly_free(pl_vrl);
 
@@ -858,7 +898,7 @@ poly_sct ** pl_wrp_right)
   nco_poly_minmax_use_crn(pl_bnds);
 
   /* do overlap */
-  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds);
+  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds, 0, (char*)NULL);
 
   /* must subtract  back the 360.0 we subtracted earlier */ 
   if(*pl_wrp_left){
@@ -882,7 +922,7 @@ poly_sct ** pl_wrp_right)
   nco_poly_minmax_use_crn(pl_bnds);
   
   /* do overlap */
-  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds);
+  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds, 0, (char*)NULL);
 
   if(*pl_wrp_right)
   {
@@ -958,7 +998,7 @@ poly_sct ** pl_wrp_right)
   nco_poly_minmax_use_crn(pl_bnds);
 
   /* do overlap */
-  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds);
+  *pl_wrp_left= nco_poly_vrl_do(pl_in, pl_bnds, 0,  (char*)NULL);
 
   /* must add back the 360.0 we subtracted earlier */ 
   if(*pl_wrp_left){
@@ -985,7 +1025,7 @@ poly_sct ** pl_wrp_right)
   nco_poly_minmax_use_crn(pl_bnds);
   
   /* do overlap */
-  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds);
+  *pl_wrp_right= nco_poly_vrl_do(pl_in, pl_bnds, 0, (char*)NULL);
 
   if(*pl_wrp_right)
   {
@@ -1475,7 +1515,7 @@ int *nbr_r){
 
     default:
     case poly_sph:
-      iret = nco_sph_intersect(pl_in, pl_out, pl_vrl, nbr_r);
+      iret = nco_sph_intersect(pl_in, pl_out, pl_vrl, nbr_r,0, (char*)NULL );
       break;
 
   }
