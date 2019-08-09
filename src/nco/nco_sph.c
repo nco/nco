@@ -992,7 +992,7 @@ nco_sph_seg_int_1(double *a, double *b, double *c, double *d, double *p, double 
   }
   else
   {
-    double fct;
+
     //nx1= nco_sph_cross(a, b, Pcross);
     //nx2= nco_sph_cross(c, d, Qcross);
 
@@ -2029,9 +2029,10 @@ void  nco_sph_adi(double *a, double *b)
 void nco_sph_add_pnt(double **R, int *r, double *P)
 {
 
-   double delta;
+
 
    /*
+   double delta;
    //delta = ( *r==0 ? 0.0 :   2.0 *asin(    sqrt( pow( R[*r-1][0] - P[0],2 ) + pow( R[*r-1][1] - P[1],2 ) + pow( R[*r-1][2] - P[2],2 )  ) /2.0) );
    if(*r >0 )
       delta = 1.0 - nco_sph_dot(R[*r-1], P );
