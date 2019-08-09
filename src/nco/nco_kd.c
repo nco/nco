@@ -528,9 +528,9 @@ KDElem **hi;			/* Returned items larger than `k'th */
  * lo, equal in `eq', and greater in `hi'.
  */
 {
-    register KDElem *idx;
-    register int cmp_val;
-    register KDElem *median;
+     KDElem *idx;
+     int cmp_val;
+     KDElem *median;
     int lo_val;
 
     idx = items;
@@ -578,8 +578,8 @@ void sel_k(KDElem *items, double k, int disc, KDElem **lo, KDElem **eq, KDElem *
  * lo, equal in `eq', and greater in `hi'.
  */
 {
-    register KDElem *idx, *median;
-    register double cmp_val;
+      KDElem *idx, *median;
+      double cmp_val;
     double lo_val;
 
     idx = items;
@@ -641,8 +641,8 @@ void sel_k(KDElem *items, double k, int disc, KDElem **lo, KDElem **eq, KDElem *
 
 
 
-void resolve(register KDElem **lo, register KDElem **eq, register KDElem **hi, int disc, double *lomean, double *himean, long *locount, long *hicount)
-// register KDElem **lo, **eq, **hi; /* Lists for examination */
+void resolve(  KDElem **lo,   KDElem **eq,   KDElem **hi, int disc, double *lomean, double *himean, long *locount, long *hicount)
+//   KDElem **lo, **eq, **hi; /* Lists for examination */
 // int disc;
 // double *lomean,*himean;   /* the total values of all the Kj's */
 // long *locount,*hicount; /* the counts to get an average     */
@@ -1408,9 +1408,9 @@ kd_status kd_next(kd_gen theGen, kd_generic *data, kd_box size)
  * size.  If there are no more items,  it returns KD_NOMORE.
  */
 {
-    register KDState *realGen = (KDState *) theGen;
-    register KDSave *top_elem;
-    register KDElem *top_item;
+      KDState *realGen = (KDState *) theGen;
+      KDSave *top_elem;
+      KDElem *top_item;
     short hort,m;
 
     while (realGen->top_index > 0) {
@@ -1781,8 +1781,8 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 
 	if( *dir == KD_HISON ) /* we are trying to find the smallest value of k[j], in the HISON subtree; */
 	{
-		register KDSave *top_elem;
-		register KDElem *top_item;
+		  KDSave *top_elem;
+		  KDElem *top_item;
 		short m;
 
 
@@ -1855,8 +1855,8 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 	}
 	else /* we are trying to find the maximal value of k[j], in the LOSON subree. */
 	{
-		register KDSave *top_elem;
-		register KDElem *top_item;
+		  KDSave *top_elem;
+		  KDElem *top_item;
 		short m;
 
 
@@ -2151,8 +2151,8 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
     double p;
     
     KDState *realGen;
-    register KDSave *top_elem;
-    register KDElem *top_item;
+    KDSave *top_elem;
+    KDElem *top_item;
 
     
     realGen = (KDState*)nco_malloc( sizeof(KDState));
