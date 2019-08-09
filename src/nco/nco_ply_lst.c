@@ -649,7 +649,7 @@ int *pl_cnt_vrl_ret){
 
 
     if (nco_dbg_lvl_get() >= nco_dbg_dev)
-      fprintf(fp_stderr, "%s(): idx=%u thr=%d\n",fnc_nm,  idx, thr_idx);
+      fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n",fnc_nm,  idx, thr_idx);
 
     /* get bounds of polygon in */
     bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 );

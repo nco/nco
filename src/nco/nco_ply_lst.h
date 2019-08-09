@@ -132,16 +132,6 @@ poly_sct **pl_lst_vrl,
 int pl_cnt_vrl);
 
 
-poly_sct **
-nco_poly_lst_chk_dbg(
-poly_sct **pl_lst,
-int pl_cnt,
-poly_sct **pl_lst_vrl,
-int pl_cnt_vrl,
-int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
-int *pl_cnt_dbg); /* size of output dbg grid */
-
-
 
 #ifdef __cplusplus
 } /* end extern "C" */
