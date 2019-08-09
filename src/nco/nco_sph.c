@@ -135,7 +135,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 
      /* skip identical points */
-     while( nx1= nco_sph_cross(P->shp[a1], P->shp[a], Pcross) <DOT_TOLERANCE   )
+     while(( nx1= nco_sph_cross(P->shp[a1], P->shp[a], Pcross) <DOT_TOLERANCE) )
      {
        aa++;a++;
        a%=n;
@@ -146,7 +146,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 
      /* skip identical points */
-     while(  nx2= nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross) < DOT_TOLERANCE )
+     while( (nx2= nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross) < DOT_TOLERANCE) )
      {
        bb++;b++;
        b%=m;
@@ -1211,7 +1211,7 @@ nco_sph_seg_int_1(double *a, double *b, double *c, double *d, double *p, double 
 
 
   if(DEBUG_LCL ) {
-    fprintf(stderr, "%s(): dx_ab=%2.15f dx_ai=%2.15f  dx_cd=%2.15f dx_ci=%2.15f\n", fnc_nm, dx_ab, dx_ai, dx_cd, dx_ci, dx_aip);
+    fprintf(stderr, "%s(): dx_ab=%2.15f dx_ai=%2.15f  dx_cd=%2.15f dx_ci=%2.15f\n", fnc_nm, dx_ab, dx_ai, dx_cd, dx_ci);
     fprintf(stderr,"%s: dx_aip=%.15f  dx_ciq=%.15e\n", fnc_nm, dx_aip, dx_ciq);
   }
 
@@ -1617,7 +1617,7 @@ nco_sph_process_pre(poly_sct *sQ, char *sq_sng, nco_bool *bGenuine)
   /* check for a "GENUINE" intersection ie ('i' to 'o') or ('o' to 'i') */
   if(numOutSide && numInside )
     for(idx=0;idx<sz;idx++)
-      if( sq_sng[idx] == 'i' &&  sq_sng[(idx+1)%sz] =='o' || sq_sng[idx]=='o' &&  sq_sng[(idx+1)%sz] == 'i'   )
+      if( (sq_sng[idx] == 'i' &&  sq_sng[(idx+1)%sz] =='o') || (sq_sng[idx]=='o' &&  sq_sng[(idx+1)%sz] == 'i')   )
       {
         *bGenuine=True;
         break;
@@ -1677,7 +1677,7 @@ nco_sph_process_pre(poly_sct *sQ, char *sq_sng, nco_bool *bGenuine)
 
 
   /* need to do overlap  func but dont process sq_sng */
-  if(numOutSide && numInside &&  (  (!numEdges && !numVertex ) ||  numEdges==1 && !numVertex || !numEdges && numVertex==1  ) )
+  if( (numOutSide && numInside) &&  (  (!numEdges && !numVertex ) ||  (numEdges==1 && !numVertex) || (!numEdges && numVertex==1)  ) )
     return 4;
 
 
