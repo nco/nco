@@ -1157,8 +1157,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
        Usually hybrid grids have as many timesteps in the grids as in the timeseries 
        Usually pressure grids are time-invariant (as of 20190511 time-varying pure pressure grids are still not supported)
        This implementation interpolates timeseries to/from time-invariant vertical grids in one OpenMP call! */
-    if(tm_nbr_in > 1L || tm_nbr_out > 1L)
-      if(tm_nbr_in > tm_nbr_out){assert((float)tm_nbr_in/(float)tm_nbr_out == tm_nbr_in/tm_nbr_out);}else{assert((float)tm_nbr_out/(float)tm_nbr_in == tm_nbr_out/tm_nbr_in);}
+    if(tm_nbr_in > 1L || tm_nbr_out > 1L){
+      if(tm_nbr_in > tm_nbr_out) assert((float)tm_nbr_in/(float)tm_nbr_out == tm_nbr_in/tm_nbr_out); else assert((float)tm_nbr_out/(float)tm_nbr_in == tm_nbr_out/tm_nbr_in);
+    } /* !tm_nbr_in */
     tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
   
     /* Sanity checks */

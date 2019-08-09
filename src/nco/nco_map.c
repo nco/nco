@@ -945,17 +945,14 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     }
 
-
     /* call the overlap routine */
-    if( pl_cnt_in && pl_cnt_out  )
-       if( pl_typ == poly_crt  )
-          pl_lst_vrl= nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl);
-       else if( pl_typ == poly_sph || pl_typ == poly_rll )
-          pl_lst_vrl= nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, grd_lon_typ_out, rtree, &pl_cnt_vrl);
+    if(pl_cnt_in && pl_cnt_out){
+      if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl);
+      else if(pl_typ == poly_sph || pl_typ == poly_rll) pl_lst_vrl=nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, grd_lon_typ_out, rtree, &pl_cnt_vrl);
+    } /* !pl_cnt_in */
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(stderr, "%s: INFO: num input polygons=%d, num output polygons=%d num overlap polygons=%d\n", nco_prg_nm_get(),pl_cnt_in, pl_cnt_out, pl_cnt_vrl);
-
 
   }
 
@@ -968,13 +965,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   lnk_nbr=pl_cnt_vrl;
 
-
-
   wgt_raw=(double *)nco_malloc(lnk_nbr*nco_typ_lng(NC_DOUBLE));
   col_src_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
   row_dst_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
-
-
 
   /* Initialize arguments before they are actually computed */
   for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
@@ -1317,91 +1310,60 @@ nco_grd_lon_typ_enm typ_out)
   if(False && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s converting lon coord from \"%s\" to \"%s\"\n",nco_prg_nm_get(),fnc_nm,typ_in_sng,typ_out_sng);
 
   switch(typ_in){
-    case nco_grd_lon_unk:
-    case nco_grd_lon_bb:
-      switch(typ_out){
-
-        case nco_grd_lon_180_wst:
-        case nco_grd_lon_180_ctr:
-          for(idx=0;idx<sz;idx++)
-             if(lon_crn[idx] >180.0  ) lon_crn[idx]-=360.0;
-
-            break;
-
-
-        case nco_grd_lon_Grn_wst:
-        case nco_grd_lon_Grn_ctr:
-        default:
-
-          for(idx=0;idx<sz;idx++)
-            if(lon_crn[idx] <0.0  ) lon_crn[idx]+=360.0;
-
-            break;
-
-      }
-
-      break;
-
+  case nco_grd_lon_unk:
+  case nco_grd_lon_bb:
+    switch(typ_out){
     case nco_grd_lon_180_wst:
     case nco_grd_lon_180_ctr:
-
-      switch(typ_out){
-
-        case nco_grd_lon_180_wst:
-        case nco_grd_lon_180_ctr:
-          for(idx=0;idx<sz;idx++)
-            if(lon_crn[idx] >180.0  )
-              lon_crn[idx]-=360.0;
-            else if(lon_crn[idx] < -180.0 )
-              lon_crn[idx]+=360.0;
-        break;
-
-        case nco_grd_lon_Grn_wst:
-        case nco_grd_lon_Grn_ctr:
-        default:
-          for(idx=0;idx<sz;idx++)
-            if(lon_crn[idx] <0.0  )
-              lon_crn[idx]+=360.0;
-          break;
-
-      }
-
+      for(idx=0;idx<sz;idx++)
+	if(lon_crn[idx] >180.0  ) lon_crn[idx]-=360.0;
       break;
-
-
     case nco_grd_lon_Grn_wst:
     case nco_grd_lon_Grn_ctr:
-      switch(typ_out){
-
-        case nco_grd_lon_180_wst:
-        case nco_grd_lon_180_ctr:
-          for(idx=0;idx<sz;idx++)
-            if(lon_crn[idx] >180.0)
-              lon_crn[idx]-=360.0;
-          break;
-
-        /* additional check for lon<0 as some generated  grids have this horrible wrapping */
-        case nco_grd_lon_Grn_wst:
-        case nco_grd_lon_Grn_ctr:
-        default:
-          for(idx=0;idx<sz;idx++)
-            if(lon_crn[idx] <0.0  )
-              lon_crn[idx]+=360.0;
-
-          break;
-
-      }
-
+    default:
+      for(idx=0;idx<sz;idx++)
+	if(lon_crn[idx] <0.0  ) lon_crn[idx]+=360.0;
       break;
-
-
+    }
+    break;
+  case nco_grd_lon_180_wst:
+  case nco_grd_lon_180_ctr:
+    switch(typ_out){
+    case nco_grd_lon_180_wst:
+    case nco_grd_lon_180_ctr:
+      for(idx=0;idx<sz;idx++)
+	if(lon_crn[idx] >180.0) lon_crn[idx]-=360.0;
+	else if(lon_crn[idx] < -180.0 ) lon_crn[idx]+=360.0;
+      break;
+    case nco_grd_lon_Grn_wst:
+    case nco_grd_lon_Grn_ctr:
+    default:
+      for(idx=0;idx<sz;idx++)
+	if(lon_crn[idx] <0.0  ) lon_crn[idx]+=360.0;
+      break;
+    }
+    break;
+  case nco_grd_lon_Grn_wst:
+  case nco_grd_lon_Grn_ctr:
+    switch(typ_out){
+    case nco_grd_lon_180_wst:
+    case nco_grd_lon_180_ctr:
+      for(idx=0;idx<sz;idx++)
+	if(lon_crn[idx] >180.0)
+	  lon_crn[idx]-=360.0;
+      break;
+      /* additional check for lon<0 as some generated  grids have this horrible wrapping */
+    case nco_grd_lon_Grn_wst:
+    case nco_grd_lon_Grn_ctr:
+    default:
+      for(idx=0;idx<sz;idx++)
+	if(lon_crn[idx] < 0.0) lon_crn[idx]+=360.0;
+      break;
+    }
+    break;
   }
-
   return;
-
-
 }
-
 
 void
 nco_msh_poly_lst_wrt
