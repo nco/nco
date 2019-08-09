@@ -1,3 +1,11 @@
+2019-08-09  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.2-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha04: BrainCamp';git push
+	git tag -a 4.8.2-alpha04 -m 'Mesh-generation re-write accurate for ~ne120 with OpenMP enhancement';git push --tags
+
+	* Massive changeset by Henry to improve intersection mesh generation including new functions nco_sph_seg_int_nw(), pre-intersect scan in nco_sph_intersect_pre(), nco_poly_vrl_do(), nco_sph_centroid(), and nco_sph_inside_mk(), new nco_sph_seg_int() algorithm, nco_poly_vrl_do(), nco_sph_centroid(), and nco_sph_inside_mk(), moved kd tree creation from nco_poly_lst_mk_vrl_sph() to nco_msh_mk(), new interpolation and nco_sph_metric() functions, refined DIST_TOLERANCE, OpenMP, #define code paths to allow for compiler-specific OpenMP implementations
+
 2019-08-08  Charlie Zender  <zender@uci.edu>
 
 	* Clarify in nco.texi when msk_src/msk_dst/msk_out are used
