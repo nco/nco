@@ -379,17 +379,18 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 module load nco/4.7.4 # 20180417
 # Personal recipe last modified: 20180427
 # Personal recipe last used successfully: 20180921 (getopt errors were eliminated by removing ~/include/getopt*.h)
+# Personal recipe last failed: 20190812 (getopt errors were eliminated by removing ~/include/getopt*.h)
 module purge
 module load ncarenv intel ncarcompilers mpt netcdf
 module add intel
-module add netcdf/4.6.1
+module add netcdf/4.6.3
 module add mpt
 export PATH=${PATH}:/opt/pbs/bin # needed for qsub
-export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1/bin # needed for ncgen
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
+export PATH=${PATH}:/glade/u/apps/ch/opt/netcdf/4.6.3/intel/18.0.5/bin # needed for ncgen
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.6.3/intel/18.0.5/lib:/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib # needed to run NCO
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/include' SL_LIB='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib' NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/include' SL_LIB='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib' NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.3/intel/18.0.5' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.20/gnu/4.8.2/lib' OPTS=D allinone;cd -
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on compy
 # https://acme-climate.atlassian.net/wiki/spaces/ED/pages/928973795/CompyMcNodeFace+-+E3SM+RGMA+ESMD+dedicated+system+at+PNNL
