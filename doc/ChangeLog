@@ -1,6 +1,10 @@
+2019-08-13  Charlie Zender  <zender@uci.edu>
+
+	* Switch cheyenne build from Intel to GNU, update to 9.1.0 compilers
+
 2019-08-12  Charlie Zender  <zender@uci.edu>
 
-	* Update config.guess from ~2013 version to GNU 20190103 version
+	* Update config.guess from ~2013 version to GNU 20190103 version to fix Cheyenne hang
 
 2019-08-09  Charlie Zender  <zender@uci.edu>
 

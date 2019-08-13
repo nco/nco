@@ -123,10 +123,10 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		module load ncl
 	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.4.0/intel/17.0.1/bin"
+		export PATH="${PATH}:/glade/u/apps/ch/opt/ncl/6.6.2/gnu/8.3.0/bin"
 	    fi # !NCARG_ROOT
             export PATH='/glade/u/home/zender/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.1/intel/17.0.1/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
+            export LD_LIBRARY_PATH='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0/lib:/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib:/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib:/glade/u/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	compy* )
 	    export PATH='/qfs/people/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/qfs/people/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
