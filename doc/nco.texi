@@ -26874,10 +26874,11 @@ Large work-load testing
 Excellent bug reports and feature requests.
 @cindex Filipe Fernandes
 @cindex Isuru Fernando
+@cindex Craig MacLachlan
 @cindex Hugo Oliveira
 @cindex Rich Signell
 @cindex Kyle Wilcox
-@item Filipe Fernandes, Isuru Fernando, Hugo Oliveira, Rich Signell, Kyle Wilcox
+@item Filipe Fernandes, Isuru Fernando, Craig MacLachlan, Hugo Oliveira, Rich Signell, Kyle Wilcox
 Anaconda packaging
 @cindex Xylar Asay-Davis
 @cindex Daniel Baumann

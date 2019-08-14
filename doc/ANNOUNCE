@@ -7,7 +7,14 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.8.2 primarily contains enhancements to the ...
+Version 4.8.2 contains still more enhancements to the regridder.
+Notably, this version debuts the NCO weight-generator algorithm.
+Previously, ncremap used ESMF or TempestRemap for weights.
+Try ncremap -a nco to use the new NCO-generated weights.
+NCO will always support ESMF and TR which are more time-tested.
+However, the NCO algorithm can already do some unique things,
+like output the overlap mesh in SCRIP format.
+Stay tuned for more ncremap advances.
 
 Work on NCO 4.8.3 has commenced and will expose more powerful options
 for vertical interpolation and, hopefully, the debut of the NCO
@@ -25,14 +32,46 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. ncremap/ncks now fxm
-   ncremap -G latlon=1280,2560#lat_typ=gss#lat_drc=n2s -g $HOME/grd_n2s.nc
    ncremap -d ecmwf_ifs.nc -g grd_n2s.nc
-   http://nco.sf.net/nco.html#n2s
+
+A. ncremap supports a new weight generation algorithm.
+   The algorithm is first-order conservative and compares
+   well in accuracy with other FV algorithms such as ERWG and TR.
+   Results of our bake-off between ERWG "conserve", NCO "nco", and TR
+   "fv2fv" are at http://dust.ess.uci.edu/nco/rgr_cmp.txt
+   ESMF "conserve" is slightly better and Tempest "fv2fv" slightly
+   worse than NCO "nco", at least in our tests. Feedback welcome.
+   Accurate weight-generation is hard, and we have great respect for
+   the more robust ERWG and TR algorithms. 
+   For now we refrain from recommending NCO over ERWG or TR.
+   We hope users will try the NCO algorithm and send feedback,
+   while we work to improve it even more.
+   ncremap -a nco -s grd_src.nc -d grd_dst.nc -m map.nc in.nc out.nc
    http://nco.sf.net/nco.html#ncremap
+      
+A. ncremap works with newer MPAS Ocean files that contain BGC
+   dimensions like R3 and FOUR. 
+   ncremap -P mpas -m map_bilin.nc in.nc out.nc
+   http://nco.sf.net/nco.html#ncremap
+
+A. ncremap omits the TR --volumetric flag from fv2se_stt maps. 
+   TempestRemap author Paul Ullrich recommends this to keep fv2se_stt
+   maps consistent (producing output in same range) with fv2se_flx maps.
+   ncremap -a fv2se_stt -s grd_src.nc -d grd_dst.nc -m map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#ncremap
+
+A. ncremap now propagates all netCDF formats except CDF5 to TR 
+   (which does not yet accept or produce CDF5 files AFAICT).
 
 BUG FIXES:
 
-A. Hi
+A. ncap2 --output again works with single command-line files
+   This was inadvertently broken in 4.8.0.
+   Thanks to Kyle Wilcox for reporting this issue.
+
+A. Regridder allows "none" for SCRIP normalization type for
+   bilinear regridding, employed in UKMO SCRIP files.
+   Thanks to Craig MacLachlan for providing this fix.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
