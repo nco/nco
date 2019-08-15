@@ -2164,7 +2164,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      https://github.com/yyr/ncl/blob/master/ni/src/examples/gsun/popRemap.ncl
 
      ESMF Regridding Status:
-     http://www.earthsystemmodeling.org/esmf_releases/last/regridding_status.html
+     https://www.earthsystemcog.org/projects/esmf
 
      Sample regrid T42->POP43, SCRIP:
      ncks -O --map=${DATA}/scrip/rmp_T42_to_POP43_conserv.nc ${DATA}/rgr/essgcm14_clm.nc ~/foo.nc */

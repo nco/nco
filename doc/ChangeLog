@@ -2,7 +2,6 @@
 
 	* Add config.sub and workaround Linux-issue that hangs on config.guess
 
-
 2019-08-13  Charlie Zender  <zender@uci.edu>
 
 	* Switch cheyenne build from Intel to GNU, update to 9.1.0 compilers in ncremap/ncclimo
