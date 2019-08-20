@@ -298,6 +298,8 @@ int *pl_nbr)
     if( msk[idx]==0 || area[idx] == 0.0 )
       continue;
 
+
+
     pl=nco_poly_init_lst(pl_typ, grd_crn_nbr,0, idx, lon_ptr, lat_ptr);
     lon_ptr+=(size_t)grd_crn_nbr;
     lat_ptr+=(size_t)grd_crn_nbr;
@@ -337,10 +339,14 @@ int *pl_nbr)
     nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
     */
 
-    pl->area=area[idx];
+    /* pl->area=area[idx]; */
 
     /* The area of an RLL grid needs to be re-calculated  as we have to take account of lines of latitude as great circles */
     nco_poly_area_add(pl);
+
+    /* area NOT set so add to the area - nb this will be eventually written to the map file in nco_map_mk */
+    if(area[idx]==-1.0)
+       area[idx]=pl->area;
 
     /* fxm:2019-06-07 - there is a problem using the polygon center  as a control point as
      * for some RLL grids the center of a polar triangle can be the pole */
