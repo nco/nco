@@ -1,5 +1,7 @@
 2019-08-20  Charlie Zender  <zender@uci.edu>
 
+	* Merge Henry's patch to allow SCRIP grids without grid_imask or grid_area variables
+
 	* Fix handling of fnc_nm and fp_stderr by Intel Compiler in nco_ply_lst.c
 
 2019-08-14  Charlie Zender  <zender@uci.edu>
