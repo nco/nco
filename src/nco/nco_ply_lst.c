@@ -589,7 +589,7 @@ int *pl_cnt_vrl_ret){
   poly_sct ** pl_lst_vrl=NULL_CEWI;
   poly_sct **pl_lst_dbg=NULL_CEWI;
 
-  FILE *fp_stderr=stderr;
+  FILE * const fp_stderr=stderr;
 
 
   pl_typ=pl_lst_in[0]->pl_typ;
@@ -617,7 +617,7 @@ int *pl_cnt_vrl_ret){
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) private(idx, thr_idx) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
+#  pragma omp parallel for default(none) private(idx, thr_idx) shared(fnc_nm,rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
 #  pragma omp parallel for default(none) private(idx, thr_idx) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
