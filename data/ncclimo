@@ -113,7 +113,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/export/zender1/bin:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.5_py3.7_nox/bin'\:${PATH}
             export LD_LIBRARY_PATH='/export/zender1/lib:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.2.5_py3.7_nox/lib'\:${LD_LIBRARY_PATH} ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
-	    soft add @openmpi-gcc
 	    export PATH='/home/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	*cheyenne* )
