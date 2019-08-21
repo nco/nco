@@ -1,5 +1,7 @@
 2019-08-21  Charlie Zender  <zender@uci.edu>
 
+	* Add ERWG to ncremap via NCO_PATH_OVERRIDE=Yes and module load ncl
+
 	* Remove 'soft' command from blues NCO_PATH_OVERRIDE code since	CentOS7 partition uses 'module'
 
 2019-08-20  Charlie Zender  <zender@uci.edu>
