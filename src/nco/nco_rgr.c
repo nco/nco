@@ -4011,7 +4011,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    if(flg_grd_in_1D && !strcmp(dmn_nm,col_nm_in)){
 	      if(dmn_idx != dmn_nbr_in-1){
 		/* Unstructured input grid has col in non-MRV location (expect this with, e.g., MPAS-O/I native grid dimension-ordering */
-		(void)fprintf(stdout,"%s: WARNING %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support unstructured spatial dimensions that are not the last (i.e., most rapidly varying) dimension of an input variable.\nHINT: Consider re-arranging input file dimensions to place horizontal dimension(s) last with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling the regridder. E3SM users: If this is an MPAS dataset with a new (unknown to ncremap) dimension, ask Charlie to add the dimension to ncremap.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
+		(void)fprintf(stdout,"%s: WARNING %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support unstructured spatial dimensions that are not the last (i.e., most rapidly varying) dimension of an input variable, so results are likely garbage.\nHINT: Re-arrange input file dimensions to place horizontal dimension(s) last with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling the regridder. E3SM users: If this is an MPAS dataset with a new (unknown to ncremap) dimension, ask Charlie to add the dimension to ncremap.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
 		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
 	    } /* !flg_grd_in_1D */
@@ -4019,7 +4019,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      /* Are horizontal dimensions most-rapidly-varying? */
 	      if(dmn_idx != dmn_nbr_in-1 && dmn_idx != dmn_nbr_in-2){
 		/* NB: Lat/lon input grid has lat/lon in non-MRV location (expect this with, e.g., AIRS L2 grid dimension-ordering */
-		(void)fprintf(stdout,"%s: WARNING %s reports lat-lon grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support rectangular lat-lon dimension(s) that are not the last two (i.e., most rapidly varying) dimensions of an input variable.\nHINT: Consider re-arranging input file dimensions to place horizontal dimensions last with, e.g., \'ncpdq -a time,lev,lat,lon in.nc out.nc\' prior to calling the regridder.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in);
+		(void)fprintf(stdout,"%s: WARNING %s reports lat-lon grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support rectangular lat-lon dimension(s) that are not the last two (i.e., most rapidly varying) dimensions of an input variable, so results are likely garbage.\nHINT: Re-arrange input file dimensions to place horizontal dimensions last with, e.g., \'ncpdq -a time,lev,lat,lon in.nc out.nc\' prior to calling the regridder.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in);
 		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
 	    } /* !flg_grd_in_2D */	      
