@@ -666,7 +666,7 @@ nco_sph_metric( double *p, double *q)
 
 
 
-  /* this is pythagoean  distance */
+  /* this is pythagorean  distance */
   dist=sqrt( (p[0]-q[0]) * (p[0]-q[0]) + (p[1]-q[1])*(p[1]-q[1]) + (p[2]-q[2])*(p[2]-q[2]))  ;
 
   if( dist > DIST_TOLERANCE)
@@ -687,45 +687,84 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
   nco_bool DEBUG_LCL=False;
   nco_bool bIGood=False;
 
+  nco_bool bInvert=False;
+
   int iret=0;
 
   double cIcross[NBR_SPH];
   double cd[NBR_SPH];
   double cd_rad=0.0;
-  double ci_rad=0.0;
-  double cdot=0.0;
+  double i_rad=0.0;
+  double idot=0.0;
+
+  //double LCL_TOLERANCE=1.0e-40;
 
 
-  nco_sph_sub(Icross,c, cIcross);
   nco_sph_sub(d,c,cd );
 
+  nco_sph_sub(Icross,c, cIcross);
   cd_rad=nco_sph_rad(cd);
-  ci_rad=nco_sph_rad(cIcross);
 
-  cdot=nco_sph_dot(cd, cIcross);
-
+  i_rad=nco_sph_rad(cIcross);
 
 
-  if(DEBUG_LCL)
-    (void)fprintf(stderr, "%s: Using sph_metric to compare points cd_rad=%.15e ci_rad=%.15e  cdot=%.15e\n", fnc_nm, cd_rad, ci_rad, cdot);
+
+
+  if(i_rad > 1.0e-10)
+  {
+    idot=nco_sph_dot(cd, cIcross);
+    bInvert=False;
+  }
+  /* distance between c and Icross is very small so compare Icross with d */
+  else
+  {
+    nco_sph_sub(Icross,d, cIcross);
+    i_rad=nco_sph_rad(cIcross);
+    idot=nco_sph_dot(cd, cIcross);
+    idot*=-1.0;
+    bInvert=True;
+
+  }
+
+
+  if( cd_rad >= i_rad && idot >1.0e-40  )
+  {
+       if(cd_rad-i_rad < 1.0e-14)
+         iret=( bInvert ? 2: 3);
+       else
+         iret=1;
+
+  }
+
+  else if( i_rad - cd_rad < 1.0e-14  && idot>1.0e-40 )
+  {
+
+       iret=( bInvert ? 2: 3);
+
+
+  }
+
+  else
+    iret=0;
 
 
 
   /* Icross is a start of arc - point c */
-  // if(ci_rad==0.0)
-  //  iret=2;
-  if(  ci_rad==cd_rad && cdot>1.0e-40 )
+  /*
+  if(ci_rad<=1.0e-40)
+    iret=2;
+  else if(  ci_rad==cd_rad && cdot>1.0e-40 )
     iret=3;
   else if(  cd_rad  >= ci_rad  &&  cdot >1.0e-40)
     iret=1;
   else
     iret=0;
-
+   */
   //if(DEBUG_LCL)
   //  (void)fprintf(stderr, "%s: iret=%d\n", fnc_nm, iret);
 
-  if(DEBUG_LCL && iret)
-    (void)fprintf(stderr, "%s: Using sph_metric to compare points cd_rad=%.15e ci_rad=%.15e  cdot=%.15e iret=%d\n", fnc_nm, cd_rad, ci_rad, cdot, iret);
+  if(DEBUG_LCL)
+    (void)fprintf(stderr, "%s: Using sph_metric to compare points cd_rad=%.15e ci_rad=%.15e  cdot=%.15e iret=%d\n", fnc_nm, cd_rad, i_rad, idot, iret);
 
 
 
@@ -769,7 +808,11 @@ nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q
     nco_sph_add_lonlat(Pcross);
     nco_sph_add_lonlat(Qcross);
 
-    nx3= nco_sph_cross(Pcross, Qcross, Icross);
+    nx3= nco_sph_sxcross(Pcross, Qcross, Icross);
+
+    /* manually normalize */
+    nco_sph_mlt(Icross, 1.0/nx3 );
+
     nco_sph_add_lonlat(Icross);
   }
   else
@@ -777,12 +820,13 @@ nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q
 
 
 
-    nx1=nco_sph_cross(a,b, Pcross );
-    nx2=nco_sph_cross(c,d, Qcross );
+    nx1=nco_sph_cross2(a,b, Pcross );
+    nx2=nco_sph_cross2(c,d, Qcross );
 
 
 
     nx3=nco_sph_cross(Pcross, Qcross, Icross);
+
 
 
 
@@ -796,18 +840,20 @@ nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q
 
   /* Icross is zero, should really have a range rather than an explicit zero */
   /* use dot product to se if Pcross and QCross parallel */
-  if(  1.0- nco_sph_dot_nm(Pcross,Qcross )  <DOT_TOLERANCE  )
+  //if(  1.0- nco_sph_dot_nm(Pcross,Qcross )  <DOT_TOLERANCE  )
     //return nco_sph_parallel(a, b, c, d, p, q);
-    return False;
+  //  return False;
 
 
 
 
 
-  //flg_ab= nco_sph_metric_int(a, b, Icross);
+  flg_ab= nco_sph_metric_int(a, b, Icross);
 
-  //flg_cd= nco_sph_metric_int(c, d, Icross);
+  flg_cd= nco_sph_metric_int(c, d, Icross);
 
+
+  /*
   if(!nco_sph_metric(a,Icross))
     flg_ab=2;
   else if(!nco_sph_metric(b,Icross))
@@ -823,7 +869,7 @@ nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q
   else
     flg_cd= nco_sph_metric_int(c, d, Icross);
 
-
+   */
 
   if(DEBUG_LCL)
     nco_sph_prn_pnt("nco_sph_seg_int_: possible: ", Icross, 3, True);
@@ -872,12 +918,14 @@ nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q
   Icross[2]*= -1.0;
   nco_sph_add_lonlat(Icross);
 
+  flg_ab=0;
+  flg_cd=0;
 
-  //flg_ab= nco_sph_metric_int(a, b, Icross);
+  flg_ab= nco_sph_metric_int(a, b, Icross);
 
-  //flg_cd= nco_sph_metric_int(c, d, Icross);
+  flg_cd= nco_sph_metric_int(c, d, Icross);
 
-
+  /*
   if(!nco_sph_metric(a,Icross))
     flg_ab=2;
   else if(!nco_sph_metric(b,Icross))
@@ -893,10 +941,11 @@ nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q
   else
     flg_cd= nco_sph_metric_int(c, d, Icross);
 
+   */
 
 
   if(DEBUG_LCL)
-    nco_sph_prn_pnt("nco_sph_seg_int_nw(): anit-podal-possible: ", Icross, 3, True);
+    nco_sph_prn_pnt("nco_sph_seg_int_nw(): anti-podal-possible: ", Icross, 3, True);
 
 
   if(DEBUG_LCL ) {
@@ -1907,7 +1956,8 @@ double nco_sph_rad(double *a){
 
 
 /* new method for calculating cross product */
-double nco_sph_sxcross(double *a, double *b, double *c)
+double
+nco_sph_sxcross(double *a, double *b, double *c)
 {
   nco_bool bDeg = False;
   double n1;
@@ -1947,7 +1997,7 @@ double nco_sph_sxcross(double *a, double *b, double *c)
    // normalize vector
    n1=sqrt( c[0]*c[0]+c[1]*c[1] + c[2]*c[2] );
 
-   if(0 &&  n1 != 0.0 && n1 !=1.0  )
+   if(0 && n1 != 0.0 && n1 !=1.0  )
    {
       c[0] /= n1;
       c[1] /= n1;
