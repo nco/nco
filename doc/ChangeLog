@@ -1,5 +1,7 @@
 2019-08-27  Charlie Zender  <zender@uci.edu>
 
+	* Build on rhea with bld/Makefile, deprecate old rhea modules
+
 	* NCO 4.8.2-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha05: Oceanside';git push
 	git tag -a 4.8.2-alpha05 -m 'ncremap: OpenMP5.0	work;blues,cheyenne,rhea updates';git push --tags

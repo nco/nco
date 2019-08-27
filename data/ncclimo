@@ -156,26 +156,13 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    export PATH='/home/zender/bin_mira'\:${PATH}
 	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
 	rhea* )
-	    # 20151017: CSZ next three lines guarantee finding mpirun
+	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
-	    module unload PE-intel # Remove Intel-compiled mpirun environment
-	    module load PE-gnu # Provides GCC-compiled mpirun environment (CSZ uses GCC to build NCO on rhea)
-	    # 20160219: CSZ UVCDAT setup causes failures with mpirun, attempting a work-around
-	    if [ -n "${UVCDAT_SETUP_PATH}" ]; then
-		module unload python ompi paraview PE-intel PE-gnu
-		module load gcc
-		source /gpfs/alpine/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
-		export ${UVCDAT_SETUP_PATH}
-	    fi # !UVCDAT_SETUP_PATH
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		# 20170825: Use module load ncl/6.3.0 (6.4.0 lacks ERWG)
-		module load ncl/6.3.0
+		module load esmf
 	    fi # !ncremap
-	    if [ -n "${NCARG_ROOT}" ]; then
-		export PATH="${PATH}:${NCARG_ROOT}/bin"
-	    fi # !NCARG_ROOT
             export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
-	    export LD_LIBRARY_PATH='/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
 	theta* )
 	    export PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib'\:${LD_LIBRARY_PATH} ; ;;

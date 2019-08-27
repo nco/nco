@@ -249,7 +249,7 @@ nco_omp_chk
 
   FILE *fp_stderr=stderr;
 
-  (void) fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d thread(s)\n",fnc_nm,smsg,thr_nbr_act);
+  (void) fprintf(fp_stderr,"%s%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d thread(s)\n",fnc_nm,smsg,thr_nbr_act);
   #ifdef _OPENMP
 
   #pragma omp parallel shared(thr_nbr_act)

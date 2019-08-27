@@ -824,8 +824,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   long ilev_nbr_out;
   long lev_nbr_out;
   long tm_idx=0L; /* [idx] Current timestep */
-  long tm_idx_in=0L; /* [idx] Current timestep in input file */
-  long tm_idx_out=0L; /* [idx] Current timestep in output file */
   long tm_nbr=0L; /* [idx] Number of timesteps in vertical grid */
   long tm_nbr_in=1L; /* [nbr] Number of timesteps in input vertical grid definition */
   long tm_nbr_out=1L; /* [nbr] Number of timesetps in output vertical grid definition */
@@ -4799,7 +4797,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       /* 20190326: sgs_frc expressed as a fraction must be <= 1.0 and in general should never exceed sgs_nrm 
 	 CLM/ELM express sgs_frc (landfrac) in percent, i.e., sgs_nrm=100.0
 	 Sum total value of sgs_frc array depends on grid resolution */
-      double sgs_nrm=1.0;
       for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 	if(sgs_frc_out[dst_idx] > sgs_nrm) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %g > %g = sgs_nrm\n",nco_prg_nm_get(),fnc_nm,dst_idx,sgs_frc_out[dst_idx],sgs_nrm);
       } /* !dst_idx */

@@ -497,37 +497,18 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
-# gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea with system (old) netCDF:
-# Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
-# Latest ticket: 381695 on 20180413
-# Latest sysadmin-compiled module usage: module load netcdf/4.6.1 nco/4.7.4 # 20180423
-# Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20190227 
-# 20190420: Everything broke due to major system upgrade (Summit?). Most packages no longer present.
-# Block below no longer works, just keeping it until I cobble together a replacement in the following block
-export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
-export LINUX_CXX='g++ -std=c++11'
-export LINUX_FC='gfortran'
-module load intel
-export LD_LIBRARY_PATH=/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57/lib:/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib:${LD_LIBRARY_PATH}
-export NETCDF_ROOT=/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57 
-export PATH=/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57/bin:${PATH}
-cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/autofs/nccs-svm1_sw/rhea/.swci/0-core/opt/spack/20170224/linux-rhel6-x86_64/gcc-4.4.7/netcdf-4.4.1-uroyzcwi6fc3kerfidguoof7g2vimo57' SZ=Y SZ_LIB='/sw/redhat6/szip/2.1/rhel6.6_gnu4.8.2/lib' UDUNITS_INC='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/include' UDUNITS_LIB='/sw/redhat6/udunits/2.1.24/rhel6.4_intel13.1.3/lib' OPTS=D OMP=Y allinone;cd -
-
 # gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 nco/4.7.4 # 20180423
 # Personal recipe last modified: 20190420
-# Personal recipe last used successfully: 20190227
-source /ccs/proj/cli900/sw/rhea/e3sm-unified/load_latest_e3sm_unified.sh
+# Personal recipe last used successfully: 20190827 (except ncgen does not link)
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
-export LD_LIBRARY_PATH=/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.2.5_py3.7_nox/lib:${LD_LIBRARY_PATH}
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.2.5_py3.7_nox/lib
 export NETCDF_ROOT=/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.2.5_py3.7_nox
-export PATH=/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.2.5_py3.7_nox/bin:${PATH}
+export PATH=${PATH}:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.2.5_py3.7_nox/bin
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.2.5_py3.7_nox' OPTS=D OMP=Y allinone;cd -
 
