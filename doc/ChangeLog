@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha05: Oceanside';git push
 	git tag -a 4.8.2-alpha05 -m 'ncremap: OpenMP5.0	work;blues,cheyenne,rhea updates';git push --tags
 
+	* Update MANIFEST, annotate libnco.h
+
 	* Use /gpfs/alpine not /lustre/atlas1 as ~/data on rhea and restore grids/maps contents there
 
 	* Fix bld/Makefile by deprecating ncap.h reference in mpncwa.c
