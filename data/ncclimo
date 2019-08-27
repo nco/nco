@@ -87,7 +87,7 @@ if [ -z "${DATA}" ]; then
 	compy* ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes all named nidNNNNN, 32|(96/128) cores|GB/node (knl/haswell) (login nodes 512 GB)
-	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
+	rhea* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
@@ -164,7 +164,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ -n "${UVCDAT_SETUP_PATH}" ]; then
 		module unload python ompi paraview PE-intel PE-gnu
 		module load gcc
-		source /lustre/atlas1/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
+		source /gpfs/alpine/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
 		export ${UVCDAT_SETUP_PATH}
 	    fi # !UVCDAT_SETUP_PATH
 	    if [ ${spt_nm} = 'ncremap' ]; then
@@ -197,9 +197,9 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Production usage:
-# ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm
-# ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm
-# ncclimo -c B1850C5e1_ne30 -s 2 -e 199 -i /lustre/atlas1/cli115/world-shared/mbranst/B1850C5e1_ne30/atm/hist -o ${DATA}/ne30/clm
+# ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm
+# ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm
+# ncclimo -c B1850C5e1_ne30 -s 2 -e 199 -i /gpfs/alpine/cli115/world-shared/mbranst/B1850C5e1_ne30/atm/hist -o ${DATA}/ne30/clm
 
 # Incremental climo testing:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1981 -i ${DATA}/ne30/raw -o ${DATA}/ne30/prv -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
@@ -208,8 +208,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -S 1980 -E 1981 -x ${DATA}/ne30/prv -s 1982 -e 1983 -i ${DATA}/ne30/clm -X ${DATA}/ne30/xtn
 
 # Annual climo testing:
-# ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 2006 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm
-# ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 1852 -i /lustre/atlas1/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 2006 -i /gpfs/alpine/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm
+# ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 1852 -i /gpfs/alpine/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -C ann -m mpas -s 1851 -e 1852 -i ${DATA}/hdf/mpasLIoutput.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 
 # Debugging and Benchmarking:
@@ -220,8 +220,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
 # ncclimo -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/ncclimo.out 2>&1 &
 # ncclimo -d 2 -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o ${DATA}/anl > ~/ncclimo.out 2>&1 &
-# ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
-# ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm > ~/ncclimo.out 2>&1 &
 # MPAS: Prior to running ncclimo on MPAS output, annotate missing values of input with, e.g.,
 # for fl in `ls hist.*` ; do
 #  ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${fl}
@@ -230,8 +230,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo --dec_md=sdd --vars=timeMonthly_avg_iceAreaCell --yr_srt=2 --yr_end=3 --mdl=mpascice --d2f --drc_in=/p/user_pub/work/E3SM/1_0/piControl/1deg_atm_60-30km_ocean/sea-ice/native/model-output/mon/ens1/v1 --map=${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr > ~/ncclimo.out 2>&1 &
 # ncclimo --dec_md=sdd --vars=timeMonthly_avg_activeTracers_temperature --yr_srt=2 --yr_end=3 --mdl=mpaso --d2f --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc --drc_in=/p/user_pub/work/E3SM/1_0/piControl/1deg_atm_60-30km_ocean/ocean/native/model-output/mon/ens1/v1 --map=${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr > ~/ncclimo.out 2>&1 &
 # Old MPAS filename conventions (until ~201609)::
-# ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
-# ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /lustre/atlas1/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
+# ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split pipe:
 # cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
 # Split redirection:
@@ -316,7 +316,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 55 -e 58 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
 #   Cori a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
-#   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
@@ -591,8 +591,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
     printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -lpartition=gpu -N ncclimo # Bigmem\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
-#    echo "3-yrs  ne30: ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1982 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc > ~/ncclimo.out 2>&1 &"
-#    printf "3-yrs ne120: ncclimo -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1982 -i /lustre/atlas1/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ~zender/data/maps/map_ne120np4_to_fv257x512_aave.20150901.nc > ~/ncclimo.out 2>&1 &\n\n"
+#    echo "3-yrs  ne30: ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1982 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc > ~/ncclimo.out 2>&1 &"
+#    printf "3-yrs ne120: ncclimo -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1982 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ~zender/data/maps/map_ne120np4_to_fv257x512_aave.20150901.nc > ~/ncclimo.out 2>&1 &\n\n"
     exit 1
 } # end fnc_usg_prn()
 

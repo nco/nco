@@ -35,6 +35,7 @@
 # Additional Documentation:
 # HowTo: https://acme-climate.atlassian.net/wiki/display/SIM/Generate%2C+Regrid%2C+and+Split+Climatologies+%28climo+files%29+with+ncclimo+and+ncremap
 # E3SM Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
+# Benchmarks: https://acme-climate.atlassian.net/wiki/spaces/ATM/pages/25231711/Validation+and+Benchmarking+of+Regridders
 
 # Regridder works in one of four modes:
 # 1. Free-will: Infer source and destination grids to generate map-file, then regrid
@@ -96,7 +97,7 @@ if [ -z "${DATA}" ]; then
 	compy* ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes all named nidNNNNN, 32|(96/128) cores|GB/node (knl/haswell) (login nodes 512 GB)
-	rhea* | titan* ) DATA="/lustre/atlas/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
+	rhea* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
@@ -173,7 +174,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    if [ -n "${UVCDAT_SETUP_PATH}" ]; then
 		module unload python ompi paraview PE-intel PE-gnu
 		module load gcc
-		source /lustre/atlas1/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
+		source /gpfs/alpine/cli900/world-shared/sw/rhea/uvcdat/latest_full/bin/setup_runtime.sh
 		export ${UVCDAT_SETUP_PATH}
 	    fi # !UVCDAT_SETUP_PATH
 	    if [ ${spt_nm} = 'ncremap' ]; then

@@ -242,18 +242,14 @@ nco_var_prc_crr_prn /* [fnc] Print name of current variable */
 
 void
 nco_omp_chk
-(int thr_nbr,
-const char *smsg)
+(const char *smsg)
 {
-
   char fnc_nm[]="nco_omp_chk()";
   int thr_nbr_act = omp_get_max_threads();
 
   FILE *fp_stderr=stderr;
 
-  (void) fprintf(fp_stderr,
-                 "%s:%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d thread(s)\n",
-                 fnc_nm, smsg, thr_nbr_act);
+  (void) fprintf(fp_stderr,"%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d thread(s)\n",fnc_nm,smsg,thr_nbr_act);
   #ifdef _OPENMP
 
   #pragma omp parallel shared(thr_nbr_act)
@@ -261,18 +257,14 @@ const char *smsg)
   # pragma omp single nowait
     { /* begin OpenMP single */
       thr_nbr_act = omp_get_num_threads(); /* [nbr] Number of threads NCO uses */
-      (void) fprintf(fp_stderr, "%s:%s INFO Small parallel test region spawned team of %d thread(s)\n", fnc_nm, smsg, thr_nbr_act);
+      (void) fprintf(fp_stderr, "%s: %s INFO Small parallel test region spawned team of %d thread(s)\n",fnc_nm, smsg, thr_nbr_act);
     } /* end OpenMP single */
   } /* end OpenMP parallel */
 
   #endif /* !_OPENMP */
-
-
-
 }
 
 void nco_omp_for_chk(
-int thr_nbr,
 const char *smsg)
 {
   char fnc_nm[]="nco_omp_for_chk()";
@@ -282,20 +274,14 @@ const char *smsg)
 
   FILE *fp_stderr=stderr;
 
-  (void)fprintf(fp_stderr,
-                 "%s:%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d thread(s)\n",
-                 fnc_nm, smsg, thr_nbr_act);
-
-
+  (void)fprintf(fp_stderr,"%s:%s: INFO After using omp_set_num_threads() to adjust for any user requests/NCO optimizations, omp_get_max_threads() reports that a parallel construct here/now would spawn %d thread(s)\n",fnc_nm,smsg,thr_nbr_act);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(idx)
 #endif /* !_OPENMP */
-
     for(idx=0;idx<cnt;idx++)
     {
       fprintf(fp_stderr,"%s: %d %d\n", fnc_nm, idx, omp_get_thread_num());
-
     }
 
 }

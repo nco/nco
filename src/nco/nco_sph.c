@@ -1460,6 +1460,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
 nco_bool
 nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
+  char fnc_nm[]="nco_sph_intersect_pre()";
 
   int n;
   int m;
@@ -1534,9 +1535,8 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
             nco_sph_adi(pi, p);
           }
 
-
         if (DEBUG_LCL) {
-          (void) fprintf(stderr, "%s():, idx=%d jdx=%d numIntersect=%d codes=%s\n", __FUNCTION__, idx, jdx, numIntersect, codes);
+          (void) fprintf(stderr, "%s: idx=%d jdx=%d numIntersect=%d codes=%s\n", fnc_nm, idx, jdx, numIntersect, codes);
           nco_sph_prn_pnt("intersect_pre()", p, 4, True);
           // nco_sph_prn_pnt("intersect_pre()", p, 3, True);
         }

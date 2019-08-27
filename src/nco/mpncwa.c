@@ -66,7 +66,9 @@
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
-#include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
+#ifdef HAVE_BISON_FLEX
+  # include "ncap_utl.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
+#endif /* !HAVE_BISON_FLEX */
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 /* Global variables (keep consistent with global variables declared in ncap.c) */ 

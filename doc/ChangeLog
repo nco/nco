@@ -1,4 +1,16 @@
+2019-08-27  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.2-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha05: Oceanside';git push
+	git tag -a 4.8.2-alpha05 -m 'ncremap: OpenMP5.0	work;blues,cheyenne,rhea updates';git push --tags
+
+	* Use /gpfs/alpine not /lustre/atlas1 as ~/data on rhea and restore grids/maps contents there
+
+	* Fix bld/Makefile by deprecating ncap.h reference in mpncwa.c
+
 2019-08-23  Charlie Zender  <zender@uci.edu>
+
+	* Quiet debugging output in nco_rgr_wgt()
 
 	* Add stubs for OpenMP5.0 support to exploit GPUs on GCC >= 9.0
 

@@ -85,7 +85,6 @@
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #ifdef HAVE_BISON_FLEX
-//# include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
   # include "ncap_utl.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
 #endif /* !HAVE_BISON_FLEX */
 #include "libnco.h" /* netCDF Operator (NCO) library */
