@@ -2721,7 +2721,7 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, i
       {
         (void)fprintf(stderr," dist to center: %f units. elem=%p item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
                       list[idx].dist,
-                      list[idx].elem,
+                      (void*)list[idx].elem,
                       list[idx].elem->item,
                       list[idx].elem->size[KD_LEFT],
                       list[idx].elem->size[KD_RIGHT],
