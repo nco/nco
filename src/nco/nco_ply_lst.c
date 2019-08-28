@@ -265,9 +265,7 @@ int *pl_nbr)
   double *lon_ptr=lon_crn;
 
   /* buffers  used in nco-poly_re_org() */
-  double lcl_dp_x[VP_MAX]={0};
-  double lcl_dp_y[VP_MAX]={0};
-
+  
   double pControl[NBR_SPH];
 
   poly_sct *pl=(poly_sct*)NULL_CEWI;
