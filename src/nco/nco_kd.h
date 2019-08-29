@@ -229,6 +229,7 @@ typedef struct KDPpriority
 {
 	double dist;
 	KDElem *elem;
+	double area;
 } KDPriority;
 
 

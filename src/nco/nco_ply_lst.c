@@ -652,7 +652,7 @@ int *pl_cnt_vrl_ret){
     thr_idx=omp_get_thread_num();
 
 
-    if (nco_dbg_lvl_get() >= nco_dbg_dev)
+    if (0 && nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n",fnc_nm,  idx, thr_idx);
 
     /* get bounds of polygon in */
@@ -673,6 +673,8 @@ int *pl_cnt_vrl_ret){
       poly_sct *pl_vrl = NULL_CEWI;
       poly_sct *pl_out = (poly_sct *) mem_lst[thr_idx].kd_list[jdx].elem->item;
 
+      /* for area debug only */
+      mem_lst[thr_idx].kd_list[jdx].area=-1.0;
       /*
       if (pl_lst_in[idx]->pl_typ != pl_out->pl_typ) {
         fprintf(stderr, "%s: %s poly type mismatch\n", nco_prg_nm_get(), fnc_nm);
@@ -858,6 +860,9 @@ int *pl_cnt_vrl_ret){
         mem_lst[thr_idx].pl_cnt++;
         vrl_cnt_on++;
 
+        /* for area debug only */
+        mem_lst[thr_idx].kd_list[jdx].area=pl_vrl->area;
+
         /*
         if(  nbr_vrl_blocks * NCO_VRL_BLOCKSIZE  <  pl_cnt_vrl+1  )
           pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * ++nbr_vrl_blocks * NCO_VRL_BLOCKSIZE );
@@ -868,6 +873,7 @@ int *pl_cnt_vrl_ret){
         vrl_cnt_on++;
 
         */
+
 
 
       }
@@ -910,8 +916,10 @@ int *pl_cnt_vrl_ret){
             (void) fprintf(stderr, "/** following pl_lst_in[%lu]  **/\n", idx);
             nco_poly_prn(pl_lst_in[idx], 0);
             (void) fprintf(stderr, "/** potential overlaps to  follow  **/\n");
-            for (kdx = 0; kdx < vrl_cnt; kdx++)
-              nco_poly_prn((poly_sct *) mem_lst[thr_idx].kd_list[kdx].elem->item,0);
+            for (kdx = 0; kdx < vrl_cnt; kdx++) {
+              nco_poly_prn((poly_sct *) mem_lst[thr_idx].kd_list[kdx].elem->item, 0);
+              (void)fprintf(fp_stderr, "vrl_area=%.15e\n",mem_lst[thr_idx].kd_list[kdx].area );
+            }
 
             (void) fprintf(stderr, "/************* end dirty rats ***************/\n");
           }
