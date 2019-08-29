@@ -1199,7 +1199,7 @@ poly_sct *pl)
   int idx;
 
   for(idx=0;idx<pl->crn_nbr;idx++)
-    pl->shp[idx]= (double*)nco_free(pl->shp[idx]);
+    if(pl->shp[idx]) pl->shp[idx]= (double*)nco_free(pl->shp[idx]);
 
   pl->shp=(double**)nco_free(pl->shp);
 
@@ -1561,6 +1561,7 @@ poly_typ_enm pl_typ
 
 
 }
+
 
 
 
