@@ -729,14 +729,13 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
 
   if( cd_rad >= i_rad && idot >1.0e-40  )
   {
-       if(cd_rad-i_rad < 1.0e-14)
+       if(cd_rad-i_rad < 2.0e-14)
          iret=( bInvert ? 2: 3);
        else
          iret=1;
 
   }
-
-  else if( i_rad - cd_rad < 1.0e-14  && idot>1.0e-40 )
+  else if( i_rad - cd_rad < 2.0e-14  && idot>1.0e-40 )
   {
 
        iret=( bInvert ? 2: 3);
@@ -778,12 +777,13 @@ nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q
 {
   const char fnc_nm[]="nco_sph_seg_int()";
 
-  int flg_sx=False;
+  int flg_sx=True;
 
   int DEBUG_LCL=False;
 
   int flg_cd=0;
   int flg_ab=0;
+
 
 
   double nx1;
@@ -808,10 +808,10 @@ nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q
     nco_sph_add_lonlat(Pcross);
     nco_sph_add_lonlat(Qcross);
 
-    nx3= nco_sph_sxcross(Pcross, Qcross, Icross);
+    nx3= nco_sph_cross(Pcross, Qcross, Icross);
 
     /* manually normalize */
-    nco_sph_mlt(Icross, 1.0/nx3 );
+    // nco_sph_mlt(Icross, 1.0/nx3 );
 
     nco_sph_add_lonlat(Icross);
   }
@@ -1953,6 +1953,17 @@ double nco_sph_rad(double *a){
 
   return n1;
 }
+
+
+double
+nco_sph_rad2(double *a){
+  double n1;
+
+  n1= a[0]*a[0]+a[1]*a[1] + a[2]*a[2];
+
+  return n1;
+}
+
 
 
 /* new method for calculating cross product */

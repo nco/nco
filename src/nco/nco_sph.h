@@ -158,6 +158,9 @@ double
 nco_sph_rad(double *a);
 
 double
+nco_sph_rad2(double *a);
+
+double
 nco_sph_sxcross(double *a, double *b, double *c);
 
 void
