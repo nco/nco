@@ -90,6 +90,10 @@ nco_poly_init
   pl->bwrp=False;
   pl->bwrp_y=False;
 
+  /* defaults to true */
+  pl->bmsk=True;
+
+
   return pl;
 }
 
@@ -125,7 +129,7 @@ nco_poly_dpl
 
   pl_cpy->bwrp=pl->bwrp;
   pl_cpy->bwrp_y=pl->bwrp_y;
-
+  pl_cpy->bmsk=pl->bmsk;
 
   pl_cpy->dp_x=(double*)nco_malloc((size_t)crn_nbr_in* sizeof(double));
   pl_cpy->dp_y=(double*)nco_malloc((size_t)crn_nbr_in* sizeof(double));
@@ -193,7 +197,7 @@ int src_id)
   pl->mem_flg=0;
   pl->bwrp=False;
   pl->bwrp_y =False;
-
+  pl->bmsk=True;
 
   return pl;
 }

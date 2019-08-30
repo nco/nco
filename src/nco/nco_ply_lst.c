@@ -244,14 +244,13 @@ double *lon_crn, /* I [dgr] Longitude corners of source grid */
 size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
 long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
 nco_grd_lon_typ_enm grd_lon_typ, /* I [num]  */
-poly_typ_enm pl_typ,
-int *pl_nbr)
+poly_typ_enm pl_typ)
 {
 
   int idx=0;
-  int idx_cnt=0;
   int wrp_cnt=0;
   int wrp_y_cnt=0;
+  int msk_cnt=0;
 
   const char fnc_nm[]="nco_poly_lst_mk_sph()";
 
@@ -270,11 +269,18 @@ int *pl_nbr)
 
   poly_sct *pl=(poly_sct*)NULL_CEWI;
 
+  /* contains plain struct  sct with bmsk=False; */
+  poly_sct *pl_msk=((poly_sct*)NULL_CEWI);
+
   poly_sct **pl_lst;
 
-  /* start with twice the grid size as we may be splitting the cells along the Greenwich meridian or dateline */
-  /* realloc at the end */
-  pl_lst=(poly_sct**)nco_malloc( sizeof (poly_sct*) * grd_sz  *2 );
+
+
+  /* list size is grd_sz - invalid or masked polygons are repesented by a poly_sct->bmsk=False */
+  pl_lst=(poly_sct**)nco_malloc( sizeof (poly_sct*) * grd_sz);
+
+  pl_msk=nco_poly_init();
+  pl_msk->bmsk=False;
 
 
   /* filter out wrapped lon cells */
@@ -292,9 +298,13 @@ int *pl_nbr)
   // printf("About to print poly sct   grd_sz=%d grd_crn_nbr=%d\n", grd_sz, grd_crn_nbr);
   for(idx=0;idx<grd_sz; idx++)
   {
+
     /* check mask and area */
-    if( msk[idx]==0 || area[idx] == 0.0 )
+    if( msk[idx]==0 || area[idx] == 0.0 ) {
+      pl_lst[idx]= nco_poly_dpl(pl_msk);
       continue;
+
+    }
 
 
 
@@ -303,12 +313,14 @@ int *pl_nbr)
     lat_ptr+=(size_t)grd_crn_nbr;
 
     /* if poly is less  than a triangle then  null is returned*/
-    if(!pl) {
+    if(!pl ) {
 
       if(nco_dbg_lvl_get()>= nco_dbg_dev)
          fprintf(stderr, "%s(): WARNING cell(id=%d) less than a triange\n", fnc_nm, idx);
 
+      pl_lst[idx]= nco_poly_dpl(pl_msk);
       continue;
+
     }
     
     /* add centroid from input  */
@@ -330,7 +342,9 @@ int *pl_nbr)
     if( pl->bwrp  && bwrp==False   )
     {
       pl=nco_poly_free(pl);
+      pl_lst[idx]= nco_poly_dpl(pl_msk);
       continue;
+
     }
 
     /* make leftermost vertex first in array
@@ -377,18 +391,17 @@ int *pl_nbr)
     wrp_cnt+=pl->bwrp;
     wrp_y_cnt+=pl->bwrp_y;
 
-    pl_lst[idx_cnt]=pl;
-    idx_cnt++;
+    pl_lst[idx]=pl;
 
 
   }
 
   if(nco_dbg_lvl_get() >=  nco_dbg_dev )
-    (void)fprintf(stderr, "%s: %s size input list(%lu), size output list(%d)  total area=%.15e  num wrapped= %d num caps=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, idx_cnt, tot_area, wrp_cnt, wrp_y_cnt);
+    (void)fprintf(stderr, "%s: %s size input list(%lu), size output list(%d)  total area=%.15e  num wrapped= %d num caps=%d num masked=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, grd_sz, tot_area, wrp_cnt, wrp_y_cnt, msk_cnt);
 
-  pl_lst=(poly_sct**)nco_realloc( pl_lst, (size_t)idx_cnt * sizeof (poly_sct*) );
 
-  *pl_nbr=idx_cnt;
+
+  pl_msk=nco_poly_free(pl_msk);
 
   return pl_lst;
 
@@ -655,6 +668,10 @@ int *pl_cnt_vrl_ret){
     if (0 && nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n",fnc_nm,  idx, thr_idx);
 
+    if(pl_lst_in[idx]->bmsk==False)
+      continue;
+
+
     /* get bounds of polygon in */
     bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 );
 
@@ -841,6 +858,7 @@ int *pl_cnt_vrl_ret){
         /* add lat/lon centers */
         nco_poly_ctr_add(pl_vrl, grd_lon_typ);
 
+
         wrp_cnt+=pl_vrl->bwrp;
 
         if( isnan(pl_vrl->area) || pl_vrl->area ==0.0 )
@@ -849,6 +867,20 @@ int *pl_cnt_vrl_ret){
 
           //pl_vrl=nco_poly_free(pl_vrl);
           //continue;
+        }
+
+        /* for input polygon wgt is used to calculate frac_a */
+        pl_lst_in[idx]->wgt+= ( pl_vrl->area / pl_lst_in[idx]->area );
+
+#ifdef _OPENMP
+#pragma omp critical
+#endif
+        {
+          /* This is critcal as two threads can add to pl_out->wgt possibly at the same time
+           * we wish to avoid a collision */
+          /* for output  polygon wgt is used to calculate frac_b */
+          pl_out->wgt+=pl_vrl->wgt;
+
         }
 
         vrl_area += pl_vrl->area;

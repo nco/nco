@@ -76,8 +76,7 @@ double *lon_crn, /* I [dgr] Longitude corners of source grid */
 size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
 long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
 nco_grd_lon_typ_enm grd_lon_typ, /* I [num] if not nil then split cells that straddle Greenwich or Dateline  */
-poly_typ_enm pl_typ,
-int *pl_nbr);    /* O [nbr] size  poly_sct */
+poly_typ_enm pl_typ);    /* O [nbr] size  poly_sct */
 
 
 

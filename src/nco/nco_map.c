@@ -947,11 +947,14 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
 
     pl_lst_out = nco_poly_lst_mk_sph(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out,
-                                 (size_t) grd_crn_nbr_out, grd_lon_typ_out, pl_typ, &pl_cnt_out);
+                                 (size_t) grd_crn_nbr_out, grd_lon_typ_out, pl_typ);
+
+    pl_cnt_out=grd_sz_out;
 
     pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,
-                                (size_t) grd_crn_nbr_in, grd_lon_typ_out, pl_typ,&pl_cnt_in);
+                                (size_t) grd_crn_nbr_in, grd_lon_typ_out, pl_typ);
 
+    pl_cnt_in=grd_sz_in;
     /* test new write func */
     // 20190526: Stop writing this file (the output grid) by default.
     //    nco_msh_poly_lst_wrt("nco_map_tst_out.nc", pl_lst_out, pl_cnt_out, grd_lon_typ_out  );
@@ -974,6 +977,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
       for (idx = 0; idx < pl_cnt_out; idx++) {
 
+        if(pl_lst_out[idx]->bmsk == False)
+          continue;
 
         my_elem1 = (KDElem *) nco_calloc((size_t) 1, sizeof(KDElem));
 
@@ -1016,15 +1021,52 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   col_src_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
   row_dst_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
 
-  /* Initialize arguments before they are actually computed */
-  for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
 
-  /* looks like "col" and "row" are ONE-BASED in the map file */
+  /*
+  for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
   for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
   for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
+  */
 
-  for(idx=0;idx<grd_sz_in;idx++) frc_in[idx]=1.0;
-  for(idx=0;idx<grd_sz_out;idx++) frc_out[idx]=1.0;
+  for(idx=0; idx<lnk_nbr;idx++ )
+  {
+    wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
+    col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
+    row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
+
+  }
+
+
+  
+  assert( grd_sz_in == pl_cnt_in  );
+  
+  for(idx=0;idx<grd_sz_in;idx++) 
+  {
+    if( pl_lst_in[idx]->wgt >0.0  ) {
+      frc_in[idx] = pl_lst_in[idx]->wgt;
+      msk_in[idx] = 1;
+    }else{
+      frc_in[idx]=0.0;
+      msk_in[idx]=0;
+    }
+    
+  }  
+  
+  assert(grd_sz_out==pl_cnt_out);
+  
+  for(idx=0;idx<grd_sz_out;idx++) {
+
+    if( pl_lst_out[idx]->wgt >0.0  ) {
+      frc_out[idx] = pl_lst_out[idx]->wgt;
+      msk_out[idx] = 1;
+    }else{
+      frc_out[idx]=0.0;
+      msk_out[idx]=0;
+    }
+
+
+  }  
+    
 
   /* Write-out overlap mesh
      20190526: Allow users to name and output mesh-file with --rgr msh_fl=msh.nc. https://github.com/nco/nco/issues/135 */
@@ -1036,7 +1078,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *lnk_nbr_ptr=lnk_nbr;
 
   /* tally up weights see if they sum to number of dst grid cells */
-  if(0 && nco_dbg_lvl_get() >= nco_dbg_dev)
+  if( nco_dbg_lvl_get() >= nco_dbg_dev)
   {
     size_t irow;
     size_t sz;
