@@ -1,3 +1,11 @@
+2019-09-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.2-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha06: XTerra';git push
+	git tag -a 4.8.2-alpha06 -m 'rhea SLURM';git push --tags
+
+	* Update rhea queue to SLURM
+
 2019-08-27  Charlie Zender  <zender@uci.edu>
 
 	* Build on rhea with bld/Makefile, deprecate old rhea modules

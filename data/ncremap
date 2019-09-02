@@ -172,7 +172,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		module load esmf
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_rhea:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.2.5_py3.7_nox/lib'\:${LD_LIBRARY_PATH} ; ;;
 	theta* )
 	    export PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -1636,7 +1636,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    # Copy host-specific mpirun syntax but not node-allocation algorithms between ncclimo and ncremap
 	    case "${HOSTNAME}" in 
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
-		blues* | blogin* | b[0123456789][0123456789][0123456789] | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* )
+		blues* | blogin* | b[0123456789][0123456789][0123456789] | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | rhea* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
@@ -1660,7 +1660,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # https://www.alcf.anl.gov/user-guides/example-program-and-makefile-xc40
 		    cmd_mpi[${fl_idx}]="aprun -L ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # ALCF Theta
 		* )
-		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt)
+		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
 #		    cmd_mpi[${fl_idx}]="mpirun -H ${nd_nm[$((${fl_idx} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	done # !fl_idx

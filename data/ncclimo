@@ -49,7 +49,7 @@
 # scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta
-# scp dust.ess.uci.edu:nco/data/ncclimo ~/bin
+# scp dust.ess.uci.edu:bin/ncclimo ~/bin
 
 # Set script name, directory, PID, run directory
 drc_pwd=${PWD}
@@ -162,7 +162,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		module load esmf
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_rhea'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_rhea:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.2.5_py3.7_nox/lib'\:${LD_LIBRARY_PATH} ; ;;
 	theta* )
 	    export PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -184,9 +184,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Production usage:
-# ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm
-# ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm
-# ncclimo -c B1850C5e1_ne30 -s 2 -e 199 -i /gpfs/alpine/cli115/world-shared/mbranst/B1850C5e1_ne30/atm/hist -o ${DATA}/ne30/clm
+# ncclimo -a sdd -c B1850C5_ne30_v0.4 -s 1 -e 59 -i /gpfs/alpine/cli115/proj-shared/mbranst/B1850C5_ne30_v0.4/atm/hist -o ${DATA}/ne30/clm
+# ncclimo -a sdd -c b1850c5_m2a -s 1 -e 127 -i /gpfs/alpine/cli115/proj-shared/b1850_acmev0_highres/atm/hist/fullfiles -o ${DATA}/ne120/clm
 
 # Incremental climo testing:
 # ncclimo -v FSNT,AODVIS -c famipc5_ne30_v0.3_00003 -s 1980 -e 1981 -i ${DATA}/ne30/raw -o ${DATA}/ne30/prv -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
@@ -256,7 +255,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # sbatch -A e3sm --nodes=4 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 
 # Best performance on resolutions finer than ne30 (~1x1 degree) requires a job scheduler/batch processor
-# Cobalt (cooley), SLURM (compy,cori), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (rhea) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
+# Cobalt (cooley), SLURM (compy,cori,rhea), Maui (a PBS-variant) (blues), Torque (a PBS-variant) (hopper), and PBS (other) schedulers allow both interactive and non-interactive (i.e., script) batch jobs
 # ALCF Maui:
 # http://www.lcrc.anl.gov/for-users/using-lcrc/running-jobs
 # ALCF Cobalt:
@@ -272,20 +271,23 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # https://www.nersc.gov/users/computational-systems/cori/running-jobs/queues-and-policies/
 # https://slurm.schedmd.com/sbatch.html # sbatch man page
 # https://slurm.schedmd.com/salloc.html # salloc man page
-# OLCF PBS: 
+# OLCF SLURM (after 20190903, PBS until 20190903): 
 # https://www.olcf.ornl.gov/support/system-user-guides/rhea-user-guide/#903
+# https://www.olcf.ornl.gov/for-users/system-user-guides/rhea/running-jobs/#slurm
 # Requesting interactive nodes, Submitting non-interactive batch jobs, Monitoring queues, Deleting jobs:
-# Cobalt: qsub -I,   qsub,  qstat,    qdel
-# PBS:    qsub -I,   qsub,  qstat,    qdel
-# PBSPro: qsub -I,   qsub,  qstat,    qdel
-# SLURM:   salloc, sbatch, squeue, scancel
+# Cobalt: qsub -I,   qsub,  qstat,    qdel, mpirun
+# LSF:    bsub -I,   bsub,jobstat,    qdel,  jsrun
+# PBS:    qsub -I,   qsub,  qstat,    qdel, mpirun
+# PBSPro: qsub -I,   qsub,  qstat,    qdel, mpirun
+# SLURM:   salloc, sbatch, squeue, scancel,   srun
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
 #   Blues:  qsub -I -A ACME -q acme -l nodes=12 -l walltime=00:30:00 -N ncclimo
 #   Cheyenne: qsub -I -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
 #   Compy:  salloc  -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo
 #   Cooley: qsub -I -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname=ncclimo
 #   Cori:   salloc  -A acme -C knl --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
-#   Rhea:   qsub -I -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
+#   Oldrhea:qsub -I -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
+#   Rhea:   salloc  -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo # Bigmem: --partition=gpu
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs|slurm] b) qsub ncclimo.[cobalt|pbs|slurm]
 # Non-interactive batch queue differences (besides argument syntax):
 # 1. Cobalt and SLURM require initial 'shebang' line to specify the shell interpreter (not required on PBS)
@@ -303,13 +305,15 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 55 -e 58 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
 #   Cori a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
-#   Rhea a):   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#   Rhea a): echo '#!/bin/bash' > ~/ncclimo.slurm
+#                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" > ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Cooley b): qsub -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
 #   Cori b): sbatch -A acme -C haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
-#   Rhea b):   qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
+#   Oldrhea b):qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
+#   Rhea b): sbatch -A CLI115 --nodecount=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 # NB: stdout/stderr files returned from batch jobs are read-protected, need 'chmod 644 ~/ncclimo.out' afterwards
 
 # Normal use: Set five "mandatory" inputs (caseid, yr_srt, yr_end, drc_in, drc_out), and possibly rgr_map, on command line
@@ -571,12 +575,12 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_bld}ncclimo -a sdd -c ${caseid_xmp} -m cam -S 41 -E 50 -x ${drc_rgr_xmp}/0041-0050 -s 51 -e 60 -i ${drc_rgr_xmp}/0051-0060 -X ${drc_rgr_xmp}/0041-0060 ${fnt_nrm}# Combine two climos\n\n"
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
     printf "blues : qsub -I -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
-    printf "cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
+    printf "cheyen: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
     printf "compy : salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
     printf "cori  : salloc  -A acme -C knl --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
-    printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
-    printf "rhea  : qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -lpartition=gpu -N ncclimo # Bigmem\n"
+    printf "rhea  : salloc  -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
+    printf "rhea  : salloc  -A CLI115 --nodes=1 --time=00:30:00 --partition=gpu --job-name=ncclimo # Bigmem\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
 #    echo "3-yrs  ne30: ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1982 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc > ~/ncclimo.out 2>&1 &"
 #    printf "3-yrs ne120: ncclimo -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1982 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ~zender/data/maps/map_ne120np4_to_fv257x512_aave.20150901.nc > ~/ncclimo.out 2>&1 &\n\n"
@@ -1463,10 +1467,10 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		# ncclimo splitter-mode, and daily and annual climatology-mode, and ncremap all use 0-based cmd_mpi array
 		# Copy host-specific mpirun syntax but not node-allocation algorithms between ncclimo and ncremap
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
-		blues* | blogin* | b[0123456789][0123456789][0123456789] | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* )
+		blues* | blogin* | b[0123456789][0123456789][0123456789] | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | rhea* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
-		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
+s		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
  		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
 # 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
@@ -1487,7 +1491,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # https://www.alcf.anl.gov/user-guides/example-program-and-makefile-xc40
 		    cmd_mpi[${mpi_idx}]="aprun -L ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # ALCF Theta
 		* )
-		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS) for, e.g., Rhea
+		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
 	    esac # !HOSTNAME
 	done # !mpi_idx_zro

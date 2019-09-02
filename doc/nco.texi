@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha05
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 8 August 2019
+@set update-date 27 August 2019
 @set update-month August 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6130,12 +6130,21 @@ Lat[1]=45 Lon[2]=180 LatLon[6]=4
 Lat[1]=45 Lon[3]=270 LatLon[7]=5 
 @end example
 @noindent
-There are other workable, valid methods to accomplish this rotation, yet
+The analogous commands to rotate all fields in a global dataset by
+@w{180 degrees} in the other direction, i.e., from [0,360) to
+[@minus{}180,180), are:
+@example
+ncks -O --msa -d lon,181.,360. -d lon,0.,180.0 in.nc out.nc
+ncap2 -O -s 'where(lon > 180) lon=lon-360' out.nc out.nc
+@end example
+
+There are other workable, valid methods to rotate data, yet
 none are simpler nor more efficient than utilizing @acronym{MSA}
 user-ordering. 
 Some final comments on applying this algorithm:
 Be careful to specify hemispheres that do not overlap, e.g., by
-inadvertently specifying coordinate ranges that both include Greenwich. 
+inadvertently specifying coordinate ranges that both include Greenwich
+or the date-line.
 Some users will find using index-based rather than coordinate-based
 hyperslabs makes this clearer.
 
