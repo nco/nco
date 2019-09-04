@@ -1965,11 +1965,61 @@ nco_sph_rad2(double *a){
 }
 
 
+double
+Sin(double theta, nco_bool blon){
+
+    double dsign=1.0;
+    double ms=0.0;
+
+
+    if(blon &&  theta > M_PI && LON_MIN_RAD >=0.0 )
+      theta-=LON_MAX_RAD;
+
+    if(theta <0.0 && theta > -1.0*M_PI)
+      dsign=-1.0;
+
+    // if( fabs(theta)< 1.0e-6 ||  fabs(theta)-M_PI<1.0e-6 )
+    if( fabs(theta)-M_PI_2<1.0e-8 )
+      ms = sqrt(0.5 * (1.0 - cos(2.0 * theta))) * dsign;
+
+    else
+      ms=sin(theta);
+
+    return ms;
+}
+
+double
+Cos(double theta, nco_bool blon){
+
+  double ms=0.0;
+
+  if(theta==0.0)
+    return 1;
+
+
+
+  if(blon &&  theta > M_PI && LON_MIN_RAD >=0.0 )
+    theta-=LON_MAX_RAD;
+
+
+  // if( fabs(theta)-M_PI_2<1.0e-6 )
+  if( fabs(theta)< 1.0e-8 ||  fabs(theta)-M_PI<1.0e-8 )
+    ms= 1.0- 2.0*pow( sin(theta/2.0),2.0  );
+  else
+    ms=cos(theta);
+
+  return ms;
+}
+
+
+
+
 
 /* new method for calculating cross product */
 double
 nco_sph_sxcross(double *a, double *b, double *c)
 {
+  char fnc_nm[]="nco_sph_sxcross";
   nco_bool bDeg = False;
   double n1;
   double lon1;
@@ -1977,6 +2027,13 @@ nco_sph_sxcross(double *a, double *b, double *c)
 
   double lat1;
   double lat2;
+
+  /* don't both with trig stuff if points on same meridian or same parallel
+   *
+  if(a[3]==b[3] ||  a[4]== b[4])
+    return nco_sph_cross2(a, b, c);
+
+  */
 
   if (bDeg) {
     lon1 = a[3] * M_PI / 180.0;
@@ -1993,16 +2050,41 @@ nco_sph_sxcross(double *a, double *b, double *c)
 
   }
 
+  /*
+  double sin_lat1_lat2_plus=Sin(lat1+lat2,False);
+  double sin_lat1_lat2_minus=Sin(lat1-lat2,False);
 
-   c[0] =   sin(lat1+lat2) * cos( (lon1+lon2) / 2.0) * sin( (lon1-lon2)/2.0)
+  double cos_lon1_lon2_plus=Cos( (lon1+lon2)/2.0,True );
+  double cos_lon1_lon2_minus=Cos( (lon1-lon2)/2.0,True );
+
+  double sin_lon1_lon2_plus=Sin( (lon1+lon2)/2.0,True );
+  double sin_lon1_lon2_minus=Sin( (lon1-lon2)/2.0,True );
+
+  c[0]=sin_lat1_lat2_plus * cos_lon1_lon2_plus * sin_lon1_lon2_minus
+       - sin_lat1_lat2_minus* sin_lon1_lon2_plus * cos_lon1_lon2_minus;
+
+  c[1]=sin_lat1_lat2_plus * sin_lon1_lon2_plus * sin_lon1_lon2_minus
+       + sin_lat1_lat2_minus* cos_lon1_lon2_plus * cos_lon1_lon2_minus;
+
+  c[2]=Cos(lat1, False) * Cos(lat2,False) * Sin(lon2-lon1,True);
+
+*/
+
+
+  c[0] =   sin(lat1+lat2) * cos( (lon1+lon2) / 2.0) * sin( (lon1-lon2)/2.0)
             - sin(lat1-lat2) * sin ((lon1+lon2) / 2.0) * cos( (lon1-lon2)/2.0);
 
    c[1] =   sin(lat1+lat2) * sin( (lon1+lon2) / 2.0) * sin( (lon1-lon2)/2.0)
             + sin(lat1-lat2) * cos ((lon1+lon2) / 2.0) * cos( (lon1-lon2)/2.0);
 
-
-
    c[2]=cos(lat1) * cos(lat2) * sin(lon2-lon1);
+
+
+
+
+
+
+
 
 
    // normalize vector
