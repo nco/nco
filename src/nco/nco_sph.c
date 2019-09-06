@@ -1865,31 +1865,30 @@ double  nco_sph_dot(double *a, double *b)
 double  nco_sph_dot_nm(double *a, double *b)
 {
   int idx;
-  double sum=0.0;
+  double sum = 0.0;
   double n1;
   double n2;
 
   const char fnc_nm[]="nco_sph_dot_nm()";
 
-  for(idx=0; idx<3; idx++)
-    sum+=a[idx]*b[idx];
+  for (idx = 0; idx < 3; idx++)
+    sum += a[idx] * b[idx];
 
   n1 = sqrt(a[0] * a[0] + a[1] * a[1] + a[2] * a[2]);
   n2 = sqrt(b[0] * b[0] + b[1] * b[1] + b[2] * b[2]);
 
-  if(sum!=0.0 &&  n1>DOT_TOLERANCE ) sum/=n1;
+  if (sum != 0.0 && n1 > DOT_TOLERANCE) sum /= n1;
 
-  if(sum!=0.0 && n2>DOT_TOLERANCE) sum/=n2;
+  if (sum != 0.0 && n2 > DOT_TOLERANCE) sum /= n2;
 
 
-  if(0 && DEBUG_SPH)
-    fprintf(stderr,"%s() dt=%f n1=%f %f\n", fnc_nm, sum, n1, n2 );
+  if (0 && DEBUG_SPH)
+    fprintf(stderr, "%s() dt=%f n1=%f %f\n", fnc_nm, sum, n1, n2);
 
 
   return sum;
-
-
 }
+
 
 double  nco_sph_cross2(double *a, double *b, double *c)
 {
@@ -1965,7 +1964,7 @@ nco_sph_rad2(double *a){
 }
 
 
-double
+inline double
 Sin(double theta, nco_bool blon){
 
     double dsign=1.0;
@@ -1975,23 +1974,29 @@ Sin(double theta, nco_bool blon){
     if(blon &&  theta > M_PI && LON_MIN_RAD >=0.0 )
       theta-=LON_MAX_RAD;
 
-    if(theta <0.0 && theta > -1.0*M_PI)
-      dsign=-1.0;
+    //if(theta <0.0 && theta > -1.0*M_PI)
+    if(theta<0.0)
+        dsign=-1.0;
 
-    // if( fabs(theta)< 1.0e-6 ||  fabs(theta)-M_PI<1.0e-6 )
-    if( fabs(theta)-M_PI_2<1.0e-8 )
-      ms = sqrt(0.5 * (1.0 - cos(2.0 * theta))) * dsign;
 
+    if( fabs(fabs(theta)-M_PI_2)<1.0e-2 )
+    {
+       ms = sqrt(0.5 * (1.0 - cos(2.0 * theta))) ;
+       ms=copysign(ms, dsign);
+    }
     else
       ms=sin(theta);
 
     return ms;
 }
 
-double
+
+
+inline double
 Cos(double theta, nco_bool blon){
 
   double ms=0.0;
+
 
   if(theta==0.0)
     return 1;
@@ -2003,7 +2008,7 @@ Cos(double theta, nco_bool blon){
 
 
   // if( fabs(theta)-M_PI_2<1.0e-6 )
-  if( fabs(theta)< 1.0e-8 ||  fabs(theta)-M_PI<1.0e-8 )
+  if( fabs(theta)< 1.0e-2 ||  fabs(fabs(theta)-M_PI)<1.0e-2 )
     ms= 1.0- 2.0*pow( sin(theta/2.0),2.0  );
   else
     ms=cos(theta);
@@ -2029,11 +2034,11 @@ nco_sph_sxcross(double *a, double *b, double *c)
   double lat2;
 
   /* don't both with trig stuff if points on same meridian or same parallel
-   *
-  if(a[3]==b[3] ||  a[4]== b[4])
-    return nco_sph_cross2(a, b, c);
 
-  */
+  if(fabs(a[3])==fabs(b[3]) ||  fabs(a[4])== fabs(b[4]))
+    return nco_sph_cross2(a, b, c);
+ */
+
 
   if (bDeg) {
     lon1 = a[3] * M_PI / 180.0;
@@ -2050,7 +2055,7 @@ nco_sph_sxcross(double *a, double *b, double *c)
 
   }
 
-  /*
+
   double sin_lat1_lat2_plus=Sin(lat1+lat2,False);
   double sin_lat1_lat2_minus=Sin(lat1-lat2,False);
 
@@ -2068,9 +2073,9 @@ nco_sph_sxcross(double *a, double *b, double *c)
 
   c[2]=Cos(lat1, False) * Cos(lat2,False) * Sin(lon2-lon1,True);
 
-*/
 
 
+  /*
   c[0] =   sin(lat1+lat2) * cos( (lon1+lon2) / 2.0) * sin( (lon1-lon2)/2.0)
             - sin(lat1-lat2) * sin ((lon1+lon2) / 2.0) * cos( (lon1-lon2)/2.0);
 
@@ -2079,7 +2084,7 @@ nco_sph_sxcross(double *a, double *b, double *c)
 
    c[2]=cos(lat1) * cos(lat2) * sin(lon2-lon1);
 
-
+ */
 
 
 
