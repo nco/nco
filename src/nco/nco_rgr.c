@@ -4775,7 +4775,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
        ncremap -P gsg -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc # New SGS method */
     sgs_frc_nm=(char *)strdup(rgr->sgs_frc_nm);
     var_nm=rgr->sgs_frc_nm;
-    var_typ_rgr=NC_DOUBLE; /* NB: Perform regridding in double precision */
+    var_typ_rgr=NC_DOUBLE; /* NB: Regrid in double precision */
     var_typ_out=NC_DOUBLE; /* NB: sgs_frc_out must be double precision */
     var_sz_in=1L; /* Compute from scratch to be sure it matches grd_sz_in */
     var_sz_out=grd_sz_out; /* Assume this holds */
@@ -4795,6 +4795,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       (void)fprintf(stdout,"%s: ERROR %s requires that sgs_frc = %s be same size as spatial grid but var_sz_in = %lu != %lu = grd_sz_in\n",nco_prg_nm_get(),fnc_nm,var_nm,var_sz_in,grd_sz_in);
       nco_exit(EXIT_FAILURE);
     } /* !var_sz_in */
+    /* Missing value setup (NB: ELM landfrac has _FillValue and is _FillValue where masked */
+    has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
     sgs_frc_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sgs_frc_in value buffer");
     rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,sgs_frc_in,var_typ_rgr);
 
@@ -4802,17 +4804,28 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     sgs_frc_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sgs_frc_out value buffer");
     for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++) sgs_frc_out[dst_idx]=0.0;
     
-    /* Regrid sgs_frc */
-    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
-      sgs_frc_out[row_dst_adr[lnk_idx]]+=sgs_frc_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
+    /* Regrid sgs_frc
+       20190907: sgs_frc_in is _FillValue (1.0e36) for ELM datasets in all masked gridcells
+       Create map with ELM mask so wgt_raw is zero for masked source gridcells
+       Otherwise sgs_frc_out could get non-zero portion of _FillValue for masked source gridcells
+       Avoid this by explicitly checking for _FillValue in sgs_frc_in */
+    if(!has_mss_val)
+      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+	sgs_frc_out[row_dst_adr[lnk_idx]]+=sgs_frc_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
+
+    if(has_mss_val)
+      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+	if(sgs_frc_in[col_src_adr[lnk_idx]] != mss_val_dbl)
+	  sgs_frc_out[row_dst_adr[lnk_idx]]+=sgs_frc_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 
     /* Evaluate sgs_frc_out */
     if(nco_dbg_lvl_get() >= nco_dbg_fl){
-      /* 20190326: sgs_frc expressed as a fraction must be <= 1.0 and in general should never exceed sgs_nrm 
+      /* 20190326: sgs_frc expressed as a fraction must never exceed sgs_nrm 
 	 CLM/ELM express sgs_frc (landfrac) in percent, i.e., sgs_nrm=100.0
 	 Sum total value of sgs_frc array depends on grid resolution */
       for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-	if(sgs_frc_out[dst_idx] > sgs_nrm) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %g > %g = sgs_nrm\n",nco_prg_nm_get(),fnc_nm,dst_idx,sgs_frc_out[dst_idx],sgs_nrm);
+	/* 20190907 Approximate comparison because rounding cause frequent excesses of epsilon ~ 1.0e-15 */
+	if((float)sgs_frc_out[dst_idx] > sgs_nrm) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %19.15f > %g = sgs_nrm\n",nco_prg_nm_get(),fnc_nm,dst_idx,sgs_frc_out[dst_idx],sgs_nrm);
       } /* !dst_idx */
     } /* !dbg */
 
@@ -4824,8 +4837,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: # means regridded, ~ means copied\n");
 
-  /* Using naked stdin/stdout/stderr in parallel region generates warning
-     Copy appropriate filehandle to variable scoped as shared in parallel clause */
+  /* Using naked stdin/stdout/stderr in parallel region generates
+     warning Copy appropriate filehandle to variable scoped as shared
+     in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
   /* OpenMP notes:
