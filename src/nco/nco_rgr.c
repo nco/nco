@@ -764,7 +764,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* [enm] Vertical grid type for input grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* [enm] Vertical grid type for output grid */
-  nco_xtr_typ_enm ntp_mth=rgr->ntp_mth; /* [enm] Interpolation method */
+  nco_ntp_typ_enm ntp_mth=rgr->ntp_mth; /* [enm] Interpolation method */
   nco_xtr_typ_enm xtr_mth=rgr->xtr_mth; /* [enm] Extrapolation method */
 
   /* Determine output grid type */
