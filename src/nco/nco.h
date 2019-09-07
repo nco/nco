@@ -1065,6 +1065,12 @@ extern "C" {
     nco_grd_lon_bb, /* Longitude grid determined by bounding box (lon_wst/lon_est) and gridcell number (lon_nbr) */
   } nco_grd_lon_typ_enm;
 
+  typedef enum nco_ntp_typ_enm 
+    { /* [enm] Interpolation type enum */
+     nco_ntp_lnr=0, // Perform linear interpolation in vertical coordinate (whether pressure or height)
+     nco_ntp_log // Perform logarithmic interpolation in vertical coordinate (whether pressure or height)
+    } nco_ntp_typ_enm;
+
   typedef enum nco_xtr_typ_enm 
     { /* [enm] Extrapolation type enum */
      nco_xtr_fll_lnr=0, // Perform linear extrapolation using two nearest valid neighbors
@@ -1210,6 +1216,7 @@ extern "C" {
     nco_grd_lat_drc_enm lat_drc; /* [enm] Latitude grid-direction enum */
     nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
     nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
+    nco_ntp_typ_enm ntp_mth; /* [enm] Interpolation method */
     nco_xtr_typ_enm xtr_mth; /* [enm] Extrapolation method */
     // Other internal data and metadata 
     char **xtn_var; /* [sng] Extensive variables */

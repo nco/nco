@@ -306,6 +306,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->msk_var=NULL; /* [sng] Mask-template variable */
   rgr->sgs_nrm=1.0; /* [sng] Sub-gridscale normalization */
   rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
+  rgr->ntp_mth=nco_ntp_lnr; /* [enm] Interpolation method */
   rgr->xtr_mth=nco_xtr_fll_ngh; /* [enm] Extrapolation method */
   
   /* Parse key-value properties */
@@ -626,6 +627,17 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !vrt_nm */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"ntp_mth")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"lin") || !strcasecmp(rgr_lst[rgr_var_idx].val,"linear") || !strcasecmp(rgr_lst[rgr_var_idx].val,"lnr")){
+	rgr->ntp_mth=nco_ntp_lnr;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"log") || !strcasecmp(rgr_lst[rgr_var_idx].val,"logarithmic") || !strcasecmp(rgr_lst[rgr_var_idx].val,"lgr")){
+	rgr->ntp_mth=nco_ntp_log;
+      }else{
+	(void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
+	abort();
+      } /* !val */
+      continue;
+    } /* !ntp_mth */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"xtr_mth")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"nrs_ngh") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ngh") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nearest_neighbor") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nn")){
 	rgr->xtr_mth=nco_xtr_fll_ngh;
@@ -752,6 +764,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool flg_vrt_tm=False; /* [flg] Output depends on time-varying vertical grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_in=nco_vrt_grd_nil; /* [enm] Vertical grid type for input grid */
   nco_grd_vrt_typ_enm nco_vrt_grd_out=nco_vrt_grd_nil; /* [enm] Vertical grid type for output grid */
+  nco_xtr_typ_enm ntp_mth=rgr->ntp_mth; /* [enm] Interpolation method */
   nco_xtr_typ_enm xtr_mth=rgr->xtr_mth; /* [enm] Extrapolation method */
 
   /* Determine output grid type */
@@ -1198,7 +1211,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     prs_min_in=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_in value buffer");
     prs_min_out=(double *)nco_malloc_dbg(ps_sz*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_min_out value buffer");
     if(flg_grd_in_hyb){
-      // fxm: assumes hybrid grid has lowest/greatest pressure at top/bottom level
+      // fxm: assumes hybrid grid has least/greatest pressure at top/bottom level
       idx_lev_max=lev_nbr_in-1;
       idx_lev_min=0L;
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
@@ -1210,7 +1223,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       } /* !tm_idx */
     } /* !flg_grd_in_hyb */
     if(flg_grd_out_hyb){
-      // fxm: assumes hybrid grid has lowest/greatest pressure at top/bottom level
+      // fxm: assumes hybrid grid has least/greatest pressure at top/bottom level
       idx_lev_max=lev_nbr_out-1;
       idx_lev_min=0L;
       for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
@@ -1580,6 +1593,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_out_prs */
 
   nco_bool flg_ntp_log=True; /* [flg] Interpolate in log(vertical_coordinate) */
+  if(ntp_mth == nco_ntp_lnr) flg_ntp_log=False;
   size_t idx_in; /* [idx] Index into 3D input variables */
   size_t idx_out; /* [idx] Index into 3D output variables */
   size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
