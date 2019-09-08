@@ -1,3 +1,9 @@
+2019-09-08  Charlie Zender  <zender@uci.edu>
+
+	* In new SGS, compute sgs_msk (when requested) based on sgs_frc
+
+	* In new SGS, normalize all variables (except sgs_frc and sgs_msk) by wgt_vld_frc
+
 2019-09-07  Charlie Zender  <zender@uci.edu>
 
 	* Check for _FillValue in sgs_frc_in (e.g., ELM landfrac) in GSG regridding
