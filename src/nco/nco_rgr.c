@@ -4833,7 +4833,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
     if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
     if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
-    if(sgs_frc_in) sgs_frc_in=(double *)nco_free(sgs_frc_in);
   } /* !sgs_frc_nm */
 
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Regridding progress: # means regridded, ~ means copied\n");
@@ -4862,15 +4861,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 # endif /* 900 */
 #endif /* !__GNUC__ */
 #if defined( __INTEL_COMPILER)
-# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
+# pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,flg_rnr,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw,wgt_vld_thr)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#  pragma omp parallel for default(none) firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,fnc_nm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 # else /* !old g++ */
 #  if defined(GXX_WITH_OPENMP5_GPU_SUPPORT)
-#   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  else
-#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_out,sgs_msk_nm,wgt_raw)
+#   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  endif /* !GCC > 9.0 */
 # endif /* !GCC < 4.9 */
 #endif /* !__INTEL_COMPILER */
@@ -5074,22 +5073,38 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 	      if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]=1.0;
 	  }else{ /* !sgs_msk_nm */
-	    /* Normalize everything else by fraction of output gridcell with valid values */
-	    /* fxm: 20190323 normalization blocks may contain too many conditions, mask_b may help */
+	    /* Normalize everything else by wgt_vld_out, fraction of output gridcell with valid values on input grid */
 	    if(has_mss_val){
 	      if(lvl_nbr == 1){
 		/* SGS-renormalize single-level fields with missing values */
 		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses single-level with missing values\n",nco_prg_nm_get(),var_nm);
+		/*for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
+		  if(tally[dst_idx]){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}*/
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  if(tally[dst_idx]){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
-	      }else{
+		  if(tally[dst_idx]){
+		    var_val_dbl_out[dst_idx]=0.0;
+		    wgt_vld_out[dst_idx]=0.0;
+		    tally[dst_idx]=0L;
+		  } /* !tally */
+		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		  idx_in=col_src_adr[lnk_idx];
+		  idx_out=row_dst_adr[lnk_idx];
+		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
+		    if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
+		    tally[idx_out]++;
+		  } /* !mss_val_dbl */
+		} /* !lnk_idx */
+		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
+		  if(tally[dst_idx]){var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}
+	      }else{ /* lvl_nbr > 1 */
 		/* SGS-renormalize multi-level fields with missing values */
 		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level with missing values\n",nco_prg_nm_get(),var_nm);
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		  if(sgs_frc_out[dst_idx] != 0.0 && sgs_frc_out[dst_idx] != mss_val_dbl){
 		    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 		      idx_out=dst_idx+lvl_idx*grd_sz_out;
-		      if(tally[idx_out]){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
+		      if(tally[idx_out]){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}
 		    } /* !lvl_idx */
 		  } /* !sgs_frc_out */
 		} /* !dst_idx */
@@ -5100,7 +5115,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses single-level without missing values\n",nco_prg_nm_get(),var_nm);
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		  var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
-	      }else{
+	      }else{ /* lvl_nbr > 1 */
 		/* SGS-renormalize multi-level fields without missing values */
 		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level without missing values\n",nco_prg_nm_get(),var_nm);
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
@@ -5158,6 +5173,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(msk_out) msk_out=(int *)nco_free(msk_out);
   if(row_dst_adr) row_dst_adr=(int *)nco_free(row_dst_adr);
   if(sgs_frc_nm) sgs_frc_nm=(char *)nco_free(sgs_frc_nm);
+  if(sgs_frc_in) sgs_frc_in=(double *)nco_free(sgs_frc_in);
   if(sgs_frc_out) sgs_frc_out=(double *)nco_free(sgs_frc_out);
   if(sgs_msk_nm) sgs_msk_nm=(char *)nco_free(sgs_msk_nm);
   if(wgt_raw) wgt_raw=(double *)nco_free(wgt_raw);

@@ -428,8 +428,8 @@ qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
 rgr_opt='--rgr lat_nm_out=lat#lon_nm_out=lon' # [sng] Regridding options
 #rgr_opt='--rgr lat_dnm_nm=x#lon_dmn_nm=y' # [sng] Regridding options for projection grid
 rnr_thr='' # [frc] Renormalization option
-sgs_frc='' # [sng] Sub-grid fraction variable
-sgs_msk='' # [sng] Sub-grid mask variable
+sgs_frc='landfrac' # [sng] Sub-grid fraction variable
+sgs_msk='landmask' # [sng] Sub-grid mask variable
 sgs_nrm='1.0' # [frc] Sub-grid normalization
 skl_fl='' # [sng] Skeleton file
 std_chk='Yes' # [sng] Check stdin for input file list
@@ -1748,7 +1748,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: out_fl   = ${out_fl}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
-    printf "dbg: qea_flg  = ${qea_flg}\n"
+#    printf "dbg: qea_flg  = ${qea_flg}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rnr_thr  = ${rnr_thr}\n"
     printf "dbg: rrg_bb   = ${bb_wesn}\n"

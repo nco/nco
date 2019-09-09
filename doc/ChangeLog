@@ -1,5 +1,7 @@
 2019-09-09  Charlie Zender  <zender@uci.edu>
 
+	* Fix new SGS by double-weighting (by sgs_frc_in and overlap weight) input values, normalized by sgs_frc_out
+
 	* In new SGS, pass sgs_msk_nm through ncremap
 
 2019-09-08  Charlie Zender  <zender@uci.edu>
