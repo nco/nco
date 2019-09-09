@@ -5068,6 +5068,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	
 	/* Sub-gridscale normalize variables except sgs_frc itself */
 	if(sgs_frc_out && strcmp(var_nm,sgs_frc_nm)){
+	  //	  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm=%s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
 	  if(sgs_msk_nm && !strcmp(var_nm,sgs_msk_nm)){
 	    /* Compute mask directly from fraction (guaranteed to be all valid values) */
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
@@ -5098,16 +5099,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		/* SGS-renormalize single-level fields without missing values */
 		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses single-level without missing values\n",nco_prg_nm_get(),var_nm);
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
+		  var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
 	      }else{
 		/* SGS-renormalize multi-level fields without missing values */
 		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level without missing values\n",nco_prg_nm_get(),var_nm);
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-		  if(sgs_frc_out[dst_idx] != 0.0){
-		    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-		      var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]/=sgs_frc_out[dst_idx];
-		    } /* !lvl_idx */
-		  } /* !sgs_frc_out */
+		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		    var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]/=wgt_vld_out[dst_idx];
+		  } /* !lvl_idx */
 		} /* !dst_idx */
 	      } /* lvl_nbr > 1 */
 	    } /* !has_mss_val */
