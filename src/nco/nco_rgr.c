@@ -4806,10 +4806,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++) sgs_frc_out[dst_idx]=0.0;
     
     /* Regrid sgs_frc
-       20190907: sgs_frc_in is _FillValue (1.0e36) for ELM datasets in all masked gridcells
-       Create map with ELM mask so wgt_raw is zero for masked source gridcells
-       Otherwise sgs_frc_out could get non-zero portion of _FillValue for masked source gridcells
-       Avoid this by explicitly checking for _FillValue in sgs_frc_in */
+       20190907: sgs_frc_in (landfrac) is _FillValue (1.0e36) for ELM datasets in all masked gridcells
+       20190910: MPAS-Seaice datasets have no mask, and sgs_frc_in (timeMonthly_avg_iceAreaCell) is never (ncatted-appended) _FillValue (-9.99999979021477e+33) */
     if(!has_mss_val)
       for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 	sgs_frc_out[row_dst_adr[lnk_idx]]+=sgs_frc_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
@@ -4829,6 +4827,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	if((float)sgs_frc_out[dst_idx] > sgs_nrm) (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %19.15f > %g = sgs_nrm\n",nco_prg_nm_get(),fnc_nm,dst_idx,sgs_frc_out[dst_idx],sgs_nrm);
       } /* !dst_idx */
     } /* !dbg */
+    //    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+    //      (void)fprintf(stdout,"%s: INFO %s reports sgs_frc_out[%lu] = %19.15f\n",nco_prg_nm_get(),fnc_nm,dst_idx,sgs_frc_out[dst_idx]);
+    //    } /* !dst_idx */
 
     if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
     if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
@@ -4937,7 +4938,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 	if(has_mss_val) tally=(int *)nco_malloc_dbg(var_sz_out*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() tally buffer");
-	if((has_mss_val && flg_rnr) || sgs_frc_out) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output renormalization weight buffer");
+	if(has_mss_val && flg_rnr) wgt_vld_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output renormalization weight buffer");
 
 	/* Initialize output */
 	(void)memset(var_val_dbl_out,0,var_sz_out*nco_typ_lng(var_typ_rgr));
@@ -5090,7 +5091,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  idx_out=row_dst_adr[lnk_idx];
 		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
 		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
-		    if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		    tally[idx_out]++;
 		  } /* !mss_val_dbl */
 		} /* !lnk_idx */
@@ -5106,7 +5106,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    idx_out=row_dst_adr[lnk_idx]+val_out_fst;
 		    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
 		      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[col_src_adr[lnk_idx]];
-		      if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		      tally[idx_out]++;
 		    } /* !mss_val_dbl */
 		  } /* !lnk_idx */

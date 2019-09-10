@@ -428,8 +428,8 @@ qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
 rgr_opt='--rgr lat_nm_out=lat#lon_nm_out=lon' # [sng] Regridding options
 #rgr_opt='--rgr lat_dnm_nm=x#lon_dmn_nm=y' # [sng] Regridding options for projection grid
 rnr_thr='' # [frc] Renormalization option
-sgs_frc='landfrac' # [sng] Sub-grid fraction variable
-sgs_msk='landmask' # [sng] Sub-grid mask variable
+sgs_frc='' # [sng] Sub-grid fraction variable
+sgs_msk='' # [sng] Sub-grid mask variable
 sgs_nrm='1.0' # [frc] Sub-grid normalization
 skl_fl='' # [sng] Skeleton file
 std_chk='Yes' # [sng] Check stdin for input file list
@@ -1389,16 +1389,25 @@ if [ "${prc_typ}" = 'mpascice' ]; then
     sgs_frc='timeMonthly_avg_iceAreaCell'
     # 20190326 timeMonthly_avg_icePresent contains fraction of time in averaging interval when any ice was present
     # Thus timeMonthly_avg_icePresent is a floating point fraction, not a traditional integer mask
-    # Add traditional integer mask with a closely related, unambiguous name, to output
-    #sgs_msk='timeMonthly_avg_icePresent'
+    # 20190910 timeMonthly_avg_icePresent should be SGS regridded like any 2D field
+    # Treat a field named timeMonthly_avg_icePresentIntMask, if present, as a traditional integer mask
     sgs_msk='timeMonthly_avg_icePresentIntMask'
     sgs_nrm='1.0'
     prc_mpas='Yes'
     prc_mpascice='Yes'
-    prc_typ='sgs'
+    prc_typ='gsg'
 fi # !mpascice
 if [ "${prc_typ}" = 'gsg' ]; then 
     prc_gsg='Yes'
+fi # !gsg
+if [ "${prc_gsg}" = 'Yes' ]; then 
+    printf "${spt_nm}: DEBUG 20190322 Using new GSG method\n"
+    if [ -n "${sgs_frc}" ]; then
+	rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
+	if [ -n "${sgs_msk}" ]; then
+	    rgr_opt="${rgr_opt}#sgs_msk_nm=${sgs_msk}"
+	fi # !sgs_msk
+    fi # !sgs_frc
 fi # !gsg
 if [ "${prc_typ}" = 'sgs' ]; then 
     nco_dgn_area='--rgr diagnose_area'
@@ -2719,16 +2728,6 @@ for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	in_fl=${rnm_fl}
     fi # !rrg
 
-    if [ "${prc_gsg}" = 'Yes' ]; then 
-	printf "${spt_nm}: DEBUG 20190322 Using new GSG method\n"
-	if [ -n "${sgs_frc}" ]; then
-	    rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
-	fi # !sgs_frc
-	if [ -n "${sgs_msk}" ]; then
-	    rgr_opt="${rgr_opt} --rgr sgs_msk_nm=${sgs_msk}"
-	fi # !sgs_msk
-    fi # !gsg
-
     # Block 5: Regrid
     if [ -n "${vrt_fl}" ]; then
 	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
@@ -2820,27 +2819,6 @@ if [ -n "${par_opt}" ]; then
 fi # !par_typ
 
 # fxm: Parallelize post-processing, if any
-if [ "${prc_gsg}" = 'Yes' ]; then 
-    for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
-	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "GSG: Re-normalize by regridded sub-grid fraction...\n"
-	fi # !vrb_lvl
-	if [ -n "${prc_elm}" ]; then
-	    # Re-normalize
-	    cmd_elm[${fl_idx}]="ncap2 -O -s 'area*=1' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_elm[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_elm[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		    printf "${spt_nm}: ERROR Failed to convert output area from [sr] to [km2]. Debug this:\n${cmd_elm[${fl_idx}]}\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	fi # !prc_elm
-    done # !fl_idx
-fi # !gsg
 if [ "${prc_typ}" = 'sgs' ]; then 
     for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -2892,23 +2870,6 @@ if [ "${prc_typ}" = 'sgs' ]; then
 		fi # !err
 	    fi # !dbg
 	fi # !prc_cice
-	if [ -n "${prc_mpascice}" ]; then
-	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-		printf "SGS: Implement idiosyncratic MPAS-SeaIce characteristics in regridded file...\n"
-	    fi # !vrb_lvl
-	    # Add units to sgs_frc
-	    cmd_mpascice[${fl_idx}]="ncap2 -O -s '${sgs_frc}@units=\"1.0\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_mpascice[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_mpascice[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		    printf "${spt_nm}: ERROR Failed to add units to ${sgs_frc}. Debug this:\n${cmd_mpascice[${fl_idx}]}\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	fi # !prc_mpascice
     done # !fl_idx
 fi # !sgs
 

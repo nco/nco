@@ -1,5 +1,11 @@
 2019-09-10  Charlie Zender  <zender@uci.edu>
 
+	* Eliminate wgt_vld_out from GSG algorithm for variables with missing values
+
+	* MPAS GSG ice-fraction now borken, why?
+
+	* Fix uninitialized cnv structure
+
 	* Multi-level ELM GSG with threads works well. Yay!
 
 	* GSG fails on ELM with --thr=2, SGS succeeds, why? FIXED out-of-bounds idx issue
