@@ -1,18 +1,20 @@
 2019-09-10  Charlie Zender  <zender@uci.edu>
 
-	* Implement new SGS for all combinations of levels and missing values
+	* GSG fails on ELM with --thr=2, SGS succeeds, why?
+
+	* Implement GSG for all combinations of levels and missing values
 
 2019-09-09  Charlie Zender  <zender@uci.edu>
 
-	* Fix new SGS by double-weighting (by sgs_frc_in and overlap weight) input values, normalized by sgs_frc_out
+	* Fix GSG by double-weighting (by sgs_frc_in and overlap weight) input values, normalized by sgs_frc_out
 
-	* In new SGS, pass sgs_msk_nm through ncremap
+	* In GSG, pass sgs_msk_nm through ncremap
 
 2019-09-08  Charlie Zender  <zender@uci.edu>
 
-	* In new SGS, compute sgs_msk (when requested) based on sgs_frc
+	* In GSG, compute sgs_msk (when requested) based on sgs_frc
 
-	* In new SGS, normalize all variables (except sgs_frc and sgs_msk) by wgt_vld_frc
+	* In GSG, normalize all variables (except sgs_frc and sgs_msk) by wgt_vld_frc
 
 2019-09-07  Charlie Zender  <zender@uci.edu>
 

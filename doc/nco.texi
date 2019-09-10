@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha06
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 6 September 2019
+@set update-date 10 September 2019
 @set update-month September 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18459,9 +18459,10 @@ This switch is never required for jobs run in an interactive shell.
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
 @cindex @code{--thr_nbr}
+@cindex @code{--thr}
 @cindex @code{--threads}
 @cindex @code{--thread_number}
-@item -t @var{thr_nbr} (@code{--thr_nbr}, @code{--threads}, @code{--thread_number})
+@item -t @var{thr_nbr} (@code{--thr_nbr}, @code{--thr}, @code{--thread_number}, @code{--threads})
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
 The @acronym{NCO} regridder scales well to 8--16 threads.
@@ -24929,10 +24930,11 @@ or else it uses the current working director (@code{$PWD}).
 @end html
 @cindex @code{-t @var{thr_nbr}}
 @cindex @var{thr_nbr}
+@cindex @code{--thr}
 @cindex @code{--thr_nbr}
 @cindex @code{--thread_number}
 @cindex @code{--threads}
-@item -t @var{thr_nbr} (@code{--thr_nbr}, @code{--thread_number}, @code{--threads})
+@item -t @var{thr_nbr} (@code{--thr_nbr}, @code{--thr}, @code{--thread_number}, @code{--threads})
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
 The @acronym{NCO} regridder scales well up to 8--16 threads.

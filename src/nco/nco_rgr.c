@@ -4957,6 +4957,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  
 	/* This first block is for "normal" variables without sub-gridscale fractions */
 	if(!sgs_frc_out){
+	  //	  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark2 var_nm=%s\n",nco_prg_nm_get(),var_nm);
 
 	  /* Apply weights */
 	  if(!has_mss_val){
@@ -5072,7 +5073,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Variables with sub-gridscale fractions require "double-weighting" and normalization
 	   Do not re-regrid the shared sgs_frc_out itself (it was regridded before OpenMP loop) */
 	if(sgs_frc_out && strcmp(var_nm,sgs_frc_nm)){
-	  //	  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm=%s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
 	  if(sgs_msk_nm && !strcmp(var_nm,sgs_msk_nm)){
 	    /* Compute mask directly from fraction (guaranteed to be all valid values) */
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
@@ -5083,7 +5083,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    if(has_mss_val){
 	      if(lvl_nbr == 1){
 		/* SGS-regrid single-level fields with missing values */
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS weighting/normalization for %s uses single-level with missing values\n",nco_prg_nm_get(),var_nm);
+		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm=%s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx];
 		  idx_out=row_dst_adr[lnk_idx];
@@ -5097,7 +5097,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  if(tally[dst_idx]){var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
 	      }else{ /* lvl_nbr > 1 */
 		/* SGS-regrid multi-level fields with missing values */
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS weighting/normalization for %s uses multi-level with missing values\n",nco_prg_nm_get(),var_nm);
 		val_in_fst=0L;
 		val_out_fst=0L;
 		for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
@@ -5122,14 +5121,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    }else{ /* !has_mss_val */
 	      if(lvl_nbr == 1){
 		/* SGS-regrid single-level fields without missing values */
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS weighting/normalization for %s uses single-level without missing values\n",nco_prg_nm_get(),var_nm);
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 		  var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx]*sgs_frc_in[col_src_adr[lnk_idx]];
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		  var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
 	      }else{ /* lvl_nbr > 1 */
 		/* SGS-regrid multi-level fields without missing values */
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS weighting/normalization for %s uses multi-level without missing values\n",nco_prg_nm_get(),var_nm);
 		val_in_fst=0L;
 		val_out_fst=0L;
 		for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
@@ -5170,7 +5167,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	{ /* begin OpenMP critical */
 	  (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
 	} /* end OpenMP critical */
-     } /* !flg_rgr */
+      } /* !flg_rgr */
     } /* !xtr */
   } /* end (OpenMP parallel for) loop over idx_tbl */
   if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");

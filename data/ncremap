@@ -541,7 +541,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--skl_fl${fnt_nrm}   Skeleton file (empty means none) (default ${fnt_bld}${skl_fl}${fnt_nrm}) [${fnt_tlc}skl_fl, skl, skeleton, skeleton_file${fnt_nrm}]"
     echo " ${fnt_bld}--std_flg${fnt_nrm}  Stdin used for input (default ${fnt_bld}${inp_std}${fnt_nrm}) [${fnt_tlc}stdin, std_flg, inp_std, redirect, standard_input${fnt_nrm}]"
     echo "${fnt_rvr}-T${fnt_nrm} ${fnt_bld}drc_tmp${fnt_nrm}  Temporary directory (for intermediate files) (default ${fnt_bld}${drc_tmp}${fnt_nrm}) [${fnt_tlc}drc_tmp, tmp_drc, dir_tmp, tmp_dir, tmp${fnt_nrm}]"
-    echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thread_number, thread, threads${fnt_nrm}]"
+    echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thr, thread_number, thread, threads${fnt_nrm}]"
     echo "${fnt_rvr}-U${fnt_nrm}          Unpack input prior to regridding [${fnt_tlc}unpack, upk, upk_inp${fnt_nrm}]"
     echo "${fnt_rvr}-u${fnt_nrm} ${fnt_bld}unq_sfx${fnt_nrm}  Unique suffix (prevents intermediate files from sharing names) (default ${fnt_bld}${unq_sfx}${fnt_nrm}) [${fnt_tlc}unq_sfx, unique_suffix, suffix${fnt_nrm}]"
     echo " ${fnt_bld}--ugrid_fl${fnt_nrm} UGRID file (empty means none) (default ${fnt_bld}${ugrid_fl}${fnt_nrm}) [${fnt_tlc}ugrid_fl, ugrid, ugrid_file${fnt_nrm}]"
@@ -716,7 +716,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Check stdin for input file list
 
 	       drc_tmp=?* | tmp_drc=?* | dir_tmp=?* | tmp_dir=?* | tmp=?* ) tmp_usr="${LONG_OPTARG}" ;; # -T # Temporary directory
-	       thr_nbr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
+	       thr_nbr=?* | thr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
 	       unpack=?* | upk=?* | upk_inp=?* ) pdq_opt='-U' ;; # -U # Unpack input
 	       unpack=?* | upk=?* | upk_inp=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -U # Unpack input
 	       ugrid_fl=?* | ugrid=?* | ugrid_file=?* ) ugrid_fl="${LONG_OPTARG}" ;; # # UGRID file
