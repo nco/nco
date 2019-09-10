@@ -1,5 +1,9 @@
 2019-09-10  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.2-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha06: XTerra';git push
+	git tag -a 4.8.2-alpha06 -m 'rhea SLURM;ncremap GSG, ntp_mth;ncks chk_nan';git push --tags
+
 	* Cause nco_chk_nan() to exit noisily with nco_exit(EXIT_FAILURE)
 
 	* MPAS GSG timeMonthly_avg_absorbedShortwaveFluxInitialArea has NaNs, why?
@@ -37,10 +41,6 @@
 	* Expose linear/logarithmic vertical interpolation option to user control with --ntp_mth=lin|log
 
 2019-09-02  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.8.2-alpha06 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha06: XTerra';git push
-	git tag -a 4.8.2-alpha06 -m 'rhea SLURM';git push --tags
 
 	* Update rhea queue to SLURM
 

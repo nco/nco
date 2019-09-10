@@ -5093,6 +5093,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
 		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
 		    tally[idx_out]++;
+		    if(isnan(var_val_dbl_out[idx_out])){
+		      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports variable %s has first NaN at output hyperslab element %ld produced during contribution of input hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,var_nm,idx_out,idx_in);
+		    } /* !isnan */
 		  } /* !mss_val_dbl */
 		} /* !lnk_idx */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
