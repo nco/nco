@@ -58,6 +58,8 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
     /* As of 20060514, CLM 3.0 uses CF1.0 not CF-1.0 (CAM gets it right) */
     if(strstr(att_val,"CF1.")) cnv->CCM_CCSM_CF=True; /* NB: Not fully implemented TODO nco145 */
     if(strstr(att_val,"MPAS")) cnv->MPAS=True; /* This works for all known MPAS versions */
+    if(strstr(att_val,"Group")) cnv->Group=True; /* Untested */
+    cnv->cf_vrs=1.0; /* Untested */
     if(nco_dbg_lvl_get() >= nco_dbg_scl && (cnv->CCM_CCSM_CF || cnv->MPAS)){
       (void)fprintf(stderr,"%s: CONVENTION File \"%s\" attribute is \"%s\"\n",nco_prg_nm_get(),cnv_sng,att_val);
       if(cnv_sng == cnv_sng_LC) (void)fprintf(stderr,"%s: WARNING: This file uses a non-standard attribute (\"%s\") to indicate the netCDF convention. The correct attribute is \"%s\".\n",nco_prg_nm_get(),cnv_sng_LC,cnv_sng_UC);
@@ -69,7 +71,7 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
 
   return cnv;
   
-} /* end nco_cnv_inq() */
+} /* end nco_cnv_ini() */
 
 nco_bool /* O [flg] File obeys CCM/CCSM/CF conventions */
 nco_cnv_ccm_ccsm_cf_inq /* O [fnc] Check if file obeys CCM/CCSM/CF conventions */

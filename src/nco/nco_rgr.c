@@ -5079,11 +5079,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]=1.0;
 	  }else{ /* !sgs_msk_nm */
 
+	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm = %s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
+
 	    /* "Double-weight" sub-gridscale input values by sgs_frc_in and overlap weight, normalize by sgs_frc_out */
 	    if(has_mss_val){
 	      if(lvl_nbr == 1){
 		/* SGS-regrid single-level fields with missing values */
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm=%s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx];
 		  idx_out=row_dst_adr[lnk_idx];
@@ -5104,7 +5105,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    idx_in=col_src_adr[lnk_idx]+val_in_fst;
 		    idx_out=row_dst_adr[lnk_idx]+val_out_fst;
 		    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
-		      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
+		      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[col_src_adr[lnk_idx]];
 		      if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		      tally[idx_out]++;
 		    } /* !mss_val_dbl */

@@ -1,6 +1,8 @@
 2019-09-10  Charlie Zender  <zender@uci.edu>
 
-	* GSG fails on ELM with --thr=2, SGS succeeds, why?
+	* Multi-level ELM GSG with threads works well. Yay!
+
+	* GSG fails on ELM with --thr=2, SGS succeeds, why? FIXED out-of-bounds idx issue
 
 	* Implement GSG for all combinations of levels and missing values
 
