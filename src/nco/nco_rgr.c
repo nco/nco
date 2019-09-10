@@ -5071,20 +5071,21 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* !has_mss_val */
 	} /* !sgs_frc_out */
 	
-	/* Variables with sub-gridscale fractions require "double-weighting" and normalization
-	   Do not re-regrid the shared sgs_frc_out itself (it was regridded before OpenMP loop) */
-	if(sgs_frc_out && strcmp(var_nm,sgs_frc_nm)){
-	  if(sgs_msk_nm && !strcmp(var_nm,sgs_msk_nm)){
+	/* Variables with sub-gridscale fractions require "double-weighting" and normalization */
+	if(sgs_frc_out){
+	  if(!strcmp(var_nm,sgs_frc_nm)){
+	    /* Do not re-regrid the shared sgs_frc_out itself (it was regridded before OpenMP loop) */
+	    memcpy(var_val_dbl_out,sgs_frc_out,grd_sz_out*nco_typ_lng(var_typ_rgr));
+	  }else if(sgs_msk_nm && !strcmp(var_nm,sgs_msk_nm)){
 	    /* Compute mask directly from fraction (guaranteed to be all valid values) */
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 	      if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]=1.0;
 	  }else{ /* !sgs_msk_nm */
-
-	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm = %s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
-
-	    /* "Double-weight" sub-gridscale input values by sgs_frc_in and overlap weight, normalize by sgs_frc_out */
+	    /* "Double-weight" all other sub-gridscale input values by sgs_frc_in and overlap weight, normalize by sgs_frc_out */
 	    if(has_mss_val){
 	      if(lvl_nbr == 1){
+		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm = %s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
+
 		/* SGS-regrid single-level fields with missing values */
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx];
@@ -5134,6 +5135,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    idx_in=col_src_adr[lnk_idx];
 		    idx_out=row_dst_adr[lnk_idx];
 		    var_val_dbl_out[idx_out+val_out_fst]+=var_val_dbl_in[idx_in+val_in_fst]*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
+ 		    tally[idx_out]++;
 		  } /* !lnk_idx */
 		  /* Normalize current level values */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
