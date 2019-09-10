@@ -4806,8 +4806,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++) sgs_frc_out[dst_idx]=0.0;
     
     /* Regrid sgs_frc
-       20190907: sgs_frc_in (landfrac) is _FillValue (1.0e36) for ELM datasets in all masked gridcells
-       20190910: MPAS-Seaice datasets have no mask, and sgs_frc_in (timeMonthly_avg_iceAreaCell) is never (ncatted-appended) _FillValue (-9.99999979021477e+33) */
+       20190907: sgs_frc_in (landfrac) is _FillValue (1.0e36) for ELM datasets in all masked gridcells, and is always positive definite (never zero) in all unmasked gridcells because it it a true area. ELM sgs_frc_out is always positive definite gridcell area everywhere, with no missing values and no zero values.
+       20190910: MPAS-Seaice datasets have no mask, and sgs_frc_in (timeMonthly_avg_iceAreaCell) is never (ncatted-appended) _FillValue (-9.99999979021477e+33) and is usually zero because it is time-mean area-fraction of sea ice which only exists in polar regions. MPAS-Seaice sgs_frc_out is zero in all gridcells without sea-ice. */
     if(!has_mss_val)
       for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 	sgs_frc_out[row_dst_adr[lnk_idx]]+=sgs_frc_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
@@ -5084,6 +5084,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    /* "Double-weight" all other sub-gridscale input values by sgs_frc_in and overlap weight, normalize by sgs_frc_out */
 	    if(has_mss_val){
 	      if(lvl_nbr == 1){
+
 		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm = %s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
 
 		/* SGS-regrid single-level fields with missing values */
@@ -5093,13 +5094,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
 		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
 		    tally[idx_out]++;
-		    if(isnan(var_val_dbl_out[idx_out])){
-		      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s reports variable %s has first NaN at output hyperslab element %ld produced during contribution of input hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,var_nm,idx_out,idx_in);
-		    } /* !isnan */
 		  } /* !mss_val_dbl */
 		} /* !lnk_idx */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  if(tally[dst_idx]){var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
+		  if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}
 	      }else{ /* lvl_nbr > 1 */
 		/* SGS-regrid multi-level fields with missing values */
 		val_in_fst=0L;
@@ -5116,7 +5114,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  /* Normalize current level values */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
 		    idx_out=dst_idx+val_out_fst;
-		    if(tally[idx_out]){var_val_dbl_out[idx_out]/=sgs_frc_out[dst_idx];}else{var_val_dbl_out[idx_out]=mss_val_dbl;}
+		    if(!tally[idx_out]){var_val_dbl_out[idx_out]=mss_val_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[idx_out]/=sgs_frc_out[dst_idx];}
 		  } /* dst_idx */
 		  val_in_fst+=grd_sz_in;
 		  val_out_fst+=grd_sz_out;
