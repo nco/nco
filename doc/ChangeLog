@@ -2,7 +2,9 @@
 
 	* NCO 4.8.2-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha06: XTerra';git push
-	git tag -a 4.8.2-alpha06 -m 'rhea SLURM;ncremap GSG, ntp_mth;ncks chk_nan';git push --tags
+	git tag -a 4.8.2-alpha06 -m 'rhea SLURM;ncremap GSG ELM/MPAS-SI, ntp_mth;ncks chk_nan';git push --tags
+
+	* GSG regridding works for MPAS Seaice. Yay!
 
 	* Re-do GSG normalization to allow for sgs_frc_out == 0.0 because MPAS-Seaice timeMonthly_avg_iceAreaCell is time-mean area-fraction of sea ice and is usually zero
 
