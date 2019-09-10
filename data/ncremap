@@ -1162,9 +1162,9 @@ else
     exit 1
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] && [ "${prc_typ}" != 'gsg' ]; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] && [ "${prc_typ}" != 'gsg' ]; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mwf', 'nil', 'rrg', 'gsg', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mpasseaice', 'mwf', 'nil', 'rrg', 'gsg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -1181,9 +1181,9 @@ if [ "${prc_typ}" = 'mod04' ]; then
     pdq_opt='-U'
     hnt_dst='--dst_regional'
 fi # !mod04
-if [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpascice' ]; then 
+if [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ]; then 
     prc_mpas='Yes'
-fi # !mpas, !mpascice
+fi # !mpas, !mpascice, !mpasseaice
 if [ "${prc_mpas}" = 'Yes' ]; then 
     # Add depth coordinate to MPAS file when requested to by specifying coordinate file, that file exists, and commmand is found
     if [ -n "${dpt_fl}" ] || [ "${dpt_flg}" = 'Yes' ]; then
@@ -1382,7 +1382,8 @@ if [ "${prc_typ}" = 'cice' ]; then
     prc_cice='Yes'
     prc_typ='sgs'
 fi # !cice
-if [ "${prc_typ}" = 'mpascice' ]; then 
+if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ]; then 
+    # NB: 'mpasseaice' is an exact synonym for 'mpascice'
     # Set MPAS-SeaIce-specific options first, then change prc_typ to sgs
     # MPAS-SeaIce requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
