@@ -4955,117 +4955,122 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	   Pass extensive variable list to NCO with, e.g., --xtn=TSurfStd_ct,...
 	   20190420: Remove languishing, unfinished intensive variable code */
 	  
-	/* Apply weights */
-	if(!has_mss_val){
-	  if(lvl_nbr == 1){
-	    /* Weight single-level fields without missing values */
-	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
-	      var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
-	  }else{
-	    val_in_fst=0L;
-	    val_out_fst=0L;
-	    /* Weight multi-level fields without missing values */
-	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-	      //if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
+	/* This first block is for "normal" variables without sub-gridscale fractions */
+	if(!sgs_frc_out){
+
+	  /* Apply weights */
+	  if(!has_mss_val){
+	    if(lvl_nbr == 1){
+	      /* Weight single-level fields without missing values */
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
-		var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
-	      val_in_fst+=grd_sz_in;
-	      val_out_fst+=grd_sz_out;
-	    } /* !lvl_idx */
-	  } /* lvl_nbr > 1 */
-	}else{ /* has_mss_val */
-	  if(lvl_nbr == 1){
-	    /* Weight single-level fields with missing values */
-	    for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-	      idx_in=col_src_adr[lnk_idx];
-	      idx_out=row_dst_adr[lnk_idx];
-	      if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
-		var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
-		if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
-		tally[idx_out]++;
-	      } /* !mss_val_dbl */
-	    } /* !lnk_idx */
-	  }else{ /* lvl_nbr > 1 */
-	    val_in_fst=0L;
-	    val_out_fst=0L;
-	    /* Weight multi-level fields with missing values */
-	    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
+	    }else{
+	      val_in_fst=0L;
+	      val_out_fst=0L;
+	      /* Weight multi-level fields without missing values */
+	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		//if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);
+		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+		  var_val_dbl_out[row_dst_adr[lnk_idx]+val_out_fst]+=var_val_dbl_in[col_src_adr[lnk_idx]+val_in_fst]*wgt_raw[lnk_idx];
+		val_in_fst+=grd_sz_in;
+		val_out_fst+=grd_sz_out;
+	      } /* !lvl_idx */
+	    } /* lvl_nbr > 1 */
+	  }else{ /* has_mss_val */
+	    if(lvl_nbr == 1){
+	      /* Weight single-level fields with missing values */
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-		idx_in=col_src_adr[lnk_idx]+val_in_fst;
-		idx_out=row_dst_adr[lnk_idx]+val_out_fst;
+		idx_in=col_src_adr[lnk_idx];
+		idx_out=row_dst_adr[lnk_idx];
 		if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
 		  var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
 		  if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
 		  tally[idx_out]++;
 		} /* !mss_val_dbl */
 	      } /* !lnk_idx */
-	      val_in_fst+=grd_sz_in;
-	      val_out_fst+=grd_sz_out;
-	    } /* !lvl_idx */
-	  } /* lvl_nbr > 1 */
-	} /* !has_mss_val */
-	
-	if(!has_mss_val){
-	  if(flg_frc_nrm){
-	    /* frc_dst = frc_out = dst_frac = frac_b contains non-unity elements and normalization type is "destarea" or "none"
-	       When this occurs for conservative remapping, follow "destarea" normalization procedure
-	       See SCRIP manual p. 11 and http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03028000000000000000
-	       NB: Non-conservative interpolation methods (e.g., bilinear) should NOT apply this normalization (theoretically there is no danger in doing so because frc_out == 1 always for all gridcells that participate in bilinear remapping and frc_out == 0 otherwise, but still, best not to tempt the Fates)
-	       NB: Both frc_out and NCO's valid weight renormalization (below) could serve the same purpose
-	       Applying both could lead to double-normalizing by missing values!
-	       20151018: Avoid double-normalizing by only executing fractional normalization 
-	       (flg_frc_nrm) block when !has_mss_val, and valid area normalization when has_mss_val
-	       fxm: Use better logic and more metadata information to determine code path */
-	    if(lvl_nbr == 1){
-	      /* Fractionally renormalize single-level fields without missing values */
-	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
-	    }else{
-	      /* Fractionally renormalize multi-level fields without missing values */
-	      for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-		if(frc_out[dst_idx] != 0.0){
-		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-		    var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]/=frc_out[dst_idx];
-		  } /* !lvl_idx */
-		} /* !frc_out */
-	      } /* !dst_idx */
+	    }else{ /* lvl_nbr > 1 */
+	      val_in_fst=0L;
+	      val_out_fst=0L;
+	      /* Weight multi-level fields with missing values */
+	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		  idx_in=col_src_adr[lnk_idx]+val_in_fst;
+		  idx_out=row_dst_adr[lnk_idx]+val_out_fst;
+		  if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		    var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx];
+		    if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
+		    tally[idx_out]++;
+		  } /* !mss_val_dbl */
+		} /* !lnk_idx */
+		val_in_fst+=grd_sz_in;
+		val_out_fst+=grd_sz_out;
+	      } /* !lvl_idx */
 	    } /* lvl_nbr > 1 */
-	  } /* flg_frc_nrm */
-	} /* !has_mss_val */
- 
-	if(has_mss_val){
-	  /* NCL and ESMF treatment of weights and missing values described at
-	     https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
-	     http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000
-	     NCO implements one of two procedures: "conservative" or "renormalized"
-	     The "conservative" algorithm uses all valid data from the input grid on the output grid
-	     Destination cells receive the weighted valid values of the source cells
-	     This is conservative because the global integrals of the source and destination fields are equal
-	     The "renormalized" algorithm divides the destination value by the sum of the valid weights
-	     This returns "reasonable" values, i.e., the mean of the valid input values
-	     However, renormalization is equivalent to extrapolating valid data to missing regions
-	     Hence the input and output integrals are unequal and the regridding is not conservative */
-
-	  /* In fields with missing value, destination cells with no accumulated weight are missing value */
-	  for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-	    if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
-
-	  if(flg_rnr){
-	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG renormalization for %s uses flg_rnr block\n",nco_prg_nm_get(),var_nm);
-	    if(wgt_vld_thr == 0.0){
-	      /* Renormalize cells with no threshold by valid accumulated weight */
-	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-		if(tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
-	    }else{
-	      /* Renormalize cells with threshold by valid accumulated weight if weight exceeds threshold */
-	      for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
-		if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
-	    } /* !wgt_vld_thr */
-	  } /* !flg_rnr */
-
-	} /* !has_mss_val */
+	  } /* !has_mss_val */
+	  
+	  if(!has_mss_val){
+	    if(flg_frc_nrm){
+	      /* frc_dst = frc_out = dst_frac = frac_b contains non-unity elements and normalization type is "destarea" or "none"
+		 When this occurs for conservative remapping, follow "destarea" normalization procedure
+		 See SCRIP manual p. 11 and http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03028000000000000000
+		 NB: Non-conservative interpolation methods (e.g., bilinear) should NOT apply this normalization (theoretically there is no danger in doing so because frc_out == 1 always for all gridcells that participate in bilinear remapping and frc_out == 0 otherwise, but still, best not to tempt the Fates)
+		 NB: Both frc_out and NCO's valid weight renormalization (below) could serve the same purpose
+		 Applying both could lead to double-normalizing by missing values!
+		 20151018: Avoid double-normalizing by only executing fractional normalization 
+		 (flg_frc_nrm) block when !has_mss_val, and valid area normalization when has_mss_val
+		 fxm: Use better logic and more metadata information to determine code path */
+	      if(lvl_nbr == 1){
+		/* Fractionally renormalize single-level fields without missing values */
+		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
+		  if(frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=frc_out[dst_idx];
+	      }else{
+		/* Fractionally renormalize multi-level fields without missing values */
+		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+		  if(frc_out[dst_idx] != 0.0){
+		    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		      var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]/=frc_out[dst_idx];
+		    } /* !lvl_idx */
+		  } /* !frc_out */
+		} /* !dst_idx */
+	      } /* lvl_nbr > 1 */
+	    } /* flg_frc_nrm */
+	  } /* !has_mss_val */
+	  
+	  if(has_mss_val){
+	    /* NCL and ESMF treatment of weights and missing values described at
+	       https://www.ncl.ucar.edu/Applications/ESMF.shtml#WeightsAndMasking
+	       http://earthsystemmodeling.org/esmf_releases/non_public/ESMF_6_1_1/ESMF_refdoc/node5.html#SECTION05012600000000000000
+	       NCO implements one of two procedures: "conservative" or "renormalized"
+	       The "conservative" algorithm uses all valid data from the input grid on the output grid
+	       Destination cells receive the weighted valid values of the source cells
+	       This is conservative because the global integrals of the source and destination fields are equal
+	       The "renormalized" algorithm divides the destination value by the sum of the valid weights
+	       This returns "reasonable" values, i.e., the mean of the valid input values
+	       However, renormalization is equivalent to extrapolating valid data to missing regions
+	       Hence the input and output integrals are unequal and the regridding is not conservative */
+	    
+	    /* In fields with missing value, destination cells with no accumulated weight are missing value */
+	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+	      if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
+	    
+	    if(flg_rnr){
+	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG renormalization for %s uses flg_rnr block\n",nco_prg_nm_get(),var_nm);
+	      if(wgt_vld_thr == 0.0){
+		/* Renormalize cells with no threshold by valid accumulated weight */
+		for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+		  if(tally[dst_idx]) var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
+	      }else{
+		/* Renormalize cells with threshold by valid accumulated weight if weight exceeds threshold */
+		for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+		  if(wgt_vld_out[dst_idx] >= wgt_vld_thr){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
+	      } /* !wgt_vld_thr */
+	    } /* !flg_rnr */
+	    
+	  } /* !has_mss_val */
+	} /* !sgs_frc_out */
 	
-	/* Sub-gridscale normalize variables except sgs_frc itself */
+	/* Variables with sub-gridscale fractions require "double-weighting" and normalization
+	   Do not re-regrid the shared sgs_frc_out itself (it was regridded before OpenMP loop) */
 	if(sgs_frc_out && strcmp(var_nm,sgs_frc_nm)){
 	  //	  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm=%s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
 	  if(sgs_msk_nm && !strcmp(var_nm,sgs_msk_nm)){
@@ -5073,19 +5078,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 	      if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]=1.0;
 	  }else{ /* !sgs_msk_nm */
-	    /* Normalize everything else by wgt_vld_out, fraction of output gridcell with valid values on input grid */
+
+	    /* "Double-weight" sub-gridscale input values by sgs_frc_in and overlap weight, normalize by sgs_frc_out */
 	    if(has_mss_val){
 	      if(lvl_nbr == 1){
-		/* SGS-renormalize single-level fields with missing values */
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses single-level with missing values\n",nco_prg_nm_get(),var_nm);
-		/*for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  if(tally[dst_idx]){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}*/
-		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  if(tally[dst_idx]){
-		    var_val_dbl_out[dst_idx]=0.0;
-		    wgt_vld_out[dst_idx]=0.0;
-		    tally[dst_idx]=0L;
-		  } /* !tally */
+		/* SGS-regrid single-level fields with missing values */
+		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS weighting/normalization for %s uses single-level with missing values\n",nco_prg_nm_get(),var_nm);
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx];
 		  idx_out=row_dst_adr[lnk_idx];
@@ -5096,33 +5094,56 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  } /* !mss_val_dbl */
 		} /* !lnk_idx */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  if(tally[dst_idx]){var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}
+		  if(tally[dst_idx]){var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}else{var_val_dbl_out[dst_idx]=mss_val_dbl;}
 	      }else{ /* lvl_nbr > 1 */
-		/* SGS-renormalize multi-level fields with missing values */
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level with missing values\n",nco_prg_nm_get(),var_nm);
-		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-		  if(sgs_frc_out[dst_idx] != 0.0 && sgs_frc_out[dst_idx] != mss_val_dbl){
-		    for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-		      idx_out=dst_idx+lvl_idx*grd_sz_out;
-		      if(tally[idx_out]){var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];}
-		    } /* !lvl_idx */
-		  } /* !sgs_frc_out */
-		} /* !dst_idx */
+		/* SGS-regrid multi-level fields with missing values */
+		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS weighting/normalization for %s uses multi-level with missing values\n",nco_prg_nm_get(),var_nm);
+		val_in_fst=0L;
+		val_out_fst=0L;
+		for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		    idx_in=col_src_adr[lnk_idx]+val_in_fst;
+		    idx_out=row_dst_adr[lnk_idx]+val_out_fst;
+		    if((var_val_crr=var_val_dbl_in[idx_in]) != mss_val_dbl){
+		      var_val_dbl_out[idx_out]+=var_val_crr*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
+		      if(wgt_vld_out) wgt_vld_out[idx_out]+=wgt_raw[lnk_idx];
+		      tally[idx_out]++;
+		    } /* !mss_val_dbl */
+		  } /* !lnk_idx */
+		  /* Normalize current level values */
+		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
+		    idx_out=dst_idx+val_out_fst;
+		    if(tally[idx_out]){var_val_dbl_out[idx_out]/=sgs_frc_out[dst_idx];}else{var_val_dbl_out[idx_out]=mss_val_dbl;}
+		  } /* dst_idx */
+		  val_in_fst+=grd_sz_in;
+		  val_out_fst+=grd_sz_out;
+		} /* !lvl_idx */
 	      } /* lvl_nbr > 1 */
 	    }else{ /* !has_mss_val */
 	      if(lvl_nbr == 1){
-		/* SGS-renormalize single-level fields without missing values */
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses single-level without missing values\n",nco_prg_nm_get(),var_nm);
+		/* SGS-regrid single-level fields without missing values */
+		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS weighting/normalization for %s uses single-level without missing values\n",nco_prg_nm_get(),var_nm);
+		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
+		  var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx]*sgs_frc_in[col_src_adr[lnk_idx]];
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  var_val_dbl_out[dst_idx]/=wgt_vld_out[dst_idx];
+		  var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
 	      }else{ /* lvl_nbr > 1 */
-		/* SGS-renormalize multi-level fields without missing values */
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS renormalization for %s uses multi-level without missing values\n",nco_prg_nm_get(),var_nm);
-		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++){
-		  for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
-		    var_val_dbl_out[dst_idx+lvl_idx*grd_sz_out]/=wgt_vld_out[dst_idx];
-		  } /* !lvl_idx */
-		} /* !dst_idx */
+		/* SGS-regrid multi-level fields without missing values */
+		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG SGS weighting/normalization for %s uses multi-level without missing values\n",nco_prg_nm_get(),var_nm);
+		val_in_fst=0L;
+		val_out_fst=0L;
+		for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
+		  for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
+		    idx_in=col_src_adr[lnk_idx];
+		    idx_out=row_dst_adr[lnk_idx];
+		    var_val_dbl_out[idx_out+val_out_fst]+=var_val_dbl_in[idx_in+val_in_fst]*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
+		  } /* !lnk_idx */
+		  /* Normalize current level values */
+		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
+		    var_val_dbl_out[dst_idx+val_out_fst]/=sgs_frc_out[dst_idx];
+		  val_in_fst+=grd_sz_in;
+		  val_out_fst+=grd_sz_out;
+		} /* !lvl_idx */
 	      } /* lvl_nbr > 1 */
 	    } /* !has_mss_val */
 	  } /* !sgs_msk_nm */
