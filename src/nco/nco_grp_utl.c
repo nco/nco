@@ -2114,16 +2114,16 @@ nco_chk_nan                           /* [fnc] Check file for NaNs */
       case NC_FLOAT:
 	for(lmn=0;lmn<var->sz;lmn++){
 	  if(isnan(var->val.fp[lmn])){
-	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s variable %s has NaNf at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
-	    exit(EXIT_FAILURE);
+	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s variable %s has first NaNf at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
+	    nco_exit(EXIT_FAILURE);
 	  } /* !isnan */
 	} /* !lmn */
 	    break;
       case NC_DOUBLE:
 	for(lmn=0;lmn<var->sz;lmn++){
 	  if(isnan(var->val.dp[lmn])){
-	    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s variable %s has NaN at hyperslab element %ld\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
-	    exit(EXIT_FAILURE);
+	    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s variable %s has first NaN at hyperslab element %ld, exiting now.\n",nco_prg_nm_get(),fnc_nm,var_trv.nm_fll,lmn);
+	    nco_exit(EXIT_FAILURE);
 	  } /* !isnan */
       } /* !lmn */
 	  break;

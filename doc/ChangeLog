@@ -1,8 +1,12 @@
 2019-09-10  Charlie Zender  <zender@uci.edu>
 
+	* Cause nco_chk_nan() to exit noisily with nco_exit(EXIT_FAILURE)
+
+	* MPAS GSG timeMonthly_avg_absorbedShortwaveFluxInitialArea has NaNs, why?
+
 	* Eliminate wgt_vld_out from GSG algorithm for variables with missing values
 
-	* MPAS GSG ice-fraction now borken, why?
+	* MPAS GSG ice-fraction now borken, why? Fixed (was skipping that one variable)
 
 	* Fix uninitialized cnv structure
 

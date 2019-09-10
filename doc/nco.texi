@@ -20510,9 +20510,15 @@ makes that options superfluous.
 @item --chk_nan
 As of @acronym{NCO} version 4.8.0 (May, 2019), @command{ncks} can
 locate @code{NaN} of NaNf in double- and single-precision
-   floating-point variables, respectively. If a NaN is encountered,
-   NCO prints its location and then exits with an error code. Thanks
-   to Matthew Thompson of NASA for this suggestion.
+floating-point variables, respectively.
+If a NaN is encountered, NCO prints its location and then exits with
+an error code.
+Thanks to Matthew Thompson of NASA for this suggestion.
+@example
+@verbatim
+$ ncks --chk_nan ~/nco/data/in.nc
+@end verbatim
+@end example
 
 @html
 <a name="dmn_fix_mk"></a> <!-- http://nco.sf.net/nco.html#dmn_fix_mk -->
