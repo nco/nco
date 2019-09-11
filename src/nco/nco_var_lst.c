@@ -1311,7 +1311,7 @@ nco_var_is_fix /* [fnc] Variable should be treated as a fixed variable */
 
   if(is_sz_rnk_prv_rth_opr && cnv->MPAS){
     
-    /* 20180912: Do not process MPAS grid variables
+    /* 20180912: Do not arithmetically process (e.g., difference, average) MPAS grid variables
        Six nCells-variables may be valuable when regridded to lat/lon
        mpas_xcl_lst in nco_rgr_wgt() and MPAS var_xcl_lst in nco_var_is_fix() differ by these six variables:
        areaCell for comparison to area(lat,lon)

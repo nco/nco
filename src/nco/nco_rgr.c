@@ -5056,7 +5056,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	      if(!tally[dst_idx]) var_val_dbl_out[dst_idx]=mss_val_dbl;
 	    
 	    if(flg_rnr){
-	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG renormalization for %s uses flg_rnr block\n",nco_prg_nm_get(),var_nm);
+	      //	      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG renormalization for %s uses flg_rnr block\n",nco_prg_nm_get(),var_nm);
 	      if(wgt_vld_thr == 0.0){
 		/* Renormalize cells with no threshold by valid accumulated weight */
 		for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
@@ -5084,9 +5084,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    /* "Double-weight" all other sub-gridscale input values by sgs_frc_in and overlap weight, normalize by sgs_frc_out */
 	    if(has_mss_val){
 	      if(lvl_nbr == 1){
-
-		if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark1 var_nm = %s, sgs_frc_nm = %s, sgs_msk_nm = %s\n",nco_prg_nm_get(),var_nm,sgs_frc_nm,sgs_msk_nm);
-
 		/* SGS-regrid single-level fields with missing values */
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
 		  idx_in=col_src_adr[lnk_idx];
@@ -5096,6 +5093,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    tally[idx_out]++;
 		  } /* !mss_val_dbl */
 		} /* !lnk_idx */
+		/* NB: Normalization clause is complex to support sgs_frc_out from both ELM and MPAS-Seaice */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
 		  if(!tally[dst_idx]){var_val_dbl_out[dst_idx]=mss_val_dbl;}else{if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];}
 	      }else{ /* lvl_nbr > 1 */
@@ -5125,8 +5123,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		/* SGS-regrid single-level fields without missing values */
 		for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 		  var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx]*sgs_frc_in[col_src_adr[lnk_idx]];
+		/* NB: sgs_frc_out is usually zero in MPAS-Seaice dataset non-polar regions */
 		for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		  var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
+		  if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx]/=sgs_frc_out[dst_idx];
 	      }else{ /* lvl_nbr > 1 */
 		/* SGS-regrid multi-level fields without missing values */
 		val_in_fst=0L;
@@ -5140,7 +5139,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		  } /* !lnk_idx */
 		  /* Normalize current level values */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)
-		    var_val_dbl_out[dst_idx+val_out_fst]/=sgs_frc_out[dst_idx];
+		    if(sgs_frc_out[dst_idx] != 0.0) var_val_dbl_out[dst_idx+val_out_fst]/=sgs_frc_out[dst_idx];
 		  val_in_fst+=grd_sz_in;
 		  val_out_fst+=grd_sz_out;
 		} /* !lvl_idx */
