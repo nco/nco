@@ -3086,7 +3086,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   } /* !tst */
 
   /* Verify frc_out is sometimes non-zero
-     ESMF: "The grid frac arrays (frac_a and frac_b) are calculated by ESMF_RegridWeightGen. For conservative remapping, the grid frac array returns the area fraction of the grid cell which participates in the remap- ping. For bilinear and patch remapping, the destination grid frac array [frac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero."
+     ESMF: "The grid frac arrays (frac_a and frac_b) are calculated by ESMF_RegridWeightGen. For conservative remapping, the grid frac array returns the area fraction of the grid cell which participates in the remapping. For bilinear and patch remapping, the destination grid frac array [frac_b] is one where the grid point participates in the remapping and zero otherwise. For bilinear and patch remapping, the source grid frac array is always set to zero."
      SCRIP: Similar to ESMF
      For both ESMF+SCRIP frac_[ab] are computed by the weight-generation algorithm and are not specified as part of the input grids
      How does an input ocean grid indicate that, say, half the gridcell is land and half ocean?
@@ -5027,17 +5027,18 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		 enddo"
 		 NB: Non-conservative interpolation methods (e.g., bilinear) should NOT apply this normalization (theoretically there is no danger in doing so because frc_out == 1 always for all gridcells that participate in bilinear remapping and frc_out == 0 otherwise)
 
-		 We readily see NCO's renormalization procedure below duplicates the ESMF-recommended procedure above
-		 However, users can control NCO renormalization with, e.g., --rnr_thr=0.1, or override it completely with --rnr_thr=none
-		 flg_frc_nrm (i.e., ESMF-recommended) normalization makes fields pretty for graphics, yet is non-conservative because e.g., MPAS Ocean gridcells projected onto global uniform grids would have their SSTs normalized for prettiness on coastal gridpoints, which is inherently non-conservative. (verify this)
-		 One option is to make rnr_thr=none turn-off flg_frc_nrm (ESMF) normalization (and NCO renormalization)...
+		 NCO's renormalization procedure below similar to the ESMF-recommended procedure above. However, users can control NCO renormalization with, e.g., --rnr_thr=0.1, or override it completely with --rnr_thr=none. Moreover, frac_b == frc_dst is determined solely by solely by gridcell binary mask overlaps during weight generation. It is time-invariant and 2D. Missing values (e.g., AOD) can vary in time and can be 3D (or N-D) and so can wgt_vld_out. Hence NCO renormalization is more flexible. flg_frc_nrm (i.e., ESMF-recommended) normalization makes fields pretty for graphics, yet is non-conservative because e.g., MPAS Ocean gridcells projected onto global uniform grids would have their SSTs normalized for prettiness on coastal gridpoints, which is inherently non-conservative.
 
-		 Missing values are an additional complication: frac_b == frc_out is determined solely by solely by gridcell binary mask overlaps during weight generation. It is time-invariant and 2D. Missing values (e.g., AOD) can vary in time and can be 3D */
+		 20190912: Make "ESMF renormalization" of fields without missing values (i.e., "destarea") opt-in rather than default
+		 "destarea" and frac_b = frc_dst together set flg_frc_nrm
+		 Formerly flg_frc_nrm triggered ESMF renormalization by default
+		 Now flg_frc_nrm and user-explicitly-set --rnr_thr to [0.0,1.0] must both be true to trigger it
+		 This keep conservative maps conservative by default
+		 NB: This "ESMF renormalization" normalizes by frac_b == frc_dst (not by wgt_vld_out) regardless of rnr_thr
 
-		 NB: Both frc_out and NCO's valid weight renormalization (below) could serve the same purpose
-		 Applying both could lead to double-normalizing by missing values!
 		 20151018: Avoid double-normalizing by only executing fractional normalization 
 		 (flg_frc_nrm) block when !has_mss_val, and valid area normalization when has_mss_val */
+
 	    if(flg_frc_nrm){ /* Only renormalize when frac_b < 1.0 (because frac_b == 1.0 does nothing) */
 	      if(flg_rnr){ /* 20190912: Only renormalize when user explicitly requests it (because renormalization is non-conservative). Prior to today, renormalization was by default, henceforth it is opt-in. */
 		if(lvl_nbr == 1){
