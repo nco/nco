@@ -1,3 +1,12 @@
+2019-09-12  Charlie Zender  <zender@uci.edu>
+
+	* Make "ESMF renormalization" of fields without missing values (i.e., "destarea") opt-in rather than default
+	"destarea" and frac_b = dst_out together set flg_frc_nrm
+	Formerly flg_frc_nrm triggered ESMF renormalization by default
+	Users must now explicitly set --rnr_thr to a value in [0.0,1.0]	(and have flg_frc_nrm be true) to trigger it
+	This keep conservative maps conservative by default
+	NB: This "ESMF renormalization" normalizes by frac_b == dst_out	regardless of rnr_thr
+
 2019-09-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha06 release procedure:
