@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha06
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 10 September 2019
+@set update-date 12 September 2019
 @set update-month September 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -185,9 +185,11 @@ T
 \gdef\dfr{{\rm d}} % [frc] Math differential fxm: upright
 \gdef\idx{i} % [idx] Index
 \gdef\psl{\epsilon} % [frc] epsilon
+\gdef\ddd{d} % [idx] d
 \gdef\iii{i} % [idx] i
 \gdef\jjj{j} % [idx] j
 \gdef\kkk{k} % [idx] k
+\gdef\sss{s} % [idx] s
 \gdef\lmnidx{i} % [idx] Element index
 \gdef\outnbr{J} % [nbr] Number of elements in output hyperslab
 \gdef\lmnnbr{N} % [nbr] Number of elements in input hyperslab
@@ -7149,6 +7151,32 @@ A counter-example is fluxes, which should be physically conserved under
 areal-regridding.
 One should consider both the type of field and its conservation
 properties when choosing a regridding strategy.
+
+@tex
+The regridded value of a variable $\xxx$ at a destination location
+$\ddd$ can be generally represented as
+$$
+\bar \xxx_{\ddd} = {\sum_{\sss=1}^{\sss=\lmnnbr} \mssflg_{\sss}
+\mskflg_{\sss} \wgt_{\sss} \xxx_{\sss} \over
+\sum_{\sss=1}^{\sss=\lmnnbr} \mssflg_{\sss} \mskflg_{\sss} \wgt_{\sss}}  
+$$
+where $\bar \xxx_{\ddd}$ is the $\ddd$'th element of the regridded
+variable, $\xxx_{\sss}$ is the $\sss$'th element of the raw (native grid)
+variable, $\mssflg_{\sss}$ is~1 unless $\xxx_{\sss}$ is the missing  
+value, $\mskflg_{\sss}$ is~1 unless $\xxx_{\sss}$ is masked, and
+$\sigma_{\sss,\ddd}$ is the overlap weight of source gridcell~$\sss$
+with destination gridcell~$\ddd$.
+This formiddable looking formula represents a standard regridding
+where the source overlaps 100\% of the destination gridcell.
+Note that when $\mssflg_{\sss} = \mskflg_{\sss} = \wgt_{\sss} = 1$,
+the generic averaging expression above reduces to a simple arithmetic
+average.  
+Furthermore, $\mskflg_{\sss} = 1$ for all global remappings such as
+changing atmospheric resolution.
+Furthermore, $\sum_{\sss=1}^{\sss=\lmnnbr} \wgt_{\sss,\ddd} = 1$
+for all destination gridcells~$\ddd$ that are completely overlapped
+by source gridcells.
+@end tex
 
 @acronym{NCO} automatically annotates the output with relevant metadata
 such as coordinate bounds, axes, and vertices (@w{@`{a} la} @acronym{CF}). 
@@ -24786,9 +24814,6 @@ with a weight threshold of 90%, so that all destination gridcells
 with at least 90% of their area contributed by valid source gridcells
 will be contain valid (not missing) values that are the area-weighted
 mean of the valid source values.
-This option was introduced because renormalization is a frequently used
-feature which previously could only be invoked by using the uglier and
-more generic @code{-R @var{rgr_opt}} option defined above.
 Specifying @samp{-r 0.9} and @samp{--rnr_thr=0.9} are equivalent.
 
 @html
