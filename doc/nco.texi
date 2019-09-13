@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha06
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 12 September 2019
+@set update-date 13 September 2019
 @set update-month September 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7156,26 +7156,75 @@ properties when choosing a regridding strategy.
 The regridded value of a variable $\xxx$ at a destination location
 $\ddd$ can be generally represented as
 $$
-\bar \xxx_{\ddd} = {\sum_{\sss=1}^{\sss=\lmnnbr} \mssflg_{\sss}
-\mskflg_{\sss} \wgt_{\sss} \xxx_{\sss} \over
-\sum_{\sss=1}^{\sss=\lmnnbr} \mssflg_{\sss} \mskflg_{\sss} \wgt_{\sss}}  
+\xxx_{\ddd} = {\sum_{\sss=1}^{\sss=\lmnnbr}
+\mssflg_{\sss} \sigma_{\sss,\ddd} \xxx_{\sss} \over
+\sum_{\sss=1}^{\sss=\lmnnbr} \mssflg_{\sss} \sigma_{\sss,\ddd}}  
 $$
-where $\bar \xxx_{\ddd}$ is the $\ddd$'th element of the regridded
+where $\xxx_{\ddd}$ is the $\ddd$'th element of the regridded
 variable, $\xxx_{\sss}$ is the $\sss$'th element of the raw (native grid)
-variable, $\mssflg_{\sss}$ is~1 unless $\xxx_{\sss}$ is the missing  
-value, $\mskflg_{\sss}$ is~1 unless $\xxx_{\sss}$ is masked, and
-$\sigma_{\sss,\ddd}$ is the overlap weight of source gridcell~$\sss$
-with destination gridcell~$\ddd$.
-This formiddable looking formula represents a standard regridding
-where the source overlaps 100\% of the destination gridcell.
-Note that when $\mssflg_{\sss} = \mskflg_{\sss} = \wgt_{\sss} = 1$,
-the generic averaging expression above reduces to a simple arithmetic
-average.  
-Furthermore, $\mskflg_{\sss} = 1$ for all global remappings such as
-changing atmospheric resolution.
-Furthermore, $\sum_{\sss=1}^{\sss=\lmnnbr} \wgt_{\sss,\ddd} = 1$
-for all destination gridcells~$\ddd$ that are completely overlapped
-by source gridcells.
+variable, $\mssflg_{\sss} = 1$ if $\xxx_{\sss}$ is valid and
+$\mssflg_{\sss} = 0$ if $\xxx_{\sss}$ is the missing value, and
+$\sigma_{\sss,\ddd}$ is the overlap weight of $\sss$'th source gridcell
+with the $\ddd$'th destination gridcell, and $\lmnnbr$ is the
+total number of source gridcells that overlap (partially or fully)
+with the destination gridcell.
+
+The number of overlap gridcells $\lmnnbr$ is a property of the source
+and destination grids and the regridding algorithm.
+The weight-generation software determines $\lmnnbr$ by
+``intersecting'' the grids, taking into account higher-order
+(e.g., local gradient) contributions if the algorithm so-demands,
+and then generates the overlap weights $\sigma_{\sss,\ddd}$
+accordingly.  
+Both source and destination grids may indicate valid gridcells with
+a mask flag that is binary-valued, zero or one, such that
+$\mskflg_{\sss} = 1$ (i.e., unmasked) for source gridcells allowed to
+contribute to the destination grid, and $\mskflg_{\sss} = 0$ (i.e.,
+masked) for gridcells that are forbidden from contributing to the
+destination grid. 
+There are subtle distinctions between the mask flag $\mskflg_{\sss}$,
+and the missing value flag $\mssflg_{\sss}$.
+The mask flag $\mskflg_{\sss}$ does not appear in the formula above
+because the weight-generator produces no weights for masked source
+gridcells.
+Doing otherwise would waste storage space in the map-file, because
+such weights are zero by definition.
+Furthermore the masks $\mskflg_{\sss}$ and $\mskflg_{\ddd}$ are 
+time-invariant whereas the missing value field $\mssflg_{\sss}$
+may vary in time, and thus produce a time-varying $\mssflg_{\ddd}$. 
+Although $\mssflg_{\sss}$ should in theory be treated the same as
+$\mskflg_{\sss}$ when computing mapping weights $\sigma_{\sss,\ddd}$,
+in practice this is not done because the masks are constant properties
+of the grids whereas missing values are potentially time-varying
+characteristics of the fields on the grids. 
+Different fields may have different patterns of missing values,
+and managing per-field map-files would be difficult, so traditionally 
+all fields are remapped with the same map-file.
+That said, it can make sense to treat flux fields and state-variable
+fields with distinct algorithms, so that a different map-file might
+be employed for each class of fields.
+
+The weight-generation software normalizes $\sigma_{\sss,\ddd}$
+such that $\sum_{\sss=1}^{\sss=\lmnnbr} \sigma_{\sss,\ddd} = 1$
+when unmasked ($\mskflg_{\sss}=1$) source gridcells completely overlap
+the destination gridcell. 
+In this case we also have
+$\sum_{\sss=1}^{\sss=\lmnnbr} \mskflg_{\sss} = \lmnnbr$.
+Furthermore, if all contributing gridpoints are valid values
+(i.e., not missing values) then $\mssflg_{\sss} = 1$ so that
+$\sum_{\sss=1}^{\sss=\lmnnbr} \mssflg_{\sss} = \lmnnbr$.
+For complete overlap with no masked values and no missing values,
+then $\mssflg_{\sss} = \mskflg_{\sss} = \sum\sigma_{\sss,\ddd} = 1$
+and the generic averaging expression above reduces to a simple
+weighted mean
+$\xxx_{\ddd} = \sum_{\sss=1}^{\sss=\lmnnbr} \sigma_{\sss,\ddd} \xxx_{\sss}$.
+
+$$
+\xxx_{\ddd} = {\sum_{\sss=1}^{\sss=\lmnnbr} \mssflg_{\sss}
+\frcsgs_{\sss} \sigma_{\sss,\ddd} \xxx_{\sss} \over
+\sum_{\sss=1}^{\sss=\lmnnbr} \mssflg_{\sss} \frcsgs_{\sss} \sigma_{\sss,\ddd}}  
+$$
+
 @end tex
 
 @acronym{NCO} automatically annotates the output with relevant metadata
@@ -10255,7 +10304,7 @@ hyperslab, $\xxx_{\idx}$ is the $\idx$'th element of the input
 hyperslab, $\mssflg_{\idx}$ is~1 unless $\xxx_{\idx}$ equals the missing  
 value, $\mskflg_{\idx}$ is~1 unless $\xxx_{\idx}$ is masked, and
 $\wgt_{\idx}$ is the weight.  
-This formiddable looking formula represents a simple weighted average
+This formiddable formula represents a simple weighted average
 whose bells and whistles are all explained below. 
 It is not too early to note, however, that when 
 $\mssflg_{\idx} = \mskflg_{\idx} = \wgt_{\idx} = 1$, the 
