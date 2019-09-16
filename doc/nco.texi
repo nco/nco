@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha06
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 13 September 2019
+@set update-date 16 September 2019
 @set update-month September 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -171,44 +171,47 @@ T
 % Define TeX macros to roughly correspond to LaTeX style files
 % Use \gdef instead of \def to make definition persistent across TeX blocks
 % These should be consistent with any TeXInfo macros
+% 0. Alphabet
+\gdef\ddd{d} % [ltr] d
+\gdef\iii{i} % [ltr] i
+\gdef\jjj{j} % [ltr] j
+\gdef\kkk{k} % [ltr] k
+\gdef\qqq{q} % [ltr] q
+\gdef\sss{s} % [ltr] s
+\gdef\vvv{v} % [ltr] v
+\gdef\xxx{x} % [ltr] x
+\gdef\yyy{y} % [ltr] y
 % 1. Primary commands
 \gdef\cod{{\rm CO}_{2}} % [frc] Math pi
-\gdef\dmn{D} % [dmn] Variable dimension
-\gdef\rdr{R} % [dmn] Re-order dimension
-\gdef\shr{S} % [dmn] Share dimension
+\gdef\dfr{{\rm d}} % [frc] Math differential fxm: upright
 \gdef\dmnidx{n} % [idx] Dimension index
 \gdef\dmnnbr{N} % [nbr] Dimension number
-\gdef\rdridx{r} % [idx] Re-order index
-\gdef\rdrnbr{R} % [nbr] Re-order number
-\gdef\shridx{s} % [idx] Share index
-\gdef\shrnbr{S} % [nbr] Share number
-\gdef\dfr{{\rm d}} % [frc] Math differential fxm: upright
+\gdef\dmn{D} % [dmn] Variable dimension
+\gdef\frcdst{f} % [flg] Destination grid fraction
+\gdef\frcsgs{s} % [flg] Sub-gridscale fraction
 \gdef\idx{i} % [idx] Index
-\gdef\psl{\epsilon} % [frc] epsilon
-\gdef\ddd{d} % [idx] d
-\gdef\iii{i} % [idx] i
-\gdef\jjj{j} % [idx] j
-\gdef\kkk{k} % [idx] k
-\gdef\sss{s} % [idx] s
 \gdef\lmnidx{i} % [idx] Element index
-\gdef\outnbr{J} % [nbr] Number of elements in output hyperslab
 \gdef\lmnnbr{N} % [nbr] Number of elements in input hyperslab
-\gdef\tllnbr{M} % [nbr] Tally (number of valid elements in input hyperslab)
 \gdef\me{{\rm e}} % [frc] Math e fxm: upright
 \gdef\mi{{\rm i}} % [frc] Math i fxm: upright
 \gdef\mpi{\pi} % [frc] Math pi
 \gdef\mpp{\cal{M}} % [map] Map
 \gdef\mskflg{m} % [flg] Mask flag
 \gdef\mssflg{\mu} % [flg] Missing value flag
-\gdef\qqq{q} % [ltr] q
-\gdef\tm{t} % [s] Time
+\gdef\outnbr{J} % [nbr] Number of elements in output hyperslab
 \gdef\prmsbs{\prime} % [sbs] Prime subscript
+\gdef\psl{\epsilon} % [frc] epsilon
+\gdef\rdridx{r} % [idx] Re-order index
+\gdef\rdrnbr{R} % [nbr] Re-order number
+\gdef\rdr{R} % [dmn] Re-order dimension
+\gdef\shridx{s} % [idx] Share index
+\gdef\shrnbr{S} % [nbr] Share number
+\gdef\shr{S} % [dmn] Share dimension
+\gdef\tllnbr{M} % [nbr] Tally (number of valid elements in input hyperslab)
+\gdef\tm{t} % [s] Time
 \gdef\wgt{w} % [frc] Weight
 \gdef\wndmrd{v} % [m s-1] Meridional wind speed
 \gdef\wndznl{u} % [m s-1] Zonal wind speed
-\gdef\vvv{v} % [ltr] v
-\gdef\xxx{x} % [ltr] x
-\gdef\yyy{y} % [ltr] y
 
 % 2. Derived commands
 \gdef\pslavg{\bar{\epsilon}} % [frc] Mean error
@@ -7188,15 +7191,14 @@ The mask flag $\mskflg_{\sss}$ does not appear in the formula above
 because the weight-generator produces no weights for masked source
 gridcells.
 Doing otherwise would waste storage space in the map-file, because
-such weights are zero by definition.
+such weights are, by definition, zero.
 Furthermore the masks $\mskflg_{\sss}$ and $\mskflg_{\ddd}$ are 
-time-invariant whereas the missing value field $\mssflg_{\sss}$
-may vary in time, and thus produce a time-varying $\mssflg_{\ddd}$. 
+time-invariant properties of the grids, whereas missing value fields
+$\mssflg_{\sss}$ (and thus $\mssflg_{\ddd}$) are potentially
+time-varying characteristics of the fields.
 Although $\mssflg_{\sss}$ should in theory be treated the same as
 $\mskflg_{\sss}$ when computing mapping weights $\sigma_{\sss,\ddd}$,
-in practice this is not done because the masks are constant properties
-of the grids whereas missing values are potentially time-varying
-characteristics of the fields on the grids. 
+in practice this is not done.
 Different fields may have different patterns of missing values,
 and managing per-field map-files would be difficult, so traditionally 
 all fields are remapped with the same map-file.
