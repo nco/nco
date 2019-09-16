@@ -288,7 +288,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
 # Vertical interpolation (201903):
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc # Missing-value extrapolation (mss_val|nrs_ngh)
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc # Missing-value extrapolation (mss_val|nrs_ngh) # Extrapolation results in missing values
 # Time-varying hybrid input
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-0[123].nc 
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-0[123].nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.197901_197903.nc
@@ -1895,10 +1895,10 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	fi # !clm_flg
     fi # !mpas
     if [ "${prc_gsg}" = 'Yes' ]; then 
-	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area or time-interval duration (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
+	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
     fi # !gsg
     if [ "${prc_typ}" = 'sgs' ]; then 
-	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area or time-interval duration (except where ${sgs_frc} = 1.0). Will first conservatively regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
+	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will first conservatively regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
 	if [ ${fl_nbr} -eq 0 ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires at least one data file (for the surface fractions of each gridcell)\n"
 	    echo "${spt_nm}: HINT Supply a data file with \"-i fl_in\""
