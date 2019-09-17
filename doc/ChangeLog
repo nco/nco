@@ -2,7 +2,7 @@
 
 	* NCO 4.8.2-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha07: XTerra';git push
-	git tag -a 4.8.2-alpha07 -m 'ncremap bch/job loop;nco.texi rgr';git push --tags
+	git tag -a 4.8.2-alpha07 -m 'ncremap/ncclimo bch/job loops;nco.texi rgr';git push --tags
 
 	* Streamline batch loops in ncremap, ncclimo sbs and sbs rgr, and ncclimo clm dly loops
 
