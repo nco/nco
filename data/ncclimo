@@ -2065,13 +2065,12 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		# Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 		# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
 		if [ -n "${par_opt}" ]; then
-		    #printf "${spt_nm}: DEBUG var_idx = ${var_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
 		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 			wait ${rgr_pid[${var_idx}]}
 			if [ "$?" -eq 0 ]; then
-			    printf "`date`: Regridded ${cmd_rgr[${pid_idx}]##* }\n"
+			    printf "`date`: Regridded ${cmd_rgr[${var_idx}]##* }\n"
 			else
-			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${var_idx}] failed. Debug this:\n${cmd_rgr[${var_idx}]}\n"
 			    # 20190323: exiting parent here creates orphans, kill live children then exit
 			    for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
 				kill -9 ${rgr_pid[${kid_idx}]}
@@ -2226,137 +2225,119 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
     
     # Begin loop over days to climatologize
     printf "Climatological daily mean...\n"
-    idx_srt=0
-    let idx_end=$((job_nbr-1))
-    for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_clm[${clm_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -le 1 ]; then
-	    if [ -z "${par_opt}" ]; then
-		eval ${cmd_clm[${clm_idx}]}
-		if [ "$?" -ne 0 ]; then
-		    printf "${spt_nm}: ERROR daily cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
-		    exit 1
-		fi # !err
-	    else # !par_opt
-		eval ${cmd_clm[${clm_idx}]} ${par_opt}
-		clm_pid[${clm_idx}]=$!
-	    fi # !par_opt
-	fi # !dbg
+    let bch_nbr=$((clm_nbr / job_nbr))
+    let bch_flg=$((clm_nbr % job_nbr))
+    if [ ${bch_nbr} -eq 0 ]; then
+	let bch_nbr=$((bch_nbr+1))
+    elif [ ${bch_flg} -ne 0 ]; then
+	let bch_nbr=$((bch_nbr+1))
+    fi # !bch_flg
+    let bch_nbrm1=$((bch_nbr-1))
+    for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
+	# clm_idx is 0-based, bch_idx is 0-based
+	let clm_idx_srt=$((bch_idx * job_nbr))
+	let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
+	if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+	    let clm_idx_srt=$((bch_idx * job_nbr))
+	    let clm_idx_end=$((clm_nbr - 1))
+	fi # !bch_flg
+	for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_clm[${clm_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -le 1 ]; then
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_clm[${clm_idx}]}
+		    if [ "$?" -ne 0 ]; then
+			printf "${spt_nm}: ERROR daily cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_opt
+		    eval ${cmd_clm[${clm_idx}]} ${par_opt}
+		    clm_pid[${clm_idx}]=$!
+		fi # !par_opt
+	    fi # !dbg
+	done # !fl_idx
 	
 	# Block NNN: Wait
 	# Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
 	if [ -n "${par_opt}" ]; then
-	    let bch_idx=$((clm_idx / job_nbr))
-	    let bch_flg=$(((clm_idx+1) % job_nbr))
-	    #printf "${spt_nm}: clm_idx = ${clm_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
-	    if [ ${bch_flg} -eq 0 ]; then
-		if [ ${dbg_lvl} -ge 1 ] && [ ${idx_srt} -le ${idx_end} ]; then
-		    printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at clm_idx = ${clm_idx}...\n"
-		fi # !dbg
-		for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
-		    wait ${clm_pid[${pid_idx}]}
-		    if [ "$?" -ne 0 ]; then
-			printf "${spt_nm}: ERROR Failed daily average. cmd_clm[${pid_idx}] failed. Debug this:\n${cmd_clm[${pid_idx}]}\n"
-			exit 1
-		    fi # !err
-		done # !pid_idx
-		let idx_srt=$((idx_srt + job_nbr))
-		let idx_end=$((idx_end + job_nbr))
-	    fi # !bch_flg
-	fi # !par_typ
-
-    done # !clm_idx
-    
-    # Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
-    if [ -n "${par_opt}" ]; then
-	let bch_flg=$((clm_nbr % job_nbr))
-	if [ ${bch_flg} -ne 0 ]; then
-	    let bch_idx=$((bch_idx+1))
-	    if [ ${dbg_lvl} -ge 1 ] && [ ${idx_srt} -lt ${clm_nbr} ]; then
-		printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
+	    if [ ${dbg_lvl} -ge 1 ] && [ ${clm_idx_srt} -le ${clm_idx_end} ]; then
+		printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at clm_idx = ${clm_idx}...\n"
 	    fi # !dbg
-	    for ((pid_idx=${idx_srt};pid_idx<${clm_nbr};pid_idx++)); do
-		wait ${clm_pid[${pid_idx}]}
+	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+		wait ${clm_pid[${clm_idx}]}
 		if [ "$?" -ne 0 ]; then
-		    printf "${spt_nm}: ERROR Failed daily average. cmd_clm[${pid_idx}] failed. Debug this:\n${cmd_clm[${pid_idx}]}\n"
+		    printf "${spt_nm}: ERROR Failed daily average. cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
-	    done # !pid_idx
-	fi # !bch_flg
-    fi # !par_typ
-
+	    done # !clm_idx
+	fi # !par_opt
+	
+    done # !bch_idx
+    
     # Begin loop over days to regrid
     if [ -n "${rgr_opt}" ]; then 
-	idx_srt=0
-	let idx_end=$((job_nbr-1))
-	for ((clm_idx=0;clm_idx<clm_nbr;clm_idx++)); do
-	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-	    if [ "${mdl_typ}" = 'mpas' ]; then
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
-	    fi # !mdl_typ
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_rgr[${clm_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -le 1 ]; then
-		if [ -z "${par_opt}" ]; then
-		    eval ${cmd_rgr[${clm_idx}]}
-		    if [ "$?" -ne 0 ]; then
-			printf "${spt_nm}: ERROR regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
-			exit 1
-		    fi # !err
-		else # !par_opt
-		    eval ${cmd_rgr[${clm_idx}]} ${par_opt}
-		    rgr_pid[${clm_idx}]=$!
-		fi # !par_opt
-	    fi # !dbg
+	let bch_nbr=$((clm_nbr / job_nbr))
+	let bch_flg=$((clm_nbr % job_nbr))
+	if [ ${bch_nbr} -eq 0 ]; then
+	    let bch_nbr=$((bch_nbr+1))
+	elif [ ${bch_flg} -ne 0 ]; then
+	    let bch_nbr=$((bch_nbr+1))
+	fi # !bch_flg
+	let bch_nbrm1=$((bch_nbr-1))
+	for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
+	    # clm_idx is 0-based, bch_idx is 0-based
+	    let clm_idx_srt=$((bch_idx * job_nbr))
+	    let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
+	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+		let clm_idx_srt=$((bch_idx * job_nbr))
+		let clm_idx_end=$((clm_nbr - 1))
+	    fi # !bch_flg
+	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		if [ "${mdl_typ}" = 'mpas' ]; then
+		    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		fi # !mdl_typ
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_rgr[${clm_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -le 1 ]; then
+		    if [ -z "${par_opt}" ]; then
+			eval ${cmd_rgr[${clm_idx}]}
+			if [ "$?" -ne 0 ]; then
+			    printf "${spt_nm}: ERROR regrid cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
+			    exit 1
+			fi # !err
+		    else # !par_opt
+			eval ${cmd_rgr[${clm_idx}]} ${par_opt}
+			rgr_pid[${clm_idx}]=$!
+		    fi # !par_opt
+		fi # !dbg
+	    done # !clm_idx
 	    
 	    # Block NNN: Wait
 	    # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
 	    if [ -n "${par_opt}" ]; then
-		let bch_idx=$((clm_idx / job_nbr))
-		let bch_flg=$(((clm_idx+1) % job_nbr))
-		#printf "${spt_nm}: clm_idx = ${clm_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
-		if [ ${bch_flg} -eq 0 ]; then
-		    if [ ${dbg_lvl} -ge 1 ] && [ ${idx_srt} -le ${idx_end} ]; then
-			printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at clm_idx = ${clm_idx}...\n"
-		    fi # !dbg
-		    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
-			wait ${rgr_pid[${pid_idx}]}
-			if [ "$?" -ne 0 ]; then
-			    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
-			    exit 1
-			fi # !err
-		    done # !pid_idx
-		    let idx_srt=$((idx_srt + job_nbr))
-		    let idx_end=$((idx_end + job_nbr))
-		fi # !bch_flg
-	    fi # !par_typ
-	    
-	done # !clm_idx
-	
-	# Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
-	if [ -n "${par_opt}" ]; then
-	    let bch_flg=$((clm_nbr % job_nbr))
-	    if [ ${bch_flg} -ne 0 ]; then
-		let bch_idx=$((bch_idx+1))
-		if [ ${dbg_lvl} -ge 1 ] && [ ${idx_srt} -lt ${clm_nbr} ]; then
-		    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
-		fi # !dbg
-		for ((pid_idx=${idx_srt};pid_idx<${clm_nbr};pid_idx++)); do
-		    wait ${rgr_pid[${pid_idx}]}
-		    if [ "$?" -ne 0 ]; then
-			printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+		    wait ${rgr_pid[${clm_idx}]}
+		    if [ "$?" -eq 0 ]; then
+			printf "`date`: Regridded ${cmd_rgr[${clm_idx}]##* }\n"
+		    else
+			printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${clm_idx}] failed. Debug this:\n${cmd_rgr[${clm_idx}]}\n"
+			# 20190323: exiting parent here creates orphans, kill live children then exit
+			for ((kid_idx=clm_idx+1;kid_idx<=clm_idx_end;kid_idx++)); do
+			    kill -9 ${rgr_pid[${kid_idx}]}
+			done # !kid_idx
 			exit 1
 		    fi # !err
-		done # !pid_idx
-	    fi # !bch_flg
-	fi # !par_typ
+		done # !clm_idx
+	    fi # !par_opt
+	    
+	done # !bch_idx
     fi # !rgr_opt
-    
 fi # !dly
 
 # Many subsequent blocks only execute for normal and incremental monthly climos, not for binary climos, or non-monthly climos

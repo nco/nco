@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha07: XTerra';git push
 	git tag -a 4.8.2-alpha07 -m 'ncremap bch/job loop;nco.texi rgr';git push --tags
 
-	* Streamline batch job loop handling in ncremap, ncclimo sbs and sbs rgr loops,
+	* Streamline batch loops in ncremap, ncclimo sbs and sbs rgr, and ncclimo clm dly loops
 
 2019-09-12  Charlie Zender  <zender@uci.edu>
 
