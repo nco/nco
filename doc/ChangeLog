@@ -1,6 +1,10 @@
 2019-09-17  Charlie Zender  <zender@uci.edu>
 
-	* Streamline batch job loop handling in ncremap
+	* NCO 4.8.2-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha07: XTerra';git push
+	git tag -a 4.8.2-alpha07 -m 'ncremap bch/job loop;nco.texi rgr';git push --tags
+
+	* Streamline batch job loop handling in ncremap, ncclimo sbs and sbs rgr loops,
 
 2019-09-12  Charlie Zender  <zender@uci.edu>
 

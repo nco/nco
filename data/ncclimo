@@ -1959,9 +1959,28 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 
 	# Begin loop over variables to split
-	idx_srt=0
-	let idx_end=$((job_nbr-1))
-	for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
+	let bch_nbr=$((var_nbr / job_nbr))
+	let bch_flg=$((var_nbr % job_nbr))
+	if [ ${bch_nbr} -eq 0 ]; then
+	    let bch_nbr=$((bch_nbr+1))
+	elif [ ${bch_flg} -ne 0 ]; then
+	    let bch_nbr=$((bch_nbr+1))
+	fi # !bch_flg
+	let bch_nbrm1=$((bch_nbr-1))
+	for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
+	    # var_idx is 0-based, bch_idx is 0-based
+	    let var_idx_srt=$((bch_idx * job_nbr))
+	    let var_idx_end=$((var_idx_srt + job_nbr - 1))
+	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+		let var_idx_srt=$((bch_idx * job_nbr))
+		let var_idx_end=$((var_nbr - 1))
+	    fi # !bch_flg
+	    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
+
+#20190917
+#	idx_srt=0
+#	let idx_end=$((job_nbr-1))
+#	for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 	    fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
 	    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 	    if [ ${dbg_lvl} -ge 1 ]; then
@@ -1979,61 +1998,29 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    sbs_pid[${var_idx}]=$!
 		fi # !par_opt
 	    fi # !dbg
+	    done # !var_idx
 	    
 	    # Block NNN: Wait
 	    # Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
 	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
 	    if [ -n "${par_opt}" ]; then
-		let bch_idx=$((var_idx / job_nbr))
-		let bch_flg=$(((var_idx+1) % job_nbr))
-		#printf "${spt_nm}: var_idx = ${var_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
-		if [ ${bch_flg} -eq 0 ]; then
-		    if [ ${dbg_lvl} -ge 1 ] && [ ${idx_srt} -le ${idx_end} ]; then
-			printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at var_idx = ${var_idx}...\n"
-		    fi # !dbg
-		    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
-			wait ${sbs_pid[${pid_idx}]}
+		#printf "${spt_nm}: DEBUG var_idx = ${var_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
+		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
+		    wait ${sbs_pid[${var_idx}]}
 			if [ "$?" -eq 0 ]; then
-			    printf "`date`: Generated ${cmd_sbs[${pid_idx}]##* }\n"
+			    printf "`date`: Generated ${cmd_sbs[${var_idx}]##* }\n"
 			else
-			    printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
+			    printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${var_idx}] failed. Debug this:\n${cmd_sbs[${var_idx}]}\n"
 			    # 20190323: exiting parent here creates orphans, kill live children then exit
-			    for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
+			    for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
 				kill -9 ${sbs_pid[${kid_idx}]}
 			    done # !kid_idx
 			    exit 1
 			fi # !err
-		    done # !pid_idx
-		    let idx_srt=$((idx_srt + job_nbr))
-		    let idx_end=$((idx_end + job_nbr))
-		fi # !bch_flg
-	    fi # !par_typ
-	    
-	done # !var_idx
-	
-	# Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
-	if [ -n "${par_opt}" ]; then
-	    let bch_flg=$((var_nbr % job_nbr))
-	    if [ ${bch_flg} -ne 0 ]; then
-		let bch_idx=$((bch_idx+1))
-		if [ ${dbg_lvl} -ge 1 ] && [ ${idx_srt} -lt ${var_nbr} ]; then
-		    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
-		fi # !dbg
-		for ((pid_idx=${idx_srt};pid_idx<${var_nbr};pid_idx++)); do
-		    wait ${sbs_pid[${pid_idx}]}
-		    if [ "$?" -eq 0 ]; then
-			printf "`date`: Generated ${cmd_sbs[${pid_idx}]##* }\n"
-		    else
-			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${pid_idx}] failed. Debug this:\n${cmd_sbs[${pid_idx}]}\n"
-			# 20190323: exiting parent here creates orphans, kill live children then exit
-			for ((kid_idx=${pid_idx}+1;kid_idx<=${idx_end};kid_idx++)); do
-			    kill -9 ${sbs_pid[${kid_idx}]}
-			done # !kid_idx
-			exit 1
-		    fi # !err
-		done # !pid_idx
-	    fi # !bch_flg
-	fi # !par_typ
+		done # !var_idx
+	    fi # !par_opt
+
+	done # !bch_idx
 	
 	# Begin loop over variables to regrid
 	if [ -n "${rgr_opt}" ]; then 

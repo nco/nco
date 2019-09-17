@@ -2781,7 +2781,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    wait ${rgr_pid[${fl_idx}]}
 	    if [ "$?" -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+		printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
 	done # !fl_idx
