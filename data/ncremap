@@ -2418,406 +2418,395 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}
 fi # !grd_src_usr_flg
 
 # Begin loop over input files
-idx_srt=0
-let idx_end=$((job_nbr-1))
-for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
-    in_fl=${fl_in[${fl_idx}]}
-    if [ "$(basename "${in_fl}")" = "${in_fl}" ]; then
-	in_fl="${drc_pwd}/${in_fl}"
-    fi # !basename
-    idx_prn=`printf "%02d" ${fl_idx}`
-    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
-	printf "Input #${idx_prn}: ${in_fl}\n"
-    fi # !vrb_lvl
-    if [ "${out_usr_flg}" = 'Yes' ]; then 
-	if [ ${fl_nbr} -ge 2 ]; then 
-	    echo "ERROR: Single output filename specified with -o for multiple input files"
-	    echo "HINT: For multiple input files use -O option to specify output directory and do not use -o or second positional option. Output files will have same name as input files, but will be in different directory."
+let bch_nbr=$((fl_nbr / job_nbr))
+let bch_flg=$((fl_nbr % job_nbr))
+if [ ${bch_nbr} -eq 0 ]; then
+    let bch_nbr=$((bch_nbr+1))
+elif [ ${bch_flg} -ne 0 ]; then
+    let bch_nbr=$((bch_nbr+1))
+fi # !bch_flg
+let bch_nbrm1=$((bch_nbr-1))
+for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
+    # fl_idx is 0-based, bch_idx is 0-based
+    let fl_idx_srt=$((bch_idx * job_nbr))
+    let fl_idx_end=$((fl_idx_srt + job_nbr - 1))
+    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+	let fl_idx_srt=$((bch_idx * job_nbr))
+	let fl_idx_end=$((fl_nbr - 1))
+    fi # !bch_flg
+    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
+	in_fl=${fl_in[${fl_idx}]}
+	if [ "$(basename "${in_fl}")" = "${in_fl}" ]; then
+	    in_fl="${drc_pwd}/${in_fl}"
+	fi # !basename
+	idx_prn=`printf "%02d" ${fl_idx}`
+	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
+	    printf "Input #${idx_prn}: ${in_fl}\n"
+	fi # !vrb_lvl
+	if [ "${out_usr_flg}" = 'Yes' ]; then 
+	    if [ ${fl_nbr} -ge 2 ]; then 
+		echo "ERROR: Single output filename specified with -o for multiple input files"
+		echo "HINT: For multiple input files use -O option to specify output directory and do not use -o or second positional option. Output files will have same name as input files, but will be in different directory."
+		exit 1
+	    fi # !fl_nbr
+	    if [ -n "${drc_usr}" ]; then
+		out_fl="${drc_out}/${out_fl}"
+	    fi # !drc_usr
+	else # !out_usr_flg
+	    out_fl="${drc_out}/$(basename "${in_fl}")"
+	fi # !out_fl
+	if [ "${in_fl}" = "${out_fl}" ]; then
+	    echo "ERROR: Input file = Output file = ${in_fl}"
+	    echo "HINT: To prevent inadvertent data loss, ${spt_nm} insists that Input file and Output filenames differ"
 	    exit 1
-	fi # !fl_nbr
-	if [ -n "${drc_usr}" ]; then
-	    out_fl="${drc_out}/${out_fl}"
-	fi # !drc_usr
-    else # !out_usr_flg
-	out_fl="${drc_out}/$(basename "${in_fl}")"
-    fi # !out_fl
-    if [ "${in_fl}" = "${out_fl}" ]; then
-	echo "ERROR: Input file = Output file = ${in_fl}"
-	echo "HINT: To prevent inadvertent data loss, ${spt_nm} insists that Input file and Output filenames differ"
-	exit 1
-    fi # !basename
-    fl_out[${fl_idx}]=${out_fl}
+	fi # !basename
+	fl_out[${fl_idx}]=${out_fl}
 
-    # Generate new map unless map-file was supplied or already-generated
-    # NB: RRG infers source grid outside file loop, and forbids multiple source grids
-    # NB: SGS infers (if necessary) source grid outside file loop, and forbids multiple source grids
-    # RRG and SGS also produce map before file loop, and will not make maps inside file loop
-    if [ "${map_mk}" = 'Yes' ]; then
-
-	# Block 1: Special cases
-	if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
-	    # Pre-process zonal input files so grid inferral works
-	    # 20160214: fix record variable to work around ncpdq problem
-	    cmd_znl[${fl_idx}]="ncecat -O -u lon ${nco_opt} ${nco_var_lst} \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${znl_fl/znl/znl1}\";ncap2 -O ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' \"${znl_fl/znl/znl1}\" \"${znl_fl/znl/znl2}\""
-	    in_fl="${znl_fl/znl/znl2}"
+	# Generate new map unless map-file was supplied or already-generated
+	# NB: RRG infers source grid outside file loop, and forbids multiple source grids
+	# NB: SGS infers (if necessary) source grid outside file loop, and forbids multiple source grids
+	# RRG and SGS also produce map before file loop, and will not make maps inside file loop
+	if [ "${map_mk}" = 'Yes' ]; then
+	    
+	    # Block 1: Special cases
+	    if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
+		# Pre-process zonal input files so grid inferral works
+		# 20160214: fix record variable to work around ncpdq problem
+		cmd_znl[${fl_idx}]="ncecat -O -u lon ${nco_opt} ${nco_var_lst} \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${in_fl}\" \"${znl_fl/znl/znl1}\";ncap2 -O ${nco_opt} -s 'lon[\$lon]={0.0,90.0,180.0,270.0}' \"${znl_fl/znl/znl1}\" \"${znl_fl/znl/znl2}\""
+		in_fl="${znl_fl/znl/znl2}"
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_znl[${fl_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -ne 2 ]; then
+		    eval ${cmd_znl[${fl_idx}]}
+		    if [ "$?" -ne 0 ] || [ ! -f "${znl_fl/znl/znl2}" ]; then
+			printf "${spt_nm}: ERROR Failed to generate lat-lon file from zonal file. Debug this:\n${cmd_znl[${fl_idx}]}\n"
+			exit 1
+		    fi # !err
+		fi # !dbg
+	    fi # !znl
+	    
+	    # Block 2: Source grid
+	    # Block 2 Loop 1: Source gridfile command
+	    if [ ! -f "${in_fl}" ]; then
+		echo "${spt_nm}: ERROR Unable to find input file ${in_fl}"
+		echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
+		exit 1
+	    fi # ! -f
+	    # Infer source grid-file from input data file
+	    cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${in_fl}\" \"${tmp_out_fl}\""
+	
+	    # Block 2 Loop 2: Execute and/or echo commands
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_src[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_src[${fl_idx}]}
+		if [ "$?" -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to infer source grid. Debug this:\n${cmd_src[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	    
+	    # Block 3: Source->destination maps
+	    # Block 3 Loop 1: Map-file commands
+	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
+		printf "Grid(src): ${grd_src}\n"
+		printf "Grid(dst): ${grd_dst}\n"
+	    fi # !vrb_lvl
+	    if [ "${wgt_typ}" = 'esmf' ]; then 
+		rgn_opt=''
+		if [ -n "${hnt_src}" ]; then
+		    rgn_opt="${rgn_opt} ${hnt_src}"
+		elif [ -f "${hnt_src_fl}" ]; then
+		    rgn_opt="${rgn_opt} `cat ${hnt_src_fl}`"
+		fi # !hnt_src_fl
+		if [ -n "${hnt_dst}" ]; then
+		    rgn_opt="${rgn_opt} ${hnt_dst}"
+		elif [ -f "${hnt_dst_fl}" ]; then
+		    rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
+		fi # !hnt_dst_fl
+		cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt} > /dev/null"
+	    elif [ "${wgt_typ}" = 'nco' ]; then 
+		if [ ${vrb_lvl} -ge ${vrb_1} ]; then
+		    if [ -n "${msh_opt}" ]; then
+			printf "Mesh-File: ${msh_fl}\n"
+		    fi # !msh_opt
+		fi # !vrb_lvl
+		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\" > /dev/null"
+	    elif [ "${wgt_typ}" = 'tempest' ]; then 
+		if [ ${vrb_lvl} -ge ${vrb_1} ]; then
+		    printf "Mesh-File: ${msh_fl}\n"
+		fi # !vrb_lvl
+		cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
+		if [ "${a2o_flg}" = 'Yes' ]; then 
+		    cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
+		fi # !a2o_flg
+		cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_src}\" --out_mesh \"${grd_dst}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_fl}\" ${wgt_opt} > /dev/null"
+		if [ "${trn_map}" = 'Yes' ]; then 
+		    # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
+		    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_dst}\" --out_mesh \"${grd_src}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_trn_fl}\" ${wgt_opt} > /dev/null"
+		    cmd_trn[${fl_idx}]="GenerateTransposeMap --in \"${map_trn_fl}\" --out \"${map_fl}\" > /dev/null"
+		fi # !trn_map
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_msh[${fl_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -ne 2 ]; then
+		    eval ${cmd_msh[${fl_idx}]}
+		    if [ "$?" -ne 0 ] || [ ! -f ${msh_fl} ]; then
+			printf "${spt_nm}: ERROR Failed to generate intersection mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
+			printf "${spt_nm}: HINT GenerateOverlapMesh requires that grids of unequal area be given as arguments in the order smaller first, larger second. ncremap supplies the grid arguments in the order source first, destination second unless explicitly told otherwise. A source grid that is a superset of the destination would violate the GenerateOverlapMesh rule. The solution is to add the \"--a2o\" switch (documented at http://nco.sf.net/nco.html#a2o) that tells ncremap to swap the grid argument order.\n"
+			exit 1
+		    fi # !err
+		fi # !dbg
+	    fi # !wgt_typ
+	    
+	    # Block 3 Loop 2: Execute and/or echo commands
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_map[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_map[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${map_rsl_fl} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
+		    if [ "${wgt_typ}" = 'esmf' ]; then 
+			printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
+		    fi # !esmf
+		    exit 1
+		fi # !err
+		if [ "${map_usr_flg}" = 'Yes' ]; then
+		    hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
+		    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' \"${map_rsl_fl}\""
+		    eval ${cmd_att[${fl_idx}]}
+		if [ "$?" -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+		fi # !map_usr_flg
+	    fi # !dbg
+	    if [ "${trn_map}" = 'Yes' ]; then 
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_trn[${fl_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -ne 2 ]; then
+		    eval ${cmd_trn[${fl_idx}]}
+		    if [ "$?" -ne 0 ] || [ ! -f ${map_fl} ]; then
+			printf "${spt_nm}: ERROR Failed to transpose map-file. Debug this:\n${cmd_trn[${fl_idx}]}\n"
+			exit 1
+		    fi # !err
+		fi # !dbg
+	    fi # !trn_map
+	    
+	    # Prevent creating new source gridfile and map-file after first iteration
+	    if [ "${mlt_map_flg}" = 'No' ] && [ ${fl_idx} -eq 0 ]; then 
+		map_mk='Already made map once. Never again.'
+	    fi # !mlt_map_flg
+	    
+	fi # !map_mk
+	
+	# Block 4: Special cases
+	# Block 4a: Add MPAS depth coordinate (prior to permutation)
+	if [ "${dpt_flg}" = 'Yes' ]; then
+	    if [ ${vrb_lvl} -ge ${vrb_2} ]; then
+		printf "DPT(in)  : ${in_fl}\n"
+		printf "DPT(out) : ${dpt_tmp_fl}\n"
+	    fi # !vrb_lvl
+	    cmd_dpt[${fl_idx}]="${cmd_dpt_mpas} ${cmd_dpt_opt} -i \"${in_fl}\" -o \"${dpt_tmp_fl}\""
+	    in_fl=${dpt_tmp_fl}
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_dpt[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_dpt[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${dpt_tmp_fl} ]; then
+		    printf "${spt_nm}: ERROR Failed to add depth coordinate to MPAS file. Debug this:\n${cmd_dpt[${fl_idx}]}\nHINTS: 1) Verify that ${dpt_exe_mpas} is executable from the command-line, it requires Python and the xarray package to succeed. 2) Verify that ${dpt_fl} or ${in_fl} contains variable \"refBottomDepth\".\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !dpt_flg
+	
+	# Block 4b: Generic Permutation/Unpacking (AIRS, HIRDLS, MLS, MOD04, MPAS)
+	# Do sub-setting operation (like PDQ) first so cmd_att works on smaller, sub-set files
+	if [ -n "${pdq_opt}" ]; then
+	    if [ ${vrb_lvl} -ge ${vrb_2} ]; then
+		printf "PDQ(in)  : ${in_fl}\n"
+		printf "PDQ(out) : ${pdq_fl}\n"
+	    fi # !vrb_lvl
+	    cmd_pdq[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${pdq_opt} \"${in_fl}\" \"${pdq_fl}\""
+	    in_fl=${pdq_fl}
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_pdq[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_pdq[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${pdq_fl} ]; then
+		    printf "${spt_nm}: ERROR Failed to generate pdq-file. Debug this:\n${cmd_pdq[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !pdq_opt
+	
+	# Block 4c: Double->Float conversion (by-request and possibly default for MPAS)
+	if [ "${d2f_flg}" = 'Yes' ]; then
+	    if [ ${vrb_lvl} -ge ${vrb_2} ]; then
+		printf "D2F(in)  : ${in_fl}\n"
+		printf "D2F(out) : ${d2f_fl}\n"
+	    fi # !vrb_lvl
+	    cmd_d2f[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${d2f_opt} \"${in_fl}\" \"${d2f_fl}\""
+	    in_fl=${d2f_fl}
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_d2f[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_d2f[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f ${d2f_fl} ]; then
+		    printf "${spt_nm}: ERROR Failed to convert double-precision to single-precision. Debug this:\n${cmd_d2f[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !d2f_flg
+	
+	# Block 4d: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then to annotate them here, so assume ncclimo is working with annotated files)
+	if [ "${prc_mpas}" = 'Yes' ] && [ "${clm_flg}" = 'No' ]; then
+	    cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} \"${in_fl}\" \"${att_fl}\";"
+	    if [ ${vrb_lvl} -ge ${vrb_2} ]; then
+		printf "att(in)  : ${in_fl}\n"
+		printf "att(out) : ${att_fl}\n"
+	    fi # !vrb_lvl
+	    in_fl="${att_fl}"
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_att[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_att[${fl_idx}]}
+		if [ "$?" -ne 0 ] || [ ! -f "${att_fl}" ]; then
+		    printf "${spt_nm}: ERROR Failed to annotate MPAS file with _FillValue. Debug this:\n${cmd_att[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	fi # !prc_mpas
+	
+	# Block 4e: RRG
+	if [ "${prc_typ}" = 'rrg' ]; then 
+	    rrg_dmn_lst=`ncdmnlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
+	    rrg_var_lst=`ncvarlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
+	    
+	    dmn_sng=''
+	    if [ -n "${rrg_dmn_lst}" ]; then
+		for dmn in ${rrg_dmn_lst} ; do
+		    dmn_sng="${dmn_sng} -d ${dmn},${dmn/${rnm_sng}/}"
+		done # !dmn
+	    else # !rrg_dmn_lst
+		echo "ERROR: Regional regridding suffix string '${rnm_sng}' not found in any dimension names in ${fl_in[${fl_idx}]}"
+		echo "HINT: Regional regridding input files must contain dimensions and variables whose names end with the ALM/CAM-SE created (from finclNlonlat namelist input) regional suffix string, e.g., '_128e_to_134e_9s_to_16s'. Valid regional suffix strings for this input file are:"
+		eval "ncks -m ${fl_in[${fl_idx}]} | cut -d ':' -f 1 | cut -d '=' -s -f 1 | grep ncol | sed 's/ncol//' | sed -e 's/^ *//' -e 's/ *$//'"
+		echo "Use exactly one of these strings as the argument to --rrg_rnm_sng"
+		exit 1
+	    fi # !rrg_dmn_lst
+	    
+	    var_sng=''
+	    if [ -n "${rrg_var_lst}" ]; then
+		for var in ${rrg_var_lst} ; do
+		    var_sng="${var_sng} -v ${var},${var/${rnm_sng}/}"
+		done # !rrg_var_lst
+	    fi # !rrg_var_lst
+	    
+	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+		printf "RRG: Remove \"${rnm_sng}\" from dimension and variable names...\n"
+	    fi # !vrb_lvl
+	    cmd_rnm[${fl_idx}]="ncrename -O ${dmn_sng} ${var_sng} \"${fl_in[${fl_idx}]}\" \"${rnm_fl}\""
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_rnm[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_rnm[${fl_idx}]}
+		if [ "$?" -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to rename regional input file. Debug this:\n${cmd_rnm[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	
+	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
+		printf "RRG: Append regional coordinates and vertices to renamed, annotated regional input data...\n"
+	    fi # !vrb_lvl
+	    cmd_apn[${fl_idx}]="ncks -A \"${rgn_fl}\" \"${rnm_fl}\""
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_apn[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		eval ${cmd_apn[${fl_idx}]}
+		if [ "$?" -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to append regional coordinates and vertices to annotated, regional input data. Debug this:\n${cmd_apn[${fl_idx}]}\n"
+		    exit 1
+		fi # !err
+	    fi # !dbg
+	    in_fl=${rnm_fl}
+	fi # !rrg
+	
+	# Block 5: Regrid
+	if [ -n "${vrt_fl}" ]; then
+	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
+		printf "Vertical : ${vrt_fl}\n"
+	    fi # !vrb_lvl
+	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
+	else # !vrt_fl
+	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
+		printf "Map/Wgt  : ${map_fl}\n"
+	    fi # !vrb_lvl
+	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
+	fi # !vrt_fl
+	
+	# Block 5 Loop 2: Execute and/or echo commands
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    echo ${cmd_rgr[${fl_idx}]}
+	fi # !dbg
+	if [ ${dbg_lvl} -ne 2 ]; then
+	    if [ -z "${par_opt}" ]; then
+		eval ${cmd_rgr[${fl_idx}]}
+		if [ "$?" -ne 0 ]; then
+		    printf "${spt_nm}: ERROR Failed to regrid or interpolate. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	    else # !par_typ
+		eval ${cmd_rgr[${fl_idx}]} ${par_opt}
+		rgr_pid[${fl_idx}]=$!
+	    fi # !par_typ
+	fi # !dbg
+    done # !fl_idx
+    
+    # Block 6: Wait
+    # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
+    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+    if [ -n "${par_opt}" ]; then
+	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
+	    wait ${rgr_pid[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
+		exit 1
+	    fi # !err
+	done # !fl_idx
+    fi # !par_opt
+    
+    # Block 7: Special case post-processing
+    if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
+	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
+	    # NB: Move file to avert problem with --no_tmp_fl causing self-overwrite
+	    cmd_znl[${fl_idx}]="/bin/mv \"${out_fl}\" \"${ncwa_fl}\";ncwa -O -a lon ${nco_opt} ${nco_var_lst} \"${ncwa_fl}\" \"${out_fl}\""
+	    # Block 7 Loop 2: Execute and/or echo commands
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_znl[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
 		eval ${cmd_znl[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f "${znl_fl/znl/znl2}" ]; then
-		    printf "${spt_nm}: ERROR Failed to generate lat-lon file from zonal file. Debug this:\n${cmd_znl[${fl_idx}]}\n"
+		if [ "$?" -ne 0 ] || [ ! -f "${out_fl}" ]; then
+		    printf "${spt_nm}: ERROR Failed to generate zonal file from lat-lon file. Debug this:\n${cmd_znl[${fl_idx}]}\n"
 		    exit 1
 		fi # !err
 	    fi # !dbg
-	fi # !znl
-
-	# Block 2: Source grid
-	# Block 2 Loop 1: Source gridfile command
-	if [ ! -f "${in_fl}" ]; then
-	    echo "${spt_nm}: ERROR Unable to find input file ${in_fl}"
-	    echo "HINT: All files implied to exist must be in the directory specified by their filename or in ${drc_in} before ${spt_nm} will proceed"
-		exit 1
-	fi # ! -f
-	# Infer source grid-file from input data file
-	cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${in_fl}\" \"${tmp_out_fl}\""
-	
-	# Block 2 Loop 2: Execute and/or echo commands
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_src[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_src[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to infer source grid. Debug this:\n${cmd_src[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-	
-	# Block 3: Source->destination maps
-	# Block 3 Loop 1: Map-file commands
-	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
-	    printf "Grid(src): ${grd_src}\n"
-	    printf "Grid(dst): ${grd_dst}\n"
-	fi # !vrb_lvl
-	if [ "${wgt_typ}" = 'esmf' ]; then 
-	    rgn_opt=''
-	    if [ -n "${hnt_src}" ]; then
-		rgn_opt="${rgn_opt} ${hnt_src}"
-	    elif [ -f "${hnt_src_fl}" ]; then
-		rgn_opt="${rgn_opt} `cat ${hnt_src_fl}`"
-	    fi # !hnt_src_fl
-	    if [ -n "${hnt_dst}" ]; then
-		rgn_opt="${rgn_opt} ${hnt_dst}"
-	    elif [ -f "${hnt_dst_fl}" ]; then
-		rgn_opt="${rgn_opt} `cat ${hnt_dst_fl}`"
-	    fi # !hnt_dst_fl
-	    cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt} > /dev/null"
-	elif [ "${wgt_typ}" = 'nco' ]; then 
-	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
-		if [ -n "${msh_opt}" ]; then
-		    printf "Mesh-File: ${msh_fl}\n"
-		fi # !msh_opt
-	    fi # !vrb_lvl
-	    cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\" > /dev/null"
-	elif [ "${wgt_typ}" = 'tempest' ]; then 
-	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
-		printf "Mesh-File: ${msh_fl}\n"
-	    fi # !vrb_lvl
-	    cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
-	    if [ "${a2o_flg}" = 'Yes' ]; then 
-		cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --b \"${grd_src}\" --a \"${grd_dst}\" --out \"${msh_fl}\" > /dev/null"
-	    fi # !a2o_flg
-	    cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_src}\" --out_mesh \"${grd_dst}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_fl}\" ${wgt_opt} > /dev/null"
-	    if [ "${trn_map}" = 'Yes' ]; then 
-		# NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-		cmd_map[${fl_idx}]="${wgt_cmd} --in_mesh \"${grd_dst}\" --out_mesh \"${grd_src}\" --ov_mesh \"${msh_fl}\" --out_map \"${map_trn_fl}\" ${wgt_opt} > /dev/null"
-		cmd_trn[${fl_idx}]="GenerateTransposeMap --in \"${map_trn_fl}\" --out \"${map_fl}\" > /dev/null"
-	    fi # !trn_map
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_msh[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_msh[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${msh_fl} ]; then
-		    printf "${spt_nm}: ERROR Failed to generate intersection mesh-file. Debug this:\n${cmd_msh[${fl_idx}]}\n"
-		    printf "${spt_nm}: HINT GenerateOverlapMesh requires that grids of unequal area be given as arguments in the order smaller first, larger second. ncremap supplies the grid arguments in the order source first, destination second unless explicitly told otherwise. A source grid that is a superset of the destination would violate the GenerateOverlapMesh rule. The solution is to add the \"--a2o\" switch (documented at http://nco.sf.net/nco.html#a2o) that tells ncremap to swap the grid argument order.\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	fi # !wgt_typ
-	
-	# Block 3 Loop 2: Execute and/or echo commands
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_map[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_map[${fl_idx}]}
-	    if [ "$?" -ne 0 ] || [ ! -f ${map_rsl_fl} ]; then
-		printf "${spt_nm}: ERROR Failed to generate map-file. Debug this:\n${cmd_map[${fl_idx}]}\n"
-		if [ "${wgt_typ}" = 'esmf' ]; then 
-		    printf "${spt_nm}: HINT When ESMF fails to generate map-files, it often puts additional debugging information in the file named PET0.RegridWeightGen.Log in the invocation directory (${drc_pwd})\n"
-		fi # !esmf
-		exit 1
-	    fi # !err
-	    if [ "${map_usr_flg}" = 'Yes' ]; then
-		hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
-		cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' \"${map_rsl_fl}\""
-		eval ${cmd_att[${fl_idx}]}
-		if [ "$?" -ne 0 ]; then
-		    printf "${spt_nm}: ERROR Failed to annotate map-file. Debug this:\n${cmd_att[${fl_idx}]}\n"
-		    exit 1
-		fi # !err
-	    fi # !map_usr_flg
-	fi # !dbg
-	if [ "${trn_map}" = 'Yes' ]; then 
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_trn[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_trn[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${map_fl} ]; then
-		    printf "${spt_nm}: ERROR Failed to transpose map-file. Debug this:\n${cmd_trn[${fl_idx}]}\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	fi # !trn_map
-
-	# Prevent creating new source gridfile and map-file after first iteration
-	if [ "${mlt_map_flg}" = 'No' ] && [ ${fl_idx} -eq 0 ]; then 
-	    map_mk='Already made map once. Never again.'
-	fi # !mlt_map_flg
-
-    fi # !map_mk
-    
-    # Block 4: Special cases
-    # Block 4a: Add MPAS depth coordinate (prior to permutation)
-    if [ "${dpt_flg}" = 'Yes' ]; then
-	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
-	    printf "DPT(in)  : ${in_fl}\n"
-	    printf "DPT(out) : ${dpt_tmp_fl}\n"
-	fi # !vrb_lvl
-	cmd_dpt[${fl_idx}]="${cmd_dpt_mpas} ${cmd_dpt_opt} -i \"${in_fl}\" -o \"${dpt_tmp_fl}\""
-	in_fl=${dpt_tmp_fl}
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_dpt[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_dpt[${fl_idx}]}
-	    if [ "$?" -ne 0 ] || [ ! -f ${dpt_tmp_fl} ]; then
-		printf "${spt_nm}: ERROR Failed to add depth coordinate to MPAS file. Debug this:\n${cmd_dpt[${fl_idx}]}\nHINTS: 1) Verify that ${dpt_exe_mpas} is executable from the command-line, it requires Python and the xarray package to succeed. 2) Verify that ${dpt_fl} or ${in_fl} contains variable \"refBottomDepth\".\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    fi # !dpt_flg
-
-    # Block 4b: Generic Permutation/Unpacking (AIRS, HIRDLS, MLS, MOD04, MPAS)
-    # Do sub-setting operation (like PDQ) first so cmd_att works on smaller, sub-set files
-    if [ -n "${pdq_opt}" ]; then
-	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
-	    printf "PDQ(in)  : ${in_fl}\n"
-	    printf "PDQ(out) : ${pdq_fl}\n"
-	fi # !vrb_lvl
-	cmd_pdq[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${pdq_opt} \"${in_fl}\" \"${pdq_fl}\""
-	in_fl=${pdq_fl}
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_pdq[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_pdq[${fl_idx}]}
-	    if [ "$?" -ne 0 ] || [ ! -f ${pdq_fl} ]; then
-		printf "${spt_nm}: ERROR Failed to generate pdq-file. Debug this:\n${cmd_pdq[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    fi # !pdq_opt
-
-    # Block 4c: Double->Float conversion (by-request and possibly default for MPAS)
-    if [ "${d2f_flg}" = 'Yes' ]; then
-	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
-	    printf "D2F(in)  : ${in_fl}\n"
-	    printf "D2F(out) : ${d2f_fl}\n"
-	fi # !vrb_lvl
-	cmd_d2f[${fl_idx}]="ncpdq -O ${nco_opt} ${nco_var_lst} ${d2f_opt} \"${in_fl}\" \"${d2f_fl}\""
-	in_fl=${d2f_fl}
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_d2f[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_d2f[${fl_idx}]}
-	    if [ "$?" -ne 0 ] || [ ! -f ${d2f_fl} ]; then
-		printf "${spt_nm}: ERROR Failed to convert double-precision to single-precision. Debug this:\n${cmd_d2f[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    fi # !d2f_flg
-
-    # Block 4d: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then to annotate them here, so assume ncclimo is working with annotated files)
-    if [ "${prc_mpas}" = 'Yes' ] && [ "${clm_flg}" = 'No' ]; then
-	cmd_att[${fl_idx}]="ncatted -O -t -a _FillValue,,o,d,${mss_val} -a _FillValue,,o,f,${mss_val} \"${in_fl}\" \"${att_fl}\";"
-	if [ ${vrb_lvl} -ge ${vrb_2} ]; then
-	    printf "att(in)  : ${in_fl}\n"
-	    printf "att(out) : ${att_fl}\n"
-	fi # !vrb_lvl
-	in_fl="${att_fl}"
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_att[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_att[${fl_idx}]}
-	    if [ "$?" -ne 0 ] || [ ! -f "${att_fl}" ]; then
-		printf "${spt_nm}: ERROR Failed to annotate MPAS file with _FillValue. Debug this:\n${cmd_att[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    fi # !prc_mpas
-	
-    # Block 4e: RRG
-    if [ "${prc_typ}" = 'rrg' ]; then 
-	rrg_dmn_lst=`ncdmnlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
-	rrg_var_lst=`ncvarlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
-	
-	dmn_sng=''
-	if [ -n "${rrg_dmn_lst}" ]; then
-	    for dmn in ${rrg_dmn_lst} ; do
-		dmn_sng="${dmn_sng} -d ${dmn},${dmn/${rnm_sng}/}"
-	    done # !dmn
-	else # !rrg_dmn_lst
-	    echo "ERROR: Regional regridding suffix string '${rnm_sng}' not found in any dimension names in ${fl_in[${fl_idx}]}"
-	    echo "HINT: Regional regridding input files must contain dimensions and variables whose names end with the ALM/CAM-SE created (from finclNlonlat namelist input) regional suffix string, e.g., '_128e_to_134e_9s_to_16s'. Valid regional suffix strings for this input file are:"
-	    eval "ncks -m ${fl_in[${fl_idx}]} | cut -d ':' -f 1 | cut -d '=' -s -f 1 | grep ncol | sed 's/ncol//' | sed -e 's/^ *//' -e 's/ *$//'"
-	    echo "Use exactly one of these strings as the argument to --rrg_rnm_sng"
-	    exit 1
-	fi # !rrg_dmn_lst
-	
-	var_sng=''
-	if [ -n "${rrg_var_lst}" ]; then
-	    for var in ${rrg_var_lst} ; do
-		var_sng="${var_sng} -v ${var},${var/${rnm_sng}/}"
-	    done # !rrg_var_lst
-	fi # !rrg_var_lst
-	
-	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "RRG: Remove \"${rnm_sng}\" from dimension and variable names...\n"
-	fi # !vrb_lvl
-	cmd_rnm[${fl_idx}]="ncrename -O ${dmn_sng} ${var_sng} \"${fl_in[${fl_idx}]}\" \"${rnm_fl}\""
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_rnm[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_rnm[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to rename regional input file. Debug this:\n${cmd_rnm[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-	
-	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "RRG: Append regional coordinates and vertices to renamed, annotated regional input data...\n"
-	fi # !vrb_lvl
-	cmd_apn[${fl_idx}]="ncks -A \"${rgn_fl}\" \"${rnm_fl}\""
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_apn[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_apn[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to append regional coordinates and vertices to annotated, regional input data. Debug this:\n${cmd_apn[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-	in_fl=${rnm_fl}
-    fi # !rrg
-
-    # Block 5: Regrid
-    if [ -n "${vrt_fl}" ]; then
-	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
-	    printf "Vertical : ${vrt_fl}\n"
-	fi # !vrb_lvl
-	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
-    else # !vrt_fl
-	if [ ${vrb_lvl} -ge ${vrb_1} ]; then
-	    printf "Map/Wgt  : ${map_fl}\n"
-	fi # !vrb_lvl
-	cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
-    fi # !vrt_fl
-    
-    # Block 5 Loop 2: Execute and/or echo commands
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_rgr[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	if [ -z "${par_opt}" ]; then
-	    eval ${cmd_rgr[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to regrid or interpolate. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	else # !par_typ
-	    eval ${cmd_rgr[${fl_idx}]} ${par_opt}
-	    rgr_pid[${fl_idx}]=$!
-	fi # !par_typ
-    fi # !dbg
-
-    # Block 6: Wait
-    # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
-    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-    if [ -n "${par_opt}" ]; then
-	let bch_idx=$((fl_idx / job_nbr))
-	let bch_flg=$(((fl_idx+1) % job_nbr))
-	#printf "${spt_nm}: fl_idx = ${fl_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
-	if [ ${bch_flg} -eq 0 ]; then
-	    if [ ${dbg_lvl} -ge 1 ] && [ ${idx_srt} -le ${idx_end} ]; then
-		printf "${spt_nm}: Waiting for batch ${bch_idx} to finish at fl_idx = ${fl_idx}...\n"
-	    fi # !dbg
-	    for ((pid_idx=${idx_srt};pid_idx<=${idx_end};pid_idx++)); do
-		wait ${rgr_pid[${pid_idx}]}
-		if [ "$?" -ne 0 ]; then
-		    printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
-		    exit 1
-		fi # !err
-	    done # !pid_idx
-	    let idx_srt=$((idx_srt + job_nbr))
-	    let idx_end=$((idx_end + job_nbr))
-	fi # !bch_flg
-    fi # !par_typ
-    
-    # Block 7: Special case post-processing
-    if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
-	# NB: Move file to avert problem with --no_tmp_fl causing self-overwrite
-	cmd_znl[${fl_idx}]="/bin/mv \"${out_fl}\" \"${ncwa_fl}\";ncwa -O -a lon ${nco_opt} ${nco_var_lst} \"${ncwa_fl}\" \"${out_fl}\""
-	# Block 7 Loop 2: Execute and/or echo commands
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_znl[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_znl[${fl_idx}]}
-	    if [ "$?" -ne 0 ] || [ ! -f "${out_fl}" ]; then
-		printf "${spt_nm}: ERROR Failed to generate zonal file from lat-lon file. Debug this:\n${cmd_znl[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
+	done # !fl_idx
     fi # !znl
-
-done # !fl_idx
-
-# Parallel mode might exit loop after a partial batch, wait() for remaining jobs to finish
-if [ -n "${par_opt}" ]; then
-    let bch_flg=$((fl_nbr % job_nbr))
-    if [ ${bch_flg} -ne 0 ]; then
-	let bch_idx=$((bch_idx+1))
-	if [ ${dbg_lvl} -ge 1 ] && [ ${idx_srt} -lt ${fl_nbr} ]; then
-	    printf "${spt_nm}: Waiting for (partial) batch ${bch_idx} to finish...\n"
-	fi # !idx_srt
-	for ((pid_idx=${idx_srt};pid_idx<${fl_nbr};pid_idx++)); do
-	    wait ${rgr_pid[${pid_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${pid_idx}] failed. Debug this:\n${cmd_rgr[${pid_idx}]}\n"
-		exit 1
-	    fi # !err
-	done # !pid_idx
-    fi # !bch_flg
-fi # !par_typ
+    
+done # !bch_idx
 
 # fxm: Parallelize post-processing, if any
 if [ "${prc_typ}" = 'sgs' ]; then 

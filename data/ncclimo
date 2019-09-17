@@ -2414,7 +2414,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' 
 	# clm_idx is 1-based, bch_idx is 0-based
 	let clm_idx_srt=$(((bch_idx * job_nbr) + 1))
 	let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
-	#printf "${spt_nm}: job_nbr = ${job_nbr}, bch_nbr = ${bch_nbr}, bch_idx = ${bch_idx}, clm_idx_srt = ${clm_idx_end}, clm_idx_end = ${clm_idx_end}\n"
+	#printf "${spt_nm}: DEBUG job_nbr = ${job_nbr}, bch_nbr = ${bch_nbr}, bch_idx = ${bch_idx}, clm_idx_srt = ${clm_idx_end}, clm_idx_end = ${clm_idx_end}\n"
 	for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 	    printf "Climatological monthly mean for month ${clm_idx} ...\n"
 	    if [ ${dbg_lvl} -ge 1 ]; then

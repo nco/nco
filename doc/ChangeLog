@@ -1,3 +1,7 @@
+2019-09-17  Charlie Zender  <zender@uci.edu>
+
+	* Streamline batch job loop handling in ncremap
+
 2019-09-12  Charlie Zender  <zender@uci.edu>
 
 	* Document regridding algorithm in nco.texi
