@@ -1270,7 +1270,7 @@ endif # endif OMP
 endif
 # endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD, MACOSX
 
-# NB: Deprecated as of 201403. Now MACOSX is subsumed in LINUX
+# NB: Deprecated as of 201403. Now LINUX* subsumes MACOSX
 ifeq (${PVM_ARCH},MACOSXOLD)
 CXX := ${LINUX_CXX}
 # NB: -D_POSIX_SOURCE breaks MACOSX build in nco_fl_utl.c, nco_mmr.c

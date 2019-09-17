@@ -4780,15 +4780,36 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     var_typ_out=NC_DOUBLE; /* NB: sgs_frc_out must be double precision */
     var_sz_in=1L; /* Compute from scratch to be sure it matches grd_sz_in */
     var_sz_out=grd_sz_out; /* Assume this holds */
-    rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
-    rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
+    char *fl_sgs=NULL; /* [sng] External sub-gridscale file name */
+    int sgs_id; /* [id] netCDF file ID for external sub-gridscale file */
+    sgs_id=in_id;
+    if((rcd=nco_inq_varid_flg(sgs_id,var_nm,&var_id_in)) != NC_NOERR){
+      /* If sgs_frc_nm is not in input file then search for it in external area file */
+      char *sls_ptr; /* [sng] Pointer to last slash character (' ') */
+      sls_ptr=strrchr(var_nm,'/');
+      if(!sls_ptr){
+	(void)fprintf(stderr,"%s: ERROR %s reports unable to find sgs_frc_nm = %s in current input file, and unable to identify filename (ending with slash '/') portion of that string to serve as local external file for sgs_frc input, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm);
+	nco_exit(EXIT_FAILURE);
+      } /* !sls_ptr */
+      sgs_frc_nm=(char *)strdup(sls_ptr+1L); /* Copy variable-name portion of string */
+      *sls_ptr='\0'; /* NULL-terminate filename */
+      fl_sgs=(char *)strdup(var_nm);
+      var_nm=sgs_frc_nm; /* NB: too tricky? */
+      rcd=nco_open(fl_sgs,NC_NOWRITE,&sgs_id);
+      if((rcd=nco_inq_varid_flg(sgs_id,var_nm,&var_id_in)) != NC_NOERR){
+	(void)fprintf(stderr,"%s: ERROR %s reports unable to find sgs_frc_nm = \"%s\" in local external file %s, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm,fl_sgs);
+	nco_exit(EXIT_FAILURE);
+      } /* !rcd */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s obtaining sgs_frc = %s from file %s\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm,fl_sgs);
+    } /* !rcd */ 
+    rcd=nco_inq_varndims(sgs_id,var_id_in,&dmn_nbr_in);
     dmn_nbr_max= dmn_nbr_in > dmn_nbr_out ? dmn_nbr_in : dmn_nbr_out;
     dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
     dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long)); /* max() for both input and output grids */
     dmn_cnt_in=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
-    rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+    rcd=nco_inq_vardimid(sgs_id,var_id_in,dmn_id_in);
     for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
-      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_in+dmn_idx);
+      rcd=nco_inq_dimlen(sgs_id,dmn_id_in[dmn_idx],dmn_cnt_in+dmn_idx);
       var_sz_in*=dmn_cnt_in[dmn_idx];
       dmn_srt[dmn_idx]=0L;
     } /* !dmn_idx */
@@ -4797,10 +4818,16 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       nco_exit(EXIT_FAILURE);
     } /* !var_sz_in */
     /* Missing value setup (NB: ELM landfrac has _FillValue and is _FillValue where masked */
-    has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
+    has_mss_val=nco_mss_val_get_dbl(sgs_id,var_id_in,&mss_val_dbl);
     sgs_frc_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sgs_frc_in value buffer");
-    rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,sgs_frc_in,var_typ_rgr);
+    rcd=nco_get_vara(sgs_id,var_id_in,dmn_srt,dmn_cnt_in,sgs_frc_in,var_typ_rgr);
 
+    /* If sgs_frc comes from external local file, close it now */
+    if(fl_sgs){
+      rcd=nco_close(sgs_id);
+      fl_sgs=(char *)nco_free(fl_sgs);
+    } /* !fl_sgs */
+    
     /* Initialize output */
     sgs_frc_out=(double *)nco_malloc_dbg(grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() sgs_frc_out value buffer");
     

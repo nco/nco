@@ -236,15 +236,18 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v FSNT,AODVIS -a conserve -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -a conserve2nd -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS --rnr=0.99 --esmf_mth=idavg -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
-# ncremap -v FSNT,AODVIS -a nco -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -a nco -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}a/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -a tempest -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # Positional arguments:
 # ncremap --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Omit cell_measures:
 # ncremap --no_cll_msr --var=FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -o ~/foo.nc
-# GSG (201903):
+# GSG (201909):
 # ncremap -P gsg --sgs_frc=landfrac -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc
-# ncremap -P mpascice --sgs_frc=timeMonthly_avg_iceAreaCell -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ~/msi_raw.nc ~/msi_gsg.nc
+# External sgs_frc:
+# ncremap -P gsg --sgs_frc=${DATA}/grids/elm_landfrac_ne30.nc/landfrac -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/ne30/clm/TBOT_200001_200012.nc ~/foo.nc
+# ncremap -P gsg --sgs_frc=${DATA}/grids/elm_landfrac_ne30.nc/landfrac -v TBOT -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc
+# ncremap -P mpasseaice --sgs_frc=timeMonthly_avg_iceAreaCell -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ~/msi_raw.nc ~/msi_gsg.nc
 # SGS (201705):
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/elm_sgs.nc # 20170510 1D->2D works conserve and bilinear, no inferral
 # ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works conserve and bilinear, no inferral
@@ -1383,7 +1386,7 @@ if [ "${prc_typ}" = 'cice' ]; then
     prc_typ='sgs'
 fi # !cice
 if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ]; then 
-    # NB: 'mpasseaice' is an exact synonym for 'mpascice'
+    # NB: 'mpasseaice' is an exact synonym for 'mpascice' (which should be deprecated)
     # Set MPAS-SeaIce-specific options first, then change prc_typ to sgs
     # MPAS-SeaIce requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
