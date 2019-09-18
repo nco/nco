@@ -230,7 +230,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo --dbg=1 --ypf=50 -s 1979 -e 1983 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split all:
 # cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
-# Split ALM:
+# Split ELM:
 # ncclimo --dbg=1 -s 2000 -e 2000 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc
 # Split vertical:
 # cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
@@ -243,7 +243,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Diurnal pipe:
 # cd ${DATA}/ne30/raw;ls *h4*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly --tpd=8 -s 2001 -e 2002 --var=PREC<T,TS,FSDS --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # SGS:
-# ncclimo -d 1 -v TBOT -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ~/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150621.nc
+# ncclimo -d 1 -v TBOT,FSDS -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
+# ncclimo -d 1 -v TBOT,FSDS -m clm2 -c F_acmev03_enso_camse_clm45bgc_ne30_co2cycle -s 2000 -e 2000 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30.nc/landfrac 
 # Seasons:
 # ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
 # ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
@@ -494,6 +495,7 @@ rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
 spl_rgr_opt='--rgr no_stagger' # [sng] Splitter regridding options
 sbs_flg='No' # [sng] Split (subset) climatologies
+sgs_frc='' # [sng] Sub-grid fraction variable
 std_chk='Yes' # [sng] Check stdin for input file list
 thr_nbr=2 # [nbr] Thread number for regridder
 tpd_out=1 # [nbr] Timesteps-per-day in ouput
@@ -554,6 +556,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-S${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year previous climo (empty means none) (default ${fnt_bld}${yr_srt_prv}${fnt_nrm}) [${fnt_tlc}yr_srt_prv, prv_yr_srt, previous_start${fnt_nrm}]"
     echo "${fnt_rvr}-s${fnt_nrm} ${fnt_bld}yr_srt${fnt_nrm}   Start year (default ${fnt_bld}${yr_srt}${fnt_nrm}) [${fnt_tlc}yr_srt, start_yr, year_start, start_year, start${fnt_nrm}]"
     echo " ${fnt_bld}--seasons${fnt_nrm}  Seasons to output ('none' means none) (default ${fnt_bld}${csn_lst}${fnt_nrm}) [${fnt_tlc}csn_lst, csn, seasons${fnt_nrm}]"
+    echo " ${fnt_bld}--sgs_frc${fnt_nrm}  Sub-grid fraction variable (empty means none) (default ${fnt_bld}${sgs_frc}${fnt_nrm}) [${fnt_tlc}sgs_frc, ice_frc, lnd_frc, ocn_frc, subgrid_fraction${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thr, thread_number, thread, threads${fnt_nrm}]"
     echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
@@ -711,6 +714,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
 	       seasons=?* | csn_lst=?* | csn=?* | season=?* ) csn_lst="${LONG_OPTARG}" ;; # # Seasons to output
+	       sgs_frc=?* | ice_frc=?* | lnd_frc=?* | ocn_frc=?* | subgrid_fraction=?* ) sgs_frc="${LONG_OPTARG}" ;; # # Sub-grid fraction variable
 	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Check stdin for input file list
 	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Check stdin for input file list
 	       thr_nbr=?* | thr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
@@ -1070,11 +1074,9 @@ if [ -n "${rgr_map}" ]; then
 	echo "${spt_nm}: HINT Supply the full path-name for the regridding map"
 	exit 1
     fi # ! -f
-    if [ "${mdl_nm}" = 'clm2' ]; then
-	printf "${spt_nm}: ERROR ${spt_nm} refuses to regrid ALM/CLM/ELM output because doing so correctly requires additional steps required for sub-gridscale (SGS) data. These steps can currently only be performed by invoking ncremap with extra arguments.\n"
-	printf "${spt_nm}: HINT Use ${spt_nm} to generate climatology/time-series files from ALM/CLM/ELM, and then issue a separate ncremap command with the extra information to regrid those files. To regrid ALM/CLM/ELM data, ncremap requires specification of the source and destination grid files (with -s grd_src and -g grd_dst, respectively).\n"
-	printf "${spt_nm}: INFO This restriction prevents users from inadvertently generating regridded output that is up to a few percent wrong. Naively regridding sub-gridscale output will generate inaccurate results in all destination gridcells that contain contributions gridcells whose surface fraction (e.g., landfrac) is less than 1.0 on the source grid. Using ncremap ensures that values from sub-gridcell features like coastlines and islands are treated correctly. For more information, contact Charlie.\n"
-	exit 1
+    if [ "${mdl_nm}" = 'clm2' ] && [ -z "${sgs_frc}" ]; then
+	printf "${spt_nm}: WARNING ${spt_nm} ALM/CLM/ELM output typically uses sub-gridscale (SGS) fractions that can only be properly renormalized if the SGS variable option to ncclimo is invoked, but that option was not invoked\n"
+	printf "${spt_nm}: HINT Provide ${spt_nm} with the SGS fraction variable using the \"--sgs_frc=\$sgs_frc_nm}\" option, otherwise the regridded data will likely not be properly or conservatively regridded\n"
     fi # !mdl_nm
     map_opt="--map=${rgr_map}"
     rgr_opt="${rgr_opt} ${map_opt}"
@@ -1092,6 +1094,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     # Users can override this splitter-only default by explicitly requesting multiple threads
     thr_nbr=1 # [nbr] Thread number for regridder
 fi # !sbs_flg
+if [ -n "${sgs_frc}" ]; then
+    sgs_opt="--rgr sgs_frc_nm=${sgs_frc}"
+    rgr_opt="${rgr_opt} ${sgs_opt}"
+fi # !sgs_frc
 if [ -n "${thr_usr}" ]; then
     thr_nbr="${thr_usr}"
 fi # !thr_usr
@@ -1592,6 +1598,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
     printf "dbg: no_ntv   = ${no_ntv_tms}\n"
     printf "dbg: sbs_flg  = ${sbs_flg}\n"
+    printf "dbg: sgs_frc  = ${sgs_frc}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: vrt_fl   = ${vrt_fl}\n"
@@ -2042,7 +2049,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    if [ "${mdl_typ}" = 'mpas' ]; then
 			# 20181114: Remove '-C' argument from ncremap invocation for MPAS splitter only
 			# This ensures CMIP6 MPAS timeseries will have _FillValue
-			cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+			cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" ${sgs_opt} ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		    fi # !mdl_typ
 		    if [ ${dbg_lvl} -ge 1 ]; then
 			echo ${cmd_rgr[${var_idx}]}

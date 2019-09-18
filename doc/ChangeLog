@@ -1,8 +1,13 @@
+2019-09-18  Charlie Zender  <zender@uci.edu>
+
+	* Replace convoluted SGS implementation (juggling grids/maps) with elegant internal method.
+	Continue to use SGS naming, which requires users to change calling syntax.
+
 2019-09-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha07: XTerra';git push
-	git tag -a 4.8.2-alpha07 -m 'ncremap/ncclimo bch/job loops;nco.texi rgr';git push --tags
+	git tag -a 4.8.2-alpha07 -m 'ncremap/ncclimo bch/job loops;ncremap sgs_frc external;nco.texi rgr';git push --tags
 
 	* Allow sgs_frc_nm to contain external local filename, then slash, then actual sgs_frc_nm
 

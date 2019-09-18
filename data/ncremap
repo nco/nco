@@ -242,23 +242,15 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=~/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Omit cell_measures:
 # ncremap --no_cll_msr --var=FSNT,AODVIS -i ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -o ~/foo.nc
-# GSG (201909):
-# ncremap -P gsg --sgs_frc=landfrac -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc
-# External sgs_frc:
-# ncremap -P gsg --sgs_frc=${DATA}/grids/elm_landfrac_ne30.nc/landfrac -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/ne30/clm/TBOT_200001_200012.nc ~/foo.nc
-# ncremap -P gsg --sgs_frc=${DATA}/grids/elm_landfrac_ne30.nc/landfrac -v TBOT -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_gsg.nc
-# ncremap -P mpasseaice --sgs_frc=timeMonthly_avg_iceAreaCell -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ~/msi_raw.nc ~/msi_gsg.nc
-# SGS (201705):
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/elm_sgs.nc # 20170510 1D->2D works conserve and bilinear, no inferral
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/t42_SCRIP.20150901.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works conserve and bilinear, no inferral
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -s ${DATA}/grids/t42_SCRIP.20150901.nc -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve, infer D not S
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/dstmch90/dstmch90_clm.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/hdf/b1850c5cn_doe_polar_merged_0_cesm1_2_0_HD+MAM4+tun2b.hp.e003.cam.h0.0001-01.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${DATA}/essgcm14/essgcm14.cam2.h0.0000-01.nc ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/fv09_rgr.nc # 20170510 2D->2D bilinear works and conserve ~2% wrong, infer S and D
-# ncremap --vrb=3 -P sgs --var=area,FSDS,landfrac,landmask,TBOT -d ${HOME}/skl_t42.nc ${DATA}/ne30/rgr/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/fv09_rgr.nc # 20170510 2D->2D works bilinear and conserve ~2% wrong, infer S and D
-# ncremap --vrb=3 -p serial -P sgs -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
+# SGS (201909):
+# ncremap -P elm -v FSDS,TBOT,GPP -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/elm_raw.nc ~/elm_sgs.nc
+# ncremap -P mpasseaice --sgs_frc=timeMonthly_avg_iceAreaCell -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ~/msi_raw.nc ~/msi_sgs.nc
+# ncremap --sgs_frc=${DATA}/grids/sgs_landfrac_ne30.nc/landfrac -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ${DATA}/ne30/clm/TBOT_200001_200012.nc ~/foo.nc # External sgs_frc
+# ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-01.nc ~/elm_sgs.nc # 20190918 1D->2D works
+# ncremap --vrb=3 --sgs_frc=landfrac --var=area,FSDS,landfrac,landmask,TBOT -m ${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc ${DATA}/essgcm14/essgcm14.clm2.h0.0000-01.nc ~/t42_rgr.nc # 20190918 2D->2D
+# ncremap --vrb=3 -p serial --sgs_frc=landfrac -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc -O ${DATA}/ne30/rgr ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc > ~/ncremap.out 2>&1 &
 # ncremap --vrb=3 -a conserve --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 normalization required to get mask right
-# ncremap --vrb=3 -P cice -a conserve --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 cice short-cut
+# ncremap --vrb=3 -a conserve -P cice --var=hi,uvel,aice,aisnap,albsno,blkmask,evap,evap_ai,fswabs,fswabs_ai,fswdn,fswthru,fswthru_ai,ice_present,snow,snow_ai,tarea,tmask,uarea -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170525 cice short-cut
 # CICE/CESM on POP grid: full grid inferral (and thus conservative remapping) fails because masked vertices/cells missing, must use bilinear or supply grid-file for conservative
 # ncremap -a bilinear -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170515: grid centers/bounds in non-masked regions suffice for bilinear interpolation
 # ncremap -a conserve -s ${DATA}/grids/gx1v7_151008.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ctl_brcp85c5cn_deg1.enm.cice.h.2050-07.nc ~/foo.nc # 20170521: conservative requires supplied tri-pole grid for centers/bounds in masked regions
@@ -1374,7 +1366,7 @@ if [ "${prc_typ}" = 'alm' ] || [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'cts
 fi # !alm, !clm, !ctsm, !elm
 # fxm: 20190326 kludge explicit specifications of this variable automatically invoke GSG mode
 if [ "${sgs_frc}" = 'timeMonthly_avg_iceAreaCell' ]; then 
-    prc_gsg='Yes'
+    prc_typ='sgs'
 fi # !gsg
 if [ "${prc_typ}" = 'cice' ]; then 
     # Set CICE-specific options first, then change prc_typ to sgs
@@ -1415,7 +1407,7 @@ if [ "${prc_gsg}" = 'Yes' ]; then
 fi # !gsg
 if [ "${prc_typ}" = 'sgs' ]; then 
     nco_dgn_area='--rgr diagnose_area'
-    wgt_opt_esmf='--user_areas --ignore_unmapped'
+    wgt_opt_esmf='--ignore_unmapped'
     wgt_opt=${wgt_opt_esmf}
 fi # !sgs
 if [ -n "${thr_usr}" ]; then 
@@ -1942,7 +1934,7 @@ if [ "${flg_vrt_only}" != 'Yes' ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "Destination grid will be inferred from data-file\n"
 	    fi # !vrb_lvl
-	    cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_dst_fl}\" ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=\"${grd_dst}\" \"${dst_fl}\" \"${tmp_out_fl}\""
+a	    cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_dst_fl}\" ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=\"${grd_dst}\" \"${dst_fl}\" \"${tmp_out_fl}\""
 	else # !dst_usr_flg
 	    if [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
 		if [ ${vrb_lvl} -ge ${vrb_3} ]; then
@@ -2119,211 +2111,16 @@ fi # !rrg
 
 if [ "${prc_typ}" = 'sgs' ]; then 
 
-    fl_idx=0
-    grd_dst_sgs="${drc_tmp}/ncremap_tmp_grd_dst_sgs.nc${unq_sfx}" # [sng] Fractional destination grid-file
-    grd_src_sgs="${drc_tmp}/ncremap_tmp_grd_src_sgs.nc${unq_sfx}" # [sng] Fractional source grid-file
-    frc_in_sgs="${drc_tmp}/ncremap_tmp_frc_in_sgs.nc${unq_sfx}" # [sng] Sub-grid fraction on input data grid
-    frc_out_sgs="${drc_tmp}/ncremap_tmp_frc_out_sgs.nc${unq_sfx}" # [sng] Sub-grid fraction on output data grid
-
-    if [ "${grd_src_usr_flg}" != 'Yes' ]; then
-	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "Source grid will be inferred from data-file\n"
-	    if [ ${fl_nbr} -ge 2 ]; then 
-		printf "Sub-grid mode assumes all input data-files on same grid as first file, so only one source grid-file will be inferred, and only one map-file will be generated, and it will be re-used\n"
-	    fi # !fl_nbr
-	fi # !vrb_lvl
-	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "Infer source grid-file from input data file...\n"
-	fi # !vrb_lvl
-	cmd_src[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_src=\"${hnt_src_fl}\" ${nco_dgn_area} ${nco_msk_src} ${nco_ugrid_fl} ${nco_var_rgr} --rgr scrip=\"${grd_src}\" \"${fl_in[${fl_idx}]}\" \"${tmp_out_fl}\""
-	
-	# Block 2 Loop 2: Execute and/or echo commands
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_src[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_src[${fl_idx}]}
-	    if [ "$?" -ne 0 ]; then
-		printf "${spt_nm}: ERROR Failed to infer source grid. Debug this:\n${cmd_src[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
-    fi # !grd_src
-
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Duplicate destination grid-file for modification into fractional destination grid-file...\n"
-    fi # !vrb_lvl
-    cmd_cp_dst[${fl_idx}]="/bin/cp -f \"${grd_dst}\" \"${grd_dst_sgs}\""
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_cp_dst[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_cp_dst[${fl_idx}]}
-	if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to duplicate destination grid-file to fractional destination grid-file. Debug this:\n${cmd_cp_dst[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Duplicate source grid for modification into fractional source grid-file...\n"
-    fi # !vrb_lvl
-    cmd_cp_src[${fl_idx}]="/bin/cp -f \"${grd_src}\" \"${grd_src_sgs}\""
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_cp_src[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_cp_src[${fl_idx}]}
-	if [ "$?" -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to duplicate source grid to fractional source grid-file. Debug this:\n${cmd_cp_src[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Append sub-grid fraction from data-file to fractional source grid-file\n"
-    fi # !vrb_lvl
-    cmd_sgs_src[${fl_idx}]="ncks -A -C -v ${sgs_frc} \"${fl_in[${fl_idx}]}\" \"${grd_src_sgs}\""
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_sgs_src[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_sgs_src[${fl_idx}]}
-	if [ "$?" -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to append sub-grid fraction from data file to fractional source grid-file. Debug this:\n${cmd_sgs_src[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Derive fraction, mask, and area in fractional source grid-file...\n"
-    fi # !vrb_lvl
-    # 0. Normalize sub-grid fraction (e.g., from percent to fraction) if necessary
-    # 1. Eliminate _FillValue and missing_value attributes before using where() which would evaluate _FillValue as false, and necessitate using a weird where() condition
-    # 2. Set (formerly) missing values to 0 sub-grid fraction
-    # 3. Set 0 sub-grid fraction to 0 imask
-    # 4. Compute active grid area
-    cmd_wheresrc[${fl_idx}]="ncap2 -O -s '${sgs_frc}=${sgs_frc}; if(${sgs_nrm} != 1.0){${sgs_frc}/=${sgs_nrm}; ${sgs_frc}@units=\"1\";} if(${sgs_frc}@missing_value.exists()) ram_delete(${sgs_frc}@missing_value); delete_miss(${sgs_frc}); where(${sgs_frc} > 1.0f) ${sgs_frc}=0.0f; where(${sgs_frc} == 0.0f) grid_imask=0; grid_area*=${sgs_frc}' \"${grd_src_sgs}\" \"${grd_src_sgs}\""
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_wheresrc[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_wheresrc[${fl_idx}]}
-	if [ "$?" -ne 0 ] || [ ! -f ${grd_src_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to derive fraction, mask, and area in fractional source grid-file. Debug this:\n${cmd_wheresrc[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Create sub-grid fraction ${sgs_frc} data file for regridding...\n"
-    fi # !vrb_lvl
-    cmd_sgs_in[${fl_idx}]="ncks -O -v ${sgs_frc} \"${grd_src_sgs}\" \"${frc_in_sgs}\""
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_sgs_in[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_sgs_in[${fl_idx}]}
-	if [ "$?" -ne 0 ] || [ ! -f ${frc_in_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to extract sub-grid fraction from fractional source grid-file. Debug this:\n${cmd_sgs_in[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Regrid sub-grid fraction ${sgs_frc} to destination grid...\n"
-    fi # !vrb_lvl
-    # NB: Sub-grid mask is extensive and may contain _FillValue (as does ALM/CLM/CTSM/ELM landmask), so do not regrid it
-    cmd_sgs_rmp[${fl_idx}]="ncremap --vrb=0 -a ${alg_opt} -v ${sgs_frc} -i \"${frc_in_sgs}\" -s \"${grd_src}\" -g \"${grd_dst}\" -o \"${frc_out_sgs}\""
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_sgs_rmp[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_sgs_rmp[${fl_idx}]}
-	if [ "$?" -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to regrid sub-grid fraction. Debug this:\n${cmd_sgs_rmp[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Derive sub-grid mask ${sgs_msk} from regridded sub-grid fraction...\n"
-    fi # !vrb_lvl
-    # Allow for possibility that sgs_frc is 3D (time,lat,lon) as in CICE
-    # And be CAREFUL changing this
-    cmd_sgs_msk[${fl_idx}]="ncap2 -O -s 'if(${sgs_frc}.ndims() < 3) sgsarea=${sgs_frc}*area; else sgsarea=${sgs_frc}(0,:,:);${sgs_msk}=0*int(sgsarea);where(sgsarea > 0) ${sgs_msk}=1; elsewhere ${sgs_msk}=0;${sgs_msk}@long_name=\"surface mask (0=invalid and 1=valid)\";if(${sgs_msk}@cell_measures.exists()) ram_delete(${sgs_msk}@cell_measures)' \"${frc_out_sgs}\" \"${frc_out_sgs}\""
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_sgs_msk[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_sgs_msk[${fl_idx}]}
-	if [ "$?" -ne 0 ] || [ ! -f ${frc_out_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to derive mask from regridded sub-grid fraction. Debug this:\n${cmd_sgs_msk[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Append regridded sub-grid fraction to destination fractional grid-file...\n"
-    fi # !vrb_lvl
-    cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc},area \"${frc_out_sgs}\" \"${grd_dst_sgs}\"" # Min Xu 20190123
-    #cmd_sgs_dst[${fl_idx}]="ncks -A -C -v ${sgs_frc} \"${frc_out_sgs}\" \"${grd_dst_sgs}\"" # CSZ until 20190123 uses area directly from destination grid rather than copying remapped area from input grid
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_sgs_dst[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_sgs_dst[${fl_idx}]}
-	if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to append regridded sub-grid fraction to destination fractional grid-file. Debug this:\n${cmd_sgs_dst[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-
-    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "SGS: Derive mask and area in fractional destination grid-file...\n"
-    fi # !vrb_lvl
-    # 1. Set 0 sub-grid fraction to 0 imask
-    # 2. Compute active grid area
-    # 20190123:
-    # Min Xu's lines make ncremap BFB with conv_remap2: conserve physical fields not area
-    # CSZ's original lines disagree with conv_remap2: conserve area not physical fields 
-    # Min Xu defines grid_area using area from remapped source grid
-    # CSZ uses area grid_area taken directly from destination grid
-    cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area=grid_center_lon;grid_area=area*${sgs_frc}' \"${grd_dst_sgs}\" \"${grd_dst_sgs}\"" # Min Xu 20190123
-    #cmd_wheredst[${fl_idx}]="ncap2 -O -s 'where(${sgs_frc} == 0.0f) grid_imask=0; elsewhere grid_imask=1;grid_area*=${sgs_frc}' \"${grd_dst_sgs}\" \"${grd_dst_sgs}\"" # CSZ until 20190123
-    if [ ${dbg_lvl} -ge 1 ]; then
-	echo ${cmd_wheredst[${fl_idx}]}
-    fi # !dbg
-    if [ ${dbg_lvl} -ne 2 ]; then
-	eval ${cmd_wheredst[${fl_idx}]}
-	if [ "$?" -ne 0 ] || [ ! -f ${grd_dst_sgs} ]; then
-	    printf "${spt_nm}: ERROR Failed to derive mask and area in fractional destination grid-file. Debug this:\n${cmd_wheredst[${fl_idx}]}\n"
-	    exit 1
-	fi # !err
-    fi # !dbg
-
-    # Ensure map-generation uses modified grid files
-    grd_src=${grd_src_sgs}
-    grd_dst=${grd_dst_sgs}
-
-    if [ "${prc_cice}" = 'Yes' ] || [ "${prc_mpascice}" = 'Yes' ] && [ ${fl_nbr} -gt 1 ]; then
-	# Convey spirit of SGS implementation assumptions described below
-	printf "WARNING: SGS-mode invoked for multiple sea-ice datasets. SGS-mode regrids all data files using the sub-grid fraction from the first datafile. This is usually appropriate for land timeseries since land sub-grid fractions generally do not change with time, yet inappropriate for sea-ice timeseries since sea-ice area generally changes with time.\nHINT: Invoke ${spt_nm} once per discrete time interval for sea-ice data. Doublecheck with Charlie if you are unsure what to do.\n"
-    fi # !prc_cice, !prc_mpascice
+    echo '' # 20190918
     
 fi # !sgs
 
 # If user provides source gridfile, or it was inferred in RRG or SGS modes, assume it applies to every input file
 # Do not infer source gridfiles from input files within file loop
 # Generate map-file once outside of file loop, and re-use it for every input file
-# This paradigm suits ELM/ALM and CTSM/CLM timeseries since (until at least 201901) land fractions do not change
-# A single instance of ncremap efficiently handles (creates/applies one SGS map for) all land datafiles from a single land simulation
-# This paradigm is inappropriate for CICE timeseries since ice fractions change dramatically
-# Invoke ncremap separately for each discrete time interval from a single sea-ice simulation
-# Hence SGS regridding of land compared to sea-ice is fundamentally more efficient
-if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ] || [ "${prc_typ}" = 'sgs' ]; then
+if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	printf "Source grid supplied by user (or derived from RRG or SGS procedures) as ${grd_src}\n"
+	printf "Source grid supplied by user (or derived from RRG procedure) as ${grd_src}\n"
     fi # !vrb_lvl
     fl_idx=0
     if [ ${vrb_lvl} -ge ${vrb_1} ]; then
@@ -2790,87 +2587,97 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	done # !fl_idx
     fi # !par_opt
     
-    # Block 7: Special case post-processing
-    if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
-	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
-	    # NB: Move file to avert problem with --no_tmp_fl causing self-overwrite
-	    cmd_znl[${fl_idx}]="/bin/mv \"${out_fl}\" \"${ncwa_fl}\";ncwa -O -a lon ${nco_opt} ${nco_var_lst} \"${ncwa_fl}\" \"${out_fl}\""
-	    # Block 7 Loop 2: Execute and/or echo commands
-	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_znl[${fl_idx}]}
-	    fi # !dbg
-	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_znl[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f "${out_fl}" ]; then
-		    printf "${spt_nm}: ERROR Failed to generate zonal file from lat-lon file. Debug this:\n${cmd_znl[${fl_idx}]}\n"
-		    exit 1
-		fi # !err
-	    fi # !dbg
-	done # !fl_idx
-    fi # !znl
-    
-done # !bch_idx
+    # Block 7: Parallel post-processing
+    for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 
-# fxm: Parallelize post-processing, if any
-if [ "${prc_typ}" = 'sgs' ]; then 
-    for ((fl_idx=0;fl_idx<${fl_nbr};fl_idx++)); do
-	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-	    printf "SGS: Append full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask to regridded file...\n"
-	fi # !vrb_lvl
-	# Replace user-areas area, user-areas sub-grid fraction, and naïvely regridded (rather than accurately re-derived) sub-grid mask, respectively
-	cmd_sgs_rpl[${fl_idx}]="ncks -A -C -v area,${sgs_frc},${sgs_msk} \"${frc_out_sgs}\" \"${fl_out[${fl_idx}]}\""
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    echo ${cmd_sgs_rpl[${fl_idx}]}
-	fi # !dbg
-	if [ ${dbg_lvl} -ne 2 ]; then
-	    eval ${cmd_sgs_rpl[${fl_idx}]}
-	    if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		printf "${spt_nm}: ERROR Failed to replace area, ${sgs_frc}, and ${sgs_msk} with full gridcell area, regridded sub-grid fraction, and re-derived sub-grid mask in output data file. Debug this:\n${cmd_sgs_rpl[${fl_idx}]}\n"
-		exit 1
-	    fi # !err
-	fi # !dbg
 	if [ -n "${prc_elm}" ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "SGS: Implement idiosyncratic ALM/CLM/CTSM/ELM characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [km2]
-	    cmd_elm[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@long_name=\"Gridcell area\";area@units=\"km^2\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
+	    cmd_ppp[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@long_name=\"Gridcell area\";area@units=\"km^2\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_elm[${fl_idx}]}
+		echo ${cmd_ppp[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_elm[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		    printf "${spt_nm}: ERROR Failed to convert output area from [sr] to [km2]. Debug this:\n${cmd_elm[${fl_idx}]}\n"
-		    exit 1
-		fi # !err
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_ppp[${fl_idx}]}
+		    if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+			printf "${spt_nm}: ERROR Failed post-processing to convert output area from [sr] to [km2]. Debug this:\n${cmd_ppp[${fl_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_typ
+		    eval ${cmd_ppp[${fl_idx}]} ${par_opt}
+		    ppp_pid[${fl_idx}]=$!
+		fi # !par_typ
 	    fi # !dbg
 	fi # !prc_elm
+
 	if [ -n "${prc_cice}" ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "SGS: Implement idiosyncratic CICE characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [m2], and aice from [frc] to [%]
-	    cmd_cice[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2;area@long_name=\"Gridcell area\";area@units=\"m^2\";${sgs_frc}*=100;${sgs_frc}@units=\"%\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
+	    cmd_ppp[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2;area@long_name=\"Gridcell area\";area@units=\"m^2\";${sgs_frc}*=100;${sgs_frc}@units=\"%\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
 	    if [ ${dbg_lvl} -ge 1 ]; then
-		echo ${cmd_cice[${fl_idx}]}
+		echo ${cmd_ppp[${fl_idx}]}
 	    fi # !dbg
 	    if [ ${dbg_lvl} -ne 2 ]; then
-		eval ${cmd_cice[${fl_idx}]}
-		if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
-		    printf "${spt_nm}: ERROR Failed to convert output area from [sr] to [m2] and ${sgs_frc} from [frc] to [%]. Debug this:\n${cmd_cice[${fl_idx}]}\n"
-		    exit 1
-		fi # !err
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_ppp[${fl_idx}]}
+		    if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+			printf "${spt_nm}: ERROR Failed post-processing to convert output area from [sr] to [m2] and ${sgs_frc} from [frc] to [%]. Debug this:\n${cmd_ppp[${fl_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_typ
+		    eval ${cmd_ppp[${fl_idx}]} ${par_opt}
+		    ppp_pid[${fl_idx}]=$!
+		fi # !par_typ
 	    fi # !dbg
 	fi # !prc_cice
+
+	# Block 8: Other special case post-processing
+	if [ "${prc_typ}" = 'hirdls' ] || [ "${prc_typ}" = 'mls' ]; then
+	    # NB: Move file to avert problem with --no_tmp_fl causing self-overwrite
+	    # fxm: ncwa_fl is not parallel-safe, needs fl_idx suffix
+	    cmd_ppp[${fl_idx}]="/bin/mv \"${fl_out[${fl_idx}]}\" \"${ncwa_fl}\";ncwa -O -a lon ${nco_opt} ${nco_var_lst} \"${ncwa_fl}\" \"${fl_out[${fl_idx}]}\""
+	    # Block 7 Loop 2: Execute and/or echo commands
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		echo ${cmd_ppp[${fl_idx}]}
+	    fi # !dbg
+	    if [ ${dbg_lvl} -ne 2 ]; then
+		if [ -z "${par_opt}" ]; then
+		    eval ${cmd_ppp[${fl_idx}]}
+		    if [ "$?" -ne 0 ] || [ ! -f ${fl_out[${fl_idx}]} ]; then
+			printf "${spt_nm}: ERROR Failed post-processing to generate zonal file from lat-lon file. Debug this:\n${cmd_ppp[${fl_idx}]}\n"
+			exit 1
+		    fi # !err
+		else # !par_typ
+		    eval ${cmd_ppp[${fl_idx}]} ${par_opt}
+		    ppp_pid[${fl_idx}]=$!
+		fi # !par_typ
+	    fi # !dbg
+	fi # !znl
     done # !fl_idx
-fi # !sgs
+
+    # Block 9: Wait for post-processing tasks to complete
+    if [ -n "${par_opt}" ]; then
+	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
+	    wait ${ppp_pid[${fl_idx}]}
+	    if [ "$?" -ne 0 ]; then
+		printf "${spt_nm}: ERROR Failed post-processing step cmd_ppp[${fl_idx}]. Debug this:\n${cmd_ppp[${fl_idx}]}\n"
+		exit 1
+	    fi # !err
+	done # !fl_idx
+    fi # !par_opt
+
+done # !bch_idx
 
 if [ "${cln_flg}" = 'Yes' ]; then
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Clean-up intermediate files...\n"
     fi # !vrb_lvl
-    /bin/rm -f ${att_fl} ${d2f_fl} ${dmm_fl} ${dpt_tmp_fl} ${frc_in_sgs} ${frc_out_sgs} ${grd_dst_sgs} ${grd_dst_dfl} ${grd_src_sgs} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${pdq_fl} ${rgn_fl} ${rnm_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
+    /bin/rm -f ${att_fl} ${d2f_fl} ${dmm_fl} ${dpt_tmp_fl} ${grd_dst_dfl} ${grd_src_dfl} ${hnt_dst_fl} ${hnt_src_fl} ${map_fl_dfl} ${map_trn_fl} ${msh_fl_dfl} ${ncwa_fl} ${nnt_fl} ${pdq_fl} ${rgn_fl} ${rnm_fl} ${tmp_out_fl} ${znl_fl/znl/znl1} ${znl_fl/znl/znl2}
 else # !cln_flg
     if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	printf "Explicitly instructed not to clean-up intermediate files\n"
