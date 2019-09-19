@@ -235,8 +235,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
       if(isGeared)
       {
-
-        if(inflag==poly_vrl_unk && pq_pre)
+        /* pq_pre may be NULL or first char is null */
+        if(inflag==poly_vrl_unk && ( pq_pre &&  pq_pre[0]!='\0') )
         {
 
           if(pq_pre[b]=='i')
@@ -781,6 +781,11 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
 nco_bool
 nco_sph_plane_int(double *p0, double *q0, double *r0)
 {
+
+  char fnc_nm[]="nco_sph_plane_int()";
+
+  nco_bool bRet=False;
+
   double pqDot;
   double prDot;
   double qrDot;
@@ -793,12 +798,13 @@ nco_sph_plane_int(double *p0, double *q0, double *r0)
     prDot=1.0-nco_sph_dot_nm(p0,r0);
     qrDot=1.0-nco_sph_dot_nm(q0,r0);
 
+    //if(DEBUG_SPH)
+    //  (void)fprintf("%s:%s: pqDot=%.15f prDot=%.15f  qrDot=%.15f ", nco_prg_nm_get(), fnc_nm, pqDot, prDot, qrDot);
 
 
-    if( prDot >= qrDot+DOT_TOLERANCE)
+    if( prDot >= qrDot)
     {
-      if(prDot > pqDot)
-        return False;
+      if(prDot > pqDot +1.0e-14 ) return False;
 
       /* r0 is in the right "direction */
       if( signbit( nco_sph_cross2( p0,q0, id )) == signbit( nco_sph_cross2( p0,r0, id )) )
@@ -810,7 +816,7 @@ nco_sph_plane_int(double *p0, double *q0, double *r0)
     else
     {
 
-      if(qrDot > pqDot+DOT_TOLERANCE)
+      if(qrDot > pqDot + 1.0e-14)
         return False;
 
       /* r0 is in the right "direction */
@@ -884,7 +890,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
        codes[1]='h';
 
 
-     if(DEBUG_LCL )
+     if(DEBUG_SPH)
        fprintf(stderr, "%s: codes=%s - quick vertex return\n", fnc_nm, codes );
 
      return True;
@@ -898,29 +904,18 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
  }
 
 
-
-
-
-
-
-
-
   bInt=nco_mat_int_pl(p0, p1, q0, q1, pt, &tpar);
   /* no intersection */
 
 
 
-  if (DEBUG_LCL)
+
+  if (DEBUG_SPH)
     fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm,  (bInt ?  "True" : "False"), codes, tpar, pt[1], pt[2] );
 
   /* from here on we have some kind of intersection */
-
-
-
-  if (  bInt==False || tpar < -1.0e-14 ||   ( tpar >1.0 &&  tpar-1.0 >1.0e-14)  )
+  if(!bInt)
     return False;
-
-
 
 
 
@@ -939,12 +934,16 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
     }
     nco_sph_add_lonlat(pcnd);
 
-    bValid=nco_sph_plane_int(p0, p1, pcnd);
+    bValid=nco_sph_metric_int(p0,p1, pcnd);
 
-    if(DEBUG_LCL) {
+    if(DEBUG_SPH) {
       nco_sph_prn_pnt("nco_sph_seg_int_: pos point ", pcnd, 4, True);
       (void)fprintf(stderr, "%s: bValid=%s\n", fnc_nm,  (bValid ?  "True" : "False") );
     }
+
+    if ( tpar < -1.0e-10  ||  ( tpar >1.0 &&  tpar-1.0 >1.0e-10)  )
+      return False;
+
 
 
     if(!bValid)
@@ -998,21 +997,12 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
      codes[1]='1';
 
 
-
-
-    if(DEBUG_LCL )
+    if(DEBUG_SPH )
       fprintf(stderr, "%s: codes=%s tpar=%.15f\n", fnc_nm, codes, tpar  );
-
-
-
 
     memcpy(r0, pcnd, sizeof(double)*NBR_SPH);
 
-
     return True;
-
-
-
 
 
 
