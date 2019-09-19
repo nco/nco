@@ -48,7 +48,7 @@
 
 #include "nco_sph.h" /* Spherical geometry intersections */
 
-#include "nco_sph_add.c"
+
 
 /* global variables for latitude, longitude in RADIANS
    these may be set in nco_poly.c or
@@ -839,7 +839,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   nco_bool bInt=False;
   nco_bool bValid=False;
 
-  nco_bool bTstVertex=False;
+  nco_bool bTstVertex=True;
   int flg_cd=0;
   int flg_ab=0;
 
@@ -3504,4 +3504,119 @@ void nco_rll_add_pnt(double **R, int *r, double *P)
 
 }
 
-/*****************************************************************************************/
+/***************************************************************************************/
+/*********************   functions that deal with 3x£ matrix ******************************************************/
+/* mat mult */
+
+void
+nco_mat_mlt_3x3
+(double mat[], double vec[], double vec_out[])
+{
+
+  vec_out[0]=mat[0]*vec[0]+mat[1]*vec[1]+mat[2]*vec[2];
+  vec_out[1]=mat[3]*vec[0]+mat[4]*vec[1]+mat[5]*vec[2];
+  vec_out[2]=mat[6]*vec[0]+mat[7]*vec[1]+mat[8]*vec[2];
+
+}
+
+/* returns true if matrix is inverted, false otherwise */
+nco_bool
+nco_mat_inv_3x3(double *mat, double *mat_inv)
+{
+  char fnc_nm[]="nco_mat_inv_3x3()";
+  double deti;
+  const double det =  mat[0] * (mat[4]*mat[8] - mat[5]*mat[7])
+                      -mat[1] * (mat[3]*mat[8] - mat[5]*mat[6])
+                      +mat[2] * (mat[3]*mat[7] - mat[4]*mat[6]);
+
+
+  //if (det==0.0 || !isfinite(det)) return False;
+  if(  isnan(det) || !isfinite(det) || det==0.0 )
+  {
+    if(0 && nco_dbg_lvl_get()>= nco_dbg_dev)
+      (void)fprintf(stderr,"%s: det=%.15f\n", fnc_nm, det);
+    return False;
+
+  }
+
+
+  deti = 1.0/det;
+
+  mat_inv[0] = (mat[4]*mat[8] - mat[5]*mat[7]) * deti;
+  mat_inv[1] = (mat[2]*mat[7] - mat[1]*mat[8]) * deti;
+  mat_inv[2] = (mat[1]*mat[5] - mat[2]*mat[4]) * deti;
+
+  mat_inv[3] = (mat[5]*mat[6] - mat[3]*mat[8]) * deti;
+  mat_inv[4] = (mat[0]*mat[8] - mat[2]*mat[6]) * deti;
+  mat_inv[5] = (mat[2]*mat[3] - mat[0]*mat[5]) * deti;
+
+  mat_inv[6] = (mat[3]*mat[7] - mat[4]*mat[6]) * deti;
+  mat_inv[7] = (mat[1]*mat[6] - mat[0]*mat[7]) * deti;
+  mat_inv[8] = (mat[0]*mat[4] - mat[1]*mat[3]) * deti;
+
+  return True;
+}
+
+
+//// Intersect a line and a plane
+nco_bool
+nco_mat_int_pl(const double *a1, const double *a2, const double *l1, const double *l2, double *p,
+               double *t)
+               {
+
+  double mat[9];
+  double mat_inv[9];
+  double V[3];
+  double X[3];
+
+
+
+  /* To do intersection just solve the set of linear equations for both */
+  mat[0]=l1[0]-l2[0];
+  mat[1]=a2[0]-a1[0];
+  mat[2]=-a1[0];
+
+  mat[3]=l1[1]-l2[1];
+  mat[4]=a2[1]-a1[1];
+  mat[5]=-a1[1];
+
+  mat[6]=l1[2]-l2[2];
+  mat[7]=a2[2]-a1[2];
+  mat[8]=-a1[2];
+
+
+
+  /* Invert M */
+  if (!nco_mat_inv_3x3(mat, mat_inv))
+    return False;
+
+  /* Set variable holding vector */
+  V[0]=l1[0]-a1[0];
+  V[1]=l1[1]-a1[1];
+  V[2]=l1[2]-a1[2];
+
+  /* solve matrix */
+  nco_mat_mlt_3x3(mat_inv, V, X);
+
+  /* check if solution is finite */
+  /*
+  if(  !( nco_mat_isfinite(X[0]) && nco_mat_isfinite(X[1]) && nco_mat_isfinite(X[2]) ) )
+    return False;
+  */
+
+  *t=X[0];
+  p[0]=X[1];
+  p[1]=X[2];
+
+
+  if( isnan(X[0]) || !isfinite(X[0]) || isnan(X[1]) || !isfinite(X[1]) || isnan(X[2]) || !isfinite(X[2]) )
+    return False;
+
+
+
+
+  return True;
+}
+
+
+/******************************************************************************************************************/
