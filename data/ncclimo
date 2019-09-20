@@ -2305,7 +2305,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
-		    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.split.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.daily.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_rgr[${clm_idx}]}

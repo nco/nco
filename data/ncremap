@@ -283,6 +283,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -P mpas --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc -m ${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${DATA}/hdf/mpaso.lrz.hist.am.timeSeriesStatsMonthly.0001-12-01.nc ~/foo.nc
 # Vertical interpolation (201903):
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc # Simultaneous horizontal/vertical regridding
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc # Missing-value extrapolation (mss_val|nrs_ngh) # Extrapolation results in missing values
 # Time-varying hybrid input
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-0[123].nc 
@@ -380,6 +381,7 @@ esmf_xpn=2.0 # [frc] ESMF extrapolation exponent
 fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to remap
 flg_grd_only='No' # [flg] Create grid then exit before regridding
+flg_hrz='No' # [flg] Perform horizontal regridding
 gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_command=\"'${cmd_ln}'\" --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
 gll_fl='' # [sng] GLL grid metadata (geometry+connectivity+Jacobian) file
 grd_dst='' # [sng] Destination grid-file
@@ -895,9 +897,13 @@ if [ -n "${unq_usr}" ]; then
 	    unq_sfx="${unq_usr}"
 	else # !unq_usr
 	    unq_sfx=""
+#	    unq_sfx=.pid${spt_pid}.tmp
+#if [ -n "${unq_usr}" ]; then
+#	    unq_sfx=.pid${spt_pid}.flidx${fl_idx}.tmp
+#fi # !unq_usr
 	fi # !unq_usr
     fi # !unq_usr
-fi # !unq_sfx
+fi # !unq_usr
 att_fl=${att_fl}${unq_sfx}
 d2f_fl=${d2f_fl}${unq_sfx}
 dmm_fl=${dmm_fl}${unq_sfx}
@@ -1419,8 +1425,6 @@ if [ -n "${vrt_fl}" ]; then
 	exit 1
     fi # ! -f
     vrt_usr_flg='Yes'
-    # Prevent attempts at simultaneous vertical and horizontal regridding
-    flg_vrt_only='Yes' 
     if [ -n "${vrt_xtr}" ]; then
 	if [ ${vrt_xtr} = 'mss_val' ] || [ ${vrt_xtr} = 'missing_value' ] || [ ${vrt_xtr} = 'msv' ]; then 
 	    vrt_opt="${vrt_opt} --rgr xtr_mth=mss_val"
@@ -1726,6 +1730,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: fl_fmt   = ${fl_fmt}\n"
     printf "dbg: fl_in[0] = ${fl_in[0]}\n"
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
+    printf "dbg: flg_hrz  = ${flg_hrz}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
     printf "dbg: gll_fl   = ${gll_fl}\n"
     printf "dbg: grd_dst  = ${grd_dst}\n"
@@ -1864,6 +1869,9 @@ fi # !dst_usr_flg
 if [ "${dst_usr_flg}" != 'Yes' ] && [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${map_usr_flg}" != 'Yes' ] && [ "${grd_sng_usr_flg}" = 'Yes' ] && [ "${vrt_usr_flg}" != 'Yes' ]; then
     flg_grd_only='Yes'
 fi # !flg_grd_only
+if [ "${map_mk}" = 'Yes' ] || [ "${map_usr_flg}" = 'Yes' ]; then
+    flg_hrz='Yes'
+fi # !flg_hrz
 
 # Generate destination grid, if necessary, once (only) before loop over input files
 # Block 1: Destination grid
@@ -1889,39 +1897,16 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
  	    printf "MPAS input specified: will add depth coordinate to all 3D variables prior to regridding\n"
 	fi # !clm_flg
     fi # !mpas
-    if [ "${prc_gsg}" = 'Yes' ]; then 
-	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
-    fi # !gsg
     if [ "${prc_typ}" = 'sgs' ]; then 
-	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will first conservatively regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value).\n"
+	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value). If re-normalization is also requested (with --rnr_thr option), then these values will be renormalizaed by ${sgs_frc} and will not be conservative.\n"
 	if [ ${fl_nbr} -eq 0 ]; then
 	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires at least one data file (for the surface fractions of each gridcell)\n"
 	    echo "${spt_nm}: HINT Supply a data file with \"-i fl_in\""
 	    exit 1
 	fi # !fl_nbr
-	if [ "${wgt_typ}" = 'tempest' ]; then
-	    printf "${spt_nm}: ERROR Sub-gridscale handling currently does not support TempestRemap.\n"
-	    echo "${spt_nm}: HINT Use ESMF weight-generator (and ask Charlie to implement SGS for Tempest)"
-	    exit 1
-	fi # !wgt_typ
-	if [ "${grd_src_usr_flg}" != 'Yes' ]; then
-	    printf "${spt_nm}: ERROR Sub-gridscale handling currently requires the user to specify the SCRIP-format source grid-file. Moreover, the source grid-file must include the (normally non-essential) grid_area field. It is infeasible to permit SGS source-grid inferral, because weight-generators assume great circle arcs but 2D-grids usually have small-circles in latitude, and this can lead to significant area mis-matches. Despite this, sub-gridscale handling is happy to infer destination (not source) grids.\n"
-	    printf "${spt_nm}: HINT Supply source grid-file with \"-s grd_src\".\nALTERNATIVE TO SGS: If the source grid-file is unavailable, first multiply sub-grid fields by ${sgs_frc} (with, e.g., ncap2 -s \"foo*=${sgs_frc};\" in.nc out.nc) and then regrid as normal without invoking sub-gridscale handling, i.e., omit the '-P sgs' and '--sgs_*' options.\n"
-	    exit 1
-	    # 20170511: fxm Inferring source grids leads to ~2% biases with conservative regridding and 2D source grids. Not sure why. 
-	    # printf "${spt_nm}: Sub-gridscale handling will attempt to infer the source SCRIP grid-file from the input data file. This will only work for rectangular 2D data files, because SGS requires the source grid-file to contain the (normally non-essential) grid_area field for the input grid.\n"
-	fi # !grd_src_usr_flg
-	if [ "${grd_dst_usr_flg}" != 'Yes' ]; then
-	    printf "${spt_nm}: Sub-gridscale handling will attempt to infer the destination SCRIP grid-file from the provided output data file template (which will not be touched).\n"
-	fi # !grd_dst_usr_flg
-	if [ "${map_usr_flg}" = 'Yes' ] && [ "${map_mk}" != 'Yes' ]; then
-	    printf "${spt_nm}: WARNING Sub-grid handling (SGS-mode) forbids specification of a precomputed map-file. Sub-grid handling must generate map-files from specially pre-processed SCRIP grid-files. Allowing pre-computed map-files risks users inadvertently supplying incorrect map-files. The supplied or inferred SCRIP grid-files must include the (normally non-essential) grid_area field, which ${spt_nm} can normally infer from rectangular 2-D datafiles, though not from 1-D (unstructured) datafiles.\n"
-	    echo "${spt_nm}: HINT Either remove map-file specification by eliminating the \"-m map_fl\" option, or use this pre-computed map but not in SGS mode (eliminate the \"-P sgs\" option)"
-	    exit 1
-	fi # !fl_nbr
     fi # !sgs
 fi # !vrb_lvl
-if [ "${flg_vrt_only}" != 'Yes' ]; then
+if [ "${flg_hrz}" = 'Yes' ]; then
     if [ "${map_mk}" != 'Yes' ] && [ "${map_usr_flg}" = 'Yes' ]; then 
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "Source and destination grids will both be read from supplied map-file\n"
@@ -1994,7 +1979,7 @@ a	    cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_d
 	    fi # !fl_nbr
 	fi # !vrb_lvl
     fi # !map_usr
-fi # !flg_vrt_only
+fi # !flg_hrz
 
 if [ "${prc_typ}" = 'rrg' ]; then 
     fl_idx=0
@@ -2108,12 +2093,6 @@ if [ "${prc_typ}" = 'rrg' ]; then
 	fi # !err
     fi # !dbg
 fi # !rrg
-
-if [ "${prc_typ}" = 'sgs' ]; then 
-
-    echo '' # 20190918
-    
-fi # !sgs
 
 # If user provides source gridfile, or it was inferred in RRG or SGS modes, assume it applies to every input file
 # Do not infer source gridfiles from input files within file loop
@@ -2264,8 +2243,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 
 	# Generate new map unless map-file was supplied or already-generated
 	# NB: RRG infers source grid outside file loop, and forbids multiple source grids
-	# NB: SGS infers (if necessary) source grid outside file loop, and forbids multiple source grids
-	# RRG and SGS also produce map before file loop, and will not make maps inside file loop
+	# RRG produces map before file loop, and will not make maps inside file loop
 	if [ "${map_mk}" = 'Yes' ]; then
 	    
 	    # Block 1: Special cases
@@ -2404,6 +2382,13 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    
 	fi # !map_mk
 	
+	#Temporary files that need fl_idx granularity
+	#att_fl="${att_fl}.flidx${fl_idx}"
+	#d2f_fl="${d2f_fl}.flidx${fl_idx}"
+	#dpt_tmp_fl="${dpt_tmp_fl}.flidx${fl_idx}"
+	#pdq_fl="${pdq_fl}.flidx${fl_idx}"
+	#rnm_fl="${rnm_fl}.flidx${fl_idx}"
+
 	# Block 4: Special cases
 	# Block 4a: Add MPAS depth coordinate (prior to permutation)
 	if [ "${dpt_flg}" = 'Yes' ]; then
@@ -2485,7 +2470,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		fi # !err
 	    fi # !dbg
 	fi # !prc_mpas
-	
+
 	# Block 4e: RRG
 	if [ "${prc_typ}" = 'rrg' ]; then 
 	    rrg_dmn_lst=`ncdmnlst ${fl_in[${fl_idx}]} | grep ${rnm_sng}`
@@ -2543,18 +2528,28 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    in_fl=${rnm_fl}
 	fi # !rrg
 	
+
 	# Block 5: Regrid
 	if [ -n "${vrt_fl}" ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		printf "Vertical : ${vrt_fl}\n"
 	    fi # !vrb_lvl
+	    if [ "${flg_hrz}" = 'Yes' ]; then
+		out_fl="${drc_tmp}/ncremap_tmp_out.${fl_idx}.nc"
+	    fi # !flg_hrz
 	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_lst} ${vrt_opt} --vrt=\"${vrt_fl}\" \"${in_fl}\" \"${out_fl}\""
-	else # !vrt_fl
+	fi # !vrt_fl
+
+	if [ "${flg_hrz}" = 'Yes' ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		printf "Map/Wgt  : ${map_fl}\n"
 	    fi # !vrb_lvl
+	    if [ "${flg_vrt}" = 'Yes' ]; then
+		in_fl="${drc_tmp}/ncremap_tmp_out.${fl_idx}.nc"
+		out_fl=${fl_out[${fl_idx}]}
+	    fi # !flg_hrz
 	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${in_fl}\" \"${out_fl}\""
-	fi # !vrt_fl
+	fi # !flg_hrz
 	
 	# Block 5 Loop 2: Execute and/or echo commands
 	if [ ${dbg_lvl} -ge 1 ]; then
@@ -2572,11 +2567,13 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		rgr_pid[${fl_idx}]=$!
 	    fi # !par_typ
 	fi # !dbg
+
     done # !fl_idx
     
     # Block 6: Wait
     # Parallel regridding (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
     # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+    # Most wait() blocks are identical
     if [ -n "${par_opt}" ]; then
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    wait ${rgr_pid[${fl_idx}]}
@@ -2584,6 +2581,10 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		printf "${spt_nm}: ERROR Failed to regrid. cmd_rgr[${fl_idx}] failed. Debug this:\n${cmd_rgr[${fl_idx}]}\n"
 		exit 1
 	    fi # !err
+	    if [ -n "${vrt_fl}" ] && [ "${flg_hrz}" = 'Yes' ]; then
+		# Remove vertically regridded intermediate output
+		/bin/rm -f "${drc_tmp}/ncremap_tmp_out.${fl_idx}.nc"
+	    fi # !vrt_fl
 	done # !fl_idx
     fi # !par_opt
     

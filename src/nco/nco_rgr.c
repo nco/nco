@@ -48,7 +48,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   /* Interpolate data file to new vertical grid */
   if(flg_vrt) rcd=nco_ntp_vrt(rgr,trv_tbl);
 
-  /* Regrid data file using weights from mapping file */
+  /* Regrid data horizontally using weights from mapping file */
   if(flg_wgt) rcd=nco_rgr_wgt(rgr,trv_tbl);
 
   /* Regrid using ESMF library
@@ -3132,8 +3132,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_std && flg_frc_out_wrt) (void)fprintf(stdout,"%s: INFO %s Maximum deviation %g exceeds threshold of %g that triggers automatic writing of fractional destination area as variable named frac_b in regridded output.\n",nco_prg_nm_get(),fnc_nm,frc_out_dff_one_max,eps_rlt_wrt_thr);
   } /* !sometimes non-unity */
   if(flg_frc_nrm && rgr->flg_rnr){
-    // 20190918: Weaken warning because renormalization will only be done once
-    (void)fprintf(stdout,"%s: INFO %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
+    // 20190918: Weaken warning because NCO no longer renormalizes when using "destarea" maps unless specifically requested to with --rnr_thr
+    (void)fprintf(stdout,"%s: INFO %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b\n",nco_prg_nm_get(),fnc_nm);
     //(void)fprintf(stdout,"%s: INFO %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice can be an error, depending on intent of each. Charlie is all ears on how NCO should handle this :)\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
     //nco_exit(EXIT_FAILURE);
   } /* !flg_rnr */
