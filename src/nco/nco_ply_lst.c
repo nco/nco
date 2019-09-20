@@ -639,7 +639,7 @@ int *pl_cnt_vrl_ret){
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
 #  pragma omp parallel for default(none) private(idx, thr_idx) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx, thr_idx) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
+#  pragma omp parallel for private(idx, thr_idx) schedule(dynamic,40) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
@@ -872,13 +872,17 @@ int *pl_cnt_vrl_ret){
         /* for input polygon wgt is used to calculate frac_a */
         pl_lst_in[idx]->wgt+= ( pl_vrl->area / pl_lst_in[idx]->area );
 
+
+
 #ifdef _OPENMP
 #pragma omp critical
 #endif
         {
           /* This is critcal as two threads can add to pl_out->wgt possibly at the same time
            * we wish to avoid a collision */
-          /* for output  polygon wgt is used to calculate frac_b */
+          /* for output  polygon wgt is used to calculate frac_b *
+           *
+           * maybe we can move this code back up to nco_msh_mk() ? */
           pl_out->wgt+=pl_vrl->wgt;
 
         }
@@ -928,7 +932,7 @@ int *pl_cnt_vrl_ret){
       } /* end OMP critical */
 
       /* area diff by more than 10% */
-      double eps = 1e-5;
+      double eps = 1e-8;
       double frc = vrl_area / pl_lst_in[idx]->area;
       if (frc < (1 - eps) || frc > 1 + eps) {
         (void) fprintf(fp_stderr,
