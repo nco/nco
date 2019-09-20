@@ -1,16 +1,18 @@
 2019-09-20  Charlie Zender  <zender@uci.edu>
 
-	* Parallelize ncremap main loop except map generation so any single invocation of ncremap should now regrid multiple files simultaneously via background and MPI parallelism, and multiple ncremap invocations will not conflict
+	* NCO 4.8.2-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha07: XTerra';git push
+	git tag -a 4.8.2-alpha07 -m 'ncremap/ncclimo bch/job loops;ncremap sgs_frc external, re-do SGS, parallelize all, simultaneous hrz vrt;nco.texi rgr';git push --tags
+
+	* Allow simultaneous horizontal/vertical regridding invocation in ncremap
+
+	* Parallelize ncremap main loop except map generation so any single invocation of ncremap should now regrid multiple files simultaneously via background and MPI parallelism, and multiple ncremap invocations will not conflict. Previously that was only true for input files that required no special handling. Now MPAS, RRG, D2F, PDQ blocks are all parallel-safe.
 
 	* Add HDF5_USE_FILE_LOCKING=FALSE solution to NC_EHDFERR documentation
 
 2019-09-18  Charlie Zender  <zender@uci.edu>
 
 	* Remove most impediments to simultaneous vertical/horizontal regridding
-
-	* NCO 4.8.2-alpha07 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha07: XTerra';git push
-	git tag -a 4.8.2-alpha07 -m 'ncremap/ncclimo bch/job loops;ncremap sgs_frc external, re-implement SGS, parallelize post-processing;nco.texi rgr';git push --tags
 
 	* Parallelize SGS post-processing
 
