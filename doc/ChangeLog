@@ -1,5 +1,7 @@
 2019-09-20  Charlie Zender  <zender@uci.edu>
 
+	* Parallelize ncremap main loop except map generation so any single invocation of ncremap should now regrid multiple files simultaneously via background and MPI parallelism, and multiple ncremap invocations will not conflict
+
 	* Add HDF5_USE_FILE_LOCKING=FALSE solution to NC_EHDFERR documentation
 
 2019-09-18  Charlie Zender  <zender@uci.edu>
