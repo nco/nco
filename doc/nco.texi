@@ -24008,12 +24008,12 @@ Subject to the availability of adequate @acronym{RAM},
 expand the number of jobs per node by increasing @var{job_nbr}
 until, ideally, each core on the node is used. 
 Remember that processes and threading are multiplicative in core use.
-Four jobs each with four threads consumes sixteen cores.
+Four jobs each with four threads each consumes sixteen cores.
 
 As an example, consider regridding @w{100 files} with a single map.
 Say you have a five-node cluster, and each node has @w{16 cores}
 and can simultaneously regrid two files using eight threads each.
-(One needs to test a bit to determine these parameters.)
+(One needs to test a bit to optimize these parameters.)
 Then an optimal (in terms of wallclock time) invocation would
 request five nodes with @w{10 simultaneous} jobs of eight threads.
 On many batch systems this would involve a scheduler command like 
@@ -24041,13 +24041,12 @@ by utilizing more threads per process.
 unless a source gridfile is specified (with @samp{-s @var{grd_src}})
 or multiple-mapfile generation is explicitly turned-off (with
 @samp{-M}). 
-The @samp{-M} switch is toggled, it requires and accepts no argument. 
+The @samp{-M} switch is a toggle, it requires and accepts no argument. 
 Toggling @samp{-M} tells @command{ncremap} to generate at most one
 mapfile regardless of the number of input files. 
 If @samp{-M} is not toggled (and neither 
 @samp{-m @var{map_fl}} nor @samp{-s @var{grd_src}} is invoked)   
-then @command{ncremap} will use @acronym{ERWG} to generate a new mapfile
-for each input file. 
+then @command{ncremap} will generate a new mapfile for each input file.
 Generating new mapfiles for each input file is necessary for processing
 batches of data on different grids (e.g., swath-like data), and slow,
 tedious, and unnecessary when batch processing data on the same grids.
@@ -24407,21 +24406,21 @@ prior to regridding for a limited (though growing) number of data-file
 types that encounter the @command{ncremap} limitation concerning
 dimension ordering. 
 Valid procedure types are @samp{airs} for @acronym{NASA AIRS} satellite data, 
-@samp{alm} or @samp{clm} @acronym{DOE ALM} and @acronym{NCAR CLM} model data,
+@samp{elm} or @samp{clm} @acronym{DOE ELM} and @acronym{NCAR CLM} model data,
 @samp{cice} for @acronym{CICE} ice model data on 2D grids,
 @samp{mpas} for @acronym{MPAS} ocean/ice model data on unstructured grids,
 @samp{mod04} for @w{Level 2} @acronym{MODIS} @acronym{MOD04} product,
 @samp{mwf} for making all weight-files for a pair of grids, 
 @samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
-(such as @acronym{ALM/CLM/CTSM/ELM} land model data or @acronym{CICE}
-sea-ice model data), 
+(such as @acronym{ALM/CLM/CTSM/ELM} land model data and
+@acronym{CICE/MPAS-Seaice} sea-ice model data), 
 and @samp{nil} (for none).
 The default @var{prc_typ} is @samp{nil}, which means @command{ncremap} 
 does not perform any special procedure prior to regridding.
 The @acronym{AIRS} procedure calls @command{ncpdq} to permute dimensions
 from their order in the input file to this order: 
 @code{StdPressureLev,GeoTrack,GeoXTrack}.
-The @acronym{ALM}, @acronym{CLM}, and @acronym{CICE} procedures set 
+The @acronym{ELM}, @acronym{CLM}, and @acronym{CICE} procedures set 
 idiosyncratic model values and then invoke the Sub-gridscale
 (@acronym{SGS}) procedure (see below). 
 The @acronym{MOD04} procedure unpacks input data.
@@ -24674,7 +24673,7 @@ Spatial fields output by most geophysical models are intensive,
 and so by default the regridder attempts to conserve the integral of the
 area times the field value such that the integral is equal on source and
 destination grids. 
-However some models (like @acronym{ALM}, @acronym{CLM}, and
+However some models (like @acronym{ELM}, @acronym{CLM}, and
 @acronym{CICE}) output gridcell values intended to apply to only a
 fraction @var{sgs_frc} (which stands for ``sub-gridscale fraction'') of
 the gridcell. 
@@ -24682,14 +24681,14 @@ For concreteness consider a sub-grid field that represents the land
 fraction.
 Land fraction is less than one in gridcells that resolve coastlines or 
 islands.  
-@acronym{ALM} and @acronym{CLM}) happily output temperature values
+@acronym{ELM} and @acronym{CLM}) happily output temperature values
 valid only for a small (i.e., @math{@var{sgs_frc} << 1}) island within
 the larger gridcell.
 Regridding weights that assume @math{@var{sgs_frc} = 1} everywhere would 
 create subtle, difficult-to-notice, biases in coastal regions that,
 on Earth, would alter global mean values (e.g., of temperature, fluxes)
 by up to a few percent at common grid resolutions.
-Though models like @acronym{ALM} and @acronym{CLM} may run on the same
+Though models like @acronym{ELM} and @acronym{CLM} may run on the same
 horizontal grid as the overlying atmosphere, they cannot be regridded
 with the atmosphere's grid weights that account for the whole gridcell
 instead of the sub-grid land fraction. 
@@ -24720,8 +24719,8 @@ original, model-specific idiosyncracies in raw
 @acronym{ALM/CLM/CTSM/ELM} and @acronym{CICE} datasets.
 @example
 # Invocations for ALM/CLM/CTSM/ELM data
-ncremap -P alm -s src_grd.nc -d dst_data.nc in.nc out.nc
-ncremap -P sgs -s src_grd.nc -d dst_data.nc in.nc out.nc
+ncremap -P elm in.nc out.nc
+ncremap -P sgs in.nc out.nc
 ncremap --sgs_frc=landfrac --sgs_msk=landmask ... 
 
 # Equivalent invocations for CICE data
@@ -24729,12 +24728,12 @@ ncremap -P cice -s src_grd.nc -d dst_data.nc in.nc out.nc
 ncremap --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 ... 
 @end example
 Files regridded using explicitly specified @acronym{SGS} options will
-differ slightly from those regridded using the @samp{-P alm} or 
+differ slightly from those regridded using the @samp{-P elm} or 
 @samp{-P cice} options. 
 The former will have an @code{area} field in sterradians, the generic
 units used internally by the regridder. 
 The latter will produces model-specific @code{area} fields in square 
-kilometers (for @acronym{ALM}) or square meters (for @acronym{CICE}),
+kilometers (for @acronym{ELM}) or square meters (for @acronym{CICE}),
 as expected in the raw output from these two models.
 To convert from angular to areal values, @acronym{NCO} assumes a
 spherical Earth with radius @w{6,371,220 m} or @w{6,371,229 m},
@@ -24783,8 +24782,8 @@ The @code{area} and @var{sgs_frc} fields in the regridded file will be
 in units of sterradians and fraction, respectively.
 However, @command{ncremap} offers custom options to reproduce the
 idiosyncratic data and metadata format of two particular models,
-@acronym{ALM} and @acronym{CICE}.
-When invoked with @samp{-P alm} (or @samp{-P clm}), the final step
+@acronym{ELM} and @acronym{CICE}.
+When invoked with @samp{-P elm} (or @samp{-P clm}), the final step
 converts the output @code{area} from sterradians to square kilometers. 
 When invoked with @samp{-P cice}, the final step converts the output
 @code{area} from sterradians to square meters, and the output

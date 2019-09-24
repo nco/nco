@@ -2166,14 +2166,15 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      wgt: 
      Maximum number of source cells contributing to destination cell is not a dimension
      in SCRIP remapping files because SCRIP stores everying in 1-D sparse matrix arrays
-     Sparse matrix formulations:
 
+     Definition of sparse matrix formulations and normalization terminology, SCRIP manual p. 8, 13, 16:
      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++){
-       // Normalization: fractional area (fracarea)
+       // Remap source function f = 1 in all unmasked source gridcells, zero elsewhere, to function F on destination grid
+       // Normalization: fractional area (fracarea) (F = 1 where destination overlaps umasked source grid)
        dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0];
-       // Normalization: destination area (destarea)
+       // Normalization: destination area (destarea) (weights in each destination cell sum to its area frcation)
        dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/dst_area[ddr_dst[lnk_idx]];
-       // Normalization: none
+       // Normalization: none (F = angular area that participates in remapping)
        dst[ddr_dst[lnk_idx]]+=src[ddr_src[lnk_idx]]*remap_matrix[lnk_idx,0]/(dst_area[ddr_dst[lnk_idx]]*dst_frc[ddr_dst[lnk_idx]);
      } // end loop over lnk
 

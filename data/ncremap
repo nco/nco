@@ -34,7 +34,7 @@
 # Documentation: http://nco.sf.net/nco.html#ncremap
 # Additional Documentation:
 # HowTo: https://acme-climate.atlassian.net/wiki/display/SIM/Generate%2C+Regrid%2C+and+Split+Climatologies+%28climo+files%29+with+ncclimo+and+ncremap
-# E3SM Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs
+# E3SM Climatology Requirements: https://acme-climate.atlassian.net/wiki/display/ATM/Climo+Files+-+v0.3+AMIP+runs (includes useful discussion of normalization in comments section)
 # Benchmarks: https://acme-climate.atlassian.net/wiki/spaces/ATM/pages/25231711/Validation+and+Benchmarking+of+Regridders
 
 # Regridder works in one of four modes:
@@ -200,10 +200,11 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 1 -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
 # ncremap -D 1 -s ${DATA}/grids/128x256_SCRIP.20160301.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
 # Regrid:
-# ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ~/rgr
-# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ~/rgr
-# ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ~/rgr
-# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ~/rgr
+# ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr
+# ls ${DATA}/ne30/raw/*1979*.nc | ncremap -j 3 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr # Batch-parallelism
+# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ${DATA}/ne30/rgr
+# ls ${DATA}/essgcm14/essgcm14*cam*0007*.nc | ncremap -a conserve -M -d ${DATA}/dstmch90/dstmch90_clm.nc -O ${DATA}/ne30/rgr
+# ncremap -a conserve -v FSNT -s ${DATA}/grids/ne30np4_pentagons.091226.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -I ${DATA}/ne30/raw -O ${DATA}/ne30/rgr
 # ncremap -P airs -v TSurfAir -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2014.10.01.202.L2.RetStd.v6.0.11.0.G14275134307.hdf ~/airs_out.nc
 # ncremap -v CloudFrc_A -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/AIRS.2002.08.01.L3.RetStd_H031.v4.0.21.0.G06104133732.hdf ~/foo.nc
 # ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/MOD04_L2.A2000055.0005.006.2014307165927.hdf ~/foo.nc
@@ -1153,9 +1154,9 @@ else
     exit 1
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ] && [ "${prc_typ}" != 'gsg' ]; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ]; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mpasseaice', 'mwf', 'nil', 'rrg', 'gsg', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mpasseaice', 'mwf', 'nil', 'rrg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -1358,12 +1359,7 @@ if [ "${prc_typ}" = 'alm' ] || [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'cts
     sgs_msk='landmask'
     sgs_nrm='1.0'
     prc_elm='Yes'
-    prc_typ='sgs'
 fi # !alm, !clm, !ctsm, !elm
-# fxm: 20190326 kludge explicit specifications of this variable automatically invoke GSG mode
-if [ "${sgs_frc}" = 'timeMonthly_avg_iceAreaCell' ]; then 
-    prc_typ='sgs'
-fi # !gsg
 if [ "${prc_typ}" = 'cice' ]; then 
     # Set CICE-specific options first, then change prc_typ to sgs
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
@@ -1371,7 +1367,6 @@ if [ "${prc_typ}" = 'cice' ]; then
     sgs_msk='tmask'
     sgs_nrm='100.0'
     prc_cice='Yes'
-    prc_typ='sgs'
 fi # !cice
 if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ]; then 
     # NB: 'mpasseaice' is an exact synonym for 'mpascice' (which should be deprecated)
@@ -1387,24 +1382,17 @@ if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ]; then
     sgs_nrm='1.0'
     prc_mpas='Yes'
     prc_mpascice='Yes'
-    prc_typ='gsg'
 fi # !mpascice
-if [ "${prc_typ}" = 'gsg' ]; then 
-    prc_gsg='Yes'
-fi # !gsg
-if [ "${prc_gsg}" = 'Yes' ]; then 
-#    printf "${spt_nm}: DEBUG 20190322 Using new GSG method\n"
+if [ -n "${sgs_frc}" ]; then 
+    prc_typ='sgs'
+fi # !sgs
+if [ "${prc_typ}" = 'sgs' ]; then
     if [ -n "${sgs_frc}" ]; then
 	rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
 	if [ -n "${sgs_msk}" ]; then
 	    rgr_opt="${rgr_opt}#sgs_msk_nm=${sgs_msk}"
 	fi # !sgs_msk
     fi # !sgs_frc
-fi # !gsg
-if [ "${prc_typ}" = 'sgs' ]; then 
-    nco_dgn_area='--rgr diagnose_area'
-    wgt_opt_esmf='--ignore_unmapped'
-    wgt_opt=${wgt_opt_esmf}
 fi # !sgs
 if [ -n "${thr_usr}" ]; then 
     thr_nbr="${thr_usr}"

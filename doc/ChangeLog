@@ -1,7 +1,11 @@
+2019-09-24  Charlie Zender  <zender@uci.edu>
+
+	* Deprecate last vestiges of old-SGS and GSG code from ncremap
+
 2019-09-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha07 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha07: XTerra';git push
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha07: XTerra/Sukhasana';git push
 	git tag -a 4.8.2-alpha07 -m 'ncremap/ncclimo bch/job loops;ncremap sgs_frc external, re-do SGS, parallelize all, simultaneous hrz vrt;nco.texi rgr';git push --tags
 
 	* Allow simultaneous horizontal/vertical regridding invocation in ncremap
