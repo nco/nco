@@ -1387,6 +1387,12 @@ if [ -n "${sgs_frc}" ]; then
     prc_typ='sgs'
 fi # !sgs
 if [ "${prc_typ}" = 'sgs' ]; then
+    if [ -z "${sgs_frc}" ]; then 
+	sgs_frc='landfrac' # 20190924: Back-compatibility with NCO 4.8.1-
+    fi # !sgs_frc
+    if [ -z "${sgs_msk}" ]; then 
+	sgs_msk='landmask' # 20190924: Back-compatibility with NCO 4.8.1-
+    fi # !sgs_msk
     if [ -n "${sgs_frc}" ]; then
 	rgr_opt="${rgr_opt} --rgr sgs_frc_nm=${sgs_frc}"
 	if [ -n "${sgs_msk}" ]; then

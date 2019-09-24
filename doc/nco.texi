@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha07
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 16 September 2019
+@set update-date 24 September 2019
 @set update-month September 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -24693,14 +24693,14 @@ horizontal grid as the overlying atmosphere, they cannot be regridded
 with the atmosphere's grid weights that account for the whole gridcell
 instead of the sub-grid land fraction. 
 
-To correctly regrid sub-grid data, specify the @samp{-P sgs} option, 
-and names of the @var{sgs_frc} and @var{sgs_msk} variables (if they
-differ from their respective defaults @code{landfrac} and
-@code{landmask}). 
-Trouble will ensue @var{sgs_frc} is a percentage, or an absolute area. 
-In that case provide the normalization factor @var{sgs_nrm} by which
-@var{sgs_frc} must be @emph{divided} (not multiplied) to obtain a true
-fraction (between zero and one).
+To correctly regrid sub-grid data, specify the names of the
+@var{sgs_frc} and @var{sgs_msk} variables.
+(if they differ from their
+respective defaults @code{landfrac} and @code{landmask}). 
+Trouble will ensue @var{sgs_frc} is a percentage, or an absolute area.
+@command{ncremap} must know the normalization factor @var{sgs_nrm} by
+which @var{sgs_frc} must be @emph{divided} (not multiplied) to obtain
+a true fraction (between zero and one).
 Datasets (such as those from @acronym{CICE}) that store @var{sgs_frc} 
 in percent should specify the option
 @samp{--sgs_nrm=100} to instruct @command{ncremap} to normalize the
@@ -24713,81 +24713,58 @@ As of @acronym{NCO} version 4.6.8 (released June, 2017), invoking any
 of the options @samp{--sgs_frc}, @samp{--sgs_msk}, or @samp{--sgs_nrm},
 automatically triggers @acronym{SGS}-mode, so that also invoking 
 @samp{-P sgs} is redundant though legal.
+As of @acronym{NCO} version 4.8.2 (released October, 2019), the values 
+of the @var{sgs_frc} and @var{sgs_msk} variables should be explicitly
+specified.
+In previous versions they defaulted to @code{landfrac} and
+@code{landmask}, respectively, when @samp{-P sgs} was selected.
+This behavior still exists but will likely be deprecated in a future
+version. 
 
-@command{ncremap} supports convenience options to recover most of the  
-original, model-specific idiosyncracies in raw
-@acronym{ALM/CLM/CTSM/ELM} and @acronym{CICE} datasets.
+The @code{area} and @var{sgs_frc} fields in the regridded file will be
+in units of sterradians and fraction, respectively.
+However, @command{ncremap} offers custom options to reproduce the
+idiosyncratic data and metadata format of two particular models,
+@acronym{ELM} and @acronym{CICE}.
+When invoked with @samp{-P elm} (or @samp{-P clm}), a final step
+converts the output @code{area} from sterradians to square kilometers. 
+When invoked with @samp{-P cice}, the final step converts the output
+@code{area} from sterradians to square meters, and the output
+@code{sgs_frc} from a fraction to a percent.
 @example
-# Invocations for ALM/CLM/CTSM/ELM data
-ncremap -P elm in.nc out.nc
-ncremap -P sgs in.nc out.nc
-ncremap --sgs_frc=landfrac --sgs_msk=landmask ... 
+# ELM/CLM: output "area" in [sr]
+ncremap --sgs_frc=landfrac --sgs_msk=landmask in.nc out.nc
+ncremap -P sgs in.nc out.nc # Deprecated in 4.8.2
+# ELM/CLM pedantic format: output "area" in [km2]
+ncremap -P elm in.nc out.nc # Same as -P clm, alm, ctsm
 
-# Equivalent invocations for CICE data
-ncremap -P cice -s src_grd.nc -d dst_data.nc in.nc out.nc
-ncremap --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 ... 
+# CICE: output "area" in [sr]
+ncremap --sgs_frc=aice --sgs_msk=tmask --sgs_nrm=100 in.nc out.nc
+# CICE pedantic format: output "area" in [m2], "aice" in [%]
+ncremap -P cice in.nc out.nc
+
+# MPAS-Seaice: both commands are equivalent
+ncremap -P mpasseaice in.nc out.nc
+ncremap --sgs_frc=timeMonthly_avg_iceAreaCell in.nc out.nc
 @end example
 Files regridded using explicitly specified @acronym{SGS} options will
 differ slightly from those regridded using the @samp{-P elm} or 
 @samp{-P cice} options. 
 The former will have an @code{area} field in sterradians, the generic
 units used internally by the regridder. 
-The latter will produces model-specific @code{area} fields in square 
+The latter produces model-specific @code{area} fields in square 
 kilometers (for @acronym{ELM}) or square meters (for @acronym{CICE}),
 as expected in the raw output from these two models.
 To convert from angular to areal values, @acronym{NCO} assumes a
 spherical Earth with radius @w{6,371,220 m} or @w{6,371,229 m},
-respectively. 
+for @acronym{ELM}) and @acronym{CICE}, respectively.
 The ouput @var{sgs_frc} field is expressed as a decimal fraction in all
 cases except for @samp{-P cice} which stores the fraction in percent.
 Thus the generic @acronym{SGS} and model-specific convenience options
-produce equivalent results, but the latter has the same metadata and
-units as raw model output.
+produce equivalent results, and the latter is intended to be
+indistinguishable (in terms of metadata and units) to raw model
+output.  
 This makes it more interoperable with many existing analysis scripts. 
-
-Sub-gridscale handling currently requires the user to specify the
-source @acronym{SCRIP} grid-file. 
-Moreover, this source grid-file must include the (normally
-non-essential) @code{grid_area} field.
-It is infeasible to permit source-grid inferral, because
-weight-generators assume great circle arcs but 2D-grids usually have
-small-circles in latitude, and this can lead to area mis-matches.
-However, sub-gridscale handling will infer destination grids from
-2D-data files, if requested: 
-@example
-ncremap -P sgs -s src_grd.nc -g dst_grd.nc  in.nc out.nc
-ncremap -P sgs -s src_grd.nc -d dst_data.nc in.nc out.nc
-@end example
-
-The method used to regrid sub-grid values is somewhat involved.
-First, if necessary, we normalize the sub-grid variable to be a 
-fraction between zero and one.
-We then regrid the sub-grid fraction, and multiply the destination area  
-by the regridded fraction. 
-Then we duplicate the source and destination grids, to modify the
-copies without tampering with the originals.
-We multiply the grid-cell area in the duplicated source grid by  
-the sub-grid fraction in the input data file. 
-We multiply the grid-cell area in the duplicated destination
-grid by regridded sub-grid fraction.
-We then construct a map-file that conserves a field weighted by
-the altered source and destination gridcell areas.
-@command{ncremap} then applies these regridding weights to all
-input fields to construct the regridded fields.
-We then overwrite the area, sub-grid fraction, and sub-grid
-mask with the correct values from the first step, the conservatively
-regridded sub-grid fraction.
-For generic data this is the final step.
-The @code{area} and @var{sgs_frc} fields in the regridded file will be
-in units of sterradians and fraction, respectively.
-However, @command{ncremap} offers custom options to reproduce the
-idiosyncratic data and metadata format of two particular models,
-@acronym{ELM} and @acronym{CICE}.
-When invoked with @samp{-P elm} (or @samp{-P clm}), the final step
-converts the output @code{area} from sterradians to square kilometers. 
-When invoked with @samp{-P cice}, the final step converts the output
-@code{area} from sterradians to square meters, and the output
-@code{sgs_frc} from a fraction to a percent.
 
 During development of this procedure, we learned that regridding
 sub-grid values correctly versus incorrectly (i.e., with and 
