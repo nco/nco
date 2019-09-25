@@ -1,5 +1,11 @@
 2019-09-24  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.2-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha08: Añjali Mudra';git push
+	git tag -a 4.8.2-alpha08 -m 'MacOS 10.14.6;ncremap sgs back-compatability;nco.texi rgr';git push --tags
+
+	* Implement landfrac and landmask defaults with -P sgs for back-compatibility
+
 	* Deprecate last vestiges of old-SGS and GSG code from ncremap
 
 2019-09-20  Charlie Zender  <zender@uci.edu>
