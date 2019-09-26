@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha07
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 24 September 2019
+@set update-date 26 September 2019
 @set update-month September 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6973,8 +6973,8 @@ Short options: None@*
 Long options: 
 @samp{--map @var{map-file}} or @samp{--rgr_map @var{map-file}}@*
 @samp{--rgr @var{key}=@var{val}} (multiple invocations allowed)@*
-@samp{--rnr=@var{wgt_thr}} or @samp{--rgr_rnr=@var{wgt_thr}} or 
-@samp{--renormalize=@var{wgt_thr}}@*
+@samp{--rnr=@var{rnr_thr}} or @samp{--rgr_rnr=@var{rnr_thr}} or 
+@samp{--renormalize=@var{rnr_thr}}@*
 @end cartouche
 
 @acronym{NCO} includes extensive regridding features in 
@@ -7101,31 +7101,36 @@ fractions of a gridcell.
 Renormalization ensures the output values are physically consistent,
 although the integral of their value times area is not conservative.
 
-@cindex @var{wgt_thr}
+@cindex @var{rnr_thr}
 By default, @acronym{NCO} implements the ``conservative'' algorithm
 because it has useful properties, is simpler to understand, and requires
 no additional parameters.
 To employ the ``renormalized'' algorithm instead, use the @samp{--rnr},
-@samp{--rgr_rnr}, or @samp{--renormalize} options to supply
-@var{wgt_thr}, the threshold weight for valid destination values.
-Valid values must cover at least the fraction @var{wgt_thr} of the
+@samp{--rgr_rnr}, @samp{--rnr_thr}, or @samp{--renormalize} options to
+supply @var{rnr_thr}, the threshold weight for valid destination values.
+Valid values must cover at least the fraction @var{rnr_thr} of the
 destination gridcell to meet the threshold for a non-missing destination
 value. 
-When @var{wgt_thr} is exceeded, the mean valid value is renormalized by
+When @var{rnr_thr} is exceeded, the mean valid value is renormalized by
 the valid area and placed in the destination gridcell. 
-If the valid area covers less than @var{wgt_thr}, then the destination
+If the valid area covers less than @var{rnr_thr}, then the destination
 gridcell is assigned the missing value.
-Valid values of @var{wgt_thr} range from zero to one.
+Valid values of @var{rnr_thr} range from zero to one.
 Keep in mind though, that this threshold is potentially a divisor, and 
 values of zero or very near to zero can lead to floating-point underflow
 and divide-by-zero errors.
 For convenience @acronym{NCO} permits users to specify a 
-@math{@var{wgt_thr} = 0.0} threshold weight.
+@math{@var{rnr_thr} = 0.0} threshold weight.
 This indicates that any valid data should be represented and
 renormalized on the output grid. 
+Also, renormalization can be prevented or turned-off by setting
+@var{rnr_thr} to any of the values @samp{off}, @samp{disabled},
+@samp{nil}, or @samp{none}: 
 @example
 @verbatim
 ncks           --map=map.nc in.nc out.nc # Conservative regridding
+ncks --rnr=nil --map=map.nc in.nc out.nc # Conservative regridding
+ncks --rnr=0.0 --map=map.nc in.nc out.nc # Renormalized regridding
 ncks --rnr=0.1 --map=map.nc in.nc out.nc # Renormalized regridding
 @end verbatim
 @end example
@@ -23030,8 +23035,8 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
 [-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
-[--vrt_fl=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}] [-W @var{wgt_opt}] [-w @var{wgt_cmd}]
-[-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
+[--vrt_fl=@var{vrt_fl}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
+[-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -23039,23 +23044,23 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 DESCRIPTION
 
 @command{ncremap} remaps the data file(s) in @var{input-file}, in
-@var{drc_in}, or piped through standard input, to the grid specified by 
-(in descending order of precedence) @var{map_fl}, @var{grd_dst}, or
-@var{dst_fl} and stores the result in @var{output-file}(s). 
+@var{drc_in}, or piped through standard input, to the horizontal grid
+specified by (in descending order of precedence) @var{map_fl},
+@var{grd_dst}, or @var{dst_fl} and stores the result in
+@var{output-file}(s).  
+If a vertical grid @var{vrt_fl} is provided, @command{ncremap} will
+(also) vertically interpolate the input file(s) to that grid.
 When no @var{input-file} is provided, @command{ncremap} operates in
 ``map-only'' mode where it exits after producing an annotated map-file. 
 @command{ncremap} was introduced to @acronym{NCO} in version 4.5.4
 (December, 2015). 
-As a newer operator, we continuously improve it with new features in
-response to user needs and feedback, yet its interface is unchanged so
-older versions work as before and newer versions have more features,
-options, and robustness.
 
-@command{ncremap} orchestrates the regridding features of several
-different programs including other @acronym{NCO} operators.
+@command{ncremap} is a ``super-operator'' that orchestrates the
+regridding features of several different programs including other
+@acronym{NCO} operators.
 Under the hood @acronym{NCO} applies pre-computed remapping weights or, 
 when necessary, generates and infers grids, generates remapping
-weights itsefl or calls external programs to generate the weights,
+weights itself or calls external programs to generate the weights,
 and then applies the weights (i.e., regrids).
 
 @cindex @command{ncremap}
@@ -24842,6 +24847,8 @@ with at least 90% of their area contributed by valid source gridcells
 will be contain valid (not missing) values that are the area-weighted
 mean of the valid source values.
 Specifying @samp{-r 0.9} and @samp{--rnr_thr=0.9} are equivalent.
+Renormalization can be turned-off by setting @var{rnr_thr} to any of
+the values @samp{off}, @samp{disabled}, @samp{nil}, or @samp{none}.
 
 @html
 <a name="rgn_dst"></a> <!-- http://nco.sf.net/nco.html#rgn_dst -->
@@ -25183,14 +25190,18 @@ priorities for future development of vertical regridding are:
       horizontal dimension(s) vary more rapidly than the vertical.
       Eliminating this constraint will remain low priority until we
       are lobbied with compelling use-cases.
-@item Interpolation is linear in log(pressure).
+@item The vertical interpolation algorithm defaults to linear in
+      log(pressure). 
       This assumption is more natural for gases (like the atmosphere)
       than for condensed media (like oceans or Earth's interior).
-      This behavior is internally controlled by a single flag.
-      Please let us know if you would like this flag to be
-      user-accessible.
-      Eliminating this constraint is a medium priority for regridding 
-      to/from depth coordinates.
+      To instead interpolate linearly in the vertical coordinate, use
+      the @samp{ntp_mth=lin} options (as of @acronym{NCO} 4.8.2).
+@item Vertical interpolation and horizontal regridding may be invoked
+      simultaneously (as of @acronym{NCO} 4.8.2) by the user simply by
+      supplying both a map-file and a vertical grid-file to
+      @command{ncremap}. 
+      When this occurs, @command{ncremap} internally performs the
+      vertical interpolation prior to the horizontal regridding.
 @item The default extrapolation method uses nearest neighbor except
       for temperature and geopotential (those extrapolation methods are
       described below).
@@ -25225,12 +25236,6 @@ priorities for future development of vertical regridding are:
       grid.
       Eliminating this constraint will not be a priority unless/until
       an important use-case is identified.  
-@item Vertical interpolation is split from horizontal so that changing
-      both horizontal and vertical grids ``simultaneously'' currently
-      requires two successive invocations of @command{ncremap}, one
-      horizontal and one vertical. 
-      Eliminating this constraint is a high priority because it would
-      be cool. 
 @item Variable names for input and output vertical grids must match
       @acronym{E3SM/CESM}, @acronym{ECMWF}, and @acronym{NCEP}
       implementations. 
@@ -25427,6 +25432,32 @@ grids applies to fields with, or places output of fields on, a
 All other fields pass through the interpolation procedure unscathed.
 Input can be rectangular (aka @acronym{RLL}), curvilinear, or
 unstructured.  
+
+@html
+<a name="vrt_ntp"></a> <!-- http://nco.sf.net/nco.html#vrt_ntp -->
+@end html
+@cindex @code{--vrt_ntp=@var{vrt_ntp}}
+@cindex @var{vrt_ntp}
+@cindex @code{--vrt_ntp}
+@cindex @code{--ntp_mth}
+@cindex @code{--interpolation_type}
+@cindex @code{--interpolation_method}
+@item --vrt_ntp=@var{vrt_ntp} (@code{--vrt_ntp}, @code{--ntp_mth}, @code{--interpolation_type}, @code{--interpolation_method})
+Specifies the interpolation method for destination points within the 
+vertical range of the input data during vertical interpolation.
+Valid values and their synonyms are
+@code{lin} (synonyms @code{linear} and @code{lnr}), and
+@code{log} (synonyms @code{logarithmic} and @code{lgr}).
+Default is @math{@var{vrt_ntp} = @code{log}}.
+The vertical interpolation algorithm defaults to linear in
+log(pressure). 
+Logarithmic interpolation is more natural for gases like the
+atmosphere, because it is compressible, than for condensed media like
+oceans or  Earth's interior, which are incompressible.
+To instead interpolate linearly in the vertical coordinate, use
+the @samp{ntp_mth=lin} option.
+@acronym{NCO} supports this feature as of version 4.8.2 (October,
+2019). 
 
 @html
 <a name="vrt_xtr"></a> <!-- http://nco.sf.net/nco.html#vrt_xtr -->

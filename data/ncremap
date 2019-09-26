@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Purpose: Generate weights (i.e., map-files) for and regrid (subsets of) netCDF files between different Swath, Curvilinear, Rectangular, and Unstructured data (SCRUD) grids, generate any required/requested global or regional rectangular grid, output SCRIP, UGRID, and/or skeleton data formats
+# Purpose: Generate weights (i.e., map-files) for and regrid (subsets of) netCDF files between different Swath, Curvilinear, Rectangular, and Unstructured data (SCRUD) horizontal grids, generate any required/requested global or regional rectangular grid, output SCRIP, UGRID, and/or skeleton data formats, and interpolate between any specified pure pressure or hybrid sigma/pressure grids
 
 # Copyright (C) 2015--present Charlie Zender
 # This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -1104,7 +1104,7 @@ if [ "${no_stg_grd}" = 'Yes' ]; then
     rgr_opt="${rgr_opt} --rgr no_stagger"
 fi # !no_stg_grd
 if [ -n "${rnr_thr}" ]; then 
-    if [ "${rnr_thr}" != 'off' ]; then 
+    if [ "${rnr_thr}" != 'off' ] && [ "${rnr_thr}" != 'disabled' ] && [ "${rnr_thr}" != 'nil' ] && [ "${rnr_thr}" != 'none' ]; then 
 	rgr_opt="${rgr_opt} --rnr_thr=${rnr_thr}"
     fi # !rnr_thr
 fi # !rnr_thr
