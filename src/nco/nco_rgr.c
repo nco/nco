@@ -1533,7 +1533,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	} /* !flg_rgr */
-	if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s lev_nm_in=%s lev_nm_out=%s ilev_nm_in=%s ilev_nm_out=%s\n",nco_prg_nm_get(),var_nm,lev_nm_in,lev_nm_out,ilev_nm_in,ilev_nm_out);
+	//	if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s lev_nm_in=%s lev_nm_out=%s ilev_nm_in=%s ilev_nm_out=%s\n",nco_prg_nm_get(),var_nm,lev_nm_in,lev_nm_out,ilev_nm_in,ilev_nm_out);
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
 	/* Duplicate netCDF4 settings when possible */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -1660,15 +1660,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !need_prs_mdp */
 
     if(need_prs_ntf){
-      /* Allocate and define interface pressures (only used for hybrid grids) */
+      /* Allocate and define interface pressures */
       if(tm_idx == 0) prs_ntf_in=(double *)nco_malloc_dbg(grd_sz_in*ilev_nbr_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_in value buffer");
       if(tm_idx == 0) prs_ntf_out=(double *)nco_malloc_dbg(grd_sz_out*ilev_nbr_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() prs_ntf_out value buffer");
-      for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
-	for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
-	  prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=p0_in*hyai_in[ilev_idx]+ps_in[idx_fst+grd_idx]*hybi_in[ilev_idx];
-      for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
-	for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
-	  prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[idx_fst+grd_idx]*hybi_out[ilev_idx];
+      if(flg_grd_in_hyb)
+	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	  for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
+	    prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=p0_in*hyai_in[ilev_idx]+ps_in[idx_fst+grd_idx]*hybi_in[ilev_idx];
+      if(flg_grd_out_hyb)
+	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	  for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
+	    prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[idx_fst+grd_idx]*hybi_out[ilev_idx];
+      /* 20190927 */
+      if(flg_grd_in_prs) memcpy(prs_ntf_in,prs_mdp_in,grd_sz_in*nco_typ_lng(var_typ_rgr));
+      if(flg_grd_out_prs) memcpy(prs_ntf_out,prs_mdp_out,grd_sz_out*nco_typ_lng(var_typ_rgr));
       if(flg_ntp_log){
 	var_sz_in=grd_sz_in*ilev_nbr_in;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_ntf_in[idx_in]=log(prs_ntf_in[idx_in]);
