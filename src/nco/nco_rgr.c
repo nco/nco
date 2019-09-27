@@ -896,6 +896,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimlen(tpl_id,dmn_id_lev_out,&lev_nbr_out);
     rcd=nco_inq_dimname(tpl_id,dmn_id_lev_out,dmn_nm);
     lev_nm_out=strdup(dmn_nm);
+    ilev_nbr_out=lev_nbr_out;
   } /* !flg_grd_out_prs */
 
   double *hyai_out=NULL; /* [frc] Hybrid A coefficient at layer interfaces on output grid */
@@ -1188,8 +1189,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !ps_id_tpl */
   } /* !flg_grd_in_hyb */
 
-  //  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark tm_nbr=%ld\n",nco_prg_nm_get(),tm_nbr);
-
   if(flg_grd_in_prs){
     lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
     rcd=nco_get_var(in_id,lev_id,lev_in,crd_typ_out);
@@ -1268,8 +1267,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Lay-out regridded file */
 
   /* Use explicitly specified output names, if any, otherwise use template names (either explicitly specified or discovered by fuzzing) */
-  if(rgr->ilev_nm_out) ilev_nm_out=rgr->ilev_nm_out;
   if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out;
+  if(rgr->ilev_nm_out){
+    if(flg_grd_out_hyb) ilev_nm_out=rgr->ilev_nm_out;
+    if(flg_grd_out_prs) lev_nm_out=rgr->ilev_nm_out;
+  } /* !ilev_nm_out */
+  /* Input interface variables, if any, must also be output on lev grid */
+  if(flg_grd_out_prs) ilev_nm_out=(char *)strdup(lev_nm_out);
 
   /* Define new vertical dimensions before all else */
   if(flg_grd_out_hyb){
@@ -1395,6 +1399,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lev_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
     (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY);
+    dmn_id_ilev_out=dmn_id_lev_out;
   } /* !flg_grd_out_prs */
 
   /* No further access to template file, close it */
@@ -1528,6 +1533,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	} /* !flg_rgr */
+	if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s lev_nm_in=%s lev_nm_out=%s ilev_nm_in=%s ilev_nm_out=%s\n",nco_prg_nm_get(),var_nm,lev_nm_in,lev_nm_out,ilev_nm_in,ilev_nm_out);
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
 	/* Duplicate netCDF4 settings when possible */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
