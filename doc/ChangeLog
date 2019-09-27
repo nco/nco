@@ -1,5 +1,11 @@
 2019-09-27  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.2-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha08: Añjali Mudra';git push
+	git tag -a 4.8.2-alpha08 -m 'MacOS 10.14.6;ncremap sgs back-compatability;nco.texi rgr';git push --tags
+
+	* Clarify ncks -H == --data option in nco.texi
+
 	* ncremap do not enter file loop for map-only invocations: fl_nbr=0 so bch_nbr=0
 
 2019-09-26  Charlie Zender  <zender@uci.edu>
@@ -9,10 +15,6 @@
 	* Document ncremap vertical interpolation algorithm options vrt_ntp=lin|log
 
 2019-09-24  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.8.2-alpha08 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha08: Añjali Mudra';git push
-	git tag -a 4.8.2-alpha08 -m 'MacOS 10.14.6;ncremap sgs back-compatability;nco.texi rgr';git push --tags
 
 	* Implement landfrac and landmask defaults with -P sgs for back-compatibility
 
