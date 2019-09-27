@@ -811,7 +811,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int lev_id_tpl=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_tpl=ps_id; /* [id] Surface pressure ID */
 
-  char *ilev_nm_in;
+  char *ilev_nm_in=NULL; /* [sng] Interface level name */
   char *lev_nm_in;
   char *ilev_nm_out;
   char *lev_nm_out;
@@ -1419,7 +1419,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* Pre-determine flags necessary during next loop */
 	dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
 	/* fxm: Generalize to include any variable containing coordinates with "standard_name" = "atmosphere_hybrid_sigma_pressure_coordinate" */
-	if(!has_ilev) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
+	if(!has_ilev && ilev_nm_in) has_ilev=!strcmp(dmn_nm_cp,ilev_nm_in);
 	if(!has_lev) has_lev=!strcmp(dmn_nm_cp,lev_nm_in);
       } /* end loop over dimensions */
       /* Regrid variables that contain either vertical dimension */
@@ -1489,7 +1489,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
-	    if(!strcmp(dmn_nm,ilev_nm_in)){
+	    if(ilev_nm_in && !strcmp(dmn_nm,ilev_nm_in)){
 	      /* Change ilev dimension */
 	      dmn_id_out[dmn_idx]=dmn_id_ilev_out;
 	      dmn_cnt_out[dmn_idx]=ilev_nbr_out;
