@@ -744,10 +744,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
      All single coordinate systems will refer to "lev" levels and indices */
 
   int dpt_id; /* [id] Ocean depth ID */
-  int hyai_id; /* [id] Hybrid A coefficient at layer interfaces ID */
-  int hyam_id; /* [id] Hybrid A coefficient at layer midpoints ID */
-  int hybi_id; /* [id] Hybrid B coefficient at layer interfaces ID */
-  int hybm_id; /* [id] Hybrid B coefficient at layer midpoints ID */
+  int hyai_id=NC_MIN_INT; /* [id] Hybrid A coefficient at layer interfaces ID */
+  int hyam_id=NC_MIN_INT; /* [id] Hybrid A coefficient at layer midpoints ID */
+  int hybi_id=NC_MIN_INT; /* [id] Hybrid B coefficient at layer interfaces ID */
+  int hybm_id=NC_MIN_INT; /* [id] Hybrid B coefficient at layer midpoints ID */
   int ilev_id=NC_MIN_INT; /* [id] Interface pressure ID */
   int lev_id=NC_MIN_INT; /* [id] Midpoint pressure ID */
   int p0_id=NC_MIN_INT; /* [id] Reference pressure ID */
@@ -950,14 +950,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* For vertical interpolation (unlike horizontal regridding), the destination grid is known a priori
      Straightforward copy all variables and attributes that define grid from fl_tpl to output
      would work in theory, but would not allow dynamic identification and relabeling of names */
-  if(flg_grd_out_hyb){
-    const int vrt_grd_lst_nbr=8; /* [nbr] Number of variables that define vertical grid */
-    const char *vrt_grd_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/PS"};
-  } /* !flg_grd_out_hyb */
-  if(flg_grd_out_prs){
-    const int vrt_grd_lst_nbr=1; /* [nbr] Number of variables that define vertical grid */
-    const char *vrt_grd_lst[]={"/plev"};
-  } /* !flg_grd_out_hyb */
+  /* if(flg_grd_out_hyb){
+     const int vrt_grd_lst_nbr=8;
+     const char *vrt_grd_lst[]={"/hyai","/hyam","/hybi","/hybm","/ilev","/lev","/P0","/PS"};
+     }
+     if(flg_grd_out_prs){
+     const int vrt_grd_lst_nbr=1;
+     const char *vrt_grd_lst[]={"/plev"};
+     }  */
 
   /* Above this line, fl_tpl and tpl_id refer to vertical coordinate file (i.e., template file)
      Below this line, fl_in and in_id refer to input file to be vertically regridded
@@ -1338,9 +1338,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Define new coordinates and grid variables in regridded file */
   const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables (scalars) */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
-  const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
+  //const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
-  const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
+  //const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
   
   if(flg_grd_out_hyb){
     rcd+=nco_def_var(out_id,"hyai",crd_typ_out,dmn_nbr_1D,&dmn_id_ilev_out,&hyai_id);
