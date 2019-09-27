@@ -1,3 +1,13 @@
+2019-09-27  Charlie Zender  <zender@uci.edu>
+
+	* ncremap do not enter file loop for map-only invocations: fl_nbr=0 so bch_nbr=0
+
+2019-09-26  Charlie Zender  <zender@uci.edu>
+
+	* Document simultaneous vertical/horizontal regridding
+
+	* Document ncremap vertical interpolation algorithm options vrt_ntp=lin|log
+
 2019-09-24  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha08 release procedure:

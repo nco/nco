@@ -195,10 +195,10 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases (for Charlie's machines)
 # Map-only:
-# ncremap -D 1 -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_scrip.20181001.nc -m ~/map.nc -a bilinear
-# ncremap -D 1 -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -g ${DATA}/grids/t62_scrip.20181001.nc -m ~/map.nc -a tempest
-# ncremap -D 1 -s ${DATA}/grids/oEC60to30.SCRIP.150729.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
-# ncremap -D 1 -s ${DATA}/grids/128x256_SCRIP.20160301.nc -d ${DATA}/dstmch90/dstmch90_clm.nc -m ~/map.nc -a tempest
+# ncremap -D 1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
+# ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
+# ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
+# ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/128x256_SCRIP.20160301.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
 # Regrid:
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -j 3 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr # Batch-parallelism
@@ -485,7 +485,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "            Tempest algorithms: tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
-    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng, or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, template_file, template${fnt_nrm}]"
+    echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng, or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, tpl, tpl_fl, template, template_file${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
     echo " ${fnt_bld}--dpt${fnt_nrm}      Add depth coordinate to MPAS files (default ${fnt_bld}${dpt_flg}${fnt_nrm}) [${fnt_tlc}dpt | depth | add_dpt | add_depth${fnt_nrm}]"
     echo " ${fnt_bld}--dpt_fl${fnt_nrm}   Depth file with refBottomDepth for MPAS ocean (empty means none) (default ${fnt_bld}${dpt_fl}${fnt_nrm}) [${fnt_tlc}dpt_fl, mpas_fl, mpas_depth, depth_file${fnt_nrm}]"
@@ -654,7 +654,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       dpt | depth | add_dpt | add_depth ) dpt_flg='Yes' ;; # # Add depth coordinate to MPAS files
 	       dpt=?* | depth=?* | add_dpt=?* | add_depth=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # DPT
 	       dpt_fl=?* | mpas_fl=?* | mpas_file=?* | depth_file=?* ) dpt_fl="${LONG_OPTARG}" ;; # # Depth file with refBottomDepth for MPAS ocean
-	       dst_fl=?* | destination_file=?* | template_file=?* | template=?* ) dst_fl="${LONG_OPTARG}" ;; # -d # Destination file
+	       dst_fl=?* | destination_file=?* | tpl=?* | tpl_fl=?* | template=?* | template_file=?* ) dst_fl="${LONG_OPTARG}" ;; # -d # Destination file
 	       grd_dst=?* | grid_dest=?* | dst_grd=?* | dest_grid=?* | destination_grid=?* ) grd_dst="${LONG_OPTARG}" ;; # -g # Destination grid-file
 	       grd_sng=?* | grid_generation=?* | grid_gen=?* | grid_string=?* ) grd_sng="${LONG_OPTARG}" ;; # -G # Grid generation string
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
@@ -2183,7 +2183,7 @@ fi # !grd_src_usr_flg
 # Begin loop over input files
 let bch_nbr=$((fl_nbr / job_nbr))
 let bch_flg=$((fl_nbr % job_nbr))
-if [ ${bch_nbr} -eq 0 ]; then
+if [ ${fl_nbr} -gt 0 ] && [ ${bch_nbr} -eq 0 ]; then
     let bch_nbr=$((bch_nbr+1))
 elif [ ${bch_flg} -ne 0 ]; then
     let bch_nbr=$((bch_nbr+1))
