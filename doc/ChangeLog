@@ -2,7 +2,9 @@
 
 	* NCO 4.8.2-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha08: Añjali Mudra';git push
-	git tag -a 4.8.2-alpha08 -m 'MacOS 10.14.6 xcode 11 macports 2.6.0 gcc 9.2 issues;ncremap sgs back-compatability, vrt prs fix;nco.texi rgr';git push --tags
+	git tag -a 4.8.2-alpha08 -m 'MacOS 10.14.6 xcode 11 macports 2.6.0 gcc 9.2 issues;ncremap sgs back-compatability, vrt prs tm_nbr fix;nco.texi rgr';git push --tags
+
+	* Ensure tm_nbr >= 1 for pure-pressure vertical grids
 
 	* Define and check-for ilev_nm_in == NULL to fix interpolation to pressure-levels
 

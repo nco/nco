@@ -29,6 +29,7 @@
 
 # Prerequisites: Bash, NCO
 # Script could use other shells, e.g., dash (Debian default) after rewriting function definitions and loops
+# Debug with 'bash -x ncclimo --dbg=dbg_lvl' where 0 <= dbg_lvl <= 5
 
 # Source: https://github.com/nco/nco/tree/master/data/ncclimo
 # Documentation: http://nco.sf.net/nco.html#ncclimo
@@ -46,6 +47,7 @@
 # scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
 # scp ~/nco/data/ncclimo dust.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo e3sm.ess.uci.edu:bin
+# scp ~/nco/data/ncclimo frazil.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta

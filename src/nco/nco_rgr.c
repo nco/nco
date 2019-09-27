@@ -837,7 +837,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   long ilev_nbr_out;
   long lev_nbr_out;
   long tm_idx=0L; /* [idx] Current timestep */
-  long tm_nbr=0L; /* [idx] Number of timesteps in vertical grid */
+  long tm_nbr=1L; /* [idx] Number of timesteps in vertical grid */
   long tm_nbr_in=1L; /* [nbr] Number of timesteps in input vertical grid definition */
   long tm_nbr_out=1L; /* [nbr] Number of timesetps in output vertical grid definition */
   size_t grd_idx; /* [idx] Gridcell index */
@@ -1172,7 +1172,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(tm_nbr_in > tm_nbr_out) assert((float)tm_nbr_in/(float)tm_nbr_out == tm_nbr_in/tm_nbr_out); else assert((float)tm_nbr_out/(float)tm_nbr_in == tm_nbr_out/tm_nbr_in);
     } /* !tm_nbr_in */
     tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
-  
+
     /* Sanity checks */
     assert(grd_sz_in == grd_sz_out);
     assert(tm_nbr_in == tm_nbr_out);
@@ -1187,6 +1187,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       memcpy(ps_out,ps_in,tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr));
     } /* !ps_id_tpl */
   } /* !flg_grd_in_hyb */
+
+  //  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark tm_nbr=%ld\n",nco_prg_nm_get(),tm_nbr);
 
   if(flg_grd_in_prs){
     lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
@@ -4989,8 +4991,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  
 	/* This first block is for "normal" variables without sub-gridscale fractions */
 	if(!sgs_frc_out){
-	  //	  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(fp_stdout,"%s: DEBUG quark2 var_nm=%s\n",nco_prg_nm_get(),var_nm);
-
 	  /* Apply weights */
 	  if(!has_mss_val){
 	    if(lvl_nbr == 1){
