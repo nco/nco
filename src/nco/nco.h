@@ -1194,6 +1194,8 @@ extern "C" {
     char *lon_nm_out; /* [sng] Name of output dimension for longitude */
     char *lon_vrt_nm; /* [sng] Name of non-rectangular boundary variable for longitude */
     char *msk_nm; /* [sng] Name of variable containing destination mask */
+    char *plev_nm_in; /* [sng] Name of input dimension to recognize as vertical dimension for pure pressure grids */
+    char *plev_nm_out; /* [sng] Name of output vertical dimension for pure pressure grids */
     char *sgs_frc_nm; /* [sng] Name of variable containing sub-gridscale fraction */
     char *sgs_msk_nm; /* [sng] Name of variable containing sub-gridscale mask */
     char *vrt_nm; /* [sng] Name of dimension to employ for vertices */

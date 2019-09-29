@@ -128,6 +128,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->lon_nm_out) rgr->lon_nm_out=(char *)nco_free(rgr->lon_nm_out);
   if(rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)nco_free(rgr->lon_vrt_nm);
   if(rgr->msk_nm) rgr->msk_nm=(char *)nco_free(rgr->msk_nm);
+  if(rgr->plev_nm_in) rgr->plev_nm_in=(char *)nco_free(rgr->plev_nm_in);
   if(rgr->vrt_nm) rgr->vrt_nm=(char *)nco_free(rgr->vrt_nm);
 
   /* Lastly, free() regrid structure itself */
@@ -269,6 +270,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_nm_out=NULL; /* [sng] Name of output dimension for longitude */
   rgr->lon_vrt_nm=NULL; /* [sng] Name of non-rectangular boundary variable for longitude */
   rgr->msk_nm=NULL; /* [sng] Name of variable containing destination mask */
+  rgr->plev_nm_in=NULL; /* [sng] Name of input variable recognize as pure-pressure coordinate */
   rgr->sgs_frc_nm=NULL; /* [sng] Name of variable sub-gridscale fraction */
   rgr->sgs_msk_nm=NULL; /* [sng] Name of variable sub-gridscale mask */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
@@ -600,6 +602,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->lon_vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !lon_vrt_nm */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"plev_nm_in") || !strcmp(rgr_lst[rgr_var_idx].key,"plev_nm")){
+      rgr->plev_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !plev_nm_in */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"sgs_frc_nm")){
       rgr->sgs_frc_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -674,6 +680,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   if(!rgr->lon_vrt_nm) rgr->lon_vrt_nm=(char *)strdup("lon_vertices"); /* [sng] Name of non-rectangular boundary variable for longitude */
   if(!rgr->msk_nm) rgr->msk_nm=(char *)strdup("mask"); /* [sng] Name of variable containing destination mask */
   if(!rgr->vrt_nm) rgr->vrt_nm=(char *)strdup("nv"); /* [sng] Name of dimension to employ for vertices */
+  if(!rgr->plev_nm_in) rgr->plev_nm_in=(char *)strdup("plev"); /* [sng] Name of variable to recognize as pure pressure coordinate */
 
   /* Derived from defaults and command-line arguments */
   // On second thought, do not strdup() these here. This way, NULL means user never specified lon/lat-out names
@@ -815,6 +822,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   char *lev_nm_in;
   char *ilev_nm_out;
   char *lev_nm_out;
+  char *plev_nm_in; /* [sng] Pure-pressure coordnate name */
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
   int *dmn_ids_in=NULL; /* [nbr] Input file dimension IDs */
   int *dmn_ids_out=NULL; /* [nbr] Output file dimension IDs */
@@ -970,10 +978,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   out_id=rgr->out_id;
 
   /* Determine input grid type */
+  if(rgr->plev_nm_in) plev_nm_in=rgr->plev_nm_in;
   if((rcd=nco_inq_varid_flg(in_id,"hyai",&hyai_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_hyb; /* EAM */
     flg_grd_in_hyb=True;
-  }else if((rcd=nco_inq_varid_flg(in_id,"plev",&plev_id)) == NC_NOERR){
+  }else if((rcd=nco_inq_varid_flg(in_id,plev_nm_in,&plev_id)) == NC_NOERR){
     nco_vrt_grd_in=nco_vrt_grd_prs; /* NCEP */
     flg_grd_in_prs=True;
   }else if((rcd=nco_inq_varid_flg(in_id,"depth",&dpt_id)) == NC_NOERR){
@@ -1023,7 +1032,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
-    rcd=nco_inq_varid(in_id,"plev",&lev_id);
+    rcd=nco_inq_varid(in_id,plev_nm_in,&lev_id);
   } /* !flg_grd_in_prs */
 
   if(flg_grd_in_dpt){
@@ -1441,7 +1450,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;
     } /* end nco_obj_typ_var */
   } /* end idx_tbl */
-  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit interpolation criteria. The vertical interpolator expects something to interpolate, and variables not interpolated are copied straight to output. HINT: If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\" and \"lev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid, e.g., \"ncks --rgr ilev_nm=interface_level --rgr lev_nm=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\".\n",nco_prg_nm_get(),fnc_nm);
+  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit interpolation criteria. The vertical interpolator expects something to interpolate, and variables not interpolated are copied straight to output. HINT: If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\", \"lev\", and/or \"plev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid. For hybrid-pressure coordinate grids, ensure that the \"ilev\" and \"lev\" variable names are known with, e.g., \"ncks --rgr ilev_nm=interface_level --rgr lev_nm=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\". For pure pressure grids, ensure the \"plev\" coordinate name is defined with, e.g., \"ncks --rgr plev_nm=pressure_level\" or \"ncremap -R '--rgr plev=pressure_level'\".\n",nco_prg_nm_get(),fnc_nm);
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){

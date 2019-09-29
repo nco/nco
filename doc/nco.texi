@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha07
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 27 September 2019
+@set update-date 29 September 2019
 @set update-month September 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6691,6 +6691,11 @@ in multi-argument format (@pxref{Multi-arguments}).
 The third example uses a convenience switch introduced to reduce typing.
 
 Generating common grids:
+@cindex @acronym{ECMWF IFS} grid
+@cindex @acronym{NCEP2} grid
+@cindex @acronym{NASA CMG} grid
+@cindex @acronym{CAM-FV} grid
+@cindex @acronym{Equi-angular} grid
 @example
 @verbatim
 # Through version 4.7.5 (August, 2018), ncks performed grid-generation
@@ -6735,6 +6740,10 @@ ncremap -G ttl='Equi-Angular grid 128x256'#latlon=128,256#lat_typ=uni#lon_typ=gr
 # T42 Gaussian grid, first longitude centered at Greenwich
 ncremap -G ttl='T42 Gaussian grid'#latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
         -g ${DATA}/grids/t42_SCRIP.20180901.nc
+
+# T62 Gaussian grid, first longitude centered at Greenwich, NCEP2 T62 Gaussian grid 
+ncremap -G ttl='NCEP2 T62 Gaussian grid'#latlon=94,192#lat_typ=gss#lon_typ=grn_ctr#lat_drc=n2s \
+        -g ${DATA}/grids/ncep2_t62_SCRIP.20191001.nc
 
 # F640 Full Gaussian grid, first longitude centered at Greenwich
 ncremap -7 -L 1 \
@@ -23901,12 +23910,14 @@ The grid-formula for this is @samp{lat_typ=uni#lon_typ=grn_ctr}.
 Some examples (remember, this @acronym{API} requires @acronym{NCO}
 4.7.6+): 
 @example
+@cindex @acronym{NCEP2} grid
 @verbatim
 ncremap -g grd.nc -G latlon=180,360                 # 1x1 Uniform grid
 ncremap -g grd.nc -G latlon=180,360#lat_drc=n2s     # 1x1 Uniform grid, N->S not S->N
 ncremap -g grd.nc -G latlon=180,360#lon_typ=grn_wst # 1x1 Uniform grid, Greenwich-west edge
 ncremap -g grd.nc -G latlon=129,256#lat_typ=cap     # 1.4x1.4  FV grid
 ncremap -g grd.nc -G latlon=94,192#lat_typ=gss      # T62 Gaussian grid
+ncremap -g grd.nc -G latlon=94,192#lat_typ=gss#lat_drc=n2s # NCEP2 T62 Gaussian grid 
 @end verbatim
 @end example
 Regional grids are a powerful tool in regional process analyses, and
