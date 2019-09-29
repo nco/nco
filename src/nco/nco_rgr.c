@@ -1672,8 +1672,20 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
 	    prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[idx_fst+grd_idx]*hybi_out[ilev_idx];
       /* 20190927 */
-      if(flg_grd_in_prs) memcpy(prs_ntf_in,prs_mdp_in,grd_sz_in*nco_typ_lng(var_typ_rgr));
-      if(flg_grd_out_prs) memcpy(prs_ntf_out,prs_mdp_out,grd_sz_out*nco_typ_lng(var_typ_rgr));
+      if(flg_grd_in_prs){
+	if(prs_mdp_in){memcpy(prs_ntf_in,prs_mdp_in,grd_sz_in*nco_typ_lng(var_typ_rgr));}else{
+	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
+	      prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=lev_in[ilev_idx];
+	} /* !prs_mdp_in */
+      } /* !flg_grd_in_prs */
+      if(flg_grd_out_prs){
+	if(prs_mdp_out){memcpy(prs_ntf_out,prs_mdp_out,grd_sz_out*nco_typ_lng(var_typ_rgr));}else{
+	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
+	      prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=lev_out[ilev_idx];
+	} /* !prs_mdp_in */
+      } /* !flg_grd_out_prs */
       if(flg_ntp_log){
 	var_sz_in=grd_sz_in*ilev_nbr_in;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_ntf_in[idx_in]=log(prs_ntf_in[idx_in]);

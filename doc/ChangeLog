@@ -1,3 +1,7 @@
+2019-09-29  Charlie Zender  <zender@uci.edu>
+
+	* Always define prs_ntf in case no prs_mdp variables are extracted in vertical interpolation
+
 2019-09-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha08 release procedure:
