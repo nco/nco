@@ -633,7 +633,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->vrt_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !vrt_nm */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"ntp_mth")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"vrt_ntp") || !strcmp(rgr_lst[rgr_var_idx].key,"ntp_mth")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"lin") || !strcasecmp(rgr_lst[rgr_var_idx].val,"linear") || !strcasecmp(rgr_lst[rgr_var_idx].val,"lnr")){
 	rgr->ntp_mth=nco_ntp_lnr;
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"log") || !strcasecmp(rgr_lst[rgr_var_idx].val,"logarithmic") || !strcasecmp(rgr_lst[rgr_var_idx].val,"lgr")){
@@ -644,7 +644,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       } /* !val */
       continue;
     } /* !ntp_mth */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"xtr_mth")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"vrt_xtr") || !strcmp(rgr_lst[rgr_var_idx].key,"xtr_mth")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"nrs_ngh") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ngh") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nearest_neighbor") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nn")){
 	rgr->xtr_mth=nco_xtr_fll_ngh;
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"mss_val") || !strcasecmp(rgr_lst[rgr_var_idx].val,"msv") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fll_val") || !strcasecmp(rgr_lst[rgr_var_idx].val,"missing_value")){

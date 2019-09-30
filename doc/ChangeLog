@@ -1,3 +1,7 @@
+2019-09-30  Charlie Zender  <zender@uci.edu>
+
+	* Add vrt_ntp, vrt_xtr synonyms to ncks
+
 2019-09-29  Charlie Zender  <zender@uci.edu>
 
 	* Allow users to specify pressure coordinate name with plev_nm_in
