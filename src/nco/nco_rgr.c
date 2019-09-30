@@ -1424,11 +1424,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool need_prs_ntf=False; /* [flg] At least one variable to regrid is on interface levels */
   nco_bool need_prs_mdp=False; /* [flg] At least one variable to regrid is on midpoint levels */
   trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
+  //  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s flg=%d\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm,trv_tbl->lst[idx_tbl].flg_xtr);
   /* Define regridding flag for each variable */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
-    dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
       has_ilev=False;
       has_lev=False;
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
@@ -1451,7 +1452,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* end nco_obj_typ_var */
   } /* end idx_tbl */
   if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit interpolation criteria. The vertical interpolator expects something to interpolate, and variables not interpolated are copied straight to output. HINT: If the name(s) of the input vertical grid dimensions (e.g., ilev and lev) do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"ilev\", \"lev\", and/or \"plev\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#regrid. For hybrid-pressure coordinate grids, ensure that the \"ilev\" and \"lev\" variable names are known with, e.g., \"ncks --rgr ilev_nm=interface_level --rgr lev_nm=midpoint_level\" or \"ncremap -R '--rgr ilev=interface_level --rgr lev=midpoint_level'\". For pure pressure grids, ensure the \"plev\" coordinate name is defined with, e.g., \"ncks --rgr plev_nm=pressure_level\" or \"ncremap -R '--rgr plev=pressure_level'\".\n",nco_prg_nm_get(),fnc_nm);
-
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
       trv=trv_tbl->lst[idx_tbl];
@@ -1542,7 +1542,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	} /* !flg_rgr */
-	//	if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s lev_nm_in=%s lev_nm_out=%s ilev_nm_in=%s ilev_nm_out=%s\n",nco_prg_nm_get(),var_nm,lev_nm_in,lev_nm_out,ilev_nm_in,ilev_nm_out);
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
 	/* Duplicate netCDF4 settings when possible */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -1914,6 +1913,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		crd_out_mnt[out_idx]=crd_out[out_nbr-out_idx-1];
 	    } /* !out_ncr */
 	    
+	    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s grd_idx=%lu,in_nbr=%lu,out_nbr=%lu\n",nco_prg_nm_get(),var_nm,grd_idx,in_nbr,out_nbr);
+	    for(out_idx=0;out_idx<out_nbr;out_idx++){
+	      ;
+	    } /* !out_idx */
 	    // Initialize bracketing index
 	    brk_lft_idx=0;
 	    // Loop over desired output coordinates
@@ -2084,7 +2087,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    (void)fprintf(fp_stdout,"ilev_nbr_out = %ld, lev_nbr_out = %ld\n",ilev_nbr_out,lev_nbr_out);
 	    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
 	      rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_nm);
-	      (void)fprintf(fp_stdout,"dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %ld\n",dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx]);
+	      (void)fprintf(fp_stdout,"quark dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %ld\n",dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx]);
 	    } /* !dmn_idx */
 	  } /* !dbg */
 
