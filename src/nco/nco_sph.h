@@ -78,7 +78,7 @@
 /* smallest RADIAN */
 #define SIGMA_RAD (1.0e-12)
 
-#define SIGMA_TOLERANCE (1.0e-12)
+#define SIGMA_TOLERANCE (1.0e-16)
 #define DOT_TOLERANCE (1.0e-14)
 
 
