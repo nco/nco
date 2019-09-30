@@ -195,7 +195,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
       if( fabs(dx1-2.0) < SIGMA_TOLERANCE )
       {
         if(nco_dbg_lvl_get() >= nco_dbg_dev)
-          (void)fprintf(stderr, "%s:%s() PARALLEL edges in oposite direction\n", nco_prg_nm_get(), fnc_nm );
+          (void)fprintf(stderr, "%s:%s() PARALLEL edges in oposite direction a=%d b=%d\n", nco_prg_nm_get(), fnc_nm, a , b );
 
         return EXIT_FAILURE;
 
