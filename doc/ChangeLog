@@ -1,5 +1,9 @@
 2019-09-30  Charlie Zender  <zender@uci.edu>
 
+	* Account for vertical layers in clever interface pressure memory allocation, then deprecate it as too clever
+
+	* Prevent taking double logarithm if input and output interface pressures
+
 	* Change default vertical interpolation back from linear to logarithmic
 
 	* Add vrt_ntp, vrt_xtr synonyms to ncks

@@ -1679,21 +1679,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
 	  for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
 	    prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=p0_out*hyai_out[ilev_idx]+ps_out[idx_fst+grd_idx]*hybi_out[ilev_idx];
-      /* 20190927 */
-      if(flg_grd_in_prs){
-	if(prs_mdp_in){memcpy(prs_ntf_in,prs_mdp_in,grd_sz_in*nco_typ_lng(var_typ_rgr));}else{
-	  for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
-	    for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
-	      prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=lev_in[ilev_idx];
-	} /* !prs_mdp_in */
-      } /* !flg_grd_in_prs */
-      if(flg_grd_out_prs){
-	if(prs_mdp_out){memcpy(prs_ntf_out,prs_mdp_out,grd_sz_out*nco_typ_lng(var_typ_rgr));}else{
-	  for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
-	    for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
-	      prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=lev_out[ilev_idx];
-	} /* !prs_mdp_in */
-      } /* !flg_grd_out_prs */
+      if(flg_grd_in_prs)
+	for(grd_idx=0;grd_idx<grd_sz_in;grd_idx++)
+	  for(ilev_idx=0;ilev_idx<ilev_nbr_in;ilev_idx++)
+	    prs_ntf_in[grd_idx+ilev_idx*grd_sz_in]=lev_in[ilev_idx];
+      if(flg_grd_out_prs)
+	for(grd_idx=0;grd_idx<grd_sz_out;grd_idx++)
+	  for(ilev_idx=0;ilev_idx<ilev_nbr_out;ilev_idx++)
+	    prs_ntf_out[grd_idx+ilev_idx*grd_sz_out]=lev_out[ilev_idx];
       if(flg_ntp_log){
 	var_sz_in=grd_sz_in*ilev_nbr_in;
 	for(idx_in=0;idx_in<var_sz_in;idx_in++) prs_ntf_in[idx_in]=log(prs_ntf_in[idx_in]);
@@ -1803,6 +1796,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    prs_ntp_out=prs_mdp_out;
 	  } /* !ilev */	  
 	  
+	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s lvl_nbr_out=%d, ilev_nbr_in=%lu, ilev_nbr_out=%lu, lev_nbr_in=%lu, lev_nbr_out=%lu\n",nco_prg_nm_get(),var_nm,lvl_nbr_out,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out);
+	  if(nco_dbg_lvl_get() >= nco_dbg_var){
+	    for(unsigned long lvl_idx=0;lvl_idx<lvl_nbr_out;lvl_idx++){
+	      (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s prs_ntp_out[%lu]=%g, exp(prs_ntp_out[%lu])=%g, \n",nco_prg_nm_get(),var_nm,lvl_idx,prs_ntp_out[lvl_idx],lvl_idx,exp(prs_ntp_out[lvl_idx]));
+	    } /* !lvl_idx */
+	  } /* !dbg */
+
 	  /* Procedure: Extract input/output coordinate/data arrays into 1D column order
 	     This enables actual interpolation code to be written for, or take advantage of, 1D interpolation routines 
 	     After interpolating into 1D sequential memory, copy back to ND output and repeat */
@@ -1913,10 +1913,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 		crd_out_mnt[out_idx]=crd_out[out_nbr-out_idx-1];
 	    } /* !out_ncr */
 	    
-	    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s grd_idx=%lu,in_nbr=%lu,out_nbr=%lu\n",nco_prg_nm_get(),var_nm,grd_idx,in_nbr,out_nbr);
-	    for(out_idx=0;out_idx<out_nbr;out_idx++){
-	      ;
-	    } /* !out_idx */
 	    // Initialize bracketing index
 	    brk_lft_idx=0;
 	    // Loop over desired output coordinates
