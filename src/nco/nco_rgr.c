@@ -308,7 +308,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->msk_var=NULL; /* [sng] Mask-template variable */
   rgr->sgs_nrm=1.0; /* [sng] Sub-gridscale normalization */
   rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
-  rgr->ntp_mth=nco_ntp_lnr; /* [enm] Interpolation method */
+  rgr->ntp_mth=nco_ntp_log; /* [enm] Interpolation method */
   rgr->xtr_mth=nco_xtr_fll_ngh; /* [enm] Extrapolation method */
   
   /* Parse key-value properties */

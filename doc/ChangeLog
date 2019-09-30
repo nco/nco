@@ -1,5 +1,7 @@
 2019-09-30  Charlie Zender  <zender@uci.edu>
 
+	* Change default vertical interpolation back from linear to logarithmic
+
 	* Add vrt_ntp, vrt_xtr synonyms to ncks
 
 2019-09-29  Charlie Zender  <zender@uci.edu>
