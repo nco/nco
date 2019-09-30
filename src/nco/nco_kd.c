@@ -2451,12 +2451,20 @@ int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority
   
 }
 
-int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head , KDPriority *list_end, int stateH, int stateV )
+//int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head , KDPriority *list_end, int stateH, int stateV )
+int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_mem, int stateH, int stateV )
 {
   
   int iret;
 
   nco_bool bAddPnt=False;
+
+  KDPriority *kd_list_nw;
+
+
+  char fnc_nm[]="kd_neighbour_intersect3";
+
+
 
   /* horizonal */
   if( stateH <2  &&   (disc == 0 || disc==2 ) )
@@ -2502,41 +2510,45 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list
   if(bAddPnt)
   { 
 
-	  (*list_head)->elem=node;
-	  (*list_head)->dist=1.1;
 
-      (*list_head)++;
+  	 if( omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE < omp_mem->kd_cnt +1 )
+	 {
 
-	  if(*list_head == list_end)
-	  	return 0;
 
-  	/*
-    for(idx=0 ; idx<m ;idx++)
-      if(!list[idx].elem)
-      {
-        list[idx].elem=node;
-        list[idx].dist=1.1;
-        break;
-      }
-    
-     if(idx==m)
-       return 0;
 
-    */
+       omp_mem->kd_list=(KDPriority*)nco_realloc(omp_mem->kd_list, ++omp_mem->kd_blk_nbr * (NCO_VRL_BLOCKSIZE *sizeof(KDPriority))  );
+
+
+
+       //(void)fprintf(stderr,"%s: Increasing block size to %ld kd_cnt=%ld omp_mem=%p\n",fnc_nm, omp_mem->kd_blk_nbr, omp_mem->kd_cnt,   (void*)omp_mem->kd_list );
+
+
+     }
+
+
+  	 omp_mem->kd_list[omp_mem->kd_cnt].elem = node;
+  	 omp_mem->kd_list[omp_mem->kd_cnt].dist = 1.0;
+  	 omp_mem->kd_list[omp_mem->kd_cnt++].area = -1.0;
+
+
+
+
   }
      
   
 
   if( node->sons[0] )
   {
-    iret= kd_neighbour_intersect3(node->sons[0], (disc+1)%4, Xq, list_head,  list_end, stateH, stateV);
+    //iret= kd_neighbour_intersect3(node->sons[0], (disc+1)%4, Xq, list_head,  list_end, stateH, stateV);
+    iret= kd_neighbour_intersect3(node->sons[0], (disc+1)%4, Xq, omp_mem, stateH, stateV);
     if(iret==0) return iret;
       
   }
      
   if( node->sons[1] )
   {  
-    iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq, list_head,  list_end, stateH, stateV);
+    //iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq, list_head,  list_end, stateH, stateV);
+    iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq, omp_mem, stateH, stateV);
     if(iret==0) return iret;
        
   }
@@ -2637,47 +2649,55 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 }
 
 
-int kd_nearest_intersect_wrp(KDTree *realTree, kd_box Xq, kd_box Xr, KDPriority *list, int nbr_lst)
+
+
+
+int kd_nearest_intersect_wrp(KDTree *realTree, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem)
 {
 
 
-   /* count duplicates for dbg */
-   int ret_cnt;
-   int ret_cnt_nw=0;
-   int ret_cnt1=0;
+  /* count duplicates for dbg */
+  int ret_cnt;
+  int ret_cnt_nw=0;
+  int ret_cnt1=0;
+  int nbr_lst;
 
-   nco_bool bSort=False;
+  nco_bool bSort=False;
 
-   const char fnc_nm[]="kd_nearest_intersect_wrp():";
-
-
-
-   ret_cnt=kd_nearest_intersect(realTree,Xq, nbr_lst,list, bSort);
+  const char fnc_nm[]="kd_nearest_intersect_wrp():";
 
 
-   /* search for second box */
-   if( ret_cnt <nbr_lst  )
-      ret_cnt1=kd_nearest_intersect(realTree,Xr, nbr_lst - ret_cnt, list+ret_cnt, bSort);
+  // (void)fprintf(stderr,"%s:%s: just entered function\n", nco_prg_nm_get(),fnc_nm );
+
+  nbr_lst=omp_mem->kd_blk_nbr*NCO_VRL_BLOCKSIZE;
 
 
-    ret_cnt+=ret_cnt1;
+
+  ret_cnt=kd_nearest_intersect(realTree,Xq,omp_mem, bSort);
+  ret_cnt1=kd_nearest_intersect(realTree,Xr, omp_mem, bSort);
 
 
-    kd_priority_list_sort(list,nbr_lst,ret_cnt, &ret_cnt_nw  );
+
+  if( omp_mem->kd_cnt >1  &&  kd_priority_list_sort(omp_mem->kd_list,  omp_mem->kd_blk_nbr* NCO_VRL_BLOCKSIZE, omp_mem->kd_cnt , &ret_cnt_nw  )  )
+    omp_mem->kd_cnt=ret_cnt_nw;
 
 
-	if(nco_dbg_lvl_get() >= nco_dbg_dev && ret_cnt_nw > ret_cnt)
-		fprintf(stderr,"%s(): num of duplicates detected=%d\n",fnc_nm,  ret_cnt_nw-ret_cnt   );
 
-	return ret_cnt_nw;
+
+
+
+  return omp_mem->kd_cnt;
 }
 
 
 
 
-int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, int bSort)
+
+//int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, int bSort)
+int kd_nearest_intersect(KDTree* realTree, kd_box Xq, omp_mem_sct *omp_mem, int bSort)
 {
 	int idx;
+	int m;
 	int node_cnt;
 
     int nw_lcl_cnt=0;
@@ -2686,26 +2706,38 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, i
 	KDPriority *list_srt;
 	KDPriority *list_end;
 
+   const char fnc_nm[]="kd_nearest_intersect():";
 
-	list_srt=list;
-	list_end=list;
+   //(void)fprintf(stderr,"%s:%s: just entered function\n", nco_prg_nm_get(),fnc_nm );
+    /*
+	list_srt= omp_mem->kd_list+ (size_t)omp_mem->kd_cnt;
+	list_end= omp_mem->kd_list;
+
+
+	m=omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE;
 
 	list_end+=m;
+   */
 
-	node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
+	//node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
+	node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, omp_mem,0,0);
 
-    ret_cnt= ( list_srt - list);
-	/*
-	for(idx=0; idx<m;idx++)
-	  if(list[idx].elem )
-	    ret_cnt++;
-      else
-        break;
-    */
-    /* sort list and remove duplicates */
-    if(ret_cnt >1 && bSort && kd_priority_list_sort(list, m, ret_cnt, &nw_lcl_cnt))
+
+    /*
+    ret_cnt= ( list_srt - omp_mem->kd_list)+ omp_mem->kd_cnt;
+    if(ret_cnt >1 && bSort && kd_priority_list_sort(omp_mem->kd_list, m, ret_cnt, &nw_lcl_cnt))
     {
        ret_cnt=nw_lcl_cnt;
+
+    }
+    */
+
+    ret_cnt=omp_mem->kd_cnt;
+
+    if(omp_mem->kd_cnt && bSort && kd_priority_list_sort(omp_mem->kd_list,  omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE, omp_mem->kd_cnt  , &nw_lcl_cnt)  )
+    {
+    	ret_cnt=nw_lcl_cnt;
+    	omp_mem->kd_cnt=nw_lcl_cnt;
 
     }
 
@@ -2713,8 +2745,12 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, i
 
 
 
+
     if(0 && nco_dbg_lvl_get() >= nco_dbg_dev  )
     {
+      KDPriority *list;
+
+      list=omp_mem->kd_list;
       (void)fprintf(stderr,"ret_cnt=%d\n", ret_cnt);
 
       for(idx=0;idx<ret_cnt;idx++)
