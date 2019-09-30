@@ -34,15 +34,6 @@
 extern "C" {
 #endif /* !__cplusplus */
 
-/* used in nco_ply_lst_vrl - for realloc to expand */
-#define NCO_VRL_BLOCKSIZE 4000
-
-typedef struct {
-    poly_sct **pl_lst;
-    size_t pl_cnt;
-    size_t blk_nbr;
-    KDPriority *kd_list;
-} omp_mem_sct;
 
 /************************ functions that manipulate lists of polygons ****************************************************/
 

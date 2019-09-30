@@ -492,7 +492,7 @@ int *pl_cnt_vrl_ret){
 
     /* find overlapping polygons */
 
-    cnt_vrl=kd_nearest_intersect(rtree, size, max_nbr_vrl,list,bSort );
+    // cnt_vrl=kd_nearest_intersect(rtree, size, max_nbr_vrl,list,bSort );
 
 
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
@@ -578,7 +578,7 @@ int *pl_cnt_vrl_ret){
   nco_bool bSort=True;
 
 
-  int max_nbr_vrl=2000;
+  int max_nbr_vrl=(NCO_VRL_BLOCKSIZE);
   int pl_cnt_vrl=0;
 
   int thr_idx=0;
@@ -622,7 +622,9 @@ int *pl_cnt_vrl_ret){
     mem_lst[idx].pl_lst=NULL_CEWI;
     mem_lst[idx].blk_nbr=0;
     mem_lst[idx].pl_cnt=0;
-    mem_lst[idx].kd_list=(KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)max_nbr_vrl);
+    mem_lst[idx].kd_list=(KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)(NCO_VRL_BLOCKSIZE));
+    mem_lst[idx].kd_cnt=0;
+    mem_lst[idx].kd_blk_nbr=1;
 
   }
 
@@ -668,8 +670,23 @@ int *pl_cnt_vrl_ret){
     if (0 && nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n",fnc_nm,  idx, thr_idx);
 
+
     if(pl_lst_in[idx]->bmsk==False)
       continue;
+
+    mem_lst[thr_idx].kd_cnt=0;
+
+    if(mem_lst[thr_idx].kd_blk_nbr >1)
+    {
+      mem_lst[thr_idx].kd_blk_nbr=1;
+
+      mem_lst[thr_idx].kd_list=(KDPriority*)nco_free(mem_lst[thr_idx].kd_list);
+      //mem_lst[thr_idx].kd_list=(KDPriority*)nco_realloc(mem_lst[idx].kd_list, sizeof(KDPriority) * NCO_VRL_BLOCKSIZE );
+      mem_lst[idx].kd_list=(KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)(NCO_VRL_BLOCKSIZE));
+
+
+    }
+
 
 
     /* get bounds of polygon in */
@@ -678,9 +695,9 @@ int *pl_cnt_vrl_ret){
 
     /* if a wrapped polygon then do two searches */
     if(bSplit)
-      vrl_cnt = kd_nearest_intersect_wrp(rtree, size1, size2,  mem_lst[thr_idx].kd_list  , max_nbr_vrl);
+      vrl_cnt = kd_nearest_intersect_wrp(rtree, size1, size2,  &mem_lst[thr_idx]);
     else
-      vrl_cnt = kd_nearest_intersect(rtree, size1, max_nbr_vrl, mem_lst[thr_idx].kd_list, bSort);
+      vrl_cnt = kd_nearest_intersect(rtree, size1, &mem_lst[thr_idx], bSort);
 
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
 
@@ -973,11 +990,11 @@ int *pl_cnt_vrl_ret){
   } /* end for idx */
 
   /* turn tot_area into a % of 4*PI */
-  tot_area = tot_area / 4.0 / M_PI *100.0;
+  /* tot_area = tot_area / 4.0 / M_PI *100.0; */
 
   /* final report */
   if (nco_dbg_lvl_get() >= nco_dbg_dev)
-    (void) fprintf(stderr, "%s: total overlaps=%d, total_area(sphere)=%3.10f total num wrapped= %d total nan nbr=%d \n", nco_prg_nm_get(), pl_cnt_vrl, tot_area  , tot_wrp_cnt, tot_nan_cnt);
+    (void) fprintf(stderr, "%s: total overlaps=%d, total_area=%.15f (area=%3.10f%%) total num wrapped= %d total nan nbr=%d \n", nco_prg_nm_get(), pl_cnt_vrl, tot_area, tot_area /4.0 / M_PI *100.0, tot_wrp_cnt, tot_nan_cnt);
 
 
 
