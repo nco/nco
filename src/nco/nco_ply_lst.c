@@ -1052,7 +1052,7 @@ int *pl_cnt_vrl_ret){
     mem_lst[idx].kd_list= (KDPriority*) nco_free(mem_lst[idx].kd_list);
 
 
-  mem_lst=(omp_mem_sct**)nco_free(mem_lst);
+  mem_lst=(omp_mem_sct*)nco_free(mem_lst);
 
   return pl_lst_vrl;
 
