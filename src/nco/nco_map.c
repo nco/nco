@@ -779,6 +779,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   if(fl_in_dst) fl_in_dst=(char *)nco_free(fl_in_dst);
   if(fl_in_src) fl_in_src=(char *)nco_free(fl_in_src);
+  if(fl_out_tmp) fl_out_tmp=(char*)nco_free(fl_out_tmp);
 
   return rcd;
 } /* !nco_map_mk() */
@@ -872,7 +873,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   /* choose mesh overlap type based on rank of src and dst */
   if(mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
-    pl_typ=poly_rll;
+    pl_typ=poly_sph;
   else
     pl_typ=poly_sph;
 
@@ -1619,11 +1620,13 @@ nco_grd_lon_typ_enm grd_lon_typ
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
+  fl_out_tmp=(char*)nco_free(fl_out_tmp);
 
   area=(double*)nco_free(area);
   lat_ctr=(double*)nco_free(lat_ctr);
+  lat_crn=(double*)nco_free(lat_crn);
+
   lon_ctr=(double*)nco_free(lon_ctr);
-  lon_crn=(double*)nco_free(lon_crn);
   lon_crn=(double*)nco_free(lon_crn);
   msk=(int*)nco_free(msk);
 
