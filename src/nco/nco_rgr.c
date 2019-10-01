@@ -1796,13 +1796,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    prs_ntp_out=prs_mdp_out;
 	  } /* !ilev */	  
 	  
-	  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s lvl_nbr_out=%d, ilev_nbr_in=%lu, ilev_nbr_out=%lu, lev_nbr_in=%lu, lev_nbr_out=%lu\n",nco_prg_nm_get(),var_nm,lvl_nbr_out,ilev_nbr_in,ilev_nbr_out,lev_nbr_in,lev_nbr_out);
-	  if(nco_dbg_lvl_get() >= nco_dbg_var){
-	    for(unsigned long lvl_idx=0;lvl_idx<lvl_nbr_out;lvl_idx++){
-	      (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s prs_ntp_out[%lu]=%g, exp(prs_ntp_out[%lu])=%g, \n",nco_prg_nm_get(),var_nm,lvl_idx,prs_ntp_out[lvl_idx],lvl_idx,exp(prs_ntp_out[lvl_idx]));
-	    } /* !lvl_idx */
-	  } /* !dbg */
-
 	  /* Procedure: Extract input/output coordinate/data arrays into 1D column order
 	     This enables actual interpolation code to be written for, or take advantage of, 1D interpolation routines 
 	     After interpolating into 1D sequential memory, copy back to ND output and repeat */
@@ -2078,15 +2071,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    if(dat_out_mnt) dat_out_mnt=(double *)nco_free(dat_out_mnt);
 	  } /* !out_ncr */
 	  
-	  if(nco_dbg_lvl_get() >= nco_dbg_var){
-	    (void)fprintf(fp_stdout,"%s: DEBUG %s variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
-	    (void)fprintf(fp_stdout,"ilev_nbr_out = %ld, lev_nbr_out = %ld\n",ilev_nbr_out,lev_nbr_out);
-	    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-	      rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_nm);
-	      (void)fprintf(fp_stdout,"quark dmn_idx = %d, dmn_nm = %s, dmn_cnt_out = %ld\n",dmn_idx,dmn_nm,dmn_cnt_out[dmn_idx]);
-	    } /* !dmn_idx */
-	  } /* !dbg */
-
 #pragma omp critical
 	  { /* begin OpenMP critical */
 	    rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
