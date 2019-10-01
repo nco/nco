@@ -1077,7 +1077,7 @@ if [ -n "${rgr_map}" ]; then
 	exit 1
     fi # ! -f
     if [ "${mdl_nm}" = 'clm2' ] && [ -z "${sgs_frc}" ]; then
-	printf "${spt_nm}: WARNING ${spt_nm} ALM/CLM/ELM output typically uses sub-gridscale (SGS) fractions that can only be properly renormalized if the SGS variable option to ncclimo is invoked, but that option was not invoked\n"
+	printf "${spt_nm}: WARNING ${spt_nm} CLM/ELM output typically uses sub-gridscale (SGS) fractions that can only be properly renormalized if the SGS variable option to ncclimo is invoked, but that option was not invoked\n"
 	printf "${spt_nm}: HINT Provide ${spt_nm} with the SGS fraction variable using the \"--sgs_frc=\$sgs_frc_nm}\" option, otherwise the regridded data will likely not be properly or conservatively regridded\n"
     fi # !mdl_nm
     map_opt="--map=${rgr_map}"

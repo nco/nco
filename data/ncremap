@@ -1155,9 +1155,9 @@ else
     exit 1
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'alm' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ]; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ]; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'alm', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mpasseaice', 'mwf', 'nil', 'rrg', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'clm', 'cice', 'ctsm', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mpasseaice', 'mwf', 'nil', 'rrg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -1353,14 +1353,14 @@ if [ "${prc_typ}" = 'rrg' ]; then
     grd_dst_usr_flg='Yes'
     hnt_dst='--dst_regional'
 fi # !rrg
-if [ "${prc_typ}" = 'alm' ] || [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'ctsm' ] || [ "${prc_typ}" = 'elm' ]; then 
-    # Set ALM/CLM/ELM-specific options first, then change prc_typ to sgs
-    rds_rth='6.37122e6' # [m] Radius of Earth in ALM/CLM/CTSM/ELM (SHR_CONST_REARTH)
+if [ "${prc_typ}" = 'clm' ] || [ "${prc_typ}" = 'ctsm' ] || [ "${prc_typ}" = 'elm' ]; then 
+    # Set CLM/ELM-specific options first, then change prc_typ to sgs
+    rds_rth='6.37122e6' # [m] Radius of Earth in CLM/CTSM/ELM (SHR_CONST_REARTH)
     sgs_frc='landfrac'
     sgs_msk='landmask'
     sgs_nrm='1.0'
     prc_elm='Yes'
-fi # !alm, !clm, !ctsm, !elm
+fi # !clm, !ctsm, !elm
 if [ "${prc_typ}" = 'cice' ]; then 
     # Set CICE-specific options first, then change prc_typ to sgs
     rds_rth='6371229.0' # [m] Radius of Earth in MPAS-SeaIce (global attribute sphere_radius)
@@ -2548,7 +2548,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		done # !dmn
 	    else # !rrg_dmn_lst
 		echo "ERROR: Regional regridding suffix string '${rnm_sng}' not found in any dimension names in ${fl_in[${fl_idx}]}"
-		echo "HINT: Regional regridding input files must contain dimensions and variables whose names end with the ALM/CAM-SE created (from finclNlonlat namelist input) regional suffix string, e.g., '_128e_to_134e_9s_to_16s'. Valid regional suffix strings for this input file are:"
+		echo "HINT: Regional regridding input files must contain dimensions and variables whose names end with the ELM/CAM-SE created (from finclNlonlat namelist input) regional suffix string, e.g., '_128e_to_134e_9s_to_16s'. Valid regional suffix strings for this input file are:"
 		eval "ncks -m ${fl_in[${fl_idx}]} | cut -d ':' -f 1 | cut -d '=' -s -f 1 | grep ncol | sed 's/ncol//' | sed -e 's/^ *//' -e 's/ *$//'"
 		echo "Use exactly one of these strings as the argument to --rrg_rnm_sng"
 		exit 1
@@ -2718,7 +2718,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 
 	if [ -n "${prc_elm}" ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
-		printf "SGS: Implement idiosyncratic ALM/CLM/CTSM/ELM characteristics in regridded file...\n"
+		printf "SGS: Implement idiosyncratic CLM/CTSM/ELM characteristics in regridded file...\n"
 	    fi # !vrb_lvl
 	    # Convert area from [sr] to [km2]
 	    cmd_ppp[${fl_idx}]="ncap2 -O -s 'area*=${rds_rth}^2/1.0e6;area@long_name=\"Gridcell area\";area@units=\"km^2\"' \"${fl_out[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""

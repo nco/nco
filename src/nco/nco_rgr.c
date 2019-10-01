@@ -785,7 +785,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     nco_vrt_grd_out=nco_vrt_grd_dpt; /* MPAS */
     flg_grd_out_dpt=True;
   }else{ /* !hyai */
-    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid or pure-pressure vertical grid coordinate information in vertical grid file\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information in vertical grid file\n",nco_prg_nm_get(),fnc_nm);
     (void)fprintf(stdout,"%s: HINT ensure vertical grid coordinate file contains a valid vertical grid coordinate\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
@@ -989,8 +989,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     nco_vrt_grd_in=nco_vrt_grd_dpt; /* NCEP */
     flg_grd_in_dpt=True;
   }else{ /* !hyai */
-    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid or pure-pressure vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR %s Unable to locate hybrid-sigma/pressure or pure-pressure vertical grid coordinate information in input file\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. These default to \"hyai\" for hybrid, \"plev\" for pressure, \"depth\" for depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
     

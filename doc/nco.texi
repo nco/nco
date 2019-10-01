@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha08
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 29 September 2019
-@set update-month September 2019
+@set update-date 1 October 2019
+@set update-month October 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -6960,6 +6960,8 @@ overwritten (its contents are immaterial).
 @html
 <a name="map"></a> <!-- http://nco.sf.net/nco.html#map -->
 <a name="esmf"></a> <!-- http://nco.sf.net/nco.html#esmf -->
+<a name="esmf"></a> <!-- http://nco.sf.net/nco.html#tr -->
+<a name="esmf"></a> <!-- http://nco.sf.net/nco.html#tempest -->
 <a name="scrip"></a> <!-- http://nco.sf.net/nco.html#scrip -->
 <a name="rgr"></a> <!-- http://nco.sf.net/nco.html#rgr -->
 <a name="rgr_map"></a> <!-- http://nco.sf.net/nco.html#rgr_map -->
@@ -6971,7 +6973,9 @@ overwritten (its contents are immaterial).
 @cindex regridding
 @cindex @code{--map}
 @cindex @acronym{ESMF}
+@cindex @acronym{TR}
 @cindex @acronym{SCRIP}
+@cindex TempestRemap
 @cindex OpenMP
 @cindex @code{--rgr @var{key}=@var{val}}
 @cindex @code{--rgr_map}
@@ -7272,13 +7276,13 @@ These annotations include
 @cindex @samp{--rgr lon_nm=@var{lon_nm}}
 @cindex @samp{--rgr lat_nm=@var{lat_nm}}
 @item Horizontal Coordinate Names: @var{lat}, @var{lon}
-    The name of the horizontal spatial coordinates assumed to represent
+    The name of the horizontal spatial coordinates that represent
     latitude and longitude in input files are @var{lat_nm} and
-    @var{lon_dmn}, which default to @code{lat} and @code{lon},
-    respectively. 
+    @var{lon_nm}, and default to @code{lat} and @code{lon},
+    respectively.  
     Variables that contain a @var{lat_dmn_nm}-dimension and a
     @var{lon_dmn_nm}-dimension on a 2D input grid will be 
-    regridded, and regridded variables will all contain the
+    regridded, and output regridded variables will all contain the 
     @var{lat_nm}- and @var{lon_nm}-variables.
     Unless the @var{lat_dmn_nm}- and @var{lon_dmn_nm}-dimensions
     are explicitly configured otherwise, they will share the same
@@ -7389,6 +7393,41 @@ These annotations include
     @samp{--rgr lon_bnd_nm=@var{lon_bnd_nm}}.
     The temporal bounds dimension in unstructured grid output remains as
     in the @var{input-file}, usually @code{nbnd}.
+@cindex @var{lev_nm}
+@cindex @var{ilev_nm}
+@cindex @var{plev_nm}
+@cindex @samp{--rgr lev_nm=@var{lev_nm}}
+@cindex @samp{--rgr ilev_nm=@var{ilev_nm}}
+@cindex @samp{--rgr plev_nm=@var{plev_nm}}
+@item Vertical Coordinate Names: @var{lev}, @var{ilev}, @var{plev}
+    The name of the vertical spatial coordinates that represent
+    midpoint levels and interface levels in input files are
+    @var{lev_nm} and @var{ilev_nm}, and default to @code{lev} and
+    @code{ilev}, respectively.  
+    Variables that contain a @var{lev_dmn_nm}-dimension or a
+    @var{ilev_dmn_nm}-dimension on hybrid-sigma/pressure input grid
+    will be regridded, and output vertically interpolated files on a 
+    hybrid-sigma/pressure grid will all contain the @var{lev_nm}- and 
+    @var{ilev_nm}-variables.
+    Unless the @var{lev_dmn_nm}- and @var{ilev_dmn_nm}-dimensions
+    are explicitly configured otherwise, they will share the same
+    name as the @var{lev_nm}- and @var{ilev_nm}-variables.
+    Thus variables regridded to a hybrid-sigma/pressure output grid
+    usually have @var{lev_nm}- and @var{ilev_nm} as coordinate
+    variables. 
+    Variables regridded to a pure-pressure output grid will only have 
+    a single vertical coordinate variable, @var{lev_nm}, which will be
+    an associated coordinate variable if @var{lev_dmn_nm} differs from
+    @var{lev_nm}.
+    To treat different variables as level and interface-level
+    coordinates, use the options @samp{--rgr lev_nm=@var{lev_nm}} and 
+    @samp{--rgr ilev_nm=@var{ilev_nm}}.   
+    Before @acronym{NCO} version 4.8.2 (October, 2019), @var{lev_nm}
+    and @var{ilev_nm} specified both the variable names @emph{and},
+    where applicable (i.e., on 2D-grids), the dimensions of the
+    vertical coordinates in output files.
+    Now the vertical variable and dimension names in output files
+    may be separately specified.
 @cindex @code{area}
 @cindex @code{cell_methods}
 @cindex @code{cell_area}
@@ -18050,7 +18089,7 @@ of the input files, together with the model name @var{mdl_nm} (specified
 with @samp{-m}) and the date range.
 Use @samp{-h @var{hst_nm}} to specify alternative history volumes.
 Examples include @samp{h0} (default, works for @acronym{CAM},
-@acronym{ALM/CLM/CTSM/ELM}), @samp{h1}, and @samp{h} (for @acronym{CISM}).
+@acronym{CLM/CTSM/ELM}), @samp{h1}, and @samp{h} (for @acronym{CISM}).
 
 @html
 <a name="drc_in"></a> <!-- http://nco.sf.net/nco.html#drc_in -->
@@ -24434,7 +24473,7 @@ Valid procedure types are @samp{airs} for @acronym{NASA AIRS} satellite data,
 @samp{mod04} for @w{Level 2} @acronym{MODIS} @acronym{MOD04} product,
 @samp{mwf} for making all weight-files for a pair of grids, 
 @samp{sgs} for datasets containing sub-gridscale (@acronym{SGS}) data
-(such as @acronym{ALM/CLM/CTSM/ELM} land model data and
+(such as @acronym{CLM/CTSM/ELM} land model data and
 @acronym{CICE/MPAS-Seaice} sea-ice model data), 
 and @samp{nil} (for none).
 The default @var{prc_typ} is @samp{nil}, which means @command{ncremap} 

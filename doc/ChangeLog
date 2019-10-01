@@ -1,3 +1,9 @@
+2019-10-01  Charlie Zender  <zender@uci.edu>
+
+	* Update ANNOUNCE, document ilev_nm, lev_nm, and plev_nm in nco.texi
+
+	* Deprecate ALM from ncremap/ncclimo options
+
 2019-09-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha08 release procedure:
