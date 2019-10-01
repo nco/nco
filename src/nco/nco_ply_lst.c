@@ -574,7 +574,7 @@ int *pl_cnt_vrl_ret){
 
 
 /* just duplicate output list to overlap */
-  nco_bool bDirtyRats=True;
+  nco_bool bDirtyRats=False;
   nco_bool bSort=True;
 
 
@@ -1047,11 +1047,12 @@ int *pl_cnt_vrl_ret){
 
 
 
-
   /* free up kd_list's */
   for(idx=0;idx<lcl_thr_nbr;idx++)
     mem_lst[idx].kd_list= (KDPriority*) nco_free(mem_lst[idx].kd_list);
 
+
+  mem_lst=(omp_mem_sct**)nco_free(mem_lst);
 
   return pl_lst_vrl;
 
@@ -1183,6 +1184,8 @@ int *pl_cnt_dbg) /* size of output dbg grid */
     }
   }
 
+
+  area=(double*)nco_free(area);
 
   *pl_cnt_dbg=pl_nbr_dbg;
 
