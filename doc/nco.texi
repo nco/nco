@@ -7393,6 +7393,30 @@ These annotations include
     @samp{--rgr lon_bnd_nm=@var{lon_bnd_nm}}.
     The temporal bounds dimension in unstructured grid output remains as
     in the @var{input-file}, usually @code{nbnd}.
+@cindex @var{lev_dmn_nm}
+@cindex @var{ilev_dmn_nm}
+@cindex @samp{--rgr ilev_dmn_nm=@var{ilev_dmn_nm}}
+@cindex @samp{--rgr lev_dmn_nm=@var{lev_dmn_nm}}
+@item Vertical Dimension Names: @var{lev_dmn}, @var{ilev_dmn}
+    The name of the dimension(s) associated with the vertical
+    coordinate(s) in multi-level input files are @var{lev_dmn_nm} and
+    @var{ilev_dmn_nm}, which default to @code{lev} and @code{ilev},
+    respectively.
+    Variables that contain a @var{lev_dmn_nm}-dimension or an
+    @var{ilev_dmn_nm}-dimension will be vertically interpolated to the 
+    specified (with @samp{vrt_fl=@var{vrt_fl}}) vertical output grid,
+    and will all contain the @var{lev_dmn_nm}- and, for
+    hybrid-sigma/pressure interface variables,
+    @var{ilev_dmn_nm}-dimensions.
+    To treat different dimensions as the midlayer and interface level
+    dimensions, use the options @samp{--rgr lev_dmn_nm=@var{lev_dmn_nm}}
+    and @samp{--rgr ilev_dmn_nm=@var{ilev_dmn_nm}} options.
+    Pure-pressure grids should use the
+    @samp{--rgr lev_dmn_nm=@var{lev_dmn_nm}} option (to reduce option
+    proliferation, there is no @var{plev_dmn_nm} option).
+    These options were introduced in @acronym{NCO} version 4.8.2 (October, 2019).
+    These options also determine the vertical dimension names in
+    vertically interpolated output files. 
 @cindex @var{lev_nm}
 @cindex @var{ilev_nm}
 @cindex @var{plev_nm}
@@ -7400,18 +7424,33 @@ These annotations include
 @cindex @samp{--rgr ilev_nm=@var{ilev_nm}}
 @cindex @samp{--rgr plev_nm=@var{plev_nm}}
 @item Vertical Coordinate Names: @var{lev}, @var{ilev}, @var{plev}
-    The name of the vertical spatial coordinates that represent
-    midpoint levels and interface levels in input files are
-    @var{lev_nm} and @var{ilev_nm}, and default to @code{lev} and
-    @code{ilev}, respectively.  
+    The name of the vertical coordinate variables that represent
+    midpoint levels and interface levels in hybrid-sigma/pressuure
+    input files are @var{lev_nm} and @var{ilev_nm}, and default to
+    @code{lev} and @code{ilev}, respectively.  
+    While the vertical coordinate in pure-pressure vertical grid files
+    (i.e., the template-file to which data will be interpolated) must 
+    be named @code{plev}, the vertical coordinate in pure-pressure
+    @emph{data} files (i.e., the files to be interpolated) may be
+    changed with the @samp{--rgr plev_nm=@var{plev_nm}} option.
+    The name of the vertical coordinate variable that represents
+    pressure levels in pure-pressure grid input data files is
+    @var{plev_nm}, and it defaults to @code{plev}.
+    To reduce proliferation of command-line options and internal code 
+    complexity, the variable and dimension options for pure-pressure
+    vertical coordinate output names re-use the ``lev'' options, i.e.,
+    @samp{--rgr lev_nm_out=@var{lev_nm_out}} option.
     Variables that contain a @var{lev_dmn_nm}-dimension or a
-    @var{ilev_dmn_nm}-dimension on hybrid-sigma/pressure input grid
-    will be regridded, and output vertically interpolated files on a 
-    hybrid-sigma/pressure grid will all contain the @var{lev_nm}- and 
-    @var{ilev_nm}-variables.
-    Unless the @var{lev_dmn_nm}- and @var{ilev_dmn_nm}-dimensions
+    @var{ilev_dmn_nm}-dimension on hybrid-sigma/pressure input grid,
+    or a @var{plev_dmn_nm}-dimension on a pure pressure grid,
+    will be regridded, and output in vertically interpolated files on
+    a hybrid-sigma/pressure grid will all contain the @var{lev_nm}-
+    and @var{ilev_nm}-variables, and output on a pure-pressure grid
+    will contain the @var{lev_nm} coordinate.
+    Unless the @var{lev_dmn_nm} and @var{ilev_dmn_nm} dimensions
     are explicitly configured otherwise, they will share the same
-    name as the @var{lev_nm}- and @var{ilev_nm}-variables.
+    name as the @var{lev_nm}/@var{plev_nm} and
+    @var{ilev_nm}-variables, respectively.
     Thus variables regridded to a hybrid-sigma/pressure output grid
     usually have @var{lev_nm}- and @var{ilev_nm} as coordinate
     variables. 

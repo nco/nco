@@ -1281,7 +1281,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(flg_grd_out_hyb) ilev_nm_out=rgr->ilev_nm_out;
     if(flg_grd_out_prs) lev_nm_out=rgr->ilev_nm_out;
   } /* !ilev_nm_out */
-  /* Input interface variables, if any, must also be output on lev grid */
+  /* Hybrid-sigma/pressure interface variables, if any, must also be output to pure-pressure files on lev grid */
   if(flg_grd_out_prs) ilev_nm_out=(char *)strdup(lev_nm_out);
 
   /* Define new vertical dimensions before all else */
@@ -1332,7 +1332,22 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	var_xcl_nbr++;
       } /* endif */
       trv_tbl->lst[idx_tbl].flg_xtr=False;
-    } /* endif */
+    } /* !idx_tbl */
+  } /* !idx */
+  /* 20191001: Do not automatically define plev_nm_in in pressure-grid output files 
+     The variable named lev_nm_out in the input data file is always defined in the output file
+     So if plev_nm_in == lev_nm_out it will be defined anyway
+     fxm: this does not appear to do what I intend :( */
+  if(flg_grd_in_prs && flg_grd_out_prs){
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++)
+      if(!strcmp(trv_tbl->lst[idx_tbl].nm_fll,plev_nm_in)) break;
+    if(idx_tbl < trv_nbr){
+      if(trv_tbl->lst[idx_tbl].flg_xtr){
+	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO automatically omitting (not copying or regridding from input) pre-defined exclusion-list variable %s\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm_fll);
+	var_xcl_nbr++;
+      } /* endif */
+      trv_tbl->lst[idx_tbl].flg_xtr=False;
+    } /* !idx_tbl */
   } /* !idx */
 
   char *var_nm; /* [sng] Variable name */
