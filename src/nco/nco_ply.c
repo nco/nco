@@ -46,7 +46,9 @@ nco_poly_free
   if(pl->shp)
     nco_poly_shp_free(pl);
 
-   return (poly_sct*)NULL;
+  pl=(poly_sct*)nco_free(pl);
+
+   return pl;
 
 }  
 
@@ -814,7 +816,8 @@ char *sp_sng){
  {
    pl_vrl = nco_poly_free(pl_vrl);
 
-   return pl_vrl;
+   //return pl_vrl;
+   return (poly_sct*)NULL;
 
  }
 
