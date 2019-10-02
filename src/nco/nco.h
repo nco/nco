@@ -1629,7 +1629,17 @@ extern "C" {
 
   typedef struct{
     poly_typ_enm pl_typ;
+
+    nco_bool bwrp;   /* if true then whole polygon is wrapped - at Greenwich or Dateline */
+    nco_bool bwrp_y; /* true if polygon is a polar cap - (ie it contains north or south pole)   */
+    nco_bool bmsk;   /* polygon not used or has frac==0.0 */
+
     int crn_nbr;           /* number of vertices */
+    int src_id;      /* used in map file as  "row" or "col" id of polygon   */
+    int dst_id;      /* used in map file - used only in overlap polygon */
+    int  stat;
+    int mem_flg;     /* [flg]    */
+
     double *dp_x;          /* x  vertices */
     double *dp_y;          /* y vertices */
     double dp_x_minmax[2]; /* x/lon minmax */
@@ -1637,18 +1647,12 @@ extern "C" {
     double dp_x_ctr;       /* x/lon center */
     double dp_y_ctr;       /* x/lat center */
     double area;
-    double **shp;    /* array of points size [crn_nbr][NBR] */
     double wgt;      /* fraction of dst  area cell in overlap polygon */
+
+    double **shp;    /* array of points size [crn_nbr][NBR] */
     double *dp_xyz;  /* maybe useful for 3D stuff */
 
-    nco_bool bwrp;   /* if true then whole polygon is wrapped - at Greenwich or Dateline */
-    nco_bool bwrp_y;
-    int src_id;      /* used in map file as  "row" or "col" id of polygon   */
-    int dst_id;     /* used in map file - used only in overlap polygon */
-
-    int  stat;
-    int mem_flg; /* [flg]    */ 
-  } poly_sct;   
+  } poly_sct;
   
 #ifdef __cplusplus
 } /* end extern "C" */

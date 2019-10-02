@@ -46,7 +46,9 @@ nco_poly_free
   if(pl->shp)
     nco_poly_shp_free(pl);
 
-   return (poly_sct*)NULL;
+  pl=(poly_sct*)nco_free(pl);
+
+   return pl;
 
 }  
 
@@ -90,6 +92,10 @@ nco_poly_init
   pl->bwrp=False;
   pl->bwrp_y=False;
 
+  /* defaults to true */
+  pl->bmsk=True;
+
+
   return pl;
 }
 
@@ -125,7 +131,7 @@ nco_poly_dpl
 
   pl_cpy->bwrp=pl->bwrp;
   pl_cpy->bwrp_y=pl->bwrp_y;
-
+  pl_cpy->bmsk=pl->bmsk;
 
   pl_cpy->dp_x=(double*)nco_malloc((size_t)crn_nbr_in* sizeof(double));
   pl_cpy->dp_y=(double*)nco_malloc((size_t)crn_nbr_in* sizeof(double));
@@ -193,7 +199,7 @@ int src_id)
   pl->mem_flg=0;
   pl->bwrp=False;
   pl->bwrp_y =False;
-
+  pl->bmsk=True;
 
   return pl;
 }
@@ -810,7 +816,8 @@ char *sp_sng){
  {
    pl_vrl = nco_poly_free(pl_vrl);
 
-   return pl_vrl;
+   //return pl_vrl;
+   return (poly_sct*)NULL;
 
  }
 
@@ -1199,7 +1206,7 @@ poly_sct *pl)
   int idx;
 
   for(idx=0;idx<pl->crn_nbr;idx++)
-    pl->shp[idx]= (double*)nco_free(pl->shp[idx]);
+    if(pl->shp[idx]) pl->shp[idx]= (double*)nco_free(pl->shp[idx]);
 
   pl->shp=(double**)nco_free(pl->shp);
 
@@ -1561,6 +1568,7 @@ poly_typ_enm pl_typ
 
 
 }
+
 
 
 
