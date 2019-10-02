@@ -903,7 +903,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_vardimid(tpl_id,lev_id,&dmn_id_lev_out);
     rcd=nco_inq_dimlen(tpl_id,dmn_id_lev_out,&lev_nbr_out);
     rcd=nco_inq_dimname(tpl_id,dmn_id_lev_out,dmn_nm);
-    lev_nm_out=strdup(dmn_nm);
     ilev_nbr_out=lev_nbr_out;
   } /* !flg_grd_out_prs */
 
@@ -1281,8 +1280,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(flg_grd_out_hyb) ilev_nm_out=rgr->ilev_nm_out;
     if(flg_grd_out_prs) lev_nm_out=rgr->ilev_nm_out;
   } /* !ilev_nm_out */
-  /* Hybrid-sigma/pressure interface variables, if any, must also be output to pure-pressure files on lev grid */
-  if(flg_grd_out_prs) ilev_nm_out=(char *)strdup(lev_nm_out);
+  if(flg_grd_out_prs){
+    /* Unless user explicitly specifies output name, use same name as input */
+    if(!rgr->lev_nm_out) lev_nm_out=(char *)strdup(plev_nm_in);
+    /* Hybrid-sigma/pressure interface variables, if any, must also be output to pure-pressure files on lev grid */
+    ilev_nm_out=(char *)strdup(lev_nm_out);
+  } /* !flg_grd_out_prs */
 
   /* Define new vertical dimensions before all else */
   if(flg_grd_out_hyb){
