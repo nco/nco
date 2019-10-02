@@ -2076,7 +2076,7 @@ void kd_print_nearest(KDTree* tree, double x, double y, int m)
 	fprintf(stdout,"Nearest Search: visited %d nodes to find the %d closest objects.\n", xz, m);
 	for(i=0;i<m;i++)
 	{
-	  if(list[i].elem && list[i].elem->size)
+	  if(list[i].elem != NULL)
 	      (void)fprintf(stdout,"Nearest Neighbor: dist to center: %f units. elem=%p. item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
 				list[i].dist,
 				(void*)list[i].elem,
