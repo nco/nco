@@ -1432,6 +1432,7 @@ nco_grd_lon_typ_enm typ_out)
     break;
   case nco_grd_lon_Grn_wst:
   case nco_grd_lon_Grn_ctr:
+
     switch(typ_out){
     case nco_grd_lon_180_wst:
     case nco_grd_lon_180_ctr:
@@ -1447,6 +1448,9 @@ nco_grd_lon_typ_enm typ_out)
 	if(lon_crn[idx] < 0.0) lon_crn[idx]+=360.0;
       break;
     }
+    break;
+
+  case nco_grd_lon_nil:
     break;
   }
   return;
