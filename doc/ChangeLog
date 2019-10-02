@@ -1,6 +1,6 @@
 2019-10-01  Charlie Zender  <zender@uci.edu>
 
-	* Failed attempt to prevent plev_nm_in definition in output file when plev_nm_in != lev_nm_out
+	* Prevent plev_nm_in definition in output file when plev_nm_in != lev_nm_out
 
 	* Update ANNOUNCE, document ilev_nm, lev_nm, and plev_nm in nco.texi
 

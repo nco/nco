@@ -62,8 +62,8 @@ B. ncremap has a new API for sub-gridscale (SGS) regridding.
    ncremap -P mpasseaice -m map.nc # MPAS-Seaice alternative
    http://nco.sf.net/nco.html#ncremap
 
-C. ncremap supports a new weight generation algorithm.
-   The algorithm is first-order conservative and compares
+C. ncremap supports the new NCO weight generation algorithm.
+   The NCO algorithm is first-order conservative and compares
    well in accuracy with other FV algorithms such as ERWG and TR.
    Results of our bake-off between ERWG "conserve", NCO "nco", and TR
    "fv2fv" are at http://dust.ess.uci.edu/nco/rgr_cmp.txt
@@ -105,6 +105,13 @@ H. ncremap/ncclimo have deprecated support for options named for the
    short-lived ALM land surface model. Use 'elm' instead of 'alm',
    ncremap -P elm -m map.nc
    http://nco.sf.net/nco.html#ncremap
+
+I. NCO supports flexible options to specify non-default names for
+   vertical grid coordinates in input and output (vertically
+   interpolated) data files. 
+   ncks --rgr plev_nm=vrt_nm --vrt=vrt_grd.nc in.nc out.nc
+   ncremap -n '--rgr plev_nm=vrt_nm' --vrt=vrt_grd.nc in.nc out.nc
+   http://nco.sf.net/nco.html#lev_nm
 
 BUG FIXES:
 
