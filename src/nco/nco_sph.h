@@ -78,15 +78,12 @@
 /* smallest RADIAN */
 #define SIGMA_RAD (1.0e-12)
 
-#define SIGMA_TOLERANCE (1.0e-12)
+#define SIGMA_TOLERANCE (1.0e-16)
 #define DOT_TOLERANCE (1.0e-14)
 
-/*regular
-#define DIST_TOLERANCE (1.0e-14)
- */
 
 /* this value plays nice with edges on grids/ne120np4_pentagons.100310.nc */
-#define DIST_TOLERANCE (1.0e-13)
+#define DIST_TOLERANCE (1.0e-14)
 
 /* convert Degrees to Radians */
 #define D2R(x)  ((x) * M_PI / 180.0)
@@ -115,7 +112,7 @@ char
 nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p, double *q);
 
 nco_bool
-nco_sph_seg_int(double *a, double *b, double *c, double *d, double *p, double *q, int flg_snp_to, char *codes);
+nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int flg_snp_to, char *codes);
 
 char
 nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag );
@@ -156,6 +153,9 @@ nco_sph_dist(double *a, double *b);
 
 double
 nco_sph_rad(double *a);
+
+double
+nco_sph_rad2(double *a);
 
 double
 nco_sph_sxcross(double *a, double *b, double *c);
@@ -261,7 +261,16 @@ nco_rll_lhs_lat(double *p0, double *q0, double *q1);
 
 
 
-/*********************************************************************************************/
+/*********************** functions for matrix*****************************************************/
+void
+nco_mat_mlt
+(double mat[], double vec[], double vec_out[]);
+
+nco_bool
+nco_mat_inv(double *mat, double *mat_inv);
+
+nco_bool
+nco_mat_int_pl(const double *p0, const double *p1, const double *q0, const double *q1, double *r0);
 
 #ifdef __cplusplus
 } /* end extern "C" */

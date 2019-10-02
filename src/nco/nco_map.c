@@ -779,6 +779,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   if(fl_in_dst) fl_in_dst=(char *)nco_free(fl_in_dst);
   if(fl_in_src) fl_in_src=(char *)nco_free(fl_in_src);
+  if(fl_out_tmp) fl_out_tmp=(char*)nco_free(fl_out_tmp);
 
   return rcd;
 } /* !nco_map_mk() */
@@ -947,11 +948,14 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
 
     pl_lst_out = nco_poly_lst_mk_sph(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out,
-                                 (size_t) grd_crn_nbr_out, grd_lon_typ_out, pl_typ, &pl_cnt_out);
+                                 (size_t) grd_crn_nbr_out, grd_lon_typ_out, pl_typ);
+
+    pl_cnt_out=grd_sz_out;
 
     pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,
-                                (size_t) grd_crn_nbr_in, grd_lon_typ_out, pl_typ,&pl_cnt_in);
+                                (size_t) grd_crn_nbr_in, grd_lon_typ_out, pl_typ);
 
+    pl_cnt_in=grd_sz_in;
     /* test new write func */
     // 20190526: Stop writing this file (the output grid) by default.
     //    nco_msh_poly_lst_wrt("nco_map_tst_out.nc", pl_lst_out, pl_cnt_out, grd_lon_typ_out  );
@@ -974,6 +978,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
       for (idx = 0; idx < pl_cnt_out; idx++) {
 
+        if(pl_lst_out[idx]->bmsk == False)
+          continue;
 
         my_elem1 = (KDElem *) nco_calloc((size_t) 1, sizeof(KDElem));
 
@@ -994,12 +1000,14 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     /* call the overlap routine */
     if(pl_cnt_in && pl_cnt_out){
-      if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl);
-      else if(pl_typ == poly_sph || pl_typ == poly_rll) pl_lst_vrl=nco_poly_lst_mk_vrl_sph(pl_lst_in, pl_cnt_in, grd_lon_typ_out, rtree, &pl_cnt_vrl);
+      /* temporarily disable crt code */
+      /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
+
+      if(pl_typ == poly_sph || pl_typ == poly_rll) pl_lst_vrl=nco_poly_lst_mk_vrl_sph(pl_lst_in, grd_sz_in , grd_lon_typ_out, rtree, &pl_cnt_vrl);
     } /* !pl_cnt_in */
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev)
-      fprintf(stderr, "%s: INFO: num input polygons=%d, num output polygons=%d num overlap polygons=%d\n", nco_prg_nm_get(),pl_cnt_in, pl_cnt_out, pl_cnt_vrl);
+      fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap polygons=%d\n", nco_prg_nm_get(),grd_sz_in, grd_sz_out , pl_cnt_vrl);
 
   }
 
@@ -1016,15 +1024,47 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   col_src_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
   row_dst_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
 
-  /* Initialize arguments before they are actually computed */
-  for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
 
-  /* looks like "col" and "row" are ONE-BASED in the map file */
+  /*
+  for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
   for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
   for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
+  */
 
-  for(idx=0;idx<grd_sz_in;idx++) frc_in[idx]=1.0;
-  for(idx=0;idx<grd_sz_out;idx++) frc_out[idx]=1.0;
+  for(idx=0; idx<lnk_nbr;idx++ )
+  {
+    wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
+    col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
+    row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
+
+  }
+  
+  for(idx=0;idx<grd_sz_in;idx++) 
+  {
+    if( pl_lst_in[idx]->wgt >0.0  ) {
+      frc_in[idx] = pl_lst_in[idx]->wgt;
+      msk_in[idx] = 1;
+    }else{
+      frc_in[idx]=0.0;
+      msk_in[idx]=0;
+    }
+    
+  }  
+  
+
+  for(idx=0;idx<grd_sz_out;idx++) {
+
+    if( pl_lst_out[idx]->wgt >0.0  ) {
+      frc_out[idx] = pl_lst_out[idx]->wgt;
+      msk_out[idx] = 1;
+    }else{
+      frc_out[idx]=0.0;
+      msk_out[idx]=0;
+    }
+
+
+  }  
+    
 
   /* Write-out overlap mesh
      20190526: Allow users to name and output mesh-file with --rgr msh_fl=msh.nc. https://github.com/nco/nco/issues/135 */
@@ -1036,7 +1076,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *lnk_nbr_ptr=lnk_nbr;
 
   /* tally up weights see if they sum to number of dst grid cells */
-  if(0 && nco_dbg_lvl_get() >= nco_dbg_dev)
+  if( nco_dbg_lvl_get() >= nco_dbg_dev)
   {
     size_t irow;
     size_t sz;
@@ -1082,7 +1122,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     /* find area mismatch between dst and overlap */
     fprintf(stderr,"%s(): Comparing dst areas with overlap areas\n",fnc_nm);
-    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out, pl_cnt_out, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
+    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out, grd_sz_out, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
     if(pl_nbr) {
       nco_msh_poly_lst_wrt("nco_map_tst_out_dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
@@ -1095,7 +1135,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     /* find area mismatch between src and overlap */
     fprintf(stderr,"%s(): Comparing src areas with overlap areas\n",fnc_nm);
-    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in, pl_cnt_in, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
+    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in, grd_sz_in, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
     if(pl_nbr) {
       nco_msh_poly_lst_wrt("nco_map_tst_in_dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
@@ -1112,11 +1152,11 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   pl_glb_in=nco_poly_free(pl_glb_in);
   pl_glb_out=nco_poly_free(pl_glb_out);
 
-  if(pl_cnt_in)
-     pl_lst_in=nco_poly_lst_free(pl_lst_in,pl_cnt_in);
+  if(grd_sz_in)
+     pl_lst_in=nco_poly_lst_free(pl_lst_in,grd_sz_in);
 
-  if(pl_cnt_out)
-     pl_lst_out=nco_poly_lst_free(pl_lst_out,pl_cnt_out);
+  if(grd_sz_out)
+     pl_lst_out=nco_poly_lst_free(pl_lst_out,grd_sz_out);
 
 
 
@@ -1392,6 +1432,7 @@ nco_grd_lon_typ_enm typ_out)
     break;
   case nco_grd_lon_Grn_wst:
   case nco_grd_lon_Grn_ctr:
+
     switch(typ_out){
     case nco_grd_lon_180_wst:
     case nco_grd_lon_180_ctr:
@@ -1407,6 +1448,9 @@ nco_grd_lon_typ_enm typ_out)
 	if(lon_crn[idx] < 0.0) lon_crn[idx]+=360.0;
       break;
     }
+    break;
+
+  case nco_grd_lon_nil:
     break;
   }
   return;
@@ -1580,11 +1624,13 @@ nco_grd_lon_typ_enm grd_lon_typ
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
+  fl_out_tmp=(char*)nco_free(fl_out_tmp);
 
   area=(double*)nco_free(area);
   lat_ctr=(double*)nco_free(lat_ctr);
+  lat_crn=(double*)nco_free(lat_crn);
+
   lon_ctr=(double*)nco_free(lon_ctr);
-  lon_crn=(double*)nco_free(lon_crn);
   lon_crn=(double*)nco_free(lon_crn);
   msk=(int*)nco_free(msk);
 
