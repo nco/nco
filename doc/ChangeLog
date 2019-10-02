@@ -1,10 +1,10 @@
 2019-10-02  Charlie Zender  <zender@uci.edu>
 
-	* Massive merge of Henry's improved map algorithms
-
 	* Add ncremap --vrt_nm option to specify vertical coordinate input/output name for pure pressure grids
 
 	* Output interpolated to pure pressure grid defaults to same vertical coordinate name as input
+
+	* Massive merge of Henry's improved map algorithms
 
 2019-10-01  Charlie Zender  <zender@uci.edu>
 
