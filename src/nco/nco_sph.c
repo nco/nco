@@ -851,8 +851,6 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
 
   double n1;
-  /* value of line parameter on line c->d */
-  double tpar;
   /* possible intersection point */
   double pcnd[NBR_SPH];
   /* placeholder ? */
@@ -904,25 +902,25 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
  }
 
 
-  bInt=nco_mat_int_pl(p0, p1, q0, q1, pt, &tpar);
+  bInt=nco_mat_int_pl(p0, p1, q0, q1, pt);
   /* no intersection */
 
 
 
 
   if (DEBUG_SPH)
-    fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm,  (bInt ?  "True" : "False"), codes, tpar, pt[1], pt[2] );
+    fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm,  (bInt ?  "True" : "False"), codes, pt[0], pt[1], pt[2] );
 
   /* from here on we have some kind of intersection */
-  if(!bInt)
+  if(!bInt ||  pt[0] < -1.0e-10  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-10) )
     return False;
 
 
 
     /* genuine intersection point not end point */
-    pcnd[0] = q0[0] + tpar * (q1[0] - q0[0]);
-    pcnd[1] = q0[1] + tpar * (q1[1] - q0[1]);
-    pcnd[2] = q0[2] + tpar * (q1[2] - q0[2]);
+    pcnd[0] = q0[0] + pt[0] * (q1[0] - q0[0]);
+    pcnd[1] = q0[1] + pt[0] * (q1[1] - q0[1]);
+    pcnd[2] = q0[2] + pt[0] * (q1[2] - q0[2]);
 
     n1 = nco_sph_rad(pcnd);
     /* normalise p */
@@ -941,9 +939,10 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
       (void)fprintf(stderr, "%s: bValid=%s\n", fnc_nm,  (bValid ?  "True" : "False") );
     }
 
-    if ( tpar < -1.0e-10  ||  ( tpar >1.0 &&  tpar-1.0 >1.0e-10)  )
+    /*
+    if ( pt[0] < -1.0e-10  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-10)  )
       return False;
-
+    */
 
 
     if(!bValid)
@@ -998,7 +997,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
 
     if(DEBUG_SPH )
-      fprintf(stderr, "%s: codes=%s tpar=%.15f\n", fnc_nm, codes, tpar  );
+      fprintf(stderr, "%s: codes=%s tpar=pt[0]=%.15f\n", fnc_nm, codes, pt[0]  );
 
     memcpy(r0, pcnd, sizeof(double)*NBR_SPH);
 
@@ -3495,32 +3494,32 @@ void nco_rll_add_pnt(double **R, int *r, double *P)
 }
 
 /***************************************************************************************/
-/*********************   functions that deal with 3x£ matrix ******************************************************/
+/*********************   functions that deal with 3x3 matrix ******************************************************/
 /* mat mult */
-
 void
-nco_mat_mlt_3x3
+nco_mat_mlt
 (double mat[], double vec[], double vec_out[])
 {
 
-  vec_out[0]=mat[0]*vec[0]+mat[1]*vec[1]+mat[2]*vec[2];
-  vec_out[1]=mat[3]*vec[0]+mat[4]*vec[1]+mat[5]*vec[2];
-  vec_out[2]=mat[6]*vec[0]+mat[7]*vec[1]+mat[8]*vec[2];
+  vec_out[0] = mat[0]*vec[0] + mat[1]*vec[1] + mat[2]*vec[2];
+  vec_out[1]=  mat[3]*vec[0] + mat[4]*vec[1] + mat[5]*vec[2];
+  vec_out[2]=  mat[6]*vec[0] + mat[7]*vec[1] + mat[8]*vec[2];
 
 }
 
 /* returns true if matrix is inverted, false otherwise */
 nco_bool
-nco_mat_inv_3x3(double *mat, double *mat_inv)
+nco_mat_inv(double *mat, double *mat_inv)
 {
-  char fnc_nm[]="nco_mat_inv_3x3()";
+  char fnc_nm[]="nco_mat_inv()";
   double deti;
-  const double det =  mat[0] * (mat[4]*mat[8] - mat[5]*mat[7])
-                      -mat[1] * (mat[3]*mat[8] - mat[5]*mat[6])
-                      +mat[2] * (mat[3]*mat[7] - mat[4]*mat[6]);
+  double det;
+
+  det =  mat[0] * (mat[4]*mat[8] - mat[5]*mat[7])
+        -mat[1] * (mat[3]*mat[8] - mat[5]*mat[6])
+        +mat[2] * (mat[3]*mat[7] - mat[4]*mat[6]);
 
 
-  //if (det==0.0 || !isfinite(det)) return False;
   if(  isnan(det) || !isfinite(det) || det==0.0 )
   {
     if(0 && nco_dbg_lvl_get()>= nco_dbg_dev)
@@ -3548,10 +3547,9 @@ nco_mat_inv_3x3(double *mat, double *mat_inv)
 }
 
 
-//// Intersect a line and a plane
+/* Intersect a line and a plane */
 nco_bool
-nco_mat_int_pl(const double *a1, const double *a2, const double *l1, const double *l2, double *p,
-               double *t)
+nco_mat_int_pl(const double *p0, const double *p1, const double *q0, const double *q1, double *r0)
                {
 
   double mat[9];
@@ -3561,47 +3559,41 @@ nco_mat_int_pl(const double *a1, const double *a2, const double *l1, const doubl
 
 
 
-  /* To do intersection just solve the set of linear equations for both */
-  mat[0]=l1[0]-l2[0];
-  mat[1]=a2[0]-a1[0];
-  mat[2]=-a1[0];
+  /* set a plane and line into matrix */
+  mat[0]=q0[0]-q1[0];
+  mat[1]=p1[0]-p0[0];
+  mat[2]=-p0[0];
 
-  mat[3]=l1[1]-l2[1];
-  mat[4]=a2[1]-a1[1];
-  mat[5]=-a1[1];
+  mat[3]=q0[1]-q1[1];
+  mat[4]=p1[1]-p0[1];
+  mat[5]=-p0[1];
 
-  mat[6]=l1[2]-l2[2];
-  mat[7]=a2[2]-a1[2];
-  mat[8]=-a1[2];
+  mat[6]=q0[2]-q1[2];
+  mat[7]=p1[2]-p0[2];
+  mat[8]=-p0[2];
 
 
 
-  /* Invert M */
-  if (!nco_mat_inv_3x3(mat, mat_inv))
+  /* find inverse */
+  if (nco_mat_inv(mat, mat_inv)==False)
     return False;
 
-  /* Set variable holding vector */
-  V[0]=l1[0]-a1[0];
-  V[1]=l1[1]-a1[1];
-  V[2]=l1[2]-a1[2];
+  /* set parameters */
+  V[0]=q0[0]-p0[0];
+  V[1]=q0[1]-p0[1];
+  V[2]=q0[2]-p0[2];
 
   /* solve matrix */
-  nco_mat_mlt_3x3(mat_inv, V, X);
+  nco_mat_mlt(mat_inv, V, X);
 
-  /* check if solution is finite */
-  /*
-  if(  !( nco_mat_isfinite(X[0]) && nco_mat_isfinite(X[1]) && nco_mat_isfinite(X[2]) ) )
-    return False;
-  */
 
-  *t=X[0];
-  p[0]=X[1];
-  p[1]=X[2];
+  r0[0]=X[0];
+  r0[1]=X[1];
+  r0[2]=X[2];
 
 
   if( isnan(X[0]) || !isfinite(X[0]) || isnan(X[1]) || !isfinite(X[1]) || isnan(X[2]) || !isfinite(X[2]) )
     return False;
-
 
 
 

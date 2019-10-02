@@ -263,14 +263,14 @@ nco_rll_lhs_lat(double *p0, double *q0, double *q1);
 
 /*********************** functions for matrix*****************************************************/
 void
-nco_mat_mlt_3x3
+nco_mat_mlt
 (double mat[], double vec[], double vec_out[]);
 
 nco_bool
-nco_mat_inv_3x3(double *mat, double *mat_inv);
+nco_mat_inv(double *mat, double *mat_inv);
 
 nco_bool
-nco_mat_int_pl(const double *a1, const double *a2, const double *l1, const double *l2, double *p,double *t);
+nco_mat_int_pl(const double *p0, const double *p1, const double *q0, const double *q1, double *r0);
 
 #ifdef __cplusplus
 } /* end extern "C" */
