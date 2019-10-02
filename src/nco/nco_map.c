@@ -1007,7 +1007,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     } /* !pl_cnt_in */
 
     if(nco_dbg_lvl_get() >= nco_dbg_dev)
-      fprintf(stderr, "%s: INFO: num input polygons=%d, num output polygons=%d num overlap polygons=%d\n", nco_prg_nm_get(),grd_sz_in, grd_sz_out , pl_cnt_vrl);
+      fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap polygons=%d\n", nco_prg_nm_get(),grd_sz_in, grd_sz_out , pl_cnt_vrl);
 
   }
 

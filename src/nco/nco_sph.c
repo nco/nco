@@ -1839,7 +1839,7 @@ nco_sph_rad2(double *a){
 }
 
 
-inline double
+double
 Sin(double theta, nco_bool blon){
 
     double dsign=1.0;
@@ -1867,7 +1867,7 @@ Sin(double theta, nco_bool blon){
 
 
 
-inline double
+double
 Cos(double theta, nco_bool blon){
 
   double ms=0.0;
