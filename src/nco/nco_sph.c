@@ -911,10 +911,11 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   if (DEBUG_SPH)
     fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm,  (bInt ?  "True" : "False"), codes, pt[0], pt[1], pt[2] );
 
-  /* from here on we have some kind of intersection */
+
   if(!bInt ||  pt[0] < -1.0e-10  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-10) )
     return False;
 
+  /* from here on we have some kind of intersection */
 
 
     /* genuine intersection point not end point */
@@ -949,9 +950,6 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
       return False;
 
 
-
-
-
   /* from here on we have a valid point */
    if(!nco_sph_metric(pcnd,p0)) {
      flg_ab = 2;
@@ -973,11 +971,6 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
     // memcpy(r0, p1, sizeof(double)*NBR_SPH);
   }else
     flg_cd=1;
-
-
-
-
-
 
 
 
