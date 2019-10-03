@@ -560,12 +560,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,NULL,"map_method","Conservative");
   rcd=nco_char_att_put(out_id,NULL,"weight_generator","NCO");
   const char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */
-  rcd=nco_char_att_put(out_id,NULL,"weight_generator_version","vrs_cpp");
-  rcd=nco_char_att_put(out_id,NULL,"","");
-  rcd=nco_char_att_put(out_id,NULL,"","");
-  rcd=nco_char_att_put(out_id,NULL,"","");
-  rcd=nco_char_att_put(out_id,NULL,"","");
-  rcd=nco_char_att_put(out_id,NULL,"","");
+  rcd=nco_char_att_put(out_id,NULL,"weight_generator_version",vrs_cpp);
   (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
   (void)nco_vrs_att_cat(out_id);
   rcd=nco_char_att_put(out_id,"S","long_name","Weights to Map Variables from Source to Destination Grid");
@@ -1474,20 +1469,16 @@ nco_grd_lon_typ_enm grd_lon_typ
         lon_crn_ptr[jdx] = pl_lst[idx]->dp_x[lcl_crn_nbr - 1];
         lat_crn_ptr[jdx] = pl_lst[idx]->dp_y[lcl_crn_nbr - 1];
       }
-
   }
-
 
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
-
 
   /* Define dimensions */
   rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr, &dmn_ids[0]);
   rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr, &dmn_ids[1]);
   grd_rnk_nbr=1;
   rcd=nco_def_dim(out_id,grd_rnk_nm,grd_rnk_nbr, &dmn_ids[2]);
-
 
   deflate=(int)True;
   shuffle=NC_SHUFFLE;
@@ -1510,7 +1501,6 @@ nco_grd_lon_typ_enm grd_lon_typ
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lon_id, shuffle, deflate, dfl_lvl);
   nco_msh_att_char(out_id, grd_ctr_lon_id, grd_ctr_lon_nm, "units", "degrees");
 
-
   (void)nco_def_var(out_id, grd_ctr_lat_nm, crd_typ,dmn_nbr_1D, dmn_ids, &grd_ctr_lat_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lat_id, shuffle, deflate, dfl_lvl);
   nco_msh_att_char(out_id, grd_ctr_lat_id, grd_ctr_lat_nm, "units", "degrees");
@@ -1519,7 +1509,6 @@ nco_grd_lon_typ_enm grd_lon_typ
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_msk_id, shuffle, deflate, dfl_lvl);
 
   (void)nco_def_var(out_id, "grid_dims", NC_INT, dmn_nbr_1D, &dmn_ids[2], &grd_rnk_id);
-
 
   /* Begin data mode */
   (void)nco_enddef(out_id);
@@ -1585,10 +1574,3 @@ const char *att_val
   return iret;
 
 }
-
-
-
-
-
-
-

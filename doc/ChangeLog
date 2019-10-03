@@ -1,5 +1,7 @@
 2019-10-03  Charlie Zender  <zender@uci.edu>
 
+	* Rewrite nco_rgr_wgt(), nco_grd_nfr(), nco_grd_mk() metadata code with new function nco_char_att_get()
+
 	* Implement applicable required and suggested metadata in map-file as per CMIP6 Specifications for Regridding Weights
 
 	* Rewrite map-file metadata code with new function nco_char_att_get()
