@@ -553,19 +553,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   char var_nm[NC_MAX_NAME];
 
   /* Implement CMIP6 conventions in Taylor, Oehmke, Ullrich, Zender et al. (2019), "CMIP6 Specifications for Regridding Weights" https://docs.google.com/document/d/1BfVVsKAk9MAsOYstwFSWI2ZBt5mrO_Nmcu7rLGDuL08/edit */
-  att_nm=strdup("title");
-  att_val=strdup("netCDF Operators (NCO) Offline Regridding Weight Generator");
-  //  att_val=strdup(rgr->grd_ttl);
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=NULL;
-  aed_mtd.id=NC_GLOBAL;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
+  rcd=nco_char_att_put(out_id,NULL,"title","netCDF Operators (NCO) Offline Regridding Weight Generator");
 
   att_nm=strdup("Conventions");
   att_val=strdup("NCAR-CSM");
@@ -611,16 +599,16 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   strcpy(var_nm,"yc_a");
   aed_mtd.id=src_grd_ctr_lat_id;
-  (void)nco_aed_prc(out_id,src_grd_ctr_lat_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"yv_a");
   aed_mtd.id=src_grd_crn_lat_id;
-  (void)nco_aed_prc(out_id,src_grd_crn_lat_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"yc_b");
   aed_mtd.id=dst_grd_ctr_lat_id;
-  (void)nco_aed_prc(out_id,dst_grd_ctr_lat_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"yv_b");
   aed_mtd.id=dst_grd_crn_lat_id;
-  (void)nco_aed_prc(out_id,dst_grd_crn_lat_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
 
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
@@ -636,16 +624,16 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   strcpy(var_nm,"xc_a");
   aed_mtd.id=src_grd_ctr_lon_id;
-  (void)nco_aed_prc(out_id,src_grd_ctr_lon_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"xv_a");
   aed_mtd.id=src_grd_crn_lon_id;
-  (void)nco_aed_prc(out_id,src_grd_crn_lon_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"xc_b");
   aed_mtd.id=dst_grd_ctr_lon_id;
-  (void)nco_aed_prc(out_id,dst_grd_ctr_lon_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"xv_b");
   aed_mtd.id=dst_grd_crn_lon_id;
-  (void)nco_aed_prc(out_id,dst_grd_crn_lon_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
 
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
@@ -661,46 +649,137 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   strcpy(var_nm,"frac_a");
   aed_mtd.id=frc_in_id;
-  (void)nco_aed_prc(out_id,frc_in_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"mask_a");
   aed_mtd.id=msk_in_id;
-  (void)nco_aed_prc(out_id,msk_in_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"frac_b");
   aed_mtd.id=frc_out_id;
-  (void)nco_aed_prc(out_id,frc_out_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"mask_b");
   aed_mtd.id=msk_out_id;
-  (void)nco_aed_prc(out_id,msk_out_id,aed_mtd);
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
 
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
+  /* Variables with units="steradian" */
   att_nm=strdup("units");
   att_val=strdup("steradian");
   aed_mtd.att_nm=att_nm;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+
   strcpy(var_nm,"area_a");
   aed_mtd.id=area_in_id;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,area_in_id,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
-  att_nm=strdup("units");
-  att_val=strdup("steradian");
-  aed_mtd.att_nm=att_nm;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
   strcpy(var_nm,"area_b");
   aed_mtd.id=area_out_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  /* Variables with standard_name="solid_angle" */
+  att_nm=strdup("standard_name");
+  att_val=strdup("solid_angle");
+  aed_mtd.att_nm=att_nm;
   aed_mtd.sz=strlen(att_val);
   aed_mtd.type=NC_CHAR;
   aed_mtd.val.cp=att_val;
   aed_mtd.mode=aed_create;
+
+  strcpy(var_nm,"area_a");
+  aed_mtd.id=area_in_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+  strcpy(var_nm,"area_b");
+  aed_mtd.id=area_out_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
+  /* Variables with standard_name="latitude" */
+  att_nm=strdup("standard_name");
+  att_val=strdup("latitude");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+
+  strcpy(var_nm,"yc_a");
+  aed_mtd.id=src_grd_ctr_lat_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+  strcpy(var_nm,"yc_b");
+  aed_mtd.id=dst_grd_ctr_lat_id;
   (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+  strcpy(var_nm,"yv_a");
+  aed_mtd.id=src_grd_crn_lat_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+  strcpy(var_nm,"yv_b");
+  aed_mtd.id=dst_grd_crn_lat_id;
+  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
+  /* Variables with standard_name="longitude" */
+  att_nm=strdup("standard_name");
+  att_val=strdup("longitude");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+
+  strcpy(var_nm,"xc_a");
+  aed_mtd.id=src_grd_ctr_lat_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+  strcpy(var_nm,"xc_b");
+  aed_mtd.id=dst_grd_ctr_lat_id;
+  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+  strcpy(var_nm,"xv_a");
+  aed_mtd.id=src_grd_crn_lat_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+  strcpy(var_nm,"xv_b");
+  aed_mtd.id=dst_grd_crn_lat_id;
+  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
+
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+  
+  /* Attribute "long_name" for all variables */
+  att_nm=strdup("long_name");
+  att_val=strdup("none");
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+
+  strcpy(var_nm,"frac_a");
+  aed_mtd.id=frc_in_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+  strcpy(var_nm,"mask_a");
+  aed_mtd.id=msk_in_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+  strcpy(var_nm,"frac_b");
+  aed_mtd.id=frc_out_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+  strcpy(var_nm,"mask_b");
+  aed_mtd.id=msk_out_id;
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+
   if(att_nm) att_nm=(char *)nco_free(att_nm);
   if(att_val) att_val=(char *)nco_free(att_val);
 
+  /* Add "long_name" attribute to all variables */
+  rcd=nco_char_att_put(out_id,"xc_a","long_name","Longitude of Source Grid Cell Centers");
+  rcd=nco_char_att_put(out_id,"xc_a","long_name","");
+  
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 

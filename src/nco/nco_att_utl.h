@@ -193,6 +193,13 @@ nco_char_att_get /* [fnc] Get a character string attribute from an open file */
  const int var_id, /* I [id] netCDF variable ID */
  const char * const att_nm); /* [sng] Attribute name */
 
+int /* O [rcd] Return code */
+nco_char_att_put /* [fnc] Get a character string attribute from an open file */
+(const int out_id, /* I [id] netCDF output-file ID */
+ const char * const var_nm_sng, /* [sng] Variable name */
+ const char * const att_nm_sng, /* [sng] Attribute name */
+ const char * const att_val_sng); /* [sng] Attribute value */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

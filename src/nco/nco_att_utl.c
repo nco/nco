@@ -2174,4 +2174,48 @@ nco_char_att_get /* [fnc] Get a character string attribute from an open file */
   
   return att_val;
   
-} /* end nco_char_att_get() */
+} /* !nco_char_att_get() */
+
+int /* O [rcd] Return code */
+nco_char_att_put /* [fnc] Get a character string attribute from an open file */
+(const int out_id, /* I [id] netCDF output-file ID */
+ const char * const var_nm_sng, /* [sng] Variable name */
+ const char * const att_nm_sng, /* [sng] Attribute name */
+ const char * const att_val_sng) /* [sng] Attribute value */
+{
+  /* Put a character string attribute into an open file
+     Return NC_NOERR on success
+     This routine allocates no externally visible memory */
+
+  char *var_nm; /* [sng] Variable name */
+  char *att_nm; /* [sng] Attribute name */
+  char *att_val; /* [sng] Attribute value */
+
+  int rcd;
+
+  long att_sz;
+
+  const nc_type att_typ=NC_CHAR;
+
+  aed_sct aed_mtd;
+
+  var_nm=(char *)strdup(var_nm_sng);
+  att_nm=(char *)strdup(att_nm_sng);
+  att_val=(char *)strdup(att_val_sng);
+
+  aed_mtd.att_nm=att_nm;
+  aed_mtd.var_nm=var_nm;
+  if(var_nm) rcd=nco_inq_varid(out_id,var_nm,&aed_mtd.id); else aed_mtd.id=NC_GLOBAL;
+  aed_mtd.sz=strlen(att_val);
+  aed_mtd.type=NC_CHAR;
+  aed_mtd.val.cp=att_val;
+  aed_mtd.mode=aed_create;
+
+  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
+
+  if(var_nm) var_nm=(char *)nco_free(var_nm);
+  if(att_nm) att_nm=(char *)nco_free(att_nm);
+  if(att_val) att_val=(char *)nco_free(att_val);
+
+  return rcd;
+} /* !nco_char_att_put() */

@@ -1,3 +1,7 @@
+2019-10-03  Charlie Zender  <zender@uci.edu>
+
+	* Rewrite map-file metadata code with new function nco_char_att_get()
+
 2019-10-02  Charlie Zender  <zender@uci.edu>
 
 	* Replace all nco_inq_att_flg calls in regridder with cleaner nco_char_att_get()
