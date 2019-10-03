@@ -1,5 +1,9 @@
 2019-10-02  Charlie Zender  <zender@uci.edu>
 
+	* Replace all nco_inq_att_flg calls in regridder with cleaner nco_char_att_get()
+
+	* Rewrite map-file ID code using new function nco_char_att_get()
+
 	* Add ncremap --vrt_nm option to specify vertical coordinate input/output name for pure pressure grids
 
 	* Output interpolated to pure pressure grid defaults to same vertical coordinate name as input

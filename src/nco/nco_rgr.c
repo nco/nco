@@ -2296,72 +2296,49 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   char *att_ttl_sng=NULL;
   char *cnv_sng=NULL;
   /* netCDF standard is uppercase Conventions, though some models user lowercase */
-  char cnv_sng_Cnv[]="Conventions"; /* [sng] Unidata standard     string (uppercase) */
-  char cnv_sng_cnv[]="conventions"; /* [sng] Unidata non-standard string (lowercase) */
-  char cnv_sng_Ttl[]="Title"; /* [sng] NCO and Tempest use "Title" attribute, and Tempest does not use "Conventions" */
-  char cnv_sng_ttl[]="title"; /* [sng] ERWG 7.1 weight_only uses "title" not "Conventions" attribute */
+  char att_sng_Cnv[]="Conventions"; /* [sng] Unidata standard     string (uppercase) */
+  char att_sng_cnv[]="conventions"; /* [sng] Unidata non-standard string (lowercase) */
+  char att_sng_Ttl[]="Title"; /* [sng] NCO and Tempest use "Title" attribute, and Tempest does not use "Conventions" */
+  char att_sng_ttl[]="title"; /* [sng] ERWG 7.1 weight_only uses "title" not "Conventions" attribute */
   char name0_sng[]="name0"; /* [sng] Attribute where Tempest stores least-rapidly-varying dimension name */
   
   long att_sz;
 
   nc_type att_typ;
 
-  nco_bool has_att_ttl=False;
-  nco_bool has_att_Ttl=False;
-  nco_bool has_att_cnv=False;
-  nco_bool has_att_Cnv=False;
   nco_rgr_mpf_typ_enm nco_rgr_mpf_typ=nco_rgr_mpf_nil; /* [enm] Type of remapping file */
   nco_rgr_typ_enm nco_rgr_typ=nco_rgr_grd_nil; /* [enm] Type of grid conversion */
   
   /* Look for map-type signature in [cC]onventions or [tT]itle attribute */
-  /* NCO and Tempest both have "Title" */
-  rcd=nco_inq_att_flg(in_id,NC_GLOBAL,cnv_sng_cnv,NULL,NULL);
-  if(rcd == NC_NOERR) has_att_cnv=True; else rcd=NC_NOERR;
-  rcd=nco_inq_att_flg(in_id,NC_GLOBAL,cnv_sng_Cnv,NULL,NULL);
-  if(rcd == NC_NOERR) has_att_Cnv=True; else rcd=NC_NOERR;
-  rcd=nco_inq_att_flg(in_id,NC_GLOBAL,cnv_sng_ttl,NULL,NULL);
-  if(rcd == NC_NOERR) has_att_ttl=True; else rcd=NC_NOERR;
-  rcd=nco_inq_att_flg(in_id,NC_GLOBAL,cnv_sng_Ttl,NULL,NULL);
-  if(rcd == NC_NOERR) has_att_Ttl=True; else rcd=NC_NOERR;
-
-  if(has_att_ttl || has_att_Ttl){
-    if(has_att_ttl) att_ttl_sng=cnv_sng_ttl; else att_ttl_sng=cnv_sng_Ttl;
-    rcd=nco_inq_att_flg(in_id,NC_GLOBAL,att_ttl_sng,&att_typ,&att_sz);
-    att_cnv_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-    rcd+=nco_get_att(in_id,NC_GLOBAL,att_ttl_sng,att_ttl_val,att_typ);
-    /* NUL-terminate attribute before using strstr() */
-    att_cnv_val[att_sz]='\0';
-  } /* !has_att_ttl */
-
-  if(has_att_cnv || has_att_Cnv){
-    if(has_att_cnv) att_cnv_sng=cnv_sng_cnv; else att_cnv_sng=cnv_sng_Cnv;
-    rcd=nco_inq_att_flg(in_id,NC_GLOBAL,att_cnv_sng,&att_typ,&att_sz);
-    att_cnv_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-    rcd+=nco_get_att(in_id,NC_GLOBAL,att_cnv_sng,att_cnv_val,att_typ);
-    /* NUL-terminate attribute before using strstr() */
-    att_cnv_val[att_sz]='\0';
-  } /* !has_att_cnv */
-  
-  /* If "[cC]onventions" or "[tT]itle" attribute was found, it determines map-file type... */
-  if(rcd == NC_NOERR && att_typ == NC_CHAR){
-    /* ESMF conventions */
-    if(att_cnv_val && strstr(att_cnv_val,"SCRIP")) nco_rgr_mpf_typ=nco_rgr_mpf_SCRIP;
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_nil && att_ttl_val){
-      if(strstr(att_ttl_val,"ESMF Offline Regridding Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF;
-      else if(strstr(att_ttl_val,"netCDF Operators")) nco_rgr_mpf_typ=nco_rgr_mpf_NCO;
-      else if(strstr(att_ttl_val,"Tempest")) nco_rgr_mpf_typ=nco_rgr_mpf_Tempest;
-      else if(strstr(att_ttl_val,"ESMF Regrid Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF_weight_only;
-    } /* !att_ttl_val */
-    if(nco_rgr_mpf_typ == nco_rgr_mpf_nil){
-      (void)fprintf(stderr,"%s: WARNING %s unable to discern map-file type from global attributes \"[cC]onventions\" = \"%s\" or \"[tT]itle\" = \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_cnv_val ? att_cnv_val : "",att_ttl_val ? att_ttl_val : "");
-      nco_rgr_mpf_typ=nco_rgr_mpf_unknown;
-    } /* !nco_rgr_mpf_typ */
-    if(att_cnv_val) att_cnv_val=(char *)nco_free(att_cnv_val);
-    if(att_ttl_val) att_ttl_val=(char *)nco_free(att_ttl_val);
+  att_cnv_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_cnv);
+  if(att_cnv_val){
+    att_cnv_sng=att_sng_cnv;
   }else{
-    (void)fprintf(stderr,"%s: WARNING %s map-file Conventions = \"%s\" does not indicate a known map-file type\n",nco_prg_nm_get(),fnc_nm,att_val);
+    att_cnv_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_Cnv);
+    if(att_cnv_val) att_cnv_sng=att_sng_Cnv;
+  } /* !att_cnv_val */
+  att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_ttl);
+  if(att_ttl_val){
+    att_ttl_sng=att_sng_ttl;
+  }else{
+    att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_Ttl);
+    if(att_ttl_val) att_ttl_sng=att_sng_Ttl;
+  } /* !att_ttl_val */
+
+  /* If "[cC]onventions" or "[tT]itle" attribute was found, it determines map-file type... */
+  if(att_cnv_val && strstr(att_cnv_val,"SCRIP")) nco_rgr_mpf_typ=nco_rgr_mpf_SCRIP;
+  if(nco_rgr_mpf_typ == nco_rgr_mpf_nil && att_ttl_val){
+    if(strstr(att_ttl_val,"ESMF Offline Regridding Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF;
+    else if(strstr(att_ttl_val,"netCDF Operators")) nco_rgr_mpf_typ=nco_rgr_mpf_NCO;
+    else if(strstr(att_ttl_val,"Tempest")) nco_rgr_mpf_typ=nco_rgr_mpf_Tempest;
+    else if(strstr(att_ttl_val,"ESMF Regrid Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF_weight_only;
+  } /* !att_ttl_val */
+  if(nco_rgr_mpf_typ == nco_rgr_mpf_nil){
+    (void)fprintf(stderr,"%s: WARNING %s unable to discern map-file type from global attributes \"[cC]onventions\" = \"%s\" and/or \"[tT]itle\" = \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_cnv_val ? att_cnv_val : "",att_ttl_val ? att_ttl_val : "");
     nco_rgr_mpf_typ=nco_rgr_mpf_unknown;
-  } /* end rcd && att_typ */
+  } /* !nco_rgr_mpf_typ */
+  if(att_cnv_val) att_cnv_val=(char *)nco_free(att_cnv_val);
+  if(att_ttl_val) att_ttl_val=(char *)nco_free(att_ttl_val);
 
   switch(nco_rgr_mpf_typ){
   case nco_rgr_mpf_SCRIP:
@@ -2434,13 +2411,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   
   cnv_sng=strdup("normalization");
   nco_rgr_nrm_typ_enm nco_rgr_nrm_typ=nco_rgr_nrm_nil;
-  rcd=nco_inq_att_flg(in_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
-  if(rcd == NC_NOERR && att_typ == NC_CHAR){
-    /* Add one for NUL byte */
-    att_val=(char *)nco_malloc(att_sz*nco_typ_lng(att_typ)+1L);
-    rcd+=nco_get_att(in_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
-    /* NUL-terminate attribute before using strstr() */
-    att_val[att_sz]='\0';
+  att_val=nco_char_att_get(in_id,NC_GLOBAL,cnv_sng);
+  if(att_val){
     if(strstr(att_val,"fracarea")) nco_rgr_nrm_typ=nco_rgr_nrm_fracarea; /* 20190912: map_gx1v6T_to_1x1_bilin.nc and map_0.1T_tripole_to_0.1x0.1_bilin.nc store "fracarea" in normalization attribute. I think NCAR created both maps for POP, probably by running ERWG with option --norm_type=fracarea. Hence "fracarea" seems to be the NCAR-way of guaranteeing that ESMF re-normalization is not performed by default. */
     if(strstr(att_val,"destarea")) nco_rgr_nrm_typ=nco_rgr_nrm_destarea; /* ESMF conserve "aave" and bilinear "bilin" generate "destarea" by default */
     if(strstr(att_val,"none")) nco_rgr_nrm_typ=nco_rgr_nrm_none;
@@ -2456,13 +2428,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
   cnv_sng=strdup("map_method");
   nco_rgr_mth_typ_enm nco_rgr_mth_typ=nco_rgr_mth_nil;
-  rcd=nco_inq_att_flg(in_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
-  if(rcd == NC_NOERR && att_typ == NC_CHAR){
-    /* Add one for NUL byte */
-    att_val=(char *)nco_malloc(att_sz*nco_typ_lng(att_typ)+1L);
-    rcd+=nco_get_att(in_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
-    /* NUL-terminate attribute before using strstr() */
-    att_val[att_sz]='\0';
+  att_val=nco_char_att_get(in_id,NC_GLOBAL,cnv_sng);
+  if(att_val){
     if(strstr(att_val,"Conservative remapping")) nco_rgr_mth_typ=nco_rgr_mth_conservative;
     if(strstr(att_val,"Bilinear remapping")) nco_rgr_mth_typ=nco_rgr_mth_bilinear;
     if(strstr(att_val,"none")) nco_rgr_mth_typ=nco_rgr_mth_none;
@@ -2604,12 +2571,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	 Challenge: Support both older and newer Tempest mapfiles
 	 Tempest (unlike SCRIP and ESMF) annotates mapfile [src/dst]_grid_dims with attributes that identify axis to which each element of [src/dst]_grid_dims refers
 	 Solution: Use Tempest mapfile [src/dst]_grid_dims attributes "name0" and/or "name1" to determine if axes' positions follow old order */
-      rcd=nco_inq_att_flg(in_id,dmn_sz_in_int_id,name0_sng,&att_typ,&att_sz);
-      if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	rcd+=nco_get_att(in_id,dmn_sz_in_int_id,name0_sng,att_val,att_typ);
-	/* NUL-terminate attribute before using strstr() */
-	att_val[att_sz]='\0';
+      att_val=nco_char_att_get(in_id,dmn_sz_in_int_id,name0_sng);
+      if(att_val){
 	if(strstr(att_val,"lat")){
 	  lon_psn_src=1;
 	  lat_psn_src=0;
@@ -2622,12 +2585,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     lon_psn_dst=0;
     lat_psn_dst=1;
     if(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest){
-      rcd=nco_inq_att_flg(in_id,dmn_sz_in_int_id,name0_sng,&att_typ,&att_sz);
-      if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	rcd+=nco_get_att(in_id,dmn_sz_in_int_id,name0_sng,att_val,att_typ);
-	/* NUL-terminate attribute before using strstr() */
-	att_val[att_sz]='\0';
+      att_val=nco_char_att_get(in_id,dmn_sz_in_int_id,name0_sng);
+      if(att_val){
 	if(strstr(att_val,"lat")){
 	  lon_psn_dst=1;
 	  lat_psn_dst=0;
@@ -2736,12 +2695,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      NB: ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc has [xy]?_a in degrees and [xy]?_b in radians! */
   nco_bool flg_crd_rdn=False; /* [flg] Destination coordinates are in radians not degrees */
   char unt_sng[]="units"; /* [sng] netCDF-standard units attribute name */
-  rcd=nco_inq_att_flg(in_id,dst_grd_ctr_lat_id,unt_sng,&att_typ,&att_sz);
-  if(rcd == NC_NOERR && att_typ == NC_CHAR){
-    att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-    rcd+=nco_get_att(in_id,dst_grd_ctr_lat_id,unt_sng,att_val,att_typ);
-    /* NUL-terminate attribute before using strstr() */
-    att_val[att_sz]='\0';
+  att_val=nco_char_att_get(in_id,dst_grd_ctr_lat_id,unt_sng);
+  if(att_val){
     /* Match "radian" and "radians" */
     if(strstr(att_val,"radian")) flg_crd_rdn=True;
     if(att_val) att_val=(char *)nco_free(att_val);
@@ -3319,12 +3274,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       goto skp_cf;
     } /* !rcd */ 
 
-    rcd=nco_inq_att_flg(in_id,cf->var_id,crd_sng,&att_typ,&att_sz);
-    if(rcd == NC_NOERR && att_typ == NC_CHAR){
-      cf->crd_sng=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-      rcd+=nco_get_att(in_id,cf->var_id,crd_sng,cf->crd_sng,att_typ);
-      /* NUL-terminate attribute before using strstr() */
-      cf->crd_sng[att_sz]='\0';
+    cf->crd_sng=nco_char_att_get(in_id,cf->var_id,crd_sng);
+    if(cf->crd_sng){
       cf->crd=True;
     }else{ /* !rcd && att_typ */
       (void)fprintf(stderr,"%s: WARNING %s reports coordinates variable %s does not have character-valued \"coordinates\" attribute. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,rgr_var);
@@ -3360,12 +3311,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     while(crd_spt < 2 && crd_idx < crd_nbr){
       cf->crd_nm[crd_spt]=crd_nm[crd_idx];
       if((rcd=nco_inq_varid_flg(in_id,cf->crd_nm[crd_spt],&cf->crd_id[crd_spt])) == NC_NOERR){
-	rcd=nco_inq_att_flg(in_id,cf->crd_id[crd_spt],unt_sng,&att_typ,&att_sz);
-	if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	  cf->unt_sng[crd_spt]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	  rcd=nco_get_att(in_id,cf->crd_id[crd_spt],unt_sng,cf->unt_sng[crd_spt],att_typ);
-	  /* NUL-terminate attribute before using strstr() */
-	  *(cf->unt_sng[crd_spt]+att_sz)='\0';
+	cf->unt_sng[crd_spt]=nco_char_att_get(in_id,cf->crd_id[crd_spt],unt_sng);
+	if(cf->unt_sng[crd_spt]){
 	  if(strcasestr(cf->unt_sng[crd_spt],"degree")){
 	    /* Increment count of spatial-like coordinates... */
 	    crd_spt++;
@@ -3392,20 +3339,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	goto skp_cf;
       } /* !rcd */ 
       
-      rcd=nco_inq_att_flg(in_id,cf->crd_id[0],unt_sng,&att_typ,&att_sz);
-      if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	cf->unt_sng[0]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	rcd=nco_get_att(in_id,cf->crd_id[0],unt_sng,cf->unt_sng[0],att_typ);
-	/* NUL-terminate attribute before using strstr() */
-	*(cf->unt_sng[0]+att_sz)='\0';
+      cf->unt_sng[0]=nco_char_att_get(in_id,cf->crd_id[0],unt_sng);
+      if(cf->unt_sng[0]){
 	if(!strcasestr(cf->unt_sng[0],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports first coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->unt_sng[0]);
       } /* !rcd && att_typ */
-      rcd=nco_inq_att_flg(in_id,cf->crd_id[1],unt_sng,&att_typ,&att_sz);
-      if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	cf->unt_sng[1]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	rcd=nco_get_att(in_id,cf->crd_id[1],unt_sng,cf->unt_sng[1],att_typ);
-	/* NUL-terminate attribute before using strstr() */
-	*(cf->unt_sng[1]+att_sz)='\0';
+      cf->unt_sng[1]=nco_char_att_get(in_id,cf->crd_id[1],unt_sng);
+      if(cf->unt_sng[1]){
 	if(!strcasestr(cf->unt_sng[1],"degrees_")) (void)fprintf(stderr,"%s: WARNING %s reports second coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[1],cf->unt_sng[1]);
       } /* !rcd && att_typ */
     } /* !crd_spt */
@@ -7701,12 +7640,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       goto skp_cf;
     } /* !rcd */ 
 
-    rcd=nco_inq_att_flg(in_id,cf->var_id,crd_sng,&att_typ,&att_sz);
-    if(rcd == NC_NOERR && att_typ == NC_CHAR){
-      cf->crd_sng=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-      rcd+=nco_get_att(in_id,cf->var_id,crd_sng,cf->crd_sng,att_typ);
-      /* NUL-terminate attribute before using strstr() */
-      cf->crd_sng[att_sz]='\0';
+    cf->crd_sng=nco_char_att_get(in_id,cf->var_id,crd_sng);
+    if(cf->crd_sng){
       cf->crd=True;
     }else{ /* !rcd && att_typ */
       (void)fprintf(stderr,"%s: WARNING %s reports coordinates variable %s does not have character-valued \"coordinates\" attribute. Turning-off CF coordinates search.\n",nco_prg_nm_get(),fnc_nm,rgr_var);
@@ -7742,12 +7677,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     while(crd_spt < 2 && crd_idx < crd_nbr){
       cf->crd_nm[crd_spt]=crd_nm[crd_idx];
       if((rcd=nco_inq_varid_flg(in_id,cf->crd_nm[crd_spt],&cf->crd_id[crd_spt])) == NC_NOERR){
-	rcd=nco_inq_att_flg(in_id,cf->crd_id[crd_spt],unt_sng,&att_typ,&att_sz);
-	if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	  cf->unt_sng[crd_spt]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	  rcd=nco_get_att(in_id,cf->crd_id[crd_spt],unt_sng,cf->unt_sng[crd_spt],att_typ);
-	  /* NUL-terminate attribute before using strstr() */
-	  *(cf->unt_sng[crd_spt]+att_sz)='\0';
+	cf->unt_sng[crd_spt]=nco_char_att_get(in_id,cf->crd_id[crd_spt],unt_sng);
+	if(cf->unt_sng[crd_spt]){
 	  if(strcasestr(cf->unt_sng[crd_spt],"degree")){
 	    /* Increment count of spatial-like coordinates... */
 	    crd_spt++;
@@ -7774,20 +7705,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	goto skp_cf;
       } /* !rcd */ 
 
-      rcd=nco_inq_att_flg(in_id,cf->crd_id[0],unt_sng,&att_typ,&att_sz);
-      if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	cf->unt_sng[0]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	rcd=nco_get_att(in_id,cf->crd_id[0],unt_sng,cf->unt_sng[0],att_typ);
-	/* NUL-terminate attribute before using strstr() */
-	*(cf->unt_sng[0]+att_sz)='\0';
+      cf->unt_sng[0]=nco_char_att_get(in_id,cf->crd_id[0],unt_sng);
+      if(cf->unt_sng[0]){
 	if(!strcasestr(cf->unt_sng[0],"degree")) (void)fprintf(stderr,"%s: WARNING %s reports first coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[0],cf->unt_sng[0]);
       } /* !rcd && att_typ */
-      rcd=nco_inq_att_flg(in_id,cf->crd_id[1],unt_sng,&att_typ,&att_sz);
-      if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	cf->unt_sng[1]=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	rcd=nco_get_att(in_id,cf->crd_id[1],unt_sng,cf->unt_sng[1],att_typ);
-	/* NUL-terminate attribute before using strstr() */
-	*(cf->unt_sng[1]+att_sz)='\0';
+      cf->unt_sng[1]=nco_char_att_get(in_id,cf->crd_id[1],unt_sng);
+      if(cf->unt_sng[1]){
 	if(!strcasestr(cf->unt_sng[1],"degree")) (void)fprintf(stderr,"%s: WARNING %s reports second coordinates variable %s has weird units attribute = %s. May not detect correct ordering of latitude and longitude coordinates\n",nco_prg_nm_get(),fnc_nm,cf->crd_nm[1],cf->unt_sng[1]);
       } /* !rcd && att_typ */
     } /* !crd_spt */

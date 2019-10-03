@@ -187,6 +187,12 @@ nco_xcp_prc /* [fnc] Perform exception processing on this variable */
  const long var_sz, /* I [nbr] Size (in elements) of operand */
  char * const var_val); /* I/O [sng] Values of operand */
 
+char * /* O [sng] Attribute value */
+nco_char_att_get /* [fnc] Get a character string attribute from an open file */
+(const int in_id, /* I [id] netCDF input-file ID */
+ const int var_id, /* I [id] netCDF variable ID */
+ const char * const att_nm); /* [sng] Attribute name */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

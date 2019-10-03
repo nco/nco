@@ -2103,19 +2103,19 @@ nco_xcp_prc /* [fnc] Perform exception processing on this variable */
  const nc_type var_typ, /* I [enm] netCDF type of operand */
  const long var_sz, /* I [nbr] Size (in elements) of operand */
  char * const var_val) /* I/O [sng] Values of string operand */
- {
+{
   /* Purpose: Perform exception processing on this variable
      Exception processing currently limited to variables of type NC_CHAR */
-   char *ctime_sng;
-   time_t time_crr_time_t;
-   struct tm *time_crr_tm;
-
+  char *ctime_sng;
+  time_t time_crr_time_t;
+  struct tm *time_crr_tm;
+  
   /* Create timestamp string */
   time_crr_time_t=time((time_t *)NULL);
   /* NB: easy to replace with localtime() if desired */
   time_crr_tm=gmtime(&time_crr_time_t);
   ctime_sng=ctime(&time_crr_time_t);
-
+  
   /* Currently both variables in list are NC_CHAR of size 8 when written
      Interestingly, date_written and time_written are 2D (time x char)
      Thus operators like ncra, ncwa may need to reduce their rank and shrink their size 
@@ -2145,5 +2145,33 @@ nco_xcp_prc /* [fnc] Perform exception processing on this variable */
     return;
   } /* !time_written */
   
- } /* end nco_xcp_prc() */
+} /* end nco_xcp_prc() */
 
+char * /* O [sng] Attribute value */
+nco_char_att_get /* [fnc] Get a character string attribute from an open file */
+(const int in_id, /* I [id] netCDF input-file ID */
+ const int var_id, /* I [id] netCDF variable ID */
+ const char * const att_nm) /* [sng] Attribute name */
+{
+  /* Get a character string attribute from an open file
+     Return NUL-terminated string if attribute exists and NULL otherwise
+     Memory allocated by this routine must be freed by calling routine */
+
+  char *att_val=NULL; /* O [sng] Attribute value */
+  
+  int rcd;
+
+  long att_sz;
+
+  nc_type att_typ;
+
+  rcd=nco_inq_att_flg(in_id,var_id,att_nm,&att_typ,&att_sz);
+  if(rcd != NC_NOERR || att_typ != NC_CHAR) return NULL;
+  att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+  rcd=nco_get_att(in_id,var_id,att_nm,att_val,att_typ);
+  /* NUL-terminate attribute before using strstr() */
+  att_val[att_sz]='\0';
+  
+  return att_val;
+  
+} /* end nco_char_att_get() */
