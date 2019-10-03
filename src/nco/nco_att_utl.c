@@ -2199,14 +2199,14 @@ nco_char_att_put /* [fnc] Get a character string attribute from an open file */
 
   aed_sct aed_mtd;
 
-  var_nm=(char *)strdup(var_nm_sng);
-  att_nm=(char *)strdup(att_nm_sng);
-  att_val=(char *)strdup(att_val_sng);
+  if(var_nm_sng) var_nm=(char *)strdup(var_nm_sng); else var_nm=NULL;
+  if(att_nm_sng) att_nm=(char *)strdup(att_nm_sng); else att_nm=NULL;
+  if(att_val_sng) att_val=(char *)strdup(att_val_sng); else att_val=NULL;
 
   aed_mtd.att_nm=att_nm;
   aed_mtd.var_nm=var_nm;
   if(var_nm) rcd=nco_inq_varid(out_id,var_nm,&aed_mtd.id); else aed_mtd.id=NC_GLOBAL;
-  aed_mtd.sz=strlen(att_val);
+  if(att_val_sng) aed_mtd.sz=strlen(att_val); else aed_mtd.sz=0L;
   aed_mtd.type=NC_CHAR;
   aed_mtd.val.cp=att_val;
   aed_mtd.mode=aed_create;

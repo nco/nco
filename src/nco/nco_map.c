@@ -554,231 +554,65 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   /* Implement CMIP6 conventions in Taylor, Oehmke, Ullrich, Zender et al. (2019), "CMIP6 Specifications for Regridding Weights" https://docs.google.com/document/d/1BfVVsKAk9MAsOYstwFSWI2ZBt5mrO_Nmcu7rLGDuL08/edit */
   rcd=nco_char_att_put(out_id,NULL,"title","netCDF Operators (NCO) Offline Regridding Weight Generator");
-
-  att_nm=strdup("Conventions");
-  att_val=strdup("NCAR-CSM");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=NULL;
-  aed_mtd.id=NC_GLOBAL;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
+  rcd=nco_char_att_put(out_id,NULL,"Conventions","NCAR-CSM");
   const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
-  att_nm=strdup("created_by");
-  att_val=strdup(usr_cpp);
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=NULL;
-  aed_mtd.id=NC_GLOBAL;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
+  rcd=nco_char_att_put(out_id,NULL,"created_by",usr_cpp);
+  rcd=nco_char_att_put(out_id,NULL,"map_method","Conservative");
+  rcd=nco_char_att_put(out_id,NULL,"weight_generator","NCO");
+  const char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */
+  rcd=nco_char_att_put(out_id,NULL,"weight_generator_version","vrs_cpp");
+  rcd=nco_char_att_put(out_id,NULL,"","");
+  rcd=nco_char_att_put(out_id,NULL,"","");
+  rcd=nco_char_att_put(out_id,NULL,"","");
+  rcd=nco_char_att_put(out_id,NULL,"","");
+  rcd=nco_char_att_put(out_id,NULL,"","");
   (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
   (void)nco_vrs_att_cat(out_id);
-
-  /* Variables with units="degrees_north" */
-  att_nm=strdup("units");
-  att_val=strdup("degrees_north");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-
-  /* Re-use space in var_nm */
-  aed_mtd.var_nm=var_nm;
-
-  strcpy(var_nm,"yc_a");
-  aed_mtd.id=src_grd_ctr_lat_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"yv_a");
-  aed_mtd.id=src_grd_crn_lat_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"yc_b");
-  aed_mtd.id=dst_grd_ctr_lat_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"yv_b");
-  aed_mtd.id=dst_grd_crn_lat_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
-  /* Variables with units="degrees_east" */
-  att_nm=strdup("units");
-  att_val=strdup("degrees_east");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-
-  strcpy(var_nm,"xc_a");
-  aed_mtd.id=src_grd_ctr_lon_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"xv_a");
-  aed_mtd.id=src_grd_crn_lon_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"xc_b");
-  aed_mtd.id=dst_grd_ctr_lon_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"xv_b");
-  aed_mtd.id=dst_grd_crn_lon_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
-  /* Variables with units="none" */
-  att_nm=strdup("units");
-  att_val=strdup("none");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-
-  strcpy(var_nm,"frac_a");
-  aed_mtd.id=frc_in_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"mask_a");
-  aed_mtd.id=msk_in_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"frac_b");
-  aed_mtd.id=frc_out_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"mask_b");
-  aed_mtd.id=msk_out_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
-  /* Variables with units="steradian" */
-  att_nm=strdup("units");
-  att_val=strdup("steradian");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-
-  strcpy(var_nm,"area_a");
-  aed_mtd.id=area_in_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"area_b");
-  aed_mtd.id=area_out_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
-  /* Variables with standard_name="solid_angle" */
-  att_nm=strdup("standard_name");
-  att_val=strdup("solid_angle");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-
-  strcpy(var_nm,"area_a");
-  aed_mtd.id=area_in_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"area_b");
-  aed_mtd.id=area_out_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-  
-  /* Variables with standard_name="latitude" */
-  att_nm=strdup("standard_name");
-  att_val=strdup("latitude");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-
-  strcpy(var_nm,"yc_a");
-  aed_mtd.id=src_grd_ctr_lat_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"yc_b");
-  aed_mtd.id=dst_grd_ctr_lat_id;
-  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
-  strcpy(var_nm,"yv_a");
-  aed_mtd.id=src_grd_crn_lat_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"yv_b");
-  aed_mtd.id=dst_grd_crn_lat_id;
-  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
-
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-  
-  /* Variables with standard_name="longitude" */
-  att_nm=strdup("standard_name");
-  att_val=strdup("longitude");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-
-  strcpy(var_nm,"xc_a");
-  aed_mtd.id=src_grd_ctr_lat_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"xc_b");
-  aed_mtd.id=dst_grd_ctr_lat_id;
-  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
-  strcpy(var_nm,"xv_a");
-  aed_mtd.id=src_grd_crn_lat_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"xv_b");
-  aed_mtd.id=dst_grd_crn_lat_id;
-  (void)nco_aed_prc(out_id,area_out_id,aed_mtd);
-
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-  
-  /* Attribute "long_name" for all variables */
-  att_nm=strdup("long_name");
-  att_val=strdup("none");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-
-  strcpy(var_nm,"frac_a");
-  aed_mtd.id=frc_in_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"mask_a");
-  aed_mtd.id=msk_in_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"frac_b");
-  aed_mtd.id=frc_out_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-  strcpy(var_nm,"mask_b");
-  aed_mtd.id=msk_out_id;
-  (void)nco_aed_prc(out_id,aed_mtd.id,aed_mtd);
-
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-
-  /* Add "long_name" attribute to all variables */
+  rcd=nco_char_att_put(out_id,"S","long_name","Weights to Map Variables from Source to Destination Grid");
+  rcd=nco_char_att_put(out_id,"area_a","long_name","Solid Angle Subtended on Source Grid");
+  rcd=nco_char_att_put(out_id,"area_a","standard_name","solid_angle");
+  rcd=nco_char_att_put(out_id,"area_a","units","steradian");
+  rcd=nco_char_att_put(out_id,"area_a","long_name","Solid Angle Subtended on Destination Grid");
+  rcd=nco_char_att_put(out_id,"area_b","standard_name","solid_angle");
+  rcd=nco_char_att_put(out_id,"area_b","units","steradian");
+  rcd=nco_char_att_put(out_id,"col","long_name","Pointer to Source Grid Element");
+  rcd=nco_char_att_put(out_id,"frac_a","long_name","Fraction of Source Gridcell That Participates in Remapping");
+  rcd=nco_char_att_put(out_id,"frac_a","units","none");
+  rcd=nco_char_att_put(out_id,"frac_b","long_name","Fraction of Destination Gridcell That Participates in Remapping");
+  rcd=nco_char_att_put(out_id,"frac_b","units","none");
+  rcd=nco_char_att_put(out_id,"mask_a","long_name","Binary Integer Mask for Source Grid");
+  rcd=nco_char_att_put(out_id,"mask_a","units","none");
+  rcd=nco_char_att_put(out_id,"mask_b","long_name","Binary Integer Mask for Destination Grid");
+  rcd=nco_char_att_put(out_id,"mask_b","units","none");
+  rcd=nco_char_att_put(out_id,"row","long_name","Pointer to Destination Grid Element");
   rcd=nco_char_att_put(out_id,"xc_a","long_name","Longitude of Source Grid Cell Centers");
-  rcd=nco_char_att_put(out_id,"xc_a","long_name","");
+  rcd=nco_char_att_put(out_id,"xc_a","standard_name","longitude");
+  rcd=nco_char_att_put(out_id,"xc_a","units","degrees_east");
+  rcd=nco_char_att_put(out_id,"xc_a","bounds","xv_a");
+  rcd=nco_char_att_put(out_id,"xc_b","long_name","Longitude of Destination Grid Cell Centers");
+  rcd=nco_char_att_put(out_id,"xc_b","standard_name","longitude");
+  rcd=nco_char_att_put(out_id,"xc_b","units","degrees_east");
+  rcd=nco_char_att_put(out_id,"xv_a","long_name","Longitude of Source Grid Cell Vertices");
+  rcd=nco_char_att_put(out_id,"xv_a","standard_name","longitude");
+  rcd=nco_char_att_put(out_id,"xv_a","units","degrees_east");
+  rcd=nco_char_att_put(out_id,"xv_b","long_name","Longitude of Destination Grid Cell Vertices");
+  rcd=nco_char_att_put(out_id,"xv_b","standard_name","longitude");
+  rcd=nco_char_att_put(out_id,"xv_b","units","degrees_east");
+  rcd=nco_char_att_put(out_id,"xc_b","bounds","xv_b");
+  rcd=nco_char_att_put(out_id,"yc_a","long_name","Latitude of Source Grid Cell Centers");
+  rcd=nco_char_att_put(out_id,"yc_a","standard_name","latitude");
+  rcd=nco_char_att_put(out_id,"yc_a","units","degrees_north");
+  rcd=nco_char_att_put(out_id,"yc_a","bounds","yv_a");
+  rcd=nco_char_att_put(out_id,"yc_b","long_name","Latitude of Destination Grid Cell Centers");
+  rcd=nco_char_att_put(out_id,"yc_b","standard_name","latitude");
+  rcd=nco_char_att_put(out_id,"yc_b","units","degrees_north");
+  rcd=nco_char_att_put(out_id,"yc_b","bounds","yv_b");
+  rcd=nco_char_att_put(out_id,"yv_a","long_name","Latitude of Source Grid Cell Vertices");
+  rcd=nco_char_att_put(out_id,"yv_a","standard_name","latitude");
+  rcd=nco_char_att_put(out_id,"yv_a","units","degrees_north");
+  rcd=nco_char_att_put(out_id,"yv_b","long_name","Latitude of Destination Grid Cell Vertices");
+  rcd=nco_char_att_put(out_id,"yv_b","standard_name","latitude");
+  rcd=nco_char_att_put(out_id,"yv_b","units","degrees_north");
   
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
