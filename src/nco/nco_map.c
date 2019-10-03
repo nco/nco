@@ -567,7 +567,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,"area_a","long_name","Solid Angle Subtended on Source Grid");
   rcd=nco_char_att_put(out_id,"area_a","standard_name","solid_angle");
   rcd=nco_char_att_put(out_id,"area_a","units","steradian");
-  rcd=nco_char_att_put(out_id,"area_a","long_name","Solid Angle Subtended on Destination Grid");
+  rcd=nco_char_att_put(out_id,"area_b","long_name","Solid Angle Subtended on Destination Grid");
   rcd=nco_char_att_put(out_id,"area_b","standard_name","solid_angle");
   rcd=nco_char_att_put(out_id,"area_b","units","steradian");
   rcd=nco_char_att_put(out_id,"col","long_name","Pointer to Source Grid Element");

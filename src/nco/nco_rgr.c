@@ -6454,15 +6454,36 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   rcd=nco_char_att_put(out_id,NULL,"Conventions","SCRIP");
   const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
   rcd=nco_char_att_put(out_id,NULL,"created_by",usr_cpp);
+  rcd=nco_char_att_put(out_id,NULL,"grid_generator","NCO");
   (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
   (void)nco_vrs_att_cat(out_id);
   rcd=nco_char_att_put(out_id,NULL,"latitude_grid_type",nco_grd_lat_sng(lat_typ));
   rcd=nco_char_att_put(out_id,NULL,"longitude_grid_type",nco_grd_lon_sng(lon_typ));
+
+  rcd=nco_char_att_put(out_id,grd_area_nm,"long_name","Solid Angle Subtended on Source Grid");
+  rcd=nco_char_att_put(out_id,grd_area_nm,"standard_name","solid_angle");
   rcd=nco_char_att_put(out_id,grd_area_nm,"units","steradian");
+
+  rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"long_name","Latitude of Grid Cell Centers");
+  rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"standard_name","latitude");
   rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees_north");
+  rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"bounds",grd_crn_lat_nm);
+  
+  rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"long_name","Longitude of Grid Cell Centers");
+  rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"standard_name","longitude");
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees_east");
+  rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"bounds",grd_crn_lon_nm);
+  
+  rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"long_name","Latitude of Grid Cell Vertices");
+  rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"standard_name","latitude");
   rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees_north");
+  
+  rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"long_name","Longitude of Grid Cell Vertices");
+  rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"standard_name","longitude");
   rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees_east");
+  
+  rcd=nco_char_att_put(out_id,msk_nm,"long_name","Binary Integer Mask for Grid");
+  rcd=nco_char_att_put(out_id,msk_nm,"units","none");
 
   /* Begin data mode */
   (void)nco_enddef(out_id);
@@ -8691,20 +8712,40 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   rcd=nco_char_att_put(out_id,NULL,"Conventions","SCRIP");
   const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
   rcd=nco_char_att_put(out_id,NULL,"created_by",usr_cpp);
+  rcd=nco_char_att_put(out_id,NULL,"grid_generator","NCO");
   (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
   (void)nco_vrs_att_cat(out_id);
   rcd=nco_char_att_put(out_id,NULL,"latitude_grid_type",nco_grd_lat_sng(lat_typ));
   rcd=nco_char_att_put(out_id,NULL,"longitude_grid_type",nco_grd_lon_sng(lon_typ));
 
+  rcd=nco_char_att_put(out_id,area_nm,"long_name","Solid Angle Subtended on Source Grid");
+  rcd=nco_char_att_put(out_id,area_nm,"standard_name","solid_angle");
   rcd=nco_char_att_put(out_id,area_nm,"units","steradian");
 
+  rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"long_name","Latitude of Grid Cell Centers");
+  rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"standard_name","latitude");
   rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees_north");
+
+  rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"long_name","Longitude of Grid Cell Centers");
+  rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"standard_name","longitude");
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees_east");
+
   if(flg_wrt_crn){
+    rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"bounds",grd_crn_lat_nm);
+    rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"bounds",grd_crn_lon_nm);
+
+    rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"long_name","Latitude of Grid Cell Vertices");
+    rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"standard_name","latitude");
     rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees_north");
+    
+    rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"long_name","Longitude of Grid Cell Vertices");
+    rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"standard_name","longitude");
     rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees_east");
   } /* !flg_wrt_crn */
   
+  rcd=nco_char_att_put(out_id,msk_nm,"long_name","Binary Integer Mask for Grid");
+  rcd=nco_char_att_put(out_id,msk_nm,"units","none");
+
   /* Begin data mode */
   (void)nco_enddef(out_id);
   
@@ -8995,7 +9036,17 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     rcd=nco_def_var(out_id,fcy_nm,crd_typ,dmn_nbr_1D,&dmn_id_fc,&fcy_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,fcy_id,shuffle,deflate,dfl_lvl);
 
+    if(strstr(rgr->grd_ttl,"None given")){
+      const char att_fmt[]="NCO constructed this UGRID grid from scratch";
+      att_val=(char *)nco_malloc((strlen(att_fmt)+strlen(rgr->fl_in)+1L)*sizeof(char));
+      sprintf(att_val,att_fmt);
+    }else{
+      att_val=strdup(rgr->grd_ttl);
+    } /* !grd_ttl */
+    rcd=nco_char_att_put(out_id,NULL,"title",att_val);
     rcd=nco_char_att_put(out_id,NULL,"Conventions","CF-1.6, UGRID-1.0");
+    rcd=nco_char_att_put(out_id,NULL,"created_by",usr_cpp);
+    rcd=nco_char_att_put(out_id,NULL,"grid_generator","NCO");
     (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
     (void)nco_vrs_att_cat(out_id);
 
