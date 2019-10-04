@@ -253,7 +253,12 @@ extern "C" {
   (double lon_r, /* I [rdn] Longitude on right of gridcell (subtractor) */
    double lon_l); /* I [rdn] Longitude on  left of gridcell (subtractee) */
 
-  double /* O [dgr] Longitude average (lon_r-lon_l) */
+  double /* O [dgr] Longitude average */
+  nco_lon_ply_avg_brnch_dgr /* [fnc] Average polygon longitude with branch-cut rules */
+  (double *lon_crn, /* I [dgr] Longitude of gridcell corners */
+   long lon_nbr); /* I [nbr] Number of vertices in polygon */
+
+  double /* O [dgr] Longitude average */
   nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut rules */
   (double lon_ll, /* I [dgr] Longitude at lower left  of gridcell */
    double lon_lr, /* I [dgr] Longitude at lower right of gridcell */

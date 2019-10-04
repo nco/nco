@@ -5176,20 +5176,22 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   ii. Third vertice of preceding triangle becomes second vertice of next triangle
 	   iii. Next non-identical point becomes last vertice of next triangle
 	   iv. Side C of previous triangle is side A of next triangle
-	B. For each triangle, compute area with L'Huilier formula unless A = B ~ 0.5*C
+	B. For each triangle, compute area with L'Huilier formula unless A = B ~ 0.5*C then use SAS formula
      3. L'Huilier method, N triangle version by Taylor: 
         Compute polygon centroid and treat this as hub from which spokes are drawn to all vertices
         This method requires computation of N triangles, though fewer sides due to optimization
 	Moreover, it works on all convex polygons and on slightly concave polygons
 	Centroid/hub has clear view of interior of most simple concave polygons
      4. L'Huilier method with exact RLL grids by Zender and Agress 20160918
-        A. Decompose polygon into triangles via and method (e.g., method 2 or 3 above)
+        A. Decompose polygon into triangles via any method (e.g., method 2 or 3 above)
 	B. Determine whether triangle is spherical or contains RLL (constant latitude)
 	C. Spherical triangles use L'Huilier, RLL triangles use series expansion */
   const char fnc_nm[]="nco_sph_plg_area()";
   const double dgr2rdn=M_PI/180.0;
-  short int bnd_idx;
+  nco_bool flg_mth_ctr=False; /* [flg] Use centroid method to compute polygon area */
+  nco_bool flg_mth_csz=!flg_mth_ctr; /* [flg] Use CSZ's advancing polygon bisector method */
   long idx; /* [idx] Counting index for unrolled grids */
+  short int bnd_idx;
 
   double *lat_bnd_rdn=NULL_CEWI; /* [rdn] Latitude  boundaries of rectangular destination grid */
   double *lon_bnd_rdn=NULL_CEWI; /* [rdn] Longitude boundaries of rectangular destination grid */
@@ -5219,6 +5221,11 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   double area_ltr_ttl; /* [sr] Sphere area allowing for latitude-triangles */
   double area_crc_ttl; /* [sr] Latitude-triangle correction for whole sphere */
   double area_crc_abs_ttl; /* [sr] Latitude-triangle absolute correction for whole sphere */
+  double lat_ctr; /* [dgr] Latitude of polygon centroid */
+  double lon_ctr; /* [dgr] Longitude of polygon centroid */
+  double lat_ctr_rdn; /* [rdn] Latitude of polygon centroid */
+  double lon_ctr_rdn; /* [rdn] Longitude of polygon centroid */
+  double lat_ctr_cos; /* [frc] Cosine latitude of polygon centroid */
   double lat_dlt; /* [rdn] Latitudinal difference */
   double lon_dlt; /* [rdn] Longitudinal difference */
   double ngl_a; /* [rdn] Interior angle/great circle arc a */
@@ -5231,89 +5238,214 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   double sin_hlf_tht; /* [frc] Sine of half angle/great circle arc theta connecting two points */
   double xcs_sph; /* [sr] Spherical excess */
   int tri_nbr; /* [nbr] Number of triangles in polygon */
+  long bnd_vld_nbr=NC_MIN_INT; /* [idx] Number of valid (non-duplicative) vertices in each triangle */
+  long *a_idx; /* [idx] Point A 1-D indices for each triangle in polygon */
+  long *b_idx; /* [idx] Point B 1-D indices for each triangle in polygon */
+  long *c_idx; /* [idx] Point C 1-D indices for each triangle in polygon */
+  long *vrt_vld=NULL; /* [idx] Indices of valid vertices */
   long idx_a; /* [idx] Point A 1-D index */
   long idx_b; /* [idx] Point B 1-D index */
   long idx_c; /* [idx] Point C 1-D index */
   nco_bool flg_sas; /* [flg] L'Huilier's formula is ill-conditioned for this triangle */
   nco_bool flg_ltr_cll; /* [flg] Any triangle in cell is latitude-triangle */
   nco_bool flg_ltr_crr; /* [flg] Current triangle is latitude-triangle */
+  /* Initialize global accumulators */
   area_ttl=0.0;
   area_ltr_ttl=0.0;
   area_crc_ttl=0.0;
   area_crc_abs_ttl=0.0;
   for(long col_idx=0;col_idx<col_nbr;col_idx++){
+    /* Initialize local properties and accumulators for this cell/polygon */
     flg_ltr_cll=False;
     ngl_c=double_CEWI; /* Otherwise compiler unsure ngl_c is initialized first use */
     area[col_idx]=0.0;
     area_ltr=0.0;
     tri_nbr=0;
-    /* A is always first vertice */
-    idx_a=bnd_nbr*col_idx; 
-    /* Start search for B at next vertice */
-    bnd_idx=1;
-    /* bnd_idx labels offset from point A of potential location of triangle points B and C 
-       We know that bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr-1, bnd_idx(C) < bnd_nbr */
-    while(bnd_idx<bnd_nbr-1){
-      flg_ltr_crr=False;
-      /* Only first triangle must search for B, subsequent triangles recycle previous C as current B */
-      if(tri_nbr == 0){
+
+    if(col_idx == 0){
+      a_idx=(long *)nco_calloc(bnd_nbr,sizeof(long));
+      b_idx=(long *)nco_calloc(bnd_nbr,sizeof(long));
+      c_idx=(long *)nco_calloc(bnd_nbr,sizeof(long));
+      vrt_vld=(long *)nco_calloc(bnd_nbr,sizeof(long));
+    } /* !col_idx */
+      
+    /* Safety re-initialization to ease debugging, not strictly necessary */
+    for(bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++){
+      vrt_vld[bnd_idx]=NC_MIN_INT;
+      a_idx[bnd_idx]=NC_MIN_INT;
+      b_idx[bnd_idx]=NC_MIN_INT;
+      c_idx[bnd_idx]=NC_MIN_INT;
+    } /* !bnd_idx */
+
+    if(flg_mth_ctr){
+      double lon_dff; /* [dgr] Longitude difference */
+      long bnd_srt_idx; /* [idx] Absolute starting index of vertices in polygon */
+      long bnd_idx; /* [idx] Offset of current valid vertex index from starting index */
+      long bnd_vld_idx; /* [idx] Absolute index of last valid vertex */
+      /* First vertice is always valid */
+      bnd_srt_idx=bnd_nbr*col_idx;
+      bnd_vld_idx=bnd_srt_idx;
+      vrt_vld[0]=bnd_vld_idx;
+      lat_ctr=lat_bnd[bnd_srt_idx];
+      lon_ctr=lon_bnd[bnd_srt_idx];
+      bnd_vld_nbr=1;
+      /* First guess for next valid index */
+      bnd_idx=1;
+      /* bnd_idx labels offset from first vertex of next valid (i.e., non-duplicative) vertex */
+      while(bnd_idx<bnd_nbr){
 	/* Skip repeated points that must occur when polygon has fewer than allowed vertices */
-	while(lon_bnd[idx_a] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_a] == lat_bnd[idx_a+bnd_idx]){
-	  /* Next vertice may not duplicate A */
+	while(lon_bnd[bnd_vld_idx] == lon_bnd[bnd_srt_idx+bnd_idx] && lat_bnd[bnd_srt_idx] == lat_bnd[bnd_srt_idx+bnd_idx]){
+	  /* Next valid vertice must not duplicate first vertex */
+	  bnd_idx++;
+	  /* Have we already found all valid vertices? */
+	  if(bnd_idx == bnd_nbr) break;
+	} /* !while */
+	/* Jump to normalization when all valid vertices found */
+	if(bnd_idx == bnd_nbr) break;
+	/* Current vertex is valid (non-duplicative) */
+	bnd_vld_idx=bnd_srt_idx+bnd_idx;
+	vrt_vld[bnd_vld_nbr]=bnd_vld_idx;
+	bnd_vld_nbr++;
+	lat_ctr+=lat_bnd[bnd_vld_idx];
+	lon_ctr+=lon_bnd[bnd_vld_idx];
+	lon_dff=lon_bnd[bnd_vld_idx]-lon_bnd[0];
+	if(lon_dff >= 180.0){
+	  lon_ctr-=360.0;
+	}else if(lon_dff <= -180.0){
+	  lon_ctr+=360.0;
+	} /* !lon_dff */
+      } /* !bnd_idx */
+      /* Compute centroid */
+      lat_ctr/=bnd_vld_nbr;
+      lon_ctr/=bnd_vld_nbr;
+      /* Centroid can become point A of bnd_nbr polygons or optimize algorithm:
+	 1. Skip sub-dividing polygon into centroid-based triangles for bnd_vld_nbr == 3
+	 2. Split quadrilaterals into two (non-centroid) triangles for bnd_vld_nbr == 4
+	 3. Use full centroid-based triangle algorithm for bnd_vld_nbr >= 5 */
+      lat_ctr_rdn=lat_ctr*dgr2rdn;
+      lon_ctr_rdn=lon_ctr*dgr2rdn;
+      lat_ctr_cos=cos(lat_ctr_rdn);
+
+      /* Polygon centroid and valid vertices are now known */
+      if(bnd_vld_nbr == 3){
+	tri_nbr=1;
+	a_idx[0]=vrt_vld[0];
+	b_idx[0]=vrt_vld[1];
+	c_idx[0]=vrt_vld[2];
+      }else if(bnd_vld_nbr == 4){
+	/* These triangles */
+	tri_nbr=2;
+	a_idx[0]=vrt_vld[0];
+	b_idx[0]=vrt_vld[1];
+	c_idx[0]=vrt_vld[2];
+	a_idx[1]=vrt_vld[0]; /* NB: Order is important. This way side C of triangle[0] = side A of trangle[1] */
+	b_idx[1]=vrt_vld[2];
+	c_idx[1]=vrt_vld[3];
+      }else if(bnd_vld_nbr >= 5){
+	tri_nbr=bnd_vld_nbr;
+	for(int tri_idx=0;tri_idx<tri_nbr;tri_idx++){
+	  a_idx[tri_idx]=NC_MIN_INT; /* A is always centroid, no index available, requires "if" condition */
+	  b_idx[tri_idx]=vrt_vld[tri_idx];
+	  c_idx[tri_idx]=vrt_vld[(tri_idx+1)%tri_nbr];
+	} /* !tri_idx */
+      }	/* !bnd_vld_nbr */
+    } /* !flg_mth_ctr */
+
+    if(flg_mth_csz){
+      /* A is always first vertice of all triangles */
+      idx_a=bnd_nbr*col_idx; 
+      /* Start search for B at next vertice */
+      bnd_idx=1;
+      /* bnd_idx labels offset from point A of potential location of triangle points B and C 
+	 We know that bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr-1, bnd_idx(C) < bnd_nbr */
+      while(bnd_idx<bnd_nbr-1){
+	flg_ltr_crr=False;
+	/* Only first triangle must search for B, subsequent triangles recycle previous C as current B */
+	if(tri_nbr == 0){
+	  /* Skip repeated points that must occur when polygon has fewer than allowed vertices */
+	  while(lon_bnd[idx_a] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_a] == lat_bnd[idx_a+bnd_idx]){
+	    /* Next vertice may not duplicate A */
+	    bnd_idx++;
+	    /* If there is no room for C then all triangles found */
+	    if(bnd_idx == bnd_nbr-1) break;
+	  } /* !while */
+	  /* Jump to next column when all triangles found */
+	  if(bnd_idx == bnd_nbr-1) break;
+	} /* !tri_nbr */
+	idx_b=idx_a+bnd_idx;
+	/* Search for C at next vertice */
+	bnd_idx++;
+	while(lon_bnd[idx_b] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_b] == lat_bnd[idx_a+bnd_idx]){
+	  /* Next vertice may not duplicate B */
 	  bnd_idx++;
 	  /* If there is no room for C then all triangles found */
-	  if(bnd_idx == bnd_nbr-1) break;
+	  if(bnd_idx == bnd_nbr) break;
 	} /* !while */
 	/* Jump to next column when all triangles found */
-	if(bnd_idx == bnd_nbr-1) break;
-      } /* !tri_nbr */
-      idx_b=idx_a+bnd_idx;
-      /* Search for C at next vertice */
-      bnd_idx++;
-      while(lon_bnd[idx_b] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_b] == lat_bnd[idx_a+bnd_idx]){
-	/* Next vertice may not duplicate B */
-	bnd_idx++;
-	/* If there is no room for C then all triangles found */
 	if(bnd_idx == bnd_nbr) break;
-      } /* !while */
-      /* Jump to next column when all triangles found */
-      if(bnd_idx == bnd_nbr) break;
-      idx_c=idx_a+bnd_idx;
-      /* Valid triangle, vertices are known and labeled */
-      tri_nbr++;
+	idx_c=idx_a+bnd_idx;
+
+	/* Valid triangle, vertices are known and labeled */
+	a_idx[tri_nbr]=idx_a;
+	b_idx[tri_nbr]=idx_b;
+	c_idx[tri_nbr]=idx_c;
+	tri_nbr++;
+
+	/* Begin search for next B at current C */
+	bnd_idx=idx_c-idx_a;
+      } /* !bnd_idx */
+    } /* !flg_mth_csz */
+	
+    /* Triangles are known for requested decomposition method 
+       Compute and accumulate their area 
+       Optimized algorithm relies on recycling previous arc c as current arc a after first triangle */
+    for(int tri_idx=0;tri_idx<tri_nbr;tri_idx++){
+
+      idx_a=a_idx[tri_idx];
+      idx_b=b_idx[tri_idx];
+      idx_c=c_idx[tri_idx];
+
       /* Compute interior angle/great circle arc a for first triangle; subsequent triangles recycle previous arc c */
-      if(tri_nbr == 1){
-	/* 20150831: Test by computing ncol=0 area in conus chevrons grid, compare to MAT results
-	   ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/257x512_SCRIP.20150901.nc -m ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150901.nc
-	   ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc -m ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc
-	   ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
-	   ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/dogfood.nc
-	   ncks -H -s %20.15e, -v area -d ncol,0 ${DATA}/ne30/rgr/dogfood.nc
-	   ncks -H -s %20.15e, -v grid_area -d grid_size,0 ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc
+      if(tri_idx == 0){
+	if(flg_mth_ctr && bnd_vld_nbr >= 5){
+	  /* Vertex A is centroid and is not available as index into lat/lon vertice arrays */
+	  lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_ctr_rdn,lon_bnd_rdn[idx_b]));
+	  lat_dlt=fabs(lat_ctr_rdn-lat_bnd_rdn[idx_b]);
+	  sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_ctr_cos*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
+	  ngl_a=2.0*asin(sin_hlf_tht);
+	}else{ /* !flg_mth_ctr !bnd_vld_nbr */
+	  /* 20150831: Test by computing ncol=0 area in conus chevrons grid, compare to MAT results
+	     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/257x512_SCRIP.20150901.nc -m ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150901.nc
+	     ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc -m ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc
+	     ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
+	     ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/dogfood.nc
+	     ncks -H -s %20.15e, -v area -d ncol,0 ${DATA}/ne30/rgr/dogfood.nc
+	     ncks -H -s %20.15e, -v grid_area -d grid_size,0 ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc
 	   
-	   ncol=0 on conus chevrons file:
-	   3.653857995295246e-05 raw GLL weight
-	   3.653857995294302e-05 matlab N-2 triangles (CSZ algorithm)
-	   3.653857995294301e-05 matlab N   triangles (MAT algorithm)
-	   3.653857995294258e-05 new NCO (haversine)
-	   3.653857995289623e-05 old NCO (acos) */
-	/* Computing great circle arcs over small arcs requires care since central angle is near 0 degrees
-	   Cosine small angles changes slowly for such angles, and leads to precision loss
-	   Use haversine formula instead of spherical law of cosines formula
-	   https://en.wikipedia.org/wiki/Great-circle_distance */
-	/* Interior angle/great circle arc a, spherical law of cosines formula (loses precision):
-	   cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
-	   lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
-	   lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];ngl_a=acos(cos_a); */
-	/* Interior angle/great circle arc a, haversine formula: */
-	// 20160918: Use branch cut rules for longitude
-	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_a],lon_bnd_rdn[idx_b]));
-	lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
-	sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
-	ngl_a=2.0*asin(sin_hlf_tht);
-      }else{
+	     ncol=0 on conus chevrons file:
+	     3.653857995295246e-05 raw GLL weight
+	     3.653857995294302e-05 matlab N-2 triangles (CSZ algorithm)
+	     3.653857995294301e-05 matlab N   triangles (MAT algorithm)
+	     3.653857995294258e-05 new NCO (haversine)
+	     3.653857995289623e-05 old NCO (acos) */
+	  /* Computing great circle arcs over small arcs requires care since central angle is near 0 degrees
+	     Cosine small angles changes slowly for such angles, and leads to precision loss
+	     Use haversine formula instead of spherical law of cosines formula
+	     https://en.wikipedia.org/wiki/Great-circle_distance */
+	  /* Interior angle/great circle arc a, spherical law of cosines formula (loses precision):
+	     cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
+	     lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
+	     lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];ngl_a=acos(cos_a); */
+	  /* Interior angle/great circle arc a, haversine formula: */
+	  // 20160918: Use branch cut rules for longitude
+	  lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_a],lon_bnd_rdn[idx_b]));
+	  lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
+	  sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
+	  ngl_a=2.0*asin(sin_hlf_tht);
+	} /* !flg_mth_ctr !bnd_vld_nbr */
+      }else{ /* !tri_idx == 0 */
 	ngl_a=ngl_c;
-      } /* !tri_nbr */
+      } /* !tri_idx == 0 */
       /* Interior angle/great circle arc b */
       lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_b],lon_bnd_rdn[idx_c]));
       lat_dlt=fabs(lat_bnd_rdn[idx_b]-lat_bnd_rdn[idx_c]);
@@ -5349,7 +5481,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	else if((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) flg_sas_hlf_a=True;
 	else if((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b)) flg_sas_hlf_b=True;
 	else abort();
-	(void)fprintf(stdout,"%s: WARNING %s reports col_idx = %li triangle %d is ill-conditioned. Using SAS formula instead L'Huilier's formula for spherical excess (and cell area) to avoid low precision.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr);
+	(void)fprintf(stdout,"%s: WARNING %s reports col_idx = %li triangle %d is ill-conditioned. Using SAS formula instead L'Huilier's formula for spherical excess (and cell area) to avoid low precision.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx);
 	/* Transform sides into canonical order for formula */
 	if(flg_sas_hlf_c){
 	  ngl_ltr_a=ngl_a;
@@ -5386,8 +5518,6 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       area_ltr+=xcs_sph;
       area_ttl+=xcs_sph;
       area_ltr_ttl+=xcs_sph;
-      /* Begin search for next B at current C */
-      bnd_idx=idx_c-idx_a;
       /* 20160918 from here to end of loop is non-spherical work
 	 Canonical latitude-triangle geometry has point A at apex and points B and C at same latitude
 	 Generate area field for latitude-triangles by fxm
@@ -5474,7 +5604,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  (void)fprintf(stdout,"%s: Latitude-triangle area using series approximation...not implemented yet\n",nco_prg_nm_get());
 	} /* !0 */
 	if(nco_dbg_lvl_get() >= nco_dbg_scl){
-	  (void)fprintf(stdout,"%s: INFO %s col_idx = %li triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_nbr,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
+	  (void)fprintf(stdout,"%s: INFO %s col_idx = %li triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
 	  if(fabs(area_crc/xcs_sph) > 0.1){
 	    (void)fprintf(stdout,"%s: DBG Non-spherical correction exceeds 10%% for current triangle with ABC vertices at lat,lon [dgr] = %g, %g\n%g, %g\n%g, %g\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
 	  } /* !fabs */
@@ -5487,6 +5617,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
     } /* !flg_ltr_cll */    
   } /* !col_idx */
   if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s total spherical area, latitude-gridcell area, %% difference, crc_ttl, crc_abs_ttl: %g, %g, %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,area_ttl,area_ltr_ttl,100.0*(area_ltr_ttl-area_ttl)/area_ttl,area_crc_ttl,area_crc_abs_ttl);
+  if(vrt_vld) vrt_vld=(long *)nco_free(vrt_vld);
+  if(a_idx) a_idx=(long *)nco_free(a_idx);
+  if(b_idx) b_idx=(long *)nco_free(b_idx);
+  if(c_idx) c_idx=(long *)nco_free(c_idx);
   if(lat_bnd_rdn) lat_bnd_rdn=(double *)nco_free(lat_bnd_rdn);
   if(lon_bnd_rdn) lon_bnd_rdn=(double *)nco_free(lon_bnd_rdn);
   if(lat_bnd_cos) lat_bnd_cos=(double *)nco_free(lat_bnd_cos);
@@ -9283,7 +9417,7 @@ nco_lon_dff_brnch_rdn /* [fnc] Subtract longitudes with branch-cut rules */
   return lon_dff;
 } /* !nco_lon_dff_brnch_rdn() */
 
-double /* O [dgr] Longitude average (lon_r-lon_l) */
+double /* O [dgr] Longitude average */
 nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut rules */
 (double lon_ll, /* I [dgr] Longitude at lower left  of gridcell */
  double lon_lr, /* I [dgr] Longitude at lower right of gridcell */
@@ -9323,6 +9457,35 @@ nco_lon_crn_avg_brnch /* [fnc] Average quadrilateral longitude with branch-cut r
   
   return 0.25*(lon_ll+lon_lr+lon_ur+lon_ul);
 } /* !nco_lon_crn_avg_brnch() */
+
+double /* O [dgr] Longitude average */
+nco_lon_ply_avg_brnch_dgr /* [fnc] Average polygon longitude with branch-cut rules */
+(double *lon_crn, /* I [dgr] Longitude of gridcell corners */
+ long lon_nbr) /* I [nbr] Number of vertices in polygon */
+{
+  /* Purpose: Return average longitude of polygon vertices, i.e., centroid longitude
+     Assume longitudes are within 180 degrees of one another
+     Default orientation is monotonically increasing longitude from left to right 
+     WLOG, adjust all longitudes to be on same branch as lon_ll */
+  const char fnc_nm[]="nco_lon_ply_avg_brnch()";
+  double lon_dff; /* [dgr] Longitude difference */
+  double lon_avg; /* [dgr] Longitude average */
+  int lon_idx; /* [idx] Polygon vertex index */
+  
+  assert(lon_nbr != 0);
+  lon_avg=lon_crn[0];
+  for(lon_idx=1;lon_idx<lon_nbr;lon_idx++){
+    lon_avg+=lon_crn[lon_idx];
+    lon_dff=lon_crn[lon_idx]-lon_crn[0];
+    if(lon_dff >= 180.0){
+      lon_avg-=360.0;
+    }else if(lon_dff <= -180.0){
+      lon_avg+=360.0;
+    } /* !lon_dff */
+  } /* !lon_idx */
+
+  return lon_avg/lon_nbr;
+} /* !nco_lon_ply_avg_brnch() */
 
 nco_bool /* O [flg] Input corners were CCW */
 nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation */

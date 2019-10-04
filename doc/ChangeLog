@@ -1,5 +1,7 @@
 2019-10-04  Charlie Zender  <zender@uci.edu>
 
+	* Implement centroid method for polygonal decomposition into triangles
+
 	* Case-insensitive matching for map-file attributes
 
 2019-10-03  Charlie Zender  <zender@uci.edu>
