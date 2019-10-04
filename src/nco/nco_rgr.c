@@ -2544,7 +2544,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       /* 20190315: TempestRemap did not propagate mask_b (or mask_a) until ~201902 */
       rcd+=nco_inq_varid_flg(in_id,"mask_b",&msk_dst_id);
       if(rcd == NC_ENOTVAR){
-	(void)fprintf(stderr,"%s: INFO %s reports map-file lacks mask_b. %sContinuing anyway without masks...\n",nco_prg_nm_get(),fnc_nm,(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) ? "Probably this TempestRemap map-file was created before ~201902 when TR began to propagate mask_a/b variables. " : "");
+	(void)fprintf(stderr,"%s: INFO %s reports map-file lacks mask_b. %sContinuing anyway without masks...\n",nco_prg_nm_get(),fnc_nm,(nco_rgr_mpf_typ == nco_rgr_mpf_Tempest) ? "Probably this TempestRemap map-file was created before ~201902 when TR began to propagate mask_a/b variables." : "");
       } /* !rcd */
       rcd=NC_NOERR;
       break;
@@ -3105,7 +3105,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   for(idx=0;idx<(long)grd_sz_out;idx++)
     if(frc_out[idx] != 0.0) break;
   if(idx == (long)grd_sz_out){
-    (void)fprintf(stdout,"%s: ERROR %s reports frc_out contains all zeros\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s reports frc_out == frac_b contains all zeros\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !always zero */
   /* Test whether frc_out is ever zero... */
@@ -3113,12 +3113,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(frc_out[idx] == 0.0) break;
   if(nco_dbg_lvl_get() >= nco_dbg_std)
     if(idx != (long)grd_sz_out)
-      (void)fprintf(stdout,"%s: INFO %s reports frc_out contains zero-elements (e.g., at 1D idx=%ld)\n",nco_prg_nm_get(),fnc_nm,idx);
+      (void)fprintf(stdout,"%s: INFO %s reports frc_out == frac_b contains zero-elements (e.g., at 1D idx=%ld)\n",nco_prg_nm_get(),fnc_nm,idx);
   /* Normalizing by frc_out is redundant iff frc_out == 1.0, so we can save time without sacrificing accuracy
-     However, frc_out is often (e.g., for CS <-> RLL maps) close but not equal to unity (an ESMF_RegridWeightGen issue?)
+     However, frc_out is often (e.g., for CS <-> RLL maps) close but not equal to unity (ESMF_RegridWeightGen issue?)
      Hence, decide whether to normalize by frc_out by diagnosing the furthest excursion of frc_out from unity */
-  nco_bool flg_frc_out_one=True;
-  nco_bool flg_frc_out_wrt=False;
+  nco_bool flg_frc_out_one=True; /* [flg] Destination gridcell fraction frc_out == frac_b is in [1-epsilon,frc_out,1+epsilon] */
+  nco_bool flg_frc_out_wrt=False; /* [flg] Write destination gridcell fraction frc_out == frac_b to regridded files */
   double frc_out_dff_one; /* [frc] Deviation of frc_out from 1.0 */
   double frc_out_dff_one_max=0.0; /* [frc] Maximum deviation of frc_out from 1.0 */
   long idx_max_dvn; /* [idx] Index of maximum deviation from 1.0 */
@@ -3130,8 +3130,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     } /* !max */
   } /* !idx */
   if(frc_out_dff_one_max > eps_rlt) flg_frc_out_one=False;
-  nco_bool flg_frc_nrm=False; /* [flg] Must normalize by frc_out because frc_out is not always unity and specified normalization is destarea or none */
-  if(!flg_frc_out_one && nco_rgr_mth_typ == nco_rgr_mth_conservative && (nco_rgr_nrm_typ == nco_rgr_nrm_destarea || nco_rgr_nrm_typ == nco_rgr_nrm_none)){
+  nco_bool flg_frc_nrm=False; /* [flg] Must normalize by frc_out == frac_b because frc_out is not always unity and specified normalization is destarea or none */
+  if(!flg_frc_out_one && /* If fraction is sometimes "far" from 1.0 and ... */
+     ((nco_rgr_mpf_typ == nco_rgr_mpf_ESMF && nco_rgr_mth_typ == nco_rgr_mth_conservative && (nco_rgr_nrm_typ == nco_rgr_nrm_destarea || nco_rgr_nrm_typ == nco_rgr_nrm_none)) || /* ESMF map-file specifies conservative regridding with "destarea" or "none" or ...  */
+      (nco_rgr_mpf_typ != nco_rgr_mpf_ESMF)) /* 20191003:  Weight-generator does not adhere to ESMF "normalization type" convention */
+     && True){
     flg_frc_nrm=True;
     /* Avoid writing frc_out unless discrepancies are particularly egregious
        Otherwise would frc_out for standard remaps like ne30->fv129x256 for which eps=2.46e-13 */
