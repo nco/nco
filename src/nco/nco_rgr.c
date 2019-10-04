@@ -2430,9 +2430,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   nco_rgr_mth_typ_enm nco_rgr_mth_typ=nco_rgr_mth_nil;
   att_val=nco_char_att_get(in_id,NC_GLOBAL,cnv_sng);
   if(att_val){
-    if(strstr(att_val,"Conservative remapping")) nco_rgr_mth_typ=nco_rgr_mth_conservative;
-    if(strstr(att_val,"Bilinear remapping")) nco_rgr_mth_typ=nco_rgr_mth_bilinear;
-    if(strstr(att_val,"none")) nco_rgr_mth_typ=nco_rgr_mth_none;
+    if(strcasestr(att_val,"Conservative")) nco_rgr_mth_typ=nco_rgr_mth_conservative;
+    if(strcasestr(att_val,"Bilinear")) nco_rgr_mth_typ=nco_rgr_mth_bilinear;
+    if(strcasestr(att_val,"none")) nco_rgr_mth_typ=nco_rgr_mth_none;
     if(att_val) att_val=(char *)nco_free(att_val);
   }else{
     /* NCO and Tempest do not store a map_method attribute */

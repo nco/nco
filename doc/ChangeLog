@@ -1,3 +1,7 @@
+2019-10-04  Charlie Zender  <zender@uci.edu>
+
+	* Case-insensitive matching for map-file attributes
+
 2019-10-03  Charlie Zender  <zender@uci.edu>
 
 	* Ensure non-ESMF map-files perform same re-normalization as ESMF "destonly" map-files
