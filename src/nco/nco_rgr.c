@@ -1465,7 +1465,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   nco_bool need_prs_ntf=False; /* [flg] At least one variable to regrid is on interface levels */
   nco_bool need_prs_mdp=False; /* [flg] At least one variable to regrid is on midpoint levels */
   trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
-  //  if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark var_nm=%s flg=%d\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm,trv_tbl->lst[idx_tbl].flg_xtr);
   /* Define regridding flag for each variable */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -5214,11 +5213,17 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   const double dgr2rdn=M_PI/180.0;
   nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
   nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
-  nco_bool flg_mth_ctr=True; /* [flg] Use centroid method to compute polygon area */
-  nco_bool flg_mth_csz=!flg_mth_ctr; /* [flg] Use CSZ's advancing polygon bisector method */
+  nco_bool flg_mth_csz=False; /* [flg] Use CSZ's advancing polygon bisector method */
+  nco_bool flg_mth_ctr=!flg_mth_csz; /* [flg] Use centroid method to compute polygon area */
   long idx; /* [idx] Counting index for unrolled grids */
   short int bnd_idx;
 
+  //  ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
+  //  tri_arc_typ=rgr->tri_arc_typ; /* [enm] Arc-type for triangle edges */
+  //  if(ply_tri_mth == nco_ply_tri_mth_csz) flg_mth_csz=True;
+  //  if(ply_tri_mth == nco_ply_tri_mth_ctr) flg_mth_ctr=True;
+  assert(flg_mth_ctr != flg_mth_csz);
+  
   double *lat_bnd_rdn=NULL_CEWI; /* [rdn] Latitude  boundaries of rectangular destination grid */
   double *lon_bnd_rdn=NULL_CEWI; /* [rdn] Longitude boundaries of rectangular destination grid */
   double *lat_bnd_sin=NULL_CEWI; /* [frc] Sine of latitude  boundaries of rectangular destination grid */
@@ -5332,6 +5337,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	bnd_vld_idx=bnd_srt_idx+bnd_idx;
 	vrt_vld[bnd_vld_nbr]=bnd_vld_idx;
 	bnd_vld_nbr++;
+	if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark col_idx=%lu, bnd_nbr=%d, bnd_idx=%ld, bnd_vld_idx=%ld, bnd_vld_nbr=%ld\n",nco_prg_nm_get(),col_idx,bnd_nbr,bnd_idx,bnd_vld_idx,bnd_vld_nbr);
+	assert(bnd_vld_nbr <= bnd_nbr);
 	lat_ctr+=lat_bnd[bnd_vld_idx];
 	lon_ctr+=lon_bnd[bnd_vld_idx];
 	lon_dff=lon_bnd[bnd_vld_idx]-lon_bnd[0];
@@ -5340,6 +5347,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	}else if(lon_dff <= -180.0){
 	  lon_ctr+=360.0;
 	} /* !lon_dff */
+	/* Search for next valid vertice in next iteration */
+	bnd_idx++;
       } /* !bnd_idx */
       /* Compute centroid */
       lat_ctr/=bnd_vld_nbr;
@@ -5358,16 +5367,16 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	a_idx[0]=vrt_vld[0];
 	b_idx[0]=vrt_vld[1];
 	c_idx[0]=vrt_vld[2];
-      }else if(bnd_vld_nbr == 4){
-	/* These triangles */
-	tri_nbr=2;
-	a_idx[0]=vrt_vld[0];
-	b_idx[0]=vrt_vld[1];
-	c_idx[0]=vrt_vld[2];
-	a_idx[1]=vrt_vld[0]; /* NB: Order is important. This way side C of triangle[0] = side A of trangle[1] */
-	b_idx[1]=vrt_vld[2];
-	c_idx[1]=vrt_vld[3];
-      }else if(bnd_vld_nbr >= 5){
+	//      }else if(bnd_vld_nbr == 4){
+	//	/* Bisect quadrilateral into two triangles rather than use centroid and have four triantles */
+	//	tri_nbr=2;
+	//	a_idx[0]=vrt_vld[0];
+	//	b_idx[0]=vrt_vld[1];
+	//	c_idx[0]=vrt_vld[2];
+	//	a_idx[1]=vrt_vld[0]; /* NB: Order is important. This way side C of triangle[0] = side A of trangle[1] */
+	//	b_idx[1]=vrt_vld[2];
+	//	c_idx[1]=vrt_vld[3];
+      }else if(bnd_vld_nbr >= 4){
 	tri_nbr=bnd_vld_nbr;
 	for(int tri_idx=0;tri_idx<tri_nbr;tri_idx++){
 	  a_idx[tri_idx]=NC_MIN_INT; /* A is always centroid, no index available, requires "if" condition */
@@ -5433,7 +5442,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 
       /* Compute interior angle/great circle arc a for first triangle; subsequent triangles recycle previous arc c */
       if(tri_idx == 0){
-	if(flg_mth_ctr && bnd_vld_nbr >= 5){
+	if(flg_mth_ctr && bnd_vld_nbr >= 4){
 	  /* Vertex A is centroid and is not available as index into lat/lon vertice arrays */
 	  lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_ctr_rdn,lon_bnd_rdn[idx_b]));
 	  lat_dlt=fabs(lat_ctr_rdn-lat_bnd_rdn[idx_b]);
