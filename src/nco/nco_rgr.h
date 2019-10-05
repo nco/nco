@@ -101,7 +101,7 @@ extern "C" {
     nco_rgr_nrm_unknown, /* Tempest */
   } nco_rgr_nrm_typ_enm;
 
-  /* ESMF: The map_method attribute indicates the interpolation type. The format of the interpolation weight file was developed by a group outside of ESMF, because of its use by utilities outside of ESMF control, the range of some of the meta data is constrained. The map_method is one of these. Because of this constraint, there is no map method corresponding to patch interpolation. A weight file generated with the "patch" interpolation method will have map_method set to "Bilinear remapping".  */
+  /* ESMF: The map_method attribute indicates the interpolation type. The format of the interpolation weight file was developed by a group outside of ESMF, because of its use by utilities outside of ESMF control, the range of some of the meta data is constrained. The map_method is one of these. Because of this constraint, there is no map method corresponding to patch interpolation. A weight file generated with the "patch" interpolation method will have map_method set to "Bilinear remapping". */
   typedef enum nco_rgr_mth_typ_enm{ /* [enm] Mapfile type enum */
     nco_rgr_mth_nil=0,
     nco_rgr_mth_conservative,
@@ -224,12 +224,16 @@ extern "C" {
   (const nco_rgr_typ_enm nco_rgr_typ); /* I [enm] Grid conversion enum */
 
   const char * /* O [sng] String describing regridding method */
-  nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */
+  nco_ply_dcm_sng /* [fnc] Convert regridding method enum to string */
   (const nco_rgr_mth_typ_enm nco_rgr_mth_typ); /* I [enm] Regridding method enum */
 
   const char * /* O [sng] String describing mapfile generator */
   nco_rgr_mpf_sng /* [fnc] Convert mapfile generator enum to string */
   (const nco_rgr_mpf_typ_enm nco_rgr_mpf_typ); /* I [enm] Mapfile generator enum */
+
+  const char * /* O [sng] String describing regridding method */
+  nco_rgr_mth_sng /* [fnc] Convert regridding method enum to string */
+  (const nco_rgr_mth_typ_enm nco_rgr_mth_typ); /* I [enm] Regridding method enum */
 
   const char * /* O [sng] String describing regridding normalization */
   nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */

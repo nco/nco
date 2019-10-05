@@ -1071,6 +1071,18 @@ extern "C" {
      nco_ntp_log // Perform logarithmic interpolation in vertical coordinate (whether pressure or height)
     } nco_ntp_typ_enm;
 
+  typedef enum nco_ply_tri_mth_typ_enm{ /* [enm] Polygon-to-triangle decomposition method enum */
+    nco_ply_tri_mth_nil=0,
+    nco_ply_tri_mth_csz, /* CSZ's advancing polygon bisector method developed at UCI */
+    nco_ply_tri_mth_ctr, /* Centroid-based method used by MAT at SNL */
+  } nco_ply_tri_mth_typ_enm;
+
+  typedef enum nco_tri_arc_typ_enm{ /* [enm] Arc-type for triangle edges */
+    nco_tri_arc_typ_nil=0,
+    nco_tri_arc_typ_gtc, /* [enm] Arcs are all on great circles */
+    nco_tri_arc_typ_ltr, /* [enm] Arcs of constant latitude are on small circles */
+  } nco_tri_arc_typ_enm;
+
   typedef enum nco_xtr_typ_enm 
     { /* [enm] Extrapolation type enum */
      nco_xtr_fll_lnr=0, // Perform linear extrapolation using two nearest valid neighbors
@@ -1218,6 +1230,8 @@ extern "C" {
     nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
     nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
     nco_ntp_typ_enm ntp_mth; /* [enm] Interpolation method */
+    nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon-to-triangle decomposition method */ 
+    nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
     nco_xtr_typ_enm xtr_mth; /* [enm] Extrapolation method */
     // Other internal data and metadata 
     char **xtn_var; /* [sng] Extensive variables */

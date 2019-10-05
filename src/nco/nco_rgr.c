@@ -306,6 +306,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lat_nrt=NC_MAX_DOUBLE; /* [dgr] Latitude of northern edge of grid */
   rgr->lon_est=NC_MAX_DOUBLE; /* [dgr] Longitude of eastern edge of grid */
   rgr->msk_var=NULL; /* [sng] Mask-template variable */
+  rgr->ply_tri_mth=nco_ply_tri_mth_csz; /* [enm] Polygon-to-triangle decomposition method */ 
+  rgr->tri_arc_typ=nco_tri_arc_typ_gtc; /* [enm] Arc-type for triangle edges */
   rgr->sgs_nrm=1.0; /* [sng] Sub-gridscale normalization */
   rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
   rgr->ntp_mth=nco_ntp_log; /* [enm] Interpolation method */
@@ -606,6 +608,17 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->plev_nm_in=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
     } /* !plev_nm_in */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"ply_tri")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"csz")){
+	rgr->ply_tri_mth=nco_ply_tri_mth_csz;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"ctr") || !strcasecmp(rgr_lst[rgr_var_idx].val,"centroid") || !strcasecmp(rgr_lst[rgr_var_idx].val,"snl") || !strcasecmp(rgr_lst[rgr_var_idx].val,"mat")){
+	rgr->ply_tri_mth=nco_ply_tri_mth_ctr;
+      }else{
+	(void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
+	abort();
+      } /* !val */
+      continue;
+    } /* !ply_tri */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"sgs_frc_nm")){
       rgr->sgs_frc_nm=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
@@ -619,6 +632,17 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* !sgs_nrm */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"tri_arc")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"gtc") || !strcasecmp(rgr_lst[rgr_var_idx].val,"great_circle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"geodesic") || !strcasecmp(rgr_lst[rgr_var_idx].val,"orthodrome")){
+	rgr->tri_arc_typ=nco_tri_arc_typ_gtc;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"ltr") || !strcasecmp(rgr_lst[rgr_var_idx].val,"small_circle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"latitude_triangle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"true")){
+	rgr->tri_arc_typ=nco_tri_arc_typ_ltr;
+      }else{
+	(void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
+	abort();
+      } /* !val */
+      continue;
+    } /* !tri_arc */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"tst")){
       rgr->tst=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
@@ -5188,7 +5212,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	C. Spherical triangles use L'Huilier, RLL triangles use series expansion */
   const char fnc_nm[]="nco_sph_plg_area()";
   const double dgr2rdn=M_PI/180.0;
-  nco_bool flg_mth_ctr=False; /* [flg] Use centroid method to compute polygon area */
+  nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
+  nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
+  nco_bool flg_mth_ctr=True; /* [flg] Use centroid method to compute polygon area */
   nco_bool flg_mth_csz=!flg_mth_ctr; /* [flg] Use CSZ's advancing polygon bisector method */
   long idx; /* [idx] Counting index for unrolled grids */
   short int bnd_idx;

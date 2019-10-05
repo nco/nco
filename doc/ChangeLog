@@ -1,5 +1,9 @@
 2019-10-04  Charlie Zender  <zender@uci.edu>
 
+	* Add ply_tri_mth and tri_arc_typ to regridder database
+
+	* Debug centroid method
+
 	* Implement centroid method for polygonal decomposition into triangles
 
 	* Case-insensitive matching for map-file attributes
