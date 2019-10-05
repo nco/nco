@@ -5211,9 +5211,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	C. Spherical triangles use L'Huilier, RLL triangles use series expansion */
   const char fnc_nm[]="nco_sph_plg_area()";
   const double dgr2rdn=M_PI/180.0;
+  const long bnd_nbrp1=bnd_nbr+1; /* [idx] Number of columns plus one (for centroid) */
   nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
   nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
-  nco_bool flg_mth_csz=False; /* [flg] Use CSZ's advancing polygon bisector method */
+  nco_bool flg_mth_csz=True; /* [flg] Use CSZ's advancing polygon bisector method */
   nco_bool flg_mth_ctr=!flg_mth_csz; /* [flg] Use centroid method to compute polygon area */
   long idx; /* [idx] Counting index for unrolled grids */
   short int bnd_idx;
@@ -5230,10 +5231,11 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   double *lon_bnd_sin=NULL_CEWI; /* [frc] Sine of longitude boundaries of rectangular destination grid */
   double *lat_bnd_cos=NULL_CEWI; /* [frc] Cosine of latitude  boundaries of rectangular destination grid */
   double *lon_bnd_cos=NULL_CEWI; /* [frc] Cosine of longitude boundaries of rectangular destination grid */
-  lon_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
-  lat_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
+  /* Allocate one extra space for some arrays to store polygon centroid values for each column for ply_tri_mth=ctr */
+  lon_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbrp1*sizeof(double));
+  lat_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbrp1*sizeof(double));
   lon_bnd_cos=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
-  lat_bnd_cos=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
+  lat_bnd_cos=(double *)nco_malloc(col_nbr*bnd_nbrp1*sizeof(double));
   lon_bnd_sin=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
   lat_bnd_sin=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
   memcpy(lat_bnd_rdn,lat_bnd,col_nbr*bnd_nbr*sizeof(double));
@@ -5273,7 +5275,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   long *a_idx; /* [idx] Point A 1-D indices for each triangle in polygon */
   long *b_idx; /* [idx] Point B 1-D indices for each triangle in polygon */
   long *c_idx; /* [idx] Point C 1-D indices for each triangle in polygon */
-  long *vrt_vld=NULL; /* [idx] Indices of valid vertices */
+  long *vrt_vld=NULL; /* [idx] Absolute 1-D indices of valid vertices */
   long idx_a; /* [idx] Point A 1-D index */
   long idx_b; /* [idx] Point B 1-D index */
   long idx_c; /* [idx] Point C 1-D index */
@@ -5361,25 +5363,33 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       lon_ctr_rdn=lon_ctr*dgr2rdn;
       lat_ctr_cos=cos(lat_ctr_rdn);
 
+      /* Place centroid values in extended arrays for easy access */
+      lat_bnd_rdn[col_idx*bnd_nbrp1]=lat_ctr_rdn;
+      lon_bnd_rdn[col_idx*bnd_nbrp1]=lon_ctr_rdn;
+      lat_bnd_cos[col_idx*bnd_nbrp1]=lat_ctr_cos;
+      
       /* Polygon centroid and valid vertices are now known */
+      assert(bnd_vld_nbr > 2);
       if(bnd_vld_nbr == 3){
+	/* Three vertices only means polygon is already decomposed into a triangle */
 	tri_nbr=1;
 	a_idx[0]=vrt_vld[0];
 	b_idx[0]=vrt_vld[1];
 	c_idx[0]=vrt_vld[2];
-	//      }else if(bnd_vld_nbr == 4){
-	//	/* Bisect quadrilateral into two triangles rather than use centroid and have four triantles */
-	//	tri_nbr=2;
-	//	a_idx[0]=vrt_vld[0];
-	//	b_idx[0]=vrt_vld[1];
-	//	c_idx[0]=vrt_vld[2];
-	//	a_idx[1]=vrt_vld[0]; /* NB: Order is important. This way side C of triangle[0] = side A of trangle[1] */
-	//	b_idx[1]=vrt_vld[2];
-	//	c_idx[1]=vrt_vld[3];
-      }else if(bnd_vld_nbr >= 4){
+      }else if(bnd_vld_nbr == 4){
+	/* Bisect quadrilateral into two triangles rather than use centroid and have four triantles */
+	tri_nbr=2;
+	a_idx[0]=vrt_vld[0];
+	b_idx[0]=vrt_vld[1];
+	c_idx[0]=vrt_vld[2];
+	a_idx[1]=vrt_vld[0]; /* NB: Order is important. This way side C of triangle[0] = side A of trangle[1] */
+	b_idx[1]=vrt_vld[2];
+	c_idx[1]=vrt_vld[3];
+      }else if(bnd_vld_nbr >= 5){
+	/* Centroid method has as many triangles as valid vertices */
 	tri_nbr=bnd_vld_nbr;
 	for(int tri_idx=0;tri_idx<tri_nbr;tri_idx++){
-	  a_idx[tri_idx]=NC_MIN_INT; /* A is always centroid, no index available, requires "if" condition */
+	  a_idx[tri_idx]=col_idx*bnd_nbrp1; /* A is always centroid, store values at end of arrays */
 	  b_idx[tri_idx]=vrt_vld[tri_idx];
 	  c_idx[tri_idx]=vrt_vld[(tri_idx+1)%tri_nbr];
 	} /* !tri_idx */
@@ -5442,42 +5452,34 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 
       /* Compute interior angle/great circle arc a for first triangle; subsequent triangles recycle previous arc c */
       if(tri_idx == 0){
-	if(flg_mth_ctr && bnd_vld_nbr >= 4){
-	  /* Vertex A is centroid and is not available as index into lat/lon vertice arrays */
-	  lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_ctr_rdn,lon_bnd_rdn[idx_b]));
-	  lat_dlt=fabs(lat_ctr_rdn-lat_bnd_rdn[idx_b]);
-	  sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_ctr_cos*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
-	  ngl_a=2.0*asin(sin_hlf_tht);
-	}else{ /* !flg_mth_ctr !bnd_vld_nbr */
-	  /* 20150831: Test by computing ncol=0 area in conus chevrons grid, compare to MAT results
-	     ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/257x512_SCRIP.20150901.nc -m ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150901.nc
-	     ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc -m ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc
-	     ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
-	     ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/dogfood.nc
-	     ncks -H -s %20.15e, -v area -d ncol,0 ${DATA}/ne30/rgr/dogfood.nc
-	     ncks -H -s %20.15e, -v grid_area -d grid_size,0 ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc
+	/* 20150831: Test by computing ncol=0 area in conus chevrons grid, compare to MAT results
+	   ncremap -s ${DATA}/grids/ne30np4_pentagons.091226.nc -g ${DATA}/grids/257x512_SCRIP.20150901.nc -m ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.20150901.nc
+	   ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc -m ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc
+	   ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
+	   ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_fv257x512_to_conusx4v1np4_chevrons_bilin.20150901.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/dogfood.nc
+	   ncks -H -s %20.15e, -v area -d ncol,0 ${DATA}/ne30/rgr/dogfood.nc
+	   ncks -H -s %20.15e, -v grid_area -d grid_size,0 ${DATA}/grids/conusx4v1np4_chevrons_scrip_c150815.nc
 	   
-	     ncol=0 on conus chevrons file:
-	     3.653857995295246e-05 raw GLL weight
-	     3.653857995294302e-05 matlab N-2 triangles (CSZ algorithm)
-	     3.653857995294301e-05 matlab N   triangles (MAT algorithm)
-	     3.653857995294258e-05 new NCO (haversine)
-	     3.653857995289623e-05 old NCO (acos) */
-	  /* Computing great circle arcs over small arcs requires care since central angle is near 0 degrees
-	     Cosine small angles changes slowly for such angles, and leads to precision loss
-	     Use haversine formula instead of spherical law of cosines formula
-	     https://en.wikipedia.org/wiki/Great-circle_distance */
-	  /* Interior angle/great circle arc a, spherical law of cosines formula (loses precision):
-	     cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
-	     lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
-	     lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];ngl_a=acos(cos_a); */
-	  /* Interior angle/great circle arc a, haversine formula: */
-	  // 20160918: Use branch cut rules for longitude
-	  lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_a],lon_bnd_rdn[idx_b]));
-	  lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
-	  sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
-	  ngl_a=2.0*asin(sin_hlf_tht);
-	} /* !flg_mth_ctr !bnd_vld_nbr */
+	   ncol=0 on conus chevrons file:
+	   3.653857995295246e-05 raw GLL weight
+	   3.653857995294302e-05 matlab N-2 triangles (CSZ algorithm)
+	   3.653857995294301e-05 matlab N   triangles (MAT algorithm)
+	   3.653857995294258e-05 new NCO (haversine)
+	   3.653857995289623e-05 old NCO (acos) */
+	/* Computing great circle arcs over small arcs requires care since central angle is near 0 degrees
+	   Cosine small angles changes slowly for such angles, and leads to precision loss
+	   Use haversine formula instead of spherical law of cosines formula
+	   https://en.wikipedia.org/wiki/Great-circle_distance */
+	/* Interior angle/great circle arc a, spherical law of cosines formula (loses precision):
+	   cos_a=lat_bnd_cos[idx_a]*lon_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_cos[idx_b]+
+	   lat_bnd_cos[idx_a]*lon_bnd_sin[idx_a]*lat_bnd_cos[idx_b]*lon_bnd_sin[idx_b]+
+	   lat_bnd_sin[idx_a]*lat_bnd_sin[idx_b];ngl_a=acos(cos_a); */
+	/* Interior angle/great circle arc a, haversine formula: */
+	// 20160918: Use branch cut rules for longitude
+	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_a],lon_bnd_rdn[idx_b]));
+	lat_dlt=fabs(lat_bnd_rdn[idx_a]-lat_bnd_rdn[idx_b]);
+	sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_a]*lat_bnd_cos[idx_b]*pow(sin(0.5*lon_dlt),2));
+	ngl_a=2.0*asin(sin_hlf_tht);
       }else{ /* !tri_idx == 0 */
 	ngl_a=ngl_c;
       } /* !tri_idx == 0 */
@@ -5487,6 +5489,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_b]*lat_bnd_cos[idx_c]*pow(sin(0.5*lon_dlt),2));
       ngl_b=2.0*asin(sin_hlf_tht);
       /* Interior angle/great circle arc c */
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG quark2 col_idx=%lu, tri_idx=%d, idx_a=%ld, idx_b=%ld, idx_c=%ld\n",nco_prg_nm_get(),col_idx,tri_idx,idx_a,idx_b,idx_c);
       lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_c],lon_bnd_rdn[idx_a]));
       lat_dlt=fabs(lat_bnd_rdn[idx_c]-lat_bnd_rdn[idx_a]);
       sin_hlf_tht=sqrt(pow(sin(0.5*lat_dlt),2)+lat_bnd_cos[idx_c]*lat_bnd_cos[idx_a]*pow(sin(0.5*lon_dlt),2));
