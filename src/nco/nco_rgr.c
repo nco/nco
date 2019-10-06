@@ -5214,7 +5214,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   const long bnd_nbrp1=bnd_nbr+1; /* [idx] Number of columns plus one (for centroid) */
   nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
   nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
-  nco_bool flg_mth_csz=False; /* [flg] Use CSZ's advancing polygon bisector method */
+  nco_bool flg_mth_csz=True; /* [flg] Use CSZ's advancing polygon bisector method */
   nco_bool flg_mth_ctr=!flg_mth_csz; /* [flg] Use centroid method to compute polygon area */
   long idx; /* [idx] Counting index for unrolled grids */
   short int bnd_idx;
