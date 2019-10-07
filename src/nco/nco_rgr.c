@@ -5211,20 +5211,21 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	C. Spherical triangles use L'Huilier, RLL triangles use series expansion */
   const char fnc_nm[]="nco_sph_plg_area()";
   const double dgr2rdn=M_PI/180.0;
-  nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
-  nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
-  nco_bool flg_mth_csz=False; /* [flg] Use CSZ's advancing polygon bisector method */
-  nco_bool flg_mth_ctr=!flg_mth_csz; /* [flg] Use centroid method to compute polygon area */
+  int bnd_nbr_ttl; /* [nbr] Number of bounds in gridcell accounting for possibility of centroid information */
   long idx; /* [idx] Counting index for unrolled grids */
   short int bnd_idx;
 
+  nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
+  nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
+  nco_bool flg_mth_csz=True; /* [flg] Use CSZ's advancing polygon bisector method */
+  nco_bool flg_mth_ctr=!flg_mth_csz; /* [flg] Use centroid method to compute polygon area */
   //  ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
   //  tri_arc_typ=rgr->tri_arc_typ; /* [enm] Arc-type for triangle edges */
   //  if(ply_tri_mth == nco_ply_tri_mth_csz) flg_mth_csz=True;
   //  if(ply_tri_mth == nco_ply_tri_mth_ctr) flg_mth_ctr=True;
   assert(flg_mth_ctr != flg_mth_csz);
   bnd_nbr_ttl=bnd_nbr;
-  // Allocate extra boundary to store centroid information if necessary
+  // Allocate space for one extra boundary to store centroid information if necessary
   if(flg_mth_ctr) bnd_nbr_ttl=bnd_nbr+1;
   
   double *lat_bnd_rdn=NULL_CEWI; /* [rdn] Latitude  boundaries of rectangular destination grid */
