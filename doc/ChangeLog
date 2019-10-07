@@ -1,3 +1,7 @@
+2019-10-07  Charlie Zender  <zender@uci.edu>
+
+	* Allocate extra boundary to store centroid information only if necessary
+
 2019-10-05  Charlie Zender  <zender@uci.edu>
 
 	* Full working implementation of centroid method
