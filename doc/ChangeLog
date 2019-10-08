@@ -6,6 +6,10 @@
 
 	* Increase matching tolerance for Gaussian grid inferral from 1.0e-7 to 1.0e-6 to recognize T62 grids in NCEP/DOE I & II reanalyses
 
+2019-10-07  Charlie Zender  <zender@uci.edu>
+
+	* Allocate extra boundary to store centroid information only if necessary
+
 2019-10-05  Charlie Zender  <zender@uci.edu>
 
 	* Full working implementation of centroid method

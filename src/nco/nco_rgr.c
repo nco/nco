@@ -5211,19 +5211,22 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	C. Spherical triangles use L'Huilier, RLL triangles use series expansion */
   const char fnc_nm[]="nco_sph_plg_area()";
   const double dgr2rdn=M_PI/180.0;
-  const long bnd_nbrp1=bnd_nbr+1; /* [idx] Number of columns plus one (for centroid) */
+  int bnd_nbr_ttl; /* [nbr] Number of bounds in gridcell accounting for possibility of centroid information */
+  long idx; /* [idx] Counting index for unrolled grids */
+  short int bnd_idx;
+
   nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
   nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
   nco_bool flg_mth_csz=True; /* [flg] Use CSZ's advancing polygon bisector method */
   nco_bool flg_mth_ctr=!flg_mth_csz; /* [flg] Use centroid method to compute polygon area */
-  long idx; /* [idx] Counting index for unrolled grids */
-  short int bnd_idx;
-
   //  ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
   //  tri_arc_typ=rgr->tri_arc_typ; /* [enm] Arc-type for triangle edges */
   //  if(ply_tri_mth == nco_ply_tri_mth_csz) flg_mth_csz=True;
   //  if(ply_tri_mth == nco_ply_tri_mth_ctr) flg_mth_ctr=True;
   assert(flg_mth_ctr != flg_mth_csz);
+  bnd_nbr_ttl=bnd_nbr;
+  // Allocate space for one extra boundary to store centroid information if necessary
+  if(flg_mth_ctr) bnd_nbr_ttl=bnd_nbr+1;
   
   double *lat_bnd_rdn=NULL_CEWI; /* [rdn] Latitude  boundaries of rectangular destination grid */
   double *lon_bnd_rdn=NULL_CEWI; /* [rdn] Longitude boundaries of rectangular destination grid */
@@ -5232,10 +5235,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   double *lat_bnd_cos=NULL_CEWI; /* [frc] Cosine of latitude  boundaries of rectangular destination grid */
   double *lon_bnd_cos=NULL_CEWI; /* [frc] Cosine of longitude boundaries of rectangular destination grid */
   /* Allocate one extra space for some arrays to store polygon centroid values for each column for ply_tri_mth=ctr */
-  lon_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbrp1*sizeof(double));
-  lat_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbrp1*sizeof(double));
+  lon_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbr_ttl*sizeof(double));
+  lat_bnd_rdn=(double *)nco_malloc(col_nbr*bnd_nbr_ttl*sizeof(double));
   lon_bnd_cos=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
-  lat_bnd_cos=(double *)nco_malloc(col_nbr*bnd_nbrp1*sizeof(double));
+  lat_bnd_cos=(double *)nco_malloc(col_nbr*bnd_nbr_ttl*sizeof(double));
   lon_bnd_sin=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
   lat_bnd_sin=(double *)nco_malloc(col_nbr*bnd_nbr*sizeof(double));
   memcpy(lat_bnd_rdn,lat_bnd,col_nbr*bnd_nbr*sizeof(double));
@@ -5364,9 +5367,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       lat_ctr_cos=cos(lat_ctr_rdn);
 
       /* Place centroid values in extended arrays for easy access */
-      lat_bnd_rdn[(col_idx+1)*bnd_nbrp1-1L]=lat_ctr_rdn;
-      lon_bnd_rdn[(col_idx+1)*bnd_nbrp1-1L]=lon_ctr_rdn;
-      lat_bnd_cos[(col_idx+1)*bnd_nbrp1-1L]=lat_ctr_cos;
+      lat_bnd_rdn[(col_idx+1)*bnd_nbr_ttl-1L]=lat_ctr_rdn;
+      lon_bnd_rdn[(col_idx+1)*bnd_nbr_ttl-1L]=lon_ctr_rdn;
+      lat_bnd_cos[(col_idx+1)*bnd_nbr_ttl-1L]=lat_ctr_cos;
       
       /* Polygon centroid and valid vertices are now known */
       assert(bnd_vld_nbr > 2);
@@ -5389,7 +5392,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	/* Centroid method has as many triangles as valid vertices */
 	tri_nbr=bnd_vld_nbr;
 	for(int tri_idx=0;tri_idx<tri_nbr;tri_idx++){
-	  a_idx[tri_idx]=(col_idx+1)*bnd_nbrp1-1L; /* A is always centroid, store values at end of arrays */
+	  a_idx[tri_idx]=(col_idx+1)*bnd_nbr_ttl-1L; /* A is always centroid, store values at end of arrays */
 	  b_idx[tri_idx]=vrt_vld[tri_idx];
 	  c_idx[tri_idx]=vrt_vld[(tri_idx+1)%tri_nbr];
 	} /* !tri_idx */
