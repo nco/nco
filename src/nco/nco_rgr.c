@@ -8378,7 +8378,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
       const double eps_rlt_cnv_gss=1.0e-6; // Convergence criterion (1.0e-7 fails for NCEP NCAR Reanalysis 1!)
-      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG %s reports lat_ctr[1]=%g, lat_ctr_tst_gss=%g, fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss))=%g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1],lat_ctr_tst_gss,fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss)));
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG %s reports lat_ctr[1]=%g, lat_ctr_tst_gss=%g, fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss))=%g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1],lat_ctr_tst_gss,fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss)));
       if(fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss)) < eps_rlt_cnv_gss) lat_typ=nco_grd_lat_gss;
     } /* !Gaussian */
     if(lat_typ == nco_grd_lat_nil){
