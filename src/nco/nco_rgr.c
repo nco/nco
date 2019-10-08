@@ -8362,7 +8362,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        Hence some comparisons cast from double to float before comparison
        20150526: T42 grid from SCRIP and related maps are only accurate to ~eight digits
        20150611: map_ne120np4_to_fv801x1600_bilin.150418.nc has yc_b[1600]=-89.775000006 not expected exact value lat_ctr[1]=-89.775000000000006
-       20170521: T62 grid from NCEP-NCAR Reanalysis 1 worse than single precision, has yc_[192]=-86.6531 not expected exact value lat_ctr[1]=-86.6532 */
+       20170521: T62 grid from NCEP-NCAR Reanalysis 1 worse than single precision, has yc_[192]=-86.6531 not expected exact value lat_ctr[1]=-86.6531671712612, relative difference is 7.86021e-07
+       20191008: T62 grid from NCEP-NCAR Reanalysis 2 worse than single precision, has yc_[92]=-86.6531 not expected exact value lat_ctr[1]=-86.6531671712612, relative difference is 7.86021e-07 */
     if(nco_dbg_lvl_get() >= nco_dbg_scl && !flg_s2n) (void)fprintf(stderr,"%s: INFO %s reports that grid inferral has detected a 2D grid that runs from north-to-south, not south-to-north. Support for creating/inferring 2D N-to-S grids was added in NCO 4.7.7 (September, 2018) and should work fine.\nHINT: If present command fails, report problem to developers and then re-try inferring grid after reversing input dataset's latitude coordinate (with, e.g., ncpdq -a time,-lat,lon in.nc out.nc)\n",nco_prg_nm_get(),fnc_nm);
     if((float)lat_ctr[1L] == (float)lat_ctr_tst_eqa) lat_typ=nco_grd_lat_eqa;
     if((float)lat_ctr[1L] == (float)lat_ctr_tst_fv) lat_typ=nco_grd_lat_fv;
@@ -8377,7 +8378,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
       if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr[1] = %g, lat_ctr_tst_gss = %g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1L],lat_ctr_tst_gss);
-      const double eps_rlt_cnv_gss=1.0e-7; // Convergence criterion (1.0e-7 fails for NCEP NCAR Reanalysis 1!)
+      const double eps_rlt_cnv_gss=1.0e-6; // Convergence criterion (1.0e-7 fails for NCEP NCAR Reanalysis 1!)
+      //if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark %s reports lat_ctr[1]=%g, lat_ctr_tst_gss=%g, fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss))=%g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1],lat_ctr_tst_gss,fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss)));
       if(fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss)) < eps_rlt_cnv_gss) lat_typ=nco_grd_lat_gss;
     } /* !Gaussian */
     if(lat_typ == nco_grd_lat_nil){
