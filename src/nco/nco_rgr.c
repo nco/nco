@@ -8476,13 +8476,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	if(flg_s2n) lat_ntf[0L]=-90.0; else lat_ntf[0L]=90.0;
 	if(flg_s2n) lat_ntf[lat_nbr]=90.0; else lat_ntf[lat_nbr]=-90.0;
       } /* !nco_grd_lat_gss */
-    } /* !(lat_bnd_id && lon_bnd_id) */
 
-    /* Now that final latitude interfaces are known, assign to boundaries */
-    for(idx=0;idx<lat_nbr;idx++){
-      lat_bnd[2L*idx]=lat_ntf[idx];
-      lat_bnd[2L*idx+1L]=lat_ntf[idx+1L];
-    } /* !idx */
+      /* Now that final latitude interfaces are known for all grid-types, assign to boundaries, overwriting provisional values stored there earlier */
+      for(idx=0;idx<lat_nbr;idx++){
+	lat_bnd[2L*idx]=lat_ntf[idx];
+	lat_bnd[2L*idx+1L]=lat_ntf[idx+1L];
+      } /* !idx */
+
+    } /* !(lat_bnd_id && lon_bnd_id) */
 
     /* Use centers and boundaries to diagnose latitude weights */
     switch(lat_typ){
