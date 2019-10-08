@@ -1,5 +1,9 @@
 2019-10-08  Charlie Zender  <zender@uci.edu>
 
+	* Fix nco_grd_nfr() to report/provide accurate latitude bounds for n2s Gaussian grids
+
+	* Fix nco_grd_nfr() to produce positive areas for n2s Gaussian grids
+
 	* Increase matching tolerance for Gaussian grid inferral from 1.0e-7 to 1.0e-6 to recognize T62 grids in NCEP/DOE I & II reanalyses
 
 2019-10-05  Charlie Zender  <zender@uci.edu>

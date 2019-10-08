@@ -1912,7 +1912,7 @@ if [ "${flg_hrz}" = 'Yes' ]; then
 	    if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 		printf "Destination grid will be inferred from data-file\n"
 	    fi # !vrb_lvl
-a	    cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_dst_fl}\" ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=\"${grd_dst}\" \"${dst_fl}\" \"${tmp_out_fl}\""
+	    cmd_dst[${fl_idx}]="ncks -O ${nco_opt} --rgr infer --rgr hnt_dst=\"${hnt_dst_fl}\" ${nco_dgn_area} ${nco_msk_dst} ${nco_var_rgr} ${nco_ugrid_fl} --rgr scrip=\"${grd_dst}\" \"${dst_fl}\" \"${tmp_out_fl}\""
 	else # !dst_usr_flg
 	    if [ "${grd_dst_usr_flg}" = 'Yes' ] && [ "${grd_sng_usr_flg}" != 'Yes' ]; then 
 		if [ ${vrb_lvl} -ge ${vrb_3} ]; then

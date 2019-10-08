@@ -8377,9 +8377,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       lat_ctr_tst_gss=rdn2dgr*asin(lat_sin[1L]);
       /* Gaussian weights on output grid will be double-precision accurate
 	 Grid itself is kept as user-specified so area diagnosed by ESMF_RegridWeightGen may be slightly inconsistent with weights */
-      if(nco_dbg_lvl_get() >= nco_dbg_sbr) (void)fprintf(stderr,"%s: INFO %s reports lat_ctr[1] = %g, lat_ctr_tst_gss = %g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1L],lat_ctr_tst_gss);
       const double eps_rlt_cnv_gss=1.0e-6; // Convergence criterion (1.0e-7 fails for NCEP NCAR Reanalysis 1!)
-      //if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG quark %s reports lat_ctr[1]=%g, lat_ctr_tst_gss=%g, fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss))=%g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1],lat_ctr_tst_gss,fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss)));
+      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG %s reports lat_ctr[1]=%g, lat_ctr_tst_gss=%g, fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss))=%g\n",nco_prg_nm_get(),fnc_nm,lat_ctr[1],lat_ctr_tst_gss,fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss)));
       if(fabs(1.0-fabs(lat_ctr[1]/lat_ctr_tst_gss)) < eps_rlt_cnv_gss) lat_typ=nco_grd_lat_gss;
     } /* !Gaussian */
     if(lat_typ == nco_grd_lat_nil){
@@ -8478,7 +8477,13 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	if(flg_s2n) lat_ntf[lat_nbr]=90.0; else lat_ntf[lat_nbr]=-90.0;
       } /* !nco_grd_lat_gss */
     } /* !(lat_bnd_id && lon_bnd_id) */
-    
+
+    /* Now that final latitude interfaces are known, assign to boundaries */
+    for(idx=0;idx<lat_nbr;idx++){
+      lat_bnd[2L*idx]=lat_ntf[idx];
+      lat_bnd[2L*idx+1L]=lat_ntf[idx+1L];
+    } /* !idx */
+
     /* Use centers and boundaries to diagnose latitude weights */
     switch(lat_typ){
     case nco_grd_lat_eqa:
@@ -8740,7 +8745,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     }else if(flg_grd_2D){
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
-	  area[lat_idx*lon_nbr+lon_idx]=dgr2rdn*(lon_bnd[2*lon_idx+1L]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1L])-sin(dgr2rdn*lat_bnd[2*lat_idx]));
+	  area[lat_idx*lon_nbr+lon_idx]=fabs(dgr2rdn*(lon_bnd[2*lon_idx+1L]-lon_bnd[2*lon_idx])*(sin(dgr2rdn*lat_bnd[2*lat_idx+1L])-sin(dgr2rdn*lat_bnd[2*lat_idx]))); /* fabs() ensures positive area in n2s grids */
     } /* !flg_grd_2D */
   } /* !area_id */
 
