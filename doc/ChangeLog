@@ -1,5 +1,7 @@
 2019-10-09  Charlie Zender  <zender@uci.edu>
 
+	* Add rgr->erwg_units flag to ensure NCO produces ERWG 7.1.0r-compliant SCRIP-format grid files, which currently only means that 'units' must be 'degrees' not CF-compliant 'degrees_north' and 'degrees_east'
+
 	* Add NWS HRRR variables gridlat_0, gridlon_0, and dimensions xgrid_0, ygrid_0 to regridder database
 
 2019-10-08  Charlie Zender  <zender@uci.edu>

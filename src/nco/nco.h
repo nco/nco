@@ -1250,6 +1250,7 @@ extern "C" {
     nco_bool flg_crv; /* [flg] Use curvilinear coordinates */
     nco_bool flg_dgn_area; /* [flg] Diagnose rather than copy inferred area */
     nco_bool flg_dgn_bnd; /* [flg] Diagnose rather than copy inferred bounds */
+    nco_bool flg_erwg_units; /* [flg] Generate ERWG 7.1.0r-compliant SCRIP-format grid files */
     nco_bool flg_grd; /* [flg] Create SCRIP-format grid file */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
     nco_bool flg_grd_src; /* [flg] User-specified input grid */

@@ -284,9 +284,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
   rgr->flg_area_out=True; /* [flg] Add area to output */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
+  rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_dgn_area=False; /* [flg] Diagnose rather than copy inferred area */
   rgr->flg_dgn_bnd=False; /* [flg] Diagnose rather than copy inferred bounds */
-  rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
+  rgr->flg_erwg_units=True; /* [flg] Generate ERWG 7.1.0r-compliant SCRIP-format grid files */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
@@ -376,10 +377,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_crv=True;
       continue;
     } /* !curvilinear */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"infer") || !strcmp(rgr_lst[rgr_var_idx].key,"nfr")){
-      rgr->flg_nfr=True;
-      continue;
-    } /* !infer */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"diagnose_area") || !strcmp(rgr_lst[rgr_var_idx].key,"dgn_area")){
       rgr->flg_dgn_area=True;
       continue;
@@ -388,6 +385,14 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_dgn_bnd=True;
       continue;
     } /* !diagnose_bounds */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"erwg_units") || !strcmp(rgr_lst[rgr_var_idx].key,"esmf_units") || !strcmp(rgr_lst[rgr_var_idx].key,"degrees")){
+      rgr->flg_erwg_units=True;
+      continue;
+    } /* !erwg_units */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"infer") || !strcmp(rgr_lst[rgr_var_idx].key,"nfr")){
+      rgr->flg_nfr=True;
+      continue;
+    } /* !infer */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"no_stagger") || !strcmp(rgr_lst[rgr_var_idx].key,"no_stg")){
       rgr->flg_stg=False;
       continue;
@@ -6650,21 +6655,22 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
   rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"long_name","Latitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"standard_name","latitude");
-  rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees_north");
+  if(rgr->flg_erwg_units) rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees"); else rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees_north"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
   rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"bounds",grd_crn_lat_nm);
   
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"long_name","Longitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"standard_name","longitude");
+  if(rgr->flg_erwg_units) rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees"); else rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees_east"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees_east");
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"bounds",grd_crn_lon_nm);
   
   rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"long_name","Latitude of Grid Cell Vertices");
   rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"standard_name","latitude");
-  rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees_north");
+  if(rgr->flg_erwg_units) rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees"); else rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees_north"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
   
   rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"long_name","Longitude of Grid Cell Vertices");
   rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"standard_name","longitude");
-  rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees_east");
+  if(rgr->flg_erwg_units) rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees"); else rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees_east"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
   
   rcd=nco_char_att_put(out_id,msk_nm,"long_name","Binary Integer Mask for Grid");
   rcd=nco_char_att_put(out_id,msk_nm,"units","none");
@@ -8918,22 +8924,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
   rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"long_name","Latitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"standard_name","latitude");
-  rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees_north");
+  if(rgr->flg_erwg_units) rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees"); else rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees_north"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
 
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"long_name","Longitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"standard_name","longitude");
-  rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees_east");
+  if(rgr->flg_erwg_units) rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees"); else rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees_east"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
 
   if(flg_wrt_crn){
     rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"bounds",grd_crn_lat_nm);
     rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"bounds",grd_crn_lon_nm);
 
     rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"long_name","Latitude of Grid Cell Vertices");
-    rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"standard_name","latitude");
+    if(rgr->flg_erwg_units) rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees"); else rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees_north"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
     rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees_north");
     
     rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"long_name","Longitude of Grid Cell Vertices");
-    rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"standard_name","longitude");
+    if(rgr->flg_erwg_units) rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees"); else rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees_east"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
     rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees_east");
   } /* !flg_wrt_crn */
   
