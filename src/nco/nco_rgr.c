@@ -386,7 +386,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_dgn_bnd=True;
       continue;
     } /* !diagnose_bounds */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"cf_units") || !strcmp(rgr_lst[rgr_var_idx].key,"CF_units"))){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"cf_units") || !strcmp(rgr_lst[rgr_var_idx].key,"CF_units")){
       rgr->flg_cf_units=True;
       rgr->flg_erwg_units=False;
       continue;
@@ -5878,7 +5878,7 @@ nco_rgr_nrm_sng /* [fnc] Convert regridding normalization enum to string */
   case nco_rgr_nrm_fracarea: return "fracarea";
   case nco_rgr_nrm_destarea: return "destarea";
   case nco_rgr_nrm_none: return "none";
-  case nco_rgr_nrm_unknown: return "Unknown (TempestRemap or ESMF_weight_only)";
+  case nco_rgr_nrm_unknown: return "Unknown (possibilities include ESMF_weight_only, NCO, and TempestRemap)";
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 

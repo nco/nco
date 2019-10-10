@@ -1,5 +1,9 @@
 2019-10-09  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.8.2-alpha09 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha09: Svadhyaya';git push
+	git tag -a 4.8.2-alpha09 -m 'ncremap ';git push --tags
+
 	* Add rgr->cf_units and rgr->erwg_units flags to ensure NCO produces ERWG 7.1.0r-compliant SCRIP-format grid files, which currently only means that 'units' must be 'degrees' not CF-compliant 'degrees_north' and 'degrees_east'
 
 	* Add NWS HRRR variables gridlat_0, gridlon_0, and dimensions xgrid_0, ygrid_0 to regridder database
