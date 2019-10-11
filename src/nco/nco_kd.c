@@ -2514,14 +2514,16 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_
   	 if( omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE < omp_mem->kd_cnt +1 )
 	 {
 
+        /* fixme: */
+        (void)fprintf(stderr,"%s:%s(): The overlap buffer is now full (size=%d) and currenly cannot be dynamically expanded\n We are trying to fix this. "\
+							 "In the meanwhile consider going into nco_kd.h  and editing NCO_VRL_BLOCKSIZE, and then re-compiling\n", nco_prg_nm_get(),fnc_nm, NCO_VRL_BLOCKSIZE     );
 
+	    nco_exit( EXIT_FAILURE );
 
-       omp_mem->kd_list=(KDPriority*)nco_realloc(omp_mem->kd_list, ++omp_mem->kd_blk_nbr * (NCO_VRL_BLOCKSIZE *sizeof(KDPriority))  );
-
-
-
-       //(void)fprintf(stderr,"%s: Increasing block size to %ld kd_cnt=%ld omp_mem=%p\n",fnc_nm, omp_mem->kd_blk_nbr, omp_mem->kd_cnt,   (void*)omp_mem->kd_list );
-
+	    /*
+        omp_mem->kd_list=(KDPriority*)nco_realloc(omp_mem->kd_list, ++omp_mem->kd_blk_nbr * (NCO_VRL_BLOCKSIZE *sizeof(KDPriority))  );
+        (void)fprintf(stderr,"%s: Increasing block size to %ld kd_cnt=%ld omp_mem=%p\n",fnc_nm, omp_mem->kd_blk_nbr, omp_mem->kd_cnt,   (void*)omp_mem->kd_list );
+        */
 
      }
 
