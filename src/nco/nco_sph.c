@@ -50,11 +50,19 @@
 
 
 
+/* all in this file */
+int DEBUG_SPH=0;
+
+/* fixme: This sets the grid type poly_sph or poly_rll -
+ *  I really dont like this. It is currrently
+ *   being used in nco_geo_lon_2_sph */
+
+poly_typ_enm NCO_SPH_PLY_TYP;
+
+
 /* global variables for latitude, longitude in RADIANS
    these may be set in nco_poly.c or
    should be safe with OPenMP   */
-
-int DEBUG_SPH=0;
 
 static double LAT_MIN_RAD;
 static double LAT_MAX_RAD;
@@ -2879,7 +2887,6 @@ void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg)
 {
 
    nco_bool bTidy=False;
-   nco_bool bSet=False;
    double sigma=1.0e-14;
 
    if(bDeg) {
@@ -2887,42 +2894,21 @@ void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg)
       lat *= M_PI / 180.0;
    }
 
-   /* branch not working dunno why ? */
-   /*
-   if(bTidy)
+   /* really dont like this */
+   if(NCO_SPH_PLY_TYP==poly_rll)
    {
-     if( fabs(lat) < sigma)
-     {
-       b[0]=cos(lon);
-       b[1]=sin(lon);
-       b[2]=0.0;
-
-       b[3]=lon;
-       b[4]=0.0;
-
-       bSet=True;
-
-     }
-     else if( fabs(lat) - M_PI_2 <sigma ) {
-       b[0] = 0.0;
-       b[1] = 0.0;
-       b[2] = (lat > 0.0 ? 1.0 : -1.0);
-
-       b[3] = 0.0;
-       b[4] = lat;
-
-       bSet = True;
-
-     }
-   }
-   */
-
-   if(!bSet)
-   {
-     /*
+     b[2] = sin(lat);
      b[0] = cos(lat) * cos(lon);
      b[1] = cos(lat) * sin(lon);
-     */
+
+     b[3]=lon;
+     b[4]=lat;
+
+
+   }
+
+   else if(NCO_SPH_PLY_TYP==poly_sph)
+   {
 
      b[2] = sin(lat);
 
@@ -2932,6 +2918,8 @@ void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg)
        b[1] = 0.0;
        b[3] = 0.0;
        b[4] = lat;
+
+
      }else if( b[2]==0.0 )
      {
        b[0]=cos(lon);
@@ -3341,45 +3329,43 @@ nco_rll_lhs_lat(double *p0, double *q0, double *q1)
 
 
 char
-nco_rll_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1)
-{
+nco_rll_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1) {
 
-  char code='0';
-  nco_bool bDeg=False;
-  nco_bool isP_LatCircle=False;
-  nco_bool isQ_LatCircle=False;
+  char code = '0';
+  nco_bool bDeg = False;
+  nco_bool isP_LatCircle = False;
+  nco_bool isQ_LatCircle = False;
 
-  isP_LatCircle=nco_rll_is_lat_circle(p0, p1);
-  isQ_LatCircle=nco_rll_is_lat_circle(q0, q1);
+  isP_LatCircle = nco_rll_is_lat_circle(p0, p1);
+  isQ_LatCircle = nco_rll_is_lat_circle(q0, q1);
 
 
   /* longitude P may hit small ciricle Q */
-  if(!isP_LatCircle && isQ_LatCircle )
-  {
+  if (!isP_LatCircle && isQ_LatCircle) {
     /* Check longitude range */
-    if( nco_sph_between(q0[3], q1[3], p0[3] )  &&  nco_sph_between(p0[4], p1[4], q0[4] ) ) {
+    if (nco_sph_between(q0[3], q1[3], p0[3]) && nco_sph_between(p0[4], p1[4], q0[4])) {
       r0[3] = p0[3];
       r0[4] = q0[4];
-      code ='1';
+      code = '1';
     }
 
   }
     /* longitude Q may hit small circle P */
-  else if(isP_LatCircle && !isQ_LatCircle)
-  {
+  else if (isP_LatCircle && !isQ_LatCircle) {
     /* Check range range */
-    if( nco_sph_between(p0[3], p1[3], q0[3] )  &&  nco_sph_between(q0[4], q1[4], p0[4] ) ) {
+    if (nco_sph_between(p0[3], p1[3], q0[3]) && nco_sph_between(q0[4], q1[4], p0[4])) {
       r0[3] = q0[3];
       r0[4] = p0[4];
-      code='1';
+      code = '1';
     }
 
   }
 
-  if(code =='1')
+  if (code == '1') {
     nco_geo_lonlat_2_sph(r0[3], r0[4], r0, bDeg);
 
 
+}
   return code;
 
 
