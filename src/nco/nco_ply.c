@@ -1259,7 +1259,7 @@ poly_sct *pl
   }
 
   /* convert from vector to (lon,lat) - degrees */
-  if( pl->pl_typ == poly_sph || pl->pl_typ==poly_rll )
+  if( pl->pl_typ == poly_sph  )
   {
     for (idx = 0; idx < pl->crn_nbr; idx++)
       nco_geo_sph_2_lonlat(pl->shp[idx], &pl->dp_x[idx], &pl->dp_y[idx], bDeg);
@@ -1267,6 +1267,15 @@ poly_sct *pl
 
   }
 
+  /* remember RLL intersection uses lon/lat so use these values */
+  else if(pl->pl_typ==poly_rll )
+  {
+    for (idx = 0; idx < pl->crn_nbr; idx++){
+      pl->dp_x[idx]=R2D(pl->shp[idx][3] );
+      pl->dp_y[idx]=R2D(pl->shp[idx][4] );
+
+    }
+  }
 
 
 }
