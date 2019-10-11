@@ -5487,7 +5487,22 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   3.653857995294302e-05 matlab CSZ decomposition (N-2 triangles)    computed at SNL by MAT
 	   3.653857995294301e-05 matlab centroid decomposition (N triangles) computed at SNL by MAT
 	   3.653857995294258e-05 NCO CSZ decomposition (new haversine)
-	   3.653857995289623e-05 NCO CSZ decomposition (old acos) */
+	   3.653857995289623e-05 NCO CSZ decomposition (old acos)
+
+	   20191011: Tested this same polygon in ESMF and NCO weight-generator
+	   NCO maps begin with first destination gridcell, find next ESMF gridcell by searching for first col:
+	   ncks --trd -C -v col ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc | egrep "=1 "
+	   ncks -H --trd -s %20.15e -C -d n_b,0 -v area_b ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc
+	   3.653857995294305e-05
+	   ncks -H --trd -s %20.15e -C -d n_b,0 -v area_b ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_nco.20191001.nc
+	   3.653857995295246e-05
+	   ESMF and NCO weight-generators produce nearly identical S results to double-precision:
+	   ncks -H --trd -s %20.15f -C -d n_s,0,1 -v S ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_nco.20191001.nc
+	   0.002181999640069   0.013095712136366
+	   ncks -H --trd -s %20.15f -C -d n_s,207436 -d n_s,209617 -v S ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc
+	   0.002181999640069   0.013095712136365
+ */
+
 	/* Computing great circle arcs over small arcs requires care since central angle is near 0 degrees
 	   Cosine small angles changes slowly for such angles, and leads to precision loss
 	   Use haversine formula instead of spherical law of cosines formula

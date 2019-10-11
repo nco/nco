@@ -571,7 +571,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,"area_b","long_name","Solid Angle Subtended on Destination Grid");
   rcd=nco_char_att_put(out_id,"area_b","standard_name","solid_angle");
   rcd=nco_char_att_put(out_id,"area_b","units","steradian");
-  rcd=nco_char_att_put(out_id,"col","long_name","Pointer to Source Grid Element");
+  rcd=nco_char_att_put(out_id,"col","long_name","Pointer to Source Grid Element (with 1, not 0, indicating the first element)");
   rcd=nco_char_att_put(out_id,"frac_a","long_name","Fraction of Source Gridcell That Participates in Remapping");
   rcd=nco_char_att_put(out_id,"frac_a","units","none");
   rcd=nco_char_att_put(out_id,"frac_b","long_name","Fraction of Destination Gridcell That Participates in Remapping");
@@ -580,7 +580,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,"mask_a","units","none");
   rcd=nco_char_att_put(out_id,"mask_b","long_name","Binary Integer Mask for Destination Grid");
   rcd=nco_char_att_put(out_id,"mask_b","units","none");
-  rcd=nco_char_att_put(out_id,"row","long_name","Pointer to Destination Grid Element");
+  rcd=nco_char_att_put(out_id,"row","long_name","Pointer to Destination Grid Element (with 1, not 0, indicating the first element)");
   rcd=nco_char_att_put(out_id,"xc_a","long_name","Longitude of Source Grid Cell Centers");
   rcd=nco_char_att_put(out_id,"xc_a","standard_name","longitude");
   rcd=nco_char_att_put(out_id,"xc_a","units","degrees_east");
