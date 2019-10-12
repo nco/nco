@@ -1,3 +1,7 @@
+2019-10-12  Charlie Zender  <zender@uci.edu>
+
+	* Re-compute area_a, area_b for map-file output, even if present in grid-files
+
 2019-10-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.8.2-alpha09 release procedure:

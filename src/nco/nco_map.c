@@ -72,7 +72,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   int dmn_sz_in_int_id; /* [id] Source grid dimension sizes variable ID */
   int dmn_sz_out_int_id; /* [id] Destination grid dimension sizes variable ID */
 
-  int area_in_id; /* [id] Area variable ID */
+  int area_in_id=NC_MIN_INT; /* [id] Area variable ID */
   int frc_in_id; /* [id] Fraction variable ID */
   int msk_in_id=NC_MIN_INT; /* [id] Mask variable ID */
   int src_grd_crn_lat_id; /* [id] Source grid corner latitudes  variable ID */
@@ -80,7 +80,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   int src_grd_ctr_lat_id; /* [id] Source grid center latitudes  variable ID */
   int src_grd_ctr_lon_id; /* [id] Source grid center longitudes variable ID */
 
-  int area_out_id; /* [id] Area variable ID */
+  int area_out_id=NC_MIN_INT; /* [id] Area variable ID */
   int frc_out_id; /* [id] Fraction variable ID */
   int msk_out_id=NC_MIN_INT; /* [id] Mask variable ID */
   int dst_grd_crn_lat_id; /* [id] Destination grid corner latitudes  variable ID */
@@ -228,11 +228,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   /* Obtain grid values necessary to compute overlap mesh */
   rcd=nco_inq_varid_flg(in_id_src,"grid_area",&area_in_id); /* ESMF: area_a */
-  /* if var not present then set id to -1 so that we know its missing */
-  if(rcd!=NC_NOERR) {
-    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s. source grid file \"%s\" is missing \"grid_area\" variable. Will calculate area's.\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_src);
-    area_in_id=-1;
-  }
+  if(rcd != NC_NOERR && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports source grid file \"%s\" is missing \"grid_area\" variable. Will calculate area.\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_src);
 
   rcd+=nco_inq_varid(in_id_src,"grid_center_lon",&src_grd_ctr_lon_id); /* ESMF: xc_a */
   rcd+=nco_inq_varid(in_id_src,"grid_center_lat",&src_grd_ctr_lat_id); /* ESMF: yc_a */
@@ -240,24 +236,15 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_inq_varid(in_id_src,"grid_corner_lat",&src_grd_crn_lat_id); /* ESMF: yv_a */
 
   rcd=nco_inq_varid_flg(in_id_src,"grid_imask",&msk_in_id); /* ESMF: msk_a */
-  /* if var not present then set id to -1 so that we know its missing */
-  if(rcd!=NC_NOERR) msk_in_id=-1;
-
 
   rcd=nco_inq_varid_flg(in_id_dst,"grid_area",&area_out_id); /* ESMF: area_b */
-  /* if var not present then set id to -1 so that we know its missing */
-  if(rcd!=NC_NOERR) {
-    if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s. dest grid file \"%s\" is missing \"grid_area\" variable. Will calculate area's.\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_dst);
-    area_out_id=-1;
-  }
+  if(rcd != NC_NOERR && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s. dest grid file \"%s\" is missing \"grid_area\" variable. Will calculate area's.\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_dst);
 
   rcd+=nco_inq_varid(in_id_dst,"grid_center_lon",&dst_grd_ctr_lon_id); /* ESMF: xc_b */
   rcd+=nco_inq_varid(in_id_dst,"grid_center_lat",&dst_grd_ctr_lat_id); /* ESMF: yc_b */
   rcd+=nco_inq_varid(in_id_dst,"grid_corner_lon",&dst_grd_crn_lon_id); /* ESMF: xv_b */
   rcd+=nco_inq_varid(in_id_dst,"grid_corner_lat",&dst_grd_crn_lat_id); /* ESMF: yv_b */
   rcd=nco_inq_varid_flg(in_id_dst,"grid_imask",&msk_out_id); /* ESMF: msk_b */
-  /* if var not present then set id to -1 so that we know its missing */
-  if(rcd!=NC_NOERR) msk_out_id=-1;
 
   /* Ensure coordinates are in degrees not radians for simplicity and CF-compliance
      NB: ${DATA}/scrip/rmp_T42_to_POP43_conserv.nc has [xy]?_a in degrees and [xy]?_b in radians! */
@@ -302,13 +289,12 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   lon_crn_in=(double *)nco_malloc(mpf.src_grid_corners*grd_sz_in*nco_typ_lng(crd_typ));
   lat_crn_in=(double *)nco_malloc(mpf.src_grid_corners*grd_sz_in*nco_typ_lng(crd_typ));
 
-  /* grid_area_in not present so set to -1.0
-   * in nco_msh_mk will fill in with calculated area */
-  if(area_in_id==-1)
-    for(idx=0;idx<grd_sz_in;idx++) area_in[idx]=-1.0;
+  /* 20191012: Always re-compute area so map-file area_a is consistent with weights */
+  //  if(area_in_id == NC_MIN_INT)
+  for(idx=0;idx<grd_sz_in;idx++) area_in[idx]=-1.0;
 
   /* if msk_in not in file the set each member to True */
-  if(msk_in_id==-1)
+  if(msk_in_id == NC_MIN_INT)
     for(idx=0;idx<grd_sz_in;idx++) msk_in[idx]=1;
 
   area_out=(double *)nco_malloc(grd_sz_out*nco_typ_lng(crd_typ));
@@ -319,23 +305,21 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   lon_crn_out=(double *)nco_malloc(mpf.dst_grid_corners*grd_sz_out*nco_typ_lng(crd_typ));
   lat_crn_out=(double *)nco_malloc(mpf.dst_grid_corners*grd_sz_out*nco_typ_lng(crd_typ));
 
-  /* grid_area_in not present so set to -1.0
-   * in nco_msh_mk will fill in with calculated area */
-  if(area_in_id==-1)
-    for(idx=0;idx<grd_sz_out;idx++) area_out[idx]=-1.0;
+  /* 20191012: Always re-compute area so map-file area_a is consistent with weights */
+  // if(area_out_id == NC_MIN_INT)
+  for(idx=0;idx<grd_sz_out;idx++) area_out[idx]=-1.0;
 
   /* if msk_in not in file the set each member to "True" */
-  if(msk_out_id==-1)
+  if(msk_out_id == NC_MIN_INT)
     for(idx=0;idx<grd_sz_out;idx++) msk_out[idx]=1;
-
 
   dmn_srt[0]=0L;
   dmn_cnt[0]=grd_sz_in;
 
-  if(area_in_id>=0)
+  if(area_in_id != NC_MIN_INT)
     rcd=nco_get_vara(in_id_src,area_in_id,dmn_srt,dmn_cnt,area_in,crd_typ);
 
-  if(msk_in_id>=0)
+  if(msk_in_id != NC_MIN_INT)
     rcd=nco_get_vara(in_id_src,msk_in_id,dmn_srt,dmn_cnt,msk_in,(nc_type)NC_INT);
 
   rcd=nco_get_vara(in_id_src,src_grd_ctr_lon_id,dmn_srt,dmn_cnt,lon_ctr_in,crd_typ);
@@ -349,10 +333,10 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   dmn_srt[0]=0L;
   dmn_cnt[0]=grd_sz_out;
 
-  if(area_out_id >=0)
+  if(area_out_id != NC_MIN_INT)
     rcd=nco_get_vara(in_id_dst,area_out_id,dmn_srt,dmn_cnt,area_out,crd_typ);
 
-  if(msk_out_id >=0)
+  if(msk_out_id != NC_MIN_INT)
     rcd=nco_get_vara(in_id_dst,msk_out_id,dmn_srt,dmn_cnt,msk_out,(nc_type)NC_INT);
 
   rcd=nco_get_vara(in_id_dst,dst_grd_ctr_lon_id,dmn_srt,dmn_cnt,lon_ctr_out,crd_typ);
@@ -794,7 +778,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   if(nco_dbg_lvl_get() >= nco_dbg_crr)
      (void)fprintf(stderr,"%s:%s(): Interpolation type=%s\n",nco_prg_nm_get(),fnc_nm, nco_poly_typ_sng_get(pl_typ)  );
 
-
   /* create some statistics on grid in and grid out */
   pl_glb_in=nco_msh_stats(area_in,msk_in,lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in,grd_sz_in, grd_crn_nbr_in);
   pl_glb_out=nco_msh_stats(area_out,msk_out,lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out,grd_sz_out, grd_crn_nbr_out);
@@ -805,7 +788,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     (void)fprintf(stderr,"\n%s:%s mesh out statistics\n",nco_prg_nm_get(),fnc_nm);
     nco_poly_prn(pl_glb_out,0);
-
   }
 
   /* determin lon_typ  nb temporary */
