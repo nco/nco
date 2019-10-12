@@ -316,8 +316,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   dmn_srt[0]=0L;
   dmn_cnt[0]=grd_sz_in;
 
-  if(area_in_id != NC_MIN_INT)
-    rcd=nco_get_vara(in_id_src,area_in_id,dmn_srt,dmn_cnt,area_in,crd_typ);
+  // if(area_in_id != NC_MIN_INT) rcd=nco_get_vara(in_id_src,area_in_id,dmn_srt,dmn_cnt,area_in,crd_typ);
 
   if(msk_in_id != NC_MIN_INT)
     rcd=nco_get_vara(in_id_src,msk_in_id,dmn_srt,dmn_cnt,msk_in,(nc_type)NC_INT);
@@ -333,8 +332,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   dmn_srt[0]=0L;
   dmn_cnt[0]=grd_sz_out;
 
-  if(area_out_id != NC_MIN_INT)
-    rcd=nco_get_vara(in_id_dst,area_out_id,dmn_srt,dmn_cnt,area_out,crd_typ);
+  // if(area_out_id != NC_MIN_INT) rcd=nco_get_vara(in_id_dst,area_out_id,dmn_srt,dmn_cnt,area_out,crd_typ);
 
   if(msk_out_id != NC_MIN_INT)
     rcd=nco_get_vara(in_id_dst,msk_out_id,dmn_srt,dmn_cnt,msk_out,(nc_type)NC_INT);

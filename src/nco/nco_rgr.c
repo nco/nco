@@ -5484,9 +5484,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   
 	   ncol=0 on conus chevrons file:
 	   3.653857995295246e-05 raw GLL weight
+	   3.653857995294305e-05 ESMF weight (area_b from map-file)
 	   3.653857995294302e-05 matlab CSZ decomposition (N-2 triangles)    computed at SNL by MAT
 	   3.653857995294301e-05 matlab centroid decomposition (N triangles) computed at SNL by MAT
-	   3.653857995294258e-05 NCO CSZ decomposition (new haversine)
+	   3.653857995294258e-05 NCO CSZ _and_ centroid decompositions (new haversine)
 	   3.653857995289623e-05 NCO CSZ decomposition (old acos)
 
 	   20191011: Tested this same polygon in ESMF and NCO weight-generator
@@ -5501,7 +5502,12 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   0.002181999640069   0.013095712136366
 	   ncks -H --trd -s %20.15f -C -d n_s,207436 -d n_s,209617 -v S ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc
 	   0.002181999640069   0.013095712136365
- */
+
+	   Compare first five polygon areas:
+	   ncks --trd -H -C -s '%20.15e, ' -d n_b,0,4 -v area_b ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc
+	   ncks --trd -H -C -s '%20.15e, ' -d n_b,0,4 -v area_b ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_nco.20191001.nc
+	   3.653857995294305e-05, 1.250459284052488e-04, 1.448204605591709e-04, 8.223598867312266e-05, 8.585831933875070e-05, # aave
+	   3.653857995294258e-05, 1.250459284052470e-04, 1.448204605591675e-04, 8.223598867312247e-05, 8.585831933875186e-05, */
 
 	/* Computing great circle arcs over small arcs requires care since central angle is near 0 degrees
 	   Cosine small angles changes slowly for such angles, and leads to precision loss
