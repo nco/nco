@@ -468,6 +468,23 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
      area_out,msk_out,lat_ctr_out,lon_ctr_out,lat_crn_out,lon_crn_out,
      frc_in,frc_out,&col_src_adr,&row_dst_adr,&wgt_raw,&lnk_nbr);
 
+  if(False && nco_dbg_lvl_get() >= nco_dbg_quiet){
+    /* 20191012: Normalize areas and weights to yield 4*pi steradians for global grids
+       This worsens overall statistics, so do not turn-on by default
+       However, may be useful for debugging so please leave in code */
+    double area_out_ttl;
+    double area_nrm_fct;
+    area_out_ttl=0.0;
+    for(size_t idx=0;idx<dst_grd_sz_nbr;idx++) area_out_ttl+=area_out[idx];
+    area_nrm_fct=4*M_PI/area_out_ttl;
+    if(fabs(area_nrm_fct-1.0) < 1.0e-13 && fabs(area_nrm_fct-1.0) > 1.0e-16){
+      /* Output grid appears to be global so normalize by ratio of true-to-computed global area */
+      if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: INFO %s normalizing output area and weights by normalization ratio = %20.15e\n",nco_prg_nm_get(),fnc_nm,area_nrm_fct);
+      for(size_t idx=0;idx<dst_grd_sz_nbr;idx++) area_out[idx]*=area_nrm_fct;
+      for(size_t idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]*=area_nrm_fct;
+    } /* !fabs */
+  } /* !dbg */
+
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile based on %li links\n",nco_prg_nm_get(),lnk_nbr);
 
   /* Open mapfile */
@@ -1039,7 +1056,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   }
 
-  /* destory kdtree */
+  /* destroy kdtree */
   if(rtree)
      kd_destroy(rtree,NULL);
 
@@ -1547,8 +1564,6 @@ const char *att_val
   aed_mtd.type=NC_CHAR;
   aed_mtd.val.cp=av;
   aed_mtd.mode=aed_create;
-
-
 
   iret=nco_aed_prc(out_id,var_id,aed_mtd);
 

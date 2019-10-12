@@ -5495,19 +5495,32 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   ncks --trd -C -v col ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc | egrep "=1 "
 	   ncks -H --trd -s %20.15e -C -d n_b,0 -v area_b ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc
 	   3.653857995294305e-05
-	   ncks -H --trd -s %20.15e -C -d n_b,0 -v area_b ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_nco.20191001.nc
+	   ncks -H --trd -s '%20.15e, ' -C -d n_b,0 -v area_b ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_nco.20191001.nc
 	   3.653857995295246e-05
 	   ESMF and NCO weight-generators produce nearly identical S results to double-precision:
-	   ncks -H --trd -s %20.15f -C -d n_s,0,1 -v S ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_nco.20191001.nc
-	   0.002181999640069   0.013095712136366
-	   ncks -H --trd -s %20.15f -C -d n_s,207436 -d n_s,209617 -v S ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc
-	   0.002181999640069   0.013095712136365
+	   ncks -H --trd -s '%20.15e, ' -C -d n_s,0,1 -v S ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_nco.20191001.nc
+	   2.181999640069480e-03, 1.309571213636605e-02
+	   ncks -H --trd -s %20.15e -C -d n_s,207436 -d n_s,209617 -v S ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc
+	   2.181999640069454e-03, 1.309571213636510e-02
 
 	   Compare first five polygon areas:
 	   ncks --trd -H -C -s '%20.15e, ' -d n_b,0,4 -v area_b ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc
 	   ncks --trd -H -C -s '%20.15e, ' -d n_b,0,4 -v area_b ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_nco.20191001.nc
 	   3.653857995294305e-05, 1.250459284052488e-04, 1.448204605591709e-04, 8.223598867312266e-05, 8.585831933875070e-05, # aave
-	   3.653857995294258e-05, 1.250459284052470e-04, 1.448204605591675e-04, 8.223598867312247e-05, 8.585831933875186e-05, */
+	   3.653857995294258e-05, 1.250459284052470e-04, 1.448204605591675e-04, 8.223598867312247e-05, 8.585831933875186e-05,
+
+	   Compare total areas:
+	   ncwa -O -y ttl -v area.? ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_aave.20191001.nc ~/foo_aave.nc
+	   ncwa -O -y ttl -v area.? ${DATA}/maps/map_cmip6_180x360_to_conusx4v1np4_chevrons_nco.20191001.nc ~/foo_nco.nc
+	   ncks --trd -H -C -s '%20.15e, ' -v area.? ~/foo_aave.nc
+	   ncks --trd -H -C -s '%20.15e, ' -v area.? ~/foo_nco.nc
+	   aave: 1.256637061435867e+01, 1.256637061435973e+01 
+	   nco:  1.256637061435857e+01, 1.256637061435955e+01
+	   4*pi: 1.25663706143591729538e+01 
+	   Does (tru_glb_ttl/NCO_glb_ttl)*NCO_lcl = ESMF_lcl ?
+	   (1.25663706143591729538/1.256637061435857)*3.653857995294258=3.6538579952944333
+	   No, normalization alone does not explain differences between ESMF and NCO
+	   It does not appear that ESMF does a global normalization of areas/weights */
 
 	/* Computing great circle arcs over small arcs requires care since central angle is near 0 degrees
 	   Cosine small angles changes slowly for such angles, and leads to precision loss

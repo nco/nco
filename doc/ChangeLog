@@ -1,5 +1,8 @@
 2019-10-12  Charlie Zender  <zender@uci.edu>
 
+	* Quantify bias reduction after normalizing by ratio of	true-to-computed area
+	This worsens global statistics, so do not turn this on by default
+
 	* Re-compute area_a, area_b for map-file output, even if present in grid-files
 
 2019-10-11  Charlie Zender  <zender@uci.edu>
