@@ -5556,7 +5556,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
       /* L'Huilier's formula is ill-conditioned when two sides are both nearly one half the third side */
       flg_sas=flg_sas_hlf_a=flg_sas_hlf_b=flg_sas_hlf_c=False;
-      const double eps_ill_cnd=1.0e-12; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
+      const double eps_ill_cnd=1.0e-15; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
       const double eps_ill_cnd_dbl=2.0*eps_ill_cnd; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
       if((fabs(ngl_a-ngl_b) < eps_ill_cnd) && (fabs(ngl_a-0.5*ngl_c) < eps_ill_cnd_dbl)) flg_sas_hlf_c=True; /* c is half a and b */
       else if((fabs(ngl_b-ngl_c) < eps_ill_cnd) && (fabs(ngl_b-0.5*ngl_a) < eps_ill_cnd_dbl)) flg_sas_hlf_a=True; /* a is half b and c */
@@ -5597,11 +5597,14 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	tan_hlf_a_tan_hlf_b=tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b);
 	xcs_sph_hlf_tan=tan_hlf_a_tan_hlf_b*sin(ngl_sfc_ltr_C)/(1.0+tan_hlf_a_tan_hlf_b*cos(ngl_sfc_ltr_C));
 	xcs_sph=2.0*atan(xcs_sph_hlf_tan);
+	// xcs_sph=2.0*atan(tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b)*sin(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))/(1.0+tan_hlf_a_tan_hlf_b*cos(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))));
       }else{
 	double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
 	/* Triangle is well-conditioned, apply L'Huilier's formula */
 	xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
 	xcs_sph=4.0*atan(xcs_sph_qtr_tan);
+	/* 20191014: Aggregate all previous area-related commands into one, gigantic, unreadable, possibly more precise command (tested and it is more obfuscated but not more precise) */
+	// xcs_sph=4.0*atan(sqrt(tan(0.5*0.5*(ngl_a+ngl_b+ngl_c))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_a))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_b))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_c))));
       } /* !flg_sas */
       area[col_idx]+=xcs_sph;
       area_ltr+=xcs_sph;
