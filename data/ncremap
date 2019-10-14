@@ -214,14 +214,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v StepTwoO3 -d ${DATA}/hdf/cam_time.nc ${DATA}/hdf/OMI-Aura_L2-OMTO3_2015m0731t0034-o58727_v003-2015m0731t080836.he5.nc ~/foo.nc
 # ncremap -v TSurfStd -G "--rgr grd_ttl='Default internally-generated grid' --rgr grid=~/rgr/ncremap_tmp_grd_dst.nc --rgr latlon=100,100 --rgr snwe=30.0,70.0,-130.0,-90.0" ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc
 # ncremap -x TSurfStd_ct -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/sld/raw/AIRS.2014.10.01.202.L2.TSurfStd.Regrid010.1DLatLon.hole.nc ~/foo.nc
-# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/cice_hi_flt.nc ~/foo.nc
-# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/hdf/cam_time.nc ~/foo.nc
 # CESM & E3SM:
 # ncremap -s ${DATA}/grids/ne120np4_pentagons.100310.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.cam.h0.0060-01.nc ~/foo.nc
-# ncremap -s ${DATA}/grids/ne120np4_pentagons.100310.nc -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.clm2.h0.0060-01.nc ~/foo.nc
-# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.cice.h.0060-01.nc ~/foo.nc
-# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.pop.h.0060-01.nc ~/foo.nc
-# ncremap -g ${DATA}/grids/180x360_SCRIP.20150901.nc ${DATA}/ne120/raw/b1850c5_m2a.rtm.h0.0060-01.nc ~/foo.nc
 # Old MPAS filename conventions (until ~201609)::
 # ncremap -P mpas -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${DATA}/hdf/hist.ocn.0003-12-01_00.00.00.nc ~/foo.nc
 # ncremap -P mpas -m ${DATA}/maps/map_mpas120_TO_T62_aave.121116.nc ${DATA}/hdf/hist.ice.0003-12-01_00.00.00.nc ~/foo.nc

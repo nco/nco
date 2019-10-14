@@ -1,3 +1,8 @@
+2019-10-13  Charlie Zender  <zender@uci.edu>
+
+	* Introduce eps_ill_cnd and demonstrate that triangular ill-condition branch never helps
+	Set eps_ill_cnd = 1.0e-15 for now
+
 2019-10-12  Charlie Zender  <zender@uci.edu>
 
 	* Quantify bias reduction after normalizing by ratio of	true-to-computed area

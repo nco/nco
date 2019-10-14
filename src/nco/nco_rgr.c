@@ -5215,7 +5215,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   iii. Next non-identical point becomes last vertice of next triangle
 	   iv. Side C of previous triangle is side A of next triangle
 	B. For each triangle, compute area with L'Huilier formula unless A = B ~ 0.5*C then use SAS formula
-     3. Centroid decomposition, N triangle version by Taylor, L'Huilier areas: 
+     3. centroidal decomposition, N triangle version by Taylor, L'Huilier areas: 
         Compute polygon centroid and treat this as hub from which spokes are drawn to all vertices
         This method requires computation of N triangles, though fewer sides due to optimization
 	Moreover, it works on all convex polygons and on slightly concave polygons
@@ -5298,6 +5298,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   long idx_b; /* [idx] Point B 1-D index */
   long idx_c; /* [idx] Point C 1-D index */
   nco_bool flg_sas; /* [flg] L'Huilier's formula is ill-conditioned for this triangle */
+  nco_bool flg_sas_hlf_a=False; /* [flg] Ill-conditioned for angle a */
+  nco_bool flg_sas_hlf_b=False; /* [flg] Ill-conditioned for angle b */
+  nco_bool flg_sas_hlf_c=False; /* [flg] Ill-conditioned for angle c */
   nco_bool flg_ltr_cll; /* [flg] Any triangle in cell is latitude-triangle */
   nco_bool flg_ltr_crr; /* [flg] Current triangle is latitude-triangle */
   /* Initialize global accumulators */
@@ -5357,7 +5360,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	bnd_vld_idx=bnd_srt_idx+bnd_idx;
 	vrt_vld[bnd_vld_nbr]=bnd_vld_idx;
 	bnd_vld_nbr++;
-	if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: DEBUG %s reports centroid decomposition col_idx=%lu, bnd_nbr=%d, bnd_idx=%ld, bnd_vld_idx=%ld, bnd_vld_nbr=%ld\n",nco_prg_nm_get(),fnc_nm,col_idx,bnd_nbr,bnd_idx,bnd_vld_idx,bnd_vld_nbr);
+	if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: DEBUG %s reports centroidal decomposition col_idx=%lu, bnd_nbr=%d, bnd_idx=%ld, bnd_vld_idx=%ld, bnd_vld_nbr=%ld\n",nco_prg_nm_get(),fnc_nm,col_idx,bnd_nbr,bnd_idx,bnd_vld_idx,bnd_vld_nbr);
 	assert(bnd_vld_nbr <= bnd_nbr);
 	lat_ctr+=lat_bnd[bnd_vld_idx];
 	lon_ctr+=lon_bnd[bnd_vld_idx];
@@ -5486,8 +5489,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	   3.653857995295246e-05 raw GLL weight
 	   3.653857995294305e-05 ESMF weight (area_b from map-file)
 	   3.653857995294302e-05 matlab CSZ decomposition (N-2 triangles)    computed at SNL by MAT
-	   3.653857995294301e-05 matlab centroid decomposition (N triangles) computed at SNL by MAT
-	   3.653857995294258e-05 NCO CSZ _and_ centroid decompositions (new haversine)
+	   3.653857995294301e-05 matlab centroidal decomposition (N triangles) computed at SNL by MAT
+	   3.653857995294258e-05 NCO CSZ _and_ centroidal decompositions (new haversine)
 	   3.653857995289623e-05 NCO CSZ decomposition (old acos)
 
 	   20191011: Tested this same polygon in ESMF and NCO weight-generator
@@ -5551,30 +5554,23 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       ngl_c=2.0*asin(sin_hlf_tht);
       /* Semi-perimeter */
       prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
-      /* Ill-conditioned? */
-      flg_sas=False;
-      if(((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) || /* c is half a and b */
-	 ((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) || /* a is half b and c */
-	 ((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b))){  /* b is half c and a */
-	/* L'Huilier's formula is ill-conditioned when two sides are both nearly one half the third side
-	   In this case Wikipedia recommends a Side-Angle-Side (SAS) formula
-	   https://en.wikipedia.org/wiki/Spherical_trigonometry */
-	flg_sas=True;
-      } /* !ill */
+      /* L'Huilier's formula is ill-conditioned when two sides are both nearly one half the third side */
+      flg_sas=flg_sas_hlf_a=flg_sas_hlf_b=flg_sas_hlf_c=False;
+      const double eps_ill_cnd=1.0e-12; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
+      const double eps_ill_cnd_dbl=2.0*eps_ill_cnd; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
+      if((fabs(ngl_a-ngl_b) < eps_ill_cnd) && (fabs(ngl_a-0.5*ngl_c) < eps_ill_cnd_dbl)) flg_sas_hlf_c=True; /* c is half a and b */
+      else if((fabs(ngl_b-ngl_c) < eps_ill_cnd) && (fabs(ngl_b-0.5*ngl_a) < eps_ill_cnd_dbl)) flg_sas_hlf_a=True; /* a is half b and c */
+      else if((fabs(ngl_c-ngl_a) < eps_ill_cnd) && (fabs(ngl_c-0.5*ngl_b) < eps_ill_cnd_dbl)) flg_sas_hlf_b=True; /* b is half c and a */
+      if(flg_sas_hlf_a || flg_sas_hlf_b || flg_sas_hlf_c) flg_sas=True;
       if(flg_sas){
-	nco_bool flg_sas_hlf_a=False; /* [flg] Ill-conditioned for angle a */
-	nco_bool flg_sas_hlf_b=False; /* [flg] Ill-conditioned for angle b */
-	nco_bool flg_sas_hlf_c=False; /* [flg] Ill-conditioned for angle c */
+	/* Wikipedia recommends treating ill-conditioned triangles by Side-Angle-Side (SAS) formula
+	   https://en.wikipedia.org/wiki/Spherical_trigonometry */
 	double cos_hlf_C; /* [frc] Cosine of canoncal surface angle C */
 	double ngl_sfc_ltr_C; /* [rdn] Canonical surface angle/great circle arc C */
 	double tan_hlf_a_tan_hlf_b; /* [frc] Product of tangents of one-half of nearly equal canoncal sides */
 	double xcs_sph_hlf_tan; /* [frc] Tangent of one-half the spherical excess */
 	/* Compute area using SAS formula */
-	if((float)ngl_a == (float)ngl_b && (float)ngl_a == (float)(0.5*ngl_c)) flg_sas_hlf_c=True;
-	else if((float)ngl_b == (float)ngl_c && (float)ngl_b == (float)(0.5*ngl_a)) flg_sas_hlf_a=True;
-	else if((float)ngl_c == (float)ngl_a && (float)ngl_c == (float)(0.5*ngl_b)) flg_sas_hlf_b=True;
-	else abort();
-	(void)fprintf(stdout,"%s: WARNING %s reports col_idx = %li triangle %d is ill-conditioned. Using SAS formula instead L'Huilier's formula for spherical excess (and cell area) to avoid low precision.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx);
+	(void)fprintf(stdout,"%s: INFO %s reports col_idx = %li triangle %d is ill-conditioned. Using SAS formula instead of L'Huilier's formula for spherical excess (and cell area) to avoid low precision.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx);
 	/* Transform sides into canonical order for formula */
 	if(flg_sas_hlf_c){
 	  ngl_ltr_a=ngl_a;
