@@ -75,6 +75,10 @@ const char * /* O [sng] sprintf() format string for XML attribute type typ */
 nco_typ_fmt_sng_att_xml /* [fnc] Provide sprintf() format string for specified attribute type in XML */
 (const nc_type typ); /* I [enm] netCDF attribute type to provide XML format string for */
 
+const char * /* O [sng] sprintf() format string for JSN attribute type typ */
+nco_typ_fmt_sng_att_jsn /* [fnc] Provide sprintf() format string for specified attribute type in JSN */
+(const nc_type typ); /* I [enm] netCDF attribute type to provide JSN format string for */
+
 void
 nco_prn_var_val_cmt     /* 0 print to stdout var values formatted  by prn_flg or dlm_sng_in  or */
 (var_sct *var,          /* I [sct] variable to print */

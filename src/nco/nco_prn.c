@@ -512,14 +512,19 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
     (void)cast_void_nctype(cls_typ,&att[idx].val);
     
     if(CDL){
-      /* CDL attribute values of many types must have type-specific suffixes (e.g., s, u, ull) unless they are user-defined types that, like variables, can always be disambiguated by their explicit (not implicit) type specifier that resolves to a base atomic-type */
-      (void)sprintf(att_sng_pln,"%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
-      (void)sprintf(att_sng_dlm,"%s%%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
+      	/* CDL attribute values of many types must have type-specific suffixes (e.g., s, u, ull) unless they are user-defined types that, like variables, can always be disambiguated by their explicit (not implicit) type specifier that resolves to a base atomic-type */
+      	(void)sprintf(att_sng_pln,"%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
+      	(void)sprintf(att_sng_dlm,"%s%%s",cls_typ <= NC_MAX_ATOMIC_TYPE ? nco_typ_fmt_sng_att_cdl(bs_typ) : nco_typ_fmt_sng_var_cdl(bs_typ));
+    }else if(XML) {
+    	(void)sprintf(att_sng_pln,"%s", nco_typ_fmt_sng_att_xml(bs_typ) );
+      	(void)sprintf(att_sng_dlm,"%s%%s", nco_typ_fmt_sng_att_xml(bs_typ) );
+    }else if(JSN) {
+    	(void)sprintf(att_sng_pln,"%s", nco_typ_fmt_sng_att_jsn(bs_typ) );
+		(void)sprintf(att_sng_dlm,"%s%%s", nco_typ_fmt_sng_att_jsn(bs_typ) );
     }else{
-      (void)sprintf(att_sng_pln,"%s",(XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
-      (void)sprintf(att_sng_dlm,"%s%%s",(XML||JSN) ? nco_typ_fmt_sng_att_xml(bs_typ) : nco_typ_fmt_sng(bs_typ));
-    } /* !CDL */
-
+		(void)sprintf(att_sng_pln,"%s", nco_typ_fmt_sng(bs_typ));
+		(void)sprintf(att_sng_dlm,"%s%%s", nco_typ_fmt_sng(bs_typ));
+    }
     switch(cls_typ){
     case NC_FLOAT:
       for(lmn=0;lmn<att_sz;lmn++){
@@ -940,6 +945,72 @@ nco_typ_fmt_sng_att_xml /* [fnc] Provide sprintf() format string for specified a
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_typ_fmt_sng_att_xml() */
+
+
+const char * /* O [sng] sprintf() format string for JSN attribute type typ */
+nco_typ_fmt_sng_att_jsn /* [fnc] Provide sprintf() format string for specified attribute type in XML */
+(const nc_type typ) /* I [enm] netCDF attribute type to provide XML format string for */
+{
+	/* Purpose: Provide sprintf() format string for specified type attribute
+       Unidata formats shown in netcdf-c/ncdump/ncdump.c pr_att_valgs() near line 593
+       Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
+       and are user-configurable with -p float_digits,double_digits.
+       These default to 7 and 15, respectively
+       Use these formats for JSN attributes AND variables */
+
+	static const char fmt_NC_FLOAT[]="%.7g"; /* %g defaults to 6 digits of precision */
+	static const char fmt_NC_DOUBLE[]="%.15g"; /* %g defaults to 6 digits of precision */
+	static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
+	static const char fmt_NC_SHORT[]="%hi";
+	static const char fmt_NC_CHAR[]="%c";
+	static const char fmt_NC_BYTE[]="%hhi"; /* Takes signed char as arg and prints 0,1,2..,126,127,-127,-126,...-2,-1 */
+
+	static const char fmt_NC_UBYTE[]="%hhu"; /*  */
+	static const char fmt_NC_USHORT[]="%hu"; /*  */
+	static const char fmt_NC_UINT[]="%u"; /*  */
+	static const char fmt_NC_INT64[]="%lli"; /*  */
+	static const char fmt_NC_UINT64[]="%llu"; /*  */
+	static const char fmt_NC_STRING[]="%s"; /*  */
+
+	switch (typ){
+		case NC_FLOAT:
+			return fmt_NC_FLOAT;
+		case NC_DOUBLE:
+			return fmt_NC_DOUBLE;
+		case NC_INT:
+			return fmt_NC_INT;
+		case NC_SHORT:
+			return fmt_NC_SHORT;
+		case NC_CHAR:
+			return fmt_NC_CHAR;
+		case NC_BYTE:
+			return fmt_NC_BYTE;
+		case NC_UBYTE:
+			return fmt_NC_UBYTE;
+		case NC_USHORT:
+			return fmt_NC_USHORT;
+		case NC_UINT:
+			return fmt_NC_UINT;
+		case NC_INT64:
+			return fmt_NC_INT64;
+		case NC_UINT64:
+			return fmt_NC_UINT64;
+		case NC_STRING:
+			return fmt_NC_STRING;
+		default: nco_dfl_case_nc_type_err(); break;
+	} /* end switch */
+
+	/* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+	return (char *)NULL;
+} /* end nco_typ_fmt_sng_att_jsn() */
+
+
+
+
+
+
+
+
 
 const char * /* O [sng] sprintf() format string for type typ */
 nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
@@ -2123,7 +2194,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     } /* !XML */
     if(JSN){
       chr2sng_sf=chr2sng_jsn;
-      if(fmt_val && (bs_typ == NC_FLOAT || bs_typ == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_xml(bs_typ));
+      if(fmt_val && (bs_typ == NC_FLOAT || bs_typ == NC_DOUBLE)) (void)sprintf(fmt_sng,"%s",fmt_val); else (void)sprintf(fmt_sng,"%s",nco_typ_fmt_sng_att_jsn(bs_typ));
    
       (void)fprintf(fp_out,"%*s\"data\": ",prn_ndn,spc_sng);
 
