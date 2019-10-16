@@ -1,6 +1,6 @@
 2019-10-14 Henry Butowsky  <henryb@hush.com>
 
-        * Fixed --json output of NC_FLOAT and NC_DOUBLE. Eliminate trailing '.' (illegal in JSON), e.g., '1234567.' is now output as '1234567'
+        * Fix --json output of NC_FLOAT and NC_DOUBLE. Eliminate trailing '.' (illegal in JSON), e.g., '1234567.' is now output as '1234567'
 
 2019-10-13  Charlie Zender  <zender@uci.edu>
 
