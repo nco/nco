@@ -1,3 +1,9 @@
+2019-10-16  Charlie Zender  <zender@uci.edu>
+
+	* Install/benchmark ESMF 8.0.0 which performs slightly worse than 7.1.0r
+
+	* Successfully built NCO including ncap2 with clang-mp-9.0 on MacOS 15 Catalina
+
 2019-10-14 Henry Butowsky  <henryb@hush.com>
 
         * Fix --json output of NC_FLOAT and NC_DOUBLE. Eliminate trailing '.' (illegal in JSON), e.g., '1234567.' is now output as '1234567'
