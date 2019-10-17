@@ -857,14 +857,18 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
         break;
     }
 
-
-    pl_lst_out = nco_poly_lst_mk_sph(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out,
-                                 (size_t) grd_crn_nbr_out, grd_lon_typ_out, pl_typ);
+    if(pl_typ==poly_sph )
+      pl_lst_out = nco_poly_lst_mk_sph(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out, (size_t) grd_crn_nbr_out, grd_lon_typ_out);
+    else if(pl_typ==poly_rll)
+      pl_lst_out = nco_poly_lst_mk_rll(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out, (size_t) grd_crn_nbr_out, grd_lon_typ_out);
 
     pl_cnt_out=grd_sz_out;
 
-    pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,
-                                (size_t) grd_crn_nbr_in, grd_lon_typ_out, pl_typ);
+
+    if(pl_typ==poly_sph)
+      pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,(size_t) grd_crn_nbr_in, grd_lon_typ_out);
+    else if(pl_typ==poly_rll)
+      pl_lst_in = nco_poly_lst_mk_rll(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,(size_t) grd_crn_nbr_in, grd_lon_typ_out);
 
     pl_cnt_in=grd_sz_in;
     /* test new write func */

@@ -57,6 +57,20 @@ poly_typ_enm pl_typ,
 int *pl_nbr);    /* O [nbr] size  poly_sct */
 
 poly_sct**             /* [O] [nbr] Array of poly_sct */
+nco_poly_lst_mk_rll(
+double *area, /* I [sr] Area of source grid */
+int *msk, /* I [flg] Mask on source grid */
+double *lat_ctr, /* I [dgr] Latitude  centers of source grid */
+double *lon_ctr, /* I [dgr] Longitude centers of source grid */
+double *lat_crn, /* I [dgr] Latitude  corners of source grid */
+double *lon_crn, /* I [dgr] Longitude corners of source grid */
+size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
+long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
+nco_grd_lon_typ_enm grd_lon_typ); /* I [num] if not nil then split cells that straddle Greenwich or Dateline  */
+
+
+
+poly_sct**             /* [O] [nbr] Array of poly_sct */
 nco_poly_lst_mk_sph(
 double *area, /* I [sr] Area of source grid */
 int *msk, /* I [flg] Mask on source grid */
@@ -66,8 +80,8 @@ double *lat_crn, /* I [dgr] Latitude  corners of source grid */
 double *lon_crn, /* I [dgr] Longitude corners of source grid */
 size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
 long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
-nco_grd_lon_typ_enm grd_lon_typ, /* I [num] if not nil then split cells that straddle Greenwich or Dateline  */
-poly_typ_enm pl_typ);    /* O [nbr] size  poly_sct */
+nco_grd_lon_typ_enm grd_lon_typ); /* I [num] if not nil then split cells that straddle Greenwich or Dateline  */
+
 
 
 
@@ -84,6 +98,7 @@ poly_sct **pl_lst_in,
 int pl_cnt_in,
 KDTree *rtree,
 int *pl_cnt_vrl_ret);
+
 
 
 poly_sct **
