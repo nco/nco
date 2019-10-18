@@ -53,13 +53,6 @@
 /* all in this file */
 int DEBUG_SPH=0;
 
-/* fixme: This sets the grid type poly_sph or poly_rll -
- *  I really dont like this. It is currrently
- *   being used in nco_geo_lon_2_sph */
-
-poly_typ_enm NCO_SPH_PLY_TYP;
-
-
 /* global variables for latitude, longitude in RADIANS
    these may be set in nco_poly.c or
    should be safe with OPenMP   */
@@ -591,30 +584,6 @@ char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p,
 
 }
 
-/* nb a and b should have the same radius */
-double nco_sph_int_alg(double *a, double *b, double *c)
-{
-  double r;
-  double g;
-  double h;
-  double k;
-
-  r=sqrt(a[0]*a[0]+ a[1]*a[1] + a[2]*a[2]);
-
-  h= ( b[0]*a[2] - b[2]*a[0]  ) / ( b[1]*a[0] - b[0]*a[1] );
-
-  g= ( -a[1]*h - a[2] ) / a[0];
-
-  k=sqrt(  r*r / (  g*g + h*h+1.0  )  );
-
-  c[0]=g*k;
-  c[1]=h*k;
-  c[2]=k;
-
-  /* return the new radius */
-  return sqrt( c[0]*c[0]+c[1]*c[1]+c[2]*c[2]);
-
-}
 
 
 /* 1.0 - dot product normalized */
@@ -781,65 +750,6 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
 
 
 }
-
-
-
-/* see if Icross is inbetween  p0 and P1 - we already know that Icross is
- * in the plane formed by the three points (Origin, p0, p1) */
-nco_bool
-nco_sph_plane_int(double *p0, double *q0, double *r0)
-{
-
-  char fnc_nm[]="nco_sph_plane_int()";
-
-  nco_bool bRet=False;
-
-  double pqDot;
-  double prDot;
-  double qrDot;
-
-  double pqCross;
-
-  double id[NBR_SPH];
-
-    pqDot=1.0-nco_sph_dot_nm(p0,q0);
-    prDot=1.0-nco_sph_dot_nm(p0,r0);
-    qrDot=1.0-nco_sph_dot_nm(q0,r0);
-
-    //if(DEBUG_SPH)
-    //  (void)fprintf("%s:%s: pqDot=%.15f prDot=%.15f  qrDot=%.15f ", nco_prg_nm_get(), fnc_nm, pqDot, prDot, qrDot);
-
-
-    if( prDot >= qrDot)
-    {
-      if(prDot > pqDot +1.0e-14 ) return False;
-
-      /* r0 is in the right "direction */
-      if( signbit( nco_sph_cross2( p0,q0, id )) == signbit( nco_sph_cross2( p0,r0, id )) )
-        return True;
-
-      return False;
-
-    }
-    else
-    {
-
-      if(qrDot > pqDot + 1.0e-14)
-        return False;
-
-      /* r0 is in the right "direction */
-      if( signbit( nco_sph_cross2( q0,p0, id ) ) == signbit( nco_sph_cross2( q0,r0, id ) ) )
-        return True;
-
-      return False;
-
-
-    }
-
-    return False;
-}
-
-
 
 
 
@@ -1409,7 +1319,6 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
   double pi[NBR_SPH]={0.0};
 
   double pControl[NBR_SPH];
-  double Pcross[NBR_SPH];
 
 
 
@@ -2142,138 +2051,6 @@ nco_bool nco_sph_between(double a, double b, double x)
 }
 
 
-
-
-
-/* use crt coords to check bounds */
-nco_bool nco_sph_lonlat_between(double *a, double *b, double *x)
-{
-  const char fnc_nm[]="nco_sph_lonlat_between()";
-
-   /* working in radians here */
-   nco_bool bDeg=False;
-   nco_bool bRet=False;
-
-   double lat_min;
-   double lat_max;
-
-   if(nco_sph_between(a[3], b[3], x[3]) == False )
-      return False;
-
-   /* special lat check */
-   //getLatCorrect(a,b, &lat_min,&lat_max);
-  nco_geo_get_lat_correct(a[3], a[4], b[3], b[4], &lat_min, &lat_max, bDeg);
-
-
-
-   if( x[4]>=lat_min && x[4]<=lat_max )
-      bRet=True;
-   else
-      bRet=False;
-
-  if(DEBUG_SPH)
-    printf("%s: lat_min=%.20f lat_max=%.20f lat=%.20f %s\n",fnc_nm, lat_min, lat_max, x[4],
-           (bRet ? "True" : "False") );
-
-
-
-
-  return bRet;
-
-
-}
-
-nco_bool sxBetween(double *a, double *b, double *c)
-{
-
-   if ( a[3] != b[3] )
-      return (  ( c[3] >= a[3] && c[3] <=b[3] ) || ( c[3] <= a[3] && c[3] >= b[3] )) ;
-   else
-      return (  ( c[4] >= a[4] && c[4] <=b[4] ) || ( c[4] <= a[4] && c[4] >= b[4] )) ;
-
-
-   /*
-   if ( a[3] != b[3] )
-     return (  a[3] <= c[3] && b[3] >= c[3] ||  a[3] >= c[3] && b[3] <= c[3] ) ;
-   else
-     return (  a[4] <= c[4] && b[4] >=c[4]   ||  a[4] >= c[4] && b[4] <= c[4] ) ;
-   */
-
-}
-
-
-int
-nco_sph_parallel_lat(double *p1, double *p2, double *q1, double *q2, double *a, double *b)
-{
-  bool bdir=False;
-
-  /* check sense of direction */
-  bdir=( p2[4] - p1[4] >0.0);
-
-  if( (q2[4] - q1[4] >0.0) != bdir  )
-     return 0;
-
-
-  return 0;
-
-
-
-}
-
-
-
-
-int nco_sph_parallel(double *a, double *b, double *c, double *d, double *p, double *q)
-{
-
-   char code='0';
-   const char *ptype="none";
-
-   if( sxBetween( a, b, c ) && sxBetween( a, b, d ) ) {
-      nco_sph_adi(p, c);
-      nco_sph_adi(q, d);
-      ptype="abc-abd";
-      code= 'e';
-   }
-   else if( sxBetween( c, d, a ) && sxBetween( c, d, b ) ) {
-      nco_sph_adi(p, a);
-      nco_sph_adi(q, b);
-      ptype="cda-cdb";
-      code= 'e';
-   }
-   else if( sxBetween( a, b, c ) && sxBetween( c, d, b ) ) {
-      nco_sph_adi(p, c);
-      nco_sph_adi(q, b);
-      ptype="abc-cdb";
-      code= 'e';
-   }
-   else if( sxBetween( a, b, c ) && sxBetween( c, d, a ) ) {
-      nco_sph_adi(p, c);
-      nco_sph_adi(q, a);
-      ptype="abc-cda";
-      code= 'e';
-   }
-   else if( sxBetween( a, b, d ) && sxBetween( c, d, b ) ) {
-      nco_sph_adi(p, d);
-      nco_sph_adi(q, b);
-      ptype="abd-cdb";
-      code= 'e';
-   }
-   else if( sxBetween( a, b, d ) && sxBetween( c, d, a ) ) {
-      nco_sph_adi(p, d);
-      nco_sph_adi(q, a);
-      ptype="abd-cda";
-      code= 'e';
-   }
-
-   if(DEBUG_SPH)
-      printf("sParallelDouble(): code=%c type=%s\n", code, ptype);
-
-   return code;
-}
-
-
-
 void nco_sph_prn_pnt(const char *sMsg, double *p, int style, nco_bool bRet)
 {
 
@@ -2402,7 +2179,7 @@ int nco_sph_mk_control(poly_sct *sP, nco_bool bInside,  double* pControl  )
    if(bInside)
    {
      bDeg=True;
-     nco_geo_lonlat_2_sph(sP->dp_x_ctr,sP->dp_y_ctr , pControl, bDeg);
+     nco_geo_lonlat_2_sph(sP->dp_x_ctr, sP->dp_y_ctr, pControl, False, bDeg);
      return NCO_NOERR;
    }
 
@@ -2476,7 +2253,7 @@ int nco_sph_mk_control(poly_sct *sP, nco_bool bInside,  double* pControl  )
    }
 
    /* remember clat, clon in radians */
-   nco_geo_lonlat_2_sph(clon, clat, pControl, bDeg );
+  nco_geo_lonlat_2_sph(clon, clat, pControl, False, bDeg);
 
    return NCO_NOERR;
 
@@ -2883,9 +2660,10 @@ void nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2,
 
 
 /* assumes lon, lat in degrees */
-void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg)
+void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bSimple, nco_bool bDeg)
 {
 
+   char fnc_nm[]="nco_geo_lonlat_2_sph";
    nco_bool bTidy=False;
    double sigma=1.0e-14;
 
@@ -2894,21 +2672,22 @@ void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg)
       lat *= M_PI / 180.0;
    }
 
-   /* really dont like this */
-   if(NCO_SPH_PLY_TYP==poly_rll)
+   /* really dont like this - this is used for RLL grids*/
+   if(bSimple )
    {
-     b[2] = sin(lat);
+
      b[0] = cos(lat) * cos(lon);
      b[1] = cos(lat) * sin(lon);
+     b[2] = sin(lat);
 
      b[3]=lon;
      b[4]=lat;
 
 
    }
-
-   else if(NCO_SPH_PLY_TYP==poly_sph)
+   else
    {
+
 
      b[2] = sin(lat);
 
@@ -3327,7 +3106,6 @@ nco_rll_lhs_lat(double *p0, double *q0, double *q1)
 
 
 
-
 char
 nco_rll_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1) {
 
@@ -3362,10 +3140,11 @@ nco_rll_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   }
 
   if (code == '1') {
-    nco_geo_lonlat_2_sph(r0[3], r0[4], r0, bDeg);
+    nco_geo_lonlat_2_sph(r0[3], r0[4], r0, True, bDeg);
 
 
-}
+
+  }
   return code;
 
 

@@ -1,4 +1,4 @@
-/* $ANTLR 2.7.7 (20190930): "ncoGrammer.g" -> "ncoTree.cpp"$ */
+/* $ANTLR 2.7.7 (20160429): "ncoGrammer.g" -> "ncoTree.cpp"$ */
 #include "ncoTree.hpp"
 #include <antlr/Token.hpp>
 #include <antlr/AST.hpp>
@@ -4026,7 +4026,7 @@ var_sct * ncoTree::assign(ANTLR_USE_NAMESPACE(antlr)RefAST _t,
 					var_rhs->add_fst.vp=(void*)NULL;
 					}
 					
-					if(var_rhs->has_scl_fct);
+					if(var_rhs->has_scl_fct)
 					{
 					var_shp->has_scl_fct=1;  
 					var_shp->scl_fct.vp=var_rhs->scl_fct.vp;

@@ -2032,7 +2032,7 @@ end0:         if(bret)
                      var_rhs->add_fst.vp=(void*)NULL;
                    }
 
-                   if(var_rhs->has_scl_fct);
+                   if(var_rhs->has_scl_fct)
                    {
                      var_shp->has_scl_fct=1;  
                      var_shp->scl_fct.vp=var_rhs->scl_fct.vp;

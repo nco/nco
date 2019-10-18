@@ -9,7 +9,6 @@
 
 #include "nco_map.h" /* Map generation */
 
-extern poly_typ_enm NCO_SPH_PLY_TYP;
 
 int /* O [enm] Return code */
 nco_map_mk /* [fnc] Create ESMF-format map file */
@@ -547,11 +546,6 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_def_var(out_id,"yv_b",crd_typ,dmn_nbr_2D,dmn_ids,&dst_grd_crn_lat_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,dst_grd_crn_lat_id,shuffle,deflate,dfl_lvl);
 
-  /* Define global and "units" attributes */
-  aed_sct aed_mtd;
-  char *att_nm;
-  char var_nm[NC_MAX_NAME];
-
   /* Implement CMIP6 conventions in Taylor, Oehmke, Ullrich, Zender et al. (2019), "CMIP6 Specifications for Regridding Weights" https://docs.google.com/document/d/1BfVVsKAk9MAsOYstwFSWI2ZBt5mrO_Nmcu7rLGDuL08/edit */
   rcd=nco_char_att_put(out_id,NULL,"title","netCDF Operators (NCO) Offline Regridding Weight Generator");
   rcd=nco_char_att_put(out_id,NULL,"Conventions","NCAR-CSM");
@@ -787,9 +781,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   else
     pl_typ=poly_sph;
 
-   /* fixme: GLOBAL set pl_typ in nco_sph.c  nb:dont like this */
-   NCO_SPH_PLY_TYP=pl_typ;
-
   if(nco_dbg_lvl_get() >= nco_dbg_crr)
      (void)fprintf(stderr,"%s:%s(): Interpolation type=%s\n",nco_prg_nm_get(),fnc_nm, nco_poly_typ_sng_get(pl_typ)  );
 
@@ -857,14 +848,18 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
         break;
     }
 
-
-    pl_lst_out = nco_poly_lst_mk_sph(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out,
-                                 (size_t) grd_crn_nbr_out, grd_lon_typ_out, pl_typ);
+    if(pl_typ==poly_sph )
+      pl_lst_out = nco_poly_lst_mk_sph(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out, (size_t) grd_crn_nbr_out, grd_lon_typ_out);
+    else if(pl_typ==poly_rll)
+      pl_lst_out = nco_poly_lst_mk_rll(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out, (size_t) grd_crn_nbr_out, grd_lon_typ_out);
 
     pl_cnt_out=grd_sz_out;
 
-    pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,
-                                (size_t) grd_crn_nbr_in, grd_lon_typ_out, pl_typ);
+
+    if(pl_typ==poly_sph)
+      pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,(size_t) grd_crn_nbr_in, grd_lon_typ_out);
+    else if(pl_typ==poly_rll)
+      pl_lst_in = nco_poly_lst_mk_rll(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,(size_t) grd_crn_nbr_in, grd_lon_typ_out);
 
     pl_cnt_in=grd_sz_in;
     /* test new write func */

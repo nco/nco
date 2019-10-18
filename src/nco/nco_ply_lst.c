@@ -234,6 +234,159 @@ int *pl_nbr)
 
 
 poly_sct **             /* [O] [nbr]  size of array */
+nco_poly_lst_mk_rll(
+double *area, /* I [sr] Area of source grid */
+int *msk, /* I [flg] Mask on source grid */
+double *lat_ctr, /* I [dgr] Latitude  centers of source grid */
+double *lon_ctr, /* I [dgr] Longitude centers of source grid */
+double *lat_crn, /* I [dgr] Latitude  corners of source grid */
+double *lon_crn, /* I [dgr] Longitude corners of source grid */
+size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
+long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
+nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
+{
+
+  int idx=0;
+  int wrp_cnt=0;
+  int wrp_y_cnt=0;
+  int msk_cnt=0;
+
+  const char fnc_nm[]="nco_poly_lst_mk_rll()";
+
+  nco_bool bwrp;
+  /* no polar caps on a RLL grid */
+  nco_bool bchk_caps=False;
+
+  double tot_area=0.0;
+
+  double *lat_ptr=lat_crn;
+  double *lon_ptr=lon_crn;
+
+
+  poly_sct *pl=(poly_sct*)NULL_CEWI;
+
+  /* contains plain struct  sct with bmsk=False; */
+  poly_sct *pl_msk=((poly_sct*)NULL_CEWI);
+
+  poly_sct **pl_lst;
+
+
+
+  /* list size is grd_sz - invalid or masked polygons are repesented by a poly_sct->bmsk=False */
+  pl_lst=(poly_sct**)nco_malloc( sizeof (poly_sct*) * grd_sz);
+
+  pl_msk=nco_poly_init();
+  pl_msk->bmsk=False;
+
+
+  /* filter out wrapped lon cells */
+  if( grd_lon_typ == nco_grd_lon_nil || grd_lon_typ == nco_grd_lon_unk || grd_lon_typ == nco_grd_lon_bb )
+    bwrp=False;
+  else
+    bwrp=True;
+
+
+
+  // printf("About to print poly sct   grd_sz=%d grd_crn_nbr=%d\n", grd_sz, grd_crn_nbr);
+  for(idx=0;idx<grd_sz; idx++)
+  {
+
+    /* check mask and area */
+    if( msk[idx]==0 || area[idx] == 0.0 ) {
+      pl_lst[idx]= nco_poly_dpl(pl_msk);
+      msk_cnt++;
+      continue;
+
+    }
+
+
+
+    pl=nco_poly_init_lst(poly_rll, grd_crn_nbr,0, idx, lon_ptr, lat_ptr);
+    lon_ptr+=(size_t)grd_crn_nbr;
+    lat_ptr+=(size_t)grd_crn_nbr;
+
+    /* if poly is less  than a triangle then  null is returned*/
+    if(!pl ) {
+
+      if(nco_dbg_lvl_get()>= nco_dbg_dev)
+        fprintf(stderr, "%s(): WARNING cell(id=%d) less than a triange\n", fnc_nm, idx);
+
+      pl_lst[idx]= nco_poly_dpl(pl_msk);
+      msk_cnt++;
+      continue;
+
+    }
+
+    /* add centroid from input  */
+    pl->dp_x_ctr=lon_ctr[idx];
+    pl->dp_y_ctr=lat_ctr[idx];
+
+
+
+    /* pop shp */
+    nco_poly_shp_pop(pl);
+
+    /* add min max */
+    nco_poly_minmax_add(pl, grd_lon_typ, bchk_caps);
+
+
+    /* if coords cannot deal with wrapping */
+    if( pl->bwrp  && bwrp==False   )
+    {
+      pl=nco_poly_free(pl);
+      pl_lst[idx]= nco_poly_dpl(pl_msk);
+      msk_cnt++;
+      continue;
+
+    }
+
+
+    /* The area of an RLL grid needs to be re-calculated  as we have to take account of lines of latitude as great circles */
+    nco_poly_area_add(pl);
+
+    /* area NOT set so add to the area - nb this will be eventually written to the map file in nco_map_mk */
+    if(area[idx]==-1.0)
+      area[idx]=pl->area;
+
+
+    /* simple center of a rll cell - should always be inside of polygon */
+    nco_poly_ctr_add(pl, grd_lon_typ);
+
+
+
+
+    if(nco_dbg_lvl_get()>= nco_dbg_dev  )
+      if(pl->bwrp)
+        nco_poly_prn(pl,0);
+
+    /* for debugging */
+    tot_area+=pl->area;
+
+    /* for debugging total number of wrapped cells */
+    wrp_cnt+=pl->bwrp;
+
+
+    pl_lst[idx]=pl;
+
+
+  }
+
+
+  if(nco_dbg_lvl_get() >=  nco_dbg_dev )
+    (void)fprintf(stderr, "%s: %s size input list(%lu), size output list(%lu)  total area=%.15e  num wrapped= %d num caps=%d num masked=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, grd_sz, tot_area, wrp_cnt, wrp_y_cnt, msk_cnt);
+
+
+
+  pl_msk=nco_poly_free(pl_msk);
+
+  return pl_lst;
+
+}
+
+
+
+
+poly_sct **             /* [O] [nbr]  size of array */
 nco_poly_lst_mk_sph(
 double *area, /* I [sr] Area of source grid */
 int *msk, /* I [flg] Mask on source grid */
@@ -243,8 +396,7 @@ double *lat_crn, /* I [dgr] Latitude  corners of source grid */
 double *lon_crn, /* I [dgr] Longitude corners of source grid */
 size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
 long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
-nco_grd_lon_typ_enm grd_lon_typ, /* I [num]  */
-poly_typ_enm pl_typ)
+nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
 {
 
   int idx=0;
@@ -256,7 +408,7 @@ poly_typ_enm pl_typ)
 
   nco_bool bwrp;
   /* check to see if cell is a polar cap */
-  nco_bool bchk_caps=False;
+  nco_bool bchk_caps=True;
 
   double tot_area=0.0;
 
@@ -290,11 +442,6 @@ poly_typ_enm pl_typ)
     bwrp=True;
 
 
-  if(pl_typ== poly_sph)
-    bchk_caps=True;
-  else if( pl_typ==poly_rll)
-    bchk_caps=False;
-
   // printf("About to print poly sct   grd_sz=%d grd_crn_nbr=%d\n", grd_sz, grd_crn_nbr);
   for(idx=0;idx<grd_sz; idx++)
   {
@@ -302,13 +449,14 @@ poly_typ_enm pl_typ)
     /* check mask and area */
     if( msk[idx]==0 || area[idx] == 0.0 ) {
       pl_lst[idx]= nco_poly_dpl(pl_msk);
+      msk_cnt++;
       continue;
 
     }
 
 
 
-    pl=nco_poly_init_lst(pl_typ, grd_crn_nbr,0, idx, lon_ptr, lat_ptr);
+    pl=nco_poly_init_lst(poly_sph, grd_crn_nbr,0, idx, lon_ptr, lat_ptr);
     lon_ptr+=(size_t)grd_crn_nbr;
     lat_ptr+=(size_t)grd_crn_nbr;
 
@@ -319,6 +467,7 @@ poly_typ_enm pl_typ)
          fprintf(stderr, "%s(): WARNING cell(id=%d) less than a triange\n", fnc_nm, idx);
 
       pl_lst[idx]= nco_poly_dpl(pl_msk);
+      msk_cnt++;
       continue;
 
     }
@@ -335,23 +484,17 @@ poly_typ_enm pl_typ)
     /* add min max */
     nco_poly_minmax_add(pl, grd_lon_typ, bchk_caps);
 
-    /* manually add wrap flag */
-    // pl->bwrp= (fabs(pl->dp_x_minmax[1] - pl->dp_x_minmax[0]) >= 180.0);
 
     /* if coords cannot deal with wrapping */
     if( pl->bwrp  && bwrp==False   )
     {
       pl=nco_poly_free(pl);
       pl_lst[idx]= nco_poly_dpl(pl_msk);
+      msk_cnt++;
       continue;
 
     }
 
-    /* make leftermost vertex first in array
-    nco_poly_re_org(pl, lcl_dp_x, lcl_dp_y);
-    */
-
-    /* pl->area=area[idx]; */
 
     /* The area of an RLL grid needs to be re-calculated  as we have to take account of lines of latitude as great circles */
     nco_poly_area_add(pl);

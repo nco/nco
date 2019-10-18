@@ -1,0 +1,48 @@
+// check the totals in a map file
+// usage:  ncap2 -v -O -S map_file_checker.nco  map_in.nc tot.nc
+
+
+pi=3.14159265358979323844;
+
+a=1;
+a@area_ttl=area_a.ttl();
+a@mask_ttl=mask_a.ttl().int();;
+a@frac_ttl=frac_a.ttl();
+a@frac_min=frac_a.min();
+a@frac_max=frac_a.max();
+a@frac_rms=(frac_a-1.0).rms();
+
+b=1;
+b@area_ttl=area_b.ttl();
+b@mask_ttl=mask_b.ttl();
+b@frac_ttl=frac_b.ttl();
+b@frac_min=frac_b.min();
+b@frac_max=frac_b.max();
+b@frac_rms=(frac_b-1.0).rms();
+
+s=1;
+s@S_ttl=S.ttl();
+
+
+print("map file statistics\n");
+print(a@area_ttl,"area_a total=%.15g steradians");
+print(a@area_ttl / 4.0 / pi *100.0, "  ( %.15f%% )\n"); 
+
+print(a@mask_ttl, "mask_a total=%d\n");
+print(a@frac_ttl, "frac_a total=%.15f ");
+print(a@frac_min, "min=%.15f ");
+print(a@frac_max, "max=%.15f ");
+print(a@frac_rms, "rms=%.15f\n");  
+
+print("\n");
+print(b@area_ttl,"area_b total=%.15g steradians");
+print(b@area_ttl / 4.0 / pi *100.0, "  ( %.15f%% )\n"); 
+
+print(b@mask_ttl, "mask_b total=%d\n");
+print(b@frac_ttl, "frac_b total=%.15f ");
+print(b@frac_min, "min=%.15f ");
+print(b@frac_max, "max=%.15f ");
+print(b@frac_rms, "rms=%.15f\n");  
+
+print("\n");
+print(s@S_ttl,"S weights  total=%.15f\n");
