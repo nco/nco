@@ -2459,7 +2459,7 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_
 
   nco_bool bAddPnt=False;
 
-  KDPriority *kd_list_nw;
+
 
 
   char fnc_nm[]="kd_neighbour_intersect3";
@@ -2699,14 +2699,10 @@ int kd_nearest_intersect_wrp(KDTree *realTree, kd_box Xq, kd_box Xr, omp_mem_sct
 int kd_nearest_intersect(KDTree* realTree, kd_box Xq, omp_mem_sct *omp_mem, int bSort)
 {
 	int idx;
-	int m;
-	int node_cnt;
-
-    int nw_lcl_cnt=0;
+	int nw_lcl_cnt=0;
 	int ret_cnt=0;
 
-	KDPriority *list_srt;
-	KDPriority *list_end;
+
 
    const char fnc_nm[]="kd_nearest_intersect():";
 
@@ -2722,7 +2718,7 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, omp_mem_sct *omp_mem, int 
    */
 
 	//node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
-	node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, omp_mem,0,0);
+    (void)kd_neighbour_intersect3(realTree->tree,0,Xq, omp_mem,0,0);
 
 
     /*

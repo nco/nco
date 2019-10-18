@@ -546,11 +546,6 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_def_var(out_id,"yv_b",crd_typ,dmn_nbr_2D,dmn_ids,&dst_grd_crn_lat_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,dst_grd_crn_lat_id,shuffle,deflate,dfl_lvl);
 
-  /* Define global and "units" attributes */
-  aed_sct aed_mtd;
-  char *att_nm;
-  char var_nm[NC_MAX_NAME];
-
   /* Implement CMIP6 conventions in Taylor, Oehmke, Ullrich, Zender et al. (2019), "CMIP6 Specifications for Regridding Weights" https://docs.google.com/document/d/1BfVVsKAk9MAsOYstwFSWI2ZBt5mrO_Nmcu7rLGDuL08/edit */
   rcd=nco_char_att_put(out_id,NULL,"title","netCDF Operators (NCO) Offline Regridding Weight Generator");
   rcd=nco_char_att_put(out_id,NULL,"Conventions","NCAR-CSM");

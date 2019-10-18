@@ -1319,7 +1319,6 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
   double pi[NBR_SPH]={0.0};
 
   double pControl[NBR_SPH];
-  double Pcross[NBR_SPH];
 
 
 
