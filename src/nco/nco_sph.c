@@ -591,30 +591,6 @@ char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p,
 
 }
 
-/* nb a and b should have the same radius */
-double nco_sph_int_alg(double *a, double *b, double *c)
-{
-  double r;
-  double g;
-  double h;
-  double k;
-
-  r=sqrt(a[0]*a[0]+ a[1]*a[1] + a[2]*a[2]);
-
-  h= ( b[0]*a[2] - b[2]*a[0]  ) / ( b[1]*a[0] - b[0]*a[1] );
-
-  g= ( -a[1]*h - a[2] ) / a[0];
-
-  k=sqrt(  r*r / (  g*g + h*h+1.0  )  );
-
-  c[0]=g*k;
-  c[1]=h*k;
-  c[2]=k;
-
-  /* return the new radius */
-  return sqrt( c[0]*c[0]+c[1]*c[1]+c[2]*c[2]);
-
-}
 
 
 /* 1.0 - dot product normalized */
@@ -781,65 +757,6 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
 
 
 }
-
-
-
-/* see if Icross is inbetween  p0 and P1 - we already know that Icross is
- * in the plane formed by the three points (Origin, p0, p1) */
-nco_bool
-nco_sph_plane_int(double *p0, double *q0, double *r0)
-{
-
-  char fnc_nm[]="nco_sph_plane_int()";
-
-  nco_bool bRet=False;
-
-  double pqDot;
-  double prDot;
-  double qrDot;
-
-  double pqCross;
-
-  double id[NBR_SPH];
-
-    pqDot=1.0-nco_sph_dot_nm(p0,q0);
-    prDot=1.0-nco_sph_dot_nm(p0,r0);
-    qrDot=1.0-nco_sph_dot_nm(q0,r0);
-
-    //if(DEBUG_SPH)
-    //  (void)fprintf("%s:%s: pqDot=%.15f prDot=%.15f  qrDot=%.15f ", nco_prg_nm_get(), fnc_nm, pqDot, prDot, qrDot);
-
-
-    if( prDot >= qrDot)
-    {
-      if(prDot > pqDot +1.0e-14 ) return False;
-
-      /* r0 is in the right "direction */
-      if( signbit( nco_sph_cross2( p0,q0, id )) == signbit( nco_sph_cross2( p0,r0, id )) )
-        return True;
-
-      return False;
-
-    }
-    else
-    {
-
-      if(qrDot > pqDot + 1.0e-14)
-        return False;
-
-      /* r0 is in the right "direction */
-      if( signbit( nco_sph_cross2( q0,p0, id ) ) == signbit( nco_sph_cross2( q0,r0, id ) ) )
-        return True;
-
-      return False;
-
-
-    }
-
-    return False;
-}
-
-
 
 
 
