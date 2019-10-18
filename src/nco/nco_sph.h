@@ -218,7 +218,7 @@ void
 nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg);
 
 void
-nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg);
+nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bSimple, nco_bool bDeg);
 
 double
 nco_geo_lat_correct(double lat1, double lon1, double lon2);

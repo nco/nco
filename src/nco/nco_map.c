@@ -9,7 +9,6 @@
 
 #include "nco_map.h" /* Map generation */
 
-extern poly_typ_enm NCO_SPH_PLY_TYP;
 
 int /* O [enm] Return code */
 nco_map_mk /* [fnc] Create ESMF-format map file */
@@ -786,9 +785,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     pl_typ=poly_rll;
   else
     pl_typ=poly_sph;
-
-   /* fixme: GLOBAL set pl_typ in nco_sph.c  nb:dont like this */
-   NCO_SPH_PLY_TYP=pl_typ;
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr)
      (void)fprintf(stderr,"%s:%s(): Interpolation type=%s\n",nco_prg_nm_get(),fnc_nm, nco_poly_typ_sng_get(pl_typ)  );

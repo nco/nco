@@ -448,9 +448,8 @@ void nco_poly_minmax_add
         }
 
 
-
-        nco_geo_lonlat_2_sph(pPole[0],pPole[1],pPole, bDeg);
-        nco_geo_lonlat_2_sph(pControl[0],pControl[1],pControl, bDeg);
+        nco_geo_lonlat_2_sph(pPole[0], pPole[1], pPole, False, bDeg);
+        nco_geo_lonlat_2_sph(pControl[0], pControl[1], pControl, False, bDeg);
 
         /* see if pole is inside polygon */
         is_caps=( nco_sph_pnt_in_poly(pl->shp, pl->crn_nbr,pControl, pPole ) %2);
@@ -1231,15 +1230,25 @@ poly_sct *pl)
   }
 
 
-  if( pl->pl_typ == poly_sph || pl->pl_typ == poly_rll)
+  if( pl->pl_typ == poly_sph)
   {
     nco_bool bDeg=True;
     for (idx = 0; idx < pl->crn_nbr; idx++)
-      nco_geo_lonlat_2_sph(pl->dp_x[idx], pl->dp_y[idx], pl->shp[idx], bDeg );
+      nco_geo_lonlat_2_sph(pl->dp_x[idx], pl->dp_y[idx], pl->shp[idx], False, bDeg);
 
   }
 
-  } /* end */
+  else if(pl->pl_typ == poly_rll)
+  {
+    nco_bool bDeg=True;
+    for (idx = 0; idx < pl->crn_nbr; idx++) {
+      nco_geo_lonlat_2_sph(pl->dp_x[idx], pl->dp_y[idx], pl->shp[idx], True, bDeg);
+    }
+
+  }
+
+
+} /* end */
 
 
 void

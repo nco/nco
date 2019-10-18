@@ -53,13 +53,6 @@
 /* all in this file */
 int DEBUG_SPH=0;
 
-/* fixme: This sets the grid type poly_sph or poly_rll -
- *  I really dont like this. It is currrently
- *   being used in nco_geo_lon_2_sph */
-
-poly_typ_enm NCO_SPH_PLY_TYP;
-
-
 /* global variables for latitude, longitude in RADIANS
    these may be set in nco_poly.c or
    should be safe with OPenMP   */
@@ -2187,7 +2180,7 @@ int nco_sph_mk_control(poly_sct *sP, nco_bool bInside,  double* pControl  )
    if(bInside)
    {
      bDeg=True;
-     nco_geo_lonlat_2_sph(sP->dp_x_ctr,sP->dp_y_ctr , pControl, bDeg);
+     nco_geo_lonlat_2_sph(sP->dp_x_ctr, sP->dp_y_ctr, pControl, False, bDeg);
      return NCO_NOERR;
    }
 
@@ -2261,7 +2254,7 @@ int nco_sph_mk_control(poly_sct *sP, nco_bool bInside,  double* pControl  )
    }
 
    /* remember clat, clon in radians */
-   nco_geo_lonlat_2_sph(clon, clat, pControl, bDeg );
+  nco_geo_lonlat_2_sph(clon, clat, pControl, False, bDeg);
 
    return NCO_NOERR;
 
@@ -2668,9 +2661,10 @@ void nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2,
 
 
 /* assumes lon, lat in degrees */
-void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg)
+void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bSimple, nco_bool bDeg)
 {
 
+   char fnc_nm[]="nco_geo_lonlat_2_sph";
    nco_bool bTidy=False;
    double sigma=1.0e-14;
 
@@ -2679,21 +2673,22 @@ void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bDeg)
       lat *= M_PI / 180.0;
    }
 
-   /* really dont like this */
-   if(NCO_SPH_PLY_TYP==poly_rll)
+   /* really dont like this - this is used for RLL grids*/
+   if(bSimple )
    {
-     b[2] = sin(lat);
+
      b[0] = cos(lat) * cos(lon);
      b[1] = cos(lat) * sin(lon);
+     b[2] = sin(lat);
 
      b[3]=lon;
      b[4]=lat;
 
 
    }
-
-   else if(NCO_SPH_PLY_TYP==poly_sph)
+   else
    {
+
 
      b[2] = sin(lat);
 
@@ -3112,7 +3107,6 @@ nco_rll_lhs_lat(double *p0, double *q0, double *q1)
 
 
 
-
 char
 nco_rll_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1) {
 
@@ -3147,10 +3141,11 @@ nco_rll_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   }
 
   if (code == '1') {
-    nco_geo_lonlat_2_sph(r0[3], r0[4], r0, bDeg);
+    nco_geo_lonlat_2_sph(r0[3], r0[4], r0, True, bDeg);
 
 
-}
+
+  }
   return code;
 
 
