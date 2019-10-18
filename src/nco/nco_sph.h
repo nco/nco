@@ -169,15 +169,6 @@ nco_sph_add_pnt(double **R, int *r, double *P);
 nco_bool
 nco_sph_between(double a, double b, double x);
 
-nco_bool
-nco_sph_lonlat_between(double *a, double *b, double *x);
-
-int
-nco_sph_parallel(double *a, double *b, double *c, double *d, double *p, double *q);
-
-int
-nco_sph_parallel_lat(double *a, double *b, double *c, double *d, double *p, double *q);
-
 
 void
 nco_sph_prn_pnt(const char *sMsg, double *p, int style, nco_bool bRet);
@@ -259,7 +250,8 @@ nco_rll_lhs(double *p0, double *QCross);
 int
 nco_rll_lhs_lat(double *p0, double *q0, double *q1);
 
-
+void
+nco_rll_add_pnt(double **R, int *r, double *P);
 
 /*********************** functions for matrix*****************************************************/
 void
