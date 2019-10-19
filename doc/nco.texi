@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha09
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 1 October 2019
+@set update-date 19 October 2019
 @set update-month October 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6495,8 +6495,19 @@ The keys that hold the longitude and latitude gridtypes (which
 are, by the way, independent of eachother) are @var{lon_typ} and
 @var{lat_typ}. 
 The @var{lat_typ} options for global grids are @samp{uni} for
-Uniform, @samp{cap} (or @samp{fv}) for Capped (equivalent to
-@acronym{FV}), and @samp{gss} for Gaussian.  
+Uniform, @samp{cap} (or @samp{fv}) for Cap@footnote{
+The term @acronym{FV} confusing because it is correct to call
+any Finite Volume grid (including arbitrary polygons) an
+@acronym{FV} grid.
+However, an @acronym{FV} grid has also been used for many years
+to described the particular type of rectangular grid with caps
+at the poles used to discretize global model grids for use with
+the Lin-Rood dynamical core.
+To reduce confusion, we use ``Cap grid'' to refer to the latter
+and reserv @acronym{FV} as a straightforward acronym for Finite
+Volume.},
+and @samp{gss} for Gaussian.
+
 These values are all case-independent, so @samp{Gss} and @samp{gss} both
 work.
 As of version 4.7.7 (September, 2018), @acronym{NCO} generates perfectly
@@ -23467,7 +23478,8 @@ small-circle edges, such as the latitude circles in @acronym{RLL}
 grids. 
 
 Specifying @code{tempest} invokes TempestRemap weight-generation
-with default options.
+with default options, which only work with Finite-Volume
+(@acronym{FV}) grids
 @cindex TempestRemap
 @cindex Tempest2
 @cindex @code{se2fv_flx}
@@ -23514,8 +23526,22 @@ ncremap -m map.nc in.nc out.nc
 This causes @command{ncremap} to automatically invoke TempestRemap with
 the boutique options 
 @samp{--in_type cgll --in_np 4 --out_type fv --out_double --mono}
-that are recommended by @acronym{E3SM} for conservative and monotone
+that are recommended by @acronym{E3SM} for conservative and monotone  
 remapping of fluxes.
+@cindex Galerkin methods
+@cindex @code{cgll}
+@cindex @code{dgll}
+@cindex @code{mono}
+@cindex @code{--mono}
+TempestRemap options have the following meanings:
+@code{mono} specifies a monotone remapping, i.e., one that does not
+generate any new extrema in the field variables.a
+@code{cgll} indicates the input or output are represented by a
+continuous Galerkin method on Gauss-Lobatto-Legendre nodes.
+This is appropriate for spectral element datasets.
+(TempestRemap also supports, although @acronym{NCO} does not invoke,
+the @code{dgll} option for a discontinuous Galerkin method on
+Gauss-Lobatto-Legendre nodes.)
 It is equivalent to, yet simpler to remember and to invoke than 
 @example
 @verbatim
@@ -23524,6 +23550,19 @@ ncremap -a tempest --src_grd=se.g --dst_grd=fv.nc -m map.nc \
         --out_double --mono'
 @end verbatim
 @end example
+Specifying @samp{-a tempest} without additional options in the
+@samp{-W} clause causes TempestRemap to employ defaults. 
+The default configuration requires both input and output grids to be
+@acronym{FV}, and produces a conservative, non-monotonic mapping.
+The @samp{-a fv2fv} option described below may produce more desirable
+results than this default for many users.
+Using @samp{-a tempest} alone without other options for spectral
+element grids will lead to undefined and likely unintentional
+results. 
+In other words, @samp{-a tempest} is intended to be used in
+conjunction with a @samp{-W} option clause to supply your own
+combination of TempestRemap options that does not duplicate one of the 
+boutique option collections that already has its own name.
 
 The full list of supported canonical algorithm names, their synonyms,
 and boutique options passed to @command{GenerateOfflineMap} are:

@@ -2337,10 +2337,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   char att_sng_ttl[]="title"; /* [sng] ERWG 7.1 weight_only uses "title" not "Conventions" attribute */
   char name0_sng[]="name0"; /* [sng] Attribute where Tempest stores least-rapidly-varying dimension name */
   
-  long att_sz;
-
-  nc_type att_typ;
-
   nco_rgr_mpf_typ_enm nco_rgr_mpf_typ=nco_rgr_mpf_nil; /* [enm] Type of remapping file */
   nco_rgr_typ_enm nco_rgr_typ=nco_rgr_grd_nil; /* [enm] Type of grid conversion */
   
@@ -5230,10 +5226,11 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   long idx; /* [idx] Counting index for unrolled grids */
   short int bnd_idx;
 
-  nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
-  nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
   nco_bool flg_mth_csz=True; /* [flg] Use CSZ's advancing polygon bisector method */
   nco_bool flg_mth_ctr=!flg_mth_csz; /* [flg] Use centroid method to compute polygon area */
+  /* Shift to this method once we pass rgr into nco_sph_plg_area() */
+  //nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
+  //nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
   //  ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
   //  tri_arc_typ=rgr->tri_arc_typ; /* [enm] Arc-type for triangle edges */
   //  if(ply_tri_mth == nco_ply_tri_mth_csz) flg_mth_csz=True;
@@ -6675,8 +6672,6 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_crn_lon_id,shuffle,deflate,dfl_lvl);
 
   /* Define global and "units" attributes */
-  aed_sct aed_mtd;
-  char *att_nm;
   char *att_val;
   
   rcd=nco_char_att_put(out_id,NULL,"title",rgr->grd_ttl);
@@ -7102,7 +7097,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long dmn_srt[dmn_nbr_grd_max];
   long dmn_cnt[dmn_nbr_grd_max];
 
-  long att_sz;
   long bnd_idx;
   long bnd_nbr=NC_MIN_INT; /* [nbr] Number of bounds in gridcell */
   long col_idx;
@@ -7128,8 +7122,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long int idx_crn_ur;
   long int idx_crn_ul;
   
-  nc_type att_typ;
-
   nco_bool FL_RTR_RMT_LCN;
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=True; /* Option O */
