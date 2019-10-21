@@ -445,7 +445,7 @@ vrt_xtr='' # [sng] Vertical extrapolation type (mss_val|nrs_ngh)
 wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable
 wgt_exe_nco='ncks' # [sng] NCO executable
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap executable
-wgt_typ='esmf' # [sng] Weight-generator program ('esmf' or 'tempest')
+wgt_typ='esmf' # [sng] Weight-generator program ('esmf' or 'nco' or 'tempest')
 wgt_opt='' # [sng] Weight-generator options
 wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF < 7.1.0r)
 #wgt_opt_esmf='--ignore_unmapped --ignore_degenerate' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF >= 7.1.0r) (ignore_degenerate is required for CICE regridding with ESMF >= 7.1.0r, and is not supported or required with ESMF < 7.1.0r)
@@ -929,6 +929,9 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
     # alg_sng in comments is for E3SM naming convention map_src_to_dst_${alg_sng}.${dt_sng}.nc
     alg_opt='tempest'
     wgt_typ='tempest'
+    if [ -n "${wgt_opt_usr}" ]; then 
+	printf "${spt_nm}: INFO Specifying the TempestRemap default algorithm '--alg_typ=tempest' without giving any additional options with -W (--wgt_opt) works only for the default TR configuration where both input and output grids are Finite Volume (FV) grids. The default TR algorithm is conservative and non-monotonic.\n"
+    fi # !wgt_opt_usr    
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
     wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --out_double --mono"
     alg_opt='se2fv_flx'
@@ -1061,7 +1064,7 @@ fi # !wgt_typ
 # NB: Define after wgt_typ-block so user can override default options
 if [ -n "${wgt_opt_usr}" ]; then 
     wgt_opt=${wgt_opt_usr}
-fi # !wgt_usr    
+fi # !wgt_opt_usr    
 if [ -n "${wgt_usr}" ]; then 
     wgt_cmd=${wgt_usr}
 fi # !wgt_usr    
@@ -1207,12 +1210,16 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 fi # !mpas
 if [ "${prc_typ}" = 'mwf' ]; then 
     [[ ${dbg_lvl} -ge 1 ]] && date_mwf=$(date +"%s")
-    # Assume destination grids ending in .nc and .g are SCRIP (and thus FV) and Exodus (and thus SE), respectively
+    # Assume destination grid-files that end in .nc are SCRIP (and thus FV), and .g means Exodus (and thus SE)
     # https://stackoverflow.com/questions/407184/how-to-check-the-extension-of-a-filename-in-a-bash-script
-    if [[ ${grd_dst} == *.g ]]; then 
+    if [[ ${grd_dst} == *.g ]]; then
 	alg_lst='fv2se_flx fv2se_stt fv2se_alt'
     else
-	alg_lst='aave blin ndtos nstod patc'
+	if [ -n "${wgt_opt_usr}" ] && [ "${wgt_opt_usr}" = 'tempest' ]; then
+	    alg_lst='fv2fv tempest'
+	else # !wgt_opt_usr
+	    alg_lst='aave blin ndtos nstod patc'
+	fi # !wgt_opt_usr
     fi # !grd_dst
     # Compute FV->SE maps
     if [ -n "${hnt_src}" ]; then
@@ -1259,7 +1266,11 @@ if [ "${prc_typ}" = 'mwf' ]; then
     if [[ ${grd_dst} == *.g ]]; then 
 	alg_lst='se2fv_flx se2fv_stt se2fv_alt'
     else
-	alg_lst='aave blin ndtos nstod patc'
+	if [ -n "${wgt_opt_usr}" ] && [ "${wgt_opt_usr}" = 'tempest' ]; then
+	    alg_lst='fv2fv tempest'
+	else # !wgt_opt_usr
+	    alg_lst='aave blin ndtos nstod patc'
+	fi # !wgt_opt_usr
     fi # !grd_dst
     if [ -n "${hnt_src}" ]; then 
        hnt_dst_sng="--hnt_dst=${hnt_src/src/dst}"
