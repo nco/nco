@@ -763,7 +763,7 @@ if [ ${vrs_prn} = 'Yes' ]; then
     if [ "${hrd_pth_fnd}" = 'Yes' ]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else
-	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths for HPCs at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
+	printf "Config: No hardcoded machine-dependent path/module overrides. (If desired, turn-on NCO hardcoded paths at supported national labs with \"export NCO_PATH_OVERRIDE=Yes\").\n"
     fi # !hrd_pth_fnd
     exit 0
 fi # !vrs_prn

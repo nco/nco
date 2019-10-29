@@ -8084,7 +8084,7 @@ also rebases any climatology boundaries associated with the record
 coordinate (e.g., @code{climatology_bounds}) (@pxref{CF Conventions}). 
 
 As of @acronym{NCO} version 4.6.3 (December, 2016), @acronym{NCO}
-also rebases the time coordinate when the unit between files differ
+also rebases the time coordinate when the units differ between files.
 For example the first file may have @code{units="days since 2014-03-01"} 
 and  the second file @code{units="hours since 2014-03-10 00:00"}.
 
@@ -26052,8 +26052,8 @@ whose attributes are to be renamed.
 <a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
 @end html
 @cartouche
-Caveat lector: Unforunately from 2007--present (January, 2019) the
-netCDF library (versions 4.0.0--4.6.2) contains bugs or limitations
+Caveat lector: Unforunately from 2007--present (November, 2019) the
+netCDF library (versions 4.0.0--4.7.2) contains bugs or limitations
 that sometimes prevent @acronym{NCO} from correctly renaming coordinate
 variables, dimensions, and groups in netCDF4 files. 
 (To our knowledge the netCDF library calls for renaming always work
