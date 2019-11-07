@@ -1109,12 +1109,12 @@ int *pl_cnt_vrl_ret){
 
           if (1) {
             int kdx;
-            (void) fprintf(stderr, "/** following pl_lst_in[%lu]  **/\n", idx);
+            (void) fprintf(stderr, "# /** following pl_lst_in[%lu]  **/\n", idx);
             nco_poly_prn(pl_lst_in[idx], 0);
-            (void) fprintf(stderr, "/** potential overlaps to  follow  **/\n");
+            (void) fprintf(stderr, "# /** potential overlaps to  follow  **/\n");
             for (kdx = 0; kdx < vrl_cnt; kdx++) {
               nco_poly_prn((poly_sct *) mem_lst[thr_idx].kd_list[kdx].elem->item, 0);
-              (void)fprintf(fp_stderr, "vrl_area=%.15e\n",mem_lst[thr_idx].kd_list[kdx].area );
+              (void)fprintf(fp_stderr, "# vrl_area=%.15e\n",mem_lst[thr_idx].kd_list[kdx].area );
             }
 
             (void) fprintf(stderr, "/************* end dirty rats ***************/\n");

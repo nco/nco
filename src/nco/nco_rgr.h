@@ -150,7 +150,8 @@ extern "C" {
 
   void
   nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
-  (const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
+  (rgr_sct * const rgr, /* I [sct] Regridding structure */
+   const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
    const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
    const long grd_sz_nbr, /* [nbr] Number of gridcells in grid */
    const int bnd_nbr, /* [nbr] Number of bounds in gridcell */

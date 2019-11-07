@@ -598,7 +598,7 @@ poly_sct *pl){
 
   if(pl->pl_typ == poly_sph )
   {
-    nco_sph_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
+    nco_msh_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
 
     /* charlies function can sometimes return a NaN */
     if (isnan(pl->area))
@@ -689,10 +689,11 @@ nco_poly_prn
   switch(style){ 
 
     case 0:
-      (void)fprintf(stderr,"\n%s: pl_typ=%d, crn_nbr=%d bwrp=%d bwrp_y=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->bwrp_y, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
+      (void)fprintf(stderr,"\n# %s: pl_typ=%d, crn_nbr=%d bwrp=%d bwrp_y=%d mem_flg=%d area=%.20e src_id=%d dst_id=%d x_ctr=%f y_ctr=%f\n", nco_prg_nm_get(),pl->pl_typ, pl->crn_nbr, pl->bwrp, pl->bwrp_y, pl->mem_flg, pl->area, pl->src_id, pl->dst_id, pl->dp_x_ctr, pl->dp_y_ctr);
+      (void)fprintf(stderr, "%d\n", pl->crn_nbr);
       for(idx=0; idx<pl->crn_nbr; idx++)
 	    (void)fprintf(stderr,"%3.15f %3.15f\n",pl->dp_x[idx], pl->dp_y[idx]);
-      (void)fprintf(stderr,"\n");
+      (void)fprintf(stderr,"#\n");
 
       /*
       (void)fprintf(stderr,"dp_y ");
@@ -700,7 +701,7 @@ nco_poly_prn
 	(void)fprintf(stderr,"%20.14f, ",pl->dp_y[idx]);
       (void)fprintf(stderr,"\n");
        */
-      (void)fprintf(stderr,"min/max x( %g, %g) y(%g %g)\n", pl->dp_x_minmax[0], pl->dp_x_minmax[1], pl->dp_y_minmax[0], pl->dp_y_minmax[1]);
+      (void)fprintf(stderr,"# min/max x( %g, %g) y(%g %g)\n", pl->dp_x_minmax[0], pl->dp_x_minmax[1], pl->dp_y_minmax[0], pl->dp_y_minmax[1]);
       
       break;
 

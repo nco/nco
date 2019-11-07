@@ -753,33 +753,123 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
 
 
 
+/* nb this func assumes that edge p and edge q are NOT parallel and that we have only one or two zero's 
+ * pqCross MUST have at least one zero for this to work  */ 
+nco_bool
+nco_sph_seg_edge(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pqCross, char *codes)
+{
+
+  const char fnc_nm[]="nco_sph_seg_edge()";
+  
+
+  int flg_ab=0;
+  int flg_cd=0;
+  
+
+  if(pqCross[0]==0)
+  {
+    nco_sph_adi(r0,p0);
+    flg_ab=2;
+  }  
+  else if(pqCross[1]==0)
+  {
+    nco_sph_adi(r0,p1);
+    flg_ab=3;
+  }  
+  
+  else if(pqCross[2]==0)
+  {
+    nco_sph_adi(r0,q0);
+    flg_cd=2;
+  }
+  
+  else if(pqCross[3]==0)
+  {
+    nco_sph_adi(r0,q1);
+    flg_cd=3;
+  }  
+  
+  if(flg_ab )
+    flg_cd=nco_sph_metric_int(q0,q1, r0);
+  else if(flg_cd)
+    flg_ab=nco_sph_metric_int(p0,p1, r0);
+
+
+  if(DEBUG_SPH ) {
+    fprintf(stderr, "%s:  flg_ab=%d flg_cd=%d\n", fnc_nm, flg_ab, flg_cd);
+    nco_sph_prn_pnt("nco_sph_seg_edge(): pos point ", r0, 4, True);
+  }
+
+  if(!flg_ab || !flg_cd)
+     return False;
+
+  codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
+  codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
+
+
+
+  if(DEBUG_SPH )
+    fprintf(stderr, "%s: codes=%s\n", fnc_nm, codes);
+
+
+  return True;
+
+
+}
+
+
 nco_bool
 nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int flg_snp_to, char *codes)
 {
   const char fnc_nm[]="nco_sph_seg_int()";
 
 
-  nco_bool DEBUG_LCL=False;
   nco_bool bInt=False;
-  nco_bool bValid=False;
+  nco_bool bSetCnd=False;
 
-  nco_bool bTstVertex=True;
+  nco_bool bTstVertex=False;
   int flg_cd=0;
   int flg_ab=0;
 
 
   double n1;
+
   /* possible intersection point */
   double pcnd[NBR_SPH];
   /* placeholder ? */
   double pt[NBR_SPH]={0.0,0.0,0.0,0.0,0.0};
 
+  int pqCross[4];
 
 
   /* set to no intersection */
   codes[0]='0';
   codes[1]='0';
 
+
+  /* populate pqCross */
+  {
+    double Pcross[NBR_SPH];
+    double Qcross[NBR_SPH];
+
+    nco_sph_cross(p0, p1, Pcross);
+    nco_sph_cross(q0, q1, Qcross);
+
+    pqCross[0] = nco_sph_lhs(p0, Qcross);
+    pqCross[1] = nco_sph_lhs(p1, Qcross);
+    pqCross[2] = nco_sph_lhs(q0, Pcross);
+    pqCross[3] = nco_sph_lhs(q1, Pcross);
+
+    if (!pqCross[0] || !pqCross[1] || !pqCross[2] || !pqCross[3]) {
+      if (DEBUG_SPH)
+        (void) fprintf(stderr, "%s: possible edge int\n", fnc_nm);
+
+      if (nco_sph_seg_edge(p0, p1, q0, q1, r0, r1, pqCross, codes))
+        return True;
+
+    }
+
+  }
 
   /* pre test for vertex/vertex intersections */
  if(bTstVertex)
@@ -795,15 +885,9 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
    if(flg_ab && flg_cd)
    {
-     if(flg_ab==2)
-       codes[0]='t';
-     else if(flg_ab==3)
-       codes[0]='h';
 
-     if(flg_cd==2)
-       codes[1]='t';
-     else if(flg_cd==3)
-       codes[1]='h';
+     codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
+     codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
 
 
      if(DEBUG_SPH)
@@ -829,13 +913,19 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   if (DEBUG_SPH)
     fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm,  (bInt ?  "True" : "False"), codes, pt[0], pt[1], pt[2] );
 
-
-  if(!bInt ||  pt[0] < -1.0e-10  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-10) )
+  if(!bInt )
     return False;
 
+
+  if(   pt[0] < -1.0e-15  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-15) )
+     return False;
+
+
+
+
   /* from here on we have some kind of intersection */
-
-
+  if(!bSetCnd)
+  {
     /* genuine intersection point not end point */
     pcnd[0] = q0[0] + pt[0] * (q1[0] - q0[0]);
     pcnd[1] = q0[1] + pt[0] * (q1[1] - q0[1]);
@@ -851,63 +941,36 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
     }
     nco_sph_add_lonlat(pcnd);
 
-    bValid=nco_sph_metric_int(p0,p1, pcnd);
+    bSetCnd=True;
 
-    if(DEBUG_SPH) {
+  }
+
+  flg_ab=nco_sph_metric_int(p0,p1, pcnd);
+
+  if(DEBUG_SPH) {
       nco_sph_prn_pnt("nco_sph_seg_int_: pos point ", pcnd, 4, True);
-      (void)fprintf(stderr, "%s: bValid=%s\n", fnc_nm,  (bValid ?  "True" : "False") );
-    }
-
-    /*
-    if ( pt[0] < -1.0e-10  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-10)  )
-      return False;
-    */
+      (void)fprintf(stderr, "%s: flg_ab=%d\n", fnc_nm,  flg_ab );
+  }
 
 
-    if(!bValid)
+
+  if(!flg_ab)
       return False;
 
-
   /* from here on we have a valid point */
-   if(!nco_sph_metric(pcnd,p0)) {
-     flg_ab = 2;
-     // memcpy(r0, p0, sizeof(double)*NBR_SPH);
-
-   }else if(!nco_sph_metric(pcnd, p1)) {
-     flg_ab = 3;
-     // memcpy(r0, p1, sizeof(double)*NBR_SPH);
-   }else
-     flg_ab=1;
-
-
-  /* from here on we have a valid point */
-  if(!nco_sph_metric(pcnd,q0)) {
+  if(!nco_sph_metric(pcnd,q0))
     flg_cd = 2;
-    // memcpy(r0, q0, sizeof(double)*NBR_SPH);
-  }else if(!nco_sph_metric(pcnd, q1)) {
+  else if(!nco_sph_metric(pcnd, q1))
     flg_cd = 3;
-    // memcpy(r0, p1, sizeof(double)*NBR_SPH);
-  }else
+  else
     flg_cd=1;
 
 
-
-  if(flg_ab==2)
-     codes[0]='t';
-   else if(flg_ab==3)
-     codes[0]='h';
-   else
-     codes[0]='1';
-
-   if(flg_cd==2)
-     codes[1]='t';
-   else if(flg_cd==3)
-     codes[1]='h';
-   else
-     codes[1]='1';
+  codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
+  codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
 
 
-    if(DEBUG_SPH )
+  if(DEBUG_SPH )
       fprintf(stderr, "%s: codes=%s tpar=pt[0]=%.15f\n", fnc_nm, codes, pt[0]  );
 
     memcpy(r0, pcnd, sizeof(double)*NBR_SPH);
@@ -1332,7 +1395,7 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
     nco_sph_mk_control(sP, bInside, pControl);
 
 
-  if(DEBUG_LCL)
+  if(DEBUG_SPH)
     nco_sph_prn_pnt("nco_sph_intersect_pre()/control pnt", pControl,3,True);
 
   n = sP->crn_nbr;
@@ -1577,6 +1640,7 @@ int nco_sph_lhs(double *Pi, double *Qi)
    const char *fnc_nm="nco_sph_lhs()";
    double ds;
 
+
    ds= nco_sph_dot_nm(Pi, Qi);
 
    if(0 && DEBUG_SPH)
@@ -1735,6 +1799,7 @@ double  nco_sph_cross(double *a, double *b, double *c)
 
    return n1;
 
+
 }
 
 double nco_sph_rad(double *a){
@@ -1781,7 +1846,6 @@ Sin(double theta, nco_bool blon){
 
     return ms;
 }
-
 
 
 double
@@ -2690,7 +2754,6 @@ void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bSimple, n
 
 
      b[2] = sin(lat);
-
 
      if (fabs(b[2]) == 1.0) {
        b[0] = 0.0;
