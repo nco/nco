@@ -598,7 +598,7 @@ poly_sct *pl){
 
   if(pl->pl_typ == poly_sph )
   {
-    nco_sph_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
+    nco_msh_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
 
     /* charlies function can sometimes return a NaN */
     if (isnan(pl->area))
