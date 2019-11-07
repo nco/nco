@@ -3101,12 +3101,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(flg_grd_out_1D && flg_bnd_1D_usable){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"INFO: Diagnosing area_out for 1D grid\n");
       /* Area of unstructured grids requires spherical trigonometry */
-      nco_sph_plg_area(lat_bnd_out,lon_bnd_out,col_nbr_out,bnd_nbr_out,area_out);
+      nco_sph_plg_area(rgr, lat_bnd_out,lon_bnd_out,col_nbr_out,bnd_nbr_out,area_out);
     } /* !1D */
     if(flg_grd_out_crv){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"INFO: Diagnosing area_out for curvilinear grid\n");
       /* Area of curvilinear grids requires spherical trigonometry */
-      nco_sph_plg_area(lat_crn_out,lon_crn_out,grd_sz_out,bnd_nbr_out,area_out);
+      nco_sph_plg_area(rgr, lat_crn_out,lon_crn_out,grd_sz_out,bnd_nbr_out,area_out);
     } /* !flg_grd_out_crv */
     if(flg_grd_out_rct && nco_grd_2D_typ != nco_grd_2D_unk){
       /* Mr. Enenstein and George O. Abell taught me the area of spherical zones
@@ -5151,7 +5151,8 @@ nco_lat_wgt_gss /* [fnc] Compute and return sine of Gaussian latitudes and their
   
 void
 nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
-(const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
+(rgr_sct * const rgr,  /* I [sct] Regridding structure */
+ const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
  const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
  const long col_nbr, /* [nbr] Number of columns in grid */
  const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
@@ -6611,7 +6612,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
 
   if(flg_grd_crv){
     /* Area of arbitrary curvilinear grids requires spherical trigonometry */
-    nco_sph_plg_area(grd_crn_lat,grd_crn_lon,grd_sz_nbr,grd_crn_nbr,area);
+    nco_sph_plg_area(rgr, grd_crn_lat,grd_crn_lon,grd_sz_nbr,grd_crn_nbr,area);
   }else{
     /* Area of rectangular spherical zones from elementary calculus results
        20150906: Half-angle formulae for better conditioning improve area normalization for 801x1600 by 2.0e-15 
@@ -8787,7 +8788,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(nco_dbg_lvl_get() >= nco_dbg_std && flg_dgn_area) (void)fprintf(stdout,"%s: INFO %s reports diagnosing area from cell boundaries...\n",nco_prg_nm_get(),fnc_nm);
     if(flg_grd_crv || flg_grd_1D){
       /* Area of arbitrary unstructured or curvilinear grids requires spherical trigonometry */
-      nco_sph_plg_area(grd_crn_lat,grd_crn_lon,grd_sz_nbr,grd_crn_nbr,area);
+      nco_sph_plg_area(rgr, grd_crn_lat,grd_crn_lon,grd_sz_nbr,grd_crn_nbr,area);
     }else if(flg_grd_2D){
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
 	for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
