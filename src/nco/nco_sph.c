@@ -761,10 +761,6 @@ nco_sph_seg_edge(double *p0, double *p1, double *q0, double *q1, double *r0, dou
 
   const char fnc_nm[]="nco_sph_seg_edge()";
   
-  nco_bool isP=False;
-  nco_bool isQ=False;
-  
-  nco_bool bValid=False;
 
   int flg_ab=0;
   int flg_cd=0;
@@ -773,80 +769,47 @@ nco_sph_seg_edge(double *p0, double *p1, double *q0, double *q1, double *r0, dou
   if(pqCross[0]==0)
   {
     nco_sph_adi(r0,p0);
-    isP=True;
-    
+    flg_ab=2;
   }  
   else if(pqCross[1]==0)
   {
     nco_sph_adi(r0,p1);
-    isP=True;
-    
+    flg_ab=3;
   }  
   
   else if(pqCross[2]==0)
   {
     nco_sph_adi(r0,q0);
-    isQ=True;
+    flg_cd=2;
   }
   
   else if(pqCross[3]==0)
   {
     nco_sph_adi(r0,q1);
-    isQ=True;
-    
-    
+    flg_cd=3;
   }  
   
-  if(isP)
-    bValid=nco_sph_metric_int(q0,q1, r0);  
-  else if(isQ)
-    bValid=nco_sph_metric_int(p0,p1, r0);
-  
-  if(!bValid)
+  if(flg_ab )
+    flg_cd=nco_sph_metric_int(q0,q1, r0);
+  else if(flg_cd)
+    flg_ab=nco_sph_metric_int(p0,p1, r0);
+
+
+  if(DEBUG_SPH ) {
+    fprintf(stderr, "%s:  flg_ab=%d flg_cd=%d\n", fnc_nm, flg_ab, flg_cd);
+    nco_sph_prn_pnt("nco_sph_seg_edge(): pos point ", r0, 4, True);
+  }
+
+  if(!flg_ab || !flg_cd)
      return False;
 
-  /* from here on we have a valid point */
-  
-  if(!nco_sph_metric(r0,p0)) {
-    flg_ab = 2;
-    // memcpy(r0, p0, sizeof(double)*NBR_SPH);
+  codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
+  codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
 
-  }else if(!nco_sph_metric(r0, p1)) {
-    flg_ab = 3;
-    // memcpy(r0, p1, sizeof(double)*NBR_SPH);
-  }else
-    flg_ab=1;
-
-
-  /* from here on we have a valid point */
-  if(!nco_sph_metric(r0,q0)) {
-    flg_cd = 2;
-    // memcpy(r0, q0, sizeof(double)*NBR_SPH);
-  }else if(!nco_sph_metric(r0, q1)) {
-    flg_cd = 3;
-    // memcpy(r0, p1, sizeof(double)*NBR_SPH);
-  }else
-    flg_cd=1;
-
-
-
-  if(flg_ab==2)
-    codes[0]='t';
-  else if(flg_ab==3)
-    codes[0]='h';
-  else
-    codes[0]='1';
-
-  if(flg_cd==2)
-    codes[1]='t';
-  else if(flg_cd==3)
-    codes[1]='h';
-  else
-    codes[1]='1';
 
 
   if(DEBUG_SPH )
-    fprintf(stderr, "%s: codes=%s tpar=pt[0]=%.15f\n", fnc_nm, codes, r0[0]  );
+    fprintf(stderr, "%s: codes=%s\n", fnc_nm, codes);
 
 
   return True;
@@ -861,18 +824,16 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   const char fnc_nm[]="nco_sph_seg_int()";
 
 
-  nco_bool DEBUG_LCL=False;
   nco_bool bInt=False;
-  nco_bool bValid=False;
   nco_bool bSetCnd=False;
 
-  nco_bool bTstVertex=True;
+  nco_bool bTstVertex=False;
   int flg_cd=0;
   int flg_ab=0;
 
 
   double n1;
-  double par;
+
   /* possible intersection point */
   double pcnd[NBR_SPH];
   /* placeholder ? */
@@ -891,29 +852,24 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
     double Pcross[NBR_SPH];
     double Qcross[NBR_SPH];
 
-    nco_sph_cross(p0,p1,Pcross);
-    nco_sph_cross(q0,q1,Qcross);
+    nco_sph_cross(p0, p1, Pcross);
+    nco_sph_cross(q0, q1, Qcross);
 
-    pqCross[0]=nco_sph_lhs(p0, Qcross);
-    pqCross[1]=nco_sph_lhs(p1, Qcross);
-    pqCross[2]=nco_sph_lhs(q0, Pcross);
-    pqCross[3]=nco_sph_lhs(q1, Pcross);
+    pqCross[0] = nco_sph_lhs(p0, Qcross);
+    pqCross[1] = nco_sph_lhs(p1, Qcross);
+    pqCross[2] = nco_sph_lhs(q0, Pcross);
+    pqCross[3] = nco_sph_lhs(q1, Pcross);
 
-    if(pqCross[0]==0 || pqCross[1]==0 || pqCross[2]==0 || pqCross[3]==0 )
-    {
+    if (!pqCross[0] || !pqCross[1] || !pqCross[2] || !pqCross[3]) {
+      if (DEBUG_SPH)
+        (void) fprintf(stderr, "%s: possible edge int\n", fnc_nm);
 
-      nco_bool bret=False;
-
-      bret=nco_sph_seg_edge(p0,p1,q0,q1, r0, r1, pqCross, codes   );
-
-      if(bret)
+      if (nco_sph_seg_edge(p0, p1, q0, q1, r0, r1, pqCross, codes))
         return True;
+
     }
 
-
   }
-
-
 
   /* pre test for vertex/vertex intersections */
  if(bTstVertex)
@@ -929,15 +885,9 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
    if(flg_ab && flg_cd)
    {
-     if(flg_ab==2)
-       codes[0]='t';
-     else if(flg_ab==3)
-       codes[0]='h';
 
-     if(flg_cd==2)
-       codes[1]='t';
-     else if(flg_cd==3)
-       codes[1]='h';
+     codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
+     codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
 
 
      if(DEBUG_SPH)
@@ -966,50 +916,12 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   if(!bInt )
     return False;
 
-  /* point very close to plane so try reversing intersection
-  if(   pt[0] < -1.0e-10  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-10) )
+
+  if(   pt[0] < -1.0e-15  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-15) )
      return False;
-  */
-
-  if( pt[0] <0.0 || pt[0] >1.0)
-    return False;
 
 
-  par=fabs(pt[0]);
 
-  /* see if intersection point is actually point on plane
-  if(0 &&  (par< 1.0e-10 ||  fabs(par-1.0) < 1.0e-10)  )
-  {
-
-    double n1;
-    double ndot=0.0;
-    double Pcross[NBR_SPH];
-
-    (void)fprintf(stderr, "%s:%s: Start POP code\n", nco_prg_nm_get(), fnc_nm);
-
-    n1=nco_sph_cross2(p0,p1,Pcross  );
-
-    if(par<1.0e-10 && nco_sph_dot( Pcross, q0  ) / n1 < DOT_TOLERANCE )
-    {
-      nco_sph_adi( pcnd, q0 );
-      bSetCnd=True;
-    }
-    else if(  fabs(par-1.0) < 1.0e-10  && nco_sph_dot( Pcross, q1  ) / n1 < DOT_TOLERANCE )
-    {
-      nco_sph_adi( pcnd, q1 );
-      bSetCnd=True;
-    }
-
-    if(bSetCnd )
-      (void)fprintf(stderr, "%s:%s: Using POP point\n", nco_prg_nm_get(), fnc_nm);
-
-
-    if(!bSetCnd)
-      return False;
-
-  }
-
-  */
 
   /* from here on we have some kind of intersection */
   if(!bSetCnd)
@@ -1033,59 +945,32 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
   }
 
-  bValid=nco_sph_metric_int(p0,p1, pcnd);
+  flg_ab=nco_sph_metric_int(p0,p1, pcnd);
 
   if(DEBUG_SPH) {
       nco_sph_prn_pnt("nco_sph_seg_int_: pos point ", pcnd, 4, True);
-      (void)fprintf(stderr, "%s: bValid=%s\n", fnc_nm,  (bValid ?  "True" : "False") );
+      (void)fprintf(stderr, "%s: flg_ab=%s\n", fnc_nm,  flg_ab );
   }
 
 
 
-  if(!bValid)
+  if(!flg_ab)
       return False;
 
-
   /* from here on we have a valid point */
-   if(!nco_sph_metric(pcnd,p0)) {
-     flg_ab = 2;
-     // memcpy(r0, p0, sizeof(double)*NBR_SPH);
-
-   }else if(!nco_sph_metric(pcnd, p1)) {
-     flg_ab = 3;
-     // memcpy(r0, p1, sizeof(double)*NBR_SPH);
-   }else
-     flg_ab=1;
-
-
-  /* from here on we have a valid point */
-  if(!nco_sph_metric(pcnd,q0)) {
+  if(!nco_sph_metric(pcnd,q0))
     flg_cd = 2;
-    // memcpy(r0, q0, sizeof(double)*NBR_SPH);
-  }else if(!nco_sph_metric(pcnd, q1)) {
+  else if(!nco_sph_metric(pcnd, q1))
     flg_cd = 3;
-    // memcpy(r0, p1, sizeof(double)*NBR_SPH);
-  }else
+  else
     flg_cd=1;
 
 
-
-  if(flg_ab==2)
-     codes[0]='t';
-   else if(flg_ab==3)
-     codes[0]='h';
-   else
-     codes[0]='1';
-
-   if(flg_cd==2)
-     codes[1]='t';
-   else if(flg_cd==3)
-     codes[1]='h';
-   else
-     codes[1]='1';
+  codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
+  codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
 
 
-    if(DEBUG_SPH )
+  if(DEBUG_SPH )
       fprintf(stderr, "%s: codes=%s tpar=pt[0]=%.15f\n", fnc_nm, codes, pt[0]  );
 
     memcpy(r0, pcnd, sizeof(double)*NBR_SPH);
@@ -1755,6 +1640,7 @@ int nco_sph_lhs(double *Pi, double *Qi)
    const char *fnc_nm="nco_sph_lhs()";
    double ds;
 
+
    ds= nco_sph_dot_nm(Pi, Qi);
 
    if(0 && DEBUG_SPH)
@@ -1913,6 +1799,7 @@ double  nco_sph_cross(double *a, double *b, double *c)
 
    return n1;
 
+
 }
 
 double nco_sph_rad(double *a){
@@ -1959,7 +1846,6 @@ Sin(double theta, nco_bool blon){
 
     return ms;
 }
-
 
 
 double
