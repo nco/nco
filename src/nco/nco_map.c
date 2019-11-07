@@ -10,6 +10,8 @@
 #include "nco_map.h" /* Map generation */
 
 
+static rgr_sct *map_rgr;
+
 int /* O [enm] Return code */
 nco_map_mk /* [fnc] Create ESMF-format map file */
 (rgr_sct * const rgr) /* I/O [sct] Regridding structure */
@@ -721,7 +723,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   /* Purpose: Compute overlap mesh and weights */
   const char fnc_nm[]="nco_msh_mk()";
 
-
+  /* set static variable */
+  map_rgr=rgr;
 
   double *wgt_raw; /* [frc] Remapping weights */
 
@@ -1137,7 +1140,7 @@ nco_msh_wrt
   grd_ctr_lat=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
   grd_ctr_lon=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
 
-  nco_sph_plg_area(lat_crn, lon_crn, grd_sz_nbr, grd_crn_nbr, area);
+  nco_msh_plg_area(lat_crn, lon_crn, grd_sz_nbr, grd_crn_nbr, area);
 
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -1566,5 +1569,21 @@ const char *att_val
   aed_mtd.var_nm=(char*)nco_free(aed_mtd.var_nm);
   av=(char*)nco_free(av);
   return iret;
+
+}
+
+void
+nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
+(const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
+ const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
+ const long grd_sz_nbr, /* [nbr] Number of gridcells in grid */
+ const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
+ double * const area_out) /* [sr] Gridcell area */
+{
+
+  nco_sph_plg_area(map_rgr, lat_bnd, lon_bnd, grd_sz_nbr, bnd_nbr, area_out);
+
+  return;
+
 
 }

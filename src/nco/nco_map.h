@@ -106,12 +106,20 @@ extern "C" {
 
 
 
+    void
+    nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
+    (const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
+    const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
+    const long grd_sz_nbr, /* [nbr] Number of gridcells in grid */
+    const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
+    double * const area_out); /* [sr] Gridcell area */
 
 
-   
-   
-   
-  
+
+
+
+
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
