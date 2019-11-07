@@ -949,7 +949,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
   if(DEBUG_SPH) {
       nco_sph_prn_pnt("nco_sph_seg_int_: pos point ", pcnd, 4, True);
-      (void)fprintf(stderr, "%s: flg_ab=%s\n", fnc_nm,  flg_ab );
+      (void)fprintf(stderr, "%s: flg_ab=%d\n", fnc_nm,  flg_ab );
   }
 
 
