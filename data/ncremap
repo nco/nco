@@ -418,6 +418,7 @@ out_xmp='out.nc' # [sng] Output file for examples
 par_typ="${par_bck}" # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression number of significant digits
 prc_typ='' # [sng] Procedure type
+prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
 rgr_opt='--rgr lat_nm_out=lat#lon_nm_out=lon' # [sng] Regridding options
 #rgr_opt='--rgr lat_dnm_nm=x#lon_dmn_nm=y' # [sng] Regridding options for projection grid
@@ -519,9 +520,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
 # 20171101: Implement but do not yet advertise PPC in ncremap
     echo " ${fnt_bld}--ppc_prc${fnt_nrm}  Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, ppc_prc, precision, quantize${fnt_nrm}]"
+    echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty means ) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}]"
 #    echo " ${fnt_bld}--qea_flg${fnt_nrm}  Quasi-equal area mode for TempestRemap (default ${fnt_bld}${qea_flg}${fnt_nrm}) [${fnt_tlc}qea, qea_flg, np2, quasi-equal-area${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
-    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none (except for MPAS, see documentation)) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, thr_rnr, rnr, renormalize_threshold${fnt_nrm}]"
+    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none (except for MPAS, see documentation)) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, rnr, renormalize_threshold${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_dst${fnt_nrm}  Regional destination grid [${fnt_tlc}rgn_dst, dst_rgn, regional_destination${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_src${fnt_nrm}  Regional source grid [${fnt_tlc}rgn_src, src_rgn, regional_source${fnt_nrm}]"
     echo " ${fnt_bld}--rrg_bb_wesn${fnt_nrm}  Regional regridding bounding-box WESN order (empty means none) (default ${fnt_bld}${bb_wesn}${fnt_nrm}) [${fnt_tlc}rrg_bb_wesn, bb, bb_wesn, wesn_sng${fnt_nrm}]"
@@ -687,6 +689,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       prc_typ=?* | pdq_typ=?* | prm_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       ppc=?* | ppc_prc=?* | precision=?* | quantize=?* ) ppc_prc="${LONG_OPTARG}" ;; # # Precision-preserving compression
+	       prs_stt=?* | preserve=?* | preserved_statistic=?* ) prs_stt="${LONG_OPTARG}" ;; # # Preserved statistic
 	       qea | qea_flg | np2 | quasi-equal-area ) qea_flg='Yes' ;; # # Quasi-equal area mode for TempestRemap
 	       qea=?* | qea_flg=?* | np2=?* | quasi-equal-area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Quasi-equal area mode for TempestRemap
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
@@ -1105,8 +1108,25 @@ fi # !no_frm_trm
 if [ "${no_stg_grd}" = 'Yes' ]; then 
     rgr_opt="${rgr_opt} --rgr no_stagger"
 fi # !no_stg_grd
+if [ -n "${prs_stt}" ]; then 
+    if [ "${prs_stt}" != 'mean' ] && [ "${prs_stt}" != 'integral' ]; then 
+	echo "${spt_nm}: ERROR \"${prs_stt}\" is an invalid value for preserved_statistic"
+	echo "${spt_nm}: HINT The only two valid values for preserved_statistic are \"mean\" and \"integral\""
+	exit 1
+    fi # !prs_stt
+    if [ "${prs_stt}" = 'mean' ] && [ -z "${rnr_thr}" ] ; then 
+	rnr_thr=0.0
+    fi # !prs_stt
+    if [ "${prs_stt}" = 'integral' ] && [ -n "${rnr_thr}" ] ; then 
+	if [ "${rnr_thr}" != 'off' ] && [ "${rnr_thr}" != 'none' ]; then
+	    echo "${spt_nm}: ERROR preserved_statistic = \"${prs_stt}\" conflicts with rnr_thr=${rnr_thr}"
+	    echo "${spt_nm}: HINT Explicitly specifying \"integral\" for the preserved-statistic is the same as turning-off renormalization so do not specify any value for renormalization"
+	    exit 1
+	fi # !rnr_thr
+    fi # !prs_stt
+fi # !prs_stt
 if [ -n "${rnr_thr}" ]; then 
-    if [ "${rnr_thr}" != 'off' ] && [ "${rnr_thr}" != 'disabled' ] && [ "${rnr_thr}" != 'nil' ] && [ "${rnr_thr}" != 'none' ]; then 
+    if [ "${rnr_thr}" != 'off' ] && [ "${rnr_thr}" != 'none' ]; then 
 	rgr_opt="${rgr_opt} --rnr_thr=${rnr_thr}"
     fi # !rnr_thr
 fi # !rnr_thr
@@ -1755,6 +1775,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: out_fl   = ${out_fl}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
+    printf "dbg: prs_stt  = ${prs_stt}\n"
 #    printf "dbg: qea_flg  = ${qea_flg}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rnr_thr  = ${rnr_thr}\n"
@@ -1768,6 +1789,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: sgs_nrm  = ${sgs_nrm}\n"
     printf "dbg: skl_fl   = ${skl_fl}\n"
     printf "dbg: spt_pid  = ${spt_pid}\n"
+    printf "dbg: std_chk  = ${std_chk}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: ugrid_fl = ${ugrid_fl}\n"
     printf "dbg: unq_sfx  = ${unq_sfx}\n"

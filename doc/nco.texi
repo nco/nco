@@ -119,12 +119,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.2-alpha09
-@set doc-edition 4.8.2-alpha09
+@set nco-edition 4.8.2-alpha10
+@set doc-edition 4.8.2-alpha10
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 19 October 2019
-@set update-month October 2019
+@set update-date 8 November 2019
+@set update-month November 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -7097,19 +7097,24 @@ a straightforward procedure of identifying gridcell overlap and
 apportioning values correctly from source to destination.
 The presence of missing values forces a decision on how to handle
 destination gridcells where some but not all source cells are valid. 
-@acronym{NCO} allows the user to choose between two distinct algorithms:
-``conservative'' and ``renormalized''. 
+@acronym{NCO} allows the user to choose between two distinct
+weight-application algorithms:
+``conservative'' and ``renormalized''.
 The ``conservative'' algorithm uses all valid data from the input grid
 on the output grid once and only once.
 Destination cells receive the weighted valid values of the source cells.
 This is conservative because the global integrals of the source and
 destination fields are equal.
+Another name for the ``conservative'' weight-application method is
+therefore ``integral-preserving''.
 The ``renormalized'' algorithm divides the destination value by the sum
 of the valid weights.
 This produces values equal to the mean of the valid input values, but
 extended to the entire destination gridcell. 
 Thus renormalization is equivalent to extrapolating valid data to
 missing regions.  
+Another name for the ``renormalized'' weight-application method is
+therefore ``mean-preserving''.
 Input and output integrals are unequal and renormalized regridding is
 not conservative. 
 Both algorithms produce identical answers when no missing data maps to 
@@ -7119,11 +7124,11 @@ The renormalized algorithm is useful because it solves some problems,
 like producing physically unrealistic temperature values, at the expense
 of incurring others, like non-conservation.
 Many land and ocean modelers eschew unrealistic gridpoint values, and
-conservative regridding often produces ``weird'' values along coastlines  
-or missing data gaps where state variables are regridded to/from small
-fractions of a gridcell.
+conservative weight-application often produces ``weird'' values along
+coastlines or missing data gaps where state variables are regridded
+to/from small fractions of a gridcell.
 Renormalization ensures the output values are physically consistent,
-although the integral of their value times area is not conservative.
+although the integral of their value times area is not preserved.
 
 @cindex @var{rnr_thr}
 By default, @acronym{NCO} implements the ``conservative'' algorithm
@@ -7147,15 +7152,14 @@ For convenience @acronym{NCO} permits users to specify a
 @math{@var{rnr_thr} = 0.0} threshold weight.
 This indicates that any valid data should be represented and
 renormalized on the output grid. 
-Also, renormalization can be prevented or turned-off by setting
-@var{rnr_thr} to any of the values @samp{off}, @samp{disabled},
-@samp{nil}, or @samp{none}: 
+Also, renormalization can be explicitly prevented or turned-off by
+setting @var{rnr_thr} to either of the values @samp{off} or @samp{none}: 
 @example
 @verbatim
-ncks           --map=map.nc in.nc out.nc # Conservative regridding
-ncks --rnr=nil --map=map.nc in.nc out.nc # Conservative regridding
-ncks --rnr=0.0 --map=map.nc in.nc out.nc # Renormalized regridding
-ncks --rnr=0.1 --map=map.nc in.nc out.nc # Renormalized regridding
+ncks           --map=map.nc in.nc out.nc # Conservative (integral-preserving)
+ncks --rnr=off --map=map.nc in.nc out.nc # Conservative (integral-preserving)
+ncks --rnr=0.1 --map=map.nc in.nc out.nc # Renormalized (mean-preserving with threshold)
+ncks --rnr=0.0 --map=map.nc in.nc out.nc # Renormalized (mean-preserving)
 @end verbatim
 @end example
 The first example uses the default conservative algorithm.
@@ -24973,16 +24977,18 @@ e.g., @samp{--rgr lat_nm_out=y --rgr lon_nm_out=x}.
 @cindex @code{--rnr}
 @cindex @code{--renormalize_threshold}
 @item -r @var{rnr_thr} (@code{--rnr_thr}, @code{--thr_rnr}, @code{--rnr}, @code{--renormalize_threshold})
-Use this option to request renormalization (see @ref{Regridding}) 
-and to specify the weight threshold.
+Use this option to request renormalized (see @ref{Regridding})
+weight-application and to specify the weight threshold, if any.
 For example, @samp{-r 0.9} tells the regridder to renormalize
 with a weight threshold of 90%, so that all destination gridcells
 with at least 90% of their area contributed by valid source gridcells
 will be contain valid (not missing) values that are the area-weighted
 mean of the valid source values.
+If the weights are conservative, then the output gridcells on the
+destination grid will preserve the mean of the input gridcells.
 Specifying @samp{-r 0.9} and @samp{--rnr_thr=0.9} are equivalent.
-Renormalization can be turned-off by setting @var{rnr_thr} to any of
-the values @samp{off}, @samp{disabled}, @samp{nil}, or @samp{none}.
+Renormalization can be explicitly turned-off by setting @var{rnr_thr}
+to either of the values @samp{off}, or @samp{none}. 
 
 @html
 <a name="rgn_dst"></a> <!-- http://nco.sf.net/nco.html#rgn_dst -->

@@ -1,3 +1,11 @@
+2019-11-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.8.2-alpha10 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.8.2-alpha10: Pranayama';git push
+	git tag -a 4.8.2-alpha10 -m 'ncremap TR MWF scrip, dpr eps_ill_cnd, --preserve;ncks json dcm pnt fix';git push --tags
+
+	* Add --preserve=mean,integral option to simplify weight application
+
 2019-11-07  Charlie Zender  <zender@uci.edu>
 
 	* Pass rgr structure into nco_sph_plg_area()
