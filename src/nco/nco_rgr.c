@@ -5227,15 +5227,15 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   long idx; /* [idx] Counting index for unrolled grids */
   short int bnd_idx;
 
-  nco_bool flg_mth_csz=True; /* [flg] Use CSZ's advancing polygon bisector method */
-  nco_bool flg_mth_ctr=!flg_mth_csz; /* [flg] Use centroid method to compute polygon area */
   /* Shift to this method once we pass rgr into nco_sph_plg_area() */
-  //nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
-  //nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
-  //  ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
-  //  tri_arc_typ=rgr->tri_arc_typ; /* [enm] Arc-type for triangle edges */
-  //  if(ply_tri_mth == nco_ply_tri_mth_csz) flg_mth_csz=True;
-  //  if(ply_tri_mth == nco_ply_tri_mth_ctr) flg_mth_ctr=True;
+  nco_bool flg_mth_csz; /* [flg] Use CSZ's advancing polygon bisector method */
+  nco_bool flg_mth_ctr; /* [flg] Use centroid method to compute polygon area */
+  nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
+  nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
+  ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
+  tri_arc_typ=rgr->tri_arc_typ; /* [enm] Arc-type for triangle edges */
+  if(ply_tri_mth == nco_ply_tri_mth_csz) flg_mth_csz=True;
+  if(ply_tri_mth == nco_ply_tri_mth_ctr) flg_mth_ctr=True;
   assert(flg_mth_ctr != flg_mth_csz);
   bnd_nbr_ttl=bnd_nbr;
   // Allocate space for one extra boundary to store centroid information if necessary
