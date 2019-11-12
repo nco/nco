@@ -1386,8 +1386,7 @@ main(int argc,char **argv)
 
       if(CHK_MAP){
 	/* Check map-file quality */
-	//nco_chk_map(in_id,trv_tbl);
-	nco_chk_nan(in_id,trv_tbl);
+	nco_map_chk(fl_in);
         goto close_and_free;
       } /* !CHK_MAP */
 

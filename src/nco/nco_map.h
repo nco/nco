@@ -130,7 +130,7 @@ extern "C" {
     double *ttl);
 
     nco_bool
-    nco_map_rpt
+    nco_map_chk
     (const char *fl_in);
 
 
