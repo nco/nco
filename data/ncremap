@@ -355,6 +355,7 @@ a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
 alg_typ='bilinear' # [sng] Algorithm for remapping (bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv|nco_con)
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
+chk_map='Yes' # [flg] Check map-file quality
 cln_flg='Yes' # [flg] Clean-up (remove) intermediate files before exiting
 clm_flg='No' # [flg] Invoked by ncclimo script
 d2f_flg='No' # [flg] Convert double-precision fields to single-precision

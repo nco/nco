@@ -3,7 +3,11 @@
 /* ncks -- netCDF Kitchen Sink */
 
 /* Purpose: Extract (subsets of) variables from a netCDF file 
-   Print them to screen, copy them to another file, or regrid them */
+   Print them to screen, copy them to another file, or regrid them
+   Since 2015 ncks has also been the back-end to the ncremap regridder,
+   meaning that ncks implements the regridder API and functionality, 
+   though all of that is a segregable component of ncks.
+   The regridder is really just an API and that ncks implements */
 
 /* Copyright (C) 1995--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -228,6 +232,7 @@ main(int argc,char **argv)
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
  
   nco_bool ALPHABETIZE_OUTPUT=True; /* Option a */
+  nco_bool CHK_MAP=False; /* [flg] Check map-file quality */
   nco_bool CHK_NAN=False; /* [flg] Check for NaNs */
   nco_bool CPY_GRP_METADATA; /* [flg] Copy group metadata (attributes) */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option x */
@@ -317,7 +322,10 @@ main(int argc,char **argv)
     {"formula_terms",no_argument,0,0}, /* [flg] Extract formula_terms variables */
     {"no_frm_trm",no_argument,0,0}, /* [flg] Do not extract formula_terms variables */
     {"no_formula_terms",no_argument,0,0}, /* [flg] Do not extract formula_terms variables */
+    {"chk_map",no_argument,0,0}, /* [flg] Check map-file quality */
+    {"check_map",no_argument,0,0}, /* [flg] Check map-file quality */
     {"chk_nan",no_argument,0,0}, /* [flg] Check file for NaNs */
+    {"check_nan",no_argument,0,0}, /* [flg] Check file for NaNs */
     {"nan",no_argument,0,0}, /* [flg] Check file for NaNs */
     {"NaN",no_argument,0,0}, /* [flg] Check file for NaNs */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
@@ -617,7 +625,8 @@ main(int argc,char **argv)
 	PRN_CLN_LGB=True;
 	PRN_CDL=True;
       } /* !dt_fmt */
-      if(!strcmp(opt_crr,"chk_nan") || !strcmp(opt_crr,"nan") || !strcmp(opt_crr,"NaN")) CHK_NAN=True; /* [flg] Check for NaNs */
+      if(!strcmp(opt_crr,"chk_map") || !strcmp(opt_crr,"check_map")) CHK_MAP=True; /* [flg] Check map-file quality */
+      if(!strcmp(opt_crr,"chk_nan") || !strcmp(opt_crr,"check_nan") || !strcmp(opt_crr,"nan") || !strcmp(opt_crr,"NaN")) CHK_NAN=True; /* [flg] Check for NaNs */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
         cnk_sz_byt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
@@ -1374,6 +1383,13 @@ main(int argc,char **argv)
       if(PRN_VAR_DATA) (void)nco_prn_xtr_val(in_id,&prn_flg,trv_tbl);
       
     }else{ 
+
+      if(CHK_MAP){
+	/* Check map-file quality */
+	//nco_chk_map(in_id,trv_tbl);
+	nco_chk_nan(in_id,trv_tbl);
+        goto close_and_free;
+      } /* !CHK_MAP */
 
       if(CHK_NAN){
 	/* Check floating-point fields for NaNs */
