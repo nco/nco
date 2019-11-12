@@ -116,6 +116,20 @@ extern "C" {
 
 
     nco_bool
+    nco_map_hst_mk
+    (var_sct* var_row,
+    int row_max,
+    int hst_ar[],
+    int hst_sz );
+
+    void
+    nco_map_var_min_max_ttl(
+    var_sct *var,
+    double *min,
+    double *max,
+    double *ttl);
+
+    nco_bool
     nco_map_rpt
     (const char *fl_in);
 

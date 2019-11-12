@@ -1850,13 +1850,13 @@ nco_map_rpt   /* print out stats report about map */
     double mask_b_min, mask_b_max, mask_b_ttl;
      
 
-    fprintf(stdout, "sparse matrix size n_s=%d\n", var_S->sz);
+    fprintf(stdout, "sparse matrix size n_s=%lu\n", var_S->sz);
 
     nco_map_var_min_max_ttl(var_col,&col_min, &col_max, &col_ttl);
     nco_map_var_min_max_ttl(var_row,&row_min, &row_max, &row_ttl);
 
-    fprintf(stdout,"n_a=%d col index min/max = %.0f %.0f\n", var_mask_a->sz, col_min, col_max );
-    fprintf(stdout,"n_b=%d row index min/max = %.0f %.0f\n", var_mask_b->sz, row_min, row_max );
+    fprintf(stdout,"n_a=%lu col index min/max = %.0f %.0f\n", var_mask_a->sz, col_min, col_max );
+    fprintf(stdout,"n_b=%lu row index min/max = %.0f %.0f\n", var_mask_b->sz, row_min, row_max );
 
     nco_map_var_min_max_ttl(var_mask_a, &mask_a_min, &mask_a_max, &mask_a_ttl);
     nco_map_var_min_max_ttl(var_mask_b, &mask_b_min, &mask_b_max, &mask_b_ttl);
@@ -1873,6 +1873,7 @@ nco_map_rpt   /* print out stats report about map */
 
     fprintf(stdout, "sum area_a weights / 4pi: %.15f\n", area_a_ttl / 4.0 / M_PI );
     fprintf(stdout, "sum area_b weights / 4pi: %.15f\n", area_b_ttl / 4.0 / M_PI );
+
 
 
     /* own scope for histogram */
