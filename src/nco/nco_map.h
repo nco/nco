@@ -115,7 +115,9 @@ extern "C" {
     double * const area_out); /* [sr] Gridcell area */
 
 
-
+    nco_bool
+    nco_map_rpt
+    (const char *fl_in);
 
 
 

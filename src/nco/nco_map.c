@@ -1587,3 +1587,358 @@ nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
 
 
 }
+
+nco_bool
+nco_map_hst_mk
+(var_sct* var_row,
+int row_max,
+int hst_ar[],
+int hst_sz )
+{
+
+
+  int idx;
+  int sz;
+  int idx_row=0;
+  int *row_bin=NULL_CEWI;
+
+
+  (void)cast_void_nctype(NC_DOUBLE ,&(var_row->val));
+
+  sz=var_row->sz;
+
+  row_bin=(int*)nco_calloc( row_max+1, sizeof(int));
+
+  /* row count  rember var_row is one based and so is row_bin*/
+  for(idx=0; idx<sz; idx++ )
+    if( (idx_row=var_row->val.ip[idx])<= row_max )
+      row_bin[idx_row]++;
+
+  /* histogram count - one based */
+  for(idx=1; idx<=row_max;idx++) {
+    idx_row = row_bin[idx];
+      if (idx_row < hst_sz)
+        hst_ar[idx_row]++;
+      else
+        hst_ar[hst_sz]++;
+  }
+
+
+
+
+
+  (void)cast_nctype_void(NC_INT,&(var_row->val));
+
+  row_bin=(int*)nco_free(row_bin);
+
+  return True;
+
+}
+
+
+
+
+var_sct *
+nco_map_var_init(
+int in_id,
+const char *var_nm,
+dmn_sct **dmn,
+int dmn_in_nbr)
+{
+  var_sct *var;
+  int rcd;
+  int var_id;
+
+  /* get var id */
+  rcd = nco_inq_varid(in_id, var_nm  , &var_id);
+  /* fill out dims */
+  var = nco_var_fll(in_id, var_id, var_nm, dmn, dmn_in_nbr);
+  /* read in data */
+  (void) nco_var_get(in_id, var);
+
+  return var;
+
+
+}
+
+void
+nco_map_var_min_max_ttl(
+var_sct *var,
+double *min,
+double *max,
+double *ttl
+){
+
+  int idx=0;
+
+  if(var->type==NC_DOUBLE){
+
+
+     double dval=0.0;
+     double min_dp=NC_MAX_DOUBLE;
+     double max_dp=-(NC_MAX_DOUBLE);
+     double ttl_dp=0.0;
+
+    (void)cast_void_nctype(NC_DOUBLE ,&(var->val));
+
+     for(idx=0; idx<var->sz; idx++ )
+     {
+       /* de-reference */
+       dval=var->val.dp[idx];
+       ttl_dp+=dval;
+
+       if(dval<min_dp)
+         min_dp=dval;
+
+       if(dval>max_dp)
+         max_dp=dval;
+
+     }
+
+    (void)cast_nctype_void(NC_DOUBLE ,&(var->val));
+
+     *min=min_dp;
+     *max=max_dp;
+     *ttl=ttl_dp;
+
+     return;
+  }
+
+  else if(var->type==NC_INT)
+  {
+    int dval=0;
+    int min_dp=(NC_MAX_INT);
+    int max_dp=(NC_MIN_INT);
+    int ttl_dp=0;
+
+
+    (void)cast_void_nctype(NC_INT,&(var->val));
+
+    for(idx=0; idx<var->sz; idx++ )
+    {
+      /* de-reference */
+      dval=var->val.ip[idx];
+      ttl_dp+=dval;
+
+      if(dval<min_dp)
+        min_dp=dval;
+
+      if(dval>max_dp)
+        max_dp=dval;
+
+    }
+
+    *min=(double)min_dp;
+    *max=(double)max_dp;
+    *ttl=(double)ttl_dp;
+
+
+    (void)cast_nctype_void(NC_INT,&(var->val));
+    return;
+
+
+
+
+  }
+
+  return;
+
+
+}
+
+
+
+nco_bool
+nco_map_rpt   /* print out stats report about map */
+(const char *fl_in)
+{
+  char fnc_nm[]="nco_map_chk";
+
+  int idx;
+  int rcd;
+  int in_id;
+  int fl_in_fmt;
+  int dmn_in_nbr;
+  int var_id;
+  int var_lst_nbr=0;
+  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT;
+
+  char dmn_nm[NC_MAX_NAME];
+  dmn_sct **dmn_in=NULL_CEWI;
+
+
+  var_sct **var_lst=NULL_CEWI;
+  
+  var_sct *var_area_a=NULL_CEWI;
+  var_sct *var_frac_a=NULL_CEWI;
+  var_sct *var_mask_a=NULL_CEWI;
+
+  var_sct *var_area_b=NULL_CEWI;
+  var_sct *var_frac_b=NULL_CEWI;
+  var_sct *var_mask_b=NULL_CEWI;
+
+  var_sct *var_col=NULL_CEWI;
+  var_sct *var_row=NULL_CEWI;
+  
+  var_sct *var_S=NULL_CEWI;
+  
+  const char *var_lst_nm[]={ "area_a", "frac_a", "mask_a",  "area_b", "frac_b", "mask_b", "col", "row", "S" };
+
+
+
+
+  rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
+  (void)nco_inq_format(in_id,&fl_in_fmt);
+
+
+  /* read in all dims from file */
+  (void)nco_inq(in_id,&dmn_in_nbr,(int *)NULL,(int *)NULL,(int *)NULL);
+  dmn_in=(dmn_sct **)nco_malloc(dmn_in_nbr*sizeof(dmn_sct *));
+
+  for(idx=0;idx<dmn_in_nbr;idx++)
+  {
+    (void)nco_inq_dimname(in_id,idx,dmn_nm);
+    dmn_in[idx] = nco_dmn_fll(in_id, idx, dmn_nm);
+  }
+
+
+  var_area_a= nco_map_var_init(in_id, "area_a", dmn_in, dmn_in_nbr);
+  var_frac_a= nco_map_var_init(in_id, "frac_a", dmn_in, dmn_in_nbr);
+  var_mask_a= nco_map_var_init(in_id, "mask_a", dmn_in, dmn_in_nbr);
+
+  var_area_b= nco_map_var_init(in_id, "area_b", dmn_in, dmn_in_nbr);
+  var_frac_b= nco_map_var_init(in_id, "frac_b", dmn_in, dmn_in_nbr);
+  var_mask_b= nco_map_var_init(in_id, "mask_b", dmn_in, dmn_in_nbr);
+
+  var_col= nco_map_var_init(in_id, "col", dmn_in, dmn_in_nbr);
+  var_row= nco_map_var_init(in_id, "row", dmn_in, dmn_in_nbr);
+  var_S= nco_map_var_init(in_id, "S", dmn_in, dmn_in_nbr);
+
+  /* do some type conversions */
+  if(var_area_a->type !=NC_DOUBLE)
+    var_area_a=nco_var_cnf_typ(NC_DOUBLE, var_area_a);
+
+  if(var_frac_a->type !=NC_DOUBLE)
+    var_frac_a=nco_var_cnf_typ(NC_DOUBLE, var_frac_a);
+
+  if(var_mask_a->type !=NC_INT)
+    var_mask_a=nco_var_cnf_typ(NC_INT, var_mask_a);
+
+  if(var_area_b->type !=NC_DOUBLE)
+    var_area_b=nco_var_cnf_typ(NC_DOUBLE, var_area_b);
+
+  if(var_frac_b->type !=NC_DOUBLE)
+    var_frac_b=nco_var_cnf_typ(NC_DOUBLE, var_frac_b);
+
+  if(var_mask_b->type !=NC_INT)
+    var_mask_b=nco_var_cnf_typ(NC_INT, var_mask_b);
+
+
+  /* start report  in own scope */
+  {
+    double col_min, col_max, col_ttl;
+    double row_min, row_max, row_ttl;
+    
+    double area_a_min, area_a_max, area_a_ttl;
+    double area_b_min, area_b_max, area_b_ttl;
+
+    double frac_a_min, frac_a_max, frac_a_ttl;
+    double frac_b_min, frac_b_max, frac_b_ttl;
+
+
+    double mask_a_min, mask_a_max, mask_a_ttl;
+    double mask_b_min, mask_b_max, mask_b_ttl;
+     
+
+    fprintf(stdout, "sparse matrix size n_s=%d\n", var_S->sz);
+
+    nco_map_var_min_max_ttl(var_col,&col_min, &col_max, &col_ttl);
+    nco_map_var_min_max_ttl(var_row,&row_min, &row_max, &row_ttl);
+
+    fprintf(stdout,"n_a=%d col index min/max = %.0f %.0f\n", var_mask_a->sz, col_min, col_max );
+    fprintf(stdout,"n_b=%d row index min/max = %.0f %.0f\n", var_mask_b->sz, row_min, row_max );
+
+    nco_map_var_min_max_ttl(var_mask_a, &mask_a_min, &mask_a_max, &mask_a_ttl);
+    nco_map_var_min_max_ttl(var_mask_b, &mask_b_min, &mask_b_max, &mask_b_ttl);
+
+    fprintf(stdout, "grid a mask min/max: %.0f %.0f\n", mask_a_min, mask_a_max );
+    fprintf(stdout, "grid b mask min/max: %.0f %.0f\n", mask_b_min, mask_b_max );
+
+
+    nco_map_var_min_max_ttl(var_area_a, &area_a_min, &area_a_max, &area_a_ttl);
+    nco_map_var_min_max_ttl(var_area_b, &area_b_min, &area_b_max, &area_b_ttl);
+
+    fprintf(stdout, "area_a min/max= %.15g %.15g\n", area_a_min, area_a_max  );
+    fprintf(stdout, "area_b min/max= %.15g %.15g\n", area_b_min, area_b_max );
+
+    fprintf(stdout, "sum area_a weights / 4pi: %.15f\n", area_a_ttl / 4.0 / M_PI );
+    fprintf(stdout, "sum area_b weights / 4pi: %.15f\n", area_b_ttl / 4.0 / M_PI );
+
+
+    /* own scope for histogram */
+    {
+      int hst_sz=31;
+      int *hst_row;
+      int *hst_col;
+
+      hst_row=(int*)nco_calloc(hst_sz+1, sizeof(int));
+      hst_col=(int*)nco_calloc(hst_sz+1, sizeof(int));
+
+
+      nco_map_hst_mk(var_col, var_mask_a->sz, hst_col, hst_sz);
+      nco_map_hst_mk(var_row, var_mask_b->sz, hst_row, hst_sz);
+
+      fprintf(stdout, "column 1: number of nonzero entries (histogram bin)\n");
+      fprintf(stdout, "column 2: number of columns with that many nonzero entries\n");
+      fprintf(stdout, "column 3: number of rows with that many nonzero entries\n");
+
+      for(idx=0;idx<hst_sz;idx++)
+        fprintf(stdout, "%4d %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
+
+      /* print final row (slighly modified */
+      fprintf(stdout, "%4d+ %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
+
+
+       fprintf(stdout, "Number of ignored source points (empty columns): %d\n", hst_col[0]);
+       fprintf(stdout, "Number of ignored source points (empty rows)   : %d\n", hst_row[0]);
+
+
+       hst_row=(int*)nco_free(hst_row);
+       hst_col=(int*)nco_free(hst_col);
+
+
+
+
+    }
+
+
+
+  }
+
+
+
+
+  nco_close(in_id);
+
+  var_area_a=nco_var_free(var_area_a);
+  var_frac_a=nco_var_free(var_frac_a);
+  var_mask_a=nco_var_free(var_mask_a);
+
+  var_area_b=nco_var_free(var_area_b);
+  var_frac_b=nco_var_free(var_frac_b);
+  var_mask_b=nco_var_free(var_mask_b);
+
+  var_col=nco_var_free(var_col);
+  var_row=nco_var_free(var_row);
+  var_S=nco_var_free(var_S);
+
+
+
+  
+  dmn_in=nco_dmn_lst_free(dmn_in,dmn_in_nbr );
+  
+
+  return True;
+
+}
+
