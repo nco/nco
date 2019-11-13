@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.8.2-alpha10
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 10 November 2019
+@set update-date 13 November 2019
 @set update-month November 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -23447,13 +23447,14 @@ Features common to many operators are described in
 @cindex @code{conserve2nd}
 @item -a @var{alg_typ} (@code{--alg_typ}, @code{--algorithm}, @code{--regrid_algorithm})
 Specifies the interpolation algorithm for weight-generation for use by
-@command{ESMF_RegridWeightGen} (@acronym{ERWG}) and/or TempestRemap.
+@command{ESMF_RegridWeightGen} (@acronym{ERWG}), @acronym{NCO}, and/or
+TempestRemap. 
 @command{ncremap} unbundles this algorithm choice from the rest of
 the weight-generator invocation syntax because users more frequently
 change interpolation algorithms than other options
 (that can be changed with @samp{-E @var{esmf_opt}}).
-The @var{alg_typ} argument must be @code{tempest} or one of
-@acronym{ERWG}'s five interpolation algorithms:
+@command{ncremap} can invoke all seven @acronym{ERWG} weight
+generation algorithms: 
 @code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{blin}, @code{bln}), 
 @code{conserve} (or @code{conservative}, @code{cns}, @code{c1}, or @code{aave}), 
 @code{conserve2nd} (or @code{conservative2nd}, @code{c2}, or @code{c2nd})
@@ -23481,9 +23482,6 @@ We are working to make it geometrically exact for gridcells with
 small-circle edges, such as the latitude circles in @acronym{RLL}
 grids. 
 
-Specifying @code{tempest} invokes TempestRemap weight-generation
-with default options, which only work with Finite-Volume
-(@acronym{FV}) grids
 @cindex TempestRemap
 @cindex Tempest2
 @cindex @code{se2fv_flx}
@@ -23508,16 +23506,27 @@ with default options, which only work with Finite-Volume
 @cindex @code{accurate_monotone_nonconservative_se2fv}
 @cindex @code{mono_fv2se}
 @cindex @code{conservative_monotone_fv2se_alt}
+@command{ncremap} can invoke eight preconfigured TempestRemap 
+weight-generation algorithms, and one generic algorithm
+(@code{tempest}) for which users should provide their own
+options. 
 As of @acronym{NCO} version 4.7.2 (January, 2018), @command{ncremap}
-implements @acronym{E3SM}-recommended settings for TempestRemap
-algorithms. 
-@command{ncremap} can now easily generate and use each of the six 
-@acronym{E3SM}-recommended mappings between @acronym{FV} and
-@acronym{SE} flux, state, and other variables.
-@command{ncremap} automatically employs the specialized ``boutique''
-TempestRemap options for these algorithms.
-This support requires TempestRemap version 2.0.0 or later (some option
-combinations fail with earlier versions). 
+implemented the six @acronym{E3SM}-recommended TempestRemap mapping
+algorithms between @acronym{FV} and @acronym{SE} flux, state, and
+other variables.
+@command{ncremap} originated some (we hope) common-sense names
+for these algorithms (@code{se2fv_flx}, @code{se2fv_stt},
+@code{se2fv_alt}, @code{fv2se_flx}, @code{fv2se_stt}, and
+@code{fv2se_alt}), and also allows more mathematically precise
+synonyms (shown below).
+Two further boutique mappings (@code{fv2fv} and @code{se2se})
+complete the named Tempest algorithms.
+Finally, the @samp{-a tempest} algorithm can be specified with
+the precise TempestRemap options as arguments to the @samp{-W}
+(or @samp{--wgt_opt}) option. 
+Note that support for the named algorithms requires TempestRemap
+version 2.0.0 or later (some option combinations fail with earlier
+versions).  
 
 Generate and use the recommended weights to remap fluxes from
 @acronym{SE} to @acronym{FV} grids, for example, with
@@ -23555,7 +23564,7 @@ ncremap -a tempest --src_grd=se.g --dst_grd=fv.nc -m map.nc \
 @end verbatim
 @end example
 Specifying @samp{-a tempest} without additional options in the
-@samp{-W} clause causes TempestRemap to employ defaults. 
+@samp{-W} clause causes TempestRemap to employ defaults.
 The default configuration requires both input and output grids to be
 @acronym{FV}, and produces a conservative, non-monotonic mapping.
 The @samp{-a fv2fv} option described below may produce more desirable

@@ -1,8 +1,12 @@
-2019-11-12  Charlie Zender  <zender@uci.edu>
+2019-11-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.0-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.0-beta01: Uttanasana';git push
 	git tag -a 4.9.0-beta01 -m 'ncremap chk_map;';git push --tags
+
+	* Update ncremap TR documentation and hint on obtaining TR
+
+2019-11-12  Charlie Zender  <zender@uci.edu>
 
 	* Hook-up and clean-up nco_map_chk()
 
