@@ -17862,7 +17862,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
-[-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}]
+[-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}]
 [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [-v @var{var_lst}] [--version] 
 [--vrt_fl=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
@@ -23452,9 +23452,12 @@ TempestRemap.
 @command{ncremap} unbundles this algorithm choice from the rest of
 the weight-generator invocation syntax because users more frequently
 change interpolation algorithms than other options
-(that can be changed with @samp{-E @var{esmf_opt}}).
+(that can be changed with @samp{-W @var{wgt_opt}}).
 @command{ncremap} can invoke all seven @acronym{ERWG} weight
-generation algorithms: 
+generation algorithms, one @acronym{NCO} algorithm, and eight
+TempestRemap algorithms. 
+
+The seven @acronym{ERWG} weight generation algorithms are:
 @code{bilinear} (default, acceptable abbreviations are @code{bilin}, @code{blin}, @code{bln}), 
 @code{conserve} (or @code{conservative}, @code{cns}, @code{c1}, or @code{aave}), 
 @code{conserve2nd} (or @code{conservative2nd}, @code{c2}, or @code{c2nd})
@@ -23465,23 +23468,24 @@ and @code{patch} (or @code{pch} or @code{patc}).
 See @acronym{ERWG} documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/public/ESMF_6_3_0rp1/ESMF_refdoc/node3.html#SECTION03020000000000000000, here}
 for detailed descriptions of @acronym{ERWG} algorithms.
-
 @cindex @code{nco_con}
 @cindex @code{nco_cns}
 @cindex @code{nco_conserve}
 @cindex @code{nco}
-As of @acronym{NCO} version 4.8.0 (May, 2019), @command{ncremap}
-implements its own internal weight-generation algorithms.
+
+@command{ncremap} implements its own internal weight-generation
+algorithm as of @acronym{NCO} version 4.8.0 (May, 2019).
 The first and only @acronym{NCO}-native algorithm is a first-order
-conservative algorithm and is still somewhat experimental.
+conservative algorithm that is still under active development yet
+accurate enough for everyday use.
 Invoke this with @code{nco_con} (or @code{nco_cns},
 @code{nco_conservative}, or simply @code{nco}).
-This algorithm is under active development and promises to free users
-from the bondage of spherically-connected cell edges.
+@ignore
+It promises to free users from the bondage of spherically-connected cell edges.
 We are working to make it geometrically exact for gridcells with
 small-circle edges, such as the latitude circles in @acronym{RLL}
 grids. 
-
+@end ignore
 @cindex TempestRemap
 @cindex Tempest2
 @cindex @code{se2fv_flx}
@@ -23831,8 +23835,8 @@ Specifies the date-string use in the full name of map-files created in
 Map-file names include, by convention, a string to indicate the
 approximate date (and thus algorithm versions employed) of weight
 generation. 
-@comment{ncremap} uses the @var{dt_sng} argument to encode the date into
-output map-file names of this format:  
+@command{ncremap} uses the @var{dt_sng} argument to encode the date
+into output map-file names of this format:  
 @code{map_@var{nm_src}_to_@var{nm_dst}_@var{alg_typ}.@var{dt_sng}.nc}.
 @acronym{MWF} mode defaults @var{dt_sng} to the current date in
 @code{YYYYMMDD}-format. 
@@ -24423,7 +24427,7 @@ Specifies the short name for the destination grid to use in the full
 name of map-files created in @acronym{MWF} mode. 
 Map-file names include, by convention, shortened versions of both the
 source and destination grids.
-@comment{ncremap} uses the @var{nm_dst} argument to encode the
+@command{ncremap} uses the @var{nm_dst} argument to encode the
 destination grid name into the output map-file name of this format: 
 @code{map_@var{nm_src}_to_@var{nm_dst}_@var{alg_typ}.@var{dt_sng}.nc}.
 @acronym{MWF} mode requires this argument, there is no default.
@@ -24442,7 +24446,7 @@ Specifies the short name for the source grid to use in the full
 name of map-files created in @acronym{MWF} mode. 
 Map-file names include, by convention, shortened versions of both the
 source and destination grids.
-@comment{ncremap} uses the @var{nm_dst} argument to encode the
+@command{ncremap} uses the @var{nm_dst} argument to encode the
 source grid name into the output map-file name of this format: 
 @code{map_@var{nm_src}_to_@var{nm_dst}_@var{alg_typ}.@var{dt_sng}.nc}.
 @acronym{MWF} mode requires this argument, there is no default.
@@ -24865,7 +24869,7 @@ As of @acronym{NCO} version 4.6.8 (released June, 2017), invoking any
 of the options @samp{--sgs_frc}, @samp{--sgs_msk}, or @samp{--sgs_nrm},
 automatically triggers @acronym{SGS}-mode, so that also invoking 
 @samp{-P sgs} is redundant though legal.
-As of @acronym{NCO} version 4.8.2 (released October, 2019), the values 
+As of @acronym{NCO} version 4.8.2 (released November, 2019), the values 
 of the @var{sgs_frc} and @var{sgs_msk} variables should be explicitly
 specified.
 In previous versions they defaulted to @code{landfrac} and
@@ -24899,6 +24903,17 @@ ncremap -P cice in.nc out.nc
 ncremap -P mpasseaice in.nc out.nc
 ncremap --sgs_frc=timeMonthly_avg_iceAreaCell in.nc out.nc
 @end example
+It is sometimes convenient to store the @var{sgs_frc} field in
+an external file from the field(s) to be regridded.
+For example, @acronym{CMIP}-style timeseries are often written
+with only one variable per file.
+@acronym{NCO} supports this organization by accepting @var{sgs_frc}
+arguments in the form of a filename followed by a slash and then a
+variable name: 
+@example
+ncremap --sgs_frc=sgs_landfrac_ne30.nc/landfrac -m map.nc in.nc out.nc
+@end example
+
 Files regridded using explicitly specified @acronym{SGS} options will
 differ slightly from those regridded using the @samp{-P elm} or 
 @samp{-P cice} options. 

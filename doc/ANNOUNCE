@@ -1,24 +1,29 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.8.2 sont nés
+The netCDF Operators NCO version 4.9.0 sont nés
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.8.2 enhances the regridder.
-Notably, this version debuts the NCO weight-generator algorithm.
-Previously, ncremap used ESMF or TempestRemap for weights.
+Version 4.9.0 marks the debut of many regridder features.
+Notably, this version simplifies the weight-application
+interface, parallelizes ncremap in stand-alone mode, and completely
+revamps, improves, and accelerates the sub-gridscale weight
+application algorithm. 
+
+This version also debuts the NCO weight-generator algorithm.
+Previously, ncremap always used ESMF or TempestRemap for weights.
 Try ncremap -a nco to use the new NCO-generated weights.
 NCO will always support ESMF and TR which are more time-tested.
 However, the NCO algorithm can already do some unique things,
-like output the overlap mesh in SCRIP format.
-Stay tuned for more ncremap advances.
+like output the overlap mesh in SCRIP format. Primarily, though,
+the NCO weight-generator is an in-house place to test new ideas.
 
-Work on NCO 4.8.3 has commenced and will expose more powerful options
-for vertical interpolation and, hopefully, the debut of the NCO
-weight-generator for regridding.
+Work on NCO 4.9.1 has commenced and will improve NCO weight-generator 
+accuracy, reduce vertical interpolation memory use, and hopefully,
+include options for invoking mbtempest in place of tempest.
 
 Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
@@ -55,6 +60,7 @@ B. ncremap has a new API for sub-gridscale (SGS) regridding.
    The -P sgs option is no longer required, thought is still accepted 
    for back-compatibility.
    ncremap --sgs_frc=landfrac -m map.nc # CLM/ELM
+   ncremap --sgs_frc=frc.nc/landfrac -m map.nc # CLM/ELM external
    ncremap -P elm -m map.nc # CLM/ELM alternative
    ncremap --sgs_frc=aice --sgs_msk=tmask -m map.nc # CICE
    ncremap -P cice -m map.nc # CICE alternative
