@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.8.2-alpha10
-@set doc-edition 4.8.2-alpha10
+@set nco-edition 4.9.0-beta01
+@set doc-edition 4.9.0-beta01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 13 November 2019
+@set update-date 14 November 2019
 @set update-month November 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -7429,7 +7429,7 @@ These annotations include
     Pure-pressure grids should use the
     @samp{--rgr lev_dmn_nm=@var{lev_dmn_nm}} option (to reduce option
     proliferation, there is no @var{plev_dmn_nm} option).
-    These options were introduced in @acronym{NCO} version 4.8.2 (October, 2019).
+    These options were introduced in @acronym{NCO} version 4.9.0 (November, 2019).
     These options also determine the vertical dimension names in
     vertically interpolated output files. 
 @cindex @var{lev_nm}
@@ -7476,7 +7476,7 @@ These annotations include
     To treat different variables as level and interface-level
     coordinates, use the options @samp{--rgr lev_nm=@var{lev_nm}} and 
     @samp{--rgr ilev_nm=@var{ilev_nm}}.   
-    Before @acronym{NCO} version 4.8.2 (October, 2019), @var{lev_nm}
+    Before @acronym{NCO} version 4.9.0 (November, 2019), @var{lev_nm}
     and @var{ilev_nm} specified both the variable names @emph{and},
     where applicable (i.e., on 2D-grids), the dimensions of the
     vertical coordinates in output files.
@@ -24869,7 +24869,7 @@ As of @acronym{NCO} version 4.6.8 (released June, 2017), invoking any
 of the options @samp{--sgs_frc}, @samp{--sgs_msk}, or @samp{--sgs_nrm},
 automatically triggers @acronym{SGS}-mode, so that also invoking 
 @samp{-P sgs} is redundant though legal.
-As of @acronym{NCO} version 4.8.2 (released November, 2019), the values 
+As of @acronym{NCO} version 4.9.0 (released November, 2019), the values 
 of the @var{sgs_frc} and @var{sgs_msk} variables should be explicitly
 specified.
 In previous versions they defaulted to @code{landfrac} and
@@ -24890,7 +24890,7 @@ When invoked with @samp{-P cice}, the final step converts the output
 @example
 # ELM/CLM: output "area" in [sr]
 ncremap --sgs_frc=landfrac --sgs_msk=landmask in.nc out.nc
-ncremap -P sgs in.nc out.nc # Deprecated in 4.8.2
+ncremap -P sgs in.nc out.nc # Deprecated in 4.9.0
 # ELM/CLM pedantic format: output "area" in [km2]
 ncremap -P elm in.nc out.nc # Same as -P clm, alm, ctsm
 
@@ -25403,9 +25403,9 @@ priorities for future development of vertical regridding are:
       This assumption is more natural for gases (like the atmosphere)
       than for condensed media (like oceans or Earth's interior).
       To instead interpolate linearly in the vertical coordinate, use
-      the @samp{ntp_mth=lin} options (as of @acronym{NCO} 4.8.2).
+      the @samp{ntp_mth=lin} options (as of @acronym{NCO} 4.9.0).
 @item Vertical interpolation and horizontal regridding may be invoked
-      simultaneously (as of @acronym{NCO} 4.8.2) by the user simply by
+      simultaneously (as of @acronym{NCO} 4.9.0) by the user simply by
       supplying both a map-file and a vertical grid-file to
       @command{ncremap}. 
       When this occurs, @command{ncremap} internally performs the
@@ -25664,7 +25664,7 @@ atmosphere, because it is compressible, than for condensed media like
 oceans or  Earth's interior, which are incompressible.
 To instead interpolate linearly in the vertical coordinate, use
 the @samp{ntp_mth=lin} option.
-@acronym{NCO} supports this feature as of version 4.8.2 (October,
+@acronym{NCO} supports this feature as of version 4.9.0 (October,
 2019). 
 
 @html
