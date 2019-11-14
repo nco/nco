@@ -1,3 +1,7 @@
+2019-11-14  Charlie Zender  <zender@uci.edu>
+
+	* ncremap allows altering mss_val without invoking -P mpas
+
 2019-11-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.0-beta01 release procedure:

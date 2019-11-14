@@ -353,6 +353,7 @@ vrb_4=4 # [enm] Verbosity level: Pedantic
 # Modify these defaults to save typing later
 a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
 alg_typ='bilinear' # [sng] Algorithm for remapping (bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv|nco_con)
+att_flg='No' # [flg] Add/alter attributes (e.g., _FillValue) before regridding
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 chk_map='Yes' # [flg] Check map-file quality
@@ -675,7 +676,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       msk_dst=?* | dst_msk=?* | mask_destination=?* | mask_dst=?* ) msk_dst="${LONG_OPTARG}" ;; # # Mask-template variable in destination file
 	       msk_out=?* | out_msk=?* | mask_output=?* | mask_out=?* ) msk_out="${LONG_OPTARG}" ;; # # Mask variable in regridded file
 	       msk_src=?* | src_msk=?* | mask_source=?* | mask_src=?* ) msk_src="${LONG_OPTARG}" ;; # # Mask-template variable in source file
-	       mss_val=?* | fll_val=?* | missing_value=?* | fill_value=?* ) mss_val="${LONG_OPTARG}" ;; # # Missing value for MPAS
+	       mss_val=?* | fll_val=?* | missing_value=?* | fill_value=?* ) mss_val_usr="${LONG_OPTARG}" ;; # # Missing value for MPAS
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG} ${nco_opt}" ;; # -n # NCO options
 	       nm_dst=?* | name_dst=?* | nm_sht_dst=?* | short_name_destination=?* ) nm_dst="${LONG_OPTARG}" ;; # # Short name of destination grid
 	       nm_src=?* | name_src=?* | nm_sht_src=?* | short_name_source=?* ) nm_src="${LONG_OPTARG}" ;; # # Short name of source grid
@@ -1085,6 +1086,10 @@ fi # !in_fl
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
+if [ -n "${mss_val_usr}" ]; then 
+    mss_val=${mss_val_usr}
+    att_flg='Yes'
+fi # !mss_val_usr    
 if [ ${dbg_lvl} -ge 2 ]; then
     nco_opt="-D ${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
@@ -1200,6 +1205,12 @@ if [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" 
     prc_mpas='Yes'
 fi # !mpas, !mpascice, !mpasseaice
 if [ "${prc_mpas}" = 'Yes' ]; then 
+
+    # Add/alter missing metadata to MPAS files unless script was invoked by ncclimo
+    if [ "${clm_flg}" = 'No' ]; then
+	att_flg='Yes'
+    fi # !clm_flg
+
     # Add depth coordinate to MPAS file when requested to by specifying coordinate file, that file exists, and commmand is found
     if [ -n "${dpt_fl}" ] || [ "${dpt_flg}" = 'Yes' ]; then
 	if [ -n "${dpt_fl}" ]; then
@@ -1730,6 +1741,7 @@ fi # !mpi_flg
 if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: a2o_flg  = ${a2o_flg}\n"
     printf "dbg: alg_opt  = ${alg_opt}\n"
+    printf "dbg: att_flg  = ${att_flg}\n"
     printf "dbg: cln_flg  = ${cln_flg}\n"
     printf "dbg: d2f_flg  = ${d2f_flg}\n"
     printf "dbg: d2f_opt  = ${d2f_opt}\n"
@@ -1917,7 +1929,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	fi # !clm_flg
 	if [ "${dpt_flg}" = 'Yes' ]; then
  	    printf "MPAS input specified: will add depth coordinate to all 3D variables prior to regridding\n"
-	fi # !clm_flg
+	fi # !dpt_flg
     fi # !mpas
     if [ "${prc_typ}" = 'sgs' ]; then 
 	printf "Input assumed to contain sub-gridscale (SGS, aka \"fractional area\") data: Intensive values valid in gridcell for spatiotemporal fraction specified by \"${sgs_frc}\" variable, not for entire gridcell area and/or time-interval duration (except where ${sgs_frc} = 1.0). Will regrid ${sgs_frc}, and then normalize subsequent regridding to conserve ${sgs_frc}*gridcell_area*field_value (not gridcell_area*field_value). If re-normalization is also requested (with --rnr_thr option), then these values will be renormalizaed by ${sgs_frc} and will not be conservative.\n"
@@ -2535,7 +2547,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	fi # !par_opt
     fi # !d2f_flg
 
-    if [ "${prc_mpas}" = 'Yes' ] && [ "${clm_flg}" = 'No' ]; then
+    if [ "${att_flg}" = 'Yes' ]; then
 	# Block 4d: Add missing metadata to MPAS files unless script was invoked by ncclimo (it makes no sense to give naked files to ncclimo and then to annotate them here, so assume ncclimo is working with annotated files)
 	for ((fl_idx=fl_idx_srt;fl_idx<=fl_idx_end;fl_idx++)); do
 	    if [ ${vrb_lvl} -ge ${vrb_2} ]; then
@@ -2570,7 +2582,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		fi # !err
 	    done # !fl_idx
 	fi # !par_opt
-    fi # !prc_mpas
+    fi # !att_flg
 
     if [ "${prc_typ}" = 'rrg' ]; then 
 	# Block 4e: RRG
