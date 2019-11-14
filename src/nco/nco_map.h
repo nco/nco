@@ -133,6 +133,21 @@ extern "C" {
     nco_map_chk
     (const char *fl_in);
 
+    nco_bool
+    nco_map_frac_b_clc(   /* calculate frac from mapping weights */
+    var_sct *var_S,
+    var_sct *var_row,
+    var_sct *var_frac_b);
+
+
+    nco_bool
+    nco_map_frac_a_clc(
+    var_sct *var_S,
+    var_sct *var_row,
+    var_sct *var_col,
+    var_sct *var_area_a,
+    var_sct *var_area_b,
+    var_sct *var_frac_a);
 
 
 

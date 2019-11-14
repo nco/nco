@@ -1558,7 +1558,7 @@ nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
 } /* !nco_msh_plg_area() */
 
 nco_bool
-nco_map_hst_mk
+nco_map_hst_mk  /* create histogram */
 (var_sct* var_row,
 int row_max,
 int hst_ar[],
@@ -1678,6 +1678,112 @@ double *ttl){
   return;
 } /* !nco_map_var_min_max_ttl() */
 
+
+nco_bool
+nco_map_frac_b_clc(   /* calculate frac from mapping weights */
+var_sct *var_S,
+var_sct *var_row,
+var_sct *var_frac_b)
+{
+  int idx;
+  int idx_row;
+  int sz;
+
+  (void)cast_void_nctype(NC_DOUBLE,&(var_S->val));
+  (void)cast_void_nctype(NC_INT,&(var_row->val));
+  (void)cast_void_nctype(NC_DOUBLE,&(var_frac_b->val));
+
+
+
+  /* set all of frac to zero
+  for(idx=0;idx<var_frac_a->sz;idx++)
+    var_frac_a->val.dp[idx]=0.0;
+  */
+  memset( var_frac_b->val.dp, 0, var_frac_b->sz *  nco_typ_lng(var_frac_b->type)  );
+
+
+  /* loop through weights and row*/
+  for(idx=0;idx<var_S->sz; idx++  ){
+    /* var_row is one based */
+    if( (idx_row=var_row->val.ip[idx]-1) >= var_frac_b->sz )
+      continue;
+    var_frac_b->val.dp[idx_row]+=var_S->val.dp[idx];
+
+  }
+
+  (void)cast_nctype_void(NC_DOUBLE,&(var_S->val));
+  (void)cast_nctype_void(NC_INT,&(var_row->val));
+  (void)cast_nctype_void(NC_DOUBLE,&(var_frac_b->val));
+  
+  return True;
+
+
+}
+
+nco_bool
+nco_map_frac_a_clc(
+var_sct *var_S,
+var_sct *var_row,
+var_sct *var_col,
+var_sct *var_area_a,
+var_sct *var_area_b,
+var_sct *var_frac_a)
+{
+
+  char fnc_nm[]="nco_map_frac_a_clc";
+  int idx;
+  int sz;
+  int idx_row;
+  int idx_col;
+
+  (void)cast_void_nctype(NC_DOUBLE,&(var_S->val));
+  (void)cast_void_nctype(NC_INT,&(var_row->val));
+  (void)cast_void_nctype(NC_INT,&(var_col->val));
+  (void)cast_void_nctype(NC_DOUBLE,&(var_area_a->val));
+  (void)cast_void_nctype(NC_DOUBLE,&(var_area_b->val));
+  (void)cast_void_nctype(NC_DOUBLE,&(var_frac_a->val));
+
+
+
+/* set frac_a to zero */
+  memset( var_frac_a->val.dp, 0, var_frac_a->sz *  nco_typ_lng(var_frac_a->type)  );
+  
+  
+  for(idx=0; idx<var_S->sz;idx++)
+  {
+     idx_row=var_row->val.ip[idx] -1;
+     idx_col=var_col->val.ip[idx]- 1;
+
+     if(idx_row >= var_area_b->sz || idx_col>= var_area_a->sz   )
+       continue;
+
+     var_frac_a->val.dp[idx_col]+= var_S->val.dp[idx] * var_area_b->val.dp[idx_row];
+
+  }
+
+  /* normalize result by area_a */
+  for(idx=0;idx< var_frac_a->sz;idx++ )
+    var_frac_a->val.dp[idx] /= var_area_a->val.dp[idx];
+
+
+
+
+  (void)cast_nctype_void(NC_DOUBLE,&(var_S->val));
+  (void)cast_nctype_void(NC_INT,&(var_row->val));
+  (void)cast_nctype_void(NC_INT,&(var_col->val));
+  (void)cast_nctype_void(NC_DOUBLE,&(var_area_a->val));
+  (void)cast_nctype_void(NC_DOUBLE,&(var_area_b->val));
+  (void)cast_nctype_void(NC_DOUBLE,&(var_frac_a->val));
+
+   return True;
+
+
+}
+
+
+
+
+
 nco_bool
 nco_map_chk   /* print out stats report about map */
 (const char *fl_in)
@@ -1689,11 +1795,10 @@ nco_map_chk   /* print out stats report about map */
   int in_id;
   int fl_in_fmt;
   int dmn_in_nbr;
-  int var_id;
-  int var_lst_nbr=0;
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT;
   
   char dmn_nm[NC_MAX_NAME];
+
   dmn_sct **dmn_in=NULL_CEWI;
   
   var_sct **var_lst=NULL_CEWI;
@@ -1710,8 +1815,7 @@ nco_map_chk   /* print out stats report about map */
   var_sct *var_row=NULL_CEWI;
   
   var_sct *var_S=NULL_CEWI;
-  
-  const char *var_lst_nm[]={ "area_a", "frac_a", "mask_a",  "area_b", "frac_b", "mask_b", "col", "row", "S" };
+
 
   rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
@@ -1763,12 +1867,13 @@ nco_map_chk   /* print out stats report about map */
     
     double area_a_min, area_a_max, area_a_ttl;
     double area_b_min, area_b_max, area_b_ttl;
-    
-    double frac_a_min, frac_a_max, frac_a_ttl;
-    double frac_b_min, frac_b_max, frac_b_ttl;
 
     double mask_a_min, mask_a_max, mask_a_ttl;
     double mask_b_min, mask_b_max, mask_b_ttl;
+
+    double s_min, s_max, s_ttl;
+
+    double frac_min, frac_max, frac_ttl;
     
     fprintf(stdout, "sparse matrix size n_s=%lu\n",var_S->sz);
     
@@ -1792,7 +1897,31 @@ nco_map_chk   /* print out stats report about map */
     
     fprintf(stdout, "sum area_a weights / 4pi: %.15f\n", area_a_ttl / 4.0 / M_PI );
     fprintf(stdout, "sum area_b weights / 4pi: %.15f\n", area_b_ttl / 4.0 / M_PI );
-    
+
+
+    nco_map_var_min_max_ttl(var_S, &s_min, &s_max, &s_ttl);
+    fprintf(stdout, "mapping weights min/max= %.15g %.15g\n", s_min, s_max );
+
+
+    nco_map_var_min_max_ttl(var_frac_a, &frac_min, &frac_max, &frac_ttl);
+    fprintf(stdout, "frac_a (disk) min/max= %.15g %.15g\n", frac_min, frac_max );
+
+    nco_map_frac_a_clc(var_S, var_row, var_col, var_area_a, var_area_b, var_frac_a   );
+
+    nco_map_var_min_max_ttl(var_frac_a, &frac_min, &frac_max, &frac_ttl);
+    fprintf(stdout, "frac_a(area_b weighted col sums / area_a)\n");
+    fprintf(stdout, "() min/max= %.15g %.15g\n", frac_min, frac_max );
+
+    nco_map_var_min_max_ttl(var_frac_b, &frac_min, &frac_max, &frac_ttl);
+    fprintf(stdout, "frac_b (disk) min/max= %.15g %.15g\n", frac_min, frac_max );
+
+    nco_map_frac_b_clc(var_S, var_row, var_frac_b);
+    nco_map_var_min_max_ttl(var_frac_b, &frac_min, &frac_max, &frac_ttl);
+
+    fprintf(stdout, "frac_b (calculated) min/max= %.15g %.15g\n", frac_min, frac_max );
+
+
+
     /* own scope for histogram */
     {
       int hst_sz=31;
@@ -1810,7 +1939,7 @@ nco_map_chk   /* print out stats report about map */
       fprintf(stdout, "column 3: number of rows with that many nonzero entries\n");
       
       for(idx=0;idx<hst_sz;idx++)
-	fprintf(stdout, "%4d %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
+	      fprintf(stdout, "%4d %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
       
       /* print final row (slighly modified */
       fprintf(stdout, "%4d+ %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
@@ -1838,5 +1967,6 @@ nco_map_chk   /* print out stats report about map */
   var_S=nco_var_free(var_S);
   
   dmn_in=nco_dmn_lst_free(dmn_in,dmn_in_nbr );
+
   return True;
 } /* !nco_map_chk() */
