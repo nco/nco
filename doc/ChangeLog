@@ -1,3 +1,7 @@
+2019-11-15  Charlie Zender  <zender@uci.edu>
+
+	* Support new fv2fv_flx, fv2fv_stt algorithms
+
 2019-11-14  Charlie Zender  <zender@uci.edu>
 
 	* Re-format chk_map output

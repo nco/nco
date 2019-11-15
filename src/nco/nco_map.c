@@ -1885,26 +1885,22 @@ nco_map_chk   /* print out stats report about map */
     nco_map_var_min_max_ttl(var_row,&row_min, &row_max, &row_ttl);
     fprintf(stdout,"Grid A size n_a = %lu, column (source) indices min, max: %.0f, %.0f\n", var_mask_a->sz, col_min, col_max );
     fprintf(stdout,"Grid B size n_b = %lu, row (destination) indices min, max: %.0f, %.0f\n", var_mask_b->sz, row_min, row_max );
-    if(col_min<1 ){
-      fprintf(stdout,"error: column index < 1\n" );
-      exit(EXIT_FAILURE);
-    } else if( col_max > var_mask_a->sz  ){
-      fprintf(stdout,"error: column index > n_a\n" );
-      exit(EXIT_FAILURE);
-    }
 
-    if(row_min<1 ){
-      fprintf(stdout,"error: row index < 1\n" );
-      exit(EXIT_FAILURE);
+    if(col_min < 1){
+      fprintf(stdout,"WARNING: minimum column index < 1\n" );
+    } else if( col_max > var_mask_a->sz  ){
+      fprintf(stdout,"WARNING: maximum column index > n_a\n" );
+    }
+    if(row_min < 1){
+      fprintf(stdout,"WARNING: minimum row index < 1\n" );
     } else if( row_max > var_mask_b->sz  ){
-      fprintf(stdout,"error: row index >  n_b\n" );
-      exit(EXIT_FAILURE);
+      fprintf(stdout,"WARNING: maximum row index > n_b\n" );
     }
     
     nco_map_var_min_max_ttl(var_area_a, &area_a_min, &area_a_max, &area_a_ttl);
     nco_map_var_min_max_ttl(var_area_b, &area_b_min, &area_b_max, &area_b_ttl);
-    fprintf(stdout, "Sum area_a/4pi: %.16f\n", area_a_ttl / 4.0 / M_PI );
-    fprintf(stdout, "Sum area_b/4pi: %.16f\n", area_b_ttl / 4.0 / M_PI );
+    fprintf(stdout, "Sum area_a/(4*pi): %.16f\n", area_a_ttl / 4.0 / M_PI );
+    fprintf(stdout, "Sum area_b/(4*pi): %.16f\n", area_b_ttl / 4.0 / M_PI );
     fprintf(stdout, "area_a min, max: %.16g, %.16g\n", area_a_min, area_a_max );
     fprintf(stdout, "area_b min, max: %.16g, %.16g\n", area_b_min, area_b_max );
 
