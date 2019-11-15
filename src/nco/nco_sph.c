@@ -2169,6 +2169,9 @@ int idx;
 int idx_pre;
 int idx_nex;
 
+int neg_cnt=0;
+int pos_cnt=0;
+
 
 double n1;
 double n2;
@@ -2177,49 +2180,33 @@ double dp;
 double theta=0.0;
 
 
-double  aCross[NBR_SPH];
-double  bCross[NBR_SPH];
+double    Vp[NBR_SPH];
+double    Vn[NBR_SPH];
+double    Vc[NBR_SPH];
 
 for(idx=0; idx<np;idx++)
 {
   idx_pre=(idx + np -1)% np;
   idx_nex=(idx +1)% np;
 
-  if(flg_sx) {
-    n1 = nco_sph_sxcross(sP[idx], sP[idx_pre], aCross);
-    n2 = nco_sph_sxcross(sP[idx], sP[idx_nex], bCross);
-  } else {
-    n1 = nco_sph_cross(sP[idx], sP[idx_pre], aCross);
-    n2 = nco_sph_cross(sP[idx], sP[idx_nex], bCross);
+   nco_sph_sub(sP[idx_pre], sP[idx], Vp);
+   nco_sph_sub(sP[idx_nex], sP[idx], Vn);
+
+   n1=nco_sph_cross(Vn, Vp, Vc);
 
 
-  }
+  dp= nco_sph_dot(Vc, sP[idx]);
 
-  //rad1_nco = sRadius(aCross);
-  //rad  = sRadius(bCross);
-  dp= nco_sph_dot(aCross, bCross);
-
-  //dp= dp / nco_sph_dot(sP[idx], sP[idx_pre]) / nco_sph_dot(sP[idx], sP[idx_nex]);
-
-
-  // dp=sDot(sP[idx1], sP[idx]) / rad1_nco /rad;
-  if(0) {
-    dp= nco_sph_dot(aCross, bCross);
-    theta = acos(dp);
-  }
+  (dp>=0.0 ? pos_cnt++ : neg_cnt++);
 
   if(DEBUG_SPH)
-    printf("%s():, %d angle=%f, dp=%f, n1=%.15g n2=%.15g\n", fnc_nm, idx, theta*180.0/M_PI, dp, n1, n2);
+    printf("%s(): idx=%d dp=%g\n", fnc_nm, idx, dp);
 
-   //if(dp<0.0)
-   //  return False;
-  //if( fabs(theta - M_PI) >SIGMA_RAD )
-  //   return False;
 
 
 }
 
-return True;
+return neg_cnt==0;
 
 
 }
