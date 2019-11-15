@@ -983,6 +983,15 @@ int *pl_cnt_vrl_ret){
 
           }
 
+          if(bDirtyRats && pl_vrl && !nco_sph_is_convex(pl_vrl->shp, pl_vrl->crn_nbr) )
+          {
+
+            (void) fprintf(stderr, "/************* concave overlap plygon***********/\n");
+            nco_poly_prn(pl_vrl, 0);
+            (void) fprintf(stderr, "/***********************************************/\n");
+
+          }
+
 
         }
 
@@ -1059,16 +1068,6 @@ int *pl_cnt_vrl_ret){
         /* for area debug only */
         mem_lst[thr_idx].kd_list[jdx].area=pl_vrl->area;
 
-        /*
-        if(  nbr_vrl_blocks * NCO_VRL_BLOCKSIZE  <  pl_cnt_vrl+1  )
-          pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * ++nbr_vrl_blocks * NCO_VRL_BLOCKSIZE );
-
-
-        pl_lst_vrl[pl_cnt_vrl] = pl_vrl;
-        pl_cnt_vrl++;
-        vrl_cnt_on++;
-
-        */
 
 
 
