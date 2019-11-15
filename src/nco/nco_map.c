@@ -1875,54 +1875,42 @@ nco_map_chk   /* print out stats report about map */
 
     double frac_min, frac_max, frac_ttl;
     
-    fprintf(stdout, "sparse matrix size n_s=%lu\n",var_S->sz);
-    
+    fprintf(stdout, "Sparse matrix size n_s: %lu\n",var_S->sz);
     nco_map_var_min_max_ttl(var_col,&col_min, &col_max, &col_ttl);
     nco_map_var_min_max_ttl(var_row,&row_min, &row_max, &row_ttl);
-    
-    fprintf(stdout,"n_a=%lu col index min/max = %.0f %.0f\n", var_mask_a->sz, col_min, col_max );
-    fprintf(stdout,"n_b=%lu row index min/max = %.0f %.0f\n", var_mask_b->sz, row_min, row_max );
+    fprintf(stdout,"Grid A size n_a = %lu, column (source) index min, max: %.0f %.0f\n", var_mask_a->sz, col_min, col_max );
+    fprintf(stdout,"Grid B size n_b = %lu, row (destination) index min, max: %.0f %.0f\n", var_mask_b->sz, row_min, row_max );
     
     nco_map_var_min_max_ttl(var_mask_a, &mask_a_min, &mask_a_max, &mask_a_ttl);
     nco_map_var_min_max_ttl(var_mask_b, &mask_b_min, &mask_b_max, &mask_b_ttl);
-    
-    fprintf(stdout, "grid a mask min/max: %.0f %.0f\n", mask_a_min, mask_a_max );
-    fprintf(stdout, "grid b mask min/max: %.0f %.0f\n", mask_b_min, mask_b_max );
+    fprintf(stdout, "mask_a min, max: %.0f, %.0f\n", mask_a_min, mask_a_max );
+    fprintf(stdout, "mask_b min, max: %.0f, %.0f\n", mask_b_min, mask_b_max );
     
     nco_map_var_min_max_ttl(var_area_a, &area_a_min, &area_a_max, &area_a_ttl);
     nco_map_var_min_max_ttl(var_area_b, &area_b_min, &area_b_max, &area_b_ttl);
-    
-    fprintf(stdout, "area_a min/max= %.15g %.15g\n", area_a_min, area_a_max  );
-    fprintf(stdout, "area_b min/max= %.15g %.15g\n", area_b_min, area_b_max );
-    
-    fprintf(stdout, "sum area_a weights / 4pi: %.15f\n", area_a_ttl / 4.0 / M_PI );
-    fprintf(stdout, "sum area_b weights / 4pi: %.15f\n", area_b_ttl / 4.0 / M_PI );
-
+    fprintf(stdout, "area_a min, max: %.15g, %.15g\n", area_a_min, area_a_max );
+    fprintf(stdout, "area_b min, max: %.15g, %.15g\n", area_b_min, area_b_max );
+    fprintf(stdout, "Sum area_a/4pi: %.15f\n", area_a_ttl / 4.0 / M_PI );
+    fprintf(stdout, "Sum area_b/4pi: %.15f\n", area_b_ttl / 4.0 / M_PI );
 
     nco_map_var_min_max_ttl(var_S, &s_min, &s_max, &s_ttl);
-    fprintf(stdout, "mapping weights min/max= %.15g %.15g\n", s_min, s_max );
-
-
-    nco_map_var_min_max_ttl(var_frac_a, &frac_min, &frac_max, &frac_ttl);
-    fprintf(stdout, "frac_a (disk) min/max= %.15g %.15g\n", frac_min, frac_max );
-
-    nco_map_frac_a_clc(var_S, var_row, var_col, var_area_a, var_area_b, var_frac_a   );
+    fprintf(stdout, "Mapping weights S min, max: %.15g, %.15g\n", s_min, s_max );
 
     nco_map_var_min_max_ttl(var_frac_a, &frac_min, &frac_max, &frac_ttl);
-    fprintf(stdout, "frac_a(area_b weighted col sums / area_a)\n");
-    fprintf(stdout, "() min/max= %.15g %.15g\n", frac_min, frac_max );
+    fprintf(stdout, "frac_a (disk) min, max: %.15g, %.15g\n", frac_min, frac_max );
+
+    nco_map_frac_a_clc(var_S, var_row, var_col, var_area_a, var_area_b, var_frac_a );
+    nco_map_var_min_max_ttl(var_frac_a, &frac_min, &frac_max, &frac_ttl);
+    fprintf(stdout, "frac_a (computed as area_b-weighted column sums/area_a) min, max: %.15g, %.15g\n", frac_min, frac_max );
 
     nco_map_var_min_max_ttl(var_frac_b, &frac_min, &frac_max, &frac_ttl);
-    fprintf(stdout, "frac_b (disk) min/max= %.15g %.15g\n", frac_min, frac_max );
+    fprintf(stdout, "frac_b (disk) min, max: %.15g, %.15g\n", frac_min, frac_max );
 
     nco_map_frac_b_clc(var_S, var_row, var_frac_b);
     nco_map_var_min_max_ttl(var_frac_b, &frac_min, &frac_max, &frac_ttl);
+    fprintf(stdout, "frac_b (computed as row sum) min, max: %.15g, %.15g\n", frac_min, frac_max );
 
-    fprintf(stdout, "frac_b (calculated) min/max= %.15g %.15g\n", frac_min, frac_max );
-
-
-
-    /* own scope for histogram */
+    /* New scope for histogram */
     {
       int hst_sz=31;
       int *hst_row;
@@ -1934,19 +1922,17 @@ nco_map_chk   /* print out stats report about map */
       nco_map_hst_mk(var_col, var_mask_a->sz, hst_col, hst_sz);
       nco_map_hst_mk(var_row, var_mask_b->sz, hst_row, hst_sz);
       
-      fprintf(stdout, "column 1: number of nonzero entries (histogram bin)\n");
-      fprintf(stdout, "column 2: number of columns with that many nonzero entries\n");
-      fprintf(stdout, "column 3: number of rows with that many nonzero entries\n");
+      fprintf(stdout, "Number of ignored source points (empty columns)  : %d\n", hst_col[0]);
+      fprintf(stdout, "Number of ignored destination points (empty rows): %d\n", hst_row[0]);
+      fprintf(stdout, "Histogram Legend\nColumn 1: Number of nonzero entries (histogram bin)\n");
+      fprintf(stdout, "Column 2: Number of columns (source cells) with that many nonzero entries\n");
+      fprintf(stdout, "Column 3: Number of rows (destination cells) with that many nonzero entries\n");
       
       for(idx=0;idx<hst_sz;idx++)
-	      fprintf(stdout, "%4d %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
+	fprintf(stdout, "%4d %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
       
       /* print final row (slighly modified */
-      fprintf(stdout, "%4d+ %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
-      
-      fprintf(stdout, "Number of ignored source points (empty columns): %d\n", hst_col[0]);
-      fprintf(stdout, "Number of ignored source points (empty rows)   : %d\n", hst_row[0]);
-      
+      fprintf(stdout, ">=%2d %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
       hst_row=(int*)nco_free(hst_row);
       hst_col=(int*)nco_free(hst_col);
     }

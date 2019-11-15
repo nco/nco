@@ -1,5 +1,7 @@
 2019-11-14  Charlie Zender  <zender@uci.edu>
 
+	* Re-format chk_map output
+
 	* NCO 4.9.0-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.0-beta01: Uttanasana';git push
 	git tag -a 4.9.0-beta01 -m 'ncremap att_flg, centroid opt, gss n2s nfr fix, HRRR, IFS, MPAS BGC, msh_fl, ntp_mth rhea SLURM, rnr=0.0 == destonly, SGS rewrite/parallelize, TR MWF SCRIP, TR volumetric, vrt_nm, vrt prs tm_nbr fix ;ncks chk_nan, chk_map, json dcm pnt fix;ncap2 -O';git push --tags
