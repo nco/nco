@@ -5228,8 +5228,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   short int bnd_idx;
 
   /* Shift to this method once we pass rgr into nco_sph_plg_area() */
-  nco_bool flg_mth_csz; /* [flg] Use CSZ's advancing polygon bisector method */
-  nco_bool flg_mth_ctr; /* [flg] Use centroid method to compute polygon area */
+  nco_bool flg_mth_csz=False; /* [flg] Use CSZ's advancing polygon bisector method */
+  nco_bool flg_mth_ctr=False; /* [flg] Use centroid method to compute polygon area */
   nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
   nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
   ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
