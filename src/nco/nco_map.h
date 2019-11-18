@@ -36,11 +36,11 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
-
+  
   int /* O [enm] Return code */
   nco_map_mk /* [fnc] Create ESMF-format map file */
   (rgr_sct * const rgr); /* I/O [sct] Regridding structure */
-
+  
   int /* O [enm] Return code */
   nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   (rgr_sct * const rgr, /* I [sct] Regridding structure */
@@ -51,106 +51,102 @@ extern "C" {
    double *lon_ctr_in, /* I [dgr] Longitude centers of source grid */
    double *lat_crn_in, /* I [dgr] Latitude  corners of source grid */
    double *lon_crn_in, /* I [dgr] Longitude corners of source grid */
-
+   
    double *area_out, /* I [sr] Area of destination grid */
    int *msk_out, /* I [flg] Mask on destination grid */
    double *lat_ctr_out, /* I [dgr] Latitude  centers of destination grid */
    double *lon_ctr_out, /* I [dgr] Longitude centers of destination grid */
    double *lat_crn_out, /* I [dgr] Latitude  corners of destination grid */
    double *lon_crn_out, /* I [dgr] Longitude corners of destination grid */
-
+   
    double *frc_in, /* O [frc] Fraction of source grid */
    double *frc_out, /* O [frc] Fraction of destination grid */
    int **col_src_adr_ptr, /* O [idx] Source address (col) */
    int **row_dst_adr_ptr, /* O [idx] Destination address (row) */
    double **wgt_raw_ptr, /* O [frc] Remapping weights */ 
    size_t *lnk_nbr_ptr); /* O [nbr] Number of links */
-   
-   poly_sct *           /* return a ply_sct with lat/lon minmax and total area */
-   nco_msh_stats
-   (double *area,       /* I [sr] Area of  grid */
-    int *msk,           /* I [flg] Mask on  grid */
-    double *lat_ctr,    /* I [dgr] Latitude  centers of  grid */
-    double *lon_ctr,    /* I [dgr] Longitude centers of  grid */
-    double *lat_crn,    /* I [dgr] Latitude  corners of  grid */
-    double *lon_crn,    /* I [dgr] Longitude corners of  grid */
-    size_t grd_sz,      /* I [nbr] Number of elements in single layer of  grid */
-    long grd_crn_nbr); /* I [nbr] Maximum number of corners in  gridcell */
-
-
-    void
-    nco_msh_lon_crr(
-    double *lon_crn,      /* I/O longitude to be corrected */
-    size_t grd_sz_in,     /* I [nbr] Number of elements in single layer of source grid */
-    long grd_crn_nbr_in,  /* I [nbr] Maximum number of corners in source gridcell */
-    nco_grd_lon_typ_enm typ_in,
-    nco_grd_lon_typ_enm typ_out);
-
-
-    void
-    nco_msh_poly_lst_wrt
-    (const char *fl_out,
-     poly_sct ** pl_lst,
-     int pl_nbr,
-     nco_grd_lon_typ_enm grd_lon_typ
-    );
-
-    int
-    nco_msh_att_char(
-    int out_id,
-    int var_id,
-    const char *var_nm,
-    const char *att_nm,
-    const char *att_val
-    );
-
-
-
-    void
-    nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
-    (const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
-    const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
-    const long grd_sz_nbr, /* [nbr] Number of gridcells in grid */
-    const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
-    double * const area_out); /* [sr] Gridcell area */
-
-
-    nco_bool
-    nco_map_hst_mk
-    (var_sct* var_row,
-    int row_max,
-    int hst_ar[],
-    int hst_sz );
-
-    void
-    nco_map_var_min_max_ttl(
-    var_sct *var,
-    double *min,
-    double *max,
-    double *ttl);
-
-    nco_bool
-    nco_map_chk
-    (const char *fl_in);
-
-    nco_bool
-    nco_map_frac_b_clc(   /* calculate frac from mapping weights */
-    var_sct *var_S,
-    var_sct *var_row,
-    var_sct *var_frac_b);
-
-
-    nco_bool
-    nco_map_frac_a_clc(
-    var_sct *var_S,
-    var_sct *var_row,
-    var_sct *var_col,
-    var_sct *var_area_a,
-    var_sct *var_area_b,
-    var_sct *var_frac_a);
-
-
-
+  
+  poly_sct *           /* return a ply_sct with lat/lon minmax and total area */
+  nco_msh_stats
+  (double *area,       /* I [sr] Area of  grid */
+   int *msk,           /* I [flg] Mask on  grid */
+   double *lat_ctr,    /* I [dgr] Latitude  centers of  grid */
+   double *lon_ctr,    /* I [dgr] Longitude centers of  grid */
+   double *lat_crn,    /* I [dgr] Latitude  corners of  grid */
+   double *lon_crn,    /* I [dgr] Longitude corners of  grid */
+   size_t grd_sz,      /* I [nbr] Number of elements in single layer of  grid */
+   long grd_crn_nbr); /* I [nbr] Maximum number of corners in  gridcell */
+  
+  void
+  nco_msh_lon_crr
+  (double *lon_crn,      /* I/O longitude to be corrected */
+   size_t grd_sz_in,     /* I [nbr] Number of elements in single layer of source grid */
+   long grd_crn_nbr_in,  /* I [nbr] Maximum number of corners in source gridcell */
+   nco_grd_lon_typ_enm typ_in,
+   nco_grd_lon_typ_enm typ_out);
+  
+  void
+  nco_msh_poly_lst_wrt
+  (const char *fl_out,
+   poly_sct ** pl_lst,
+   int pl_nbr,
+   nco_grd_lon_typ_enm grd_lon_typ
+   );
+  
+  int
+  nco_msh_att_char
+  (int out_id,
+   int var_id,
+   const char *var_nm,
+   const char *att_nm,
+   const char *att_val
+   );
+  
+  void
+  nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
+  (const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
+   const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
+   const long grd_sz_nbr, /* [nbr] Number of gridcells in grid */
+   const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
+   double * const area_out); /* [sr] Gridcell area */
+  
+  nco_bool
+  nco_map_hst_mk
+  (var_sct* var_row,
+   int row_max,
+   int hst_ar[],
+   int hst_sz);
+  
+  void
+  nco_map_var_min_max_ttl
+  (var_sct *var,
+   double *min,
+   double *max,
+   double *ttl,
+   double *avg,
+   double *mebs,
+   double *rms,
+   double *sdn);
+  
+  nco_bool
+  nco_map_chk
+  (const char *fl_in);
+  
+  nco_bool
+  nco_map_frac_b_clc   /* calculate frac from mapping weights */
+  (var_sct *var_S,
+   var_sct *var_row,
+   var_sct *var_frac_b);
+  
+  nco_bool
+  nco_map_frac_a_clc
+  (var_sct *var_S,
+   var_sct *var_row,
+   var_sct *var_col,
+   var_sct *var_area_a,
+   var_sct *var_area_b,
+   var_sct *var_frac_a);
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
