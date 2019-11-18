@@ -1597,22 +1597,25 @@ int hst_sz )
 } /* !nco_map_hst_mk() */
 
 var_sct *
-nco_map_var_init(
-int in_id,
-const char *var_nm,
-dmn_sct **dmn,
-int dmn_in_nbr)
+nco_map_var_init
+(int in_id,
+ char * var_nm,
+ dmn_sct **dmn,
+ int dmn_in_nbr)
 {
   var_sct *var;
   int rcd;
   int var_id;
 
-  /* get var id */
-  rcd = nco_inq_varid(in_id, var_nm  , &var_id);
-  /* fill out dims */
-  var = nco_var_fll(in_id, var_id, var_nm, dmn, dmn_in_nbr);
-  /* read in data */
-  (void) nco_var_get(in_id, var);
+  /* Get variable ID */
+  rcd=nco_inq_varid_flg(in_id,var_nm,&var_id);
+  /* 20191118 Global (all?) Tempest map-files lack mask_a/b variables */
+  if(rcd != NC_NOERR) return NULL;
+
+  /* Fill-in dimensions */
+  var=nco_var_fll(in_id,var_id,var_nm,dmn,dmn_in_nbr);
+  /* Read data */
+  (void)nco_var_get(in_id, var);
 
   return var;
 } /* !nco_map_var_init() */
@@ -1652,12 +1655,16 @@ nco_map_var_min_max_ttl
       if(dval < min_dp) min_dp=dval;
       if(dval > max_dp) max_dp=dval;
     } /* !idx */
-    (void)cast_nctype_void(NC_DOUBLE,&(var->val));
-
     avg_dp=ttl_dp/sz;
     mebs_dp/=sz;
-    sdn_dp=sqrt(rms_dp/(sz-1.0));
     rms_dp=sqrt(rms_dp/sz);
+    for(idx=0;idx<sz;idx++){
+      dval=var->val.dp[idx];
+      sdn_dp+=(dval-avg_dp)*(dval-avg_dp);
+    } /* !idx */
+    sdn_dp=sqrt(sdn_dp/(sz-1ULL));
+
+    (void)cast_nctype_void(NC_DOUBLE,&(var->val));
 
     *min=min_dp;
     *max=max_dp;
@@ -1688,12 +1695,15 @@ nco_map_var_min_max_ttl
 	if(dval < min_dp) min_dp=dval;
 	if(dval > max_dp) max_dp=dval;
     } /* !idx */
-    (void)cast_nctype_void(NC_INT,&(var->val));
-
     avg_dp=(double)ttl_dp/sz;
     mebs_dp/=sz;
     rms_dp=sqrt(rms_dp/sz);
-    sdn_dp=sqrt(rms_dp/(sz-1.0));
+    for(idx=0;idx<sz;idx++){
+      dval=var->val.ip[idx];
+      sdn_dp+=(dval-avg_dp)*(dval-avg_dp);
+    } /* !idx */
+    sdn_dp=sqrt(sdn_dp/(sz-1ULL));
+    (void)cast_nctype_void(NC_INT,&(var->val));
 
     *min=(double)min_dp;
     *max=(double)max_dp;
@@ -1703,7 +1713,7 @@ nco_map_var_min_max_ttl
     *rms=rms_dp;
     *sdn=sdn_dp;
     return;
-  }
+  } /* !NC_INT */
   
   return;
 } /* !nco_map_var_min_max_ttl() */
@@ -1798,32 +1808,29 @@ nco_map_chk   /* print out stats report about map */
 {
   char fnc_nm[]="nco_map_chk";
   
+  char dmn_nm[NC_MAX_NAME];
+
+  dmn_sct **dmn_in=NULL_CEWI;
+  
   int idx;
   int rcd;
   int in_id;
   int fl_in_fmt;
   int dmn_in_nbr;
+
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT;
   
-  char dmn_nm[NC_MAX_NAME];
-
-  dmn_sct **dmn_in=NULL_CEWI;
-  
   var_sct **var_lst=NULL_CEWI;
-  
-  var_sct *var_area_a=NULL_CEWI;
-  var_sct *var_frac_a=NULL_CEWI;
-  var_sct *var_mask_a=NULL_CEWI;
 
-  var_sct *var_area_b=NULL_CEWI;
-  var_sct *var_frac_b=NULL_CEWI;
-  var_sct *var_mask_b=NULL_CEWI;
-
-  var_sct *var_col=NULL_CEWI;
-  var_sct *var_row=NULL_CEWI;
-  
   var_sct *var_S=NULL_CEWI;
-
+  var_sct *var_area_a=NULL_CEWI;
+  var_sct *var_area_b=NULL_CEWI;
+  var_sct *var_col=NULL_CEWI;
+  var_sct *var_frac_a=NULL_CEWI;
+  var_sct *var_frac_b=NULL_CEWI;
+  var_sct *var_mask_a=NULL_CEWI;
+  var_sct *var_mask_b=NULL_CEWI;
+  var_sct *var_row=NULL_CEWI;
 
   rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
@@ -1834,156 +1841,147 @@ nco_map_chk   /* print out stats report about map */
 
   for(idx=0;idx<dmn_in_nbr;idx++){
     (void)nco_inq_dimname(in_id,idx,dmn_nm);
-    dmn_in[idx]=nco_dmn_fll(in_id, idx, dmn_nm);
-  }
+    dmn_in[idx]=nco_dmn_fll(in_id,idx,dmn_nm);
+  } /* !idx */
 
-  var_area_a= nco_map_var_init(in_id, "area_a", dmn_in, dmn_in_nbr);
-  var_frac_a= nco_map_var_init(in_id, "frac_a", dmn_in, dmn_in_nbr);
-  var_mask_a= nco_map_var_init(in_id, "mask_a", dmn_in, dmn_in_nbr);
+  var_S=nco_map_var_init(in_id,"S",dmn_in,dmn_in_nbr);
+  var_area_a=nco_map_var_init(in_id,"area_a",dmn_in,dmn_in_nbr);
+  var_area_b=nco_map_var_init(in_id,"area_b",dmn_in,dmn_in_nbr);
+  var_col=nco_map_var_init(in_id,"col",dmn_in,dmn_in_nbr);
+  var_frac_a=nco_map_var_init(in_id,"frac_a",dmn_in,dmn_in_nbr);
+  var_frac_b=nco_map_var_init(in_id,"frac_b",dmn_in,dmn_in_nbr);
+  var_mask_a=nco_map_var_init(in_id,"mask_a",dmn_in,dmn_in_nbr);
+  var_mask_b=nco_map_var_init(in_id,"mask_b",dmn_in,dmn_in_nbr);
+  var_row=nco_map_var_init(in_id,"row",dmn_in,dmn_in_nbr);
 
-  var_area_b= nco_map_var_init(in_id, "area_b", dmn_in, dmn_in_nbr);
-  var_frac_b= nco_map_var_init(in_id, "frac_b", dmn_in, dmn_in_nbr);
-  var_mask_b= nco_map_var_init(in_id, "mask_b", dmn_in, dmn_in_nbr);
+  /* Type conversions */
+  if(var_area_a->type != NC_DOUBLE) var_area_a=nco_var_cnf_typ(NC_DOUBLE,var_area_a);
+  if(var_area_b->type != NC_DOUBLE) var_area_b=nco_var_cnf_typ(NC_DOUBLE,var_area_b);
+  if(var_frac_a->type != NC_DOUBLE) var_frac_a=nco_var_cnf_typ(NC_DOUBLE,var_frac_a);
+  if(var_frac_b->type != NC_DOUBLE) var_frac_b=nco_var_cnf_typ(NC_DOUBLE,var_frac_b);
+  if(var_mask_a && var_mask_a->type != NC_INT) var_mask_a=nco_var_cnf_typ(NC_INT,var_mask_a);
+  if(var_mask_b && var_mask_b->type != NC_INT) var_mask_b=nco_var_cnf_typ(NC_INT,var_mask_b);
 
-  var_col= nco_map_var_init(in_id, "col", dmn_in, dmn_in_nbr);
-  var_row= nco_map_var_init(in_id, "row", dmn_in, dmn_in_nbr);
-  var_S= nco_map_var_init(in_id, "S", dmn_in, dmn_in_nbr);
-
-  /* do some type conversions */
-  if(var_area_a->type != NC_DOUBLE)
-    var_area_a=nco_var_cnf_typ(NC_DOUBLE, var_area_a);
-
-  if(var_frac_a->type != NC_DOUBLE)
-    var_frac_a=nco_var_cnf_typ(NC_DOUBLE, var_frac_a);
-
-  if(var_mask_a->type != NC_INT)
-    var_mask_a=nco_var_cnf_typ(NC_INT, var_mask_a);
-
-  if(var_area_b->type != NC_DOUBLE)
-    var_area_b=nco_var_cnf_typ(NC_DOUBLE, var_area_b);
-
-  if(var_frac_b->type != NC_DOUBLE)
-    var_frac_b=nco_var_cnf_typ(NC_DOUBLE, var_frac_b);
-
-  if(var_mask_b->type != NC_INT)
-    var_mask_b=nco_var_cnf_typ(NC_INT, var_mask_b);
-
-  /* start report  in own scope */
+  /* Start Report in own scope */
   {
-    double col_min, col_max, col_ttl;
-    double row_min, row_max, row_ttl;
-    
-    double area_a_min, area_a_max, area_a_ttl;
-    double area_b_min, area_b_max, area_b_ttl;
-
-    double mask_a_min, mask_a_max, mask_a_ttl;
-    double mask_b_min, mask_b_max, mask_b_ttl;
-
-    double s_min, s_max, s_ttl;
-
-    double frac_min_dsk,frac_max_dsk,frac_ttl_dsk;
-    double frac_min_cmp,frac_max_cmp,frac_ttl_cmp;
-    
+    const double eps_abs=5.0e-16;
+    double area_a_min,area_a_max,area_a_ttl;
+    double area_b_min,area_b_max,area_b_ttl;
     double avg,mebs,rms,sdn;
+    double col_min,col_max,col_ttl;
+    double frac_avg_cmp,frac_min_cmp,frac_max_cmp,frac_ttl_cmp;
+    double frac_avg_dsk,frac_min_dsk,frac_max_dsk,frac_ttl_dsk;
+    double mask_a_min,mask_a_max,mask_a_ttl;
+    double mask_b_min,mask_b_max,mask_b_ttl;
+    double row_min,row_max,row_ttl;
+    double s_min,s_max,s_ttl;
 
-    fprintf(stdout,"Sparse matrix size n_s: %lu\n",var_S->sz);
-    nco_map_var_min_max_ttl(var_S, &s_min, &s_max, &s_ttl,&avg,&mebs,&rms,&sdn);
-    fprintf(stdout,"Mapping weights S min, max: %.16g, %.16g\n",s_min,s_max);
-    nco_map_var_min_max_ttl(var_col,&col_min, &col_max, &col_ttl,&avg,&mebs,&rms,&sdn);
-    nco_map_var_min_max_ttl(var_row,&row_min, &row_max, &row_ttl,&avg,&mebs,&rms,&sdn);
-    fprintf(stdout,"Grid A size n_a = %lu, column (source) indices min, max: %.0f, %.0f\n",var_mask_a->sz,col_min,col_max);
-    fprintf(stdout,"Grid B size n_b = %lu, row (destination) indices min, max: %.0f, %.0f\n",var_mask_b->sz,row_min,row_max);
+    nco_map_var_min_max_ttl(var_col,&col_min,&col_max,&col_ttl,&avg,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_row,&row_min,&row_max,&row_ttl,&avg,&mebs,&rms,&sdn);
 
     if(col_min < 1){fprintf(stdout,"WARNING: minimum column index < 1\n");}
-    else if(col_max > var_mask_a->sz){fprintf(stdout,"WARNING: maximum col index > n_a\n");}
+    else if(col_max > var_area_a->sz){fprintf(stdout,"WARNING: maximum col index > n_a\n");}
     if(row_min < 1){fprintf(stdout,"WARNING: minimum row index < 1\n" );}
-    else if(row_max > var_mask_b->sz){fprintf(stdout,"WARNING: maximum row index > n_b\n");}
+    else if(row_max > var_area_b->sz){fprintf(stdout,"WARNING: maximum row index > n_b\n");}
     
+    int hst_sz=31;
+    int *hst_row;
+    int *hst_col;
+    hst_row=(int*)nco_calloc(hst_sz+1,sizeof(int));
+    hst_col=(int*)nco_calloc(hst_sz+1,sizeof(int));
+    nco_map_hst_mk(var_col,var_area_a->sz,hst_col,hst_sz);
+    nco_map_hst_mk(var_row,var_area_b->sz,hst_row,hst_sz);
+
     nco_map_var_min_max_ttl(var_area_a,&area_a_min,&area_a_max,&area_a_ttl,&avg,&mebs,&rms,&sdn);
+    if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,&mask_a_min,&mask_a_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
+
+    fprintf(stdout,"Map report on %s:\n",fl_in);
+    fprintf(stdout,"Sparse matrix size n_s: %lu\n",var_S->sz);
+    nco_map_var_min_max_ttl(var_S,&s_min,&s_max,&s_ttl,&avg,&mebs,&rms,&sdn);
+    fprintf(stdout,"Mapping weights S min, max: %.16g, %.16g\n\n",s_min,s_max);
+
+    fprintf(stdout,"Grid A size n_a = %lu // Number of columns/sources\n",var_area_a->sz);
+    fprintf(stdout,"area_a sum/(4*pi): %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
+    fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
+    if(var_mask_a) fprintf(stdout,"mask_a min, max: %.0f, %.0f\n",mask_a_min,mask_a_max); else fprintf(stdout,"mask_a min, max: map-file omits mask_a\n");
+    fprintf(stdout,"Column (source cell) indices utilized min, max: %.0f, %.0f\n",col_min,col_max);
+    fprintf(stdout,"Ignored source cells (empty columns): %d\n\n",hst_col[0]);
+
     nco_map_var_min_max_ttl(var_area_b,&area_b_min,&area_b_max,&area_b_ttl,&avg,&mebs,&rms,&sdn);
-    fprintf(stdout,"area_a min, max: %0.16f, %0.16f\n",area_a_min,area_a_max);
-    fprintf(stdout,"area_b min, max: %0.16f, %0.16f\n",area_b_min,area_b_max);
-    fprintf(stdout,"Sum area_a/(4*pi): %0.16f = 1.0%s%0.1e\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
-    fprintf(stdout,"Sum area_b/(4*pi): %0.16f = 1.0%s%0.1e\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
+    if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,&mask_b_min,&mask_b_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
 
-    nco_map_var_min_max_ttl(var_frac_a,&frac_min_dsk,&frac_max_dsk,&frac_ttl_dsk,&avg,&mebs,&rms,&sdn);
-    /* Compute as area_b-weighted column sums/area_a */
+    fprintf(stdout,"Grid B size n_b = %lu // Number of rows/destinations\n",var_area_b->sz);
+    fprintf(stdout,"area_b sum/(4*pi): %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
+    fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);
+    if(var_mask_b) fprintf(stdout,"mask_b min, max: %.0f, %.0f\n",mask_b_min,mask_b_max); else fprintf(stdout,"mask_b min, max: map-file omits mask_b\n");
+    fprintf(stdout,"Row (destination cell) indices utilized min, max: %.0f, %.0f\n",row_min,row_max);
+    fprintf(stdout,"Ignored destination cells (empty rows): %d\n\n",hst_row[0]);
+
+    /* Compute and report frac_a statistics from frac_a disk values */
+    nco_map_var_min_max_ttl(var_frac_a,&frac_min_dsk,&frac_max_dsk,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+    /* Compute frac_a as area_b-weighted column sums/area_a */
     nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
-    nco_map_var_min_max_ttl(var_frac_a,&frac_min_cmp,&frac_max_cmp,&frac_ttl_cmp,&avg,&mebs,&rms,&sdn);
-    fprintf(stdout,"frac_a (disk) avg: %0.16f = 1.0-%0.1e\n",avg,1.0-avg);
-    fprintf(stdout,"frac_a (disk) min: %0.16f = 1.0-%0.1e\n",frac_min_dsk,1.0-frac_min_dsk);
-    fprintf(stdout,"frac_a (disk) max: %0.16f = 1.0+%0.1e\n",frac_max_dsk,frac_max_dsk-1.0);
-    fprintf(stdout,"frac_a (disk) mbs: %0.16f =     %0.1e\n",mebs,mebs);
-    fprintf(stdout,"frac_a (disk) rms: %0.16f =     %0.1e\n",rms,rms);
-    fprintf(stdout,"frac_a (disk) sdn: %0.16f =     %0.1e\n",sdn,sdn);
+    nco_map_var_min_max_ttl(var_frac_a,&frac_min_cmp,&frac_max_cmp,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
-    const double eps_abs=1.0e-16;
+    fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid B\n",frac_avg_dsk,frac_avg_dsk > 1 ? "+" : "-",fabs(1.0-frac_avg_dsk));
+    fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid B\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk));
+    fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid B\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk));
+    fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // Mean absolute bias from 1.0\n",mebs,mebs);
+    fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // RMS relative to 1.0\n",rms,rms);
+    fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
+
+    /* Inform/Warn if difference between disk and computed values */
     double dsk_cmp_dff;
     dsk_cmp_dff=frac_min_dsk-frac_min_cmp;
     if(fabs(dsk_cmp_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of min(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_dsk,frac_min_cmp,dsk_cmp_dff);}
     dsk_cmp_dff=frac_max_dsk-frac_max_cmp;
     if(fabs(frac_max_dsk-frac_max_cmp) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of max(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_dsk,frac_max_cmp,frac_max_dsk-frac_max_cmp);}
     
-    nco_map_var_min_max_ttl(var_frac_b,&frac_min_dsk,&frac_max_dsk,&frac_ttl_dsk,&avg,&mebs,&rms,&sdn);
-    /* Compute as row sums */
+    /* Compute and report frac_b statistics from frac_b disk values */
+    nco_map_var_min_max_ttl(var_frac_b,&frac_min_dsk,&frac_max_dsk,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+    /* Compute frac_b as row sums */
     nco_map_frac_b_clc(var_S,var_row,var_frac_b);
-    nco_map_var_min_max_ttl(var_frac_b,&frac_min_cmp,&frac_max_cmp,&frac_ttl_cmp,&avg,&mebs,&rms,&sdn);
-    fprintf(stdout,"frac_b (disk) min: %0.16f = 1.0-%0.1e\n",frac_min_dsk,1.0-frac_min_dsk);
-    fprintf(stdout,"frac_b (disk) max: %0.16f = 1.0+%0.1e\n",frac_max_dsk,frac_max_dsk-1.0);
+    nco_map_var_min_max_ttl(var_frac_b,&frac_min_cmp,&frac_max_cmp,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
+    fprintf(stdout,"\n");
+    fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid A\n",frac_avg_dsk,frac_avg_dsk > 1 ? "+" : "-",fabs(1.0-frac_avg_dsk));
+    fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid A\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk));
+    fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid A\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk));
+    fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // Mean absolute bias from 1.0\n",mebs,mebs);
+    fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // RMS relative to 1.0\n",rms,rms);
+    fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
+
+    /* Inform/Warn if difference between disk and computed values */
     dsk_cmp_dff=frac_min_dsk-frac_min_cmp;
     if(fabs(dsk_cmp_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of min(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_dsk,frac_min_cmp,dsk_cmp_dff);}
     dsk_cmp_dff=frac_max_dsk-frac_max_cmp;
     if(fabs(frac_max_dsk-frac_max_cmp) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_dsk,frac_max_cmp,frac_max_dsk-frac_max_cmp);}
 
-    nco_map_var_min_max_ttl(var_mask_a,&mask_a_min,&mask_a_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
-    nco_map_var_min_max_ttl(var_mask_b,&mask_b_min,&mask_b_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
-    fprintf(stdout,"mask_a min, max: %.0f, %.0f\n",mask_a_min,mask_a_max);
-    fprintf(stdout,"mask_b min, max: %.0f, %.0f\n",mask_b_min,mask_b_max);
-    
-    /* New scope for histogram */
-    {
-      int hst_sz=31;
-      int *hst_row;
-      int *hst_col;
-      
-      hst_row=(int*)nco_calloc(hst_sz+1, sizeof(int));
-      hst_col=(int*)nco_calloc(hst_sz+1, sizeof(int));
-      
-      nco_map_hst_mk(var_col, var_mask_a->sz, hst_col, hst_sz);
-      nco_map_hst_mk(var_row, var_mask_b->sz, hst_row, hst_sz);
-      
-      fprintf(stdout, "Number of ignored source points (empty columns)  : %d\n", hst_col[0]);
-      fprintf(stdout, "Number of ignored destination points (empty rows): %d\n", hst_row[0]);
-      fprintf(stdout, "Histogram Legend:\nColumn 1: Number of nonzero entries (histogram bin)\n");
-      fprintf(stdout, "Column 2: Number of columns (source cells) with that many nonzero entries\n");
-      fprintf(stdout, "Column 3: Number of rows (destination cells) with that many nonzero entries\n");
-      
-      for(idx=0;idx<hst_sz;idx++)
-	fprintf(stdout, "%4d %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
-      
-      /* print final row (slighly modified */
-      fprintf(stdout, ">=%2d %12d %12d\n",idx, hst_col[idx], hst_row[idx] );
-      hst_row=(int*)nco_free(hst_row);
-      hst_col=(int*)nco_free(hst_col);
-    }
-  }
+    fprintf(stdout,"\nHistogram of nonzero entries in sparse matrix:\n");
+    fprintf(stdout,"  Column 1: Number of nonzero entries (histogram bin)\n");
+    fprintf(stdout,"  Column 2: Number of columns (source cells) with that many nonzero entries\n");
+    fprintf(stdout,"  Column 3: Number of rows (destination cells) with that many nonzero entries\n");
+    fprintf(stdout,"  [");
+    for(idx=0;idx<=hst_sz;idx++)
+      if(hst_col[idx] != 0 || hst_row[idx] != 0) fprintf(stdout,"[%s%d,%d,%d]%s",idx == hst_sz ? ">= " : "",idx,hst_col[idx],hst_row[idx],idx != hst_sz ? ", " : "]\n");
+    /* Print final row (slighly modified) */
+    if(hst_row) hst_row=(int *)nco_free(hst_row);
+    if(hst_col) hst_col=(int *)nco_free(hst_col);
+  } /* !report */
   
   nco_close(in_id);
-  
-  var_area_a=nco_var_free(var_area_a);
-  var_frac_a=nco_var_free(var_frac_a);
-  var_mask_a=nco_var_free(var_mask_a);
-  
-  var_area_b=nco_var_free(var_area_b);
-  var_frac_b=nco_var_free(var_frac_b);
-  var_mask_b=nco_var_free(var_mask_b);
-  
-  var_col=nco_var_free(var_col);
-  var_row=nco_var_free(var_row);
-  var_S=nco_var_free(var_S);
-  
-  dmn_in=nco_dmn_lst_free(dmn_in,dmn_in_nbr );
+
+  /* Free memory */
+  if(dmn_in) dmn_in=nco_dmn_lst_free(dmn_in,dmn_in_nbr );
+  if(var_S) var_S=nco_var_free(var_S);
+  if(var_area_a) var_area_a=nco_var_free(var_area_a);
+  if(var_area_b) var_area_b=nco_var_free(var_area_b);
+  if(var_col) var_col=nco_var_free(var_col);
+  if(var_frac_a) var_frac_a=nco_var_free(var_frac_a);
+  if(var_frac_b) var_frac_b=nco_var_free(var_frac_b);
+  if(var_mask_a) var_mask_a=nco_var_free(var_mask_a);
+  if(var_mask_b) var_mask_b=nco_var_free(var_mask_b);
+  if(var_row) var_row=nco_var_free(var_row);
 
   return True;
 } /* !nco_map_chk() */
