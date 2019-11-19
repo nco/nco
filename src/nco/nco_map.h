@@ -120,6 +120,8 @@ extern "C" {
   void
   nco_map_var_min_max_ttl
   (var_sct *var,
+   double *area,
+   nco_bool flg_area_wgt,
    double *min,
    double *max,
    double *ttl,
@@ -130,7 +132,8 @@ extern "C" {
   
   nco_bool
   nco_map_chk
-  (const char *fl_in);
+  (const char *fl_in,
+   nco_bool flg_area_wgt);
   
   nco_bool
   nco_map_frac_b_clc   /* calculate frac from mapping weights */

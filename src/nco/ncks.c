@@ -281,6 +281,7 @@ main(int argc,char **argv)
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
+  nco_bool flg_area_wgt=False; /* [flg] Area-weight map-file statistics */
   nco_bool flg_dmm_in=False; /* [flg] Make dummy input file */
   nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_rgr=False; /* [flg] Regrid */
@@ -306,6 +307,7 @@ main(int argc,char **argv)
   
   static struct option opt_lng[]={ /* Structure ordered by short option key if possible */
     /* Long options with no argument, no short option counterpart */
+    {"area_wgt",no_argument,0,0}, /* [sng] Area-weight map-file statistics */
     {"bld",no_argument,0,0}, /* [sng] Build-engine */
     {"build_engine",no_argument,0,0}, /* [sng] Build-engine */
     {"calendar",no_argument,0,0}, /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
@@ -745,6 +747,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
+      if(!strcmp(opt_crr,"area_wgt") || !strcmp(opt_crr,"area_weight")) flg_area_wgt=True;
       if(!strcmp(opt_crr,"rgr") || !strcmp(opt_crr,"regridding")){
         flg_rgr=True;
         rgr_arg=(char **)nco_realloc(rgr_arg,(rgr_nbr+1)*sizeof(char *));
@@ -1386,7 +1389,7 @@ main(int argc,char **argv)
 
       if(CHK_MAP){
 	/* Check map-file quality */
-	nco_map_chk(fl_in);
+	nco_map_chk(fl_in,flg_area_wgt);
         goto close_and_free;
       } /* !CHK_MAP */
 
