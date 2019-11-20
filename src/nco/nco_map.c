@@ -1561,34 +1561,34 @@ nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
 } /* !nco_msh_plg_area() */
 
 nco_bool
-nco_map_hst_mk  /* create histogram */
-(var_sct* var_row,
-int row_max,
-int hst_ar[],
-int hst_sz )
+nco_map_hst_mk /* Create histogram */
+(var_sct * var_row,
+ int row_max,
+ int hst_ar[],
+ int hst_sz )
 {
   int idx;
   int sz;
   int idx_row=0;
   int *row_bin=NULL_CEWI;
-
-  (void)cast_void_nctype(NC_DOUBLE ,&(var_row->val));
-
+  
+  (void)cast_void_nctype(NC_DOUBLE,&(var_row->val));
+  
   sz=var_row->sz;
-
-  row_bin=(int*)nco_calloc( row_max+1, sizeof(int));
-
-  /* row count remember var_row is one based and so is row_bin */
-  for(idx=0; idx<sz; idx++ )
-    if( (idx_row=var_row->val.ip[idx])<= row_max )
+  
+  row_bin=(int*)nco_calloc(row_max+1,sizeof(int));
+  
+  /* Row count: var_row and row_bin are one-based */
+  for(idx=0;idx<sz;idx++)
+    if((idx_row=var_row->val.ip[idx]) <= row_max)
       row_bin[idx_row]++;
-
-  /* histogram count - one based */
-  for(idx=1; idx<=row_max;idx++){
-    idx_row = row_bin[idx];
+  
+  /* Histogram count is one-based */
+  for(idx=1;idx<=row_max;idx++){
+    idx_row=row_bin[idx];
     if(idx_row < hst_sz) hst_ar[idx_row]++; else hst_ar[hst_sz]++;
   }
-
+  
   (void)cast_nctype_void(NC_INT,&(var_row->val));
 
   row_bin=(int*)nco_free(row_bin);
@@ -1829,11 +1829,10 @@ nco_map_chk /* Map-file evaluation */
   
   double *val=NULL;
   
-  int idx;
-  int rcd;
-  int in_id;
-  int fl_in_fmt;
   int dmn_in_nbr;
+  int fl_in_fmt;
+  int in_id;
+  int rcd;
 
   nco_bool area_wgt_a;
   nco_bool area_wgt_b;
@@ -1843,6 +1842,8 @@ nco_map_chk /* Map-file evaluation */
   nco_bool has_frac_b=False;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT;
+  size_t hst_sz_nnz;
+  size_t idx;
   size_t sz;
   
   var_sct **var_lst=NULL_CEWI;
@@ -1960,10 +1961,10 @@ nco_map_chk /* Map-file evaluation */
     if(has_area_a) nco_map_var_min_max_ttl(var_area_a,(double *)NULL,flg_area_wgt,&area_a_min,&area_a_max,&area_a_ttl,&avg,&mebs,&rms,&sdn);
     if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,(double *)NULL,flg_area_wgt,&mask_a_min,&mask_a_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
 
-    fprintf(stdout,"Map report on %s:\n",fl_in);
+    fprintf(stdout,"Characterization of map-file %s:\n",fl_in);
     fprintf(stdout,"Sparse matrix size n_s: %lu\n",var_S->sz);
     nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,&s_min,&s_max,&s_ttl,&avg,&mebs,&rms,&sdn);
-    fprintf(stdout,"Mapping weights S min, max: %.16g, %.16g\n\n",s_min,s_max);
+    fprintf(stdout,"Weights S min, max: %.16g, %.16g\n\n",s_min,s_max);
 
     fprintf(stdout,"Grid A size n_a = %lu // Number of columns/sources\n",var_area_a->sz);
     if(has_area_a){
@@ -2057,8 +2058,11 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"  Column 2: Number of columns (source cells) with that many nonzero entries\n");
     fprintf(stdout,"  Column 3: Number of rows (destination cells) with that many nonzero entries\n");
     fprintf(stdout,"  [");
+    hst_sz_nnz=hst_sz;
     for(idx=0;idx<=hst_sz;idx++)
-      if(hst_col[idx] != 0 || hst_row[idx] != 0) fprintf(stdout,"[%s%d,%d,%d]%s",idx == hst_sz ? ">= " : "",idx,hst_col[idx],hst_row[idx],idx != hst_sz ? ", " : "]\n");
+      if(hst_col[idx] != 0 || hst_row[idx] != 0) hst_sz_nnz=idx;
+    for(idx=0;idx<=hst_sz_nnz;idx++)
+      if(hst_col[idx] != 0 || hst_row[idx] != 0) fprintf(stdout,"[%s%lu,%d,%d]%s",idx == hst_sz ? ">= " : "",idx,hst_col[idx],hst_row[idx],idx != hst_sz_nnz ? ", " : "]\n");
     /* Print final row (slighly modified) */
     if(hst_row) hst_row=(int *)nco_free(hst_row);
     if(hst_col) hst_col=(int *)nco_free(hst_col);
