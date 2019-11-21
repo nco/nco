@@ -1,5 +1,7 @@
 2019-11-21  Charlie Zender  <zender@uci.edu>
 
+	* Change to bin_min < weight <= bin_max
+
 	* NCO 4.9.0-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.0-beta02: Uttanasana';git push
 	git tag -a 4.9.0-beta02 -m 'ncremap att_flg, centroid opt, fv2fv_flx/stt, gss n2s nfr fix, HRRR, IFS, MPAS BGC, msh_fl, ntp_mth rhea SLURM, rnr=0.0 == destonly, SGS rewrite/parallelize, TR MWF SCRIP, TR volumetric, vrt_nm, vrt prs tm_nbr fix;ncks area_wgt, chk_nan, chk_map, json dcm pnt fix;ncap2 -O fix';git push --tags
