@@ -1,0 +1,22 @@
+2019-11-21 Henry Butowsky <henryb@hush.com>
+
+	tag  hmb-msh-1.0
+
+        works well with all maps in ex2.sh (including all swaps)  but stats for ne120 are worse  than  previous msh version
+        see below
+
+        ne120 bm's
+	 nco avg,min,max,mebs,rms of one:
+	 1.000000000000002
+	 0.999999999979666
+	 1.000000000020256
+	 0.000000000000028
+	 0.000000000000060
+
+        ne30 bm's
+	 nco avg,min,max,mebs,rms of one:
+	 0.999999999999999
+	 0.999999999999952
+	 1.000000000000050
+	 0.000000000000005
+	 0.000000000000010
