@@ -1576,7 +1576,7 @@ nco_map_hst_mk /* Create histogram */
   
   sz=var_row->sz;
   
-  row_bin=(int*)nco_calloc(row_max+1,sizeof(int));
+  row_bin=(int *)nco_calloc(row_max+1,sizeof(int));
   
   /* Row count: var_row and row_bin are one-based */
   for(idx=0;idx<sz;idx++)
@@ -1828,10 +1828,12 @@ nco_map_chk /* Map-file evaluation */
   dmn_sct **dmn_in=NULL_CEWI;
   
   double *val=NULL;
+  double wgt;
   
   int dmn_in_nbr;
   int fl_in_fmt;
   int in_id;
+  int hst_sz_nnz;
   int rcd;
 
   nco_bool area_wgt_a;
@@ -1842,7 +1844,6 @@ nco_map_chk /* Map-file evaluation */
   nco_bool has_frac_b=False;
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT;
-  size_t hst_sz_nnz;
   size_t idx;
   size_t sz;
   
@@ -1966,6 +1967,24 @@ nco_map_chk /* Map-file evaluation */
     nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,&s_min,&s_max,&s_ttl,&avg,&mebs,&rms,&sdn);
     fprintf(stdout,"Weights S min, max: %.16g, %.16g\n\n",s_min,s_max);
 
+    int hst_idx;
+    int *hst_wgt;
+    double hst_wgt_ntf[]={NC_MIN_INT,-1,0,1,2,NC_MAX_INT};
+    const int hst_wgt_nbr=-1+sizeof(hst_wgt_ntf)/sizeof(double);
+    hst_wgt_ntf[0]=s_min;
+    hst_wgt_ntf[hst_wgt_nbr]=s_max;
+    hst_wgt=(int *)nco_calloc(hst_wgt_nbr,sizeof(int));
+    sz=var_S->sz;
+    for(idx=0;idx<sz;idx++){
+      wgt=var_S->val.dp[idx];
+      for(hst_idx=0;hst_idx<hst_wgt_nbr;hst_idx++){
+	if(wgt < hst_wgt_ntf[hst_idx+1]){
+	  hst_wgt[hst_idx]++;
+	  break;
+	} /* !wgt */
+      } /* !hst_idx */
+    } /* !idx */
+    
     fprintf(stdout,"Grid A size n_a = %lu // Number of columns/sources\n",var_area_a->sz);
     if(has_area_a){
       fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
@@ -2053,19 +2072,35 @@ nco_map_chk /* Map-file evaluation */
     dsk_cmp_dff=frac_max_dsk-frac_max_cmp;
     if(fabs(frac_max_dsk-frac_max_cmp) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_dsk,frac_max_cmp,frac_max_dsk-frac_max_cmp);}
 
-    fprintf(stdout,"\nHistogram of nonzero entries in sparse matrix:\n");
-    fprintf(stdout,"  Column 1: Number of nonzero entries (histogram bin)\n");
-    fprintf(stdout,"  Column 2: Number of columns (source cells) with that many nonzero entries\n");
-    fprintf(stdout,"  Column 3: Number of rows (destination cells) with that many nonzero entries\n");
+    fprintf(stdout,"\nHistogram of non-zero entries in sparse matrix:\n");
+    fprintf(stdout,"  Column 1: Number of non-zero entries (histogram bin)\n");
+    fprintf(stdout,"  Column 2: Number of columns (source cells) with that many non-zero entries\n");
+    fprintf(stdout,"  Column 3: Number of rows (destination cells) with that many non-zero entries\n");
     fprintf(stdout,"  [");
     hst_sz_nnz=hst_sz;
     for(idx=0;idx<=hst_sz;idx++)
-      if(hst_col[idx] != 0 || hst_row[idx] != 0) hst_sz_nnz=idx;
+      if(hst_col[idx] > 0 || hst_row[idx] > 0) hst_sz_nnz=idx;
     for(idx=0;idx<=hst_sz_nnz;idx++)
-      if(hst_col[idx] != 0 || hst_row[idx] != 0) fprintf(stdout,"[%s%lu,%d,%d]%s",idx == hst_sz ? ">= " : "",idx,hst_col[idx],hst_row[idx],idx != hst_sz_nnz ? ", " : "]\n");
-    /* Print final row (slighly modified) */
+      if(hst_col[idx] > 0 || hst_row[idx] > 0) fprintf(stdout,"[%s%lu,%d,%d]%s",idx == hst_sz ? ">= " : "",idx,hst_col[idx],hst_row[idx],idx != hst_sz_nnz ? ", " : "]\n");
+
+    fprintf(stdout,"\nHistogram of weights S: [bin_min <= # weights < bin_max]\n");
+    fprintf(stdout,"  Column 1: Lower bound on weights (bin_min)\n");
+    fprintf(stdout,"  Column 2: Upper bound on weights (bin_max)\n");
+    fprintf(stdout,"  Column 3: Number of weights in bin\n");
+    fprintf(stdout,"  [");
+    hst_sz_nnz=0;
+    int hst_vld_crr=0;
+    for(idx=0;idx<=hst_wgt_nbr;idx++)
+      if(hst_wgt[idx] > 0) hst_sz_nnz++;
+    for(idx=0;idx<hst_wgt_nbr;idx++)
+      if(hst_wgt[idx] > 0){
+	hst_vld_crr++;
+	fprintf(stdout,"[%g,%g,%d]%s",hst_vld_crr == 1 ? s_min : hst_wgt_ntf[idx],hst_vld_crr == hst_sz_nnz ? s_max : hst_wgt_ntf[idx+1],hst_wgt[idx],hst_vld_crr != hst_sz_nnz ? ", " : "]\n");
+      } /* !hst_wgt */
+
     if(hst_row) hst_row=(int *)nco_free(hst_row);
     if(hst_col) hst_col=(int *)nco_free(hst_col);
+    if(hst_wgt) hst_wgt=(int*)nco_free(hst_wgt);
   } /* !report */
   
   nco_close(in_id);
