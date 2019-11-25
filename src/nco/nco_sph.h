@@ -138,6 +138,8 @@ nco_sph_cross(double *a, double *b, double *c);
 double
 nco_sph_cross2(double *a, double *b, double *c);
 
+double
+nco_sph_trp(double *a, double *b, double *c);
 
 void
 nco_sph_add(double *a, double *b, double *c);
