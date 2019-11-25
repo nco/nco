@@ -941,6 +941,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   for(idx=0; idx<lnk_nbr;idx++ )
   {
+    if(pl_lst_vrl[idx]->wgt >1.0 &&  pl_lst_vrl[idx]->wgt <1.0 +1.0e-10)
+      pl_lst_vrl[idx]->wgt=1.0;
+
     wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
     col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
     row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
@@ -949,6 +952,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   
   for(idx=0;idx<grd_sz_in;idx++) 
   {
+    if(pl_lst_in[idx]->wgt >1.0 && pl_lst_in[idx]->wgt < 1.0+1.0e-10  )
+      pl_lst_in[idx]->wgt=1.0;
+
     if( pl_lst_in[idx]->wgt >0.0  ) {
       frc_in[idx] = pl_lst_in[idx]->wgt;
       msk_in[idx] = 1;
@@ -961,6 +967,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   
 
   for(idx=0;idx<grd_sz_out;idx++) {
+
+    if(pl_lst_out[idx]->wgt >1.0 && pl_lst_out[idx]->wgt < 1.0+1.0e-10  )
+      pl_lst_out[idx]->wgt=1.0;
+
 
     if( pl_lst_out[idx]->wgt >0.0  ) {
       frc_out[idx] = pl_lst_out[idx]->wgt;
@@ -1551,6 +1561,10 @@ nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
  const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
  double * const area_out) /* [sr] Gridcell area */
 {
+
+  if(!map_rgr  )
+    map_rgr=(rgr_sct*)nco_calloc(1, sizeof(rgr_sct));
+
 
   map_rgr->ply_tri_mth=nco_ply_tri_mth_csz;
   map_rgr->tri_arc_typ=nco_tri_arc_typ_gtc;
