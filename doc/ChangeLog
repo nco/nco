@@ -1,6 +1,6 @@
 2019-11-21  Charlie Zender  <zender@uci.edu>
 
-	* Change to bin_min < weight <= bin_max
+	* Change to bin_min < weight <= bin_max. Now agrees with TR AnalyzeMap.
 
 	* NCO 4.9.0-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.0-beta02: Uttanasana';git push

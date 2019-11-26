@@ -2083,7 +2083,7 @@ nco_map_chk /* Map-file evaluation */
     for(idx=0;idx<=hst_sz_nnz;idx++)
       if(hst_col[idx] > 0 || hst_row[idx] > 0) fprintf(stdout,"[%s%lu,%d,%d]%s",idx == hst_sz ? ">= " : "",idx,hst_col[idx],hst_row[idx],idx != hst_sz_nnz ? ", " : "]\n");
 
-    fprintf(stdout,"\nHistogram of weights S: [bin_min = # weights <= bin_max]\n");
+    fprintf(stdout,"\nHistogram of weights S: [bin_min < weights <= bin_max]\n");
     fprintf(stdout,"  Column 1: Lower bound on weights (bin_min)\n");
     fprintf(stdout,"  Column 2: Upper bound on weights (bin_max)\n");
     fprintf(stdout,"  Column 3: Number of weights in bin\n");
