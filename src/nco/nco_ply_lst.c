@@ -987,6 +987,8 @@ int *pl_cnt_vrl_ret){
           {
 
             (void) fprintf(stderr, "/************* concave overlap plygon***********/\n");
+            nco_poly_prn(pl_lst_in[idx],0);
+            nco_poly_prn(pl_out,0);
             nco_poly_prn(pl_vrl, 0);
             (void) fprintf(stderr, "/***********************************************/\n");
 
@@ -1034,8 +1036,8 @@ int *pl_cnt_vrl_ret){
         { nan_cnt++;
           pl_vrl->area=0.0;
 
-          //pl_vrl=nco_poly_free(pl_vrl);
-          //continue;
+          pl_vrl=nco_poly_free(pl_vrl);
+           continue;
         }
 
         /* for input polygon wgt is used to calculate frac_a */
