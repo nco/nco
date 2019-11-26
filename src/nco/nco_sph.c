@@ -823,13 +823,14 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 {
   const char fnc_nm[]="nco_sph_seg_int()";
 
-
+  nco_bool bSwap=False;
   nco_bool bInt=False;
   nco_bool bSetCnd=False;
 
   nco_bool bTstVertex=False;
   int flg_cd=0;
   int flg_ab=0;
+
 
 
   double n1;
@@ -839,6 +840,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   /* placeholder ? */
   double pt[NBR_SPH]={0.0,0.0,0.0,0.0,0.0};
 
+  double *dswp;
   int pqCross[4];
 
 
@@ -852,6 +854,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
     double Pcross[NBR_SPH];
     double Qcross[NBR_SPH];
 
+
     nco_sph_cross(p0, p1, Pcross);
     nco_sph_cross(q0, q1, Qcross);
 
@@ -860,16 +863,22 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
     pqCross[2] = nco_sph_lhs(q0, Pcross);
     pqCross[3] = nco_sph_lhs(q1, Pcross);
 
-    if (!pqCross[0] || !pqCross[1] || !pqCross[2] || !pqCross[3]) {
-      if (DEBUG_SPH)
-        (void) fprintf(stderr, "%s: possible edge int\n", fnc_nm);
 
-      if (nco_sph_seg_edge(p0, p1, q0, q1, r0, r1, pqCross, codes))
-        return True;
+    /* The plane / line intersection method doesnt work very well when the end point of the line is on
+     * or very near to the plane - so we swap the values around and use  {q0,q1,Origin}  as plane and {p0,p1} as line */
+    if(  pqCross[0]*pqCross[1] !=0 && pqCross[2]* pqCross[3]==0  )
+    {
+      dswp=p0; p0=q0; q0=dswp;
+      dswp=p1; p1=q1; q1=dswp;
 
+      bSwap=True;
     }
 
+
+
   }
+
+
 
   /* pre test for vertex/vertex intersections */
  if(bTstVertex)
@@ -945,6 +954,16 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
   }
 
+  /* swap values back if necessary */
+  if(bSwap) {
+
+    dswp = p0;p0 = q0;q0 = dswp;
+    dswp = p1;p1 = q1;q1 = dswp;
+  }
+
+
+
+
   flg_ab=nco_sph_metric_int(p0,p1, pcnd);
 
   if(DEBUG_SPH) {
@@ -957,13 +976,8 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   if(!flg_ab)
       return False;
 
-  /* from here on we have a valid point */
-  if(!nco_sph_metric(pcnd,q0))
-    flg_cd = 2;
-  else if(!nco_sph_metric(pcnd, q1))
-    flg_cd = 3;
-  else
-    flg_cd=1;
+
+  flg_cd= ( !nco_sph_metric(pcnd,q0) ? 2 : !nco_sph_metric(pcnd, q1) ? 3 :1 );
 
 
   codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
@@ -981,231 +995,171 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
 }
 
-
-
-
 nco_bool
-nco_sph_seg_int_1(double *a, double *b, double *c, double *d, double *p, double *q, int flg_snp_to, char *codes)
+nco_sph_seg_int_1(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int flg_snp_to, char *codes)
 {
-  const char fnc_nm[]="nco_sph_seg_int()_1";
+  const char fnc_nm[]="nco_sph_seg_int()";
 
-  int flg_sx=True;
 
-  int DEBUG_LCL=False;
+  nco_bool DEBUG_LCL=False;
+  nco_bool bInt=False;
+  nco_bool bValid=False;
 
+  nco_bool bTstVertex=True;
   int flg_cd=0;
   int flg_ab=0;
 
 
-
-  double nx1;
-  double nx2;
-  double nx3;
-
-
-  double  Pcross[NBR_SPH]={0};
-  double  Qcross[NBR_SPH]={0};
-  double  Icross[NBR_SPH]={0};
+  double n1;
+  /* possible intersection point */
+  double pcnd[NBR_SPH];
+  /* placeholder ? */
+  double pt[NBR_SPH]={0.0,0.0,0.0,0.0,0.0};
 
 
 
-  double X_TOLERANCE=0.99999;
-
-  double SP_TOLERANCE=1.0e-8;
-
-  if(flg_sx) {
-    nx1= nco_sph_sxcross(a, b, Pcross);
-    nx2= nco_sph_sxcross(c, d, Qcross);
-
-    nco_sph_add_lonlat(Pcross);
-    nco_sph_add_lonlat(Qcross);
-
-    nx3= nco_sph_cross(Pcross, Qcross, Icross);
-
-    /* manually normalize */
-    // nco_sph_mlt(Icross, 1.0/nx3 );
-
-    nco_sph_add_lonlat(Icross);
-  }
-  else
-  {
-
-
-
-    nx1=nco_sph_cross2(a,b, Pcross );
-    nx2=nco_sph_cross2(c,d, Qcross );
-
-
-
-    nx3=nco_sph_cross(Pcross, Qcross, Icross);
-
-
-
-
-    nco_sph_add_lonlat(Icross);
-  }
-
-
+  /* set to no intersection */
   codes[0]='0';
   codes[1]='0';
 
 
-  /* Icross is zero, should really have a range rather than an explicit zero */
-  /* use dot product to se if Pcross and QCross parallel */
-  //if(  1.0- nco_sph_dot_nm(Pcross,Qcross )  <DOT_TOLERANCE  )
-    //return nco_sph_parallel(a, b, c, d, p, q);
-  //  return False;
+  /* pre test for vertex/vertex intersections */
+  if(bTstVertex)
+  {
+    if(!nco_sph_metric(p1,q1))
+    { flg_ab=3; flg_cd=3; memcpy(r0, p1, sizeof(double)*NBR_SPH); }
+    else if(!nco_sph_metric(p1,q0))
+    { flg_ab=3; flg_cd=2; memcpy(r0, p1, sizeof(double)*NBR_SPH);}
+    else if(!nco_sph_metric(p0,q1))
+    {flg_ab=2; flg_cd=3; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
+    else if(!nco_sph_metric(p0,q0))
+    {flg_ab=2; flg_cd=2; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
+
+    if(flg_ab && flg_cd)
+    {
+      if(flg_ab==2)
+        codes[0]='t';
+      else if(flg_ab==3)
+        codes[0]='h';
+
+      if(flg_cd==2)
+        codes[1]='t';
+      else if(flg_cd==3)
+        codes[1]='h';
+
+
+      if(DEBUG_SPH)
+        fprintf(stderr, "%s: codes=%s - quick vertex return\n", fnc_nm, codes );
+
+      return True;
+
+    }
+    else
+    {
+      flg_ab=0; flg_cd=0;
+    }
+
+  }
+
+
+  bInt=nco_mat_int_pl(p0, p1, q0, q1, pt);
+  /* no intersection */
 
 
 
 
+  if (DEBUG_SPH)
+    fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm,  (bInt ?  "True" : "False"), codes, pt[0], pt[1], pt[2] );
 
-  flg_ab= nco_sph_metric_int(a, b, Icross);
 
-  flg_cd= nco_sph_metric_int(c, d, Icross);
+  if(!bInt ||  pt[0] < -1.0e-10  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-10) )
+    return False;
 
+  /* from here on we have some kind of intersection */
+
+
+  /* genuine intersection point not end point */
+  pcnd[0] = q0[0] + pt[0] * (q1[0] - q0[0]);
+  pcnd[1] = q0[1] + pt[0] * (q1[1] - q0[1]);
+  pcnd[2] = q0[2] + pt[0] * (q1[2] - q0[2]);
+
+  n1 = nco_sph_rad(pcnd);
+  /* normalise p */
+  if (n1 != 0.0 && n1 != 1.0) {
+
+    pcnd[0] /= n1;
+    pcnd[1] /= n1;
+    pcnd[2] /= n1;
+  }
+  nco_sph_add_lonlat(pcnd);
+
+  bValid=nco_sph_metric_int(p0,p1, pcnd);
+
+  if(DEBUG_SPH) {
+    nco_sph_prn_pnt("nco_sph_seg_int_: pos point ", pcnd, 4, True);
+    (void)fprintf(stderr, "%s: bValid=%s\n", fnc_nm,  (bValid ?  "True" : "False") );
+  }
 
   /*
-  if(!nco_sph_metric(a,Icross))
-    flg_ab=2;
-  else if(!nco_sph_metric(b,Icross))
-    flg_ab=3;
+  if ( pt[0] < -1.0e-10  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-10)  )
+    return False;
+  */
+
+
+  if(!bValid)
+    return False;
+
+
+  /* from here on we have a valid point */
+  if(!nco_sph_metric(pcnd,p0)) {
+    flg_ab = 2;
+    // memcpy(r0, p0, sizeof(double)*NBR_SPH);
+
+  }else if(!nco_sph_metric(pcnd, p1)) {
+    flg_ab = 3;
+    // memcpy(r0, p1, sizeof(double)*NBR_SPH);
+  }else
+    flg_ab=1;
+
+
+  /* from here on we have a valid point */
+  if(!nco_sph_metric(pcnd,q0)) {
+    flg_cd = 2;
+    // memcpy(r0, q0, sizeof(double)*NBR_SPH);
+  }else if(!nco_sph_metric(pcnd, q1)) {
+    flg_cd = 3;
+    // memcpy(r0, p1, sizeof(double)*NBR_SPH);
+  }else
+    flg_cd=1;
+
+
+
+  if(flg_ab==2)
+    codes[0]='t';
+  else if(flg_ab==3)
+    codes[0]='h';
   else
-    flg_ab=nco_sph_metric_int(a, b, Icross);
+    codes[0]='1';
 
-
-  if(!nco_sph_metric(c,Icross))
-    flg_cd=2;
-  else if(!nco_sph_metric(d,Icross))
-    flg_cd=3;
+  if(flg_cd==2)
+    codes[1]='t';
+  else if(flg_cd==3)
+    codes[1]='h';
   else
-    flg_cd= nco_sph_metric_int(c, d, Icross);
-
-   */
-
-  if(DEBUG_LCL)
-    nco_sph_prn_pnt("nco_sph_seg_int_: possible: ", Icross, 3, True);
+    codes[1]='1';
 
 
-  if(DEBUG_LCL ) {
-    fprintf(stderr, "%s(): flg_ab=%d flg_cd=%d\n", fnc_nm, flg_ab, flg_cd  );
+  if(DEBUG_SPH )
+    fprintf(stderr, "%s: codes=%s tpar=pt[0]=%.15f\n", fnc_nm, codes, pt[0]  );
 
-  }
+  memcpy(r0, pcnd, sizeof(double)*NBR_SPH);
 
-
-
-  if(flg_ab && flg_cd)
-  {
+  return True;
 
 
-    if(flg_ab==2)
-      codes[0]='t';
-    else if(flg_ab==3)
-      codes[0]='h';
-    else
-      codes[0]='1';
-
-    if(flg_cd==2)
-      codes[1]='t';
-    else if(flg_cd==3)
-      codes[1]='h';
-    else
-      codes[1]='1';
-
-
-    memcpy(p,Icross, sizeof(double)*NBR_SPH);
-
-
-    if(DEBUG_LCL)
-      fprintf(stderr,"%s(): code=%sn", fnc_nm, codes);
-
-
-    return True;
-  }
-
-
-  /* try antipodal point */
-  Icross[0]*= -1.0;
-  Icross[1]*= -1.0;
-  Icross[2]*= -1.0;
-  nco_sph_add_lonlat(Icross);
-
-  flg_ab=0;
-  flg_cd=0;
-
-  flg_ab= nco_sph_metric_int(a, b, Icross);
-
-  flg_cd= nco_sph_metric_int(c, d, Icross);
-
-  /*
-  if(!nco_sph_metric(a,Icross))
-    flg_ab=2;
-  else if(!nco_sph_metric(b,Icross))
-    flg_ab=3;
-  else
-    flg_ab=nco_sph_metric_int(a, b, Icross);
-
-
-  if(!nco_sph_metric(c,Icross))
-    flg_cd=2;
-  else if(!nco_sph_metric(d,Icross))
-    flg_cd=3;
-  else
-    flg_cd= nco_sph_metric_int(c, d, Icross);
-
-   */
-
-
-  if(DEBUG_LCL)
-    nco_sph_prn_pnt("nco_sph_seg_int_nw(): anti-podal-possible: ", Icross, 3, True);
-
-
-  if(DEBUG_LCL ) {
-    fprintf(stderr, "%s(): flg_ab=%d flg_cd=%d\n", fnc_nm, flg_ab, flg_cd  );
-
-  }
-
-
-
-  if(flg_ab && flg_cd)
-  {
-
-
-    if(flg_ab==2)
-      codes[0]='t';
-    else if(flg_ab==3)
-      codes[0]='h';
-    else
-      codes[0]='1';
-
-    if(flg_cd==2)
-      codes[1]='t';
-    else if(flg_cd==3)
-      codes[1]='h';
-    else
-      codes[1]='1';
-
-
-    memcpy(p,Icross, sizeof(double)*NBR_SPH);
-
-
-    if(DEBUG_LCL)
-      fprintf(stderr,"%s(): code=%sn", fnc_nm, codes);
-
-
-    return True;
-  }
-
-
-
-
-  if(DEBUG_LCL)
-    fprintf(stderr,"%s(): code=%s\n", fnc_nm, codes);
-
-
-  return False;
 
 }
+
 
 
 
@@ -1760,7 +1714,7 @@ double  nco_sph_cross2(double *a, double *b, double *c)
   n1=sqrt( c[0]*c[0]+c[1]*c[1] + c[2]*c[2] );
 
 
-  if(DEBUG_SPH)
+  if(0 && DEBUG_SPH)
     printf("%s: n1=%.15f (%.15f, %.15f %.15f)\n",fnc_nm, n1, c[0],c[1], c[2]);
 
   return n1;
@@ -1801,6 +1755,21 @@ double  nco_sph_cross(double *a, double *b, double *c)
 
 
 }
+
+/* return triple product */
+double nco_sph_trp(double *a, double *b, double *c)
+{
+  double tot;
+
+  tot=(a[1]*b[2]-a[2]*b[1])*c[0]+
+      (a[2]*b[0]-a[0]*b[2])*c[1]+
+      (a[0]*b[1]-a[1]*b[0])*c[2];
+
+
+   return tot;
+
+}
+
 
 double nco_sph_rad(double *a){
   double n1;
