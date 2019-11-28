@@ -919,11 +919,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   }
 
-
-  /* fnd max crn_nbr from list of overlap polygons */
+  /* Find max crn_nbr from list of overlap polygons */
   grd_crn_nbr_vrl=0;
   for(idx=0;idx < pl_cnt_vrl;idx++)
-    if( pl_lst_vrl[idx]->crn_nbr > grd_crn_nbr_vrl )
+    if(pl_lst_vrl[idx]->crn_nbr > grd_crn_nbr_vrl)
       grd_crn_nbr_vrl=pl_lst_vrl[idx]->crn_nbr;
 
   lnk_nbr=pl_cnt_vrl;
@@ -932,58 +931,47 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   col_src_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
   row_dst_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
 
-
   /*
   for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
   for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
   for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
   */
 
-  for(idx=0; idx<lnk_nbr;idx++ )
-  {
-    if(pl_lst_vrl[idx]->wgt >1.0 &&  pl_lst_vrl[idx]->wgt <1.0 +1.0e-10)
+  for(idx=0; idx<lnk_nbr;idx++){
+    if(pl_lst_vrl[idx]->wgt > 1.0 && pl_lst_vrl[idx]->wgt < 1.0+1.0e-10)
       pl_lst_vrl[idx]->wgt=1.0;
 
     wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
     col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
     row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
-
   }
   
-  for(idx=0;idx<grd_sz_in;idx++) 
-  {
-    if(pl_lst_in[idx]->wgt >1.0 && pl_lst_in[idx]->wgt < 1.0+1.0e-10  )
+  for(idx=0;idx<grd_sz_in;idx++){
+    if(pl_lst_in[idx]->wgt >1.0 && pl_lst_in[idx]->wgt < 1.0+1.0e-10)
       pl_lst_in[idx]->wgt=1.0;
 
-    if( pl_lst_in[idx]->wgt >0.0  ) {
-      frc_in[idx] = pl_lst_in[idx]->wgt;
-      msk_in[idx] = 1;
+    if(pl_lst_in[idx]->wgt > 0.0){
+      frc_in[idx]=pl_lst_in[idx]->wgt;
+      msk_in[idx]=1;
     }else{
       frc_in[idx]=0.0;
       msk_in[idx]=0;
     }
-    
   }  
-  
 
-  for(idx=0;idx<grd_sz_out;idx++) {
+  for(idx=0;idx<grd_sz_out;idx++){
 
-    if(pl_lst_out[idx]->wgt >1.0 && pl_lst_out[idx]->wgt < 1.0+1.0e-10  )
+    if(pl_lst_out[idx]->wgt > 1.0 && pl_lst_out[idx]->wgt < 1.0+1.0e-10)
       pl_lst_out[idx]->wgt=1.0;
 
-
-    if( pl_lst_out[idx]->wgt >0.0  ) {
-      frc_out[idx] = pl_lst_out[idx]->wgt;
-      msk_out[idx] = 1;
+    if(pl_lst_out[idx]->wgt >0.0){
+      frc_out[idx]=pl_lst_out[idx]->wgt;
+      msk_out[idx]=1;
     }else{
       frc_out[idx]=0.0;
       msk_out[idx]=0;
     }
-
-
   }  
-    
-
   /* Write-out overlap mesh
      20190526: Allow users to name and output mesh-file with --rgr msh_fl=msh.nc. https://github.com/nco/nco/issues/135 */
   if(rgr->fl_msh) nco_msh_poly_lst_wrt(rgr->fl_msh,pl_lst_vrl,pl_cnt_vrl,grd_lon_typ_out);
@@ -994,7 +982,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *lnk_nbr_ptr=lnk_nbr;
 
   /* tally up weights see if they sum to number of dst grid cells */
-  if( nco_dbg_lvl_get() >= nco_dbg_dev)
+  if(nco_dbg_lvl_get() >= nco_dbg_dev)
   {
     size_t irow;
     size_t sz;
@@ -1006,8 +994,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     tally=(double*)nco_malloc( sizeof(double)*sz);
     for(idx=0;idx<sz;idx++)
       tally[idx]=0.0;
-
-
 
     for(idx=0;idx<sz;idx++)
     {
@@ -1021,13 +1007,11 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     fprintf(stderr, "%s(): S.total=%.10f  WARNING following is list of incomplete dst cells, by src_id no\n", fnc_nm,sum);
     for(idx=0; idx< pl_cnt_out;idx++)
-      if(  fabs(tally[idx]-1.0) >1e-8  )
-        fprintf(stderr,"%lu(%.20f)\n", idx, tally[idx]);
+      if(fabs(tally[idx]-1.0) > 1.0e-8)
+        fprintf(stderr,"%lu(%.20f)\n",idx,tally[idx]);
 
     // fprintf(stderr,"\n sum=%.20f\n", idx, sum);
-
     tally=(double*)nco_free(tally);
-
   }
 
   if(nco_dbg_lvl_get() >= nco_dbg_dev)
@@ -1037,50 +1021,39 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     poly_sct **pl_lst_dbg=NULL_CEWI;
 
-
-    /* find area mismatch between dst and overlap */
+    /* Find area mismatch between dst and overlap */
     fprintf(stderr,"%s(): Comparing dst areas with overlap areas\n",fnc_nm);
-    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out, grd_sz_out, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
+    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out,grd_sz_out,pl_lst_vrl,pl_cnt_vrl,io_flg,&pl_nbr);
 
-    if(pl_nbr) {
-      nco_msh_poly_lst_wrt("nco_map_tst_out_dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
-      pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg, pl_nbr);
+    if(pl_nbr){
+      nco_msh_poly_lst_wrt("nco_map_tst_out_dbg.nc",pl_lst_dbg,pl_nbr,grd_lon_typ_out);
+      pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg,pl_nbr);
     }
-
 
     pl_nbr=0;
     io_flg=0;
 
     /* find area mismatch between src and overlap */
     fprintf(stderr,"%s(): Comparing src areas with overlap areas\n",fnc_nm);
-    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in, grd_sz_in, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
+    pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in,grd_sz_in,pl_lst_vrl,pl_cnt_vrl,io_flg,&pl_nbr);
 
-    if(pl_nbr) {
-      nco_msh_poly_lst_wrt("nco_map_tst_in_dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out);
-      pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg, pl_nbr);
+    if(pl_nbr){
+      nco_msh_poly_lst_wrt("nco_map_tst_in_dbg.nc",pl_lst_dbg,pl_nbr,grd_lon_typ_out);
+      pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg,pl_nbr);
     }
-
-
   }
 
-  /* destroy kdtree */
-  if(rtree)
-     kd_destroy(rtree,NULL);
+  /* Destroy kdtree */
+  if(rtree) kd_destroy(rtree,NULL);
 
   pl_glb_in=nco_poly_free(pl_glb_in);
   pl_glb_out=nco_poly_free(pl_glb_out);
 
-  if(grd_sz_in)
-     pl_lst_in=nco_poly_lst_free(pl_lst_in,grd_sz_in);
+  if(grd_sz_in) pl_lst_in=nco_poly_lst_free(pl_lst_in,grd_sz_in);
 
-  if(grd_sz_out)
-     pl_lst_out=nco_poly_lst_free(pl_lst_out,grd_sz_out);
+  if(grd_sz_out) pl_lst_out=nco_poly_lst_free(pl_lst_out,grd_sz_out);
 
-
-
-  if(pl_cnt_vrl)
-    pl_lst_vrl=nco_poly_lst_free(pl_lst_vrl,pl_cnt_vrl);
-
+  if(pl_cnt_vrl) pl_lst_vrl=nco_poly_lst_free(pl_lst_vrl,pl_cnt_vrl);
 
   return rcd;
 } /* !nco_msh_mk() */
@@ -1145,7 +1118,7 @@ nco_msh_wrt
   grd_ctr_lat=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
   grd_ctr_lon=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
 
-  nco_msh_plg_area(lat_crn, lon_crn, grd_sz_nbr, grd_crn_nbr, area);
+  nco_msh_plg_area(lat_crn,lon_crn,grd_sz_nbr,grd_crn_nbr,area);
 
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -1167,8 +1140,8 @@ nco_msh_wrt
   (void)nco_def_var(out_id,grd_crn_lon_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lon_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_crn_lon_id,shuffle,deflate,dfl_lvl);
 
-  (void)nco_def_var(out_id,grd_area_nm, crd_typ,dmn_nbr_1D, dmn_ids, &grd_area_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_area_id, shuffle, deflate, dfl_lvl);
+  (void)nco_def_var(out_id,grd_area_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_area_id);
+  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_area_id,shuffle,deflate,dfl_lvl);
 
   /* Begin data mode */
   (void)nco_enddef(out_id);
@@ -1180,7 +1153,7 @@ nco_msh_wrt
 
   rcd=nco_put_vara(out_id,grd_crn_lat_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
   rcd=nco_put_vara(out_id,grd_crn_lon_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
-  rcd=nco_put_vara(out_id,grd_area_id,dmn_srt,dmn_cnt, area, crd_typ);
+  rcd=nco_put_vara(out_id,grd_area_id,dmn_srt,dmn_cnt,area,crd_typ);
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
@@ -1617,19 +1590,28 @@ nco_map_var_init
  dmn_sct **dmn,
  int dmn_in_nbr)
 {
-  var_sct *var;
+  const char fnc_nm[]="nco_map_var_init()"; /* [sng] Function name */
   int rcd;
   int var_id;
+  var_sct *var;
 
   /* Get variable ID */
   rcd=nco_inq_varid_flg(in_id,var_nm,&var_id);
   /* 20191118 Global (all?) Tempest map-files lack mask_a/b variables */
-  if(rcd != NC_NOERR) return NULL;
-
+  if(rcd != NC_NOERR){
+    if(!strcmp(var_nm,"S")){
+      (void)fprintf(stderr,"%s: ERROR %s is unable to find variable \"S\" which is a required variable in supported map-files.\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stderr,"%s: HINT ncks --chk_map only works on map-files that contain sparse array information in ESMF/CMIP6-format which is the format used by many projects including CESM, E3SM, and CMIP6. This function will not work on Exodus (\".g\") grid-files or overlap/interface mesh-files, nor on SCRIP grid-files or overlap/interface mesh-files. If the map-file is in original SCRIP (not ESMF) format then the weight variable is named \"remap_matrix\" instead of \"S\". NCO does not support such SCRIP map-files, though it would not be difficult to add this support. Please contact the NCO project if this feature would be useful to you.\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE); 
+    }else{
+      return NULL;
+    } /* !S */
+  } /* !rcd */
+    
   /* Fill-in dimensions */
   var=nco_var_fll(in_id,var_id,var_nm,dmn,dmn_in_nbr);
   /* Read data */
-  (void)nco_var_get(in_id, var);
+  (void)nco_var_get(in_id,var);
 
   return var;
 } /* !nco_map_var_init() */
@@ -1764,7 +1746,7 @@ var_sct *var_frac_b)
   for(idx=0;idx<var_frac_a->sz;idx++)
     var_frac_a->val.dp[idx]=0.0;
   */
-  memset( var_frac_b->val.dp, 0, var_frac_b->sz *  nco_typ_lng(var_frac_b->type)  );
+  memset(var_frac_b->val.dp,0,var_frac_b->sz*nco_typ_lng(var_frac_b->type));
 
   /* loop through weights and row*/
   for(idx=0;idx<var_S->sz; idx++  ){
@@ -1806,19 +1788,17 @@ var_sct *var_frac_a)
   /* set frac_a to zero */
   memset( var_frac_a->val.dp, 0, var_frac_a->sz *  nco_typ_lng(var_frac_a->type)  );
   
-  for(idx=0; idx<var_S->sz;idx++)
-  {
-     idx_row=var_row->val.ip[idx] -1;
-     idx_col=var_col->val.ip[idx]- 1;
+  for(idx=0; idx<var_S->sz;idx++){
+     idx_row=var_row->val.ip[idx]-1L;
+     idx_col=var_col->val.ip[idx]-1L;
 
-     if(idx_row >= var_area_b->sz || idx_col>= var_area_a->sz   )
-       continue;
-     var_frac_a->val.dp[idx_col]+= var_S->val.dp[idx] * var_area_b->val.dp[idx_row];
+     if(idx_row >= var_area_b->sz || idx_col>= var_area_a->sz) continue;
+     var_frac_a->val.dp[idx_col]+=var_S->val.dp[idx]*var_area_b->val.dp[idx_row];
   }
 
-  /* normalize result by area_a */
-  for(idx=0;idx< var_frac_a->sz;idx++ )
-    var_frac_a->val.dp[idx] /= var_area_a->val.dp[idx];
+  /* Normalize result by area_a */
+  for(idx=0;idx< var_frac_a->sz;idx++)
+    var_frac_a->val.dp[idx]/=var_area_a->val.dp[idx];
 
   (void)cast_nctype_void(NC_DOUBLE,&(var_S->val));
   (void)cast_nctype_void(NC_INT,&(var_row->val));
@@ -1879,7 +1859,7 @@ nco_map_chk /* Map-file evaluation */
   rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
-  /* read in all dims from file */
+  /* Read all dimensions from file */
   (void)nco_inq(in_id,&dmn_in_nbr,(int *)NULL,(int *)NULL,(int *)NULL);
   dmn_in=(dmn_sct **)nco_malloc(dmn_in_nbr*sizeof(dmn_sct *));
 
