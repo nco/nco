@@ -947,7 +947,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   }
   
   for(idx=0;idx<grd_sz_in;idx++){
-    if(pl_lst_in[idx]->wgt >1.0 && pl_lst_in[idx]->wgt < 1.0+1.0e-10)
+    if(pl_lst_in[idx]->wgt > 1.0 && pl_lst_in[idx]->wgt < 1.0+1.0e-10)
       pl_lst_in[idx]->wgt=1.0;
 
     if(pl_lst_in[idx]->wgt > 0.0){
@@ -957,14 +957,13 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       frc_in[idx]=0.0;
       msk_in[idx]=0;
     }
-  }  
+  }
 
   for(idx=0;idx<grd_sz_out;idx++){
-
     if(pl_lst_out[idx]->wgt > 1.0 && pl_lst_out[idx]->wgt < 1.0+1.0e-10)
       pl_lst_out[idx]->wgt=1.0;
 
-    if(pl_lst_out[idx]->wgt >0.0){
+    if(pl_lst_out[idx]->wgt > 0.0){
       frc_out[idx]=pl_lst_out[idx]->wgt;
       msk_out[idx]=1;
     }else{
@@ -972,6 +971,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       msk_out[idx]=0;
     }
   }  
+
   /* Write-out overlap mesh
      20190526: Allow users to name and output mesh-file with --rgr msh_fl=msh.nc. https://github.com/nco/nco/issues/135 */
   if(rgr->fl_msh) nco_msh_poly_lst_wrt(rgr->fl_msh,pl_lst_vrl,pl_cnt_vrl,grd_lon_typ_out);
@@ -982,8 +982,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *lnk_nbr_ptr=lnk_nbr;
 
   /* tally up weights see if they sum to number of dst grid cells */
-  if(nco_dbg_lvl_get() >= nco_dbg_dev)
-  {
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
     size_t irow;
     size_t sz;
     double sum=0.0;
@@ -992,16 +991,11 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     sz=lnk_nbr;
 
     tally=(double*)nco_malloc( sizeof(double)*sz);
-    for(idx=0;idx<sz;idx++)
-      tally[idx]=0.0;
+    for(idx=0;idx<sz;idx++) tally[idx]=0.0;
 
-    for(idx=0;idx<sz;idx++)
-    {
+    for(idx=0;idx<sz;idx++){
       irow=row_dst_adr[idx] - 1;
-
-      if( irow < sz )
-         tally[irow] += wgt_raw[idx];
-
+      if(irow < sz) tally[irow] += wgt_raw[idx];
       sum+=wgt_raw[idx];
     }
 
@@ -1014,8 +1008,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     tally=(double*)nco_free(tally);
   }
 
-  if(nco_dbg_lvl_get() >= nco_dbg_dev)
-  {
+  if(nco_dbg_lvl_get() >= nco_dbg_dev){
     int io_flg=1;
     int pl_nbr=0;
 
@@ -1045,14 +1038,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   /* Destroy kdtree */
   if(rtree) kd_destroy(rtree,NULL);
-
   pl_glb_in=nco_poly_free(pl_glb_in);
   pl_glb_out=nco_poly_free(pl_glb_out);
-
   if(grd_sz_in) pl_lst_in=nco_poly_lst_free(pl_lst_in,grd_sz_in);
-
   if(grd_sz_out) pl_lst_out=nco_poly_lst_free(pl_lst_out,grd_sz_out);
-
   if(pl_cnt_vrl) pl_lst_vrl=nco_poly_lst_free(pl_lst_vrl,pl_cnt_vrl);
 
   return rcd;
@@ -1600,8 +1589,8 @@ nco_map_var_init
   /* 20191118 Global (all?) Tempest map-files lack mask_a/b variables */
   if(rcd != NC_NOERR){
     if(!strcmp(var_nm,"S")){
-      (void)fprintf(stderr,"%s: ERROR %s is unable to find variable \"S\" which is a required variable in supported map-files.\n",nco_prg_nm_get(),fnc_nm);
-      (void)fprintf(stderr,"%s: HINT ncks --chk_map only works on map-files that contain sparse array information in ESMF/CMIP6-format which is the format used by many projects including CESM, E3SM, and CMIP6. This function will not work on Exodus (\".g\") grid-files or overlap/interface mesh-files, nor on SCRIP grid-files or overlap/interface mesh-files. If the map-file is in original SCRIP (not ESMF) format then the weight variable is named \"remap_matrix\" instead of \"S\". NCO does not support such SCRIP map-files, though it would not be difficult to add this support. Please contact the NCO project if this feature would be useful to you.\n",nco_prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR %s cannot find variable \"S\", a required variable in supported map-files\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stderr,"%s: HINT ncks --chk_map works on map-files that contain sparse array information in the ESMF/CMIP6-format used by CESM, E3SM, CMIP6, and other projects. The map-file checker does not work on Exodus (\".g\") or SCRIP grid-files or overlap/interface mesh-files. The original SCRIP (not ESMF) format names the weight variable \"remap_matrix\" instead of \"S\". The NCO regridder can employ such SCRIP map-files, though the map-file checker does not yet support them. Please contact the NCO project if supporting SCRIP map-file checking would be useful to you.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE); 
     }else{
       return NULL;
@@ -1622,7 +1611,9 @@ nco_map_var_min_max_ttl
  double *area,
  nco_bool flg_area_wgt,
  double *min,
+ size_t *idx_min,
  double *max,
+ size_t *idx_max,
  double *ttl,
  double *avg,
  double *mebs,
@@ -1661,8 +1652,14 @@ nco_map_var_min_max_ttl
       ttl_dp+=dval*area_lcl[idx];
       mebs_dp+=fabs(dval-one)*area_lcl[idx];
       rms_dp+=(dval-one)*(dval-one)*area_lcl[idx];
-      if(dval < min_dp) min_dp=dval;
-      if(dval > max_dp) max_dp=dval;
+      if(dval < min_dp){
+	min_dp=dval;
+	*idx_min=idx;
+      } /* !dval */
+      if(dval > max_dp){
+	max_dp=dval;
+	*idx_max=idx;
+      } /* !dval */
     } /* !idx */
     avg_dp=ttl_dp/area_ttl;
     mebs_dp/=area_ttl;
@@ -1700,8 +1697,14 @@ nco_map_var_min_max_ttl
 	ttl_dp+=dval;
 	mebs_dp+=fabs((double)dval-one);
 	rms_dp+=((double)dval-one)*((double)dval-one);
-	if(dval < min_dp) min_dp=dval;
-	if(dval > max_dp) max_dp=dval;
+	if(dval < min_dp){
+	  min_dp=dval;
+	  *idx_min=idx;
+	} /* !dval */
+	if(dval > max_dp){
+	  max_dp=dval;
+	  *idx_max=idx;
+	} /* !dval */
     } /* !idx */
     avg_dp=(double)ttl_dp/sz;
     mebs_dp/=sz;
@@ -1788,13 +1791,12 @@ var_sct *var_frac_a)
   /* set frac_a to zero */
   memset( var_frac_a->val.dp, 0, var_frac_a->sz *  nco_typ_lng(var_frac_a->type)  );
   
-  for(idx=0; idx<var_S->sz;idx++){
+  for(idx=0;idx<var_S->sz;idx++){
      idx_row=var_row->val.ip[idx]-1L;
      idx_col=var_col->val.ip[idx]-1L;
-
-     if(idx_row >= var_area_b->sz || idx_col>= var_area_a->sz) continue;
+     if(idx_row >= var_area_b->sz || idx_col >= var_area_a->sz) continue;
      var_frac_a->val.dp[idx_col]+=var_S->val.dp[idx]*var_area_b->val.dp[idx_row];
-  }
+  } /* !idx */
 
   /* Normalize result by area_a */
   for(idx=0;idx< var_frac_a->sz;idx++)
@@ -1839,6 +1841,8 @@ nco_map_chk /* Map-file evaluation */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT;
   size_t idx;
+  size_t idx_min;
+  size_t idx_max;
   size_t sz;
   
   var_sct **var_lst=NULL_CEWI;
@@ -1852,6 +1856,10 @@ nco_map_chk /* Map-file evaluation */
   var_sct *var_mask_a=NULL_CEWI;
   var_sct *var_mask_b=NULL_CEWI;
   var_sct *var_row=NULL_CEWI;
+  var_sct *var_xc_a=NULL_CEWI;
+  var_sct *var_xc_b=NULL_CEWI;
+  var_sct *var_yc_a=NULL_CEWI;
+  var_sct *var_yc_b=NULL_CEWI;
 
   area_wgt_a=flg_area_wgt;
   area_wgt_b=flg_area_wgt;
@@ -1877,6 +1885,10 @@ nco_map_chk /* Map-file evaluation */
   var_mask_a=nco_map_var_init(in_id,"mask_a",dmn_in,dmn_in_nbr);
   var_mask_b=nco_map_var_init(in_id,"mask_b",dmn_in,dmn_in_nbr);
   var_row=nco_map_var_init(in_id,"row",dmn_in,dmn_in_nbr);
+  var_xc_a=nco_map_var_init(in_id,"xc_a",dmn_in,dmn_in_nbr);
+  var_xc_b=nco_map_var_init(in_id,"xc_b",dmn_in,dmn_in_nbr);
+  var_yc_a=nco_map_var_init(in_id,"yc_a",dmn_in,dmn_in_nbr);
+  var_yc_b=nco_map_var_init(in_id,"yc_b",dmn_in,dmn_in_nbr);
 
   /* Type conversions */
   if(var_area_a->type != NC_DOUBLE) var_area_a=nco_var_cnf_typ(NC_DOUBLE,var_area_a);
@@ -1937,8 +1949,8 @@ nco_map_chk /* Map-file evaluation */
     double row_min,row_max,row_ttl;
     double s_min,s_max,s_ttl;
 
-    nco_map_var_min_max_ttl(var_col,(double *)NULL,flg_area_wgt,&col_min,&col_max,&col_ttl,&avg,&mebs,&rms,&sdn);
-    nco_map_var_min_max_ttl(var_row,(double *)NULL,flg_area_wgt,&row_min,&row_max,&row_ttl,&avg,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_col,(double *)NULL,flg_area_wgt,&col_min,&idx_min,&col_max,&idx_max,&col_ttl,&avg,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_row,(double *)NULL,flg_area_wgt,&row_min,&idx_min,&row_max,&idx_max,&row_ttl,&avg,&mebs,&rms,&sdn);
 
     if(col_min < 1){fprintf(stdout,"WARNING: minimum column index < 1\n");}
     else if(col_max > var_area_a->sz){fprintf(stdout,"WARNING: maximum col index > n_a\n");}
@@ -1953,17 +1965,21 @@ nco_map_chk /* Map-file evaluation */
     nco_map_hst_mk(var_col,var_area_a->sz,hst_col,hst_sz);
     nco_map_hst_mk(var_row,var_area_b->sz,hst_row,hst_sz);
 
-    if(has_area_a) nco_map_var_min_max_ttl(var_area_a,(double *)NULL,flg_area_wgt,&area_a_min,&area_a_max,&area_a_ttl,&avg,&mebs,&rms,&sdn);
-    if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,(double *)NULL,flg_area_wgt,&mask_a_min,&mask_a_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
+    if(has_area_a) nco_map_var_min_max_ttl(var_area_a,(double *)NULL,flg_area_wgt,&area_a_min,&idx_min,&area_a_max,&idx_max,&area_a_ttl,&avg,&mebs,&rms,&sdn);
+    if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,(double *)NULL,flg_area_wgt,&mask_a_min,&idx_min,&mask_a_max,&idx_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Characterization of map-file %s:\n",fl_in);
+    fprintf(stdout,"Cell triplet format: [1-based index,latitude,longitude]\n");
     fprintf(stdout,"Sparse matrix size n_s: %lu\n",var_S->sz);
-    nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,&s_min,&s_max,&s_ttl,&avg,&mebs,&rms,&sdn);
-    fprintf(stdout,"Weights S min, max: %.16g, %.16g\n\n",s_min,s_max);
+    nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,&s_min,&idx_min,&s_max,&idx_max,&s_ttl,&avg,&mebs,&rms,&sdn);
+    //    fprintf(stdout,"Weights S min, max: %.16g, %.16g\n\n",s_min,s_max);
+    fprintf(stdout,"Weight S min = %.16g (index = %lu) from [%d,%+g,%+g] to [%d,%+g,%+g]\n",s_min,idx_min+1UL,var_col->val.ip[idx_min],var_yc_a->val.dp[var_col->val.ip[idx_min]-1],var_xc_a->val.dp[var_col->val.ip[idx_min]-1],var_row->val.ip[idx_min],var_yc_b->val.dp[var_row->val.ip[idx_min]-1],var_xc_b->val.dp[var_row->val.ip[idx_min]-1]);
+    fprintf(stdout,"Weight S max = %.16g (index = %lu) from [%d,%+g,%+g] to [%d,%+g,%+g]\n",s_max,idx_max+1UL,var_col->val.ip[idx_max],var_yc_a->val.dp[var_col->val.ip[idx_max]-1],var_xc_a->val.dp[var_col->val.ip[idx_max]-1],var_row->val.ip[idx_max],var_yc_b->val.dp[var_row->val.ip[idx_max]-1],var_xc_b->val.dp[var_row->val.ip[idx_max]-1]);
+    fprintf(stdout,"\n");
 
     int hst_idx;
     int *hst_wgt;
-    double hst_wgt_ntf[]={NC_MIN_INT,-1,0,1,2,NC_MAX_INT};
+    double hst_wgt_ntf[]={NC_MIN_INT,-1,0,1,2,10,NC_MAX_INT};
     const int hst_wgt_nbr=-1+sizeof(hst_wgt_ntf)/sizeof(double);
     hst_wgt_ntf[0]=s_min;
     hst_wgt_ntf[hst_wgt_nbr]=s_max;
@@ -1991,8 +2007,8 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Column (source cell) indices utilized min, max: %.0f, %.0f\n",col_min,col_max);
     fprintf(stdout,"Ignored source cells (empty columns): %d\n\n",hst_col[0]);
 
-    if(has_area_b) nco_map_var_min_max_ttl(var_area_b,(double *)NULL,flg_area_wgt,&area_b_min,&area_b_max,&area_b_ttl,&avg,&mebs,&rms,&sdn);
-    if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,(double *)NULL,flg_area_wgt,&mask_b_min,&mask_b_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
+    if(has_area_b) nco_map_var_min_max_ttl(var_area_b,(double *)NULL,flg_area_wgt,&area_b_min,&idx_min,&area_b_max,&idx_max,&area_b_ttl,&avg,&mebs,&rms,&sdn);
+    if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,(double *)NULL,flg_area_wgt,&mask_b_min,&idx_min,&mask_b_max,&idx_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Grid B size n_b = %lu // Number of rows/destinations\n",var_area_b->sz);
     if(has_area_b){
@@ -2008,16 +2024,16 @@ nco_map_chk /* Map-file evaluation */
 
     if(has_frac_a){
       /* Compute and report frac_a statistics from frac_a disk values */
-      nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_dsk,&frac_max_dsk,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+      nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
       /* Compute frac_a as area_b-weighted column sums/area_a */
       nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
-      nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_cmp,&frac_max_cmp,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
+      nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     } /* !has_frac_a */
 
     if(has_frac_a){
       fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sShould be 1.0 for global Grid B\n",frac_avg_dsk,frac_avg_dsk > 1 ? "+" : "-",fabs(1.0-frac_avg_dsk),area_wgt_a ? "(area-weighted) " : "");
-      fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid B\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk));
-      fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid B\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk));
+      fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
+      fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
       fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0\n",mebs,mebs,area_wgt_a ? "(area-weighted) " : "");
       fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_a ? "(area-weighted) " : "");
       fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
@@ -2038,16 +2054,16 @@ nco_map_chk /* Map-file evaluation */
     if(fabs(frac_max_dsk-frac_max_cmp) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of max(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_dsk,frac_max_cmp,frac_max_dsk-frac_max_cmp);}
     
     /* Compute and report frac_b statistics from frac_b disk values */
-    nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_dsk,&frac_max_dsk,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
     /* Compute frac_b as row sums */
     nco_map_frac_b_clc(var_S,var_row,var_frac_b);
-    nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_cmp,&frac_max_cmp,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
+    nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
     fprintf(stdout,"\n");
     if(has_frac_b){
       fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sShould be 1.0 for global Grid A\n",frac_avg_dsk,frac_avg_dsk > 1 ? "+" : "-",fabs(1.0-frac_avg_dsk),area_wgt_b ? "(area-weighted) " : "");
-      fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid A\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk));
-      fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid A\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk));
+      fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
+      fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
       fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0\n",mebs,mebs,area_wgt_b ? "(area-weighted) " : "");
       fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_b ? "(area-weighted) " : "");
       fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
@@ -2079,8 +2095,8 @@ nco_map_chk /* Map-file evaluation */
 
     fprintf(stdout,"\nHistogram of weights S: [bin_min < weights <= bin_max]\n");
     fprintf(stdout,"  Column 1: Lower bound on weights (bin_min)\n");
-    fprintf(stdout,"  Column 2: Upper bound on weights (bin_max)\n");
-    fprintf(stdout,"  Column 3: Number of weights in bin\n");
+    fprintf(stdout,"  Column 2: Number of weights in bin\n");
+    fprintf(stdout,"  Column 3: Upper bound on weights (bin_max)\n");
     fprintf(stdout,"  [");
     hst_sz_nnz=0;
     int hst_vld_crr=0;
@@ -2089,7 +2105,7 @@ nco_map_chk /* Map-file evaluation */
     for(idx=0;idx<hst_wgt_nbr;idx++)
       if(hst_wgt[idx] > 0){
 	hst_vld_crr++;
-	fprintf(stdout,"[%g,%g,%d]%s",hst_vld_crr == 1 ? s_min : hst_wgt_ntf[idx],hst_vld_crr == hst_sz_nnz ? s_max : hst_wgt_ntf[idx+1],hst_wgt[idx],hst_vld_crr != hst_sz_nnz ? ", " : "]\n");
+	fprintf(stdout,"[%g,%d,%g]%s",hst_vld_crr == 1 ? s_min : hst_wgt_ntf[idx],hst_wgt[idx],hst_vld_crr == hst_sz_nnz ? s_max : hst_wgt_ntf[idx+1],hst_vld_crr != hst_sz_nnz ? ", " : "]\n");
       } /* !hst_wgt */
 
     if(hst_row) hst_row=(int *)nco_free(hst_row);
@@ -2110,6 +2126,10 @@ nco_map_chk /* Map-file evaluation */
   if(var_mask_a) var_mask_a=nco_var_free(var_mask_a);
   if(var_mask_b) var_mask_b=nco_var_free(var_mask_b);
   if(var_row) var_row=nco_var_free(var_row);
+  if(var_xc_a) var_xc_a=nco_var_free(var_xc_a);
+  if(var_xc_b) var_xc_b=nco_var_free(var_xc_b);
+  if(var_yc_a) var_yc_a=nco_var_free(var_yc_a);
+  if(var_yc_b) var_yc_b=nco_var_free(var_yc_b);
 
   return True;
 } /* !nco_map_chk() */
