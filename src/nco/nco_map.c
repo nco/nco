@@ -1969,12 +1969,11 @@ nco_map_chk /* Map-file evaluation */
     if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,(double *)NULL,flg_area_wgt,&mask_a_min,&idx_min,&mask_a_max,&idx_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Characterization of map-file %s:\n",fl_in);
-    fprintf(stdout,"Cell triplet format: [1-based index,latitude,longitude]\n");
+    fprintf(stdout,"Cell triplet elements : [1-based index,latitude,longitude]\n");
     fprintf(stdout,"Sparse matrix size n_s: %lu\n",var_S->sz);
     nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,&s_min,&idx_min,&s_max,&idx_max,&s_ttl,&avg,&mebs,&rms,&sdn);
-    //    fprintf(stdout,"Weights S min, max: %.16g, %.16g\n\n",s_min,s_max);
-    fprintf(stdout,"Weight S min = %.16g (index = %lu) from [%d,%+g,%+g] to [%d,%+g,%+g]\n",s_min,idx_min+1UL,var_col->val.ip[idx_min],var_yc_a->val.dp[var_col->val.ip[idx_min]-1],var_xc_a->val.dp[var_col->val.ip[idx_min]-1],var_row->val.ip[idx_min],var_yc_b->val.dp[var_row->val.ip[idx_min]-1],var_xc_b->val.dp[var_row->val.ip[idx_min]-1]);
-    fprintf(stdout,"Weight S max = %.16g (index = %lu) from [%d,%+g,%+g] to [%d,%+g,%+g]\n",s_max,idx_max+1UL,var_col->val.ip[idx_max],var_yc_a->val.dp[var_col->val.ip[idx_max]-1],var_xc_a->val.dp[var_col->val.ip[idx_max]-1],var_row->val.ip[idx_max],var_yc_b->val.dp[var_row->val.ip[idx_max]-1],var_xc_b->val.dp[var_row->val.ip[idx_max]-1]);
+    fprintf(stdout,"Weight min S(%8lu): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_min+1UL,s_min,var_col->val.ip[idx_min],var_yc_a->val.dp[var_col->val.ip[idx_min]-1],var_xc_a->val.dp[var_col->val.ip[idx_min]-1],var_row->val.ip[idx_min],var_yc_b->val.dp[var_row->val.ip[idx_min]-1],var_xc_b->val.dp[var_row->val.ip[idx_min]-1]);
+    fprintf(stdout,"Weight max S(%8lu): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_max+1UL,s_max,var_col->val.ip[idx_max],var_yc_a->val.dp[var_col->val.ip[idx_max]-1],var_xc_a->val.dp[var_col->val.ip[idx_max]-1],var_row->val.ip[idx_max],var_yc_b->val.dp[var_row->val.ip[idx_max]-1],var_xc_b->val.dp[var_row->val.ip[idx_max]-1]);
     fprintf(stdout,"\n");
 
     int hst_idx;
@@ -1995,7 +1994,7 @@ nco_map_chk /* Map-file evaluation */
       } /* !hst_idx */
     } /* !idx */
     
-    fprintf(stdout,"Grid A size n_a = %lu // Number of columns/sources\n",var_area_a->sz);
+    fprintf(stdout,"Grid A size n_a: %lu // Number of columns/sources\n",var_area_a->sz);
     if(has_area_a){
       fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
       fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
@@ -2010,7 +2009,7 @@ nco_map_chk /* Map-file evaluation */
     if(has_area_b) nco_map_var_min_max_ttl(var_area_b,(double *)NULL,flg_area_wgt,&area_b_min,&idx_min,&area_b_max,&idx_max,&area_b_ttl,&avg,&mebs,&rms,&sdn);
     if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,(double *)NULL,flg_area_wgt,&mask_b_min,&idx_min,&mask_b_max,&idx_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
 
-    fprintf(stdout,"Grid B size n_b = %lu // Number of rows/destinations\n",var_area_b->sz);
+    fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
     if(has_area_b){
       fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
       fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);
@@ -2100,7 +2099,7 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"  [");
     hst_sz_nnz=0;
     int hst_vld_crr=0;
-    for(idx=0;idx<=hst_wgt_nbr;idx++)
+    for(idx=0;idx<hst_wgt_nbr;idx++)
       if(hst_wgt[idx] > 0) hst_sz_nnz++;
     for(idx=0;idx<hst_wgt_nbr;idx++)
       if(hst_wgt[idx] > 0){
