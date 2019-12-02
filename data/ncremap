@@ -273,6 +273,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -D 0 --vrb=1 -a conserve --dat_glb=${HOME}/dat_glb.nc --grd_glb=${HOME}/grd_glb.nc -g ${HOME}/grd_rgn.nc ~/dat_rgn.nc ~/foo.nc
 # MWF (201807):
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/cmip6_180x360.g --grd_dst=${DATA}/grids/ne30.g --nm_src=cmip6_180x360 --nm_dst=ne30np4 --dt_sng=20190601 --drc_out=${DATA}/maps > ~/ncremap.out 2>&1 &
+# ncremap -D 2 -P mwf --grd_src=${DATA}/grids/cmip6_720x1440.g --grd_dst=${DATA}/grids/ne120.g --nm_src=cmip6_720x1440 --nm_dst=ne120np4 --dt_sng=20190601 --drc_out=${DATA}/maps > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/cmip6_180x360_scrip.nc --grd_dst=${DATA}/grids/ne30.g --nm_src=cmip6_180x360 --nm_dst=ne30np4 --dt_sng=20190601 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/T62_040121.nc --nm_src=oRRS30to10 --nm_dst=T62 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &
 # ncremap -D 2 -P mwf --grd_src=${DATA}/grids/ocean.RRS.30-10km_scrip_150722.nc --grd_dst=${DATA}/grids/ne30.g --nm_src=oRRS30to10 --nm_dst=ne30np4 --dt_sng=20180901 --drc_out=$TMPDIR > ~/ncremap.out 2>&1 &

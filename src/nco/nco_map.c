@@ -1969,7 +1969,7 @@ nco_map_chk /* Map-file evaluation */
     if(var_mask_a) nco_map_var_min_max_ttl(var_mask_a,(double *)NULL,flg_area_wgt,&mask_a_min,&idx_min,&mask_a_max,&idx_max,&mask_a_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Characterization of map-file %s:\n",fl_in);
-    fprintf(stdout,"Cell triplet elements : [1-based index,latitude,longitude]\n");
+    fprintf(stdout,"Cell triplet elements : [Fortran (1-based) index, center latitude, center longitude]\n");
     fprintf(stdout,"Sparse matrix size n_s: %lu\n",var_S->sz);
     nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,&s_min,&idx_min,&s_max,&idx_max,&s_ttl,&avg,&mebs,&rms,&sdn);
     fprintf(stdout,"Weight min S(%8lu): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_min+1UL,s_min,var_col->val.ip[idx_min],var_yc_a->val.dp[var_col->val.ip[idx_min]-1],var_xc_a->val.dp[var_col->val.ip[idx_min]-1],var_row->val.ip[idx_min],var_yc_b->val.dp[var_row->val.ip[idx_min]-1],var_xc_b->val.dp[var_row->val.ip[idx_min]-1]);
@@ -2081,8 +2081,8 @@ nco_map_chk /* Map-file evaluation */
       fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_b ? "(area-weighted) " : "");
       fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
 
-      fprintf(stdout,"Commands to examine extrema:\n");
       if(nco_dbg_lvl_get() >= nco_dbg_std){
+	fprintf(stdout,"Commands to examine extrema:\n");
 	fprintf(stdout,"min(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_min+1UL,fl_in);
 	fprintf(stdout,"max(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_max+1UL,fl_in);
       } /* !dbg */
