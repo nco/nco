@@ -1,8 +1,12 @@
-2019-11-30  Charlie Zender  <zender@uci.edu>
+2019-12-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.0-beta03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.0-beta03: Baddha Koṇāsana';git push
 	git tag -a 4.9.0-beta03 -m 'ncremap att_flg, centroid opt, fv2fv_flx/stt, gss n2s nfr fix, HRRR, IFS, MPAS BGC, msh_fl, ntp_mth rhea SLURM, rnr=0.0 == destonly, SGS rewrite/parallelize, TR MWF SCRIP, TR volumetric, vrt_nm, vrt prs tm_nbr fix;ncks area_wgt, chk_nan, chk_map, json dcm pnt fix;ncap2 -O fix';git push --tags
+
+	* Support netCDF 4.7.3
+
+2019-11-30  Charlie Zender  <zender@uci.edu>
 
 	* nco_map_chk() print ncks helper commands to examine S,frac_a/b extrema iff dbg >= 1
 
