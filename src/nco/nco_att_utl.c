@@ -2193,10 +2193,6 @@ nco_char_att_put /* [fnc] Get a character string attribute from an open file */
 
   int rcd;
 
-  long att_sz;
-
-  const nc_type att_typ=NC_CHAR;
-
   aed_sct aed_mtd;
 
   if(var_nm_sng) var_nm=(char *)strdup(var_nm_sng); else var_nm=NULL;

@@ -2650,101 +2650,57 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	return kd_neighbour(realTree->tree,Xq,m,*alist,Bp,Bn);
 }
 
-
-
-
-
 int kd_nearest_intersect_wrp(KDTree *realTree, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem)
 {
-
-
   /* count duplicates for dbg */
-  int ret_cnt;
   int ret_cnt_nw=0;
+  int ret_cnt=0;
   int ret_cnt1=0;
-  int nbr_lst;
 
   nco_bool bSort=False;
 
-  const char fnc_nm[]="kd_nearest_intersect_wrp():";
-
-
+  //  const char fnc_nm[]="kd_nearest_intersect_wrp():";
   // (void)fprintf(stderr,"%s:%s: just entered function\n", nco_prg_nm_get(),fnc_nm );
-
-  nbr_lst=omp_mem->kd_blk_nbr*NCO_VRL_BLOCKSIZE;
-
-
 
   ret_cnt=kd_nearest_intersect(realTree,Xq,omp_mem, bSort);
   ret_cnt1=kd_nearest_intersect(realTree,Xr, omp_mem, bSort);
 
-
-
   if( omp_mem->kd_cnt >1  &&  kd_priority_list_sort(omp_mem->kd_list,  omp_mem->kd_blk_nbr* NCO_VRL_BLOCKSIZE, omp_mem->kd_cnt , &ret_cnt_nw  )  )
     omp_mem->kd_cnt=ret_cnt_nw;
-
-
-
-
-
 
   return omp_mem->kd_cnt;
 }
 
-
-
-
-
 //int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, int bSort)
 int kd_nearest_intersect(KDTree* realTree, kd_box Xq, omp_mem_sct *omp_mem, int bSort)
 {
-	int idx;
-	int nw_lcl_cnt=0;
-	int ret_cnt=0;
-
-
-
+  int idx;
+  int nw_lcl_cnt=0;
+  int ret_cnt=0;
+  
    const char fnc_nm[]="kd_nearest_intersect():";
 
    //(void)fprintf(stderr,"%s:%s: just entered function\n", nco_prg_nm_get(),fnc_nm );
     /*
 	list_srt= omp_mem->kd_list+ (size_t)omp_mem->kd_cnt;
 	list_end= omp_mem->kd_list;
-
-
 	m=omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE;
-
 	list_end+=m;
    */
-
-	//node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
+   //node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
     (void)kd_neighbour_intersect3(realTree->tree,0,Xq, omp_mem,0,0);
 
-
     /*
-    ret_cnt= ( list_srt - omp_mem->kd_list)+ omp_mem->kd_cnt;
-    if(ret_cnt >1 && bSort && kd_priority_list_sort(omp_mem->kd_list, m, ret_cnt, &nw_lcl_cnt))
-    {
-       ret_cnt=nw_lcl_cnt;
-
-    }
+    ret_cnt=( list_srt - omp_mem->kd_list)+ omp_mem->kd_cnt;
+    if(ret_cnt > 1 && bSort && kd_priority_list_sort(omp_mem->kd_list, m, ret_cnt, &nw_lcl_cnt)) ret_cnt=nw_lcl_cnt;
     */
-
     ret_cnt=omp_mem->kd_cnt;
-
-    if(omp_mem->kd_cnt && bSort && kd_priority_list_sort(omp_mem->kd_list,  omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE, omp_mem->kd_cnt  , &nw_lcl_cnt)  )
-    {
+    if(omp_mem->kd_cnt && bSort && kd_priority_list_sort(omp_mem->kd_list,  omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE, omp_mem->kd_cnt  , &nw_lcl_cnt)){
     	ret_cnt=nw_lcl_cnt;
     	omp_mem->kd_cnt=nw_lcl_cnt;
-
     }
 
-
-
-
-
-
-    if(0 && nco_dbg_lvl_get() >= nco_dbg_dev  )
+    if(0 && nco_dbg_lvl_get() >= nco_dbg_dev)
     {
       KDPriority *list;
 
@@ -2763,8 +2719,5 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, omp_mem_sct *omp_mem, int 
                       list[idx].elem->size[KD_TOP]);
       }
     }
-
-
   return ret_cnt;
-	
 }

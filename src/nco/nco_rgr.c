@@ -1407,7 +1407,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables (scalars) */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   //const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
-  const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
+  //const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
   //const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
   
   if(flg_grd_out_hyb){
@@ -2327,8 +2327,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   char *att_val;
   char *att_cnv_val=NULL;
   char *att_ttl_val=NULL;
-  char *att_cnv_sng=NULL;
-  char *att_ttl_sng=NULL;
   char *cnv_sng=NULL;
   /* netCDF standard is uppercase Conventions, though some models user lowercase */
   char att_sng_Cnv[]="Conventions"; /* [sng] Unidata standard     string (uppercase) */
@@ -2342,19 +2340,9 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   
   /* Look for map-type signature in [cC]onventions or [tT]itle attribute */
   att_cnv_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_cnv);
-  if(att_cnv_val){
-    att_cnv_sng=att_sng_cnv;
-  }else{
-    att_cnv_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_Cnv);
-    if(att_cnv_val) att_cnv_sng=att_sng_Cnv;
-  } /* !att_cnv_val */
+  if(!att_cnv_val) att_cnv_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_Cnv);
   att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_ttl);
-  if(att_ttl_val){
-    att_ttl_sng=att_sng_ttl;
-  }else{
-    att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_Ttl);
-    if(att_ttl_val) att_ttl_sng=att_sng_Ttl;
-  } /* !att_ttl_val */
+  if(!att_ttl_val) att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_Ttl);
 
   /* If "[cC]onventions" or "[tT]itle" attribute was found, it determines map-file type... */
   if(att_cnv_val && strstr(att_cnv_val,"SCRIP")) nco_rgr_mpf_typ=nco_rgr_mpf_SCRIP;
