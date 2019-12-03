@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.0-beta03
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 14 November 2019
+@set update-date 3 December 2019
 @set update-month November 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6998,7 +6998,8 @@ Long options:
 @samp{--map @var{map-file}} or @samp{--rgr_map @var{map-file}}@*
 @samp{--rgr @var{key}=@var{val}} (multiple invocations allowed)@*
 @samp{--rnr=@var{rnr_thr}} or @samp{--rgr_rnr=@var{rnr_thr}} or 
-@samp{--renormalize=@var{rnr_thr}}@*
+@samp{--renormalize=@var{rnr_thr}} or
+@samp{--renormalization_threshold=@var{rnr_thr}}@*
 @end cartouche
 
 @acronym{NCO} includes extensive regridding features in 
@@ -7081,6 +7082,7 @@ planned.
 @html
 <a name="rnr"></a> <!-- http://nco.sf.net/nco.html#rnr -->
 <a name="renormalize"></a> <!-- http://nco.sf.net/nco.html#renormalize -->
+<a name="renormalization_threshold"></a> <!-- http://nco.sf.net/nco.html#renormalization_threshold -->
 <a name="rgr_rnr"></a> <!-- http://nco.sf.net/nco.html#rgr_rnr -->
 @end html
 @cindex conservative regridding
@@ -7091,6 +7093,7 @@ planned.
 @cindex @code{_FillValue}
 @cindex @code{--rnr}
 @cindex @code{--renormalize}
+@cindex @code{--renormalization_threshold}
 @cindex @code{--rgr_rnr}
 Conservative regridding is, for first-order accurate algorithms,
 a straightforward procedure of identifying gridcell overlap and
@@ -25029,7 +25032,7 @@ Specifying @code{--preserve=@var{mean}} sets the destination
 gridcell equal to the mean of the source weights times the source
 values. 
 This is exactly equivalent to setting @code{--rnr=0.0}, i.e.,
-renormalizing the integral value by the fractional area covered (see
+renormalizing the integral value by the fractional area covered (see 
 @ref{Regridding}). 
 This is often desired for regridding state variables, e.g.,
 temperature, though it is not the default behavior and must be
@@ -25043,8 +25046,9 @@ explicitly requested (except in @acronym{MPAS}-mode).
 @cindex @code{--rnr_thr}
 @cindex @code{--thr_rnr}
 @cindex @code{--rnr}
-@cindex @code{--renormalize_threshold}
-@item -r @var{rnr_thr} (@code{--rnr_thr}, @code{--thr_rnr}, @code{--rnr}, @code{--renormalize_threshold})
+@cindex @code{--renormalize}
+@cindex @code{--renormalization_threshold}
+@item -r @var{rnr_thr} (@code{--rnr_thr}, @code{--thr_rnr}, @code{--rnr}, @code{--renormalize}, @code{--renormalization_threshold})
 Use this option to request renormalized (see @ref{Regridding})
 weight-application and to specify the weight threshold, if any.
 For example, @samp{-r 0.9} tells the regridder to renormalize
@@ -25058,8 +25062,8 @@ Specifying @samp{-r 0.9} and @samp{--rnr_thr=0.9} are equivalent.
 Renormalization can be explicitly turned-off by setting @var{rnr_thr}
 to either of the values @samp{off}, or @samp{none}. 
 The @samp{--preserve=@var{prs_stt}} option performs the same task
-as this option but does not allow setting an arbitrary threshold
-fraction. 
+as this option except it does not allow setting an arbitrary threshold
+fraction.  
 
 @html
 <a name="rgn_dst"></a> <!-- http://nco.sf.net/nco.html#rgn_dst -->

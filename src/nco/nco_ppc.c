@@ -707,7 +707,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  if(op1.fp[idx] != mss_val_flt) u32_ptr[idx]|=msk_f32_u32_one;
       } /* end else */
     }else if(nco_baa_cnv_get() == nco_baa_dgr){
-      /* Digit Rounding (GCD19)
+      /* Digit Rounding (GCD19), an unfinished work in progress...
 	 Test DGR:
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -C -D 1 --baa=3 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
@@ -822,7 +822,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
       } /* end else */
     }else if(nco_baa_cnv_get() == nco_baa_bg2){
-      /* Bit-Groom: alternately shave and set LSBs with dynamic masks */
+      /* Bit-Grooming Version 2: alternately shave and set LSBs with dynamic masks, an unfinished work in progress... */
       if(!has_mss_val){
 	for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
 	for(idx=1L;idx<sz;idx+=2L)

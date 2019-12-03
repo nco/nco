@@ -527,7 +527,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty means ) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}]"
 #    echo " ${fnt_bld}--qea_flg${fnt_nrm}  Quasi-equal area mode for TempestRemap (default ${fnt_bld}${qea_flg}${fnt_nrm}) [${fnt_tlc}qea, qea_flg, np2, quasi-equal-area${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
-    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none (except for MPAS, see documentation)) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, rnr, renormalize_threshold${fnt_nrm}]"
+    echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none (except for MPAS, see documentation)) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, rnr, renormalize, renormalization_threshold${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_dst${fnt_nrm}  Regional destination grid [${fnt_tlc}rgn_dst, dst_rgn, regional_destination${fnt_nrm}]"
     echo " ${fnt_bld}--rgn_src${fnt_nrm}  Regional source grid [${fnt_tlc}rgn_src, src_rgn, regional_source${fnt_nrm}]"
     echo " ${fnt_bld}--rrg_bb_wesn${fnt_nrm}  Regional regridding bounding-box WESN order (empty means none) (default ${fnt_bld}${bb_wesn}${fnt_nrm}) [${fnt_tlc}rrg_bb_wesn, bb, bb_wesn, wesn_sng${fnt_nrm}]"
@@ -697,7 +697,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       qea | qea_flg | np2 | quasi-equal-area ) qea_flg='Yes' ;; # # Quasi-equal area mode for TempestRemap
 	       qea=?* | qea_flg=?* | np2=?* | quasi-equal-area=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Quasi-equal area mode for TempestRemap
 	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
-	       rnr_thr=?* | thr_rnr=?* | rnr=?* | renormalization_threshold=?* ) rnr_thr="${LONG_OPTARG}" ;; # -r # Renormalization threshold
+	       rnr_thr=?* | thr_rnr=?* | rnr=?* | renormalize=?* | renormalization_threshold=?* ) rnr_thr="${LONG_OPTARG}" ;; # -r # Renormalization threshold
 	       rgn_dst=?* | dst_rgn=?* | regional_destination=?* ) hnt_dst='--dst_regional' ;; # # Regional destination grid
 	       rgn_dst=?* | dst_rgn=?* | regional_destination=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Regional destination grid
 	       rgn_src=?* | src_rgn=?* | regional_source=?* ) hnt_src='--src_regional' ;; # # Regional source grid

@@ -478,6 +478,7 @@ main(int argc,char **argv)
     {"vrt_crd",required_argument,0,0}, /* [sng] File containing vertical coordinate grid */
     {"rnr_thr",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"renormalize",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
+    {"renormalization_threshold",required_argument,0,0}, /* [flg] Renormalize destination values by valid area */
     {"trr",required_argument,0,0}, /* [sng] Terraref */
     {"terraref",required_argument,0,0}, /* [sng] Terraref */
     {"trr_in",required_argument,0,0}, /* [sng] File containing raw Terraref imagery */
@@ -764,7 +765,7 @@ main(int argc,char **argv)
         flg_rgr=True;
 	rgr_vrt=(char *)strdup(optarg);
       } /* !vrt_fl */
-      if(!strcmp(opt_crr,"rnr_thr") || !strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize")){
+      if(!strcmp(opt_crr,"rnr_thr") || !strcmp(opt_crr,"rgr_rnr") || !strcmp(opt_crr,"renormalize") || !strcmp(opt_crr,"renormalization_threshold")){
         wgt_vld_thr=strtod(optarg,&sng_cnv_rcd);
         if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtod",sng_cnv_rcd);
       } /* endif rgr_rnr */
