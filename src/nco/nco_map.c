@@ -931,11 +931,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   col_src_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
   row_dst_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
 
-  /*
-  for(idx=0;idx<lnk_nbr;idx++) wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
-  for(idx=0;idx<lnk_nbr;idx++) col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
-  for(idx=0;idx<lnk_nbr;idx++) row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
-  */
 
   for(idx=0; idx<lnk_nbr;idx++){
     if(pl_lst_vrl[idx]->wgt > 1.0 && pl_lst_vrl[idx]->wgt < 1.0+1.0e-10)
@@ -947,8 +942,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   }
   
   for(idx=0;idx<grd_sz_in;idx++){
-    if(pl_lst_in[idx]->wgt > 1.0 && pl_lst_in[idx]->wgt < 1.0+1.0e-10)
-      pl_lst_in[idx]->wgt=1.0;
 
     if(pl_lst_in[idx]->wgt > 0.0){
       frc_in[idx]=pl_lst_in[idx]->wgt;
@@ -960,8 +953,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   }
 
   for(idx=0;idx<grd_sz_out;idx++){
-    if(pl_lst_out[idx]->wgt > 1.0 && pl_lst_out[idx]->wgt < 1.0+1.0e-10)
-      pl_lst_out[idx]->wgt=1.0;
 
     if(pl_lst_out[idx]->wgt > 0.0){
       frc_out[idx]=pl_lst_out[idx]->wgt;
