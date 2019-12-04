@@ -13,7 +13,7 @@ interface, parallelizes ncremap in stand-alone mode, and completely
 revamps, improves, and accelerates the sub-gridscale weight
 application algorithm. 
 
-This version also debuts the NCO weight-generator algorithm.
+The NCO conservative weight-generator algorithm also debuts.
 Previously, ncremap always used ESMF or TempestRemap for weights.
 Try ncremap -a nco to use the new NCO-generated weights.
 NCO will always support ESMF and TR which are more time-tested.
@@ -22,14 +22,15 @@ like output the overlap mesh in SCRIP format. Primarily, though,
 the NCO weight-generator is an in-house place to test new ideas.
 
 Work on NCO 4.9.1 has commenced and will improve NCO weight-generator 
-accuracy, reduce vertical interpolation memory use, and hopefully,
-include options for invoking mbtempest in place of tempest.
+accuracy, reduce vertical interpolation memory use, and progress on
+weight generation options.
 
-Work on NCO 5.0.0 has commenced "under the hood". The key leap in that 
+Work on NCO 5.0.0 has commenced "under the hood". A key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
 netCDF4 user-defined types ENUM and VLEN is ready now (though
 unsupported) with the --udt flag. 5.0.0 will contain the finished
-version of that, and progress on native weight generation by ncremap.
+version of that, and include options for invoking mbtempest in place
+of tempest. 
 
 Enjoy,
 Charlie
@@ -37,7 +38,7 @@ Charlie
 NEW FEATURES (full details always in ChangeLog):
 
 A. ncremap has been refactored for full parallelism.
-   Previously the standalone ncremap ran could only run parallelized
+   Previously the standalone ncremap could only run parallelized
    when invoked with pure weight application requests.
    Special processing like CLM/ELM sub-gridscale regridding or MPAS
    juggling only worked with single file invocations (which is what
@@ -72,34 +73,45 @@ C. ncremap supports the new NCO weight generation algorithm.
    The NCO algorithm is first-order conservative and compares
    well in accuracy with other FV algorithms such as ERWG and TR.
    Results of our bake-off between ERWG "conserve", NCO "nco", and TR
-   "fv2fv" are at http://dust.ess.uci.edu/nco/rgr_cmp.txt
-   ESMF "conserve" is slightly better and Tempest "fv2fv" slightly
-   worse than NCO "nco", at least in our tests. Feedback welcome.
-   Accurate weight-generation is hard, and we have great respect for
-   the more robust ERWG and TR algorithms. 
-   For now we refrain from recommending NCO over ERWG or TR.
+   "mono" are at http://dust.ess.uci.edu/nco/rgr_cmp.txt
+   ESMF "conserve" is slightly better than TR "mono" and NCO "nco", at
+   least in our tests. One must generally look beyond the 10th-13th
+   significant digit (of 15 total digits) to see differences.
    We hope users will try the NCO algorithm and send feedback,
    while we work to improve it even more.
    ncremap -a nco -s grd_src.nc -d grd_dst.nc -m map.nc in.nc out.nc
    http://nco.sf.net/nco.html#ncremap
       
-D. ncremap works with newer MPAS Ocean files that contain BGC
+D. ncks supports a new option --chk_map to evaluate the quality of
+   regridding weights. This option works with map-files (not
+   grid-files) in ESMF/CMIP6-compliant format (i.e., sparse matrix
+   S and coordinates [xy][ab]_[cv]). When invoked with the additional
+   --area_wgt option (also new), the evaluation statistics will be
+   area-weighted and thus reflect exactly the global-mean/min/max/
+   mebs/rms/sdn biases expected when regridding a globally uniform
+   field.
+   ncks --chk_map map.nc
+   ncks --chk_map --area_wgt map.nc
+   http://nco.sf.net/nco.html#chk_map
+   http://nco.sf.net/nco.html#area_wgt
+
+E. ncremap works with newer MPAS Ocean files that contain BGC
    dimensions like R3 and FOUR. 
    ncremap -P mpas -m map_bilin.nc in.nc out.nc
    http://nco.sf.net/nco.html#ncremap
 
-E. ncremap now propagates all netCDF formats except CDF5 to
+F. ncremap now propagates all netCDF formats except CDF5 to
    TempestRemap (TR) (which does not yet accept or produce CDF5 files
    AFAICT). 
    http://nco.sf.net/nco.html#tr
 
-F. ncremap omits the TR --volumetric flag from fv2se_stt maps. 
+G. ncremap omits the TR --volumetric flag from fv2se_stt maps. 
    TempestRemap author Paul Ullrich recommends this to keep fv2se_stt
    maps consistent (producing output in same range) with fv2se_flx maps.
    ncremap -a fv2se_stt -s grd_src.nc -d grd_dst.nc -m map.nc in.nc out.nc
    http://nco.sf.net/nco.html#ncremap
 
-G. ncremap allows simultaneous invocation of horizontal and vertical
+H. ncremap allows simultaneous invocation of horizontal and vertical
    regridding. Yes, now ncremap can automagically regrid any file
    to any new horizontal and vertical grid at the same time.
    Simply supply both a map-file and a vertical grid-file:
@@ -107,17 +119,23 @@ G. ncremap allows simultaneous invocation of horizontal and vertical
    http://nco.sf.net/nco.html#vrt
    http://nco.sf.net/nco.html#ncremap
 
-H. ncremap/ncclimo have deprecated support for options named for the
+I. ncremap/ncclimo have deprecated support for options named for the
    short-lived ALM land surface model. Use 'elm' instead of 'alm',
    ncremap -P elm -m map.nc
    http://nco.sf.net/nco.html#ncremap
 
-I. NCO supports flexible options to specify non-default names for
+J. NCO supports flexible options to specify non-default names for
    vertical grid coordinates in input and output (vertically
    interpolated) data files. 
    ncks --rgr plev_nm=vrt_nm --vrt=vrt_grd.nc in.nc out.nc
    ncremap -n '--rgr plev_nm=vrt_nm' --vrt=vrt_grd.nc in.nc out.nc
    http://nco.sf.net/nco.html#lev_nm
+
+K. ncks supports a new option --chk_nan to quickly find the location
+   of any NaN values in a dataset. Thanks to Matthew Thompson of NASA
+   for this suggestion.
+   ncks --chk_nan in.nc
+   http://nco.sf.net/nco.html#chk_nan
 
 BUG FIXES:
 
@@ -134,6 +152,11 @@ C. ncremap vertical interpolation bug-fix for fields stored on
 
 D. ncremap bug-fix for pressure-to-pressure grid vertical
    interpolation for input files with no time dimension.
+
+E. ncks --json fixes JSON output of NC_FLOAT and NC_DOUBLE
+   by eliminating the trailing '.' (illegal in JSON) from
+   integer-valued floats. '1234567.' is now output as '1234567'.
+   Thanks to Aleksandar Jelenak for this bug report.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
