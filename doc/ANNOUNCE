@@ -1,29 +1,28 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.9.0 sont nés
+The netCDF Operators NCO version 4.9.0 are woke.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.9.0 marks the debut of many regridder features.
-Notably, this version simplifies the weight-application
-interface, parallelizes ncremap in stand-alone mode, and completely
-revamps, improves, and accelerates the sub-gridscale weight
-application algorithm. 
+Version 4.9.0 includes new regridder features, JSON, and ncap2 fixes. 
+Notably, this version simplifies the weight-application interface,
+parallelizes ncremap in stand-alone mode, and completely revamps,
+improves, and accelerates the sub-gridscale weight application
+algorithm.  
 
 The NCO conservative weight-generator algorithm also debuts.
-Previously, ncremap always used ESMF or TempestRemap for weights.
-Try ncremap -a nco to use the new NCO-generated weights.
+Previously, ncremap always used ESMF or TempestRemap to make weights. 
+Use 'ncremap -a nco' to get NCO's conservative weight generation.
 NCO will always support ESMF and TR which are more time-tested.
-However, the NCO algorithm can already do some unique things,
-like output the overlap mesh in SCRIP format. Primarily, though,
-the NCO weight-generator is an in-house place to test new ideas.
+However, NCO has some unique features, like an option to output the
+overlap mesh in SCRIP format. 
 
-Work on NCO 4.9.1 has commenced and will improve NCO weight-generator 
-accuracy, reduce vertical interpolation memory use, and progress on
-weight generation options.
+Work on NCO 4.9.1 has commenced and will improve NCO weight-generator  
+accuracy, reduce vertical interpolation memory use, and supply more
+accurate weight generation options for rectangular lat-lon grids.
 
 Work on NCO 5.0.0 has commenced "under the hood". A key leap in that 
 release will be support for netCDF4 user-defined types. Printing of
@@ -72,13 +71,13 @@ B. ncremap has a new API for sub-gridscale (SGS) regridding.
 C. ncremap supports the new NCO weight generation algorithm.
    The NCO algorithm is first-order conservative and compares
    well in accuracy with other FV algorithms such as ERWG and TR.
-   Results of our bake-off between ERWG "conserve", NCO "nco", and TR
-   "mono" are at http://dust.ess.uci.edu/nco/rgr_cmp.txt
-   ESMF "conserve" is slightly better than TR "mono" and NCO "nco", at
-   least in our tests. One must generally look beyond the 10th-13th
-   significant digit (of 15 total digits) to see differences.
-   We hope users will try the NCO algorithm and send feedback,
-   while we work to improve it even more.
+   Special thanks to Henry Butowsky for his dedication to this.
+   Our bake-off between ERWG "conserve", NCO "nco", and TR "mono"
+   algorithms favors ESMF "conserve" slightly in most (NCO wins for
+   min(frac_b)) categories tested by --chk_map (see below), for the
+   grids we have tested (the results seem consistent between grids).
+   The three algorithms generally agree to 10-13 significant digits. 
+   We hope users will try the NCO algorithm and send feedback.
    ncremap -a nco -s grd_src.nc -d grd_dst.nc -m map.nc in.nc out.nc
    http://nco.sf.net/nco.html#ncremap
       
@@ -86,10 +85,12 @@ D. ncks supports a new option --chk_map to evaluate the quality of
    regridding weights. This option works with map-files (not
    grid-files) in ESMF/CMIP6-compliant format (i.e., sparse matrix
    S and coordinates [xy][ab]_[cv]). When invoked with the additional
-   --area_wgt option (also new), the evaluation statistics will be
-   area-weighted and thus reflect exactly the global-mean/min/max/
-   mebs/rms/sdn biases expected when regridding a globally uniform
-   field.
+   --area_wgt option (also new), the evaluation statistics are
+   area-weighted and thus reflect exactly the global-mean/min/max/ 
+   mebs/rms/sdn biases expected when regridding globally uniform
+   fields. This tool makes it easier to objectively assess
+   weight-generation algorithms, and will hopefully assist in their
+   improvement.
    ncks --chk_map map.nc
    ncks --chk_map --area_wgt map.nc
    http://nco.sf.net/nco.html#chk_map

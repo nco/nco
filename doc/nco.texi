@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.0
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 3 December 2019
+@set update-date 4 December 2019
 @set update-month November 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -9203,6 +9203,10 @@ It is recommended though not required to write netCDF4 files after
 @acronym{PPC}.
 For clarity the @samp{-4/-7} switches are omitted in subsequent
 examples. 
+@html
+<a name="number_of_significant_digits"></a> <!-- http://nco.sf.net/nco.html#number_of_significant_digits -->
+<a name="least_significant_digit"></a> <!-- http://nco.sf.net/nco.html#least_significant_digit -->
+@end html
 @cindex @code{number_of_significant_digits}
 @cindex @code{least_significant_digit}
 @cindex Jeff Whitaker
@@ -9216,9 +9220,9 @@ The @acronym{NSD} and @acronym{DSD} algorithms store the attributes
 @footnote{
 A suggestion by Rich Signell and the @command{nc3tonc4} tool by Jeff
 Whitaker inspired @acronym{NCO} to implement @acronym{PPC}.
-@acronym{NCO} implements a different @acronym{DSD} algorithm than 
-@command{nc3tonc4}, and produces slightly different (not bit-for-bit) 
-though self-consistent and equivalent results.
+Note that @acronym{NCO} implements a different @acronym{DSD} algorithm
+than @command{nc3tonc4}, and produces slightly different (not
+bit-for-bit) though self-consistent and equivalent results.
 @command{nc3tonc4} records the precision of its @acronym{DSD} algorithm 
 in the attribute @code{least_significant_digit} and @acronym{NCO} 
 does the same for consistency.
@@ -9228,8 +9232,13 @@ here} also shows how to compress @acronym{IEEE} floating-point data by
 zeroing insignificant bits.
 The author, John Caron, writes that the technique has been called
 ``bit-shaving''.
-When combined with our bias-elimination procedure that rounds-up to one,
-a more suitable terminology might be ``bit-grooming''.}, respectively.
+We call the algorithm of always rounding-up ``bit-setting''.
+And we named the algorithm produced by alternately rounding up and
+down (with a few other bells and whistles) ``bit-grooming''.
+Imagine orthogonally raking an already-groomed Japanese rock garden.
+The criss-crossing tracks increase the pattern's entropy, and this
+entropy produces self-compensating instead of accumulating errors
+during statistical operations.}, respectively.
 
 It is safe to attempt @acronym{PPC} on input that has already been
 rounded. 
@@ -20722,7 +20731,9 @@ When invoked with the additional @samp{--area_wgt} option, the
 evaluation statistics are area-weighted and thus exactly represent
 the global-mean/min/max/mebs/rms/sdn biases expected when regridding a
 globally uniform field.
-Thanks to Mark Taylor of Saturday Night Live (@acronym{SNL}) and Paul
+This tool makes it easier to objectively assess weight-generation
+algorithms, and will hopefully assist in their improvement.
+Thanks to Mark Taylor of Saturday Night Live (@acronym{SNL}) and Paul 
 Ullrich of UC Davis for this suggestion and early prototypes.
 @example
 @verbatim
