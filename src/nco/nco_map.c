@@ -2017,82 +2017,62 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Row (destination cell) indices utilized min, max: %.0f, %.0f\n",row_min,row_max);
     fprintf(stdout,"Ignored destination cells (empty rows): %d\n\n",hst_row[0]);
 
-    if(has_frac_a){
       /* Compute and report frac_a statistics from frac_a disk values */
-      nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
-      /* Compute frac_a as area_b-weighted column sums/area_a */
-      nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
-      nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
-    } /* !has_frac_a */
+    if(has_frac_a) nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+    /* Compute frac_a as area_b-weighted column sums/area_a */
+    nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
+    nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
+    
+    fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sShould be 1.0 for global Grid B\n",frac_avg_dsk,frac_avg_dsk > 1 ? "+" : "-",fabs(1.0-frac_avg_dsk),area_wgt_a ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
+    fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
+    fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0\n",mebs,mebs,area_wgt_a ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_a ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
 
-    if(has_frac_a){
-      fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sShould be 1.0 for global Grid B\n",frac_avg_dsk,frac_avg_dsk > 1 ? "+" : "-",fabs(1.0-frac_avg_dsk),area_wgt_a ? "(area-weighted) " : "");
-      fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
-      fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
-      fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0\n",mebs,mebs,area_wgt_a ? "(area-weighted) " : "");
-      fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_a ? "(area-weighted) " : "");
-      fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
-
-      if(nco_dbg_lvl_get() >= nco_dbg_std){
-	fprintf(stdout,"Commands to examine extrema:\n");
-	fprintf(stdout,"min(frac_a): ncks --fortran -H --trd -d n_a,%lu -v .?_a %s\n",idx_min+1UL,fl_in);
-	fprintf(stdout,"max(frac_a): ncks --fortran -H --trd -d n_a,%lu -v .?_a %s\n",idx_max+1UL,fl_in);
-      } /* !dbg */
-
-    }else{ /* !has_frac_a */
-      fprintf(stdout,"frac_a avg: map-file does not provide frac_a\n");
-      fprintf(stdout,"frac_a min: map-file does not provide frac_a\n");
-      fprintf(stdout,"frac_a max: map-file does not provide frac_a\n");
-      fprintf(stdout,"frac_a mbs: map-file does not provide frac_a\n");
-      fprintf(stdout,"frac_a rms: map-file does not provide frac_a\n");
-      fprintf(stdout,"frac_a sdn: map-file does not provide frac_a\n");
-    } /* !has_frac_a */
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
+      fprintf(stdout,"Commands to examine extrema:\n");
+      fprintf(stdout,"min(frac_a): ncks --fortran -H --trd -d n_a,%lu -v .?_a %s\n",idx_min+1UL,fl_in);
+      fprintf(stdout,"max(frac_a): ncks --fortran -H --trd -d n_a,%lu -v .?_a %s\n",idx_max+1UL,fl_in);
+    } /* !dbg */
 
     /* Inform/Warn if difference between disk and computed values */
     double dsk_cmp_dff;
-    dsk_cmp_dff=frac_min_dsk-frac_min_cmp;
-    if(fabs(dsk_cmp_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of min(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_dsk,frac_min_cmp,dsk_cmp_dff);}
-    dsk_cmp_dff=frac_max_dsk-frac_max_cmp;
-    if(fabs(frac_max_dsk-frac_max_cmp) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of max(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_dsk,frac_max_cmp,frac_max_dsk-frac_max_cmp);}
+    if(has_frac_a){
+      dsk_cmp_dff=frac_min_dsk-frac_min_cmp;
+      if(fabs(dsk_cmp_dff) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of min(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_dsk,frac_min_cmp,dsk_cmp_dff);}
+      dsk_cmp_dff=frac_max_dsk-frac_max_cmp;
+      if(fabs(frac_max_dsk-frac_max_cmp) > eps_abs){fprintf(stdout,"%s: Computed (as area_b-weighted column sums/area_a) and disk-values of max(frac_a) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_dsk,frac_max_cmp,frac_max_dsk-frac_max_cmp);}
+    } /* !has_frac_a */
     
-    if(has_frac_b){
-      /* Compute and report frac_b statistics from frac_b disk values */
-      nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
-      /* Compute frac_b as row sums */
-      nco_map_frac_b_clc(var_S,var_row,var_frac_b);
-      nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
-    } /* !has_frac_b */
+    /* Compute and report frac_b statistics from frac_b disk values */
+    if(has_frac_b) nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_dsk,&idx_min,&frac_max_dsk,&idx_max,&frac_ttl_dsk,&frac_avg_dsk,&mebs,&rms,&sdn);
+    /* Compute frac_b as row sums */
+    nco_map_frac_b_clc(var_S,var_row,var_frac_b);
+    nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
     fprintf(stdout,"\n");
-    if(has_frac_b){
-      fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sShould be 1.0 for global Grid A\n",frac_avg_dsk,frac_avg_dsk > 1 ? "+" : "-",fabs(1.0-frac_avg_dsk),area_wgt_b ? "(area-weighted) " : "");
-      fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
-      fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
-      fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0\n",mebs,mebs,area_wgt_b ? "(area-weighted) " : "");
-      fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_b ? "(area-weighted) " : "");
-      fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
+    fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sShould be 1.0 for global Grid A\n",frac_avg_dsk,frac_avg_dsk > 1 ? "+" : "-",fabs(1.0-frac_avg_dsk),area_wgt_b ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_min_dsk,frac_min_dsk > 1 ? "+" : "-",fabs(1.0-frac_min_dsk),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
+    fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_max_dsk,frac_max_dsk > 1 ? "+" : "-",fabs(1.0-frac_max_dsk),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
+    fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0\n",mebs,mebs,area_wgt_b ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_b ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
 
-      if(nco_dbg_lvl_get() >= nco_dbg_std){
-	fprintf(stdout,"Commands to examine extrema:\n");
-	fprintf(stdout,"min(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_min+1UL,fl_in);
-	fprintf(stdout,"max(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_max+1UL,fl_in);
-      } /* !dbg */
-
-    }else{ /* !has_frac_b */
-      fprintf(stdout,"frac_b avg: map-file does not provide frac_b\n");
-      fprintf(stdout,"frac_b min: map-file does not provide frac_b\n");
-      fprintf(stdout,"frac_b max: map-file does not provide frac_b\n");
-      fprintf(stdout,"frac_b mbs: map-file does not provide frac_b\n");
-      fprintf(stdout,"frac_b rms: map-file does not provide frac_b\n");
-      fprintf(stdout,"frac_b sdn: map-file does not provide frac_b\n");
-    } /* !has_frac_b */
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
+      fprintf(stdout,"Commands to examine extrema:\n");
+      fprintf(stdout,"min(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_min+1UL,fl_in);
+      fprintf(stdout,"max(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_max+1UL,fl_in);
+    } /* !dbg */
 
     /* Inform/Warn if difference between disk and computed values */
-    dsk_cmp_dff=frac_min_dsk-frac_min_cmp;
-    if(fabs(dsk_cmp_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of min(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_dsk,frac_min_cmp,dsk_cmp_dff);}
-    dsk_cmp_dff=frac_max_dsk-frac_max_cmp;
-    if(fabs(frac_max_dsk-frac_max_cmp) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_dsk,frac_max_cmp,frac_max_dsk-frac_max_cmp);}
-
+    if(has_frac_b){
+      dsk_cmp_dff=frac_min_dsk-frac_min_cmp;
+      if(fabs(dsk_cmp_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of min(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_min_dsk,frac_min_cmp,dsk_cmp_dff);}
+      dsk_cmp_dff=frac_max_dsk-frac_max_cmp;
+      if(fabs(frac_max_dsk-frac_max_cmp) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(dsk_cmp_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_dsk,frac_max_cmp,frac_max_dsk-frac_max_cmp);}
+    } /* !has_frac_b */
+      
     fprintf(stdout,"\nHistogram of non-zero entries in sparse matrix:\n");
     fprintf(stdout,"  Column 1: Number of non-zero entries (histogram bin)\n");
     fprintf(stdout,"  Column 2: Number of columns (source cells) with that many non-zero entries\n");

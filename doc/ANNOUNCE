@@ -159,6 +159,10 @@ E. ncks --json fixes JSON output of NC_FLOAT and NC_DOUBLE
    integer-valued floats. '1234567.' is now output as '1234567'.
    Thanks to Aleksandar Jelenak for this bug report.
 
+F. ncremap no longer automatically employs mean-preserving algorithm
+   when encountering missing_data. Thanks to Xylar Asay-Davis for
+   patiently suggesting saner behavior.
+
 Full release statement at http://nco.sf.net/ANNOUNCE
 
 KNOWN PROBLEMS DUE TO NCO:

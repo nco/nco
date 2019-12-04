@@ -1,6 +1,6 @@
 nco (4.9.0-1) unstable; urgency=low
 
-  * new upstream version fxm
+  * new upstream version Balasana: ncremap att_flg, centroid opt, fv2fv_flx/stt, gss n2s nfr fix, HRRR, IFS, MPAS BGC, msh_fl, ntp_mth rhea SLURM, rnr=0.0 == destonly, SGS rewrite/parallelize, TR MWF SCRIP, TR volumetric, vrt_nm, vrt prs tm_nbr fix;ncks area_wgt, chk_nan, chk_map, json dcm pnt fix;ncap2 -O fix
 
  -- Charlie Zender <zender@uci.edu>  Mon, 01 Sep 2019 12:25:38 -0700
 

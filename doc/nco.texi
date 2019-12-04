@@ -7446,7 +7446,7 @@ These annotations include
     Pure-pressure grids should use the
     @samp{--rgr lev_dmn_nm=@var{lev_dmn_nm}} option (to reduce option
     proliferation, there is no @var{plev_dmn_nm} option).
-    These options were introduced in @acronym{NCO} version 4.9.0 (November, 2019).
+    These options were introduced in @acronym{NCO} version 4.9.0 (December, 2019).
     These options also determine the vertical dimension names in
     vertically interpolated output files. 
 @cindex @var{lev_nm}
@@ -7493,7 +7493,7 @@ These annotations include
     To treat different variables as level and interface-level
     coordinates, use the options @samp{--rgr lev_nm=@var{lev_nm}} and 
     @samp{--rgr ilev_nm=@var{ilev_nm}}.   
-    Before @acronym{NCO} version 4.9.0 (November, 2019), @var{lev_nm}
+    Before @acronym{NCO} version 4.9.0 (December, 2019), @var{lev_nm}
     and @var{ilev_nm} specified both the variable names @emph{and},
     where applicable (i.e., on 2D-grids), the dimensions of the
     vertical coordinates in output files.
@@ -24927,7 +24927,7 @@ As of @acronym{NCO} version 4.6.8 (released June, 2017), invoking any
 of the options @samp{--sgs_frc}, @samp{--sgs_msk}, or @samp{--sgs_nrm},
 automatically triggers @acronym{SGS}-mode, so that also invoking 
 @samp{-P sgs} is redundant though legal.
-As of @acronym{NCO} version 4.9.0 (released November, 2019), the values 
+As of @acronym{NCO} version 4.9.0 (released December, 2019), the values 
 of the @var{sgs_frc} and @var{sgs_msk} variables should be explicitly
 specified.
 In previous versions they defaulted to @code{landfrac} and
@@ -25723,7 +25723,7 @@ atmosphere, because it is compressible, than for condensed media like
 oceans or  Earth's interior, which are incompressible.
 To instead interpolate linearly in the vertical coordinate, use
 the @samp{ntp_mth=lin} option.
-@acronym{NCO} supports this feature as of version 4.9.0 (October,
+@acronym{NCO} supports this feature as of version 4.9.0 (December,
 2019). 
 
 @html
