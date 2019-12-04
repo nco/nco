@@ -72,13 +72,15 @@ C. ncremap supports the new NCO weight generation algorithm.
    The NCO algorithm is first-order conservative and compares
    well in accuracy with other FV algorithms such as ERWG and TR.
    Special thanks to Henry Butowsky for his dedication to this.
-   Our bake-off between ERWG "conserve", NCO "nco", and TR "mono"
-   algorithms favors ESMF "conserve" slightly in most (NCO wins for
-   min(frac_b)) categories tested by --chk_map (see below), for the
-   grids we have tested (the results seem consistent between grids).
+   We evaluated ERWG "conserve", NCO "nco", and TR "mono" with
+   --chk_map (see below) on the E3SMv1 lo-res and hi-res grids.
    The three algorithms generally agree to 10-13 significant digits. 
+   ESMF won for atm->atm remapping, and NCO for ocn->atm remapping,
+   both by razor-thin margins. YMMV.
    We hope users will try the NCO algorithm and send feedback.
+   NCO weight-generation is threaded and scales well to 3-4 threads.
    ncremap -a nco -s grd_src.nc -d grd_dst.nc -m map.nc in.nc out.nc
+   ncremap -t 4 -a nco -s grd_src.nc -d grd_dst.nc -m map.nc
    http://nco.sf.net/nco.html#ncremap
       
 D. ncks supports a new option --chk_map to evaluate the quality of
