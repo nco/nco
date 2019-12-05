@@ -502,7 +502,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 nco/4.7.4 # 20180423
 # Personal recipe last modified: 20190828
-# Personal recipe last used successfully: 20190827 (except ncgen does not link)
+# Personal recipe last used successfully: 20191204 (except ncgen does not link)
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
