@@ -1,26 +1,15 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.9.0 are woke.
+The netCDF Operators NCO version 4.9.1 are woke.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.9.0 includes new regridder features, JSON, and ncap2 fixes. 
-Notably, this version simplifies the weight-application interface,
-parallelizes ncremap in stand-alone mode, and completely revamps,
-improves, and accelerates the sub-gridscale weight application
-algorithm.  
+Version 4.9.1 includes new regridder features, ...
 
-The NCO conservative weight-generator algorithm also debuts.
-Previously, ncremap always used ESMF or TempestRemap to make weights. 
-Use 'ncremap -a nco' to get NCO's conservative weight generation.
-NCO will always support ESMF and TR which are more time-tested.
-However, NCO has some unique features, like an option to output the
-overlap mesh in SCRIP format. 
-
-Work on NCO 4.9.1 has commenced and will improve NCO weight-generator  
+Work on NCO 4.9.2 has commenced and will improve NCO weight-generator  
 accuracy, reduce vertical interpolation memory use, and supply more
 accurate weight generation options for rectangular lat-lon grids.
 
@@ -36,134 +25,22 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap has been refactored for full parallelism.
-   Previously the standalone ncremap could only run parallelized
-   when invoked with pure weight application requests.
-   Special processing like CLM/ELM sub-gridscale regridding or MPAS
-   juggling only worked with single file invocations (which is what
-   ncclimo always requests). Now the standalone ncremap is
-   parallelized and adheres to --job_nbr control for all regridding
-   in standalone invocations, meaning that regridding lists of files
-   offline with MPI or background parallelism is now much quicker:
-   ls cam/*.nc | ncremap --job_nbr=4 --par_typ=mpi -m map.nc
-   ls mpas/*.nc | ncremap -P mpas -j 4 -p mpi -m map.nc
-   ls elm/*.nc | ncremap --sgs_frc=landfrac -j 16 -m map.nc
+A. ncremap changes the default regridder algorithm from ESMF
+   "bilinear" to NCO "nco_con", a first-order conservative algorithm 
+   (similar to ESMF "conserve") that requires no external
+   dependencies. Because the default algorithm comes with NCO, users
+   without access to ESMF and/or TempestRemap can perform a full
+   regridding workflow. Of course many/most users will still wish to
+   employ ESMF or TR, and their algorithms are easily accessed:
+   ncremap -a nco -s grd_src.nc -d grd_dst.nc -m map.nc   # New default
+   ncremap -a bilin -s grd_src.nc -d grd_dst.nc -m map.nc # Old default
+   ncremap -a fv2fv -s grd_src.nc -d grd_dst.nc -m map.nc # Tempest
+   http://nco.sf.net/nco.html#alg_typ
    http://nco.sf.net/nco.html#ncremap
-
-B. ncremap has a new API for sub-gridscale (SGS) regridding.
-   Previously ncremap employed a convoluted and slow procedure to
-   remap data with sub-gridscale fractions, e.g., CLM/ELM, CICE,
-   and MPAS-Seaice data. That procedure and ncremap API used to
-   require specification of the source and destination grids.
-   The new, faster ncremap SGS procedure requires only the map-file
-   and the name of the sub-gridscale fraction field.
-   The -P sgs option is no longer required, thought is still accepted 
-   for back-compatibility.
-   ncremap --sgs_frc=landfrac -m map.nc # CLM/ELM
-   ncremap --sgs_frc=frc.nc/landfrac -m map.nc # CLM/ELM external
-   ncremap -P elm -m map.nc # CLM/ELM alternative
-   ncremap --sgs_frc=aice --sgs_msk=tmask -m map.nc # CICE
-   ncremap -P cice -m map.nc # CICE alternative
-   ncremap --sgs_frc=timeMonthly_avg_iceAreaCell -m map.nc # MPAS-Seaice
-   ncremap -P mpasseaice -m map.nc # MPAS-Seaice alternative
-   http://nco.sf.net/nco.html#ncremap
-
-C. ncremap supports the new NCO weight generation algorithm.
-   The NCO algorithm is first-order conservative and compares
-   well in accuracy with other FV algorithms such as ERWG and TR.
-   Special thanks to Henry Butowsky for his dedication to this.
-   We evaluated ERWG "conserve", NCO "nco", and TR "mono" with
-   --chk_map (see below) on the E3SMv1 lo-res and hi-res grids.
-   The three algorithms generally agree to 10-13 significant digits. 
-   ESMF won for atm->atm remapping, and NCO for ocn->atm remapping,
-   both by razor-thin margins. YMMV.
-   We hope users will try the NCO algorithm and send feedback.
-   NCO weight-generation is threaded and scales well to 3-4 threads.
-   ncremap -a nco -s grd_src.nc -d grd_dst.nc -m map.nc in.nc out.nc
-   ncremap -t 4 -a nco -s grd_src.nc -d grd_dst.nc -m map.nc
-   http://nco.sf.net/nco.html#ncremap
-      
-D. ncks supports a new option --chk_map to evaluate the quality of
-   regridding weights. This option works with map-files (not
-   grid-files) in ESMF/CMIP6-compliant format (i.e., sparse matrix
-   S and coordinates [xy][ab]_[cv]). When invoked with the additional
-   --area_wgt option (also new), the evaluation statistics are
-   area-weighted and thus reflect exactly the global-mean/min/max/ 
-   mebs/rms/sdn biases expected when regridding globally uniform
-   fields. This tool makes it easier to objectively assess
-   weight-generation algorithms, and will hopefully assist in their
-   improvement.
-   ncks --chk_map map.nc
-   ncks --chk_map --area_wgt map.nc
-   http://nco.sf.net/nco.html#chk_map
-   http://nco.sf.net/nco.html#area_wgt
-
-E. ncremap works with newer MPAS Ocean files that contain BGC
-   dimensions like R3 and FOUR. 
-   ncremap -P mpas -m map_bilin.nc in.nc out.nc
-   http://nco.sf.net/nco.html#ncremap
-
-F. ncremap now propagates all netCDF formats except CDF5 to
-   TempestRemap (TR) (which does not yet accept or produce CDF5 files
-   AFAICT). 
-   http://nco.sf.net/nco.html#tr
-
-G. ncremap omits the TR --volumetric flag from fv2se_stt maps. 
-   TempestRemap author Paul Ullrich recommends this to keep fv2se_stt
-   maps consistent (producing output in same range) with fv2se_flx maps.
-   ncremap -a fv2se_stt -s grd_src.nc -d grd_dst.nc -m map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#ncremap
-
-H. ncremap allows simultaneous invocation of horizontal and vertical
-   regridding. Yes, now ncremap can automagically regrid any file
-   to any new horizontal and vertical grid at the same time.
-   Simply supply both a map-file and a vertical grid-file:
-   ncremap -m map.nc --vrt=vrt_grd.nc in.nc out.nc
-   http://nco.sf.net/nco.html#vrt
-   http://nco.sf.net/nco.html#ncremap
-
-I. ncremap/ncclimo have deprecated support for options named for the
-   short-lived ALM land surface model. Use 'elm' instead of 'alm',
-   ncremap -P elm -m map.nc
-   http://nco.sf.net/nco.html#ncremap
-
-J. NCO supports flexible options to specify non-default names for
-   vertical grid coordinates in input and output (vertically
-   interpolated) data files. 
-   ncks --rgr plev_nm=vrt_nm --vrt=vrt_grd.nc in.nc out.nc
-   ncremap -n '--rgr plev_nm=vrt_nm' --vrt=vrt_grd.nc in.nc out.nc
-   http://nco.sf.net/nco.html#lev_nm
-
-K. ncks supports a new option --chk_nan to quickly find the location
-   of any NaN values in a dataset. Thanks to Matthew Thompson of NASA
-   for this suggestion.
-   ncks --chk_nan in.nc
-   http://nco.sf.net/nco.html#chk_nan
 
 BUG FIXES:
 
-A. ncap2 --output again works with single command-line files
-   This was inadvertently broken in 4.8.0.
-   Thanks to Kyle Wilcox for reporting this issue.
-
-B. Regridder allows "none" for SCRIP normalization type for
-   bilinear regridding, employed in UKMO SCRIP files.
-   Thanks to Craig MacLachlan for providing this fix.
-
-C. ncremap vertical interpolation bug-fix for fields stored on
-   interface levels of hybrid coordinate grids (e.g., CMFMC).
-
-D. ncremap bug-fix for pressure-to-pressure grid vertical
-   interpolation for input files with no time dimension.
-
-E. ncks --json fixes JSON output of NC_FLOAT and NC_DOUBLE
-   by eliminating the trailing '.' (illegal in JSON) from
-   integer-valued floats. '1234567.' is now output as '1234567'.
-   Thanks to Aleksandar Jelenak for this bug report.
-
-F. ncremap no longer automatically employs mean-preserving algorithm
-   when encountering missing_data. Thanks to Xylar Asay-Davis for
-   patiently suggesting saner behavior.
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -171,9 +48,9 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.8.0 built/tested under
-   MacOS 10.14.1 with netCDF 4.6.1 on HDF5 1.10.2 and with
-   Linux with netCDF 4.6.2-development (20180515) on HDF5 1.8.19.
+   These problems occur with NCO 4.9.1 built/tested under
+   MacOS 10.15.1 with netCDF 4.7.0 on HDF5 1.10.2 and with
+   Linux with netCDF 4.7.4-development (20191203) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
