@@ -1520,7 +1520,7 @@ nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
 
 
   map_rgr->ply_tri_mth=nco_ply_tri_mth_csz;
-  map_rgr->tri_arc_typ=nco_tri_arc_typ_gtc;
+  map_rgr->edg_typ=nco_edg_gtc;
 
   nco_sph_plg_area(map_rgr, lat_bnd, lon_bnd, grd_sz_nbr, bnd_nbr, area_out);
 

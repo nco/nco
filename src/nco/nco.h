@@ -1077,11 +1077,12 @@ extern "C" {
     nco_ply_tri_mth_ctr, /* Centroid-based method used by MAT at SNL */
   } nco_ply_tri_mth_typ_enm;
 
-  typedef enum nco_tri_arc_typ_enm{ /* [enm] Arc-type for triangle edges */
-    nco_tri_arc_typ_nil=0,
-    nco_tri_arc_typ_gtc, /* [enm] Arcs are all on great circles */
-    nco_tri_arc_typ_ltr, /* [enm] Arcs of constant latitude are on small circles */
-  } nco_tri_arc_typ_enm;
+  typedef enum nco_edg_typ_enm{ /* [enm] Edge-type/arc-type that connects grid vertices */
+    nco_edg_nil=0,
+    nco_edg_gtc, /* [enm] Edges/arcs are great circle segments */
+    nco_edg_smc, /* [enm] Edges/arcs of constant latitude are small circle segments, all others are great circle segments */
+    nco_edg_crt, /* [enm] Edges/arcs are Cartesian/planar lines and neglect curvature */
+  } nco_edg_typ_enm;
 
   typedef enum nco_xtr_typ_enm 
     { /* [enm] Extrapolation type enum */
@@ -1231,7 +1232,7 @@ extern "C" {
     nco_grd_lon_typ_enm lon_typ; /* [enm] Longitude grid-type enum */
     nco_ntp_typ_enm ntp_mth; /* [enm] Interpolation method */
     nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon-to-triangle decomposition method */ 
-    nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
+    nco_edg_typ_enm edg_typ; /* [enm] Arc-type for triangle edges */
     nco_xtr_typ_enm xtr_mth; /* [enm] Extrapolation method */
     // Other internal data and metadata 
     char **xtn_var; /* [sng] Extensive variables */

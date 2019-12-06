@@ -309,7 +309,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_est=NC_MAX_DOUBLE; /* [dgr] Longitude of eastern edge of grid */
   rgr->msk_var=NULL; /* [sng] Mask-template variable */
   rgr->ply_tri_mth=nco_ply_tri_mth_csz; /* [enm] Polygon-to-triangle decomposition method */ 
-  rgr->tri_arc_typ=nco_tri_arc_typ_gtc; /* [enm] Arc-type for triangle edges */
+  rgr->edg_typ=nco_edg_gtc; /* [enm] Edge/Arc-type for triangle edges */
   rgr->sgs_nrm=1.0; /* [sng] Sub-gridscale normalization */
   rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
   rgr->ntp_mth=nco_ntp_log; /* [enm] Interpolation method */
@@ -391,6 +391,19 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_erwg_units=False;
       continue;
     } /* !erwg_units */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"edg_typ") || !strcmp(rgr_lst[rgr_var_idx].key,"tri_arc") || !strcmp(rgr_lst[rgr_var_idx].key,"vrt_cnc")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"grt_crc") || !strcasecmp(rgr_lst[rgr_var_idx].val,"gtc") || !strcasecmp(rgr_lst[rgr_var_idx].val,"great_circle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"geodesic") || !strcasecmp(rgr_lst[rgr_var_idx].val,"orthodrome")){
+	rgr->edg_typ=nco_edg_gtc;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"sml_crc") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ltr") || !strcasecmp(rgr_lst[rgr_var_idx].val,"small_circle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"latitude_triangle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"true")){
+	rgr->edg_typ=nco_edg_smc;
+      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"crt") || !strcasecmp(rgr_lst[rgr_var_idx].val,"cartesian") || !strcasecmp(rgr_lst[rgr_var_idx].val,"planar") || !strcasecmp(rgr_lst[rgr_var_idx].val,"flat")){
+	rgr->edg_typ=nco_edg_crt;
+      }else{
+	(void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
+	abort();
+      } /* !val */
+      continue;
+    } /* !edg_typ */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"erwg_units") || !strcmp(rgr_lst[rgr_var_idx].key,"esmf_units") || !strcmp(rgr_lst[rgr_var_idx].key,"degrees")){
       rgr->flg_cf_units=False;
       rgr->flg_erwg_units=True;
@@ -644,17 +657,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtod",sng_cnv_rcd);
       continue;
     } /* !sgs_nrm */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"tri_arc")){
-      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"gtc") || !strcasecmp(rgr_lst[rgr_var_idx].val,"great_circle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"geodesic") || !strcasecmp(rgr_lst[rgr_var_idx].val,"orthodrome")){
-	rgr->tri_arc_typ=nco_tri_arc_typ_gtc;
-      }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"ltr") || !strcasecmp(rgr_lst[rgr_var_idx].val,"small_circle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"latitude_triangle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"true")){
-	rgr->tri_arc_typ=nco_tri_arc_typ_ltr;
-      }else{
-	(void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
-	abort();
-      } /* !val */
-      continue;
-    } /* !tri_arc */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"tst")){
       rgr->tst=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
@@ -5219,9 +5221,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   nco_bool flg_mth_csz=False; /* [flg] Use CSZ's advancing polygon bisector method */
   nco_bool flg_mth_ctr=False; /* [flg] Use centroid method to compute polygon area */
   nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
-  nco_tri_arc_typ_enm tri_arc_typ; /* [enm] Arc-type for triangle edges */
+  nco_edg_typ_enm edg_typ; /* [enm] Arc-type for triangle edges */
   ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
-  tri_arc_typ=rgr->tri_arc_typ; /* [enm] Arc-type for triangle edges */
+  edg_typ=rgr->edg_typ; /* [enm] Arc-type for triangle edges */
   if(ply_tri_mth == nco_ply_tri_mth_csz) flg_mth_csz=True;
   if(ply_tri_mth == nco_ply_tri_mth_ctr) flg_mth_ctr=True;
   assert(flg_mth_ctr != flg_mth_csz);
@@ -5252,12 +5254,12 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
     lon_bnd_sin[idx]=sin(lon_bnd_rdn[idx]);
     lat_bnd_sin[idx]=sin(lat_bnd_rdn[idx]);
   } /* !idx */
-  double area_crc; /* [sr] Latitude-triangle correction to spherical triangle area */
-  double area_ltr; /* [sr] Gridcell area allowing for latitude-triangles */
+  double area_smc_crc; /* [sr] Small-circle correction to spherical triangle area */
+  double area_smc; /* [sr] Gridcell area allowing for latitude-triangles */
   double area_ttl; /* [sr] Sphere area assuming spherical triangles */
-  double area_ltr_ttl; /* [sr] Sphere area allowing for latitude-triangles */
-  double area_crc_ttl; /* [sr] Latitude-triangle correction for whole sphere */
-  double area_crc_abs_ttl; /* [sr] Latitude-triangle absolute correction for whole sphere */
+  double area_smc_ttl; /* [sr] Sphere area allowing for latitude-triangles */
+  double area_smc_crc_ttl; /* [sr] Latitude-triangle correction for whole sphere */
+  double area_smc_crc_abs_ttl; /* [sr] Latitude-triangle absolute correction for whole sphere */
   double lat_ctr; /* [dgr] Latitude of polygon centroid */
   double lon_ctr; /* [dgr] Longitude of polygon centroid */
   double lat_ctr_rdn; /* [rdn] Latitude of polygon centroid */
@@ -5287,19 +5289,19 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   nco_bool flg_sas_hlf_a=False; /* [flg] Ill-conditioned for angle a */
   nco_bool flg_sas_hlf_b=False; /* [flg] Ill-conditioned for angle b */
   nco_bool flg_sas_hlf_c=False; /* [flg] Ill-conditioned for angle c */
-  nco_bool flg_ltr_cll; /* [flg] Any triangle in cell is latitude-triangle */
-  nco_bool flg_ltr_crr; /* [flg] Current triangle is latitude-triangle */
+  nco_bool flg_ply_has_smc; /* [flg] Any triangle in polygon has small-circle edge */
+  nco_bool flg_tri_crr_smc; /* [flg] Current triangle has small_circle edge */
   /* Initialize global accumulators */
   area_ttl=0.0;
-  area_ltr_ttl=0.0;
-  area_crc_ttl=0.0;
-  area_crc_abs_ttl=0.0;
+  area_smc_ttl=0.0;
+  area_smc_crc_ttl=0.0;
+  area_smc_crc_abs_ttl=0.0;
   for(long col_idx=0;col_idx<col_nbr;col_idx++){
     /* Initialize local properties and accumulators for this cell/polygon */
-    flg_ltr_cll=False;
+    flg_ply_has_smc=False;
     ngl_c=double_CEWI; /* Otherwise compiler unsure ngl_c is initialized first use */
     area[col_idx]=0.0;
-    area_ltr=0.0;
+    area_smc=0.0;
     tri_nbr=0;
 
     if(col_idx == 0){
@@ -5411,7 +5413,6 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       /* bnd_idx labels offset from point A of potential location of triangle points B and C 
 	 We know that bnd_idx(A) == 0, bnd_idx(B) < bnd_nbr-1, bnd_idx(C) < bnd_nbr */
       while(bnd_idx<bnd_nbr-1){
-	flg_ltr_crr=False;
 	/* Only first triangle must search for B, subsequent triangles recycle previous C as current B */
 	if(tri_nbr == 0){
 	  /* Skip repeated points that must occur when polygon has fewer than allowed vertices */
@@ -5450,7 +5451,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	
     /* Triangles are known for requested decomposition method 
        Compute and accumulate their area 
-       Optimized algorithm relies on recycling previous arc c as current arc a after first triangle */
+       Optimized algorithm recycles previous arc c as current arc a (after first triangle) */
     for(int tri_idx=0;tri_idx<tri_nbr;tri_idx++){
 
       idx_a=a_idx[tri_idx];
@@ -5540,8 +5541,11 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       ngl_c=2.0*asin(sin_hlf_tht);
       /* Semi-perimeter */
       prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
-      /* L'Huilier's formula is ill-conditioned when two sides are both nearly one half the third side */
+      /* L'Huilier's formula becomes ill-conditioned when two sides are one half the third side
+	 Wikipedia recommends treating ill-conditioned triangles by Side-Angle-Side (SAS) formula
+	 https://en.wikipedia.org/wiki/Spherical_trigonometry */
       flg_sas=flg_sas_hlf_a=flg_sas_hlf_b=flg_sas_hlf_c=False;
+      /* Sensitivity tests on ~20191014 showed that triangular ill-conditioning treatment (i.e., switching to SAS method) does not improve (and may degrade) accuracy for eps_ill_cnd > 1.0e-15 */
       const double eps_ill_cnd=1.0e-15; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
       const double eps_ill_cnd_dbl=2.0*eps_ill_cnd; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
       if((fabs(ngl_a-ngl_b) < eps_ill_cnd) && (fabs(ngl_a-0.5*ngl_c) < eps_ill_cnd_dbl)) flg_sas_hlf_c=True; /* c is half a and b */
@@ -5549,8 +5553,6 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       else if((fabs(ngl_c-ngl_a) < eps_ill_cnd) && (fabs(ngl_c-0.5*ngl_b) < eps_ill_cnd_dbl)) flg_sas_hlf_b=True; /* b is half c and a */
       if(flg_sas_hlf_a || flg_sas_hlf_b || flg_sas_hlf_c) flg_sas=True;
       if(flg_sas){
-	/* Wikipedia recommends treating ill-conditioned triangles by Side-Angle-Side (SAS) formula
-	   https://en.wikipedia.org/wiki/Spherical_trigonometry */
 	double cos_hlf_C; /* [frc] Cosine of canoncal surface angle C */
 	double ngl_sfc_ltr_C; /* [rdn] Canonical surface angle/great circle arc C */
 	double tan_hlf_a_tan_hlf_b; /* [frc] Product of tangents of one-half of nearly equal canoncal sides */
@@ -5593,24 +5595,25 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	// xcs_sph=4.0*atan(sqrt(tan(0.5*0.5*(ngl_a+ngl_b+ngl_c))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_a))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_b))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_c))));
       } /* !flg_sas */
       area[col_idx]+=xcs_sph;
-      area_ltr+=xcs_sph;
+      area_smc+=xcs_sph;
       area_ttl+=xcs_sph;
-      area_ltr_ttl+=xcs_sph;
+      area_smc_ttl+=xcs_sph;
       /* 20160918 from here to end of loop is non-spherical work
+	 20170217: Temporarily turn-off latitude circle diagnostics because Sungduk's POP case breaks them
 	 Canonical latitude-triangle geometry has point A at apex and points B and C at same latitude
 	 Generate area field for latitude-triangles by fxm
 	 ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/ne30np4_pentagons.091226.nc -m ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc
 	 ncap2 -O -s area_b=0.0 ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc ~/rgr/map_fv257x512_to_ne30np4_bilin.no_area_b.nc
 	 ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
 	 ncks -O -D 5 -v FSNT --map ${DATA}/rgr/map_fv257x512_to_ne30np4_bilin.no_area_b.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/ne30_FSNT.nc > ~/foo.txt 2>&1 */
+      flg_tri_crr_smc=False;
       if(lat_bnd_rdn[idx_a] == lat_bnd_rdn[idx_b] ||
 	 lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c] ||
 	 lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
-	flg_ltr_cll=flg_ltr_crr=True;
+	flg_ply_has_smc=flg_tri_crr_smc=True;
       } /* endif */
-      /* 20170217: Temporarily turn-off latitude circle diagnostics because Sungduk's POP case breaks them */
-      flg_ltr_cll=flg_ltr_crr=False;
-      if(flg_ltr_crr){
+      //      flg_ply_has_smc=flg_tri_crr_smc=False;
+      if(edg_typ == nco_edg_smc && flg_tri_crr_smc){
 	double ngl_plr; /* [rdn] Polar angle (co-latitude) */
 	long idx_ltr_a; /* [idx] Point A (apex) of canonical latitude-triangle geometry, 1-D index */
 	long idx_ltr_b; /* [idx] Point B (base) of canonical latitude-triangle geometry, 1-D index */
@@ -5643,23 +5646,23 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	}else{
 	  abort();
 	} /* endif */
-	/* 20160918: Compute area of latitude triangle wedge exactly */
+	/* 20160918: Compute exact area of latitude triangle wedge */
 	double xpn_x; /* [frc] Expansion parameter */
 	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_ltr_b],lon_bnd_rdn[idx_ltr_c]));
 	/* Numeric conditioning uncertain. Approaches divide-by-zero when lon_dlt << 1 */
 	xpn_x=lat_bnd_sin[idx_ltr_b]*(1.0-cos(lon_dlt))/sin(lon_dlt);
-	area_crc=2.0*atan(xpn_x);
+	area_smc_crc=2.0*atan(xpn_x);
 	/* 20170217: Sungduk's POP regrid triggers following abort():
 	   ncremap -D 1 -i ~/pop_g16.nc -d ~/cam_f19.nc -o ~/foo.nc */
 	if(xpn_x < 0.0) abort();
-	//if(lat_bnd[idx_ltr_b] > 0.0) area_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
-	area_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b];
-	area_ltr+=area_crc;
-	area_ltr_ttl+=area_crc;
-	area_crc_ttl+=area_crc;
-	area_crc_abs_ttl+=fabs(area_crc);
+	//if(lat_bnd[idx_ltr_b] > 0.0) area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_smc_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
+	area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b];
+	area_smc+=area_smc_crc;
+	area_smc_ttl+=area_smc_crc;
+	area_smc_crc_ttl+=area_smc_crc;
+	area_smc_crc_abs_ttl+=fabs(area_smc_crc);
 	if(0){
-	  /* 20160918: Compute area of latitude triangle wedge using power expansion */
+	  /* 20160918: Approximate area of latitude triangle wedge. Use truncated power expansion of exact formula. */
 	  double xpn_x_sqr; /* [frc] Expansion parameter squared */
 	  double xpn_sum; /* [frc] Expansion sum */
 	  double xpn_nmr; /* [frc] Expansion term numerator */
@@ -5682,19 +5685,19 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  (void)fprintf(stdout,"%s: Latitude-triangle area using series approximation...not implemented yet\n",nco_prg_nm_get());
 	} /* !0 */
 	if(nco_dbg_lvl_get() >= nco_dbg_scl){
-	  (void)fprintf(stdout,"%s: INFO %s col_idx = %li triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,xcs_sph,xcs_sph+area_crc,100.0*area_crc/xcs_sph);
-	  if(fabs(area_crc/xcs_sph) > 0.1){
+	  (void)fprintf(stdout,"%s: INFO %s col_idx = %li triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,xcs_sph,xcs_sph+area_smc_crc,100.0*area_smc_crc/xcs_sph);
+	  if(fabs(area_smc_crc/xcs_sph) > 0.1){
 	    (void)fprintf(stdout,"%s: DBG Non-spherical correction exceeds 10%% for current triangle with ABC vertices at lat,lon [dgr] = %g, %g\n%g, %g\n%g, %g\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
 	  } /* !fabs */
 	} /* !dbg */
-      } /* !flg_ltr_crr */
+      } /* !edg_typ && flg_tri_crr_smc */
     } /* !tri_idx */
-    if(flg_ltr_cll){
+    if(edg_typ == nco_edg_smc && flg_ply_has_smc){
       /* Current gridcell contained at least one latitude-triangle */
-      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s col_idx = %li spherical area, latitude-gridcell area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_ltr,100.0*(area_ltr-area[col_idx])/area[col_idx]);
-    } /* !flg_ltr_cll */    
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s col_idx = %li spherical area, latitude-gridcell area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_smc,100.0*(area_smc-area[col_idx])/area[col_idx]);
+    } /* !edg_typ && !flg_ply_has_smc */    
   } /* !col_idx */
-  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s total spherical area, latitude-gridcell area, %% difference, crc_ttl, crc_abs_ttl: %g, %g, %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,area_ttl,area_ltr_ttl,100.0*(area_ltr_ttl-area_ttl)/area_ttl,area_crc_ttl,area_crc_abs_ttl);
+  if(edg_typ == nco_edg_smc && nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s total spherical area, latitude-gridcell area, %% difference, crc_ttl, crc_abs_ttl: %g, %g, %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,area_ttl,area_smc_ttl,100.0*(area_smc_ttl-area_ttl)/area_ttl,area_smc_crc_ttl,area_smc_crc_abs_ttl);
   if(vrt_vld) vrt_vld=(long *)nco_free(vrt_vld);
   if(a_idx) a_idx=(long *)nco_free(a_idx);
   if(b_idx) b_idx=(long *)nco_free(b_idx);
