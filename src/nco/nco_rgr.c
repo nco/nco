@@ -276,6 +276,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
   /* Initialize key-value properties used in grid generation */
+  rgr->edg_typ=nco_edg_gtc; /* [enm] Edge/Arc-type for triangle edges */
   rgr->fl_grd=NULL; /* [sng] Name of SCRIP grid file to create */
   rgr->fl_hnt_dst=NULL; /* [sng] ERWG hint destination */
   rgr->fl_hnt_src=NULL; /* [sng] ERWG hint source */
@@ -283,11 +284,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->fl_skl=NULL; /* [sng] Name of skeleton data file to create */
   rgr->fl_ugrid=NULL; /* [sng] Name of UGRID grid file to create */
   rgr->flg_area_out=True; /* [flg] Add area to output */
+  rgr->flg_cf_units=False; /* [flg] Generate CF-compliant (breaks ERWG 7.1.0r-) units fields in SCRIP-format grid files */
   rgr->flg_cll_msr=True; /* [flg] Add cell_measures attribute */
   rgr->flg_crv=False; /* [flg] Use curvilinear coordinates */
   rgr->flg_dgn_area=False; /* [flg] Diagnose rather than copy inferred area */
   rgr->flg_dgn_bnd=False; /* [flg] Diagnose rather than copy inferred bounds */
-  rgr->flg_cf_units=False; /* [flg] Generate CF-compliant (breaks ERWG 7.1.0r-) units fields in SCRIP-format grid files */
   rgr->flg_erwg_units=True; /* [flg] Generate ERWG 7.1.0r-compliant SCRIP-format grid files */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
@@ -309,7 +310,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->lon_est=NC_MAX_DOUBLE; /* [dgr] Longitude of eastern edge of grid */
   rgr->msk_var=NULL; /* [sng] Mask-template variable */
   rgr->ply_tri_mth=nco_ply_tri_mth_csz; /* [enm] Polygon-to-triangle decomposition method */ 
-  rgr->edg_typ=nco_edg_gtc; /* [enm] Edge/Arc-type for triangle edges */
   rgr->sgs_nrm=1.0; /* [sng] Sub-gridscale normalization */
   rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
   rgr->ntp_mth=nco_ntp_log; /* [enm] Interpolation method */
@@ -5601,11 +5601,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       /* 20160918 from here to end of loop is non-spherical work
 	 20170217: Temporarily turn-off latitude circle diagnostics because Sungduk's POP case breaks them
 	 Canonical latitude-triangle geometry has point A at apex and points B and C at same latitude
-	 Generate area field for latitude-triangles by fxm
-	 ncremap -s ${DATA}/grids/257x512_SCRIP.20150901.nc -g ${DATA}/grids/ne30np4_pentagons.091226.nc -m ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc
-	 ncap2 -O -s area_b=0.0 ${DATA}/maps/map_fv257x512_to_ne30np4_bilin.20150901.nc ~/rgr/map_fv257x512_to_ne30np4_bilin.no_area_b.nc
-	 ncks -O -D 5 -v FSNT --map ${DATA}/maps/map_ne30np4_to_fv257x512_bilin.150418.nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ${DATA}/ne30/rgr/fv_FSNT.nc
-	 ncks -O -D 5 -v FSNT --map ${DATA}/rgr/map_fv257x512_to_ne30np4_bilin.no_area_b.nc ${DATA}/ne30/rgr/fv_FSNT.nc ${DATA}/ne30/rgr/ne30_FSNT.nc > ~/foo.txt 2>&1 */
+	 ncremap --dbg=1 --alg_typ=nco --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+	 ncremap --dbg=1 -R 'edg_typ=smc' --alg_typ=nco --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_smc.20190601.nc */
       flg_tri_crr_smc=False;
       if(lat_bnd_rdn[idx_a] == lat_bnd_rdn[idx_b] ||
 	 lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c] ||
