@@ -1515,10 +1515,12 @@ nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
  double * const area_out) /* [sr] Gridcell area */
 {
 
-  if(!map_rgr) map_rgr=(rgr_sct*)nco_calloc(1,sizeof(rgr_sct));
-
-  map_rgr->ply_tri_mth=nco_ply_tri_mth_csz;
-  map_rgr->edg_typ=nco_edg_gtc;
+  /* only situation where map_rgr is null is when running debug program vrl-tst */
+  if(!map_rgr) {
+    map_rgr = (rgr_sct *) nco_calloc(1, sizeof(rgr_sct));
+    map_rgr->ply_tri_mth = nco_ply_tri_mth_csz;
+    map_rgr->edg_typ = nco_edg_gtc;
+  }
 
   nco_sph_plg_area(map_rgr,lat_bnd,lon_bnd,grd_sz_nbr,bnd_nbr,area_out);
 
