@@ -2878,8 +2878,24 @@ int
 nco_copy_att(const int nc_id_in,const int var_id_in,const char * const att_nm,const int nc_id_out,const int var_id_out)
 {
   /* Purpose: Wrapper for nc_copy_att() */
+  const char fnc_nm[]="nco_copy_att()";
   int rcd;
   rcd=nc_copy_att(nc_id_in,var_id_in,att_nm,nc_id_out,var_id_out);
+  if(rcd == NC_ENAMEINUSE){
+    if(var_id_out > NC_GLOBAL){
+      char var_nm_in[NC_MAX_NAME+1L];
+      char var_nm_out[NC_MAX_NAME+1L];
+      (void)nco_inq_varname(nc_id_in,var_id_in,var_nm_in);
+      (void)nco_inq_varname(nc_id_out,var_id_out,var_nm_out);
+      (void)fprintf(stdout,"ERROR: %s unable to copy attribute \"%s\" from \"%s\" to \"%s\" because the destination variable already has an attribute of that name\n",fnc_nm,att_nm,var_nm_in,var_nm_out);
+    }else{
+      char grp_nm_in[NC_MAX_NAME+1L];
+      char grp_nm_out[NC_MAX_NAME+1L];
+      (void)nco_inq_grpname(nc_id_in,grp_nm_in);
+      (void)nco_inq_grpname(nc_id_out,grp_nm_out);
+      (void)fprintf(stdout,"ERROR: %s unable to copy attribute \"%s\" from \"%s\" to \"%s\" because the destination group already has an attribute of that name\n",fnc_nm,att_nm,grp_nm_in,grp_nm_out);
+    } /* endif */
+  } /* !NC_ENAMEINUSE */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_copy_att()");
   return rcd;
 }  /* end nco_copy_att */

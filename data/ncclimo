@@ -759,7 +759,7 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
     printf "Config: ${spt_nm} running from directory ${drc_spt}\n"
     printf "Config: Call NCO binaries in directory ${drc_nco}\n"
-    printf "Config: Binaries linked to netCDF library version ${lbr_vrs}\n"
+    printf "Config: NCO Binaries linked to netCDF library version ${lbr_vrs}\n"
     if [ "${hrd_pth_fnd}" = 'Yes' ]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else

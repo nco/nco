@@ -406,6 +406,7 @@ map_trn_fl='' # [sng] Map-file transpose (for Tempest)
 map_mk='No' # [flg] Generate map-file (i.e., map does not yet exist)
 map_usr_flg='No' # [flg] User supplied argument to --map option
 map_xmp='map.nc' # [sng] Map-file for examples
+mbt_flg='No' # [flg] mbtempest front-end to TempestRemap
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
 msh_fl='' # [sng] Mesh-file (for Tempest)
@@ -449,6 +450,7 @@ vrt_opt='' # [sng] Vertical options (e.g., '--rgr xtr_mth=mss_val')
 vrt_ntp='' # [sng] Vertical interpolation type (lin|log)
 vrt_xtr='' # [sng] Vertical extrapolation type (mss_val|nrs_ngh)
 wgt_exe_esmf='ESMF_RegridWeightGen' # [sng] ESMF executable
+wgt_exe_mbt='mbtempest' # [sng] MOAB-Tempest executable
 wgt_exe_nco='ncks' # [sng] NCO executable
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap executable
 wgt_typ='esmf' # [sng] Weight-generator program ('esmf' or 'nco' or 'tempest')
@@ -506,6 +508,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-M${fnt_nrm}          Multi-map-file toggle (unset means generate one map-file per input file) [${fnt_tlc}mlt_map, no_multimap${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}map_fl${fnt_nrm}   Map-file (empty means generate internally) (default ${fnt_bld}${map_fl}${fnt_nrm}) [${fnt_tlc}map_fl, map, map_file, rgr_map, regrid_map${fnt_nrm}]"
+    echo " ${fnt_bld}--mbt${fnt_nrm}      Use MOAB-Tempest (mbtempest) front-end to TempestRemap (default ${fnt_bld}${mbt_flg}${fnt_nrm}) [${fnt_tlc}mbt, mbtempest, moabtempest, tfe_mbt${fnt_nrm}]"
     echo " ${fnt_bld}--msh_fl${fnt_nrm}   Mesh-file for grid intersection (empty means generate internally or not at all) (default ${fnt_bld}${msh_fl}${fnt_nrm}) [${fnt_tlc}msh_fl, msh, mesh, mesh_file${fnt_nrm}]"
     echo " ${fnt_bld}--msk_dst${fnt_nrm}  Mask-template variable in destination file (empty means none) (default ${fnt_bld}${msk_dst}${fnt_nrm}) [${fnt_tlc}msk_dst, dst_msk, mask_destination, mask_dst${fnt_nrm}]"
     echo " ${fnt_bld}--msk_out${fnt_nrm}  Mask variable in regridded file (empty means none) (default ${fnt_bld}${msk_out}${fnt_nrm}) [${fnt_tlc}msk_out, out_msk, mask_output, mask_rgr${fnt_nrm}]"
@@ -671,9 +674,11 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       hrd_pth=?* | hard_path=?* | csz_exe=?* | csz_bin_lib=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Use hard-coded paths on known machines
 	       in_fl=?* | in_file=?* | input_file=?* ) in_fl="${LONG_OPTARG}" ;; # -i # Input file
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
+	       map_fl=?* | map=?* | map_file=?* | rgr_map=?* | regrid_map=?* ) map_fl="${LONG_OPTARG}" ;; # -m # Map-file
+	       mbt | mbtempest | moabtempest | tfe_mbt ) mbt_flg='Yes' ;; # # mbtempest front-end to TempestRemap
+	       mbt=?* | mbtempest=?* | moabtempest=?* | tfe_mbt=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # mbtempest front-end to TempestRemap
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
-	       map_fl=?* | map=?* | map_file=?* | rgr_map=?* | regrid_map=?* ) map_fl="${LONG_OPTARG}" ;; # -m # Map-file
 	       msh_fl=?* | msh=?* | mesh=?* | mesh_file=?* ) msh_fl="${LONG_OPTARG}" ;; # # Mesh file
 	       msk_dst=?* | dst_msk=?* | mask_destination=?* | mask_dst=?* ) msk_dst="${LONG_OPTARG}" ;; # # Mask-template variable in destination file
 	       msk_out=?* | out_msk=?* | mask_output=?* | mask_out=?* ) msk_out="${LONG_OPTARG}" ;; # # Mask variable in regridded file
@@ -773,6 +778,8 @@ if [ "$?" -eq 0 ]; then
 	wgt_opt_esmf="${wgt_opt_esmf} --ignore_degenerate"
     fi # !erwg_vrs_mjr
 fi # !err
+cmd_wgt_mbt=`command -v ${wgt_exe_mbt} 2> /dev/null`
+cmd_wgt_nco=`command -v ${wgt_exe_nco} 2> /dev/null`
 cmd_wgt_tps=`command -v ${wgt_exe_tps} 2> /dev/null`
 cmd_dpt_mpas=`command -v ${dpt_exe_mpas} --no_log 2> /dev/null`
 if [ ${vrs_prn} = 'Yes' ]; then
@@ -786,7 +793,7 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
     printf "Config: ${spt_nm} running from directory ${drc_spt}\n"
     printf "Config: Call NCO binaries in directory ${drc_nco}\n"
-    printf "Config: Binaries linked to netCDF library version ${lbr_vrs}\n"
+    printf "Config: NCO binaries linked to netCDF library version ${lbr_vrs}\n"
     if [ "${hrd_pth_fnd}" = 'Yes' ]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else
@@ -797,6 +804,16 @@ if [ ${vrs_prn} = 'Yes' ]; then
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} version ${erwg_vrs_sng} found as ${cmd_wgt_esmf}\n"
     else
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} not found\n"
+    fi # !err
+    if [ -n "${cmd_wgt_mbt}" ]; then
+	printf "Config: MOAB-Tempest weight-generation command ${wgt_exe_mbt} found as ${cmd_wgt_mbt}\n"
+    else
+	printf "Config: MOAB-Tempest weight-generation command ${wgt_exe_mbt} not found\n"
+    fi # !err
+    if [ -n "${cmd_wgt_nco}" ]; then
+	printf "Config: NCO weight-generation command ${wgt_exe_nco} found as ${nco_exe}\n"
+    else
+	printf "Config: NCO weight-generation command ${wgt_exe_nco} not found\n"
     fi # !err
     if [ -n "${cmd_wgt_tps}" ]; then
 	printf "Config: TempestRemap weight-generation command ${wgt_exe_tps} found as ${cmd_wgt_tps}\n"
@@ -1788,6 +1805,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: in_fl    = ${in_fl}\n"
     printf "dbg: map_fl   = ${map_fl}\n"
     printf "dbg: map_mk   = ${map_mk}\n"
+    printf "dbg: mbt_flg  = ${mbt_flg}\n"
     printf "dbg: mlt_map  = ${mlt_map_flg}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: msh_fl   = ${msh_fl}\n"

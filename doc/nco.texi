@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.1-alpha01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 5 December 2019
-@set update-month November 2019
+@set update-date 8 December 2019
+@set update-month December 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
