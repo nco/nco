@@ -40,7 +40,20 @@ A. ncremap changes the default regridder algorithm from ESMF
 
 BUG FIXES:
 
-A. Hi
+A. Fix a difficulty that caused Intel compilers to fail to build NCO.
+   Now the netcdf.h header, and thus the EXTERNL token, are always
+   included and defined during autoconf header checks.
+   Thanks to Matthew Thompson of NASA for reporting the issue, and to
+   Dave Allured of NOAA for providing the fix.
+
+B. Print WARNING instead of dying when requested to copy the
+   _NCProperties attribute. That attribute should not but can be 
+   exposed through the netCDF API in some circumstances, and this new
+   treatment prevents that leakage from breaking workflows. Thanks to
+   Rotislav for reporting and Dave Allured for helpful discussions.
+   This is really a feature yet listed as a bug-fix because it is
+   an incomprehensible technical workaround, the kind of thing users
+   should never need to know about.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

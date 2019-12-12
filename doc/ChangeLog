@@ -1,3 +1,16 @@
+2019-12-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.1-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha02: Utthita Trikonasana';git push
+	git tag -a 4.9.1-alpha02 -m 'autoconf EXTERNL netcdf_mem.h;nco_copy_att() _NCProperties;ncremap nco_con dfl;';git push --tags
+
+	* Modify configure.ac to define EXTERNL from netcdf.h during autoconf check of netcdf_mem.h
+	Thanks to Matthew Thompson and Dave Allured for reporting and solving the issue
+
+	* Surgically prevent nco_copy_att() from attempting to copy _NCProperties
+
+	* Henry restored functionality to edg_typ and ply_tri_mth options
+
 2019-12-10  Charlie Zender  <zender@uci.edu>
 
 	* Print names of attribute and variables/groups when nco_copy_att() fails
@@ -7,10 +20,6 @@
 	* ncremap add stubs for MOAB-Tempest executable mbtempest
 
 2019-12-06  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.9.1-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha02: Utthita Trikonasana';git push
-	git tag -a 4.9.1-alpha02 -m 'ncremap nco_con dfl;';git push --tags
 
 	* Re-do logic for invoking small circle triangles
 

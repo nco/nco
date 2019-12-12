@@ -364,7 +364,7 @@ soft add +netcdf-c-4.4.1.1-f77-4.4.4-gcc-5.3.0-serial
 soft add +gsl-2.3
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/spack-0.10.0/opt/spack/linux-centos6-x86_64/gcc-5.3.0/netcdf-4.4.1.1-2dtwbu4ojkwj5tqd4uqvomnu6ecmh6tx' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+<ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/spack-0.10.0/opt/spack/linux-centos6-x86_64/gcc-5.3.0/netcdf-4.4.1.1-2dtwbu4ojkwj5tqd4uqvomnu6ecmh6tx' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 ANTLR_ROOT='/soft/antlr/2.7.7' CC='gcc' CXX='g++' NETCDF_ROOT='/soft/spack-0.10.0/opt/spack/linux-centos6-x86_64/gcc-5.3.0/netcdf-4.4.1.1-2dtwbu4ojkwj5tqd4uqvomnu6ecmh6tx' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo

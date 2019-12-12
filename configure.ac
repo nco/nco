@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[4.9.1-alpha01],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.9.1-alpha02],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -322,7 +322,12 @@ fi
 # Option 2 is to add test/symbol in build-engine, e.g., 
 #  #if defined(HAVE_NETCDF_MEM_H)
 # which requires additional build tests in Autoconf/CMake/Makefile */
-AC_CHECK_HEADER([netcdf_mem.h],AC_DEFINE([HAVE_NETCDF_MEM_H],1,[Define to 1 if <netcdf_mem.h> is present]),nco_have_netcdf_mem_h=no)
+# 20191212 Dave Allured suggests correct procedure is to always include netcdf.h during autoconf header checks. This ensures tokens like EXTERNL (from netcdf.h) are defined in netcdf_mem.h etc.
+AC_CHECK_HEADER([netcdf_mem.h],AC_DEFINE([HAVE_NETCDF_MEM_H],1,[Define to 1 if <netcdf_mem.h> is present]),nco_have_netcdf_mem_h=no,
+[#ifdef HAVE_NETCDF_H
+# include <netcdf.h>
+#endif
+])
 
 # Begin OpenMP
 AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [default=yes]]),enable_openmp=${enableval},enable_openmp=yes)
