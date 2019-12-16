@@ -1,3 +1,13 @@
+2019-12-16  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.1-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha03: Ignite';git push
+	git tag -a 4.9.1-alpha03 -m '';git push --tags
+
+	* Add stubs for ncclimo global average timeseries
+
+	* Tweak _NCProperties message
+
 2019-12-12  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.1-alpha02 release procedure:

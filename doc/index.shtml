@@ -722,9 +722,11 @@ Sanitize input/output filenames;
 <!-- http://nco.sf.net#Binaries -->
 <!-- http://nco.sf.net#exe -->
 <!-- http://nco.sf.net#executables -->
-<!-- http://nco.sf.net#Executables -->
-<dt><a name="Binaries"></a><a name="bnr"><a name="binaries"></a></dt>
-<dt><a name="Executables"></a><a name="exe"><a name="executables"></a></dt>
+<!-- http://nco.sf.net#install -->
+<!-- http://nco.sf.net#Install -->
+<dt><a name="Install"></a><a name="install"></a><a name="Install"></a></dt>
+<dt><a name="Binaries"></a><a name="bnr"></a><a name="binaries"></a><a name="Binaries"></a><a name="binary"></a></dt>
+<dt><a name="Executables"></a><a name="exe"></a><a name="executables"></a></dt>
 <h2>Pre-built Executables</h2>
 
 <p>Pre-built binary executables are available for many platforms.
@@ -736,6 +738,8 @@ Below are one-line installation instructions and links to these and to
 packages for other platforms created by volunteers.
 Anyone willing to perform regular regression testing and porting 
 of NCO to other platforms is welcome.  
+We highly recommend the Anaconda method to first-time users, as it
+works on all platforms and is perhaps the most up-to-date pre-packaged version.
 Previous versions of these executables are still available by searching
 the directory index <a href="src">here</a>.
 
@@ -749,7 +753,7 @@ Thanks to NSF for supporting AIX machines at NCAR over the years.
 
 <a name="anaconda"></a> <!-- http://nco.sf.net#anaconda -->
 <a name="conda"></a> <!-- http://nco.sf.net#conda -->
-<h3><a href="https://www.continuum.io/why-anaconda">Anaconda</a></h3>
+<h3><a href="https://www.continuum.io/why-anaconda">Anaconda (for *NIX, MacOS, and Windows)</a></h3>
 <ul>
 <a href="https://www.continuum.io/why-anaconda">Anaconda</a> is a coordinated,
 cross-platform Python environment that utilizes the <tt>conda</tt> package manager.
@@ -1667,7 +1671,7 @@ community.
 
 <li><dt>
 <a name="wenshan"></a><a name="Wenshan"></a> <!-- http://nco.sf.net#wenshan -->
-<a href="http://dust.ess.uci.edu/wenshanw">Wenshan Wang</a>, 
+<a href="http://dust.ess.uci.edu/wenshanw">Dr. Wenshan Wang</a>, 
 <i>Roles</i>: Postdoc
 <i>Current Research</i>: 
 1.&nbsp;Causes and implications of Greenland snowmelt.

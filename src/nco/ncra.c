@@ -1572,13 +1572,10 @@ main(int argc,char **argv)
           } /* end if */
         } /* end if */
 
-
         if(fl_udu_sng) fl_udu_sng=(char*)nco_free(fl_udu_sng);
 
-        ra_lst_free(ra_bnds_lst, ra_bnds_nbr);
-        ra_lst_free(ra_climo_lst, ra_climo_nbr);
-
-
+        ra_lst_free(ra_bnds_lst,ra_bnds_nbr);
+        ra_lst_free(ra_climo_lst,ra_climo_nbr);
       } /* end idx_rec loop over different record variables to process */
 
       if(flg_cb && nco_prg_id == ncra){
