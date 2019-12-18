@@ -851,7 +851,9 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 # Pre-20170810 GCC7 dies on nco_yyget_leng() prototype with --enable-debug-custom option
 #CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 # 20170810 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
-CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+#CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+# 20191217 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
+CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1

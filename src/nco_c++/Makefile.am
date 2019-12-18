@@ -21,7 +21,7 @@ libnco_c___la_LDFLAGS = -release @VERSION@
 
 tst_SOURCES = tst.cc
 
-tst_LDADD = -lnco_c++
+tst_LDADD = libnco_c++.la
 
 TESTPROGRAMS = tst
 check_PROGRAMS = $(TESTPROGRAMS)

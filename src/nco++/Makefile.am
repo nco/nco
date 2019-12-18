@@ -38,15 +38,15 @@ ncoTree.cpp \
 nco_gsl.c
 
 # 20190414 ncap2 on MacOS relink when libnco.a changes
-#ncap2_LDADD = -lnco
+#ncap2_LDFLAGS = ../nco/libnco.la
 
 # 20150108 Be sure that netCDF in /usr/local takes precedence over GSL libraries in /usr
 # AKA be sure GSL in /usr does not cause ncap2 linker to search /usr before /usr/local
-NCO_AND_ANTLR_STUFF = -L../nco -lnco -lantlr
-#ncap2_LDADD = -lnco -lantlr
+NCO_AND_ANTLR_STUFF = ../nco/libnco.la -lantlr
+#ncap2_LDFLAGS = ../nco/libnco.la -lantlr
 
 # fxm: 20080515 Takeshi Enomoto reports that MACOSX needs
-# ncap2_LDADD = ../nco/.libs/libnco.dylib -lantlr
+# ncap2_LDFLAGS = ../nco/.libs/libnco.dylib -lantlr
 
 # fxm: 20140730 Ed Anderson reports that PGI- and GCC-compiled ncap2 need
 # -Xcompiler -shared added to ncap2_LINK which, apparently, would be done with
@@ -55,12 +55,11 @@ NCO_AND_ANTLR_STUFF = -L../nco -lnco -lantlr
 if ENABLE_GSL
 GSL_LIB_ARG = $(shell gsl-config --libs)
 GSL_INC_ARG = $(shell gsl-config --cflags)
-#ncap2_LDFLAGS = -L../nco ${GSL_LIB_ARG}
+#ncap2_LDFLAGS = ${GSL_LIB_ARG}
 ncap2_LDFLAGS = ${NCO_AND_ANTLR_STUFF} ${GSL_LIB_ARG}
 #AM_CPPFLAGS = -I./ -I../nco ${GSL_INC_ARG}
 AM_CPPFLAGS = -I./ -I../nco
 else
-#ncap2_LDFLAGS = -L../nco
 ncap2_LDFLAGS = ${NCO_AND_ANTLR_STUFF}
 AM_CPPFLAGS = -I./ -I../nco
 endif

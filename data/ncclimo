@@ -202,8 +202,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -C ann -m mpas -s 1851 -e 1852 -i ${DATA}/hdf/mpasLIoutput.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 
 # Debugging and Benchmarking:
-# ncclimo -v FSNT,AODVIS,TREFHT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
-# ncclimo --var_lst=FSNT,AODVIS --caseid=famipc5_ne30_v0.3_00003 --yr_srt=1980 --yr_end=1983 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
+# ncclimo -v FSNT,AODVIS,TREFHT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -R ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo --var_lst=FSNT,AODVIS --caseid=famipc5_ne30_v0.3_00003 --yr_srt=1980 --yr_end=1983 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -a sdd -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
@@ -222,35 +222,37 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split pipe:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split redirection:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc > ~/foo;ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm < ~/foo
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc > ~/foo;ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm < ~/foo
 # Split stdin switch:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --stdin -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --stdin -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split positional arguments:
-# ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
+# ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
 # Split directory:
-# ncclimo --dbg=1 --ypf=50 -s 1979 -e 1983 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
+# ncclimo --dbg=1 --ypf=50 -s 1979 -e 1983 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
+# Split global mean
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --glb_avg -s 1979 -e 1981 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
 # Split all:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split ELM:
 # ncclimo --dbg=1 -s 2000 -e 2000 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc
 # Split vertical:
 # cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
 # cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --vrt_xtr=mss_val --drc_out=${DATA}/ne30/clm # Missing value interpolation
 # Split production:
-# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
-# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Daily pipe:
 # cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Diurnal pipe:
 # cd ${DATA}/ne30/raw;ls *h4*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly --tpd=8 -s 2001 -e 2002 --var=PREC<T,TS,FSDS --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # SGS:
-# ncclimo -d 1 -v TBOT,FSDS -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_fv129x256_aave.20150901.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
+# ncclimo -d 1 -v TBOT,FSDS -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_cmip6_180x360_nco.20190601.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
 # ncclimo -d 1 -v TBOT,FSDS -m clm2 -c F_acmev03_enso_camse_clm45bgc_ne30_co2cycle -s 2000 -e 2000 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30.nc/landfrac 
 # Seasons:
-# ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
-# ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc
+# ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # Compy Jobs or MPI:
 # ncclimo -a sdd -c 20180215.DECKv1b_H1.ne30_oEC.edison -s 2010 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc # ne30 climo on 1 node in full-background (12 jobs) mode
 # ncclimo -a sdd --jobs=3 -c 20180410.A_WCYCL1950_HR.ne120_oRRS18v3_ICG.theta -s 1 -e 5 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_cmip6_720x1440_aave.20181001.nc # ne120 climo on 1 node in background mode with 3-jobs (to stay under 192 GB RAM limit)
@@ -472,7 +474,7 @@ fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to split
 fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experiment')
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
-glb_avg='' # [sng] Global average timeseries
+glb_avg='No' # [sng] Global average timeseries
 hdr_pad='10000' # [B] Pad at end of header section
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 inp_aut='No' # [sng] Input file list automatically generated
@@ -538,7 +540,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm}) [${fnt_tlc}yr_end, end_yr, year_end, end_year, end${fnt_nrm}]"
     echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm}) [${fnt_tlc}fml_nm, family_name${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is inherited from input) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
-    echo " ${fnt_bld}--glb_avg${fnt_nrm}  Global average timeseries (empty means false) (default ${fnt_bld}${glb_avg}${fnt_nrm}) [${fnt_tlc}glb_avg, global_average${fnt_nrm}]"
+    echo " ${fnt_bld}--glb_avg${fnt_nrm}  Global average timeseries (default ${fnt_bld}${glb_avg}${fnt_nrm}) [${fnt_tlc}glb_avg, global_average${fnt_nrm}]"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
@@ -700,7 +702,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       amwg_link=?* | amwg_links=?* | AMWG_link=?* | AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Link E3SM to AMWG name
 	       no_amwg_link | no_amwg_links | no_amwg | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # # Link E3SM to AMWG name
 	       no_amwg_link=?* | no_amwg_links=?* | no_amwg=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM to AMWG name
-	       glb_avg=?* | global_average=?* ) glb_avg="${LONG_OPTARG}" ;; # # Global average timeseries
+	       glb_avg | global_average ) glb_avg='Yes' ;; # # Global average timeseries
+	       glb_avg=?* | global_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Global average timeseries
 	       mdl_nm=?* | mdl=?* | model_name=?* | model=?* ) mdl_nm_usr="${LONG_OPTARG}" ;; # -m # Model name
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG} ${nco_opt}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
@@ -1012,9 +1015,6 @@ if [ -n "${gaa_sng_std}" ]; then
 	gaa_sng="${gaa_sng_std} --gaa yrs_averaged=${yrs_avg_sng}"
     fi # !sbs_flg
 fi # !gaa_sng
-if [ -n "${glb_avg}" ]; then 
-    glb_avg="${glb_avg}"
-fi # !job_usr
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
 fi # !job_usr
@@ -1097,7 +1097,7 @@ else # !rgr_map
     fi # !dpt_opt
 fi # !rgr_map
 if [ "${sbs_flg}" = 'Yes' ]; then
-    # 20190419: Splitter typically writes 1-3 multi-dimensional fields into each output file
+    # 20190419: Splitter typically writes 1--3 multi-dimensional fields into each output file
     # OpenMP incurs significant RAM overhead that may not be worthwhile
     # New default is 1 regridding thread for splitter 
     # Users can override this splitter-only default by explicitly requesting multiple threads
@@ -1252,6 +1252,13 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     let sgm_nbrm1=${sgm_nbr}-1
 
 else # !sbs_flg
+
+    if [ "${glb_avg}" = 'Yes' ]; then 
+	echo "${spt_nm}: ERROR Global average functionality is intended for time-series (splitting) mode only. If you would like ${spt_nm} to provide global mean output for other types of climatologies, please talk to Charlie."
+	echo "${spt_nm}: HINT Create global means of climos with, e.g., \"ncwa -w area in.nc out.nc\""
+	echo "${spt_nm}: HINT See averaging documentation at http://nco.sf.net/nco.html#ncwa"
+	exit 1
+    fi # !glb_avg
 
     if [ -z "${out_nm}" ]; then
 	echo "${spt_nm}: ERROR Missing information needed to generate output filenames"
@@ -1582,6 +1589,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: fl_nbr   = ${fl_nbr}\n"
     printf "dbg: fml_nm   = ${fml_nm}\n"
     printf "dbg: gaa_sng  = ${gaa_sng}\n"
+    printf "dbg: glb_avg  = ${glb_avg}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
     printf "dbg: hrd_pth  = ${hrd_pth}\n"
     printf "dbg: hst_nm   = ${hst_nm}\n"
@@ -1899,7 +1907,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	# CAM-SE contains area (though does not contain lat,lon until regridded)
 	cam* ) var_lst_xtn=',area' ;;
     esac # !mdl_nm
-
+    if [ "${glb_avg}" = 'Yes' ]; then 
+	# 20191217 Global average timeseries require area variable
+	var_lst_xtn=',area'
+    fi # !glb_avg
+    
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 	fl_sgm[${sgm_idx}]=''
 
@@ -2031,6 +2043,27 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    fi # !err
 		done # !var_idx
 	    fi # !par_opt
+	    
+	    if [ "${glb_avg}" = 'Yes' ]; then 
+		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
+		    cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w area -a ncol ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+		    if [ ${dbg_lvl} -ge 1 ]; then
+			echo ${cmd_avg[${var_idx}]}
+		    fi # !dbg
+		    if [ ${dbg_lvl} -le 1 ]; then
+			if [ -z "${par_opt}" ]; then
+			    eval ${cmd_avg[${var_idx}]}
+			    if [ "$?" -ne 0 ]; then
+				printf "${spt_nm}: ERROR spatial average cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
+				exit 1
+			    fi # !err
+			else # !par_opt
+			    eval ${cmd_avg[${var_idx}]} ${par_opt}
+			    avg_pid[${var_idx}]=$!
+			fi # !par_opt
+		    fi # !dbg
+		done # !var_idx
+	    fi # !glb_avg
 	    
 	done # !bch_idx
 	

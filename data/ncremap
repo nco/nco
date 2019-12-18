@@ -810,6 +810,11 @@ if [ ${vrs_prn} = 'Yes' ]; then
     else
 	printf "Config: MOAB-Tempest weight-generation command ${wgt_exe_mbt} not found\n"
     fi # !err
+    if [ -n "${cmd_dpt_mpas}" ]; then
+	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} found as ${cmd_dpt_mpas}\n"
+    else
+	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} not found\n"
+    fi # !err
     if [ -n "${cmd_wgt_nco}" ]; then
 	printf "Config: NCO weight-generation command ${wgt_exe_nco} found as ${nco_exe}\n"
     else
@@ -819,11 +824,6 @@ if [ ${vrs_prn} = 'Yes' ]; then
 	printf "Config: TempestRemap weight-generation command ${wgt_exe_tps} found as ${cmd_wgt_tps}\n"
     else
 	printf "Config: TempestRemap weight-generation command ${wgt_exe_tps} not found\n"
-    fi # !err
-    if [ -n "${cmd_dpt_mpas}" ]; then
-	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} found as ${cmd_dpt_mpas}\n"
-    else
-	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} not found\n"
     fi # !err
     exit 0
 fi # !vrs_prn

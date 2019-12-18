@@ -1,8 +1,14 @@
-2019-12-16  Charlie Zender  <zender@uci.edu>
+2019-12-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.1-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha03: Ignite';git push
-	git tag -a 4.9.1-alpha03 -m '';git push --tags
+	git tag -a 4.9.1-alpha03 -m 'automake libnco.la;ncclimo glb_avg';git push --tags
+
+	* Correct automake syntax from -lnco to -l../nco/libnco.la (per bug #118 from Daniel Macks)
+
+	* ncclimo global average timeseries working prototype with --glb_avg
+
+2019-12-16  Charlie Zender  <zender@uci.edu>
 
 	* Add stubs for ncclimo global average timeseries
 
