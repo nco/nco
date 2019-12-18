@@ -51,6 +51,8 @@ nco_pck_map_sng_get /* [fnc] Convert packing map enum to string */
     return "flt_byt";
   case nco_pck_map_dbl_flt:
     return "dbl_flt";
+  case nco_pck_map_flt_dbl:
+    return "flt_dbl";
   default: nco_dfl_case_pck_map_err(); break;
   } /* end switch */
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
@@ -175,6 +177,12 @@ nco_pck_map_get /* [fnc] Convert user-specified packing map to key */
   if(!strcmp(nco_pck_map_sng,"pck_map_flt_byt")) return nco_pck_map_flt_byt;
   if(!strcmp(nco_pck_map_sng,"dbl_flt")) return nco_pck_map_dbl_flt;
   if(!strcmp(nco_pck_map_sng,"pck_map_dbl_flt")) return nco_pck_map_dbl_flt;
+  if(!strcmp(nco_pck_map_sng,"dbl_sgl")) return nco_pck_map_dbl_flt;
+  if(!strcmp(nco_pck_map_sng,"pck_map_dbl_sgl")) return nco_pck_map_dbl_flt;
+  if(!strcmp(nco_pck_map_sng,"flt_dbl")) return nco_pck_map_flt_dbl;
+  if(!strcmp(nco_pck_map_sng,"pck_map_flt_dbl")) return nco_pck_map_flt_dbl;
+  if(!strcmp(nco_pck_map_sng,"sgl_dbl")) return nco_pck_map_flt_dbl;
+  if(!strcmp(nco_pck_map_sng,"pck_map_sgl_dbl")) return nco_pck_map_flt_dbl;
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified packing map %s\n",nco_prg_nm_get(),fnc_nm,nco_pck_map_sng);
   nco_exit(EXIT_FAILURE);
@@ -398,6 +406,25 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
+  case nco_pck_map_flt_dbl:
+    switch(nc_typ_in){ 
+    case NC_FLOAT: 
+      nc_typ_pck_out_tmp=NC_DOUBLE; nco_pck_plc_alw=True; break;
+    case NC_DOUBLE: 
+    case NC_INT64: 
+    case NC_UINT64: 
+    case NC_INT: 
+    case NC_UINT: 
+    case NC_SHORT: 
+    case NC_USHORT: 
+    case NC_BYTE: 
+    case NC_UBYTE: 
+    case NC_CHAR: 
+    case NC_STRING: 
+      nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end nc_type switch */ 
+    break;
   default: 
     (void)fprintf(stdout,"%s: ERROR %s reports switch(nco_pck_map) statement fell through to default case\n",nco_prg_nm_get(),fnc_nm);
     nco_err_exit(0,fnc_nm);
@@ -533,13 +560,13 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
     } /* endelse */
     break;
   case nco_pck_plc_all_new_att:
-    /* 20180909: Never re-pack when simply converting double->float */
+    /* 20180909: Never re-pack when simply converting double->float or float->double */
     if(var_in->pck_ram){
-      if(nco_pck_map == nco_pck_map_dbl_flt){
+      if(nco_pck_map == nco_pck_map_dbl_flt || nco_pck_map == nco_pck_map_flt_dbl){
 	if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s leaving variable %s of type %s as packed\n",nco_prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck));
       }else{
 	goto var_pck_try_to_rpk;
-      } /* !dbl_flt */
+      } /* !dbl_flt && !flt_dbl */
     }else{
       goto var_upk_try_to_pck;
     } /* endif */
@@ -652,9 +679,11 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
     /* 20180909: Implement dbl_flt separately */
     if(nco_pck_map == nco_pck_map_dbl_flt){
       var_out=nco_var_cnf_typ((nc_type)NC_FLOAT,var_out);
+    }else if(nco_pck_map == nco_pck_map_flt_dbl){
+      var_out=nco_var_cnf_typ((nc_type)NC_DOUBLE,var_out);
     }else{
       var_out=nco_var_pck(var_out,typ_out,&PCK_VAR_WITH_NEW_PCK_ATT);
-    } /* !dbl_flt */
+    } /* !dbl_flt, !flt_dbl */
   }else{
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: INFO %s packing policy %s with packing map %s does not allow packing variable %s of type %s, skipping...\n",nco_prg_nm_get(),fnc_nm,nco_pck_plc_sng_get(nco_pck_plc),nco_pck_map_sng_get(nco_pck_map),var_in->nm,nco_typ_sng(var_out->typ_upk));
   } /* !nco_pck_plc_alw */ 

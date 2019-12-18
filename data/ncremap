@@ -783,7 +783,7 @@ cmd_wgt_nco=`command -v ${wgt_exe_nco} 2> /dev/null`
 cmd_wgt_tps=`command -v ${wgt_exe_tps} 2> /dev/null`
 cmd_dpt_mpas=`command -v ${dpt_exe_mpas} --no_log 2> /dev/null`
 if [ ${vrs_prn} = 'Yes' ]; then
-    printf "${spt_nm}, the NCO regridder and weight, grid, and map-generator, version ${nco_vrs}\n"
+    printf "${spt_nm}, the NCO regridder and grid, map, and weight-generator, version ${nco_vrs}\n"
     printf "Copyright (C) 2016--present Charlie Zender\n"
     printf "This program is part of NCO, the netCDF Operators\n"
     printf "NCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\n"
@@ -934,7 +934,7 @@ rgn_fl=${rgn_fl}${unq_sfx}
 tmp_out_fl=${tmp_out_fl}${unq_sfx}
 znl_fl=${znl_fl}${unq_sfx}
 
-# Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt
+# Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|nco
 if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bilin' ] || [ ${alg_typ} = 'blin' ] || [ ${alg_typ} = 'bln' ]; then 
     alg_opt='bilinear'
 elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] || [ ${alg_typ} = 'c1' ] || [ ${alg_typ} = 'aave' ]; then 

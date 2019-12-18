@@ -35,6 +35,7 @@
    ncpdq -O -D 3 -P all_xst ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P xst_new ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -M dbl_flt ~/nco/data/in.nc ~/foo.nc
+   ncpdq -O -D 3 -M flt_dbl ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -a lon,lat -g g21,g22 ~/nco/data/in_grp_3.nc ~/foo.nc
    ncpdq -O -D 3 -g g1 -v v1 --union -G dude -p ~/nco/data in_grp.nc ~/foo.nc */
@@ -950,7 +951,7 @@ main(int argc,char **argv)
 	     If operator newly packed this particular variable... */
           if(
             /* ...either because operator newly packs all variables... */
-            (nco_pck_plc == nco_pck_plc_all_new_att && nco_pck_map != nco_pck_map_dbl_flt) ||
+            (nco_pck_plc == nco_pck_plc_all_new_att && nco_pck_map != nco_pck_map_dbl_flt && nco_pck_map != nco_pck_map_flt_dbl) ||
             /* ...or because operator newly packs un-packed variables like this one... */
             (nco_pck_plc == nco_pck_plc_all_xst_att && !var_prc[idx]->pck_ram) ||
             /* ...or because operator re-packs packed variables like this one... */

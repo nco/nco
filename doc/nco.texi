@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.1-alpha03
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 17 December 2019
+@set update-date 18 December 2019
 @set update-month December 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -22303,6 +22303,7 @@ or else the user must define an @command{alias}.
 <a name="flt_byt"></a> <!-- http://nco.sf.net/nco.html#flt_byt -->
 <a name="nxt_lsr"></a> <!-- http://nco.sf.net/nco.html#nxt_lsr -->
 <a name="dbl_flt"></a> <!-- http://nco.sf.net/nco.html#dbl_flt -->
+<a name="flt_dbl"></a> <!-- http://nco.sf.net/nco.html#flt_dbl -->
 @end html
 @cindex packing map
 @cindex @var{pck_map}
@@ -22323,6 +22324,7 @@ Six packing maps are currently implemented:@*
 @cindex @samp{flt_byt}
 @cindex @samp{nxt_lsr}
 @cindex @samp{dbl_flt}
+@cindex @samp{flt_dbl}
 @cindex @code{NC_DOUBLE}
 @cindex @code{NC_FLOAT}
 @cindex @code{NC_INT64}
@@ -22369,6 +22371,11 @@ Definition: Demote (via type-conversion, @emph{not packing}) double-precision va
 Map: Demote @code{NC_DOUBLE} to @code{NC_FLOAT}. 
 Types copied instead of packed: All except @code{NC_DOUBLE}@*
 @var{pck_map} key values: @samp{dbl_flt}, @samp{pck_map_dbl_flt}, @samp{dbl_sgl}, @samp{pck_map_dbl_sgl}@*
+@item Promote Floats to Doubles
+Definition: Promote (via type-conversion, @emph{not packing}) single-precision variables to double-precision@*
+Map: Promote @code{NC_FLOAT} to @code{NC_DOUBLE}.
+Types copied instead of packed: All except @code{NC_FLOAT}@*
+@var{pck_map} key values: @samp{flt_dbl}, @samp{pck_map_flt_dbl}, @samp{sgl_dbl}, @samp{pck_map_sgl_dbl}@*
 @end table
 @noindent
 The default @samp{all_new} packing policy with the default
@@ -22378,12 +22385,24 @@ file size by @w{about 50%.}
 @w{about 87%.}
 
 @cindex @code{d2f}
-The final packing map, @samp{pck_map_dbl_flt}, does a pure
-type-conversion from @code{NC_DOUBLE} to @code{NC_FLOAT}. 
+The ``packing map'' @samp{pck_map_dbl_flt} does a pure type-conversion
+(no packing is involved) from @code{NC_DOUBLE} to @code{NC_FLOAT}.
 The resulting variables are not packed, they are just single-precision
 floating point instead of double-precision floating point.
 This operation is irreversible, and no attributes are created, modified,
 or deleted for these variables.
+Note that coordinate and coordinate-like variables will not be demoted
+as best practices dictate maintaining coordinates in the highest
+possible precision.
+
+The ``packing map'' @samp{pck_map_flt_dbl} does a pure type-conversion
+(no packing is involved) from @code{NC_FLOAT} to @code{NC_DOUBLE}.
+The resulting variables are not packed, they are just double-precision
+floating point instead of single-precision floating point.
+This operation is irreversible, and no attributes are created, modified,
+or deleted for these variables.
+All single-precision variables, including coordinates, are promoted. 
+Note that this map can double the size of a dataset.
 
 @cindex @var{_FillValue}
 @cindex @code{_FillValue}

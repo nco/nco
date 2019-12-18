@@ -1,3 +1,11 @@
+2019-12-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.1-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha04: Skyglow';git push
+	git tag -a 4.9.1-alpha04 -m '';git push --tags
+
+	* Implement ncpdq flt_dbl map
+
 2019-12-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.1-alpha03 release procedure:

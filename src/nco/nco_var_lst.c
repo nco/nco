@@ -986,7 +986,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	    !nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)
 	    ) ||
 	   /* ...or double->float conversion requested and input is not double, or input is coordinate... */ 
-	   (nco_pck_map == nco_pck_map_dbl_flt && ((var[idx]->type != NC_DOUBLE) || var[idx]->is_crd_var))
+	   (nco_pck_map == nco_pck_map_dbl_flt && ((var[idx]->type != NC_DOUBLE) || var[idx]->is_crd_var)) ||
+	   /* ...or float->double conversion requested and input is not float (allow coordinate promotion)... */ 
+	   (nco_pck_map == nco_pck_map_flt_dbl && var[idx]->type != NC_FLOAT)
 	   )
           var_op_typ[idx]=fix_typ;
       }else{ /* endif packing operation requested */
@@ -1014,6 +1016,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     if(cnv->CCM_CCSM_CF || cnv->MPAS){
       nco_bool var_is_fix;  /* [fnc] Variable should be treated as a fixed variable */
       var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc,cnv);  
+      /* Allow promotion from float->double to work for coordinates and special variables */
+      if(nco_prg_id == ncpdq && nco_pck_map == nco_pck_map_flt_dbl) var_is_fix=False;
       if(var_is_fix) var_op_typ[idx]=fix_typ;
     } /* end if cnv->CCM_CCSM_CF */
 
@@ -1202,7 +1206,9 @@ nco_var_lst_dvd_ncbo                          /* [fnc] Divide input lists into o
 	 !nco_pck_plc_typ_get(nco_pck_map,var->typ_upk,(nc_type *)NULL)
 	 ) ||
 	/* ...or double->float conversion requested and input is not double, or input is coordinate... */ 
-	(nco_pck_map == nco_pck_map_dbl_flt && ((var->type != NC_DOUBLE) || var->is_crd_var))
+	(nco_pck_map == nco_pck_map_dbl_flt && ((var->type != NC_DOUBLE) || var->is_crd_var)) ||
+	/* ...or float->double conversion requested and input is not float (allow coordinate promotion to double)... */ 
+	(nco_pck_map == nco_pck_map_flt_dbl && var->type != NC_FLOAT)
 	 )
         var_op_typ=fix_typ;
     }else{ /* endif packing operation requested */
