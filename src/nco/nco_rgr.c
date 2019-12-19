@@ -1619,12 +1619,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	if(flg_add_msv_att && trv.flg_rgr){
 	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 	  if(!has_mss_val){
+	    nco_bool flg_att_chg; /* [flg] _FillValue attribute was written */
 	    aed_mtd_fll_val.var_nm=var_nm;
 	    aed_mtd_fll_val.id=var_id_out;
 	    aed_mtd_fll_val.type=var_typ_out;
 	    if(var_typ_out == NC_FLOAT) aed_mtd_fll_val.val.fp=&mss_val_flt;
 	    else if(var_typ_out == NC_DOUBLE) aed_mtd_fll_val.val.dp=&mss_val_dbl;
-	    (void)nco_aed_prc(out_id,var_id_out,aed_mtd_fll_val);
+	    flg_att_chg=nco_aed_prc(out_id,var_id_out,aed_mtd_fll_val);
+	    if(!flg_att_chg && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports unsuccessful attempt to create _FillValue attribute for variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  } /* !has_mss_val */
 	} /* !flg_add_msv_att */
       } /* !rcd */

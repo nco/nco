@@ -17883,7 +17883,7 @@ SYNTAX
 ncclimo [-3] [-4] [-5] [-6] [-7] 
 [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}]
 [-d @var{dbg_lvl}] [--d2f]  [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
-[-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [-h @var{hst_nm}] [-i @var{drc_in}]
+[-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
 [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
@@ -18412,6 +18412,25 @@ with the primary variable and other associated variables.
 See @ref{CF Conventions} for a detailed description.
 
 @html
+<a name="glb_avg"></a> <!-- http://nco.sf.net/nco.html#glb_avg -->
+<a name="global_average"></a> <!-- http://nco.sf.net/nco.html#global_average -->
+@end html
+@cindex @code{--glb_avg}
+@cindex @code{--global_average}
+@item --glb_avg (@code{--glb_avg}, @code{--global_average})
+As of @acronym{NCO} version 4.9.1 (released TBD, 2020), this switch
+(which takes no argument) tells the splitter to output horizontally
+spatially averaged timeseries files instead of raw, native-grid
+timeseries.  
+This switch only has effect in timeseries splitting mode.
+This is useful, for example, to quickly diagnose the behavior of ongoing
+model simulations prior to a full-blown analysis. 
+Thus the spatial mean files will be in the same location and have the same
+name as the native grid timeseries would have been and had, respectively.
+Note that this switch does not alter the capability of also outputting
+the full regridded timeseries, if requested, at the same time.
+
+@html
 <a name="no_ntv_tms"></a> <!-- http://nco.sf.net/nco.html#no_ntv_tms -->
 <a name="no_ntv"></a> <!-- http://nco.sf.net/nco.html#no_ntv -->
 <a name="no_native"></a> <!-- http://nco.sf.net/nco.html#no_native -->
@@ -18430,7 +18449,12 @@ That is the typical format in which Model Intercomparison Projects
 (@acronym{MIP}s) request and disseminate contributions.
 When the data producer has no use for the split timeseries on the native
 grid, he/she can invoke this flag to cause @command{ncclimo} to
-delete the native grid timeseries (not the raw native grid datafiles). 
+delete the native grid timeseries (not the raw native grid datafiles).
+This functionality is implemented by first creating the native grid 
+timeseries, regridding it, and then overwriting the native grid
+timeseries with the regridded timeseries.
+Thus the regridded files will be in the same location and have the same
+name as the native grid timeseries would have been and had, respectively.
 
 @html
 <a name="no_stg_grd"></a> <!-- http://nco.sf.net/nco.html#no_stg_grd -->
@@ -22371,11 +22395,13 @@ Definition: Demote (via type-conversion, @emph{not packing}) double-precision va
 Map: Demote @code{NC_DOUBLE} to @code{NC_FLOAT}. 
 Types copied instead of packed: All except @code{NC_DOUBLE}@*
 @var{pck_map} key values: @samp{dbl_flt}, @samp{pck_map_dbl_flt}, @samp{dbl_sgl}, @samp{pck_map_dbl_sgl}@*
+The @code{dbl_flt} map was introduced in @acronym{NCO} version 4.7.7 (September, 2018).
 @item Promote Floats to Doubles
 Definition: Promote (via type-conversion, @emph{not packing}) single-precision variables to double-precision@*
 Map: Promote @code{NC_FLOAT} to @code{NC_DOUBLE}.
 Types copied instead of packed: All except @code{NC_FLOAT}@*
 @var{pck_map} key values: @samp{flt_dbl}, @samp{pck_map_flt_dbl}, @samp{sgl_dbl}, @samp{pck_map_sgl_dbl}@*
+The @code{flt_dbl} map was introduced in @acronym{NCO} version 4.9.1 (TBD, 2020).
 @end table
 @noindent
 The default @samp{all_new} packing policy with the default

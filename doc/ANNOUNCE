@@ -41,7 +41,12 @@ A. ncremap changes the default regridder algorithm from ESMF
 B. ncclimo can now output spatial-average timeseries.
    The new --glb_avg (or --global_average) option causes ncclimo to
    perform a spatial mean over the timeseries constructed from the
-   input data.
+   input data. The main limitation is that it only works for
+   timeseries whose horizontal spatial dimension is "ncol" and
+   whose area weight is named "area", as in CAM SE/EAM.
+   Let us know if this function would be useful to you for other
+   models and we can easily add options to make these hardwired values
+   specifiable from the command-line.
    ls *mdl*.nc | ncclimo --glb_avg -s 1979 -e 1981 --drc_out=drc_out
    http://nco.sf.net/nco.html#ncclimo
    http://nco.sf.net/nco.html#glb_avg

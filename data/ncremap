@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# ncremap, the NCO regridder and grid-file, map-file, and weight-generator
+
 # Purpose: Generate weights (i.e., map-files) for and regrid (subsets of) netCDF files between different Swath, Curvilinear, Rectangular, and Unstructured data (SCRUD) horizontal grids, generate any required/requested global or regional rectangular grid, output SCRIP, UGRID, and/or skeleton data formats, and interpolate between any specified pure pressure or hybrid sigma/pressure grids
 
 # Copyright (C) 2015--present Charlie Zender
