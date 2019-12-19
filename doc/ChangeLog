@@ -1,8 +1,8 @@
 2019-12-19  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.9.1-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha04: Skyglow';git push
-	git tag -a 4.9.1-alpha04 -m 'ncpdq flt_dbl';git push --tags
+	* NCO 4.9.1 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.1: Skyglow';git push
+	git tag -a 4.9.1 -m 'autoconf EXTERNL netcdf_mem.h;automake libnco.la;ncclimo --glb_avg;ncpdq flt_dbl;ncremap vrt_ntp fix, nco_con dfl;nco_copy_att() _NCProperties;';git push --tags
 
 	* Always set lev_out_min to fix uninitialized error identified by valgrind that caused errorneous behavior in nco_vrt_ntp() with some compilers (compy, cori)
 

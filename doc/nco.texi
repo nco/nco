@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.1-alpha03
-@set doc-edition 4.9.1-alpha03
+@set nco-edition 4.9.1
+@set doc-edition 4.9.1
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 18 December 2019
+@set update-date 19 December 2019
 @set update-month December 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -27265,6 +27265,7 @@ Auxiliary coordinate support.
 @item Scott Capps
 Large work-load testing
 @cindex Xylar Asay-Davis
+@cindex Sterling Baldwin 
 @cindex Dave Blodgett
 @cindex Peter Campbell
 @cindex Philip Cameron-Smith
@@ -27273,6 +27274,7 @@ Large work-load testing
 @cindex Aleksandar Jelenak
 @cindex Markus Liebig
 @cindex Keith Lindsay
+@cindex Daniel Macks, 
 @cindex Stu Muller
 @cindex Daniel Neumann
 @cindex Mike Page
@@ -27288,7 +27290,7 @@ Large work-load testing
 @cindex George White
 @cindex Min Xu
 @cindex Remik Ziemlinski
-@item Xylar Asay-Davis, Dave Blodgett, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Matthew Thompson, Adrian Tompkins, George White Andrew Wittenberg, Min Xu, Remik Ziemlinski
+@item Xylar Asay-Davis, Sterling Baldwin, Dave Blodgett, Philip Cameron-Smith, Peter Campbell, Martin Dix, Mark Flanner, Aleksandar Jelenak, Markus Liebig, Keith Lindsay, Daniel Macks, Daniel Neumann, Mike Page, Martin Schmidt, Michael Schulz, Lori Sentman, Rich Signell, Bob Simons, Gary Strand, Matthew Thompson, Adrian Tompkins, George White Andrew Wittenberg, Min Xu, Remik Ziemlinski
 Excellent bug reports and feature requests.
 @cindex Filipe Fernandes
 @cindex Isuru Fernando

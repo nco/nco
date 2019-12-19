@@ -7,7 +7,10 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.9.1 includes new regridder features, ...
+Version 4.9.1 contains an important bugfix for vertical interpolation,
+and two small new feature for ncclimo and ncpdq. It also fixes some
+autoconf-build issues that affected some users with Intel compilers,
+and those attempting parallel builds of NCO.
 
 Work on NCO 4.9.2 has commenced and will improve NCO weight-generator  
 accuracy, reduce vertical interpolation memory use, and supply more
@@ -78,6 +81,19 @@ B. Print WARNING instead of dying when requested to copy the
    This is really a feature yet listed as a bug-fix because it is
    an incomprehensible technical workaround, the kind of thing users
    should never need to know about.
+
+C. Fix an error when interpolating to/from a pure pressure grid.
+   The minimum pressure was not always being initialized, which caused
+   (highly) erroneous values when the interpolation type was mss_val.
+   This bug only affects NCO installations built by compilers that do
+   not automatically initialize allocated memory to preset values.
+   Affected output datasets would be obviously corrupted, so nothing
+   subtle about this bug. There is no workaround, the only fix is to
+   upgrade. Thanks to Sterling Baldwin for reporting this.
+
+D. Fix misuse of autoconf library references. This foiled parallel
+   builds, and caused difficulty compiling ncap2. Thanks to Daniel
+   Macks for identifying and solving the issue.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
