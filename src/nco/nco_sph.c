@@ -104,6 +104,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
    int iqpLHS = 0;
    int iq1pLHS = 0 ;
 
+   int pqCross[4]={0,0,0,0};
+
    nco_bool isParallel=False;
 
    double nx1;
@@ -164,9 +166,11 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      ipqLHS = nco_sph_lhs(P->shp[a], Qcross);
      ip1qLHS = nco_sph_lhs(P->shp[a1], Qcross);
 
+     /* save for seg_int func */
+     pqCross[0]=ipqLHS;
+     pqCross[1]=ip1qLHS;
 
       /* imply rules facing if 0 */
-
       if(ipqLHS==0 && ip1qLHS!=0)
          ipqLHS=ip1qLHS*-1;
       else if( ipqLHS != 0 && ip1qLHS == 0 )
@@ -176,9 +180,12 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
       iqpLHS = nco_sph_lhs(Q->shp[b], Pcross);
       iq1pLHS = nco_sph_lhs(Q->shp[b1], Pcross);
 
-      /* imply rules facing if 0 */
+     /* save for seg_int func */
+     pqCross[2]=iqpLHS;
+     pqCross[3]=iq1pLHS;
 
 
+     /* imply rules facing if 0 */
       if(iqpLHS == 0 && iq1pLHS != 0)
          iqpLHS=iq1pLHS*-1;
       else if(iqpLHS != 0 && iq1pLHS == 0)
@@ -292,7 +299,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 
         if(ip1qLHS*ipqLHS==-1 && iq1pLHS*iqpLHS==-1  &&
-        nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, flg_snp_to, codes) )
+        nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCross, flg_snp_to, codes) )
         {
           /* if here then there is some kind of intersection */
 
@@ -819,7 +826,7 @@ nco_sph_seg_edge(double *p0, double *p1, double *q0, double *q1, double *r0, dou
 
 
 nco_bool
-nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int flg_snp_to, char *codes)
+nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  double *r1, int *pq_cross, int flg_snp_to, char *codes)
 {
   const char fnc_nm[]="nco_sph_seg_int()";
 
@@ -841,7 +848,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   double pt[NBR_SPH]={0.0,0.0,0.0,0.0,0.0};
 
   double *dswp;
-  int pqCross[4];
+  int pq_cross_lcl[4];
 
 
   /* set to no intersection */
@@ -849,8 +856,8 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
   codes[1]='0';
 
 
-  /* populate pqCross */
-  {
+  /* populate pqCross if arg null*/
+  if(!pq_cross) {
     double Pcross[NBR_SPH];
     double Qcross[NBR_SPH];
 
@@ -858,15 +865,18 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
     nco_sph_cross(p0, p1, Pcross);
     nco_sph_cross(q0, q1, Qcross);
 
-    pqCross[0] = nco_sph_lhs(p0, Qcross);
-    pqCross[1] = nco_sph_lhs(p1, Qcross);
-    pqCross[2] = nco_sph_lhs(q0, Pcross);
-    pqCross[3] = nco_sph_lhs(q1, Pcross);
+    pq_cross_lcl[0] = nco_sph_lhs(p0, Qcross);
+    pq_cross_lcl[1] = nco_sph_lhs(p1, Qcross);
+    pq_cross_lcl[2] = nco_sph_lhs(q0, Pcross);
+    pq_cross_lcl[3] = nco_sph_lhs(q1, Pcross);
 
+    pq_cross=pq_cross_lcl;
 
-    /* The plane / line intersection method doesnt work very well when the end point of the line is on
-     * or very near to the plane - so we swap the values around and use  {q0,q1,Origin}  as plane and {p0,p1} as line */
-    if(  pqCross[0]*pqCross[1] !=0 && pqCross[2]* pqCross[3]==0  )
+  }
+
+  /* The plane / line intersection method doesnt work very well when the end point of the line is on
+  * or very near to the plane - so we swap the values around and use  {q0,q1,Origin}  as plane and {p0,p1} as line */
+  if(  pq_cross[0]*pq_cross[1] !=0 && pq_cross[2]* pq_cross[3]==0  )
     {
       dswp=p0; p0=q0; q0=dswp;
       dswp=p1; p1=q1; q1=dswp;
@@ -876,7 +886,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
 
 
-  }
+
 
 
 
@@ -1371,7 +1381,7 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
         continue;
       */
 
-      if(nco_sph_seg_int(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx], p, q, 0, codes)) {
+      if(nco_sph_seg_int(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx],  p, q, (int*)NULL,0, codes)) {
 
         if (DEBUG_LCL) {
           (void) fprintf(stderr, "%s():, idx=%d jdx=%d numIntersect=%d codes=%s\n", __FUNCTION__, idx, jdx, numIntersect, codes);
