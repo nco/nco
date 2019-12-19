@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha04: Skyglow';git push
 	git tag -a 4.9.1-alpha04 -m 'ncpdq flt_dbl';git push --tags
 
+	* Change ps_sz from double to size_t
+
 	* Fix nco_rgr.c CEWI's and outfit for bug-hunting why _FillValue not requested or created
 
 2019-12-18  Charlie Zender  <zender@uci.edu>

@@ -1247,7 +1247,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   flg_add_msv_att=False;
   /* Extrapolation type xtr_fll_msv may cause need to create _FillValue attributes */
   if(xtr_mth == nco_xtr_fll_msv){
-    const double ps_sz=tm_nbr*grd_sz_in; // [nbr] Size of surface-pressure field
+    const size_t ps_sz=tm_nbr*grd_sz_in; // [nbr] Size of surface-pressure field
     double *prs_max_in=NULL; /* [Pa] Maximum midpoint pressure on input grid */
     double *prs_max_out=NULL; /* [Pa] Maximum midpoint pressure on output grid */
     double *prs_min_in=NULL; /* [Pa] Minimum midpoint pressure on input grid */
@@ -1302,9 +1302,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     for(idx=0;idx<ps_sz;idx++)
       if(prs_max_out[idx] > prs_max_in[idx]) break;
     if(idx < ps_sz) flg_add_msv_att=True;
+    // 20191219: Valgrind identified "Conditional jump or move depends on uninitialised value(s)" in next if
     for(idx=0;idx<ps_sz;idx++)
       if(prs_min_out[idx] < prs_min_in[idx]) break;
     if(idx < ps_sz) flg_add_msv_att=True;
+    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG %s reports ps_sz = %lu, tm_nbr = %lu, grd_sz_in = %lu\n",nco_prg_nm_get(),fnc_nm,ps_sz,tm_nbr,grd_sz_in);
     if(flg_add_msv_att && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one point in at least one output level requires extrapolation (not interpolation). Will ensure that all interpolated fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm);
     if(prs_max_in) prs_max_in=(double *)nco_free(prs_max_in);
     if(prs_max_out) prs_max_out=(double *)nco_free(prs_max_out);
