@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha04: Skyglow';git push
 	git tag -a 4.9.1-alpha04 -m 'ncpdq flt_dbl';git push --tags
 
-	* Add WARNING when nco_vrt_ntp() fails to create _FillValue attribute
+	* Print WARNING when nco_vrt_ntp() fails to create _FillValue attribute
 
 	* Document --glb_avg
 

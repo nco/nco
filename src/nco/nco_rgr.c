@@ -1618,6 +1618,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* Variables with subterranean levels and missing-value extrapolation must have _FillValue attribute */
 	if(flg_add_msv_att && trv.flg_rgr){
 	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s, prior to trying to add _FillValue, reports variable %s has_mss_val = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,has_mss_val);
 	  if(!has_mss_val){
 	    nco_bool flg_att_chg; /* [flg] _FillValue attribute was written */
 	    aed_mtd_fll_val.var_nm=var_nm;
