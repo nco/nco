@@ -1,8 +1,12 @@
-2019-12-18  Charlie Zender  <zender@uci.edu>
+2019-12-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.1-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha04: Skyglow';git push
 	git tag -a 4.9.1-alpha04 -m 'ncpdq flt_dbl';git push --tags
+
+	* Fix nco_rgr.c CEWI's and outfit for bug-hunting why _FillValue not requested or created
+
+2019-12-18  Charlie Zender  <zender@uci.edu>
 
 	* Print WARNING when nco_vrt_ntp() fails to create _FillValue attribute
 

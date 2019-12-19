@@ -1031,11 +1031,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     return NCO_ERR;
   } /* !hyai */
     
+  /* 20191219: This block is not used, deprecate it? Or use once new coordinates like altitude, depth supported? */
   nco_vrt_ntp_typ_enm nco_vrt_ntp_typ=nco_ntp_nil; /* Vertical interpolation type */
   if(nco_vrt_grd_in == nco_vrt_grd_hyb && nco_vrt_grd_out == nco_vrt_grd_hyb) nco_vrt_ntp_typ=nco_ntp_hyb_to_hyb;
   if(nco_vrt_grd_in == nco_vrt_grd_hyb && nco_vrt_grd_out == nco_vrt_grd_prs) nco_vrt_ntp_typ=nco_ntp_hyb_to_prs;
   if(nco_vrt_grd_in == nco_vrt_grd_prs && nco_vrt_grd_out == nco_vrt_grd_hyb) nco_vrt_ntp_typ=nco_ntp_prs_to_hyb;
   if(nco_vrt_grd_in == nco_vrt_grd_prs && nco_vrt_grd_out == nco_vrt_grd_prs) nco_vrt_ntp_typ=nco_ntp_prs_to_prs;
+  assert(nco_vrt_ntp_typ != nco_ntp_nil);
 
   /* Variables on input grid, i.e., on grid in data file to be interpolated */
   if(flg_grd_in_hyb){
@@ -1613,7 +1615,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    if(dfl_lvl >= 0) shuffle=NC_SHUFFLE;
 	    if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var_id_out,shuffle,deflate,dfl_lvl);
 	  } /* !dmn_nbr_out */
-	} /* !NC_FORMAT_NETCDF4 */ 
+	} /* !NC_FORMAT_NETCDF4 */
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
 	/* Variables with subterranean levels and missing-value extrapolation must have _FillValue attribute */
 	if(flg_add_msv_att && trv.flg_rgr){
@@ -5581,11 +5583,12 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	/* Determine canonical surface angle C
 	   To find any angle given three spherical triangle sides, Wikipedia opines: 
 	   "The cosine rule may be used to give the angles A, B, and C but, to avoid ambiguities, the half-angle formulae are preferred."
-	   For this ill-conditioned case, use half-angle cosine formula because RHS of half-angle sine formula is near 1, where arcsin() is imprecise, whereas RHS of cosine formula is near 0, where arccos() is well-conditioned. */
+	   For this ill-conditioned case, use half-angle cosine formula because RHS of half-angle sine formula is near 1, where arcsin() is imprecise, whereas RHS of cosine formula is near 0, where arccos() is well-conditioned */
 	cos_hlf_C=sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)));
 	ngl_sfc_ltr_C=2.0*acos(cos_hlf_C);
 	/* SAS formula */
 	tan_hlf_a_tan_hlf_b=tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b);
+	ngl_ltr_c+=0; /* CEWI */
 	xcs_sph_hlf_tan=tan_hlf_a_tan_hlf_b*sin(ngl_sfc_ltr_C)/(1.0+tan_hlf_a_tan_hlf_b*cos(ngl_sfc_ltr_C));
 	xcs_sph=2.0*atan(xcs_sph_hlf_tan);
 	// xcs_sph=2.0*atan(tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b)*sin(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))/(1.0+tan_hlf_a_tan_hlf_b*cos(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))));
@@ -6584,6 +6587,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     for(idx=0L;idx<grd_sz_nbr;idx++){
       idx2=grd_crn_nbr*idx;
       flg_ccw=nco_ccw_chk(grd_crn_lat+idx2,grd_crn_lon+idx2,grd_crn_nbr,idx_ccw,rcr_lvl);
+      if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_vec) (void)fprintf(stderr,"%s: DEBUG %s reports nco_ccw_chk() tried to change idx = %lu from CW to CCW\n",nco_prg_nm_get(),fnc_nm,idx);
     } /* !idx */
   } /* !flg_s2n */
  
@@ -9551,7 +9555,7 @@ nco_lon_ply_avg_brnch_dgr /* [fnc] Average polygon longitude with branch-cut rul
      Assume longitudes are within 180 degrees of one another
      Default orientation is monotonically increasing longitude from left to right 
      WLOG, adjust all longitudes to be on same branch as lon_ll */
-  const char fnc_nm[]="nco_lon_ply_avg_brnch()";
+  //  const char fnc_nm[]="nco_lon_ply_avg_brnch()";
   double lon_dff; /* [dgr] Longitude difference */
   double lon_avg; /* [dgr] Longitude average */
   int lon_idx; /* [idx] Polygon vertex index */
