@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.1-alpha04: Skyglow';git push
 	git tag -a 4.9.1-alpha04 -m 'ncpdq flt_dbl';git push --tags
 
+	* Always set lev_out_min to fix uninitialized error identified by valgrind that caused errorneous behavior in nco_vrt_ntp() with some compilers (compy, cori)
+
 	* Change ps_sz from double to size_t
 
 	* Fix nco_rgr.c CEWI's and outfit for bug-hunting why _FillValue not requested or created

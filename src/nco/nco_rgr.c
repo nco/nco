@@ -1295,18 +1295,16 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       double lev_out_max;
       double lev_out_min;
       if(lev_out[0] < lev_out[1]) lev_out_max=lev_out[lev_nbr_out-1]; else lev_out_max=lev_out[0];
-      if(lev_out[0] < lev_out[1]) lev_out_min=lev_out[0]; else lev_out_max=lev_out[lev_nbr_out-1];
+      if(lev_out[0] < lev_out[1]) lev_out_min=lev_out[0]; else lev_out_min=lev_out[lev_nbr_out-1];
       for(size_t idx_out=0;idx_out<ps_sz;idx_out++) prs_max_out[idx_out]=lev_out_max;
       for(size_t idx_out=0;idx_out<ps_sz;idx_out++) prs_min_out[idx_out]=lev_out_min;
     } /* !flg_grd_out_prs */
     for(idx=0;idx<ps_sz;idx++)
       if(prs_max_out[idx] > prs_max_in[idx]) break;
     if(idx < ps_sz) flg_add_msv_att=True;
-    // 20191219: Valgrind identified "Conditional jump or move depends on uninitialised value(s)" in next if
     for(idx=0;idx<ps_sz;idx++)
       if(prs_min_out[idx] < prs_min_in[idx]) break;
     if(idx < ps_sz) flg_add_msv_att=True;
-    if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: DEBUG %s reports ps_sz = %lu, tm_nbr = %lu, grd_sz_in = %lu\n",nco_prg_nm_get(),fnc_nm,ps_sz,tm_nbr,grd_sz_in);
     if(flg_add_msv_att && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports at least one point in at least one output level requires extrapolation (not interpolation). Will ensure that all interpolated fields have _FillValue attribute.\n",nco_prg_nm_get(),fnc_nm);
     if(prs_max_in) prs_max_in=(double *)nco_free(prs_max_in);
     if(prs_max_out) prs_max_out=(double *)nco_free(prs_max_out);
@@ -1622,7 +1620,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* Variables with subterranean levels and missing-value extrapolation must have _FillValue attribute */
 	if(flg_add_msv_att && trv.flg_rgr){
 	  has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
-	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s, prior to trying to add _FillValue, reports variable %s has_mss_val = %d\n",nco_prg_nm_get(),fnc_nm,var_nm,has_mss_val);
 	  if(!has_mss_val){
 	    nco_bool flg_att_chg; /* [flg] _FillValue attribute was written */
 	    aed_mtd_fll_val.var_nm=var_nm;
