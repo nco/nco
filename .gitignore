@@ -38,11 +38,7 @@ TAGS
 *.hdf
 
 # Directory-specific
-/config.h
-/config.guess
-/config.log
-/config.sub
-/config.status
+/config.*
 /libtool
 /stamp-h*
 
