@@ -1,6 +1,7 @@
 # Git-ignore patterns for ~/nco
 
 # Autoconf/Automake
+Makefile
 Makefile.in
 .deps
 .libs
@@ -8,14 +9,11 @@ Makefile.in
 *.la
 *.lo
 
-/autom4te.cache
-/aclocal.m4
-/compile
-/configure
-/depcomp
-/install-sh
-/missing
-/Makefile
+autom4te.cache/
+aclocal.m4
+configure
+autobld/*
+m4/*
 
 # CMake
 CMakeCache.txt
