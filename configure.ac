@@ -158,7 +158,7 @@ fi
 # End pvmgetarch Compatibility
 
 # Use automake to create Makefiles
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign])
 #AM_INIT_AUTOMAKE(nco,"${nco_version}")
 
 # Put preprocessor symbols in config.h

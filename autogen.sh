@@ -116,5 +116,5 @@ rm -rf autom4te.cache
 
 $ACLOCAL -I m4\
 && $AUTOHEADER \
-&& $AUTOMAKE --foreign --add-missing \
+&& $AUTOMAKE --add-missing \
 && $AUTOCONF
