@@ -1,18 +1,15 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.9.1 are woke.
+The netCDF Operators NCO version 4.9.2 are woke.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.9.1 contains an important bugfix for vertical interpolation,
-and two small new feature for ncclimo and ncpdq. It also fixes some
-autoconf-build issues that affected some users with Intel compilers,
-and those attempting parallel builds of NCO.
+Version 4.9.2 contains...
 
-Work on NCO 4.9.2 has commenced and will improve NCO weight-generator  
+Work on NCO 4.9.3 has commenced and will improve NCO weight-generator  
 accuracy, reduce vertical interpolation memory use, and supply more
 accurate weight generation options for rectangular lat-lon grids.
 
@@ -28,72 +25,13 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap changes the default regridder algorithm from ESMF
-   "bilinear" to NCO "nco_con", a first-order conservative algorithm 
-   (similar to ESMF "conserve") that requires no external
-   dependencies. Because the default algorithm comes with NCO, users
-   without access to ESMF and/or TempestRemap can perform a full
-   regridding workflow. Of course many/most users will still wish to
-   employ ESMF or TR, and their algorithms are easily accessed:
+A. ncremap changes blah blah blah
    ncremap -a nco -s grd_src.nc -d grd_dst.nc -m map.nc   # New default
-   ncremap -a bilin -s grd_src.nc -d grd_dst.nc -m map.nc # Old default
-   ncremap -a fv2fv -s grd_src.nc -d grd_dst.nc -m map.nc # Tempest
-   http://nco.sf.net/nco.html#alg_typ
    http://nco.sf.net/nco.html#ncremap
-
-B. ncclimo can now output spatial-average timeseries.
-   The new --glb_avg (or --global_average) option causes ncclimo to
-   perform a spatial mean over the timeseries constructed from the
-   input data. The main limitation is that it only works for
-   timeseries whose horizontal spatial dimension is "ncol" and
-   whose area weight is named "area", as in CAM SE/EAM.
-   Let us know if this function would be useful to you for other
-   models and we can easily add options to make these hardwired values
-   specifiable from the command-line.
-   ls *mdl*.nc | ncclimo --glb_avg -s 1979 -e 1981 --drc_out=drc_out
-   http://nco.sf.net/nco.html#ncclimo
-   http://nco.sf.net/nco.html#glb_avg
-
-C. ncpdq has a new map, flt_dbl, to convert single-precision to
-   double-precision floating point variables. The resulting variables
-   are not packed. All single-precision variables, including
-   coordinates, are promoted. Some software requires geospatial data
-   in double precision, and this feature simplifies the dataset
-   conversion. 
-   ncpdq -M flt_dbl in.nc out.nc
-   ncpdq -M sgl_dbl in.nc out.nc
-   http://nco.sf.net/nco.html#flt_dbl
-   http://nco.sf.net/nco.html#ncpdq
 
 BUG FIXES:
 
-A. Fix a difficulty that caused Intel compilers to fail to build NCO.
-   Now the netcdf.h header, and thus the EXTERNL token, are always
-   included and defined during autoconf header checks.
-   Thanks to Matthew Thompson of NASA for reporting the issue, and to
-   Dave Allured of NOAA for providing the fix.
-
-B. Print WARNING instead of dying when requested to copy the
-   _NCProperties attribute. That attribute should not but can be 
-   exposed through the netCDF API in some circumstances, and this new
-   treatment prevents that leakage from breaking workflows. Thanks to
-   Rotislav for reporting and Dave Allured for helpful discussions.
-   This is really a feature yet listed as a bug-fix because it is
-   an incomprehensible technical workaround, the kind of thing users
-   should never need to know about.
-
-C. Fix an error when interpolating to/from a pure pressure grid.
-   The minimum pressure was not always being initialized, which caused
-   (highly) erroneous values when the interpolation type was mss_val.
-   This bug only affects NCO installations built by compilers that do
-   not automatically initialize allocated memory to preset values.
-   Affected output datasets would be obviously corrupted, so nothing
-   subtle about this bug. There is no workaround, the only fix is to
-   upgrade. Thanks to Sterling Baldwin for reporting this.
-
-D. Fix misuse of autoconf library references. This foiled parallel
-   builds, and caused difficulty compiling ncap2. Thanks to Daniel
-   Macks for identifying and solving the issue.
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -101,9 +39,9 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.9.1 built/tested under
-   MacOS 10.15.1 with netCDF 4.7.0 on HDF5 1.10.2 and with
-   Linux with netCDF 4.7.4-development (20191203) on HDF5 1.8.19.
+   These problems occur with NCO 4.9.2 built/tested under
+   MacOS 10.15.2 with netCDF 4.7.0 on HDF5 1.10.2 and with
+   Linux with netCDF 4.7.4-development (20191218) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments

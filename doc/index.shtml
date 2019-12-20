@@ -640,11 +640,15 @@ netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncclimo -v</tt> splitter support for regular expressions?;
 <tt>ncremap</tt> support <tt>mbtempest</tt>?;</li>
-<li><b>NCO 4.9.1</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<li><b>NCO 4.9.2</b>: (<i>In Progress, features in-progress or complete include</i>) 
 <tt>ncks --bsa</tt> Byte-swap algoritm;
-<tt>ncclimo</tt> spatial averages;
+<tt>ncremap</tt> faster weight-generation;
 <tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 4.9.0</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<li><b>NCO 4.9.1</b>: (<i>Current Stable Release</i>)
+<tt>ncclimo --glb_avg</tt> spatial average timeseries;
+<tt>ncpdq --flt_dbl</tt> map;
+<tt>ncremap --vrt_xtr=mss_val</tt> bugfix</li>
+<li><b>NCO 4.9.0</b>: 
 <tt>ncks --chk_map</tt> map-file evaluation;
 <tt>ncks --chk_nan</tt> find all NaNs;
 <tt>ncremap</tt> simulaneous horizontal and vertical regridding;
@@ -652,7 +656,7 @@ netCDF4 user-defined types support;
 <tt>ncremap --job_nbr</tt> parallelism;
 <tt>ncremap --sgs_frc</tt> sub-gridscale acceleration;
 <tt>ncremap --vrt</tt> vertical grid flexibility</li>
-<li><b>NCO 4.8.1</b>: (<i>Current Stable Release</i>)
+<li><b>NCO 4.8.1</b>: 
 <tt>ncap2</tt> fixes single-file handling;
 <tt>ncclimo</tt> fine-grained seasonal parallelism;
 <tt>ncclimo</tt> supports vertical interpolation;
@@ -676,7 +680,7 @@ netCDF4 user-defined types support;
 <tt>ncclimo --dpt_fl</tt> depth-coordinates;
 <tt>ncremap</tt> SGS fix, lat/lon_dmn_nm;</li>
 <li><b>NCO 4.7.8</b>: 
-<li>ncremap/ncclimo --d2f</li> Double->Float map;</li>
+<tt>ncremap/ncclimo --d2f</tt> Double->Float map;</li>
 <li><b>NCO 4.7.7</b>: 
 <tt>ncpdq -M dbl_flt</tt> Double->Float map;
 <tt>ncremap --skl</tt> skeleton files;

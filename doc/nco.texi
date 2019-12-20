@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.1
-@set doc-edition 4.9.1
+@set nco-edition 4.9.2-alpha01
+@set doc-edition 4.9.2-alpha01
 @set copyright-years 1995--2019
 @set update-year 2019
-@set update-date 19 December 2019
+@set update-date 20 December 2019
 @set update-month December 2019
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18418,7 +18418,7 @@ See @ref{CF Conventions} for a detailed description.
 @cindex @code{--glb_avg}
 @cindex @code{--global_average}
 @item --glb_avg (@code{--glb_avg}, @code{--global_average})
-As of @acronym{NCO} version 4.9.1 (released TBD, 2020), this switch
+As of @acronym{NCO} version 4.9.1 (released December, 2019), this switch
 (which takes no argument) tells the splitter to output horizontally
 spatially averaged timeseries files instead of raw, native-grid
 timeseries.  
@@ -22401,7 +22401,8 @@ Definition: Promote (via type-conversion, @emph{not packing}) single-precision v
 Map: Promote @code{NC_FLOAT} to @code{NC_DOUBLE}.
 Types copied instead of packed: All except @code{NC_FLOAT}@*
 @var{pck_map} key values: @samp{flt_dbl}, @samp{pck_map_flt_dbl}, @samp{sgl_dbl}, @samp{pck_map_sgl_dbl}@*
-The @code{flt_dbl} map was introduced in @acronym{NCO} version 4.9.1 (TBD, 2020).
+The @code{flt_dbl} map was introduced in @acronym{NCO} version 4.9.1
+(December, 2019). 
 @end table
 @noindent
 The default @samp{all_new} packing policy with the default

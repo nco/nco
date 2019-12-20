@@ -2885,7 +2885,7 @@ nco_copy_att(const int nc_id_in,const int var_id_in,const char * const att_nm,co
      https://sourceforge.net/p/nco/bugs/117
      https://github.com/Unidata/netcdf-c/issues/803 */
   if(!strcmp(att_nm,"_NCProperties")){
-    (void)fprintf(stdout,"INFO: %s requested to copy attribute \"%s\". As of version 4.9.1 (TBD, 2020), NCO refuses to copy this attribute as its value is exclusively reserved for the netCDF library to manipulate internally. This attribute was likely exposed to NCO via an upstream violation of the netCDF API. The netCDF library should though does not enforce this proscription itself, at least through netCDF verstion 4.7.3. To reduce headaches, NCO will proceed as though this operation were never requested. This message is informational only and may be safely ignored.\n",fnc_nm,att_nm);
+    (void)fprintf(stdout,"INFO: %s requested to copy attribute \"%s\". As of version 4.9.1 (December, 2019), NCO refuses to copy this attribute as its value is exclusively reserved for the netCDF library to manipulate internally. This attribute was likely exposed to NCO via an upstream violation of the netCDF API. The netCDF library should though does not enforce this proscription itself, at least through netCDF verstion 4.7.3. To reduce headaches, NCO will proceed as though this operation were never requested. This message is informational only and may be safely ignored.\n",fnc_nm,att_nm);
     rcd=NC_NOERR;
   }else{
     rcd=nc_copy_att(nc_id_in,var_id_in,att_nm,nc_id_out,var_id_out);
