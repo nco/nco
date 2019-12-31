@@ -102,6 +102,20 @@ extern "C" {
 #endif /* !__cplusplus */
 
 /*---------------------------------------------------------------------
+Structures
+---------------------------------------------------------------------*/
+
+/* vertex info  */
+typedef struct {
+  poly_vrl_flg_enm  in_flag;  /* if P_in - vertex from a, Q_in Vertex from b */
+  int p_vrt;                  /* if -1 then genuine intersection */
+  int q_vrt;
+  double p0[NBR_SPH];           /* actual point - used for debuggging */
+}vrt_info_sct;
+
+
+
+/*---------------------------------------------------------------------
 Function prototypes.
 ---------------------------------------------------------------------*/
 
@@ -167,6 +181,9 @@ nco_sph_adi(double *a, double *b);
 
 void
 nco_sph_add_pnt(double **R, int *r, double *P);
+
+void
+nco_sph_add_pnt_chk( vrt_info_sct *vrt_info, poly_vrl_flg_enm inflag, int p_vrt, int q_vrt,  double **R, int *r, double *P);
 
 nco_bool
 nco_sph_between(double a, double b, double x);

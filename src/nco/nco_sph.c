@@ -123,6 +123,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
    double p[NBR_SPH];
    double q[NBR_SPH];
 
+   vrt_info_sct  vrt_info[VP_MAX]={0};
+
    poly_vrl_flg_enm inflag= poly_vrl_unk;
 
    n=P->crn_nbr;
@@ -209,21 +211,6 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
       }
 
-      /*
-      if( dx1  <DOT_TOLERANCE )
-      {
-
-         ip1qLHS=0;
-         ipqLHS=0;
-         iq1pLHS=0;
-         iqpLHS=0;
-         qpFace=0;
-         pqFace=0;
-         isParallel=True;
-
-      } else
-        isParallel=False;
-      */
 
       if( isGeared == False)
       {
@@ -271,14 +258,22 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
             inflag = lcl_inflag;
 
             /* there is a subtle  trick here - a point is "force added" by setting the flags pqFace and qpFace */
-            if (pcode == '2')
-              nco_sph_add_pnt(R->shp, r, p);
+            //if (pcode == '2')
+            //  nco_sph_add_pnt(R->shp, r, p);
 
             if (inflag == poly_vrl_pin) {
+
+              if(pcode=='2')
+                nco_sph_add_pnt_chk(vrt_info, inflag, a1,-1, R->shp, r, p  );
+
               pqFace = 1;
               qpFace = 0;
 
             } else if (inflag == poly_vrl_qin) {
+
+              if(pcode=='2')
+                nco_sph_add_pnt_chk(vrt_info, inflag, -1, b1,  R->shp, r, p  );
+
               pqFace = 0;
               qpFace = 1;
             }
@@ -301,48 +296,30 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
         if(ip1qLHS*ipqLHS==-1 && iq1pLHS*iqpLHS==-1  &&
         nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCross, flg_snp_to, codes) )
         {
-          /* if here then there is some kind of intersection */
 
-
-          if(inflag== poly_vrl_unk )
-          {
-            /* no problem with genuine intersection */
-            if(codes[0]=='1' && codes[1]=='1' )
-              inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
-
-            /*
-            else if(  pq_pre &&  (codes[0]=='h' || codes[0] =='t'  ))
-            {
-
-              if(pq_pre[b]=='v' || pq_pre[b] == 'e')
-                inflag=poly_vrl_pin;
-
-            }
-
-            else if(  pq_pre && codes[0]=='1')
-            {
-
-             if(  codes[1]=='h' &&  ( pq_pre[b1]=='v' ||  pq_pre[b1]=='i'  ) )
-               inflag=poly_vrl_pin;
-
-            }
-            */
-
-
-          }
-          else
+          /* if here then there is some kind of intersection
+           * nb IMPORTANT - if inflag is unset then first intersection must be proper to set the inflag
+           * i.e NOT an edge or vertex intersection */
+          if(inflag != poly_vrl_unk || (codes[0]=='1' && codes[1]=='1') )
             inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
+
+
 
           if(inflag != poly_vrl_unk)
           {
-            nco_sph_add_pnt(R->shp, r, p);
+            int p_arg;
+            int q_arg;
+
+            p_arg=( codes[0]=='h' ? a : codes[0]=='t' ? a1 : -1 );
+            q_arg=( codes[1]=='h' ? b : codes[1]=='t' ? b1 : -1 );
+
+            nco_sph_add_pnt_chk( vrt_info, inflag,p_arg, q_arg, R->shp, r, p);
 
             if (numIntersect++ == 0) {
               /* reset counters */
               aa = 0;
               bb = 0;
             }
-
 
 
           }
@@ -362,13 +339,13 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
          if (qpFace && pqFace)  {
 
             /* Advance either P or Q which has previously arrived ? */
-            if(inflag == poly_vrl_pin) nco_sph_add_pnt(R->shp,r, P->shp[a]);
+            if(inflag == poly_vrl_pin) nco_sph_add_pnt_chk(vrt_info, inflag, a,-2,  R->shp,r, P->shp[a]);
 
             aa++;a++;
 
 
          } else if (qpFace) {
-            if(inflag == poly_vrl_qin) nco_sph_add_pnt(R->shp,r, Q->shp[b]);
+            if(inflag == poly_vrl_qin) nco_sph_add_pnt_chk(vrt_info, inflag, b,-2, R->shp,r, Q->shp[b]);
 
             bb++;b++;
 
@@ -376,7 +353,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
             /* advance q */
          } else if (pqFace) {
             /* advance p */
-            if(inflag == poly_vrl_pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
+            if(inflag == poly_vrl_pin) nco_sph_add_pnt_chk(vrt_info, inflag, a,-2, R->shp,r,P->shp[a]);
 
             aa++;a++;
 
@@ -398,7 +375,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
          else {
             /* catch all */
-            if(inflag==poly_vrl_pin) nco_sph_add_pnt(R->shp,r,P->shp[a]);
+            if(inflag==poly_vrl_pin) nco_sph_add_pnt_chk(vrt_info, inflag, a,-2,  R->shp,r,P->shp[a]);
             aa++;a++;
 
          }
@@ -834,7 +811,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
   nco_bool bInt=False;
   nco_bool bSetCnd=False;
 
-  nco_bool bTstVertex=False;
+  nco_bool bTstVertex=True;
   int flg_cd=0;
   int flg_ab=0;
 
@@ -874,53 +851,62 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
   }
 
+
+  /* pre test for vertex/vertex intersections */
+  if(bTstVertex)
+  {
+    if( !pq_cross[1] && !pq_cross[3] &&  !nco_sph_metric(p1,q1))
+    { flg_ab=3; flg_cd=3; memcpy(r0, p1, sizeof(double)*NBR_SPH); }
+
+    else if( !pq_cross[1] && !pq_cross[2] &&  !nco_sph_metric(p1,q0))
+    { flg_ab=3; flg_cd=2; memcpy(r0, p1, sizeof(double)*NBR_SPH);}
+
+    else if(!pq_cross[0] && !pq_cross[3] && !nco_sph_metric(p0,q1))
+    {flg_ab=2; flg_cd=3; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
+
+    else if(!pq_cross[0] && !pq_cross[2] && !nco_sph_metric(p0,q0))
+    {flg_ab=2; flg_cd=2; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
+
+    if(flg_ab && flg_cd)
+    {
+
+      codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
+      codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
+
+
+      if(DEBUG_SPH)
+        fprintf(stderr, "%s: codes=%s - quick vertex return\n", fnc_nm, codes );
+
+      return True;
+
+    }
+    else
+    {
+      flg_ab=0; flg_cd=0;
+    }
+
+  }
+
+
   /* The plane / line intersection method doesnt work very well when the end point of the line is on
   * or very near to the plane - so we swap the values around and use  {q0,q1,Origin}  as plane and {p0,p1} as line */
-  if(  pq_cross[0]*pq_cross[1] !=0 && pq_cross[2]* pq_cross[3]==0  )
+  if( pq_cross[0]*pq_cross[1] !=0 && pq_cross[2]* pq_cross[3]==0  )
     {
       dswp=p0; p0=q0; q0=dswp;
       dswp=p1; p1=q1; q1=dswp;
 
       bSwap=True;
     }
+   else if( False && pq_cross[0] && pq_cross[1] && pq_cross[2] && pq_cross[3] &&   nco_sph_dist(p0,p1) > nco_sph_dist(q0,q1)  )
+  {
+    dswp=p0; p0=q0; q0=dswp;
+    dswp=p1; p1=q1; q1=dswp;
+
+    bSwap=True;
 
 
+  }
 
-
-
-
-
-  /* pre test for vertex/vertex intersections */
- if(bTstVertex)
- {
-   if(!nco_sph_metric(p1,q1))
-   { flg_ab=3; flg_cd=3; memcpy(r0, p1, sizeof(double)*NBR_SPH); }
-   else if(!nco_sph_metric(p1,q0))
-   { flg_ab=3; flg_cd=2; memcpy(r0, p1, sizeof(double)*NBR_SPH);}
-   else if(!nco_sph_metric(p0,q1))
-   {flg_ab=2; flg_cd=3; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
-   else if(!nco_sph_metric(p0,q0))
-   {flg_ab=2; flg_cd=2; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
-
-   if(flg_ab && flg_cd)
-   {
-
-     codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
-     codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
-
-
-     if(DEBUG_SPH)
-       fprintf(stderr, "%s: codes=%s - quick vertex return\n", fnc_nm, codes );
-
-     return True;
-
-   }
-   else
-   {
-     flg_ab=0; flg_cd=0;
-   }
-
- }
 
 
   bInt=nco_mat_int_pl(p0, p1, q0, q1, pt);
@@ -986,7 +972,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
   if(!flg_ab)
       return False;
 
-
+  //flg_cd=nco_sph_metric_int(q0,q1, pcnd);
   flg_cd= ( !nco_sph_metric(pcnd,q0) ? 2 : !nco_sph_metric(pcnd, q1) ? 3 :1 );
 
 
@@ -2037,6 +2023,37 @@ void nco_sph_add_pnt(double **R, int *r, double *P)
 
 
 }
+
+/* add a vertex or intersection to vrt_info and Points sct
+ *  vrt_nbr==-1 indicates an intersection  */
+
+void
+nco_sph_add_pnt_chk( vrt_info_sct *vrt_info, poly_vrl_flg_enm in_flag, int p_vrt, int q_vrt,  double **R, int *r, double *P)
+{
+
+  /* check if we are adding a vertex already on top of stack */
+  if(False && *r>0 &&  ( p_vrt>=0  && vrt_info[*r-1].p_vrt == p_vrt ) ||  ( q_vrt>=0 && vrt_info[*r-1].q_vrt==q_vrt )  )
+    return;
+
+
+  /* only add  point if its distinct from previous point */
+  if ( *r==0 || nco_sph_metric(R[*r-1], P )  )
+  {
+
+    vrt_info[*r].in_flag=in_flag;
+    vrt_info[*r].p_vrt=p_vrt;
+    vrt_info[*r].q_vrt=q_vrt;
+
+    memcpy(vrt_info[*r].p0, P, sizeof(double)*NBR_SPH );
+
+    memcpy(R[*r], P, sizeof(double)*NBR_SPH);
+    (*r)++;
+  }
+
+
+
+}
+
 
 
 nco_bool nco_sph_between(double a, double b, double x)
