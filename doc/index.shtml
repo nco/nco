@@ -849,10 +849,32 @@ The most up-to-date executables are probably those in the tarball below. Those u
 <a name="visual"></a> <!-- http://nco.sf.net#visual -->
 <a name="mvs"></a> <!-- http://nco.sf.net#mvs -->
 <a name="windows"></a> <!-- http://nco.sf.net#windows -->
-<h3><a href="http://www.microsoft.com">Microsoft Windows</a>
+<h3><a href="http://www.microsoft.com">Microsoft Windows (version 10 and later)</a> via Linux install</h3>
+Installing a full linux subsystem in Windows&nbsp;10 is straightforward:
+Search (e.g., in Google) for "install linux in windows 10".
+The first link, for example, is 
+<a href="http://windowscentral.com/how-install-linux-distros-windows-10">here</a>.
+Follow those instructions.
+We suggest installing Ubuntu.
+Once you have, open a shell window and enter <tt>sudo apt-get install nco</a>, just as you
+would do on any Debian or Ubuntu Linux platform.
+(These instructions are copied from Adrian Tompkins.)
+
+To build NCO from source yourself using MSVC with CMake, please see example in <tt>nco/cmake/build.bat</tt>.
+<ul>
+<!-- Copy files from http://glace.ess.uci.edu
+/usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.9.1.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+-->
+<li><a href="src/nco-4.9.1.windows.mvs.exe">nco-4.9.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.1.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.1.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+</ul>
+
+<a name="visual"></a> <!-- http://nco.sf.net#visual -->
+<a name="mvs"></a> <!-- http://nco.sf.net#mvs -->
+<a name="windows"></a> <!-- http://nco.sf.net#windows -->
+<h3><a href="http://www.microsoft.com">Microsoft Windows (version 9 and earlier)</a>
 (native build, compiled with <a href="https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx">Visual Studio 2015</a>, use this if unsure)</h3>
-These native Windows executables (64bit) are stand-alone, i.e., do not
-require users to have any additional software. 
+These native Windows executables (64bit) are stand-alone, i.e., do not require users to have any additional software. 
 This is a new feature as of 20120615, please send us feedback. 
 To build NCO from source yourself using MSVC with CMake, please see example in <tt>nco/cmake/build.bat</tt>.
 <ul>

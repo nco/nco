@@ -148,7 +148,7 @@ void
 nco_cpy_prn(void) /* [fnc] Print copyright notice */
 {
   /* Purpose: Print copyright notice */
-  (void)fprintf(stderr,"Copyright (C) 1995--2019 Charlie Zender\n");
+  (void)fprintf(stderr,"Copyright (C) 1995--2020 Charlie Zender\n");
   (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\nYou may redistribute and/or modify NCO under the terms of the\nGNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\nGPL: http://www.gnu.org/copyleft/gpl.html\nLICENSE: https://github.com/nco/nco/tree/master/LICENSE\n");
 } /* end copyright_prn() */
 
@@ -205,8 +205,9 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
-  /* Purpose: Return mnemonic describing current NCO version */
-  return "Hatha";
+  /* Purpose: Return mnemonic describing current NCO version 
+     20191221: ncremap/ncclimo print left quote and first word of this string, so one-word strings look best */
+  return "Kiya";
 } /* end nco_nmn_get() */
 
 void

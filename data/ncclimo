@@ -398,6 +398,8 @@ while [ -h "${nco_exe}" ]; do
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
+nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $6}')
+
 # 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
 if [ -z "${nco_vrs}" ]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
@@ -755,7 +757,7 @@ if [ ${psn_nbr} -ge 1 ]; then
 fi # !psn_nbr
 
 if [ ${vrs_prn} = 'Yes' ]; then
-    printf "${spt_nm}, the NCO climatology operator, version ${nco_vrs}\n"
+    printf "${spt_nm}, the NCO climatology operator, version ${nco_vrs} ${nco_sng}\n"
     printf "Copyright (C) 2016--present Charlie Zender\n"
     printf "This program is part of NCO, the netCDF Operators\n"
     printf "NCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\n"
@@ -763,9 +765,8 @@ if [ ${vrs_prn} = 'Yes' ]; then
     printf "GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\n"
     printf "GPL: http://www.gnu.org/copyleft/gpl.html\n"
     printf "LICENSE: https://github.com/nco/nco/tree/master/LICENSE\n"
-    printf "Config: ${spt_nm} running from directory ${drc_spt}\n"
-    printf "Config: Call NCO binaries in directory ${drc_nco}\n"
-    printf "Config: NCO Binaries linked to netCDF library version ${lbr_vrs}\n"
+    printf "Config: ${spt_nm} script located in directory ${drc_spt}\n"
+    printf "Config: NCO binaries located in directory ${drc_nco}, linked to netCDF library version ${lbr_vrs}\n"
     if [ "${hrd_pth_fnd}" = 'Yes' ]; then
 	printf "Config: Employ NCO machine-dependent hardcoded paths/modules for ${HOSTNAME}. (If desired, turn-off NCO hardcoded paths with \"export NCO_PATH_OVERRIDE=No\").\n"
     else
