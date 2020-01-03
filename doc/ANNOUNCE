@@ -41,7 +41,7 @@ KNOWN PROBLEMS DUE TO NCO:
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.9.2 built/tested under
    MacOS 10.15.2 with netCDF 4.7.0 on HDF5 1.10.2 and with
-   Linux with netCDF 4.7.4-development (20191218) on HDF5 1.8.19.
+   Linux with netCDF 4.7.4-development (20200102) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
