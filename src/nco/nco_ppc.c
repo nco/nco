@@ -370,7 +370,8 @@ nco_ppc_around /* [fnc] Replace op1 values by their values rounded to decimal pr
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
 
-  /* Purpose: Replace op1 values by their values rounded to decimal precision ppc
+  /* Purpose: Implement NCO DSD PPC algorithm from Zen16
+     Replace op1 values by their values rounded to decimal precision ppc
      Similar to numpy.around() function, hence the name around()
      Based on implementation by Jeff Whitaker for netcdf4-python described here:
      http://netcdf4-python.googlecode.com/svn/trunk/docs/netCDF4-module.html
@@ -567,7 +568,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
 
-  /* Purpose: Mask-out insignificant bits of op1 values */
+  /* Purpose: Implement NCO NSD PPC algorithm from Zen16 by masking-out insignificant bits of op1 values */
   
   /* Rounding is currently defined as op1:=bitmask(op1,ppc) */  
   
@@ -609,8 +610,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   
   const int bit_xpl_nbr_sgn_flt=23; /* [nbr] Bits 0-22 of SP significands are explicit. Bit 23 is implicitly 1. */
   const int bit_xpl_nbr_sgn_dbl=53; /* [nbr] Bits 0-52 of DP significands are explicit. Bit 53 is implicitly 1. */
-  const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored ponent */
-  const int ieee_xpn_fst_dbl=1023; /* [nbr] IEEE "exponent bias" = actual exponent minus stored ponent */
+  const int ieee_xpn_fst_flt=127; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
+  //const int ieee_xpn_fst_dbl=1023; /* [nbr] IEEE "exponent bias" = actual exponent minus stored exponent */
   
   double prc_bnr_xct; /* [nbr] Binary digits of precision, exact */
   
