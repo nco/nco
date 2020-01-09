@@ -123,7 +123,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
    double p[NBR_SPH];
    double q[NBR_SPH];
 
-   vrt_info_sct  vrt_info[VP_MAX]={0};
+   vrt_info_sct  vrt_info[VP_MAX];
 
    poly_vrl_flg_enm inflag= poly_vrl_unk;
 
