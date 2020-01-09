@@ -182,6 +182,9 @@ nco_sph_adi(double *a, double *b);
 void
 nco_sph_add_pnt(double **R, int *r, double *P);
 
+bool
+nco_sph_vrt_info_cmp( vrt_info_sct *info_a, vrt_info_sct *info_b);
+
 void
 nco_sph_add_pnt_chk( vrt_info_sct *vrt_info, poly_vrl_flg_enm inflag, int p_vrt, int q_vrt,  double **R, int *r, double *P);
 

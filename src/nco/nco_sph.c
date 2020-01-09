@@ -345,7 +345,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 
          } else if (qpFace) {
-            if(inflag == poly_vrl_qin) nco_sph_add_pnt_chk(vrt_info, inflag, b,-2, R->shp,r, Q->shp[b]);
+            if(inflag == poly_vrl_qin) nco_sph_add_pnt_chk(vrt_info, inflag, -2,b, R->shp,r, Q->shp[b]);
 
             bb++;b++;
 
@@ -392,7 +392,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
       /* quick exit if current point is same a First point  - nb an exact match ?*/
       //if( *r >3 &&  R->shp[0][3]==R->shp[*r-1][3] && R->shp[0][4]==R->shp[*r-1][4] )
       //if( *r >3 &&  1.0 - nco_sph_dot_nm(R->shp[0], R->shp[*r-1]) < DOT_TOLERANCE  )
-     if( *r >3 &&  nco_sph_metric(R->shp[0], R->shp[*r-1])==False   )
+     if( *r >3 &&  (nco_sph_metric(R->shp[0], R->shp[*r-1])==False ||  nco_sph_vrt_info_cmp( &vrt_info[0], &vrt_info[*r-1])  ) )
       {
          --*r;
          break;
@@ -897,17 +897,6 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
       bSwap=True;
     }
-   else if( False && pq_cross[0] && pq_cross[1] && pq_cross[2] && pq_cross[3] &&   nco_sph_dist(p0,p1) > nco_sph_dist(q0,q1)  )
-  {
-    dswp=p0; p0=q0; q0=dswp;
-    dswp=p1; p1=q1; q1=dswp;
-
-    bSwap=True;
-
-
-  }
-
-
 
   bInt=nco_mat_int_pl(p0, p1, q0, q1, pt);
   /* no intersection */
@@ -915,8 +904,15 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
 
 
-  if (DEBUG_SPH)
-    fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm,  (bInt ?  "True" : "False"), codes, pt[0], pt[1], pt[2] );
+  if (DEBUG_SPH) {
+    fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm, (bInt ? "True" : "False"),
+            codes, pt[0], pt[1], pt[2]);
+
+    if(pq_cross[0]*pq_cross[1] != 0 && pq_cross[2]* pq_cross[3]==0  ||  pq_cross[0]*pq_cross[1] == 0 && pq_cross[2]* pq_cross[3]!=0)
+      fprintf(stderr,"WARNING pq_cross[*] swapped\n" );
+
+
+  }
 
   if(!bInt )
     return False;
@@ -979,6 +975,16 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
   codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
   codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
 
+  /*
+  if(flg_ab==2)
+  {memcpy(pcnd, p0, sizeof(double)*NBR_SPH);}
+  else if(flg_ab==3)
+  {memcpy(pcnd, p1, sizeof(double)*NBR_SPH);}
+  else if(flg_cd==2)
+  {memcpy(pcnd, q0, sizeof(double)*NBR_SPH);}
+  else if(flg_cd==3)
+  {memcpy(pcnd, q1, sizeof(double)*NBR_SPH);}
+  */
 
   if(DEBUG_SPH )
       fprintf(stderr, "%s: codes=%s tpar=pt[0]=%.15f\n", fnc_nm, codes, pt[0]  );
@@ -990,6 +996,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
 
 }
+
 
 nco_bool
 nco_sph_seg_int_1(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int flg_snp_to, char *codes)
@@ -2024,6 +2031,21 @@ void nco_sph_add_pnt(double **R, int *r, double *P)
 
 }
 
+
+inline bool
+nco_sph_vrt_info_cmp( vrt_info_sct *info_a, vrt_info_sct *info_b)
+{
+   if( info_a->p_vrt >=0 && info_b->p_vrt >=0 &&  info_a->p_vrt== info_b->p_vrt  )
+     return True;
+
+  if( info_a->q_vrt >=0 && info_b->q_vrt >=0 &&  info_a->q_vrt== info_b->q_vrt  )
+    return True;
+
+   return False;
+
+}
+
+
 /* add a vertex or intersection to vrt_info and Points sct
  *  vrt_nbr==-1 indicates an intersection  */
 
@@ -2032,13 +2054,19 @@ nco_sph_add_pnt_chk( vrt_info_sct *vrt_info, poly_vrl_flg_enm in_flag, int p_vrt
 {
 
   /* check if we are adding a vertex already on top of stack */
-  if(False && *r>0 &&  ( p_vrt>=0  && vrt_info[*r-1].p_vrt == p_vrt ) ||  ( q_vrt>=0 && vrt_info[*r-1].q_vrt==q_vrt )  )
+
+  if(*r>0 &&  (( p_vrt>=0  && vrt_info[*r-1].p_vrt == p_vrt ) ||  ( q_vrt>=0 && vrt_info[*r-1].q_vrt==q_vrt ))  )
     return;
 
 
   /* only add  point if its distinct from previous point */
   if ( *r==0 || nco_sph_metric(R[*r-1], P )  )
   {
+
+
+    if(DEBUG_SPH)
+      nco_sph_prn_pnt("nco_sph_add_pnt_chk():", P, 3, True);
+
 
     vrt_info[*r].in_flag=in_flag;
     vrt_info[*r].p_vrt=p_vrt;
