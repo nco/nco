@@ -132,6 +132,10 @@ char
 nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag );
 
 nco_bool
+nco_sph_seg_smc(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes);
+
+
+nco_bool
 nco_sph_seg_vrt_int(double *a, double *b, double *c);
 
 int

@@ -996,6 +996,164 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
 
 }
+nco_bool
+nco_sph_seg_smc   /* intersect great circles and small circles */
+(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes) {
+
+  /* p0, p1 great circle */
+  /* q0 q1 small circle */
+
+
+  /* Intersection Method
+   * we assume  that it has already been confirmed that q0, q1 is a small circle
+   *
+   * Determine the line of intertection of the plane containing the great arc and the plane
+   * containing the small circle.
+   *
+   * plane of great circle N components ( n0, n1, n2)
+   * plane of small circle H components ( 0.0, 0.0, h2)
+   * unit vectors (i, j, k)
+   *
+   * P= h2 / (1 - n2^2) (n2*N +  k )
+   * Q= (n1*i - n0*j) / sqrt( n1^2 + n2^2)
+   *
+   * Line of intersction
+   * X=P + sQ  ( s is line parameter  )  and ||Q||=1
+   *
+   * Find the intersction points with the unit sphere.
+   * ( we wish to solve for s )
+   * 1=||X||=(P + sQ).(P + sQ)
+   *
+   * Expands out to a simple quadratic for s
+   *  s = - (P.Q) +/-  sqrt(  (P.Q)^2 - (P.P) +1  )
+   *
+   * We are lucky P.Q =0 so formula simplifies to
+   *  s0= sqrt( 1-  (P.P) )
+   *  s1= -s0
+   *
+   *  Put s0/s1 into line formula to get the point(s) of intersection
+   *
+   * */
+
+  const char fnc_nm[]="nco_sph_seg_smc()";
+  double nd1=0.0;
+  double nd2=0.0;
+  double Pcst=0.0;
+  double pqdot;
+
+  double s0=0.0;
+  double s1=0.0;
+
+  double PCross[NBR_SPH] = {0.0};
+
+  double P[NBR_SPH] = {0.0};
+
+  double Q[NBR_SPH] = {0.0};
+
+  double N[NBR_SPH] = {0.0};
+
+  double h2 = 0.0;
+
+  double dtmp = 0.0;
+
+
+
+  /* set codes to 0 */
+  codes[0] = '0';
+  codes[1] = '0';
+
+
+  /* nb remember cross normalizes */
+  nd1 = nco_sph_cross(p0, p1, PCross);
+
+
+  nco_sph_adi(N, PCross);
+
+  /* determine P */
+  nco_sph_adi(P, PCross);
+  nco_sph_mlt(P, -1.0*N[2]);
+  P[2] += 1.0;
+
+  nco_sph_mlt(P,q0[2] / (1.0 - N[2] * N[2]));
+
+  /* determine Q */
+  Q[0] = N[1];
+  Q[1] = -1.0* N[0];
+  Q[2] = 0.0;
+
+  nco_sph_mlt(Q, 1.0 / sqrt(1.0-N[2]*N[2]));
+
+
+  /* now solve quadratic for r  pqdot ALWAYS zero */
+  //pqdot = nco_sph_dot(P, Q);
+  //dtmp = pqdot * pqdot - nco_sph_rad2(P) + 1.0;
+
+  dtmp= 1.0 - nco_sph_rad2(P);
+
+  if(DEBUG_SPH) {
+    fprintf(stderr, "%s:%s: dtmp=%f pqdot=%.15f\n", nco_prg_nm_get(), fnc_nm, dtmp, pqdot);
+    nco_sph_prn_pnt("nco_sph_seg_smc() - P", P, 4, True);
+
+    nco_sph_prn_pnt("nco_sph_seg_smc() - Q", Q, 4, True);
+  }
+
+
+
+  if (dtmp < 0.0)
+    return False;
+
+  /* from here on we have one or two solutions */
+  dtmp = sqrt(dtmp);
+
+
+
+  s0=dtmp;
+  s1-=dtmp;
+
+
+  /* now plug s0  into line formula */
+  nco_sph_adi(r0, Q);
+  nco_sph_mlt(r0, s0 );
+  //nco_sph_add(r0, P, r0   );
+  r0[0]+=P[0]; r0[1]+=P[1] ; r0[2]+=P[2];
+
+  nco_sph_add_lonlat(r0);
+
+  codes[0]='1';
+
+  /* now plug s0  into line formula */
+  if(dtmp>0.0) {
+    nco_sph_adi(r1, Q);
+    nco_sph_mlt(r1, s1);
+    nco_sph_add(r1, P, r1);
+
+    nco_sph_add_lonlat(r1);
+
+    codes[1]='1';
+  }
+
+
+
+
+
+
+  if(DEBUG_SPH) {
+    nco_sph_prn_pnt("nco_sph_seg_smc() - first soln", r0, 4, True);
+    fprintf(stderr, "%s: radius r0=%.15f\n",fnc_nm, nco_sph_rad(r0));
+    nco_sph_prn_pnt("nco_sph_seg_smc() - second soln", r1, 4, True);
+    fprintf(stderr, "%s: radius r1=%.15f\n",fnc_nm, nco_sph_rad(r1));
+
+  }
+
+
+  return True;
+
+
+}
+
+
+
+
 
 
 nco_bool
