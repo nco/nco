@@ -5659,10 +5659,13 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	if(xpn_x < 0.0) abort();
 	//if(lat_bnd[idx_ltr_b] > 0.0) area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_smc_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
 	area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b];
+	// Adjust diagnostic areas by small-circle area correction
 	area_smc+=area_smc_crc;
 	area_smc_ttl+=area_smc_crc;
 	area_smc_crc_ttl+=area_smc_crc;
 	area_smc_crc_abs_ttl+=fabs(area_smc_crc);
+	// 20200109: Adjust area reported to calling code by small-circle area correction
+	area[col_idx]+=area_smc_crc;
 	if(0){
 	  /* 20160918: Approximate area of latitude triangle wedge. Use truncated power expansion of exact formula. */
 	  double xpn_x_sqr; /* [frc] Expansion parameter squared */
