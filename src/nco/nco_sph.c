@@ -405,6 +405,58 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 }
 
+int
+nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], nco_bool flg_smc )
+{
+
+  nco_bool isP_LatCircle =False;
+  nco_bool isQ_LatCircle =False;
+
+  if(flg_smc){
+    isP_LatCircle = nco_rll_is_lat_circle(p0, p1);
+    isQ_LatCircle = nco_rll_is_lat_circle(q0, q1);
+  }
+
+
+  if (isQ_LatCircle) {
+
+    pqCross[0] = nco_rll_lhs_lat(p0, q0, q1);
+    pqCross[1] = nco_rll_lhs_lat(p1, q0, q1);
+  } else {
+    pqCross[0] = nco_sph_lhs(p0, qCross);
+    pqCross[1] = nco_sph_lhs(p1, qCross);
+
+  }
+
+  
+
+  if (isP_LatCircle){
+    pqCross[2] = nco_rll_lhs_lat(q0, p0, p1);
+    pqCross[3] = nco_rll_lhs_lat(q1, p0, p1);
+  }else{
+    pqCross[2] = nco_sph_lhs(q0, pCross);
+    pqCross[3] = nco_sph_lhs(q1, pCross);
+  }
+
+
+  /* imply rules facing if 0 */
+  if (pqCross[0] == 0 && pqCross[1] != 0)
+    pqCross[0] =  -pqCross[1];
+  else if (pqCross[0] != 0 && pqCross[1] == 0)
+    pqCross[1] = -pqCross[0];
+
+
+  if (pqCross[2] == 0 && pqCross[3] != 0)
+    pqCross[2] =  -pqCross[3];
+  else if (pqCross[2] != 0 && pqCross[3] == 0)
+    pqCross[3] = -pqCross[2] ;
+
+
+
+}
+
+
+
 
 char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p, double *q)
 {
@@ -996,6 +1048,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
 
 }
+
 nco_bool
 nco_sph_seg_smc   /* intersect great circles and small circles */
 (double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes) {
