@@ -105,6 +105,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
    int iq1pLHS = 0 ;
 
    int pqCross[4]={0,0,0,0};
+   /* pqCross before implied facing rules */
+   int pqCrossOriginal[4]={0,0,0,0};
 
    nco_bool isParallel=False;
 
@@ -164,41 +166,56 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
      nx3= nco_sph_cross(Pcross, Qcross, Xcross);
 
+     pqCross[0] = nco_sph_lhs(P->shp[a1], Qcross);
+     pqCross[1] = nco_sph_lhs(P->shp[a], Qcross);
 
-     ipqLHS = nco_sph_lhs(P->shp[a], Qcross);
-     ip1qLHS = nco_sph_lhs(P->shp[a1], Qcross);
+     pqCross[2] = nco_sph_lhs(Q->shp[b1], Pcross);
+     pqCross[3] = nco_sph_lhs(Q->shp[b], Pcross);
 
-     /* save for seg_int func */
-     pqCross[0]=ipqLHS;
-     pqCross[1]=ip1qLHS;
+     /* save befoe implied
+     pqCrossOriginal[0]=pqCross[0];
+     pqCrossOriginal[1]=pqCross[1];
+     pqCrossOriginal[2]=pqCross[2];
+     pqCrossOriginal[3]=pqCross[3]; */
+     memcpy(pqCrossOriginal, pqCross, sizeof(int) *4 );
 
-      /* imply rules facing if 0 */
+     /* imply rules facing if 0
       if(ipqLHS==0 && ip1qLHS!=0)
          ipqLHS=ip1qLHS*-1;
       else if( ipqLHS != 0 && ip1qLHS == 0 )
          ip1qLHS=ipqLHS*-1;
+     */
 
 
-      iqpLHS = nco_sph_lhs(Q->shp[b], Pcross);
-      iq1pLHS = nco_sph_lhs(Q->shp[b1], Pcross);
-
-     /* save for seg_int func */
-     pqCross[2]=iqpLHS;
-     pqCross[3]=iq1pLHS;
-
-
-     /* imply rules facing if 0 */
+     /* imply rules facing if 0
       if(iqpLHS == 0 && iq1pLHS != 0)
          iqpLHS=iq1pLHS*-1;
       else if(iqpLHS != 0 && iq1pLHS == 0)
          iq1pLHS=iqpLHS*-1;
+     */
+
+     /* imply facing rules - more subsinct than before  */
+     if(!pqCross[0])
+       pqCross[0]=-pqCross[1];
+     if(!pqCross[1])
+       pqCross[1]=-pqCross[0];
+
+     if(!pqCross[2])
+       pqCross[2]=-pqCross[3];
+     if(!pqCross[3])
+       pqCross[3]=-pqCross[2];
+
 
 
       /* now calculate face rules */
-      qpFace = nco_sph_face(ip1qLHS, ipqLHS, iqpLHS);
-      pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
+      //qpFace = nco_sph_face(ip1qLHS, ipqLHS, iqpLHS);
+      //pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
+     qpFace = nco_sph_face(pqCross[0], pqCross[1], pqCross[3]);
+     pqFace = nco_sph_face(pqCross[2], pqCross[3], pqCross[1]);
 
-      /* Xcross product near zero !! so make it zero*/
+
+
+     /* Xcross product near zero !! so make it zero*/
       dx1=1.0- nco_sph_dot_nm(Pcross,Qcross );
 
       /* spans parallel but in oposite directions */
@@ -214,7 +231,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
       if( isGeared == False)
       {
-         if(  (ipqLHS == 1 && iqpLHS == 1) ||  ( qpFace && pqFace )     )
+         //if(  (ipqLHS == 1 && iqpLHS == 1) ||  ( qpFace && pqFace )     )
+        if(  (pqCross[1] == 1 && pqCross[3] == 1) ||  ( qpFace && pqFace )     )
          {
             aa++;a++;
          }
@@ -244,7 +262,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 
         //if(isParallel)
-        if(ipqLHS==0 && ip1qLHS==0 && iqpLHS==0 && iq1pLHS==0)
+        //if(ipqLHS==0 && ip1qLHS==0 && iqpLHS==0 && iq1pLHS==0)
+        if(!pqCross[0]  && !pqCross[1] && !pqCross[2] && !pqCross[3] )
         {
           char pcode='0';
           poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
@@ -293,15 +312,17 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
         }
 
 
-        if(ip1qLHS*ipqLHS==-1 && iq1pLHS*iqpLHS==-1  &&
-        nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCross, flg_snp_to, codes) )
+        //if(ip1qLHS*ipqLHS==-1 && iq1pLHS*iqpLHS==-1  &&
+        if( pqCross[0]*pqCross[1]==-1  && pqCross[2]*pqCross[3]==-1 &&
+        nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes) )
         {
 
           /* if here then there is some kind of intersection
            * nb IMPORTANT - if inflag is unset then first intersection must be proper to set the inflag
            * i.e NOT an edge or vertex intersection */
           if(inflag != poly_vrl_unk || (codes[0]=='1' && codes[1]=='1') )
-            inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
+            //inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
+            inflag = (pqCross[1] == 1 ? poly_vrl_pin : pqCross[3] == 1 ? poly_vrl_qin : inflag);
 
 
 
@@ -357,20 +378,21 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
             aa++;a++;
 
-         } else if (iqpLHS == -1) {
+         //} else if (iqpLHS == -1) {
+         } else if (pqCross[3] == -1) {
             /* advance q */
             //if(inflag== Qin) sAddPoint(R,r,Q->shp[b]);
             bb++;b++;
 
             /* cross product zero  */
-         } else if( ipqLHS==0 && ip1qLHS==0 && iq1pLHS ==0 && iqpLHS ==0   ){
+         //} else if( ipqLHS==0 && ip1qLHS==0 && iq1pLHS ==0 && iqpLHS ==0   ){
+         } else if( !pqCross[0] &&  !pqCross[1] && !pqCross[2] && !pqCross[3]   ){
             if(inflag==poly_vrl_pin)
             {bb++;b++;}
             else
             {aa++;a++;}
 
          }
-
 
 
          else {
@@ -439,7 +461,7 @@ nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  
   }
 
 
-  /* imply rules facing if 0 */
+  /* imply rules facing if 0
   if (pqCross[0] == 0 && pqCross[1] != 0)
     pqCross[0] =  -pqCross[1];
   else if (pqCross[0] != 0 && pqCross[1] == 0)
@@ -451,7 +473,7 @@ nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  
   else if (pqCross[2] != 0 && pqCross[3] == 0)
     pqCross[3] = -pqCross[2] ;
 
-
+*/
 
 }
 
