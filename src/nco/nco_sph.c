@@ -165,26 +165,26 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      nco_sph_mk_pqcross(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b], Qcross, pqCross, False );
 
 
-     /* save befoe implied
-     pqCrossOriginal[0]=pqCross[0];
-     pqCrossOriginal[1]=pqCross[1];
-     pqCrossOriginal[2]=pqCross[2];
-     pqCrossOriginal[3]=pqCross[3]; */
-     memcpy(pqCrossOriginal, pqCross, sizeof(int) *4 );
+     /* save Cross before implied */
+     memcpy(pqCrossOriginal, pqCross, sizeof(pqCross) );
 
 
      /* imply facing rules  */
      if(!pqCross[0])
        pqCross[0]=-pqCross[1];
-     if(!pqCross[1])
+     else if(!pqCross[1])
        pqCross[1]=-pqCross[0];
 
      if(!pqCross[2])
        pqCross[2]=-pqCross[3];
-     if(!pqCross[3])
+     else if(!pqCross[3])
        pqCross[3]=-pqCross[2];
 
 
+     if(!pqCross[0] && !pqCross[1] && !pqCross[2] && !pqCross[3] )
+       isParallel=True;
+     else
+       isParallel=False;
 
       /* now calculate face rules */
      qpFace = nco_sph_face(pqCross[0], pqCross[1], pqCross[3]);
@@ -236,8 +236,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
         }
 
 
-
-        if(!pqCross[0]  && !pqCross[1] && !pqCross[2] && !pqCross[3] )
+        if(isParallel)
         {
           char pcode='0';
           poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
@@ -287,7 +286,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 
         if( pqCross[0]*pqCross[1]==-1  && pqCross[2]*pqCross[3]==-1 &&
-        nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes) )
+             nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes) )
         {
 
           /* if here then there is some kind of intersection
@@ -356,7 +355,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
             bb++;b++;
 
             /* cross product zero  */
-         } else if( !pqCross[0] &&  !pqCross[1] && !pqCross[2] && !pqCross[3]   ){
+         } else if(isParallel){
             if(inflag==poly_vrl_pin)
             {bb++;b++;}
             else
