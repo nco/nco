@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.2-alpha01
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 2 January 2020
+@set update-date 12 January 2020
 @set update-month January 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6701,6 +6701,9 @@ The second example above supplies the bounding box with a single option
 in multi-argument format (@pxref{Multi-arguments}).
 The third example uses a convenience switch introduced to reduce typing.
 
+@html
+<a name="grd_cmd"></a> <!-- http://nco.sf.net/nco.html#grd_cmd -->
+@end html
 Generating common grids:
 @cindex @acronym{ECMWF IFS} grid
 @cindex @acronym{NCEP2} grid

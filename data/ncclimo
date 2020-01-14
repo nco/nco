@@ -246,7 +246,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Daily pipe:
 # cd ${DATA}/ne30/raw;ls *h1*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly -s 2001 -e 2002 --var=PRECT,TREFHT --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # Diurnal pipe:
-# cd ${DATA}/ne30/raw;ls *h4*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly --tpd=8 -s 2001 -e 2002 --var=PREC<T,TS,FSDS --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
+# cd ${DATA}/ne30/raw;ls *h4*.nc | ncclimo --dbg=1 --job_nbr=8 --caseid=famipc5_ne30_v0.3_00007 --clm_md=dly --tpd=8 -s 2001 -e 2002 --var=PRECT,TS,FSDS --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # SGS:
 # ncclimo -d 1 -v TBOT,FSDS -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_cmip6_180x360_nco.20190601.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
 # ncclimo -d 1 -v TBOT,FSDS -m clm2 -c F_acmev03_enso_camse_clm45bgc_ne30_co2cycle -s 2000 -e 2000 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30.nc/landfrac 
@@ -506,7 +506,7 @@ sbs_flg='No' # [sng] Split (subset) climatologies
 sgs_frc='' # [sng] Sub-grid fraction variable
 std_chk='Yes' # [sng] Check stdin for input file list
 thr_nbr=2 # [nbr] Thread number for regridder
-tpd_out=1 # [nbr] Timesteps-per-day in ouput
+tpd_out=1 # [nbr] Timesteps-per-day in output
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
 var_lst_rx_xtr='No' # [sng] Process var_lst to expand rx
@@ -1223,7 +1223,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     if [ "${clm_md}" = 'ann' ]; then
 	fpy=1
     elif [ "${clm_md}" = 'dly' ]; then
-	fpy=${dpy}
+	dpf=1
+	let fpy=${dpy}/${dpf}
     elif [ "${clm_md}" = 'mth' ]; then
 	fpy=12
     fi # !clm_md
