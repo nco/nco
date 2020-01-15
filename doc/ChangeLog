@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha03: Alta Vista';git push
 	git tag -a 4.9.2-alpha03 -m 'ncks chk_map() NaN fixes; ncremap fv2fv options';git push --tags
 
+	* nco_map_mk() If Tempest pg grid-files that lack "grid_dims" variables are unstructured then skip sanity check otherwise bail
+
 	* nco_chk_map() report differences in order cmp_dsk_dff not dsk_cmp_dff
 
 	* ncremap disambiguate synonyms for fv2fv and fv2fv_stt, though they are now equivalent

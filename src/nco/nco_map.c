@@ -157,22 +157,39 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   if(nco_rgr_typ == nco_rgr_grd_1D_to_1D || nco_rgr_typ == nco_rgr_grd_2D_to_1D) flg_grd_out_1D=True;
   if(nco_rgr_typ == nco_rgr_grd_1D_to_2D || nco_rgr_typ == nco_rgr_grd_2D_to_2D) flg_grd_out_2D=True;
 
-  rcd+=nco_inq_varid(in_id_src,"grid_dims",&dmn_sz_in_int_id);
-  rcd+=nco_inq_varid(in_id_dst,"grid_dims",&dmn_sz_out_int_id);
-  assert(rcd == NC_NOERR);
-
+  /* 20200115: Tempest-generated (with ConvertExodustoSCRIP) physics grids "pg" grid-files, e.g., ne256pg2.nc, lack "grid_dims" variables */
+  nco_bool has_dmn_sz_in=True; /* [flg] Source grid-file has "grid_dims" variable */
+  nco_bool has_dmn_sz_out=True; /* [flg] Destination grid-file has "grid_dims" variable */
+  rcd=nco_inq_varid_flg(in_id_src,"grid_dims",&dmn_sz_in_int_id);
+  if(rcd != NC_NOERR) has_dmn_sz_in=False;
+  rcd=nco_inq_varid_flg(in_id_dst,"grid_dims",&dmn_sz_out_int_id);
+  if(rcd != NC_NOERR) has_dmn_sz_out=False;
+  rcd=NC_NOERR;
+  
   dmn_srt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
   dmn_cnt=(long *)nco_malloc(dmn_nbr_grd_max*sizeof(long));
 
   dmn_sz_in_int=(int *)nco_malloc(mpf.src_grid_rank*nco_typ_lng((nc_type)NC_INT));
   dmn_sz_out_int=(int *)nco_malloc(mpf.dst_grid_rank*nco_typ_lng((nc_type)NC_INT));
 
-  dmn_srt[0]=0L;
-  dmn_cnt[0]=mpf.src_grid_rank;
-  rcd=nco_get_vara(in_id_src,dmn_sz_in_int_id,dmn_srt,dmn_cnt,dmn_sz_in_int,(nc_type)NC_INT);
-  dmn_srt[0]=0L;
-  dmn_cnt[0]=mpf.dst_grid_rank;
-  rcd=nco_get_vara(in_id_dst,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
+  if(has_dmn_sz_in){
+    dmn_srt[0]=0L;
+    dmn_cnt[0]=mpf.src_grid_rank;
+    rcd=nco_get_vara(in_id_src,dmn_sz_in_int_id,dmn_srt,dmn_cnt,dmn_sz_in_int,(nc_type)NC_INT);
+  }else{ /* !has_dmn_sz_in */
+    /* 20200115: If (TR pg) grid-files that lack "grid_dims" variables are unstructured then skip sanity check otherwise bail */
+    assert(mpf.src_grid_rank == 1);
+    dmn_sz_in_int[0]=mpf.src_grid_size;
+  } /* !has_dmn_sz_in */
+  if(has_dmn_sz_out){
+    dmn_srt[0]=0L;
+    dmn_cnt[0]=mpf.dst_grid_rank;
+    rcd=nco_get_vara(in_id_dst,dmn_sz_out_int_id,dmn_srt,dmn_cnt,dmn_sz_out_int,(nc_type)NC_INT);
+  }else{ /* !has_dmn_sz_out */
+    /* 20200115: If (TR pg) grid-files that lack "grid_dims" variables are unstructured then skip sanity check otherwise bail */
+    assert(mpf.dst_grid_rank == 1);
+    dmn_sz_out_int[0]=mpf.dst_grid_size;
+  } /* !has_dmn_sz_out */
 
   /* Check-for and workaround faulty grid sizes, typically from bogus dual-grid generation algorithm */
   if(flg_grd_in_1D && (mpf.src_grid_size != dmn_sz_in_int[0])){
@@ -1078,7 +1095,6 @@ nco_msh_wrt
   char *fl_out_tmp=NULL_CEWI;
 
   char grd_area_nm[]="grid_area"; /* 20150830: NB ESMF_RegridWeightGen --user_areas looks for variable named "grid_area" */
-  char dmn_sz_nm[]="grid_dims";
   char grd_crn_lat_nm[]="grid_corner_lat";
   char grd_crn_lon_nm[]="grid_corner_lon";
   char grd_crn_nm[]="grid_corners";
@@ -1093,7 +1109,7 @@ nco_msh_wrt
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
-
+  
   area=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
   grd_ctr_lat=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
   grd_ctr_lon=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
@@ -1413,40 +1429,39 @@ nco_grd_lon_typ_enm grd_lon_typ
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
-  rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr, &dmn_ids[0]);
-  rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr, &dmn_ids[1]);
+  rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_ids[0]);
+  rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_ids[1]);
   grd_rnk_nbr=1;
-  rcd=nco_def_dim(out_id,grd_rnk_nm,grd_rnk_nbr, &dmn_ids[2]);
+  rcd=nco_def_dim(out_id,grd_rnk_nm,grd_rnk_nbr,&dmn_ids[2]);
 
   deflate=(int)True;
   shuffle=NC_SHUFFLE;
 
   /* Define variables */
-
   (void)nco_def_var(out_id,grd_crn_lat_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lat_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_crn_lat_id,shuffle,deflate,dfl_lvl);
-  nco_msh_att_char(out_id, grd_crn_lat_id, grd_crn_lat_nm, "units", "degrees");
+  nco_msh_att_char(out_id,grd_crn_lat_id,grd_crn_lat_nm,"units","degrees");
 
   (void)nco_def_var(out_id,grd_crn_lon_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lon_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_crn_lon_id,shuffle,deflate,dfl_lvl);
-  nco_msh_att_char(out_id, grd_crn_lon_id, grd_crn_lon_nm, "units", "degrees");
+  nco_msh_att_char(out_id,grd_crn_lon_id,grd_crn_lon_nm,"units","degrees");
 
-  (void)nco_def_var(out_id,grd_area_nm, crd_typ,dmn_nbr_1D, dmn_ids, &grd_area_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_area_id, shuffle, deflate, dfl_lvl);
-  nco_msh_att_char(out_id, grd_area_id, grd_area_nm, "units", "steradians");
+  (void)nco_def_var(out_id,grd_area_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_area_id);
+  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_area_id,shuffle,deflate,dfl_lvl);
+  nco_msh_att_char(out_id,grd_area_id,grd_area_nm,"units","steradians");
 
-  (void)nco_def_var(out_id, grd_ctr_lon_nm, crd_typ,dmn_nbr_1D, dmn_ids, &grd_ctr_lon_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lon_id, shuffle, deflate, dfl_lvl);
-  nco_msh_att_char(out_id, grd_ctr_lon_id, grd_ctr_lon_nm, "units", "degrees");
+  (void)nco_def_var(out_id,grd_ctr_lon_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_ctr_lon_id);
+  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lon_id,shuffle,deflate,dfl_lvl);
+  nco_msh_att_char(out_id,grd_ctr_lon_id,grd_ctr_lon_nm,"units","degrees");
 
-  (void)nco_def_var(out_id, grd_ctr_lat_nm, crd_typ,dmn_nbr_1D, dmn_ids, &grd_ctr_lat_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lat_id, shuffle, deflate, dfl_lvl);
-  nco_msh_att_char(out_id, grd_ctr_lat_id, grd_ctr_lat_nm, "units", "degrees");
+  (void)nco_def_var(out_id,grd_ctr_lat_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_ctr_lat_id);
+  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_ctr_lat_id,shuffle,deflate,dfl_lvl);
+  nco_msh_att_char(out_id,grd_ctr_lat_id,grd_ctr_lat_nm,"units","degrees");
 
-  (void)nco_def_var(out_id, msk_nm, NC_INT, dmn_nbr_1D, dmn_ids, &grd_msk_id);
-  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_msk_id, shuffle, deflate, dfl_lvl);
+  (void)nco_def_var(out_id,msk_nm,NC_INT,dmn_nbr_1D,dmn_ids,&grd_msk_id);
+  if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_msk_id,shuffle,deflate,dfl_lvl);
 
-  (void)nco_def_var(out_id, "grid_dims", NC_INT, dmn_nbr_1D, &dmn_ids[2], &grd_rnk_id);
+  (void)nco_def_var(out_id,dmn_sz_nm,NC_INT,dmn_nbr_1D,&dmn_ids[2],&grd_rnk_id);
 
   /* Begin data mode */
   (void)nco_enddef(out_id);
@@ -1454,13 +1469,13 @@ nco_grd_lon_typ_enm grd_lon_typ
   rcd=nco_put_var(out_id,grd_crn_lat_id,lat_crn,crd_typ);
   rcd=nco_put_var(out_id,grd_crn_lon_id,lon_crn,crd_typ);
 
-  rcd=nco_put_var(out_id, grd_area_id, area, crd_typ);
-  rcd=nco_put_var(out_id, grd_ctr_lon_id, lon_ctr, crd_typ);
-  rcd=nco_put_var(out_id, grd_ctr_lat_id, lat_ctr, crd_typ);
+  rcd=nco_put_var(out_id,grd_area_id,area,crd_typ);
+  rcd=nco_put_var(out_id,grd_ctr_lon_id,lon_ctr,crd_typ);
+  rcd=nco_put_var(out_id,grd_ctr_lat_id,lat_ctr,crd_typ);
 
-  rcd=nco_put_var(out_id,grd_msk_id, msk, NC_INT);
+  rcd=nco_put_var(out_id,grd_msk_id,msk,NC_INT);
 
-  rcd=nco_put_var(out_id,grd_rnk_id,&grd_sz_nbr, NC_INT);
+  rcd=nco_put_var(out_id,grd_rnk_id,&grd_sz_nbr,NC_INT);
 
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
