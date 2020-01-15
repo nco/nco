@@ -972,7 +972,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   *row_dst_adr_ptr=row_dst_adr;
   *lnk_nbr_ptr=lnk_nbr;
 
-  /* tally up weights see if they sum to number of dst grid cells */
+  /* Tally weights to check if they sum to number of dst grid cells */
   if(nco_dbg_lvl_get() >= nco_dbg_dev){
     size_t irow;
     size_t sz;
@@ -1833,6 +1833,7 @@ nco_map_chk /* Map-file evaluation */
   size_t idx_min;
   size_t idx_max;
   size_t sz;
+  size_t tally;
   
   var_sct **var_lst=NULL_CEWI;
 
@@ -1908,20 +1909,23 @@ nco_map_chk /* Map-file evaluation */
     if(idx < sz) has_area_b=False;
   } /* !var_area_b */
   if(var_frac_a){
+    tally=0L;
     has_frac_a=True;
     sz=var_frac_a->sz;
     val=var_frac_a->val.dp;
+    /* frac_a must have at least one non-zero value */
     for(idx=0;idx<sz;idx++)
-      if(val[idx] == 0.0) break;
-    if(idx < sz) has_frac_a=False;
+      if(val[idx] != 0.0) break;
+    if(idx == sz) has_frac_a=False;
   } /* !var_frac_a */
   if(var_frac_b){
     has_frac_b=True;
     sz=var_frac_b->sz;
     val=var_frac_b->val.dp;
+    /* frac_b must have at least one non-zero value */
     for(idx=0;idx<sz;idx++)
-      if(val[idx] == 0.0) break;
-    if(idx < sz) has_frac_b=False;
+      if(val[idx] != 0.0) break;
+    if(idx == sz) has_frac_a=False;
   } /* !var_frac_b */
 
   /* Start Report in own scope */
