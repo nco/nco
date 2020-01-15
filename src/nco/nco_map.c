@@ -1807,6 +1807,8 @@ nco_map_chk /* Map-file evaluation */
  nco_bool flg_area_wgt)
 {
   char fnc_nm[]="nco_map_chk()";
+  char idx_sng_fmt[5];
+  char *idx_sng=NULL;
   
   char dmn_nm[NC_MAX_NAME];
 
@@ -1817,6 +1819,7 @@ nco_map_chk /* Map-file evaluation */
   
   int dmn_in_nbr;
   int fl_in_fmt;
+  int idx_sng_lng_max;
   int in_id;
   int hst_sz_nnz;
   int rcd;
@@ -1965,8 +1968,15 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"Cell triplet elements : [Fortran (1-based) index, center latitude, center longitude]\n");
     fprintf(stdout,"Sparse matrix size n_s: %lu\n",var_S->sz);
     nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,&s_min,&idx_min,&s_max,&idx_max,&s_ttl,&avg,&mebs,&rms,&sdn);
-    fprintf(stdout,"Weight min S(%8lu): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_min+1UL,s_min,var_col->val.ip[idx_min],var_yc_a->val.dp[var_col->val.ip[idx_min]-1],var_xc_a->val.dp[var_col->val.ip[idx_min]-1],var_row->val.ip[idx_min],var_yc_b->val.dp[var_row->val.ip[idx_min]-1],var_xc_b->val.dp[var_row->val.ip[idx_min]-1]);
-    fprintf(stdout,"Weight max S(%8lu): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_max+1UL,s_max,var_col->val.ip[idx_max],var_yc_a->val.dp[var_col->val.ip[idx_max]-1],var_xc_a->val.dp[var_col->val.ip[idx_max]-1],var_row->val.ip[idx_max],var_yc_b->val.dp[var_row->val.ip[idx_max]-1],var_xc_b->val.dp[var_row->val.ip[idx_max]-1]);
+    idx_sng_lng_max=(long)ceil(log10((double)var_S->sz));
+    if(idx_sng_lng_max == (long)log10((double)var_S->sz)) idx_sng_lng_max++;
+    (void)sprintf(idx_sng_fmt,"%%%dlu",idx_sng_lng_max);
+    idx_sng=(char *)nco_malloc((idx_sng_lng_max+1UL)*sizeof(char));
+    (void)sprintf(idx_sng,idx_sng_fmt,idx_min+1UL);
+    //(void)fprintf(stdout,"idx_sng_fmt = %s, idx_sng = %s\n",idx_sng_fmt,idx_sng);
+    fprintf(stdout,"Weight min S(%s): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_sng,s_min,var_col->val.ip[idx_min],var_yc_a->val.dp[var_col->val.ip[idx_min]-1],var_xc_a->val.dp[var_col->val.ip[idx_min]-1],var_row->val.ip[idx_min],var_yc_b->val.dp[var_row->val.ip[idx_min]-1],var_xc_b->val.dp[var_row->val.ip[idx_min]-1]);
+    (void)sprintf(idx_sng,idx_sng_fmt,idx_max+1UL);
+    fprintf(stdout,"Weight max S(%s): % 0.16e from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_sng,s_max,var_col->val.ip[idx_max],var_yc_a->val.dp[var_col->val.ip[idx_max]-1],var_xc_a->val.dp[var_col->val.ip[idx_max]-1],var_row->val.ip[idx_max],var_yc_b->val.dp[var_row->val.ip[idx_max]-1],var_xc_b->val.dp[var_row->val.ip[idx_max]-1]);
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine extrema:\n");
       fprintf(stdout,"min(S): ncks --fortran -H --trd -d n_s,%lu -d n_a,%d -d n_b,%d -v S,row,col,.?_a,.?_b %s\n",idx_min+1UL,var_col->val.ip[idx_min],var_row->val.ip[idx_min],fl_in);
@@ -1978,10 +1988,12 @@ nco_map_chk /* Map-file evaluation */
     /* Print NaN locations in weight array */
     for(idx=0;idx<sz;idx++){
       if(isnan(val[idx])){
-	if(nco_dbg_lvl_get() >= nco_dbg_quiet) fprintf(stdout,"WARNING: Weight S(%8lu) = NaN from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx+1UL,var_col->val.ip[idx],var_yc_a->val.dp[var_col->val.ip[idx]-1],var_xc_a->val.dp[var_col->val.ip[idx]-1],var_row->val.ip[idx],var_yc_b->val.dp[var_row->val.ip[idx]-1],var_xc_b->val.dp[var_row->val.ip[idx]-1]);
+	(void)sprintf(idx_sng,idx_sng_fmt,idx+1UL);
+	if(nco_dbg_lvl_get() >= nco_dbg_quiet) fprintf(stdout,"WARNING: Weight S(%s) = NaN from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_sng,var_col->val.ip[idx],var_yc_a->val.dp[var_col->val.ip[idx]-1],var_xc_a->val.dp[var_col->val.ip[idx]-1],var_row->val.ip[idx],var_yc_b->val.dp[var_row->val.ip[idx]-1],var_xc_b->val.dp[var_row->val.ip[idx]-1]);
       } /* !isnan */
     } /* !idx */
     fprintf(stdout,"\n");
+    if(idx_sng) idx_sng=(char *)nco_free(idx_sng);
       
     int hst_idx;
     int *hst_wgt;

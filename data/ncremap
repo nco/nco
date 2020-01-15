@@ -986,9 +986,10 @@ elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_ty
     wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${np_se_nbr} --mono --volumetric"
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
-elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_fv2fv' ]; then # alg_sng='fv2fv'
-    # 20190227: Added --mono3 --noconserve for fv2fv per recommendation of Mark Taylor
-    wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --out_np 2 --mono3 --noconserve'
+elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ]; then # alg_sng='highorder'
+    # 20190227: Added --mono3 --noconserve for fv2fv per (misinterpreted)recommendation of Mark Taylor
+    # 20200115: Replaced --mono3 --noconserve with --in_np 2 per recommendation of Mark Taylor and Paul Ullrich
+    wgt_opt_tps='--in_type fv --in_np 2 --out_type fv'
     alg_opt='fv2fv'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'fv2fv_mono' ] || [ ${alg_typ} = 'conservative_monotone_fv2fv' ]; then # alg_sng='mono'

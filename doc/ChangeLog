@@ -1,5 +1,11 @@
 2020-01-15  Charlie Zender  <zender@sastrugi>
 
+	* ncremap disambiguate synonyms for fv2fv and fv2fv_stt, though they are now equivalent
+
+	* ncremap replace "--mono3 --noconserve" in fv2fv with "--in_np 2" per recommendation of Mark Taylor
+
+	* nco_chk_map() more compact format for weight index
+
 	* nco_chk_map() fix index in NaN printing
 
 2020-01-14  Charlie Zender  <zender@sastrugi>

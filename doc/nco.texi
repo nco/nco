@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.2-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 12 January 2020
+@set update-date 15 January 2020
 @set update-month January 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -23524,6 +23524,8 @@ Features common to many operators are described in
 <a name="se2se"></a> <!-- http://nco.sf.net/nco.html#se2se -->
 <a name="cs2cs"></a> <!-- http://nco.sf.net/nco.html#cs2cs -->
 <a name="fv2fv"></a> <!-- http://nco.sf.net/nco.html#fv2fv -->
+<a name="fv2fv_flx"></a> <!-- http://nco.sf.net/nco.html#fv2fv_flx -->
+<a name="fv2fv_stt"></a> <!-- http://nco.sf.net/nco.html#fv2fv_stt -->
 <a name="rll2rll"></a> <!-- http://nco.sf.net/nco.html#rll2rll -->
 <a name="nco_con"></a> <!-- http://nco.sf.net/nco.html#nco_con -->
 @end html
@@ -23601,6 +23603,8 @@ grids.
 @cindex @code{se2se}
 @cindex @code{cs2cs}
 @cindex @code{fv2fv}
+@cindex @code{fv2fv_flx}
+@cindex @code{fv2fv_stt}
 @cindex @code{rll2rll}
 @cindex @code{mono_se2fv}
 @cindex @code{conservative_monotone_se2fv}
@@ -23627,8 +23631,9 @@ for these algorithms (@code{se2fv_flx}, @code{se2fv_stt},
 @code{se2fv_alt}, @code{fv2se_flx}, @code{fv2se_stt}, and
 @code{fv2se_alt}), and also allows more mathematically precise
 synonyms (shown below).
-Two further boutique mappings (@code{fv2fv} and @code{se2se})
-complete the named Tempest algorithms.
+As of @acronym{NCO} version 4.9.0 (December, 2019), @command{ncremap} 
+added two further boutique mappings (@code{fv2fv_flx} and
+@code{fv2fv_stt}). 
 Finally, the @samp{-a tempest} algorithm can be specified with
 the precise TempestRemap options as arguments to the @samp{-W}
 (or @samp{--wgt_opt}) option. 
@@ -23700,12 +23705,12 @@ Options: @samp{--in_type cgll --in_np 4 --out_type fv --out_double}
 Options: @samp{--in_type fv --in_np 2 --out_type cgll --out_np 4 --volumetric}
 @item @code{se2fv_alt} (synonyms @code{intbilin_se2fv}, @code{accurate_monotone_nonconservative_se2fv}),
 Options: @samp{--in_type cgll --in_np 4 --out_type fv --mono3 --noconserve}
-@item @code{fv2se_alt} (synonyms @code{mono_fv2se}, @code{conservative_monotone_fv2se_alt}).
+@item @code{fv2se_alt} (synonyms @code{mono_fv2se}, @code{conservative_monotone_fv2se_alt}),
 Options: @samp{--in_type fv --in_np 1 --out_type cgll --out_np 4 --mono --volumetric}
 @item @code{se2se} (synonyms @code{cs2cs}, @code{conservative_monotone_se2se}),
 Options: @samp{--in_type cgll --in_np 4 --out_type cgll --out_np 4 --mono}
-@item @code{fv2fv} (synonyms @code{rll2rll}, @code{accurate_monotone_nonconservative_fv2fv}),
-Options: @samp{--in_type fv --in_np 2 --out_type fv --out_np 2 --mono3 --noconserve}
+@item @code{fv2fv} (synonyms @code{rll2rll}),
+Options: @samp{--in_type fv --in_np 2 --out_type fv}
 @item @code{fv2fv_flx} (synonyms @code{fv2fv_mono}, @code{conservative_monotone_fv2fv}),
 Options: @samp{--in_type fv --in_np 1 --out_type fv}
 @item @code{fv2fv_stt} (synonyms @code{fv2fv_highorder}, @code{accurate_conservative_nonmonotone_fv2fv}),
