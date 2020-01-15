@@ -398,8 +398,8 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Sysadmin upgrade request: rc-support@pnnl.gov # PNNL Maintainer = Tim Carlson ?
 # Latest ticket: 20190525 ICS-4099 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
-# Personal recipe last modified: 20190525
-# Personal recipe last used successfully: 20190525
+# Personal recipe last modified: 20200114
+# Personal recipe last used successfully: 20200114
 # 20190526: DAP functionality is present in libnetcdf but missing in my NCO because configure does not find libcurl although it is definitely in /lib64/libcurl.so.*
 # 20190806: Must load modules prior to (re-)building otherwise system GCC 4.8.5 C++ compiler will not link to g++ 8.1.0 Antlr library
 module purge
@@ -408,7 +408,7 @@ module load mvapich2/2.3.1 # Required for ncclimo/ncremap in MPI-mode
 module load netcdf/4.6.3
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' LDFLAGS='-L/lib64' NETCDF_INC='/share/apps/netcdf/4.6.3/gcc/8.1.0/include' NETCDF_LIB='/share/apps/netcdf/4.6.3/gcc/8.1.0/lib' UDUNITS2_PATH='/share/apps/udunits/2.2.26' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1

@@ -1972,6 +1972,15 @@ nco_map_chk /* Map-file evaluation */
       fprintf(stdout,"min(S): ncks --fortran -H --trd -d n_s,%lu -d n_a,%d -d n_b,%d -v S,row,col,.?_a,.?_b %s\n",idx_min+1UL,var_col->val.ip[idx_min],var_row->val.ip[idx_min],fl_in);
       fprintf(stdout,"max(S): ncks --fortran -H --trd -d n_s,%lu -d n_a,%d -d n_b,%d -v S,row,col,.?_a,.?_b %s\n",idx_max+1UL,var_col->val.ip[idx_max],var_row->val.ip[idx_max],fl_in);
     } /* !dbg */
+    /* Check for and report NaNs in weight array */
+    sz=var_S->sz;
+    val=var_S->val.dp;
+    /* Print NaN locations in weight array */
+    for(idx=0;idx<sz;idx++){
+      if(isnan(val[idx])){
+	if(nco_dbg_lvl_get() >= nco_dbg_quiet) fprintf(stdout,"WARNING: Weight S(%8lu) = NaN from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_max+1UL,var_col->val.ip[idx],var_yc_a->val.dp[var_col->val.ip[idx]-1],var_xc_a->val.dp[var_col->val.ip[idx]-1],var_row->val.ip[idx],var_yc_b->val.dp[var_row->val.ip[idx]-1],var_xc_b->val.dp[var_row->val.ip[idx]-1]);
+      } /* !isnan */
+    } /* !idx */
     fprintf(stdout,"\n");
       
     int hst_idx;

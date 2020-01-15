@@ -1,5 +1,7 @@
 2020-01-14  Charlie Zender  <zender@sastrugi>
 
+	* nco_chk_map() check for and report NaNs in weight array
+
 	* NCO 4.9.2-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha02: Big Horn';git push
 	git tag -a 4.9.2-alpha02 -m 'ncks chk_map() fixes; ccr lz4.cdl';git push --tags
