@@ -1,5 +1,11 @@
 2020-01-15  Charlie Zender  <zender@sastrugi>
 
+	* NCO 4.9.2-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha03: Alta Vista';git push
+	git tag -a 4.9.2-alpha03 -m 'ncks chk_map() NaN fixes; ncremap fv2fv options';git push --tags
+
+	* nco_chk_map() report differences in order cmp_dsk_dff not dsk_cmp_dff
+
 	* ncremap disambiguate synonyms for fv2fv and fv2fv_stt, though they are now equivalent
 
 	* ncremap replace "--mono3 --noconserve" in fv2fv with "--in_np 2" per recommendation of Mark Taylor
