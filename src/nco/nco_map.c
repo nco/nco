@@ -1978,7 +1978,7 @@ nco_map_chk /* Map-file evaluation */
     /* Print NaN locations in weight array */
     for(idx=0;idx<sz;idx++){
       if(isnan(val[idx])){
-	if(nco_dbg_lvl_get() >= nco_dbg_quiet) fprintf(stdout,"WARNING: Weight S(%8lu) = NaN from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx_max+1UL,var_col->val.ip[idx],var_yc_a->val.dp[var_col->val.ip[idx]-1],var_xc_a->val.dp[var_col->val.ip[idx]-1],var_row->val.ip[idx],var_yc_b->val.dp[var_row->val.ip[idx]-1],var_xc_b->val.dp[var_row->val.ip[idx]-1]);
+	if(nco_dbg_lvl_get() >= nco_dbg_quiet) fprintf(stdout,"WARNING: Weight S(%8lu) = NaN from cell [%d,%+g,%+g] to [%d,%+g,%+g]\n",idx+1UL,var_col->val.ip[idx],var_yc_a->val.dp[var_col->val.ip[idx]-1],var_xc_a->val.dp[var_col->val.ip[idx]-1],var_row->val.ip[idx],var_yc_b->val.dp[var_row->val.ip[idx]-1],var_xc_b->val.dp[var_row->val.ip[idx]-1]);
       } /* !isnan */
     } /* !idx */
     fprintf(stdout,"\n");

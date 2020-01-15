@@ -1,3 +1,7 @@
+2020-01-15  Charlie Zender  <zender@sastrugi>
+
+	* nco_chk_map() fix index in NaN printing
+
 2020-01-14  Charlie Zender  <zender@sastrugi>
 
 	* nco_chk_map() check for and report NaNs in weight array
