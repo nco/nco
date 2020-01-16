@@ -5420,18 +5420,44 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	/* Only first triangle must search for B, subsequent triangles recycle previous C as current B */
 	if(tri_nbr == 0){
 	  /* Skip repeated points that must occur when polygon has fewer than allowed vertices */
-	  while(lon_bnd[idx_a] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_a] == lat_bnd[idx_a+bnd_idx]){
-	    /* Next vertice may not duplicate A */
-	    bnd_idx++;
-	    /* If there is no room for C then all triangles found */
-	    if(bnd_idx == bnd_nbr-1) break;
-	  } /* !while */
+	  /* 20200115: Prior to today we never skipped polar points (same latitudes but different longitudes)
+	     That worked fine in practice for spherical triangles partly because triangles from CSZ decomposition 
+	     (aka hub-and-spoke decomposition) are additive, even with multiple points on the same great circle,
+	     and partly due to luck (a starting vertex surrounded by points on the same geodesic would break it).
+	     Moreover, repeated polar points pose no issues for L'Huilier's (or Girard's) method which depends
+	     only on the interior angles and side lengths, not the longitudes of polar points.
+	     Small circles change that last part, and we must now eliminate repeated polar points. */
+	  if(edg_typ == nco_edg_smc){
+	    /* Skip repeated numerically identical points */
+	    while(lon_bnd[idx_a] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_a] == lat_bnd[idx_a+bnd_idx]){
+	      /* Next vertice may not duplicate A */
+	      bnd_idx++;
+	      /* If there is no room for C then all triangles found */
+	      if(bnd_idx == bnd_nbr-1) break;
+	    } /* !while */
+	    /* Skip geometrically identical (i.e., repeated polar) points */
+	    while((fabs(lat_bnd[idx_a]) == 90.0) && (fabs(lat_bnd[idx_a+bnd_idx]) == 90.0)){
+	      bnd_idx++;
+	      if(bnd_idx == bnd_nbr-1) break;
+	    } /* !while */
+	  }else if(edg_typ != nco_edg_smc){
+	    /* Spherical polygongs can use simpler, pre-20200116 algorithm to eliminate repeated points */
+	    while(lon_bnd[idx_a] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_a] == lat_bnd[idx_a+bnd_idx]){
+	      /* Next vertice may not duplicate A */
+	      bnd_idx++;
+	      /* If there is no room for C then all triangles found */
+	      if(bnd_idx == bnd_nbr-1) break;
+	    } /* !while */
+	  }else{
+	    abort();
+	  } /* !edg_typ */
 	  /* Jump to next column when all triangles found */
 	  if(bnd_idx == bnd_nbr-1) break;
 	} /* !tri_nbr */
 	idx_b=idx_a+bnd_idx;
 	/* Search for C at next vertice */
 	bnd_idx++;
+	/* fxm */
 	while(lon_bnd[idx_b] == lon_bnd[idx_a+bnd_idx] && lat_bnd[idx_b] == lat_bnd[idx_a+bnd_idx]){
 	  /* Next vertice may not duplicate B */
 	  bnd_idx++;
@@ -5612,8 +5638,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       if(lat_bnd_rdn[idx_a] == lat_bnd_rdn[idx_b] ||
 	 lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c] ||
 	 lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
-	flg_ply_has_smc=flg_tri_crr_smc=True;
-	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG Found small circle triangle with ABC vertices at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
+	/* Set flag only if triangle is not degenerate. Degenerate triangles (3 points on a geodesic) have zero area */
+	if(xcs_sph != 0.0) flg_ply_has_smc=flg_tri_crr_smc=True;
+	if(nco_dbg_lvl_get() >= nco_dbg_io) (void)fprintf(stdout,"%s: DEBUG Found small circle triangle with vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
       } /* endif */
       if((edg_typ == nco_edg_smc) && flg_tri_crr_smc){
 	double ngl_plr; /* [rdn] Polar angle (co-latitude) */
@@ -5646,18 +5673,26 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  ngl_ltr_c=ngl_a;
 	  ngl_plr=fabs(M_PI_2-lat_bnd_rdn[idx_c]);
 	}else{
-	  (void)fprintf(stdout,"%s: ERROR latitudes not equal in small circle section. ABC vertices at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
+	  (void)fprintf(stdout,"%s: ERROR latitudes not equal in small circle section. Vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
 	  abort();
 	} /* endif */
 	/* 20160918: Compute exact area of latitude triangle wedge */
 	double xpn_x; /* [frc] Expansion parameter */
 	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_ltr_b],lon_bnd_rdn[idx_ltr_c]));
+	if(lon_dlt == 0.0){
+	  (void)fprintf(stdout,"%s: ERROR longitudes equal in small circle section. Vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
+	  (void)fprintf(stdout,"%s: DEBUG col_nbr=%lu, bnd_nbr=%d, col_idx=%ld, area=%g. Vertices [0..bnd_nbr-1] in format idx (lat,lon)\n",nco_prg_nm_get(),col_nbr,bnd_nbr,col_idx,xcs_sph);
+	  for(int bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
+	    (void)fprintf(stdout,"%2d (%g, %g)\n",bnd_idx,lat_bnd[bnd_nbr*col_idx+bnd_idx],lon_bnd[bnd_nbr*col_idx+bnd_idx]);
+	} /* lon_dlt */
+	assert(lon_dlt != 0.0 && lon_dlt != M_PI);
 	/* Numeric conditioning uncertain. Approaches divide-by-zero when lon_dlt << 1 */
 	xpn_x=lat_bnd_sin[idx_ltr_b]*(1.0-cos(lon_dlt))/sin(lon_dlt);
+	assert(fabs(xpn_x) != M_PI_2);
 	area_smc_crc=2.0*atan(xpn_x);
 	/* 20170217: Sungduk's POP regrid triggers following abort():
 	   ncremap -D 1 -i ~/pop_g16.nc -d ~/cam_f19.nc -o ~/foo.nc */
-	assert(xpn_x >= 0.0);
+	//assert(xpn_x >= 0.0);
 	//if(lat_bnd[idx_ltr_b] > 0.0) area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_smc_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
 	area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b];
 	// Adjust diagnostic areas by small-circle area correction
@@ -5693,7 +5728,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	if(nco_dbg_lvl_get() >= nco_dbg_scl){
 	  (void)fprintf(stdout,"%s: INFO %s col_idx = %li triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,xcs_sph,xcs_sph+area_smc_crc,100.0*area_smc_crc/xcs_sph);
 	  if(fabs(area_smc_crc/xcs_sph) > 0.1){
-	    (void)fprintf(stdout,"%s: DEBUG Non-spherical correction exceeds 10%% for current triangle with ABC vertices at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
+	    (void)fprintf(stdout,"%s: DEBUG Non-spherical correction exceeds 10%% for current triangle with vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
 	  } /* !fabs */
 	} /* !dbg */
       } /* !edg_typ && flg_tri_crr_smc */

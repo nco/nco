@@ -796,7 +796,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   if(mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
     /* 20200116 fxm change back to poly_rll */
     pl_typ=poly_rll;
-  /*    pl_typ=poly_sph;*/
+    /*   pl_typ=poly_sph;*/
   else
     pl_typ=poly_sph;
 
