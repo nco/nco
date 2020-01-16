@@ -7,7 +7,7 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.9.2 contains...
+Version 4.9.2 contains regridding fixes and features.
 
 Work on NCO 4.9.3 has commenced and will improve NCO weight-generator  
 accuracy, reduce vertical interpolation memory use, and supply more
@@ -25,13 +25,25 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap changes blah blah blah
-   ncremap -a nco -s grd_src.nc -d grd_dst.nc -m map.nc   # New default
-   http://nco.sf.net/nco.html#ncremap
+A. ncremap --chk_map checks for and reports NaN weights.
+   Previously chk_map generally ignored NaNs in the weight array.
+   The format of the analysis report has also been improved.
+   ncremap --chk_map map.nc
+   http://nco.sf.net/nco.html#chk_map
 
 BUG FIXES:
 
-A. Hi
+A. ncks --chk_map statistics no longer scrambled.
+   Statistics of "normal" global->global conservative maps are
+   unaffected. Some other types of map-files are.
+   There is no workaround. Solution is to upgrade.
+   http://nco.sf.net/nco.html#chk_map
+
+B. ncremap --alg_typ=fv2fv now implements the same TempestRemap
+   options as --alg_typ=fv2fv_stt. The previous fv2fv options
+   were not actually as described.
+   http://nco.sf.net/nco.html#fv2fv
+   http://nco.sf.net/nco.html#fv2fv_stt
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

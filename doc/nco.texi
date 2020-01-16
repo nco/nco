@@ -20769,6 +20769,25 @@ $ ncks --chk_map --area_wgt map.nc # Area-weighted statistics
 @end verbatim
 @end example
 
+The analysis computes @code{frac_b} as row-sums of the weight array,
+and compares this to the stored values of @code{frac_b}.
+@code{frac_b} in the file may differ from the row-sum for example if
+the map-file generator artificially limits the stored @code{frac_b}
+value for any cell to 1.0 for those row-sums that exceed 1.0.
+This precautions is necessary because there are semi-valid reasons a
+map-generator might do this.
+Computing row-sums and comparing to stored @code{frac_b} catches any
+such discrepancies.
+The analysis sounds an alarm when discrepancies exceed a tolerance
+(5.0e-16).  
+
+Note that @code{frac_b} min/max are generally not perfect (1.0) for
+global grids, and reporting the detectable biases is a prime feature
+of the checker. 
+When invoked with area-weighting as @samp{ncks --area_wgt --chk_map},
+the global weighted mean of @code{frac_b} will alter the unweighted
+statistics (min/max will not change). 
+
 @html
 <a name="chk_nan"></a> <!-- http://nco.sf.net/nco.html#chk_nan -->
 @end html

@@ -326,7 +326,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   // if(area_out_id == NC_MIN_INT)
   for(idx=0;idx<grd_sz_out;idx++) area_out[idx]=-1.0;
 
-  /* if msk_in not in file the set each member to "True" */
+  /* If msk_in not in file then set mask in each to "True" */
   if(msk_out_id == NC_MIN_INT)
     for(idx=0;idx<grd_sz_out;idx++) msk_out[idx]=1;
 
@@ -469,13 +469,14 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   size_t wgt_nbr=1L; /* [nbr] Number of weights */
   size_t lnk_nbr; /* [nbr] Number of links */
-  //size_t lnk_idx; /* [idx] Link index */
 
   deflate=(int)True;
   shuffle=NC_SHUFFLE;
   dfl_lvl=rgr->dfl_lvl;
   fl_out_fmt=rgr->fl_out_fmt;
   fl_out=rgr->fl_map;
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG calling nco_msh_mk()...\n",nco_prg_nm_get());
 
   /* Define overlap mesh vertices, count links, compute overlap weights
      This includes Mohammad Abouali code to create triangle list and Zender code to compute triangle areas */
@@ -484,6 +485,8 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
      area_in,msk_in,lat_ctr_in,lon_ctr_in,lat_crn_in,lon_crn_in,
      area_out,msk_out,lat_ctr_out,lon_ctr_out,lat_crn_out,lon_crn_out,
      frc_in,frc_out,&col_src_adr,&row_dst_adr,&wgt_raw,&lnk_nbr);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG return from nco_msh_mk()...\n",nco_prg_nm_get());
 
   if(False && nco_dbg_lvl_get() >= nco_dbg_quiet){
     /* 20191012: Normalize areas and weights to yield 4*pi steradians for global grids
@@ -803,7 +806,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   if(nco_dbg_lvl_get() >= nco_dbg_crr)
      (void)fprintf(stderr,"%s:%s(): Interpolation type=%s\n",nco_prg_nm_get(),fnc_nm, nco_poly_typ_sng_get(pl_typ)  );
 
-  /* create some statistics on grid in and grid out */
+  /* Create some statistics on grid in and grid out */
   pl_glb_in=nco_msh_stats(area_in,msk_in,lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in,grd_sz_in, grd_crn_nbr_in);
   pl_glb_out=nco_msh_stats(area_out,msk_out,lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out,grd_sz_out, grd_crn_nbr_out);
 

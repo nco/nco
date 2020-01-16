@@ -83,6 +83,11 @@ drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
 spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
 
+# 20200110 Qi Tang reports his batch scripts on Cori that use netCDF4 map-files fail unless he sets this
+if [ -z "${HDF5_USE_FILE_LOCKING}" ]; then
+    export HDF5_USE_FILE_LOCKING='FALSE'
+fi # HDF5_USE_FILE_LOCKING
+
 # Configure paths at High-Performance Computer Centers (HPCCs) based on ${HOSTNAME}
 if [ -z "${HOSTNAME}" ]; then
     if [ -f /bin/hostname ] && [ -x /bin/hostname ]; then
