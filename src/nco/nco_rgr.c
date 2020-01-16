@@ -5613,9 +5613,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	 lat_bnd_rdn[idx_b] == lat_bnd_rdn[idx_c] ||
 	 lat_bnd_rdn[idx_c] == lat_bnd_rdn[idx_a]){
 	flg_ply_has_smc=flg_tri_crr_smc=True;
+	if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG Found small circle triangle with ABC vertices at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
       } /* endif */
-      //      flg_ply_has_smc=flg_tri_crr_smc=False;
-      if(edg_typ == nco_edg_smc && flg_tri_crr_smc){
+      if((edg_typ == nco_edg_smc) && flg_tri_crr_smc){
 	double ngl_plr; /* [rdn] Polar angle (co-latitude) */
 	long idx_ltr_a; /* [idx] Point A (apex) of canonical latitude-triangle geometry, 1-D index */
 	long idx_ltr_b; /* [idx] Point B (base) of canonical latitude-triangle geometry, 1-D index */
@@ -5646,6 +5646,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  ngl_ltr_c=ngl_a;
 	  ngl_plr=fabs(M_PI_2-lat_bnd_rdn[idx_c]);
 	}else{
+	  (void)fprintf(stdout,"%s: ERROR latitudes not equal in small circle section. ABC vertices at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
 	  abort();
 	} /* endif */
 	/* 20160918: Compute exact area of latitude triangle wedge */
@@ -5656,7 +5657,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	area_smc_crc=2.0*atan(xpn_x);
 	/* 20170217: Sungduk's POP regrid triggers following abort():
 	   ncremap -D 1 -i ~/pop_g16.nc -d ~/cam_f19.nc -o ~/foo.nc */
-	if(xpn_x < 0.0) abort();
+	assert(xpn_x >= 0.0);
 	//if(lat_bnd[idx_ltr_b] > 0.0) area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_smc_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
 	area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b];
 	// Adjust diagnostic areas by small-circle area correction

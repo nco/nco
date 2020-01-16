@@ -709,7 +709,6 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   return rcd;
 } /* !nco_map_mk() */
 
-
 int /* O [enm] Return code */
 nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 (rgr_sct * const rgr, /* I [sct] Regridding structure */
@@ -750,7 +749,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   int pl_cnt_in=0;
   int pl_cnt_out=0;
 
-
   long grd_crn_nbr_in;    /* [nbr] Maximum number of corners in source gridcell */
   long grd_crn_nbr_out;  /*  [nbr] Maximum number of corners in destination gridcell */
   size_t grd_sz_in;       /* [nbr] Number of elements in single layer of source grid */
@@ -772,7 +770,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   int pl_cnt_vrl=0;
 
-
   poly_sct *pl_glb_in=NULL_CEWI;
   poly_sct *pl_glb_out=NULL_CEWI;
 
@@ -785,21 +782,21 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   KDTree *rtree=NULL_CEWI;
 
-
   grd_crn_nbr_in=mpf->src_grid_corners;
   grd_crn_nbr_out=mpf->dst_grid_corners;
 
   grd_sz_in=mpf->src_grid_size;
   grd_sz_out=mpf->dst_grid_size;
 
-
   /* Construct overlap mesh here
      NB: Parallelize loop with OpenMP and/or MPI
      Final lnk_nbr and grd_crn_nbr_vrl are known only after a full loop through input grids */
 
-  /* choose mesh overlap type based on rank of src and dst */
+  /* Choose mesh overlap type based on rank of src and dst */
   if(mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
+    /* 20200116 fxm change back to poly_rll */
     pl_typ=poly_rll;
+  /*    pl_typ=poly_sph;*/
   else
     pl_typ=poly_sph;
 
@@ -1329,8 +1326,7 @@ nco_msh_poly_lst_wrt
 (const char *fl_out,
 poly_sct ** pl_lst,
 int pl_nbr,
-nco_grd_lon_typ_enm grd_lon_typ
-)
+nco_grd_lon_typ_enm grd_lon_typ)
 {
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
