@@ -31,6 +31,16 @@ A. ncremap --chk_map checks for and reports NaN weights.
    ncremap --chk_map map.nc
    http://nco.sf.net/nco.html#chk_map
 
+A. ncremap and ncclimo both now export HDF5_USE_FILE_LOCKING='FALSE'
+   unless that environment variable already exists. This has proven
+   useful at preventing mysterious crashes, especially in batch mode.
+
+A. NCO's weight generator can now read unstructured SCRIP gridfiles
+   created by TempestRemap utilities thatand converted that do not
+   include the (supposedly standard) "grid_dims" variable when they
+   convert the Exodus file to SCRIP. The unstructured dimension size
+   is used instead of the contents of the "grid_dims" variable.
+   
 BUG FIXES:
 
 A. ncks --chk_map statistics no longer scrambled.

@@ -2,7 +2,7 @@
 
 	* NCO 4.9.2-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha03: Alta-Vista';git push
-	git tag -a 4.9.2-alpha03 -m 'ncks chk_map() NaN fixes; ncremap fv2fv options';git push --tags
+	git tag -a 4.9.2-alpha03 -m 'ncks chk_map() NaN fixes; ncremap fv2fv options, TR pg2 compatibility';git push --tags
 
 	* ncclimo and ncremap now export HDF5_USE_FILE_LOCKING='FALSE'
 	Qi Tang reported 20200110 that his batch scripts on Cori that use netCDF4 map-files fail unless he sets this
