@@ -983,19 +983,22 @@ int *pl_cnt_vrl_ret){
 
           }
 
-          if(bDirtyRats && pl_vrl && !nco_sph_is_convex(pl_vrl->shp, pl_vrl->crn_nbr) )
-          {
-
-            (void) fprintf(stderr, "/************* concave overlap plygon***********/\n");
-            nco_poly_prn(pl_lst_in[idx],0);
-            nco_poly_prn(pl_out,0);
-            nco_poly_prn(pl_vrl, 0);
-            (void) fprintf(stderr, "/***********************************************/\n");
-
-          }
 
 
         }
+
+
+        if(bDirtyRats && pl_vrl && !nco_sph_is_convex(pl_vrl->shp, pl_vrl->crn_nbr) )
+        {
+
+          (void) fprintf(stderr, "/************* concave overlap plygon***********/\n");
+          nco_poly_prn(pl_lst_in[idx],0);
+          nco_poly_prn(pl_out,0);
+          nco_poly_prn(pl_vrl, 0);
+          (void) fprintf(stderr, "/***********************************************/\n");
+
+        }
+
 
 
 

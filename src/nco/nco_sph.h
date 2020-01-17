@@ -102,6 +102,20 @@ extern "C" {
 #endif /* !__cplusplus */
 
 /*---------------------------------------------------------------------
+Structures
+---------------------------------------------------------------------*/
+
+/* vertex info  */
+typedef struct {
+  poly_vrl_flg_enm  in_flag;  /* if P_in - vertex from a, Q_in Vertex from b */
+  int p_vrt;                  /* if -1 then genuine intersection */
+  int q_vrt;
+  double p0[NBR_SPH];           /* actual point - used for debuggging */
+}vrt_info_sct;
+
+
+
+/*---------------------------------------------------------------------
 Function prototypes.
 ---------------------------------------------------------------------*/
 
@@ -112,10 +126,17 @@ char
 nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p, double *q);
 
 nco_bool
-nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int flg_snp_to, char *codes);
+nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes);
+
+int
+nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], nco_edg_typ_enm rgr_edg_typ,   nco_edg_typ_enm *p_edg_typ, nco_edg_typ_enm *q_edg_typ);
 
 char
 nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag );
+
+nco_bool
+nco_sph_seg_smc(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes);
+
 
 nco_bool
 nco_sph_seg_vrt_int(double *a, double *b, double *c);
@@ -167,6 +188,12 @@ nco_sph_adi(double *a, double *b);
 
 void
 nco_sph_add_pnt(double **R, int *r, double *P);
+
+bool
+nco_sph_vrt_info_cmp( vrt_info_sct *info_a, vrt_info_sct *info_b);
+
+void
+nco_sph_add_pnt_chk( vrt_info_sct *vrt_info, poly_vrl_flg_enm inflag, int p_vrt, int q_vrt,  double **R, int *r, double *P);
 
 nco_bool
 nco_sph_between(double a, double b, double x);

@@ -9,7 +9,7 @@
 
 #include "nco_map.h" /* Map generation */
 
-static rgr_sct *map_rgr;
+rgr_sct *map_rgr;
 
 int /* O [enm] Return code */
 nco_map_mk /* [fnc] Create ESMF-format map file */
