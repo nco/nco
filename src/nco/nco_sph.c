@@ -49,6 +49,7 @@
 #include "nco_sph.h" /* Spherical geometry intersections */
 
 
+extern rgr_sct *map_rgr;
 
 /* all in this file */
 int DEBUG_SPH=0;
@@ -111,7 +112,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
    double dx1;
 
 
-   char codes[]="00";
+   char codes[]="0000";
 
    double Pcross[NBR_SPH];
    double Qcross[NBR_SPH];
@@ -123,6 +124,10 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
    vrt_info_sct  vrt_info[VP_MAX];
 
    poly_vrl_flg_enm inflag= poly_vrl_unk;
+
+   nco_edg_typ_enm p_edg_typ=nco_edg_gtc;
+   nco_edg_typ_enm q_edg_typ=nco_edg_gtc;
+
 
    n=P->crn_nbr;
    m=Q->crn_nbr;
@@ -162,7 +167,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      nx3= nco_sph_cross(Pcross, Qcross, Xcross);
 
 
-     nco_sph_mk_pqcross(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b], Qcross, pqCross, False );
+     nco_sph_mk_pqcross(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b], Qcross, pqCross, map_rgr->edg_typ, &p_edg_typ, &q_edg_typ);
 
 
      /* save Cross before implied */
@@ -241,9 +246,10 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
           char pcode='0';
           poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
 
-          pcode = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
-
-
+          if(q_edg_typ == p_edg_typ == nco_edg_gtc  )
+            pcode = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
+          else if(p_edg_typ == q_edg_typ == nco_edg_smc )
+            pcode = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
 
           if (  !(pcode=='1' && inflag== poly_vrl_unk)  &&   lcl_inflag != poly_vrl_unk   ) {
 
@@ -285,41 +291,48 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
         }
 
 
-        if( pqCross[0]*pqCross[1]==-1  && pqCross[2]*pqCross[3]==-1 &&
-             nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes) )
+        if( pqCross[0]*pqCross[1]==-1  && pqCross[2]*pqCross[3]==-1)
         {
+          nco_bool bInt=False;
 
-          /* if here then there is some kind of intersection
-           * nb IMPORTANT - if inflag is unset then first intersection must be proper to set the inflag
-           * i.e NOT an edge or vertex intersection */
-          if(inflag != poly_vrl_unk || (codes[0]=='1' && codes[1]=='1') )
-            inflag = (pqCross[1] == 1 ? poly_vrl_pin : pqCross[3] == 1 ? poly_vrl_qin : inflag);
+          if(p_edg_typ == q_edg_typ == nco_edg_gtc )
+              bInt=nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes);
+          else if(p_edg_typ==nco_edg_gtc && q_edg_typ== nco_edg_smc)
+              bInt=nco_sph_seg_smc(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes);
+          else if(p_edg_typ==nco_edg_smc && q_edg_typ== nco_edg_gtc)
+              bInt=nco_sph_seg_smc( Q->shp[b1], Q->shp[b], P->shp[a1], P->shp[a],  p, q, pqCrossOriginal, flg_snp_to, codes);
 
 
+          if(bInt) {
+            /* if here then there is some kind of intersection
+             * nb IMPORTANT - if inflag is unset then first intersection must be proper to set the inflag
+             * i.e NOT an edge or vertex intersection */
+            if (inflag != poly_vrl_unk || (codes[0] == '1' && codes[1] == '1'))
+              inflag = (pqCross[1] == 1 ? poly_vrl_pin : pqCross[3] == 1 ? poly_vrl_qin : inflag);
 
-          if(inflag != poly_vrl_unk)
-          {
-            int p_arg;
-            int q_arg;
 
-            p_arg=( codes[0]=='h' ? a : codes[0]=='t' ? a1 : -1 );
-            q_arg=( codes[1]=='h' ? b : codes[1]=='t' ? b1 : -1 );
+            if (inflag != poly_vrl_unk) {
+              int p_arg;
+              int q_arg;
 
-            nco_sph_add_pnt_chk( vrt_info, inflag,p_arg, q_arg, R->shp, r, p);
+              p_arg = (codes[0] == 'h' ? a : codes[0] == 't' ? a1 : -1);
+              q_arg = (codes[1] == 'h' ? b : codes[1] == 't' ? b1 : -1);
 
-            if (numIntersect++ == 0) {
-              /* reset counters */
-              aa = 0;
-              bb = 0;
+              nco_sph_add_pnt_chk(vrt_info, inflag, p_arg, q_arg, R->shp, r, p);
+
+              if (numIntersect++ == 0) {
+                /* reset counters */
+                aa = 0;
+                bb = 0;
+              }
+
+
             }
 
 
-          }
-
-
-          if (DEBUG_SPH)
+            if (DEBUG_SPH)
               printf("%%InOut sets inflag=%s\n", nco_poly_vrl_flg_sng_get(inflag));
-
+          }
 
         }
 
@@ -397,13 +410,13 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 }
 
 int
-nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], nco_bool flg_smc )
+nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], nco_edg_typ_enm rgr_edg_typ,   nco_edg_typ_enm *p_edg_typ, nco_edg_typ_enm *q_edg_typ)
 {
 
   nco_bool isP_LatCircle =False;
   nco_bool isQ_LatCircle =False;
 
-  if(flg_smc){
+  if(rgr_edg_typ == nco_edg_smc ){
     isP_LatCircle = nco_rll_is_lat_circle(p0, p1);
     isQ_LatCircle = nco_rll_is_lat_circle(q0, q1);
   }
@@ -413,7 +426,7 @@ nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  
 
     pqCross[0] = nco_rll_lhs_lat(p0, q0, q1);
     pqCross[1] = nco_rll_lhs_lat(p1, q0, q1);
-  } else {
+  }else{
     pqCross[0] = nco_sph_lhs(p0, qCross);
     pqCross[1] = nco_sph_lhs(p1, qCross);
 
@@ -430,6 +443,10 @@ nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  
   }
 
 
+  *p_edg_typ= ( isP_LatCircle ? nco_edg_smc : nco_edg_gtc );
+  *q_edg_typ= ( isQ_LatCircle ? nco_edg_smc : nco_edg_gtc );
+
+  return;
 
 }
 
@@ -1041,7 +1058,7 @@ nco_sph_seg_smc   /* intersect great circles and small circles */
    * Determine the line of intertection of the plane containing the great arc and the plane
    * containing the small circle.
    *
-   * plane of great circle N components ( n0, n1, n2)
+   * plane of great circle  components ( n0, n1, n2)
    * plane of small circle H components ( 0.0, 0.0, h2)
    * unit vectors (i, j, k)
    *
@@ -1067,32 +1084,31 @@ nco_sph_seg_smc   /* intersect great circles and small circles */
    * */
 
   const char fnc_nm[]="nco_sph_seg_smc()";
-  double nd1=0.0;
-  double nd2=0.0;
-  double Pcst=0.0;
-  double pqdot;
 
+  nco_bool bSetr0=False;
+  nco_bool bSetr1=False;
+
+  int flg_ab=0;
+  int flg_cd=0;
+
+  double pqdot;
   double s0=0.0;
   double s1=0.0;
+  double dtmp = 0.0;
+  double nd1;
 
   double PCross[NBR_SPH] = {0.0};
-
   double P[NBR_SPH] = {0.0};
-
   double Q[NBR_SPH] = {0.0};
-
   double N[NBR_SPH] = {0.0};
 
-  double h2 = 0.0;
 
-  double dtmp = 0.0;
+
 
 
 
   /* set codes to 0 */
-  codes[0] = '0';
-  codes[1] = '0';
-
+  strcpy(codes,"0000");
 
   /* nb remember cross normalizes */
   nd1 = nco_sph_cross(p0, p1, PCross);
@@ -1136,8 +1152,6 @@ nco_sph_seg_smc   /* intersect great circles and small circles */
   /* from here on we have one or two solutions */
   dtmp = sqrt(dtmp);
 
-
-
   s0=dtmp;
   s1-=dtmp;
 
@@ -1149,23 +1163,57 @@ nco_sph_seg_smc   /* intersect great circles and small circles */
   r0[0]+=P[0]; r0[1]+=P[1] ; r0[2]+=P[2];
 
   nco_sph_add_lonlat(r0);
+  flg_ab=nco_sph_metric_int(p0,p1, r0);
+  flg_cd=nco_sph_metric_int(q0,q1,r0 );
 
-  codes[0]='1';
+  if(flg_ab && flg_cd )
+  {
+    codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
+    codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
+    bSetr0=True;
+  }
+
+  if(dtmp==0.0 )
+    return bSetr0;
+
+
 
   /* now plug s0  into line formula */
   if(dtmp>0.0) {
+    flg_ab=0;
+    flg_cd=0;
+
+
     nco_sph_adi(r1, Q);
     nco_sph_mlt(r1, s1);
     nco_sph_add(r1, P, r1);
 
     nco_sph_add_lonlat(r1);
 
-    codes[1]='1';
+    flg_ab=nco_sph_metric_int(p0,p1, r1);
+    flg_cd=nco_sph_metric_int(q0,q1,r1 );
+
+    if(flg_ab && flg_cd )
+    {
+      codes[2]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
+      codes[3]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
+      bSetr1=True;
+    }
+
+
   }
 
 
+  /* shuffle the codes and vectors if r0 unset and r1 set */
+  if(!bSetr0 && bSetr1)
+  {
+    codes[0]=codes[2];
+    codes[1]=codes[3];
+    codes[2]='0';
+    codes[3]='0';
+    nco_sph_adi(r0,r1);
 
-
+  }
 
 
   if(DEBUG_SPH) {
@@ -1173,11 +1221,13 @@ nco_sph_seg_smc   /* intersect great circles and small circles */
     fprintf(stderr, "%s: radius r0=%.15f\n",fnc_nm, nco_sph_rad(r0));
     nco_sph_prn_pnt("nco_sph_seg_smc() - second soln", r1, 4, True);
     fprintf(stderr, "%s: radius r1=%.15f\n",fnc_nm, nco_sph_rad(r1));
+    fprintf(stderr, "%s: codes=%s\n",fnc_nm, codes);
 
   }
 
 
-  return True;
+
+    return (bSetr0 || bSetr1);
 
 
 }
