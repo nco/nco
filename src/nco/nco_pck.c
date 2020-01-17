@@ -1089,7 +1089,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
 
   /* Routine should be called with variable already in memory */
   if(var->val.vp == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_var_upk() called with empty var->val.vp\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR %s called with empty var->val.vp\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
 

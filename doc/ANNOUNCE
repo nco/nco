@@ -49,11 +49,19 @@ A. ncks --chk_map statistics no longer scrambled.
    There is no workaround. Solution is to upgrade.
    http://nco.sf.net/nco.html#chk_map
 
-B. ncremap --alg_typ=fv2fv now implements the same TempestRemap
+A. ncremap --alg_typ=fv2fv now implements the same TempestRemap
    options as --alg_typ=fv2fv_stt. The previous fv2fv options
-   were not actually as described.
+   were not actually as described. Solution is to upgrade.
    http://nco.sf.net/nco.html#fv2fv
    http://nco.sf.net/nco.html#fv2fv_stt
+
+A. ncpdq -U now always unpacks all variables, including packed
+   grid variables (like "lat"). Previously it would not unpack 
+   variables with specially reserved grid names ("lat", "lon", etc.).
+   Thanks to Susan Rennie for reporting this issue.  
+   This fixes a bug introduced in NCO 4.7.7. Solution is to use
+   earlier versions of NCO or to upgrade.
+   http://nco.sf.net/nco.html#ncpdq
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

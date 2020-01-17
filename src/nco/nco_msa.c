@@ -1732,12 +1732,12 @@ do_upk:
   (void)nco_pck_dsk_inq(grp_id, var_in);
 
   /* Packing/Unpacking */
-  if (nco_is_rth_opr(nco_prg_id_get())) {
+  if(nco_is_rth_opr(nco_prg_id_get())){
     /* Arithmetic operators must unpack variables before performing arithmetic
     Otherwise arithmetic will produce garbage results */
     /* 20050519: Not sure why I originally made nco_var_upk() call SMP-critical
     20050629: Making this region multi-threaded causes no problems */
-    if (var_in->pck_dsk) var_in = nco_var_upk(var_in);
+    if(var_in->pck_dsk) var_in=nco_var_upk(var_in);
   } /* endif arithmetic operator */
 
   return;

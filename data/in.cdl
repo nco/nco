@@ -63,7 +63,7 @@
 
 netcdf in {
 dimensions:
-  dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,vrt_nbr=2,lon_cal=10,lat_cal=10,Lon=4,Lat=2,time=unlimited;
+dgn=1,bnd=2,lat=2,lat_grd=3,lev=3,rlev=3,ilev=4,lon=4,lon_grd=5,char_dmn_lng80=80,char_dmn_lng26=26,char_dmn_lng04=4,date_dmn=5,fl_dmn=3,lsmlev=6,wvl=2,time_udunits=3;lon_T42=128,lat_T42=64,lat_times_lon=8,gds_crd=8,gds_ncd=8,lon_cal=10,lat_cal=10,Lon=4,Lat=2,pck_crd=4,vrt_nbr=2,time=unlimited;
 variables:
   :Conventions = "CF-1.5";
   :history = "History global attribute.\nTextual attributes like history often have embedded newlines like this.\nSuch newlines should serve as linebreaks on the screen to enhance legibility like this.\nFriendly CDL converters print a single NC_CHAR attribute as a comma-separated list of strings where each embedded delimiter marks a linebreak. This makes poetry embedded in CDL much nicer to read (except for the printed literal \\n\'s---those are an eyesore):\n\nA POET by Hafiz\n\nA poet is someone\nWho can pour light into a cup,\nThen raise it to nourish\nYour beautiful parched, holy mouth\n";
@@ -543,6 +543,12 @@ variables:
 	pck_arr:note = "Packed value is -32767s, 0s, 1s, 32767s, unpacked is same in double";
 	pck_arr:scale_factor = 1.0d;
 	pck_arr:add_offset = 0.0d;
+
+	short pck_crd(pck_crd);
+	pck_crd:long_name = "Coordinate array variable, float, packed as short";
+	pck_crd:note = "Packed value is -32767s, 0s, 1s, 32767s, unpacked is factor of 10 different, offset by 73 in float";
+	pck_crd:scale_factor = 10.0f;
+	pck_crd:add_offset = 73.0f;
 
 	double upk;
 	upk:long_name = "Unpacked scalar variable";
@@ -1564,6 +1570,7 @@ data:
 	pck_7=1;
 	rec_var_pck_scale_factor_only=1,2,3,4,5,6,7,8,9,10;
 	pck_arr=-32767,0,1,32767;
+	pck_crd=-32767,0,1,32767;
 	pi=3.1415926535897932384626433832795029;
 	pi_arr_dbl=3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029;
 	pi_arr_flt=3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029,3.1415926535897932384626433832795029;

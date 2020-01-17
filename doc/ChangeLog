@@ -1,3 +1,15 @@
+2020-01-17  Charlie Zender  <zender@sastrugi>
+
+	* NCO 4.9.2-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha04: Alta-Vista';git push
+	git tag -a 4.9.2-alpha04 -m 'ncpdq -U -v lat fix; ncremap sml_crc';git push --tags
+
+	* ncpdq -U now always unpacks all variables, including packed grid variables
+
+	* Create infrastructure to address bug where ncpdq -U strips attributes from packed grid variables yet does not unpack them
+
+	* Merge new intersection code that handles small circles
+
 2020-01-16  Charlie Zender  <zender@sastrugi>
 
 	* nco_sph_plg_area() and edg_typ=sml_crc works with RLL grids

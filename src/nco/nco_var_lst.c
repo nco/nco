@@ -1018,6 +1018,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       var_is_fix=nco_var_is_fix(var_nm,nco_prg_id,nco_pck_plc,cnv);  
       /* Allow promotion from float->double to work for coordinates and special variables */
       if(nco_prg_id == ncpdq && nco_pck_map == nco_pck_map_flt_dbl) var_is_fix=False;
+      /* Allow unpacking to work for coordinates and special variables */
+      if(nco_prg_id == ncpdq && nco_pck_plc == nco_pck_plc_upk) var_is_fix=False;
       if(var_is_fix) var_op_typ[idx]=fix_typ;
     } /* end if cnv->CCM_CCSM_CF */
 
