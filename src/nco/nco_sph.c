@@ -167,7 +167,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      nx3= nco_sph_cross(Pcross, Qcross, Xcross);
 
 
-     nco_sph_mk_pqcross(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b], Qcross, pqCross, map_rgr->edg_typ, &p_edg_typ, &q_edg_typ);
+     (void)nco_sph_mk_pqcross(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b], Qcross, pqCross, map_rgr->edg_typ, &p_edg_typ, &q_edg_typ);
 
 
      /* save Cross before implied */
@@ -446,7 +446,7 @@ nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  
   *p_edg_typ= ( isP_LatCircle ? nco_edg_smc : nco_edg_gtc );
   *q_edg_typ= ( isQ_LatCircle ? nco_edg_smc : nco_edg_gtc );
 
-  return;
+  return EXIT_SUCCESS;
 
 }
 
