@@ -1,8 +1,10 @@
 2020-01-17  Charlie Zender  <zender@sastrugi>
 
 	* NCO 4.9.2-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha04: Alta-Vista';git push
+	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha04: Chow-Mein';git push
 	git tag -a 4.9.2-alpha04 -m 'ncpdq -U -v lat fix; ncremap sml_crc';git push --tags
+
+	* ncremap/ncclimo fix printing of multi-word NCO version names
 
 	* ncpdq -U now always unpacks all variables, including packed grid variables
 

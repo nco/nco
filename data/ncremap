@@ -315,7 +315,7 @@ while [ -h "${nco_exe}" ]; do
 done
 drc_nco="$( cd -P "$( dirname "${nco_exe}" )" && pwd )"
 nco_vrs=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $5}')
-nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk '{print $6}')
+nco_sng=$(ncks --version 2>&1 > /dev/null | grep NCO | awk -F '"' '{print $2}')
 # 20190218: Die quickly when NCO is found yet cannot run, e.g., due to linker errors
 if [ -z "${nco_vrs}" ]; then
     echo "${spt_nm}: ERROR ${nco_exe} dies with error message on next line:"
@@ -791,7 +791,7 @@ cmd_wgt_nco=`command -v ${wgt_exe_nco} 2> /dev/null`
 cmd_wgt_tps=`command -v ${wgt_exe_tps} 2> /dev/null`
 cmd_dpt_mpas=`command -v ${dpt_exe_mpas} --no_log 2> /dev/null`
 if [ ${vrs_prn} = 'Yes' ]; then
-    printf "${spt_nm}, the NCO regridder and grid, map, and weight-generator, version ${nco_vrs} ${nco_sng}\n"
+    printf "${spt_nm}, the NCO regridder and grid, map, and weight-generator, version ${nco_vrs} \"${nco_sng}\"\n"
     printf "Copyright (C) 2016--present Charlie Zender\n"
     printf "This program is part of NCO, the netCDF Operators\n"
     printf "NCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\n"
