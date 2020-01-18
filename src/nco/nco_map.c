@@ -505,7 +505,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     } /* !fabs */
   } /* !dbg */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile with n_s = %li, n_a = %li, n_b = %li\n",nco_prg_nm_get(),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile with n_s = %li, n_a = %li, n_b = %li. Maximum variable size is sizeof(double)*n_s = 8*%li = %li\n",nco_prg_nm_get(),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr,sizeof(double)*lnk_nbr);
 
   /* Open mapfile */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -949,18 +949,14 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   col_src_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
   row_dst_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
 
-
   for(idx=0; idx<lnk_nbr;idx++){
-    if(pl_lst_vrl[idx]->wgt > 1.0 && pl_lst_vrl[idx]->wgt < 1.0+1.0e-10)
-      pl_lst_vrl[idx]->wgt=1.0;
-
+    if(pl_lst_vrl[idx]->wgt > 1.0 && pl_lst_vrl[idx]->wgt < 1.0+1.0e-10) pl_lst_vrl[idx]->wgt=1.0;
     wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
     col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
     row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
   }
   
   for(idx=0;idx<grd_sz_in;idx++){
-
     if(pl_lst_in[idx]->wgt > 0.0){
       frc_in[idx]=pl_lst_in[idx]->wgt;
       msk_in[idx]=1;
@@ -971,7 +967,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   }
 
   for(idx=0;idx<grd_sz_out;idx++){
-
     if(pl_lst_out[idx]->wgt > 0.0){
       frc_out[idx]=pl_lst_out[idx]->wgt;
       msk_out[idx]=1;
@@ -1003,12 +998,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     for(idx=0;idx<sz;idx++) tally[idx]=0.0;
 
     for(idx=0;idx<sz;idx++){
-      irow=row_dst_adr[idx] - 1;
+      irow=row_dst_adr[idx]-1;
       if(irow < sz) tally[irow] += wgt_raw[idx];
       sum+=wgt_raw[idx];
     }
 
-    fprintf(stderr, "%s(): S.total=%.10f  WARNING following is list of incomplete dst cells, by src_id no\n", fnc_nm,sum);
+    fprintf(stderr, "%s(): S.total=%.10f WARNING following is list of incomplete dst cells, by src_id no\n", fnc_nm,sum);
     for(idx=0; idx< pl_cnt_out;idx++)
       if(fabs(tally[idx]-1.0) > 1.0e-8)
         fprintf(stderr,"%lu(%.20f)\n",idx,tally[idx]);
