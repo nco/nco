@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.2-alpha03
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 15 January 2020
+@set update-date 17 January 2020
 @set update-month January 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3011,16 +3011,32 @@ can be aggregated into multi-arguments.
 These features are:
 Global Attribute Addition options indicated via @samp{--gaa} (@pxref{Global Attribute Addition});
 Image Manipulation indicated via @samp{--trr}@footnote{
+@html
+<a name="envi"></a> <!-- http://nco.sf.net/nco.html#envi -->
+<a name="ENVI"></a> <!-- http://nco.sf.net/nco.html#ENVI -->
+<a name="BIL"></a> <!-- http://nco.sf.net/nco.html#BIL -->
+<a name="BSQ"></a> <!-- http://nco.sf.net/nco.html#BSQ -->
+<a name="BIP"></a> <!-- http://nco.sf.net/nco.html#BIP -->
+<a name="bil"></a> <!-- http://nco.sf.net/nco.html#bil -->
+<a name="bsq"></a> <!-- http://nco.sf.net/nco.html#bsq -->
+<a name="bip"></a> <!-- http://nco.sf.net/nco.html#bip -->
+@end html
 @cindex @acronym{ENVI}
 @cindex @acronym{DOE}
-@cindex @acronym{Terraref}
+@cindex @acronym{BIL} format
+@cindex @acronym{BSQ} format
+@cindex @acronym{BIP} format
+@cindex Terraref
 @cindex @samp{--trr}
 @acronym{NCO} supports decoding @acronym{ENVI} images in support of the
 @acronym{DOE} Terraref project.
 These options are indicated via the @command{ncks} @samp{--trr} switch,
-and are otherwise undocumented.}, 
-Precision-Preserving Compression options indicated via @samp{--ppc} (@pxref{Precision-Preserving Compression});
-and 
+and are otherwise undocumented.
+Please contact us if more support and documentation of handling of
+@acronym{ENVI} @acronym{BIL}, @acronym{BSQ}, and @acronym{BIP} images
+would be helpful},
+Precision-Preserving Compression options are indicated via
+@samp{--ppc} (@pxref{Precision-Preserving Compression}); and 
 Regridding options are indicated via @samp{--rgr} (@pxref{Regridding}).
 Arguments to these four indicator options take the form of key-value
 pairs, e.g., @samp{--rgr @var{key}=@var{val}}. 
@@ -20687,6 +20703,9 @@ coordinates to the binary file:
 <a name="cln"></a> <!-- http://nco.sf.net/nco.html#cln -->
 <a name="calendar"></a> <!-- http://nco.sf.net/nco.html#calendar -->
 @end html
+@cindex calendar dates
+@cindex date formats
+@cindex Gregorian dates
 @cindex @code{--calendar}
 @cindex @code{--cln_lgb}
 @cindex @code{--prn_lgb}
