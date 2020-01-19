@@ -1,5 +1,9 @@
 2020-01-18  Charlie Zender  <zender@sastrugi>
 
+	* nco_map_mk() more legible diagnostics
+
+	* ncremap --devnull=No flag redirects regridder output to terminal instead of /dev/null
+
 	* NCO 4.9.2-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha04: Chow-Mein';git push
 	git tag -a 4.9.2-alpha04 -m 'ncpdq -U -v lat fix; ncremap sml_crc mrg, ne1024pg2';git push --tags
