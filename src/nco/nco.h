@@ -1262,6 +1262,7 @@ extern "C" {
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
     nco_bool flg_stg; /* [flg] Write staggered grid with FV output */
     nco_bool flg_usr_rqs; /* [flg] User-requested regridding */
+    size_t hdr_pad; /* [B] Pad at end of header section (for map-file only) */
   } rgr_sct; /* end Regrid structure */
 
   /* Key-value structure */

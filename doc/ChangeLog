@@ -1,5 +1,11 @@
 2020-01-19  Charlie Zender  <zender@sastrugi>
 
+	* ncremap create alg_typ=nco map-files and mesh-files with hdr_pad=10k so that annotating them is quicker
+
+	* NCO 4.9.2-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha05: HRH';git push
+	git tag -a 4.9.2-alpha05 -m 'ncremap dbg_lvl fl_fmt to ncks; no remap_command';git push --tags
+
 	* ncremap deprecate passing gaa for remap_command to ncatted as it causes breakage
 
 	* ncremap pass '${nco_opt}' to ncks when alg_typ=nco

@@ -101,6 +101,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
   size_t idx; /* [idx] Counting index for unrolled grids */
+  size_t hdr_pad=0UL; /* [B] Pad at end of header section */
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining source grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_src);
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s obtaining destination grid from %s\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_dst);
@@ -629,9 +630,17 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
-  /* Begin data mode */
+  /* Take output file out of define mode */
   /* 20200119: Map-writing fails mysteriously here with E_VARSIZE, for netCDF 4.6.3 compy */
-  (void)nco_enddef(out_id);
+  hdr_pad=rgr->hdr_pad; /* [B] Pad at end of header section */
+  if(hdr_pad == 0UL){
+    (void)nco_enddef(out_id);
+  }else{
+    (void)nco__enddef(out_id,hdr_pad);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
+  } /* hdr_pad */
+
+  /* Begin data mode */
 
   /* Write values to mapfile */
   dmn_srt[0]=0L;
@@ -1108,6 +1117,8 @@ nco_msh_wrt
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   
+  size_t hdr_pad=10000UL; /* [B] Pad at end of header section */
+
   area=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
   grd_ctr_lat=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
   grd_ctr_lon=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
@@ -1137,8 +1148,14 @@ nco_msh_wrt
   (void)nco_def_var(out_id,grd_area_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_area_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_area_id,shuffle,deflate,dfl_lvl);
 
-  /* Begin data mode */
-  (void)nco_enddef(out_id);
+  /* Take output file out of define mode */
+  /* 20200119: Map-writing fails mysteriously here with E_VARSIZE, for netCDF 4.6.3 compy */
+  if(hdr_pad == 0UL){
+    (void)nco_enddef(out_id);
+  }else{
+    (void)nco__enddef(out_id,hdr_pad);
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stderr,"%s: INFO Padding header with %lu extra bytes\n",nco_prg_nm_get(),(unsigned long)hdr_pad);
+  } /* hdr_pad */
 
   dmn_srt[0]=0L;
   dmn_srt[1]=0L;
