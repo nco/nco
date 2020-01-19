@@ -360,6 +360,7 @@ main(int argc,char **argv)
       flg_typ_mch=True;
       break;
     case '?': /* Print proper usage */
+      //(void)fprintf(stdout,"%s ERROR bad syntax in received command line:\n%s\n",nco_prg_nm_get(),cmd_ln);
       (void)nco_usg_prn();
       nco_exit(EXIT_SUCCESS);
       break;
@@ -368,6 +369,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
+      //(void)fprintf(stdout,"%s ERROR bad syntax in received command line:\n%s\n",nco_prg_nm_get(),cmd_ln);
       (void)fprintf(stdout,"%s ERROR in command-line syntax/options. Please reformulate command accordingly.\n",nco_prg_nm_get());
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);

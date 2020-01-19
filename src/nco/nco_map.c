@@ -560,7 +560,8 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd+=nco_def_var(out_id,"yv_b",crd_typ,dmn_nbr_2D,dmn_ids,&dst_grd_crn_lat_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,dst_grd_crn_lat_id,shuffle,deflate,dfl_lvl);
 
-  /* Define arrays dimensioned by n_s last to help evade netCDF file format limits */
+  /* Defining largest array last to help evade netCDF3-classic file format limits only works if
+     largest array is S because x/yv_a/b come in pairs of equal size. So define S last. */
   rcd+=nco_def_var(out_id,"col",(nc_type)NC_INT,dmn_nbr_1D,&num_links_id,&col_src_adr_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,col_src_adr_id,shuffle,deflate,dfl_lvl);
   rcd+=nco_def_var(out_id,"row",(nc_type)NC_INT,dmn_nbr_1D,&num_links_id,&row_dst_adr_id);

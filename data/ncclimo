@@ -1043,7 +1043,7 @@ if [ -n "${fl_fmt}" ]; then
     nco_opt="${nco_fl_fmt} ${nco_opt}"
 fi # !fl_fmt
 if [ ${dbg_lvl} -ge 2 ]; then
-    nco_opt="-D ${dbg_lvl} ${nco_opt}"
+    nco_opt="--dbg_lvl=${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
 if [ -n "${var_lst}" ] && [ "${sbs_flg}" != 'Yes' ]; then
     if [ "${xcl_flg}" = 'Yes' ]; then

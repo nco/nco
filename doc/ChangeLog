@@ -1,3 +1,9 @@
+2020-01-19  Charlie Zender  <zender@sastrugi>
+
+	* ncremap deprecate passing gaa for remap_command to ncatted as it causes breakage
+
+	* ncremap pass '${nco_opt}' to ncks when alg_typ=nco
+
 2020-01-18  Charlie Zender  <zender@sastrugi>
 
 	* nco_map_mk() more legible diagnostics

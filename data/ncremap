@@ -392,7 +392,9 @@ fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to remap
 flg_grd_only='No' # [flg] Create grid then exit before regridding
 flg_hrz='No' # [flg] Perform horizontal regridding
-gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_command=\"'${cmd_ln}'\" --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
+# 20200119 appending attribute containing remap_command causes ncatted to fail, temporarily remove it
+#gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_command=\"'${cmd_ln}'\" --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
+gaa_sng="--gaa remap_script=${spt_nm} --gaa remap_hostname=${HOSTNAME} --gaa remap_version=${nco_vrs}" # [sng] Global attributes to add
 gll_fl='' # [sng] GLL grid metadata (geometry+connectivity+Jacobian) file
 grd_dst='' # [sng] Destination grid-file
 grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
@@ -1126,7 +1128,7 @@ if [ -n "${mss_val_usr}" ]; then
     att_flg='Yes'
 fi # !mss_val_usr    
 if [ ${dbg_lvl} -ge 2 ]; then
-    nco_opt="-D ${dbg_lvl} ${nco_opt}"
+    nco_opt="--dbg_lvl=${dbg_lvl} ${nco_opt}"
 fi # !dbg_lvl
 if [ -n "${ppc_prc}" ]; then
     nco_opt="${nco_opt} --ppc default=${ppc_prc}"
@@ -1139,12 +1141,12 @@ if [ "${devnull}" = 'Yes' ]; then
 else
     devnull=''
 fi # !dfl_lvl
-if [ -n "${gaa_sng}" ]; then 
-    nco_opt="${nco_opt} ${gaa_sng}"
-fi # !gaa_sng
 if [ -n "${hdr_pad}" ]; then 
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
 fi # !hdr_pad
+if [ -n "${gaa_sng}" ]; then 
+    nco_opt="${nco_opt} ${gaa_sng}"
+fi # !gaa_sng
 if [ "${no_cll_msr}" = 'Yes' ]; then 
     nco_opt="${nco_opt} --no_cll_msr"
 fi # !no_cll_msr
@@ -1813,6 +1815,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: inp_std  = ${inp_std}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
     printf "dbg: hrd_pth  = ${hrd_pth}\n"
+    printf "dbg: hst_att  = ${hst_att}\n"
     printf "dbg: job_nbr  = ${job_nbr}\n"
     printf "dbg: in_fl    = ${in_fl}\n"
     printf "dbg: map_fl   = ${map_fl}\n"
@@ -2196,7 +2199,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	fi # !hnt_dst_fl
 	cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
     elif [ "${wgt_typ}" = 'nco' ]; then 
-	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
+	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [ "${a2o_flg}" = 'Yes' ]; then 
@@ -2399,7 +2402,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			printf "Mesh-File: ${msh_fl}\n"
 		    fi # !msh_opt
 		fi # !vrb_lvl
-		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
+		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
 	    elif [ "${wgt_typ}" = 'tempest' ]; then 
 		if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		    printf "Mesh-File: ${msh_fl}\n"
@@ -2441,7 +2444,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		    exit 1
 		fi # !err
 		if [ "${map_usr_flg}" = 'Yes' ]; then
-		    hst_att="`date`: ${cmd_ln};${cmd_map[${fl_idx}]}"
+		    hst_att="`date`: ${cmd_ln}; ${cmd_map[${fl_idx}]}"
 		    cmd_att[${fl_idx}]="ncatted -O ${gaa_sng} --gaa history='${hst_att}' \"${map_rsl_fl}\""
 		    eval ${cmd_att[${fl_idx}]}
 		if [ "$?" -ne 0 ]; then
