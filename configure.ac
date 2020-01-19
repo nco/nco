@@ -10,7 +10,7 @@
 # Usage:
 # autoconf
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
-# cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
+# cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make ianstall
 # cd ~/nco;autoreconf --force
 # cd ~/nco;for fl in NEWS README AUTHORS ChangeLog ; do ln -s doc/${fl} ${fl};done;autoreconf --force
 
@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[4.9.2-alpha03],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.9.2-alpha04],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT

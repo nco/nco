@@ -1,12 +1,14 @@
 2020-01-18  Charlie Zender  <zender@sastrugi>
 
+	* NCO 4.9.2-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha04: Chow-Mein';git push
+	git tag -a 4.9.2-alpha04 -m 'ncpdq -U -v lat fix; ncremap sml_crc mrg, ne1024pg2';git push --tags
+
+	* nco_map_mk() add ignored weight diagnostic, and RAM/format INFO
+
 	* nco_map_mk() define arrays dimensioned by n_s last to help evade netCDF file format limits
 
 2020-01-17  Charlie Zender  <zender@sastrugi>
-
-	* NCO 4.9.2-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha04: Chow-Mein';git push
-	git tag -a 4.9.2-alpha04 -m 'ncpdq -U -v lat fix; ncremap sml_crc';git push --tags
 
 	* ncremap/ncclimo fix printing of multi-word NCO version names
 
