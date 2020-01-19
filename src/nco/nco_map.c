@@ -505,7 +505,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     } /* !fabs */
   } /* !dbg */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile with format %s with n_s = %li, n_a = %li, n_b = %li. Mean number of links per src/dst cell = n_s/sqrt(n_a*n_b) = %g. Weight variable n_s size is sizeof(double)*n_s = 8*%li = %g MB. \n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr/sqrt(src_grd_sz_nbr*dst_grd_sz_nbr),lnk_nbr,sizeof(double)*lnk_nbr/1.0e6);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile with format %s with n_s = %li, n_a = %li, n_b = %li. Mean number of links per src/dst cell = n_s/sqrt(n_a*n_b) = %g. Weight variable n_s size is sizeof(double)*n_s = 8*%li = %g MB. Vertex variables x/y_vb are sizeof(double)*n_b*nv_b = 8*%li*%li = %g MB.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr/sqrt(src_grd_sz_nbr*dst_grd_sz_nbr),lnk_nbr,sizeof(double)*lnk_nbr/1.0e6,dst_grd_sz_nbr,dst_grd_crn_nbr,sizeof(double)*dst_grd_sz_nbr*dst_grd_crn_nbr/1.0e6);
 
   /* Open mapfile */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -629,6 +629,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Begin data mode */
+  /* 20200119: Map-writing fails mysteriously here with E_VARSIZE, for netCDF 4.6.3 compy */
   (void)nco_enddef(out_id);
 
   /* Write values to mapfile */
