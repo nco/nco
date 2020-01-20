@@ -246,9 +246,9 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
           char pcode='0';
           poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
 
-          if(q_edg_typ == p_edg_typ == nco_edg_gtc  )
+          if( p_edg_typ == nco_edg_gtc  && q_edg_typ == nco_edg_gtc  )
             pcode = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
-          else if(p_edg_typ == q_edg_typ == nco_edg_smc )
+          else if(p_edg_typ == nco_edg_smc && q_edg_typ == nco_edg_smc )
             pcode = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
 
           if (  !(pcode=='1' && inflag== poly_vrl_unk)  &&   lcl_inflag != poly_vrl_unk   ) {
@@ -955,7 +955,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
     fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm, (bInt ? "True" : "False"),
             codes, pt[0], pt[1], pt[2]);
 
-    if(pq_cross[0]*pq_cross[1] != 0 && pq_cross[2]* pq_cross[3]==0  ||  pq_cross[0]*pq_cross[1] == 0 && pq_cross[2]* pq_cross[3]!=0)
+    if(  ( pq_cross[0]*pq_cross[1] != 0 && pq_cross[2]* pq_cross[3]==0 )  ||  ( pq_cross[0]*pq_cross[1] == 0 && pq_cross[2]* pq_cross[3]!=0 ))
       fprintf(stderr,"WARNING pq_cross[*] swapped\n" );
 
 
