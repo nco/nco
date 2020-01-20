@@ -1,4 +1,12 @@
+2020-01-20  Charlie Zender  <zender@sastrugi>
+
+	* nco_map_chk() fix mistaken values of perfection for frac_b
+
+	* nco_map_mk() add thr_nbr attribute
+
 2020-01-19  Charlie Zender  <zender@sastrugi>
+
+	* ncremap fix --devnull to use --dvn_flg
 
 	* NCO 4.9.2-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha05: HRH';git push
@@ -22,7 +30,7 @@
 
 	* nco_map_mk() add ignored weight diagnostic, and RAM/format INFO
 
-	* nco_map_mk() define arrays dimensioned by n_s last to help evade netCDF file format limits
+	* nco_map_mk() define arrays dimensioned by n_s last to help evade netCDF3-classic file format limits
 
 2020-01-17  Charlie Zender  <zender@sastrugi>
 

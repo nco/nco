@@ -1243,6 +1243,7 @@ extern "C" {
     int in_id; /* [id] Input netCDF file ID */
     int out_id; /* [id] Output netCDF file ID */
     int rgr_nbr; /* [nbr] Number of regridding arguments */
+    int thr_nbr; /* [nbr] Thread number */
     int xtn_nbr; /* [nbr] Number of extensive variables */
     long idx_dbg; /* [idx] Index of gridcell for debugging */
     long tst; /* [enm] Generic key for testing (undocumented) */

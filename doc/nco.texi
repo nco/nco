@@ -17893,6 +17893,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @node ncclimo netCDF Climatology Generator, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Reference Manual
 @section @command{ncclimo} netCDF Climatology Generator
 @cindex climo
+@cindex @acronym{HDF5_USE_FILE_LOCKING}
 @cindex climatology
 @findex ncclimo
 
@@ -17935,6 +17936,11 @@ fixes in the @acronym{NCO} binaries, not to improve @command{ncclimo}.
 One may download and give executable permissions to the latest source 
 at @url{https://github.com/nco/nco/tree/master/data/ncclimo} without
 re-installing the rest of @acronym{NCO}.}. 
+Be aware that, as of February 2020 and @acronym{NCO} @w{version 4.9.2}, 
+the @command{ncremap} and @command{ncclimo} scripts export the
+environment variable @samp{HDF5_USE_FILE_LOCKING='FALSE'} to forestall
+mysterious issues that can cause scripts involving netCDF4 files to
+fail. 
 
 There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
 @samp{-i}, and @samp{-o})) to generate climatologies, and many more
@@ -23317,6 +23323,7 @@ and then applies the weights (i.e., regrids).
 @cindex @acronym{ERWG}
 @cindex TempestRemap
 @cindex @acronym{NCL}
+@cindex @acronym{HDF5_USE_FILE_LOCKING}
 @cindex Conda
 Unlike the rest of @acronym{NCO}, @command{ncremap} and
 @command{ncclimo} are shell scripts, not compiled binaries@footnote{ 
@@ -23327,6 +23334,11 @@ fixes in the @acronym{NCO} binaries, not to improve @command{ncremap}.
 One may download and give executable permissions to the latest source 
 at @url{https://github.com/nco/nco/tree/master/data/ncremap} without
 re-installing the rest of @acronym{NCO}.}. 
+Be aware that, as of February 2020 and @acronym{NCO} @w{version 4.9.2}, 
+the @command{ncremap} and @command{ncclimo} scripts export the
+environment variable @samp{HDF5_USE_FILE_LOCKING='FALSE'} to forestall
+mysterious issues that can cause scripts involving netCDF4 files to
+fail. 
 @command{ncremap} wraps the underlying regridder (@command{ncks}) and
 external executables to produce a friendly interface to regridding.
 Without any external dependencies, @command{ncremap} applies weights

@@ -1173,6 +1173,7 @@ main(int argc,char **argv)
 
       /* Copy Global Metadata */
       rgr_nfo->out_id=out_id;
+      rgr_nfo->thr_nbr=thr_nbr;
       nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
       (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,PCK_ATT_CPY);
       /* Catenate time-stamped command line to "history" global attribute */

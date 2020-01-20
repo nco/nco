@@ -34,6 +34,7 @@ A. ncremap --chk_map checks for and reports NaN weights.
 A. ncremap and ncclimo both now export HDF5_USE_FILE_LOCKING='FALSE'
    unless that environment variable already exists. This has proven
    useful at preventing mysterious crashes, especially in batch mode.
+   Let us know if this setting causes problems for your workflow.
 
 A. NCO's weight generator can now read unstructured SCRIP gridfiles
    created by TempestRemap utilities thatand converted that do not
@@ -54,6 +55,15 @@ A. ncremap --alg_typ=fv2fv now implements the same TempestRemap
    were not actually as described. Solution is to upgrade.
    http://nco.sf.net/nco.html#fv2fv
    http://nco.sf.net/nco.html#fv2fv_stt
+
+A. ncremap --devnull option controls whether internal (and sometimes
+   noisy) output from NCO weight-generator is sent to terminal or to
+   /dev/null. The default is to send internal messages to /dev/null.
+   This only works with the NCO weight-generator (--alg_typ=nco).
+   ncremap --devnull=Yes ... # Send internal messages to /dev/null
+   ncremap --devnull=No  ... #  Send internal messages to terminal
+   http://nco.sf.net/nco.html#devnull
+   http://nco.sf.net/nco.html#ncremap
 
 A. ncpdq -U now always unpacks all variables, including packed
    grid variables (like "lat"). Previously it would not unpack 

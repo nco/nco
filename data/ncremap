@@ -384,7 +384,7 @@ drc_out_xmp="~/rgr" # [sng] Output file directory for examples
 dst_fl='' # [sng] Destination file
 dst_xmp='dst.nc' # [sng] Destination file for examples
 dt_sng=`date +%Y%m%d` # [sng] Date string for MWF map names
-dvn_flg='Yes' # [flg] Send NCO regridder output to /dev/null
+dvn_flg='Yes' # [flg] Send internal NCO regridder output to /dev/null
 esmf_nsp=8 # [nbr] ESMF extrapolation number of source points
 esmf_typ='' # [sng] ESMF extrapolation type (nearestidavg|neareststod|none)
 esmf_xpn=2.0 # [frc] ESMF extrapolation exponent
@@ -502,7 +502,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dst_fl${fnt_nrm}   Data file to infer destination grid from (empty means none, i.e., use grd_fl, grd_sng, or map_fl)) (default ${fnt_bld}${dst_fl}${fnt_nrm}) [${fnt_tlc}dst_fl, destination_file, tpl, tpl_fl, template, template_file${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
-    echo " ${fnt_bld}--devnull${fnt_nrm}  Send NCO regridder output to /dev/null (default ${fnt_bld}${devnull}${fnt_nrm}) [${fnt_tlc}devnull, dev_nll, dvn_flg${fnt_nrm}]"
+    echo " ${fnt_bld}--devnull${fnt_nrm}  Send NCO weight-generator messages to /dev/null (default ${fnt_bld}${dvn_flg}${fnt_nrm}) [${fnt_tlc}devnull, dev_nll, dvn_flg${fnt_nrm}]"
     echo " ${fnt_bld}--dpt${fnt_nrm}      Add depth coordinate to MPAS files (default ${fnt_bld}${dpt_flg}${fnt_nrm}) [${fnt_tlc}dpt | depth | add_dpt | add_depth${fnt_nrm}]"
     echo " ${fnt_bld}--dpt_fl${fnt_nrm}   Depth file with refBottomDepth for MPAS ocean (empty means none) (default ${fnt_bld}${dpt_fl}${fnt_nrm}) [${fnt_tlc}dpt_fl, mpas_fl, mpas_depth, depth_file${fnt_nrm}]"
     echo " ${fnt_bld}--dt_sng${fnt_nrm}   Date string (for MWF map names) (default ${fnt_bld}${dt_sng}${fnt_nrm}) [${fnt_tlc}dt_sng, date_string${fnt_nrm}]"
@@ -578,9 +578,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "          ${fnt_bld}$spt_nm -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -g ${grd_dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -s ${grd_src_xmp} -g ${grd_dst_xmp} -m ${map_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -a bilinear -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -a conserve -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -a tempest  -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a aave  -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a bilin -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a fv2fv -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm -a nco   -d ${dst_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -v ${var_xmp} -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -m ${map_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -M -d ${dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
@@ -669,7 +670,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       d2f | d2s | dbl_flt | dbl_sgl | double_float ) d2f_flg='Yes' ;; # # Convert double-precision fields to single-precision
 	       d2f=?* | d2s=?* | dbl_flt=?* | dbl_sgl=?* | double_float=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # D2F
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
-	       devnull=?* | dev_nll=?* | dev_null=?* | dvn_flg=?* ) dvn_flg="${LONG_OPTARG}" ;; # # Send NCO regridder output to /dev/null
+	       devnull=?* | dev_nll=?* | dev_null=?* | dvn_flg=?* ) dvn_flg="${LONG_OPTARG}" ;; # # Send NCO weight-generator messages to /dev/null
 	       dfl_lvl=?* | deflate=?* | dfl=?* ) dfl_lvl="${LONG_OPTARG}" ;; # -L # Deflate level
 	       dpt | depth | add_dpt | add_depth ) dpt_flg='Yes' ;; # # Add depth coordinate to MPAS files
 	       dpt=?* | depth=?* | add_dpt=?* | add_depth=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # DPT
@@ -1136,7 +1137,7 @@ fi # !ppc_prc
 if [ -n "${dfl_lvl}" ]; then
     nco_opt="${nco_opt} --dfl_lvl=${dfl_lvl}"
 fi # !dfl_lvl
-if [ "${devnull}" = 'Yes' ]; then
+if [ "${dvn_flg}" = 'Yes' ]; then
     devnull=' > /dev/null'
 else
     devnull=''

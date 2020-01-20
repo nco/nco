@@ -194,11 +194,12 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   /* Check-for and workaround faulty grid sizes, typically from bogus dual-grid generation algorithm */
   if(flg_grd_in_1D && (mpf.src_grid_size != dmn_sz_in_int[0])){
-    (void)fprintf(stdout,"%s: INFO %s reports input grid dimension sizes disagree: mpf.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect grid_dims variable in source gridfile. This is a known issue with some gridfiles generated prior to ~20150901, particularly for spectral element dual-grids, and for grids created by TempestRemap. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.src_grid_size,dmn_sz_in_int[0]);
+    (void)fprintf(stdout,"%s: INFO %s reports unstructured input grid dimension sizes disagree: mpf.src_grid_size = %ld != %d = dmn_sz_in[0]. Problem may be caused by incorrect or non-existent \"grid_dims\" variable in source gridfile. This is a known issue with some gridfiles generated prior to ~20150901, particularly for spectral element dual-grids, and for grids created by TempestRemap. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.src_grid_size,dmn_sz_in_int[0]);
       dmn_sz_in_int[0]=mpf.src_grid_size;
   } /* !bug */
+  /* 20200119: Why do PG2 grids still trigger this warning despite above workaround? */
   if(flg_grd_out_1D && (mpf.dst_grid_size != dmn_sz_out_int[0])){
-    (void)fprintf(stdout,"%s: INFO %s reports output grid dimension sizes disagree: mpf.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect grid_dims variable in destination gridfile. This is a known issue with gridfiles generated prior to ~20150901, particularly for spectral element dual-grids, and for grids created by TempestRemap. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.dst_grid_size,dmn_sz_out_int[0]);
+    (void)fprintf(stdout,"%s: INFO %s reports unstructured output grid dimension sizes disagree: mpf.dst_grid_size = %ld != %d = dmn_sz_out[0]. Problem may be caused by incorrect or non-existent \"grid_dims\" variable in destination gridfile. This is a known issue with gridfiles generated prior to ~20150901, particularly for spectral element dual-grids, and for grids created by TempestRemap. This problem can be safely ignored if workaround succeeds. Attempting workaround ...\n",nco_prg_nm_get(),fnc_nm,mpf.dst_grid_size,dmn_sz_out_int[0]);
     dmn_sz_out_int[0]=mpf.dst_grid_size;
   } /* !bug */
 
@@ -451,6 +452,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int out_id; /* I [id] Output netCDF file ID */
   int shuffle; /* [flg] Turn-on shuffle filter */
+  int thr_nbr=int_CEWI; /* [nbr] Thread number */
 
   int num_links_id; /* [id] Number of links dimension ID */
   int num_wgts_id; /* [id] Number of weights dimension ID */
@@ -476,6 +478,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   dfl_lvl=rgr->dfl_lvl;
   fl_out_fmt=rgr->fl_out_fmt;
   fl_out=rgr->fl_map;
+  thr_nbr=rgr->thr_nbr;
 
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG calling nco_msh_mk()...\n",nco_prg_nm_get());
 
@@ -581,6 +584,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,NULL,"weight_generator_version",vrs_cpp);
   (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
   (void)nco_vrs_att_cat(out_id);
+  if(thr_nbr > 1) (void)nco_thr_att_cat(out_id,thr_nbr);
   rcd=nco_char_att_put(out_id,"S","long_name","Weights to Map Variables from Source to Destination Grid");
   rcd=nco_char_att_put(out_id,"area_a","long_name","Solid Angle Subtended on Source Grid");
   rcd=nco_char_att_put(out_id,"area_a","standard_name","solid_angle");
@@ -753,7 +757,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   /* Purpose: Compute overlap mesh and weights */
   const char fnc_nm[]="nco_msh_mk()";
 
-  /* set static variable */
+  /* Set static variable */
   map_rgr=rgr;
 
   double *wgt_raw; /* [frc] Remapping weights */
@@ -1077,6 +1081,7 @@ nco_msh_wrt
   int rcd;
   int shuffle; /* [flg] Turn-on shuffle filter */
   int deflate; /* [flg] Turn-on deflate filter */
+  //int thr_nbr=int_CEWI; /* [nbr] Thread number */
 
   int out_id; /* I [id] Output netCDF file ID */
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
@@ -1137,6 +1142,7 @@ nco_msh_wrt
 
   deflate=(int)True;
   shuffle=NC_SHUFFLE;
+  //thr_nbr=rgr->thr_nbr;
 
   /* Define variables */
   (void)nco_def_var(out_id,grd_crn_lat_nm,crd_typ,dmn_nbr_2D,dmn_ids,&grd_crn_lat_id);
@@ -1147,6 +1153,8 @@ nco_msh_wrt
 
   (void)nco_def_var(out_id,grd_area_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_area_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_area_id,shuffle,deflate,dfl_lvl);
+
+  //if(thr_nbr > 1) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   /* Take output file out of define mode */
   /* 20200119: Map-writing fails mysteriously here with E_VARSIZE, for netCDF 4.6.3 compy */
@@ -1752,11 +1760,12 @@ nco_map_var_min_max_ttl
 } /* !nco_map_var_min_max_ttl() */
 
 nco_bool
-nco_map_frac_b_clc(   /* calculate frac from mapping weights */
-var_sct *var_S,
-var_sct *var_row,
-var_sct *var_frac_b)
+nco_map_frac_b_clc /* Compute frac_b as row sums of the weight matrix S */
+(var_sct *var_S,
+ var_sct *var_row,
+ var_sct *var_frac_b)
 {
+  /* Purpose: Compute frac_b as row sums of the weight matrix S */
   int idx;
   int idx_row;
   int sz;
@@ -1781,17 +1790,20 @@ var_sct *var_frac_b)
   (void)cast_nctype_void(NC_DOUBLE,&(var_frac_b->val));
   
   return True;
-}
+} /* !nco_map_frac_b_clc() */
+
 
 nco_bool
-nco_map_frac_a_clc(
-var_sct *var_S,
-var_sct *var_row,
-var_sct *var_col,
-var_sct *var_area_a,
-var_sct *var_area_b,
-var_sct *var_frac_a)
+nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weight matrix S */
+(var_sct *var_S,
+ var_sct *var_row,
+ var_sct *var_col,
+ var_sct *var_area_a,
+ var_sct *var_area_b,
+ var_sct *var_frac_a)
 {
+  /* Purpose: Compute frac_a as area_b-weighted column sums of the weight matrix S */
+
   char fnc_nm[]="nco_map_frac_a_clc()";
   int idx;
   int sz;
@@ -1828,13 +1840,15 @@ var_sct *var_frac_a)
   (void)cast_nctype_void(NC_DOUBLE,&(var_frac_a->val));
 
    return True;
-}
+} /* !nco_map_frac_a_clc() */
 
 nco_bool
 nco_map_chk /* Map-file evaluation */
 (const char *fl_in,
  nco_bool flg_area_wgt)
 {
+  /* Purpose: Perform high-level evaluation of map-file */
+
   char fnc_nm[]="nco_map_chk()";
   char idx_sng_fmt[5];
   char *idx_sng=NULL;
@@ -2052,7 +2066,7 @@ nco_map_chk /* Map-file evaluation */
     
     fprintf(stdout,"Grid A size n_a: %lu // Number of columns/sources\n",var_area_a->sz);
     if(has_area_a){
-      fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
+      fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
       fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
     }else{
       fprintf(stdout,"area_a sum/4*pi: map-file does not provide area_a\n");
@@ -2067,7 +2081,7 @@ nco_map_chk /* Map-file evaluation */
 
     fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
     if(has_area_b){
-      fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Should be 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
+      fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
       fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);
     }else{
       fprintf(stdout,"area_b sum/4*pi: map-file does not provide area_b\n");
@@ -2083,12 +2097,12 @@ nco_map_chk /* Map-file evaluation */
     nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
     nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     
-    fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sConservation (should be 1.0 for global Grid B)\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
-    fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid B)\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
-    fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0 (should be 0.0 for global Grid B)\n",mebs,mebs,area_wgt_a ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0 (should be 0.0 for global Grid B)\n",rms,rms,area_wgt_a ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation (should be 0.0 for global Grid B)\n",sdn,sdn);
+    fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sConservation (perfect is 1.0 for global Grid B)\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid B)\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
+    fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid B)\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
+    fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0 (perfect is 0.0 for global Grid B)\n",mebs,mebs,area_wgt_a ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0 (perfect is 0.0 for global Grid B)\n",rms,rms,area_wgt_a ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation (perfect is 0.0 for global Grid B)\n",sdn,sdn);
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine extrema:\n");
@@ -2112,12 +2126,12 @@ nco_map_chk /* Map-file evaluation */
     nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
     fprintf(stdout,"\n");
-    fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sConsistency (should be 1.0 for global Grid A)\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_b ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid A)\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
-    fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (should be 1.0 for global Grid A)\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
-    fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0 (should be 0.0 for global Grid A)\n",mebs,mebs,area_wgt_b ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0 (should be 1.0 for global Grid A)\n",rms,rms,area_wgt_b ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation (should be 1.0 for global Grid A)\n",sdn,sdn);
+    fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sConsistency (computed row-sums of S) (perfect is 1.0 for global Grid A)\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_b ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid A)\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
+    fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid A)\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
+    fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0 (perfect is 0.0 for global Grid A)\n",mebs,mebs,area_wgt_b ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0 (perfect is 0.0 for global Grid A)\n",rms,rms,area_wgt_b ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation (perfect is 0.0 for global Grid A)\n",sdn,sdn);
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine extrema:\n");
