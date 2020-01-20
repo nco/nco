@@ -295,7 +295,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
         {
           nco_bool bInt=False;
 
-          if(p_edg_typ == q_edg_typ == nco_edg_gtc )
+          if(p_edg_typ == nco_edg_gtc && q_edg_typ == nco_edg_gtc )
               bInt=nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes);
           else if(p_edg_typ==nco_edg_gtc && q_edg_typ== nco_edg_smc)
               bInt=nco_sph_seg_smc(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes);
