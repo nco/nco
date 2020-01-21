@@ -1,3 +1,7 @@
+2020-01-21  Charlie Zender  <zender@sastrugi>
+
+	* nco_map_mk() add grid_file_src/dst attributes, remove quotes from version
+
 2020-01-20  Charlie Zender  <zender@sastrugi>
 
 	* nco_map_chk() fix mistaken values of perfection for frac_b
