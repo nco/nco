@@ -3082,11 +3082,7 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   int a = 0, a1 = 0, aa=0;
   int b = 0, b1 = 0, bb=0;
 
-
-  int ipqLHS = 0;
-  int ip1qLHS = 0 ;
-  int iqpLHS = 0;
-  int iq1pLHS = 0 ;
+  int pqCross[4]={0,0,0,0};
 
   nco_bool isParallel=False;
   nco_bool isP_LatCircle=False;
@@ -3126,48 +3122,44 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     nx1 = nco_sph_cross(P->shp[a1], P->shp[a], Pcross);
     nx2 = nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross);
 
-    //nx3= nco_sph_cross(Pcross, Qcross, Xcross);
-
     if (isQ_LatCircle) {
 
-      ip1qLHS = nco_rll_lhs_lat(P->shp[a1], Q->shp[b1], Q->shp[b]);
-      ipqLHS = nco_rll_lhs_lat(P->shp[a], Q->shp[b1], Q->shp[b]);
-    } else {
-      ip1qLHS = nco_rll_lhs(P->shp[a1], Qcross);
-      ipqLHS = nco_rll_lhs(P->shp[a], Qcross);
+      pqCross[0] = nco_rll_lhs_lat(P->shp[a1], Q->shp[b1], Q->shp[b]);
+      pqCross[1] = nco_rll_lhs_lat(P->shp[a], Q->shp[b1], Q->shp[b]);
+    }else{
+      pqCross[0] = nco_rll_lhs(P->shp[a1], Qcross);
+      pqCross[1] = nco_rll_lhs(P->shp[a],  Qcross);
 
     }
 
-    /* imply rules facing if 0 */
-
-    if (ipqLHS == 0 && ip1qLHS != 0)
-      ipqLHS = ip1qLHS * -1;
-    else if (ipqLHS != 0 && ip1qLHS == 0)
-      ip1qLHS = ipqLHS * -1;
 
 
-    if (isP_LatCircle) {
-      iq1pLHS = nco_rll_lhs_lat(Q->shp[b1], P->shp[a1], P->shp[a]);
-      iqpLHS = nco_rll_lhs_lat(Q->shp[b], P->shp[a1], P->shp[a]);
-
-
-    } else {
-
-      iq1pLHS = nco_rll_lhs(Q->shp[b1], Pcross);
-      iqpLHS = nco_rll_lhs(Q->shp[b], Pcross);
-
+    if (isP_LatCircle){
+      pqCross[2] = nco_rll_lhs_lat(Q->shp[b1], P->shp[a1], P->shp[a]);
+      pqCross[3] = nco_rll_lhs_lat(Q->shp[b], P->shp[a1], P->shp[a]);
+    }else{
+      pqCross[2] = nco_rll_lhs(Q->shp[b1], Pcross);
+      pqCross[3] = nco_rll_lhs(Q->shp[b],  Pcross);
     }
 
-    /* imply rules facing if 0 */
-    if (iqpLHS == 0 && iq1pLHS != 0)
-      iqpLHS = iq1pLHS * -1;
-    else if (iqpLHS != 0 && iq1pLHS == 0)
-      iq1pLHS = iqpLHS * -1;
+
+
+    /* imply facing rules  */
+    if(!pqCross[0])
+      pqCross[0]=-pqCross[1];
+    else if(!pqCross[1])
+      pqCross[1]=-pqCross[0];
+
+    if(!pqCross[2])
+      pqCross[2]=-pqCross[3];
+    else if(!pqCross[3])
+      pqCross[3]=-pqCross[2];
 
 
     /* now calculate face rules */
-    qpFace = nco_sph_face(ip1qLHS, ipqLHS, iqpLHS);
-    pqFace = nco_sph_face(iq1pLHS, iqpLHS, ipqLHS);
+    qpFace = nco_sph_face(pqCross[0], pqCross[1], pqCross[3]);
+    pqFace = nco_sph_face(pqCross[2], pqCross[3], pqCross[1]);
+
 
 
     /* check for parallel segments */
@@ -3191,20 +3183,21 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
     if (isParallel) {
 
-      ip1qLHS = 0;
-      ipqLHS = 0;
-      iq1pLHS = 0;
-      iqpLHS = 0;
+      pqCross[0]=0;
+      pqCross[1]=0;
+      pqCross[2]=0;
+      pqCross[3]=0;
+
       qpFace = 0;
       pqFace = 0;
-
 
     }
 
 
     if( isGeared == False)
     {
-      if(  (ipqLHS == 1 && iqpLHS == 1) ||  ( qpFace && pqFace )     )
+      //if(  (ipqLHS == 1 && iqpLHS == 1) ||  ( qpFace && pqFace )     )
+      if(  ( pqCross[1]==1   && pqCross[3] == 1) ||  ( qpFace && pqFace )     )
       {
         aa++;a++;
       }
@@ -3273,7 +3266,7 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
             bb = 0;
           }
 
-          inflag = (ipqLHS == 1 ? poly_vrl_pin : iqpLHS == 1 ? poly_vrl_qin : inflag);
+          inflag = (pqCross[1] == 1 ? poly_vrl_pin : pqCross[3] == 1 ? poly_vrl_qin : inflag);
 
 
           if (DEBUG_SPH)
@@ -3283,7 +3276,7 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       }
 
       if(DEBUG_SPH)
-        printf("numIntersect=%d code=%c (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d)\n",numIntersect, code, ipqLHS, ip1qLHS,  iqpLHS,iq1pLHS, qpFace,pqFace);
+        printf("numIntersect=%d codes=%s (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d) inflag=%s\n",numIntersect, code, pqCross[1], pqCross[0],  pqCross[3], pqCross[2], qpFace,pqFace, nco_poly_vrl_flg_sng_get(inflag));
 
 
 
@@ -3308,13 +3301,13 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
         aa++;a++;
 
-      } else if (iqpLHS == -1) {
+      } else if ( pqCross[3]  == -1) {
         /* advance q */
         //if(inflag== Qin) sAddPoint(R,r,Q->shp[b]);
         bb++;b++;
 
         /* cross product zero  */
-      } else if( ipqLHS==0 && ip1qLHS==0 && iq1pLHS ==0 && iqpLHS ==0   ){
+      } else if(  !pqCross[0] && !pqCross[1] && !pqCross[2] && !pqCross[3]     ){
         if(inflag==poly_vrl_pin)
         {bb++;b++;}
         else
