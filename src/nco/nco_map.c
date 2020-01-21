@@ -446,7 +446,10 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   /* Set-up output file */
   char *fl_out_tmp=NULL_CEWI;
+  char *fl_grd_dst;
+  char *fl_grd_src;
   char *fl_out;
+  char *sls_ptr;
 
   int deflate; /* [flg] Turn-on deflate filter */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
@@ -476,6 +479,8 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   deflate=(int)True;
   shuffle=NC_SHUFFLE;
   dfl_lvl=rgr->dfl_lvl;
+  fl_grd_dst=rgr->fl_grd_dst;
+  fl_grd_src=rgr->fl_grd_src;
   fl_out_fmt=rgr->fl_out_fmt;
   fl_out=rgr->fl_map;
   thr_nbr=rgr->thr_nbr;
@@ -509,7 +514,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     } /* !fabs */
   } /* !dbg */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile with format %s with n_s = %li, n_a = %li, n_b = %li. Mean number of links per destination cell = n_s/n_b = %li/%li = %g. Mean number of links per geometric mean src/dst cell = n_s/sqrt(n_a*n_b) = %li/sqrt(%li*%li) = %g. RAM size of weight variable n_s is sizeof(double)*n_s = 8*%li = %g MB. RAM sizes of vertex variables x/y_va are sizeof(double)*n_a*nv_a = 8*%li*%li = %g MB. RAM sizes of vertex variables x/y_vb are sizeof(double)*n_b*nv_b = 8*%li*%li = %g MB.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr,dst_grd_sz_nbr,lnk_nbr/(1.0*dst_grd_sz_nbr),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr/sqrt(src_grd_sz_nbr*dst_grd_sz_nbr),lnk_nbr,sizeof(double)*lnk_nbr/1.0e6,src_grd_sz_nbr,src_grd_crn_nbr,sizeof(double)*src_grd_sz_nbr*src_grd_crn_nbr/1.0e6,dst_grd_sz_nbr,dst_grd_crn_nbr,sizeof(double)*dst_grd_sz_nbr*dst_grd_crn_nbr/1.0e6);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile in format %s with n_s = %li, n_a = %li, n_b = %li. Mean number of links per destination cell = n_s/n_b = %li/%li = %g. Mean number of links per geometric mean src/dst cell = n_s/sqrt(n_a*n_b) = %li/sqrt(%li*%li) = %g. RAM size of weight variable n_s is sizeof(double)*n_s = 8*%li = %g MB. RAM sizes of vertex variables x/y_va are sizeof(double)*n_a*nv_a = 8*%li*%li = %g MB. RAM sizes of vertex variables x/y_vb are sizeof(double)*n_b*nv_b = 8*%li*%li = %g MB.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr,dst_grd_sz_nbr,lnk_nbr/(1.0*dst_grd_sz_nbr),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr/sqrt(src_grd_sz_nbr*dst_grd_sz_nbr),lnk_nbr,sizeof(double)*lnk_nbr/1.0e6,src_grd_sz_nbr,src_grd_crn_nbr,sizeof(double)*src_grd_sz_nbr*src_grd_crn_nbr/1.0e6,dst_grd_sz_nbr,dst_grd_crn_nbr,sizeof(double)*dst_grd_sz_nbr*dst_grd_crn_nbr/1.0e6);
 
   /* Open mapfile */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -580,11 +585,22 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,NULL,"created_by",usr_cpp);
   rcd=nco_char_att_put(out_id,NULL,"map_method","Conservative");
   rcd=nco_char_att_put(out_id,NULL,"weight_generator","NCO");
-  const char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */
-  rcd=nco_char_att_put(out_id,NULL,"weight_generator_version",vrs_cpp);
+  char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */
+  /* 20170417: vrs_cpp is typically something like "4.6.6-alpha08" (quotes included) 
+     The quotation marks annoy me yet are necessary to protect the string in nco.h 
+     Here we remove the quotation marks by pointing past the first and putting NUL in the last */
+  char *vrs_sng; /* [sng] NCO version */
+  vrs_sng=vrs_cpp;
+  if(vrs_cpp[0L] == '"'){
+    vrs_cpp[strlen(vrs_cpp)-1L]='\0';
+    vrs_sng=vrs_cpp+1L;
+  } /* endif */
+  rcd=nco_char_att_put(out_id,NULL,"weight_generator_version",vrs_sng);
+  rcd=nco_char_att_put(out_id,NULL,"grid_file_src",(sls_ptr=strrchr(fl_grd_src,'/')) == NULL ? fl_grd_src : sls_ptr+1);
+  rcd=nco_char_att_put(out_id,NULL,"grid_file_dst",(sls_ptr=strrchr(fl_grd_dst,'/')) == NULL ? fl_grd_dst : sls_ptr+1);
   (void)nco_hst_att_cat(out_id,rgr->cmd_ln);
   (void)nco_vrs_att_cat(out_id);
-  if(thr_nbr > 1) (void)nco_thr_att_cat(out_id,thr_nbr);
+  if(thr_nbr >= 1) (void)nco_thr_att_cat(out_id,thr_nbr);
   rcd=nco_char_att_put(out_id,"S","long_name","Weights to Map Variables from Source to Destination Grid");
   rcd=nco_char_att_put(out_id,"area_a","long_name","Solid Angle Subtended on Source Grid");
   rcd=nco_char_att_put(out_id,"area_a","standard_name","solid_angle");
@@ -1154,7 +1170,7 @@ nco_msh_wrt
   (void)nco_def_var(out_id,grd_area_nm,crd_typ,dmn_nbr_1D,dmn_ids,&grd_area_id);
   if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,grd_area_id,shuffle,deflate,dfl_lvl);
 
-  //if(thr_nbr > 1) (void)nco_thr_att_cat(out_id,thr_nbr);
+  //if(thr_nbr >= 1) (void)nco_thr_att_cat(out_id,thr_nbr);
 
   /* Take output file out of define mode */
   /* 20200119: Map-writing fails mysteriously here with E_VARSIZE, for netCDF 4.6.3 compy */
@@ -2126,7 +2142,7 @@ nco_map_chk /* Map-file evaluation */
     nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
     fprintf(stdout,"\n");
-    fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sConsistency (computed row-sums of S) (perfect is 1.0 for global Grid A)\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_b ? "(area-weighted) " : "");
+    fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sConsistency (row-sums of S) (perfect is 1.0 for global Grid A)\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_b ? "(area-weighted) " : "");
     fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid A)\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
     fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid A)\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
     fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0 (perfect is 0.0 for global Grid A)\n",mebs,mebs,area_wgt_b ? "(area-weighted) " : "");
