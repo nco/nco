@@ -3276,9 +3276,7 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       }
 
       if(DEBUG_SPH)
-        printf("numIntersect=%d codes=%s (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d) inflag=%s\n",numIntersect, code, pqCross[1], pqCross[0],  pqCross[3], pqCross[2], qpFace,pqFace, nco_poly_vrl_flg_sng_get(inflag));
-
-
+        printf("numIntersect=%d codes=%c (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d) inflag=%s\n",numIntersect, code, pqCross[1], pqCross[0],  pqCross[3], pqCross[2], qpFace,pqFace, nco_poly_vrl_flg_sng_get(inflag));
 
       if (qpFace && pqFace)  {
 

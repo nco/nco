@@ -2497,67 +2497,41 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_
 
   }
 
-  if( stateH==2 && stateV==2 )
-  	bAddPnt=True;
-  else if(stateH==2 && stateV==1  && node->size[KD_TOP] >= Xq[KD_BOTTOM]  && node->size[KD_BOTTOM] <= Xq[KD_TOP] )
-     bAddPnt=True;
-  else if(stateH==1 && stateV==2 &&  node->size[KD_RIGHT] >= Xq[KD_LEFT]  && node->size[KD_LEFT] <= Xq[KD_RIGHT]  )
-  	bAddPnt=True;
-  else  if(BOXINTERSECT(node->size, Xq))
-	  bAddPnt=True;
+  if(stateH == 2 && stateV == 2) bAddPnt=True;
+  else if(stateH == 2 && stateV == 1 && node->size[KD_TOP] >= Xq[KD_BOTTOM] && node->size[KD_BOTTOM] <= Xq[KD_TOP]) bAddPnt=True;
+  else if(stateH == 1 && stateV == 2 && node->size[KD_RIGHT] >= Xq[KD_LEFT] && node->size[KD_LEFT] <= Xq[KD_RIGHT]) bAddPnt=True;
+  else if(BOXINTERSECT(node->size,Xq)) bAddPnt=True;
 
-	/* add node as necessary */
-  if(bAddPnt)
-  { 
+  /* add node as necessary */
+  if(bAddPnt){ 
+    if(omp_mem->kd_blk_nbr*NCO_VRL_BLOCKSIZE < omp_mem->kd_cnt+1){
+      /* fxm */
+      (void)fprintf(stderr,"%s: ERROR %s reports that the kd-tree overlap buffer (size=%d) is now full and currenly cannot be dynamically expanded. We are trying to fix this. In the meanwhile consider increasing NCO_VRL_BLOCKSIZE in nco_kd.h, and then re-compiling.\n",nco_prg_nm_get(),fnc_nm,NCO_VRL_BLOCKSIZE);
+      nco_exit(EXIT_FAILURE);
 
+      /*
+        omp_mem->kd_list=(KDPriority*)nco_realloc(omp_mem->kd_list,++omp_mem->kd_blk_nbr*(NCO_VRL_BLOCKSIZE*sizeof(KDPriority)));
+        (void)fprintf(stderr,"%s: Increasing block size to %ld kd_cnt=%ld omp_mem=%p\n",fnc_nm,omp_mem->kd_blk_nbr,omp_mem->kd_cnt,(void*)omp_mem->kd_list);
+      */
+    } /* !omp_mem */
+    omp_mem->kd_list[omp_mem->kd_cnt].elem = node;
+    omp_mem->kd_list[omp_mem->kd_cnt].dist = 1.0;
+    omp_mem->kd_list[omp_mem->kd_cnt++].area = -1.0;
+  } /* !baddPnt */
 
-  	 if( omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE < omp_mem->kd_cnt +1 )
-	 {
-
-        /* fixme: */
-        (void)fprintf(stderr,"%s:%s(): The overlap buffer is now full (size=%d) and currenly cannot be dynamically expanded\n We are trying to fix this. "\
-							 "In the meanwhile consider going into nco_kd.h  and editing NCO_VRL_BLOCKSIZE, and then re-compiling\n", nco_prg_nm_get(),fnc_nm, NCO_VRL_BLOCKSIZE     );
-
-	    nco_exit( EXIT_FAILURE );
-
-	    /*
-        omp_mem->kd_list=(KDPriority*)nco_realloc(omp_mem->kd_list, ++omp_mem->kd_blk_nbr * (NCO_VRL_BLOCKSIZE *sizeof(KDPriority))  );
-        (void)fprintf(stderr,"%s: Increasing block size to %ld kd_cnt=%ld omp_mem=%p\n",fnc_nm, omp_mem->kd_blk_nbr, omp_mem->kd_cnt,   (void*)omp_mem->kd_list );
-        */
-
-     }
-
-
-  	 omp_mem->kd_list[omp_mem->kd_cnt].elem = node;
-  	 omp_mem->kd_list[omp_mem->kd_cnt].dist = 1.0;
-  	 omp_mem->kd_list[omp_mem->kd_cnt++].area = -1.0;
-
-
-
-
-  }
-     
-  
-
-  if( node->sons[0] )
-  {
+  if(node->sons[0]){
     //iret= kd_neighbour_intersect3(node->sons[0], (disc+1)%4, Xq, list_head,  list_end, stateH, stateV);
     iret= kd_neighbour_intersect3(node->sons[0], (disc+1)%4, Xq, omp_mem, stateH, stateV);
     if(iret==0) return iret;
-      
   }
      
-  if( node->sons[1] )
-  {  
+  if(node->sons[1]){  
     //iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq, list_head,  list_end, stateH, stateV);
     iret=kd_neighbour_intersect3(node->sons[1], (disc+1)%4,  Xq, omp_mem, stateH, stateV);
     if(iret==0) return iret;
-       
   }
 
-
   return 1;
-  
 }
 
 int kd_priority_cmp( const void *vp1, const void *vp2)
@@ -2571,8 +2545,6 @@ int kd_priority_cmp( const void *vp1, const void *vp2)
 
   return ( df < 0 ? -1 :  df >0 ? 1 : 0   );
 }
-
-
 
 /* Sorts input list
  * if duplicates then copy new list over to old and True returned

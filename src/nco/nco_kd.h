@@ -170,9 +170,9 @@
 extern "C" {
 #endif /* __cplusplus */
 
-
+  /* 20200121 Overlap buffer 
+     Increase this as necessary until we get a dynamic overlap buffer working */
 #define NCO_VRL_BLOCKSIZE 6000
-
 
 typedef struct kd_dummy_defn {
     int dummy;
