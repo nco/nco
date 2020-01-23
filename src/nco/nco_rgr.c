@@ -396,6 +396,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
 	rgr->edg_typ=nco_edg_gtc;
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"sml_crc") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ltr") || !strcasecmp(rgr_lst[rgr_var_idx].val,"small_circle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"latitude_triangle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"true")){
 	rgr->edg_typ=nco_edg_smc;
+	(void)fprintf(stderr,"%s: WARNING Requested to run with small-circle edges. This option has not yet been tested and validated. Use only at your own risk.\n",nco_prg_nm_get());
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"crt") || !strcasecmp(rgr_lst[rgr_var_idx].val,"cartesian") || !strcasecmp(rgr_lst[rgr_var_idx].val,"planar") || !strcasecmp(rgr_lst[rgr_var_idx].val,"flat")){
 	rgr->edg_typ=nco_edg_crt;
       }else{
