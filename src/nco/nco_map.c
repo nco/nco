@@ -2121,7 +2121,7 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_a ? "Area-weighted " : "");
     fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
     const double eps_max_wrn=1.0e-1; /* [frc] Maximum error in column-sum/row-sums before WARNING is printed */
-    if(frac_max_cmp-1.0 > eps_max_wrn) fprintf(stdout,"WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) error = %0.1e\n\tRegridding with these weights will produce embarassing results\n\tSuggest re-generating weights with a different algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n",fabs(1.0-frac_max_cmp));
+    if(frac_max_cmp-1.0 > eps_max_wrn) fprintf(stdout,"WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) error = %0.1e\n\tRegridding with these weights will produce embarrassing results\n\tSuggest re-generating weights with a better algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n",fabs(1.0-frac_max_cmp));
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine extrema:\n");
@@ -2152,7 +2152,7 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sean absolute bias from 1.0\n",mebs,mebs,area_wgt_b ? "Area-weighted m" : "M");
     fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_b ? "Area-weighted " : "");
     fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
-    if(frac_max_cmp-1.0 > eps_max_wrn) fprintf(stdout,"WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) error = %0.1e\n\tRegridding with these weights will produce embarassing results\n\tSuggest re-generating weights with a different algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n",fabs(1.0-frac_max_cmp));
+    if(frac_max_cmp-1.0 > eps_max_wrn) fprintf(stdout,"WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) error = %0.1e\n\tRegridding with these weights will produce embarrassing results\n\tSuggest re-generating weights with a better algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n",fabs(1.0-frac_max_cmp));
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine extrema:\n");
