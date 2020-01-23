@@ -1818,7 +1818,7 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
  var_sct *var_area_b,
  var_sct *var_frac_a)
 {
-  /* Purpose: Compute frac_a as area_b-weighted column sums of the weight matrix S */
+  /* Purpose: Compute frac_a as area_b-weighted column sums of the weight matrix S normalized by area_a */
 
   char fnc_nm[]="nco_map_frac_a_clc()";
   int idx;
@@ -2113,12 +2113,13 @@ nco_map_chk /* Map-file evaluation */
     nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
     nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     
-    fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sConservation (perfect is 1.0 for global Grid B)\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid B)\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
-    fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid B)\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
-    fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0 (perfect is 0.0 for global Grid B)\n",mebs,mebs,area_wgt_a ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0 (perfect is 0.0 for global Grid B)\n",rms,rms,area_wgt_a ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation (perfect is 0.0 for global Grid B)\n",sdn,sdn);
+    fprintf(stdout,"Conservation (area-weighted column-sums of weights): Perfect maps (for global Grid B) have avg = min = max = 1.0, mbs = rms = sdn = 0.0\n");
+    fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "Area-weighted m" : "M");
+    fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Minimum in grid A cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
+    fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Maximum in grid A cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
+    fprintf(stdout,"frac_a mbs: %0.16f =     %0.1e // %sean absolute bias from 1.0\n",mebs,mebs,area_wgt_a ? "Area-weighted m" : "M");
+    fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_a ? "Area-weighted " : "");
+    fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine extrema:\n");
@@ -2142,12 +2143,13 @@ nco_map_chk /* Map-file evaluation */
     nco_map_var_min_max_ttl(var_frac_b,var_area_b->val.dp,area_wgt_b,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
 
     fprintf(stdout,"\n");
-    fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sConsistency (row-sums of S) (perfect is 1.0 for global Grid A)\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_b ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid A)\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
-    fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Cell [%lu,%+g,%+g] (perfect is 1.0 for global Grid A)\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
-    fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sMean absolute bias from 1.0 (perfect is 0.0 for global Grid A)\n",mebs,mebs,area_wgt_b ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0 (perfect is 0.0 for global Grid A)\n",rms,rms,area_wgt_b ? "(area-weighted) " : "");
-    fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation (perfect is 0.0 for global Grid A)\n",sdn,sdn);
+    fprintf(stdout,"Consistency (row-sums of weights): Perfect maps (for global Grid A) have avg = min = max = 1.0, mbs = rms = sdn = 0.0\n");
+    fprintf(stdout,"frac_b avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_b ? "Area-weighted m" : "M");
+    fprintf(stdout,"frac_b min: %0.16f = 1.0%s%0.1e // Minimum in grid B cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_b->val.dp[idx_min],var_xc_b->val.dp[idx_min]);
+    fprintf(stdout,"frac_b max: %0.16f = 1.0%s%0.1e // Maximum in grid B cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_b->val.dp[idx_max],var_xc_b->val.dp[idx_max]);
+    fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sean absolute bias from 1.0\n",mebs,mebs,area_wgt_b ? "Area-weighted m" : "M");
+    fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_b ? "Area-weighted " : "");
+    fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine extrema:\n");
