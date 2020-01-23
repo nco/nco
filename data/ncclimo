@@ -317,14 +317,14 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cori a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Rhea a): echo '#!/bin/bash' > ~/ncclimo.slurm
-#                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" > ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
+#                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Cooley b): qsub -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
 #   Cori b): sbatch -A acme -C haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Oldrhea b):qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
-#   Rhea b): sbatch -A CLI115 --nodecount=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+#   Rhea b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 # NB: stdout/stderr files returned from batch jobs are read-protected, need 'chmod 644 ~/ncclimo.out' afterwards
 
 # Normal use: Set five "mandatory" inputs (caseid, yr_srt, yr_end, drc_in, drc_out), and possibly rgr_map, on command line
