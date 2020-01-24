@@ -422,6 +422,9 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     } /* !flg_grd_out_crv */
   } /* flg_grd_out_2D */
 
+  if(flg_grd_out_crv || flg_grd_in_crv )
+    rgr->flg_crv=True;
+
   /* Close input netCDF files */
   nco_close(in_id_dst);
   nco_close(in_id_src);
@@ -825,7 +828,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
      Final lnk_nbr and grd_crn_nbr_vrl are known only after a full loop through input grids */
 
   /* Choose mesh overlap type based on rank of src and dst */
-  if(mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
+  if( !rgr->flg_crv && mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
     /* 20200116 fxm change back to poly_rll */
     pl_typ=poly_rll;
     /*   pl_typ=poly_sph;*/
