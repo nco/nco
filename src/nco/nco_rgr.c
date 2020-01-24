@@ -5727,7 +5727,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  (void)fprintf(stdout,"%s: Latitude-triangle area using series approximation...not implemented yet\n",nco_prg_nm_get());
 	} /* !0 */
 	if(nco_dbg_lvl_get() >= nco_dbg_scl){
-	  (void)fprintf(stdout,"%s: INFO %s col_idx = %li triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,xcs_sph,xcs_sph+area_smc_crc,100.0*area_smc_crc/xcs_sph);
+	  (void)fprintf(stdout,"%s: INFO %s col_idx = %li triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g%%\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,xcs_sph,xcs_sph+area_smc_crc,100.0*area_smc_crc/xcs_sph);
 	  if(fabs(area_smc_crc/xcs_sph) > 0.1){
 	    (void)fprintf(stdout,"%s: DEBUG Non-spherical correction exceeds 10%% for current triangle with vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
 	  } /* !fabs */
@@ -5736,10 +5736,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
     } /* !tri_idx */
     if(edg_typ == nco_edg_smc && flg_ply_has_smc){
       /* Current gridcell contained at least one latitude-triangle */
-      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s col_idx = %li spherical area, latitude-gridcell area, %% difference: %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_smc,100.0*(area_smc-area[col_idx])/area[col_idx]);
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s col_idx = %li spherical area, latitude-gridcell area, %% difference: %g, %g, %g%%\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_smc,100.0*(area_smc-area[col_idx])/area[col_idx]);
     } /* !edg_typ && !flg_ply_has_smc */    
   } /* !col_idx */
-  if(edg_typ == nco_edg_smc && nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s total spherical area, latitude-gridcell area, %% difference, crc_ttl, crc_abs_ttl: %g, %g, %g, %g, %g\n",nco_prg_nm_get(),fnc_nm,area_ttl,area_smc_ttl,100.0*(area_smc_ttl-area_ttl)/area_ttl,area_smc_crc_ttl,area_smc_crc_abs_ttl);
+  if(edg_typ == nco_edg_smc && nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s total spherical area, latitude-gridcell area, %% difference, crc_ttl, crc_abs_ttl: %g, %g, %g%%, %g, %g\n",nco_prg_nm_get(),fnc_nm,area_ttl,area_smc_ttl,100.0*(area_smc_ttl-area_ttl)/area_ttl,area_smc_crc_ttl,area_smc_crc_abs_ttl);
   if(vrt_vld) vrt_vld=(long *)nco_free(vrt_vld);
   if(a_idx) a_idx=(long *)nco_free(a_idx);
   if(b_idx) b_idx=(long *)nco_free(b_idx);

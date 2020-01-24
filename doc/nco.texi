@@ -27371,7 +27371,7 @@ Anaconda packaging
 Debian packaging
 @cindex Patrice Dumas
 @cindex Ed Hill
-@cindex Orion Powlawski
+@cindex Orion Poplawski
 @item Patrice Dumas, Ed Hill, Orion Poplawski
 RedHat packaging
 @cindex George Shapavalov
