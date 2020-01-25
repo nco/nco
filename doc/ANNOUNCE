@@ -27,7 +27,8 @@ NEW FEATURES (full details always in ChangeLog):
 
 A. ncremap --chk_map checks for and reports NaN weights.
    Previously chk_map generally ignored NaNs in the weight array.
-   The format of the analysis report has also been improved.
+   The format of the analysis report has also been improved, and gives
+   the locations of extrema, i.e., max/min for weights and errors.
    ncremap --chk_map map.nc
    http://nco.sf.net/nco.html#chk_map
 
@@ -37,25 +38,11 @@ A. ncremap and ncclimo both now export HDF5_USE_FILE_LOCKING='FALSE'
    Let us know if this setting causes problems for your workflow.
 
 A. NCO's weight generator can now read unstructured SCRIP gridfiles
-   created by TempestRemap utilities thatand converted that do not
-   include the (supposedly standard) "grid_dims" variable when they
-   convert the Exodus file to SCRIP. The unstructured dimension size
-   is used instead of the contents of the "grid_dims" variable.
+   created by TempestRemap utilities that do not include the
+   (supposedly standard) "grid_dims" dimension when converting Exodus
+   files to SCRIP. The unstructured dimension size is used instead of
+   the contents of the "grid_dims" variable. 
    
-BUG FIXES:
-
-A. ncks --chk_map statistics no longer scrambled.
-   Statistics of "normal" global->global conservative maps are
-   unaffected. Some other types of map-files are.
-   There is no workaround. Solution is to upgrade.
-   http://nco.sf.net/nco.html#chk_map
-
-A. ncremap --alg_typ=fv2fv now implements the same TempestRemap
-   options as --alg_typ=fv2fv_stt. The previous fv2fv options
-   were not actually as described. Solution is to upgrade.
-   http://nco.sf.net/nco.html#fv2fv
-   http://nco.sf.net/nco.html#fv2fv_stt
-
 A. ncremap --devnull option controls whether internal (and sometimes
    noisy) output from NCO weight-generator is sent to terminal or to
    /dev/null. The default is to send internal messages to /dev/null.
@@ -72,6 +59,34 @@ A. ncpdq -U now always unpacks all variables, including packed
    This fixes a bug introduced in NCO 4.7.7. Solution is to use
    earlier versions of NCO or to upgrade.
    http://nco.sf.net/nco.html#ncpdq
+
+BUG FIXES:
+
+A. ncks --chk_map statistics no longer scrambled.
+   Statistics of "normal" global->global conservative maps are
+   unaffected. Some other types of map-files are.
+   There is no workaround. Solution is to upgrade.
+   http://nco.sf.net/nco.html#chk_map
+
+A. ncremap --alg_typ=fv2fv now implements the same TempestRemap
+   options as --alg_typ=fv2fv_stt. The previous fv2fv options
+   were not actually as described. Solution is to upgrade.
+   http://nco.sf.net/nco.html#fv2fv
+   http://nco.sf.net/nco.html#fv2fv_stt
+
+A. ncremap now passes all NCO options through to ncks.
+   Previously these options, such as file formats were not passed
+   and ncks used defaults instead.
+   There is no workaround. Solution is to upgrade.
+
+A. ncremap now computes correct weights for "PG" ("physics
+   grids", a type of FV grid) grids mapped to/from RLL grids.
+   Previously ncremap produced correct weights when PG grids were
+   mapped to/from unstructured grids but not RLL grids.
+   RLL<->PG2 maps were found to have triggered a bug in the weight
+   generator where fxm
+   ncremap --grd_src=pg2.nc --grd_out=180x360.nc --map=map.nc
+   http://nco.sf.net/nco.html#ncremap
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

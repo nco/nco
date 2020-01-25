@@ -1811,7 +1811,6 @@ nco_map_frac_b_clc /* Compute frac_b as row sums of the weight matrix S */
   return True;
 } /* !nco_map_frac_b_clc() */
 
-
 nco_bool
 nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weight matrix S */
 (var_sct *var_S,
@@ -1848,7 +1847,7 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
   } /* !idx */
 
   /* Normalize result by area_a */
-  for(idx=0;idx< var_frac_a->sz;idx++)
+  for(idx=0;idx<var_frac_a->sz;idx++)
     var_frac_a->val.dp[idx]/=var_area_a->val.dp[idx];
 
   (void)cast_nctype_void(NC_DOUBLE,&(var_S->val));
@@ -2124,8 +2123,21 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"frac_a rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_a ? "Area-weighted " : "");
     fprintf(stdout,"frac_a sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
     const double eps_max_wrn=1.0e-1; /* [frc] Maximum error in column-sum/row-sums before WARNING is printed */
-    if(frac_max_cmp-1.0 > eps_max_wrn) fprintf(stdout,"WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) error = %0.1e\n\tRegridding with these weights will produce embarrassing results\n\tSuggest re-generating weights with a better algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n",fabs(1.0-frac_max_cmp));
+    if(frac_max_cmp-1.0 > eps_max_wrn) fprintf(stdout,"WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) error = %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n",fabs(1.0-frac_max_cmp));
 
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
+      val=var_frac_a->val.dp;
+      int wrn_nbr=0; // [nbr] Number of warnings
+      const double eps_err=1.0e-8;
+      for(idx=0;idx<var_frac_a->sz;idx++){
+	if(fabs(val[idx]-1.0) > eps_err){
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) fprintf(stdout,"WARNING conservation = %0.16f = 1.0%s%0.1e for grid A cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
+	  wrn_nbr++;
+	} /* !err */
+      } /* !idx */
+      if(wrn_nbr > 0) fprintf(stdout,"WARNING non-conservative weighted column-sums (error exceeds tolerance = %0.1e) for %d grid A cells\nNB: WARNINGS may often be safely ignored for gridcells not intended to fully contribute to both source and destination grids (e.g., gridcells with fractional land/ocean)\n",eps_err,wrn_nbr);
+    } /* !dbg */
+    
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine extrema:\n");
       fprintf(stdout,"min(frac_a): ncks --fortran -H --trd -d n_a,%lu -v .?_a %s\n",idx_min+1UL,fl_in);
@@ -2155,8 +2167,21 @@ nco_map_chk /* Map-file evaluation */
     fprintf(stdout,"frac_b mbs: %0.16f =     %0.1e // %sean absolute bias from 1.0\n",mebs,mebs,area_wgt_b ? "Area-weighted m" : "M");
     fprintf(stdout,"frac_b rms: %0.16f =     %0.1e // %sRMS relative to 1.0\n",rms,rms,area_wgt_b ? "Area-weighted " : "");
     fprintf(stdout,"frac_b sdn: %0.16f =     %0.1e // Standard deviation\n",sdn,sdn);
-    if(frac_max_cmp-1.0 > eps_max_wrn) fprintf(stdout,"WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) error = %0.1e\n\tRegridding with these weights will produce embarrassing results\n\tSuggest re-generating weights with a better algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n",fabs(1.0-frac_max_cmp));
+    if(frac_max_cmp-1.0 > eps_max_wrn) fprintf(stdout,"WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) error = %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n",fabs(1.0-frac_max_cmp));
 
+    if(nco_dbg_lvl_get() >= nco_dbg_std){
+      val=var_frac_b->val.dp;
+      int wrn_nbr=0; // [nbr] Number of warnings
+      const double eps_err=1.0e-8;
+      for(idx=0;idx<var_frac_b->sz;idx++){
+	if(fabs(val[idx]-1.0) > eps_err){
+	  if(nco_dbg_lvl_get() >= nco_dbg_std) fprintf(stdout,"WARNING consistency = %0.16f = 1.0%s%0.1e for grid B cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
+	  wrn_nbr++;
+	} /* !err */
+      } /* !idx */
+      if(wrn_nbr > 0) fprintf(stdout,"WARNING non-consistent row-sums (error exceeds tolerance = %0.1e) for %d grid B cells\nNB: WARNINGS may often be safely ignored for gridcells not intended to fully contribute to both source and destination grids (e.g., gridcells with fractional land/ocean)\n",eps_err,wrn_nbr);
+    } /* !dbg */
+    
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine extrema:\n");
       fprintf(stdout,"min(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_min+1UL,fl_in);

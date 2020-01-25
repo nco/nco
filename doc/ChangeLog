@@ -1,3 +1,7 @@
+2020-01-25  Charlie Zender  <zender@sastrugi>
+
+	* nco_map_chk() prints gridcells where row/column totals errors exceeds tolerance
+
 2020-01-21  Charlie Zender  <zender@sastrugi>
 
 	* nco_map_mk() add grid_file_src/dst attributes, remove quotes from version
