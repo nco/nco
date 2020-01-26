@@ -23,9 +23,30 @@ scp -p ~/nco/doc/milestones_old.shtml dust.ess.uci.edu:Sites/nco
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
 <dt><a name="News"></a></dt>
-<h2>Releases &amp; Milestones from 2003&ndash;2015 (versions 2.8.4&ndash;4.5.3)</h2>
+<h2>Releases &amp; Milestones from 2003&ndash;2017 (versions 2.8.4&ndash;4.7.1)</h2>
 
 <ul>
+
+<li>2017 Dec&nbsp;21: 4.7.1 Conda Windows port
+<li>2017 Nov&nbsp;08: 4.7.0 Sundry features/fixes
+<li>2017 Sep&nbsp;18: 4.6.9 CDF5, CMake
+<li>2017 Aug&nbsp;16: 4.6.8 Sundry features/fixes
+<li>2017 May&nbsp;26: 4.6.7 Sub-gridscale regridding
+<li>2017 Apr&nbsp;21: 4.6.6 UGRID
+<li>2017 Mar&nbsp;15: 4.6.5 Sundry features/fixes
+<li>2017 Feb&nbsp;07: 4.6.4 <tt>ncclimo</tt> splitter
+<li>2017 Jan&nbsp;27: <i>Geosci. Model Dev.</i> publishes compression-error trade-off <a href="http://www.geosci-model-dev.net/10/413/2017">paper</a></li>
+<li>2016 Dec&nbsp;23: 4.6.3 Sundry features/fixes
+<li>2016 Nov&nbsp;16: 4.6.2 JSON
+<li>2016 Sep&nbsp;19: <i>Geosci. Model Dev.</i> publishes PPC <a href="http://www.geosci-model-dev.net/9/3199/2016">paper</a></li>
+<li>2016 Aug&nbsp;06: 4.6.1 Sundry features/fixes
+<li>2016 Jul&nbsp;06: Submitted compression-error trade-off <a href="http://www.geosci-model-dev-discuss.net/gmd-2016-177">manuscript</a> to <i>Geosci. Model Dev.</i></li>
+<li>2016 May&nbsp;12: 4.6.0 <tt>ncclimo</tt>
+<li>2016 Apr&nbsp;06: <a href="http://dust.ess.uci.edu/smn/pst_nco_esds_201604.pdf">Poster</a> at NASA ESDSWG, Greenbelt</li>
+<li>2016 Apr&nbsp;05: <a href="http://dust.ess.uci.edu/smn/smn_nco_gsfc_201604.pdf">Talk</a> at NASA GES DISC, Greenbelt</li>
+<li>2016 Mar&nbsp;22: Submitted PPC manuscript to <i>Geosci. Model Dev.</i></li>
+<li>2016 Feb&nbsp;17: 4.5.5 Sundry features/fixes
+<li>2016 Jan&nbsp;07: 4.5.4 <tt>ncremap</tt>
 <li>2015 Dec&nbsp;16: <a href="http://dust.ess.uci.edu/smn/pst_nco_agu_201512.pdf">Poster</a> at Fall AGU, San Francisco</li>
 <li>2015 Nov&nbsp;04: <a href="http://dust.ess.uci.edu/smn/smn_nco_acme_201511.pdf">Talk</a> at DOE ACME, Albuquerque</li>
 <li>2015 Oct&nbsp;20: 4.5.3 Curvilinear
