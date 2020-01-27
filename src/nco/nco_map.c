@@ -422,8 +422,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     } /* !flg_grd_out_crv */
   } /* flg_grd_out_2D */
 
-  if(flg_grd_out_crv || flg_grd_in_crv )
-    rgr->flg_crv=True;
+  if(flg_grd_out_crv || flg_grd_in_crv) rgr->flg_crv=True;
 
   /* Close input netCDF files */
   nco_close(in_id_dst);
