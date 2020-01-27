@@ -1534,15 +1534,18 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     code='0';
   }
 
-  if(DEBUG_SPH )
-  {
+  if(DEBUG_SPH ) {
     if (code >= '1')
       nco_sph_prn_pnt("nco_sph_seg_parallel(): intersect1", r0, 3, True);
 
     if (code == '2')
       nco_sph_prn_pnt("nco_sph_seg_parallel(): intersect2", r1, 3, True);
 
+    /* points very close together - so use only first one*/
+    if (code == '2' && !nco_sph_metric(r0, r1))
+      code = '1';
   }
+
 
 
   return code;
