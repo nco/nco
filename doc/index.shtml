@@ -139,7 +139,8 @@ NCO is
 <a href="http://dust.ess.uci.edu/ppr/ppr_ZeM07.pdf">fast</a>, 
 <a href="http://dust.ess.uci.edu/ppr/ppr_Zen08.pdf">powerful</a>,
 and 
-<a href="http://www.gnu.org/licenses/gpl-3.0.html">free</a>.
+<a href="https://opensource.org/licenses/BSD-3-Clause">free</a>.
+<!-- <a href="http://www.gnu.org/licenses/gpl-3.0.html">free</a>.
 </table>
 <hr>
 
@@ -149,7 +150,7 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2020 Feb&nbsp;??: 4.9.2 <i>In Progress...</i>
+<li>2020 Feb&nbsp;??: 4.9.2 BSD License <i>In Progress...</i>
 <li>2019 Dec&nbsp;19: 4.9.1 Sundry features/fixes
 <li>2019 Dec&nbsp;04: 4.9.0 ncremap lollapalooza
 <li>2019 Jul&nbsp;01: 4.8.1 Sundry features/fixes
@@ -249,7 +250,7 @@ special cases.
 <a name="Contribute"></a> <!-- http://nco.sf.net#Contribute -->
 <a name="contribute"></a> <!-- http://nco.sf.net#contribute -->
 <h2>How to Contribute: Volunteer, Endorse, or Donate</h2>
-<p>NCO has always (since 1995) been GPL'd Open Source.
+<p>NCO has always (since 1995) been Open Source.
 <a href="http://sf.net">SourceForge.net</a> started hosting NCO 
 in March, 2000.
 This facilitated collaboration, code contributions, and support.
