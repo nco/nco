@@ -5628,7 +5628,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	// xcs_sph=4.0*atan(sqrt(tan(0.5*0.5*(ngl_a+ngl_b+ngl_c))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_a))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_b))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_c))));
       } /* !flg_sas */
       if(isnan(xcs_sph)){
-	(void)fprintf(stdout,"%s: WARNING Triangle area formula yields NaN for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g). Setting this area = 0.0\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
+	(void)fprintf(stdout,"%s: WARNING Triangle area formula yields NaN for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g). Setting this area = 0.0 temporarily (CSZ is aware of this issue and will try to solve in February).\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
 	xcs_sph=0.0;
 	//nco_exit(EXIT_FAILURE);
       } /* !NaN */
