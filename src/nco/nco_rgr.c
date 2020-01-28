@@ -5620,12 +5620,18 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	// xcs_sph=2.0*atan(tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b)*sin(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))/(1.0+tan_hlf_a_tan_hlf_b*cos(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))));
       }else{
 	double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
-	/* Triangle is well-conditioned, apply L'Huilier's formula */
+	/* Triangle is well-conditioned according to eps_ill_cnd above so apply L'Huilier's formula */
 	xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
-	xcs_sph=4.0*atan(xcs_sph_qtr_tan);
+	assert(fabs(xcs_sph_qtr_tan) != M_PI_2);
+        xcs_sph=4.0*atan(xcs_sph_qtr_tan);
 	/* 20191014: Aggregate all previous area-related commands into one, gigantic, unreadable, possibly more precise command (tested and it is more obfuscated but not more precise) */
 	// xcs_sph=4.0*atan(sqrt(tan(0.5*0.5*(ngl_a+ngl_b+ngl_c))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_a))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_b))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_c))));
       } /* !flg_sas */
+      if(isnan(xcs_sph)){
+	(void)fprintf(stdout,"%s: WARNING Triangle area formula yields NaN for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g). Setting this area = 0.0\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
+	xcs_sph=0.0;
+	//nco_exit(EXIT_FAILURE);
+      } /* !NaN */
       area[col_idx]+=xcs_sph;
       area_smc+=xcs_sph;
       area_ttl+=xcs_sph;
