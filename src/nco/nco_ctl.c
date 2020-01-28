@@ -876,6 +876,7 @@ nco_prg_prs /* [fnc] Strip program name to stub and set program ID */
   else if(!strcmp(nm_out_tmp,"mpncws")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
   else if(!strcmp(nm_out_tmp,"mpncwa")){*prg_lcl=ncwa;}
+  else if(!strcmp(nm_out_tmp,"vrl-tst")){*prg_lcl=ncks;}
   else{
     (void)fprintf(stdout,"%s: ERROR executable name %s not registered in nco_prg_prs()\n",nm_out_tmp,nm_out_tmp);
     nco_exit(EXIT_FAILURE);
