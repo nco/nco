@@ -993,13 +993,13 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
   }
 
-  /* swap values back if necessary */
-  if(bSwap) {
+  /* swap values back if necessary
+  if( bSwap) {
 
     dswp = p0;p0 = q0;q0 = dswp;
     dswp = p1;p1 = q1;q1 = dswp;
   }
-
+  */
 
 
 
@@ -1017,6 +1017,13 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
   //flg_cd=nco_sph_metric_int(q0,q1, pcnd);
   flg_cd= ( !nco_sph_metric(pcnd,q0) ? 2 : !nco_sph_metric(pcnd, q1) ? 3 :1 );
+
+  if(bSwap)
+  {
+    int flg_tmp=flg_ab;
+    flg_ab=flg_cd;
+    flg_cd=flg_tmp;
+  }
 
 
   codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
@@ -1548,7 +1555,6 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
       code = '1';
 
   
-
   return code;
 }
 
