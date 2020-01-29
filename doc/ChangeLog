@@ -1,5 +1,9 @@
 2020-01-28  Charlie Zender  <zender@sastrugi>
 
+	* NCO 4.9.2-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha06: Supta Baddha Konasana';git push
+	git tag -a 4.9.2-alpha06 -m 'ncks chk_map dgn;ncremap ne30np2, NaN area = 0.0;index.shtml';git push --tags
+
 	* Print WARNING and set area of weird triangles to 0.0 instead of NaN
 
 2020-01-25  Charlie Zender  <zender@sastrugi>

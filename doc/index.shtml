@@ -750,7 +750,7 @@ The first link, for example, is
 <a href="http://windowscentral.com/how-install-linux-distros-windows-10">here</a>.
 Follow those instructions.
 We suggest installing Ubuntu.
-Once you have, open a shell window and enter <tt>sudo apt-get install nco</a>, just as you
+Once you have, open a shell window and enter <tt>sudo apt-get install nco</tt>, just as you
 would do on any Debian or Ubuntu Linux platform.
 (These instructions are copied from Adrian Tompkins.)
 
@@ -760,7 +760,7 @@ To build NCO from source yourself using MSVC with CMake, please see example in <
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.9.1.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.9.1.windows.mvs.exe">nco-4.9.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.1.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.1.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+<li><a href="src/nco-4.9.1.windows.mvs.exe">nco-4.9.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.1.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.1.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="visual"></a> <!-- http://nco.sf.net#visual -->
@@ -776,7 +776,7 @@ To build NCO from source yourself using MSVC with CMake, please see example in <
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.9.1.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.9.1.windows.mvs.exe">nco-4.9.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.1.windows.mvs.exe"-->) : Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.1.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+<li><a href="src/nco-4.9.1.windows.mvs.exe">nco-4.9.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.1.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.1.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
