@@ -83,7 +83,10 @@ drc_spt="$( cd -P "$( dirname "${spt_src}" )" && pwd )"
 spt_nm=$(basename ${spt_src}) # [sng] Script name (unlike $0, ${BASH_SOURCE[0]} works well with 'source <script>')
 spt_pid=$$ # [nbr] Script PID (process ID)
 
-# 20200110 Qi Tang reports his batch scripts on Cori that use netCDF4 map-files fail unless he sets this
+# https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.1/src/hdf5-1.10.1-RELEASE.txt
+# "The file locking calls used in HDF5 1.10.0 (including patch1) will fail when the underlying file system does not support file locking or where locks have been disabled. To disable all file locking operations, an environment variable named HDF5_USE_FILE_LOCKING can be set to the five-character string 'FALSE'."
+# 20200110 Qi Tang reports Cori batch scripts to generate map-files fail unless he sets this
+# 20200131 Necessary whenever using OpenMP and netCDF4-linked library on any non-locking filesystem?
 if [ -z "${HDF5_USE_FILE_LOCKING}" ]; then
     export HDF5_USE_FILE_LOCKING='FALSE'
 fi # HDF5_USE_FILE_LOCKING

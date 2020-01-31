@@ -5577,6 +5577,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	 https://en.wikipedia.org/wiki/Spherical_trigonometry */
       flg_sas=flg_sas_hlf_a=flg_sas_hlf_b=flg_sas_hlf_c=False;
       /* Sensitivity tests on ~20191014 showed that triangular ill-conditioning treatment (i.e., switching to SAS method) does not improve (and may degrade) accuracy for eps_ill_cnd > 1.0e-15 */
+
       const double eps_ill_cnd=1.0e-15; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
       const double eps_ill_cnd_dbl=2.0*eps_ill_cnd; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
       if((fabs(ngl_a-ngl_b) < eps_ill_cnd) && (fabs(ngl_a-0.5*ngl_c) < eps_ill_cnd_dbl)) flg_sas_hlf_c=True; /* c is half a and b */
@@ -5618,6 +5619,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	xcs_sph_hlf_tan=tan_hlf_a_tan_hlf_b*sin(ngl_sfc_ltr_C)/(1.0+tan_hlf_a_tan_hlf_b*cos(ngl_sfc_ltr_C));
 	xcs_sph=2.0*atan(xcs_sph_hlf_tan);
 	// xcs_sph=2.0*atan(tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b)*sin(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))/(1.0+tan_hlf_a_tan_hlf_b*cos(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))));
+	(void)fprintf(stdout,"%s: INFO Triangle used SAS area formula for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f).\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
       }else{
 	double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
 	/* Triangle is well-conditioned according to eps_ill_cnd above so apply L'Huilier's formula */
@@ -5628,9 +5630,16 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	// xcs_sph=4.0*atan(sqrt(tan(0.5*0.5*(ngl_a+ngl_b+ngl_c))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_a))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_b))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_c))));
       } /* !flg_sas */
       if(isnan(xcs_sph)){
-	(void)fprintf(stdout,"%s: WARNING Triangle area formula yields NaN for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g). Setting this area = 0.0 temporarily (CSZ is aware of this issue and will try to solve in February).\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
+	if( /* Categorize reason for NaN */
+	   ((lat_bnd[idx_a] == lat_bnd[idx_b]) && (lon_bnd[idx_a] == lon_bnd[idx_b])) ||
+	   ((lat_bnd[idx_b] == lat_bnd[idx_c]) && (lon_bnd[idx_b] == lon_bnd[idx_c])) ||
+	   ((lat_bnd[idx_c] == lat_bnd[idx_a]) && (lon_bnd[idx_c] == lon_bnd[idx_a])) 
+	   ){
+	  (void)fprintf(stdout,"%s: WARNING Triangle has repeated points for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g). Setting triangle area = 0.0.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
+	}else{
+	  (void)fprintf(stdout,"%s: WARNING Triangle area formula yields NaN for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Are points co-linear? Setting area = 0.0.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
+	} /* !co-linear */
 	xcs_sph=0.0;
-	//nco_exit(EXIT_FAILURE);
       } /* !NaN */
       area[col_idx]+=xcs_sph;
       area_smc+=xcs_sph;
