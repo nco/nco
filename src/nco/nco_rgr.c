@@ -5622,22 +5622,44 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	(void)fprintf(stdout,"%s: INFO Triangle used SAS area formula for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f).\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
       }else{
 	double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
-	/* Triangle is well-conditioned according to eps_ill_cnd above so apply L'Huilier's formula */
-	xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
-	assert(fabs(xcs_sph_qtr_tan) != M_PI_2);
-        xcs_sph=4.0*atan(xcs_sph_qtr_tan);
-	/* 20191014: Aggregate all previous area-related commands into one, gigantic, unreadable, possibly more precise command (tested and it is more obfuscated but not more precise) */
-	// xcs_sph=4.0*atan(sqrt(tan(0.5*0.5*(ngl_a+ngl_b+ngl_c))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_a))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_b))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_c))));
+	if( /* Angle exceeds semi-perimeter */
+		 (ngl_a > prm_smi) ||
+		 (ngl_b > prm_smi) ||
+		 (ngl_c > prm_smi)
+		 ){
+	  (void)fprintf(stdout,"%s: WARNING Triangle has angle that exceeds semi-perimeter = %0.16e polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Setting spherical excess = 0.0.\n",nco_prg_nm_get(),prm_smi,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
+	  xcs_sph=0.0;
+	}else{
+	  xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
+	  assert(fabs(xcs_sph_qtr_tan) != M_PI_2);
+	  xcs_sph=4.0*atan(xcs_sph_qtr_tan);
+	  /* 20191014: Aggregate all previous area-related commands into one, gigantic, unreadable, possibly more precise command (tested and it is more obfuscated but not more precise) */
+	  // xcs_sph=4.0*atan(sqrt(tan(0.5*0.5*(ngl_a+ngl_b+ngl_c))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_a))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_b))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_c))));
+	} /* !prm_smi */
       } /* !flg_sas */
       if(isnan(xcs_sph)){
-	if( /* Categorize reason for NaN */
+	const double eps_ngl_skn=1.0e-13; /* [frc] Angles skinnier than this form needles whose area ~ 0.0 */
+	/* Categorize reason for NaN */
+	if( /* Angle exceeds semi-perimeter */
+		 (ngl_a > prm_smi) ||
+		 (ngl_b > prm_smi) ||
+		 (ngl_c > prm_smi)
+		 ){	  
+	  (void)fprintf(stdout,"%s: WARNING Triangle has angle that exceeds semi-perimeter = %0.16e polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Setting triangle area = 0.0.\n",nco_prg_nm_get(),prm_smi,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
+	}else if( /* Are angles too skinny? Quite often on ne30pg2, ne120pg2 */
+		 (ngl_a < eps_ngl_skn) ||
+		 (ngl_b < eps_ngl_skn) ||
+		 (ngl_c < eps_ngl_skn)
+		 ){	  
+	  (void)fprintf(stdout,"%s: WARNING Triangle has at least one skinny angles < %g [rdn] for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16f, %0.16f, %0.16f). Setting triangle area = 0.0.\n",nco_prg_nm_get(),eps_ngl_skn,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
+	}else if( /* Are two vertices identical to double-precision? Never on ne30pg2, ne120pg2 */
 	   ((lat_bnd[idx_a] == lat_bnd[idx_b]) && (lon_bnd[idx_a] == lon_bnd[idx_b])) ||
 	   ((lat_bnd[idx_b] == lat_bnd[idx_c]) && (lon_bnd[idx_b] == lon_bnd[idx_c])) ||
 	   ((lat_bnd[idx_c] == lat_bnd[idx_a]) && (lon_bnd[idx_c] == lon_bnd[idx_a])) 
 	   ){
 	  (void)fprintf(stdout,"%s: WARNING Triangle has repeated points for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g). Setting triangle area = 0.0.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
 	}else{
-	  (void)fprintf(stdout,"%s: WARNING Triangle area formula yields NaN for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Are points co-linear? Setting area = 0.0.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
+	  (void)fprintf(stdout,"%s: WARNING Triangle area formula yields NaN for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16f, %0.16f, %0.16f). Are points co-linear? Setting triangle area = 0.0.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
 	} /* !co-linear */
 	xcs_sph=0.0;
       } /* !NaN */

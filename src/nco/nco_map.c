@@ -1727,10 +1727,10 @@ nco_map_var_min_max_ttl
 
   }else if(var->type == NC_INT){
 
-    int dval=0;
-    int min_dp=NC_MAX_INT;
-    int max_dp=NC_MIN_INT;
-    int ttl_dp=0;
+    int ival=0;
+    int min_ip=NC_MAX_INT;
+    int max_ip=NC_MIN_INT;
+    int ttl_ip=0;
     double avg_dp=0.0;
     double mebs_dp=0.0;
     double rms_dp=0.0;
@@ -1739,32 +1739,32 @@ nco_map_var_min_max_ttl
     (void)cast_void_nctype(NC_INT,&(var->val));
     for(idx=0;idx<sz;idx++){
 	/* De-reference */
-	dval=var->val.ip[idx];
-	ttl_dp+=dval;
-	mebs_dp+=fabs((double)dval-one);
-	rms_dp+=((double)dval-one)*((double)dval-one);
-	if(dval < min_dp){
-	  min_dp=dval;
+	ival=var->val.ip[idx];
+	ttl_ip+=ival;
+	mebs_dp+=fabs((double)ival-one);
+	rms_dp+=((double)ival-one)*((double)ival-one);
+	if(ival < min_ip){
+	  min_ip=ival;
 	  *idx_min=idx;
-	} /* !dval */
-	if(dval > max_dp){
-	  max_dp=dval;
+	} /* !ival */
+	if(ival > max_ip){
+	  max_ip=ival;
 	  *idx_max=idx;
-	} /* !dval */
+	} /* !ival */
     } /* !idx */
-    avg_dp=(double)ttl_dp/sz;
+    avg_dp=(double)ttl_ip/sz;
     mebs_dp/=sz;
     rms_dp=sqrt(rms_dp/sz);
     for(idx=0;idx<sz;idx++){
-      dval=var->val.ip[idx];
-      sdn_dp+=(dval-avg_dp)*(dval-avg_dp);
+      ival=var->val.ip[idx];
+      sdn_dp+=((double)ival-avg_dp)*((double)ival-avg_dp);
     } /* !idx */
     sdn_dp=sqrt(sdn_dp/(sz-1ULL));
     (void)cast_nctype_void(NC_INT,&(var->val));
 
-    *min=(double)min_dp;
-    *max=(double)max_dp;
-    *ttl=(double)ttl_dp;
+    *min=(double)min_ip;
+    *max=(double)max_ip;
+    *ttl=(double)ttl_ip;
     *avg=avg_dp;
     *mebs=mebs_dp;
     *rms=rms_dp;
@@ -1877,6 +1877,8 @@ nco_map_chk /* Map-file evaluation */
   double *val=NULL;
   double wgt;
   
+  int *ival=int_CEWI;
+
   int dmn_in_nbr;
   int fl_in_fmt;
   int idx_sng_lng_max;
@@ -2002,6 +2004,28 @@ nco_map_chk /* Map-file evaluation */
   if(var_mask_a) has_mask_a=True;
   if(var_mask_b) has_mask_b=True;
 
+  size_t mask_a_one=0UL;
+  size_t mask_a_zro=0UL;
+  if(has_mask_a){
+    sz=var_mask_a->sz;
+    ival=var_mask_a->val.ip;
+    for(idx=0;idx<sz;idx++)
+      if(ival[idx] == 0) mask_a_zro++; else if(ival[idx] == 1) mask_a_one++;
+    /* masks must have at least one one value */
+    assert(mask_a_zro != sz);
+  } /* !var_mask_a */
+
+  size_t mask_b_one=0UL;
+  size_t mask_b_zro=0UL;
+  if(has_mask_b){
+    sz=var_mask_b->sz;
+    ival=var_mask_b->val.ip;
+    for(idx=0;idx<sz;idx++)
+      if(ival[idx] == 0) mask_b_zro++; else if(ival[idx] == 1) mask_b_one++;
+    /* masks must have at least one one value */
+    assert(mask_b_zro != sz);
+  } /* !var_mask_b */
+  
   /* Start Report in own scope */
   {
     const double eps_abs=5.0e-16;
@@ -2086,6 +2110,8 @@ nco_map_chk /* Map-file evaluation */
     } /* !idx */
     
     fprintf(stdout,"Grid A size n_a: %lu // Number of columns/sources\n",var_area_a->sz);
+    if(var_mask_a) fprintf(stdout,"mask_a 0's, 1's: %lu, %lu\n",mask_a_zro,mask_a_one);
+    if(var_mask_a) fprintf(stdout,"mask_a min, max: %.0f, %.0f\n",mask_a_min,mask_a_max); else fprintf(stdout,"mask_a min, max: map-file omits mask_a\n");
     if(has_area_a){
       fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
       fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
@@ -2093,7 +2119,6 @@ nco_map_chk /* Map-file evaluation */
       fprintf(stdout,"area_a sum/4*pi: map-file does not provide area_a\n");
       fprintf(stdout,"area_a min, max: map-file does not provide area_a\n");
     } /* !has_area_a */
-    if(var_mask_a) fprintf(stdout,"mask_a min, max: %.0f, %.0f\n",mask_a_min,mask_a_max); else fprintf(stdout,"mask_a min, max: map-file omits mask_a\n");
     fprintf(stdout,"Column (source cell) indices utilized min, max: %.0f, %.0f\n",col_min,col_max);
     fprintf(stdout,"Ignored source cells (empty columns): %d\n\n",hst_col[0]);
 
@@ -2101,6 +2126,8 @@ nco_map_chk /* Map-file evaluation */
     if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,(double *)NULL,flg_area_wgt,&mask_b_min,&idx_min,&mask_b_max,&idx_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
+    if(var_mask_b) fprintf(stdout,"mask_b 0's, 1's: %lu, %lu\n",mask_b_zro,mask_b_one);
+    if(var_mask_b) fprintf(stdout,"mask_b min, max: %.0f, %.0f\n",mask_b_min,mask_b_max); else fprintf(stdout,"mask_b min, max: map-file omits mask_b\n");
     if(has_area_b){
       fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
       fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);
@@ -2108,7 +2135,6 @@ nco_map_chk /* Map-file evaluation */
       fprintf(stdout,"area_b sum/4*pi: map-file does not provide area_b\n");
       fprintf(stdout,"area_b min, max: map-file does not provide area_b\n");
     } /* !has_area_b */
-    if(var_mask_b) fprintf(stdout,"mask_b min, max: %.0f, %.0f\n",mask_b_min,mask_b_max); else fprintf(stdout,"mask_b min, max: map-file omits mask_b\n");
     fprintf(stdout,"Row (destination cell) indices utilized min, max: %.0f, %.0f\n",row_min,row_max);
     fprintf(stdout,"Ignored destination cells (empty rows): %d\n\n",hst_row[0]);
 
@@ -2136,7 +2162,7 @@ nco_map_chk /* Map-file evaluation */
     } /* !has_frac_a */
     
     const double eps_max_wrn=1.0e-1; /* [frc] Maximum error in column-sum/row-sums before WARNING is printed */
-    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || fabs(frac_min_cmp-1.0) > eps_max_wrn) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
+    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || fabs(frac_min_cmp-1.0) > eps_max_wrn) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       val=var_frac_a->val.dp;
@@ -2182,7 +2208,7 @@ nco_map_chk /* Map-file evaluation */
       if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
     } /* !has_frac_b */
       
-    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || fabs(frac_min_cmp-1.0) > eps_max_wrn) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
+    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || fabs(frac_min_cmp-1.0) > eps_max_wrn) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       val=var_frac_b->val.dp;
