@@ -768,6 +768,7 @@ int *pl_cnt_vrl_ret){
     mem_lst[idx].kd_list=(KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)(NCO_VRL_BLOCKSIZE));
     mem_lst[idx].kd_cnt=0;
     mem_lst[idx].kd_blk_nbr=1;
+    mem_lst[idx].idx_cnt=0;
 
   }
 
@@ -1113,9 +1114,9 @@ int *pl_cnt_vrl_ret){
 
           if (1) {
             int kdx;
-            (void) fprintf(stderr, "# /** following pl_lst_in[%lu]  **/\n", idx);
+            (void) fprintf(fp_stderr, "# /** following pl_lst_in[%lu]  **/\n", idx);
             nco_poly_prn(pl_lst_in[idx], 0);
-            (void) fprintf(stderr, "# /** potential overlaps to  follow  **/\n");
+            (void) fprintf(fp_stderr, "# /** overlaps to  follow  **/\n");
             for (kdx = 0; kdx < vrl_cnt; kdx++) {
               nco_poly_prn((poly_sct *) mem_lst[thr_idx].kd_list[kdx].elem->item, 0);
               (void)fprintf(fp_stderr, "# vrl_area=%.15e\n",mem_lst[thr_idx].kd_list[kdx].area );
@@ -1131,6 +1132,14 @@ int *pl_cnt_vrl_ret){
 
 
     } /* end dbg */
+
+    /* output some usefull tracking stuff - not debug but informative */
+    if (  ++mem_lst[thr_idx].idx_cnt % 2000 == 0 && nco_dbg_lvl_get() >=3   )
+      (void)fprintf(fp_stderr, "%s: thread %d  has processed %ld input cells and output %ld overlap cells\n", nco_prg_nm_get(), thr_idx, mem_lst[thr_idx].idx_cnt, mem_lst[thr_idx].pl_cnt  );
+
+
+
+
 
 
 
