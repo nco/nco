@@ -1422,7 +1422,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   const char fnc_nm[] = "nco_sph_seg_parallel()";
 
-  char code;
+  char code='0';
   int flg_sx = 0;
 
   double nx1;
@@ -1437,6 +1437,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   double Pcross[NBR_SPH] = {0};
   double Qcross[NBR_SPH] = {0};
   double Tcross[NBR_SPH] = {0};
+
 
 
   if (flg_sx) {
@@ -1535,11 +1536,12 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   {
     code='2';
     nco_sph_adi(r0,p0 );
-    nco_sph_adi(r0,p1 );
+    nco_sph_adi(r1,p1 );
     *inflag=poly_vrl_pin;
   } else{
     code='0';
   }
+
 
   if(DEBUG_SPH ) {
     if (code >= '1')
