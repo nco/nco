@@ -244,6 +244,7 @@ typedef struct {
     KDPriority *kd_list;
     size_t kd_cnt;
     size_t kd_blk_nbr;
+    size_t idx_cnt;   /* number of input cells processed by each thread */
 } omp_mem_sct;
 
 
