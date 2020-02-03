@@ -5290,10 +5290,11 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   long idx_a; /* [idx] Point A 1-D index */
   long idx_b; /* [idx] Point B 1-D index */
   long idx_c; /* [idx] Point C 1-D index */
-  nco_bool flg_sas; /* [flg] L'Huilier's formula is ill-conditioned for this triangle */
-  nco_bool flg_sas_hlf_a=False; /* [flg] Ill-conditioned for angle a */
-  nco_bool flg_sas_hlf_b=False; /* [flg] Ill-conditioned for angle b */
-  nco_bool flg_sas_hlf_c=False; /* [flg] Ill-conditioned for angle c */
+  nco_bool flg_sas_ndl=False; /* [flg] L'Huilier's formula will fail due to needle where one side exceeds semi-perimeter */
+  nco_bool flg_sas_isc=False; /* [flg] L'Huilier's formula is ill-conditioned due to flat, near-isoceles triangle */
+  nco_bool flg_sas_a=False; /* [flg] Use SAS triangle formula with central angle a */
+  nco_bool flg_sas_b=False; /* [flg] Use SAS triangle formula with central angle b */
+  nco_bool flg_sas_c=False; /* [flg] Use SAS triangle formula with central angle c */
   nco_bool flg_ply_has_smc; /* [flg] Any triangle in polygon has small-circle edge */
   nco_bool flg_tri_crr_smc; /* [flg] Current triangle has small_circle edge */
   /* Initialize global accumulators */
@@ -5572,62 +5573,97 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       ngl_c=2.0*asin(sin_hlf_tht);
       /* Semi-perimeter */
       prm_smi=0.5*(ngl_a+ngl_b+ngl_c);
-      /* L'Huilier's formula becomes ill-conditioned when two sides are one half the third side
+      /* L'Huilier's formula results in NaN if any side exceeds semi-perimeter
+	 This can occur in needle-shaped triangles due to rounding errors in derived arc lengths a, b, c 
+	 20200203: Problematic needles occurs a few dozen times in ne120pg2 -> cmip6 maps
+	 Problematic isoceles triangles are much rarer than problematic needles
+	 Therefore look for needle-issues first, then, if none found, look for isoceles issues
 	 Wikipedia recommends treating ill-conditioned triangles by Side-Angle-Side (SAS) formula
-	 https://en.wikipedia.org/wiki/Spherical_trigonometry */
-      flg_sas=flg_sas_hlf_a=flg_sas_hlf_b=flg_sas_hlf_c=False;
-      /* Sensitivity tests on ~20191014 showed that triangular ill-conditioning treatment (i.e., switching to SAS method) does not improve (and may degrade) accuracy for eps_ill_cnd > 1.0e-15 */
-
-      const double eps_ill_cnd=1.0e-15; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
-      const double eps_ill_cnd_dbl=2.0*eps_ill_cnd; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
-      if((fabs(ngl_a-ngl_b) < eps_ill_cnd) && (fabs(ngl_a-0.5*ngl_c) < eps_ill_cnd_dbl)) flg_sas_hlf_c=True; /* c is half a and b */
-      else if((fabs(ngl_b-ngl_c) < eps_ill_cnd) && (fabs(ngl_b-0.5*ngl_a) < eps_ill_cnd_dbl)) flg_sas_hlf_a=True; /* a is half b and c */
-      else if((fabs(ngl_c-ngl_a) < eps_ill_cnd) && (fabs(ngl_c-0.5*ngl_b) < eps_ill_cnd_dbl)) flg_sas_hlf_b=True; /* b is half c and a */
-      if(flg_sas_hlf_a || flg_sas_hlf_b || flg_sas_hlf_c) flg_sas=True;
-      if(flg_sas){
-	double cos_hlf_C; /* [frc] Cosine of canoncal surface angle C */
+	 https://en.wikipedia.org/wiki/Spherical_trigonometry
+	 Diagnose needles beforehand and call SAS routines as above to avoid NaN in L'Huilier
+	 Label problematic needle triangles by shortest side, e.g., "flg_sas_a" means (b ~ c) and a ~ 0.0 */
+      flg_sas_ndl=flg_sas_isc=flg_sas_a=flg_sas_b=flg_sas_c=False;
+      if(ngl_a > prm_smi){if(ngl_b > ngl_c) flg_sas_c=True; else flg_sas_b=True;} /* a exceeds semi-perimeter */
+      else if(ngl_b > prm_smi){if(ngl_c > ngl_a) flg_sas_a=True; else flg_sas_c=True;} /* b exceeds semi-perimeter */
+      else if(ngl_c > prm_smi){if(ngl_a > ngl_b) flg_sas_b=True; else flg_sas_a=True;} /* c exceeds semi-perimeter */
+      if(flg_sas_a || flg_sas_b || flg_sas_c) flg_sas_ndl=True;
+      if(!flg_sas_ndl){
+	/* L'Huilier's formula becomes ill-conditioned when two sides are one half the third side
+	   This occurs for flat, isoceles-shaped triangles
+	   Label problematic isoceles triangles by longest side, e.g., "flg_sas_a" means (b ~ c) ~ 0.5*a */
+	/* Sensitivity tests on ~20191014 showed that triangular ill-conditioning treatment (i.e., switching to SAS method) does not improve (and may degrade) accuracy for eps_ill_cnd > 1.0e-15 */
+	const double eps_ill_cnd=1.0e-15; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
+	const double eps_ill_cnd_dbl=2.0*eps_ill_cnd; /* [frc] Ill-conditioned tolerance for interior angle/great circle arcs in triangle */
+	if((fabs(ngl_a-ngl_b) < eps_ill_cnd) && (fabs(ngl_a-0.5*ngl_c) < eps_ill_cnd_dbl)) flg_sas_c=True; /* c is twice a and b */
+	else if((fabs(ngl_b-ngl_c) < eps_ill_cnd) && (fabs(ngl_b-0.5*ngl_a) < eps_ill_cnd_dbl)) flg_sas_a=True; /* a is twice b and c */
+	else if((fabs(ngl_c-ngl_a) < eps_ill_cnd) && (fabs(ngl_c-0.5*ngl_b) < eps_ill_cnd_dbl)) flg_sas_b=True; /* b is twice c and a */
+	if(flg_sas_a || flg_sas_b || flg_sas_c) flg_sas_isc=True;
+      } /* !flg_sas_ndl */
+      if(flg_sas_isc || flg_sas_ndl){
+	/* Compute area using SAS formula */
+	double cos_hlf_C; /* [frc] Cosine of half of canoncal surface angle C */
+	//double sin_hlf_C; /* [frc] Sine of half of canoncal surface angle C */
 	double ngl_sfc_ltr_C; /* [rdn] Canonical surface angle/great circle arc C */
 	double tan_hlf_a_tan_hlf_b; /* [frc] Product of tangents of one-half of nearly equal canoncal sides */
 	double xcs_sph_hlf_tan; /* [frc] Tangent of one-half the spherical excess */
-	/* Compute area using SAS formula */
-	(void)fprintf(stdout,"%s: INFO %s reports col_idx = %li triangle %d is ill-conditioned. Using SAS formula instead of L'Huilier's formula for spherical excess (and cell area) to avoid low precision.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx);
-	/* Transform sides into canonical order for formula */
-	if(flg_sas_hlf_c){
+	/* Transform sides into canonical order for formula where C is surface angle between arcs a and b */
+	if(flg_sas_c){
 	  ngl_ltr_a=ngl_a;
 	  ngl_ltr_b=ngl_b;
 	  ngl_ltr_c=ngl_c;
-	} /* !flg_sas_hlf_c */
-	if(flg_sas_hlf_a){
+	} /* !flg_sas_c */
+	if(flg_sas_a){
 	  ngl_ltr_a=ngl_b;
 	  ngl_ltr_b=ngl_c;
 	  ngl_ltr_c=ngl_a;
-	} /* !flg_sas_hlf_a */
-	if(flg_sas_hlf_b){
+	} /* !flg_sas_a */
+	if(flg_sas_b){
 	  ngl_ltr_a=ngl_c;
 	  ngl_ltr_b=ngl_a;
 	  ngl_ltr_c=ngl_b;
-	} /* !flg_sas_hlf_b */
+	} /* !flg_sas_b */
+	if(flg_sas_ndl) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %li triangle %d is needle-shaped triangle with a side that exceeds semi-perimeter = %0.16e. Eschew L'Huilier's formula for spherical excess to avoid NaN. Could use SAS formula with canonical central interior arc c = %0.16e.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,prm_smi,ngl_ltr_c);
+	if(flg_sas_isc) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %li triangle %d is nearly flat isoceles-shaped triangle. Canonical arcs a and b differ by %0.16e. Eschew L'Huilier's formula for spherical excess to avoid low precision. Could use SAS formula.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,fabs(ngl_ltr_a-ngl_ltr_b));
 	/* Determine canonical surface angle C
 	   To find any angle given three spherical triangle sides, Wikipedia opines: 
 	   "The cosine rule may be used to give the angles A, B, and C but, to avoid ambiguities, the half-angle formulae are preferred."
-	   For this ill-conditioned case, use half-angle cosine formula because RHS of half-angle sine formula is near 1, where arcsin() is imprecise, whereas RHS of cosine formula is near 0, where arccos() is well-conditioned */
-	cos_hlf_C=sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)));
+	   Half-angle formulae include two applicable variants that yield the sine or cosine of half C
+	   Then C is determined as twice the asin() or acos() function, respectively
+	   For needle-shaped triangles, RHS sin formula is ~ sin^2(0)/sin(a)*sin(b) ~ 0.0 
+	   For needle-shaped triangles, RHS cos formula is ~ sin^2(s)/sin(a)*sin(b) ~ 0.5
+	   For flat isoceles triangles, RHS sin formula is ~ sin^2(0)/sin(a)*sin(b) ~ 0.0 
+	   For flat isoceles triangles, RHS cos formula is ~ sin(s)*sin(0)/sin(a)*sin(b) ~ 0.0 
+	   Use sin formula since both needle- and isoceles-shaped triangles have RHS ~ 0.0 where arcsin() is most precise 
+	   20200203: Half-angle sine formula gives NaNs, and half-angle cosine formula works on ne120pg2->cmip. Why?
+	   Adopting cosine formula because it works */
+	//sin_hlf_C=sqrt(sin(prm_smi-ngl_ltr_a)*sin(prm_smi-ngl_ltr_b)/(sin(ngl_ltr_a)*sin(ngl_ltr_b))); // Half-angle sine formula
+	cos_hlf_C=sqrt(sin(prm_smi)*sin(prm_smi-ngl_ltr_c)/(sin(ngl_ltr_a)*sin(ngl_ltr_b))); // Half-angle cosine formula
+	//ngl_sfc_ltr_C=2.0*asin(sin_hlf_C);
 	ngl_sfc_ltr_C=2.0*acos(cos_hlf_C);
 	/* SAS formula */
 	tan_hlf_a_tan_hlf_b=tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b);
-	ngl_ltr_c+=0; /* CEWI */
 	xcs_sph_hlf_tan=tan_hlf_a_tan_hlf_b*sin(ngl_sfc_ltr_C)/(1.0+tan_hlf_a_tan_hlf_b*cos(ngl_sfc_ltr_C));
+	assert(fabs(xcs_sph_hlf_tan) != M_PI_2);
 	xcs_sph=2.0*atan(xcs_sph_hlf_tan);
+	(void)fprintf(stdout,"%s: INFO Triangle used SAS area formula for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Spherical excess = %0.16e.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c,xcs_sph);
+
+	// Single-line version
 	// xcs_sph=2.0*atan(tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b)*sin(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))/(1.0+tan_hlf_a_tan_hlf_b*cos(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))));
-	(void)fprintf(stdout,"%s: INFO Triangle used SAS area formula for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f).\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
+	/* Above procedure for problematic needle-shaped and isoceles-shaped triangles degrades statistics
+	   For ne30pg2, ne120pg2 -> cmip, setting area = 0.0 _greatly_ improves area statistics (Why?)
+	   Set spherical excess to zero for problematic needle-shaped and isoceles-shaped triangles */
+	/* fxm: Make zeroing skinny needles/isoceles-shaped triangle-areas a command-line option? */
+	xcs_sph=0.0;
+	/* !flg_sas */
       }else{
 	double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
-	if( /* Angle exceeds semi-perimeter */
+	if( /* Side exceeds semi-perimeter */
 		 (ngl_a > prm_smi) ||
 		 (ngl_b > prm_smi) ||
 		 (ngl_c > prm_smi)
 		 ){
-	  (void)fprintf(stdout,"%s: WARNING Triangle has angle that exceeds semi-perimeter = %0.16e polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Setting spherical excess = 0.0.\n",nco_prg_nm_get(),prm_smi,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
+	  (void)fprintf(stdout,"%s: WARNING Triangle side exceeds semi-perimeter = %0.16e polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Assigned spherical excess = 0.0.\n",nco_prg_nm_get(),prm_smi,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
+	  /* 20200203: All known cases of side that exceeds semi-perimeter are skinny-ass acuuute triangles */
 	  xcs_sph=0.0;
 	}else{
 	  xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
@@ -5640,26 +5676,26 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       if(isnan(xcs_sph)){
 	const double eps_ngl_skn=1.0e-13; /* [frc] Angles skinnier than this form needles whose area ~ 0.0 */
 	/* Categorize reason for NaN */
-	if( /* Angle exceeds semi-perimeter */
+	if( /* Side exceeds semi-perimeter */
 		 (ngl_a > prm_smi) ||
 		 (ngl_b > prm_smi) ||
 		 (ngl_c > prm_smi)
 		 ){	  
-	  (void)fprintf(stdout,"%s: WARNING Triangle has angle that exceeds semi-perimeter = %0.16e polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Setting triangle area = 0.0.\n",nco_prg_nm_get(),prm_smi,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
+	  (void)fprintf(stdout,"%s: WARNING Triangle side exceeds semi-perimeter = %0.16e polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Assigned triangle area = 0.0.\n",nco_prg_nm_get(),prm_smi,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
 	}else if( /* Are angles too skinny? Quite often on ne30pg2, ne120pg2 */
 		 (ngl_a < eps_ngl_skn) ||
 		 (ngl_b < eps_ngl_skn) ||
 		 (ngl_c < eps_ngl_skn)
 		 ){	  
-	  (void)fprintf(stdout,"%s: WARNING Triangle has at least one skinny angles < %g [rdn] for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16f, %0.16f, %0.16f). Setting triangle area = 0.0.\n",nco_prg_nm_get(),eps_ngl_skn,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
+	  (void)fprintf(stdout,"%s: WARNING Triangle has at least one skinny angles < %g [rdn] for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16f, %0.16f, %0.16f). Assigned triangle area = 0.0.\n",nco_prg_nm_get(),eps_ngl_skn,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
 	}else if( /* Are two vertices identical to double-precision? Never on ne30pg2, ne120pg2 */
 	   ((lat_bnd[idx_a] == lat_bnd[idx_b]) && (lon_bnd[idx_a] == lon_bnd[idx_b])) ||
 	   ((lat_bnd[idx_b] == lat_bnd[idx_c]) && (lon_bnd[idx_b] == lon_bnd[idx_c])) ||
 	   ((lat_bnd[idx_c] == lat_bnd[idx_a]) && (lon_bnd[idx_c] == lon_bnd[idx_a])) 
 	   ){
-	  (void)fprintf(stdout,"%s: WARNING Triangle has repeated points for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g). Setting triangle area = 0.0.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
+	  (void)fprintf(stdout,"%s: WARNING Triangle has repeated points for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g). Assigned triangle area = 0.0.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
 	}else{
-	  (void)fprintf(stdout,"%s: WARNING Triangle area formula yields NaN for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16f, %0.16f, %0.16f). Are points co-linear? Setting triangle area = 0.0.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
+	  (void)fprintf(stdout,"%s: WARNING Triangle area formula yields NaN for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16f, %0.16f, %0.16f). Are points co-linear? Assigned triangle area = 0.0.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
 	} /* !co-linear */
 	xcs_sph=0.0;
       } /* !NaN */
