@@ -5657,21 +5657,11 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	/* !flg_sas */
       }else{
 	double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */
-	if( /* Side exceeds semi-perimeter */
-		 (ngl_a > prm_smi) ||
-		 (ngl_b > prm_smi) ||
-		 (ngl_c > prm_smi)
-		 ){
-	  (void)fprintf(stdout,"%s: WARNING Triangle side exceeds semi-perimeter = %0.16e polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Assigned spherical excess = 0.0.\n",nco_prg_nm_get(),prm_smi,col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
-	  /* 20200203: All known cases of side that exceeds semi-perimeter are skinny-ass acuuute triangles */
-	  xcs_sph=0.0;
-	}else{
-	  xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
-	  assert(fabs(xcs_sph_qtr_tan) != M_PI_2);
-	  xcs_sph=4.0*atan(xcs_sph_qtr_tan);
-	  /* 20191014: Aggregate all previous area-related commands into one, gigantic, unreadable, possibly more precise command (tested and it is more obfuscated but not more precise) */
-	  // xcs_sph=4.0*atan(sqrt(tan(0.5*0.5*(ngl_a+ngl_b+ngl_c))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_a))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_b))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_c))));
-	} /* !prm_smi */
+	xcs_sph_qtr_tan=sqrt(tan(0.5*prm_smi)*tan(0.5*(prm_smi-ngl_a))*tan(0.5*(prm_smi-ngl_b))*tan(0.5*(prm_smi-ngl_c)));
+	assert(fabs(xcs_sph_qtr_tan) != M_PI_2);
+	xcs_sph=4.0*atan(xcs_sph_qtr_tan);
+	/* 20191014: Aggregate all previous area-related commands into one, gigantic, unreadable, possibly more precise command (tested and it is more obfuscated but not more precise) */
+	// xcs_sph=4.0*atan(sqrt(tan(0.5*0.5*(ngl_a+ngl_b+ngl_c))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_a))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_b))*tan(0.5*(0.5*(ngl_a+ngl_b+ngl_c)-ngl_c))));
       } /* !flg_sas */
       if(isnan(xcs_sph)){
 	const double eps_ngl_skn=1.0e-13; /* [frc] Angles skinnier than this form needles whose area ~ 0.0 */
