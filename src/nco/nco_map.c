@@ -1730,7 +1730,7 @@ nco_map_var_min_max_ttl
     int ival=0;
     int min_ip=NC_MAX_INT;
     int max_ip=NC_MIN_INT;
-    int ttl_ip=0;
+    double ttl_dp=0.0;
     double avg_dp=0.0;
     double mebs_dp=0.0;
     double rms_dp=0.0;
@@ -1740,7 +1740,7 @@ nco_map_var_min_max_ttl
     for(idx=0;idx<sz;idx++){
 	/* De-reference */
 	ival=var->val.ip[idx];
-	ttl_ip+=ival;
+	ttl_dp+=ival;
 	mebs_dp+=fabs((double)ival-one);
 	rms_dp+=((double)ival-one)*((double)ival-one);
 	if(ival < min_ip){
@@ -1752,7 +1752,7 @@ nco_map_var_min_max_ttl
 	  *idx_max=idx;
 	} /* !ival */
     } /* !idx */
-    avg_dp=(double)ttl_ip/sz;
+    avg_dp=ttl_dp/sz;
     mebs_dp/=sz;
     rms_dp=sqrt(rms_dp/sz);
     for(idx=0;idx<sz;idx++){
@@ -1764,7 +1764,7 @@ nco_map_var_min_max_ttl
 
     *min=(double)min_ip;
     *max=(double)max_ip;
-    *ttl=(double)ttl_ip;
+    *ttl=ttl_dp;
     *avg=avg_dp;
     *mebs=mebs_dp;
     *rms=rms_dp;

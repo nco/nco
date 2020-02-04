@@ -1,8 +1,12 @@
-2020-02-03  Charlie Zender  <zender@sastrugi>
+2020-02-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.2-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha08: Vasisthasana';git push
-	git tag -a 4.9.2-alpha08 -m 'ncremap SAS needles+isoceles, use canonical ngl, cos formula';git push --tags
+	git tag -a 4.9.2-alpha08 -m 'ncremap SAS needles+isoceles, use canonical ngl, cosine formula; cori fix';git push --tags
+
+	* nco_var_min_max_ttl() change ttl_ip to ttl_dp to support large grids
+
+2020-02-03  Charlie Zender  <zender@sastrugi>
 
 	* Unify treatment of needle-shaped and flat isoceles-shaped triangle areas (and set to zero)
 
