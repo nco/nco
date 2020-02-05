@@ -1888,6 +1888,8 @@ nco_map_chk /* Map-file evaluation */
 
   nco_bool area_wgt_a;
   nco_bool area_wgt_b;
+  nco_bool grid_a_tiles_sphere=False;
+  nco_bool grid_b_tiles_sphere=False;
   nco_bool has_area_a=False;
   nco_bool has_area_b=False;
   nco_bool has_frac_a=False;
@@ -2115,6 +2117,7 @@ nco_map_chk /* Map-file evaluation */
     if(has_area_a){
       fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
       fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
+      if(fabs(1.0-area_a_ttl/4.0/M_PI) < 1.0e-2) grid_a_tiles_sphere=True;
     }else{
       fprintf(stdout,"area_a sum/4*pi: map-file does not provide area_a\n");
       fprintf(stdout,"area_a min, max: map-file does not provide area_a\n");
@@ -2131,6 +2134,7 @@ nco_map_chk /* Map-file evaluation */
     if(has_area_b){
       fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
       fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);
+      if(fabs(1.0-area_b_ttl/4.0/M_PI) < 1.0e-2) grid_b_tiles_sphere=True;
     }else{
       fprintf(stdout,"area_b sum/4*pi: map-file does not provide area_b\n");
       fprintf(stdout,"area_b min, max: map-file does not provide area_b\n");
@@ -2162,8 +2166,8 @@ nco_map_chk /* Map-file evaluation */
     } /* !has_frac_a */
     
     const double eps_max_wrn=1.0e-1; /* [frc] Maximum error in column-sum/row-sums before WARNING is printed */
-    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || fabs(frac_min_cmp-1.0) > eps_max_wrn) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
-
+    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tIgnore this warning if Grid B is not intended to completely tile the sphere, otherwise...\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
+      
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       val=var_frac_a->val.dp;
       int wrn_nbr=0; // [nbr] Number of warnings
@@ -2208,7 +2212,7 @@ nco_map_chk /* Map-file evaluation */
       if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
     } /* !has_frac_b */
       
-    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || fabs(frac_min_cmp-1.0) > eps_max_wrn) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
+    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_a_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tIgnore this warning if Grid A is not intended to completely tile the sphere, otherwise...\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       val=var_frac_b->val.dp;

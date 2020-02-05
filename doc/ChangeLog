@@ -2,7 +2,9 @@
 
 	* NCO 4.9.2-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha08: Vasisthasana';git push
-	git tag -a 4.9.2-alpha08 -m '';git push --tags
+	git tag -a 4.9.2-alpha08 -m 'ncks eliminate alarmist WARNINGS on regional grids';git push --tags
+
+	* nco_chk_map() eliminate some WARNINGs for grids not within 99% of tiling sphere
 
 	* NCO 4.9.2-alpha07 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha07: Dandasana';git push
