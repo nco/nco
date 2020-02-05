@@ -3533,6 +3533,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"latitude0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("latitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("x"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
+    else if((rcd=nco_inq_dimid_flg(in_id,"y1",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y1"); /* NSIDC EASE */
     else if((rcd=nco_inq_dimid_flg(in_id,"ygrid_0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("ygrid_0"); /* NWS HRRR */
     else{
       (void)fprintf(stdout,"%s: ERROR %s reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input latitude dimension name with \"ncks --rgr lat_nm_in=name\" or \"ncremap -R '--rgr lat_nm_in=name'\"\n",nco_prg_nm_get(),fnc_nm);
@@ -3568,6 +3569,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"longitude0",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("longitude0"); /* Oxford */
     else if((rcd=nco_inq_dimid_flg(in_id,"x",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x"); /* NEMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"y",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("y"); /* NSIDC polar stereographic (NB: unfortunate incompatible conflict between NEMO & NSIDC names) */
+    else if((rcd=nco_inq_dimid_flg(in_id,"x1",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x1"); /* NSIDC EASE */
     else if((rcd=nco_inq_dimid_flg(in_id,"xgrid_0",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("xgrid_0"); /* NWS HRRR */
     else{
       (void)fprintf(stdout,"%s: ERROR %s reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input longitude dimension name with \"ncks --rgr lon_nm_in=name\" or \"ncremap -R '--rgr lon_nm_in=name'\"\n",nco_prg_nm_get(),fnc_nm);
@@ -3824,7 +3826,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   char *att_nm_crd=NULL;
   att_nm_crd=strdup("coordinates");
   aed_mtd_crd.att_nm=att_nm_crd;
-  if(flg_grd_out_1D) aed_mtd_crd.mode=aed_overwrite; else aed_mtd_crd.mode=aed_delete;
+  if(flg_grd_out_1D || flg_grd_out_crv) aed_mtd_crd.mode=aed_overwrite; else aed_mtd_crd.mode=aed_delete;
   aed_mtd_crd.type=NC_CHAR;
   aed_mtd_crd.sz=strlen(lat_nm_out)+strlen(lon_nm_out)+1L;
   att_val_crd=(char *)nco_malloc((aed_mtd_crd.sz+1L)*nco_typ_lng(aed_mtd_crd.type));
@@ -4188,6 +4190,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd=nco_char_att_put(out_id,area_nm_out,"long_name","Solid angle subtended by gridcell");
     rcd=nco_char_att_put(out_id,area_nm_out,"standard_name","solid_angle");
     rcd=nco_char_att_put(out_id,area_nm_out,"units","steradian");
+    if(flg_grd_out_1D || flg_grd_out_crv) rcd=nco_char_att_put(out_id,area_nm_out,att_nm_crd,att_val_crd);
     att_val=(char *)nco_calloc((strlen(lat_dmn_nm_out)+strlen(lon_dmn_nm_out)+8L),sizeof(char));
     (void)sprintf(att_val,"%s, %s: sum",lat_dmn_nm_out,lon_dmn_nm_out);
     rcd=nco_char_att_put(out_id,area_nm_out,"cell_mathods",att_val);
@@ -4196,6 +4199,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
   if(flg_frc_out_wrt){
     rcd=nco_char_att_put(out_id,frc_nm_out,"long_name","Fraction of gridcell valid on destination grid");
+    if(flg_grd_out_1D || flg_grd_out_crv) rcd=nco_char_att_put(out_id,area_nm_out,att_nm_crd,att_val_crd);
     att_val=(char *)nco_calloc((strlen(lat_dmn_nm_out)+strlen(lon_dmn_nm_out)+8L),sizeof(char));
     (void)sprintf(att_val,"%s, %s: sum",lat_dmn_nm_out,lon_dmn_nm_out);
     rcd=nco_char_att_put(out_id,frc_nm_out,"cell_mathods",att_val);
@@ -4203,12 +4207,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   
   if(flg_msk_out){
     rcd=nco_char_att_put(out_id,msk_nm_out,"long_name","Mask (0 = invalid destination, 1 = valid destination)");
+    if(flg_grd_out_1D || flg_grd_out_crv) rcd=nco_char_att_put(out_id,area_nm_out,att_nm_crd,att_val_crd);
   } /* !flg_msk_out */
 
   rcd=nco_char_att_put(out_id,lat_nm_out,"long_name","Latitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,lat_nm_out,"standard_name","latitude");
   rcd=nco_char_att_put(out_id,lat_nm_out,"units","degrees_north");
-  rcd=nco_char_att_put(out_id,lat_nm_out,"axis","Y");
+  // 20200204: Attach "axis" attribute to single-dimensional geospatial coordinates not to two-dimensional coordinate variables per CF Conventions section 5.2
+  if(!flg_grd_out_crv) rcd=nco_char_att_put(out_id,lat_nm_out,"axis","Y");
 
   double vld_min;
   vld_min=-90.0;
@@ -4244,7 +4250,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   rcd=nco_char_att_put(out_id,lon_nm_out,"long_name","Longitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,lon_nm_out,"standard_name","longitude");
   rcd=nco_char_att_put(out_id,lon_nm_out,"units","degrees_east");
-  rcd=nco_char_att_put(out_id,lon_nm_out,"axis","X");
+  // 20200204: Attach "axis" attribute to single-dimensional geospatial coordinates not to two-dimensional coordinate variables per CF Conventions section 5.2
+  if(!flg_grd_out_crv) rcd=nco_char_att_put(out_id,lon_nm_out,"axis","X");
   /* UGRID Conventions define "topology" and "modulo" attributes 
      https://github.com/ugrid-conventions/ugrid-conventions
      My understanding is these should only be utilized for global grids */
@@ -5666,6 +5673,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
       if(isnan(xcs_sph)){
 	const double eps_ngl_skn=1.0e-13; /* [frc] Angles skinnier than this form needles whose area ~ 0.0 */
 	/* Categorize reason for NaN */
+	(void)fprintf(stdout,"%s: WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\nUnxpected NaN polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e).\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c);
 	if( /* Side exceeds semi-perimeter */
 		 (ngl_a > prm_smi) ||
 		 (ngl_b > prm_smi) ||

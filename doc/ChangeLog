@@ -1,8 +1,18 @@
-2020-02-04  Charlie Zender  <zender@uci.edu>
+2020-02-05  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.2-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha08: Vasisthasana';git push
-	git tag -a 4.9.2-alpha08 -m 'ncremap SAS needles+isoceles, use canonical ngl, cosine formula; cori fix';git push --tags
+	git tag -a 4.9.2-alpha08 -m 'ncremap SAS needles+isoceles, use canonical ngl, cosine formula, crv axis/coordinates atts; ncks cori fix';git push --tags
+
+	* Regrid (and plot with Panoply) EASE grid with aave though nco weight-generation has issues
+
+	* nco_rgr_wgt() add "coordinates" attributes to output fields on curvilinear output grids
+
+	* nco_rgr_wgt() omit "axis" attributes from 2-D coordinate variables per CF Conventions
+
+	* ncremap as implemented, multiple -R options lose all but last	option. Aargh.
+
+2020-02-04  Charlie Zender  <zender@uci.edu>
 
 	* nco_var_min_max_ttl() change ttl_ip to ttl_dp to support large grids
 

@@ -191,6 +191,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     esac # !HOSTNAME
 fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
+# Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Production usage:
 # ncclimo -a sdd -c B1850C5_ne30_v0.4 -s 1 -e 59 -i /gpfs/alpine/cli115/proj-shared/mbranst/B1850C5_ne30_v0.4/atm/hist -o ${DATA}/ne30/clm
 # ncclimo -a sdd -c b1850c5_m2a -s 1 -e 127 -i /gpfs/alpine/cli115/proj-shared/b1850_acmev0_highres/atm/hist/fullfiles -o ${DATA}/ne120/clm
