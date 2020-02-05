@@ -2,7 +2,11 @@
 
 	* NCO 4.9.2-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha08: Vasisthasana';git push
-	git tag -a 4.9.2-alpha08 -m 'ncremap SAS needles+isoceles, use canonical ngl, cosine formula, crv axis/coordinates atts; ncks cori fix';git push --tags
+	git tag -a 4.9.2-alpha08 -m '';git push --tags
+
+	* NCO 4.9.2-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha07: Dandasana';git push
+	git tag -a 4.9.2-alpha07 -m 'ncks chk_map msk_a/b; ncremap SAS needles+isoceles, use canonical ngl, cosine formula, crv axis/coordinates atts; ncks cori fix';git push --tags
 
 	* Regrid (and plot with Panoply) EASE grid with aave though nco weight-generation has issues
 
@@ -14,19 +18,15 @@
 
 2020-02-04  Charlie Zender  <zender@uci.edu>
 
-	* nco_var_min_max_ttl() change ttl_ip to ttl_dp to support large grids
+	* nco_var_min_max_ttl() change ttl_ip to ttl_dp to support large grids (this may have been unnecessary)
 
 2020-02-03  Charlie Zender  <zender@sastrugi>
 
 	* Unify treatment of needle-shaped and flat isoceles-shaped triangle areas (and set to zero)
 
-	* Until today SAS formula was wrongly using actual not canonical angles for canonical formula
+	* Until today SAS formula wrongly used actual not canonical angles A, B for canonical formula
 
 2020-01-31  Charlie Zender  <zender@sastrugi>
-
-	* NCO 4.9.2-alpha07 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha07: Dandasana';git push
-	git tag -a 4.9.2-alpha07 -m 'ncks chk_map msk_a/b;ncremap NaN reasons';git push --tags
 
 	* Add mask_a/b evaluations to nco_map_chk()
 
