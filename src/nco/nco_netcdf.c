@@ -2245,8 +2245,12 @@ int
 nco_inq_varnatts(const int nc_id,const int var_id,int * const att_nbr)
 {
   /* Purpose: Wrapper for nc_inq_varnatts() */
+  const char fnc_nm[]="nco_inq_varnatts()";
   int rcd;
   rcd=nc_inq_varnatts(nc_id,var_id,att_nbr);
+  if(rcd == NC_ENOTVAR){
+    (void)fprintf(stdout,"ERROR: %s cannot find variable ID %d\n",fnc_nm,var_id);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varnatts()");
   return rcd;
 } /* end nco_inq_varnatts */

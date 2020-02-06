@@ -2123,8 +2123,8 @@ nco_map_chk /* Map-file evaluation */
       fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
       if(fabs(1.0-area_a_ttl/4.0/M_PI) < 1.0e-2) grid_a_tiles_sphere=True;
     }else{
-      fprintf(stdout,"area_a sum/4*pi: map-file does not provide area_a\n");
-      fprintf(stdout,"area_a min, max: map-file does not provide area_a\n");
+      fprintf(stdout,"area_a sum/4*pi: map-file does not provide completely non-zero area_a\n");
+      fprintf(stdout,"area_a min, max: map-file does not provide completely non-zero area_a\n");
     } /* !has_area_a */
     fprintf(stdout,"Column (source cell) indices utilized min, max: %.0f, %.0f\n",col_min,col_max);
     fprintf(stdout,"Ignored source cells (empty columns): %d\n\n",hst_col[0]);
@@ -2140,8 +2140,8 @@ nco_map_chk /* Map-file evaluation */
       fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);
       if(fabs(1.0-area_b_ttl/4.0/M_PI) < 1.0e-2) grid_b_tiles_sphere=True;
     }else{
-      fprintf(stdout,"area_b sum/4*pi: map-file does not provide area_b\n");
-      fprintf(stdout,"area_b min, max: map-file does not provide area_b\n");
+      fprintf(stdout,"area_b sum/4*pi: map-file does not provide completely non-zero area_b\n");
+      fprintf(stdout,"area_b min, max: map-file does not provide completely non-zero area_b\n");
     } /* !has_area_b */
     fprintf(stdout,"Row (destination cell) indices utilized min, max: %.0f, %.0f\n",row_min,row_max);
     fprintf(stdout,"Ignored destination cells (empty rows): %d\n\n",hst_row[0]);
@@ -2152,7 +2152,7 @@ nco_map_chk /* Map-file evaluation */
     nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
     nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     
-    fprintf(stdout,"Conservation metrics (area_b-weighted column-sums of weights normalized by area_a) and errors---\nPerfect metrics (for global Grid B) are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
+    fprintf(stdout,"Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors---\nPerfect metrics (for global Grid B) are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
     fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "Area-weighted m" : "M");
     fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Minimum in grid A cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
     fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Maximum in grid A cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);

@@ -1458,6 +1458,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(p0_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY); /* p0 not expected to be in ECMWF grids */
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
     if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
+    /* 20200205: walter_in.nc breaks here */
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
 
@@ -4213,7 +4214,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   rcd=nco_char_att_put(out_id,lat_nm_out,"long_name","Latitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,lat_nm_out,"standard_name","latitude");
   rcd=nco_char_att_put(out_id,lat_nm_out,"units","degrees_north");
-  // 20200204: Attach "axis" attribute to single-dimensional geospatial coordinates not to two-dimensional coordinate variables per CF Conventions section 5.2
+  // 20200205: Attach "axis" attribute to single-dimensional geospatial coordinates not to two-dimensional coordinate variables per CF Conventions section 5.2
   if(!flg_grd_out_crv) rcd=nco_char_att_put(out_id,lat_nm_out,"axis","Y");
 
   double vld_min;
@@ -4250,7 +4251,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   rcd=nco_char_att_put(out_id,lon_nm_out,"long_name","Longitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,lon_nm_out,"standard_name","longitude");
   rcd=nco_char_att_put(out_id,lon_nm_out,"units","degrees_east");
-  // 20200204: Attach "axis" attribute to single-dimensional geospatial coordinates not to two-dimensional coordinate variables per CF Conventions section 5.2
+  // 20200205: Attach "axis" attribute to single-dimensional geospatial coordinates not to two-dimensional coordinate variables per CF Conventions section 5.2
   if(!flg_grd_out_crv) rcd=nco_char_att_put(out_id,lon_nm_out,"axis","X");
   /* UGRID Conventions define "topology" and "modulo" attributes 
      https://github.com/ugrid-conventions/ugrid-conventions

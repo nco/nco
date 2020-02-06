@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha08: Vasisthasana';git push
 	git tag -a 4.9.2-alpha08 -m 'ncks eliminate alarmist WARNINGS on regional grids, EASE area == 0.0 WARNINGS';git push --tags
 
+	* nco_inq_varnatts() emit variable ID on error
+
 	* nco_chk_map() check and WARNING for area_a/b == 0.0 prior to normalization to prevent unexpected divide-by-zero for EASE grid areas
 
 	* nco_chk_map() eliminate some WARNINGs for grids not within 99% of tiling sphere
