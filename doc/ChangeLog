@@ -2,7 +2,7 @@
 
 	* NCO 4.9.2-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha08: Vasisthasana';git push
-	git tag -a 4.9.2-alpha08 -m 'ncks eliminate alarmist WARNINGS on regional grids';git push --tags
+	git tag -a 4.9.2-alpha08 -m 'ncks eliminate alarmist WARNINGS on regional grids, EASE area == 0.0 WARNINGS';git push --tags
 
 	* nco_chk_map() check and WARNING for area_a/b == 0.0 prior to normalization to prevent unexpected divide-by-zero for EASE grid areas
 
