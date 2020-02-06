@@ -1281,7 +1281,8 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 	if [ "${rnr_thr}" != 'off' ]; then 
 	    rgr_opt="${rgr_opt} --rnr_thr=${rnr_thr}"
 	fi # !rnr_thr
-    else
+    elif [ -z "${prs_stt}" ]; then 
+	# Default MPAS behavior (since forever) has been to renormalize
 	rgr_opt="${rgr_opt} --rnr_thr=0.0"
     fi # !rnr_thr
     # 20181130 No known reason to include staggered grid with regridded MPAS data

@@ -856,6 +856,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int ilev_id_tpl=ilev_id; /* [id] Interface pressure ID */
   const int lev_id_tpl=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_tpl=ps_id; /* [id] Surface pressure ID */
+  (void)fprintf(stdout,"%s: DEBUG quark1 ps_id_tpl = %d, ps_id_in = NDY, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id);
 
   char *ilev_nm_in=NULL; /* [sng] Interface level name */
   char *lev_nm_in;
@@ -1031,7 +1032,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)fprintf(stdout,"%s: HINT only invoke vertical interpolation on files that contain variables with vertical dimensions, and with known vertical coordinate variable names. These default to \"hyai\" for hybrid, \"plev\" for pressure, \"depth\" for depth. See http://nco.sf.net/nco.html#lev_nm for options to change these names at run-time, e.g., \"--rgr plev_nm=vrt_nm\"\n",nco_prg_nm_get());
     return NCO_ERR;
   } /* !hyai */
-    
+
+  /* Sanity checks: One type of input and one type of output grid detected */
+  assert(!(flg_grd_in_hyb && flg_grd_in_prs));
+  assert(!(flg_grd_in_hyb && flg_grd_in_dpt));
+  assert(!(flg_grd_in_prs && flg_grd_in_dpt));
+  assert(flg_grd_in_hyb || flg_grd_in_prs || flg_grd_in_dpt);
+  assert(!(flg_grd_out_hyb && flg_grd_out_prs));
+  assert(!(flg_grd_out_hyb && flg_grd_out_dpt));
+  assert(!(flg_grd_out_prs && flg_grd_out_dpt));
+  assert(flg_grd_out_hyb || flg_grd_out_prs || flg_grd_out_dpt);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG Input grid flags : flg_grd_in_hyb = %d, flg_grd_in_prs = %d, flg_grd_in_dpt = %d\n",nco_prg_nm_get(),flg_grd_in_hyb,flg_grd_in_prs,flg_grd_in_dpt);
+  if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: DEBUG Output grid flags: flg_grd_out_hyb = %d, flg_grd_out_prs = %d, flg_grd_out_dpt = %d\n",nco_prg_nm_get(),flg_grd_out_hyb,flg_grd_out_prs,flg_grd_out_dpt);
+
   /* 20191219: This block is not used, deprecate it? Or use once new coordinates like altitude, depth supported? */
   nco_vrt_ntp_typ_enm nco_vrt_ntp_typ=nco_ntp_nil; /* Vertical interpolation type */
   if(nco_vrt_grd_in == nco_vrt_grd_hyb && nco_vrt_grd_out == nco_vrt_grd_hyb) nco_vrt_ntp_typ=nco_ntp_hyb_to_hyb;
@@ -1059,6 +1072,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       (void)fprintf(stderr,"%s: ERROR %s Unable to find surface pressure variable required for hybrid grid in input file\n",nco_prg_nm_get(),fnc_nm);
       abort();
     } /* !rcd */
+    (void)fprintf(stdout,"%s: DEBUG quark2 ps_id_tpl = %d, ps_id_in = NDY, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id);
     if(flg_grd_hyb_cameam){
       rcd=nco_inq_varid(in_id,"P0",&p0_id);
       ilev_id=NC_MIN_INT;
@@ -1073,6 +1087,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   if(flg_grd_in_prs){
     rcd=nco_inq_varid(in_id,plev_nm_in,&lev_id);
+    if((rcd=nco_inq_varid_flg(in_id,"PS",&ps_id)) == NC_NOERR) (void)fprintf(stderr,"%s: WARNING %s detects PS (canonical surface pressure name for hybrid grids) in pure-pressure input data file. NCO currently assumes that pure-pressure grid datasets have spatially invariant pressure levels, and does not utilize the (presumably) spatially varying PS field in the input data file.\nHINT: To regrid pressure level input and make use of spatially varying PS, define the input data on a hybrid grid with ",nco_prg_nm_get(),fnc_nm);
   } /* !flg_grd_in_prs */
 
   if(flg_grd_in_dpt){
@@ -1082,6 +1097,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int ilev_id_in=ilev_id; /* [id] Interface pressure ID */
   const int lev_id_in=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_in=ps_id; /* [id] Surface pressure ID */
+  (void)fprintf(stdout,"%s: DEBUG quark3 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   /* Identify all record-dimensions in input file */
   rcd=nco_inq_unlimdims(in_id,&dmn_nbr_rec,(int *)NULL);
@@ -1439,6 +1455,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,p0_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
+    (void)fprintf(stdout,"%s: DEBUG quark4 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     if(flg_grd_hyb_ecmwf){
       /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
       int dmn_nbr_out_ecmwf=0;
@@ -1448,6 +1465,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out+dmn_nbr_out_ecmwf++);
       } /* !dmn_idx */
       rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out,&ps_id);
+      (void)fprintf(stdout,"%s: DEBUG quark5 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     } /* !flg_grd_hyb_ecmwf */
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ps_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
@@ -1460,7 +1478,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
     if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
     /* 20200205: walter_in.nc breaks here */
-    (void)fprintf(stdout,"%s: DEBUG quark ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
+    (void)fprintf(stdout,"%s: DEBUG quark6 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
 

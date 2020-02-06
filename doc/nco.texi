@@ -123,8 +123,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.2-alpha07
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 19 January 2020
-@set update-month January 2020
+@set update-date 6 February 2020
+@set update-month February 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -24689,24 +24689,9 @@ Two positional arguments are interpreted as a single @var{input-file}
 and its corresponding @var{output-file}.
 
 @html
-<a name="alm"></a> <!-- http://nco.sf.net/nco.html#alm -->
-<a name="cice"></a> <!-- http://nco.sf.net/nco.html#cice -->
-<a name="clm"></a> <!-- http://nco.sf.net/nco.html#clm -->
-<a name="ctsm"></a> <!-- http://nco.sf.net/nco.html#ctsm -->
-<a name="elm"></a> <!-- http://nco.sf.net/nco.html#elm -->
 <a name="mpas"></a> <!-- http://nco.sf.net/nco.html#mpas -->
-<a name="mpascice"></a> <!-- http://nco.sf.net/nco.html#mpascice -->
-<a name="mwf"></a> <!-- http://nco.sf.net/nco.html#mwf-->
-<a name="MWF"></a> <!-- http://nco.sf.net/nco.html#MWF-->
-<a name="pdq_typ"></a> <!-- http://nco.sf.net/nco.html#pdq_typ -->
 <a name="prc_typ"></a> <!-- http://nco.sf.net/nco.html#prc_typ -->
 <a name="rrg"></a> <!-- http://nco.sf.net/nco.html#rrg -->
-<a name="sgs"></a> <!-- http://nco.sf.net/nco.html#sgs -->
-<a name="sgs_frc"></a> <!-- http://nco.sf.net/nco.html#sgs_frc -->
-<a name="sgs_msk"></a> <!-- http://nco.sf.net/nco.html#sgs_msk -->
-<a name="sub-grid"></a> <!-- http://nco.sf.net/nco.html#sub-grid -->
-<a name="sub-gridscale"></a> <!-- http://nco.sf.net/nco.html#sub-gridscale -->
-<a name="subgrid"></a> <!-- http://nco.sf.net/nco.html#subgrid -->
 @end html
 @cindex @code{-P @var{prc_typ}}
 @cindex @var{prc_typ}
@@ -24973,6 +24958,20 @@ ncremap --rnm_sng='_128e_to_134e_9s_to_16s' --bb_wesn='128,134,-16,-9' \
 including input and output methods and regridding algorithms. 
 @*
 @*
+@html
+<a name="alm"></a> <!-- http://nco.sf.net/nco.html#alm -->
+<a name="cice"></a> <!-- http://nco.sf.net/nco.html#cice -->
+<a name="clm"></a> <!-- http://nco.sf.net/nco.html#clm -->
+<a name="ctsm"></a> <!-- http://nco.sf.net/nco.html#ctsm -->
+<a name="elm"></a> <!-- http://nco.sf.net/nco.html#elm -->
+<a name="mpascice"></a> <!-- http://nco.sf.net/nco.html#mpascice -->
+<a name="sgs"></a> <!-- http://nco.sf.net/nco.html#sgs -->
+<a name="sgs_frc"></a> <!-- http://nco.sf.net/nco.html#sgs_frc -->
+<a name="sgs_msk"></a> <!-- http://nco.sf.net/nco.html#sgs_msk -->
+<a name="sub-grid"></a> <!-- http://nco.sf.net/nco.html#sub-grid -->
+<a name="sub-gridscale"></a> <!-- http://nco.sf.net/nco.html#sub-gridscale -->
+<a name="subgrid"></a> <!-- http://nco.sf.net/nco.html#subgrid -->
+@end html
 @b{@acronym{SGS}-mode}:@*
 @cindex Sub-gridscale (@acronym{SGS}) data
 @cindex @acronym{SGS}-mode
@@ -25015,10 +25014,10 @@ To correctly regrid sub-grid data, specify the names of the
 @var{sgs_frc} and @var{sgs_msk} variables.
 (if they differ from their
 respective defaults @code{landfrac} and @code{landmask}). 
-Trouble will ensue @var{sgs_frc} is a percentage, or an absolute area.
+Trouble will ensue if @var{sgs_frc} is a percentage, or an absolute area.
 @command{ncremap} must know the normalization factor @var{sgs_nrm} by
 which @var{sgs_frc} must be @emph{divided} (not multiplied) to obtain
-a true fraction (between zero and one).
+a true, normalized fraction (between zero and one).
 Datasets (such as those from @acronym{CICE}) that store @var{sgs_frc} 
 in percent should specify the option
 @samp{--sgs_nrm=100} to instruct @command{ncremap} to normalize the
@@ -25135,25 +25134,6 @@ Furthermore, a naming conflict among intermediate files still exists
 when all source files share the same grid.
 
 @html
-<a name="rgr_opt"></a> <!-- http://nco.sf.net/nco.html#rgr_opt -->
-@end html
-@cindex @code{-R @var{rgr_opt}}
-@cindex @var{rgr_opt}
-@cindex @code{--rgr_opt}
-@cindex @code{--regrid_options}
-@item -R @var{rgr_opt} (@code{--rgr_opt}, @code{--regrid_options})
-@command{ncremap} passes @var{rgr_opt} directly through to the
-regridder.  
-This is useful to customize output grids and metadata.
-One use is to rename output variables and dimensions from the defaults
-provided by or derived from input data.
-The default value is @samp{--rgr lat_nm_out=lat --rgr lon_nm_out=lon},
-i.e., by default @command{ncremap} always names latitude and longitude
-``lat'' and ``lon'', respectively, regardless of their input names.
-Users might use this option to set different canonical axes names,
-e.g., @samp{--rgr lat_nm_out=y --rgr lon_nm_out=x}.
-
-@html
 <a name="preserve"></a> <!-- http://nco.sf.net/nco.html#preserve -->
 @end html
 @cindex @code{--preserve=@var{prs_stt}}
@@ -25193,6 +25173,25 @@ renormalizing the integral value by the fractional area covered (see
 This is often desired for regridding state variables, e.g.,
 temperature, though it is not the default behavior and must be
 explicitly requested (except in @acronym{MPAS}-mode).
+
+@html
+<a name="rgr_opt"></a> <!-- http://nco.sf.net/nco.html#rgr_opt -->
+@end html
+@cindex @code{-R @var{rgr_opt}}
+@cindex @var{rgr_opt}
+@cindex @code{--rgr_opt}
+@cindex @code{--regrid_options}
+@item -R @var{rgr_opt} (@code{--rgr_opt}, @code{--regrid_options})
+@command{ncremap} passes @var{rgr_opt} directly through to the
+regridder.  
+This is useful to customize output grids and metadata.
+One use is to rename output variables and dimensions from the defaults
+provided by or derived from input data.
+The default value is @samp{--rgr lat_nm_out=lat --rgr lon_nm_out=lon},
+i.e., by default @command{ncremap} always names latitude and longitude
+``lat'' and ``lon'', respectively, regardless of their input names.
+Users might use this option to set different canonical axes names,
+e.g., @samp{--rgr lat_nm_out=y --rgr lon_nm_out=x}.
 
 @html
 <a name="rnr_thr"></a> <!-- http://nco.sf.net/nco.html#rnr_thr -->
@@ -25722,9 +25721,10 @@ vertical coordinate format to @acronym{CESM}/@acronym{E3SM}-format
 hybrid vertical grids. 
 The native @acronym{IFS} hybrid datasets that we have seen store
 pressure coordinates in terms of a slightly different formula that
-employs the log of pressure (@code{lnsp}) instead of @code{PS},
-that redefines @code{hyai} and @code{hyam} to be pure-pressure offsets
-(rather than coefficients), and that omits @code{P0}:
+employs the log of surface pressure (@code{lnsp}) instead of surface
+pressure @code{PS}, that redefines @code{hyai} and @code{hyam} to be
+pure-pressure offsets (rather than coefficients), and that omits
+@code{P0}: 
 @example
 @verbatim
 prs_mdp[time,lev,  lat,lon]=hyam+hybm*exp(lnsp) # Midlayer
@@ -25741,7 +25741,7 @@ half-layer coordinate and employs distinct dimensions (@code{nhym} and
 
 The @code{lev} and @code{ilev} coordinates of a hybrid grid are
 defined by the hybrid coefficients and reference pressure, and are
-by convention stored in millibars as follows:
+by convention stored in millibars (not Pascals) as follows:
 @example
 @verbatim
 ilev[ilev]=P0*(hyai+hybi)/100.0;
@@ -25753,10 +25753,19 @@ A vertical hybrid grid file @var{vrt_fl} must contain at least
 @code{hyai}, @code{hybi}, @code{hyam}, @code{hybm(lev)} and
 @code{P0}; @code{PS}, @code{lev}, and @code{ilev} are optional. 
 (Exceptions for @acronym{ECMWF} grids are noted above).
-If @var{vrt_fl} does not contain @code{PS} then @code{PS} will
-be taken from the file to be interpolated.
-In all cases @code{lev} and @code{ilev} are optional and will be
-diagnosed from the other parameters using the above definitions.
+All hybrid-coordinate data files must contain @code{PS}.
+Interpolating a pure-pressure coordinate data file to hybrid
+coordinates requires, therefore, that the hybrid-coordinate
+@var{vrt_fl} must contain @code{PS} and/or the input data file
+must contain @code{PS}.
+If both contain @code{PS} then the @code{PS} from the @var{vrt_fl}
+takes precedence and will be used to construct the hybrid grid
+and then copied without to the output file.
+
+In all cases @code{lev} and @code{ilev} are optional in input
+hybrid-coordinate data files and vertical grid-files.  
+They are diagnosed from the other parameters using the above
+definitions. 
 The minimal requirements---a @code{plev} coordinate for a
 pure-pressure grid or five parameters for a hybrid grid---allow 
 vertical gridfiles to be much smaller than horizontal gridfiles

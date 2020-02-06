@@ -1,8 +1,14 @@
-2020-02-05  Charlie Zender  <zender@uci.edu>
+2020-02-06  Charlie Zender  <zender@uci.edu>
+
+	* ncremap allow --prs_stt=integral to work with -P mpas
 
 	* NCO 4.9.2-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha08: Vasisthasana';git push
 	git tag -a 4.9.2-alpha08 -m 'ncks eliminate alarmist WARNINGS on regional grids, EASE area == 0.0 WARNINGS';git push --tags
+
+	* Clarify treatment of PS during vertical interpolation
+
+2020-02-05  Charlie Zender  <zender@uci.edu>
 
 	* nco_inq_varnatts() emit variable ID on error
 
