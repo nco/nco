@@ -1334,6 +1334,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
     /* Horizontal dimensions necessary to define PS variable */
     for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+      /* 20200205: uninitialized value? */
       if(ps_id_tpl != NC_MIN_INT){
 	rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
       }else{
@@ -1459,6 +1460,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
     if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
     /* 20200205: walter_in.nc breaks here */
+    (void)fprintf(stdout,"%s: DEBUG quark ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
 
