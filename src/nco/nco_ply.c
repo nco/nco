@@ -561,9 +561,23 @@ void nco_poly_minmax_add
 
         }
 
+        /* check if newly minted min/max are still wrapped *
+         * This fixes following type of grid cell - which has lon=360.0
+         * instead of lon=0.0
+         *
+          360.000000000000000 -90.000000000000000
+          24.000000000000000  -90.000000000000000
+          24.000000000000000  -85.500000000000000
+          360.000000000000000  -85.500000000000000
+          # min/max x( 0, 24)
+          The verices are not overwritten but the cell bcomes  un-wrapped
+         */
+
+       if(pl->dp_x_minmax[1] - pl->dp_x_minmax[0] < 180.0)
+         pl->bwrp=False;
+
 
         lcl_dp_x = (double *) nco_free(lcl_dp_x);
-
 
       }
 
