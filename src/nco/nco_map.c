@@ -1846,8 +1846,10 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
   } /* !idx */
 
   /* Normalize result by area_a */
-  for(idx=0;idx<var_frac_a->sz;idx++)
-    var_frac_a->val.dp[idx]/=var_area_a->val.dp[idx];
+  for(idx=0;idx<var_frac_a->sz;idx++){
+    if(var_area_a->val.dp[idx] != 0.0) var_frac_a->val.dp[idx]/=var_area_a->val.dp[idx]; else
+      fprintf(stdout,"WARNING area_a = %g for grid A cell %lu: Unable to normalize area_b-weighted column sum to compute frac_a for this gridcell\n",var_area_a->val.dp[idx],idx+1UL);
+  } /* !idx */
 
   (void)cast_nctype_void(NC_DOUBLE,&(var_S->val));
   (void)cast_nctype_void(NC_INT,&(var_row->val));
@@ -1974,6 +1976,7 @@ nco_map_chk /* Map-file evaluation */
       if(val[idx] == 0.0) break;
     if(idx < sz) area_wgt_a=False;
     if(idx < sz) has_area_a=False;
+    if(idx < sz) fprintf(stdout,"WARNING area_a = %g for grid A cell [%lu,%+g,%+g] (and possibly others). Empty areas may corrupt diagnostics.\n",val[idx],idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
   } /* !var_area_a */
   if(var_area_b){
     has_area_b=True;
@@ -1983,6 +1986,7 @@ nco_map_chk /* Map-file evaluation */
       if(val[idx] == 0.0) break;
     if(idx < sz) area_wgt_b=False;
     if(idx < sz) has_area_b=False;
+    if(idx < sz) fprintf(stdout,"WARNING area_b = %g for grid B cell [%lu,%+g,%+g] (and possibly others). Empty areas may corrupt diagnostics.\n",val[idx],idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
   } /* !var_area_b */
   if(var_frac_a){
     tally=0L;
@@ -2148,7 +2152,7 @@ nco_map_chk /* Map-file evaluation */
     nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
     nco_map_var_min_max_ttl(var_frac_a,var_area_a->val.dp,area_wgt_a,&frac_min_cmp,&idx_min,&frac_max_cmp,&idx_max,&frac_ttl_cmp,&frac_avg_cmp,&mebs,&rms,&sdn);
     
-    fprintf(stdout,"Conservation metrics (area-weighted column-sums of weights) and errors---\nPerfect metrics (for global Grid B) are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
+    fprintf(stdout,"Conservation metrics (area_b-weighted column-sums of weights normalized by area_a) and errors---\nPerfect metrics (for global Grid B) are avg = min = max = 1.0, mbs = rms = sdn = 0.0:\n");
     fprintf(stdout,"frac_a avg: %0.16f = 1.0%s%0.1e // %sean\n",frac_avg_cmp,frac_avg_cmp > 1 ? "+" : "-",fabs(1.0-frac_avg_cmp),area_wgt_a ? "Area-weighted m" : "M");
     fprintf(stdout,"frac_a min: %0.16f = 1.0%s%0.1e // Minimum in grid A cell [%lu,%+g,%+g]\n",frac_min_cmp,frac_min_cmp > 1 ? "+" : "-",fabs(1.0-frac_min_cmp),idx_min+1UL,var_yc_a->val.dp[idx_min],var_xc_a->val.dp[idx_min]);
     fprintf(stdout,"frac_a max: %0.16f = 1.0%s%0.1e // Maximum in grid A cell [%lu,%+g,%+g]\n",frac_max_cmp,frac_max_cmp > 1 ? "+" : "-",fabs(1.0-frac_max_cmp),idx_max+1UL,var_yc_a->val.dp[idx_max],var_xc_a->val.dp[idx_max]);
