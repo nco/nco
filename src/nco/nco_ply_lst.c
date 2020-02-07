@@ -729,6 +729,11 @@ int *pl_cnt_vrl_ret){
   int tot_nan_cnt=0;
   int tot_wrp_cnt=0;
 
+  /* approx number of input cells each thread will process */
+  int thr_quota;
+  /* reporting step */
+  int thr_quota_step;
+
   poly_typ_enm pl_typ;
   size_t idx;
 
@@ -772,6 +777,10 @@ int *pl_cnt_vrl_ret){
 
   }
 
+  thr_quota=pl_cnt_in/lcl_thr_nbr;
+  thr_quota_step=thr_quota/20;
+  if( thr_quota_step <2000 )
+    thr_quota_step=2000;
 
 #ifdef __GNUG__
   # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
@@ -1134,8 +1143,8 @@ int *pl_cnt_vrl_ret){
     } /* end dbg */
 
     /* output some usefull tracking stuff - not debug but informative */
-    if (  ++mem_lst[thr_idx].idx_cnt % 2000 == 0 && nco_dbg_lvl_get() >=3   )
-      (void)fprintf(fp_stderr, "%s: thread %d  has processed %ld input cells and output %ld overlap cells\n", nco_prg_nm_get(), thr_idx, mem_lst[thr_idx].idx_cnt, mem_lst[thr_idx].pl_cnt  );
+    if (  ++mem_lst[thr_idx].idx_cnt % thr_quota_step == 0 && nco_dbg_lvl_get() >=3   )
+      (void)fprintf(fp_stderr, "%s: thread %d  has processed %2.2f%% (%ld) src cells of quota and output %ld overlap cells\n", nco_prg_nm_get(), thr_idx, (float)mem_lst[thr_idx].idx_cnt/(float)thr_quota *100.0,  mem_lst[thr_idx].idx_cnt, mem_lst[thr_idx].pl_cnt  );
 
 
 
