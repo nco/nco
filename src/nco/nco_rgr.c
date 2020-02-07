@@ -1087,8 +1087,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   if(flg_grd_in_prs){
     rcd=nco_inq_varid(in_id,plev_nm_in,&lev_id);
-    if((rcd=nco_inq_varid_flg(in_id,"PS",&ps_id)) == NC_NOERR)
+    if((rcd=nco_inq_varid_flg(in_id,"PS",&ps_id)) == NC_NOERR){
+      /* Output file creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
+      flg_grd_hyb_cameam=True;
       if(flg_grd_out_hyb) (void)fprintf(stderr,"%s: INFO %s detects PS (canonical surface pressure name for hybrid grids) in pure-pressure input data file. As their name implies, pure-pressure grid datasets have spatially invariant pressure levels, so PS will be copied directly to the output hybrid-coordinate data file. However, if the vertical grid-file itself contains PS, then that PS will be used and copied to the output hybrid-coordinate data file.\n",nco_prg_nm_get(),fnc_nm);
+    } /* !ps_id */
   } /* !flg_grd_in_prs */
 
   if(flg_grd_in_dpt){
@@ -1197,9 +1200,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   double *hybi_in=NULL; /* [frc] Hybrid B coefficient at layer interfaces on input grid */
   double *hybm_in=NULL; /* [frc] Hybrid B coefficient at layer midpoints on input grid */
   double *lev_in=NULL; /* [Pa] Air pressure on input grid */
-  double *ps_in=NULL; /* [Pa] Surface pressure on input grid */
   double *prs_mdp_in=NULL; /* [Pa] Midpoint pressure on input grid */
   double *prs_ntf_in=NULL; /* [Pa] Interface pressure on input grid */
+  double *ps_in=NULL; /* [Pa] Surface pressure on input grid */
   double p0_in; /* [Pa] Reference pressure on input grid */
   
   if(flg_grd_in_hyb){
@@ -1207,19 +1210,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     hyam_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
     hybi_in=(double *)nco_malloc(ilev_nbr_in*nco_typ_lng(var_typ_rgr));
     hybm_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
-    ps_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
     
     rcd=nco_get_var(in_id,hyai_id,hyai_in,crd_typ_out);
     rcd=nco_get_var(in_id,hyam_id,hyam_in,crd_typ_out);
     rcd=nco_get_var(in_id,hybi_id,hybi_in,crd_typ_out);
     rcd=nco_get_var(in_id,hybm_id,hybm_in,crd_typ_out);
     if(flg_grd_hyb_cameam) rcd=nco_get_var(in_id,p0_id,&p0_in,crd_typ_out);
-    rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
     /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
     if(flg_grd_hyb_ecmwf){
-      /* Convert ECMWF-provided log(surface_pressure) to surface_pressure */
-      const size_t ps_sz_in=tm_nbr_in*grd_sz_in; /* [nbr] Number of elements in ps_in */
-      for(size_t idx=0;idx<ps_sz_in;idx++) ps_in[idx]=exp(ps_in[idx]); 
       /* Decompose ECMWF hya? convention into CAM/EAM-like product of P0 and hya? */
       p0_in=100000.0;
       for(size_t idx=0;idx<lev_nbr_in;idx++){
@@ -1255,6 +1253,27 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     assert(grd_sz_in == grd_sz_out);
     assert(tm_nbr_in == tm_nbr_out);
     
+  } /* !flg_grd_in_hyb */
+
+  if(flg_grd_in_prs){
+    lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
+    rcd=nco_get_var(in_id,lev_id,lev_in,crd_typ_out);
+  } /* !flg_grd_in_prs */
+  
+  /* Always obtain surface pressure if input or output grid is hybrid */
+  if(flg_grd_in_hyb || flg_grd_out_hyb){
+    ps_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
+
+    /* Surface pressure comes from either hybrid vertical grid-files, hybrid data files, or pressure data files that provide surface pressure */
+    if(flg_grd_in_hyb || (flg_grd_in_prs && ps_id_tpl == NC_MIN_INT)) rcd=nco_get_var(in_id,ps_id,ps_in,crd_typ_out);
+
+    /* ECMWF distributes IFS forecasts with lnsp = log(surface pressure) */
+    if(flg_grd_hyb_ecmwf){
+      /* Convert ECMWF-provided log(surface_pressure) to surface_pressure */
+      const size_t ps_sz_in=tm_nbr_in*grd_sz_in; /* [nbr] Number of elements in ps_in */
+      for(size_t idx=0;idx<ps_sz_in;idx++) ps_in[idx]=exp(ps_in[idx]); 
+    } /* flg_grd_hyb_ecmwf */
+
     /* Finally have enough information to allocate output pressure grid */
     ps_out=(double *)nco_malloc_dbg(tm_nbr_out*grd_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_out value buffer");
     
@@ -1264,17 +1283,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     }else{
       memcpy(ps_out,ps_in,tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr));
     } /* !ps_id_tpl */
-  } /* !flg_grd_in_hyb */
-
-  if(flg_grd_in_prs){
-    lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
-    rcd=nco_get_var(in_id,lev_id,lev_in,crd_typ_out);
-  } /* !flg_grd_in_prs */
-  
-  if(flg_grd_in_prs && flg_grd_out_hyb && ps_id_tpl == NC_MIN_INT && ps_id_in != NC_MIN_INT){
-    (void)fprintf(stdout,"%s: DEBUG quark3.75 Allocating input pressure array tm_nbr_in = %li, grd_sz_in = %lu\n",nco_prg_nm_get(),tm_nbr_in,grd_sz_in);
-    ps_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
-  } /* !flg_grd_in_prs */
+  } /* ! */
 
   (void)fprintf(stdout,"%s: DEBUG quark3.8 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
@@ -1518,6 +1527,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* No further access to template file, close it */
   nco_close(tpl_id);
 
+  (void)fprintf(stdout,"%s: DEBUG quark7 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
+
   /* Remove local copy of file */
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_tpl);
 
@@ -1561,6 +1572,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Interpolate %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
     } /* end idx_tbl */
   } /* end dbg */
+
+  (void)fprintf(stdout,"%s: DEBUG quark8 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
@@ -1682,6 +1695,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !var */
   } /* end idx_tbl */
   
+  (void)fprintf(stdout,"%s: DEBUG quark9 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
+
   /* Free pre-allocated array space */
   if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
   if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
@@ -1693,6 +1708,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
       
+  (void)fprintf(stdout,"%s: DEBUG quark9.7 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
+
   /* Begin data mode */
   (void)nco_enddef(out_id);
 
@@ -1705,12 +1722,15 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)nco_put_var(out_id,ilev_id,ilev_out,crd_typ_out);
     (void)nco_put_var(out_id,lev_id,lev_out,crd_typ_out);
     (void)nco_put_var(out_id,p0_id,&p0_out,crd_typ_out);
+    (void)fprintf(stdout,"%s: DEBUG quark9.9 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     (void)nco_put_var(out_id,ps_id,ps_out,crd_typ_out);
   } /* !flg_grd_out_hyb */
   
   if(flg_grd_out_prs){
     (void)nco_put_var(out_id,lev_id,lev_out,crd_typ_out);
   } /* !flg_grd_out_prs */
+
+  (void)fprintf(stdout,"%s: DEBUG quark10 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   nco_bool flg_ntp_log=True; /* [flg] Interpolate in log(vertical_coordinate) */
   if(ntp_mth == nco_ntp_lnr) flg_ntp_log=False;
@@ -1805,6 +1825,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     has_lev=False;
     has_tm=False;
     
+    (void)fprintf(stdout,"%s: DEBUG quark12 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
+
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Interpolation progress: # means interpolated, ~ means copied\n");
 
 #ifdef __GNUG__

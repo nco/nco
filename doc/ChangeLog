@@ -1,3 +1,7 @@
+2020-02-07  Charlie Zender  <zender@uci.edu>
+
+	* nco_vrt_ntp() pure pressure input may now provide PS for use in interpolating to output hybrid files
+
 2020-02-06  Charlie Zender  <zender@uci.edu>
 
 	* nco_vrt_ntp() set horizontal grd_sz_in, grd_sz_out correctly for grd_in_prs
