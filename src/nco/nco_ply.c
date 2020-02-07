@@ -551,7 +551,23 @@ void nco_poly_minmax_add
             break;
 
         }
-        /* swap values if necessaary */
+
+        /* max == 360.0 has been converted to 0.0 we want the 360 value for the limits *
+         * as the kd tree manages wrapping by splitting the limits into 2 *
+         * dont wish to edit the actual vertices */
+        if(grd_lon_typ == nco_grd_lon_Grn_wst || grd_lon_typ ==  nco_grd_lon_Grn_ctr)
+        {
+          if( pl->dp_x_minmax[0] == 0.0 &&  pl->dp_x_minmax[1] >180.0   )
+            pl->dp_x_minmax[0]=360.0;
+
+          else if( pl->dp_x_minmax[0] >180.0  &&  pl->dp_x_minmax[1] == 0.0 )
+            pl->dp_x_minmax[1]=360.0;
+
+        }
+
+
+
+        /* swap values if necessasary */
         if (pl->dp_x_minmax[0] > pl->dp_x_minmax[1]) {
           double stmp;
           stmp = pl->dp_x_minmax[0];
@@ -561,18 +577,8 @@ void nco_poly_minmax_add
 
         }
 
-        /* check if newly minted min/max are still wrapped *
-         * This fixes following type of grid cell - which has lon=360.0
-         * instead of lon=0.0
-         *
-          360.000000000000000 -90.000000000000000
-          24.000000000000000  -90.000000000000000
-          24.000000000000000  -85.500000000000000
-          360.000000000000000  -85.500000000000000
-          # min/max x( 0, 24)
-          The verices are not overwritten but the cell bcomes  un-wrapped
-         */
 
+       /* double check wrapping again */
        if(pl->dp_x_minmax[1] - pl->dp_x_minmax[0] < 180.0)
          pl->bwrp=False;
 
