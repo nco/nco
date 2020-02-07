@@ -1087,7 +1087,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   if(flg_grd_in_prs){
     rcd=nco_inq_varid(in_id,plev_nm_in,&lev_id);
-    if((rcd=nco_inq_varid_flg(in_id,"PS",&ps_id)) == NC_NOERR) (void)fprintf(stderr,"%s: WARNING %s detects PS (canonical surface pressure name for hybrid grids) in pure-pressure input data file. NCO currently assumes that pure-pressure grid datasets have spatially invariant pressure levels, and does not utilize the (presumably) spatially varying PS field in the input data file.\nHINT: To regrid pressure level input and make use of spatially varying PS, define the input data on a hybrid grid with ",nco_prg_nm_get(),fnc_nm);
+    if((rcd=nco_inq_varid_flg(in_id,"PS",&ps_id)) == NC_NOERR)
+      if(flg_grd_out_hyb) (void)fprintf(stderr,"%s: INFO %s detects PS (canonical surface pressure name for hybrid grids) in pure-pressure input data file. As their name implies, pure-pressure grid datasets have spatially invariant pressure levels, so PS will be copied directly to the output hybrid-coordinate data file. However, if the vertical grid-file itself contains PS, then that PS will be used and copied to the output hybrid-coordinate data file.\n",nco_prg_nm_get(),fnc_nm);
   } /* !flg_grd_in_prs */
 
   if(flg_grd_in_dpt){
@@ -1142,6 +1143,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !dmn_idx */
   } /* !flg_grd_in_hyb */
 
+  (void)fprintf(stdout,"%s: DEBUG quark3.5 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
+
   if(flg_grd_in_prs){
     /* Interrogate plev to obtain plev dimensions */
     rcd=nco_inq_vardimid(in_id,lev_id,&dmn_id_lev_in);
@@ -1170,15 +1173,24 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	/* Yes. Do any dimensions vary more rapidly than lev? */
 	if(dmn_idx < dmn_nbr_in-1){
 	  /* Yes. Assume remaining dimension are horizontal spatial dimensions */
-	  for(int dmn_idx_hrz=dmn_idx;dmn_idx_hrz<dmn_nbr_in;dmn_idx_hrz++){
-	    rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx_hrz);
+	  char var_nm[NC_MAX_NAME+1L];
+	  (void)nc_inq_varname(in_id,var_idx,var_nm);
+	  (void)fprintf(stdout,"%s: DEBUG quark3.67 var_idx = %d, hrz tpl var_nm = %s\n",nco_prg_nm_get(),var_idx,var_nm);
+	  for(int dmn_idx_hrz=dmn_idx+1;dmn_idx_hrz<dmn_nbr_in;dmn_idx_hrz++){
+	    rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx_hrz],dmn_cnt_in+dmn_idx_hrz);
 	    grd_sz_in*=dmn_cnt_in[dmn_idx_hrz];
+	    (void)fprintf(stdout,"%s: DEBUG quark3.68 dmn_idx_hrz = %d, dmn_cnt_in[%d] = %lu\n",nco_prg_nm_get(),dmn_idx_hrz,dmn_idx_hrz,dmn_cnt_in[dmn_idx_hrz]);
 	  } /* !dmn_idx_hrz */
+	  break;
 	} /* !dmn_idx */
       } /* !dmn_idx */
     } /* !var_idx */
+    assert(var_idx != var_nbr);
     grd_sz_out=grd_sz_in;
   } /* !flg_grd_in_prs */
+
+  (void)fprintf(stdout,"%s: DEBUG quark3.7 grd_sz_in = %lu, grd_sz_out = %lu\n",nco_prg_nm_get(),grd_sz_in,grd_sz_out);
+  (void)fprintf(stdout,"%s: DEBUG quark3.7 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   double *hyai_in=NULL; /* [frc] Hybrid A coefficient at layer interfaces on input grid */
   double *hyam_in=NULL; /* [frc] Hybrid A coefficient at layer midpoints on input grid */
@@ -1259,6 +1271,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_get_var(in_id,lev_id,lev_in,crd_typ_out);
   } /* !flg_grd_in_prs */
   
+  if(flg_grd_in_prs && flg_grd_out_hyb && ps_id_tpl == NC_MIN_INT && ps_id_in != NC_MIN_INT){
+    (void)fprintf(stdout,"%s: DEBUG quark3.75 Allocating input pressure array tm_nbr_in = %li, grd_sz_in = %lu\n",nco_prg_nm_get(),tm_nbr_in,grd_sz_in);
+    ps_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
+  } /* !flg_grd_in_prs */
+
+  (void)fprintf(stdout,"%s: DEBUG quark3.8 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
+
   /* Compare input and output surface pressure fields to determine whether subterranean extrapolation required */
   nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
   flg_add_msv_att=False;
@@ -1289,6 +1308,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       } /* !tm_idx */
     } /* !flg_grd_in_hyb */
     if(flg_grd_out_hyb){
+      (void)fprintf(stdout,"%s: DEBUG quark3.9 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
+
       // fxm: assumes hybrid grid has least/greatest pressure at top/bottom level
       idx_lev_max=lev_nbr_out-1;
       idx_lev_min=0L;
@@ -1300,6 +1321,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	} /* !grd_idx */
       } /* !tm_idx */
     } /* !flg_grd_out_hyb */
+    (void)fprintf(stdout,"%s: DEBUG quark3.95 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     if(flg_grd_in_prs){
       double lev_in_max;
       double lev_in_min;
@@ -1330,6 +1352,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !xtr_mth */
   
   /* Lay-out regridded file */
+  (void)fprintf(stdout,"%s: DEBUG quark3.95 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   /* Use explicitly specified output names, if any, otherwise use template names (either explicitly specified or discovered by fuzzing) */
   if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out;
@@ -1350,12 +1373,14 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
     /* Horizontal dimensions necessary to define PS variable */
     for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+      (void)fprintf(stdout,"%s: DEBUG quark3.97 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
       /* 20200205: uninitialized value? */
       if(ps_id_tpl != NC_MIN_INT){
 	rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
       }else{
 	rcd=nco_inq_dimname(in_id,dmn_ids_out[dmn_idx],dmn_nm);
       } /* !ps_id_tpl */
+      (void)fprintf(stdout,"%s: DEBUG quark3.98 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
       if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
       /* 20190602: ECMWF IFS PS variable has degenerate vertical dimension (lev_2). Avoid re-definition */
       if(flg_grd_hyb_ecmwf)
