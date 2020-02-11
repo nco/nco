@@ -2170,7 +2170,7 @@ nco_map_chk /* Map-file evaluation */
     } /* !has_frac_a */
     
     const double eps_max_wrn=1.0e-1; /* [frc] Maximum error in column-sum/row-sums before WARNING is printed */
-    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tIgnore this warning if Grid B is not intended to completely tile the sphere, otherwise...\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
+    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
       
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       val=var_frac_a->val.dp;
@@ -2178,7 +2178,7 @@ nco_map_chk /* Map-file evaluation */
       const double eps_err=1.0e-8;
       for(idx=0;idx<var_frac_a->sz;idx++){
 	if(!has_mask_a || (has_mask_a && var_mask_a->val.ip[idx] == 1)){
-	  if(fabs(val[idx]-1.0) > eps_err){
+	  if((val[idx]-1.0 > eps_err) || (grid_b_tiles_sphere && (fabs(val[idx]-1.0) > eps_err))){
 	    if(nco_dbg_lvl_get() >= nco_dbg_fl) fprintf(stdout,"WARNING conservation = %0.16f = 1.0%s%0.1e for grid A cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
 	    wrn_nbr++;
 	  } /* !err */
@@ -2216,7 +2216,7 @@ nco_map_chk /* Map-file evaluation */
       if(fabs(cmp_dsk_dff) > eps_abs){fprintf(stdout,"%s: Computed (as row sums) and disk-values of max(frac_b) disagree by more than %0.1e:\n  %0.16f - %0.16f = %g\n",fabs(cmp_dsk_dff) < 10*eps_abs ? "INFO" : "WARNING",eps_abs,frac_max_cmp,frac_max_dsk,cmp_dsk_dff);}
     } /* !has_frac_b */
       
-    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_a_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tIgnore this warning if Grid A is not intended to completely tile the sphere, otherwise...\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
+    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_a_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       val=var_frac_b->val.dp;
@@ -2224,7 +2224,7 @@ nco_map_chk /* Map-file evaluation */
       const double eps_err=1.0e-8;
       for(idx=0;idx<var_frac_b->sz;idx++){
 	if(!has_mask_b || (has_mask_b && var_mask_b->val.ip[idx] == 1)){
-	  if(fabs(val[idx]-1.0) > eps_err){
+	  if((val[idx]-1.0 > eps_err) || (grid_a_tiles_sphere && (fabs(val[idx]-1.0) > eps_err))){
 	    if(nco_dbg_lvl_get() >= nco_dbg_fl) fprintf(stdout,"WARNING consistency = %0.16f = 1.0%s%0.1e for grid B cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
 	    wrn_nbr++;
 	  } /* !err */

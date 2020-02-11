@@ -1,3 +1,7 @@
+2020-02-11  Charlie Zender  <zender@uci.edu>
+
+	* nco_map_chk() only issue WARNINGs for min(frac_a/b) cells when grid_b/a tiles sphere
+
 2020-02-07  Charlie Zender  <zender@uci.edu>
 
 	* nco_vrt_ntp() pure pressure input may now provide PS for use in interpolating to output hybrid files
