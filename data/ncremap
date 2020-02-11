@@ -404,6 +404,7 @@ grd_dst_xmp='grd_dst.nc' # [sng] Destination grid-file for examples
 grd_sng='' # [sng] Grid string
 grd_src='' # [sng] Source grid-file
 grd_src_xmp='grd_src.nc' # [sng] Source grid-file for examples
+grd_vrt_xmp='grd_vrt.nc' # [sng] Vertical grid-file for examples
 hdr_pad='10000' # [B] Pad at end of header section
 hnt_dst='' # [sng] ERWG hint for destination grid
 hnt_src='' # [sng] ERWG hint for source grid
@@ -590,9 +591,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "          ${fnt_bld}$spt_nm -M -d ${dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -M -g ${grd_dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -s ${grd_src_xmp} -d ${dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
-    printf "          ${fnt_bld}$spt_nm -s ${grd_src_xmp} -g ${grd_dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -d ${dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}$spt_nm -g ${grd_dst_xmp} -I ${drc_in_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm --vrt=${grd_vrt_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
+    printf "          ${fnt_bld}$spt_nm --vrt=${grd_vrt_xmp} -m ${map_xmp} ${in_xmp} ${out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}ls mdl*2005*nc | $spt_nm -m ${map_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "          ${fnt_bld}ls mdl*2005*nc | $spt_nm -d ${dst_xmp} -O ${drc_out_xmp} ${fnt_nrm}\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"

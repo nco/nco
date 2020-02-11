@@ -119,8 +119,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.2-alpha07
-@set doc-edition 4.9.2-alpha07
+@set nco-edition 4.9.2-alpha08
+@set doc-edition 4.9.2-alpha08
 @set copyright-years 1995--2020
 @set update-year 2020
 @set update-date 6 February 2020
@@ -13158,7 +13158,7 @@ variable with at least one dimension.
 This is equivalent to a negative stride, e.g., 
 @example 
 @verbatim
-th_rv=th(1 ,:,:).reverse($lon); // {12,11,10,9 }, {16,15,14,13}
+th_rv=th(1,:,:).reverse($lon); // {12,11,10,9 }, {16,15,14,13}
 od_rv=od.reverse($time);        // {38,36,34,32,30,28,26,24,22,20}
 @end verbatim
 @end example

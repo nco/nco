@@ -856,7 +856,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int ilev_id_tpl=ilev_id; /* [id] Interface pressure ID */
   const int lev_id_tpl=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_tpl=ps_id; /* [id] Surface pressure ID */
-  (void)fprintf(stdout,"%s: DEBUG quark1 ps_id_tpl = %d, ps_id_in = NDY, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id);
+  //  (void)fprintf(stdout,"%s: DEBUG quark1 ps_id_tpl = %d, ps_id_in = NDY, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id);
 
   char *ilev_nm_in=NULL; /* [sng] Interface level name */
   char *lev_nm_in;
@@ -1072,7 +1072,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       (void)fprintf(stderr,"%s: ERROR %s Unable to find surface pressure variable required for hybrid grid in input file\n",nco_prg_nm_get(),fnc_nm);
       abort();
     } /* !rcd */
-    (void)fprintf(stdout,"%s: DEBUG quark2 ps_id_tpl = %d, ps_id_in = NDY, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id);
+
     if(flg_grd_hyb_cameam){
       rcd=nco_inq_varid(in_id,"P0",&p0_id);
       ilev_id=NC_MIN_INT;
@@ -1101,7 +1101,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int ilev_id_in=ilev_id; /* [id] Interface pressure ID */
   const int lev_id_in=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_in=ps_id; /* [id] Surface pressure ID */
-  (void)fprintf(stdout,"%s: DEBUG quark3 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   /* Identify all record-dimensions in input file */
   rcd=nco_inq_unlimdims(in_id,&dmn_nbr_rec,(int *)NULL);
@@ -1146,8 +1145,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !dmn_idx */
   } /* !flg_grd_in_hyb */
 
-  (void)fprintf(stdout,"%s: DEBUG quark3.5 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
-
   if(flg_grd_in_prs){
     /* Interrogate plev to obtain plev dimensions */
     rcd=nco_inq_vardimid(in_id,lev_id,&dmn_id_lev_in);
@@ -1178,11 +1175,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  /* Yes. Assume remaining dimension are horizontal spatial dimensions */
 	  char var_nm[NC_MAX_NAME+1L];
 	  (void)nc_inq_varname(in_id,var_idx,var_nm);
-	  (void)fprintf(stdout,"%s: DEBUG quark3.67 var_idx = %d, hrz tpl var_nm = %s\n",nco_prg_nm_get(),var_idx,var_nm);
 	  for(int dmn_idx_hrz=dmn_idx+1;dmn_idx_hrz<dmn_nbr_in;dmn_idx_hrz++){
 	    rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx_hrz],dmn_cnt_in+dmn_idx_hrz);
 	    grd_sz_in*=dmn_cnt_in[dmn_idx_hrz];
-	    (void)fprintf(stdout,"%s: DEBUG quark3.68 dmn_idx_hrz = %d, dmn_cnt_in[%d] = %lu\n",nco_prg_nm_get(),dmn_idx_hrz,dmn_idx_hrz,dmn_cnt_in[dmn_idx_hrz]);
 	  } /* !dmn_idx_hrz */
 	  break;
 	} /* !dmn_idx */
@@ -1191,9 +1186,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     assert(var_idx != var_nbr);
     grd_sz_out=grd_sz_in;
   } /* !flg_grd_in_prs */
-
-  (void)fprintf(stdout,"%s: DEBUG quark3.7 grd_sz_in = %lu, grd_sz_out = %lu\n",nco_prg_nm_get(),grd_sz_in,grd_sz_out);
-  (void)fprintf(stdout,"%s: DEBUG quark3.7 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   double *hyai_in=NULL; /* [frc] Hybrid A coefficient at layer interfaces on input grid */
   double *hyam_in=NULL; /* [frc] Hybrid A coefficient at layer midpoints on input grid */
@@ -1285,8 +1277,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !ps_id_tpl */
   } /* ! */
 
-  (void)fprintf(stdout,"%s: DEBUG quark3.8 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
-
   /* Compare input and output surface pressure fields to determine whether subterranean extrapolation required */
   nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
   flg_add_msv_att=False;
@@ -1317,8 +1307,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       } /* !tm_idx */
     } /* !flg_grd_in_hyb */
     if(flg_grd_out_hyb){
-      (void)fprintf(stdout,"%s: DEBUG quark3.9 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
-
       // fxm: assumes hybrid grid has least/greatest pressure at top/bottom level
       idx_lev_max=lev_nbr_out-1;
       idx_lev_min=0L;
@@ -1330,7 +1318,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	} /* !grd_idx */
       } /* !tm_idx */
     } /* !flg_grd_out_hyb */
-    (void)fprintf(stdout,"%s: DEBUG quark3.95 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     if(flg_grd_in_prs){
       double lev_in_max;
       double lev_in_min;
@@ -1361,7 +1348,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !xtr_mth */
   
   /* Lay-out regridded file */
-  (void)fprintf(stdout,"%s: DEBUG quark3.95 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   /* Use explicitly specified output names, if any, otherwise use template names (either explicitly specified or discovered by fuzzing) */
   if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out;
@@ -1382,14 +1368,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
     /* Horizontal dimensions necessary to define PS variable */
     for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-      (void)fprintf(stdout,"%s: DEBUG quark3.97 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
-      /* 20200205: uninitialized value? */
       if(ps_id_tpl != NC_MIN_INT){
 	rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
       }else{
 	rcd=nco_inq_dimname(in_id,dmn_ids_out[dmn_idx],dmn_nm);
       } /* !ps_id_tpl */
-      (void)fprintf(stdout,"%s: DEBUG quark3.98 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
       if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
       /* 20190602: ECMWF IFS PS variable has degenerate vertical dimension (lev_2). Avoid re-definition */
       if(flg_grd_hyb_ecmwf)
@@ -1489,7 +1472,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,p0_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
-    (void)fprintf(stdout,"%s: DEBUG quark4 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     if(flg_grd_hyb_ecmwf){
       /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
       int dmn_nbr_out_ecmwf=0;
@@ -1499,7 +1481,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  rcd=nco_inq_dimid(out_id,dmn_nm,dmn_ids_out+dmn_nbr_out_ecmwf++);
       } /* !dmn_idx */
       rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_out_ecmwf,dmn_ids_out,&ps_id);
-      (void)fprintf(stdout,"%s: DEBUG quark5 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     } /* !flg_grd_hyb_ecmwf */
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,ps_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
@@ -1511,8 +1492,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(p0_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,p0_id_tpl,p0_id,PCK_ATT_CPY); /* p0 not expected to be in ECMWF grids */
     if(ilev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ilev_id_tpl,ilev_id,PCK_ATT_CPY); else if(ilev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,ilev_id_in,ilev_id,PCK_ATT_CPY);
     if(lev_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,lev_id_tpl,lev_id,PCK_ATT_CPY); else if(lev_id_in != NC_MIN_INT) (void)nco_att_cpy(in_id,out_id,lev_id_in,lev_id,PCK_ATT_CPY);
-    /* 20200205: walter_in.nc breaks here */
-    (void)fprintf(stdout,"%s: DEBUG quark6 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     if(ps_id_tpl != NC_MIN_INT) (void)nco_att_cpy(tpl_id,out_id,ps_id_tpl,ps_id,PCK_ATT_CPY); else (void)nco_att_cpy(in_id,out_id,ps_id_in,ps_id,PCK_ATT_CPY);
   } /* !flg_grd_out_hyb */
 
@@ -1526,8 +1505,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   /* No further access to template file, close it */
   nco_close(tpl_id);
-
-  (void)fprintf(stdout,"%s: DEBUG quark7 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   /* Remove local copy of file */
   if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_tpl);
@@ -1572,8 +1549,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Interpolate %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
     } /* end idx_tbl */
   } /* end dbg */
-
-  (void)fprintf(stdout,"%s: DEBUG quark8 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   /* Pre-allocate dimension ID and cnt/srt space */
   int dmn_nbr_max; /* [nbr] Maximum number of dimensions variable can have in input or output */
@@ -1695,8 +1670,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     } /* !var */
   } /* end idx_tbl */
   
-  (void)fprintf(stdout,"%s: DEBUG quark9 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
-
   /* Free pre-allocated array space */
   if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
   if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
@@ -1708,8 +1681,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   /* Turn-off default filling behavior to enhance efficiency */
   nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
       
-  (void)fprintf(stdout,"%s: DEBUG quark9.7 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
-
   /* Begin data mode */
   (void)nco_enddef(out_id);
 
@@ -1722,15 +1693,12 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     (void)nco_put_var(out_id,ilev_id,ilev_out,crd_typ_out);
     (void)nco_put_var(out_id,lev_id,lev_out,crd_typ_out);
     (void)nco_put_var(out_id,p0_id,&p0_out,crd_typ_out);
-    (void)fprintf(stdout,"%s: DEBUG quark9.9 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
     (void)nco_put_var(out_id,ps_id,ps_out,crd_typ_out);
   } /* !flg_grd_out_hyb */
   
   if(flg_grd_out_prs){
     (void)nco_put_var(out_id,lev_id,lev_out,crd_typ_out);
   } /* !flg_grd_out_prs */
-
-  (void)fprintf(stdout,"%s: DEBUG quark10 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
 
   nco_bool flg_ntp_log=True; /* [flg] Interpolate in log(vertical_coordinate) */
   if(ntp_mth == nco_ntp_lnr) flg_ntp_log=False;
@@ -1825,8 +1793,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     has_lev=False;
     has_tm=False;
     
-    (void)fprintf(stdout,"%s: DEBUG quark12 ps_id_tpl = %d, ps_id_in = %d, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id_in,ps_id);
-
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"Interpolation progress: # means interpolated, ~ means copied\n");
 
 #ifdef __GNUG__
