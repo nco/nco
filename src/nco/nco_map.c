@@ -2184,7 +2184,7 @@ nco_map_chk /* Map-file evaluation */
 	  } /* !err */
 	} /* !msk */
       } /* !idx */
-      if(wrn_nbr > 0) fprintf(stdout,"WARNING non-conservative weighted column-sums (error exceeds tolerance = %0.1e) for %d grid A cells\nNB: conservation WARNINGS may be safely ignored for Grid A cells not completely overlapped with unmasked Grid B cells (e.g., coastlines)\n\n",eps_err,wrn_nbr);
+      if(wrn_nbr > 0) fprintf(stdout,"WARNING non-conservative weighted column-sums (error exceeds tolerance = %0.1e) for %d grid A cells\nNB: conservation WARNINGS may be safely ignored for Grid A cells not completely overlapped with unmasked Grid B cells (e.g., coastlines)\nThese diagnostics attempt to rule-out such false-positive WARNINGs yet are imperfect\nTrue-positive WARNINGs occur in source gridcells that this map under-extracts (error < 0) or over-extracts (error > 0)\n\n",eps_err,wrn_nbr);
     } /* !dbg */
     
     if(nco_dbg_lvl_get() >= nco_dbg_std){
@@ -2230,7 +2230,7 @@ nco_map_chk /* Map-file evaluation */
 	  } /* !err */
 	} /* !msk */
       } /* !idx */
-      if(wrn_nbr > 0) fprintf(stdout,"WARNING non-consistent row-sums (error exceeds tolerance = %0.1e) for %d grid B cells\nNB: consistency WARNINGS may be safely ignored for Grid B cells not completely overlapped with unmasked Grid A cells (e.g., coastlines)\n\n",eps_err,wrn_nbr);
+      if(wrn_nbr > 0) fprintf(stdout,"WARNING non-consistent row-sums (error exceeds tolerance = %0.1e) for %d grid B cells\nNB: consistency WARNINGS may be safely ignored for Grid B cells not completely overlapped with unmasked Grid A cells (e.g., coastlines)\nThese diagnostics attempt to rule-out such false-positive WARNINGs yet are imperfect\nTrue-positive WARNINGs occur in destination gridcells that this map underfills (error < 0) or overfills (error > 0)\n\n",eps_err,wrn_nbr);
     } /* !dbg */
     
     if(nco_dbg_lvl_get() >= nco_dbg_std){
