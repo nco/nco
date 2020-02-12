@@ -1,3 +1,13 @@
+2020-02-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.2-alpha09 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha09: Absinthe';git push
+	git tag -a 4.9.2-alpha09 -m '';git push --tags
+
+	* nco_ntp_vrt() investigating prs->hyb interpolation
+
+	* nco_map_chk() add warning about self-overlapping source grids
+
 2020-02-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.2-alpha08 release procedure:
@@ -10,11 +20,11 @@
 
 2020-02-07  Charlie Zender  <zender@uci.edu>
 
-	* nco_vrt_ntp() pure pressure input may now provide PS for use in interpolating to output hybrid files
+	* nco_ntp_vrt() pure pressure input may now provide PS for use in interpolating to output hybrid files
 
 2020-02-06  Charlie Zender  <zender@uci.edu>
 
-	* nco_vrt_ntp() set horizontal grd_sz_in, grd_sz_out correctly for grd_in_prs
+	* nco_ntp_vrt() set horizontal grd_sz_in, grd_sz_out correctly for grd_in_prs
 
 	* ncremap allow --prs_stt=integral to work with -P mpas
 
@@ -189,7 +199,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.1: Skyglow';git push
 	git tag -a 4.9.1 -m 'autoconf EXTERNL netcdf_mem.h;automake libnco.la;ncclimo --glb_avg;ncpdq flt_dbl;ncremap vrt_ntp fix, nco_con dfl;nco_copy_att() _NCProperties;';git push --tags
 
-	* Always set lev_out_min to fix uninitialized error (identified by valgrind) that caused errorneous behavior in mss_val extrapolation in nco_vrt_ntp() with some compilers (compy, cori defaults)
+	* Always set lev_out_min to fix uninitialized error (identified by valgrind) that caused errorneous behavior in mss_val extrapolation in nco_ntp_vrt() with some compilers (compy, cori defaults)
 
 	* Change ps_sz from double to size_t
 
@@ -197,7 +207,7 @@
 
 2019-12-18  Charlie Zender  <zender@uci.edu>
 
-	* Print WARNING when nco_vrt_ntp() fails to create _FillValue attribute
+	* Print WARNING when nco_ntp_vrt() fails to create _FillValue attribute
 
 	* Document --glb_avg
 

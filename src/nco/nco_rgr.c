@@ -856,7 +856,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   const int ilev_id_tpl=ilev_id; /* [id] Interface pressure ID */
   const int lev_id_tpl=lev_id; /* [id] Midpoint pressure ID */
   const int ps_id_tpl=ps_id; /* [id] Surface pressure ID */
-  //  (void)fprintf(stdout,"%s: DEBUG quark1 ps_id_tpl = %d, ps_id_in = NDY, ps_id = %d\n",nco_prg_nm_get(),ps_id_tpl,ps_id);
 
   char *ilev_nm_in=NULL; /* [sng] Interface level name */
   char *lev_nm_in;
@@ -1090,7 +1089,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if((rcd=nco_inq_varid_flg(in_id,"PS",&ps_id)) == NC_NOERR){
       /* Output file creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
       flg_grd_hyb_cameam=True;
-      if(flg_grd_out_hyb) (void)fprintf(stderr,"%s: INFO %s detects PS (canonical surface pressure name for hybrid grids) in pure-pressure input data file. As their name implies, pure-pressure grid datasets have spatially invariant pressure levels, so PS will be copied directly to the output hybrid-coordinate data file. However, if the vertical grid-file itself contains PS, then that PS will be used and copied to the output hybrid-coordinate data file.\n",nco_prg_nm_get(),fnc_nm);
+      if(flg_grd_out_hyb) (void)fprintf(stderr,"%s: INFO %s detects variable PS (canonical name for spatially varying surface pressure field in hybrid grids) in pure-pressure input data file. Pure-pressure grid datasets have spatially invariant pressure levels, so PS will be copied directly to, and used to construct the pressures of, the output hybrid-coordinate data file. However, if the vertical grid-file itself contains PS, then that PS will be used and copied to the output hybrid-coordinate data file.\n",nco_prg_nm_get(),fnc_nm);
     } /* !ps_id */
   } /* !flg_grd_in_prs */
 
@@ -1371,6 +1370,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       if(ps_id_tpl != NC_MIN_INT){
 	rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
       }else{
+	(void)fprintf(stdout,"%s: DEBUG quark1 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
 	rcd=nco_inq_dimname(in_id,dmn_ids_out[dmn_idx],dmn_nm);
       } /* !ps_id_tpl */
       if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
@@ -1471,6 +1471,9 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd+=nco_def_var(out_id,"P0",crd_typ_out,dmn_nbr_0D,(int *)NULL,&p0_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,p0_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
+    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+      (void)fprintf(stdout,"%s: DEBUG quark2 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
+    } /* !dmn_idx */
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
     if(flg_grd_hyb_ecmwf){
       /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */
