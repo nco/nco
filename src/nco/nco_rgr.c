@@ -1109,11 +1109,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   } /* !dmn_nbr_rec */
 
   if(flg_grd_in_hyb){
+    /* Get hybrid vertical information first */
     rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_in);
-    dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
-    dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
-    if(!dmn_srt) dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long)); /* NB: Only allocate dmn_srt once  */
-    rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_in);
     rcd=nco_inq_vardimid(in_id,hyai_id,&dmn_id_ilev_in);
     if(flg_grd_hyb_cameam) rcd=nco_inq_vardimid(in_id,hyam_id,&dmn_id_lev_in);
     if(flg_grd_hyb_ecmwf) rcd=nco_inq_vardimid(in_id,lev_id,&dmn_id_lev_in);
@@ -1123,25 +1120,6 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     ilev_nm_in=strdup(dmn_nm);
     rcd=nco_inq_dimname(in_id,dmn_id_lev_in,dmn_nm);
     lev_nm_in=strdup(dmn_nm);
-    for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
-      rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
-      /* 20190330: Allow possibility that PS has time dimension > 1 
-	 We want horizontal not temporal dimensions to contribute to grd_sz 
-	 Temporal dimension is usually unlimited 
-	 Only multiply grd_sz by fixed (non-unlimited) dimension sizes
-	 Corner-case exception when PS spatial dimension on unstructured grid is unlimited */
-      for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
-	if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
-	  break; 
-      if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1) grd_sz_in*=dmn_cnt_in[dmn_idx];
-      if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
-	dmn_id_tm_in=dmn_ids_in[dmn_idx];
-	dmn_idx_tm_in=dmn_idx;
-	tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
-	if(tm_nbr_in > 1L) flg_vrt_tm=True;
-      } /* tm_nbr_in > 1 */
-      dmn_srt[dmn_idx]=0L;
-    } /* !dmn_idx */
   } /* !flg_grd_in_hyb */
 
   if(flg_grd_in_prs){
@@ -1150,40 +1128,44 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_inq_dimlen(in_id,dmn_id_lev_in,&lev_nbr_in);
     rcd=nco_inq_dimname(in_id,dmn_id_lev_in,dmn_nm);
     lev_nm_in=strdup(dmn_nm);
-    /* Problem: What is horizontal grid size of pressure grid file?
-       Algorithm: 
-       Examine first multi-dimensional variable that includes plev dimension 
-       Assume horizontal dimensions vary more rapidly than (i.e., follow) plev
-       Compute horizontal grid size accordingly
-       Set output horizontal size to input horizontal size */
-    int var_nbr; /* [nbr] Number of variables in file */
-    int var_idx; /* [idx] Index over variables in file */
-    rcd=nco_inq(in_id,&dmn_nbr_in,&var_nbr,(int *)NULL,(int *)NULL);
-    dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
-    dmn_cnt_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
-    for(var_idx=0;var_idx<var_nbr;var_idx++){
-      rcd=nco_inq_varndims(in_id,var_idx,&dmn_nbr_in);
-      rcd=nco_inq_vardimid(in_id,var_idx,dmn_ids_in);
-      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++)
-	if(dmn_ids_in[dmn_idx] == dmn_id_lev_in)
-	  break;
-      /* Does current variable have lev dimension? */
-      if(dmn_idx < dmn_nbr_in){
-	/* Yes. Do any dimensions vary more rapidly than lev? */
-	if(dmn_idx < dmn_nbr_in-1){
-	  /* Yes. Assume remaining dimension are horizontal spatial dimensions */
-	  char var_nm[NC_MAX_NAME+1L];
-	  (void)nc_inq_varname(in_id,var_idx,var_nm);
-	  for(int dmn_idx_hrz=dmn_idx+1;dmn_idx_hrz<dmn_nbr_in;dmn_idx_hrz++){
-	    rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx_hrz],dmn_cnt_in+dmn_idx_hrz);
-	    grd_sz_in*=dmn_cnt_in[dmn_idx_hrz];
-	  } /* !dmn_idx_hrz */
-	  break;
+
+    /* Define horizontal grid if no PS is provided (i.e., pure-pressure to pure-pressure interpolation) */
+    if(!flg_grd_out_hyb){
+      /* Problem: What is horizontal grid size of pressure grid file?
+	 Algorithm: 
+	 Examine first multi-dimensional variable that includes plev dimension 
+	 Assume horizontal dimensions vary more rapidly than (i.e., follow) plev
+	 Compute horizontal grid size accordingly
+	 Set output horizontal size to input horizontal size */
+      int var_nbr; /* [nbr] Number of variables in file */
+      int var_idx; /* [idx] Index over variables in file */
+      rcd=nco_inq(in_id,&dmn_nbr_in,&var_nbr,(int *)NULL,(int *)NULL);
+      dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+      dmn_cnt_in=(long *)nco_malloc(dmn_nbr_in*sizeof(long));
+      for(var_idx=0;var_idx<var_nbr;var_idx++){
+	rcd=nco_inq_varndims(in_id,var_idx,&dmn_nbr_in);
+	rcd=nco_inq_vardimid(in_id,var_idx,dmn_ids_in);
+	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++)
+	  if(dmn_ids_in[dmn_idx] == dmn_id_lev_in)
+	    break;
+	/* Does current variable have lev dimension? */
+	if(dmn_idx < dmn_nbr_in){
+	  /* Yes. Do any dimensions vary more rapidly than lev? */
+	  if(dmn_idx < dmn_nbr_in-1){
+	    /* Yes. Assume remaining dimension are horizontal spatial dimensions */
+	    char var_nm[NC_MAX_NAME+1L];
+	    (void)nc_inq_varname(in_id,var_idx,var_nm);
+	    for(int dmn_idx_hrz=dmn_idx+1;dmn_idx_hrz<dmn_nbr_in;dmn_idx_hrz++){
+	      rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx_hrz],dmn_cnt_in+dmn_idx_hrz);
+	      grd_sz_in*=dmn_cnt_in[dmn_idx_hrz];
+	    } /* !dmn_idx_hrz */
+	    break;
+	  } /* !dmn_idx */
 	} /* !dmn_idx */
-      } /* !dmn_idx */
-    } /* !var_idx */
-    assert(var_idx != var_nbr);
-    grd_sz_out=grd_sz_in;
+      } /* !var_idx */
+      assert(var_idx != var_nbr);
+      grd_sz_out=grd_sz_in;
+    } /* !flg_grd_out_hyb */
   } /* !flg_grd_in_prs */
 
   double *hyai_in=NULL; /* [frc] Hybrid A coefficient at layer interfaces on input grid */
@@ -1217,17 +1199,58 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       } /* !idx */
     } /* flg_grd_hyb_ecmwf */
     
+  } /* !flg_grd_in_hyb */
+
+  if(flg_grd_in_prs){
+    lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
+    rcd=nco_get_var(in_id,lev_id,lev_in,crd_typ_out);
+  } /* !flg_grd_in_prs */
+  
+  /* Always obtain surface pressure if input or output grid is hybrid */
+  if(flg_grd_in_hyb || flg_grd_out_hyb){
+
+    /* Copy horizontal grid information from input file
+       LHS variables were set above if PS is in template file */
     if(ps_id_tpl == NC_MIN_INT){
-      /* Copy horizontal grid information from input file */
+
+      /* NB: dmn_nbr_in/out in this block refer only to horizontal dimensions necessary to define PS */
+      rcd=nco_inq_varndims(in_id,ps_id,&dmn_nbr_in); /* This is harmlessly repeated for hybrid input files */
+      dmn_ids_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+      dmn_cnt_in=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long));
+      if(!dmn_srt) dmn_srt=(long *)nco_malloc((dmn_nbr_in+1)*sizeof(long)); /* NB: Only allocate dmn_srt once  */
+
+      rcd=nco_inq_vardimid(in_id,ps_id,dmn_ids_in);
+      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_in+dmn_idx);
+	/* 20190330: Allow possibility that PS has time dimension > 1 
+	   We want horizontal not temporal dimensions to contribute to grd_sz 
+	   Temporal dimension is usually unlimited 
+	   Only multiply grd_sz by fixed (non-unlimited) dimension sizes
+	   Corner-case exception when PS spatial dimension on unstructured grid is unlimited */
+	for(rec_idx=0;rec_idx<dmn_nbr_rec;rec_idx++)
+	  if(dmn_ids_in[dmn_idx] == dmn_ids_rec[rec_idx])
+	    break; 
+	if(rec_idx == dmn_nbr_rec || dmn_nbr_in == 1) grd_sz_in*=dmn_cnt_in[dmn_idx];
+	if(rec_idx != dmn_nbr_rec && dmn_nbr_in > 1 && dmn_cnt_in[dmn_idx] > 1L){
+	  dmn_id_tm_in=dmn_ids_in[dmn_idx];
+	  dmn_idx_tm_in=dmn_idx;
+	  tm_nbr_in=dmn_cnt_in[dmn_idx_tm_in];
+	  if(tm_nbr_in > 1L) flg_vrt_tm=True;
+	} /* tm_nbr_in > 1 */
+	dmn_srt[dmn_idx]=0L;
+      } /* !dmn_idx */
+
+      /* Given all input PS information, define output PS information */
       dmn_nbr_ps=dmn_nbr_out=dmn_nbr_in;
       dmn_ids_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
       dmn_cnt_out=(long *)nco_malloc((dmn_nbr_out+1)*sizeof(long));
+      /* fxm: next line works for hyb_in and is buggy for prs_in */
       memcpy(dmn_ids_out,dmn_ids_in,dmn_nbr_in*sizeof(int));
       memcpy(dmn_cnt_out,dmn_cnt_in,dmn_nbr_in*sizeof(long));
       grd_sz_out=grd_sz_in;
       tm_nbr_out=tm_nbr_in;
     } /* !ps_id_tpl */
-    
+
     /* Timestep sequencing
        NB: tm_nbr_??? variables count timesteps in vertical grid definitions
        These are not necessarily the same as the number of timesteps in either file
@@ -1243,16 +1266,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     /* Sanity checks */
     assert(grd_sz_in == grd_sz_out);
     assert(tm_nbr_in == tm_nbr_out);
-    
-  } /* !flg_grd_in_hyb */
 
-  if(flg_grd_in_prs){
-    lev_in=(double *)nco_malloc(lev_nbr_in*nco_typ_lng(var_typ_rgr));
-    rcd=nco_get_var(in_id,lev_id,lev_in,crd_typ_out);
-  } /* !flg_grd_in_prs */
-  
-  /* Always obtain surface pressure if input or output grid is hybrid */
-  if(flg_grd_in_hyb || flg_grd_out_hyb){
     ps_in=(double *)nco_malloc_dbg(tm_nbr_in*grd_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() ps_in value buffer");
 
     /* Surface pressure comes from either hybrid vertical grid-files, hybrid data files, or pressure data files that provide surface pressure */
@@ -1348,6 +1362,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   
   /* Lay-out regridded file */
 
+  (void)fprintf(stdout,"%s: DEBUG quark1 dmn_nbr_out = %d, dmn_nbr_ps = %d\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps);
+
   /* Use explicitly specified output names, if any, otherwise use template names (either explicitly specified or discovered by fuzzing) */
   if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out;
   if(rgr->ilev_nm_out){
@@ -1366,13 +1382,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev_out);
     rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
     /* Horizontal dimensions necessary to define PS variable */
+    /* 20200212: fxm uninitialised value(s) */
+    (void)fprintf(stdout,"%s: DEBUG quark2 dmn_nbr_out = %d, dmn_nbr_ps = %d\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps);
     for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+      /* 20200212: fxm Go by dimension name not ID in this block */
       if(ps_id_tpl != NC_MIN_INT){
 	rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
       }else{
-	(void)fprintf(stdout,"%s: DEBUG quark1 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
-	rcd=nco_inq_dimname(in_id,dmn_ids_out[dmn_idx],dmn_nm);
+	/* 20200212: fxm Invalid read of size 4 */
+	rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
+	rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_out+dmn_idx);
+	(void)fprintf(stdout,"%s: DEBUG quark3 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_in[%d] = %d, dmn_cnt_out[%d] = %lu, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_in[dmn_idx],dmn_idx,dmn_cnt_out[dmn_idx],dmn_nm);
       } /* !ps_id_tpl */
+      (void)fprintf(stdout,"%s: DEBUG quark4 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_in[%d] = %d, dmn_cnt_out[%d] = %lu, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_in[dmn_idx],dmn_idx,dmn_cnt_out[dmn_idx],dmn_nm);
       if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
       /* 20190602: ECMWF IFS PS variable has degenerate vertical dimension (lev_2). Avoid re-definition */
       if(flg_grd_hyb_ecmwf)
@@ -1472,7 +1494,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,p0_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
     for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-      (void)fprintf(stdout,"%s: DEBUG quark2 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
+      rcd=nco_inq_dimname(out_id,dmn_ids_out[dmn_idx],dmn_nm);
+      (void)fprintf(stdout,"%s: DEBUG quark5 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
     } /* !dmn_idx */
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
     if(flg_grd_hyb_ecmwf){

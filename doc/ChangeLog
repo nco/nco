@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha09: Absinthe';git push
 	git tag -a 4.9.2-alpha09 -m '';git push --tags
 
+	* nco_ntp_vrt() unify treatment of PS in hyb_in and prs_in files
+
 	* nco_ntp_vrt() investigating prs->hyb interpolation
 
 	* nco_map_chk() add warning about self-overlapping source grids
