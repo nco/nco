@@ -1362,7 +1362,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
   
   /* Lay-out regridded file */
 
-  (void)fprintf(stdout,"%s: DEBUG quark1 dmn_nbr_out = %d, dmn_nbr_ps = %d\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps);
+  //(void)fprintf(stdout,"%s: DEBUG quark1 dmn_nbr_out = %d, dmn_nbr_ps = %d\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps);
 
   /* Use explicitly specified output names, if any, otherwise use template names (either explicitly specified or discovered by fuzzing) */
   if(rgr->lev_nm_out) lev_nm_out=rgr->lev_nm_out;
@@ -1382,19 +1382,13 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd=nco_def_dim(out_id,ilev_nm_out,ilev_nbr_out,&dmn_id_ilev_out);
     rcd=nco_def_dim(out_id,lev_nm_out,lev_nbr_out,&dmn_id_lev_out);
     /* Horizontal dimensions necessary to define PS variable */
-    /* 20200212: fxm uninitialised value(s) */
-    (void)fprintf(stdout,"%s: DEBUG quark2 dmn_nbr_out = %d, dmn_nbr_ps = %d\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps);
     for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-      /* 20200212: fxm Go by dimension name not ID in this block */
       if(ps_id_tpl != NC_MIN_INT){
 	rcd=nco_inq_dimname(tpl_id,dmn_ids_out[dmn_idx],dmn_nm);
       }else{
-	/* 20200212: fxm Invalid read of size 4 */
 	rcd=nco_inq_dimname(in_id,dmn_ids_in[dmn_idx],dmn_nm);
 	rcd=nco_inq_dimlen(in_id,dmn_ids_in[dmn_idx],dmn_cnt_out+dmn_idx);
-	(void)fprintf(stdout,"%s: DEBUG quark3 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_in[%d] = %d, dmn_cnt_out[%d] = %lu, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_in[dmn_idx],dmn_idx,dmn_cnt_out[dmn_idx],dmn_nm);
       } /* !ps_id_tpl */
-      (void)fprintf(stdout,"%s: DEBUG quark4 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_in[%d] = %d, dmn_cnt_out[%d] = %lu, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_in[dmn_idx],dmn_idx,dmn_cnt_out[dmn_idx],dmn_nm);
       if(flg_grd_hyb_cameam) rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_ids_out+dmn_idx);
       /* 20190602: ECMWF IFS PS variable has degenerate vertical dimension (lev_2). Avoid re-definition */
       if(flg_grd_hyb_ecmwf)
@@ -1493,10 +1487,10 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     rcd+=nco_def_var(out_id,"P0",crd_typ_out,dmn_nbr_0D,(int *)NULL,&p0_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,p0_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
-    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-      rcd=nco_inq_dimname(out_id,dmn_ids_out[dmn_idx],dmn_nm);
-      (void)fprintf(stdout,"%s: DEBUG quark5 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
-    } /* !dmn_idx */
+    //    for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+    //      rcd=nco_inq_dimname(out_id,dmn_ids_out[dmn_idx],dmn_nm);
+    //      (void)fprintf(stdout,"%s: DEBUG quark5 dmn_nbr_out = %d, dmn_nbr_ps = %d, dmn_idx = %d, dmn_ids_out[%d] = %d, dmn_nm = %s\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps,dmn_idx,dmn_idx,dmn_ids_out[dmn_idx],dmn_nm);
+    //    } /* !dmn_idx */
     if(flg_grd_hyb_cameam) rcd+=nco_def_var(out_id,"PS",crd_typ_out,dmn_nbr_ps,dmn_ids_out,&ps_id);
     if(flg_grd_hyb_ecmwf){
       /* Remove degenerate ECMWF vertical dimension so that output PS has dmn_nbr_ps-1 not dmn_nbr_ps dimensions */

@@ -2,9 +2,11 @@
 
 	* NCO 4.9.2-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha09: Absinthe';git push
-	git tag -a 4.9.2-alpha09 -m 'ncremap unify [prs,hyb]->hyb, chk ovr area, swap';git push --tags
+	git tag -a 4.9.2-alpha09 -m 'ncremap unify [prs,hyb]->hyb, fix toowzh prs->prs bug; chk ovr area -> swap';git push --tags
 
-	* ncremap, ncclimo update paths to e3sm_unified_1.3.0
+	* nco_ntp_vrt() verify toowzh bug fixed and that prs->prs ntp is _exact_
+
+	* ncremap, ncclimo, acme1, rhea update paths to e3sm_unified_1.3.0
 
 	* nco_sph_plg_area() Quiet area messages for isoceles and skinny triangles
 
