@@ -988,7 +988,7 @@ int *pl_cnt_vrl_ret){
 
 
         /* swap args around and try again */
-        if(!pl_vrl &&   (bGenuine==False && lret !=1 || bBadArea ) )
+        if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
         {
 
           flg_snp_to=1;
