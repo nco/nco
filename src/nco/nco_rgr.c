@@ -1090,6 +1090,11 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       /* Output file creation procedure discriminates between input surface pressure dimensioned as CAM/EAM vs. ECMWF */
       flg_grd_hyb_cameam=True;
       if(flg_grd_out_hyb) (void)fprintf(stderr,"%s: INFO %s detects variable PS (canonical name for spatially varying surface pressure field in hybrid grids) in pure-pressure input data file. Pure-pressure grid datasets have spatially invariant pressure levels, so PS will be copied directly to, and used to construct the pressures of, the output hybrid-coordinate data file. However, if the vertical grid-file itself contains PS, then that PS will be used and copied to the output hybrid-coordinate data file.\n",nco_prg_nm_get(),fnc_nm);
+    }else{
+      if(flg_grd_out_hyb && (ps_id_tpl == NC_MIN_INT)){
+	(void)fprintf(stderr,"%s: ERROR %s does not find variable PS (canonical name for spatially varying surface pressure field in hybrid grids) in pure-pressure input data file or in vertical grid-file for hybrid-pressure output. PS must be present in at least one of these files in order to construct the output hybrid-coordinate pressures.\nHINT: Append a valid PS to the inpud data file or vertical grid-file.\n",nco_prg_nm_get(),fnc_nm);
+	nco_exit(EXIT_FAILURE);
+      } /* !ps_id_tpl */
     } /* !ps_id */
   } /* !flg_grd_in_prs */
 
