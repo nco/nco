@@ -5689,8 +5689,8 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  ngl_ltr_b=ngl_a;
 	  ngl_ltr_c=ngl_b;
 	} /* !flg_sas_b */
-	if(flg_sas_ndl) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %li triangle %d is needle-shaped triangle with a side that exceeds semi-perimeter = %0.16e. Eschew L'Huilier's formula for spherical excess to avoid NaN. Could use SAS formula with canonical central interior arc c = %0.16e.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,prm_smi,ngl_ltr_c);
-	if(flg_sas_isc) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %li triangle %d is nearly flat isoceles-shaped triangle. Canonical arcs a and b differ by %0.16e. Eschew L'Huilier's formula for spherical excess to avoid low precision. Could use SAS formula.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,fabs(ngl_ltr_a-ngl_ltr_b));
+	if(flg_sas_ndl && (nco_dbg_lvl_get() >= nco_dbg_scl)) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %li triangle %d is needle-shaped triangle with a side that exceeds semi-perimeter = %0.16e. Eschew L'Huilier's formula for spherical excess to avoid NaN. Could use SAS formula with canonical central interior arc c = %0.16e.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,prm_smi,ngl_ltr_c);
+	if(flg_sas_isc && (nco_dbg_lvl_get() >= nco_dbg_scl)) (void)fprintf(stdout,"%s: INFO %s reports col_idx = %li triangle %d is nearly flat isoceles-shaped triangle. Canonical arcs a and b differ by %0.16e. Eschew L'Huilier's formula for spherical excess to avoid low precision. Could use SAS formula.\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,fabs(ngl_ltr_a-ngl_ltr_b));
 	/* Determine canonical surface angle C
 	   To find any angle given three spherical triangle sides, Wikipedia opines: 
 	   "The cosine rule may be used to give the angles A, B, and C but, to avoid ambiguities, the half-angle formulae are preferred."
@@ -5712,15 +5712,15 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	xcs_sph_hlf_tan=tan_hlf_a_tan_hlf_b*sin(ngl_sfc_ltr_C)/(1.0+tan_hlf_a_tan_hlf_b*cos(ngl_sfc_ltr_C));
 	assert(fabs(xcs_sph_hlf_tan) != M_PI_2);
 	xcs_sph=2.0*atan(xcs_sph_hlf_tan);
-	(void)fprintf(stdout,"%s: INFO Triangle used SAS area formula for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Spherical excess = %0.16e.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c,xcs_sph);
-
+	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO SAS area formula for polygon col_idx = %li, triangle %d, vertices A, B, C at (lat,lon) [dgr] = (%0.16f, %0.16f), (%0.16f, %0.16f), (%0.16f, %0.16f). Interior angles/great circle arcs (a, b, c) [rdn] = (%0.16e, %0.16e, %0.16e). Spherical excess = %0.16e.\n",nco_prg_nm_get(),col_idx,tri_idx,lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c],ngl_a,ngl_b,ngl_c,xcs_sph);
 	// Single-line version
 	// xcs_sph=2.0*atan(tan(0.5*ngl_ltr_a)*tan(0.5*ngl_ltr_b)*sin(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))/(1.0+tan_hlf_a_tan_hlf_b*cos(2.0*acos(sqrt(sin(prm_smi)*sin(prm_smi-ngl_c)/(sin(ngl_a)*sin(ngl_b)))))));
 	/* Above procedure for problematic needle-shaped and isoceles-shaped triangles degrades statistics
 	   For ne30pg2, ne120pg2 -> cmip, setting area = 0.0 _greatly_ improves area statistics (Why?)
 	   Set spherical excess to zero for problematic needle-shaped and isoceles-shaped triangles */
 	/* fxm: Make zeroing skinny needles/isoceles-shaped triangle-areas a command-line option? */
-	xcs_sph=0.0;
+	if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO Setting SAS area = 0.0\n",nco_prg_nm_get());
+	  xcs_sph=0.0;
 	/* !flg_sas */
       }else{
 	double xcs_sph_qtr_tan; /* [frc] Tangent of one-quarter the spherical excess */

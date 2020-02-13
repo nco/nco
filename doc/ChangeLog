@@ -1,14 +1,12 @@
 2019-02-13 Henry Butowsky  <henryb@hush.com>
 
-	* IMPORTANT fix to nco_ply_lst_mk_vrl_sph()
-	if the area of the overlap is more than the area of the src cell or dst cell then the
-	overlap is recalculated swapping src cell for dst cell
-	
-2020-02-12  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.9.2-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha09: Absinthe';git push
-	git tag -a 4.9.2-alpha09 -m '';git push --tags
+	git tag -a 4.9.2-alpha09 -m 'ncremap unify [prs,hyb]->hyb, chk ovr area, swap';git push --tags
+
+	* nco_ply_lst_mk_vrl_sph() if overlap area exceeds src or dst cell area then swap src and dst, recalculate
+
+2020-02-12  Charlie Zender  <zender@uci.edu>
 
 	* nco_ntp_vrt() unify treatment of PS in hyb_in and prs_in files
 
