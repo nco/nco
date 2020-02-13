@@ -901,6 +901,18 @@ int *pl_cnt_vrl_ret){
             pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
 
         }
+
+        if(pl_vrl)
+        {
+          /* add area nb also sets wrapping */
+          nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
+
+          /* REMEMBER  poly_rll area uses minmax limits AND NOT VERTEX's */
+          nco_poly_area_add(pl_vrl);
+        }
+
+
+
       }
 
       if(pl_typ== poly_sph ) {
@@ -911,6 +923,7 @@ int *pl_cnt_vrl_ret){
         /* [flg] set by nco_sph_intersect_pre - if True it means that scan hase detected a genuine intersection so
          * so no need to do further processing */
         nco_bool bGenuine=False;
+        nco_bool bBadArea=False;
         char in_sng[VP_MAX];
         char out_sng[VP_MAX];
 
@@ -955,8 +968,27 @@ int *pl_cnt_vrl_ret){
 
         }
 
+        if(pl_vrl)
+        {
+          double min_area= ( pl_out->area < pl_lst_in[idx]->area ? pl_out->area : pl_lst_in[idx]->area  );
+          /* add area nb also sets wrapping */
+          nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
+
+          /* REMEMBER  poly_rll area uses minmax limits AND NOT VERTEX's */
+          nco_poly_area_add(pl_vrl);
+
+          if( isnan( pl_vrl->area) || pl_vrl->area == 0.0 || (pl_vrl->area - min_area)/ min_area  > 1.0e-04 ) {
+
+            pl_vrl = nco_poly_free(pl_vrl);
+            bBadArea=True;
+          }
+
+        }
+
+
+
         /* swap args around and try again */
-        if(!pl_vrl && bGenuine==False && lret !=1  )
+        if(!pl_vrl &&   (bGenuine==False && lret !=1 || bBadArea ) )
         {
 
           flg_snp_to=1;
@@ -993,7 +1025,11 @@ int *pl_cnt_vrl_ret){
 
           }
 
-
+          if(pl_vrl)
+          {
+            nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
+            nco_poly_area_add(pl_vrl);
+          }
 
         }
 
@@ -1027,11 +1063,6 @@ int *pl_cnt_vrl_ret){
 
 
 
-        /* add area nb also sets wrapping */
-        nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
-
-        /* REMEMBER  poly_rll area uses minmax limits AND NOT VERTEX's */
-        nco_poly_area_add(pl_vrl);
 
         /* shp not needed */
         nco_poly_shp_free(pl_vrl);
