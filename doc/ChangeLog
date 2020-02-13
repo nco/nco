@@ -1,8 +1,14 @@
-2019-02-13 Henry Butowsky  <henryb@hush.com>
+2020-02-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.2-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha09: Absinthe';git push
 	git tag -a 4.9.2-alpha09 -m 'ncremap unify [prs,hyb]->hyb, chk ovr area, swap';git push --tags
+
+	* ncremap, ncclimo update paths to e3sm_unified_1.3.0
+
+	* nco_sph_plg_area() Quiet area messages for isoceles and skinny triangles
+
+2020-02-13 Henry Butowsky  <henryb@hush.com>
 
 	* nco_ply_lst_mk_vrl_sph() if overlap area exceeds src or dst cell area then swap src and dst, recalculate
 
