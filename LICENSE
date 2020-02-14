@@ -6,7 +6,7 @@ Copyright information is in the file COPYRIGHT.
 
 You are permitted to link NCO with the HDF, netCDF, OPeNDAP, and UDUnits
 libraries and to distribute the resulting executables under the terms 
-of the BSD License, but in addition obeying the extra stipulations of the 
+of the BSD, but in addition obeying the extra stipulations of the 
 HDF, netCDF, OPeNDAP, and UDUnits licenses.
    
 This program is distributed in the hope that it will be useful,

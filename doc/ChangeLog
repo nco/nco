@@ -1,8 +1,8 @@
 2020-02-14  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.9.2-alpha10 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha10: Recently and Nearby';git push
-	git tag -a 4.9.2-alpha10 -m 'BSD license';git push --tags
+	* NCO 4.9.2-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.2-beta01: Recently and Nearby';git push
+	git tag -a 4.9.2-beta01 -m 'Re-license from GPL3 to BSD;ncks chk_map, lz4.cdl;ncpdq -U -v lat fix;ncremap prs->hyb, crv axis/crd atts, fv2fv opt, ne1024pg2, NaN area, fl_fmt/hdr_pad, sml_crc;';git push --tags
 
 	* Change license from GPL3 to BSD 3-clause
 

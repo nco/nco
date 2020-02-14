@@ -7,7 +7,21 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-Version 4.9.2 contains regridding fixes and features.
+We have re-licensed NCO source code from GPL3 to 3-Clause BSD
+starting with Version 4.9.2. Why? To encourage wider adoption
+and support. Without institutional (i.e., federal agency) support,
+NCO development would crawl to a standstill. We are acceding
+to the preferences of our occasional sponsors (DOE, NASA, NSF)
+for permissive OpenSource licenses.
+
+Version 4.9.2 contains many regridding fixes and features: 
+Improved adoption has made the NCO weight-generator more robust.
+Its signature strengths are speed and ultra-high resolution support.
+It can create ~3 km global maps from in under an hour to and from
+some (not all) grids including FV physics grids (ne1024pg2), MPAS
+grids, and RLL grids. Problems remain, though ncremap also supports
+ESMF and TempestRemap so take your pick. Moreover the map checker,
+ncks --chk_map, produces improved metrics with fewer false alarms.
 
 Work on NCO 4.9.3 has commenced and will improve NCO weight-generator  
 accuracy, reduce vertical interpolation memory use, and supply more
@@ -25,11 +39,23 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncremap --chk_map checks for and reports NaN weights.
+A. ncremap now supports vertical interpolation of pure-pressure
+   files to hybrid grids when the surface PS is included in the
+   pure-pressure data-file rather than the vertical grid-file.
+   Moreover, the PS may be time-varying. This feature permits
+   full decoupling of PS from the vertical grid-file which allows
+   for more elegant manipulation of vertical grid-files.
+   ncremap --vrt=vrt.nc ncep.nc hybrid.nc
+   http://nco.sf.net/nco.html#vrt
+
+A. ncks --chk_map checks for and reports NaN weights.
    Previously chk_map generally ignored NaNs in the weight array.
    The format of the analysis report has also been improved, and gives
    the locations of extrema, i.e., max/min for weights and errors.
-   ncremap --chk_map map.nc
+   The checker takes better account of masks and regional grids and
+   so now reports fewer false-positive map errors.
+   ncks --chk_map map.nc
+   ncks -D 2 --chk_map map.nc # Increased verbosity
    http://nco.sf.net/nco.html#chk_map
 
 A. ncremap and ncclimo both now export HDF5_USE_FILE_LOCKING='FALSE'
@@ -78,15 +104,6 @@ A. ncremap now passes all NCO options through to ncks.
    Previously these options, such as file formats were not passed
    and ncks used defaults instead.
    There is no workaround. Solution is to upgrade.
-
-A. ncremap now computes correct weights for "PG" ("physics
-   grids", a type of FV grid) grids mapped to/from RLL grids.
-   Previously ncremap produced correct weights when PG grids were
-   mapped to/from unstructured grids but not RLL grids.
-   RLL<->PG2 maps were found to have triggered a bug in the weight
-   generator where fxm
-   ncremap --grd_src=pg2.nc --grd_out=180x360.nc --map=map.nc
-   http://nco.sf.net/nco.html#ncremap
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
