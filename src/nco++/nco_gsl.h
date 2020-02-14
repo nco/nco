@@ -12,7 +12,7 @@
    The NCO modifications that provide missing value support are, in addition, 
    Copyright (C) 2013--present Charlie Zender
    License: 3-Clause BSD License
-   See http://www.gnu.org/copyleft/gpl.html for full license text
+   See https://opensource.org/licenses/BSD-3-Clause for full license text
 
    Original GSL files, copyright holders, and authors of functions below are:
    gsl/fit/linear.c: Copyright (C) 2000, 2007 Brian Gough */

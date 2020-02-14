@@ -1,5 +1,11 @@
 2020-02-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.3-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha01: VD';git push
+	git tag -a 4.9.3-alpha01 -m 'Functionally identical to 4.9.2';git push --tags
+
+	* Change some malingering gpl.html URLs to BSD3 URLs
+
 	* NCO 4.9.2 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2: Delirium';git push
 	git tag -a 4.9.2 -m 'Re-license from GPL3 to BSD;ncks chk_map, lz4.cdl;ncpdq -U -v lat fix;ncremap prs->hyb, crv axis/crd atts, fv2fv opt, ne1024pg2, NaN area, fl_fmt/hdr_pad, sml_crc;';git push --tags

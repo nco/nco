@@ -5,7 +5,7 @@
 
 # Copyright (C) 2003--present Charlie Zender
 # License: 3-Clause BSD License
-# See http://www.gnu.org/copyleft/gpl.html for full license text
+# See https://opensource.org/licenses/BSD-3-Clause for full license text
 
 # Usage:
 # autoconf
@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[4.9.2],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.9.3-alpha01],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT

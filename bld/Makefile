@@ -5,7 +5,7 @@
 
 # Copyright (C) 1994--present Charlie Zender
 # License: 3-Clause BSD License
-# See http://www.gnu.org/copyleft/gpl.html for full license text
+# See https://opensource.org/licenses/BSD-3-Clause for full license text
 
 # Quickie test copies:
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld

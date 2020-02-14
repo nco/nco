@@ -705,7 +705,7 @@ NCO for Debian over the years.
 <dt>The <a href="https://admin.fedoraproject.org/pkgdb/package/nco">Fedora NCO</a> RPMs are usually up-to-date so that &lsquo;<tt>sudo dnf install nco</tt>&rsquo; installs a recent version. 
 RHEL NCO RPMs are documented at the Fedora site.
 OpenSUSE keeps NCO RPMs <a href="http://software.opensuse.org/package/nco">here</a>.
-A comprehensive list of pre-built RPMs for many OS's is <a href="http://rpmfind.net/linux/rpm2html/search.php?query=nco">here</a>.
+A comprehensive list of pre-built RPMs for many OS&rsquo;s is <a href="http://rpmfind.net/linux/rpm2html/search.php?query=nco">here</a>.
 Volunteers have updated and maintained fairly up-to-date NCO packages in Fedora since it was added by Ed Hill in about 2004.
 Thanks to Patrice Dumas, Ed Hill, Orion Poplawski, and Manfred Schwarb for packaging NCO RPMs over the years.
 Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL and CentOS.
@@ -744,7 +744,7 @@ The most up-to-date executables are probably those in the tarball below. Those u
   <a href="#bld_macports">dependencies</a> for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>). Maintained by NCO Project.</li>
 <li><a href="src/nco-4.0.7_x86_10.6.dmg">nco-4.0.7_x86_10.6.dmg</a> (<!--#fsize file="src/nco-4.0.7_x86_10.6.dmg"-->): For Mac OS 10.6 (last updated <!--#flastmod file="src/nco-4.0.7_x86_10.6.dmg"-->). Maintained by Chad Cantwell.</li>
 <li><a href="http://fink.sf.net">Fink</a> packages for <a href="http://fink.sf.net/pdb/package.php/nco">NCO</a>: Currently NCO 3.9.5. Maintained by Alexander Hansen.</li> 
-<li><a href="http://brew.sh">Homebrew</a> packages for <a href="https://github.com/Homebrew/homebrew-science/nco.rb">NCO</a>: Currently NCO 4.6.X. Install with &lsquo;<tt>sudo brew install nco</tt>&rsquo;. Maintained by Ian Lancaster (Alejandro Soto's instructions <a href="http://alejandrosoto.net/blog/2014/01/22/setting-up-my-mac-for-scientific-research">here</a>).</li> 
+<li><a href="http://brew.sh">Homebrew</a> packages for <a href="https://github.com/Homebrew/homebrew-science/nco.rb">NCO</a>: Currently NCO 4.6.X. Install with &lsquo;<tt>sudo brew install nco</tt>&rsquo;. Maintained by Ian Lancaster (Alejandro Soto&rsquo;s instructions <a href="http://alejandrosoto.net/blog/2014/01/22/setting-up-my-mac-for-scientific-research">here</a>).</li> 
 <li><a href="http://trac.macosforge.org/projects/macports/wiki">MacPorts</a> infrastructure for <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">NCO</a>: <a href="http://svn.macports.org/repository/macports/trunk/dports/science/nco">Portfile</a>: Currently NCO 4.6.6. Install with &lsquo;<tt>sudo port install nco</tt>&rsquo;. Maintained by Takeshi Enomoto.</li>
 </ul>
 
@@ -768,7 +768,7 @@ To build NCO from source yourself using MSVC with CMake, please see example in <
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.9.2.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.9.2.windows.mvs.exe">nco-4.9.2.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.2.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.2.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+<li><a href="src/nco-4.9.1.windows.mvs.exe">nco-4.9.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.1.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.1.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="visual"></a> <!-- http://nco.sf.net#visual -->
@@ -782,9 +782,9 @@ To build NCO from source yourself using MSVC with CMake, please see example in <
 <ul>
 <!-- Copy files from http://glace.ess.uci.edu
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
-/usr/bin/scp /home/pvicente/windows_setup/nco-4.9.2.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
+/usr/bin/scp /home/pvicente/windows_setup/nco-4.9.1.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.9.2.windows.mvs.exe">nco-4.9.2.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.2.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.2.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+<li><a href="src/nco-4.9.1.windows.mvs.exe">nco-4.9.1.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.1.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.1.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
@@ -991,7 +991,7 @@ One difference between running a "tagged" release
 tagged release operators will print a valid version number (e.g.,
 <tt>4.9.2</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
-The development version simply places today's date in place of the
+The development version simply places today&rsquo;s date in place of the
 version.
 Once the autotools builds are working more robustly, the confusion
 over versions should largely disappear.
@@ -1284,7 +1284,7 @@ LAM installs easily with our own testing environment (latest Ubuntu).
   only one such &ldquo;large&rdquo; variable and it is the last to be defined.
   If the file is an input dataset (i.e., NCO <i>reads</i> it) written
   by PnetCDF then the input data are fine (because PnetCDF writes CDF5
-  through a different mechanism than serial programs like NCO's
+  through a different mechanism than serial programs like NCO&rsquo;s
   writer).
   And if the CDF5 dataset was originally written by any netCDF version
   4.6.1 or greater, then it is unaffected by this bug.

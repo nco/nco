@@ -1,29 +1,15 @@
 $Header$ -*-text-*-
 
-Happy Valentine's Day! Love, the netCDF Operators NCO version 4.9.2.
+The netCDF Operators NCO version 4.9.3 are woke.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 
-We have re-licensed NCO source code from GPL3 to 3-Clause BSD
-starting with Version 4.9.2. Why? To encourage wider adoption
-and support. Without institutional (i.e., federal agency) support,
-NCO development would crawl to a standstill. We are acceding
-to the preferences of our occasional sponsors (DOE, NASA, NSF)
-for permissive OpenSource licenses.
+Version 4.9.3 contains many regridding fixes and features: 
 
-Version 4.9.2 contains many regridding fixes and features: 
-Improved adoption has made the NCO weight-generator more robust.
-Its signature strengths are speed and ultra-high resolution support.
-It can create ~3 km global maps from in under an hour to and from
-some (not all) grids including FV physics grids (ne1024pg2), MPAS
-grids, and RLL grids. Problems remain, though ncremap also supports
-ESMF and TempestRemap so take your pick. Moreover the map checker,
-ncks --chk_map, produces improved metrics with fewer false alarms.
-
-Work on NCO 4.9.3 has commenced and will improve NCO weight-generator  
+Work on NCO 4.9.4 has commenced and will improve NCO weight-generator  
 accuracy, reduce vertical interpolation memory use, and supply more
 accurate weight generation options for rectangular lat-lon grids.
 
@@ -48,63 +34,9 @@ A. ncremap now supports vertical interpolation of pure-pressure
    ncremap --vrt=vrt.nc ncep.nc hybrid.nc
    http://nco.sf.net/nco.html#vrt
 
-B. ncks --chk_map checks for and reports NaN weights.
-   Previously chk_map generally ignored NaNs in the weight array.
-   The format of the analysis report has also been improved, and gives
-   the locations of extrema, i.e., max/min for weights and errors.
-   The checker takes better account of masks and regional grids and
-   so now reports fewer false-positive map errors.
-   ncks --chk_map map.nc
-   ncks -D 2 --chk_map map.nc # Increased verbosity
-   http://nco.sf.net/nco.html#chk_map
-
-C. ncremap and ncclimo both now export HDF5_USE_FILE_LOCKING='FALSE'
-   unless that environment variable already exists. This proves
-   useful at preventing mysterious crashes, especially in batch mode.
-   Let us know if this setting causes problems for your workflow.
-   http://nco.sf.net/nco.html#HDF5_USE_FILE_LOCKING
-
-D. NCO's weight generator can now read unstructured SCRIP gridfiles
-   created by TempestRemap utilities that do not include the
-   (supposedly standard) "grid_dims" dimension when converting Exodus
-   files to SCRIP. The unstructured dimension size is used instead of
-   the contents of the "grid_dims" variable. 
-   
-E. ncremap --devnull option controls whether internal (and sometimes
-   noisy) output from NCO weight-generator is sent to terminal or to
-   /dev/null. The default is to send internal messages to /dev/null.
-   This only works with the NCO weight-generator (--alg_typ=nco).
-   ncremap --devnull=Yes ... # Send internal messages to /dev/null
-   ncremap --devnull=No  ... #  Send internal messages to terminal
-   http://nco.sf.net/nco.html#devnull
-   http://nco.sf.net/nco.html#ncremap
-
-F. ncpdq -U now always unpacks all variables, including packed
-   grid variables (like "lat"). Previously it would not unpack 
-   variables with specially reserved grid names ("lat", "lon", etc.).
-   Thanks to Susan Rennie for reporting this issue.  
-   This fixes a bug introduced in NCO 4.7.7. Solution is to use
-   earlier versions of NCO or to upgrade.
-   http://nco.sf.net/nco.html#ncpdq
-
 BUG FIXES:
 
-A. ncks --chk_map statistics no longer scrambled.
-   Statistics of "normal" global->global conservative maps are
-   unaffected. Some other types of map-files are.
-   There is no workaround. Solution is to upgrade.
-   http://nco.sf.net/nco.html#chk_map
-
-B. ncremap --alg_typ=fv2fv now implements the same TempestRemap
-   options as --alg_typ=fv2fv_stt. The previous fv2fv options
-   were not actually as described. Solution is to upgrade.
-   http://nco.sf.net/nco.html#fv2fv
-   http://nco.sf.net/nco.html#fv2fv_stt
-
-C. ncremap now passes all NCO options through to ncks.
-   Previously these options, such as file formats were not passed
-   and ncks used defaults instead.
-   There is no workaround. Solution is to upgrade.
+A. ncks --chk_map
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -112,7 +44,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.9.2 built/tested under
+   These problems occur with NCO 4.9.3 built/tested under
    MacOS 10.15.2 with netCDF 4.7.3 on HDF5 1.10.2 and with
    Linux with netCDF 4.7.4-development (20200102) on HDF5 1.8.19.
 
