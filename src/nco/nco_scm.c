@@ -5,7 +5,7 @@
 /* Copyright (C) 1995--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
-   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+   3-Clause BSD License with exceptions described in the LICENSE file */
 
 #include "nco_scm.h" /* Software configuration management */
 
@@ -149,7 +149,7 @@ nco_cpy_prn(void) /* [fnc] Print copyright notice */
 {
   /* Purpose: Print copyright notice */
   (void)fprintf(stderr,"Copyright (C) 1995--2020 Charlie Zender\n");
-  (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\nYou may redistribute and/or modify NCO under the terms of the\nGNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file\nGPL: http://www.gnu.org/copyleft/gpl.html\nLICENSE: https://github.com/nco/nco/tree/master/LICENSE\n");
+  (void)fprintf(stdout,"This program is part of NCO, the netCDF Operators.\nNCO is free software and comes with a BIG FAT KISS and ABSOLUTELY NO WARRANTY\nYou may redistribute and/or modify NCO under the terms of the\n3-Clause BSD License with exceptions described in the LICENSE file\nBSD: https://opensource.org/licenses/BSD-3-Clause\nLICENSE: https://github.com/nco/nco/tree/master/LICENSE\n");
 } /* end copyright_prn() */
 
 void

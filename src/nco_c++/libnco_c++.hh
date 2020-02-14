@@ -5,7 +5,7 @@
 /* Copyright (C) 1995--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
-   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+   3-Clause BSD License with exceptions described in the LICENSE file */
 
 /* libnco_c++.hh headers depend only on system headers
    Thus libnco_c++.a may be built independently of any other libraries

@@ -18787,7 +18787,7 @@ We hope to remove this limitation in the future.
 @item --version (@code{--version}, @code{--vrs}, @code{--config}, @code{--configuration}, @code{--cnf})
 This switch (which takes no argument) causes the operator to print
 its version and configuration.
-This includes the copyright notice, @acronym{URL}s to the @acronym{GPL}
+This includes the copyright notice, @acronym{URL}s to the @acronym{BSD}
 and @acronym{NCO} license, directories from which the @acronym{NCO}
 scripts and binaries are running, and the locations of any separate 
 executables that may be used by the script.
@@ -23858,7 +23858,7 @@ Please let us know if this capability is important to you.
 @item --version (@code{--version}, @code{--vrs}, @code{--config}, @code{--configuration}, @code{--cnf})
 This switch (which takes no argument) causes the operator to print
 its version and configuration.
-This includes the copyright notice, @acronym{URL}s to the @acronym{GPL}
+This includes the copyright notice, @acronym{URL}s to the @acronym{BSD}
 and @acronym{NCO} license, directories from which the @acronym{NCO}
 scripts and binaries are running, and the locations of any separate 
 executables that may be used by the script.
@@ -27302,9 +27302,12 @@ CMake build-engine.
 @cindex Jerome Mao
 @item Jerome Mao
 Multi-argument parsing.
+@cindex Joseph O'Rourke
+@item Joseph O'Rourke
+Routines from his book ``Computational Geometry in C''.
 @cindex Russ Rew
 @item Russ Rew
-Advice on @acronym{NCO} structural algorithms
+Advice on @acronym{NCO} structural algorithms.
 @cindex Brian Mays
 @item Brian Mays
 Original packaging for Debian @acronym{GNU}/Linux, @command{nroff} man pages.

@@ -1,7 +1,7 @@
 Charlie Zender wrote most of NCO and holds all NCO copyrights. 
-He licenses NCO under the GNU GPL3 (see file COPYING).
+He places NCO under the BSD 3-Clause license (see file COPYING).
 Advance permission must be sought from him for any usage or 
-(re-)distribution of NCO code not compliant with the GPL. 
+(re-)distribution of NCO code not compliant with the BSD.
 Contact him at <surname at uci dot edu>. His surname is zender.
 
 All other NCO contributors either explicitly assigned their copyrights 

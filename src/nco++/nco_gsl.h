@@ -6,11 +6,12 @@
    that the NCO version (prefixed with nco_) accepts a missing value argument which,
    if non-NULL, indicates data to be "skipped", i.e., treated as missing. 
 
-   GSL and NCO are both distributed under the GPL3 license.
+   GSL is distributed under the GPL3 license.
+   NCO distributed under the BSD license.
    The GSL code is copyright by its respective authors.
    The NCO modifications that provide missing value support are, in addition, 
    Copyright (C) 2013--present Charlie Zender
-   License: GNU General Public License (GPL) Version 3
+   License: 3-Clause BSD License
    See http://www.gnu.org/copyleft/gpl.html for full license text
 
    Original GSL files, copyright holders, and authors of functions below are:

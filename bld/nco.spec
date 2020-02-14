@@ -6,7 +6,7 @@ Version:        4.9.2
 Release:        1%{?dist}
 Summary:        Programs that manipulate netCDF files
 Group:          Applications/Engineering
-License:        GPL3
+License:        BSD
 URL:            http://nco.sf.net/
 
 # Obtain NCO version 4.9.2-1 tar.gz from Sourceforge using CVS:

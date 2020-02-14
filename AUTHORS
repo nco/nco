@@ -6,7 +6,7 @@ Henry Butowsky
      'ncra' and 'ncwa'.  Type conversion for arithmetic.  Migration to
      netCDF3 API. 'ncap2' parser, lexer, GSL-support, and I/O.
      Multislabbing algorithm.  Variable wildcarding.  Numerous hacks.
-     'ncap2' language.
+     'ncap2' language. Mesh intersection algorithms.
 Rorik Peterson
      Original autotool build support.  Long command-line options.
      Original UDUnits support.  Debianization.  Numerous bug-fixes.
@@ -18,6 +18,8 @@ Harry Mangalam
      Benchmarking.  OPeNDAP configuration.
 Pedro Vicente
      Windows Visual Studio support.  netCDF4 groups.
+Joseph O'Rourke
+     Computational Geometry routines
 Russ Rew
      Advice on NCO structural algorithms
 Brian Mays

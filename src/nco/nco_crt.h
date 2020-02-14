@@ -7,7 +7,7 @@
    Copyright (C) 2018--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
-   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+   3-Clause BSD License with exceptions described in the LICENSE file */
 
 /* This copyright statement and license terms for the original code were agreed
    to by the original author, Joseph O'Rourke, on 20190517:

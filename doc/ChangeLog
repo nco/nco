@@ -1,8 +1,12 @@
-2020-02-13  Charlie Zender  <zender@uci.edu>
+2020-02-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.2-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-alpha10: Recently and Nearby';git push
-	git tag -a 4.9.2-alpha10 -m '';git push --tags
+	git tag -a 4.9.2-alpha10 -m 'BSD license';git push --tags
+
+	* Change license from GPL3 to BSD 3-clause
+
+2020-02-13  Charlie Zender  <zender@uci.edu>
 
 	* nco_ntp_vrt() add ERROR and HINT when prs->hyb lacks PS
 

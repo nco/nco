@@ -9,7 +9,7 @@ Volatile files are created automatically (e.g., by invoking
 Top-level files:
 AUTHORS		Whom to praise and blame
 CITATION	How and why to cite NCO in your work
-COPYING		GNU General Public License GPL3
+COPYING		3-Clause BSD License
 COPYRIGHT	Copyright information
 INSTALL		Boilerplate instructions for ./configure
 LICENSE		License details

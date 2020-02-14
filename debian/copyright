@@ -40,30 +40,32 @@ On January 26, 2010, Charlie Zender removed John Burkhardt from this
 copyright file after removing his gamma function code (nco_gmm.c)
 from the source. 
 
+On May 17, 2019, Charlie Zender changed the license of the computational
+geometry routines (then in nco_crt.[ch], nco_sph.[ch]) to BSD with the
+permission of the original author, Joseph O'Rourke.
+
+On February 14, 2020, Charlie Zender changed all licenses of NCO source
+code from GPL3 to BSD 3-clause.
+
 NCO is copyright (C) 1995--2011 Charlie Zender
 Portions of the following NCO files are copyright by others:
 nco_getopt.c: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler
 nco_getopt.h: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler
 
-   License: GNU General Public License (GPL) Version 3
-   The full license text is at http://www.gnu.org/copyleft/gpl.html 
+   License: 3-Clause BSD License
+   The full license text is at https://opensource.org/licenses/BSD-3-Clause
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
-   As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the HDF, netCDF, OPeNDAP, and UDUnits
+   You are permitted to link NCO with the HDF, netCDF, OPeNDAP, and UDUnits
    libraries and to distribute the resulting executables under the terms 
-   of the GPL, but in addition obeying the extra stipulations of the 
+   of the BSD, but in addition obeying the extra stipulations of the 
    HDF, netCDF, OPeNDAP, and UDUnits licenses.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   3-Clause BSD License for more details.
    
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301, USA.
-
    The original author of this software, Charlie Zender, seeks to improve
    it with your suggestions, contributions, bug-reports, and patches.
    Please contact the NCO project at http://nco.sf.net or write to
@@ -72,5 +74,3 @@ nco_getopt.h: Copyright 1997, 2000, 2001, 2002, Benjamin Sittler
    University of California, Irvine
    Irvine, CA 92697-3100
 
-On Debian GNU/Linux systems, the complete text of the GNU General
-Public License can be found in "/usr/share/common-licenses/GPL".

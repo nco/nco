@@ -4,7 +4,7 @@
 # Newer autoconf convention names this file configure.ac, formerly configure.in
 
 # Copyright (C) 2003--present Charlie Zender
-# License: GNU General Public License (GPL) Version 3
+# License: 3-Clause BSD License
 # See http://www.gnu.org/copyleft/gpl.html for full license text
 
 # Usage:
