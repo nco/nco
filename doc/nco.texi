@@ -119,11 +119,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.2-beta01
-@set doc-edition 4.9.2-beta01
+@set nco-edition 4.9.2
+@set doc-edition 4.9.2
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 6 February 2020
+@set update-date 14 February 2020
 @set update-month February 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17893,7 +17893,6 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @node ncclimo netCDF Climatology Generator, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Reference Manual
 @section @command{ncclimo} netCDF Climatology Generator
 @cindex climo
-@cindex @acronym{HDF5_USE_FILE_LOCKING}
 @cindex climatology
 @findex ncclimo
 
@@ -17936,11 +17935,16 @@ fixes in the @acronym{NCO} binaries, not to improve @command{ncclimo}.
 One may download and give executable permissions to the latest source 
 at @url{https://github.com/nco/nco/tree/master/data/ncclimo} without
 re-installing the rest of @acronym{NCO}.}. 
-Be aware that, as of February 2020 and @acronym{NCO} @w{version 4.9.2}, 
-the @command{ncremap} and @command{ncclimo} scripts export the
-environment variable @samp{HDF5_USE_FILE_LOCKING='FALSE'} to forestall
-mysterious issues that can cause scripts involving netCDF4 files to
-fail. 
+@html
+<a name="HDF5_USE_FILE_LOCKING"></a> <!-- http://nco.sf.net/nco.html#HDF5_USE_FILE_LOCKING -->
+@end html
+@cindex @code{HDF5_USE_FILE_LOCKING}
+As of @acronym{NCO} 4.9.2 (February, 2020), the @command{ncclimo}
+and @command{ncremap} scripts export the environment variable
+@code{HDF5_USE_FILE_LOCKING} with a value of @code{FALSE}.
+This prevents failures of these operators that can occur with some
+versions of the underlying HDF library that attempt to lock files
+on file systems that cannot or do not support it.
 
 There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
 @samp{-i}, and @samp{-o})) to generate climatologies, and many more
@@ -23323,7 +23327,6 @@ and then applies the weights (i.e., regrids).
 @cindex @acronym{ERWG}
 @cindex TempestRemap
 @cindex @acronym{NCL}
-@cindex @acronym{HDF5_USE_FILE_LOCKING}
 @cindex Conda
 Unlike the rest of @acronym{NCO}, @command{ncremap} and
 @command{ncclimo} are shell scripts, not compiled binaries@footnote{ 
@@ -23334,11 +23337,16 @@ fixes in the @acronym{NCO} binaries, not to improve @command{ncremap}.
 One may download and give executable permissions to the latest source 
 at @url{https://github.com/nco/nco/tree/master/data/ncremap} without
 re-installing the rest of @acronym{NCO}.}. 
-Be aware that, as of February 2020 and @acronym{NCO} @w{version 4.9.2}, 
-the @command{ncremap} and @command{ncclimo} scripts export the
-environment variable @samp{HDF5_USE_FILE_LOCKING='FALSE'} to forestall
-mysterious issues that can cause scripts involving netCDF4 files to
-fail. 
+@html
+<a name="HDF5_USE_FILE_LOCKING"></a> <!-- http://nco.sf.net/nco.html#HDF5_USE_FILE_LOCKING -->
+@end html
+@cindex @code{HDF5_USE_FILE_LOCKING}
+As of @acronym{NCO} 4.9.2 (February, 2020), the @command{ncclimo}
+and @command{ncremap} scripts export the environment variable
+@code{HDF5_USE_FILE_LOCKING} with a value of @code{FALSE}.
+This prevents failures of these operators that can occur with some
+versions of the underlying HDF library that attempt to lock files
+on file systems that cannot or do not support it.
 @command{ncremap} wraps the underlying regridder (@command{ncks}) and
 external executables to produce a friendly interface to regridding.
 Without any external dependencies, @command{ncremap} applies weights
@@ -23904,6 +23912,21 @@ not execute these commands.
 If @math{@var{dbg_lvl} > 2}, @command{ncremap} prints the diagnostic
 information, executes all commands, and passes-through the debugging
 level to the regridder (@command{ncks}) for additional diagnostics.
+
+@html
+<a name="devnull"></a> <!-- http://nco.sf.net/nco.html#devnull -->
+@end html
+@cindex @code{--devnull}
+@cindex @code{--dev_nll}
+@cindex @code{--dvn_flg}
+@item @code{--devnull=@var{dvn_flg}} (@code{--devnull}, @code{--dev_nll}, @code{--dvn_flg})
+The @var{dvn_flg} controls whether @command{ncremap} suppresses
+regridder output or sends it to @code{/dev/null}.
+The default value of @var{dvn_flg} is ``Yes'', so that
+@command{ncremap} prints little output to the terminal.
+Set @var{dvn_flg} to ``No'' to allow the internal regridder
+executables (mainly @command{ncks}) to send their output to the
+terminal.
 
 @html
 <a name="dpt"></a> <!-- http://nco.sf.net/nco.html#dpt -->

@@ -1,5 +1,15 @@
 2020-02-14  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.2 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.2: Delirium';git push
+	git tag -a 4.9.2 -m 'Re-license from GPL3 to BSD;ncks chk_map, lz4.cdl;ncpdq -U -v lat fix;ncremap prs->hyb, crv axis/crd atts, fv2fv opt, ne1024pg2, NaN area, fl_fmt/hdr_pad, sml_crc;';git push --tags
+
+	* Shrink homepage logo, fix banner
+
+	* ncremap/ncclimo document HDF5_FILE_LOCKING
+
+	* ncremap document --devnull
+
 	* NCO 4.9.2-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.2-beta01: Recently and Nearby';git push
 	git tag -a 4.9.2-beta01 -m 'Re-license from GPL3 to BSD;ncks chk_map, lz4.cdl;ncpdq -U -v lat fix;ncremap prs->hyb, crv axis/crd atts, fv2fv opt, ne1024pg2, NaN area, fl_fmt/hdr_pad, sml_crc;';git push --tags
