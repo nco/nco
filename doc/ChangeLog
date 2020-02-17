@@ -1,8 +1,12 @@
-2020-02-14  Charlie Zender  <zender@uci.edu>
+2020-02-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha02: VD';git push
 	git tag -a 4.9.3-alpha02 -m '';git push --tags
+
+	* ncks nco_map_fix() add --map_fix option to fix self-overlaps
+
+2020-02-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha01: VD';git push

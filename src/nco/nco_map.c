@@ -1784,9 +1784,10 @@ nco_map_frac_b_clc /* Compute frac_b as row sums of the weight matrix S */
  var_sct *var_frac_b)
 {
   /* Purpose: Compute frac_b as row sums of the weight matrix S */
-  int idx;
   int idx_row;
-  int sz;
+
+  size_t idx;
+  size_t sz;
 
   (void)cast_void_nctype(NC_DOUBLE,&(var_S->val));
   (void)cast_void_nctype(NC_INT,&(var_row->val));
@@ -1795,11 +1796,11 @@ nco_map_frac_b_clc /* Compute frac_b as row sums of the weight matrix S */
   /* Set computed frac_b to zero */
   memset(var_frac_b->val.dp,0,var_frac_b->sz*nco_typ_lng(var_frac_b->type));
 
-  /* Loop through weights and rows */
-  for(idx=0;idx<var_S->sz;idx++){
-    /* var_row is one-based */
-    if((idx_row=var_row->val.ip[idx]-1) >= var_frac_b->sz)
-      continue;
+  /* Perform row-sum of weights for each row */
+  sz=var_S->sz;
+  for(idx=0;idx<sz;idx++){
+    /* var_row is one-based, guard against bogus row-indices, add weight to appropriate row */
+    if((idx_row=var_row->val.ip[idx]-1) >= var_frac_b->sz) continue;
     var_frac_b->val.dp[idx_row]+=var_S->val.dp[idx];
   } /* !idx */
 
@@ -1822,8 +1823,8 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
   /* Purpose: Compute frac_a as area_b-weighted column sums of the weight matrix S normalized by area_a */
 
   char fnc_nm[]="nco_map_frac_a_clc()";
-  int idx;
-  int sz;
+  size_t idx;
+  size_t sz;
   int idx_row;
   int idx_col;
 
@@ -1837,18 +1838,21 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
   /* Set frac_a to zero */
   memset(var_frac_a->val.dp,0,var_frac_a->sz*nco_typ_lng(var_frac_a->type));
   
-  for(idx=0;idx<var_S->sz;idx++){
-    /* var_row and var_col are one-based */
+  sz=var_S->sz;
+  for(idx=0;idx<sz;idx++){
+    /* var_row and var_dol are one-based, guard against bogus row-indices, add area_b-weighted weight to appropriate column */
     idx_row=var_row->val.ip[idx]-1L;
     idx_col=var_col->val.ip[idx]-1L;
     if(idx_row >= var_area_b->sz || idx_col >= var_area_a->sz) continue;
     var_frac_a->val.dp[idx_col]+=var_S->val.dp[idx]*var_area_b->val.dp[idx_row];
   } /* !idx */
 
-  /* Normalize result by area_a */
-  for(idx=0;idx<var_frac_a->sz;idx++){
+  /* Sum of area_b-weighted weights should equal area_a (for complete overlap)
+     Normalize result by area_a to create a metric whose ideal value is 1.0 */
+  sz=var_frac_a->sz;
+  for(idx=0;idx<sz;idx++){
     if(var_area_a->val.dp[idx] != 0.0) var_frac_a->val.dp[idx]/=var_area_a->val.dp[idx]; else
-      fprintf(stdout,"WARNING area_a = %g for grid A cell %lu: Unable to normalize area_b-weighted column sum to compute frac_a for this gridcell\n",var_area_a->val.dp[idx],idx+1UL);
+      (void)fprintf(stdout,"WARNING area_a = %g for grid A cell %lu: Unable to normalize area_b-weighted column sum to compute frac_a for this gridcell\n",var_area_a->val.dp[idx],idx+1UL);
   } /* !idx */
 
   (void)cast_nctype_void(NC_DOUBLE,&(var_S->val));
@@ -1864,7 +1868,8 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
 nco_bool
 nco_map_chk /* Map-file evaluation */
 (const char *fl_in,
- nco_bool flg_area_wgt)
+ nco_bool flg_area_wgt,
+ nco_bool flg_map_fix)
 {
   /* Purpose: Perform high-level evaluation of map-file */
 
@@ -1925,7 +1930,7 @@ nco_map_chk /* Map-file evaluation */
   area_wgt_a=flg_area_wgt;
   area_wgt_b=flg_area_wgt;
 
-  rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
+  if(flg_map_fix) rcd=nco_fl_open(fl_in,NC_WRITE,&bfr_sz_hnt,&in_id); else rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Read all dimensions from file */
@@ -2173,10 +2178,11 @@ nco_map_chk /* Map-file evaluation */
     if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
       
     if(nco_dbg_lvl_get() >= nco_dbg_std){
+      sz=var_frac_a->sz;
       val=var_frac_a->val.dp;
       int wrn_nbr=0; // [nbr] Number of warnings
       const double eps_err=1.0e-8;
-      for(idx=0;idx<var_frac_a->sz;idx++){
+      for(idx=0;idx<sz;idx++){
 	if(!has_mask_a || (has_mask_a && var_mask_a->val.ip[idx] == 1)){
 	  if((val[idx]-1.0 > eps_err) || (grid_b_tiles_sphere && (fabs(val[idx]-1.0) > eps_err))){
 	    if(nco_dbg_lvl_get() >= nco_dbg_fl) fprintf(stdout,"WARNING conservation = %0.16f = 1.0%s%0.1e for grid A cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
@@ -2221,10 +2227,11 @@ nco_map_chk /* Map-file evaluation */
     if(frac_max_cmp-1.0 > eps_max_wrn || (grid_a_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_b) or min(frac_b) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\n%sWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn,(frac_max_cmp-1.0 > eps_max_wrn) ? "\tFor example, a source grid that overlaps itself will usually result in frac_b >> 1\n" : "");
 
     if(nco_dbg_lvl_get() >= nco_dbg_std){
+      sz=var_frac_b->sz;
       val=var_frac_b->val.dp;
       int wrn_nbr=0; // [nbr] Number of warnings
       const double eps_err=1.0e-8;
-      for(idx=0;idx<var_frac_b->sz;idx++){
+      for(idx=0;idx<sz;idx++){
 	if(!has_mask_b || (has_mask_b && var_mask_b->val.ip[idx] == 1)){
 	  if((val[idx]-1.0 > eps_err) || (grid_a_tiles_sphere && (fabs(val[idx]-1.0) > eps_err))){
 	    if(nco_dbg_lvl_get() >= nco_dbg_fl) fprintf(stdout,"WARNING consistency = %0.16f = 1.0%s%0.1e for grid B cell [%lu,%+g,%+g]\n",val[idx],val[idx] > 1 ? "+" : "-",fabs(1.0-val[idx]),idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
@@ -2234,6 +2241,38 @@ nco_map_chk /* Map-file evaluation */
       } /* !idx */
       if(wrn_nbr > 0) fprintf(stdout,"WARNING non-consistent row-sums (error exceeds tolerance = %0.1e) for %d of %lu grid B cells\nNB: consistency WARNINGS may be safely ignored for Grid B cells not completely overlapped with unmasked Grid A cells (e.g., coastlines)\nThese diagnostics attempt to rule-out such false-positive WARNINGs yet are imperfect\nTrue-positive WARNINGs occur in destination gridcells that this map underfills (error < 0) or overfills (error > 0)\n\n",eps_err,wrn_nbr,var_area_b->sz);
     } /* !dbg */
+
+    if(flg_map_fix){
+      size_t idx_row;
+      size_t idx_crr_row;
+      size_t sz_row;
+      sz_row=var_frac_b->sz;
+      val=var_frac_b->val.dp;
+      int wrn_nbr=0; // [nbr] Number of warnings
+      const double eps_err=1.0e-8;
+      for(idx_row=0;idx_row<sz_row;idx_row++){
+	if(!has_mask_b || (has_mask_b && var_mask_b->val.ip[idx_row] == 1)){
+	  if((val[idx_row]-1.0 > eps_err) || (grid_a_tiles_sphere && (fabs(val[idx_row]-1.0) > eps_err))){
+	    wrn_nbr++;
+	    (void)fprintf(stdout,"FIXING consistency = %0.16f = 1.0%s%0.1e for grid B cell [%lu,%+g,%+g]\n",val[idx_row],val[idx_row] > 1 ? "+" : "-",fabs(1.0-val[idx_row]),idx_row+1UL,var_yc_b->val.dp[idx_row],var_xc_b->val.dp[idx_row]);
+	    /* Renormalize all weights that contribute to this inconsistent frac_b */
+	    sz=var_S->sz;
+	    for(idx=0;idx<sz;idx++){
+	      if((idx_crr_row=var_row->val.ip[idx]-1) == idx_row) var_S->val.dp[idx]/=val[idx_row];
+	    } /* !idx */
+	  } /* !err */
+	} /* !msk */
+      } /* !idx_row */
+      if(wrn_nbr > 0){
+	/* Compute frac_b as row sums with re-normalized weights */
+	nco_map_frac_b_clc(var_S,var_row,var_frac_b);
+	(void)fprintf(stdout,"%s: INFO Re-writing S and frac_b arrays to fix %d self-overlaps\n",nco_prg_nm_get(),wrn_nbr);
+	rcd=nco_put_var(in_id,var_frac_b->id,var_frac_b->val.vp,(nc_type)NC_DOUBLE);
+	rcd=nco_put_var(in_id,var_S->id,var_S->val.vp,(nc_type)NC_DOUBLE);
+      }else{ /* !wrn_nbr */
+	(void)fprintf(stdout,"%s: INFO User requested map fix but %s found no self-overlaps to fix\n",nco_prg_nm_get(),fnc_nm);
+      } /* !wrn_nbr */
+    } /* !flg_map_fix */
     
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine consistency extrema:\n");
