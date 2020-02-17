@@ -751,7 +751,7 @@ void gsl_cls::gsl_ini_stats(void){
 
     
 { f_unn lcl_arr[]={ f_unn(gsl_stats_char_quantile_from_sorted_data), f_unn(gsl_stats_short_quantile_from_sorted_data), f_unn(gsl_stats_int_quantile_from_sorted_data), f_unn(gsl_stats_float_quantile_from_sorted_data), f_unn(gsl_stats_quantile_from_sorted_data), f_unn(gsl_stats_uchar_quantile_from_sorted_data), f_unn(gsl_stats_ushort_quantile_from_sorted_data), f_unn(gsl_stats_uint_quantile_from_sorted_data), f_unn(gsl_stats_long_quantile_from_sorted_data),f_unn(gsl_stats_ulong_quantile_from_sorted_data) };   
-  gpr_vtr.push_back(gpr_cls("gsl_stats_quantile_from_sorted_data",ARR2VTR(lcl_arr),hnd_fnc_stat1));
+  gpr_vtr.push_back(gpr_cls("gsl_stats_quantile_from_sorted_data",ARR2VTR(lcl_arr),hnd_fnc_stat2));
 
   }
 
