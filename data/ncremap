@@ -1326,7 +1326,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alg_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
-	cmd_mwf="ncremap ${wgt_sng} --alg_typ=${alg_typ} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" ${hnt_src_sng} ${hnt_dst_sng} --map=\"${map_nm}\""
+	cmd_mwf="ncremap ${wgt_sng} --alg_typ=${alg_typ} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" ${hnt_src_sng} ${hnt_dst_sng} --map_fl=\"${map_nm}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_mwf}
 	fi # !dbg
@@ -1382,7 +1382,7 @@ if [ "${prc_typ}" = 'mwf' ]; then
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    printf "MWF: Create ${alg_typ} map ${map_nm}\n"
 	fi # !vrb_lvl
-	cmd_fwm="ncremap ${wgt_sng} ${a2o_sng} --alg_typ=${alg_typ} --grd_src=\"${grd_dst}\" --grd_dst=\"${grd_src}\" ${hnt_src_sng} ${hnt_dst_sng} --map=\"${map_nm}\""
+	cmd_fwm="ncremap ${wgt_sng} ${a2o_sng} --alg_typ=${alg_typ} --grd_src=\"${grd_dst}\" --grd_dst=\"${grd_src}\" ${hnt_src_sng} ${hnt_dst_sng} --map_fl=\"${map_nm}\""
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_fwm}
 	fi # !dbg
@@ -2205,7 +2205,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	fi # !hnt_dst_fl
 	cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
     elif [ "${wgt_typ}" = 'nco' ]; then 
-	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
+	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [ "${a2o_flg}" = 'Yes' ]; then 
@@ -2408,7 +2408,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			printf "Mesh-File: ${msh_fl}\n"
 		    fi # !msh_opt
 		fi # !vrb_lvl
-		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
+		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
 	    elif [ "${wgt_typ}" = 'tempest' ]; then 
 		if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		    printf "Mesh-File: ${msh_fl}\n"
@@ -2773,7 +2773,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 	    if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		printf "Map/Wgt  : ${map_fl}\n"
 	    fi # !vrb_lvl
-	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map=\"${map_fl}\" \"${fl_in[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
+	    cmd_rgr[${fl_idx}]="${cmd_mpi[${fl_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${nco_var_rgr} ${nco_var_lst} ${nco_msk_out} ${rgr_opt} --map_fl=\"${map_fl}\" \"${fl_in[${fl_idx}]}\" \"${fl_out[${fl_idx}]}\""
 	    if [ ${dbg_lvl} -ge 1 ]; then
 		echo ${cmd_rgr[${fl_idx}]}
 	    fi # !dbg

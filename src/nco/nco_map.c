@@ -1869,7 +1869,7 @@ nco_bool
 nco_map_chk /* Map-file evaluation */
 (const char *fl_in,
  nco_bool flg_area_wgt,
- nco_bool flg_map_fix)
+ nco_bool flg_fix_map)
 {
   /* Purpose: Perform high-level evaluation of map-file */
 
@@ -1930,7 +1930,7 @@ nco_map_chk /* Map-file evaluation */
   area_wgt_a=flg_area_wgt;
   area_wgt_b=flg_area_wgt;
 
-  if(flg_map_fix) rcd=nco_fl_open(fl_in,NC_WRITE,&bfr_sz_hnt,&in_id); else rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
+  if(flg_fix_map) rcd=nco_fl_open(fl_in,NC_WRITE,&bfr_sz_hnt,&in_id); else rcd=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
   /* Read all dimensions from file */
@@ -2242,7 +2242,7 @@ nco_map_chk /* Map-file evaluation */
       if(wrn_nbr > 0) fprintf(stdout,"WARNING non-consistent row-sums (error exceeds tolerance = %0.1e) for %d of %lu grid B cells\nNB: consistency WARNINGS may be safely ignored for Grid B cells not completely overlapped with unmasked Grid A cells (e.g., coastlines)\nThese diagnostics attempt to rule-out such false-positive WARNINGs yet are imperfect\nTrue-positive WARNINGs occur in destination gridcells that this map underfills (error < 0) or overfills (error > 0)\n\n",eps_err,wrn_nbr,var_area_b->sz);
     } /* !dbg */
 
-    if(flg_map_fix){
+    if(flg_fix_map){
       size_t idx_row;
       size_t idx_crr_row;
       size_t sz_row;
@@ -2264,15 +2264,18 @@ nco_map_chk /* Map-file evaluation */
 	} /* !msk */
       } /* !idx_row */
       if(wrn_nbr > 0){
+	/* Compute frac_a as area_b-weighted column sums/area_a with renormalized weights */
+	nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
 	/* Compute frac_b as row sums with re-normalized weights */
 	nco_map_frac_b_clc(var_S,var_row,var_frac_b);
-	(void)fprintf(stdout,"%s: INFO Re-writing S and frac_b arrays to fix %d self-overlaps\n",nco_prg_nm_get(),wrn_nbr);
+	(void)fprintf(stdout,"%s: INFO Re-writing S, frac_a, and frac_b arrays to fix %d (presumed) self-overlaps detected via frac_b >> 1.0 search\n",nco_prg_nm_get(),wrn_nbr);
+	rcd=nco_put_var(in_id,var_frac_a->id,var_frac_a->val.vp,(nc_type)NC_DOUBLE);
 	rcd=nco_put_var(in_id,var_frac_b->id,var_frac_b->val.vp,(nc_type)NC_DOUBLE);
 	rcd=nco_put_var(in_id,var_S->id,var_S->val.vp,(nc_type)NC_DOUBLE);
       }else{ /* !wrn_nbr */
-	(void)fprintf(stdout,"%s: INFO User requested map fix but %s found no self-overlaps to fix\n",nco_prg_nm_get(),fnc_nm);
+	(void)fprintf(stdout,"%s: INFO User requested map fix with --fix_map but %s finds no frac_b >> 1.0 gridcells that would indicate potential self-overlaps in grid_a\n",nco_prg_nm_get(),fnc_nm);
       } /* !wrn_nbr */
-    } /* !flg_map_fix */
+    } /* !flg_fix_map */
     
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       fprintf(stdout,"Commands to examine consistency extrema:\n");
