@@ -1,7 +1,7 @@
 2020-02-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha02: VD';git push
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha02: Fuji Rolls';git push
 	git tag -a 4.9.3-alpha02 -m '';git push --tags
 
 	* Recompute and store new frac_a as well as frac_b when	re-normalizing weights
