@@ -2268,7 +2268,7 @@ nco_map_chk /* Map-file evaluation */
 	nco_map_frac_a_clc(var_S,var_row,var_col,var_area_a,var_area_b,var_frac_a);
 	/* Compute frac_b as row sums with re-normalized weights */
 	nco_map_frac_b_clc(var_S,var_row,var_frac_b);
-	(void)fprintf(stdout,"%s: INFO Re-writing S, frac_a, and frac_b arrays to fix %d (presumed) self-overlaps detected via frac_b >> 1.0 search\n",nco_prg_nm_get(),wrn_nbr);
+	(void)fprintf(stdout,"%s: INFO Re-writing S, frac_a, and frac_b arrays to fix %d (presumed) self-overlaps detected via frac_b >> 1.0 search\nNB: The \"fixed\" file should no longer report any frac_b WARNINGs because the weights have been normalized to prevent this. However, the fixed file is expected to produce frac_a WARNINGs because weights of the self-overlapping grid_a cells were reduced to compensate for the self-overlap. So long as all affected grid_a cells contain valid data the net result should be correct. The best solution is to remove/re-bin the self-overlapping grid_a cells before remapping.\n",nco_prg_nm_get(),wrn_nbr);
 	rcd=nco_put_var(in_id,var_frac_a->id,var_frac_a->val.vp,(nc_type)NC_DOUBLE);
 	rcd=nco_put_var(in_id,var_frac_b->id,var_frac_b->val.vp,(nc_type)NC_DOUBLE);
 	rcd=nco_put_var(in_id,var_S->id,var_S->val.vp,(nc_type)NC_DOUBLE);

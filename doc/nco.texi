@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.3-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 14 February 2020
+@set update-date 20 February 2020
 @set update-month February 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3143,11 +3143,17 @@ move and copy them with @code{mv} and @code{cp}) it makes sense to audit it for 
 protect it from malicious users trying to exploit security gaps.
 Securing @acronym{NCO} against malicious attacks is multi-faceted, and
 involves careful memory management and auditing of user-input.
-As of version 4.7.3 (March, 2018), @acronym{NCO} implements a whitelist
-of characters allowed in user-specified filenames.
-The purpose of the whitelist is to prevent malicious users from injecting
+In versions 4.7.3--4.7.6 (March-September, 2018), @acronym{NCO}
+implements a whitelist of characters allowed in user-specified
+filenames.
+This whitelist proved unpopular mainly because it proscribed certain
+character combinations that could appear in automatically generated
+files, and was therefore turned-off in 4.7.7 and following versions.
+The whitelist is described here for posterity and for possible
+improvement and re-introduction:
+The purpose of the whitelist was to prevent malicious users from injecting
 filename strings that could be used for attacks. 
-The whitelist allows only these characters:
+The whitelist allowed only these characters:
 @example
 @verbatim
 abcdefghijklmnopqrstuvwxyz
@@ -3155,10 +3161,10 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 1234567890_-.@ :%/
 @end verbatim
 @end example
-The backslash character @kbd{\} is also whitelisted for Windows only.
+The backslash character @kbd{\} was also whitelisted for Windows only.
 This whitelist allows filenames to be @acronym{URL}s, include username
 prefixes, and standard non-alphabetic characters. 
-The implied blacklist includes these characters
+The implied blacklist included these characters
 @example
 @verbatim
 ;|<>[](),&*?'"
@@ -3173,7 +3179,7 @@ The @acronym{DAP} protocol supports accessing files with so-called
 ``constraint expressions''.
 @acronym{NCO} allows access to a wider set of whitelisted characters
 for files whose names indicate the @acronym{DAP} protocol.
-Currently this is defined as any filename beginning with the string @samp{http://}, @samp{https://}, 
+This is defined as any filename beginning with the string @samp{http://}, @samp{https://}, 
 or @samp{dap4://}.
 The whitelist for these files is expanded to include these characters:
 @example
@@ -3182,13 +3188,13 @@ The whitelist for these files is expanded to include these characters:
 @end verbatim
 @end example
 
-The whitelist method is straightforward, and does not seem to interfere
+The whitelist method is straightforward, and does not interfere
 with @acronym{NCO}'s globbing feature.
-The whitelist currently applies only to filenames because they are
-handled by shell commands passed to the @command{system()} function. 
-However, the whitelist method is applicable to other user-input such as variable lists,
-hyperslab arguments, etc.
-Hence, the whitelist may be applied to other user-input in the future.
+The whitelist applies only to filenames because they are handled by
+shell commands passed to the @command{system()} function.  
+However, the whitelist method is applicable to other user-input such
+as variable lists, hyperslab arguments, etc.
+Hence, the whitelist could be applied to other user-input in the future.
 
 @html
 <a name="fl_in"></a> <!-- http://nco.sf.net/nco.html#fl_in -->
