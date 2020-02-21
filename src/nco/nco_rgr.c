@@ -4640,14 +4640,16 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
   /* OpenMP notes:
-     default(): None
+     default(none): GCC9.x does not accept this (https://github.com/nco/nco/issues/114) perhaps because of fp_stdout/stderr? Intel accepts it. 
      firstprivate(): Pointers that could be inadvertently free()'d if they lost their NULL-initialization
      private(): Almost everything else
      shared(): uggh...shared clause depends on both compiler and compiler-version
      1. All const variables are default shared for gcc >= 4.9.2,
      2. fnc_nm (only!) must be explicit shared for g++ 4.6.3 (travis)
      3. flg_rnr,fnc_nm,wgt_vld_thr must be explicit shared for icc 13.1.3 (rhea)
-     4. assert() cannot be used in OpenMP blocks */
+     4. assert() cannot be used in OpenMP blocks
+     5. Good discussion of "const" variables in shared() clause here http://jakascorner.com/blog/2016/07/omp-default-none-and-const.html
+     20200221: fxm Revisit default(none) in light of above article */
 #ifdef __GNUG__
 # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
 # if GCC_LIB_VERSION < 490

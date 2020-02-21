@@ -1,8 +1,14 @@
+/* $Header$ */
+
+/* Purpose: Functions that manipulate lists of polygons */
+
+/* Copyright (C) 2018--present Charlie Zender
+   This file is part of NCO, the netCDF Operators. NCO is free software.
+   You may redistribute and/or modify NCO under the terms of the 
+   3-Clause BSD License with exceptions described in the LICENSE file */
 
 #include "nco_ply_lst.h"
 
-
-/************************ functions that manipulate lists of polygons ****************************************************/
 void
 nco_poly_re_org_lst(  /* for each poly_sct*  in list re-order points so that first point is the leftermost point */
 poly_sct **pl_lst,
@@ -61,11 +67,6 @@ int arr_nbr)
   return;
 
 }
-
-
-
-
-
 
 poly_sct **             /* [O] [nbr]  size of array */
 nco_poly_lst_mk(
@@ -285,21 +286,15 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
   else
     bwrp=True;
 
-
-
   // printf("About to print poly sct   grd_sz=%d grd_crn_nbr=%d\n", grd_sz, grd_crn_nbr);
   for(idx=0;idx<grd_sz; idx++)
   {
-
     /* check mask and area */
     if( msk[idx]==0 || area[idx] == 0.0 ) {
       pl_lst[idx]= nco_poly_dpl(pl_msk);
       msk_cnt++;
       continue;
-
     }
-
-
 
     pl=nco_poly_init_lst(poly_rll, grd_crn_nbr,0, idx, lon_ptr, lat_ptr);
     lon_ptr+=(size_t)grd_crn_nbr;
@@ -314,21 +309,17 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
       pl_lst[idx]= nco_poly_dpl(pl_msk);
       msk_cnt++;
       continue;
-
     }
 
     /* add centroid from input  */
     pl->dp_x_ctr=lon_ctr[idx];
     pl->dp_y_ctr=lat_ctr[idx];
 
-
-
     /* pop shp */
     nco_poly_shp_pop(pl);
 
     /* add min max */
     nco_poly_minmax_add(pl, grd_lon_typ, bchk_caps);
-
 
     /* if coords cannot deal with wrapping */
     if( pl->bwrp  && bwrp==False   )
@@ -337,9 +328,7 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
       pl_lst[idx]= nco_poly_dpl(pl_msk);
       msk_cnt++;
       continue;
-
     }
-
 
     /* The area of an RLL grid needs to be re-calculated  as we have to take account of lines of latitude as great circles */
     nco_poly_area_add(pl);
@@ -351,9 +340,6 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
 
     /* simple center of a rll cell - should always be inside of polygon */
     nco_poly_ctr_add(pl, grd_lon_typ);
-
-
-
 
     if(nco_dbg_lvl_get()>= nco_dbg_dev  )
       if(pl->bwrp)
@@ -367,24 +353,16 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
 
 
     pl_lst[idx]=pl;
-
-
   }
-
 
   if(nco_dbg_lvl_get() >=  nco_dbg_dev )
     (void)fprintf(stderr, "%s: %s size input list(%lu), size output list(%lu)  total area=%.15e  num wrapped= %d num caps=%d num masked=%d\n", nco_prg_nm_get(),fnc_nm, grd_sz, grd_sz, tot_area, wrp_cnt, wrp_y_cnt, msk_cnt);
-
-
 
   pl_msk=nco_poly_free(pl_msk);
 
   return pl_lst;
 
 }
-
-
-
 
 poly_sct **             /* [O] [nbr]  size of array */
 nco_poly_lst_mk_sph(
@@ -774,7 +752,6 @@ int *pl_cnt_vrl_ret){
     mem_lst[idx].kd_cnt=0;
     mem_lst[idx].kd_blk_nbr=1;
     mem_lst[idx].idx_cnt=0;
-
   }
 
   thr_quota=pl_cnt_in/lcl_thr_nbr;
@@ -782,26 +759,25 @@ int *pl_cnt_vrl_ret){
   if( thr_quota_step <2000 )
     thr_quota_step=2000;
 
+  /* NB: "OpenMP notes" section of nco_rgr.c has detailed discussion of these settings
+     Henry, please keep the variables in alphabetical order within a clause and remember to update Intel */
 #ifdef __GNUG__
   # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
 # if GCC_LIB_VERSION < 490
 #  define GXX_OLD_OPENMP_SHARED_TREATMENT 1
 # endif /* 480 */
 #endif /* !__GNUC__ */
-#if defined( __INTEL_COMPILER)
-#  pragma omp parallel for default(none) private(idx, thr_idx) shared(bDirtyRats, bSort, fnc_nm ,grd_lon_typ, max_nbr_vrl, mem_lst, pl_cnt_in, pl_lst_in, pl_cnt_dbg, pl_lst_dbg, pl_typ, rtree,  stderr, tot_area, tot_nan_cnt, tot_wrp_cnt)
+#if defined(__INTEL_COMPILER)
+# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,fnc_nm,grd_lon_typ,max_nbr_vrl,mem_lst,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,rtree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) private(idx, thr_idx) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
+#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,pl_cnt_dbg,pl_typ,rtree,tot_nan_cnt,tot_wrp_cnt)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx, thr_idx) schedule(dynamic,40) shared(rtree, grd_lon_typ, bDirtyRats, bSort, max_nbr_vrl, pl_cnt_dbg, tot_nan_cnt, tot_wrp_cnt, pl_typ)
+#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,pl_cnt_dbg,pl_typ,rtree,tot_nan_cnt,tot_wrp_cnt)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
-
-
     nco_bool bSplit=False;
-
 
     int vrl_cnt = 0;
     int vrl_cnt_on = 0;
@@ -1165,23 +1141,15 @@ int *pl_cnt_vrl_ret){
             (void) fprintf(stderr, "/************* end dirty rats ***************/\n");
           }
 
-
         }
 
       }
-
 
     } /* end dbg */
 
     /* output some usefull tracking stuff - not debug but informative */
     if (  ++mem_lst[thr_idx].idx_cnt % thr_quota_step == 0 && nco_dbg_lvl_get() >=3   )
       (void)fprintf(fp_stderr, "%s: thread %d  has processed %2.2f%% (%ld) of src cells quota and output %ld overlap cells\n", nco_prg_nm_get(), thr_idx, (float)mem_lst[thr_idx].idx_cnt/(float)thr_quota *100.0,  mem_lst[thr_idx].idx_cnt, mem_lst[thr_idx].pl_cnt  );
-
-
-
-
-
-
 
   } /* end for idx */
 
@@ -1191,9 +1159,6 @@ int *pl_cnt_vrl_ret){
   /* final report */
   if (nco_dbg_lvl_get() >= nco_dbg_dev)
     (void) fprintf(stderr, "%s: total overlaps=%d, total_area=%.15f (area=%3.10f%%) total num wrapped= %d total nan nbr=%d \n", nco_prg_nm_get(), pl_cnt_vrl, tot_area, tot_area /4.0 / M_PI *100.0, tot_wrp_cnt, tot_nan_cnt);
-
-
-
 
   /* write filtered polygons to file */
   if(bDirtyRats && pl_cnt_dbg)

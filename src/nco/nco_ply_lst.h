@@ -34,9 +34,6 @@
 extern "C" {
 #endif /* !__cplusplus */
 
-
-/************************ functions that manipulate lists of polygons ****************************************************/
-
 void
 nco_poly_re_org_lst(  /* for each poly_sct*  in list re-order points so that first point is the leftermost point */
 poly_sct **pl_lst,
@@ -68,8 +65,6 @@ size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
 long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
 nco_grd_lon_typ_enm grd_lon_typ); /* I [num] if not nil then split cells that straddle Greenwich or Dateline  */
 
-
-
 poly_sct**             /* [O] [nbr] Array of poly_sct */
 nco_poly_lst_mk_sph(
 double *area, /* I [sr] Area of source grid */
@@ -82,15 +77,10 @@ size_t grd_sz, /* I [nbr] Number of elements in single layer of source grid */
 long grd_crn_nbr, /* I [nbr] Maximum number of corners in source gridcell */
 nco_grd_lon_typ_enm grd_lon_typ); /* I [num] if not nil then split cells that straddle Greenwich or Dateline  */
 
-
-
-
-
 poly_sct **
 nco_poly_lst_free(
 poly_sct **pl_lst,
 int arr_nbr);
-
 
 poly_sct **
 nco_poly_lst_mk_vrl(   /* create overlap mesh  for crt */
@@ -98,8 +88,6 @@ poly_sct **pl_lst_in,
 int pl_cnt_in,
 KDTree *rtree,
 int *pl_cnt_vrl_ret);
-
-
 
 poly_sct **
 nco_poly_lst_mk_vrl_sph(  /* create overlap mesh  for sph polygons */
@@ -109,12 +97,10 @@ nco_grd_lon_typ_enm grd_lon_typ,
 KDTree *rtree,
 int *pl_cnt_vrl_ret);
 
-
 void
 nco_poly_set_priority(
 int nbr_lst,
 KDPriority *list);
-
 
 /* create list for debugging */
 poly_sct **
@@ -126,7 +112,6 @@ int pl_cnt_vrl,
 int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
 int *pl_cnt_dbg); /* size of output dbg grid */
 
-
 /* check areas */
 void nco_poly_lst_chk(
 poly_sct **pl_lst_in,
@@ -135,8 +120,6 @@ poly_sct **pl_lst_out,
 int pl_cnt_out,
 poly_sct **pl_lst_vrl,
 int pl_cnt_vrl);
-
-
 
 #ifdef __cplusplus
 } /* end extern "C" */
