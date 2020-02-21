@@ -962,6 +962,7 @@ elif [ ${alg_typ} = 'patch' ] || [ ${alg_typ} = 'patc' ] || [ ${alg_typ} = 'pch'
 elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp' ]; then 
     # 20171108 'tempest' invokes TempestRemap with no automatic options, suitable for RLL re-mapping?
     # 20171108 TempestRemap boutique options based on particular remapping type
+    # 20200221 Add --correct_areas to many TR maps as per Transition to TR page
     # https://acme-climate.atlassian.net/wiki/spaces/Docs/pages/178848194/Transition+to+TempestRemap+for+Atmosphere+grids
     # alg_sng in comments is for E3SM naming convention map_src_to_dst_${alg_sng}.${dt_sng}.nc
     alg_opt='tempest'
@@ -970,31 +971,31 @@ elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp
 	printf "${spt_nm}: INFO Specifying the TempestRemap default algorithm '--alg_typ=tempest' without giving any additional options with -W (--wgt_opt) works only for the default TR configuration where both input and output grids are Finite Volume (FV) grids. The default TR algorithm is conservative and non-monotonic.\n"
     fi # !wgt_opt_usr    
 elif [ ${alg_typ} = 'se2fv_flx' ] || [ ${alg_typ} = 'mono_se2fv' ] || [ ${alg_typ} = 'conservative_monotone_se2fv' ]; then # alg_sng='mono'
-    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono"
+    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono --correct_areas"
     alg_opt='se2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_stt' ] || [ ${alg_typ} = 'highorder_se2fv' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_se2fv' ]; then # alg_sng='highorder'
-    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --out_double"
+    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --correct_areas"
     alg_opt='se2fv_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2fv_alt' ] || [ ${alg_typ} = 'intbilin_se2fv' ] || [ ${alg_typ} = 'accurate_monotone_nonconservative_se2fv' ]; then # alg_sng='intbilin'
-    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono3 --noconserve"
+    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono3 --noconserve --correct_areas"
     alg_opt='se2fv_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'se2se' ] || [ ${alg_typ} = 'cs2cs' ] || [ ${alg_typ} = 'conservative_monotone_se2se' ]; then # alg_sng='se2se'
-    # 20190227: Added mono for se2se per recommendation of Mark Taylor
+    # 20190227: Add mono for se2se per recommendation of Mark Taylor
     wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type cgll --out_np ${np_se_nbr} --mono"
     alg_opt='se2se'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_flx' ] || [ ${alg_typ} = 'monotr_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se' ]; then # alg_sng='monotr'
     # NB: Generate mono map for opposite direction regridding (i.e., reverse switches and grids), then transpose
-    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono"
+    wgt_opt_tps="--in_type cgll --in_np ${np_se_nbr} --out_type fv --mono --correct_areas"
     alg_opt='fv2se_flx'
     wgt_typ='tempest'
     trn_map='Yes'
 elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2se' ]; then # alg_sng='highorder'
     # 20190716: Remove "--volumetric" from fv2se_stt per Mark Taylor and Paul Ullrich
-    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np ${np_se_nbr} --out_double"
+    wgt_opt_tps="--in_type fv --in_np 2 --out_type cgll --out_np ${np_se_nbr}"
     alg_opt='fv2se_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # alg_sng='mono'
@@ -1002,19 +1003,20 @@ elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_ty
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ]; then # alg_sng='highorder'
-    # 20190227: Added --mono3 --noconserve for fv2fv per (misinterpreted)recommendation of Mark Taylor
-    # 20200115: Replaced --mono3 --noconserve with --in_np 2 per recommendation of Mark Taylor and Paul Ullrich
+    # 20190227: Add --mono3 --noconserve for fv2fv per (misinterpreted)recommendation of Mark Taylor
+    # 20200115: Replace --mono3 --noconserve with --in_np 2 per recommendation of Mark Taylor and Paul Ullrich
     wgt_opt_tps='--in_type fv --in_np 2 --out_type fv'
     alg_opt='fv2fv'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_flx' ] || [ ${alg_typ} = 'fv2fv_mono' ] || [ ${alg_typ} = 'conservative_monotone_fv2fv' ]; then # alg_sng='mono'
-    # 20191115: Added per recommendation of Paul Ullrich
-    wgt_opt_tps='--in_type fv --in_np 1 --out_type fv'
+    # 20191115: Add per recommendation of Paul Ullrich
+    # 20200221: Add --out_np 1 per (new?) settings in on Transition to TR page
+    wgt_opt_tps='--in_type fv --in_np 1 --out_type fv --out_np 1 --correct_areas'
     alg_opt='fv2fv_flx'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${alg_typ} = 'accurate_conservative_nonmonotone_fv2fv' ]; then # alg_sng='highorder'
-    # 20191115: Added per recommendation of Paul Ullrich
-    wgt_opt_tps='--in_type fv --in_np 2 --out_type fv'
+    # 20191115: Add per recommendation of Paul Ullrich
+    wgt_opt_tps='--in_type fv --in_np 2 --out_type fv --correct_areas'
     alg_opt='fv2fv_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'nco_con' ] || [ ${alg_typ} = 'nco_cns' ] || [ ${alg_typ} = 'nco_conserve' ] || [ ${alg_typ} = 'nco' ]; then 

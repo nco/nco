@@ -1,12 +1,14 @@
 2020-02-21  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.3-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha02: Fuji Rolls';git push
+	git tag -a 4.9.3-alpha02 -m 'ncks --frac_b_fix;ncremap --correct_areas;';git push --tags
+
+	* ncremap add --correct_areas on the four conservative TR maps with destination FV grids
+
 	* Update OpenMP update shared() clause in nco_ply_lst.c for thr_quota,thr_quota_step for Intel Compilers
 
 2020-02-20  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.9.3-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha02: Fuji Rolls';git push
-	git tag -a 4.9.3-alpha02 -m '';git push --tags
 
 	* Update Zen of Regridding documentation on Confluence
 

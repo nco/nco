@@ -123,7 +123,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.3-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 20 February 2020
+@set update-date 21 February 2020
 @set update-month February 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -23757,28 +23757,28 @@ The full list of supported canonical algorithm names, their synonyms,
 and boutique options passed to @command{GenerateOfflineMap} are:
 @table @asis
 @item @code{se2fv_flx} (synonyms @code{mono_se2fv}, @code{conservative_monotone_se2fv})
-Options: @samp{--in_type cgll --in_np 4 --out_type fv --mono}
+Options: @samp{--in_type cgll --in_np 4 --out_type fv --mono --correct_areas}
 @item @code{fv2se_flx} (synonyms @code{monotr_fv2se}, @code{conservative_monotone_fv2se}),
-Options: @samp{--in_type cgll --in_np 4 --out_type fv --mono}.
+Options: @samp{--in_type cgll --in_np 4 --out_type fv --mono --correct_areas}.
 For @code{fv2se_flx} the weights are generated with options identical to
 @code{se2fv_flx}, and then the transpose of the resulting weight matrix
 is employed. 
 @item @code{se2fv_stt} (synonyms @code{highorder_se2fv}, @code{accurate_conservative_nonmonotone_se2fv}),
-Options: @samp{--in_type cgll --in_np 4 --out_type fv --out_double}
+Options: @samp{--in_type cgll --in_np 4 --out_type fv --correct_areas}
 @item @code{fv2se_stt} (synonyms @code{highorder_fv2se}, @code{accurate_conservative_nonmonotone_fv2se}),
 Options: @samp{--in_type fv --in_np 2 --out_type cgll --out_np 4 --volumetric}
 @item @code{se2fv_alt} (synonyms @code{intbilin_se2fv}, @code{accurate_monotone_nonconservative_se2fv}),
-Options: @samp{--in_type cgll --in_np 4 --out_type fv --mono3 --noconserve}
+Options: @samp{--in_type cgll --in_np 4 --out_type fv --mono3 --noconserve --correct_areas}
 @item @code{fv2se_alt} (synonyms @code{mono_fv2se}, @code{conservative_monotone_fv2se_alt}),
 Options: @samp{--in_type fv --in_np 1 --out_type cgll --out_np 4 --mono --volumetric}
 @item @code{se2se} (synonyms @code{cs2cs}, @code{conservative_monotone_se2se}),
 Options: @samp{--in_type cgll --in_np 4 --out_type cgll --out_np 4 --mono}
 @item @code{fv2fv} (synonyms @code{rll2rll}),
-Options: @samp{--in_type fv --in_np 2 --out_type fv}
+Options: @samp{--in_type fv --in_np 2 --out_type fv --correct_areas}
 @item @code{fv2fv_flx} (synonyms @code{fv2fv_mono}, @code{conservative_monotone_fv2fv}),
-Options: @samp{--in_type fv --in_np 1 --out_type fv}
+Options: @samp{--in_type fv --in_np 1 --out_type fv --out_np 1 --correct_areas}
 @item @code{fv2fv_stt} (synonyms @code{fv2fv_highorder}, @code{accurate_conservative_nonmonotone_fv2fv}),
-Options: @samp{--in_type fv --in_np 2 --out_type fv}
+Options: @samp{--in_type fv --in_np 2 --out_type fv --correct_areas}
 @end table
 Thus these boutique options are specialized for @acronym{SE} grids with
 fourth order resolution (@math{@var{np} = 4}).
