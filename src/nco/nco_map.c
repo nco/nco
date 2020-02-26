@@ -247,7 +247,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   /* Obtain grid values necessary to compute overlap mesh */
   rcd=nco_inq_varid_flg(in_id_src,"grid_area",&area_in_id); /* ESMF: area_a */
-  if(rcd != NC_NOERR && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports source grid file \"%s\" is missing \"grid_area\" variable. Will calculate area.\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_src);
+  if(rcd != NC_NOERR && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports source grid file \"%s\" does not contain \"grid_area\" variable. By default, NCO calculates gridcell areas itself anyway, so this omission is fine.\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_src);
 
   rcd+=nco_inq_varid(in_id_src,"grid_center_lon",&src_grd_ctr_lon_id); /* ESMF: xc_a */
   rcd+=nco_inq_varid(in_id_src,"grid_center_lat",&src_grd_ctr_lat_id); /* ESMF: yc_a */
@@ -257,7 +257,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_inq_varid_flg(in_id_src,"grid_imask",&msk_in_id); /* ESMF: msk_a */
 
   rcd=nco_inq_varid_flg(in_id_dst,"grid_area",&area_out_id); /* ESMF: area_b */
-  if(rcd != NC_NOERR && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s. dest grid file \"%s\" is missing \"grid_area\" variable. Will calculate area's.\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_dst);
+  if(rcd != NC_NOERR && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: INFO %s reports destination grid file \"%s\" does not contain \"grid_area\" variable. By default, NCO calculates gridcell areas itself anyway, so this omission is fine.\n",nco_prg_nm_get(),fnc_nm,rgr->fl_grd_dst);
 
   rcd+=nco_inq_varid(in_id_dst,"grid_center_lon",&dst_grd_ctr_lon_id); /* ESMF: xc_b */
   rcd+=nco_inq_varid(in_id_dst,"grid_center_lat",&dst_grd_ctr_lat_id); /* ESMF: yc_b */
@@ -516,7 +516,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     } /* !fabs */
   } /* !dbg */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile in format %s with n_s = %li, n_a = %li, n_b = %li. Mean number of links per destination cell = n_s/n_b = %li/%li = %g. Mean number of links per geometric mean src/dst cell = n_s/sqrt(n_a*n_b) = %li/sqrt(%li*%li) = %g. RAM size of weight variable n_s is sizeof(double)*n_s = 8*%li = %g MB. RAM sizes of vertex variables x/y_va are sizeof(double)*n_a*nv_a = 8*%li*%li = %g MB. RAM sizes of vertex variables x/y_vb are sizeof(double)*n_b*nv_b = 8*%li*%li = %g MB.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr,dst_grd_sz_nbr,lnk_nbr/(1.0*dst_grd_sz_nbr),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr/sqrt(src_grd_sz_nbr*dst_grd_sz_nbr),lnk_nbr,sizeof(double)*lnk_nbr/1.0e6,src_grd_sz_nbr,src_grd_crn_nbr,sizeof(double)*src_grd_sz_nbr*src_grd_crn_nbr/1.0e6,dst_grd_sz_nbr,dst_grd_crn_nbr,sizeof(double)*dst_grd_sz_nbr*dst_grd_crn_nbr/1.0e6);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile in format %s with n_s = %li, n_a = %li, n_b = %li. Mean number of links per destination cell = n_s/n_b = %li/%li = %g. Mean number of links per geometric mean src/dst cell = n_s/sqrt(n_a*n_b) = %li/sqrt(%li*%li) = %g. RAM size of weight variable n_s is sizeof(double)*n_s = 8*%li = %g MB. RAM sizes of vertex variables x/y_va are sizeof(double)*n_a*nv_a = 8*%li*%li = %g MB. RAM sizes of vertex variables x/y_vb are sizeof(double)*n_b*nv_b = 8*%li*%li = %g MB. Storage reduction due to employing sparse matrix instead of full-matrix formulation is a factor of %ld/%ld ~ %ld.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr,dst_grd_sz_nbr,lnk_nbr/(1.0*dst_grd_sz_nbr),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr/sqrt(src_grd_sz_nbr*dst_grd_sz_nbr),lnk_nbr,sizeof(double)*lnk_nbr/1.0e6,src_grd_sz_nbr,src_grd_crn_nbr,sizeof(double)*src_grd_sz_nbr*src_grd_crn_nbr/1.0e6,dst_grd_sz_nbr,dst_grd_crn_nbr,sizeof(double)*dst_grd_sz_nbr*dst_grd_crn_nbr/1.0e6,src_grd_sz_nbr*dst_grd_sz_nbr*sizeof(double),lnk_nbr*sizeof(double)+(src_grd_sz_nbr+dst_grd_sz_nbr)*sizeof(int),(src_grd_sz_nbr*dst_grd_sz_nbr*sizeof(double))/(lnk_nbr*sizeof(double)+(src_grd_sz_nbr+dst_grd_sz_nbr)*sizeof(int)));
 
   /* Open mapfile */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);

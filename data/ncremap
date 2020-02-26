@@ -206,6 +206,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Map-only:
+# ncremap -D 1 --devnull=No --nco='--dbg=1' --alg_typ=nco --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncremap -D 1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc

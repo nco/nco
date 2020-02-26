@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.3-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 25 February 2020
+@set update-date 26 February 2020
 @set update-month February 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20840,25 +20840,43 @@ The individual weight @var{S(i,j)} represents the contribution of
 source gridcell @var{i} to destination gridcell @var{j}.
 By convention the weights are normalized to sum to unity in each row 
 (source gridcell) that completely overlaps that output grid.
-Thus the weights in a single row may all be considered to represent  
-fractional areas of the same source gridcell (we will drop the
-@acronym{DOF} terminology hereafter for conciseness).
+Thus the weights in a single row are all equivalent to the fractional
+areas that the same source gridcell (we will drop the @acronym{DOF}
+terminology hereafter for conciseness) contributes to each destination
+gridcell.
 Regardless of the values of the individual weights, it is intuitive
 that their row-sum should never exceed unity because that would be
-physically equivalent to the input gridcell contributing more than
-its area to the destination grid.
+physically equivalent to an input gridcell contributing more than its
+area to the destination grid.
+Map-files typically store these row-sum statistics for each gridcell
+in the @code{frac_b} variable described further below.
 
 Likewise the weights in a single column represent the fractional areas
-of all the input gridcells that contribute to a single destination
-gridcell.
-However, each input gridcell in a column may have a different area
-so column-sums are not expected to sum to unity.
+that every input gridcell contributes to a single destination
+gridcell. 
+Each input gridcell in a column may represent a different area so
+column-sums in general do not sum to unity.
+However, a destination gridcell ought to receive contributions
+equivalent in total to its own area from the source grid.
+Thus a constraint on column-sums is that their weights, themselves
+weighted by the source gridcell area represented by each row, should
+sum exactly to the destination gridcell area.
+In other words, the source-area-weighted column-sum divided by the
+destination gridcell area would be unity (in a perfect first order
+map) for every destination gridcell that is completely overlapped by
+valid source gridcells. 
+Map-files typically store these weighted-column-sum statistics for
+each gridcell in the @code{frac_a} variable described further below. 
 
-Storing the entire matrix @b{S} is unnecessary because only a relative
-handful of gridcells in the source grid contribute to a given
+Storing the entire weight-matrix @b{S} is unnecessary because only a
+relative handful of gridcells in the source grid contribute to a given 
 destination gridcell, and visa versa.
 Instead, map-files store only the non-zero @var{S(i,j)}, and encodes
 them as a sparse-matrix.
+Storing @b{S} as a sparse matrix rather than a full matrix reduces
+overall storage sizes by a factor on the order of the ratio of the
+product of the grid sizes to their sum, or about 10,000 for grids with
+horizontal resolution near one degree, and more for finer resolutions.
 The sparse-matrix representation is a one-dimensional array of weights 
 @code{S}, together with two ancillary arrays named @code{row} and
 @code{column} that contain the one-dimensional row and column indices,
@@ -20867,29 +20885,50 @@ of the associated weight.
 By convention, map-files store the row and column indices using the
 1-based convention in common use in the 1990s when regridding software
 was all written in Fortran.
-The map-checker prints cell locations with 1-based indices as well.
+The map-checker prints cell locations with 1-based indices as well:
+@example
+@verbatim
+% ncks --chk_map map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+Characterization of map-file map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+Cell triplet elements : [Fortran (1-based) index, center latitude, center longitude]
+Sparse matrix size n_s: 246659
+Weight min S(190813):  5.1827201764857658e-25 from cell \
+                       [33796,-45.7998,+136.437] to [15975,-45.5,+134.5]
+Weight max S( 67391):  1.0000000000000000e+00 from cell \
+                       [33671,-54.4442,+189.645] to [12790,-54.5,+189.5]
+Ignored weights (S=0.0): 0
+...
+@end verbatim
+@end example
+The map-file weights span twenty-five orders of magnitude in this
+example which is typical.
+The Fortran-convention index of each weight extreme is followed by 
+its geographic latitude and longitude.
+Reporting the locations of extrema, and of gridcells whose metrics
+miss their target values by more than a specificied tolerance, are
+prime map-checker features.
 
-The two statistics most telling about map quality are named
-@var{frac_a} and @var{frac_b}.
-These metrics quantify Conservation (of the field on the source
-grid, Grid~A) and Consistency (of the mapping to the destination
-grid, Grid~B), respectively.
+As mentioned above, the two statistics most telling about map quality
+are the row-sums and weighted column-sums named @var{frac_a} and
+@var{frac_b}. 
+These metrics quantify the Conservation and Consistency of the
+mapping, respectively. 
 These general concepts have exact definitions that the map-checker
 evaluates relative to ideal performance. 
-Conservation expresses the total fraction of an input gridcell that
-contributes to the output grid. 
+Conservation means the total fraction of an input gridcell that
+contributes to the output grid.  
 For global input and output grids that completely tile the sphere,
 the entirety of each input gridcell should contribute (i.e., map to)
 the output grid.
 The same concept that applies locally to conservation of a gridcell
-applies globally to the overall conservation of the input grid.
+value applies globally to the overall conservation of an input field.
 Thus a perfectly conserving map between global grids that tile the
 sphere would have @math{@var{frac_a} = 1.0} for every input gridcell,
-and for the mean of all the gridcells.
+and for the mean of all input gridcells.
 
 The map-checker computes @var{frac_a} from the weight variable
-@code{S} in the map-file, compares them to the @code{frac_a} on-disk, 
-and warns of any disagreements.
+@code{S} in the map-file, compares those values to the @code{frac_a}
+values (if any) on-disk, and warns of any disagreements.
 By definition, conservation is perfect to first order if the source
 gridcell area equals the sum of the areas contributed by that gridcell
 to the destination grid.
@@ -20897,12 +20936,28 @@ Computing area-weighted columns sums and comparing @var{frac_a} to
 stored @code{frac_a} catches any discrepancies.
 The analysis sounds an alarm when discrepancies exceed a tolerance
 (currently 5.0e-16).  
-
 More importantly, the map-checker reports the summary statistics of
 the computed @var{frac_a} metrics and their imputed errors, including
 the grid mean, minimum, maximum, mean-absolute bias, root-mean-square
 bias, and standard deviation.
-
+@example
+@verbatim
+% ncks --chk_map map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+...
+Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors---
+Perfect metrics for global Grid B are avg = min = max = 1.0, mbs = rms = sdn = 0.0:
+frac_a avg: 1.0000000000000000 = 1.0-0.0e+00 // Mean
+frac_a min: 0.9999999999991109 = 1.0-8.9e-13 // Minimum in grid A cell [45328,+77.3747,+225]
+frac_a max: 1.0000000000002398 = 1.0+2.4e-13 // Maximum in grid A cell [47582,+49.8351,+135]
+frac_a mbs: 0.0000000000000096 =     9.6e-15 // Mean absolute bias from 1.0
+frac_a rms: 0.0000000000000167 =     1.7e-14 // RMS relative to 1.0
+frac_a sdn: 0.0000000000000167 =     1.7e-14 // Standard deviation
+...
+@end verbatim
+@end example
+The values of @code{frac_a} are generally imperfect (not 1.0) for
+global grids, and reporting the detectable biases is a prime feature
+of the checker.  
 
 Consistency expresses the total fraction of an output gridcell that
 receives contributions from the input grid. 
@@ -20911,19 +20966,20 @@ to the output grid.
 The analysis computes the consistency @var{frac_b} as row-sums of the 
 weights stored in @code{S} and compares these to the stored values of
 @code{frac_b}. 
-@code{frac_b} in the file may differ from the row-sum for example if
-the map-file generator artificially limits the stored @code{frac_b}
-value for any cell to 1.0 for those row-sums that exceed 1.0.
-This precaution is necessary because there are semi-valid reasons a
-map-generator might do this.
+@code{frac_b} in the file may differ from the computed row-sum for
+example if the map-file generator artificially limits the stored
+@code{frac_b} value for any cell to 1.0 for those row-sums that exceed
+1.0. 
 Computing row-sums and comparing @var{frac_b} to stored @code{frac_b}
 catches any such discrepancies.
+There are semi-valid reasons a map-generator might do this, so this
+does not necessarily indicate an error.
 The analysis sounds an alarm when discrepancies exceed a tolerance
 (currently 5.0e-16).  
 
-Note that @code{frac_b} min/max are generally not perfect (1.0) for
+The values of @code{frac_b} are generally imperfect (not 1.0) for
 global grids, and reporting the detectable biases is a prime feature
-of the checker. 
+of the checker.  
 When invoked with area-weighting as @samp{ncks --area_wgt --chk_map},
 the global-weighted mean statistics of @code{frac_b} will of course
 differ from the unweighted statistics, although the minimum and
