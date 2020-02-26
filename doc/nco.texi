@@ -77,6 +77,12 @@ Official TeXInfo documentation:
 http://www.gnu.org/software/texinfo/manual/texinfo/texinfo.html
 
 Legend (defined in "highlighting" section of TeXInfo manual):
+@b{}: Selects bold face
+@i{}: Selects an italic font
+@r{}: Selects a Roman font (usefule in example-like environments to have comments in Roman)
+@t{}: Selects the fixed-width font used by @code{}
+@sansserif{}: Selects a sanserif font
+@slanted{}: Selects a slanted font
 @code{}: Program text, e.g., @code{if(foo) x=y;}
 @command{}: Commands, e.g., @command{ncra}
 @dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
@@ -123,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.3-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 21 February 2020
+@set update-date 25 February 2020
 @set update-month February 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -185,6 +191,8 @@ T
 \gdef\cod{{\rm CO}_{2}} % [frc] Math pi
 \gdef\dfr{{\rm d}} % [frc] Math differential fxm: upright
 \gdef\dmnidx{n} % [idx] Dimension index
+\gdef\clmnbr{I} % [nbr] Column number
+\gdef\rownbr{J} % [nbr] Row number
 \gdef\dmnnbr{N} % [nbr] Dimension number
 \gdef\dmn{D} % [dmn] Variable dimension
 \gdef\frcdst{f} % [flg] Destination grid fraction
@@ -20779,13 +20787,16 @@ makes that options superfluous.
 @html
 <a name="chk_map"></a> <!-- http://nco.sf.net/nco.html#chk_map -->
 <a name="area_wgt"></a> <!-- http://nco.sf.net/nco.html#area_wgt -->
+<a name="frac_b_nrm"></a> <!-- http://nco.sf.net/nco.html#frac_b_nrm -->
 @end html
 @cindex @code{--area_wgt}
 @cindex @code{--chk_map}
+@cindex @code{--frac_b_nrm}
 @cindex map-file
 @item --chk_map
-As of @acronym{NCO} version 4.9.0 (December, 2019), @command{ncks} can 
-evaluate the quality of regridding weights.
+As of @acronym{NCO} version 4.9.0 (December, 2019), invoking
+@samp{--chk_map} causes @command{ncks} to evaluate the quality of
+regridding weights in the map-file provided as @var{input-file}.
 This option works with map-files (not grid-files) in
 @acronym{ESMF}/@acronym{CMIP6}-compliant format (i.e., a sparse matrix
 variable named @code{S} and coordinates @code{[xy][ab]_[cv]}.
@@ -20801,27 +20812,122 @@ Ullrich of UC Davis for this suggestion and early prototypes.
 @verbatim
 $ ncks --chk_map map.nc            # Unweighted statistics
 $ ncks --chk_map --area_wgt map.nc # Area-weighted statistics
+$ ncks --chk_map --dbg=2 map.nc    # Additional diagnostics
 @end verbatim
 @end example
 
-The analysis computes @code{frac_b} as row-sums of the weight array,
-and compares this to the stored values of @code{frac_b}.
+The map-checker performs numerous checks and reports numerous
+statistics, probably more than you care about. 
+Be assured that each piece of provided information has in the past
+proved useful to developers of weight-generation and regridding
+algorithms.
+Most of the time, users can learn whether the examined map is of
+sufficient quality for their purposes by examing only a few of these
+statistics.
+Before defining these primary statistics, it is helpful to understand
+the meaning of the weight-array @var{S} (stored in a map-file as the
+variable @code{S}), and the terminology of rows and columns.
+
+A remapping (aka regridding) transforms a field on an input grid to an
+an output grid while conserving to the extent possible or desired the
+local and global properties of the field.
+The map @var{S} is a matrix of @var{I} rows and @var{J} columns of
+weights, where @var{I} is the number of gridcells (or degrees of
+freedom, @acronym{DOF}s) in the source grid, and 
+@var{J} is the number of gridcells (or @acronym{DOFs}) in the
+destination grid. 
+The individual weight @var{S(i,j)} represents the contribution of
+source gridcell @var{i} to destination gridcell @var{j}.
+By convention the weights are normalized to sum to unity in each row 
+(source gridcell) that completely overlaps that output grid.
+Thus the weights in a single row may all be considered to represent  
+fractional areas of the same source gridcell (we will drop the
+@acronym{DOF} terminology hereafter for conciseness).
+Regardless of the values of the individual weights, it is intuitive
+that their row-sum should never exceed unity because that would be
+physically equivalent to the input gridcell contributing more than
+its area to the destination grid.
+
+Likewise the weights in a single column represent the fractional areas
+of all the input gridcells that contribute to a single destination
+gridcell.
+However, each input gridcell in a column may have a different area
+so column-sums are not expected to sum to unity.
+
+Storing the entire matrix @b{S} is unnecessary because only a relative
+handful of gridcells in the source grid contribute to a given
+destination gridcell, and visa versa.
+Instead, map-files store only the non-zero @var{S(i,j)}, and encodes
+them as a sparse-matrix.
+The sparse-matrix representation is a one-dimensional array of weights 
+@code{S}, together with two ancillary arrays named @code{row} and
+@code{column} that contain the one-dimensional row and column indices,
+respectively, corresponding to the source and destination gridcells
+of the associated weight.
+By convention, map-files store the row and column indices using the
+1-based convention in common use in the 1990s when regridding software
+was all written in Fortran.
+The map-checker prints cell locations with 1-based indices as well.
+
+The two statistics most telling about map quality are named
+@var{frac_a} and @var{frac_b}.
+These metrics quantify Conservation (of the field on the source
+grid, Grid~A) and Consistency (of the mapping to the destination
+grid, Grid~B), respectively.
+These general concepts have exact definitions that the map-checker
+evaluates relative to ideal performance. 
+Conservation expresses the total fraction of an input gridcell that
+contributes to the output grid. 
+For global input and output grids that completely tile the sphere,
+the entirety of each input gridcell should contribute (i.e., map to)
+the output grid.
+The same concept that applies locally to conservation of a gridcell
+applies globally to the overall conservation of the input grid.
+Thus a perfectly conserving map between global grids that tile the
+sphere would have @math{@var{frac_a} = 1.0} for every input gridcell,
+and for the mean of all the gridcells.
+
+The map-checker computes @var{frac_a} from the weight variable
+@code{S} in the map-file, compares them to the @code{frac_a} on-disk, 
+and warns of any disagreements.
+By definition, conservation is perfect to first order if the source
+gridcell area equals the sum of the areas contributed by that gridcell
+to the destination grid.
+Computing area-weighted columns sums and comparing @var{frac_a} to
+stored @code{frac_a} catches any discrepancies.
+The analysis sounds an alarm when discrepancies exceed a tolerance
+(currently 5.0e-16).  
+
+More importantly, the map-checker reports the summary statistics of
+the computed @var{frac_a} metrics and their imputed errors, including
+the grid mean, minimum, maximum, mean-absolute bias, root-mean-square
+bias, and standard deviation.
+
+
+Consistency expresses the total fraction of an output gridcell that
+receives contributions from the input grid. 
+Thus consistency is directly analogous to conservation, only applied
+to the output grid. 
+The analysis computes the consistency @var{frac_b} as row-sums of the 
+weights stored in @code{S} and compares these to the stored values of
+@code{frac_b}. 
 @code{frac_b} in the file may differ from the row-sum for example if
 the map-file generator artificially limits the stored @code{frac_b}
 value for any cell to 1.0 for those row-sums that exceed 1.0.
-This precautions is necessary because there are semi-valid reasons a
+This precaution is necessary because there are semi-valid reasons a
 map-generator might do this.
-Computing row-sums and comparing to stored @code{frac_b} catches any
-such discrepancies.
+Computing row-sums and comparing @var{frac_b} to stored @code{frac_b}
+catches any such discrepancies.
 The analysis sounds an alarm when discrepancies exceed a tolerance
-(5.0e-16).  
+(currently 5.0e-16).  
 
 Note that @code{frac_b} min/max are generally not perfect (1.0) for
 global grids, and reporting the detectable biases is a prime feature
 of the checker. 
 When invoked with area-weighting as @samp{ncks --area_wgt --chk_map},
-the global weighted mean of @code{frac_b} will alter the unweighted
-statistics (min/max will not change). 
+the global-weighted mean statistics of @code{frac_b} will of course
+differ from the unweighted statistics, although the minimum and
+maximum will not change.
 
 @html
 <a name="chk_nan"></a> <!-- http://nco.sf.net/nco.html#chk_nan -->

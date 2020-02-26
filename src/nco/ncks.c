@@ -282,7 +282,7 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_area_wgt=False; /* [flg] Area-weight map-file statistics */
   nco_bool flg_dmm_in=False; /* [flg] Make dummy input file */
-  nco_bool flg_fix_map=False; /* [flg] Fix map-file weights */
+  nco_bool flg_frac_b_nrm=False; /* [flg] Normalize map-file weights when frac_b >> 1 */
   nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_rgr=False; /* [flg] Regrid */
   nco_bool flg_trr=False; /* [flg] Terraref */
@@ -353,8 +353,7 @@ main(int argc,char **argv)
     {"library",no_argument,0,0},
     {"lst_rnk_ge2",no_argument,0,0}, /* [flg] Print extraction list of rank >= 2 variables */
     {"lst_xtr",no_argument,0,0}, /* [flg] Print extraction list */
-    {"fix_map",no_argument,0,0}, /* [flg] Fix map-file weights */
-    {"frac_b_fix",no_argument,0,0}, /* [flg] Fix map-file weights */
+    {"frac_b_nrm",no_argument,0,0}, /* [flg] Normalize map-file weights when frac_b >> 1 */
     {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"md5_wrt_att",no_argument,0,0}, /* [flg] Write MD5 digests as attributes */
@@ -752,7 +751,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
       if(!strcmp(opt_crr,"area_wgt") || !strcmp(opt_crr,"area_weight")) flg_area_wgt=True;
-      if(!strcmp(opt_crr,"fix_map") || !strcmp(opt_crr,"frac_b_fix")) flg_fix_map=True;
+      if(!strcmp(opt_crr,"frac_b_nrm")) flg_frac_b_nrm=True;
       if(!strcmp(opt_crr,"rgr") || !strcmp(opt_crr,"regridding")){
         flg_rgr=True;
         rgr_arg=(char **)nco_realloc(rgr_arg,(rgr_nbr+1)*sizeof(char *));
@@ -1396,7 +1395,7 @@ main(int argc,char **argv)
 
       if(CHK_MAP){
 	/* Check map-file quality */
-	nco_map_chk(fl_in,flg_area_wgt,flg_fix_map);
+	nco_map_chk(fl_in,flg_area_wgt,flg_frac_b_nrm);
         goto close_and_free;
       } /* !CHK_MAP */
 

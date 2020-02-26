@@ -135,7 +135,7 @@ extern "C" {
   nco_bool
   nco_map_chk
   (const char *fl_in,
-   nco_bool flg_fix_map,
+   nco_bool flg_frac_b_nrm,
    nco_bool flg_area_wgt);
   
   nco_bool
