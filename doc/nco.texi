@@ -20831,57 +20831,58 @@ variable @code{S}), and the terminology of rows and columns.
 A remapping (aka regridding) transforms a field on an input grid to an
 an output grid while conserving to the extent possible or desired the
 local and global properties of the field.
-The map @var{S} is a matrix of @var{I} rows and @var{J} columns of
-weights, where @var{I} is the number of gridcells (or degrees of
-freedom, @acronym{DOF}s) in the source grid, and 
-@var{J} is the number of gridcells (or @acronym{DOFs}) in the
-destination grid. 
-The individual weight @var{S(i,j)} represents the contribution of
-source gridcell @var{i} to destination gridcell @var{j}.
+The map @var{S} is a matrix of @var{M} rows and @var{N} columns of
+weights, where @var{M} is the number of gridcells (or degrees of
+freedom, @acronym{DOF}s) in the destination grid, and @var{N} is the
+number of gridcells (or @acronym{DOFs}) in the source grid. 
+An individual weight @var{S(m,n)} represents the fractional
+contribution to destination gridcell @var{m} by source gridcell
+@var{n}. 
 By convention the weights are normalized to sum to unity in each row 
-(source gridcell) that completely overlaps that output grid.
+(destination gridcell) that completely overlaps that input grid.
 Thus the weights in a single row are all equivalent to the fractional
-areas that the same source gridcell (we will drop the @acronym{DOF}
-terminology hereafter for conciseness) contributes to each destination
-gridcell.
+destination areas that the same destination gridcell (we will drop the
+@acronym{DOF} terminology hereafter for conciseness) receives from
+each source gridcell. 
 Regardless of the values of the individual weights, it is intuitive
 that their row-sum should never exceed unity because that would be
-physically equivalent to an input gridcell contributing more than its
-area to the destination grid.
-Map-files typically store these row-sum statistics for each gridcell
-in the @code{frac_b} variable described further below.
+physically equivalent to an output gridcell receiving more than its
+own area from the source grid.
+Map-files typically store these row-sum statistics for each
+destination gridcell in the @code{frac_b} variable described further
+below. 
 
-Likewise the weights in a single column represent the fractional areas
-that every input gridcell contributes to a single destination
-gridcell. 
-Each input gridcell in a column may represent a different area so
-column-sums in general do not sum to unity.
-However, a destination gridcell ought to receive contributions
-equivalent in total to its own area from the source grid.
+Likewise the weights in a single column represent the fractional
+destination areas that a single source gridcell contributes to  
+that every output gridcell.
+Each output gridcell in a column may have a different area so
+column-sums need not and in general do not sum to unity.
+However, a source gridcell ought to contribute to a destination
+area equivalent in total to its own area.
 Thus a constraint on column-sums is that their weights, themselves
-weighted by the source gridcell area represented by each row, should
-sum exactly to the destination gridcell area.
-In other words, the source-area-weighted column-sum divided by the
-destination gridcell area would be unity (in a perfect first order
-map) for every destination gridcell that is completely overlapped by
-valid source gridcells. 
+weighted by the destination gridcell area represented by each row,
+should sum exactly to the source gridcell area.
+In other words, the destination-area-weighted column-sum divided by
+the source gridcell area would be unity (in a perfect first order
+map) for every source gridcell that completely overlaps valid
+destination gridcells.  
 Map-files typically store these weighted-column-sum statistics for
 each gridcell in the @code{frac_a} variable described further below. 
 
 Storing the entire weight-matrix @b{S} is unnecessary because only a
 relative handful of gridcells in the source grid contribute to a given 
 destination gridcell, and visa versa.
-Instead, map-files store only the non-zero @var{S(i,j)}, and encodes
+Instead, map-files store only the non-zero @var{S(m,n)}, and encodes
 them as a sparse-matrix.
 Storing @b{S} as a sparse matrix rather than a full matrix reduces
 overall storage sizes by a factor on the order of the ratio of the
 product of the grid sizes to their sum, or about 10,000 for grids with
 horizontal resolution near one degree, and more for finer resolutions.
 The sparse-matrix representation is a one-dimensional array of weights 
-@code{S}, together with two ancillary arrays named @code{row} and
-@code{column} that contain the one-dimensional row and column indices,
-respectively, corresponding to the source and destination gridcells
-of the associated weight.
+@code{S}, together with two ancillary arrays named @code{row}
+and @code{column} that contain the one-dimensional row and column
+indices, respectively, corresponding to the destination and source
+gridcells of the associated weight.
 By convention, map-files store the row and column indices using the
 1-based convention in common use in the 1990s when regridding software
 was all written in Fortran.
@@ -20900,19 +20901,19 @@ Ignored weights (S=0.0): 0
 ...
 @end verbatim
 @end example
-The map-file weights span twenty-five orders of magnitude in this
-example which is typical.
+Here the map-file weights span twenty-five orders of magnitude,
+which is typical.
 The Fortran-convention index of each weight extreme is followed by 
 its geographic latitude and longitude.
 Reporting the locations of extrema, and of gridcells whose metrics
 miss their target values by more than a specificied tolerance, are
 prime map-checker features.
 
-As mentioned above, the two statistics most telling about map quality
-are the row-sums and weighted column-sums named @var{frac_a} and
-@var{frac_b}. 
+As mentioned above, the two statistics most telling about map quality 
+are the weighted column-sums named @var{frac_a} and the row sums
+named @var{frac_b}.
 These metrics quantify the Conservation and Consistency of the
-mapping, respectively. 
+mapping, respectively.  
 These general concepts have exact definitions that the map-checker
 evaluates relative to ideal performance. 
 Conservation means the total fraction of an input gridcell that
@@ -20926,14 +20927,15 @@ Thus a perfectly conserving map between global grids that tile the
 sphere would have @math{@var{frac_a} = 1.0} for every input gridcell,
 and for the mean of all input gridcells.
 
-The map-checker computes @var{frac_a} from the weight variable
-@code{S} in the map-file, compares those values to the @code{frac_a}
+The map-checker computes @var{frac_a} from the stored variables
+@code{S}, @code{row}, @code{column}, @code{area_a}, and @code{area_b}
+in the map-file, and then compares those values to the @code{frac_a}
 values (if any) on-disk, and warns of any disagreements.
-By definition, conservation is perfect to first order if the source
-gridcell area equals the sum of the areas contributed by that gridcell
-to the destination grid.
-Computing area-weighted columns sums and comparing @var{frac_a} to
-stored @code{frac_a} catches any discrepancies.
+By definition, conservation is perfect to first order if the sum of
+the destination-gridcell-area-weighted weights equals the source
+gridcell area.
+Computing area-weighted column sums and comparing those @var{frac_a}
+to the stored @code{frac_a} catches any discrepancies. 
 The analysis sounds an alarm when discrepancies exceed a tolerance
 (currently 5.0e-16).  
 More importantly, the map-checker reports the summary statistics of
@@ -25173,23 +25175,25 @@ including input and output methods and regridding algorithms.
 @cindex @code{--sgs_msk=@var{sgs_msk}}
 @cindex @code{--sgs_nrm=@var{sgs_nrm}}
 In sub-grid mode, @command{ncremap} performs substantial pre- and
-post-processing to conserve fields that represent fractional parts
-of a gridcell.
-The sub-gridscale (@acronym{SGS}) fraction usually changes spatially
-with the geographic distribution of ice, ocean, vegetation, and so on.
+post-processing to conserve fields that represent fractional spatial
+parts of a gridcell, and/or fractional temporal parts of the analysis
+period. 
 Spatial fields output by most geophysical models are intensive, 
 and so by default the regridder attempts to conserve the integral of the
 area times the field value such that the integral is equal on source and
 destination grids. 
-However some models (like @acronym{ELM}, @acronym{CLM}, and
-@acronym{CICE}) output gridcell values intended to apply to only a
-fraction @var{sgs_frc} (which stands for ``sub-gridscale fraction'') of
-the gridcell. 
+However some models (like @acronym{ELM}, @acronym{CLM},
+@acronym{CICE}, and @acronym{MPAS-Seaice}) output gridcell values
+intended to apply to only a fraction @var{sgs_frc} (for
+``sub-gridscale fraction'') of the gridcell.  
+The sub-gridscale (@acronym{SGS}) fraction usually changes spatially
+with the distribution of land and ocean, and spatiotemporally with
+the distribution of sea ice and possibly vegetation.
 For concreteness consider a sub-grid field that represents the land
 fraction.
 Land fraction is less than one in gridcells that resolve coastlines or 
 islands.  
-@acronym{ELM} and @acronym{CLM}) happily output temperature values
+@acronym{ELM} and @acronym{CLM} happily output temperature values
 valid only for a small (i.e., @math{@var{sgs_frc} << 1}) island within
 the larger gridcell.
 Regridding weights that assume @math{@var{sgs_frc} = 1} everywhere would 
@@ -25201,10 +25205,10 @@ horizontal grid as the overlying atmosphere, they cannot be regridded
 with the atmosphere's grid weights that account for the whole gridcell
 instead of the sub-grid land fraction. 
 
-To correctly regrid sub-grid data, specify the names of the
-@var{sgs_frc} and @var{sgs_msk} variables.
-(if they differ from their
-respective defaults @code{landfrac} and @code{landmask}). 
+To correctly regrid sub-grid data, specify the names of the fractional
+area @var{sgs_frc} and, if applicable, the mask variable @var{sgs_msk}
+(strictly, this is only necessary if these names differ from their
+respective defaults @code{landfrac} and @code{landmask}).  
 Trouble will ensue if @var{sgs_frc} is a percentage, or an absolute area.
 @command{ncremap} must know the normalization factor @var{sgs_nrm} by
 which @var{sgs_frc} must be @emph{divided} (not multiplied) to obtain
