@@ -121,7 +121,7 @@ binary-common:
 	dh_installchangelogs doc/ChangeLog
 	dh_installdocs
 	install -d debian/nco/usr/share/doc/nco/html
-	install -m 644 doc/nco.html/*.html debian/nco/usr/share/doc/nco/html
+	install -m 644 doc/nco.html debian/nco/usr/share/doc/nco/html
 	rm -f debian/nco/usr/share/info/dir
 	dh_installinfo
 	dh_installman
