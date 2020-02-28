@@ -1,8 +1,14 @@
-2020-02-21  Charlie Zender  <zender@uci.edu>
+2020-02-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha02: Fuji Rolls';git push
 	git tag -a 4.9.3-alpha02 -m 'ncks --frac_b_fix;ncremap --correct_areas;';git push --tags
+
+	* ncremap allow polar caps in small-circle code (which now finally runs to completion)
+
+	* nco.texi Long-winded documentation for --chk_map and SGS
+
+2020-02-21  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add --correct_areas on the four conservative TR maps with destination FV grids
 

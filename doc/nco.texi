@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.3-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 26 February 2020
+@set update-date 28 February 2020
 @set update-month February 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20854,20 +20854,21 @@ below.
 
 Likewise the weights in a single column represent the fractional
 destination areas that a single source gridcell contributes to  
-that every output gridcell.
+every output gridcell.
 Each output gridcell in a column may have a different area so
-column-sums need not and in general do not sum to unity.
-However, a source gridcell ought to contribute to a destination
-area equivalent in total to its own area.
+column-sums need not, and in general do not, sum to unity.
+However, a source gridcell ought to contribute to the destination
+grid a total area equal to its own area.
 Thus a constraint on column-sums is that their weights, themselves
-weighted by the destination gridcell area represented by each row,
+weighted by the destination gridcell area corresponding to each row,
 should sum exactly to the source gridcell area.
 In other words, the destination-area-weighted column-sum divided by
 the source gridcell area would be unity (in a perfect first order
 map) for every source gridcell that completely overlaps valid
 destination gridcells.  
-Map-files typically store these weighted-column-sum statistics for
-each gridcell in the @code{frac_a} variable described further below. 
+Map-files typically store these area-weighted-column-sum-ratio
+statistics for each gridcell in the @code{frac_a} variable described
+further below.  
 
 Storing the entire weight-matrix @b{S} is unnecessary because only a
 relative handful of gridcells in the source grid contribute to a given 
@@ -20902,7 +20903,8 @@ Ignored weights (S=0.0): 0
 @end verbatim
 @end example
 Here the map-file weights span twenty-five orders of magnitude,
-which is typical.
+which may seem large though in practice is typical for high-resolution
+intersection grids.
 The Fortran-convention index of each weight extreme is followed by 
 its geographic latitude and longitude.
 Reporting the locations of extrema, and of gridcells whose metrics
@@ -20910,32 +20912,31 @@ miss their target values by more than a specificied tolerance, are
 prime map-checker features.
 
 As mentioned above, the two statistics most telling about map quality 
-are the weighted column-sums named @var{frac_a} and the row sums
+are the weighted column-sums named @var{frac_a} and the row-sums
 named @var{frac_b}.
-These metrics quantify the Conservation and Consistency of the
-mapping, respectively.  
-These general concepts have exact definitions that the map-checker
-evaluates relative to ideal performance. 
+The short-hand names for what these metrics quantify are
+Conservation and Consistency, respectively. 
 Conservation means the total fraction of an input gridcell that
-contributes to the output grid.  
+contributes to the output grid.
 For global input and output grids that completely tile the sphere,
 the entirety of each input gridcell should contribute (i.e., map to)
 the output grid.
 The same concept that applies locally to conservation of a gridcell
 value applies globally to the overall conservation of an input field.
-Thus a perfectly conserving map between global grids that tile the
-sphere would have @math{@var{frac_a} = 1.0} for every input gridcell,
-and for the mean of all input gridcells.
+Thus a perfectly conservative mapping between global grids that tile
+the sphere would have @math{@var{frac_a} = 1.0} for every input
+gridcell, and for the mean of all input gridcells.
 
 The map-checker computes @var{frac_a} from the stored variables
 @code{S}, @code{row}, @code{column}, @code{area_a}, and @code{area_b}
 in the map-file, and then compares those values to the @code{frac_a}
 values (if any) on-disk, and warns of any disagreements.
 By definition, conservation is perfect to first order if the sum of
-the destination-gridcell-area-weighted weights equals the source
-gridcell area.
-Computing area-weighted column sums and comparing those @var{frac_a}
-to the stored @code{frac_a} catches any discrepancies. 
+the destination-gridcell-area-weighted weights (which is an area)
+equals the source gridcell area, and so their ratio (@var{frac_a}) is
+unity.
+Computing the area-weighted-column-sum-ratios and comparing those
+@var{frac_a} to the stored @code{frac_a} catches any discrepancies. 
 The analysis sounds an alarm when discrepancies exceed a tolerance
 (currently 5.0e-16).  
 More importantly, the map-checker reports the summary statistics of
@@ -20958,34 +20959,126 @@ frac_a sdn: 0.0000000000000167 =     1.7e-14 // Standard deviation
 @end verbatim
 @end example
 The values of @code{frac_a} are generally imperfect (not 1.0) for
-global grids, and reporting the detectable biases is a prime feature
-of the checker.  
+global grids.
+Reporting the detectable biases, the second floating-point column
+in each row above, is a prime feature of the checker.
+These biases should be vanishingly small with respect unity.
+Mean biases as large as 1.0e-08 may be considered acceptable for
+off-line analysis (i.e., a single regridding of raw data) and 
+simultaneously unacceptable for on-line use such as in a coupler
+where forward and inverse mappings may be applied tens of thousands
+of times.
+The mean biases for such on-line regridding should be close to 1.0e-15
+in order for tens-of-thousands of applications to not significantly
+bias the simulation.
+
+The minimum and maximum gridcell biases indicate the worst performing
+locations of the mapping.
+These are generally much (a few orders of magnitude) greater than the
+mean biases.
+Observe that the minimum and maximum biases in the examples above
+and below occur at longitudes that are multiples of 45~degrees.
+This is characteristic of mappings to/from for cube-square grids
+whose faces have edges, and thus additional complexity, at multiples
+of 45~degrees.
+This illustrates how intersection grid geometry influences biases.
+More complex, finer-scale structures, produce greater biases.
+The Root-Mean-Square (@acronym{RMS}) and standard deviation metrics
+characterize the distribution of biases throughout the entire
+intersection grid, and are thus complementary information to the
+minimum and maximum biases. 
 
 Consistency expresses the total fraction of an output gridcell that
 receives contributions from the input grid. 
 Thus consistency is directly analogous to conservation, only applied
 to the output grid. 
-The analysis computes the consistency @var{frac_b} as row-sums of the 
-weights stored in @code{S} and compares these to the stored values of
-@code{frac_b}. 
-@code{frac_b} in the file may differ from the computed row-sum for
-example if the map-file generator artificially limits the stored
-@code{frac_b} value for any cell to 1.0 for those row-sums that exceed
-1.0. 
-Computing row-sums and comparing @var{frac_b} to stored @code{frac_b}
-catches any such discrepancies.
+The map-checker computes the consistency @var{frac_b} as row-sums of
+the weights stored in @code{S} and compares these to the stored values
+of @code{frac_b}. 
+(Note how the definition of weights @var{S(m,n)} as the fractional
+contribution to destination gridcell @var{m} by source gridcell
+@var{n} makes calculation of @var{frac_b} almost trivial in comparison
+to @var{frac_a}). 
+Nevertheless, @code{frac_b} in the file may differ from the computed
+row-sum for example if the map-file generator artificially limits the
+stored @code{frac_b} value for any cell to~1.0 for those row-sums that 
+exceed~1.0.  
+The map-checker raises an alarm when discrepancies between computed
+and stored @code{frac_b} exceed a tolerance (currently 5.0e-16).  
 There are semi-valid reasons a map-generator might do this, so this
 does not necessarily indicate an error.
-The analysis sounds an alarm when discrepancies exceed a tolerance
-(currently 5.0e-16).  
+The alarm simply informs the user that applying the weights will lead
+to a slightly different Consistency than indicated by the stored
+@code{frac_b}.
 
-The values of @code{frac_b} are generally imperfect (not 1.0) for
-global grids, and reporting the detectable biases is a prime feature
-of the checker.  
-When invoked with area-weighting as @samp{ncks --area_wgt --chk_map},
-the global-weighted mean statistics of @code{frac_b} will of course
-differ from the unweighted statistics, although the minimum and
-maximum will not change.
+As with @code{frac_a}, the values of @code{frac_b} are generally
+imperfect (not~1.0) for global grids, and reporting the detectable
+biases is a prime feature of the checker.
+@example
+@verbatim
+% ncks --chk_map map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+...
+Consistency metrics (row-sums of weights) and errors---
+Perfect metrics for global Grid A are avg = min = max = 1.0, mbs = rms = sdn = 0.0:
+frac_b avg: 0.9999999999999999 = 1.0-1.1e-16 // Mean
+frac_b min: 0.9999999999985523 = 1.0-1.4e-12 // Minimum in grid B cell [59446,+75.5,+45.5]
+frac_b max: 1.0000000000004521 = 1.0+4.5e-13 // Maximum in grid B cell [63766,+87.5,+45.5]
+frac_b mbs: 0.0000000000000065 =     6.5e-15 // Mean absolute bias from 1.0
+frac_b rms: 0.0000000000000190 =     1.9e-14 // RMS relative to 1.0
+frac_b sdn: 0.0000000000000190 =     1.9e-14 // Standard deviation
+...
+@end verbatim
+@end example
+This example shows that @var{frac_b} has the greatest local errors
+at similar boundaries (multiples of 45~degrees longitude) as
+@var{frac_a}. It is typical for Conservation and Consistency to
+degrade in intricate areas of the intersection grid, and these
+areas occur at multiples of 45~degrees longitude for cubed-sphere
+mappings. 
+
+The map-checker will produce area-weighted metrics when invoked
+with the additional @code{--area_wgt} flag, e.g.,
+@samp{ncks --area_wgt --chk_map in.nc}.
+Area-weighted statistics show the exact local and global results to
+expect with real-world grids in which large consistency/conservation
+errors in small gridcells may be less important than smaller errors in
+larger gridcells. 
+Global-weighted mean statistics will of course differ from unweighted
+statistics, although the minimum and maximum do not change:
+@example
+@verbatim
+% ncks --area_wgt --chk_map map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+...
+Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors---
+Perfect metrics for global Grid B are avg = min = max = 1.0, mbs = rms = sdn = 0.0:
+frac_a avg: 1.0000000000000009 = 1.0+8.9e-16 // Area-weighted mean
+frac_a min: 0.9999999999999236 = 1.0-7.6e-14 // Minimum in grid A cell [12810,+3.44654,+293.25]
+frac_a max: 1.0000000000001146 = 1.0+1.1e-13 // Maximum in grid A cell [16203,-45.7267,+272.31]
+frac_a mbs: 0.0000000000000067 =     6.7e-15 // Area-weighted mean absolute bias from 1.0
+frac_a rms: 0.0000000000000102 =     1.0e-14 // Area-weighted RMS relative to 1.0
+frac_a sdn: 0.0000000000000103 =     1.0e-14 // Standard deviation
+
+Consistency metrics (row-sums of weights) and errors---
+Perfect metrics for global Grid A are avg = min = max = 1.0, mbs = rms = sdn = 0.0:
+frac_b avg: 1.0000000000000047 = 1.0+4.7e-15 // Area-weighted mean
+frac_b min: 0.9999999999998442 = 1.0-1.6e-13 // Minimum in grid B cell [48415,+44.5,+174.5]
+frac_b max: 1.0000000000002611 = 1.0+2.6e-13 // Maximum in grid B cell [16558,-44.5,+357.5]
+frac_b mbs: 0.0000000000000065 =     6.5e-15 // Area-weighted mean absolute bias from 1.0
+frac_b rms: 0.0000000000000129 =     1.3e-14 // Area-weighted RMS relative to 1.0
+frac_b sdn: 0.0000000000000133 =     1.3e-14 // Standard deviation
+...
+@end verbatim
+@end example
+The examples above show systematic differences (besides rounding)
+between the unweighted and area-weighted statistics.
+The area-weighted mean @var{frac_b} statistic deserves special
+mention.
+Its value is the exact factor by which the mapping will shift the
+global mean of a spatially uniform input field.
+This metric is, therefore, first among equals when evaluating 
+the quality of maps under consideration for use in time-stepping
+models where global conservation (e.g., of mass or energy) is
+crucial. 
 
 @html
 <a name="chk_nan"></a> <!-- http://nco.sf.net/nco.html#chk_nan -->
@@ -25174,10 +25267,10 @@ including input and output methods and regridding algorithms.
 @cindex @code{--sgs_frc=@var{sgs_frc}}
 @cindex @code{--sgs_msk=@var{sgs_msk}}
 @cindex @code{--sgs_nrm=@var{sgs_nrm}}
-In sub-grid mode, @command{ncremap} performs substantial pre- and
-post-processing to conserve fields that represent fractional spatial
-parts of a gridcell, and/or fractional temporal parts of the analysis
-period. 
+@command{ncremap} has a sub-gridscale (@acronym{SGS}) mode that
+performs the special pre-processing and weighting necessary to
+to conserve fields that represent fractional spatial portions of a
+gridcell, and/or fractional temporal periods of the analysis.
 Spatial fields output by most geophysical models are intensive, 
 and so by default the regridder attempts to conserve the integral of the
 area times the field value such that the integral is equal on source and
@@ -25196,23 +25289,35 @@ islands.
 @acronym{ELM} and @acronym{CLM} happily output temperature values
 valid only for a small (i.e., @math{@var{sgs_frc} << 1}) island within
 the larger gridcell.
-Regridding weights that assume @math{@var{sgs_frc} = 1} everywhere would 
-create subtle, difficult-to-notice, biases in coastal regions that,
-on Earth, would alter global mean values (e.g., of temperature, fluxes)
-by up to a few percent at common grid resolutions.
-Though models like @acronym{ELM} and @acronym{CLM} may run on the same
-horizontal grid as the overlying atmosphere, they cannot be regridded
-with the atmosphere's grid weights that account for the whole gridcell
-instead of the sub-grid land fraction. 
+Model architecture dictates this behavior and savvy researchers expect
+it.
+The goal of the @acronym{NCO} weight-application algorithm is to treat
+@acronym{SGS} fields as seamlessly as possible so that those less
+familiar with sub-gridscale models can easily regrid them correctly.
 
-To correctly regrid sub-grid data, specify the names of the fractional
-area @var{sgs_frc} and, if applicable, the mask variable @var{sgs_msk}
-(strictly, this is only necessary if these names differ from their
+Fortunately, models like @acronym{ELM} and @acronym{CLM} that run on
+the same horizontal grid as the overlying atmosphere can use the same
+mapping-file as the atmosphere, so long as the @acronym{SGS}
+weight-application procedure is invoked.
+Not invoking an @acronym{SGS}-aware weight application algorithm is
+equivalent to assuming @math{@var{sgs_frc} = 1} everywhere.
+Regridding sub-grid values correctly versus incorrectly (e.g., with
+and without @acronym{SGS}-mode) alters global-mean answers for
+land-based quantities by @w{about 1%} for horizontal grid resolutions
+of about one degree. 
+The resulting biases are in intricately shaped regions (coasts, lakes,
+sea-ice floes) and so are easy to overlook.
+
+To invoke @acronym{SGS} mode and correctly regrid sub-gridscale data, 
+specify the names of the fractional area @var{sgs_frc} and, if
+applicable, the mask variable @var{sgs_msk} (strictly, this is only
+necessary if these names differ from their 
 respective defaults @code{landfrac} and @code{landmask}).  
-Trouble will ensue if @var{sgs_frc} is a percentage, or an absolute area.
+Trouble will ensue if @var{sgs_frc} is a percentage or an absolute
+area rather than a fractional area (between zero and one).
 @command{ncremap} must know the normalization factor @var{sgs_nrm} by
 which @var{sgs_frc} must be @emph{divided} (not multiplied) to obtain
-a true, normalized fraction (between zero and one).
+a true, normalized fraction.
 Datasets (such as those from @acronym{CICE}) that store @var{sgs_frc} 
 in percent should specify the option
 @samp{--sgs_nrm=100} to instruct @command{ncremap} to normalize the
@@ -25288,13 +25393,6 @@ produce equivalent results, and the latter is intended to be
 indistinguishable (in terms of metadata and units) to raw model
 output.  
 This makes it more interoperable with many existing analysis scripts. 
-
-During development of this procedure, we learned that regridding
-sub-grid values correctly versus incorrectly (i.e., with and 
-without @samp{-P sgs}, respectively) alters global-mean answers
-for land-based quantities by @w{about 1%} for typical grid resolutions  
-on Earth.
-This is small enough to be easily overlooked.
 
 @html
 <a name="par_typ"></a> <!-- http://nco.sf.net/nco.html#par_typ -->

@@ -5330,10 +5330,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   } /* !idx */
   double area_smc_crc; /* [sr] Small-circle correction to spherical triangle area */
   double area_smc; /* [sr] Gridcell area allowing for latitude-triangles */
-  double area_ttl; /* [sr] Sphere area assuming spherical triangles */
-  double area_smc_ttl; /* [sr] Sphere area allowing for latitude-triangles */
-  double area_smc_crc_ttl; /* [sr] Latitude-triangle correction for whole sphere */
-  double area_smc_crc_abs_ttl; /* [sr] Latitude-triangle absolute correction for whole sphere */
+  double area_ttl; /* [sr] Total area of input polygon list assuming spherical triangles */
+  double area_smc_ttl; /* [sr] Total area of input polygon list allowing for latitude-triangles */
+  double area_smc_crc_ttl; /* [sr] Latitude-triangle correction (should be small) to total area of input polygon list */
+  double area_smc_crc_abs_ttl; /* [sr] Latitude-triangle absolute correction (no compensation of positive/negative contributions, should be no smaller than above) to total area of input polygon list */
   double lat_ctr; /* [dgr] Latitude of polygon centroid */
   double lon_ctr; /* [dgr] Longitude of polygon centroid */
   double lat_ctr_rdn; /* [rdn] Latitude of polygon centroid */
@@ -5759,10 +5759,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	} /* !co-linear */
 	xcs_sph=0.0;
       } /* !NaN */
-      area[col_idx]+=xcs_sph;
-      area_smc+=xcs_sph;
-      area_ttl+=xcs_sph;
-      area_smc_ttl+=xcs_sph;
+      area[col_idx]+=xcs_sph; /* Accumulate spherical triangle area into reported polygon area and adjust below */
+      area_smc+=xcs_sph; /* Accumulate spherical triangle area into small-circle polygon area and adjust below */
+      area_ttl+=xcs_sph; /* Accumulate spherical triangle area into spherical polygon area */
+      area_smc_ttl+=xcs_sph; /* Accumulate spherical triangle area into total polygon area and adjust below */
       /* 20160918 from here to end of loop is non-spherical work
 	 20170217: Temporarily turn-off latitude circle diagnostics because Sungduk's POP case breaks them
 	 Canonical latitude-triangle geometry has point A at apex and points B and C at same latitude
@@ -5813,22 +5813,39 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	/* 20160918: Compute exact area of latitude triangle wedge */
 	double xpn_x; /* [frc] Expansion parameter */
 	lon_dlt=fabs(nco_lon_dff_brnch_rdn(lon_bnd_rdn[idx_ltr_b],lon_bnd_rdn[idx_ltr_c]));
-	if(lon_dlt == 0.0){
-	  (void)fprintf(stdout,"%s: ERROR longitudes equal in small circle section. Vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
+	assert(lon_dlt != 0.0); // Latitude triangles must have bases with distinct longitudes
+	if(lon_dlt != M_PI){
+	  /* Normal clause executed for small-circle triangles */
+	  /* Numeric conditioning uncertain. Approaches divide-by-zero when lon_dlt << 1 */
+	  xpn_x=lat_bnd_sin[idx_ltr_b]*(1.0-cos(lon_dlt))/sin(lon_dlt);
+	  assert(fabs(xpn_x) != M_PI_2);
+	  area_smc_crc=2.0*atan(xpn_x);
+	  /* 20170217: Sungduk's POP regrid triggers following abort():
+	     ncremap -D 1 -i ~/pop_g16.nc -d ~/cam_f19.nc -o ~/foo.nc */
+	  //assert(xpn_x >= 0.0);
+	  //if(lat_bnd[idx_ltr_b] > 0.0) area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_smc_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
+	  area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b];
+	}else{
+	/* 20200228: Latitude triangles may have bases with longitudes that differ by 180 degrees 
+	   Consider a quadrilateral with four equidistant vertices in longitude, and that caps a pole:
+	   CSZ decomposition technique divides this into two triangles each with three co-latitudinal points and no vertex at pole
+	   Solution candidates:
+	   1. Divide such quadrilaterals using centroid technique 
+	   Just realized current implementation of centroid decomposition fails on polar caps
+	   Failure occurs because centroid latitude is +/- ~90 not mean of vertices' latitudes
+	   Must impute "pseudo-centroid" with latitude +/- 90 instead of averaging vertex latitudes
+	   Requires testing each polygon to determine if it contains pole <- Too difficult/expensive
+	   2. Assume latitude triangles whose base is 180 degrees are at pole
+	   Compute area exactly using analytic formula for annular lune */
+	  (void)fprintf(stdout,"%s: INFO longitudes differ by pi in small circle section. Vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
 	  (void)fprintf(stdout,"%s: DEBUG col_nbr=%lu, bnd_nbr=%d, col_idx=%ld, area=%g. Vertices [0..bnd_nbr-1] in format idx (lat,lon)\n",nco_prg_nm_get(),col_nbr,bnd_nbr,col_idx,xcs_sph);
 	  for(int bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
 	    (void)fprintf(stdout,"%2d (%g, %g)\n",bnd_idx,lat_bnd[bnd_nbr*col_idx+bnd_idx],lon_bnd[bnd_nbr*col_idx+bnd_idx]);
-	} /* lon_dlt */
-	assert(lon_dlt != 0.0 && lon_dlt != M_PI);
-	/* Numeric conditioning uncertain. Approaches divide-by-zero when lon_dlt << 1 */
-	xpn_x=lat_bnd_sin[idx_ltr_b]*(1.0-cos(lon_dlt))/sin(lon_dlt);
-	assert(fabs(xpn_x) != M_PI_2);
-	area_smc_crc=2.0*atan(xpn_x);
-	/* 20170217: Sungduk's POP regrid triggers following abort():
-	   ncremap -D 1 -i ~/pop_g16.nc -d ~/cam_f19.nc -o ~/foo.nc */
-	//assert(xpn_x >= 0.0);
-	//if(lat_bnd[idx_ltr_b] > 0.0) area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b]; else area_smc_crc+=+lon_dlt*lat_bnd_sin[idx_ltr_b];
-	area_smc_crc+=-lon_dlt*lat_bnd_sin[idx_ltr_b];
+	  (void)fprintf(stdout,"%s: INFO Assuming triangle is decomposed portion of polar cap. Treating area with analytic formula for annular lune\n",nco_prg_nm_get());
+	  /* Compute small circle correction as difference between spherical triangle area and standard annuular lune formula 
+	     Small circle correct is positive-definite for polar triangles so use fabs(sin(lat_bnd_sin)) */
+	  area_smc_crc=lon_dlt*fabs(lat_bnd_sin[idx_ltr_b])-area_smc;
+	} /* !lon_dlt */
 	// Adjust diagnostic areas by small-circle area correction
 	area_smc+=area_smc_crc;
 	area_smc_ttl+=area_smc_crc;
@@ -5857,7 +5874,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	    xpn_trm=xpn_nmr/xpn_dnm;
 	    xpn_sum+=xpn_trm;
 	  } /* !idx_xpn */
-	  (void)fprintf(stdout,"%s: Latitude-triangle area using series approximation...not implemented yet\n",nco_prg_nm_get());
+	  (void)fprintf(stdout,"%s: Small-circle area using series approximation...not implemented yet\n",nco_prg_nm_get());
 	} /* !0 */
 	if(nco_dbg_lvl_get() >= nco_dbg_scl){
 	  (void)fprintf(stdout,"%s: INFO %s col_idx = %li triangle %d spherical area, latitude-triangle area, %% difference: %g, %g, %g%%\n",nco_prg_nm_get(),fnc_nm,col_idx,tri_idx,xcs_sph,xcs_sph+area_smc_crc,100.0*area_smc_crc/xcs_sph);
@@ -5869,10 +5886,10 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
     } /* !tri_idx */
     if(edg_typ == nco_edg_smc && flg_ply_has_smc){
       /* Current gridcell contained at least one latitude-triangle */
-      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s col_idx = %li spherical area, latitude-gridcell area, %% difference: %g, %g, %g%%\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_smc,100.0*(area_smc-area[col_idx])/area[col_idx]);
+      if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s col_idx = %li spherical area, small circle area, %% difference: %g, %g, %g%%\n",nco_prg_nm_get(),fnc_nm,col_idx,area[col_idx],area_smc,100.0*(area_smc-area[col_idx])/area[col_idx]);
     } /* !edg_typ && !flg_ply_has_smc */    
   } /* !col_idx */
-  if(edg_typ == nco_edg_smc && nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s total spherical area, latitude-gridcell area, %% difference, crc_ttl, crc_abs_ttl: %g, %g, %g%%, %g, %g\n",nco_prg_nm_get(),fnc_nm,area_ttl,area_smc_ttl,100.0*(area_smc_ttl-area_ttl)/area_ttl,area_smc_crc_ttl,area_smc_crc_abs_ttl);
+  if(edg_typ == nco_edg_smc && nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s total spherical area, small circle area, %% difference, crc_ttl, crc_abs_ttl: %g, %g, %g%%, %g, %g\n",nco_prg_nm_get(),fnc_nm,area_ttl,area_smc_ttl,100.0*(area_smc_ttl-area_ttl)/area_ttl,area_smc_crc_ttl,area_smc_crc_abs_ttl);
   if(vrt_vld) vrt_vld=(long *)nco_free(vrt_vld);
   if(a_idx) a_idx=(long *)nco_free(a_idx);
   if(b_idx) b_idx=(long *)nco_free(b_idx);

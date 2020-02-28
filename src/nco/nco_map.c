@@ -1812,7 +1812,7 @@ nco_map_frac_b_clc /* Compute frac_b as row sums of the weight matrix S */
 } /* !nco_map_frac_b_clc() */
 
 nco_bool
-nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weight matrix S */
+nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weight matrix S normalized by area_a */
 (var_sct *var_S,
  var_sct *var_row,
  var_sct *var_col,
