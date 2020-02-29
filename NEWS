@@ -1,0 +1,31 @@
+NCO NEWS -- history of user-visible changes. 
+--------
+
+* Changes in NCO version 1.2:
+** Fortran compatibility has been dropped
+** DODS support
+** New operations: min,max,ttl,rms,rmssdn...
+^L
+
+* Changes in NCO version 1.1:
+^L
+** New operator ncatted--netCDF Attribute Editor
+** Windows NT supported
+** Improved documentation
+** ncrcat support for DOE ARM-style time=base_time+time_offset records
+^L
+* Changes in NCO version 1.0:
+^L
+** All known bugs in version 0.9 have been fixed.
+** The manual is nearly complete, and describes all operators.
+** All operators should now work on machines with sizeof(long) > sizeof(int).  
+** Implemented ARM time=base_time+time_offset convention in ncrcat.
+** Improved support for NCAR CSM conventions
+** ncks allows specification of hyperslab stride
+** ncks works with wrapped coordinates (e.g., longitude)
+^L
+
+Local variables:
+mode: outline
+paragraph-separate: "[  ^L]*$"
+end:

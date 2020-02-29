@@ -1,0 +1,87 @@
+# $Header$ -*-text-*-
+
+# Purpose: NCO README file
+
+What is NCO?
+The netCDF Operators, NCO, are a suite of programs known as operators. 
+The operators facilitate manipulation and analysis of self-describing
+data stored in the freely available netCDF and HDF formats 
+(http://www.unidata.ucar.edu/packages/netcdf and
+http://hdfgroup.org, respectively). 
+Each NCO operator (e.g., ncks) takes netCDF or HDF input file(s),
+performs an operation (e.g., averaging, hyperslabbing, or renaming),
+and outputs information, usually a processed netCDF file  
+Although most users of netCDF and HDF data are involved in scientific
+research, these data formats, and thus NCO, are generic and are
+equally useful in fields from agriculture to zoology.
+The NCO Users Guide illustrates NCO use with examples from the field
+of climate modeling and analysis. 
+The NCO homepage is http://nco.sf.net.
+
+Installation:
+NCO runs on all major UNIX systems and MS Windows.
+NCO (except ncap2) requires only an ANSI-compliant C99 compiler.
+NCO can be built and installed with the standard GNU autotools
+./configure mechanism or with a custom Makefile.
+ncap2 requires an C++ compiler and can be hard to build.
+Please submit patches to help simplify the build system!
+
+Newer Autotools Configure Build Procedure:
+Try the newer ./configure mechanism first by using the configure
+command in the top-level NCO directory:
+
+`cd ~/nco;./configure;make;make install'
+
+or 
+
+`cd ~/nco;./configure;make;make install-strip'
+
+if you to strip the executables and libraries. In this case, NCO
+will run at the same speed, but consume less memory and only about
+half the disk space since all debugging information is "stripped". 
+
+If autotools do not work, please look at the slightly more complex
+(and realistic) examples that we use to test your machine architecture.
+These are in the configure.eg file in the top-level NCO directory. 
+The output of these commands from our test machines is available at 
+
+http://dust.ess.uci.edu/nco/rgr
+
+Please send us any modifications to the configure.ac script that 
+might benefit other NCO users. 
+
+Older Manual Makefile Build Procedure:
+If configure does not work for you, try the older build mechanism:
+
+`cd ~/nco/bld;make dir;make'
+`cd ~/nco/src/nco_c++;make -f Makefile.old dir;make -f Makefile.old'
+
+You must use GNU make, which reads `Makefile' by default.
+Makefile has some hardcoded switches which may be only valid at UCI
+or NCAR, but which can serve as a template for your environment. 
+First, be sure to define NETCDF_INC and NETCDF_LIB variables either 
+within your environment, or at the top of Makefile. 
+Within Makefile, locate the block of code which corresponds
+to your machine type as defined by $PVM_ARCH and the pvmgetarch command.
+Within this block you may need to edit the CC, CPPFLAGS, and LDFLAGS
+arguments so they reflect the names of the compilers and linkers.  
+
+Read ./bld/Makefile for useful user-specified switches.
+Compile with `make OPTS=D' to build debugging versions.  
+Environment variables MY_OBJ_DIR, MY_INC_DIR, MY_LIB_DIR and
+MY_BIN_DIR control locations of object files, include files,
+libraries, and executables. 
+
+Documentation and Bug Reports:
+Please read the NCO manual before you submit a bug report!  
+It is supplied in many formats: Postscript (nco.ps), Texinfo
+(nco.texi), Info (nco.info), HTML (nco.html), and DVI (nco.dvi).
+If you got NCO from a CVS snapshot, you must generate these formats
+yourself with 'make nco.html', 'make nco.pdf', 'make nco.ps',
+etc. from within the doc/ directory.
+Sending me questions whose answers aren't in the manual is the best
+way to motivate me to write more documentation.  
+Let me also accentuate the contrapositive of that suggestion.
+
+Good luck!
+Charlie
