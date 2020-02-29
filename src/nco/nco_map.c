@@ -516,7 +516,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
     } /* !fabs */
   } /* !dbg */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile in format %s with n_s = %li, n_a = %li, n_b = %li. Mean number of links per destination cell = n_s/n_b = %li/%li = %g. Mean number of links per geometric mean src/dst cell = n_s/sqrt(n_a*n_b) = %li/sqrt(%li*%li) = %g. RAM size of weight variable n_s is sizeof(double)*n_s = 8*%li = %g MB. RAM sizes of vertex variables x/y_va are sizeof(double)*n_a*nv_a = 8*%li*%li = %g MB. RAM sizes of vertex variables x/y_vb are sizeof(double)*n_b*nv_b = 8*%li*%li = %g MB. Storage reduction due to employing sparse matrix instead of full-matrix formulation is a factor of %ld/%ld ~ %ld.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr,dst_grd_sz_nbr,lnk_nbr/(1.0*dst_grd_sz_nbr),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr/sqrt(src_grd_sz_nbr*dst_grd_sz_nbr),lnk_nbr,sizeof(double)*lnk_nbr/1.0e6,src_grd_sz_nbr,src_grd_crn_nbr,sizeof(double)*src_grd_sz_nbr*src_grd_crn_nbr/1.0e6,dst_grd_sz_nbr,dst_grd_crn_nbr,sizeof(double)*dst_grd_sz_nbr*dst_grd_crn_nbr/1.0e6,src_grd_sz_nbr*dst_grd_sz_nbr*sizeof(double),lnk_nbr*sizeof(double)+(src_grd_sz_nbr+dst_grd_sz_nbr)*sizeof(int),(src_grd_sz_nbr*dst_grd_sz_nbr*sizeof(double))/(lnk_nbr*sizeof(double)+(src_grd_sz_nbr+dst_grd_sz_nbr)*sizeof(int)));
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile in format %s with n_s = %li, n_a = %li, n_b = %li. Mean number of links per destination cell = n_s/n_b = %li/%li = %g. Mean number of links per geometric mean src/dst cell = n_s/sqrt(n_a*n_b) = %li/sqrt(%li*%li) = %g. RAM size of weight variable n_s is sizeof(double)*n_s = 8*%li = %g MB. RAM sizes of vertex variables x/y_va are sizeof(double)*n_a*nv_a = 8*%li*%li = %g MB. RAM sizes of vertex variables x/y_vb are sizeof(double)*n_b*nv_b = 8*%li*%li = %g MB. Storage reduction due to employing sparse-matrix instead of full-matrix formulation is a factor of %ld/%ld ~ %ld.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr,dst_grd_sz_nbr,lnk_nbr/(1.0*dst_grd_sz_nbr),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr/sqrt(src_grd_sz_nbr*dst_grd_sz_nbr),lnk_nbr,sizeof(double)*lnk_nbr/1.0e6,src_grd_sz_nbr,src_grd_crn_nbr,sizeof(double)*src_grd_sz_nbr*src_grd_crn_nbr/1.0e6,dst_grd_sz_nbr,dst_grd_crn_nbr,sizeof(double)*dst_grd_sz_nbr*dst_grd_crn_nbr/1.0e6,src_grd_sz_nbr*dst_grd_sz_nbr*sizeof(double),lnk_nbr*sizeof(double)+(src_grd_sz_nbr+dst_grd_sz_nbr)*sizeof(int),(src_grd_sz_nbr*dst_grd_sz_nbr*sizeof(double))/(lnk_nbr*sizeof(double)+(src_grd_sz_nbr+dst_grd_sz_nbr)*sizeof(int)));
 
   /* Open mapfile */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -2072,7 +2072,7 @@ nco_map_chk /* Map-file evaluation */
 
     fprintf(stdout,"Characterization of map-file %s\n",fl_in);
     fprintf(stdout,"Cell triplet elements : [Fortran (1-based) index, center latitude, center longitude]\n");
-    fprintf(stdout,"Sparse matrix size n_s: %lu\n",var_S->sz);
+    fprintf(stdout,"Sparse-matrix size n_s: %lu\n",var_S->sz);
     nco_map_var_min_max_ttl(var_S,(double *)NULL,flg_area_wgt,&s_min,&idx_min,&s_max,&idx_max,&s_ttl,&avg,&mebs,&rms,&sdn);
     idx_sng_lng_max=(long)ceil(log10((double)var_S->sz));
     if(idx_sng_lng_max == (long)log10((double)var_S->sz)) idx_sng_lng_max++;
@@ -2283,7 +2283,7 @@ nco_map_chk /* Map-file evaluation */
       fprintf(stdout,"max(frac_b): ncks --fortran -H --trd -d n_b,%lu -v .?_b %s\n",idx_max+1UL,fl_in);
     } /* !dbg */
 
-    fprintf(stdout,"\nHistogram of non-zero entries in sparse matrix:\n");
+    fprintf(stdout,"\nHistogram of non-zero entries in sparse-matrix:\n");
     fprintf(stdout,"  Column 1: Number of non-zero entries (histogram bin)\n");
     fprintf(stdout,"  Column 2: Number of columns (source cells) with that many non-zero entries\n");
     fprintf(stdout,"  Column 3: Number of rows (destination cells) with that many non-zero entries\n");

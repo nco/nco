@@ -14672,8 +14672,8 @@ If it does not exist then the calendar used defaults to mixed
 Gregorian/Julian as defined by UDUnits. 
  
 If @code{varIn} is not a floating point type then it is promoted to
-@code{NC_DOUBLE} for the system call in the Udunits library;  
-and then demoted back to to its original type after.
+@code{NC_DOUBLE} for the system call in the Udunits library,   
+and then demoted back to its original type after.
 @example
 @verbatim
 T[lon]={0.0,100.0,150.0,200.0};
@@ -25385,7 +25385,7 @@ kilometers (for @acronym{ELM}) or square meters (for @acronym{CICE}),
 as expected in the raw output from these two models.
 To convert from angular to areal values, @acronym{NCO} assumes a
 spherical Earth with radius @w{6,371,220 m} or @w{6,371,229 m},
-for @acronym{ELM}) and @acronym{CICE}, respectively.
+for @acronym{ELM} and @acronym{CICE}, respectively.
 The ouput @var{sgs_frc} field is expressed as a decimal fraction in all
 cases except for @samp{-P cice} which stores the fraction in percent.
 Thus the generic @acronym{SGS} and model-specific convenience options

@@ -5841,9 +5841,9 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  (void)fprintf(stdout,"%s: DEBUG col_nbr=%lu, bnd_nbr=%d, col_idx=%ld, area=%g. Vertices [0..bnd_nbr-1] in format idx (lat,lon)\n",nco_prg_nm_get(),col_nbr,bnd_nbr,col_idx,xcs_sph);
 	  for(int bnd_idx=0;bnd_idx<bnd_nbr;bnd_idx++)
 	    (void)fprintf(stdout,"%2d (%g, %g)\n",bnd_idx,lat_bnd[bnd_nbr*col_idx+bnd_idx],lon_bnd[bnd_nbr*col_idx+bnd_idx]);
-	  (void)fprintf(stdout,"%s: INFO Assuming triangle is decomposed portion of polar cap. Treating area with analytic formula for annular lune\n",nco_prg_nm_get());
+	  (void)fprintf(stdout,"%s: INFO Assuming this triangle is decomposed from polar cap polygon. Treating area with analytic formula for annular lune\n",nco_prg_nm_get());
 	  /* Compute small circle correction as difference between spherical triangle area and standard annuular lune formula 
-	     Small circle correct is positive-definite for polar triangles so use fabs(sin(lat_bnd_sin)) */
+	     Small circle correction is positive-definite for polar triangles so use fabs(sin(lat_bnd_sin)) */
 	  area_smc_crc=lon_dlt*fabs(lat_bnd_sin[idx_ltr_b])-area_smc;
 	} /* !lon_dlt */
 	// Adjust diagnostic areas by small-circle area correction
