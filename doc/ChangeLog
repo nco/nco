@@ -1,3 +1,9 @@
+2020-03-01  Charlie Zender  <zender@uci.edu>
+
+	* ncremap/ncclimo: Re-formulate --par_typ option parsing to use	regular expressions
+
+	* Update --unq_sfx documentation
+
 2020-02-28  Charlie Zender  <zender@uci.edu>
 
 	* nco_rgr.c allow polar caps in small-circle code (which now finally runs to completion)
