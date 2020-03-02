@@ -130,7 +130,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set copyright-years 1995--2020
 @set update-year 2020
 @set update-date 1 March 2020
-@set update-month February 2020
+@set update-month March 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -25415,13 +25415,14 @@ File-level parallelism accelerates throughput when regridding multiple
 files in one @command{ncremap} invocation, and has no effect when only
 one file is to be regridded.
 Note that the @command{ncclimo} and @command{ncremap} semantics for
-selecting file-level parallelism are identical.
+selecting file-level parallelism are identical, though their defaults
+differ (Background mode for @command{ncclimo} and Serial mode for
+@command{ncremap}). 
 Select the desired mode with the argument to
 @samp{--par_typ=@var{par_typ}}.
-Background mode is the default, and may also be explicitly selected by
-any one of the @var{par_typ} synonyms @code{bck}, @code{Background},
-or @code{background}.
-specified with @samp{--par_typ=bck}
+Values of @var{par_typ} that explicitly select Background mode are
+@code{bck}, @samp{Background}, and @code{background}.  
+
 @samp{mpi} (for @acronym{MPI} mode), and @samp{nil} (for none).
 The default @var{par_typ} is @samp{nil}, which means @command{ncremap} 
 will run in serial mode, and process one file at a time.
