@@ -20929,10 +20929,10 @@ Thus a perfectly conservative mapping between global grids that tile
 the sphere would have @math{@var{frac_a} = 1.0} for every input
 gridcell, and for the mean of all input gridcells.
 
-The map-checker computes @var{frac_a} from the stored variables
-@code{S}, @code{row}, @code{column}, @code{area_a}, and @code{area_b}
-in the map-file, and then compares those values to the @code{frac_a}
-values (if any) on-disk, and warns of any disagreements.
+The map-checker computes Conservation (@var{frac_a}) from the stored
+variables @code{S}, @code{row}, @code{column}, @code{area_a}, and
+@code{area_b} in the map-file, and then compares those values to the
+@code{frac_a} values (if any) on-disk, and warns of any disagreements.
 By definition, conservation is perfect to first order if the sum of
 the destination-gridcell-area-weighted weights (which is an area)
 equals the source gridcell area, and so their ratio (@var{frac_a}) is
@@ -20960,29 +20960,29 @@ frac_a sdn: 0.0000000000000167 =     1.7e-14 // Standard deviation
 ...
 @end verbatim
 @end example
-The values of @code{frac_a} are generally imperfect (not 1.0) for
-global grids.
-Reporting the detectable biases, the second floating-point column
-in each row above, is a prime feature of the checker.
-These biases should be vanishingly small with respect unity.
+The values of the @code{frac_a} metric are generally imperfect (not
+1.0) for global grids.
+The bias is the deviation from the target metric shown in the second
+floating-point column in each row above (e.g., 8.9e-13). 
+These biases should be vanishingly small with respect to unity.
 Mean biases as large as 1.0e-08 may be considered acceptable for
-off-line analysis (i.e., a single regridding of raw data) and 
-simultaneously unacceptable for on-line use such as in a coupler
-where forward and inverse mappings may be applied tens of thousands
-of times.
+off-line analyses (i.e., a single regridding of raw data) though the
+acceptable tolerance should be more stringent for on-line use such as
+in a coupler where forward and reverse mappings may be applied tens of 
+thousands of times.
 The mean biases for such on-line regridding should be close to 1.0e-15
-in order for tens-of-thousands of applications to not significantly
-bias the simulation.
+in order for tens-of-thousands of repetitions to still conserve
+mass/energy to full double-precision.
 
 The minimum and maximum gridcell biases indicate the worst performing
 locations of the mapping.
 These are generally much (a few orders of magnitude) greater than the
 mean biases.
 Observe that the minimum and maximum biases in the examples above
-and below occur at longitudes that are multiples of 45~degrees.
+and below occur at longitudes that are multiples of @w{45 degrees}.
 This is characteristic of mappings to/from for cube-square grids
 whose faces have edges, and thus additional complexity, at multiples
-of 45~degrees.
+of @w{45 degrees}.
 This illustrates how intersection grid geometry influences biases.
 More complex, finer-scale structures, produce greater biases.
 The Root-Mean-Square (@acronym{RMS}) and standard deviation metrics
@@ -20992,9 +20992,18 @@ minimum and maximum biases.
 
 Consistency expresses the total fraction of an output gridcell that
 receives contributions from the input grid. 
-Thus consistency is directly analogous to conservation, only applied
+Thus Consistency is directly analogous to Conservation, only applied
 to the output grid. 
-The map-checker computes the consistency @var{frac_b} as row-sums of
+Conservation is the extent to which the mapping preserves the local
+and grid-wide integrals of input fields, while Consistency is the
+extent to which the mapping correctly aligns the input and output
+grids so that each destination cell receives the appropriate
+proportion of the input integrals.
+The mapping will produce an acceptably faithful reproduction of the
+input on the output grid only if all local and global Conservation and
+Consistency metrics meet the acceptable error tolerances. 
+
+The map-checker computes the Consistency (@var{frac_b}) as row-sums of 
 the weights stored in @code{S} and compares these to the stored values
 of @code{frac_b}. 
 (Note how the definition of weights @var{S(m,n)} as the fractional
@@ -21003,8 +21012,8 @@ contribution to destination gridcell @var{m} by source gridcell
 to @var{frac_a}). 
 Nevertheless, @code{frac_b} in the file may differ from the computed
 row-sum for example if the map-file generator artificially limits the
-stored @code{frac_b} value for any cell to~1.0 for those row-sums that 
-exceed~1.0.  
+stored @code{frac_b} value for any cell @w{to 1.0} for those row-sums
+that @w{exceed 1.0}.  
 The map-checker raises an alarm when discrepancies between computed
 and stored @code{frac_b} exceed a tolerance (currently 5.0e-16).  
 There are semi-valid reasons a map-generator might do this, so this
@@ -21014,8 +21023,7 @@ to a slightly different Consistency than indicated by the stored
 @code{frac_b}.
 
 As with @code{frac_a}, the values of @code{frac_b} are generally
-imperfect (not~1.0) for global grids, and reporting the detectable
-biases is a prime feature of the checker.
+imperfect @w{(not 1.0)} for global grids:
 @example
 @verbatim
 % ncks --chk_map map_ne30np4_to_cmip6_180x360_nco.20190601.nc
@@ -21032,10 +21040,10 @@ frac_b sdn: 0.0000000000000190 =     1.9e-14 // Standard deviation
 @end verbatim
 @end example
 This example shows that @var{frac_b} has the greatest local errors
-at similar boundaries (multiples of 45~degrees longitude) as
+at similar boundaries (multiples of @w{45 degrees} longitude) as
 @var{frac_a}. It is typical for Conservation and Consistency to
 degrade in intricate areas of the intersection grid, and these
-areas occur at multiples of 45~degrees longitude for cubed-sphere
+areas occur at multiples of @w{45 degrees} longitude for cubed-sphere 
 mappings. 
 
 The map-checker will produce area-weighted metrics when invoked
@@ -21071,8 +21079,12 @@ frac_b sdn: 0.0000000000000133 =     1.3e-14 // Standard deviation
 ...
 @end verbatim
 @end example
-The examples above show systematic differences (besides rounding)
+The examples above show no outstanding differences (besides rounding) 
 between the unweighted and area-weighted statistics.
+The absence of degradation between the global unweighted statistics
+(further up the page) and the global weighted statistics (just above)
+demonstrates there are no important correlations between local weight
+biases and gridcell areas.
 The area-weighted mean @var{frac_b} statistic deserves special
 mention.
 Its value is the exact factor by which the mapping will shift the
@@ -21081,6 +21093,48 @@ This metric is, therefore, first among equals when evaluating
 the quality of maps under consideration for use in time-stepping
 models where global conservation (e.g., of mass or energy) is
 crucial. 
+
+@cindex @code{--frac_b_nrm}
+As of @acronym{NCO} version 4.9.2 (March, 2020), adding the
+@samp{--frac_b_nrm} flag changes the map-checker into a read-write
+algorithm that first diagnoses the map-file statistics described
+above and then re-writes the weights (and weight-derived statistics
+@var{frac_a} and @var{frac_b}) to compensate or ``fix'' issues
+that poor-quality input grids can cause.
+Input grids can and often do have regions that are not tiled by
+any portion of any input gridcell.
+For example, many @acronym{FV} ocean grids (such as @acronym{MPAS})
+are empty (have no gridcells) in land regions beyond the coasts.
+Some @acronym{FV} ocean grids have gridcells everywhere and mask
+(i.e., screen-out) the non-ocean gridcells by setting the mask value
+to zero.
+Both these designs are perfectly legal.
+What is illegal, yet sometimes encountered in practice, is overlapping
+gridcells on the same input grid.
+Such an input grid is said to be self-overlapping.
+The surface topography dataset
+@file{SCRIPgrid_1km-merge-10min_HYDRO1K-merge-nomask_c130402.nc}
+(hereafter @acronym{HYDRO1K} for short) used by @acronym{E3SM} and
+@acronym{CESM} is self-overlapping.
+Weight-generators that receive the same input location twice might
+(if they do not take precaustions to idenfity the issue, which no
+known weight-generators do) double-weight the self-overlapped
+region(s).
+In other words, self-overlapping input grids can lead
+weight-generators to produce values @math{@code{frac_b} >> 1.0}.
+Applying these weights would lead to exaggerated values on the
+destination grid.
+
+The best solution to this issue is to adjust that input grid to
+avoid self-overlap.
+However, this solution may be difficult or impractical where the
+original data or dataset producer is not available.
+In such cases, the @code{--frac_b_nrm} flag provides a workaround. 
+fxm
+
+Poorly designed 
+First, it is important to understand that
+@samp{ncks --frac_b_nrm map.nc} is designed to alter @file{map.nc} 
 
 @html
 <a name="chk_nan"></a> <!-- http://nco.sf.net/nco.html#chk_nan -->

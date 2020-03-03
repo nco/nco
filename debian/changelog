@@ -8,7 +8,7 @@ nco (4.9.2-1) unstable; urgency=low
 
   * new upstream version Delirium: Re-license from GPL3 to BSD;ncks chk_map, lz4.cdl;ncpdq -U -v lat fix;ncremap prs->hyb, crv axis/crd atts, fv2fv opt, ne1024pg2, NaN area, fl_fmt/hdr_pad, sml_crc
 
- -- Charlie Zender <zender@uci.edu>  Fri, 14 Mar 2020 12:25:40 -0700
+ -- Charlie Zender <zender@uci.edu>  Fri, 14 Feb 2020 12:25:40 -0700
 
 nco (4.9.1-1) unstable; urgency=low
 
