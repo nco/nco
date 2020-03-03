@@ -1065,18 +1065,15 @@ int *pl_cnt_vrl_ret){
 
 
 
+        /*
 #ifdef _OPENMP
 #pragma omp critical
 #endif
         {
-          /* This is critcal as two threads can add to pl_out->wgt possibly at the same time
-           * we wish to avoid a collision */
-          /* for output  polygon wgt is used to calculate frac_b *
-           *
-           * maybe we can move this code back up to nco_msh_mk() ? */
           pl_out->wgt+=pl_vrl->wgt;
 
         }
+*/
 
         vrl_area += pl_vrl->area;
 
@@ -1149,7 +1146,7 @@ int *pl_cnt_vrl_ret){
 
     /* output some usefull tracking stuff - not debug but informative */
     if (  ++mem_lst[thr_idx].idx_cnt % thr_quota_step == 0 && nco_dbg_lvl_get() >=3   )
-      (void)fprintf(fp_stderr, "%s: thread %d  has processed %2.2f%% (%ld) of src cells quota and output %ld overlap cells\n", nco_prg_nm_get(), thr_idx, (float)mem_lst[thr_idx].idx_cnt/(float)thr_quota *100.0,  mem_lst[thr_idx].idx_cnt, mem_lst[thr_idx].pl_cnt  );
+      (void)fprintf(fp_stderr, "%s: thread %d  has processed %2.2f%% (%ld) of src cells quota and output %ld overlap cells\n",    nco_prg_nm_get(), thr_idx, (float)mem_lst[thr_idx].idx_cnt/(float)thr_quota *100.0,  mem_lst[thr_idx].idx_cnt, mem_lst[thr_idx].pl_cnt  );
 
   } /* end for idx */
 

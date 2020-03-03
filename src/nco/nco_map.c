@@ -830,7 +830,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   if( !rgr->flg_crv && mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
     /* 20200116 fxm change back to poly_rll */
     pl_typ=poly_rll;
-    /*   pl_typ=poly_sph;*/
   else
     pl_typ=poly_sph;
 
@@ -983,8 +982,13 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   row_dst_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
 
   for(idx=0;idx<lnk_nbr;idx++){
-    if(pl_lst_vrl[idx]->wgt > 1.0 && pl_lst_vrl[idx]->wgt < 1.0+1.0e-10) pl_lst_vrl[idx]->wgt=1.0;
+    if(pl_lst_vrl[idx]->wgt > 1.0 && pl_lst_vrl[idx]->wgt < 1.0+1.0e-10)
+      pl_lst_vrl[idx]->wgt=1.0;
+
     wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
+
+    pl_lst_out[pl_lst_vrl[idx]->dst_id]->wgt+=pl_lst_vrl[idx]->wgt;
+
     col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
     row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
   } /* !idx */
