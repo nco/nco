@@ -830,7 +830,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   if( !rgr->flg_crv && mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
     /* 20200116 fxm change back to poly_rll */
     pl_typ=poly_rll;
-    /*   pl_typ=poly_sph;*/
   else
     pl_typ=poly_sph;
 
@@ -983,8 +982,13 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   row_dst_adr=(int *)nco_malloc(lnk_nbr*nco_typ_lng(NC_INT));
 
   for(idx=0;idx<lnk_nbr;idx++){
-    if(pl_lst_vrl[idx]->wgt > 1.0 && pl_lst_vrl[idx]->wgt < 1.0+1.0e-10) pl_lst_vrl[idx]->wgt=1.0;
+    if(pl_lst_vrl[idx]->wgt > 1.0 && pl_lst_vrl[idx]->wgt < 1.0+1.0e-10)
+      pl_lst_vrl[idx]->wgt=1.0;
+
     wgt_raw[idx]=pl_lst_vrl[idx]->wgt;
+
+    pl_lst_out[pl_lst_vrl[idx]->dst_id]->wgt+=pl_lst_vrl[idx]->wgt;
+
     col_src_adr[idx]=pl_lst_vrl[idx]->src_id+1;
     row_dst_adr[idx]=pl_lst_vrl[idx]->dst_id+1;
   } /* !idx */
@@ -1011,7 +1015,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   /* Write-out overlap mesh
      20190526: Allow users to name and output mesh-file with --rgr msh_fl=msh.nc. https://github.com/nco/nco/issues/135 */
-  if(rgr->fl_msh) nco_msh_poly_lst_wrt(rgr->fl_msh,pl_lst_vrl,pl_cnt_vrl,grd_lon_typ_out);
+  if(rgr->fl_msh) nco_msh_poly_lst_wrt(rgr->fl_msh,pl_lst_vrl,pl_cnt_vrl,grd_lon_typ_out, rgr->fl_out_fmt);
 
   *wgt_raw_ptr=wgt_raw;
   *col_src_adr_ptr=col_src_adr;
@@ -1056,7 +1060,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_out,grd_sz_out,pl_lst_vrl,pl_cnt_vrl,io_flg,&pl_nbr);
 
     if(pl_nbr){
-      nco_msh_poly_lst_wrt("nco_map_tst_out_dbg.nc",pl_lst_dbg,pl_nbr,grd_lon_typ_out);
+      nco_msh_poly_lst_wrt("nco_map_tst_out_dbg.nc",pl_lst_dbg,pl_nbr,grd_lon_typ_out, rgr->fl_out_fmt);
       pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg,pl_nbr);
     }
 
@@ -1068,7 +1072,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in,grd_sz_in,pl_lst_vrl,pl_cnt_vrl,io_flg,&pl_nbr);
 
     if(pl_nbr){
-      nco_msh_poly_lst_wrt("nco_map_tst_in_dbg.nc",pl_lst_dbg,pl_nbr,grd_lon_typ_out);
+      nco_msh_poly_lst_wrt("nco_map_tst_in_dbg.nc",pl_lst_dbg,pl_nbr,grd_lon_typ_out, rgr->fl_out_fmt);
       pl_lst_dbg=nco_poly_lst_free(pl_lst_dbg,pl_nbr);
     }
   }
@@ -1367,7 +1371,8 @@ nco_msh_poly_lst_wrt
 (const char *fl_out,
 poly_sct ** pl_lst,
 int pl_nbr,
-nco_grd_lon_typ_enm grd_lon_typ)
+nco_grd_lon_typ_enm grd_lon_typ,
+int fl_out_fmt)
 {
   const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
@@ -1379,7 +1384,6 @@ nco_grd_lon_typ_enm grd_lon_typ)
 
   int out_id; /* I [id] Output netCDF file ID */
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
-  int fl_out_fmt=NC_FORMAT_CLASSIC; /* [enm] Output file format */
   int dmn_ids[3]; /* [id] Dimension IDs array for output variable */
   int grd_crn_lat_id; /* [id] Grid corner latitudes  variable ID */
   int grd_crn_lon_id; /* [id] Grid corner longitudes variable ID */
