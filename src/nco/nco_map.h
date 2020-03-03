@@ -90,7 +90,8 @@ extern "C" {
   (const char *fl_out,
    poly_sct ** pl_lst,
    int pl_nbr,
-   nco_grd_lon_typ_enm grd_lon_typ
+   nco_grd_lon_typ_enm grd_lon_typ,
+   int fl_out_fmt
    );
   
   int
