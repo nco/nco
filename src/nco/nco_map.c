@@ -827,7 +827,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
      Final lnk_nbr and grd_crn_nbr_vrl are known only after a full loop through input grids */
 
   /* Choose mesh overlap type based on rank of src and dst */
-  if( !rgr->flg_crv && mpf->src_grid_rank==2 && mpf->dst_grid_rank==2)
+  if( !rgr->flg_crv &&  rgr->edg_typ!=nco_edg_gtc &&  (mpf->src_grid_rank==2 && mpf->dst_grid_rank==2))
     /* 20200116 fxm change back to poly_rll */
     pl_typ=poly_rll;
   else
