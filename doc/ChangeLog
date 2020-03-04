@@ -1,5 +1,13 @@
 2020-03-04  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.3-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha03: ';git push
+	git tag -a 4.9.3-alpha03 -m '';git push --tags
+
+	* NCO 4.9.3-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha02: Loss Prevention';git push
+	git tag -a 4.9.3-alpha02 -m 'ncks --frac_b_nrm;ncremap --correct_areas, RLL edg_typ, smc areas; nco.texi chk_map, job_nbr, par_typ, SGS, unq_sfx';git push --tags
+
 	* nco_msh_mk() allow user to override edg_typ for RLL intersections
 
 	* nco_rgr_ini() default to edg_typ_nil so user can change it
@@ -26,10 +34,6 @@
 
 2020-02-21  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.9.3-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha02: Fuji Rolls';git push
-	git tag -a 4.9.3-alpha02 -m 'ncks --frac_b_fix;ncremap --correct_areas;';git push --tags
-
 	* ncremap add --correct_areas on the four conservative TR maps with destination FV grids
 
 	* Update OpenMP update shared() clause in nco_ply_lst.c for thr_quota,thr_quota_step for Intel Compilers
@@ -42,7 +46,7 @@
 
 	* Recompute and store new frac_a as well as frac_b when	re-normalizing weights
 
-	* Change ncks --map_fix option (ambiguous with ncks --map) to --fix_map or --frac_b_fix
+	* Change ncks --map_fix option (ambiguous with ncks --map) to --fix_map or --frac_b_nrm
 
 2020-02-17  Charlie Zender  <zender@uci.edu>
 

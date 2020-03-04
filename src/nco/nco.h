@@ -348,7 +348,7 @@ extern "C" {
 # define NCO_VERSION_MINOR 9
 #endif /* !NCO_VERSION_MINOR */
 #ifndef NCO_VERSION_PATCH
-# define NCO_VERSION_PATCH 3
+# define NCO_VERSION_PATCH 2
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
 # define NCO_VERSION_NOTE "-alpha02" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */

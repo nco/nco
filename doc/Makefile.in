@@ -193,8 +193,7 @@ am__uninstall_files_from_dir = { \
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in \
 	$(top_srcdir)/autobld/mkinstalldirs \
-	$(top_srcdir)/autobld/texinfo.tex AUTHORS ChangeLog NEWS \
-	README TODO
+	$(top_srcdir)/autobld/texinfo.tex AUTHORS ChangeLog TODO
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
