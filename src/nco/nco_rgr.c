@@ -276,7 +276,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
   /* Initialize key-value properties used in grid generation */
-  rgr->edg_typ=nco_edg_gtc; /* [enm] Edge/Arc-type for triangle edges */
+  rgr->edg_typ=nco_edg_nil; /* [enm] Edge/Arc-type for triangle edges */
   rgr->fl_grd=NULL; /* [sng] Name of SCRIP grid file to create */
   rgr->fl_hnt_dst=NULL; /* [sng] ERWG hint destination */
   rgr->fl_hnt_src=NULL; /* [sng] ERWG hint source */
@@ -5294,10 +5294,11 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
   /* Shift to this method once we pass rgr into nco_sph_plg_area() */
   nco_bool flg_mth_csz=False; /* [flg] Use CSZ's advancing polygon bisector method */
   nco_bool flg_mth_ctr=False; /* [flg] Use centroid method to compute polygon area */
-  nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
   nco_edg_typ_enm edg_typ; /* [enm] Arc-type for triangle edges */
-  ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
+  nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon decomposition method */ 
+  if(rgr->edg_typ == nco_edg_nil) rgr->edg_typ=nco_edg_gtc;
   edg_typ=rgr->edg_typ; /* [enm] Arc-type for triangle edges */
+  ply_tri_mth=rgr->ply_tri_mth; /* [enm] Polygon decomposition method */ 
   if(ply_tri_mth == nco_ply_tri_mth_csz) flg_mth_csz=True;
   if(ply_tri_mth == nco_ply_tri_mth_ctr) flg_mth_ctr=True;
   assert(flg_mth_ctr != flg_mth_csz);

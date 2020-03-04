@@ -1076,11 +1076,11 @@ elif [ "${par_typ}" = ${par_mpi} ] || [[ "${par_typ}" =~ (mpi|MPI) ]]; then
     par_typ=${par_mpi}
     par_opt=' &'
     mpi_flg='Yes'
-elif [ "${par_typ}" = ${par_srl} ] || [ "${par_typ}" = 'srl' ] || [[ "${par_typ}" =~ [sS]erial ]] || [[ "${par_typ}" =~ [nN]il ]]; then 
+elif [ "${par_typ}" = ${par_srl} ] || [ "${par_typ}" = 'srl' ] || [[ "${par_typ}" =~ [sS]erial ]] || [[ "${par_typ}" =~ [nN]il ]] || [[ "${par_typ}" =~ [nN]one ]]; then 
     par_typ=${par_srl}
 else 
     echo "ERROR: Invalid -p par_typ option = ${par_typ}"
-    echo "HINT: Valid par_typ arguments include '${par_bck}' (or 'bck'), '${par_mpi}' (or 'MPI'), and '${par_srl}' (or 'srl' or 'nil'). For background parallelism, select '${par_bck}' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select '${par_mpi}' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select '${par_srl}', which causes ${spt_nm} to spawn all processes serially on a single compute node."
+    echo "HINT: Valid par_typ arguments include '${par_bck}' (or 'bck'), '${par_mpi}' (or 'MPI'), and '${par_srl}' (or 'srl' or 'nil' or 'none'). For background parallelism, select '${par_bck}' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select '${par_mpi}' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select '${par_srl}', which causes ${spt_nm} to spawn all processes serially on a single compute node."
     exit 1
 fi # !par_typ
 if [ -n "${rgr_map}" ]; then 

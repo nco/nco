@@ -1078,7 +1078,7 @@ extern "C" {
   } nco_ply_tri_mth_typ_enm;
 
   typedef enum nco_edg_typ_enm{ /* [enm] Edge-type/arc-type that connects grid vertices */
-    nco_edg_nil=0,
+    nco_edg_nil=0, /* [enm] Edges/arcs are of unspecified type */
     nco_edg_gtc, /* [enm] Edges/arcs are great circle segments */
     nco_edg_smc, /* [enm] Edges/arcs of constant latitude are small circle segments, all others are great circle segments */
     nco_edg_crt, /* [enm] Edges/arcs are Cartesian/planar lines and neglect curvature */

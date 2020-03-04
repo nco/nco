@@ -1,6 +1,16 @@
+2020-03-04  Charlie Zender  <zender@uci.edu>
+
+	* nco_msh_mk() allow user to override edg_typ for RLL intersections
+
+	* nco_rgr_ini() default to edg_typ_nil so user can change it
+
+2020-03-03  Charlie Zender  <zender@uci.edu>
+
+	* nco.texi --par_typ documentation
+
 2020-03-02  Charlie Zender  <zender@uci.edu>
 
-	* nco.texi more work on --frac_b_nrm documentation
+	* nco.texi more --frac_b_nrm documentation
 
 2020-03-01  Charlie Zender  <zender@uci.edu>
 

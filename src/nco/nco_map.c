@@ -827,14 +827,25 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
      Final lnk_nbr and grd_crn_nbr_vrl are known only after a full loop through input grids */
 
   /* Choose mesh overlap type based on rank of src and dst */
-  if( !rgr->flg_crv &&  rgr->edg_typ!=nco_edg_gtc &&  (mpf->src_grid_rank==2 && mpf->dst_grid_rank==2))
-    /* 20200116 fxm change back to poly_rll */
-    pl_typ=poly_rll;
-  else
-    pl_typ=poly_sph;
-
+  if(!rgr->flg_crv && /* Grid is not curvilinear (fxm: check should be if _either_ grid is curvilinear) */
+     (rgr->edg_typ != nco_edg_gtc) && /* User did not specify great circle edges */
+     (mpf->src_grid_rank == 2 && mpf->dst_grid_rank == 2)) /* Both grids are 2-D */
+    {
+      /* Use small circle triangles for RLL mapping if user did specify great circles edges */ 
+      if(rgr->edg_typ == nco_edg_nil) rgr->edg_typ=nco_edg_smc;
+      pl_typ=poly_rll;
+    }else{
+      if(rgr->edg_typ == nco_edg_nil) rgr->edg_typ=nco_edg_gtc;
+      pl_typ=poly_sph;
+  } /* !edg_typ */
+  /* 20200304: NB: edg_typ and pl_typ are NOT synonyms:
+     pl_typ determines which area routines to use
+     edg_typ determines which edge types to assume for intersections and within the spherical area routines
+     Polygons of type poly_sph may have edges of type edg_typ_smc
+     edg_typ_smc means edges with same latitude are small circles, other edges are great circles */
+  
   if(nco_dbg_lvl_get() >= nco_dbg_crr)
-     (void)fprintf(stderr,"%s:%s(): Interpolation type=%s\n",nco_prg_nm_get(),fnc_nm, nco_poly_typ_sng_get(pl_typ)  );
+     (void)fprintf(stderr,"%s:%s(): Interpolation type=%s\n",nco_prg_nm_get(),fnc_nm, nco_poly_typ_sng_get(pl_typ));
 
   /* Create some statistics on grid in and grid out */
   pl_glb_in=nco_msh_stats(area_in,msk_in,lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in,grd_sz_in, grd_crn_nbr_in);

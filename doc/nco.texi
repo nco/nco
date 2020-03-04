@@ -18243,7 +18243,6 @@ create the list of input files when no list is provided through
 @cindex @var{job_nbr}
 @cindex @code{--job_nbr}
 @cindex @code{--job_number}
-@cindex @code{--job_number}
 @cindex @code{--jobs}
 @item -j @var{job_nbr} (@code{--job_nbr}, @code{--job_number}, @code{--jobs})
 The @var{job_nbr} parameter controls the parallelism granularity of
@@ -25474,25 +25473,45 @@ differ (Background mode for @command{ncclimo} and Serial mode for
 @command{ncremap}). 
 Select the desired mode with the argument to
 @samp{--par_typ=@var{par_typ}}.
-Values of @var{par_typ} that explicitly select Background mode are
-@code{bck}, @samp{Background}, and @code{background}.  
+Explicitly select Background mode with @var{par_typ} values of
+@code{bck}, @code{background}, or @code{Background}.
+The values @code{mpi} or @code{MPI} select @acronym{MPI} mode, and
+the @code{srl}, @code{serial}, @code{Serial}, @code{nil}, or
+@code{none} will select Serial mode (which disables file-level
+parallelism). 
 
-@samp{mpi} (for @acronym{MPI} mode), and @samp{nil} (for none).
-The default @var{par_typ} is @samp{nil}, which means @command{ncremap} 
-will run in serial mode, and process one file at a time.
-Background and @acronym{MPI} parallelism modes both issue all regridding 
-commands at one time.
-In Background mode these commands are spawned as @acronym{UNIX}
-background processes on the local node.
-Nodes with mutiple cores will take advantage of this and simultaneously
-execute regridding commands.
-In @acronym{MPI} mode these commands are issued round-robin fashion
-to all the compute nodes available to the job.
-Typically both parallel modes scale well with sufficent @acronym{CPU}s
-until I/O contention becomes the bottleneck. 
-Furthermore, a naming conflict among intermediate files still exists
-(see Limitations, below) so parallel mode is currently only supported
-when all source files share the same grid.
+The default file-level parallelism for @command{ncremap} is Serial
+mode (i.e., no file-level parallelism), in which @command{ncremap}
+processes one input file at a time.
+Background and @acronym{MPI} modes implement true file-level
+parallelism. 
+Typically both these parallel modes scale well with sufficent
+unless and until I/O contention becomes the bottleneck. 
+In Background mode @command{ncremap} issues all commands to regrid
+the input file list as @acronym{UNIX} background processes on the
+local node. 
+Nodes with mutiple cores and sufficient @acronym{RAM} take advantage
+of this to simultaneously regrid multiple files.
+In @acronym{MPI} mode @command{ncremap} issues commands to regrid
+the input file list in round-robin fashion to all available compute
+nodes. 
+Prior to @acronym{NCO} version 4.9.0 (released December, 2019),
+Background and @acronym{MPI} parallelism modes both regridded all
+the input files at one time and there was no way to limit the number 
+of files being simultaneously regridded.
+Subsequent versions allow finer grained parallelism by introducing
+the ability to limit the number of discrete workflow elements or
+``jobs'' (i.e., file regriddings) to perform simultaneously within a
+@command{ncremap} invocation or ``workflow''.
+
+As of @acronym{NCO} version 4.9.0 (released December, 2019),
+the @samp{--job_nbr=@var{job_nbr}} option specifies the maximum number
+of files to regrid simultaneously on all nodes being harnessed by the
+workflow.
+Thus @var{job_nbr} is an additional parameter to fine-tune file level
+parallelism and has no effect in Serial mode.
+Please see the @command{ncremap} @var{job_nbr} documentation for more
+details.
 
 @html
 <a name="preserve"></a> <!-- http://nco.sf.net/nco.html#preserve -->
