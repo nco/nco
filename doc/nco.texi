@@ -25753,6 +25753,15 @@ or else it uses the current working director (@code{$PWD}).
 @item -t @var{thr_nbr} (@code{--thr_nbr}, @code{--thr}, @code{--thread_number}, @code{--threads})
 Specifies the number of threads used per regridding process
 (@pxref{OpenMP Threading}).
+@command{ncremap} can use OpenMP shared-memory techniques to
+simultaneosly regrid multiple variables within a single file.
+This shared memory parallelism is quite efficient because it
+uses a single copy of the regridding weights in physical memory
+to regrid multiple variable simultaneously.
+In cases where the weight array significantly exceeds the size of the 
+variables to be regridded, simultaneously regridding multiple
+variables may not al
+
 The @acronym{NCO} regridder scales well up to 8--16 threads.
 
 @html
