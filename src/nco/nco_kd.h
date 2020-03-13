@@ -234,6 +234,7 @@ typedef struct KDPpriority
 	double dist;
 	KDElem *elem;
 	double area;
+    char dbg_sng[200];
 } KDPriority;
 
 

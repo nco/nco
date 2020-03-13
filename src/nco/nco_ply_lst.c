@@ -838,6 +838,8 @@ int *pl_cnt_vrl_ret){
 
       /* for area debug only */
       mem_lst[thr_idx].kd_list[jdx].area=-1.0;
+      mem_lst[thr_idx].kd_list[jdx].dbg_sng[0]='\0';
+
       /*
       if (pl_lst_in[idx]->pl_typ != pl_out->pl_typ) {
         fprintf(stderr, "%s: %s poly type mismatch\n", nco_prg_nm_get(), fnc_nm);
@@ -895,6 +897,7 @@ int *pl_cnt_vrl_ret){
 
 
         int lret = 0;
+        int lret2=0;
 
         /* [flg] set by nco_sph_intersect_pre - if True it means that scan hase detected a genuine intersection so
          * so no need to do further processing */
@@ -965,15 +968,16 @@ int *pl_cnt_vrl_ret){
 
         /* swap args around and try again */
         if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
+        //if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
         {
 
           flg_snp_to=1;
 
           nco_sph_intersect_pre(pl_out, pl_lst_in[idx], out_sng);
-          lret = nco_sph_process_pre(pl_lst_in[idx], out_sng, &bGenuine);
+          lret2 = nco_sph_process_pre(pl_lst_in[idx], out_sng, &bGenuine);
 
 
-          switch(lret)
+          switch(lret2)
           {
 
             case 1:
@@ -1008,6 +1012,10 @@ int *pl_cnt_vrl_ret){
           }
 
         }
+
+
+       if(bDirtyRats )
+          sprintf(mem_lst[thr_idx].kd_list[jdx].dbg_sng, "lret=%d in_sng=%s   lret2=%d  out_sng=%s\n",lret, in_sng, lret2, out_sng);
 
 
         if(bDirtyRats && pl_vrl && !nco_sph_is_convex(pl_vrl->shp, pl_vrl->crn_nbr) )
@@ -1110,6 +1118,7 @@ int *pl_cnt_vrl_ret){
       } /* end OMP critical */
 
       /* area diff by more than 10% */
+      int kdx;
       double eps = 1e-8;
       double frc = vrl_area / pl_lst_in[idx]->area;
       if (frc < (1 - eps) || frc > 1 + eps) {
@@ -1121,22 +1130,40 @@ int *pl_cnt_vrl_ret){
 
         if (bDirtyRats) {
           //if (pl_lst_in[idx]->bwrp ) {
-          pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + 1));
-          pl_lst_dbg[pl_cnt_dbg] = nco_poly_dpl(pl_lst_in[idx]);
-          pl_cnt_dbg++;
 
           if (1) {
-            int kdx;
             (void) fprintf(fp_stderr, "# /** following pl_lst_in[%lu]  **/\n", idx);
             nco_poly_prn(pl_lst_in[idx], 0);
             (void) fprintf(fp_stderr, "# /** overlaps to  follow  **/\n");
             for (kdx = 0; kdx < vrl_cnt; kdx++) {
               nco_poly_prn((poly_sct *) mem_lst[thr_idx].kd_list[kdx].elem->item, 0);
               (void)fprintf(fp_stderr, "# vrl_area=%.15e\n",mem_lst[thr_idx].kd_list[kdx].area );
+              (void)fprintf(fp_stderr, "# dbg_sng=%s\n",mem_lst[thr_idx].kd_list[kdx].dbg_sng );
+
             }
 
             (void) fprintf(stderr, "/************* end dirty rats ***************/\n");
           }
+
+          if(1 && vrl_cnt_on>0) {
+
+
+            pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + vrl_cnt_on));
+
+            /* write overlaps maybe */
+            for (kdx = 0; kdx < vrl_cnt_on; kdx++) {
+              poly_sct * lcl_poly=mem_lst[thr_idx].pl_lst[mem_lst[thr_idx].pl_cnt - vrl_cnt_on + kdx];
+
+              if(lcl_poly->src_id== pl_lst_in[idx]->src_id )
+                  pl_lst_dbg[pl_cnt_dbg++] = nco_poly_dpl(lcl_poly);
+
+            }
+
+
+
+          }
+
+
 
         }
 
@@ -1160,9 +1187,7 @@ int *pl_cnt_vrl_ret){
   /* write filtered polygons to file */
   if(bDirtyRats && pl_cnt_dbg)
   {
-
-
-    /* nco_msh_poly_lst_wrt("tst-wrt-dbg.nc", pl_lst_dbg, pl_cnt_dbg, grd_lon_typ); */
+    nco_msh_poly_lst_wrt("tst-wrt-dbg.nc", pl_lst_dbg, pl_cnt_dbg, grd_lon_typ,NC_FORMAT_NETCDF4);
     pl_lst_dbg=(poly_sct**)nco_poly_lst_free(pl_lst_dbg, pl_cnt_dbg);
   }
 
