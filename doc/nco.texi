@@ -24676,11 +24676,12 @@ and can simultaneously regrid two files using eight threads each.
 (One needs to test a bit to optimize these parameters.)
 Then an optimal (in terms of wallclock time) invocation would
 request five nodes with @w{10 simultaneous} jobs of eight threads.
-On many batch systems this would involve a scheduler command like 
-this @samp{qsub -l nodes=5 ...} followed by 
-@samp{ncremap -p mpi -j 10 -t 8 ...}.
-This job will likely complete between five and ten-times faster than a 
-serial invocation of @command{ncremap}.
+On @acronym{PBS} or @acronym{SLURM} batch systems this would involve a
+scheduler command like @samp{qsub -l nodes=5 ...} or 
+@samp{sbatch --nodes=5 ...}, respectively, followed by 
+@samp{ncremap --par_typ=mpi --job_nbr=10 --thr_nbr=8 ...}.
+This job will likely complete between five and ten-times faster than a  
+serial-mode invocation of @command{ncremap} to regrid the same files.
 The uncertainty range is due to unforeseeable, system-dependent
 load and I/O charateristics.
 Nodes that can simultaneously write to more than one file fare better
