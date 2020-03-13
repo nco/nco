@@ -3620,6 +3620,10 @@ nco_mat_inv(double *mat, double *mat_inv)
   return True;
 }
 
+
+#ifdef ENABLE_GSL
+
+
 nco_bool
 nco_mat_int_pl
 (const double *p0, const double *p1, const double *q0, const double *q1, double *r0)
@@ -3708,12 +3712,12 @@ mat[8]=-p0[2];
 }
 
 
-
+#else
 
 
 /* Intersect a line and a plane */
 nco_bool
-nco_mat_int_pl_1(const double *p0, const double *p1, const double *q0, const double *q1, double *r0)
+nco_mat_int_pl(const double *p0, const double *p1, const double *q0, const double *q1, double *r0)
                {
 
   double mat[9];
@@ -3763,6 +3767,8 @@ nco_mat_int_pl_1(const double *p0, const double *p1, const double *q0, const dou
 
   return True;
 }
+
+#endif
 
 
 /******************************************************************************************************************/
