@@ -3620,10 +3620,100 @@ nco_mat_inv(double *mat, double *mat_inv)
   return True;
 }
 
+nco_bool
+nco_mat_int_pl
+(const double *p0, const double *p1, const double *q0, const double *q1, double *r0)
+{
+  int s;
+/*
+ double mat[9];
+double mat_inv[9];
+double V[3];
+double X[3];
+*/
+
+  int size=3;
+  nco_bool bRet=False;
+
+
+  gsl_matrix *gsl_mat = gsl_matrix_alloc(size, size);
+  gsl_permutation *p = gsl_permutation_alloc(size);
+
+  gsl_vector *gsl_vec_b = gsl_vector_alloc(size);
+  gsl_vector *gsl_vec_x = gsl_vector_alloc(size);
+
+
+  /*
+  gsl_matrix_long_double *gsl_mat = gsl_matrix_long_double_alloc(size, size);
+  gsl_permutation *p = gsl_permutation_alloc(size);
+
+  gsl_vector_long_double *gsl_vec_b = gsl_vector_long_double_alloc(size);
+  gsl_vector_long_double *gsl_vec_x = gsl_vector_long_double_alloc(size);
+  */
+
+
+
+
+/* set a plane and line into matrix
+mat[0]=q0[0]-q1[0];
+mat[1]=p1[0]-p0[0];
+mat[2]=-p0[0];
+
+mat[3]=q0[1]-q1[1];
+mat[4]=p1[1]-p0[1];
+mat[5]=-p0[1];
+
+mat[6]=q0[2]-q1[2];
+mat[7]=p1[2]-p0[2];
+mat[8]=-p0[2];
+*/
+  /* set a plane and line into matrix */
+  gsl_matrix_set( gsl_mat, 0, 0,    q0[0]-q1[0] );
+  gsl_matrix_set( gsl_mat, 0, 1,  p1[0]-p0[0] );
+  gsl_matrix_set( gsl_mat, 0, 2,  -p0[0]);
+  gsl_matrix_set( gsl_mat, 1, 0,  q0[1]-q1[1] );
+  gsl_matrix_set( gsl_mat, 1, 1,  p1[1]-p0[1]);
+  gsl_matrix_set( gsl_mat, 1, 2,  -p0[1] );
+  gsl_matrix_set( gsl_mat, 2, 0,  q0[2]-q1[2]);
+  gsl_matrix_set( gsl_mat, 2, 1,  p1[2]-p0[2]);
+  gsl_matrix_set( gsl_mat, 2, 2,  -p0[2] );
+
+
+  gsl_vector_set(gsl_vec_b, 0,q0[0]-p0[0]);
+  gsl_vector_set(gsl_vec_b, 1,q0[1]-p0[1]);
+  gsl_vector_set(gsl_vec_b, 2,q0[2]-p0[2]);
+
+
+  /* remember LU decomposition is put into gsl_mat */
+  if(!gsl_linalg_LU_decomp(gsl_mat, p, &s) && !gsl_linalg_LU_solve(gsl_mat,p,gsl_vec_b, gsl_vec_x)) {
+    bRet = True;
+
+    r0[0]=gsl_vector_get(gsl_vec_x,0);
+    r0[1]=gsl_vector_get(gsl_vec_x,1);
+    r0[2]=gsl_vector_get(gsl_vec_x,2);
+
+  }
+
+  gsl_permutation_free(p);
+  gsl_matrix_free(gsl_mat);
+  gsl_vector_free(gsl_vec_b);
+  gsl_vector_free(gsl_vec_x);
+
+
+  return bRet;
+
+
+
+
+}
+
+
+
+
 
 /* Intersect a line and a plane */
 nco_bool
-nco_mat_int_pl(const double *p0, const double *p1, const double *q0, const double *q1, double *r0)
+nco_mat_int_pl_1(const double *p0, const double *p1, const double *q0, const double *q1, double *r0)
                {
 
   double mat[9];
