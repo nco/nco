@@ -81,6 +81,64 @@ void nco_sph_prn(double **sR, int r, int istyle)
 
 }
 
+double  nco_sph_cross_chk(double *a, double *b, double *c)
+{
+  const char fnc_nm[]="nco_sph_cross()";
+  //
+  double n1;
+
+  c[0]=a[1]*b[2]-a[2]*b[1];
+  c[1]=a[2]*b[0]-a[0]*b[2];
+
+  /* check if longitude  the same ? - then Z component must be zero */
+  c[2]= ( a[3]==b[3] ? 0.0 : a[0]*b[1]-a[1]*b[0] );
+
+  // normalize vector
+  n1=sqrt( c[0]*c[0]+c[1]*c[1] + c[2]*c[2] );
+
+  if(0 && DEBUG_SPH)
+    printf("%s: n1=%.15f (%.15f, %.15f %.15f)\n",fnc_nm, n1, c[0],c[1], c[2]);
+
+
+  if( n1 >  0.0 && n1 != 1.0  )
+  {
+    c[0] /= n1;
+    c[1] /= n1;
+    c[2] /= n1;
+  }
+
+
+  return n1;
+
+
+}
+
+
+
+double  nco_sph_cross3(double *a, double *b, double *c)
+{
+  const char fnc_nm[]="nco_sph_cross()";
+  //
+  double n2;
+  double tmp[NBR_SPH];
+
+  /* see if point a and point b on exactly the same same merdian */
+  // if(a[3]==b[3]) return nco_sph_cross_chk(a, b, c);
+
+   nco_sph_sub(a,b,tmp);
+
+   // nco_sph_add_lonlat(tmp);
+
+   n2=nco_sph_cross(tmp, b, c);
+
+   return n2;
+
+
+}
+
+
+
+
 
 /* spherical functions */
 int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp_to, const char *pq_pre)
@@ -184,6 +242,17 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
        pqCross[2]=-pqCross[3];
      else if(!pqCross[3])
        pqCross[3]=-pqCross[2];
+
+     /* weird -sometimes it happens ? */
+     if(!pqCross[0] && !pqCross[1] ) {
+       pqCross[2] = 0;
+       pqCross[3] = 0;
+     } else if(!pqCross[2] && !pqCross[3])
+     {
+       pqCross[0] = 0;
+       pqCross[1] = 0;
+
+     }
 
 
      if(!pqCross[0] && !pqCross[1] && !pqCross[2] && !pqCross[3] )
@@ -336,8 +405,15 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
         }
 
-         if(DEBUG_SPH)
+         if(DEBUG_SPH){
             printf("numIntersect=%d codes=%s (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d) inflag=%s\n",numIntersect, codes, pqCross[1], pqCross[0],  pqCross[3], pqCross[2], qpFace,pqFace, nco_poly_vrl_flg_sng_get(inflag));
+
+            printf("dx1=%.15f nx3=%.15f\n", dx1, nx3);
+            nco_sph_prn_pnt("PCross",Pcross,4,True );
+            nco_sph_prn_pnt("QCross",Qcross,4,True );
+
+          }
+
 
 
 
@@ -921,6 +997,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
       codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
 
 
+
       if(DEBUG_SPH)
         fprintf(stderr, "%s: codes=%s - quick vertex return\n", fnc_nm, codes );
 
@@ -933,6 +1010,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
     }
 
   }
+
 
 
   /* The plane / line intersection method doesnt work very well when the end point of the line is on
@@ -964,8 +1042,9 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
   if(!bInt )
     return False;
 
-
-  if(   pt[0] < -1.0e-15  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-15) )
+  /* this is quite permissive  as some  returned points maybe in the range <1.0e-14, or 1.0+1.-e-14
+     The points are double checked later with flg_cd=nco_sph_metric_int(q0,q1, pcnd); */
+  if(   pt[0] < -1.0e-12  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-12) )
      return False;
 
 
@@ -1015,8 +1094,8 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
   if(!flg_ab)
       return False;
 
-  //flg_cd=nco_sph_metric_int(q0,q1, pcnd);
-  flg_cd= ( !nco_sph_metric(pcnd,q0) ? 2 : !nco_sph_metric(pcnd, q1) ? 3 :1 );
+  flg_cd=nco_sph_metric_int(q0,q1, pcnd);
+  //flg_cd= ( !nco_sph_metric(pcnd,q0) ? 2 : !nco_sph_metric(pcnd, q1) ? 3 :1 );
 
   if(bSwap)
   {
