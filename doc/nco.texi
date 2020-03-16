@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.3-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 1 March 2020
+@set update-date 16 March 2020
 @set update-month March 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20812,8 +20812,8 @@ Ullrich of UC Davis for this suggestion and early prototypes.
 @example
 @verbatim
 $ ncks --chk_map map.nc            # Unweighted statistics
-$ ncks --chk_map --area_wgt map.nc # Area-weighted statistics
 $ ncks --chk_map --dbg=2 map.nc    # Additional diagnostics
+$ ncks --chk_map --area_wgt map.nc # Area-weighted statistics
 @end verbatim
 @end example
 
@@ -21046,8 +21046,8 @@ areas occur at multiples of @w{45 degrees} longitude for cubed-sphere
 mappings. 
 
 The map-checker will produce area-weighted metrics when invoked
-with the additional @code{--area_wgt} flag, e.g.,
-@samp{ncks --area_wgt --chk_map in.nc}.
+with the @code{--area_wgt} flag, e.g.,
+@samp{ncks --area_wgt in.nc}.
 Area-weighted statistics show the exact local and global results to
 expect with real-world grids in which large consistency/conservation
 errors in small gridcells may be less important than smaller errors in
@@ -21056,7 +21056,7 @@ Global-weighted mean statistics will of course differ from unweighted
 statistics, although the minimum and maximum do not change:
 @example
 @verbatim
-% ncks --area_wgt --chk_map map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+% ncks --area_wgt map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 ...
 Conservation metrics (column-sums of area_b-weighted weights normalized by area_a) and errors---
 Perfect metrics for global Grid B are avg = min = max = 1.0, mbs = rms = sdn = 0.0:
@@ -21124,16 +21124,20 @@ weight-generators to produce values @math{@code{frac_b} >> 1.0}.
 Applying these weights would lead to exaggerated values on the
 destination grid.
 
-The best solution to this issue is to adjust that input grid to
+The best solution to this issue is to adjust the input grid to
 avoid self-overlap.
 However, this solution may be difficult or impractical where the
-original data or dataset producer is not available.
+original data, producer, or algorithm are unavailable or unclear.
 In such cases, the @code{--frac_b_nrm} flag provides a workaround. 
-fxm
-
-Poorly designed 
-First, it is important to understand that
-@samp{ncks --frac_b_nrm map.nc} is designed to alter @file{map.nc} 
+Please understand that @samp{ncks --frac_b_nrm map.nc} is designed to
+alter @file{map.nc} in place, so backup the original file first.
+@example
+@verbatim
+% ncks --frac_b_nrm SCRIPgrid_1km-merge-10min_HYDRO1K-merge-nomask_c130402.nc
+...
+...
+@end verbatim
+@end example
 
 @html
 <a name="chk_nan"></a> <!-- http://nco.sf.net/nco.html#chk_nan -->
@@ -25479,7 +25483,7 @@ Explicitly select Background mode with @var{par_typ} values of
 The values @code{mpi} or @code{MPI} select @acronym{MPI} mode, and
 the @code{srl}, @code{serial}, @code{Serial}, @code{nil}, or
 @code{none} will select Serial mode (which disables file-level
-parallelism). 
+parallelism, though still allows intra-file OpenMP parallelism). 
 
 The default file-level parallelism for @command{ncremap} is Serial
 mode (i.e., no file-level parallelism), in which @command{ncremap}
@@ -25487,7 +25491,7 @@ processes one input file at a time.
 Background and @acronym{MPI} modes implement true file-level
 parallelism. 
 Typically both these parallel modes scale well with sufficent
-unless and until I/O contention becomes the bottleneck. 
+memory unless and until I/O contention becomes the bottleneck. 
 In Background mode @command{ncremap} issues all commands to regrid
 the input file list as @acronym{UNIX} background processes on the
 local node. 
@@ -25502,7 +25506,7 @@ the input files at one time and there was no way to limit the number
 of files being simultaneously regridded.
 Subsequent versions allow finer grained parallelism by introducing
 the ability to limit the number of discrete workflow elements or
-``jobs'' (i.e., file regriddings) to perform simultaneously within a
+``jobs'' (i.e., file regriddings) to perform simultaneously within an
 @command{ncremap} invocation or ``workflow''.
 
 As of @acronym{NCO} version 4.9.0 (released December, 2019),
@@ -25510,7 +25514,7 @@ the @samp{--job_nbr=@var{job_nbr}} option specifies the maximum number
 of files to regrid simultaneously on all nodes being harnessed by the
 workflow.
 Thus @var{job_nbr} is an additional parameter to fine-tune file level
-parallelism and has no effect in Serial mode.
+parallelism (it has no effect in Serial mode).
 Please see the @command{ncremap} @var{job_nbr} documentation for more
 details.
 
@@ -25759,11 +25763,32 @@ simultaneosly regrid multiple variables within a single file.
 This shared memory parallelism is quite efficient because it
 uses a single copy of the regridding weights in physical memory
 to regrid multiple variable simultaneously.
-In cases where the weight array significantly exceeds the size of the 
-variables to be regridded, simultaneously regridding multiple
-variables may not al
-
-The @acronym{NCO} regridder scales well up to 8--16 threads.
+Even so, simultaneously regridding multiple variables, especially at
+high resolution, may be memory-limited, meaning that the insufficient
+@acronym{RAM} can often limit the number of variables that the system
+can simultaneously regrid.
+By convention all variables to be regridded share the same
+regridding weights stored in a map-file, so that only one copy
+of the weights needs to be in memory, just as in Serial mode.
+However, the per-thread (i.e., per-variable) OpenMP memory demands 
+are considerable, with the memory required to regrid variables
+amounting to no less than about 5--7 times (for type @code{NC_FLOAT})
+and 2.5--3.5 times (for type @code{NC_DOUBLE}) the size of the
+uncompressed variable, respectively.
+Memory requirements are so high because the regridder performs
+all arithmetic in double precision to retain the highest accuracy,
+and must allocate separate buffers to hold the input and output
+(regridded) variable, a tally array to count the number of missing
+values and an array to sum the of the weights contributing to each
+output gridcell (the last two arrays are only necessary for variables
+with a @code{_FillValue} attribute).
+The input, output, and weight-sum arrays are always double precision,
+and the tally array is composed of four-byte integers.
+Given the high memory demands, one strategy to optimize @var{thr_nbr}
+for repetitious workflows is to increase it to keep doubling it (1, 2,
+4, @dots{}) until throughput stops improving. 
+With sufficient @acronym{RAM}, the @acronym{NCO} regridder scales well
+up to 8--16 threads. 
 
 @html
 <a name="upk_inp"></a> <!-- http://nco.sf.net/nco.html#upk_inp -->

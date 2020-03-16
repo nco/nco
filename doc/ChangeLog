@@ -1,7 +1,11 @@
+2020-03-16  Charlie Zender  <zender@uci.edu>
+
+	* ncks: --frac_b_nrm and --area_wgt both automatically imply --chk_map
+
 2020-03-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha03: Naughty NaN';git push
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha03: SDHalf';git push
 	git tag -a 4.9.3-alpha03 -m '';git push --tags
 
 	* NCO 4.9.3-alpha02 release procedure:

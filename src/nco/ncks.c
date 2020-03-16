@@ -750,8 +750,13 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
-      if(!strcmp(opt_crr,"area_wgt") || !strcmp(opt_crr,"area_weight")) flg_area_wgt=True;
-      if(!strcmp(opt_crr,"frac_b_nrm")) flg_frac_b_nrm=True;
+      if(!strcmp(opt_crr,"area_wgt") || !strcmp(opt_crr,"area_weight")){
+	flg_area_wgt=True;
+	CHK_MAP=True;
+      } /* !area_wgt */
+      if(!strcmp(opt_crr,"frac_b_nrm")){
+	flg_frac_b_nrm=True;
+      } /* !frac_b_nrm */
       if(!strcmp(opt_crr,"rgr") || !strcmp(opt_crr,"regridding")){
         flg_rgr=True;
         rgr_arg=(char **)nco_realloc(rgr_arg,(rgr_nbr+1)*sizeof(char *));
