@@ -225,7 +225,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      nx3= nco_sph_cross(Pcross, Qcross, Xcross);
 
 
-     (void)nco_sph_mk_pqcross(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b], Qcross, pqCross, map_rgr->edg_typ, &p_edg_typ, &q_edg_typ);
+     (void)nco_sph_mk_pqcross(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b], Qcross, pqCross, nco_edg_gtc, &p_edg_typ, &q_edg_typ);
 
 
      /* save Cross before implied */
@@ -243,17 +243,6 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      else if(!pqCross[3])
        pqCross[3]=-pqCross[2];
 
-     /* weird -sometimes it happens ? */
-     if(!pqCross[0] && !pqCross[1] ) {
-       pqCross[2] = 0;
-       pqCross[3] = 0;
-     } else if(!pqCross[2] && !pqCross[3])
-     {
-       pqCross[0] = 0;
-       pqCross[1] = 0;
-
-     }
-
 
      if(!pqCross[0] && !pqCross[1] && !pqCross[2] && !pqCross[3] )
        isParallel=True;
@@ -269,8 +258,19 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      /* Xcross product near zero !! so make it zero*/
       dx1=1.0- nco_sph_dot_nm(Pcross,Qcross );
 
-      /* spans parallel but in oposite directions */
-      if( fabs(dx1-2.0) < SIGMA_TOLERANCE )
+      /* spans parallel we cannot rely on all pqCross[0..3]=0 so we check again here */
+      if(dx1<DOT_TOLERANCE && !isParallel)
+      {
+        isParallel=True;
+        pqCross[0]=0;
+        pqCross[1]=0;
+        pqCross[2]=0;
+        pqCross[3]=0;
+
+      }
+
+
+      else if( fabs(dx1-2.0) < SIGMA_TOLERANCE )
       {
         if(nco_dbg_lvl_get() >= nco_dbg_dev)
           (void)fprintf(stderr, "%s:%s() PARALLEL edges in oposite direction a=%d b=%d\n", nco_prg_nm_get(), fnc_nm, a , b );
@@ -320,7 +320,43 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
           else if(p_edg_typ == nco_edg_smc && q_edg_typ == nco_edg_smc )
             pcode = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
 
-          if (  !(pcode=='1' && inflag== poly_vrl_unk)  &&   lcl_inflag != poly_vrl_unk   ) {
+          if (  !(pcode=='1' && inflag== poly_vrl_unk)   ) {
+
+
+            /* nco_sph_parallel returns poly_vrl_unk when the vertices q1 and p1 are the same -so we have to peek ahead
+             * to determine which flag to set */
+            if(pcode=='2' && lcl_inflag==poly_vrl_unk )
+            {
+              double dx1=0.0;
+              double dx2=0.0;
+
+              double Pp[NBR_SPH];
+              double Pn[NBR_SPH];
+              double Qn[NBR_SPH];
+
+              nco_sph_sub(P->shp[a1], P->shp[a], Pp);
+              nco_sph_sub(P->shp[ (a+n+1)%n], P->shp[a], Pn);
+
+              nco_sph_sub(Q->shp[ (b+m+1)%m ],P->shp[a], Qn);
+
+              dx1=1.0-nco_sph_dot(Pp,Pn);
+              dx2=1.0-nco_sph_dot(Pp, Qn);
+
+              if(dx1 >dx2)
+                lcl_inflag=poly_vrl_qin;
+              else
+                lcl_inflag=poly_vrl_pin;
+
+              if(DEBUG_SPH)
+              {
+                printf("%s:nco_sph_seg_parallel() has returned inflag==poly_vrl_unk. Peek ahead done inflag=%s\n",fnc_nm, nco_poly_vrl_flg_sng_get(lcl_inflag)   );
+
+              }
+
+
+            }
+
+
 
             inflag = lcl_inflag;
 
@@ -1095,7 +1131,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
       return False;
 
   flg_cd=nco_sph_metric_int(q0,q1, pcnd);
-  //flg_cd= ( !nco_sph_metric(pcnd,q0) ? 2 : !nco_sph_metric(pcnd, q1) ? 3 :1 );
+
 
   if(bSwap)
   {
@@ -1541,9 +1577,10 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   dx_q0 = 1.0 - nco_sph_dot_nm(p0, q0);
 
+  /*
   if( dx_q0< DOT_TOLERANCE)
     dx_q0=0.0;
-
+  */
 
   if (dx_q0 != 0.0) {
     nx3 = nco_sph_cross(p0, q0, Tcross);
@@ -1555,8 +1592,10 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   dx_q1 = 1.0 - nco_sph_dot_nm(p0, q1);
 
+  /*
   if(dx_q1 <DOT_TOLERANCE)
     dx_q1=0.0;
+  */
 
   if (dx_q1 != 0.0) {
     nx3 = nco_sph_cross(p0, q1, Tcross);
@@ -1566,8 +1605,8 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   }
 
   /* we now have 4 "points to order"
-  * a=0.0, dx_ab, dx_ac , dx_ad
-   * always dx_ab > 0.0 and dx_ac < dx_ad
+  * a=0.0, dx_p0, dx_q0 , dx_q1
+   * always dx_p0 > 0.0 and dx_q0 < dx_q1
    * */
 
   /* no overlap so return */
@@ -1596,6 +1635,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     *inflag=poly_vrl_qin;
 
   }
+
     /* RHS overlap */
   else if( dx_q0 >=0.0 &&  dx_q0 < dx_p1 && dx_q1 > dx_p1    )
   {
@@ -1611,6 +1651,8 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     nco_sph_adi(r1, q1);
     *inflag=poly_vrl_qin;
   }
+
+
   else if( dx_q0 <0.0 && dx_q1 > dx_p1    )
   {
     code='2';
@@ -1622,6 +1664,14 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   }
 
 
+  /* points very close together - so use only first one*/
+  if (code == '2' && !nco_sph_metric(r0, r1))
+    code = '1';
+
+  /* q1 and p1 vertices are the same */
+  if(code=='2' && fabs( dx_q1 -dx_p1 )<DOT_TOLERANCE)
+    *inflag=poly_vrl_unk;
+
   if(DEBUG_SPH ) {
     if (code >= '1')
       nco_sph_prn_pnt("nco_sph_seg_parallel(): intersect1", r0, 3, True);
@@ -1629,11 +1679,11 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     if (code == '2')
       nco_sph_prn_pnt("nco_sph_seg_parallel(): intersect2", r1, 3, True);
 
+    (void)fprintf(stderr, "%s: dx_p1=%.16f dx_q0=%.16f dx_q1=%.16f\n",fnc_nm, dx_p1, dx_q0, dx_q1 );
+    (void)fprintf(stderr, "%s: returning inflag=%s\n", fnc_nm, nco_poly_vrl_flg_sng_get(*inflag));
+
   }
 
-  /* points very close together - so use only first one*/
-  if (code == '2' && !nco_sph_metric(r0, r1))
-      code = '1';
 
   
   return code;
