@@ -2932,7 +2932,7 @@ nco_sph_inside_mk(poly_sct *sP, double *pControl)
   nco_bool bDeg=False;
 
 
-  double max_dp = -(DBL_MAX);
+  double max_dp = -(KD_DBL_MAX);
   double length = 0.0;
 
   double pMidPoint[NBR_SPH]={0.0};
