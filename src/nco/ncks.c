@@ -756,6 +756,7 @@ main(int argc,char **argv)
       } /* !area_wgt */
       if(!strcmp(opt_crr,"frac_b_nrm")){
 	flg_frac_b_nrm=True;
+	CHK_MAP=True;
       } /* !frac_b_nrm */
       if(!strcmp(opt_crr,"rgr") || !strcmp(opt_crr,"regridding")){
         flg_rgr=True;
