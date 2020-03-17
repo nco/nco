@@ -125,11 +125,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.3-alpha02
-@set doc-edition 4.9.3-alpha02
+@set nco-edition 4.9.3-alpha03
+@set doc-edition 4.9.3-alpha03
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 16 March 2020
+@set update-date 17 March 2020
 @set update-month March 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -21111,10 +21111,10 @@ Both these designs are perfectly legal.
 What is illegal, yet sometimes encountered in practice, is overlapping
 gridcells on the same input grid.
 Such an input grid is said to be self-overlapping.
-The surface topography dataset
+The surface topography dataset grid
 @file{SCRIPgrid_1km-merge-10min_HYDRO1K-merge-nomask_c130402.nc}
-(hereafter @acronym{HYDRO1K} for short) used by @acronym{E3SM} and
-@acronym{CESM} is self-overlapping.
+(hereafter the @acronym{HYDRO1K} grid for short) used by
+@acronym{E3SM} and @acronym{CESM} is self-overlapping.
 Weight-generators that receive the same input location twice might
 (if they do not take precaustions to idenfity the issue, which no
 known weight-generators do) double-weight the self-overlapped
@@ -21131,9 +21131,10 @@ original data, producer, or algorithm are unavailable or unclear.
 In such cases, the @code{--frac_b_nrm} flag provides a workaround. 
 Please understand that @samp{ncks --frac_b_nrm map.nc} is designed to
 alter @file{map.nc} in place, so backup the original file first.
+@c ncks --frac_b_nrm $DATA/maps/map_hydro1k_to_ne1024np4_nco.20200301.nc > foo 2>&1
 @example
 @verbatim
-% ncks --frac_b_nrm SCRIPgrid_1km-merge-10min_HYDRO1K-merge-nomask_c130402.nc
+% ncks --frac_b_nrm map_hydro1k_to_ne1024np4_nco.20200301.nc
 ...
 ...
 @end verbatim

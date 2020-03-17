@@ -1,24 +1,24 @@
+2020-03-17  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.3-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha03: SDHalf';git push
+	git tag -a 4.9.3-alpha03 -m 'ncremap/ncks: intersection precision, GSL, pg2<->RLL';git push --tags
+
 2020-03-17  Henry Butowsky <henryb@hush.com>
 
-	* many fixes to nco_sph.c
+	* Use GSL library to solve matrix in nco_mat_int_pl()
 
-	* using gsl libs to solve matrix in nco_mat_int_pl()
+	* nco_seg_intersect() fixes to detection and handling of parallel arcs
 
-	* fixes to nco_seg_intersect()- detection and handling of parallel arcs
+	* nco_sph_parallel() check if identical vertices
 
-	* fixes to nco_sph_parallel() - check if indentical vertices
-
-	* fixes to nco_sph_seg_int() - changes to some fundamental constants
+	* nco_sph_seg_int() change some fundamental constants
 
 2020-03-16  Charlie Zender  <zender@uci.edu>
 
 	* ncks: --frac_b_nrm and --area_wgt both automatically imply --chk_map
 
 2020-03-04  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.9.3-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha03: SDHalf';git push
-	git tag -a 4.9.3-alpha03 -m '';git push --tags
 
 	* NCO 4.9.3-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha02: Loss Prevention';git push
