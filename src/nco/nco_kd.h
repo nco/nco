@@ -110,8 +110,8 @@
 #define PATH_INIT	50
 #define PATH_INCR	10
 
-#ifndef DBL_MAX
-# define DBL_MAX         (1.79769313486232e+30) 
+#ifndef KD_DBL_MAX
+# define KD_DBL_MAX         (1.79769313486232e+30)
 #endif
 
 
@@ -234,6 +234,7 @@ typedef struct KDPpriority
 	double dist;
 	KDElem *elem;
 	double area;
+    char dbg_sng[200];
 } KDPriority;
 
 

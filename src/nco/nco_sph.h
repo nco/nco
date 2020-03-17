@@ -56,6 +56,17 @@
 #include        <stdio.h>
 #include        <math.h>
 
+#ifdef HAVE_CONFIG_H
+# include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
+#ifdef ENABLE_GSL
+  #include <gsl/gsl_vector.h>
+  #include <gsl/gsl_matrix.h>
+  #include <gsl/gsl_permutation.h>
+  #include <gsl/gsl_linalg.h>
+#endif
+
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_mmr.h"     /* Memory management */

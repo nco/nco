@@ -1239,11 +1239,11 @@ nco_msh_stats
 
  pl=nco_poly_init_crn(poly_crt, 4, -1);
 
- pl->dp_x_minmax[0]=DBL_MAX;
- pl->dp_x_minmax[1]=-DBL_MAX;
+ pl->dp_x_minmax[0]=KD_DBL_MAX;
+ pl->dp_x_minmax[1]=-KD_DBL_MAX;
 
- pl->dp_y_minmax[0]=DBL_MAX;
- pl->dp_y_minmax[1]=-DBL_MAX;
+ pl->dp_y_minmax[0]=KD_DBL_MAX;
+ pl->dp_y_minmax[1]=-KD_DBL_MAX;
  
  for(idx=0; idx< grd_sz;idx++ ){
    if(msk[idx]){

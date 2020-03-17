@@ -77,8 +77,8 @@ nco_poly_init
   pl->dp_y_minmax[0]=0.0;
   pl->dp_y_minmax[1]=0.0;
 
-  pl->dp_x_ctr=DBL_MAX;
-  pl->dp_y_ctr=DBL_MAX;
+  pl->dp_x_ctr=KD_DBL_MAX;
+  pl->dp_y_ctr=KD_DBL_MAX;
 
   pl->wgt=0.0;
   pl->stat=0;
@@ -361,11 +361,11 @@ void nco_poly_minmax_add
 
   sz=pl->crn_nbr;
 
-  pl->dp_x_minmax[0]=DBL_MAX;
-  pl->dp_x_minmax[1]=-DBL_MAX;
+  pl->dp_x_minmax[0]=KD_DBL_MAX;
+  pl->dp_x_minmax[1]=-KD_DBL_MAX;
 
-  pl->dp_y_minmax[0]=DBL_MAX;
-  pl->dp_y_minmax[1]=-DBL_MAX;
+  pl->dp_y_minmax[0]=KD_DBL_MAX;
+  pl->dp_y_minmax[1]=-KD_DBL_MAX;
 
 
 
@@ -513,8 +513,8 @@ void nco_poly_minmax_add
           case nco_grd_lon_Grn_ctr:
             nco_msh_lon_crr(lcl_dp_x, sz, 1, grd_lon_typ, nco_grd_lon_180_ctr);
 
-            pl->dp_x_minmax[0] = DBL_MAX;
-            pl->dp_x_minmax[1] = -DBL_MAX;
+            pl->dp_x_minmax[0] = KD_DBL_MAX;
+            pl->dp_x_minmax[1] = -KD_DBL_MAX;
 
             /* find new min-max */
             for (idx = 0; idx < sz; idx++) {
@@ -534,8 +534,8 @@ void nco_poly_minmax_add
           case nco_grd_lon_180_wst:
           case nco_grd_lon_180_ctr:
             nco_msh_lon_crr(lcl_dp_x, sz, 1, grd_lon_typ, nco_grd_lon_Grn_ctr);
-            pl->dp_x_minmax[0] = DBL_MAX;
-            pl->dp_x_minmax[1] = -DBL_MAX;
+            pl->dp_x_minmax[0] = KD_DBL_MAX;
+            pl->dp_x_minmax[1] = -KD_DBL_MAX;
 
             /* find new min-max */
             for (idx = 0; idx < sz; idx++) {
@@ -1119,7 +1119,7 @@ double *lcl_dp_y)
   
   int lcl_min=0;
   int crn_nbr=pl->crn_nbr;
-  double x_min=DBL_MAX;
+  double x_min=KD_DBL_MAX;
 
     
   /* find index of min X value */

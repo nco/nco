@@ -586,7 +586,7 @@ void sel_k(KDElem *items, double k, int disc, KDElem **lo, KDElem **eq, KDElem *
     *lo = *eq = *hi = (KDElem *)NULL;
 	*lomean = *himean = 0.0;
 	*locount = *hicount = 0;
-    lo_val = DBL_MAX;
+    lo_val = KD_DBL_MAX;
     
     median = (KDElem *)NULL;
     while (idx)
@@ -720,8 +720,8 @@ int get_min_max(KDElem *list, int disc, double *b_min, double *b_max)
     KDElem *item;
     int count;
 
-    *b_min = DBL_MAX;
-    *b_max = -(DBL_MAX);
+    *b_min = KD_DBL_MAX;
+    *b_max = -(KD_DBL_MAX);
 
     disc = disc & 0x01;		/* zero: horizontal, one: vertical */
     count = 0;
@@ -1674,10 +1674,10 @@ void unload_items(KDTree* rootTree, KDElem **nodelist, kd_box extent, long *item
 {
 	/* traverse the tree and collect the nodes bottom-up into a single list; delete
 	   dead nodes, freeing them */
-        extent[KD_LEFT] =   DBL_MAX;
-	extent[KD_BOTTOM] = DBL_MAX;
-	extent[KD_RIGHT] =  -DBL_MAX;
-	extent[KD_TOP] =    -DBL_MAX;
+        extent[KD_LEFT] =   KD_DBL_MAX;
+	extent[KD_BOTTOM] = KD_DBL_MAX;
+	extent[KD_RIGHT] =  -KD_DBL_MAX;
+	extent[KD_TOP] =    -KD_DBL_MAX;
 	
 	
 	collect_nodes(rootTree, rootTree->tree, nodelist, extent, items, mean);
@@ -2607,7 +2607,7 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	*alist = (KDPriority *)nco_calloc(sizeof(KDPriority),m);
 	for(idx=0;idx<m;idx++)
 	{
-	  (*alist)[idx].dist = DBL_MAX;
+	  (*alist)[idx].dist = KD_DBL_MAX;
 	  (*alist)[idx].elem = (KDElem*)NULL;
 	}
 

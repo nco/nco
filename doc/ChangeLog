@@ -1,3 +1,15 @@
+2020-03-17  Henry Butowsky <henryb@hush.com>
+
+	* many fixes to nco_sph.c
+
+	* using gsl libs to solve matrix in nco_mat_int_pl()
+
+	* fixes to nco_seg_intersect()- detection and handling of parallel arcs
+
+	* fixes to nco_sph_parallel() - check if indentical vertices
+
+	* fixes to nco_sph_seg_int() - changes to some fundamental constants
+
 2020-03-16  Charlie Zender  <zender@uci.edu>
 
 	* ncks: --frac_b_nrm and --area_wgt both automatically imply --chk_map

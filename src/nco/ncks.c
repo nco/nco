@@ -105,6 +105,10 @@
 # include "nco_mpi.h" /* MPI utilities */
 #endif /* !ENABLE_MPI */
 
+#ifdef ENABLE_GSL
+  #include <gsl/gsl_errno.h>
+#endif
+
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
@@ -1045,6 +1049,15 @@ main(int argc,char **argv)
   if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N Current charset = %s\n"),nco_prg_nm,nl_langinfo(CODESET));
   if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N This text may appear in a foreign language\n"),nco_prg_nm);
 #endif /* !_LANGINFO_H */
+
+
+
+
+  #if defined(ENABLE_GSL)
+    gsl_set_error_handler_off();
+  #endif /* !ENABLE_GSL */
+
+
 
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);
