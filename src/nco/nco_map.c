@@ -2288,7 +2288,7 @@ nco_map_chk /* Map-file evaluation */
 	rcd=nco_put_var(in_id,var_frac_b->id,var_frac_b->val.vp,(nc_type)NC_DOUBLE);
 	rcd=nco_put_var(in_id,var_S->id,var_S->val.vp,(nc_type)NC_DOUBLE);
       }else{ /* !wrn_nbr */
-	(void)fprintf(stdout,"%s: INFO User requested map fix with --fix_map but %s finds no frac_b >> 1.0 gridcells that would indicate potential self-overlaps in grid_a\n",nco_prg_nm_get(),fnc_nm);
+	(void)fprintf(stdout,"%s: INFO User requested map re-weight with --frac_b_nrm to adjust for self-overlapped Grid A gridcells but %s finds no frac_b >> 1.0 gridcells that would indicate potential self-overlaps in Grid A\n",nco_prg_nm_get(),fnc_nm);
       } /* !wrn_nbr */
     } /* !flg_frac_b_nrm */
     

@@ -1,5 +1,7 @@
 2020-03-17  Charlie Zender  <zender@uci.edu>
 
+	* Add time_int_udunits to test rebasing integer-valued UDUnits time coordinate
+
 	* NCO 4.9.3-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha03: SDHalf';git push
 	git tag -a 4.9.3-alpha03 -m 'ncremap/ncks: intersection precision, GSL, pg2<->RLL';git push --tags
