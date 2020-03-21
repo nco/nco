@@ -4053,7 +4053,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02% 2> %tmp_fl_05%";
     $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_02% %tmp_fl_03%";
     $tst_cmd[4]="time_ttl = 1475";
-    $dsc_sng="Concatenate 1D variable across two files. [hours file1 - days file2] .Requires UDUnits.";
+    $dsc_sng="Concatenate 1D variable across two files. [hours file1 - days file2]. Requires UDUnits.";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -4077,7 +4077,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'2012-01-29','2012-02-02'  %tmp_fl_00% %tmp_fl_01%  2> %tmp_fl_05%";
     $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[4]="time_ttl = 10";
-    $dsc_sng="Concatenate 1D variable across 1 file. [limits - timstamp day_360 calendar] .Requires UDUnits.";
+    $dsc_sng="Concatenate 1D variable across 1 file. [limits - timstamp day_360 calendar]. Requires UDUnits.";
     $tst_cmd[5]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
@@ -4092,9 +4092,6 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $tst_cmd[4]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
-
-
-
 
 	
     #######################################

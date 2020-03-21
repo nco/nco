@@ -1,3 +1,7 @@
+2020-03-21  Charlie Zender  <zender@uci.edu>
+
+	* Quiet HINT on -C -x -v crd combination per user request
+
 2020-03-17  Charlie Zender  <zender@uci.edu>
 
 	* Add time_int_udunits to test rebasing integer-valued UDUnits time coordinate

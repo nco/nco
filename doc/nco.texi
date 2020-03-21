@@ -12997,9 +12997,9 @@ Generating a regularly spaced n-dimensional array with @command{ncap2}
 is simple with the @code{array()} function. 
 @noindent The function comes in three (overloaded) forms
 @example
-(A) var_out=array(val_srt, val_inc, $dmn_nm);           // One-dimensional output
-(B) var_out=array(val_srt, val_inc, var_tpl);           // Multi-dimensional output
-(C) var_out=array(val_srt, val_inc, /$dmn1,$dmn2...,$dmnN/); // Multi-dimensional output
+(A) var_out=array(val_srt,val_inc,$dmn_nm); // One-dimensional output
+(B) var_out=array(val_srt,val_inc,var_tpl); // Multi-dimensional output
+(C) var_out=array(val_srt,val_inc,/$dmn1,$dmn2...,$dmnN/); // Multi-dimensional output
 @end example
 @noindent
 
@@ -13013,7 +13013,7 @@ Variable from which the array can derive its shape 1D or nD
 @end table
 
 @noindent @strong{One-Dimensional Arrays@*}
-Use form (A) or (B)  for 1D arrays 
+Use form (A) or (B) above for 1D arrays:
 @example
 # var_out will be NC_DOUBLE:
 var_out=array(10.0,2,$time) // 10.5,12.5,14.5,16.5,18.5,20.5,22.5,24.5,26.5,28.5
@@ -13034,11 +13034,10 @@ var_out=array(1.0,0.0,$lon) // 1.0,1.0,1.0,1.0
 @noindent @strong{n-Dimensional Arrays@*}
 Use form (B) or (C) for creating n-D arrays.@* 
 NB: In (C) the final argument is a list of dimensions
-
 @example
 // These are equivalent
-var_out=array(1.0, 2.0, three_dmn_var);
-var_out=array(1.0, 2.0,/$lat, $lev, $lon/);
+var_out=array(1.0,2.0,three_dmn_var);
+var_out=array(1.0,2.0,/$lat,$lev,$lon/);
 
 // var_out is NC_BYTE
 var_out=array(20b, -4, /$lat,$lon/); // 20,16,12,8,4,0,-4,-8  
