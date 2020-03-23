@@ -4093,6 +4093,21 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
+<<<<<<< HEAD
+=======
+
+#ncrcat #26    
+    $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time.int();time\@units=\"seconds since 2019-05-29 00:00:00 UTC\"' $in_pth_arg in.nc %tmp_fl_00%";
+    $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time.int();time\@units=\"seconds since 2019-05-30 00:00:00 UTC\"' $in_pth_arg in.nc %tmp_fl_01%";
+    $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg  -v time  %tmp_fl_00% %tmp_fl_01% %tmp_fl_02%    2> %tmp_fl_05%";
+    $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_02% %tmp_fl_03%";
+    $tst_cmd[4]="time_ttl = 864110";
+    $dsc_sng="Concatenate 1D variable across two files, rebase time (NC_INT) in second file. Requires UDUnits.";
+    $tst_cmd[5]="SS_OK";
+    NCO_bm::tst_run(\@tst_cmd);
+    $#tst_cmd=0; # Reset array
+
+>>>>>>> 52066d4b0c3e0548a5afebc9cf0ad6b51bd54e37
 	
     #######################################
     #### Group tests (requires netCDF4) ###
@@ -4100,7 +4115,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
     if($RUN_NETCDF4_TESTS){
 	
-#ncrcat #26	
+#ncrcat #27	
 # same as ncrcat #02 with group
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -g g4 -v one_dmn_rec_var $in_pth_arg in_grp.nc in_grp.nc -d time,2.,3. %tmp_fl_00% 2> %tmp_fl_02%";
@@ -4111,7 +4126,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-#ncrcat #27	
+#ncrcat #28	
 # 2 groups each one with a record (part 1)
 # ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var -p ~/nco/data in_grp_3.nc in_grp_3.nc -d time,2.,3. ~/foo.nc
 
@@ -4123,7 +4138,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-#ncrcat #28
+#ncrcat #29
 # 2 groups each one with a record (part 2)
 # ncra -Y ncrcat -h -O -g g25g1,g25g2 -v one_dmn_rec_var -p ~/nco/data in_grp_3.nc in_grp_3.nc -d time,2.,3. ~/foo.nc
 
@@ -4135,7 +4150,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array		
 	
-#ncrcat #29
+#ncrcat #30
 #same as #03 
 
     $tst_cmd[0]="ncra -Y ncrcat $omp_flg -h -O $fl_fmt $nco_D_flg -v three_dmn_var_dbl $in_pth_arg -d time,,2 -d lat,0,0 -d lon,0,0 -d lon,3,3 in_grp_3.nc in_grp_3.nc %tmp_fl_00% 2> %tmp_fl_02%";
@@ -4149,7 +4164,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 	} #### Group tests	
 	
-# ncrcat #30
+# ncrcat #31
 # Detect input_complete when stride skips user-specified idx_end_max
 # ncrcat -O -C -v time -d time,0,10,9,1 -p ~/nco/data in.nc in.nc ~/foo.nc
 # ncks -C -H --trd -s '%g, ' -v time ~/foo.nc
@@ -4161,7 +4176,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array 		
 
-# ncrcat #31
+# ncrcat #32
 # Another detect input_complete when stride skips user-specified idx_end_max
 # ncks -O -C -v time -d time,0,2 ~/nco/data/in.nc ~/foo1.nc
 # ncks -O -C -v time -d time,3,5 ~/nco/data/in.nc ~/foo2.nc
@@ -4183,7 +4198,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 
     if($RUN_NETCDF4_TESTS){
 
-#ncrcat #31
+#ncrcat #33
 #ncks -h -O -g g4 -v one_dmn_rec_var ~/nco/data/in_grp.nc in_grp1.nc
 #ncrcat -h --no_tmp_fl --rec_apn -v one_dmn_rec_var ~/nco/data/in_grp.nc in_grp1.nc
 
@@ -4196,7 +4211,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 	
-#ncrcat #32
+#ncrcat #34
 #ncks -h -O -g g5 -v one_dmn_rec_var,time51,time52 ~/nco/data/in_grp.nc in_grp1.nc
 #ncrcat -h --no_tmp_fl --rec_apn -g g5 -v one_dmn_rec_var ~/nco/data/in_grp.nc in_grp1.nc
 
@@ -4209,7 +4224,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
 	
-#ncrcat #33
+#ncrcat #35
 #ncks -h -O -g g5 -v one_dmn_rec_var,time51,time52 ~/nco/data/in_grp.nc in_grp1.nc 
 #ncks -h -O -g g5 -v one_dmn_rec_var,time51,time52 ~/nco/data/in_grp.nc in_grp2.nc 
 #ncrcat -O -h -g g5 -v one_dmn_rec_var -p ~/nco/data in_grp1.nc in_grp2.nc ~/foo.nc
