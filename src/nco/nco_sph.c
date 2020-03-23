@@ -202,7 +202,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 
      /* skip identical points */
-     while(( nx1= nco_sph_cross(P->shp[a1], P->shp[a], Pcross) <DOT_TOLERANCE) )
+     while(( nx1= nco_sph_cross_chk(P->shp[a1], P->shp[a], Pcross) <DOT_TOLERANCE) )
      {
        aa++;a++;
        a%=n;
@@ -213,7 +213,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 
      /* skip identical points */
-     while( (nx2= nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross) < DOT_TOLERANCE) )
+     while( (nx2= nco_sph_cross_chk(Q->shp[b1], Q->shp[b], Qcross) < DOT_TOLERANCE) )
      {
        bb++;b++;
        b%=m;
@@ -1080,7 +1080,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
   /* this is quite permissive  as some  returned points maybe in the range <1.0e-14, or 1.0+1.-e-14
      The points are double checked later with flg_cd=nco_sph_metric_int(q0,q1, pcnd); */
-  if(   pt[0] < -1.0e-12  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-12) )
+  if(   pt[0] < -1.0e-11  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-11) )
      return False;
 
 
@@ -1131,6 +1131,9 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
       return False;
 
   flg_cd=nco_sph_metric_int(q0,q1, pcnd);
+
+  if(!flg_cd)
+    return False;
 
 
   if(bSwap)
