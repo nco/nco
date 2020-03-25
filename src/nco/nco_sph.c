@@ -320,7 +320,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
           else if(p_edg_typ == nco_edg_smc && q_edg_typ == nco_edg_smc )
             pcode = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
 
-          if (  !(pcode=='1' && inflag== poly_vrl_unk)   ) {
+          if ( pcode !='0' &&  !(pcode=='1' && inflag== poly_vrl_unk)   ) {
 
 
             /* nco_sph_parallel returns poly_vrl_unk when the vertices q1 and p1 are the same -so we have to peek ahead
@@ -1584,6 +1584,9 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   if( dx_q0< DOT_TOLERANCE)
     dx_q0=0.0;
   */
+  if(dx_q0<0.0)
+    dx_q0=fabs(dx_q0);
+
 
   if (dx_q0 != 0.0) {
     nx3 = nco_sph_cross(p0, q0, Tcross);
@@ -1599,6 +1602,10 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   if(dx_q1 <DOT_TOLERANCE)
     dx_q1=0.0;
   */
+
+  if(dx_q1<0.0)
+    dx_q1=fabs(dx_q1);
+
 
   if (dx_q1 != 0.0) {
     nx3 = nco_sph_cross(p0, q1, Tcross);
