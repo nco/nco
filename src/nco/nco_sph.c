@@ -312,20 +312,22 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
         if(isParallel)
         {
-          char pcode='0';
+          char pcode[]={'0'};
+          nco_bool bInt=False;
+
           poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
 
           if( p_edg_typ == nco_edg_gtc  && q_edg_typ == nco_edg_gtc  )
-            pcode = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
+            bInt = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag, pcode);
           else if(p_edg_typ == nco_edg_smc && q_edg_typ == nco_edg_smc )
-            pcode = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
+            bInt = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag, pcode);
 
-          if ( pcode !='0' &&  !(pcode=='1' && inflag== poly_vrl_unk)   ) {
+          if (bInt &&  !(pcode[0]=='1' && inflag== poly_vrl_unk)   ) {
 
 
             /* nco_sph_parallel returns poly_vrl_unk when the vertices q1 and p1 are the same -so we have to peek ahead
              * to determine which flag to set */
-            if(pcode=='2' && lcl_inflag==poly_vrl_unk )
+            if(pcode[0]=='2' && lcl_inflag==poly_vrl_unk )
             {
               double dx1=0.0;
               double dx2=0.0;
@@ -361,12 +363,12 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
             inflag = lcl_inflag;
 
             /* there is a subtle  trick here - a point is "force added" by setting the flags pqFace and qpFace */
-            //if (pcode == '2')
+            //if (pcode[0] == '2')
             //  nco_sph_add_pnt(R->shp, r, p);
 
             if (inflag == poly_vrl_pin) {
 
-              if(pcode=='2')
+              if(pcode[0]=='2')
                 nco_sph_add_pnt_chk(vrt_info, inflag, a1,-1, R->shp, r, p  );
 
               pqFace = 1;
@@ -374,7 +376,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
             } else if (inflag == poly_vrl_qin) {
 
-              if(pcode=='2')
+              if(pcode[0]=='2')
                 nco_sph_add_pnt_chk(vrt_info, inflag, -1, b1,  R->shp, r, p  );
 
               pqFace = 0;
@@ -388,9 +390,9 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
             }
           }
 
-          if(pcode=='1')
+          if(pcode[0]=='1')
             strcpy(codes,"p0");
-          if(pcode=='2')
+          if(pcode[0]=='2')
             strcpy(codes,"pp");
 
         }
@@ -1534,13 +1536,13 @@ nco_sph_seg_int_1(double *p0, double *p1, double *q0, double *q1, double *r0, do
 
 
 
-char
-nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag )
+nco_bool
+nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag, char *codes )
 {
 
   const char fnc_nm[] = "nco_sph_seg_parallel()";
 
-  char code='0';
+  //char code='0';
   int flg_sx = 0;
 
   double nx1;
@@ -1556,6 +1558,8 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   double Qcross[NBR_SPH] = {0};
   double Tcross[NBR_SPH] = {0};
 
+  codes[0]='0';
+  //codes[1]='0';
 
 
   if (flg_sx) {
@@ -1574,7 +1578,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   /* check points in the same direction */
   if (nco_sph_dot_nm(Pcross, Qcross) < 0.99)
-    return '0';
+    False;
 
   dx_p1 = 1.0 - nco_sph_dot_nm(p0, p1);
 
@@ -1621,25 +1625,25 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   /* no overlap so return */
   if( (dx_q0 < 0.0  && dx_q1 < 0.0) || ( dx_q0 > dx_p1 && dx_q1 > dx_p1  )) {
-    code = '0';
+    codes[0] = '0';
   }
 
   else if(dx_q0 <0.0 &&  dx_q1 == 0.0   )
   {
-    code='1';
+    codes[0]='1';
     nco_sph_adi(r0,p0);
     /* not sure which flag to set here */
     *inflag=poly_vrl_qin;
   }
   else if( dx_q0 == dx_p1 && dx_q1 > dx_p1  )
   {
-    code='1';
+    codes[0]='1';
     nco_sph_adi(r0,p1);
     *inflag=poly_vrl_pin;
   }
     /* LHS overlap */
   else if (dx_q0 <0.0 &&  (dx_q1 >0.0 && dx_q1 <= dx_p1)  ) {
-    code= '2';
+    codes[0]= '2';
     nco_sph_adi(r0, p0);
     nco_sph_adi(r1, q1);
     *inflag=poly_vrl_qin;
@@ -1649,14 +1653,14 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     /* RHS overlap */
   else if( dx_q0 >=0.0 &&  dx_q0 < dx_p1 && dx_q1 > dx_p1    )
   {
-    code= '2';
+    codes[0]= '2';
     nco_sph_adi(r0, q0);
     nco_sph_adi(r1, p1);
     *inflag=poly_vrl_pin;
 
   }
   else if(  dx_q0 >=0.0 && dx_q1 <= dx_p1    ) {
-    code= '2';
+    codes[0]= '2';
     nco_sph_adi(r0, q0);
     nco_sph_adi(r1, q1);
     *inflag=poly_vrl_qin;
@@ -1665,28 +1669,28 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   else if( dx_q0 <0.0 && dx_q1 > dx_p1    )
   {
-    code='2';
+    codes[0]='2';
     nco_sph_adi(r0,p0 );
     nco_sph_adi(r1,p1 );
     *inflag=poly_vrl_pin;
   } else{
-    code='0';
+    codes[0]='0';
   }
 
 
   /* points very close together - so use only first one*/
-  if (code == '2' && !nco_sph_metric(r0, r1))
-    code = '1';
+  if (codes[0] == '2' && !nco_sph_metric(r0, r1))
+    codes[0] = '1';
 
   /* q1 and p1 vertices are the same */
-  if(code=='2' && fabs( dx_q1 -dx_p1 )<DOT_TOLERANCE)
+  if(codes[0]=='2' && fabs( dx_q1 -dx_p1 )<DOT_TOLERANCE)
     *inflag=poly_vrl_unk;
 
   if(DEBUG_SPH ) {
-    if (code >= '1')
+    if (codes[0] >= '1')
       nco_sph_prn_pnt("nco_sph_seg_parallel(): intersect1", r0, 3, True);
 
-    if (code == '2')
+    if (codes[0] == '2')
       nco_sph_prn_pnt("nco_sph_seg_parallel(): intersect2", r1, 3, True);
 
     (void)fprintf(stderr, "%s: dx_p1=%.16f dx_q0=%.16f dx_q1=%.16f\n",fnc_nm, dx_p1, dx_q0, dx_q1 );
@@ -1694,9 +1698,12 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   }
 
+  if(codes[0]!='0')
+    return True;
 
+  return False;
   
-  return code;
+
 }
 
 
@@ -3244,7 +3251,7 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
 
 
 
-  char code='0';
+  char code[]="00";
 
   double Pcross[NBR_SPH];
   double Qcross[NBR_SPH];
@@ -3369,9 +3376,9 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       {
         poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
 
-        code = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag);
+         nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag, code);
 
-        if(code == 'X'){
+        if(code[0] == 'X'){
           if(nco_dbg_lvl_get() >= nco_dbg_dev) (void)fprintf(stderr,"%s: ERROR %s() reports %s\n",nco_prg_nm_get(),fnc_nm,"parallel edges in opposite directions\n");
           return EXIT_FAILURE;
         }
@@ -3381,7 +3388,7 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
           inflag = lcl_inflag;
 
           /* there is a subtle  trick here - a point is "force added" by setting the flags pqFace and qpFace */
-          if (code == '2')
+          if (code[0] == '2')
             nco_sph_add_pnt(R->shp, r, p);
 
           if (inflag == poly_vrl_pin) {
@@ -3404,10 +3411,10 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       }
 
       if(!isParallel) {
-        code = nco_rll_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q);
+        code[0] = nco_rll_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q);
 
 
-        if (code == '1' || code == 'e') {
+        if (code[0] == '1' || code[0] == 'e') {
 
           nco_sph_add_pnt(R->shp, r, p);
 
@@ -3427,7 +3434,7 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
       }
 
       if(DEBUG_SPH)
-        printf("numIntersect=%d codes=%c (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d) inflag=%s\n",numIntersect, code, pqCross[1], pqCross[0],  pqCross[3], pqCross[2], qpFace,pqFace, nco_poly_vrl_flg_sng_get(inflag));
+        printf("numIntersect=%d codes=%s (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d) inflag=%s\n",numIntersect, code, pqCross[1], pqCross[0],  pqCross[3], pqCross[2], qpFace,pqFace, nco_poly_vrl_flg_sng_get(inflag));
 
       if (qpFace && pqFace)  {
 
@@ -3605,13 +3612,14 @@ nco_rll_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 
 }
 
-char
-nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag ) {
+nco_bool
+nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag, char*codes ) {
 
   int id;
 
-  char code = '0';
+  //char code = '0';
 
+  codes[0]='0';
 
   nco_bool isP_LatCircle = False;
   nco_bool isQ_LatCircle = False;
@@ -3622,7 +3630,7 @@ nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   /* check for brain dead call */
   if (isP_LatCircle != isQ_LatCircle)
-    return code;
+    return False;
 
 
   if (isP_LatCircle)
@@ -3664,28 +3672,34 @@ nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     nco_sph_adi(r0, p0);
     nco_sph_adi(r1, q1);
     *inflag=poly_vrl_qin;
-    code = '2';
+    codes[0] = '2';
   } else if ( nco_sph_between(p0[id], p1[id], q0[id]) && !nco_sph_between(p0[id], p1[id], q1[id]) ) {
     nco_sph_adi(r0, q0);
     nco_sph_adi(r1, p1);
     *inflag=poly_vrl_pin;
-    code = '2';
+    codes[0] = '2';
 
   } else if ( nco_sph_between(p0[id], p1[id], q0[id]) && nco_sph_between(p0[id], p1[id], q1[id])) {
     nco_sph_adi(r0, q0);
     nco_sph_adi(r0, q1);
     *inflag=poly_vrl_qin;
-    code = '2';
+    codes[0] = '2';
   } else if (nco_sph_between(q0[id], q1[id], p0[id]) && nco_sph_between(q0[id], q1[id], p1[id])) {
     nco_sph_adi(r0, p0);
     nco_sph_adi(r1, p1);
     *inflag=poly_vrl_pin;
-    code = '2';
+    codes[0] = '2';
 
   } else
-    code = '0';
+    codes[0] = '0';
 
-  return code;
+
+  if(codes[0]!='0')
+    return True;
+
+  return False;
+
+
 
 }
 
