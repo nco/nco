@@ -851,17 +851,19 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   pl_glb_in=nco_msh_stats(area_in,msk_in,lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in,grd_sz_in, grd_crn_nbr_in);
   pl_glb_out=nco_msh_stats(area_out,msk_out,lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out,grd_sz_out, grd_crn_nbr_out);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr){
-    (void)fprintf(stderr,"%s:%s mesh in statistics\n",nco_prg_nm_get(),fnc_nm);
-    nco_poly_prn(pl_glb_in,0);
-
-    (void)fprintf(stderr,"\n%s:%s mesh out statistics\n",nco_prg_nm_get(),fnc_nm);
-    nco_poly_prn(pl_glb_out,0);
-  }
 
   /* determin lon_typ  nb temporary */
   grd_lon_typ_in=nco_poly_minmax_2_lon_typ(pl_glb_in);
   grd_lon_typ_out=nco_poly_minmax_2_lon_typ(pl_glb_out);
+
+  if(nco_dbg_lvl_get() >= nco_dbg_crr){
+    (void)fprintf(stderr,"%s:%s mesh in statistics (grd_lon_typ=%s)\n",nco_prg_nm_get(),fnc_nm, nco_grd_lon_sng(grd_lon_typ_in) );
+    nco_poly_prn(pl_glb_in,0);
+
+    (void)fprintf(stderr,"\n%s:%s mesh out statistics (grd_lon_typ=%s)\n",nco_prg_nm_get(),fnc_nm, nco_grd_lon_sng(grd_lon_typ_out));
+    nco_poly_prn(pl_glb_out,0);
+  }
+
 
   /* run though just to check - some (0-360) SCRIP files have a negative lon for wrapped cells ??*/
   nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in, grd_lon_typ_in, grd_lon_typ_in );
