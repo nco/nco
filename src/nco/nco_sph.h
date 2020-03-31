@@ -142,8 +142,8 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 int
 nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], nco_edg_typ_enm rgr_edg_typ,   nco_edg_typ_enm *p_edg_typ, nco_edg_typ_enm *q_edg_typ);
 
-char
-nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag );
+nco_bool
+nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag, char *codes );
 
 nco_bool
 nco_sph_seg_smc(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes);
@@ -275,8 +275,8 @@ nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r);
 char
 nco_rll_seg_int(double *a, double *b, double *c, double *d, double *p, double *q);
 
-char
-nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag );
+nco_bool
+nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag, char *codes );
 
 void
 nco_rll_area(poly_sct *pl);
