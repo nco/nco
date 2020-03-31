@@ -1,3 +1,11 @@
+2020-03-31  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.3-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha04: Quarrantine';git push
+	git tag -a 4.9.3-alpha04 -m 'ncrcat: rbs nc_int rgr tst ncremap/ncks: pg2 all work;';git push --tags
+
+	* ncremap: curvilinear regional NCO grids that worked with ESMF	now work with NCO weight generator
+
 2020-03-21  Charlie Zender  <zender@uci.edu>
 
 	* Quiet HINT on -C -x -v crd combination per user request

@@ -125,8 +125,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.3-alpha03
-@set doc-edition 4.9.3-alpha03
+@set nco-edition 4.9.3-alpha04
+@set doc-edition 4.9.3-alpha04
 @set copyright-years 1995--2020
 @set update-year 2020
 @set update-date 17 March 2020
@@ -2754,16 +2754,22 @@ penalty of copying the entire output file unless the expansion exceeds
 the amount of header padding.
 This can be beneficial when it is known that some metadata will be added
 at a future date.
-The operators which benefit most from judicious use of header padding
+The operators that benefit most from judicious use of header padding
 are @command{ncatted} and @command{ncrename}, since they only alter
 metadata. 
 
 This optimization exploits the netCDF library @code{nc__enddef()}
-function, which behaves differently with different versions of netCDF.
+function.
+This function behaves differently with different storage formats.
 It will improve speed of future metadata expansion with @code{CLASSIC}
 and @code{64bit} netCDF files, though not necessarily with @code{NETCDF4} 
 files, i.e., those created by the netCDF interface to the @acronym{HDF5}
 library (@pxref{File Formats and Conversion}).
+netCDF3 formats use a simple sequential ordering that requires copying
+the file if the size of new metadata exceeds the available padding.
+netCDF4 files use internal file pointers that allow flexibility at
+inserting and removing data without necessitating copying the whole
+file.
 
 @html
 <a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
@@ -14920,7 +14926,7 @@ We call such grids @emph{standard} grids.
 It is increasingly common for datasets to use metadata to describe
 much more complex grids.
 Let us first define three important coordinate grid properties:
-rectangularity, regularity, and fxm.
+regularity, rectangularity, and structure.
 
 Grids are @emph{regular} if the spacing between adjacent is constant. 
 For example, a 4-by-5 degree latitude-longitude grid is regular
@@ -14942,9 +14948,18 @@ depend on another dimension.
 Non-rectangular grids present many special challenges to 
 analysis software like @acronym{NCO}.
 
+Grids are @emph{structured} if they are represented as functions
+of two horizontal spatial dimensions.
+For example, grids with latitude and longitude dimensions are
+structured, and so are curvilinear grids with along-track and
+cross-track dimensions.
+A grid with a single dimension is @emph{unstructured}.
+For example, icosohedral grids are usually unstructured, as are
+@acronym{MPAS} grids.
+
 Wrapped coordinates (@pxref{Wrapped Coordinates}), such as longitude,
-are independent of these grid properties (regularity,
-rectangularity). 
+are independent of these grid properties (regularity, rectangularity,
+structure). 
 
 @cindex wrapped coordinates
 The preferred @acronym{NCO} technique to analyze data on non-standard
@@ -16644,7 +16659,7 @@ The complete list of mathematical functions supported is
 platform-specific.  
 Functions mandated by @w{ANSI C} are @emph{guaranteed} to be present
 and are indicated with an asterisk 
-@c fxm No they're not, not yet
+@c fxm No they are not, not yet
 @cindex @code{ANSI C}
 @cindex @code{float}
 @cindex precision

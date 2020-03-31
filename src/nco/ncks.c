@@ -1050,14 +1050,9 @@ main(int argc,char **argv)
   if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stdout,gettext("%s: I18N This text may appear in a foreign language\n"),nco_prg_nm);
 #endif /* !_LANGINFO_H */
 
-
-
-
   #if defined(ENABLE_GSL)
     gsl_set_error_handler_off();
   #endif /* !ENABLE_GSL */
-
-
 
   /* Initialize traversal table */
   (void)trv_tbl_init(&trv_tbl);

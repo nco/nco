@@ -4093,9 +4093,6 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
-<<<<<<< HEAD
-=======
-
 #ncrcat #26    
     $tst_cmd[0]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time.int();time\@units=\"seconds since 2019-05-29 00:00:00 UTC\"' $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncap2 -h -O $fl_fmt $nco_D_flg -v -s 'time=time.int();time\@units=\"seconds since 2019-05-30 00:00:00 UTC\"' $in_pth_arg in.nc %tmp_fl_01%";
@@ -4107,8 +4104,6 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array
 
->>>>>>> 52066d4b0c3e0548a5afebc9cf0ad6b51bd54e37
-	
     #######################################
     #### Group tests (requires netCDF4) ###
     #######################################
