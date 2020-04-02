@@ -1001,12 +1001,12 @@ KDElem *find_item(KDElem *elem, int disc, kd_generic item, kd_box size, int sear
 				items_elem->size[2] = size[2];
 				items_elem->size[3] = size[3];
 				items_elem->lo_min_bound = size[vert];
-				items_elem->hi_max_bound = size[vert+2];
-				items_elem->other_bound = (((disc+1)%4 & 0x2) ? size[vert] : size[vert+2]);
+				items_elem->hi_max_bound = size[vert + 2];
+				items_elem->other_bound = (((disc + 1) % 4 & 0x2) ? size[vert] : size[vert + 2]);
 				items_elem->sons[0] = 0;
 				items_elem->sons[1] = 0;
 				items_elem->item = item;
-				
+
 			}
 			else
 				elem->sons[ival] = kd_new_node(item, size, size[vert], size[vert+2], (((disc+1)%4 & 0x2) ? size[vert] : size[vert+2]), (KDElem *) NULL, (KDElem *) NULL);
@@ -2622,9 +2622,10 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	return kd_neighbour(realTree->tree,Xq,m,*alist,Bp,Bn);
 }
 
-int kd_nearest_intersect_wrp(KDTree *realTree, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem)
+int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem)
 {
   /* count duplicates for dbg */
+  int idx;
   int ret_cnt_nw=0;
   int ret_cnt=0;
   int ret_cnt1=0;
@@ -2634,8 +2635,11 @@ int kd_nearest_intersect_wrp(KDTree *realTree, kd_box Xq, kd_box Xr, omp_mem_sct
   //  const char fnc_nm[]="kd_nearest_intersect_wrp():";
   // (void)fprintf(stderr,"%s:%s: just entered function\n", nco_prg_nm_get(),fnc_nm );
 
-  ret_cnt=kd_nearest_intersect(realTree,Xq,omp_mem, bSort);
-  ret_cnt1=kd_nearest_intersect(realTree,Xr, omp_mem, bSort);
+
+  ret_cnt = kd_nearest_intersect(rTree, nbr_tr,Xq, omp_mem, bSort);
+
+  ret_cnt1 = kd_nearest_intersect(rTree,nbr_tr, Xr, omp_mem, bSort);
+
 
   if( omp_mem->kd_cnt >1  &&  kd_priority_list_sort(omp_mem->kd_list,  omp_mem->kd_blk_nbr* NCO_VRL_BLOCKSIZE, omp_mem->kd_cnt , &ret_cnt_nw  )  )
     omp_mem->kd_cnt=ret_cnt_nw;
@@ -2644,7 +2648,7 @@ int kd_nearest_intersect_wrp(KDTree *realTree, kd_box Xq, kd_box Xr, omp_mem_sct
 }
 
 //int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, int bSort)
-int kd_nearest_intersect(KDTree* realTree, kd_box Xq, omp_mem_sct *omp_mem, int bSort)
+int kd_nearest_intersect(KDTree** rTree, int nbr_tr, kd_box Xq, omp_mem_sct *omp_mem, int bSort)
 {
   int idx;
   int nw_lcl_cnt=0;
@@ -2660,7 +2664,9 @@ int kd_nearest_intersect(KDTree* realTree, kd_box Xq, omp_mem_sct *omp_mem, int 
 	list_end+=m;
    */
    //node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
-    (void)kd_neighbour_intersect3(realTree->tree,0,Xq, omp_mem,0,0);
+
+   for(idx=0;idx < nbr_tr;idx++)
+    (void)kd_neighbour_intersect3(rTree[idx]->tree,0,Xq, omp_mem,0,0);
 
     /*
     ret_cnt=( list_srt - omp_mem->kd_list)+ omp_mem->kd_cnt;
