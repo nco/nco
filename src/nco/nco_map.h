@@ -32,6 +32,7 @@
 #include "nco_sng_utl.h" /* String utilities */
 #include "nco_ply_lst.h"  /* polygon list functions */
 #include "nco_ply.h"     /* polygon functions */
+#include "nco_kd.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -153,7 +154,18 @@ extern "C" {
    var_sct *var_area_a,
    var_sct *var_area_b,
    var_sct *var_frac_a);
-  
+
+
+  kd_tree *
+  nco_map_kd_init
+  (poly_sct **pl_lst,
+   int pl_cnt,
+   nco_grd_lon_typ_enm grd_lon_typ);
+
+
+
+
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
