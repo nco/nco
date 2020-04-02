@@ -690,7 +690,8 @@ nco_poly_lst_mk_vrl_sph(  /* create overlap mesh  for sph polygons */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
 nco_grd_lon_typ_enm grd_lon_typ,
-KDTree *rtree,
+KDTree **tree,
+int nbr_tr,
 int *pl_cnt_vrl_ret){
 
 
@@ -773,7 +774,7 @@ int *pl_cnt_vrl_ret){
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
 #  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,pl_cnt_dbg,pl_typ,rtree,tot_nan_cnt,tot_wrp_cnt)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,pl_cnt_dbg,pl_typ,rtree,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
@@ -824,9 +825,9 @@ int *pl_cnt_vrl_ret){
 
     /* if a wrapped polygon then do two searches */
     if(bSplit)
-      vrl_cnt = kd_nearest_intersect_wrp(rtree, size1, size2,  &mem_lst[thr_idx]);
+      vrl_cnt = kd_nearest_intersect_wrp(tree, nbr_tr, size1, size2,  &mem_lst[thr_idx]);
     else
-      vrl_cnt = kd_nearest_intersect(rtree, size1, &mem_lst[thr_idx], bSort);
+      vrl_cnt = kd_nearest_intersect(tree, nbr_tr, size1, &mem_lst[thr_idx], bSort);
 
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
 
