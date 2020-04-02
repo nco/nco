@@ -156,7 +156,7 @@ extern "C" {
    var_sct *var_frac_a);
 
 
-  kd_tree *
+  KDTree *
   nco_map_kd_init
   (poly_sct **pl_lst,
    int pl_cnt,

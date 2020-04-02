@@ -961,12 +961,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
 
 #if defined(__INTEL_COMPILER)
-# pragma omp parallel for default(none) private(idx,thr_idx) shared(tree, pl_lst_out, quota, nbr_xcs, fp_stderr)
+# pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, nbr_xcs, pl_lst_out, quota, tree)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) private(idx,thr_idx) shared(tree, pl_lst_out, quota, nbr_xcs, fp_stderr)
+#  pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, nbr_xcs, pl_lst_out, quota, tree)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx,thr_idx)
+#  pragma omp parallel for private(idx,thr_idx) shared(fp_stderr, nbr_xcs, pl_lst_out, quota, tree)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
       for(idx=0;idx<nbr_tr;idx++) {
@@ -1126,11 +1126,11 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
 
 /* create tree */
-kd_tree *
+KDTree *
 nco_map_kd_init( poly_sct **pl_lst, int pl_cnt, nco_grd_lon_typ_enm grd_lon_typ   )
 {
   int idx;
-  kd_tree *rtree;
+  KDTree *rtree;
 
   rtree=kd_create();
 
