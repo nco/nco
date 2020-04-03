@@ -123,7 +123,7 @@ nco_gsl_stats_covariance
  const size_t n,
  const double *mss_val) /* Missing value */
 {
-  gsl_stats_covariance(data1, stride1, data2,stride2,n);
+  return gsl_stats_covariance(data1, stride1, data2,stride2,n);
 
 }
 
