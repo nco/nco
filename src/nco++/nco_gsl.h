@@ -2,20 +2,19 @@
 
 /* Purpose: GSL functions that handle missing values */
 
+/* Copyright (C) 1995--present Charlie Zender
+This file is part of NCO, the netCDF Operators. NCO is free software.
+You may redistribute and/or modify NCO under the terms of the
+3-Clause BSD License with exceptions described in the LICENSE file */
+
+
+
 /* nco_gsl.[ch] re-implement GSL functions without arithmetic changes _except_
    that the NCO version (prefixed with nco_) accepts a missing value argument which,
-   if non-NULL, indicates data to be "skipped", i.e., treated as missing. 
+   if non-NULL, indicates data to be "skipped", i.e., treated as missing. */
 
-   GSL is distributed under the GPL3 license.
-   NCO distributed under the BSD license.
-   The GSL code is copyright by its respective authors.
-   The NCO modifications that provide missing value support are, in addition, 
-   Copyright (C) 2013--present Charlie Zender
-   License: 3-Clause BSD License
-   See https://opensource.org/licenses/BSD-3-Clause for full license text
 
-   Original GSL files, copyright holders, and authors of functions below are:
-   gsl/fit/linear.c: Copyright (C) 2000, 2007 Brian Gough */
+
 
 /* Usage:
    #include "nco_gsl.h" *//* Missing value-aware GSL functions */
@@ -32,11 +31,6 @@ extern "C" {
 /* Standard header files */
 #include <stddef.h> /* size_t */
  
-/* GSL macros */
-#define CONCAT2x(a,b) a ## _ ## b 
-#define CONCAT2(a,b) CONCAT2x(a,b)
-#define FUNCTION(drc,nm) CONCAT2(drc,nm)
-#define BASE double
 #define NCO_GSL_SUCCESS 0
 
   /* Forward declarations */
@@ -56,17 +50,17 @@ nco_gsl_fit_linear
  const double *mss_val);
 
 double
-FUNCTION(nco_gsl_stats,mean) 
-(const BASE data[], 
+nco_gsl_stats_mean
+(const double data[],
  const size_t stride, 
  const size_t size,
  const double *mss_val); /* fill value */
 
 double 
-FUNCTION(nco_gsl_stats,covariance) 
-(const BASE data1[], 
+nco_gsl_stats_covariance
+(const double data1[],
  const size_t stride1,
- const BASE data2[], 
+ const double data2[],
  const size_t stride2,
  const size_t n,
  const double *mss_val); /* fill value */
