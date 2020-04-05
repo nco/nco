@@ -1,3 +1,13 @@
+2020-04-05  Charlie Zender  <zender@uci.edu>
+
+	* nco_att_utl.c shift INFO/WARNING message from dbg_lvl == 0 to 1 to quiet annoying messages
+
+2020-04-02  Charlie Zender  <zender@uci.edu>
+
+	* Fix typo in ncclimo HINT reported by Sterling
+
+	* Merge Henry's modifications to parallelize kdtree
+
 2020-03-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha04 release procedure:

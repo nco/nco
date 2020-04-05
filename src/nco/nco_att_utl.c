@@ -720,7 +720,8 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 	if(nco_prg_id == ncrcat || nco_prg_id == ncecat){
 	  /* ...then risk exists that packing attributes in first file do not match subsequent files... */
 	  static short FIRST_WARNING=True;
-	  if(FIRST_WARNING) (void)fprintf(stderr,"%s: INFO/WARNING Multi-file concatenator encountered packing attribute %s for variable %s. NCO copies the packing attributes from the first file to the output file. The packing attributes from the remaining files must match exactly those in the first file or data from subsequent files will not unpack correctly. Be sure all input files share the same packing attributes. If in doubt, unpack (with ncpdq -U) the input files, then concatenate them, then pack the result (with ncpdq). This message is printed only once per invocation.\n",nco_prg_nm_get(),att_nm,var_nm);
+	  /* 20200405: Quiet this message by printing only when debug >= 1 */
+	  if(FIRST_WARNING && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO/WARNING Multi-file concatenator encountered packing attribute %s for variable %s. NCO copies the packing attributes from the first file to the output file. The packing attributes from the remaining files must match exactly those in the first file or data from subsequent files will not unpack correctly. Be sure all input files share the same packing attributes. If in doubt, unpack (with ncpdq -U) the input files, then concatenate them, then pack the result (with ncpdq). This message is printed only once per invocation.\n",nco_prg_nm_get(),att_nm,var_nm);
 	  FIRST_WARNING=False;
 	} /* endif ncrcat or ncecat */
       }else{ /* ...do not copy packing attributes... */
