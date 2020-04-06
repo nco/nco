@@ -1,3 +1,9 @@
+2020-04-03 Henry Butowsky   <henryb@hush.com>
+
+    * The custom functions nco_gsl_fit_linear(), nco_gsl_stats_mean() and nco_gsl_stats_covariance()
+      are derved from GSL code to be missing value aware; have been removed and replaced with stubs that
+      call original GSL functions; due to unresloved copyright conflict between GSL licensed as GPL and NCO as BSD,
+
 2020-03-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha04 release procedure:
