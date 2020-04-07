@@ -1,6 +1,16 @@
+2020-04-06  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.3-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha05: Ozark';git push
+	git tag -a 4.9.3-alpha05 -m 'ncrcat: quiet nfo; nco_gsl.c/h; ncremap kdtree parallel';git push --tags
+
 2020-04-05  Charlie Zender  <zender@uci.edu>
 
 	* nco_att_utl.c shift INFO/WARNING message from dbg_lvl == 0 to 1 to quiet annoying message
+
+2020-04-03  Henry Butowsky  <henryb@hush.com>
+
+	* Turn nco_gsl_fit_linear(), nco_gsl_stats_mean(), nco_gsl_stats_covariance() in nco_gsl.c/h into stubs to comply with separation of GSL GPL code and NCO BSD code
 
 2020-04-02  Charlie Zender  <zender@uci.edu>
 
