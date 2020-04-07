@@ -647,9 +647,11 @@ nco_cln_clc_var_dff /* [fnc] difference between two co-ordinate units */
 
   ptr_unn op1;    
 
-  size_t idx;    
+  size_t idx;
 
   size_t sz;
+
+  nc_type var_typ_org;
   
   /* Do nothing if units identical */
   if(!strcasecmp(fl_unt_sng,fl_bs_sng)) return NCO_NOERR;
@@ -659,7 +661,11 @@ nco_cln_clc_var_dff /* [fnc] difference between two co-ordinate units */
 
   if(ut_cnv == NULL) return NCO_ERR;     
 
-  sz=var->sz;  
+  sz=var->sz;
+
+  var_typ_org=var->type;
+  if(!(var->type==NC_FLOAT && var->type==NC_DOUBLE))
+    var=nco_var_cnf_typ(NC_DOUBLE,var);
 
   (void)cast_void_nctype(var->type,&op1);                
   op1=var->val;
@@ -691,6 +697,9 @@ nco_cln_clc_var_dff /* [fnc] difference between two co-ordinate units */
 
  cv_free(ut_cnv);  
  (void)cast_nctype_void(var->type,&op1);
+
+ /* convert back to original type */
+ var=nco_var_cnf_typ(var_typ_org,var);
 
  return NCO_NOERR;
 } /* !nco_cln_clc_var_dff() */
@@ -802,6 +811,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   double crr_val=0.0;
   double scl_val=1.0;
 
+
   tm_typ unt_tm_typ; /* enum for units type in fl_unt_sng */  
   tm_typ bs_tm_typ; /* enum for units type in fl_bs_sng */
 
@@ -854,13 +864,25 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
     (void)fprintf(stderr,"\n");
   } /* !dbg */
 
+
+
+
   if(og_val){
     *og_val=(*og_val)*scl_val+crr_val;
   }else if(var){
     size_t sz;
     size_t idx;
     ptr_unn op1;
-    
+    /* save  original type if have to promote type to do conversion */
+    nc_type var_typ_org;
+
+    var_typ_org=var->type;
+
+    /* promote type to do conversion */
+    if( var->type!=NC_FLOAT ||  var->type !=NC_DOUBLE)
+      var=nco_var_cnf_typ(NC_DOUBLE, var);
+
+
     sz=var->sz;  
     op1=var->val;
     (void)cast_void_nctype(var->type,&op1);
@@ -889,8 +911,12 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
       } /* !has_mss_val */
     } /* !NC_FLOAT */
    (void)cast_nctype_void(var->type,&op1);
+
+    var=nco_var_cnf_typ(var_typ_org, var);
   } /* !var */
-  
+
+
+
   return NCO_NOERR;
 
 } /* end nco_cln_clc_tm() */
