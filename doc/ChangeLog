@@ -1,5 +1,7 @@
 2020-04-06  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo add new clm_md='hf' type for high-frequency datasets
+
 	* NCO 4.9.3-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha05: Ozark';git push
 	git tag -a 4.9.3-alpha05 -m 'ncrcat: quiet nfo; nco_gsl.c/h; ncremap kdtree parallel';git push --tags

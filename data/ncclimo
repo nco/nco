@@ -853,15 +853,24 @@ if [ -n "${mdl_nm_usr}" ]; then
 fi # !mdl_nm_usr
 if [ -n "${clm_md_usr}" ]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are piped or positional
-    if [ "${clm_md_usr}" = 'daily' ] || [ "${clm_md_usr}" = 'doy' ] || [ "${clm_md_usr}" = 'day' ] ; then
-	clm_md_usr='dly'
-    fi # !clm_md
     if [ "${clm_md_usr}" = 'annual' ] || [ "${clm_md_usr}" = 'yearly' ] || [ "${clm_md_usr}" = 'year' ] ; then
 	clm_md_usr='ann'
-    fi # !clm_md
+    fi # !clm_md_usr
+    if [ "${clm_md_usr}" = 'daily' ] || [ "${clm_md_usr}" = 'doy' ] || [ "${clm_md_usr}" = 'day' ] ; then
+	clm_md_usr='dly'
+    fi # !clm_md_usr
+    if [ "${clm_md_usr}" = 'hf' ] || [ "${clm_md_usr}" = 'high_frequency' ] || [ "${clm_md_usr}" = 'hgh_frq' ] ; then
+	clm_md_usr='hf'
+    fi # !clm_md_usr
+    if [ "${clm_md_usr}" = 'month' ] || [ "${clm_md_usr}" = 'monthly' ] ; then
+	clm_md_usr='mth'
+    fi # !clm_md_usr
     clm_md="${clm_md_usr}"
-    clm_flg='Yes' # redundant (and safe)
-else
+fi # !clm_md_usr
+if [ "${clm_md}" = 'ann' ] || [ "${clm_md_usr}" = 'dly' ] ; then
+    clm_flg='Yes'
+fi # !clm_md
+if [ "${clm_md}" = 'hf' ] || [ "${clm_md}" = 'mth' ] ; then
     # Otherwise subset (split) mode whenever stdin pipe has data or positional arguments are used
     if [ ${inp_std} = 'Yes' ] || [ ${inp_psn} = 'Yes' ]; then
 	sbs_flg='Yes'
@@ -988,8 +997,8 @@ if [ -n "${fml_nm_usr}" ]; then
     fml_nm="${fml_nm_usr}"
     out_nm="${fml_nm}"
 fi # !fml_nm
-if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'mth' ]; then 
-    echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', or 'mth' (default)"
+if [ "${clm_md}" != 'ann' ] && [ "${clm_md}" != 'dly' ] && [ "${clm_md}" != 'hf' ] && [ "${clm_md}" != 'mth' ]; then 
+    echo "${spt_nm}: ERROR User-defined climatology mode is ${clm_md}. Valid options are 'ann', 'dly', 'hf', and 'mth' (default)"
     exit 1
 fi # !clm_md
 if [ "${clm_md}" = 'ann' ]; then 
