@@ -1234,27 +1234,35 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     fi # !job_usr
 
     # Input files per year
+    flg_dct='Yes' # [flg] Double-check time in years against file count
     if [ "${clm_md}" = 'ann' ]; then
 	fpy=1
     elif [ "${clm_md}" = 'dly' ]; then
 	dpf=1
 	let fpy=${dpy}/${dpf}
+    elif [ "${clm_md}" = 'hf' ]; then
+	# CESM/E3SM high-frequency output often employs noleap calendar and 30 days per file
+	dpf=30
+	let fpy=${dpy}/${dpf}
+	flg_dct='No'
     elif [ "${clm_md}" = 'mth' ]; then
 	fpy=12
     fi # !clm_md
     let yr_sbs=${fl_nbr}/${fpy}
     let fl_rmd=${fl_nbr}%${fpy}
-    if [ ${fl_rmd} -ne 0 ]; then
-	printf "${spt_nm}: ERROR ${fl_nbr} files of clm_md=${clm_md} input contain non-integral number of years, ${fl_rmd} files leftover in final year\n"
-	printf "${spt_nm}: HINT Provide input filenames in multiples of ${fpy}\n"
-	exit 1
-    fi # !fl_rmd
-    if [ ${yr_sbs} -ne ${yr_nbr} ]; then
+    if [ ${flg_dct} = 'Yes' ]; then
+	if [ ${fl_rmd} -ne 0 ]; then
+	    printf "${spt_nm}: ERROR ${fl_nbr} files of clm_md=${clm_md} input contain non-integral number of years, ${fl_rmd} files leftover in final year\n"
+	    printf "${spt_nm}: HINT Provide input filenames in multiples of ${fpy}\n"
+	    exit 1
+	fi # !fl_rmd
+	if [ ${yr_sbs} -ne ${yr_nbr} ]; then
 	# Sanity check that number of files specified matches number expected from date switches
-	printf "${spt_nm}: ERROR ${fl_nbr} files specified (via stdin pipe, positional, or input directory) expected to contain ${yr_sbs} years of data but date options specify ${yr_nbr} years of data\n"
-	printf "${spt_nm}: HINT Number of files at ${fpy} files-per-year must match number of years implied by arguments to start- and end-year switches (--yr_srt=${yr_srt} and --yr_end=${yr_end}, respectively)\n"
-	exit 1
-    fi # !yr_sbs
+	    printf "${spt_nm}: ERROR ${fl_nbr} files specified (via stdin pipe, positional, or input directory) expected to contain ${yr_sbs} years of data but date options specify ${yr_nbr} years of data\n"
+	    printf "${spt_nm}: HINT Number of files at ${fpy} files-per-year must match number of years implied by arguments to start- and end-year switches (--yr_srt=${yr_srt} and --yr_end=${yr_end}, respectively)\n"
+	    exit 1
+	fi # !yr_sbs
+    fi # !flg_dct
 
     # How many segments of output?
     let sgm_nbr=${yr_sbs}/${ypf_max}

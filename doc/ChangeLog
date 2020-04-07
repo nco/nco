@@ -1,6 +1,12 @@
+2020-04-07  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo hgh_frq works for PRECT with ragged dates, non-integral years
+
+	* ncrcat correctly rebase time values not stored in floating point
+
 2020-04-06  Charlie Zender  <zender@uci.edu>
 
-	* ncclimo add new clm_md='hf' type for high-frequency datasets
+	* ncclimo add new clm_md='hf' type for high-frequency (hgh_frq) datasets
 
 	* NCO 4.9.3-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha05: Ozark';git push
