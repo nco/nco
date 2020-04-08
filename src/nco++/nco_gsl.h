@@ -26,8 +26,15 @@ extern "C" {
 
 /* Standard header files */
 #include <stddef.h> /* size_t */
- 
+
+#ifdef HAVE_CONFIG_H
+# include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
+
 #define NCO_GSL_SUCCESS 0
+
+#ifdef ENABLE_GSL
 
   /* Forward declarations */
 int
@@ -60,6 +67,8 @@ nco_gsl_stats_covariance
  const size_t stride2,
  const size_t n,
  const double *mss_val); /* fill value */
+
+#endif
 
 #ifdef __cplusplus
 } /* end extern "C" */
