@@ -28,6 +28,8 @@
    from the observed variance of the points around the best fit line.
 */
 
+#ifdef ENABLE_GSL
+
 int
 nco_gsl_fit_linear
 (const double *x, 
@@ -136,3 +138,5 @@ nco_gsl_stats_mean
   return gsl_stats_mean(data, stride, size);
 
 }
+
+#endif
