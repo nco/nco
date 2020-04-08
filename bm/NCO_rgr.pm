@@ -2627,7 +2627,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #Since input variable is contiguous and default mode is (xst, xst), NCO determines that input has no existing chunksizes and so lets netCDF determine chunksizes
 #ncks -O -4 -L 0 --cnk_dmn lat,1 -v /lat ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -m --trd --hdn -v /lat ~/foo.nc | grep _ChunkSizes
-    $dsc_sng="(Groups) Imposing deflation (-L 1) on contiguous variable uses netCDF-default (not user-specified) sizes";
+    $dsc_sng="(Groups) Imposing no deflation (-L 0) on contiguous variable uses netCDF-default (not user-specified) sizes";
     $tst_cmd[0]="ncks -O -4 -L 0 --cnk_dmn lat,1 -v /lat $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -m --trd --hdn -v /lat %tmp_fl_00% | grep _ChunkSizes";
     $tst_cmd[2]="lat attribute 2: _ChunkSizes, size = 1 NC_INT, value = 2";
@@ -2639,7 +2639,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #Imposing real deflation (-L 1) on contiguous variable uses user-specified (not netCDF-default) sizes.
 #Input variable is contiguous and default mode is (xst, xst). 
 #NCO determines that variable must be chunked (because compressed) and uses user-specified explicit overrides for chunksizes
-#ncks -O -4 -L 0 --cnk_dmn lat,1 -v /lat ~/nco/data/in_grp.nc ~/foo.nc
+#ncks -O -4 -L 1 --cnk_dmn lat,1 -v /lat ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -C -m --trd --hdn -v /lat ~/foo.nc | grep _ChunkSizes
     $dsc_sng="(Groups) Imposing deflation (-L 1) on contiguous variable uses netCDF-default (not user-specified) sizes";
     $tst_cmd[0]="ncks -O -4 -L 1 --cnk_dmn lat,1 -v /lat $nco_D_flg $in_pth_arg in_grp.nc %tmp_fl_00%";
