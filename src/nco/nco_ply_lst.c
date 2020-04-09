@@ -760,7 +760,7 @@ int *pl_cnt_vrl_ret){
   if( thr_quota_step <2000 )
     thr_quota_step=2000;
 
-  /* NB: "OpenMP notes" section of nco_rgr.c has detailed discussion of these settings
+/* NB: "OpenMP notes" section of nco_rgr.c has detailed discussion of these settings
      Henry, please keep the variables in alphabetical order within a clause and remember to update Intel */
 #ifdef __GNUG__
   # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
@@ -769,12 +769,12 @@ int *pl_cnt_vrl_ret){
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined(__INTEL_COMPILER)
-# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,fnc_nm,grd_lon_typ,max_nbr_vrl,mem_lst,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,rtree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
+# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,fnc_nm,grd_lon_typ,max_nbr_vrl,mem_lst,nbr_tr,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,tree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,pl_cnt_dbg,pl_typ,rtree,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
