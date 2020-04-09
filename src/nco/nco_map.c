@@ -961,12 +961,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
 
 #if defined(__INTEL_COMPILER)
-# pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, nbr_xcs, pl_lst_out, quota, tree)
+# pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr,  grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst_out, quota, tree)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, nbr_xcs, pl_lst_out, quota, tree)
+#  pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst_out, quota, tree)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx,thr_idx) shared(fp_stderr, nbr_xcs, pl_lst_out, quota, tree)
+#  pragma omp parallel for private(idx,thr_idx) shared(fp_stderr, grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst_out, quota, tree)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
       for(idx=0;idx<nbr_tr;idx++) {
