@@ -8,50 +8,8 @@
    You may redistribute and/or modify NCO under the terms of the
    3-Clause BSD License with exceptions described in the LICENSE file */
 
-#include <gsl/gsl_statistics.h>
-#include <gsl/gsl_fit.h>
-#include "nco_gsl.h" /* Missing value-aware GSL functions */
 
-/* Fit the data (x_i, y_i) to the linear relationship 
-
-   Y = c0 + c1 x
-
-   returning, 
-
-   c0, c1  --  coefficients
-   cov00, cov01, cov11  --  variance-covariance matrix of c0 and c1,
-   sumsq   --   sum of squares of residuals 
-
-   This fit can be used in the case where the errors for the data are
-   uknown, but assumed equal for all points. The resulting
-   variance-covariance matrix estimates the error in the coefficients
-   from the observed variance of the points around the best fit line.
-*/
-
-#ifdef ENABLE_GSL
-
-int
-nco_gsl_fit_linear
-(const double *x, 
- const size_t xstride,
- const double *y, 
- const size_t ystride,
- const size_t n,
- double *c0, 
- double *c1,
- double *cov_00, 
- double *cov_01, 
- double *cov_11, 
- double *sumsq,
- const double *mss_val)
-{
-
-
-  return gsl_fit_linear(x, xstride, y, ystride, n, c0, c1, cov_00, cov_01, cov_11, sumsq);
-
-
-}
-
+#include "nco_gsl.h"
 
 
 static double
@@ -60,8 +18,8 @@ compute_covariance
  const size_t stride1,
  const double data2[],
  const size_t stride2,
- const size_t n, 
- const double mean1, 
+ const size_t n,
+ const double mean1,
  const double mean2,
  const double *mss_val) /* Missing value */
 {
@@ -97,6 +55,52 @@ compute_covariance
 
   return covariance ;
 }
+
+
+
+#ifdef ENABLE GSL
+
+/* Fit the data (x_i, y_i) to the linear relationship
+
+   Y = c0 + c1 x
+
+   returning,
+
+   c0, c1  --  coefficients
+   cov00, cov01, cov11  --  variance-covariance matrix of c0 and c1,
+   sumsq   --   sum of squares of residuals
+
+   This fit can be used in the case where the errors for the data are
+   uknown, but assumed equal for all points. The resulting
+   variance-covariance matrix estimates the error in the coefficients
+   from the observed variance of the points around the best fit line.
+*/
+
+
+int
+nco_gsl_fit_linear
+(const double *x, 
+ const size_t xstride,
+ const double *y, 
+ const size_t ystride,
+ const size_t n,
+ double *c0, 
+ double *c1,
+ double *cov_00, 
+ double *cov_01, 
+ double *cov_11, 
+ double *sumsq,
+ const double *mss_val)
+{
+
+
+  return gsl_fit_linear(x, xstride, y, ystride, n, c0, c1, cov_00, cov_01, cov_11, sumsq);
+
+
+}
+
+
+
 
 double 
 nco_gsl_stats_covariance_m
@@ -139,4 +143,67 @@ nco_gsl_stats_mean
 
 }
 
+#else
+
+int
+nco_gsl_fit_linear
+(const double *x,
+ const size_t xstride,
+ const double *y,
+ const size_t ystride,
+ const size_t n,
+ double *c0,
+ double *c1,
+ double *cov_00,
+ double *cov_01,
+ double *cov_11,
+ double *sumsq,
+ const double *mss_val)
+{
+
+  return EXIT_FAILURE;
+
+}
+
+
+double
+nco_gsl_stats_covariance_m
+(const double data1[],
+ const size_t stride1,
+ const double data2[],
+ const size_t stride2,
+ const size_t n,
+ const double mean1,
+ const double mean2,
+ const double *mss_val) /* Missing value */
+{
+  return *mss_val;
+
+}
+
+double
+nco_gsl_stats_covariance
+(const double data1[],
+ const size_t stride1,
+ const double data2[],
+ const size_t stride2,
+ const size_t n,
+ const double *mss_val) /* Missing value */
+{
+  return *mss_val;
+
+}
+
+
+double
+nco_gsl_stats_mean
+(const double data[],
+ const size_t stride,
+ const size_t size,
+ const double *mss_val) /* Missing value */
+{
+
+  return *mss_val;
+
+}
 #endif
