@@ -58,7 +58,7 @@ compute_covariance
 
 
 
-#ifdef ENABLE GSL
+#ifdef ENABLE_GSL
 
 /* Fit the data (x_i, y_i) to the linear relationship
 
@@ -143,7 +143,7 @@ nco_gsl_stats_mean
 
 }
 
-#else
+#else /* !ENABLE_GSL */
 
 int
 nco_gsl_fit_linear
@@ -206,4 +206,4 @@ nco_gsl_stats_mean
   return *mss_val;
 
 }
-#endif
+#endif /* !ENABLE_GSL */

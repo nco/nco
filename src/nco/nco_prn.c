@@ -271,8 +271,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      unsigned int *prm_lst=NULL;
 	      char sng_foo[11]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 */
 	      rcd=nco_inq_var_filter(grp_id,var_id,&flt_id,&prm_nbr,NULL);
-	      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
-	      if(flt_id != NC_MAX_UINT){
+	      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
+	      if(flt_id != NC_MAX_UINT && flt_id != 0){
 		/* Print _Filter for filtered variables */
 		prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 		rcd=nco_inq_var_filter(grp_id,var_id,NULL,NULL,prm_lst);

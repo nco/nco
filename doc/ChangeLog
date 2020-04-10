@@ -1,3 +1,7 @@
+2020-04-10  Charlie Zender  <zender@uci.edu>
+
+	* ncap2 final patch for nco_gsl.c/h for when GSL not enabled
+
 2020-04-08  Charlie Zender  <zender@uci.edu>
 
 	* ncks alter nco_prn_att() to debug netCDF 4.7.4 changes in nc_inq_var_filter()
