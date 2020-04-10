@@ -1,5 +1,7 @@
 2020-04-10  Charlie Zender  <zender@uci.edu>
 
+	* nco_netcdf.c Add hint for possible explanation of NC_EACCESS (-77) due to old DAP server
+
 	* ncap2 final patch for nco_gsl.c/h for when GSL not enabled
 
 2020-04-08  Charlie Zender  <zender@uci.edu>
