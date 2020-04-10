@@ -31,10 +31,17 @@ extern "C" {
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
+/* 3rd party vendors */
+#ifdef ENABLE_GSL
+  #include <gsl/gsl_statistics.h>
+  #include <gsl/gsl_fit.h>
+#endif
+
+/* Personal headers */
+#include "nco.h"
 
 #define NCO_GSL_SUCCESS 0
 
-#ifdef ENABLE_GSL
 
   /* Forward declarations */
 int
@@ -68,7 +75,6 @@ nco_gsl_stats_covariance
  const size_t n,
  const double *mss_val); /* fill value */
 
-#endif
 
 #ifdef __cplusplus
 } /* end extern "C" */
