@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.3-alpha05
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 7 April 2020
+@set update-date 14 April 2020
 @set update-month April 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -21125,6 +21125,7 @@ Both these designs are perfectly legal.
 What is illegal, yet sometimes encountered in practice, is overlapping
 gridcells on the same input grid.
 Such an input grid is said to be self-overlapping.
+
 The surface topography dataset grid
 @file{SCRIPgrid_1km-merge-10min_HYDRO1K-merge-nomask_c130402.nc}
 (hereafter the @acronym{HYDRO1K} grid for short) used by
