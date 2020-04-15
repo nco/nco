@@ -168,6 +168,9 @@ double
 nco_sph_cross(double *a, double *b, double *c);
 
 double
+nco_sph_cross_sub(double *a, double *b, double *c);
+
+double
 nco_sph_cross2(double *a, double *b, double *c);
 
 double
