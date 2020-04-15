@@ -114,16 +114,18 @@ double  nco_sph_cross_chk(double *a, double *b, double *c)
 }
 
 
-
-double  nco_sph_cross3(double *a, double *b, double *c)
+/* for vectors a,b close together we get a "better" cross product  -by
+ * subtracting them first i.e  (a-b) X b --  mathematically speaking it makes
+ * no difference - but this is the finite world of doubles */
+double  nco_sph_cross_sub(double *a, double *b, double *c)
 {
   const char fnc_nm[]="nco_sph_cross()";
   //
   double n2;
   double tmp[NBR_SPH];
 
-  /* see if point a and point b on exactly the same same merdian */
-  // if(a[3]==b[3]) return nco_sph_cross_chk(a, b, c);
+  /* see if point a and point b on exactly the same same meridian */
+  if(a[3]==b[3]) return nco_sph_cross_chk(a, b, c);
 
    nco_sph_sub(a,b,tmp);
 
@@ -201,8 +203,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
       b1 = (b + m - 1) % m;
 
 
-     /* skip identical points */
-     while(( nx1= nco_sph_cross_chk(P->shp[a1], P->shp[a], Pcross) <DOT_TOLERANCE) )
+     /* skip identical points - remember nco_sph_cross_sub - checks longitude */
+     while(( nx1= nco_sph_cross_sub(P->shp[a1], P->shp[a], Pcross) <DOT_TOLERANCE) )
      {
        aa++;a++;
        a%=n;
@@ -212,8 +214,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      }
 
 
-     /* skip identical points */
-     while( (nx2= nco_sph_cross_chk(Q->shp[b1], Q->shp[b], Qcross) < DOT_TOLERANCE) )
+     /* skip identical points - remember nco_sph_cross_sub - checks longitude */
+     while( (nx2= nco_sph_cross_sub(Q->shp[b1], Q->shp[b], Qcross) < DOT_TOLERANCE) )
      {
        bb++;b++;
        b%=m;
@@ -851,40 +853,24 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
   }
 
 
-  if( cd_rad >= i_rad && idot >1.0e-40  )
+  if( idot >1.0e-40)
   {
-       if(cd_rad-i_rad < 2.0e-14)
-         iret=( bInvert ? 2: 3);
-       else
-         iret=1;
-
+    /* very close to vertex */
+    if( fabs(cd_rad-i_rad) <2.0e-14  )
+      iret=( bInvert ? 2: 3);
+    /* in the middle */
+    else if( cd_rad>i_rad)
+      iret=1;
+    /* off the end i_rad>cd_rad */
+    else
+      iret=0;
   }
-  else if( i_rad - cd_rad < 2.0e-14  && idot>1.0e-40 )
+  else
   {
-
-       iret=( bInvert ? 2: 3);
-
-
+    iret=0;
   }
 
-  else
-    iret=0;
 
-
-
-  /* Icross is a start of arc - point c */
-  /*
-  if(ci_rad<=1.0e-40)
-    iret=2;
-  else if(  ci_rad==cd_rad && cdot>1.0e-40 )
-    iret=3;
-  else if(  cd_rad  >= ci_rad  &&  cdot >1.0e-40)
-    iret=1;
-  else
-    iret=0;
-   */
-  //if(DEBUG_LCL)
-  //  (void)fprintf(stderr, "%s: iret=%d\n", fnc_nm, iret);
 
   if(DEBUG_LCL)
     (void)fprintf(stderr, "%s: Using sph_metric to compare points cd_rad=%.15e ci_rad=%.15e  cdot=%.15e iret=%d\n", fnc_nm, cd_rad, i_rad, idot, iret);
@@ -973,8 +959,9 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
   nco_bool bSetCnd=False;
 
   nco_bool bTstVertex=False;
-  int flg_cd=0;
-  int flg_ab=0;
+  int flg_p=0;
+  int flg_q=0;
+
 
 
 
@@ -999,9 +986,9 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
     double Pcross[NBR_SPH];
     double Qcross[NBR_SPH];
 
-
-    nco_sph_cross(p0, p1, Pcross);
-    nco_sph_cross(q0, q1, Qcross);
+    /* remeber nco_sph_cross_sub - requires presence of londitude - p0[3], p1[3] */
+    nco_sph_cross_sub(p0, p1, Pcross);
+    nco_sph_cross_sub(q0, q1, Qcross);
 
     pq_cross_lcl[0] = nco_sph_lhs(p0, Qcross);
     pq_cross_lcl[1] = nco_sph_lhs(p1, Qcross);
@@ -1017,22 +1004,22 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
   if(bTstVertex)
   {
     if( !pq_cross[1] && !pq_cross[3] &&  !nco_sph_metric(p1,q1))
-    { flg_ab=3; flg_cd=3; memcpy(r0, p1, sizeof(double)*NBR_SPH); }
+    { flg_q=3; flg_p=3; memcpy(r0, p1, sizeof(double)*NBR_SPH); }
 
     else if( !pq_cross[1] && !pq_cross[2] &&  !nco_sph_metric(p1,q0))
-    { flg_ab=3; flg_cd=2; memcpy(r0, p1, sizeof(double)*NBR_SPH);}
+    { flg_q=3; flg_p=2; memcpy(r0, p1, sizeof(double)*NBR_SPH);}
 
     else if(!pq_cross[0] && !pq_cross[3] && !nco_sph_metric(p0,q1))
-    {flg_ab=2; flg_cd=3; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
+    {flg_q=2; flg_p=3; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
 
     else if(!pq_cross[0] && !pq_cross[2] && !nco_sph_metric(p0,q0))
-    {flg_ab=2; flg_cd=2; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
+    {flg_q=2; flg_p=2; memcpy(r0, p0, sizeof(double)*NBR_SPH); }
 
-    if(flg_ab && flg_cd)
+    if(flg_q && flg_p)
     {
 
-      codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
-      codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
+      codes[0]=( flg_q==2 ? 't' : flg_q==3 ? 'h' :'1' );
+      codes[1]=( flg_p==2 ? 't' : flg_p==3 ? 'h' :'1' );
 
 
 
@@ -1044,7 +1031,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
     }
     else
     {
-      flg_ab=0; flg_cd=0;
+      flg_q=0; flg_p=0;
     }
 
   }
@@ -1053,6 +1040,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
   /* The plane / line intersection method doesnt work very well when the end point of the line is on
   * or very near to the plane - so we swap the values around and use  {q0,q1,Origin}  as plane and {p0,p1} as line */
+  /*
   if( pq_cross[0]*pq_cross[1] !=0 && pq_cross[2]* pq_cross[3]==0  )
     {
       dswp=p0; p0=q0; q0=dswp;
@@ -1060,6 +1048,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
       bSwap=True;
     }
+  */
 
   bInt=nco_mat_int_pl(p0, p1, q0, q1, pt);
   /* no intersection */
@@ -1071,8 +1060,9 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
     fprintf(stderr, "%s: bInt=%s codes=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm, (bInt ? "True" : "False"),
             codes, pt[0], pt[1], pt[2]);
 
-    if(  ( pq_cross[0]*pq_cross[1] != 0 && pq_cross[2]* pq_cross[3]==0 )  ||  ( pq_cross[0]*pq_cross[1] == 0 && pq_cross[2]* pq_cross[3]!=0 ))
+    /* * if(  ( pq_cross[0]*pq_cross[1] != 0 && pq_cross[2]* pq_cross[3]==0 )  ||  ( pq_cross[0]*pq_cross[1] == 0 && pq_cross[2]* pq_cross[3]!=0 ))
       fprintf(stderr,"WARNING pq_cross[*] swapped\n" );
+      */
 
 
   }
@@ -1081,9 +1071,9 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
     return False;
 
   /* this is quite permissive  as some  returned points maybe in the range <1.0e-14, or 1.0+1.-e-14
-     The points are double checked later with flg_cd=nco_sph_metric_int(q0,q1, pcnd); */
-  if(   pt[0] < -1.0e-11  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-11) )
-     return False;
+     The points are double checked later with flg_p=nco_sph_metric_int(q0,q1, pcnd); */
+  /* if(   pt[0] < -1.0e-11  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-11) )
+     return False; */
 
 
 
@@ -1110,62 +1100,44 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
   }
 
-  /* swap values back if necessary
-  if( bSwap) {
-
-    dswp = p0;p0 = q0;q0 = dswp;
-    dswp = p1;p1 = q1;q1 = dswp;
-  }
-  */
 
 
-
-  flg_ab=nco_sph_metric_int(p0,p1, pcnd);
+  flg_q=nco_sph_metric_int(p0,p1, pcnd);
 
   if(DEBUG_SPH) {
       nco_sph_prn_pnt("nco_sph_seg_int_: pos point ", pcnd, 4, True);
-      (void)fprintf(stderr, "%s: flg_ab=%d\n", fnc_nm,  flg_ab );
+      (void)fprintf(stderr, "%s: flg_ab=%d\n", fnc_nm,  flg_q );
   }
 
 
 
-  if(!flg_ab)
+  if(!flg_q)
       return False;
 
-  flg_cd=nco_sph_metric_int(q0,q1, pcnd);
+  flg_p=nco_sph_metric_int(q0,q1, pcnd);
 
-  if(!flg_cd)
+  if(!flg_p)
     return False;
 
 
   if(bSwap)
   {
-    int flg_tmp=flg_ab;
-    flg_ab=flg_cd;
-    flg_cd=flg_tmp;
+    int flg_tmp=flg_q;
+    flg_q=flg_p;
+    flg_p=flg_tmp;
   }
 
 
-  codes[0]=( flg_ab==2 ? 't' : flg_ab==3 ? 'h' :'1' );
-  codes[1]=( flg_cd==2 ? 't' : flg_cd==3 ? 'h' :'1' );
+  codes[0]=( flg_q==2 ? 't' : flg_q==3 ? 'h' :'1' );
+  codes[1]=( flg_p==2 ? 't' : flg_p==3 ? 'h' :'1' );
 
-  /*
-  if(flg_ab==2)
-  {memcpy(pcnd, p0, sizeof(double)*NBR_SPH);}
-  else if(flg_ab==3)
-  {memcpy(pcnd, p1, sizeof(double)*NBR_SPH);}
-  else if(flg_cd==2)
-  {memcpy(pcnd, q0, sizeof(double)*NBR_SPH);}
-  else if(flg_cd==3)
-  {memcpy(pcnd, q1, sizeof(double)*NBR_SPH);}
-  */
 
   if(DEBUG_SPH )
       fprintf(stderr, "%s: codes=%s tpar=pt[0]=%.15f\n", fnc_nm, codes, pt[0]  );
 
-    memcpy(r0, pcnd, sizeof(double)*NBR_SPH);
+  memcpy(r0, pcnd, sizeof(double)*NBR_SPH);
 
-    return True;
+  return True;
 
 
 
