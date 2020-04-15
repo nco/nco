@@ -1,3 +1,11 @@
+2020-04-15  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.3-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha06: Holy Fire';git push
+	git tag -a 4.9.3-alpha06 -m 'ncap2 nco_gsl.c/h deprecated;ncclimo clm_md=hgh_frq;ncrcat rbs int tm;ncremap cross-product';git push --tags
+
+	* Henry merges cross product treatment that improves accuracy on high resolution grids
+
 2020-04-10  Charlie Zender  <zender@uci.edu>
 
 	* nco_netcdf.c Add hint for possible explanation of NC_EACCESS (-77) due to old DAP server

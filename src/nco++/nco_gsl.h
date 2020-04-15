@@ -42,7 +42,6 @@ extern "C" {
 
 #define NCO_GSL_SUCCESS 0
 
-
   /* Forward declarations */
 int
 nco_gsl_fit_linear
@@ -74,7 +73,6 @@ nco_gsl_stats_covariance
  const size_t stride2,
  const size_t n,
  const double *mss_val); /* fill value */
-
 
 #ifdef __cplusplus
 } /* end extern "C" */

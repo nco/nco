@@ -8,9 +8,7 @@
    You may redistribute and/or modify NCO under the terms of the
    3-Clause BSD License with exceptions described in the LICENSE file */
 
-
 #include "nco_gsl.h"
-
 
 static double
 compute_covariance
@@ -56,8 +54,6 @@ compute_covariance
   return covariance ;
 }
 
-
-
 #ifdef ENABLE_GSL
 
 /* Fit the data (x_i, y_i) to the linear relationship
@@ -76,7 +72,6 @@ compute_covariance
    from the observed variance of the points around the best fit line.
 */
 
-
 int
 nco_gsl_fit_linear
 (const double *x, 
@@ -92,15 +87,8 @@ nco_gsl_fit_linear
  double *sumsq,
  const double *mss_val)
 {
-
-
   return gsl_fit_linear(x, xstride, y, ystride, n, c0, c1, cov_00, cov_01, cov_11, sumsq);
-
-
 }
-
-
-
 
 double 
 nco_gsl_stats_covariance_m
@@ -114,7 +102,6 @@ nco_gsl_stats_covariance_m
  const double *mss_val) /* Missing value */
 {
   return gsl_stats_covariance_m(data1, stride1, data2,stride2,n,mean1,mean2);
-
 }
 
 double 
@@ -127,9 +114,7 @@ nco_gsl_stats_covariance
  const double *mss_val) /* Missing value */
 {
   return gsl_stats_covariance(data1, stride1, data2,stride2,n);
-
 }
-
 
 double
 nco_gsl_stats_mean
@@ -138,9 +123,7 @@ nco_gsl_stats_mean
  const size_t size,
  const double *mss_val) /* Missing value */
 {
-
   return gsl_stats_mean(data, stride, size);
-
 }
 
 #else /* !ENABLE_GSL */
@@ -160,11 +143,8 @@ nco_gsl_fit_linear
  double *sumsq,
  const double *mss_val)
 {
-
   return EXIT_FAILURE;
-
 }
-
 
 double
 nco_gsl_stats_covariance_m
@@ -178,7 +158,6 @@ nco_gsl_stats_covariance_m
  const double *mss_val) /* Missing value */
 {
   return *mss_val;
-
 }
 
 double
@@ -191,9 +170,7 @@ nco_gsl_stats_covariance
  const double *mss_val) /* Missing value */
 {
   return *mss_val;
-
 }
-
 
 double
 nco_gsl_stats_mean
@@ -202,8 +179,6 @@ nco_gsl_stats_mean
  const size_t size,
  const double *mss_val) /* Missing value */
 {
-
   return *mss_val;
-
 }
 #endif /* !ENABLE_GSL */
