@@ -1,5 +1,7 @@
 2020-04-18  Charlie Zender  <zender@uci.edu>
 
+	* Add nc_inq_var_filter_flg() to workaround netCDF 4.7.4 backwards incompatibility in nc_inq_var_filter()
+
 	* Test with GCC 10.0.1 (emits many new warnings) on Fedora 32-beta with netCDF 4.8.0-development
 
 	* Update return codes in nco_ctl.c and NCO_rgr.pl for netCDF 4.8.0, 4.8.1

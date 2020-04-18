@@ -1284,7 +1284,7 @@ nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id)
 int
 nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id)
 {
-  /* Purpose: Error-tolerant Wrapper for nc_inq_ncid(). Tolerates NC_ENOGRP */
+  /* Purpose: Error-tolerant wrapper for nc_inq_ncid(). Tolerates NC_ENOGRP. */
   int rcd;
   rcd=nc_inq_ncid(nc_id,grp_nm,grp_id);
   if(rcd == NC_ENOGRP) return rcd;
@@ -1383,7 +1383,7 @@ int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id)
 
 int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id)
 {
-  /* Purpose: Error-tolerant wrapper for nc_def_grp(). Tolerates NC_ENAMEINUSE (-42) "String match to name in use" */
+  /* Purpose: Error-tolerant wrapper for nc_def_grp(). Tolerates NC_ENAMEINUSE (-42) "String match to name in use". */
   int rcd;
   rcd=nc_def_grp(nc_id,grp_nm,grp_id);
   if(rcd == NC_ENAMEINUSE) return rcd;
@@ -1472,7 +1472,7 @@ int nco_inq_grp_ncid(const int nc_id,const char * const grp_nm,int * const grp_i
 
 int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id)
 {
-  /* Purpose: Error-tolerant wrapper for nc_inq_grp_ncid(). Tolerates NC_ENOGRP */
+  /* Purpose: Error-tolerant wrapper for nc_inq_grp_ncid(). Tolerates NC_ENOGRP. */
   int rcd;
   rcd=nc_inq_grp_ncid(nc_id,grp_nm,grp_id);
   if(rcd == NC_ENOGRP) return rcd;
@@ -1497,7 +1497,7 @@ int nco_inq_grp_full_ncid(const int nc_id,const char * const grp_nm_fll,int * co
 
 int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int * const grp_id)
 {
-  /* Purpose: Error-tolerant Wrapper for nc_inq_grp_full_ncid(). Tolerates NC_ENOGRP */
+  /* Purpose: Error-tolerant wrapper for nc_inq_grp_full_ncid(). Tolerates NC_ENOGRP. */
   int fl_fmt;
   int rcd;
   rcd=nco_inq_format(nc_id,&fl_fmt);
@@ -1522,7 +1522,7 @@ int nco_inq_grp_parent(const int nc_id,int * const prn_id)
 
 int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id)
 {
-  /* Purpose: Error-tolerant Wrapper for nc_inq_grp_parent_flg(). Tolerates NC_ENOGRP */
+  /* Purpose: Error-tolerant wrapper for nc_inq_grp_parent_flg(). Tolerates NC_ENOGRP. */
   int rcd;
   rcd=nc_inq_grp_parent(nc_id,prn_id);
   if(rcd == NC_ENOGRP) return rcd;
@@ -2071,6 +2071,16 @@ int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter()");
   return rcd;
 } /* end nco_inq_var_filter() */
+
+int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
+{
+  /* Purpose: Error-tolerant wrapper for nc_inq_var_filter(). Tolerates NC_ENOFILTER. */
+  int rcd;
+  rcd=nc_inq_var_filter(nc_id,var_id,flt_id,prm_nbr,prm_lst);
+  if(rcd == NC_ENOFILTER) return rcd;
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter()");
+  return rcd;
+} /* end nco_inq_var_filter_flg() */
 
 int
 nco_def_var_fletcher32

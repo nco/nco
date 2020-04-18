@@ -533,6 +533,12 @@ extern "C" {
 # define NC_EDAPSVC (-70)      /**< DAP server error */
 #endif
 
+  /* Backwards-compatibility error codes implemented in 202004 to workaround netCDF 4.7.4 backwards incompatibility with nc_inq_var_filter()
+     Currently used only in nco_prn.c */
+#ifndef NC_ENOFILTER
+# define NC_ENOFILTER(-136)      /**< Filter not defined on variable. */
+#endif
+
   /* NCO began using MIN/MAX tokens in nco_pck.c on 20101130
      Not sure when these tokens were introduced to netcdf.h */
 #ifndef NC_MAX_BYTE
