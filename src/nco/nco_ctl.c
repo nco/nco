@@ -572,6 +572,8 @@ nco_exit_lbr_rcd(void) /* [fnc] Exit with netCDF library version as return code 
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '7' && lbr_sng[3] == '.' && lbr_sng[4] == '2'){rcd=472;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '7' && lbr_sng[3] == '.' && lbr_sng[4] == '3'){rcd=473;}
   else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '7' && lbr_sng[3] == '.' && lbr_sng[4] == '4'){rcd=474;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '8' && lbr_sng[3] == '.' && lbr_sng[4] == '0'){rcd=480;}
+  else if(lbr_sng[0] == '4' && lbr_sng[1] == '.' && lbr_sng[2] == '8' && lbr_sng[3] == '.' && lbr_sng[4] == '1'){rcd=481;}
 #endif /* HAVE_NETCDF4_H */
   /* exit() with custom rcd for use by Perl regression tester nco_bm.pl/NCO_rgr.pm */
   rcd-=300;

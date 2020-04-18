@@ -472,6 +472,7 @@ int nco_inq_var_deflate(const int nc_id,const int var_id,int * const shuffle,int
 int nco_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ);
 int nco_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val);
 int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
+int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
 int nco_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
 int nco_inq_var_packing(const int nc_id,const int var_id,int * const packing);
 int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);

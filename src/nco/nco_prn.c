@@ -270,7 +270,23 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      size_t prm_nbr;
 	      unsigned int *prm_lst=NULL;
 	      char sng_foo[11]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 */
-	      rcd=nco_inq_var_filter(grp_id,var_id,&flt_id,&prm_nbr,NULL);
+	      /* 20200418 netCDF 4.7.4 nc_inq_var_filter() is backwards incompatible
+		 https://github.com/Unidata/netcdf-c/issues/1693
+		 As of 4.7.4, nc_inq_var_filter() called on a chunked and shuffled 
+		 though not compressed variable in a netCDF4 dataset returns error -136:
+		 "NetCDF: Filter error: filter not defined for variable"
+		 Prior to 4.7.4, nc_inq_var_filter() returns NC_NOERR on such variables, and sets the filter ID to 0
+		 Workaround for netCDF 4.7.4 is to proceed only if first nc_inq_var_filter_flg() returns NC_NOERR */
+	      if(NC_LIB_VERSION == 474 || NC_LIB_VERSION == 480){
+		rcd=nco_inq_var_filter_flg(grp_id,var_id,&flt_id,&prm_nbr,NULL);
+		if(rcd == NC_ENOFILTER){
+		  rcd=NC_NOERR;
+		  flt_id=0;
+		  prm_nbr=0;
+		} /* !rcd */
+	      }else{ /* !netCDF 4.7.4 || 4.8.0 */
+		rcd=nco_inq_var_filter(grp_id,var_id,&flt_id,&prm_nbr,NULL);
+	      } /* !netCDF 4.7.4 */
 	      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
 	      if(flt_id != NC_MAX_UINT && flt_id != 0){
 		/* Print _Filter for filtered variables */
