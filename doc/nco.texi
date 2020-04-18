@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.3-alpha06
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 14 April 2020
+@set update-date 16 April 2020
 @set update-month April 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20854,7 +20854,7 @@ An individual weight @var{S(m,n)} represents the fractional
 contribution to destination gridcell @var{m} by source gridcell
 @var{n}. 
 By convention the weights are normalized to sum to unity in each row 
-(destination gridcell) that completely overlaps that input grid.
+(destination gridcell) that completely overlaps the input grid.
 Thus the weights in a single row are all equivalent to the fractional
 destination areas that the same destination gridcell (we will drop the
 @acronym{DOF} terminology hereafter for conciseness) receives from
@@ -20888,15 +20888,15 @@ further below.
 Storing the entire weight-matrix @b{S} is unnecessary because only a
 relative handful of gridcells in the source grid contribute to a given 
 destination gridcell, and visa versa.
-Instead, map-files store only the non-zero @var{S(m,n)}, and encodes
+Instead, map-files store only the non-zero @var{S(m,n)}, and encode
 them as a sparse-matrix.
 Storing @b{S} as a sparse matrix rather than a full matrix reduces
 overall storage sizes by a factor on the order of the ratio of the
 product of the grid sizes to their sum, or about 10,000 for grids with
 horizontal resolution near one degree, and more for finer resolutions.
 The sparse-matrix representation is a one-dimensional array of weights 
-@code{S}, together with two ancillary arrays named @code{row}
-and @code{column} that contain the one-dimensional row and column
+@code{S}, together with two ancillary arrays, @code{row}
+and @code{column}, that contain the one-dimensional row and column
 indices, respectively, corresponding to the destination and source
 gridcells of the associated weight.
 By convention, map-files store the row and column indices using the
@@ -20917,8 +20917,8 @@ Ignored weights (S=0.0): 0
 ...
 @end verbatim
 @end example
-Here the map-file weights span twenty-five orders of magnitude,
-which may seem large though in practice is typical for high-resolution
+Here the map-file weights span twenty-five orders of magnitude.
+This may seem large though in practice is typical for high-resolution
 intersection grids.
 The Fortran-convention index of each weight extreme is followed by 
 its geographic latitude and longitude.
@@ -20927,8 +20927,7 @@ miss their target values by more than a specificied tolerance, are
 prime map-checker features.
 
 As mentioned above, the two statistics most telling about map quality 
-are the weighted column-sums named @var{frac_a} and the row-sums
-named @var{frac_b}.
+are the weighted column-sums @var{frac_a} and the row-sums @var{frac_b}.
 The short-hand names for what these metrics quantify are
 Conservation and Consistency, respectively. 
 Conservation means the total fraction of an input gridcell that
@@ -21135,7 +21134,7 @@ Weight-generators that receive the same input location twice might
 known weight-generators do) double-weight the self-overlapped
 region(s).
 In other words, self-overlapping input grids can lead
-weight-generators to produce values @math{@code{frac_b} >> 1.0}.
+weight-generators to produce values @math{@var{frac_b} >> 1.0}.
 Applying these weights would lead to exaggerated values on the
 destination grid.
 
@@ -21145,7 +21144,7 @@ However, this solution may be difficult or impractical where the
 original data, producer, or algorithm are unavailable or unclear.
 In such cases, the @code{--frac_b_nrm} flag provides a workaround. 
 Please understand that @samp{ncks --frac_b_nrm map.nc} is designed to
-alter @file{map.nc} in place, so backup the original file first.
+alter @file{map.nc} in-xsplace, so backup the original file first.
 @c ncks --frac_b_nrm $DATA/maps/map_hydro1k_to_ne1024np4_nco.20200301.nc > foo 2>&1
 @example
 @verbatim
