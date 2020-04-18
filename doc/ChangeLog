@@ -1,3 +1,9 @@
+2020-04-18  Charlie Zender  <zender@uci.edu>
+
+	* Test with GCC 10.0.1 (emits many new warnings) on Fedora 32-beta with netCDF 4.8.0-development
+
+	* Update return codes in nco_ctl.c and NCO_rgr.pl for netCDF 4.8.0, 4.8.1
+
 2020-04-15  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha06 release procedure:
