@@ -201,6 +201,12 @@
 # define NC_EACCESS      (-77)      /**< Access Failure */
 #endif
 
+  /* Backwards-compatibility error codes implemented in 202004 to workaround netCDF 4.7.4 backwards incompatibility with nc_inq_var_filter()
+     Currently used only in nco_prn.c */
+#ifndef NC_ENOFILTER
+# define NC_ENOFILTER (-136)      /**< Filter not defined on variable. */
+#endif
+
 /* Some netCDF3 stubs for netCDF4 routines need netCDF4-only return codes
    These netCDF4 tokens are never defined in netCDF3-only netcdf.h */
 #ifndef HAVE_NETCDF4_H
