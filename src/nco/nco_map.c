@@ -1028,9 +1028,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     if(pl_lst_in[idx]->wgt > 0.0){
       frc_in[idx]=pl_lst_in[idx]->wgt;
 
+      /*
       if(frc_in[idx]>1.0 && frc_in[idx]< 1.0+1.0e-10)
         frc_in[idx]=1.0;
-
+      */
 
       msk_in[idx]=1;
     }else{
@@ -1042,8 +1043,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   for(idx=0;idx<grd_sz_out;idx++){
     if(pl_lst_out[idx]->wgt > 0.0){
       frc_out[idx]=pl_lst_out[idx]->wgt;
+
+      /*
       if(frc_out[idx]>1.0 && frc_out[idx] <(1.0+1.0e-10))
         frc_out[idx]=1.0;
+      */
+
       msk_out[idx]=1;
     }else{
       frc_out[idx]=0.0;
