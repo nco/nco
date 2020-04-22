@@ -607,51 +607,6 @@ void nco_poly_minmax_add
 }
 
 
-
-void
-nco_poly_area_add(
-poly_sct *pl){
-
-  if(pl->crn_nbr <3)
-    pl->area=0.0;
-
-
-  if(pl->pl_typ == poly_sph )
-  {
-    nco_msh_plg_area(pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
-
-    /* charlies function can sometimes return a NaN */
-    if (isnan(pl->area))
-      pl->area = 0.0;
-
-  }
-
-  /* rll poly polygon should only have 3 or 4 vertex */
-  if(pl->pl_typ == poly_rll){
-    /* full formula area=(lon1-lon0)*(sin(lat1)-sin(lat0) ) */
-    double dp_tmp=sin(D2R( pl->dp_y_minmax[1] )) - sin(D2R(pl->dp_y_minmax[0]) );
-
-    double dff=pl->dp_x_minmax[1] - pl->dp_x_minmax[0];
-
-    if(pl->bwrp )
-      dp_tmp *= D2R(360.0 - dff );
-    else
-      dp_tmp*=D2R(dff);
-
-
-    pl->area = fabs(dp_tmp);
-
-
-
-  }
-    //nco_rll_area(pl);
-
-
-
-}
-
-
-
 /* Uses min-max limits only no serious polygon stuff */
 /* should really only be used after nco_sph_intersect */
 /* remember that for polY_sph - dp_y_minmax[0,1] a latitude correction has been added */
@@ -1293,7 +1248,6 @@ poly_sct *pl
   {
     for (idx = 0; idx < pl->crn_nbr; idx++)
       nco_geo_sph_2_lonlat(pl->shp[idx], &pl->dp_x[idx], &pl->dp_y[idx], bDeg);
-
 
   }
 

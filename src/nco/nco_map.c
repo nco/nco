@@ -1027,6 +1027,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   for(idx=0;idx<grd_sz_in;idx++){
     if(pl_lst_in[idx]->wgt > 0.0){
       frc_in[idx]=pl_lst_in[idx]->wgt;
+
+      /*
+      if(frc_in[idx]>1.0 && frc_in[idx]< 1.0+1.0e-10)
+        frc_in[idx]=1.0;
+      */
+
       msk_in[idx]=1;
     }else{
       frc_in[idx]=0.0;
@@ -1037,6 +1043,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   for(idx=0;idx<grd_sz_out;idx++){
     if(pl_lst_out[idx]->wgt > 0.0){
       frc_out[idx]=pl_lst_out[idx]->wgt;
+
+      /*
+      if(frc_out[idx]>1.0 && frc_out[idx] <(1.0+1.0e-10))
+        frc_out[idx]=1.0;
+      */
+
       msk_out[idx]=1;
     }else{
       frc_out[idx]=0.0;
@@ -1229,7 +1241,8 @@ nco_msh_wrt
   grd_ctr_lat=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
   grd_ctr_lon=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
 
-  nco_msh_plg_area(lat_crn,lon_crn,grd_sz_nbr,grd_crn_nbr,area);
+
+  nco_sph_plg_area(map_rgr,lat_crn,lon_crn,grd_sz_nbr,grd_crn_nbr,area);
 
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
@@ -1644,26 +1657,78 @@ const char *att_val
   return iret;
 } /* !nco_msh_att_char() */
 
+
 void
-nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
-(const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
- const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
- const long grd_sz_nbr, /* [nbr] Number of gridcells in grid */
- const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
- double * const area_out) /* [sr] Gridcell area */
-{
+nco_poly_area_add(
+poly_sct *pl){
+
+  const char fnc_nm[]="nco_poly_area_add()";
 
   /* only situation where map_rgr is null is when running debug program vrl-tst */
   if(!map_rgr) {
     map_rgr = (rgr_sct *) nco_calloc(1, sizeof(rgr_sct));
     map_rgr->ply_tri_mth = nco_ply_tri_mth_csz;
     map_rgr->edg_typ = nco_edg_gtc;
+    map_rgr->area_mth = 2;
   }
 
-  nco_sph_plg_area(map_rgr,lat_bnd,lon_bnd,grd_sz_nbr,bnd_nbr,area_out);
+
+
+  if(pl->crn_nbr <3) {
+    pl->area = 0.0;
+    return;
+  }
+
+  if(pl->pl_typ == poly_sph )
+  {
+
+    if(map_rgr->area_mth==1) {
+      nco_sph_plg_area(map_rgr, pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
+    }
+    else if(map_rgr->area_mth==2) {
+
+      if(!pl->shp)
+      {
+        (void)fprintf(stderr, "%s:%s: attempt to call nco_sph_area_quadrature() with pl->shp==null\n", nco_prg_nm_get(), fnc_nm);
+         abort();
+      }
+
+      pl->area = nco_sph_area_quadrature(pl->shp, pl->crn_nbr);
+    }
+
+    if (isnan(pl->area))
+      pl->area = 0.0;
+
+  }
+
+  /* rll poly polygon should only have 3 or 4 vertex */
+  if(pl->pl_typ == poly_rll){
+    /* full formula area=(lon1-lon0)*(sin(lat1)-sin(lat0) ) */
+    double dp_tmp=sin(D2R( pl->dp_y_minmax[1] )) - sin(D2R(pl->dp_y_minmax[0]) );
+
+    double dff=pl->dp_x_minmax[1] - pl->dp_x_minmax[0];
+
+    if(pl->bwrp )
+      dp_tmp *= D2R(360.0 - dff );
+    else
+      dp_tmp*=D2R(dff);
+
+
+    pl->area = fabs(dp_tmp);
+
+
+
+  }
+  //nco_rll_area(pl);
 
   return;
-} /* !nco_msh_plg_area() */
+
+}
+
+
+
+
+
 
 nco_bool
 nco_map_hst_mk /* Create histogram */

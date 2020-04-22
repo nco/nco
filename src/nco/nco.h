@@ -1251,6 +1251,7 @@ extern "C" {
     int rgr_nbr; /* [nbr] Number of regridding arguments */
     int thr_nbr; /* [nbr] Thread number */
     int xtn_nbr; /* [nbr] Number of extensive variables */
+    int area_mth; /* [enm]  area method used calculating grid cell area */
     long idx_dbg; /* [idx] Index of gridcell for debugging */
     long tst; /* [enm] Generic key for testing (undocumented) */
     nco_bool flg_area_out; /* [flg] Add area to output */

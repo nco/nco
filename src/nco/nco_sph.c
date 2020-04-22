@@ -3194,6 +3194,259 @@ void  nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg)
 
 
 
+double
+nco_sph_area_karney(
+double **sP, int np
+)
+{
+
+  int idx;
+  int idx_pre;
+  int idx_nex;
+
+  double dLon1;
+  double dLat1;
+  double dLon2;
+  double dLat2;
+
+  double dLamLat1;
+  double dLamLat2;
+
+  double dFaceArea = 0.0;
+
+  double dS;
+
+
+  for (idx = 0; idx < np; idx++)
+  {
+
+    // Get Nodes bounding this Node
+    idx_pre = (idx + np - 1) % np;
+
+    idx_nex = (idx + 1) % np;
+
+      //const Node & node0 = nodes[face[idx_pre]];
+      //const Node & node1 = nodes[face[idx]];
+      //const Node & node2 = nodes[face[idx_nex]];
+
+
+    // Calculate area using Karney's method
+    // http://osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html
+    dLon1 = sP[idx][3];
+    dLat1 = sP[idx][4];
+
+    dLon2 = sP[idx_nex][3];
+    dLat2 = sP[idx_nex][4];
+
+    if ((dLon1 < -0.5 * M_PI) && (dLon2 > 0.5 * M_PI))
+       dLon1 += 2.0 * M_PI;
+
+    if ((dLon2 < -0.5 * M_PI) && (dLon1 > 0.5 * M_PI))
+      dLon2 += 2.0 * M_PI;
+
+
+    dLamLat1 = 2.0 * atanh(tan(dLat1 / 2.0));
+    dLamLat2 = 2.0 * atanh(tan(dLat2 / 2.0));
+
+    dS = tan(0.5 * (dLon2 - dLon1)) * tanh(0.5 * (dLamLat1 + dLamLat2));
+
+    dFaceArea -= 2.0 * atan(dS);
+
+
+  }
+
+
+
+  if (dFaceArea < -1.0e-14)
+      dFaceArea += 2.0 * M_PI;
+
+
+  return dFaceArea;
+}
+
+
+
+double nco_sph_area_quadrature(
+double **sP, int np)
+{
+
+  int nTriangles = np - 2;
+  int idx=0;
+  int nOrder = 6;
+  double dG[6];
+  double dW[6];
+
+  double dA;
+  double dB;
+  double dR;
+  double dDenomTerm;
+  double dJacobian;
+  double dFaceArea = 0.0;
+
+  const double *node1;
+  const double *node2;
+  const double *node3;
+
+  double dF[NBR_SPH]={0.0};
+  double dDaF[NBR_SPH]={0.0};
+  double dDbF[NBR_SPH]={0.0};
+
+  double dDaG[NBR_SPH]={0.0};
+  double dDbG[NBR_SPH]={0.0};
+
+  double nodeCross[NBR_SPH];
+
+  if(np <3 )
+     return dFaceArea;
+
+
+  dG[0] = -0.9324695142031521;
+  dG[1] = -0.6612093864662645;
+  dG[2] = -0.2386191860831969;
+  dG[3] = +0.2386191860831969;
+  dG[4] = +0.6612093864662645;
+  dG[5] = +0.9324695142031521;
+
+  dW[0] = 0.1713244923791704;
+  dW[1] = 0.3607615730481386;
+  dW[2] = 0.4679139345726910;
+  dW[3] = 0.4679139345726910;
+  dW[4] = 0.3607615730481386;
+  dW[5] = 0.1713244923791704;
+
+
+  // Scale quadrature points
+  for (idx = 0; idx < nOrder; idx++) {
+    dG[idx] = 0.5 * (dG[idx] + 1.0);
+    dW[idx] = 0.5 * dW[idx];
+  }
+
+
+
+
+  node1 = sP[0];
+
+  // Loop over all sub-triangles of this Face
+  for (idx = 0; idx < nTriangles; idx++) {
+
+
+    // Calculate the area of the modified Face
+    //Node node1 = nodes[face[0]];
+    //Node node2 = nodes[face[j+1]];
+    //Node node3 = nodes[face[j+2]];
+
+    node2 = sP[idx + 1];
+    node3 = sP[idx + 2];
+
+    // Calculate area at quadrature node
+    for (int p = 0; p < nOrder; p++) {
+      for (int q = 0; q < nOrder; q++) {
+
+        dA = dG[p];
+        dB = dG[q];
+
+        dF[0] = (1.0 - dB) * ((1.0 - dA) * node1[0] + dA * node2[0]) + dB * node3[0];
+        dF[1] = (1.0 - dB) * ((1.0 - dA) * node1[1] + dA * node2[1]) + dB * node3[1];
+        dF[2] = (1.0 - dB) * ((1.0 - dA) * node1[2] + dA * node2[2]) + dB * node3[2];
+
+        /*
+        Node dDaF(
+        (1.0 - dB) * (dnode2[0] - dnode1[0]),
+        (1.0 - dB) * (dnode2[1] - dnode1[1]),
+        (1.0 - dB) * (dnode2[2] - dnode1[2]));
+        */
+
+        dDaF[0] = (1.0 - dB) * (node2[0] - node1[0]);
+        dDaF[1] = (1.0 - dB) * (node2[1] - node1[1]);
+        dDaF[2] = (1.0 - dB) * (node2[2] - node1[2]);
+
+        /*
+        Node dDbF(
+        - (1.0 - dA) * dnode1[0] - dA * dnode2[0] + dnode3[0],
+        - (1.0 - dA) * dnode1[1] - dA * dnode2[1] + dnode3[1],
+        - (1.0 - dA) * dnode1[2] - dA * dnode2[2] + dnode3[2]);
+        */
+
+        dDbF[0] = -(1.0 - dA) * node1[0] - dA * node2[0] + node3[0];
+        dDbF[1] = -(1.0 - dA) * node1[1] - dA * node2[1] + node3[1];
+        dDbF[2] = -(1.0 - dA) * node1[2] - dA * node2[2] + node3[2];
+
+
+        //dR = sqrt(dF[0] * dF[0] + dF[1] * dF[1] + dF[2] * dF[2]);
+        dR=nco_sph_rad(dF);
+
+        /*
+        Node dDaG(
+        dDaF[0] * (dF[1] * dF[1] + dF[2] * dF[2])- dF[0] * (dDaF[1] * dF[1] + dDaF[2] * dF[2]),
+        dDaF[1] * (dF[0] * dF[0] + dF[2] * dF[2])- dF[1] * (dDaF[0] * dF[0] + dDaF[2] * dF[2]),
+        dDaF[2] * (dF[0] * dF[0] + dF[1] * dF[1])- dF[2] * (dDaF[0] * dF[0] + dDaF[1] * dF[1]));
+        */
+
+        dDaG[0] = dDaF[0] * (dF[1] * dF[1] + dF[2] * dF[2]) - dF[0] * (dDaF[1] * dF[1] + dDaF[2] * dF[2]);
+        dDaG[1] = dDaF[1] * (dF[0] * dF[0] + dF[2] * dF[2]) - dF[1] * (dDaF[0] * dF[0] + dDaF[2] * dF[2]);
+        dDaG[2] = dDaF[2] * (dF[0] * dF[0] + dF[1] * dF[1]) - dF[2] * (dDaF[0] * dF[0] + dDaF[1] * dF[1]);
+
+
+
+        /*
+        Node dDbG(
+        dDbF[0] * (dF[1] * dF[1] + dF[2] * dF[2])- dF[0] * (dDbF[1] * dF[1] + dDbF[2] * dF[2]),
+        dDbF[1] * (dF[0] * dF[0] + dF[2] * dF[2])- dF[1] * (dDbF[0] * dF[0] + dDbF[2] * dF[2]),
+        dDbF[2] * (dF[0] * dF[0] + dF[1] * dF[1])- dF[2] * (dDbF[0] * dF[0] + dDbF[1] * dF[1]));
+        */
+
+        dDbG[0] = dDbF[0] * (dF[1] * dF[1] + dF[2] * dF[2]) - dF[0] * (dDbF[1] * dF[1] + dDbF[2] * dF[2]);
+        dDbG[1] = dDbF[1] * (dF[0] * dF[0] + dF[2] * dF[2]) - dF[1] * (dDbF[0] * dF[0] + dDbF[2] * dF[2]);
+        dDbG[2] = dDbF[2] * (dF[0] * dF[0] + dF[1] * dF[1]) - dF[2] * (dDbF[0] * dF[0] + dDbF[1] * dF[1]);
+
+
+        dDenomTerm = 1.0 / (dR * dR * dR);
+
+        dDaG[0] *= dDenomTerm;
+        dDaG[1] *= dDenomTerm;
+        dDaG[2] *= dDenomTerm;
+
+        dDbG[0] *= dDenomTerm;
+        dDbG[1] *= dDenomTerm;
+        dDbG[2] *= dDenomTerm;
+        /*
+                Node node;
+                Node dDx1G;
+                Node dDx2G;
+
+                ApplyLocalMap(
+                    faceQuad,
+                    nodes,
+                    dG[p],
+                    dG[q],
+                    node,
+                    dDx1G,
+                    dDx2G);
+        */
+        // Cross product gives local Jacobian
+        //Node nodeCross = CrossProduct(dDaG, dDbG);
+
+        /* plain cross product - no normalization */
+        nco_sph_cross2(dDaG, dDbG, nodeCross);
+
+        //dJacobian = sqrt(nodeCross[0] * nodeCross[0] + nodeCross[1] * nodeCross[1] + nodeCross[2] * nodeCross[2]);
+        dJacobian=nco_sph_rad(nodeCross);
+
+        //dFaceArea += 2.0 * dW[p] * dW[q] * (1.0 - dG[q]) * dJacobian;
+
+        dFaceArea += dW[p] * dW[q] * dJacobian;
+      }
+    }
+  }
+
+  return dFaceArea;
+}
+
+
+
+
+
+
 /****************  functions for RLL grids *******************************************/
 
 int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)

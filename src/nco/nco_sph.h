@@ -255,6 +255,11 @@ nco_sph_metric( double *p, double *q);
 int
 nco_sph_metric_int(double *c, double *d, double *Icross);
 
+double
+nco_sph_area_karney( double **sP, int np);
+
+double
+nco_sph_area_quadrature(double  **sP, int np);
 
 /***************** nco_geo functions these manimpulate lat & lon  ***************************/
 void

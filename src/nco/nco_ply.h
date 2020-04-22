@@ -82,11 +82,6 @@ extern "C" {
    nco_bool bchk_caps);
 
   void
-  nco_poly_area_add(
-  poly_sct *pl);
-
-
-  void
   nco_poly_minmax_use_crn /* use the values of minmax box as dp_x, dp_y  */
   (poly_sct *pl);
   

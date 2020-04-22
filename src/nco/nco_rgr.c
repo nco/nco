@@ -296,6 +296,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_stg=True; /* [flg] Write staggered grid with FV output */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
   rgr->grd_typ=nco_grd_2D_eqa; /* [enm] Grid type */
+  rgr->area_mth=2; /* [enm]  choose func that calcs grid cell area */
   rgr->idx_dbg=0; /* [idx] Index of gridcell for debugging */
   rgr->lat_drc=nco_grd_lat_drc_s2n; /* [enm] Latitude grid direction */
   rgr->lat_typ=nco_grd_lat_eqa; /* [enm] Latitude grid type */
@@ -391,6 +392,14 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_erwg_units=False;
       continue;
     } /* !erwg_units */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"cell_area_quad")){
+      rgr->area_mth=2;
+      continue;
+    } /* !area_nco */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"cell_area_nco")){
+      rgr->area_mth=1;
+      continue;
+    } /* !area_nco */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"edg_typ") || !strcmp(rgr_lst[rgr_var_idx].key,"tri_arc") || !strcmp(rgr_lst[rgr_var_idx].key,"vrt_cnc")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"grt_crc") || !strcasecmp(rgr_lst[rgr_var_idx].val,"gtc") || !strcasecmp(rgr_lst[rgr_var_idx].val,"great_circle") || !strcasecmp(rgr_lst[rgr_var_idx].val,"geodesic") || !strcasecmp(rgr_lst[rgr_var_idx].val,"orthodrome")){
 	rgr->edg_typ=nco_edg_gtc;
