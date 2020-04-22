@@ -3271,18 +3271,16 @@ double **sP, int np)
 {
 
   int nTriangles = np - 2;
-
   int idx=0;
   int nOrder = 6;
+  double dG[6];
+  double dW[6];
 
-
-  //DataArray1D<double> dG;
-  //DataArray1D<double> dW;
-  //GaussQuadrature::GetPoints(nOrder, 0.0, 1.0, dG, dW);
-
-  double dG[nOrder];
-  double dW[nOrder];
-
+  double dA;
+  double dB;
+  double dR;
+  double dDenomTerm;
+  double dJacobian;
   double dFaceArea = 0.0;
 
   const double *node1;
@@ -3344,12 +3342,11 @@ double **sP, int np)
     for (int p = 0; p < nOrder; p++) {
       for (int q = 0; q < nOrder; q++) {
 
-        double dA = dG[p];
-        double dB = dG[q];
-        double dR;
-        double dDenomTerm;
-        double dJacobian;
-
+        dA = dG[p];
+        dB = dG[q];
+        dR;
+        dDenomTerm;
+        dJacobian;
 
         dF[0] = (1.0 - dB) * ((1.0 - dA) * node1[0] + dA * node2[0]) + dB * node3[0];
         dF[1] = (1.0 - dB) * ((1.0 - dA) * node1[1] + dA * node2[1]) + dB * node3[1];
