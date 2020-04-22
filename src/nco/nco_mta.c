@@ -191,7 +191,10 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
     "infer",
     "nfr",
     "no_stagger",
-    "no_stg"};
+    "no_stg",
+    "cell_area_nco",
+    "cell_area_quad"
+    };
   const char *gaa_flags[]={""};
   const char *trr_flags[]={""};
   const char *ppc_flags[]={""};
