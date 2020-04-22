@@ -3344,9 +3344,6 @@ double **sP, int np)
 
         dA = dG[p];
         dB = dG[q];
-        dR;
-        dDenomTerm;
-        dJacobian;
 
         dF[0] = (1.0 - dB) * ((1.0 - dA) * node1[0] + dA * node2[0]) + dB * node3[0];
         dF[1] = (1.0 - dB) * ((1.0 - dA) * node1[1] + dA * node2[1]) + dB * node3[1];
