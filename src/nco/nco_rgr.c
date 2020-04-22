@@ -275,7 +275,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->sgs_msk_nm=NULL; /* [sng] Name of variable sub-gridscale mask */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
-  /* Initialize key-value properties used in grid generation */
+  /* Initialize key-value properties used in grid and weight generation */
+  rgr->area_mth=2; /* [enm] Method to compute grid cell area */
   rgr->edg_typ=nco_edg_nil; /* [enm] Edge/Arc-type for triangle edges */
   rgr->fl_grd=NULL; /* [sng] Name of SCRIP grid file to create */
   rgr->fl_hnt_dst=NULL; /* [sng] ERWG hint destination */
@@ -296,7 +297,6 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_stg=True; /* [flg] Write staggered grid with FV output */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
   rgr->grd_typ=nco_grd_2D_eqa; /* [enm] Grid type */
-  rgr->area_mth=2; /* [enm]  choose func that calcs grid cell area */
   rgr->idx_dbg=0; /* [idx] Index of gridcell for debugging */
   rgr->lat_drc=nco_grd_lat_drc_s2n; /* [enm] Latitude grid direction */
   rgr->lat_typ=nco_grd_lat_eqa; /* [enm] Latitude grid type */

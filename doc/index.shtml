@@ -1028,7 +1028,7 @@ Source documentation for NCO and netCDF4(alpha13)</a></li>
 we recommend that you first try the pre-built executables for your
 system, e.g.,  
 <tt>
-<dt>brew install homebrew/science/nco # Mac (after installing Homebrew)</dt>
+<dt>brew install nco          # Mac (after installing Homebrew)</dt>
 <dt>conda install -c conda-forge nco # Any Linux or Mac (after installing Anaconda)</dt>
 <dt>sudo aptitude install nco # Debian-based Linux systems like Debian, Mint, Ubuntu</dt>
 <dt>sudo dnf-install nco      # Newer RPM-based Linux systems like CentOS, Fedora, openSUSE, RHEL</dt>

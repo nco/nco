@@ -1,3 +1,11 @@
+2020-04-22  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.3-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha07: Squidgy Squeegy Squishy';git push
+	git tag -a 4.9.3-alpha07 -m 'nco.texi chk_map doc; ncks TR area quadrature option --cell_area_quad;ncremap eliminate frac_a/frac_b bias trick';git push --tags
+
+	* Merge TempestRemap area quadrature area method, intersection updates
+
 2020-04-18  Charlie Zender  <zender@uci.edu>
 
 	* Add nc_inq_var_filter_flg() to workaround netCDF 4.7.4 backwards incompatibility in nc_inq_var_filter()
