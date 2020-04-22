@@ -103,15 +103,7 @@ extern "C" {
    const char *att_nm,
    const char *att_val
    );
-  
-  void
-  nco_msh_plg_area /* [fnc] wrapper to nco_sph_plg_area() */
-  (const double * const lat_bnd, /* [dgr] Latitude  boundaries of rectangular grid */
-   const double * const lon_bnd, /* [dgr] Longitude boundaries of rectangular grid */
-   const long grd_sz_nbr, /* [nbr] Number of gridcells in grid */
-   const int bnd_nbr, /* [nbr] Number of bounds in gridcell */
-   double * const area_out); /* [sr] Gridcell area */
-  
+
   nco_bool
   nco_map_hst_mk
   (var_sct* var_row,
@@ -162,8 +154,9 @@ extern "C" {
    int pl_cnt,
    nco_grd_lon_typ_enm grd_lon_typ);
 
-
-
+  void
+  nco_poly_area_add
+  (poly_sct *pl);
 
 
 #ifdef __cplusplus
