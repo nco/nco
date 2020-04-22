@@ -3267,7 +3267,7 @@ double **sP, int np
 
 
 double nco_sph_area_quadrature(
-const double **sP, int np)
+double **sP, int np)
 {
 
   int nTriangles = np - 2;

@@ -259,7 +259,7 @@ double
 nco_sph_area_karney( double **sP, int np);
 
 double
-nco_sph_area_quadrature(const double  **sP, int np);
+nco_sph_area_quadrature(double  **sP, int np);
 
 /***************** nco_geo functions these manimpulate lat & lon  ***************************/
 void
