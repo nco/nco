@@ -1,3 +1,7 @@
+2020-04-29  Charlie Zender  <zender@uci.edu>
+
+	* Print var_id, var_nm, att_nm when nco_get_att() returns NC_ENOTATT
+
 2020-04-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha07 release procedure:

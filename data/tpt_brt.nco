@@ -1,0 +1,56 @@
+// $Header$ -*-C++-*-
+
+/* Usage: ncap2 -O -S tpt_brt.nco in.nc out.nc
+
+   Purpose: ESS 138 Remote Sensing Lab 3 example conversion of GOES16 radiance to brightness temperature
+
+   Procedure:
+   1. Unpack GOES16 L1b data into netCDF3 format (otherwise ncap2 produces errors in following step)
+   2. Compute brightness temperature, remove valid_range attribute that refers to packed data (otherwise Panoply is unable to plot results)
+   ncpdq -O -U -3 ${DATA}/ess_rmt_lab/ABI-L1b-RadC_2018_106_16_OR_ABI-L1b-RadC-M3C14_G16_s20181061602231_e20181061605004_c20181061605056.nc ${DATA}/ess_rmt_lab/ABI-L1b-RadC_2018_106_16_OR_ABI-L1b-RadC-M3C14_G16_s20181061602231_e20181061605004_c20181061605056.nc3
+   ncap2 -O -S ~/nco/data/tpt_brt.nco ${DATA}/ess_rmt_lab/ABI-L1b-RadC_2018_106_16_OR_ABI-L1b-RadC-M3C14_G16_s20181061602231_e20181061605004_c20181061605056.nc ~/tpt_brt.nc
+
+   NB: Band 1 of GOES16 ABI is stored in brightness per unit wavelength: W m-2 sr-1 um-1
+   NB: Bands 14, 15 of GOES16 ABI are stored in brightness per unit wavenumber: mW m-2 sr-1 (cm-1)-1 */
+
+*cst_Avagadro=6.022045e+23f; // (6.022045e+23) [mlc mol-1] Avagadro's number
+*cst_Boltzmann=1.3806503e-23f; // (1.3806503e-23) [J K-1] Boltzmann's constant MoT00 p. BG11
+*speed_of_light=2.99792458e+08f; // (2.99792458e+08) [m s-1] Speed of light in vacuo (CODATA)
+*cst_Planck=6.62606876e-34f; // (6.62606876e-34) [J s] Planck's constant (CODATA)
+*cst_Gravitation=6.673e-11f; // (6.673e-11) [N m2 kg-2] Universal gravitational constant (CODATA)
+*cst_Avagadro=6.02214199e+23f; // (6.02214199e+23) [mlc mol-1] Avagadro's number (CODATA)
+*gas_cst_unv=8.314472f; // (8.314472) [J mol-1 K-1] Universal gas constant (CODATA)
+*cst_Stefan_Boltzmann=5.67032e-8f; // (5.67032e-8) [W m-2 K-4] Stefan-Boltzmann constant GoY89 p. 462
+*hc=1.986488377e-25f; // (1.986488377e-25) [J m] Planck constant times speed of light = hc
+*hc2=5.9553531e-17f; // (5.9553531e-17) [J m2 s-1] Planck constant times speed of light squared = hc2
+*joules_per_calorie=4.1855f; // (4.1855) [J cal-1] Cal = energy to heat 1g H20 1C @ 15C
+
+/* Parameters from GOES16 ATBD p.44 */
+*a0=11.8430f;
+*a1=0.963999f;
+*a2=0.0711657f;
+*a3=0.820187f;
+*TFG=288; // [K] First-guess temperature
+*theta=0.0; // [rdn] Zenith angle
+
+*wvl_ctr_mcr=band_wavelength;
+*wvl_ctr=wvl_ctr_mcr*1.0e-6f; // [um]->[m]
+wvn_ctr=1.0f/(100*wvl_ctr); // [m]->[cm-1]
+wvn_ctr@long_name="Wavenumber";
+wvn_ctr@standard_name="sensor_band_central_radiation_wavenumber";
+wvn_ctr@units="cm-1";
+
+// Convert GOES16 brightness into standard per unit CGS wavenumber dimensions for use in inversion formula
+//rad_upk=unpack(rad); // Unpacking in ncap2 leads to problems
+rad=Rad/1000.0f; // [mW m-2 sr-1 (cm-1)-1] -> [W m-2 sr-1 (cm-1)-1]
+rad@units="W m-2 sr-1 (cm-1)-1";
+
+// Invert radiance field to obtain brightness temperature
+tpt_brt=(100.0f*hc*wvn_ctr)/(cst_Boltzmann)/ln(1.0f+2.0e8f*hc2*wvn_ctr^3/rad); // Full Planck equation
+tpt_brt@long_name="Brightness Temperature";
+tpt_brt@standard_name="toa_brightness_temperature";
+tpt_brt@units="K";
+
+ram_delete(rad@valid_range);
+ram_delete(tpt_brt@valid_range);
+ram_delete(rad_upk@valid_range);
