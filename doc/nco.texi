@@ -5621,6 +5621,9 @@ using integer notation without a decimal point.
 This convention serves only to differentiate coordinate values from
 dimension indices.
 It is independent of the type of any netCDF coordinate variables.
+In other words, even if coordinates are defined as integers, specify
+them with decimal points to have the command interpret them as values,
+rather than indices.
 For a given dimension, the specified limits must both be coordinate
 values (with decimal points) or dimension indices (no decimal points).
 
@@ -14767,7 +14770,7 @@ variable or attribute.
 It is most useful when one needs to apply a set of operations on a list
 of variables.
 For example, after regular processing one may wish to set the
-@code{_FillVlaue} of all @code{NC_FLOAT} variables to a particular
+@code{_FillValue} of all @code{NC_FLOAT} variables to a particular
 value, or to create min/max attributes for all 3D variables of type
 @code{NC_DOUBLE}.
 A vpointer is not a 'pointer' to a memory location in the C/C++

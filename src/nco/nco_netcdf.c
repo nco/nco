@@ -3041,7 +3041,6 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
     char var_nm[NC_MAX_NAME+1L];
     (void)nco_inq_varname(nc_id,var_id,var_nm);
     (void)fprintf(stderr,"ERROR: %s unable to get attribute var_id: %d, var_nm: %s, att_nm: %s\n",fnc_nm,var_id,var_nm,att_nm);
-    nco_err_exit(rcd,fnc_nm);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_att()");
   return rcd;
