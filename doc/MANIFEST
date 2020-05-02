@@ -121,8 +121,11 @@ nco/data/psd_wrf.nco	Sample ncap2 script that computes WRF particle size distrib
 nco/data/sld_nco.sh	NCO script to process (regrid) Swath-Like Data (SLD)
 nco/data/swamp.sh	Demonstrate SWAMP usage
 nco/data/tst.nco	Sample ncap2 script that computes geophysical quantities
+nco/data/tpr_brt.nco	ESS 138 Lab 3: Retrieve brightness temperatures and SST from GOES16 L1b radiances
 nco/data/udunits.dat	UDUnits database for Debian compatibility
 nco/data/xmp_500mb_hgt.nco ncap2 script to compute 500 mb height field
+nco/data/xmp_flx_spc.nco ncap2 example processing spectral/broadband flux data
+nco/data/xmp_wnd_msk.nco ncap2 example compute wind speed power statistics
 
 Documentation directory:
 nco/doc/ANNOUNCE	Announcement to accompany release notifications

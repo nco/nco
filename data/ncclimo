@@ -759,6 +759,8 @@ shift $((OPTIND-1)) # Advance one argument
 psn_nbr=$#
 if [ ${psn_nbr} -ge 1 ]; then
     inp_psn='Yes'
+    # 20200430 Input files on command-line mean we need not check standard-input
+    std_chk='No'
 fi # !psn_nbr
 
 if [ ${vrs_prn} = 'Yes' ]; then
@@ -831,7 +833,7 @@ if [ "${std_chk}" = 'Yes' ]; then
 	fi # !stdin
     fi # !bch
     if [ ${inp_std} = 'Yes' ] && [ ${inp_psn} = 'Yes' ]; then
-	echo "${spt_nm}: ERROR expecting input both from stdin and positional command-line arguments"
+	echo "${spt_nm}: ERROR expecting input from both stdin and positional command-line arguments"
 	exit 1
     fi # !inp_std
 fi # !std_chk
@@ -870,28 +872,44 @@ fi # !clm_md_usr
 if [ "${clm_md}" = 'ann' ] || [ "${clm_md_usr}" = 'dly' ] ; then
     clm_flg='Yes'
 fi # !clm_md
+if [ -z "${drc_in}" ]; then
+    drc_in="${drc_pwd}"
+else # !drc_in
+    drc_in_usr_flg='Yes'
+fi # !drc_in
+
 if [ "${clm_md}" = 'hf' ] || [ "${clm_md}" = 'mth' ] ; then
-    # Otherwise subset (split) mode whenever stdin pipe has data or positional arguments are used
+    # Subset (split) mode whenever stdin pipe has data or positional arguments are used
     if [ ${inp_std} = 'Yes' ] || [ ${inp_psn} = 'Yes' ]; then
 	sbs_flg='Yes'
-	clm_flg='No'
-	dec_md='sdd'
-	if [ -z "${mdl_nm_usr}" ]; then 
-	    mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
-	fi # !mdl_nm_usr
-    fi # !stdin || !psn
+    fi # !sbs_flg
+    # fxm: When input files are specified by -i drc_in must also specify --ypf to turn-on splitter mode 
+    # Otherwise it is ambiguous whether to generate climatology or to split
     if [ -n "${ypf_max_usr}" ]; then 
-	# fxm: Must specify --ypf to turn-on splitter mode when input files are specified by -i drc_in
-	# Otherwise it is ambiguous whether to generate climatology or to split
 	ypf_max=${ypf_max_usr}
 	sbs_flg='Yes'
+    fi # !ypf_max_usr
+    if [ "${sbs_flg}" = 'Yes' ]; then 
 	clm_flg='No'
 	dec_md='sdd'
 	if [ -z "${mdl_nm_usr}" ]; then 
 	    mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
 	fi # !mdl_nm_usr
-    fi # !ypf_max
-fi # !clm_md_usr
+	# Glob files in splitter mode if other input avenues were not used
+	if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
+	    inp_glb='Yes'
+	fi # !inp_*
+    fi # !sbs_flg
+fi # !clm_md
+if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
+    inp_glb='Yes'
+fi # !clm_flg, !dly
+
+# Read files from stdin pipe, positional arguments, or directory glob
+#printf "dbg: inp_aut  = ${inp_aut}\n"
+#printf "dbg: inp_glb  = ${inp_glb}\n"
+#printf "dbg: inp_psn  = ${inp_psn}\n"
+#printf "dbg: inp_std  = ${inp_std}\n"
 
 # Derived variables
 if [ -n "${drc_out_usr}" ]; then
@@ -1015,11 +1033,6 @@ elif [ "${clm_md}" = 'mth' ]; then
 	csn_flg='No'
     fi # !csn_lst
 fi # !clm_md
-if [ -z "${drc_in}" ]; then
-    drc_in="${drc_pwd}"
-else # !drc_in
-    drc_in_usr_flg='Yes'
-fi # !drc_in
 if [ -n "${gaa_sng_std}" ]; then
     if [ "${yr_nbr}" -gt 1 ] ; then
 	yrs_avg_sng="${yr_srt}-${yr_end}"
@@ -1163,17 +1176,7 @@ if [ ${dec_md} = 'scd' ]; then
     let yr_cln=${yr_cln}+1
 fi # !scd
 
-# Read files from stdin pipe, positional arguments, or directory glob
-#printf "dbg: inp_aut  = ${inp_aut}\n"
-#printf "dbg: inp_glb  = ${inp_glb}\n"
-#printf "dbg: inp_psn  = ${inp_psn}\n"
-#printf "dbg: inp_std  = ${inp_std}\n"
-if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'dly' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
-    inp_glb='Yes'
-fi # !clm_flg, !dly
-if [ ${sbs_flg} = 'Yes' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
-    inp_glb='Yes'
-fi # !sbs_flg
+# clm_flg and sbs_flg are now fixed so finalize input file options then gather input filenames
 if [ ${sbs_flg} = 'Yes' ] && [ ${inp_glb} = 'No' ] && [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ]; then
     echo "${spt_nm}: ERROR Specify input file(s) with -i \$drc_in or with positional argument(s) or with stdin"
     if [ ${bch_pbs} = 'Yes' ]; then
@@ -1192,6 +1195,10 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
 fi # !clm_flg
 if [ ${inp_glb} = 'Yes' ]; then 
+    if [ ! -d "${drc_in}" ]; then
+	echo "${spt_nm}: ERROR specified input directory for globbing, \"${drc_in}\", does not exist"
+	exit 1
+    fi # !drc_in
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ]; then
 	    fl_in[${fl_nbr}]=${fl}
@@ -1199,6 +1206,7 @@ if [ ${inp_glb} = 'Yes' ]; then
 	fi # !file
     done
 fi # !inp_glb
+
 if [ ${inp_psn} = 'Yes' ]; then
     # Read any positional arguments
     for ((psn_idx=1;psn_idx<=psn_nbr;psn_idx++)); do

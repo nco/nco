@@ -1,3 +1,17 @@
+2020-05-01  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo/ncremap warn when input directory for globbing DNE
+
+	* ncclimo simplify and disambiguate determination of sbs_flg and inp_glb
+
+2020-04-30  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo allow clm_md='hf' to use input from globbing directory when inp_glb='Yes'
+
+	* ncremap when inp_psn='Yes', set std_chk='No'
+
+	* ncremap clean-up unique suffix algorithm
+
 2020-04-29  Charlie Zender  <zender@uci.edu>
 
 	* Clarify hyperslabbing syntax for integer-valued coordinates
