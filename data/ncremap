@@ -1121,6 +1121,10 @@ fi # !wgt_usr
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
 else # !drc_in
+    if [ ! -d "${drc_in}" ]; then
+	echo "${spt_nm}: ERROR specified input directory \"${drc_in}\" does not exist"
+	exit 1
+    fi # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
 if [ -n "${in_fl}" ]; then
@@ -1658,10 +1662,6 @@ if [ ${inp_aut} = 'Yes' ]; then
     fl_nbr=1
 fi # !inp_aut
 if [ ${inp_glb} = 'Yes' ]; then 
-    if [ ! -d "${drc_in}" ]; then
-	echo "${spt_nm}: ERROR specified input directory for globbing, \"${drc_in}\", does not exist"
-	exit 1
-    fi # !drc_in
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ]; then
 	    fl_in[${fl_nbr}]=${fl}

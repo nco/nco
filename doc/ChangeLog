@@ -1,3 +1,7 @@
+2020-05-02  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo/ncremap always check that user-specified drc_in exists for all input types
+
 2020-05-01  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo/ncremap warn when input directory for globbing DNE

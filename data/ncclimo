@@ -875,6 +875,10 @@ fi # !clm_md
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
 else # !drc_in
+    if [ ! -d "${drc_in}" ]; then
+	echo "${spt_nm}: ERROR specified input directory \"${drc_in}\" does not exist"
+	exit 1
+    fi # !drc_in
     drc_in_usr_flg='Yes'
 fi # !drc_in
 
@@ -1195,10 +1199,6 @@ if [ ${clm_flg} = 'Yes' ] && [ ${clm_md} = 'mth' ]; then
     inp_std='No' # fxm: 20170123 hack for false positives in non-interactive batch mode on PBS
 fi # !clm_flg
 if [ ${inp_glb} = 'Yes' ]; then 
-    if [ ! -d "${drc_in}" ]; then
-	echo "${spt_nm}: ERROR specified input directory for globbing, \"${drc_in}\", does not exist"
-	exit 1
-    fi # !drc_in
     for fl in "${drc_in}"/*.nc "${drc_in}"/*.nc3 "${drc_in}"/*.nc4 "${drc_in}"/*.nc5 "${drc_in}"/*.nc6 "${drc_in}"/*.nc7 "${drc_in}"/*.cdf "${drc_in}"/*.hdf "${drc_in}"/*.he5 "${drc_in}"/*.h5 ; do
 	if [ -f "${fl}" ]; then
 	    fl_in[${fl_nbr}]=${fl}
