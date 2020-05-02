@@ -1,5 +1,9 @@
 2020-05-02  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.3-alpha08 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha08: Olive Bread';git push
+	git tag -a 4.9.3-alpha08 -m 'nco_get_att() NC_ENOTATT branch; ncclimo inp_glb w/sbs_flg';git push --tags
+
 	* ncclimo/ncremap always check that user-specified drc_in exists for all input types
 
 2020-05-01  Charlie Zender  <zender@uci.edu>
