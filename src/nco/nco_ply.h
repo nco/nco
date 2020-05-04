@@ -153,6 +153,10 @@ extern "C" {
   poly_sct *pl
   );
 
+  size_t
+  nco_poly_sizeof(
+  poly_sct *pl);
+
   nco_bool
   nco_poly_minmax_split(
   poly_sct *pl,
