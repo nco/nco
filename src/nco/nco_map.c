@@ -998,7 +998,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     } /* !pl_cnt_in */
 
 
-    /* claculate total size of overlap mesh */
+    /* calculate total size of overlap mesh */
     for(idx=0;idx<pl_cnt_vrl;idx++)
       if(pl_lst_vrl && pl_lst_vrl[idx])
         pl_sz_vrl+=nco_poly_sizeof(pl_lst_vrl[idx]);
