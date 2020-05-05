@@ -150,6 +150,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
    nco_bool qpFace = False;
    nco_bool pqFace = False;
    nco_bool isGeared = False;
+   nco_bool bInt=False;
 
    int numIntersect=0;
 
@@ -158,6 +159,11 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
    int a = 0, a1 = 0, aa=0;
    int b = 0, b1 = 0, bb=0;
+
+   int p_flg=0;
+   int q_flg=0;
+
+
 
 
    int pqCross[4]={0,0,0,0};
@@ -227,7 +233,18 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      nx3= nco_sph_cross(Pcross, Qcross, Xcross);
 
 
-     (void)nco_sph_mk_pqcross(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b], Qcross, pqCross, nco_edg_gtc, &p_edg_typ, &q_edg_typ);
+     //(void)nco_sph_mk_pqcross(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b], Qcross, pqCross, nco_edg_gtc, &p_edg_typ, &q_edg_typ);
+     /* if true  we have an intersection */
+     nco_sph_seg_int_final(P->shp[a1],P->shp[a],Q->shp[b1], Q->shp[b],p,q, &p_flg, &q_flg  );
+
+     /* see if we have some kind of intersection */
+     if(p_flg >=1 && p_flg<=3 && q_flg>=1 &&q_flg<=3 )
+        bInt=True;
+     else
+        bInt=False;
+
+     //nco_sph_mk_pqcross_int(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b],  Qcross  , pqCross, p_flg , q_flg );
+     nco_sph_mk_pqcross_int(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b],  Qcross  , pqCross,  0, 0 );
 
 
      /* save Cross before implied */
@@ -260,27 +277,29 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      /* Xcross product near zero !! so make it zero*/
       dx1=1.0- nco_sph_dot_nm(Pcross,Qcross );
 
-      /* spans parallel we cannot rely on all pqCross[0..3]=0 so we check again here */
-      if(dx1<DOT_TOLERANCE && !isParallel)
-      {
-        isParallel=True;
-        pqCross[0]=0;
-        pqCross[1]=0;
-        pqCross[2]=0;
-        pqCross[3]=0;
 
+
+
+      /* no intersection from nco_sph_seg_int_final() - see if we have parallel spans */
+      if(bInt==False) {
+
+        /* spans parallel we cannot rely on all pqCross[0..3]=0 so we check again here */
+        if (dx1 < DOT_TOLERANCE && !isParallel) {
+          isParallel = True;
+          pqCross[0] = 0;
+          pqCross[1] = 0;
+          pqCross[2] = 0;
+          pqCross[3] = 0;
+
+        } else if (fabs(dx1 - 2.0) < SIGMA_TOLERANCE){
+          if (nco_dbg_lvl_get() >= nco_dbg_dev)
+            (void) fprintf(stderr, "%s:%s() PARALLEL edges in oposite direction a=%d b=%d\n", nco_prg_nm_get(), fnc_nm,
+                           a, b);
+
+          return EXIT_FAILURE;
+
+        }
       }
-
-
-      else if( fabs(dx1-2.0) < SIGMA_TOLERANCE )
-      {
-        if(nco_dbg_lvl_get() >= nco_dbg_dev)
-          (void)fprintf(stderr, "%s:%s() PARALLEL edges in oposite direction a=%d b=%d\n", nco_prg_nm_get(), fnc_nm, a , b );
-
-        return EXIT_FAILURE;
-
-      }
-
 
       if( isGeared == False)
       {
@@ -309,22 +328,81 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
           else if(  (pq_pre[b]=='e' || pq_pre[b]=='v') && pq_pre[b1]=='i'  )
           { inflag=poly_vrl_qin; bb=0; }
 
+          if(inflag == poly_vrl_qin && DEBUG_SPH)
+            (void)fprintf(stderr, "%s:%s(): Auto set inflag=Qin kicks in\n", nco_prg_nm_get(), fnc_nm);
         }
+
+
+        //if( pqCross[0]*pqCross[1]==-1  && pqCross[2]*pqCross[3]==-1)
+        if( bInt)
+        {
+
+          //bInt=nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes);
+          /*
+          if(p_edg_typ == nco_edg_gtc && q_edg_typ == nco_edg_gtc )
+            bInt=nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes);
+          else if(p_edg_typ==nco_edg_gtc && q_edg_typ== nco_edg_smc)
+            bInt=nco_sph_seg_smc(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes);
+          else if(p_edg_typ==nco_edg_smc && q_edg_typ== nco_edg_gtc)
+            bInt=nco_sph_seg_smc( Q->shp[b1], Q->shp[b], P->shp[a1], P->shp[a],  p, q, pqCrossOriginal, flg_snp_to, codes);
+         */
+
+          if(bInt) {
+            /* if here then there is some kind of intersection
+             * nb IMPORTANT - if inflag is unset then first intersection must be proper to set the inflag
+             * i.e NOT an edge or vertex intersection */
+            //if (inflag != poly_vrl_unk || (codes[0] == '1' && codes[1] == '1'))
+            if (inflag != poly_vrl_unk || (p_flg==1 && q_flg==1) )
+              inflag = (pqCross[1] == 1 ? poly_vrl_pin : pqCross[3] == 1 ? poly_vrl_qin : inflag);
+
+
+            if (inflag != poly_vrl_unk) {
+              int p_arg;
+              int q_arg;
+
+              //p_arg = (codes[0] == 'h' ? a : codes[0] == 't' ? a1 : -1);
+              //q_arg = (codes[1] == 'h' ? b : codes[1] == 't' ? b1 : -1);
+              p_arg = ( p_flg==3 ? a :  p_flg==2 ? a1 : -1);
+              q_arg = ( q_flg==3 ? b :  q_flg==2 ? b1 : -1);
+
+
+
+              nco_sph_add_pnt_chk(vrt_info, inflag, p_arg, q_arg, R->shp, r, p);
+
+              if (numIntersect++ == 0) {
+                /* reset counters */
+                aa = 0;
+                bb = 0;
+              }
+
+
+            }
+
+
+            if (DEBUG_SPH)
+              printf("%%InOut sets inflag=%s\n", nco_poly_vrl_flg_sng_get(inflag));
+          }
+
+        }
+
+
 
 
         if(isParallel)
         {
           char pcode[]={'0'};
-          nco_bool bInt=False;
+          nco_bool bPInt=False;
+
+
 
           poly_vrl_flg_enm lcl_inflag = poly_vrl_unk;
 
           if( p_edg_typ == nco_edg_gtc  && q_edg_typ == nco_edg_gtc  )
-            bInt = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag, pcode);
+            bPInt = nco_sph_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag, pcode);
           else if(p_edg_typ == nco_edg_smc && q_edg_typ == nco_edg_smc )
-            bInt = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag, pcode);
+            bPInt = nco_rll_seg_parallel(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b], p, q, &lcl_inflag, pcode);
 
-          if (bInt &&  !(pcode[0]=='1' && inflag== poly_vrl_unk)   ) {
+          if (bPInt &&  !(pcode[0]=='1' && inflag== poly_vrl_unk)   ) {
 
 
             /* nco_sph_parallel returns poly_vrl_unk when the vertices q1 and p1 are the same -so we have to peek ahead
@@ -400,61 +478,16 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
         }
 
 
-        if( pqCross[0]*pqCross[1]==-1  && pqCross[2]*pqCross[3]==-1)
-        {
-          nco_bool bInt=False;
-
-          if(p_edg_typ == nco_edg_gtc && q_edg_typ == nco_edg_gtc )
-              bInt=nco_sph_seg_int(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes);
-          else if(p_edg_typ==nco_edg_gtc && q_edg_typ== nco_edg_smc)
-              bInt=nco_sph_seg_smc(P->shp[a1], P->shp[a], Q->shp[b1], Q->shp[b],  p, q, pqCrossOriginal, flg_snp_to, codes);
-          else if(p_edg_typ==nco_edg_smc && q_edg_typ== nco_edg_gtc)
-              bInt=nco_sph_seg_smc( Q->shp[b1], Q->shp[b], P->shp[a1], P->shp[a],  p, q, pqCrossOriginal, flg_snp_to, codes);
-
-
-          if(bInt) {
-            /* if here then there is some kind of intersection
-             * nb IMPORTANT - if inflag is unset then first intersection must be proper to set the inflag
-             * i.e NOT an edge or vertex intersection */
-            if (inflag != poly_vrl_unk || (codes[0] == '1' && codes[1] == '1'))
-              inflag = (pqCross[1] == 1 ? poly_vrl_pin : pqCross[3] == 1 ? poly_vrl_qin : inflag);
-
-
-            if (inflag != poly_vrl_unk) {
-              int p_arg;
-              int q_arg;
-
-              p_arg = (codes[0] == 'h' ? a : codes[0] == 't' ? a1 : -1);
-              q_arg = (codes[1] == 'h' ? b : codes[1] == 't' ? b1 : -1);
-
-              nco_sph_add_pnt_chk(vrt_info, inflag, p_arg, q_arg, R->shp, r, p);
-
-              if (numIntersect++ == 0) {
-                /* reset counters */
-                aa = 0;
-                bb = 0;
-              }
-
-
-            }
-
-
-            if (DEBUG_SPH)
-              printf("%%InOut sets inflag=%s\n", nco_poly_vrl_flg_sng_get(inflag));
-          }
-
-        }
 
          if(DEBUG_SPH){
             printf("numIntersect=%d codes=%s (ipqLHS=%d, ip1qLHS=%d), (iqpLHS=%d, iq1pLHS=%d), (qpFace=%d pqFace=%d) inflag=%s\n",numIntersect, codes, pqCross[1], pqCross[0],  pqCross[3], pqCross[2], qpFace,pqFace, nco_poly_vrl_flg_sng_get(inflag));
 
             printf("dx1=%.15f nx3=%.15f\n", dx1, nx3);
+            printf("flg_p=%d flg_q=%d", p_flg, q_flg);
             nco_sph_prn_pnt("PCross",Pcross,4,True );
             nco_sph_prn_pnt("QCross",Qcross,4,True );
 
           }
-
-
 
 
          if (qpFace && pqFace)  {
@@ -567,6 +600,100 @@ nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  
 }
 
 
+void
+nco_sph_mk_pqcross_int( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], int flg_p , int flg_q   )
+{
+
+  switch(flg_p )
+  {
+    /* parallel or bad return from nco_sph_metric_int() */
+    case 0:
+      pqCross[0] = nco_sph_lhs(p0, qCross);
+      pqCross[1] = nco_sph_lhs(p1, qCross);
+      break;
+
+
+      /* genuine intersection */
+    case 1:
+      pqCross[0] = nco_sph_lhs(p0, qCross);
+      //pqCross[1] = nco_sph_lhs(p1, qCross);
+      pqCross[1]=-pqCross[0];
+      break;
+    
+    /* intersection on or very near p0 */  
+    case 2:
+      pqCross[0]=0;
+      pqCross[1] = nco_sph_lhs(p1, qCross);
+      break;
+   
+    /* intersection on or very near p1 */  
+    case 3:
+      pqCross[0] = nco_sph_lhs(p0, qCross); 
+      pqCross[1] =0;
+      break;
+    
+    /* p0 and p1 on RHS */  
+    case 4:
+      pqCross[1] = nco_sph_lhs(p1, qCross);
+      pqCross[0]=pqCross[1];
+      break;
+    
+      /* p0 and p1 on LHS */
+    case 5:
+      pqCross[0] =  nco_sph_lhs(p0, qCross);
+      pqCross[1] = pqCross[0];
+      break;
+      
+  }
+
+
+  switch(flg_q)
+  {
+    case 0:
+      pqCross[2] = nco_sph_lhs(q0, pCross);
+      pqCross[3] = nco_sph_lhs(q1, pCross);
+      break;
+
+
+      /* genuine intersection */
+    case 1:
+      pqCross[2] = nco_sph_lhs(q0, pCross);
+      //pqCross[3] = nco_sph_lhs(q1, qCross);
+      pqCross[3]=-pqCross[2];
+      break;
+
+      /* intersection on or very near q0 */
+    case 2:
+      pqCross[2]=0;
+      pqCross[3] = nco_sph_lhs(q1, pCross);
+      break;
+
+      /* intersection on or very near q1 */
+    case 3:
+      pqCross[2] = nco_sph_lhs(q0, pCross);
+      pqCross[3] =0;
+      break;
+
+      /* q0 and q1 on RHS */
+    case 4:
+      pqCross[3] = nco_sph_lhs(q1, pCross);
+      pqCross[2]=pqCross[3];
+      break;
+
+      /* q0 and q1 on LHS */
+    case 5:
+      pqCross[2] =  nco_sph_lhs(q0, pCross);
+      pqCross[3] = pqCross[2];
+      break;
+
+  }
+
+}
+
+
+
+
+
 
 
 char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p, double *q)
@@ -631,7 +758,6 @@ char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p,
   if(  1.0- nco_sph_dot_nm(Pcross,Qcross )  <DOT_TOLERANCE  )
     //return nco_sph_parallel(a, b, c, d, p, q);
     return '0';
-
 
 
   dx_ab=1.0 - nco_sph_dot_nm(a,b);
@@ -834,12 +960,21 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
   i_rad=nco_sph_rad(cIcross);
 
 
-
+  /* **************************************
+   * return values in iret
+   * 1  -  in middle   *
+   * 2  -  on or very near to c
+   * 3  -  on or very near to d
+   * 4  -  to the LEFT of c
+   * 5  -  to the RIGHT of d
+   * 0  -  point has wrong direction sense
+   ****************************************/
 
   if(i_rad > 1.0e-10)
   {
     idot=nco_sph_dot(cd, cIcross);
     bInvert=False;
+
   }
   /* distance between c and Icross is very small so compare Icross with d */
   else
@@ -859,11 +994,14 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
     if( fabs(cd_rad-i_rad) <2.0e-14  )
       iret=( bInvert ? 2: 3);
     /* in the middle */
-    else if( cd_rad>i_rad)
+    else if ( cd_rad>i_rad)
       iret=1;
     /* off the end i_rad>cd_rad */
+    else if( i_rad >cd_rad )
+      iret= ( bInvert ? 4: 5 );
     else
       iret=0;
+
   }
   else
   {
@@ -944,6 +1082,110 @@ nco_sph_seg_edge(double *p0, double *p1, double *q0, double *q1, double *r0, dou
 
 
   return True;
+
+
+}
+
+
+nco_bool
+nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0,  double *r1, int *flg_p, int *flg_q)
+{
+  const char fnc_nm[]="nco_sph_seg_int_final()";
+
+  nco_bool bInt=False;
+  nco_bool bSetCnd=False;
+
+  double n1;
+  /* possible intersection point */
+  double pcnd[NBR_SPH];
+  /* placeholder ? */
+  double pt[NBR_SPH]={0.0,0.0,0.0,0.0,0.0};
+
+   *flg_p=0;
+   *flg_q=0;
+
+
+
+
+  bInt=nco_mat_int_pl(p0, p1, q0, q1, pt);
+  /* no intersection */
+
+
+
+  if (DEBUG_SPH) {
+    fprintf(stderr, "%s: bInt=%s tpar=X[0]=%.16f X[1]=%.16f X[2]=%.16f\n", fnc_nm, (bInt ? "True" : "False"), pt[0], pt[1], pt[2]);
+
+  }
+
+  if(!bInt )
+    return False;
+
+  /* this is quite permissive  as some  returned points maybe in the range <1.0e-14, or 1.0+1.-e-14
+     The points are double checked later with flg_p=nco_sph_metric_int(q0,q1, pcnd); */
+  /* if(   pt[0] < -1.0e-11  ||  ( pt[0] >1.0 &&  pt[0]-1.0 >1.0e-11) )
+     return False; */
+
+
+
+
+  /* from here on we have some kind of intersection */
+  if(!bSetCnd)
+  {
+    /* genuine intersection point not end point */
+    pcnd[0] = q0[0] + pt[0] * (q1[0] - q0[0]);
+    pcnd[1] = q0[1] + pt[0] * (q1[1] - q0[1]);
+    pcnd[2] = q0[2] + pt[0] * (q1[2] - q0[2]);
+
+    n1 = nco_sph_rad(pcnd);
+    /* normalise p */
+    if (n1 != 0.0 && n1 != 1.0) {
+
+      pcnd[0] /= n1;
+      pcnd[1] /= n1;
+      pcnd[2] /= n1;
+    }
+    nco_sph_add_lonlat(pcnd);
+
+    bSetCnd=True;
+
+  }
+
+
+  *flg_q=nco_sph_metric_int(q0,q1, pcnd);
+  *flg_p=nco_sph_metric_int(p0,p1, pcnd);
+
+
+
+
+
+
+  if(DEBUG_SPH) {
+      nco_sph_prn_pnt("nco_sph_seg_int_final(): pos point ", pcnd, 4, True);
+      (void)fprintf(stderr, "%s: flg_p=%d flg_q=%d\n", fnc_nm,  *flg_p, *flg_q );
+  }
+
+
+
+  //nco_sph_mk_pqcross_int( p0, p1, Pcross, q0,  q1,  Qcross  , pq_cross_new, flg_p , flg_q );
+
+
+  if(DEBUG_SPH)
+  {
+    //(void)fprintf(stderr, "pqCross(old)=%d, %d, %d, %d\n",pq_cross[0], pq_cross[1], pq_cross[2], pq_cross[3]);
+    //(void)fprintf(stderr, "pqCross(new)=%d, %d, %d, %d\n",pq_cross_new[0], pq_cross_new[1], pq_cross_new[2], pq_cross_new[3]);
+
+
+  }
+
+  memcpy(r0, pcnd, sizeof(double)*NBR_SPH);
+
+
+  //if(flg_p==0 || flg_p>3 || flg_q==0 || flg_q >3 )
+  //  return False;
+
+
+  return True;
+
 
 
 }
@@ -1105,14 +1347,14 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
   flg_q=nco_sph_metric_int(p0,p1, pcnd);
 
   if(DEBUG_SPH) {
-      nco_sph_prn_pnt("nco_sph_seg_int_: pos point ", pcnd, 4, True);
-      (void)fprintf(stderr, "%s: flg_ab=%d\n", fnc_nm,  flg_q );
+    nco_sph_prn_pnt("nco_sph_seg_int_: pos point ", pcnd, 4, True);
+    (void)fprintf(stderr, "%s: flg_ab=%d\n", fnc_nm,  flg_q );
   }
 
 
 
   if(!flg_q)
-      return False;
+    return False;
 
   flg_p=nco_sph_metric_int(q0,q1, pcnd);
 
@@ -1133,7 +1375,7 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
 
   if(DEBUG_SPH )
-      fprintf(stderr, "%s: codes=%s tpar=pt[0]=%.15f\n", fnc_nm, codes, pt[0]  );
+    fprintf(stderr, "%s: codes=%s tpar=pt[0]=%.15f\n", fnc_nm, codes, pt[0]  );
 
   memcpy(r0, pcnd, sizeof(double)*NBR_SPH);
 
@@ -1142,6 +1384,8 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
 
 
 }
+
+
 
 nco_bool
 nco_sph_seg_smc   /* intersect great circles and small circles */
@@ -1690,6 +1934,8 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
   int jdx1;
   int numIntersect;
   int numVertex = 0;
+  int flg_p;
+  int flg_q;
 
   nco_bool DEBUG_LCL=False;
   nco_bool bComplex = False;
@@ -1718,7 +1964,7 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
    * also there is a situation where for some polygons the center maybe outside polygon ?
    * Also if we use a point outide we dont have to bother (re)calculating the center
    */
-    nco_sph_mk_control(sP, bInside, pControl);
+  nco_sph_mk_control(sP, bInside, pControl);
 
 
   if(DEBUG_SPH)
@@ -1736,6 +1982,8 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
     memset(pi,0, sizeof(double)* NBR_SPH);
 
     for (jdx = 0; jdx < n; jdx++) {
+      flg_p=0;
+      flg_q=0;
       jdx1 = (jdx + n - 1) % n;
 
       /* check for parallel edges
@@ -1743,19 +1991,24 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
         continue;
       */
 
-      if(nco_sph_seg_int(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx],  p, q, (int*)NULL,0, codes)) {
+      //nco_sph_seg_int(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx],  p, q, (int*)NULL,0, codes)
+      nco_sph_seg_int_final(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx],  p, q, &flg_p, &flg_q);
+
+
+      if(flg_p >=1 &&flg_p <=3 && flg_q>=1 && flg_q <=3)
+      {
 
         if (DEBUG_LCL) {
-          (void) fprintf(stderr, "%s():, idx=%d jdx=%d numIntersect=%d codes=%s\n", __FUNCTION__, idx, jdx, numIntersect, codes);
+          (void) fprintf(stderr, "%s():, idx=%d jdx=%d numIntersect=%d flg_p=%d flg_q=%d\n", __FUNCTION__, idx, jdx, numIntersect, flg_p, flg_q);
           nco_sph_prn_pnt("intersect_pre()", p, 4, True);
         }
 
-        if (codes[1] != '0' && codes[1] != '1') {
+        if (flg_q != 1)
+        {
           bComplex = True;
           break;
         }
-
-        if (codes[1] == '1')
+        else
           /* check for consecutive points */
           if (numIntersect == 0 || 1.0 - nco_sph_dot_nm(pi, p) > DOT_TOLERANCE) {
             //if(numIntersect==0 ||  pi[0]!=p[0] && pi[1]!=p[1] )
@@ -1768,32 +2021,28 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
         if (DEBUG_LCL) {
           (void) fprintf(stderr, "%s: idx=%d jdx=%d numIntersect=%d codes=%s\n", fnc_nm, idx, jdx, numIntersect, codes);
           nco_sph_prn_pnt("intersect_pre()", p, 4, True);
-          // nco_sph_prn_pnt("intersect_pre()", p, 3, True);
         }
       }
 
-      /*
-      if(numIntersect >= 2)
-        break;
-      */
+
 
     }
 
 
 
-    if (bComplex) {
+    if (bComplex)
+    {
       /* head of q is on an edge of p */
-      if (codes[0] == '1' && (codes[1] == 'h' || codes[1] == 't'))
+      if (flg_p == 1   && (flg_q == 3 || flg_q == 2))
         sq_sng[idx] = 'e';
         /* head of q is on vertex of p */
-      else if ((codes[0] == 'h' || codes[0] == 't') && codes[1] == 'h')
+      else if ((flg_p == 3 || flg_p == 2 ) && flg_q == 3)
         sq_sng[idx] = 'v';
 
-    } else
-      if(bInside)
-        sq_sng[idx]= ( numIntersect==0 ? 'i': 'o' );
-      else
-        sq_sng[idx]= ( numIntersect %2 ? 'i' : 'o' );
+    } else if(bInside)
+      sq_sng[idx]= ( numIntersect==0 ? 'i': 'o' );
+    else
+      sq_sng[idx]= ( numIntersect %2 ? 'i' : 'o' );
 
 
   }
@@ -1803,6 +2052,8 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
   return True;
 
 }
+
+
 
 int
 nco_sph_process_pre(poly_sct *sQ, char *sq_sng, nco_bool *bGenuine)
@@ -1970,7 +2221,7 @@ int nco_sph_lhs(double *Pi, double *Qi)
    ds= nco_sph_dot_nm(Pi, Qi);
 
    if(0 && DEBUG_SPH)
-     (void)fprintf(stderr,"%s: ds=%.15f  lon=%.15f lat=%.15f \n",fnc_nm, ds, R2D(Pi[3]), R2D(Pi[4]) );
+     (void)fprintf(stderr,"%s: ds=%.16e  lon=%.16e lat=%.16e\n",fnc_nm, ds, R2D(Pi[3]), R2D(Pi[4]) );
 
    if( fabs(ds)<=DOT_TOLERANCE)
      return 0;

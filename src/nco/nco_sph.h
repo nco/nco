@@ -91,6 +91,7 @@
 
 #define SIGMA_TOLERANCE (1.0e-16)
 #define DOT_TOLERANCE (1.0e-14)
+//#define DOT_TOLERANCE (DBL_EPSILON)
 
 
 /* this value plays nice with edges on grids/ne120np4_pentagons.100310.nc */
@@ -139,8 +140,15 @@ nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p, doubl
 nco_bool
 nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes);
 
+nco_bool
+nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0,  double *r1, int *flg_p, int *flg_q);
+
 int
 nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], nco_edg_typ_enm rgr_edg_typ,   nco_edg_typ_enm *p_edg_typ, nco_edg_typ_enm *q_edg_typ);
+
+void
+nco_sph_mk_pqcross_int( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], int flg_p , int flg_q );
+
 
 nco_bool
 nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag, char *codes );
