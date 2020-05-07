@@ -1546,11 +1546,12 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
     nx1 = nco_sph_cross(p0, p1, Pcross);
     nx2 = nco_sph_cross(q0, q1, Qcross);
 
+
   }
 
   /* check points in the same direction */
-  if (nco_sph_dot_nm(Pcross, Qcross) < 0.99)
-    False;
+  if (nco_sph_dot_nm(Pcross, Qcross) < 0.99 ||  nco_sph_cross(Pcross, Qcross, Tcross) >1.0e-14  )
+    return False;
 
   dx_p1 = 1.0 - nco_sph_dot_nm(p0, p1);
 
