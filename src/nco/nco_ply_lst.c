@@ -501,9 +501,13 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
 
 
 
-    if(nco_dbg_lvl_get()>= nco_dbg_dev  )
-      if(pl->bwrp)
-        nco_poly_prn(pl,0);
+    if(nco_dbg_lvl_get()>= nco_dbg_dev  ) {
+      if (pl->bwrp)
+        nco_poly_prn(pl, 0);
+        /* check if convex */
+        if( !nco_sph_is_convex(pl->shp, pl->crn_nbr) )
+          (void)fprintf(stderr, "%s:%s: id=%d  is concave\n", nco_prg_nm_get(),fnc_nm, pl->src_id);
+    }
 
     /* for debugging */
     tot_area+=pl->area;
@@ -696,7 +700,7 @@ int *pl_cnt_vrl_ret){
 
 
 /* just duplicate output list to overlap */
-  nco_bool bDirtyRats=False;
+  nco_bool bDirtyRats=True;
   nco_bool bSort=True;
 
 
