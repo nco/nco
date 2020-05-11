@@ -237,18 +237,44 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      /* if true  we have an intersection */
      nco_sph_seg_int_final(P->shp[a1],P->shp[a],Q->shp[b1], Q->shp[b],p,q, &p_flg, &q_flg  );
 
+     nco_sph_mk_pqcross_int(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b],  Qcross  , pqCrossOriginal, p_flg , q_flg );
+     if(p_flg<0) p_flg*=-1;
+     if(q_flg<0) q_flg*=-1;
+
      /* see if we have some kind of intersection */
      if(p_flg >=1 && p_flg<=3 && q_flg>=1 &&q_flg<=3 )
         bInt=True;
      else
         bInt=False;
 
-     //nco_sph_mk_pqcross_int(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b],  Qcross  , pqCross, p_flg , q_flg );
-     nco_sph_mk_pqcross_int(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b],  Qcross  , pqCross,  0, 0 );
+
+
+     pqCross[0] = nco_sph_lhs(P->shp[a1], Qcross);
+     pqCross[1] = nco_sph_lhs(P->shp[a], Qcross);
+
+     pqCross[2] = nco_sph_lhs(Q->shp[b1], Pcross);
+     pqCross[3] = nco_sph_lhs(Q->shp[b], Pcross);
+
+     if( DEBUG_SPH )
+     {
+       int idx;
+
+       for (idx = 0; idx < 4; idx++)
+         if (pqCross[idx] != pqCrossOriginal[idx])
+           break;
+
+       if (idx < 4)
+       {
+         printf("old   \nip1qLHS=%d ipqLHS=%d iq1pLHS=%d iqpLHS=%d\n", pqCross[0], pqCross[1], pqCross[2], pqCross[3]);
+         printf("cross \nip1qLHS=%d ipqLHS=%d iq1pLHS=%d iqpLHS=%d\n", pqCrossOriginal[0], pqCrossOriginal[1], pqCrossOriginal[2], pqCrossOriginal[3]);
+       }
+     }
+
+
 
 
      /* save Cross before implied */
-     memcpy(pqCrossOriginal, pqCross, sizeof(pqCross) );
+     // memcpy(pqCrossOriginal, pqCross, sizeof(pqCross) );
 
 
      /* imply facing rules  */
@@ -601,7 +627,113 @@ nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  
 
 
 void
-nco_sph_mk_pqcross_int( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], int flg_p , int flg_q   )
+nco_sph_mk_pqcross_int( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], int p_flg , int q_flg   )
+{
+
+  switch( abs(p_flg) ) {
+    /* parallel or bad return from nco_sph_metric_int() */
+    case 0:
+      pqCross[0] = nco_sph_lhs(p0, qCross);
+      pqCross[1] = nco_sph_lhs(p1, qCross);
+      break;
+
+
+    case 1:
+      pqCross[0] = 1;
+      pqCross[1] = -1;
+      break;
+
+    case 2:
+      pqCross[0] = 0;
+      pqCross[1] = 1;
+      break;
+
+    case 3:
+      pqCross[0] = 1;
+      pqCross[1] = 0;
+      break;
+
+
+    case 4:
+      //pqCross[1]=nco_sph_lhs(p1, qCross);
+      //pqCross[0] = pqCross[1];
+      pqCross[0] = 1;
+      pqCross[1] = 1;
+
+      break;
+
+    case 5:
+      //pqCross[0]=nco_sph_lhs(p0, qCross);
+      //pqCross[1] = pqCross[0];
+      pqCross[0] = 1;
+      pqCross[1] = 1;
+      break;
+
+
+
+  }
+
+  if(p_flg <0)
+  {
+    pqCross[0] *= -1;
+    pqCross[1] *= -1;
+  }
+
+
+  switch( abs(q_flg) ) {
+    /* parallel or bad return from nco_sph_metric_int() */
+    case 0:
+      pqCross[2] = nco_sph_lhs(q0, pCross);
+      pqCross[3] = nco_sph_lhs(q1, pCross);
+      break;
+
+
+    case 1:
+      pqCross[2] = 1;
+      pqCross[3] = -1;
+      break;
+
+
+    case 2:
+      pqCross[2] = 0;
+      pqCross[3] = 1;
+      break;
+
+    case 3:
+      pqCross[2] = 1;
+      pqCross[3] = 0;
+      break;
+
+    case 4:
+      //pqCross[3]= nco_sph_lhs(q1, pCross);
+      //pqCross[2] = pqCross[3];
+      pqCross[2]=1;
+      pqCross[3]=1;
+      break;
+
+    case 5:
+      //pqCross[2]=  nco_sph_lhs(q0, pCross);
+      //pqCross[3] = pqCross[2];
+      pqCross[2]=1;
+      pqCross[3]=1;
+
+      break;
+
+
+  }
+
+  if( q_flg<0)
+  {
+    pqCross[2] *= -1;
+    pqCross[3] *= -1;
+  }
+
+
+}
+
+
+void
+nco_sph_mk_pqcross_int_1( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], int flg_p , int flg_q   )
 {
 
   switch(flg_p )
@@ -619,31 +751,31 @@ nco_sph_mk_pqcross_int( double *p0, double *p1, double *pCross, double *q0, doub
       //pqCross[1] = nco_sph_lhs(p1, qCross);
       pqCross[1]=-pqCross[0];
       break;
-    
-    /* intersection on or very near p0 */  
+
+      /* intersection on or very near p0 */
     case 2:
       pqCross[0]=0;
       pqCross[1] = nco_sph_lhs(p1, qCross);
       break;
-   
-    /* intersection on or very near p1 */  
+
+      /* intersection on or very near p1 */
     case 3:
-      pqCross[0] = nco_sph_lhs(p0, qCross); 
+      pqCross[0] = nco_sph_lhs(p0, qCross);
       pqCross[1] =0;
       break;
-    
-    /* p0 and p1 on RHS */  
+
+      /* p0 and p1 on RHS */
     case 4:
       pqCross[1] = nco_sph_lhs(p1, qCross);
       pqCross[0]=pqCross[1];
       break;
-    
+
       /* p0 and p1 on LHS */
     case 5:
       pqCross[0] =  nco_sph_lhs(p0, qCross);
       pqCross[1] = pqCross[0];
       break;
-      
+
   }
 
 
@@ -932,7 +1064,7 @@ nco_sph_metric( double *p, double *q)
 
 
 int
-nco_sph_metric_int(double *c, double *d, double *Icross)
+nco_sph_metric_int_1(double *c, double *d, double *Icross)
 {
 
   char fnc_nm[]="nco_sph_metric_int()";
@@ -1022,6 +1154,101 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
 
 
 
+
+
+int
+nco_sph_metric_int(double *c, double *d, double *Icross)
+{
+
+  char fnc_nm[]="nco_sph_metric_int()";
+  nco_bool DEBUG_LCL=False;
+
+  nco_bool bInvert=False;
+
+  int iret=0;
+
+  double cIcross[NBR_SPH];
+  double cd[NBR_SPH];
+  double cd_rad=0.0;
+  double i_rad=0.0;
+  double idot=0.0;
+
+  double LCL_TOLERANCE=1.0e-16;
+
+
+  nco_sph_sub(d,c,cd );
+
+  nco_sph_sub(Icross,c, cIcross);
+  cd_rad=nco_sph_rad(cd);
+
+  i_rad=nco_sph_rad(cIcross);
+
+  idot=nco_sph_dot(cd, cIcross);
+
+  /* **************************************
+   * return values in iret
+   * 1  -  in middle   *
+   * 2  -  on or very near to c
+   * 3  -  on or very near to d
+   * 4  -  to the LEFT of c
+   * 5  -  to the RIGHT of d
+   * 0  -  point has wrong direction sense
+   ****************************************/
+
+  /* on or very near c vertex */
+
+
+  if(i_rad< (2 * DOT_TOLERANCE) )
+    iret=2;
+  else if ( idot < -1.0e-40)
+    iret=4;
+  else if ( idot > 1.0e-40)
+  {
+    if(sqrt(nco_sph_dist(Icross,d)) < 2 * DOT_TOLERANCE  )
+      iret=3;
+    else if( i_rad <cd_rad )
+      iret=1;
+    else if(i_rad >cd_rad)
+      iret=5;
+    else
+      iret=0;
+
+  }else{
+    /* idot in the range  1.0e-40 =>  idot <=1.0e-40 */
+    iret = 0;
+  }
+
+
+  if(DEBUG_LCL)
+    (void)fprintf(stderr, "%s: Using sph_metric to compare points cd_rad=%.15e ci_rad=%.15e  cdot=%.15e iret=%d\n", fnc_nm, cd_rad, i_rad, idot, iret);
+
+
+
+  return iret;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* nb this func assumes that edge p and edge q are NOT parallel and that we have only one or two zero's 
  * pqCross MUST have at least one zero for this to work  */ 
 nco_bool
@@ -1088,7 +1315,7 @@ nco_sph_seg_edge(double *p0, double *p1, double *q0, double *q1, double *r0, dou
 
 
 nco_bool
-nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0,  double *r1, int *flg_p, int *flg_q)
+nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0,  double *r1, int *p_flg, int *q_flg)
 {
   const char fnc_nm[]="nco_sph_seg_int_final()";
 
@@ -1101,8 +1328,13 @@ nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0
   /* placeholder ? */
   double pt[NBR_SPH]={0.0,0.0,0.0,0.0,0.0};
 
-   *flg_p=0;
-   *flg_q=0;
+  double p_ds;
+  double q_ds;
+  double Pcross[NBR_SPH];
+  double Qcross[NBR_SPH];
+
+   *p_flg=0;
+   *q_flg=0;
 
 
 
@@ -1151,17 +1383,103 @@ nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0
   }
 
 
-  *flg_q=nco_sph_metric_int(q0,q1, pcnd);
-  *flg_p=nco_sph_metric_int(p0,p1, pcnd);
+  *q_flg=nco_sph_metric_int(q0,q1, pcnd);
+  *p_flg=nco_sph_metric_int(p0,p1, pcnd);
+
+
+  {
+    double nx1;
+    double nx2;
+
+
+    nx1=nco_sph_cross_sub(p0,p1, Pcross);
+    nx2=nco_sph_cross_sub(q0,q1, Qcross);
 
 
 
+    switch(*p_flg)
+    {
+      case 0:
+         break;
+
+      /* intersection */
+      case 1:
+        p_ds=nco_sph_dot_nm(p0, Qcross);
+        if(p_ds<0.0) *p_flg=-1;
+        break;
+
+       /* on or very near vertex p0 */
+      case 2:
+        p_ds=nco_sph_dot_nm(p1,Qcross);
+        if(p_ds<0) *p_flg=-2;
+        break;
+
+        /* on or very near vertex p1 */
+      case 3:
+        p_ds=nco_sph_dot_nm(p0,Qcross);
+        if(p_ds<0.0) *p_flg=-3;
+        break;
+
+      case 4:
+        p_ds=nco_sph_dot_nm(p1,Qcross);
+        if(p_ds<0.0) *p_flg=-4;
+        break;
+
+      case 5:
+        p_ds=nco_sph_dot_nm(p0,Qcross);
+        *p_flg=(p_ds <0.0 ? -5: 5 );
+        break;
+
+    }
+
+
+    switch(*q_flg)
+    {
+      case 0:
+        break;
+
+        /* intersection */
+      case 1:
+        q_ds=nco_sph_dot_nm(q0, Pcross);
+        if(q_ds<0.0) *q_flg=-1;
+        break;
+
+        /* on or very near vertex q0 */
+      case 2:
+        q_ds=nco_sph_dot_nm(q1,Pcross);
+        if(q_ds<0) *q_flg=-2;
+        break;
+
+        /* on or very near vertex q1 */
+      case 3:
+        q_ds=nco_sph_dot_nm(q0,Pcross);
+        if(q_ds<0.0) *q_flg=-3;
+        break;
+
+      case 4:
+        q_ds=nco_sph_dot_nm(q1,Pcross);
+        if(q_ds<0.0) *q_flg=-4;
+        break;
+
+      case 5:
+        q_ds=nco_sph_dot_nm(q0,Pcross);
+        *q_flg=( q_ds <0.0 ? -5: 5 );
+        break;
+
+    }
+
+
+
+
+
+
+  }
 
 
 
   if(DEBUG_SPH) {
       nco_sph_prn_pnt("nco_sph_seg_int_final(): pos point ", pcnd, 4, True);
-      (void)fprintf(stderr, "%s: flg_p=%d flg_q=%d\n", fnc_nm,  *flg_p, *flg_q );
+      (void)fprintf(stderr, "%s: flg_p=%d flg_q=%d p_ds=%.15e q_ds=%.15e  \n", fnc_nm,  *p_flg, *q_flg, p_ds, q_ds);
   }
 
 
@@ -1993,6 +2311,8 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
 
       //nco_sph_seg_int(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx],  p, q, (int*)NULL,0, codes)
       nco_sph_seg_int_final(sP->shp[jdx1], sP->shp[jdx], pControl, sQ->shp[idx],  p, q, &flg_p, &flg_q);
+      if(flg_p<0) flg_p=-flg_p;
+      if(flg_q<0) flg_q=-flg_q;
 
 
       if(flg_p >=1 &&flg_p <=3 && flg_q>=1 && flg_q <=3)
@@ -2220,7 +2540,7 @@ int nco_sph_lhs(double *Pi, double *Qi)
 
    ds= nco_sph_dot_nm(Pi, Qi);
 
-   if(0 && DEBUG_SPH)
+   if(False && DEBUG_SPH)
      (void)fprintf(stderr,"%s: ds=%.16e  lon=%.16e lat=%.16e\n",fnc_nm, ds, R2D(Pi[3]), R2D(Pi[4]) );
 
    if( fabs(ds)<=DOT_TOLERANCE)
@@ -2248,15 +2568,6 @@ int nco_sph_lhs(double *Pi, double *Qi)
   */
 
 }
-
-
-
-
-
-
-
-
-
 
 
 
