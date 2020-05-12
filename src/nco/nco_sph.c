@@ -237,7 +237,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
      /* if true  we have an intersection */
      nco_sph_seg_int_final(P->shp[a1],P->shp[a],Q->shp[b1], Q->shp[b],p,q, &p_flg, &q_flg  );
 
-     nco_sph_mk_pqcross_int(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b],  Qcross  , pqCrossOriginal, p_flg , q_flg );
+     nco_sph_mk_pqcross_int(P->shp[a1],P->shp[a], Pcross, Q->shp[b1], Q->shp[b],  Qcross  , pqCross, p_flg , q_flg );
      if(p_flg<0) p_flg*=-1;
      if(q_flg<0) q_flg*=-1;
 
@@ -249,15 +249,18 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
 
 
-     pqCross[0] = nco_sph_lhs(P->shp[a1], Qcross);
-     pqCross[1] = nco_sph_lhs(P->shp[a], Qcross);
-
-     pqCross[2] = nco_sph_lhs(Q->shp[b1], Pcross);
-     pqCross[3] = nco_sph_lhs(Q->shp[b], Pcross);
 
      if( DEBUG_SPH )
      {
        int idx;
+
+       pqCrossOriginal[0] = nco_sph_lhs(P->shp[a1], Qcross);
+       pqCrossOriginal[1] = nco_sph_lhs(P->shp[a], Qcross);
+
+       pqCrossOriginal[2] = nco_sph_lhs(Q->shp[b1], Pcross);
+       pqCrossOriginal[3] = nco_sph_lhs(Q->shp[b], Pcross);
+
+
 
        for (idx = 0; idx < 4; idx++)
          if (pqCross[idx] != pqCrossOriginal[idx])
@@ -265,8 +268,8 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
 
        if (idx < 4)
        {
-         printf("old   \nip1qLHS=%d ipqLHS=%d iq1pLHS=%d iqpLHS=%d\n", pqCross[0], pqCross[1], pqCross[2], pqCross[3]);
-         printf("cross \nip1qLHS=%d ipqLHS=%d iq1pLHS=%d iqpLHS=%d\n", pqCrossOriginal[0], pqCrossOriginal[1], pqCrossOriginal[2], pqCrossOriginal[3]);
+         printf("new   \nip1qLHS=%d ipqLHS=%d iq1pLHS=%d iqpLHS=%d\n", pqCross[0], pqCross[1], pqCross[2], pqCross[3]);
+         printf("Original\nip1qLHS=%d ipqLHS=%d iq1pLHS=%d iqpLHS=%d\n", pqCrossOriginal[0], pqCrossOriginal[1], pqCrossOriginal[2], pqCrossOriginal[3]);
        }
      }
 
@@ -1198,13 +1201,13 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
   /* on or very near c vertex */
 
 
-  if(i_rad< (2 * DOT_TOLERANCE) )
+  if(i_rad< (DIST_TOLERANCE) )
     iret=2;
   else if ( idot < -1.0e-40)
     iret=4;
   else if ( idot > 1.0e-40)
   {
-    if(sqrt(nco_sph_dist(Icross,d)) < 2 * DOT_TOLERANCE  )
+    if(sqrt(nco_sph_dist(Icross,d)) < (DIST_TOLERANCE) )
       iret=3;
     else if( i_rad <cd_rad )
       iret=1;
@@ -1249,42 +1252,42 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
 
 
 
-/* nb this func assumes that edge p and edge q are NOT parallel and that we have only one or two zero's 
- * pqCross MUST have at least one zero for this to work  */ 
+/* nb this func assumes that edge p and edge q are NOT parallel and that we have only one or two zero's
+ * pqCross MUST have at least one zero for this to work  */
 nco_bool
 nco_sph_seg_edge(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pqCross, char *codes)
 {
 
   const char fnc_nm[]="nco_sph_seg_edge()";
-  
+
 
   int flg_ab=0;
   int flg_cd=0;
-  
+
 
   if(pqCross[0]==0)
   {
     nco_sph_adi(r0,p0);
     flg_ab=2;
-  }  
+  }
   else if(pqCross[1]==0)
   {
     nco_sph_adi(r0,p1);
     flg_ab=3;
-  }  
-  
+  }
+
   else if(pqCross[2]==0)
   {
     nco_sph_adi(r0,q0);
     flg_cd=2;
   }
-  
+
   else if(pqCross[3]==0)
   {
     nco_sph_adi(r0,q1);
     flg_cd=3;
-  }  
-  
+  }
+
   if(flg_ab )
     flg_cd=nco_sph_metric_int(q0,q1, r0);
   else if(flg_cd)
@@ -1382,8 +1385,13 @@ nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0
 
   }
 
+  if(pt[0]==0.0)
+    *q_flg=2;
+  else if(pt[0]==1.0)
+    *q_flg=3;
+  else
+    *q_flg=nco_sph_metric_int(q0,q1, pcnd);
 
-  *q_flg=nco_sph_metric_int(q0,q1, pcnd);
   *p_flg=nco_sph_metric_int(p0,p1, pcnd);
 
 

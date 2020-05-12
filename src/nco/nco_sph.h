@@ -95,7 +95,7 @@
 
 
 /* this value plays nice with edges on grids/ne120np4_pentagons.100310.nc */
-#define DIST_TOLERANCE (1.0e-14)
+#define DIST_TOLERANCE (DBL_EPSILON)
 
 /* convert Degrees to Radians */
 #define D2R(x)  ((x) * M_PI / 180.0)
@@ -141,7 +141,7 @@ nco_bool
 nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes);
 
 nco_bool
-nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0,  double *r1, int *flg_p, int *flg_q);
+nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0,  double *r1, int *p_flg, int *q_flg);
 
 int
 nco_sph_mk_pqcross( double *p0, double *p1, double *pCross, double *q0, double  *q1, double *qCross, int pqCross[], nco_edg_typ_enm rgr_edg_typ,   nco_edg_typ_enm *p_edg_typ, nco_edg_typ_enm *q_edg_typ);
