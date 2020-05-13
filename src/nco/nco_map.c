@@ -804,6 +804,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   int pl_cnt_vrl=0;
 
+  size_t pl_sz_vrl=0;
+
   poly_sct *pl_glb_in=NULL_CEWI;
   poly_sct *pl_glb_out=NULL_CEWI;
 
@@ -995,8 +997,17 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       if(pl_typ == poly_sph || pl_typ == poly_rll) pl_lst_vrl=nco_poly_lst_mk_vrl_sph(pl_lst_in, grd_sz_in , grd_lon_typ_out, tree,nbr_tr,  &pl_cnt_vrl);
     } /* !pl_cnt_in */
 
-    if(nco_dbg_lvl_get() >= nco_dbg_dev)
-      fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap polygons=%d\n", nco_prg_nm_get(),grd_sz_in, grd_sz_out , pl_cnt_vrl);
+
+    /* calculate total size of overlap mesh */
+    for(idx=0;idx<pl_cnt_vrl;idx++)
+      if(pl_lst_vrl && pl_lst_vrl[idx])
+        pl_sz_vrl+=nco_poly_sizeof(pl_lst_vrl[idx]);
+
+
+    if(nco_dbg_lvl_get() >= nco_dbg_dev) {
+      fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap polygons=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
+      fprintf(stderr, "%s: total size overlap mesh %lu\n", nco_prg_nm_get(), pl_sz_vrl );
+    }
 
   }
 

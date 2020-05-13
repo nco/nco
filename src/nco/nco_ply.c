@@ -53,6 +53,9 @@ nco_poly_free
 }  
 
 
+
+
+
 poly_sct *   
 nco_poly_init
 (void)
@@ -177,7 +180,40 @@ nco_poly_dpl
   return pl_cpy;
   
 } 
-  
+
+size_t
+nco_poly_sizeof(poly_sct *pl)
+{
+
+  size_t ttl_sz=0;
+  size_t arr_sz;
+
+  if(!pl)
+    return ttl_sz;
+
+
+  ttl_sz=sizeof(poly_sct);
+
+
+
+  if(pl->crn_nbr==0)
+    return ttl_sz;
+
+  arr_sz=sizeof(double)*pl->crn_nbr;
+
+  if(pl->dp_x)ttl_sz+=arr_sz;
+
+  if(pl->dp_y)ttl_sz+=arr_sz;
+
+  if(pl->shp)ttl_sz+=arr_sz*3;
+
+  if(pl->dp_xyz)ttl_sz+=arr_sz;
+
+  return ttl_sz;
+
+
+}
+
 poly_sct *
 nco_poly_init_crn
 (poly_typ_enm pl_typ,
