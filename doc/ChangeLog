@@ -1,3 +1,7 @@
+2020-05-13  Charlie Zender  <zender@uci.edu>
+
+	* Correctly identify modern clang compiler versions
+
 2020-05-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha08 release procedure:

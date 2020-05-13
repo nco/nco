@@ -24,9 +24,9 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_nm[]="xlC"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __xlC__ defined in nco_cmp_get(), probably compiled with AIX xlC_r or xlC"; /* [sng] Compiler string */
 #endif /* !__xlC__ */
-#if defined(__GNUC__) && !defined(__clang) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
+#if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Testing for GCC macros early is dangerous because some compilers, 
-     including Intel's, define GCC macros for compatibility */
+     including Intel icc and clang, define GCC macros for compatibility */
 #if defined(__GNUG__)
   static const char cmp_nm[]="g++"; /* [sng] Compiler name */
   static const char cmp_sng[]="Token __GNUG__ defined in nco_cmp_get(). Compiled with GNU g++ (or a compiler that emulates g++)."; /* [sng] Compiler string */
@@ -48,11 +48,25 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
     (void)fprintf(stderr,"%s: INFO GCC version is %s\n",nco_prg_nm_get(),cmp_vrs);
   } /* endif dbg */
 #endif /* !__GNUC__ */
-#ifdef __clang
+#ifdef __clang__
   /* Some compilers, including clang, also define __GNUC__ by default */
   static const char cmp_nm[]="clang";
-  static const char cmp_sng[]="Token __clang defined in nco_cmp_get(), probably compiled with LLVM clang"; /* [sng] Compiler string */
-#endif /* !__clang */
+  static const char cmp_sng[]="Token __clang__ defined in nco_cmp_get(), probably compiled with LLVM clang"; /* [sng] Compiler string */
+  /* 20200513 Obtain clang info with this trick from LWN:
+     cc -dM -E - < /dev/null | grep clang */
+  static const char clg_vrs[]=TKN2SNG(__clang_version__); // [sng] Compiler version
+  static const char clg_vrs_mjr[]=TKN2SNG(__clang_major__); // [sng] Compiler major version
+  static const char clg_vrs_mnr[]=TKN2SNG(__clang_minor__); // [sng] Compiler minor version
+  static const char clg_vrs_pch[]=TKN2SNG(__clang_patchlevel__); // [sng] Compiler patch version
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    (void)fprintf(stderr,"%s: INFO clang major version is %s\n",nco_prg_nm_get(),clg_vrs_mjr);
+    (void)fprintf(stderr,"%s: INFO clang minor version is %s\n",nco_prg_nm_get(),clg_vrs_mnr);
+    (void)fprintf(stderr,"%s: INFO clang patch version is %s\n",nco_prg_nm_get(),clg_vrs_pch);
+  } /* endif dbg */
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    (void)fprintf(stderr,"%s: INFO clang version is %s\n",nco_prg_nm_get(),clg_vrs);
+  } /* endif dbg */
+#endif /* !__clang__ */
 #ifdef __INTEL_COMPILER
   /* Some compilers, including icc, also define __GNUC__ by default */
   static const char cmp_nm[]="icc";
@@ -69,7 +83,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
 #endif /* !PGI_CC */
 
   /* No tokens matched */
-#if !defined(NCO_XLC_LIKELY) && !defined(__clang) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
+#if !defined(NCO_XLC_LIKELY) && !defined(__clang__) && !defined(__GNUC__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)
   /* Unknown compiler */
   static const char cmp_nm[]="unknown"; /* [sng] Compiler name */
   static const char cmp_sng[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler string */
