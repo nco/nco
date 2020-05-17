@@ -682,6 +682,7 @@ main(int argc,char **argv)
   
   if(!nbr_spt && !fl_spt_usr){
     (void)fprintf(stdout,"%s: ERROR Must give %s work to do with at least one command string (e.g., -s \"one=1\") or file-based script of commands (e.g., \"-S script.nco\"). Please reformulate command accordingly and try again.\n",nco_prg_nm_get(),nco_prg_nm_get());
+    (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* !nbr_spt */
   
