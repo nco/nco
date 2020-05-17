@@ -3,9 +3,13 @@
 /* Usage: 
 
    ncap2 -O -S planck.nco planck.nc
-   ncap2 -O -S ~/nco/data/planck.nco ${DATA}/ess_rmt/planck.nc
+   ncap2 -O -S ~/nco/data/planck.nco ${DATA}/ess_rmt/ess138_planck.nc
 
-   Purpose: ESS 138 examples Planck's law, brightness temperature, and emissivity
+   Instacopy:
+   scp ~/nco/data/planck.nco dust.ess.uci.edu:
+   scp ~/nco/data/planck.nco e3sm.ess.uci.edu:
+
+   Purpose: ESS 138 examples of Planck's law, brightness temperature, and emissivity
 
    Procedure:
    ncap2 -s 'SST=a0 + a1*Tb11um + a2*(TFG - 273.15)*(Tb11um - Tb12um) + a3*(Tb11um - Tb12um)*(1/cos(theta) - 1);SST@long_name="Retrieved Sea Surface Temperature"' ${DATA}/ess_rmt_lab/goes16_11um_12um.nc */
@@ -28,39 +32,76 @@ msv_sfc=1.0f; // [frc]
 msv_sfc@long_name="Greybody emissivity of emitting surface";
 msv_sfc@units="fraction";
 
-*wvl_nbr=10000;
+*wvl_nbr=100000;
+defdim("wvl_ctr",wvl_nbr);
 defdim("wvl_ctr_mcr",wvl_nbr);
+defdim("wvn_ctr",wvl_nbr);
 defdim("wvn_ctr_cgs",wvl_nbr);
-*wvl_srt_mcr=0.2f;
+defdim("frq_ctr",wvl_nbr);
+*wvl_srt_mcr=0.2f; // [um]
 *wvl_srt_ln=ln(wvl_srt_mcr);
-*wvl_end_mcr=100.0f;
+*wvl_end_mcr=1000.0f; // [um]
 *wvl_end_ln=ln(wvl_end_mcr);
 *wvl_ncr_ln=(wvl_end_ln-wvl_srt_ln)/$wvl_ctr_mcr.size;
 *wvl_ln=array(wvl_srt_ln,wvl_ncr_ln,$wvl_ctr_mcr);
 wvl_ctr_mcr=exp(wvl_ln);
-wvl_ctr=wvl_ctr_mcr*1.0e-6f; // [um]->[m]
 
 wvl_ctr_mcr@long_name="Wavelength at band center";
 wvl_ctr_mcr@standard_name="sensor_band_central_radiation_wavelength";
 wvl_ctr_mcr@units="microns";
 
-wvn_ctr=1.0f/wvl_ctr; // [m]->[m-1]
-wvn_ctr_cgs[$wvn_ctr_cgs]=0.0+1.0f/(100*wvl_ctr); // [m]->[cm-1]
+// 20200517: Two-step "trick" copies array values between arrays with same dimension sizes and different dimension names
+wvl_ctr[$wvl_ctr]=0.0f;
+wvl_ctr(:)=wvl_ctr_mcr*1.0e-6f; // [um]->[m]
+wvl_ctr@long_name="Wavelength at band center";
+wvl_ctr@standard_name="sensor_band_central_radiation_wavelength";
+wvl_ctr@units="meters";
+
+frq_ctr[$frq_ctr]=0.0f;
+frq_ctr(:)=speed_of_light/wvl_ctr.reverse($0); // [m]->[s-1]
+frq_ctr@long_name="Frequency";
+frq_ctr@standard_name="sensor_band_central_radiation_frequency";
+frq_ctr@units="Hz";
+
+//wvn_ctr_cgs[$wvn_ctr_cgs]=0.0+1.0f/(100*wvl_ctr); // [m]->[cm-1]
+wvn_ctr[$wvn_ctr]=0.0;
+wvn_ctr(:)=1.0f/wvl_ctr.reverse($0); // [m]->[m-1]
+wvn_ctr@long_name="Wavenumber";
+wvn_ctr@standard_name="sensor_band_central_radiation_wavenumber";
+wvn_ctr@units="m-1";
+
+wvn_ctr_cgs[$wvn_ctr_cgs]=0.0;
+wvn_ctr_cgs(:)=1.0f/(100*wvl_ctr.reverse($0)); // [m]->[cm-1]
 wvn_ctr_cgs@long_name="Wavenumber";
-wvn_ctr_cgs@standard_name="sensor_band_centrala_radiation_wavenumber";
+wvn_ctr_cgs@standard_name="sensor_band_central_radiation_wavenumber";
 wvn_ctr_cgs@units="cm-1";
 
-plk_wvl[$wvl_ctr_mcr]=msv_sfc*2.0f*hc2/wvl_ctr^5/exp(-1.0f+hc/(wvl_ctr*cst_Boltzmann*tpt_sfc));
+plk_wvl[$wvl_ctr]=msv_sfc*2.0f*hc2/wvl_ctr^5/(-1.0f+exp(hc/(wvl_ctr*cst_Boltzmann*tpt_sfc)));
+plk_wvl@long_name="Radiance at band center";
 plk_wvl@units="W m-2 sr-1 m-1";
 
+plk_wvl_mcr[$wvl_ctr_mcr]=0.0;
+plk_wvl_mcr(:)=plk_wvl/1.0e6f;
+plk_wvl_mcr@long_name="Radiance at band center";
 plk_wvl_mcr@units="W m-2 sr-1 um-1";
-plk_frq@units="W m-2 sr-1 Hz-1";
+
+plk_wvn[$wvn_ctr]=msv_sfc*2.0f*hc2*wvn_ctr^3/(-1.0f+exp(hc*wvn_ctr/(cst_Boltzmann*tpt_sfc)));
+plk_wvn@long_name="Radiance at band center";
 plk_wvn@units="W m-2 sr-1 (m-1)-1";
 
+plk_wvn_cgs[$wvn_ctr_cgs]=msv_sfc*2.0e8f*hc2*wvn_ctr_cgs^3/(-1.0f+exp(100.0f*hc*wvn_ctr_cgs/(cst_Boltzmann*tpt_sfc)));
+plk_wvn_cgs@long_name="Radiance at band center";
+plk_wvn_cgs@units="W m-2 sr-1 (cm-1)-1";
+
+// Planck function of frequency underflows in single-precision
+//plk_frq[$frq_ctr]=msv_sfc*2.0f*cst_Planck*frq_ctr^3/(speed_of_light*speed_of_light*(-1.0f+exp(cst_Planck*frq_ctr/(cst_Boltzmann*tpt_sfc))));
+plk_frq[$frq_ctr]=float(msv_sfc*2.0*cst_Planck*double(frq_ctr)^3/(speed_of_light*speed_of_light*(-1.0+exp(cst_Planck*double(frq_ctr)/(cst_Boltzmann*tpt_sfc)))));
+plk_frq@long_name="Radiance at band center";
+plk_frq@units="W m-2 sr-1 Hz-1";
+
 // Invert radiance field to obtain brightness temperature
-tpt_brt=hc/(wvl_ctr*cst_Boltzmann)/ln(1.0f+2.0f*hc2/plk_wvl*wvl_ctr^5); // Invert Planck equation for Tb
+tpt_brt=hc/(wvl_ctr*cst_Boltzmann)/ln(1.0f+2.0f*hc2/(plk_wvl*wvl_ctr^5)); // Invert Planck equation for Tb
 tpt_brt@long_name="Brightness Temperature";
 tpt_brt@standard_name="toa_brightness_temperature";
 tpt_brt@units="K";
 
-ram_delete(rad@valid_range);
