@@ -1,8 +1,12 @@
-2020-05-18  Charlie Zender  <zender@uci.edu>
+2020-05-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha09: Rib Eye';git push
 	git tag -a 4.9.3-alpha09 -m 'ncap2 ess_rmt demo;ncks cmp vrs clang;';git push --tags
+
+	* Construct and identify clang and GCC compiler library numeric versions
+
+2020-05-18  Charlie Zender  <zender@uci.edu>
 
 	* Insert first GPU directives, modified from Dhruv Seth
 

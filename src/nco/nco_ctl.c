@@ -39,19 +39,23 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char cmp_vrs_mnr[]=TKN2SNG(__GNUC_MINOR__); // [sng] Compiler minor version
   static const char cmp_vrs_pch[]=TKN2SNG(__GNUC_PATCHLEVEL__); // [sng] Compiler patch version
 
+  /* 20200519: Construct numeric library version */
+# define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
+
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
     (void)fprintf(stderr,"%s: INFO GCC major version is %s\n",nco_prg_nm_get(),cmp_vrs_mjr);
     (void)fprintf(stderr,"%s: INFO GCC minor version is %s\n",nco_prg_nm_get(),cmp_vrs_mnr);
     (void)fprintf(stderr,"%s: INFO GCC patch version is %s\n",nco_prg_nm_get(),cmp_vrs_pch);
   } /* endif dbg */
   if(nco_dbg_lvl_get() >= nco_dbg_std){
-    (void)fprintf(stderr,"%s: INFO GCC version is %s\n",nco_prg_nm_get(),cmp_vrs);
+    (void)fprintf(stderr,"%s: INFO GCC version defined as __VERSION__ is %s\n",nco_prg_nm_get(),cmp_vrs);
+    (void)fprintf(stderr,"%s: INFO GCC version constructed as integer is %d\n",nco_prg_nm_get(),GCC_LIB_VERSION);
   } /* endif dbg */
 #endif /* !__GNUC__ */
 #ifdef __clang__
   /* Some compilers, including clang, also define __GNUC__ by default */
   static const char cmp_nm[]="clang";
-  static const char cmp_sng[]="Token __clang__ defined in nco_cmp_get(), probably compiled with LLVM clang"; /* [sng] Compiler string */
+  static const char cmp_sng[]="Token __clang__ defined in nco_cmp_get(), compiled with LLVM clang"; /* [sng] Compiler string */
   /* 20200513 Obtain clang info with this trick from LWN:
      cc -dM -E - < /dev/null | grep clang */
   static const char clg_vrs[]=TKN2SNG(__clang_version__); // [sng] Compiler version
@@ -63,8 +67,11 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
     (void)fprintf(stderr,"%s: INFO clang minor version is %s\n",nco_prg_nm_get(),clg_vrs_mnr);
     (void)fprintf(stderr,"%s: INFO clang patch version is %s\n",nco_prg_nm_get(),clg_vrs_pch);
   } /* endif dbg */
+  /* 20200519: Construct numeric library version */
+# define CLANG_LIB_VERSION ( __clang_major__ * 100 + __clang_minor__ * 10 + __clang_patchlevel__ )
   if(nco_dbg_lvl_get() >= nco_dbg_std){
-    (void)fprintf(stderr,"%s: INFO clang version is %s\n",nco_prg_nm_get(),clg_vrs);
+    (void)fprintf(stderr,"%s: INFO clang version defined as __clang_version__ is %s\n",nco_prg_nm_get(),clg_vrs);
+    (void)fprintf(stderr,"%s: INFO clang version constructed as integer is %d\n",nco_prg_nm_get(),CLANG_LIB_VERSION);
   } /* endif dbg */
 #endif /* !__clang__ */
 #ifdef __INTEL_COMPILER
