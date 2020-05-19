@@ -1,3 +1,11 @@
+2020-05-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.3-alpha09 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha09: Rib Eye';git push
+	git tag -a 4.9.3-alpha09 -m 'ncap2 ess_rmt demo;ncks cmp vrs clang;';git push --tags
+
+	* Insert first GPU directives, modified from Dhruv Seth
+
 2020-05-17  Charlie Zender  <zender@uci.edu>
 
 	* Improve ncap2 planck.nco demo for ESS 138

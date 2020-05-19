@@ -4678,7 +4678,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #   pragma omp target teams distribute parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
 #  else
 #   pragma omp parallel for firstprivate(dmn_cnt_in,dmn_cnt_out,dmn_srt,dmn_id_in,dmn_id_out,tally,var_val_dbl_in,var_val_dbl_out,wgt_vld_out) private(dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dst_idx,has_mss_val,idx,idx_in,idx_out,idx_tbl,in_id,lnk_idx,lvl_idx,lvl_nbr,mss_val_dbl,rcd,thr_idx,trv,val_in_fst,val_out_fst,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr,var_val_crr) shared(col_src_adr,dmn_nbr_hrz_crd,flg_frc_nrm,frc_out,lnk_nbr,out_id,row_dst_adr,sgs_frc_nm,sgs_frc_in,sgs_frc_out,sgs_msk_nm,wgt_raw)
-#  endif /* !GCC > 9.0 */
+#  endif /* !GCC >= 9.0 */
 # endif /* !GCC < 4.9 */
 #endif /* !__INTEL_COMPILER */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
@@ -4764,11 +4764,17 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	   20190420: Remove languishing, unfinished intensive variable code */
 	  
 	/* This first block is for "normal" variables without sub-gridscale fractions */
+#if defined(GXX_WITH_OPENMP5_GPU_SUPPORT)
+# pragma omp target data map (to: row_dst_adr[0:lnk_nbr],var_val_dbl_in[0:var_sz_in],col_src_adr[0:lnk_nbr],wgt_raw[0:lnk_nbr]) map(tofrom: var_val_dbl_out[0:var_sz_out])
+#endif /* !GCC >= 9.0 */
 	if(!sgs_frc_out){
 	  /* Apply weights */
 	  if(!has_mss_val){
 	    if(lvl_nbr == 1){
 	      /* Weight single-level fields without missing values */
+#if defined(GXX_WITH_OPENMP5_GPU_SUPPORT)
+# pragma omp target teams distribute parallel for
+#endif /* !GCC >= 9.0 */
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 		var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 	    }else{
@@ -5817,7 +5823,7 @@ nco_sph_plg_area /* [fnc] Compute area of spherical polygon */
 	  ngl_ltr_c=ngl_a;
 	  ngl_plr=fabs(M_PI_2-lat_bnd_rdn[idx_c]);
 	}else{
-	  (void)fprintf(stdout,"%s: ERROR latitudes not equal in small circle section. Vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_ltr_a],lon_bnd[idx_ltr_a],lat_bnd[idx_ltr_b],lon_bnd[idx_ltr_b],lat_bnd[idx_ltr_c],lon_bnd[idx_ltr_c]);
+	  (void)fprintf(stdout,"%s: ERROR latitudes not equal in small circle section. Vertices A, B, C at (lat,lon) [dgr] = (%g, %g), (%g, %g), (%g, %g)\n",nco_prg_nm_get(),lat_bnd[idx_a],lon_bnd[idx_a],lat_bnd[idx_b],lon_bnd[idx_b],lat_bnd[idx_c],lon_bnd[idx_c]);
 	  abort();
 	} /* endif */
 	/* 20160918: Compute exact area of latitude triangle wedge */
