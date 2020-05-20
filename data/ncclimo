@@ -92,7 +92,7 @@ if [ -z "${DATA}" ]; then
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	compy* ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
-	cori* ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes all named nidNNNNN, 32|(96/128) cores|GB/node (knl/haswell) (login nodes 512 GB)
+	cori* ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes all named nidNNNNN, (32/68)|(96/128) cores|GB/node (knl/haswell) (login nodes 512 GB)
 	rhea* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
@@ -305,7 +305,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 2. Cobalt appends stdout/stderr to existing output files, if any, whereas PBS overwrites existing files
 # 3. Cobalt uses ${COBALT_NODEFILE} and (NA) whereas PBS (and PBSPro) use ${PBS_NODEFILE} and ${PBS_NUM_PPN}, respectively, and SLURM uses ${SLURM_NODELIST} and ${SLURM_CPUS_ON_NODE}, respectively
 # 4. SLURM automatically combines stdout and stderr, yet does not understand tilde (~ = home directory) expansion in error/output filenames
-# 5. After merger of Cori Phase 1 Haswell and Phase 2 KNL cabinets in ~2017, SLURM on Cori requires Quality-of-Service (QOS) argument, either -C haswell or -C knl
+# 5. After merger of Cori Phase 1 Haswell and Phase 2 KNL cabinets in ~2017, SLURM on Cori requires Quality-of-Service (QOS) argument, either -C haswell or -C knl or -C gpu
 # Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s; difference 5 requires -C argument on Cori only
 #   Blues a):  echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Cheyenne a) echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs

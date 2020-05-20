@@ -4764,17 +4764,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	   20190420: Remove languishing, unfinished intensive variable code */
 	  
 	/* This first block is for "normal" variables without sub-gridscale fractions */
-	//#if defined(GXX_WITH_OPENMP5_GPU_SUPPORT)
 # pragma omp target data map (to: row_dst_adr[0:lnk_nbr],var_val_dbl_in[0:var_sz_in],col_src_adr[0:lnk_nbr],wgt_raw[0:lnk_nbr]) map(tofrom: var_val_dbl_out[0:var_sz_out])
-	//#endif /* !GCC >= 9.0 */
 	if(!sgs_frc_out){
 	  /* Apply weights */
 	  if(!has_mss_val){
 	    if(lvl_nbr == 1){
 	      /* Weight single-level fields without missing values */
-	      //#if defined(GXX_WITH_OPENMP5_GPU_SUPPORT)
 # pragma omp target teams distribute parallel for
-	      //#endif /* !GCC >= 9.0 */
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 		var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 	    }else{

@@ -21991,10 +21991,10 @@ Also @samp{--units}.
 
 @html
 <a name="V"></a> <!-- http://nco.sf.net/nco.html#V -->
-<a name="var_val"></a> <!-- http://nco.sf.net/nco.html#var_val -->
+<a name="val_var"></a> <!-- http://nco.sf.net/nco.html#val_var -->
 @end html
 @cindex @code{-V}
-@cindex @code{--var_val}
+@cindex @code{--val_var}
 @cindex @code{--no_dmn_var_nm}
 @cindex @code{--no_nm_prn}
 @item -V
@@ -22433,7 +22433,7 @@ use the @samp{--no_blank} option.
 @cindex @code{-Q}
 @cindex @code{--quiet}
 @cindex @code{-V}
-@cindex @code{--var_val}
+@cindex @code{--val_var}
 @cindex @code{--no_dmn_var_nm}
 @cindex @code{--no_nm_prn}
 @command{ncks} prints in a verbose fashion by default and supplies a

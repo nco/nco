@@ -559,7 +559,7 @@ main(int argc,char **argv)
     {"threads",required_argument,0,'t'},
     {"omp_num_threads",required_argument,0,'t'},
     {"units",no_argument,0,'u'},
-    {"var_val",no_argument,0,'V'}, /* [flg] Print variable values only */
+    {"val_var",no_argument,0,'V'}, /* [flg] Print variable values only */
     {"variable",required_argument,0,'v'},
     {"auxiliary",required_argument,0,'X'},
     {"exclude",no_argument,0,'x'},
