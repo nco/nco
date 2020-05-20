@@ -95,7 +95,9 @@
 
 
 /* this value plays nice with edges on grids/ne120np4_pentagons.100310.nc */
-#define DIST_TOLERANCE (DBL_EPSILON)
+#define DIST_TOLERANCE (5.0e-15)
+
+#define CROSS_TOLERANCE (1.0e-14)
 
 /* convert Degrees to Radians */
 #define D2R(x)  ((x) * M_PI / 180.0)
