@@ -1,8 +1,17 @@
-2020-05-20  Charlie Zender  <zender@uci.edu>
+2020-05-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha09: Rib Eye';git push
 	git tag -a 4.9.3-alpha09 -m 'ncap2 ess_rmt demo;ncks cmp vrs clang;';git push --tags
+
+	* Demonstrate that regridding target data construct in regridding code
+	1) interferes with top-level OpenMP parallelization, 2) only writes data from one thread
+
+	* Demonstrate that clang autovectorizes simplest regridding loop
+
+	* Add timers to nco_rgr.c/h
+
+2020-05-20  Charlie Zender  <zender@uci.edu>
 
 	* ncks change --var_val to --val_var to avoid getop() abbreviation ambiguity with --var
 

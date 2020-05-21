@@ -4763,14 +4763,20 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	   Pass extensive variable list to NCO with, e.g., --xtn=TSurfStd_ct,...
 	   20190420: Remove languishing, unfinished intensive variable code */
 	  
+	clock_t tm_srt; /* [us] Microseconds at start */
+	clock_t tm_end; /* [us] Microseconds at end */
+	float tm_drn; /* [s] Seconds elapsed */
+	tm_srt=clock();
+ 
 	/* This first block is for "normal" variables without sub-gridscale fractions */
-# pragma omp target data map (to: row_dst_adr[0:lnk_nbr],var_val_dbl_in[0:var_sz_in],col_src_adr[0:lnk_nbr],wgt_raw[0:lnk_nbr]) map(tofrom: var_val_dbl_out[0:var_sz_out])
-	if(!sgs_frc_out){
+	//#pragma omp target data map (to: row_dst_adr[0:lnk_nbr],var_val_dbl_in[0:var_sz_in],col_src_adr[0:lnk_nbr],wgt_raw[0:lnk_nbr]) map(tofrom: var_val_dbl_out[0:var_sz_out])
+	  if(!sgs_frc_out){
 	  /* Apply weights */
 	  if(!has_mss_val){
 	    if(lvl_nbr == 1){
 	      /* Weight single-level fields without missing values */
-# pragma omp target teams distribute parallel for
+	      //#pragma omp target teams distribute parallel for
+	      //#pragma omp simd
 	      for(lnk_idx=0;lnk_idx<lnk_nbr;lnk_idx++)
 		var_val_dbl_out[row_dst_adr[lnk_idx]]+=var_val_dbl_in[col_src_adr[lnk_idx]]*wgt_raw[lnk_idx];
 	    }else{
@@ -4897,7 +4903,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    
 	  } /* !has_mss_val */
 	} /* !sgs_frc_out */
-	
+	  
 	/* Variables with sub-gridscale fractions require "double-weighting" and normalization */
 	if(sgs_frc_out){
 	  if(!strcmp(var_nm,sgs_frc_nm)){
@@ -4975,6 +4981,10 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    } /* !has_mss_val */
 	  } /* !sgs_msk_nm */
 	} /* !sgs_frc_out */
+
+	tm_end=clock();
+	tm_drn=(float)(tm_end-tm_srt)/CLOCKS_PER_SEC;
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: INFO Compute time for %s (thread %d/%d): %g s\n",nco_prg_nm_get(),trv.nm,thr_idx,omp_get_num_threads(),tm_drn);
 
 #pragma omp critical
 	{ /* begin OpenMP critical */
