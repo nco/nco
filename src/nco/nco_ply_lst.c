@@ -920,6 +920,8 @@ int *pl_cnt_vrl_ret){
 
         lret = nco_sph_process_pre(pl_out, in_sng, &bGenuine);
 
+        //if(bGenuine) in_sng[0]='\0';
+
         switch(lret)
         {
 
@@ -968,7 +970,7 @@ int *pl_cnt_vrl_ret){
 
 
         /* swap args around and try again */
-        if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
+        if(!pl_vrl &&   (  lret !=1 || bBadArea ) )
         //if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
         {
 
@@ -977,6 +979,8 @@ int *pl_cnt_vrl_ret){
           nco_sph_intersect_pre(pl_out, pl_lst_in[idx], out_sng);
           lret2 = nco_sph_process_pre(pl_lst_in[idx], out_sng, &bGenuine);
 
+
+         // if(bGenuine) out_sng[0]='\0';
 
           switch(lret2)
           {
