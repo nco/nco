@@ -416,7 +416,7 @@ int nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp
              * i.e NOT an edge or vertex intersection */
             //if (inflag != poly_vrl_unk || (codes[0] == '1' && codes[1] == '1'))
             if (inflag != poly_vrl_unk || (p_flg==1 && q_flg==1) )
-              inflag = (pqCross[1] == 1 ? poly_vrl_pin : pqCross[3] == 1 ? poly_vrl_qin : inflag);
+                inflag = (pqCross[1] == 1 ? poly_vrl_pin : pqCross[3] == 1 ? poly_vrl_qin : inflag);
 
 
             if (inflag != poly_vrl_unk) {
@@ -1245,7 +1245,7 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
     iret=4;
   else if ( idot > 1.0e-40)
   {
-    if(sqrt(nco_sph_dist(Icross,d)) < (DIST_TOLERANCE) )
+    if(sqrt(nco_sph_dist(Icross,d)) < ( DIST_TOLERANCE) )
       iret=3;
     else if( i_rad <cd_rad )
       iret=1;
@@ -1288,8 +1288,6 @@ nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0
   /* placeholder ? */
   double pt[NBR_SPH]={0.0,0.0,0.0,0.0,0.0};
 
-  double p_ds=0.0;
-  double q_ds=0.0;
   double Pcross[NBR_SPH];
   double Qcross[NBR_SPH];
 
@@ -1352,127 +1350,144 @@ nco_sph_seg_int_final(double *p0, double *p1, double *q0, double *q1, double *r0
   {
     double nx1;
     double nx2;
-
+    double p_ds=0.0;
+    double q_ds=0.0;
+    double p0_ds;
+    double p1_ds;
+    double q0_ds;
+    double q1_ds;
 
     // nx1=nco_sph_cross_sub(p0,p1, Pcross);
     // nx2=nco_sph_cross_sub(q0,q1, Qcross);
 
 
 
-    nx1=nco_sph_cross_chk(p0,p1, Pcross);
-    nx2=nco_sph_cross_chk(q0,q1, Qcross);
+    nx1 = nco_sph_cross_chk(p0, p1, Pcross);
+    nx2 = nco_sph_cross_chk(q0, q1, Qcross);
+
+    p0_ds = nco_sph_dot(p0, Qcross);
+    p1_ds = nco_sph_dot(p1, Qcross);
+
+    q0_ds = nco_sph_dot(q0, Pcross);
+    q1_ds = nco_sph_dot(q1, Pcross);
 
 
-    switch(*p_flg)
-    {
+    switch (*p_flg) {
       case 0:
-         codes[0]='0';
-         break;
-
-      /* intersection */
-      case 1:
-        p_ds=nco_sph_dot_nm(p0, Qcross);
-        if(fabs(p_ds)<DOT_TOLERANCE)
-          p_ds=-nco_sph_dot_nm(p1, Qcross);
-
-        if(p_ds<0.0) *p_flg=-1;
-        codes[0]='1';
-        break;
-
-       /* on or very near vertex p0 */
-      case 2:
-        p_ds=nco_sph_dot_nm(p1,Qcross);
-        if(p_ds<0) *p_flg=-2;
-        codes[0]='t';
-        break;
-
-        /* on or very near vertex p1 */
-      case 3:
-        p_ds=nco_sph_dot_nm(p0,Qcross);
-        if(p_ds<0.0) *p_flg=-3;
-        codes[0]='h';
-        break;
-
-      case 4:
-        p_ds=nco_sph_dot_nm(p1,Qcross);
-        if(p_ds<0.0) *p_flg=-4;
-        codes[0]='0';
-        break;
-
-      case 5:
-        p_ds=nco_sph_dot_nm(p0,Qcross);
-        if(p_ds<0.0)  *p_flg=-5;
-        codes[0]='0';
-        break;
-
-    }
-
-    if(p_ds==0.0)
-      *p_flg=0;
-
-
-
-    switch(*q_flg)
-    {
-      case 0:
-        codes[1]='0';
+        codes[0] = '0';
         break;
 
         /* intersection */
       case 1:
-        q_ds=nco_sph_dot_nm(q0, Pcross);
-        if(q_ds<0.0) *q_flg=-1;
-        codes[1]='1';
+        p_ds = p0_ds;
+        if (fabs(p0_ds) < DOT_TOLERANCE)
+          p_ds = -p1_ds;
+
+        if (p_ds < 0.0) *p_flg = -1;
+        codes[0] = '1';
         break;
 
-        /* on or very near vertex q0 */
+        /* on or very near vertex p0 */
       case 2:
-        q_ds=nco_sph_dot_nm(q1,Pcross);
-        if(q_ds<0) *q_flg=-2;
-        codes[1]='t';
+        //p_ds=nco_sph_dot_nm(p1,Qcross);
+        p_ds = p1_ds;
+        if (p_ds < 0) *p_flg = -2;
+        codes[0] = 't';
         break;
 
-        /* on or very near vertex q1 */
+        /* on or very near vertex p1 */
       case 3:
-        q_ds=nco_sph_dot_nm(q0,Pcross);
-        if(q_ds<0.0) *q_flg=-3;
-        codes[1]='h';
+        //p_ds=nco_sph_dot_nm(p0,Qcross);
+        p_ds = p0_ds;
+        if (p_ds < 0.0) *p_flg = -3;
+        codes[0] = 'h';
         break;
 
       case 4:
-        q_ds=nco_sph_dot_nm(q1,Pcross);
-        if(q_ds<0.0) *q_flg=-4;
-        codes[1]='0';
+        //p_ds=nco_sph_dot_nm(p1,Qcross);
+        p_ds = p1_ds;
+        if (fabs(p_ds) < DOT_TOLERANCE) p_ds = p0_ds;
+        if (p_ds < 0.0) *p_flg = -4;
+        codes[0] = '0';
         break;
 
       case 5:
-        q_ds=nco_sph_dot_nm(q0,Pcross);
-        //*q_flg=( q_ds <0.0 ? -5: 5 );
-        if(q_ds<0.0 ) *q_flg=-5;
+        //p_ds=nco_sph_dot_nm(p0,Qcross);
+        p_ds = p0_ds;
+        if (fabs(p_ds) < DOT_TOLERANCE) p_ds = p1_ds;
 
-        codes[1]='0';
+        if (p_ds < 0.0) *p_flg = -5;
+        codes[0] = '0';
         break;
 
     }
 
-    if(q_ds==0.0)
-      *q_flg=0;
+    if (p_ds == 0.0)
+      *p_flg = 0;
 
 
+    switch (*q_flg) {
+      case 0:
+        codes[1] = '0';
+        break;
+
+        /* intersection */
+      case 1:
+        //q_ds=nco_sph_dot_nm(q0, Pcross);
+        q_ds = q0_ds;
+        if (fabs(q_ds) < DOT_TOLERANCE) q_ds = -q1_ds;
+
+        if (q_ds < 0.0) *q_flg = -1;
+        codes[1] = '1';
+        break;
+
+        /* on or very near vertex q0 */
+      case 2:
+        //q_ds=nco_sph_dot_nm(q1,Pcross);
+        q_ds = q1_ds;
+        if (q_ds < 0) *q_flg = -2;
+        codes[1] = 't';
+        break;
+
+        /* on or very near vertex q1 */
+      case 3:
+        //q_ds=nco_sph_dot_nm(q0,Pcross);
+        q_ds = q0_ds;
+        if (q_ds < 0.0) *q_flg = -3;
+        codes[1] = 'h';
+        break;
+
+      case 4:
+        //q_ds=nco_sph_dot_nm(q1,Pcross);
+        q_ds = q1_ds;
+        if (fabs(q_ds) < DOT_TOLERANCE) q_ds = q0_ds;
+        if (q_ds < 0.0) *q_flg = -4;
+        codes[1] = '0';
+        break;
+
+      case 5:
+        //q_ds=nco_sph_dot_nm(q0,Pcross);
+        q_ds = q0_ds;
+        if (fabs(q_ds) < DOT_TOLERANCE) q_ds = q1_ds;
+        //*q_flg=( q_ds <0.0 ? -5: 5 );
+        if (q_ds < 0.0) *q_flg = -5;
+
+        codes[1] = '0';
+        break;
+
+    }
+
+    if (q_ds == 0.0)
+      *q_flg = 0;
 
 
-  }
-
-
-
-
-
-  if(DEBUG_SPH) {
+    if (DEBUG_SPH) {
       nco_sph_prn_pnt("nco_sph_seg_int_final(): pos point ", pcnd, 4, True);
-      (void)fprintf(stderr, "%s: codes=%s flg_p=%d flg_q=%d p_ds=%.15e q_ds=%.15e  \n", fnc_nm, codes, *p_flg, *q_flg, p_ds, q_ds);
+      (void) fprintf(stderr, "%s: codes=%s flg_p=%d flg_q=%d p_ds=%.15e q_ds=%.15e  \n", fnc_nm, codes, *p_flg, *q_flg,p_ds, q_ds);
+      (void) fprintf(stderr, "%s: p0_ds=%.15e p1_ds=%.15e q0_ds=%.15e q1_ds=%.15e\n", fnc_nm, p0_ds, p1_ds, q0_ds, q1_ds);
+    }
+
   }
-
-
 
   //nco_sph_mk_pqcross_int( p0, p1, Pcross, q0,  q1,  Qcross  , pq_cross_new, flg_p , flg_q );
 
