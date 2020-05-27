@@ -998,7 +998,8 @@ elif [ ${alg_typ} = 'fv2se_stt' ] || [ ${alg_typ} = 'highorder_fv2se' ] || [ ${a
     alg_opt='fv2se_stt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2se_alt' ] || [ ${alg_typ} = 'mono_fv2se' ] || [ ${alg_typ} = 'conservative_monotone_fv2se_alt' ]; then # alg_sng='mono'
-    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${np_se_nbr} --mono --volumetric"
+    # 20200525: Remove "--volumetric" from fv2se_mono per Mark Taylor modifying Confluence instructions
+    wgt_opt_tps="--in_type fv --in_np 1 --out_type cgll --out_np ${np_se_nbr} --mono"
     alg_opt='fv2se_alt'
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'fv2fv' ] || [ ${alg_typ} = 'rll2rll' ]; then # alg_sng='highorder'

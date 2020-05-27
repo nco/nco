@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.3-alpha09
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 12 May 2020
+@set update-date 25 May 2020
 @set update-month May 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -24100,11 +24100,11 @@ is employed.
 @item @code{se2fv_stt} (synonyms @code{highorder_se2fv}, @code{accurate_conservative_nonmonotone_se2fv}),
 Options: @samp{--in_type cgll --in_np 4 --out_type fv --correct_areas}
 @item @code{fv2se_stt} (synonyms @code{highorder_fv2se}, @code{accurate_conservative_nonmonotone_fv2se}),
-Options: @samp{--in_type fv --in_np 2 --out_type cgll --out_np 4 --volumetric}
+Options: @samp{--in_type fv --in_np 2 --out_type cgll --out_np 4}
 @item @code{se2fv_alt} (synonyms @code{intbilin_se2fv}, @code{accurate_monotone_nonconservative_se2fv}),
 Options: @samp{--in_type cgll --in_np 4 --out_type fv --mono3 --noconserve --correct_areas}
 @item @code{fv2se_alt} (synonyms @code{mono_fv2se}, @code{conservative_monotone_fv2se_alt}),
-Options: @samp{--in_type fv --in_np 1 --out_type cgll --out_np 4 --mono --volumetric}
+Options: @samp{--in_type fv --in_np 1 --out_type cgll --out_np 4 --mono}
 @item @code{se2se} (synonyms @code{cs2cs}, @code{conservative_monotone_se2se}),
 Options: @samp{--in_type cgll --in_np 4 --out_type cgll --out_np 4 --mono}
 @item @code{fv2fv} (synonyms @code{rll2rll}),
