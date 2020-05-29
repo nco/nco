@@ -1,3 +1,13 @@
+2020-05-29  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.3-alpha09 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha09: Rib Eye';git push
+ 	git tag -a 4.9.3-alpha09 -m 'ncap2 ess_rmt demos planck.nco;ncks cmp vrs clang;ncremap cxl --volumetric, default cell_area_nco, rgr_opt fix, experimental GPU offloads';git push --tags
+
+2020-05-29 Henry Butowsky  <henryb@hush.com>
+
+	* Set rgr->area_mth default to cell_area_nco
+
 2020-05-28  Charlie Zender  <zender@uci.edu>
 
 	* nco_rgr_wgt() add GPU offloading to 3D variable loops without	missing values
@@ -7,10 +17,6 @@
 	* Pass ${rgr_opt} (e.g., "--rgr edg_typ=smc") to NCO map-generation commands
 
 2020-05-25  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.9.3-alpha09 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.3-alpha09: Rib Eye';git push
-	git tag -a 4.9.3-alpha09 -m 'ncap2 ess_rmt demo;ncks cmp vrs clang;ncremap cxl --volumetric';git push --tags
 
 	* Update nco.texi with latest TR options
 
@@ -26,7 +32,7 @@
 
 2020-05-20  Charlie Zender  <zender@uci.edu>
 
-	* ncks change --var_val to --val_var to avoid getop() abbreviation ambiguity with --var
+	* ncks change --var_val to --val_var to avoid getopt() abbreviation ambiguity with --var
 
 2020-05-19  Charlie Zender  <zender@uci.edu>
 

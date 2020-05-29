@@ -276,7 +276,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->vrt_nm=NULL; /* [sng] Name of dimension to employ for vertices */
 
   /* Initialize key-value properties used in grid and weight generation */
-  rgr->area_mth=2; /* [enm] Method to compute grid cell area */
+  rgr->area_mth=1; /* [enm] Method to compute grid cell area */
   rgr->edg_typ=nco_edg_nil; /* [enm] Edge/Arc-type for triangle edges */
   rgr->fl_grd=NULL; /* [sng] Name of SCRIP grid file to create */
   rgr->fl_hnt_dst=NULL; /* [sng] ERWG hint destination */
