@@ -696,8 +696,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	  break;
 	default: nco_dfl_case_nc_type_err(); break;
 	} /* !bs_typ switch */
-	if(CDL) (void)fprintf(fp_out,"}%s",(lmn != att_szm1) ? spr_sng : "")
-;	if(JSN) (void)fprintf(fp_out,"]%s",(lmn != att_szm1) ? spr_sng : "");
+	if(CDL) (void)fprintf(fp_out,"}%s",(lmn != att_szm1) ? spr_sng : "");
+	if(JSN) (void)fprintf(fp_out,"]%s",(lmn != att_szm1) ? spr_sng : "");
 	/* if(XML && lmn != att_szm1 ) (void)fprintf(fp_out," "); */
       } /* !lmn */
       rcd=nco_free_vlens(att_sz,att[idx].val.vlnp);

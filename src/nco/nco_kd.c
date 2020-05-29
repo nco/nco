@@ -2625,7 +2625,6 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem)
 {
   /* count duplicates for dbg */
-  int idx;
   int ret_cnt_nw=0;
   int ret_cnt=0;
   int ret_cnt1=0;
@@ -2654,7 +2653,7 @@ int kd_nearest_intersect(KDTree** rTree, int nbr_tr, kd_box Xq, omp_mem_sct *omp
   int nw_lcl_cnt=0;
   int ret_cnt=0;
   
-   const char fnc_nm[]="kd_nearest_intersect():";
+  //const char fnc_nm[]="kd_nearest_intersect()";
 
    //(void)fprintf(stderr,"%s:%s: just entered function\n", nco_prg_nm_get(),fnc_nm );
     /*
@@ -2666,16 +2665,19 @@ int kd_nearest_intersect(KDTree** rTree, int nbr_tr, kd_box Xq, omp_mem_sct *omp
    //node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
 
    for(idx=0;idx < nbr_tr;idx++)
-    (void)kd_neighbour_intersect3(rTree[idx]->tree,0,Xq, omp_mem,0,0);
+     (void)kd_neighbour_intersect3(rTree[idx]->tree,0,Xq, omp_mem,0,0);
 
     /*
     ret_cnt=( list_srt - omp_mem->kd_list)+ omp_mem->kd_cnt;
     if(ret_cnt > 1 && bSort && kd_priority_list_sort(omp_mem->kd_list, m, ret_cnt, &nw_lcl_cnt)) ret_cnt=nw_lcl_cnt;
     */
     ret_cnt=omp_mem->kd_cnt;
-    if(omp_mem->kd_cnt && bSort && kd_priority_list_sort(omp_mem->kd_list,  omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE, omp_mem->kd_cnt  , &nw_lcl_cnt)){
-    	ret_cnt=nw_lcl_cnt;
-    	omp_mem->kd_cnt=nw_lcl_cnt;
+    if(omp_mem->kd_cnt &&
+       bSort &&
+       kd_priority_list_sort(omp_mem->kd_list,omp_mem->kd_blk_nbr*NCO_VRL_BLOCKSIZE,omp_mem->kd_cnt,&nw_lcl_cnt)
+       ){
+      ret_cnt=nw_lcl_cnt;
+      omp_mem->kd_cnt=nw_lcl_cnt;
     }
 
     if(0 && nco_dbg_lvl_get() >= nco_dbg_dev)

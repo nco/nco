@@ -577,7 +577,7 @@ int *pl_cnt_vrl_ret){
   int max_nbr_vrl=1000;
   int pl_cnt_vrl=0;
 
-  nco_bool bSort=True;
+  //nco_bool bSort=True;
 
   const char fnc_nm[]="nco_poly_mk_vrl()";
 
@@ -614,7 +614,6 @@ int *pl_cnt_vrl_ret){
     /* find overlapping polygons */
 
     // cnt_vrl=kd_nearest_intersect(rtree, size, max_nbr_vrl,list,bSort );
-
 
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
 
@@ -684,7 +683,6 @@ int *pl_cnt_vrl_ret){
 
 }
 
-
 poly_sct **
 nco_poly_lst_mk_vrl_sph(  /* create overlap mesh  for sph polygons */
 poly_sct **pl_lst_in,
@@ -693,12 +691,11 @@ nco_grd_lon_typ_enm grd_lon_typ,
 KDTree **tree,
 int nbr_tr,
 int *pl_cnt_vrl_ret){
+  /* just duplicate output list to overlap */
+  const char fnc_nm[]="nco_poly_lst_mk_vrl_sph()";
 
-
-/* just duplicate output list to overlap */
   nco_bool bDirtyRats=False;
   nco_bool bSort=True;
-
 
   int max_nbr_vrl=(NCO_VRL_BLOCKSIZE);
   int pl_cnt_vrl=0;
@@ -715,12 +712,6 @@ int *pl_cnt_vrl_ret){
 
   poly_typ_enm pl_typ;
   size_t idx;
-
-  /* used in realloc */
-  size_t nbr_vrl_blocks=0;
-
-
-  const char fnc_nm[]="nco_poly_lst_mk_vrl_sph()";
 
   int lcl_thr_nbr;
   omp_mem_sct *mem_lst=NULL_CEWI;
@@ -1258,7 +1249,6 @@ int pl_cnt_vrl)
   int idx;
   int jdx;
 
-  double sum=0.0;
   double epsilon=1.0e-8;
 
   const char fnc_nm[]="nco_poly_lst_chk()";
@@ -1297,10 +1287,6 @@ int pl_cnt_vrl)
   for(idx=0;idx<pl_cnt_out;idx++)
     if( fabs(  pl_lst_out[idx]->area) > epsilon)
       fprintf(stderr, "src_id=%d area=%.10f\n", pl_lst_out[idx]->src_id, pl_lst_out[idx]->area );
-
-
-
-
 
    return;
 }

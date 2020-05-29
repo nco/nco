@@ -2192,7 +2192,7 @@ nco_char_att_put /* [fnc] Get a character string attribute from an open file */
   char *att_nm; /* [sng] Attribute name */
   char *att_val; /* [sng] Attribute value */
 
-  int rcd;
+  int rcd=NC_NOERR;
 
   aed_sct aed_mtd;
 
