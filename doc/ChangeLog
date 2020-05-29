@@ -1,3 +1,7 @@
+2020-05-29 Henry Butowsky  <henryb@hush.com>
+
+	* set rgr->area_mth default to cell_area_nco
+
 2020-05-27  Charlie Zender  <zender@uci.edu>
 
 	* Pass ${rgr_opt} (e.g., "--rgr edg_typ=smc") to NCO map-generation commands
