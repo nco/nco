@@ -151,7 +151,8 @@ and
 <h2>Recent Releases &amp; Milestones</h2>
 
 <ul>
-<li>2020 Apr&nbsp;??: 4.9.3 <i>In Progress...</i>
+<li>2020 Jul&nbsp;??: 4.9.4 <i>In Progress...</i>
+<li>2020 May&nbsp;31: 4.9.3 Sundry features/fixes
 <li>2020 Feb&nbsp;14: 4.9.2 BSD License
 <li>2019 Dec&nbsp;19: 4.9.1 Sundry features/fixes
 <li>2019 Dec&nbsp;04: 4.9.0 ncremap lollapalooza
@@ -536,13 +537,19 @@ netCDF4 user-defined types support;
 <tt>ncks --xtn</tt> better extensive variable treatment?;
 <tt>ncclimo -v</tt> splitter support for regular expressions?;
 <tt>ncremap</tt> support <tt>mbtempest</tt>?;</li>
-<li><b>NCO 4.9.4</b>: (<i>Future</i>)
+<li><b>NCO 4.9.5</b>: (<i>Future</i>)
 <tt>ncks --bsa</tt> Byte-swap algoritm;
-<tt>ncremap</tt> faster weight-generation;
+<tt>ncremap</tt> GPU-offloading;
+<tt>ncremap</tt> TR quadrature algorithm;
 <tt>ncremap</tt> small-circle weights;</li>
-<li><b>NCO 4.9.3</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<li><b>NCO 4.9.4</b>: (<i>In Progress, features in-progress or complete include</i>) 
+<tt>ncclimo</tt> improve high-frequency splitting;
+<tt>ncks, ncremap</tt> regridding vectorization;
+<tt>ncremap</tt> Improved PG2 grid generation;
+<li><b>NCO 4.9.3</b>: (<i>Current Stable Release</i>)
 <tt>ncks --frac_b_fix</tt> map-file correction;
-<tt>ncremap --correct_areas</tt> for TR FV destination maps;</li>
+<tt>ncremap --correct_areas</tt> for TR FV destination maps;
+<tt>ncremap</tt> parallelize K-D tree loading;</li>
 <li><b>NCO 4.9.2</b>: (<i>Current Stable Release</i>)
 <tt>ncks --chk_map</tt> improvements;
 <tt>ncclimo/ncremap HDF5_USE_FILE_LOCKING='FALSE'</tt>;

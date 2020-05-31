@@ -6,7 +6,6 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-
 Version 4.9.3 contains many regridding fixes and features: 
 This version updates adds robustness to the NCO weight-generator
 for PG2 grids, updates default options for TempestRemap, implements
@@ -34,7 +33,7 @@ A. ncatted prints additional diagnostics when referenced attributes
    are not found. 
    http://nco.sf.net/nco.html#ncatted
 
-B.  ncclimo adds a new clm_md='hf' type for splitting high-frequency 
+B. ncclimo adds a new clm_md='hf' type for splitting high-frequency 
    (hgh_frq) datasets. Currently these datasets must be daily means.
    http://nco.sf.net/nco.html#ncclimo
    
@@ -110,8 +109,8 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.9.3 built/tested under
-   MacOS 10.15.2 with netCDF 4.7.3 on HDF5 1.10.2 and with
-   Linux with netCDF 4.7.4-development (20200102) on HDF5 1.8.19.
+   MacOS 10.15.5 with netCDF 4.7.4 on HDF5 1.10.2 and with
+   Linux with netCDF 4.8.0-development (2020501) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments
