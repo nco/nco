@@ -9,6 +9,7 @@
 
 # Quickie test copies:
 # scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
+# scp ~/nco/bld/Makefile grele.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile gplogin2.ps.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile skyglow.ess.uci.edu:nco/bld
 
@@ -430,6 +431,49 @@ endif # endif ESMF_ROOT
 endif # endif ESMF_LIB
 endif # end if ESMF
 
+ifeq (${GSL},Y)
+# Build GSL-enabled NCO 
+# Place GSL block after DAP blocks for both to work together
+ifdef GSL_ROOT
+ GSL_CONFIG := ${GSL_ROOT}/bin/gsl-config
+else
+ GSL_CONFIG := gsl-config
+endif
+ifdef GSL_INC
+ GSL_INC_FLG := -I${GSL_INC}
+else
+ GSL_INC_FLG := $(shell ${GSL_CONFIG} --cflags)
+endif # endif GSL_INC
+ifdef GSL_LIB
+ GSL_LIB_FLG := -L${GSL_LIB} -lgsl
+else
+ GSL_LIB_FLG := $(shell ${GSL_CONFIG} --libs)
+endif # endif GSL_LIB
+ifndef GSL_MAJOR_VERSION
+# 20161118: Following line is always accurate
+  GSL_MAJOR_VERSION := $(shell ${GSL_CONFIG} --version | cut -c 1 )
+endif # endif GSL_MAJOR_VERSION
+ifndef GSL_MINOR_VERSION
+# gsl-config --version: 1.16 (old GSL versioning)
+# gsl-config --version: 2.2.1 (new GSL versioning)
+# GSL_MINOR_VERSION := $(shell ${GSL_CONFIG} --version )
+  ifeq (${GSL_MAJOR_VERSION},2)
+   GSL_MINOR_VERSION := $(shell ${GSL_CONFIG} --version | cut -c 3 )
+   GSL_PATCH_VERSION := $(shell ${GSL_CONFIG} --version | cut -c 5 )
+  else # !GSL_MAJOR_VERSION
+   GSL_MINOR_VERSION := $(shell ${GSL_CONFIG} --version | sed s/^[1-9]\.// )
+   GSL_PATCH_VERSION := 0
+  endif # !GSL_MAJOR_VERSION
+  ifeq (${GSL_MINOR_VERSION},${null})
+   GSL_MINOR_VERSION := 4
+   GSL_PATCH_VERSION := 0
+  endif # end if GSL_MINOR_VERSION
+ endif # endif GSL_PATCH_VERSION
+ ifndef GSL_PATCH_VERSION
+   GSL_PATCH_VERSION := 0
+ endif # endif GSL_PATCH_VERSION
+endif # end if GSL
+
 ifeq (${SZ},Y)
 # 20150515: -lsz needed (at least by icc) on rhea
 ifdef SZ_LIB
@@ -470,8 +514,8 @@ ifdef LIB_NCAR
  NC_LDFLAGS := ${LIB_NCAR} ${NC_LDFLAGS}
 endif
 
-OTHER_CFLAGS :=  ${ESMF_INC_FLG} ${NC_CFLAGS} ${MPI_CFLAGS} ${UDUNITS_INC_FLG}
-OTHER_LDFLAGS := ${NCO_LDFLAGS} ${ESMF_LIB_FLG} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${SZ_LIB_FLG} ${UDUNITS_LIB_FLG}
+OTHER_CFLAGS :=  ${ESMF_INC_FLG} ${NC_CFLAGS} ${MPI_CFLAGS} ${GSL_INC_FLG} ${UDUNITS_INC_FLG}
+OTHER_LDFLAGS := ${NCO_LDFLAGS} ${ESMF_LIB_FLG} ${NC_LDFLAGS} ${MPI_LDFLAGS} ${GSL_LIB_FLG} ${SZ_LIB_FLG} ${UDUNITS_LIB_FLG}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=

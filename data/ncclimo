@@ -296,7 +296,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cheyenne: qsub -I -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
 #   Compy:  salloc  -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo
 #   Cooley: qsub -I -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname=ncclimo
-#   Cori:   salloc  -A acme -C knl --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
+#   Cori:   salloc  -A e3sm -C knl --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
 #   Oldrhea:qsub -I -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
 #   Rhea:   salloc  -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo # Bigmem: --partition=gpu
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs|slurm] b) qsub ncclimo.[cobalt|pbs|slurm]
@@ -322,7 +322,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Cooley b): qsub -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname ncclimo --error ~/ncclimo.err --output ~/ncclimo.out --notify zender@uci.edu ~/ncclimo.cobalt
-#   Cori b): sbatch -A acme -C haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
+#   Cori b): sbatch -A e3sm -C haswell --nodes=12 --time=00:30:00 --partition=debug --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 #   Oldrhea b):qsub -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Rhea b): sbatch -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
 # NB: stdout/stderr files returned from batch jobs are read-protected, need 'chmod 644 ~/ncclimo.out' afterwards
@@ -595,7 +595,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "cheyen: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
     printf "compy : salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
-    printf "cori  : salloc  -A acme -C knl --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
+    printf "cori  : salloc  -A e3sm -C knl --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
     printf "rhea  : salloc  -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "rhea  : salloc  -A CLI115 --nodes=1 --time=00:30:00 --partition=gpu --job-name=ncclimo # Bigmem\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
