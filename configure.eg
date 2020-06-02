@@ -294,7 +294,7 @@ make install
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in system directories with CMake:
 # Generic when netCDF is in /usr (Ubuntu glace, Fedora skyglow)
 # Personal recipe last modified: 20170814
-# Personal recipe last used successfully: 20171218
+# Personal recipe last used successfully: 20200601
 cd ~/nco/cmake
 cmake .. -DCMAKE_INSTALL_PREFIX=/usr/local
 make
@@ -315,7 +315,7 @@ make install
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20180912
-# Personal recipe last used successfully: 20190511
+# Personal recipe last used successfully: 20200601
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
@@ -378,7 +378,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: 216373 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 module load nco/4.7.4 # 20180417
 # Personal recipe last modified: 20190813
-# Personal recipe last used successfully: 20190813
+# Personal recipe last used successfully: 20200601
 # Personal recipe last failed: 20190812 (antlr needed GCC 9.1.0 recompile)
 # Cheyenne GNU:
 module purge
@@ -399,7 +399,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket: 20190525 ICS-4099 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
 # Personal recipe last modified: 20200114
-# Personal recipe last used successfully: 20200114
+# Personal recipe last used successfully: 20200601
 # 20190526: DAP functionality is present in libnetcdf but missing in my NCO because configure does not find libcurl although it is definitely in /lib64/libcurl.so.*
 # 20190806: Must load modules prior to (re-)building otherwise system GCC 4.8.5 C++ compiler will not link to g++ 8.1.0 Antlr library
 module purge
@@ -438,7 +438,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: module load nco/4.7.4 # 20180430 (without ncap2)
 # Personal recipe last modified: 20190801 (converted from intel to gnu)
-# Personal recipe last used successfully: 20191108 (currently not linking ncap2 because needs -L${HOME}/lib_cori to find -lantlr. Moreover, ldd cannot find system libraries.)
+# Personal recipe last used successfully: 20200601 (currently not linking ncap2 because needs -L${HOME}/lib_cori to find -lantlr. Moreover, ldd cannot find system libraries.)
 module load gcc
 #module load udunits
 export GNU_TRP=`~/nco/autobld/config.guess`
@@ -519,7 +519,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf/4.6.1 nco/4.7.4 # 20180423
 # Personal recipe last modified: 20190828
-# Personal recipe last used successfully: 20200307 (except ncgen does not link)
+# Personal recipe last used successfully: 20200601 (except ncgen does not link)
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -851,7 +851,14 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
-# gcc/g++ Zender uses this to debug NCO with custom-install netCDF (and ESMF) binaries in /usr/local (givre, roulee, grele)
+# gcc/g++ Zender uses this to debug NCO with custom-install netCDF (and ESMF) binaries in /usr/local (grele)
+# Personal recipe last modified: 20200601
+# Personal recipe last used successfully: 20200601
+# cd ~/nco/bld;make GSL=Y OMP=Y OPTS=D UDUNITS=Y allinone
+
+# gcc/g++ Zender uses this to debug NCO with custom-install netCDF (and ESMF) binaries in /usr/local (givre, roulee)
+# Personal recipe last modified: 20190828
+# Personal recipe last used successfully: 
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CXX='g++' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1

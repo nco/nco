@@ -1982,10 +1982,11 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
   /* Purpose: Compute frac_a as area_b-weighted column sums of the weight matrix S normalized by area_a */
 
   char fnc_nm[]="nco_map_frac_a_clc()";
-  size_t idx;
-  size_t sz;
   int idx_row;
   int idx_col;
+  size_t cnt_zro; /* [nbr] Number of valid areas in Grid A */
+  size_t idx;
+  size_t sz;
 
   (void)cast_void_nctype(NC_DOUBLE,&(var_S->val));
   (void)cast_void_nctype(NC_INT,&(var_row->val));
@@ -2009,11 +2010,19 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
   /* Sum of area_b-weighted weights should equal area_a (for complete overlap)
      Normalize result by area_a to create a metric whose ideal value is 1.0 */
   sz=var_frac_a->sz;
-  for(idx=0;idx<sz;idx++){
-    if(var_area_a->val.dp[idx] != 0.0) var_frac_a->val.dp[idx]/=var_area_a->val.dp[idx]; else
-      (void)fprintf(stdout,"WARNING area_a = %g for grid A cell %lu: Unable to normalize area_b-weighted column sum to compute frac_a for this gridcell\n",var_area_a->val.dp[idx],idx+1UL);
-  } /* !idx */
+  cnt_zro=0L;
+  for(idx=0;idx<sz;idx++)
+    if(var_area_a->val.dp[idx] == 0.0) cnt_zro++;
 
+  if(cnt_zro == sz){
+    (void)fprintf(stdout,"INFO area_a = 0.0 or is undefined for all cells in Grid A. This is legal (e.g., for bilinear maps) though it prevents computing the frac_a statistic. Instead, frac_a will be reported as 0.0 for all cells. These frac_a statistics may be safely ignored.\n");
+  }else{
+    for(idx=0;idx<sz;idx++){
+      if(var_area_a->val.dp[idx] != 0.0) var_frac_a->val.dp[idx]/=var_area_a->val.dp[idx]; else
+	(void)fprintf(stdout,"WARNING area_a = %g for grid A cell %lu: Unable to normalize area_b-weighted column sum to compute frac_a for this gridcell\n",var_area_a->val.dp[idx],idx+1UL);
+    } /* !idx */
+  }  /* !cnt_zro */
+    
   (void)cast_nctype_void(NC_DOUBLE,&(var_S->val));
   (void)cast_nctype_void(NC_INT,&(var_row->val));
   (void)cast_nctype_void(NC_INT,&(var_col->val));
@@ -2140,7 +2149,7 @@ nco_map_chk /* Map-file evaluation */
       if(val[idx] == 0.0) break;
     if(idx < sz) area_wgt_a=False;
     if(idx < sz) has_area_a=False;
-    if(idx < sz) fprintf(stdout,"WARNING area_a = %g for grid A cell [%lu,%+g,%+g] (and possibly others). Empty areas may corrupt diagnostics.\n",val[idx],idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
+    if(idx < sz) fprintf(stdout,"WARNING area_a = %g for grid A cell [%lu,%+g,%+g] (and possibly others). Empty areas are legal (e.g., for bilinear maps) yet may corrupt some diagnostics.\n",val[idx],idx+1UL,var_yc_a->val.dp[idx],var_xc_a->val.dp[idx]);
   } /* !var_area_a */
   if(var_area_b){
     has_area_b=True;
@@ -2150,7 +2159,7 @@ nco_map_chk /* Map-file evaluation */
       if(val[idx] == 0.0) break;
     if(idx < sz) area_wgt_b=False;
     if(idx < sz) has_area_b=False;
-    if(idx < sz) fprintf(stdout,"WARNING area_b = %g for grid B cell [%lu,%+g,%+g] (and possibly others). Empty areas may corrupt diagnostics.\n",val[idx],idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
+    if(idx < sz) fprintf(stdout,"WARNING area_b = %g for grid B cell [%lu,%+g,%+g] (and possibly others). Empty areas are legal (e.g., for bilinear maps) yet may corrupt diagnostics.\n",val[idx],idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
   } /* !var_area_b */
   if(var_frac_a){
     tally=0L;
@@ -2334,7 +2343,14 @@ nco_map_chk /* Map-file evaluation */
     } /* !has_frac_a */
     
     const double eps_max_wrn=1.0e-1; /* [frc] Maximum error in column-sum/row-sums before WARNING is printed */
-    if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
+    size_t cnt_zro; /* [nbr] Number of valid areas in Grid A */
+    sz=var_frac_a->sz;
+    cnt_zro=0L;
+    for(idx=0;idx<sz;idx++)
+      if(var_area_a->val.dp[idx] == 0.0) cnt_zro++;
+
+    if(cnt_zro != sz) /* Ignore frac_a values when area_a is all invalid or zero */
+      if(fabs(frac_max_cmp-1.0) > eps_max_wrn || (grid_b_tiles_sphere && (fabs(frac_min_cmp-1.0) > eps_max_wrn))) fprintf(stdout,"\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\tDanger, Will Robinson! max(frac_a) or min(frac_a) error exceeds %0.1e\n\tRegridding with these embarrassing weights will produce funny results\n\tSuggest re-generating weights with a better algorithm/weight-generator\n\tHave both input grid-files been validated? If not, one might be barmy\nWARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING\n\n",eps_max_wrn);
       
     if(nco_dbg_lvl_get() >= nco_dbg_std){
       sz=var_frac_a->sz;

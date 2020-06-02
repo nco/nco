@@ -1,3 +1,11 @@
+2020-06-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.4-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha01: Calcification';git push
+ 	git tag -a 4.9.4-alpha01 -m 'Functionally identical to 4.9.3';git push --tags
+
+	* Do not warn about frac_a when area_a is not provided or is all zero (e.g., bilinear maps)
+
 2020-05-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.3 release procedure:
