@@ -6385,6 +6385,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   nco_bool FORCE_OVERWRITE=True; /* Option O */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   nco_bool flg_grd_1D=False;
   nco_bool flg_grd_2D=False;
@@ -6851,7 +6853,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   } /* endif dbg */
 
   /* Open grid file */
-  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
   rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_id_grd_crn);
@@ -7004,7 +7006,7 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
     } /* !flg_grd_2D */
     
     /* Open grid file */
-    fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
     
     /* Define dimensions */
     if(flg_grd_crv){
@@ -7339,6 +7341,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   nco_bool flg_1D_psd_rct_bnd=False; /* [flg] Unstructured input grid with pseudo-rectangular bounds */
@@ -9104,7 +9108,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* endif dbg */
 
   /* Open grid file */
-  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
   /* 20151230 ERWG appears to require presence of corner arrays in grid file even when they are not used (e.g., bilinear)
@@ -9445,7 +9449,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(fc_nd[idx+3L] != mss_val_int_out) fcy[fc_idx]=0.25*(ndy[fc_nd[idx+0L]]+ndy[fc_nd[idx+1L]]+ndy[fc_nd[idx+2L]]+ndy[fc_nd[idx+3L]]); else fcy[fc_idx]=0.33*(ndy[fc_nd[idx+0L]]+ndy[fc_nd[idx+1L]]+ndy[fc_nd[idx+2L]]);
     } /* !fc_idx */
 
-    fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
     rcd=nco_def_dim(out_id,dg_dmn_nm,dg_nbr,&dmn_id_dg);
     rcd=nco_def_dim(out_id,fc_dmn_nm,fc_nbr,&dmn_id_fc);

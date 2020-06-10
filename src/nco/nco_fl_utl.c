@@ -113,12 +113,14 @@ nco_fl_dmm_mk /* Create dummy file */
   nco_bool FORCE_OVERWRITE=True; /* Option O */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
 
   /* Open dummy file */
-  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
   rcd=nco_def_dim(out_id,"dummy",1L,&dmn_id);
   if(rcd != NC_NOERR){
@@ -1681,8 +1683,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
- const int RAM_CREATE, /* I [flg] Create file in RAM */
- const int RAM_OPEN, /* I [flg] Open (netCDF3) file(s) in RAM */
+ const nco_bool RAM_CREATE, /* I [flg] Create file in RAM */
+ const nco_bool RAM_OPEN, /* I [flg] Open (netCDF3) file(s) in RAM */
+ const nco_bool SHARE_CREATE, /* I [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+ const nco_bool SHARE_OPEN, /* I [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
  const int WRT_TMP_FL, /* I [flg] Write output to temporary file */
  int * const out_id) /* O [id] File ID */
 {

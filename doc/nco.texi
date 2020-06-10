@@ -35,11 +35,11 @@ C-c C-u C-e	texitnfo-every-node-update
 Multiple files:
 M-x texinfo-multiple-files-update
 
-Usage: 
+Usage:
 export TEX='tex --src-specials'
 cd ~/nco/doc;texi2dvi nco.texi;makeinfo --html --ifinfo --no-split --output=nco.html nco.texi;makeinfo nco.texi;dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --ifinfo --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:Sites/nco;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../README ../data/ncap.in ../data/ncap2.in zender,nco@web.sf.net:/home/project-web/nco/htdocs;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco_rfr_crd.pdf ../README ../data/ncap.in ../data/ncap2.in dust.ess.uci.edu:Sites/nco;cd -
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha01
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 31 May 2020
-@set update-month May 2020
+@set update-date 9 June 2020
+@set update-month June 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -2119,6 +2119,7 @@ units.
 
 @html
 <a name="lrg"></a> <!-- http://nco.sf.net/nco.html#lrg -->
+<a name="input_files"></a> <!-- http://nco.sf.net/nco.html#input_files -->
 @end html
 @node Large Numbers of Files, Large Datasets, Statistics vs. Concatenation, Strategies
 @section Large Numbers of Files
@@ -21739,6 +21740,7 @@ where @code{VAs} and @code{GAs} denote variable and group/global
 attributes, respectively. 
 
 @html
+<a name="-m"></a> <!-- http://nco.sf.net/nco.html#-m -->
 <a name="m"></a> <!-- http://nco.sf.net/nco.html#m -->
 <a name="mtd"></a> <!-- http://nco.sf.net/nco.html#mtd -->
 <a name="metadata"></a> <!-- http://nco.sf.net/nco.html#metadata -->
@@ -27269,7 +27271,6 @@ is given above (@pxref{Operation Types}).
 @html
 <a name="mask"></a> <!-- http://nco.sf.net/nco.html#mask -->
 <a name="msk"></a> <!-- http://nco.sf.net/nco.html#msk -->
-<a name="-m"></a> <!-- http://nco.sf.net/nco.html#-m -->
 @end html
 @node Mask condition, Normalization and Integration, ncwa netCDF Weighted Averager, ncwa netCDF Weighted Averager
 @subsection Mask condition

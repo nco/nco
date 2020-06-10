@@ -282,6 +282,8 @@ main(int argc,char **argv)
   nco_bool RETAIN_ALL_DIMS=False; /* [flg] Retain all dimensions */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_area_wgt=False; /* [flg] Area-weight map-file statistics */
@@ -386,10 +388,13 @@ main(int argc,char **argv)
     {"retain_all_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
     {"orphan_dimensions",no_argument,0,0}, /* [flg] Retain all dimensions */
     {"rph_dmn",no_argument,0,0}, /* [flg] Retain all dimensions */
-    {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"ram_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
     {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
-    {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"diskless_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
+    {"share_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) with unbuffered I/O */
+    {"create_share",no_argument,0,0}, /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
+    {"open_share",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) with unbuffered I/O */
     {"secret",no_argument,0,0},
     {"shh",no_argument,0,0},
     {"srm",no_argument,0,0}, /* [flg] Print ncStream */
@@ -752,8 +757,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"ntm") || !strcmp(opt_crr,"nonatomic") || !strcmp(opt_crr,"udt") || !strcmp(opt_crr,"user_defined_types")) PRN_UDT=True; /* [flg] Print non-atomic variables */
       if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")) ppc_arg[ppc_nbr++]=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"rad") || !strcmp(opt_crr,"retain_all_dimensions") || !strcmp(opt_crr,"orphan_dimensions") || !strcmp(opt_crr,"rph_dmn")) RETAIN_ALL_DIMS=True;
-      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Open (netCDF3) file(s) in RAM */
-      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open file in RAM */
+      if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"create_share")) SHARE_CREATE=True; /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
+      if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"open_share") || !strcmp(opt_crr,"diskless_all")) SHARE_OPEN=True; /* [flg] Open (netCDF3) file(s) with unbuffered I/O */
       if(!strcmp(opt_crr,"area_wgt") || !strcmp(opt_crr,"area_weight")){
 	flg_area_wgt=True;
 	CHK_MAP=True;
@@ -1185,7 +1192,7 @@ main(int argc,char **argv)
       rgr_nfo->fl_out_fmt=fl_out_fmt;
       rgr_nfo->dfl_lvl=dfl_lvl;
       rgr_nfo->hdr_pad=hdr_pad;
-      rgr_nfo->fl_out_tmp=nco_fl_out_open(rgr_nfo->fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+      rgr_nfo->fl_out_tmp=nco_fl_out_open(rgr_nfo->fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
       if(EXTRACT_CLL_MSR) rgr_nfo->flg_area_out=True; else rgr_nfo->flg_area_out=False; /* [flg] Add area to output */
 
       /* Copy Global Metadata */
@@ -1220,7 +1227,7 @@ main(int argc,char **argv)
       (void)nco_fl_fmt_vet(fl_out_fmt,cnk_nbr,dfl_lvl);
       
       /* Open output file */
-      fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+      fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
     
       /* Initialize chunking from user-specified inputs */
       if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_csh_byt,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);

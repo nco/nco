@@ -1,3 +1,9 @@
+2020-06-09  Charlie Zender  <zender@uci.edu>
+
+	* Implement getopt(), initialization, and argument passing for for SHARE_CREATE/SHARE_OPEN
+
+	* Fix comments for RAM_CREATE/RAM_OPEN
+
 2020-06-02  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha01 release procedure:

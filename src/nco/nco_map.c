@@ -94,7 +94,10 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   nco_bool FL_RTR_RMT_LCN_DST;
   nco_bool FL_RTR_RMT_LCN_SRC;
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
+  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
 
   nco_mpf_sct mpf;
@@ -472,7 +475,6 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=True; /* Option O */
-  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
 
   size_t wgt_nbr=1L; /* [nbr] Number of weights */
@@ -519,7 +521,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Defining mapfile in format %s with n_s = %li, n_a = %li, n_b = %li. Mean number of links per destination cell = n_s/n_b = %li/%li = %g. Mean number of links per geometric mean src/dst cell = n_s/sqrt(n_a*n_b) = %li/sqrt(%li*%li) = %g. RAM size of weight variable n_s is sizeof(double)*n_s = 8*%li = %g MB. RAM sizes of vertex variables x/y_va are sizeof(double)*n_a*nv_a = 8*%li*%li = %g MB. RAM sizes of vertex variables x/y_vb are sizeof(double)*n_b*nv_b = 8*%li*%li = %g MB. Storage reduction due to employing sparse-matrix instead of full-matrix formulation is a factor of %ld/%ld ~ %ld.\n",nco_prg_nm_get(),nco_fmt_sng(fl_out_fmt),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr,dst_grd_sz_nbr,lnk_nbr/(1.0*dst_grd_sz_nbr),lnk_nbr,src_grd_sz_nbr,dst_grd_sz_nbr,lnk_nbr/sqrt(src_grd_sz_nbr*dst_grd_sz_nbr),lnk_nbr,sizeof(double)*lnk_nbr/1.0e6,src_grd_sz_nbr,src_grd_crn_nbr,sizeof(double)*src_grd_sz_nbr*src_grd_crn_nbr/1.0e6,dst_grd_sz_nbr,dst_grd_crn_nbr,sizeof(double)*dst_grd_sz_nbr*dst_grd_crn_nbr/1.0e6,src_grd_sz_nbr*dst_grd_sz_nbr*sizeof(double),lnk_nbr*sizeof(double)+(src_grd_sz_nbr+dst_grd_sz_nbr)*sizeof(int),(src_grd_sz_nbr*dst_grd_sz_nbr*sizeof(double))/(lnk_nbr*sizeof(double)+(src_grd_sz_nbr+dst_grd_sz_nbr)*sizeof(int)));
 
   /* Open mapfile */
-  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
   rcd+=nco_def_dim(out_id,"n_s",lnk_nbr,&num_links_id);
   rcd+=nco_def_dim(out_id,"n_a",src_grd_sz_nbr,&src_grid_size_id);
@@ -1244,6 +1246,8 @@ nco_msh_wrt
   nco_bool FORCE_OVERWRITE=True; /* Option O */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   
   size_t hdr_pad=10000UL; /* [B] Pad at end of header section */
@@ -1256,7 +1260,7 @@ nco_msh_wrt
   nco_sph_plg_area(map_rgr,lat_crn,lon_crn,grd_sz_nbr,grd_crn_nbr,area);
 
   /* Open grid file */
-  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
   rcd=nco_def_dim(out_id,grd_crn_nm,grd_crn_nbr,&dmn_id_grd_crn);
@@ -1532,6 +1536,8 @@ int fl_out_fmt)
   nco_bool FORCE_OVERWRITE=True; /* Option O */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
 
   grd_sz_nbr=pl_nbr;
@@ -1573,7 +1579,7 @@ int fl_out_fmt)
   }
   
   /* Open grid file */
-  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
   rcd=nco_def_dim(out_id,grd_sz_nm,grd_sz_nbr,&dmn_ids[0]);

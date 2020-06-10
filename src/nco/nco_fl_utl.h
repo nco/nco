@@ -156,8 +156,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
  const nco_bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  const int fl_out_fmt, /* I [enm] Output file format */
  const size_t * const bfr_sz_hnt, /* I [B] Buffer size hint */
- const int RAM_CREATE, /* I [flg] Create file in RAM */
- const int RAM_OPEN, /* I [flg] Open (netCDF3) file(s) in RAM */
+ const nco_bool RAM_CREATE, /* I [flg] Create file in RAM */
+ const nco_bool RAM_OPEN, /* I [flg] Open (netCDF3) file(s) in RAM */
+ const nco_bool SHARE_CREATE, /* I [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+ const nco_bool SHARE_OPEN, /* I [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
  const int WRT_TMP_FL, /* I [flg] Write output to temporary file */
  int * const out_id); /* O [id] File ID */
 

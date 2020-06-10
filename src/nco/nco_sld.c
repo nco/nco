@@ -268,6 +268,8 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   nco_bool FORCE_OVERWRITE=True; /* Option O */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
+  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
 
   size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
@@ -371,7 +373,7 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   if(var_raw.vp) var_raw.vp=(void *)nco_free(var_raw.vp);
 
   /* Open grid file */  
-  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,WRT_TMP_FL,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
 
   /* Define dimensions */
   rcd=nco_def_dim(out_id,wvl_nm,wvl_nbr,&dmn_id_wvl);

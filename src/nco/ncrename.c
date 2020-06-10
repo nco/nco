@@ -175,10 +175,10 @@ main(int argc,char **argv)
     {"dirty",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"mmr_drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
     {"hdf4",no_argument,0,0}, /* [flg] Treat file as HDF4 */
-    {"ram_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"ram_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
     {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
-    {"diskless_all",no_argument,0,0}, /* [flg] Open (netCDF3) and create file(s) in RAM */
+    {"diskless_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
     {"version",no_argument,0,0},
     {"vrs",no_argument,0,0},
     /* Long options with argument, no short option counterpart */
@@ -262,7 +262,7 @@ main(int argc,char **argv)
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
 	nc_set_log_level(log_lvl);
       } /* !log_lvl */
-      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Create file in RAM */
+      if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"vrs") || !strcmp(opt_crr,"version")){
         (void)nco_vrs_prn(CVS_Id,CVS_Revision);
         nco_exit(EXIT_SUCCESS);
