@@ -1735,6 +1735,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   /* [fnc] Merge clobber mode with user-specified file format */
   md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
   if(RAM_CREATE) md_create|=NC_DISKLESS|NC_WRITE;
+  if(SHARE_CREATE) md_create|=NC_SHARE;
 
   if(FORCE_OVERWRITE && *FORCE_APPEND){
     (void)fprintf(stdout,"%s: ERROR FORCE_OVERWRITE and FORCE_APPEND are both set\n",nco_prg_nm_get());
@@ -1837,6 +1838,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       int md_open; /* [enm] Mode flag for nc_open() call */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
       if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
+      if(SHARE_OPEN) md_open=md_open|NC_SHARE;
       rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt_lcl,out_id);
       (void)nco_redef(*out_id);
       return fl_out_tmp;
@@ -1858,6 +1860,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     usr_rpl[1]='\0';
 
     if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
+    if(SHARE_OPEN) md_open=md_open|NC_SHARE;
 
     if(*FORCE_APPEND){
       /* Incur expense of copying current file to temporary file
@@ -1926,6 +1929,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     md_create=NC_NOCLOBBER;
     md_create=nco_create_mode_mrg(md_create,fl_out_fmt);
     if(RAM_CREATE) md_create|=NC_DISKLESS|NC_WRITE;
+    if(SHARE_CREATE) md_create|=NC_SHARE;
 #ifdef ENABLE_MPI
     rcd+=nco_create_par(fl_out_tmp,md_create,MPI_COMM_WORLD,MPI_INFO_NULL,out_id);
 #else /* !ENABLE_MPI */

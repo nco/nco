@@ -1,6 +1,12 @@
+2020-06-10  Charlie Zender  <zender@uci.edu>
+
+	* Implement getopt_long() processing for NC_SHARE, add synonyms uio and unbuffered_io
+
 2020-06-09  Charlie Zender  <zender@uci.edu>
 
-	* Implement getopt(), initialization, and argument passing for for SHARE_CREATE/SHARE_OPEN
+	* Add NC_SHARE mask to open and create mode in nco_fl_utl.c
+
+	* Implement initialization, and argument passing for for SHARE_CREATE/SHARE_OPEN
 
 	* Fix comments for RAM_CREATE/RAM_OPEN
 
