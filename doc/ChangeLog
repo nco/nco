@@ -1,5 +1,9 @@
 2020-06-10  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.4-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha02: Hangover Run';git push
+ 	git tag -a 4.9.4-alpha02 -m 'NC_SHARE via --share, --uio';git push --tags
+
 	* Implement getopt_long() processing for NC_SHARE, add synonyms uio and unbuffered_io
 
 2020-06-09  Charlie Zender  <zender@uci.edu>
