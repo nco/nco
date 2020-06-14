@@ -1264,12 +1264,13 @@ extern "C" {
     nco_bool flg_grd; /* [flg] Create SCRIP-format grid file */
     nco_bool flg_grd_dst; /* [flg] User-specified destination grid */
     nco_bool flg_grd_src; /* [flg] User-specified input grid */
-    nco_bool flg_wgt; /* [flg] User-specified mapping weights */
     nco_bool flg_msk_out; /* [flg] Add mask to output */
     nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
     nco_bool flg_stg; /* [flg] Write staggered grid with FV output */
+    nco_bool flg_uio; /* [flg] Unbuffered I/O (NC_SHARE) for netCDF3 files */
     nco_bool flg_usr_rqs; /* [flg] User-requested regridding */
+    nco_bool flg_wgt; /* [flg] User-specified mapping weights */
     size_t hdr_pad; /* [B] Pad at end of header section (for map-file only) */
   } rgr_sct; /* end Regrid structure */
 

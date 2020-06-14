@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 12 June 2020
+@set update-date 14 June 2020
 @set update-month June 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -10128,6 +10128,7 @@ This is accomplished with the @samp{--no_tmp_fl} switch
 <a name="open_share"></a> <!-- http://nco.sf.net/nco.html#open_share -->
 <a name="unbuffered_io"></a> <!-- http://nco.sf.net/nco.html#unbuffered_io -->
 <a name="unbuffered"></a> <!-- http://nco.sf.net/nco.html#unbuffered -->
+<a name="uio"></a> <!-- http://nco.sf.net/nco.html#uio -->
 @end html
 @node Unbuffered I/O, Packed data, RAM disks, Shared features
 @section Unbuffered I/O

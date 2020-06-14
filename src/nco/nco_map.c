@@ -96,8 +96,8 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
-  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
-  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_CREATE=rgr->flg_uio; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
+  nco_bool SHARE_OPEN=rgr->flg_uio; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
 
   nco_mpf_sct mpf;
@@ -117,6 +117,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   fl_in_src=nco_fl_mk_lcl(fl_in_src,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN_SRC);
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+  if(SHARE_OPEN) md_open=md_open|NC_SHARE;
 
   rcd+=nco_fl_open(fl_in_src,md_open,&bfr_sz_hnt,&in_id_src);
   rcd+=nco_fl_open(fl_in_dst,md_open,&bfr_sz_hnt,&in_id_dst);
@@ -856,8 +857,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   pl_glb_in=nco_msh_stats(area_in,msk_in,lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in,grd_sz_in, grd_crn_nbr_in);
   pl_glb_out=nco_msh_stats(area_out,msk_out,lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out,grd_sz_out, grd_crn_nbr_out);
 
-
-  /* determin lon_typ  nb temporary */
+  /* Determine lon_typ  nb temporary */
   grd_lon_typ_in=nco_poly_minmax_2_lon_typ(pl_glb_in);
   grd_lon_typ_out=nco_poly_minmax_2_lon_typ(pl_glb_out);
 
@@ -868,7 +868,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     (void)fprintf(stderr,"\n%s:%s mesh out statistics (grd_lon_typ=%s)\n",nco_prg_nm_get(),fnc_nm, nco_grd_lon_sng(grd_lon_typ_out));
     nco_poly_prn(pl_glb_out,0);
   }
-
 
   /* run though just to check - some (0-360) SCRIP files have a negative lon for wrapped cells ??*/
   nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in, grd_lon_typ_in, grd_lon_typ_in );
@@ -925,7 +924,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     pl_cnt_out=grd_sz_out;
 
-
     if(pl_typ==poly_sph)
       pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in,(size_t) grd_crn_nbr_in, grd_lon_typ_out);
     else if(pl_typ==poly_rll)
@@ -963,7 +961,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
       tree=(KDTree**)nco_calloc(nbr_tr, sizeof( KDTree*));
 
-
 #if defined(__INTEL_COMPILER)
 # pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr,  grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst_out, quota, tree)
 #else /* !__INTEL_COMPILER */
@@ -982,14 +979,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
             (void)fprintf(fp_stderr, "%s: thread %d created a kdtree of %d nodes\n",    nco_prg_nm_get(), thr_idx, tree[idx]->item_count  );
 
       }
-
-
-
-
     }
-
-
-
 
     /* call the overlap routine */
     if(pl_cnt_in && pl_cnt_out){
@@ -999,18 +989,15 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       if(pl_typ == poly_sph || pl_typ == poly_rll) pl_lst_vrl=nco_poly_lst_mk_vrl_sph(pl_lst_in, grd_sz_in , grd_lon_typ_out, tree,nbr_tr,  &pl_cnt_vrl);
     } /* !pl_cnt_in */
 
-
     /* calculate total size of overlap mesh */
     for(idx=0;idx<pl_cnt_vrl;idx++)
       if(pl_lst_vrl && pl_lst_vrl[idx])
         pl_sz_vrl+=nco_poly_sizeof(pl_lst_vrl[idx]);
 
-
     if(nco_dbg_lvl_get() >= nco_dbg_dev) {
       fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap polygons=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
       fprintf(stderr, "%s: total size overlap mesh %lu\n", nco_prg_nm_get(), pl_sz_vrl );
     }
-
   }
 
   /* Find max crn_nbr from list of overlap polygons */
@@ -1190,8 +1177,6 @@ nco_map_kd_init( poly_sct **pl_lst, int pl_cnt, nco_grd_lon_typ_enm grd_lon_typ 
 
 }
 
-
-
 int
 nco_msh_wrt
 (const  char *fl_out,
@@ -1200,7 +1185,7 @@ nco_msh_wrt
  double *lat_crn,
  double *lon_crn)
 {
-  const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_msh_wrt()"; /* [sng] Function name */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 2-D grid variables */
 
@@ -1481,7 +1466,7 @@ int pl_nbr,
 nco_grd_lon_typ_enm grd_lon_typ,
 int fl_out_fmt)
 {
-  const char fnc_nm[]="nco_grd_mk()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_msh_poly_lst_wrt()"; /* [sng] Function name */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 2-D grid variables */
 
@@ -1510,7 +1495,6 @@ int fl_out_fmt)
   double *area=NULL_CEWI;
   double *lon_ctr=NULL_CEWI;
   double *lat_ctr=NULL_CEWI;
-
 
   long idx;
   long jdx;

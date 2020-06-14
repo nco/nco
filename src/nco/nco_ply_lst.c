@@ -791,7 +791,6 @@ int *pl_cnt_vrl_ret){
     if (0 && nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n",fnc_nm,  idx, thr_idx);
 
-
     if(pl_lst_in[idx]->bmsk==False)
       continue;
 
@@ -804,11 +803,7 @@ int *pl_cnt_vrl_ret){
       mem_lst[thr_idx].kd_list=(KDPriority*)nco_free(mem_lst[thr_idx].kd_list);
       //mem_lst[thr_idx].kd_list=(KDPriority*)nco_realloc(mem_lst[idx].kd_list, sizeof(KDPriority) * NCO_VRL_BLOCKSIZE );
       mem_lst[idx].kd_list=(KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)(NCO_VRL_BLOCKSIZE));
-
-
     }
-
-
 
     /* get bounds of polygon in */
     bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 );
@@ -839,9 +834,6 @@ int *pl_cnt_vrl_ret){
       }
       */
 
-
-
-
       if(pl_typ== poly_rll)
       {
 
@@ -861,8 +853,6 @@ int *pl_cnt_vrl_ret){
          *     pl_out
          */
 
-
-
         if(!pl_vrl)
         {
           if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out))
@@ -880,9 +870,6 @@ int *pl_cnt_vrl_ret){
           /* REMEMBER  poly_rll area uses minmax limits AND NOT VERTEX's */
           nco_poly_area_add(pl_vrl);
         }
-
-
-
       }
 
       if(pl_typ== poly_sph ) {
@@ -953,10 +940,7 @@ int *pl_cnt_vrl_ret){
             pl_vrl = nco_poly_free(pl_vrl);
             bBadArea=True;
           }
-
         }
-
-
 
         /* swap args around and try again */
         if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
@@ -968,7 +952,6 @@ int *pl_cnt_vrl_ret){
           nco_sph_intersect_pre(pl_out, pl_lst_in[idx], out_sng);
           lret2 = nco_sph_process_pre(pl_lst_in[idx], out_sng, &bGenuine);
 
-
           switch(lret2)
           {
 
@@ -976,8 +959,7 @@ int *pl_cnt_vrl_ret){
               pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
               break;
 
-
-            case 2:
+	    case 2:
               pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to, (char *)NULL);
               break;
 
@@ -993,8 +975,6 @@ int *pl_cnt_vrl_ret){
             case 5:
               pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to,  out_sng);
               break;
-
-
           }
 
           if(pl_vrl)
@@ -1002,32 +982,20 @@ int *pl_cnt_vrl_ret){
             nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
             nco_poly_area_add(pl_vrl);
           }
-
         }
-
 
        if(bDirtyRats )
           sprintf(mem_lst[thr_idx].kd_list[jdx].dbg_sng, "lret=%d in_sng=%s   lret2=%d  out_sng=%s\n",lret, in_sng, lret2, out_sng);
 
-
         if(bDirtyRats && pl_vrl && !nco_sph_is_convex(pl_vrl->shp, pl_vrl->crn_nbr) )
         {
-
           (void) fprintf(stderr, "/************* concave overlap plygon***********/\n");
           nco_poly_prn(pl_lst_in[idx],0);
           nco_poly_prn(pl_out,0);
           nco_poly_prn(pl_vrl, 0);
           (void) fprintf(stderr, "/***********************************************/\n");
-
         }
-
-
-
-
       } /* end if poly_sph */
-
-
-
 
       if (pl_vrl) {
         // nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
@@ -1035,10 +1003,6 @@ int *pl_cnt_vrl_ret){
         /* add aprropriate id's */
         pl_vrl->src_id = pl_lst_in[idx]->src_id;
         pl_vrl->dst_id = pl_out->src_id;
-
-
-
-
 
         /* shp not needed */
         nco_poly_shp_free(pl_vrl);
@@ -1048,7 +1012,6 @@ int *pl_cnt_vrl_ret){
 
         /* add lat/lon centers */
         nco_poly_ctr_add(pl_vrl, grd_lon_typ);
-
 
         wrp_cnt+=pl_vrl->bwrp;
 
@@ -1063,8 +1026,6 @@ int *pl_cnt_vrl_ret){
         /* for input polygon wgt is used to calculate frac_a */
         pl_lst_in[idx]->wgt+= ( pl_vrl->area / pl_lst_in[idx]->area );
 
-
-
         /*
 #ifdef _OPENMP
 #pragma omp critical
@@ -1074,7 +1035,6 @@ int *pl_cnt_vrl_ret){
 
         }
 */
-
         vrl_area += pl_vrl->area;
 
         if( mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE <  mem_lst[thr_idx].pl_cnt +1 )
@@ -1086,16 +1046,8 @@ int *pl_cnt_vrl_ret){
 
         /* for area debug only */
         mem_lst[thr_idx].kd_list[jdx].area=pl_vrl->area;
-
-
-
-
       }
-
-
     } /* end jdx */
-
-
 
     if (nco_dbg_lvl_get() >= nco_dbg_dev) {
 
@@ -1131,36 +1083,23 @@ int *pl_cnt_vrl_ret){
               nco_poly_prn((poly_sct *) mem_lst[thr_idx].kd_list[kdx].elem->item, 0);
               (void)fprintf(fp_stderr, "# vrl_area=%.15e\n",mem_lst[thr_idx].kd_list[kdx].area );
               (void)fprintf(fp_stderr, "# dbg_sng=%s\n",mem_lst[thr_idx].kd_list[kdx].dbg_sng );
-
             }
 
             (void) fprintf(stderr, "/************* end dirty rats ***************/\n");
           }
 
           if(1 && vrl_cnt_on>0) {
-
-
             pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + vrl_cnt_on));
-
             /* write overlaps maybe */
             for (kdx = 0; kdx < vrl_cnt_on; kdx++) {
               poly_sct * lcl_poly=mem_lst[thr_idx].pl_lst[mem_lst[thr_idx].pl_cnt - vrl_cnt_on + kdx];
 
               if(lcl_poly->src_id== pl_lst_in[idx]->src_id )
                   pl_lst_dbg[pl_cnt_dbg++] = nco_poly_dpl(lcl_poly);
-
             }
-
-
-
           }
-
-
-
         }
-
       }
-
     } /* end dbg */
 
     /* output some usefull tracking stuff - not debug but informative */
@@ -1183,9 +1122,6 @@ int *pl_cnt_vrl_ret){
     pl_lst_dbg=(poly_sct**)nco_poly_lst_free(pl_lst_dbg, pl_cnt_dbg);
   }
 
-
-
-
   /* concatenate memory lists */
   {
 
@@ -1196,12 +1132,8 @@ int *pl_cnt_vrl_ret){
     for (idx = 0; idx < lcl_thr_nbr; idx++)
       tot_pl_cnt += mem_lst[idx].pl_cnt;
 
-
     pl_lst_vrl = mem_lst[0].pl_lst;
-
-
     pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * tot_pl_cnt);
-
 
     tmp_pl_lst = pl_lst_vrl;
     tmp_pl_lst += mem_lst[0].pl_cnt;
@@ -1219,22 +1151,14 @@ int *pl_cnt_vrl_ret){
     *pl_cnt_vrl_ret=tot_pl_cnt;
   }
 
-
-
-
   /* free up kd_list's */
   for(idx=0;idx<lcl_thr_nbr;idx++)
     mem_lst[idx].kd_list= (KDPriority*) nco_free(mem_lst[idx].kd_list);
 
-
   mem_lst=(omp_mem_sct*)nco_free(mem_lst);
 
   return pl_lst_vrl;
-
 }
-
-
-
 
 /* check areas - nb WARNING modifies area in pl_lst_in and pl_lst_out */
 void nco_poly_lst_chk(
