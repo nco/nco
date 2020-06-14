@@ -1,3 +1,11 @@
+2020-06-14  Charlie Zender  <zender@uci.edu>
+
+	* Add --uio flag to ncclimo, mainly for splitter, and to ncremap (still not used internally by regridder, though)
+
+2020-06-11  Charlie Zender  <zender@uci.edu>
+
+	* Document --uio, --share
+
 2020-06-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha02 release procedure:

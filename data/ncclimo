@@ -573,6 +573,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--sgs_frc${fnt_nrm}  Sub-grid fraction variable (empty means none) (default ${fnt_bld}${sgs_frc}${fnt_nrm}) [${fnt_tlc}sgs_frc, ice_frc, lnd_frc, ocn_frc, subgrid_fraction${fnt_nrm}]"
     echo "${fnt_rvr}-t${fnt_nrm} ${fnt_bld}thr_nbr${fnt_nrm}  Thread number for regridder (default ${fnt_bld}${thr_nbr}${fnt_nrm}) [${fnt_tlc}thr_nbr, thr, thread_number, thread, threads${fnt_nrm}]"
     echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
+    echo " ${fnt_bld}--uio${fnt_nrm}      Unbuffered I/O (NC_SHARE) for netCDF3 files [${fnt_tlc}uio, unbuffered, share${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_fl${fnt_nrm}   Vertical coordinate file (empty means none) (default ${fnt_bld}${vrt_fl}${fnt_nrm}) [${fnt_tlc}vrt_fl, vrt, vrt_crd, vertical_coordinate${fnt_nrm}]"
@@ -735,8 +736,11 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Check stdin for input file list
 	       thr_nbr=?* | thr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
 	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_out="${LONG_OPTARG}" ;; # # Timesteps-per-day in output
+	       uio | unbuffered | share ) uio_flg='Yes' ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
+	       uio=?* | unbuffered=?* | share=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
+	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
 	       vrt_fl=?* | vrt=?* | vrt_crd=?* | vertical_coordinate=?* ) vrt_fl="${LONG_OPTARG}" ;; # # Vertical coordinate file
 	       vrt_xtr=?* | xtr_mth=?* | extrapolation_type=?* | extrapolation_method=?* ) vrt_xtr="${LONG_OPTARG}" ;; # # Vertical extrapolation type (mss_val|nrs_ngh)
 	       drc_xtn=?* | xtn_drc=?* | extended_dir=?* | extended_climo=?* | extended=?* ) drc_xtn="${LONG_OPTARG}" ;; # -X # Extended climo directory
@@ -1086,6 +1090,9 @@ fi # !dfl_lvl
 if [ -n "${hdr_pad}" ]; then
     nco_opt="${nco_opt} --hdr_pad=${hdr_pad}"
 fi # !hdr_pad
+if [ -n "${uio_flg}" ]; then
+    nco_opt="${nco_opt} --unbuffered_io"
+fi # !ppc_prc
 if [ "${no_cll_msr}" = 'Yes' ]; then 
     spl_opt="${spl_opt} --no_cll_msr"
 fi # !no_cll_msr
@@ -1649,6 +1656,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: sbs_flg  = ${sbs_flg}\n"
     printf "dbg: sgs_frc  = ${sgs_frc}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
+    printf "dbg: uio_flg  = ${uio_flg}\n"
     printf "dbg: var_lst  = ${var_lst}\n"
     printf "dbg: vrt_fl   = ${vrt_fl}\n"
     printf "dbg: xtn_flg  = ${xtn_flg}\n"

@@ -2,17 +2,17 @@
 # http://cvs.fedoraproject.org/viewvc/devel/nco/nco.spec?view=co
 
 Name:           nco
-Version:        4.9.3
+Version:        4.9.4
 Release:        1%{?dist}
 Summary:        Programs that manipulate netCDF files
 Group:          Applications/Engineering
 License:        BSD
 URL:            http://nco.sf.net/
 
-# Obtain NCO version 4.9.3-1 tar.gz from Sourceforge using CVS:
+# Obtain NCO version 4.9.4-1 tar.gz from Sourceforge using CVS:
 # cvs -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco login
-# cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4.9.3-1 -d nco-%{version} nco
-# tar czf nco-%{version}.tar.gz --exclude='nco-4.9.3/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
+# cvs -z3 -d:pserver:anonymous@nco.cvs.sf.net:/cvsroot/nco co -r nco-4.9.4-1 -d nco-%{version} nco
+# tar czf nco-%{version}.tar.gz --exclude='nco-4.9.4/debian*' --exclude='.cvsignore' --exclude=ncap_lex.c --exclude='ncap_yacc.[ch]' ./nco-%{version}
 Source0:        nco-%{version}.tar.gz
 #Patch0:		nco_install_C_headers.patch
 #Patch1:         nco_find_udunits-dat.patch
@@ -21,7 +21,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  automake, autoconf, libtool
 BuildRequires:  netcdf, netcdf-devel
 BuildRequires:  udunits, udunits-devel
-# Required for ncap:
+# Required for ncap, ncwa:
 BuildRequires:  flex
 # Required for ncap2:
 BuildRequires:  gsl, gsl-devel
@@ -111,7 +111,7 @@ fi
 * Sun July 31 2020 Charlie Zender <zender@uci.edu> - 4.9.4-1
 - new upstream 4.9.4
 
-* Sun May 31 2020 Charlie Zender <zender@uci.edu> - 4.9.3-1
+* Sun May 31 2020 Charlie Zender <zender@uci.edu> - 4.9.4-1
 - new upstream 4.9.3
 
 * Fri Feb 14 2020 Charlie Zender <zender@uci.edu> - 4.9.2-1

@@ -1,19 +1,17 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.9.3 have arrived.
+The netCDF Operators NCO version 4.9.4 have arrived.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.9.3 contains many regridding fixes and features: 
-This version updates adds robustness to the NCO weight-generator
-for PG2 grids, updates default options for TempestRemap, implements
-a high frequency mode for the splitter, and fixes some issues with
-ncremap, ncclimo, and ncrcat and works-around a backwards
-incompatibility with the latest netCDF library, 4.7.4.
+Version 4.9.4 contains many regridding fixes and features: 
 
-Work on NCO 4.9.4 has commenced and will improve NCO weight-generator  
+This version adds support for unbuffered I/O that can dramatically
+speed-up I/O for large record variables.
+
+Work on NCO 4.9.5 has commenced and will improve NCO weight-generator  
 accuracy, reduce vertical interpolation memory use, and supply more
 accurate weight generation options for rectangular lat-lon grids.
 
@@ -29,78 +27,20 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncatted prints additional diagnostics when referenced attributes
-   are not found. 
-   http://nco.sf.net/nco.html#ncatted
+A. All operators now support unbuffered I/O with netCDF3 files when 
+   invoked with the flag --uio or longer synonyms --unbuffered_io or
+   --share_all. Typically unbufferend I/O may significantly reduce
+   throughput time when large record variables are written or read.
+   Thanks to Barron Henderson for this suggestion.
+   ncks -v T in.nc out.nc       # Default, buffered I/O
+   ncks --uio -v T in.nc out.nc # Unbuffered I/O
+   http://nco.sf.net/nco.html#uio
 
-B. ncclimo adds a new clm_md='hf' type for splitting high-frequency 
-   (hgh_frq) datasets. Currently these datasets must be daily means.
-   http://nco.sf.net/nco.html#ncclimo
-   
-C. ncremap now automatically parallelizes the loading of data into
-   KD-trees during regridding when OpenMP is available.
-   This significantly improves weight-generation throughput.
-   http://nco.sf.net/nco.html#ncremap
-
-D. The ncks --frac_b_nrm and --area_wgt options both now automatically
-   imply --chk_map.
-   http://nco.sf.net/nco.html#chk_map
-
-E. Options for TempestRemap have been updated to current guidance:
-   No TR algorithms invoke the TR --volumetric option anymore.
-   Many TR algorithms now add the TR  --correct_areas option.
-   http://nco.sf.net/nco.html#tempest
-
-F. ncremap's grid intersection algorithms are improved.
-   In particular, "physics grids" (aka PG2 grids) intersections
-   are now more robust for all resolutions in both directions
-   up to ne1024.
-   http://nco.sf.net/nco.html#ncremap
-
-G. ncks accepts a new option --cell_area_quad which implements the
-   TempestRemap quadrature algorithm instead of the NCO piecewise
-   constant algorithm to compute cell areas. The TR algorithm often
-   produces slight improved map statistics, though sometimes produces
-   worse statistics. We are working to understand this better before
-   deciding whether to adopt it as the default area algorithm.
-   http://nco.sf.net/nco.html#ncks
-
-H. ncks includes a workaround to the backwards incompatible changes
-   to nc_inq_var_filter() inadvertently introduced in netCDF 4.7.4.
-   Without this workaround, NCO may quit when printing files that 
-   store results compressed with non-DEFLATE filters.
-   http://nco.sf.net/nco.html#ncks
-
-I. ncap2 eliminated an old and little-used custom correlation
-   procedure that worked for data with missing values yet that ran
-   afoul of the NCO's new BSD license. 
-   http://nco.sf.net/nco.html#ncap2
-      
-J. The Users Guide now fully documents the ncremap and ncks options 
-   chk_map, job_nbr, par_typ, SGS, unq_sfx.
-
-K. Add --frac_b_nrm option to ncks map-checker
-   http://nco.sf.net/nco.html#chk_map
+A. 
 
 BUG FIXES:
 
-A. ncremap once again passes non-default regridding options to
-   the NCO weight-generator in map-only mode. This appears to
-   have been inadvertently broken in 4.9.2. The solution is to
-   avoid 4.9.2.
-
-B. ncclimo in splitter mode now correctly globs all files in a
-   directory. Previsously, the globbing option to ncclimo was
-   broken for the splitter. Thanks to Jill Zhang for reporting.
-   The solution is to upgrade.
-
-C. ncrcat once again re-bases time coordinates stored as integers.
-   It lost that capability in an unknown but recent NCO release.
-   The solution is to upgrade.
-
-D. Curvilinear regional NCO grids that work with ESMF now work
-   with the NCO weight generator.
-
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -108,7 +48,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.9.3 built/tested under
+   These problems occur with NCO 4.9.4 built/tested under
    MacOS 10.15.5 with netCDF 4.7.4 on HDF5 1.10.2 and with
    Linux with netCDF 4.8.0-development (2020501) on HDF5 1.8.19.
 
