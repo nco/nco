@@ -1,12 +1,8 @@
-2020-06-14  Charlie Zender  <zender@uci.edu>
+2020-06-15 Henry Butowsky  <henryb@hush.com>
 
-	* Use --uio flag within regridder, and everywhere except nco_msh_wrt(), nco_msh_poly_lst_wrt()
-
-	* Add --uio flag to ncclimo, mainly for splitter, and to ncremap (still not used internally by regridder, though)
-
-2020-06-11  Charlie Zender  <zender@uci.edu>
-
-	* Document --uio, --share
+	* inception of wgt_sct a lightweight version of poly_sct used when overlap mesh is not requested
+	  nco_ply_lst_mk_vrl_sph() - can now return wgt_sct**
+	  nco_msh_mk() - can now deal with overlap list of wgt_sct **
 
 2020-06-10  Charlie Zender  <zender@uci.edu>
 
