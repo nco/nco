@@ -89,13 +89,14 @@ int pl_cnt_in,
 KDTree *rtree,
 int *pl_cnt_vrl_ret);
 
-poly_sct **
+void **
 nco_poly_lst_mk_vrl_sph(  /* create overlap mesh  for sph polygons */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
 nco_grd_lon_typ_enm grd_lon_typ,
 KDTree **tree,
 int nbr_tr,
+int lst_out_typ,
 int *pl_cnt_vrl_ret);
 
 void
@@ -121,6 +122,12 @@ poly_sct **pl_lst_out,
 int pl_cnt_out,
 poly_sct **pl_lst_vrl,
 int pl_cnt_vrl);
+
+void
+nco_mem_lst_cat(
+omp_mem_sct *mem_lst,
+int sz_lst);
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
