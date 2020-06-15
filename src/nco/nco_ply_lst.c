@@ -683,13 +683,15 @@ int *pl_cnt_vrl_ret){
 
 }
 
-poly_sct **
+
+void **
 nco_poly_lst_mk_vrl_sph(  /* create overlap mesh  for sph polygons */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
 nco_grd_lon_typ_enm grd_lon_typ,
 KDTree **tree,
 int nbr_tr,
+int lst_out_typ,
 int *pl_cnt_vrl_ret){
   /* just duplicate output list to overlap */
   const char fnc_nm[]="nco_poly_lst_mk_vrl_sph()";
@@ -721,8 +723,8 @@ int *pl_cnt_vrl_ret){
   double tot_area=0.0;
 
 
-  poly_sct ** pl_lst_vrl=NULL_CEWI;
-  poly_sct **pl_lst_dbg=NULL_CEWI;
+  void** void_lst_vrl=NULL_CEWI;
+  poly_sct** pl_lst_dbg=NULL_CEWI;
 
   FILE * const fp_stderr=stderr;
 
@@ -738,6 +740,7 @@ int *pl_cnt_vrl_ret){
   for(idx=0;idx<lcl_thr_nbr;idx++)
   {
     mem_lst[idx].pl_lst=NULL_CEWI;
+    mem_lst[idx].wgt_lst=NULL_CEWI;
     mem_lst[idx].blk_nbr=0;
     mem_lst[idx].pl_cnt=0;
     mem_lst[idx].kd_list=(KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)(NCO_VRL_BLOCKSIZE));
@@ -791,6 +794,7 @@ int *pl_cnt_vrl_ret){
     if (0 && nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n",fnc_nm,  idx, thr_idx);
 
+
     if(pl_lst_in[idx]->bmsk==False)
       continue;
 
@@ -803,7 +807,11 @@ int *pl_cnt_vrl_ret){
       mem_lst[thr_idx].kd_list=(KDPriority*)nco_free(mem_lst[thr_idx].kd_list);
       //mem_lst[thr_idx].kd_list=(KDPriority*)nco_realloc(mem_lst[idx].kd_list, sizeof(KDPriority) * NCO_VRL_BLOCKSIZE );
       mem_lst[idx].kd_list=(KDPriority *)nco_calloc(sizeof(KDPriority),(size_t)(NCO_VRL_BLOCKSIZE));
+
+
     }
+
+
 
     /* get bounds of polygon in */
     bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 );
@@ -834,6 +842,9 @@ int *pl_cnt_vrl_ret){
       }
       */
 
+
+
+
       if(pl_typ== poly_rll)
       {
 
@@ -853,6 +864,8 @@ int *pl_cnt_vrl_ret){
          *     pl_out
          */
 
+
+
         if(!pl_vrl)
         {
           if (nco_poly_in_poly_minmax(pl_lst_in[idx], pl_out))
@@ -870,6 +883,9 @@ int *pl_cnt_vrl_ret){
           /* REMEMBER  poly_rll area uses minmax limits AND NOT VERTEX's */
           nco_poly_area_add(pl_vrl);
         }
+
+
+
       }
 
       if(pl_typ== poly_sph ) {
@@ -940,17 +956,21 @@ int *pl_cnt_vrl_ret){
             pl_vrl = nco_poly_free(pl_vrl);
             bBadArea=True;
           }
+
         }
+
+
 
         /* swap args around and try again */
         if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
-        //if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
+          //if(!pl_vrl &&   ( (bGenuine==False && lret !=1 ) || bBadArea ) )
         {
 
           flg_snp_to=1;
 
           nco_sph_intersect_pre(pl_out, pl_lst_in[idx], out_sng);
           lret2 = nco_sph_process_pre(pl_lst_in[idx], out_sng, &bGenuine);
+
 
           switch(lret2)
           {
@@ -959,7 +979,8 @@ int *pl_cnt_vrl_ret){
               pl_vrl = nco_poly_dpl(pl_lst_in[idx]);
               break;
 
-	    case 2:
+
+            case 2:
               pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to, (char *)NULL);
               break;
 
@@ -975,6 +996,8 @@ int *pl_cnt_vrl_ret){
             case 5:
               pl_vrl = nco_poly_vrl_do(pl_out, pl_lst_in[idx], flg_snp_to,  out_sng);
               break;
+
+
           }
 
           if(pl_vrl)
@@ -982,20 +1005,32 @@ int *pl_cnt_vrl_ret){
             nco_poly_minmax_add(pl_vrl, grd_lon_typ, False);
             nco_poly_area_add(pl_vrl);
           }
+
         }
 
-       if(bDirtyRats )
+
+        if(bDirtyRats )
           sprintf(mem_lst[thr_idx].kd_list[jdx].dbg_sng, "lret=%d in_sng=%s   lret2=%d  out_sng=%s\n",lret, in_sng, lret2, out_sng);
+
 
         if(bDirtyRats && pl_vrl && !nco_sph_is_convex(pl_vrl->shp, pl_vrl->crn_nbr) )
         {
+
           (void) fprintf(stderr, "/************* concave overlap plygon***********/\n");
           nco_poly_prn(pl_lst_in[idx],0);
           nco_poly_prn(pl_out,0);
           nco_poly_prn(pl_vrl, 0);
           (void) fprintf(stderr, "/***********************************************/\n");
+
         }
+
+
+
+
       } /* end if poly_sph */
+
+
+
 
       if (pl_vrl) {
         // nco_poly_re_org(pl_vrl, lcl_dp_x, lcl_dp_y);
@@ -1003,6 +1038,10 @@ int *pl_cnt_vrl_ret){
         /* add aprropriate id's */
         pl_vrl->src_id = pl_lst_in[idx]->src_id;
         pl_vrl->dst_id = pl_out->src_id;
+
+
+
+
 
         /* shp not needed */
         nco_poly_shp_free(pl_vrl);
@@ -1013,6 +1052,7 @@ int *pl_cnt_vrl_ret){
         /* add lat/lon centers */
         nco_poly_ctr_add(pl_vrl, grd_lon_typ);
 
+
         wrp_cnt+=pl_vrl->bwrp;
 
         if( isnan(pl_vrl->area) || pl_vrl->area ==0.0 )
@@ -1020,11 +1060,13 @@ int *pl_cnt_vrl_ret){
           pl_vrl->area=0.0;
 
           pl_vrl=nco_poly_free(pl_vrl);
-           continue;
+          continue;
         }
 
         /* for input polygon wgt is used to calculate frac_a */
         pl_lst_in[idx]->wgt+= ( pl_vrl->area / pl_lst_in[idx]->area );
+
+
 
         /*
 #ifdef _OPENMP
@@ -1035,19 +1077,46 @@ int *pl_cnt_vrl_ret){
 
         }
 */
+
         vrl_area += pl_vrl->area;
+        mem_lst[thr_idx].kd_list[jdx].area=pl_vrl->area;
 
-        if( mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE <  mem_lst[thr_idx].pl_cnt +1 )
-          mem_lst[thr_idx].pl_lst= (poly_sct**)nco_realloc(mem_lst[thr_idx].pl_lst, sizeof(poly_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE );
 
-        mem_lst[thr_idx].pl_lst[  mem_lst[thr_idx].pl_cnt  ]=pl_vrl;
-        mem_lst[thr_idx].pl_cnt++;
+        if( mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE <  mem_lst[thr_idx].pl_cnt +1 ){
+          if(lst_out_typ==1)
+            mem_lst[thr_idx].wgt_lst= (wgt_sct**)nco_realloc(mem_lst[thr_idx].wgt_lst, sizeof(wgt_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE );
+          else if(lst_out_typ==2)
+            mem_lst[thr_idx].pl_lst= (poly_sct**)nco_realloc(mem_lst[thr_idx].pl_lst, sizeof(poly_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE );
+        }
+
+
+        if(lst_out_typ==1) {
+          wgt_sct *wgt_lcl=(wgt_sct*)nco_calloc(1,sizeof(wgt_sct));
+          wgt_lcl->src_id=pl_vrl->src_id;
+          wgt_lcl->dst_id=pl_vrl->dst_id;
+          wgt_lcl->area=pl_vrl->area;
+          wgt_lcl->wgt=pl_vrl->wgt;
+          mem_lst[thr_idx].wgt_lst[mem_lst[thr_idx].pl_cnt++] =wgt_lcl;
+
+          pl_vrl=nco_poly_free(pl_vrl);
+        }
+        else if(lst_out_typ==2 )
+          mem_lst[thr_idx].pl_lst[mem_lst[thr_idx].pl_cnt++] = pl_vrl;
+
         vrl_cnt_on++;
 
         /* for area debug only */
-        mem_lst[thr_idx].kd_list[jdx].area=pl_vrl->area;
+
+
+
+
+
       }
+
+
     } /* end jdx */
+
+
 
     if (nco_dbg_lvl_get() >= nco_dbg_dev) {
 
@@ -1083,23 +1152,36 @@ int *pl_cnt_vrl_ret){
               nco_poly_prn((poly_sct *) mem_lst[thr_idx].kd_list[kdx].elem->item, 0);
               (void)fprintf(fp_stderr, "# vrl_area=%.15e\n",mem_lst[thr_idx].kd_list[kdx].area );
               (void)fprintf(fp_stderr, "# dbg_sng=%s\n",mem_lst[thr_idx].kd_list[kdx].dbg_sng );
+
             }
 
             (void) fprintf(stderr, "/************* end dirty rats ***************/\n");
           }
 
-          if(1 && vrl_cnt_on>0) {
+          if(1 && vrl_cnt_on>0 && lst_out_typ==2 ) {
+
+
             pl_lst_dbg = (poly_sct **) nco_realloc(pl_lst_dbg, sizeof(poly_sct *) * (pl_cnt_dbg + vrl_cnt_on));
+
             /* write overlaps maybe */
             for (kdx = 0; kdx < vrl_cnt_on; kdx++) {
               poly_sct * lcl_poly=mem_lst[thr_idx].pl_lst[mem_lst[thr_idx].pl_cnt - vrl_cnt_on + kdx];
 
               if(lcl_poly->src_id== pl_lst_in[idx]->src_id )
-                  pl_lst_dbg[pl_cnt_dbg++] = nco_poly_dpl(lcl_poly);
+                pl_lst_dbg[pl_cnt_dbg++] = nco_poly_dpl(lcl_poly);
+
             }
+
+
+
           }
+
+
+
         }
+
       }
+
     } /* end dbg */
 
     /* output some usefull tracking stuff - not debug but informative */
@@ -1122,43 +1204,41 @@ int *pl_cnt_vrl_ret){
     pl_lst_dbg=(poly_sct**)nco_poly_lst_free(pl_lst_dbg, pl_cnt_dbg);
   }
 
-  /* concatenate memory lists */
-  {
 
-    size_t tot_pl_cnt = 0;
-    poly_sct **tmp_pl_lst = NULL_CEWI;
 
-    /* find total size of lists */
-    for (idx = 0; idx < lcl_thr_nbr; idx++)
-      tot_pl_cnt += mem_lst[idx].pl_cnt;
 
-    pl_lst_vrl = mem_lst[0].pl_lst;
-    pl_lst_vrl = (poly_sct **) nco_realloc(pl_lst_vrl, sizeof(poly_sct *) * tot_pl_cnt);
-
-    tmp_pl_lst = pl_lst_vrl;
-    tmp_pl_lst += mem_lst[0].pl_cnt;
-
-    for (idx = 1; idx < lcl_thr_nbr; idx++) {
-      if (mem_lst[idx].pl_lst) {
-        memcpy(tmp_pl_lst, mem_lst[idx].pl_lst, sizeof(poly_sct *) * mem_lst[idx].pl_cnt);
-        tmp_pl_lst += mem_lst[idx].pl_cnt;
-
-        /* free up list */
-        mem_lst[idx].pl_lst = (poly_sct **) nco_free(mem_lst[idx].pl_lst);
-      }
-    }
-
-    *pl_cnt_vrl_ret=tot_pl_cnt;
-  }
+  /* concatenate memory list, place results into first member list */
+  nco_mem_lst_cat(mem_lst, lcl_thr_nbr);
 
   /* free up kd_list's */
   for(idx=0;idx<lcl_thr_nbr;idx++)
     mem_lst[idx].kd_list= (KDPriority*) nco_free(mem_lst[idx].kd_list);
 
+
+  *pl_cnt_vrl_ret=mem_lst[0].pl_cnt;
+
+
+
+  if(lst_out_typ==1)
+    void_lst_vrl=(void**) mem_lst[0].wgt_lst;
+  else if( lst_out_typ==2 )
+    void_lst_vrl=(void**) mem_lst[0].pl_lst;
+
+
+
   mem_lst=(omp_mem_sct*)nco_free(mem_lst);
 
-  return pl_lst_vrl;
+
+
+  /* REMEMBER the void type can be a wgt_sct** array or a poly_sct** array
+   * wgt_sct is a subset of poly_sct - with simple members */
+  return void_lst_vrl;
+
+
+
 }
+
+
 
 /* check areas - nb WARNING modifies area in pl_lst_in and pl_lst_out */
 void nco_poly_lst_chk(
@@ -1287,3 +1367,282 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
 
 }
+
+
+wgt_sct **
+nco_poly_lst_mk_bln_sph(  /* create overlap mesh  for sph polygons */
+poly_sct **pl_lst_in,
+int pl_cnt_in,
+nco_grd_lon_typ_enm grd_lon_typ,
+KDTree **tree,
+int nbr_tr,
+int *wgt_cnt_bln_ret) {
+
+  /* just duplicate output list to overlap */
+  const char fnc_nm[] = "nco_poly_lst_mk_vrl_sph()";
+
+
+  nco_bool bSort = True;
+
+  int thr_idx = 0;
+  /* approx number of input cells each thread will process */
+  int thr_quota;
+  /* reporting step */
+  int thr_quota_step;
+
+  poly_typ_enm pl_typ;
+  size_t idx;
+
+  int lcl_thr_nbr;
+  omp_mem_sct *mem_lst = NULL_CEWI;
+
+  wgt_sct **wgt_lst_bln = NULL_CEWI;
+
+
+
+  FILE *const fp_stderr = stderr;
+
+
+  pl_typ = pl_lst_in[0]->pl_typ;
+
+
+  lcl_thr_nbr = omp_get_max_threads();
+
+
+  mem_lst = (omp_mem_sct *) nco_malloc(sizeof(omp_mem_sct) * lcl_thr_nbr);
+
+  for (idx = 0; idx < lcl_thr_nbr; idx++) {
+    mem_lst[idx].wgt_lst = NULL_CEWI;
+    mem_lst[idx].blk_nbr = 0;
+    mem_lst[idx].pl_cnt = 0;
+    mem_lst[idx].kd_list = (KDPriority *) nco_calloc(sizeof(KDPriority), (size_t) (NCO_VRL_BLOCKSIZE));
+    mem_lst[idx].kd_cnt = 0;
+    mem_lst[idx].kd_blk_nbr = 1;
+    mem_lst[idx].idx_cnt = 0;
+  }
+
+  thr_quota = pl_cnt_in / lcl_thr_nbr;
+  thr_quota_step = thr_quota / 20;
+  if (thr_quota_step < 2000)
+    thr_quota_step = 2000;
+
+
+
+  /* NB: "OpenMP notes" section of nco_rgr.c has detailed discussion of these settings
+     Henry, please keep the variables in alphabetical order within a clause and remember to update Intel */
+#ifdef __GNUG__
+  # define GCC_LIB_VERSION ( __GNUC__ * 100 + __GNUC_MINOR__ * 10 + __GNUC_PATCHLEVEL__ )
+# if GCC_LIB_VERSION < 490
+#  define GXX_OLD_OPENMP_SHARED_TREATMENT 1
+# endif /* 480 */
+#endif /* !__GNUC__ */
+#if defined(__INTEL_COMPILER)
+# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,fnc_nm,grd_lon_typ,max_nbr_vrl,mem_lst,nbr_tr,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,tree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
+#else /* !__INTEL_COMPILER */
+# ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
+#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
+# else /* !old g++ */
+#  pragma omp parallel for private(idx, thr_idx) schedule(dynamic, 40) shared(bSort, grd_lon_typ, nbr_tr,pl_typ, tree)
+# endif /* !old g++ */
+#endif /* !__INTEL_COMPILER */
+  for (idx = 0; idx < pl_cnt_in; idx++) {
+    nco_bool bSplit = False;
+
+    int vrl_cnt = 0;
+    int vrl_cnt_on = 0;
+    int nan_cnt = 0;
+    int wrp_cnt = 0;
+
+    size_t jdx;
+
+    double vrl_area = 0.0;
+
+    kd_box size1;
+    kd_box size2;
+
+    // (void) nco_poly_set_priority(max_nbr_vrl, list);
+
+    thr_idx = omp_get_thread_num();
+
+
+    if (0 && nco_dbg_lvl_get() >= nco_dbg_dev)
+      fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n", fnc_nm, idx, thr_idx);
+
+
+    if (pl_lst_in[idx]->bmsk == False)
+      continue;
+
+    mem_lst[thr_idx].kd_cnt = 0;
+
+    if (mem_lst[thr_idx].kd_blk_nbr > 1) {
+      mem_lst[thr_idx].kd_blk_nbr = 1;
+
+      mem_lst[thr_idx].kd_list = (KDPriority *) nco_free(mem_lst[thr_idx].kd_list);
+      //mem_lst[thr_idx].kd_list=(KDPriority*)nco_realloc(mem_lst[idx].kd_list, sizeof(KDPriority) * NCO_VRL_BLOCKSIZE );
+      mem_lst[idx].kd_list = (KDPriority *) nco_calloc(sizeof(KDPriority), (size_t) (NCO_VRL_BLOCKSIZE));
+
+
+    }
+
+
+
+    /* get bounds of polygon in */
+    bSplit = nco_poly_minmax_split(pl_lst_in[idx], grd_lon_typ, size1, size2);
+
+
+    /* if a wrapped polygon then do two searches */
+    if (bSplit)
+      vrl_cnt = kd_nearest_intersect_wrp(tree, nbr_tr, size1, size2, &mem_lst[thr_idx]);
+    else
+      vrl_cnt = kd_nearest_intersect(tree, nbr_tr, size1, &mem_lst[thr_idx], bSort);
+
+    /* nco_poly_prn(2, pl_lst_in[idx] ); */
+
+
+    for (jdx = 0; jdx < pl_lst_in[idx]->crn_nbr; jdx++) {
+
+
+    } /* end jdx */
+
+
+    /* output some usefull tracking stuff - not debug but informative */
+    if (  ++mem_lst[thr_idx].idx_cnt % thr_quota_step == 0 && nco_dbg_lvl_get() >=3   )
+      (void)fprintf(fp_stderr, "%s: thread %d  has processed %2.2f%% (%ld) of src cells quota and output %ld overlap cells\n",    nco_prg_nm_get(), thr_idx, (float)mem_lst[thr_idx].idx_cnt/(float)thr_quota *100.0,  mem_lst[thr_idx].idx_cnt, mem_lst[thr_idx].pl_cnt  );
+
+
+  }  /* end idx */
+
+
+  /* concatenate memory lists */
+  {
+
+    size_t tot_wgt_cnt = 0;
+    wgt_sct **tmp_wgt_lst = NULL_CEWI;
+
+    /* find total size of lists */
+    for (idx = 0; idx < lcl_thr_nbr; idx++)
+      tot_wgt_cnt += mem_lst[idx].pl_cnt;
+
+
+    wgt_lst_bln = mem_lst[0].wgt_lst;
+
+
+    wgt_lst_bln = (wgt_sct **) nco_realloc(wgt_lst_bln, sizeof(wgt_sct *) * tot_wgt_cnt);
+
+
+    tmp_wgt_lst = wgt_lst_bln;
+    tmp_wgt_lst += mem_lst[0].pl_cnt;
+
+    for (idx = 1; idx < lcl_thr_nbr; idx++) {
+      if (mem_lst[idx].pl_lst) {
+        memcpy(tmp_wgt_lst, mem_lst[idx].wgt_lst, sizeof(wgt_sct *) * mem_lst[idx].pl_cnt);
+        tmp_wgt_lst += mem_lst[idx].pl_cnt;
+
+        /* free up list */
+        mem_lst[idx].wgt_lst = (wgt_sct **) nco_free(mem_lst[idx].wgt_lst);
+      }
+    }
+
+    *wgt_cnt_bln_ret=tot_wgt_cnt;
+  }
+
+
+
+
+  /* free up kd_list's */
+  for(idx=0;idx<lcl_thr_nbr;idx++)
+    mem_lst[idx].kd_list= (KDPriority*) nco_free(mem_lst[idx].kd_list);
+
+
+  mem_lst=(omp_mem_sct*)nco_free(mem_lst);
+
+  return wgt_lst_bln;
+
+
+}
+
+
+
+
+void
+nco_mem_lst_cat(
+omp_mem_sct *mem_lst,
+int sz_lst)
+{
+
+  int idx;
+  int i_typ;
+  size_t tot_cnt = 0;
+
+
+  if(mem_lst->wgt_lst)
+    i_typ = 1;
+  else if(mem_lst->pl_lst)
+    i_typ = 2;
+  else
+    i_typ=0;
+
+  /* quick return if list empty */
+  if(!i_typ)
+    return;
+
+  /* find total size of lists */
+  for (idx = 0; idx < sz_lst; idx++)
+    tot_cnt += mem_lst[idx].pl_cnt;
+
+  if(!tot_cnt)
+    return;
+
+  else if( i_typ==1 ){
+
+    wgt_sct **tmp_wgt_lst = NULL;
+
+    tmp_wgt_lst = mem_lst[0].wgt_lst = (wgt_sct **) nco_realloc(mem_lst[0].wgt_lst, sizeof(wgt_sct *) * tot_cnt);
+
+    tmp_wgt_lst += mem_lst[0].pl_cnt;
+
+
+    for (idx = 1; idx < sz_lst; idx++) {
+      if (mem_lst[idx].wgt_lst) {
+        memcpy(tmp_wgt_lst, mem_lst[idx].wgt_lst, sizeof(wgt_sct *) * mem_lst[idx].pl_cnt);
+        tmp_wgt_lst += mem_lst[idx].pl_cnt;
+        /* free up list */
+        mem_lst[idx].wgt_lst = (wgt_sct **) nco_free(mem_lst[idx].wgt_lst);
+      }
+    }
+
+  }
+
+  else if(i_typ==2) {
+    poly_sct **tmp_ply_lst = NULL;
+
+    tmp_ply_lst = mem_lst[0].pl_lst = (poly_sct **) nco_realloc(mem_lst[0].pl_lst, sizeof(poly_sct *) * tot_cnt);
+
+    tmp_ply_lst += mem_lst[0].pl_cnt;
+
+
+    for (idx = 1; idx < sz_lst; idx++) {
+      if (mem_lst[idx].pl_lst) {
+        memcpy(tmp_ply_lst, mem_lst[idx].pl_lst, sizeof(poly_sct *) * mem_lst[idx].pl_cnt);
+        tmp_ply_lst += mem_lst[idx].pl_cnt;
+        /* free up list */
+        mem_lst[idx].pl_lst = (poly_sct **) nco_free(mem_lst[idx].pl_lst);
+      }
+    }
+
+  }
+
+  /* update first list with total */
+  mem_lst[0].pl_cnt=tot_cnt;
+
+
+  return;
+
+
+
+
+
+
+
+}
+

@@ -1090,7 +1090,14 @@ extern "C" {
     nco_edg_crt, /* [enm] Edges/arcs are Cartesian/planar lines and neglect curvature */
   } nco_edg_typ_enm;
 
-  typedef enum nco_xtr_typ_enm 
+  typedef enum nco_wgt_typ_enm{
+    nco_wgt_nil=0,
+    nco_wgt_con,   /* conservative algorithm */
+    nco_wgt_nni,   /* nearest neighbor interpolation */
+    nco_wgt_bln    /* bilinear interpolation */
+  } nco_wgt_typ_enm;
+
+typedef enum nco_xtr_typ_enm
     { /* [enm] Extrapolation type enum */
      nco_xtr_fll_lnr=0, // Perform linear extrapolation using two nearest valid neighbors
      nco_xtr_fll_ngh, // Set extrapolated value to value of nearest valid neighbor
@@ -1240,6 +1247,7 @@ extern "C" {
     nco_ply_tri_mth_typ_enm ply_tri_mth; /* [enm] Polygon-to-triangle decomposition method */ 
     nco_edg_typ_enm edg_typ; /* [enm] Arc-type for triangle edges */
     nco_xtr_typ_enm xtr_mth; /* [enm] Extrapolation method */
+    nco_wgt_typ_enm wgt_typ; /* [enm] Weight generation type */
     // Other internal data and metadata 
     char **xtn_var; /* [sng] Extensive variables */
     char *cmd_ln; /* [sng] Command-line */
@@ -1680,7 +1688,17 @@ extern "C" {
     double *dp_xyz;  /* maybe useful for 3D stuff */
 
   } poly_sct;
-  
+
+  typedef struct{
+    int src_id;
+    int dst_id;
+    double area;
+    double wgt;
+
+} wgt_sct;
+
+
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* !__cplusplus */
