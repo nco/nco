@@ -240,6 +240,7 @@ typedef struct KDPpriority
 
 typedef struct {
     poly_sct **pl_lst;
+    wgt_sct **wgt_lst;
     size_t pl_cnt;
     size_t blk_nbr;
     KDPriority *kd_list;

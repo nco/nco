@@ -1680,7 +1680,17 @@ extern "C" {
     double *dp_xyz;  /* maybe useful for 3D stuff */
 
   } poly_sct;
-  
+
+  typedef struct{
+    int src_id;
+    int dst_id;
+    double area;
+    double wgt;
+
+} wgt_sct;
+
+
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* !__cplusplus */
