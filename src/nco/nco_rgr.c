@@ -315,7 +315,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
   rgr->ntp_mth=nco_ntp_log; /* [enm] Interpolation method */
   rgr->xtr_mth=nco_xtr_fll_ngh; /* [enm] Extrapolation method */
-  
+  rgr->wgt_typ=nco_wgt_con;     /* [enm] weight generation  method */
+
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
   for(rgr_var_idx=0;rgr_var_idx<rgr_var_nbr;rgr_var_idx++){
@@ -703,6 +704,19 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       } /* !val */
       continue;
     } /* !xtr_mth */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"wgt_typ") || !strcmp(rgr_lst[rgr_var_idx].key,"weight_type")){
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_con"))
+        rgr->wgt_typ=nco_wgt_con;
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_nni"))
+        rgr->wgt_typ=nco_wgt_nni;
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_bln"))
+        rgr->wgt_typ=nco_wgt_bln;
+      else {
+        (void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
+        abort();
+      }
+      continue;
+    } /* !wgt_typ */
     (void)fprintf(stderr,"%s: ERROR %s reports unrecognized key-value option to --rgr switch: %s\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key);
     nco_exit(EXIT_FAILURE);
   } /* end for */
