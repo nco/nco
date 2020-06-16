@@ -986,12 +986,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       for (idx = 0; idx < nbr_tr; idx++) {
 
         thr_idx = omp_get_thread_num();
-        tree[idx] = nco_map_kd_init(pl_lst_out + quota * idx, quota + (idx == nbr_tr - 1 ? nbr_xcs : 0),
-                                    grd_lon_typ_out);
+        tree[idx] = nco_map_kd_init(pl_lst_out + quota * idx, quota + (idx == nbr_tr - 1 ? nbr_xcs : 0),grd_lon_typ_out);
 
         if (nco_dbg_lvl_get() >= 3)
-          (void) fprintf(fp_stderr, "%s: thread %d created a kdtree of %d nodes\n", nco_prg_nm_get(), thr_idx,
-                         tree[idx]->item_count);
+          (void) fprintf(fp_stderr, "%s: thread %d created a kdtree of %d nodes\n", nco_prg_nm_get(), thr_idx,tree[idx]->item_count);
 
       } /* end for */
 
@@ -1013,8 +1011,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
       if (pl_typ == poly_sph || pl_typ == poly_rll)
-        /* REMEMBER the return type is poly_sct**   but it may actually be wgt_sct** - so later on we recast its
-         * wgt_sct is a subset of poly_sct - with simple members */
+        /* REMEMBER the return type is void**    but it may actually be wgt_sct** or poly_sct** - so we recast it */
         void_lst_vrl = nco_poly_lst_mk_vrl_sph(pl_lst_in, grd_sz_in, grd_lon_typ_out, tree, nbr_tr, lst_typ, &pl_cnt_vrl);
 
       if(lst_typ==1)
@@ -1073,14 +1070,12 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   }
 
+  /* Destroy kdtree */
+  for (idx = 0; idx < nbr_tr; idx++)
+    kd_destroy(tree[idx], NULL);
+  tree = (KDTree **) nco_free(tree);
 
 
-  /* Find max crn_nbr from list of overlap polygons
-  grd_crn_nbr_vrl=0;
-  for(idx=0;idx < pl_cnt_vrl;idx++)
-    if(pl_lst_vrl[idx]->crn_nbr > grd_crn_nbr_vrl)
-      grd_crn_nbr_vrl=pl_lst_vrl[idx]->crn_nbr;
-  */
 
   wgt_raw = (double *) nco_malloc(lnk_nbr * nco_typ_lng(NC_DOUBLE));
   col_src_adr = (int *) nco_malloc(lnk_nbr * nco_typ_lng(NC_INT));
@@ -1149,27 +1144,19 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
 
 
-  /* Destroy kdtree */
-  for (idx = 0; idx < nbr_tr; idx++)
-    kd_destroy(tree[idx], NULL);
-
-  tree = (KDTree **) nco_free(tree);
 
   pl_glb_in = nco_poly_free(pl_glb_in);
   pl_glb_out = nco_poly_free(pl_glb_out);
 
-  /* remember pl_lst_vrl can be an array of wgt_sct* */
-  if(pl_cnt_vrl)
-    /*
-     if(lst_typ==1) {
-       for (idx = 0; idx < pl_cnt_vrl; idx++)
-          pl_lst_vrl[idx] = (poly_sct*)nco_free(pl_lst_vrl[idx]);
+  if(lst_typ==1 && wgt_lst_vrl)
+  {
+    for(idx=0;idx < pl_cnt_vrl;idx++)
+      wgt_lst_vrl[idx]=(wgt_sct*)nco_free(wgt_lst_vrl[idx]);
 
-       pl_lst_vrl = ( poly_sct** )nco_free(pl_lst_vrl);
+    wgt_lst_vrl=(wgt_sct**)nco_free(wgt_lst_vrl);
+  }
 
-     }
-     */
-    if(lst_typ==2)
+  else if(lst_typ==2 && pl_lst_vrl)
       pl_lst_vrl = nco_poly_lst_free(pl_lst_vrl, pl_cnt_vrl);
 
   if (grd_sz_in) pl_lst_in = nco_poly_lst_free(pl_lst_in, grd_sz_in);
