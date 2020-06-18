@@ -1126,7 +1126,7 @@ nco_usg_prn(void)
     if(prg_lcl == ncks) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
     if(prg_lcl == ncecat) (void)fprintf(stdout,"-u, --ulm_nm, rcd_nm\tNew unlimited (record) dimension name\n");
   } /* end if */
-  if(strstr(opt_sng,"--uio")) (void)fprintf(stdout,"    --uio, --share_all\tUse unbuffered I/O to read/write netCDF3 file(s)\n");
+  if(strstr(opt_sng,"--uio")) (void)fprintf(stdout,"    --uio, --share_all\tUnbuffered I/O to read/write netCDF3 file(s)\n");
   if(strstr(opt_sng,"--unn")) (void)fprintf(stdout,"    --unn, union\tSelect union of specified groups and variables\n");
   if(strstr(opt_sng,"[-V")) (void)fprintf(stdout,"-V, --var_val\t\tPrint variable values only\n");
   if(strstr(opt_sng,"[-v")){

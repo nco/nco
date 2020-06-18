@@ -315,7 +315,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->tst=0L; /* [enm] Generic key for testing (undocumented) */
   rgr->ntp_mth=nco_ntp_log; /* [enm] Interpolation method */
   rgr->xtr_mth=nco_xtr_fll_ngh; /* [enm] Extrapolation method */
-  rgr->wgt_typ=nco_wgt_con;     /* [enm] weight generation  method */
+  rgr->wgt_typ=nco_wgt_con; /* [enm] Weight generation method */
 
   /* Parse key-value properties */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -714,7 +714,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       else {
         (void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);
         abort();
-      }
+      } /* !val */
       continue;
     } /* !wgt_typ */
     (void)fprintf(stderr,"%s: ERROR %s reports unrecognized key-value option to --rgr switch: %s\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key);
@@ -3258,8 +3258,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     if(nco_dbg_lvl_get() >= nco_dbg_std && flg_frc_out_wrt) (void)fprintf(stdout,"%s: INFO %s Maximum deviation %g exceeds threshold of %g that triggers automatic writing of fractional destination area as variable named frac_b in regridded output.\n",nco_prg_nm_get(),fnc_nm,frc_out_dff_one_max,eps_rlt_wrt_thr);
   } /* !sometimes non-unity */
   if(flg_frc_nrm && rgr->flg_rnr){
-    // 20190918: Weaken warning because NCO no longer renormalizes when using "destarea" maps unless specifically requested to with --rnr_thr
-    (void)fprintf(stdout,"%s: INFO %s reports manual request to renormalize fields to preserve mean-values (rather than integral values) in destination gridcells incompletely covered by valid data in source gridcells (i.e., non-unity frc_dst = dst_frac = frac_b)\n",nco_prg_nm_get(),fnc_nm);
+    // 20190918: Weaken from WARNING to INFO because NCO no longer renormalizes when using "destarea" maps unless specifically requested to with --rnr_thr
+    (void)fprintf(stdout,"%s: INFO %s reports manual request to renormalize fields to preserve mean-values (rather than integral values) in destination gridcells that are incompletely covered by valid data in source gridcells (i.e., non-unity frc_dst = dst_frac = frac_b)\n",nco_prg_nm_get(),fnc_nm);
     //(void)fprintf(stdout,"%s: INFO %s reports manual request (with --rnr) to renormalize fields with non-unity frc_dst = dst_frac = frac_b at same time global metadata specifies normalization type = %s. Normalizing twice can be an error, depending on intent of each. Charlie is all ears on how NCO should handle this :)\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
     //nco_exit(EXIT_FAILURE);
   } /* !flg_rnr */
@@ -4146,7 +4146,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	    if(flg_grd_in_1D && !strcmp(dmn_nm,col_nm_in)){
 	      if(dmn_idx != dmn_nbr_in-1){
 		/* Unstructured input grid has col in non-MRV location (expect this with, e.g., MPAS-O/I native grid dimension-ordering */
-		(void)fprintf(stdout,"%s: WARNING %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support unstructured spatial dimensions that are not the last (i.e., most rapidly varying) dimension of an input variable, so results are likely garbage.\nHINT: Re-arrange input file dimensions to place horizontal dimension(s) last with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling the regridder. E3SM users: If this is an MPAS dataset with a new (unknown to ncremap) dimension, ask Charlie to add the dimension to ncremap.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
+		(void)fprintf(stdout,"%s: WARNING %s reports unstructured grid spatial coordinate %s is (zero-based) dimension %d of input variable to be regridded %s which has %d dimensions. The NCO regridder does not support unstructured spatial dimensions that are not the last (i.e., most rapidly varying) dimension of an input variable, so results are likely garbage.\nHINT: Re-arrange input file dimensions to place horizontal dimension(s) last with, e.g., \'ncpdq -a time,lev,%s in.nc out.nc\' prior to calling the regridder. E3SM users: If this is an MPAS dataset with a new (unknown to ncremap) dimension, please ask Charlie to add the dimension to the ncremap dimension permutation list.\n",nco_prg_nm_get(),fnc_nm,dmn_nm,dmn_idx,var_nm,dmn_nbr_in,dmn_nm);
 		trv_tbl->lst[idx_tbl].flg_mrv=False;
 	      } /* !dmn_idx */
 	    } /* !flg_grd_in_1D */

@@ -1,8 +1,11 @@
+2020-06-18  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add --pdq_opt to override internal presets and allow MPAS-SI BGC workaround
+
 2020-06-15 Henry Butowsky  <henryb@hush.com>
 
-	* inception of wgt_sct a lightweight version of poly_sct used when overlap mesh is not requested
-	  nco_ply_lst_mk_vrl_sph() - can now return wgt_sct**
-	  nco_msh_mk() - can now deal with overlap list of wgt_sct **
+	* Introduce wgt_sct, a lightweight version of poly_sct used when overlap mesh is not requested
+	  nco_ply_lst_mk_vrl_sph() can return and nco_msh_mk() can now understand overlap list of wgt_sct**
 
 2020-06-14  Charlie Zender  <zender@uci.edu>
 
@@ -11,7 +14,7 @@
 2020-06-11  Charlie Zender  <zender@uci.edu>
 
 	* Document --uio, --share
-	
+
 2020-06-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha02 release procedure:

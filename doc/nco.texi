@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 14 June 2020
+@set update-date 18 June 2020
 @set update-month June 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -16801,7 +16801,7 @@ This page lists the @command{ncap2} operators in order of precedence (highest to
 @html
 <a name="ncap_nmc"></a> <!-- http://nco.sf.net/nco.html#ncap_nmc -->
 @end html
-@node ID Quoting, make_bounds() function, Operator precedence and associativity , ncap2 netCDF Arithmetic Processor
+@node ID Quoting, make_bounds() function, Operator precedence and associativity, ncap2 netCDF Arithmetic Processor
 @subsection ID Quoting
 @cindex ID Quoting
 In this section a name refers to a variable, attribute, or dimension name.
@@ -16875,6 +16875,9 @@ netcdf-4.0 Final  2008/08/28@*
 @end example
 @c End HMB documentation
 
+@html
+<a name="make_bounds"></a> <!-- http://nco.sf.net/nco.html#make_bounds -->
+@end html
 @node make_bounds() function, solar_zenith_angle function, ID Quoting, ncap2 netCDF Arithmetic Processor
 @subsection make_bounds() function
 @cindex make_bounds() function
@@ -16886,13 +16889,14 @@ The @command{ncap2} custom function 'make_bounds()' takes any monotonic 1D coord
 @item 1st Argument
 The name of the input coordinate variable.
 @item 2nd Argument
-The dimension name of the second dimension of the output variable. 
+The second dimension of the output variable, referenced as a dimension
+(i.e., the name preceded by a dollarsign) not as a string name.
 The size of this dimension should always @w{be 2}.
 If the dimension does not yet exist create it first using @code{defdim()}. 
 @item 3rd Argument
-The string value of a "bounds" attribute that is created in the input
+The name of a "bounds" attribute that is created in the input
 coordinate variable. 
-This must be the variable name to contain the bounds.
+This will be the name of variable created to contain the bounds.
 @end table
 Typical usage:
 @example
@@ -17989,7 +17993,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}]
-[-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [-v @var{var_lst}] [--version] 
+[-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [--uio] [-v @var{var_lst}] [--version] 
 [--vrt_fl=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
@@ -23681,7 +23685,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [--rrg_grd_rgn=@var{grd_rgn}] [--rrg_rnm_sng=@var{rnm_sng}]
 [-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
 [--skl=@var{skl-file}] [--stdin] [-T @var{drc_tmp}] [-t @var{thr_nbr}]
-[-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}]
+[-U] [-u @var{unq_sfx}] [--ugrid=@var{ugrid-file}] [--uio]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [--vrt_fl=@var{vrt_fl}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] [--xcl_var]

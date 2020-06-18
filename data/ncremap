@@ -436,6 +436,7 @@ np_se_nbr=4 # [nbr] Polynomial order for TempestRemap SE maps
 out_fl='' # [sng] Output file
 out_xmp='out.nc' # [sng] Output file for examples
 par_typ="${par_bck}" # [sng] Parallelism type
+pdq_opt='' # [sng] ncpdq dimension permutation option
 ppc_prc='' # [nbr] Precision-preserving compression number of significant digits
 prc_typ='' # [sng] Procedure type
 prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
@@ -542,6 +543,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, pdq_typ, prm_typ, procedure${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
 # 20171101: Implement but do not yet advertise PPC in ncremap
+    echo " ${fnt_bld}--pdq_opt${fnt_nrm}  ncpdq dimension permutation string (empty means none) (default ${fnt_bld}${pdq_opt}${fnt_nrm}) [${fnt_tlc}pdq, pdq_opt, prm, prm_opt, permute${fnt_nrm}]"
     echo " ${fnt_bld}--ppc_prc${fnt_nrm}  Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, ppc_prc, precision, quantize${fnt_nrm}]"
     echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty means ) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}]"
 #    echo " ${fnt_bld}--qea_flg${fnt_nrm}  Quasi-equal area mode for TempestRemap (default ${fnt_bld}${qea_flg}${fnt_nrm}) [${fnt_tlc}qea, qea_flg, np2, quasi-equal-area${fnt_nrm}]"
@@ -717,6 +719,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       out_fl=?* | output_file=?* | out_file=?* ) out_fl="${LONG_OPTARG}" ;; # -o # Output file
 	       prc_typ=?* | pdq_typ=?* | prm_typ=?* | procedure=?* ) prc_typ="${LONG_OPTARG}" ;; # -P # Procedure type
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
+	       pdq=?* | pdq_opt=?* | prm=?* | prm_opt=?* | permute=?* ) pdq_opt="${LONG_OPTARG}" ;; # # ncpdq dimension permutation option
 	       ppc=?* | ppc_prc=?* | precision=?* | quantize=?* ) ppc_prc="${LONG_OPTARG}" ;; # # Precision-preserving compression
 	       prs_stt=?* | preserve=?* | preserved_statistic=?* ) prs_stt="${LONG_OPTARG}" ;; # # Preserved statistic
 	       qea | qea_flg | np2 | quasi-equal-area ) qea_flg='Yes' ;; # # Quasi-equal area mode for TempestRemap
@@ -1248,16 +1251,24 @@ if [ -n "${prc_typ}" ]; then
     fi # !prc_typ
 fi # !prc_typ
 if [ "${prc_typ}" = 'airs' ]; then 
-    pdq_opt='-a StdPressureLev,GeoTrack,GeoXTrack'
+    if [ -z "${pdq_opt}" ]; then 
+	pdq_opt='-a StdPressureLev,GeoTrack,GeoXTrack'
+    fi # !pdq_opt
 fi # !airs
 if [ "${prc_typ}" = 'hirdls' ]; then 
-    pdq_opt='-a Pressure,Latitude,lon'
+    if [ -z "${pdq_opt}" ]; then 
+	pdq_opt='-a Pressure,Latitude,lon'
+    fi # !pdq_opt
 fi # !hirdls
 if [ "${prc_typ}" = 'mls' ]; then 
-    pdq_opt='-a CO_Pressure,CO_Latitude,lon'
+    if [ -z "${pdq_opt}" ]; then 
+	pdq_opt='-a CO_Pressure,CO_Latitude,lon'
+    fi # !pdq_opt
 fi # !mls
 if [ "${prc_typ}" = 'mod04' ]; then 
-    pdq_opt='-U'
+    if [ -z "${pdq_opt}" ]; then 
+	pdq_opt='-U'
+    fi # !pdq_opt
     hnt_dst='--dst_regional'
 fi # !mod04
 if [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ]; then 
@@ -1284,11 +1295,14 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 	fi # !err
 	dpt_flg='Yes'
     fi # !dpt_fl
-#    pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # MPAS-Ocean
-#    pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # MPAS-SeaIce
-#    pdq_opt='-a Time,nCategories,TWO,nEdges,nCells' # MPAS-LandIce
-#    pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,TWO,nEdges,nCells' # MPAS O,SI,LI and depth
-    pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20190806: MPAS O,SI,LI,depth and BGC in one swell foop
+    if [ -z "${pdq_opt}" ]; then
+#	pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # MPAS-Ocean
+#	pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # MPAS-SeaIce
+#	pdq_opt='-a Time,nCategories,TWO,nEdges,nCells' # MPAS-LandIce
+#	pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,TWO,nEdges,nCells' # MPAS O,SI,LI and depth
+#	pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20190806: MPAS O,SI,LI,depth and BGC in one swell foop
+	pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20200620: MPAS O,SI,LI,depth and new SI BGC in one swell foop
+    fi # !pdq_opt
     if [ -n "${rnr_thr}" ]; then 
 	# rnr_thr='off' in MPAS mode turns-off renormalization
 	if [ "${rnr_thr}" != 'off' ]; then 
@@ -1850,6 +1864,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: np_se_nbr= ${np_se_nbr}\n"
     printf "dbg: out_fl   = ${out_fl}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
+    printf "dbg: pdq_opt  = ${pdq_opt}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
     printf "dbg: prs_stt  = ${prs_stt}\n"
 #    printf "dbg: qea_flg  = ${qea_flg}\n"
