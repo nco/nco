@@ -1994,6 +1994,30 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 #	done # !sgm_idx
     fi # !dbg
 
+    # 20200619 High-frequency output requires date information
+    if [ "${clm_md}" = 'hf' ]; then
+	unset dpm # Days per month
+	declare -a dpm
+	dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
+	let srd=${dpy}*${tpd_out}
+	drn=${tpd_out}
+
+	yyyy_srt=`printf "%04d" ${yr_srt}`
+	yyyy_end=`printf "%04d" ${yr_end}`
+
+	if [ ${dbg_lvl} -ge 2 ]; then
+	    printf "dbg: HFS variable(s):\n"
+	    printf "dpm = ${dpm}\n"
+	    printf "dpy = ${dpy}\n"
+	    printf "drn = ${drn}\n"
+	    printf "srd = ${srd}\n"
+	    printf "tpd_out = ${tpd_out}\n"
+	    printf "yyyy_srt = ${yyyy_srt}\n"
+	    printf "yyyy_end = ${yyyy_end}\n"
+	fi # !dbg
+
+    fi # !clm_md
+
     # Create template output filenames (to avoid Bash 2D string arrays)
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 	if [ -z "${fml_nm_usr}" ]; then 
@@ -2044,9 +2068,13 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		let var_idx_end=$((var_nbr - 1))
 	    fi # !bch_flg
 	    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
-		
 		fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
-		cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		if [ "${clm_md}" = 'hf' ]; then
+		    # 20200619 High-frequency output requires time-coordinate hyperslabs
+		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		else
+		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		fi # !clm_md
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_sbs[${var_idx}]}
 		fi # !dbg

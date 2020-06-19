@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha03: Da 5 Bloods';git push
  	git tag -a 4.9.4-alpha03 -m 'ncclimo uio; ncremap pdq_opt, si bgc, uio';git push --tags
 
+	* ncclimo add stubs to correctly date-hyperslab high-frequency time-series
+
 	* ncremap document --ppc and --pdq
 
 2020-06-18  Charlie Zender  <zender@uci.edu>
