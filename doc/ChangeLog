@@ -1,11 +1,22 @@
+2020-06-19  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.4-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha03: Da 5 Bloods';git push
+ 	git tag -a 4.9.4-alpha03 -m 'ncclimo uio; ncremap pdq_opt, si bgc, uio';git push --tags
+
+	* ncremap document --ppc and --pdq
+
 2020-06-18  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers
+	BGC dimensions to preset pdq_opt for mpasseaice
 
 	* ncremap add --pdq_opt to override internal presets and allow MPAS-SI BGC workaround
 
 2020-06-15 Henry Butowsky  <henryb@hush.com>
 
 	* Introduce wgt_sct, a lightweight version of poly_sct used when overlap mesh is not requested
-	  nco_ply_lst_mk_vrl_sph() can return and nco_msh_mk() can now understand overlap list of wgt_sct**
+	  nco_ply_lst_mk_vrl_sph() returns and nco_msh_mk() understands overlap list of wgt_sct**
 
 2020-06-14  Charlie Zender  <zender@uci.edu>
 

@@ -543,9 +543,10 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-P${fnt_nrm} ${fnt_bld}prc_typ${fnt_nrm}  Procedure type (empty means none) (default ${fnt_bld}${prc_typ}${fnt_nrm}) [${fnt_tlc}prc_typ, pdq_typ, prm_typ, procedure${fnt_nrm}]"
     echo "${fnt_rvr}-p${fnt_nrm} ${fnt_bld}par_typ${fnt_nrm}  Parallelism type (default ${fnt_bld}${par_typ}${fnt_nrm}) [${fnt_tlc}par_typ, par_md, parallel_type, parallel_mode, parallel${fnt_nrm}]"
 # 20171101: Implement but do not yet advertise PPC in ncremap
+# 20200618: Document and advertise PPC in ncremap
     echo " ${fnt_bld}--pdq_opt${fnt_nrm}  ncpdq dimension permutation string (empty means none) (default ${fnt_bld}${pdq_opt}${fnt_nrm}) [${fnt_tlc}pdq, pdq_opt, prm, prm_opt, permute${fnt_nrm}]"
     echo " ${fnt_bld}--ppc_prc${fnt_nrm}  Precision-preserving compression (empty means none) (default ${fnt_bld}${ppc_prc}${fnt_nrm}) [${fnt_tlc}ppc, ppc_prc, precision, quantize${fnt_nrm}]"
-    echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty means ) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}]"
+    echo " ${fnt_bld}--preserve${fnt_nrm} Preserved statistic (empty preserves integral, except mean for MPAS) (default ${fnt_bld}${prs_stt}${fnt_nrm}) [${fnt_tlc}preserve, prs_stt, preserved_statistic${fnt_nrm}]"
 #    echo " ${fnt_bld}--qea_flg${fnt_nrm}  Quasi-equal area mode for TempestRemap (default ${fnt_bld}${qea_flg}${fnt_nrm}) [${fnt_tlc}qea, qea_flg, np2, quasi-equal-area${fnt_nrm}]"
     echo "${fnt_rvr}-R${fnt_nrm} ${fnt_bld}rgr_opt${fnt_nrm}  Regrid options (empty means none) (default ${fnt_bld}${rgr_opt}${fnt_nrm}) [${fnt_tlc}rgr_opt, regrid_options${fnt_nrm}]"
     echo "${fnt_rvr}-r${fnt_nrm} ${fnt_bld}rnr_thr${fnt_nrm}  Renormalization threshold (empty means none (except for MPAS, see documentation)) (default ${fnt_bld}${rnr_thr}${fnt_nrm}) [${fnt_tlc}rnr_thr, rnr, renormalize, renormalization_threshold${fnt_nrm}]"
@@ -2080,7 +2081,7 @@ if [ "${flg_hrz}" = 'Yes' ]; then
 	    printf "Will generate mapping weights and map-file with \'${wgt_cmd}\'\n"
 	fi # !vrb_lvl
 	if [ ${flg_grd_only} != 'Yes' ]; then
-	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT The Conda 'nco' package and some NCL packages provide ESMF_RegridWeightGen. Tempest executables must either be installed from source (https://github.com/ClimateGlobalChange/tempestremap) or obtained via the Conda 'tempest-remap' package (which the Conda 'nco' package automatically provides).\n"; exit 1; }
+	    command -v ${wgt_exe} 2>&1 > /dev/null || { printf "${spt_nm}: ERROR cannot find weight-generation command executable ${wgt_exe}. Please install the executable, or change your PATH to find it.\n${spt_nm}: HINT The Conda 'nco' package and some NCL packages provide ESMF_RegridWeightGen. Tempest executables can be installed from source (https://github.com/ClimateGlobalChange/tempestremap) or obtained via the Conda 'tempest-remap' package (which the Conda 'nco' package also automatically provides).\n"; exit 1; }
 	fi # !flg_grd_only
 	if [ ${vrb_lvl} -ge ${vrb_3} ]; then
 	    if [ ${fl_nbr} -ge 2 ]; then 
@@ -2103,7 +2104,7 @@ if [ "${prc_typ}" = 'rrg' ]; then
 	rgn_nbr=`echo ${rnm_sng} | wc -l`
 	if [ "${rgn_nbr}" -ne 1 ]; then
 	    echo "ERROR: Inferred regional regridding suffix '${rnm_sng}' indicates multiple regions present in input file. ncremap only works on one region at a time."
-	    echo "HINT: Give a single region string as the argument to --rrg_rnm_sng"
+	    echo "HINT: Provide a single region string as the argument to the --rrg_rnm_sng option"
 	    exit 1
 	fi # !rgn_nbr
 	echo "${spt_nm}: INFO Parsed input file dimension list to obtain regional suffix string '${rnm_sng}'"

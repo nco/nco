@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 18 June 2020
+@set update-date 19 June 2020
 @set update-month June 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -23680,7 +23680,8 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [-n @var{nco_opt}] [--nm_dst=@var{nm_dst}] [--nm_src=@var{nm_src}] 
 [--no_cll_msr] [--no_frm_trm] [--no_stg_grd]
 [-O @var{drc_out}] [-o @var{output-file}] [-P @var{prc_typ}] [-p @var{par_typ}]
-[--preserve=@var{prs_stt}] [-R @var{rgr_opt}] [--rgn_dst] [--rgn_src] [--rnr_thr=@var{rnr_thr}] 
+[--pdq=@var{pdq_opt}] [--ppc=@var{ppc_opt}] [--preserve=@var{prs_stt}]
+[-R @var{rgr_opt}] [--rgn_dst] [--rgn_src] [--rnr_thr=@var{rnr_thr}] 
 [--rrg_bb_wesn=@var{bb_wesn}] [--rrg_dat_glb=@var{dat_glb}] [--rrg_grd_glb=@var{grd_glb}]
 [--rrg_grd_rgn=@var{grd_rgn}] [--rrg_rnm_sng=@var{rnm_sng}]
 [-s @var{grd_src}] [--sgs_frc=@var{sgs_frc}] [--sgs_msk=@var{sgs_msk}] [--sgs_nrm=@var{sgs_nrm}]
@@ -25590,6 +25591,46 @@ Thus @var{job_nbr} is an additional parameter to fine-tune file level
 parallelism (it has no effect in Serial mode).
 Please see the @command{ncremap} @var{job_nbr} documentation for more
 details.
+
+@html
+<a name="pdq_opt"></a> <!-- http://nco.sf.net/nco.html#pdq_opt -->
+<a name="prm_opt"></a> <!-- http://nco.sf.net/nco.html#prm_opt -->
+<a name="prm"></a> <!-- http://nco.sf.net/nco.html#prm -->
+<a name="pdq"></a> <!-- http://nco.sf.net/nco.html#pdq -->
+<a name="permute"></a> <!-- http://nco.sf.net/nco.html#permute -->
+@end html
+@cindex @var{pdq_opt}
+@cindex @code{--pdq_opt}
+@cindex @code{--pdq}
+@cindex @code{--prm_opt}
+@cindex @code{--prm}
+@cindex @code{--permute}
+@item --pdq_opt @var{pdq_opt} (@code{--pdq}, @code{--prm_opt}, @code{--prm}, @code{--permute})
+Specifies the dimension permutation option used by @command{ncpdq}
+prior to regridding. 
+Synonyms include @samp{--pdq}, @samp{--prm}, @samp{--prm_opt}, and
+@samp{--permute}. 
+Files to be regridded must have their horizontal spatial dimension(s) 
+in the last (most-rapidly-varying) position. 
+Most data files store variables with dimensions arranged in this
+order, and @command{ncremap} internally sets the permutation option
+for datasets known (via the @code{--prc_typ} option) to require
+permutation.
+Use @samp{--pdq=@var{pdq_opt}} to override the internally preset
+defaults.
+This is useful when regridding files that contain new dimensions that 
+@command{ncremap} has not encountered before.
+For example, if a development version of an @acronym{MPAS} model
+inserts a new dimension @code{new_dim} after the horizontal spatial
+dimension @code{nCells} in some variables, that would prevent the
+regridder from working because the horizontal dimension(s) must
+be the last dimension(s).
+The workaround is to instruct @command{ncremap} what the permutation
+option to @command{ncpdq} should be in order to place the horizontal
+spatial dimension(s) at the end of all variables:
+@example
+ncremap --pdq='-a Time,new_dim,nCells' --map=map.nc in.nc out.nc
+@end example
 
 @html
 <a name="preserve"></a> <!-- http://nco.sf.net/nco.html#preserve -->

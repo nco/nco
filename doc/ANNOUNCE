@@ -31,12 +31,22 @@ A. All operators now support unbuffered I/O with netCDF3 files when
    invoked with the flag --uio or longer synonyms --unbuffered_io or
    --share_all. Typically unbufferend I/O may significantly reduce
    throughput time when large record variables are written or read.
+   Performance improvements may depend on netCDF version.
    Thanks to Barron Henderson for this suggestion.
    ncks -v T in.nc out.nc       # Default, buffered I/O
    ncks --uio -v T in.nc out.nc # Unbuffered I/O
    http://nco.sf.net/nco.html#uio
 
-A. 
+A. ncremap now has an --pdq option to specify the dimension
+   permutation string used by ncpdq prior to regridding.
+   Synonyms include --pdq_opt, --prm, and --permute.
+   Files to be regridded must have their horizontal spatial
+   dimension(s) in the last (most-rapidly-varying) position.
+   Use --pdq to override the internally preset defaults for certain 
+   filetypes. This is useful when regridding files that contain
+   new dimensions that ncremap has not encountered before.
+   ncremap --pdq='-a Time,new_dim,nCells' --map=map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#pdq_opt
 
 BUG FIXES:
 
