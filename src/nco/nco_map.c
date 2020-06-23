@@ -1062,17 +1062,38 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     lnk_nbr = pl_cnt_vrl;
   }
 
-  else if(rgr->wgt_typ== nco_wgt_bln)
+  else if(rgr->wgt_typ== nco_wgt_nni)
   {
+      lst_typ=1;
+
+    /* call the overlap routine */
+    if (pl_cnt_in && pl_cnt_out)
+    {
+      /* temporarily disable crt code */
+      /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
+
+      if (pl_typ == poly_sph || pl_typ == poly_rll)
+        /* REMEMBER the return type is void**    but it may actually be wgt_sct** or poly_sct** - so we recast it */
+        wgt_lst_vrl = nco_poly_lst_mk_nni_sph(pl_lst_in, grd_sz_in, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
+
+        pl_lst_vrl=(poly_sct**)NULL_CEWI;
 
 
 
+    } /* !pl_cnt_in */
 
+
+
+    if (nco_dbg_lvl_get() >= nco_dbg_dev )
+      fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap weights(bln)=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
+
+    lnk_nbr=pl_cnt_vrl;
   }
 
   /* Destroy kdtree */
   for (idx = 0; idx < nbr_tr; idx++)
     kd_destroy(tree[idx], NULL);
+
   tree = (KDTree **) nco_free(tree);
 
 
