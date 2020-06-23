@@ -293,14 +293,14 @@ void kd_destroy(KDTree *this_one, void (*delfunc)(kd_generic item));
 char *kd_err_string(void);
 int kd_finish (kd_gen);
 void kd_insert(KDTree* , kd_generic , kd_box, kd_generic );
-int kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn);
+int kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority *list, kd_box Bp, kd_box Bn);
 int kd_neighbour_intersect(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn);
 int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
 int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
 //int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head, KDPriority *list_end, int stateH, int stateV );
 //int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head, KDPriority *list_end, int stateH, int stateV );
 int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_mem, int stateH, int stateV );
-int kd_nearest (KDTree* tree, double x, double y, int m, KDPriority **alist);
+int kd_nearest (KDTree* tree, double x, double y, int m, KDPriority *alist);
 
 int kd_nearest_intersect(KDTree **rTree, int nbr_tr,kd_box Xq, omp_mem_sct *omp_mem, int bSort);
 int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem);

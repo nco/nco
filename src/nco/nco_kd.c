@@ -2064,7 +2064,7 @@ int add_priority_intersect(int m, KDPriority *P, kd_box Xq, KDElem *elem)
 	return 1;
 }
 
-int kd_nearest(KDTree* tree, double x, double y, int m, KDPriority **alist);
+int kd_nearest(KDTree* tree, double x, double y, int m, KDPriority *alist);
 
 
 void kd_print_nearest(KDTree* tree, double x, double y, int m)
@@ -2144,7 +2144,7 @@ int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list
 	return 1;
 }
 
-int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn)
+int  kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority *list, kd_box Bp, kd_box Bn)
 {
     int d;
     short hort,vert;
@@ -2193,7 +2193,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 			/* Check this one */
 			kd_data_tries++;
 			if( top_item->item ) /* really shouldn't add dead nodes to the list! */
-				add_priority(m,list,Xq,top_item);
+				add_priority(nbr_list,list,Xq,top_item);
 			top_elem->state += 1;
 			break;
 		case KD_LOSON:
@@ -2213,7 +2213,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 						top_elem->Bp[hort] = top_item->other_bound;
 						top_elem->Bn[hort] = top_item->lo_min_bound;
 					}
-					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
+					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,nbr_list,list))
 					{
 						top_elem->state += 1;
 						kd_pushb(realGen, top_item->sons[KD_LOSON], (d+1)%4,top_elem->Bn,top_elem->Bp);
@@ -2238,7 +2238,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 						top_elem->Bp[hort] = top_item->hi_max_bound;
 						top_elem->Bn[hort] = top_item->size[d];
 					}
-					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
+					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,nbr_list,list))
 					{
 						top_elem->state += 1;
 						kd_pushb(realGen, top_item->sons[KD_HISON], (d+1)%4,top_elem->Bn,top_elem->Bp);
@@ -2266,7 +2266,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 						top_elem->Bp[hort] = top_item->hi_max_bound;
 						top_elem->Bn[hort] = top_item->size[d];
 					}
-					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
+					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,nbr_list,list))
 					{
 						top_elem->state += 1;
 						kd_pushb(realGen, top_item->sons[KD_HISON], (d+1)%4,top_elem->Bn,top_elem->Bp);
@@ -2291,7 +2291,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 						top_elem->Bp[hort] = top_item->other_bound;
 						top_elem->Bn[hort] = top_item->lo_min_bound;
 					}
-					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
+					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,nbr_list,list))
 					{
 						top_elem->state += 1;
 						kd_pushb(realGen, top_item->sons[KD_LOSON], (d+1)%4,top_elem->Bn,top_elem->Bp);
@@ -2595,7 +2595,7 @@ nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *
 }
 
 
-int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
+int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority *alist)
 {
 	int idx;
         kd_box Bp,Bn,Xq;
@@ -2604,11 +2604,12 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	Xq[KD_BOTTOM] = y;
 	Xq[KD_RIGHT] = x;
 	Xq[KD_TOP] = y;
-	*alist = (KDPriority *)nco_calloc(sizeof(KDPriority),m);
+	//*alist = (KDPriority *)nco_calloc(sizeof(KDPriority),m);
 	for(idx=0;idx<m;idx++)
 	{
-	  (*alist)[idx].dist = KD_DBL_MAX;
-	  (*alist)[idx].elem = (KDElem*)NULL;
+	  alist[idx].dist = KD_DBL_MAX;
+	  //alist[idx].elem = (KDElem*)NULL;
+	  //alist[idx].area = 0.0;
 	}
 
 
@@ -2619,7 +2620,7 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	Bn[1]=realTree->extent[3];
 
 
-	return kd_neighbour(realTree->tree,Xq,m,*alist,Bp,Bn);
+	return kd_neighbour(realTree->tree,Xq,m,alist,Bp,Bn);
 }
 
 int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem)
