@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha03
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 19 June 2020
+@set update-date 24 June 2020
 @set update-month June 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13389,6 +13389,7 @@ See @pxref{ID Quoting}.
 
 @html
 <a name="value_list"></a> <!-- http://nco.sf.net/nco.html#value_list -->
+<a name="initialize"></a> <!-- http://nco.sf.net/nco.html#initialize -->
 @end html
 @node Value List, Number literals, Attributes, ncap2 netCDF Arithmetic Processor
 @subsection Value List

@@ -1971,12 +1971,13 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    fi # !sgm_nbrm1
 	else # !clm_md
 	    # High-frequency timeseries are hyperslabbed by date and so need fuzzy file-lists
-	    # that may contain an extra file or two in case year-boundaries are intermediate records
+	    # that may contain an extra file or two in case year-boundaries are intermediate records.
 	    # Output high-frequency timeseries segments will start/end on year boundaries as normal
 	    # However, the number of files read in each segment may differ, and is not known a priori
-	    # NB: High-frequency timeseries underestimate fpy by one when fpy=dpy/dpf is non-integral
+	    # NB: High-frequency timeseries underestimate fpy by [0,1) when fpy=dpy/dpf is non-integral
 	    let fpyp1=${fpy}+1
-	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy} # NB: uses fpy to underestimate fl_idx_srt
+#	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy} # NB: uses fpy to underestimate fl_idx_srt
+	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
 	    let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: uses fpyp1 to overestimate fl_idx_end
 	    let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
 	    let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
@@ -2003,6 +2004,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	done # !fl_idx
 	yyyy_srt_sgm[${sgm_idx}]=`printf "%04d" ${yr_srt_sgm}`
 	yyyy_end_sgm[${sgm_idx}]=`printf "%04d" ${yr_end_sgm}`
+	let yr_endp1_sgm=${yr_end_sgm}+1
+	yyyy_endp1_sgm[${sgm_idx}]=`printf "%04d" ${yr_endp1_sgm}`
 
 	# Sanity check all files existence before wasting time and space on concatenation
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
@@ -2043,7 +2046,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    printf "dbg: HFS variable(s):\n"
-	    printf "dpm = ${dpm}\n"
+	    printf "dpm[3] = ${dpm[3]}\n"
 	    printf "dpy = ${dpy}\n"
 	    printf "drn = ${drn}\n"
 	    printf "fl_idx_srt = ${fl_idx_srt}\n"
@@ -2115,8 +2118,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
 		if [ "${clm_md}" = 'hf' ]; then
 		    # 20200619 High-frequency output requires time-coordinate hyperslabs
-		    tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-01-01 00:00:00"
-		    tm_end="${yyyy_end_sgm[${sgm_idx}]}-12-31 23:59:59"
+		    tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-01-01 00:00:01"
+		    tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01 00:00:00"
 		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		else
 		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
