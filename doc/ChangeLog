@@ -1,5 +1,9 @@
 2020-06-25  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.4-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha04: 5 Oaks';git push
+ 	git tag -a 4.9.4-alpha04 -m 'ncclimo hgh_frq yr bnd xct';git push --tags
+
 	* ncclimo fix high-frequency off-by-one error due to CAM/EAM time-stamps at averaging interval end
 
 	* ncclimo optimize fuzziness of input file-list to work with longer time-series
