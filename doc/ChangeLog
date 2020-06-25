@@ -1,3 +1,9 @@
+2020-06-24  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo high-frequency mode creates exact, year-aligned output files
+
+	* ncclimo create pruned yet fuzzy file-lists for timeseries segments
+
 2020-06-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha03 release procedure:

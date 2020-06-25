@@ -10,7 +10,7 @@
 # Usage:
 # autoconf
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
-# cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make ianstall
+# cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
 # cd ~/nco;autoreconf --force
 # cd ~/nco;for fl in NEWS README AUTHORS ChangeLog ; do ln -s doc/${fl} ${fl};done;autoreconf --force
 

@@ -1263,8 +1263,12 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     elif [ "${clm_md}" = 'mth' ]; then
 	fpy=12
     fi # !clm_md
-    let yr_sbs=${fl_nbr}/${fpy}
-    let fl_rmd=${fl_nbr}%${fpy}
+    if [ "${clm_md}" = 'hf' ]; then
+	let yr_sbs=${yr_nbr}
+    else
+	let yr_sbs=${fl_nbr}/${fpy}
+	let fl_rmd=${fl_nbr}%${fpy}
+    fi # !clm_md
     if [ ${flg_dct} = 'Yes' ]; then
 	if [ ${fl_rmd} -ne 0 ]; then
 	    printf "${spt_nm}: ERROR ${fl_nbr} files of clm_md=${clm_md} input contain non-integral number of years, ${fl_rmd} files leftover in final year\n"
@@ -1955,20 +1959,52 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 	fl_sgm[${sgm_idx}]=''
 
-	let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy}
-	let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy}
-	let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
-	let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
-	if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
-	    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpy}
-	    let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
-	fi # !sgm_nbrm1
+	if [ "${clm_md}" != 'hf' ]; then
+	    # Non-high-frequency timeseries receive exact file-lists to hyperslab by index
+	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy}
+	    let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy}
+	    let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
+	    let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
+	    if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+		let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpy}
+		let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
+	    fi # !sgm_nbrm1
+	else # !clm_md
+	    # High-frequency timeseries are hyperslabbed by date and so need fuzzy file-lists
+	    # that may contain an extra file or two in case year-boundaries are intermediate records
+	    # Output high-frequency timeseries segments will start/end on year boundaries as normal
+	    # However, the number of files read in each segment may differ, and is not known a priori
+	    # NB: High-frequency timeseries underestimate fpy by one when fpy=dpy/dpf is non-integral
+	    let fpyp1=${fpy}+1
+	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy} # NB: uses fpy to underestimate fl_idx_srt
+	    let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: uses fpyp1 to overestimate fl_idx_end
+	    let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
+	    let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
+	    if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+		let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpyp1} # NB: uses fpyp1 to overestimate fl_idx_end
+		let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
+	    fi # !sgm_nbrm1
+	    # Fuzzify list by including files nominally before and after first and last expected files
+	    if [ ${fl_idx_srt} -ne 0 ]; then
+		let fl_idx_srt=${fl_idx_srt}-1
+	    fi # !fl_idx_srt
+	    # Fuzziness may generate indices that are too large
+	    if [ ${fl_idx_end} -gt ${fl_nbr} ]; then
+		let fl_idx_end=${fl_nbr}
+	    fi # !fl_idx_end
+	    if [ ${fl_idx_end} -lt ${fl_nbr} ]; then
+		let fl_idx_end=${fl_idx_end}+1
+	    fi # !fl_idx_end
+	fi # !clm_md
+
+	# NB: fl_idx_srt is zero-based while fl_idx_end one-based, i.e., the count, one more than the index
 	for ((fl_idx=fl_idx_srt;fl_idx<fl_idx_end;fl_idx++)); do
 	    fl_sgm[${sgm_idx}]="${fl_sgm[${sgm_idx}]} ${fl_in[${fl_idx}]}"
-	    yyyy_srt_sgm[${sgm_idx}]=`printf "%04d" ${yr_srt_sgm}`
-	    yyyy_end_sgm[${sgm_idx}]=`printf "%04d" ${yr_end_sgm}`
 	done # !fl_idx
+	yyyy_srt_sgm[${sgm_idx}]=`printf "%04d" ${yr_srt_sgm}`
+	yyyy_end_sgm[${sgm_idx}]=`printf "%04d" ${yr_end_sgm}`
 
+	# Sanity check all files existence before wasting time and space on concatenation
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
 	    if [ ! -f "${fl_crr}" ]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${fl_crr}"
@@ -2005,13 +2041,21 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	yyyy_srt=`printf "%04d" ${yr_srt}`
 	yyyy_end=`printf "%04d" ${yr_end}`
 
-	if [ ${dbg_lvl} -ge 2 ]; then
+	if [ ${dbg_lvl} -ge 1 ]; then
 	    printf "dbg: HFS variable(s):\n"
 	    printf "dpm = ${dpm}\n"
 	    printf "dpy = ${dpy}\n"
 	    printf "drn = ${drn}\n"
+	    printf "fl_idx_srt = ${fl_idx_srt}\n"
+	    printf "fl_idx_end = ${fl_idx_end}\n"
+	    printf "fpy = ${fpy}\n"
+	    printf "fpyp1 = ${fpyp1}\n"
+	    printf "sgm_rmd = ${sgm_rmd}\n"
 	    printf "srd = ${srd}\n"
 	    printf "tpd_out = ${tpd_out}\n"
+	    printf "ypf_max = ${ypf_max}\n"
+	    printf "yr_nbr = ${yr_nbr}\n"
+	    printf "yr_sbs = ${yr_sbs}\n"
 	    printf "yyyy_srt = ${yyyy_srt}\n"
 	    printf "yyyy_end = ${yyyy_end}\n"
 	fi # !dbg
@@ -2071,7 +2115,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
 		if [ "${clm_md}" = 'hf' ]; then
 		    # 20200619 High-frequency output requires time-coordinate hyperslabs
-		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		    tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-01-01 00:00:00"
+		    tm_end="${yyyy_end_sgm[${sgm_idx}]}-12-31 23:59:59"
+		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		else
 		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		fi # !clm_md
