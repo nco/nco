@@ -1371,15 +1371,15 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
 wgt_sct **
 nco_poly_lst_mk_nni_sph(  /* create overlap mesh  for sph polygons */
-poly_sct **pl_lst_in,
-int pl_cnt_in,
+poly_sct **pl_lst_out,
+int pl_cnt,
 nco_grd_lon_typ_enm grd_lon_typ,
 KDTree **tree,
 int nbr_tr,
 int *wgt_cnt_bln_ret) {
 
   /* just duplicate output list to overlap */
-  const char fnc_nm[] = "nco_poly_lst_mk_vrl_sph()";
+  const char fnc_nm[] = "nco_poly_lst_mk_nni_sph()";
 
 
   nco_bool bSort = True;
@@ -1404,7 +1404,7 @@ int *wgt_cnt_bln_ret) {
   FILE *const fp_stderr = stderr;
 
 
-  pl_typ = pl_lst_in[0]->pl_typ;
+  pl_typ = pl_lst_out[0]->pl_typ;
 
 
   lcl_thr_nbr = omp_get_max_threads();
@@ -1422,7 +1422,7 @@ int *wgt_cnt_bln_ret) {
     mem_lst[idx].idx_cnt = 0;
   }
 
-  thr_quota = pl_cnt_in / lcl_thr_nbr;
+  thr_quota = pl_cnt / lcl_thr_nbr;
   thr_quota_step = thr_quota / 20;
   if (thr_quota_step < 2000)
     thr_quota_step = 2000;
@@ -1446,7 +1446,7 @@ int *wgt_cnt_bln_ret) {
 #  pragma omp parallel for private(idx, thr_idx) schedule(dynamic, 40) shared(bSort, grd_lon_typ, nbr_tr,pl_typ, tree)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
-  for (idx = 0; idx < pl_cnt_in; idx++) {
+  for (idx = 0; idx < pl_cnt; idx++) {
     nco_bool bSplit = False;
 
     int vrl_cnt = 0;
@@ -1470,7 +1470,7 @@ int *wgt_cnt_bln_ret) {
       fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n", fnc_nm, idx, thr_idx);
 
 
-    if (pl_lst_in[idx]->bmsk == False)
+    if (pl_lst_out[idx]->bmsk == False)
       continue;
 
     mem_lst[thr_idx].kd_cnt = 0;
@@ -1488,10 +1488,12 @@ int *wgt_cnt_bln_ret) {
 
 
     /* get bounds of polygon in */
-    bSplit = nco_poly_minmax_split(pl_lst_in[idx], grd_lon_typ, size1, size2);
+    bSplit = nco_poly_minmax_split(pl_lst_out[idx], grd_lon_typ, size1, size2);
 
 
-    kd_nearest(tree[0], pl_lst_in[idx]->dp_x_ctr, pl_lst_in[idx]->dp_y_ctr, 20, mem_lst[thr_idx].kd_list);
+    kd_nearest(tree[0], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, 8, mem_lst[thr_idx].kd_list);
+
+    (void)fprintf(fp_stderr,"%s:%s: kd_nearest returned 8 (I think)\ndist following ** ", nco_prg_nm_get(), fnc_nm);
 
 
     /*
@@ -1512,11 +1514,14 @@ int *wgt_cnt_bln_ret) {
 
       wgt_lcl=(wgt_sct*)nco_malloc(sizeof(wgt_lcl));
 
-      wgt_lcl->src_id=pl_lst_in[idx]->src_id;
-      wgt_lcl->dst_id=pl->src_id;
+      /* remember src is in tree and dst is in list */
+      wgt_lcl->src_id=pl->src_id;
+      wgt_lcl->dst_id=pl_lst_out[idx]->src_id;
       wgt_lcl->area=pl->area;
       wgt_lcl->wgt=1.0 / nbr_nni;
 
+
+      (void)fprintf(fp_stderr,"%.10e ", mem_lst[thr_idx].kd_list[jdx].dist );
 
       if( mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE <  mem_lst[thr_idx].pl_cnt +1 )
          mem_lst[thr_idx].wgt_lst= (wgt_sct**)nco_realloc(mem_lst[thr_idx].wgt_lst, sizeof(wgt_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE );
@@ -1524,8 +1529,10 @@ int *wgt_cnt_bln_ret) {
       mem_lst[thr_idx].wgt_lst[mem_lst[thr_idx].pl_cnt++] =wgt_lcl;
 
 
-
     } /* end jdx */
+
+    (void)fprintf(fp_stderr,"\n");
+
 
 
     /* output some usefull tracking stuff - not debug but informative */
