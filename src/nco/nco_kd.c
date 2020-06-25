@@ -1958,6 +1958,12 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 double KDdist(kd_box Xq, KDElem *elem)
 {
 
+   return coord_dist(  Xq[KD_LEFT] - ((poly_sct*)elem->item)->dp_x_ctr, Xq[KD_TOP] -  ((poly_sct*)elem->item)->dp_y_ctr   );
+
+
+
+
+
   // double hypot();
 	/* The following calcs edge-to-edge distance on bounding boxes. I could
 	   imagine that this would not be good enough for stuff like all-angle
@@ -2038,7 +2044,7 @@ void add_priority(int m, KDPriority *P, kd_box Xq, KDElem *elem)
 		else
 			break;
 	}
-        return;
+	return;
 }
 
 
@@ -2119,7 +2125,7 @@ int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list
 	int idx;
 	double sum=0.0;
 
-	int dbg_flg=1;
+	int dbg_flg=0;
 
 	if(dbg_flg)
 	  printf("ball: Bp(%.14f, %.14f) Bn(%.14f, %.14f) list[m-1].dist=%g ",  Bp[0], Bp[1], Bn[0], Bn[1], list[m-1].dist);
@@ -2131,16 +2137,19 @@ int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list
 		{
 			sum += coord_dist(Xq[idx],Bn[idx]);
 			if( sum > list[m-1].dist )
-			  { printf(" ret=0\n"); return 0; };
+			  return 0;
 		}
 		else if( Xq[idx] > Bp[idx] )
 		{
 			sum += coord_dist(Xq[idx],Bp[idx]);
 			if( sum > list[m-1].dist )
-  			  { printf(" ret=0\n");  return 0; };
+  			  return 0;
 		}
 	}
-        printf(" ret=1\n");
+
+	if(dbg_flg)
+		printf(" ret=1\n");
+
 	return 1;
 }
 
@@ -2184,7 +2193,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority *list, kd_bo
 		hort = d & 1;
 		vert = d & 2;
 
-                printf("kd_neighbour(), state=%d p=%g disc=%d kd_data_tries=%d\n", top_elem->state,p,d,kd_data_tries );  
+		// printf("kd_neighbour(), state=%d p=%g disc=%d kd_data_tries=%d\n", top_elem->state,p,d,kd_data_tries );
 
 		
 		switch (top_elem->state)
