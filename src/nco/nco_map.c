@@ -952,52 +952,17 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       nco_poly_prn(pl_lst_out[idx],1);
     */
 
-    /* create tree */
-    {
-      int thr_idx;
-      /* nbr nodes (to insert) per tree */
-      size_t quota = 0;
-      /* extra to add to last last tree */
-      size_t nbr_xcs;
-
-      FILE *fp_stderr = stderr;
-
-      if (pl_cnt_out < 10000)
-        nbr_tr = 1;
-      else
-        nbr_tr = omp_get_max_threads();
+  }
 
 
-      quota = pl_cnt_out / nbr_tr;
-      nbr_xcs = pl_cnt_out % nbr_tr;
-
-      tree = (KDTree **) nco_calloc(nbr_tr, sizeof(KDTree *));
 
 
-#if defined(__INTEL_COMPILER)
-# pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr,  grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst_out, quota, tree)
-#else /* !__INTEL_COMPILER */
-# ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst_out, quota, tree)
-# else /* !old g++ */
-#  pragma omp parallel for private(idx, thr_idx) shared(fp_stderr, grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst_out, quota, tree)
-# endif /* !old g++ */
-#endif /* !__INTEL_COMPILER */
-      for (idx = 0; idx < nbr_tr; idx++) {
 
-        thr_idx = omp_get_thread_num();
-        tree[idx] = nco_map_kd_init(pl_lst_out + quota * idx, quota + (idx == nbr_tr - 1 ? nbr_xcs : 0),grd_lon_typ_out);
 
-        if (nco_dbg_lvl_get() >= 3)
-          (void) fprintf(fp_stderr, "%s: thread %d created a kdtree of %d nodes\n", nco_prg_nm_get(), thr_idx,tree[idx]->item_count);
-
-      } /* end for */
-
-    } /* end tree scope */
-
-  }  /* end scope */
 
   if (rgr->wgt_typ == nco_wgt_con) {
+    int nbr_tr;
+    KDTree **tree;
     void **void_lst_vrl=NULL_CEWI;
 
     if(rgr->fl_msh )
@@ -1005,21 +970,20 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     else
       lst_typ=1;
 
-    /* call the overlap routine */
-    if (pl_cnt_in && pl_cnt_out) {
+    tree=nco_map_kd(pl_lst_out, pl_cnt_out, grd_lon_typ_out,&nbr_tr);
+
+
       /* temporarily disable crt code */
       /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
-      if (pl_typ == poly_sph || pl_typ == poly_rll)
-        /* REMEMBER the return type is void**    but it may actually be wgt_sct** or poly_sct** - so we recast it */
-        void_lst_vrl = nco_poly_lst_mk_vrl_sph(pl_lst_in, grd_sz_in, grd_lon_typ_out, tree, nbr_tr, lst_typ, &pl_cnt_vrl);
+    if (pl_typ == poly_sph || pl_typ == poly_rll)
+      /* REMEMBER the return type is void**    but it may actually be wgt_sct** or poly_sct** - so we recast it */
+      void_lst_vrl = nco_poly_lst_mk_vrl_sph(pl_lst_in, grd_sz_in, grd_lon_typ_out, tree, nbr_tr, lst_typ, &pl_cnt_vrl);
 
-      if(lst_typ==1)
-        wgt_lst_vrl=(wgt_sct**)void_lst_vrl;
-      else if(lst_typ==2)
-        pl_lst_vrl=(poly_sct**)void_lst_vrl;
-
-    } /* !pl_cnt_in */
+    if(lst_typ==1)
+      wgt_lst_vrl=(wgt_sct**)void_lst_vrl;
+    else if(lst_typ==2)
+      pl_lst_vrl=(poly_sct**)void_lst_vrl;
 
 
 
@@ -1059,42 +1023,47 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       }
     }
 
+    for (idx = 0; idx < nbr_tr; idx++)
+      kd_destroy(tree[idx], NULL);
+
+    tree = (KDTree **) nco_free(tree);
+
+
     lnk_nbr = pl_cnt_vrl;
   }
 
   else if(rgr->wgt_typ== nco_wgt_nni)
   {
-      lst_typ=1;
+    int nbr_tr;
+    KDTree **tree;
 
-    /* call the overlap routine */
-    if (pl_cnt_in && pl_cnt_out)
-    {
-      /* temporarily disable crt code */
-      /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
+    tree=nco_map_kd(pl_lst_in, pl_cnt_in, grd_lon_typ_out,&nbr_tr);
+    lst_typ=1;
 
-      if (pl_typ == poly_sph || pl_typ == poly_rll)
-        /* REMEMBER the return type is void**    but it may actually be wgt_sct** or poly_sct** - so we recast it */
-        wgt_lst_vrl = nco_poly_lst_mk_nni_sph(pl_lst_in, grd_sz_in, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
+    /* temporarily disable crt code */
+    /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
-        pl_lst_vrl=(poly_sct**)NULL_CEWI;
+    if (pl_typ == poly_sph || pl_typ == poly_rll)
+      wgt_lst_vrl = nco_poly_lst_mk_nni_sph(pl_lst_out, grd_sz_out, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
 
-
-
-    } /* !pl_cnt_in */
+    pl_lst_vrl=(poly_sct**)NULL_CEWI;
 
 
 
     if (nco_dbg_lvl_get() >= nco_dbg_dev )
-      fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap weights(bln)=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
+      fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap weights(nni)=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
+
+
+
+    for (idx = 0; idx < nbr_tr; idx++)
+      kd_destroy(tree[idx], NULL);
+
+    tree = (KDTree **) nco_free(tree);
+
+
 
     lnk_nbr=pl_cnt_vrl;
   }
-
-  /* Destroy kdtree */
-  for (idx = 0; idx < nbr_tr; idx++)
-    kd_destroy(tree[idx], NULL);
-
-  tree = (KDTree **) nco_free(tree);
 
 
 
@@ -1185,6 +1154,67 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   return rcd;
 } /* !nco_msh_mk() */
+
+
+
+
+/* create tree */
+KDTree**
+nco_map_kd(
+poly_sct **pl_lst,
+int pl_cnt,
+nco_grd_lon_typ_enm grd_lon_typ,
+int *nbr_tr)
+{
+  int thr_idx;
+  /* nbr nodes (to insert) per tree */
+  size_t quota = 0;
+  /* extra to add to last last tree */
+  size_t nbr_xcs;
+  size_t idx;
+
+
+  FILE *fp_stderr = stderr;
+  KDTree ** tree;
+
+  if (pl_cnt < 10000)
+    *nbr_tr = 1;
+  else
+    *nbr_tr = omp_get_max_threads();
+
+
+  quota = pl_cnt / *nbr_tr;
+  nbr_xcs = pl_cnt % *nbr_tr;
+
+  tree = (KDTree **) nco_calloc(*nbr_tr, sizeof(KDTree *));
+
+
+  #if defined(__INTEL_COMPILER)
+  # pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr,  grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst, quota, tree)
+  #else /* !__INTEL_COMPILER */
+  # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
+  #  pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst, quota, tree)
+  # else /* !old g++ */
+  #  pragma omp parallel for private(idx, thr_idx) shared(fp_stderr, grd_lon_typ, nbr_tr, nbr_xcs, pl_lst, quota, tree)
+  # endif /* !old g++ */
+  #endif /* !__INTEL_COMPILER */
+  for (idx = 0; idx < *nbr_tr; idx++)
+  {
+
+    thr_idx = omp_get_thread_num();
+    tree[idx] = nco_map_kd_init(pl_lst + quota * idx, quota + (idx == *nbr_tr - 1 ? nbr_xcs : 0),grd_lon_typ);
+
+    if (nco_dbg_lvl_get() >= 3)
+      (void) fprintf(fp_stderr, "%s: thread %d created a kdtree of %d nodes\n", nco_prg_nm_get(), thr_idx,tree[idx]->item_count);
+
+  } /* end for */
+
+  return tree;
+} /* end tree scope */
+
+
+
+
 
 
 
