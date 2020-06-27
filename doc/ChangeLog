@@ -1,3 +1,7 @@
+2020-06-27  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo hfs instead of hf, add dpf input option, change output to (time,hour,space) to ease regridding
+
 2020-06-26  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo uses MRO, ncecat to create timeseries of annual mean diurnal cycles
