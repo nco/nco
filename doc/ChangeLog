@@ -1,4 +1,14 @@
+2020-06-26  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo uses MRO, ncecat to create timeseries of annual mean diurnal cycles
+
+	* ncclimo hf respects specified tpd_out
+
 2020-06-25  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo improve clm_md documentation
+
+	* ncclimo fix daily off-by-one error due to CAM/EAM time-stamps at averaging interval end
 
 	* NCO 4.9.4-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha04: 5 Oaks';git push

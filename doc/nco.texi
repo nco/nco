@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha04
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 24 June 2020
+@set update-date 27 June 2020
 @set update-month June 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -5915,8 +5915,7 @@ separated by regular intervals of records.
 It is perhaps best illustrated by an extended example which describes
 how to solve the same problem both with and without the @acronym{SSC} feature.
 
-The first task in climate data processing is often creating seasonal
-cycles. 
+Creating seasonal cycles is a common task in climate data processing.
 Suppose a 150-year climate simulation produces 150 output files, each
 comprising 12 records, each record a monthly mean:
 @file{1850.nc}, @file{1851.nc}, ... @file{1999.nc}.
@@ -5942,19 +5941,19 @@ So far, nothing is unusual and this task can be performed by any
 The @acronym{SSC} feature makes obsolete the need for the shell loop
 used in @w{Step 1} above. 
 
-The new @acronym{SSC} option aggregates more than one input record at a time
-before performing arithmetic operations, and, with an additional
-switch, allows us to archive those results in multiple-record output
-(MRO) files.  
+The new @acronym{SSC} option aggregates more than one input record at
+a time before performing arithmetic operations, and, with an
+additional switch, allows us to archive those results in
+multiple-record output (MRO) files.  
 This reduces the task of producing the climatological summertime
-mean to one step:
+mean to @emph{one} step:
 @example
 # Step 1: Compute climatological summertime mean
 ncra -O -F -d time,6,,12,3 -n 150,4,1 1850.nc clm_JJA.nc
 @end example
 @noindent
 The @acronym{SSC} option instructs @command{ncra} (or @command{ncrcat})
-to process  files in groups of three records. 
+to process files in groups of three records. 
 To better understand the meaning of each argument to the @samp{-d}
 hyperslab option, read it this way: ``for the time dimension start with
 the sixth record, continue without end, repeat the process every twelfth
@@ -18100,7 +18099,15 @@ The last month is December of the end year specified with @samp{-e}.
 @cindex @code{--climatology}
 @item -C @var{clm_md} (@code{--clm_md}, @code{--climatology_mode}, @code{--mode}, @code{--climatology})
 Climatology mode.
-Valid values are for @var{clm_md} are @samp{ann}, @samp{mth}, and @samp{dly}.
+Valid values for @var{clm_md} are
+@code{ann} (or synonyms @code{annual}, @code{annual}, @code{yearly}, or @code{year})
+for annual-mode climatologies,
+@code{dly} (or synonyms @code{daily}, @code{doy}, or @code{day})
+for daily-mode climatologies,
+@code{hf} (or synonyms @code{hgh_frq} or @code{high_frequency})
+for high-frequency splitting,
+@code{mth} (or synonyms @code{month} or @code{monthly})
+for monthly climotologies.
 The value indicates the timespan of each input file for annual and
 monthly climatologies.
 The default mode is @samp{mth}, which means input files are monthly
@@ -21247,7 +21254,7 @@ Before @acronym{NCO} version 4.2.5 (January, 2013), the syntax for
 @code{--fix_rec_dmn} did not permit or require the specification of
 the dimension name @var{dim}. 
 This is because the feature only worked on netCDF3 files, which support
-only one record dimension, so specifying its name was not necessary.
+only one record dimension, so specifying its name was unnecessary.
 netCDF4 files allow an arbitrary number of record dimensions, so the
 user must specify which record dimension to fix.
 The decision was made that starting with @acronym{NCO} version 4.2.5
@@ -28605,7 +28612,7 @@ or
 ************************************************************************
 Task 1: Regional processing
 ************************************************************************
-The first task in data processing is often creating seasonal cycles.
+A common task in data processing is often creating seasonal cycles.
 Imagine a 100-year simulation with its 1200 monthly mean files.
 Our goal is to create a single file containing 12 months of data.
 Each month in the output file is the mean of 100 input files.

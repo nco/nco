@@ -538,7 +538,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}dec_md${fnt_nrm}   December mode (default ${fnt_bld}${dec_md}${fnt_nrm}) [${fnt_tlc}dec_md, dcm_md, december_mode, dec_mode${fnt_nrm}]"
     echo " ${fnt_bld}--amwg_lnk${fnt_nrm} Link E3SM-climo to AMWG-climo filenames [${fnt_tlc}amwg_links, AMWG_link${fnt_nrm}]"
-    echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}]"
+    echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}] [${fnt_tlc}ann | dly | hgh_frq | mth${fnt_nrm}]"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
@@ -859,16 +859,16 @@ if [ -n "${mdl_nm_usr}" ]; then
 fi # !mdl_nm_usr
 if [ -n "${clm_md_usr}" ]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are piped or positional
-    if [ "${clm_md_usr}" = 'annual' ] || [ "${clm_md_usr}" = 'yearly' ] || [ "${clm_md_usr}" = 'year' ] ; then
+    if [ "${clm_md_usr}" = 'ann' ] || [ "${clm_md_usr}" = 'annual' ] || [ "${clm_md_usr}" = 'yearly' ] || [ "${clm_md_usr}" = 'year' ] ; then
 	clm_md_usr='ann'
     fi # !clm_md_usr
-    if [ "${clm_md_usr}" = 'daily' ] || [ "${clm_md_usr}" = 'doy' ] || [ "${clm_md_usr}" = 'day' ] ; then
+    if [ "${clm_md_usr}" = 'dly' ] || [ "${clm_md_usr}" = 'daily' ] || [ "${clm_md_usr}" = 'doy' ] || [ "${clm_md_usr}" = 'day' ] ; then
 	clm_md_usr='dly'
     fi # !clm_md_usr
     if [ "${clm_md_usr}" = 'hf' ] || [ "${clm_md_usr}" = 'high_frequency' ] || [ "${clm_md_usr}" = 'hgh_frq' ] ; then
 	clm_md_usr='hf'
     fi # !clm_md_usr
-    if [ "${clm_md_usr}" = 'month' ] || [ "${clm_md_usr}" = 'monthly' ] ; then
+    if [ "${clm_md_usr}" = 'mth' ] || [ "${clm_md_usr}" = 'month' ] || [ "${clm_md_usr}" = 'monthly' ] ; then
 	clm_md_usr='mth'
     fi # !clm_md_usr
     clm_md="${clm_md_usr}"
@@ -2039,7 +2039,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	declare -a dpm
 	dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
 	let srd=${dpy}*${tpd_out}
-	drn=${tpd_out}
+	let drn=${dpy}*${tpd_out}
 
 	yyyy_srt=`printf "%04d" ${yr_srt}`
 	yyyy_end=`printf "%04d" ${yr_end}`
@@ -2053,9 +2053,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    printf "fl_idx_end = ${fl_idx_end}\n"
 	    printf "fpy = ${fpy}\n"
 	    printf "fpyp1 = ${fpyp1}\n"
+	    printf "ppn_opt = ${ppn_opt}\n"
 	    printf "sgm_rmd = ${sgm_rmd}\n"
 	    printf "srd = ${srd}\n"
 	    printf "tpd_out = ${tpd_out}\n"
+	    printf "var_lst_xtn = ${var_lst_xtn}\n"
 	    printf "ypf_max = ${ypf_max}\n"
 	    printf "yr_nbr = ${yr_nbr}\n"
 	    printf "yr_sbs = ${yr_sbs}\n"
@@ -2120,9 +2122,26 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    # 20200619 High-frequency output requires time-coordinate hyperslabs
 		    tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-01-01 00:00:01"
 		    tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01 00:00:00"
-		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		    if [ ${tpd_out} -eq 1 ]; then
+			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		    else
+			fl_rcat[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_ncrcat.nc"
+			fl_ecat[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_ncecat.nc"
+			fl_tpd_tpl="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_tpd"
+			fl_tpd_all=''
+			for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
+			    fl_tpd[${tpd_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_tpd${tpd_idx}.nc"
+			    fl_tpd_all="${fl_tpd_all} ${fl_tpd[${tpd_idx}]}"
+			done # !tpd_idx
+			# 20200626: Diurnal mode is really slow on MacOSX (UDUnits parsing sluggishness?)
+			# 20200627: Next line averages all timesteps into one climatological record
+			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
+			# 20200627: Next line outputs one record per year
+			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra -O --mro -d time,\${srt},,${srd},${drn} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u tpd ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'tpd=array(0,24/\$tpd.size,\$tpd);tpd@units=\"hours\";tpd@long_name=\"Hour of Day\"' ${fl_ecat[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]}"
+		    fi # !tpd_out
 		else
-		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		    # Normal splitting, non-high-frequency 
+		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		fi # !clm_md
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_sbs[${var_idx}]}
@@ -2346,6 +2365,9 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
     
     yyyy_srt=`printf "%04d" ${yr_srt}`
     yyyy_end=`printf "%04d" ${yr_end}`
+# 20200625 Off-by-one bug?
+#    let yr_endp1=${yr_end}+1
+#    yyyy_endp1=`printf "%04d" ${yr_endp1}`
     clm_idx=0
     for mth in `seq 1 12`; do
 	MM=`printf "%02d" ${mth}`
