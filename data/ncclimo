@@ -1981,7 +1981,6 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    # However, the number of files read in each segment may differ, and is not known a priori
 	    # NB: High-frequency timeseries underestimate fpy by [0,1) when fpy=dpy/dpf is non-integral
 	    let fpyp1=${fpy}+1
-#	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy} # NB: uses fpy to underestimate fl_idx_srt
 	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
 	    let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: uses fpyp1 to overestimate fl_idx_end
 	    let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
@@ -2143,8 +2142,6 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			done # !tpd_idx
 			# 20200627: Average all timesteps into one climatological record as data(time,space)
 			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
-			# 20200627: Output one record per year as data(time,space,hour) (has wrong stride)
-			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra -O --mro -d time,\${srt},,${srd},${drn} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,ncol,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
 			# 20200628: Output one record per year as data(time,hour,space), easier to regrid
 			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
 		    fi # !tpd_out
@@ -2536,6 +2533,73 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	done # !bch_idx
     fi # !rgr_opt
 fi # !dly
+
+# Computing climos from high-freqency data requires many steps:
+# A primary goal is to re-use not re-write code, especially existing monthly frequency climo code
+# Otherwise the code maintainability significantly suffers
+# Code-reuse all-but-requires same existing parallelization as monthly frequency climos
+# Proposed Algorithm:
+# 1. Re-use splitter option ypf for intermediate files so users can prevent excessive intermediate filesizes
+# 2. Generate month-aligned intermediate files containing ypf instances of same month for all variables
+# 2a. Base this step on draft annual-mean diurnal cycle in HFS
+# 2b. Parallelize over month using job_nbr algorithm? or over segment?
+# 2c. Parallelization is difficult/tedious due to number of basic blocks (3? 4? 5?)
+# 3. Intermediate files of shape (time=min(actual,ypf),hour,space) are interchangeable with monthly-frequency output in stage-1 ncra which equally weights all input records to obtain ncra climatological monthly diurnal-mean output
+# 4. Use climatological monthly diurnal-mean output to create climatological seasonal diurnal-mean output
+# 5. Use climatological monthly seasonal-mean output to create climatological annual diurnal-mean output
+# 6. Final output climo format: (time=1,hour,space) (or convert to (time=hour,space)?)
+# Advantages:
+# 1. Code-reuse and maintainability
+# 2. Scales to any-length simulation (intermediate files can be a single month)
+# 3. Output similar to existing monthly-frequency climos with additional 'hour' dimension
+# 4. Climatology bounds attributes correct for time variable(?)
+# Disadvantages:
+# 1. E3SM post-processing may not like new 'hour' dimension
+# 2. No corresponding examples in CF Conventions
+# 3. Any utility in multiple-variables per output file, e.g., TS, PRECT? Would single variables suffice?
+if [ "${clm_md}" = 'hfs' ]; then
+
+    if [ -z "${dpf}" ]; then
+	dpf=30
+    fi # !dpf
+    let fpy=${dpy}/${dpf}
+    let yr_sbs=${yr_nbr}
+
+    # How many segments of output?
+    let sgm_nbr=${yr_sbs}/${ypf_max}
+    let sgm_rmd=${yr_sbs}%${ypf_max}
+    if [ ${sgm_rmd} -ne 0 ]; then
+	let sgm_nbr=${sgm_nbr}+1
+	sgm_flg='Yes'
+    else # !sgm_rmd
+	sgm_flg='No'
+    fi # !sgm_rmd  
+    let sgm_nbrm1=${sgm_nbr}-1
+
+    if [ ${dbg_lvl} -ge 1 ]; then
+	    printf "dbg: HFC variable(s):\n"
+	    printf "dpm[3] = ${dpm[3]}\n"
+	    printf "dpy = ${dpy}\n"
+	    printf "drn = ${drn}\n"
+	    printf "fl_idx_srt = ${fl_idx_srt}\n"
+	    printf "fl_idx_end = ${fl_idx_end}\n"
+	    printf "fpy = ${fpy}\n"
+	    printf "fpyp1 = ${fpyp1}\n"
+	    printf "nco_opt = ${nco_opt}\n"
+	    printf "ppn_opt = ${ppn_opt}\n"
+	    printf "sgm_rmd = ${sgm_rmd}\n"
+	    printf "spl_opt = ${spl_opt}\n"
+	    printf "srd = ${srd}\n"
+	    printf "tpd_out = ${tpd_out}\n"
+	    printf "var_lst_xtn = ${var_lst_xtn}\n"
+	    printf "ypf_max = ${ypf_max}\n"
+	    printf "yr_nbr = ${yr_nbr}\n"
+	    printf "yr_sbs = ${yr_sbs}\n"
+	    printf "yyyy_srt = ${yyyy_srt}\n"
+	    printf "yyyy_end = ${yyyy_end}\n"
+    fi # !dbg
+
+fi # !hfs
 
 # Many subsequent blocks only execute for normal and incremental monthly climos, not for binary climos, or non-monthly climos
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
