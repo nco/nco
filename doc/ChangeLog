@@ -1,5 +1,9 @@
 2020-06-27  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo deconvolve two time dimensions by isolating each tpd in separate ncrcat step
+
+	* ncclimo hfs fix stride, set to tpd
+
 	* ncclimo hfs instead of hf, add dpf input option, change output to (time,hour,space) to ease regridding
 
 2020-06-26  Charlie Zender  <zender@uci.edu>

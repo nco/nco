@@ -2038,7 +2038,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 #	done # !sgm_idx
     fi # !dbg
 
-    # 20200619 High-frequency output requires date information
+    # 20200619 High-frequency splitter output requires date information
     if [ "${clm_md}" = 'hfs' ]; then
 	unset dpm # Days per month
 	declare -a dpm
@@ -2058,8 +2058,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    printf "fl_idx_end = ${fl_idx_end}\n"
 	    printf "fpy = ${fpy}\n"
 	    printf "fpyp1 = ${fpyp1}\n"
+	    printf "nco_opt = ${nco_opt}\n"
 	    printf "ppn_opt = ${ppn_opt}\n"
 	    printf "sgm_rmd = ${sgm_rmd}\n"
+	    printf "spl_opt = ${spl_opt}\n"
 	    printf "srd = ${srd}\n"
 	    printf "tpd_out = ${tpd_out}\n"
 	    printf "var_lst_xtn = ${var_lst_xtn}\n"
@@ -2134,17 +2136,19 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			fl_ecat[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_ncecat.nc"
 			fl_pdq[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_ncpdq.nc"
 			fl_tpd_tpl="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_tpd"
-			fl_tpd_all=''
+			fl_tsa_tpl="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_tsa"
+			fl_tsa_all=''
 			for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
 			    fl_tpd[${tpd_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_tpd${tpd_idx}.nc"
-			    fl_tpd_all="${fl_tpd_all} ${fl_tpd[${tpd_idx}]}"
+			    fl_tsa[${tpd_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_tsa${tpd_idx}.nc"
+			    fl_tsa_all="${fl_tsa_all} ${fl_tsa[${tpd_idx}]}"
 			done # !tpd_idx
 			# 20200627: Average all timesteps into one climatological record as data(time,space)
 			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
-			# 20200627: Output one record per year as data(time,space,hour)
+			# 20200627: Output one record per year as data(time,space,hour) (has wrong stride)
 			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra -O --mro -d time,\${srt},,${srd},${drn} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,ncol,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
 			# 20200628: Output one record per year as data(time,hour,space), easier to regrid
-			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra -O --mro -d time,\${srt},,${srd},${drn} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
+			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};touch ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;touch ${fl_rcat[${var_idx}]};ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tsa_tpl}\${srt}.nc;done;ncecat -O -u hour ${nco_opt} ${fl_tsa_all} ${fl_ecat[${var_idx}]};touch ${fl_tsa_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};touch ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};touch ${fl_pdq[${var_idx}]}"
 		    fi # !tpd_out
 		else
 		    # Normal splitting, non-high-frequency 
