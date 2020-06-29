@@ -314,7 +314,7 @@ kd_status kd_really_delete (KDTree* theTree, kd_generic data, kd_box old_size, i
 KDTree* kd_rebuild ( KDTree* );
 int kd_set_build_depth(int depth);
 int kd_priority_cmp( const void *vp1, const void *vp2);
-
+int kd_priority_cmp_dist( const void *vp1, const void *vp2);
 nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *out_fll_nbr);
 kd_gen kd_start (KDTree* tree, kd_box size);
 kd_status kd_is_member(KDTree* , kd_generic , kd_box );

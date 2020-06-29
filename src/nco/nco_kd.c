@@ -2546,6 +2546,21 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_
   return 1;
 }
 
+
+/* sort by distance */
+int kd_priority_cmp_dist( const void *vp1, const void *vp2)
+{
+
+  const KDPriority * const kd1=((const KDPriority * const )vp1);
+  const KDPriority * const kd2=((const KDPriority * const )vp2);
+
+  //ptrdiff_t df= (char*)kd1->elem->item - (char*)kd2->elem->item;
+  double  df= kd1->dist - kd2->dist;
+
+  return ( df < 0.0 ? -1 :  df >0.0 ? 1 : 0   );
+}
+
+
 int kd_priority_cmp( const void *vp1, const void *vp2)
 {
 
