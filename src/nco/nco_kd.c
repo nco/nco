@@ -1957,8 +1957,11 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 
 double KDdist(kd_box Xq, KDElem *elem)
 {
+    double hyp;
 
-   return coord_dist(  Xq[KD_LEFT] - ((poly_sct*)elem->item)->dp_x_ctr, Xq[KD_TOP] -  ((poly_sct*)elem->item)->dp_y_ctr   );
+     hyp=hypot(  Xq[KD_LEFT] - ((poly_sct*)elem->item)->dp_x_ctr, Xq[KD_TOP] -  ((poly_sct*)elem->item)->dp_y_ctr   );
+
+  return hyp*hyp;
 
 
 
@@ -2078,7 +2081,7 @@ void kd_print_nearest(KDTree* tree, double x, double y, int m)
 	KDPriority *list=NULL;
 	int xz,i;
 	
-	xz = kd_nearest(tree, x, y, m, &list);
+	xz = kd_nearest(tree, x, y, m, list);
 	fprintf(stdout,"Nearest Search: visited %d nodes to find the %d closest objects.\n", xz, m);
 	for(i=0;i<m;i++)
 	{
@@ -2602,6 +2605,7 @@ nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *
   return bret;
 
 }
+
 
 
 int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority *alist)

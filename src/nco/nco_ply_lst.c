@@ -1392,6 +1392,9 @@ int *wgt_cnt_bln_ret) {
   /* max number of nearest neighbours to consider */
   int nbr_nni=8;
 
+  double min_dist=1.0e-12;
+  double min_wgt=1.0e-20;
+
   poly_typ_enm pl_typ;
   size_t idx;
 
@@ -1449,14 +1452,15 @@ int *wgt_cnt_bln_ret) {
   for (idx = 0; idx < pl_cnt; idx++) {
     nco_bool bSplit = False;
 
-    int vrl_cnt = 0;
-    int vrl_cnt_on = 0;
-    int nan_cnt = 0;
-    int wrp_cnt = 0;
+    double wgt_ttl=0.0;
+
+    wgt_sct wgt_pre[nbr_nni];
+
+    wgt_sct * wgt_lcl=NULL_CEWI;
+    poly_sct *pl=NULL_CEWI;
 
     size_t jdx;
-
-    double vrl_area = 0.0;
+    size_t kdx;
 
     kd_box size1;
     kd_box size2;
@@ -1486,52 +1490,80 @@ int *wgt_cnt_bln_ret) {
     }
 
 
-
     /* get bounds of polygon in */
-    bSplit = nco_poly_minmax_split(pl_lst_out[idx], grd_lon_typ, size1, size2);
+    //bSplit = nco_poly_minmax_split(pl_lst_out[idx], grd_lon_typ, size1, size2);
+
+    for(kdx=0;kdx<nbr_tr;kdx++)
+      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, nbr_nni, mem_lst[thr_idx].kd_list);
+
+    (void)fprintf(fp_stderr,"%s:%s:   kd_nearest returned 8 (I think)\ndist following ** ", nco_prg_nm_get(), fnc_nm);
 
 
-    kd_nearest(tree[0], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, 8, mem_lst[thr_idx].kd_list);
-
-    (void)fprintf(fp_stderr,"%s:%s: kd_nearest returned 8 (I think)\ndist following ** ", nco_prg_nm_get(), fnc_nm);
 
 
-    /*
-    if (bSplit)
-      vrl_cnt = kd_nearest_intersect_wrp(tree, nbr_tr, size1, size2, &mem_lst[thr_idx]);
-    else
-      vrl_cnt = kd_nearest_intersect(tree, nbr_tr, size1, &mem_lst[thr_idx], bSort);
 
-    */
+    /* remember kd list sorted according to distance */
 
+    /* check first member distance if min then output singleton */
+    if(mem_lst[thr_idx].kd_list[0].dist <= min_dist)
+    {
 
-    for (jdx = 0; jdx < nbr_nni  ; jdx++) {
+      pl=(poly_sct*)mem_lst[thr_idx].kd_list[0].elem->item;
 
-      wgt_sct *wgt_lcl;
-      poly_sct *pl;
-
-      pl=(poly_sct*)mem_lst[thr_idx].kd_list[jdx].elem->item;
-
-      wgt_lcl=(wgt_sct*)nco_malloc(sizeof(wgt_lcl));
-
-      /* remember src is in tree and dst is in list */
+      wgt_lcl=(wgt_sct*)nco_malloc(sizeof(wgt_sct));
       wgt_lcl->src_id=pl->src_id;
       wgt_lcl->dst_id=pl_lst_out[idx]->src_id;
       wgt_lcl->area=pl->area;
-      wgt_lcl->wgt=1.0 / nbr_nni;
-
-
-      (void)fprintf(fp_stderr,"%.10e ", mem_lst[thr_idx].kd_list[jdx].dist );
+      wgt_lcl->dist=mem_lst[thr_idx].kd_list[0].dist;
+      wgt_lcl->wgt=1.0;
 
       if( mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE <  mem_lst[thr_idx].pl_cnt +1 )
-         mem_lst[thr_idx].wgt_lst= (wgt_sct**)nco_realloc(mem_lst[thr_idx].wgt_lst, sizeof(wgt_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE );
+        mem_lst[thr_idx].wgt_lst= (wgt_sct**)nco_realloc(mem_lst[thr_idx].wgt_lst, sizeof(wgt_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE );
 
       mem_lst[thr_idx].wgt_lst[mem_lst[thr_idx].pl_cnt++] =wgt_lcl;
 
 
-    } /* end jdx */
+    }else{
 
-    (void)fprintf(fp_stderr,"\n");
+      /* output at least one */
+      for (jdx = 0; jdx < nbr_nni; jdx++) {
+
+        pl = (poly_sct *) mem_lst[thr_idx].kd_list[jdx].elem->item;
+
+        /* remember src is in tree and dst is in list */
+        wgt_pre[jdx].src_id = pl->src_id;
+        wgt_pre[jdx].dst_id = pl_lst_out[idx]->src_id;
+        wgt_pre[jdx].area = pl->area;
+        wgt_pre[jdx].dist = mem_lst[thr_idx].kd_list[jdx].dist;
+        /* assume the dist is dist squared */
+        wgt_pre[jdx].wgt = 1.0 / wgt_pre[jdx].dist;
+        wgt_ttl += wgt_pre[jdx].wgt;
+
+      }
+
+      /* normalize weights */
+      for (jdx = 0; jdx < nbr_nni; jdx++)
+        wgt_pre[jdx].wgt /= wgt_ttl;
+
+
+      for (jdx = 0; jdx < nbr_nni; jdx++){
+
+
+        if (wgt_pre[jdx].wgt < min_wgt)
+          continue;
+
+        wgt_lcl = (wgt_sct *) nco_malloc(sizeof(wgt_sct));
+        *wgt_lcl = wgt_pre[jdx];
+
+        if (mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE < mem_lst[thr_idx].pl_cnt + 1)
+          mem_lst[thr_idx].wgt_lst = (wgt_sct **) nco_realloc(mem_lst[thr_idx].wgt_lst, sizeof(wgt_sct *) * ++mem_lst[thr_idx].blk_nbr *NCO_VRL_BLOCKSIZE);
+
+        mem_lst[thr_idx].wgt_lst[mem_lst[thr_idx].pl_cnt++] = wgt_lcl;
+
+
+      } /* end jdx */
+
+    } /* end if else */
 
 
 
