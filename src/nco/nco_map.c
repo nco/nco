@@ -1190,10 +1190,10 @@ int *nbr_tr)
 
 
   #if defined(__INTEL_COMPILER)
-  # pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr,  grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst, quota, tree)
+  # pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr,  grd_lon_typ, nbr_tr, nbr_xcs, pl_lst, quota, tree)
   #else /* !__INTEL_COMPILER */
   # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-  #  pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, grd_lon_typ_out, nbr_tr, nbr_xcs, pl_lst, quota, tree)
+  #  pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr, grd_lon_typ, nbr_tr, nbr_xcs, pl_lst, quota, tree)
   # else /* !old g++ */
   #  pragma omp parallel for private(idx, thr_idx) shared(fp_stderr, grd_lon_typ, nbr_tr, nbr_xcs, pl_lst, quota, tree)
   # endif /* !old g++ */
@@ -1202,7 +1202,7 @@ int *nbr_tr)
   {
 
     thr_idx = omp_get_thread_num();
-    tree[idx] = nco_map_kd_init(pl_lst + quota * idx, quota + (idx == *nbr_tr - 1 ? nbr_xcs : 0),grd_lon_typ);
+    tree[idx] = nco_map_kd_init(pl_lst + quota * idx, quota + (idx == *nbr_tr - 1 ? nbr_xcs : 0), grd_lon_typ);
 
     if (nco_dbg_lvl_get() >= 3)
       (void) fprintf(fp_stderr, "%s: thread %d created a kdtree of %d nodes\n", nco_prg_nm_get(), thr_idx,tree[idx]->item_count);
@@ -1238,7 +1238,7 @@ nco_map_kd_init( poly_sct **pl_lst, int pl_cnt, nco_grd_lon_typ_enm grd_lon_typ 
 
   for (idx = 0; idx < pl_cnt; idx++) {
 
-    if(pl_lst[idx]->bmsk == False)
+    if(!pl_lst[idx]->bmsk )
       continue;
 
     my_elem1 = (KDElem *) nco_calloc((size_t) 1, sizeof(KDElem));
