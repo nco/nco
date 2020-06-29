@@ -1390,7 +1390,7 @@ int *wgt_cnt_bln_ret) {
   /* reporting step */
   int thr_quota_step;
   /* max number of nearest neighbours to consider */
-  int nbr_nni=8;
+  const int nbr_nni=8;
 
   double min_dist=1.0e-12;
   double min_wgt=1.0e-20;
