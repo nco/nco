@@ -454,7 +454,7 @@ caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
-clm_md='mth' # [sng] Climatology mode ('ann', 'dly', 'hgh_frq', or 'mth')
+clm_md='mth' # [sng] Climatology mode ('ann', 'dly', 'hfs', or 'mth')
 csn_flg='No' # [flg] Trigger season-processing code
 csn_lst='mam,jja,son,djf' # [sng] Seasons to output (subset of mam,jja,son,djf,jfm,amj,jas,ond,fm,on)
 d2f_flg='No' # [flg] Convert double-precision fields to single-precision
@@ -539,7 +539,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}dec_md${fnt_nrm}   December mode (default ${fnt_bld}${dec_md}${fnt_nrm}) [${fnt_tlc}dec_md, dcm_md, december_mode, dec_mode${fnt_nrm}]"
     echo " ${fnt_bld}--amwg_lnk${fnt_nrm} Link E3SM-climo to AMWG-climo filenames [${fnt_tlc}amwg_links, AMWG_link${fnt_nrm}]"
-    echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}] [${fnt_tlc}ann | dly | hgh_frq | mth${fnt_nrm}]"
+    echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}] [${fnt_tlc}ann | dly | hfs | mth${fnt_nrm}]"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
@@ -587,9 +587,9 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-y${fnt_nrm} ${fnt_bld}rgr_prv${fnt_nrm}  Regridded previous climo directory (default ${fnt_bld}${drc_rgr_prv}${fnt_nrm}) [${fnt_tlc}drc_rgr_prv, drc_prv_rgr, regridded_previous, previous_regridded${fnt_nrm}]"
     echo " ${fnt_bld}--ypf_max${fnt_nrm}  Years-per-output-file maximum (default ${fnt_bld}${ypf_max}${fnt_nrm}) [${fnt_tlc}ypf_max, ypf, years, years_per_file${fnt_nrm}]"
     printf "\n"
-    printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate CAM climo\n"
-    printf "${fnt_bld}${spt_nm} -c control -m clm2 -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate CLM climo\n"
-    printf "${fnt_bld}${spt_nm} -m mpascice -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}# Generate MPAS-CICE climo\n"
+    printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate EAM/CAM climo\n"
+    printf "${fnt_bld}${spt_nm} -c control -m clm2 -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate EAM/CLM climo\n"
+    printf "${fnt_bld}${spt_nm} -m mpasseaice -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}# Generate MPAS-Seaice climo\n"
     printf "${fnt_bld}${spt_nm} -m mpaso -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}# Generate MPAS-Ocean climo\n"
     printf "${fnt_bld}cd output;ls *cam*19??-??*.nc | ${spt_nm} -v FSNT,TREFHT -s 1900 -e 1999 -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Split climo\n"
     printf "${fnt_bld}ncclimo -a sdd -c ${caseid_xmp} -m cam -S 41 -E 50 -x ${drc_rgr_xmp}/0041-0050 -s 51 -e 60 -i ${drc_rgr_xmp}/0051-0060 -X ${drc_rgr_xmp}/0041-0060 ${fnt_nrm}# Combine two climos\n\n"
@@ -1960,7 +1960,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	# 20191217 Global average timeseries require area variable
 	var_lst_xtn=',area'
     fi # !glb_avg
-    
+
+    # Populate input file arguments fl_sgm with all files necessary to bracket each segment
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 	fl_sgm[${sgm_idx}]=''
 
@@ -2037,22 +2038,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 #	done # !sgm_idx
     fi # !dbg
 
-    # 20200619 High-frequency splitter output requires date information
     if [ "${clm_md}" = 'hfs' ]; then
-	unset dpm # Days per month
-	declare -a dpm
-	dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
-	let srd=${dpy}*${tpd_out}
-	let drn=${dpy}*${tpd_out}
-
-	yyyy_srt=`printf "%04d" ${yr_srt}`
-	yyyy_end=`printf "%04d" ${yr_end}`
 
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    printf "dbg: HFS variable(s):\n"
-	    printf "dpm[3] = ${dpm[3]}\n"
 	    printf "dpy = ${dpy}\n"
-	    printf "drn = ${drn}\n"
 	    printf "fl_idx_srt = ${fl_idx_srt}\n"
 	    printf "fl_idx_end = ${fl_idx_end}\n"
 	    printf "fpy = ${fpy}\n"
@@ -2061,14 +2051,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    printf "ppn_opt = ${ppn_opt}\n"
 	    printf "sgm_rmd = ${sgm_rmd}\n"
 	    printf "spl_opt = ${spl_opt}\n"
-	    printf "srd = ${srd}\n"
 	    printf "tpd_out = ${tpd_out}\n"
 	    printf "var_lst_xtn = ${var_lst_xtn}\n"
 	    printf "ypf_max = ${ypf_max}\n"
 	    printf "yr_nbr = ${yr_nbr}\n"
 	    printf "yr_sbs = ${yr_sbs}\n"
-	    printf "yyyy_srt = ${yyyy_srt}\n"
-	    printf "yyyy_end = ${yyyy_end}\n"
 	fi # !dbg
 
     fi # !clm_md
@@ -2278,10 +2265,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		for ((var_idx=0;var_idx<var_nbr;var_idx++)); do
 		    /bin/mv -f ${fl_rgr[${var_idx}]} ${fl_out[${var_idx}]}
 		    printf "`date`: Overwrote native timeseries with regridded for ${var_sbs[${var_idx}]}\n"
-		    done # !var_idx
-		fi # !no_ntv_tms
+		done # !var_idx
+	    fi # !no_ntv_tms
 
-	    fi # !rgr_opt
+	fi # !rgr_opt
 	
     done # !sgm_idx
     
@@ -2554,7 +2541,7 @@ fi # !dly
 # 3. Output similar to existing monthly-frequency climos with additional 'hour' dimension
 # 4. Climatology bounds attributes correct for time variable(?)
 # Disadvantages:
-# 1. E3SM post-processing may not like new 'hour' dimension
+# 1. E3SM-diags post-processing may not like new 'hour' dimension
 # 2. No corresponding examples in CF Conventions
 # 3. Any utility in multiple-variables per output file, e.g., TS, PRECT? Would single variables suffice?
 if [ "${clm_md}" = 'hfs' ]; then
@@ -2564,6 +2551,13 @@ if [ "${clm_md}" = 'hfs' ]; then
     fi # !dpf
     let fpy=${dpy}/${dpf}
     let yr_sbs=${yr_nbr}
+
+    unset dpm # Days per month
+    declare -a dpm
+    dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
+
+    yyyy_srt=`printf "%04d" ${yr_srt}`
+    yyyy_end=`printf "%04d" ${yr_end}`
 
     # How many segments of output?
     let sgm_nbr=${yr_sbs}/${ypf_max}
@@ -2577,30 +2571,128 @@ if [ "${clm_md}" = 'hfs' ]; then
     let sgm_nbrm1=${sgm_nbr}-1
 
     if [ ${dbg_lvl} -ge 1 ]; then
-	    printf "dbg: HFC variable(s):\n"
-	    printf "dpm[3] = ${dpm[3]}\n"
-	    printf "dpy = ${dpy}\n"
-	    printf "drn = ${drn}\n"
-	    printf "fl_idx_srt = ${fl_idx_srt}\n"
-	    printf "fl_idx_end = ${fl_idx_end}\n"
-	    printf "fpy = ${fpy}\n"
-	    printf "fpyp1 = ${fpyp1}\n"
-	    printf "nco_opt = ${nco_opt}\n"
-	    printf "ppn_opt = ${ppn_opt}\n"
-	    printf "sgm_rmd = ${sgm_rmd}\n"
-	    printf "spl_opt = ${spl_opt}\n"
-	    printf "srd = ${srd}\n"
-	    printf "tpd_out = ${tpd_out}\n"
-	    printf "var_lst_xtn = ${var_lst_xtn}\n"
-	    printf "ypf_max = ${ypf_max}\n"
-	    printf "yr_nbr = ${yr_nbr}\n"
-	    printf "yr_sbs = ${yr_sbs}\n"
-	    printf "yyyy_srt = ${yyyy_srt}\n"
-	    printf "yyyy_end = ${yyyy_end}\n"
+	printf "dbg: HFC variable(s):\n"
+	printf "dpm[3] = ${dpm[3]}\n"
+	printf "dpy = ${dpy}\n"
+	printf "fl_idx_srt = ${fl_idx_srt}\n"
+	printf "fl_idx_end = ${fl_idx_end}\n"
+	printf "fpy = ${fpy}\n"
+	printf "fpyp1 = ${fpyp1}\n"
+	printf "nco_opt = ${nco_opt}\n"
+	printf "ppn_opt = ${ppn_opt}\n"
+	printf "sgm_rmd = ${sgm_rmd}\n"
+	printf "spl_opt = ${spl_opt}\n"
+	printf "tpd_out = ${tpd_out}\n"
+	printf "var_lst_xtn = ${var_lst_xtn}\n"
+	printf "ypf_max = ${ypf_max}\n"
+	printf "yr_nbr = ${yr_nbr}\n"
+	printf "yr_sbs = ${yr_sbs}\n"
     fi # !dbg
+    
+    # Create template output filenames (to avoid Bash 2D string arrays)
+    for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
+	if [ -z "${fml_nm_usr}" ]; then 
+	    fl_out_tpl[${sgm_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_mth_tpl.nc"
+	else # !fml_nm_usr
+	    fl_out_tpl[${sgm_idx}]="${drc_out}/hfc_${fml_nm}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_mth_tpl.nc"
+	fi # !fml_nm_usr
+    done # !sgm_idx
 
-fi # !hfs
+    mth_nbr=12
+    
+    # Begin outer loop over time segments
+    for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 
+	# Begin loop over months to split
+	let bch_nbr=$((mth_nbr / job_nbr))
+	let bch_flg=$((mth_nbr % job_nbr))
+	if [ ${bch_nbr} -eq 0 ]; then
+	    let bch_nbr=$((bch_nbr+1))
+	elif [ ${bch_flg} -ne 0 ]; then
+	    let bch_nbr=$((bch_nbr+1))
+	fi # !bch_flg
+	let bch_nbrm1=$((bch_nbr-1))
+	for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
+	    # mth_idx is 1-based, bch_idx is 0-based
+	    let mth_idx_srt=$(((bch_idx * job_nbr) + 1))
+	    let mth_idx_end=$((mth_idx_srt + job_nbr - 1))
+	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
+		let mth_idx_srt=$((bch_idx * job_nbr))
+		let mth_idx_end=$((mth_nbr - 1))
+	    fi # !bch_flg
+	    printf "${spt_nm}: DEBUG job_nbr = ${job_nbr}, bch_nbr = ${bch_nbr}, bch_idx = ${bch_idx}, mth_idx_srt = ${mth_idx_end}, mth_idx_end = ${mth_idx_end}\n"
+	    for ((mth_idx=mth_idx_srt;mth_idx<=mth_idx_end;mth_idx++)); do
+		MM=`printf "%02d" ${mth_idx}`
+		fl_out[${mth_idx}]="${fl_out_tpl[${sgm_idx}]/mth_tpl/${MM}}"
+		DD=`printf "%02d" ${dpm[${mth_idx}]}` 
+		tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-${MM}-01 00:00:01"
+		let mthp1=$((mth_idx + 1))
+		MMp1=`printf "%02d" ${mthp1}`
+		tm_end="${yyyy_end_sgm[${sgm_idx}]}-${MMp1}-01 00:00:00"
+		if [ ${mth_idx} -eq 12 ]; then
+		    tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01 00:00:00"
+		fi # !December
+		let srd=${dpy}*${tpd_out}
+		let drn=${dpm[${mth_idx}]}*${tpd_out}
+		fl_rcat[${mth_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_ncrcat.nc"
+		fl_ecat[${mth_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_ncecat.nc"
+		fl_pdq[${mth_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_ncpdq.nc"
+		fl_tpd_tpl="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_tpd"
+		fl_tpd_all=''
+		for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
+		    fl_tpd[${tpd_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_tpd${tpd_idx}.nc"
+		    fl_tpd_all="${fl_tpd_all} ${fl_tpd[${tpd_idx}]}"
+		done # !tpd_idx
+		# 20200628: Output one record per year as data(time,hour,space), easier to regrid
+		#cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
+		# 20200628: Output one record per month as data(time,hour,space), easier to regrid
+		# fxm: create MM-specific fl_sgm rather than using fl_sgm constructed for annual bounds
+		# fxm: got to here
+		cmd_sbs[${mth_idx}]="${cmd_mpi[${mth_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${mth_idx}]};/bin/rm -f ${fl_out[${mth_idx}]}"
+		#;for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${mth_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${mth_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${mth_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${mth_idx}]} ${fl_pdq[${mth_idx}]};/bin/rm -f ${fl_ecat[${mth_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${mth_idx}]} ${fl_out[${mth_idx}]};/bin/rm -f ${fl_pdq[${mth_idx}]}"
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_sbs[${mth_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -le 1 ]; then
+		    if [ -z "${par_opt}" ]; then
+			eval ${cmd_sbs[${mth_idx}]}
+			if [ "$?" -ne 0 ]; then
+			    printf "${spt_nm}: ERROR subset cmd_sbs[${mth_idx}] failed. Debug this:\n${cmd_sbs[${mth_idx}]}\n"
+			    exit 1
+			fi # !err
+		    else # !par_opt
+			eval ${cmd_sbs[${mth_idx}]} ${par_opt}
+			sbs_pid[${mth_idx}]=$!
+		    fi # !par_opt
+		fi # !dbg
+	    done # !mth_idx
+	    
+	    # Block NNN: Wait
+	    # Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
+	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+	    if [ -n "${par_opt}" ]; then
+		#printf "${spt_nm}: DEBUG mth_idx = ${mth_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
+		for ((mth_idx=mth_idx_srt;mth_idx<=mth_idx_end;mth_idx++)); do
+		    wait ${sbs_pid[${mth_idx}]}
+		    if [ "$?" -eq 0 ]; then
+			printf "`date`: Generated ${cmd_sbs[${mth_idx}]##* }\n"
+		    else
+			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${mth_idx}] failed. Debug this:\n${cmd_sbs[${mth_idx}]}\n"
+			# 20190323: exiting parent here creates orphans, kill live children then exit
+			for ((kid_idx=mth_idx+1;kid_idx<=mth_idx_end;kid_idx++)); do
+			    kill -9 ${sbs_pid[${kid_idx}]}
+			done # !kid_idx
+			exit 1
+		    fi # !err
+		done # !mth_idx
+	    fi # !par_opt
+
+        done # !bch_idx
+
+    done # !sgm_idx
+
+fi # !hfc
+				      
 # Many subsequent blocks only execute for normal and incremental monthly climos, not for binary climos, or non-monthly climos
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
     
