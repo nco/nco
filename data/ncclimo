@@ -547,7 +547,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--dpt_fl${fnt_nrm}   Depth file with refBottomDepth for MPAS ocean (empty means none) (default ${fnt_bld}${dpt_fl}${fnt_nrm}) [${fnt_tlc}dpt_fl, mpas_fl, mpas_depth, depth_file${fnt_nrm}]"
     echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year previous climo (empty means none) (default ${fnt_bld}${yr_end_prv}${fnt_nrm}) [${fnt_tlc}yr_end_prv, prv_yr_end, previous_end${fnt_nrm}]"
     echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm}) [${fnt_tlc}yr_end, end_yr, year_end, end_year, end${fnt_nrm}]"
-    echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm}) [${fnt_tlc}fml_nm, family_name${fnt_nrm}]"
+    echo "${fnt_rvr}-f${fnt_nrm} ${fnt_bld}fml_nm${fnt_nrm}   Family name (nickname) (empty means none) (default ${fnt_bld}${fml_nm}${fnt_nrm}) [${fnt_tlc}fml_nm, fml, family_name${fnt_nrm}]"
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is inherited from input) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo " ${fnt_bld}--glb_avg${fnt_nrm}  Global average timeseries (default ${fnt_bld}${glb_avg}${fnt_nrm}) [${fnt_tlc}glb_avg, global_average${fnt_nrm}]"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
@@ -703,7 +703,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       dpt_fl=?* | mpas_fl=?* | mpas_file=?* | depth_file=?* ) dpt_opt="--dpt_fl=${LONG_OPTARG}" ;; # # Depth file with refBottomDepth for MPAS ocean
 	       yr_end_prv=?* | prv_yr_end=?* | previous_end=?* ) yr_end_prv="${LONG_OPTARG}" ;; # -E # End year previous
 	       yr_end=?* | end_yr=?* | year_end=?* | end_year=?* | end=?* ) yr_end="${LONG_OPTARG}" ;; # -e # End year
-	       fml_nm=?* | family_name=?* | family=?* ) fml_nm_usr="${LONG_OPTARG}" ;; # -f # Family name
+	       fml_nm=?* | fml=?* | family_name=?* | family=?* ) fml_nm_usr="${LONG_OPTARG}" ;; # -f # Family name
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
@@ -2544,7 +2544,7 @@ fi # !dly
 # 1. E3SM-diags post-processing may not like new 'hour' dimension
 # 2. No corresponding examples in CF Conventions
 # 3. Any utility in multiple-variables per output file, e.g., TS, PRECT? Would single variables suffice?
-if [ "${clm_md}" = 'hfs' ]; then
+if [ "${clm_md}" = 'hfc' ]; then
 
     if [ -z "${dpf}" ]; then
 	dpf=30
@@ -2620,7 +2620,7 @@ if [ "${clm_md}" = 'hfs' ]; then
 		let mth_idx_srt=$((bch_idx * job_nbr))
 		let mth_idx_end=$((mth_nbr - 1))
 	    fi # !bch_flg
-	    printf "${spt_nm}: DEBUG job_nbr = ${job_nbr}, bch_nbr = ${bch_nbr}, bch_idx = ${bch_idx}, mth_idx_srt = ${mth_idx_end}, mth_idx_end = ${mth_idx_end}\n"
+	    #printf "${spt_nm}: DEBUG job_nbr = ${job_nbr}, bch_nbr = ${bch_nbr}, bch_idx = ${bch_idx}, mth_idx_srt = ${mth_idx_end}, mth_idx_end = ${mth_idx_end}\n"
 	    for ((mth_idx=mth_idx_srt;mth_idx<=mth_idx_end;mth_idx++)); do
 		MM=`printf "%02d" ${mth_idx}`
 		fl_out[${mth_idx}]="${fl_out_tpl[${sgm_idx}]/mth_tpl/${MM}}"
@@ -2643,13 +2643,8 @@ if [ "${clm_md}" = 'hfs' ]; then
 		    fl_tpd[${tpd_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_tpd${tpd_idx}.nc"
 		    fl_tpd_all="${fl_tpd_all} ${fl_tpd[${tpd_idx}]}"
 		done # !tpd_idx
-		# 20200628: Output one record per year as data(time,hour,space), easier to regrid
-		#cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}' ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
 		# 20200628: Output one record per month as data(time,hour,space), easier to regrid
-		# fxm: create MM-specific fl_sgm rather than using fl_sgm constructed for annual bounds
-		# fxm: got to here
-		cmd_sbs[${mth_idx}]="${cmd_mpi[${mth_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${mth_idx}]};/bin/rm -f ${fl_out[${mth_idx}]}"
-		#;for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${mth_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${mth_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${mth_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${mth_idx}]} ${fl_pdq[${mth_idx}]};/bin/rm -f ${fl_ecat[${mth_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${mth_idx}]} ${fl_out[${mth_idx}]};/bin/rm -f ${fl_pdq[${mth_idx}]}"
+		cmd_sbs[${mth_idx}]="${cmd_mpi[${mth_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${mth_idx}]};/bin/rm -f ${fl_out[${mth_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra -O -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${mth_idx}]} ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${mth_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${mth_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${mth_idx}]} ${fl_pdq[${mth_idx}]};/bin/rm -f ${fl_ecat[${mth_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${mth_idx}]} ${fl_out[${mth_idx}]};/bin/rm -f ${fl_pdq[${mth_idx}]}"
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_sbs[${mth_idx}]}
 		fi # !dbg
@@ -2691,6 +2686,24 @@ if [ "${clm_md}" = 'hfs' ]; then
 
     done # !sgm_idx
 
+    # Re-plumb climo generation input fields to use the new monthly diurnal files
+    clm_flg='Yes'
+    clm_md='mth'
+    clm_nbr=17
+    csn_flg='Yes'
+    # Overwrite first 12 entries of cmd_clm:
+    clm_idx=0
+    clm_idx=0
+    for mth in {01..12}; do
+	let clm_idx=${clm_idx}+1
+	MM=`printf "%02d" ${clm_idx}`
+	# The ole' switcheroo
+	fl_all=${fl_out[${clm_idx}]}
+	# fxm: borken for dec_md=scd, hardcoded hfc
+	fl_out[${clm_idx}]="${drc_out}/hfc_${MM}_${yyyy_srt}${MM}_${yyyy_end}${MM}_climo.nc"
+	# fxm: fl_all is already a monthly climo so this is an arithmetic no-op that only changes cb metadata
+	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} ${fl_all} ${fl_out[${clm_idx}]}"
+    done # !mth
 fi # !hfc
 				      
 # Many subsequent blocks only execute for normal and incremental monthly climos, not for binary climos, or non-monthly climos

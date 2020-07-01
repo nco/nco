@@ -1,8 +1,12 @@
-2020-06-28  Charlie Zender  <zender@uci.edu>
+2020-06-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha05: SpaceForce';git push
- 	git tag -a 4.9.4-alpha05 -m 'ncclimo hfs ann drn cyc, align mth drn';git push --tags
+ 	git tag -a 4.9.4-alpha05 -m 'ncclimo align mth, hfc clm';git push --tags
+
+	* Change clm_md to hfc for climos, hfs for splitting
+
+2020-06-28  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo HFCs successfully aligned with months
 

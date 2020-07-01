@@ -1125,7 +1125,7 @@ For Mac OS X with MacPorts:
 <dt>sudo port install libdap # DAP</dt>
 <dt>sudo port install gsl # GSL</dt>
 <dt>sudo port install netcdf # netCDF</dt>
-<dt>sudo port install netcdf-fortran +gcc7 # netCDF for ESMF</dt>
+<dt>sudo port install netcdf-fortran # netCDF for ESMF</dt>
 <dt>sudo port install udunits2 # UDUnits</dt>
 </tt>
 Without MacPorts, the system TeXInfo may be too old to build the
@@ -1142,7 +1142,7 @@ For Windows with Cygwin, select and install the following packages with Cygwin S
 <dt>netcdf # netCDF</dt>
 <dt>udunits2 # UDUnits</dt>
 </tt>
-As of 20131101 there is no Cygwin package for ANTLR, and the netCDF package does not yet support DAP. 
+As of 20131101 there is no Cygwin package for ANTLR, and the Cygwin netCDF package does not yet support DAP. 
 </li>
 
 <li>Once you have installed the pre-requisites as shown above, you may then build the latest stable NCO and install it in, e.g., <tt>/usr/local</tt> with: 
