@@ -3482,7 +3482,8 @@ var_sct * srt_cls::mst_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_o
           fmc_vtr.push_back( fmc_cls("make_bounds",this,PBOUNDS)); 
 
     }		      
-  } 
+  }
+
   var_sct * bnds_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker){
   const std::string fnc_nm("arr_cls::fnd");
   // int fdx=fmc_obj.fdx();
@@ -3551,9 +3552,12 @@ var_sct * srt_cls::mst_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_o
      
    var_ret=ncap_cst_mk(cst_vtr,prs_arg);
 
-   // use coordinate var name so we get attribute propagation
+   //  This a real hack - we use a random name for the var as we wish to control
+   //  the attribute propagation. If we used the coordinate var name then the RHS would
+   //  get all the atts from coord name we only wish to get units, cal, and a custom
    nco_free(var_ret->nm);
-   var_ret->nm=strdup(var1->nm);      
+   var_ret->nm=(char*)nco_calloc(40, sizeof(char));
+   sprintf(var_ret->nm, "xyz%d", rand() );
 
    // convert to type of first arg
    var_ret=nco_var_cnf_typ(var1->type,var_ret);  
@@ -3575,19 +3579,94 @@ var_sct * srt_cls::mst_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_o
     }
   }
 
+
+
+  /* Remember this puts @bounds into var1 - the input coordinate var */
   if(var_txt)
   {
-    std::string att_nm;
-    NcapVar *Nvar;
+    string att_nm;
+    NcapVar *Nvar=NULL;
 
     if(var_txt->type !=NC_CHAR && var_txt->type !=NC_STRING)     
       wrn_prn(fnc_nm,"Third argument is the bounds name and must be a  text type");  
     else
     {
-      att_nm=var_ret->nm;att_nm+="@bounds";
+      att_nm=var1->nm;att_nm+="@bounds";
       Nvar=new NcapVar(var_txt,att_nm);
       prs_arg->var_vtr.push_ow(Nvar);       
     }       
+
+  }
+
+
+  /* grab if they exist @units and @calendar from input var ( coordinate var) */
+  {
+
+    char bnds_txt[100];
+    nco_char ch;
+
+    var_sct *att_units=NULL_CEWI;
+    var_sct *att_cal=NULL_CEWI;
+    var_sct *att_long_name=NULL_CEWI;
+
+    
+    std::string att_nm_in;
+    std::string att_nm_out;
+    NcapVar *Nvar=NULL;
+
+    /* get @units from coordinate var */
+    att_nm_in=var1->nm; att_nm_in+="@units";
+
+    Nvar=prs_arg->var_vtr.find(att_nm_in);
+
+    if(Nvar !=NULL)
+      att_units=nco_var_dpl(Nvar->var);
+    else
+      att_units=ncap_att_init(att_nm_in,prs_arg);
+
+    if(att_units)
+    {
+      att_nm_out=var_ret->nm; att_nm_out+="@units";
+      Nvar=new NcapVar(att_units,att_nm_out);
+      prs_arg->var_vtr.push_ow(Nvar);
+
+
+    }
+
+
+    /* get @calendar from coordinate var */
+    att_nm_in=var1->nm; att_nm_in+="@calendar";
+
+    Nvar=prs_arg->var_vtr.find(att_nm_in);
+
+    if(Nvar !=NULL)
+      att_cal=nco_var_dpl(Nvar->var);
+    else
+      att_cal=ncap_att_init(att_nm_in,prs_arg);
+
+    if(att_cal)
+    {
+      att_nm_out=var_ret->nm; att_nm_out+="@calendar";
+      Nvar=new NcapVar(att_cal,att_nm_out);
+      prs_arg->var_vtr.push_ow(Nvar);
+
+
+    }
+
+    /* create a new @long_name */
+    att_long_name=ncap_sclr_var_mk("~zz@tmp", ch);
+
+    sprintf(bnds_txt,"Bounds for $%s coordinate",var1->nm  );
+    att_long_name->sz=strlen(bnds_txt);
+
+    att_long_name->val.cp=(char*)nco_malloc(sizeof(char)*att_long_name->sz  );
+    strncpy(att_long_name->val.cp, bnds_txt, att_long_name->sz );
+    cast_nctype_void(att_long_name->type,&att_long_name->val);
+
+    att_nm_out=var_ret->nm; att_nm_out+="@long_name";
+    Nvar=new NcapVar(att_long_name,att_nm_out);
+    prs_arg->var_vtr.push_ow(Nvar);
+
 
   }
 
