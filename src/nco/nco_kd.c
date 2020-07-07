@@ -2073,15 +2073,13 @@ int add_priority_intersect(int m, KDPriority *P, kd_box Xq, KDElem *elem)
 	return 1;
 }
 
-int kd_nearest(KDTree* tree, double x, double y, int m, KDPriority *alist);
 
-
-void kd_print_nearest(KDTree* tree, double x, double y, int m)
+void kd_print_nearest(KDTree* tree, double x, double y, poly_typ_enm pl_typ,   int m)
 {
 	KDPriority *list=NULL;
 	int xz,i;
 	
-	xz = kd_nearest(tree, x, y, m, list);
+	xz = kd_nearest(tree, x, y, pl_typ,  m, list);
 	fprintf(stdout,"Nearest Search: visited %d nodes to find the %d closest objects.\n", xz, m);
 	for(i=0;i<m;i++)
 	{
@@ -2623,10 +2621,10 @@ nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *
 
 
 
-int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority *alist)
+int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m, KDPriority *alist)
 {
 	int idx;
-        kd_box Bp,Bn,Xq;
+	kd_box Bp,Bn,Xq;
 
 	Xq[KD_LEFT] = x;
 	Xq[KD_BOTTOM] = y;
