@@ -69,8 +69,9 @@
 #endif
 
 #include "nco.h"
-#include "nco_mmr.h" /* Memory management */
-#include "nco_omp.h" /* OpenMP utilities */
+#include "nco_mmr.h"  /* Memory management */
+#include "nco_omp.h"  /* OpenMP utilities */
+//#include "nco_sph.h"
 //#include "nco_ply_lst.h"
 
 #define KD_LEFT		0
@@ -297,8 +298,6 @@ int kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority *list, kd_box
 int kd_neighbour_intersect(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn);
 int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
 int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
-//int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head, KDPriority *list_end, int stateH, int stateV );
-//int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head, KDPriority *list_end, int stateH, int stateV );
 int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_mem, int stateH, int stateV );
 int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m, KDPriority *alist);
 

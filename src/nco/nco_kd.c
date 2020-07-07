@@ -91,7 +91,9 @@ static double kd_tree_badness_factor2 = 0.0;
 static double kd_tree_badness_factor3 = 0.0;  /* count of one-son nodes */
 static int kd_tree_max_levels = 0;
 
-
+/* used in kDist to calculate the appropriate distance metric */
+/* nb this is set in Kd_nearest()  */
+static poly_typ_enm kd_pl_typ=poly_rll;
 
 
 /* Forward declarations
@@ -1959,10 +1961,56 @@ double KDdist(kd_box Xq, KDElem *elem)
 {
     double hyp;
 
-     hyp=hypot(  Xq[KD_LEFT] - ((poly_sct*)elem->item)->dp_x_ctr, Xq[KD_TOP] -  ((poly_sct*)elem->item)->dp_y_ctr   );
+    switch(kd_pl_typ)
+	{
 
-  return hyp*hyp;
+    	/* use 2D cartesian distance */
+	  case poly_crt:
+	  case poly_rll:
+		hyp=hypot(  Xq[KD_LEFT] - ((poly_sct*)elem->item)->dp_x_ctr, Xq[KD_TOP] -  ((poly_sct*)elem->item)->dp_y_ctr   );
+		hyp*=hyp;
+    	break;
 
+
+	  case poly_sph:
+	  {
+	  	double x1;
+	  	double y1;
+	  	double x2;
+	  	double y2;
+        double dx;
+        double dy;
+        double dz;
+        double C;
+
+        x1=((poly_sct*)elem->item)->dp_x_ctr *M_PI / 180.0;
+        y1=((poly_sct*)elem->item)->dp_y_ctr *M_PI / 180.0;
+
+
+        /* convert to radians */
+        x2=Xq[KD_LEFT] * M_PI/180.0;
+        y2=Xq[KD_TOP]  * M_PI/180.0;
+
+        dx=cos(x1)*cos(y1) - cos(x2)*cos(y2);
+        dy=cos(x1)*sin(y1) - cos(x2)*sin(y2);
+        dz=sin(y1)-sin(y2);
+
+        C= sqrt(dx*dx + dy*dy +dz*dz);
+
+        hyp=2*asin( C/2.0 );
+
+        hyp=hyp*hyp;
+
+	  }
+	  break;
+
+
+
+	} /* end switch */
+
+
+
+   return hyp;
 
 
 
@@ -2051,30 +2099,8 @@ void add_priority(int m, KDPriority *P, kd_box Xq, KDElem *elem)
 }
 
 
-int add_priority_intersect(int m, KDPriority *P, kd_box Xq, KDElem *elem)
-{
-	int idx;
-	double d;
-	
-	d = KDdist(Xq,elem);
-        d*=d;
 
-	for(idx=01 ;idx<m; idx++)
-	{
-	  /* elem empty */
-          if( !P[idx].elem   )
-	   {    
-	    P[idx].dist=d;
-	    P[idx].elem=elem;
-            break;
-          }
-	}
-	
-	return 1;
-}
-
-
-void kd_print_nearest(KDTree* tree, double x, double y, poly_typ_enm pl_typ,   int m)
+void kd_print_nearest(KDTree* tree, double x, double y, poly_typ_enm pl_typ, int m)
 {
 	KDPriority *list=NULL;
 	int xz,i;
@@ -2630,6 +2656,11 @@ int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m
 	Xq[KD_BOTTOM] = y;
 	Xq[KD_RIGHT] = x;
 	Xq[KD_TOP] = y;
+
+	/* bit of  hack - set the static here -
+	 * nb is picked up in kDist() */
+	kd_pl_typ=pl_typ;
+
 	//*alist = (KDPriority *)nco_calloc(sizeof(KDPriority),m);
 	for(idx=0;idx<m;idx++)
 	{
