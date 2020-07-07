@@ -1494,7 +1494,7 @@ int *wgt_cnt_bln_ret) {
     //bSplit = nco_poly_minmax_split(pl_lst_out[idx], grd_lon_typ, size1, size2);
 
     for(kdx=0;kdx<nbr_tr;kdx++)
-      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, nbr_nni, mem_lst[thr_idx].kd_list + nbr_nni *kdx );
+      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, pl_typ,  nbr_nni, mem_lst[thr_idx].kd_list + nbr_nni *kdx );
 
     if(nbr_tr >1 )
       qsort((void *)mem_lst[thr_idx].kd_list,  nbr_nni*nbr_tr, sizeof(KDPriority), kd_priority_cmp_dist);
