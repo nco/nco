@@ -17833,6 +17833,8 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
   fi
 
 
+		OPENMP_CFLAGS+=" -march=native" #-foffload=nvptx-none"
+
 
 
 $as_echo "#define ENABLE_OPENMP 1" >>confdefs.h

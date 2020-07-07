@@ -334,6 +334,8 @@ AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [de
 # Enable OpenMP unless told not to
 if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
     AC_OPENMP
+		OPENMP_CFLAGS+=" -march=native" #-foffload=nvptx-none"
+
     AC_SUBST(OPENMP_CFLAGS)
     AC_DEFINE([ENABLE_OPENMP],[1],[Compile operators with OpenMP support])
     AC_MSG_NOTICE([OpenMP support enabled])
