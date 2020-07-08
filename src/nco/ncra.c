@@ -1171,8 +1171,8 @@ main(int argc,char **argv)
        This permits us to weight with scalar arithmetic later, rather than broadcasting the weight
        This differs from ncwa wgt treatment (where wgt can be N-D and is always broadcast to match variable)
        20150708: Unsure why nco_var_dpl() calls below generate valgrind invalid read errors */
-    /* fxm: got to here with ncfe wgt */
-    /* 20200701: Is sz_rec == 1 when wgt is scalar? */
+    /* 20200701: Verified that sz_rec == 1 when wgt is scalar */
+    //    if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: DEBUG wgt_nm=%s, wgt->sz_rec=%li\n",nco_prg_nm_get(),wgt_nm,wgt->sz_rec);
     wgt->val.vp=(void *)nco_realloc(wgt->val.vp,wgt->sz_rec*nco_typ_lng(wgt->type));
     wgt->tally=(long *)nco_realloc(wgt->tally,wgt->sz_rec*sizeof(long));
     (void)nco_var_zero(wgt->type,wgt->sz_rec,wgt->val);
@@ -1200,7 +1200,7 @@ main(int argc,char **argv)
     if(nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(stderr,"\n");
 
     /* Open file once per thread to improve caching */
-    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,NC_NOWRITE,&bfr_sz_hnt,in_id_arr+thr_idx);
+    for(thr_idx=0;thr_idx<thr_nbr;thr_idx++) rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,in_id_arr+thr_idx);
     in_id=in_id_arr[0];
 
     /* Do ncge ensemble refresh */
@@ -1231,6 +1231,7 @@ main(int argc,char **argv)
 
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
 
+      /* fxm: got to here with ncfe wgt */
       /* Loop over number of different record dimensions in file */
       for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
         char *fl_udu_sng=NULL_CEWI;
@@ -1615,6 +1616,7 @@ main(int argc,char **argv)
       /* End ncra, ncrcat section */
     }else if(nco_prg_id == ncfe){ /* ncfe */
 
+      /* fxm: got to here with ncfe wgt */
 #ifdef _OPENMP
 #pragma omp parallel for private(idx,in_id) shared(nco_dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id,thr_nbr)
 #endif /* !_OPENMP */

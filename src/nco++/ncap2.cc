@@ -750,6 +750,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
     } /* !netCDF4 */
     if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
+    if(SHARE_OPEN) md_open=md_open|NC_SHARE;
     rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt,&out_id);
     (void)nco_redef(out_id);
   } /* !FL_OUT_NEW */
@@ -786,6 +787,7 @@ main(int argc,char **argv)
   prs_arg.fl_out_fmt=fl_out_fmt; /* [sng] Output data file format */
 
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+  if(SHARE_OPEN) md_open=md_open|NC_SHARE;
   rcd+=nco_fl_open(fl_out_tmp,md_open,&bfr_sz_hnt,&prs_arg.out_id_readonly);
   
   prs_arg.FORTRAN_IDX_CNV=(FORTRAN_IDX_CNV==True);
@@ -811,6 +813,7 @@ main(int argc,char **argv)
     
     /* Open files for each thread */
     if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+    if(SHARE_OPEN) md_open=md_open|NC_SHARE;
     rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&prs_tmp.in_id);
     
     /* Handle to read output only */

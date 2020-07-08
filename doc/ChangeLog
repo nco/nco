@@ -1,5 +1,9 @@
 2020-07-08  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.4-alpha06 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha06: Missoula';git push
+ 	git tag -a 4.9.4-alpha06 -m 'NC_SHARE on read, ncclimo fxm';git push --tags
+
 	* Add 'if(SHARE_OPEN) md_open=md_open|NC_SHARE;' to all main.c files
 
 2020-07-01  Charlie Zender  <zender@uci.edu>
