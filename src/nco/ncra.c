@@ -794,6 +794,7 @@ main(int argc,char **argv)
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,HPSS_TRY,&FL_RTR_RMT_LCN);
   /* Open file using appropriate buffer size hints and verbosity */
   if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
+  if(SHARE_OPEN) md_open=md_open|NC_SHARE;
   rcd+=nco_fl_open(fl_in,md_open,&bfr_sz_hnt,&in_id);
   (void)nco_inq_format(in_id,&fl_in_fmt);
 
@@ -1151,6 +1152,7 @@ main(int argc,char **argv)
     /* Record operators only need space for one record, not entire variable */
     if(nco_prg_id == ncra || nco_prg_id == ncrcat) var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
     if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
+      /* 20200701: fxm unclear (i.e., I cannot remember) why wgt_sum allocated iff has_mss_val */
       if((wgt_arr || wgt_nm) && var_prc[idx]->has_mss_val) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double));
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_calloc(var_prc_out[idx]->sz,sizeof(long));
       var_prc_out[idx]->val.vp=(void *)nco_calloc(var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type));
@@ -1160,10 +1162,17 @@ main(int argc,char **argv)
   if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
     /* Find weight variable that matches current variable */
     wgt=nco_var_get_wgt_trv(in_id,lmt_nbr,lmt_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,wgt_nm,var_prc[0],trv_tbl);
-    assert(wgt->nbr_dim < 2);
-    /* Change wgt from a normal full variable to one that only holds one record at a time
-       This differs from ncwa wgt treatment
-       20150708: nco_var_dpl() calls below generate valgrind invalid read errors. Not sure why. */
+    /* ncra can handle scalar, 1-D, and degenerate 1-D weights, nces requires scalar weights */
+    if(nco_prg_id == ncra) assert(wgt->nbr_dim < 2);
+    if(nco_prg_id == ncfe || nco_prg_id == ncge){
+      if(wgt->nbr_dim == 1) assert(wgt->sz_rec == 1L); else assert(wgt->nbr_dim == 0);
+    } /* !ncfe */
+    /* Change wgt from a normal full (scalar or 1-D) variable to a scalar variable 
+       This permits us to weight with scalar arithmetic later, rather than broadcasting the weight
+       This differs from ncwa wgt treatment (where wgt can be N-D and is always broadcast to match variable)
+       20150708: Unsure why nco_var_dpl() calls below generate valgrind invalid read errors */
+    /* fxm: got to here with ncfe wgt */
+    /* 20200701: Is sz_rec == 1 when wgt is scalar? */
     wgt->val.vp=(void *)nco_realloc(wgt->val.vp,wgt->sz_rec*nco_typ_lng(wgt->type));
     wgt->tally=(long *)nco_realloc(wgt->tally,wgt->sz_rec*sizeof(long));
     (void)nco_var_zero(wgt->type,wgt->sz_rec,wgt->val);

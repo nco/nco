@@ -419,8 +419,8 @@ main(int argc,char **argv)
   } /* end if FL_OUT_NEW */
 
   /* Open file. Writing must be enabled and file should be in define mode for renaming */
-  /*  if(nco_dbg_lvl == 8) md_open|=NC_SHARE;*/
   if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
+  if(SHARE_OPEN) md_open=md_open|NC_SHARE;
   rcd+=nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&nc_id);
   (void)nco_redef(nc_id);
 

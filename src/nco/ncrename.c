@@ -381,6 +381,7 @@ main(int argc,char **argv)
 
   /* Open file enabled for writing. Place file in define mode for renaming. */
   if(RAM_OPEN) md_open=NC_WRITE|NC_DISKLESS; else md_open=NC_WRITE;
+  if(SHARE_OPEN) md_open=md_open|NC_SHARE;
   rcd+=nco_fl_open(fl_out,md_open,&bfr_sz_hnt,&nc_id);
 
   /* 20141010: Avoid nc_rename_var/dim() bug */

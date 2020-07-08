@@ -277,7 +277,9 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		 "NetCDF: Filter error: filter not defined for variable"
 		 Prior to 4.7.4, nc_inq_var_filter() returns NC_NOERR on such variables, and sets the filter ID to 0
 		 Workaround for netCDF 4.7.4 is to proceed only if first nc_inq_var_filter_flg() returns NC_NOERR */
-	      if(NC_LIB_VERSION == 474 || NC_LIB_VERSION == 480){
+	      // 20200701 Dennis Heimbigner reverted the 4.7.4 change in 4.8.0-develop
+	      //if(NC_LIB_VERSION == 474 || NC_LIB_VERSION == 480){
+	      if(NC_LIB_VERSION == 474){
 		rcd=nco_inq_var_filter_flg(grp_id,var_id,&flt_id,&prm_nbr,NULL);
 		if(rcd == NC_ENOFILTER){
 		  rcd=NC_NOERR;

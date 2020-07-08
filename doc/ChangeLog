@@ -1,3 +1,11 @@
+2020-07-08  Charlie Zender  <zender@uci.edu>
+
+	* Add 'if(SHARE_OPEN) md_open=md_open|NC_SHARE;' to all main.c files
+
+2020-07-01  Charlie Zender  <zender@uci.edu>
+
+	* Dennis Heimbigner reverted 4.7.4 nc_inq_var_filter() change in 4.8.0-develop, so revert workaround in nco_prn_att()
+
 2020-06-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha05 release procedure:

@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha05
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 27 June 2020
-@set update-month June 2020
+@set update-date 1 July 2020
+@set update-month July 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -8662,7 +8662,11 @@ Nine chunking maps are currently implemented:@*
 @item Chunksize Equals Dimension Size
 Definition: Chunksize defaults to dimension size. 
 Explicitly specify chunksizes for particular dimensions with
-@samp{--cnk_dmn} option.@*
+@samp{--cnk_dmn} option.
+In most cases this chunksize will be applied in all variables
+that contain the specified dimension.
+Some chunking policies noted above allow (fxm), and others (fxm) 
+prevent this chunksize from applying to all variables.@*
 @var{cnk_map} key values: @samp{dmn}, @samp{cnk_dmn}, @samp{map_dmn}@*
 Mnemonic: @emph{D}i@emph{M}e@emph{N}sion@*
 @item Chunksize Equals Dimension Size except Record Dimension
@@ -20121,9 +20125,9 @@ Prior to this, @command{nces} was only guaranteed to work on hyperslabs
 in the record dimension that resolved to the same size.}
 @cindex record dimension
 @cindex hyperslab
-@command{nces} does allow files to differ in the record dimension size
-if the requested record hyperslab (@pxref{Hyperslabs}) resolves to the
-same size for all files.  
+@command{nces} does allow files to differ in the input record
+dimension size if the requested record hyperslab (@pxref{Hyperslabs})
+resolves to the same size for all files.  
 @command{nces} recomputes the record dimension hyperslab limits for
 each input file so that coordinate limits may be used to select equal
 length timeseries from unequal length files.
@@ -23348,18 +23352,21 @@ When no weight is specified, @command{ncra} weights each record (e.g.,
 time slice) in the @var{input-files} equally.
 @command{ncra} does not attempt to see if, say, the @code{time}
 coordinate is irregularly spaced and thus would require a weighted
-average in order to be a true time average.
+average in order to be a true time-average.
+Specifying unequal weights is entirely the user's responsibility.
 
 Weights specified with @samp{-w wgt} may take one of two forms.
 In the first form, the @samp{wgt} argument is a comma-separated list of
-values by which to weight each @emph{file}. 
-Thus the number of values must equal the number of files specified
-in the input file list, or else the program will exit.
+values by which to weight each @emph{file} (recall that files may have
+multiple timesteps). 
+In this form the number of weights specified must equal the number of
+files specified in the input file list, or else the program will exit.
 In the second form, the @samp{wgt} argument is the name of a weighting
 variable present in every input file.
 The variable may be a scalar or a one-dimensional record variable.
-Scalar weights are applied uniformly to the entire file (i.e., a
-per-file weight).
+Scalar weights are applied uniformly to the entire file (i.e., this
+produces the same arithmetic result as supplying the same value
+as a per-file weight option on the command-line).
 One-dimensional weights apply to each corresponding record (i.e.,
 per-record weights), and are suitable for dynamically changing
 timesteps. 
@@ -23390,8 +23397,8 @@ Bear these two exceptions in mind when weighting input:
 First, @command{ncra} only applies weights if the arithmetic operation
 type is averaging (@pxref{Operation Types}), i.e., for timeseries mean
 and for timeseries mean absolute value.
-Second, weights are never applied for minimization, square-roots, etc.
-@command{ncra} @emph{never weights} coordinate variables (e.g., 
+Weights are never applied for minimization, square-roots, etc.
+Second, @command{ncra} @emph{never weights} coordinate variables (e.g., 
 @code{time}) regardless of the weighting performed on non-coordinate
 variables.
 
