@@ -2,7 +2,7 @@
 
 	* NCO 4.9.4-alpha06 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha06: Missoula';git push
- 	git tag -a 4.9.4-alpha06 -m 'NC_SHARE on read, ncclimo fxm';git push --tags
+ 	git tag -a 4.9.4-alpha06 -m 'all: NC_SHARE on read; nces -w wgt; ncks revert nc_inq_var_filter() workaround';git push --tags
 
 	* Add per-file weight logic to nces, works with command-line weights not wgt_nm weights
 

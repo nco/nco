@@ -948,7 +948,7 @@ nco_usg_prn(void)
     break;
   case ncfe:
   case ncge:
-    opt_sng=(char *)strdup("[-3] [-4] [-5] [-6] [-7] [-A] [--bfr byt] [-C] [-c] [--cnk_byt byt] [--cnk_csh byt] [--cnk_dmn nm,lmn] [--cnk_map map] [--cnk_min byt] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [--glb ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [--hpss] [-L lvl] [-l path] [--msa] [-n ...] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] [--nsm_fl] [--nsm_grp] [--nsm_sfx] [-O] [-o out.nc] [-p path] [--ppc ...] [-R] [-r] [--ram_all] [-t thr_nbr] [--uio] [--unn] [-v ...] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
+    opt_sng=(char *)strdup("[-3] [-4] [-5] [-6] [-7] [-A] [--bfr byt] [-C] [-c] [--cnk_byt byt] [--cnk_csh byt] [--cnk_dmn nm,lmn] [--cnk_map map] [--cnk_min byt] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...]  [--dbl|flt] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [--glb ...] [-H] [-h] [--hdf] [--hdr_pad nbr] [--hpss] [-L lvl] [-l path] [--msa] [-n ...] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] [--nsm_fl] [--nsm_grp] [--nsm_sfx] [-O] [-o out.nc] [-p path] [--ppc ...] [-R] [-r] [--ram_all] [-t thr_nbr] [--uio] [--unn] [-v ...] [-w wgt] [-X box] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
     break;
   case ncrcat:
     opt_sng=(char *)strdup("[-3] [-4] [-5] [-6] [-7] [-A] [--bfr byt] [-C] [-c] [--cnk_byt byt] [--cnk_csh byt] [--cnk_dmn nm,lmn] [--cnk_map map] [--cnk_min byt] [--cnk_plc plc] [--cnk_scl sz] [-D nco_dbg_lvl] [-d ...] [-F] [--fl_fmt fmt] [-G grp:lvl] [-g ...] [--glb ...] [-H] [-h] [--hdr_pad nbr] [--hpss] [-L lvl] [-l path] [--md5_dgs] [--msa] [-n ...] [--no_cll_msr] [--no_frm_trm] [--no_tmp_fl] [-O] [-o out.nc] [-p path] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn] [-t thr_nbr] [--uio] [--unn] [-v ...] [-X box] [-x] in.nc [...] [out.nc]\n");
@@ -1137,7 +1137,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--vrt")) (void)fprintf(stdout,"    --vrt_fl, vrt_crd vrt.nc\tFile containing vertical coordinate grid to interpolate to\n");
   /*  if(strstr(opt_sng,"[-W]")) (void)fprintf(stdout,"-W\t\tNormalize by weight but not tally\n");*/
   if(strstr(opt_sng,"[-w")){
-    if(prg_lcl == ncra) (void)fprintf(stdout,"-w, --wgt_var, weight wgt\tPer-file weights or variable name\n");
+    if(prg_lcl == ncra || prg_lcl == ncfe) (void)fprintf(stdout,"-w, --wgt_var, weight wgt\tPer-file weights or variable name\n");
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-w, --wgt_var, weight wgt\tWeighting variable name\n");
     if(prg_lcl == ncflint) (void)fprintf(stdout,"-w, --wgt_var, weight wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
