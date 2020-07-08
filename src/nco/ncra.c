@@ -1231,7 +1231,6 @@ main(int argc,char **argv)
 
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
 
-      /* fxm: got to here with ncfe wgt */
       /* Loop over number of different record dimensions in file */
       for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
         char *fl_udu_sng=NULL_CEWI;
@@ -1616,9 +1615,11 @@ main(int argc,char **argv)
       /* End ncra, ncrcat section */
     }else if(nco_prg_id == ncfe){ /* ncfe */
 
-      /* fxm: got to here with ncfe wgt */
+      if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs))
+	(void)nco_msa_var_get_trv(in_id,wgt_out,trv_tbl);
+
 #ifdef _OPENMP
-#pragma omp parallel for private(idx,in_id) shared(nco_dbg_lvl,fl_idx,FLG_BFR_NRM,in_id_arr,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out,nbr_dmn_fl,trv_tbl,var_trv,grp_id,gpe,grp_out_fll,grp_out_id,out_id,var_out_id,thr_nbr)
+#pragma omp parallel for private(idx,in_id) shared(FLG_BFR_NRM,fl_idx,gpe,grp_id,grp_out_fll,grp_out_id,in_id_arr,nbr_dmn_fl,nbr_var_prc,nco_dbg_lvl,nco_op_typ,out_id,rcd,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
 #endif /* !_OPENMP */
       for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 
@@ -1649,7 +1650,34 @@ main(int argc,char **argv)
 	   Output variable type is "sticky" so only convert on first record */
         if(fl_idx == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
         var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
-        /* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
+
+	/* Weight current variable (modified from per-record weighting code above) */
+	nco_bool flg_rth_ntl;
+	if(fl_idx == 0) flg_rth_ntl=True; else flg_rth_ntl=False;
+	if((wgt_arr || wgt_nm) && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs) && !var_prc[idx]->is_crd_var){
+	  if(wgt_arr){
+	    /* Per-file weight */
+	    wgt_scv.type=NC_DOUBLE;
+	    wgt_scv.val.d=wgt_arr[fl_idx];
+	  } /* !wgt_arr */
+	  if(wgt_nm){
+	    wgt_scv.type=wgt_out->type;
+	    wgt_scv.val.d=wgt_out->val.dp[0]; /* Per-file weight */
+	  } /* !wgt_nm */
+	  if(var_prc[idx]->wgt_sum) var_prc[idx]->wgt_crr=wgt_scv.val.d;
+	  nco_scv_cnf_typ(var_prc[idx]->type,&wgt_scv);
+	  if(nco_dbg_lvl >= nco_dbg_std && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, fl_idx = %i, typ = %s, wgt_val = %g, wgt_crr = %g, var_val=%g\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,fl_idx,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->wgt_crr,var_prc[idx]->val.dp[0]);
+	  (void)nco_var_scv_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,&wgt_scv);
+	  if(wgt_nm && var_prc[idx]->has_mss_val){
+	    (void)fprintf(fp_stdout,"%s: ERROR %s -w wgt_nm does not yet work on variables that contain missing values and variable %s contains a missing value attribute. This is TODO nco1124. %s will now quit rather than compute possibly erroneous values. HINT: Restrict the %s -w wgt_nm operation to variables with no missing value attributes.\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get(),var_prc[idx]->nm,nco_prg_nm_get());
+	    nco_exit(EXIT_FAILURE);
+	  } /* !wgt_nm */
+	  /* Increment running total of wgt_out after its application to last processed variable for this record */
+	  if(wgt_nm && (idx == nbr_var_prc-1)){
+	    if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_typ,wgt_out,wgt_avg); else nco_opr_drv((long)1L,nco_op_typ,wgt_out,wgt_avg);
+	  } /* !wgt_nm */
+	} /* !wgt */
+	/* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: fl_idx not rec_usd_cml! */
         nco_opr_drv(fl_idx,nco_op_typ,var_prc[idx],var_prc_out[idx]);
         FLG_BFR_NRM=True; /* [flg] Current output buffers need normalization */
 

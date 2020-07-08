@@ -581,7 +581,7 @@ nco_msa_min_idx /* [fnc] Find minimum values in current and return minimum value
 } /* end nco_msa_min_idx() */
 
 void
-nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multihyperslabs */
+nco_msa_var_get    /* [fnc] Get variable data from disk taking account of multi-hyperslabs */
 (const int in_id,  /* I [id] netCDF input file ID */
  var_sct *var_in,
  lmt_msa_sct * const * lmt_lst, /* I [sct] multi-hyperslab limits */
