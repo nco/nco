@@ -7516,7 +7516,7 @@ nco_msa_var_get_rec_trv             /* [fnc] Read a user-defined limit */
             var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->end=idx_rec_crr_in;
             var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1L;
             var_trv->var_dmn[idx_dmn].crd->lmt_msa.lmt_dmn[idx_lmt]->srd=1L;
-          }
+          } /* !idx_lmt */
         }else{ /* lmt_dmn_nbr == 0 */
           flg_lmt=True;
           /* Alloc dummy limit */
@@ -7545,7 +7545,7 @@ nco_msa_var_get_rec_trv             /* [fnc] Read a user-defined limit */
             var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->end=idx_rec_crr_in;
             var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->cnt=1L;
             var_trv->var_dmn[idx_dmn].ncd->lmt_msa.lmt_dmn[idx_lmt]->srd=1L;
-          }
+          } /* !idx_lmt */
         }else{ /* lmt_dmn_nbr == 0 */
           flg_lmt=True;
           /* Allocate dummy limit */

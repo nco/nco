@@ -839,7 +839,7 @@ extern "C" {
     long max_idx; /* Index of maximum requested value in dimension */
     long min_idx; /* Index of minimum requested value in dimension */
 
-    /* Following four flags are used only by multi-file operators ncra and ncrcat: */
+    /* Following six counters are used only by multi-file operators ncra and ncrcat: */
     long idx_end_max_abs; /* [idx] Maximum allowed index in record dimension (multi-file record dimension only) */
     long rec_dmn_sz; /* [nbr] Number of records in this file (multi-file record dimension only) */
     long rec_in_cml; /* [nbr] Cumulative number of records in all files opened so far (multi-file record dimension only) */
@@ -850,8 +850,9 @@ extern "C" {
     long srd; /* Stride of hyperslab */
     long srt; /* Index to start of hyperslab */
 
-    nco_bool flg_mro; /* True for multi-record output (used by ncra only) */
+    nco_bool flg_ilv; /* True for interleaved output (used by ncra and ncrcat only) */
     nco_bool flg_input_complete; /* True for multi-file operators when no more files need be opened */
+    nco_bool flg_mro; /* True for multi-record output (used by ncra only) */
 
     nco_bool is_rec_dmn; /* True if record dimension, else False */
     nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */

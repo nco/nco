@@ -56,17 +56,17 @@ nco_lst_rx_search /* [fnc] Search for pattern matches in var string list */
  char *rx_sng, /* I [sng] Regular expression pattern */
  nco_bool *var_xtr_rqs); /* O [flg] Matched vars holder */
 
-nco_bool /* O [flg] Both var_nm and bnds_nm are in ra_lst */
+nco_bool /* O [flg] Both var_nm and bnds_nm are in rgd_arr_lst */
 nco_rgd_arr_lst_chk /* [fnc] Check list of ragged arrays for presence of var_nm and bnds_nm */
-(char ***ra_lst, /* I [sct] List of ragged arrays */
+(char ***rgd_arr_lst, /* I [sct] List of ragged arrays */
  int nbr_lst, /* I [nbr] Number of ragged arrays in list */
  char *var_nm, /* I [sng] Variable name to search for */
  char *bnds_nm); /* I [sng] Bounds name to search for */
 
 void
-nco_rgd_arr_lst_free /* [fnc] Free memory associated with ra_lst, a list of ragged arrays */
-(char ***ra_lst, /* I [sct] List of ragged arrays */
- int nbr_lst); /* O [nbr] Number of ragged arrays in list */
+nco_rgd_arr_lst_free /* [fnc] Free memory associated with rgd_arr_lst, a list of ragged arrays */
+(char ***rgd_arr_lst, /* I/O [sct] List of ragged arrays */
+ int nbr_lst); /* I [nbr] Number of ragged arrays in list */
 
 void 
 nco_srt_ntg /* [fnc] Sort array of integers */

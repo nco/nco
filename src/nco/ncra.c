@@ -1231,33 +1231,30 @@ main(int argc,char **argv)
       (void)fprintf(fp_stderr,"%s: ERROR Interleaving requested for operator %s\nHINT: Interleaving is only valid for ncra and ncrcat\n",nco_prg_nm_get(),nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* ! FLG_ILV */
-    if(FLG_ILV){ /* 20200709 */
-      if(nco_dbg_lvl >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG Interleaving is in development, use at own risk\n",nco_prg_nm_get());
 
-      
-
-    }else if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
+    if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
 
       /* Loop over all record dimensions in file */
       for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
         char *fl_udu_sng=NULL_CEWI;
-        char ***ra_bnds_lst=NULL_CEWI;
-        char ***ra_climo_lst=NULL_CEWI;
-        int ra_bnds_nbr=0;
-        int ra_climo_nbr=0;
+        char ***rgd_arr_bnds_lst=NULL_CEWI;
+        char ***rgd_arr_climo_lst=NULL_CEWI;
+        int rgd_arr_bnds_nbr=0;
+        int rgd_arr_climo_nbr=0;
 
         /* Obtain group ID */
         (void)nco_inq_grp_full_ncid(in_id,lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
 
         /* Fill record array */
+        if(FLG_ILV) lmt_rec[idx_rec]->flg_ilv=True;
         (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
 
         if(lmt_rec[idx_rec]->is_rec_dmn){
           int crd_id;
           if(nco_inq_varid_flg(grp_id,lmt_rec[idx_rec]->nm,&crd_id) == NC_NOERR){
             fl_udu_sng=nco_lmt_get_udu_att(grp_id,crd_id,"units");
-            ra_bnds_lst=nco_lst_cf_att(grp_id,"bounds",&ra_bnds_nbr);
-            ra_climo_lst=nco_lst_cf_att(grp_id,"climatology",&ra_climo_nbr);
+            rgd_arr_bnds_lst=nco_lst_cf_att(grp_id,"bounds",&rgd_arr_bnds_nbr);
+            rgd_arr_climo_lst=nco_lst_cf_att(grp_id,"climatology",&rgd_arr_climo_nbr);
           } /* !crd_id */
         } /* !is_rec_dmn */
 
@@ -1280,7 +1277,7 @@ main(int argc,char **argv)
 	} /* !REC_APN */
 
         if(nco_dbg_lvl_get() >= nco_dbg_crr)  (void)fprintf(fp_stdout,"%s: DEBUG record %d id %d name %s rec_dmn_sz %ld units=\"%s\"\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz,fl_udu_sng);
-        /* Two distinct ways to specify MRO are --mro and -d dmn,a,b,c,d,[m,M] */
+        /* Two distinct ways to specify MRO are --mro and -d dmn,srt,end,srd,ssc,[m,M] */
         if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
         if(lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
 
@@ -1290,7 +1287,7 @@ main(int argc,char **argv)
         /* Perform various error-checks on input file */
         if(False) (void)nco_fl_cmp_err_chk();
 
-        /* This file may be superfluous though valid data will be found in upcoming files */
+        /* This file could be superfluous even though desired data may be found in upcoming files */
         if(nco_dbg_lvl >= nco_dbg_std)
           if((lmt_rec[idx_rec]->srt > lmt_rec[idx_rec]->end) && (lmt_rec[idx_rec]->rec_rmn_prv_ssc == 0L))
             (void)fprintf(fp_stdout,"%s: INFO %s (input file %d) is superfluous\n",nco_prg_nm_get(),fl_in,fl_idx);
@@ -1303,7 +1300,7 @@ main(int argc,char **argv)
         while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
           /* Following logic/assumptions built-in to this loop:
 	     idx_rec_crr_in points to valid record before loop is entered
-	     Loop is never entered if this file has no valid records
+	     Loop is never entered if this file has no valid (i.e., desired) records
 	     Much conditional logic needed to prescribe group position and next record
 
 	     Index juggling:
@@ -1328,15 +1325,17 @@ main(int argc,char **argv)
           /* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
           if(rec_rmn_prv_ssc == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
 
-	  /* Retrieve this record of weight variable */
+	  /* Retrieve this record of weight variable, if any */
 	  if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs))
 	    (void)nco_msa_var_get_rec_trv(in_id,wgt_out,lmt_rec[idx_rec]->nm_fll,idx_rec_crr_in,trv_tbl);
 
           /* Process all variables in current record */
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
+	  if(FLG_ILV && nco_dbg_lvl >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG Interleaving file %d record %ld\n",nco_prg_nm_get(),fl_idx,idx_rec_crr_in);
+
 #ifdef _OPENMP
-#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv,fl_udu_sng,ra_bnds_lst,ra_climo_lst,ra_bnds_nbr,ra_climo_nbr,thr_nbr)
+#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,fl_udu_sng,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,rgd_arr_bnds_lst,rgd_arr_bnds_nbr,rgd_arr_climo_lst,rgd_arr_climo_nbr,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 
@@ -1362,7 +1361,7 @@ main(int argc,char **argv)
             /* Memory management after current extracted group */
             if(gpe && grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
-            /* Store the output variable ID */
+            /* Store output variable ID */
             var_prc_out[idx]->id=var_out_id;
 
             /* Retrieve this record of this variable. NB: Updates hyperslab start indices to idx_rec_crr_in */
@@ -1380,8 +1379,8 @@ main(int argc,char **argv)
             if(var_prc[idx]->is_crd_var){
               nco_bool do_rebase=False;
               if(!strcmp(var_prc[idx]->nm,lmt_rec[idx_rec]->nm) ||
-		 nco_rgd_arr_lst_chk(ra_bnds_lst,ra_bnds_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm) ||
-		 nco_rgd_arr_lst_chk(ra_climo_lst,ra_climo_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm))
+		 nco_rgd_arr_lst_chk(rgd_arr_bnds_lst,rgd_arr_bnds_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm) ||
+		 nco_rgd_arr_lst_chk(rgd_arr_climo_lst,rgd_arr_climo_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm))
 		do_rebase=True;
               if(do_rebase && fl_udu_sng && lmt_rec[idx_rec]->rbs_sng){
                 if(nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng,lmt_rec[idx_rec]->lmt_cln,(double*)NULL,var_prc[idx]) != NCO_NOERR){
@@ -1556,8 +1555,12 @@ main(int argc,char **argv)
             end_max_crr=min_lng(lmt_rec[idx_rec]->idx_end_max_abs-rec_in_cml[idx_rec],min_lng(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L));
             if(--rec_rmn_prv_ssc > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
           }else{ /* !REC_SRD_LST */
-            if(--rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
-          } /* !REC_SRD_LST */
+	    if(FLG_ILV){
+	      if(idx_rec_crr_in < lmt_rec[idx_rec]->end) idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L; else idx_rec_crr_in=lmt_rec[idx_rec]->srt+1L;
+	    }else{
+	      if(--rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
+	    } /* !FLG_ILV */
+	  } /* !REC_SRD_LST */
 
         } /* end idx_rec_crr_in master while loop over records in current file */
 
@@ -1598,8 +1601,8 @@ main(int argc,char **argv)
 
         if(fl_udu_sng) fl_udu_sng=(char*)nco_free(fl_udu_sng);
 
-        nco_rgd_arr_lst_free(ra_bnds_lst,ra_bnds_nbr);
-        nco_rgd_arr_lst_free(ra_climo_lst,ra_climo_nbr);
+        nco_rgd_arr_lst_free(rgd_arr_bnds_lst,rgd_arr_bnds_nbr);
+        nco_rgd_arr_lst_free(rgd_arr_climo_lst,rgd_arr_climo_nbr);
       } /* end idx_rec loop over different record variables to process */
 
       if(flg_cb && nco_prg_id == ncra){

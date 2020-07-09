@@ -752,7 +752,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       /* Re-base and reset origin to 0.0 if re-basing fails 
       if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
       */
-
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
 
@@ -1315,7 +1314,7 @@ no_data_ok: /* end goto */
 
   fl_udu_sng=(char *)nco_free(fl_udu_sng);
 
-} /* end nco_lmt_evl() */
+} /* !nco_lmt_evl() */
 
 void                      
 nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hyperslab specifications */
@@ -2092,4 +2091,4 @@ no_data_ok: /* end goto */
 
   fl_udu_sng=(char *)nco_free(fl_udu_sng);
 
-} /* nco_lmt_evl_dmn_crd() */
+} /* !nco_lmt_evl_dmn_crd() */
