@@ -250,6 +250,7 @@ main(int argc,char **argv)
   nco_bool EXTRACT_CLL_MSR=True; /* [flg] Extract cell_measures variables */
   nco_bool EXTRACT_FRM_TRM=True; /* [flg] Extract formula_terms variables */
   nco_bool FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
+  nco_bool FLG_ILV=False; /* [flg] Interleave Output */
   nco_bool FLG_MRO=False; /* [flg] Multi-Record Output */
   nco_bool FL_LST_IN_APPEND=True; /* Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
@@ -355,6 +356,8 @@ main(int argc,char **argv)
     {"help",no_argument,0,0},
     {"hlp",no_argument,0,0},
     {"hpss_try",no_argument,0,0}, /* [flg] Search HPSS for unfound files */
+    {"ilv",no_argument,0,0}, /* [flg] Interleave Output */
+    {"interleave_output",no_argument,0,0}, /* [flg] Interleave Output */
     {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"mro",no_argument,0,0}, /* [flg] Multi-Record Output */
@@ -572,6 +575,7 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "help" */
       if(!strcmp(opt_crr,"hpss_try")) HPSS_TRY=True; /* [flg] Search HPSS for unfound files */
+      if(!strcmp(opt_crr,"ilv") || !strcmp(opt_crr,"interleave_output")) FLG_ILV=True; /* [flg] Interleave Output */
       if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){
 	log_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
@@ -1223,13 +1227,20 @@ main(int argc,char **argv)
     } /* ! ncge */
 
     if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
-      /* Get variable ID in this file */
+      /* Get weight ID in this file */
       trv_sct *trv=trv_tbl_var_nm_fll(wgt_out->nm_fll,trv_tbl);
       (void)nco_inq_grp_full_ncid(in_id,trv->grp_nm_fll,&grp_id);
       (void)nco_var_mtd_refresh(grp_id,wgt_out);
     } /* !wgt_nm */
 
-    if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
+    if(FLG_ILV && (nco_prg_id == ncfe || nco_prg_id == ncge)){
+      (void)fprintf(fp_stderr,"%s: ERROR Interleaving requested for operator %s\nHINT: Interleaving is only valid for ncra and ncrcat\n",nco_prg_nm_get(),nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* ! FLG_ILV */
+    if(FLG_ILV){ /* 20200709 */
+      if(nco_dbg_lvl >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG Interleaving is in development, use at own risk\n",nco_prg_nm_get());
+
+    }else if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
 
       /* Loop over number of different record dimensions in file */
       for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
@@ -1329,7 +1340,7 @@ main(int argc,char **argv)
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_MRO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv,fl_udu_sng,ra_bnds_lst,ra_climo_lst,ra_bnds_nbr,ra_climo_nbr,thr_nbr)
+#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv,fl_udu_sng,ra_bnds_lst,ra_climo_lst,ra_bnds_nbr,ra_climo_nbr,thr_nbr)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 

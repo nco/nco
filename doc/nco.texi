@@ -20084,7 +20084,7 @@ DESCRIPTION
 to, averages) on variables across an arbitrary number (an
 @dfn{ensemble}) of @var{input-files} and/or of input groups within each
 file. 
-Each file (or group) receives an equal weight.
+Each file (or group) receives an equal weight by default.
 @command{nces} was formerly (until @acronym{NCO} version 4.3.9,
 released December, 2013) known as @command{ncea} (netCDF Ensemble
 Averager)@footnote{
@@ -20095,7 +20095,7 @@ as expected with invocations of @command{ncea} for as long as possible.
 Please replace @command{ncea} by @command{nces} in all future work.}.
 @cindex ensemble
 For example, @command{nces} will average a set of files or groups,
-weighting each file or group evenly. 
+weighting each file or group evenly by default. 
 This is distinct from @command{ncra}, which performs statistics only
 over the record dimension(s) (e.g., @var{time}), and weights each record 
 in each record dimension evenly.
@@ -20108,8 +20108,17 @@ This may be to reduce statistical noise by combining the results of a
 large number of experiments, or it may simply be a step in a procedure 
 whose goal is to compute anomalies from a mean state. 
 In any case, when one desires to generate a file whose statistical
-properties are equally influenced by all the inputs, then @command{nces}
-is the operator to use. 
+properties are influenced by all the inputs, then use @command{nces}.
+
+As of @acronym{NCO} @w{version 4.9.4}, released in July, 2020,
+@command{nces} accepts user-specified weights with the @samp{-w} 
+(or long-option equivalent @samp{--wgt}, @samp{--wgt_var},
+or @samp{--weight}) switch. 
+The user must specify one weight per input file on the command line,
+or the name of a (scalar or degenerate 1-D array) variable in each
+input file that contains a single value to weight that file.
+When no weight is specified, @command{nces} weights each file
+(e.g., ensemble) in the @var{input-files} equally.
 
 Variables in the @var{output-file} are the same size as the variable
 hyperslab in each input file or group, and each input file or group
@@ -20270,6 +20279,11 @@ nces --nsm_grp mdl1.nc mdl2.nc mdl3.nc out.nc
 nces --nsm_grp --nsm_sfx='_min' --op_typ=min -n 3,1,1 mdl1.nc out.nc
 nces --nsm_grp -g cesm -v tas -d time,0,3 -n 3,1,1 mdl1.nc out.nc
 @end example
+@example
+nces --nsm_grp mdl1.nc mdl2.nc mdl3.nc out.nc
+nces --nsm_grp --nsm_sfx='_min' --op_typ=min -n 3,1,1 mdl1.nc out.nc
+nces --nsm_grp -g cesm -v tas -d time,0,3 -n 3,1,1 mdl1.nc out.nc
+@end example
 The first command stores averages in the output groups @file{/cesm} and 
 @file{/ecmwf}, while the second stores minima in the output groups
 @file{/cesm/cesm_min} and @file{/ecmwf/ecmwf_min}:
@@ -20278,6 +20292,27 @@ as expected.
 Note that each input file may contain different numbers of members
 of each ensemble, as long as all distinct ensembles contain at least one
 member in the first file.
+
+As of @acronym{NCO} @w{version 4.9.4}, released in July, 2020,
+@command{nces} accepts user-specified weights with the @samp{-w} 
+(or long-option equivalent @samp{--wgt}, @samp{--wgt_var},
+or @samp{--weight}) switch: 
+@example
+# Construct input variables with values of 1 and 2
+ncks -O -M -v one ~/nco/data/in.nc ~/1.nc
+ncrename -O -v one,var ~/1.nc
+ncap2 -O -s 'var=2' ~/1.nc ~/2.nc
+
+# Three methods of weighting input files unevenly
+# 1. Old-method: specify input files multiple times
+# 2. New-method: specify one weight per input file
+# 3. New-method: specify weight variable in each input file
+nces -O ~/1.nc ~/2.nc ~/2.nc ~/out.nc # Clumsy, limited to integer weights
+nces -O -w 1,2 ~/1.nc ~/2.nc ~/out.nc # Flexible, works for any weight
+nces -O -w var ~/1.nc ~/2.nc ~/out.nc # Flexible, works for any weight
+# All three methods produce same answer: var=(1*1+2*2)/3=5/3=1.67
+ncks ~/out.nc
+@end example
 
 @page
 @html

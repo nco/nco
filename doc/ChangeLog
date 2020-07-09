@@ -1,3 +1,7 @@
+2020-07-09  Charlie Zender  <zender@uci.edu>
+
+	* ncra/ncrcat add --ilv, --interleave_output flags and stubs to interleave output data
+
 2020-07-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha06 release procedure:
