@@ -1,5 +1,7 @@
 2020-07-09  Charlie Zender  <zender@uci.edu>
 
+	* Clean-up and move nco_rgd_arr_lst_free() and nco_rgd_arr_lst_chk() to nco_lst_utl.c/h
+
 	* ncra/ncrcat add --ilv, --interleave_output flags and stubs to interleave output data
 
 2020-07-08  Charlie Zender  <zender@uci.edu>

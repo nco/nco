@@ -102,12 +102,6 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-
-/* forward declaration */
-nco_bool ra_lst_chk(char ***ra_lst, int nbr_lst, char *var_nm, char *bnds_nm);
-void ra_lst_free(char ***ra_lst, int nbr_lst);
-
-
 /* Define inline'd functions in header so source is visible to calling files
    C99 only: Declare prototype in exactly one header
    http://www.drdobbs.com/the-new-c-inline-functions/184401540 */
@@ -1240,9 +1234,11 @@ main(int argc,char **argv)
     if(FLG_ILV){ /* 20200709 */
       if(nco_dbg_lvl >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG Interleaving is in development, use at own risk\n",nco_prg_nm_get());
 
+      
+
     }else if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* ncfe and ncge jump to else branch */
 
-      /* Loop over number of different record dimensions in file */
+      /* Loop over all record dimensions in file */
       for(idx_rec=0;idx_rec<nbr_rec;idx_rec++){
         char *fl_udu_sng=NULL_CEWI;
         char ***ra_bnds_lst=NULL_CEWI;
@@ -1257,12 +1253,12 @@ main(int argc,char **argv)
         (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
 
         if(lmt_rec[idx_rec]->is_rec_dmn){
-          int mid=-1;
-          if(nco_inq_varid_flg(grp_id,lmt_rec[idx_rec]->nm,&mid) == NC_NOERR && mid >= 0){
-            fl_udu_sng=nco_lmt_get_udu_att(grp_id,mid,"units"); /* Units attribute of coordinate variable */
+          int crd_id;
+          if(nco_inq_varid_flg(grp_id,lmt_rec[idx_rec]->nm,&crd_id) == NC_NOERR){
+            fl_udu_sng=nco_lmt_get_udu_att(grp_id,crd_id,"units");
             ra_bnds_lst=nco_lst_cf_att(grp_id,"bounds",&ra_bnds_nbr);
             ra_climo_lst=nco_lst_cf_att(grp_id,"climatology",&ra_climo_nbr);
-          } /* !mid */
+          } /* !crd_id */
         } /* !is_rec_dmn */
 
         if(REC_APN){
@@ -1384,8 +1380,8 @@ main(int argc,char **argv)
             if(var_prc[idx]->is_crd_var){
               nco_bool do_rebase=False;
               if(!strcmp(var_prc[idx]->nm,lmt_rec[idx_rec]->nm) ||
-		 ra_lst_chk(ra_bnds_lst,ra_bnds_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm) ||
-		 ra_lst_chk(ra_climo_lst,ra_climo_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm))
+		 nco_rgd_arr_lst_chk(ra_bnds_lst,ra_bnds_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm) ||
+		 nco_rgd_arr_lst_chk(ra_climo_lst,ra_climo_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm))
 		do_rebase=True;
               if(do_rebase && fl_udu_sng && lmt_rec[idx_rec]->rbs_sng){
                 if(nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng,lmt_rec[idx_rec]->lmt_cln,(double*)NULL,var_prc[idx]) != NCO_NOERR){
@@ -1602,8 +1598,8 @@ main(int argc,char **argv)
 
         if(fl_udu_sng) fl_udu_sng=(char*)nco_free(fl_udu_sng);
 
-        ra_lst_free(ra_bnds_lst,ra_bnds_nbr);
-        ra_lst_free(ra_climo_lst,ra_climo_nbr);
+        nco_rgd_arr_lst_free(ra_bnds_lst,ra_bnds_nbr);
+        nco_rgd_arr_lst_free(ra_climo_lst,ra_climo_nbr);
       } /* end idx_rec loop over different record variables to process */
 
       if(flg_cb && nco_prg_id == ncra){
@@ -1999,42 +1995,3 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
-/* ra_lst is a list of ragged arrays
-   First element is var_nm, second element is the cf_nm, and the remaining elements are variable names mentioned in attribute var_nm@cf_nm */
-nco_bool
-ra_lst_chk(char ***ra_lst,int nbr_lst,char *var_nm,char *bnds_nm)
-{
-  int idx=0;
-  int jdx=0;
-
-  for(idx=0;idx<nbr_lst;idx++)
-    if(!strcmp(var_nm, ra_lst[idx][0]))
-      break;
-
-  if(idx == nbr_lst)
-    return False;
-
-  jdx=2;
-  while(strlen(ra_lst[idx][jdx]) > 0)
-    if(!strcmp(ra_lst[idx][jdx++],bnds_nm))
-      return True;
-
-  return False;
-} /* !ra_lst_chk() */
-
-/* remember ra_lst is a list of ragged arrays */
-/* the end of the ragged array is indicated by a zero-length (not null) string */
-void ra_lst_free(char ***ra_lst,int nbr_lst){
-  int sz=1;
-  int fdx;
-  for(fdx=0;fdx<nbr_lst;fdx++){
-    while(strlen(ra_lst[fdx][sz]) > 0) sz++;
-    ra_lst[fdx]=nco_sng_lst_free(ra_lst[fdx],sz);
-  } /* !fdx */
-} /* !ra_lst_free() */
-
-
-
-
-

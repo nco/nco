@@ -796,6 +796,52 @@ sng_lst_cat /* [fnc] Join string list together into one string, delete originals
   return sng;
 } /* end sng_lst_cat() */
 
+nco_bool /* O [flg] Both var_nm and bnds_nm are in ra_lst */
+nco_rgd_arr_lst_chk /* [fnc] Check list of ragged arrays for presence of var_nm and bnds_nm */
+(char ***ra_lst, /* I [sct] List of ragged arrays */
+ int nbr_lst, /* I [nbr] Number of ragged arrays in list */
+ char *var_nm, /* I [sng] Variable name to search for */
+ char *bnds_nm) /* I [sng] Bounds name to search for */
+{
+  /* Purpose:
+     Check the list of ragged arrays for presence of variable name var_nm and bounds name bnds_nm
+     ra_lst is a list of ragged arrays and each ragged array has this structure:
+     First element is var_nm
+     Second element is cf_nm
+     Remaining elements are variable names mentioned in attribute var_nm@cf_nm */
+  int idx;
+  int jdx=0;
+
+  for(idx=0;idx<nbr_lst;idx++)
+    if(!strcmp(var_nm,ra_lst[idx][0]))
+      break;
+
+  if(idx == nbr_lst)
+    return False;
+
+  jdx=2;
+  while(strlen(ra_lst[idx][jdx]) > 0)
+    if(!strcmp(ra_lst[idx][jdx++],bnds_nm))
+      return True;
+
+  return False;
+} /* !nco_rgd_arr_lst_chk() */
+
+void
+nco_rgd_arr_lst_free /* [fnc] Free memory associated with ra_lst, a list of ragged arrays */
+(char ***ra_lst, /* I [sct] List of ragged arrays */
+ int nbr_lst) /* O [nbr] Number of ragged arrays in list */
+{
+  /* Purpose: Free memory associated with ra_lst, a list of ragged arrays
+     NB: End of ragged array is indicated by a zero-length (not null) string */
+  int idx;
+  int sz=1;
+  for(idx=0;idx<nbr_lst;idx++){
+    while(strlen(ra_lst[idx][sz]) > 0) sz++;
+    ra_lst[idx]=nco_sng_lst_free(ra_lst[idx],sz);
+  } /* !idx */
+} /* !nco_rgd_arr_lst_free() */
+
 char ** /* O [sng] Pointer to free'd string list */
 nco_sng_lst_free /* [fnc] Free memory associated with string list */
 (char **sng_lst, /* I/O [sng] String list to free */
