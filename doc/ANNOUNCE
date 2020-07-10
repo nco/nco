@@ -29,24 +29,39 @@ NEW FEATURES (full details always in ChangeLog):
 
 A. All operators now support unbuffered I/O with netCDF3 files when 
    invoked with the flag --uio or longer synonyms --unbuffered_io or
-   --share_all. Typically unbufferend I/O may significantly reduce
-   throughput time when large record variables are written or read.
-   Performance improvements may depend on netCDF version.
-   Thanks to Barron Henderson for this suggestion.
-   ncks -v T in.nc out.nc       # Default, buffered I/O
+   --share_all. This flag invokes the netCDF library NC_SHARE flag
+   which enables unbuffered (non-cached) I/O. Unbufferend I/O may
+   significantly reduce throughput time when large record variables
+   are written or read. Performance improvements may depend on netCDF
+   version. Thanks to Barron Henderson for this suggestion.
+   ncks       -v T in.nc out.nc # Default, buffered I/O
    ncks --uio -v T in.nc out.nc # Unbuffered I/O
+   ncra --uio -v T,Q,U,V in*.nc out.nc
    http://nco.sf.net/nco.html#uio
 
-A. ncremap now has an --pdq option to specify the dimension
-   permutation string used by ncpdq prior to regridding.
-   Synonyms include --pdq_opt, --prm, and --permute.
-   Files to be regridded must have their horizontal spatial
-   dimension(s) in the last (most-rapidly-varying) position.
-   Use --pdq to override the internally preset defaults for certain 
-   filetypes. This is useful when regridding files that contain
-   new dimensions that ncremap has not encountered before.
+A. nces now supports the -w (or --wgt) option for per-file weights.
+   This option is analogous to the ncra --wgt option, except it
+   specifies a per-file weight (or weight-variable name) instead
+   of a per-record weight. This is useful when computing statistics  
+   of ensembles whose members should be weighted unevenly. Hence
+   these three commands produce the same answers, though the second
+   and third are much more flexible and can have non-integral weights: 
+   nces   1.nc 2.nc 2.nc out.nc
+   nces -w 1,2 1.nc 2.nc out.nc
+   nces -w var 1.nc 2.nc out.nc
+   http://nco.sf.net/nco.html#nces
+   http://nco.sf.net/nco.html#xmp_nces
+
+A. ncremap understands new dimensions used in DOE E3SM MPAS BGC
+   simulations. ncremap also supports the new --pdq_opt to
+   override internal presets and to future-proof itself against
+   unexpected new dimensions from any model input.
+   ncremap -P mpasseaice --map=map.nc in.nc out.nc
    ncremap --pdq='-a Time,new_dim,nCells' --map=map.nc in.nc out.nc
+   Thanks to Ahmed Elshall for reporting the new dimensions.
    http://nco.sf.net/nco.html#pdq_opt
+
+D.  
 
 BUG FIXES:
 

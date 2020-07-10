@@ -555,7 +555,8 @@ nco_prn_lmt                    /* [fnc] Print limit information */
   (void)fprintf(stderr,"WRP = %s\n",lmt.srt > lmt.end ? "YES" : "NO");
   (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
   (void)fprintf(stderr,"SSC = %s\n",lmt.ssc != 1L ? "YES" : "NO");
-  (void)fprintf(stderr,"MRO = %s\n\n",lmt.flg_mro ? "YES" : "NO");
+  (void)fprintf(stderr,"MRO = %s\n",lmt.flg_mro ? "YES" : "NO");
+  (void)fprintf(stderr,"ILV = %s\n\n",lmt.flg_ilv ? "YES" : "NO");
 } /* nco_prn_lmt() */
 
 void
@@ -1303,7 +1304,7 @@ no_data_ok: /* end goto */
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
 
-  if(nco_dbg_lvl_get() == nco_dbg_old){
+  if(nco_dbg_lvl_get() >= nco_dbg_std && lmt.flg_ilv){
     (void)nco_prn_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 
@@ -2080,7 +2081,7 @@ no_data_ok: /* end goto */
   /* Place contents of working structure in location of returned structure */
   *lmt_ptr=lmt;
 
-  if(nco_dbg_lvl_get() == nco_dbg_old){
+  if(nco_dbg_lvl_get() >= nco_dbg_old){
     (void)nco_prn_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 

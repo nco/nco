@@ -544,8 +544,10 @@ netCDF4 user-defined types support;
 <tt>ncremap</tt> small-circle weights;</li>
 <li><b>NCO 4.9.4</b>: (<i>In Progress, features in-progress or complete include</i>) 
 <tt>ncclimo</tt> improve high-frequency splitting;
+<tt>nces --wgt</tt> per-file weights;
 <tt>ncks, ncremap</tt> regridding vectorization;
-<tt>ncremap</tt> Improved PG2 grid generation;
+<tt>ncra, ncrcat --ilv</tt> interleave output;
+<tt>ncremap</tt> Improved PG2 grid generation;</li>
 <li><b>NCO 4.9.3</b>: (<i>Current Stable Release</i>)
 <tt>ncks --frac_b_fix</tt> map-file correction;
 <tt>ncremap --correct_areas</tt> for TR FV destination maps;

@@ -1205,10 +1205,8 @@ main(int argc,char **argv)
     if(nco_prg_id == ncge){
       /* Refresh ensembles */
       if(fl_idx > 0) (void)nco_nsm_ncr(in_id,trv_tbl);
-   
       /* Check if ensembles are valid */
       (void)nco_chk_nsm(in_id,fl_idx,trv_tbl); 
-
     }else{ /* ! ncge */
       /* Variables may have different ID, missing_value, type, in each file */
       for(idx=0;idx<nbr_var_prc;idx++){
