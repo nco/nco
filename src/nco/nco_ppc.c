@@ -774,6 +774,31 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 ncks -O -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g\n",nco_prg_nm_get(),op1.fp[idx]);
+    }else if(nco_baa_cnv_get() == nco_baa_rnd){
+      /* Round mantissa, LSBs to zero*/
+      /*idea: properly rounded mantissa using floating-point arithmetics (except for shaving LSB)*/
+      float val_tmp; /* Quantized value RK */
+      unsigned int *u32_ptr_tmp; /*pointer to it for shaving*/
+      u32_ptr_tmp = (unsigned int*) &val_tmp;
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx++) {
+	  val_tmp = op1.fp[idx]; /* save it*/
+          u32_ptr_tmp[0] &= msk_f32_u32_zro; /*shave it*/
+          op1.fp[idx] *= 2; /*double unshaved*/
+          op1.fp[idx] -= val_tmp; /*subtract shaved*/
+          u32_ptr[idx]&=msk_f32_u32_zro; /*shave again*/
+        }
+      }else{
+	const float mss_val_flt=*mss_val.fp;
+	for(idx=0L;idx<sz;idx++)
+	  if(op1.fp[idx] != mss_val_flt){ 
+            val_tmp = op1.fp[idx]; /* save it*/
+            u32_ptr_tmp[0] &= msk_f32_u32_zro; /*shave it*/
+            op1.fp[idx] *= 2; /*double unshaved*/
+            op1.fp[idx] -= val_tmp; /*subtract shaved*/
+            u32_ptr[idx]&=msk_f32_u32_zro; /*shave again*/
+          };
+      } /* end else */
     }else abort();
     break;
   case NC_DOUBLE:
