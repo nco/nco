@@ -1,3 +1,7 @@
+2020-07-11  Charlie Zender  <zender@uci.edu>
+
+	* Merge rkouznetsov bit-adjustment-algorithm (BAA) #5 approach to quantization
+
 2020-07-09  Charlie Zender  <zender@uci.edu>
 
 	* Add flg_ilv to lmt_sct so srt and end can depend on srd
