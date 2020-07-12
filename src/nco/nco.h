@@ -727,6 +727,7 @@ extern "C" {
     nco_baa_set, /* 2 Bit Set (option since 20160117) */
     nco_baa_dgr, /* 3 Digit Rounding (GCD19 option since 20190121) */
     nco_baa_bg2, /* 4 Bit Groom version 2 dynamic masks (option since 20190203) */
+    nco_baa_rnd, /* 5 Bit rounding */
   }; /* end nco_baa_cnv */
 
   enum nco_bnr_cnv{ /* [enm] Binary byte-ordering convention to employ (native or byte-swapped) */
