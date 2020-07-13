@@ -1968,7 +1968,7 @@ double KDdist(kd_box Xq, KDElem *elem)
 	  case poly_crt:
 	  case poly_rll:
 		hyp=hypot(  Xq[KD_LEFT] - ((poly_sct*)elem->item)->dp_x_ctr, Xq[KD_TOP] -  ((poly_sct*)elem->item)->dp_y_ctr   );
-		hyp*=hyp;
+
     	break;
 
 
@@ -1999,7 +1999,7 @@ double KDdist(kd_box Xq, KDElem *elem)
 
         hyp=2*asin( C/2.0 );
 
-        hyp=hyp*hyp;
+        // hyp=hyp*hyp;
 
 	  }
 	  break;
