@@ -1538,8 +1538,8 @@ int *wgt_cnt_bln_ret) {
         wgt_pre[jdx].dst_id = pl_lst_out[idx]->src_id;
         wgt_pre[jdx].area = pl->area;
         wgt_pre[jdx].dist = mem_lst[thr_idx].kd_list[jdx].dist;
-        /* assume the dist is dist squared */
-        wgt_pre[jdx].wgt = 1.0 / wgt_pre[jdx].dist;
+        /* use dist squared */
+        wgt_pre[jdx].wgt = 1.0 / wgt_pre[jdx].dist /  wgt_pre[jdx].dist;
         wgt_ttl += wgt_pre[jdx].wgt;
 
       }
