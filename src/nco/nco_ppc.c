@@ -756,6 +756,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u32_xpn = %u, i32_xpn=%d, dgt_nbr_pre_dcm = d_i = %d, qnt_pwr_xpn = p_i = %d, qnt_fct_flt = q_i = %g\n",nco_prg_nm_get(),op1.fp[idx],u32_xpn,i32_xpn,dgt_nbr_pre_dcm,qnt_pwr_xpn,qnt_fct_flt);
 	} /* !idx */
 	for(idx=1L;idx<sz;idx+=2L){
+	  u8_xpn='0'; /* CEWI */
 	  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g, u8_xpn_nbr = %hhu\n",nco_prg_nm_get(),op1.fp[idx],u8_xpn);
 	  if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
 	    u32_ptr[idx]|=msk_f32_u32_one;
@@ -773,34 +774,36 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	 ccc --tst=bnr --flt_foo=8 2> /dev/null | grep "Binary of float"
 	 ncks -O -C -D 1 --baa=4 -v ppc_bgr --ppc default=3 ~/nco/data/in.nc ~/foo.nc
 	 ncks -O -C -D 1 --baa=4 -v one_dmn_rec_var_flt --ppc default=3 ~/nco/data/in.nc ~/foo.nc */
+      idx=0L;
       if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG nco_ppc_bitmask() reports val = %g\n",nco_prg_nm_get(),op1.fp[idx]);
     }else if(nco_baa_cnv_get() == nco_baa_rnd){
-      /* Round mantissa, LSBs to zero*/
-      /*idea: properly rounded mantissa using floating-point arithmetics (except for shaving LSB)*/
-      float val_tmp; /* Quantized value RK */
-      unsigned int *u32_ptr_tmp; /*pointer to it for shaving*/
-      u32_ptr_tmp = (unsigned int*) &val_tmp;
+      /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
+	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask */
+      float val_tmp; /* Quantized value */
+      unsigned int *u32_ptr_tmp; /* Pointer to quantized value for shaving */
+      u32_ptr_tmp=(unsigned int *)&val_tmp;
       if(!has_mss_val){
-	for(idx=0L;idx<sz;idx++) {
-	  val_tmp = op1.fp[idx]; /* save it*/
-          u32_ptr_tmp[0] &= msk_f32_u32_zro; /*shave it*/
-          op1.fp[idx] *= 2; /*double unshaved*/
-          op1.fp[idx] -= val_tmp; /*subtract shaved*/
-          u32_ptr[idx]&=msk_f32_u32_zro; /*shave again*/
-        }
-      }else{
+	for(idx=0L;idx<sz;idx++){
+	  val_tmp=op1.fp[idx]; /* Save raw value */
+          u32_ptr_tmp[0]&=msk_f32_u32_zro; /* Shave it */
+          op1.fp[idx]*=2; /* Double raw value */
+          op1.fp[idx]-=val_tmp; /* Subtract shaved value */
+          u32_ptr[idx]&=msk_f32_u32_zro; /* Shave again */
+        } /* !idx */
+      }else{ /* !has_mss_val */
 	const float mss_val_flt=*mss_val.fp;
-	for(idx=0L;idx<sz;idx++)
+	for(idx=0L;idx<sz;idx++){
 	  if(op1.fp[idx] != mss_val_flt){ 
-            val_tmp = op1.fp[idx]; /* save it*/
-            u32_ptr_tmp[0] &= msk_f32_u32_zro; /*shave it*/
-            op1.fp[idx] *= 2; /*double unshaved*/
-            op1.fp[idx] -= val_tmp; /*subtract shaved*/
-            u32_ptr[idx]&=msk_f32_u32_zro; /*shave again*/
-          };
-      } /* end else */
+            val_tmp=op1.fp[idx]; /* Save raw value */
+            u32_ptr_tmp[0]&=msk_f32_u32_zro; /* Shave it */
+            op1.fp[idx]*=2; /* Double raw value */
+            op1.fp[idx]-=val_tmp; /* Subtract shaved value */
+            u32_ptr[idx]&=msk_f32_u32_zro; /* Shave again */
+	  } /* !mss_val_flt */
+	} /* !idx */
+      } /* !has_mss_val */
     }else abort();
-    break;
+    break; /* !NC_FLOAT */
   case NC_DOUBLE:
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
@@ -861,8 +864,34 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	for(idx=1L;idx<sz;idx+=2L)
 	  if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
       } /* end else */
+    }else if(nco_baa_cnv_get() == nco_baa_rnd){
+      /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
+	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask */
+      double val_tmp; /* Quantized value */
+      unsigned int *u64_ptr_tmp; /* Pointer to quantized value for shaving */
+      u64_ptr_tmp=(unsigned int *)&val_tmp;
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx++){
+	  val_tmp=op1.fp[idx]; /* Save raw value */
+          u64_ptr_tmp[0]&=msk_f64_u64_zro; /* Shave it */
+          op1.fp[idx]*=2; /* Double raw value */
+          op1.fp[idx]-=val_tmp; /* Subtract shaved value */
+          u64_ptr[idx]&=msk_f64_u64_zro; /* Shave again */
+        } /* !idx */
+      }else{ /* !has_mss_val */
+	const double mss_val_dbl=*mss_val.dp;
+	for(idx=0L;idx<sz;idx++){
+	  if(op1.dp[idx] != mss_val_dbl){ 
+            val_tmp=op1.dp[idx]; /* Save raw value */
+            u64_ptr_tmp[0]&=msk_f64_u64_zro; /* Shave it */
+            op1.dp[idx]*=2; /* Double raw value */
+            op1.dp[idx]-=val_tmp; /* Subtract shaved value */
+            u64_ptr[idx]&=msk_f64_u64_zro; /* Shave again */
+	  } /* !mss_val_dbl */
+	} /* !idx */
+      } /* !has_mss_val */
     }else abort();
-    break;
+    break; /* !NC_DOUBLE */
   case NC_INT: /* Do nothing for non-floating point types ...*/
   case NC_SHORT:
   case NC_CHAR:

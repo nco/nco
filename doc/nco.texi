@@ -27879,6 +27879,9 @@ Numerous bug-fixes.
 @cindex Joe Hamman
 @item Joe Hamman
 Python bindings (PyNCO).
+@cindex Rostislav Kouznetsov
+@item Rostislav Kouznetsov
+Quantization by rounding 
 @cindex Daniel Wang
 @item Daniel Wang
 Script Workflow Analysis for MultiProcessing (@acronym{SWAMP}).

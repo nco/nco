@@ -1,6 +1,10 @@
+2020-07-13  Charlie Zender  <zender@uci.edu>
+
+	* Implement double precision version of Kouznetsov's round-to-nearest quantization
+
 2020-07-11  Charlie Zender  <zender@uci.edu>
 
-	* Merge rkouznetsov bit-adjustment-algorithm (BAA) #5 approach to quantization
+	* Merge Rostislav Kouznetsov (rkouznetsov) bit-adjustment-algorithm (BAA) #5 approach to quantization
 
 2020-07-09  Charlie Zender  <zender@uci.edu>
 
