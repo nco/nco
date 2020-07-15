@@ -1,10 +1,16 @@
+2020-07-15  Charlie Zender  <zender@uci.edu>
+
+	* Change default Bit-Adjustment Algorithm from Bit Grooming to Bit Rounding
+
+	* Merge Kouznetsov's bit-adjustment-algorithm (BAA) #6 half-shaving quantization algorithmw
+
 2020-07-13  Charlie Zender  <zender@uci.edu>
 
 	* Implement double precision version of Kouznetsov's round-to-nearest quantization
 
 2020-07-11  Charlie Zender  <zender@uci.edu>
 
-	* Merge Rostislav Kouznetsov (rkouznetsov) bit-adjustment-algorithm (BAA) #5 approach to quantization
+	* Merge Rostislav Kouznetsov (rkouznetsov) bit-adjustment-algorithm (BAA) #5 bit-rounding quantization algorithm
 
 2020-07-09  Charlie Zender  <zender@uci.edu>
 

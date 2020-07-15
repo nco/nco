@@ -803,22 +803,25 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !idx */
       } /* !has_mss_val */
     }else if(nco_baa_cnv_get() == nco_baa_sh2){
-      /* Bit-Half-Shave: shave LSBs and set MSB of them*/
+      /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
+	 Shave LSBs and set MSB of them
+	 See figures at https://github.com/nco/nco/pull/200 */
       unsigned int msk_f32_u32_hshv;
-      msk_f32_u32_hshv =  msk_f32_u32_one & (msk_f32_u32_zro >> 1); /*set one bit: the MSB of LSBs*/
+      msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
       if(!has_mss_val){
-	for(idx=0L;idx<sz;idx++) {
-                u32_ptr[idx] &= msk_f32_u32_zro; /*shave*/
-                u32_ptr[idx] |= msk_f32_u32_hshv; /*set msb of lsbs*/
-        }
+	for(idx=0L;idx<sz;idx++){
+	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave as normal */
+	  u32_ptr[idx]|=msk_f32_u32_hshv; /* Set MSB of LSBs */
+        } /* !idx */
       }else{
 	const float mss_val_flt=*mss_val.fp;
-	for(idx=0L;idx<sz;idx++)
-	  if(op1.fp[idx] != mss_val_flt) {
-                u32_ptr[idx] &= msk_f32_u32_zro; /*shave*/
-                u32_ptr[idx] |= msk_f32_u32_hshv; /*set msb of lsbs*/
-          }
-      } /* end else */
+	for(idx=0L;idx<sz;idx++){
+	  if(op1.fp[idx] != mss_val_flt){
+	    u32_ptr[idx]&=msk_f32_u32_zro; /* Shave as normal */
+	    u32_ptr[idx]|=msk_f32_u32_hshv; /* Set MSB of LSBs */
+          } /* !mss_val_flt */
+	} /* !idx */
+      } /* !has_mss_val */
     }else abort();
     break; /* !NC_FLOAT */
   case NC_DOUBLE:
@@ -883,7 +886,8 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* end else */
     }else if(nco_baa_cnv_get() == nco_baa_rnd){
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
-	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask */
+	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask
+	 See figures at https://github.com/nco/nco/pull/199 */
       double val_tmp; /* Quantized value */
       unsigned int *u64_ptr_tmp; /* Pointer to quantized value for shaving */
       u64_ptr_tmp=(unsigned int *)&val_tmp;
@@ -908,22 +912,25 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	} /* !idx */
       } /* !has_mss_val */
     }else if(nco_baa_cnv_get() == nco_baa_sh2){
-      /* Bit-Half-Shave: shave LSBs and set MSB of them*/
+      /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
+	 Shave LSBs and set MSB of them
+	 See figures at https://github.com/nco/nco/pull/200 */
       unsigned long int msk_f64_u64_hshv;
-      msk_f64_u64_hshv =  msk_f64_u64_one & (msk_f64_u64_zro >> 1); /*set one bit: the MSB of LSBs*/
+      msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
       if(!has_mss_val){
-	for(idx=0L;idx<sz;idx++) {
-                u64_ptr[idx] &= msk_f64_u64_zro; /*shave*/
-                u64_ptr[idx] |= msk_f64_u64_hshv; /*set msb of lsbs*/
-        }
+	for(idx=0L;idx<sz;idx++){
+	  u64_ptr[idx]&=msk_f64_u64_zro; /* Shave as normal */
+	  u64_ptr[idx]|=msk_f64_u64_hshv; /* Set MSB of LSBs */
+        } /* !idx */
       }else{
 	const double mss_val_dbl=*mss_val.dp;
-	for(idx=0L;idx<sz;idx++)
-	  if(op1.dp[idx] != mss_val_dbl) {
-                u64_ptr[idx] &= msk_f64_u64_zro; /*shave*/
-                u64_ptr[idx] |= msk_f64_u64_hshv; /*set msb of lsbs*/
-          }
-      } /* end else */
+	for(idx=0L;idx<sz;idx++){
+	  if(op1.dp[idx] != mss_val_dbl){
+	    u64_ptr[idx]&=msk_f64_u64_zro; /* Shave as normal */
+	    u64_ptr[idx]|=msk_f64_u64_hshv; /* Set MSB of LSBs */
+          } /* !mss_val_dbl */
+	} /* !idx */
+      } /* !has_mss_val */
     }else abort();
     break; /* !NC_DOUBLE */
   case NC_INT: /* Do nothing for non-floating point types ...*/
