@@ -334,8 +334,13 @@ AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [de
 # Enable OpenMP unless told not to
 if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
     AC_OPENMP
-		OPENMP_CFLAGS+=" -march=native" #-foffload=nvptx-none"
-
+		
+		#skatreka++
+		case ${CC} in
+			gcc* ) OPENMP_CFLAGS+=" -foffload=nvptx-none" ;;
+			#icc* ) OPENMP_CFLAGS+="" ;;
+		esac
+		#skatreka--
     AC_SUBST(OPENMP_CFLAGS)
     AC_DEFINE([ENABLE_OPENMP],[1],[Compile operators with OpenMP support])
     AC_MSG_NOTICE([OpenMP support enabled])
@@ -345,6 +350,16 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
     # LDFLAGS="${LDFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP
+
+#skatreka++
+#Optimization specific compiler flags
+OPT_CFLAGS=""
+case ${CC} in
+	gcc* ) OPT_CFLAGS+=" -march=native" ;;
+	icc* ) OPT_CFLAGS+=" -xHost" ;;
+esac
+CFLAGS="{CFLAGS} ${OPT_CFLAGS}"
+#skatreka--
 
 # Begin DAP support
 echo "Beginning generic tests for DAP support"
