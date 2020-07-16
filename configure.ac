@@ -1025,7 +1025,7 @@ fi
 # Begin enable_optimize_custom
 # Activate all known, helpful switches for fastest possible run-time performance
 # These switches are highly compiler and architecture dependent
-# Settings should improve performance relative to default ./configure setttings
+# Settings should improve performance relative to default ./configure settings
 AC_ARG_ENABLE(optimize-custom,AS_HELP_STRING([--enable-optimize-custom],[Activate compiler switches for potentially faster run-time performance (slower compilation). NB: This option may interact unfavorably with some versions of Flex. De-activate this if building fails with with errors involving "yyget_leng()". [default=no]]),enable_optimize_custom=${enableval},enable_optimize_custom=no)
 if test "${enable_optimize_custom}" = 'yes'; then
     AC_DEFINE(ENABLE_OPTIMIZE_CUSTOM,1,Fastest possible execution (slowest compilation))

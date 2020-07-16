@@ -1,3 +1,7 @@
+2020-07-16  Charlie Zender  <zender@uci.edu>
+
+	* ncra/ncrcat: Implement stride resets over interleaved dimension, works for one file
+
 2020-07-15  Charlie Zender  <zender@uci.edu>
 
 	* Change default Bit-Adjustment Algorithm from Bit Grooming to Bit Rounding

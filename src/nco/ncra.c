@@ -1,6 +1,6 @@
 /* $Header$ */
 
-/* This single source file compiles into three separate executables:
+/* This single source file compiles into one executable that behaves as three different commands depending on invocation name:
    ncra -- netCDF record averager
    nces -- netCDF ensemble statistics
    ncrcat -- netCDF record concatenator */
@@ -199,6 +199,7 @@ main(int argc,char **argv)
   int grp_out_id;    /* [ID] Group ID (output) */
   int idx=int_CEWI;
   int idx_rec=0; /* [idx] Index that iterates over number of record dimensions */
+  int idx_ilv=0; /* [idx] Index that iterates over interleaved "dimension" */
   int in_id;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int log_lvl=0; /* [enm] netCDF library debugging verbosity [0..5] */
@@ -1243,8 +1244,12 @@ main(int argc,char **argv)
         /* Obtain group ID */
         (void)nco_inq_grp_full_ncid(in_id,lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
 
+        if(FLG_ILV){
+	  lmt_rec[idx_rec]->flg_ilv=True;
+	  /* Re-set interleaved dimension counter at start of each file */
+	  idx_ilv=0L;
+	} /* !FLG_ILV */
         /* Fill record array */
-        if(FLG_ILV) lmt_rec[idx_rec]->flg_ilv=True;
         (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
 
         if(lmt_rec[idx_rec]->is_rec_dmn){
@@ -1548,14 +1553,21 @@ main(int argc,char **argv)
 
           /* Finally, set index for next record or get outta' Dodge */
           if(REC_SRD_LST){
-            /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
-            long end_max_crr;
-            end_max_crr=min_lng(lmt_rec[idx_rec]->idx_end_max_abs-rec_in_cml[idx_rec],min_lng(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L));
-            if(--rec_rmn_prv_ssc > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
+	    if(FLG_ILV){
+	      /* Current interleaved index complete, start next interleaved index */
+	      idx_ilv++;
+	      if(idx_ilv < lmt_rec[idx_rec]->srd) idx_rec_crr_in=lmt_rec[idx_rec]->srt+idx_ilv; else idx_rec_crr_in=rec_dmn_sz;
+	    }else{
+	      /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
+	      long end_max_crr;
+	      end_max_crr=min_lng(lmt_rec[idx_rec]->idx_end_max_abs-rec_in_cml[idx_rec],min_lng(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L));
+	      if(--rec_rmn_prv_ssc > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
+	    } /* !FLG_ILV */
           }else{ /* !REC_SRD_LST */
 	    if(FLG_ILV){
-	      if(idx_rec_crr_in < lmt_rec[idx_rec]->end) idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L; else idx_rec_crr_in=lmt_rec[idx_rec]->srt+1L;
-	    }else{
+	      /* Next stride is within current file so proceed */
+	      idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
+	    }else{ /* !FLG_ILV */
 	      if(--rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
 	    } /* !FLG_ILV */
 	  } /* !REC_SRD_LST */

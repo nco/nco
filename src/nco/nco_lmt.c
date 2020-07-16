@@ -1301,8 +1301,15 @@ no_data_ok: /* end goto */
      NB: Location of this augmentation is important! Moving it would have side-effects! */
   lmt.rec_in_cml+=dmn_sz;
 
-  /* Place contents of working structure in location of returned structure */
-  *lmt_ptr=lmt;
+  /* Index juggling only used for interleaved option in ncra/ncrcat */
+  if(lmt.flg_ilv){
+    /* 20200716: Assume input files to ILV operations align on even interleaved boundaries 
+       nco_lmt_evl() currently sets lmt.end to last valid index of first interleaved index
+       Could adjust lmt.end to last valid index of last interleaved index
+       That way lmt.end would truly reflect index of last record desired in file
+       However, SSC works well with current convention so stick with it */
+    //    lmt.end+=lmt.srd-1L;
+  } /* !lmt.flg_ilv */
 
   if(nco_dbg_lvl_get() >= nco_dbg_std && lmt.flg_ilv){
     (void)nco_prn_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
@@ -1312,6 +1319,9 @@ no_data_ok: /* end goto */
     if(nco_prg_id != ncks) (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148\n");
     if(nco_prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try multislabbing (http://nco.sf.net/nco.html#msa) wrapped dimension using ncks first, and then apply %s to the resulting file\n",nco_prg_nm_get());
   } /* end dbg */
+
+  /* Place contents of working structure in location of returned structure */
+  *lmt_ptr=lmt;
 
   fl_udu_sng=(char *)nco_free(fl_udu_sng);
 
@@ -2078,9 +2088,6 @@ no_data_ok: /* end goto */
      NB: Location of this augmentation is important! Moving it would have side-effects! */
   lmt.rec_in_cml+=dmn_sz;
 
-  /* Place contents of working structure in location of returned structure */
-  *lmt_ptr=lmt;
-
   if(nco_dbg_lvl_get() >= nco_dbg_old){
     (void)nco_prn_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
@@ -2089,6 +2096,9 @@ no_data_ok: /* end goto */
     if(nco_prg_id != ncks) (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148\n");
     if(nco_prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try multislabbing (http://nco.sf.net/nco.html#msa) wrapped dimension using ncks first, and then apply %s to the resulting file\n",nco_prg_nm_get());
   } /* end dbg */
+
+  /* Place contents of working structure in location of returned structure */
+  *lmt_ptr=lmt;
 
   fl_udu_sng=(char *)nco_free(fl_udu_sng);
 
