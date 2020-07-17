@@ -336,9 +336,14 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
     AC_OPENMP
 		
 		#skatreka++
-		case ${CC} in
-			gcc* ) OPENMP_CFLAGS+=" -foffload=nvptx-none" ;;
-			#icc* ) OPENMP_CFLAGS+="" ;;
+		#If GPU availible, add appropriate offload flag to selected compiler
+		case ${HOSTNAME} in
+			cori* )
+			case ${CC} in
+				gcc* | g++*) OPENMP_CFLAGS+=" -foffload=nvptx-none"; ;;
+				clang* ) OPENMP_CFLAGS+=" -fopenmp-targets=nvptx64-nvidia-cuda"; ;;
+				#Intel compilers don't support NVIDIA GPU offloading
+			esac
 		esac
 		#skatreka--
     AC_SUBST(OPENMP_CFLAGS)
@@ -351,15 +356,6 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
 fi
 # End OpenMP
 
-#skatreka++
-#Optimization specific compiler flags
-OPT_CFLAGS=""
-case ${CC} in
-	gcc* ) OPT_CFLAGS+=" -march=native" ;;
-	icc* ) OPT_CFLAGS+=" -xHost" ;; #for knl cross comp: -xMIC-AVX512 -axMIC-AVX512
-esac
-CFLAGS="{CFLAGS} ${OPT_CFLAGS}"
-#skatreka--
 
 # Begin DAP support
 echo "Beginning generic tests for DAP support"
@@ -1298,6 +1294,30 @@ LEX_OUTPUT_ROOT="lex.${NCO_YY_PFX}"
 LFLAGS="-P${NCO_YY_PFX}"
 AC_SUBST(LEX_OUTPUT_ROOT)
 AC_SUBST(LFLAGS)
+
+
+#skatreka++
+#Optimization specific compiler flags
+OPT_CFLAGS=""
+case ${CC} in
+	gcc* | g++* ) OPT_CFLAGS+=" -march=native"; ;;
+	clang* ) OPT_CFLAGS+=" -march=native"; ;;
+	icc* ) OPT_CFLAGS+=" -xHost";
+	       OPT_CFLAGS+=" -xMIC-AVX512 -axMIC-AVX512"; ;;
+	       #More options can be added here if processor name is detected
+esac
+CFLAGS+="$OPT_CFLAGS"
+
+OPT_CXXFLAGS=""
+case ${CXX} in
+	g++* ) OPT_CXXFLAGS+=" -march=native"; ;;
+	clang* ) OPT_CXXFLAGS+=" -march=native"; ;;
+	icpc* ) OPT_CXXFLAGS+=" -xHost";
+			OPT_CXXFLAGS+=" -xMIC-AVX512 -axMIC-AVX512"; ;;
+			#More options can be added here if processor name is detected
+esac
+CXXFLAGS+="$OPT_CXXFLAGS"
+#skatreka--
 
 # Every autoconf script finishes by calling AC_OUTPUT to generate and run config.status
 AC_OUTPUT

@@ -17833,8 +17833,18 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
   fi
 
 
-		OPENMP_CFLAGS+=" -march=native" #-foffload=nvptx-none"
 
+		#skatreka++
+		#If GPU availible, add appropriate offload flag to selected compiler
+		case ${HOSTNAME} in
+			cori* )
+			case ${CC} in
+				gcc* | g++*) OPENMP_CFLAGS+=" -foffload=nvptx-none"; ;;
+				clang* ) OPENMP_CFLAGS+=" -fopenmp -fopenmp-targets=nvptx64-nvidia-cuda"; ;;
+				#Intel compilers don't support NVIDIA GPU offloading
+			esac
+		esac
+		#skatreka--
 
 
 $as_echo "#define ENABLE_OPENMP 1" >>confdefs.h
@@ -17847,6 +17857,7 @@ $as_echo "$as_me: OpenMP support enabled" >&6;}
     # LDFLAGS="${LDFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP
+
 
 # Begin DAP support
 echo "Beginning generic tests for DAP support"
@@ -21027,6 +21038,29 @@ LEX_OUTPUT_ROOT="lex.${NCO_YY_PFX}"
 LFLAGS="-P${NCO_YY_PFX}"
 
 
+
+
+#skatreka++
+#Optimization specific compiler flags
+OPT_CFLAGS=""
+case ${CC} in
+	gcc* | g++* ) OPT_CFLAGS+=" -march=native"; ;;
+	clang* ) OPT_CFLAGS+=" -march=native"; ;;
+	icc* ) OPT_CFLAGS+=" -xHost";
+	       OPT_CFLAGS+=" -xMIC-AVX512 -axMIC-AVX512"; ;;
+	       #More options can be added here if processor name is detected
+esac
+CFLAGS+="$OPT_CFLAGS"
+
+OPT_CXXFLAGS=""
+case ${CXX} in
+	g++* ) OPT_CXXFLAGS+=" -march=native"; ;;
+	icpc* ) OPT_CXXFLAGS+=" -xHost";
+			OPT_CXXFLAGS+=" -xMIC-AVX512 -axMIC-AVX512"; ;;
+			#More options can be added here if processor name is detected
+esac
+CXXFLAGS+="$OPT_CXXFLAGS"
+#skatreka--
 
 # Every autoconf script finishes by calling AC_OUTPUT to generate and run config.status
 cat >confcache <<\_ACEOF
