@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha06
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 16 July 2020
+@set update-date 17 July 2020
 @set update-month July 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -10073,8 +10073,7 @@ multi-file operators that write output every record (timestep) or file.
 variables in such cases (@pxref{RAM variables}). 
 
 Two switches, @samp{--ram_all} and @samp{--diskless_all}, are convenient
-shortcuts for specifying both @samp{--create_ram} and
-@samp{--diskless_ram}. 
+shortcuts for specifying both @samp{--create_ram} and @samp{--open_ram}. 
 Thus
 @example
 ncks in.nc out.nc # Default: Open in.nc on disk, write out.nc to disk
@@ -10162,7 +10161,7 @@ These flags turn-off the default I/O buffering mode for both newly
 created and existing datasets.
 For finer-grained control, use the @code{--create_share} switch to
 request unbuffered I/O only for newly created datasets, and the
-@code{--create_share} switch to request unbuffered I/O only for
+@code{--open_share} switch to request unbuffered I/O only for
 existing datasets.
 Typically these options only significantly reduce throughput time
 when large record variables are written or read.
@@ -27879,8 +27878,9 @@ Numerous bug-fixes.
 @cindex Joe Hamman
 @item Joe Hamman
 Python bindings (PyNCO).
+@cindex Milan Klower
 @cindex Rostislav Kouznetsov
-@item Rostislav Kouznetsov
+@item Milan Klower, Rostislav Kouznetsov
 Quantization by rounding 
 @cindex Daniel Wang
 @item Daniel Wang

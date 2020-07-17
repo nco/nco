@@ -1246,7 +1246,8 @@ main(int argc,char **argv)
 
         if(FLG_ILV){
 	  lmt_rec[idx_rec]->flg_ilv=True;
-	  /* Re-set interleaved dimension counter at start of each file */
+	  /* Assume that input files in interleaved mode align evenly on dimension boundaries
+	     Therefore re-set interleaved dimension counter at start of each file */
 	  idx_ilv=0L;
 	} /* !FLG_ILV */
         /* Fill record array */
@@ -1556,7 +1557,7 @@ main(int argc,char **argv)
 	    if(FLG_ILV){
 	      /* Current interleaved index complete, start next interleaved index */
 	      idx_ilv++;
-	      if(idx_ilv < lmt_rec[idx_rec]->srd) idx_rec_crr_in=lmt_rec[idx_rec]->srt+idx_ilv; else idx_rec_crr_in=rec_dmn_sz;
+	      if(idx_ilv < lmt_rec[idx_rec]->srd) idx_rec_crr_in=lmt_rec[idx_rec]->srt+idx_ilv; else idx_rec_crr_in++;
 	    }else{
 	      /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
 	      long end_max_crr;
@@ -1566,7 +1567,8 @@ main(int argc,char **argv)
           }else{ /* !REC_SRD_LST */
 	    if(FLG_ILV){
 	      /* Next stride is within current file so proceed */
-	      idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
+	      //	      idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
+	      idx_rec_crr_in+=lmt_rec[idx_rec]->srd;
 	    }else{ /* !FLG_ILV */
 	      if(--rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
 	    } /* !FLG_ILV */

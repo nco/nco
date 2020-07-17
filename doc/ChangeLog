@@ -1,6 +1,12 @@
+2020-07-17  Charlie Zender  <zender@uci.edu>
+
+	* ncra/ncrcat interleaving invoked as either stride-only, or stride-ssc both work for multiple files
+
+	* Merge Kouznetsov's implementation of Milan Klower's integer-math-only version of nearest neighbor rounding into the new default bit-adjustment-algorithm (BAA) #5
+
 2020-07-16  Charlie Zender  <zender@uci.edu>
 
-	* ncra/ncrcat: Implement stride resets over interleaved dimension, works for one file
+	* ncra/ncrcat: Implement stride resets over interleaved dimension, works for multiple files!
 
 2020-07-15  Charlie Zender  <zender@uci.edu>
 
