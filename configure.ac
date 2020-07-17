@@ -356,7 +356,7 @@ fi
 OPT_CFLAGS=""
 case ${CC} in
 	gcc* ) OPT_CFLAGS+=" -march=native" ;;
-	icc* ) OPT_CFLAGS+=" -xHost" ;;
+	icc* ) OPT_CFLAGS+=" -xHost" ;; #for knl cross comp: -xMIC-AVX512 -axMIC-AVX512
 esac
 CFLAGS="{CFLAGS} ${OPT_CFLAGS}"
 #skatreka--
