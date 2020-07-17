@@ -623,9 +623,11 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   unsigned int *u32_ptr;
   unsigned int msk_f32_u32_zro;
   unsigned int msk_f32_u32_one;
+  unsigned int msk_f32_u32_hshv;
   unsigned long int *u64_ptr;
   unsigned long int msk_f64_u64_zro;
   unsigned long int msk_f64_u64_one;
+  unsigned long int msk_f64_u64_hshv;
   unsigned short prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   unsigned short prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
   
@@ -673,6 +675,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     msk_f32_u32_zro <<= bit_xpl_nbr_zro;
     /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
     msk_f32_u32_one=~msk_f32_u32_zro;
+    msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
     if(nco_baa_cnv_get() == nco_baa_grm){
       /* Bit-Groom: alternately shave and set LSBs */
       if(!has_mss_val){
@@ -779,26 +782,17 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     }else if(nco_baa_cnv_get() == nco_baa_rnd){
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask */
-      float val_tmp; /* Quantized value */
-      unsigned int *u32_ptr_tmp; /* Pointer to quantized value for shaving */
-      u32_ptr_tmp=(unsigned int *)&val_tmp;
       if(!has_mss_val){
 	for(idx=0L;idx<sz;idx++){
-	  val_tmp=op1.fp[idx]; /* Save raw value */
-          u32_ptr_tmp[0]&=msk_f32_u32_zro; /* Shave it */
-          op1.fp[idx]*=2; /* Double raw value */
-          op1.fp[idx]-=val_tmp; /* Subtract shaved value */
-          u32_ptr[idx]&=msk_f32_u32_zro; /* Shave again */
+          u32_ptr[idx]+=msk_f32_u32_hshv; /* Add 1 at MSB of LSBs, carry 1 to mantissa or even exponent*/
+          u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
         } /* !idx */
       }else{ /* !has_mss_val */
 	const float mss_val_flt=*mss_val.fp;
 	for(idx=0L;idx<sz;idx++){
 	  if(op1.fp[idx] != mss_val_flt){ 
-            val_tmp=op1.fp[idx]; /* Save raw value */
-            u32_ptr_tmp[0]&=msk_f32_u32_zro; /* Shave it */
-            op1.fp[idx]*=2; /* Double raw value */
-            op1.fp[idx]-=val_tmp; /* Subtract shaved value */
-            u32_ptr[idx]&=msk_f32_u32_zro; /* Shave again */
+            u32_ptr[idx]+=msk_f32_u32_hshv;/* add 1 to the MSB of LSBs*/
+            u32_ptr[idx]&=msk_f32_u32_zro; /* Shave it */
 	  } /* !mss_val_flt */
 	} /* !idx */
       } /* !has_mss_val */
@@ -806,8 +800,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
 	 See figures at https://github.com/nco/nco/pull/200 */
-      unsigned int msk_f32_u32_hshv;
-      msk_f32_u32_hshv=msk_f32_u32_one & (msk_f32_u32_zro >> 1); /* Set one bit: the MSB of LSBs */
       if(!has_mss_val){
 	for(idx=0L;idx<sz;idx++){
 	  u32_ptr[idx]&=msk_f32_u32_zro; /* Shave as normal */
@@ -836,6 +828,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     msk_f64_u64_zro <<= bit_xpl_nbr_zro;
     /* Bit Set   mask for OR:  Put ones into bits to be set, zeros in untouched bits */
     msk_f64_u64_one=~msk_f64_u64_zro;
+    msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
     if(nco_baa_cnv_get() == nco_baa_grm){
       /* Bit-Groom: alternately shave and set LSBs */
       if(!has_mss_val){
@@ -888,26 +881,17 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* Round mantissa, LSBs to zero contributed by Rostislav Kouznetsov 20200711
 	 Round mantissa using floating-point arithmetic, shave LSB using bit-mask
 	 See figures at https://github.com/nco/nco/pull/199 */
-      double val_tmp; /* Quantized value */
-      unsigned int *u64_ptr_tmp; /* Pointer to quantized value for shaving */
-      u64_ptr_tmp=(unsigned int *)&val_tmp;
       if(!has_mss_val){
 	for(idx=0L;idx<sz;idx++){
-	  val_tmp=op1.fp[idx]; /* Save raw value */
-          u64_ptr_tmp[0]&=msk_f64_u64_zro; /* Shave it */
-          op1.fp[idx]*=2; /* Double raw value */
-          op1.fp[idx]-=val_tmp; /* Subtract shaved value */
-          u64_ptr[idx]&=msk_f64_u64_zro; /* Shave again */
+          u64_ptr[idx]+=msk_f64_u64_hshv; /* Add 1 at MSB of LSBs */
+          u64_ptr[idx]&=msk_f64_u64_zro; /* Shave it */
         } /* !idx */
       }else{ /* !has_mss_val */
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx++){
 	  if(op1.dp[idx] != mss_val_dbl){ 
-            val_tmp=op1.dp[idx]; /* Save raw value */
-            u64_ptr_tmp[0]&=msk_f64_u64_zro; /* Shave it */
-            op1.dp[idx]*=2; /* Double raw value */
-            op1.dp[idx]-=val_tmp; /* Subtract shaved value */
-            u64_ptr[idx]&=msk_f64_u64_zro; /* Shave again */
+            u64_ptr[idx]+=msk_f64_u64_hshv; /* Add 1 at MSB of LSBs */
+            u64_ptr[idx]&=msk_f64_u64_zro; /* Shave it */
 	  } /* !mss_val_dbl */
 	} /* !idx */
       } /* !has_mss_val */
@@ -915,8 +899,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       /* Bit Half-Shave contributed by Rostislav Kouznetsov 20200715
 	 Shave LSBs and set MSB of them
 	 See figures at https://github.com/nco/nco/pull/200 */
-      unsigned long int msk_f64_u64_hshv;
-      msk_f64_u64_hshv=msk_f64_u64_one & (msk_f64_u64_zro >> 1); /* Set one bit: the MSB of LSBs */
       if(!has_mss_val){
 	for(idx=0L;idx<sz;idx++){
 	  u64_ptr[idx]&=msk_f64_u64_zro; /* Shave as normal */
