@@ -8010,7 +8010,7 @@ nco_prs_aux_crd                       /* [fnc] Parse auxiliary coordinates */
             if(nco_dbg_lvl_get() == nco_dbg_old){
               for(int idx_lmt=0;idx_lmt<lmt_dmn_nbr;idx_lmt++){
                 (void)fprintf(stdout,"\nlimit index %d\n",idx_lmt);
-                nco_lmt_prt(lmt[idx_lmt]);
+                nco_lmt_prn(lmt[idx_lmt]);
               }
             }
           } /* !aux_lmt_nbr */

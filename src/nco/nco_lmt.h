@@ -54,7 +54,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/default values */
 (lmt_sct *lmt); /* I/O [sct] Limit structure to initialize */
 
 void
-nco_lmt_prt /* [fnc] Print a Limit structure */
+nco_lmt_prn /* [fnc] Print a Limit structure */
 (lmt_sct *lmt); /* I/O [sct] Limit structure to print */
 
 void

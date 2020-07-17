@@ -1,6 +1,8 @@
 2020-07-17  Charlie Zender  <zender@uci.edu>
 
-	* ncra/ncrcat interleaving invoked as either stride-only, or stride-ssc both work for multiple files
+	* Adjuct diagnostic count (cnt) for interleaving (do not divide span by stride)
+
+	* ncrcat interleaving invoked as either stride-only and stride-ssc work identically for multiple files
 
 	* Merge Kouznetsov's implementation of Milan Klower's integer-math-only version of nearest neighbor rounding into the new default bit-adjustment-algorithm (BAA) #5
 

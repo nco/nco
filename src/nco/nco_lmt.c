@@ -56,7 +56,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
 } /* end nco_lmt_init() */
 
 void
-nco_lmt_prt /* [fnc] Print a Limit structure */
+nco_lmt_prn /* [fnc] Print a Limit structure */
 (lmt_sct *lmt) /* I/O [sct] Limit structure to print */
 {
   (void)fprintf(stdout,"Name: %s\n",lmt->nm);
@@ -75,8 +75,8 @@ nco_lmt_prt /* [fnc] Print a Limit structure */
 
   (void)fprintf(stdout,"Limit type: %d\n",lmt->lmt_typ);
 
-  (void)fprintf(stdout,"Valid elements: %li\n",lmt->cnt);
-  (void)fprintf(stdout,"Subcycle of hyperslab: %li\n",lmt->ssc);
+  (void)fprintf(stdout,"Valid elements (i.e., count): %li\n",lmt->cnt);
+  (void)fprintf(stdout,"Subcycle length of hyperslab: %li\n",lmt->ssc);
   (void)fprintf(stdout,"Index to end of hyperslab: %li\n",lmt->end);
   (void)fprintf(stdout,"Index of maximum requested value: %li\n",lmt->max_idx);
   (void)fprintf(stdout,"Index of minimum requested value: %li\n",lmt->min_idx);
@@ -85,7 +85,7 @@ nco_lmt_prt /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Maximum allowed index in record dimension: %li\n",lmt->idx_end_max_abs);
   (void)fprintf(stdout,"Records skipped in initial superfluous files: %li\n",lmt->rec_skp_ntl_spf);
   (void)fprintf(stdout,"Records skipped since previous good one: %li\n",lmt->rec_skp_vld_prv);
-  (void)fprintf(stdout,"Records remaining-to-be-read: %li\n",lmt->rec_rmn_prv_ssc);
+  (void)fprintf(stdout,"Records remaining-to-be-read in current group: %li\n",lmt->rec_rmn_prv_ssc);
   (void)fprintf(stdout,"Stride of hyperslab: %li\n",lmt->srd);
   (void)fprintf(stdout,"Index to start of hyperslab: %li\n",lmt->srt);
 
@@ -97,7 +97,7 @@ nco_lmt_prt /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Is user-specified minimum: %d\n",lmt->is_usr_spc_min);
   (void)fprintf(stdout,"Calendar-type attribute: %d\n",lmt->lmt_cln);
 
-} /* end nco_lmt_prt() */
+} /* end nco_lmt_prn() */
 
 void
 nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
@@ -1210,14 +1210,25 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* NB: MFO record dimension never reaches this block if current file is superfluous
      In that case code has already branched down to flg_data_ok or flg_data_err */
   if(rec_dmn_and_mfo){ 
-    /* NB: This is---and must be---performed as integer arithmetic */ 
-    cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;  
-    /* This fixes "sloppy" specification of end index by user, i.e., ensures that end index coincides with a stride */
-    lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;   
-    /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
-    rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
-    /* Next file must know how many records in this file come after (and thus will be skipped) last used record in this file */
-    lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
+    if(lmt.flg_ilv){
+      /* NB: This is---and must be---performed as integer arithmetic */ 
+      cnt_rmn_crr=1L+(lmt.end-lmt.srt);
+      /* This fixes "sloppy" specification of end index by user, i.e., ensures that end index coincides with a stride */
+      lmt.end=lmt.srt+(cnt_rmn_crr-1L);
+      /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
+      rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
+      /* Next file must know how many records in this file come after (and thus will be skipped) last used record in this file */
+      lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
+    }else{ /* !lmt.flg_ilv */
+      /* NB: This is---and must be---performed as integer arithmetic */ 
+      cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
+      /* This fixes "sloppy" specification of end index by user, i.e., ensures that end index coincides with a stride */
+      lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;
+      /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
+      rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
+      /* Next file must know how many records in this file come after (and thus will be skipped) last used record in this file */
+      lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
+    } /* !lmt.flg_ilv */
   } /* !rec_dmn_and_mfo */      
 
   /* Compute cnt from srt, end, and srd
@@ -1226,7 +1237,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   if(lmt.srd == 1L){
     if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dmn_sz-lmt.srt+lmt.end+1L;
   }else{
-    if(lmt.srt <= lmt.end) lmt.cnt=1L+(lmt.end-lmt.srt)/lmt.srd; else lmt.cnt=1L+((dmn_sz-lmt.srt)+lmt.end)/lmt.srd;
+    if(lmt.flg_ilv){
+      if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=1L+(dmn_sz-lmt.srt)+lmt.end;
+    }else{ /* !lmt.flg_ilv */
+      if(lmt.srt <= lmt.end) lmt.cnt=1L+(lmt.end-lmt.srt)/lmt.srd; else lmt.cnt=1L+((dmn_sz-lmt.srt)+lmt.end)/lmt.srd;
+    } /* !lmt.flg_ilv */
   } /* end else */
 
   /* NB: Degenerate cases of WRP && SRD exist for which dmn_cnt_2 == 0

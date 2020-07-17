@@ -227,7 +227,7 @@ main(int argc,char **argv)
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
   long *idx_rec_out=NULL; /* [idx] Index of current record in output file (0 is first, ...) */
-  long *rec_in_cml=NULL;  /* [nbr] Number of records, read or not, in all processed files */
+  long *rec_in_cml=NULL; /* [nbr] Number of records, read or not, in all processed files */
   long *rec_usd_cml=NULL; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
   long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
   long rec_rmn_prv_ssc=0L; /* [idx] Records remaining to be read in current subcycle group */
@@ -1411,7 +1411,7 @@ main(int argc,char **argv)
                 if(flg_rth_ntl) nco_opr_drv((long)0L,nco_op_min,var_prc[idx],var_prc_out[idx]);
               }else{
                 /* Convert char, short, long, int, and float types to doubles before arithmetic
-		   Output variable type is "sticky" so only convert on first record */
+		   Output variable type is "sticky" so only convert on first record in group */
                 if(flg_rth_ntl) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 		var_prc_typ_pre_prm=var_prc[idx]->type; /* [enm] Type of variable before promotion */
                 var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
@@ -1567,7 +1567,6 @@ main(int argc,char **argv)
           }else{ /* !REC_SRD_LST */
 	    if(FLG_ILV){
 	      /* Next stride is within current file so proceed */
-	      //	      idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
 	      idx_rec_crr_in+=lmt_rec[idx_rec]->srd;
 	    }else{ /* !FLG_ILV */
 	      if(--rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
