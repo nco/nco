@@ -1,6 +1,6 @@
 2020-07-17  Charlie Zender  <zender@uci.edu>
 
-	* Adjuct diagnostic count (cnt) for interleaving (do not divide span by stride)
+	* Adjust diagnostic count (cnt) for interleaving (do not divide span by stride)
 
 	* ncrcat interleaving invoked as either stride-only and stride-ssc work identically for multiple files
 

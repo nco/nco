@@ -1210,25 +1210,14 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* NB: MFO record dimension never reaches this block if current file is superfluous
      In that case code has already branched down to flg_data_ok or flg_data_err */
   if(rec_dmn_and_mfo){ 
-    if(lmt.flg_ilv){
-      /* NB: This is---and must be---performed as integer arithmetic */ 
-      cnt_rmn_crr=1L+(lmt.end-lmt.srt);
-      /* This fixes "sloppy" specification of end index by user, i.e., ensures that end index coincides with a stride */
-      lmt.end=lmt.srt+(cnt_rmn_crr-1L);
-      /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
-      rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
-      /* Next file must know how many records in this file come after (and thus will be skipped) last used record in this file */
-      lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
-    }else{ /* !lmt.flg_ilv */
-      /* NB: This is---and must be---performed as integer arithmetic */ 
-      cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
-      /* This fixes "sloppy" specification of end index by user, i.e., ensures that end index coincides with a stride */
-      lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;
-      /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
-      rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
-      /* Next file must know how many records in this file come after (and thus will be skipped) last used record in this file */
-      lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
-    } /* !lmt.flg_ilv */
+    /* NB: This is---and must be---performed as integer arithmetic */ 
+    cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
+    /* This fixes "sloppy" specification of end index by user, i.e., ensures that end index coincides with a stride */
+    lmt.end=lmt.srt+(cnt_rmn_crr-1L)*lmt.srd;
+    /* Save current rec_skp_vld_prv for diagnostics (printed below) for this file */
+    rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
+    /* Next file must know how many records in this file come after (and thus will be skipped) last used record in this file */
+    lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
   } /* !rec_dmn_and_mfo */      
 
   /* Compute cnt from srt, end, and srd
