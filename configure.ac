@@ -336,7 +336,7 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
     AC_OPENMP
 		
 		#skatreka++
-		#define USE_GPU 0
+		#define USE_GPU 1
 		#If GPU availible, add appropriate offload flag to selected compiler
 		USE_GPU=0
 		if (test $USE_GPU -ne 0); then
