@@ -17835,7 +17835,7 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
 
 
 		#skatreka++
-		#define USE_GPU 0
+		#define USE_GPU 1
 		#If GPU availible, add appropriate offload flag to selected compiler
 		USE_GPU=0
 		if (test $USE_GPU -ne 0); then
