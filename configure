@@ -17835,15 +17835,19 @@ $as_echo "$ac_cv_prog_c_openmp" >&6; }
 
 
 		#skatreka++
+		#define USE_GPU 0
 		#If GPU availible, add appropriate offload flag to selected compiler
+		USE_GPU=0
+		if (test $USE_GPU -ne 0); then
 		case ${HOSTNAME} in
 			cori* )
 			case ${CC} in
 				gcc* | g++*) OPENMP_CFLAGS+=" -foffload=nvptx-none"; ;;
-				clang* ) OPENMP_CFLAGS+=" -fopenmp -fopenmp-targets=nvptx64-nvidia-cuda"; ;;
+				clang* ) OPENMP_CFLAGS+=" -fopenmp-targets=nvptx64-nvidia-cuda"; ;;
 				#Intel compilers don't support NVIDIA GPU offloading
 			esac
 		esac
+		fi
 		#skatreka--
 
 
@@ -21055,6 +21059,7 @@ CFLAGS+="$OPT_CFLAGS"
 OPT_CXXFLAGS=""
 case ${CXX} in
 	g++* ) OPT_CXXFLAGS+=" -march=native"; ;;
+	clang* ) OPT_CXXFLAGS+=" -march=native"; ;;
 	icpc* ) OPT_CXXFLAGS+=" -xHost";
 			OPT_CXXFLAGS+=" -xMIC-AVX512 -axMIC-AVX512"; ;;
 			#More options can be added here if processor name is detected
