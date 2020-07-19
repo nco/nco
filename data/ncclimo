@@ -2523,22 +2523,28 @@ fi # !dly
 
 # Computing climos from high-freqency data requires many steps:
 # A primary goal is to re-use not re-write code, especially existing monthly frequency climo code
-# Otherwise the code maintainability significantly suffers
+# Otherwise code maintainability significantly suffers
 # Code-reuse all-but-requires same existing parallelization as monthly frequency climos
 # Proposed Algorithm:
 # 1. Re-use splitter option ypf for intermediate files so users can prevent excessive intermediate filesizes
-# 2. Generate month-aligned intermediate files containing ypf instances of same month for all variables
-# 2a. Base this step on draft annual-mean diurnal cycle in HFS
-# 2b. Parallelize over month using job_nbr algorithm? or over segment?
-# 2c. Parallelization is difficult/tedious due to number of basic blocks (3? 4? 5?)
-# 3. Intermediate files of shape (time=min(actual,ypf),hour,space) are interchangeable with monthly-frequency output in stage-1 ncra which equally weights all input records to obtain ncra climatological monthly diurnal-mean output
+# 2. Generate month-aligned intermediate segments containing ypf instances of a single month (and no other months) for all variables
+# 2a. To subset repeated appearances of given month and skip intervening 11 months, command must have form ncrcat -d time,srt_sng,end_sng,srd,ssc where srd=dpy*tpd and ssc=dpm*tpd
+# 2b. Same as draft annual-mean HFS feature for diurnal cycle, except srt_sng/end_sng are "yyyy_srt_sgm-MM-01 00:00:01/yyyy_end_sgm-(MMp1)-01 00:00:00" instead of "yyyy_srt_sgm-01-01 00:00:01/yyyy_endp1_sgm-01-01 00:00:00"
+# 2c. Intermediate monthly segments sgm_yyyy_srt_yyyy_end_MM.nc have ypf instances of given month, except last segment may be ragged
+# 2d. Evaluate mean diurnal cycle of monthly-segment using ncra --ilv srt,end,srd = 0,,tpd
+# 2e. 
+# Exception is that traditionaly monthly mean climos equally weight all input records using ncra
+# 2c. Ragged numbers of ypf in last segment suggests using ncra climatological monthly diurnal-mean output
+# 2d. Parallelize this over month (probably) using job_nbr algorithm? or over segment (unlikely)?
+# 2e. Parallelization is difficult/tedious due to number of basic blocks (3? 4? 5?)
+# 3. Intermediate files of shape (time=min(actual,ypf),hour,space) are nearly interchangeable with monthly-frequency output in stage-1 ncra
 # 4. Use climatological monthly diurnal-mean output to create climatological seasonal diurnal-mean output
 # 5. Use climatological monthly seasonal-mean output to create climatological annual diurnal-mean output
 # 6. Final output climo format: (time=1,hour,space) (or convert to (time=hour,space)?)
 # Advantages:
 # 1. Code-reuse and maintainability
-# 2. Scales to any-length simulation (intermediate files can be a single month)
-# 3. Output similar to existing monthly-frequency climos with additional 'hour' dimension
+# 2. Scales to any length o simulation (intermediate files can be a single month)
+# 3. Output similar to existing monthly-frequency climos with new, fixed-length 'hour' dimension
 # 4. Climatology bounds attributes correct for time variable(?)
 # Disadvantages:
 # 1. E3SM-diags post-processing may not like new 'hour' dimension

@@ -1,6 +1,8 @@
 2020-07-19  Charlie Zender  <zender@uci.edu>
 
-	* ncra interleave (flg_ilv) implies multi-record-output (flg_mro)
+	* Re-considering ilv implementation and final diurnal strategy
+
+	* ncra interleave (flg_ilv) always implies multi-record-output (flg_mro)
 
 2020-07-17  Charlie Zender  <zender@uci.edu>
 
