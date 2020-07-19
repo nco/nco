@@ -570,7 +570,7 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "help" */
       if(!strcmp(opt_crr,"hpss_try")) HPSS_TRY=True; /* [flg] Search HPSS for unfound files */
-      if(!strcmp(opt_crr,"ilv") || !strcmp(opt_crr,"interleave_output")) FLG_ILV=True; /* [flg] Interleave Output */
+      if(!strcmp(opt_crr,"ilv") || !strcmp(opt_crr,"interleave_output")) FLG_ILV=FLG_MRO=True; /* [flg] Interleave Output */
       if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){
 	log_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
@@ -1280,7 +1280,7 @@ main(int argc,char **argv)
 	  } /* endif record coordinate exists in output file */
 	} /* !REC_APN */
 
-        if(nco_dbg_lvl_get() >= nco_dbg_crr)  (void)fprintf(fp_stdout,"%s: DEBUG record %d id %d name %s rec_dmn_sz %ld units=\"%s\"\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz,fl_udu_sng);
+        if(nco_dbg_lvl_get() >= nco_dbg_crr)  (void)fprintf(fp_stdout,"%s: DEBUG1 record %d id %d name %s rec_dmn_sz %ld units=\"%s\"\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz,fl_udu_sng);
         /* Two distinct ways to specify MRO are --mro and -d dmn,srt,end,srd,ssc,[m,M] */
         if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
         if(lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
@@ -1316,7 +1316,8 @@ main(int argc,char **argv)
 	     rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
 
 	     Flag juggling:
-	     REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with nces normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR. */
+	     REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with nces normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR.
+	     20200719: REC_LST_DSR is never set for FLG_ILV, since all input records are assumed to align with interleaved dimension, and normalization will always occur at a group ending */
 
           /* Last stride in file has distinct index-augmenting behavior */
           if(idx_rec_crr_in >= lmt_rec[idx_rec]->end) REC_SRD_LST=True; else REC_SRD_LST=False;
@@ -1325,9 +1326,11 @@ main(int argc,char **argv)
           /* Each group comprises SSC records */
           if(REC_FRS_GRP) rec_rmn_prv_ssc=lmt_rec[idx_rec]->ssc;
           /* Final record triggers normalization regardless of its location within group */
-          if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
+          if(!FLG_ILV && fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
           /* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
           if(rec_rmn_prv_ssc == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
+
+          if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG MRO=%s, ssc=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->ssc,idx_rec_crr_in,rec_rmn_prv_ssc,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
 
 	  /* Retrieve this record of weight variable, if any */
 	  if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs))
@@ -1556,6 +1559,7 @@ main(int argc,char **argv)
           if(REC_SRD_LST){
 	    if(FLG_ILV){
 	      /* Current interleaved index complete, start next interleaved index */
+	      --rec_rmn_prv_ssc;
 	      idx_ilv++;
 	      if(idx_ilv < lmt_rec[idx_rec]->srd) idx_rec_crr_in=lmt_rec[idx_rec]->srt+idx_ilv; else idx_rec_crr_in++;
 	    }else{
@@ -1567,6 +1571,7 @@ main(int argc,char **argv)
           }else{ /* !REC_SRD_LST */
 	    if(FLG_ILV){
 	      /* Next stride is within current file so proceed */
+	      --rec_rmn_prv_ssc;
 	      idx_rec_crr_in+=lmt_rec[idx_rec]->srd;
 	    }else{ /* !FLG_ILV */
 	      if(--rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
