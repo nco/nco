@@ -1227,6 +1227,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dmn_sz-lmt.srt+lmt.end+1L;
   }else{
     if(lmt.flg_ilv){
+      /* All records between srt and end ILV files are valid though not sequential
+	 There are no gaps because consecutive groups are interleaved 
+	 Hence the effective "stride", in terms of the cnt measure, is always 1L for ILV */
       if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=1L+(dmn_sz-lmt.srt)+lmt.end;
     }else{ /* !lmt.flg_ilv */
       if(lmt.srt <= lmt.end) lmt.cnt=1L+(lmt.end-lmt.srt)/lmt.srd; else lmt.cnt=1L+((dmn_sz-lmt.srt)+lmt.end)/lmt.srd;
@@ -1307,12 +1310,16 @@ no_data_ok: /* end goto */
 
   /* Index juggling only used for interleaved option in ncra/ncrcat */
   if(lmt.flg_ilv){
-    /* 20200716: Assume input files to ILV operations align on even interleaved boundaries 
+    /* 20200716: Assume input files to ILV operations align on even interleaved boundaries, i.e.,
+       (end - srt + 1) % srd == 0 
        nco_lmt_evl() currently sets lmt.end to last valid index of first interleaved index
        Could adjust lmt.end to last valid index of last interleaved index
        That way lmt.end would truly reflect index of last record desired in file
-       However, SSC works well with current convention so stick with it */
-    //    lmt.end+=lmt.srd-1L;
+       However, SSC works well with current convention so stick with it to leverage SSC for ILV
+       This implies additional condition that 
+       ssc*srd == end - srt + 1L
+       We thus prescribe SSC for ILV based on srt, end, and srd */
+    lmt.ssc=(lmt.end+lmt.srd)/lmt.srd;
   } /* !lmt.flg_ilv */
 
   if(nco_dbg_lvl_get() >= nco_dbg_std && lmt.flg_ilv){
