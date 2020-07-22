@@ -986,16 +986,20 @@ Updating NCO source requires some familiarity with development tools,
 especially <a href="http://git-scm.com/book/en/v2">Git</a> and  
 <a href="http://www.gnu.org/software/make/make.html">Make</a>.
 
-You may retrieve any NCO distribution you wish from 
+You may retrieve any NCO source code distribution you wish from 
 <a href="https://help.github.com">GitHub</a>. 
-Usually you wish to retrieve a recent tagged (i.e., released) version.
+To avoid the churn that comes with using the latest snapshot,
+potential contributors may wish to retrieve a recent tagged (i.e.,
+stable and released) version, 
 This command retrieves the entire NCO repository (&lt; 20&nbsp;MB) and
 then checks out NCO version <tt>4.9.3</tt>:
 <p><tt>git clone https://github.com/nco/nco.git;cd nco;git checkout 4.9.3</tt></p>
-These commands retrieve the current (&ldquo;bleeding edge&rdquo;)
-development version of NCO into a local directory named <tt>nco</tt>:
-<p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p> or
-<p><tt>git clone git@github.com:/nco/nco.git</tt></p>,
+However, the most efficient way to actively track and develop NCO is to
+retrieve the current (&ldquo;bleeding edge&rdquo;) NCO snapshot.
+This command retrieves the latest NCO master branch into a local
+directory named <tt>nco</tt>:
+<p><tt>git clone git@github.com:/nco/nco.git</tt></p>, or
+<p><tt>git clone https://github.com/nco/nco.git ~/nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;git pull</tt></p>
 One difference between running a "tagged" release 
@@ -1003,10 +1007,8 @@ One difference between running a "tagged" release
 tagged release operators will print a valid version number (e.g.,
 <tt>4.9.3</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
-The development version simply places today&rsquo;s date in place of the
-version.
-Once the autotools builds are working more robustly, the confusion
-over versions should largely disappear.
+Snapshots will include the sub-version and patch-level in the version
+information (e.g., <tt>4.9.3-alpha06</tt>). 
 
 <a name="doxy"></a>
 <h3>Developer NCO Source Documentation</h3>

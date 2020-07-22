@@ -702,12 +702,14 @@ nco_msa_lmt_all_ntl
     lmt_rgl->cnt=dmn_sz;
     lmt_rgl->srd=1L;
     lmt_rgl->ssc=1L;
+    lmt_rgl->ilv=1L;
     lmt_rgl->flg_mro=False;
+    lmt_rgl->flg_ilv=False;
     lmt_rgl->min_sng=NULL;
     lmt_rgl->max_sng=NULL;
     lmt_rgl->srd_sng=NULL;
     lmt_rgl->ssc_sng=NULL;
-    lmt_rgl->mro_sng=NULL;
+    lmt_rgl->ilv_sng=NULL;
     lmt_rgl->rbs_sng=NULL;
     lmt_rgl->origin=0.0;
 

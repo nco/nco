@@ -823,7 +823,7 @@ extern "C" {
 
     char *max_sng; /* User-specified string for dimension maximum */
     char *min_sng; /* User-specified string for dimension minimum */
-    char *mro_sng; /* User-specified string for multi-record output */
+    char *ilv_sng; /* User-specified string for interleave stride */
     char *ssc_sng; /* User-specified string for dimension subcycle */
     
     char *rbs_sng; /* Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
@@ -837,10 +837,13 @@ extern "C" {
     int lmt_typ; /* crd_val or dmn_idx */
 
     long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
-    long ssc; /* Subcycle of hyperslab */
     long end; /* Index to end of hyperslab */
+    long ilv; /* Interleave stride */
     long max_idx; /* Index of maximum requested value in dimension */
     long min_idx; /* Index of minimum requested value in dimension */
+    long srd; /* Stride of hyperslab */
+    long srt; /* Index to start of hyperslab */
+    long ssc; /* Subcycle of hyperslab */
 
     /* Following six counters are used only by multi-file operators ncra and ncrcat: */
     long idx_end_max_abs; /* [idx] Maximum allowed index in record dimension (multi-file record dimension only) */
@@ -849,9 +852,6 @@ extern "C" {
     long rec_rmn_prv_ssc; /* [nbr] Records remaining-to-be-read to complete subcycle group from previous file (multi-file record dimension only) */
     long rec_skp_ntl_spf; /* [nbr] Records skipped in initial superfluous files (multi-file record dimension only) */
     long rec_skp_vld_prv; /* [nbr] Records skipped since previous good one (multi-file record dimension only) */
-
-    long srd; /* Stride of hyperslab */
-    long srt; /* Index to start of hyperslab */
 
     nco_bool flg_ilv; /* True for interleaved output (used by ncra and ncrcat only) */
     nco_bool flg_input_complete; /* True for multi-file operators when no more files need be opened */

@@ -1,3 +1,13 @@
+2020-07-22  Charlie Zender  <zender@uci.edu>
+
+	* New interleave API works for ncrcat single and multiple files!
+
+2020-07-21  Charlie Zender  <zender@sastrugi.local>
+
+	* Eliminate deprecated or un-used MRO specification via 'm' or 'M' as sixth hyperslab argument
+
+	* Change interleave API from --ilv -d dmn,srt,cnt,ilv=srd=ssc to -d dmn,srt,cnt,srd,ssc,ilv
+
 2020-07-19  Charlie Zender  <zender@uci.edu>
 
 	* Re-considering ilv implementation and final diurnal strategy

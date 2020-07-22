@@ -19,7 +19,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->ssc_sng=NULL;         /* [sng] User-specified string for dimension subcycle */
   lmt->max_sng=NULL;         /* [sng] User-specified string for dimension maximum */
   lmt->min_sng=NULL;         /* [sng] User-specified string for dimension minimum */
-  lmt->mro_sng=NULL;         /* [sng] User-specified string for multi-record output */
+  lmt->ilv_sng=NULL;         /* [sng] User-specified string for interleave stride */
   lmt->rbs_sng=NULL;         /* [sng] Used by ncra, ncrcat to re-base record coordinate (holds unit attribute from first file) */
   lmt->srd_sng=NULL;         /* [sng] User-specified string for dimension stride */
 
@@ -33,6 +33,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
 
   lmt->cnt=-1;               /* [nbr] Valid elements in this dimension (including effects of stride and wrapping) */
   lmt->ssc=-1;               /* [nbr] Subcycle of hyperslab */
+  lmt->ilv=-1;               /* [nbr] Interleave stride */
   lmt->end=-1;               /* [nbr] Index to end of hyperslab */
   lmt->max_idx=-1;           /* [nbr] Index of maximum requested value in dimension */
   lmt->min_idx=-1;           /* [nbr] Index of minimum requested value in dimension */
@@ -63,7 +64,7 @@ nco_lmt_prn /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"User-specified string for dimension subcycle: %s\n",lmt->ssc_sng);
   (void)fprintf(stdout,"User-specified string for dimension maximum : %s\n",lmt->max_sng);
   (void)fprintf(stdout,"User-specified string for dimension minimum: %s\n",lmt->min_sng);
-  (void)fprintf(stdout,"User-specified string for multi-record output: %s\n",lmt->mro_sng);
+  (void)fprintf(stdout,"User-specified string for interleave stride: %s\n",lmt->ilv_sng);
   (void)fprintf(stdout,"Unit attribute from first file: %s\n",lmt->rbs_sng);
   (void)fprintf(stdout,"User-specified string for dimension stride: %s\n",lmt->srd_sng);
 
@@ -76,8 +77,11 @@ nco_lmt_prn /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Limit type: %d\n",lmt->lmt_typ);
 
   (void)fprintf(stdout,"Valid elements (i.e., count): %li\n",lmt->cnt);
-  (void)fprintf(stdout,"Subcycle length of hyperslab: %li\n",lmt->ssc);
-  (void)fprintf(stdout,"Index to end of hyperslab: %li\n",lmt->end);
+  (void)fprintf(stdout,"Index of hyperslab start: %li\n",lmt->srt);
+  (void)fprintf(stdout,"Index of hyperslab end: %li\n",lmt->end);
+  (void)fprintf(stdout,"Hyperslab stride: %li\n",lmt->srd);
+  (void)fprintf(stdout,"Subcycle length: %li\n",lmt->ssc);
+  (void)fprintf(stdout,"Interleave stride: %li\n",lmt->ilv);
   (void)fprintf(stdout,"Index of maximum requested value: %li\n",lmt->max_idx);
   (void)fprintf(stdout,"Index of minimum requested value: %li\n",lmt->min_idx);
   (void)fprintf(stdout,"Number of records in this file: %li\n",lmt->rec_dmn_sz);
@@ -86,8 +90,6 @@ nco_lmt_prn /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Records skipped in initial superfluous files: %li\n",lmt->rec_skp_ntl_spf);
   (void)fprintf(stdout,"Records skipped since previous good one: %li\n",lmt->rec_skp_vld_prv);
   (void)fprintf(stdout,"Records remaining-to-be-read in current group: %li\n",lmt->rec_rmn_prv_ssc);
-  (void)fprintf(stdout,"Stride of hyperslab: %li\n",lmt->srd);
-  (void)fprintf(stdout,"Index to start of hyperslab: %li\n",lmt->srt);
 
   (void)fprintf(stdout,"Is multi-record output: %d\n",lmt->flg_mro);
   (void)fprintf(stdout,"No more files need be opened: %d\n",lmt->flg_input_complete);
@@ -117,7 +119,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   if(lmt1->min_sng) lmt2->min_sng=(char *)strdup(lmt1->min_sng);
 
   if(lmt1->ssc_sng) lmt2->ssc_sng=(char *)strdup(lmt1->ssc_sng);      
-  if(lmt1->mro_sng) lmt2->mro_sng=(char *)strdup(lmt1->mro_sng);
+  if(lmt1->ilv_sng) lmt2->ilv_sng=(char *)strdup(lmt1->ilv_sng);
   if(lmt1->rbs_sng) lmt2->rbs_sng=(char *)strdup(lmt1->rbs_sng);
   if(lmt1->srd_sng) lmt2->srd_sng=(char *)strdup(lmt1->srd_sng);
 
@@ -131,6 +133,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
 
   lmt2->cnt=lmt1->cnt;
   lmt2->ssc=lmt1->ssc;
+  lmt2->ilv=lmt1->ilv;
   lmt2->end=lmt1->end;
   lmt2->max_idx=lmt1->max_idx;
   lmt2->min_idx=lmt1->min_idx;
@@ -143,6 +146,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   lmt2->srd=lmt1->srd;
   lmt2->srt=lmt1->srt;
 
+  lmt2->flg_ilv=lmt1->flg_ilv;
   lmt2->flg_mro=lmt1->flg_mro;
   lmt2->flg_input_complete=lmt1->flg_input_complete;
   lmt2->is_rec_dmn=lmt1->is_rec_dmn;
@@ -166,7 +170,7 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   lmt->ssc_sng=(char *)nco_free(lmt->ssc_sng);
   lmt->max_sng=(char *)nco_free(lmt->max_sng);
   lmt->min_sng=(char *)nco_free(lmt->min_sng);
-  lmt->mro_sng=(char *)nco_free(lmt->mro_sng);
+  lmt->ilv_sng=(char *)nco_free(lmt->ilv_sng);
 
   lmt->rbs_sng=(char *)nco_free(lmt->rbs_sng);   
   lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
@@ -275,7 +279,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
       } /* end if */
       if(lmt[idx]->srd_sng) lmt_dim->srd_sng=(char *)strdup(lmt[idx]->srd_sng); else lmt_dim->srd_sng=NULL;
       if(lmt[idx]->ssc_sng) lmt_dim->ssc_sng=(char *)strdup(lmt[idx]->ssc_sng); else lmt_dim->ssc_sng=NULL;
-      if(lmt[idx]->mro_sng) lmt_dim->mro_sng=(char *)strdup(lmt[idx]->mro_sng); else lmt_dim->mro_sng=NULL;
+      if(lmt[idx]->ilv_sng) lmt_dim->ilv_sng=(char *)strdup(lmt[idx]->ilv_sng); else lmt_dim->ilv_sng=NULL;
       lmt_dim->nm=(char *)strdup(lmt[idx]->nm);
       break;
     } /* end if */
@@ -299,7 +303,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
     lmt_dim->nm=(char *)strdup(dmn_nm);
     lmt_dim->srd_sng=NULL;
     lmt_dim->ssc_sng=NULL;
-    lmt_dim->mro_sng=NULL;
+    lmt_dim->ilv_sng=NULL;
     /* Generate min and max strings to look as if user had specified them
        Adjust accordingly if FORTRAN_IDX_CNV was requested for other dimensions
        These sizes will later be decremented in nco_lmt_evl() where all information
@@ -419,7 +423,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     lmt[idx]->max_sng=NULL;
     lmt[idx]->srd_sng=NULL;
     lmt[idx]->ssc_sng=NULL;
-    lmt[idx]->mro_sng=NULL;
+    lmt[idx]->ilv_sng=NULL;
     /* rec_skp_ntl_spf is used for record dimension in multi-file operators */
     lmt[idx]->rec_skp_ntl_spf=0L; /* Number of records skipped in initial superfluous files */
 
@@ -431,7 +435,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     if(arg_nbr > 2) lmt[idx]->max_sng=arg_lst[2]; 
     if(arg_nbr > 3) lmt[idx]->srd_sng=arg_lst[3];
     if(arg_nbr > 4) lmt[idx]->ssc_sng=arg_lst[4];
-    if(arg_nbr > 5) lmt[idx]->mro_sng=arg_lst[5];
+    if(arg_nbr > 5) lmt[idx]->ilv_sng=arg_lst[5];
 
     if(lmt[idx]->max_sng == NULL) lmt[idx]->is_usr_spc_max=False; else lmt[idx]->is_usr_spc_max=True;
     if(lmt[idx]->min_sng == NULL) lmt[idx]->is_usr_spc_min=False; else lmt[idx]->is_usr_spc_min=True;
@@ -541,7 +545,7 @@ nco_prn_lmt                    /* [fnc] Print limit information */
   (void)fprintf(stderr,"max_sng = %s\n",lmt.max_sng == NULL ? "NULL" : lmt.max_sng);
   (void)fprintf(stderr,"srd_sng = %s\n",lmt.srd_sng == NULL ? "NULL" : lmt.srd_sng);
   (void)fprintf(stderr,"ssc_sng = %s\n",lmt.ssc_sng == NULL ? "NULL" : lmt.ssc_sng);
-  (void)fprintf(stderr,"mro_sng = %s\n",lmt.ssc_sng == NULL ? "NULL" : lmt.mro_sng);
+  (void)fprintf(stderr,"ilv_sng = %s\n",lmt.ssc_sng == NULL ? "NULL" : lmt.ilv_sng);
   (void)fprintf(stderr,"monotonic_direction = %s\n",(monotonic_direction == not_checked) ? "not checked" : (monotonic_direction == increasing) ? "increasing" : "decreasing");
   (void)fprintf(stderr,"min_val = %g\n",lmt.min_val);
   (void)fprintf(stderr,"max_val = %g\n",lmt.max_val);
@@ -552,6 +556,7 @@ nco_prn_lmt                    /* [fnc] Print limit information */
   (void)fprintf(stderr,"cnt = %li\n",lmt.cnt);
   (void)fprintf(stderr,"srd = %li\n",lmt.srd);
   (void)fprintf(stderr,"ssc = %li\n",lmt.ssc);
+  (void)fprintf(stderr,"ilv = %li\n",lmt.ilv);
   (void)fprintf(stderr,"WRP = %s\n",lmt.srt > lmt.end ? "YES" : "NO");
   (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
   (void)fprintf(stderr,"SSC = %s\n",lmt.ssc != 1L ? "YES" : "NO");
@@ -612,6 +617,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   lmt.min_val=0.0;
   lmt.ssc=1L;
   lmt.srd=1L;
+  lmt.ilv=1L;
   lmt.flg_input_complete=False;
 
   /* Get dimension ID from name */
@@ -691,23 +697,33 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* end ncra */
   } /* !lmt.ssc_sng */
 
-  if(lmt.mro_sng){
-    if(strcasecmp(lmt.mro_sng,"m")){
-      (void)fprintf(stdout,"%s: ERROR Requested MRO flag for %s, \"%s\", must be 'm' or 'M'\n",nco_prg_nm_get(),lmt.nm,lmt.mro_sng);
+  if(lmt.ilv_sng){
+    if(strchr(lmt.ilv_sng,'.') || strchr(lmt.ilv_sng,'e') || strchr(lmt.ilv_sng,'E') || strchr(lmt.ilv_sng,'d') || strchr(lmt.ilv_sng,'D')){
+      (void)fprintf(stdout,"%s: ERROR Requested interleave stride argument for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.ilv_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    lmt.flg_mro=True;
-  } /* !lmt.mro_sng */
+    lmt.ilv=strtol(lmt.ilv_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.ilv_sng,"strtol",sng_cnv_rcd);
+    if(lmt.ilv < 1L){
+      (void)fprintf(stdout,"%s: ERROR Interleave stride argument for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.ilv);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    if(nco_prg_id != ncra && nco_prg_id != ncrcat){
+      (void)fprintf(stdout,"%s: ERROR Interleave stride hypserslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* end ncra */
+    lmt.flg_ilv=True;
+  } /* !lmt.ilv_sng */
 
   /* In case flg_mro is set in ncra.c by --mro */
   if(lmt.flg_mro){
     if(nco_prg_id == ncrcat){
-      (void)fprintf(stdout,"%s: INFO Specifying Multi-Record Output (MRO) option ('m', 'M', or --mro) is redundant. MRO is always true for ncrcat.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: INFO Specifying Multi-Record Output (MRO) option (--mro) is redundant. MRO is always true for ncrcat.\n",nco_prg_nm_get());
     }else if(nco_prg_id != ncra){
-      (void)fprintf(stdout,"%s: ERROR Multi-Record Output (MRO) ('m', 'M', or --mro) is only valid for ncra.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Multi-Record Output (MRO) option (--mro) is only valid for ncra.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end else */
-  } /* !lmt.mro_sng */
+  } /* !lmt.flg_mro */
 
   /* If min_sng and max_sng are both NULL then set type to lmt_dmn_idx */
   if(lmt.min_sng == NULL && lmt.max_sng == NULL){
@@ -1093,16 +1109,34 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(lmt.min_idx < 0L) lmt.min_idx+=dmn_sz;
     if(lmt.max_idx < 0L) lmt.max_idx+=dmn_sz;
 
-    /* Exit if requested indices are always invalid for all operators... */
+    /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
+       Order and mutual-exclusivity of these conditions is important */
+    if(lmt.ilv > 1L && !lmt.ssc_sng && !lmt.srd_sng){
+      lmt.ssc=lmt.ilv;
+      lmt.srd=lmt.ssc;
+    }else if(lmt.ilv > 1L && !lmt.ssc_sng){
+      lmt.ssc=lmt.ilv;
+    }else if(lmt.ilv > 1L && !lmt.srd_sng){
+      lmt.srd=lmt.ssc;
+    }else if(lmt.ssc > 1L && !lmt.srd_sng){
+      lmt.srd=lmt.ssc;
+    } /* lmt.ilv */
+    if(lmt.ilv > 1L) lmt.flg_mro=True;
+
+    /* Exit if requested indices are invalid for all operators... */
     if(lmt.min_idx < 0L){
       msg_sng=strdup("Minimum index is too negative");
       NCO_SYNTAX_ERROR=True;
     }else if(lmt.max_idx < 0L){
       msg_sng=strdup("Maximum index is too negative");
       NCO_SYNTAX_ERROR=True;
-    }else if(lmt.ssc > lmt.srd){
-      (void)fprintf(stdout,"%s: ERROR User-specified subcycle exceeds stride for %s: %li > %li\n",nco_prg_nm_get(),lmt.nm,lmt.ssc,lmt.srd);
+    }else if(lmt.ilv > 1L && lmt.ssc > lmt.srd){
+      (void)fprintf(stdout,"%s: ERROR User-specified subcycle exceeds stride for dimension %s: %li > %li\n",nco_prg_nm_get(),lmt.nm,lmt.ssc,lmt.srd);
       msg_sng=strdup("Subcycle exceeds stride");
+      NCO_SYNTAX_ERROR=True;
+    }else if(lmt.ssc % lmt.ilv != 0L){
+      (void)fprintf(stdout,"%s: ERROR Interleave stride must evenly divide group size for dimension %s: %li %% %li = %li != 0\n",nco_prg_nm_get(),lmt.nm,lmt.ssc,lmt.ilv,lmt.ssc%lmt.ilv);
+      msg_sng=strdup("Interleave stride does not evenly divide sub-cycle length");
       NCO_SYNTAX_ERROR=True;
     }else if(!rec_dmn_and_mfo && lmt.min_idx >= dmn_sz){
       msg_sng=strdup("Minimum index greater than size in non-MFO");
@@ -1221,15 +1255,19 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* !rec_dmn_and_mfo */      
 
   /* Compute cnt from srt, end, and srd
-     This is fine for multi-file record dimensions since those operators read-in one
-     record at a time and thus never actually use lmt.cnt for record dimension. */
+     This is misleading though fine for multi-file record dimensions since those operators always
+     read-in and write-out single records and thus never actually use lmt.cnt for record dimension. */
   if(lmt.srd == 1L){
     if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=dmn_sz-lmt.srt+lmt.end+1L;
   }else{
     if(lmt.flg_ilv){
-      /* All records between srt and end ILV files are valid though not sequential
-	 There are no gaps because consecutive groups are interleaved 
-	 Hence the effective "stride", in terms of the cnt measure, is always 1L for ILV */
+      /* In ILV mode in valid ILV files (which are evenly aligned so groups never cross files)
+	 all records between srt and end for one sub-cycle are valid though not sequential
+	 There are no gaps between valid records in a sub-cycle and consecutive groups are interleaved 
+	 Hence the effective "stride", in terms of the cnt measure, is always 1L for ILV
+	 When stride exceeds one then sub-cycles have intervening space
+	 Remember, though, that cnt here is diagnostic and is not used in ncra, ncrcat
+	 20200721: diagnostic cnt here should be modified to account for ssc stride */
       if(lmt.srt <= lmt.end) lmt.cnt=lmt.end-lmt.srt+1L; else lmt.cnt=1L+(dmn_sz-lmt.srt)+lmt.end;
     }else{ /* !lmt.flg_ilv */
       if(lmt.srt <= lmt.end) lmt.cnt=1L+(lmt.end-lmt.srt)/lmt.srd; else lmt.cnt=1L+((dmn_sz-lmt.srt)+lmt.end)/lmt.srd;
@@ -1305,7 +1343,8 @@ no_data_ok: /* end goto */
   /* Accumulate count of records in all opened files, including this one
      Increment here at end so this structure member includes records from current file 
      only at end of this routine, where it can only be used diagnostically
-     NB: Location of this augmentation is important! Moving it would have side-effects! */
+     NB: Location of this augmentation is important! Moving it would have side-effects! 
+     Consult CSZ before doing so */
   lmt.rec_in_cml+=dmn_sz;
 
   /* Index juggling only used for interleaved option in ncra/ncrcat */
@@ -1317,9 +1356,18 @@ no_data_ok: /* end goto */
        That way lmt.end would truly reflect index of last record desired in file
        However, SSC works well with current convention so stick with it to leverage SSC for ILV
        This implies additional condition that 
-       ssc*srd == end - srt + 1L
-       We thus prescribe SSC for ILV based on srt, end, and srd */
-    lmt.ssc=(lmt.end+lmt.srd)/lmt.srd;
+       ssc*srd == end - srt + 1L (Old API)
+       We thus prescribe SSC for ILV based on srt, end, and srd:
+       lmt.ssc=(lmt.end+lmt.srd)/lmt.srd;
+       20200721: New API 
+       --ilv,ilv -d time,srt,end,srd,ssc
+       Hence sets ilv separately from srd, and ssc must be set explicitly and consistently
+       Rules:
+       1.             ssc % ilv = 0 # Interleave stride must evenly divide group size
+       Old Rule: This rule was imposed in old API, though is unnecessary in new API
+       Actual new rule is much more relaxed: sub-cycles cannot cross between files
+       2. (end - srt + 1) % ssc = 0 # Group size must evenly divide file size when ilv > 1 */
+    assert(lmt.ssc % lmt.ilv == 0L);
   } /* !lmt.flg_ilv */
 
   if(nco_dbg_lvl_get() >= nco_dbg_std && lmt.flg_ilv){
@@ -1492,23 +1540,33 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     } /* end ncra */
   } /* !lmt.ssc_sng */
 
-  if(lmt.mro_sng){
-    if(strcasecmp(lmt.mro_sng,"m")){
-      (void)fprintf(stdout,"%s: ERROR Requested MRO flag for %s, \"%s\", must be 'm' or 'M'\n",nco_prg_nm_get(),lmt.nm,lmt.mro_sng);
+  if(lmt.ilv_sng){
+    if(strchr(lmt.ilv_sng,'.') || strchr(lmt.ilv_sng,'e') || strchr(lmt.ilv_sng,'E') || strchr(lmt.ilv_sng,'d') || strchr(lmt.ilv_sng,'D')){
+      (void)fprintf(stdout,"%s: ERROR Requested interleave stride argument for %s, %s, must be integer\n",nco_prg_nm_get(),lmt.nm,lmt.ilv_sng);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    lmt.flg_mro=True;
-  } /* !lmt.mro_sng */
+    lmt.ilv=strtol(lmt.ilv_sng,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(lmt.ilv_sng,"strtol",sng_cnv_rcd);
+    if(lmt.ilv < 1L){
+      (void)fprintf(stdout,"%s: ERROR Interleave stride argument for %s is %li but must be > 0\n",nco_prg_nm_get(),lmt.nm,lmt.ilv);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    if(nco_prg_id != ncra && nco_prg_id != ncrcat){
+      (void)fprintf(stdout,"%s: ERROR Interleave stride hypserslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* end ncra */
+    lmt.flg_ilv=True;
+  } /* !lmt.ilv_sng */
 
   /* In case flg_mro is set in ncra.c by --mro */
   if(lmt.flg_mro){
     if(nco_prg_id == ncrcat){
-      (void)fprintf(stdout,"%s: INFO Specifying Multi-Record Output (MRO) option ('m', 'M', or --mro) is redundant. MRO is always true for ncrcat.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: INFO Specifying Multi-Record Output (MRO) option (--mro) is redundant. MRO is always true for ncrcat.\n",nco_prg_nm_get());
     }else if(nco_prg_id != ncra){
-      (void)fprintf(stdout,"%s: ERROR Multi-Record Output (MRO) ('m', 'M', or --mro) is only valid for ncra.\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Multi-Record Output (MRO) option (--mro) is only valid for ncra.\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end else */
-  } /* !lmt.mro_sng */
+  } /* !lmt.flg_mro */
 
   /* If min_sng and max_sng are both NULL then set type to lmt_dmn_idx */
   if(lmt.min_sng == NULL && lmt.max_sng == NULL){
@@ -1903,25 +1961,39 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     if(lmt.min_idx < 0L) lmt.min_idx+=dmn_sz;
     if(lmt.max_idx < 0L) lmt.max_idx+=dmn_sz;
 
-    /* Exit if requested indices are always invalid for all operators... */
+    /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
+       Order and mutual-exclusivity of these conditions is important */
+    if(lmt.ilv > 1L && !lmt.ssc_sng && !lmt.srd_sng){
+      lmt.ssc=lmt.ilv;
+      lmt.srd=lmt.ssc;
+    }else if(lmt.ilv > 1L && !lmt.ssc_sng){
+      lmt.ssc=lmt.ilv;
+    }else if(lmt.ilv > 1L && !lmt.srd_sng){
+      lmt.srd=lmt.ssc;
+    }else if(lmt.ssc > 1L && !lmt.srd_sng){
+      lmt.srd=lmt.ssc;
+    } /* lmt.ilv */
+    if(lmt.ilv > 1L) lmt.flg_mro=True;
+
+    /* Exit if requested indices are invalid for all operators... */
     if(lmt.min_idx < 0L){
       msg_sng=strdup("Minimum index is too negative");
       NCO_SYNTAX_ERROR=True;
     }else if(lmt.max_idx < 0L){
       msg_sng=strdup("Maximum index is too negative");
       NCO_SYNTAX_ERROR=True;
-    }else if(lmt.ssc > lmt.srd){
-      (void)fprintf(stdout,"%s: ERROR User-specified subcycle exceeds stride for %s: %li > %li\n",nco_prg_nm_get(),lmt.nm,lmt.ssc,lmt.srd);
+    }else if(lmt.ilv > 1L && lmt.ssc > lmt.srd){
+      (void)fprintf(stdout,"%s: ERROR User-specified subcycle exceeds stride for dimension %s: %li > %li\n",nco_prg_nm_get(),lmt.nm,lmt.ssc,lmt.srd);
       msg_sng=strdup("Subcycle exceeds stride");
+      NCO_SYNTAX_ERROR=True;
+    }else if(lmt.ssc % lmt.ilv != 0L){
+      (void)fprintf(stdout,"%s: ERROR Interleave stride must evenly divide group size for dimension %s: %li %% %li = %li != 0\n",nco_prg_nm_get(),lmt.nm,lmt.ssc,lmt.ilv,lmt.ssc%lmt.ilv);
+      msg_sng=strdup("Interleave stride does not evenly divide sub-cycle length");
       NCO_SYNTAX_ERROR=True;
     }else if(!rec_dmn_and_mfo && lmt.min_idx >= dmn_sz){
       msg_sng=strdup("Minimum index greater than size in non-MFO");
       NCO_SYNTAX_ERROR=True;
       (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",nco_prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
-    }else if(lmt.max_idx >= dmn_sz && nco_prg_id == ncks){
-      /* 20130203 pvn Check for -d max > dimension size; check fortran case; check multi file operators */
-      msg_sng=strdup("ERROR: Maximum index exceeds dimension size");
-      NCO_SYNTAX_ERROR=True;
     } /* end if impossible indices */
 
     if(NCO_SYNTAX_ERROR){

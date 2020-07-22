@@ -5963,11 +5963,12 @@ A separate option, @samp{--mro}, instructs @command{ncra} to output
 its results from each sub-group, and to produce a @dfn{Multi-Record Output}
 (@acronym{MRO}) file rather than a @dfn{Single-Record Output}
 (@acronym{SRO}) file. 
-Unless @samp{--mro} is specified, @command{ncra} collects together all
-the sub-groups, operates on their ensemble, and produces a single
+Unless Multi-Record-Output is indicated (either with @samp{--mro} or
+implicitly, as with interleave-mode), @command{ncra} collects together
+all sub-groups, operates on their ensemble, and produces a single
 output record. 
-The addition of @samp{--mro} to the above example causes @command{ncra}
-to archive all (150) annual summertime means to one file:
+Adding @samp{--mro} to the above example causes @command{ncra} to
+archive all (150) annual summertime means to one file: 
 @example
 # Step 1: Archive all 150 summertime means in one file
 ncra --mro -O -F -d time,6,,12,3 -n 150,4,1 1850.nc 1850_2009_JJA.nc
@@ -23552,8 +23553,8 @@ operations.
 @command{ncra} includes the powerful subcycle and multi-record output
 features (@pxref{Subcycle}). 
 This example uses these features to compute and output winter
-(@acronym{DJF}) averages for all winter seasons beginning with year 1990 
-and continuing to the end of the input file:
+(@acronym{DJF}) averages for all winter seasons beginning with year
+1990 and continuing to the end of the input file:
 @example
 ncra -O --mro -d time,"1990-12-01",,12,3 in.nc out.nc
 @end example
@@ -28195,23 +28196,31 @@ ncra -O --mro -d time,"1990-12-01",,12,3 in.nc out.nc
 @example
 ncra -O --mro -d time,,,12,12 in.nc out.nc
 @end example
-Here we use the subcycle feature (i.e., the number after the fourth comma: @samp{3} in the seasonal example and the second @samp{12} in the annual example) 
-to retrieve groups of records separated by regular intervals (@pxref{Subcycle}).
-The option @option{--mro} switches @command{ncra} to produce a Multi-Record Output instead of a single-record output.
-For example, assume @var{snd} is a 3D array with dimensions @code{time} * @code{latitude} * @code{longitude} 
-and @code{time} includes every month from Jan. 1990 to Dec. 2005, 192 months as total, which are 16 years.
-Let's look at the following two command lines.
+Here we use the subcycle feature (i.e., the number after the fourth
+comma: @samp{3} in the seasonal example and the second @samp{12} in
+the annual example) to retrieve groups of records separated by regular
+intervals (@pxref{Subcycle}).
+The option @option{--mro} switches @command{ncra} to produce a
+Multi-Record Output instead of a single-record output. 
+For example, assume @var{snd} is a 3D array with dimensions
+@code{time} * @code{latitude} * @code{longitude} and @code{time}
+includes every month from Jan. 1990 to Dec. 2005, 192 months as total, 
+which are 16 years. 
+Consider the following two command lines:
 @example
 ncra --mro -v snd -d time,"1990-12-01",,12,3 in.nc out_mro.nc
 ncra -v snd -d time,"1990-12-01",,12,3 in.nc out_sro.nc
 @end example
-In the first output file, @file{out_mro.nc}, @var{snd} is still a 3D array with dimensions @code{time} * @code{latitude} * @code{longitude},
+In the first output file, @file{out_mro.nc}, @var{snd} is still a 3D
+array with dimensions @code{time} * @code{latitude} * @code{longitude}, 
 but the length of @code{time} now is 16, meaning 16 winters.
-In the second output file, @file{out_sro.nc}, the length of @code{time} is @w{only 1}.
+In the second output file, @file{out_sro.nc}, the length of
+@code{time} is @w{only 1}. 
 It is now the average of all the 16 winters.
 
-when using @samp{-d @var{dim},min[,max]} to specify the hyperslabs,
-you can leave it blank if you want to include the minimum or the maximum of the data, like we did above.
+When using @samp{-d @var{dim},min[,max]} to specify the hyperslabs, 
+you can leave it blank if you want to include the minimum or the
+maximum of the data, like we did above. 
 
 @node One time point one file, Multiple files with multiple time points, Monthly data in one file, Quick Start
 @section One time point one file

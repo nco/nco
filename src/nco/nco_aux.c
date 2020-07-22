@@ -230,11 +230,11 @@ nco_aux_evl
   lmt_tpl.is_usr_spc_min=True; 
   lmt_tpl.is_usr_spc_max=True;
   lmt_tpl.flg_mro=False;
+  lmt_tpl.flg_ilv=False;
   lmt_tpl.srd_sng=(char *)strdup("1");
   lmt_tpl.ssc_sng=NULL;
   lmt_tpl.ssc_sng=NULL;
-  lmt_tpl.mro_sng=NULL;
-  lmt_tpl.mro_sng=NULL;
+  lmt_tpl.ilv_sng=NULL;
   lmt_tpl.is_rec_dmn=0;
   lmt_tpl.id=dmn_id;
   lmt_tpl.min_idx=0;
@@ -244,6 +244,7 @@ nco_aux_evl
   lmt_tpl.cnt=0L;
   lmt_tpl.srd=1L;
   lmt_tpl.ssc=1L;
+  lmt_tpl.ilv=1L;
 
   /* malloc() lmt structure to return
      No way to know exact size in advance though maximum is about dim_sz/2 */
@@ -453,11 +454,11 @@ nco_aux_evl_trv
   lmt_tpl.is_usr_spc_min=True; 
   lmt_tpl.is_usr_spc_max=True;
   lmt_tpl.flg_mro=False;
+  lmt_tpl.flg_ilv=False;
   lmt_tpl.srd_sng=(char *)strdup("1");
   lmt_tpl.ssc_sng=NULL;
   lmt_tpl.ssc_sng=NULL;
-  lmt_tpl.mro_sng=NULL;
-  lmt_tpl.mro_sng=NULL;
+  lmt_tpl.ilv_sng=NULL;
   lmt_tpl.is_rec_dmn=0;
   lmt_tpl.id=dmn_id;
   lmt_tpl.min_idx=0;
@@ -467,6 +468,7 @@ nco_aux_evl_trv
   lmt_tpl.cnt=0L;
   lmt_tpl.srd=1L;
   lmt_tpl.ssc=1L;
+  lmt_tpl.ilv=1L;
 
   /* malloc() lmt structure to return
      No way to know exact size in advance though maximum is about dim_sz/2 */

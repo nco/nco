@@ -199,7 +199,6 @@ main(int argc,char **argv)
   int grp_out_id;    /* [ID] Group ID (output) */
   int idx=int_CEWI;
   int idx_rec=0; /* [idx] Index that iterates over number of record dimensions */
-  int idx_ilv=0; /* [idx] Index that iterates over interleaved "dimension" */
   int in_id;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int log_lvl=0; /* [enm] netCDF library debugging verbosity [0..5] */
@@ -227,10 +226,12 @@ main(int argc,char **argv)
 
   long idx_rec_crr_in; /* [idx] Index of current record in current input file */
   long *idx_rec_out=NULL; /* [idx] Index of current record in output file (0 is first, ...) */
+  long ilv_srd; /* [idx] Interleave stride */
   long *rec_in_cml=NULL; /* [nbr] Number of records, read or not, in all processed files */
   long *rec_usd_cml=NULL; /* [nbr] Cumulative number of input records used (catenated by ncrcat or operated on by ncra) */
   long rec_dmn_sz=0L; /* [idx] Size of record dimension, if any, in current file (increments by srd) */
   long rec_rmn_prv_ssc=0L; /* [idx] Records remaining to be read in current subcycle group */
+  long rec_rmn_prv_ilv=0L; /* [idx] Records remaining to be read in current interleaved index */
 
   md5_sct *md5=NULL; /* [sct] MD5 configuration */
 
@@ -351,8 +352,6 @@ main(int argc,char **argv)
     {"help",no_argument,0,0},
     {"hlp",no_argument,0,0},
     {"hpss_try",no_argument,0,0}, /* [flg] Search HPSS for unfound files */
-    {"ilv",no_argument,0,0}, /* [flg] Interleave Output */
-    {"interleave_output",no_argument,0,0}, /* [flg] Interleave Output */
     {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"mro",no_argument,0,0}, /* [flg] Multi-Record Output */
@@ -400,6 +399,8 @@ main(int argc,char **argv)
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"hdr_pad",required_argument,0,0},
     {"header_pad",required_argument,0,0},
+    {"ilv_srd",required_argument,0,0}, /* [flg] Interleave stride */
+    {"interleave_srd",required_argument,0,0}, /* [flg] Interleave stride */
     {"log_lvl",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
     {"log_level",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
     {"ppc",required_argument,0,0}, /* [nbr] Precision-preserving compression, i.e., number of total or decimal significant digits */
@@ -570,7 +571,15 @@ main(int argc,char **argv)
 	nco_exit(EXIT_SUCCESS);
       } /* endif "help" */
       if(!strcmp(opt_crr,"hpss_try")) HPSS_TRY=True; /* [flg] Search HPSS for unfound files */
-      if(!strcmp(opt_crr,"ilv") || !strcmp(opt_crr,"interleave_output")) FLG_ILV=FLG_MRO=True; /* [flg] Interleave Output */
+      if(!strcmp(opt_crr,"ilv_srd") || !strcmp(opt_crr,"interleave_stride")){
+        ilv_srd=strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+        if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
+	if(ilv_srd < 1L){
+	  (void)fprintf(stdout,"%s: ERROR Interleave stride argument is %li but must be > 0\n",nco_prg_nm_get(),ilv_srd);
+	  nco_exit(EXIT_FAILURE);
+	} /* end if */
+	FLG_ILV=FLG_MRO=True; /* [flg] Interleave stride */
+      } /* !ilv_srd */
       if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){
 	log_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtol",sng_cnv_rcd);
@@ -1240,18 +1249,22 @@ main(int argc,char **argv)
         char ***rgd_arr_climo_lst=NULL_CEWI;
         int rgd_arr_bnds_nbr=0;
         int rgd_arr_climo_nbr=0;
+        int ilv_per_ssc; /* [nbr] Number of interleaves per sub-cycle */
 
         /* Obtain group ID */
         (void)nco_inq_grp_full_ncid(in_id,lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
 
+        /* Fill record array */
         if(FLG_ILV){
 	  lmt_rec[idx_rec]->flg_ilv=True;
-	  /* Assume that input files in interleaved mode align evenly on dimension boundaries
-	     Therefore re-set interleaved dimension counter at start of each file */
-	  idx_ilv=0L;
+	  lmt_rec[idx_rec]->ilv=ilv_srd;
 	} /* !FLG_ILV */
-        /* Fill record array */
         (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
+	/* ILV and MRO may be set in nco_lmt_evl(), and MRO may also be set on command-line */
+	FLG_ILV=lmt_rec[idx_rec]->flg_ilv;
+	FLG_MRO=lmt_rec[idx_rec]->flg_mro;
+        if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
+        ilv_per_ssc=lmt_rec[idx_rec]->ssc/lmt_rec[idx_rec]->ilv; /* Sub-cycles never cross file boundaries in interleave-compliant files */
 
         if(lmt_rec[idx_rec]->is_rec_dmn){
           int crd_id;
@@ -1281,9 +1294,6 @@ main(int argc,char **argv)
 	} /* !REC_APN */
 
         if(nco_dbg_lvl_get() >= nco_dbg_crr)  (void)fprintf(fp_stdout,"%s: DEBUG1 record %d id %d name %s rec_dmn_sz %ld units=\"%s\"\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz,fl_udu_sng);
-        /* Two distinct ways to specify MRO are --mro and -d dmn,srt,end,srd,ssc,[m,M] */
-        if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
-        if(lmt_rec[idx_rec]->flg_mro) FLG_MRO=True;
 
         /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
         if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
@@ -1298,6 +1308,7 @@ main(int argc,char **argv)
 
         rec_dmn_sz=lmt_rec[idx_rec]->rec_dmn_sz;
         rec_rmn_prv_ssc=lmt_rec[idx_rec]->rec_rmn_prv_ssc; /* Local copy may be decremented later */
+        rec_rmn_prv_ilv=ilv_per_ssc; /* Decrement once per interleave (i.e., every ilv elements) */
         idx_rec_crr_in= (rec_rmn_prv_ssc > 0L) ? 0L : lmt_rec[idx_rec]->srt;
 
         /* Master while loop over records in current file */
@@ -1313,6 +1324,7 @@ main(int argc,char **argv)
 	     lmt_rec->rec_rmn_prv_ssc: Structure member, at start of this while loop, contains records remaining-to-be-read to complete subcycle group from previous file. Structure member remains constant until next file is read.
 	     rec_in_cml: Cumulative number of records, read or not, in all files opened so far. Similar to lmt_rec->rec_in_cml but augmented at end of record loop, rather than prior to record loop.
 	     rec_rmn_prv_ssc: Local copy initialized from lmt_rec structure member begins with above, and then is set to and tracks number of records remaining remaining in current group. This means it is decremented from ssc_nbr->0 for each group contained in current file.
+	     rec_rmn_prv_ilv: Tracks number of records remaining remaining in current interleaved index. This means it is decremented from ssc/ilv->0 a total of ssc_nbr/ilv_nbr times for each ssc in current file.
 	     rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
 
 	     Flag juggling:
@@ -1325,12 +1337,12 @@ main(int argc,char **argv)
           if(rec_rmn_prv_ssc == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;
           /* Each group comprises SSC records */
           if(REC_FRS_GRP) rec_rmn_prv_ssc=lmt_rec[idx_rec]->ssc;
-          /* Final record triggers normalization regardless of its location within group */
-          if(!FLG_ILV && fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
           /* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
           if(rec_rmn_prv_ssc == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
+          /* Final record triggers normalization regardless of its location within group */
+          if(!FLG_ILV && fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
 
-          if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG MRO=%s, ssc=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->ssc,idx_rec_crr_in,rec_rmn_prv_ssc,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
+          if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG2 MRO=%s, ssc=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->ssc,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
 
 	  /* Retrieve this record of weight variable, if any */
 	  if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs))
@@ -1557,23 +1569,49 @@ main(int argc,char **argv)
 
           /* Finally, set index for next record or get outta' Dodge */
           if(REC_SRD_LST){
+	    /* Next stride or sub-cycle is not within current file */
 	    if(FLG_ILV){
-	      /* Current interleaved index complete, start next interleaved index */
-	      --rec_rmn_prv_ssc;
-	      idx_ilv++;
-	      if(idx_ilv < lmt_rec[idx_rec]->srd) idx_rec_crr_in=lmt_rec[idx_rec]->srt+idx_ilv; else idx_rec_crr_in++;
-	    }else{
+	      if(--rec_rmn_prv_ssc > 0L){
+		/* Next record is within current sub-cycle */
+		if(--rec_rmn_prv_ilv > 0L){
+		  /* Next record is within current interleave so augment record index by interleave stride */
+		  idx_rec_crr_in+=lmt_rec[idx_rec]->ilv;
+		}else{
+		  /* Otherwise reset record index to start next interleave and reset interleave counter */
+		  idx_rec_crr_in+=1L-(ilv_per_ssc-1L)*lmt_rec[idx_rec]->ilv;
+		  rec_rmn_prv_ilv=ilv_per_ssc;
+		} /* !rec_rmn_prv_ilv */
+	      }else{ /* !rec_rmn_prv_ssc */
+		/* Finished current sub-cycle so break current while loop and jump to next file */
+		break;
+	      } /* !rec_rmn_prv_ssc */
+	    }else{ /* !FLG_ILV */
 	      /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
 	      long end_max_crr;
 	      end_max_crr=min_lng(lmt_rec[idx_rec]->idx_end_max_abs-rec_in_cml[idx_rec],min_lng(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L));
 	      if(--rec_rmn_prv_ssc > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
 	    } /* !FLG_ILV */
           }else{ /* !REC_SRD_LST */
+	    /* Next stride or sub-cycle is within current file */
 	    if(FLG_ILV){
-	      /* Next stride is within current file so proceed */
-	      --rec_rmn_prv_ssc;
-	      idx_rec_crr_in+=lmt_rec[idx_rec]->srd;
+	      if(--rec_rmn_prv_ssc > 0L){
+		/* Next record is within current sub-cycle */
+		if(--rec_rmn_prv_ilv > 0L){
+		  /* Next record is within current interleave so augment record index by interleave stride */
+		  idx_rec_crr_in+=lmt_rec[idx_rec]->ilv;
+		}else{
+		  /* Otherwise reset record index to start next interleave and reset interleave counter */
+		  idx_rec_crr_in+=1L-(ilv_per_ssc-1L)*lmt_rec[idx_rec]->ilv;
+		  rec_rmn_prv_ilv=ilv_per_ssc;
+		} /* !rec_rmn_prv_ilv */
+	      }else{
+		/* Finished current sub-cycle so hop to next sub-cycle within file */
+		idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
+		/* Reset interleave counter */
+		rec_rmn_prv_ilv=ilv_per_ssc;
+	      } /* !rec_rmn_prv_ssc */
 	    }else{ /* !FLG_ILV */
+	      /* Augment index by one within sub-cycles or hop to next sub-cycle within file  */
 	      if(--rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
 	    } /* !FLG_ILV */
 	  } /* !REC_SRD_LST */
