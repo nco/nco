@@ -1111,17 +1111,18 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 
     /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
        Order and mutual-exclusivity of these conditions is important */
-    if(lmt.ilv > 1L && !lmt.ssc_sng && !lmt.srd_sng){
+    if(lmt.ilv_sng && !lmt.ssc_sng && !lmt.srd_sng){
       lmt.ssc=lmt.ilv;
       lmt.srd=lmt.ssc;
-    }else if(lmt.ilv > 1L && !lmt.ssc_sng){
+    }else if(lmt.ilv_sng && !lmt.ssc_sng){
       lmt.ssc=lmt.ilv;
-    }else if(lmt.ilv > 1L && !lmt.srd_sng){
+    }else if(lmt.ilv_sng && !lmt.srd_sng){
       lmt.srd=lmt.ssc;
-    }else if(lmt.ssc > 1L && !lmt.srd_sng){
+    }else if(lmt.ssc_sng && !lmt.srd_sng){
       lmt.srd=lmt.ssc;
     } /* lmt.ilv */
-    if(lmt.ilv > 1L) lmt.flg_mro=True;
+    /* Set MRO whenever interleave is explicitly requested */
+    if(lmt.ilv_sng) lmt.flg_mro=True;
 
     /* Exit if requested indices are invalid for all operators... */
     if(lmt.min_idx < 0L){
@@ -1963,17 +1964,18 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
     /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
        Order and mutual-exclusivity of these conditions is important */
-    if(lmt.ilv > 1L && !lmt.ssc_sng && !lmt.srd_sng){
+    if(lmt.ilv_sng && !lmt.ssc_sng && !lmt.srd_sng){
       lmt.ssc=lmt.ilv;
       lmt.srd=lmt.ssc;
-    }else if(lmt.ilv > 1L && !lmt.ssc_sng){
+    }else if(lmt.ilv_sng && !lmt.ssc_sng){
       lmt.ssc=lmt.ilv;
-    }else if(lmt.ilv > 1L && !lmt.srd_sng){
+    }else if(lmt.ilv_sng && !lmt.srd_sng){
       lmt.srd=lmt.ssc;
-    }else if(lmt.ssc > 1L && !lmt.srd_sng){
+    }else if(lmt.ssc_sng && !lmt.srd_sng){
       lmt.srd=lmt.ssc;
     } /* lmt.ilv */
-    if(lmt.ilv > 1L) lmt.flg_mro=True;
+    /* Set MRO whenever interleave is explicitly requested */
+    if(lmt.ilv_sng) lmt.flg_mro=True;
 
     /* Exit if requested indices are invalid for all operators... */
     if(lmt.min_idx < 0L){

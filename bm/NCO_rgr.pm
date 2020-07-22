@@ -2820,10 +2820,10 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 	
 #ncks #102
 # Test NSD compression rounding to three significant digits
-# ncks -4 -O -C -v ppc_big,ppc_dbl --ppc ppc_big,ppc_dbl=3 ~/nco/data/in.nc ~/foo.nc
+# ncks -4 -O -C --baa=0 -v ppc_big,ppc_dbl --ppc ppc_big,ppc_dbl=3 ~/nco/data/in.nc ~/foo.nc
 # ncks -H --trd -d time,5 -s %g -v ppc_big ~/foo.nc
     $dsc_sng="Test NSD compression rounding to three significant digits";
-    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C -v ppc_big,ppc_dbl --ppc ppc_big,ppc_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
+    $tst_cmd[0]="ncks -O $nco_D_flg -4 -C --baa=0 -v ppc_big,ppc_dbl --ppc ppc_big,ppc_dbl=3 $in_pth_arg in.nc %tmp_fl_00";
     $tst_cmd[1]="ncks -H --trd -d time,5 -s %g -v ppc_big %tmp_fl_00";
     $tst_cmd[2]="1235";
     $tst_cmd[3]="SS_OK";   

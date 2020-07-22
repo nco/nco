@@ -1,6 +1,6 @@
 2020-07-22  Charlie Zender  <zender@uci.edu>
 
-	* New interleave API works for ncrcat single and multiple files!
+	* New interleave API appears to work for ncrcat/ncra single and multiple files!
 
 2020-07-21  Charlie Zender  <zender@sastrugi.local>
 

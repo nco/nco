@@ -1261,8 +1261,9 @@ main(int argc,char **argv)
 	} /* !FLG_ILV */
         (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
 	/* ILV and MRO may be set in nco_lmt_evl(), and MRO may also be set on command-line */
+        if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
 	FLG_ILV=lmt_rec[idx_rec]->flg_ilv;
-	FLG_MRO=lmt_rec[idx_rec]->flg_mro;
+        if(FLG_ILV) FLG_MRO=lmt_rec[idx_rec]->flg_mro;
         if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
         ilv_per_ssc=lmt_rec[idx_rec]->ssc/lmt_rec[idx_rec]->ilv; /* Sub-cycles never cross file boundaries in interleave-compliant files */
 
@@ -1308,7 +1309,7 @@ main(int argc,char **argv)
 
         rec_dmn_sz=lmt_rec[idx_rec]->rec_dmn_sz;
         rec_rmn_prv_ssc=lmt_rec[idx_rec]->rec_rmn_prv_ssc; /* Local copy may be decremented later */
-        rec_rmn_prv_ilv=ilv_per_ssc; /* Decrement once per interleave (i.e., every ilv elements) */
+        rec_rmn_prv_ilv=0L; /* Sub-cycles not allowed to cross file boundaries in interleave mode */
         idx_rec_crr_in= (rec_rmn_prv_ssc > 0L) ? 0L : lmt_rec[idx_rec]->srt;
 
         /* Master while loop over records in current file */
@@ -1328,21 +1329,53 @@ main(int argc,char **argv)
 	     rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
 
 	     Flag juggling:
+	     When introduced in NCO 4.2.1 in 2012, "groups" and sub-cycles (née drn) were synonymous
+	     Groups are the vernacular for a collection of records to output (ncrcat) or reduce (ncra)
+	     NCO 4.9.4 in 2020 introduced interleaving, which alters the meaning of groups
+	     A "group" is now a set of records that ncra reduces/normalizes/outputs as a single record
+	     Thus groups and sub-cycles are still synonomous except in ncra in interleave mode
+	     In interleave mode, ncra reduces/normalizes/outputs ilv records per ssc (i.e., one output per ssc/ilv records)
+	     A non-interleaved group has ssc records, while an interleaved group has ssc/ilv records
+	     
+	     The relevant group flags REC_FRS_GRP and REC_LST_GRP are now context-sensitive:
+	     ncra re-initializes memory at the beginning, and reduces/normalizes/outputs data 
+	     at the end, respectively, of each group.
+	     In normal (non-interleave) mode, groups are sub-cycles of ssc records
+	     In interleave mode, the ilv groups per sub-cycle each contain ssc/ilv records
+	     In both normal and interleaved mode, REC_FRS_GRP/REC_LST_GRP are true for 
+	     first/last records in a group, respectively, and false otherwise
+
 	     REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with nces normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR.
 	     20200719: REC_LST_DSR is never set for FLG_ILV, since all input records are assumed to align with interleaved dimension, and normalization will always occur at a group ending */
 
+	  if(FLG_ILV){
+	    /* Even intra-ssc strides commence group beginnings */
+	    if(rec_rmn_prv_ilv == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;
+	  }else{
+	    /* Even inter-ssc strides commence group beginnings */
+	    if(rec_rmn_prv_ssc == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;
+	  } /* !FLG_ILV */
+
+          /* Reset interleaved group counter to ssc/ilv records */
+          if(rec_rmn_prv_ilv == 0L) rec_rmn_prv_ilv=ilv_per_ssc;
+
+          /* Reset sub-cycle counter to ssc records */
+          if(rec_rmn_prv_ssc == 0L) rec_rmn_prv_ssc=lmt_rec[idx_rec]->ssc;
+
+	  /* ncra reduction/normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
+	  if(FLG_ILV){
+	    if(rec_rmn_prv_ilv == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
+	  }else{
+	    if(rec_rmn_prv_ssc == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
+	  } /* !FLG_ILV */
+
           /* Last stride in file has distinct index-augmenting behavior */
           if(idx_rec_crr_in >= lmt_rec[idx_rec]->end) REC_SRD_LST=True; else REC_SRD_LST=False;
-          /* Even strides commence group beginnings */
-          if(rec_rmn_prv_ssc == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;
-          /* Each group comprises SSC records */
-          if(REC_FRS_GRP) rec_rmn_prv_ssc=lmt_rec[idx_rec]->ssc;
-          /* ncra normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
-          if(rec_rmn_prv_ssc == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
+
           /* Final record triggers normalization regardless of its location within group */
           if(!FLG_ILV && fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
 
-          if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG2 MRO=%s, ssc=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->ssc,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
+          if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG2 MRO=%s, ssc=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->ssc,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
 
 	  /* Retrieve this record of weight variable, if any */
 	  if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs))
@@ -1577,9 +1610,8 @@ main(int argc,char **argv)
 		  /* Next record is within current interleave so augment record index by interleave stride */
 		  idx_rec_crr_in+=lmt_rec[idx_rec]->ilv;
 		}else{
-		  /* Otherwise reset record index to start next interleave and reset interleave counter */
+		  /* Otherwise set record index to start next interleave */
 		  idx_rec_crr_in+=1L-(ilv_per_ssc-1L)*lmt_rec[idx_rec]->ilv;
-		  rec_rmn_prv_ilv=ilv_per_ssc;
 		} /* !rec_rmn_prv_ilv */
 	      }else{ /* !rec_rmn_prv_ssc */
 		/* Finished current sub-cycle so break current while loop and jump to next file */
@@ -1600,15 +1632,12 @@ main(int argc,char **argv)
 		  /* Next record is within current interleave so augment record index by interleave stride */
 		  idx_rec_crr_in+=lmt_rec[idx_rec]->ilv;
 		}else{
-		  /* Otherwise reset record index to start next interleave and reset interleave counter */
+		  /* Otherwise set record index to start next interleave */
 		  idx_rec_crr_in+=1L-(ilv_per_ssc-1L)*lmt_rec[idx_rec]->ilv;
-		  rec_rmn_prv_ilv=ilv_per_ssc;
 		} /* !rec_rmn_prv_ilv */
 	      }else{
 		/* Finished current sub-cycle so hop to next sub-cycle within file */
 		idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
-		/* Reset interleave counter */
-		rec_rmn_prv_ilv=ilv_per_ssc;
 	      } /* !rec_rmn_prv_ssc */
 	    }else{ /* !FLG_ILV */
 	      /* Augment index by one within sub-cycles or hop to next sub-cycle within file  */
