@@ -1,5 +1,11 @@
 2020-07-22  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.4-alpha07 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha07: Interleave';git push
+ 	git tag -a 4.9.4-alpha07 -m 'ncra/ncrcat: ILV API;ncks baa 5,6 = ppc bit round, half-shave;';git push --tags
+
+	* Update NSD=3 regression test to select Bit Grooming
+
 	* New interleave API appears to work for ncrcat/ncra single and multiple files!
 
 2020-07-21  Charlie Zender  <zender@sastrugi.local>
