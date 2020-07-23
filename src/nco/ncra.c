@@ -1255,13 +1255,12 @@ main(int argc,char **argv)
         (void)nco_inq_grp_full_ncid(in_id,lmt_rec[idx_rec]->grp_nm_fll,&grp_id);
 
         /* Fill record array */
-        if(FLG_ILV){
-	  lmt_rec[idx_rec]->flg_ilv=True;
-	  lmt_rec[idx_rec]->ilv=ilv_srd;
-	} /* !FLG_ILV */
+        //if(FLG_ILV){
+	//lmt_rec[idx_rec]->flg_ilv=True;
+	//lmt_rec[idx_rec]->ilv=ilv_srd;
+	//} /* !FLG_ILV */
         (void)nco_lmt_evl(grp_id,lmt_rec[idx_rec],rec_usd_cml[idx_rec],FORTRAN_IDX_CNV);
 	/* ILV and MRO may be set in nco_lmt_evl(), and MRO may also be set on command-line */
-        if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
 	FLG_ILV=lmt_rec[idx_rec]->flg_ilv;
         if(FLG_ILV) FLG_MRO=lmt_rec[idx_rec]->flg_mro;
         if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
@@ -1601,12 +1600,15 @@ main(int argc,char **argv)
           if(nco_dbg_lvl >= nco_dbg_var) (void)fprintf(fp_stderr,"\n");
 
           /* Finally, set index for next record or get outta' Dodge */
-          if(REC_SRD_LST){
+	  /* Decrement both counters for next record */
+	  rec_rmn_prv_ssc--;
+	  rec_rmn_prv_ilv--;
+	  if(REC_SRD_LST){
 	    /* Next stride or sub-cycle is not within current file */
 	    if(FLG_ILV){
-	      if(--rec_rmn_prv_ssc > 0L){
+	      if(rec_rmn_prv_ssc > 0L){
 		/* Next record is within current sub-cycle */
-		if(--rec_rmn_prv_ilv > 0L){
+		if(rec_rmn_prv_ilv > 0L){
 		  /* Next record is within current interleave so augment record index by interleave stride */
 		  idx_rec_crr_in+=lmt_rec[idx_rec]->ilv;
 		}else{
@@ -1621,14 +1623,14 @@ main(int argc,char **argv)
 	      /* Last index depends on whether user-specified end was exact, sloppy, or caused truncation */
 	      long end_max_crr;
 	      end_max_crr=min_lng(lmt_rec[idx_rec]->idx_end_max_abs-rec_in_cml[idx_rec],min_lng(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L));
-	      if(--rec_rmn_prv_ssc > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
+	      if(rec_rmn_prv_ssc > 0L && idx_rec_crr_in < end_max_crr) idx_rec_crr_in++; else break;
 	    } /* !FLG_ILV */
           }else{ /* !REC_SRD_LST */
 	    /* Next stride or sub-cycle is within current file */
 	    if(FLG_ILV){
-	      if(--rec_rmn_prv_ssc > 0L){
+	      if(rec_rmn_prv_ssc > 0L){
 		/* Next record is within current sub-cycle */
-		if(--rec_rmn_prv_ilv > 0L){
+		if(rec_rmn_prv_ilv > 0L){
 		  /* Next record is within current interleave so augment record index by interleave stride */
 		  idx_rec_crr_in+=lmt_rec[idx_rec]->ilv;
 		}else{
@@ -1641,7 +1643,7 @@ main(int argc,char **argv)
 	      } /* !rec_rmn_prv_ssc */
 	    }else{ /* !FLG_ILV */
 	      /* Augment index by one within sub-cycles or hop to next sub-cycle within file  */
-	      if(--rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
+	      if(rec_rmn_prv_ssc > 0L) idx_rec_crr_in++; else idx_rec_crr_in+=lmt_rec[idx_rec]->srd-lmt_rec[idx_rec]->ssc+1L;
 	    } /* !FLG_ILV */
 	  } /* !REC_SRD_LST */
 
