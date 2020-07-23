@@ -13,12 +13,12 @@
    20200403: Above description was true until today, when we removed the GSL-derived code */
 
 /* Usage:
-   #include "nco_gsl.h" *//* Missing value-aware GSL functions */
+   #include "nco_gsl.hh" *//* Missing value-aware GSL functions */
 
-#ifndef NCO_GSL_H
-#define NCO_GSL_H
+#ifndef NCO_GSL_HH
+#define NCO_GSL_HH
 
-#define ENABLE_NCO_GSL /* If disabled results should be the same as the gsl equivalent function; validation only */ 
+#define ENABLE_NCO_GSL /* If disabled results should be the same as the GSL equivalent function; validation only */ 
 
 #ifdef __cplusplus
 extern "C" {
@@ -78,4 +78,4 @@ nco_gsl_stats_covariance
 } /* end extern "C" */
 #endif /* __cplusplus */
 
-#endif /* NCO_GSL_H */
+#endif /* NCO_GSL_HH */

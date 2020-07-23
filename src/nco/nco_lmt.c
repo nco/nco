@@ -725,6 +725,21 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* end else */
   } /* !lmt.flg_mro */
 
+  /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
+     Order and mutual-exclusivity of these conditions is important */
+  if(lmt.ilv_sng && !lmt.ssc_sng && !lmt.srd_sng){
+    lmt.ssc=lmt.ilv;
+    lmt.srd=lmt.ssc;
+  }else if(lmt.ilv_sng && !lmt.ssc_sng){
+    lmt.ssc=lmt.ilv;
+  }else if(lmt.ilv_sng && !lmt.srd_sng){
+    lmt.srd=lmt.ssc;
+  }else if(lmt.ssc_sng && !lmt.srd_sng){
+    lmt.srd=lmt.ssc;
+  } /* lmt.ilv */
+  /* Set MRO whenever interleave is explicitly requested */
+  if(lmt.ilv_sng) lmt.flg_mro=True;
+
   /* If min_sng and max_sng are both NULL then set type to lmt_dmn_idx */
   if(lmt.min_sng == NULL && lmt.max_sng == NULL){
     /* Limiting indices will be set to default extrema a bit later */
@@ -1108,21 +1123,6 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(flg_old_usg) (void)fprintf(stdout,"%s: WARNING Only NCO 4.4.6 treats negative zero as the last element of a dimension. Beginning 20141002, NCO uses the Python convention where negative one is the last element of a dimension, and negative zero is the same as zero and so selects the first element of a dimension. Negative zero also causes this warning to be printed in case the 4.4.6 behavior was intended.\n",nco_prg_nm_get());
     if(lmt.min_idx < 0L) lmt.min_idx+=dmn_sz;
     if(lmt.max_idx < 0L) lmt.max_idx+=dmn_sz;
-
-    /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
-       Order and mutual-exclusivity of these conditions is important */
-    if(lmt.ilv_sng && !lmt.ssc_sng && !lmt.srd_sng){
-      lmt.ssc=lmt.ilv;
-      lmt.srd=lmt.ssc;
-    }else if(lmt.ilv_sng && !lmt.ssc_sng){
-      lmt.ssc=lmt.ilv;
-    }else if(lmt.ilv_sng && !lmt.srd_sng){
-      lmt.srd=lmt.ssc;
-    }else if(lmt.ssc_sng && !lmt.srd_sng){
-      lmt.srd=lmt.ssc;
-    } /* lmt.ilv */
-    /* Set MRO whenever interleave is explicitly requested */
-    if(lmt.ilv_sng) lmt.flg_mro=True;
 
     /* Exit if requested indices are invalid for all operators... */
     if(lmt.min_idx < 0L){
@@ -1569,6 +1569,21 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     } /* end else */
   } /* !lmt.flg_mro */
 
+  /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
+     Order and mutual-exclusivity of these conditions is important */
+  if(lmt.ilv_sng && !lmt.ssc_sng && !lmt.srd_sng){
+    lmt.ssc=lmt.ilv;
+    lmt.srd=lmt.ssc;
+  }else if(lmt.ilv_sng && !lmt.ssc_sng){
+    lmt.ssc=lmt.ilv;
+  }else if(lmt.ilv_sng && !lmt.srd_sng){
+    lmt.srd=lmt.ssc;
+  }else if(lmt.ssc_sng && !lmt.srd_sng){
+    lmt.srd=lmt.ssc;
+  } /* lmt.ilv */
+  /* Set MRO whenever interleave is explicitly requested */
+  if(lmt.ilv_sng) lmt.flg_mro=True;
+
   /* If min_sng and max_sng are both NULL then set type to lmt_dmn_idx */
   if(lmt.min_sng == NULL && lmt.max_sng == NULL){
     /* Limiting indices will be set to default extrema a bit later */
@@ -1961,21 +1976,6 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     if(flg_old_usg) (void)fprintf(stdout,"%s: WARNING Only NCO 4.4.6 treats negative zero as the last element of a dimension. Beginning 20141002, NCO uses the Python convention where negative one is the last element of a dimension, and negative zero is the same as zero and so selects the first element of a dimension. Negative zero also causes this warning to be printed in case the 4.4.6 behavior was intended.\n",nco_prg_nm_get());
     if(lmt.min_idx < 0L) lmt.min_idx+=dmn_sz;
     if(lmt.max_idx < 0L) lmt.max_idx+=dmn_sz;
-
-    /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
-       Order and mutual-exclusivity of these conditions is important */
-    if(lmt.ilv_sng && !lmt.ssc_sng && !lmt.srd_sng){
-      lmt.ssc=lmt.ilv;
-      lmt.srd=lmt.ssc;
-    }else if(lmt.ilv_sng && !lmt.ssc_sng){
-      lmt.ssc=lmt.ilv;
-    }else if(lmt.ilv_sng && !lmt.srd_sng){
-      lmt.srd=lmt.ssc;
-    }else if(lmt.ssc_sng && !lmt.srd_sng){
-      lmt.srd=lmt.ssc;
-    } /* lmt.ilv */
-    /* Set MRO whenever interleave is explicitly requested */
-    if(lmt.ilv_sng) lmt.flg_mro=True;
 
     /* Exit if requested indices are invalid for all operators... */
     if(lmt.min_idx < 0L){

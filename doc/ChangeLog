@@ -1,5 +1,7 @@
 2020-07-23  Charlie Zender  <zender@uci.edu>
 
+	* Change nco_gsl.[c/h] to nco_gsl.[cc/hh] so broken MSVC compiles it as C++ and eliminates "restrict" keyword
+
 	* Fix ILV record counters when multiple SSCs within one file
 
 2020-07-22  Charlie Zender  <zender@uci.edu>

@@ -35,7 +35,7 @@ NcapVarVector.cc \
 ncoLexer.cpp \
 ncoParser.cpp \
 ncoTree.cpp \
-nco_gsl.c
+nco_gsl.cc
 
 # 20190414 ncap2 on MacOS relink when libnco.a changes
 #ncap2_LDFLAGS = ../nco/libnco.la

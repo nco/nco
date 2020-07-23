@@ -8,7 +8,7 @@
    You may redistribute and/or modify NCO under the terms of the
    3-Clause BSD License with exceptions described in the LICENSE file */
 
-#include "nco_gsl.h"
+#include "nco_gsl.hh"
 
 static double
 compute_covariance

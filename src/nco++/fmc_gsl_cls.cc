@@ -8,7 +8,7 @@
    3-Clause BSD License with exceptions described in the LICENSE file */
 
 #include "fmc_gsl_cls.hh"
-#include "nco_gsl.h"
+#include "nco_gsl.hh"
 
 // GSL Functions
 #ifdef ENABLE_GSL

@@ -21,7 +21,7 @@
 #include "sym_cls.hh"
 #include "fmc_cls.hh"
 #include "fmc_all_cls.hh"
-#include "nco_gsl.h"
+#include "nco_gsl.hh"
 #ifdef ENABLE_GSL
 # include "fmc_gsl_cls.hh"
 #endif // !ENABLE_GSL

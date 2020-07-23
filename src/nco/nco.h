@@ -60,6 +60,9 @@ extern "C" {
 #  define restrict
 # endif /* !__GNUG__ */
 #endif /* !__cplusplus */
+#ifdef _MSC_VER
+# define restrict
+#endif /* !_MSC_VER */
 
 /* Boolean values */
 /* From Wikipedia:
@@ -1690,7 +1693,6 @@ typedef enum nco_xtr_typ_enm
 
     double **shp;    /* array of points size [crn_nbr][NBR] */
     double *dp_xyz;  /* maybe useful for 3D stuff */
-
   } poly_sct;
 
   typedef struct{
@@ -1698,10 +1700,7 @@ typedef enum nco_xtr_typ_enm
     int dst_id;
     double area;
     double wgt;
-
-} wgt_sct;
-
-
+  } wgt_sct;
 
 #ifdef __cplusplus
 } /* end extern "C" */
