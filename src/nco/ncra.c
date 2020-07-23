@@ -1293,7 +1293,7 @@ main(int argc,char **argv)
 	  } /* endif record coordinate exists in output file */
 	} /* !REC_APN */
 
-        if(nco_dbg_lvl_get() >= nco_dbg_crr)  (void)fprintf(fp_stdout,"%s: DEBUG1 record %d id %d name %s rec_dmn_sz %ld units=\"%s\"\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz,fl_udu_sng);
+        if(nco_dbg_lvl_get() >= nco_dbg_crr)  (void)fprintf(fp_stdout,"%s: DEBUG record %d id %d name %s rec_dmn_sz %ld units=\"%s\"\n",nco_prg_nm_get(),idx_rec,lmt_rec[idx_rec]->id,lmt_rec[idx_rec]->nm_fll,lmt_rec[idx_rec]->rec_dmn_sz,fl_udu_sng);
 
         /* NB: nco_cnv_arm_base_time_get() with same nc_id contains OpenMP critical region */
         if(CNV_ARM) base_time_crr=nco_cnv_arm_base_time_get(in_id);
@@ -1308,10 +1308,17 @@ main(int argc,char **argv)
 
         rec_dmn_sz=lmt_rec[idx_rec]->rec_dmn_sz;
         rec_rmn_prv_ssc=lmt_rec[idx_rec]->rec_rmn_prv_ssc; /* Local copy may be decremented later */
-        rec_rmn_prv_ilv=0L; /* Sub-cycles not allowed to cross file boundaries in interleave mode */
         idx_rec_crr_in= (rec_rmn_prv_ssc > 0L) ? 0L : lmt_rec[idx_rec]->srt;
 
-        /* Master while loop over records in current file */
+	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG Entering fl_idx=%d ILV=%s MRO=%s, srt=%ld, end=%ld, srd=%ld, ssc=%ld, ilv=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, idx_rec_out=%ld\n",nco_prg_nm_get(),fl_idx,FLG_ILV ? "YES" : "NO",FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->srt,lmt_rec[idx_rec]->end,lmt_rec[idx_rec]->srd,lmt_rec[idx_rec]->ssc,lmt_rec[idx_rec]->ilv,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,idx_rec_out[idx_rec]);
+
+	/* Sub-cycles not allowed to cross file boundaries in interleave mode */
+        if(rec_rmn_prv_ilv > 0L){
+	  (void)fprintf(fp_stdout,"%s: ERROR interleaved sub-cycle crosses file boundary between %s (input file %d) and previous file. Diagnostic counters: rec_rmn_prv_ssc = %ld, rec_rmn_prv_ilv = %ld\n",nco_prg_nm_get(),fl_in,fl_idx,rec_rmn_prv_ssc,rec_rmn_prv_ilv);
+	  nco_exit(EXIT_FAILURE);
+	} /* !rec_rmn_prv_ilv */
+
+	/* Master while loop over records in current file */
         while(idx_rec_crr_in >= 0L && idx_rec_crr_in < rec_dmn_sz){
           /* Following logic/assumptions built-in to this loop:
 	     idx_rec_crr_in points to valid record before loop is entered
@@ -1374,7 +1381,7 @@ main(int argc,char **argv)
           /* Final record triggers normalization regardless of its location within group */
           if(!FLG_ILV && fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
 
-          if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG2 MRO=%s, srd=%ld, ssc=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->srd,lmt_rec[idx_rec]->ssc,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
+          if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG2 rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
 
 	  /* Retrieve this record of weight variable, if any */
 	  if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs))
@@ -1382,8 +1389,6 @@ main(int argc,char **argv)
 
           /* Process all variables in current record */
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
-
-	  if(FLG_ILV && nco_dbg_lvl >= nco_dbg_quiet) (void)fprintf(stderr,"%s: DEBUG Interleaving file %d record %ld\n",nco_prg_nm_get(),fl_idx,idx_rec_crr_in);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,fl_udu_sng,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,rgd_arr_bnds_lst,rgd_arr_bnds_nbr,rgd_arr_climo_lst,rgd_arr_climo_nbr,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
@@ -1512,8 +1517,8 @@ main(int argc,char **argv)
               if(md5) (void)nco_md5_chk(md5,var_prc_out[idx]->nm,var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type),grp_out_id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp);
             } /* end if ncrcat */
 
-            /* Warn if record coordinate, if any, is not monotonic */
-            if(nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
+            /* Warn if record coordinate, if any, is not monotonic (unless interleaved) */
+            if(!FLG_ILV && nco_prg_id == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec_crr_in,idx_rec_out[idx_rec]);
             /* Convert missing_value, if any, back to unpacked or unpromoted type
 	       Otherwise missing_value will be double-promoted when next record read in nco_msa_var_get_trv()
 	       Do not convert after last record otherwise normalization fails
