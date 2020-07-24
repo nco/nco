@@ -1,4 +1,10 @@
+2020-07-24  Charlie Zender  <zender@uci.edu>
+
+	* Change diagnostic rec_rmn_prv_ilv to 0 if no FLG_ILV
+
 2020-07-23  Charlie Zender  <zender@uci.edu>
+
+	* Create simple ILV regression tests that all pass so far
 
 	* Exit with error when interleaved sub-cycle crosses file boundary
 
