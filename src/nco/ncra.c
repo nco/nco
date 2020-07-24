@@ -1680,7 +1680,7 @@ main(int argc,char **argv)
             rec_nbr_trn=max_int(rec_nbr_spn_max-rec_nbr_spn_act,0L);
             /* Records requested is maximum minus any truncated in last group */
             rec_nbr_rqs=rec_nbr_rqs_max-rec_nbr_trn;
-            if(rec_nbr_rqs != rec_usd_cml[idx_rec]) (void)fprintf(fp_stdout,"%s: WARNING User requested %li records but only %li were found and used\n",nco_prg_nm_get(),rec_nbr_rqs,rec_usd_cml[idx_rec]);
+            if(rec_nbr_rqs != rec_usd_cml[idx_rec]) (void)fprintf(fp_stdout,"%s: WARNING User requested %li records but %s%li were found and used\n",nco_prg_nm_get(),rec_nbr_rqs,(rec_usd_cml[idx_rec] < rec_nbr_rqs) ? "only " : "",rec_usd_cml[idx_rec]);
           } /* end if */
           /* ... and die if no records were read ... */
           if(rec_usd_cml[idx_rec] <= 0){
@@ -1894,7 +1894,7 @@ main(int argc,char **argv)
 
   } /* end loop over fl_idx */
 
-  if(FLG_ILV && lmt_rec[0]->ilv > 1 && rec_rmn_prv_ilv != 0) (void)fprintf(stderr,"%s: WARNING input ended while last interleaved sub-cycle was incomplete. This means the interleaved dimension in the last sub-cycle will contain a non-uniform number of records contributing to different indices. Consider re-defining hyperslab or input data length to ensure output all based on complete sub-cycles. Diagnostics: full sub-cycle length = %ld, records needed for completion of last sub-cycle and of last interleaved index are, respectively, rec_rmn_prv_ssc = %ld, and rec_rmn_prv_ilv = %ld\n",nco_prg_nm_get(),lmt_rec[0]->ssc,rec_rmn_prv_ssc,rec_rmn_prv_ilv);
+  if(FLG_ILV && lmt_rec[0]->ilv > 1 && rec_rmn_prv_ilv != 0) (void)fprintf(stderr,"%s: WARNING input ended while last interleaved sub-cycle was incomplete. This means the interleaved dimension in the last sub-cycle will contain a non-uniform number of records contributing to different indices. Consider re-defining hyperslab or input data length to ensure output all based on complete sub-cycles. Diagnostics: full sub-cycle length = %ld, stride between first elements of consecutive sub-cycles = %ld, records needed for completion of last sub-cycle and of last interleaved index are, respectively, rec_rmn_prv_ssc = %ld, and rec_rmn_prv_ilv = %ld\n",nco_prg_nm_get(),lmt_rec[0]->ssc,lmt_rec[0]->srd,rec_rmn_prv_ssc,rec_rmn_prv_ilv);
 
   /* Subcycle argument warning */
   if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* fxm: Remove this or make DBG when crd_val SSC/MRO is predictable? */
