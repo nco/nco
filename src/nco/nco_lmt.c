@@ -1049,7 +1049,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       }else if(rec_usd_cml > 0L){
         /* Otherwise, adjust starting index by records skipped in jumps across file boundaries */
         lmt.srt+=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd; 
-        if(lmt.srt>lmt.end){
+        if(lmt.srt > lmt.end){
           /* Do not allow record dimension wrapping in MFOs */
           flg_no_data_ok=True;
           goto no_data_ok;
@@ -1170,8 +1170,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 	 rec_usd_cml and rec_skp_ntl_spf are both zero only for first file */
       if(rec_usd_cml == 0L && lmt.rec_skp_ntl_spf == 0L) lmt.rec_skp_vld_prv=0L;
       
-      /* For record dimensions with user-specified limit, allow possibility 
-	 that limit pertains to record dimension in a multi-file operator.
+      /* For record dimensions with user-specified limits, allow possibility 
+	 that limits pertain to record dimension in a multi-file operator.
 	 Then user-specified maximum index may exceed number of records in any one file
 	 Thus lmt.srt does not necessarily equal lmt.min_idx and 
 	 lmt.end does not necessarily equal lmt.max_idx */
@@ -1902,7 +1902,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       }else if(rec_usd_cml > 0L){
         /* Otherwise, adjust starting index by records skipped in jumps across file boundaries */
         lmt.srt+=lmt.srd-1L-lmt.rec_skp_vld_prv%lmt.srd; 
-        if(lmt.srt>lmt.end){
+        if(lmt.srt > lmt.end){
           /* Do not allow record dimension wrapping in MFOs */
           flg_no_data_ok=True;
           goto no_data_ok;
@@ -2023,8 +2023,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 	 rec_usd_cml and rec_skp_ntl_spf are both zero only for first file */
       if(rec_usd_cml == 0L && lmt.rec_skp_ntl_spf == 0L) lmt.rec_skp_vld_prv=0L;
 
-      /* For record dimensions with user-specified limit, allow possibility 
-	 that limit pertains to record dimension in a multi-file operator.
+      /* For record dimensions with user-specified limits, allow possibility 
+	 that limits pertain to record dimension in a multi-file operator.
 	 Then user-specified maximum index may exceed number of records in any one file
 	 Thus lmt.srt does not necessarily equal lmt.min_idx and 
 	 lmt.end does not necessarily equal lmt.max_idx */
