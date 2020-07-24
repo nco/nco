@@ -1310,7 +1310,7 @@ main(int argc,char **argv)
         rec_rmn_prv_ssc=lmt_rec[idx_rec]->rec_rmn_prv_ssc; /* Local copy may be decremented later */
         idx_rec_crr_in= (rec_rmn_prv_ssc > 0L) ? 0L : lmt_rec[idx_rec]->srt;
 
-	if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG After lmt_evl() for fl_idx=%d ILV=%s MRO=%s, srt=%ld, end=%ld, srd=%ld, ssc=%ld, ilv=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, idx_rec_out=%ld\n",nco_prg_nm_get(),fl_idx,FLG_ILV ? "YES" : "NO",FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->srt,lmt_rec[idx_rec]->end,lmt_rec[idx_rec]->srd,lmt_rec[idx_rec]->ssc,lmt_rec[idx_rec]->ilv,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,idx_rec_out[idx_rec]);
+	if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG After lmt_evl() for fl_idx=%d ILV=%s MRO=%s, srt=%ld, end=%ld, srd=%ld, ssc=%ld, ilv=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, idx_rec_out=%ld\n",nco_prg_nm_get(),fl_idx,FLG_ILV ? "YES" : "NO",FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->srt,lmt_rec[idx_rec]->end,lmt_rec[idx_rec]->srd,lmt_rec[idx_rec]->ssc,lmt_rec[idx_rec]->ilv,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,idx_rec_out[idx_rec]);
 
 	/* Sub-cycles not allowed to cross file boundaries in interleave mode */
         if(FLG_ILV && rec_rmn_prv_ilv > 0L){
@@ -1352,7 +1352,7 @@ main(int argc,char **argv)
 	     first/last records in a group, respectively, and false otherwise
 
 	     REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with nces normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR.
-	     20200719: REC_LST_DSR is never set for FLG_ILV, since all input records are assumed to align with interleaved dimension, and normalization will always occur at a group ending */
+	     20200719: REC_LST_DSR is never set for FLG_ILV, since complete sub-cycles are assumed to be within a single file, and normalization always occurs at a group ending. */
 
 	  if(FLG_ILV){
 	    /* Even intra-ssc strides commence group beginnings */
@@ -1379,9 +1379,9 @@ main(int argc,char **argv)
           if(idx_rec_crr_in >= lmt_rec[idx_rec]->end) REC_SRD_LST=True; else REC_SRD_LST=False;
 
           /* Final record triggers normalization regardless of its location within group */
-          if(!FLG_ILV && fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
+          if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
 
-          if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG2 rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
+          if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
 
 	  /* Retrieve this record of weight variable, if any */
 	  if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs))
@@ -1893,6 +1893,8 @@ main(int argc,char **argv)
     } /* endif ncra || ncrcat */
 
   } /* end loop over fl_idx */
+
+  if(FLG_ILV && lmt_rec[0]->ilv > 1 && rec_rmn_prv_ilv != 0) (void)fprintf(stderr,"%s: WARNING input ended while last interleaved sub-cycle was incomplete. This means the interleaved dimension in the last sub-cycle will contain a non-uniform number of records contributing to different indices. Consider re-defining hyperslab or input data length to ensure output all based on complete sub-cycles. Diagnostics: full sub-cycle length = %ld, records needed for completion of last sub-cycle and of last interleaved index are, respectively, rec_rmn_prv_ssc = %ld, and rec_rmn_prv_ilv = %ld\n",nco_prg_nm_get(),lmt_rec[0]->ssc,rec_rmn_prv_ssc,rec_rmn_prv_ilv);
 
   /* Subcycle argument warning */
   if(nco_prg_id == ncra || nco_prg_id == ncrcat){ /* fxm: Remove this or make DBG when crd_val SSC/MRO is predictable? */

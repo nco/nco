@@ -1,5 +1,7 @@
 2020-07-24  Charlie Zender  <zender@uci.edu>
 
+	* Warn when interleaved input ends on incomplete sub-cycle
+
 	* Change diagnostic rec_rmn_prv_ilv to 0 if no FLG_ILV
 
 2020-07-23  Charlie Zender  <zender@uci.edu>
