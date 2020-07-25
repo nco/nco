@@ -865,7 +865,7 @@ case ${host} in
 	esac
 	case ${CXX} in
 #	    icpc* ) CXXFLAGS="${CXXFLAGS} -cxxlib-icc" ; ;;
-	    icpc* ) CXXFLAGS="${CXXFLAGS} -cxxlib-gcc" ; ;;
+	    #icpc* ) CXXFLAGS="${CXXFLAGS} -cxxlib-gcc" ; ;;
 	esac
 	;;
     mips*-sgi-irix* )
@@ -1119,7 +1119,10 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	    ;;
 	x86_64*-linux* )
 	    case ${CC} in
-		icc* ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
+		#skatreka++
+		#icc* ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
+		icc* ) CFLAGS="${CFLAGS} -xHost -axHASWELL,KNL"
+		#skatreka--
 		    case ${CXX} in
 			icpc* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
@@ -1134,9 +1137,21 @@ if test "${enable_optimize_custom}" = 'yes'; then
 			pgCC* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
-	    esac
-	    ;;
-    esac
+		#skatreka++	
+		clang* ) CFLAGS="${CFLAGS} -march=native"
+				case ${CXX} in
+			clang* ) CXXFLAGS="{CXXFLAGS} ${CFLAGS}"
+				esac
+				;;
+		gcc* | g++*) CFLAGS="${CFLAGS} -march=native"
+				case ${CXX} in
+			g++* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
+	    	esac
+	    	;;
+			esac
+			;;
+		#skatreka--
+	esac
 fi
 # End enable_optimize_custom
 
@@ -1302,25 +1317,27 @@ AC_SUBST(LFLAGS)
 
 #skatreka++
 #Optimization specific compiler flags
-OPT_CFLAGS=""
-case ${CC} in
-	gcc* | g++* ) OPT_CFLAGS+=" -march=native"; ;;
-	clang* ) OPT_CFLAGS+=" -march=native"; ;;
-	icc* ) OPT_CFLAGS+=" -xHost";
-	       OPT_CFLAGS+=" -xMIC-AVX512 -axMIC-AVX512"; ;;
-	       #More options can be added here if processor name is detected
-esac
-CFLAGS+="$OPT_CFLAGS"
-
-OPT_CXXFLAGS=""
-case ${CXX} in
-	g++* ) OPT_CXXFLAGS+=" -march=native"; ;;
-	clang* ) OPT_CXXFLAGS+=" -march=native"; ;;
-	icpc* ) OPT_CXXFLAGS+=" -xHost";
-			OPT_CXXFLAGS+=" -xMIC-AVX512 -axMIC-AVX512"; ;;
-			#More options can be added here if processor name is detected
-esac
-CXXFLAGS+="$OPT_CXXFLAGS"
+#OPT_CFLAGS=""
+#case ${CC} in
+	#gcc* | g++* ) OPT_CFLAGS+=" -march=native"; ;;
+	#clang* ) OPT_CFLAGS+=" -march=native"; ;;
+	#icc* ) OPT_CFLAGS+=" -xHost";
+	       #OPT_CFLAGS+=" -axHASWELL,KNL"; ;;
+	       ##OPT_CFLAGS+=" -xMIC-AVX512 -axMIC-AVX512"; ;;
+	       ##More options can be added here if processor name is detected
+#esac
+#CFLAGS+="$OPT_CFLAGS"
+#
+#OPT_CXXFLAGS=""
+#case ${CXX} in
+	#g++* ) OPT_CXXFLAGS+=" -march=native"; ;;
+	#clang* ) OPT_CXXFLAGS+=" -march=native"; ;;
+	#icpc* ) OPT_CXXFLAGS+=" -xHost";
+			#OPT_CXXFLAGS+=" -axHASWELL,KNL"; ;;
+		##	OPT_CXXFLAGS+=" -xMIC-AVX512 -axMIC-AVX512"; ;;
+			##More options can be added here if processor name is detected
+#esac
+#CXXFLAGS+="$OPT_CXXFLAGS"
 #skatreka--
 
 # Every autoconf script finishes by calling AC_OUTPUT to generate and run config.status
