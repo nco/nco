@@ -2671,6 +2671,7 @@ feature is automatic and cannot be controlled by the user.
 * Stride::
 * Record Appending::
 * Subcycle::
+* Interleave::
 * Multislabs::
 * Wrapped Coordinates::
 * Auxiliary Coordinates::
@@ -5879,7 +5880,7 @@ which is counter to the purpose of @samp{--rec_apn}.
 <a name="drn"></a> <!-- http://nco.sf.net/nco.html#drn -->
 <a name="mro"></a> <!-- http://nco.sf.net/nco.html#mro -->
 @end html
-@node Subcycle, Multislabs, Record Appending, Shared features
+@node Subcycle, Interleave, Record Appending, Shared features
 @section Subcycle
 @cindex duration
 @cindex sub-cycle
@@ -5904,23 +5905,23 @@ and operate on multiple groups of records.
 These groups may be connected to physical @emph{sub-cycles} of a
 periodic nature, e.g., months of a year, or hours of a day. 
 Or they may be thought of as groups of a specifed duration.
-The feature and the terminology to describe it are new.
-For now, we call this the @dfn{subcycle feature}, sometimes abbreviated
+We call this the @dfn{subcycle feature}, sometimes abbreviated
 @acronym{SSC}
 @footnote{When originally released in 2012 this was called the
 @dfn{duration feature}, and was abbreviated @acronym{DRN}.}.
 
-The subcycle feature allows processing of groups of records
-separated by regular intervals of records.
-It is perhaps best illustrated by an extended example which describes
-how to solve the same problem both with and without the @acronym{SSC} feature.
+The subcycle feature allows processing of groups of records separated
+by regular intervals of records. 
+It is perhaps best illustrated by an extended example that describes 
+how to solve the same problem both with and without the @acronym{SSC}
+feature. 
 
 Creating seasonal cycles is a common task in climate data processing.
 Suppose a 150-year climate simulation produces 150 output files, each
 comprising 12 records, each record a monthly mean:
 @file{1850.nc}, @file{1851.nc}, ... @file{1999.nc}.
-Our goal is to create a single file containing the summertime (June,
-July, and August, aka JJA) mean.
+Our goal is to create a single file that contains the climatological
+summertime (June, July, and August, aka JJA) mean.
 Traditionally, we would first compute the climatological monthly
 mean for each month of summer. 
 Each of these is a 150-year mean, i.e., 
@@ -5943,7 +5944,7 @@ used in @w{Step 1} above.
 
 The new @acronym{SSC} option aggregates more than one input record at
 a time before performing arithmetic operations, and, with an
-additional switch, allows us to archive those results in
+additional switch, allows archival of those results in
 multiple-record output (MRO) files.  
 This reduces the task of producing the climatological summertime
 mean to @emph{one} step:
@@ -5964,7 +5965,7 @@ its results from each sub-group, and to produce a @dfn{Multi-Record Output}
 (@acronym{MRO}) file rather than a @dfn{Single-Record Output}
 (@acronym{SRO}) file. 
 Unless Multi-Record-Output is indicated (either with @samp{--mro} or
-implicitly, as with interleave-mode), @command{ncra} collects together
+implicitly, as with interleave-mode), @command{ncra} collects together 
 all sub-groups, operates on their ensemble, and produces a single
 output record. 
 Adding @samp{--mro} to the above example causes @command{ncra} to
@@ -5980,8 +5981,128 @@ These operations generate and require no intermediate files.
 This contrasts to previous @acronym{NCO} methods, which require
 generating, averaging, then catenating 150 files.  
 The @samp{--mro} option only works on @command{ncra} and has no effect
-on (or rather is redundant for) @command{ncrcat}, since @command{ncrcat}
-always outputs all selected records.
+on (or rather is redundant for) @command{ncrcat}, since
+@command{ncrcat} always outputs all selected records.
+
+@html
+<a name="interleave"></a> <!-- http://nco.sf.net/nco.html#interleave -->
+<a name="ilv"></a> <!-- http://nco.sf.net/nco.html#ilv -->
+@end html
+@node Interleave, Multislabs, Subcycle, Shared features
+@section Interleave
+@cindex interleave
+@cindex @code{--mro}
+@cindex @code{-d @var{dim},[@var{min}],[@var{max}],[@var{stride}],[@var{subcycle}],[@var{interleave}]}
+@cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],[@var{stride}],[@var{subcycle}],[@var{interleave}]}
+@cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],[@var{stride}],@var{subcycle}],[@var{interleave}]}
+@cartouche
+Availability: @command{ncra}, @command{ncrcat}@* 
+Short options: @samp{-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]}@*
+Long options: 
+@samp{--mro}
+@samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]}@*
+@samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]}@*
+@end cartouche
+As of version 4.9.4 (August, 2020), @acronym{NCO} allows both Multi-File,
+Multi-Record operators, @command{ncra} and @command{ncrcat}, to
+extract, interleave, and operate on multiple groups of records. 
+Interleaving (or de-interleaving, depending on one's perspective)
+means altering the order of records in a group to be processed.
+Specifically, the interleaving feature (sometimes abbreviated
+@acronym{ILV}) causes the operator to treat as sequential records
+those that are separated by multiples of the specified
+@var{interleave} parameter within a sub-cycle. 
+
+The interleave feature sequences records with respect to their
+position relative to the beginning of each sub-cycle.
+Records a multiple of @var{interleave} from sub-cycle beginning
+are first extracted (@command{ncrcat}) or reduced (@command{ncra}),
+then records offset from these by one, two, et cetera up to
+@math{@var{interleave}-1}. 
+In this manner interleaving is as an inner (intra-sub-cycle) loop 
+that preserves high-frequency signals relative to the longer
+stride between sub-cycles.
+Thus interleaving allows deconvolution of periodic phenomena within a 
+time-series.
+
+Interleaving is perhaps best illustrated by an extended example that
+describes how to solve the same problem both with and without the
+@acronym{ILV} feature. 
+Consider as an example an interannual timeseries archived at a
+high-enough temporal frequency to resolve the diurnal cycle with
+@var{tpd} timesteps-per-day.
+Many climate models and re-analyses are archived at hourly,
+tri-hourly, or six-hourly resolution yielding
+@math{@var{tpd} = 24, 8}, or @math{6}, respectively.
+
+
+Creating seasonal cycles is a common task in climate data processing.
+Suppose a 150-year climate simulation produces 150 output files, each
+comprising 12 records, each record a monthly mean:
+@file{1850.nc}, @file{1851.nc}, ... @file{1999.nc}.
+Our goal is to create a single file that contains the climatological
+summertime (June, July, and August, aka JJA) mean.
+Traditionally, we would first compute the climatological monthly
+mean for each month of summer. 
+Each of these is a 150-year mean, i.e., 
+@example
+@verbatim
+# Step 1: Create climatological monthly files clm06.nc..clm08.nc
+for mth in {6..8}; do
+  mm=`printf "%02d" $mth`
+  ncra -O -F -d time,${mm},,12 -n 150,4,1 1850.nc clm${mm}.nc
+done
+# Step 2: Average climatological monthly files into summertime mean
+ncra -O clm06 clm07.nc clm08.nc clm_JJA.nc
+@end verbatim
+@end example
+@noindent
+So far, nothing is unusual and this task can be performed by any
+@acronym{NCO} version. 
+The @acronym{ILV} feature makes obsolete the need for the shell loop
+used in @w{Step 1} above. 
+
+The new @acronym{ILV} option aggregates more than one input record at
+a time before performing arithmetic operations, and, with an
+additional switch, allows archival of those results in
+multiple-record output (MRO) files.  
+This reduces the task of producing the climatological summertime
+mean to @emph{one} step:
+@example
+# Step 1: Compute climatological summertime mean
+ncra -O -F -d time,6,,12,3 -n 150,4,1 1850.nc clm_JJA.nc
+@end example
+@noindent
+The @acronym{ILV} option instructs @command{ncra} (or @command{ncrcat})
+to process files in groups of three records. 
+To better understand the meaning of each argument to the @samp{-d}
+hyperslab option, read it this way: ``for the time dimension start with
+the sixth record, continue without end, repeat the process every twelfth
+record, and define a sub-cycle as three consecutive records''. 
+
+A separate option, @samp{--mro}, instructs @command{ncra} to output 
+its results from each sub-group, and to produce a @dfn{Multi-Record Output}
+(@acronym{MRO}) file rather than a @dfn{Single-Record Output}
+(@acronym{SRO}) file. 
+Unless Multi-Record-Output is indicated (either with @samp{--mro} or
+implicitly, as with interleave-mode), @command{ncra} collects together 
+all sub-groups, operates on their ensemble, and produces a single
+output record. 
+Adding @samp{--mro} to the above example causes @command{ncra} to
+archive all (150) annual summertime means to one file: 
+@example
+# Step 1: Archive all 150 summertime means in one file
+ncra --mro -O -F -d time,6,,12,3 -n 150,4,1 1850.nc 1850_2009_JJA.nc
+# ...or all (150) annual means...
+ncra --mro -O -d time,,,12,12 -n 150,4,1 1850.nc 1850_2009.nc
+@end example
+@noindent
+These operations generate and require no intermediate files.
+This contrasts to previous @acronym{NCO} methods, which require
+generating, averaging, then catenating 150 files.  
+The @samp{--mro} option only works on @command{ncra} and has no effect
+on (or rather is redundant for) @command{ncrcat}, since
+@command{ncrcat} always outputs all selected records.
 
 @html
 <a name="multislab"></a> <!-- http://nco.sf.net/nco.html#multislab -->
@@ -5989,7 +6110,7 @@ always outputs all selected records.
 <a name="msa"></a> <!-- http://nco.sf.net/nco.html#msa -->
 <a name="mlt"></a> <!-- http://nco.sf.net/nco.html#mlt -->
 @end html
-@node Multislabs, Wrapped Coordinates, Subcycle, Shared features
+@node Multislabs, Wrapped Coordinates, Interleave, Shared features
 @section Multislabs 
 @cindex multislab
 @cindex multi-hyperslab
@@ -16805,7 +16926,7 @@ This page lists the @command{ncap2} operators in order of precedence (highest to
 @html
 <a name="ncap_nmc"></a> <!-- http://nco.sf.net/nco.html#ncap_nmc -->
 @end html
-@node ID Quoting, make_bounds() function, Operator precedence and associativity, ncap2 netCDF Arithmetic Processor
+@node ID Quoting, make_bounds() function, Operator precedence and associativity , ncap2 netCDF Arithmetic Processor
 @subsection ID Quoting
 @cindex ID Quoting
 In this section a name refers to a variable, attribute, or dimension name.
@@ -25335,6 +25456,9 @@ This facilitates detailed yet economical regional process studies.
 Regional output files are in a special format that we call
 @acronym{RRG} (for ``regional regridding'').
 An @acronym{RRG} file may contain any number of rectangular regions.
+However, @command{ncremap} can process only one region per invocation
+(change the argument to the @samp{--rnm_sng} option, described below,
+in each invocation).
 The coordinates and variables for one region do not interfere with
 other (possibly overlapping) regions because all variables and
 dimensions are named with a per-region suffix string, e.g.,
@@ -25415,8 +25539,8 @@ Second, the regional bounding-box may be explicitly set with
 The normal parsing of the bounding-box string from the suffix string
 may fail in (as yet undiscovered) corner cases, and the
 @samp{--bb_wesn} option provides a workaround should that occur.
-The bounding-box string must include the entire @acronym{RRG} region,
-specified in WESN order.
+The bounding-box string must include the entire @acronym{RRG} region
+(not a subset thereof), specified in WESN order.
 The two override options may be used independently or together, as in:
 @example
 @verbatim
