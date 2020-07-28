@@ -206,6 +206,12 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -C ann -m cism -h h -c b.e10.BG20TRCN.f09_g16.002 -s 1851 -e 1852 -i /gpfs/alpine/cli115/proj-shared/4ue/data/for_charlie -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -C ann -m mpas -s 1851 -e 1852 -i ${DATA}/hdf/mpasLIoutput.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 
+# High-frequency climos:
+# drc_in=${DATA}/ne30/raw
+# caseid=famipc5_ne30_v0.3_00007.cam.h4 # 3-hour resolution
+# cd ${drc_in};ls ${caseid}*.nc | ncclimo --dec_md=sdd--tpd=8 --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc
+# ncclimo --dec_md=sdd--tpd=8 --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/PRECT_200101_200212.nc
+
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS,TREFHT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo --var_lst=FSNT,AODVIS --caseid=famipc5_ne30_v0.3_00003 --yr_srt=1980 --yr_end=1983 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
@@ -454,6 +460,7 @@ caseid='' # [sng] Case ID
 caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
+clm_hfc_or_mth='No' # [sng] Generate monthly output climatology
 clm_md='mth' # [sng] Climatology mode ('ann', 'dly', 'hfc', 'hfs', or 'mth')
 csn_flg='No' # [flg] Trigger season-processing code
 csn_lst='mam,jja,son,djf' # [sng] Seasons to output (subset of mam,jja,son,djf,jfm,amj,jas,ond,fm,on)
@@ -879,8 +886,16 @@ if [ -n "${clm_md_usr}" ]; then
     fi # !clm_md_usr
     clm_md="${clm_md_usr}"
 fi # !clm_md_usr
-if [ "${clm_md}" = 'ann' ] || [ "${clm_md_usr}" = 'dly' ] ; then
+if [ "${clm_md}" = 'hfc' ] || [ "${clm_md}" = 'mth' ]; then
+    clm_hfc_or_mth='Yes'
+fi # !clm_md
+if [ "${clm_md}" = 'ann' ] || [ "${clm_md}" = 'dly' ]; then
     clm_flg='Yes'
+fi # !clm_md
+if [ "${clm_md}" = 'dly' ] || [ "${clm_md}" = 'hfc' ]; then
+    unset dpm # Days per month
+    declare -a dpm
+    dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
 fi # !clm_md
 if [ -z "${drc_in}" ]; then
     drc_in="${drc_pwd}"
@@ -1039,7 +1054,7 @@ if [ "${clm_md}" = 'ann' ]; then
 elif [ "${clm_md}" = 'dly' ]; then 
     clm_nbr=${dpy}
     dec_md='sdd'
-elif [[ "${clm_md}" = 'hfc' ] || [ "${clm_md}" = 'mth' ]]; then 
+elif [ "${clm_hfc_or_mth}" = 'Yes' ]; then 
     clm_nbr=12
     csn_flg='Yes'
     if [ ${csn_lst} = 'none' ]; then
@@ -1322,10 +1337,10 @@ else # !sbs_flg
 	exit 1
     fi # out_nm
 
-    if [ ${inp_std} = 'Yes' ] && [ ${clm_md} != 'dly' ] ; then
+    if [ ${inp_std} = 'Yes' ] && [ ${clm_md} != 'dly' ] && [ ${clm_md} != 'hfc' ] ; then
 	echo "${spt_nm}: ERROR Detected input on pipe to stdin rather than console in climatology generation mode"
-	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files or in daily climatology mode"
-	echo "${spt_nm}: HINT In other climo generation modes (montly and annual), one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
+	echo "${spt_nm}: HINT Piping filenames to ${spt_nm} only works when splitting files or in daily or in high-frequency climatology mode"
+	echo "${spt_nm}: HINT In other climo generation modes (monthly and annual), one specifies the year/month boundaries and ${spt_nm} automatically generates the correct input file names"
 	echo "${spt_nm}: HINT See invocation examples at http://nco.sf.net/nco.html#ncclimo"
 	exit 1
     fi # !stdin
@@ -1530,7 +1545,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	fi # !nd_nbr
 	for ((mpi_idx_zro=0;mpi_idx_zro<mpi_nbr;mpi_idx_zro++)); do
 	    mpi_idx=${mpi_idx_zro}
-	    if [ "${clm_flg}" = 'Yes' ] && [[ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'mth' ]]; then 
+	    if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then 
 		# Offset MPI index from 0- to 1-based for traditional monthly-based climo generation
 		let mpi_idx=${mpi_idx_zro}+1
 	    fi # !sbs_flg
@@ -1592,7 +1607,7 @@ s		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n
     fi # !thr_usr
 fi # !mpi
 
-if [ "${clm_flg}" = 'Yes' ] && [[ "${clm_md}" = 'hfc' ] || [ "${clm_md}" = 'mth' ]] && [ "${bnr_flg}" = 'No' ]; then
+if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}" = 'No' ]; then
     # For regular monthly climos, override default job_nbr (2) with months-per-year
     # If user does not explicitly set job number then, for monthly climos, base it on parallelism type
     if [ -z "${job_usr}" ]; then 
@@ -1768,7 +1783,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     fi # !rgr
 fi # !sbs_flg
 if [ "${clm_flg}" = 'Yes' ]; then
-    if [[ "${clm_md}" = 'hfc' ] || [ "${clm_md}" = 'mth' ]] && [ "${bnr_flg}" = 'No' ]; then
+    if [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}" = 'No' ]; then
 	if [ "${par_typ}" = ${par_bck} ]; then
 	    printf "Background parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) batches of job_nbr = ${job_nbr} months simultaneously\n"
 	elif [ "${par_typ}" = ${par_mpi} ]; then
@@ -1812,7 +1827,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
-    if [[ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'mth' ]]; then 
+    if [ "${clm_hfc_or_mth}" = 'Yes' ]; then 
 	if [ ${csn_flg} = 'No' ]; then 
 	    printf "Seasons and therefore annual means derived from seasonal means have been turned-off and will not be computed\n"
 	elif [ ${dec_md} = 'scd' ]; then 
@@ -1836,39 +1851,22 @@ fi # !clm_flg
 
 # Block 1: Generate, check, and store (but do not yet execute) commands
 
-# Block 1 Loop 1: Climatologies based on monthly means
-if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
+# Block 1 Loop 1: Produce monthly-mean climatologies
+if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     clm_idx=0
     for mth in {01..12}; do
 	let clm_idx=${clm_idx}+1
 	MM=`printf "%02d" ${clm_idx}`
-	fl_all=''
-	for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
-	    YYYY=`printf "%04d" ${yr}`
-	    if [ ${nm_typ} = 'cesm' ]; then
-		fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
-	    elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
-		# 20161130: Old MPAS rule until today
-		# fl_all="${fl_all} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
-		# Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
- 		fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
-	    elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
-		fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
-	    elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM
-		fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
-	    elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
-		fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
-	    elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
-		fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
-	    fi # !cesm
-	done # !yr
-	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
+	if [ ${clm_md} = 'mth' ]; then 
 	    fl_all=''
-	    for yr in `seq ${yr_srtm1} ${yr_endm1}`; do
+	    for yr in `seq ${yyyy_srt} ${yyyy_end}`; do
 		YYYY=`printf "%04d" ${yr}`
 		if [ ${nm_typ} = 'cesm' ]; then
 		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
+		    # 20161130: Old MPAS rule until today
+		    # fl_all="${fl_all} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+		    # Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
  		    fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
 		elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 		    fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
@@ -1880,34 +1878,97 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ]; then
 		    fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
 		fi # !cesm
 	    done # !yr
-	    yyyy_clm_srt=${yyyy_clm_srt_dec}
-	    yyyy_clm_end=${yyyy_clm_end_dec}
-	fi # !scd
-	# Check for existence of raw input only when file will be used
-	if [ "${bnr_flg}" = 'No' ]; then
-	    for fl_crr in ${fl_all} ; do
-		if [ ! -f "${drc_in}/${fl_crr}" ]; then
-		    echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
-		    echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
-		    exit 1
-		fi # ! -f
-	    done # !fl_crr
-	else # !bnr_flg
-	    # In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
-	    drc_out="${drc_in}"
-	fi # !bnr_flg
+	    if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
+		fl_all=''
+		for yr in `seq ${yr_srtm1} ${yr_endm1}`; do
+		    YYYY=`printf "%04d" ${yr}`
+		    if [ ${nm_typ} = 'cesm' ]; then
+			fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
+		    elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
+ 			fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
+		    elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
+			fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
+		    elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM
+			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}.${bs_sfx}"
+		    elif [ ${nm_typ} = 'yyyy-mm-01' ]; then # Generate from caseid + YYYY-MM-01
+			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01.${bs_sfx}"
+		    elif [ ${nm_typ} = 'yyyy-mm-01-00000' ]; then # Generate from caseid + YYYY-MM-01-00000
+			fl_all="${fl_all} ${bs_nm}.${YYYY}-${MM}-01-00000.${bs_sfx}"
+		    fi # !cesm
+		done # !yr
+	    fi # !scd
+	    # Check for existence of raw input only when file will be used
+	    if [ "${bnr_flg}" = 'No' ]; then
+		for fl_crr in ${fl_all} ; do
+		    if [ ! -f "${drc_in}/${fl_crr}" ]; then
+			echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
+			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+			exit 1
+		    fi # ! -f
+		done # !fl_crr
+	    else # !bnr_flg
+		# In binary mode drc_out is actually used to locate input files from climatology B (same as output files in incremental mode)
+		drc_out="${drc_in}"
+	    fi # !bnr_flg
+
+	fi # !clm_md
+
 	if [ -n "${var_lst}" ] && [ "${var_lst_rx_xtr}" = 'Yes' ] ; then
 	    # Match var_lst regular expressions to contents of first file to create real extraction list
 	    # https://stackoverflow.com/questions/2440414/how-to-retrieve-the-first-word-of-the-output-of-a-command-in-bash
-	    fl_arr=( ${fl_all} ) # Create file array
+	    if [ ${clm_md} = 'hfc' ]; then 
+		fl_in_tpl=${fl_in[0]}
+	    elif [ ${clm_md} = 'mth' ]; then 
+		fl_arr=( ${fl_all} ) # Create file array
+		fl_in_tpl=${fl_arr[0]}
+	    fi # !clm_md
 	    #echo "${spt_nm}: DEBUG var_lst before expansion = ${var_lst}"
-	    var_lst=`ncks -v ${var_lst} --lst_xtr ${drc_in}/${fl_arr[0]}`
+	    var_lst=`ncks -v ${var_lst} --lst_xtr ${drc_in}/${fl_in_tpl}`
 	    #echo "${spt_nm}: DEBUG var_lst after  expansion = ${var_lst}"
 	    nco_opt="${nco_opt} -v ${var_lst}"
 	    var_lst_rx_xtr='No'
 	fi # !var_lst
+
+	# Common to both high-frequency and monthly-input climos
+	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
+	    yyyy_clm_srt=${yyyy_clm_srt_dec}
+	    yyyy_clm_end=${yyyy_clm_end_dec}
+	fi # !scd
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
-	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
+	
+	if [ ${clm_md} = 'hfc' ]; then 
+	    # Command to produce interleaved monthly climos
+	    if [ "${fl_nbr}" -eq 1 ]; then
+		DD=`printf "%02d" ${dpm[${clm_idx}]}` 
+		tm_srt="${yyyy_clm_srt}-${MM}-01 00:00:01"
+		let mthp1=$((clm_idx + 1))
+		MMp1=`printf "%02d" ${mthp1}`
+		tm_end="${yyyy_clm_end}-${MMp1}-01 00:00:00"
+		let yr_endp1=$((yyyy_clm_end + 1))
+		yyyy_clm_endp1=`printf "%02d" ${yr_endp1}`
+		if [ ${clm_idx} -eq 12 ]; then
+		    tm_end="${yyyy_clm_endp1}-01-01 00:00:00"
+		fi # !December
+		let srd=${dpy}*${tpd_out}
+		let ssc=${dpm[${clm_idx}]}*${tpd_out}
+		# Compute interleaved mean of single-file input (e.g., CMIP timeseries format)
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
+	    else
+		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
+		ilv_nbr=${tpd_out}
+		for ((ilv_idx=0;ilv_idx<ilv_nbr;ilv_idx++)); do
+		    if [ -z "${fml_nm_usr}" ]; then 
+			fl_out_tpl[${ilv_idx}]="${drc_out}/hfc_${yyyy_clm_srt}_${yyyy_clm_end}_mth_tpl.nc"
+		    else # !fml_nm_usr
+			fl_out_tpl[${ilv_idx}]="${drc_out}/hfc_${fml_nm}_${yyyy_srt_sgm[${ilv_idx}]}01_${yyyy_end_sgm[${ilv_idx}]}12_mth_tpl.nc"
+		    fi # !fml_nm_usr
+		done # !ilv_idx
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat --cb -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_tpd_all} ${fl_out[${clm_idx}]}"
+	    fi # !fl_nbr
+	elif [ ${clm_md} = 'mth' ]; then 
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
+	fi # !clm_md
+
     done # !mth
 
     # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
@@ -2360,9 +2421,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	fi # !basename
     fi # !inp_std
 
-    unset dpm # Days per month
-    declare -a dpm
-    dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
     let srd=${dpy}*${tpd_out}
     drn=${tpd_out}
     
@@ -2560,14 +2618,7 @@ fi # !dly
 # 1. E3SM-diags post-processing may not like new 'hour' dimension
 # 2. No corresponding examples in CF Conventions
 # 3. Any utility in multiple-variables per output file, e.g., TS, PRECT? Would single variables suffice?
-if [ "${clm_md}" = 'hfc' ]; then
-
-    unset dpm # Days per month
-    declare -a dpm
-    dpm=(0 31 28 31 30 31 30 31 31 30 31 30 31) # 365-day calendar, 1-based indexing
-
-    yyyy_srt=`printf "%04d" ${yr_srt}`
-    yyyy_end=`printf "%04d" ${yr_end}`
+if [ "${clm_md}" = 'hfc_old' ]; then
 
     if [ ${dbg_lvl} -ge 1 ]; then
 	printf "dbg: HFC variable(s):\n"
@@ -2582,40 +2633,7 @@ if [ "${clm_md}" = 'hfc' ]; then
 	printf "yr_sbs = ${yr_sbs}\n"
     fi # !dbg
     
-    # Create template output filenames (to avoid Bash 2D string arrays)
-    clm_idx=0
-    for mth in {01..12}; do
-	let clm_idx=${clm_idx}+1
-	MM=`printf "%02d" ${clm_idx}`
-	fl_all=''
-	if [ ${dec_md} = 'scd' ] && [ ${MM} = '12' ]; then 
-	    yyyy_clm_srt=${yyyy_clm_srt_dec}
-	    yyyy_clm_end=${yyyy_clm_end_dec}
-	fi # !scd
-	# 20200726 fxm consolidate var_lst_rx_xtr blocks
-	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
-
-	# Command to produce interleaved monthly climos
-	if [ "${fl_nbr}" -eq 1 ]; then
-	    # Compute interleaved mean of single-file input (e.g., CMIP timeseries format)
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${drn},${ilv_nbr} -p ${drc_in} ${fl_in[*]} ${fl_out[${clm_idx}]}"
-	else
-	    # Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
-	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat --cb -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_tpd_all} ${fl_out[${clm_idx}]}"
-	fi # !fl_nbr
-    done # !mth
-
-    ilv_nbr=${tpd_out}
-    for ((ilv_idx=0;ilv_idx<ilv_nbr;ilv_idx++)); do
-	if [ -z "${fml_nm_usr}" ]; then 
-	    fl_out_tpl[${ilv_idx}]="${drc_out}/hfc_${yyyy_clm_srt}_${yyyy_clm_end}_mth_tpl.nc"
-	else # !fml_nm_usr
-	    fl_out_tpl[${ilv_idx}]="${drc_out}/hfc_${fml_nm}_${yyyy_srt_sgm[${ilv_idx}]}01_${yyyy_end_sgm[${ilv_idx}]}12_mth_tpl.nc"
-	fi # !fml_nm_usr
-    done # !ilv_idx
-
     mth_nbr=12
-    
     # Begin outer loop over time segments
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 
@@ -2723,7 +2741,7 @@ if [ "${clm_md}" = 'hfc' ]; then
 fi # !hfc
 				      
 # Many subsequent blocks only execute for normal and incremental monthly climos, not for binary climos, or non-monthly climos
-if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'mth' ] && [ "${bnr_flg}" = 'No' ]; then
+if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}" = 'No' ]; then
     
     # Block 1 Loop 2: Execute and/or echo monthly climatology commands
     printf "Generating climatology...\n"
