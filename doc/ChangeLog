@@ -1,8 +1,12 @@
-2020-07-26  Charlie Zender  <zender@uci.edu>
+2020-07-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha08 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha08: Ella by Starlight';git push
  	git tag -a 4.9.4-alpha08 -m 'ncclimo: mrg hfc mth; ncra/ncrcat: ilv warnings, tidy; nco_gsl.ch rename';git push --tags
+
+	* ncra/nces die when user-specified wgt_nbr and fl_nbr are unequal
+
+2020-07-26  Charlie Zender  <zender@uci.edu>
 
 	* Merge clm_md=hfc with clm_md=mth climo code
 

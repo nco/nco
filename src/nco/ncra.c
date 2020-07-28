@@ -792,6 +792,13 @@ main(int argc,char **argv)
   /* Process positional arguments and fill-in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN,FORCE_OVERWRITE);
 
+  if(wgt_arr){
+    if(wgt_nbr != fl_nbr){
+      (void)fprintf(fp_stdout,"%s: ERROR User-specified per-file weight array has %d elements but there are %d input files.\nHINT: Specify one weight per input file\n",nco_prg_nm_get(),wgt_nbr,fl_nbr);
+      nco_exit(EXIT_FAILURE);
+    } /* !wgt_nbr */
+  } /* !wgt_arr */
+    
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   in_id_arr=(int *)nco_malloc(thr_nbr*sizeof(int));
