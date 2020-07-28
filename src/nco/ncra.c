@@ -919,7 +919,7 @@ main(int argc,char **argv)
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Add climatology_bounds attribute to output file (before cell_methods) */
-  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncfe)){
+  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncap)){
     char bnd_sng[]="bounds"; /* CF-standard time bounds attribute name */
     char clm_sng[]="climatology"; /* CF-standard climatology bounds attribute name */
     char cln_sng[]="calendar"; /* CF-standard calendar attribute name */
@@ -1138,7 +1138,7 @@ main(int argc,char **argv)
     if(cb) cb=(clm_bnd_sct *)nco_free(cb);
 
   /* Add cell_methods attributes (before exiting define mode) */
-  if(nco_prg_id == ncra || nco_prg_id == ncfe){
+  if(nco_prg_id == ncra || nco_prg_id == ncap){
     dmn_sct **dmn=NULL_CEWI;
     int nbr_dmn=nbr_rec;
     dmn=(dmn_sct **)nco_malloc(nbr_dmn*sizeof(dmn_sct *));
@@ -1707,7 +1707,7 @@ main(int argc,char **argv)
         nco_rgd_arr_lst_free(rgd_arr_climo_lst,rgd_arr_climo_nbr);
       } /* end idx_rec loop over different record variables to process */
 
-      if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncfe)){
+      if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncap)){
 	/* Obtain climatology bounds from input file
 	   20160824: Currently dmn_srt_srt and dmn_srt_end indices are 0 and 1, respectively
 	   This means values are always/only taken for first record in input file
@@ -2010,7 +2010,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
   } /* endif ncra || nces */
 
-  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncfe)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
+  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncap)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
 
   if(flg_cb && (cb->bnd2clm || cb->clm2bnd)){
     /* Rename time bounds as climatology bounds, or visa-versa

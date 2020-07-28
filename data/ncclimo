@@ -1952,10 +1952,12 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		let srd=${dpy}*${tpd_out}
 		let ssc=${dpm[${clm_idx}]}*${tpd_out}
 		# Compute interleaved mean of single-file input (e.g., CMIP timeseries format)
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
 		# Combine monthly into seasonal and annual means with nces
-		cmd_mth2csn='nces --cb'
-		cmd_csn2ann='nces --c2b'
+#		cmd_mth2csn='nces --cb'
+#		cmd_csn2ann='nces --c2b'
+		cmd_mth2csn='nces'
+		cmd_csn2ann='nces'
 	    else
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
 		ilv_nbr=${tpd_out}
