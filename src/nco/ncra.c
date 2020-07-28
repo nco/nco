@@ -581,7 +581,7 @@ main(int argc,char **argv)
 	  (void)fprintf(stdout,"%s: ERROR Interleave stride argument is %li but must be > 0\n",nco_prg_nm_get(),ilv_srd);
 	  nco_exit(EXIT_FAILURE);
 	} /* end if */
-	FLG_ILV=FLG_MRO=FLG_MSO=True; /* [flg] Interleave stride */
+	FLG_ILV=FLG_MRO=True; /* [flg] Interleave stride */
       } /* !ilv_srd */
       if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){
 	log_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -919,7 +919,7 @@ main(int argc,char **argv)
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Add climatology_bounds attribute to output file (before cell_methods) */
-  if(flg_cb && nco_prg_id == ncra){
+  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncfe)){
     char bnd_sng[]="bounds"; /* CF-standard time bounds attribute name */
     char clm_sng[]="climatology"; /* CF-standard climatology bounds attribute name */
     char cln_sng[]="calendar"; /* CF-standard calendar attribute name */
@@ -1138,7 +1138,7 @@ main(int argc,char **argv)
     if(cb) cb=(clm_bnd_sct *)nco_free(cb);
 
   /* Add cell_methods attributes (before exiting define mode) */
-  if(nco_prg_id == ncra){
+  if(nco_prg_id == ncra || nco_prg_id == ncfe){
     dmn_sct **dmn=NULL_CEWI;
     int nbr_dmn=nbr_rec;
     dmn=(dmn_sct **)nco_malloc(nbr_dmn*sizeof(dmn_sct *));
@@ -1707,7 +1707,7 @@ main(int argc,char **argv)
         nco_rgd_arr_lst_free(rgd_arr_climo_lst,rgd_arr_climo_nbr);
       } /* end idx_rec loop over different record variables to process */
 
-      if(flg_cb && nco_prg_id == ncra){
+      if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncfe)){
 	/* Obtain climatology bounds from input file
 	   20160824: Currently dmn_srt_srt and dmn_srt_end indices are 0 and 1, respectively
 	   This means values are always/only taken for first record in input file
@@ -2010,7 +2010,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
   } /* endif ncra || nces */
 
-  if(flg_cb && nco_prg_id == ncra) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
+  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncfe)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
 
   if(flg_cb && (cb->bnd2clm || cb->clm2bnd)){
     /* Rename time bounds as climatology bounds, or visa-versa

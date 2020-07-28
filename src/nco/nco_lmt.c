@@ -47,6 +47,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->srt=-1;               /* [nbr] Index to start of hyperslab */
 
   lmt->flg_mro=-1;           /* [flg] True for multi-record output (used by ncra only) */
+  lmt->flg_mso=-1;           /* [flg] True for multi-subcycle output (used by ncra only) */
   lmt->flg_input_complete=-1;/* [flg] True for multi-file operators when no more files need be opened */
   lmt->is_rec_dmn=-1;        /* [flg]  True if record dimension, else False */
   lmt->is_usr_spc_lmt=-1;    /* [flg]  True if any part of limit is user-specified, else False */
@@ -92,6 +93,7 @@ nco_lmt_prn /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Records remaining-to-be-read in current group: %li\n",lmt->rec_rmn_prv_ssc);
 
   (void)fprintf(stdout,"Is multi-record output: %d\n",lmt->flg_mro);
+  (void)fprintf(stdout,"Is multi-subcycle output: %d\n",lmt->flg_mso);
   (void)fprintf(stdout,"No more files need be opened: %d\n",lmt->flg_input_complete);
   (void)fprintf(stdout,"Is record dimension: %d\n",lmt->is_rec_dmn);
   (void)fprintf(stdout,"Any part is user-specified: %d\n",lmt->is_usr_spc_lmt);
@@ -148,6 +150,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
 
   lmt2->flg_ilv=lmt1->flg_ilv;
   lmt2->flg_mro=lmt1->flg_mro;
+  lmt2->flg_mso=lmt1->flg_mso;
   lmt2->flg_input_complete=lmt1->flg_input_complete;
   lmt2->is_rec_dmn=lmt1->is_rec_dmn;
   lmt2->is_usr_spc_lmt=lmt1->is_usr_spc_lmt;
@@ -561,6 +564,7 @@ nco_prn_lmt                    /* [fnc] Print limit information */
   (void)fprintf(stderr,"SRD = %s\n",lmt.srd != 1L ? "YES" : "NO");
   (void)fprintf(stderr,"SSC = %s\n",lmt.ssc != 1L ? "YES" : "NO");
   (void)fprintf(stderr,"MRO = %s\n",lmt.flg_mro ? "YES" : "NO");
+  (void)fprintf(stderr,"MSO = %s\n",lmt.flg_mso ? "YES" : "NO");
   (void)fprintf(stderr,"ILV = %s\n\n",lmt.flg_ilv ? "YES" : "NO");
 } /* nco_prn_lmt() */
 
@@ -613,6 +617,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 
   /* Initialize limit structure */
   lmt.flg_mro=False;
+  lmt.flg_mso=False;
   lmt.max_val=0.0;
   lmt.min_val=0.0;
   lmt.ssc=1L;
@@ -725,6 +730,16 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* end else */
   } /* !lmt.flg_mro */
 
+  /* In case flg_mso is set in ncra.c by --mso */
+  if(lmt.flg_mso){
+    if(nco_prg_id == ncrcat){
+      (void)fprintf(stdout,"%s: INFO Specifying Multi-Subcycle Output (MSO) option (--mso) is redundant. MSO is always true for ncrcat.\n",nco_prg_nm_get());
+    }else if(nco_prg_id != ncra){
+      (void)fprintf(stdout,"%s: ERROR Multi-Subcycle Output (MSO) option (--mso) is only valid for ncra.\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* end else */
+  } /* !lmt.flg_mso */
+
   /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
      Order and mutual-exclusivity of these conditions is important */
   if(lmt.ilv_sng && !lmt.ssc_sng && !lmt.srd_sng){
@@ -739,6 +754,8 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* lmt.ilv */
   /* Set MRO whenever interleave is explicitly requested */
   if(lmt.ilv_sng) lmt.flg_mro=True;
+  /* Set MSO whenever interleave is explicitly requested */
+  if(lmt.ilv_sng) lmt.flg_mso=True;
 
   /* If min_sng and max_sng are both NULL then set type to lmt_dmn_idx */
   if(lmt.min_sng == NULL && lmt.max_sng == NULL){
@@ -1463,6 +1480,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
 
   /* Initialize limit structure */
   lmt.flg_mro=False;
+  lmt.flg_mso=False;
   lmt.max_val=0.0;
   lmt.min_val=0.0;
   lmt.ssc=1L;
@@ -1569,6 +1587,16 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     } /* end else */
   } /* !lmt.flg_mro */
 
+  /* In case flg_mso is set in ncra.c by --mso */
+  if(lmt.flg_mso){
+    if(nco_prg_id == ncrcat){
+      (void)fprintf(stdout,"%s: INFO Specifying Multi-Subcycle Output (MSO) option (--mso) is redundant. MSO is always true for ncrcat.\n",nco_prg_nm_get());
+    }else if(nco_prg_id != ncra){
+      (void)fprintf(stdout,"%s: ERROR Multi-Subcycle Output (MSO) option (--mso) is only valid for ncra.\n",nco_prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+    } /* end else */
+  } /* !lmt.flg_mso */
+
   /* 20200721 Context-sensitive argument inferral makes default (blank) arguments more useful 
      Order and mutual-exclusivity of these conditions is important */
   if(lmt.ilv_sng && !lmt.ssc_sng && !lmt.srd_sng){
@@ -1583,6 +1611,8 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
   } /* lmt.ilv */
   /* Set MRO whenever interleave is explicitly requested */
   if(lmt.ilv_sng) lmt.flg_mro=True;
+  /* Set MSO whenever interleave is explicitly requested */
+  if(lmt.ilv_sng) lmt.flg_mso=True;
 
   /* If min_sng and max_sng are both NULL then set type to lmt_dmn_idx */
   if(lmt.min_sng == NULL && lmt.max_sng == NULL){
