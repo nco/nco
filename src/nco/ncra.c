@@ -248,6 +248,7 @@ main(int argc,char **argv)
   nco_bool FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
   nco_bool FLG_ILV=False; /* [flg] Interleave Output */
   nco_bool FLG_MRO=False; /* [flg] Multi-Record Output */
+  nco_bool FLG_MSO=False; /* [flg] Multi-Subcycle Output */
   nco_bool FL_LST_IN_APPEND=True; /* Option H */
   nco_bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   nco_bool FL_RTR_RMT_LCN;
@@ -355,7 +356,9 @@ main(int argc,char **argv)
     {"md5_dgs",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"md5_digest",no_argument,0,0}, /* [flg] Perform MD5 digests */
     {"mro",no_argument,0,0}, /* [flg] Multi-Record Output */
+    {"mso",no_argument,0,0}, /* [flg] Multi-Subcycle Output */
     {"multi_record_output",no_argument,0,0}, /* [flg] Multi-Record Output */
+    {"multi_subcycle_output",no_argument,0,0}, /* [flg] Multi-Subcycle Output */
     {"msa_usr_rdr",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     {"msa_user_order",no_argument,0,0}, /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
     {"nsm_fl",no_argument,0,0},
@@ -578,7 +581,7 @@ main(int argc,char **argv)
 	  (void)fprintf(stdout,"%s: ERROR Interleave stride argument is %li but must be > 0\n",nco_prg_nm_get(),ilv_srd);
 	  nco_exit(EXIT_FAILURE);
 	} /* end if */
-	FLG_ILV=FLG_MRO=True; /* [flg] Interleave stride */
+	FLG_ILV=FLG_MRO=FLG_MSO=True; /* [flg] Interleave stride */
       } /* !ilv_srd */
       if(!strcmp(opt_crr,"log_lvl") || !strcmp(opt_crr,"log_level")){
 	log_lvl=(int)strtol(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
@@ -591,6 +594,7 @@ main(int argc,char **argv)
         if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Will perform MD5 digests of input and output hyperslabs\n",nco_prg_nm_get());
       } /* endif "md5_dgs" */
       if(!strcmp(opt_crr,"mro") || !strcmp(opt_crr,"multi_record_output")) FLG_MRO=True; /* [flg] Multi-Record Output */
+      if(!strcmp(opt_crr,"mso") || !strcmp(opt_crr,"multi_subcycle_output")) FLG_MSO=True; /* [flg] Multi-Subcycle Output */
       if(!strcmp(opt_crr,"msa_usr_rdr") || !strcmp(opt_crr,"msa_user_order")) MSA_USR_RDR=True; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
       if(!strcmp(opt_crr,"nsm_fl") || !strcmp(opt_crr,"nsm_file") || !strcmp(opt_crr,"ensemble_file")){
 	if(nco_prg_nm) nco_prg_nm=(char *)nco_free(nco_prg_nm);
@@ -1271,6 +1275,7 @@ main(int argc,char **argv)
 	FLG_ILV=lmt_rec[idx_rec]->flg_ilv;
         if(FLG_ILV) FLG_MRO=lmt_rec[idx_rec]->flg_mro;
         if(FLG_MRO) lmt_rec[idx_rec]->flg_mro=True;
+        if(FLG_MSO) lmt_rec[idx_rec]->flg_mso=True;
         ilv_per_ssc=lmt_rec[idx_rec]->ssc/lmt_rec[idx_rec]->ilv; /* Sub-cycles never cross file boundaries in interleave-compliant files */
 
         if(lmt_rec[idx_rec]->is_rec_dmn){
@@ -1317,7 +1322,7 @@ main(int argc,char **argv)
         rec_rmn_prv_ssc=lmt_rec[idx_rec]->rec_rmn_prv_ssc; /* Local copy may be decremented later */
         idx_rec_crr_in= (rec_rmn_prv_ssc > 0L) ? 0L : lmt_rec[idx_rec]->srt;
 
-	if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG After lmt_evl() for fl_idx=%d ILV=%s MRO=%s, srt=%ld, end=%ld, srd=%ld, ssc=%ld, ilv=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, idx_rec_out=%ld\n",nco_prg_nm_get(),fl_idx,FLG_ILV ? "YES" : "NO",FLG_MRO ? "YES" : "NO",lmt_rec[idx_rec]->srt,lmt_rec[idx_rec]->end,lmt_rec[idx_rec]->srd,lmt_rec[idx_rec]->ssc,lmt_rec[idx_rec]->ilv,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,idx_rec_out[idx_rec]);
+	if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG After lmt_evl() for fl_idx=%d ILV=%s MRO=%s, MSO=%s, srt=%ld, end=%ld, srd=%ld, ssc=%ld, ilv=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, idx_rec_out=%ld\n",nco_prg_nm_get(),fl_idx,FLG_ILV ? "YES" : "NO",FLG_MRO ? "YES" : "NO",FLG_MSO ? "YES" : "NO",lmt_rec[idx_rec]->srt,lmt_rec[idx_rec]->end,lmt_rec[idx_rec]->srd,lmt_rec[idx_rec]->ssc,lmt_rec[idx_rec]->ilv,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,idx_rec_out[idx_rec]);
 
 	/* Sub-cycles not allowed to cross file boundaries in interleave mode */
         if(FLG_ILV && rec_rmn_prv_ilv > 0L){
@@ -1398,7 +1403,7 @@ main(int argc,char **argv)
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,fl_udu_sng,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,rgd_arr_bnds_lst,rgd_arr_bnds_nbr,rgd_arr_climo_lst,rgd_arr_climo_nbr,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
+#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,FLG_MSO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,fl_udu_sng,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,rgd_arr_bnds_lst,rgd_arr_bnds_nbr,rgd_arr_climo_lst,rgd_arr_climo_nbr,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 

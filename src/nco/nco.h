@@ -859,6 +859,7 @@ extern "C" {
     nco_bool flg_ilv; /* True for interleaved output (used by ncra and ncrcat only) */
     nco_bool flg_input_complete; /* True for multi-file operators when no more files need be opened */
     nco_bool flg_mro; /* True for multi-record output (used by ncra only) */
+    nco_bool flg_mso; /* True for multi-subcycle output (used by ncra only) */
 
     nco_bool is_rec_dmn; /* True if record dimension, else False */
     nco_bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */

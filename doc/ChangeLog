@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha08: Ella by Starlight';git push
  	git tag -a 4.9.4-alpha08 -m 'ncclimo: mrg hfc mth; ncra/ncrcat: ilv warnings, tidy; nco_gsl.ch rename';git push --tags
 
+	* Stubs for --mso to allow turning on/off multi-subcycle output
+
 	* ncra/nces die when user-specified wgt_nbr and fl_nbr are unequal
 
 2020-07-26  Charlie Zender  <zender@uci.edu>
