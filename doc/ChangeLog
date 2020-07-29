@@ -1,3 +1,11 @@
+2020-07-29  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.4-alpha09 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha09: Marble';git push
+	git tag -a 4.9.4-alpha09 -m 'ncclimo:  ; nces  ; ncra/ncrcat: ;';git push --tags
+
+	* Temporarily disable cb for high-frequency climos
+
 2020-07-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha08 release procedure:

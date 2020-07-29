@@ -1347,8 +1347,8 @@ main(int argc,char **argv)
 	     rec_usd_cml: Cumulative number of input records used (catenated by ncrcat or operated on by ncra)
 
 	     Flag juggling:
-	     When introduced in NCO 4.2.1 in 2012, "groups" and sub-cycles (née drn) were synonymous
 	     Groups are the vernacular for a collection of records to output (ncrcat) or reduce (ncra)
+	     When introduced in NCO 4.2.1 in 2012, "groups" and sub-cycles (née drn) were synonymous
 	     NCO 4.9.4 in 2020 introduced interleaving, which alters the meaning of groups
 	     A "group" is now a set of records that ncra reduces/normalizes/outputs as a single record
 	     Thus groups and sub-cycles are still synonomous except in ncra in interleave mode
@@ -1364,11 +1364,12 @@ main(int argc,char **argv)
 	     first/last records in a group, respectively, and false otherwise
 
 	     REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with nces normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR.
-	     20200719: REC_LST_DSR is never set for FLG_ILV, since complete sub-cycles are assumed to be within a single file, and normalization always occurs at a group ending. */
+	     20200719: REC_LST_DSR is not used for FLG_ILV, since complete sub-cycles are assumed to be within a single file, and normalization always occurs at a group ending. */
 
 	  if(FLG_ILV){
 	    /* Even intra-ssc strides commence group beginnings */
 	    if(rec_rmn_prv_ilv == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;
+	    //if(FLG_MSO && rec_usd_cml[idx_rec]) REC_FRS_GRP=False;
 	  }else{
 	    /* Even inter-ssc strides commence group beginnings */
 	    if(rec_rmn_prv_ssc == 0L) REC_FRS_GRP=True; else REC_FRS_GRP=False;
@@ -1380,18 +1381,19 @@ main(int argc,char **argv)
           /* Reset sub-cycle counter to ssc records */
           if(rec_rmn_prv_ssc == 0L) rec_rmn_prv_ssc=lmt_rec[idx_rec]->ssc;
 
+          /* Final record triggers normalization regardless of its location within group */
+          if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
+
 	  /* ncra reduction/normalization/writing code must know last record in current group (LRCG) for both MRO and non-MRO */
 	  if(FLG_ILV){
 	    if(rec_rmn_prv_ilv == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
+	    //if(FLG_MSO && !REC_LST_DSR[idx_rec]) REC_LST_GRP=False;
 	  }else{
 	    if(rec_rmn_prv_ssc == 1L) REC_LST_GRP=True; else REC_LST_GRP=False;
 	  } /* !FLG_ILV */
 
           /* Last stride in file has distinct index-augmenting behavior */
           if(idx_rec_crr_in >= lmt_rec[idx_rec]->end) REC_SRD_LST=True; else REC_SRD_LST=False;
-
-          /* Final record triggers normalization regardless of its location within group */
-          if(fl_idx == fl_nbr-1 && idx_rec_crr_in == min_int(lmt_rec[idx_rec]->end+lmt_rec[idx_rec]->ssc-1L,rec_dmn_sz-1L)) REC_LST_DSR[idx_rec]=True;
 
           if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, REC_FRS_GRP=%s, REC_LST_GRP=%s, REC_SRD_LST=%s, REC_LST_DSR=%s, idx_rec_out=%ld\n",nco_prg_nm_get(),idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,REC_FRS_GRP ? "YES" : "NO",REC_LST_GRP ? "YES" : "NO",REC_SRD_LST ? "YES" : "NO",REC_LST_DSR[idx_rec] ? "YES" : "NO",idx_rec_out[idx_rec]);
 

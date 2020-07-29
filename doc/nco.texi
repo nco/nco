@@ -22497,7 +22497,7 @@ function ncrng { ncap2 -O -C -v -s "foo_min=${1}.min();foo_max=${1}.max();print(
 # ncmode $var_nm $fl_nm : What is mode of variable?
 function ncmode { ncap2 -O -C -v -s "foo=gsl_stats_median_from_sorted_data(${1}.sort());print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncrecsz $fl_nm : What is record dimension size?
-function ncrecsz { ncks --trd -M ${1} | grep -E -i "^Record dimension:" | cut -f 8- -d ' ' ; }
+function ncrecsz { ncks --trd -M ${1} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' ' ; }
 # nctypget $var_nm $fl_nm : What type is variable?
 function nctypget { ncks --trd -m -v ${1} ${2} | grep -E -i "^${1}: type" | cut -f 3 -d ' ' | cut -f 1 -d ',' ; }
 
