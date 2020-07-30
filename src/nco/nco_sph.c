@@ -972,7 +972,6 @@ nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0,  dou
   /* placeholder ? */
   double pt[NBR_SPH]={0.0,0.0,0.0,0.0,0.0};
 
-  double *dswp;
   int pq_cross_lcl[4];
 
 
@@ -1190,7 +1189,7 @@ nco_sph_seg_smc   /* intersect great circles and small circles */
   int flg_ab=0;
   int flg_cd=0;
 
-  double pqdot;
+  double pqdot=0.0;
   double s0=0.0;
   double s1=0.0;
   double dtmp = 0.0;
@@ -2567,7 +2566,7 @@ int pos_cnt=0;
 
 
 double n1;
-double n2;
+
 
 double dp;
 double theta=0.0;
