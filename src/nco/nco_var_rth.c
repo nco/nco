@@ -29,13 +29,15 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-  
+																																							  
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.fp[idx]=fabsf(op1.fp[idx]);
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=fabsf(op1.fp[idx]); 
       } /* end for */
@@ -43,9 +45,11 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.dp[idx]=fabs(op1.dp[idx]);
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fabs(op1.dp[idx]);
       } /* end for */
@@ -53,9 +57,11 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.ip[idx]=labs(op1.ip[idx]); /* int abs(int), long labs(long) */
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.ip[idx] != mss_val_ntg) op1.ip[idx]=labs(op1.ip[idx]); /* int abs(int), long labs(long) */
       } /* end for */
@@ -63,9 +69,11 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op1.sp[idx] < 0) op1.sp[idx]=-op1.sp[idx] ;
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_short && op1.sp[idx] < 0) op1.sp[idx]=-op1.sp[idx];
       } /* end for */
@@ -73,9 +81,11 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op1.bp[idx] < 0) op1.bp[idx]=-op1.bp[idx] ;
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.bp[idx] != mss_val_byte && op1.bp[idx] < 0) op1.bp[idx]=-op1.bp[idx];
       } /* end for */
@@ -85,9 +95,11 @@ nco_var_abs /* [fnc] Replace op1 values by their absolute values */
   case NC_UINT: break; /* Do nothing */
   case NC_INT64: 
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.i64p[idx]=llabs(op1.i64p[idx]);
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.i64p[idx] != mss_val_int64) op1.i64p[idx]=llabs(op1.i64p[idx]);
       } /* end for */
@@ -131,9 +143,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.fp[idx]+=op1.fp[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]+=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -141,9 +155,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.dp[idx]+=op1.dp[idx];
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]+=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -151,9 +167,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ip[idx]+=op1.ip[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ip[idx] != mss_val_ntg) && (op1.ip[idx] != mss_val_ntg)) op2.ip[idx]+=op1.ip[idx]; else op2.ip[idx]=mss_val_ntg;
       } /* end for */
@@ -161,9 +179,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.sp[idx]+=op1.sp[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]+=op1.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
@@ -171,9 +191,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.usp[idx]+=op1.usp[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]+=op1.usp[idx]; else op2.usp[idx]=mss_val_ushort;
       } /* end for */
@@ -181,9 +203,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.uip[idx]+=op1.uip[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]+=op1.uip[idx]; else op2.uip[idx]=mss_val_uint;
       } /* end for */
@@ -191,9 +215,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.i64p[idx]+=op1.i64p[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]+=op1.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
       } /* end for */
@@ -201,9 +227,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ui64p[idx]+=op1.ui64p[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]+=op1.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
       } /* end for */
@@ -211,9 +239,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.bp[idx]+=op1.bp[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.bp[idx] != mss_val_byte) && (op1.bp[idx] != mss_val_byte)) op2.bp[idx]+=op1.bp[idx]; else op2.bp[idx]=mss_val_byte;
       } /* end for */
@@ -221,9 +251,11 @@ nco_var_add /* [fnc] Add first operand to second operand */
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ubp[idx]+=op1.ubp[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ubp[idx] != mss_val_ubyte) && (op1.ubp[idx] != mss_val_ubyte)) op2.ubp[idx]+=op1.ubp[idx]; else op2.ubp[idx]=mss_val_ubyte;
       } /* end for */
@@ -270,12 +302,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.fp[idx]+=op1.fp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)){
 	  op2.fp[idx]+=op1.fp[idx];
@@ -288,12 +322,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.dp[idx]+=op1.dp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)){
 	  op2.dp[idx]+=op1.dp[idx];
@@ -306,12 +342,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ip[idx]+=op1.ip[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ip[idx] != mss_val_ntg) && (op1.ip[idx] != mss_val_ntg)){
 	  op2.ip[idx]+=op1.ip[idx];
@@ -324,12 +362,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.sp[idx]+=op1.sp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)){
 	  op2.sp[idx]+=op1.sp[idx];
@@ -342,12 +382,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.usp[idx]+=op1.usp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)){
 	  op2.usp[idx]+=op1.usp[idx];
@@ -360,12 +402,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.uip[idx]+=op1.uip[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)){
 	  op2.uip[idx]+=op1.uip[idx];
@@ -378,12 +422,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.i64p[idx]+=op1.i64p[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)){
 	  op2.i64p[idx]+=op1.i64p[idx];
@@ -396,12 +442,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ui64p[idx]+=op1.ui64p[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)){
 	  op2.ui64p[idx]+=op1.ui64p[idx];
@@ -414,12 +462,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.bp[idx]+=op1.bp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.bp[idx] != mss_val_byte) && (op1.bp[idx] != mss_val_byte)){
 	  op2.bp[idx]+=op1.bp[idx];
@@ -432,12 +482,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ubp[idx]+=op1.ubp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ubp[idx] != mss_val_ubyte) && (op1.ubp[idx] != mss_val_ubyte)){
 	  op2.ubp[idx]+=op1.ubp[idx];
@@ -459,12 +511,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.fp[idx]+=op1.fp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)){
 	  op2.fp[idx]+=op1.fp[idx];
@@ -475,12 +529,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.dp[idx]+=op1.dp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)){
 	  op2.dp[idx]+=op1.dp[idx];
@@ -491,12 +547,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ip[idx]+=op1.ip[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ip[idx] != mss_val_ntg) && (op1.ip[idx] != mss_val_ntg)){
 	  op2.ip[idx]+=op1.ip[idx];
@@ -507,12 +565,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.sp[idx]+=op1.sp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)){
 	  op2.sp[idx]+=op1.sp[idx];
@@ -523,12 +583,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.usp[idx]+=op1.usp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)){
 	  op2.usp[idx]+=op1.usp[idx];
@@ -539,12 +601,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.uip[idx]+=op1.uip[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)){
 	  op2.uip[idx]+=op1.uip[idx];
@@ -555,12 +619,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.i64p[idx]+=op1.i64p[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)){
 	  op2.i64p[idx]+=op1.i64p[idx];
@@ -571,12 +637,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ui64p[idx]+=op1.ui64p[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)){
 	  op2.ui64p[idx]+=op1.ui64p[idx];
@@ -587,12 +655,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.bp[idx]+=op1.bp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.bp[idx] != mss_val_byte) && (op1.bp[idx] != mss_val_byte)){
 	  op2.bp[idx]+=op1.bp[idx];
@@ -603,12 +673,14 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ubp[idx]+=op1.ubp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ubp[idx] != mss_val_ubyte) && (op1.ubp[idx] != mss_val_ubyte)){
 	  op2.ubp[idx]+=op1.ubp[idx];
@@ -679,12 +751,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.fp[idx]+=op1.fp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt){
 	  op2.fp[idx]+=op1.fp[idx];
@@ -696,12 +770,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.dp[idx]+=op1.dp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl){
 	  op2.dp[idx]+=op1.dp[idx];
@@ -713,12 +789,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ip[idx]+=op1.ip[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.ip[idx] != mss_val_ntg){
 	  op2.ip[idx]+=op1.ip[idx];
@@ -730,12 +808,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.sp[idx]+=op1.sp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_short){
 	  op2.sp[idx]+=op1.sp[idx];
@@ -747,12 +827,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.usp[idx]+=op1.usp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.usp[idx] != mss_val_ushort){
 	  op2.usp[idx]+=op1.usp[idx];
@@ -764,12 +846,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.uip[idx]+=op1.uip[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.uip[idx] != mss_val_uint){
 	  op2.uip[idx]+=op1.uip[idx];
@@ -781,12 +865,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.i64p[idx]+=op1.i64p[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.i64p[idx] != mss_val_int64){
 	  op2.i64p[idx]+=op1.i64p[idx];
@@ -798,12 +884,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ui64p[idx]+=op1.ui64p[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.ui64p[idx] != mss_val_uint64){
 	  op2.ui64p[idx]+=op1.ui64p[idx];
@@ -815,12 +903,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.bp[idx]+=op1.bp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.bp[idx] != mss_val_byte){
 	  op2.bp[idx]+=op1.bp[idx];
@@ -832,12 +922,14 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ubp[idx]+=op1.ubp[idx];
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.ubp[idx] != mss_val_ubyte){
 	  op2.ubp[idx]+=op1.ubp[idx];
@@ -898,60 +990,70 @@ nco_var_copy_tll /* [fnc] Copy hyperslab variables of type var_typ from op1 to o
   case NC_FLOAT:
     {
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.fp[idx] == mss_val_flt) op2.fp[idx]=0.0f; else tally[idx]=1L;
     }
     break;
   case NC_DOUBLE:
     {
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.dp[idx] == mss_val_dbl) op2.dp[idx]=0.0; else tally[idx]=1L;
     }
     break;
   case NC_INT:
     {
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.ip[idx] == mss_val_ntg) op2.ip[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_SHORT:
     {
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.sp[idx] == mss_val_short) op2.sp[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_USHORT:
     {
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.usp[idx] == mss_val_ushort) op2.usp[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_UINT:
     {
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.uip[idx] == mss_val_uint) op2.uip[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_INT64:
     {
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.i64p[idx] == mss_val_int64) op2.i64p[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_UINT64:
     {
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] == mss_val_uint64) op2.ui64p[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_BYTE:
     {
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.bp[idx] == mss_val_byte) op2.bp[idx]=0; else tally[idx]=1L;
     }
     break;
   case NC_UBYTE:
     {
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(op2.ubp[idx] == mss_val_ubyte) op2.ubp[idx]=0; else tally[idx]=1L;
     }
     break;
@@ -991,9 +1093,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.fp[idx]/=op1.fp[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]/=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -1001,9 +1105,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     break; /* end NC_FLOAT */
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.dp[idx]/=op1.dp[idx];
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]/=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -1011,9 +1117,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     break; /* end NC_DOUBLE */
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ip[idx]/=op1.ip[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ip[idx] != mss_val_ntg) && (op1.ip[idx] != mss_val_ntg)) op2.ip[idx]/=op1.ip[idx]; else op2.ip[idx]=mss_val_ntg;
       } /* end for */
@@ -1021,9 +1129,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     break; /* end NC_INT */
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.sp[idx]/=op1.sp[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]/=op1.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
@@ -1031,9 +1141,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     break; /* end NC_SHORT */
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.usp[idx]/=op1.usp[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]/=op1.usp[idx]; else op2.usp[idx]=mss_val_ushort;
       } /* end for */
@@ -1041,9 +1153,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     break; /* end NC_USHORT */
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.uip[idx]/=op1.uip[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]/=op1.uip[idx]; else op2.uip[idx]=mss_val_uint;
       } /* end for */
@@ -1051,9 +1165,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     break; /* end NC_UINT */
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.i64p[idx]/=op1.i64p[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]/=op1.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
       } /* end for */
@@ -1061,9 +1177,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     break; /* end NC_INT64 */
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ui64p[idx]/=op1.ui64p[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]/=op1.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
       } /* end for */
@@ -1071,9 +1189,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     break; /* end NC_UINT64 */
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.bp[idx]/=op1.bp[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.bp[idx] != mss_val_byte) && (op1.bp[idx] != mss_val_byte)) op2.bp[idx]/=op1.bp[idx]; else op2.bp[idx]=mss_val_byte;
       } /* end for */
@@ -1081,9 +1201,11 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
     break; /* end NC_BYTE */
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ubp[idx]/=op1.ubp[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ubp[idx] != mss_val_ubyte) && (op1.ubp[idx] != mss_val_ubyte)) op2.ubp[idx]/=op1.ubp[idx]; else op2.ubp[idx]=mss_val_ubyte;
       } /* end for */
@@ -1122,10 +1244,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.fp[idx] < op1.fp[idx]) op2.fp[idx]=op1.fp[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.fp[idx] == mss_val_flt)
 	  op2.fp[idx]=op1.fp[idx];
@@ -1136,10 +1260,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.dp[idx] < op1.dp[idx]) op2.dp[idx]=op1.dp[idx];
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.dp[idx] == mss_val_dbl) 
 	  op2.dp[idx]=op1.dp[idx];
@@ -1150,10 +1276,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.ip[idx] < op1.ip[idx]) op2.ip[idx]=op1.ip[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.ip[idx] == mss_val_ntg) 
 	  op2.ip[idx]=op1.ip[idx];
@@ -1164,10 +1292,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.sp[idx] < op1.sp[idx]) op2.sp[idx]=op1.sp[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.sp[idx] == mss_val_short) 
 	  op2.sp[idx]=op1.sp[idx];
@@ -1178,10 +1308,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.usp[idx] < op1.usp[idx]) op2.usp[idx]=op1.usp[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.usp[idx] == mss_val_ushort) 
 	  op2.usp[idx]=op1.usp[idx];
@@ -1192,10 +1324,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.uip[idx] < op1.uip[idx]) op2.uip[idx]=op1.uip[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.uip[idx] == mss_val_uint) 
 	  op2.uip[idx]=op1.uip[idx];
@@ -1206,10 +1340,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.i64p[idx] < op1.i64p[idx]) op2.i64p[idx]=op1.i64p[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.i64p[idx] == mss_val_int64) 
 	  op2.i64p[idx]=op1.i64p[idx];
@@ -1220,10 +1356,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.ui64p[idx] < op1.ui64p[idx]) op2.ui64p[idx]=op1.ui64p[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.ui64p[idx] == mss_val_uint64) 
 	  op2.ui64p[idx]=op1.ui64p[idx];
@@ -1234,10 +1372,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.bp[idx] < op1.bp[idx]) op2.bp[idx]=op1.bp[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.bp[idx] == mss_val_byte) 
 	  op2.bp[idx]=op1.bp[idx];
@@ -1248,10 +1388,12 @@ nco_var_max_bnr /* [fnc] Maximize two operands */
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.ubp[idx] < op1.ubp[idx]) op2.ubp[idx]=op1.ubp[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.ubp[idx] == mss_val_ubyte) 
 	  op2.ubp[idx]=op1.ubp[idx];
@@ -1290,10 +1432,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.fp[idx] > op1.fp[idx]) op2.fp[idx]=op1.fp[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.fp[idx] == mss_val_flt) 
 	  op2.fp[idx]=op1.fp[idx];
@@ -1304,10 +1448,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.dp[idx] > op1.dp[idx]) op2.dp[idx]=op1.dp[idx];
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.dp[idx] == mss_val_dbl) 
 	  op2.dp[idx]=op1.dp[idx];
@@ -1318,10 +1464,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.ip[idx] > op1.ip[idx]) op2.ip[idx]=op1.ip[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.ip[idx] == mss_val_ntg) 
 	  op2.ip[idx]=op1.ip[idx];
@@ -1332,10 +1480,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.sp[idx] > op1.sp[idx]) op2.sp[idx]=op1.sp[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.sp[idx] == mss_val_short) 
 	  op2.sp[idx]=op1.sp[idx];
@@ -1346,10 +1496,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.usp[idx] > op1.usp[idx]) op2.usp[idx]=op1.usp[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.usp[idx] == mss_val_ushort) 
 	  op2.usp[idx]=op1.usp[idx];
@@ -1360,10 +1512,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.uip[idx] > op1.uip[idx]) op2.uip[idx]=op1.uip[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.uip[idx] == mss_val_uint) 
 	  op2.uip[idx]=op1.uip[idx];
@@ -1374,10 +1528,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.i64p[idx] > op1.i64p[idx]) op2.i64p[idx]=op1.i64p[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.i64p[idx] == mss_val_int64) 
 	  op2.i64p[idx]=op1.i64p[idx];
@@ -1388,10 +1544,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.ui64p[idx] > op1.ui64p[idx]) op2.ui64p[idx]=op1.ui64p[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.ui64p[idx] == mss_val_uint64) 
 	  op2.ui64p[idx]=op1.ui64p[idx];
@@ -1402,10 +1560,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.bp[idx] > op1.bp[idx]) op2.bp[idx]=op1.bp[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.bp[idx] == mss_val_byte) 
 	  op2.bp[idx]=op1.bp[idx];
@@ -1416,10 +1576,12 @@ nco_var_min_bnr /* [fnc] Minimize two operands */
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) 
 	if(op2.ubp[idx] > op1.ubp[idx]) op2.ubp[idx]=op1.ubp[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op2.ubp[idx] == mss_val_ubyte) 
 	  op2.ubp[idx]=op1.ubp[idx];
@@ -1460,9 +1622,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.fp[idx]*=op1.fp[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]*=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -1470,9 +1634,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.dp[idx]*=op1.dp[idx];
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]*=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -1480,9 +1646,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ip[idx]*=op1.ip[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ip[idx] != mss_val_ntg) && (op1.ip[idx] != mss_val_ntg)) op2.ip[idx]*=op1.ip[idx]; else op2.ip[idx]=mss_val_ntg;
       } /* end for */
@@ -1490,9 +1658,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.sp[idx]*=op1.sp[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]*=op1.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
@@ -1500,9 +1670,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.usp[idx]*=op1.usp[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]*=op1.usp[idx]; else op2.usp[idx]=mss_val_ushort;
       } /* end for */
@@ -1510,9 +1682,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.uip[idx]*=op1.uip[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]*=op1.uip[idx]; else op2.uip[idx]=mss_val_uint;
       } /* end for */
@@ -1520,9 +1694,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.i64p[idx]*=op1.i64p[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]*=op1.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
       } /* end for */
@@ -1530,9 +1706,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ui64p[idx]*=op1.ui64p[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]*=op1.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
       } /* end for */
@@ -1540,9 +1718,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.bp[idx]*=op1.bp[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.bp[idx] != mss_val_byte) && (op1.bp[idx] != mss_val_byte)) op2.bp[idx]*=op1.bp[idx]; else op2.bp[idx]=mss_val_byte;
       } /* end for */
@@ -1550,9 +1730,11 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ubp[idx]*=op1.ubp[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ubp[idx] != mss_val_ubyte) && (op1.ubp[idx] != mss_val_ubyte)) op2.ubp[idx]*=op1.ubp[idx]; else op2.ubp[idx]=mss_val_ubyte;
       } /* end for */
@@ -1594,9 +1776,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
   switch(type){
   case NC_FLOAT: /* Hand-code modulo operator for floating point arguments (intrinsic % requires integer arguments) */
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.fp[idx]=op1.fp[idx]-op2.fp[idx]*(int)(op1.fp[idx]/op2.fp[idx]);
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]=op1.fp[idx]-op2.fp[idx]*(int)(op1.fp[idx]/op2.fp[idx]); else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -1604,9 +1788,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_FLOAT */
   case NC_DOUBLE: /* Hand-code modulo operator for floating point arguments (intrinsic % requires integer arguments) */
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.dp[idx]=op1.dp[idx]-op2.dp[idx]*(int)(op1.dp[idx]/op2.dp[idx]);
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]=op1.dp[idx]-op2.dp[idx]*(int)(op1.dp[idx]/op2.dp[idx]); else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -1614,9 +1800,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_DOUBLE */
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ip[idx]=op1.ip[idx]%op2.ip[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ip[idx] != mss_val_ntg) && (op1.ip[idx] != mss_val_ntg)) op2.ip[idx]=op1.ip[idx]%op2.ip[idx]; else op2.ip[idx]=mss_val_ntg;
       } /* end for */
@@ -1624,9 +1812,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_INT */
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.sp[idx]=op1.sp[idx]%op2.sp[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]=op1.sp[idx]%op2.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
@@ -1634,9 +1824,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_SHORT */
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.usp[idx]=op1.usp[idx]%op2.usp[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]=op1.usp[idx]%op2.usp[idx]; else op2.usp[idx]=mss_val_ushort;
       } /* end for */
@@ -1644,9 +1836,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_USHORT */
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.uip[idx]=op1.uip[idx]%op2.uip[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]=op1.uip[idx]%op2.uip[idx]; else op2.uip[idx]=mss_val_uint;
       } /* end for */
@@ -1654,9 +1848,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_UINT */
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.i64p[idx]=op1.i64p[idx]%op2.i64p[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]=op1.i64p[idx]%op2.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
       } /* end for */
@@ -1664,9 +1860,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_INT64 */
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ui64p[idx]=op1.ui64p[idx]%op2.ui64p[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]=op1.ui64p[idx]%op2.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
       } /* end for */
@@ -1674,9 +1872,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_UINT64 */
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.bp[idx]=op1.bp[idx]%op2.bp[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.bp[idx] != mss_val_byte) && (op1.bp[idx] != mss_val_byte)) op2.bp[idx]=op1.bp[idx]%op2.bp[idx]; else op2.bp[idx]=mss_val_byte;
       } /* end for */
@@ -1684,9 +1884,11 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
     break; /* end NC_BYTE */
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ubp[idx]=op1.ubp[idx]%op2.ubp[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ubp[idx] != mss_val_ubyte) && (op1.ubp[idx] != mss_val_ubyte)) op2.ubp[idx]=op1.ubp[idx]%op2.ubp[idx]; else op2.ubp[idx]=mss_val_ubyte;
       } /* end for */
@@ -1765,112 +1967,310 @@ nco_var_msk /* [fnc] Mask third operand where first and second operands fail com
   switch(type){
   case NC_FLOAT:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.fp[idx] != (float)op1) op3.fp[idx]=mss_val_flt; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.fp[idx] == (float)op1) op3.fp[idx]=mss_val_flt; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.fp[idx] >= (float)op1) op3.fp[idx]=mss_val_flt; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.fp[idx] <= (float)op1) op3.fp[idx]=mss_val_flt; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.fp[idx] >  (float)op1) op3.fp[idx]=mss_val_flt; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.fp[idx] <  (float)op1) op3.fp[idx]=mss_val_flt; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.fp[idx] != (float)op1) op3.fp[idx]=mss_val_flt; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.fp[idx] == (float)op1) op3.fp[idx]=mss_val_flt; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.fp[idx] >= (float)op1) op3.fp[idx]=mss_val_flt; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.fp[idx] <= (float)op1) op3.fp[idx]=mss_val_flt; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.fp[idx] >  (float)op1) op3.fp[idx]=mss_val_flt; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.fp[idx] <  (float)op1) op3.fp[idx]=mss_val_flt; 
+			break;
     } /* end switch */
     break;
   case NC_DOUBLE:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.dp[idx] != (double)op1) op3.dp[idx]=mss_val_dbl; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.dp[idx] == (double)op1) op3.dp[idx]=mss_val_dbl; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.dp[idx] >= (double)op1) op3.dp[idx]=mss_val_dbl; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.dp[idx] <= (double)op1) op3.dp[idx]=mss_val_dbl; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.dp[idx] >  (double)op1) op3.dp[idx]=mss_val_dbl; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.dp[idx] <  (double)op1) op3.dp[idx]=mss_val_dbl; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.dp[idx] != (double)op1) op3.dp[idx]=mss_val_dbl; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.dp[idx] == (double)op1) op3.dp[idx]=mss_val_dbl; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.dp[idx] >= (double)op1) op3.dp[idx]=mss_val_dbl; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.dp[idx] <= (double)op1) op3.dp[idx]=mss_val_dbl; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.dp[idx] >  (double)op1) op3.dp[idx]=mss_val_dbl; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.dp[idx] <  (double)op1) op3.dp[idx]=mss_val_dbl; 
+			break;
     } /* end switch */
     break;
   case NC_INT:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.ip[idx] != (nco_int)op1) op3.ip[idx]=mss_val_ntg; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.ip[idx] == (nco_int)op1) op3.ip[idx]=mss_val_ntg; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.ip[idx] >= (nco_int)op1) op3.ip[idx]=mss_val_ntg; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.ip[idx] <= (nco_int)op1) op3.ip[idx]=mss_val_ntg; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.ip[idx] >  (nco_int)op1) op3.ip[idx]=mss_val_ntg; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.ip[idx] <  (nco_int)op1) op3.ip[idx]=mss_val_ntg; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ip[idx] != (nco_int)op1) op3.ip[idx]=mss_val_ntg; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ip[idx] == (nco_int)op1) op3.ip[idx]=mss_val_ntg; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ip[idx] >= (nco_int)op1) op3.ip[idx]=mss_val_ntg; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ip[idx] <= (nco_int)op1) op3.ip[idx]=mss_val_ntg; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ip[idx] >  (nco_int)op1) op3.ip[idx]=mss_val_ntg; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ip[idx] <  (nco_int)op1) op3.ip[idx]=mss_val_ntg; 
+			break;
     } /* end switch */
     break;
   case NC_SHORT:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.sp[idx] != (nco_short)op1) op3.sp[idx]=mss_val_short; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.sp[idx] == (nco_short)op1) op3.sp[idx]=mss_val_short; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >= (nco_short)op1) op3.sp[idx]=mss_val_short; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <= (nco_short)op1) op3.sp[idx]=mss_val_short; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >  (nco_short)op1) op3.sp[idx]=mss_val_short; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <  (nco_short)op1) op3.sp[idx]=mss_val_short; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.sp[idx] != (nco_short)op1) op3.sp[idx]=mss_val_short; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.sp[idx] == (nco_short)op1) op3.sp[idx]=mss_val_short; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.sp[idx] >= (nco_short)op1) op3.sp[idx]=mss_val_short; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.sp[idx] <= (nco_short)op1) op3.sp[idx]=mss_val_short; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.sp[idx] >  (nco_short)op1) op3.sp[idx]=mss_val_short; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.sp[idx] <  (nco_short)op1) op3.sp[idx]=mss_val_short; 
+			break;
     } /* end switch */
     break;
   case NC_USHORT:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.usp[idx] != (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.usp[idx] == (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.usp[idx] >= (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.usp[idx] <= (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.usp[idx] >  (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.usp[idx] <  (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.usp[idx] != (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.usp[idx] == (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.usp[idx] >= (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.usp[idx] <= (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.usp[idx] >  (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.usp[idx] <  (nco_ushort)op1) op3.usp[idx]=mss_val_ushort; 
+			break;
     } /* end switch */
     break;
   case NC_UINT:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.uip[idx] != (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.uip[idx] == (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.uip[idx] >= (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.uip[idx] <= (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.uip[idx] >  (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.uip[idx] <  (nco_uint)op1) op3.uip[idx]=mss_val_uint; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.uip[idx] != (nco_uint)op1) op3.uip[idx]=mss_val_uint; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.uip[idx] == (nco_uint)op1) op3.uip[idx]=mss_val_uint; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.uip[idx] >= (nco_uint)op1) op3.uip[idx]=mss_val_uint; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.uip[idx] <= (nco_uint)op1) op3.uip[idx]=mss_val_uint; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.uip[idx] >  (nco_uint)op1) op3.uip[idx]=mss_val_uint; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.uip[idx] <  (nco_uint)op1) op3.uip[idx]=mss_val_uint; 
+			break;
     } /* end switch */
     break;
   case NC_INT64:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] != (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] == (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] >= (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] <= (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] >  (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.i64p[idx] <  (nco_int64)op1) op3.i64p[idx]=mss_val_int64; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.i64p[idx] != (nco_int64)op1) op3.i64p[idx]=mss_val_int64; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.i64p[idx] == (nco_int64)op1) op3.i64p[idx]=mss_val_int64; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.i64p[idx] >= (nco_int64)op1) op3.i64p[idx]=mss_val_int64; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.i64p[idx] <= (nco_int64)op1) op3.i64p[idx]=mss_val_int64; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.i64p[idx] >  (nco_int64)op1) op3.i64p[idx]=mss_val_int64; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.i64p[idx] <  (nco_int64)op1) op3.i64p[idx]=mss_val_int64; 
+			break;
     } /* end switch */
     break;
   case NC_UINT64:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] != (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] == (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] >= (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] <= (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] >  (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] <  (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] != (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] == (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] >= (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] <= (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] >  (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ui64p[idx] <  (nco_uint64)op1) op3.ui64p[idx]=mss_val_uint64; 
+			break;
     } /* end switch */
     break;
   case NC_BYTE:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (nco_byte)op1) op3.bp[idx]=mss_val_byte; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (nco_byte)op1) op3.bp[idx]=mss_val_byte; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (nco_byte)op1) op3.bp[idx]=mss_val_byte; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (nco_byte)op1) op3.bp[idx]=mss_val_byte; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (nco_byte)op1) op3.bp[idx]=mss_val_byte; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (nco_byte)op1) op3.bp[idx]=mss_val_byte; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (nco_byte)op1) op3.bp[idx]=mss_val_byte; 
+			break;
     } /* end switch */
     break;
   case NC_UBYTE:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] != (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] == (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] >= (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] <= (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] >  (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.ubp[idx] <  (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ubp[idx] != (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ubp[idx] == (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ubp[idx] >= (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ubp[idx] <= (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ubp[idx] >  (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.ubp[idx] <  (nco_ubyte)op1) op3.ubp[idx]=mss_val_ubyte; 
+			break;
     } /* end switch */
     break;
   case NC_CHAR:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (nco_char)op1) op3.cp[idx]=mss_val_char; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (nco_char)op1) op3.cp[idx]=mss_val_char; break;
+    case nco_op_eq: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (nco_char)op1) op3.cp[idx]=mss_val_char; 
+			break;
+    case nco_op_ne: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (nco_char)op1) op3.cp[idx]=mss_val_char; 
+			break;
+    case nco_op_lt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (nco_char)op1) op3.cp[idx]=mss_val_char; 
+			break;
+    case nco_op_gt: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (nco_char)op1) op3.cp[idx]=mss_val_char; 
+			break;
+    case nco_op_le: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (nco_char)op1) op3.cp[idx]=mss_val_char; 
+			break;
+    case nco_op_ge: 
+			#pragma omp simd
+			for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (nco_char)op1) op3.cp[idx]=mss_val_char; 
+			break;
     } /* end switch */
     break;
   case NC_STRING: break; /* Do nothing */
@@ -1915,60 +2315,70 @@ nco_var_tll_zro_mss_val /* [fnc] Write missing value into elements with zero tal
   case NC_FLOAT:
     {
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.fp[idx]=mss_val_flt;
     }
     break;
   case NC_DOUBLE:
     {
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.dp[idx]=mss_val_dbl;
     }
     break;
   case NC_INT:
     {
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.ip[idx]=mss_val_ntg;
     }
     break;
   case NC_SHORT:
     {
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.sp[idx]=mss_val_short;
     }
     break;
   case NC_USHORT:
     {
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.usp[idx]=mss_val_ushort;
     }
     break;
   case NC_UINT:
     {
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.uip[idx]=mss_val_uint;
     }
     break;
   case NC_INT64:
     {
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.i64p[idx]=mss_val_int64;
     }
     break;
   case NC_UINT64:
     {
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.ui64p[idx]=mss_val_uint64;
     }
     break;
   case NC_BYTE:
     {
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.bp[idx]=mss_val_byte;
     }
     break;
   case NC_UBYTE:
     {
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] == 0L) op1.ubp[idx]=mss_val_ubyte;
     }
     break;
@@ -2009,81 +2419,101 @@ nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */
 	 Repetitions: \dmnszavg^(\dmnnbr-\avgnbr)
 	 Total Counts: \flpnbr=\dmnszavg^(\dmnnbr-\avgnbr), \rthnbr=2\dmnszavg^(\dmnnbr-\avgnbr), \mmrusrnbr=2\dmnszavg^(\dmnnbr-\avgnbr)
 	 NB: Counted LHS+RHS+tally offsets and fetches */
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=tally[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.fp[idx]/=tally[idx]; else op1.fp[idx]=mss_val_flt;
     } /* end else */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.dp[idx]/=tally[idx];
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.dp[idx]/=tally[idx]; else op1.dp[idx]=mss_val_dbl;
     } /* end else */
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.ip[idx]/=tally[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ip[idx]/=tally[idx]; else op1.ip[idx]=mss_val_ntg;
     } /* end else */
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=tally[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=tally[idx]; else op1.sp[idx]=mss_val_short;
     } /* end else */
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.usp[idx]/=tally[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.usp[idx]/=tally[idx]; else op1.usp[idx]=mss_val_ushort;
     } /* end else */
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.uip[idx]/=tally[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.uip[idx]/=tally[idx]; else op1.uip[idx]=mss_val_uint;
     } /* end else */
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.i64p[idx]/=tally[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.i64p[idx]/=tally[idx]; else op1.i64p[idx]=mss_val_int64;
     } /* end else */
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.ui64p[idx]/=tally[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ui64p[idx]/=tally[idx]; else op1.ui64p[idx]=mss_val_uint64;
     } /* end else */
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.bp[idx]/=tally[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.bp[idx]/=tally[idx]; else op1.bp[idx]=mss_val_byte;
     } /* end else */
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.ubp[idx]/=tally[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ubp[idx]/=tally[idx]; else op1.ubp[idx]=mss_val_ubyte;
     } /* end else */
     break;
@@ -2121,81 +2551,101 @@ nco_var_nrm_sdn /* [fnc] Normalize value of first operand by count-1 in tally ar
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=tally[idx]-1L;
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.fp[idx]/=tally[idx]-1L; else op1.fp[idx]=mss_val_flt;
     } /* end else */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.dp[idx]/=tally[idx]-1L;
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.dp[idx]/=tally[idx]-1L; else op1.dp[idx]=mss_val_dbl;
     } /* end else */
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.ip[idx]/=tally[idx]-1L;
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.ip[idx]/=tally[idx]-1L; else op1.ip[idx]=mss_val_ntg;
     } /* end else */
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=tally[idx]-1L;
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.sp[idx]/=tally[idx]-1L; else op1.sp[idx]=mss_val_short;
     } /* end else */
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.usp[idx]/=tally[idx]-1L;
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.usp[idx]/=tally[idx]-1L; else op1.usp[idx]=mss_val_ushort;
     } /* end else */
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.uip[idx]/=tally[idx]-1L;
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.uip[idx]/=tally[idx]-1L; else op1.uip[idx]=mss_val_uint;
     } /* end else */
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.i64p[idx]/=tally[idx]-1L;
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.i64p[idx]/=tally[idx]-1L; else op1.i64p[idx]=mss_val_int64;
     } /* end else */
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.ui64p[idx]/=tally[idx]-1L;
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.ui64p[idx]/=tally[idx]-1L; else op1.ui64p[idx]=mss_val_uint64;
     } /* end else */
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.bp[idx]/=tally[idx]-1L;
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.bp[idx]/=tally[idx]-1L; else op1.bp[idx]=mss_val_byte;
     } /* end else */
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op1.ubp[idx]/=tally[idx]-1L;
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] > 1L) op1.ubp[idx]/=tally[idx]-1L; else op1.ubp[idx]=mss_val_ubyte;
     } /* end else */
     break;
@@ -2235,60 +2685,70 @@ nco_var_nrm_wgt /* [fnc] Normalize value of first operand by weight array */
   case NC_FLOAT:
     {
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.fp[idx]*=tally[idx]/wgt[idx]; else op1.fp[idx]=mss_val_flt;
     }
     break;
   case NC_DOUBLE:
     {
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.dp[idx]*=tally[idx]/wgt[idx]; else op1.dp[idx]=mss_val_dbl;
     }
     break;
   case NC_INT:
     {
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ip[idx]*=tally[idx]/wgt[idx]; else op1.ip[idx]=mss_val_ntg;
     }
     break;
   case NC_SHORT:
     {
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]*=tally[idx]/wgt[idx]; else op1.sp[idx]=mss_val_short;
     }
     break;
   case NC_USHORT:
     {
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.usp[idx]*=tally[idx]/wgt[idx]; else op1.usp[idx]=mss_val_ushort;
     }
     break;
   case NC_UINT:
     {
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.uip[idx]*=tally[idx]/wgt[idx]; else op1.uip[idx]=mss_val_uint;
     }
     break;
   case NC_INT64:
     {
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.i64p[idx]*=tally[idx]/wgt[idx]; else op1.i64p[idx]=mss_val_int64;
     }
     break;
   case NC_UINT64:
     {
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ui64p[idx]*=tally[idx]/wgt[idx]; else op1.ui64p[idx]=mss_val_uint64;
     }
     break;
   case NC_BYTE:
     {
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.bp[idx]*=tally[idx]/wgt[idx]; else op1.bp[idx]=mss_val_byte;
     }
     break;
   case NC_UBYTE:
     {
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.ubp[idx]*=tally[idx]/wgt[idx]; else op1.ubp[idx]=mss_val_ubyte;
     }
     break;
@@ -2328,9 +2788,11 @@ nco_var_pwr /* [fnc] Raise first operand to power of second operand */
   switch(type){ 
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.fp[idx]=powf(op1.fp[idx],op2.fp[idx]);
     }else{
       float mss_val_flt=*mss_val.fp; /* Temporary variable reduces de-referencing */
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
         if((op1.fp[idx] != mss_val_flt) && (op2.fp[idx] != mss_val_flt)) op2.fp[idx]=powf(op1.fp[idx],op2.fp[idx]); else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -2338,9 +2800,11 @@ nco_var_pwr /* [fnc] Raise first operand to power of second operand */
     break; /* end NC_FLOAT */
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.dp[idx]=pow(op1.dp[idx],op2.dp[idx]);
     }else{
       double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
         if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] != mss_val_dbl)) op2.dp[idx]=pow(op1.dp[idx],op2.dp[idx]); else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -2394,7 +2858,12 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
      Assume operands conform, are same type, and are in memory */
   
   /* Subtraction is currently defined as op2:=op2-op1 */
-  
+	static double total_time = 0;
+	clock_t tm_srt;  
+	clock_t tm_end;  
+	float tm_drn;
+	tm_srt = clock();
+	
   long idx;
   
   /* Typecast pointer to values before access */
@@ -2405,9 +2874,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.fp[idx]-=op1.fp[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]-=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -2415,9 +2886,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.dp[idx]-=op1.dp[idx];
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]-=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -2425,9 +2898,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ip[idx]-=op1.ip[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ip[idx] != mss_val_ntg) && (op1.ip[idx] != mss_val_ntg)) op2.ip[idx]-=op1.ip[idx]; else op2.ip[idx]=mss_val_ntg;
       } /* end for */
@@ -2435,9 +2910,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.sp[idx]-=op1.sp[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]-=op1.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
@@ -2445,9 +2922,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.usp[idx]-=op1.usp[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]-=op1.usp[idx]; else op2.usp[idx]=mss_val_ushort;
       } /* end for */
@@ -2455,9 +2934,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.uip[idx]-=op1.uip[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]-=op1.uip[idx]; else op2.uip[idx]=mss_val_uint;
       } /* end for */
@@ -2465,9 +2946,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.i64p[idx]-=op1.i64p[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]-=op1.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
       } /* end for */
@@ -2475,9 +2958,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ui64p[idx]-=op1.ui64p[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]-=op1.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
       } /* end for */
@@ -2485,9 +2970,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.bp[idx]-=op1.bp[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.bp[idx] != mss_val_byte) && (op1.bp[idx] != mss_val_byte)) op2.bp[idx]-=op1.bp[idx]; else op2.bp[idx]=mss_val_byte;
       } /* end for */
@@ -2495,9 +2982,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++) op2.ubp[idx]-=op1.ubp[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if((op2.ubp[idx] != mss_val_ubyte) && (op1.ubp[idx] != mss_val_ubyte)) op2.ubp[idx]-=op1.ubp[idx]; else op2.ubp[idx]=mss_val_ubyte;
       } /* end for */
@@ -2510,7 +2999,10 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
-  
+ 	tm_end = clock();
+	tm_drn = (float)(tm_end - tm_srt)/CLOCKS_PER_SEC;
+	total_time += tm_drn;
+	fprintf(stdout, "Total subtraction took %gs seconds to run\n", total_time); 
 } /* end nco_var_sbt() */
 
 void
@@ -2540,12 +3032,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.fp[idx]=sqrtf(op1.fp[idx]);
 	tally[idx]++;
       } /* end for */
     }else{
       const float mss_val_flt=*mss_val.fp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt){
 	  op2.fp[idx]=sqrtf(op1.fp[idx]);
@@ -2556,12 +3050,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.dp[idx]=sqrt(op1.dp[idx]);
 	tally[idx]++;
       } /* end for */
     }else{
       const double mss_val_dbl=*mss_val.dp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl){
 	  op2.dp[idx]=sqrt(op1.dp[idx]);
@@ -2572,12 +3068,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
     break;
   case NC_INT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ip[idx]=(nco_int)sqrt((double)(op1.ip[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.ip[idx] != mss_val_ntg){
 	  op2.ip[idx]=(nco_int)sqrt((double)(op1.ip[idx]));
@@ -2588,12 +3086,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
     break;
   case NC_SHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.sp[idx]=(nco_short)sqrt((double)(op1.sp[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_short mss_val_short=*mss_val.sp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_short){
 	  op2.sp[idx]=(nco_short)sqrt((double)(op1.sp[idx]));
@@ -2604,12 +3104,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
     break;
   case NC_USHORT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.usp[idx]=(nco_ushort)sqrt((double)(op1.usp[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.usp[idx] != mss_val_ushort){
 	  op2.usp[idx]=(nco_ushort)sqrt((double)(op1.usp[idx]));
@@ -2620,12 +3122,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
     break;
   case NC_UINT:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.uip[idx]=(nco_uint)sqrt((double)(op1.uip[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.uip[idx] != mss_val_uint){
 	  op2.uip[idx]=(nco_uint)sqrt((double)(op1.uip[idx]));
@@ -2636,12 +3140,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
     break;
   case NC_INT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.i64p[idx]=(nco_int64)sqrt((double)(op1.i64p[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.i64p[idx] != mss_val_int64){
 	  op2.i64p[idx]=(nco_int64)sqrt((double)(op1.i64p[idx]));
@@ -2652,12 +3158,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
     break;
   case NC_UINT64:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ui64p[idx]=(nco_uint64)sqrt((double)(op1.ui64p[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.ui64p[idx] != mss_val_uint64){
 	  op2.ui64p[idx]=(nco_uint64)sqrt((double)(op1.ui64p[idx]));
@@ -2668,12 +3176,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
     break;
   case NC_BYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.bp[idx]=(nco_byte)sqrt((double)(op1.bp[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.bp[idx] != mss_val_byte){
 	  op2.bp[idx]=(nco_byte)sqrt((double)(op1.bp[idx]));
@@ -2684,12 +3194,14 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
     break;
   case NC_UBYTE:
     if(!has_mss_val){
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	op2.ubp[idx]=(nco_ubyte)sqrt((double)(op1.ubp[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
+			#pragma omp simd
       for(idx=0;idx<sz;idx++){
 	if(op1.ubp[idx] != mss_val_ubyte){
 	  op2.ubp[idx]=(nco_ubyte)sqrt((double)(op1.ubp[idx]));
@@ -2753,33 +3265,43 @@ nco_var_zero /* [fnc] Zero value of first operand */
   
   switch(type){
   case NC_FLOAT:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.fp[idx]=0.0;
     break;
   case NC_DOUBLE:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.dp[idx]=0.0;
     break;
   case NC_INT:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.ip[idx]=0L;
     break;
   case NC_SHORT:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.sp[idx]=0;
     break;
   case NC_USHORT:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.usp[idx]=0;
     break;
   case NC_UINT:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.uip[idx]=0;
     break;
   case NC_INT64:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.i64p[idx]=0;
     break;
   case NC_UINT64:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.ui64p[idx]=0;
     break;
   case NC_BYTE:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.bp[idx]=0;
     break;
   case NC_UBYTE:
+			#pragma omp simd
     for(idx=0;idx<sz;idx++) op1.ubp[idx]=0;
     break;
   case NC_CHAR: break; /* Do nothing */

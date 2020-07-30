@@ -1,3 +1,4 @@
+
 # $Header$ -*-Shell-script-*-
 
 # Purpose: Generate NCO configure script using autoconf build-engine
