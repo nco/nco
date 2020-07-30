@@ -6035,7 +6035,6 @@ Many climate models and re-analyses are archived at hourly,
 tri-hourly, or six-hourly resolution yielding
 @math{@var{tpd} = 24, 8}, or @math{6}, respectively.
 
-
 Creating seasonal cycles is a common task in climate data processing.
 Suppose a 150-year climate simulation produces 150 output files, each
 comprising 12 records, each record a monthly mean:
