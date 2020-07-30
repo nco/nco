@@ -3603,7 +3603,7 @@ var_sct * srt_cls::mst_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_o
   {
 
     char bnds_txt[100];
-    nco_char ch;
+    nco_char ch=nco_char_CEWI;
 
     var_sct *att_units=NULL_CEWI;
     var_sct *att_cal=NULL_CEWI;
