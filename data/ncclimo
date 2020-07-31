@@ -1851,7 +1851,7 @@ fi # !clm_flg
 
 # Block 1: Generate, check, and store (but do not yet execute) commands
 
-# Block 1 Loop 1: Produce monthly-mean climatologies
+# Block 1 Loop 1: Produce monthly-mean climatology output
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
     clm_idx=0
     for mth in {01..12}; do
@@ -1937,6 +1937,34 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${MM}_${yyyy_clm_srt}${MM}_${yyyy_clm_end}${MM}_climo.nc"
 	
 	if [ ${clm_md} = 'hfc' ]; then 
+	    # Computing climos from high-freqency data requires many steps:
+	    # A primary goal is to re-use not re-write code, especially existing monthly frequency climo code
+	    # Otherwise code maintainability significantly suffers
+	    # Code-reuse all-but-requires same existing parallelization as monthly frequency climos
+	    # Difficulty is that traditionaly monthly mean climos equally weight all input records using ncra
+	    # Proposed Algorithm:
+	    # 1. Re-use splitter option ypf for intermediate files so users can prevent excessive intermediate filesizes
+	    # 2. Generate month-aligned intermediate segments containing ypf instances of a single month (and no other months) for all variables
+	    # 2a. To subset repeated appearances of given month and skip intervening 11 months, command must have form ncrcat -d time,srt_sng,end_sng,srd,ssc where srd=dpy*tpd and ssc=dpm*tpd
+	    # 2b. Same as draft annual-mean HFS feature for diurnal cycle, except srt_sng/end_sng are "yyyy_srt_sgm-MM-01 00:00:01/yyyy_end_sgm-(MMp1)-01 00:00:00" instead of "yyyy_srt_sgm-01-01 00:00:01/yyyy_endp1_sgm-01-01 00:00:00"
+	    # 2c. Intermediate monthly segments sgm_yyyy_srt_yyyy_end_MM.nc have ypf instances of given month, except last segment may be ragged
+	    # 2d. Evaluate mean diurnal cycle of monthly-segment using ncra --d time,srt,end,srd=ssc,ssc=dpm*tpd,tpd
+	    # 2c. Ragged numbers of ypf in last segment suggests using ncra climatological monthly diurnal-mean output
+	    # 2d. Parallelize this over month (probably) using job_nbr algorithm? or over segment (unlikely)?
+	    # 2e. Parallelization is difficult/tedious due to number of basic blocks (3? 4? 5?)
+	    # 3. Intermediate files of shape (time=min(actual,ypf),hour,space) are nearly interchangeable with monthly-frequency output in stage-1 ncra
+	    # 4. Use climatological monthly diurnal-mean output to create climatological seasonal diurnal-mean output
+	    # 5. Use climatological monthly seasonal-mean output to create climatological annual diurnal-mean output
+	    # 6. Final output climo format: (time=1,hour,space) (or convert to (time=hour,space)?)
+	    # Advantages:
+	    # 1. Code-reuse and maintainability
+	    # 2. Scales to any length o simulation (intermediate files can be a single month)
+	    # 3. Output similar to existing monthly-frequency climos with new, fixed-length 'hour' dimension
+	    # 4. Climatology bounds attributes correct for time variable(?)
+	    # Disadvantages:
+	    # 1. E3SM-diags post-processing may not like new 'hour' dimension
+	    # 2. No corresponding examples in CF Conventions
+	    # 3. Any utility in multiple-variables per output file, e.g., TS, PRECT? Would single variables suffice?
 	    DD=`printf "%02d" ${dpm[${clm_idx}]}` 
 	    tm_srt="${yyyy_clm_srt}-${MM}-01 00:00:01"
 	    let mthp1=$((clm_idx + 1))
@@ -1955,7 +1983,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		# Compute interleaved mean of single-file input (e.g., CMIP timeseries format)
 		# Works though produces ypf sets of diurnal steps
 		#cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
-		tm_nbr=16 # fxm
 		tm_nbr=`ncks --trd -M ${fl_in} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
 		let ssc2=${tm_nbr}*${tpd_out}/${srd}
 		cmd_clm[${clm_idx}]="ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]};ncra -O -d time,,,,${ssc2},${tpd_out} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]}"
@@ -1964,15 +1991,15 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 #		cmd_csn2ann='nces --c2b'
 		cmd_mth2csn='nces'
 		cmd_csn2ann='nces'
-	    else
+	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
 		# Cull this month from every year of climatology into single file
 		fl_mth[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tms_foo_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
-		cmd_clm[${clm_idx}]="ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${ssc} -p ${drc_in} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
-		echo "quark ${cmd_clm[${clm_idx}]}"
-		eval ${cmd_clm[${clm_idx}]}
+		cmd_cll[${clm_idx}]="ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${ssc} -p ${drc_in} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
+		echo "quark ${cmd_cll[${clm_idx}]}"
+		eval ${cmd_cll[${clm_idx}]}
 		if [ "$?" -ne 0 ]; then
-		    printf "${spt_nm}: ERROR subset cmd_clm[${clm_idx}] failed. Debug this:\n${cmd_clm[${clm_idx}]}\n"
+		    printf "${spt_nm}: ERROR month-cull cmd_cll[${clm_idx}] failed. Debug this:\n${cmd_cll[${clm_idx}]}\n"
 		    exit 1
 		fi # !err
 		ilv_nbr=${tpd_out}
@@ -1985,15 +2012,16 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		    #HH=`printf "%02d" ${hh_end}` 
 		    #tm_end="${yyyy_clm_end}-${MMp1}-01 00:00:00"
 		    ILV=`printf "%02d" ${ilv_idx}` 
-		    fl_out_tpl[${ilv_idx}]="${drc_out}/${out_nm}_${MM}_ilv${ILV}_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
-		    cmd_ilv[${ilv_idx}]="ncra -O ${nco_opt} ${gaa_sng} -d time,${ilv_idx},,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out_tpl[${ilv_idx}]}"
+		    fl_ilv_tpl[${ilv_idx}]="${drc_out}/${out_nm}_${MM}_ilv${ILV}_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
+		    cmd_ilv[${ilv_idx}]="ncra -O ${nco_opt} ${gaa_sng} -d time,${ilv_idx},,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_ilv_tpl[${ilv_idx}]}"
 		    echo "quark ${cmd_ilv[${ilv_idx}]}"
 		    eval ${cmd_ilv[${ilv_idx}]}
 		    if [ "$?" -ne 0 ]; then
-			printf "${spt_nm}: ERROR subset cmd_ilv[${ilv_idx}] failed. Debug this:\n${cmd_ilv[${ilv_idx}]}\n"
+			printf "${spt_nm}: ERROR interleave cmd_ilv[${ilv_idx}] failed. Debug this:\n${cmd_ilv[${ilv_idx}]}\n"
 			exit 1
 		    fi # !err
 		done # !ilv_idx
+		    # Clean-up monthly inputs
 		    /bin/rm ${fl_mth[${clm_idx}]}
 		    cmd_clm[${clm_idx}]="ncrcat -O ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}ilv* ${fl_out[${clm_idx}]}"
 		    echo "quark ${cmd_clm[${clm_idx}]}"
@@ -2623,157 +2651,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 	done # !bch_idx
     fi # !rgr_opt
 fi # !dly
-
-# Computing climos from high-freqency data requires many steps:
-# A primary goal is to re-use not re-write code, especially existing monthly frequency climo code
-# Otherwise code maintainability significantly suffers
-# Code-reuse all-but-requires same existing parallelization as monthly frequency climos
-# Difficulty is that traditionaly monthly mean climos equally weight all input records using ncra
-# Proposed Algorithm:
-# 1. Re-use splitter option ypf for intermediate files so users can prevent excessive intermediate filesizes
-# 2. Generate month-aligned intermediate segments containing ypf instances of a single month (and no other months) for all variables
-# 2a. To subset repeated appearances of given month and skip intervening 11 months, command must have form ncrcat -d time,srt_sng,end_sng,srd,ssc where srd=dpy*tpd and ssc=dpm*tpd
-# 2b. Same as draft annual-mean HFS feature for diurnal cycle, except srt_sng/end_sng are "yyyy_srt_sgm-MM-01 00:00:01/yyyy_end_sgm-(MMp1)-01 00:00:00" instead of "yyyy_srt_sgm-01-01 00:00:01/yyyy_endp1_sgm-01-01 00:00:00"
-# 2c. Intermediate monthly segments sgm_yyyy_srt_yyyy_end_MM.nc have ypf instances of given month, except last segment may be ragged
-# 2d. Evaluate mean diurnal cycle of monthly-segment using ncra --d time,srt,end,srd=ssc,ssc=dpm*tpd,tpd
-# 
-# 2c. Ragged numbers of ypf in last segment suggests using ncra climatological monthly diurnal-mean output
-# 2d. Parallelize this over month (probably) using job_nbr algorithm? or over segment (unlikely)?
-# 2e. Parallelization is difficult/tedious due to number of basic blocks (3? 4? 5?)
-# 3. Intermediate files of shape (time=min(actual,ypf),hour,space) are nearly interchangeable with monthly-frequency output in stage-1 ncra
-# 4. Use climatological monthly diurnal-mean output to create climatological seasonal diurnal-mean output
-# 5. Use climatological monthly seasonal-mean output to create climatological annual diurnal-mean output
-# 6. Final output climo format: (time=1,hour,space) (or convert to (time=hour,space)?)
-# Advantages:
-# 1. Code-reuse and maintainability
-# 2. Scales to any length o simulation (intermediate files can be a single month)
-# 3. Output similar to existing monthly-frequency climos with new, fixed-length 'hour' dimension
-# 4. Climatology bounds attributes correct for time variable(?)
-# Disadvantages:
-# 1. E3SM-diags post-processing may not like new 'hour' dimension
-# 2. No corresponding examples in CF Conventions
-# 3. Any utility in multiple-variables per output file, e.g., TS, PRECT? Would single variables suffice?
-if [ "${clm_md}" = 'hfc_old' ]; then
-
-    if [ ${dbg_lvl} -ge 1 ]; then
-	printf "dbg: HFC variable(s):\n"
-	printf "dpm[3] = ${dpm[3]}\n"
-	printf "dpy = ${dpy}\n"
-	printf "nco_opt = ${nco_opt}\n"
-	printf "ppn_opt = ${ppn_opt}\n"
-	printf "spl_opt = ${spl_opt}\n"
-	printf "tpd_out = ${tpd_out}\n"
-	printf "var_lst_xtn = ${var_lst_xtn}\n"
-	printf "yr_nbr = ${yr_nbr}\n"
-	printf "yr_sbs = ${yr_sbs}\n"
-    fi # !dbg
-    
-    mth_nbr=12
-    # Begin outer loop over time segments
-    for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
-
-	# Begin loop over months to split
-	let bch_nbr=$((mth_nbr / job_nbr))
-	let bch_flg=$((mth_nbr % job_nbr))
-	if [ ${bch_nbr} -eq 0 ]; then
-	    let bch_nbr=$((bch_nbr+1))
-	elif [ ${bch_flg} -ne 0 ]; then
-	    let bch_nbr=$((bch_nbr+1))
-	fi # !bch_flg
-	let bch_nbrm1=$((bch_nbr-1))
-	for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
-	    # mth_idx is 1-based, bch_idx is 0-based
-	    let mth_idx_srt=$(((bch_idx * job_nbr) + 1))
-	    let mth_idx_end=$((mth_idx_srt + job_nbr - 1))
-	    if [ ${bch_idx} -eq ${bch_nbrm1} ] && [ ${bch_flg} -ne 0 ] ; then
-		let mth_idx_srt=$((bch_idx * job_nbr))
-		let mth_idx_end=$((mth_nbr - 1))
-	    fi # !bch_flg
-	    #printf "${spt_nm}: DEBUG job_nbr = ${job_nbr}, bch_nbr = ${bch_nbr}, bch_idx = ${bch_idx}, mth_idx_srt = ${mth_idx_end}, mth_idx_end = ${mth_idx_end}\n"
-	    for ((mth_idx=mth_idx_srt;mth_idx<=mth_idx_end;mth_idx++)); do
-		MM=`printf "%02d" ${mth_idx}`
-		fl_out[${mth_idx}]="${fl_out_tpl[${sgm_idx}]/mth_tpl/${MM}}"
-		DD=`printf "%02d" ${dpm[${mth_idx}]}` 
-		tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-${MM}-01 00:00:01"
-		let mthp1=$((mth_idx + 1))
-		MMp1=`printf "%02d" ${mthp1}`
-		tm_end="${yyyy_end_sgm[${sgm_idx}]}-${MMp1}-01 00:00:00"
-		if [ ${mth_idx} -eq 12 ]; then
-		    tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01 00:00:00"
-		fi # !December
-		let srd=${dpy}*${tpd_out}
-		let drn=${dpm[${mth_idx}]}*${tpd_out}
-		fl_rcat[${mth_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_ncrcat.nc"
-		fl_ecat[${mth_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_ncecat.nc"
-		fl_pdq[${mth_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_ncpdq.nc"
-		fl_tpd_tpl="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_tpd"
-		fl_tpd_all=''
-		for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
-		    fl_tpd[${tpd_idx}]="${drc_out}/hfc_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_${MM}_tpd${tpd_idx}.nc"
-		    fl_tpd_all="${fl_tpd_all} ${fl_tpd[${tpd_idx}]}"
-		done # !tpd_idx
-		# 20200628: Output one record per month as data(time,hour,space), easier to regrid
-		cmd_sbs[${mth_idx}]="${cmd_mpi[${mth_idx}]} OMP_PROC_BIND=false ncrcat -O ${nco_opt} ${spl_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${drn} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${mth_idx}]};/bin/rm -f ${fl_out[${mth_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra -O -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${mth_idx}]} ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${mth_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${mth_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${mth_idx}]} ${fl_pdq[${mth_idx}]};/bin/rm -f ${fl_ecat[${mth_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${mth_idx}]} ${fl_out[${mth_idx}]};/bin/rm -f ${fl_pdq[${mth_idx}]}"
-		if [ ${dbg_lvl} -ge 1 ]; then
-		    echo ${cmd_sbs[${mth_idx}]}
-		fi # !dbg
-		if [ ${dbg_lvl} -le 1 ]; then
-		    if [ -z "${par_opt}" ]; then
-			eval ${cmd_sbs[${mth_idx}]}
-			if [ "$?" -ne 0 ]; then
-			    printf "${spt_nm}: ERROR subset cmd_sbs[${mth_idx}] failed. Debug this:\n${cmd_sbs[${mth_idx}]}\n"
-			    exit 1
-			fi # !err
-		    else # !par_opt
-			eval ${cmd_sbs[${mth_idx}]} ${par_opt}
-			sbs_pid[${mth_idx}]=$!
-		    fi # !par_opt
-		fi # !dbg
-	    done # !mth_idx
-	    
-	    # Block NNN: Wait
-	    # Parallel splitting (both Background and MPI) spawns simultaneous processes in batches of ${job_nbr}
-	    # Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
-	    if [ -n "${par_opt}" ]; then
-		#printf "${spt_nm}: DEBUG mth_idx = ${mth_idx}, bch_idx = ${bch_idx}, bch_flg = ${bch_flg}\n"
-		for ((mth_idx=mth_idx_srt;mth_idx<=mth_idx_end;mth_idx++)); do
-		    wait ${sbs_pid[${mth_idx}]}
-		    if [ "$?" -eq 0 ]; then
-			printf "`date`: Generated ${cmd_sbs[${mth_idx}]##* }\n"
-		    else
-			printf "${spt_nm}: ERROR Failed to split. cmd_sbs[${mth_idx}] failed. Debug this:\n${cmd_sbs[${mth_idx}]}\n"
-			# 20190323: exiting parent here creates orphans, kill live children then exit
-			for ((kid_idx=mth_idx+1;kid_idx<=mth_idx_end;kid_idx++)); do
-			    kill -9 ${sbs_pid[${kid_idx}]}
-			done # !kid_idx
-			exit 1
-		    fi # !err
-		done # !mth_idx
-	    fi # !par_opt
-
-        done # !bch_idx
-
-    done # !sgm_idx
-
-    # Re-plumb climo generation input fields to use the new monthly diurnal files
-    clm_flg='Yes'
-    clm_md='mth'
-    clm_nbr=17
-    csn_flg='Yes'
-    # Overwrite first 12 entries of cmd_clm:
-    clm_idx=0
-    clm_idx=0
-    for mth in {01..12}; do
-	let clm_idx=${clm_idx}+1
-	MM=`printf "%02d" ${clm_idx}`
-	# The ole' switcheroo
-	fl_all=${fl_out[${clm_idx}]}
-	# fxm: borken for dec_md=scd, hardcoded hfc
-	fl_out[${clm_idx}]="${drc_out}/hfc_${MM}_${yyyy_srt}${MM}_${yyyy_end}${MM}_climo.nc"
-	# fxm: fl_all is already a monthly climo so this is an arithmetic no-op that only changes cb metadata
-	cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} ${fl_all} ${fl_out[${clm_idx}]}"
-    done # !mth
-fi # !hfc
 				      
 # Many subsequent blocks only execute for normal and incremental monthly climos, not for binary climos, or non-monthly climos
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}" = 'No' ]; then
@@ -2836,7 +2713,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	date_dff=$((date_crr-date_clm))
 	echo "Elapsed time to generate monthly climos $((date_dff/60))m$((date_dff % 60))s"
     fi # !dbg
-    
+    # Clean-up interleave files
+    if [ ${clm_md} = 'hfc' ] && [ "${fl_nbr}" -gt 1 ]; then
+	/bin/rm "${drc_out}/${out_nm}_[01][0-9]_ilv[0-9][0-9]_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
+    fi # !clm_md
+	
     # Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).
     if [ -n "${rgr_opt}" ]; then 
 	printf "Regrid monthly data...\n"

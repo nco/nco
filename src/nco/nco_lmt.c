@@ -548,7 +548,7 @@ nco_prn_lmt                    /* [fnc] Print limit information */
   (void)fprintf(stderr,"max_sng = %s\n",lmt.max_sng == NULL ? "NULL" : lmt.max_sng);
   (void)fprintf(stderr,"srd_sng = %s\n",lmt.srd_sng == NULL ? "NULL" : lmt.srd_sng);
   (void)fprintf(stderr,"ssc_sng = %s\n",lmt.ssc_sng == NULL ? "NULL" : lmt.ssc_sng);
-  (void)fprintf(stderr,"ilv_sng = %s\n",lmt.ssc_sng == NULL ? "NULL" : lmt.ilv_sng);
+  (void)fprintf(stderr,"ilv_sng = %s\n",lmt.ilv_sng == NULL ? "NULL" : lmt.ilv_sng);
   (void)fprintf(stderr,"monotonic_direction = %s\n",(monotonic_direction == not_checked) ? "not checked" : (monotonic_direction == increasing) ? "increasing" : "decreasing");
   (void)fprintf(stderr,"min_val = %g\n",lmt.min_val);
   (void)fprintf(stderr,"max_val = %g\n",lmt.max_val);
@@ -717,7 +717,10 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       (void)fprintf(stdout,"%s: ERROR Interleave stride hypserslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end ncra */
-    lmt.flg_ilv=True;
+    if(lmt.ilv > 1L){
+      lmt.flg_ilv=True;
+      (void)fprintf(stdout,"%s: quark1 lmt.ilv_sng = %s, lmt.ilv = %ld, flg_ilv = %s\n",nco_prg_nm_get(),lmt.ilv_sng == NULL ? "NULL" : lmt.ilv_sng,lmt.ilv,lmt.flg_ilv ? "YES" : "NO");
+    } /* !lmt.ilv */
   } /* !lmt.ilv_sng */
 
   /* In case flg_mro is set in ncra.c by --mro */
@@ -1574,7 +1577,10 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       (void)fprintf(stdout,"%s: ERROR Interleave stride hypserslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end ncra */
-    lmt.flg_ilv=True;
+    if(lmt.ilv > 1L){
+      lmt.flg_ilv=True;
+      (void)fprintf(stdout,"%s: quark2 lmt.ilv_sng = %s, lmt.ilv = %ld, flg_ilv = %s\n",nco_prg_nm_get(),lmt.ilv_sng == NULL ? "NULL" : lmt.ilv_sng,lmt.ilv,lmt.flg_ilv ? "YES" : "NO");
+    } /* !lmt.ilv */
   } /* !lmt.ilv_sng */
 
   /* In case flg_mro is set in ncra.c by --mro */

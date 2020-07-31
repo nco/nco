@@ -1,8 +1,12 @@
-2020-07-30  Charlie Zender  <zender@uci.edu>
+2020-07-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha09: Marble';git push
-	git tag -a 4.9.4-alpha09 -m 'ncclimo:  ; nces  ; ncra/ncrcat: ;';git push --tags
+	git tag -a 4.9.4-alpha09 -m 'ncbo: simd vectorization; ncclimo: drn sgl fl ; nces wrn ; ncra/ncrcat: mso stubs ;';git push --tags
+
+	* Investigate why FLG_ILV spuriously set despite no ilv argument
+
+2020-07-30  Charlie Zender  <zender@uci.edu>
 
 	* Merge and tidy Sahil Katrekar vectorization directives
 
