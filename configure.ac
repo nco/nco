@@ -1,4 +1,3 @@
-
 # $Header$ -*-Shell-script-*-
 
 # Purpose: Generate NCO configure script using autoconf build-engine
@@ -11,7 +10,7 @@
 # Usage:
 # autoconf
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
-# cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
+# cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make ianstall
 # cd ~/nco;autoreconf --force
 # cd ~/nco;for fl in NEWS README AUTHORS ChangeLog ; do ln -s doc/${fl} ${fl};done;autoreconf --force
 
@@ -55,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[4.9.4-alpha08],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.9.4-alpha01],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -335,6 +334,19 @@ AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [de
 # Enable OpenMP unless told not to
 if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
     AC_OPENMP
+	#skatreka++
+	#GPU Support
+	#If GPU availible, add appropriate offload flag to selected compiler
+	AC_ARG_ENABLE(gpu,AS_HELP_STRING([--enable-gpu],[Enable OpenMP GPU offloading for Nvidia GPUs [default=no]]),enable_gpu=${enableval},enable_gpu=no)
+
+	if (test "$enable_gpu" != 'no'); then
+		case ${CC} in
+			gcc* | g++*) OPENMP_CFLAGS+=" -foffload=nvptx-none";;
+			clang* ) OPENMP_CFLAGS+=" -fopenmp-targets=nvptx64-nvidia-cuda";;
+			#Intel compilers don't support NVIDIA GPU offloading
+		esac
+	fi
+	#skatreka--
     AC_SUBST(OPENMP_CFLAGS)
     AC_DEFINE([ENABLE_OPENMP],[1],[Compile operators with OpenMP support])
     AC_MSG_NOTICE([OpenMP support enabled])
@@ -344,6 +356,7 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
     # LDFLAGS="${LDFLAGS} ${OPENMP_CFLAGS}"
 fi
 # End OpenMP
+
 
 # Begin DAP support
 echo "Beginning generic tests for DAP support"
@@ -849,7 +862,7 @@ case ${host} in
 	esac
 	case ${CXX} in
 #	    icpc* ) CXXFLAGS="${CXXFLAGS} -cxxlib-icc" ; ;;
-	    icpc* ) CXXFLAGS="${CXXFLAGS} -cxxlib-gcc" ; ;;
+	    #icpc* ) CXXFLAGS="${CXXFLAGS} -cxxlib-gcc" ; ;;
 	esac
 	;;
     mips*-sgi-irix* )
@@ -1026,7 +1039,7 @@ fi
 # Begin enable_optimize_custom
 # Activate all known, helpful switches for fastest possible run-time performance
 # These switches are highly compiler and architecture dependent
-# Settings should improve performance relative to default ./configure settings
+# Settings should improve performance relative to default ./configure setttings
 AC_ARG_ENABLE(optimize-custom,AS_HELP_STRING([--enable-optimize-custom],[Activate compiler switches for potentially faster run-time performance (slower compilation). NB: This option may interact unfavorably with some versions of Flex. De-activate this if building fails with with errors involving "yyget_leng()". [default=no]]),enable_optimize_custom=${enableval},enable_optimize_custom=no)
 if test "${enable_optimize_custom}" = 'yes'; then
     AC_DEFINE(ENABLE_OPTIMIZE_CUSTOM,1,Fastest possible execution (slowest compilation))
@@ -1103,7 +1116,10 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	    ;;
 	x86_64*-linux* )
 	    case ${CC} in
-		icc* ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
+		#skatreka++
+		#icc* ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
+		icc* ) CFLAGS="${CFLAGS} -xHost -axHASWELL,KNL"
+		#skatreka--
 		    case ${CXX} in
 			icpc* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
@@ -1118,9 +1134,21 @@ if test "${enable_optimize_custom}" = 'yes'; then
 			pgCC* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
-	    esac
-	    ;;
-    esac
+		#skatreka++	
+		clang* ) CFLAGS="${CFLAGS} -march=native"
+				case ${CXX} in
+			clang* ) CXXFLAGS="{CXXFLAGS} ${CFLAGS}"
+				esac
+				;;
+		gcc* | g++*) CFLAGS="${CFLAGS} -march=native"
+				case ${CXX} in
+			g++* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
+	    	esac
+	    	;;
+			esac
+			;;
+		#skatreka--
+	esac
 fi
 # End enable_optimize_custom
 
@@ -1282,6 +1310,8 @@ LEX_OUTPUT_ROOT="lex.${NCO_YY_PFX}"
 LFLAGS="-P${NCO_YY_PFX}"
 AC_SUBST(LEX_OUTPUT_ROOT)
 AC_SUBST(LFLAGS)
+
+
 
 # Every autoconf script finishes by calling AC_OUTPUT to generate and run config.status
 AC_OUTPUT
