@@ -45,15 +45,15 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->rec_rmn_prv_ssc=-1;   /* [nbr] Records remaining-to-be-read to complete subcycle group from previous file (multi-file record dimension only) */
   lmt->srd=-1;               /* [nbr] Stride of hyperslab */
   lmt->srt=-1;               /* [nbr] Index to start of hyperslab */
-
-  lmt->flg_mro=-1;           /* [flg] True for multi-record output (used by ncra only) */
-  lmt->flg_mso=-1;           /* [flg] True for multi-subcycle output (used by ncra only) */
-  lmt->flg_input_complete=-1;/* [flg] True for multi-file operators when no more files need be opened */
-  lmt->is_rec_dmn=-1;        /* [flg]  True if record dimension, else False */
-  lmt->is_usr_spc_lmt=-1;    /* [flg]  True if any part of limit is user-specified, else False */
-  lmt->is_usr_spc_max=-1;    /* [flg]  True if user-specified, else False */
-  lmt->is_usr_spc_min=-1;    /* [flg]  True if user-specified, else False */
-  lmt->lmt_cln=cln_nil;      /* [flg]  Used by ncra, ncrcat to store enum of calendar-type attribute */
+  lmt->flg_ilv=False;        /* [flg] True for interleaved output (used by ncra only) */
+  lmt->flg_mro=False;        /* [flg] True for multi-record output (used by ncra only) */
+  lmt->flg_mso=False;        /* [flg] True for multi-subcycle output (used by ncra only) */
+  lmt->flg_input_complete=False;/* [flg] True for multi-file operators when no more files need be opened */
+  lmt->is_rec_dmn=False;     /* [flg] True if record dimension, else False */
+  lmt->is_usr_spc_lmt=False; /* [flg] True if any part of limit is user-specified, else False */
+  lmt->is_usr_spc_max=False; /* [flg] True if user-specified, else False */
+  lmt->is_usr_spc_min=False; /* [flg] True if user-specified, else False */
+  lmt->lmt_cln=cln_nil;      /* [enm] Used by ncra, ncrcat to store enum of calendar-type attribute */
 
 } /* end nco_lmt_init() */
 
@@ -147,8 +147,8 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   lmt2->rec_rmn_prv_ssc=lmt1->rec_rmn_prv_ssc;
   lmt2->srd=lmt1->srd;
   lmt2->srt=lmt1->srt;
-
   lmt2->flg_ilv=lmt1->flg_ilv;
+
   lmt2->flg_mro=lmt1->flg_mro;
   lmt2->flg_mso=lmt1->flg_mso;
   lmt2->flg_input_complete=lmt1->flg_input_complete;
@@ -170,13 +170,13 @@ nco_lmt_free /* [fnc] Free memory associated with limit structure */
   lmt->nm_fll=(char *)nco_free(lmt->nm_fll);
   lmt->grp_nm_fll=(char *)nco_free(lmt->grp_nm_fll);
 
-  lmt->ssc_sng=(char *)nco_free(lmt->ssc_sng);
+  lmt->ilv_sng=(char *)nco_free(lmt->ilv_sng);
   lmt->max_sng=(char *)nco_free(lmt->max_sng);
   lmt->min_sng=(char *)nco_free(lmt->min_sng);
-  lmt->ilv_sng=(char *)nco_free(lmt->ilv_sng);
+  lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
+  lmt->ssc_sng=(char *)nco_free(lmt->ssc_sng);
 
   lmt->rbs_sng=(char *)nco_free(lmt->rbs_sng);   
-  lmt->srd_sng=(char *)nco_free(lmt->srd_sng);
 
   lmt=(lmt_sct *)nco_free(lmt);
 

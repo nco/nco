@@ -1363,6 +1363,10 @@ main(int argc,char **argv)
 	     In both normal and interleaved mode, REC_FRS_GRP/REC_LST_GRP are true for 
 	     first/last records in a group, respectively, and false otherwise
 
+	     20200731 To disambiguate the meanings of REC_FRS_GRP and REC_LST_GRP we introduce:
+	     REC_FRS_SSC and REC_LST_SSC for the first and last records in a sub-cycle
+	     REC_FRS_CRR_GRP_OUT and REC_LST_CRR_GRP_OUT for the first and last records in the current (ncra output group (if any)
+
 	     REC_LST_DSR is "sloppy"---it is only set in last input file. If last file(s) is/are superfluous, REC_LST_DSR is never set and final normalization is done outside file and record loops (along with nces normalization). FLG_BFR_NRM indicates these situations and allow us to be "sloppy" in setting REC_LST_DSR.
 	     20200719: REC_LST_DSR is not used for FLG_ILV, since complete sub-cycles are assumed to be within a single file, and normalization always occurs at a group ending. */
 

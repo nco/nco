@@ -10,7 +10,7 @@
 # Usage:
 # autoconf
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
-# cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make ianstall
+# cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
 # cd ~/nco;autoreconf --force
 # cd ~/nco;for fl in NEWS README AUTHORS ChangeLog ; do ln -s doc/${fl} ${fl};done;autoreconf --force
 
@@ -335,18 +335,17 @@ AC_ARG_ENABLE(openmp,AS_HELP_STRING([--enable-openmp],[Build NCO with OpenMP [de
 if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes')); then
     AC_OPENMP
 	#skatreka++
-	#GPU Support
-	#If GPU availible, add appropriate offload flag to selected compiler
-	AC_ARG_ENABLE(gpu,AS_HELP_STRING([--enable-gpu],[Enable OpenMP GPU offloading for Nvidia GPUs [default=no]]),enable_gpu=${enableval},enable_gpu=no)
+	# GPU offloading depends upon OpenMP presence
+    AC_ARG_ENABLE(gpu,AS_HELP_STRING([--enable-gpu],[Enable OpenMP GPU offloading for Nvidia GPUs [default=no]]),enable_gpu=${enableval},enable_gpu=no)
 
-	if (test "$enable_gpu" != 'no'); then
-		case ${CC} in
-			gcc* | g++*) OPENMP_CFLAGS+=" -foffload=nvptx-none";;
-			clang* ) OPENMP_CFLAGS+=" -fopenmp-targets=nvptx64-nvidia-cuda";;
-			#Intel compilers don't support NVIDIA GPU offloading
-		esac
-	fi
-	#skatreka--
+    if (test "x$enable_gpu" != 'xno'); then
+	case ${CC} in
+	    gcc* | g\+\+* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -foffload=nvptx-none" ;;
+	    clang* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -fopenmp-targets=nvptx64-nvidia-cuda" ;;
+	    # Intel compilers do not yet support Nvidia GPU offloading
+	esac
+    fi
+    #skatreka--
     AC_SUBST(OPENMP_CFLAGS)
     AC_DEFINE([ENABLE_OPENMP],[1],[Compile operators with OpenMP support])
     AC_MSG_NOTICE([OpenMP support enabled])
@@ -910,7 +909,8 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
     GCC_CFLAGS="${GCC_BASE_FLAGS} -Wmissing-prototypes"
     GCC_CXXFLAGS="${GCC_BASE_FLAGS}"
 
-# Compilation flags recommended by GSL that I like and use:
+# Compilation flags that I like and use:
+# See also GSL optimization guide, and Gentoo https://wiki.gentoo.org/wiki/GCC_optimization
 # -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
 # -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
 # -pedantic: Disallow non-ISO constructs (including type long long) (sometimes useful)
@@ -929,6 +929,8 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
 # -pg: Enable profiling, generate gmon.out output files (also needed by linker)
+# -Og: Optimize while retaining complete compatibility with -g
+# -O2: Recommended optimization level for general case, uses SSE and AVX but no YMM
 # -O3: clang -O4 DNE, highest clang optimization is -O3 
 # -O4: Turn on optimization so uninitialized variables are flagged
 # Compilation flags recommended by GSL that I do not like and do not use:
@@ -1093,7 +1095,7 @@ if test "${enable_optimize_custom}" = 'yes'; then
 # -qstrict: Ensure that -O3 optimizations do not alter program semantics
 # -Q : Inline all appropriate subprograms
 		xlc* ) CFLAGS="${CFLAGS} -O3 -qstrict -Q"
-		    case ${CXX} in
+ 	            case ${CXX} in
 			xlC* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
@@ -1117,6 +1119,16 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	x86_64*-linux* )
 	    case ${CC} in
 		#skatreka++
+		clang* ) CFLAGS="${CFLAGS} -march=native"
+		    case ${CXX} in
+			clang* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
+		    esac
+		    ;;
+		gcc* | g\+\+* ) CFLAGS="${CFLAGS} -march=native"
+		    case ${CXX} in
+			g\+\+* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
+	    	    esac
+	    	    ;;
 		#icc* ) CFLAGS="${CFLAGS} -O3 -axW -mcpu=pentium4"
 		icc* ) CFLAGS="${CFLAGS} -xHost -axHASWELL,KNL"
 		#skatreka--
@@ -1134,20 +1146,8 @@ if test "${enable_optimize_custom}" = 'yes'; then
 			pgCC* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
 		    esac
 		    ;;
-		#skatreka++	
-		clang* ) CFLAGS="${CFLAGS} -march=native"
-				case ${CXX} in
-			clang* ) CXXFLAGS="{CXXFLAGS} ${CFLAGS}"
-				esac
-				;;
-		gcc* | g++*) CFLAGS="${CFLAGS} -march=native"
-				case ${CXX} in
-			g++* ) CXXFLAGS="${CXXFLAGS} ${CFLAGS}"
-	    	esac
-	    	;;
-			esac
-			;;
-		#skatreka--
+	    esac
+	    ;;
 	esac
 fi
 # End enable_optimize_custom

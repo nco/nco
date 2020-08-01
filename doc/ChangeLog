@@ -1,3 +1,7 @@
+2020-08-01  Charlie Zender  <zender@uci.edu>
+
+	* Merge and tidy Sahil Katrekar configure GPU-offloading and enable-optimize options
+
 2020-07-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha09 release procedure:
