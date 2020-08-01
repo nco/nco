@@ -2858,11 +2858,11 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
      Assume operands conform, are same type, and are in memory */
   
   /* Subtraction is currently defined as op2:=op2-op1 */
-	static double total_time = 0;
-	clock_t tm_srt;  
-	clock_t tm_end;  
-	float tm_drn;
-	tm_srt = clock();
+	//static double total_time = 0;
+	//clock_t tm_srt;  
+	//clock_t tm_end;  
+	//float tm_drn;
+	//tm_srt = clock();
 	
   long idx;
   
@@ -2999,10 +2999,10 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
- 	tm_end = clock();
-	tm_drn = (float)(tm_end - tm_srt)/CLOCKS_PER_SEC;
-	total_time += tm_drn;
-	fprintf(stdout, "Total subtraction took %gs seconds to run\n", total_time); 
+ 	//tm_end = clock();
+	//tm_drn = (float)(tm_end - tm_srt)/CLOCKS_PER_SEC;
+	//total_time += tm_drn;
+	//fprintf(stdout, "Total subtraction took %gs seconds to run\n", total_time); 
 } /* end nco_var_sbt() */
 
 void
