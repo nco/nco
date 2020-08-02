@@ -719,7 +719,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* end ncra */
     if(lmt.ilv > 1L){
       lmt.flg_ilv=True;
-      (void)fprintf(stdout,"%s: quark1 lmt.ilv_sng = %s, lmt.ilv = %ld, flg_ilv = %s\n",nco_prg_nm_get(),lmt.ilv_sng == NULL ? "NULL" : lmt.ilv_sng,lmt.ilv,lmt.flg_ilv ? "YES" : "NO");
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: quark1 lmt.ilv_sng = %s, lmt.ilv = %ld, flg_ilv = %s\n",nco_prg_nm_get(),lmt.ilv_sng == NULL ? "NULL" : lmt.ilv_sng,lmt.ilv,lmt.flg_ilv ? "YES" : "NO");
     } /* !lmt.ilv */
   } /* !lmt.ilv_sng */
 
@@ -1579,7 +1579,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     } /* end ncra */
     if(lmt.ilv > 1L){
       lmt.flg_ilv=True;
-      (void)fprintf(stdout,"%s: quark2 lmt.ilv_sng = %s, lmt.ilv = %ld, flg_ilv = %s\n",nco_prg_nm_get(),lmt.ilv_sng == NULL ? "NULL" : lmt.ilv_sng,lmt.ilv,lmt.flg_ilv ? "YES" : "NO");
+      //(void)fprintf(stdout,"%s: quark2 lmt.ilv_sng = %s, lmt.ilv = %ld, flg_ilv = %s\n",nco_prg_nm_get(),lmt.ilv_sng == NULL ? "NULL" : lmt.ilv_sng,lmt.ilv,lmt.flg_ilv ? "YES" : "NO");
     } /* !lmt.ilv */
   } /* !lmt.ilv_sng */
 

@@ -1,3 +1,11 @@
+2020-08-02  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.4-alpha10 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Marble';git push
+	git tag -a 4.9.4-alpha10 -m '';git push --tags
+
+	* Test file famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc area is corrupt in last ~100 values
+
 2020-08-01  Charlie Zender  <zender@uci.edu>
 
 	* Merge and tidy Sahil Katrekar configure GPU-offloading and enable-optimize options
