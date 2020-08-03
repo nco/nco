@@ -180,6 +180,11 @@ int ifmt)              /* I [enm] nco_fmt_dt */
 
  switch(ifmt)
  {
+
+   case fmt_dt_nil:
+     buff[0]='\0';
+     break;
+
     /* plain format all out */
     case fmt_dt_rgl:
      sprintf(buff,"%04d-%02d-%02d %02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec  );
@@ -193,7 +198,6 @@ int ifmt)              /* I [enm] nco_fmt_dt */
 
      /* do date and time if time not all zero */
     case fmt_dt_sht:
-    case fmt_dt_nil:
       sprintf(bdate,"%04d-%02d-%02d", ttx->year,ttx->month, ttx->day);
       if( ttx->hour !=0 || ttx->min!=0 || ttx->sec !=0.0 )
       {
