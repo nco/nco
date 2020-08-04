@@ -1,6 +1,6 @@
 2020-08-04  Charlie Zender  <zender@uci.edu>
 
-	* Generalize order of specification of --dt_fmt and --cal
+	* Generalize order of specification of --dt_fmt and --cal, tidy code
 
 2020-08-04 Henry Butowsky  <henryb@hush.com>
 

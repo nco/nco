@@ -178,47 +178,36 @@ int ifmt)              /* I [enm] nco_fmt_dt */
 
  buff=(char*)nco_malloc( sizeof(char) * NCO_MAX_LEN_FMT_SNG );
 
- switch(ifmt)
- {
-
-   case fmt_dt_nil:
-     buff[0]='\0';
-     break;
-
-    /* plain format all out */
-    case fmt_dt_rgl:
-     sprintf(buff,"%04d-%02d-%02d %02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec  );
-     break;
-
-
-     /* plain format all out with 'T' char as spacer*/
-   case fmt_dt_iso8601:
-     sprintf(buff,"%04d-%02d-%02dT%02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec  );
-     break;
-
-     /* do date and time if time not all zero */
-    case fmt_dt_sht:
-      sprintf(bdate,"%04d-%02d-%02d", ttx->year,ttx->month, ttx->day);
-      if( ttx->hour !=0 || ttx->min!=0 || ttx->sec !=0.0 )
-      {
-        int isec;
-        double m_sec, frac_sec;
-
-        frac_sec=modf(ttx->sec, &m_sec);
-        isec=(int)m_sec;
-
-        if( frac_sec==0.0)
-          sprintf(btime, " %02d:%02d:%02d", ttx->hour,ttx->min, isec );
-        else
-          sprintf(btime, " %02d:%02d:%02.7f", ttx->hour,ttx->min, ttx->sec );
-      }
-      sprintf(buff,"%s%s", bdate,btime);
-      break;
+ switch(ifmt){
+ case fmt_dt_nil:
+   buff[0]='\0';
+   break;
+   /* Plain format */
+ case fmt_dt_rgl:
+   sprintf(buff,"%04d-%02d-%02d %02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec);
+   break;
+   /* Plain format all out with 'T' char as date-time spacer */
+ case fmt_dt_iso8601:
+   sprintf(buff,"%04d-%02d-%02dT%02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec);
+   break;
+   /* Print date and time if time not all zero */
+ case fmt_dt_sht:
+   sprintf(bdate,"%04d-%02d-%02d",ttx->year,ttx->month,ttx->day);
+   if(ttx->hour !=0 || ttx->min!=0 || ttx->sec !=0.0){
+     int isec;
+     double m_sec,frac_sec;
+     
+     frac_sec=modf(ttx->sec, &m_sec);
+     isec=(int)m_sec;
+     
+     if(frac_sec == 0.0) sprintf(btime, " %02d:%02d:%02d", ttx->hour,ttx->min, isec ); else sprintf(btime, " %02d:%02d:%02.7f", ttx->hour,ttx->min, ttx->sec);
+   }
+   sprintf(buff,"%s%s", bdate,btime);
+   break;
  }
-
-   return buff;
+ 
+ return buff;
 }
-
 
 nco_cln_typ /* [enm] Calendar type */
 nco_cln_get_cln_typ /* [fnc] Determine calendar type or cln_nil if not found */

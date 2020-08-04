@@ -2071,29 +2071,26 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(TRD && flg_malloc_unit_var == False){
       unit_sng_var=strdup("(no units)");
       flg_malloc_unit_var=True;
-    }else if(  prn_flg->cdl_fmt_dt != fmt_dt_nil  &&  flg_malloc_unit_var){
+    }else if(prn_flg->cdl_fmt_dt != fmt_dt_nil && flg_malloc_unit_var){
 
         var_tmp=nco_var_dpl(var);
         var_aux=nco_var_dpl(var);
         var_aux->val.vp=nco_free(var_aux->val.vp);
 
-        if(var_aux->has_mss_val)
-        {
-	  		var_aux->mss_val.vp=nco_free(var_aux->mss_val.vp);
-          	var_aux->has_mss_val=False;
-		}
+        if(var_aux->has_mss_val){
+	  var_aux->mss_val.vp=nco_free(var_aux->mss_val.vp);
+	  var_aux->has_mss_val=False;
+	}
 
         nco_var_cnf_typ(NC_STRING,var_aux);
 
         /* NB: nco_cln_var_prs() modifies var_tmp and var_aux */
-		if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_NOERR)
-			{var_swp=var;var=var_aux;var_aux=var_swp;}
-		else
-			var_aux=nco_var_free(var_aux);
-
+	if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_NOERR){
+	  var_swp=var;var=var_aux;var_aux=var_swp;
+	}else{
+	  var_aux=nco_var_free(var_aux);
+	}
         if(var_tmp) var_tmp=(var_sct*)nco_var_free(var_tmp);
-	
-
     }
   }else{
     flg_malloc_unit_var=False;
