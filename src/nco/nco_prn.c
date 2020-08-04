@@ -2086,10 +2086,10 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         nco_var_cnf_typ(NC_STRING,var_aux);
 
         /* NB: nco_cln_var_prs() modifies var_tmp and var_aux */
-		if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_ERR)
-			var_aux=nco_var_free(var_aux);
-		else
+		if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_NOERR)
 			{var_swp=var;var=var_aux;var_aux=var_swp;}
+		else
+			var_aux=nco_var_free(var_aux);
 
         if(var_tmp) var_tmp=(var_sct*)nco_var_free(var_tmp);
 	
