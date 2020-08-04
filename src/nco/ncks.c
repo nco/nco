@@ -638,11 +638,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"dt_fmt") || !strcmp(opt_crr,"date_format")){
         dt_fmt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       } /* !dt_fmt */
-      if(!strcmp(opt_crr,"calendar") || !strcmp(opt_crr,"cln_lgb") || !strcmp(opt_crr,"prn_cln_lgb") || !strcmp(opt_crr,"prn_lgb") || !strcmp(opt_crr,"timestamp"))
-        PRN_CLN_LGB=True; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
-
-      if(PRN_CLN_LGB && dt_fmt== fmt_dt_nil) dt_fmt=fmt_dt_sht;
-
+      if(!strcmp(opt_crr,"calendar") || !strcmp(opt_crr,"cln_lgb") || !strcmp(opt_crr,"prn_cln_lgb") || !strcmp(opt_crr,"prn_lgb") || !strcmp(opt_crr,"timestamp")) PRN_CLN_LGB=True; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
       if(!strcmp(opt_crr,"chk_map") || !strcmp(opt_crr,"check_map")) CHK_MAP=True; /* [flg] Check map-file quality */
       if(!strcmp(opt_crr,"chk_nan") || !strcmp(opt_crr,"check_nan") || !strcmp(opt_crr,"nan") || !strcmp(opt_crr,"NaN")) CHK_NAN=True; /* [flg] Check for NaNs */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
@@ -1336,6 +1332,7 @@ main(int argc,char **argv)
     if(nco_dbg_lvl >= nco_dbg_scl) prn_flg.fll_pth=True; else prn_flg.fll_pth=False;
     if(prn_flg.xml) prn_flg.nwl_pst_val=False; else prn_flg.nwl_pst_val=True;
     prn_flg.dlm_sng=dlm_sng;
+    if(PRN_CLN_LGB && dt_fmt == fmt_dt_nil) dt_fmt=fmt_dt_sht;
     prn_flg.cdl_fmt_dt=dt_fmt;
     prn_flg.fl_out_fmt=fl_out_fmt;
     prn_flg.fmt_val=fmt_val;

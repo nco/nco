@@ -28138,6 +28138,9 @@ Single bug reports and fixes
 @cindex Wenshan Wang
 @item Wenshan Wang
 @acronym{CMIP5} and @acronym{MODIS} processing documentation, reference card
+@cindex Todd Mitchell
+@item Todd Mitchell
+Financial support
 @end table
 Please let me know if your name was omitted!
 

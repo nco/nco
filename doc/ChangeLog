@@ -1,6 +1,10 @@
-2020-07-04 Henry Butowsky  <henryb@hush.com>
-	
-	* expanded usage of ncks --dt_fmt switch to json (--json) and xml (--xml) output
+2020-08-04  Charlie Zender  <zender@uci.edu>
+
+	* Generalize order of specification of --dt_fmt and --cal
+
+2020-08-04 Henry Butowsky  <henryb@hush.com>
+
+	* Expand usage of ncks --dt_fmt switch to JSON (--json) and XML (--xml) output
 
 2020-08-03  Charlie Zender  <zender@uci.edu>
 
