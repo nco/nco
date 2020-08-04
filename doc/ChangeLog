@@ -1,8 +1,14 @@
-2020-08-02  Charlie Zender  <zender@uci.edu>
+2020-08-03  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Marble';git push
 	git tag -a 4.9.4-alpha10 -m '';git push --tags
+
+	* Multi-file high-frequency climos appear to work, need optimization
+
+	* Workaround ILV-setting by restricting ilv failure checks to ilv > 1
+
+2020-08-02  Charlie Zender  <zender@uci.edu>
 
 	* Test file famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc area is corrupt in last ~100 values
 

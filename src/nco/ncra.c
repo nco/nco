@@ -1325,7 +1325,7 @@ main(int argc,char **argv)
 	if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG After lmt_evl() for fl_idx=%d ILV=%s MRO=%s, MSO=%s, srt=%ld, end=%ld, srd=%ld, ssc=%ld, ilv=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, idx_rec_out=%ld\n",nco_prg_nm_get(),fl_idx,FLG_ILV ? "YES" : "NO",FLG_MRO ? "YES" : "NO",FLG_MSO ? "YES" : "NO",lmt_rec[idx_rec]->srt,lmt_rec[idx_rec]->end,lmt_rec[idx_rec]->srd,lmt_rec[idx_rec]->ssc,lmt_rec[idx_rec]->ilv,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,idx_rec_out[idx_rec]);
 
 	/* Sub-cycles not allowed to cross file boundaries in interleave mode */
-        if(FLG_ILV && rec_rmn_prv_ilv > 0L){
+        if(FLG_ILV && lmt_rec[0]->ilv > 1 && rec_rmn_prv_ilv > 0L){
 	  (void)fprintf(fp_stdout,"%s: ERROR interleaved sub-cycle crosses file boundary between %s (input file %d) and previous file. Diagnostic counters: rec_rmn_prv_ssc = %ld, rec_rmn_prv_ilv = %ld\n",nco_prg_nm_get(),fl_in,fl_idx,rec_rmn_prv_ssc,rec_rmn_prv_ilv);
 	  nco_exit(EXIT_FAILURE);
 	} /* !rec_rmn_prv_ilv */

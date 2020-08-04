@@ -1986,17 +1986,12 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		tm_nbr=`ncks --trd -M ${fl_in} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
 		let ssc2=${tm_nbr}*${tpd_out}/${srd}
 		cmd_clm[${clm_idx}]="ncra -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]};ncra -O -d time,,,,${ssc2},${tpd_out} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]}"
-		# Combine monthly into seasonal and annual means with nces
-#		cmd_mth2csn='nces --cb'
-#		cmd_csn2ann='nces --c2b'
-		cmd_mth2csn='nces'
-		cmd_csn2ann='nces'
 	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
 		# Cull this month from every year of climatology into single file
 		fl_mth[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tms_foo_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
 		cmd_cll[${clm_idx}]="ncrcat -O ${nco_opt} ${gaa_sng} -d time,'${tm_srt}','${tm_end}',${srd},${ssc} -p ${drc_in} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
-		echo "quark ${cmd_cll[${clm_idx}]}"
+		echo "${cmd_cll[${clm_idx}]}"
 		eval ${cmd_cll[${clm_idx}]}
 		if [ "$?" -ne 0 ]; then
 		    printf "${spt_nm}: ERROR month-cull cmd_cll[${clm_idx}] failed. Debug this:\n${cmd_cll[${clm_idx}]}\n"
@@ -2014,18 +2009,23 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		    ILV=`printf "%02d" ${ilv_idx}` 
 		    fl_ilv_tpl[${ilv_idx}]="${drc_out}/${out_nm}_${MM}_ilv${ILV}_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
 		    cmd_ilv[${ilv_idx}]="ncra -O ${nco_opt} ${gaa_sng} -d time,${ilv_idx},,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_ilv_tpl[${ilv_idx}]}"
-		    echo "quark ${cmd_ilv[${ilv_idx}]}"
+		    echo "${cmd_ilv[${ilv_idx}]}"
 		    eval ${cmd_ilv[${ilv_idx}]}
 		    if [ "$?" -ne 0 ]; then
 			printf "${spt_nm}: ERROR interleave cmd_ilv[${ilv_idx}] failed. Debug this:\n${cmd_ilv[${ilv_idx}]}\n"
 			exit 1
 		    fi # !err
 		done # !ilv_idx
-		    # Clean-up monthly inputs
-		    /bin/rm ${fl_mth[${clm_idx}]}
-		    cmd_clm[${clm_idx}]="ncrcat -O ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}ilv* ${fl_out[${clm_idx}]}"
-		    echo "quark ${cmd_clm[${clm_idx}]}"
-	     fi # !fl_nbr
+		# Clean-up monthly inputs
+		/bin/rm -f ${fl_mth[${clm_idx}]}
+		cmd_clm[${clm_idx}]="ncrcat -O ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_ilv* ${fl_out[${clm_idx}]}"
+		echo "${cmd_clm[${clm_idx}]}"
+            fi # !fl_nbr
+	    # Combine monthly into seasonal and annual means with nces
+	    #cmd_mth2csn='nces --cb'
+	    #cmd_csn2ann='nces --c2b'
+	    cmd_mth2csn='nces'
+	    cmd_csn2ann='nces'
 	elif [ ${clm_md} = 'mth' ]; then 
 	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
 	    # Combine monthly into seasonal and annual means with ncra
@@ -2715,7 +2715,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
     fi # !dbg
     # Clean-up interleave files
     if [ ${clm_md} = 'hfc' ] && [ "${fl_nbr}" -gt 1 ]; then
-	/bin/rm "${drc_out}/${out_nm}_[01][0-9]_ilv[0-9][0-9]_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
+	/bin/rm -f ${drc_out}/${out_nm}_[01][0-9]_ilv[0-9][0-9]_*.nc
     fi # !clm_md
 	
     # Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).
