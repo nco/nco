@@ -1,3 +1,7 @@
+2020-07-04 Henry Butowsky  <henryb@hush.com>
+	
+	* expanded usage of ncks --dt_fmt switch to json (--json) and xml (--xml) output
+
 2020-08-03  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo use ISO8601 time format to eliminate whitespace and quotes

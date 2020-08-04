@@ -204,7 +204,7 @@ main(int argc,char **argv)
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int dmn_nbr_fl;
   int dmn_rec_fl;
-  int dt_fmt=fmt_dt_sht;
+  int dt_fmt=fmt_dt_nil;
   int fl_in_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Input file format */
   int fl_nbr=0;
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
@@ -635,12 +635,14 @@ main(int argc,char **argv)
         (void)fprintf(stdout,"%s\n",bld_ngn);
         nco_exit(EXIT_SUCCESS);
       } /* endif "bld" */
-      if(!strcmp(opt_crr,"calendar") || !strcmp(opt_crr,"cln_lgb") || !strcmp(opt_crr,"prn_cln_lgb") || !strcmp(opt_crr,"prn_lgb") || !strcmp(opt_crr,"timestamp")) PRN_CLN_LGB=True; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
       if(!strcmp(opt_crr,"dt_fmt") || !strcmp(opt_crr,"date_format")){
         dt_fmt=strtoul(optarg,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	PRN_CLN_LGB=True;
-	PRN_CDL=True;
       } /* !dt_fmt */
+      if(!strcmp(opt_crr,"calendar") || !strcmp(opt_crr,"cln_lgb") || !strcmp(opt_crr,"prn_cln_lgb") || !strcmp(opt_crr,"prn_lgb") || !strcmp(opt_crr,"timestamp"))
+        PRN_CLN_LGB=True; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
+
+      if(PRN_CLN_LGB && dt_fmt== fmt_dt_nil) dt_fmt=fmt_dt_sht;
+
       if(!strcmp(opt_crr,"chk_map") || !strcmp(opt_crr,"check_map")) CHK_MAP=True; /* [flg] Check map-file quality */
       if(!strcmp(opt_crr,"chk_nan") || !strcmp(opt_crr,"check_nan") || !strcmp(opt_crr,"nan") || !strcmp(opt_crr,"NaN")) CHK_NAN=True; /* [flg] Check for NaNs */
       if(!strcmp(opt_crr,"cnk_byt") || !strcmp(opt_crr,"chunk_byte")){
@@ -1361,9 +1363,8 @@ main(int argc,char **argv)
       prn_flg.nbr_zro=1;
       /* JSON numerical arrays have no notion of missing values */
       prn_flg.PRN_MSS_VAL_BLANK=False;
-      prn_flg.jsn_att_fmt=JSN_ATT_FMT;  
-      prn_flg.jsn_data_brk=JSN_DATA_BRK;  
-      prn_flg.jsn_var_fmt=JSN_VAR_FMT;  
+      prn_flg.jsn_data_brk=JSN_DATA_BRK;
+      prn_flg.jsn_var_fmt=JSN_VAR_FMT;
     }else { /* endif JSON */
       prn_flg.jsn_att_fmt=0;
       prn_flg.jsn_data_brk=False;
