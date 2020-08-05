@@ -209,12 +209,12 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # High-frequency climos:
 # drc_in=${DATA}/ne30/raw
 # caseid=famipc5_ne30_v0.3_00007.cam.h4 # 3-hour resolution
-# cd ${drc_in};ls ${caseid}*.nc | ncclimo --dec_md=sdd--tpd=8 --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc
-# ncclimo --dec_md=sdd--tpd=8 --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/PRECT_200101_200212.nc
+# cd ${drc_in};ls ${caseid}*.nc | ncclimo --tpd=8 --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc
+# ncclimo --tpd=8 --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/PRECT_200101_200212.nc
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS,TREFHT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
-# ncclimo --var_lst=FSNT,AODVIS --caseid=famipc5_ne30_v0.3_00003 --yr_srt=1980 --yr_end=1983 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo --var_lst=FSNT,AODVIS,TREFHT --caseid=famipc5_ne30_v0.3_00003 --yr_srt=1980 --yr_end=1983 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -a sdd -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
@@ -469,7 +469,7 @@ d2f_opt='--d2f' # [sng] Option string to convert double-precision fields to sing
 dpt_fl='' # [sng] Depth file with refBottomDepth for MPAS ocean
 dpt_opt='' # [sng] Option string to add depth coordinate to regridded MPAS files
 dbg_lvl=0 # [nbr] Debugging level
-dec_md='scd' # [sng] December mode ('scd' or 'sdd' as per above)
+dec_md='sdd' # [sng] December mode ('scd' or 'sdd' as per above)
 dfl_lvl='' # [enm] Deflate level
 dpf='' # [nbr] Days-per-file in input
 drc_in='' # [sng] Input file directory
@@ -497,7 +497,7 @@ inp_glb='No' # [sng] Input file list from globbing directory
 inp_psn='No' # [sng] Input file list from positional arguments
 inp_std='No' # [sng] Input file list from stdin
 job_nbr=12 # [nbr] Job simultaneity for parallelism
-lnk_flg='Yes' # [sng] Link E3SM-climo to AMWG-climo filenames
+lnk_flg='No' # [sng] Link E3SM-climo to AMWG-climo filenames
 map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
 mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
 mdl_nm_usr='' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
@@ -1988,42 +1988,19 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		cmd_clm[${clm_idx}]="ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]};ncra -O -d time,,,,${ssc2},${tpd_out} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]}"
 	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
-		# Cull this month from every year of climatology into single file
+
+		# Cull this month from interannual climatology into interannual diurnal file
 		fl_mth[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tms_foo_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
-		cmd_cll[${clm_idx}]="ncrcat -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc} -p ${drc_in} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
-		echo "${cmd_cll[${clm_idx}]}"
-		eval ${cmd_cll[${clm_idx}]}
-		if [ "$?" -ne 0 ]; then
-		    printf "${spt_nm}: ERROR month-cull cmd_cll[${clm_idx}] failed. Debug this:\n${cmd_cll[${clm_idx}]}\n"
-		    exit 1
-		fi # !err
-		ilv_nbr=${tpd_out}
-		#let drn_hr=24/${tpd_out}
-		for ((ilv_idx=0;ilv_idx<ilv_nbr;ilv_idx++)); do
-		    #let hh_srt=${ilv_idx}*${drn_hr}
-		    #HH=`printf "%02d" ${hh_srt}` 
-		    #tm_srt="${yyyy_clm_srt}-${MM}-01T${HH}:00:01"
-		    #let hh_end=$((((ilv_idx + 1)*drn_hr ) % 24))
-		    #HH=`printf "%02d" ${hh_end}` 
-		    #tm_end="${yyyy_clm_end}-${MMp1}-01 00:00:00"
-		    ILV=`printf "%02d" ${ilv_idx}` 
-		    fl_ilv_tpl[${ilv_idx}]="${drc_out}/${out_nm}_${MM}_ilv${ILV}_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
-		    cmd_ilv[${ilv_idx}]="ncra -O ${nco_opt} ${gaa_sng} -d time,${ilv_idx},,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_ilv_tpl[${ilv_idx}]}"
-		    echo "${cmd_ilv[${ilv_idx}]}"
-		    eval ${cmd_ilv[${ilv_idx}]}
-		    if [ "$?" -ne 0 ]; then
-			printf "${spt_nm}: ERROR interleave cmd_ilv[${ilv_idx}] failed. Debug this:\n${cmd_ilv[${ilv_idx}]}\n"
-			exit 1
-		    fi # !err
-		done # !ilv_idx
-		# Clean-up monthly inputs
-		/bin/rm -f ${fl_mth[${clm_idx}]}
-		cmd_clm[${clm_idx}]="ncrcat -O ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_ilv* ${fl_out[${clm_idx}]}"
-		echo "${cmd_clm[${clm_idx}]}"
-            fi # !fl_nbr
-	    # Combine monthly into seasonal and annual means with nces
-	    #cmd_mth2csn='nces --cb'
-	    #cmd_csn2ann='nces --c2b'
+		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc} -p ${drc_in} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
+
+		# Take mean value of each diurnal timestep across all instances of this month
+		fl_tpd_tpl[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tpdTPDTT_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
+		cmd_tpd_tpl[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,TPDidx,,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_tpd_tpl[${clm_idx}]}"
+
+		# Concatenate individual timestep means into full diurnal timeseries
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
+	    fi # !fl_nbr
+	    # Combine monthly into seasonal and annual means with nces (preserving diurnal timesteps)
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
 	elif [ ${clm_md} = 'mth' ]; then 
@@ -2033,7 +2010,113 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    cmd_csn2ann='ncra --c2b'
 	fi # !clm_md
     done # !mth
+		    
+    if [ ${clm_md} = 'hfc' ] && [ "${fl_nbr}" -gt 1 ]; then
+	printf "Cull each month from interannual climatology into interannual diurnal file...\n"
+	[[ ${dbg_lvl} -ge 1 ]] && date_cll=$(date +"%s")
 
+	if [ ${job_nbr} -eq 1 ] || [ ${job_nbr} -eq 2 ] || [ ${job_nbr} -eq 3 ] || [ ${job_nbr} -eq 4 ] || [ ${job_nbr} -eq 6 ] || [ ${job_nbr} -eq 12 ]; then
+	    echo "Successful match of job_nbr to list of permissible values" > /dev/null
+	else
+	    echo "${spt_nm}: ERROR Job number job_nbr=${job_nbr} is invalid in monthly climo mode. Must be a factor of 12. Valid values are 1, 2, 3, 4, 6, and 12. Please re-submit with valid job_nbr."
+		    exit 1
+	fi # !job_nbr
+
+	# Batch number is inverse to job number, so job_nbr=1->bch_nbr=12 (serial mode, slowest), job_nbr=2->bch_nbr=6, ... job_nbr=12->bch_nbr=1 (full background mode, fastest)
+	let bch_nbr=$((12 / job_nbr))
+	for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
+	    # clm_idx is 1-based, bch_idx is 0-based
+	    let clm_idx_srt=$(((bch_idx * job_nbr) + 1))
+	    let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
+	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+		printf "Culling climatological monthly timeseries for month ${clm_idx} ...\n"
+		if [ ${dbg_lvl} -ge 1 ]; then
+		    echo ${cmd_cll[${clm_idx}]}
+		fi # !dbg
+		if [ ${dbg_lvl} -le 1 ]; then
+		    if [ -z "${par_opt}" ]; then
+			eval ${cmd_cll[${clm_idx}]}
+			if [ "$?" -ne 0 ]; then
+			    printf "${spt_nm}: ERROR monthly cull cmd_cll[${clm_idx}] failed. Debug this:\n${cmd_cll[${clm_idx}]}\n"
+			    exit 1
+			fi # !err
+		    else # !par_opt
+			eval ${cmd_cll[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+			cll_pid[${clm_idx}]=$!
+		    fi # !par_opt
+		fi # !dbg
+	    done # !clm_idx
+	    if [ -n "${par_opt}" ]; then
+		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+		    wait ${cll_pid[${clm_idx}]}
+		    if [ "$?" -ne 0 ]; then
+			printf "${spt_nm}: ERROR monthly cull cmd_cll[${clm_idx}] failed. Debug this:\n${cmd_cll[${clm_idx}]}\n"
+			exit 1
+		    fi # !err
+		done # !clm_idx
+	    fi # !par_opt
+	done # !bch_idx
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    date_crr=$(date +"%s")
+	    date_dff=$((date_crr-date_cll))
+	    echo "Elapsed time to cull monthly timeseries $((date_dff/60))m$((date_dff % 60))s"
+	fi # !dbg
+
+	printf "Take mean value of each diurnal timestep across all instances of every month...\n"
+	[[ ${dbg_lvl} -ge 1 ]] && date_tpd=$(date +"%s")
+
+	for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
+	    TT=`printf "%02d" ${tpd_idx}`
+	    printf "Parallelize monthly means for diurnal timestep ${tpd_idx}...\n"
+	    let bch_nbr=$((12 / job_nbr))
+	    for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
+		# clm_idx is 1-based, bch_idx is 0-based
+		let clm_idx_srt=$(((bch_idx * job_nbr) + 1))
+		let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
+		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+		    printf "De-interleave and average diurnal timestep ${tpd_idx} for month ${clm_idx} ...\n"
+		    cmd_tpd[${clm_idx}]=${cmd_tpd_tpl[${clm_idx}]/TPDTT/${TT}}
+		    cmd_tpd[${clm_idx}]=${cmd_tpd[${clm_idx}]/TPDidx/${tpd_idx}}
+		    if [ ${dbg_lvl} -ge 1 ]; then
+			echo ${cmd_tpd[${clm_idx}]}
+		    fi # !dbg
+		    if [ ${dbg_lvl} -le 1 ]; then
+			if [ -z "${par_opt}" ]; then
+			    eval ${cmd_tpd[${clm_idx}]}
+			    if [ "$?" -ne 0 ]; then
+				printf "${spt_nm}: ERROR monthly de-interleave and average command cmd_tpd[${clm_idx}] failed. Debug this:\n${cmd_tpd[${clm_idx}]}\n"
+				exit 1
+			    fi # !err
+			else # !par_opt
+			    eval ${cmd_tpd[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+			    tpd_pid[${clm_idx}]=$!
+			fi # !par_opt
+		    fi # !dbg
+		done # !clm_idx
+		if [ -n "${par_opt}" ]; then
+		    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+			wait ${tpd_pid[${clm_idx}]}
+			if [ "$?" -ne 0 ]; then
+			    printf "${spt_nm}: ERROR monthly de-interleave and average command cmd_tpd[${clm_idx}] failed. Debug this:\n${cmd_tpd[${clm_idx}]}\n"
+			    exit 1
+			fi # !err
+		    done # !clm_idx
+		fi # !par_opt
+	    done # !bch_idx
+	done # !tpd_idx
+	if [ ${dbg_lvl} -ge 1 ]; then
+	    date_crr=$(date +"%s")
+	    date_dff=$((date_crr-date_tpd))
+	    echo "Elapsed time to de-interleave and average all timesteps $((date_dff/60))m$((date_dff % 60))s"
+	fi # !dbg
+
+	# Clean-up monthly inputs (important since these file can be huge)
+	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
+	    /bin/rm -f ${fl_mth[${clm_idx}]}
+	done # !clm_idx
+
+    fi # !clm_md && fl_nbr
+    
     # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
     for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	# Produces names like "${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
@@ -2715,7 +2798,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
     fi # !dbg
     # Clean-up interleave files
     if [ ${clm_md} = 'hfc' ] && [ "${fl_nbr}" -gt 1 ]; then
-	/bin/rm -f ${drc_out}/${out_nm}_[01][0-9]_ilv[0-9][0-9]_*.nc
+	/bin/rm -f ${drc_out}/${out_nm}_[01][0-9]_tpd[0-9][0-9]_*.nc
     fi # !clm_md
 	
     # Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).

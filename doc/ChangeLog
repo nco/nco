@@ -1,3 +1,15 @@
+2020-08-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.4-alpha10 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Marble';git push
+	git tag -a 4.9.4-alpha10 -m 'ncks dt_fmt json/xml; ncclimo ia mlt fl hfc; ';git push --tags
+
+	* Parallelize diurnal climo generation from multiple input files
+
+	* Turn-off AMWG links by default (enable old behavior with --amwg_links)
+
+	* Default December mode is sdd (enable old behavior with --dec_md=scd)
+
 2020-08-04  Charlie Zender  <zender@uci.edu>
 
 	* Generalize order of specification of --dt_fmt and --cal, tidy code
@@ -9,10 +21,6 @@
 2020-08-03  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo use ISO8601 time format to eliminate whitespace and quotes
-
-	* NCO 4.9.4-alpha10 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Marble';git push
-	git tag -a 4.9.4-alpha10 -m '';git push --tags
 
 	* Multi-file high-frequency climos appear to work, need optimization
 
