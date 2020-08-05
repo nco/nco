@@ -1,10 +1,12 @@
 2020-08-05  Charlie Zender  <zender@uci.edu>
 
-	* Add exit() hints to many NC_EDAP* errors from remote DAP servers
-
 	* NCO 4.9.4-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Marble';git push
 	git tag -a 4.9.4-alpha10 -m 'ncks dt_fmt json/xml; ncclimo ia mlt fl hfc; ';git push --tags
+
+	* ncclimo kill remaining children after bad cull before exiting parent
+
+	* Add exit() hints to many NC_EDAP* errors from remote DAP servers
 
 	* Parallelize diurnal climo generation from multiple input files
 

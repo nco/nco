@@ -2053,6 +2053,12 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 			printf "${spt_nm}: ERROR monthly cull cmd_cll[${clm_idx}] failed. Debug this:\n${cmd_cll[${clm_idx}]}\n"
 			exit 1
 		    fi # !err
+		    # 20200805: exiting parent here creates orphans, kill live children then exit
+		    for ((kid_idx=clm_idx+1;kid_idx<=clm_idx_end;kid_idx++)); do
+			kill -9 ${cll_pid[${kid_idx}]}
+		    done # !kid_idx
+		    exit 1
+		fi # !err
 		done # !clm_idx
 	    fi # !par_opt
 	done # !bch_idx
