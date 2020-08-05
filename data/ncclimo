@@ -2102,6 +2102,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 			wait ${tpd_pid[${clm_idx}]}
 			if [ "$?" -ne 0 ]; then
 			    printf "${spt_nm}: ERROR monthly de-interleave and average command cmd_tpd[${clm_idx}] failed. Debug this:\n${cmd_tpd[${clm_idx}]}\n"
+			    # 20200805: exiting parent here creates orphans, kill live children then exit
+			    for ((kid_idx=clm_idx+1;kid_idx<=clm_idx_end;kid_idx++)); do
+				kill -9 ${tpd_pid[${kid_idx}]}
+			    done # !kid_idx
 			    exit 1
 			fi # !err
 		    done # !clm_idx
