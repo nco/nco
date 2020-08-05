@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Marble';git push
 	git tag -a 4.9.4-alpha10 -m 'ncks dt_fmt json/xml; ncclimo ia mlt fl hfc; ';git push --tags
 
+	* ncclimo fix yyyy_clm_end string in December for scd, sdd modes
+
 	* ncclimo kill remaining children after bad interleave before exiting parent
 
 	* ncclimo kill remaining children after bad cull before exiting parent

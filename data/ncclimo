@@ -1971,8 +1971,11 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    MMp1=`printf "%02d" ${mthp1}`
 	    tm_end="${yyyy_clm_end}-${MMp1}-01T00:00:00"
 	    let yr_endp1=$((yyyy_clm_end + 1))
-	    yyyy_clm_endp1=`printf "%02d" ${yr_endp1}`
+	    yyyy_clm_endp1=`printf "%04d" ${yr_endp1}`
 	    if [ ${clm_idx} -eq 12 ]; then
+		tm_srt="${yyyy_clm_srt_dec}-${MM}-01T00:00:01"
+		let yr_endp1=$((yyyy_clm_end_dec + 1))
+		yyyy_clm_endp1=`printf "%04d" ${yr_endp1}`
 		tm_end="${yyyy_clm_endp1}-01-01T00:00:00"
 	    fi # !December
 	    let srd=${dpy}*${tpd_out}
