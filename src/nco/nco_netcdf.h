@@ -207,6 +207,36 @@
 # define NC_ENOFILTER (-136)      /**< Filter not defined on variable. */
 #endif
 
+  /* Many backwards-compatibility error codes implemented in 202008 to diagnose problems with DAP
+     Currently used only in nco_netcdf.c */
+#ifndef NC_EDAP
+# define NC_EDAP         (-66)      /**< Generic DAP error */
+#endif
+#ifndef NC_EDAPSVC
+# define NC_EDAPSVC      (-70)      /**< DAP server error */
+#endif
+#ifndef NC_EDAS
+# define NC_EDAS         (-71)      /**< Malformed or inaccessible DAS */
+#endif
+#ifndef NC_EDDS
+# define NC_EDDS         (-72)      /**< Malformed or inaccessible DDS */
+#endif
+#ifndef NC_EDMR
+# define NC_EDMR         NC_EDDS    /**< Dap4 alias */
+#endif
+#ifndef NC_EDATADDS
+# define NC_EDATADDS     (-73)      /**< Malformed or inaccessible DATADDS */
+#endif
+#ifndef NC_EDATADAP
+# define NC_EDATADAP     NC_EDATADDS    /**< Dap4 alias */
+#endif
+#ifndef NC_EDAPURL
+# define NC_EDAPURL      (-74)      /**< Malformed DAP URL */
+#endif
+#ifndef NC_EDAPCONSTRAINT
+# define NC_EDAPCONSTRAINT (-75)    /**< Malformed DAP Constraint*/
+#endif
+
 /* Some netCDF3 stubs for netCDF4 routines need netCDF4-only return codes
    These netCDF4 tokens are never defined in netCDF3-only netcdf.h */
 #ifndef HAVE_NETCDF4_H
