@@ -1943,7 +1943,7 @@ nco_vrs_att_cat /* [fnc] Add NCO version global attribute */
   char *vrs_sng_xtn; /* [sng] NCO version value, with extended information */
   ptr_unn att_val;
   
-  /* 20170417: vrs_cpp is typically something like "4.6.6-alpha09" (quotes included) 
+  /* 20170417: vrs_cpp is typically something like "4.6.6-alpha10" (quotes included) 
      The quotation marks annyoy me yet are necessary to protect the string in nco.h 
      Here we remove the quotation marks by pointing past the first and putting NUL in the last */
   vrs_sng=vrs_cpp;

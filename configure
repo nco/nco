@@ -20476,7 +20476,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # -Wuninitialized: Warn on uninitialized variables. GCC has many false negatives, clang is better?
 # -Wwrite-strings: Apply const-qualifier to string constants, die if overwritten
 # -fno-common: Prevent global variables from being simultaneously defined in different files
-# -g: Put debugging symbols in executable
+# -g: Put debugging symbols in binary executable
 # -pg: Enable profiling, generate gmon.out output files (also needed by linker)
 # -Og: Optimize while retaining complete compatibility with -g
 # -O2: Recommended optimization level for general case, uses SSE and AVX but no YMM

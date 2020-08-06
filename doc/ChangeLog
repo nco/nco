@@ -1,10 +1,12 @@
 2020-08-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha10 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Marble';git push
-	git tag -a 4.9.4-alpha10 -m 'ncks dt_fmt json/xml; ncclimo ia mlt fl hfc; ';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Splashdown';git push
+	git tag -a 4.9.4-alpha10 -m 'autoconf enable-gpu, enable-optimize; ncks dt_fmt json/xml; ncclimo ia mlt fl hfc, sdd dfl, nfr tpd, no_amwg;';git push --tags
 
-	* ncclimo infer tdp_out from first file if not user-specified with hfc and hfs
+	* ncclimo remove extraneous 's' (typo/command) from MPI section
+
+	* ncclimo infer tdp_out from first file if not user-specified with hfc or hfs
 
 2020-08-05  Charlie Zender  <zender@uci.edu>
 
@@ -14,7 +16,7 @@
 
 	* ncclimo kill remaining children after bad cull before exiting parent
 
-	* Add exit() hints to many NC_EDAP* errors from remote DAP servers
+	* Add exit() hints for many NC_EDAP* errors from remote DAP servers
 
 	* Parallelize diurnal climo generation from multiple input files
 
