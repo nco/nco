@@ -1,8 +1,12 @@
-2020-08-05  Charlie Zender  <zender@uci.edu>
+2020-08-06  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Marble';git push
 	git tag -a 4.9.4-alpha10 -m 'ncks dt_fmt json/xml; ncclimo ia mlt fl hfc; ';git push --tags
+
+	* ncclimo infer tdp_out from first file if not user-specified with hfc and hfs
+
+2020-08-05  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo fix yyyy_clm_end string in December for scd, sdd modes
 

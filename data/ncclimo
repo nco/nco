@@ -745,7 +745,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       no_stdin | no_inp_std | no_redirect | no_standard_input ) std_chk='No' ;; # # Check stdin for input file list
 	       no_stdin=?* | no_inp_std=?* | no_redirect=?* | no_standard_input=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Check stdin for input file list
 	       thr_nbr=?* | thr=?* | thread_number=?* | thread=?* | threads=?* ) thr_usr="${LONG_OPTARG}" ;; # -t # Thread number
-	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_out="${LONG_OPTARG}" ;; # # Timesteps-per-day in output
+	       tpd_out=?* | tpd=?* | timesteps_per_day=?* ) tpd_usr="${LONG_OPTARG}" ;; # # Timesteps-per-day in output
 	       uio | unbuffered | share ) uio_flg='Yes' ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
 	       uio=?* | unbuffered=?* | share=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
@@ -1171,6 +1171,9 @@ fi # !sgs_frc
 if [ -n "${thr_usr}" ]; then
     thr_nbr="${thr_usr}"
 fi # !thr_usr
+if [ -n "${tpd_usr}" ]; then 
+    tpd_out="${tpd_usr}"
+fi # !tpd_usr
 if [ -n "${vrt_fl}" ]; then
     if [ ! -f "${vrt_fl}" ]; then
 	echo "ERROR: Unable to find specified vertical coordinate file ${vrt_fl}"
@@ -1250,6 +1253,19 @@ if [ ${inp_std} = 'Yes' ]; then
 	let fl_nbr=${fl_nbr}+1
     done < /dev/stdin
 fi # !inp_std
+
+if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
+    if [ -z "${tpd_usr}" ]; then 
+	# User requested high-frequency mode and did not specify tpd so (try to) infer it
+	tpd_out=`ncks --trd -H -s '%g ' -v time_bnds -d time,2 -C ${fl_in[0]} | awk '{ print 1.0/($2 - $1); exit }'`
+	# Ensure result is positive integer
+	[ "${tpd_out}" -ge 0 ] 2>/dev/null && tpd_nfr='Yes' || tpd_nfr='No'
+	if [ "${tpd_nfr}" != 'Yes' ]; then
+	    printf "${spt_nm}: ERROR Inferred value of tpd=${tpd_out} is not a positive integer. User requested high-frequency climatology or splitter operations without specifying the number of timesteps per day (tpd) in the input files, so ${spt_nm} tried to infer tpd from the first input file. This operation resulted in a nonsense value. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Explicitly specify the number of timesteps per day in the input files with the --tpd option.\n"
+	    exit 1
+	fi # !tpd_nfr
+    fi # !tpd_usr
+fi # !hfc && !hfs
 
 # Parse grid/map arguments before in_fl arguments so we know whether this could be a map-only invocation
 if [ "${sbs_flg}" = 'Yes' ]; then
@@ -1726,11 +1742,11 @@ if [ ${dbg_lvl} -ge 0 ]; then
     printf "Climatology operations invoked with command:\n"
     echo "${cmd_ln}"
 fi # !dbg
-if [ -n "${caseid}" ]; then
-    printf "Started climatology generation for dataset ${caseid} at `date`\n"
-else
+if [ "${sbs_flg}" = 'Yes' ]; then
     printf "Started climatology splitting at `date`\n"
-fi # !caseid
+else
+    printf "Started climatology generation at `date`\n"
+fi # !sbs_flg
 printf "Running climatology script ${spt_nm} from directory ${drc_spt}\n"
 printf "NCO binaries version ${nco_vrs} from directory ${drc_nco}\n"
 printf "Parallelism mode = ${par_typ}\n"
@@ -2024,7 +2040,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    echo "Successful match of job_nbr to list of permissible values" > /dev/null
 	else
 	    echo "${spt_nm}: ERROR Job number job_nbr=${job_nbr} is invalid in monthly climo mode. Must be a factor of 12. Valid values are 1, 2, 3, 4, 6, and 12. Please re-submit with valid job_nbr."
-		    exit 1
+	    exit 1
 	fi # !job_nbr
 
 	# Batch number is inverse to job number, so job_nbr=1->bch_nbr=12 (serial mode, slowest), job_nbr=2->bch_nbr=6, ... job_nbr=12->bch_nbr=1 (full background mode, fastest)
