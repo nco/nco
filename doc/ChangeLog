@@ -1,5 +1,7 @@
 2020-08-06  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo tpd_out inferral valid for any time-coordinate named "time" (EAM and ELM, not yet MPAS)
+
 	* NCO 4.9.4-alpha10 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha10: Splashdown';git push
 	git tag -a 4.9.4-alpha10 -m 'autoconf enable-gpu, enable-optimize; ncks dt_fmt json/xml; ncclimo ia mlt fl hfc, sdd dfl, nfr tpd, no_amwg;';git push --tags

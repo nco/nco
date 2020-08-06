@@ -1257,7 +1257,10 @@ fi # !inp_std
 if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
     if [ -z "${tpd_usr}" ]; then 
 	# User requested high-frequency mode and did not specify tpd so (try to) infer it
-	tpd_out=`ncks --trd -H -s '%g ' -v time_bnds -d time,2 -C ${fl_in[0]} | awk '{ print 1.0/($2 - $1); exit }'`
+	# Examine bounds of second timestep in case first timestep is instantaneous (e.g., restart values)
+	tm_var='time'
+	tm_bnds=`ncks --trd -M -m -v ${tm_var} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
+	tpd_out=`ncks --trd -H -s '%g ' -v ${tm_bnds} -d ${tm_var},1 -C ${fl_in[0]} | awk '{ print 1.0/($2 - $1); exit }'`
 	# Ensure result is positive integer
 	[ "${tpd_out}" -ge 0 ] 2>/dev/null && tpd_nfr='Yes' || tpd_nfr='No'
 	if [ "${tpd_nfr}" != 'Yes' ]; then
@@ -1784,7 +1787,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	printf "Each input file assumed to contain mean of one year\n"
     elif [ ${clm_md} = 'dly' ]; then 
 	printf "Each input file assumed to contain mean of one day\n"
-    elif [ ${clm_md} = 'hfc' ]; then 
+    elif [ ${clm_md} = 'hfs' ]; then 
 	printf "Each input file assumed to contain an integer number of days each comprising ${tpd_out} timesteps\n"
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
