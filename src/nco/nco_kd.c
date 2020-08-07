@@ -1978,10 +1978,7 @@ double KDdist(kd_box Xq, KDElem *elem)
 	  	double y1;
 	  	double x2;
 	  	double y2;
-        double dx;
-        double dy;
-        double dz;
-        double C;
+
 
         x1=((poly_sct*)elem->item)->dp_x_ctr *M_PI / 180.0;
         y1=((poly_sct*)elem->item)->dp_y_ctr *M_PI / 180.0;
@@ -1991,15 +1988,10 @@ double KDdist(kd_box Xq, KDElem *elem)
         x2=Xq[KD_LEFT] * M_PI/180.0;
         y2=Xq[KD_TOP]  * M_PI/180.0;
 
-        dx=cos(x1)*cos(y1) - cos(x2)*cos(y2);
-        dy=cos(x1)*sin(y1) - cos(x2)*sin(y2);
-        dz=sin(y1)-sin(y2);
+        /* orthodromic distance - classic formula */
+        hyp=acos( sin(y1)*sin(y2) +  cos(y1)*cos(y2)*cos( x1-x2 )  );
 
-        C= sqrt(dx*dx + dy*dy +dz*dz);
 
-        hyp=2*asin( C/2.0 );
-
-        // hyp=hyp*hyp;
 
 	  }
 	  break;
