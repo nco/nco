@@ -490,6 +490,7 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
      * just remember FROM HERE on that the pl->dp_x_ctr, pl->dp_y_ctr iS NOT the Centroid
      * */
 
+    /*
      if(nco_sph_inside_mk(pl,pControl ))
      {
        pl->dp_x_ctr=R2D(pControl[3]);
@@ -497,7 +498,7 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
      }
      else
        nco_poly_ctr_add(pl, grd_lon_typ);
-
+     */
 
 
 
@@ -1452,7 +1453,10 @@ int *wgt_cnt_bln_ret) {
   for (idx = 0; idx < pl_cnt; idx++) {
     nco_bool bSplit = False;
 
+    double dp_x_wrp;   /* used to do a wrapped lon search */
     double wgt_ttl=0.0;
+
+    int nbr_nni_cnt; /* equal to or less than nbr_nni */
 
     wgt_sct wgt_pre[nbr_nni];
 
@@ -1461,6 +1465,7 @@ int *wgt_cnt_bln_ret) {
 
     size_t jdx;
     size_t kdx;
+    size_t nbr_lst_lcl;
 
     kd_box size1;
     kd_box size2;
@@ -1493,14 +1498,48 @@ int *wgt_cnt_bln_ret) {
     /* get bounds of polygon in */
     //bSplit = nco_poly_minmax_split(pl_lst_out[idx], grd_lon_typ, size1, size2);
 
+    dp_x_wrp=KD_DBL_MAX;
+
     for(kdx=0;kdx<nbr_tr;kdx++)
       kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, pl_typ,  nbr_nni, mem_lst[thr_idx].kd_list + nbr_nni *kdx );
 
+    nbr_lst_lcl=nbr_nni*nbr_tr;
+
+    switch(grd_lon_typ)
+    {
+      case nco_grd_lon_nil:
+      case nco_grd_lon_unk:
+      case nco_grd_lon_Grn_ctr:
+      case nco_grd_lon_Grn_wst:
+      case nco_grd_lon_bb:
+        if(pl_lst_out[idx]->dp_x_ctr <180.0)
+          dp_x_wrp=pl_lst_out[idx]->dp_x_ctr+360.0;
+        else if(pl_lst_out[idx]->dp_x_ctr >180.0)
+          dp_x_wrp=pl_lst_out[idx]->dp_x_ctr-360.0;
+        break;
+
+
+      case nco_grd_lon_180_wst:
+      case nco_grd_lon_180_ctr:
+        if(pl_lst_out[idx]->dp_x_ctr <0.0)
+          dp_x_wrp=pl_lst_out[idx]->dp_x_ctr+360.0;
+        else if(pl_lst_out[idx]->dp_x_ctr >0.0)
+          dp_x_wrp=pl_lst_out[idx]->dp_x_ctr-360.0;
+        break;
+
+    }
+
+    if(False && dp_x_wrp != KD_DBL_MAX)
+    {
+      for (kdx = 0; kdx < nbr_tr; kdx++)
+        kd_nearest(tree[kdx], dp_x_wrp, pl_lst_out[idx]->dp_y_ctr, pl_typ, nbr_nni, mem_lst[thr_idx].kd_list + nbr_lst_lcl+nbr_nni * kdx);
+
+      nbr_lst_lcl+=nbr_nni*nbr_tr;
+    }
+
+
     if(nbr_tr >1 )
-      qsort((void *)mem_lst[thr_idx].kd_list,  nbr_nni*nbr_tr, sizeof(KDPriority), kd_priority_cmp_dist);
-
-    //(void)fprintf(fp_stderr,"%s:%s:   kd_nearest returned 8 (I think)\ndist following ** ", nco_prg_nm_get(), fnc_nm);
-
+      qsort((void *)mem_lst[thr_idx].kd_list, nbr_lst_lcl,  sizeof(KDPriority), kd_priority_cmp_dist);
 
 
 
@@ -1525,11 +1564,20 @@ int *wgt_cnt_bln_ret) {
 
       mem_lst[thr_idx].wgt_lst[mem_lst[thr_idx].pl_cnt++] =wgt_lcl;
 
+      if (nco_dbg_lvl_get() >= nco_dbg_dev)
+        (void)fprintf(fp_stderr,"%s:%s: singleton  x_ctr=%f  y_ctr=%f\n", nco_prg_nm_get(), fnc_nm, pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr );
+
 
     }else{
 
+      /* check for duplicates in first nbr_nni by sorting again with ->item  !!!*/
+      kd_priority_list_sort(mem_lst[thr_idx].kd_list,nbr_nni, nbr_nni,&nbr_nni_cnt );
+
+      if (nco_dbg_lvl_get() >= nco_dbg_dev && nbr_nni_cnt < nbr_nni )
+         (void)fprintf(fp_stderr,"%s:%s: nbr_nni_cnt=%d x_ctr=%f  y_ctr=%f\n", nco_prg_nm_get(), fnc_nm, nbr_nni_cnt, pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr );
+
       /* output at least one */
-      for (jdx = 0; jdx < nbr_nni; jdx++) {
+      for (jdx = 0; jdx < nbr_nni_cnt; jdx++) {
 
         pl = (poly_sct *) mem_lst[thr_idx].kd_list[jdx].elem->item;
 
@@ -1539,18 +1587,24 @@ int *wgt_cnt_bln_ret) {
         wgt_pre[jdx].area = pl->area;
         wgt_pre[jdx].dist = mem_lst[thr_idx].kd_list[jdx].dist;
         /* use dist squared */
-        wgt_pre[jdx].wgt = 1.0 / wgt_pre[jdx].dist /  wgt_pre[jdx].dist;
-        wgt_ttl += wgt_pre[jdx].wgt;
+        wgt_pre[jdx].wgt = 1.0 / wgt_pre[jdx].dist / wgt_pre[jdx].dist;
+
 
       }
 
+      /* find weights total */
+      for (jdx = 0; jdx < nbr_nni_cnt; jdx++)
+        wgt_ttl += wgt_pre[jdx].wgt;
+
+
+
+
       /* normalize weights */
-      for (jdx = 0; jdx < nbr_nni; jdx++)
+      for (jdx = 0; jdx < nbr_nni_cnt; jdx++)
         wgt_pre[jdx].wgt /= wgt_ttl;
 
 
-      for (jdx = 0; jdx < nbr_nni; jdx++){
-
+      for (jdx = 0; jdx < nbr_nni_cnt; jdx++) {
 
         if (wgt_pre[jdx].wgt < min_wgt)
           continue;
@@ -1559,16 +1613,36 @@ int *wgt_cnt_bln_ret) {
         *wgt_lcl = wgt_pre[jdx];
 
         if (mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE < mem_lst[thr_idx].pl_cnt + 1)
-          mem_lst[thr_idx].wgt_lst = (wgt_sct **) nco_realloc(mem_lst[thr_idx].wgt_lst, sizeof(wgt_sct *) * ++mem_lst[thr_idx].blk_nbr *NCO_VRL_BLOCKSIZE);
+          mem_lst[thr_idx].wgt_lst = (wgt_sct **) nco_realloc(mem_lst[thr_idx].wgt_lst,sizeof(wgt_sct *) * ++mem_lst[thr_idx].blk_nbr *NCO_VRL_BLOCKSIZE);
 
         mem_lst[thr_idx].wgt_lst[mem_lst[thr_idx].pl_cnt++] = wgt_lcl;
 
+        //(void)fprintf(stderr,"%s: weight(%lu)=%f ",fnc_nm, mem_lst[thr_idx].pl_cnt, wgt_lcl->wgt);
 
       } /* end jdx */
 
-    } /* end if else */
+      if (nco_dbg_lvl_get() >= nco_dbg_dev) {
+        if ((grd_lon_typ == nco_grd_lon_Grn_ctr || grd_lon_typ == nco_grd_lon_Grn_wst) &&
+            pl_lst_out[idx]->dp_x_ctr > 0.0 && pl_lst_out[idx]->dp_x_ctr < 180.0) {
+
+          int neg_cnt=0;
+
+          for (jdx = 0; jdx < nbr_nni_cnt; jdx++)
+          {
+            pl = (poly_sct *) mem_lst[thr_idx].kd_list[jdx].elem->item;
+            if(pl->dp_x_ctr >350.0)
+              neg_cnt++;
+
+          }
+          if(neg_cnt)
+            (void)fprintf(fp_stderr,"%s:%s: in x_ctr=%f  xxneg_cnt=%d\n", nco_prg_nm_get(), fnc_nm, pl_lst_out[idx]->dp_x_ctr, neg_cnt);
+
+        }
 
 
+      } /* end if else */
+
+    }
 
     /* output some usefull tracking stuff - not debug but informative */
     if (  ++mem_lst[thr_idx].idx_cnt % thr_quota_step == 0 && nco_dbg_lvl_get() >=3   )
