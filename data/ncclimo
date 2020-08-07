@@ -2009,7 +2009,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		#cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
 		tm_nbr=`ncks --trd -M ${fl_in} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
 		let ssc2=${tm_nbr}*${tpd_out}/${srd}
-		cmd_clm[${clm_idx}]="ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]};ncra -O -d time,,,,${ssc2},${tpd_out} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]};ncra -O -d time,,,,${ssc2},${tpd_out} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]}"
 	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
 
@@ -2364,9 +2364,10 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    # 20200619 High-frequency output requires time-coordinate hyperslabs
 		    tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-01-01T00:00:01"
 		    tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01T00:00:00"
-		    if [ ${tpd_out} -eq 1 ]; then
+		    if [ ${tpd_out} -lt 3600 ]; then
 			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		    else
+			# Deprecated code to output in sub-average periods or different shapes
 			fl_rcat[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_ncrcat.nc"
 			fl_ecat[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_ncecat.nc"
 			fl_pdq[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_ncpdq.nc"
@@ -2378,7 +2379,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			done # !tpd_idx
 			# 20200627: Average all timesteps into one climatological record as data(time,space)
 			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
-			# 20200628: Output one record per year as data(time,hour,space), easier to regrid
+			# 20200628: Output one record per year as data(time,tpd,space), easier to regrid
 			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
 		    fi # !tpd_out
 		else

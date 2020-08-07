@@ -1,3 +1,15 @@
+2020-08-07  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.4-alpha11 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha11: Euphoria';git push
+	git tag -a 4.9.4-alpha11 -m '';git push --tags
+
+	* ncclimo add mpi mode to hfc for fl_nbr == 1
+
+	* Deprecate unreleased splitter code for sub-averages and (time,tpd,space) shapes
+
+	* nco_rgr_wgt() add 5.0e-15 tolerance to area checks, check only 2D grids
+
 2020-08-06  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo tpd_out inferral valid for any time-coordinate named "time" (EAM and ELM, not yet MPAS)

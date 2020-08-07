@@ -3265,7 +3265,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   } /* !flg_rnr */
 
   /* Detailed summary of 2D grids now available including quality-checked coordinates and area */
-  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+  if(flg_grd_out_2D && nco_dbg_lvl_get() >= nco_dbg_sbr){
     lat_wgt_ttl=0.0;
     area_out_ttl=0.0;
     if(flg_grd_out_rct){
@@ -3287,8 +3287,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	for(lon_idx=0;lon_idx<lon_nbr_out;lon_idx++)
 	  (void)fprintf(stdout,"lat[%li] = %g, lon[%li] = %g, area[%li,%li] = %g\n",lat_idx,lat_ctr_out[lat_idx],lon_idx,lon_ctr_out[lon_idx],lat_idx,lon_idx,area_out[lat_idx*lon_nbr_out+lon_idx]);
     assert(area_out_ttl > 0.0);
-    assert(area_out_ttl <= 4.0*M_PI);
-  } /* endif dbg */
+    assert(area_out_ttl <= 4.0*M_PI + 5.0e-15);
+  } /* !flg_grd_out_2D && !dbg */
 
   /* Allocate space for and obtain weights and addresses */
   wgt_raw=(double *)nco_malloc_dbg(mpf.num_links*nco_typ_lng(NC_DOUBLE),fnc_nm,"Unable to malloc() value buffer for remapping weights");
