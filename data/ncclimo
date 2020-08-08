@@ -51,6 +51,7 @@
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:bin/ncclimo ~/bin
+# scp dust.ess.uci.edu:bin/ncclimo ~/${MY_BIN_DIR}
 
 # Set script name, directory, PID, run directory
 drc_pwd=${PWD}
@@ -1260,13 +1261,13 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 	# Examine bounds of second timestep in case first timestep is instantaneous (e.g., restart values)
 	tm_var='time'
 	tm_bnds=`ncks --trd -M -m -v ${tm_var} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
-	tpd_out=`ncks --trd -H -s '%g ' -v ${tm_bnds} -d ${tm_var},1 -C ${fl_in[0]} | awk '{ print 1.0/($2 - $1); exit }'`
+	tpd_out=`ncks --trd -H -s '%f ' -v ${tm_bnds} -d ${tm_var},1 -C ${fl_in[0]} | awk '{ print 1.0/($2 - $1); exit }'`
 	# Ensure result is positive integer
-	[ "${tpd_out}" -ge 0 ] 2>/dev/null && tpd_nfr='Yes' || tpd_nfr='No'
-	if [ "${tpd_nfr}" != 'Yes' ]; then
+	[ "${tpd_out}" -ge 0 ] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
+	if [ "${tpd_ntg}" != 'Yes' ]; then
 	    printf "${spt_nm}: ERROR Inferred value of tpd=${tpd_out} is not a positive integer. User requested high-frequency climatology or splitter operations without specifying the number of timesteps per day (tpd) in the input files, so ${spt_nm} tried to infer tpd from the first input file. This operation resulted in a nonsense value. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Explicitly specify the number of timesteps per day in the input files with the --tpd option.\n"
 	    exit 1
-	fi # !tpd_nfr
+	fi # !tpd_ntg
     fi # !tpd_usr
 fi # !hfc && !hfs
 
@@ -2002,19 +2003,29 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    let srd=${dpy}*${tpd_out}
 	    let ssc=${dpm[${clm_idx}]}*${tpd_out}
 	    
+	    # Cull this month from interannual climatology into interannual diurnal file
+	    fl_mth[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tms_foo_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
+
 	    # Command to produce interleaved monthly climos
 	    if [ "${fl_nbr}" -eq 1 ]; then
 		# Compute interleaved mean of single-file input (e.g., CMIP timeseries format)
-		# Works though produces ypf sets of diurnal steps
 		#cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]}"
 		tm_nbr=`ncks --trd -M ${fl_in} | grep -E -i "^Root record dimension 0:" | cut -f 10- -d ' '`
 		let ssc2=${tm_nbr}*${tpd_out}/${srd}
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_out[${clm_idx}]};ncra -O -d time,,,,${ssc2},${tpd_out} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]}"
+		# Ensure result is positive integer
+		[ "${ssc2}" -ge 0 ] 2>/dev/null && ssc2_ntg='Yes' || ssc2_ntg='No'
+		if [ "${ssc2_ntg}" != 'Yes' ]; then
+		    printf "${spt_nm}: ERROR Inferred value of ssc2=${ssc2} is not a positive integer. User requested high-frequency climatology with one input file. ${spt_nm} attempted to divine the sub-cycle length based on the assumption that the file contains and integral number of years (at any temporal resolution) of input data. The divination resulted in a non-integral sub-cycle length. This is not surprising since a number of assumptions must hold true for the inferral to work correctly.\nHINT: Clip the input timeseries to an integral number of years.\n"
+		    exit 1
+		fi # !ssc2_ntg
+
+		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_mth[${clm_idx}]}"
+
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
+		    
 	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
 
-		# Cull this month from interannual climatology into interannual diurnal file
-		fl_mth[${clm_idx}]="${drc_out}/${out_nm}_${MM}_tms_foo_${yyyy_clm_srt}_${yyyy_clm_end}.nc"
 		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc} -p ${drc_in} ${fl_in[*]} ${fl_mth[${clm_idx}]}"
 
 		# Take mean value of each diurnal timestep across all instances of this month
@@ -2035,8 +2046,13 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	fi # !clm_md
     done # !mth
 		    
-    if [ ${clm_md} = 'hfc' ] && [ "${fl_nbr}" -gt 1 ]; then
-	printf "Cull each month from interannual climatology into interannual diurnal file...\n"
+    if [ ${clm_md} = 'hfc' ]; then
+
+	if [ "${fl_nbr}" -gt 1 ]; then
+	    printf "Cull each month from interannual climatology into interannual diurnal file...\n"
+	else
+	    printf "Create interannual timeseries of monthly diurnal timestep means from single file...\n"
+	fi # !fl_nbr
 	[[ ${dbg_lvl} -ge 1 ]] && date_cll=$(date +"%s")
 
 	if [ ${job_nbr} -eq 1 ] || [ ${job_nbr} -eq 2 ] || [ ${job_nbr} -eq 3 ] || [ ${job_nbr} -eq 4 ] || [ ${job_nbr} -eq 6 ] || [ ${job_nbr} -eq 12 ]; then
@@ -2090,64 +2106,68 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    echo "Elapsed time to cull monthly timeseries $((date_dff/60))m$((date_dff % 60))s"
 	fi # !dbg
 
-	printf "Take mean value of each diurnal timestep across all instances of every month...\n"
-	[[ ${dbg_lvl} -ge 1 ]] && date_tpd=$(date +"%s")
+	if [ "${fl_nbr}" -gt 1 ]; then
 
-	for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
-	    TT=`printf "%02d" ${tpd_idx}`
-	    printf "Parallelize monthly means for diurnal timestep ${tpd_idx}...\n"
-	    let bch_nbr=$((12 / job_nbr))
-	    for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
-		# clm_idx is 1-based, bch_idx is 0-based
-		let clm_idx_srt=$(((bch_idx * job_nbr) + 1))
-		let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
-		for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
-		    printf "De-interleave and average diurnal timestep ${tpd_idx} for month ${clm_idx} ...\n"
-		    cmd_tpd[${clm_idx}]=${cmd_tpd_tpl[${clm_idx}]/TPDTT/${TT}}
-		    cmd_tpd[${clm_idx}]=${cmd_tpd[${clm_idx}]/TPDidx/${tpd_idx}}
-		    if [ ${dbg_lvl} -ge 1 ]; then
-			echo ${cmd_tpd[${clm_idx}]}
-		    fi # !dbg
-		    if [ ${dbg_lvl} -le 1 ]; then
-			if [ -z "${par_opt}" ]; then
-			    eval ${cmd_tpd[${clm_idx}]}
+	    printf "Take mean value of each diurnal timestep across all instances of every month...\n"
+	    [[ ${dbg_lvl} -ge 1 ]] && date_tpd=$(date +"%s")
+
+	    for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
+		TT=`printf "%02d" ${tpd_idx}`
+		printf "Parallelize monthly means for diurnal timestep ${tpd_idx}...\n"
+		let bch_nbr=$((12 / job_nbr))
+		for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
+		    # clm_idx is 1-based, bch_idx is 0-based
+		    let clm_idx_srt=$(((bch_idx * job_nbr) + 1))
+		    let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
+		    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+			printf "De-interleave and average diurnal timestep ${tpd_idx} for month ${clm_idx} ...\n"
+			cmd_tpd[${clm_idx}]=${cmd_tpd_tpl[${clm_idx}]/TPDTT/${TT}}
+			cmd_tpd[${clm_idx}]=${cmd_tpd[${clm_idx}]/TPDidx/${tpd_idx}}
+			if [ ${dbg_lvl} -ge 1 ]; then
+			    echo ${cmd_tpd[${clm_idx}]}
+			fi # !dbg
+			if [ ${dbg_lvl} -le 1 ]; then
+			    if [ -z "${par_opt}" ]; then
+				eval ${cmd_tpd[${clm_idx}]}
+				if [ "$?" -ne 0 ]; then
+				    printf "${spt_nm}: ERROR monthly de-interleave and average command cmd_tpd[${clm_idx}] failed. Debug this:\n${cmd_tpd[${clm_idx}]}\n"
+				    exit 1
+				fi # !err
+			    else # !par_opt
+				eval ${cmd_tpd[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
+				tpd_pid[${clm_idx}]=$!
+			    fi # !par_opt
+			fi # !dbg
+		    done # !clm_idx
+		    if [ -n "${par_opt}" ]; then
+			for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
+			    wait ${tpd_pid[${clm_idx}]}
 			    if [ "$?" -ne 0 ]; then
 				printf "${spt_nm}: ERROR monthly de-interleave and average command cmd_tpd[${clm_idx}] failed. Debug this:\n${cmd_tpd[${clm_idx}]}\n"
+				# 20200805: exiting parent here creates orphans, kill live children then exit
+				for ((kid_idx=clm_idx+1;kid_idx<=clm_idx_end;kid_idx++)); do
+				    kill -9 ${tpd_pid[${kid_idx}]}
+				done # !kid_idx
 				exit 1
 			    fi # !err
-			else # !par_opt
-			    eval ${cmd_tpd[${clm_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
-			    tpd_pid[${clm_idx}]=$!
-			fi # !par_opt
-		    fi # !dbg
-		done # !clm_idx
-		if [ -n "${par_opt}" ]; then
-		    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
-			wait ${tpd_pid[${clm_idx}]}
-			if [ "$?" -ne 0 ]; then
-			    printf "${spt_nm}: ERROR monthly de-interleave and average command cmd_tpd[${clm_idx}] failed. Debug this:\n${cmd_tpd[${clm_idx}]}\n"
-			    # 20200805: exiting parent here creates orphans, kill live children then exit
-			    for ((kid_idx=clm_idx+1;kid_idx<=clm_idx_end;kid_idx++)); do
-				kill -9 ${tpd_pid[${kid_idx}]}
-			    done # !kid_idx
-			    exit 1
-			fi # !err
-		    done # !clm_idx
-		fi # !par_opt
-	    done # !bch_idx
-	done # !tpd_idx
-	if [ ${dbg_lvl} -ge 1 ]; then
-	    date_crr=$(date +"%s")
-	    date_dff=$((date_crr-date_tpd))
-	    echo "Elapsed time to de-interleave and average all timesteps $((date_dff/60))m$((date_dff % 60))s"
-	fi # !dbg
+			done # !clm_idx
+		    fi # !par_opt
+		done # !bch_idx
+	    done # !tpd_idx
+	    if [ ${dbg_lvl} -ge 1 ]; then
+		date_crr=$(date +"%s")
+		date_dff=$((date_crr-date_tpd))
+		echo "Elapsed time to de-interleave and average all timesteps $((date_dff/60))m$((date_dff % 60))s"
+	    fi # !dbg
 
-	# Clean-up monthly inputs (important since these file can be huge)
-	for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
-	    /bin/rm -f ${fl_mth[${clm_idx}]}
-	done # !clm_idx
+	    # Clean-up monthly inputs (important since these file can be huge)
+	    for ((clm_idx=1;clm_idx<=12;clm_idx++)); do
+		/bin/rm -f ${fl_mth[${clm_idx}]}
+	    done # !clm_idx
 
-    fi # !clm_md && fl_nbr
+	fi # !fl_nbr
+
+    fi # !clm_md
     
     # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
     for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
@@ -2829,9 +2849,13 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	date_dff=$((date_crr-date_clm))
 	echo "Elapsed time to generate monthly climos $((date_dff/60))m$((date_dff % 60))s"
     fi # !dbg
-    # Clean-up interleave files
-    if [ ${clm_md} = 'hfc' ] && [ "${fl_nbr}" -gt 1 ]; then
-	/bin/rm -f ${drc_out}/${out_nm}_[01][0-9]_tpd[0-9][0-9]_*.nc
+    # Clean-up monthly inputs (important since these file can be huge)
+    if [ ${clm_md} = 'hfc' ]; then
+	if [ "${fl_nbr}" -eq 1 ]; then
+	    /bin/rm -f ${drc_out}/${out_nm}_[01][0-9]_tms_foo_${yyyy_clm_srt}_${yyyy_clm_end}.nc
+	else    
+	    /bin/rm -f ${drc_out}/${out_nm}_[01][0-9]_tpd[0-9][0-9]_*.nc
+	fi # !fl_nbr
     fi # !clm_md
 	
     # Block 1: Loop 4: Regrid first twelve files. Load-balance by using idle nodes (nodes not used for seasonal climatologies).
