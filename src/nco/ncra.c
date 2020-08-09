@@ -153,6 +153,8 @@ main(int argc,char **argv)
   
   cnk_sct cnk; /* [sct] Chunking structure */
 
+  cnv_sct *cnv; /* [sct] Convention structure */
+
 #if defined(__cplusplus) || defined(PGI_CC)
   ddra_info_sct ddra_info;
   ddra_info.flg_ddra=False;
@@ -239,7 +241,6 @@ main(int argc,char **argv)
   nco_bool *flg_input_complete=NULL; /* [flg] All requested records in record dimension have been read */
 
   nco_bool CNV_ARM;
-  cnv_sct *cnv; /* [sct] Convention structure */
   nco_bool EXCLUDE_INPUT_LIST=False; /* Option c */
   nco_bool EXTRACT_ALL_COORDINATES=False; /* Option c */
   nco_bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -276,6 +277,7 @@ main(int argc,char **argv)
   nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_skp1; /* [flg] Current record is not dimension of this variable */
   nco_bool flg_skp2; /* [flg] Current record is not dimension of this variable */
+  nco_bool flg_wgt_by_rec_not_by_fl=False; /* [flg] Weight each record (not file) by command-line numeric weights, if any */
 
   nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
 
@@ -367,6 +369,7 @@ main(int argc,char **argv)
     {"create_ram",no_argument,0,0}, /* [flg] Create file in RAM */
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
     {"diskless_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
+    {"per_record_weights",no_argument,0,0}, /* [flg] Weight each record (not file) by command-line numeric weights, if any */
     {"share_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) with unbuffered I/O */
     {"create_share",no_argument,0,0}, /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
     {"open_share",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) with unbuffered I/O */
@@ -605,6 +608,7 @@ main(int argc,char **argv)
 	nco_prg_nm=nco_prg_prs("ncge",&nco_prg_id);
       } /* endif nsm_grp */
       if(!strcmp(opt_crr,"nsm_sfx") || !strcmp(opt_crr,"ensemble_suffix")) nsm_sfx=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"per_record_weights")) flg_wgt_by_rec_not_by_fl=True; /* [flg] Weight each record (not file) by command-line numeric weights, if any */
       if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
         ppc_arg[ppc_nbr]=(char *)strdup(optarg);
         ppc_nbr++;
@@ -796,9 +800,13 @@ main(int argc,char **argv)
   /* Process positional arguments and fill-in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN,FORCE_OVERWRITE);
 
+  if(flg_wgt_by_rec_not_by_fl && nco_prg_id_get() != ncra){
+    (void)fprintf(fp_stdout,"%s: ERROR Illegal invocation of flag --per_record_weights\nHINT: Per-record weighting by command-line numeric weights is only available with ncra\n",nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* flg_wgt_by_rec_not_by_fl */
   if(wgt_arr){
-    if(wgt_nbr != fl_nbr){
-      (void)fprintf(fp_stdout,"%s: ERROR User-specified per-file weight array has %d elements but there are %d input files.\nHINT: Specify one weight per input file\n",nco_prg_nm_get(),wgt_nbr,fl_nbr);
+    if(wgt_nbr != fl_nbr && !flg_wgt_by_rec_not_by_fl){
+      (void)fprintf(fp_stdout,"%s: ERROR User-specified per-file weight array has %d elements but there are %d input files.\nHINT: Specify one weight per input file, or toggle the default behavior by invoking with --per_record_weight which causes command-line weights to be applied per-record not per-file.\n",nco_prg_nm_get(),wgt_nbr,fl_nbr);
       nco_exit(EXIT_FAILURE);
     } /* !wgt_nbr */
   } /* !wgt_arr */
@@ -1489,9 +1497,8 @@ main(int argc,char **argv)
 		/* Weight current record */
 		if((wgt_arr || wgt_nm) && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs) && !var_prc[idx]->is_crd_var){
 		  if(wgt_arr){
-		    /* Per-file weight */
 		    wgt_scv.type=NC_DOUBLE;
-		    wgt_scv.val.d=wgt_arr[fl_idx];
+		    if(flg_wgt_by_rec_not_by_fl) wgt_scv.val.d=wgt_arr[idx_rec_crr_in % wgt_nbr]; else wgt_scv.val.d=wgt_arr[fl_idx];
 		  } /* !wgt_arr */
 		  if(wgt_nm){
 		    wgt_scv.type=wgt_out->type;
@@ -1774,9 +1781,8 @@ main(int argc,char **argv)
 	if(fl_idx == 0) flg_rth_ntl=True; else flg_rth_ntl=False;
 	if((wgt_arr || wgt_nm) && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs) && !var_prc[idx]->is_crd_var){
 	  if(wgt_arr){
-	    /* Per-file weight */
 	    wgt_scv.type=NC_DOUBLE;
-	    wgt_scv.val.d=wgt_arr[fl_idx];
+	    wgt_scv.val.d=wgt_arr[fl_idx]; /* Per-file weight */
 	  } /* !wgt_arr */
 	  if(wgt_nm){
 	    wgt_scv.type=wgt_out->type;

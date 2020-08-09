@@ -1,5 +1,7 @@
 2020-08-09  Charlie Zender  <zender@uci.edu>
 
+	* ncra --per_record_weights applies command-line numeric weights to records
+
 	* nco_rgr_wgt() clarify HINT when spatial dimension hard to find
 
 2020-08-07  Charlie Zender  <zender@uci.edu>

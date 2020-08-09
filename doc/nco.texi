@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha10
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 2 August 2020
+@set update-date 9 August 2020
 @set update-month August 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -14839,7 +14839,7 @@ includes support for UDUnits conversions.
 The function is called @code{udunits}. 
 Its syntax is
 @example
-varOut=udunits(varIn, "UnitsOutString")
+varOut=udunits(varIn,"UnitsOutString")
 @end example
 
 The @code{udunits()} function looks for the attribute of
@@ -14853,8 +14853,8 @@ In addition if @code{varIn@@units} is of the form
 If it does not exist then the calendar used defaults to mixed
 Gregorian/Julian as defined by UDUnits. 
  
-If @code{varIn} is not a floating point type then it is promoted to
-@code{NC_DOUBLE} for the system call in the Udunits library,   
+If @code{varIn} is not a floating-point type then it is promoted to
+@code{NC_DOUBLE} for the system call in the UDUnits library,   
 and then demoted back to its original type after.
 @example
 @verbatim
@@ -23679,17 +23679,18 @@ This example uses these features to compute and output winter
 ncra -O --mro -d time,"1990-12-01",,12,3 in.nc out.nc
 @end example
 
-The @samp{-w wgt} option weights input data @emph{per-file} or
-@emph{per-timestep}:
+The @samp{-w wgt} option weights input data @emph{per-file}
+when explicit numeric weights are given on the command-line, or 
+@emph{per-timestep} when the argument is a record variable that
+resides in the file:
 @example
-ncra -w 31,31,28 dec.nc jan.nc feb.nc out.nc 
-ncra -w delta_t in1.nc in2.nc in3.nc out.nc 
+ncra -w 31,31,28 dec.nc jan.nc feb.nc out.nc # Per-file weights
+ncra -w delta_t in1.nc in2.nc in3.nc out.nc # Per-timestep weights
 @end example
 The first example weights the input differently per-file to produce
 correctly weighted winter seasonal mean statistics.
 The second example weights the input per-timestep to produce correctly 
 weighted mean statistics.
-The last example 
 
 @page
 @html

@@ -521,8 +521,16 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 	 cell_methods = "time: mean within years time: mean over years"
 	 Three-step methods (e.g., climatological MAM) should have climatology-bounds attribute
 	 cell_methods = "time: mean within years time: mean over years"
-	 Four-step methods (e.g., climatological ANN) should have time-bounds attribute
-	 cell_methods = "time: mean" */
+	 Four-step methods (e.g., climatological ANN) with one timestep should have time-bounds attribute
+	 cell_methods = "time: mean"
+	 20200809:
+	 http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#climatological-statistics Example 7.13
+	 Two-step methods with multiple timesteps (e.g., climatological diurnal cycle for March) should have climatology-bounds attribute
+	 cell_methods = "time: cell_methods="time: mean within days time: mean over days time: mean over years";
+	 Three-step methods with multiple timesteps (e.g., climatological diurnal cycle for MAM) should have climatology-bounds attribute
+	 cell_methods = "time: cell_methods="time: mean within days time: mean over days time: mean over years";
+	 Four-step methods with multiple timesteps (e.g., climatological diurnal cycle for ANN) should have climatology-bounds attribute
+	 cell_methods = "time: cell_methods="time: mean within days time: mean over years"; */
       ptr_unn val_old; /* [sng] Old cell_methods attribute */
       val_old.vp=(void *)nco_malloc((att_lng+1L)*sizeof(char));
       (void)nco_get_att(grp_out_id,var_out_id,aed.att_nm,val_old.vp,NC_CHAR);
