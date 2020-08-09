@@ -1,3 +1,7 @@
+2020-08-09  Charlie Zender  <zender@uci.edu>
+
+	* nco_rgr_wgt() clarify HINT when spatial dimension hard to find
+
 2020-08-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha11 release procedure:

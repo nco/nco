@@ -3589,7 +3589,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
       if(dmn_idx == dmn_nbr_in){
 	dmn_id_col=NC_MIN_INT;
-	(void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension in the input file that matches the size of the unstructured dimension in the supplied map-file = src_grd_dims[0] = n_a = %ld. HINT: \n",nco_prg_nm_get(),fnc_nm,col_nbr_in);
+	(void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension in the input file (or, with ncremap, a possibly already subsetted intermediate file) that matches the size of the unstructured dimension in the supplied map-file = src_grd_dims[0] = n_a = %ld.\nHINT: Ensure at least one member of the variable extraction list has a spatial dimension of size = %ld\n",nco_prg_nm_get(),fnc_nm,col_nbr_in,col_nbr_in);
 	nco_exit(EXIT_FAILURE);
       } /* !dmn_idx */
     } /* !col_nm_in */

@@ -8187,14 +8187,14 @@ results in @code{lon_cal=1,2,3,4}.
 
 @cindex MKS units
 @cindex God
-netCDF variables should always be stored with MKS (i.e., God's) units,
-so that application programs may assume MKS dimensions apply to all
-input variables. 
-The UDUnits feature is intended to alleviate some of the @acronym{NCO}
-user's pain when handling MKS units.
+netCDF variables should always be stored with @acronym{MKS} (i.e.,
+God's) units, so that application programs may assume @acronym{MKS}
+dimensions apply to all input variables. 
+The UDUnits feature is intended to alleviate @acronym{NCO} users'
+pain when handling @acronym{MKS} units. 
 It connects users who think in human-friendly units (e.g.,
-miles, millibars, days) to extract data which are always stored in God's
-units, MKS (e.g., meters, Pascals, seconds). 
+miles, millibars, days) to extract data which are always stored in
+God's units, @acronym{MKS} (e.g., meters, Pascals, seconds). 
 The feature is not intended to encourage writers to store data in 
 esoteric units (e.g., furlongs, pounds per square inch, fortnights). 
 
