@@ -806,7 +806,7 @@ main(int argc,char **argv)
   } /* flg_wgt_by_rec_not_by_fl */
   if(wgt_arr){
     if(wgt_nbr != fl_nbr && !flg_wgt_by_rec_not_by_fl){
-      (void)fprintf(fp_stdout,"%s: ERROR User-specified per-file weight array has %d elements but there are %d input files.\nHINT: Specify one weight per input file, or toggle the default behavior by invoking with --per_record_weight which causes command-line weights to be applied per-record not per-file.\n",nco_prg_nm_get(),wgt_nbr,fl_nbr);
+      (void)fprintf(fp_stdout,"%s: ERROR User-specified per-file weight array has %d elements but there are %d input files.\nHINT: Specify one weight per input file, or toggle the default behavior by invoking with --per_record_weights which causes command-line weights to be applied per-record not per-file.\n",nco_prg_nm_get(),wgt_nbr,fl_nbr);
       nco_exit(EXIT_FAILURE);
     } /* !wgt_nbr */
   } /* !wgt_arr */
