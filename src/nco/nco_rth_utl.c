@@ -55,7 +55,7 @@ nco_opr_nrm /* [fnc] Normalization of arithmetic operations for ncra/nces */
   nbr_var_prc_cpy=nbr_var_prc;
 
 #ifdef _OPENMP
-#pragma omp parallel for private(idx) shared(nbr_var_prc_cpy,nco_op_typ_cpy,var_prc,var_prc_out)
+# pragma omp parallel for private(idx) shared(nbr_var_prc_cpy,nco_op_typ_cpy,var_prc,var_prc_out)
 #endif /* !_OPENMP */
   for(idx=0;idx<nbr_var_prc_cpy;idx++){
 
@@ -391,6 +391,26 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
      because we have only operated on local copies of them. */
 
 } /* end vec_set() */
+
+void
+nco_zero_double /* [fnc] Zero all values of double array */
+(const long sz, /* I [nbr] Size (in elements) of operand */
+ double * restrict const op1) /* I/O [nbr] Array to be zeroed */
+{
+  /* Purpose: Zero all values of long array */
+
+  /* Presumably this old method used until 20050321, and then again after 20120330,
+     is slower than memset() because of pointer de-referencing. 
+     However, it does have the virtue of being correct. */
+  if(op1 == NULL){
+    (void)fprintf(stdout,"%s: ERROR nco_zero_double() asked to zero NULL pointer\n",nco_prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+  size_t sz_byt; /* [B] Number of bytes in variable buffer */
+  sz_byt=(size_t)sz*sizeof(long);
+  (void)memset((void *)op1,0,sz_byt);
+
+} /* end nco_zero_double() */
 
 void
 nco_zero_long /* [fnc] Zero all values of long array */

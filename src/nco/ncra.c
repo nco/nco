@@ -1180,7 +1180,7 @@ main(int argc,char **argv)
     if(nco_prg_id == ncra || nco_prg_id == ncrcat) var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
     if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
       /* 20200701: fxm unclear (i.e., I cannot remember) why wgt_sum allocated iff has_mss_val */
-      if((wgt_arr || wgt_nm) && var_prc[idx]->has_mss_val) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double));
+      if((wgt_arr || wgt_nm) && var_prc[idx]->has_mss_val) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double)); else var_prc_out[idx]->wgt_sum=NULL;
       //if(wgt_arr || wgt_nm) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double));
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_calloc(var_prc_out[idx]->sz,sizeof(long));
       var_prc_out[idx]->val.vp=(void *)nco_calloc(var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type));
@@ -1481,6 +1481,7 @@ main(int argc,char **argv)
               if(flg_rth_ntl){
                 (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
                 (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
+                if(var_prc_out[idx]->wgt_sum) (void)memset(var_prc_out[idx]->wgt_sum,0,var_prc_out[idx]->sz*sizeof(double));
               } /* end if flg_rth_ntl */
 
               if(var_prc[idx]->type == NC_CHAR || var_prc[idx]->type == NC_STRING){
@@ -1507,7 +1508,7 @@ main(int argc,char **argv)
 		  } /* !wgt_nm */
 		  if(var_prc[idx]->wgt_sum) var_prc[idx]->wgt_crr=wgt_scv.val.d;
 		  nco_scv_cnf_typ(var_prc[idx]->type,&wgt_scv);
-		  if(nco_dbg_lvl >= nco_dbg_fl && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, idx = %li, typ = %s, wgt_val = %g, wgt_crr = %g, var_val=%g\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,idx_rec_crr_in,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->wgt_crr,var_prc[idx]->val.dp[0]);
+		  if(nco_dbg_lvl >= nco_dbg_fl && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, idx = %li, typ = %s, wgt_val = %g, wgt_crr = %g, var_val = %g, ttl = %g, tally = %ld\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,idx_rec_crr_in,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->wgt_crr,var_prc[idx]->val.dp[0],var_prc_out[idx]->val.dp[0],var_prc_out[idx]->tally[0]);
 		  (void)nco_var_scv_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,&wgt_scv);
 		  if(wgt_nm && var_prc[idx]->has_mss_val){
 		    (void)fprintf(fp_stdout,"%s: ERROR %s -w wgt_nm does not yet work on variables that contain missing values and variable %s contains a missing value attribute. This is TODO nco1124. %s will now quit rather than compute possibly erroneous values. HINT: Restrict the %s -w wgt_nm operation to variables with no missing value attributes.\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get(),var_prc[idx]->nm,nco_prg_nm_get());
@@ -1576,7 +1577,8 @@ main(int argc,char **argv)
 
 	    for(idx=0;idx<nbr_var_prc;idx++){
 	      if(var_prc[idx]->wgt_sum){
-		if(NORMALIZE_BY_WEIGHT) (void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
+		(void)fprintf(fp_stdout,"quark wgt_sum[0] = %g\n",var_prc[idx]->wgt_sum[0]); 
+		(void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
 	      } /* !wgt_sum */
 	    } /* !idx */
 	      
@@ -1791,7 +1793,7 @@ main(int argc,char **argv)
 	  } /* !wgt_nm */
 	  if(var_prc[idx]->wgt_sum) var_prc[idx]->wgt_crr=wgt_scv.val.d;
 	  nco_scv_cnf_typ(var_prc[idx]->type,&wgt_scv);
-	  if(nco_dbg_lvl >= nco_dbg_std && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, fl_idx = %i, typ = %s, wgt_val = %g, wgt_crr = %g, var_val=%g\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,fl_idx,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->wgt_crr,var_prc[idx]->val.dp[0]);
+	  if(nco_dbg_lvl >= nco_dbg_std && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, fl_idx = %i, typ = %s, wgt_val = %g, wgt_crr = %g, var_val = %g\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,fl_idx,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->wgt_crr,var_prc[idx]->val.dp[0]);
 	  (void)nco_var_scv_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,&wgt_scv);
 	  if(wgt_nm && var_prc[idx]->has_mss_val){
 	    (void)fprintf(fp_stdout,"%s: ERROR %s -w wgt_nm does not yet work on variables that contain missing values and variable %s contains a missing value attribute. This is TODO nco1124. %s will now quit rather than compute possibly erroneous values. HINT: Restrict the %s -w wgt_nm operation to variables with no missing value attributes.\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get(),var_prc[idx]->nm,nco_prg_nm_get());

@@ -3684,9 +3684,8 @@ nco_fll_var_trv                       /* [fnc] Fill-in variable structure list f
       var[idx_var]=nco_var_fll_trv(grp_id,var_id,&var_trv,trv_tbl);
 
       /* Transfer dimensions  */
-      for (int idx_dmn = 0; idx_dmn < var[idx_var]->nbr_dim; idx_dmn++) {
+      for (int idx_dmn = 0; idx_dmn < var[idx_var]->nbr_dim; idx_dmn++)
         var[idx_var]->dim[idx_dmn]->nm_fll = strdup(var_trv.var_dmn[idx_dmn].dmn_nm_fll);
-      }
 
       idx_var++;
 
