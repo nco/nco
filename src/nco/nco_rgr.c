@@ -4807,8 +4807,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 #ifdef ENABLE_GPU
 # pragma omp target data map(to:col_src_adr[0:lnk_nbr],row_dst_adr[0:lnk_nbr],var_val_dbl_in[0:var_sz_in],wgt_raw[0:lnk_nbr]) map(tofrom:var_val_dbl_out[0:var_sz_out])
 # pragma omp parallel for reduction(+:val_in_fst,val_out_fst)
-#else /* !ENABLE_GPU */
-# pragma omp simd
 #endif /* !ENABLE_GPU */
 	      for(lvl_idx=0;lvl_idx<lvl_nbr;lvl_idx++){
 		//if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(fp_stdout,"%s lvl_idx = %d val_in_fst = %li, val_out_fst = %li\n",trv.nm,lvl_idx,val_in_fst,val_out_fst);

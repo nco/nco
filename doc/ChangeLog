@@ -1,6 +1,12 @@
 2020-08-11  Charlie Zender  <zender@uci.edu>
 
-	* Hand-merge Sahil's GPU directives and autoconf token
+	* NCO 4.9.4-alpha12 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha12: Dry Rot';git push
+	git tag -a 4.9.4-alpha12 -m 'autoconf gpu token; nco_rgr_wgt() gpu directives;';git push --tags
+
+	* Do not nest SIMD within existing SIMD region
+
+	* Hand-merge Sahil's GPU directives and autoconf token, add SIMD branch
 
 2020-08-10  Charlie Zender  <zender@uci.edu>
 
