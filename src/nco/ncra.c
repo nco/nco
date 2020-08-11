@@ -1181,6 +1181,7 @@ main(int argc,char **argv)
     if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
       /* 20200701: fxm unclear (i.e., I cannot remember) why wgt_sum allocated iff has_mss_val */
       if((wgt_arr || wgt_nm) && var_prc[idx]->has_mss_val) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double));
+      //if(wgt_arr || wgt_nm) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double));
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_calloc(var_prc_out[idx]->sz,sizeof(long));
       var_prc_out[idx]->val.vp=(void *)nco_calloc(var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type));
     } /* end if */

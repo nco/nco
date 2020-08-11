@@ -1,8 +1,14 @@
-2020-08-09  Charlie Zender  <zender@uci.edu>
+2020-08-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha11 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha11: Euphoria';git push
-	git tag -a 4.9.4-alpha11 -m 'ncclimo hfc mpi fl_nbr=1; ncra --per_record_weights;';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha11: Homemade Sushi';git push
+	git tag -a 4.9.4-alpha11 -m 'autoconf link to alpha10 not alpha01 error; ncclimo hfc mpi fl_nbr=1; ncra --per_record_weights;';git push --tags
+
+	* autoconf link to alpha10 not alpha01
+
+	* ncra investigate per-record weighting anomalies spotted by PJCS
+
+2020-08-09  Charlie Zender  <zender@uci.edu>
 
 	* ncra --per_record_weights applies command-line numeric weights to records
 

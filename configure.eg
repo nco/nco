@@ -440,7 +440,7 @@ module load gcc
 #module load udunits
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='gcc' CXX='g++' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' NETCDF_DIR='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2' NETCDF_INC='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/include' NETCDF_LIB='/opt/cray/pe/netcdf/4.7.3.3/gnu/8.2/lib' NETCDF_ROOT='/opt/cray/pe/netcdf/4.7.3.3' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1

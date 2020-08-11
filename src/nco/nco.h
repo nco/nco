@@ -355,14 +355,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 4
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE "-alpha10" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
+# define NCO_VERSION_NOTE "-alpha11" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.9.4-alpha10"
+# define NCO_VERSION "4.9.4-alpha11"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -1606,7 +1606,7 @@ typedef enum nco_xtr_typ_enm
     char *nm; /* [sng] Variable name */
     char *nm_fll; /* [sng] Absolute variable name (needed for GTT search for object by full name) */
     char fmt[5]; /* [sng] Hint for printf()-style formatting */
-    double *wgt_sum; /* [frc] Running sum of per-file weights (ncra/ncea only) */
+    double *wgt_sum; /* [frc] Running sum (over records) of per-record or per-file weights (ncra/ncea only) */
     double wgt_crr; /* [frc] Weight of current record (ncra/ncea only) */
     dmn_sct **dim; /* [sct] Pointers to full dimension structures */
     int *dmn_id; /* [id] Contiguous vector of dimension IDs */
