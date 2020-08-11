@@ -22,6 +22,9 @@
 /* Compile operators with ESMF support */
 #undef ENABLE_ESMF
 
+/* Enable GPU offloading support */
+#undef ENABLE_GPU
+
 /* Compile operators with GSL support */
 #undef ENABLE_GSL
 

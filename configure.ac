@@ -339,6 +339,7 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
     AC_ARG_ENABLE(gpu,AS_HELP_STRING([--enable-gpu],[Enable OpenMP GPU offloading for Nvidia GPUs [default=no]]),enable_gpu=${enableval},enable_gpu=no)
 
     if (test "x$enable_gpu" != 'xno'); then
+	AC_DEFINE([ENABLE_GPU],[1],[Enable GPU offloading support])	
 	case ${CC} in
 	    gcc* | g\+\+* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -foffload=nvptx-none" ;;
 	    clang* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -fopenmp-targets=nvptx64-nvidia-cuda" ;;
