@@ -1,5 +1,7 @@
 2020-08-11  Charlie Zender  <zender@uci.edu>
 
+	* ncra reset wgt_sum after each ssc during MRO to fix per-record weighting
+
 	* NCO 4.9.4-alpha12 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha12: Dry Rot';git push
 	git tag -a 4.9.4-alpha12 -m 'autoconf gpu token; nco_rgr_wgt() gpu directives;';git push --tags

@@ -1577,7 +1577,6 @@ main(int argc,char **argv)
 
 	    for(idx=0;idx<nbr_var_prc;idx++){
 	      if(var_prc[idx]->wgt_sum){
-		(void)fprintf(fp_stdout,"quark wgt_sum[0] = %g\n",var_prc[idx]->wgt_sum[0]); 
 		(void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
 	      } /* !wgt_sum */
 	    } /* !idx */
