@@ -17847,6 +17847,9 @@ fi
 
 
     if (test "x$enable_gpu" != 'xno'); then
+
+$as_echo "#define ENABLE_GPU 1" >>confdefs.h
+
 	case ${CC} in
 	    gcc* | g\+\+* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -foffload=nvptx-none" ;;
 	    clang* ) OPENMP_CFLAGS="${OPENMP_CFLAGS} -fopenmp-targets=nvptx64-nvidia-cuda" ;;

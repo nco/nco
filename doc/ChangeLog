@@ -1,3 +1,7 @@
+2020-08-11  Charlie Zender  <zender@uci.edu>
+
+	* Hand-merge Sahil's GPU directives and autoconf token
+
 2020-08-10  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha11 release procedure:
