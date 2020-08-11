@@ -1,0 +1,30 @@
+// check min max values of netcdf 3/4 types
+// usage: ncap2 -4 -v -O -S typ.nco in.nc out.nc 
+a=1b;
+a@type="NC_BYTE";
+a@min_nmax={-128b, 127b};
+a1=1ub;
+a1@type="NC_UBYTE";
+a1@min_max={0ub, 255ub};
+
+b=1s;
+b@type="NC_SHORT";
+b@min_max={-32768s, 32767s};
+b1=1us;
+b1@type="NC_USHORT";
+b1@min_max={0, 65535us};
+
+c=1l;
+c@type="NC_INT";
+c@min_max={-2147483648l, 2147483647l};
+c1=1ul;
+c1@type="NC_UINT";
+c1@min_max={0ul, 4294967295U, -1U, 4294967296U };
+
+// d=9223372036854775807ll;
+d=1ll;
+d@type="NC_INT64";
+d@min_max={-9223372036854775808ll, 9223372036854775807ll};
+d1=18446744073709551615ull;
+d1@type="NC_UINT64";
+d1@min_max={0, 18446744073709551615ull};
