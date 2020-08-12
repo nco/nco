@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha13: Kamala & Krall';git push
 	git tag -a 4.9.4-alpha13 -m 'ncra per-record wgt fix; ';git push --tags
 
+	* ncclimo turn-on bnd2tpdclm in single- and multi-file input hfc modes
+
 	* ncra, nces add cb->bnd2tpdclm to convert time bounds to diurnal climatology bounds
 
 	* ncra, nces cell_methods for diurnal climatology bounds works

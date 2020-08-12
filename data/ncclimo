@@ -2021,7 +2021,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 
 		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_mth[${clm_idx}]}"
 
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --b2t -O ${nco_opt} ${gaa_sng} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
 		    
 	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
@@ -2033,7 +2033,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		cmd_tpd_tpl[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,TPDidx,,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_tpd_tpl[${clm_idx}]}"
 
 		# Concatenate individual timestep means into full diurnal timeseries
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O --b2t ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
 	    fi # !fl_nbr
 	    # Combine monthly into seasonal and annual means with nces (preserving diurnal timesteps)
 	    cmd_mth2csn='nces'
@@ -2113,7 +2113,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 
 	    for ((tpd_idx=0;tpd_idx<tpd_out;tpd_idx++)); do
 		TT=`printf "%02d" ${tpd_idx}`
-		printf "Parallelize monthly means for diurnal timestep ${tpd_idx}...\n"
+		printf "Compute monthly means for diurnal timestep ${tpd_idx}...\n"
 		let bch_nbr=$((12 / job_nbr))
 		for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 		    # clm_idx is 1-based, bch_idx is 0-based

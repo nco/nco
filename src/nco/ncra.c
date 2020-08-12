@@ -930,7 +930,7 @@ main(int argc,char **argv)
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Add climatology_bounds attribute to output file (before cell_methods) */
-  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncap)){
+  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)){
     char bnd_sng[]="bounds"; /* CF-standard time-bounds attribute name */
     char clm_sng[]="climatology"; /* CF-standard climatology bounds attribute name */
     char cln_sng[]="calendar"; /* CF-standard calendar attribute name */
@@ -1152,7 +1152,7 @@ main(int argc,char **argv)
     if(cb) cb=(clm_bnd_sct *)nco_free(cb);
 
   /* Add cell_methods attributes (before exiting define mode) */
-  if(nco_prg_id == ncra || nco_prg_id == ncap){
+  if(nco_prg_id == ncra || nco_prg_id == ncrcat){
     dmn_sct **dmn=NULL_CEWI;
     int nbr_dmn=nbr_rec;
     dmn=(dmn_sct **)nco_malloc(nbr_dmn*sizeof(dmn_sct *));
@@ -1728,7 +1728,7 @@ main(int argc,char **argv)
         nco_rgd_arr_lst_free(rgd_arr_climo_lst,rgd_arr_climo_nbr);
       } /* end idx_rec loop over different record variables to process */
 
-      if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncap)){
+      if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)){
 	/* Obtain climatology bounds from input file
 	   20160824: Currently dmn_srt_srt and dmn_srt_end indices are 0 and 1, respectively
 	   This means values are always/only taken for first record in input file
@@ -2030,9 +2030,9 @@ main(int argc,char **argv)
     } /* end loop over idx */
   } /* endif ncra || nces */
 
-  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncap)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
+  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
 
-  if(flg_cb && (cb->bnd2clm || cb->clm2bnd)){
+  if(flg_cb && (cb->bnd2clm || cb->bnd2tpdclm || cb->clm2bnd)){
     /* Rename time-bounds as climatology bounds, or visa-versa
        Otherwise wrong bounds will remain orphaned in output file
        Also, this ensures same dimensions are used
@@ -2041,7 +2041,7 @@ main(int argc,char **argv)
        That would entail significant modifications to traversal table logic
        Renaming seems simpler and less error prone */
     rcd+=nco_redef(out_id);
-    if(cb->bnd2clm) rcd+=nco_rename_var(out_id,cb->tm_bnd_id_out,cb->clm_bnd_nm);
+    if(cb->bnd2clm || cb->bnd2tpdclm) rcd+=nco_rename_var(out_id,cb->tm_bnd_id_out,cb->clm_bnd_nm);
     if(cb->clm2bnd) rcd+=nco_rename_var(out_id,cb->clm_bnd_id_out,cb->tm_bnd_nm);
     rcd+=nco_enddef(out_id);
   } /* !flg_cb */
