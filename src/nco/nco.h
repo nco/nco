@@ -1121,7 +1121,7 @@ typedef enum nco_xtr_typ_enm
     } nco_xtr_typ_enm;
 
   /* CF Coordinates structure (20160503: Used only in ncks.c for to infer grids from CF coordinates convention) */
-  typedef struct{ /* clm_bnd_sct */
+  typedef struct{ /* cr_crd_sct */
     char *crd_nm[2]; /* [sng] Coordinate names */
     char *crd_sng; /* [sng] Coordinates attribute value */
     char *dmn_nm[2]; /* [sng] Dimension names */
@@ -1153,6 +1153,7 @@ typedef enum nco_xtr_typ_enm
     long dmn_srt_srt[2]; /* [idx] Start indices for retrieving start bounds */
     long dmn_srt_end[2]; /* [idx] Start indices for retrieving end bounds */
     nc_type type; /* [enm] Type of (time and) climatology bounds variable(s) */
+    nco_bool bnd2tpdclm; /* [flg] Convert time bounds to climatology bounds with diurnal component */
     nco_bool bnd2clm; /* [flg] Convert time bounds to climatology bounds */
     nco_bool clm2bnd; /* [flg] Convert climatology bounds to time bounds */
     nco_bool clm2clm; /* [flg] Convert climatology bounds to climatology bounds */

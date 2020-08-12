@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha12
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 11 August 2020
+@set update-date 12 August 2020
 @set update-month August 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1796,9 +1796,9 @@ the final output file instead of to an intermediate temporary file.
 When eschewing temporary files, users may forsake the ability to have
 the same name for both @var{output-file} and @var{input-file} since, as   
 described above, the temporary file prevented overlap issues.
-However, if the user creates the output file in @acronym{RAM} (@pxref{RAM disks})
-then it is still possible to have the same name for both
-@var{output-file} and @var{input-file}.
+However, if the user creates the output file in @acronym{RAM}
+(@pxref{RAM disks}) then it is still possible to have the same name
+for both @var{output-file} and @var{input-file}.
 @example
 ncks in.nc out.nc # Default: create out.pid.tmp.nc then move to out.nc
 ncks --wrt_tmp_fl in.nc out.nc # Same as default
@@ -4397,6 +4397,7 @@ build time.
 <a name="grp"></a> <!-- http://nco.sf.net/nco.html#grp -->
 <a name="var"></a> <!-- http://nco.sf.net/nco.html#var -->
 <a name="xcl"></a> <!-- http://nco.sf.net/nco.html#xcl -->
+<a name="exclude"></a> <!-- http://nco.sf.net/nco.html#exclude -->
 <a name="sbs"></a> <!-- http://nco.sf.net/nco.html#sbs -->
 <a name="subset"></a> <!-- http://nco.sf.net/nco.html#subset -->
 @end html
@@ -4461,10 +4462,27 @@ union, rather than the intersection, of the specified groups and
 variables. 
 Not using the @samp{-v} or @samp{-g} option is equivalent to specifying
 all variables or groupp, respectively.  
+
 The @samp{-x} option causes the list of variables specified with
 @samp{-v} to be @emph{excluded} rather than @emph{extracted}.
 Thus @samp{-x} saves typing when you only want to extract fewer than
 half of the variables in a file.
+@example       
+@verbatim
+ncks -x -v v1,v2 in.nc out.nc # Extract all variables except v1, v2
+ncks -C -x -v lat,lon in.nc out.nc # Extract all except lat, lon
+@end verbatim
+@end example
+The first example above shows the typical use of @samp{-x} to
+subset all variables except a few into the output.
+Note that @code{v1} and @code{v2} will be retained in the
+output if they are coordinate-like variables
+(@pxref{Subsetting Coordinate Variables})
+associated with any extracted variable.
+If one wishes to exclude coordinate-like variables despite their
+being referenced by extracted variables, one must use the @samp{-C}  
+(or synonym @samp{--xcl_ass_var}) option as shown in the second
+example.
 
 Variables or groups explicitly specified for extraction with
 @samp{-v @var{var}[,@dots{}]} or @samp{-g @var{grp}[,@dots{}]}
@@ -17018,9 +17036,9 @@ The second dimension of the output variable, referenced as a dimension
 The size of this dimension should always @w{be 2}.
 If the dimension does not yet exist create it first using @code{defdim()}. 
 @item 3rd Argument
-The name of a "bounds" attribute that is created in the input
-coordinate variable. 
-This will be the name of variable created to contain the bounds.
+This optional string argument will be placed in the "bounds" attribute
+that will be created in the input coordinate variable. 
+Normally this is the name of the bounds variable:
 @end table
 Typical usage:
 @example

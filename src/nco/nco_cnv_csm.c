@@ -376,6 +376,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   dmn_mch=(int *)nco_calloc(dmn_nbr_rdc,sizeof(int));
 
   if(cb){
+    if(cb->bnd2tpdclm) cll_mth_clm=strdup("time: mean within days time: mean within years time: mean over years");
     if(cb->bnd2clm || cb->clm2clm) cll_mth_clm=strdup("time: mean within years time: mean over years");
     if(cb->clm2bnd) cll_mth_clm=strdup("time: mean");
   } /* !cb */

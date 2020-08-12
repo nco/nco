@@ -273,7 +273,8 @@ main(int argc,char **argv)
   nco_bool WRT_TMP_FL=True; /* [flg] Write output to temporary file */
   nco_bool flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
   nco_bool flg_cb=False; /* [flg] Climatology bounds */
-  nco_bool flg_c2b=False; /* [flg] Climatology bounds-to-time bounds */
+  nco_bool flg_c2b=False; /* [flg] Climatology-bounds to time-bounds */
+  nco_bool flg_b2t=False; /* [flg] Time-bounds to climatology bounds */
   nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_skp1; /* [flg] Current record is not dimension of this variable */
   nco_bool flg_skp2; /* [flg] Current record is not dimension of this variable */
@@ -339,7 +340,8 @@ main(int argc,char **argv)
     {"clm_bnd",no_argument,0,0}, /* [sct] Climatology bounds */
     {"cb",no_argument,0,0}, /* [sct] Climatology bounds */
     {"clm2bnd",no_argument,0,0}, /* [sct] Climatology bounds-to-time bounds */
-    {"c2b",no_argument,0,0}, /* [sct] Climatology bounds-to-time bounds */
+    {"b2t",no_argument,0,0}, /* [flg] Time-bounds to climatology bounds */
+    {"c2b",no_argument,0,0}, /* [sct] Climatology bounds to time-bounds */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
@@ -559,6 +561,7 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"clm_bnd") || !strcmp(opt_crr,"cb")) flg_cb=True; /* [sct] Climatology bounds */
       if(!strcmp(opt_crr,"clm2bnd") || !strcmp(opt_crr,"c2b")) flg_c2b=flg_cb=True; /* [sct] Climatology bounds-to-time bounds */
+      if(!strcmp(opt_crr,"bnd2tpdclm") || !strcmp(opt_crr,"b2t")) flg_c2b=flg_cb=True; /* [sct] Time-bounds to diurnal climatology bounds */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"dbl") || !strcmp(opt_crr,"rth_dbl")) nco_rth_cnv=nco_rth_flt_dbl; /* [flg] Arithmetic convention: promote float to double */
       if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"rth_flt")) nco_rth_cnv=nco_rth_flt_flt; /* [flg] Arithmetic convention: keep single-precision */

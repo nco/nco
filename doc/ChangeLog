@@ -1,3 +1,11 @@
+2020-08-12  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.4-alpha13 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha13: Kamala & Krall';git push
+	git tag -a 4.9.4-alpha13 -m 'ncra per-record wgt fix; ';git push --tags
+
+	* Clarify rules for exclusion of coordinate-like variables
+
 2020-08-11  Charlie Zender  <zender@uci.edu>
 
 	* ncra reset wgt_sum after each ssc during MRO to fix per-record weighting
