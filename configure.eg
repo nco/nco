@@ -816,7 +816,7 @@ CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=$
 # Firn 20180729 (works)
 ANTLR_ROOT=${HOME} CC='gcc' CFLAGS='' CXX='g++' CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 # Sastrugi 20180729 (works with both gcc and clang)
-ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g' CXX=${LINUX_CXX} CXXFLAGS='-g' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' CXX=${LINUX_CXX} CXXFLAGS='-g -Wall -DNCO_ABORT_ON_ERROR' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 # Rigb 20190912 (fxm)
 ANTLR_ROOT=${HOME} CC=${LINUX_CC} CFLAGS='' CXX=${LINUX_CXX} CXXFLAGS='' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo

@@ -376,9 +376,9 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   dmn_mch=(int *)nco_calloc(dmn_nbr_rdc,sizeof(int));
 
   if(cb){
-    if(cb->bnd2tpdclm) cll_mth_clm=strdup("time: mean within days time: mean within years time: mean over years");
     if(cb->bnd2clm || cb->clm2clm) cll_mth_clm=strdup("time: mean within years time: mean over years");
     if(cb->clm2bnd) cll_mth_clm=strdup("time: mean");
+    if(cb->bnd2tpdclm) cll_mth_clm=strdup("time: mean within days time: mean within years time: mean over years");
   } /* !cb */
 
   /* Process all variables */
@@ -405,6 +405,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     aed.sz=0L;
     dmn_nbr_mch=0;
     flg_dpl=False;
+
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has cll_mth_clm = %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm,cll_mth_clm);
 
     if(cb){
       /* Does variable use time coordinate? */
@@ -559,7 +561,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 
     /* 20150308 */
     /* Does variable already have "coordinates" attribute?
-       NB: This reuses att_nm which has only enough space to hold "cell_methods" */
+       NB: This re-uses att_nm which has only enough space to hold "cell_methods" */
     strcpy(aed.att_nm,"coordinates");
     rcd=nco_inq_att_flg(grp_out_id,var_out_id,aed.att_nm,&att_typ,&att_lng);
     if(rcd == NC_NOERR && att_typ == NC_CHAR){

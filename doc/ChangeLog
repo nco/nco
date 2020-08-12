@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha13: Kamala & Krall';git push
 	git tag -a 4.9.4-alpha13 -m 'ncra per-record wgt fix; ';git push --tags
 
+	* ncra, nces add cb->bnd2tpdclm to convert time bounds to diurnal climatology bounds
+
+	* ncra, nces cell_methods for diurnal climatology bounds works
+
 	* Clarify rules for exclusion of coordinate-like variables
 
 2020-08-11  Charlie Zender  <zender@uci.edu>
