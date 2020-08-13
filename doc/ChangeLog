@@ -1,8 +1,12 @@
-2020-08-12  Charlie Zender  <zender@uci.edu>
+2020-08-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha13 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha13: Kamala & Krall';git push
-	git tag -a 4.9.4-alpha13 -m 'ncra per-record wgt fix; ';git push --tags
+	git tag -a 4.9.4-alpha13 -m 'ncra per-record wgt fix, no cll_mth for bnds; ';git push --tags
+
+	* ncra drop cell_methods from climatology_bounds, time_bounds variables
+
+2020-08-12  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo turn-on bnd2tpdclm in single- and multi-file input hfc modes
 

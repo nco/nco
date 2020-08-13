@@ -210,8 +210,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # High-frequency climos:
 # drc_in=${DATA}/ne30/raw
 # caseid=famipc5_ne30_v0.3_00007.cam.h4 # 3-hour resolution
-# cd ${drc_in};ls ${caseid}*.nc | ncclimo --tpd=8 --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc
-# ncclimo --tpd=8 --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/PRECT_200101_200212.nc
+# cd ${drc_in};ls ${caseid}*.nc | ncclimo --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc
+# ncclimo --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/PRECT_200101_200212.nc
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS,TREFHT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
@@ -2069,7 +2069,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    let clm_idx_srt=$(((bch_idx * job_nbr) + 1))
 	    let clm_idx_end=$((clm_idx_srt + job_nbr - 1))
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
-		printf "Culling climatological monthly timeseries for month ${clm_idx} ...\n"
+		printf "Cull climatological monthly timeseries for month ${clm_idx} ...\n"
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_cll[${clm_idx}]}
 		fi # !dbg

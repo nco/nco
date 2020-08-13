@@ -419,6 +419,8 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
 	aed.type=NC_CHAR;
 	aed.val.cp=att_val;
 	aed.mode=aed_overwrite;
+	/* Do not add cell_methods to time bounds variables, and delete them if they exist */
+	if(var_out_id == cb->clm_bnd_id_out || var_out_id == cb->tm_bnd_id_out) aed.mode=aed_delete;
 	(void)nco_aed_prc(grp_out_id,var_out_id,aed);
 	if(att_val) att_val=(char *)nco_free(att_val);
 	continue;

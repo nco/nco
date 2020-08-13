@@ -6869,6 +6869,11 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
     (void)nco_xtr_cf_add(nc_id,"grid_mapping",trv_tbl);
   } /* cnv->CCM_CCSM_CF */
 
+  /* Die with helpful hint if extraction rules lead to retaining user-excluded variables
+     See discussion at https://github.com/nco/nco/issues/211 */
+  if(EXCLUDE_INPUT_LIST && False)
+    ; //(void)nco_xtr_xcl_chk(EXTRACT_ASSOCIATED_COORDINATES,var_lst_in,var_xtr_nbr,trv_tbl);
+
   /* Mark extracted dimensions */
   (void)nco_xtr_dmn_mrk(trv_tbl);
 
