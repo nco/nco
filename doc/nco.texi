@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-alpha12
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 12 August 2020
+@set update-date 13 August 2020
 @set update-month August 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18145,9 +18145,10 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 DESCRIPTION
 
 In climatology generation mode, @command{ncclimo} ingests ``raw'' data
-consisting of a monthly or annual timeseries of files and from these
+consisting of interannual sets of files, each containing sub-daily
+(diurnal), daily, monthly, or yearly averages, and from these
 produces climatological daily, monthly, seasonal, and/or annual
-means. 
+means.
 Alternatively, in timeseries reshaping (aka ``splitter'') mode,
 @command{ncclimo} will subset and temporally split the input raw data
 timeseries into per-variable files spanning the entire period. 
@@ -18171,11 +18172,11 @@ and @command{ncremap} scripts export the environment variable
 @code{HDF5_USE_FILE_LOCKING} with a value of @code{FALSE}.
 This prevents failures of these operators that can occur with some
 versions of the underlying HDF library that attempt to lock files
-on file systems that cannot or do not support it.
+on file systems that cannot, or do not, support it.
 
-There are five required options (@samp{-c}, @samp{-s}, @samp{-e},
-@samp{-i}, and @samp{-o})) to generate climatologies, and many more
-options are available to customize the processing.
+There are five (usually) required options (@samp{-c}, @samp{-s},
+@samp{-e}, @samp{-i}, and @samp{-o})) to generate climatologies, and
+many more options are available to customize the processing.
 Options are similar to @command{ncremap} options.
 Standard @command{ncclimo} usage for climatology generation looks like
 @example
@@ -18184,8 +18185,18 @@ ncclimo -m mdl_nm  -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo -v var_lst -c caseid -s srt_yr -e end_yr -i drc_in -o drc_out
 ncclimo --case=caseid --start=srt_yr --end=end_yr --input=drc_in --output=drc_out
 @end example
-In climatology generation mode, @command{ncclimo} constructs the list of
-input filenames from the argument to the date and model-type options.
+In climatology generation mode, @command{ncclimo} constructs the list
+of input filenames from the arguments to the caseid, date, and
+model-type options.
+As of @acronym{NCO} version 4.9.4 (September, 2020), @command{ncclimo}
+can produce climatologies of high-frequency input data supplied via
+standard input, positional command-line options, or directory
+contents, all input methods traditionally supported only in splitter
+mode. 
+Instead of using the @code{caseid} option to help generate the input
+filenames as it does for normal (monthly) climos, @command{ncclimo}
+uses the @code{caseid} option, when provided, to rename the output
+files for high-frequency climos.
 @cindex standard input
 @cindex @code{stdin}
 @command{ncclimo} automatically switches to timeseries reshaping mode
