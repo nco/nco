@@ -521,7 +521,7 @@ main(int argc,char **argv)
     {"fl_bnr",required_argument,0,'b'},
     {"coords",no_argument,0,'c'},
     {"crd",no_argument,0,'c'},
-     {"xtr_ass_var",no_argument,0,'c'},
+    {"xtr_ass_var",no_argument,0,'c'},
     {"xcl_ass_var",no_argument,0,'C'},
     {"no_coords",no_argument,0,'C'},
     {"no_crd",no_argument,0,'C'},
