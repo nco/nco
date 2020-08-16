@@ -1,8 +1,14 @@
-2020-08-13  Charlie Zender  <zender@uci.edu>
+2020-08-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha13 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha13: Kamala & Krall';git push
-	git tag -a 4.9.4-alpha13 -m 'ncra per-record wgt fix, no cll_mth for bnds; ';git push --tags
+	git tag -a 4.9.4-alpha13 -m 'ncra per-record wgt fix, no cll_mth for bnds; ncrename rgr github';git push --tags
+
+	* ncrename add GitHub issue to expected failures for regression tests #28, #31
+
+2020-08-13  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo update documentation for hfcs, both on Confluence and in nco.texi
 
 	* ncra drop cell_methods from climatology_bounds, time_bounds variables
 

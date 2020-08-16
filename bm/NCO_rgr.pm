@@ -5992,7 +5992,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncrename -O -d time,newrec -v time,newrec ~/nco/data/in_4c.nc ~/foo.nc
 #ncks -s %g -H --trd -g // -v newrec -d newrec,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate dimension and variable in netCDF4-classic file
-    $dsc_sng="netCDF4-classic: Valid values after renaming coordinate dimension and variable in netCDF4-classic file";
+    $dsc_sng="netCDF4-classic: Valid values after renaming coordinate dimension and variable in netCDF4-classic file  (netCDF bug, requires Unidata fix https://github.com/Unidata/netcdf-c/issues/597)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec -v time,newrec $in_pth_arg in_4c.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H --trd -g // -v newrec -d newrec,0 -C %tmp_fl_00%";
     $tst_cmd[2]="1";
@@ -6028,7 +6028,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
 #ncrename -O -d time,newrec -v time,newrec ~/nco/data/in_grp.nc ~/foo.nc
 #ncks -s %g -H --trd -g // -v newrec -d newrec,0 -C ~/foo.nc
 # Check for valid values after renaming coordinate dimension and variable in netCDF4 file
-    $dsc_sng="netCDF4: Valid values after renaming coordinate dimension and variable in netCDF4 file";
+    $dsc_sng="netCDF4: Valid values after renaming coordinate dimension and variable in netCDF4 file (netCDF bug, requires Unidata fix https://github.com/Unidata/netcdf-c/issues/597)";
     $tst_cmd[0]="ncrename -O $fl_fmt $nco_D_flg -d time,newrec -v time,newrec $in_pth_arg in_grp.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -s %g -H --trd -g // -v newrec -d newrec,0 -C %tmp_fl_00%";
     $tst_cmd[2]="1";
