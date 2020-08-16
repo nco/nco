@@ -157,6 +157,13 @@ nco_xtr_xcl                          /* [fnc] Convert extraction list to exclusi
  trv_tbl_sct * const trv_tbl); /* I/O [sct] GTT (Group Traversal Table) */
 
 void
+nco_xtr_xcl_chk /* [fnc] Convert extraction list to exclusion list */
+(nco_bool EXTRACT_ASSOCIATED_COORDINATES, /* I [flg] Extract all coordinates associated with extracted variables? */
+ char ** var_lst_in, /* I [sng] User-specified list of variables */
+ const int var_xtr_nbr, /* I [nbr] Number of variables in list */
+ trv_tbl_sct * const trv_tbl); /* I [sct] GTT (Group Traversal Table) */
+
+void
 nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction list */
 (trv_tbl_sct * const trv_tbl);        /* I/O [sct] Traversal table */
 

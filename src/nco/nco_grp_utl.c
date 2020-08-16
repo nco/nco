@@ -1018,6 +1018,40 @@ nco_xtr_xcl /* [fnc] Convert extraction list to exclusion list */
 } /* end nco_xtr_xcl() */
 
 void
+nco_xtr_xcl_chk /* [fnc] Convert extraction list to exclusion list */
+(nco_bool EXTRACT_ASSOCIATED_COORDINATES, /* I [flg] Extract all coordinates associated with extracted variables? */
+ char ** var_lst_in, /* I [sng] User-specified list of variables */
+ const int var_xtr_nbr, /* I [nbr] Number of variables in list */
+ trv_tbl_sct * const trv_tbl) /* I [sct] GTT (Group Traversal Table) */
+{
+  /* Purpose: Die with helpful hint if extraction rules lead to retaining user-excluded variables
+     See discussion at https://github.com/nco/nco/issues/211 
+     Test cases: 
+     ncks -x -v lat ~/nco/data/in.nc
+     ncks -x -v time_bnds ~/nco/data/in.nc */
+
+  const char fnc_nm[]="nco_xtr_xcl_chk()"; /* [sng] Function name */
+
+  /* Block implements default (and only) behavior until 20140521,
+     i.e., extract all except exclude intersection of -g and -v arguments */
+  static short FIRST_WARNING=True;
+  for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+    trv_tbl->lst[idx_tbl].flg_xtr=!trv_tbl->lst[idx_tbl].flg_xtr; /* Toggle extraction flag */
+    trv_tbl->lst[idx_tbl].flg_xcl=True; /* Extraction flag was toggled by exclusion option */
+    if(!trv_tbl->lst[idx_tbl].flg_xtr && trv_tbl->lst[idx_tbl].nco_typ == nco_obj_typ_var && trv_tbl->lst[idx_tbl].is_crd_var){
+      if(nco_dbg_lvl_get() >= nco_dbg_std && FIRST_WARNING && EXTRACT_ASSOCIATED_COORDINATES){
+	(void)fprintf(stdout,"%s: HINT Explicitly excluding (with -x) a coordinate variable (like \"%s\") from the extraction list does not always remove the coordinate from output unless the -C option is also invoked to turn off extraction of coordinates associated with other variables. Otherwise, a coordinate you wish to exclude may be extracted in its capacity as coordinate-information for other extracted variables. Use \"-C -x -v crd_nm\" to guarantee that crd_nm will not be output. See http://nco.sf.net/nco.html#xmp_xtr_xcl for more information.\n",nco_prg_nm_get(),trv_tbl->lst[idx_tbl].nm);
+	FIRST_WARNING=False;
+      } /* !FIRST_WARNING */
+    } /* end if */
+  } /* end for */
+
+  if(nco_dbg_lvl_get() == nco_dbg_old) (void)trv_tbl_prn_xtr(trv_tbl,fnc_nm);
+
+  return;
+} /* end nco_xtr_xcl_chk() */
+
+void
 nco_xtr_crd_add                       /* [fnc] Add all coordinates to extraction list */
 (trv_tbl_sct * const trv_tbl)         /* I/O [sct] GTT (Group Traversal Table) */
 {
@@ -6779,6 +6813,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
      nco_xtr_crd_add()
      nco_xtr_crd_ass_add()
      nco_xtr_cf_add()
+     nco_xtr_xcl_chk()
      Limit-related functions must be called in order:
      nco_lmt_prs()
      nco_prs_aux_crd()
@@ -6871,8 +6906,7 @@ nco_bld_trv_tbl                       /* [fnc] Construct GTT, Group Traversal Ta
 
   /* Die with helpful hint if extraction rules lead to retaining user-excluded variables
      See discussion at https://github.com/nco/nco/issues/211 */
-  if(EXCLUDE_INPUT_LIST && False)
-    ; //(void)nco_xtr_xcl_chk(EXTRACT_ASSOCIATED_COORDINATES,var_lst_in,var_xtr_nbr,trv_tbl);
+  //if(EXCLUDE_INPUT_LIST) (void)nco_xtr_xcl_chk(EXTRACT_ASSOCIATED_COORDINATES,var_lst_in,var_xtr_nbr,trv_tbl);
 
   /* Mark extracted dimensions */
   (void)nco_xtr_dmn_mrk(trv_tbl);

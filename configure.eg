@@ -393,7 +393,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on compy
 # https://acme-climate.atlassian.net/wiki/spaces/ED/pages/928973795/CompyMcNodeFace+-+E3SM+RGMA+ESMD+dedicated+system+at+PNNL
 # Sysadmin upgrade request: rc-support@pnnl.gov # PNNL Maintainer = Tim Carlson ?
-# Latest ticket to build NCO: 20190525 ICS-4099 (closed in 1 day!)
+# Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
 # Personal recipe last modified: 20200114
 # Personal recipe last used successfully: 20200601

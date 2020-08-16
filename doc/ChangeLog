@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha13: Kamala & Krall';git push
 	git tag -a 4.9.4-alpha13 -m 'ncra per-record wgt fix, no cll_mth for bnds; ncrename rgr github';git push --tags
 
+	* Add nco_xtr_xcl_chk() to die with hint if extraction rules lead to retaining user-excluded variables
+
 	* ncrename add GitHub issue to expected failures for regression tests #28, #31
 
 2020-08-13  Charlie Zender  <zender@uci.edu>
