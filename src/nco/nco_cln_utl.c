@@ -479,6 +479,162 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
 
 } /* end nco_cln_chk_tm() */
 
+
+int /* O [rcd] Return code */
+nco_cln_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bounds arrays */
+(int yr_srt,   /* I [yr] Year at climo start */
+ int yr_end,    /* I [yr] Year at climo start */
+ int mth_srt,   /* I [mth] Month at climo start [1..12] format */
+ int mth_end,   /* I [mth] Month at climo end [1..12] format */
+ int tpd,       /* I [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...]*/
+ const char *unt_sng, /* I [sng] Units of time coordinate (UDUnits format) */
+ const char *cln_sng, /* I [sng] Calendar string of time coordinate (UDUnits format, NULL=none) */
+ double *bnd_var,    /* O [frc] Climatology bounds variable values */
+ double *tm_var)    /* O [frc] Time coordinate values */
+{
+
+ nco_cln_typ cln_typ;
+
+ var_sct *var_tmp=NULL_CEWI;
+
+ cln_typ=nco_cln_get_cln_typ(cln_sng);
+
+/* full string to be parsed  "0 seconds since date" */
+ char srt_sng[200];
+ char end_sng[200];
+
+ int idx;
+
+ double dbg_org_srt=0.0;
+ double dbg_org_end=0.0;
+
+
+
+ sprintf(srt_sng, "seconds since %d-%d-01", yr_srt, mth_srt);
+
+ /* move end foward by one month */
+ if(mth_end < 12)
+ {
+   mth_end++;
+ }
+ else if( mth_end==12)
+ {
+
+   mth_end=1;
+   yr_end++;
+
+ }
+
+ sprintf(end_sng,"seconds since %d-%d-01", yr_end, mth_end );
+
+  if( tpd==0)
+  {
+
+    if(tm_var)
+    {
+      tm_var[0]=0.0;
+      if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &tm_var[0]  , (var_sct*)NULL ) !=NCO_NOERR )
+        return NCO_ERR;
+
+    }
+
+    if(bnd_var)
+    {
+      bnd_var[0]=0.0;
+      bnd_var[1]=0.0;
+
+      if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &bnd_var[0], (var_sct*)NULL) !=NCO_NOERR )
+        return NCO_ERR;
+
+      if( nco_cln_clc_dbl_var_dff(end_sng, unt_sng, cln_typ, &bnd_var[1], (var_sct*)NULL) !=NCO_NOERR )
+        return NCO_ERR;
+
+    }
+
+    return NCO_NOERR;
+
+  }
+
+
+
+
+
+  if(tm_var){
+    double step = 24 / tpd;
+
+     var_tmp=(var_sct*)nco_malloc(sizeof(var_sct) );
+     var_dfl_set(var_tmp);
+
+     var_tmp->sz=tpd;
+     var_tmp->type=NC_DOUBLE;
+
+
+     for(idx=0;idx<tpd;idx++)
+        tm_var[idx]= (step/2 + step*idx)* 3600;
+
+
+      cast_void_nctype(NC_DOUBLE,&var_tmp->val.dp);
+      var_tmp->val.dp=tm_var;
+      cast_nctype_void(NC_DOUBLE,&var_tmp->val.dp);
+
+      if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, (double*)NULL, var_tmp   ) !=NCO_NOERR )
+        return NCO_ERR;
+
+      var_tmp->val.vp=NULL;
+
+      var_tmp=nco_var_free(var_tmp);
+
+  }
+
+
+  if(bnd_var){
+    double step = 24 / tpd;
+    /* seconds difference between srt_sng and end_sng */
+    double srt_end_dff;
+
+    if( nco_cln_clc_dbl_var_dff(end_sng, srt_sng, cln_typ, &srt_end_dff, (var_sct*)NULL) !=NCO_NOERR )
+      return NCO_ERR;
+
+    /* start at midnight of previous day (last day of previous month) */
+    srt_end_dff =srt_end_dff - (24.0 - step) * 3600.0;
+
+    var_tmp=(var_sct*)nco_malloc(sizeof(var_sct) );
+    var_dfl_set(var_tmp);
+
+    var_tmp->sz=tpd*2;
+    var_tmp->type=NC_DOUBLE;
+
+
+    for(idx=0;idx<tpd;idx++) {
+      bnd_var[2 * idx] = (step * idx) * 3600;
+      bnd_var[2 * idx + 1] = bnd_var[2*idx]+srt_end_dff;
+    }
+
+    cast_void_nctype(NC_DOUBLE,&var_tmp->val.dp);
+    var_tmp->val.dp=bnd_var;
+    cast_nctype_void(NC_DOUBLE,&var_tmp->val.dp);
+
+    if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, (double*)NULL, var_tmp   ) !=NCO_NOERR )
+      return NCO_ERR;
+
+
+    var_tmp->val.vp=NULL;
+
+    var_tmp=nco_var_free(var_tmp);
+
+
+
+  }
+
+
+
+  return NCO_NOERR;
+
+}
+
+
+
+
 #ifndef ENABLE_UDUNITS
 /* Stub functions to compile without UDUNITS2 */
 
