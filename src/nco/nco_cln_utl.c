@@ -901,7 +901,7 @@ double *og_val)         /* O [dbl] output value */
   }else rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);
 
   /* Copy over iff successful */ 
-  if(rcd==NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s: report unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln, val_dbl);  
+  if(rcd == NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s: report unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln, val_dbl);  
  
   return rcd;        
 } /* !nco_cln_clc_dbl_org() */
@@ -1027,10 +1027,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
     var=nco_var_cnf_typ(var_typ_org, var);
   } /* !var */
 
-
-
   return NCO_NOERR;
-
 } /* !nco_cln_clc_tm() */
 
 int /* [rcd] Successful conversion returns NCO_NOERR */
@@ -1196,7 +1193,6 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
   lgb_sng[0]='\0'; /* CEWI */
 
   return NCO_NOERR;
-
 } /* !nco_cln_sng_rbs() */
 
 int
@@ -1205,8 +1201,7 @@ nco_cln_var_prs
  nco_cln_typ lmt_cln,
  int ifmt,
  var_sct *var,
- var_sct *var_ret
-)
+ var_sct *var_ret)
 {
   size_t sz;
   size_t idx;
@@ -1214,9 +1209,6 @@ nco_cln_var_prs
 
   double resolution;
   tm_cln_sct tm;
-
-
-
   /* base units for udunits */
   const char *bs_sng="seconds since 2001-01-01";
   const char *fnc_nm="nco_cln_var_prs";
@@ -1230,22 +1222,16 @@ nco_cln_var_prs
   if(nco_dbg_lvl_get() >= nco_dbg_crr)
      (void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,bs_sng,lmt_cln);
 
-  /* rebase to seconds since blah-blah */
-  if(nco_cln_clc_dbl_var_dff(fl_unt_sng,bs_sng,lmt_cln, (double*)NULL, var ) != NCO_NOERR )
-     return NCO_ERR;
-
-
+  /* Rebase to seconds since blah-blah */
+  if(nco_cln_clc_dbl_var_dff(fl_unt_sng,bs_sng,lmt_cln, (double*)NULL, var ) != NCO_NOERR) return NCO_ERR;
 
   cast_void_nctype(var->type,&var->val);
 
-  if(var_ret->type !=NC_STRING)
-      nco_var_cnf_typ(NC_STRING, var_ret);
+  if(var_ret->type !=NC_STRING) nco_var_cnf_typ(NC_STRING, var_ret);
 
-  if( var_ret->val.vp)
-      var_ret->val.vp=(void*)nco_free(var_ret->val.vp);
+  if(var_ret->val.vp) var_ret->val.vp=(void*)nco_free(var_ret->val.vp);
 
   var_ret->val.vp=nco_malloc( sizeof(nco_string) *var_ret->sz);
-
 
   var_ret->has_mss_val=True;
   var_ret->mss_val.vp=nco_malloc(sizeof(nco_string*));
@@ -1253,73 +1239,52 @@ nco_cln_var_prs
   cast_void_nctype(var_ret->type,&var_ret->val);
 
   var_ret->mss_val.sngp[0]=strdup(empty_sng);
-
-
   sz=var->sz;
-
   tm.sc_cln=lmt_cln;
-
-
   // (void)fprintf(stderr,"%s: %s reports var \"%s\" has missing value %d\n",nco_prg_nm_get(),fnc_nm,var->nm,var->has_mss_val);
 
-
-
-  if(var->type == NC_DOUBLE) {
+  if(var->type == NC_DOUBLE){
     double mss_val_dbl;
-    if(var->has_mss_val)
-       mss_val_dbl=var->mss_val.dp[0];
-
-    for (idx = 0; idx < sz; idx++) {
-
-
-      if(var->has_mss_val && var->val.dp[idx]==mss_val_dbl) {
+    if(var->has_mss_val) mss_val_dbl=var->mss_val.dp[0];
+    for (idx = 0; idx < sz; idx++){
+      if(var->has_mss_val && var->val.dp[idx]==mss_val_dbl){
         var_ret->val.sngp[idx] = strdup(empty_sng);
         continue;
       }
 
       tm.value = var->val.dp[idx];
-
       if (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)
         nco_cln_pop_tm(&tm);
       else
         (void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
 
       var_ret->val.sngp[idx] = nco_cln_fmt_dt(&tm, ifmt);
-
     }
-  }
-  else if(var->type==NC_FLOAT){
+  }else if(var->type==NC_FLOAT){
 
     float mss_val_flt;
-    if(var->has_mss_val)
-       mss_val_flt=var->mss_val.fp[0];
+    if(var->has_mss_val) mss_val_flt=var->mss_val.fp[0];
 
     for (idx = 0; idx < sz; idx++) {
-
       if(var->has_mss_val && var->val.fp[idx]==mss_val_flt ){
         var_ret->val.sngp[idx] = strdup(empty_sng);
         continue;
       }
 
+      tm.value=(double)(var->val.fp[idx]);
 
-      tm.value = (double) (var->val.fp[idx]);
-
-      if (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)
+      if(lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)
         nco_cln_pop_tm(&tm);
       else
-        (void) ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
-
+        (void)ut_decode_time(tm.value, &tm.year, &tm.month, &tm.day, &tm.hour, &tm.min, &tm.sec, &resolution);
       var_ret->val.sngp[idx] = nco_cln_fmt_dt(&tm, ifmt);
-
     }
-
   }
-
 
   cast_nctype_void(var->type,&var->val);
   cast_nctype_void(var_ret->type,&var->val);
 
-    return NCO_NOERR;
+  return NCO_NOERR;
 
 } /* !nco_cln_var_prs() */
 

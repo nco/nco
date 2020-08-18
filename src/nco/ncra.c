@@ -1340,7 +1340,7 @@ main(int argc,char **argv)
         rec_rmn_prv_ssc=lmt_rec[idx_rec]->rec_rmn_prv_ssc; /* Local copy may be decremented later */
         idx_rec_crr_in= (rec_rmn_prv_ssc > 0L) ? 0L : lmt_rec[idx_rec]->srt;
 
-	if(FLG_ILV && nco_dbg_lvl >= nco_dbg_std) (void)fprintf(fp_stdout,"%s: DEBUG After lmt_evl() for fl_idx=%d ILV=%s MRO=%s, MSO=%s, srt=%ld, end=%ld, srd=%ld, ssc=%ld, ilv=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, idx_rec_out=%ld\n",nco_prg_nm_get(),fl_idx,FLG_ILV ? "YES" : "NO",FLG_MRO ? "YES" : "NO",FLG_MSO ? "YES" : "NO",lmt_rec[idx_rec]->srt,lmt_rec[idx_rec]->end,lmt_rec[idx_rec]->srd,lmt_rec[idx_rec]->ssc,lmt_rec[idx_rec]->ilv,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,idx_rec_out[idx_rec]);
+	if(FLG_ILV && nco_dbg_lvl >= nco_dbg_fl) (void)fprintf(fp_stdout,"%s: DEBUG After lmt_evl() for fl_idx=%d ILV=%s MRO=%s, MSO=%s, srt=%ld, end=%ld, srd=%ld, ssc=%ld, ilv=%ld, rec_idx=%ld, rec_rmn_prv_ssc=%ld, rec_rmn_prv_ilv=%ld, idx_rec_out=%ld\n",nco_prg_nm_get(),fl_idx,FLG_ILV ? "YES" : "NO",FLG_MRO ? "YES" : "NO",FLG_MSO ? "YES" : "NO",lmt_rec[idx_rec]->srt,lmt_rec[idx_rec]->end,lmt_rec[idx_rec]->srd,lmt_rec[idx_rec]->ssc,lmt_rec[idx_rec]->ilv,idx_rec_crr_in,rec_rmn_prv_ssc,rec_rmn_prv_ilv,idx_rec_out[idx_rec]);
 
 	/* Sub-cycles not allowed to cross file boundaries in interleave mode */
         if(FLG_ILV && lmt_rec[0]->ilv > 1 && rec_rmn_prv_ilv > 0L){
@@ -2037,6 +2037,7 @@ main(int argc,char **argv)
   if(flg_cb){
     if(clm_nfo_sng) rcd=nco_clm_nfo_get(clm_nfo_sng,cb);
     //rcd=nco_clm_nfo_to_tm_bnds(yr_srt,yr_end,mth_srt,mth_end,tpd,unt_sng,cln_sng,bnd_var,tm_var);
+    if(rcd != NCO_NOERR) abort();
   } /* !flg_cb */
 
   if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
@@ -2074,9 +2075,6 @@ main(int argc,char **argv)
     if(in_id_arr) in_id_arr=(int *)nco_free(in_id_arr);
     if(wgt_arr) wgt_arr=(double *)nco_free(wgt_arr);
     if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
-    /* Free climatology bounds */
-    if(cb->unt_val) cb->unt_val=(char *)nco_free(cb->unt_val);
-    if(cb->cln_val) cb->cln_val=(char *)nco_free(cb->cln_val);
     /* Free lists of strings */
     if(fl_lst_in && !fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);
@@ -2105,7 +2103,10 @@ main(int argc,char **argv)
     if(wgt) wgt=(var_sct *)nco_var_free(wgt);
     if(wgt_out) wgt_out=(var_sct *)nco_var_free(wgt_out);
     if(wgt_avg) wgt_avg=(var_sct *)nco_var_free(wgt_avg);
+    /* Free climatology bounds */
     if(cb){
+      if(cb->unt_val) cb->unt_val=(char *)nco_free(cb->unt_val);
+      if(cb->cln_val) cb->cln_val=(char *)nco_free(cb->cln_val);
       if(cb->tm_bnd_nm) cb->tm_bnd_nm=(char *)nco_free(cb->tm_bnd_nm);
       if(cb->tm_crd_nm) cb->tm_crd_nm=(char *)nco_free(cb->tm_crd_nm);
       if(cb->clm_bnd_nm) cb->clm_bnd_nm=(char *)nco_free(cb->clm_bnd_nm);

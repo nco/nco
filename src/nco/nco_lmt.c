@@ -719,7 +719,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     } /* end ncra */
     if(lmt.ilv > 1L){
       lmt.flg_ilv=True;
-      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: quark1 lmt.ilv_sng = %s, lmt.ilv = %ld, flg_ilv = %s\n",nco_prg_nm_get(),lmt.ilv_sng == NULL ? "NULL" : lmt.ilv_sng,lmt.ilv,lmt.flg_ilv ? "YES" : "NO");
+      if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: quark1 lmt.ilv_sng = %s, lmt.ilv = %ld, flg_ilv = %s\n",nco_prg_nm_get(),lmt.ilv_sng == NULL ? "NULL" : lmt.ilv_sng,lmt.ilv,lmt.flg_ilv ? "YES" : "NO");
     } /* !lmt.ilv */
   } /* !lmt.ilv_sng */
 
@@ -1391,7 +1391,7 @@ no_data_ok: /* end goto */
     assert(lmt.ssc % lmt.ilv == 0L);
   } /* !lmt.flg_ilv */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std && lmt.flg_ilv){
+  if(nco_dbg_lvl_get() >= nco_dbg_fl && lmt.flg_ilv){
     (void)nco_prn_lmt(lmt,min_lmt_typ,FORTRAN_IDX_CNV,flg_no_data_ok,rec_usd_cml,monotonic_direction,rec_dmn_and_mfo,cnt_rmn_ttl,cnt_rmn_crr,rec_skp_vld_prv_dgn);
   } /* end dbg */
 
