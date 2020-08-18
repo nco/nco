@@ -125,6 +125,7 @@ main(int argc,char **argv)
   char **wgt_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
+  char *clm_nfo_sng; /* [sng] Climatology information string */
   char *cnk_arg[NC_MAX_DIMS];
   char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
   char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
@@ -340,7 +341,7 @@ main(int argc,char **argv)
     {"clm_bnd",no_argument,0,0}, /* [sct] Climatology bounds */
     {"cb",no_argument,0,0}, /* [sct] Climatology bounds */
     {"clm2bnd",no_argument,0,0}, /* [sct] Climatology bounds to time-bounds */
-    {"b2t",no_argument,0,0}, /* [flg] Time-bounds to climatology bounds */
+    {"b2t",no_argument,0,0}, /* [flg] Time-bounds to diurnal climatology bounds */
     {"c2b",no_argument,0,0}, /* [sct] Climatology bounds to time-bounds */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
@@ -387,6 +388,7 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
+    {"clm_nfo",required_argument,0,0}, /* [sct] Climatology information */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"cnk_csh",required_argument,0,0}, /* [B] Chunk cache size in bytes */
@@ -553,6 +555,7 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cll_msr") || !strcmp(opt_crr,"cell_measures")) EXTRACT_CLL_MSR=True; /* [flg] Extract cell_measures variables */
       if(!strcmp(opt_crr,"no_cll_msr") || !strcmp(opt_crr,"no_cell_measures")) EXTRACT_CLL_MSR=False; /* [flg] Do not extract cell_measures variables */
+      if(!strcmp(opt_crr,"clm_nfo") || !strcmp(opt_crr,"climatology_information")) clm_nfo_sng=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"frm_trm") || !strcmp(opt_crr,"formula_terms")) EXTRACT_FRM_TRM=True; /* [flg] Extract formula_terms variables */
       if(!strcmp(opt_crr,"no_frm_trm") || !strcmp(opt_crr,"no_formula_terms")) EXTRACT_FRM_TRM=False; /* [flg] Do not extract formula_terms variables */
       if(!strcmp(opt_crr,"cll_mth") || !strcmp(opt_crr,"cell_methods")) flg_cll_mth=True; /* [flg] Add/modify cell_methods attributes */
@@ -957,6 +960,8 @@ main(int argc,char **argv)
     cb->type=NC_NAT; /* [enm] Time coordinate type */
     cb->val[0]=NC_MIN_DOUBLE;
     cb->val[1]=NC_MIN_DOUBLE;
+
+    if(clm_nfo_sng) rcd=nco_clm_nfo_get(clm_nfo_sng,cb);
 
     if((rcd=nco_inq_varid_flg(in_id,"time",&cb->tm_crd_id_in)) == NC_NOERR) cb->tm_crd_nm=strdup("time");
     else if((rcd=nco_inq_varid_flg(in_id,"Time",&cb->tm_crd_id_in)) == NC_NOERR) cb->tm_crd_nm=strdup("Time");
@@ -2029,6 +2034,9 @@ main(int argc,char **argv)
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     } /* end loop over idx */
   } /* endif ncra || nces */
+
+  /* Compute climatological time and bounds arrays */
+  //rcd=nco_clm_nfo_to_tm_bnds(yr_srt,yr_end,mth_srt,mth_end,tpd,unt_sng,cln_sng,bnd_var,tm_var);
 
   if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
 

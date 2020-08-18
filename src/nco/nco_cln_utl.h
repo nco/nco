@@ -72,7 +72,7 @@ extern "C" {
     double sec;
     double value;
   } tm_cln_sct;
-  
+
   int /* O [nbr] Number of days to end of month */
   nco_nd2endm /* [fnc] Compute number of days to end of month */
   (const int mth, /* I [mth] Month */
@@ -173,7 +173,6 @@ extern "C" {
   (const char *unt_sng, /* I [ptr] units attribute string */  
    tm_cln_sct *tm_in); /*  O [sct] struct to be populated */
 
-
   int /* O [rcd] Return code */
   nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bounds arrays */
   (int yr_srt,   /* I [yr] Year at climo start */
@@ -185,7 +184,6 @@ extern "C" {
    const char *cln_sng, /* I [sng] Calendar string of time coordinate (UDUnits format, NULL=none) */
    double *bnd_var,    /* O [frc] Climatology bounds variable values */
    double *tm_var);    /* O [frc] Time coordinate values */
-
 
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H
@@ -208,7 +206,6 @@ extern "C" {
    nco_cln_typ lmt_cln,  /* [enm] Calendar type of coordinate var */ 
    double *rgn_val, /* I/O [ptr] time diff in units based on fl_bs_sng */ 
    var_sct *var);   /* I/O [ptr]  */ 
-  
 
 # endif /* !HAVE_UDUNITS2_H */
 #endif /* !ENABLE_UDUNITS */

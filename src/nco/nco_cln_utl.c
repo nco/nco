@@ -8,8 +8,6 @@
    3-Clause BSD License with exceptions described in the LICENSE file */
 
 #include "nco_cln_utl.h" /* Calendar utilities */
-#include "libnco.h"
-#include "nco.h"
 
 /* Arrays to hold calendar type units */
 /* Format: year, month, day, hour, minute, second, origin, offset */
@@ -137,7 +135,7 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
   } /* end if */
   
   return newdate_YYMMDD;
-} /* end nco_newdate() */
+} /* !nco_newdate() */
 
 tm_typ /* O [enm] Units type */
 nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
@@ -164,8 +162,7 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
   
   if(lcl_sng) lcl_sng=(char *)nco_free(lcl_sng);
   return rcd_typ;
-} /* end nco_cln_get_tm_typ() */
-
+} /* !nco_cln_get_tm_typ() */
 
 char *                 /* O [sng] contains newly malloced output string */
 nco_cln_fmt_dt         /*   [fnc] format an output string */
@@ -239,7 +236,7 @@ nco_cln_get_cln_typ /* [fnc] Determine calendar type or cln_nil if not found */
   lcl_sng=(char *)nco_free(lcl_sng);
   
   return rcd_typ;
-} /* end nco_cln_get_cln_typ() */
+} /* !nco_cln_get_cln_typ() */
 
 int /* O [nbr] Number of days */
 nco_cln_days_in_year_prior_to_given_month /* [fnc] Number of days in year prior to month */
@@ -272,8 +269,7 @@ nco_cln_days_in_year_prior_to_given_month /* [fnc] Number of days in year prior 
   for(idx=0;idx<mth_idx;idx++) idays+=days[idx];
   
   return idays;
-} /* end nco_cln_days_in_year_prior_to_given_month() */
-
+} /* !nco_cln_days_in_year_prior_to_given_month() */
 
 void
 nco_cln_pop_tm         /* [fnc] Calculate other members  in cln_sct from value*/
@@ -287,8 +283,7 @@ nco_cln_pop_tm         /* [fnc] Calculate other members  in cln_sct from value*/
   double m_value;
   double *data=NULL_CEWI;
 
-  switch(cln_sct->sc_cln)
-  {
+  switch(cln_sct->sc_cln){
     case cln_360:
       data=DATA_360;
       days_per_month=DAYS_PER_MONTH_360;
@@ -311,10 +306,7 @@ nco_cln_pop_tm         /* [fnc] Calculate other members  in cln_sct from value*/
       break;
   } /* end switch */
 
-
   /* take account of origin */
-
-
   /* get integer value and fraction part - nb add origin */
   fr_value=modf(cln_sct->value+(double)data[6], &m_value);
 
@@ -335,20 +327,15 @@ nco_cln_pop_tm         /* [fnc] Calculate other members  in cln_sct from value*/
   days+=1;
   cln_sct->month=1;
 
-  for(idx=0 ; idx<12 ;idx++  )
-  {
-    if( days - days_per_month[idx] <=0 )
-      break;
+  for(idx=0;idx<12;idx++){
+    if(days - days_per_month[idx] <= 0) break;
 
-    days -= days_per_month[idx];
-      ++cln_sct->month;
+    days-=days_per_month[idx];
+    ++cln_sct->month;
   }
   cln_sct->day=days;
-
-
   return;
-} /* end nco_cln_pop_tm() */
-
+} /* !nco_cln_pop_tm() */
 
 void
 nco_cln_pop_val /* [fnc] Calculate value in cln_sct */ 
@@ -399,10 +386,7 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
   } /* end switch */
   
   return;
-} /* end nco_cln_pop_val() */
-
-
-
+} /* !nco_cln_pop_val() */
 
 double /* O [dbl] time in (base) seconds of tm_typ */
 nco_cln_val_tm_typ
@@ -453,8 +437,7 @@ nco_cln_val_tm_typ
   } /* end switch */ 
   
   return scl;
-} /* end nco_cln_typ_val() */
-
+} /* !nco_cln_typ_val() */
 
 void
 nco_cln_prn_tm         /* [fnc] print tm sct*/
@@ -477,8 +460,7 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
   /* Does string contain date keyword? */
   if(strcasestr(unit_sng," from ") || strcasestr(unit_sng," since ") || strcasestr(unit_sng," after ")) return True; else return False;
 
-} /* end nco_cln_chk_tm() */
-
+} /* !nco_cln_chk_tm() */
 
 int /* O [rcd] Return code */
 nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bounds arrays */
@@ -492,130 +474,111 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
  double *bnd_var,    /* O [frc] Climatology bounds variable values */
  double *tm_var)    /* O [frc] Time coordinate values */
 {
-
   char srt_sng[200];
- char end_sng[200];
- char md_sng[200];
-
- int idx;
- double step;
-
- nco_cln_typ cln_typ;
- var_sct *var_tmp=NULL_CEWI;
-
- step=24.0/tpd;
-
- cln_typ=nco_cln_get_cln_typ(cln_sng);
-
- if(cln_typ==cln_nil)
-   return NCO_ERR;
-
- sprintf(srt_sng, "seconds since %d-%d-01", yr_srt, mth_srt);
-
- /* move end foward by one month */
- if(++mth_end ==13)
- {
-   mth_end=1;
+  char end_sng[200];
+  char md_sng[200];
+  
+  int idx;
+  double step;
+  
+  nco_cln_typ cln_typ;
+  var_sct *var_tmp=NULL_CEWI;
+  
+  step=24.0/tpd;
+  
+  cln_typ=nco_cln_get_cln_typ(cln_sng);
+  
+  if(cln_typ == cln_nil)
+    return NCO_ERR;
+  
+  sprintf(srt_sng, "seconds since %d-%d-01",yr_srt,mth_srt);
+  
+  /* move end foward by one month */
+  if(++mth_end ==13){
+    mth_end=1;
    yr_end++;
- }
+  }
 
- sprintf(end_sng,"seconds since %d-%d-01", yr_end, mth_end );
-
- if( tpd==0)
-  {
-
-    if(tm_var)
-    {
+  sprintf(end_sng,"seconds since %d-%d-01",yr_end,mth_end);
+  
+  if(tpd == 0){
+    
+    if(tm_var){
       int days;
       int mth_md_srt=mth_srt;
       int yr_md_srt=yr_srt;
-
+      
       double dbl_dff_org=0.0;
-
+      
       /* move forward by one month */
-      if(++mth_md_srt==13)
-      {
+      if(++mth_md_srt == 13){
         mth_md_srt=1;
         yr_md_srt++;
-
       }
-
+      
       /* find day in middle of month - round to midnight */
-      sprintf(md_sng,"seconds since %d-%d-01", yr_md_srt, mth_md_srt );
-
+      sprintf(md_sng,"seconds since %d-%d-01", yr_md_srt, mth_md_srt);
+      
       /* find number of seconds between start and end of month */
-      if( nco_cln_clc_dbl_var_dff(md_sng, srt_sng, cln_typ, &dbl_dff_org  , (var_sct*)NULL ) !=NCO_NOERR )
+      if(nco_cln_clc_dbl_var_dff(md_sng,srt_sng,cln_typ,&dbl_dff_org,(var_sct*)NULL) != NCO_NOERR)
         return NCO_ERR;
-
-      /* integer arithmetic */
-      days=dbl_dff_org  / 2 /  (24*3600);
-
-
+      
+      /* NB: integer arithmetic */
+      days=dbl_dff_org/2/(24*3600);
+      
       tm_var[0]=days*24.0*3600.0;
-      if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &tm_var[0]  , (var_sct*)NULL ) !=NCO_NOERR )
+      if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,&tm_var[0],(var_sct*)NULL) != NCO_NOERR)
         return NCO_ERR;
+    } /* !tm_var */
 
-    }
-
-    if(bnd_var)
-    {
+    if(bnd_var){
       bnd_var[0]=0.0;
       bnd_var[1]=0.0;
 
-      if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &bnd_var[0], (var_sct*)NULL) !=NCO_NOERR )
+      if(nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &bnd_var[0], (var_sct*)NULL) != NCO_NOERR)
         return NCO_ERR;
 
-      if( nco_cln_clc_dbl_var_dff(end_sng, unt_sng, cln_typ, &bnd_var[1], (var_sct*)NULL) !=NCO_NOERR )
+      if(nco_cln_clc_dbl_var_dff(end_sng, unt_sng, cln_typ, &bnd_var[1], (var_sct*)NULL) != NCO_NOERR)
         return NCO_ERR;
-
-    }
+    } /* !bnd_var */
 
     return NCO_NOERR;
+  } /* !tpd */
 
-  }
-
-
-  var_tmp=(var_sct*)nco_malloc(sizeof(var_sct) );
+  var_tmp=(var_sct*)nco_malloc(sizeof(var_sct));
   var_dfl_set(var_tmp);
   var_tmp->type=NC_DOUBLE;
-
 
   if(tm_var){
 
      var_tmp->sz=tpd;
 
-
      for(idx=0;idx<tpd;idx++)
-        tm_var[idx]= (step/2 + step*idx)* 3600;
-
+       tm_var[idx]=(step/2 + step*idx)*3600;
 
      cast_void_nctype(NC_DOUBLE,&var_tmp->val);
      var_tmp->val.dp=tm_var;
      cast_nctype_void(NC_DOUBLE,&var_tmp->val);
 
-     if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, (double*)NULL, var_tmp   ) !=NCO_NOERR )
-        return NCO_ERR;
+     if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,(double *)NULL,var_tmp) != NCO_NOERR)
+       return NCO_ERR;
 
      var_tmp->val.vp=NULL;
+  } /* !tm_var */
 
-  }
-
-
-  if(bnd_var)
-  {
+  if(bnd_var){
     /* seconds difference between srt_sng and end_sng */
     double srt_end_dff;
 
-    if( nco_cln_clc_dbl_var_dff(end_sng, srt_sng, cln_typ, &srt_end_dff, (var_sct*)NULL) !=NCO_NOERR )
+    if(nco_cln_clc_dbl_var_dff(end_sng,srt_sng,cln_typ,&srt_end_dff,(var_sct*)NULL) != NCO_NOERR)
       return NCO_ERR;
 
     /* start at midnight of previous day (last day of previous month) */
-    srt_end_dff =srt_end_dff - (24.0 - step) * 3600.0;
+    srt_end_dff=srt_end_dff - (24.0-step)*3600.0;
 
     var_tmp->sz=tpd*2;
 
-
-    for(idx=0;idx<tpd;idx++) {
+    for(idx=0;idx<tpd;idx++){
       bnd_var[2 * idx] = (step * idx) * 3600;
       bnd_var[2 * idx + 1] = bnd_var[2*idx]+srt_end_dff;
     }
@@ -624,25 +587,16 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
     var_tmp->val.dp=bnd_var;
     cast_nctype_void(NC_DOUBLE,&var_tmp->val);
 
-    if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, (double*)NULL, var_tmp   ) !=NCO_NOERR )
+    if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,(double *)NULL,var_tmp) != NCO_NOERR)
       return NCO_ERR;
 
-
     var_tmp->val.vp=NULL;
+  } /* !bnd_var */
 
-
-  }
-
-  if(var_tmp)
-    var_tmp=nco_var_free(var_tmp);
-
+  if(var_tmp) var_tmp=nco_var_free(var_tmp);
 
   return NCO_NOERR;
-
-}
-
-
-
+} /* !nco_clm_nfo_to_tm_bnds() */
 
 #ifndef ENABLE_UDUNITS
 /* Stub functions to compile without UDUNITS2 */
@@ -658,7 +612,7 @@ var_sct *var)           /* I/O [var_sct] var values modified */
   (void)fprintf(stderr,"%s: WARNING NCO was built without UDUnits. NCO is therefore unable to convert values from \"%s\" to \"%s\". See http://nco.sf.net/nco.html#rbs for more information.\n%s: HINT Re-build or re-install NCO enabled with UDUnits.\n",nco_prg_nm_get(),fl_unt_sng,fl_bs_sng,nco_prg_nm_get());
 
   return NCO_NOERR;
-} /* end nco_cln_clc_dbl_var_dff() */
+} /* !nco_cln_clc_dbl_var_dff() */
 
 int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_org(   /* [fnc] difference between two co-ordinate units */
@@ -682,7 +636,7 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
 {
   lgb_sng[0]='\0'; /* CEWI */
   return NCO_NOERR;
-} /* end nco_cln_sng_rbs() */
+} /* !nco_cln_sng_rbs() */
 
 int
 nco_cln_var_prs
@@ -1077,7 +1031,7 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 
   return NCO_NOERR;
 
-} /* end nco_cln_clc_tm() */
+} /* !nco_cln_clc_tm() */
 
 int /* [rcd] Successful conversion returns NCO_NOERR */
 nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
@@ -1243,8 +1197,7 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
 
   return NCO_NOERR;
 
-} /* end nco_cln_sng_rbs() */
-
+} /* !nco_cln_sng_rbs() */
 
 int
 nco_cln_var_prs
@@ -1368,11 +1321,7 @@ nco_cln_var_prs
 
     return NCO_NOERR;
 
-} /* end nco_cln_var_prs() */
-
-
-
-
+} /* !nco_cln_var_prs() */
 
 # endif /* HAVE_UDUNITS2_H */
 #endif /* ENABLE_UDUNITS */

@@ -1134,33 +1134,6 @@ typedef enum nco_xtr_typ_enm
     nco_bool crd; /* [flg] CF coordinates information is complete */
   } cf_crd_sct; /* end CF coordinates structure */
 
-  /* Climatology bounds structure (20160503: Used only in ncra.c for climos) */
-  typedef struct{ /* clm_bnd_sct */
-    char *bnd_dmn_nm; /* [sng] Bounds dimension name name */
-    char *clm_bnd_nm; /* [sng] Climatology bounds variable name (to create) */
-    char *tm_bnd_nm; /* [sng] Time bounds variable name (to delete) */
-    char *tm_crd_nm; /* [sng] Name of time coordinate variable */
-    char *cln_val; /* [sng] Bounds calendar value */
-    char *unt_val; /* [sng] Bounds units value */
-    double val[2]; /* [frc] Climatology bounds variable attribute values */
-    int clm_bnd_id_in; /* [id] Variable ID for clm_bnds in input */
-    int clm_bnd_id_out; /* [id] Variable ID for clm_bnds in output */
-    int tm_bnd_id_in; /* [id] Variable ID for tm_bnds in input */
-    int tm_bnd_id_out; /* [id] Variable ID for tm_bnds in output */
-    int tm_crd_id_in; /* [id] Variable ID for tm_crd in input */
-    int tm_crd_id_out; /* [id] Variable ID for tm_crd in output */
-    int dmn_ids[2]; /* [idx] Dimension IDs for new bounds variable */
-    long dmn_srt_srt[2]; /* [idx] Start indices for retrieving start bounds */
-    long dmn_srt_end[2]; /* [idx] Start indices for retrieving end bounds */
-    nc_type type; /* [enm] Type of (time and) climatology bounds variable(s) */
-    nco_bool bnd2tpdclm; /* [flg] Convert time bounds to climatology bounds with diurnal component */
-    nco_bool bnd2clm; /* [flg] Convert time bounds to climatology bounds */
-    nco_bool clm2bnd; /* [flg] Convert climatology bounds to time bounds */
-    nco_bool clm2clm; /* [flg] Convert climatology bounds to climatology bounds */
-    nco_bool clm_bnd_in; /* [flg] Climatology bounds appear in input */
-    nco_bool tm_bnd_in; /* [flg] Time bounds appear in input */
-  } clm_bnd_sct; /* end climatology bounds structure */
-
   /* Terraref structure */
   typedef struct{ /* trr_sct */
     // File names specifiable with individual command line switches

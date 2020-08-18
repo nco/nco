@@ -1,3 +1,7 @@
+2020-08-18  Charlie Zender  <zender@uci.edu>
+
+	* Merge Henry's nco_clm_nfo_to_tm_bnds() and write nco_clm_nfo_get()
+
 2020-08-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha13 release procedure:

@@ -9,6 +9,64 @@
 
 #include "nco_cnv_csm.h" /* CCM/CCSM/CF conventions */
 
+int /* O [rcd] Return code */
+nco_clm_nfo_get /* [fnc] Parse clm_nfo arguments and merge into structure */
+(const char *clm_nfo_sng, /* I [sng] Climatology information string */
+ clm_bnd_sct *cb) /* I/O [sct] Climatology bounds structure */
+{
+  char **arg_lst;
+
+  char *msg_sng=NULL_CEWI; /* [sng] Error message */
+
+  const char dlm_sng[]=",";
+
+  int arg_nbr;
+
+  nco_bool NCO_SYNTAX_ERROR=False; /* [flg] Syntax error in hyperslab specification */
+
+  /* Purpose: Parse user-supplied climatology bounds arguments from clm_nfo_sng and 
+     merge results into climatolgoy bounds (cb) structure */
+  arg_lst=nco_lst_prs_2D(clm_nfo_sng,dlm_sng,&arg_nbr);
+  
+  /* Check syntax */
+  if(arg_nbr < 2){ /* Need more than just dimension name */
+    msg_sng=strdup("Climatology information must specify at least six arguments (the first argument is the start year, the second is the end year, etc.)");
+    NCO_SYNTAX_ERROR=True;
+  }else if(arg_nbr > 6){ /* Too much information */
+    msg_sng=strdup("Too many (more than 6) arguments in climatology information string");
+    NCO_SYNTAX_ERROR=True;
+  }else if(arg_lst[0] == NULL){ /* Start year not specified */
+    msg_sng=strdup("Start year not specified");
+    NCO_SYNTAX_ERROR=True;
+  }else if(arg_nbr == 2 && arg_lst[1] == NULL){ /* End year not specified */
+    msg_sng=strdup("End year not specified");
+    NCO_SYNTAX_ERROR=True;
+  }else if(arg_nbr == 3 && arg_lst[2] == NULL){ /* Start month not specified */
+    msg_sng=strdup("Start month not specified");
+    NCO_SYNTAX_ERROR=True;
+  }else if(arg_nbr == 4 && arg_lst[3] == NULL){ /* End month not specified */
+    msg_sng=strdup("End month not specified");
+    NCO_SYNTAX_ERROR=True;
+  }else if(arg_nbr == 5 && arg_lst[4] == NULL){ /* Timesteps per day not specified */
+    msg_sng=strdup("Timesteps per day not specified");
+    NCO_SYNTAX_ERROR=True;
+  }else if(arg_nbr == 6 && arg_lst[5] == NULL){ /* Units string not specified */
+    msg_sng=strdup("Units string not specified");
+    NCO_SYNTAX_ERROR=True;
+  }else if(arg_nbr == 7 && arg_lst[6] == NULL){ /* Calendar string not specified */
+    msg_sng=strdup("Calendar string not specified");
+    NCO_SYNTAX_ERROR=True;
+  } /* end else */
+  
+  if(NCO_SYNTAX_ERROR){
+    (void)fprintf(stdout,"%s: ERROR parsing climatolgy bounds information from \"%s\": %s\n%s: HINT Conform request to hyperslab documentation at http://nco.sf.net/nco.html#hyp\n",nco_prg_nm_get(),clm_nfo_sng,msg_sng,nco_prg_nm_get());
+    msg_sng=(char *)nco_free(msg_sng);
+    nco_exit(EXIT_FAILURE);
+  } /* !NCO_SYNTAX_ERROR */
+
+  return NCO_NOERR;
+} /* !nco_clm_nfo_get() */
+
 cnv_sct * /* O [sct] Convention structure */
 nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file */
 (const int nc_id) /* I [id] netCDF file ID */
@@ -627,7 +685,6 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
   if(dmn_mch) dmn_mch=(int *)nco_free(dmn_mch);
 
   return NC_NOERR;
-
 } /* end nco_cnv_cf_cll_mth_add() */
 
 int
