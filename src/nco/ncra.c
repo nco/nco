@@ -2037,14 +2037,16 @@ main(int argc,char **argv)
 
   /* Compute climatological time and bounds arrays */
   if(flg_cb && clm_nfo_sng){
+    rcd=nco_clm_nfo_get(clm_nfo_sng,cb);
     cb->tm_val=(double *)nco_malloc(max_int(1,cb->tpd)*sizeof(double)); /* [frc] Time coordinate variable values */
     cb->bnd_val=(double *)nco_malloc(max_int(1,cb->tpd)*2*sizeof(double)); /* [frc] Time (or climatology) bounds variable values */
-    rcd=nco_clm_nfo_get(clm_nfo_sng,cb);
     rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
       //if(rcd != NCO_NOERR) abort();
   } /* !flg_cb && !clm_nfo_sng */
 
-  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
+  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)){
+    if(cb->bnd2tpdclm && clm_nfo_sng) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->bnd_val,(nc_type)NC_DOUBLE); else rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
+  } /* !flg_cb */
 
   if(flg_cb && (cb->bnd2clm || cb->bnd2tpdclm || cb->clm2bnd)){
     /* Rename time-bounds as climatology bounds, or visa-versa
