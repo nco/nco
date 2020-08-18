@@ -1957,6 +1957,14 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 
 
 
+inline double hav(double x1, double x2)
+{
+  double h=sin((x1-x2)/2.0);
+
+  return h*h;
+
+}
+
 double KDdist(kd_box Xq, KDElem *elem)
 {
     double hyp;
@@ -1989,7 +1997,10 @@ double KDdist(kd_box Xq, KDElem *elem)
         y2=Xq[KD_TOP]  * M_PI/180.0;
 
         /* orthodromic distance - classic formula */
-        hyp=acos( sin(y1)*sin(y2) +  cos(y1)*cos(y2)*cos( x1-x2 )  );
+        //hyp=acos( sin(y1)*sin(y2) +  cos(y1)*cos(y2)*cos( x1-x2 )  );
+
+        /* haversine formula */
+        hyp = 2.0* asin( sqrt(  hav(y1,y2)  + cos(y1)*cos(y2)* hav(x1,x2) )  );
 
 
 
