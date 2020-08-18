@@ -175,7 +175,7 @@ extern "C" {
 
 
   int /* O [rcd] Return code */
-  nco_cln_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bounds arrays */
+  nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bounds arrays */
   (int yr_srt,   /* I [yr] Year at climo start */
    int yr_end,    /* I [yr] Year at climo start */
    int mth_srt,   /* I [mth] Month at climo start [1..12] format */
