@@ -6126,7 +6126,7 @@ var_sct *udunits_cls::clbtime_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
 {
 
   int idx;
-  int md_sz=8;
+  const int md_sz=8;
   int iret=0;
 
   std::vector<std::string> str_vtr;
