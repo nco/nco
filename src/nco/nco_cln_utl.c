@@ -479,6 +479,171 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
 
 } /* end nco_cln_chk_tm() */
 
+
+int /* O [rcd] Return code */
+nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bounds arrays */
+(int yr_srt,   /* I [yr] Year at climo start */
+ int yr_end,    /* I [yr] Year at climo start */
+ int mth_srt,   /* I [mth] Month at climo start [1..12] format */
+ int mth_end,   /* I [mth] Month at climo end [1..12] format */
+ int tpd,       /* I [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...]*/
+ const char *unt_sng, /* I [sng] Units of time coordinate (UDUnits format) */
+ const char *cln_sng, /* I [sng] Calendar string of time coordinate (UDUnits format, NULL=none) */
+ double *bnd_var,    /* O [frc] Climatology bounds variable values */
+ double *tm_var)    /* O [frc] Time coordinate values */
+{
+
+  char srt_sng[200];
+ char end_sng[200];
+ char md_sng[200];
+
+ int idx;
+ double step;
+
+ nco_cln_typ cln_typ;
+ var_sct *var_tmp=NULL_CEWI;
+
+ step=24.0/tpd;
+
+ cln_typ=nco_cln_get_cln_typ(cln_sng);
+
+ if(cln_typ==cln_nil)
+   return NCO_ERR;
+
+ sprintf(srt_sng, "seconds since %d-%d-01", yr_srt, mth_srt);
+
+ /* move end foward by one month */
+ if(++mth_end ==13)
+ {
+   mth_end=1;
+   yr_end++;
+ }
+
+ sprintf(end_sng,"seconds since %d-%d-01", yr_end, mth_end );
+
+ if( tpd==0)
+  {
+
+    if(tm_var)
+    {
+      int days;
+      int mth_md_srt=mth_srt;
+      int yr_md_srt=yr_srt;
+
+      double dbl_dff_org=0.0;
+
+      /* move forward by one month */
+      if(++mth_md_srt==13)
+      {
+        mth_md_srt=1;
+        yr_md_srt++;
+
+      }
+
+      /* find day in middle of month - round to midnight */
+      sprintf(md_sng,"seconds since %d-%d-01", yr_md_srt, mth_md_srt );
+
+      /* find number of seconds between start and end of month */
+      if( nco_cln_clc_dbl_var_dff(md_sng, srt_sng, cln_typ, &dbl_dff_org  , (var_sct*)NULL ) !=NCO_NOERR )
+        return NCO_ERR;
+
+      /* integer arithmetic */
+      days=dbl_dff_org  / 2 /  (24*3600);
+
+
+      tm_var[0]=days*24.0*3600.0;
+      if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &tm_var[0]  , (var_sct*)NULL ) !=NCO_NOERR )
+        return NCO_ERR;
+
+    }
+
+    if(bnd_var)
+    {
+      bnd_var[0]=0.0;
+      bnd_var[1]=0.0;
+
+      if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &bnd_var[0], (var_sct*)NULL) !=NCO_NOERR )
+        return NCO_ERR;
+
+      if( nco_cln_clc_dbl_var_dff(end_sng, unt_sng, cln_typ, &bnd_var[1], (var_sct*)NULL) !=NCO_NOERR )
+        return NCO_ERR;
+
+    }
+
+    return NCO_NOERR;
+
+  }
+
+
+  var_tmp=(var_sct*)nco_malloc(sizeof(var_sct) );
+  var_dfl_set(var_tmp);
+  var_tmp->type=NC_DOUBLE;
+
+
+  if(tm_var){
+
+     var_tmp->sz=tpd;
+
+
+     for(idx=0;idx<tpd;idx++)
+        tm_var[idx]= (step/2 + step*idx)* 3600;
+
+
+     cast_void_nctype(NC_DOUBLE,&var_tmp->val);
+     var_tmp->val.dp=tm_var;
+     cast_nctype_void(NC_DOUBLE,&var_tmp->val);
+
+     if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, (double*)NULL, var_tmp   ) !=NCO_NOERR )
+        return NCO_ERR;
+
+     var_tmp->val.vp=NULL;
+
+  }
+
+
+  if(bnd_var)
+  {
+    /* seconds difference between srt_sng and end_sng */
+    double srt_end_dff;
+
+    if( nco_cln_clc_dbl_var_dff(end_sng, srt_sng, cln_typ, &srt_end_dff, (var_sct*)NULL) !=NCO_NOERR )
+      return NCO_ERR;
+
+    /* start at midnight of previous day (last day of previous month) */
+    srt_end_dff =srt_end_dff - (24.0 - step) * 3600.0;
+
+    var_tmp->sz=tpd*2;
+
+
+    for(idx=0;idx<tpd;idx++) {
+      bnd_var[2 * idx] = (step * idx) * 3600;
+      bnd_var[2 * idx + 1] = bnd_var[2*idx]+srt_end_dff;
+    }
+
+    cast_void_nctype(NC_DOUBLE,&var_tmp->val);
+    var_tmp->val.dp=bnd_var;
+    cast_nctype_void(NC_DOUBLE,&var_tmp->val);
+
+    if( nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, (double*)NULL, var_tmp   ) !=NCO_NOERR )
+      return NCO_ERR;
+
+
+    var_tmp->val.vp=NULL;
+
+
+  }
+
+  if(var_tmp)
+    var_tmp=nco_var_free(var_tmp);
+
+
+  return NCO_NOERR;
+
+}
+
+
+
+
 #ifndef ENABLE_UDUNITS
 /* Stub functions to compile without UDUNITS2 */
 
@@ -791,9 +956,9 @@ int /* [rcd] Successful conversion returns NCO_NOERR */
 nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 (const char *fl_unt_sng, /* I [ptr] Units attribute string from disk */
  const char *fl_bs_sng, /* I [ptr] Units attribute string from disk */
- nco_cln_typ lmt_cln, /* [enum] Calendar type of coordinate variable */ 
+ nco_cln_typ lmt_cln, /* [enum] Calendar type of coordinate variable */
  double *og_val, /* I/O [ptr] */
- var_sct *var) /* I/O [ptr] */  
+ var_sct *var) /* I/O [ptr] */
 {
   /* Called for target units in fl_bs_sng of form "value unit since date-stamp" for cln_360 or cln_365
      Either "var" is NULL and there is a single value to process *og_val or var is initialized and og_val is NULL */
@@ -805,12 +970,12 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   double scl_val=1.0;
 
 
-  tm_typ unt_tm_typ; /* enum for units type in fl_unt_sng */  
+  tm_typ unt_tm_typ; /* enum for units type in fl_unt_sng */
   tm_typ bs_tm_typ; /* enum for units type in fl_bs_sng */
 
   tm_cln_sct unt_cln_sct;
   tm_cln_sct bs_cln_sct;
-  
+
   /* Die if unsupported calendar type */
   if(lmt_cln != cln_360 && lmt_cln != cln_365 && lmt_cln != cln_366){
     (void)fprintf(stderr,"%s: %s reports invalid calendar type lmt_cln=%d. Only cln_365,cln_360 cln_366 allowed.\n",nco_prg_nm_get(),fnc_nm,lmt_cln);
@@ -820,35 +985,35 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   /* Obtain units type from fl_bs_sng */
   tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
   if(sscanf(fl_bs_sng,"%s",tmp_sng) != 1) return NCO_ERR;
-  bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
+  bs_tm_typ=nco_cln_get_tm_typ(tmp_sng);
   if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports unt_sng=\"%s\", bs_sng=\"%s\", tmp_sng=\"%s\"\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,tmp_sng);
   if(tmp_sng) tmp_sng=(char *)nco_free(tmp_sng);
 
-  /* Is unit string a bare date string? */ 
+  /* Is unit string a bare date string? */
   tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
   if(!strncmp("s@",fl_unt_sng,2)) unt_tm_typ=bs_tm_typ;
-  else if(sscanf(fl_unt_sng,"%s",tmp_sng) == 1) unt_tm_typ=nco_cln_get_tm_typ(tmp_sng);  
+  else if(sscanf(fl_unt_sng,"%s",tmp_sng) == 1) unt_tm_typ=nco_cln_get_tm_typ(tmp_sng);
   else return NCO_ERR;
   if(tmp_sng) tmp_sng=(char *)nco_free(tmp_sng);
-  
-  /* Assume non-standard calendar */ 
+
+  /* Assume non-standard calendar */
   if(nco_cln_prs_tm(fl_unt_sng,&unt_cln_sct) == NCO_ERR) return NCO_ERR;
   if(nco_cln_prs_tm(fl_bs_sng,&bs_cln_sct) == NCO_ERR) return NCO_ERR;
-  
+
   unt_cln_sct.sc_typ=bs_tm_typ;
   bs_cln_sct.sc_typ=bs_tm_typ;
-  
+
   unt_cln_sct.sc_cln=lmt_cln;
-  bs_cln_sct.sc_cln=lmt_cln; 
+  bs_cln_sct.sc_cln=lmt_cln;
   (void)nco_cln_pop_val(&unt_cln_sct);
   (void)nco_cln_pop_val(&bs_cln_sct);
-  
+
   /* Get offset */
-  crr_val=(unt_cln_sct.value-bs_cln_sct.value)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);                 
+  crr_val=(unt_cln_sct.value-bs_cln_sct.value)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
 
   /* Scale factor */
   if(unt_tm_typ == bs_tm_typ) scl_val=1.0; else scl_val=nco_cln_val_tm_typ(lmt_cln,unt_tm_typ)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
-  
+
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     nco_cln_prn_tm(&unt_cln_sct);
     nco_cln_prn_tm(&bs_cln_sct);
@@ -876,31 +1041,31 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
       var=nco_var_cnf_typ(NC_DOUBLE, var);
 
 
-    sz=var->sz;  
+    sz=var->sz;
     op1=var->val;
     (void)cast_void_nctype(var->type,&op1);
 
     if(var->type == NC_DOUBLE){
       double *dp;
       dp=op1.dp;
-      if(var->has_mss_val){  
-	double mss_dbl=var->mss_val.dp[0]; 
+      if(var->has_mss_val){
+	double mss_dbl=var->mss_val.dp[0];
 	for(idx=0;idx<sz;idx++)
-	  if(dp[idx] != mss_dbl) dp[idx]=dp[idx]*scl_val+crr_val; 
+	  if(dp[idx] != mss_dbl) dp[idx]=dp[idx]*scl_val+crr_val;
       }else{
-	for(idx=0;idx<sz;idx++) dp[idx]=dp[idx]*scl_val+crr_val; 
+	for(idx=0;idx<sz;idx++) dp[idx]=dp[idx]*scl_val+crr_val;
       } /* !var->has_mss_val */
     } /* !NC_DOUBLE */
 
     if(var->type == NC_FLOAT){
       float *fp;
       fp=op1.fp;
-      if(var->has_mss_val){  
-	float mss_flt=var->mss_val.fp[0]; 
+      if(var->has_mss_val){
+	float mss_flt=var->mss_val.fp[0];
 	for(idx=0;idx<sz;idx++)
-	  if(fp[idx] != mss_flt) fp[idx]=fp[idx]*(float)scl_val+(float)crr_val;                      
+	  if(fp[idx] != mss_flt) fp[idx]=fp[idx]*(float)scl_val+(float)crr_val;
       }else{
-	for(idx=0;idx<sz;idx++) fp[idx]=fp[idx]*(float)scl_val+(float)crr_val;                      
+	for(idx=0;idx<sz;idx++) fp[idx]=fp[idx]*(float)scl_val+(float)crr_val;
       } /* !has_mss_val */
     } /* !NC_FLOAT */
    (void)cast_nctype_void(var->type,&op1);
