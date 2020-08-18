@@ -958,6 +958,8 @@ main(int argc,char **argv)
     cb->tm_crd_id_in=NC_MIN_INT; /* [id] Time coordinate ID */
     cb->tm_crd_nm=NULL; /* [sng] Time coordinate name */
     cb->type=NC_NAT; /* [enm] Time coordinate type */
+    cb->bnd_val=NULL; /* [frc] Time coordinate variable values */
+    cb->tm_val=NULL; /* [frc] Time (or climatology) bounds variable values */
     cb->val[0]=NC_MIN_DOUBLE;
     cb->val[1]=NC_MIN_DOUBLE;
 
@@ -2034,11 +2036,13 @@ main(int argc,char **argv)
   } /* endif ncra || nces */
 
   /* Compute climatological time and bounds arrays */
-  if(flg_cb){
-    if(clm_nfo_sng) rcd=nco_clm_nfo_get(clm_nfo_sng,cb);
-    //rcd=nco_clm_nfo_to_tm_bnds(yr_srt,yr_end,mth_srt,mth_end,tpd,unt_sng,cln_sng,bnd_var,tm_var);
-    if(rcd != NCO_NOERR) abort();
-  } /* !flg_cb */
+  if(flg_cb && clm_nfo_sng){
+    cb->tm_val=(double *)nco_malloc(max_int(1,cb->tpd)*sizeof(double)); /* [frc] Time coordinate variable values */
+    cb->bnd_val=(double *)nco_malloc(max_int(1,cb->tpd)*2*sizeof(double)); /* [frc] Time (or climatology) bounds variable values */
+    rcd=nco_clm_nfo_get(clm_nfo_sng,cb);
+    rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
+      //if(rcd != NCO_NOERR) abort();
+  } /* !flg_cb && !clm_nfo_sng */
 
   if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
 
@@ -2105,11 +2109,13 @@ main(int argc,char **argv)
     if(wgt_avg) wgt_avg=(var_sct *)nco_var_free(wgt_avg);
     /* Free climatology bounds */
     if(cb){
-      if(cb->unt_val) cb->unt_val=(char *)nco_free(cb->unt_val);
+      if(cb->bnd_val) cb->bnd_val=(double *)nco_free(cb->bnd_val);
+      if(cb->clm_bnd_nm) cb->clm_bnd_nm=(char *)nco_free(cb->clm_bnd_nm);
       if(cb->cln_val) cb->cln_val=(char *)nco_free(cb->cln_val);
       if(cb->tm_bnd_nm) cb->tm_bnd_nm=(char *)nco_free(cb->tm_bnd_nm);
       if(cb->tm_crd_nm) cb->tm_crd_nm=(char *)nco_free(cb->tm_crd_nm);
-      if(cb->clm_bnd_nm) cb->clm_bnd_nm=(char *)nco_free(cb->clm_bnd_nm);
+      if(cb->tm_val) cb->tm_val=(double *)nco_free(cb->tm_val);
+      if(cb->unt_val) cb->unt_val=(char *)nco_free(cb->unt_val);
       if(cb) cb=(clm_bnd_sct *)nco_free(cb);
     } /* !cb */
 

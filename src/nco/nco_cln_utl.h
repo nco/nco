@@ -175,15 +175,15 @@ extern "C" {
 
   int /* O [rcd] Return code */
   nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bounds arrays */
-  (int yr_srt,   /* I [yr] Year at climo start */
-   int yr_end,    /* I [yr] Year at climo start */
-   int mth_srt,   /* I [mth] Month at climo start [1..12] format */
-   int mth_end,   /* I [mth] Month at climo end [1..12] format */
-   int tpd,       /* I [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...]*/
+  (int yr_srt, /* I [yr] Year at climo start */
+   int yr_end, /* I [yr] Year at climo start */
+   int mth_srt, /* I [mth] Month at climo start [1..12] format */
+   int mth_end, /* I [mth] Month at climo end [1..12] format */
+   int tpd, /* I [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...]*/
    const char *unt_sng, /* I [sng] Units of time coordinate (UDUnits format) */
    const char *cln_sng, /* I [sng] Calendar string of time coordinate (UDUnits format, NULL=none) */
-   double *bnd_var,    /* O [frc] Climatology bounds variable values */
-   double *tm_var);    /* O [frc] Time coordinate values */
+   double *bnd_val, /* O [frc] Climatology bounds variable values */
+   double *tm_val); /* O [frc] Time coordinate values */
 
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H

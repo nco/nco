@@ -40,6 +40,8 @@ extern "C" {
     char *tm_crd_nm; /* [sng] Name of time coordinate variable */
     char *cln_val; /* [sng] Bounds calendar value */
     char *unt_val; /* [sng] Bounds units value */
+    double *tm_val; /* [frc] Time coordinate variable values */
+    double *bnd_val; /* [frc] Time (or climatology) bounds variable values */
     double val[2]; /* [frc] Climatology bounds variable attribute values */
     int clm_bnd_id_in; /* [id] Variable ID for clm_bnds in input */
     int clm_bnd_id_out; /* [id] Variable ID for clm_bnds in output */

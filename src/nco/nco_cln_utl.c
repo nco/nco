@@ -464,15 +464,15 @@ nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "P
 
 int /* O [rcd] Return code */
 nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bounds arrays */
-(int yr_srt,   /* I [yr] Year at climo start */
- int yr_end,    /* I [yr] Year at climo start */
- int mth_srt,   /* I [mth] Month at climo start [1..12] format */
- int mth_end,   /* I [mth] Month at climo end [1..12] format */
- int tpd,       /* I [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...]*/
+(int yr_srt, /* I [yr] Year at climo start */
+ int yr_end, /* I [yr] Year at climo start */
+ int mth_srt, /* I [mth] Month at climo start [1..12] format */
+ int mth_end, /* I [mth] Month at climo end [1..12] format */
+ int tpd, /* I [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...]*/
  const char *unt_sng, /* I [sng] Units of time coordinate (UDUnits format) */
  const char *cln_sng, /* I [sng] Calendar string of time coordinate (UDUnits format, NULL=none) */
- double *bnd_var,    /* O [frc] Climatology bounds variable values */
- double *tm_var)    /* O [frc] Time coordinate values */
+ double *bnd_val, /* O [frc] Climatology bounds variable values */
+ double *tm_val) /* O [frc] Time coordinate values */
 {
   char srt_sng[200];
   char end_sng[200];
@@ -503,7 +503,7 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
   
   if(tpd == 0){
     
-    if(tm_var){
+    if(tm_val){
       int days;
       int mth_md_srt=mth_srt;
       int yr_md_srt=yr_srt;
@@ -526,21 +526,21 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
       /* NB: integer arithmetic */
       days=dbl_dff_org/2/(24*3600);
       
-      tm_var[0]=days*24.0*3600.0;
-      if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,&tm_var[0],(var_sct*)NULL) != NCO_NOERR)
+      tm_val[0]=days*24.0*3600.0;
+      if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,&tm_val[0],(var_sct*)NULL) != NCO_NOERR)
         return NCO_ERR;
-    } /* !tm_var */
+    } /* !tm_val */
 
-    if(bnd_var){
-      bnd_var[0]=0.0;
-      bnd_var[1]=0.0;
+    if(bnd_val){
+      bnd_val[0]=0.0;
+      bnd_val[1]=0.0;
 
-      if(nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &bnd_var[0], (var_sct*)NULL) != NCO_NOERR)
+      if(nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &bnd_val[0], (var_sct*)NULL) != NCO_NOERR)
         return NCO_ERR;
 
-      if(nco_cln_clc_dbl_var_dff(end_sng, unt_sng, cln_typ, &bnd_var[1], (var_sct*)NULL) != NCO_NOERR)
+      if(nco_cln_clc_dbl_var_dff(end_sng, unt_sng, cln_typ, &bnd_val[1], (var_sct*)NULL) != NCO_NOERR)
         return NCO_ERR;
-    } /* !bnd_var */
+    } /* !bnd_val */
 
     return NCO_NOERR;
   } /* !tpd */
@@ -549,24 +549,24 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
   var_dfl_set(var_tmp);
   var_tmp->type=NC_DOUBLE;
 
-  if(tm_var){
+  if(tm_val){
 
      var_tmp->sz=tpd;
 
      for(idx=0;idx<tpd;idx++)
-       tm_var[idx]=(step/2 + step*idx)*3600;
+       tm_val[idx]=(step/2 + step*idx)*3600;
 
      cast_void_nctype(NC_DOUBLE,&var_tmp->val);
-     var_tmp->val.dp=tm_var;
+     var_tmp->val.dp=tm_val;
      cast_nctype_void(NC_DOUBLE,&var_tmp->val);
 
      if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,(double *)NULL,var_tmp) != NCO_NOERR)
        return NCO_ERR;
 
      var_tmp->val.vp=NULL;
-  } /* !tm_var */
+  } /* !tm_val */
 
-  if(bnd_var){
+  if(bnd_val){
     /* seconds difference between srt_sng and end_sng */
     double srt_end_dff;
 
@@ -579,19 +579,18 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
     var_tmp->sz=tpd*2;
 
     for(idx=0;idx<tpd;idx++){
-      bnd_var[2 * idx] = (step * idx) * 3600;
-      bnd_var[2 * idx + 1] = bnd_var[2*idx]+srt_end_dff;
+      bnd_val[2 * idx] = (step * idx) * 3600;
+      bnd_val[2 * idx + 1] = bnd_val[2*idx]+srt_end_dff;
     }
 
     cast_void_nctype(NC_DOUBLE,&var_tmp->val);
-    var_tmp->val.dp=bnd_var;
+    var_tmp->val.dp=bnd_val;
     cast_nctype_void(NC_DOUBLE,&var_tmp->val);
 
-    if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,(double *)NULL,var_tmp) != NCO_NOERR)
-      return NCO_ERR;
+    if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,(double *)NULL,var_tmp) != NCO_NOERR) return NCO_ERR;
 
     var_tmp->val.vp=NULL;
-  } /* !bnd_var */
+  } /* !bnd_val */
 
   if(var_tmp) var_tmp=nco_var_free(var_tmp);
 
