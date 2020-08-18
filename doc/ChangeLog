@@ -1,5 +1,9 @@
 2020-08-18  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.4-alpha14 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha14: Fiscalini';git push
+	git tag -a 4.9.4-alpha14 -m 'ncclimo clm_nfo to ncra';git push --tags
+
 	* Merge Henry's nco_clm_nfo_to_tm_bnds() and write nco_clm_nfo_get()
 
 2020-08-16  Charlie Zender  <zender@uci.edu>

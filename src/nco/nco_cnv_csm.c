@@ -14,11 +14,14 @@ nco_clm_nfo_get /* [fnc] Parse clm_nfo arguments and merge into structure */
 (const char *clm_nfo_sng, /* I [sng] Climatology information string */
  clm_bnd_sct *cb) /* I/O [sct] Climatology bounds structure */
 {
+  const char fnc_nm[]="nco_clm_nfo_get()"; /* [sng] Function name */
+
+  const char dlm_sng[]=",";
+
   char **arg_lst;
 
   char *msg_sng=NULL_CEWI; /* [sng] Error message */
-
-  const char dlm_sng[]=",";
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
 
   int arg_nbr;
 
@@ -32,8 +35,8 @@ nco_clm_nfo_get /* [fnc] Parse clm_nfo arguments and merge into structure */
   if(arg_nbr < 2){ /* Need more than just dimension name */
     msg_sng=strdup("Climatology information must specify at least six arguments (the first argument is the start year, the second is the end year, etc.)");
     NCO_SYNTAX_ERROR=True;
-  }else if(arg_nbr > 6){ /* Too much information */
-    msg_sng=strdup("Too many (more than 6) arguments in climatology information string");
+  }else if(arg_nbr > 7){ /* Too much information */
+    msg_sng=strdup("Too many (more than 7) arguments in climatology information string");
     NCO_SYNTAX_ERROR=True;
   }else if(arg_lst[0] == NULL){ /* Start year not specified */
     msg_sng=strdup("Start year not specified");
@@ -63,6 +66,31 @@ nco_clm_nfo_get /* [fnc] Parse clm_nfo arguments and merge into structure */
     msg_sng=(char *)nco_free(msg_sng);
     nco_exit(EXIT_FAILURE);
   } /* !NCO_SYNTAX_ERROR */
+
+  if(arg_lst[0]){
+    cb->yr_srt=strtol(arg_lst[0],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[0],"strtol",sng_cnv_rcd);
+  } /* !arg_lst[0] */    
+  if(arg_lst[1]){
+    cb->yr_end=strtol(arg_lst[1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[1],"strtol",sng_cnv_rcd);
+  } /* !arg_lst[1] */    
+  if(arg_lst[2]){
+    cb->mth_srt=strtol(arg_lst[2],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[2],"strtol",sng_cnv_rcd);
+  } /* !arg_lst[2] */    
+  if(arg_lst[3]){
+    cb->mth_end=strtol(arg_lst[3],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[3],"strtol",sng_cnv_rcd);
+  } /* !arg_lst[3] */    
+  if(arg_lst[4]){
+    cb->tpd=strtol(arg_lst[4],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+    if(*sng_cnv_rcd) nco_sng_cnv_err(arg_lst[4],"strtol",sng_cnv_rcd);
+  } /* !arg_lst[4] */    
+  //if(arg_lst[5]) cb->unt_val=arg_lst[5];
+  //if(arg_lst[6]) cb->cln_val=arg_lst[6];
+    
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports variable climatology bounds structure elements yr_srt=%d, yr_end=%d, mth_srt=%d, mth_end=%d, tpd=%d, unt_val=%s, cln_val=%s\n",nco_prg_nm_get(),fnc_nm,cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->unt_val,cb->cln_val);
 
   return NCO_NOERR;
 } /* !nco_clm_nfo_get() */
@@ -464,7 +492,7 @@ nco_cnv_cf_cll_mth_add               /* [fnc] Add cell_methods attributes */
     dmn_nbr_mch=0;
     flg_dpl=False;
 
-    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has cll_mth_clm = %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm,cll_mth_clm);
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports variable %s has cll_mth_clm = %s\n",nco_prg_nm_get(),fnc_nm,var_trv->nm,cll_mth_clm);
 
     if(cb){
       /* Does variable use time coordinate? */

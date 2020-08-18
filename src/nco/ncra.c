@@ -961,8 +961,6 @@ main(int argc,char **argv)
     cb->val[0]=NC_MIN_DOUBLE;
     cb->val[1]=NC_MIN_DOUBLE;
 
-    if(clm_nfo_sng) rcd=nco_clm_nfo_get(clm_nfo_sng,cb);
-
     if((rcd=nco_inq_varid_flg(in_id,"time",&cb->tm_crd_id_in)) == NC_NOERR) cb->tm_crd_nm=strdup("time");
     else if((rcd=nco_inq_varid_flg(in_id,"Time",&cb->tm_crd_id_in)) == NC_NOERR) cb->tm_crd_nm=strdup("Time");
     if(cb->tm_crd_id_in != NC_MIN_INT){
@@ -1104,7 +1102,7 @@ main(int argc,char **argv)
 	  
 	  /* Add units attribute */
 	  att_nm=strdup(unt_sng);
-	  att_val=cb->unt_val;
+	  att_val=strdup(cb->unt_val);
 	  aed_mtd.att_nm=att_nm;
 	  aed_mtd.var_nm=(cb->bnd2clm || cb->bnd2tpdclm) ? cb->tm_bnd_nm : cb->clm_bnd_nm;
 	  aed_mtd.id=(cb->bnd2clm || cb->bnd2tpdclm) ? cb->tm_bnd_id_out : cb->clm_bnd_id_out;
@@ -1114,7 +1112,7 @@ main(int argc,char **argv)
 	  aed_mtd.mode=aed_create;
 	  if(cb->bnd2clm || cb->bnd2tpdclm) (void)nco_aed_prc(out_id,cb->tm_bnd_id_out,aed_mtd); else (void)nco_aed_prc(out_id,cb->clm_bnd_id_out,aed_mtd);
 	  if(att_nm) att_nm=(char *)nco_free(att_nm);
-	  if(att_val) att_val=cb->unt_val=(char *)nco_free(att_val);
+	  if(att_val) att_val=(char *)nco_free(att_val);
 	} /* !rcd && att_typ */
 	rcd=NC_NOERR;
       } /* !rcd && att_typ */
@@ -1132,7 +1130,7 @@ main(int argc,char **argv)
 	  
 	  /* Add calendar attribute */
 	  att_nm=strdup(cln_sng);
-	  att_val=cb->cln_val;
+	  att_val=strdup(cb->cln_val);
 	  aed_mtd.att_nm=att_nm;
 	  aed_mtd.var_nm=(cb->bnd2clm || cb->bnd2tpdclm) ? cb->tm_bnd_nm : cb->clm_bnd_nm;
 	  aed_mtd.id=(cb->bnd2clm || cb->bnd2tpdclm) ? cb->tm_bnd_id_out : cb->clm_bnd_id_out;
@@ -1142,7 +1140,7 @@ main(int argc,char **argv)
 	  aed_mtd.mode=aed_create;
 	  if(cb->bnd2clm || cb->bnd2tpdclm) (void)nco_aed_prc(out_id,cb->tm_bnd_id_out,aed_mtd); else (void)nco_aed_prc(out_id,cb->clm_bnd_id_out,aed_mtd);
 	  if(att_nm) att_nm=(char *)nco_free(att_nm);
-	  if(att_val) att_val=cb->cln_val=(char *)nco_free(att_val);
+	  if(att_val) att_val=(char *)nco_free(att_val);
 	} /* !rcd && att_typ */
 	rcd=NC_NOERR;
       } /* !rcd && att_typ */
@@ -2036,7 +2034,10 @@ main(int argc,char **argv)
   } /* endif ncra || nces */
 
   /* Compute climatological time and bounds arrays */
-  //rcd=nco_clm_nfo_to_tm_bnds(yr_srt,yr_end,mth_srt,mth_end,tpd,unt_sng,cln_sng,bnd_var,tm_var);
+  if(flg_cb){
+    if(clm_nfo_sng) rcd=nco_clm_nfo_get(clm_nfo_sng,cb);
+    //rcd=nco_clm_nfo_to_tm_bnds(yr_srt,yr_end,mth_srt,mth_end,tpd,unt_sng,cln_sng,bnd_var,tm_var);
+  } /* !flg_cb */
 
   if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
 
@@ -2062,6 +2063,7 @@ main(int argc,char **argv)
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
+    if(clm_nfo_sng) clm_nfo_sng=(char *)nco_free(clm_nfo_sng);
     if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
     if(cnk_plc_sng) cnk_plc_sng=(char *)nco_free(cnk_plc_sng);
     if(fl_in) fl_in=(char *)nco_free(fl_in);
@@ -2072,6 +2074,9 @@ main(int argc,char **argv)
     if(in_id_arr) in_id_arr=(int *)nco_free(in_id_arr);
     if(wgt_arr) wgt_arr=(double *)nco_free(wgt_arr);
     if(wgt_nm) wgt_nm=(char *)nco_free(wgt_nm);
+    /* Free climatology bounds */
+    if(cb->unt_val) cb->unt_val=(char *)nco_free(cb->unt_val);
+    if(cb->cln_val) cb->cln_val=(char *)nco_free(cb->cln_val);
     /* Free lists of strings */
     if(fl_lst_in && !fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,fl_nbr); 
     if(fl_lst_in && fl_lst_abb) fl_lst_in=nco_sng_lst_free(fl_lst_in,1);

@@ -697,7 +697,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       nco_exit(EXIT_FAILURE);
     } /* end if */
     if(nco_prg_id != ncra && nco_prg_id != ncrcat){
-      (void)fprintf(stdout,"%s: ERROR Subcycle hypserslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Subcycle hyperslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end ncra */
   } /* !lmt.ssc_sng */
@@ -714,7 +714,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       nco_exit(EXIT_FAILURE);
     } /* end if */
     if(nco_prg_id != ncra && nco_prg_id != ncrcat){
-      (void)fprintf(stdout,"%s: ERROR Interleave stride hypserslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Interleave stride hyperslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end ncra */
     if(lmt.ilv > 1L){
@@ -1574,7 +1574,7 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       nco_exit(EXIT_FAILURE);
     } /* end if */
     if(nco_prg_id != ncra && nco_prg_id != ncrcat){
-      (void)fprintf(stdout,"%s: ERROR Interleave stride hypserslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR Interleave stride hyperslabs only implemented for ncra and ncrcat\n",nco_prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end ncra */
     if(lmt.ilv > 1L){
