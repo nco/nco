@@ -2046,6 +2046,7 @@ main(int argc,char **argv)
 
   if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)){
     if(cb->bnd2tpdclm && clm_nfo_sng) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->bnd_val,(nc_type)NC_DOUBLE); else rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
+    if(cb->bnd2tpdclm && clm_nfo_sng) rcd=nco_put_var(out_id,cb->tm_crd_id_out,cb->tm_val,(nc_type)NC_DOUBLE);
   } /* !flg_cb */
 
   if(flg_cb && (cb->bnd2clm || cb->bnd2tpdclm || cb->clm2bnd)){

@@ -2038,6 +2038,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	    # Combine monthly into seasonal and annual means with nces (preserving diurnal timesteps)
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
+#	    cmd_csn2ann="nces --b2t --clm_nfo=${yyyy_clm_srt_dec},${yyyy_clm_end_dec},${mm_ann_srt},${mm_ann_end},${tpd_out}"
 	elif [ ${clm_md} = 'mth' ]; then 
 	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --cb -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
 	    # Combine monthly into seasonal and annual means with ncra
