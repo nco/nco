@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha14: Fiscalini';git push
 	git tag -a 4.9.4-alpha14 -m 'ncclimo clm_nfo to ncra';git push --tags
 
+	* ncclimo annotate seasonal and annual climos with clm_nfo, fix double-free()'s
+
 	* Coordinate and bounds values work well for climatological monthly means
 
 2020-08-18  Charlie Zender  <zender@uci.edu>

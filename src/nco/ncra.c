@@ -125,7 +125,7 @@ main(int argc,char **argv)
   char **wgt_lst_in=NULL_CEWI;
   char *aux_arg[NC_MAX_DIMS];
   char *cmd_ln;
-  char *clm_nfo_sng; /* [sng] Climatology information string */
+  char *clm_nfo_sng=NULL; /* [sng] Climatology information string */
   char *cnk_arg[NC_MAX_DIMS];
   char *cnk_map_sng=NULL_CEWI; /* [sng] Chunking map */
   char *cnk_plc_sng=NULL_CEWI; /* [sng] Chunking policy */
@@ -943,23 +943,25 @@ main(int argc,char **argv)
 
     cb=(clm_bnd_sct *)nco_malloc(sizeof(clm_bnd_sct));
     cb->bnd2clm=False; /* [flg] Convert time-bounds to climatology bounds */
+    cb->bnd2tpdclm=False; /* [flg] Convert time-bounds to diurnal climatology bounds */
+    cb->bnd_val=NULL; /* [frc] Time coordinate variable values */
     cb->clm2bnd=False; /* [flg] Convert climatology bounds to time-bounds */
     cb->clm2clm=False; /* [flg] Convert climatology bounds to climatology bounds */
-    cb->bnd2tpdclm=False; /* [flg] Convert time-bounds to diurnal climatology bounds */
     cb->clm_bnd_id_in=NC_MIN_INT; /* [id] Climatology bounds ID */
     cb->clm_bnd_id_out=NC_MIN_INT; /* [id] Climatology bounds ID */
     cb->clm_bnd_in=False; /* [flg] Climatology bounds appear in input */
     cb->clm_bnd_nm=NULL; /* [sng] Climatology bounds name */
-    cb->dmn_srt_srt[0]=0L;cb->dmn_srt_srt[1]=0L;
+    cb->cln_val=NULL; /* [sng] Bounds calendar value */
     cb->dmn_srt_end[0]=0L;cb->dmn_srt_end[1]=1L;
+    cb->dmn_srt_srt[0]=0L;cb->dmn_srt_srt[1]=0L;
     cb->tm_bnd_id_in=NC_MIN_INT; /* [id] Time-bounds ID */
     cb->tm_bnd_in=False; /* [flg] Time-bounds appear in input */
     cb->tm_bnd_nm=NULL; /* [sng] Time-bounds name */
     cb->tm_crd_id_in=NC_MIN_INT; /* [id] Time coordinate ID */
     cb->tm_crd_nm=NULL; /* [sng] Time coordinate name */
-    cb->type=NC_NAT; /* [enm] Time coordinate type */
-    cb->bnd_val=NULL; /* [frc] Time coordinate variable values */
     cb->tm_val=NULL; /* [frc] Time (or climatology) bounds variable values */
+    cb->type=NC_NAT; /* [enm] Time coordinate type */
+    cb->unt_val=NULL; /* [sng] Bounds units value */
     cb->val[0]=NC_MIN_DOUBLE;
     cb->val[1]=NC_MIN_DOUBLE;
 
@@ -2070,6 +2072,7 @@ main(int argc,char **argv)
   if(flg_mmr_cln){
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
+    //if(nco_dbg_lvl_get() >= nco_dbg_quiet) (void)fprintf(stdout,"%s: free quark3\n",nco_prg_nm_get());
     if(cmd_ln) cmd_ln=(char *)nco_free(cmd_ln);
     if(clm_nfo_sng) clm_nfo_sng=(char *)nco_free(clm_nfo_sng);
     if(cnk_map_sng) cnk_map_sng=(char *)nco_free(cnk_map_sng);
