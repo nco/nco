@@ -933,7 +933,7 @@ main(int argc,char **argv)
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
 
   /* Add climatology_bounds attribute to output file (before cell_methods) */
-  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)){
+  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat || nco_prg_id == ncfe)){
     char bnd_sng[]="bounds"; /* CF-standard time-bounds attribute name */
     char clm_sng[]="climatology"; /* CF-standard climatology bounds attribute name */
     char cln_sng[]="calendar"; /* CF-standard calendar attribute name */
@@ -2041,12 +2041,12 @@ main(int argc,char **argv)
     cb->tm_val=(double *)nco_malloc(max_int(1,cb->tpd)*sizeof(double)); /* [frc] Time coordinate variable values */
     cb->bnd_val=(double *)nco_malloc(max_int(1,cb->tpd)*2*sizeof(double)); /* [frc] Time (or climatology) bounds variable values */
     rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
-      //if(rcd != NCO_NOERR) abort();
+    //assert(rcd != NCO_NOERR);
   } /* !flg_cb && !clm_nfo_sng */
 
-  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat)){
-    if(cb->bnd2tpdclm && clm_nfo_sng) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->bnd_val,(nc_type)NC_DOUBLE); else rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
+  if(flg_cb && (nco_prg_id == ncra || nco_prg_id == ncrcat || nco_prg_id == ncfe)){
     if(cb->bnd2tpdclm && clm_nfo_sng) rcd=nco_put_var(out_id,cb->tm_crd_id_out,cb->tm_val,(nc_type)NC_DOUBLE);
+    if(cb->bnd2tpdclm && clm_nfo_sng) rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->bnd_val,(nc_type)NC_DOUBLE); else rcd=nco_put_var(out_id,cb->clm_bnd_id_out,cb->val,(nc_type)NC_DOUBLE);
   } /* !flg_cb */
 
   if(flg_cb && (cb->bnd2clm || cb->bnd2tpdclm || cb->clm2bnd)){
