@@ -6040,7 +6040,6 @@ var_sct *udunits_cls::regular_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
     units_out_sng="seconds since 1970-01-01";
 
     susg="usage: var_out="+sfnm+"(var_in ,\"format-timestring ? \")";
-
   
     if(nbr_args<1)
        err_prn(sfnm,"Function has been called with less than two arguments\n"+susg); 
@@ -6048,10 +6047,8 @@ var_sct *udunits_cls::regular_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
     /* data to convert */ 
     var=walker.out(args_vtr[0]);  
 
-
     if( !var->undefined && var->type !=NC_FLOAT && var->type !=NC_DOUBLE )
       nco_var_cnf_typ(NC_DOUBLE,var); 
-
      
     var_ret=nco_var_dpl(var);
     if(var_ret->val.vp)
@@ -6062,9 +6059,6 @@ var_sct *udunits_cls::regular_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
     /* text string output units */
     if(nbr_args >=2)
        var_iformat=walker.out(args_vtr[1]);
-
-
-
 
     if(prs_arg->ntl_scn  )
     {
@@ -6077,7 +6071,6 @@ var_sct *udunits_cls::regular_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
       return var_ret;
     }
 
-
     if(var_iformat)
     {
        nco_var_cnf_typ(NC_INT,var_iformat);
@@ -6085,13 +6078,10 @@ var_sct *udunits_cls::regular_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
        iformat=var_iformat->val.ip[0];
 
        var_iformat=(var_sct*)nco_var_free(var_iformat);
-
     }
     // use default format
     else
       iformat=1;
-
-
 
      // grab units attribute of var
      units_in_sng=ncap_att2var(prs_arg, std::string(var->nm)+"@units");
@@ -6107,24 +6097,16 @@ var_sct *udunits_cls::regular_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
     else
       cln_typ=cln_nil;
 
-
-
     rcd=nco_cln_var_prs(units_in_sng.c_str(), cln_typ,iformat, var,var_ret);
     if(rcd==NCO_ERR)
         err_prn(sfnm,"Error formatting time string");
 
-
-
     var=(var_sct*)nco_var_free(var);
-
     return var_ret;
-
  }
-
 
 var_sct *udunits_cls::clbtime_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_obj, ncoTree &walker)
 {
-
   int idx;
   const int md_sz=8;
   int iret=0;
@@ -6140,7 +6122,7 @@ var_sct *udunits_cls::clbtime_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
   0   yr_srt    int
   1   yr_end    int
   2   mth_srt   int
-  3   mt_end    int
+  3   mth_end   int
   4   tpd       int
   5   unt_sng   const *char
   6   cln_sng   const *char
@@ -6150,7 +6132,6 @@ var_sct *udunits_cls::clbtime_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
   for(idx=0;idx<md_sz;idx++) {
     var_md[idx] = walker.out(args_vtr[idx]);
     cast_void_nctype(var_md[idx]->type,&var_md[idx]->val);
-
   }
 
   if( var_md[5]->type !=NC_CHAR && var_md[5]->type !=NC_STRING )
@@ -6159,57 +6140,35 @@ var_sct *udunits_cls::clbtime_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls
   if( var_md[6]->type !=NC_CHAR && var_md[6]->type !=NC_STRING)
     err_prn(sfnm, "cln_sng - 6th argument must be of type string\n");
 
-
   ncap_att_str(var_md[5], str_vtr );
-
   ncap_att_str(var_md[6], str_vtr );
 
-
   /* print out all args */
-  if(nco_dbg_lvl_get() >= nco_dbg_dev &&  !walker.prs_arg->ntl_scn ) {
+  if(nco_dbg_lvl_get() >= nco_dbg_dev &&  !walker.prs_arg->ntl_scn ){
     (void) fprintf(stderr, "clbtime: yr_srt=%d yr_end=%d mth_srt=%d mth_end=%d tpd=%d\n",
      var_md[0]->val.ip[0], var_md[1]->val.ip[0], var_md[2]->val.ip[0], var_md[3]->val.ip[0],var_md[4]->val.ip[0]);
     (void) fprintf(stderr,"unt_sng=%s cln_sng=%s\n", str_vtr[0].c_str(), str_vtr[1].c_str());
-
   }
   {
-
-
     iret = nco_clm_nfo_to_tm_bnds( var_md[0]->val.ip[0], var_md[1]->val.ip[0], var_md[2]->val.ip[0],
                                    var_md[3]->val.ip[0], var_md[4]->val.ip[0],
                                    str_vtr[0].c_str(), str_vtr[1].c_str(),
                                   (var_md[7]->nbr_dim==2 ? var_md[7]->val.dp: NULL ), (var_md[7]->nbr_dim==1 ? var_md[7]->val.dp: NULL )
                                   );
-
-
   }
 
    if(iret==NCO_ERR)
      err_prn(sfnm,"nco_cln_nfo_to_tm_bnds() returned error");
 
-
-
   /* duplicate time var  */
   var_ret=nco_var_dpl(var_md[7]);
-
-
-
-
 
   for(idx=0;idx<md_sz;idx++) {
     cast_nctype_void(var_md[idx]->type,&var_md[idx]->val);
     var_md[idx]=nco_var_free(var_md[idx]);
   }
-
-
-
   return var_ret;
-
-
 }
-
-
-
 
 //Polygon Function family /************************************************/
 polygon_cls::polygon_cls(bool){
@@ -6217,7 +6176,6 @@ polygon_cls::polygon_cls(bool){
   if(fmc_vtr.empty()){
     fmc_vtr.push_back( fmc_cls("print_kml",this,(int)PKML));
     fmc_vtr.push_back( fmc_cls("print_kml_filter",this,(int)PKMLFILTER));
-
   }
 }
 
