@@ -1621,6 +1621,8 @@ int *wgt_cnt_bln_ret) {
 
       } /* end jdx */
 
+
+      /*
       if (nco_dbg_lvl_get() >= nco_dbg_dev) {
         if ((grd_lon_typ == nco_grd_lon_Grn_ctr || grd_lon_typ == nco_grd_lon_Grn_wst) &&
             pl_lst_out[idx]->dp_x_ctr > 0.0 && pl_lst_out[idx]->dp_x_ctr < 180.0) {
@@ -1640,7 +1642,8 @@ int *wgt_cnt_bln_ret) {
         }
 
 
-      } /* end if else */
+
+      }  */
 
     }
 
