@@ -800,7 +800,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   int rcd=NCO_NOERR;
 
-  long grd_crn_nbr_vrl; /* [nbr] Maximum number of corners in overlap polygon */
+
 
   size_t idx; /* [idx] Counting index for unrolled grids */
   size_t lnk_nbr; /* [nbr] Number of links */
@@ -810,7 +810,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   int lst_typ=0;  /* 0 - no list, 1 - poly_sct list, 2 - wgt_lst */
 
-  size_t pl_sz_vrl=0;
+
 
   poly_sct *pl_glb_in=NULL_CEWI;
   poly_sct *pl_glb_out=NULL_CEWI;
@@ -824,8 +824,8 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   poly_typ_enm pl_typ=poly_none  ;
 
-  KDTree **tree=NULL_CEWI;
-  int nbr_tr;
+
+
 
 
   grd_crn_nbr_in=mpf->src_grid_corners;
@@ -2147,7 +2147,7 @@ nco_map_chk /* Map-file evaluation */
   size_t sz;
   size_t tally;
   
-  var_sct **var_lst=NULL_CEWI;
+
 
   var_sct *var_S=NULL_CEWI;
   var_sct *var_area_a=NULL_CEWI;
