@@ -1,8 +1,12 @@
-2020-08-19  Charlie Zender  <zender@uci.edu>
+2020-08-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha14 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha14: Fiscalini';git push
 	git tag -a 4.9.4-alpha14 -m 'ncclimo clm_nfo to ncra';git push --tags
+
+	* Nicefy and commit climatology bounds test script cb_tst.nco
+
+2020-08-19  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo monthly dates good though seasonal and annual climo dates are borken
 

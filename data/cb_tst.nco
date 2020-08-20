@@ -1,0 +1,33 @@
+// $Header$ -*-C++-*-
+
+/* Purpose test clbtime() and C function nco_clm_nfo_to_tm_bnds()
+   Usage: 
+   ncap2 -O -v -s 'tpd=8' -S ~/nco/data/cb_tst.nco ~/foo.nc
+   ncap2 -O -v -s 'tpd=8;yr_srt=2001;yr_end=2002;mth_srt=1;mth_end=12;' -S ~/nco/data/cb_tst.nco ~/foo.nc
+   ncks -H --cal ~/foo.nc
+
+   Code wraps and calls ncap2 function clbtime() twice:
+   clbtime(yr_srt, yr_end, mth_srt, mth_end, tpd, @units, @calendar, tm_var|bnd_var) */
+
+  if(!exists(tpd)) tpd=24;
+  if(!exists(yr_srt)) yr_srt=2001;
+  if(!exists(yr_end)) yr_end=2002;
+  if(!exists(mth_srt)) mth_srt=1;
+  if(!exists(mth_end)) mth_end=12;
+
+  defdim("tpd",tpd);
+  defdim("bnd",2);
+
+  tm_var[tpd]=0.0;
+  tm_var@units="days since 2001-01-01";
+  tm_var@calendar="365_day";
+  {
+    tm_var=clbtime(yr_srt,yr_end,mth_srt,mth_end,tpd,tm_var@units,tm_var@calendar,tm_var);
+  }
+
+  bnd_var[tpd,bnd]=0.0;
+  bnd_var@units=tm_var@units;
+  bnd_var@calendar=tm_var@calendar;
+  {
+    bnd_var=clbtime(yr_srt,yr_end,mth_srt,mth_end,tpd,bnd_var@units,bnd_var@calendar,bnd_var);
+  }

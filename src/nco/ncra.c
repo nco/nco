@@ -1014,10 +1014,13 @@ main(int argc,char **argv)
     } /* !tm_crd_in */
 
     if(flg_c2b && cb->clm_bnd_in) cb->clm2bnd=True;
-    if(cb->clm_bnd_in) cb->clm2clm=True;
-    if(cb->tm_bnd_in){
-      if(flg_b2t) cb->bnd2tpdclm=True; else cb->bnd2clm=True;
-    } /* !cb->tm_bnd_in */
+    if(flg_b2t){
+      if(cb->tm_bnd_in) cb->bnd2tpdclm=cb->bnd2clm=True;
+      if(cb->clm_bnd_in) cb->bnd2tpdclm=True;
+    }else{
+      if(cb->clm_bnd_in) cb->clm2clm=True;
+      if(cb->tm_bnd_in) cb->bnd2clm=True;
+    } /* !flg_b2t */
       
     if(cb->tm_bnd_in){
       rcd=nco_inq_varid_flg(in_id,cb->tm_bnd_nm,&cb->tm_bnd_id_in); 
