@@ -1955,14 +1955,11 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
    objects to collect, the quicker the convergence (on the average). Also, I'm using doubles because
    Ints can easily overflow when you use d-squared type numbers. */
 
-
-
+extern double hav(double x1, double x2);
 inline double hav(double x1, double x2)
 {
   double h=sin((x1-x2)/2.0);
-
   return h*h;
-
 }
 
 double KDdist(kd_box Xq, KDElem *elem)

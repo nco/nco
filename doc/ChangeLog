@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha14: Fiscalini';git push
 	git tag -a 4.9.4-alpha14 -m 'ncclimo clm_nfo to ncra';git push --tags
 
-	* Merged Henry's nearest neighbor distance weighted interpolation algorithm
+	* Fix linking with extern double hav(double x1, double x2)
+
+	* Merge Henry's nearest neighbor distance weighted interpolation algorithm
 
 2020-08-20  Charlie Zender  <zender@uci.edu>
 
