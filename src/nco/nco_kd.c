@@ -91,7 +91,9 @@ static double kd_tree_badness_factor2 = 0.0;
 static double kd_tree_badness_factor3 = 0.0;  /* count of one-son nodes */
 static int kd_tree_max_levels = 0;
 
-
+/* used in kDist to calculate the appropriate distance metric */
+/* nb this is set in Kd_nearest()  */
+static poly_typ_enm kd_pl_typ=poly_rll;
 
 
 /* Forward declarations
@@ -1955,8 +1957,66 @@ int find_min_max_node(int j, KDElem **kd_minval_node, KDElem **kd_minval_nodesda
 
 
 
+inline double hav(double x1, double x2)
+{
+  double h=sin((x1-x2)/2.0);
+
+  return h*h;
+
+}
+
 double KDdist(kd_box Xq, KDElem *elem)
 {
+    double hyp;
+
+    switch(kd_pl_typ)
+	{
+
+    	/* use 2D cartesian distance */
+	  case poly_crt:
+	  case poly_rll:
+		hyp=hypot(  Xq[KD_LEFT] - ((poly_sct*)elem->item)->dp_x_ctr, Xq[KD_TOP] -  ((poly_sct*)elem->item)->dp_y_ctr   );
+
+    	break;
+
+
+	  case poly_sph:
+	  {
+	  	double x1;
+	  	double y1;
+	  	double x2;
+	  	double y2;
+
+
+        x1=((poly_sct*)elem->item)->dp_x_ctr *M_PI / 180.0;
+        y1=((poly_sct*)elem->item)->dp_y_ctr *M_PI / 180.0;
+
+
+        /* convert to radians */
+        x2=Xq[KD_LEFT] * M_PI/180.0;
+        y2=Xq[KD_TOP]  * M_PI/180.0;
+
+        /* orthodromic distance - classic formula */
+        //hyp=acos( sin(y1)*sin(y2) +  cos(y1)*cos(y2)*cos( x1-x2 )  );
+
+        /* haversine formula */
+        hyp = 2.0* asin( sqrt(  hav(y1,y2)  + cos(y1)*cos(y2)* hav(x1,x2) )  );
+
+
+
+	  }
+	  break;
+
+
+
+	} /* end switch */
+
+
+
+   return hyp;
+
+
+
 
   // double hypot();
 	/* The following calcs edge-to-edge distance on bounding boxes. I could
@@ -2038,41 +2098,17 @@ void add_priority(int m, KDPriority *P, kd_box Xq, KDElem *elem)
 		else
 			break;
 	}
-        return;
+	return;
 }
 
 
-int add_priority_intersect(int m, KDPriority *P, kd_box Xq, KDElem *elem)
-{
-	int idx;
-	double d;
-	
-	d = KDdist(Xq,elem);
-        d*=d;
 
-	for(idx=01 ;idx<m; idx++)
-	{
-	  /* elem empty */
-          if( !P[idx].elem   )
-	   {    
-	    P[idx].dist=d;
-	    P[idx].elem=elem;
-            break;
-          }
-	}
-	
-	return 1;
-}
-
-int kd_nearest(KDTree* tree, double x, double y, int m, KDPriority **alist);
-
-
-void kd_print_nearest(KDTree* tree, double x, double y, int m)
+void kd_print_nearest(KDTree* tree, double x, double y, poly_typ_enm pl_typ, int m)
 {
 	KDPriority *list=NULL;
 	int xz,i;
 	
-	xz = kd_nearest(tree, x, y, m, &list);
+	xz = kd_nearest(tree, x, y, pl_typ,  m, list);
 	fprintf(stdout,"Nearest Search: visited %d nodes to find the %d closest objects.\n", xz, m);
 	for(i=0;i<m;i++)
 	{
@@ -2119,7 +2155,7 @@ int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list
 	int idx;
 	double sum=0.0;
 
-	int dbg_flg=1;
+	int dbg_flg=0;
 
 	if(dbg_flg)
 	  printf("ball: Bp(%.14f, %.14f) Bn(%.14f, %.14f) list[m-1].dist=%g ",  Bp[0], Bp[1], Bn[0], Bn[1], list[m-1].dist);
@@ -2131,20 +2167,23 @@ int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list
 		{
 			sum += coord_dist(Xq[idx],Bn[idx]);
 			if( sum > list[m-1].dist )
-			  { printf(" ret=0\n"); return 0; };
+			  return 0;
 		}
 		else if( Xq[idx] > Bp[idx] )
 		{
 			sum += coord_dist(Xq[idx],Bp[idx]);
 			if( sum > list[m-1].dist )
-  			  { printf(" ret=0\n");  return 0; };
+  			  return 0;
 		}
 	}
-        printf(" ret=1\n");
+
+	if(dbg_flg)
+		printf(" ret=1\n");
+
 	return 1;
 }
 
-int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn)
+int  kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority *list, kd_box Bp, kd_box Bn)
 {
     int d;
     short hort,vert;
@@ -2184,7 +2223,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 		hort = d & 1;
 		vert = d & 2;
 
-                printf("kd_neighbour(), state=%d p=%g disc=%d kd_data_tries=%d\n", top_elem->state,p,d,kd_data_tries );  
+		// printf("kd_neighbour(), state=%d p=%g disc=%d kd_data_tries=%d\n", top_elem->state,p,d,kd_data_tries );
 
 		
 		switch (top_elem->state)
@@ -2193,7 +2232,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 			/* Check this one */
 			kd_data_tries++;
 			if( top_item->item ) /* really shouldn't add dead nodes to the list! */
-				add_priority(m,list,Xq,top_item);
+				add_priority(nbr_list,list,Xq,top_item);
 			top_elem->state += 1;
 			break;
 		case KD_LOSON:
@@ -2213,7 +2252,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 						top_elem->Bp[hort] = top_item->other_bound;
 						top_elem->Bn[hort] = top_item->lo_min_bound;
 					}
-					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
+					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,nbr_list,list))
 					{
 						top_elem->state += 1;
 						kd_pushb(realGen, top_item->sons[KD_LOSON], (d+1)%4,top_elem->Bn,top_elem->Bp);
@@ -2238,7 +2277,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 						top_elem->Bp[hort] = top_item->hi_max_bound;
 						top_elem->Bn[hort] = top_item->size[d];
 					}
-					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
+					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,nbr_list,list))
 					{
 						top_elem->state += 1;
 						kd_pushb(realGen, top_item->sons[KD_HISON], (d+1)%4,top_elem->Bn,top_elem->Bp);
@@ -2266,7 +2305,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 						top_elem->Bp[hort] = top_item->hi_max_bound;
 						top_elem->Bn[hort] = top_item->size[d];
 					}
-					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
+					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,nbr_list,list))
 					{
 						top_elem->state += 1;
 						kd_pushb(realGen, top_item->sons[KD_HISON], (d+1)%4,top_elem->Bn,top_elem->Bp);
@@ -2291,7 +2330,7 @@ int  kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, k
 						top_elem->Bp[hort] = top_item->other_bound;
 						top_elem->Bn[hort] = top_item->lo_min_bound;
 					}
-					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,m,list))
+					if( bounds_overlap_ball(Xq,top_elem->Bp,top_elem->Bn,nbr_list,list))
 					{
 						top_elem->state += 1;
 						kd_pushb(realGen, top_item->sons[KD_LOSON], (d+1)%4,top_elem->Bn,top_elem->Bp);
@@ -2534,6 +2573,21 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_
   return 1;
 }
 
+
+/* sort by distance */
+int kd_priority_cmp_dist( const void *vp1, const void *vp2)
+{
+
+  const KDPriority * const kd1=((const KDPriority * const )vp1);
+  const KDPriority * const kd2=((const KDPriority * const )vp2);
+
+  //ptrdiff_t df= (char*)kd1->elem->item - (char*)kd2->elem->item;
+  double  df= kd1->dist - kd2->dist;
+
+  return ( df < 0.0 ? -1 :  df >0.0 ? 1 : 0   );
+}
+
+
 int kd_priority_cmp( const void *vp1, const void *vp2)
 {
 
@@ -2595,20 +2649,27 @@ nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *
 }
 
 
-int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
+
+int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m, KDPriority *alist)
 {
 	int idx;
-        kd_box Bp,Bn,Xq;
+	kd_box Bp,Bn,Xq;
 
 	Xq[KD_LEFT] = x;
 	Xq[KD_BOTTOM] = y;
 	Xq[KD_RIGHT] = x;
 	Xq[KD_TOP] = y;
-	*alist = (KDPriority *)nco_calloc(sizeof(KDPriority),m);
+
+	/* bit of  hack - set the static here -
+	 * nb is picked up in kDist() */
+	kd_pl_typ=pl_typ;
+
+	//*alist = (KDPriority *)nco_calloc(sizeof(KDPriority),m);
 	for(idx=0;idx<m;idx++)
 	{
-	  (*alist)[idx].dist = KD_DBL_MAX;
-	  (*alist)[idx].elem = (KDElem*)NULL;
+	  alist[idx].dist = KD_DBL_MAX;
+	  //alist[idx].elem = (KDElem*)NULL;
+	  //alist[idx].area = 0.0;
 	}
 
 
@@ -2619,7 +2680,7 @@ int kd_nearest(KDTree* realTree, double x, double y, int m, KDPriority **alist)
 	Bn[1]=realTree->extent[3];
 
 
-	return kd_neighbour(realTree->tree,Xq,m,*alist,Bp,Bn);
+	return kd_neighbour(realTree->tree,Xq,m,alist,Bp,Bn);
 }
 
 int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem)

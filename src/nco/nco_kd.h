@@ -69,8 +69,9 @@
 #endif
 
 #include "nco.h"
-#include "nco_mmr.h" /* Memory management */
-#include "nco_omp.h" /* OpenMP utilities */
+#include "nco_mmr.h"  /* Memory management */
+#include "nco_omp.h"  /* OpenMP utilities */
+//#include "nco_sph.h"
 //#include "nco_ply_lst.h"
 
 #define KD_LEFT		0
@@ -293,28 +294,26 @@ void kd_destroy(KDTree *this_one, void (*delfunc)(kd_generic item));
 char *kd_err_string(void);
 int kd_finish (kd_gen);
 void kd_insert(KDTree* , kd_generic , kd_box, kd_generic );
-int kd_neighbour(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn);
+int kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority *list, kd_box Bp, kd_box Bn);
 int kd_neighbour_intersect(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn);
 int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
 int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
-//int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head, KDPriority *list_end, int stateH, int stateV );
-//int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, KDPriority **list_head, KDPriority *list_end, int stateH, int stateV );
 int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_mem, int stateH, int stateV );
-int kd_nearest (KDTree* tree, double x, double y, int m, KDPriority **alist);
+int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m, KDPriority *alist);
 
 int kd_nearest_intersect(KDTree **rTree, int nbr_tr,kd_box Xq, omp_mem_sct *omp_mem, int bSort);
 int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem);
 kd_status kd_next (kd_gen , kd_generic *, kd_box);
 void kd_print (KDTree*);
 void kd_print_path(void);
-void kd_print_nearest (KDTree* tree, double x, double y, int m);
+void kd_print_nearest (KDTree* tree, double x, double y, poly_typ_enm pl_typ, int m);
 void kd_push(KDState *gen, KDElem *elem, short disc);
 void kd_pushb(KDState *gen, KDElem* elem, short dk, kd_box Bxn, kd_box Bxp);
 kd_status kd_really_delete (KDTree* theTree, kd_generic data, kd_box old_size, int *num_tries, int *num_del);
 KDTree* kd_rebuild ( KDTree* );
 int kd_set_build_depth(int depth);
 int kd_priority_cmp( const void *vp1, const void *vp2);
-
+int kd_priority_cmp_dist( const void *vp1, const void *vp2);
 nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *out_fll_nbr);
 kd_gen kd_start (KDTree* tree, kd_box size);
 kd_status kd_is_member(KDTree* , kd_generic , kd_box );
