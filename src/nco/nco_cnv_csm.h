@@ -52,13 +52,12 @@ extern "C" {
     int tm_bnd_id_out; /* [id] Variable ID for tm_bnds in output */
     int tm_crd_id_in; /* [id] Variable ID for tm_crd in input */
     int tm_crd_id_out; /* [id] Variable ID for tm_crd in output */
-    int tpd; /* I [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...]*/
+    int tpd; /* [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...] */
     int yr_end; /* [yr] Year at climo start */
     int yr_srt; /* [yr] Year at climo start */
     long dmn_srt_srt[2]; /* [idx] Start indices for retrieving start bounds */
     long dmn_srt_end[2]; /* [idx] Start indices for retrieving end bounds */
     nc_type type; /* [enm] Type of (time and) climatology bounds variable(s) */
-    nco_bool bnd2tpdclm; /* [flg] Convert time bounds to climatology bounds with diurnal component */
     nco_bool bnd2clm; /* [flg] Convert time bounds to climatology bounds */
     nco_bool clm2bnd; /* [flg] Convert climatology bounds to time bounds */
     nco_bool clm2clm; /* [flg] Convert climatology bounds to climatology bounds */

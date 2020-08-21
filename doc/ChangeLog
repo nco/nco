@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha14: Fiscalini';git push
 	git tag -a 4.9.4-alpha14 -m 'ncclimo clm_nfo to ncra';git push --tags
 
-	* Fix linking with extern double hav(double x1, double x2)
+	* Re-write ncra to use unified cb structure based on clm_nfo argument
+
+	* Fix new link error with extern double hav(double x1, double x2)
 
 	* Merge Henry's nearest neighbor distance weighted interpolation algorithm
 
