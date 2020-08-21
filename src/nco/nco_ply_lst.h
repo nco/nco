@@ -99,6 +99,16 @@ int nbr_tr,
 int lst_out_typ,
 int *pl_cnt_vrl_ret);
 
+wgt_sct **
+nco_poly_lst_mk_nni_sph(  /* create overlap mesh  for sph polygons */
+poly_sct **pl_lst_out,
+int pl_cnt,
+nco_grd_lon_typ_enm grd_lon_typ,
+KDTree **tree,
+int nbr_tr,
+int *wgt_cnt_bln_ret);
+
+
 void
 nco_poly_set_priority(
 int nbr_lst,

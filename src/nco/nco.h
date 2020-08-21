@@ -1675,7 +1675,9 @@ typedef enum nco_xtr_typ_enm
     int dst_id;
     double area;
     double wgt;
+    double dist;
   } wgt_sct;
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

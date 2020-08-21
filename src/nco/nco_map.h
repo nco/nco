@@ -147,6 +147,13 @@ extern "C" {
    var_sct *var_area_b,
    var_sct *var_frac_a);
 
+  /* create tree */
+  KDTree**
+  nco_map_kd(
+  poly_sct **pl_lst,
+  int pl_cnt,
+  nco_grd_lon_typ_enm grd_lon_typ,
+  int *nbr_tr);
 
   KDTree *
   nco_map_kd_init

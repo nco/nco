@@ -490,6 +490,7 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
      * just remember FROM HERE on that the pl->dp_x_ctr, pl->dp_y_ctr iS NOT the Centroid
      * */
 
+    /*
      if(nco_sph_inside_mk(pl,pControl ))
      {
        pl->dp_x_ctr=R2D(pControl[3]);
@@ -497,7 +498,7 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
      }
      else
        nco_poly_ctr_add(pl, grd_lon_typ);
-
+     */
 
 
 
@@ -1370,16 +1371,16 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
 
 wgt_sct **
-nco_poly_lst_mk_bln_sph(  /* create overlap mesh  for sph polygons */
-poly_sct **pl_lst_in,
-int pl_cnt_in,
+nco_poly_lst_mk_nni_sph(  /* create overlap mesh  for sph polygons */
+poly_sct **pl_lst_out,
+int pl_cnt,
 nco_grd_lon_typ_enm grd_lon_typ,
 KDTree **tree,
 int nbr_tr,
 int *wgt_cnt_bln_ret) {
 
   /* just duplicate output list to overlap */
-  const char fnc_nm[] = "nco_poly_lst_mk_vrl_sph()";
+  const char fnc_nm[] = "nco_poly_lst_mk_nni_sph()";
 
 
   nco_bool bSort = True;
@@ -1389,6 +1390,11 @@ int *wgt_cnt_bln_ret) {
   int thr_quota;
   /* reporting step */
   int thr_quota_step;
+  /* max number of nearest neighbours to consider */
+  const int nbr_nni=8;
+
+  double min_dist=1.0e-12;
+  double min_wgt=1.0e-20;
 
   poly_typ_enm pl_typ;
   size_t idx;
@@ -1396,14 +1402,13 @@ int *wgt_cnt_bln_ret) {
   int lcl_thr_nbr;
   omp_mem_sct *mem_lst = NULL_CEWI;
 
-  wgt_sct **wgt_lst_bln = NULL_CEWI;
-
+  wgt_sct **wgt_lst_nni = NULL_CEWI;
 
 
   FILE *const fp_stderr = stderr;
 
 
-  pl_typ = pl_lst_in[0]->pl_typ;
+  pl_typ = pl_lst_out[0]->pl_typ;
 
 
   lcl_thr_nbr = omp_get_max_threads();
@@ -1421,7 +1426,7 @@ int *wgt_cnt_bln_ret) {
     mem_lst[idx].idx_cnt = 0;
   }
 
-  thr_quota = pl_cnt_in / lcl_thr_nbr;
+  thr_quota = pl_cnt / lcl_thr_nbr;
   thr_quota_step = thr_quota / 20;
   if (thr_quota_step < 2000)
     thr_quota_step = 2000;
@@ -1445,17 +1450,22 @@ int *wgt_cnt_bln_ret) {
 #  pragma omp parallel for private(idx, thr_idx) schedule(dynamic, 40) shared(bSort, grd_lon_typ, nbr_tr,pl_typ, tree)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
-  for (idx = 0; idx < pl_cnt_in; idx++) {
+  for (idx = 0; idx < pl_cnt; idx++) {
     nco_bool bSplit = False;
 
-    int vrl_cnt = 0;
-    int vrl_cnt_on = 0;
-    int nan_cnt = 0;
-    int wrp_cnt = 0;
+    double dp_x_wrp;   /* used to do a wrapped lon search */
+    double wgt_ttl=0.0;
+
+    int nbr_nni_cnt; /* equal to or less than nbr_nni */
+
+    wgt_sct wgt_pre[nbr_nni];
+
+    wgt_sct * wgt_lcl=NULL_CEWI;
+    poly_sct *pl=NULL_CEWI;
 
     size_t jdx;
-
-    double vrl_area = 0.0;
+    size_t kdx;
+    size_t nbr_lst_lcl;
 
     kd_box size1;
     kd_box size2;
@@ -1469,7 +1479,7 @@ int *wgt_cnt_bln_ret) {
       fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n", fnc_nm, idx, thr_idx);
 
 
-    if (pl_lst_in[idx]->bmsk == False)
+    if (pl_lst_out[idx]->bmsk == False)
       continue;
 
     mem_lst[thr_idx].kd_cnt = 0;
@@ -1485,25 +1495,157 @@ int *wgt_cnt_bln_ret) {
     }
 
 
-
     /* get bounds of polygon in */
-    bSplit = nco_poly_minmax_split(pl_lst_in[idx], grd_lon_typ, size1, size2);
+    //bSplit = nco_poly_minmax_split(pl_lst_out[idx], grd_lon_typ, size1, size2);
+
+    dp_x_wrp=KD_DBL_MAX;
+
+    for(kdx=0;kdx<nbr_tr;kdx++)
+      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, pl_typ,  nbr_nni, mem_lst[thr_idx].kd_list + nbr_nni *kdx );
+
+    nbr_lst_lcl=nbr_nni*nbr_tr;
+
+    switch(grd_lon_typ)
+    {
+      case nco_grd_lon_nil:
+      case nco_grd_lon_unk:
+      case nco_grd_lon_Grn_ctr:
+      case nco_grd_lon_Grn_wst:
+      case nco_grd_lon_bb:
+        if(pl_lst_out[idx]->dp_x_ctr <180.0)
+          dp_x_wrp=pl_lst_out[idx]->dp_x_ctr+360.0;
+        else if(pl_lst_out[idx]->dp_x_ctr >180.0)
+          dp_x_wrp=pl_lst_out[idx]->dp_x_ctr-360.0;
+        break;
 
 
-    /* if a wrapped polygon then do two searches */
-    if (bSplit)
-      vrl_cnt = kd_nearest_intersect_wrp(tree, nbr_tr, size1, size2, &mem_lst[thr_idx]);
-    else
-      vrl_cnt = kd_nearest_intersect(tree, nbr_tr, size1, &mem_lst[thr_idx], bSort);
+      case nco_grd_lon_180_wst:
+      case nco_grd_lon_180_ctr:
+        if(pl_lst_out[idx]->dp_x_ctr <0.0)
+          dp_x_wrp=pl_lst_out[idx]->dp_x_ctr+360.0;
+        else if(pl_lst_out[idx]->dp_x_ctr >0.0)
+          dp_x_wrp=pl_lst_out[idx]->dp_x_ctr-360.0;
+        break;
 
-    /* nco_poly_prn(2, pl_lst_in[idx] ); */
+    }
+
+    if(False && dp_x_wrp != KD_DBL_MAX)
+    {
+      for (kdx = 0; kdx < nbr_tr; kdx++)
+        kd_nearest(tree[kdx], dp_x_wrp, pl_lst_out[idx]->dp_y_ctr, pl_typ, nbr_nni, mem_lst[thr_idx].kd_list + nbr_lst_lcl+nbr_nni * kdx);
+
+      nbr_lst_lcl+=nbr_nni*nbr_tr;
+    }
 
 
-    for (jdx = 0; jdx < pl_lst_in[idx]->crn_nbr; jdx++) {
+    if(nbr_tr >1 )
+      qsort((void *)mem_lst[thr_idx].kd_list, nbr_lst_lcl,  sizeof(KDPriority), kd_priority_cmp_dist);
 
 
-    } /* end jdx */
 
+
+    /* remember kd list sorted according to distance */
+
+    /* check first member distance if min then output singleton */
+    if(mem_lst[thr_idx].kd_list[0].dist <= min_dist)
+    {
+
+      pl=(poly_sct*)mem_lst[thr_idx].kd_list[0].elem->item;
+
+      wgt_lcl=(wgt_sct*)nco_malloc(sizeof(wgt_sct));
+      wgt_lcl->src_id=pl->src_id;
+      wgt_lcl->dst_id=pl_lst_out[idx]->src_id;
+      wgt_lcl->area=pl->area;
+      wgt_lcl->dist=mem_lst[thr_idx].kd_list[0].dist;
+      wgt_lcl->wgt=1.0;
+
+      if( mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE <  mem_lst[thr_idx].pl_cnt +1 )
+        mem_lst[thr_idx].wgt_lst= (wgt_sct**)nco_realloc(mem_lst[thr_idx].wgt_lst, sizeof(wgt_sct*) * ++mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE );
+
+      mem_lst[thr_idx].wgt_lst[mem_lst[thr_idx].pl_cnt++] =wgt_lcl;
+
+      if (nco_dbg_lvl_get() >= nco_dbg_dev)
+        (void)fprintf(fp_stderr,"%s:%s: singleton  x_ctr=%f  y_ctr=%f\n", nco_prg_nm_get(), fnc_nm, pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr );
+
+
+    }else{
+
+      /* check for duplicates in first nbr_nni by sorting again with ->item  !!!*/
+      kd_priority_list_sort(mem_lst[thr_idx].kd_list,nbr_nni, nbr_nni,&nbr_nni_cnt );
+
+      if (nco_dbg_lvl_get() >= nco_dbg_dev && nbr_nni_cnt < nbr_nni )
+         (void)fprintf(fp_stderr,"%s:%s: nbr_nni_cnt=%d x_ctr=%f  y_ctr=%f\n", nco_prg_nm_get(), fnc_nm, nbr_nni_cnt, pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr );
+
+      /* output at least one */
+      for (jdx = 0; jdx < nbr_nni_cnt; jdx++) {
+
+        pl = (poly_sct *) mem_lst[thr_idx].kd_list[jdx].elem->item;
+
+        /* remember src is in tree and dst is in list */
+        wgt_pre[jdx].src_id = pl->src_id;
+        wgt_pre[jdx].dst_id = pl_lst_out[idx]->src_id;
+        wgt_pre[jdx].area = pl->area;
+        wgt_pre[jdx].dist = mem_lst[thr_idx].kd_list[jdx].dist;
+        /* use dist squared */
+        wgt_pre[jdx].wgt = 1.0 / wgt_pre[jdx].dist / wgt_pre[jdx].dist;
+
+
+      }
+
+      /* find weights total */
+      for (jdx = 0; jdx < nbr_nni_cnt; jdx++)
+        wgt_ttl += wgt_pre[jdx].wgt;
+
+
+
+
+      /* normalize weights */
+      for (jdx = 0; jdx < nbr_nni_cnt; jdx++)
+        wgt_pre[jdx].wgt /= wgt_ttl;
+
+
+      for (jdx = 0; jdx < nbr_nni_cnt; jdx++) {
+
+        if (wgt_pre[jdx].wgt < min_wgt)
+          continue;
+
+        wgt_lcl = (wgt_sct *) nco_malloc(sizeof(wgt_sct));
+        *wgt_lcl = wgt_pre[jdx];
+
+        if (mem_lst[thr_idx].blk_nbr * NCO_VRL_BLOCKSIZE < mem_lst[thr_idx].pl_cnt + 1)
+          mem_lst[thr_idx].wgt_lst = (wgt_sct **) nco_realloc(mem_lst[thr_idx].wgt_lst,sizeof(wgt_sct *) * ++mem_lst[thr_idx].blk_nbr *NCO_VRL_BLOCKSIZE);
+
+        mem_lst[thr_idx].wgt_lst[mem_lst[thr_idx].pl_cnt++] = wgt_lcl;
+
+        //(void)fprintf(stderr,"%s: weight(%lu)=%f ",fnc_nm, mem_lst[thr_idx].pl_cnt, wgt_lcl->wgt);
+
+      } /* end jdx */
+
+
+      /*
+      if (nco_dbg_lvl_get() >= nco_dbg_dev) {
+        if ((grd_lon_typ == nco_grd_lon_Grn_ctr || grd_lon_typ == nco_grd_lon_Grn_wst) &&
+            pl_lst_out[idx]->dp_x_ctr > 0.0 && pl_lst_out[idx]->dp_x_ctr < 180.0) {
+
+          int neg_cnt=0;
+
+          for (jdx = 0; jdx < nbr_nni_cnt; jdx++)
+          {
+            pl = (poly_sct *) mem_lst[thr_idx].kd_list[jdx].elem->item;
+            if(pl->dp_x_ctr >350.0)
+              neg_cnt++;
+
+          }
+          if(neg_cnt)
+            (void)fprintf(fp_stderr,"%s:%s: in x_ctr=%f  xxneg_cnt=%d\n", nco_prg_nm_get(), fnc_nm, pl_lst_out[idx]->dp_x_ctr, neg_cnt);
+
+        }
+
+
+
+      }  */
+
+    }
 
     /* output some usefull tracking stuff - not debug but informative */
     if (  ++mem_lst[thr_idx].idx_cnt % thr_quota_step == 0 && nco_dbg_lvl_get() >=3   )
@@ -1513,50 +1655,20 @@ int *wgt_cnt_bln_ret) {
   }  /* end idx */
 
 
-  /* concatenate memory lists */
-  {
-
-    size_t tot_wgt_cnt = 0;
-    wgt_sct **tmp_wgt_lst = NULL_CEWI;
-
-    /* find total size of lists */
-    for (idx = 0; idx < lcl_thr_nbr; idx++)
-      tot_wgt_cnt += mem_lst[idx].pl_cnt;
-
-
-    wgt_lst_bln = mem_lst[0].wgt_lst;
-
-
-    wgt_lst_bln = (wgt_sct **) nco_realloc(wgt_lst_bln, sizeof(wgt_sct *) * tot_wgt_cnt);
-
-
-    tmp_wgt_lst = wgt_lst_bln;
-    tmp_wgt_lst += mem_lst[0].pl_cnt;
-
-    for (idx = 1; idx < lcl_thr_nbr; idx++) {
-      if (mem_lst[idx].pl_lst) {
-        memcpy(tmp_wgt_lst, mem_lst[idx].wgt_lst, sizeof(wgt_sct *) * mem_lst[idx].pl_cnt);
-        tmp_wgt_lst += mem_lst[idx].pl_cnt;
-
-        /* free up list */
-        mem_lst[idx].wgt_lst = (wgt_sct **) nco_free(mem_lst[idx].wgt_lst);
-      }
-    }
-
-    *wgt_cnt_bln_ret=tot_wgt_cnt;
-  }
-
-
+  nco_mem_lst_cat(mem_lst, lcl_thr_nbr);
 
 
   /* free up kd_list's */
   for(idx=0;idx<lcl_thr_nbr;idx++)
     mem_lst[idx].kd_list= (KDPriority*) nco_free(mem_lst[idx].kd_list);
 
+  wgt_lst_nni=mem_lst[0].wgt_lst;
+
+  *wgt_cnt_bln_ret=mem_lst[0].pl_cnt;
 
   mem_lst=(omp_mem_sct*)nco_free(mem_lst);
 
-  return wgt_lst_bln;
+  return wgt_lst_nni;
 
 
 }
