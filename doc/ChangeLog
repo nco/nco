@@ -1,8 +1,12 @@
-2020-08-20  Charlie Zender  <zender@uci.edu>
+2020-08-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-alpha14 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha14: Fiscalini';git push
 	git tag -a 4.9.4-alpha14 -m 'ncclimo clm_nfo to ncra';git push --tags
+
+	* Merged Henry's nearest neighbor distance weighted interpolation algorithm
+
+2020-08-20  Charlie Zender  <zender@uci.edu>
 
 	* Nicefy and commit climatology bounds test script cb_tst.nco
 
