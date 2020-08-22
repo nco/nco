@@ -179,7 +179,7 @@ extern "C" {
    int yr_end, /* I [yr] Year at climo start */
    int mth_srt, /* I [mth] Month at climo start [1..12] format */
    int mth_end, /* I [mth] Month at climo end [1..12] format */
-   int tpd, /* I [nbr] Timesteps per day [0=none, 1, 2, 3, 4, 6, 8,  12, 24, ...]*/
+   int tpd, /* I [nbr] Timesteps per day [0=monthly, 1=daily, 2, 3, 4, 6, 8, 12, 24=hourly, ...] */
    const char *unt_sng, /* I [sng] Units of time coordinate (UDUnits format) */
    const char *cln_sng, /* I [sng] Calendar string of time coordinate (UDUnits format, NULL=none) */
    double *bnd_val, /* O [frc] Climatology bounds variable values */

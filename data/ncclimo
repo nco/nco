@@ -2169,6 +2169,9 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 
     fi # !clm_md
     
+    if [ ${clm_md} = 'mth' ]; then
+	tpd_out=0
+    fi # !tpd_out	
     # Monthly output filenames constructed above; specify remaining (seasonal, annual) output names
     for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
 	# Produces names like "${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
