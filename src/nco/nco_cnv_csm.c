@@ -90,7 +90,7 @@ nco_clm_nfo_get /* [fnc] Parse clm_nfo arguments and merge into structure */
   //if(arg_lst[5]) cb->unt_val=arg_lst[5];
   //if(arg_lst[6]) cb->cln_val=arg_lst[6];
     
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: DEBUG %s reports variable climatology bounds structure elements yr_srt=%d, yr_end=%d, mth_srt=%d, mth_end=%d, tpd=%d, unt_val=%s, cln_val=%s\n",nco_prg_nm_get(),fnc_nm,cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->unt_val,cb->cln_val);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: DEBUG %s reports variable climatology bounds structure elements yr_srt=%d, yr_end=%d, mth_srt=%d, mth_end=%d, tpd=%d, unt_val=%s, cln_val=%s\n",nco_prg_nm_get(),fnc_nm,cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->unt_val,cb->cln_val);
 
   return NCO_NOERR;
 } /* !nco_clm_nfo_get() */
@@ -102,7 +102,7 @@ nco_cnv_ini /* O [fnc] Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating
   /* Purpose: Determine conventions (ARM/CCM/CCSM/CF/MPAS) for treating file
      Based-on and supercedes nco_cnv_ccm_ccsm_cf_inq() */
 
-  //  const char fnc_nm[]="nco_cnv_ini()"; /* [sng] Function name */
+  // const char fnc_nm[]="nco_cnv_ini()"; /* [sng] Function name */
 
   char *att_val;
   char *cnv_sng=NULL_CEWI;

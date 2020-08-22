@@ -1085,11 +1085,12 @@ main(int argc,char **argv)
       if(cb->clm2bnd) cb->tm_bnd_id_out=cb->clm_bnd_id_out;
     } /* !clm2clm */
 
-    if(cb->bnd2clm || cb->clm2bnd){
-      aed_sct aed_mtd;
-      char *att_nm;
-      char *att_val;
+    /* Begin attribute manipulation */
+    aed_sct aed_mtd;
+    char *att_nm;
+    char *att_val;
 
+    if(cb->bnd2clm || cb->clm2bnd){
       /* Add new bounds attribute */
       att_nm = (cb->bnd2clm) ? strdup(clm_sng) : strdup(bnd_sng);
       att_val= (cb->bnd2clm) ? strdup(cb->clm_bnd_nm) : strdup(cb->tm_bnd_nm);
@@ -1112,18 +1113,20 @@ main(int argc,char **argv)
       aed_mtd.mode=aed_delete;
       (void)nco_aed_prc(out_id,cb->tm_crd_id_out,aed_mtd);
       if(att_nm) att_nm=(char *)nco_free(att_nm);
+    } /* !bnd2clm !clm2bnd */
 
-      /* Copy units attribute from coordinate to new bounds if necessary */
-      if(cb->tm_bnd_in) rcd=nco_inq_att_flg(out_id,cb->tm_bnd_id_out,unt_sng,&att_typ,&att_sz);
-      if(cb->clm_bnd_in) rcd=nco_inq_att_flg(out_id,cb->clm_bnd_id_out,unt_sng,&att_typ,&att_sz);
-      if(rcd != NC_NOERR && att_typ == NC_CHAR){
-	rcd=nco_inq_att_flg(out_id,cb->tm_crd_id_out,unt_sng,&att_typ,&att_sz);
-	if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	  cb->unt_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	  rcd+=nco_get_att(out_id,cb->tm_crd_id_out,unt_sng,cb->unt_val,att_typ);
-	  /* NUL-terminate attribute before using strstr() */
-	  cb->unt_val[att_sz]='\0';
-	  
+    /* Obtain units and calendar strings and copy these to new bounds if necessary */
+    if(cb->tm_bnd_in) rcd=nco_inq_att_flg(out_id,cb->tm_bnd_id_out,unt_sng,&att_typ,&att_sz);
+    if(cb->clm_bnd_in) rcd=nco_inq_att_flg(out_id,cb->clm_bnd_id_out,unt_sng,&att_typ,&att_sz);
+    if(rcd != NC_NOERR && att_typ == NC_CHAR){
+      rcd=nco_inq_att_flg(out_id,cb->tm_crd_id_out,unt_sng,&att_typ,&att_sz);
+      if(rcd == NC_NOERR && att_typ == NC_CHAR){
+	cb->unt_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+	rcd+=nco_get_att(out_id,cb->tm_crd_id_out,unt_sng,cb->unt_val,att_typ);
+	/* NUL-terminate attribute before using strstr() */
+	cb->unt_val[att_sz]='\0';
+	
+	if(cb->bnd2clm || cb->clm2bnd){
 	  /* Add units attribute */
 	  att_nm=strdup(unt_sng);
 	  att_val=strdup(cb->unt_val);
@@ -1137,21 +1140,23 @@ main(int argc,char **argv)
 	  if(cb->bnd2clm) (void)nco_aed_prc(out_id,cb->tm_bnd_id_out,aed_mtd); else (void)nco_aed_prc(out_id,cb->clm_bnd_id_out,aed_mtd);
 	  if(att_nm) att_nm=(char *)nco_free(att_nm);
 	  if(att_val) att_val=(char *)nco_free(att_val);
-	} /* !rcd && att_typ */
-	rcd=NC_NOERR;
+	} /* !bnd2clm !clm2bnd */
       } /* !rcd && att_typ */
-
-      /* Copy calendar attribute from coordinate to new bounds if necessary */
-      if(cb->tm_bnd_in) rcd=nco_inq_att_flg(out_id,cb->tm_bnd_id_out,cln_sng,&att_typ,&att_sz);
-      if(cb->clm_bnd_in) rcd=nco_inq_att_flg(out_id,cb->clm_bnd_id_out,cln_sng,&att_typ,&att_sz);
-      if(rcd != NC_NOERR && att_typ == NC_CHAR){
-	rcd=nco_inq_att_flg(out_id,cb->tm_crd_id_out,cln_sng,&att_typ,&att_sz);
-	if(rcd == NC_NOERR && att_typ == NC_CHAR){
-	  cb->cln_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-	  rcd+=nco_get_att(out_id,cb->tm_crd_id_out,cln_sng,cb->cln_val,att_typ);
-	  /* NUL-terminate attribute before using strstr() */
-	  cb->cln_val[att_sz]='\0';
+      rcd=NC_NOERR;
+    } /* !rcd && att_typ */
+    
+    /* Copy calendar attribute from coordinate to new bounds if necessary */
+    if(cb->tm_bnd_in) rcd=nco_inq_att_flg(out_id,cb->tm_bnd_id_out,cln_sng,&att_typ,&att_sz);
+    if(cb->clm_bnd_in) rcd=nco_inq_att_flg(out_id,cb->clm_bnd_id_out,cln_sng,&att_typ,&att_sz);
+    if(rcd != NC_NOERR && att_typ == NC_CHAR){
+      rcd=nco_inq_att_flg(out_id,cb->tm_crd_id_out,cln_sng,&att_typ,&att_sz);
+      if(rcd == NC_NOERR && att_typ == NC_CHAR){
+	cb->cln_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+	rcd+=nco_get_att(out_id,cb->tm_crd_id_out,cln_sng,cb->cln_val,att_typ);
+	/* NUL-terminate attribute before using strstr() */
+	cb->cln_val[att_sz]='\0';
 	  
+	if(cb->bnd2clm || cb->clm2bnd){
 	  /* Add calendar attribute */
 	  att_nm=strdup(cln_sng);
 	  att_val=strdup(cb->cln_val);
@@ -1165,12 +1170,11 @@ main(int argc,char **argv)
 	  if(cb->bnd2clm) (void)nco_aed_prc(out_id,cb->tm_bnd_id_out,aed_mtd); else (void)nco_aed_prc(out_id,cb->clm_bnd_id_out,aed_mtd);
 	  if(att_nm) att_nm=(char *)nco_free(att_nm);
 	  if(att_val) att_val=(char *)nco_free(att_val);
-	} /* !rcd && att_typ */
-	rcd=NC_NOERR;
+	} /* !bnd2clm !clm2bnd */
       } /* !rcd && att_typ */
+      rcd=NC_NOERR;
+    } /* !rcd && att_typ */
       
-    } /* !bnd2clm !clm2bnd */
-
     /* For memory allocation when tpd == 0 is valid argument fxm: delete next line once tpd == 0 is accepted by nco_clm_nfo_to_tm_bnds() */
     if(cb->tpd < 1) cb->tpd=1;
     /* Combine calendar and units strings with clm_nfo_sng to create climatological time and bounds arrays */

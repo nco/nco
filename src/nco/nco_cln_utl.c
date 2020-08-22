@@ -474,6 +474,8 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
  double *bnd_val, /* O [frc] Climatology bounds variable values */
  double *tm_val) /* O [frc] Time coordinate values */
 {
+  const char fnc_nm[]="nco_clm_nfo_to_tm_bnds()"; /* [sng] Function name */
+
   char srt_sng[200];
   char end_sng[200];
   char md_sng[200];
@@ -485,16 +487,21 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
   var_sct *var_tmp=NULL_CEWI;
   
   step=24.0/tpd;
-  
+
+  if(!unt_sng) (void)fprintf(stdout,"%s: WARNING %s called with empty units string\n",nco_prg_nm_get(),fnc_nm);
+  if(!cln_sng){
+    (void)fprintf(stdout,"%s: WARNING %s called with empty calendar string, will adopt default calendar \"noleap\"\n",nco_prg_nm_get(),fnc_nm);
+    /* Default to noleap (365-day) calendar used by most ESMs */
+    if(!cln_sng) cln_sng=(char *)strdup("noleap");
+  } /* !cln_sng */
   cln_typ=nco_cln_get_cln_typ(cln_sng);
   
-  if(cln_typ == cln_nil)
-    return NCO_ERR;
+  if(cln_typ == cln_nil) return NCO_ERR;
   
-  sprintf(srt_sng, "seconds since %d-%d-01",yr_srt,mth_srt);
+  sprintf(srt_sng,"seconds since %d-%d-01",yr_srt,mth_srt);
   
-  /* move end foward by one month */
-  if(++mth_end ==13){
+  /* Move end forward one month */
+  if(++mth_end == 13){
     mth_end=1;
    yr_end++;
   }
@@ -510,24 +517,24 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
       
       double dbl_dff_org=0.0;
       
-      /* move forward by one month */
+      /* Move forward one month */
       if(++mth_md_srt == 13){
         mth_md_srt=1;
         yr_md_srt++;
       }
       
       /* find day in middle of month - round to midnight */
-      sprintf(md_sng,"seconds since %d-%d-01", yr_md_srt, mth_md_srt);
+      sprintf(md_sng,"seconds since %d-%d-01",yr_md_srt,mth_md_srt);
       
       /* find number of seconds between start and end of month */
-      if(nco_cln_clc_dbl_var_dff(md_sng,srt_sng,cln_typ,&dbl_dff_org,(var_sct*)NULL) != NCO_NOERR)
+      if(nco_cln_clc_dbl_var_dff(md_sng,srt_sng,cln_typ,&dbl_dff_org,(var_sct *)NULL) != NCO_NOERR)
         return NCO_ERR;
       
       /* NB: integer arithmetic */
       days=dbl_dff_org/2/(24*3600);
       
       tm_val[0]=days*24.0*3600.0;
-      if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,&tm_val[0],(var_sct*)NULL) != NCO_NOERR)
+      if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,&tm_val[0],(var_sct *)NULL) != NCO_NOERR)
         return NCO_ERR;
     } /* !tm_val */
 
@@ -535,24 +542,23 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
       bnd_val[0]=0.0;
       bnd_val[1]=0.0;
 
-      if(nco_cln_clc_dbl_var_dff(srt_sng, unt_sng, cln_typ, &bnd_val[0], (var_sct*)NULL) != NCO_NOERR)
+      if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,&bnd_val[0],(var_sct *)NULL) != NCO_NOERR)
         return NCO_ERR;
 
-      if(nco_cln_clc_dbl_var_dff(end_sng, unt_sng, cln_typ, &bnd_val[1], (var_sct*)NULL) != NCO_NOERR)
+      if(nco_cln_clc_dbl_var_dff(end_sng,unt_sng,cln_typ,&bnd_val[1],(var_sct *)NULL) != NCO_NOERR)
         return NCO_ERR;
     } /* !bnd_val */
 
     return NCO_NOERR;
-  } /* !tpd */
+  } /* tpd != 0 */
 
-  var_tmp=(var_sct*)nco_malloc(sizeof(var_sct));
+  /* tpd >= 1 so times are daily or diurnal */
+  var_tmp=(var_sct *)nco_malloc(sizeof(var_sct));
   var_dfl_set(var_tmp);
   var_tmp->type=NC_DOUBLE;
 
   if(tm_val){
-
      var_tmp->sz=tpd;
-
      for(idx=0;idx<tpd;idx++)
        tm_val[idx]=(step/2 + step*idx)*3600;
 
@@ -567,13 +573,13 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
   } /* !tm_val */
 
   if(bnd_val){
-    /* seconds difference between srt_sng and end_sng */
+    /* Seconds difference between srt_sng and end_sng */
     double srt_end_dff;
 
-    if(nco_cln_clc_dbl_var_dff(end_sng,srt_sng,cln_typ,&srt_end_dff,(var_sct*)NULL) != NCO_NOERR)
+    if(nco_cln_clc_dbl_var_dff(end_sng,srt_sng,cln_typ,&srt_end_dff,(var_sct *)NULL) != NCO_NOERR)
       return NCO_ERR;
 
-    /* start at midnight of previous day (last day of previous month) */
+    /* Start at midnight of previous day (last day of previous month) */
     srt_end_dff=srt_end_dff - (24.0-step)*3600.0;
 
     var_tmp->sz=tpd*2;
