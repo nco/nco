@@ -2,7 +2,7 @@
 
 	* NCO 4.9.4-alpha14 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha14: Fiscalini';git push
-	git tag -a 4.9.4-alpha14 -m 'ncclimo clm_nfo to ncra';git push --tags
+	git tag -a 4.9.4-alpha14 -m 'ncclimo clm_nfo to ncra, deprecate	c2b, add cb_tst.nco;ncremap nni';git push --tags
 
 	* Always define unt_val and cln_val, fix DJF clm_nfo interpretation, results look valid
 
