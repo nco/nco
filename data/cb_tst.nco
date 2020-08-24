@@ -15,7 +15,11 @@
   if(!exists(mth_srt)) mth_srt=1;
   if(!exists(mth_end)) mth_end=12;
 
-  defdim("tpd",tpd);
+  if( tpd==0 ) 
+     defdim("tpd",1);
+  else
+    defdim("tpd",tpd);
+
   defdim("bnd",2);
 
   tm_var[tpd]=0.0;
