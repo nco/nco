@@ -395,7 +395,7 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
 
   /* buffers  used in nco-poly_re_org() */
   
-  double pControl[NBR_SPH];
+
 
   poly_sct *pl=(poly_sct*)NULL_CEWI;
 
@@ -700,7 +700,7 @@ int *pl_cnt_vrl_ret){
   nco_bool bDirtyRats=False;
   nco_bool bSort=True;
 
-  int max_nbr_vrl=(NCO_VRL_BLOCKSIZE);
+
   int pl_cnt_vrl=0;
 
   int thr_idx=0;
@@ -764,12 +764,12 @@ int *pl_cnt_vrl_ret){
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined(__INTEL_COMPILER)
-# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,fnc_nm,grd_lon_typ,max_nbr_vrl,mem_lst,nbr_tr,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,tree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
+# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,fnc_nm,grd_lon_typ,mem_lst,nbr_tr,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,tree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for(idx=0 ; idx<pl_cnt_in ;idx++ ) {
@@ -1383,7 +1383,7 @@ int *wgt_cnt_bln_ret) {
   const char fnc_nm[] = "nco_poly_lst_mk_nni_sph()";
 
 
-  nco_bool bSort = True;
+
 
   int thr_idx = 0;
   /* approx number of input cells each thread will process */
@@ -1442,16 +1442,16 @@ int *wgt_cnt_bln_ret) {
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined(__INTEL_COMPILER)
-# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,fnc_nm,grd_lon_typ,max_nbr_vrl,mem_lst,nbr_tr,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,tree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
+# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,fnc_nm,grd_lon_typ,max_nbr_vrl,mem_lst,nbr_tr,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,tree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
-#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,max_nbr_vrl,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,grd_lon_typ,max_nbr_vrl,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx, thr_idx) schedule(dynamic, 40) shared(bSort, grd_lon_typ, nbr_tr,pl_typ, tree)
+#  pragma omp parallel for private(idx, thr_idx) schedule(dynamic, 40) shared(grd_lon_typ, nbr_tr,pl_typ, tree)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for (idx = 0; idx < pl_cnt; idx++) {
-    nco_bool bSplit = False;
+
 
     double dp_x_wrp;   /* used to do a wrapped lon search */
     double wgt_ttl=0.0;
@@ -1467,8 +1467,8 @@ int *wgt_cnt_bln_ret) {
     size_t kdx;
     size_t nbr_lst_lcl;
 
-    kd_box size1;
-    kd_box size2;
+
+
 
     // (void) nco_poly_set_priority(max_nbr_vrl, list);
 
