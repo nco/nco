@@ -588,7 +588,7 @@ char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p,
   double dx_cd;
   double dx_ci;
 
-  double darc;
+
 
   double  Pcross[NBR_SPH]={0};
   double  Qcross[NBR_SPH]={0};
@@ -617,7 +617,7 @@ char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p,
     nco_sph_add_lonlat(Icross);
   }
 
-  darc=atan(nx3);
+
 
   /*
   if(DEBUG_SPH) {
@@ -2569,7 +2569,7 @@ double n1;
 
 
 double dp;
-double theta=0.0;
+
 
 
 double    Vp[NBR_SPH];
@@ -2609,7 +2609,7 @@ int nco_sph_mk_control(poly_sct *sP, nco_bool bInside,  double* pControl  )
    /* do stuff in radians */
 
 
-   int iret=NCO_ERR;
+
    double clat=0.0;
    double clon=0.0;
 
@@ -2917,7 +2917,7 @@ nco_sph_inside_mk(poly_sct *sP, double *pControl)
   int mid_idx1=-1;
   int max_idx=-1;
 
-  nco_bool bDeg=False;
+
 
 
   double max_dp = -(KD_DBL_MAX);
@@ -3107,8 +3107,8 @@ void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bSimple, n
 {
 
    char fnc_nm[]="nco_geo_lonlat_2_sph";
-   nco_bool bTidy=False;
-   double sigma=1.0e-14;
+
+
 
    if(bDeg) {
       lon *= M_PI / 180.0;

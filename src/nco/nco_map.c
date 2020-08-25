@@ -803,7 +803,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
 
   size_t idx; /* [idx] Counting index for unrolled grids */
-  size_t lnk_nbr; /* [nbr] Number of links */
+  size_t lnk_nbr=0; /* [nbr] Number of links */
   //size_t lnk_idx; /* [idx] Link index */
 
   int pl_cnt_vrl=0;
@@ -2145,7 +2145,7 @@ nco_map_chk /* Map-file evaluation */
   size_t idx_min;
   size_t idx_max;
   size_t sz;
-  size_t tally;
+
   
 
 
@@ -2230,7 +2230,6 @@ nco_map_chk /* Map-file evaluation */
     if(idx < sz) fprintf(stdout,"WARNING area_b = %g for grid B cell [%lu,%+g,%+g] (and possibly others). Empty areas are legal (e.g., for bilinear maps) yet prevent calculation of some diagnostics.\n",val[idx],idx+1UL,var_yc_b->val.dp[idx],var_xc_b->val.dp[idx]);
   } /* !var_area_b */
   if(var_frac_a){
-    tally=0L;
     has_frac_a=True;
     sz=var_frac_a->sz;
     val=var_frac_a->val.dp;

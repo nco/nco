@@ -481,6 +481,8 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
   char md_sng[200];
   
   int idx;
+  int day_mid=15;
+
   double step;
   
   nco_cln_typ cln_typ;
@@ -509,34 +511,18 @@ nco_clm_nfo_to_tm_bnds /* [fnc] Compute and return climatological time and bound
   sprintf(end_sng,"seconds since %d-%d-01",yr_end,mth_end);
   
   if(tpd == 0){
-    
+
     if(tm_val){
-      int days;
-      int mth_md_srt=mth_srt;
-      int yr_md_srt=yr_srt;
-      
-      double dbl_dff_org=0.0;
-      
-      /* Move forward one month */
-      if(++mth_md_srt == 13){
-        mth_md_srt=1;
-        yr_md_srt++;
-      }
-      
-      /* find day in middle of month - round to midnight */
-      sprintf(md_sng,"seconds since %d-%d-01",yr_md_srt,mth_md_srt);
-      
-      /* find number of seconds between start and end of month */
-      if(nco_cln_clc_dbl_var_dff(md_sng,srt_sng,cln_typ,&dbl_dff_org,(var_sct *)NULL) != NCO_NOERR)
+
+      tm_val[0]=0.0;
+
+      /* find day in middle of month - see day_mid  */
+      sprintf(md_sng,"seconds since %d-%d-%d",yr_srt,mth_srt, day_mid);
+
+      if(nco_cln_clc_dbl_var_dff(md_sng,unt_sng,cln_typ,&tm_val[0],(var_sct *)NULL) != NCO_NOERR)
         return NCO_ERR;
-      
-      /* NB: integer arithmetic */
-      days=dbl_dff_org/2/(24*3600);
-      
-      tm_val[0]=days*24.0*3600.0;
-      if(nco_cln_clc_dbl_var_dff(srt_sng,unt_sng,cln_typ,&tm_val[0],(var_sct *)NULL) != NCO_NOERR)
-        return NCO_ERR;
-    } /* !tm_val */
+
+    }
 
     if(bnd_val){
       bnd_val[0]=0.0;
