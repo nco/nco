@@ -1187,8 +1187,6 @@ main(int argc,char **argv)
       rcd=NC_NOERR;
     } /* !rcd */
       
-    /* For memory allocation when tpd == 0 is valid argument fxm: delete next line once tpd == 0 is accepted by nco_clm_nfo_to_tm_bnds() */
-    if(cb->tpd < 1) cb->tpd=1;
     /* Combine calendar and units strings with clm_nfo_sng to create climatological time and bounds arrays */
     if(clm_nfo_sng) rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
     //assert(rcd != NCO_NOERR);
