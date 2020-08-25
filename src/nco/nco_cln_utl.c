@@ -1,4 +1,4 @@
-/* $Header$ */
+ /* $Header$ */
 
 /* Purpose: Calendar utilities */
 
@@ -656,7 +656,16 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
 #ifdef ENABLE_UDUNITS
 # ifdef HAVE_UDUNITS2_H
 
-/* UDUnits2 routines */
+
+
+
+
+
+/* Make a udunits2 converter:
+ *
+ * Used internally by nco_cln_clc_dbl_dff() and  nco_cln_clc_var_dff()
+ * NB it is up to the calling function to free up the converter after use */
+
 cv_converter*   /* UDUnits converter */
 nco_cln_cnv_mk  /* [fnc] UDUnits2 create a custom converter  */
 (const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
@@ -719,6 +728,15 @@ nco_cln_cnv_mk  /* [fnc] UDUnits2 create a custom converter  */
   return ut_cnv;
 }  /* end UDUnits2 nco_cln_cnv_mk() */
 
+
+/* fl_unt_sng - source units
+ * fl_bs_sng  - target units
+ * *og_val    -  single value of type NC_DOUBLE
+ *
+ * Conversion done by udunits library.
+ * Input and Output value og_val
+ * /
+ *
 int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_dff( /* [fnc] difference between two co-ordinate units */
 const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
@@ -739,6 +757,15 @@ double *og_val)
 
   return NCO_NOERR;          
 } /* end UDUnits2 nco_cln_clc_dbl_dff() */
+
+
+/* fl_unt_sng - source units
+ * fl_bs_sng  - target units
+ * var        -  var_sct array of values.
+ *
+ * Conversion done by udunits library
+ * if var->type less than NC_FLOAT then var is promoted to NC_DOUBLE for conversion then
+ * demoted back afterwards. */
 
 int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_var_dff /* [fnc] difference between two co-ordinate units */
@@ -807,6 +834,31 @@ nco_cln_clc_var_dff /* [fnc] difference between two co-ordinate units */
  return NCO_NOERR;
 } /* !nco_cln_clc_var_dff() */
 
+
+
+
+/* This function is similar to nco_cln_clc_dbl_org() except the value(s) to be converted
+   is in og_val or an array of values in var.
+
+   fl_unt_sng - is the  source units string
+   fl_bs_sng  - is the targets unit string
+   lmt_cln    - is the calendar type or lmt_nil (as approriate)
+   *og_val    - input value or (double*)NULL if var is used
+   *var       - input array of values or (var_sct*)NULL if og_val used.
+   *
+   * if a non standard lmt_cln is used.then the nco_cln_utl is used (transparently) to do the conversion
+   * otherwise the udunits2 library is used.
+   *
+   * If var type is less than NC_FLOAT or NC_DOUBLE. Then var is promoted to NC_DOUBLE for the conversion;
+   * then demoted back to original type after.
+   *
+   *
+   * Examples of usage:
+   * nco_cln_clc_dbl_var_dff("seconds since 2001-01-01", "days since 1978-02-04", cln_365, og_val, (var_sct*)NULL);
+   *
+   * nco_cln_clc_dbl_var_dff("days since 1900-01-01", "days since 1950-01-31", cln_std, (double*)NULL, var);
+   */
+
 int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_var_dff( /* [fnc] difference between two co-ordinate units */
 const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
@@ -842,6 +894,25 @@ var_sct *var) /* I/O [var_sct] var values modified - can be NULL  */
   return rcd;
 } /* end UDUnits2 nco_cln_clc_dbl_var_dff() */
 
+
+
+/* If you wish to replicate the function of the udunits2 command line application then
+ * This should be your first port of call.
+ * val_unt_sng takes the form  "value  units" - where val is interpreted as a double
+ * fl_bs_sng is of the form "units" and is the target units to be converted to
+ *
+ * Examples of usage:
+ * "10 days since 2001-01-01"  "hours since 2001-01-09"  - 48 (hours)
+ * "5 minutes since 1992-02-29T12:00:00" "seconds since 1992-01-31"  2.5491e+06 (seconds)
+ * "1 mile" "m"    1609.34 (m)
+ * "12 inches" "cm" 30.48 cm
+ *
+ * If lmt_cln is empty or of type "standard" (cln_std) or "julian" (cln_jul) or "gregorian" (cln_grg) then
+ * the conversion is done by the udunits2 library.
+ *
+ * if lmt_cln is of type "360_day" (cln_360) or "365_day" (cln_365) or "366_day" (cln_366) then
+ * the conversion is done "transparently" by the nco_cln_utl library.
+ * /
 int   /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_org(   /* [fnc] difference between two co-ordinate units */
 const char *val_unt_sng, /* I [ptr] input value and  units in the same string */
