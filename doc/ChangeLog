@@ -2,7 +2,7 @@
 
 	* NCO 4.9.4-alpha15 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha15: Madelines';git push
-	git tag -a 4.9.4-alpha15 -m '';git push --tags
+	git tag -a 4.9.4-alpha15 -m 'nco_vrt_ntp fix;ncclimo drn cf cnv works';git push --tags
 
 	* nco_vrt_ntp() assign grd_sz_in (from input file) := grd_sz_out (from template file)
 	This fixes vertical interpolation when PS is in vrt_fl, a regression introduced in 4.9.2
