@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha15: Madelines';git push
 	git tag -a 4.9.4-alpha15 -m '';git push --tags
 
-	* Start to utilize tpd=0 for monthly mean data
+	* Informational error message when vertical interpolation horizontal/temporal grids mismatched
+
+	* Start to utilize tpd=0 for monthly mean data thanks to clm_nfo bugfix
 
 2020-08-23  Charlie Zender  <zender@uci.edu>
 

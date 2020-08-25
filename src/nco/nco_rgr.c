@@ -1295,6 +1295,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
 
     /* Sanity checks */
+    if(grd_sz_in != grd_sz_out || tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: ERROR %s reports that temporal or horizontal spatial dimensions differ: grd_sz_in = %ld != %ld = grd_sz_out, tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out,tm_nbr_in,tm_nbr_out);
     assert(grd_sz_in == grd_sz_out);
     assert(tm_nbr_in == tm_nbr_out);
 
