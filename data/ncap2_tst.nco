@@ -404,7 +404,7 @@ nbr_err_ttl=0;
     nbr_err++;
   }
   
-  ram_delete(hmask);
+  // ram_delete(hmask);
 
   print("RESULTS block h: Num errors="); print(nbr_err,"%d");
   nbr_err_ttl+=nbr_err;
@@ -685,7 +685,7 @@ nbr_err_ttl=0;
   // Create map larger variable
   n3=remap(three_dmn_var_dbl,n1_map);
 
-  if(n1.min() != n1_st(0,0) || n1.max()!=n1_st(7)){
+  if(n1.min() != n1_st(0,0) || n1.max()!=n1_st(1,3)){
         print("ERROR: n1: Basic sort test\n");
         nbr_err++;
   }
