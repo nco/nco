@@ -728,14 +728,14 @@ double *og_val)
   cv_converter *ut_cnv=NULL; 
 
   /* Do nothing if units identical */
-  if(strcasecmp(fl_unt_sng,fl_bs_sng)==0) return NCO_NOERR;
+  if(strcasecmp(fl_unt_sng,fl_bs_sng) == 0) return NCO_NOERR;
 
   /* Convert */
   ut_cnv=nco_cln_cnv_mk(fl_unt_sng, fl_bs_sng);
 
   if(ut_cnv != NULL) og_val[0]=cv_convert_double(ut_cnv,og_val[0]); else return NCO_ERR;     
 
-  cv_free(ut_cnv);  
+  cv_free(ut_cnv);
 
   return NCO_NOERR;          
 } /* end UDUnits2 nco_cln_clc_dbl_dff() */
@@ -913,7 +913,6 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 
   double crr_val=0.0;
   double scl_val=1.0;
-
 
   tm_typ unt_tm_typ; /* enum for units type in fl_unt_sng */
   tm_typ bs_tm_typ; /* enum for units type in fl_bs_sng */

@@ -767,7 +767,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   const char fnc_nm[]="nco_ntp_vrt()"; /* [sng] Function name */
 
-  char *fl_tpl;
+  char *fl_tpl; /* [sng] Template file (vertical grid file) */
   char *fl_pth_lcl=NULL;
 
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
@@ -1033,8 +1033,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 
   /* Above this line, fl_tpl and tpl_id refer to vertical coordinate file (i.e., template file)
      Below this line, fl_in and in_id refer to input file to be vertically regridded
-     We do not close template file until after copying all grid variables
-     For maximum efficiency, we do this just after defining all interpolated variables in output
+     Do not close template file until all grid variables have been copied
+     For maximum efficiency, do this after defining all interpolated variables in output 
      That way no file needs to exit define mode or enter data mode more than once
      However this requires keeping template file, input data file, and output file simulataneously open */
   in_id=rgr->in_id;
@@ -1280,6 +1280,19 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
       memcpy(dmn_cnt_out,dmn_cnt_in,dmn_nbr_in*sizeof(long));
       grd_sz_out=grd_sz_in;
       tm_nbr_out=tm_nbr_in;
+    }else{ /* !ps_id_tpl */
+      /* 20200825: 
+	 We have already defined grd_sz_out if PS is in template file
+	 We have already defined grd_sz_in and grd_sz_out := grd_sz_in when PS not in template file
+	 We have already defined grd_sz_in if input file is pure-pressure
+	 However, we have not yet defined grd_sz_in if input file is hybrid
+	 Expectation is that grd_sz_in (from input file) = grd_sz_out (from template file)
+	 An independent check on this would examine dimension sizes in input file
+	 Such a check would immediately flag horizontal mismatches between vertical file and input file
+	 The check could not rely on PS being present in input file
+	 The check could/should examine the first horizontal variable in input file
+	 This would require a lot of code, so we just assume it is true */
+      grd_sz_in=grd_sz_out;
     } /* !ps_id_tpl */
 
     /* Timestep sequencing
@@ -1295,7 +1308,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
     tm_nbr=tm_nbr_in > tm_nbr_out ? tm_nbr_in : tm_nbr_out;
 
     /* Sanity checks */
-    if(grd_sz_in != grd_sz_out || tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: ERROR %s reports that temporal or horizontal spatial dimensions differ: grd_sz_in = %ld != %ld = grd_sz_out, tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out,tm_nbr_in,tm_nbr_out);
+    if(grd_sz_in != grd_sz_out || tm_nbr_in != tm_nbr_out) (void)fprintf(stdout,"%s: ERROR %s reports that temporal or horizontal spatial dimensions differ: grd_sz_in = %ld != %ld = grd_sz_out, and/or tm_nbr_in = %ld != %ld = tm_nbr_out\n",nco_prg_nm_get(),fnc_nm,grd_sz_in,grd_sz_out,tm_nbr_in,tm_nbr_out);
     assert(grd_sz_in == grd_sz_out);
     assert(tm_nbr_in == tm_nbr_out);
 
