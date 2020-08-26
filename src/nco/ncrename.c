@@ -198,6 +198,7 @@ main(int argc,char **argv)
     {"log_level",required_argument,0,0}, /* [enm] netCDF library debugging verbosity [0..5] */
     /* Long options with short counterparts */
     {"attribute",required_argument,0,'a'},
+    {"dbg_lvl",required_argument,0,'D'},
     {"debug",required_argument,0,'D'},
     {"nco_dbg_lvl",required_argument,0,'D'},
     {"dimension",required_argument,0,'d'},

@@ -1,10 +1,16 @@
-2020-08-25  Charlie Zender  <zender@uci.edu>
-
-	* index.shtml: add MD5, SHA hashes to Windows self-extracting tarball on homepage
+2020-08-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta01: Uncle Leroy';git push
-	git tag -a 4.9.4-beta01 -m '';git push --tags
+	git tag -a 4.9.4-beta01 -m 'ncra doc prw';git push --tags
+
+	* Make --dbg_lvl synonym to -D for all binary executables
+
+	* ncbo re-add one set of SIMD timers for debugging use
+
+2020-08-25  Charlie Zender  <zender@uci.edu>
+
+	* index.shtml: add MD5, SHA hashes to Windows self-extracting tarball on homepage
 
 	* ncra add --prw synonym to --per_record_weights
 

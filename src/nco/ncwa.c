@@ -355,6 +355,7 @@ main(int argc,char **argv)
     {"no_crd",no_argument,0,'C'},
     {"coords",no_argument,0,'c'},
     {"crd",no_argument,0,'c'},
+    {"dbg_lvl",required_argument,0,'D'},
     {"debug",required_argument,0,'D'},
     {"nco_dbg_lvl",required_argument,0,'D'},
     {"dimension",required_argument,0,'d'},

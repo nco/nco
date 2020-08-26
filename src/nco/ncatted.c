@@ -247,6 +247,7 @@ main(int argc,char **argv)
     /* Long options with short counterparts */
     {"append",no_argument,0,'A'},
     {"attribute",required_argument,0,'a'},
+    {"dbg_lvl",required_argument,0,'D'},
     {"debug",required_argument,0,'D'},
     {"nco_dbg_lvl",required_argument,0,'D'},
     {"history",no_argument,0,'h'},

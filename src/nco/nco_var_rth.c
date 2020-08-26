@@ -2858,12 +2858,9 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
      Assume operands conform, are same type, and are in memory */
   
   /* Subtraction is currently defined as op2:=op2-op1 */
-	//static double total_time = 0;
-	//clock_t tm_srt;  
-	//clock_t tm_end;  
-	//float tm_drn;
-	//tm_srt = clock();
-	
+
+  const char fnc_nm[]="nco_var_sbt()"; /* [sng] Function name */
+
   long idx;
   
   /* Typecast pointer to values before access */
@@ -2871,14 +2868,29 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
   
+  /* 20200826 SIMD timer code 
+     Invoke with, e.g., 
+     ncbo -O --dbg=2 ${DATA}/bm/eamv1_ne30np4l72.nc ${DATA}/bm/eamv1_ne30np4l72.nc ~/foo.nc */
+  static double tm_ttl=0.0;
+  clock_t tm_srt;  
+  clock_t tm_end;  
+  double tm_drn;
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    tm_srt=clock();
+  } /* !dbg */
+	
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.fp[idx]-=op1.fp[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]-=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -2886,11 +2898,15 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.dp[idx]-=op1.dp[idx];
     }else{
       const double mss_val_dbl=*mss_val.dp;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]-=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -2898,11 +2914,15 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_INT:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.ip[idx]-=op1.ip[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.ip[idx] != mss_val_ntg) && (op1.ip[idx] != mss_val_ntg)) op2.ip[idx]-=op1.ip[idx]; else op2.ip[idx]=mss_val_ntg;
       } /* end for */
@@ -2910,11 +2930,15 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_SHORT:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.sp[idx]-=op1.sp[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_short) && (op1.sp[idx] != mss_val_short)) op2.sp[idx]-=op1.sp[idx]; else op2.sp[idx]=mss_val_short;
       } /* end for */
@@ -2922,11 +2946,15 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_USHORT:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.usp[idx]-=op1.usp[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.usp[idx] != mss_val_ushort) && (op1.usp[idx] != mss_val_ushort)) op2.usp[idx]-=op1.usp[idx]; else op2.usp[idx]=mss_val_ushort;
       } /* end for */
@@ -2934,11 +2962,15 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_UINT:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.uip[idx]-=op1.uip[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.uip[idx] != mss_val_uint) && (op1.uip[idx] != mss_val_uint)) op2.uip[idx]-=op1.uip[idx]; else op2.uip[idx]=mss_val_uint;
       } /* end for */
@@ -2946,11 +2978,15 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_INT64:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.i64p[idx]-=op1.i64p[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.i64p[idx] != mss_val_int64) && (op1.i64p[idx] != mss_val_int64)) op2.i64p[idx]-=op1.i64p[idx]; else op2.i64p[idx]=mss_val_int64;
       } /* end for */
@@ -2958,11 +2994,15 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_UINT64:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.ui64p[idx]-=op1.ui64p[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.ui64p[idx] != mss_val_uint64) && (op1.ui64p[idx] != mss_val_uint64)) op2.ui64p[idx]-=op1.ui64p[idx]; else op2.ui64p[idx]=mss_val_uint64;
       } /* end for */
@@ -2970,11 +3010,15 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_BYTE:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.bp[idx]-=op1.bp[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.bp[idx] != mss_val_byte) && (op1.bp[idx] != mss_val_byte)) op2.bp[idx]-=op1.bp[idx]; else op2.bp[idx]=mss_val_byte;
       } /* end for */
@@ -2982,11 +3026,15 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_UBYTE:
     if(!has_mss_val){
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.ubp[idx]-=op1.ubp[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
-#pragma omp simd
+#if ( __GNUC__ > 8 )
+# pragma omp simd
+#endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
 	if((op2.ubp[idx] != mss_val_ubyte) && (op1.ubp[idx] != mss_val_ubyte)) op2.ubp[idx]-=op1.ubp[idx]; else op2.ubp[idx]=mss_val_ubyte;
       } /* end for */
@@ -2999,11 +3047,24 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
- 	//tm_end = clock();
-	//tm_drn = (float)(tm_end - tm_srt)/CLOCKS_PER_SEC;
-	//total_time += tm_drn;
-	//fprintf(stdout, "Total subtraction took %gs seconds to run\n", total_time); 
-} /* end nco_var_sbt() */
+
+  /* 20200826 SIMD timer code */
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    if(tm_ttl > 0.0){
+      /* Print seen/unseen message only once per invocation */
+#if ( __GNUC__ > 8 )
+      (void)fprintf(stdout,"%s: %s reports C-compiler sees #pragma omp simd (because __GNUC__ > 8)\n",nco_prg_nm_get(),fnc_nm);
+#else /* !__GNUC__ */
+      (void)fprintf(stdout,"%s: %s reports C-compiler does not see #pragma omp simd\n",nco_prg_nm_get(),fnc_nm);
+#endif /* !__GNUC__ */
+    } /* !tm_ttl */
+    tm_end=clock();
+    tm_drn=(tm_end-tm_srt)/CLOCKS_PER_SEC;
+    tm_ttl+=tm_drn;
+    (void)fprintf(stdout,"%s: %s reports elapsed time for function is %g s\n",nco_prg_nm_get(),fnc_nm,tm_ttl);
+  } /* !dbg */
+  
+} /* !nco_var_sbt() */
 
 void
 nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second operand */

@@ -260,6 +260,7 @@ main(int argc,char **argv)
     {"xcl_ass_var",no_argument,0,'C'},
     {"no_coords",no_argument,0,'C'},
     {"no_crd",no_argument,0,'C'},
+    {"dbg_lvl",required_argument,0,'D'},
     {"debug",required_argument,0,'D'},
     {"nco_dbg_lvl",required_argument,0,'D'},
     {"dimension",required_argument,0,'d'},

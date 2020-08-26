@@ -339,7 +339,6 @@ main(int argc,char **argv)
     {"clm_bnd",no_argument,0,0}, /* [sct] Climatology bounds */
     {"cb",no_argument,0,0}, /* [sct] Climatology bounds */
     {"clm2bnd",no_argument,0,0}, /* [sct] Climatology bounds to time-bounds */
-    {"b2t",no_argument,0,0}, /* [flg] Time-bounds to diurnal climatology bounds */
     {"c2b",no_argument,0,0}, /* [sct] Climatology bounds to time-bounds */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
@@ -434,6 +433,7 @@ main(int argc,char **argv)
     {"xcl_ass_var",no_argument,0,'C'},
     {"no_coords",no_argument,0,'C'},
     {"no_crd",no_argument,0,'C'},
+    {"dbg_lvl",required_argument,0,'D'},
     {"debug",required_argument,0,'D'},
     {"nco_dbg_lvl",required_argument,0,'D'},
     {"dimension",required_argument,0,'d'},
