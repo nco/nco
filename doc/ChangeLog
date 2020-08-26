@@ -1,5 +1,7 @@
 2020-08-25  Charlie Zender  <zender@uci.edu>
 
+	* index.shtml: add MD5, SHA hashes to Windows self-extracting tarball on homepage
+
 	* NCO 4.9.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta01: Uncle Leroy';git push
 	git tag -a 4.9.4-beta01 -m '';git push --tags
