@@ -61,11 +61,28 @@ A. ncremap understands new dimensions used in DOE E3SM MPAS BGC
    Thanks to Ahmed Elshall for reporting the new dimensions.
    http://nco.sf.net/nco.html#pdq_opt
 
-D.  
+A. ncra now supports the --per_record_weights (or --prw) option to
+   utilize command-line weights specified by -w (or --wgt) for
+   per-record weights instead of per-file-weights. This is useful when
+   computing weighted averages with cyclically varying weights, since
+   the weight given on the command line will be repeated for the
+   length of the timeseries. Consider, for example, a CMIP6 timeseries
+   of historical monthly mean emissions that one wishes to convert to
+   an timeseries of annual-mean emissions. One can weight each month
+   by its number of days via: 
+   ncra --per_record_weights --mro -d time,,,12,12 --wgt \
+        31,28,31,30,31,30,31,31,30,31,30,31 ~/monthly.nc ~/annual.nc
+   http://nco.sf.net/nco.html#ncra
+   http://nco.sf.net/nco.html#per_record_weights
 
 BUG FIXES:
 
-A. Hi
+A. ncremap/ncks: Fix vertical interpolation from hybrid-to-hybrid
+   files when surface pressure is in vertical grid file.
+   This capability worked up to 4.9.1, and was inadvertently broken in
+   4.9.2 and 4.9.3. The workaround is to use 4.9.1, or move
+   the desired PS field from the gridfile to the input file.
+   The solution is to upgrade. Thanks to Wuyin Lin for reporting.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

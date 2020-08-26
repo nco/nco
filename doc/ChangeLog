@@ -1,5 +1,11 @@
 2020-08-25  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.4-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-beta01: Uncle Leroy';git push
+	git tag -a 4.9.4-beta01 -m '';git push --tags
+
+	* ncra add --prw synonym to --per_record_weights
+
 	* NCO 4.9.4-alpha15 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha15: Madelines';git push
 	git tag -a 4.9.4-alpha15 -m 'nco_vrt_ntp fix;ncclimo drn cf cnv works';git push --tags

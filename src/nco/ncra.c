@@ -371,6 +371,7 @@ main(int argc,char **argv)
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
     {"diskless_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
     {"per_record_weights",no_argument,0,0}, /* [flg] Weight each record (not file) by command-line numeric weights, if any */
+    {"prw",no_argument,0,0}, /* [flg] Weight each record (not file) by command-line numeric weights, if any */
     {"share_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) with unbuffered I/O */
     {"create_share",no_argument,0,0}, /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
     {"open_share",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) with unbuffered I/O */
@@ -613,7 +614,7 @@ main(int argc,char **argv)
 	nco_prg_nm=nco_prg_prs("ncge",&nco_prg_id);
       } /* endif nsm_grp */
       if(!strcmp(opt_crr,"nsm_sfx") || !strcmp(opt_crr,"ensemble_suffix")) nsm_sfx=(char *)strdup(optarg);
-      if(!strcmp(opt_crr,"per_record_weights")) flg_wgt_by_rec_not_by_fl=True; /* [flg] Weight each record (not file) by command-line numeric weights, if any */
+      if(!strcmp(opt_crr,"per_record_weights") || !strcmp(opt_crr,"prw")) flg_wgt_by_rec_not_by_fl=True; /* [flg] Weight each record (not file) by command-line numeric weights, if any */
       if(!strcmp(opt_crr,"ppc") || !strcmp(opt_crr,"precision_preserving_compression") || !strcmp(opt_crr,"quantize")){
         ppc_arg[ppc_nbr]=(char *)strdup(optarg);
         ppc_nbr++;
@@ -806,12 +807,12 @@ main(int argc,char **argv)
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN,FORCE_OVERWRITE);
 
   if(flg_wgt_by_rec_not_by_fl && nco_prg_id_get() != ncra){
-    (void)fprintf(fp_stdout,"%s: ERROR Illegal invocation of flag --per_record_weights\nHINT: Per-record weighting by command-line numeric weights is only available with ncra\n",nco_prg_nm_get());
+    (void)fprintf(fp_stdout,"%s: ERROR Illegal invocation of flag --per_record_weights (or --prw)\nHINT: Per-record weighting by command-line numeric weights is only available with ncra\n",nco_prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* flg_wgt_by_rec_not_by_fl */
   if(wgt_arr){
     if(wgt_nbr != fl_nbr && !flg_wgt_by_rec_not_by_fl){
-      (void)fprintf(fp_stdout,"%s: ERROR User-specified per-file weight array has %d elements but there are %d input files.\nHINT: Specify one weight per input file, or toggle the default behavior by invoking with --per_record_weights which causes command-line weights to be applied per-record not per-file.\n",nco_prg_nm_get(),wgt_nbr,fl_nbr);
+      (void)fprintf(fp_stdout,"%s: ERROR User-specified per-file weight array has %d elements but there are %d input files.\nHINT: Specify one weight per input file, or toggle the default behavior by invoking with --per_record_weights (or synonym --prw) which causes command-line weights to be applied per-record not per-file.\n",nco_prg_nm_get(),wgt_nbr,fl_nbr);
       nco_exit(EXIT_FAILURE);
     } /* !wgt_nbr */
   } /* !wgt_arr */
@@ -1186,7 +1187,7 @@ main(int argc,char **argv)
       } /* !bnd2clm !clm2bnd */
       rcd=NC_NOERR;
     } /* !rcd */
-      
+    
     /* Combine calendar and units strings with clm_nfo_sng to create climatological time and bounds arrays */
     if(clm_nfo_sng) rcd=nco_clm_nfo_to_tm_bnds(cb->yr_srt,cb->yr_end,cb->mth_srt,cb->mth_end,cb->tpd,cb->unt_val,cb->cln_val,cb->bnd_val,cb->tm_val);
     //assert(rcd != NCO_NOERR);
