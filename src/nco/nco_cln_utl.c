@@ -735,8 +735,9 @@ nco_cln_cnv_mk  /* [fnc] UDUnits2 create a custom converter  */
  *
  * Conversion done by udunits library.
  * Input and Output value og_val
- * /
- *
+ */
+
+
 int /* [flg] NCO_NOERR or NCO_ERR */ 
 nco_cln_clc_dbl_dff( /* [fnc] difference between two co-ordinate units */
 const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
@@ -912,8 +913,10 @@ var_sct *var) /* I/O [var_sct] var values modified - can be NULL  */
  *
  * if lmt_cln is of type "360_day" (cln_360) or "365_day" (cln_365) or "366_day" (cln_366) then
  * the conversion is done "transparently" by the nco_cln_utl library.
- * /
-int   /* [flg] NCO_NOERR or NCO_ERR */ 
+ */
+
+
+int   /* [flg] NCO_NOERR or NCO_ERR */
 nco_cln_clc_dbl_org(   /* [fnc] difference between two co-ordinate units */
 const char *val_unt_sng, /* I [ptr] input value and  units in the same string */
 const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
