@@ -2677,6 +2677,7 @@ feature is automatic and cannot be controlled by the user.
 * Auxiliary Coordinates::
 * Grid Generation::
 * Regridding::
+* Climatology and Bounds Support::
 * UDUnits Support::
 * Rebasing Time Coordinate::
 * Multiple Record Dimensions::
@@ -7160,7 +7161,7 @@ overwritten (its contents are immaterial).
 <a name="rgr_map"></a> <!-- http://nco.sf.net/nco.html#rgr_map -->
 <a name="regrid"></a> <!-- http://nco.sf.net/nco.html#regrid -->
 @end html
-@node Regridding, UDUnits Support, Grid Generation, Shared features
+@node Regridding, Climatology and Bounds Support, Grid Generation, Shared features
 @section Regridding
 @cindex map
 @cindex grid-file
@@ -7989,11 +7990,103 @@ ncks --map=${DATA}/maps/map_ne30np4_to_t42_aave.20150601.nc
 @end example
 
 @html
+<a name="clm_nfo"></a> <!-- http://nco.sf.net/nco.html#clm_nfo -->
+<a name="cb"></a> <!-- http://nco.sf.net/nco.html#cb -->
+<a name="clm_bnd"></a> <!-- http://nco.sf.net/nco.html#clm_bnd -->
+<a name="climatology_information"></a> <!-- http://nco.sf.net/nco.html#climatology_information -->
+@end html
+@node Climatology and Bounds Support, UDUnits Support, Regridding, Shared features
+@section Climatology and Bounds Support
+@cindex @code{--clm_nfo}
+@cindex @code{--cb}
+@cindex @code{--clm_bnd}
+@cindex @code{--climatology_information}
+Availability: @command{nces}, @command{ncra}, @command{ncrcat}@*
+Short options: None@*
+Long options: 
+@samp{--clm_bnd=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}@*
+@samp{--cb=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}@*
+@samp{--clm_nfo=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}@*
+@samp{--climatology_information=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}@*
+
+(NB: This section describes support for generating 
+@acronym{CF}-compliant bounds variables and attributes, i.e.,
+metadata. For instructions on constructing climatologies themselves,
+see the @command{ncclimo} documentation).
+As of @acronym{NCO} version 4.9.4 (September, 2020) @command{ncra}
+introduces the @samp{--clm_bnd} option, a powerful method to
+fully implement the @acronym{CF} @code{bounds}, @code{climatology},
+and @code{cell_methods} attributes defined by @ref{CF Conventions}.
+The new method replaces the previous @samp{--cb} and @samp{--c2b}
+methods introduced in version 4.6.0 which only worked for monthly mean
+data.
+The @code{--clm_bnd} method also works for climatological diurnally
+resolved input, and for datasets that contain more than more than one
+record. 
+This new option takes as argument a comma-separated list of five
+relevant input parameters:
+@samp{--clm_bnd=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}, 
+where
+@var{yr_srt} is the climatology start-year,
+@var{yr_end} is the climatology end-year,
+@var{mth_srt} is the climatology start-month (in @code{[1..12]} format),
+@var{mth_end} is the climatology end-month (in @code{[1..12]} format), and
+@var{tpd} is the number of timestpes per day (with the special
+exception that @math{@var{tpd}=0} indicates monthly data, not
+diurnally-resolved data).
+For example, a seasonal summer climatology created from monthly mean
+input data spanning June, 2000 to August, 2020 should call
+@command{ncra} with @samp{--clm_bnd=2000,2020,6,8,0}, whereas a
+diurnally resolved climatology of the same period with 6-hourly input
+data resolution would use @samp{--clm_bnd=2000,2020,6,8,4}.
+The @command{ncclimo} command internally uses @code{--clm_bnd}
+extensively. 
+
+@example
+# Average monthly means into a climatological month
+ncra --clm_bnd=2014,2016,1,1,0 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
+# Average seasonally contiguous climatological monthly means into a season
+ncra --clm_bnd=2013,2016,12,2,0 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
+# Average seasonally discontiguous climatological means into a season
+ncra --clm_bnd=2014,2016,1,12,0 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
+# Reduce four climatological seasons to make an annual climatology
+ncra --clm_bnd=2014,2016,1,12,0 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
+# Reduce twelve monthly climatologies to make into an annual climatology
+ncra --clm_bnd=2014,2016,1,12,0 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
+@end example
+In the fourth and fifth examples, @acronym{NCO} uses the number of
+input files (3 and 4, respectively) to discriminate between seasonal
+and annual climatologies since the other arguments to @samp{--clm_bnd}
+are identical.
+
+When using this option, @acronym{NCO} expects each output file to
+contain @code{max(1,@var{tpd})} records.
+@command{nces} and @command{ncra} both accept the @samp{--clm_bnd} option.
+While @command{ncra} almost always reduces the input dataset over the
+record dimension, @command{nces} never does.
+This makes it easy to use @command{nces} to combine and create
+climatologies of diurnally resolved input files.
+@example
+# Average diurnally resolved monthly means into a climatology
+nces --clm_bnd=2014,2016,1,1,8 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
+# Average seasonally contiguous diurnally resolved means into a season
+nces --clm_bnd=2013,2016,12,2,8 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
+# Average seasonally discontiguous diurnally resolved means into a season
+nces --clm_bnd=2014,2016,1,12,8 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
+# Reduce four diurnally resolved seasons to make an annual climatology
+nces --clm_bnd=2014,2016,1,12,8 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
+# Reduce twelve diurnally resolved months to make into an annual climatology
+nces --clm_bnd=2014,2016,1,12,8 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
+@end example
+Every input in the above set of examples must have eight records,
+and that number will appear in the output as well.
+
+@html
 <a name="udunits"></a> <!-- http://nco.sf.net/nco.html#udunits -->
 <a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
 <a name="UDUnits2"></a> <!-- http://nco.sf.net/nco.html#UDUnits2 -->
 @end html
-@node UDUnits Support, Rebasing Time Coordinate, Regridding, Shared features
+@node UDUnits Support, Rebasing Time Coordinate, Climatology and Bounds Support, Shared features
 @section UDUnits Support 
 @cindex UDUnits
 @cindex Unidata
@@ -20213,7 +20306,7 @@ of changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--clm_nfo @var{y1},@var{y2},@var{y1},@var{y2},@var{tpd}]
+nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb @var{y1},@var{y2},@var{m1},@var{m2},@var{tpd}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
@@ -23480,7 +23573,7 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb] [--clm_nfo @var{y1},@var{y2},@var{y1},@var{y2},@var{tpd}]
+ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb @var{y1},@var{y2},@var{m1},@var{m2},@var{tpd}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F] [--fl_fmt @var{fl_fmt}]
@@ -23586,6 +23679,8 @@ Second, @command{ncra} @emph{never weights} coordinate variables (e.g.,
 @code{time}) regardless of the weighting performed on non-coordinate
 variables.
 
+@ignore
+@c Old, and possibly future, documentation
 @html
 <a name="cb"></a> <!-- http://nco.sf.net/nco.html#cb -->
 <a name="c2b"></a> <!-- http://nco.sf.net/nco.html#c2b -->
@@ -23639,74 +23734,7 @@ ncra --c2b clm_DJF.nc clm_MAM.nc clm_JJA.nc clm_SON.nc clm_ANN.nc
 @end example
 Currently this functionality only works with climatologies within and
 over years (not within or over days).
-
-@html
-<a name="clm_nfo"></a> <!-- http://nco.sf.net/nco.html#clm_nfo -->
-@end html
-@cindex @code{--clm_nfo}
-As of @acronym{NCO} version 4.9.4 (September, 2020) @command{ncra}
-introduces the new @samp{--clm_nfo} option, a more powerful method to
-fully implement the @acronym{CF} @code{bounds}, @code{climatology},
-and @code{cell_methods} attributes defined by @ref{CF Conventions}.
-The new method supercedes the @samp{--cb} and @samp{--c2b} methods
-described above which only worked for monthly mean data, and also
-works for climatological diurnally resolved input, and for datasets
-that contain more than more than one record.
-The new option takes as argument a comma-separated list of five
-relevant input parameters:
-@samp{--clm_nfo=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}, 
-where
-@var{yr_srt} is the climatology start-year,
-@var{yr_end} is the climatology end-year,
-@var{mth_srt} is the climatology start-month (in @code{[1..12]} format),
-@var{mth_end} is the climatology end-month (in @code{[1..12]} format), and
-@var{tpd} is the number of timestpes per day (with the special
-exception that @math{@var{tpd}=0} indicates monthly data, not
-diurnally-resolved data).
-For example, a seasonal summer climatology created from monthly mean
-input data spanning June, 2000 to August, 2020 should call
-@command{ncra} with @samp{--clm_nfo=2000,2020,6,8,0}, whereas a
-diurnally resolved climatology of the same period with 6-hourly input
-data resolution would use @samp{--clm_nfo=2000,2020,6,8,4}.
-
-@example
-# Average monthly means into a climatological month
-ncra --clm_nfo=2014,2016,1,1,0 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
-# Average seasonally contiguous climatological monthly means into a season
-ncra --clm_nfo=2013,2016,12,2,0 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
-# Average seasonally discontiguous climatological means into a season
-ncra --clm_nfo=2014,2016,1,12,0 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
-# Reduce four climatological seasons to make an annual climatology
-ncra --clm_nfo=2014,2016,1,12,0 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
-# Reduce twelve monthly climatologies to make into an annual climatology
-ncra --clm_nfo=2014,2016,1,12,0 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
-@end example
-In the fourth and fifth examples, @acronym{NCO} uses the number of
-input files (3 and 4, respectively) to discriminate between seasonal
-and annual climatologies since the other arguments to @samp{--clm_nfo}
-are identical.
-
-When using this option, @acronym{NCO} expects each output file to
-contain @code{max(1,@var{tpd})} records.
-@command{nces} and @command{ncra} both accept the @samp{--clm_nfo} option.
-While @command{ncra} almost always reduces the input dataset over the
-record dimension, @command{nces} never does.
-This makes it easy to use @command{nces} to combine and create
-climatologies of diurnally resolved input files.
-@example
-# Average diurnally resolved monthly means into a climatology
-nces --clm_nfo=2014,2016,1,1,8 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
-# Average seasonally contiguous diurnally resolved means into a season
-nces --clm_nfo=2013,2016,12,2,8 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
-# Average seasonally discontiguous diurnally resolved means into a season
-nces --clm_nfo=2014,2016,1,12,8 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
-# Reduce four diurnally resolved seasons to make an annual climatology
-nces --clm_nfo=2014,2016,1,12,8 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
-# Reduce twelve diurnally resolved months to make into an annual climatology
-nces --clm_nfo=2014,2016,1,12,8 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
-@end example
-Every input in the above set of examples must have eight records,
-and that number will appear in the output as well.
+@end ignore
 
 @noindent
 @html

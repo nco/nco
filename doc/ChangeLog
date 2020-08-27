@@ -8,9 +8,15 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta01: Uncle Leroy';git push
 	git tag -a 4.9.4-beta01 -m 'ncra doc prw';git push --tags
 
+	* ncks/ncremap add stubs for nco_nni, xtr_nsp, xtr_xpn
+
+	* Finish draft clm_bnd documentation
+
+	* nco_rgr.c: add synonyms con, nni, bln (and longer) to wgt_con, wgt_nni, wgt_bln
+
 	* Henry verifies build-compliance of --disable-udunits
 
-	* Change --cb from flag into --clm_nfo/--clm_bnd synonym, start documentation
+	* Change --cb from flag into --clm_nfo/--clm_bnd synonym
 
 2020-08-26  Charlie Zender  <zender@uci.edu>
 

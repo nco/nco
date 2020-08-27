@@ -366,7 +366,7 @@ vrb_4=4 # [enm] Verbosity level: Pedantic
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 a2o_flg='No' # [flg] Atmosphere-to-ocean (only used by Tempest mesh generator)
-alg_typ='nco_con' # [sng] Algorithm for remapping (bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|nco_con)
+alg_typ='nco_con' # [sng] Algorithm for remapping (bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|nco_con|nco_nni)
 att_flg='No' # [flg] Add/alter attributes (e.g., _FillValue) before regridding
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
@@ -391,7 +391,7 @@ dt_sng=`date +%Y%m%d` # [sng] Date string for MWF map names
 dvn_flg='Yes' # [flg] Send internal NCO regridder output to /dev/null
 esmf_nsp=8 # [nbr] ESMF extrapolation number of source points
 esmf_typ='' # [sng] ESMF extrapolation type (nearestidavg|neareststod|none)
-esmf_xpn=2.0 # [frc] ESMF extrapolation exponent
+esmf_xpn=2.0 # [frc] ESMF extrapolation exponent (absolute value)
 fl_fmt='' # [enm] Output file format
 fl_nbr=0 # [nbr] Number of files to remap
 flg_grd_only='No' # [flg] Create grid then exit before regridding
@@ -502,7 +502,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}alg_typ${fnt_nrm}  Algorithm for weight generation (default ${fnt_bld}${alg_typ}${fnt_nrm}) [${fnt_tlc}alg_typ, algorithm, regrid_algorithm${fnt_nrm}]"
     echo "            ESMF algorithms: bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch"
-    echo "            NCO algorithms: nco_con (1st order conservative algorithm similar to \"conserve\")"
+    echo "            NCO algorithms: nco_con (1st order conservative algorithm similar to \"conserve\"), nco_nni (nearest-neighbor-weighted-interpolation/extrapolation)"
     echo "            Tempest algorithms: fv2fv|fv2fv_flx|fv2fv_stt|fv2se_flx|fv2se_stt|fv2se_alt|se2fv_flx|se2fv_stt|se2fv_alt|se2se|tempest"
     echo " ${fnt_bld}--a2o${fnt_nrm}      Atmosphere-to-ocean remap (for Tempest only) (default ${fnt_bld}${a2o_flg}${fnt_nrm}) [${fnt_tlc}a2o, atm2ocn, b2l, big2ltl, l2s, lrg2sml${fnt_nrm}]"
     echo "${fnt_rvr}-D${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
@@ -1029,6 +1029,9 @@ elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${a
     wgt_typ='tempest'
 elif [ ${alg_typ} = 'nco_con' ] || [ ${alg_typ} = 'nco_cns' ] || [ ${alg_typ} = 'nco_conserve' ] || [ ${alg_typ} = 'nco' ]; then 
     alg_opt='nco_con'
+    wgt_typ='nco'
+elif [ ${alg_typ} = 'nco_nni' ] || [ ${alg_typ} = 'nco_nnn' ] || [ ${alg_typ} = 'nco_distance_weighted' ] || [ ${alg_typ} = 'nco_nearest_neighbor' ]; then
+    alg_opt='nco_nni'
     wgt_typ='nco'
 else 
     echo "${spt_nm}: ERROR ${alg_typ} is not a valid weight-generation algorithm"

@@ -1219,8 +1219,10 @@ typedef enum nco_xtr_typ_enm
     double lat_nrt; /* [dgr] Latitude of northern edge of grid */
     double lon_est; /* [dgr] Longitude of eastern edge of grid */
     double sgs_nrm; /* [frc] Sub-gridscale normalization */
+    double xtr_xpn; /* [frc] Exponent of distance in extrapolation (absolute value) */
     long lat_nbr; /* [nbr] Number of latitudes in destination grid */
     long lon_nbr; /* [nbr] Number of longitudes in destination grid */
+    long xtr_nsp; /* [nbr] Extrapolation number of source points */
     nco_grd_2D_typ_enm grd_typ; /* [enm] Destination grid-type enum */
     nco_grd_lat_drc_enm lat_drc; /* [enm] Latitude grid-direction enum */
     nco_grd_lat_typ_enm lat_typ; /* [enm] Latitude grid-type enum */
