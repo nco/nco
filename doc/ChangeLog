@@ -6,7 +6,7 @@
 
 	* NCO 4.9.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta01: Uncle Leroy';git push
-	git tag -a 4.9.4-beta01 -m 'ncra doc prw';git push --tags
+	git tag -a 4.9.4-beta01 -m 'ncremap/ncks nco_nni, xtr_nsp, xtr_xpn; ncra doc prw, clm_nfo->cb;';git push --tags
 
 	* ncks/ncremap add stubs for nco_nni, xtr_nsp, xtr_xpn
 
