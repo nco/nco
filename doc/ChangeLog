@@ -2,7 +2,13 @@
 
 	* NCO 4.9.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4: Uncle Leroy';git push
-	git tag -a 4.9.4 -m 'all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prw; ncremap no_amwg, sdd dfl, si bgc';git push --tags
+	git tag -a 4.9.4 -m 'all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prw; ncremap no_amwg, sdd dfl, si bgc, nco_nni';git push --tags
+
+	* NCO 4.9.4-beta02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-beta02: Reanimated Umbrella';git push
+	git tag -a 4.9.4-beta02 -m '';git push --tags
+
+	* ncremap genericize xtr_nsp and xtr_xpn arguments for both ESMF and NCO nco_nni
 
 	* NCO 4.9.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta01: Uncle Leroy';git push
