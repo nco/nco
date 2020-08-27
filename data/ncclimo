@@ -2021,7 +2021,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 
 		cmd_cll[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,${tm_srt},${tm_end},${srd},${ssc},${tpd_out} ${fl_in} ${fl_mth[${clm_idx}]}"
 
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_nfo=${yr_srt},${yr_end},${clm_idx},${clm_idx},${tpd_out} -O ${nco_opt} ${gaa_sng} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},${tpd_out} -O ${nco_opt} ${gaa_sng} -d time,,,,${ssc2},${tpd_out} ${fl_mth[${clm_idx}]} ${fl_out[${clm_idx}]}"
 		    
 	    else # !fl_nbr
 		# Concatenate means of each interleaved index of multi-file input (e.g., raw history output or multiple segments) 
@@ -2033,13 +2033,13 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		cmd_tpd_tpl[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra -O ${nco_opt} ${gaa_sng} -d time,TPDidx,,${tpd_out} ${fl_mth[${clm_idx}]} ${fl_tpd_tpl[${clm_idx}]}"
 
 		# Concatenate individual timestep means into full diurnal timeseries
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O --clm_nfo=${yr_srt},${yr_end},${clm_idx},${clm_idx},${tpd_out} ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncrcat -O --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},${tpd_out} ${nco_opt} ${gaa_sng} ${drc_out}/${out_nm}_${MM}_tpd* ${fl_out[${clm_idx}]}"
 	    fi # !fl_nbr
 	    # Combine monthly into seasonal and annual means with nces (preserving diurnal timesteps)
 	    cmd_mth2csn='nces'
 	    cmd_csn2ann='nces'
 	elif [ ${clm_md} = 'mth' ]; then 
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_nfo=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncra --clm_bnd=${yr_srt},${yr_end},${clm_idx},${clm_idx},0 -O ${nco_opt} ${gaa_sng} -p ${drc_in} ${fl_all} ${fl_out[${clm_idx}]}"
 	    # Combine monthly into seasonal and annual means with ncra
 	    cmd_mth2csn='ncra'
 	    cmd_csn2ann='ncra'
@@ -2177,16 +2177,16 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 	# Produces names like "${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
 	let clm_idx=1+12+${csn_idx}
 	fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_srt}${csn_srt_mm[${map_r2d[${csn_idx}]}]}_${yyyy_end}${csn_end_mm[${map_r2d[${csn_idx}]}]}_climo.nc"
-	clm_nfo[${clm_idx}]="--clm_nfo=${yr_srt},${yr_end},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
+	clm_bnd[${clm_idx}]="--clm_bnd=${yr_srt},${yr_end},${csn_srt_idx[${map_r2d[${csn_idx}]}]},${csn_end_idx[${map_r2d[${csn_idx}]}]},${tpd_out}"
 	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
-	    clm_nfo[${clm_idx}]="--clm_nfo=${yyyy_clm_srt_dec},${yyyy_clm_end_dec},${mm_djf_srt},${mm_djf_end},${tpd_out}"
+	    clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_clm_srt_dec},${yyyy_clm_end_dec},${mm_djf_srt},${mm_djf_end},${tpd_out}"
 	fi # !DJF
 	if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'ANN' ]; then
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
 	    fl_out[${clm_idx}]="${drc_out}/${out_nm}_${csn_abb[${map_r2d[${csn_idx}]}]}_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
-	    clm_nfo[${clm_idx}]="--clm_nfo=${yyyy_clm_srt_dec},${yyyy_end},${mm_ann_srt},${mm_ann_end},${tpd_out}"
+	    clm_bnd[${clm_idx}]="--clm_bnd=${yyyy_clm_srt_dec},${yyyy_end},${mm_ann_srt},${mm_ann_end},${tpd_out}"
 	fi # !ANN
     done # !csn_idx
 #    fl_out[13]="${drc_out}/${out_nm}_MAM_${yyyy_srt}03_${yyyy_end}05_climo.nc"
@@ -2195,7 +2195,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 #    fl_out[16]="${drc_out}/${out_nm}_DJF_${yyyy_clm_srt_dec}${mm_djf_srt}_${yyyy_end}${mm_djf_end}_climo.nc"
     if [ "${ann_flg}" = 'Yes' ]; then
 	fl_out[${clm_nbr}]="${drc_out}/${out_nm}_ANN_${yyyy_clm_srt_dec}${mm_ann_srt}_${yyyy_end}${mm_ann_end}_climo.nc"
-	clm_nfo[${clm_nbr}]="--clm_nfo=${yyyy_clm_srt_dec},${yyyy_end},${mm_ann_srt},${mm_ann_end},${tpd_out}"
+	clm_bnd[${clm_nbr}]="--clm_bnd=${yyyy_clm_srt_dec},${yyyy_end},${mm_ann_srt},${mm_ann_end},${tpd_out}"
     fi # !ann_flg
     # Derive all regridded and AMWG names from output names
     for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
@@ -2908,7 +2908,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
 #	if [ ${clm_md} != 'hfc' ]; then
 #	    for ((clm_idx=1;clm_idx<=clm_nbr;clm_idx++)); do
-#		clm_nfo[${clm_idx}]=''
+#		clm_bnd[${clm_idx}]=''
 #	    done # !clm_idx
 #	fi # !clm_md
 	for ((csn_idx=0;csn_idx<${csn_nbr};csn_idx++)); do
@@ -2917,10 +2917,10 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	    for ((mth_idx=${csn_srt_idx[${map_r2d[${csn_idx}]}]};mth_idx<=${csn_end_idx[${map_r2d[${csn_idx}]}]};mth_idx++)); do
 		fl_lst="${fl_lst} ${fl_out[${mth_idx}]}"
 	    done # !mth_idx
-	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_nfo[${clm_idx}]} -O -w ${csn_wgt[${map_r2d[${csn_idx}]}]} ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_idx}]}"
+	    cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_bnd[${clm_idx}]} -O -w ${csn_wgt[${map_r2d[${csn_idx}]}]} ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_idx}]}"
 	    # DJF specified as exception since month-order is non-consecutive (12,1,2)
 	    if [ "${csn_abb[${map_r2d[${csn_idx}]}]}" = 'DJF' ]; then
-		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_nfo[${clm_idx}]} -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[${clm_idx}]}"
+		cmd_clm[${clm_idx}]="${cmd_mpi[${clm_idx}]} ${cmd_mth2csn} ${clm_bnd[${clm_idx}]} -O -w 31,31,28 ${nco_opt} ${gaa_sng} ${fl_out[12]} ${fl_out[1]} ${fl_out[2]} ${fl_out[${clm_idx}]}"
 	    fi # !DJF
 	done # !csn_idx
 	# cmd_clm[13]="${cmd_mpi[13]} ncra --cb -O -w 31,30,31 ${nco_opt} ${gaa_sng} ${fl_out[3]} ${fl_out[4]} ${fl_out[5]} ${fl_out[13]}"
@@ -3038,7 +3038,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	printf "Climatological annual mean...\n"
 	[[ ${dbg_lvl} -ge 1 ]] && date_clm=$(date +"%s")
 	fl_lst="${fl_out[${clm_csn_mam_idx}]} ${fl_out[${clm_csn_jja_idx}]} ${fl_out[${clm_csn_son_idx}]} ${fl_out[${clm_csn_djf_idx}]}"
-	cmd_clm[${clm_nbr}]="${cmd_mpi[${clm_nbr}]} ${cmd_csn2ann} ${clm_nfo[${clm_nbr}]} -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_nbr}]}"
+	cmd_clm[${clm_nbr}]="${cmd_mpi[${clm_nbr}]} ${cmd_csn2ann} ${clm_bnd[${clm_nbr}]} -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_lst} ${fl_out[${clm_nbr}]}"
 	#    cmd_clm[17]="${cmd_mpi[17]} ncra --c2b -O -w 92,92,91,90 ${nco_opt} ${gaa_sng} ${fl_out[13]} ${fl_out[14]} ${fl_out[15]} ${fl_out[16]} ${fl_out[17]}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_clm[${clm_nbr}]}

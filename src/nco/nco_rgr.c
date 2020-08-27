@@ -693,7 +693,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       } /* !val */
       continue;
     } /* !ntp_mth */
-    if(!strcmp(rgr_lst[rgr_var_idx].key,"vrt_xtr") || !strcmp(rgr_lst[rgr_var_idx].key,"xtr_mth")){
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"xtr_mth")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"nrs_ngh") || !strcasecmp(rgr_lst[rgr_var_idx].val,"ngh") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nearest_neighbor") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nn")){
 	rgr->xtr_mth=nco_xtr_fll_ngh;
       }else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"mss_val") || !strcasecmp(rgr_lst[rgr_var_idx].val,"msv") || !strcasecmp(rgr_lst[rgr_var_idx].val,"fll_val") || !strcasecmp(rgr_lst[rgr_var_idx].val,"missing_value")){
@@ -705,11 +705,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       continue;
     } /* !xtr_mth */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"wgt_typ") || !strcmp(rgr_lst[rgr_var_idx].key,"weight_type")){
-      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_con"))
+      if(!strcasecmp(rgr_lst[rgr_var_idx].val,"con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"conservative") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_con"))
         rgr->wgt_typ=nco_wgt_con;
-      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_nni"))
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"nni") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nearest_neighbor") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_nni"))
         rgr->wgt_typ=nco_wgt_nni;
-      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_bln"))
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"bln") || !strcasecmp(rgr_lst[rgr_var_idx].val,"bilinear") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_bln"))
         rgr->wgt_typ=nco_wgt_bln;
       else {
         (void)fprintf(stderr,"%s: ERROR %s unable to parse \"%s\" option value \"%s\" (possible typo in value?), aborting...\n",nco_prg_nm_get(),fnc_nm,rgr_lst[rgr_var_idx].key,rgr_lst[rgr_var_idx].val);

@@ -23658,8 +23658,8 @@ relevant input parameters:
 where
 @var{yr_srt} is the climatology start-year,
 @var{yr_end} is the climatology end-year,
-@var{mth_srt} is the climatology start-month (in @code[1..12] format),
-@var{mth_end} is the climatology end-month (in @code[1..12] format), and
+@var{mth_srt} is the climatology start-month (in @code{[1..12]} format),
+@var{mth_end} is the climatology end-month (in @code{[1..12]} format), and
 @var{tpd} is the number of timestpes per day (with the special
 exception that @math{@var{tpd}=0} indicates monthly data, not
 diurnally-resolved data).
@@ -23668,9 +23668,6 @@ input data spanning June, 2000 to August, 2020 should call
 @command{ncra} with @samp{--clm_nfo=2000,2020,6,8,0}, whereas a
 diurnally resolved climatology of the same period with 6-hourly input
 data resolution would use @samp{--clm_nfo=2000,2020,6,8,4}.
-
-When using this option, @acronym{NCO} expects each output file to
-contain @code{max(1,@var{tpd})} records.
 
 @example
 # Average monthly means into a climatological month
@@ -23688,6 +23685,28 @@ In the fourth and fifth examples, @acronym{NCO} uses the number of
 input files (3 and 4, respectively) to discriminate between seasonal
 and annual climatologies since the other arguments to @samp{--clm_nfo}
 are identical.
+
+When using this option, @acronym{NCO} expects each output file to
+contain @code{max(1,@var{tpd})} records.
+@command{nces} and @command{ncra} both accept the @samp{--clm_nfo} option.
+While @command{ncra} almost always reduces the input dataset over the
+record dimension, @command{nces} never does.
+This makes it easy to use @command{nces} to combine and create
+climatologies of diurnally resolved input files.
+@example
+# Average diurnally resolved monthly means into a climatology
+nces --clm_nfo=2014,2016,1,1,8 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
+# Average seasonally contiguous diurnally resolved means into a season
+nces --clm_nfo=2013,2016,12,2,8 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
+# Average seasonally discontiguous diurnally resolved means into a season
+nces --clm_nfo=2014,2016,1,12,8 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
+# Reduce four diurnally resolved seasons to make an annual climatology
+nces --clm_nfo=2014,2016,1,12,8 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
+# Reduce twelve diurnally resolved months to make into an annual climatology
+nces --clm_nfo=2014,2016,1,12,8 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
+@end example
+Every input in the above set of examples must have eight records,
+and that number will appear in the output as well.
 
 @noindent
 @html

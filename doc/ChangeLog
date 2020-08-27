@@ -10,7 +10,7 @@
 
 	* Henry verifies build-compliance of --disable-udunits
 
-	* Change --cb from flag into --clm_nfo/--clm_bnd synonym
+	* Change --cb from flag into --clm_nfo/--clm_bnd synonym, start documentation
 
 2020-08-26  Charlie Zender  <zender@uci.edu>
 
