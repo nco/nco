@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-beta01
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 23 August 2020
+@set update-date 27 August 2020
 @set update-month August 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -20213,7 +20213,7 @@ of changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
+nces [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--clm_nfo @var{y1},@var{y2},@var{y1},@var{y2},@var{tpd}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}]]] [-F]
@@ -23480,7 +23480,7 @@ changing variable dimensionality, including the record dimension.
 @noindent
 SYNTAX
 @example
-ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb]
+ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb] [--clm_nfo @var{y1},@var{y2},@var{y1},@var{y2},@var{tpd}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
 [-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F] [--fl_fmt @var{fl_fmt}]
@@ -23639,6 +23639,55 @@ ncra --c2b clm_DJF.nc clm_MAM.nc clm_JJA.nc clm_SON.nc clm_ANN.nc
 @end example
 Currently this functionality only works with climatologies within and
 over years (not within or over days).
+
+@html
+<a name="clm_nfo"></a> <!-- http://nco.sf.net/nco.html#clm_nfo -->
+@end html
+@cindex @code{--clm_nfo}
+As of @acronym{NCO} version 4.9.4 (September, 2020) @command{ncra}
+introduces the new @samp{--clm_nfo} option, a more powerful method to
+fully implement the @acronym{CF} @code{bounds}, @code{climatology},
+and @code{cell_methods} attributes defined by @ref{CF Conventions}.
+The new method supercedes the @samp{--cb} and @samp{--c2b} methods
+described above which only worked for monthly mean data, and also
+works for climatological diurnally resolved input, and for datasets
+that contain more than more than one record.
+The new option takes as argument a comma-separated list of five
+relevant input parameters:
+@samp{--clm_nfo=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}, 
+where
+@var{yr_srt} is the climatology start-year,
+@var{yr_end} is the climatology end-year,
+@var{mth_srt} is the climatology start-month (in @code[1..12] format),
+@var{mth_end} is the climatology end-month (in @code[1..12] format), and
+@var{tpd} is the number of timestpes per day (with the special
+exception that @math{@var{tpd}=0} indicates monthly data, not
+diurnally-resolved data).
+For example, a seasonal summer climatology created from monthly mean
+input data spanning June, 2000 to August, 2020 should call
+@command{ncra} with @samp{--clm_nfo=2000,2020,6,8,0}, whereas a
+diurnally resolved climatology of the same period with 6-hourly input
+data resolution would use @samp{--clm_nfo=2000,2020,6,8,4}.
+
+When using this option, @acronym{NCO} expects each output file to
+contain @code{max(1,@var{tpd})} records.
+
+@example
+# Average monthly means into a climatological month
+ncra --clm_nfo=2014,2016,1,1,0 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
+# Average seasonally contiguous climatological monthly means into a season
+ncra --clm_nfo=2013,2016,12,2,0 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
+# Average seasonally discontiguous climatological means into a season
+ncra --clm_nfo=2014,2016,1,12,0 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
+# Reduce four climatological seasons to make an annual climatology
+ncra --clm_nfo=2014,2016,1,12,0 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
+# Reduce twelve monthly climatologies to make into an annual climatology
+ncra --clm_nfo=2014,2016,1,12,0 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
+@end example
+In the fourth and fifth examples, @acronym{NCO} uses the number of
+input files (3 and 4, respectively) to discriminate between seasonal
+and annual climatologies since the other arguments to @samp{--clm_nfo}
+are identical.
 
 @noindent
 @html

@@ -336,10 +336,6 @@ main(int argc,char **argv)
     {"cell_methods",no_argument,0,0}, /* [flg] Add/modify cell_methods attributes */
     {"no_cll_mth",no_argument,0,0}, /* [flg] Do not add/modify cell_methods attributes */
     {"no_cell_methods",no_argument,0,0}, /* [flg] Do not add/modify cell_methods attributes */
-    {"clm_bnd",no_argument,0,0}, /* [sct] Climatology bounds */
-    {"cb",no_argument,0,0}, /* [sct] Climatology bounds */
-    {"clm2bnd",no_argument,0,0}, /* [sct] Climatology bounds to time-bounds */
-    {"c2b",no_argument,0,0}, /* [sct] Climatology bounds to time-bounds */
     {"clean",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"mmr_cln",no_argument,0,0}, /* [flg] Clean memory prior to exit */
     {"drt",no_argument,0,0}, /* [flg] Allow dirty memory on exit */
@@ -386,7 +382,9 @@ main(int argc,char **argv)
     /* Long options with argument, no short option counterpart */
     {"bfr_sz_hnt",required_argument,0,0}, /* [B] Buffer size hint */
     {"buffer_size_hint",required_argument,0,0}, /* [B] Buffer size hint */
-    {"clm_nfo",required_argument,0,0}, /* [sct] Climatology information */
+    {"cb",required_argument,0,0}, /* [sct] Climatology and bounds information */
+    {"clm_bnd",required_argument,0,0}, /* [sct] Climatology and bounds information */
+    {"clm_nfo",required_argument,0,0}, /* [sct] Climatology and bounds information */
     {"cnk_byt",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"chunk_byte",required_argument,0,0}, /* [B] Chunk size in bytes */
     {"cnk_csh",required_argument,0,0}, /* [B] Chunk cache size in bytes */
@@ -554,9 +552,9 @@ main(int argc,char **argv)
       } /* endif cnk */
       if(!strcmp(opt_crr,"cll_msr") || !strcmp(opt_crr,"cell_measures")) EXTRACT_CLL_MSR=True; /* [flg] Extract cell_measures variables */
       if(!strcmp(opt_crr,"no_cll_msr") || !strcmp(opt_crr,"no_cell_measures")) EXTRACT_CLL_MSR=False; /* [flg] Do not extract cell_measures variables */
-      if(!strcmp(opt_crr,"clm_nfo") || !strcmp(opt_crr,"climatology_information")){
+      if(!strcmp(opt_crr,"cb") || !strcmp(opt_crr,"clm_bnd") || !strcmp(opt_crr,"clm_nfo") || !strcmp(opt_crr,"climatology_information")){
 	clm_nfo_sng=(char *)strdup(optarg);
-	flg_cb=True; /* [sct] Climatology bounds */
+	flg_cb=True; /* [sct] Process climatology and bounds information */
       } /* !clm_nfo */
       if(!strcmp(opt_crr,"frm_trm") || !strcmp(opt_crr,"formula_terms")) EXTRACT_FRM_TRM=True; /* [flg] Extract formula_terms variables */
       if(!strcmp(opt_crr,"no_frm_trm") || !strcmp(opt_crr,"no_formula_terms")) EXTRACT_FRM_TRM=False; /* [flg] Do not extract formula_terms variables */
@@ -564,7 +562,6 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"no_cll_mth") || !strcmp(opt_crr,"no_cell_methods")) flg_cll_mth=False; /* [flg] Add/modify cell_methods attributes */
       if(!strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
-      if(!strcmp(opt_crr,"clm_bnd") || !strcmp(opt_crr,"cb")) flg_cb=True; /* [sct] Climatology bounds */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"dbl") || !strcmp(opt_crr,"rth_dbl")) nco_rth_cnv=nco_rth_flt_dbl; /* [flg] Arithmetic convention: promote float to double */
       if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"rth_flt")) nco_rth_cnv=nco_rth_flt_flt; /* [flg] Arithmetic convention: keep single-precision */

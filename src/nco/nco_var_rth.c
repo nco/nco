@@ -2882,13 +2882,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.fp[idx]-=op1.fp[idx];
     }else{
       const float mss_val_flt=*mss_val.fp;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -2898,13 +2898,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_DOUBLE:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.dp[idx]-=op1.dp[idx];
     }else{
       const double mss_val_dbl=*mss_val.dp;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -2914,13 +2914,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_INT:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.ip[idx]-=op1.ip[idx];
     }else{
       const nco_int mss_val_ntg=*mss_val.ip;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -2930,13 +2930,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_SHORT:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.sp[idx]-=op1.sp[idx];
     }else{
       const nco_short mss_val_short=*mss_val.sp;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -2946,13 +2946,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_USHORT:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.usp[idx]-=op1.usp[idx];
     }else{
       const nco_ushort mss_val_ushort=*mss_val.usp;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -2962,13 +2962,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_UINT:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.uip[idx]-=op1.uip[idx];
     }else{
       const nco_uint mss_val_uint=*mss_val.uip;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -2978,13 +2978,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_INT64:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.i64p[idx]-=op1.i64p[idx];
     }else{
       const nco_int64 mss_val_int64=*mss_val.i64p;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -2994,13 +2994,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_UINT64:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.ui64p[idx]-=op1.ui64p[idx];
     }else{
       const nco_uint64 mss_val_uint64=*mss_val.ui64p;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -3010,13 +3010,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_BYTE:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.bp[idx]-=op1.bp[idx];
     }else{
       const nco_byte mss_val_byte=*mss_val.bp;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -3026,13 +3026,13 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
     break;
   case NC_UBYTE:
     if(!has_mss_val){
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++) op2.ubp[idx]-=op1.ubp[idx];
     }else{
       const nco_ubyte mss_val_ubyte=*mss_val.ubp;
-#if ( __GNUC__ > 8 )
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
 # pragma omp simd
 #endif /* !__GNUC__ */
       for(idx=0;idx<sz;idx++){
@@ -3050,18 +3050,18 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
 
   /* 20200826 SIMD timer code */
   if(nco_dbg_lvl_get() >= nco_dbg_fl){
-    if(tm_ttl > 0.0){
+    if(tm_ttl == 0.0){
       /* Print seen/unseen message only once per invocation */
-#if ( __GNUC__ > 8 )
-      (void)fprintf(stdout,"%s: %s reports C-compiler sees #pragma omp simd (because __GNUC__ > 8)\n",nco_prg_nm_get(),fnc_nm);
+#if ( __GNUC__ >= 8 ) || ( __clang_major__ >= 8 )
+      (void)fprintf(stdout,"%s: %s reports C-compiler sees #pragma omp simd (because __GNUC__ >= 8 or __clang_major__ >= 8)\n",nco_prg_nm_get(),fnc_nm);
 #else /* !__GNUC__ */
       (void)fprintf(stdout,"%s: %s reports C-compiler does not see #pragma omp simd\n",nco_prg_nm_get(),fnc_nm);
 #endif /* !__GNUC__ */
     } /* !tm_ttl */
     tm_end=clock();
-    tm_drn=(tm_end-tm_srt)/CLOCKS_PER_SEC;
+    tm_drn=1.0e6*(tm_end-tm_srt)/CLOCKS_PER_SEC;
     tm_ttl+=tm_drn;
-    (void)fprintf(stdout,"%s: %s reports elapsed time for function is %g s\n",nco_prg_nm_get(),fnc_nm,tm_ttl);
+    (void)fprintf(stdout,"%s: %s reports elapsed time in function is %g us\n",nco_prg_nm_get(),fnc_nm,tm_ttl);
   } /* !dbg */
   
 } /* !nco_var_sbt() */

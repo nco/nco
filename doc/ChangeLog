@@ -1,8 +1,18 @@
-2020-08-26  Charlie Zender  <zender@uci.edu>
+2020-08-27  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.4 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4: Uncle Leroy';git push
+	git tag -a 4.9.4 -m 'all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prw; ncremap no_amwg, sdd dfl, si bgc';git push --tags
 
 	* NCO 4.9.4-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta01: Uncle Leroy';git push
 	git tag -a 4.9.4-beta01 -m 'ncra doc prw';git push --tags
+
+	* Henry verifies build-compliance of --disable-udunits
+
+	* Change --cb from flag into --clm_nfo/--clm_bnd synonym
+
+2020-08-26  Charlie Zender  <zender@uci.edu>
 
 	* Make --dbg_lvl synonym to -D for all binary executables
 
@@ -133,7 +143,7 @@
 
 	* ncclimo remove extraneous 's' (typo/command) from MPI section
 
-	* ncclimo infer tdp_out from first file if not user-specified with hfc or hfs
+	* ncclimo infer tpd_out from first file if not user-specified with hfc or hfs
 
 2020-08-05  Charlie Zender  <zender@uci.edu>
 
@@ -179,7 +189,7 @@
 
 	* NCO 4.9.4-alpha09 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-alpha09: Marble';git push
-	git tag -a 4.9.4-alpha09 -m 'ncbo: simd vectorization; ncclimo: drn sgl fl ; nces wrn ; ncra/ncrcat: mso stubs ;';git push --tags
+	git tag -a 4.9.4-alpha09 -m 'ncbo: simd vectorization; ncclimo: drn sgl fl; nces wrn; ncra/ncrcat: mso stubs ;';git push --tags
 
 	* Investigate why FLG_ILV spuriously set despite no ilv argument
 
@@ -247,7 +257,7 @@
 
 2020-07-19  Charlie Zender  <zender@uci.edu>
 
-	* Re-considering ilv implementation and final diurnal strategy
+	* Re-consider ilv implementation and final diurnal strategy
 
 	* ncra interleave (flg_ilv) always implies multi-record-output (flg_mro)
 

@@ -304,7 +304,18 @@ variables:
         cnv_CF_grd:grid_mapping = "albers_conical_equal_area";
         cnv_CF_grd:purpose = "Test whether grid_mapping is propagated with coordinate";
 
-	char albers_conical_equal_area;
+        char mapping;
+        mapping:geoid = "eigen-6c4" ;
+	mapping:grid_mapping_name = "polar_stereographic" ;
+	mapping:latitude_of_projection_origin = -90. ;
+	mapping:standard_parallel = -71. ;
+	mapping:straight_vertical_longitude_from_pole = 0. ;
+	mapping:semi_major_axis = 6378273. ;
+	mapping:inverse_flattening = 298.27940504282 ;
+	mapping:false_easting = 0. ;
+	mapping:false_northing = 0. ;
+
+        char albers_conical_equal_area;
         albers_conical_equal_area:long_name = "Albers Conical Equal Area Projection";
         albers_conical_equal_area:purpose = "Test that this grid_mapping is propagated with all associated variables (like cnv_CF_grd)";
         albers_conical_equal_area:grid_mapping_name = "albers_conical_equal_area";
