@@ -207,8 +207,18 @@ extern "C" {
    double *rgn_val, /* I/O [ptr] time diff in units based on fl_bs_sng */ 
    var_sct *var);   /* I/O [ptr]  */ 
 
-# endif /* !HAVE_UDUNITS2_H */
+# endif
+
+#else
+
+  int /* [flg] NCO_NOERR or NCO_ERR */
+    nco_cln_clc_dbl_dff /* [fnc] difference between two co-ordinate units */
+    (const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
+     const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
+     double *og_val);
+
 #endif /* !ENABLE_UDUNITS */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */
