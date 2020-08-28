@@ -8,7 +8,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta02: Reanimated Umbrella';git push
 	git tag -a 4.9.4-beta02 -m '';git push --tags
 
-	* Fix lat_nbr regression introduced in beta01
+	* ncremap workaround to prevent multi-arguments from becoming separate global metadata
+
+	* ncremap fix lat_nbr regression introduced in beta01
 
 	* ncremap genericize xtr_nsp and xtr_xpn arguments for both ESMF and NCO nco_nni
 

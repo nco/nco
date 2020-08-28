@@ -206,7 +206,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Map-only:
-# ncremap -D 1 --devnull=No --nco='--dbg=1' --alg_typ=nco --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncremap -D 1 --devnull=No --nco='--dbg=1' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncremap -D 1 --devnull=No --nco='--dbg=1' --alg_typ=nco_nni --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_nni.20200901.nc
 # ncremap -D 1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
 # ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
@@ -440,8 +441,8 @@ ppc_prc='' # [nbr] Precision-preserving compression number of significant digits
 prc_typ='' # [sng] Procedure type
 prs_stt='' # [sng] Preserved statistic ('integral' or 'mean')
 qea_flg='No' # [sng] Quasi-equal area mode for TempestRemap
-rgr_opt='--rgr lat_nm_out=lat#lon_nm_out=lon' # [sng] Regridding options
-#rgr_opt='--rgr lat_dnm_nm=x#lon_dmn_nm=y' # [sng] Regridding options for projection grid
+rgr_opt='--rgr lat_nm_out=lat --rgr lon_nm_out=lon' # [sng] Regridding options
+#rgr_opt='--rgr lat_dnm_nm=x --rgr lon_dmn_nm=y' # [sng] Regridding options for projection grid
 rnr_thr='' # [frc] Renormalization option
 sgs_frc='' # [sng] Sub-grid fraction variable
 sgs_msk='' # [sng] Sub-grid mask variable
@@ -1112,7 +1113,7 @@ if [ ${wgt_typ} = 'esmf' ]; then
     wgt_opt="${wgt_opt_esmf}"
 elif [ ${wgt_typ} = 'nco' ]; then
     if [ "${alg_opt}" = 'nco_nni' ]; then
-	wgt_opt_nco="${wgt_opt_nco} --xtr_nsp=${xtr_nsp} --xtr_xpn=${xtr_xpn}"
+	wgt_opt_nco="${wgt_opt_nco} --rgr wgt_typ=${alg_opt} --rgr xtr_nsp=${xtr_nsp} --rgr xtr_xpn=${xtr_xpn}"
     fi # alg_opt
     wgt_cmd="${wgt_exe_nco}"
     wgt_exe="${wgt_exe_nco}"
@@ -2241,7 +2242,7 @@ if [ "${grd_src_usr_flg}" = 'Yes' ] || [ "${prc_typ}" = 'rrg' ]; then
 	fi # !hnt_dst_fl
 	cmd_map[${fl_idx}]="${wgt_cmd} -s \"${grd_src}\" -d \"${grd_dst}\" -w \"${map_fl}\" --method ${alg_opt} ${wgt_opt} ${rgn_opt}${devnull}"
     elif [ "${wgt_typ}" = 'nco' ]; then 
-	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --wgt_typ=${alg_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
+	cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
     elif [ "${wgt_typ}" = 'tempest' ]; then 
 	cmd_msh[${fl_idx}]="GenerateOverlapMesh ${msh_opt_tps} --a \"${grd_src}\" --b \"${grd_dst}\" --out \"${msh_fl}\"${devnull}"
 	if [ "${a2o_flg}" = 'Yes' ]; then 
@@ -2444,7 +2445,7 @@ for ((bch_idx=0;bch_idx<bch_nbr;bch_idx++)); do
 			printf "Mesh-File: ${msh_fl}\n"
 		    fi # !msh_opt
 		fi # !vrb_lvl
-		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --wgt_typ=${alg_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
+		cmd_map[${fl_idx}]="${wgt_cmd} ${wgt_opt} --thr_nbr=${thr_nbr} ${nco_opt} --grd_src=\"${grd_src}\" --grd_dst=\"${grd_dst}\" --map_fl=\"${map_fl}\" ${msh_opt} ${rgr_opt} \"${dmm_fl}\" \"${tmp_out_fl}\"${devnull}"
 	    elif [ "${wgt_typ}" = 'tempest' ]; then 
 		if [ ${vrb_lvl} -ge ${vrb_1} ]; then
 		    printf "Mesh-File: ${msh_fl}\n"
