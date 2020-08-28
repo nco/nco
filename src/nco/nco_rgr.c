@@ -460,6 +460,11 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       assert(cnv_nbr == 2);
       continue;
     } /* !lonlat */
+    if(!strcmp(rgr_lst[rgr_var_idx].key,"lat_nbr")){
+      rgr->lat_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
+      continue;
+    } /* !lat_nbr */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"lon_nbr")){
       rgr->lon_nbr=strtol(rgr_lst[rgr_var_idx].val,&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(rgr_lst[rgr_var_idx].val,"strtol",sng_cnv_rcd);
