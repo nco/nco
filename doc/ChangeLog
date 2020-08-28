@@ -1,4 +1,4 @@
-2020-08-27  Charlie Zender  <zender@uci.edu>
+2020-08-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4: Uncle Leroy';git push
@@ -6,9 +6,13 @@
 
 	* NCO 4.9.4-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta02: Reanimated Umbrella';git push
-	git tag -a 4.9.4-beta02 -m '';git push --tags
+	git tag -a 4.9.4-beta02 -m 'ncremap nni->dwe';git push --tags
 
-	* ncremap workaround to prevent multi-arguments from becoming separate global metadata
+	* ncremap rename Nearest Neighbor Interpolation (_nni) to Distance-Weighted Extrapolation (_dwe)
+
+2020-08-27  Charlie Zender  <zender@uci.edu>
+
+	* ncremap workaround to prevent multi-arguments from becoming separate global metadata attributes
 
 	* ncremap fix lat_nbr regression introduced in beta01
 

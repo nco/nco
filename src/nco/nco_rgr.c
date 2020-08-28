@@ -719,8 +719,8 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     if(!strcmp(rgr_lst[rgr_var_idx].key,"wgt_typ") || !strcmp(rgr_lst[rgr_var_idx].key,"weight_type")){
       if(!strcasecmp(rgr_lst[rgr_var_idx].val,"con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_con") || !strcasecmp(rgr_lst[rgr_var_idx].val,"conservative") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_con"))
         rgr->wgt_typ=nco_wgt_con;
-      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"nni") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_nni") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nearest_neighbor") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_nni"))
-        rgr->wgt_typ=nco_wgt_nni;
+      else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"dwe") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_dwe") || !strcasecmp(rgr_lst[rgr_var_idx].val,"distance_weighted") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_dwe"))
+        rgr->wgt_typ=nco_wgt_dwe;
       else if(!strcasecmp(rgr_lst[rgr_var_idx].val,"bln") || !strcasecmp(rgr_lst[rgr_var_idx].val,"nco_bln") || !strcasecmp(rgr_lst[rgr_var_idx].val,"bilinear") || !strcasecmp(rgr_lst[rgr_var_idx].val,"wgt_bln"))
         rgr->wgt_typ=nco_wgt_bln;
       else {

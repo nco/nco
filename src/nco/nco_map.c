@@ -1028,7 +1028,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     lnk_nbr = pl_cnt_vrl;
   }
 
-  else if(rgr->wgt_typ== nco_wgt_nni)
+  else if(rgr->wgt_typ== nco_wgt_dwe)
   {
     int nbr_tr;
     KDTree **tree;
