@@ -25,8 +25,8 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   char *fl_pth_lcl=NULL;
 
   const double rdn2dgr=180.0/M_PI;
-  const double dgr2rdn=M_PI/180.0;
-  const double eps_rlt=1.0e-14; /* [frc] Round-off error tolerance */
+
+
 
   double *area_in=NULL; /* [sr] Area of source grid */
   double *frc_in=NULL; /* [frc] Fraction of source grid */
@@ -1283,8 +1283,8 @@ nco_msh_wrt
   int grd_area_id; /* [id] Grid corner longitudes variable ID */
 
   double *area=NULL_CEWI;
-  double *grd_ctr_lat=NULL_CEWI;
-  double *grd_ctr_lon=NULL_CEWI;
+
+
 
   long dmn_srt[2];
   long dmn_cnt[2];
@@ -1299,9 +1299,9 @@ nco_msh_wrt
   char grd_crn_lat_nm[]="grid_corner_lat";
   char grd_crn_lon_nm[]="grid_corner_lon";
   char grd_crn_nm[]="grid_corners";
-  char grd_ctr_lat_nm[]="grid_center_lat";
-  char grd_ctr_lon_nm[]="grid_center_lon";
-  char grd_rnk_nm[]="grid_rank";
+
+
+
   char grd_sz_nm[]="grid_size";
   char msk_nm[]="grid_imask";
 
@@ -1316,8 +1316,6 @@ nco_msh_wrt
   size_t hdr_pad=10000UL; /* [B] Pad at end of header section */
 
   area=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
-  grd_ctr_lat=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
-  grd_ctr_lon=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
 
 
   nco_sph_plg_area(map_rgr,lat_crn,lon_crn,grd_sz_nbr,grd_crn_nbr,area);
@@ -1370,7 +1368,7 @@ nco_msh_wrt
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
   area=(double*)nco_free(area);
-  grd_ctr_lat=(double*)nco_free(grd_ctr_lat);
+
 
   return True;
 } /* !nco_msh_wrt() */
