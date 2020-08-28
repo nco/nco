@@ -1964,10 +1964,14 @@ inline double hav(double x1, double x2)
 
 double KDdist(kd_box Xq, KDElem *elem)
 {
-    double hyp;
+    double hyp=0.0;
 
     switch(kd_pl_typ)
 	{
+
+	  case poly_none:
+	    break;
+
 
     	/* use 2D cartesian distance */
 	  case poly_crt:
@@ -2684,8 +2688,8 @@ int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, o
 {
   /* count duplicates for dbg */
   int ret_cnt_nw=0;
-  int ret_cnt=0;
-  int ret_cnt1=0;
+
+
 
   nco_bool bSort=False;
 
@@ -2693,9 +2697,9 @@ int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, o
   // (void)fprintf(stderr,"%s:%s: just entered function\n", nco_prg_nm_get(),fnc_nm );
 
 
-  ret_cnt = kd_nearest_intersect(rTree, nbr_tr,Xq, omp_mem, bSort);
+  (void)kd_nearest_intersect(rTree, nbr_tr,Xq, omp_mem, bSort);
 
-  ret_cnt1 = kd_nearest_intersect(rTree,nbr_tr, Xr, omp_mem, bSort);
+  (void)kd_nearest_intersect(rTree,nbr_tr, Xr, omp_mem, bSort);
 
 
   if( omp_mem->kd_cnt >1  &&  kd_priority_list_sort(omp_mem->kd_list,  omp_mem->kd_blk_nbr* NCO_VRL_BLOCKSIZE, omp_mem->kd_cnt , &ret_cnt_nw  )  )

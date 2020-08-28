@@ -119,7 +119,7 @@ double  nco_sph_cross_chk(double *a, double *b, double *c)
  * no difference - but this is the finite world of doubles */
 double  nco_sph_cross_sub(double *a, double *b, double *c)
 {
-  const char fnc_nm[]="nco_sph_cross()";
+
   //
   double n2;
   double tmp[NBR_SPH];
@@ -655,7 +655,7 @@ char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p,
 
 
 
-  if(0 && DEBUG_SPH)
+  if(DEBUG_SPH)
     fprintf(stderr,"%s(): dx_ab=%2.10f dx_ai=%2.10f  nx1=%2.20f nx_ai=%2.10f   \n", fnc_nm, dx_ab, dx_ai, nx1, nx_ai );
 
   if(  ( dx_ai==0.0 ||  (  nco_sph_dot_nm(ai, Pcross) >0.99 && dx_ai>= 0.0 && dx_ai<=dx_ab  )) &&
@@ -700,7 +700,7 @@ char  nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p,
 
 
 
-  if(0 && DEBUG_SPH)
+  if(DEBUG_SPH)
     fprintf(stderr,"%s(): dx_ab=%2.10f dx_ai=%2.10f  nx1=%2.20f nx_ai=%2.10f   \n", fnc_nm, dx_ab, dx_ai, nx1, nx_ai );
 
   if(  ( dx_ai==0.0 ||  (  nco_sph_dot_nm(ai, Pcross) >0.99 && dx_ai>= 0.0 && dx_ai<=dx_ab  )) &&
@@ -811,7 +811,7 @@ nco_sph_metric_int(double *c, double *d, double *Icross)
 
   char fnc_nm[]="nco_sph_metric_int()";
   nco_bool DEBUG_LCL=False;
-  nco_bool bIGood=False;
+
 
   nco_bool bInvert=False;
 
@@ -1193,7 +1193,7 @@ nco_sph_seg_smc   /* intersect great circles and small circles */
   double s0=0.0;
   double s1=0.0;
   double dtmp = 0.0;
-  double nd1;
+
 
   double PCross[NBR_SPH] = {0.0};
   double P[NBR_SPH] = {0.0};
@@ -1208,8 +1208,9 @@ nco_sph_seg_smc   /* intersect great circles and small circles */
   /* set codes to 0 */
   strcpy(codes,"0000");
 
-  /* nb remember cross normalizes */
+  /* nb remember cross normalizes
   nd1 = nco_sph_cross(p0, p1, PCross);
+  */
 
 
   nco_sph_adi(N, PCross);
@@ -1341,7 +1342,7 @@ nco_sph_seg_int_1(double *p0, double *p1, double *q0, double *q1, double *r0, do
   const char fnc_nm[]="nco_sph_seg_int()";
 
 
-  nco_bool DEBUG_LCL=False;
+
   nco_bool bInt=False;
   nco_bool bValid=False;
 
@@ -1549,7 +1550,7 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
   /* check points in the same direction */
   if (nco_sph_dot_nm(Pcross, Qcross) < 0.99)
-    False;
+    return False;
 
   dx_p1 = 1.0 - nco_sph_dot_nm(p0, p1);
 
@@ -1688,7 +1689,7 @@ nco_sph_intersect_pre(poly_sct *sP, poly_sct *sQ, char sq_sng[]) {
   int jdx;
   int jdx1;
   int numIntersect;
-  int numVertex = 0;
+
 
   nco_bool DEBUG_LCL=False;
   nco_bool bComplex = False;
@@ -3200,7 +3201,7 @@ double **sP, int np
 {
 
   int idx;
-  int idx_pre;
+  //int idx_pre;
   int idx_nex;
 
   double dLon1;
@@ -3220,9 +3221,9 @@ double **sP, int np
   {
 
     // Get Nodes bounding this Node
-    idx_pre = (idx + np - 1) % np;
+    // idx_pre = (idx + np - 1) % np;
 
-    idx_nex = (idx + 1) % np;
+    // idx_nex = (idx + 1) % np;
 
       //const Node & node0 = nodes[face[idx_pre]];
       //const Node & node1 = nodes[face[idx]];
@@ -3470,9 +3471,10 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   nco_bool isP_LatCircle=False;
   nco_bool isQ_LatCircle=False;
 
+  /*
   double nx1;
   double nx2;
-
+  */
 
 
   char code[]="00";
@@ -3501,8 +3503,10 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     isP_LatCircle = nco_rll_is_lat_circle(P->shp[a1], P->shp[a]);
     isQ_LatCircle = nco_rll_is_lat_circle(Q->shp[b1], Q->shp[b]);
 
+    /*
     nx1 = nco_sph_cross(P->shp[a1], P->shp[a], Pcross);
     nx2 = nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross);
+    */
 
     if (isQ_LatCircle) {
 
