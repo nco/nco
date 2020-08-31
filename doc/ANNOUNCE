@@ -40,12 +40,12 @@ A. All operators now support unbuffered I/O with netCDF3 files when
    http://nco.sf.net/nco.html#uio
 
 A. nces now supports the -w (or --wgt) option for per-file weights.
-   This option is analogous to the ncra --wgt option, except it
-   specifies a per-file weight (or weight-variable name) instead
-   of a per-record weight. This is useful when computing statistics  
-   of ensembles whose members should be weighted unevenly. Hence
-   these three commands produce the same answers, though the second
-   and third are much more flexible and can have non-integral weights: 
+   This option is similar to the ncra --wgt option. The nces version
+   also accepts a variable name that contains a scalar per-file-weight. 
+   Per-file weights are useful when computing statistics of ensembles
+   whose members should be weighted unevenly. Hence these three
+   commands produce the same answers, though the second and third
+   are much more flexible and can have non-integral weights: 
    nces   1.nc 2.nc 2.nc out.nc
    nces -w 1,2 1.nc 2.nc out.nc
    nces -w var 1.nc 2.nc out.nc
@@ -74,6 +74,20 @@ A. ncra now supports the --per_record_weights (or --prw) option to
         31,28,31,30,31,30,31,31,30,31,30,31 ~/monthly.nc ~/annual.nc
    http://nco.sf.net/nco.html#ncra
    http://nco.sf.net/nco.html#per_record_weights
+
+A. ncremap allows access to a new NCO regridding algorithm based on
+   distance-weighted extrapolation (DWE). DWE is similar to the ESMF
+   nearestidavg extrapolation alorithm, and accepts the same two
+   parameters as input: --xtr_xpn sets the (absolute value of) the
+   exponent used in distance weighting (default is 2.0), and --xtr_nsp
+   sets the number of source points used in the extrapolation (default
+   is 8). ncremap can apply DWE to the entire destination grid, or
+   just to points with missing/masked values.
+   ncremap --alg_typ=nco_dwe -s src.nc -d dst.nc -m map.nc
+   ncremap -a nco_dwe --xtr_xpn=1.0 -s src.nc -d dst.nc -m map.nc
+   ncremap -a nco_dwe --xtr_nsp=1 -s src.nc -d dst.nc -m map.nc
+   Thanks to Henry Butowsky for implementing the new method.
+   http://nco.sf.net/nco.html#dwe
 
 BUG FIXES:
 

@@ -2132,7 +2132,7 @@ nco_get_typ                           /* [fnc] Obtain netCDF type to define vari
   
   /* Checking only nco_is_rth_opr() is too simplistic
      1. All variables handled by arithmetic operators are currently unpacked on reading
-     2. However "fixed variables" appear in many arithemetic operators
+     2. However "fixed variables" appear in many arithmetic operators
      ncbo treats coordinate variables as fixed (does not subtract them)
      ncra treats non-record variables as fixed (does not average them)
      ncwa treats variables without averaging dimensions as fixed (does not average them)

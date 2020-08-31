@@ -2498,7 +2498,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst=(trv_sct *)nco_realloc(trv_tbl->lst,trv_tbl->nbr*sizeof(trv_sct));
 
   /* Add this element (a group) to table */
-  trv_tbl->lst[idx].nco_typ=nco_obj_typ_grp;          /* [enm] netCDF4 object type: group or variable */
+  trv_tbl->lst[idx].nco_typ=nco_obj_typ_grp;      /* [enm] netCDF4 object type: group or variable */
 
   trv_tbl->lst[idx].nm=strdup(grp_nm);            /* [sng] Relative name (i.e., variable name or last component of path name for groups) */
   trv_tbl->lst[idx].grp_nm=strdup(grp_nm);        /* [sng] Group name */
@@ -2550,7 +2550,7 @@ nco_grp_itr                            /* [fnc] Populate traversal table by exam
   trv_tbl->lst[idx].is_crd_lk_var=nco_obj_typ_err; /* [flg] Is a coordinate-like variable (same as var_sct is_crd_var: crd, 2D, bounds...) */
   trv_tbl->lst[idx].is_crd_var=nco_obj_typ_err;   /* [flg] (For variables only) Is this a coordinate variable? (unique dimension exists in-scope) */
   trv_tbl->lst[idx].is_rec_var=nco_obj_typ_err;   /* [flg] (For variables only) Is a record variable? (is_crd_var must be True) */
-  trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err;/* [enm] (For variables only) NetCDF type */
+  trv_tbl->lst[idx].var_typ=(nc_type)nco_obj_typ_err; /* [enm] (For variables only) NetCDF type */
   trv_tbl->lst[idx].enm_prc_typ=err_typ;          /* [enm] (For variables only) Processing type enumerator */
   trv_tbl->lst[idx].var_typ_out=(nc_type)err_typ; /* [enm] (For variables only) NetCDF type in output file (used by ncflint, ncpdq) */
   if(grp_nm_fll_prn) trv_tbl->lst[idx].grp_nm_fll_prn=strdup(grp_nm_fll_prn); /* [sng] (ncge) Parent group full name */
@@ -4255,14 +4255,14 @@ nco_var_prc_fix_trv                    /* [fnc] Store processed and fixed variab
 } /* end nco_var_prc_fix_trv() */
 
 void
-nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT */
+nco_var_typ_trv /* [fnc] Transfer variable type into GTT */
 (const int prc_nbr,                    /* I [nbr] Number of processed variables */
  CST_X_PTR_CST_PTR_CST_Y(var_sct,var), /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl)          /* I/O [sct] Traversal table */
 {
   /* Purpose: Transfer variable type to table */
 
-  /* Loop table. */
+  /* Loop table */
   for(int idx_var=0;idx_var<prc_nbr;idx_var++){
 
     nc_type typ_out;         /* [enm] Type in output file */
@@ -4277,12 +4277,67 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
         trv_tbl->lst[idx_tbl].var_typ_out=typ_out;
         break;
       } /* Match */
-    } /* Mark output type in table for "nm_fll" */
+    } /* !idx_tbl */
 
-  } /* Loop table. */
+  } /* !idx_var */
 
   return;
 } /* end nco_var_typ_trv() */
+
+void
+nco_set_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmetically promoted type for integers */
+(const int prc_nbr, /* I [nbr] Number of processed variables */
+ CST_X_PTR_CST_PTR_CST_Y(var_sct,var), /* I [sct] Array of extracted variables */
+ trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
+{
+  /* Purpose: Set GTT variable output type to unpacked, arithmetically promoted type for integers
+     20200830: Feature first introduced in ncra so small types like NC_BYTE can be output as, e.g., NC_DOUBLE 
+     Paul Ullrich uses NC_BYTE to hold Boolean flags and averages these over many files 
+     Demoting back to NC_BYTE on output discards floating point averages */
+
+  nc_type var_typ_out=NC_NAT; /* [enm] Type in output file */
+
+  /* Loop table */
+  for(int idx_var=0;idx_var<prc_nbr;idx_var++){
+
+    assert(var[idx_var]);
+    /* Output Type depends on input type */
+    if(var[idx_var]->is_fix_var){
+      var_typ_out=var[idx_var]->type;
+    }else{
+      switch(var[idx_var]->typ_upk){
+      case NC_FLOAT: 
+      case NC_DOUBLE: 
+      case NC_CHAR:
+      case NC_STRING:
+	var_typ_out=var[idx_var]->typ_upk; 
+	break;
+	/* Do not un-promote integers after processing */
+      case NC_INT:
+      case NC_SHORT:
+      case NC_BYTE:
+      case NC_UBYTE: 
+      case NC_USHORT: 
+      case NC_UINT: 
+      case NC_INT64: 
+      case NC_UINT64: 
+	var_typ_out=NC_FLOAT;
+	break;
+      default: nco_dfl_case_nc_type_err(); break;
+      } /* end switch */
+    } /* !prc_var */
+    
+    /* Mark output type in table for "nm_fll" */
+    for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
+      if(!strcmp(var[idx_var]->nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
+        trv_tbl->lst[idx_tbl].var_typ_out=var_typ_out;
+        break;
+      } /* !strcmp() */
+    } /* !idx_tbl */
+  } /* !idx_var */
+
+  return;
+} /* end nco_set_typ_out() */
 
 var_sct *                             /* O [sct] Variable structure */
 nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
@@ -4706,7 +4761,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     rec_dmn_nm=(char *)strdup(var_trv->rec_dmn_nm_out);
   } /* endif */
 
-  /* Is requested record dimension in this group ? */
+  /* Is requested record dimension in this group? */
   if(rec_dmn_nm){
 
     if(nco_prg_id == ncks){
@@ -5030,6 +5085,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
   /* Some operators change output netCDF variable type */
   if(nco_prg_id == ncflint || nco_prg_id == ncpdq){
+  //if(nco_prg_id == ncflint || nco_prg_id == ncpdq || nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
 
     /* If initialization value was changed, then set output type to new type */
     if(var_trv->var_typ_out != (nc_type)err_typ) var_typ_out=var_trv->var_typ_out; else var_typ_out=var_typ;

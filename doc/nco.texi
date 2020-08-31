@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-beta01
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 27 August 2020
+@set update-date 28 August 2020
 @set update-month August 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -8004,8 +8004,8 @@ ncks --map=${DATA}/maps/map_ne30np4_to_t42_aave.20150601.nc
 Availability: @command{nces}, @command{ncra}, @command{ncrcat}@*
 Short options: None@*
 Long options: 
-@samp{--clm_bnd=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}@*
 @samp{--cb=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}@*
+@samp{--clm_bnd=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}@*
 @samp{--clm_nfo=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}@*
 @samp{--climatology_information=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}@*
 
@@ -8017,15 +8017,15 @@ As of @acronym{NCO} version 4.9.4 (September, 2020) @command{ncra}
 introduces the @samp{--clm_bnd} option, a powerful method to
 fully implement the @acronym{CF} @code{bounds}, @code{climatology},
 and @code{cell_methods} attributes defined by @ref{CF Conventions}.
-The new method replaces the previous @samp{--cb} and @samp{--c2b}
-methods introduced in version 4.6.0 which only worked for monthly mean
+The new method updates the previous @samp{--cb} and @samp{--c2b}
+methods introduced in version 4.6.0 which only worked for monthly mean 
 data.
-The @code{--clm_bnd} method also works for climatological diurnally
+The newer @code{--cb} method also works for climatological diurnally
 resolved input, and for datasets that contain more than more than one
 record. 
-This new option takes as argument a comma-separated list of five
-relevant input parameters:
-@samp{--clm_bnd=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}, 
+This option takes as argument a comma-separated list of five relevant
+input parameters: 
+@samp{--cb=@var{yr_srt},@var{yr_end},@var{mth_srt},@var{mth_end},@var{tpd}}, 
 where
 @var{yr_srt} is the climatology start-year,
 @var{yr_end} is the climatology end-year,
@@ -8044,39 +8044,39 @@ extensively.
 
 @example
 # Average monthly means into a climatological month
-ncra --clm_bnd=2014,2016,1,1,0 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
+ncra --cb=2014,2016,1,1,0 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
 # Average seasonally contiguous climatological monthly means into a season
-ncra --clm_bnd=2013,2016,12,2,0 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
+ncra --cb=2013,2016,12,2,0 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
 # Average seasonally discontiguous climatological means into a season
-ncra --clm_bnd=2014,2016,1,12,0 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
+ncra --cb=2014,2016,1,12,0 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
 # Reduce four climatological seasons to make an annual climatology
-ncra --clm_bnd=2014,2016,1,12,0 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
+ncra --cb=2014,2016,1,12,0 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
 # Reduce twelve monthly climatologies to make into an annual climatology
-ncra --clm_bnd=2014,2016,1,12,0 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
+ncra --cb=2014,2016,1,12,0 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
 @end example
 In the fourth and fifth examples, @acronym{NCO} uses the number of
 input files (3 and 4, respectively) to discriminate between seasonal
-and annual climatologies since the other arguments to @samp{--clm_bnd}
+and annual climatologies since the other arguments to @samp{--cb}
 are identical.
 
 When using this option, @acronym{NCO} expects each output file to
 contain @code{max(1,@var{tpd})} records.
-@command{nces} and @command{ncra} both accept the @samp{--clm_bnd} option.
+@command{nces} and @command{ncra} both accept the @samp{--cb} option.
 While @command{ncra} almost always reduces the input dataset over the
 record dimension, @command{nces} never does.
 This makes it easy to use @command{nces} to combine and create
 climatologies of diurnally resolved input files.
 @example
 # Average diurnally resolved monthly means into a climatology
-nces --clm_bnd=2014,2016,1,1,8 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
+nces --cb=2014,2016,1,1,8 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
 # Average seasonally contiguous diurnally resolved means into a season
-nces --clm_bnd=2013,2016,12,2,8 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
+nces --cb=2013,2016,12,2,8 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
 # Average seasonally discontiguous diurnally resolved means into a season
-nces --clm_bnd=2014,2016,1,12,8 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
+nces --cb=2014,2016,1,12,8 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
 # Reduce four diurnally resolved seasons to make an annual climatology
-nces --clm_bnd=2014,2016,1,12,8 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
+nces --cb=2014,2016,1,12,8 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
 # Reduce twelve diurnally resolved months to make into an annual climatology
-nces --clm_bnd=2014,2016,1,12,8 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
+nces --cb=2014,2016,1,12,8 -w 31,28,31,30,31,30,31,31,30,31,30,31 clm_??.nc ANN.nc
 @end example
 Every input in the above set of examples must have eight records,
 and that number will appear in the output as well.

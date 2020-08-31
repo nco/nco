@@ -6,7 +6,7 @@
 
 	* NCO 4.9.4-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta02: Reanimated Umbrella';git push
-	git tag -a 4.9.4-beta02 -m 'ncremap nni->dwe';git push --tags
+	git tag -a 4.9.4-beta02 -m 'ncremap xtr_xpn, xtr_nsp, nni->dwe';git push --tags
 
 	* ncremap rename Nearest Neighbor Interpolation (_nni) to Distance-Weighted Extrapolation (_dwe)
 

@@ -262,6 +262,7 @@ main(int argc,char **argv)
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool NORMALIZE_BY_WEIGHT=True; /* [flg] Normalize by command-line weight */
+  nco_bool PROMOTE_INTS=False; /* [flg] Promote integers to floating point in output */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
   nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
@@ -366,6 +367,8 @@ main(int argc,char **argv)
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
     {"diskless_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
     {"per_record_weights",no_argument,0,0}, /* [flg] Weight each record (not file) by command-line numeric weights, if any */
+    {"prm_int",no_argument,0,0}, /* [flg] Promote integers to floating point in output */
+    {"promote_integers",no_argument,0,0}, /* [flg] Promote integers to floating point in output */
     {"prw",no_argument,0,0}, /* [flg] Weight each record (not file) by command-line numeric weights, if any */
     {"share_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) with unbuffered I/O */
     {"create_share",no_argument,0,0}, /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
@@ -616,6 +619,7 @@ main(int argc,char **argv)
         ppc_arg[ppc_nbr]=(char *)strdup(optarg);
         ppc_nbr++;
       } /* endif "ppc" */
+      if(!strcmp(opt_crr,"prm_int") || !strcmp(opt_crr,"promote_integers")) PROMOTE_INTS=True; /* [flg] Promote integers to floating point in output */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"create_share")) SHARE_CREATE=True; /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
@@ -910,6 +914,9 @@ main(int argc,char **argv)
   /* Initialize chunking from user-specified inputs */
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_csh_byt,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
+  /* Keep integers promoted to double-precision on output */
+  //if(PROMOTE_INTS) (void)nco_set_typ_out(xtr_nbr,var,trv_tbl);
+  
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,!REC_APN,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
 

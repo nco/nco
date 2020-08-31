@@ -75,9 +75,15 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   } /* endif dbg */
 #endif /* !__clang__ */
 #ifdef __INTEL_COMPILER
+  // https://software.intel.com/content/www/us/en/develop/documentation/cpp-compiler-developer-guide-and-reference/top/compiler-reference/macros/additional-predefined-macros.html
   /* Some compilers, including icc, also define __GNUC__ by default */
   static const char cmp_nm[]="icc";
   static const char cmp_sng[]="Token __INTEL_COMPILER defined in nco_cmp_get(), probably compiled with Intel icc"; /* [sng] Compiler string */
+  static const char itl_vrs[]=TKN2SNG(__INTEL_COMPILER); // [sng] Compiler version
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    (void)fprintf(stderr,"%s: INFO icc version defined as __INTEL_COMPILER is %s\n",nco_prg_nm_get(),itl_vrs);
+    (void)fprintf(stderr,"%s: INFO icc version defined as __INTEL_COMPILER_BUILD_DATE is %s\n",nco_prg_nm_get(),__INTEL_COMPILER_BUILD_DATE);
+  } /* endif dbg */
 #endif /* !__INTEL_COMPILER */
 #ifdef __PATHCC__
   /* Some compilers, including pathcc, also define __GNUC__ by default */

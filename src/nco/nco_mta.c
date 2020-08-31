@@ -29,13 +29,12 @@ nco_sng2kvm /* [fnc] Convert string to key-value pair */
   char *ptr_for_free=args_copy;
   kvm_sct kvm;
 
-  if(!strstr(args_copy, "="))
-  {
+  if(!strstr(args_copy,"=")){
     kvm.key=strdup(args_copy);
     kvm.val=NULL;
     nco_free(ptr_for_free);
     return kvm;
-  }
+  } /* !args_copy */
   
   kvm.key=strdup(strsep(&args_copy,"="));
   kvm.val=strdup(args_copy);
@@ -48,20 +47,21 @@ nco_sng2kvm /* [fnc] Convert string to key-value pair */
     nco_exit(EXIT_FAILURE);
   } /* kvm.key */
   return kvm;
+  
 } /* nco_sng2kvm() */
 
 char * /* O [sng] Stripped-string */
 nco_sng_strip /* [fnc] Strip leading and trailing white space */
 (char *sng) /* I/O [sng] String to strip */
 {
-  /* fxm: seems not working for \n??? */
+  /* fxm: does not not work for \n??? */
   char *srt=sng;
   while(isspace(*srt)) srt++;
   size_t end=strlen(srt);
   if(srt != sng){
     memmove(sng,srt,end);
     sng[end]='\0';
-  } /* endif */
+  } /* !srt */
   while(isblank(*(sng+end-1L))) end--;
   sng[end]='\0';
   return sng;
@@ -91,8 +91,9 @@ nco_kvm_prn(kvm_sct kvm)
 
 char * /* O/I [sng] string that has backslash(es) */
 nco_remove_backslash
-(char *args) /* O/I [sng] string that had already been got rid of backslash(es) */
-{ /* Purpose: recursively remove backslash from string */
+(char *args) /* O/I [sng] String that had already been got rid of backslash(es) */
+{
+  /* Purpose: recursively remove backslash from string */
   char *backslash_pos=strstr(args,"\\"); 
   if(backslash_pos){
     int absolute_pos=backslash_pos-args;/* Get memory address offset */
@@ -101,19 +102,17 @@ nco_remove_backslash
   }else return args;
 } /* !nco_remove_backslash() */
 
-char * /* O [sng] the flag that has no hyphens */
-nco_remove_hyphens /* [fnc] Remove the hyphens come before the flag */
-(char* args) /* I [sng] the flag that has hyphens in it*/
+char * /* O [sng] Flag without hyphens */
+nco_remove_hyphens /* [fnc] Remove hyphens that come before the flag */
+(char* args) /* I [sng] Flag with hyphens in it */
 {
   char *hyphen_pos=strstr(args,"-"); 
   if(hyphen_pos){
-    int absolute_pos=hyphen_pos-args;/* Get memory address offset */
+    int absolute_pos=hyphen_pos-args; /* Get memory address offset */
     memmove(&args[absolute_pos],&args[absolute_pos+1L],strlen(args)-absolute_pos);
     return nco_remove_hyphens(args);
-  }
-  else
-    return args;
-}
+  }else return args;
+} /* !nco_remove_hyphens */
 
 char ** /* O [sng] Group of split strings */
 nco_sng_split /* [fnc] Split string by delimiter */
@@ -134,7 +133,7 @@ nco_sng_split /* [fnc] Split string by delimiter */
     sng_fnl=(char **)nco_malloc(sizeof(char *));
     sng_fnl[0]=sng_tmp;
     return sng_fnl;
-  }
+  } /* !sng_tmp */
   
   /* Count positions where delimiter appears */
   sng_fnl=(char **)nco_malloc(sizeof(char *)*counter);
@@ -172,7 +171,7 @@ nco_sng_split /* [fnc] Split string by delimiter */
 
 int /* O [flg] Option is flag */
 nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
-(const char* flag) /* I [sng] Input string */
+(const char *flag) /* I [sng] Input string */
 {
   const char fnc_nm[]="nco_opt_is_flg()"; /* [sng] Function name */
   const char *rgr_flags[]={
@@ -199,35 +198,27 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
   const char *trr_flags[]={""};
   const char *ppc_flags[]={""};
   
-  for(unsigned int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++)
-    {
-      if(!strcmp(flag,rgr_flags[index])){
-        return NCO_NOERR;
-      }
+  for(unsigned int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++){
+    if(!strcmp(flag,rgr_flags[index])){
+      return NCO_NOERR;
     }
-  for(unsigned int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++)
-    {
-      if(!strcmp(flag, gaa_flags[index])) 
-        return NCO_NOERR;
-    }
-  for(unsigned int index=0;index<sizeof(trr_flags)/sizeof(char *);index++)
-    {
-      if(!strcmp(flag, trr_flags[index])) 
-        return NCO_NOERR;
-    }
-  for(unsigned int index=0;index<sizeof(ppc_flags)/sizeof(char *);index++)
-    {
-      if(!strcmp(flag, ppc_flags[index])) 
-        return NCO_NOERR;
-    }
+  }
+  for(unsigned int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++){
+    if(!strcmp(flag, gaa_flags[index])) return NCO_NOERR;
+  }
+  for(unsigned int index=0;index<sizeof(trr_flags)/sizeof(char *);index++){
+    if(!strcmp(flag, trr_flags[index])) return NCO_NOERR;
+  }
+  for(unsigned int index=0;index<sizeof(ppc_flags)/sizeof(char *);index++){
+    if(!strcmp(flag, ppc_flags[index])) return NCO_NOERR;
+  }
   
   (void)fprintf(stderr, "%s: ERROR %s Multi-Argument (MTA) parser reports unrecognized option \"%s\"\n%s: HINT Lack of equals sign indicates this may be a mis-typed flag rather than an erroneous key-value pair specification. Valid MTA flags are listed below. Synonyms for each flag are listed on the same line. A leading \"--\" is optional. MTA documentation is at http://nco.sf.net/nco.html#mta\n",nco_prg_nm_get(),fnc_nm,flag,nco_prg_nm_get());
 
   (void)fprintf(stderr, "Regridder flags (\"rgr\" indicator):\n");
-  for(unsigned int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++)
-    {
-      (void)fprintf(stderr, "  %2d. %s\n",index+1,rgr_flags[index]);
-    }
+  for(unsigned int index=0;index<sizeof(rgr_flags)/sizeof(char *);index++){
+    (void)fprintf(stderr,"  %2d. %s\n",index+1,rgr_flags[index]);
+  }
   /*
     (void)fprintf(stderr, "ncks gaa (Global Attribute Adding) flags:\n");
     for(unsigned int index=0;index<sizeof(gaa_flags)/sizeof(char *);index++)
@@ -249,7 +240,6 @@ nco_opt_is_flg /* [fnc] Check whether option is registered as NCO flag */
   
   return NCO_ERR;
 }
-
 
 int /* O [flg] Input has valid syntax */
 nco_input_check /* [fnc] Check whether input has valid syntax */
@@ -315,13 +305,10 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
   
   for(int sng_idx=0;sng_idx<nco_count_blocks(args,nco_mta_dlm);sng_idx++){
     char *value=NULL, *set_of_keys=NULL;
-    if(strstr(separate_args[sng_idx],"="))
-    { /*key-value pair case*/
+    if(strstr(separate_args[sng_idx],"=")){ /*key-value pair case*/
       value=strdup(strstr(separate_args[sng_idx],"="));
       set_of_keys=strdup(strtok(separate_args[sng_idx],"="));
-    }
-    else
-    { /*Pure key case (flags) */
+    }else{ /* Pure key case (flags) */
       set_of_keys=strdup(nco_remove_hyphens(separate_args[sng_idx]));
       value=NULL;
     }
@@ -330,8 +317,7 @@ nco_arg_mlt_prs /* [fnc] main parser, split the string and assign to kvm structu
     for(int sub_idx=0;sub_idx<nco_count_blocks(set_of_keys,nco_mta_sub_dlm);sub_idx++){
       char *temp_value=strdup(individual_args[sub_idx]);
       temp_value=(char *)nco_realloc(temp_value,strlen(temp_value)+(value ? strlen(value) : 0)+1L);
-      if(value)
-        temp_value= strcat(temp_value,value);
+      if(value) temp_value= strcat(temp_value,value);
       kvm_set[kvm_idx++]=nco_sng2kvm(nco_remove_backslash(temp_value));
       nco_free(temp_value);
     } /* !sub_idx */
