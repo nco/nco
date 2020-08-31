@@ -1371,7 +1371,7 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
 
 wgt_sct **
-nco_poly_lst_mk_nni_sph(  /* create overlap mesh  for sph polygons */
+nco_poly_lst_mk_dwe_sph(  /* create overlap mesh  for sph polygons */
 poly_sct **pl_lst_out,
 int pl_cnt,
 nco_grd_lon_typ_enm grd_lon_typ,
@@ -1380,7 +1380,7 @@ int nbr_tr,
 int *wgt_cnt_bln_ret) {
 
   /* just duplicate output list to overlap */
-  const char fnc_nm[] = "nco_poly_lst_mk_nni_sph()";
+  const char fnc_nm[] = "nco_poly_lst_mk_dwe_sph()";
 
 
 
@@ -1391,7 +1391,7 @@ int *wgt_cnt_bln_ret) {
   /* reporting step */
   int thr_quota_step;
   /* max number of nearest neighbours to consider */
-  const int nbr_nni=8;
+  const int nbr_dwe=8;
 
   double min_dist=1.0e-12;
   double min_wgt=1.0e-20;
@@ -1458,7 +1458,7 @@ int *wgt_cnt_bln_ret) {
 
     int nbr_nni_cnt; /* equal to or less than nbr_nni */
 
-    wgt_sct wgt_pre[nbr_nni];
+    wgt_sct wgt_pre[nbr_dwe];
 
     wgt_sct * wgt_lcl=NULL_CEWI;
     poly_sct *pl=NULL_CEWI;
@@ -1501,9 +1501,9 @@ int *wgt_cnt_bln_ret) {
     dp_x_wrp=KD_DBL_MAX;
 
     for(kdx=0;kdx<nbr_tr;kdx++)
-      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, pl_typ,  nbr_nni, mem_lst[thr_idx].kd_list + nbr_nni *kdx );
+      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, pl_typ,  nbr_dwe, mem_lst[thr_idx].kd_list + nbr_dwe *kdx );
 
-    nbr_lst_lcl=nbr_nni*nbr_tr;
+    nbr_lst_lcl=nbr_dwe*nbr_tr;
 
     switch(grd_lon_typ)
     {
@@ -1532,9 +1532,9 @@ int *wgt_cnt_bln_ret) {
     if(False && dp_x_wrp != KD_DBL_MAX)
     {
       for (kdx = 0; kdx < nbr_tr; kdx++)
-        kd_nearest(tree[kdx], dp_x_wrp, pl_lst_out[idx]->dp_y_ctr, pl_typ, nbr_nni, mem_lst[thr_idx].kd_list + nbr_lst_lcl+nbr_nni * kdx);
+        kd_nearest(tree[kdx], dp_x_wrp, pl_lst_out[idx]->dp_y_ctr, pl_typ, nbr_dwe, mem_lst[thr_idx].kd_list + nbr_lst_lcl+nbr_dwe * kdx);
 
-      nbr_lst_lcl+=nbr_nni*nbr_tr;
+      nbr_lst_lcl+=nbr_dwe*nbr_tr;
     }
 
 
@@ -1571,9 +1571,9 @@ int *wgt_cnt_bln_ret) {
     }else{
 
       /* check for duplicates in first nbr_nni by sorting again with ->item  !!!*/
-      kd_priority_list_sort(mem_lst[thr_idx].kd_list,nbr_nni, nbr_nni,&nbr_nni_cnt );
+      kd_priority_list_sort(mem_lst[thr_idx].kd_list,nbr_dwe, nbr_dwe,&nbr_nni_cnt );
 
-      if (nco_dbg_lvl_get() >= nco_dbg_dev && nbr_nni_cnt < nbr_nni )
+      if (nco_dbg_lvl_get() >= nco_dbg_dev && nbr_nni_cnt < nbr_dwe )
          (void)fprintf(fp_stderr,"%s:%s: nbr_nni_cnt=%d x_ctr=%f  y_ctr=%f\n", nco_prg_nm_get(), fnc_nm, nbr_nni_cnt, pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr );
 
       /* output at least one */
