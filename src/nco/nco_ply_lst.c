@@ -1384,13 +1384,13 @@ int *wgt_cnt_bln_ret) {
   const char fnc_nm[] = "nco_poly_lst_mk_dwe_sph()";
 
 
-
   int thr_idx = 0;
   /* approx number of input cells each thread will process */
   int thr_quota;
   /* reporting step */
   int thr_quota_step;
   /* max number of nearest neighbours to consider - nr-reference from rgr_nfo */
+  int const max_nbr_dwe=20;
   int nbr_dwe=0;
 
   double pow_dwe=0.0;
@@ -1415,7 +1415,7 @@ int *wgt_cnt_bln_ret) {
 
   lcl_thr_nbr = omp_get_max_threads();
 
-  nbr_dwe=rgr_nfo->xtr_nsp;
+  nbr_dwe= ( rgr_nfo->xtr_nsp > max_nbr_dwe ? max_nbr_dwe : rgr_nfo->xtr_nsp );
 
   pow_dwe=rgr_nfo->xtr_xpn;
 
@@ -1463,7 +1463,7 @@ int *wgt_cnt_bln_ret) {
 
     int nbr_dwe_cnt; /* equal to or less than nbr_nni */
 
-    wgt_sct wgt_pre[nbr_dwe];
+    wgt_sct wgt_pre[max_nbr_dwe];
 
     wgt_sct * wgt_lcl=NULL_CEWI;
     poly_sct *pl=NULL_CEWI;
