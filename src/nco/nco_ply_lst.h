@@ -100,7 +100,8 @@ int lst_out_typ,
 int *pl_cnt_vrl_ret);
 
 wgt_sct **
-nco_poly_lst_mk_nni_sph(  /* create overlap mesh  for sph polygons */
+nco_poly_lst_mk_dwe_sph(
+rgr_sct *const rgr_nfo,
 poly_sct **pl_lst_out,
 int pl_cnt,
 nco_grd_lon_typ_enm grd_lon_typ,

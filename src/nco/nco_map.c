@@ -1040,7 +1040,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
     if (pl_typ == poly_sph || pl_typ == poly_rll)
-      wgt_lst_vrl = nco_poly_lst_mk_nni_sph(pl_lst_out, grd_sz_out, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
+      wgt_lst_vrl = nco_poly_lst_mk_dwe_sph(map_rgr, pl_lst_out, grd_sz_out, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
 
     pl_lst_vrl=(poly_sct**)NULL_CEWI;
 
@@ -1263,7 +1263,7 @@ nco_msh_wrt
  double *lat_crn,
  double *lon_crn)
 {
-  const char fnc_nm[]="nco_msh_wrt()"; /* [sng] Function name */
+  // const char fnc_nm[]="nco_msh_wrt()"; /* [sng] Function name */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 2-D grid variables */
 
@@ -1303,7 +1303,7 @@ nco_msh_wrt
 
 
   char grd_sz_nm[]="grid_size";
-  char msk_nm[]="grid_imask";
+  // char msk_nm[]="grid_imask";
 
   nco_bool FORCE_APPEND=False; /* Option A */
   nco_bool FORCE_OVERWRITE=True; /* Option O */
@@ -1542,7 +1542,7 @@ int pl_nbr,
 nco_grd_lon_typ_enm grd_lon_typ,
 int fl_out_fmt)
 {
-  const char fnc_nm[]="nco_msh_poly_lst_wrt()"; /* [sng] Function name */
+  //const char fnc_nm[]="nco_msh_poly_lst_wrt()"; /* [sng] Function name */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 2-D grid variables */
 
