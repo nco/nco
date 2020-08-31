@@ -2556,7 +2556,7 @@ nco_bool nco_sph_is_convex(double **sP, int np)
   const char fnc_nm[]="nco_sph_is_convex()";
 
 
-nco_bool flg_sx=0;
+
 
 int idx;
 int idx_pre;
@@ -3107,8 +3107,7 @@ void nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2,
 void nco_geo_lonlat_2_sph(double lon, double lat, double *b, nco_bool bSimple, nco_bool bDeg)
 {
 
-   char fnc_nm[]="nco_geo_lonlat_2_sph";
-
+   //char fnc_nm[]="nco_geo_lonlat_2_sph";
 
 
    if(bDeg) {
@@ -3191,79 +3190,6 @@ void  nco_geo_sph_2_lonlat(double *a, double *lon, double *lat, nco_bool bDeg)
 
    return;
 }
-
-
-
-double
-nco_sph_area_karney(
-double **sP, int np
-)
-{
-
-  int idx;
-  //int idx_pre;
-  int idx_nex;
-
-  double dLon1;
-  double dLat1;
-  double dLon2;
-  double dLat2;
-
-  double dLamLat1;
-  double dLamLat2;
-
-  double dFaceArea = 0.0;
-
-  double dS;
-
-
-  for (idx = 0; idx < np; idx++)
-  {
-
-    // Get Nodes bounding this Node
-    // idx_pre = (idx + np - 1) % np;
-
-    // idx_nex = (idx + 1) % np;
-
-      //const Node & node0 = nodes[face[idx_pre]];
-      //const Node & node1 = nodes[face[idx]];
-      //const Node & node2 = nodes[face[idx_nex]];
-
-
-    // Calculate area using Karney's method
-    // http://osgeo-org.1560.x6.nabble.com/Area-of-a-spherical-polygon-td3841625.html
-    dLon1 = sP[idx][3];
-    dLat1 = sP[idx][4];
-
-    dLon2 = sP[idx_nex][3];
-    dLat2 = sP[idx_nex][4];
-
-    if ((dLon1 < -0.5 * M_PI) && (dLon2 > 0.5 * M_PI))
-       dLon1 += 2.0 * M_PI;
-
-    if ((dLon2 < -0.5 * M_PI) && (dLon1 > 0.5 * M_PI))
-      dLon2 += 2.0 * M_PI;
-
-
-    dLamLat1 = 2.0 * atanh(tan(dLat1 / 2.0));
-    dLamLat2 = 2.0 * atanh(tan(dLat2 / 2.0));
-
-    dS = tan(0.5 * (dLon2 - dLon1)) * tanh(0.5 * (dLamLat1 + dLamLat2));
-
-    dFaceArea -= 2.0 * atan(dS);
-
-
-  }
-
-
-
-  if (dFaceArea < -1.0e-14)
-      dFaceArea += 2.0 * M_PI;
-
-
-  return dFaceArea;
-}
-
 
 
 double nco_sph_area_quadrature(
