@@ -6,7 +6,7 @@
 
 	* NCO 4.9.4-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta02: Reanimated Umbrella';git push
-	git tag -a 4.9.4-beta02 -m 'ncremap xtr_xpn, xtr_nsp, nni->dwe';git push --tags
+	git tag -a 4.9.4-beta02 -m 'ncra --prm_ints; ncremap xtr_xpn, xtr_nsp, nni->dwe';git push --tags
 
 	* ncra set output type of all fix/prc variables in nco_set_prm_typ_out() with PROMOTE_INTS
 
