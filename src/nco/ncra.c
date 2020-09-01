@@ -286,6 +286,7 @@ main(int argc,char **argv)
   nco_int base_time_crr=nco_int_CEWI;
 
   nc_type var_prc_typ_pre_prm=NC_NAT; /* [enm] Type of variable before promotion */
+  nc_type var_typ_out=NC_NAT; /* [enm] Type of variable in output file */
 
   scv_sct wgt_scv;
   scv_sct wgt_avg_scv;
@@ -367,7 +368,8 @@ main(int argc,char **argv)
     {"open_ram",no_argument,0,0}, /* [flg] Open (netCDF3) file(s) in RAM */
     {"diskless_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) in RAM */
     {"per_record_weights",no_argument,0,0}, /* [flg] Weight each record (not file) by command-line numeric weights, if any */
-    {"prm_int",no_argument,0,0}, /* [flg] Promote integers to floating point in output */
+    {"prm_ints",no_argument,0,0}, /* [flg] Promote integers to floating point in output */
+    {"prm_ntg",no_argument,0,0}, /* [flg] Promote integers to floating point in output */
     {"promote_integers",no_argument,0,0}, /* [flg] Promote integers to floating point in output */
     {"prw",no_argument,0,0}, /* [flg] Weight each record (not file) by command-line numeric weights, if any */
     {"share_all",no_argument,0,0}, /* [flg] Open and create (netCDF3) file(s) with unbuffered I/O */
@@ -619,7 +621,7 @@ main(int argc,char **argv)
         ppc_arg[ppc_nbr]=(char *)strdup(optarg);
         ppc_nbr++;
       } /* endif "ppc" */
-      if(!strcmp(opt_crr,"prm_int") || !strcmp(opt_crr,"promote_integers")){
+      if(!strcmp(opt_crr,"prm_ints") || !strcmp(opt_crr,"prm_ntg") || !strcmp(opt_crr,"promote_integers")){
 	PROMOTE_INTS=True; /* [flg] Promote integers to floating point in output */
 	if(nco_prg_id_get() != ncra){
 	  (void)fprintf(stdout,"%s: ERROR Option --promote_integers to archive arithmetically processed integer-valued variables as floating point values is only supported with ncra\n",nco_prg_nm_get());
@@ -921,7 +923,9 @@ main(int argc,char **argv)
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_csh_byt,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Keep integers promoted to double-precision on output */
-  if(PROMOTE_INTS) (void)nco_set_prm_typ_out(xtr_nbr,var,trv_tbl);
+  //  if(PROMOTE_INTS) (void)nco_set_prm_typ_out(xtr_nbr,var,trv_tbl);
+  // (void)nco_set_prm_typ_out(xtr_nbr,var,trv_tbl);
+  if(nco_prg_id_get() == ncra) (void)nco_set_prm_typ_out(PROMOTE_INTS,xtr_nbr,var,trv_tbl);
   
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,!REC_APN,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
@@ -1680,15 +1684,15 @@ main(int argc,char **argv)
               if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
 	      // 20200831: var_typ_out may differ from typ_upk when PROMOTE_INTS is invoked
-	      //              var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
-	      var_prc_out[idx]=nco_var_cnf_typ(var_trv->var_typ_out,var_prc_out[idx]);
+	      var_typ_out= PROMOTE_INTS ? var_trv->var_typ_out : var_prc_out[idx]->typ_upk;
+	      var_prc_out[idx]=nco_var_cnf_typ(var_typ_out,var_prc_out[idx]);
               /* Packing/Unpacking */
               if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
 	      if(var_trv->ppc != NC_MAX_INT){
 		if(var_trv->flg_nsd) (void)nco_ppc_bitmask(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val); else (void)nco_ppc_around(var_trv->ppc,var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val);
 	      } /* endif ppc */
 	      if(nco_is_xcp(var_trv->nm)) nco_xcp_prc(var_trv->nm,var_prc_out[idx]->type,var_prc_out[idx]->sz,(char *)var_prc_out[idx]->val.vp);
-              if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
+              if(var_prc_out[idx]->nbr_dim == 0) (void)nco_put_var1(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_typ_out); else (void)nco_put_vara(grp_out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_typ_out);
             } /* end loop over idx */
             idx_rec_out[idx_rec]++; /* [idx] Index of current record in output file (0 is first, ...) */
           } /* end if normalize and write */

@@ -4286,7 +4286,8 @@ nco_var_typ_trv /* [fnc] Transfer variable type into GTT */
 
 void
 nco_set_prm_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmetically promoted type for integers */
-(const int prc_nbr, /* I [nbr] Number of processed variables */
+(nco_bool const PROMOTE_INTS, /* I/O [flg] Promote integers to floating point in output */
+ const int prc_nbr, /* I [nbr] Number of processed variables */
  CST_X_PTR_CST_PTR_CST_Y(var_sct,var), /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
 {
@@ -4305,43 +4306,45 @@ nco_set_prm_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmeti
     /* Output Type depends on input type */
     if(var[idx_var]->is_fix_var){
       var_typ_out=var[idx_var]->type;
+    }else if(!PROMOTE_INTS){
+      var_typ_out=var[idx_var]->typ_upk;
     }else{
       switch(var[idx_var]->typ_upk){
       case NC_FLOAT: 
       case NC_DOUBLE: 
       case NC_CHAR:
       case NC_STRING:
-	var_typ_out=var[idx_var]->typ_upk; 
+	var_typ_out=var[idx_var]->typ_upk;
 	break;
 	/* Do not un-promote integers after processing */
       case NC_INT:
       case NC_SHORT:
       case NC_BYTE:
       case NC_UBYTE: 
-      case NC_USHORT: 
+      case NC_USHORT:
       case NC_UINT: 
       case NC_INT64: 
       case NC_UINT64: 
 	/* Archiving processed integers as NC_DOUBLE preserves most precision yet is probably overkill
 	   NC_FLOAT saves 2x space and still gives ~7 digits precision */
-	// var_typ_out=NC_FLOAT;
-	var_typ_out=NC_DOUBLE;
+	var_typ_out=NC_FLOAT;
+	//	var_typ_out=NC_DOUBLE;
 	break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
-    } /* !prc_var */
+    } /* !PROMOTE_INTS */
     
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: %s reports var[%d]=%s, type=%s, typ_dsk=%s, typ_pck=%s, typ_upk=%s, var_typ_out=%s\n",nco_prg_nm_get(),fnc_nm,idx_var,var[idx_var]->nm_fll,nco_typ_sng(var[idx_var]->type),nco_typ_sng(var[idx_var]->typ_dsk),nco_typ_sng(var[idx_var]->typ_pck),nco_typ_sng(var[idx_var]->typ_upk),nco_typ_sng(var_typ_out));
 
     /* Mark output type in table for "nm_fll" */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(!strcmp(var[idx_var]->nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
-        trv_tbl->lst[idx_tbl].var_typ_out=var_typ_out;
-        break;
+	trv_tbl->lst[idx_tbl].var_typ_out=var_typ_out;
+	break;
       } /* !strcmp() */
     } /* !idx_tbl */
   } /* !idx_var */
-
+  
   return;
 } /* end nco_set_prm_typ_out() */
 
@@ -4639,8 +4642,8 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   long dmn_sz;                           /* [nbr] Size of dimension (on input)  */  
   long dmn_sz_grp;                       /* [sng] Dimension size for group  */  
 
-  nc_type var_typ;                       /* [enm] netCDF type in input variable (usually same as output) */
-  nc_type var_typ_out;                   /* [enm] netCDF type in output variable (usually same as input) */ 
+  nc_type var_typ;                       /* [enm] netCDF type of input variable (usually same as output) */
+  nc_type var_typ_out;                   /* [enm] netCDF type of output variable (usually same as input) */ 
 
   nco_bool CRR_DMN_IS_REC_IN_INPUT;      /* [flg] Current dimension of variable is record dimension of variable in input file/group */
   nco_bool DFN_CRR_DMN_AS_REC_IN_OUTPUT=False; /* [flg] Define current dimension as record dimension in output file */
@@ -7834,21 +7837,21 @@ nco_var_get_wgt_trv                   /* [fnc] Retrieve weighting or mask variab
             /* Case of input limits, reconstruct limits and hyperslab */
             if (lmt_nbr) {
               lmt_sct **lmt = NULL_CEWI;  /* [sct] User defined limits */
-              lmt = nco_lmt_prs(lmt_nbr, lmt_arg);
-              nco_bld_lmt_var(nc_id, MSA_USR_RDR, lmt_nbr, lmt, FORTRAN_IDX_CNV, wgt_trv);
+              lmt = nco_lmt_prs(lmt_nbr,lmt_arg);
+              nco_bld_lmt_var(nc_id,MSA_USR_RDR,lmt_nbr,lmt,FORTRAN_IDX_CNV,wgt_trv);
               /* Transfer from table to local variable */
-              wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
+              wgt_var = nco_var_fll_trv(grp_id,var_id,wgt_trv,trv_tbl);
               /* Assign the hyperslab information for a variable 'var_sct'  from the obtained GTT variable */
               /* Similar to nco_msa_var_get_trv() but just with one input GTT variable */
-              (void)nco_msa_var_get_sct(nc_id, wgt_var, wgt_trv);
-              lmt = nco_lmt_lst_free(lmt, lmt_nbr);
+              (void)nco_msa_var_get_sct(nc_id,wgt_var,wgt_trv);
+              lmt = nco_lmt_lst_free(lmt,lmt_nbr);
             }
             else {
               /* Retrieve hyperslabs from table */
               /* Transfer from table to local variable */
-              wgt_var = nco_var_fll_trv(grp_id, var_id, wgt_trv, trv_tbl);
+              wgt_var = nco_var_fll_trv(grp_id,var_id,wgt_trv,trv_tbl);
               /* Retrieve variable NB: use GTT version, that "knows" all limits */
-              (void)nco_msa_var_get_trv(nc_id, wgt_var, trv_tbl);
+              (void)nco_msa_var_get_trv(nc_id,wgt_var,trv_tbl);
             }
 
             wgt_tbl = (trv_sct **)nco_free(wgt_tbl);

@@ -614,6 +614,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,"area_b","standard_name","solid_angle");
   rcd=nco_char_att_put(out_id,"area_b","units","steradian");
   rcd=nco_char_att_put(out_id,"col","long_name","Pointer to Source Grid Element (with 1, not 0, indicating the first element)");
+  rcd=nco_char_att_put(out_id,"dst_grid_dims","long_name","Size of each logical dimension in the Destination Grid, in Fortran order (for historical reasons), i.e., from most- to least-rapidly varying");
   rcd=nco_char_att_put(out_id,"frac_a","long_name","Fraction of Source Gridcell That Participates in Remapping");
   rcd=nco_char_att_put(out_id,"frac_a","units","none");
   rcd=nco_char_att_put(out_id,"frac_b","long_name","Fraction of Destination Gridcell That Participates in Remapping");
@@ -623,10 +624,12 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,"mask_b","long_name","Binary Integer Mask for Destination Grid");
   rcd=nco_char_att_put(out_id,"mask_b","units","none");
   rcd=nco_char_att_put(out_id,"row","long_name","Pointer to Destination Grid Element (with 1, not 0, indicating the first element)");
+  rcd=nco_char_att_put(out_id,"src_grid_dims","long_name","Size of each logical dimension in the Source Grid, in Fortran order (for historical reasons), from most- to least-rapidly varying");
+  rcd=nco_char_att_put(out_id,"xc_a","bounds","xv_a");
   rcd=nco_char_att_put(out_id,"xc_a","long_name","Longitude of Source Grid Cell Centers");
   rcd=nco_char_att_put(out_id,"xc_a","standard_name","longitude");
   rcd=nco_char_att_put(out_id,"xc_a","units","degrees_east");
-  rcd=nco_char_att_put(out_id,"xc_a","bounds","xv_a");
+  rcd=nco_char_att_put(out_id,"xc_b","bounds","xv_b");
   rcd=nco_char_att_put(out_id,"xc_b","long_name","Longitude of Destination Grid Cell Centers");
   rcd=nco_char_att_put(out_id,"xc_b","standard_name","longitude");
   rcd=nco_char_att_put(out_id,"xc_b","units","degrees_east");
@@ -636,15 +639,14 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,"xv_b","long_name","Longitude of Destination Grid Cell Vertices");
   rcd=nco_char_att_put(out_id,"xv_b","standard_name","longitude");
   rcd=nco_char_att_put(out_id,"xv_b","units","degrees_east");
-  rcd=nco_char_att_put(out_id,"xc_b","bounds","xv_b");
+  rcd=nco_char_att_put(out_id,"yc_a","bounds","yv_a");
   rcd=nco_char_att_put(out_id,"yc_a","long_name","Latitude of Source Grid Cell Centers");
   rcd=nco_char_att_put(out_id,"yc_a","standard_name","latitude");
   rcd=nco_char_att_put(out_id,"yc_a","units","degrees_north");
-  rcd=nco_char_att_put(out_id,"yc_a","bounds","yv_a");
+  rcd=nco_char_att_put(out_id,"yc_b","bounds","yv_b");
   rcd=nco_char_att_put(out_id,"yc_b","long_name","Latitude of Destination Grid Cell Centers");
   rcd=nco_char_att_put(out_id,"yc_b","standard_name","latitude");
   rcd=nco_char_att_put(out_id,"yc_b","units","degrees_north");
-  rcd=nco_char_att_put(out_id,"yc_b","bounds","yv_b");
   rcd=nco_char_att_put(out_id,"yv_a","long_name","Latitude of Source Grid Cell Vertices");
   rcd=nco_char_att_put(out_id,"yv_a","standard_name","latitude");
   rcd=nco_char_att_put(out_id,"yv_a","units","degrees_north");
@@ -2047,7 +2049,7 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
 {
   /* Purpose: Compute frac_a as area_b-weighted column sums of the weight matrix S normalized by area_a */
 
-  char fnc_nm[]="nco_map_frac_a_clc()";
+  //char fnc_nm[]="nco_map_frac_a_clc()";
   int idx_row;
   int idx_col;
   size_t cnt_zro; /* [nbr] Number of valid areas in Grid A */

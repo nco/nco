@@ -2513,7 +2513,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_dimid(in_id,"n_s",&num_links_id);
     break;
   default:
-    (void)fprintf(stderr,"%s: ERROR %s unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
     nco_dfl_case_generic_err();
     /* NB: This return never executes because nco_dfl_case_generic_err() calls exit()
        Return placed here to suppress clang -Wsometimes-uninitialized warnings
@@ -2586,7 +2586,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   } /* endif dbg */
   /* 20190726: Allow normalization type to be "none" for bilinear regridding which UKMO SCRIP files set to "none"*/
   if(nco_rgr_mth_typ == nco_rgr_mth_conservative && nco_rgr_nrm_typ == nco_rgr_nrm_none){
-    (void)fprintf(stdout,"%s: ERROR %s reports requested normalization type = %s is not yet supported. Specifically, masks specified by a mask variable (dst_grid_imask,mask_b) are ignored. More specifically, any destination mask information is assumed to be built into the weight array so that no source points will contribute to masked locations. Talk to Charlie if you want this changed.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
+    (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports requested normalization type = %s is not yet supported. Specifically, masks specified by a mask variable (dst_grid_imask,mask_b) are ignored. More specifically, any destination mask information is assumed to be built into the weight array so that no source points will contribute to masked locations. Talk to Charlie if you want this changed.\n",nco_prg_nm_get(),fnc_nm,nco_rgr_nrm_sng(nco_rgr_nrm_typ));
     nco_exit(EXIT_FAILURE);
   } /* !msk */
     
@@ -2657,7 +2657,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     rcd+=nco_inq_varid(in_id,"S",&wgt_raw_id); /* NB: remap_matrix[num_links,num_wgts] != S[n_s] */
     break;
   default:
-    (void)fprintf(stderr,"%s: ERROR %s unknown map file type\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unknown map file type\n",nco_prg_nm_get(),fnc_nm);
     nco_dfl_case_generic_err();
     /* NB: This return never executes because nco_dfl_case_generic_err() calls exit()
        Return placed here to suppress clang -Wsometimes-uninitialized warnings
@@ -2688,7 +2688,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       rcd=NC_NOERR;
       break;
     default:
-      (void)fprintf(stderr,"%s: ERROR %s unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unknown map-file type\n",nco_prg_nm_get(),fnc_nm);
       nco_dfl_case_generic_err();
     } /* !nco_rgr_mpf_typ */
     if(msk_dst_id == NC_MIN_INT) flg_msk_out=False;
@@ -3230,7 +3230,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   if(rgr->tst == -1){
     /* Passing --rgr tst=-1 causes regridder to fail here 
        This failure should cause host climo script to abort */
-    (void)fprintf(stdout,"%s: ERROR %s reports regridder instructed to fail here. This tests failure mode in climo scripts...\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports regridder instructed to fail here. This tests failure mode in climo scripts...\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !tst */
 
@@ -3244,7 +3244,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   for(idx=0;idx<(long)grd_sz_out;idx++)
     if(frc_out[idx] != 0.0) break;
   if(idx == (long)grd_sz_out){
-    (void)fprintf(stdout,"%s: ERROR %s reports frc_out == frac_b contains all zeros\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports frc_out == frac_b contains all zeros\n",nco_prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
   } /* !always zero */
   /* Test whether frc_out is ever zero... */
@@ -3615,7 +3615,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       if(dmn_ids_in) dmn_ids_in=(int *)nco_free(dmn_ids_in);
       if(dmn_idx == dmn_nbr_in){
 	dmn_id_col=NC_MIN_INT;
-	(void)fprintf(stdout,"%s: ERROR %s expects data on an unstructured grid but cannot find a dimension in the input file (or, with ncremap, a possibly already subsetted intermediate file) that matches the size of the unstructured dimension in the supplied map-file = src_grd_dims[0] = n_a = %ld.\nHINT: Ensure at least one member of the variable extraction list has a spatial dimension of size = %ld\n",nco_prg_nm_get(),fnc_nm,col_nbr_in,col_nbr_in);
+	(void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") expects data on an unstructured grid but cannot find a dimension in the input data file (or, with ncremap, a possibly already subsetted intermediate file) that matches the size of the unstructured dimension in the supplied map-file = src_grd_dims[0] = n_a = %ld.\nHINT: Ensure at least one member of the variable extraction list has a spatial dimension of size = %ld\n",nco_prg_nm_get(),fnc_nm,col_nbr_in,col_nbr_in);
 	nco_exit(EXIT_FAILURE);
       } /* !dmn_idx */
     } /* !col_nm_in */
@@ -3649,12 +3649,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"y1",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("y1"); /* NSIDC EASE */
     else if((rcd=nco_inq_dimid_flg(in_id,"ygrid_0",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("ygrid_0"); /* NWS HRRR */
     else{
-      (void)fprintf(stdout,"%s: ERROR %s reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input latitude dimension name with \"ncks --rgr lat_nm_in=name\" or \"ncremap -R '--rgr lat_nm_in=name'\"\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports unable to find latitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input latitude dimension name with \"ncks --rgr lat_nm_in=name\" or \"ncremap -R '--rgr lat_nm_in=name'\"\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
     } /* !lat */
     rcd=nco_inq_dimlen(in_id,dmn_id_lat,&lat_nbr_in_dat);
     if(lat_nbr_in != lat_nbr_in_dat){
-      (void)fprintf(stdout,"%s: ERROR %s reports mapfile and data file dimension sizes disagree: mapfile lat_nbr_in = %ld != %ld = lat_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lat_nbr_in,lat_nbr_in_dat);
+      (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports mapfile and data file dimension sizes disagree: mapfile lat_nbr_in = %ld != %ld = lat_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lat_nbr_in,lat_nbr_in_dat);
       nco_exit(EXIT_FAILURE);
     } /* !err */
     long lon_nbr_in_dat; /* [nbr] Number of longitudes in input datafile */
@@ -3685,12 +3685,12 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"x1",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("x1"); /* NSIDC EASE */
     else if((rcd=nco_inq_dimid_flg(in_id,"xgrid_0",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("xgrid_0"); /* NWS HRRR */
     else{
-      (void)fprintf(stdout,"%s: ERROR %s reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input longitude dimension name with \"ncks --rgr lon_nm_in=name\" or \"ncremap -R '--rgr lon_nm_in=name'\"\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports unable to find longitude dimension in input file. Tried the usual suspects. HINT: Inform regridder of input longitude dimension name with \"ncks --rgr lon_nm_in=name\" or \"ncremap -R '--rgr lon_nm_in=name'\"\n",nco_prg_nm_get(),fnc_nm);
       nco_exit(EXIT_FAILURE);
     } /* !lat */
     rcd=nco_inq_dimlen(in_id,dmn_id_lon,&lon_nbr_in_dat);
     if(lon_nbr_in != lon_nbr_in_dat){
-      (void)fprintf(stdout,"%s: ERROR %s reports mapfile and data file dimension sizes disagree: mapfile lon_nbr_in = %ld != %ld = lon_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lon_nbr_in,lon_nbr_in_dat);
+      (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") reports mapfile and data file dimension sizes disagree: mapfile lon_nbr_in = %ld != %ld = lon_nbr_in from datafile. HINT: Check that source grid (i.e., \"grid A\") used to create mapfile matches grid on which data are stored in input datafile.\n",nco_prg_nm_get(),fnc_nm,lon_nbr_in,lon_nbr_in_dat);
       nco_exit(EXIT_FAILURE);
     } /* !err */
   } /* !2D */
@@ -4609,7 +4609,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       char *sls_ptr; /* [sng] Pointer to last slash character (' ') */
       sls_ptr=strrchr(var_nm,'/');
       if(!sls_ptr){
-	(void)fprintf(stderr,"%s: ERROR %s reports unable to find sgs_frc_nm = %s in current input file, and unable to identify filename (ending with slash '/') portion of that string to serve as local external file for sgs_frc input, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm);
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unable to find sgs_frc_nm = %s in current input file, and unable to identify filename (ending with slash '/') portion of that string to serve as local external file for sgs_frc input, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm);
 	nco_exit(EXIT_FAILURE);
       } /* !sls_ptr */
       sgs_frc_nm=(char *)strdup(sls_ptr+1L); /* Copy variable-name portion of string */
@@ -4618,7 +4618,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       var_nm=sgs_frc_nm; /* NB: too tricky? */
       rcd=nco_open(fl_sgs,NC_NOWRITE,&sgs_id);
       if((rcd=nco_inq_varid_flg(sgs_id,var_nm,&var_id_in)) != NC_NOERR){
-	(void)fprintf(stderr,"%s: ERROR %s reports unable to find sgs_frc_nm = \"%s\" in local external file %s, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm,fl_sgs);
+	(void)fprintf(stderr,"%s: ERROR %s (aka \"the regridder\") reports unable to find sgs_frc_nm = \"%s\" in local external file %s, exiting\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm,fl_sgs);
 	nco_exit(EXIT_FAILURE);
       } /* !rcd */
       if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s obtaining sgs_frc = %s from file %s\n",nco_prg_nm_get(),fnc_nm,sgs_frc_nm,fl_sgs);
@@ -4635,7 +4635,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
       dmn_srt[dmn_idx]=0L;
     } /* !dmn_idx */
     if(var_sz_in != grd_sz_in){
-      (void)fprintf(stdout,"%s: ERROR %s requires that sgs_frc = %s be same size as spatial grid but var_sz_in = %lu != %lu = grd_sz_in\n",nco_prg_nm_get(),fnc_nm,var_nm,var_sz_in,grd_sz_in);
+      (void)fprintf(stdout,"%s: ERROR %s (aka \"the regridder\") requires that sgs_frc = %s be same size as spatial grid but var_sz_in = %lu != %lu = grd_sz_in\n",nco_prg_nm_get(),fnc_nm,var_nm,var_sz_in,grd_sz_in);
       nco_exit(EXIT_FAILURE);
     } /* !var_sz_in */
     /* Missing value setup (NB: ELM landfrac has _FillValue and is _FillValue where masked */

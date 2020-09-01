@@ -4327,6 +4327,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
 	
 # ncra #09	
+# ncra -O -v rec_var_dbl_mss_val_dbl_pck -p ~/nco/data in.nc ~/foo.nc
     $dsc_sng="record mean of packed double with double missing values";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_mss_val_dbl_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --trd -s '%f' -v rec_var_dbl_mss_val_dbl_pck %tmp_fl_00%";
@@ -4336,6 +4337,7 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
 	
 # ncra #10	
+# ncra -O -v rec_var_dbl_pck -p ~/nco/data in.nc ~/foo.nc
     $dsc_sng="record mean of packed double to test precision";
     $tst_cmd[0]="ncra $omp_flg -h -O $fl_fmt $nco_D_flg -v rec_var_dbl_pck $in_pth_arg in.nc %tmp_fl_00%";
     $tst_cmd[1]="ncks -C -H --trd -s '%f' -v rec_var_dbl_pck %tmp_fl_00%";
