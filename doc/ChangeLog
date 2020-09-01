@@ -2,7 +2,11 @@
 
 	* NCO 4.9.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4: Uncle Leroy';git push
-	git tag -a 4.9.4 -m 'all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prw; ncremap no_amwg, sdd dfl, si bgc, nco_nni';git push --tags
+	git tag -a 4.9.4 -m 'all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prm_ints prw; ncremap no_amwg, sdd dfl, si bgc, nco_dwe, xtr_xpn, xtr_nsp';git push --tags
+
+	* NCO 4.9.4-beta03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.4-beta03: Devastating Shavasana';git push
+	git tag -a 4.9.4-beta03 -m '';git push --tags
 
 	* NCO 4.9.4-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta02: Reanimated Umbrella';git push
