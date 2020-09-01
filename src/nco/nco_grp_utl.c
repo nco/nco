@@ -4285,7 +4285,7 @@ nco_var_typ_trv /* [fnc] Transfer variable type into GTT */
 } /* end nco_var_typ_trv() */
 
 void
-nco_set_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmetically promoted type for integers */
+nco_set_prm_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmetically promoted type for integers */
 (const int prc_nbr, /* I [nbr] Number of processed variables */
  CST_X_PTR_CST_PTR_CST_Y(var_sct,var), /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl) /* I/O [sct] Traversal table */
@@ -4294,6 +4294,7 @@ nco_set_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmeticall
      20200830: Feature first introduced in ncra so small types like NC_BYTE can be output as, e.g., NC_DOUBLE 
      Paul Ullrich uses NC_BYTE to hold Boolean flags and averages these over many files 
      Demoting back to NC_BYTE on output discards floating point averages */
+  const char fnc_nm[]="nco_set_prm_typ_out()"; /* [sng] Function name */
 
   nc_type var_typ_out=NC_NAT; /* [enm] Type in output file */
 
@@ -4321,12 +4322,17 @@ nco_set_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmeticall
       case NC_UINT: 
       case NC_INT64: 
       case NC_UINT64: 
-	var_typ_out=NC_FLOAT;
+	/* Archiving processed integers as NC_DOUBLE preserves most precision yet is probably overkill
+	   NC_FLOAT saves 2x space and still gives ~7 digits precision */
+	// var_typ_out=NC_FLOAT;
+	var_typ_out=NC_DOUBLE;
 	break;
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* !prc_var */
     
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: %s reports var[%d]=%s, type=%s, typ_dsk=%s, typ_pck=%s, typ_upk=%s, var_typ_out=%s\n",nco_prg_nm_get(),fnc_nm,idx_var,var[idx_var]->nm_fll,nco_typ_sng(var[idx_var]->type),nco_typ_sng(var[idx_var]->typ_dsk),nco_typ_sng(var[idx_var]->typ_pck),nco_typ_sng(var[idx_var]->typ_upk),nco_typ_sng(var_typ_out));
+
     /* Mark output type in table for "nm_fll" */
     for(unsigned idx_tbl=0;idx_tbl<trv_tbl->nbr;idx_tbl++){
       if(!strcmp(var[idx_var]->nm_fll,trv_tbl->lst[idx_tbl].nm_fll)){
@@ -4337,7 +4343,7 @@ nco_set_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmeticall
   } /* !idx_var */
 
   return;
-} /* end nco_set_typ_out() */
+} /* end nco_set_prm_typ_out() */
 
 var_sct *                             /* O [sct] Variable structure */
 nco_var_fll_trv                       /* [fnc] Allocate variable structure and fill with metadata */
@@ -5090,6 +5096,11 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
     /* If initialization value was changed, then set output type to new type */
     if(var_trv->var_typ_out != (nc_type)err_typ) var_typ_out=var_trv->var_typ_out; else var_typ_out=var_typ;
 
+  }else if(nco_prg_id == ncra){
+
+    /* If initialization value was changed, then set output type to new type */
+    if(var_trv->var_typ_out != (nc_type)err_typ) var_typ_out=var_trv->var_typ_out;
+
   }else if(nco_prg_id != ncbo){
     int var_id;        /* [id] Variable ID */
 
@@ -5109,6 +5120,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       var_prc->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc->dim[idx_dmn]);   
     }
     var_prc=(var_sct *)nco_var_free(var_prc);
+
   } /* !(ncflint || ncpdq) */
 
   /* Special case for ncwa */

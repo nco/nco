@@ -619,7 +619,13 @@ main(int argc,char **argv)
         ppc_arg[ppc_nbr]=(char *)strdup(optarg);
         ppc_nbr++;
       } /* endif "ppc" */
-      if(!strcmp(opt_crr,"prm_int") || !strcmp(opt_crr,"promote_integers")) PROMOTE_INTS=True; /* [flg] Promote integers to floating point in output */
+      if(!strcmp(opt_crr,"prm_int") || !strcmp(opt_crr,"promote_integers")){
+	PROMOTE_INTS=True; /* [flg] Promote integers to floating point in output */
+	if(nco_prg_id_get() != ncra){
+	  (void)fprintf(stdout,"%s: ERROR Option --promote_integers to archive arithmetically processed integer-valued variables as floating point values is only supported with ncra\n",nco_prg_nm_get());
+	  nco_exit(EXIT_FAILURE);
+	} /* end if */
+      } /* !prm_int */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"create_ram") || !strcmp(opt_crr,"diskless_all")) RAM_CREATE=True; /* [flg] Create (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"ram_all") || !strcmp(opt_crr,"open_ram") || !strcmp(opt_crr,"diskless_all")) RAM_OPEN=True; /* [flg] Open (netCDF3) file(s) in RAM */
       if(!strcmp(opt_crr,"share_all") || !strcmp(opt_crr,"unbuffered_io") || !strcmp(opt_crr,"uio") || !strcmp(opt_crr,"create_share")) SHARE_CREATE=True; /* [flg] Create (netCDF3) file(s) with unbuffered I/O */
@@ -915,7 +921,7 @@ main(int argc,char **argv)
   if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC) rcd+=nco_cnk_ini(in_id,fl_out,cnk_arg,cnk_nbr,cnk_map,cnk_plc,cnk_csh_byt,cnk_min_byt,cnk_sz_byt,cnk_sz_scl,&cnk);
 
   /* Keep integers promoted to double-precision on output */
-  //if(PROMOTE_INTS) (void)nco_set_typ_out(xtr_nbr,var,trv_tbl);
+  if(PROMOTE_INTS) (void)nco_set_prm_typ_out(xtr_nbr,var,trv_tbl);
   
   /* Define dimensions, extracted groups, variables, and attributes in output file */
   (void)nco_xtr_dfn(in_id,out_id,&cnk,dfl_lvl,gpe,md5,!FORCE_APPEND,!REC_APN,False,nco_pck_plc_nil,(char *)NULL,trv_tbl);
@@ -1612,9 +1618,9 @@ main(int argc,char **argv)
 	       20140930: This is (too?) confusing and hard-to-follow, a better solution is to add a field mss_val_typ 
 	       to var_sct and then separately and explicitly track types of both val and mss_val members. */
             if(var_prc[idx]->has_mss_val && /* If there is a missing value and... */
-	       !REC_LST_DSR[idx_rec] && /* ...no more records will be read (thus no more calls to nco_msa_var_get_trv()) and... */
+	       !REC_LST_DSR[idx_rec] && /* ...More records will be read (more calls to nco_msa_var_get_trv()) and... */
 	       !(var_prc[idx]->pck_dsk && var_prc_typ_pre_prm != var_prc_out[idx]->type) && /* Exclude conversion on situations like regression test ncra #32 */
-	       var_prc[idx]->type != var_prc[idx]->typ_upk) /* ...the variable was auto-promoted (e.g., --dbl) then */
+	       var_prc[idx]->type != var_prc[idx]->typ_upk) /* ...variable was auto-promoted (e.g., --dbl) then */
 	      var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk); /* Demote missing value */
 
             /* Free current input buffer */
@@ -1673,7 +1679,9 @@ main(int argc,char **argv)
               /* Memory management after current extracted group */
               if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
 
-              var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
+	      // 20200831: var_typ_out may differ from typ_upk when PROMOTE_INTS is invoked
+	      //              var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
+	      var_prc_out[idx]=nco_var_cnf_typ(var_trv->var_typ_out,var_prc_out[idx]);
               /* Packing/Unpacking */
               if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(grp_out_id,var_prc_out[idx],nco_pck_plc);
 	      if(var_trv->ppc != NC_MAX_INT){

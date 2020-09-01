@@ -427,7 +427,7 @@ nco_var_typ_trv                        /* [fnc] Transfer variable type into GTT 
  trv_tbl_sct * const trv_tbl);         /* I/O [sct] Traversal table */
 
 void
-nco_set_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmetically promoted type for integers */
+nco_set_prm_typ_out /* [fnc] Set GTT variable output type to unpacked, arithmetically promoted type for integers */
 (const int prc_nbr, /* I [nbr] Number of processed variables */
  CST_X_PTR_CST_PTR_CST_Y(var_sct,var), /* I [sct] Array of extracted variables */
  trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal table */

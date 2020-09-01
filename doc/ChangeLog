@@ -1,4 +1,4 @@
-2020-08-28  Charlie Zender  <zender@uci.edu>
+2020-08-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4: Uncle Leroy';git push
@@ -7,6 +7,10 @@
 	* NCO 4.9.4-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta02: Reanimated Umbrella';git push
 	git tag -a 4.9.4-beta02 -m 'ncremap xtr_xpn, xtr_nsp, nni->dwe';git push --tags
+
+	* ncra add nco_set_prm_typ_out to support --promote_ints --prm_int option
+
+2020-08-28  Charlie Zender  <zender@uci.edu>
 
 	* ncremap rename Nearest Neighbor Interpolation (_nni) to Distance-Weighted Extrapolation (_dwe)
 

@@ -4587,9 +4587,9 @@ if(0){
     $tst_cmd[3]="SS_OK";
     NCO_bm::tst_run(\@tst_cmd);
     $#tst_cmd=0; # Reset array	
-	}
+}
 
-	} #### Group tests		
+    } #### Group tests		
 
 # ncra #33
 # Handle scale factor and missing value with rth_dbl

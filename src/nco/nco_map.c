@@ -2255,7 +2255,7 @@ nco_map_chk /* Map-file evaluation */
     ival=var_mask_a->val.ip;
     for(idx=0;idx<sz;idx++)
       if(ival[idx] == 0) mask_a_zro++; else if(ival[idx] == 1) mask_a_one++;
-    /* Masks must have at least one unmasked value, i.e, one value of 1 */
+    /* Source mask must have at least one unmasked value, i.e, one value of 1 */
     assert(mask_a_zro != sz);
   } /* !var_mask_a */
 
@@ -2266,7 +2266,7 @@ nco_map_chk /* Map-file evaluation */
     ival=var_mask_b->val.ip;
     for(idx=0;idx<sz;idx++)
       if(ival[idx] == 0) mask_b_zro++; else if(ival[idx] == 1) mask_b_one++;
-    /* Masks must have at least one unmasked value, i.e, one value of 1 */
+    /* Destination mask must have at least one unmasked value, i.e, one value of 1 */
     assert(mask_b_zro != sz);
   } /* !var_mask_b */
   
