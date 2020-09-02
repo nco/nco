@@ -1,6 +1,8 @@
-2020-09-01  Charlie Zender  <zender@uci.edu>
+2020-09-02  Charlie Zender  <zender@uci.edu>
 
-	* ncremap allow mask_a/b_zro == sz and print warning so chk_map	works on DWE map-files
+	* ncclimo future-proof mdl_nm option to accept 'eam' instead of	'cam' and 'elm' instead of 'clm2'
+
+2020-09-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4: Uncle Leroy';git push
@@ -8,7 +10,9 @@
 
 	* NCO 4.9.4-beta03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta03: Devastating Shavasana';git push
-	git tag -a 4.9.4-beta03 -m 'ncap2 clang tidy;';git push --tags
+	git tag -a 4.9.4-beta03 -m 'ncap2 clang tidy;ncremap dwe chk_map;';git push --tags
+
+	* ncremap allow mask_a/b_zro == sz and print warning so chk_map	works on DWE map-files
 
 	* Tidy Clang warning messages due to sloppy ncap2 code, comment-out all _flg_dbg class members
 

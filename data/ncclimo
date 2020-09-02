@@ -388,7 +388,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # hst_nm:  History volume name referring to the $hst_nm character sequence used in history tape names:
 #          caseid.mdl_nm.hst_nm.YYYY-MM.nc (examples include 'h0' (default, works for cam, clm), 'h1', 'h' (for cism), 'hist' (for mpascice, mpasseaice, mpassi, mpaso)
 # mdl_nm:  Model name referring to the character sequence $mdl_nm used in history tape names:
-#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'pop')
+#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'eam', 'elm', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'pop')
 # nco_opt: String of options to pass-through to NCO, e.g.,
 #          '-D 2 -7 -L 1' for NCO debugging level 2, netCDF4-classic output, compression level 1
 #          '--no_tmp_fl -x' to skip temporary files, turn extraction into exclusion list
@@ -500,8 +500,8 @@ inp_std='No' # [sng] Input file list from stdin
 job_nbr=12 # [nbr] Job simultaneity for parallelism
 lnk_flg='No' # [sng] Link E3SM-climo to AMWG-climo filenames
 map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
-mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
-mdl_nm_usr='' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
+mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
+mdl_nm_usr='' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
@@ -1145,7 +1145,7 @@ if [ -n "${rgr_map}" ]; then
 	echo "${spt_nm}: HINT Supply the full path-name for the regridding map"
 	exit 1
     fi # ! -f
-    if [ "${mdl_nm}" = 'clm2' ] && [ -z "${sgs_frc}" ]; then
+    if [ "${mdl_nm}" = 'clm2' ] || [ "${mdl_nm}" = 'elm' ] && [ -z "${sgs_frc}" ]; then
 	printf "${spt_nm}: WARNING ${spt_nm} CLM/ELM output typically uses sub-gridscale (SGS) fractions that can only be properly renormalized if the SGS variable option to ncclimo is invoked, but that option was not invoked\n"
 	printf "${spt_nm}: HINT Provide ${spt_nm} with the SGS fraction variable using the \"--sgs_frc=\${sgs_frc_nm}\" option, otherwise the regridded data will likely not be properly or conservatively regridded\n"
     fi # !mdl_nm
@@ -2230,7 +2230,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	
     case ${mdl_nm} in
 	# CAM-SE contains area (though does not contain lat,lon until regridded)
-	cam* ) var_lst_xtn=',area' ;;
+	cam* | eam* ) var_lst_xtn=',area' ;;
     esac # !mdl_nm
     if [ "${glb_avg}" = 'Yes' ]; then 
 	# 20191217 Global average timeseries require area variable
