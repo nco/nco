@@ -1,12 +1,14 @@
 2020-09-01  Charlie Zender  <zender@uci.edu>
 
+	* ncremap allow mask_a/b_zro == sz and print warning so chk_map	works on DWE map-files
+
 	* NCO 4.9.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4: Uncle Leroy';git push
 	git tag -a 4.9.4 -m 'all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prm_ints prw; ncremap no_amwg, sdd dfl, si bgc, nco_dwe, xtr_xpn, xtr_nsp';git push --tags
 
 	* NCO 4.9.4-beta03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta03: Devastating Shavasana';git push
-	git tag -a 4.9.4-beta03 -m '';git push --tags
+	git tag -a 4.9.4-beta03 -m 'ncap2 clang tidy;';git push --tags
 
 	* Tidy Clang warning messages due to sloppy ncap2 code, comment-out all _flg_dbg class members
 

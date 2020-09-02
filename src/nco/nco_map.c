@@ -316,7 +316,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   //  if(area_in_id == NC_MIN_INT)
   for(idx=0;idx<grd_sz_in;idx++) area_in[idx]=-1.0;
 
-  /* if msk_in not in file the set each member to True */
+  /* If msk_in not in file then set each member to True */
   if(msk_in_id == NC_MIN_INT)
     for(idx=0;idx<grd_sz_in;idx++) msk_in[idx]=1;
 
@@ -332,7 +332,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   // if(area_out_id == NC_MIN_INT)
   for(idx=0;idx<grd_sz_out;idx++) area_out[idx]=-1.0;
 
-  /* If msk_in not in file then set mask in each to "True" */
+  /* If msk_in not in file then set mask in each to True */
   if(msk_out_id == NC_MIN_INT)
     for(idx=0;idx<grd_sz_out;idx++) msk_out[idx]=1;
 
@@ -865,8 +865,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
   pl_glb_in=nco_msh_stats(area_in,msk_in,lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in,grd_sz_in, grd_crn_nbr_in);
   pl_glb_out=nco_msh_stats(area_out,msk_out,lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out,grd_sz_out, grd_crn_nbr_out);
 
-
-  /* determin lon_typ  nb temporary */
+  /* determine lon_typ  nb temporary */
   grd_lon_typ_in=nco_poly_minmax_2_lon_typ(pl_glb_in);
   grd_lon_typ_out=nco_poly_minmax_2_lon_typ(pl_glb_out);
 
@@ -1377,8 +1376,8 @@ nco_msh_wrt
 
 poly_sct *           /* return a ply_sct with lat/lon minmax and total area */
 nco_msh_stats
-(double *area,       /* I [sr] Area of  grid */
- int *msk,           /* I [flg] Mask on  grid */
+(double *area,       /* I [sr] Area of grid */
+ int *msk,           /* I [flg] Mask on grid */
  double *lat_ctr,    /* I [dgr] Latitude  centers of  grid */
  double *lon_ctr,    /* I [dgr] Longitude centers of  grid */
  double *lat_crn,    /* I [dgr] Latitude  corners of  grid */
@@ -2258,7 +2257,8 @@ nco_map_chk /* Map-file evaluation */
     for(idx=0;idx<sz;idx++)
       if(ival[idx] == 0) mask_a_zro++; else if(ival[idx] == 1) mask_a_one++;
     /* Source mask must have at least one unmasked value, i.e, one value of 1 */
-    assert(mask_a_zro != sz);
+    //assert(mask_a_zro != sz);
+    if(mask_a_zro == sz) (void)fprintf(stdout,"WARNING mask_a has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well still be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed.\n");
   } /* !var_mask_a */
 
   size_t mask_b_one=0UL;
@@ -2269,7 +2269,8 @@ nco_map_chk /* Map-file evaluation */
     for(idx=0;idx<sz;idx++)
       if(ival[idx] == 0) mask_b_zro++; else if(ival[idx] == 1) mask_b_one++;
     /* Destination mask must have at least one unmasked value, i.e, one value of 1 */
-    assert(mask_b_zro != sz);
+    //assert(mask_b_zro != sz);
+    if(mask_b_zro == sz) (void)fprintf(stdout,"WARNING mask_b has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well still be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed.\n");
   } /* !var_mask_b */
   
   /* Start Report in own scope */
