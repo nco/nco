@@ -8,6 +8,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta03: Devastating Shavasana';git push
 	git tag -a 4.9.4-beta03 -m '';git push --tags
 
+	* Tidy Clang warning messages due to sloppy ncap2 code, comment-out all _flg_dbg class members
+
 	* NCO 4.9.4-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta02: Reanimated Umbrella';git push
 	git tag -a 4.9.4-beta02 -m 'ncra --prm_ints; ncremap xtr_xpn, xtr_nsp, nni->dwe';git push --tags

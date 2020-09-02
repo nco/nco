@@ -2757,12 +2757,12 @@ var_sct * srt_cls::srt_fnd(bool &, std::vector<RefAST> &args_vtr, fmc_cls &fmc_o
       if(nbr_args>1){
         bool bdef;
         NcapVar *Nvar;
-        if(args_vtr[1]->getType() != CALL_REF ) 
+        if(args_vtr[1]->getType() != CALL_REF) 
           err_prn(sfnm," second argument must be a call by reference variable\n"+susg);   
 
-          var_nm=args_vtr[1]->getFirstChild()->getText(); 
-          bdef=(prs_arg->ncap_var_init_chk(var_nm)>0);
-          Nvar=prs_arg->var_vtr.find(var_nm);  
+	var_nm=args_vtr[1]->getFirstChild()->getText(); 
+	bdef=(prs_arg->ncap_var_init_chk(var_nm)>0);
+	Nvar=prs_arg->var_vtr.find(var_nm);  
            
         /*This horrible line below:
           Initial scan -- prs_arg->ntl_scn=True 
@@ -3852,16 +3852,15 @@ var_sct * bil_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walk
     // 5 - input Y   co-ordinate var
     
     if(in_nbr_args<4){
-      if(var_arr[1]->nbr_dim <2 )
+      if(var_arr[1]->nbr_dim < 2)
 	err_prn(sfnm,"Output data variable "+std::string(var_arr[1]->nm) + " must have at least two dimensions ");
 
-        // get output co-ordinate vars   
-        if(in_nbr_args <3) 
-          var_arr[2]=prs_arg->ncap_var_init(std::string(var_arr[1]->dim[0]->nm),true); 
+      // get output co-ordinate vars   
+      if(in_nbr_args < 3) 
+	var_arr[2]=prs_arg->ncap_var_init(std::string(var_arr[1]->dim[0]->nm),true); 
            
-        var_arr[3]=prs_arg->ncap_var_init(std::string(var_arr[1]->dim[1]->nm),true); 
-      }
-
+      var_arr[3]=prs_arg->ncap_var_init(std::string(var_arr[1]->dim[1]->nm),true); 
+    }
         
       if(in_nbr_args<6){
         if(var_arr[0]->nbr_dim <2 )
@@ -5828,33 +5827,27 @@ var_sct *vlist_cls::push_fnd(bool &, std::vector<RefAST> &vtr_args, fmc_cls &fmc
 
   // do heavy lifting 
   {
-   
-
    char *units_out_sng;
 
    nco_cln_typ cln_typ=cln_nil;
 
    units_out_sng=ncap_att_char(var_ud_out);   
 
-   if( calendar_in_sng.size())
+   if(calendar_in_sng.size())
      cln_typ=nco_cln_get_cln_typ(calendar_in_sng.c_str());
 
-     rcd=nco_cln_clc_dbl_var_dff(units_in_sng.c_str(),units_out_sng,cln_typ,(double*)NULL, var);
+   rcd=nco_cln_clc_dbl_var_dff(units_in_sng.c_str(),units_out_sng,cln_typ,(double*)NULL, var);
     
    if(rcd!=NCO_NOERR)
-      err_prn(sfnm, "Udunits was unable to convert data in the var '"+std::string(var->nm)+"' from '" +std::string(units_in_sng) +"' to '"+std::string(units_out_sng)+"'\n");
+     err_prn(sfnm, "Udunits was unable to convert data in the var '"+std::string(var->nm)+"' from '" +std::string(units_in_sng) +"' to '"+std::string(units_out_sng)+"'\n");
 
-    // nco_free(units_in_sng);
-    nco_free(units_out_sng);
-
+   // nco_free(units_in_sng);
+   nco_free(units_out_sng);
   }
-  
 
   /* revert var back to original type */
-  if( var->type != lcl_typ)
+  if(var->type != lcl_typ)
     nco_var_cnf_typ(lcl_typ,var);
-
-
 
   return var;
 
@@ -6250,15 +6243,14 @@ var_sct *polygon_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &w
     const char prn_str[]="%.14f,%.14f,0\n";
 
 
-    if( var_lat->nbr_dim != 2 || var_lon->nbr_dim !=2 || var_lat->type != NC_DOUBLE || var_lon->type != NC_DOUBLE )
+    if(var_lat->nbr_dim != 2 || var_lon->nbr_dim !=2 || var_lat->type != NC_DOUBLE || var_lon->type != NC_DOUBLE)
       err_prn(fnc_nm, "both input vars( "+  SCS(var_lat->nm)+","+ SCS(var_lon->nm) + ") must have 2 dims,  and be of type NC_DOUBLE\n");
 
     grid_size=var_lat->dim[0]->cnt;
     grid_corners=var_lat->dim[1]->cnt;
 
-    if( var_lon->dim[0]->cnt != grid_size || var_lon->dim[1]->cnt != grid_corners)
+    if(var_lon->dim[0]->cnt != grid_size || var_lon->dim[1]->cnt != grid_corners)
       err_prn(fnc_nm, "var " + SCS(var_lon->nm) + " must be same shape as " + SCS(var_lat->nm) + ".\n");
-
 
     (void)cast_void_nctype(NC_DOUBLE,&var_lon->val);
     (void)cast_void_nctype(NC_DOUBLE,&var_lat->val);
@@ -6266,24 +6258,18 @@ var_sct *polygon_cls::fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &w
     if(var_filter)
       (void)cast_void_nctype(NC_DOUBLE,&var_filter->val);
 
-
     (void)fprintf(stdout, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     (void)fprintf(stdout, "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n");
 
     (void)fprintf(stdout,"\n<Document>\n");
     for(idx=0;idx<grid_size;idx++){
-      bool brep=false
-      ;
-      double pdlon=1e10;
-      double pdlat=1e10;
+      //      bool brep=false;
+      //      double pdlon=1e10;
+      //      double pdlat=1e10;
       double dlon;
       double dlat;
 
-
-
-
       is_convex=chk_polygon_convex( &var_lon->val.dp[ idx*grid_corners ], &var_lat->val.dp[ idx*grid_corners ], grid_corners );
-
 
       // filter grids by x width (longitude)
       if( fdx== PKMLFILTER)

@@ -3,7 +3,7 @@
 
 #include <antlr/config.hpp>
 #include "ncoParserTokenTypes.hpp"
-/* $ANTLR 2.7.7 (20190930): "ncoGrammer.g" -> "ncoTree.hpp"$ */
+/* $ANTLR 2.7.7 (20191228): "ncoGrammer.g" -> "ncoTree.hpp"$ */
 #include <antlr/TreeParser.hpp>
 
 #line 1 "ncoGrammer.g"
@@ -15,7 +15,7 @@
 /* Copyright (C) 1995--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
-   GNU General Public License (GPL) Version 3 with exceptions described in the LICENSE file */
+   3-Clause BSD License with exceptions described in the LICENSE file */
 
     // C Standard Headers
     #include <assert.h>
@@ -285,10 +285,10 @@ if(lmt->getNumberOfChildren()==1 &&
 
 
 // populate ast_lmt_vtr
-if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
-  return false;	
+if(nbr_dmn != lmt_init(lmt,ast_lmt_vtr))
+    return false;	
 
-  for(idx=0 ; idx <nbr_dmn ; idx++){
+for(idx=0;idx<nbr_dmn;idx++){
 
     // fill out lmt structure
     // use same logic as nco_lmt_prs 

@@ -354,7 +354,7 @@ public:
 // GSL Function
 class gsl_cls : public vtl_cls {
 private:
-   bool _flg_dbg;
+   //bool _flg_dbg;
   std::vector<gpr_cls> gpr_vtr;
 
 public:
@@ -396,7 +396,7 @@ static  var_sct *hnd_fnc_stat4(HANDLE_ARGS);
 class gsl2_cls: public vtl_cls {
 private:
    enum {PGSL_RNG_MIN,PGSL_RNG_MAX,PGSL_RNG_NAME };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
    gsl2_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -414,7 +414,7 @@ private:
          PWVAR_M,   PWSD_M,   PWABSDEV_M, PWSKEW_M_SD,
          PWKURTOSIS_M_SD
        };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   gsl_stt2_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -428,7 +428,7 @@ public:
 class gsl_spl_cls: public vtl_cls {
 private:
    enum {PLINEAR,PPOLY,PCSPLINE,PCSPLINE_PER,PAKIMA,PAKIMA_PER,PEVAL };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
    gsl_spl_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -444,7 +444,7 @@ public:
 class gsl_fit_cls: public vtl_cls {
 private:
    enum { PLIN,PWLIN,PLIN_EST,PMUL,PWMUL,PMUL_EST };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
    gsl_fit_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -459,7 +459,7 @@ public:
 class gsl_mfit_cls: public vtl_cls {
 private:
   enum { PMLIN, PMWLIN, PMLIN_EST};
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
    gsl_mfit_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -468,10 +468,6 @@ public:
 
 };
 
-
-
-
-
 #endif // !ENABLE_GSL
 
 #ifdef ENABLE_GSL
@@ -479,7 +475,7 @@ class nco_gsl_cls: public vtl_cls
 {
 private:
   enum {NCO_GSL_FUNC1,NCO_GSL_FUNC2};
-  bool _flg_dbg;
+  //bool _flg_dbg;
   std::vector<gpr_cls> gpr_vtr;
 public:
   nco_gsl_cls(bool flg_dbg);

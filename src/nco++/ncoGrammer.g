@@ -924,10 +924,10 @@ if(lmt->getNumberOfChildren()==1 &&
 
 
 // populate ast_lmt_vtr
-if( nbr_dmn!=lmt_init(lmt,ast_lmt_vtr) )
-  return false;	
+if(nbr_dmn != lmt_init(lmt,ast_lmt_vtr))
+    return false;	
 
-  for(idx=0 ; idx <nbr_dmn ; idx++){
+for(idx=0;idx<nbr_dmn;idx++){
 
     // fill out lmt structure
     // use same logic as nco_lmt_prs 

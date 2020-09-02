@@ -73,7 +73,7 @@
 //Conversion Functions **************************************/
 class cnv_cls: public vtl_cls {
 private:
-  bool _flg_dbg;
+  //bool _flg_dbg;
 public:
     cnv_cls(bool flg_dbg);
     var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -86,7 +86,7 @@ private:
   /* we want the enums to be exactly identical to the values of nco_op_typ */
   enum{ PAVG=nco_op_avg ,PAVGSQR=nco_op_avgsqr , PMIBS=nco_op_mibs, PMABS=nco_op_mabs, PMEBS=nco_op_mebs, PMAX=nco_op_max ,PMIN=nco_op_min ,PRMS=nco_op_rms,
 	PRMSSDN=nco_op_rmssdn, PSQRAVG=nco_op_sqravg, PTTL=nco_op_ttl, PTABS=nco_op_tabs};
-  bool _flg_dbg;
+  //bool _flg_dbg;
 public:
   agg_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -96,7 +96,7 @@ public:
 class utl_cls: public vtl_cls {
 private:
   enum {SET_MISS,CH_MISS,DEL_MISS,GET_MISS,NUM_MISS,HAS_MISS, RAM_WRITE,RAM_DELETE, MASK_MISS,LINEAR_FILL_MISS, SIMPLE_FILL_MISS, WEIGHT_FILL_MISS};
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   utl_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -115,7 +115,7 @@ public:
 class bsc_cls: public vtl_cls {
 private:
   enum {PSIZE,PTYPE,PNDIMS,PEXISTS,PGETDIMS };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   bsc_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -125,7 +125,7 @@ public:
 //Maths Functions /****************************************/
 class mth_cls: public vtl_cls {
 private:
-   bool _flg_dbg;
+   //bool _flg_dbg;
   std::vector<sym_cls> sym_vtr;
 public:
   mth_cls(bool flg_dbg);
@@ -136,7 +136,7 @@ public:
 class mth2_cls: public vtl_cls {
 private:
   enum {PPOW,PATAN2,PCONVERT, PXRATIO, PSOLARZENITHANGLE};
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   mth2_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -148,7 +148,7 @@ public:
 class pdq_cls: public vtl_cls {
 private: 
    enum {PREVERSE,PPERMUTE };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   pdq_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -158,7 +158,7 @@ public:
 class msk_cls: public vtl_cls {
 private:
    enum {PMASK1, PMASK_CLIP };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   msk_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -168,7 +168,7 @@ public:
 class pck_cls: public vtl_cls {
 private:
    enum {PPACK, PPACK_BYTE, PPACK_CHAR, PPACK_SHORT, PPACK_INT, PUNPACK,};
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   pck_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -178,7 +178,7 @@ public:
 class srt_cls: public vtl_cls {
 private:
   enum {PASORT,PDSORT,PREMAP,PUNMAP,PIMAP };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   srt_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -193,7 +193,7 @@ public:
 class agg_idx_cls: public vtl_cls {
 private:
   enum { PMIN, PMAX};
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   agg_idx_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -205,7 +205,7 @@ public:
 class unr_cls: public vtl_cls {
 private:
    enum {PABS,PSQR };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
 
   unr_cls(bool flg_dbg);
@@ -216,7 +216,7 @@ public:
 class arr_cls: public vtl_cls {
 private:
    enum {PARRAY };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   arr_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -226,7 +226,7 @@ public:
 class  bnds_cls: public vtl_cls {
 private:
    enum {PBOUNDS };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   bnds_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -238,7 +238,7 @@ public:
 class bil_cls: public vtl_cls {
 private:
   enum {PBIL_ALL,PBIL_ALL_WRP};
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   bil_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -251,7 +251,7 @@ public:
  class misc_cls: public vtl_cls {	 
  private:	 
    enum {PMISC1, PMISC2, PMISC3 };	 
-    bool _flg_dbg;	 
+    //bool _flg_dbg;	 
  public:	 
    misc_cls(bool flg_dbg);	 
    var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);	 
@@ -262,7 +262,7 @@ public:
 class cod_cls: public vtl_cls {
 private:
    enum {PCOORD };
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   cod_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -273,7 +273,7 @@ public:
 class vlist_cls: public vtl_cls {
 private:
   enum {PJOIN,PPUSH,PGET_VARS_IN,PGET_VARS_OUT,PATOI,PATOL};
-   bool _flg_dbg;
+   //bool _flg_dbg;
 public:
   vlist_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -288,7 +288,7 @@ public:
 class aggd_cls: public vtl_cls {
 private:
   enum{ PWVARIANCE};
-  bool _flg_dbg;
+  //bool _flg_dbg;
 public:
   aggd_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -299,7 +299,7 @@ public:
 class print_cls: public vtl_cls {
 private:
   enum{ PPRINT, PSPRINT,PSNPRINT};
-  bool _flg_dbg;
+  //bool _flg_dbg;
 public:
   print_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -310,7 +310,7 @@ public:
 class udunits_cls: public vtl_cls {
 private:
   enum{ PUNITS1,PSTRFTIME,PREGULAR,CLBTIME};
-  bool _flg_dbg;
+  //bool _flg_dbg;
 public:
   udunits_cls(bool flg_dbg);
   var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
@@ -323,7 +323,7 @@ public:
 class polygon_cls: public vtl_cls {
 private:
     enum{ PKML, PKMLFILTER };
-    bool _flg_dbg;
+    //bool _flg_dbg;
 public:
     polygon_cls(bool flg_dbg);
     var_sct *fnd(RefAST expr, RefAST fargs,fmc_cls &fmc_obj, ncoTree &walker);
