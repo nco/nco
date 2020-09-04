@@ -1051,11 +1051,16 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap weights(nni)=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
 
 
+    /* dont really like this - for weight of input cells  maybe greater than 1 - some maybe 0.0  */
+    for(idx=0;idx<pl_cnt_vrl;idx++)
+      pl_lst_in[ wgt_lst_vrl[idx]->src_id]->wgt+=wgt_lst_vrl[idx]->wgt;
 
     for (idx = 0; idx < nbr_tr; idx++)
       kd_destroy(tree[idx], NULL);
 
     tree = (KDTree **) nco_free(tree);
+
+
 
 
 
