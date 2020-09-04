@@ -1,8 +1,8 @@
 nco (4.9.4-1) unstable; urgency=low
 
-  * new upstream version Gooseneck Kettle: all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs, sdd dfl; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prm_ints prw; ncremap no_amwg, si bgc, nco_dwe, xtr_xpn, xtr_nsp
+  * new upstream version Gooseneck Spout: all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs, sdd dfl; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prm_ints prw; ncremap no_amwg, si bgc, nco_dwe, xtr_xpn, xtr_nsp
 
- -- Charlie Zender <zender@uci.edu>  Sun, 04 Sep 2020 12:25:42 -0700
+ -- Charlie Zender <zender@uci.edu>  Fri, 04 Sep 2020 12:25:42 -0700
 
 nco (4.9.3-1) unstable; urgency=low
 

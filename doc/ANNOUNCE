@@ -14,6 +14,7 @@ weights for nces. New NCO-wide features include:  support for
 unbuffered I/O that can speed-up I/O for large record variables,
 more precise quantization than Bit Grooming, and faster arithmetic
 that takes advantage of SIMD directives on OpenMP-enabled builds.
+Overall release is packed with interesting new features...read on.
 
 Work on NCO 4.9.5 has commenced and will improve high-freqency
 splitting and climo capabilities, more SIMD acceleration, and
@@ -24,7 +25,13 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. All operators now support unbuffered I/O with netCDF3 files when 
+A. NCO may now be configured with --enable-gpu at build-time to
+   offload certain arithmetically intensive computations to the GPUs
+   with select architectures and compilers. This feature currently
+   has no speed benefits, and needs a volunteer to lead development.
+   Please contact me if interested.
+
+B. All operators now support unbuffered I/O with netCDF3 files when 
    invoked with the flag --uio or longer synonyms --unbuffered_io or
    --share_all. This flag invokes the netCDF library NC_SHARE flag
    which enables unbuffered (non-cached) I/O. Unbufferend I/O may
@@ -36,79 +43,17 @@ A. All operators now support unbuffered I/O with netCDF3 files when
    ncra --uio -v T,Q,U,V in*.nc out.nc
    http://nco.sf.net/nco.html#uio
 
-A. nces now supports the -w (or --wgt) option for per-file weights.
-   This option is similar to the ncra --wgt option. The nces version
-   also accepts a variable name that contains a scalar per-file-weight. 
-   Per-file weights are useful when computing statistics of ensembles
-   whose members should be weighted unevenly. Hence these three
-   commands produce the same answers, though the second and third
-   are much more flexible and can have non-integral weights: 
-   nces   1.nc 2.nc 2.nc out.nc
-   nces -w 1,2 1.nc 2.nc out.nc
-   nces -w var 1.nc 2.nc out.nc
-   http://nco.sf.net/nco.html#nces
-   http://nco.sf.net/nco.html#xmp_nces
+C. The default quantization method has changed from Bit Grooming to
+   Bit Rounding, contributed by Rostislav Kouznetsov with suggestions
+   from Milan Klower. As implemented, Bit Rounding will substantially
+   improve the precision for the specified number of significant
+   digits to retain. A future version of NCO will re-tune the number
+   of bits per retained digit to turn this precision advantage into
+   a compression advantage. An article submitted by R. Kouznetsov to
+   GMD describes Bit Rounding more...precisely.
+   http://nco.sf.net/nco.html#bg
 
-A. ncremap understands new dimensions used in DOE E3SM MPAS BGC
-   simulations. ncremap also supports the new --pdq_opt to
-   override internal presets and to future-proof itself against
-   unexpected new dimensions from any model input.
-   ncremap -P mpasseaice --map=map.nc in.nc out.nc
-   ncremap --pdq='-a Time,new_dim,nCells'  --map=map.nc in.nc out.nc
-   ncremap --pdq='-a time,new_dim,lat,lon' --map=map.nc in.nc out.nc
-   Thanks to Ahmed Elshall for reporting the new dimensions.
-   http://nco.sf.net/nco.html#pdq_opt
-
-A. ncra now supports the --per_record_weights (or --prw) option to
-   utilize command-line weights specified by -w (or --wgt) for
-   per-record weights instead of per-file-weights. This is useful when
-   computing weighted averages with cyclically varying weights, since
-   the weight given on the command line will be repeated for the
-   length of the timeseries. Consider, for example, a CMIP6 timeseries
-   of historical monthly mean emissions that one wishes to convert to
-   an timeseries of annual-mean emissions. One can weight each month
-   by its number of days via: 
-   ncra --per_record_weights --mro -d time,,,12,12 --wgt \
-        31,28,31,30,31,30,31,31,30,31,30,31 ~/monthly.nc ~/annual.nc
-   Thanks to Philip Cameron-Smith of LLNL for this suggestion.
-   http://nco.sf.net/nco.html#ncra
-   http://nco.sf.net/nco.html#xmp_ncra
-   http://nco.sf.net/nco.html#prw
-
-A. ncra accepts the new flag --promote_ints (or --prm_ints) to output
-   statistics of integer-valued input variables in floating-point
-   precision in the output file. By default, NCO arithmetic operators
-   such as ncra auto-promote integers to double-precision prior to
-   arithmetic, then conduct the arithmetic, then demote the values
-   back to integers for final output. This default behavior quantizes
-   the mantissa of the values and prevents, e.g., turning statisitical
-   means of boolean (0 or 1-valued) input data into floating point
-   probabilities. The --promote_ints flag causes the statistical means
-   of integer (including NC_BYTE) inputs to be output as
-   single-precision floating point (NC_FLOAT) variables. This allows
-   use arithmetic to be performed on Boolean values stored in the
-   space-conserving NC_BYTE (single byte) format in input files.
-   ncra --prm_ints in*.nc out.nc
-   Thanks to Paul Ullrich of UC Davis for this suggestion.
-   http://nco.sf.net/nco.html#prm_ints
-   http://nco.sf.net/nco.html#promote_ints
-
-A. ncremap allows access to a new regridding algorithm based on
-   distance-weighted extrapolation (DWE). DWE is similar to the ESMF
-   nearestidavg extrapolation alorithm, and accepts the same two
-   parameters as input: --xtr_xpn sets the (absolute value of) the
-   exponent used in distance weighting (default is 2.0), and --xtr_nsp
-   sets the number of source points used in the extrapolation (default
-   is 8). ncremap can apply DWE to the entire destination grid, or
-   just to points with missing/masked values.
-
-   ncremap --alg_typ=nco_dwe -s src.nc -d dst.nc -m map.nc
-   ncremap -a nco_dwe --xtr_xpn=1.0 -s src.nc -d dst.nc -m map.nc
-   ncremap -a nco_dwe --xtr_nsp=1   -s src.nc -d dst.nc -m map.nc
-   Thanks to Henry Butowsky for implementing the new method.
-   http://nco.sf.net/nco.html#dwe
-
-A. The multi-file, multi-record operators, ncra and ncrcat now
+D. The multi-file, multi-record operators, ncra and ncrcat now
    support interleaved time-coordinates in groups of records. 
    Interleaving (or de-interleaving, depending on one's perspective)
    means altering the order of records in a group to be processed.
@@ -134,17 +79,126 @@ A. The multi-file, multi-record operators, ncra and ncrcat now
    http://nco.sf.net/nco.html#interleave
    http://nco.sf.net/nco.html#ilv
 
-A. The default quantization method has changed from Bit Grooming to
-   Bit Rounding, contributed by Rostislav Kouznetsov with suggestions
-   from Milan Klower. As implemented, Bit Rounding will substantially
-   improve the precision for the specified number of significant
-   digits to retain. A future version of NCO will re-tune the number
-   of bits per retained digit to turn this precision advantage into
-   a compression advantage. An article submitted by R. Kouznetsov to
-   GMD describes Bit Rounding more...precisely.
-   http://nco.sf.net/nco.html#bg
+E. nces now supports the -w (or --wgt) option for per-file weights.
+   This option is similar to the ncra --wgt option. The nces version
+   also accepts a variable name that contains a scalar per-file-weight. 
+   Per-file weights are useful when computing statistics of ensembles
+   whose members should be weighted unevenly. Hence these three
+   commands produce the same answers, though the second and third
+   are much more flexible and can have non-integral weights: 
+   nces   1.nc 2.nc 2.nc out.nc
+   nces -w 1,2 1.nc 2.nc out.nc
+   nces -w var 1.nc 2.nc out.nc
+   http://nco.sf.net/nco.html#nces
+   http://nco.sf.net/nco.html#xmp_nces
 
-A. ncclimo now supports the high-frequency climos and splitting.
+F. ncra now supports the --per_record_weights (or --prw) option to
+   utilize command-line weights specified by -w (or --wgt) for
+   per-record weights instead of per-file-weights. This is useful when
+   computing weighted averages with cyclically varying weights, since
+   the weight given on the command line will be repeated for the
+   length of the timeseries. Consider, for example, a CMIP6 timeseries
+   of historical monthly mean emissions that one wishes to convert to
+   an timeseries of annual-mean emissions. One can weight each month
+   by its number of days via: 
+   ncra --per_record_weights --mro -d time,,,12,12 --wgt \
+        31,28,31,30,31,30,31,31,30,31,30,31 ~/monthly.nc ~/annual.nc
+   Thanks to Philip Cameron-Smith of LLNL for this suggestion.
+   http://nco.sf.net/nco.html#ncra
+   http://nco.sf.net/nco.html#xmp_ncra
+   http://nco.sf.net/nco.html#prw
+
+G. ncra accepts the new flag --promote_ints (or --prm_ints) to output
+   statistics of integer-valued input variables in floating-point
+   precision in the output file. By default, NCO arithmetic operators
+   such as ncra auto-promote integers to double-precision prior to
+   arithmetic, then conduct the arithmetic, then demote the values
+   back to integers for final output. This default behavior quantizes
+   the mantissa of the values and prevents, e.g., turning statisitical
+   means of boolean (0 or 1-valued) input data into floating point
+   probabilities. The --promote_ints flag causes the statistical means
+   of integer (including NC_BYTE) inputs to be output as
+   single-precision floating point (NC_FLOAT) variables. This allows
+   use arithmetic to be performed on Boolean values stored in the
+   space-conserving NC_BYTE (single byte) format in input files.
+   ncra --prm_ints in*.nc out.nc
+   Thanks to Paul Ullrich of UC Davis for this suggestion.
+   http://nco.sf.net/nco.html#prm_ints
+   http://nco.sf.net/nco.html#promote_ints
+
+H. ncremap understands new dimensions used in DOE E3SM MPAS BGC
+   simulations. ncremap also supports the new --pdq_opt to
+   override internal presets and to future-proof itself against
+   unexpected new dimensions from any model input.
+   ncremap -P mpasseaice --map=map.nc in.nc out.nc
+   ncremap --pdq='-a Time,new_dim,nCells'  --map=map.nc in.nc out.nc
+   ncremap --pdq='-a time,new_dim,lat,lon' --map=map.nc in.nc out.nc
+   Thanks to Ahmed Elshall for reporting the new dimensions.
+   http://nco.sf.net/nco.html#pdq_opt
+
+I. ncremap allows access to a new regridding algorithm based on
+   distance-weighted extrapolation (DWE). DWE is similar to the ESMF
+   nearestidavg extrapolation alorithm, and accepts the same two
+   parameters as input: --xtr_xpn sets the (absolute value of) the
+   exponent used in distance weighting (default is 2.0), and --xtr_nsp
+   sets the number of source points used in the extrapolation (default
+   is 8). ncremap can apply DWE to the entire destination grid, or
+   just to points with missing/masked values.
+
+   ncremap --alg_typ=nco_dwe -s src.nc -d dst.nc -m map.nc
+   ncremap -a nco_dwe --xtr_xpn=1.0 -s src.nc -d dst.nc -m map.nc
+   ncremap -a nco_dwe --xtr_nsp=1   -s src.nc -d dst.nc -m map.nc
+   Thanks to Henry Butowsky for implementing the new method.
+   http://nco.sf.net/nco.html#dwe
+
+J. The ncks --dt_fmt option now applies equally well to JSON and XML
+   output as to CDL output:
+   % ncks -d time,0 -v time --cdl --dt_fmt=3 ~/nco/data/in.nc
+   ...
+   time = "1964-03-13T21:09:0.000000" ;
+   ...
+   % ncks -d time,0 -v time --json --dt_fmt=3 ~/nco/data/in.nc
+   ...
+   "data": ["1964-03-13T21:09:0.000000"]
+   ...
+   % ncks -d time,0 -v time --xml --dt_fmt=3 ~/nco/data/in.nc
+   ...
+   <ncml:values separator="*">1964-03-13T21:09:0.000000</ncml:values>
+   ...
+
+   Thanks to Troy Mare for this suggestion.
+   http://nco.sf.net/nco.html#dt_fmt
+   http://nco.sf.net/nco.html#json
+   http://nco.sf.net/nco.html#xml
+
+K. ncra, nces, and ncrcat introduce the --clm_nfo (or --cb) option to
+   produce CF-conformant climatological times and bounds.
+   This option takes a comma-separated argument list of five relevant 
+   input parameters: --cb=yr_srt,yr_end,mth_srt,mth_end,tpd, 
+   where yr_srt is the climatology start-year, yr_end is the
+   climatology end-year, mth_srt is the climatology start-month (in
+   [1..12] format), mth_end is the climatology end-month (in [1..12]
+   format), and tpd is the number of timestpes per day (with the
+   special exception that tpd=0 indicates monthly data, not
+   diurnally-resolved data. A seasonal summer climatology created from
+   monthly mean input data spanning June, 2000 to August, 2020 should
+   call ncra with --clm_bnd=2000,2020,6,8,0, whereas a diurnally
+   resolved climatology of the same period with 6-hourly input data
+   resolution would use --clm_bnd=2000,2020,6,8,4. 
+   ncra --cb=2014,2016,1,1,0 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
+   http://nco.sf.net/nco.html#cb
+   http://nco.sf.net/nco.html#ncra
+
+L. ncclimo has changed default settings for two parameters.
+   As of this verion, ncclimo sets the options "-a sdd
+   --no_amwg_links" by default. For seasonally contiguous DJF climos 
+   one must now explicitly set "-a scd". To create symbolic links
+   to climatology files with AMWG names, one must now explicitly
+   request --amwg_links.
+   http://nco.sf.net/nco.html#dec_md
+   http://nco.sf.net/nco.html#lnk_flg
+
+M. ncclimo now supports the high-frequency climos and splitting.
    Access these capabilities by specifying the climatology-mode
    options hfc and hfs, respectively. In both cases (climos and
    splitting) the input file(s) name will not be constructed
@@ -165,65 +219,12 @@ A. ncclimo now supports the high-frequency climos and splitting.
    http://nco.sf.net/nco.html#ncclimo
    http://nco.sf.net/nco.html#clm_md   
 
-A. ncclimo has changed default settings for two parameters.
-   As of this verion, ncclimo sets the options "-a sdd
-   --no_amwg_links" by default. For seasonally contiguous DJF climos 
-   one must now explicitly set "-a scd". To create symbolic links
-   to climatology files with AMWG names, one must now explicitly
-   request --amwg_links.
-   http://nco.sf.net/nco.html#dec_md
-   http://nco.sf.net/nco.html#lnk_flg
-
-A. NCO may now be configured with --enable-gpu at build-time to
-   offload certain arithmetically intensive computations to the GPUs
-   with select architectures and compilers. This feature currently
-   has no speed benefits, and needs a volunteer to lead development.
-   Please contact me if interested.
-
-A. The ncks --dt_fmt option now applies equally well to JSON and XML
-   output as to CDL output:
-   % ncks -d time,0 -v time --cdl --dt_fmt=3 ~/nco/data/in.nc
-   ...
-   time = "1964-03-13T21:09:0.000000" ;
-   ...
-   % ncks -d time,0 -v time --json --dt_fmt=3 ~/nco/data/in.nc
-   ...
-   "data": ["1964-03-13T21:09:0.000000"]
-   ...
-   % ncks -d time,0 -v time --xml --dt_fmt=3 ~/nco/data/in.nc
-   ...
-   <ncml:values separator="*">1964-03-13T21:09:0.000000</ncml:values>
-   ...
-
-   Thanks to Troy Mare for this suggestion.
-   http://nco.sf.net/nco.html#dt_fmt
-   http://nco.sf.net/nco.html#json
-   http://nco.sf.net/nco.html#xml
-
-A. ncclimo now outputs more CF-conformant climatological times and
+N. ncclimo now outputs more CF-conformant climatological times and
    bounds for all climatologies. Previously, ncclimo output a
    time-centered value for climatological bounds, now it outputs
    an initial YYYYMMDD format, as recommended by CF examples such as
    http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#climatological-statistics
    Example 7.13
-
-A. ncra, nces, and ncrcat introduce the --clm_nfo (or --cb) option to
-   produce CF-conformant climatological times and bounds.
-   This option takes a comma-separated argument list of five relevant 
-   input parameters: --cb=yr_srt,yr_end,mth_srt,mth_end,tpd, 
-   where yr_srt is the climatology start-year, yr_end is the
-   climatology end-year, mth_srt is the climatology start-month (in
-   [1..12] format), mth_end is the climatology end-month (in [1..12]
-   format), and tpd is the number of timestpes per day (with the
-   special exception that tpd=0 indicates monthly data, not
-   diurnally-resolved data. A seasonal summer climatology created from
-   monthly mean input data spanning June, 2000 to August, 2020 should
-   call ncra with --clm_bnd=2000,2020,6,8,0, whereas a diurnally
-   resolved climatology of the same period with 6-hourly input data
-   resolution would use --clm_bnd=2000,2020,6,8,4. 
-   ncra --cb=2014,2016,1,1,0 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
-   http://nco.sf.net/nco.html#cb
-   http://nco.sf.net/nco.html#ncra
 
 BUG FIXES:
 
@@ -241,8 +242,8 @@ KNOWN PROBLEMS DUE TO NCO:
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
    These problems occur with NCO 4.9.4 built/tested under
-   MacOS 10.15.5 with netCDF 4.7.4 on HDF5 1.10.2 and with
-   Linux with netCDF 4.8.0-development (2020501) on HDF5 1.8.19.
+   MacOS 10.15.6 with netCDF 4.7.4 on HDF5 1.10.2 and with
+   Linux with netCDF 4.8.0-development (2020715) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)
    Correctly read arrays of NC_STRING with embedded delimiters in ncatted arguments

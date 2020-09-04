@@ -4063,9 +4063,12 @@ if($RUN_NETCDF4_TESTS_VERSION_GE_431){
     $#tst_cmd=0; # Reset array
 
 #ncrcat #23	
-
+# ncks -O -v time ~/nco/data/in.nc ~/foo.nc
+# ncatted -O -a units,time,\"kelvin\" ~/foo.nc
+# ncra -Y ncrcat -O -C -v time -d time,'-272 Celsius','-270 Celsius' ~/foo.nc ~/foo1.nc
+# ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' ~/foo1.nc ~/foo2.nc
     $tst_cmd[0]="ncks -O $fl_fmt $nco_D_flg -v time  $in_pth_arg in.nc %tmp_fl_00%";
-    $tst_cmd[1]="ncatted  -h -O $fl_fmt $nco_D_flg -a units,time,\"kelvin\" %tmp_fl_00%";
+    $tst_cmd[1]="ncatted  -h -O $fl_fmt $nco_D_flg -a units,time,m,c,\"kelvin\" %tmp_fl_00%";
     $tst_cmd[2]="ncra -Y ncrcat -O $fl_fmt $nco_D_flg -C -v time -d time,'-272 Celsius','-270 Celsius' %tmp_fl_00% %tmp_fl_01% 2> %tmp_fl_05%";
     $tst_cmd[3]="ncap2 -O -v -C -s 'time_ttl=time.total();print(time_ttl)' %tmp_fl_01% %tmp_fl_02%";
     $tst_cmd[4]="time_ttl = 5";

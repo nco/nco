@@ -1,8 +1,10 @@
 2020-09-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.4: Gooseneck Kettle';git push
+	cd ~/nco;git commit -a -m 'Version 4.9.4: Gooseneck Spout';git push
 	git tag -a 4.9.4 -m 'all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs, sdd dfl; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prm_ints prw; ncremap no_amwg, si bgc, nco_dwe, xtr_xpn, xtr_nsp';git push --tags
+
+	* Fix typo in ncrcat regression test #23 so it once again succeeds
 
 	* ncremap add new global attribute NCO_regrid_method, based on ESMF_regrid_method, to describe actual weight generation algorithm
 
