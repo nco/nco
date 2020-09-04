@@ -1534,7 +1534,7 @@ int *wgt_cnt_bln_ret) {
 
     }
 
-    if(False && dp_x_wrp != KD_DBL_MAX)
+    if(dp_x_wrp != KD_DBL_MAX)
     {
       for (kdx = 0; kdx < nbr_tr; kdx++)
         kd_nearest(tree[kdx], dp_x_wrp, pl_lst_out[idx]->dp_y_ctr, pl_typ, nbr_dwe, mem_lst[thr_idx].kd_list + nbr_lst_lcl+nbr_dwe * kdx);
