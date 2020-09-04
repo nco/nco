@@ -152,7 +152,7 @@ and
 
 <ul>
 <li>2020 Oct&nbsp;??: 4.9.5 <i>In Progress...</i>
-<li>2020 Sep&nbsp;??: 4.9.4 High Frequency climos
+<li>2020 Sep&nbsp;04: 4.9.4 High Frequency climos
 <li>2020 May&nbsp;31: 4.9.3 Sundry features/fixes
 <li>2020 Feb&nbsp;14: 4.9.2 BSD License
 <li>2019 Dec&nbsp;19: 4.9.1 Sundry features/fixes
@@ -550,9 +550,11 @@ netCDF4 user-defined types support;
 <tt>ncclimo</tt> high-frequency climos;
 <tt>nces --wgt</tt> per-file weights;
 <tt>nces --prw</tt> per-record weights;
+<tt>nces/ncra/ncrcat --cb</tt> climatology bounds;
+<tt>ncra --prm_ints</tt> promote integers;
 <tt>ncks, ncremap</tt> regridding vectorization;
 <tt>ncra, ncrcat ilv</tt> interleave output;
-<tt>ncremap --nni</tt> nearest neighbor weight generation algorithm;</li>
+<tt>ncremap --dwe</tt> distance-weighted extrapolation weight generation algorithm;</li>
 <li><b>NCO 4.9.3</b>: (<i>Current Stable Release</i>)
 <tt>ncks --frac_b_fix</tt> map-file correction;
 <tt>ncremap --correct_areas</tt> for TR FV destination maps;

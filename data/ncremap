@@ -237,6 +237,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -P mpas --mss_val=-1.0e36 -s ${DATA}/grids/ais20km.150910.SCRIP.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ais20km.20180117.nc ~/foo.nc
 # ncremap -P mpas --mss_val=-1.0e36 -s ${DATA}/grids/ais20km.150910.SCRIP.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/mpasLIoutput.nc ~/foo.nc
 # E3SM benchmarks:
+# ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_dwe.20200901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
+# ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_nco.20190601.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_mono.20190401.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_highorder.20190401.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc

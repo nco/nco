@@ -588,7 +588,11 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   rcd=nco_char_att_put(out_id,NULL,"Conventions","NCAR-CSM");
   const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
   rcd=nco_char_att_put(out_id,NULL,"created_by",usr_cpp);
-  rcd=nco_char_att_put(out_id,NULL,"map_method","Conservative");
+  if(rgr->wgt_typ == nco_wgt_con) rcd=nco_char_att_put(out_id,NULL,"map_method","Conservative");
+  else if(rgr->wgt_typ == nco_wgt_dwe) rcd=nco_char_att_put(out_id,NULL,"map_method","Bilinear"); /* NB: map_method values are constrained by SCRIP/ESMF precedence. Values besides "Conservative" and "Bilinear" may be unsupported by other regridders. */
+  /* ERWG stores actual weight generation in "ESMF_regrid_method" */
+  if(rgr->wgt_typ == nco_wgt_con) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","First-order Conservative");
+  else if(rgr->wgt_typ == nco_wgt_dwe) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Distance-Weighted Extrapolation");
   rcd=nco_char_att_put(out_id,NULL,"weight_generator","NCO");
   char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */
   /* 20170417: vrs_cpp is typically something like "4.6.6-alpha10" (quotes included) 
@@ -933,7 +937,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     pl_cnt_out = grd_sz_out;
 
-
     if (pl_typ == poly_sph)
       pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in, (size_t) grd_crn_nbr_in, grd_lon_typ_out);
     else if (pl_typ == poly_rll)
@@ -948,16 +951,9 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     for(idx=0;idx<pl_cnt_out  ;idx++)
       nco_poly_prn(pl_lst_out[idx],1);
     */
-
   }
 
-
-
-
-
-
-
-  if (rgr->wgt_typ == nco_wgt_con) {
+  if(rgr->wgt_typ == nco_wgt_con){
     int nbr_tr;
     KDTree **tree;
     void **void_lst_vrl=NULL_CEWI;
@@ -968,7 +964,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       lst_typ=1;
 
     tree=nco_map_kd(pl_lst_out, pl_cnt_out, grd_lon_typ_out,&nbr_tr);
-
 
       /* temporarily disable crt code */
       /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
@@ -981,8 +976,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       wgt_lst_vrl=(wgt_sct**)void_lst_vrl;
     else if(lst_typ==2)
       pl_lst_vrl=(poly_sct**)void_lst_vrl;
-
-
 
     if (nco_dbg_lvl_get() >= nco_dbg_dev )
       fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap polygons=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
@@ -1020,17 +1013,14 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       }
     }
 
-    for (idx = 0; idx < nbr_tr; idx++)
-      kd_destroy(tree[idx], NULL);
+    for(idx=0;idx < nbr_tr;idx++)
+      kd_destroy(tree[idx],NULL);
 
-    tree = (KDTree **) nco_free(tree);
+    tree=(KDTree **)nco_free(tree);
+    lnk_nbr=pl_cnt_vrl;
 
+  }else if(rgr->wgt_typ == nco_wgt_dwe){
 
-    lnk_nbr = pl_cnt_vrl;
-  }
-
-  else if(rgr->wgt_typ== nco_wgt_dwe)
-  {
     int nbr_tr;
     KDTree **tree;
 
@@ -1040,18 +1030,15 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     /* temporarily disable crt code */
     /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
-    if (pl_typ == poly_sph || pl_typ == poly_rll)
+    if(pl_typ == poly_sph || pl_typ == poly_rll)
       wgt_lst_vrl = nco_poly_lst_mk_dwe_sph(map_rgr, pl_lst_out, grd_sz_out, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
 
     pl_lst_vrl=(poly_sct**)NULL_CEWI;
 
-
-
-    if (nco_dbg_lvl_get() >= nco_dbg_dev )
+    if(nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap weights(nni)=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
 
-
-    /* dont really like this - for weight of input cells  maybe greater than 1 - some maybe 0.0  */
+    /* dont really like this - for weight of input cells maybe greater than 1 - some maybe 0.0  */
     for(idx=0;idx<pl_cnt_vrl;idx++)
       pl_lst_in[ wgt_lst_vrl[idx]->src_id]->wgt+=wgt_lst_vrl[idx]->wgt;
 
@@ -1060,22 +1047,14 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     tree = (KDTree **) nco_free(tree);
 
-
-
-
-
     lnk_nbr=pl_cnt_vrl;
   }
-
-
 
   wgt_raw = (double *) nco_malloc(lnk_nbr * nco_typ_lng(NC_DOUBLE));
   col_src_adr = (int *) nco_malloc(lnk_nbr * nco_typ_lng(NC_INT));
   row_dst_adr = (int *) nco_malloc(lnk_nbr * nco_typ_lng(NC_INT));
 
-
-  if( lst_typ == 1 ) {
-
+  if(lst_typ == 1){
     wgt_sct *wgt_lcl;
 
     for (idx = 0; idx < lnk_nbr; idx++) {
@@ -1092,8 +1071,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       col_src_adr[idx] = wgt_lcl->src_id + 1;
       row_dst_adr[idx] = wgt_lcl->dst_id + 1;
     } /* !idx */
-  }
-  else if(lst_typ==2 ) {
+  }else if(lst_typ == 2){
     for (idx = 0; idx < lnk_nbr; idx++) {
 
       if (pl_lst_vrl[idx]->wgt > 1.0 && pl_lst_vrl[idx]->wgt < 1.0 + 1.0e-10)
@@ -1128,27 +1106,20 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     }
   } /* !idx */
 
-
   *wgt_raw_ptr = wgt_raw;
   *col_src_adr_ptr = col_src_adr;
   *row_dst_adr_ptr = row_dst_adr;
   *lnk_nbr_ptr = lnk_nbr;
 
-
-
-
   pl_glb_in = nco_poly_free(pl_glb_in);
   pl_glb_out = nco_poly_free(pl_glb_out);
 
-  if(lst_typ==1 && wgt_lst_vrl)
-  {
+  if(lst_typ==1 && wgt_lst_vrl){
     for(idx=0;idx < pl_cnt_vrl;idx++)
       wgt_lst_vrl[idx]=(wgt_sct*)nco_free(wgt_lst_vrl[idx]);
 
     wgt_lst_vrl=(wgt_sct**)nco_free(wgt_lst_vrl);
-  }
-
-  else if(lst_typ==2 && pl_lst_vrl)
+  }else if(lst_typ==2 && pl_lst_vrl)
       pl_lst_vrl = nco_poly_lst_free(pl_lst_vrl, pl_cnt_vrl);
 
   if (grd_sz_in) pl_lst_in = nco_poly_lst_free(pl_lst_in, grd_sz_in);
@@ -1156,9 +1127,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   return rcd;
 } /* !nco_msh_mk() */
-
-
-
 
 /* create tree */
 KDTree**
@@ -1190,7 +1158,6 @@ int *nbr_tr)
 
   tree = (KDTree **) nco_calloc(*nbr_tr, sizeof(KDTree *));
 
-
   #if defined(__INTEL_COMPILER)
   # pragma omp parallel for default(none) private(idx,thr_idx) shared(fp_stderr,  grd_lon_typ, nbr_tr, nbr_xcs, pl_lst, quota, tree)
   #else /* !__INTEL_COMPILER */
@@ -1214,14 +1181,6 @@ int *nbr_tr)
   return tree;
 } /* end tree scope */
 
-
-
-
-
-
-
-
-/* create tree */
 KDTree *
 nco_map_kd_init( poly_sct **pl_lst, int pl_cnt, nco_grd_lon_typ_enm grd_lon_typ   )
 {
@@ -1256,9 +1215,7 @@ nco_map_kd_init( poly_sct **pl_lst, int pl_cnt, nco_grd_lon_typ_enm grd_lon_typ 
     }
 
   }
-
   return rtree;
-
 }
 
 int
@@ -1290,8 +1247,6 @@ nco_msh_wrt
 
   double *area=NULL_CEWI;
 
-
-
   long dmn_srt[2];
   long dmn_cnt[2];
 
@@ -1305,8 +1260,6 @@ nco_msh_wrt
   char grd_crn_lat_nm[]="grid_corner_lat";
   char grd_crn_lon_nm[]="grid_corner_lon";
   char grd_crn_nm[]="grid_corners";
-
-
 
   char grd_sz_nm[]="grid_size";
   // char msk_nm[]="grid_imask";
@@ -1322,7 +1275,6 @@ nco_msh_wrt
   size_t hdr_pad=10000UL; /* [B] Pad at end of header section */
 
   area=(double*)nco_malloc( sizeof(double) * grd_sz_nbr);
-
 
   nco_sph_plg_area(map_rgr,lat_crn,lon_crn,grd_sz_nbr,grd_crn_nbr,area);
 
@@ -1374,7 +1326,6 @@ nco_msh_wrt
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
   area=(double*)nco_free(area);
-
 
   return True;
 } /* !nco_msh_wrt() */
