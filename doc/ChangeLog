@@ -1,16 +1,16 @@
 2020-09-03  Charlie Zender  <zender@uci.edu>
 
-	* nco.texi document prw, dwe, prm_int, ilv
-
-2020-09-02  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.9.4 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4: Uncle Leroy';git push
 	git tag -a 4.9.4 -m 'all: simd, baa bit rnd, uio/NC_SHARE; autoconf: enable-gpu; ncclimo: kll rph kdz, hfc/hfs, sdd dfl ; nces: per-fl-wgt; ncks: vrt fix, dt_fmt json/xml; ncra clm_nfo ilv prm_ints prw; ncremap no_amwg, si bgc, nco_dwe, xtr_xpn, xtr_nsp';git push --tags
 
 	* NCO 4.9.4-beta03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.4-beta03: Devastating Shavasana';git push
-	git tag -a 4.9.4-beta03 -m 'ncap2 clang tidy;ncremap dwe chk_map;';git push --tags
+	git tag -a 4.9.4-beta03 -m 'ncap2 clang tidy;ncclimo eam elm; ncremap dwe chk_map;';git push --tags
+
+	* nco.texi document prw, dwe, prm_int, ilv, hfc/hfs, dt_fmt
+
+2020-09-02  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo future-proof mdl_nm option to accept 'eam' instead of	'cam' and 'elm' instead of 'clm2'
 

@@ -207,6 +207,24 @@ A. ncclimo now outputs more CF-conformant climatological times and
    http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#climatological-statistics
    Example 7.13
 
+A. ncra, nces, and ncrcat introduce the --clm_nfo (or --cb) option to
+   produce CF-conformant climatological times and bounds.
+   This option takes a comma-separated argument list of five relevant 
+   input parameters: --cb=yr_srt,yr_end,mth_srt,mth_end,tpd, 
+   where yr_srt is the climatology start-year, yr_end is the
+   climatology end-year, mth_srt is the climatology start-month (in
+   [1..12] format), mth_end is the climatology end-month (in [1..12]
+   format), and tpd is the number of timestpes per day (with the
+   special exception that tpd=0 indicates monthly data, not
+   diurnally-resolved data. A seasonal summer climatology created from
+   monthly mean input data spanning June, 2000 to August, 2020 should
+   call ncra with --clm_bnd=2000,2020,6,8,0, whereas a diurnally
+   resolved climatology of the same period with 6-hourly input data
+   resolution would use --clm_bnd=2000,2020,6,8,4. 
+   ncra --cb=2014,2016,1,1,0 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
+   http://nco.sf.net/nco.html#cb
+   http://nco.sf.net/nco.html#ncra
+
 BUG FIXES:
 
 A. ncremap/ncks: Fix vertical interpolation from hybrid-to-hybrid

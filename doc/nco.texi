@@ -125,8 +125,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.4-beta02
-@set doc-edition 4.9.4-beta02
+@set nco-edition 4.9.4-beta03
+@set doc-edition 4.9.4-beta03
 @set copyright-years 1995--2020
 @set update-year 2020
 @set update-date 3 September 2020
@@ -18288,9 +18288,11 @@ filenames as it does for normal (monthly) climos, @command{ncclimo}
 uses the @code{caseid} option, when provided, to rename the output
 files for high-frequency climos.
 @example
+@verbatim
 # Generate diurnal climos from high-frequency CMIP6 timeseries
 cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo --clm_md=hfc
   -c ${caseid} --yr_srt=2001 --yr_end=2002 --drc_out=${HOME}
+@end verbatim
 @end example
 
 @cindex standard input
@@ -18302,12 +18304,14 @@ if neither of these is done and no @var{caseid} is specified, in which
 case it assumes all @code{*.nc} files in @var{drc_in} constitute the
 input file list. 
 @example
+@verbatim
 # Split monthly timeseries into CMIP-like timeseries
 cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo              -v=T \
   --ypf=1 --yr_srt=56 --yr_end=76 --drc_out=${HOME}
 # Split high-frequency timeseries into CMIP-like timeseries
 cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo --clm_md=hfs -v=T \
   --ypf=1 --yr_srt=56 --yr_end=76 --drc_out=${HOME}
+@end verbatim
 @end example
 
 Options for @command{ncclimo} and @command{ncremap} come in both short
