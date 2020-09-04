@@ -27,44 +27,70 @@ ncra [\-3] [\-4] [\-5] [\-6] [\-7]
 [\-\-cnk_plc 
 .IR plc ]
 [\-\-cnk_scl 
-.IR sz_lmn ] [\-D 
+.IR sz_lmn ]
+[\-D 
 .IR dbg_lvl ]
 [\-d 
 .IR dim ,[
 .IR min ][,[
 .IR max ]][,
 .IR stride [[,[
-.IR subcycle ]]]]]
-[\-\-dbl|flt] [-F] [--fl_fmt=fmt] [\-G
+.IR subcycle [[,[
+.IR interleave ]]]]]]
+[\-\-dbl|flt]
+[-F]
+[--fl_fmt=fmt]
+[\-G
 .IR gpe_dsc ]
 [\-g  
 .IR grp [,...]]
 [\-\-glb
 .IR att_name=
 .IR att_val ]]
-[\-h] [\-\-hdf] [\-\-hdr_pad
-.IR sz_byt ] [\-\-hpss_try]
+[\-h]
+[\-\-hdf]
+[\-\-hdr_pad
+.IR sz_byt ]
+[\-\-hpss_try]
 [\-L 
 .IR dfl_lvl ] 
 [\-l 
 .IR path ]
-[\-\-mro] [\-\-msa] [\-N] [\-n 
+[\-\-mro]
+[\-\-msa]
+[\-N]
+[\-n 
 .IR loop ]
-[\-\-no_cll_msr] [\-\-no_cll_mth] [\-\-no_frm_trm] [\-\-no_tmp_fl] [\-O] [\-p 
+[\-\-no_cll_msr]
+[\-\-no_cll_mth]
+[\-\-no_frm_trm]
+[\-\-no_tmp_fl]
+[\-O]
+[\-p 
 .IR path ]
 [\-\-ppc 
 .IR var1 [,
 .IR var2 [,...]]=
 .IR prc ]]
-[\-R] [\-r] [\-\-ram_all] [\-\-rec_apn] [\-t
+[\-\-prm_int]
+[\-\-prw
+.IR wgt_arr ]
+[\-R]
+[\-r]
+[\-\-ram_all]
+[\-\-rec_apn]
+[\-t
 .IR thr_nbr ]
-[\-\-uio] [\-\-unn] [\-v 
+[\-\-uio]
+[\-\-unn]
+[\-v 
 .IR var [,...]]
 [\-w 
 .IR wgt ]
 [\-X 
 .IR box ] 
-[\-x] [\-y 
+[\-x]
+[\-y 
 .IR op_typ ]
 .I input-files
 .I output-file

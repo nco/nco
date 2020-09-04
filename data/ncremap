@@ -1031,7 +1031,7 @@ elif [ ${alg_typ} = 'fv2fv_stt' ] || [ ${alg_typ} = 'fv2fv_highorder' ] || [ ${a
 elif [ ${alg_typ} = 'nco_con' ] || [ ${alg_typ} = 'nco_cns' ] || [ ${alg_typ} = 'nco_conserve' ] || [ ${alg_typ} = 'nco' ]; then 
     alg_opt='nco_con'
     wgt_typ='nco'
-elif [ ${alg_typ} = 'nco_dwe' ] || [ ${alg_typ} = 'nco_nni' ] || [ ${alg_typ} = 'nco_distance_weighted' ] || [ ${alg_typ} = 'nco_nearest_neighbor' ]; then
+elif [ ${alg_typ} = 'nco_dwe' ] || [ ${alg_typ} = 'dwe' ] || [ ${alg_typ} = 'nco_distance_weighted' ] || [ ${alg_typ} = 'nco_nearest_neighbor' ]; then
     alg_opt='nco_dwe'
     wgt_typ='nco'
 else 

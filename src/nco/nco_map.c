@@ -2258,7 +2258,7 @@ nco_map_chk /* Map-file evaluation */
       if(ival[idx] == 0) mask_a_zro++; else if(ival[idx] == 1) mask_a_one++;
     /* Source mask must have at least one unmasked value, i.e, one value of 1 */
     //assert(mask_a_zro != sz);
-    if(mask_a_zro == sz) (void)fprintf(stdout,"WARNING mask_a has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well still be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed.\n");
+    if(mask_a_zro == sz) (void)fprintf(stdout,"WARNING mask_a has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with the map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well still be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed. Also, the other WARNINGs below can probably be ignored for DWE maps. These warnings will be quieted in a future version.\n");
   } /* !var_mask_a */
 
   size_t mask_b_one=0UL;
@@ -2270,7 +2270,7 @@ nco_map_chk /* Map-file evaluation */
       if(ival[idx] == 0) mask_b_zro++; else if(ival[idx] == 1) mask_b_one++;
     /* Destination mask must have at least one unmasked value, i.e, one value of 1 */
     //assert(mask_b_zro != sz);
-    if(mask_b_zro == sz) (void)fprintf(stdout,"WARNING mask_b has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well still be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed.\n");
+    if(mask_b_zro == sz) (void)fprintf(stdout,"WARNING mask_b has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with the map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well still be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed. Also, the other WARNINGs below can probably be ignored for DWE maps. These warnings will be quieted in a future version.\n");
   } /* !var_mask_b */
   
   /* Start Report in own scope */

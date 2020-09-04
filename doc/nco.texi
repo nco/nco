@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.4-beta02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 1 September 2020
+@set update-date 3 September 2020
 @set update-month September 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -6022,7 +6022,7 @@ Long options:
 @samp{--dimension @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]}@*
 @samp{--dmn @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]}@*
 @end cartouche
-As of version 4.9.4 (August, 2020), @acronym{NCO} allows both Multi-File,
+As of version 4.9.4 (September, 2020), @acronym{NCO} allows both Multi-File,
 Multi-Record operators, @command{ncra} and @command{ncrcat}, to
 extract, interleave, and operate on multiple groups of records. 
 Interleaving (or de-interleaving, depending on one's perspective)
@@ -6030,7 +6030,7 @@ means altering the order of records in a group to be processed.
 Specifically, the interleaving feature (sometimes abbreviated
 @acronym{ILV}) causes the operator to treat as sequential records
 those that are separated by multiples of the specified
-@var{interleave} parameter within a sub-cycle. 
+@var{interleave} parameter within a group or sub-cycle of records.
 
 The interleave feature sequences records with respect to their
 position relative to the beginning of each sub-cycle.
@@ -6038,11 +6038,27 @@ Records a multiple of @var{interleave} from sub-cycle beginning
 are first extracted (@command{ncrcat}) or reduced (@command{ncra}),
 then records offset from these by one, two, et cetera up to
 @math{@var{interleave}-1}. 
-In this manner interleaving is as an inner (intra-sub-cycle) loop 
+In this manner interleaving extracts an inner (intra-sub-cycle) loop  
 that preserves high-frequency signals relative to the longer
 stride between sub-cycles.
 Thus interleaving allows deconvolution of periodic phenomena within a 
 time-series.
+
+Processing simple arithmetical sequences is a helpful way to gain 
+understanding of what interleaving does. 
+Here are some examples to reify the abstract.
+Let @file{in1.nc} contain the record-arry [1..10],
+@file{in2.nc} contain [11..20], and @file{in12.nc} contain [1..20].
+@example
+@verbatim
+ncra   -d time,,,,10,5 in1.nc ~/foo.nc # 3.5, 4.5, 5.5, 6.5, 7.5
+ncrcat -d time,0,4,,6,2 in1.nc ~/foo.nc # 1, 3, 5, 2, 4, 6 (+WARNING)
+ncrcat -d time,2,,10,4,2 in12.nc ~/foo.nc # 3, 5, 4, 6, 13, 15, 14, 16
+ncra   -d time,2,,10,4,2 in12.nc ~/foo.nc # 4, 5, 14, 15
+ncra   -d time,,,,10,2 in1.nc in2.nc ~/foo.nc # 5, 6, 15, 16
+ncra   -d time,,,,10,2 in12.nc ~/foo.nc # 5, 6, 15, 16
+@end verbatim
+@end example
 
 Interleaving is perhaps best illustrated by an extended example that
 describes how to solve the same problem both with and without the
@@ -6053,31 +6069,35 @@ high-enough temporal frequency to resolve the diurnal cycle with
 Many climate models and re-analyses are archived at hourly,
 tri-hourly, or six-hourly resolution yielding
 @math{@var{tpd} = 24, 8}, or @math{6}, respectively.
+Our goal is to extract a monthly mean diurnal cycle from this
+timeseries.
 
-Creating seasonal cycles is a common task in climate data processing.
 Suppose a 150-year climate simulation produces 150 output files, each
-comprising 12 records, each record a monthly mean:
+comprising 365 days of hourly data, or 8760 records, each record an hourly mean:
 @file{1850.nc}, @file{1851.nc}, ... @file{1999.nc}.
 Our goal is to create a single file that contains the climatological
-summertime (June, July, and August, aka JJA) mean.
-Traditionally, we would first compute the climatological monthly
-mean for each month of summer. 
-Each of these is a 150-year mean, i.e., 
+monthly mean diurnal cycle for, say, March, which contains @w{31 days}
+or @w{744 hourly} records that commence on the 60th day of the 356-day
+year, with record index 1416.
+Traditionally, we might first compute the climatological monthly
+mean for hour of the day, then combine those into a full diurnal cycle:
 @example
 @verbatim
-# Step 1: Create climatological monthly files clm06.nc..clm08.nc
-for mth in {6..8}; do
-  mm=`printf "%02d" $mth`
-  ncra -O -F -d time,${mm},,12 -n 150,4,1 1850.nc clm${mm}.nc
+# Step 1: Create climatological hourly files hr00.nc..hr23.nc 
+for hr in {0..23}; do
+  hh=`printf "%02d" $hr`
+  let srt=${hr}+1416
+  # Alternatively, use UDUnits by setting srt=1850-03-01T00:00:01 
+  ncra -O -d time,${srt},,8760 -n 150,4,1 1850.nc hr${hh}.nc
 done
-# Step 2: Average climatological monthly files into summertime mean
-ncra -O clm06 clm07.nc clm08.nc clm_JJA.nc
+# Step 2: Concatenate climatological hourly files into diurnal cycle
+ncrcata -O hr??.nc clm_drn.nc
 @end verbatim
 @end example
 @noindent
 So far, nothing is unusual and this task can be performed by any
 @acronym{NCO} version. 
-The @acronym{ILV} feature makes obsolete the need for the shell loop
+The @acronym{ILV} feature obsoletes the need for the shell loop
 used in @w{Step 1} above. 
 
 The new @acronym{ILV} option aggregates more than one input record at
@@ -6087,40 +6107,17 @@ multiple-record output (MRO) files.
 This reduces the task of producing the climatological summertime
 mean to @emph{one} step:
 @example
-# Step 1: Compute climatological summertime mean
-ncra -O -F -d time,6,,12,3 -n 150,4,1 1850.nc clm_JJA.nc
+# Step 1: Archive all 150 March-mean diurnal cycles in one file
+ncra -O -d time,1850-03-01T00:00:01,,8760,744,24 -n 150,4,1 1850.nc clm_drn.nc
 @end example
 @noindent
 The @acronym{ILV} option instructs @command{ncra} (or @command{ncrcat})
-to process files in groups of three records. 
-To better understand the meaning of each argument to the @samp{-d}
-hyperslab option, read it this way: ``for the time dimension start with
-the sixth record, continue without end, repeat the process every twelfth
-record, and define a sub-cycle as three consecutive records''. 
-
-A separate option, @samp{--mro}, instructs @command{ncra} to output 
-its results from each sub-group, and to produce a @dfn{Multi-Record Output}
-(@acronym{MRO}) file rather than a @dfn{Single-Record Output}
-(@acronym{SRO}) file. 
-Unless Multi-Record-Output is indicated (either with @samp{--mro} or
-implicitly, as with interleave-mode), @command{ncra} collects together 
-all sub-groups, operates on their ensemble, and produces a single
-output record. 
-Adding @samp{--mro} to the above example causes @command{ncra} to
-archive all (150) annual summertime means to one file: 
-@example
-# Step 1: Archive all 150 summertime means in one file
-ncra --mro -O -F -d time,6,,12,3 -n 150,4,1 1850.nc 1850_2009_JJA.nc
-# ...or all (150) annual means...
-ncra --mro -O -d time,,,12,12 -n 150,4,1 1850.nc 1850_2009.nc
-@end example
-@noindent
-These operations generate and require no intermediate files.
-This contrasts to previous @acronym{NCO} methods, which require
-generating, averaging, then catenating 150 files.  
-The @samp{--mro} option only works on @command{ncra} and has no effect
-on (or rather is redundant for) @command{ncrcat}, since
-@command{ncrcat} always outputs all selected records.
+to process files in groups of 31 days (744 hourly records) interleaved
+with a 24-record cycle.
+The end result will have 150 sets of 24-timesteps representing the
+diurnal cycle of March in every year.
+A given timestep is the mean of the same hour of the day for every day
+in March of that year.
 
 @html
 <a name="multislab"></a> <!-- http://nco.sf.net/nco.html#multislab -->
@@ -18290,6 +18287,12 @@ Instead of using the @code{caseid} option to help generate the input
 filenames as it does for normal (monthly) climos, @command{ncclimo}
 uses the @code{caseid} option, when provided, to rename the output
 files for high-frequency climos.
+@example
+# Generate diurnal climos from high-frequency CMIP6 timeseries
+cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo --clm_md=hfc
+  -c ${caseid} --yr_srt=2001 --yr_end=2002 --drc_out=${HOME}
+@end example
+
 @cindex standard input
 @cindex @code{stdin}
 @command{ncclimo} automatically switches to timeseries reshaping mode
@@ -18298,6 +18301,14 @@ placed as positional arguments (after the last command-line option), or
 if neither of these is done and no @var{caseid} is specified, in which
 case it assumes all @code{*.nc} files in @var{drc_in} constitute the
 input file list. 
+@example
+# Split monthly timeseries into CMIP-like timeseries
+cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo              -v=T \
+  --ypf=1 --yr_srt=56 --yr_end=76 --drc_out=${HOME}
+# Split high-frequency timeseries into CMIP-like timeseries
+cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo --clm_md=hfs -v=T \
+  --ypf=1 --yr_srt=56 --yr_end=76 --drc_out=${HOME}
+@end example
 
 Options for @command{ncclimo} and @command{ncremap} come in both short
 (single-letter) and long forms. 
@@ -18350,8 +18361,10 @@ Valid values for @var{clm_md} are
 for annual-mode climatologies,
 @code{dly} (or synonyms @code{daily}, @code{doy}, or @code{day})
 for daily-mode climatologies,
-@code{hf} (or synonyms @code{hgh_frq} or @code{high_frequency})
-for high-frequency splitting,
+@code{hfc} (or synonyms @code{high_frequency_climo} or @code{hgh_frq_clm})
+for high-frequency (diurnally resolved) climos, 
+@code{hfs} (or synonyms @code{high_frequency_splitter} or @code{hgh_frq_spl})
+for high-frequency splitting, and 
 @code{mth} (or synonyms @code{month} or @code{monthly})
 for monthly climotologies.
 The value indicates the timespan of each input file for annual and
@@ -18360,10 +18373,21 @@ The default mode is @samp{mth}, which means input files are monthly
 averages.  
 Use @samp{ann} when the input files are a series of annual means 
 (a common temporal resolution for ice-sheet simulations).
-The value @samp{dly} is used for all input files whose temporal
-resolution is daily or finer.
-The data could be a daily average, or diurnally-resolved, e.g.,
-3-hourly. 
+The value @samp{dly} is used only input files whose temporal
+resolution is daily or finer, and when the desired output is a
+day-of-year climatology where the means are output for each
+day of a @w{365 day} year.
+Day-of-year climatologies are uncommon, yet useful for showing
+daily variability.
+The value @samp{hfc} indicates a high-frequency climatology where
+the output will be a traditional set of climatological monthly,
+seasonal, or annual means similar to monthly climos, except that
+each file will have the same number of timesteps-per-day as the
+input data to resolve the diurnal cycle.
+The value @samp{hfs} indicates a high-frequency splitting operation
+where an interannual input timeseries will be split into regular
+size segments of a given number of years, similar to @acronym{CMIP}
+timeseries.
 
 The climatology generator and splitter do not require that daily-mode
 input files begin or end on daily boundaries.
@@ -18942,6 +18966,7 @@ arguments to the @samp{-R} switch.
 See below the discussion on regridding.
 
 @html
+<a name="srt_yr"></a> <!-- http://nco.sf.net/nco.html#srt_yr -->
 <a name="srt_yr"></a> <!-- http://nco.sf.net/nco.html#srt_yr -->
 @end html
 @cindex @code{-s @var{srt_yr}}
@@ -20352,6 +20377,8 @@ whose goal is to compute anomalies from a mean state.
 In any case, when one desires to generate a file whose statistical
 properties are influenced by all the inputs, then use @command{nces}.
 
+@cindex weights
+@cindex weighted average
 As of @acronym{NCO} @w{version 4.9.4}, released in July, 2020,
 @command{nces} accepts user-specified weights with the @samp{-w} 
 (or long-option equivalent @samp{--wgt}, @samp{--wgt_var},
@@ -20535,6 +20562,8 @@ Note that each input file may contain different numbers of members
 of each ensemble, as long as all distinct ensembles contain at least one
 member in the first file.
 
+@cindex weights
+@cindex weighted average
 As of @acronym{NCO} @w{version 4.9.4}, released in July, 2020,
 @command{nces} accepts user-specified weights with the @samp{-w} 
 (or long-option equivalent @samp{--wgt}, @samp{--wgt_var},
@@ -21087,6 +21116,8 @@ coordinates to the binary file:
 @html
 <a name="cal"></a> <!-- http://nco.sf.net/nco.html#cal -->
 <a name="cln"></a> <!-- http://nco.sf.net/nco.html#cln -->
+<a name="date_format"></a> <!-- http://nco.sf.net/nco.html#date_format -->
+<a name="dt_fmt"></a> <!-- http://nco.sf.net/nco.html#dt_fmt -->
 <a name="calendar"></a> <!-- http://nco.sf.net/nco.html#calendar -->
 @end html
 @cindex calendar dates
@@ -21095,6 +21126,8 @@ coordinates to the binary file:
 @cindex @code{--calendar}
 @cindex @code{--cln_lgb}
 @cindex @code{--prn_lgb}
+@cindex @code{--dt_fmt}
+@cindex @code{--date_format}
 @cindex @code{--datestamp}
 @item --cal 
 As of @acronym{NCO} version 4.6.5 (March, 2017), @command{ncks} can
@@ -21145,6 +21178,24 @@ ncks -H -m -v time_bnds -C --dt_fmt=value ~/nco/data/in.nc
 @end example
 Note that @samp{--dt_fmt} automatically implies @samp{--cal}
 makes that options superfluous.
+
+As of @acronym{NCO} version 4.9.4 (September, 2020), invoking
+the @samp{--dt_fmt} option now applies equally well to @acronym{JSON}
+and @acronym{XML} output as to @acronym{CDL} output:
+@example
+% ncks -d time,0 -v time --cdl --dt_fmt=3 ~/nco/data/in.nc
+...
+time = "1964-03-13T21:09:0.000000" ;
+...
+% ncks -d time,0 -v time --json --dt_fmt=3 ~/nco/data/in.nc
+...
+"data": ["1964-03-13T21:09:0.000000"]
+...
+% ncks -d time,0 -v time --xml --dt_fmt=3 ~/nco/data/in.nc
+...
+<ncml:values separator="*">1964-03-13T21:09:0.000000</ncml:values>
+...
+@end example
 
 @html
 <a name="chk_map"></a> <!-- http://nco.sf.net/nco.html#chk_map -->
@@ -23576,12 +23627,14 @@ SYNTAX
 ncra [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c] [--cb @var{y1},@var{y2},@var{m1},@var{m2},@var{tpd}]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F] [--fl_fmt @var{fl_fmt}]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]
+[-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...]
 [-h] [--hdf] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--mro] [-N] [-n @var{loop}] 
 [--no_cll_msr] [--no_cll_mth] [--no_frm_trm] [--no_tmp_fl] 
-[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
+[-O] [-o @var{output-file}] [-p @var{path}] [--ppc ...] [--prm_int] [--prw wgt_arr]
+[-R] [-r] [--ram_all] [--rec_apn] [--rth_dbl|flt]
 [-t @var{thr_nbr}] [--unn] [-v @var{var}[,@dots{}]] [-w wgt] [-X ...] [-x] [-y @var{op_typ}]
 [@var{input-files}] [@var{output-file}]
 @end example
@@ -23670,7 +23723,39 @@ user provides them as normalized), and the numerator of the weighted
 average will not be divided by the sum of the weights (which is one for
 normalized weights).
 
-Bear these two exceptions in mind when weighting input:
+@html
+<a name="prw"></a> <!-- http://nco.sf.net/nco.html#prw -->
+<a name="per_record_weights"></a> <!-- http://nco.sf.net/nco.html#per_record_weights -->
+@end html
+@cindex @code{--per_record_weights}
+@cindex @code{--prw}
+@cindex weights
+@cindex weighted average
+@cindex per-record-weights
+@cindex record average
+As of @acronym{NCO} @w{version 4.9.4}, released in September, 2020,
+@command{ncra} supports the @samp{--per_record_weights} (or
+@samp{--prw}) flag to utilize the command-line weights separately
+specified by @samp{-w @var{wgt_arr}} (or @samp{--wgt @var{wgt_arr}})
+for per-record weights instead of per-file-weights, where
+@var{wgt_arr} is a 1-D array of weights.
+This is useful when computing weighted averages with cyclically
+varying weights, since the weights given on the command line will be 
+repeated for the length of the timeseries.
+Consider, for example, a @acronym{CMIP6} timeseries of historical
+monthly mean emissions that one wishes to convert to a timeseries of
+annual-mean emissions.
+One can now weight each month by its number of days via:
+@example
+ncra --per_record_weights --mro -d time,,,12,12 --wgt \
+  31,28,31,30,31,30,31,31,30,31,30,31 ~/monthly.nc ~/annual.nc
+@end example
+Note that the twelve weights will be implicitly repeated throughtout
+the duration of the input file(s), which in this case may therefore
+specify an interannual monthly timeseries that is reduced to a
+timeseries of annual-means in the output.
+
+Bear these exceptions in mind when weighting input:
 First, @command{ncra} only applies weights if the arithmetic operation
 type is averaging (@pxref{Operation Types}), i.e., for timeseries mean
 and for timeseries mean absolute value.
@@ -23678,6 +23763,34 @@ Weights are never applied for minimization, square-roots, etc.
 Second, @command{ncra} @emph{never weights} coordinate variables (e.g., 
 @code{time}) regardless of the weighting performed on non-coordinate
 variables.
+
+@html
+<a name="prm_ints"></a> <!-- http://nco.sf.net/nco.html#prm_ints -->
+<a name="promote_ints"></a> <!-- http://nco.sf.net/nco.html#promote_ints -->
+@end html
+@cindex @code{--promote_ints}
+@cindex @code{--prm_ints}
+@cindex promotion
+@cindex Boolean values
+As of @acronym{NCO} @w{version 4.9.4}, released in September, 2020,
+@command{ncra} supports the @samp{--promote_ints} (or @samp{prm_ints}) 
+flags to output statistics of integer-valued input variables in
+floating-point precision in the output file.
+By default, arithmetic operators such as @command{ncra} auto-promote
+integers to double-precision prior to arithmetic, then conduct the
+arithmetic, then demote the values back to integers for final output.
+The final stage (demotion) of this default behavior quantizes the
+mantissa of the values and prevents, e.g., retaining the statisitical
+means of Boolean (0 or 1-valued) input data as floating point data.
+The @samp{--promote_ints} flag eliminates the demotion and causes the
+statistical means of integer (@code{NC_BYTE}, @code{NC_SHORT},
+@code{NC_INT}, @code{NC_INT64}) inputs to be output as
+single-precision floating point (@code{NC_FLOAT}) variables.
+This allows useful arithmetic to be performed on Boolean values stored
+in the space-conserving @code{NC_BYTE} (single-byte) format.
+@example
+ncra --prm_ints in*.nc out.nc
+@end example
 
 @ignore
 @c Old, and possibly future, documentation
@@ -23833,7 +23946,8 @@ SYNTAX
 ncrcat [-3] [-4] [-5] [-6] [-7] [-A] [-C] [-c]
 [--cnk_byt @var{sz_byt}] [--cnk_csh @var{sz_byt}] [--cnk_dmn @var{nm},@var{sz_lmn}]
 [--cnk_map @var{map}] [--cnk_min @var{sz_byt}] [--cnk_plc @var{plc}] [--cnk_scl @var{sz_lmn}]
-[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}]]]] [-F] [--fl_fmt @var{fl_fmt}]
+[-D @var{dbg}] [-d @var{dim},[@var{min}][,[@var{max}][,[@var{stride}][,[@var{subcycle}][,[@var{interleave}]]]]]
+[-F] [--fl_fmt @var{fl_fmt}]
 [-G @var{gpe_dsc}] [-g @var{grp}[,@dots{}]] [--glb ...]
 [-h] [--hdr_pad @var{nbr}] [--hpss] 
 [-L @var{dfl_lvl}] [-l @var{path}] [--md5_digest] [-n @var{loop}]
@@ -23969,7 +24083,7 @@ SYNTAX
 @example
 ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [-D @var{dbg_lvl}] [-d @var{dst_fl}] [--d2f] [--dpt] [--dpt_fl=@var{dpt_fl}]
-[--dt_sng=@var{dt_sng}] [--esmf_nsp=@var{esmf_nsp}] [--esmf_typ=@var{esmf_typ}] [--esmf_xpn=@var{esmf_xpn}] 
+[--dt_sng=@var{dt_sng}] [--esmf_typ=@var{esmf_typ}] 
 [--fl_fmt=@var{fl_fmt}] [-G @var{grd_sng}] [-g @var{grd_dst}]
 [-I @var{drc_in}] [-i @var{input-file}] [-j @var{job_nbr}] [-L @var{dfl_lvl}]
 [-M] [-m @var{map_fl}] [--msh_fl=@var{msh_fl}]
@@ -23987,6 +24101,7 @@ ncremap [-3] [-4] [-5] [-6] [-7] [-a @var{alg_typ}] [--a2o]
 [-V @var{rgr_var}] [-v @var{var_lst}[,@dots{}]] [--version] [--vrb=@var{vrb_lvl}] 
 [--vrt_fl=@var{vrt_fl}] [--vrt_ntp=@var{vrt_ntp}] [--vrt_xtr=@var{vrt_xtr}]
 [-W @var{wgt_opt}] [-w @var{wgt_cmd}] [-x @var{xtn_lst}[,@dots{}]] [--xcl_var]
+[--xtr_nsp=@var{xtr_nsp}] [--xtr_xpn=@var{xtr_xpn}]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -24279,12 +24394,14 @@ Features common to many operators are described in
 <a name="fv2fv_stt"></a> <!-- http://nco.sf.net/nco.html#fv2fv_stt -->
 <a name="rll2rll"></a> <!-- http://nco.sf.net/nco.html#rll2rll -->
 <a name="nco_con"></a> <!-- http://nco.sf.net/nco.html#nco_con -->
+<a name="nco_dwe"></a> <!-- http://nco.sf.net/nco.html#nco_dwe -->
 @end html
 @cindex @code{-a @var{alg_typ}}
 @cindex @var{alg_typ}
 @cindex @code{--alg_typ}
 @cindex @code{--algorithm}
 @cindex @code{--regrid_algorithm}
+@cindex @code{dwe}
 @cindex @code{neareststod}
 @cindex @code{nstod}
 @cindex @code{stod}
@@ -24330,13 +24447,53 @@ for detailed descriptions of @acronym{ERWG} algorithms.
 @cindex @code{nco_conserve}
 @cindex @code{nco}
 
+@html
+<a name="dwe"></a> <!-- http://nco.sf.net/nco.html#dwe -->
+<a name="nco_dwe"></a> <!-- http://nco.sf.net/nco.html#nco_dwe -->
+<a name="distance_weighted"></a> <!-- http://nco.sf.net/nco.html#distance_weighted -->
+<a name="nearest_neighbor"></a> <!-- http://nco.sf.net/nco.html#nearest_neighbor -->
+@end html
+@cindex @code{nco_dwe}
+@cindex @code{dwe}
+@cindex @code{distance_weighted}
+@cindex @code{nco_nearest_neighbor}
+@cindex @acronym{DWE}
+@cindex distance-weighted extrapolation
+@cindex nearest-neighbor extrapolation
 @command{ncremap} implements its own internal weight-generation
 algorithm as of @acronym{NCO} version 4.8.0 (May, 2019).
-The first and only @acronym{NCO}-native algorithm is a first-order
-conservative algorithm that is still under active development yet
-accurate enough for everyday use.
-Invoke this with @code{nco_con} (or @code{nco_cns},
-@code{nco_conservative}, or simply @code{nco}).
+The first @acronym{NCO}-native algorithm is a first-order conservative
+algorithm that competes well in accuracy with similar algorithms
+(e.g., @acronym{ERWG}'s conservative algorithm).
+This algorithm is built-in to @acronym{NCO} and requires no external
+software so it is the default weight generation algorithm and is
+recommended for everyday use. 
+The algorithm may also be explicitly invoked with @code{nco_con} (or
+@code{nco_cns}, @code{nco_conservative}, or simply @code{nco}).
+
+As of @acronym{NCO} version 4.9.4 (September, 2019) @command{ncremap}
+supports a second internal weight-generation algorithm based on
+distance-weighted extrapolation (@acronym{DWE}). @acronym{DWE} is
+similar to the @acronym{ERWG} @code{nearestidavg} extrapolation
+alorithm, and accepts the same two parameters as input:
+@samp{--xtr_xpn @var{xtr_xpn}} sets the (absolute value of) the
+exponent used in inverse distance weighting (default @w{is 2.0}), and 
+@samp{--xtr_nsp @var{xtr_nsp}} sets the number of source points used
+in the extrapolation (default @w{is 8}).
+Currently, @command{ncremap} applies @command{NCO}'s @acronym{DWE} to
+the entire destination grid, not just to points with missing/masked
+values, whereas @acronym{ERWG} uses @acronym{DWE} solely for
+extrapolation to missing data points.
+We intend @command{NCO}'s @acronym{DWE} to offer both types of
+functionality in a future release.
+@example
+@verbatim
+ncremap --alg_typ=nco_dwe -s src.nc -d dst.nc -m map.nc
+ncremap -a nco_dwe --xtr_xpn=1.0 -s src.nc -d dst.nc -m map.nc
+ncremap -a nco_dwe --xtr_nsp=1   -s src.nc -d dst.nc -m map.nc
+@end verbatim
+@end example
+
 @ignore
 It promises to free users from the bondage of spherically-connected cell edges.
 We are working to make it geometrically exact for gridcells with
@@ -24728,6 +24885,7 @@ into output map-file names of this format:
 @cindex @code{--esmf_mth}
 @cindex @code{--esmf_extrap_type}
 @cindex @code{--esmf_extrap_method}
+@cindex distance-weighted extrapolation
 @item --esmf_typ=@var{esmf_typ} (@code{--esmf_typ}, @code{--esmf_mth}, @code{--esmf_extrap_type}, @code{--esmf_extrap_method})
 Specifies the extrapolation method used to compute unmapped
 destination point values with the @acronym{ERWG} weight generator.
@@ -24735,13 +24893,13 @@ Valid values, their synonyms, and their meanings are
 @code{neareststod} (synonyms @code{stod} and @code{nsd}) which
 uses the nearest valid source value,
 @code{nearestidavg} (synonyms @code{idavg} and @code{id}) which
-uses an inverse distance-weighted (with an exponent of @var{esmf_xpn})
-average of the nearest @var{esmf_nsp} valid source values, and 
+uses an inverse distance-weighted (with an exponent of @var{xtr_xpn})
+average of the nearest @var{xtr_nsp} valid source values, and 
 @code{none} (synonyms @code{nil} and @code{nowaydude}) which forbids 
 extrapolation. 
 Default is @math{@var{esmf_typ} = @code{none}}.
-The arguments to options @samp{--esmf_xpn=@var{esmf_xpn}} (which
-defaults to 2.0) and @samp{--esmf_nsp=@var{esmf_nsp}} (which defaults
+The arguments to options @samp{--xtr_xpn=@var{xtr_xpn}} (which
+defaults to 2.0) and @samp{--xtr_nsp=@var{xtr_nsp}} (which defaults
 to 8) set the parameters that control the extrapolation
 @code{nearestidavg} algorithm.   
 For more information on @acronym{ERWG} extrapolation, see documentation
@@ -24749,40 +24907,40 @@ For more information on @acronym{ERWG} extrapolation, see documentation
 @acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
 
 @html
-<a name="esmf_nsp"></a> <!-- http://nco.sf.net/nco.html#esmf_nsp -->
+<a name="xtr_nsp"></a> <!-- http://nco.sf.net/nco.html#xtr_nsp -->
 @end html
 @cindex extrapolation
-@cindex @code{--esmf_nsp=@var{esmf_nsp}}
-@cindex @var{esmf_nsp}
-@cindex @code{--esmf_nsp}
+@cindex @code{--xtr_nsp=@var{xtr_nsp}}
+@cindex @var{xtr_nsp}
+@cindex @code{--xtr_nsp}
 @cindex @code{--esmf_pnt_src_nbr}
 @cindex @code{--esmf_extrap_num_src_pnts}
-@item --esmf_nsp=@var{esmf_nsp} (@code{--esmf_nsp}, @code{--esmf_pnt_src_nbr}, @code{--esmf_extrap_num_src_pnts})
+@item --xtr_nsp=@var{xtr_nsp} (@code{--xtr_nsp}, @code{--esmf_pnt_src_nbr}, @code{--esmf_extrap_num_src_pnts})
 Specifies the number of source points to use in extrapolating unmapped
 destination point values with the @acronym{ERWG} weight generator.
 This option is only useful in conjunction with explicitly requested
 extrapolation types @math{@var{esmf_typ} = @code{neareststod}} and
 @math{@var{esmf_typ} = @code{nearestidavg}}. 
-Default is @math{@var{esmf_nsp} = 8}.
+Default is @math{@var{xtr_nsp} = 8}.
 For more information on @acronym{ERWG} extrapolation, see documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
 @acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
 
 @html
-<a name="esmf_xpn"></a> <!-- http://nco.sf.net/nco.html#esmf_xpn -->
+<a name="xtr_xpn"></a> <!-- http://nco.sf.net/nco.html#xtr_xpn -->
 @end html
-@cindex @code{--esmf_xpn=@var{esmf_xpn}}
-@cindex @var{esmf_xpn}
-@cindex @code{--esmf_xpn}
+@cindex @code{--xtr_xpn=@var{xtr_xpn}}
+@cindex @var{xtr_xpn}
+@cindex @code{--xtr_xpn}
 @cindex @code{--esmf_pnt_src_nbr}
 @cindex @code{--esmf_extrap_num_src_pnts}
-@item --esmf_xpn=@var{esmf_xpn} (@code{--esmf_xpn}, @code{--esmf_pnt_src_nbr}, @code{--esmf_extrap_num_src_pnts})
+@item --xtr_xpn=@var{xtr_xpn} (@code{--xtr_xpn}, @code{--esmf_pnt_src_nbr}, @code{--esmf_extrap_num_src_pnts})
 Specifies the number of source points to use in extrapolating unmapped
 destination point values with the @acronym{ERWG} weight generator.
 This option is only useful in conjunction with explicitly requested
 extrapolation types @math{@var{esmf_typ} = @code{neareststod}} and
 @math{@var{esmf_typ} = @code{nearestidavg}}. 
-Default is @math{@var{esmf_xpn} = 2.0}.
+Default is @math{@var{xtr_xpn} = 2.0}.
 For more information on @acronym{ERWG} extrapolation, see documentation
 @uref{http://www.earthsystemmodeling.org/esmf_releases/last_built/ESMF_refdoc/node3.html#SECTION03022300000000000000, here}.
 @acronym{NCO} supports this feature as of version 4.7.4 (April, 2018). 
@@ -25929,7 +26087,8 @@ The workaround is to instruct @command{ncremap} what the permutation
 option to @command{ncpdq} should be in order to place the horizontal
 spatial dimension(s) at the end of all variables:
 @example
-ncremap --pdq='-a Time,new_dim,nCells' --map=map.nc in.nc out.nc
+ncremap --pdq='-a Time,new_dim,nCells'  --map=map.nc in.nc out.nc
+ncremap --pdq='-a time,new_dim,lat,lon' --map=map.nc in.nc out.nc
 @end example
 
 @html
@@ -27517,6 +27676,7 @@ Variables not prefixed with a period (@code{global}) must be present.
 @node ncwa netCDF Weighted Averager,  , ncrename netCDF Renamer, Reference Manual
 @section @command{ncwa} netCDF Weighted Averager
 @cindex averaging data
+@cindex weights
 @cindex weighted average
 @cindex masked average
 @cindex broadcasting variables

@@ -6,21 +6,18 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.9.4 contains many regridding fixes and features: 
+Version 4.9.4 contains new features focused on de-interleaving time
+coordinates and per-record weighting for ncra, high-freqency (e.g.,
+diurnally-resolved) climatologies and new defaults for ncclimo, a
+new distance-weight extrapolation algorithm for ncremap, per-file
+weights for nces. New NCO-wide features include:  support for
+unbuffered I/O that can speed-up I/O for large record variables,
+more precise quantization than Bit Grooming, and faster arithmetic
+that takes advantage of SIMD directives on OpenMP-enabled builds.
 
-This version adds support for unbuffered I/O that can dramatically
-speed-up I/O for large record variables.
-
-Work on NCO 4.9.5 has commenced and will improve NCO weight-generator  
-accuracy, reduce vertical interpolation memory use, and supply more
-accurate weight generation options for rectangular lat-lon grids.
-
-Work on NCO 5.0.0 has commenced "under the hood". A key leap in that 
-release will be support for netCDF4 user-defined types. Printing of
-netCDF4 user-defined types ENUM and VLEN is ready now (though
-unsupported) with the --udt flag. 5.0.0 will contain the finished
-version of that, and include options for invoking mbtempest in place
-of tempest. 
+Work on NCO 4.9.5 has commenced and will improve high-freqency
+splitting and climo capabilities, more SIMD acceleration, and
+more GPU offloading support.
 
 Enjoy,
 Charlie
@@ -57,7 +54,8 @@ A. ncremap understands new dimensions used in DOE E3SM MPAS BGC
    override internal presets and to future-proof itself against
    unexpected new dimensions from any model input.
    ncremap -P mpasseaice --map=map.nc in.nc out.nc
-   ncremap --pdq='-a Time,new_dim,nCells' --map=map.nc in.nc out.nc
+   ncremap --pdq='-a Time,new_dim,nCells'  --map=map.nc in.nc out.nc
+   ncremap --pdq='-a time,new_dim,lat,lon' --map=map.nc in.nc out.nc
    Thanks to Ahmed Elshall for reporting the new dimensions.
    http://nco.sf.net/nco.html#pdq_opt
 
@@ -72,10 +70,30 @@ A. ncra now supports the --per_record_weights (or --prw) option to
    by its number of days via: 
    ncra --per_record_weights --mro -d time,,,12,12 --wgt \
         31,28,31,30,31,30,31,31,30,31,30,31 ~/monthly.nc ~/annual.nc
+   Thanks to Philip Cameron-Smith of LLNL for this suggestion.
    http://nco.sf.net/nco.html#ncra
-   http://nco.sf.net/nco.html#per_record_weights
+   http://nco.sf.net/nco.html#xmp_ncra
+   http://nco.sf.net/nco.html#prw
 
-A. ncremap allows access to a new NCO regridding algorithm based on
+A. ncra accepts the new flag --promote_ints (or --prm_ints) to output
+   statistics of integer-valued input variables in floating-point
+   precision in the output file. By default, NCO arithmetic operators
+   such as ncra auto-promote integers to double-precision prior to
+   arithmetic, then conduct the arithmetic, then demote the values
+   back to integers for final output. This default behavior quantizes
+   the mantissa of the values and prevents, e.g., turning statisitical
+   means of boolean (0 or 1-valued) input data into floating point
+   probabilities. The --promote_ints flag causes the statistical means
+   of integer (including NC_BYTE) inputs to be output as
+   single-precision floating point (NC_FLOAT) variables. This allows
+   use arithmetic to be performed on Boolean values stored in the
+   space-conserving NC_BYTE (single byte) format in input files.
+   ncra --prm_ints in*.nc out.nc
+   Thanks to Paul Ullrich of UC Davis for this suggestion.
+   http://nco.sf.net/nco.html#prm_ints
+   http://nco.sf.net/nco.html#promote_ints
+
+A. ncremap allows access to a new regridding algorithm based on
    distance-weighted extrapolation (DWE). DWE is similar to the ESMF
    nearestidavg extrapolation alorithm, and accepts the same two
    parameters as input: --xtr_xpn sets the (absolute value of) the
@@ -83,11 +101,111 @@ A. ncremap allows access to a new NCO regridding algorithm based on
    sets the number of source points used in the extrapolation (default
    is 8). ncremap can apply DWE to the entire destination grid, or
    just to points with missing/masked values.
+
    ncremap --alg_typ=nco_dwe -s src.nc -d dst.nc -m map.nc
    ncremap -a nco_dwe --xtr_xpn=1.0 -s src.nc -d dst.nc -m map.nc
-   ncremap -a nco_dwe --xtr_nsp=1 -s src.nc -d dst.nc -m map.nc
+   ncremap -a nco_dwe --xtr_nsp=1   -s src.nc -d dst.nc -m map.nc
    Thanks to Henry Butowsky for implementing the new method.
    http://nco.sf.net/nco.html#dwe
+
+A. The multi-file, multi-record operators, ncra and ncrcat now
+   support interleaved time-coordinates in groups of records. 
+   Interleaving (or de-interleaving, depending on one's perspective)
+   means altering the order of records in a group to be processed.
+   Specifically, the interleaving feature causes the operator to treat
+   as sequential records those that are separated by multiples of the
+   specified interleave parameter within a group of records.
+   Specify the interleave parameter as the fifth hyperslab argument.
+   The interleave feature sequences records with respect to their
+   position relative to the beginning of each sub-cycle.
+   Records a multiple of interleave from sub-cycle beginning
+   are first extracted (by ncrcat) or reduced (by ncra), then records
+   offset from these by one, two, et cetera up to interleave-1. 
+   Thus interleaving allows deconvolution of periodic phenomena within
+   a time-series. Some examples to reify the abstract:
+
+   Let in1.nc = [1..10], in2.nc = [11..20], and in12.nc = [1..20].
+   ncra -d time,,,,10,5 in1.nc ~/foo.nc # 3.5, 4.5, 5.5, 6.5, 7.5
+   ncrcat -d time,0,4,,6,2 in1.nc ~/foo.nc 1, 3, 5, 2, 4, 6 (+WARNING)
+   ncrcat -d time,2,,10,4,2 in12.nc ~/foo.nc # 3, 5, 4, 6, 13, 15, 14, 16
+   ncra   -d time,2,,10,4,2 in12.nc ~/foo.nc # 4, 5, 14, 15
+   ncra -d time,,,,10,2 in1.nc in2.nc ~/foo.nc # 5, 6, 15, 16
+   ncra -d time,,,,10,2 in12.nc ~/foo.nc # 5, 6, 15, 16
+   http://nco.sf.net/nco.html#interleave
+   http://nco.sf.net/nco.html#ilv
+
+A. The default quantization method has changed from Bit Grooming to
+   Bit Rounding, contributed by Rostislav Kouznetsov with suggestions
+   from Milan Klower. As implemented, Bit Rounding will substantially
+   improve the precision for the specified number of significant
+   digits to retain. A future version of NCO will re-tune the number
+   of bits per retained digit to turn this precision advantage into
+   a compression advantage. An article submitted by R. Kouznetsov to
+   GMD describes Bit Rounding more...precisely.
+   http://nco.sf.net/nco.html#bg
+
+A. ncclimo now supports the high-frequency climos and splitting.
+   Access these capabilities by specifying the climatology-mode
+   options hfc and hfs, respectively. In both cases (climos and
+   splitting) the input file(s) name will not be constructed
+   automatically and must be provided via stdin, positional
+   command-line arguments, or a director to glob. For climos,
+   ncclimo will detect the number of timesteps per day (tpd) in the 
+   input data, and compute the climatological mean diurnal cycle
+   from the input data. The output is similar to monthly climos,
+   except each climatological monthly, seasonal, or annual output
+   file will contain tpd timesteps to represent the diurnal cycle.
+
+   # Split high-frequency timeseries into CMIP-like timeseries
+   cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo --clm_md=hfs -v=T \
+     --ypf=1 --yr_srt=56 --yr_end=76 --drc_out=${HOME}
+   # Generate diurnal climos from high-frequency CMIP6 timeseries
+   cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo --clm_md=hfc
+     -c ${caseid} --yr_srt=2001 --yr_end=2002 --drc_out=${HOME}
+   http://nco.sf.net/nco.html#ncclimo
+   http://nco.sf.net/nco.html#clm_md   
+
+A. ncclimo has changed default settings for two parameters.
+   As of this verion, ncclimo sets the options "-a sdd
+   --no_amwg_links" by default. For seasonally contiguous DJF climos 
+   one must now explicitly set "-a scd". To create symbolic links
+   to climatology files with AMWG names, one must now explicitly
+   request --amwg_links.
+   http://nco.sf.net/nco.html#dec_md
+   http://nco.sf.net/nco.html#lnk_flg
+
+A. NCO may now be configured with --enable-gpu at build-time to
+   offload certain arithmetically intensive computations to the GPUs
+   with select architectures and compilers. This feature currently
+   has no speed benefits, and needs a volunteer to lead development.
+   Please contact me if interested.
+
+A. The ncks --dt_fmt option now applies equally well to JSON and XML
+   output as to CDL output:
+   % ncks -d time,0 -v time --cdl --dt_fmt=3 ~/nco/data/in.nc
+   ...
+   time = "1964-03-13T21:09:0.000000" ;
+   ...
+   % ncks -d time,0 -v time --json --dt_fmt=3 ~/nco/data/in.nc
+   ...
+   "data": ["1964-03-13T21:09:0.000000"]
+   ...
+   % ncks -d time,0 -v time --xml --dt_fmt=3 ~/nco/data/in.nc
+   ...
+   <ncml:values separator="*">1964-03-13T21:09:0.000000</ncml:values>
+   ...
+
+   Thanks to Troy Mare for this suggestion.
+   http://nco.sf.net/nco.html#dt_fmt
+   http://nco.sf.net/nco.html#json
+   http://nco.sf.net/nco.html#xml
+
+A. ncclimo now outputs more CF-conformant climatological times and
+   bounds for all climatologies. Previously, ncclimo output a
+   time-centered value for climatological bounds, now it outputs
+   an initial YYYYMMDD format, as recommended by CF examples such as
+   http://cfconventions.org/Data/cf-conventions/cf-conventions-1.8/cf-conventions.html#climatological-statistics
+   Example 7.13
 
 BUG FIXES:
 

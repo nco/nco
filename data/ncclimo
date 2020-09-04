@@ -472,7 +472,7 @@ dpt_opt='' # [sng] Option string to add depth coordinate to regridded MPAS files
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='sdd' # [sng] December mode ('scd' or 'sdd' as per above)
 dfl_lvl='' # [enm] Deflate level
-dpf='' # [nbr] Days-per-file in input
+dpf_dfl='30' # [nbr] Days-per-file in input
 drc_in='' # [sng] Input file directory
 drc_in_xmp="${DATA}/ne30/raw" # [sng] Input file directory for examples
 drc_in_mps="${DATA}/mpas/raw" # [sng] Input file directory for MPAS examples
@@ -551,7 +551,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate input names or to name HFC output (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
-    echo "${fnt_rvr}--dpf${fnt_nrm} ${fnt_bld}dpf${fnt_nrm}  Days per file (default ${fnt_bld}${dpf}${fnt_nrm}) [${fnt_tlc}dpf, days_per_file${fnt_nrm}]"
+    echo " ${fnt_bld}--dpf${fnt_nrm}      Days per file in input (default ${fnt_bld}${dpf_dfl}${fnt_nrm}) [${fnt_tlc}dpf, days_per_file${fnt_nrm}]"
     echo " ${fnt_bld}--dpt_fl${fnt_nrm}   Depth file with refBottomDepth for MPAS ocean (empty means none) (default ${fnt_bld}${dpt_fl}${fnt_nrm}) [${fnt_tlc}dpt_fl, mpas_fl, mpas_depth, depth_file${fnt_nrm}]"
     echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year previous climo (empty means none) (default ${fnt_bld}${yr_end_prv}${fnt_nrm}) [${fnt_tlc}yr_end_prv, prv_yr_end, previous_end${fnt_nrm}]"
     echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm}) [${fnt_tlc}yr_end, end_yr, year_end, end_year, end${fnt_nrm}]"
@@ -1303,7 +1303,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     elif [ "${clm_md}" = 'hfs' ]; then
 	# CESM/E3SM high-frequency output often employs noleap calendar and 30 days per file (no matter how many timesteps per day)
 	if [ -z "${dpf}" ]; then
-	    dpf=30
+	    dpf=${dpf_dfl}
 	fi # !dpf
 	let fpy=${dpy}/${dpf}
 	flg_dct='No'

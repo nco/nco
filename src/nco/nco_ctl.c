@@ -1025,7 +1025,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-D")) (void)fprintf(stdout,"-D, --dbg_lvl, debug-level lvl\tDebug-level is lvl\n");
   if(strstr(opt_sng,"[-d")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-d, --dmn, dimension old_dim,new_dim Dimension's old and new names\n");
-    else if(prg_lcl == ncra || prg_lcl == ncrcat) (void)fprintf(stdout,"-d, --dmn, dimension dim,[min][,[max][[[,stride[,subcycle]]]]] Dimension's limits, stride, subcycle in hyperslab\n");
+    else if(prg_lcl == ncra || prg_lcl == ncrcat) (void)fprintf(stdout,"-d, --dmn, dimension dim,[min][,[max][[[,stride[,subcycle[,interleave]]]]]] Dimension's limits, stride, subcycle, interleave in hyperslab\n");
     else (void)fprintf(stdout,"-d, --dmn, dimension dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n");
   } /* end if -d */
   if(strstr(opt_sng,"--dbl|flt")) (void)fprintf(stdout,"    --dbl, flt, rth_dbl|flt\tdbl: Promote single- to double-precision b4 arithmetic (default). flt: Single-precision arithmetic is allowed.\n");
