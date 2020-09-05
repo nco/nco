@@ -13,9 +13,10 @@
 #ifndef NCO_PLY_H
 #define NCO_PLY_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+/* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, printf */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
@@ -35,13 +36,11 @@ extern "C" {
 
 #define CORNER_MAX 100
 
-
-/* filter out cells  larger than below  */   
+/* Filter-out cells larger than below */
 #define CELL_LATITUDE_MAX  30.0
 #define CELL_LONGITUDE_MAX 180.0
 
 #define DEBUG_VRL (0)
-
 
   poly_sct *
   nco_poly_free
@@ -88,7 +87,6 @@ extern "C" {
   void
   nco_poly_prn
   (poly_sct *pl, int style);
-
   
   poly_sct*
   nco_poly_vrl_do(
@@ -97,14 +95,11 @@ extern "C" {
   int flg_snp_to,
   char *sp_sng);
 
-
-
   nco_bool                  /* [flg] return True if pl_out inside pl_in */
   nco_poly_in_poly_minmax(  /* uses minmax limits only no serious polygon stuff */
   poly_sct *pl_in,
   poly_sct *pl_out
   );
-
   
   nco_bool
   nco_poly_wrp_splt( 
@@ -187,7 +182,6 @@ extern "C" {
 
 int
 nco_poly_typ_sz(poly_typ_enm pl_typ);
-
   
 #ifdef __cplusplus
 } /* end extern "C" */

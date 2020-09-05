@@ -52,31 +52,31 @@
 #ifndef NCO_SPH_H /* Contents have not yet been inserted in current source file */
 #define NCO_SPH_H
 
-#include        <stdlib.h>
-#include        <stdio.h>
-#include        <math.h>
-
 #ifdef HAVE_CONFIG_H
 # include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
 
+/* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, printf */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
+
+/* 3rd party vendors */
 #ifdef ENABLE_GSL
-  #include <gsl/gsl_vector.h>
-  #include <gsl/gsl_matrix.h>
-  #include <gsl/gsl_permutation.h>
-  #include <gsl/gsl_linalg.h>
-#endif
+ #include <gsl/gsl_vector.h>
+ #include <gsl/gsl_matrix.h>
+ #include <gsl/gsl_permutation.h>
+ #include <gsl/gsl_linalg.h>
+#endif /* !ENABLE_GSL */
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
-#include "nco_mmr.h"     /* Memory management */
-#include "nco_omp.h"     /* OpenMP utilities */
-#include "nco_rgr.h"     /* Regridding */
-#include "nco_sld.h"     /* Swath-Like Data */
-#include "nco_sng_utl.h" /* String utilities */
-
 #include "nco_crt.h" /* Cartesian geometry intersections */
+#include "nco_mmr.h" /* Memory management */
+#include "nco_omp.h" /* OpenMP utilities */
 #include "nco_ply.h" /* Polygon structure & utilities */
+#include "nco_rgr.h" /* Regridding */
+#include "nco_sng_utl.h" /* String utilities */
 
 #define NBR_SPH (5)
 #define NBR_RLL (5)
@@ -91,7 +91,6 @@
 
 #define SIGMA_TOLERANCE (1.0e-16)
 #define DOT_TOLERANCE (1.0e-14)
-
 
 /* this value plays nice with edges on grids/ne120np4_pentagons.100310.nc */
 #define DIST_TOLERANCE (1.0e-14)
@@ -122,19 +121,26 @@ typedef struct {
   int p_vrt;                  /* if -1 then genuine intersection */
   int q_vrt;
   double p0[NBR_SPH];           /* actual point - used for debuggging */
-}vrt_info_sct;
-
-
+} vrt_info_sct;
 
 /*---------------------------------------------------------------------
 Function prototypes.
 ---------------------------------------------------------------------*/
+
+double
+Sin(double theta, nco_bool blon);
+
+double
+Cos(double theta, nco_bool blon);
 
 int
 nco_sph_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r, int flg_snp_to, const char *pq_pre);
 
 char
 nco_sph_seg_int_old(double *a, double *b, double *c, double *d, double *p, double *q);
+
+nco_bool
+nco_sph_seg_int_1(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int flg_snp_to, char *codes);
 
 nco_bool
 nco_sph_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes);
@@ -147,7 +153,6 @@ nco_sph_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
 
 nco_bool
 nco_sph_seg_smc(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, int *pq_cross, int flg_snp_to, char *codes);
-
 
 nco_bool
 nco_sph_seg_vrt_int(double *a, double *b, double *c);
@@ -162,10 +167,16 @@ double
 nco_sph_dot(double *a, double *b);
 
 double
+nco_sph_dot_sp(double *a, double *b);
+
+double
 nco_sph_dot_nm(double *a, double *b);
 
 double
 nco_sph_cross(double *a, double *b, double *c);
+
+double
+nco_sph_cross_chk(double *a, double *b, double *c);
 
 double
 nco_sph_cross_sub(double *a, double *b, double *c);
@@ -211,7 +222,6 @@ nco_sph_add_pnt_chk( vrt_info_sct *vrt_info, poly_vrl_flg_enm inflag, int p_vrt,
 
 nco_bool
 nco_sph_between(double a, double b, double x);
-
 
 void
 nco_sph_prn_pnt(const char *sMsg, double *p, int style, nco_bool bRet);
@@ -270,8 +280,6 @@ nco_geo_lat_correct(double lat1, double lon1, double lon2);
 
 void
 nco_geo_get_lat_correct(double lon1, double lat1, double lon2, double lat2, double *dp_min, double *dp_max, nco_bool bDeg);
-
-
 
 /**************** functions for RLL grids ***************************************************/
 int

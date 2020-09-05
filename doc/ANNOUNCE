@@ -241,7 +241,7 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.9.4 built/tested under
+   These problems occur with NCO 4.9.5 built/tested under
    MacOS 10.15.6 with netCDF 4.7.4 on HDF5 1.10.2 and with
    Linux with netCDF 4.8.0-development (2020715) on HDF5 1.8.19.
 

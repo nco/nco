@@ -84,6 +84,11 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
  const double op2); /* I [frc] Value to fill vector with */
 
 void
+nco_zero_double /* [fnc] Zero all values of double array */
+(const long sz, /* I [nbr] Size (in elements) of operand */
+ double * restrict const op1); /* I/O [nbr] Array to be zeroed */
+
+void
 nco_zero_long /* [fnc] Zero all values of long array */
 (const long sz, /* I [nbr] Size (in elements) of operand */
  long * restrict const op1); /* I/O [nbr] Array to be zeroed */

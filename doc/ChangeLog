@@ -1,3 +1,19 @@
+2020-09-05  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.5-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha01: Relaxed Pigeon';git push
+ 	git tag -a 4.9.5-alpha01 -m 'Functionally identical to 4.9.4;';git push --tags
+
+	* nco_sph.h clean up headers and file-scope variables
+
+	* nco_rth_utl.h add prototype nco_zero_double()
+
+	* nco_sph.h add prototypes for nco_sph_cross_chk(), nco_sph_seg_int_1(), Sin(), Cos()
+
+	* Tidy nco_sph.c
+
+	* Install 4.9.4 everywhere
+
 2020-09-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.4 release procedure:
