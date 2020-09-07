@@ -972,22 +972,80 @@ int nc_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id
   (void)fprintf(stdout,"ERROR: %s reports define variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.6.0 (released ~20180125) or later.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nc_def_var_filter() */
+} /* !nc_def_var_filter() */
 
 int nc_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
 {
   /* Purpose: Pseudo-library stub function to inquire a filter for a variable
      This particular stub routine is only called by netCDF4-enabled code
-     when built against a netCDF library that it too old to have the nc_inq_var_filter() function. */
+     when built against a netCDF library too old to have the nc_inq_var_filter() function. */
   int rcd;
   const char fnc_nm[]="nc_inq_var_filter()";
   rcd=NC_NOERR+0*(nc_id+var_id);
   *flt_id=*prm_nbr=*prm_lst=rcd; /* CEWI */
-  (void)fprintf(stdout,"ERROR: %s reports define variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.6.0 (released ~20180125) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  (void)fprintf(stdout,"ERROR: %s reports inquire variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.6.0 (released ~20180125) or later.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nc_inq_var_filter() */
-#endif /* 4.6.0 */
+#endif /* !4.6.0 */
+
+#if NC_LIB_VERSION < 474
+int nc_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst)
+{
+  /* Purpose: Pseudo-library stub function to inquire all filter IDs for a variable
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library too old to have the nc_inq_var_filterids() function. */
+  int rcd;
+  const char fnc_nm[]="nc_inq_var_filterids()";
+  rcd=NC_NOERR+0*(nc_id+var_id);
+  *flt_nbr=*flt_lst=rcd; /* CEWI */
+  (void)fprintf(stdout,"ERROR: %s reports inquire variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nc_inq_var_filterids() */
+
+int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
+{
+  /* Purpose: Pseudo-library stub function to inquire specific filter settings for a variable
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library too old to have the nc_inq_var_filter_info() function. */
+  int rcd;
+  const char fnc_nm[]="nc_inq_var_filter_info()";
+  rcd=NC_NOERR+0*(nc_id+var_id);
+  *prm_nbr=*prm_lst=rcd; /* CEWI */
+  (void)fprintf(stdout,"ERROR: %s reports inquire variable filter information was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nc_inq_var_filter_info() */
+
+int nc_var_filter_remove(const int nc_id,const int var_id,const unsigned int flt_id)
+{
+  /* Purpose: Pseudo-library stub function to remove specific filter from a variable
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library too old to have the nc_var_filter_remove() function. */
+  int rcd;
+  const char fnc_nm[]="nc_var_filter_remove()";
+  rcd=NC_NOERR+0*(nc_id+var_id);
+  (void)fprintf(stdout,"ERROR: %s reports remove variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.7.4 (released ~20201001) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* end nc_var_filter_remove() */
+#endif /* !4.7.4 */
+
+#if NC_LIB_VERSION < 480
+int nc_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const unsigned int * const prm_lst)
+{
+  /* Purpose: Pseudo-library stub function to create a filter for a variable
+     This particular stub routine is only called by netCDF4-enabled code
+     when built against a netCDF library that it too old to have the nc_def_var_filterx() function. */
+  int rcd;
+  const char fnc_nm[]="nc_def_var_filterx()";
+  rcd=NC_NOERR+0*(nc_id+var_id+*flt_nm+prm_nbr+*prm_lst); /* CEWI */
+  (void)fprintf(stdout,"ERROR: %s reports define variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.8.0 (released ~20201001) or later.\nExiting...\n",fnc_nm,fnc_nm);
+  nco_err_exit(rcd,fnc_nm);
+  return rcd;
+} /* !nc_def_var_filterx() */
+#endif /* !4.8.0 */
 
 #ifdef ENABLE_MPI
 # ifdef HAVE_NETCDF4_H
@@ -1966,6 +2024,15 @@ int nco_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_i
   return rcd;
 } /* end nco_def_var_filter() */
 
+int nco_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const unsigned int * const prm_lst)
+{
+  /* Purpose: Wrapper for nc_def_var_filter() */
+  int rcd;
+  rcd=nc_def_var_filterx(nc_id,var_id,flt_nm,prm_nbr,prm_lst);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_filterx()");
+  return rcd;
+} /* end nco_def_var_filter() */
+
 int
 nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_typ,int * const dmn_nbr,int * const dmn_id,int * const att_nbr)
 {
@@ -2077,7 +2144,7 @@ int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt
   rcd=nc_inq_var_filter(nc_id,var_id,flt_id,prm_nbr,prm_lst);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter()");
   return rcd;
-} /* end nco_inq_var_filter() */
+} /* !nco_inq_var_filter() */
 
 int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
 {
@@ -2087,7 +2154,34 @@ int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const
   if(rcd == NC_ENOFILTER) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter()");
   return rcd;
-} /* end nco_inq_var_filter_flg() */
+} /* !nco_inq_var_filter_flg() */
+
+int nco_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst)
+{
+  /* Purpose: Wrapper for nc_inq_var_filterids() */
+  int rcd;
+  rcd=nc_inq_var_filterids(nc_id,var_id,flt_nbr,flt_lst);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filterids()");
+  return rcd;
+} /* !nco_inq_var_filterids() */
+
+int nco_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
+{
+  /* Purpose: Wrapper for nc_inq_var_filter_info() */
+  int rcd;
+  rcd=nc_inq_var_filter_info(nc_id,var_id,flt_id,prm_nbr,prm_lst);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter_info()");
+  return rcd;
+} /* !nco_inq_var_filter_info() */
+
+int nco_var_filter_remove(const int nc_id,const int var_id,const unsigned int flt_id)
+{
+  /* Purpose: Wrapper for nc_var_filter_remove() */
+  int rcd;
+  rcd=nc_var_filter_remove(nc_id,var_id,flt_id);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_var_filter_remove()");
+  return rcd;
+} /* !nco_var_filter_remove() */
 
 int
 nco_def_var_fletcher32

@@ -43,7 +43,6 @@
    http://www.unidata.ucar.edu/software/netcdf/docs_rc/default_chunking_4_1.html */
 
 #include "nco_cnk.h" /* Chunking */
-#include "nco.h"
 
 const char * /* O [sng] Chunking map string */
 nco_cnk_map_sng_get /* [fnc] Convert chunking map enum to string */

@@ -1988,6 +1988,7 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_dbg.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_dmn_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_fl_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_flt.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_grp_trv.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_grp_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_kd.o) \

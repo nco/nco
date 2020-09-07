@@ -35,6 +35,7 @@
 #include "nco_dbg.h" /* Debugging */
 #include "nco_dmn_utl.h" /* Dimension utilities */
 #include "nco_fl_utl.h" /* File manipulation */
+#include "nco_flt.h" /* Compression filters */
 #include "nco_grp_trv.h" /* Group traversal */
 #include "nco_grp_utl.h" /* Group utilities */
 #include "nco_kd.h" /* K-d tree geometric data structure */

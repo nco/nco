@@ -701,10 +701,7 @@ main(int argc,char **argv)
       } /* !fix_rec_dmn */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"fl_prn") || !strcmp(opt_crr,"file_print") || !strcmp(opt_crr,"prn_fl") || !strcmp(opt_crr,"print_file")) fl_prn=(char *)strdup(optarg);
-      if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"filter")){
-	flt_sng=(char *)strdup(optarg);
-        if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Requested filter string = %s\n",nco_prg_nm_get(),flt_sng);
-      } /* !flt_sng */
+      if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"filter")) flt_sng=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"fmt_val") || !strcmp(opt_crr,"val_fmt") || !strcmp(opt_crr,"value_format")) fmt_val=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
@@ -1096,6 +1093,9 @@ main(int argc,char **argv)
   (void)nco_bld_trv_tbl(in_id,trv_pth,lmt_nbr,lmt_arg,aux_nbr,aux_arg,MSA_USR_RDR,FORTRAN_IDX_CNV,grp_lst_in,grp_lst_in_nbr,var_lst_in,xtr_nbr,EXTRACT_ALL_COORDINATES,GRP_VAR_UNN,GRP_XTR_VAR_XCL,EXCLUDE_INPUT_LIST,EXTRACT_ASSOCIATED_COORDINATES,EXTRACT_CLL_MSR,EXTRACT_FRM_TRM,nco_pck_plc_nil,&flg_dne,trv_tbl);
 
   if(ALPHABETIZE_OUTPUT) trv_tbl_srt(srt_mth,trv_tbl);
+
+  /* [fnc] Parse filter string and exit */
+  if(flt_sng) nco_flt_prs(flt_sng);
 
   /* [fnc] Print extraction list and exit */
   if(LST_XTR) nco_xtr_lst(trv_tbl);

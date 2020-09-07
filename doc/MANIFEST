@@ -260,6 +260,8 @@ nco/src/nco/nco_dmn_utl.c
 nco/src/nco/nco_dmn_utl.h
 nco/src/nco/nco_fl_utl.c
 nco/src/nco/nco_fl_utl.h
+nco/src/nco/nco_flt.c
+nco/src/nco/nco_flt.h
 nco/src/nco/nco_getopt.c
 nco/src/nco/nco_getopt.h
 nco/src/nco/nco_grp_trv.c

@@ -51,6 +51,9 @@
 #ifdef NC_HAVE_META_H
 # include <netcdf_meta.h> /* NC_VERSION_..., HAVE_NC_RENAME_GRP */	 
 #endif /* !NC_HAVE_META_H */
+#if NC_LIB_VERSION >= 474
+# include <netcdf_filter.h> /* netCDF filters */	 
+#endif /* !4.7.4 */
 #ifdef ENABLE_MPI
 # include <mpi.h> /* MPI definitions */
 # include <netcdf_par.h> /* Parallel netCDF definitions */
@@ -59,7 +62,7 @@
 /* Personal headers */
 #include "nco_typ.h" /* Type definitions, opaque types */
 
-/* NB: 
+/* NB:
    nco_netcdf.h does #include nco_typ.h which #defines some forward-compatibility tokens
    nco_netcdf.h does not #include nco.h which #defines some forward-compatibility tokens
    This barrier helps segregate NCO from wrappers
@@ -501,6 +504,7 @@ int nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,
 int nco_def_var_chunking(const int nc_id,const int var_id,const int srg_typ,const size_t * const cnk_sz);
 int nco_def_var_deflate(const int nc_id,const int var_id,const int shuffle,const int deflate,const int dfl_lvl);
 int nco_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int *prm_lst);
+int nco_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const unsigned int * const prm_lst);
 int nco_def_var_fletcher32(const int nc_id,const int var_id,const int chk_typ);
 int nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type * const var_typ,int * const dmn_nbr,int * const dmn_id,int * const att_nbr);
 int nco_inq_var_chunking(const int nc_id,const int var_id,int * const srg_typ,size_t * const cnk_sz);
@@ -509,6 +513,9 @@ int nco_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ);
 int nco_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val);
 int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
 int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
+int nco_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst);
+int nco_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
+int nco_var_filter_remove(const int nc_id,const int var_id,const unsigned int flt_id);
 int nco_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
 int nco_inq_var_packing(const int nc_id,const int var_id,int * const packing);
 int nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id);
@@ -575,16 +582,26 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
 
   /* 20180923: netcdf_mem.h always contains nc_open_mem()
      nco_create_mem(), nco_open_memio(), nco_close_memio(), NC_memio, and NC_MEMIO_LOCKED introduced in netcdf_mem.h versions 4.6.2 */
-#if NC_LIB_VERSION < 462 
+#if NC_LIB_VERSION < 462
   int nc_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id);
   int nc_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int * const nc_id);
   int nc_close_memio(const int nc_id,NC_memio * const info);
-#endif /* 4.6.2 */
+#endif /* !4.6.2 */
 
-#if NC_LIB_VERSION < 460 
+#if NC_LIB_VERSION < 460
   int nc_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm_lst);
   int nc_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
-#endif /* 4.6.0 */
+#endif /* !4.6.0 */
+
+#if NC_LIB_VERSION < 474
+  int nc_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst);
+  int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
+  int nc_var_filter_remove(const int nc_id,const int var_id,const unsigned int flt_id);
+#endif /* !4.7.4 */
+
+#if NC_LIB_VERSION < 480
+  int nc_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const unsigned int * const prm_lst);
+#endif /* !4.8.0 */
 
   /* Begin netCDF4 stubs */
 #ifndef HAVE_NETCDF4_H

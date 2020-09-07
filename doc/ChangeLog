@@ -1,5 +1,17 @@
 2020-09-07  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.5-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha02: Aquashavasana';git push
+ 	git tag -a 4.9.5-alpha02 -m 'nco_flt.[ch], compression filter stubs';git push --tags
+
+ 	* Add nco_def_var_filterx() wrapper for netCDF 4.8.0+
+
+ 	* Add nco_inq_var_filterids(), nco_inq_var_filter_info(), nco_inq_var_filter_remove() wrappers for netCDF 4.7.4+
+
+	* Add nco_flt.c, nco_flt.h for compression filter utilities
+
+	* ncclimo/ncremap add future-compatible clauses for andes+chrysalis
+
 	* ncks add --flt and --filter options to provide filter string
 
 	* Add solution to HDF5 errors caused by no HDF5_PLUGIN_PATH environment variable

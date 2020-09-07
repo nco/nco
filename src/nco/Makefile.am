@@ -79,6 +79,7 @@ nco_ctl.h \
 nco_dbg.h \
 nco_dmn_utl.h \
 nco_fl_utl.h \
+nco_flt.h \
 nco_grp_utl.h \
 nco_grp_trv.h \
 nco_lmt.h \
@@ -146,6 +147,7 @@ nco_ctl.c \
 nco_dbg.c \
 nco_dmn_utl.c \
 nco_fl_utl.c \
+nco_flt.c \
 nco_grp_utl.c \
 nco_grp_trv.c \
 nco_kd.c \
