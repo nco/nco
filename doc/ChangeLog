@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha02: Aquashavasana';git push
  	git tag -a 4.9.5-alpha02 -m 'nco_flt.[ch], compression filter stubs';git push --tags
 
+	* Protect pragma omp simd with compiler-version ifdef's for GCC	and Clang
+
  	* Add nco_def_var_filterx() wrapper for netCDF 4.8.0+
 
  	* Add nco_inq_var_filterids(), nco_inq_var_filter_info(), nco_inq_var_filter_remove() wrappers for netCDF 4.7.4+
