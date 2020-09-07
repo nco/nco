@@ -2026,12 +2026,12 @@ int nco_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_i
 
 int nco_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const unsigned int * const prm_lst)
 {
-  /* Purpose: Wrapper for nc_def_var_filter() */
+  /* Purpose: Wrapper for nc_def_var_filterx() */
   int rcd;
   rcd=nc_def_var_filterx(nc_id,var_id,flt_nm,prm_nbr,prm_lst);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_filterx()");
   return rcd;
-} /* end nco_def_var_filter() */
+} /* end nco_def_var_filterx() */
 
 int
 nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_typ,int * const dmn_nbr,int * const dmn_id,int * const att_nbr)
