@@ -1,6 +1,8 @@
 2020-09-07  Charlie Zender  <zender@uci.edu>
 
-	* Add solution to HDF5 errors cause by no explicitly set HDF5_PLUGIN_PATH
+	* ncks add --flt and --filter options to provide filter string
+
+	* Add solution to HDF5 errors caused by no HDF5_PLUGIN_PATH environment variable
 
 2020-09-05  Charlie Zender  <zender@uci.edu>
 

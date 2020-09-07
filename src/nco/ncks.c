@@ -139,6 +139,7 @@ main(int argc,char **argv)
   char *fl_prn=NULL; /* [sng] Formatted text output file */
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
+  char *flt_sng=NULL; /* [sng] Filter string */
   char *fmt_val=NULL; /* [sng] Format string for variable values */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL; /* [sng] String representation of current long-option name */
@@ -452,6 +453,8 @@ main(int argc,char **argv)
     {"file_print",required_argument,0,0}, /* [sng] Formatted text output file */
     {"prn_fl",required_argument,0,0}, /* [sng] Formatted text output file */
     {"print_file",required_argument,0,0}, /* [sng] Formatted text output file */
+    {"flt",required_argument,0,0}, /* [sng] Filter string */
+    {"filter",required_argument,0,0}, /* [sng] Filter string */
     {"fmt_val",required_argument,0,0}, /* [sng] Format string for variable values */
     {"val_fmt",required_argument,0,0}, /* [sng] Format string for variable values */
     {"value_format",required_argument,0,0}, /* [sng] Format string for variable values */
@@ -698,6 +701,10 @@ main(int argc,char **argv)
       } /* !fix_rec_dmn */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
       if(!strcmp(opt_crr,"fl_prn") || !strcmp(opt_crr,"file_print") || !strcmp(opt_crr,"prn_fl") || !strcmp(opt_crr,"print_file")) fl_prn=(char *)strdup(optarg);
+      if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"filter")){
+	flt_sng=(char *)strdup(optarg);
+        if(nco_dbg_lvl >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Requested filter string = %s\n",nco_prg_nm_get(),flt_sng);
+      } /* !flt_sng */
       if(!strcmp(opt_crr,"fmt_val") || !strcmp(opt_crr,"val_fmt") || !strcmp(opt_crr,"value_format")) fmt_val=(char *)strdup(optarg);
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
@@ -1472,6 +1479,7 @@ close_and_free:
     /* ncks-specific memory */
     if(fl_bnr) fl_bnr=(char *)nco_free(fl_bnr);
     if(fl_prn) fl_prn=(char *)nco_free(fl_prn);
+    if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     if(rec_dmn_nm) rec_dmn_nm=(char *)nco_free(rec_dmn_nm); 
     /* NCO-generic clean-up */
     /* Free individual strings/arrays */
