@@ -18,7 +18,9 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
-#include <netcdf_filter.h> /* netCDF filter definitions */
+#if NC_LIB_VERSION >= 474
+# include <netcdf_filter.h> /* netCDF filter definitions */
+#endif /* !4.7.4 */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */
