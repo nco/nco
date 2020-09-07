@@ -286,7 +286,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		  flt_id=0;
 		  prm_nbr=0;
 		} /* !rcd */
-	      }else{ /* !netCDF 4.7.4 || 4.8.0 */
+	      }else{ /* !netCDF < 4.7.4 || >= 4.8.0 */
 		rcd=nco_inq_var_filter(grp_id,var_id,&flt_id,&prm_nbr,NULL);
 	      } /* !netCDF 4.7.4 */
 	      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);

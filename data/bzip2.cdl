@@ -18,7 +18,7 @@ netcdf bzip2 {
     float var(dim0, dim1, dim2, dim3) ;
         var:_Storage = "chunked" ;
         var:_ChunkSizes = 4, 4, 4, 4 ;
-        var:_Filter = "307,9" ;
+        var:_Filter = "307,9" ; // BZIP2, Level 9
         var:_NoFill = "true" ;
 
  data:

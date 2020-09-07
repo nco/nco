@@ -18,8 +18,8 @@ netcdf lz4 {
     float var(dim0, dim1, dim2, dim3) ;
         var:_Storage = "chunked" ;
         var:_ChunkSizes = 4, 4, 4, 4 ;
-//      var:_Filter = "307,9" ; // BZIP2 level 9
-        var:_Filter = "32004,9" ; // LZ4 level 9
+//      var:_Filter = "307,9" ; // BZIP2, Level 9
+        var:_Filter = "32004,9" ; // LZ4, Level 9
         var:_NoFill = "true" ;
 
  data:
