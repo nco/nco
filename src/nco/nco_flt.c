@@ -8,7 +8,7 @@
    3-Clause BSD License with exceptions described in the LICENSE file */
 
 /* Usage:
-   ncks -O -4 -D 4 --cnk_scl=8 ~/nco/data/in.nc ~/foo.nc
+   ncks -O -4 -D 1 --flt='*,32004,1' ~/nco/data/in.nc ~/foo.nc
    ncks -C -m --hdn --cdl ~/foo.nc
 
    Unidata _Filter docs:
@@ -51,5 +51,7 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
     (void)fprintf(stdout,"\n");
   } /* !dbg */
     
+  nco_exit(EXIT_SUCCESS);
+
   return (char *)NULL;
 } /* !nco_flt_prs() */

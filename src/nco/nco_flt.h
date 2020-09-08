@@ -1,6 +1,6 @@
 /* $Header$ */
 
-/* Purpose: Description (definition) of filter functions */
+/* Purpose: Description (definition) of compression filter functions */
 
 /* Copyright (C) 2020--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
@@ -8,7 +8,7 @@
    3-Clause BSD License with exceptions described in the LICENSE file */
 
 /* Usage:
-   #include "nco_cnk.h" *//* Compression filters */
+   #include "nco_flt.h" *//* Compression filters */
 
 #ifndef NCO_FLT_H
 #define NCO_FLT_H
@@ -18,6 +18,12 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
+#ifdef NC_HAVE_META_H
+# include <netcdf_meta.h> /* NC_VERSION_..., HAVE_NC_RENAME_GRP */	 
+#endif /* !NC_HAVE_META_H */
+#ifndef NC_LIB_VERSION
+# define NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH )
+#endif /* !NC_LIB_VERSION */
 #if NC_LIB_VERSION >= 474
 # include <netcdf_filter.h> /* netCDF filter definitions */
 #endif /* !4.7.4 */
@@ -25,6 +31,7 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus

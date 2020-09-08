@@ -183,7 +183,6 @@ else()
   add_definitions(-DNC_LIB_VERSION=360)
 endif()
 
-
 find_path(path_netcdf_mem_h netcdf_mem.h PATHS ${NETCDF_INCLUDE})
 if (path_netcdf_mem_h)
   message("-- Found netcdf_mem.h in: " ${path_netcdf_mem_h})

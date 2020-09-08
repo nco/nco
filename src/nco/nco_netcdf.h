@@ -51,6 +51,9 @@
 #ifdef NC_HAVE_META_H
 # include <netcdf_meta.h> /* NC_VERSION_..., HAVE_NC_RENAME_GRP */	 
 #endif /* !NC_HAVE_META_H */
+#ifndef NC_LIB_VERSION
+# define NC_LIB_VERSION ( NC_VERSION_MAJOR * 100 + NC_VERSION_MINOR * 10 + NC_VERSION_PATCH )
+#endif /* !NC_LIB_VERSION */
 #if NC_LIB_VERSION >= 474
 # include <netcdf_filter.h> /* netCDF filters */	 
 #endif /* !4.7.4 */
