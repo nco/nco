@@ -35,7 +35,7 @@
 
 # Autotools glossary:
 # AC_ARG_ENABLE(foo,...) Create configure option --enable-foo
-# AC_ARG_VAR Add token TKN to environment variables ingested by configure
+# AC_ARG_VAR Add token TKN to influential environment variables ingested by configure, reported by configure --help
 # AC_CHECK_DECL Find token TKN defined in header, define ${flg} accordingly
 # AC_CHECK_FUNC Find fnc_nm() in libXXX.a, define ${flg} accordingly
 # AC_CHECK_HEADER Find XXX.h and define HAVE_XXX_H
@@ -236,8 +236,8 @@ echo "################################"
 
 # Begin mandatory link test with libnetcdf.a
 # Make precious variables for ./configure --help
-AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
-AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
+AC_ARG_VAR([NETCDF_INC],[Directory with netCDF headers (e.g., netcdf.h)])
+AC_ARG_VAR([NETCDF_LIB],[Directory with netCDF libraries (e.g., libnetcdf.a)])
 
 # User-specified netCDF locations, if any, take precedence
 if test "${NETCDF_ROOT}"; then
@@ -277,7 +277,7 @@ AC_ARG_ENABLE(netcdf4,AS_HELP_STRING([--enable-netcdf4],[Enable netCDF Version 4
 if test "x${enable_netcdf4}" = 'xno' ; then
     AC_ARG_ENABLE(netcdf-4,AS_HELP_STRING([--enable-netcdf-4],[Enable netCDF Version 4 features (same as enable-netcdf4) [default=yes]]),enable_netcdf4=${enableval},enable_netcdf4=yes)  
 fi # !netCDF4
-AC_ARG_VAR([NETCDF_ROOT],[Root of netCDF4 installation] (compile-time))
+AC_ARG_VAR([NETCDF_ROOT],[Root directory of netCDF4 installation (contains bin, include, lib)])
 
 # Test if user set NETCDF_ROOT and it exists
 if test "x${enable_netcdf4}" = 'xyes'; then
@@ -518,7 +518,7 @@ fi
 
 # Begin i18n
 # i18n support (experimental, for future use)
-AC_ARG_VAR(I18N_SHARE,Root of internationalization (i18n) locale directories (run-time))
+AC_ARG_VAR([I18N_SHARE],[Root of internationalization (i18n) locale directories (used at run-time)])
 # Add user-specified netCDF locations, if any, else add /usr/local/ locations if they exist
 if test "${I18N_SHARE}"; then
     if test -d "${I18N_SHARE}"; then
@@ -560,79 +560,6 @@ fi
 # If --enable-nco_cplusplus, compile NCO C++ interface library
 AC_ARG_ENABLE(nco_cplusplus,AS_HELP_STRING([--enable-nco_cplusplus],[Build NCO C++ interface library [default=yes]]),enable_nco_cxx=${enableval},enable_nco_cxx=yes)
 # End nco_c++
-
-echo "##################################################"
-echo "# Testing for ESMF support (only for developers) #"
-echo "##################################################"
-# Begin ESMF
-
-# Begin mandatory link test with libnetcdf.a
-# Make precious variables for ./configure --help
-AC_ARG_VAR(ESMF_INC,Location of ESMF headers (compile-time))
-AC_ARG_VAR(ESMF_LIB,Location of ESMF library (compile-time))
-
-# NB: Desirable for ESMF flags to precede netCDF flags so configure does not look in ESMF location for netCDF
-# Store pre-ESMF LIBS value to restore from later
-nco_LIBS_no_ESMF="${LIBS}"
-nco_CPPFLAGS_no_ESMF="${CPPFLAGS}"
-AC_ARG_ENABLE(esmf,AS_HELP_STRING([--enable-esmf],[Build-in ESMF support for integrated (instead of off-line) regridding. WARNING: Development code = Unsupported (and not necessary for regridding! Dragons lurk here.) [default=no]]),enable_esmf=${enableval},enable_esmf=no)
-if test "${enable_esmf}" != 'yes'; then
-    enable_esmf='no'
-fi
-
-# Check for ESMF libraries unless told not to
-# Linking to ESMF library requires six more libraries to fully resolve on Linux:
-# -lesmf -lrt -lgfortran -ldl -lnetcdff -lnetcdf_c++
-if test "${enable_esmf}" != 'no'; then
-    if test "${ESMF_INC}"; then
-	CPPFLAGS="${CPPFLAGS} -I${ESMF_INC}"
-    else
-	ESMF_ROOT='/usr/local'
-	ESMF_INC="${ESMF_ROOT}/include"
-	ESMF_INC_ARG="-I${ESMF_INC}/include"
-	CPPFLAGS="${CPPFLAGS} ${ESMF_INC_ARG}"
-    fi
-    if test "${ESMF_LIB}"; then
-	LIBS="${LIBS} -L${ESMF_LIB}"
-    else
-	ESMF_ROOT='/usr/local'
-	ESMF_LIB="${ESMF_ROOT}/lib"
-	LIBS="${LIBS} -L${ESMF_LIB}"
-    fi
-# fxm: make non-fatal code path for when cannot find esmf-config
-    AC_CHECK_LIB([netcdf_c++],[main])
-    AC_CHECK_LIB([netcdff],[main])
-    AC_CHECK_LIB([dl],[main])
-    AC_CHECK_LIB([gfortran],[main])
-# librt.a: Real-time library
-    AC_CHECK_LIB([rt],[main])
-# Most elegant formulation:
-#    AC_CHECK_FUNC([clock_gettime])
-#    if test $ac_cv_func_clock_gettime = no; then
-#	AC_CHECK_LIB(rt, clock_gettime,,
-#		     [AC_MSG_ERROR([librt required but not found])])
-#    fi
-    AC_CHECK_LIB([esmf],[ESMC_Initialize],,enable_esmf=no)
-    AC_MSG_NOTICE([These ESMF library and header tests must succeed for ESMF support:])
-    if test "${ESMF_ROOT}"; then
-	AC_CHECK_FILE([${ESMF_INC}/ESMC.h],AC_DEFINE([HAVE_ESMF_H],1,[Define to 1 if <ESMC.h> is present]),enable_esmf=no)
-    else
-	AC_CHECK_HEADER([ESMC.h],AC_DEFINE([HAVE_ESMF_H],1,[Define to 1 if <ESMC.h> is present]),enable_esmf=no)
-    fi
-    if test "${enable_esmf}" = 'no'; then
-	AC_MSG_WARN([ESMF support disabled (missing/unusable library or header file)])
-	LIBS="${nco_LIBS_no_ESMF}"  
-	CPPFLAGS="${nco_CPPFLAGS_no_ESMF}"
-    elif test "${enable_esmf}" = 'yes'; then
-	AC_DEFINE(ENABLE_ESMF,1,Compile operators with ESMF support)
-	AC_MSG_NOTICE([ESMF support enabled])
-    fi
-fi
-AM_CONDITIONAL(ENABLE_ESMF,[test "${enable_esmf}" = 'yes'])
-#echo "DEBUG: After ESMF tests LIBS = ${LIBS}"
-# This would activate conditional ESMF tests, if there were any
-# AM_CONDITIONAL(TEST_ESMF,[test "${enable_esmf}" = 'yes'])
-# End ESMF
 
 echo "########################################"
 echo "#     Testing for GSL support          #"
@@ -840,7 +767,7 @@ if test "${enable_udunits2}" != 'no'; then
 
 # When empty, utInit() uses environment variable UDUNITS2_PATH, if any (see nco_lmt.c)
 # Thus UDUNITS2_PATH need not be known at compile time
-    AC_ARG_VAR([UDUNITS2_PATH],Root directory of UDUnits2 (normally contains [bin, include, lib, share] subdirectories))
+    AC_ARG_VAR([UDUNITS2_PATH],[Root directory of UDUnits2 (normally contains bin, include, lib, share subdirectories)])
 fi
 
 # This would activate conditional UDUnits2 tests, if there were any
@@ -1328,9 +1255,7 @@ echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
 echo "ENABLE_DAP........... ${enable_dap}"
-echo "ENABLE_ESMF...........${enable_esmf}"
 echo "ENABLE_GSL........... ${enable_gsl}"
-echo "ENABLE_LOGGING....... ${enable_logging}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
 echo "ENABLE_OPENMP........ ${enable_openmp}"
 echo "ENABLE_UDUNITS....... ${enable_udunits}"

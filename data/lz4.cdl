@@ -21,7 +21,15 @@ netcdf lz4 {
 //      var:_Filter = "307,9" ; // BZIP2, Level 9
         var:_Filter = "32004,9" ; // LZ4, Level 9
         var:_NoFill = "true" ;
+ ariables:
 
+ float var(dim0, dim1, dim2, dim3) ;
+ var:_Storage = "chunked" ;
+ var:_ChunkSizes = 4, 4, 4, 4 ;
+ //      var:_Filter = "307,9" ; // BZIP2, Level 9
+ var:_Filter = "32004,9" ; // LZ4, Level 9
+ var:_NoFill = "true" ;
+ 1;95;0cq
  data:
 
 // ncap2 -O -v -s 'defdim("dmn",256);val=array(0,1,$dmn);print(val)' ~/nco/data/in.nc ~/foo.nc;ncks -s "%d, " ~/foo.nc

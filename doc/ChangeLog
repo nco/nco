@@ -1,8 +1,12 @@
-2020-09-07  Charlie Zender  <zender@uci.edu>
+2020-09-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha02: Aquashavasana';git push
- 	git tag -a 4.9.5-alpha02 -m 'nco_flt.[ch], compression filter stubs';git push --tags
+ 	git tag -a 4.9.5-alpha02 -m 'nco_flt.[ch], compression filter stubs, dpr esmf';git push --tags
+
+	* Deprecate configure.ac ESMF options and improve examples
+
+2020-09-07  Charlie Zender  <zender@uci.edu>
 
 	* Protect pragma omp simd with compiler-version ifdef's for GCC	and Clang
 
