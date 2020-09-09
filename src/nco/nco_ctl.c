@@ -32,7 +32,7 @@ nco_cmp_get(void) /* [fnc] Return compiler and version */
   static const char itl_vrs[]=TKN2SNG(__INTEL_COMPILER); // [sng] Compiler version
   if(nco_dbg_lvl_get() >= nco_dbg_std){
     (void)fprintf(stderr,"%s: INFO icc version defined as __INTEL_COMPILER is %s\n",nco_prg_nm_get(),itl_vrs);
-    (void)fprintf(stderr,"%s: INFO icc version defined as \"__INTEL_COMPILER_BUILD_DATE\" is %d\n",nco_prg_nm_get(),__INTEL_COMPILER_BUILD_DATE);
+    (void)fprintf(stderr,"%s: INFO icc version defined as __INTEL_COMPILER_BUILD_DATE is %d\n",nco_prg_nm_get(),__INTEL_COMPILER_BUILD_DATE);
   } /* endif dbg */
 #endif /* !__INTEL_COMPILER */
 #if defined(__GNUC__) && !defined(__clang__) && !defined(__INTEL_COMPILER) && !defined(__PATHCC__) && !defined(PGI_CC)

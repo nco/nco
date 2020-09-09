@@ -764,7 +764,7 @@ int *pl_cnt_vrl_ret){
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined(__INTEL_COMPILER)
-# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,fnc_nm,grd_lon_typ,mem_lst,nbr_tr,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,tree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(bDirtyRats,bSort,grd_lon_typ,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
 #  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,bSort,grd_lon_typ,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
@@ -1205,9 +1205,6 @@ int *pl_cnt_vrl_ret){
     pl_lst_dbg=(poly_sct**)nco_poly_lst_free(pl_lst_dbg, pl_cnt_dbg);
   }
 
-
-
-
   /* concatenate memory list, place results into first member list */
   nco_mem_lst_cat(mem_lst, lcl_thr_nbr);
 
@@ -1215,31 +1212,19 @@ int *pl_cnt_vrl_ret){
   for(idx=0;idx<lcl_thr_nbr;idx++)
     mem_lst[idx].kd_list= (KDPriority*) nco_free(mem_lst[idx].kd_list);
 
-
   *pl_cnt_vrl_ret=mem_lst[0].pl_cnt;
-
-
 
   if(lst_out_typ==1)
     void_lst_vrl=(void**) mem_lst[0].wgt_lst;
   else if( lst_out_typ==2 )
     void_lst_vrl=(void**) mem_lst[0].pl_lst;
 
-
-
   mem_lst=(omp_mem_sct*)nco_free(mem_lst);
-
-
 
   /* REMEMBER the void type can be a wgt_sct** array or a poly_sct** array
    * wgt_sct is a subset of poly_sct - with simple members */
   return void_lst_vrl;
-
-
-
 }
-
-
 
 /* check areas - nb WARNING modifies area in pl_lst_in and pl_lst_out */
 void nco_poly_lst_chk(
@@ -1435,9 +1420,7 @@ int *wgt_cnt_bln_ret) {
   thr_quota_step = thr_quota / 20;
   if (thr_quota_step < 2000)
     thr_quota_step = 2000;
-
-
-
+  
   /* NB: "OpenMP notes" section of nco_rgr.c has detailed discussion of these settings
      Henry, please keep the variables in alphabetical order within a clause and remember to update Intel */
 #ifdef __GNUG__
@@ -1447,12 +1430,12 @@ int *wgt_cnt_bln_ret) {
 # endif /* 480 */
 #endif /* !__GNUC__ */
 #if defined(__INTEL_COMPILER)
-# pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,fnc_nm,grd_lon_typ,max_nbr_vrl,mem_lst,nbr_tr,pl_cnt_in,pl_lst_in,pl_cnt_dbg,pl_lst_dbg,pl_typ,tree,stderr,thr_quota,thr_quota_step,tot_area,tot_nan_cnt,tot_wrp_cnt)
+#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(grd_lon_typ,nbr_tr,pl_typ,tree)
 #else /* !__INTEL_COMPILER */
 # ifdef GXX_OLD_OPENMP_SHARED_TREATMENT
 #  pragma omp parallel for default(none) private(idx,thr_idx) shared(bDirtyRats,grd_lon_typ,max_nbr_vrl,nbr_tr,pl_cnt_dbg,pl_typ,tree,tot_nan_cnt,tot_wrp_cnt)
 # else /* !old g++ */
-#  pragma omp parallel for private(idx, thr_idx) schedule(dynamic, 40) shared(grd_lon_typ, nbr_tr,pl_typ, tree)
+#  pragma omp parallel for private(idx,thr_idx) schedule(dynamic,40) shared(grd_lon_typ,nbr_tr,pl_typ,tree)
 # endif /* !old g++ */
 #endif /* !__INTEL_COMPILER */
   for (idx = 0; idx < pl_cnt; idx++) {
