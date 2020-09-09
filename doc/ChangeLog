@@ -1,5 +1,7 @@
 2020-09-08  Charlie Zender  <zender@uci.edu>
 
+	* nco_cmp_get() result in Intel compiler on MacOSX even if __clang__ defined
+
 	* NCO 4.9.5-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha02: Aquashavasana';git push
  	git tag -a 4.9.5-alpha02 -m 'nco_flt.[ch], compression filter stubs, dpr esmf';git push --tags
