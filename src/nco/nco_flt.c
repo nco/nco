@@ -24,14 +24,26 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
   /* Purpose: Parse user-provided filter string */
   const char fnc_nm[]="nco_flt_prs()";
 
+  char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
+
   size_t prm_idx; /* [idx] Parameter index in list */
   size_t prm_nbr=0L; /* [nbr] Number of filter parameters in list */
 
   unsigned int flt_id=0; /* [id] Filter ID */
-  unsigned int *prm_lst=NULL; /* [sct] List of filter parameters */
-  
+  //unsigned int *prm_lst=NULL; /* [sct] List of filter parameters */
+  unsigned int **prm_lst=NULL; /* [sct] List of filter parameters */
+
+  if(!flt_sng){
+    (void)fprintf(stderr,"%s: ERROR %s reports supplied filter string is empty\n",nco_prg_nm_get(),flt_sng);
+    nco_exit(EXIT_FAILURE);
+  } /* !flt_sng */
+
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Requested filter string = %s\n",nco_prg_nm_get(),flt_sng);
 
+  prm_lst=nco_lst_prs_1D(flt_sng,",",&prm_nbr);
+  flt_id=(unsigned short int)strtoul(prm_lst[0],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+  if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+  
   /* Use netCDF-provided helper function to parse user-provided filter request 
      EXTERNL int NC_parsefilterspec(const char* txt, int format, NC_Filterspec** specp);
      int NC_parsefilterspec(const char* spec, unsigned int* idp, size_t* nparamsp, unsigned int** paramsp);
@@ -55,3 +67,20 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 
   return (char *)NULL;
 } /* !nco_flt_prs() */
+
+const char * /* O [sng] String describing latitude grid-type */
+nco_flt_sng_get /* [fnc] Convert compression filter enum to string */
+(const nco_flt_typ_enm nco_flt_typ) /* I [enm] Compression filter type */
+{
+  /* Purpose: Convert compression grid-type enum to descriptive string */
+  switch(nco_flt_typ){
+  case nco_flt_nil: return "Filter type is unset"; break;
+  case nco_flt_dfl: return "DEFLATE"; break;
+  case nco_flt_bzp: return "Bzip2"; break;
+  case nco_flt_lz4: return "LZ4"; break;
+  case nco_flt_bgr: return "Bit Grooming"; break;
+  case nco_flt_dgr: return "Digit Rounding"; break;
+  case nco_flt_btr: return "Bit Rounding"; break;
+  default: nco_dfl_case_generic_err(); break;
+  } /* end switch */
+} /* !nco_flt_sng_get() */

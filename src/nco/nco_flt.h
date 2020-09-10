@@ -34,14 +34,32 @@
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 
+/* Filters types that NCO knows internally: 
+   Convert string to filter enum in nco_flt_typ_set() */
+typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
+  nco_flt_nil=0, /* 0 [enm] Filter type is unset */
+  nco_flt_dfl=1, /* 1 [enm] DEFLATE */
+  nco_flt_bzp=2, /* 2 [enm] Bzip2 */
+  nco_flt_lz4=3, /* 3 [enm] LZ4 */
+  nco_flt_bgr=4, /* 4 [enm] Bit Grooming */
+  nco_flt_dgr=5, /* 5 [enm] Digit Rounding */
+  nco_flt_btr=6, /* 6 [enm] Bit Rounding */
+} nco_flt_typ_enm; /* end nco_flt_typ_enm */
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
 const char * /* O [sng] Parsed Filter string */
 nco_flt_prs /* [fnc] Parse user-provided filter string */
-(const char * flt_sng); /* I [sng] Filter string */
+(const char * flt_sng, /* I [sng] User-provided filter string */
+ const unsigned int *flt_id, /* O [enm] Compression filter ID */
+ const nco_flt_typ_enm *nco_flt_typ); /* O [enm] Compression filter type */
   
+const char * /* O [sng] Filter string */
+nco_flt_sng_get /* [fnc] Convert compression filter enum to string */
+(const nco_flt_typ_enm nco_flt_typ); /* I [enm] Compression filter type */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
