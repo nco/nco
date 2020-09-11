@@ -1,5 +1,7 @@
 2020-09-10  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo make dec_md option scd==djf and sdd=jfd synonyms
+
 	* Add dr.cdl to test DigitRounding quantization
 
 2020-09-09  Charlie Zender  <zender@uci.edu>

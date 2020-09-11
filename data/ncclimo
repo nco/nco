@@ -546,7 +546,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-5${fnt_nrm}          Output file format 64BIT_DATA (netCDF3/PnetCDF CDF5) [${fnt_tlc}fl_fmt, file_format=64bit_data${fnt_nrm}]"
     echo "${fnt_rvr}-6${fnt_nrm}          Output file format 64BIT_OFFSET (netCDF3 64bit CDF2) [${fnt_tlc}fl_fmt, file_format=64bit_offset${fnt_nrm}]"
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
-    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}dec_md${fnt_nrm}   December mode (default ${fnt_bld}${dec_md}${fnt_nrm}) [${fnt_tlc}dec_md, dcm_md, december_mode, dec_mode${fnt_nrm}]"
+    echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}dec_md${fnt_nrm}   December mode (default ${fnt_bld}${dec_md}${fnt_nrm}) [${fnt_tlc}dec_md, dcm_md, december_mode, dec_mode${fnt_nrm}] [${fnt_tlc}scd,djf | sdd,jfd${fnt_nrm}]"
     echo " ${fnt_bld}--amwg_lnk${fnt_nrm} Link E3SM-climo to AMWG-climo filenames [${fnt_tlc}amwg_links, AMWG_link${fnt_nrm}]"
     echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}] [${fnt_tlc}ann | dly | hfc | hfs | mth${fnt_nrm}]"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate input names or to name HFC output (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
@@ -667,7 +667,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	5) fl_fmt='5' ;; # File format
 	6) fl_fmt='6' ;; # File format
 	7) fl_fmt='7' ;; # File format
-	a) dec_md="${OPTARG}" ;; # December mode
+	a) dec_md_usr="${OPTARG}" ;; # December mode
 	C) clm_md_usr="${OPTARG}" ;; # Climatology mode
 	c) caseid="${OPTARG}" ;; # CASEID
 	d) dbg_lvl="${OPTARG}" ;; # Debugging level
@@ -869,6 +869,13 @@ fi # !yr_srt_prv extended climo
 if [ -n "${mdl_nm_usr}" ]; then 
     mdl_nm="${mdl_nm_usr}"
 fi # !mdl_nm_usr
+if [ -n "${dec_md_usr}" ]; then 
+    if [ "${dec_md_usr}" = 'djf' ] || [ "${dec_md_usr}" = 'DJF' ] || [ "${dec_md_usr}" = 'scd' ] || [ "${dec_md_usr}" = 'seasonally_contiguous_december' ] ; then
+	dec_md='scd'
+    elif [ "${dec_md_usr}" = 'jfd' ] || [ "${dec_md_usr}" = 'JFD' ] || [ "${dec_md_usr}" = 'sdd' ] || [ "${dec_md_usr}" = 'seasonally_discontiguous_december' ] ; then
+	dec_md='sdd'
+    fi # !clm_md_usr
+fi # !dec_md_usr
 if [ -n "${clm_md_usr}" ]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are piped or positional
     if [ "${clm_md_usr}" = 'ann' ] || [ "${clm_md_usr}" = 'annual' ] || [ "${clm_md_usr}" = 'yearly' ] || [ "${clm_md_usr}" = 'year' ] ; then
