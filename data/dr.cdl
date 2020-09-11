@@ -2,8 +2,9 @@
 
 // Purpose: Test netCDF filters with DigitRounding compression
 
-// Generate netCDF file with:
+// Generate netCDF file (Shared filter library for DigitRounding must be installed and loadable) with:
 // ncgen -k netCDF-4 -b -o ~/nco/data/dr.nc ~/nco/data/dr.cdl
+// ncks --hdn ~/nco/data/dr.nc
 
 netcdf dr {
 
@@ -22,6 +23,7 @@ netcdf dr {
 //        var:_Filter = "32004,9" ; // LZ4, Level 9
         var:_Filter = "47987,4" ; // DigitRound, NSD 4
         var:_NoFill = "true" ;
+        var:_FillValue = 255.0f ;
 
  data:
 

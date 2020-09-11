@@ -1,3 +1,7 @@
+2020-09-11  Charlie Zender  <zender@uci.edu>
+
+	* Add _FillValue to filter test datasets
+
 2020-09-10  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo make dec_md option scd==djf and sdd=jfd synonyms

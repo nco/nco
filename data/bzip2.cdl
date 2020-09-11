@@ -2,8 +2,13 @@
 
 // Purpose: Test netCDF filters with BZIP2 compression
 
-// Generate netCDF file with:
+// Generate and test netCDF file (CCR with Bzip2 must be installed and loadable) with:
 // ncgen -k netCDF-4 -b -o ~/nco/data/bzip2.nc ~/nco/data/bzip2.cdl
+// ncdump -h -s ~/nco/data/bzip2.nc
+// ncks --hdn ~/nco/data/bzip2.nc
+
+// Test CCR:
+// 
 
 netcdf bzip2 {
 
@@ -20,6 +25,7 @@ netcdf bzip2 {
         var:_ChunkSizes = 4, 4, 4, 4 ;
         var:_Filter = "307,9" ; // BZIP2, Level 9
         var:_NoFill = "true" ;
+        var:_FillValue = 255.0f ;
 
  data:
 

@@ -2,8 +2,10 @@
 
 // Purpose: Test netCDF filters with LZ4 compression
 
-// Generate netCDF file with:
+// Generate and test netCDF file (CCR with LZ4 must be installed and loadable) with:
 // ncgen -k netCDF-4 -b -o ~/nco/data/lz4.nc ~/nco/data/lz4.cdl
+// ncdump -h -s ~/nco/data/lz4.nc
+// ncks --hdn ~/nco/data/lz4.nc
 
 netcdf lz4 {
 
@@ -20,7 +22,9 @@ netcdf lz4 {
         var:_ChunkSizes = 4, 4, 4, 4 ;
 //      var:_Filter = "307,9" ; // BZIP2, Level 9
         var:_Filter = "32004,9" ; // LZ4, Level 9
+//        var:_Filter = "47987,4" ; // DigitRound, NSD 4
         var:_NoFill = "true" ;
+        var:_FillValue = 255.0f ;
 
  data:
 
