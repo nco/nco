@@ -1,3 +1,9 @@
+2020-09-14  Charlie Zender  <zender@uci.edu>
+
+	* ncks nco_prn_att() fix printing of multi-element filter parameter lists
+
+	* Add bgr.cdl and zstd.cdl to test BitGrooming and Zstandard filters
+
 2020-09-11  Charlie Zender  <zender@uci.edu>
 
 	* Add _FillValue to filter test datasets

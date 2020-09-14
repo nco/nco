@@ -5200,6 +5200,12 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
       int dfl_lvl_in; /* [enm] Deflate level [0..9] */
       int shuffle; /* [flg] Turn-on shuffle filter */
       rcd=nco_inq_var_deflate(grp_in_id,var_in_id,&shuffle,&deflate,&dfl_lvl_in);
+
+      // 20200914
+      //      if(NC_LIB_VERSION >= 474){
+      //	int nco_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst)
+      //} /* !NC_LIB_VERSION */
+    
       /* Copy original deflation settings */
       if(deflate || shuffle) (void)nco_def_var_deflate(grp_out_id,var_out_id,shuffle,deflate,dfl_lvl_in);
       /* Overwrite HDF Lempel-Ziv compression level, if requested */

@@ -365,7 +365,6 @@ else()
   message("${color_magenta}-- Disabling GSL support${color_reset}")
 endif ()
 
-
 #//////////////////////////
 #detect optional dependencies
 #//////////////////////////

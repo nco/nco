@@ -52,9 +52,9 @@ extern "C" {
 
 const char * /* O [sng] Parsed Filter string */
 nco_flt_prs /* [fnc] Parse user-provided filter string */
-(const char * flt_sng, /* I [sng] User-provided filter string */
- const unsigned int *flt_id, /* O [enm] Compression filter ID */
- const nco_flt_typ_enm *nco_flt_typ); /* O [enm] Compression filter type */
+(const char * flt_sng); /* I [sng] User-provided filter string */
+ // const unsigned int *flt_id, /* O [enm] Compression filter ID */
+ // const nco_flt_typ_enm *nco_flt_typ); /* O [enm] Compression filter type */
   
 const char * /* O [sng] Filter string */
 nco_flt_sng_get /* [fnc] Convert compression filter enum to string */

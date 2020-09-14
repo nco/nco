@@ -269,7 +269,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      size_t prm_idx;
 	      size_t prm_nbr;
 	      unsigned int *prm_lst=NULL;
-	      char sng_foo[11]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 */
+	      char sng_foo[12]; /* nbr] Maximum printed size of unsigned integer (4294967295) + 1 (for comma) + 1 (for trailing NUL) */
 	      /* 20200418 netCDF 4.7.4 nc_inq_var_filter() is backwards incompatible
 		 https://github.com/Unidata/netcdf-c/issues/1693
 		 As of 4.7.4, nc_inq_var_filter() called on a chunked and shuffled 
@@ -301,7 +301,8 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		val_hdn_sng=(char *)nco_malloc(100L*sizeof(char));
 		sprintf(val_hdn_sng,"%u,",flt_id);
 		for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
-		  (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],prm_idx == prm_nbr ? "," : "");
+		  //if(flt_id == 37373 && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"Filter parameter #%lu of %lu = %u\n",prm_idx,prm_nbr,prm_lst[prm_idx]);
+		  (void)sprintf(sng_foo,"%u%s",prm_lst[prm_idx],(prm_idx == prm_nbr-1) ? "" : ",");
 		  strcat(val_hdn_sng,sng_foo);
 		} /* !prm_idx */
 		att_sz=att[idx].sz=strlen(val_hdn_sng);
