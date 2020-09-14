@@ -23,6 +23,7 @@ netcdf bgr {
 //        var_flt:_Filter = "32004,9" ; // LZ4, Level 9
 //        var_flt:_Filter = "47987,4" ; // DigitRound, NSD 4
         var_flt:_Filter = "37373,4" ; // BitGroom, NSD 4
+	var_flt:_Filter = "1,1" ; // DEFLATE, Level 1
 //        var_flt:_NoFill = "true" ;
         var_flt:_FillValue = 255.0f ;
 

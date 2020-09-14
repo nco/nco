@@ -1,5 +1,7 @@
 2020-09-14  Charlie Zender  <zender@uci.edu>
 
+	* ncks nco_prn_att() test for multiple filters, WARN if found because not handled properly yet
+
 	* ncks nco_prn_att() fix printing of multi-element filter parameter lists
 
 	* Add bgr.cdl and zstd.cdl to test BitGrooming and Zstandard filters

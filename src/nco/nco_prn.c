@@ -56,11 +56,12 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 
   char chr_val; /* [sng] Current character */
 
+  char att_nm[NC_MAX_NAME];
   char att_sng_dlm[NCO_MAX_LEN_FMT_SNG];
   char att_sng_pln[NCO_MAX_LEN_FMT_SNG];
   char src_sng[NC_MAX_NAME];
-  char att_nm[NC_MAX_NAME];
   char val_sng[NCO_ATM_SNG_LNG];
+  char var_nm[NC_MAX_NAME+1L];
 
   double val_dbl;
 
@@ -266,6 +267,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 		 Unfortunately, I do not yet have an actual file or dynamic filter library for testing:
 		 https://www.unidata.ucar.edu/software/netcdf/docs/filters_8md_source.html */
 	      unsigned int flt_id=NC_MAX_UINT;
+	      size_t flt_nbr;
 	      size_t prm_idx;
 	      size_t prm_nbr;
 	      unsigned int *prm_lst=NULL;
@@ -289,9 +291,14 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      }else{ /* !netCDF < 4.7.4 || >= 4.8.0 */
 		rcd=nco_inq_var_filter(grp_id,var_id,&flt_id,&prm_nbr,NULL);
 	      } /* !netCDF 4.7.4 */
-	      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
+	      //if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
 	      if(flt_id != NC_MAX_UINT && flt_id != 0){
-		/* Print _Filter for filtered variables */
+		rcd=nco_inq_var_filterids(grp_id,var_id,&flt_nbr,NULL);
+		if(flt_nbr > 1){
+		  nco_inq_varname(grp_id,var_id,var_nm);
+		  (void)fprintf(stdout,"%s: WARNING %s reports variable %s has %lu filters applied. The proper library functions to correctly handle multiple filters are not present in netCDF version 4.7.4. Stay tuned.\n",nco_prg_nm_get(),fnc_nm,var_nm,(unsigned long)flt_nbr);
+		} /* !flt_nbr */
+		/* Print _Filter for (first filter of) filtered variables */
 		prm_lst=(unsigned int *)nco_malloc(prm_nbr*sizeof(unsigned int));
 		rcd=nco_inq_var_filter(grp_id,var_id,NULL,NULL,prm_lst);
 		idx=att_nbr_ttl++;
