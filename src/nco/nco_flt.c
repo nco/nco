@@ -30,7 +30,6 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
   size_t prm_nbr=0L; /* [nbr] Number of filter parameters in list */
 
   unsigned int flt_id=0; /* [id] Filter ID */
-  //unsigned int *prm_lst=NULL; /* [sct] List of filter parameters */
   unsigned int *prm_lst=NULL; /* [sct] List of filter parameters */
   char **flt_lst; /* [sng] List of filter parameters */
 
@@ -43,7 +42,7 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 
   flt_lst=nco_lst_prs_1D(flt_sng,",",(int *)&prm_nbr);
   flt_id=strtoul(flt_lst[0],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-  if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+  if(*sng_cnv_rcd) nco_sng_cnv_err(flt_lst[0],"strtoul",sng_cnv_rcd);
 
   /* Decrement so prm_nbr counts filter parameters not including filter ID */
   prm_nbr--;
@@ -65,6 +64,7 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
     for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){ 
       prm_lst[prm_idx]=strtoul(flt_lst[prm_idx+1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(flt_lst[prm_idx+1],"strtoul",sng_cnv_rcd);
+
       //(void)fprintf(stdout,"flt_lst[%lu] = %s%s",prm_idx+1,flt_lst[prm_idx+1],prm_idx == prm_nbr ? "" : ", ");
       //(void)fprintf(stdout,"prm_lst[%lu] = %u%s",prm_idx,prm_lst[prm_idx],prm_idx == prm_nbr ? "u" : "u, ");
       (void)fprintf(stdout,"%u%s",prm_lst[prm_idx],prm_idx == prm_nbr-1 ? "u" : "u, ");
