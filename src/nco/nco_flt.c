@@ -17,9 +17,9 @@
 
 #include "nco_flt.h" /* Compression filters */
 
-const char * /* O [sng] Parsed Filter string */
+void
 nco_flt_prs /* [fnc] Parse user-provided filter string */
-(const char * flt_sng) /* I [sng] Filter string */
+(char * const flt_sng) /* I [sng] Filter string */
 {
   /* Purpose: Parse user-provided filter string */
   const char fnc_nm[]="nco_flt_prs()";
@@ -31,7 +31,8 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 
   unsigned int flt_id=0; /* [id] Filter ID */
   //unsigned int *prm_lst=NULL; /* [sct] List of filter parameters */
-  unsigned int **prm_lst=NULL; /* [sct] List of filter parameters */
+  unsigned int *prm_lst=NULL; /* [sct] List of filter parameters */
+  char **flt_lst; /* [sng] List of filter parameters */
 
   if(!flt_sng){
     (void)fprintf(stderr,"%s: ERROR %s reports supplied filter string is empty\n",nco_prg_nm_get(),flt_sng);
@@ -40,9 +41,13 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Requested filter string = %s\n",nco_prg_nm_get(),flt_sng);
 
-  prm_lst=nco_lst_prs_1D(flt_sng,",",&prm_nbr);
-  flt_id=(unsigned short int)strtoul(prm_lst[0],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+  flt_lst=nco_lst_prs_1D(flt_sng,",",(int *)&prm_nbr);
+  flt_id=strtoul(flt_lst[0],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
   if(*sng_cnv_rcd) nco_sng_cnv_err(optarg,"strtoul",sng_cnv_rcd);
+
+  /* Decrement so prm_nbr counts filter parameters not including filter ID */
+  prm_nbr--;
+  prm_lst=(unsigned int *)nco_malloc(sizeof(unsigned int)*prm_nbr);
   
   /* Use netCDF-provided helper function to parse user-provided filter request 
      EXTERNL int NC_parsefilterspec(const char* txt, int format, NC_Filterspec** specp);
@@ -56,19 +61,22 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
   //NC_parsefilterspec(flt_sng,int format, NC_Filterspec** specp);
 
   if(nco_dbg_lvl_get() >= nco_dbg_std){
-    (void)fprintf(stderr,"%s: INFO %s reports parsed filter string: ID = %u, prm_nbr = %lu, ",nco_prg_nm_get(),fnc_nm,flt_id,prm_nbr);
-    for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){
-      (void)fprintf(stdout,"prm_lst[%lu] = %u%s",prm_idx,prm_lst[prm_idx],prm_idx == prm_nbr ? ", " : "");
+    (void)fprintf(stderr,"%s: INFO %s reports parsed filter ID = %u, prm_nbr = %lu: ",nco_prg_nm_get(),fnc_nm,flt_id,prm_nbr);
+    for(prm_idx=0;prm_idx<prm_nbr;prm_idx++){ 
+      prm_lst[prm_idx]=strtoul(flt_lst[prm_idx+1],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(flt_lst[prm_idx+1],"strtoul",sng_cnv_rcd);
+      //(void)fprintf(stdout,"flt_lst[%lu] = %s%s",prm_idx+1,flt_lst[prm_idx+1],prm_idx == prm_nbr ? "" : ", ");
+      //(void)fprintf(stdout,"prm_lst[%lu] = %u%s",prm_idx,prm_lst[prm_idx],prm_idx == prm_nbr ? "u" : "u, ");
+      (void)fprintf(stdout,"%u%s",prm_lst[prm_idx],prm_idx == prm_nbr-1 ? "u" : "u, ");
     } /* !prm_idx */
     (void)fprintf(stdout,"\n");
   } /* !dbg */
     
   nco_exit(EXIT_SUCCESS);
 
-  return (char *)NULL;
 } /* !nco_flt_prs() */
 
-const char * /* O [sng] String describing latitude grid-type */
+const char * /* O [sng] String describing compression filter */
 nco_flt_sng_get /* [fnc] Convert compression filter enum to string */
 (const nco_flt_typ_enm nco_flt_typ) /* I [enm] Compression filter type */
 {
@@ -83,4 +91,7 @@ nco_flt_sng_get /* [fnc] Convert compression filter enum to string */
   case nco_flt_btr: return "Bit Rounding"; break;
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
+
+  return (char *)NULL;
+  
 } /* !nco_flt_sng_get() */

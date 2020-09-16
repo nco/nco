@@ -20,10 +20,9 @@ netcdf zstd {
     float var(dim0, dim1, dim2, dim3) ;
         var:_Storage = "chunked" ;
         var:_ChunkSizes = 4, 4, 4, 4 ;
-//      var:_Filter = "307,9" ; // BZIP2, Level 9
-        var:_Filter = "32015,3" ; // Zstandard, Level 9
-//        var:_Filter = "47987,4" ; // DigitRound, NSD 4
-        var:_NoFill = "true" ;
+//        var:_Filter = "32015,3" ; // Zstandard, [-131072 <= level <= 22]
+        var:_Filter = "32015,4294967168" ; // Zstandard, Level -128 (expressed as uint32)
+//	var:_NoFill = "true" ;
         var:_FillValue = 255.0f ;
 
  data:

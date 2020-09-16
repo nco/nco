@@ -50,9 +50,9 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
 extern "C" {
 #endif /* __cplusplus */
 
-const char * /* O [sng] Parsed Filter string */
+void
 nco_flt_prs /* [fnc] Parse user-provided filter string */
-(const char * flt_sng); /* I [sng] User-provided filter string */
+(char * const flt_sng); /* I [sng] User-provided filter string */
  // const unsigned int *flt_id, /* O [enm] Compression filter ID */
  // const nco_flt_typ_enm *nco_flt_typ); /* O [enm] Compression filter type */
   
