@@ -1,3 +1,7 @@
+2020-09-16  Charlie Zender  <zender@uci.edu>
+
+	* nco_flt_prs() understands NC_parsefilterspec() API for non-(unsigned int) parameter types
+
 2020-09-14  Charlie Zender  <zender@uci.edu>
 
 	* ncks nco_prn_att() test for multiple filters, WARN if found because not handled properly yet
