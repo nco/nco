@@ -1,6 +1,12 @@
 2020-09-17  Charlie Zender  <zender@uci.edu>
 
-	* 
+	* NCO 4.9.5-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha03: PurpleAir';git push
+ 	git tag -a 4.9.5-alpha03 -m 'icc, icpc builds; ncks prn flt fix, nco_flt_prs(); ncclimo area_nm, hrz_dmn';git push --tags
+
+	* ncclimo add --area_nm and --hrz_dmn to support datasets with area_p, area_d, ncol_d, lat,lon
+
+	* nco_flt_prs() support all filter-types suffixes except byte
 
 2020-09-16  Charlie Zender  <zender@uci.edu>
 
@@ -25,10 +31,6 @@
 	* Add dr.cdl to test DigitRounding quantization
 
 2020-09-09  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.9.5-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha03: Drishti';git push
- 	git tag -a 4.9.5-alpha03 -m 'icc, icpc;';git push --tags
 
 	* Intel compiler compatibility fully restored
 

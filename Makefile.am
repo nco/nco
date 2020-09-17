@@ -10,6 +10,10 @@ bld_extras = bld/Makefile bld/pvmgetarch bld/nco.spec
 EXTRA_DIST = $(bld_extras)
 ACLOCAL_AMFLAGS = -I m4
 
+# 20200917 Attempt to improve TAG-generation
+ETAGS_ARGS = CMakeLists.txt Makefile.am configure.ac
+TAGS_DEPENDENCIES = CMakeLists.txt Makefile.am configure.ac
+
 test:	tst
 tst:
 	$(MAKE) check
