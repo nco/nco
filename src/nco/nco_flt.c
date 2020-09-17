@@ -9,7 +9,7 @@
 
 /* Usage:
    ncks -O -4 -D 1 --flt='*,32004,1' ~/nco/data/in.nc ~/foo.nc
-   ncks -O -4 -D 1 --flt='32004,1,6,-4,2.5f,-7.3d' ~/nco/data/in.nc ~/foo.nc
+   ncks -O -4 -D 1 --flt='32004,1U,1,-1,1.0f,-1.0d,1UL,-1L,1US,-1S' ~/nco/data/in.nc # Test all input types
    ncks -C -m --hdn --cdl ~/foo.nc
 
    Unidata _Filter docs:
@@ -74,7 +74,7 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 
   /* Initialize u32_nbr before incrementing */
   u32_nbr=0L;
-  char *sfx_lcn=NULL; /* [sng] Location of character type suffix, if any */
+  char *sfx_lcn=NULL; /* [sng] Location of type-suffix first character, if any */
   for(prm_idx=1;prm_idx<=prm_nbr;prm_idx++){ 
     if((sfx_lcn=strchr(prm_lst[prm_idx],'d')) || (sfx_lcn=strchr(prm_lst[prm_idx],'D'))){
       *sfx_lcn='\0';
@@ -91,16 +91,25 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
       ui32p=(unsigned int *)&flt_foo;
       u32_lst[u32_nbr++]=*ui32p;
       /* !float */
-    }else if((sfx_lcn=strchr(prm_lst[prm_idx],'u')) || (sfx_lcn=strchr(prm_lst[prm_idx],'U'))){
+    }else if((sfx_lcn=strchr(prm_lst[prm_idx],'s')) || (sfx_lcn=strchr(prm_lst[prm_idx],'S'))){
       *sfx_lcn='\0';
-      if((sfx_lcn=strchr(prm_lst[prm_idx],'s')) || (sfx_lcn=strchr(prm_lst[prm_idx],'S'))){
+      if((sfx_lcn=strchr(prm_lst[prm_idx],'u')) || (sfx_lcn=strchr(prm_lst[prm_idx],'U'))){
 	*sfx_lcn='\0';
 	unsigned short usht_foo=(unsigned short)strtoul(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtoul",sng_cnv_rcd);
 	ui32p=(unsigned int *)&usht_foo;
 	u32_lst[u32_nbr++]=*ui32p;
 	/* !unsigned short */
-      }else if((sfx_lcn=strchr(prm_lst[prm_idx],'l')) || (sfx_lcn=strchr(prm_lst[prm_idx],'L'))){
+      }else{ 
+	short sht_foo=(short)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
+	ui32p=(unsigned int *)&sht_foo;
+	u32_lst[u32_nbr++]=*ui32p;
+	/* !short */
+      } /* !sfx_lcn */
+    }else if((sfx_lcn=strchr(prm_lst[prm_idx],'l')) || (sfx_lcn=strchr(prm_lst[prm_idx],'L'))){
+      *sfx_lcn='\0';
+      if((sfx_lcn=strchr(prm_lst[prm_idx],'u')) || (sfx_lcn=strchr(prm_lst[prm_idx],'U'))){
 	*sfx_lcn='\0';
 	unsigned long long ulng_lng_foo=(unsigned long long)strtoull(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
 	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtoull",sng_cnv_rcd);
@@ -109,43 +118,36 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 	u32_lst[u32_nbr++]=*(ui32p+1);
 	/* !unsigned long long */
       }else{
-	/* unsigned int */
-	*sfx_lcn='\0';
-	unsigned int uint_foo=(unsigned int)strtoul(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtoul",sng_cnv_rcd);
-	ui32p=(unsigned int *)&uint_foo;
+	long long lng_lng_foo=(long long)strtoll(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+	if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtoll",sng_cnv_rcd);
+	ui32p=(unsigned int *)&lng_lng_foo;
 	u32_lst[u32_nbr++]=*ui32p;
-	/* !unsigned int */
-      } /* !unsigned */
-    }else if((sfx_lcn=strchr(prm_lst[prm_idx],'s')) || (sfx_lcn=strchr(prm_lst[prm_idx],'S'))){
+	u32_lst[u32_nbr++]=*(ui32p+1);
+	/* !long long */
+      } /* !sfx_lcn */
+    }else if((sfx_lcn=strchr(prm_lst[prm_idx],'u')) || (sfx_lcn=strchr(prm_lst[prm_idx],'U'))){
+      /* Explicit unsigned int */
       *sfx_lcn='\0';
-      short sht_foo=(short)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
-      ui32p=(unsigned int *)&sht_foo;
+      unsigned int uint_foo=(unsigned int)strtoul(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
+      if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtoul",sng_cnv_rcd);
+      ui32p=(unsigned int *)&uint_foo;
       u32_lst[u32_nbr++]=*ui32p;
-      /* !short */
-    }else if((sfx_lcn=strchr(prm_lst[prm_idx],'l')) || (sfx_lcn=strchr(prm_lst[prm_idx],'L'))){
-      *sfx_lcn='\0';
-      long long lng_lng_foo=(long long)strtoll(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
-      if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtoll",sng_cnv_rcd);
-      ui32p=(unsigned int *)&lng_lng_foo;
-      u32_lst[u32_nbr++]=*ui32p;
-      u32_lst[u32_nbr++]=*(ui32p+1);
-      /* !long long */
+      /* !unsigned int */
     }else if((sfx_lcn=strchr(prm_lst[prm_idx],'-'))){
+      /* Implicit signed int */
       int int_foo=(int)strtol(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtol",sng_cnv_rcd);
       ui32p=(unsigned int *)&int_foo;
       u32_lst[u32_nbr++]=*ui32p;
       /* !int */
     }else{
+      /* Implicit unsigned int */
       unsigned int uint_foo=(unsigned int)strtoul(prm_lst[prm_idx],&sng_cnv_rcd,NCO_SNG_CNV_BASE10);
       if(*sng_cnv_rcd) nco_sng_cnv_err(prm_lst[prm_idx],"strtoul",sng_cnv_rcd);
       ui32p=(unsigned int *)&uint_foo;
       u32_lst[u32_nbr++]=*ui32p;
       /* !unsigned int */
     } /* !type */
-    
   } /* !prm_idx */
 
   if(nco_dbg_lvl_get() >= nco_dbg_std){

@@ -455,6 +455,8 @@ par_srl='serial' # [sng] Parallelism: serial
 # Defaults for command-line options and some derived variables
 # Modify these defaults to save typing later
 ann_sfx='01-01-00000' # [sng] Annual file suffix (MPAS, e.g., uses '01-01-00000')
+area_nm='area' # [sng] Name of variable containing gridcell area
+hrz_dmn='ncol' # [sng] Name of horizontal dimension(s) (comma-separated, if 2-D, e.g. 'lat,lon')
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 bnr_flg='No' # [sng] Binary method
@@ -493,6 +495,7 @@ fml_nm='' # [sng] Family name (i.e., nickname, e.g., 'amip', 'control', 'experim
 gaa_sng_std="--gaa climo_script=${spt_nm} --gaa climo_command=\"'${cmd_ln}'\" --gaa climo_hostname=${HOSTNAME} --gaa climo_version=${nco_vrs}" # [sng] Global attributes to add
 glb_avg='No' # [sng] Global average timeseries
 hdr_pad='10000' # [B] Pad at end of header section
+hrz_dmn='ncol' # [sng] Name of horizontal dimension(s) (comma-separated, if 2-D, e.g. 'lat,lon')
 hst_nm='h0' # [sng] History volume (e.g., 'h0', 'h1', 'h')
 inp_aut='No' # [sng] Input file list automatically generated
 inp_glb='No' # [sng] Input file list from globbing directory 
@@ -548,6 +551,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-7${fnt_nrm}          Output file format NETCDF4_CLASSIC (netCDF4 classic HDF5) [${fnt_tlc}fl_fmt, file_format=netcdf4_classic${fnt_nrm}]"
     echo "${fnt_rvr}-a${fnt_nrm} ${fnt_bld}dec_md${fnt_nrm}   December mode (default ${fnt_bld}${dec_md}${fnt_nrm}) [${fnt_tlc}dec_md, dcm_md, december_mode, dec_mode${fnt_nrm}] [${fnt_tlc}scd,djf | sdd,jfd${fnt_nrm}]"
     echo " ${fnt_bld}--amwg_lnk${fnt_nrm} Link E3SM-climo to AMWG-climo filenames [${fnt_tlc}amwg_links, AMWG_link${fnt_nrm}]"
+    echo " ${fnt_bld}--area_nm${fnt_nrm}  Area-variable name (default ${fnt_bld}${area_nm}${fnt_nrm}) [${fnt_tlc}area_nm, area_name, area${fnt_nrm}]"
     echo "${fnt_rvr}-C${fnt_nrm} ${fnt_bld}clm_md${fnt_nrm}   Climatology mode (default ${fnt_bld}${clm_md}${fnt_nrm}) [${fnt_tlc}clm_md, climatology_mode, climo_mode${fnt_nrm}] [${fnt_tlc}ann | dly | hfc | hfs | mth${fnt_nrm}]"
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate input names or to name HFC output (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
@@ -560,6 +564,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--fl_fmt${fnt_nrm}   File format (empty is inherited from input) (default ${fnt_bld}${fl_fmt}${fnt_nrm}) [${fnt_tlc}fl_fmt, fmt_out, file_format, format_out${fnt_nrm}]"
     echo " ${fnt_bld}--glb_avg${fnt_nrm}  Global average timeseries (default ${fnt_bld}${glb_avg}${fnt_nrm}) [${fnt_tlc}glb_avg, global_average${fnt_nrm}]"
     echo "${fnt_rvr}-h${fnt_nrm} ${fnt_bld}hst_nm${fnt_nrm}   History volume name (default ${fnt_bld}${hst_nm}${fnt_nrm}) [${fnt_tlc}hst_nm, history_name, history${fnt_nrm}]"
+    echo " ${fnt_bld}--hrz_dmn${fnt_nrm}  Horizontal dimension name(s) (default ${fnt_bld}${hrz_dmn}${fnt_nrm}) [${fnt_tlc}hrz_dmn, dmn_hrz, hrz_dmn_nm, horizontal_dimension${fnt_nrm}]"
     echo "${fnt_rvr}-i${fnt_nrm} ${fnt_bld}drc_in${fnt_nrm}   Input directory (default ${fnt_bld}${drc_in}${fnt_nrm}) [${fnt_tlc}drc_in, in_drc, dir_in, in_dir, input${fnt_nrm}]"
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
@@ -701,14 +706,15 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       # Long options with no argument, no short option counterpart
 	       # Long options with argument, no short option counterpart
 	       # Long options with short counterparts, ordered by short option key
-	       dec_md=?* | dcm_md=? | december_mode=?* | dec_mode=?* ) dec_md="${LONG_OPTARG}" ;; # -a # December mode
+	       area_nm=?* | area_name=?* | area=?* ) area_nm="${LONG_OPTARG}" ;; # # Area-variable name
 	       clm_md=?* | climatology_mode=?* | climo_mode=?* ) clm_md_usr="${LONG_OPTARG}" ;; # -C # Climatology mode
 	       caseid=?* | case_id=?* | case=?* ) caseid="${LONG_OPTARG}" ;; # -c # CASEID
 	       d2f | d2s | dbl_flt | dbl_sgl | double_float ) d2f_flg='Yes'; d2f_opt='--d2f' ;; # # Convert double-precision fields to single-precision
 	       d2f=?* | d2s=?* | dbl_flt=?* | dbl_sgl=?* | double_float=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # D2F
-	       dpf=?* | days_per_file=?* ) dpf="${LONG_OPTARG}" ;; # # Days-per-file
+	       dec_md=?* | dcm_md=? | december_mode=?* | dec_mode=?* ) dec_md="${LONG_OPTARG}" ;; # -a # December mode
 	       dbg_lvl=?* | dbg=?* | debug=?* | debug_level=?* ) dbg_lvl="${LONG_OPTARG}" ;; # -d # Debugging level
 	       dfl_lvl=?* | deflate=?* | dfl=?* ) dfl_lvl="${LONG_OPTARG}" ;; # -L # Deflate level
+	       dpf=?* | days_per_file=?* ) dpf="${LONG_OPTARG}" ;; # # Days-per-file
 	       dpt_fl=?* | mpas_fl=?* | mpas_file=?* | depth_file=?* ) dpt_opt="--dpt_fl=${LONG_OPTARG}" ;; # # Depth file with refBottomDepth for MPAS ocean
 	       yr_end_prv=?* | prv_yr_end=?* | previous_end=?* ) yr_end_prv="${LONG_OPTARG}" ;; # -E # End year previous
 	       yr_end=?* | end_yr=?* | year_end=?* | end_year=?* | end=?* ) yr_end="${LONG_OPTARG}" ;; # -e # End year
@@ -716,14 +722,15 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       hst_nm=?* | history_name=?* | history=?* ) hst_nm="${LONG_OPTARG}" ;; # -h # History tape name
 	       drc_in=?* | in_drc=?* | dir_in=?* | in_dir=?* | input=?* ) drc_in="${LONG_OPTARG}" ;; # -i # Input directory
 	       fl_fmt=?* | fmt_out=?* | file_format=?* | format_out=?* ) fl_fmt="${LONG_OPTARG}" ;; # # Output file format
+	       glb_avg | global_average ) glb_avg='Yes' ;; # # Global average timeseries
+	       glb_avg=?* | global_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Global average timeseries
+	       hrz_dmn=?* | hrz_dmn_nm=?* | dmn_hrz=?* | horizontal_dimension=?* ) hrz_dmn="${LONG_OPTARG}" ;; # # Horizontal dimension name(s)
 	       job_nbr=?* | job_number=?* | jobs=?* ) job_usr="${LONG_OPTARG}" ;; # -j # Job simultaneity
 	       lnk_flg=?* | link_flag=?* ) lnk_flg="${LONG_OPTARG}" ;; # -l # Link E3SM to AMWG name
 	       amwg_link | amwg_links | AMWG_link | AMWG_links ) lnk_flg='Yes' ;; # # Link E3SM to AMWG name
 	       amwg_link=?* | amwg_links=?* | AMWG_link=?* | AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Link E3SM to AMWG name
 	       no_amwg_link | no_amwg_links | no_amwg | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # # Link E3SM to AMWG name
 	       no_amwg_link=?* | no_amwg_links=?* | no_amwg=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM to AMWG name
-	       glb_avg | global_average ) glb_avg='Yes' ;; # # Global average timeseries
-	       glb_avg=?* | global_average=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Global average timeseries
 	       mdl_nm=?* | mdl=?* | model_name=?* | model=?* ) mdl_nm_usr="${LONG_OPTARG}" ;; # -m # Model name
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG} ${nco_opt}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
@@ -1353,7 +1360,7 @@ else # !sbs_flg
 
     if [ "${glb_avg}" = 'Yes' ]; then 
 	echo "${spt_nm}: ERROR Global average functionality is intended for time-series (splitting) mode only. If you would like ${spt_nm} to provide global mean output for other types of climatologies, please talk to Charlie."
-	echo "${spt_nm}: HINT Create global means of climos with, e.g., \"ncwa -w area in.nc out.nc\""
+	echo "${spt_nm}: HINT Create global means of climos with, e.g., \"ncwa -w ${area_nm} in.nc out.nc\""
 	echo "${spt_nm}: HINT See averaging documentation at http://nco.sf.net/nco.html#ncwa"
 	exit 1
     fi # !glb_avg
@@ -2238,11 +2245,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	
     case ${mdl_nm} in
 	# CAM-SE contains area (though does not contain lat,lon until regridded)
-	cam* | eam* ) var_lst_xtn=',area' ;;
+	cam* | eam* ) var_lst_xtn=",${area_nm}' ;;
     esac # !mdl_nm
     if [ "${glb_avg}" = 'Yes' ]; then 
 	# 20191217 Global average timeseries require area variable
-	var_lst_xtn=',area'
+	var_lst_xtn=',${area_nm}'
     fi # !glb_avg
 
     # Populate input file arguments fl_sgm with all files necessary to bracket each segment
@@ -2460,7 +2467,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    
 	    if [ "${glb_avg}" = 'Yes' ]; then 
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
-		    cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w area -a ncol ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
+		    cmd_avg[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncwa -O -w ${area_nm} -a ${hrz_dmn} ${fl_out[${var_idx}]} ${fl_out[${var_idx}]}"
 		    if [ ${dbg_lvl} -ge 1 ]; then
 			echo ${cmd_avg[${var_idx}]}
 		    fi # !dbg

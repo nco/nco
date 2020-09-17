@@ -1,3 +1,7 @@
+2020-09-17  Charlie Zender  <zender@uci.edu>
+
+	* 
+
 2020-09-16  Charlie Zender  <zender@uci.edu>
 
 	* nco_flt_prs() understands NC_parsefilterspec() API for non-(unsigned int) parameter types
