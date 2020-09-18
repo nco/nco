@@ -19,6 +19,7 @@ netcdf bgr {
     int var_int(dim0, dim1, dim2, dim3) ;
         var_int:_Storage = "chunked" ;
         var_int:_ChunkSizes = 4, 4, 4, 4 ;
+	var_int:_Filter = "37373,4" ; // BitGroom, NSD 4
         var_int:_FillValue = 255 ;
 
     float var_flt(dim0, dim1, dim2, dim3) ;

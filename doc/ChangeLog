@@ -1,3 +1,11 @@
+2020-09-18  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.5-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha04: Elderflower';git push
+ 	git tag -a 4.9.5-alpha04 -m '';git push --tags
+
+	* ncclimo brown paper bag fix quoting of area_nm
+
 2020-09-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.5-alpha03 release procedure:

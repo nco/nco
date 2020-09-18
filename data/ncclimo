@@ -2245,11 +2245,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	
     case ${mdl_nm} in
 	# CAM-SE contains area (though does not contain lat,lon until regridded)
-	cam* | eam* ) var_lst_xtn=",${area_nm}' ;;
+	cam* | eam* ) var_lst_xtn=",${area_nm}" ;;
     esac # !mdl_nm
     if [ "${glb_avg}" = 'Yes' ]; then 
 	# 20191217 Global average timeseries require area variable
-	var_lst_xtn=',${area_nm}'
+	var_lst_xtn=",${area_nm}"
     fi # !glb_avg
 
     # Populate input file arguments fl_sgm with all files necessary to bracket each segment
