@@ -3301,10 +3301,10 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
   nco_bool isP_LatCircle=False;
   nco_bool isQ_LatCircle=False;
 
-  /*
+
   double nx1;
   double nx2;
-  */
+
 
 
   char code[]="00";
@@ -3333,10 +3333,10 @@ int nco_rll_intersect(poly_sct *P, poly_sct *Q, poly_sct *R, int *r)
     isP_LatCircle = nco_rll_is_lat_circle(P->shp[a1], P->shp[a]);
     isQ_LatCircle = nco_rll_is_lat_circle(Q->shp[b1], Q->shp[b]);
 
-    /*
+
     nx1 = nco_sph_cross(P->shp[a1], P->shp[a], Pcross);
     nx2 = nco_sph_cross(Q->shp[b1], Q->shp[b], Qcross);
-    */
+
 
     if (isQ_LatCircle) {
 
@@ -3673,6 +3673,8 @@ nco_rll_seg_int(double *p0, double *p1, double *q0, double *q1, double *r0, doub
 nco_bool
 nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0, double *r1, poly_vrl_flg_enm *inflag, char*codes ) {
 
+  char fnc_nm[]="nco_rll_seg_parallel()";
+
   int id;
 
   //char code = '0';
@@ -3751,6 +3753,8 @@ nco_rll_seg_parallel(double *p0, double *p1, double *q0, double *q1, double *r0,
   } else
     codes[0] = '0';
 
+  if(DEBUG_SPH)
+    printf("%s: isP_LatCircle=%d isQ_LatCircle=%d codes=%s\n",  fnc_nm, isP_LatCircle, isQ_LatCircle,  codes );
 
   if(codes[0]!='0')
     return True;
