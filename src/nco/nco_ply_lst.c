@@ -697,7 +697,7 @@ int *pl_cnt_vrl_ret){
   /* just duplicate output list to overlap */
   const char fnc_nm[]="nco_poly_lst_mk_vrl_sph()";
 
-  nco_bool bDirtyRats=True;
+  nco_bool bDirtyRats=False;
   nco_bool bSort=True;
 
 
