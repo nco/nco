@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha04: Elderflower';git push
  	git tag -a 4.9.5-alpha04 -m 'nco_inq_varname() dgn; ncclimo area_nm fix; ncremap nsx fix RLL';git push --tags
 
+	* nco_def_var_filterx() prototype uses char ** not unsigned int *
+
 	* nco_inq_var_filter() error diagnostics
 
 	* Attempt to improve autoconf/automake generation of etags

@@ -1033,14 +1033,14 @@ int nc_var_filter_remove(const int nc_id,const int var_id,const unsigned int flt
 #endif /* !4.7.4 */
 
 #if NC_LIB_VERSION < 480
-int nc_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const unsigned int * const prm_lst)
+int nc_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const char ** const prm_lst)
 {
   /* Purpose: Pseudo-library stub function to create a filter for a variable
      This particular stub routine is only called by netCDF4-enabled code
      when built against a netCDF library that it too old to have the nc_def_var_filterx() function. */
   int rcd;
   const char fnc_nm[]="nc_def_var_filterx()";
-  rcd=NC_NOERR+0*(nc_id+var_id+*flt_nm+prm_nbr+*prm_lst); /* CEWI */
+  rcd=NC_NOERR+0*(nc_id+var_id+*flt_nm+prm_nbr+(int)**prm_lst); /* CEWI */
   (void)fprintf(stdout,"ERROR: %s reports define variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.8.0 (released ~20201001) or later.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   return rcd;
@@ -2024,7 +2024,7 @@ int nco_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_i
   return rcd;
 } /* !nco_def_var_filter() */
 
-int nco_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const unsigned int * const prm_lst)
+int nco_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const char ** const prm_lst)
 {
   /* Purpose: Wrapper for nc_def_var_filterx() */
   int rcd;
