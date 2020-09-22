@@ -276,7 +276,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Personal recipe last used successfully: 20171218
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-cd ~/nco;cmake/clean.sh
+cd ~/nco;cmake/clean
 cd ~/nco/cmake;cmake .. -DCMAKE_INSTALL_PREFIX=${HOME}
 make install
 

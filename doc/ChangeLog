@@ -1,3 +1,7 @@
+2020-09-22  Charlie Zender  <zender@uci.edu>
+
+	* Merge two fixes by Henry for RLL grid intersections, one for edg_typ=sph
+
 2020-09-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.5-alpha04 release procedure:

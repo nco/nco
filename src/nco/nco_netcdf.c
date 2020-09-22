@@ -146,7 +146,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
      Hence we recommend installing NCO without -DNCO_ABORT_ON_ERROR for end users */
   exit(EXIT_FAILURE);
 #endif /* !NCO_ABORT_ON_ERROR */
-} /* end nco_err_exit() */
+} /* !nco_err_exit() */
 
 size_t /* O [B] Native type size */
 nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
@@ -187,7 +187,7 @@ nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return 0;
-} /* end nco_typ_lng() */
+} /* !nco_typ_lng() */
 
 size_t /* O [B] Native type size */
 nco_typ_lng_udt /* [fnc] Convert netCDF type enum to native type size */
@@ -235,7 +235,7 @@ nco_typ_lng_udt /* [fnc] Convert netCDF type enum to native type size */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return 0;
-} /* end nco_typ_lng_udt() */
+} /* !nco_typ_lng_udt() */
 
 const char * /* O [sng] String describing type */
 nco_typ_sng /* [fnc] Convert netCDF type enum to string */
@@ -281,7 +281,7 @@ nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_typ_sng() */
+} /* !nco_typ_sng() */
 
 const char * /* O [sng] Native CDL type */
 cdl_typ_nm /* [fnc] Return string describing native CDL type */
@@ -617,7 +617,7 @@ nco_fmt_sng /* [fnc] Convert netCDF file format enum to string */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_fmt_sng() */
+} /* !nco_fmt_sng() */
 
 const char * /* O [sng] String describing extended file format */
 nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
@@ -666,7 +666,7 @@ nco_fmt_xtn_sng /* [fnc] Convert netCDF extended file format enum to string */
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_fmt_xtn_sng() */
+} /* !nco_fmt_xtn_sng() */
 
 const char * /* O [sng] String describing file format for hidden attributes */
 nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden attributes */
@@ -690,7 +690,7 @@ nco_fmt_hdn_sng /* [fnc] Convert netCDF file format enum to string for hidden at
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_fmt_hdn_sng() */
+} /* !nco_fmt_hdn_sng() */
 
 const char * /* O [sng] String describing endianness for hidden attributes */
 nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attributes */
@@ -709,7 +709,7 @@ nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attribu
 
   /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_ndn_sng() */
+} /* !nco_ndn_sng() */
 
 void
 nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(nc_type) case */
@@ -733,7 +733,7 @@ nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(
   const char fnc_nm[]="nco_dfl_case_nc_type_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal, because each type should have a well-defined action. This error may be triggered by using an NCO built with only netCDF3 functionality to examine a netCDF4 dataset that contains a new atomic type (e.g., NC_INT64).\nHINT: Configure/build NCO with --enable-netCDF4. Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
-} /* end nco_dfl_case_nc_type_err() */
+} /* !nco_dfl_case_nc_type_err() */
 
 void
 nco_dfl_case_generic_err(void) /* [fnc] Print error and exit for illegal switch case */
@@ -743,7 +743,7 @@ nco_dfl_case_generic_err(void) /* [fnc] Print error and exit for illegal switch 
   const char fnc_nm[]="nco_dfl_case_generic_err()";
   (void)fprintf(stdout,"%s: ERROR switch statement fell through to default case, which is unsafe. This generic error handler ensures all switch statements are fully enumerated. Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
-} /* end nco_dfl_case_generic_err() */
+} /* !nco_dfl_case_generic_err() */
 
 void
 nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(nco_prg_id_id) case */
@@ -753,7 +753,7 @@ nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(n
   const char fnc_nm[]="nco_dfl_case_prg_id_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nco_prg_id) statement fell through to default case, which is unsafe. This specific error handler ensures all switch(nco_prg_id) statements are fully enumerated. Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
-} /* end nco_dfl_case_prg_id_err() */
+} /* !nco_dfl_case_prg_id_err() */
 
 void
 nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
@@ -775,7 +775,7 @@ nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
   if(err_ptr[0] == ',') (void)fprintf(stdout,"HINT: Conversion functions like \"%s()\" accept only one number at a time, so comma-separated lists of numbers are invalid. ",sng_cnv_fnc);
   (void)fprintf(stdout,"Exiting...\n");
   nco_err_exit(0,fnc_nm);
-} /* end nco_sng_cnv_err() */
+} /* !nco_sng_cnv_err() */
 
 /* Begin file-level routines */
 int
@@ -790,7 +790,7 @@ nco_create(const char * const fl_nm,const int cmode,int * const nc_id)
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco_create */
+} /* !nco_create */
 
 int
 nco__create(const char * const fl_nm,const int cmode,const size_t sz_ntl,size_t * const bfr_sz_hnt,int * const nc_id)
@@ -804,7 +804,7 @@ nco__create(const char * const fl_nm,const int cmode,const size_t sz_ntl,size_t 
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco__create */
+} /* !nco__create */
 
 int
 nco_open(const char * const fl_nm,const int mode,int * const nc_id)
@@ -818,7 +818,7 @@ nco_open(const char * const fl_nm,const int mode,int * const nc_id)
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco_open */
+} /* !nco_open */
 
 int
 nco__open(const char * const fl_nm,const int mode,size_t * const bfr_sz_hnt,int * const nc_id)
@@ -832,7 +832,7 @@ nco__open(const char * const fl_nm,const int mode,size_t * const bfr_sz_hnt,int 
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco__open */
+} /* !nco__open */
 
 int
 nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
@@ -842,7 +842,7 @@ nco_open_flg(const char * const fl_nm,const int mode,int * const nc_id)
   int rcd;
   rcd=nc_open(fl_nm,mode,nc_id);
   return rcd;
-} /* end nco_open */
+} /* !nco_open */
 
 /* #if NC_LIB_VERSION < 440 */
 #ifndef HAVE_NETCDF_MEM_H
@@ -916,7 +916,7 @@ nco_open_mem(const char * const fl_nm,const int mode,const size_t sz,void * cons
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco_open_mem() */
+} /* !nco_open_mem() */
 
 int
 nco_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int * const nc_id)
@@ -930,7 +930,7 @@ nco_create_mem(const char * const fl_nm,const int mode,const size_t sz_ntl,int *
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco_create_mem() */
+} /* !nco_create_mem() */
 
 int
 nco_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int * const nc_id)
@@ -944,7 +944,7 @@ nco_open_memio(const char * const fl_nm,const int mode,NC_memio * const info,int
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco_open_memio() */
+} /* !nco_open_memio() */
 
 int
 nco_close_memio(const int nc_id,NC_memio * const info)
@@ -958,7 +958,7 @@ nco_close_memio(const int nc_id,NC_memio * const info)
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco_close_memio() */
+} /* !nco_close_memio() */
 
 #if NC_LIB_VERSION < 460
 int nc_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm_lst)
@@ -1060,7 +1060,7 @@ nco_create_par(const char * const fl_nm,const int cmode,MPI_Comm mpi_cmm,MPI_Inf
   rcd=nc_create_par(fl_nm,cmode,mpi_cmm,mpi_nfo,nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_create_par */
+} /* !nco_create_par */
 
 int 
 nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info mpi_nfo,int * const nc_id)
@@ -1071,7 +1071,7 @@ nco_open_par(const char * const fl_nm,const int mode,MPI_Comm mpi_cmm,MPI_Info m
   rcd=nc_open_par(fl_nm,mode,mpi_cmm,mpi_nfo,nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_open_par */
+} /* !nco_open_par */
 
 int 
 nco_var_par_access(const int nc_id,const int var_id,const int par_access)
@@ -1084,7 +1084,7 @@ nco_var_par_access(const int nc_id,const int var_id,const int par_access)
   rcd=nc_var_par_access(nc_id,var_id,par_access);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_var_par_access */
+} /* !nco_var_par_access */
 # endif /* !HAVE_NETCDF4_H */
 
 # ifdef PNETCDF_EXPOSED_API
@@ -1101,7 +1101,7 @@ ncompi_create(MPI_Comm mpi_cmm,const char * const fl_nm,const int cmode,MPI_Info
   rcd=ncmpi_create(mpi_cmm,fl_nm,cmode,mpi_nfo,nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end ncompi_create */
+} /* !ncompi_create */
 int
 ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_Info mpi_nfo,int * const nc_id)
 {
@@ -1111,7 +1111,7 @@ ncompi_open(MPI_Comm mpi_cmm,const char * const fl_nm,const int omode,MPI_Info m
   rcd=ncmpi_open(mpi_cmm,fl_nm,omode,mpi_nfo,nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end ncompi_open */
+} /* !ncompi_open */
 # endif /* !PNETCDF_EXPOSED_API */
 #endif /* !ENABLE_MPI */
 
@@ -1123,7 +1123,7 @@ nco_redef(const int nc_id)
   rcd=nc_redef(nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_redef()");
   return rcd;
-} /* end nco_redef */
+} /* !nco_redef */
 
 int
 nco_set_fill(const int nc_id,const int fill_mode,int * const old_mode)
@@ -1133,7 +1133,7 @@ nco_set_fill(const int nc_id,const int fill_mode,int * const old_mode)
   rcd=nc_set_fill(nc_id,fill_mode,old_mode);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_set_fill()");
   return rcd;
-} /* end nco_set_fill */
+} /* !nco_set_fill */
 
 int
 nco_enddef(const int nc_id)
@@ -1143,7 +1143,7 @@ nco_enddef(const int nc_id)
   rcd=nc_enddef(nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_enddef()");
   return rcd;
-} /* end nco_enddef */
+} /* !nco_enddef */
 
 int /* O [enm] netCDF error code */
 nco__enddef /* [fnc] Wrapper for nc__enddef */
@@ -1160,7 +1160,7 @@ nco__enddef /* [fnc] Wrapper for nc__enddef */
   rcd=nc__enddef(nc_id,hdr_pad,v_align,v_minfree,r_align);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco__enddef()");
   return rcd;
-} /* end nco__enddef */
+} /* !nco__enddef */
 
 int
 nco_sync(const int nc_id)
@@ -1170,7 +1170,7 @@ nco_sync(const int nc_id)
   rcd=nc_sync(nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_sync()");
   return rcd;
-} /* end nco_sync */
+} /* !nco_sync */
 
 int
 nco_abort(const int nc_id)
@@ -1180,7 +1180,7 @@ nco_abort(const int nc_id)
   rcd=nc_abort(nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_abort()");
   return rcd;
-} /* end nco_abort */
+} /* !nco_abort */
 
 int
 nco_close(const int nc_id)
@@ -1256,7 +1256,7 @@ nco_close(const int nc_id)
   rcd=nc_close(nc_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_close */
+} /* !nco_close */
 
 int
 nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * const att_glb_nbr,int * const rec_dmn_id)
@@ -1266,7 +1266,7 @@ nco_inq(const int nc_id,int * const dmn_nbr_fl,int * const var_nbr_fl,int * cons
   rcd=nc_inq(nc_id,dmn_nbr_fl,var_nbr_fl,att_glb_nbr,rec_dmn_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq()");
   return rcd;
-} /* end nco_inq() */
+} /* !nco_inq() */
 
 /* NB: nc_inq_path() introduced in netCDF 4.3.2, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #ifndef HAVE_NC_INQ_PATH
@@ -1308,7 +1308,7 @@ nco_inq_format(const int nc_id,int * const fl_fmt)
   rcd=nc_inq_format(nc_id,fl_fmt);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format()");
   return rcd;
-} /* end nco_inq_format() */
+} /* !nco_inq_format() */
 
   /* NB: nc_inq_format_extended() introduced in netCDF 4.3.1, but NC_LIB_VERSION does not work until netCDF 4.4.0 */
 #ifndef NC_HAVE_INQ_FORMAT_EXTENDED
@@ -1333,7 +1333,7 @@ nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
   rcd=nc_inq_format_extended(nc_id,fl_fmt,mode);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_format_extended()");
   return rcd;
-} /* end nco_inq_format_extended() */
+} /* !nco_inq_format_extended() */
 
 #ifdef HAVE_NETCDF4_H
 int
@@ -1344,7 +1344,7 @@ nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id)
   rcd=nc_inq_ncid(nc_id,grp_nm,grp_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ncid()");
   return rcd;
-} /* end nco_inq_ncid() */
+} /* !nco_inq_ncid() */
 
 int
 nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id)
@@ -1355,7 +1355,7 @@ nco_inq_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id)
   if(rcd == NC_ENOGRP) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ncid()");
   return rcd;
-} /* end nco_inq_ncid_flg() */
+} /* !nco_inq_ncid_flg() */
 #endif /* !HAVE_NETCDF4_H */
 
 int
@@ -1366,7 +1366,7 @@ nco_inq_ndims(const int nc_id,int * const dmn_nbr_fl)
   rcd=nc_inq_ndims(nc_id,dmn_nbr_fl);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_ndims()");
   return rcd;
-} /* end nco_inq_ndims() */
+} /* !nco_inq_ndims() */
 
 int
 nco_inq_nvars(const int nc_id,int * const var_nbr_fl)
@@ -1376,7 +1376,7 @@ nco_inq_nvars(const int nc_id,int * const var_nbr_fl)
   rcd=nc_inq_nvars(nc_id,var_nbr_fl);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_nvars()");
   return rcd;
-} /* end nco_inq_nvars() */
+} /* !nco_inq_nvars() */
 
 int
 nco_inq_natts(const int nc_id,int * const att_glb_nbr)
@@ -1386,7 +1386,7 @@ nco_inq_natts(const int nc_id,int * const att_glb_nbr)
   rcd=nc_inq_natts(nc_id,att_glb_nbr);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_natts()");
   return rcd;
-} /* end nco_inq_natts() */
+} /* !nco_inq_natts() */
 
 int
 nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id)
@@ -1396,7 +1396,7 @@ nco_inq_unlimdim(const int nc_id,int * const rec_dmn_id)
   rcd=nc_inq_unlimdim(nc_id,rec_dmn_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdim()");
   return rcd;
-} /* end nco_inq_unlimdim() */
+} /* !nco_inq_unlimdim() */
 
 int
 nco_inq_unlimdim_flg(const int nc_id,int * const rec_dmn_id)
@@ -1407,7 +1407,7 @@ nco_inq_unlimdim_flg(const int nc_id,int * const rec_dmn_id)
   if(rcd == NC_EBADDIM) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdim_flg()");
   return rcd;
-} /* end nco_inq_unlimdim_flg() */
+} /* !nco_inq_unlimdim_flg() */
 
 int nco_get_chunk_cache
 (size_t * const sz_byt, /* [B] Raw data chunk cache size */
@@ -1419,7 +1419,7 @@ int nco_get_chunk_cache
   rcd=nc_get_chunk_cache(sz_byt,cnk_nbr_hsh,pmp_fvr_frc);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_chunk_cache()");
   return rcd;
-} /* end nco_get_chunk_cache() */
+} /* !nco_get_chunk_cache() */
 
 int nco_set_chunk_cache
 (const size_t sz_byt, /* [B] Raw data chunk cache size */
@@ -1431,7 +1431,7 @@ int nco_set_chunk_cache
   rcd=nc_set_chunk_cache(sz_byt,cnk_nbr_hsh,pmp_fvr_frc);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_set_chunk_cache()");
   return rcd;
-} /* end nco_set_chunk_cache() */
+} /* !nco_set_chunk_cache() */
 
 /* End File routines */
 
@@ -1444,7 +1444,7 @@ int nco_def_grp(const int nc_id,const char * const grp_nm,int * const grp_id)
   rcd=nc_def_grp(nc_id,grp_nm,grp_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_grp()");
   return rcd;
-} /* end nco_def_grp() */
+} /* !nco_def_grp() */
 
 int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id)
 {
@@ -1454,7 +1454,7 @@ int nco_def_grp_flg(const int nc_id,const char * const grp_nm,int * const grp_id
   if(rcd == NC_ENAMEINUSE) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_grp_flg()");
   return rcd;
-} /* end nco_def_grp_flg() */
+} /* !nco_def_grp_flg() */
 
 #ifndef HAVE_NC_RENAME_GRP
 int
@@ -1488,7 +1488,7 @@ nco_rename_grp(int grp_id,const char * const grp_nm)
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_grp()");
   return rcd;
-} /* end nco_rename_grp() */
+} /* !nco_rename_grp() */
 
 int nco_inq_grpname(const int nc_id,char * const grp_nm)
 {
@@ -1497,7 +1497,7 @@ int nco_inq_grpname(const int nc_id,char * const grp_nm)
   rcd=nc_inq_grpname(nc_id,grp_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grpname()");
   return rcd;
-} /* end nco_inq_grpname() */
+} /* !nco_inq_grpname() */
 
 int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm_full)
 {
@@ -1506,7 +1506,7 @@ int nco_inq_grpname_full(const int nc_id,size_t * grp_nm_lng,char * const grp_nm
   rcd=nc_inq_grpname_full(nc_id,grp_nm_lng,grp_nm_full);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grpname_full()");
   return rcd;
-} /* end nco_inq_grpname_full() */
+} /* !nco_inq_grpname_full() */
 
 int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng)
 {
@@ -1515,7 +1515,7 @@ int nco_inq_grpname_len(const int nc_id,size_t * const grp_nm_lng)
   rcd=nc_inq_grpname_len(nc_id,grp_nm_lng);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grpname_len()");
   return rcd;
-} /* end nco_inq_grpname_len() */
+} /* !nco_inq_grpname_len() */
 
 int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids)
 {
@@ -1524,7 +1524,7 @@ int nco_inq_grps(const int nc_id,int * const grp_nbr,int * const grp_ids)
   rcd=nc_inq_grps(nc_id,grp_nbr,grp_ids);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grps()");
   return rcd;
-} /* end nco_inq_grps() */
+} /* !nco_inq_grps() */
 
 int nco_inq_grp_ncid(const int nc_id,const char * const grp_nm,int * const grp_id)
 {
@@ -1533,7 +1533,7 @@ int nco_inq_grp_ncid(const int nc_id,const char * const grp_nm,int * const grp_i
   rcd=nc_inq_grp_ncid(nc_id,grp_nm,grp_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_ncid()");
   return rcd;
-} /* end nco_inq_grp_ncid() */
+} /* !nco_inq_grp_ncid() */
 
 int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const grp_id)
 {
@@ -1543,7 +1543,7 @@ int nco_inq_grp_ncid_flg(const int nc_id,const char * const grp_nm,int * const g
   if(rcd == NC_ENOGRP) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_ncid()");
   return rcd;
-} /* end nco_inq_grp_ncid() */
+} /* !nco_inq_grp_ncid() */
 
 int nco_inq_grp_full_ncid(const int nc_id,const char * const grp_nm_fll,int * const grp_id)
 {
@@ -1558,7 +1558,7 @@ int nco_inq_grp_full_ncid(const int nc_id,const char * const grp_nm_fll,int * co
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_full_ncid()");
   return rcd;
-} /* end nco_inq_grp_full_ncid() */
+} /* !nco_inq_grp_full_ncid() */
 
 int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int * const grp_id)
 {
@@ -1574,7 +1574,7 @@ int nco_inq_grp_full_ncid_flg(const int nc_id,const char * const grp_nm_fll,int 
   if(rcd == NC_ENOGRP) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_full_ncid()");
   return rcd;
-} /* end nco_inq_grp_full_ncid_flg() */
+} /* !nco_inq_grp_full_ncid_flg() */
 
 int nco_inq_grp_parent(const int nc_id,int * const prn_id)
 {
@@ -1583,7 +1583,7 @@ int nco_inq_grp_parent(const int nc_id,int * const prn_id)
   rcd=nc_inq_grp_parent(nc_id,prn_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_parent()");
   return rcd;
-} /* end nco_inq_grp_parent() */
+} /* !nco_inq_grp_parent() */
 
 int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id)
 {
@@ -1593,7 +1593,7 @@ int nco_inq_grp_parent_flg(const int nc_id,int * const prn_id)
   if(rcd == NC_ENOGRP) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_grp_parent_flg()");
   return rcd;
-} /* end nco_inq_grp_parent_flg() */
+} /* !nco_inq_grp_parent_flg() */
 #endif /* !HAVE_NETCDF4_H */
 /* End Group routines */
 
@@ -1628,7 +1628,7 @@ nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * co
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_def_dim */
+} /* !nco_def_dim */
 
 int
 nco_inq_dimid(const int nc_id,const char * const dmn_nm,int * const dmn_id)
@@ -1643,7 +1643,7 @@ nco_inq_dimid(const int nc_id,const char * const dmn_nm,int * const dmn_id)
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_dimid */
+} /* !nco_inq_dimid */
 
 int
 nco_inq_dimid_flg(const int nc_id,const char * const dmn_nm,int * const dmn_id)
@@ -1654,7 +1654,7 @@ nco_inq_dimid_flg(const int nc_id,const char * const dmn_nm,int * const dmn_id)
   if(rcd == NC_EBADDIM) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimid_flg()");
   return rcd;
-} /* end nco_inq_dimid */
+} /* !nco_inq_dimid */
 
 int
 nco_inq_dim(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
@@ -1672,7 +1672,7 @@ nco_inq_dim(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim()");
   return rcd;
-}/* end nco_inq_dim */
+}/* !nco_inq_dim */
 
 int
 nco_inq_dim_flg(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
@@ -1686,7 +1686,7 @@ nco_inq_dim_flg(const int nc_id,const int dmn_id,char *dmn_nm,long *dmn_sz)
   if(rcd == NC_EBADDIM) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim_flg()");
   return rcd;
-}/* end nco_inq_dim */
+}/* !nco_inq_dim */
 
 int
 nco_inq_dimname(const int nc_id,const int dmn_id,char *dmn_nm)
@@ -1696,7 +1696,7 @@ nco_inq_dimname(const int nc_id,const int dmn_id,char *dmn_nm)
   rcd=nc_inq_dimname(nc_id,dmn_id,dmn_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimname()");
   return rcd;
-} /* end nco_inq_dimname */
+} /* !nco_inq_dimname */
 
 int
 nco_inq_dimlen(const int nc_id,const int dmn_id,long *dmn_sz)
@@ -1709,7 +1709,7 @@ nco_inq_dimlen(const int nc_id,const int dmn_id,long *dmn_sz)
   if(dmn_sz) *dmn_sz=(long)dmn_sz_t;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimlen()");
   return rcd;
-} /* end nco_inq_dimlen */
+} /* !nco_inq_dimlen */
 
 int
 nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
@@ -1723,7 +1723,7 @@ nco_rename_dim(const int nc_id,const int dmn_id,const char * const dmn_nm)
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_dim()");
   return rcd;
-}  /* end nco_inq_rename_dim */
+}  /* !nco_inq_rename_dim */
 
 #ifdef HAVE_NETCDF4_H
 int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int flg_prn)
@@ -1733,7 +1733,7 @@ int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int f
   rcd=nc_inq_dimids(nc_id,dmn_nbr,dmn_ids,flg_prn);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimids()");
   return rcd;
-} /* end nco_inq_dimids() */
+} /* !nco_inq_dimids() */
 
 int
 nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult)
@@ -1743,7 +1743,7 @@ nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult)
   rcd=nc_inq_unlimdims(nc_id,nbr_dmn_ult,dmn_ids_ult);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nc_inq_unlimdims()");
   return rcd;
-} /* end nco_inq_unlimdims() */
+} /* !nco_inq_unlimdims() */
 #endif /* !HAVE_NETCDF4_H */
 /* End Dimension routines */
 
@@ -1760,7 +1760,7 @@ nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * 
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_type() type %d\n",fnc_nm,var_typ);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_type() */
+} /* !nco_inq_type() */
 
 int
 nco_inq_typeids(const int nc_id,int * const typ_nbr,int * const typ_ids)
@@ -1776,7 +1776,7 @@ nco_inq_typeids(const int nc_id,int * const typ_nbr,int * const typ_ids)
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_typeids() */
+} /* !nco_inq_typeids() */
 
 int
 nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ)
@@ -1790,7 +1790,7 @@ nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_user_type() type %d\n",fnc_nm,var_typ);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_user_type() */
+} /* !nco_inq_user_type() */
 #endif /* !HAVE_NETCDF4_H */
 /* End Type routines */
 
@@ -1807,7 +1807,7 @@ nco_def_enum(const int nc_id,const nc_type bs_typ,const char * const typ_nm,nc_t
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_def_enum() type \"%s\"\n",fnc_nm,typ_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_def_enum() */
+} /* !nco_def_enum() */
 
 int
 nco_insert_enum(const int nc_id,const nc_type var_typ,const char * const mbr_nm,const void * const vp)
@@ -1819,7 +1819,7 @@ nco_insert_enum(const int nc_id,const nc_type var_typ,const char * const mbr_nm,
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_insert_enum() member \"%s\"\n",fnc_nm,mbr_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_insert_enum() */
+} /* !nco_insert_enum() */
 
 int
 nco_inq_enum(const int nc_id,const nc_type var_typ,char * const typ_nm,nc_type * const bs_typ,size_t * const typ_sz,size_t * const typ_nbr)
@@ -1831,7 +1831,7 @@ nco_inq_enum(const int nc_id,const nc_type var_typ,char * const typ_nm,nc_type *
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_enum() type %d\n",fnc_nm,var_typ);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_enum() */
+} /* !nco_inq_enum() */
 
 int
 nco_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char * const mbr_nm,void * const vp)
@@ -1843,7 +1843,7 @@ nco_inq_enum_member(const int nc_id,const nc_type var_typ,const int idx,char * c
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_enum_member() type %d\n",fnc_nm,var_typ);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_enum_member() */
+} /* !nco_inq_enum_member() */
 
 int
 nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val,char * const mbr_nm)
@@ -1855,7 +1855,7 @@ nco_inq_enum_ident(const int nc_id,const nc_type var_typ,const long long val,cha
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_enum_ident() type %d\n",fnc_nm,var_typ);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_enum_ident() */
+} /* !nco_inq_enum_ident() */
 
 /* End enum routines */
 
@@ -1870,7 +1870,7 @@ nco_def_vlen(const int nc_id,const char * const typ_nm,const nc_type bs_typ,nc_t
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_def_vlen() type \"%s\"\n",fnc_nm,typ_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_def_vlen() */
+} /* !nco_def_vlen() */
 
 int
 nco_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ)
@@ -1882,7 +1882,7 @@ nco_inq_vlen(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * 
   if(rcd != NC_NOERR) (void)fprintf(stdout,"ERROR: %s failed to nc_inq_vlen() type %d\n",fnc_nm,var_typ);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_vlen() */
+} /* !nco_inq_vlen() */
 
 int
 nco_free_vlen(nc_vlen_t * const vlenp)
@@ -1893,7 +1893,7 @@ nco_free_vlen(nc_vlen_t * const vlenp)
   rcd=nc_free_vlen(vlenp);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_free_vlen() */
+} /* !nco_free_vlen() */
 
 int
 nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp)
@@ -1904,7 +1904,7 @@ nco_free_vlens(const size_t sz,nc_vlen_t * const vlenp)
   rcd=nc_free_vlens(sz,vlenp);
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_free_vlens() */
+} /* !nco_free_vlens() */
 /* End vlen routines */
 #endif /* !HAVE_NETCDF4_H */
 /* End user-defined data type routines (_enum, _vlen) */
@@ -1918,7 +1918,7 @@ nco_copy_var(const int nc_in_id,const int var_id,const int nc_out_id)
   rcd=nc_copy_var(nc_in_id,var_id,nc_out_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_copy_var()");
   return rcd;
-} /* end nco_copy_var */
+} /* !nco_copy_var */
 
 int
 nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,const int dmn_nbr,const int * const dmn_id,int * const var_id)
@@ -1951,7 +1951,7 @@ nco_def_var(const int nc_id,const char * const var_nm,const nc_type var_typ,cons
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var()");
   return rcd;
-} /* end nco_def_var() */
+} /* !nco_def_var() */
 
 int nco_def_var_chunking
 (const int nc_id, /* [ID] netCDF ID */
@@ -1996,7 +1996,7 @@ int nco_def_var_chunking
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
 
   return rcd;
-} /* end nco_def_var_chunking() */
+} /* !nco_def_var_chunking() */
 
 int nco_def_var_deflate
 (const int nc_id, /* [ID] netCDF ID */
@@ -2013,7 +2013,7 @@ int nco_def_var_deflate
   rcd=nc_def_var_deflate(nc_id,var_id,shuffle,deflate_new,dfl_lvl);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_deflate()");
   return rcd;
-} /* end nco_def_var_deflate() */
+} /* !nco_def_var_deflate() */
 
 int nco_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_id,const size_t prm_nbr,const unsigned int * const prm_lst)
 {
@@ -2022,7 +2022,7 @@ int nco_def_var_filter(const int nc_id,const int var_id,const unsigned int flt_i
   rcd=nc_def_var_filter(nc_id,var_id,flt_id,prm_nbr,prm_lst);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_filter()");
   return rcd;
-} /* end nco_def_var_filter() */
+} /* !nco_def_var_filter() */
 
 int nco_def_var_filterx(const int nc_id,const int var_id,const char * const flt_nm,const size_t prm_nbr,const unsigned int * const prm_lst)
 {
@@ -2031,7 +2031,7 @@ int nco_def_var_filterx(const int nc_id,const int var_id,const char * const flt_
   rcd=nc_def_var_filterx(nc_id,var_id,flt_nm,prm_nbr,prm_lst);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_filterx()");
   return rcd;
-} /* end nco_def_var_filterx() */
+} /* !nco_def_var_filterx() */
 
 int
 nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_typ,int * const dmn_nbr,int * const dmn_id,int * const att_nbr)
@@ -2041,7 +2041,7 @@ nco_inq_var(const int nc_id,const int var_id,char * const var_nm,nc_type *var_ty
   rcd=nc_inq_var(nc_id,var_id,var_nm,var_typ,dmn_nbr,dmn_id,att_nbr);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var()");
   return rcd;
-} /* end nco_inq_var */
+} /* !nco_inq_var */
 
 int nco_inq_var_chunking
 (const int nc_id, /* [ID] netCDF ID */
@@ -2063,7 +2063,7 @@ int nco_inq_var_chunking
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_chunking()");
   return rcd;
-} /* end nco_inq_var_chunking() */
+} /* !nco_inq_var_chunking() */
 
 int
 nco_inq_var_deflate
@@ -2088,7 +2088,7 @@ nco_inq_var_deflate
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_deflate()");
   return rcd;
-} /* end nco_inq_var_deflate() */
+} /* !nco_inq_var_deflate() */
 
 int
 nco_inq_var_endian
@@ -2109,7 +2109,7 @@ nco_inq_var_endian
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_endian()");
   return rcd;
-} /* end nco_inq_var_endian() */
+} /* !nco_inq_var_endian() */
 
 int
 nco_inq_var_fill
@@ -2135,7 +2135,7 @@ nco_inq_var_fill
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_fill()");
   return rcd;
-} /* end nco_inq_var_fill() */
+} /* !nco_inq_var_fill() */
 
 int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
 {
@@ -2200,7 +2200,7 @@ nco_def_var_fletcher32
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var_fletcher32()");
   return rcd;
-} /* end nco_def_var_fletcher32() */
+} /* !nco_def_var_fletcher32() */
 
 int
 nco_inq_var_fletcher32
@@ -2221,7 +2221,7 @@ nco_inq_var_fletcher32
   } /* !netCDF4 */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_fletcher32()");
   return rcd;
-} /* end nco_inq_var_fletcher32() */
+} /* !nco_inq_var_fletcher32() */
 
 int /* O [flg] Return success code */
 nco_inq_var_packing /* [fnc] Check whether variable is packed on disk */
@@ -2279,7 +2279,7 @@ nco_inq_var_packing /* [fnc] Check whether variable is packed on disk */
   if(has_scl_fct || has_add_fst) *packing=1; /* [flg] Variable is packed on disk */
 
   return NC_NOERR;
-} /* end nco_inq_var_packing() */
+} /* !nco_inq_var_packing() */
 
 int
 nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
@@ -2299,7 +2299,7 @@ nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_varid */
+} /* !nco_inq_varid */
 
 int
 nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id)
@@ -2310,17 +2310,21 @@ nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id)
   if(rcd == NC_ENOTVAR) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varid_flg()");
   return rcd;
-} /* end nco_inq_varid */
+} /* !nco_inq_varid */
 
 int
 nco_inq_varname(const int nc_id,const int var_id,char * const var_nm)
 {
   /* Purpose: Wrapper for nc_inq_varname() */
+  const char fnc_nm[]="nco_inq_varname()";
   int rcd;
   rcd=nc_inq_varname(nc_id,var_id,var_nm);
+  if(rcd == NC_ENOTVAR){
+    (void)fprintf(stdout,"ERROR: %s reports specified dataset %d has no variable ID %d\n",fnc_nm,nc_id,var_id);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varname()");
   return rcd;
-} /* end nco_inq_varname */
+} /* !nco_inq_varname */
 
 int
 nco_inq_vartype(const int nc_id,const int var_id,nc_type * const var_typ)
@@ -2330,7 +2334,7 @@ nco_inq_vartype(const int nc_id,const int var_id,nc_type * const var_typ)
   rcd=nc_inq_vartype(nc_id,var_id,var_typ);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_vartype()");
   return rcd;
-} /* end nco_inq_vartype */
+} /* !nco_inq_vartype */
 
 int
 nco_inq_varndims(const int nc_id,const int var_id,int * const dmn_nbr)
@@ -2340,7 +2344,7 @@ nco_inq_varndims(const int nc_id,const int var_id,int * const dmn_nbr)
   rcd=nc_inq_varndims(nc_id,var_id,dmn_nbr);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varndims()");
   return rcd;
-} /* end nco_inq_varndims */
+} /* !nco_inq_varndims */
 
 int
 nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id)
@@ -2350,7 +2354,7 @@ nco_inq_vardimid(const int nc_id,const int var_id,int * const dmn_id)
   rcd=nc_inq_vardimid(nc_id,var_id,dmn_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_vardimid()");
   return rcd;
-} /* end nco_inq_vardimid */
+} /* !nco_inq_vardimid */
 
 int
 nco_inq_varnatts(const int nc_id,const int var_id,int * const att_nbr)
@@ -2360,11 +2364,11 @@ nco_inq_varnatts(const int nc_id,const int var_id,int * const att_nbr)
   int rcd;
   rcd=nc_inq_varnatts(nc_id,var_id,att_nbr);
   if(rcd == NC_ENOTVAR){
-    (void)fprintf(stdout,"ERROR: %s cannot find variable ID %d\n",fnc_nm,var_id);
+    (void)fprintf(stdout,"ERROR: %s reports specified dataset %d has no variable ID %d\n",fnc_nm,nc_id,var_id);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varnatts()");
   return rcd;
-} /* end nco_inq_varnatts */
+} /* !nco_inq_varnatts */
 
 int
 nco_rename_var(const int nc_id,const int var_id,const char * const var_nm)
@@ -2378,7 +2382,7 @@ nco_rename_var(const int nc_id,const int var_id,const char * const var_nm)
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_var()");
   return rcd;
-} /* end nco_rename_var */
+} /* !nco_rename_var */
 
 #ifdef HAVE_NETCDF4_H
 int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids)
@@ -2388,7 +2392,7 @@ int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids)
   rcd=nc_inq_varids(nc_id,var_nbr,var_ids);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varids()");
   return rcd;
-} /* end nco_inq_varids() */
+} /* !nco_inq_varids() */
 #endif /* !HAVE_NETCDF4_H */
 /* End _var */
 
@@ -2433,7 +2437,7 @@ nco_get_var(const int nc_id,const int var_id,void * const vp,const nc_type var_t
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_get_var */
+} /* !nco_get_var */
 
 int
 nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type var_typ)
@@ -2467,7 +2471,7 @@ nco_put_var(const int nc_id,const int var_id,const void * const vp,const nc_type
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var()");
   return rcd;
-} /* end nco_put_var */
+} /* !nco_put_var */
 
 int
 nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * const vp,const nc_type var_typ)
@@ -2517,7 +2521,7 @@ nco_get_var1(const int nc_id,const int var_id,const long * const srt,void * cons
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_get_var1 */
+} /* !nco_get_var1 */
 
 int
 nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void * const vp,const nc_type var_typ)
@@ -2575,7 +2579,7 @@ nco_put_var1(const int nc_id,const int var_id,const long * const srt,const void 
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_put_var1 */
+} /* !nco_put_var1 */
 
 int
 nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,void * const vp,const nc_type var_typ)
@@ -2654,7 +2658,7 @@ nco_get_vara(const int nc_id,const int var_id,const long * const srt,const long 
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_get_vara */
+} /* !nco_get_vara */
 
 int
 nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const void * const vp,const nc_type var_typ)
@@ -2695,7 +2699,7 @@ nco_put_vara(const int nc_id,const int var_id,const long * const srt,const long 
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara()");
   return rcd;
-} /* end nco_put_vara */
+} /* !nco_put_vara */
 
 int
 nco_get_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,void * const vp,const nc_type var_typ)
@@ -2747,7 +2751,7 @@ nco_get_vars(const int nc_id,const int var_id,const long * const srt,const long 
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_get_vars */
+} /* !nco_get_vars */
 
 int
 nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const void * const vp,const nc_type var_typ)
@@ -2790,7 +2794,7 @@ nco_put_vars(const int nc_id,const int var_id,const long * const srt,const long 
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_put_vars */
+} /* !nco_put_vars */
 
 int
 nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const long * const map,void * const vp,const nc_type var_typ)
@@ -2838,7 +2842,7 @@ nco_get_varm(const int nc_id,const int var_id,const long * const srt,const long 
   } /* !udt */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_varm()");
   return rcd;
-} /* end nco_get_varm */
+} /* !nco_get_varm */
 
 int
 nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long * const cnt,const long * const srd,const long * const map,const void * const vp,const nc_type var_typ)
@@ -2877,7 +2881,7 @@ nco_put_varm(const int nc_id,const int var_id,const long * const srt,const long 
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_varm()");
   return rcd;
-} /* end nco_put_varm */
+} /* !nco_put_varm */
 /* End Variable routines */
 
 /* Begin Attribute routines (_att) */
@@ -2896,7 +2900,7 @@ nco_inq_att(const int nc_id,const int var_id,const char * const att_nm,nc_type *
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco_inq_att */
+} /* !nco_inq_att */
 
 int
 nco_inq_att_flg(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ,long * const att_sz)
@@ -2914,7 +2918,7 @@ nco_inq_att_flg(const int nc_id,const int var_id,const char * const att_nm,nc_ty
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco_inq_att_flg */
+} /* !nco_inq_att_flg */
 
 int
 nco_inq_attid(const int nc_id,const int var_id,const char * const att_nm,int * const att_id)
@@ -2924,7 +2928,7 @@ nco_inq_attid(const int nc_id,const int var_id,const char * const att_nm,int * c
   rcd=nc_inq_attid(nc_id,var_id,att_nm,att_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attid()");
   return rcd;
-} /* end nco_inq_attid */
+} /* !nco_inq_attid */
 
 int
 nco_inq_attid_flg(const int nc_id,const int var_id,const char * const att_nm,int * const att_id)
@@ -2939,7 +2943,7 @@ nco_inq_attid_flg(const int nc_id,const int var_id,const char * const att_nm,int
     nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
-} /* end nco_inq_attid_flg */
+} /* !nco_inq_attid_flg */
 
 int
 nco_inq_atttype(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ)
@@ -2949,7 +2953,7 @@ nco_inq_atttype(const int nc_id,const int var_id,const char * const att_nm,nc_ty
   rcd=nc_inq_atttype(nc_id,var_id,att_nm,att_typ);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_atttype()");
   return rcd;
-} /* end nco_inq_atttype */
+} /* !nco_inq_atttype */
 
 int
 nco_inq_attlen(const int nc_id,const int var_id,const char * const att_nm,long * const att_sz)
@@ -2962,7 +2966,7 @@ nco_inq_attlen(const int nc_id,const int var_id,const char * const att_nm,long *
   if(att_sz) *att_sz=(long)att_sz_t;
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attlen()");
   return rcd;
-} /* end nco_inq_attlen */
+} /* !nco_inq_attlen */
 
 int
 nco_inq_attlen_flg(const int nc_id,const int var_id,const char * const att_nm,long * const att_sz)
@@ -2977,7 +2981,7 @@ nco_inq_attlen_flg(const int nc_id,const int var_id,const char * const att_nm,lo
   if(rcd == NC_ENOTATT) return rcd;
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nco_inq_attlen */
+} /* !nco_inq_attlen */
 
 int
 nco_inq_attname(const int nc_id,const int var_id,const int att_id,char * const att_nm)
@@ -2987,7 +2991,7 @@ nco_inq_attname(const int nc_id,const int var_id,const int att_id,char * const a
   rcd=nc_inq_attname(nc_id,var_id,att_id,att_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_attname()");
   return rcd;
-} /* end nco_inq_attname */
+} /* !nco_inq_attname */
 
 int
 nco_copy_att(const int nc_id_in,const int var_id_in,const char * const att_nm,const int nc_id_out,const int var_id_out)
@@ -3022,7 +3026,7 @@ nco_copy_att(const int nc_id_in,const int var_id_in,const char * const att_nm,co
   } /* !_NCProperties */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_copy_att()");
   return rcd;
-}  /* end nco_copy_att */
+}  /* !nco_copy_att */
 
 int
 nco_rename_att(const int nc_id,const int var_id,const char * const att_nm,const char * const att_new_nm)
@@ -3044,7 +3048,7 @@ nco_rename_att(const int nc_id,const int var_id,const char * const att_nm,const 
   } /* !NC_ENAMEINUSE */
   if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
-}  /* end nco_rename_att */
+}  /* !nco_rename_att */
 
 int
 nco_del_att(const int nc_id,const int var_id,const char * const att_nm)
@@ -3054,7 +3058,7 @@ nco_del_att(const int nc_id,const int var_id,const char * const att_nm)
   rcd=nc_del_att(nc_id,var_id,att_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_del_att()");
   return rcd;
-} /* end nco_del_att */
+} /* !nco_del_att */
 
 int
 nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_type att_typ,const long att_len,const void * const vp)
@@ -3090,7 +3094,7 @@ nco_put_att(const int nc_id,const int var_id,const char * const att_nm,const nc_
   } /* !rcd */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att()");
   return rcd;
-} /* end nco_put_att */
+} /* !nco_put_att */
 
 int
 nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * const vp,const nc_type att_typ)
@@ -3145,7 +3149,7 @@ nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void * co
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_att()");
   return rcd;
-} /* end nco_get_att */
+} /* !nco_get_att */
 /* End Attribute routines */
 
 /* Begin netCDF4 stubs */
@@ -3205,7 +3209,7 @@ int nco_inq_dimids(const int nc_id,int * const dmn_nbr,int * const dmn_ids,int f
   if(dmn_ids)
     for(dmn_idx=0;dmn_idx<*dmn_nbr;dmn_idx++) dmn_ids[dmn_idx]=dmn_idx;
   return NC_NOERR;
-} /* end nco_inq_dimids() */
+} /* !nco_inq_dimids() */
 int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult){
   int rcd;
   int unlimid;
@@ -3218,7 +3222,7 @@ int nco_inq_unlimdims(const int nc_id,int *nbr_dmn_ult,int *dmn_ids_ult){
     *nbr_dmn_ult=0;
   } /* unlimid */
   return NC_NOERR;
-} /* end nco_inq_unlimdims() */
+} /* !nco_inq_unlimdims() */
 
 int nco_inq_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz){assert(0);return NC_NOERR;}
 int nco_inq_user_type(const int nc_id,const nc_type var_typ,char * const typ_nm,size_t * const typ_sz,nc_type * const bs_typ,size_t * const fld_nbr,int * const cls_typ){assert(0);return NC_NOERR;}
@@ -3232,7 +3236,7 @@ int nco_inq_varids(const int nc_id,int * const var_nbr,int * const var_ids){
   if(var_ids)
     for(int var_idx=0;var_idx<*var_nbr;var_idx++) var_ids[var_idx]=var_idx;
   return NC_NOERR;
-} /* end nco_inq_varids() */
+} /* !nco_inq_varids() */
 #endif /* HAVE_NETCDF4_H */
 #ifndef _MSC_VER
 #ifndef ENABLE_NETCDF4

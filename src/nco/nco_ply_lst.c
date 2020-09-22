@@ -1350,8 +1350,6 @@ int *pl_cnt_dbg) /* size of output dbg grid */
   *pl_cnt_dbg=pl_nbr_dbg;
 
   return pl_lst_dbg;
-
-
 }
 
 
@@ -1367,7 +1365,6 @@ int *wgt_cnt_bln_ret) {
 
   /* just duplicate output list to overlap */
   const char fnc_nm[] = "nco_poly_lst_mk_dwe_sph()";
-
 
   int thr_idx = 0;
   /* approx number of input cells each thread will process */
@@ -1391,12 +1388,9 @@ int *wgt_cnt_bln_ret) {
 
   wgt_sct **wgt_lst_dwe = NULL_CEWI;
 
-
   FILE *const fp_stderr = stderr;
 
-
   pl_typ = pl_lst_out[0]->pl_typ;
-
 
   lcl_thr_nbr = omp_get_max_threads();
 
@@ -1440,7 +1434,6 @@ int *wgt_cnt_bln_ret) {
 #endif /* !__INTEL_COMPILER */
   for (idx = 0; idx < pl_cnt; idx++) {
 
-
     double dp_x_wrp;   /* used to do a wrapped lon search */
     double wgt_ttl=0.0;
 
@@ -1455,17 +1448,12 @@ int *wgt_cnt_bln_ret) {
     size_t kdx;
     size_t nbr_lst_lcl;
 
-
-
-
     // (void) nco_poly_set_priority(max_nbr_vrl, list);
 
     thr_idx = omp_get_thread_num();
 
-
     if (0 && nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(fp_stderr, "%s(): idx=%lu thr=%d\n", fnc_nm, idx, thr_idx);
-
 
     if (pl_lst_out[idx]->bmsk == False)
       continue;
@@ -1478,10 +1466,7 @@ int *wgt_cnt_bln_ret) {
       mem_lst[thr_idx].kd_list = (KDPriority *) nco_free(mem_lst[thr_idx].kd_list);
       //mem_lst[thr_idx].kd_list=(KDPriority*)nco_realloc(mem_lst[idx].kd_list, sizeof(KDPriority) * NCO_VRL_BLOCKSIZE );
       mem_lst[idx].kd_list = (KDPriority *) nco_calloc(sizeof(KDPriority), (size_t) (NCO_VRL_BLOCKSIZE));
-
-
     }
-
 
     /* get bounds of polygon in */
     //bSplit = nco_poly_minmax_split(pl_lst_out[idx], grd_lon_typ, size1, size2);
@@ -1506,7 +1491,6 @@ int *wgt_cnt_bln_ret) {
           dp_x_wrp=pl_lst_out[idx]->dp_x_ctr-360.0;
         break;
 
-
       case nco_grd_lon_180_wst:
       case nco_grd_lon_180_ctr:
         if(pl_lst_out[idx]->dp_x_ctr <0.0)
@@ -1514,7 +1498,6 @@ int *wgt_cnt_bln_ret) {
         else if(pl_lst_out[idx]->dp_x_ctr >0.0)
           dp_x_wrp=pl_lst_out[idx]->dp_x_ctr-360.0;
         break;
-
     }
 
     if(dp_x_wrp != KD_DBL_MAX)
@@ -1525,12 +1508,8 @@ int *wgt_cnt_bln_ret) {
       nbr_lst_lcl+=nbr_dwe*nbr_tr;
     }
 
-
     if(nbr_tr >1 )
       qsort((void *)mem_lst[thr_idx].kd_list, nbr_lst_lcl,  sizeof(KDPriority), kd_priority_cmp_dist);
-
-
-
 
     /* remember kd list sorted according to distance */
 
@@ -1555,7 +1534,6 @@ int *wgt_cnt_bln_ret) {
       if (nco_dbg_lvl_get() >= nco_dbg_dev)
         (void)fprintf(fp_stderr,"%s:%s: singleton  x_ctr=%f  y_ctr=%f\n", nco_prg_nm_get(), fnc_nm, pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr );
 
-
     }else{
 
       /* check for duplicates in first nbr_nni by sorting again with ->item  !!!*/
@@ -1576,21 +1554,15 @@ int *wgt_cnt_bln_ret) {
         wgt_pre[jdx].dist = mem_lst[thr_idx].kd_list[jdx].dist;
         /* use dist squared */
         wgt_pre[jdx].wgt = 1.0 /  pow(wgt_pre[jdx].dist, pow_dwe);
-
-
       }
 
       /* find weights total */
       for (jdx = 0; jdx < nbr_dwe_cnt; jdx++)
         wgt_ttl += wgt_pre[jdx].wgt;
 
-
-
-
       /* normalize weights */
       for (jdx = 0; jdx < nbr_dwe_cnt; jdx++)
         wgt_pre[jdx].wgt /= wgt_ttl;
-
 
       for (jdx = 0; jdx < nbr_dwe_cnt; jdx++) {
 
@@ -1608,21 +1580,14 @@ int *wgt_cnt_bln_ret) {
         //(void)fprintf(stderr,"%s: weight(%lu)=%f ",fnc_nm, mem_lst[thr_idx].pl_cnt, wgt_lcl->wgt);
 
       } /* end jdx */
-
-
-
     }
 
     /* output some usefull tracking stuff - not debug but informative */
     if (  ++mem_lst[thr_idx].idx_cnt % thr_quota_step == 0 && nco_dbg_lvl_get() >=3   )
       (void)fprintf(fp_stderr, "%s: thread %d  has processed %2.2f%% (%ld) of src cells quota and output %ld overlap cells\n",    nco_prg_nm_get(), thr_idx, (float)mem_lst[thr_idx].idx_cnt/(float)thr_quota *100.0,  mem_lst[thr_idx].idx_cnt, mem_lst[thr_idx].pl_cnt  );
-
-
   }  /* end idx */
 
-
   nco_mem_lst_cat(mem_lst, lcl_thr_nbr);
-
 
   /* free up kd_list's */
   for(idx=0;idx<lcl_thr_nbr;idx++)
@@ -1635,24 +1600,19 @@ int *wgt_cnt_bln_ret) {
   mem_lst=(omp_mem_sct*)nco_free(mem_lst);
 
   return wgt_lst_dwe;
-
-
-}
+} /* !nco_poly_lst_mk_dwe_sph() */
 
 void nco_poly_lst_ctr_add(
 poly_sct **pl_lst,
 int pl_cnt,
 int ctr_typ)
 {
-
-  nco_bool bDeg=True;
   int idx;
 
   double pControl[NBR_SPH];
 
   for(idx=0;idx<pl_cnt;idx++)
   {
-
     if(pl_lst[idx]->crn_nbr <3 || pl_lst[idx]->area==0.0  )
       continue;
 
@@ -1661,35 +1621,18 @@ int ctr_typ)
       pl_lst[idx]->dp_x_ctr=R2D(pControl[3]);
       pl_lst[idx]->dp_y_ctr=R2D(pControl[4]);
     }
-
   }
-
   return;
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
+} /* !nco_poly_lst_ctr_add() */
 
 void
 nco_mem_lst_cat(
 omp_mem_sct *mem_lst,
 int sz_lst)
 {
-
   int idx;
   int i_typ;
   size_t tot_cnt = 0;
-
 
   if(mem_lst->wgt_lst)
     i_typ = 1;
@@ -1717,7 +1660,6 @@ int sz_lst)
 
     tmp_wgt_lst += mem_lst[0].pl_cnt;
 
-
     for (idx = 1; idx < sz_lst; idx++) {
       if (mem_lst[idx].wgt_lst) {
         memcpy(tmp_wgt_lst, mem_lst[idx].wgt_lst, sizeof(wgt_sct *) * mem_lst[idx].pl_cnt);
@@ -1726,7 +1668,6 @@ int sz_lst)
         mem_lst[idx].wgt_lst = (wgt_sct **) nco_free(mem_lst[idx].wgt_lst);
       }
     }
-
   }
 
   else if(i_typ==2) {
@@ -1736,7 +1677,6 @@ int sz_lst)
 
     tmp_ply_lst += mem_lst[0].pl_cnt;
 
-
     for (idx = 1; idx < sz_lst; idx++) {
       if (mem_lst[idx].pl_lst) {
         memcpy(tmp_ply_lst, mem_lst[idx].pl_lst, sizeof(poly_sct *) * mem_lst[idx].pl_cnt);
@@ -1745,20 +1685,11 @@ int sz_lst)
         mem_lst[idx].pl_lst = (poly_sct **) nco_free(mem_lst[idx].pl_lst);
       }
     }
-
   }
 
   /* update first list with total */
   mem_lst[0].pl_cnt=tot_cnt;
 
-
   return;
-
-
-
-
-
-
-
-}
+} /* !nco_mem_lst_cat() */
 

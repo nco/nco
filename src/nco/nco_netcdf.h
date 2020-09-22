@@ -333,7 +333,7 @@ nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */
 (const char *cnv_sng, /* I [sng] String to convert */
  const char *sng_cnv_fnc, /* I [sng] Name of function used to convert string */
  const char *err_ptr); /* I [chr] First illegal character in string */
-/* end nco_sng_cnv_err() */
+/* !nco_sng_cnv_err() */
 
 void 
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
