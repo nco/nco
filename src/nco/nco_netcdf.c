@@ -2140,8 +2140,14 @@ nco_inq_var_fill
 int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
 {
   /* Purpose: Wrapper for nc_inq_var_filter() */
+  const char fnc_nm[]="nco_inq_var_filter()";
   int rcd;
   rcd=nc_inq_var_filter(nc_id,var_id,flt_id,prm_nbr,prm_lst);
+  if(rcd == NC_ENOFILTER){
+    char var_nm[NC_MAX_NAME+1L];
+    (void)nco_inq_varname(nc_id,var_id,var_nm);
+    (void)fprintf(stdout,"ERROR: %s reports no filter defined for variable \"%s\"\n",fnc_nm,var_nm);
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter()");
   return rcd;
 } /* !nco_inq_var_filter() */
