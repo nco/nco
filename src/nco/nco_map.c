@@ -968,6 +968,15 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       /* temporarily disable crt code */
       /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
+     /* add "centers" - */
+     if(pl_typ==poly_sph)
+     {
+       nco_poly_lst_ctr_add(pl_lst_in, grd_sz_in,1);
+       nco_poly_lst_ctr_add(pl_lst_out, grd_sz_out,1);
+
+     }
+
+
     if (pl_typ == poly_sph || pl_typ == poly_rll)
       /* REMEMBER the return type is void**    but it may actually be wgt_sct** or poly_sct** - so we recast it */
       void_lst_vrl = nco_poly_lst_mk_vrl_sph(pl_lst_in, grd_sz_in, grd_lon_typ_out, tree, nbr_tr, lst_typ, &pl_cnt_vrl);
