@@ -13,8 +13,8 @@ EXTRA_DIST = nco nco.dvi nco.html nco.pdf nco.ps nco.xml VERSION
 AM_MAKEINFOHTMLFLAGS = --ifinfo --no-split
 
 # 20200917 Attempt to improve TAG-generation
-ETAGS_ARGS = Makefile.am configure.ac VERSION
-TAGS_DEPENDENCIES = Makefile.am configure.ac VERSION
+ETAGS_ARGS = Makefile.am VERSION nco.texi ANNOUNCE MANIFEST debian.txt
+TAGS_DEPENDENCIES = Makefile.am VERSION nco.texi ANNOUNCE MANIFEST debian.txt
 
 ## Automake manual section 14:
 ## If configure built it, 'distclean' should delete it

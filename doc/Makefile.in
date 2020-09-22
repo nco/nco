@@ -370,8 +370,8 @@ EXTRA_DIST = nco nco.dvi nco.html nco.pdf nco.ps nco.xml VERSION
 AM_MAKEINFOHTMLFLAGS = --ifinfo --no-split
 
 # 20200917 Attempt to improve TAG-generation
-ETAGS_ARGS = Makefile.am configure.ac VERSION
-TAGS_DEPENDENCIES = Makefile.am configure.ac VERSION
+ETAGS_ARGS = Makefile.am VERSION nco.texi ANNOUNCE MANIFEST debian.txt
+TAGS_DEPENDENCIES = Makefile.am VERSION nco.texi ANNOUNCE MANIFEST debian.txt
 all: all-am
 
 .SUFFIXES:
@@ -385,9 +385,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign doc/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu doc/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign doc/Makefile
+	  $(AUTOMAKE) --gnu doc/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

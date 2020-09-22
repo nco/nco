@@ -1,12 +1,16 @@
 2020-09-22  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.5-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha04: Elderflower';git push
+ 	git tag -a 4.9.5-alpha04 -m 'nco_inq_varname() dgn; ncclimo area_nm fix; ncremap nsx fix RLL';git push --tags
+
+	* Attempt to improve autoconf/automake generation of etags
+
+	* nco_inq_varname() error diagnostics
+
 	* Merge two fixes by Henry for RLL grid intersections, one for edg_typ=sph
 
 2020-09-18  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.9.5-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha04: Elderflower';git push
- 	git tag -a 4.9.5-alpha04 -m '';git push --tags
 
 	* ncclimo brown paper bag fix quoting of area_nm
 
