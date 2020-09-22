@@ -125,6 +125,14 @@ int pl_cnt_vrl,
 int io_flg,  /* [flg] 0 - use src_id from vrl, 1 - use dst_id from vrl */
 int *pl_cnt_dbg); /* size of output dbg grid */
 
+
+/* we need this as for wgt_con - we want the center to always be "inside polygon" */
+void nco_poly_lst_ctr_add(
+poly_sct **pl_lst,
+int pl_cnt,
+int ctr_typ);
+
+
 /* check areas */
 void nco_poly_lst_chk(
 poly_sct **pl_lst_in,

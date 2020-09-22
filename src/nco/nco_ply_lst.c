@@ -697,7 +697,7 @@ int *pl_cnt_vrl_ret){
   /* just duplicate output list to overlap */
   const char fnc_nm[]="nco_poly_lst_mk_vrl_sph()";
 
-  nco_bool bDirtyRats=False;
+  nco_bool bDirtyRats=True;
   nco_bool bSort=True;
 
 
@@ -1638,6 +1638,44 @@ int *wgt_cnt_bln_ret) {
 
 
 }
+
+void nco_poly_lst_ctr_add(
+poly_sct **pl_lst,
+int pl_cnt,
+int ctr_typ)
+{
+
+  nco_bool bDeg=True;
+  int idx;
+
+  double pControl[NBR_SPH];
+
+  for(idx=0;idx<pl_cnt;idx++)
+  {
+
+    if(pl_lst[idx]->crn_nbr <3 || pl_lst[idx]->area==0.0  )
+      continue;
+
+    if(ctr_typ==1){
+      nco_sph_inside_mk(pl_lst[idx], pControl);
+      pl_lst[idx]->dp_x_ctr=R2D(pControl[3]);
+      pl_lst[idx]->dp_y_ctr=R2D(pControl[4]);
+    }
+
+  }
+
+  return;
+
+}
+
+
+
+
+
+
+
+
+
 
 
 
