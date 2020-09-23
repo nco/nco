@@ -40,9 +40,6 @@ In all cases the splitter will output the correct area variable.
 http://nco.sf.net/nco.html#glb_avg
 http://nco.sf.net/nco.html#hrz_dmn
 
-B. 
-
-
 BUG FIXES:
 
 A. The prototype for the nco_def_var_filterx() function
@@ -51,7 +48,11 @@ has been changed to agree with the next netCDF release.
 B. An OpenMP incompatibility with the Intel Compiler Suite
 has been fixed. NCO once again builds fine with Intel.
 
+C. ncatted will now print the full list of parameters recorded
+in a (netCDF4) variable's _Filter attribute.
 
+D. Fix a bug in the computation of the intersection mesh
+between two RLL grids that crept into the 4.9.4 release.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
