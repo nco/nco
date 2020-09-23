@@ -355,14 +355,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 5
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE "-alpha03" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
+# define NCO_VERSION_NOTE "-beta01" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.9.5-alpha03"
+# define NCO_VERSION "4.9.5-beta01"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */

@@ -1,8 +1,8 @@
 2020-09-22  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.9.5-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.5-alpha04: Elderflower';git push
- 	git tag -a 4.9.5-alpha04 -m 'nco_inq_varname() dgn; ncclimo area_nm fix; ncremap nsx fix RLL';git push --tags
+	* NCO 4.9.5-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.5-beta01: Elderflower';git push
+ 	git tag -a 4.9.5-beta01 -m 'nco_inq_varname() dgn; ncclimo area_nm fix; ncremap nsx fix RLL';git push --tags
 
 	* nco_def_var_filterx() prototype uses char ** not unsigned int *
 

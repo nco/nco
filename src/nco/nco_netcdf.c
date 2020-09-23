@@ -2158,7 +2158,7 @@ int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const
   int rcd;
   rcd=nc_inq_var_filter(nc_id,var_id,flt_id,prm_nbr,prm_lst);
   if(rcd == NC_ENOFILTER) return rcd;
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter()");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter_flg()");
   return rcd;
 } /* !nco_inq_var_filter_flg() */
 
