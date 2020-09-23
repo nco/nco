@@ -208,7 +208,7 @@ nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
   /* Purpose: Return mnemonic describing current NCO version 
      20191221: ncremap/ncclimo print left quote and first word of this string, so one-word strings look best 
      20200117: fixed this limitation, multi-word versions seem to work */
-  return "Elderflower";
+  return "RBG";
 } /* end nco_nmn_get() */
 
 void

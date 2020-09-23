@@ -1,3 +1,11 @@
+2020-09-23  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.5 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.5: RBG';git push
+ 	git tag -a 4.9.5 -m 'intel cmp fix; ncatted prn mlt flt prms; ncclimo area_nm hrz_dmn; ncremap nsx fix RLL;';git push --tags
+
+	* nco_def_var_filterx() prototype fix for netCDF 4.8.0 forward compatibility
+
 2020-09-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.5-beta01 release procedure:

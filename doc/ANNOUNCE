@@ -6,7 +6,11 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.9.5 contains new features ...
+Version 4.9.5 is a minor NCO release that contains a few new features
+and fixes to more smoothly work with current and future releases of
+the E3SM climate model and with the next netCDF release. Unless the
+features/fixes listed below affect you, chillax and upgrade next
+time. 
 
 Work on NCO 4.9.6 has commenced and will improve high-freqency
 splitting and climo capabilities, more SIMD acceleration, and
@@ -17,15 +21,11 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-
-NCO 4.9.5-alpha03, now in my $HOME on Cori, Compy, and Blues,
-contains the draft solution to alternate names than "area"
-and "ncol" for certain ncclimo features, namely computing
-global average means from splitter output documented here
-http://nco.sf.net/nco.html#glb_avg
-and for creating CMIP6-like
-timeseries that automatically include the area variable.
-
+A. ncclimo supports alternates to "area" and "ncol" as names
+for the area field and the horizontal dimension that it assumes
+for computing global average means from splitter output with
+the --glb_avg option, and for creating CMIP6-like timeseries that
+automatically include the area variable.  
 Two new options, --area_nm and --hrz_dmn, control the name
 of the area variable (default is "area") and of the horizontal
 dimension(s) (default="ncol") over which to average the
@@ -36,13 +36,22 @@ ncclimo --glb_avg --area=area_p ...
 ncclimo --glb_avg --area=area_d --hrz_dmn=ncol_d ...
 ncclimo --glb_avg --hrz_dmn=lat,lon ...
 
-In all cases the splitter should now output the correct
-area variable.
+In all cases the splitter will output the correct area variable. 
+http://nco.sf.net/nco.html#glb_avg
+http://nco.sf.net/nco.html#hrz_dmn
+
+B. 
 
 
 BUG FIXES:
 
-A. fxm
+A. The prototype for the nco_def_var_filterx() function
+has been changed to agree with the next netCDF release.
+
+B. An OpenMP incompatibility with the Intel Compiler Suite
+has been fixed. NCO once again builds fine with Intel.
+
+
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
