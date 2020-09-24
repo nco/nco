@@ -789,7 +789,7 @@ would do on any Debian or Ubuntu Linux platform.
 <a name="mvs"></a> <!-- http://nco.sf.net#mvs -->
 <a name="windows"></a> <!-- http://nco.sf.net#windows -->
 <h3><a href="http://www.microsoft.com">Microsoft Windows (version 9 and earlier)</a>
-(native build, compiled with <a href="https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx">Visual Studio 2015</a>, use this if unsure)</h3>
+(native build, compiled with <a href="https://www.visualstudio.com/en-us/visual-studio-homepage-vs.aspx">Visual Studio 2019</a>, use this if unsure)</h3>
 These native Windows executables (64bit) are stand-alone, i.e., do not require users to have any additional software. 
 This is a new feature as of 20120615, please send us feedback. 
 To build NCO from source yourself using MSVC with CMake, please see example in <tt>nco/cmake/build.bat</tt>.
@@ -798,7 +798,7 @@ To build NCO from source yourself using MSVC with CMake, please see example in <
 /usr/bin/scp /home/pvicente/nco/doc/index.shtml pvicente,nco@web.sf.net:/home/project-web/nco/htdocs
 /usr/bin/scp /home/pvicente/windows_setup/nco-4.9.1.windows.mvs.exe pvicente,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
-<li><a href="src/nco-4.9.4.windows.mvs.exe">nco-4.9.4.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.4.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.4.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
+<li><a href="src/nco-4.9.5.windows.mvs.exe">nco-4.9.5.windows.mvs.exe</a> (<!--#fsize file="src/nco-4.9.5.windows.mvs.exe"-->): Windows Self-Extracting Installer (last updated <!--#flastmod file="src/nco-4.9.5.windows.mvs.exe"-->). Maintained by Pedro Vicente.</li>
 </ul>
 
 <a name="cygwin"></a> <!-- http://nco.sf.net#cygwin -->
