@@ -262,6 +262,7 @@ main(int argc,char **argv)
   nco_bool HPSS_TRY=False; /* [flg] Search HPSS for unfound files */
   nco_bool MSA_USR_RDR=False; /* [flg] Multi-Slab Algorithm returns hyperslabs in user-specified order */
   nco_bool NORMALIZE_BY_WEIGHT=True; /* [flg] Normalize by command-line weight */
+  nco_bool NRM_BY_DNM=True; /* [flg] Normalize by denominator */
   nco_bool PROMOTE_INTS=False; /* [flg] Promote integers to floating point in output */
   nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
   nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
@@ -709,6 +710,7 @@ main(int argc,char **argv)
       fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'N':
+      //      NRM_BY_DNM=False;
       NORMALIZE_BY_WEIGHT=False;
       break;
     case 'n': /* NINTAP-style abbreviation of files to average */
@@ -1248,9 +1250,8 @@ main(int argc,char **argv)
     /* Record operators only need space for one record, not entire variable */
     if(nco_prg_id == ncra || nco_prg_id == ncrcat) var_prc[idx]->sz=var_prc[idx]->sz_rec=var_prc_out[idx]->sz=var_prc_out[idx]->sz_rec;
     if(nco_prg_id == ncra || nco_prg_id == ncfe || nco_prg_id == ncge){
-      /* 20200701: fxm unclear (i.e., I cannot remember) why wgt_sum allocated iff has_mss_val */
+      /* 20200701: Iff has_mss_val then need wgt_sum to track running sum of time-varying (per-record or per-file) weights applied at each grid point in variables that may have spatio-temporally varying missing values */
       if((wgt_arr || wgt_nm) && var_prc[idx]->has_mss_val) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double)); else var_prc_out[idx]->wgt_sum=NULL;
-      //if(wgt_arr || wgt_nm) var_prc_out[idx]->wgt_sum=var_prc[idx]->wgt_sum=(double *)nco_calloc(var_prc_out[idx]->sz,sizeof(double));
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_calloc(var_prc_out[idx]->sz,sizeof(long));
       var_prc_out[idx]->val.vp=(void *)nco_calloc(var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type));
     } /* end if */
@@ -1487,7 +1488,7 @@ main(int argc,char **argv)
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,FLG_MSO,NORMALIZE_BY_WEIGHT,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,fl_udu_sng,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,rgd_arr_bnds_lst,rgd_arr_bnds_nbr,rgd_arr_climo_lst,rgd_arr_climo_nbr,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
+#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,FLG_MSO,NORMALIZE_BY_WEIGHT,NRM_BY_DNM,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,fl_udu_sng,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,rgd_arr_bnds_lst,rgd_arr_bnds_nbr,rgd_arr_climo_lst,rgd_arr_climo_nbr,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 
@@ -1641,9 +1642,12 @@ main(int argc,char **argv)
 	       2. In nco_opr_nrm() below, use mss_val from var_prc_out not var_prc
 	       Problem is var_prc[idx]->mss_val is typ_upk while var_prc_out is type, so normalization
 	       sets missing var_prc_out value to var_prc[idx]->mss_val read as type */
-            (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,lmt_rec[idx_rec]->nm_fll,trv_tbl);
+
+	    /* First, divide accumulated (though currently un-weighted) values by tally to obtain (un-weighted) time-means */
+            if(NRM_BY_DNM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,lmt_rec[idx_rec]->nm_fll,trv_tbl);
             FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
 
+	    /* Second, multiply unweighted time-mean values by time-mean weights */
 	    for(idx=0;idx<nbr_var_prc;idx++){
 	      if(var_prc[idx]->wgt_sum){
 		(void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
@@ -1651,7 +1655,8 @@ main(int argc,char **argv)
 	    } /* !idx */
 	      
 	    if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
-	      /* Compute mean of per-record weight, by normalizing running sum of weight by tally
+	      /* Third, and only if the weight comes from a record variable in the file ... 
+		 Compute mean of per-record weight, by normalizing running sum of weight by tally
 		 Then normalize all numerical record variables by mean of per-record weight
 		 Still ill-defined when MRO is invoked with --wgt 
 		 Same logic applies in two locations in this code:
