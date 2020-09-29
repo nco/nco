@@ -1643,13 +1643,14 @@ main(int argc,char **argv)
 	       Problem is var_prc[idx]->mss_val is typ_upk while var_prc_out is type, so normalization
 	       sets missing var_prc_out value to var_prc[idx]->mss_val read as type */
 
-	    /* First, divide accumulated (though currently un-weighted) values by tally to obtain (un-weighted) time-means */
+	    /* First, divide accumulated (not yet weighted) values by tally to obtain (non-weighted) time-means */
             if(NRM_BY_DNM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,lmt_rec[idx_rec]->nm_fll,trv_tbl);
             FLG_BFR_NRM=False; /* [flg] Current output buffers need normalization */
 
 	    /* Second, multiply unweighted time-mean values by time-mean weights */
 	    for(idx=0;idx<nbr_var_prc;idx++){
 	      if(var_prc[idx]->wgt_sum){
+		// 20200928: Condition this on by if(NORMALIZE_BY_WEIGHT) as is done for ncea below
 		(void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
 	      } /* !wgt_sum */
 	    } /* !idx */
@@ -2015,8 +2016,10 @@ main(int argc,char **argv)
      In such cases FLG_BFR_NRM is still true, indicating ncra still needs normalization
      FLG_BFR_NRM is always true here for ncfe and ncge */
   if(FLG_BFR_NRM){
-    (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,(char *)NULL,(trv_tbl_sct *)NULL);
+    /* First, divide accumulated (not yet weighted) values by tally to obtain (non-weighted) time-means */
+    if(NRM_BY_DNM) (void)nco_opr_nrm(nco_op_typ,nbr_var_prc,var_prc,var_prc_out,(char *)NULL,(trv_tbl_sct *)NULL);
     
+    /* Second, multiply unweighted time-mean values by time-mean weights */
     for(idx=0;idx<nbr_var_prc;idx++){
       if(var_prc[idx]->wgt_sum){
 	if(NORMALIZE_BY_WEIGHT) (void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
@@ -2024,7 +2027,8 @@ main(int argc,char **argv)
     } /* !idx */
 
     if(wgt_nm && (nco_op_typ == nco_op_avg || nco_op_typ == nco_op_mebs)){
-      /* Compute mean of per-record weight, by normalizing running sum of weight by tally
+      /* Third, and only if the weight comes from a record variable in the file ... 
+	 Compute mean of per-record weight, by normalizing running sum of weight by tally
 	 Then normalize all numerical record variables by mean of per-record weight
 	 Still ill-defined when MRO is invoked with --wgt 
 	 Same logic applies in two locations in this code:
