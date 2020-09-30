@@ -8213,23 +8213,34 @@ The
 UDUnits2} package supports non-ASCII characters and logarithmic units. 
 We are interested in user-feedback on these features.
 
+@cindex @code{UDUNITS2_XML_PATH}
 One aspect that deserves mention is that UDUnits, and thus
 @acronym{NCO}, supports run-time definition of the location of the
 relevant UDUnits databases. 
-With UDUnits @w{version 1}, users may specify the directory which
-contains the UDUnits database, @file{udunits.dat}, via the
-@code{UDUNITS_PATH} environment variable.
 With UDUnits @w{version 2}, users may specify the UDUnits database file 
 itself, @file{udunits2.xml}, via the @code{UDUNITS2_XML_PATH} 
 environment variable.
 @example
-# UDUnits1
-export UDUNITS_PATH='/unusual/location/share/udunits'
 # UDUnits2
 export UDUNITS2_XML_PATH='/unusual/location/share/udunits/udunits2.xml'
 @end example
 This run-time flexibility can enable the full functionality of
 pre-built binaries on machines with libraries in different locations.
+
+@ignore
+@cindex @code{UDUNITS_PATH}
+@acronym{NCO} supported for UDUnits @w{version 1} for many years, 
+and deprecated this feature in about 2015.
+Some UDUnits @w{version 1} feature may still work (we do not know).
+If you are stuck with a UDUnits @w{version 1} installation
+you might try to specify the directory which contains the UDUnits
+database, @file{udunits.dat}, via the @code{UDUNITS_PATH} environment
+variable: 
+@example
+# UDUnits1
+export UDUNITS_PATH='/unusual/location/share/udunits'
+@end example
+@end ignore
 
 @cindex Climate and Forecast Metadata Convention
 @cindex @acronym{CF} conventions

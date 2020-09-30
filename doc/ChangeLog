@@ -1,3 +1,7 @@
+2020-09-29  Charlie Zender  <zender@uci.edu>
+
+	* Remove UDUnits1 documentation from nco.texi
+
 2020-09-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.6-alpha01 release procedure:

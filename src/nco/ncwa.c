@@ -618,7 +618,7 @@ main(int argc,char **argv)
       break;
     case 'n':
       NORMALIZE_BY_WEIGHT=False;
-      (void)fprintf(fp_stdout,"%s: ERROR This option has been disabled while I re-think its implementation\n",nco_prg_nm);
+      (void)fprintf(fp_stdout,"%s: ERROR This option has been disabled while I re-think its implementation. Sincerely, Charlie\n",nco_prg_nm);
       nco_exit(EXIT_FAILURE);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */

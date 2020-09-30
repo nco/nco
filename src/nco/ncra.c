@@ -1650,7 +1650,7 @@ main(int argc,char **argv)
 	    /* Second, multiply unweighted time-mean values by time-mean weights */
 	    for(idx=0;idx<nbr_var_prc;idx++){
 	      if(var_prc[idx]->wgt_sum){
-		// 20200928: Condition this on by if(NORMALIZE_BY_WEIGHT) as is done for ncea below
+		// 20200928: fxm Condition this on if(NORMALIZE_BY_WEIGHT) as is done for ncea below?
 		(void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
 	      } /* !wgt_sum */
 	    } /* !idx */
