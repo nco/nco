@@ -729,9 +729,7 @@ int *pl_cnt_vrl_ret){
   poly_sct** pl_lst_dbg=NULL_CEWI;
 
   FILE * const fp_stderr=stderr;
-
-
-  pl_typ=pl_lst_in[0]->pl_typ;
+  
 
 
   lcl_thr_nbr=omp_get_max_threads();
