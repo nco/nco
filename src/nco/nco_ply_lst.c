@@ -798,7 +798,7 @@ int *pl_cnt_vrl_ret){
 
 
     if(pl_lst_in[idx]->bmsk==False)
-      continue;
+      goto cont_msk;  /* need to iterate mem_lst diagnostics at end of loop*/
 
     mem_lst[thr_idx].kd_cnt=0;
 
@@ -1185,6 +1185,8 @@ int *pl_cnt_vrl_ret){
       }
 
     } /* end dbg */
+
+    cont_msk: ;
 
     /* output some usefull tracking stuff - not debug but informative */
     if (  ++mem_lst[thr_idx].idx_cnt % thr_quota_step == 0 && nco_dbg_lvl_get() >=3   )
