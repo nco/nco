@@ -14038,6 +14038,7 @@ n2=-999,-999,11,11,11,11,11,11,999,-999;
 @end example
 
 @html
+<a name="missing"></a> <!-- http://nco.sf.net/nco.html#missing -->
 <a name="mask_miss"></a> <!-- http://nco.sf.net/nco.html#mask_miss -->
 <a name="has_miss"></a> <!-- http://nco.sf.net/nco.html#has_miss -->
 <a name="delete_miss"></a> <!-- http://nco.sf.net/nco.html#delete_miss -->
@@ -14047,9 +14048,9 @@ n2=-999,-999,11,11,11,11,11,11,999,-999;
 <a name="number_miss"></a> <!-- http://nco.sf.net/nco.html#number_miss -->
 @end html
 
-The following methods query or manipulate missing value information associated
-with a variable. The methods that ``manipulate'' will only succeed on variables in Output
-
+The following methods query or manipulate missing value (aka
+@code{_FillValue} information associated with a variable.
+The methods that ``manipulate'' only succeed on variables in Output.
 @table @code
 @item set_miss(expr)
 @cindex @code{set_miss()}
@@ -14090,8 +14091,8 @@ else returns 0 (False)
 @item missing()
 @cindex @code{missing(), mask_miss()}
 This function creates a True/False mask array of where the missing value is set.
-It is syntatically equivalent to ( var_in == var_in.get_miss()). except that cant do this
-unless you delete the missing value before-hand!!
+It is syntatically equivalent to @code{(var_in == var_in.get_miss())},
+except that requires deleting the missing value before-hand.
 @end table
 
 @example
@@ -14105,7 +14106,7 @@ where(th < 0.0 || th > 50.0) th=th.get_miss();
 new[$time,$lat,$lon]=1.0;
 new.set_miss(-997.0);
 
-// Extract only elements divisible by 3
+// Extract all elements evenly divisible by 3
 where (three_dmn_var_dbl%3 == 0)
      new=three_dmn_var_dbl; 
 elsewhere
@@ -14118,7 +14119,7 @@ print("Number of missing values in three_dmn_var_dbl: ");
 print(mss_val_nbr,"%d");
 print(three_dmn_var_dbl);
 
-// find the total number of missing values along dims $lat and $lon
+// Find the total number of missing values along dims $lat and $lon
 mss_ttl=three_mn_var_dbl.missing().ttl($lat,$lon);
 print(mss_ttl); // 0, 0, 0, 8, 0, 0, 0, 1, 0, 2 ;
 @end verbatim
@@ -17616,31 +17617,31 @@ value attributes to each numeric type, as in the third example.
 @cindex @acronym{IEEE} NaN
 @cindex Not-a-Number
 @acronym{NCO} arithmetic operators may not work as expected on
-@acronym{IEEE} NaN (short for Not-a-Number) and NaN-like numbers such as 
-positive infinity and negative infinity
+@acronym{IEEE} NaN (short for Not-a-Number) and NaN-like numbers such
+as positive infinity and negative infinity
 @footnote{NaN is a special floating point value (not a string).
 Arithmetic comparisons to NaN and NaN-like numbers always
 return False, contrary to the behavior of all other numbers.
 This behavior is difficult to intuit, yet @w{@acronym{IEEE} 754}
 mandates it.  
 To correctly handle NaNs during arithmetic, code must use special 
-math library macros (e.g., @command{isnormal()}) to determine whether
+math library macros (e.g., @command{isnormal()}) to determine whether 
 any operand is special. 
 If so, additional special logic must handle the arithmetic.
-This is in addition to the normal handling incurred to correctly handle
-missing values. 
+This is in addition to the normal handling incurred to correctly
+handle missing values. 
 Handling field and missing values (either or both of which may be NaN)
 in binary operators thus incurs four-to-eight extra code paths.
 Each code path slows down arithmetic relative to normal numbers.
 This makes supporting NaN arithmetic costly and inefficient.
-Hence @acronym{NCO} supports NaN only to the extent necessary to replace
-it with a normal number.
-Although using NaN for the missing value (or any value) in datasets is
+Hence @acronym{NCO} supports NaN only to the extent necessary to
+replace it with a normal number.
+Although using NaN for the missing value (or any value) in datasets is 
 legal in netCDF, we strongly discourage it.
 We recommend avoiding NaN entirely.}. 
-One way to work-around this problem is to change @acronym{IEEE} NaNs to
-normal missing values. 
-As of @acronym{NCO} 4.1.0 (March, 2012), @command{ncatted} works with
+One way to work-around this problem is to change @acronym{IEEE} NaNs
+to normal missing values. 
+As of @acronym{NCO} 4.1.0 (March, 2012), @command{ncatted} works with 
 NaNs (though none of the arithmetic operators do).
 This limited support enables users to change NaN to a normal number
 before performing arithmetic or propagating a NaN-tainted dataset.

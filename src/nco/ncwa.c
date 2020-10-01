@@ -968,8 +968,8 @@ main(int argc,char **argv)
       /* Retrieve variable from disk into memory */
       (void)nco_msa_var_get_trv(in_id,var_prc[idx],trv_tbl);
       /* var_prc_out still has type = packed type for packed variables
-      nco_typ_cnv_rth() fixes that for most operations, though not for minimization or maximization
-      Following line is necessary only for packed variables subject to minimization or maximization */
+	 nco_typ_cnv_rth() fixes that for most operations, though not for minimization or maximization
+	 Following line is necessary only for packed variables subject to minimization or maximization */
       if(var_prc[idx]->typ_dsk != var_prc[idx]->type && var_prc[idx]->typ_upk == var_prc[idx]->type) var_prc_out[idx]=nco_var_cnf_typ(var_prc[idx]->type,var_prc_out[idx]);
 
       /* Convert char, short, long, int, and float types to doubles before arithmetic */

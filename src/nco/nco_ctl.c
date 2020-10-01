@@ -1008,7 +1008,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[-b ")) (void)fprintf(stdout,"-b, --fl_bnr, binary-file fl_bnr\tUnformatted binary file to write\n");
   if(strstr(opt_sng,"[-b]")) (void)fprintf(stdout,"-b, --rdd, retain-degenerate-dimensions\tRetain degenerate dimensions\n");
   if(strstr(opt_sng,"--bfr")) (void)fprintf(stdout,"    --bfr_sz, buffer_size sz\tBuffer size to open files with\n");
-  if(strstr(opt_sng,"[-C]")) (void)fprintf(stdout,"-C, --no_crd, xcl_ass_\tExclude coordinates, CF-associated variables (ancillary, bounds, ...)\n");
+  if(strstr(opt_sng,"[-C]")) (void)fprintf(stdout,"-C, --no_crd, xcl_ass_var\tExclude coordinates, CF-associated variables (ancillary, bounds, ...)\n");
   if(strstr(opt_sng,"[-c]")) (void)fprintf(stdout,"-c, --crd, xtr_ass_var\tExtract coordinates, CF-associated variables (ancillary, bounds, ...)\n");
   if(strstr(opt_sng,"--cb")) (void)fprintf(stdout,"    --cb, clm_bnd\tCF Climatology and bounds information as yr_srt,yr_end,mth_srt,mth_end,tpd\n");
   if(strstr(opt_sng,"--cal")) (void)fprintf(stdout,"    --cal,--cln\tPrint UDUnits-compatible dates/times in human-legible calendar format\n");
@@ -1100,15 +1100,15 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"--nsm_grp")) (void)fprintf(stdout,"    --nsm_grp, ensemble_group\tEnsembles comprise equally weighted groups\n");
   if(strstr(opt_sng,"--nsm_sfx")) (void)fprintf(stdout,"    --nsm_sfx, ensemble_suffix\tPlace ensemble output in group parent/parent+nsm_sfx\n");
   if(strstr(opt_sng,"[-O]")) (void)fprintf(stdout,"-O, --ovr, overwrite\tOverwrite existing output file, if any\n");
-  if(strstr(opt_sng,"[-o")) (void)fprintf(stdout,"-o, --output, fl_out out.nc\tOutput file name (or use last positional argument)\n");
+  if(strstr(opt_sng,"[-o")) (void)fprintf(stdout,"-o, --output, fl_out \tOutput file name (or use last positional argument)\n");
   if(strstr(opt_sng,"[-P")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-P, --prn, print\tPrint data, metadata, and units. Abbreviation for -C -H -M -m -u.\n");
     if(prg_lcl == ncpdq) (void)fprintf(stdout,"-P, --pck_plc, pack_policy pck_plc\tPacking policy [all_new,all_xst,xst_new,upk]\n");
   } /* end if -P */
   if(strstr(opt_sng,"[-p")) (void)fprintf(stdout,"-p, --pth, path path\tPath prefix for all input filenames\n");
   if(strstr(opt_sng,"--ppc")) (void)fprintf(stdout,"    --ppc v1[,v2[,...]]=prc\tPrecision-Preserving Compression: Number of total or decimal significant digits\n");
-  if(strstr(opt_sng,"--prm_int")) (void)fprintf(stdout,"    --prm_int\t\tPromote integers to floating-point in output\n");
-  if(strstr(opt_sng,"--prw")) (void)fprintf(stdout,"    --prw\t\tPer-Record Weights\n");
+  if(strstr(opt_sng,"--prm_int")) (void)fprintf(stdout,"    --prm_int, prm_ntg\tPromote integers to floating-point in output\n");
+  if(strstr(opt_sng,"--prw")) (void)fprintf(stdout,"    --prw, per_recor...\tPer-Record Weights\n");
   if(strstr(opt_sng,"[-Q]")) (void)fprintf(stdout,"-Q, --quiet\t\tQuiet printing of dimension indices and coordinate values\n");
   if(strstr(opt_sng,"[-q]")) (void)fprintf(stdout,"-q, --quench\t\tQuench (turn-off) all printing to screen\n");
   if(strstr(opt_sng,"[-R]")) (void)fprintf(stdout,"-R, --rtn, retain\tRetain remotely-retrieved files after use\n");
@@ -1168,7 +1168,7 @@ nco_usg_prn(void)
   }else{
     if(nco_is_mfo(prg_lcl)) (void)fprintf(stdout,"in.nc [...]\t\tInput file names\n"); else (void)fprintf(stdout,"in.nc\t\t\tInput file name\n");
   } /* endif in.nc */
-  if(strstr(opt_sng,"[out.nc]")) (void)fprintf(stdout,"out.nc\t\t\tOutput file name (or use -o switch)\n");
+  if(strstr(opt_sng,"[out.nc]")) (void)fprintf(stdout,"\t\t\tOutput file name (or use -o switch)\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
 
   /* Free the space holding option string */
