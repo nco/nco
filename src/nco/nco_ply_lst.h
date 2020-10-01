@@ -83,17 +83,18 @@ poly_sct **pl_lst,
 int arr_nbr);
 
 poly_sct **
-nco_poly_lst_mk_vrl(   /* create overlap mesh  for crt */
+nco_poly_lst_mk_vrl_crt(   /* create overlap mesh  for crt */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
 KDTree *rtree,
 int *pl_cnt_vrl_ret);
 
 void **
-nco_poly_lst_mk_vrl_sph(  /* create overlap mesh  for sph polygons */
+nco_poly_lst_mk_vrl(  /* create overlap mesh  for sph polygons */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
 nco_grd_lon_typ_enm grd_lon_typ,
+poly_typ_enm pl_typ,
 KDTree **tree,
 int nbr_tr,
 int lst_out_typ,

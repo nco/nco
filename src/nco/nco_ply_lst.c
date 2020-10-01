@@ -564,7 +564,7 @@ KDPriority *list){
 }
 
 poly_sct **
-nco_poly_lst_mk_vrl(   /* create overlap mesh  for crt polygons */
+nco_poly_lst_mk_vrl_crt(   /* create overlap mesh  for crt polygons */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
 KDTree *rtree,
@@ -580,7 +580,7 @@ int *pl_cnt_vrl_ret){
 
   //nco_bool bSort=True;
 
-  const char fnc_nm[]="nco_poly_mk_vrl()";
+  const char fnc_nm[]="nco_poly_mk_vrl_crt()";
 
   /* buffers  used in nco-poly_re_org() */
   double lcl_dp_x[VP_MAX]={0};
@@ -686,16 +686,17 @@ int *pl_cnt_vrl_ret){
 
 
 void **
-nco_poly_lst_mk_vrl_sph(  /* create overlap mesh  for sph polygons */
+nco_poly_lst_mk_vrl(  /* create overlap mesh  for sph polygons */
 poly_sct **pl_lst_in,
 int pl_cnt_in,
 nco_grd_lon_typ_enm grd_lon_typ,
+poly_typ_enm pl_typ,
 KDTree **tree,
 int nbr_tr,
 int lst_out_typ,
 int *pl_cnt_vrl_ret){
   /* just duplicate output list to overlap */
-  const char fnc_nm[]="nco_poly_lst_mk_vrl_sph()";
+  const char fnc_nm[]="nco_poly_lst_mk_vrl()";
 
   nco_bool bDirtyRats=False;
   nco_bool bSort=True;
@@ -713,7 +714,7 @@ int *pl_cnt_vrl_ret){
   /* reporting step */
   int thr_quota_step;
 
-  poly_typ_enm pl_typ;
+
   size_t idx;
 
   int lcl_thr_nbr;
