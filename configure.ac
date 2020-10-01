@@ -730,6 +730,8 @@ if test "${enable_udunits2}" != 'no'; then
 	AC_CHECK_FILE([/opt/local/include/udunits2/udunits2.h], [CPPFLAGS="$CPPFLAGS -I/opt/local/include/udunits2"], [])
 	#/opt/local/lib/libudunits2.a
 	AC_CHECK_FILE([/opt/local/lib/libudunits2.a], [LDFLAGS="$LDFLAGS -L/opt/local/lib"], [])
+	AC_CHECK_FILE([/opt/local/lib/libudunits2.dylib], [LDFLAGS="$LDFLAGS -L/opt/local/lib"], [])
+	# 20201001 MacPorts installs /opt/local/lib/libudunits2.dylib not /opt/local/lib/libudunits2.a 
 	# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
 	# NB: 20100729 udunits2.xml location seems to have changed from 
 	# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml

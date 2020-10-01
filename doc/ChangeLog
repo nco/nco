@@ -1,3 +1,9 @@
+2020-10-01  Charlie Zender  <zender@uci.edu>
+
+	* configure.ac check for UDUnits2 library in /opt/local/lib/libudunits2.dylib
+
+	* Merge fixes from Henry to enable better regridding of	problematic input grid cells
+
 2020-09-29  Charlie Zender  <zender@uci.edu>
 
 	* Remove UDUnits1 documentation from nco.texi

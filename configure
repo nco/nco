@@ -19870,6 +19870,26 @@ if test "x$ac_cv_file__opt_local_lib_libudunits2_a" = xyes; then :
   LDFLAGS="$LDFLAGS -L/opt/local/lib"
 fi
 
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/local/lib/libudunits2.dylib" >&5
+$as_echo_n "checking for /opt/local/lib/libudunits2.dylib... " >&6; }
+if ${ac_cv_file__opt_local_lib_libudunits2_dylib+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/opt/local/lib/libudunits2.dylib"; then
+  ac_cv_file__opt_local_lib_libudunits2_dylib=yes
+else
+  ac_cv_file__opt_local_lib_libudunits2_dylib=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_local_lib_libudunits2_dylib" >&5
+$as_echo "$ac_cv_file__opt_local_lib_libudunits2_dylib" >&6; }
+if test "x$ac_cv_file__opt_local_lib_libudunits2_dylib" = xyes; then :
+  LDFLAGS="$LDFLAGS -L/opt/local/lib"
+fi
+
+	# 20201001 MacPorts installs /opt/local/lib/libudunits2.dylib not /opt/local/lib/libudunits2.a
 	# 20101011 Debian installs udunits2.xml in /usr/share/xml/udunits/udunits2
 	# NB: 20100729 udunits2.xml location seems to have changed from
 	# /usr/local/share/udunits2.xml (in Fedora Core 6) to /usr/local/share/udunits/udunits2.xml

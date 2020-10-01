@@ -710,7 +710,7 @@ main(int argc,char **argv)
       fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'N':
-      //      NRM_BY_DNM=False;
+      //NRM_BY_DNM=False;
       NORMALIZE_BY_WEIGHT=False;
       break;
     case 'n': /* NINTAP-style abbreviation of files to average */
