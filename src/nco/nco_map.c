@@ -966,7 +966,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     tree=nco_map_kd(pl_lst_out, pl_cnt_out, grd_lon_typ_out,&nbr_tr);
 
       /* temporarily disable crt code */
-      /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
+      /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl_crt(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
      /* add "centers" - */
      if(pl_typ==poly_sph)
@@ -979,7 +979,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
     if (pl_typ == poly_sph || pl_typ == poly_rll)
       /* REMEMBER the return type is void**    but it may actually be wgt_sct** or poly_sct** - so we recast it */
-      void_lst_vrl = nco_poly_lst_mk_vrl_sph(pl_lst_in, grd_sz_in, grd_lon_typ_out, tree, nbr_tr, lst_typ, &pl_cnt_vrl);
+      void_lst_vrl = nco_poly_lst_mk_vrl(pl_lst_in, grd_sz_in, grd_lon_typ_out, pl_typ, tree, nbr_tr, lst_typ, &pl_cnt_vrl);
 
     if(lst_typ==1)
       wgt_lst_vrl=(wgt_sct**)void_lst_vrl;
@@ -1037,7 +1037,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     lst_typ=1;
 
     /* temporarily disable crt code */
-    /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
+    /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl_crt(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
     if(pl_typ == poly_sph || pl_typ == poly_rll)
       wgt_lst_vrl = nco_poly_lst_mk_dwe_sph(map_rgr, pl_lst_out, grd_sz_out, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);
