@@ -207,12 +207,12 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Test cases ($DATA/[grids/maps] refers to ~zender/data/[grids/maps] on Charlie's test machines)
 # Map-only:
-# ncremap -D 1 --devnull=No --nco='--dbg=1' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
-# ncremap -D 1 --devnull=No --nco='--dbg=1' --alg_typ=nco_dwe --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_dwe.20200901.nc
-# ncremap -D 1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
-# ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
-# ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
-# ncremap -D 1 --alg_typ=tempest --grd_src=${DATA}/grids/128x256_SCRIP.20160301.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
+# ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_con --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' --alg_typ=nco_dwe --xtr_nsp=8 --xtr_xpn=2.0 --grd_src=${DATA}/grids/ne30np4_pentagons.091226.nc --grd_dst=${DATA}/grids/cmip6_180x360_scrip.20181001.nc --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_dwe.20200901.nc
+# ncremap --dbg=1 --alg_typ=bilin   --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
+# ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --grd_dst=${DATA}/grids/t62_scrip.20181001.nc --map=${HOME}/map.nc
+# ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/oEC60to30.SCRIP.150729.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
+# ncremap --dbg=1 --alg_typ=tempest --grd_src=${DATA}/grids/128x256_SCRIP.20160301.nc --tpl=${DATA}/dstmch90/dstmch90_clm.nc --map=${HOME}/map.nc
 # Regrid:
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr
 # ls ${DATA}/ne30/raw/*1979*.nc | ncremap -j 3 -m ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc -O ${DATA}/ne30/rgr # Batch-parallelism
@@ -297,8 +297,10 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Vertical interpolation (201903):
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_hyb_L72_ps.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo # PS in "fat" template file
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc # skinny template file
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc# Simultaneous horizontal/vertical regridding
-# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc # Missing-value extrapolation (mss_val|nrs_ngh) # Extrapolation results in missing values
+# Missing-value extrapolation (mss_val|nrs_ngh)
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --vrt_xtr=mss_val --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc # Extrapolation results in missing values
+# Simultaneous horizontal/vertical regridding
+# ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --vrt_fl=${DATA}/grids/vrt_hyb_L72.nc ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-01.nc ~/foo.nc
 # Time-varying hybrid input
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-0[123].nc 
 # ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.1979-0[123].nc ${DATA}/ne30/rgr/famipc5_ne30_v0.3_00003.cam.h0.197901_197903.nc

@@ -1,3 +1,7 @@
+2020-10-02  Charlie Zender  <zender@uci.edu>
+
+	* Improve regression tests for ncra -N, mostly working
+
 2020-10-01  Charlie Zender  <zender@uci.edu>
 
 	* configure.ac check for UDUnits2 library in /opt/local/lib/libudunits2.dylib

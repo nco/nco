@@ -710,7 +710,7 @@ main(int argc,char **argv)
       fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'N':
-      //NRM_BY_DNM=False;
+      NRM_BY_DNM=False;
       NORMALIZE_BY_WEIGHT=False;
       break;
     case 'n': /* NINTAP-style abbreviation of files to average */
@@ -771,7 +771,13 @@ main(int argc,char **argv)
 	} /* end loop over elements */
 	if(NORMALIZE_BY_WEIGHT) wgt_avg_scl/=wgt_nbr; else wgt_avg_scl=1.0/wgt_nbr;
 	assert(wgt_avg_scl != 0.0);
-	for(idx=0L;idx<wgt_nbr;idx++) wgt_arr[idx]/=wgt_avg_scl;
+	if(NORMALIZE_BY_WEIGHT)
+	  for(idx=0L;idx<wgt_nbr;idx++)
+	    wgt_arr[idx]/=wgt_avg_scl;
+	if(nco_dbg_lvl >= nco_dbg_std){
+	  (void)fprintf(stderr,"%s: INFO per-file or (with --prw) per-record weights: ",nco_prg_nm_get());
+	  for(idx=0L;idx<wgt_nbr;idx++) (void)fprintf(stderr,"wgt_arr[%d]=%g%s",idx,wgt_arr[idx],idx < wgt_nbr-1 ? ", " : "\n");
+	} /* !dbg */
       } /* !wgt_nm */
       break;
     case 'X': /* Copy auxiliary coordinate argument for later processing */
@@ -1488,7 +1494,7 @@ main(int argc,char **argv)
           if(nco_dbg_lvl >= nco_dbg_scl) (void)fprintf(fp_stdout,"%s: INFO Record %ld of %s contributes to output record %ld\n",nco_prg_nm_get(),idx_rec_crr_in,fl_in,idx_rec_out[idx_rec]);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,FLG_MSO,NORMALIZE_BY_WEIGHT,NRM_BY_DNM,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,fl_udu_sng,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,rgd_arr_bnds_lst,rgd_arr_bnds_nbr,rgd_arr_climo_lst,rgd_arr_climo_nbr,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
+#pragma omp parallel for private(idx,in_id) shared(CNV_ARM,FLG_BFR_NRM,FLG_ILV,FLG_MRO,FLG_MSO,NORMALIZE_BY_WEIGHT,NRM_BY_DNM,REC_FRS_GRP,REC_LST_DSR,base_time_crr,base_time_srt,fl_idx,fl_in,fl_nbr,fl_out,fl_udu_sng,flg_skp1,flg_skp2,gpe,grp_id,grp_out_fll,grp_out_id,idx_rec,idx_rec_crr_in,idx_rec_out,in_id_arr,lmt_rec,md5,nbr_dmn_fl,nbr_rec,nbr_var_prc,nco_dbg_lvl,nco_op_typ,nco_prg_id,out_id,rcd,rec_usd_cml,rgd_arr_bnds_lst,rgd_arr_bnds_nbr,rgd_arr_climo_lst,rgd_arr_climo_nbr,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_prc_typ_pre_prm,var_trv,wgt_arr,wgt_avg,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
 #endif /* !_OPENMP */
           for(idx=0;idx<nbr_var_prc;idx++){
 
@@ -1578,7 +1584,7 @@ main(int argc,char **argv)
 		  } /* !wgt_nm */
 		  if(var_prc[idx]->wgt_sum) var_prc[idx]->wgt_crr=wgt_scv.val.d;
 		  nco_scv_cnf_typ(var_prc[idx]->type,&wgt_scv);
-		  if(nco_dbg_lvl >= nco_dbg_fl && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, idx = %li, typ = %s, wgt_val = %g, wgt_crr = %g, var_val = %g, ttl = %g, tally = %ld\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,idx_rec_crr_in,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->wgt_crr,var_prc[idx]->val.dp[0],var_prc_out[idx]->val.dp[0],var_prc_out[idx]->tally[0]);
+		  if(nco_dbg_lvl >= nco_dbg_grp && (wgt_nm || wgt_arr)) (void)fprintf(fp_stdout,"wgt_nm = %s, var_nm = %s, idx = %li, typ = %s, wgt_val = %g, wgt_crr = %g, var_val = %g, ttl = %g, tally = %ld\n",wgt_nm ? wgt_out->nm_fll : "NULL",var_prc[idx]->nm,idx_rec_crr_in,nco_typ_sng(wgt_scv.type),wgt_scv.val.d,var_prc[idx]->wgt_crr,var_prc[idx]->val.dp[0],var_prc_out[idx]->val.dp[0],var_prc_out[idx]->tally[0]);
 		  (void)nco_var_scv_mlt(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,&wgt_scv);
 		  if(wgt_nm && var_prc[idx]->has_mss_val){
 		    (void)fprintf(fp_stdout,"%s: ERROR %s -w wgt_nm does not yet work on variables that contain missing values and variable %s contains a missing value attribute. This is TODO nco1124. %s will now quit rather than compute possibly erroneous values. HINT: Restrict the %s -w wgt_nm operation to variables with no missing value attributes.\n",nco_prg_nm_get(),nco_prg_nm_get(),nco_prg_nm_get(),var_prc[idx]->nm,nco_prg_nm_get());
@@ -1650,7 +1656,8 @@ main(int argc,char **argv)
 	    /* Second, multiply unweighted time-mean values by time-mean weights */
 	    for(idx=0;idx<nbr_var_prc;idx++){
 	      if(var_prc[idx]->wgt_sum){
-		// 20200928: fxm Condition this on if(NORMALIZE_BY_WEIGHT) as is done for ncea below?
+		// 20201002: fxm Condition this on if(NORMALIZE_BY_WEIGHT) as is done for ncea below?
+		//if(NORMALIZE_BY_WEIGHT) (void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
 		(void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
 	      } /* !wgt_sum */
 	    } /* !idx */
@@ -1824,7 +1831,7 @@ main(int argc,char **argv)
 	(void)nco_msa_var_get_trv(in_id,wgt_out,trv_tbl);
 
 #ifdef _OPENMP
-#pragma omp parallel for private(idx,in_id) shared(FLG_BFR_NRM,fl_idx,gpe,grp_id,grp_out_fll,grp_out_id,in_id_arr,nbr_dmn_fl,nbr_var_prc,nco_dbg_lvl,nco_op_typ,out_id,rcd,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_trv,wgt_arr,wgt_avg,wgt_avg_scl,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
+#pragma omp parallel for private(idx,in_id) shared(FLG_BFR_NRM,fl_idx,gpe,grp_id,grp_out_fll,grp_out_id,in_id_arr,nbr_dmn_fl,nbr_var_prc,nco_dbg_lvl,nco_op_typ,out_id,rcd,thr_nbr,trv_tbl,var_out_id,var_prc,var_prc_out,var_trv,wgt_arr,wgt_avg,wgt_nbr,wgt_nm,wgt_out,wgt_scv)
 #endif /* !_OPENMP */
       for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 
@@ -2022,7 +2029,8 @@ main(int argc,char **argv)
     /* Second, multiply unweighted time-mean values by time-mean weights */
     for(idx=0;idx<nbr_var_prc;idx++){
       if(var_prc[idx]->wgt_sum){
-	if(NORMALIZE_BY_WEIGHT) (void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
+	//(void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val);
+	if(NORMALIZE_BY_WEIGHT) (void)nco_var_nrm_wgt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->wgt_sum,var_prc_out[idx]->val); // original code
       } /* !wgt_sum */
     } /* !idx */
 
