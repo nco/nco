@@ -215,7 +215,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/PRECT_200101_200212.nc
 
 # Debugging and Benchmarking:
-# ncclimo -v FSNT,AODVIS,TREFHT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo -v FSNT,AODVIS,TREFHT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo --var_lst=FSNT,AODVIS,TREFHT --caseid=famipc5_ne30_v0.3_00003 --yr_srt=1980 --yr_end=1983 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
 # ncclimo > ~/ncclimo.out 2>&1 &

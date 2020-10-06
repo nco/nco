@@ -6911,6 +6911,10 @@ ncremap -G ttl='CAM-FV scalar grid 129x256'#latlon=129,256#lat_typ=fv#lon_typ=gr
 ncremap -G ttl='CAM-FV scalar grid 192x288'#latlon=192,288#lat_typ=fv#lon_typ=grn_ctr \
         -g ${DATA}/grids/192x288_SCRIP.20160301.nc
 
+# 361x576 NASA MERRA2 FV grid, first longitude centered at DateLine
+ncremap -G ttl='NASA MERRA2 Cap grid 361x576'#latlon=361,576#lat_typ=cap#lon_typ=180_ctr \
+        -g ${DATA}/grids/merra2_361x576.20201001.nc
+
 # 1441x2880 CAM-FV grid, first longitude centered at Greenwich
 ncremap -G ttl='CAM-FV scalar grid 1441x2880'#latlon=1441,2880#lat_typ=fv#lon_typ=grn_ctr \
         -g ${DATA}/grids/1441x2880_SCRIP.20170901.nc
@@ -25103,6 +25107,7 @@ ncremap -g grd.nc -G latlon=180,360#lat_drc=n2s     # 1x1 Uniform grid, N->S not
 ncremap -g grd.nc -G latlon=180,360#lon_typ=grn_wst # 1x1 Uniform grid, Greenwich-west edge
 ncremap -g grd.nc -G latlon=129,256#lat_typ=cap     # 1.4x1.4  FV grid
 ncremap -g grd.nc -G latlon=94,192#lat_typ=gss      # T62 Gaussian grid
+ncremap -g grd.nc -G latlon=361,576#lat_typ=cap#lon_typ=180_ctr # MERRA2 FV grid
 ncremap -g grd.nc -G latlon=94,192#lat_typ=gss#lat_drc=n2s # NCEP2 T62 Gaussian grid 
 @end verbatim
 @end example
