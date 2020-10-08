@@ -3578,6 +3578,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nCells",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nCells"); /* MPAS-O/I */
     else if((rcd=nco_inq_dimid_flg(in_id,"nEdges",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("nEdges"); /* MPAS-O/I */
+    else if((rcd=nco_inq_dimid_flg(in_id,"ncol_d",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("ncol_d"); /* EAM dynamics grid */
+    else if((rcd=nco_inq_dimid_flg(in_id,"ncol_p",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("ncol_d"); /* EAM physics grid */
     else if((rcd=nco_inq_dimid_flg(in_id,"sounding_id",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("sounding_id"); /* OCO2 */
     /* 20180605: Database matches to above names may be false-positives
        ALM/CLM/CTSM/ELM store all possible dimension names that archived variables could use
@@ -7654,6 +7656,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latitude");
     else if((rcd=nco_inq_varid_flg(in_id,"Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("Latitude"); /* AMSR, HIRDLS, TRMM */
     else if((rcd=nco_inq_varid_flg(in_id,"lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("lat"); /* CAM */
+    else if((rcd=nco_inq_varid_flg(in_id,"lat_d",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("lat_d"); /* EAM dynamics grid */
     else if((rcd=nco_inq_varid_flg(in_id,"Lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("Lat");
     else if((rcd=nco_inq_varid_flg(in_id,"XLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("XLAT"); /* WRF */
     else if((rcd=nco_inq_varid_flg(in_id,"XLAT_M",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("XLAT_M"); /* Unknown */
@@ -7675,6 +7678,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("longitude");
     else if((rcd=nco_inq_varid_flg(in_id,"Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("Longitude"); /* AMSR, TRMM */
     else if((rcd=nco_inq_varid_flg(in_id,"lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lon"); /* CAM */
+    else if((rcd=nco_inq_varid_flg(in_id,"lon_d",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lon"); /* EAM dynamics grid */
     else if((rcd=nco_inq_varid_flg(in_id,"Lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("Lon");
     else if((rcd=nco_inq_varid_flg(in_id,"XLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG"); /* WRF */
     else if((rcd=nco_inq_varid_flg(in_id,"XLONG_M",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG_M"); /* Unknown */
@@ -7893,6 +7897,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"Area",&area_id)) == NC_NOERR) area_nm_in=strdup("Area");
   else if((rcd=nco_inq_varid_flg(in_id,"areaCell",&area_id)) == NC_NOERR) area_nm_in=strdup("areaCell"); /* MPAS-O/I */
   else if((rcd=nco_inq_varid_flg(in_id,"grid_area",&area_id)) == NC_NOERR) area_nm_in=strdup("grid_area");
+  else if((rcd=nco_inq_varid_flg(in_id,"area_d",&area_id)) == NC_NOERR) area_nm_in=strdup("area_d"); /* EAM dynamics grid */
+  else if((rcd=nco_inq_varid_flg(in_id,"area_p",&area_id)) == NC_NOERR) area_nm_in=strdup("area_p"); /* EAM physics grid */
   // else if((rcd=nco_inq_varid_flg(in_id,"aice",&area_id)) == NC_NOERR) area_nm_in=strdup("aice"); /* CICE time-dependent ice area (3D), not total gridcell area */
   else if((rcd=nco_inq_varid_flg(in_id,"tarea",&area_id)) == NC_NOERR) area_nm_in=strdup("tarea"); /* CICE time-invariant state-variable gridcell area (2D) */
   else if((rcd=nco_inq_varid_flg(in_id,"uarea",&area_id)) == NC_NOERR) area_nm_in=strdup("uarea"); /* CICE time-invariant dynamics variables (2D) */
