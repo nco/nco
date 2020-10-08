@@ -215,15 +215,13 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo --var=PRECT --caseid=famipc5_ne30_v0.3_00007 --clm_md=hfc --caseid=hfc --yr_srt=2001 --yr_end=2002 --drc_out=${HOME} --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc ~/PRECT_200101_200212.nc
 
 # Debugging and Benchmarking:
-# ncclimo -v FSNT,AODVIS,TREFHT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
-# ncclimo --var_lst=FSNT,AODVIS,TREFHT --caseid=famipc5_ne30_v0.3_00003 --yr_srt=1980 --yr_end=1983 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo -v FSNT,AODVIS,TREFHT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo --var_lst=FSNT,AODVIS,TREFHT --caseid=20180129.DECKv1b_piControl.ne30_oEC.edison --yr_srt=1 --yr_end=2 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
 # ncclimo -c ne30_gx1.B1850c5d -s 6 -e 7 > ~/ncclimo.out 2>&1 &
 # ncclimo -d 2 -v FSNT -m cam2 -c essgcm14 -s 1 -e 20 -i ${DATA}/essgcm14 -o ${DATA}/anl > ~/ncclimo.out 2>&1 &
-# ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
-# ncclimo -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm > ~/ncclimo.out 2>&1 &
 # MPAS: Prior to running ncclimo on MPAS output, annotate missing values of input with, e.g.,
 # for fl in `ls hist.*` ; do
 #  ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${fl}
@@ -235,19 +233,19 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # ncclimo -v iceAreaCell -c hist -s 2 -e 3 -m ice -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
 # Split pipe:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split redirection:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc > ~/foo;ncclimo --dbg=1 -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm < ~/foo
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc > ~/foo;ncclimo --dbg=1 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm < ~/foo
 # Split stdin switch:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --stdin -s 1979 -e 1981 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 --stdin -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split positional arguments:
-# ncclimo --dbg=1 -s 1979 -e 1979 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/famipc5_ne30_v0.3_00003.cam.h0.1979-??.nc
+# ncclimo --dbg=1 -s 1 -e 1 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-??.nc
 # Split directory:
-# ncclimo --dbg=1 --ypf=50 -s 1979 -e 1983 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
+# ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split global mean
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 --glb_avg -s 1979 -e 1981 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *0001-??*.nc *000[12]-??*.nc | ncclimo --dbg=1 --glb_avg -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
 # Split all:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *0001-??*.nc *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split ELM:
 # ncclimo --dbg=1 -s 2000 -e 2000 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc
 # Split vertical:
@@ -264,8 +262,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncclimo -d 1 -v TBOT,FSDS -m clm2 -c essgcm14 -s 1 -e 1 -i ${DATA}/essgcm14 -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_t42_to_cmip6_180x360_nco.20190601.nc --sgs_frc=${DATA}/grids/clm2_landfrac_t42.nc/landfrac 
 # ncclimo -d 1 -v TBOT,FSDS -m clm2 -c F_acmev03_enso_camse_clm45bgc_ne30_co2cycle -s 2000 -e 2000 -i ${DATA}/ne30/raw -o ${DATA}/ne30/rgr --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc --sgs_frc=${DATA}/grids/elm_landfrac_ne30.nc/landfrac 
 # Seasons:
-# ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
-# ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo -d 1 --csn_lst=mam,jja,son,djf,jfm,on -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo -d 1 --csn_lst=jfm,jas,ann -v FSNT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # Compy Jobs or MPI:
 # ncclimo -c 20180215.DECKv1b_H1.ne30_oEC.edison -s 2010 -e 2014 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_aave.20181001.nc # ne30 climo on 1 node in full-background (12 jobs) mode
 # ncclimo --jobs=3 -c 20180410.A_WCYCL1950_HR.ne120_oRRS18v3_ICG.theta -s 1 -e 5 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_cmip6_720x1440_aave.20181001.nc # ne120 climo on 1 node in background mode with 3-jobs (to stay under 192 GB RAM limit)
@@ -315,17 +313,17 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # 4. SLURM automatically combines stdout and stderr, yet does not understand tilde (~ = home directory) expansion in error/output filenames
 # 5. After merger of Cori Phase 1 Haswell and Phase 2 KNL cabinets in ~2017, SLURM on Cori requires Quality-of-Service (QOS) argument, either -C haswell or -C knl or -C gpu
 # Differences 1 & 2 impose slightly different invocations; difference 3 requires abstracting environment variables; difference 4 requires omitting ~'s; difference 5 requires -C argument on Cori only
-#   Blues a):  echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
-#   Cheyenne a) echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#   Blues a):  echo "ncclimo -a scd -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
+#   Cheyenne a) echo "ncclimo -a scd -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" > ~/ncclimo.pbs;chmod a+x ~/ncclimo.pbs
 #   Compy a): echo '#!/bin/bash' > ~/ncclimo.slurm
 #                   echo "ncclimo -d 1 -p mpi -c 20180215.DECKv1b_H1.ne30_oEC.edison -s 2010 -e 2010 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Cooley a): /bin/rm -f ~/ncclimo.err ~/ncclimo.out
 #              echo '#!/bin/bash' > ~/ncclimo.cobalt
 #              echo "ncclimo -d 1 -p mpi -c b1850c5_m2a -s 55 -e 58 -i /home/taylorm/scratch1.qtang/b1850c5_m2a/run -o ${DATA}/ne120/clm" >> ~/ncclimo.cobalt;chmod a+x ~/ncclimo.cobalt
 #   Cori a): echo '#!/bin/bash' > ~/ncclimo.slurm
-#                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne30_v0.3_00003 -s 1980 -e 1983 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
+#                   echo "ncclimo -d 1 -p mpi -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -r ${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Rhea a): echo '#!/bin/bash' > ~/ncclimo.slurm
-#                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1983 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
+#                   echo "ncclimo -a scd -d 1 -p mpi -c famipc5_ne120_v0.3_00003 -s 1 -e 2 -i ${DATA}/ne120/raw -o ${DATA}/ne120/clm -r ${DATA}/maps/map_ne120np4_to_fv257x512_aave.20150901.nc" >> ~/ncclimo.slurm;chmod a+x ~/ncclimo.slurm
 #   Blues b):  qsub -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Cheyenne b): qsub -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo -j oe -m e -o ~/ncclimo.out ~/ncclimo.pbs
 #   Compy b): sbatch -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo --mail-type=END --output=${HOME}/ncclimo.out ~/ncclimo.slurm
@@ -461,7 +459,7 @@ bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 bnr_flg='No' # [sng] Binary method
 caseid='' # [sng] Case ID
-caseid_xmp='famipc5_ne30_v0.3_00003' # [sng] Case ID for examples
+caseid_xmp='20180129.DECKv1b_piControl.ne30_oEC.edison' # [sng] Case ID for examples
 cf_flg='Yes' # [sng] Produce CF climatology attribute?
 clm_flg='Yes' # [sng] Generate climatology
 clm_hfc_or_mth='No' # [sng] Generate monthly output climatology
@@ -535,8 +533,8 @@ vrt_xtr='' # [sng] Vertical extrapolation type (mss_val|nrs_ngh)
 xcl_flg='No' # [sng] Exclude rather than extract variable list
 xtn_flg='No' # [sng] Produce extended climatology
 ypf_max=50 # [yr] Years-per-output-file
-yr_end='1983' # [yr] End year
-yr_srt='1980' # [yr] Start year
+yr_end='2' # [yr] End year
+yr_srt='1' # [yr] Start year
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
@@ -616,8 +614,6 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "rhea  : salloc  -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "rhea  : salloc  -A CLI115 --nodes=1 --time=00:30:00 --partition=gpu --job-name=ncclimo # Bigmem\n"
     printf "\nComplete documentation at http://nco.sf.net/nco.html#${spt_nm}\n\n"
-#    echo "3-yrs  ne30: ncclimo -c famipc5_ne30_v0.3_00003 -s 1980 -e 1982 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne30_v0.3_00003-wget-test -o ${DATA}/ne30/clm -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc > ~/ncclimo.out 2>&1 &"
-#    printf "3-yrs ne120: ncclimo -p mpi -c famipc5_ne120_v0.3_00003 -s 1980 -e 1982 -i /gpfs/alpine/cli115/world-shared/mbranst/famipc5_ne120_v0.3_00003-wget-test -o ${DATA}/ne120/clm -r ~zender/data/maps/map_ne120np4_to_fv257x512_aave.20150901.nc > ~/ncclimo.out 2>&1 &\n\n"
     exit 1
 } # end fnc_usg_prn()
 

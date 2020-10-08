@@ -1,5 +1,7 @@
 2020-10-08  Charlie Zender  <zender@uci.edu>
 
+	* Replace old benchmark case famipc5_ne30_v0.3_00003 by 20180129.DECKv1b_piControl.ne30_oEC.edison
+
 	* Add lat_d, lon_d, area_d, area_p, ncol_d, ncol_p to regridding database
 
 2020-10-02  Charlie Zender  <zender@uci.edu>
