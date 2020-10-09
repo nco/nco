@@ -6883,8 +6883,10 @@ The third example uses a convenience switch introduced to reduce typing.
 @end html
 Generating common grids:
 @cindex @acronym{ECMWF IFS} grid
+@cindex @acronym{ECMWF ERA5} grid
 @cindex @acronym{NCEP2} grid
 @cindex @acronym{NASA CMG} grid
+@cindex @acronym{NASA MERRA2} grid
 @cindex @acronym{CAM-FV} grid
 @cindex @acronym{Equi-angular} grid
 @example
@@ -6959,8 +6961,16 @@ ncremap -7 -L 1 \
      -g ${DATA}/grids/grd_18000x36000_SCRIP.nc
 
 # 1x1 degree Equi-Angular Regional grid over Greenland, centered longitudes
-ncremap -G ttl='Equi-Angular Greenland grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
-        -g ${HOME}/greenland_SCRIP.nc
+ncremap -G ttl='Equi-Angular Greenland 1x1 degree grid'#latlon=30,90#snwe=55.0,85.0,-90.0,0.0#lat_typ=uni#lon_typ=grn_ctr \
+        -g ${HOME}/greenland_1x1.nc
+
+# 721x1440 ECMWF ERA5 resolution
+ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV grid 0.25x0.25 degree, dimensions 721x1440, cell centers on Poles/Equator and Prime Meridian/Date Line'#latlon=721,1440#lat_drc=n2s#lat_typ=cap#lon_typ=grn_ctr \
+        -g ${DATA}/grids/era5.nc
+
+# 105x401 Greenland ERA5
+ncremap -G ttl='Equi-Angular Greenland 0.25x0.25 degree ERA5 north-to-south grid'#latlon=105,401#snwe=58.875,85.125,-87.125,13.125#lat_typ=uni#lat_drc=n2s#lon_typ=grn_ctr \
+        -g ${DATA}/grids/greenland_0.25x0.25_era5.nc
 @end verbatim
 @end example
 

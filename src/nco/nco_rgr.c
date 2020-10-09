@@ -3060,11 +3060,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     for(idx=0L;idx<lon_nbr_out;idx++){
       lon_bnd_out[2L*idx]=lon_ntf_out[idx];
       lon_bnd_out[2L*idx+1L]=lon_ntf_out[idx+1L];
-    } /* end loop over longitude */
+    } /* !lon_nbr_out */
     for(idx=0L;idx<lat_nbr_out;idx++){
       lat_bnd_out[2L*idx]=lat_ntf_out[idx];
       lat_bnd_out[2L*idx+1L]=lat_ntf_out[idx+1L];
-    } /* end loop over latitude */
+    } /* !lat_nbr_out */
 
     if(nco_dbg_lvl_get() >= nco_dbg_crr){
       for(idx=0L;idx<lon_nbr_out;idx++) (void)fprintf(stdout,"lon[%li] = [%g, %g, %g]\n",idx,lon_bnd_out[2L*idx],lon_ctr_out[idx],lon_bnd_out[2L*idx+1L]);
@@ -8733,6 +8733,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	break;
       case nco_grd_lat_eqa:
 	lat_ncr=lat_spn/lat_nbr;
+	/* 20201009 */
 	for(lat_idx=1L;lat_idx<lat_nbr;lat_idx++)
 	  if(flg_s2n) lat_ntf[lat_idx]=lat_ntf[0L]+lat_idx*lat_ncr; else lat_ntf[lat_idx]=lat_ntf[0L]-lat_idx*lat_ncr;
 	break;
@@ -8789,8 +8790,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       default:
 	nco_dfl_case_generic_err(); break;
       } /* !lat_typ */
-      /* Ensure rounding errors do not produce unphysical grid */
-      lat_ntf[lat_nbr]=lat_nrt;
 
       if(lat_typ == nco_grd_lat_gss){
 	/* 20170510: First approximation above to exterior interfaces for Gaussian grid are ~ +/-89 degrees

@@ -26,8 +26,6 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   const double rdn2dgr=180.0/M_PI;
 
-
-
   double *area_in=NULL; /* [sr] Area of source grid */
   double *frc_in=NULL; /* [frc] Fraction of source grid */
   double *lat_crn_in=NULL; /* [dgr] Latitude  corners of source grid */
@@ -357,8 +355,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
 
   // if(area_out_id != NC_MIN_INT) rcd=nco_get_vara(in_id_dst,area_out_id,dmn_srt,dmn_cnt,area_out,crd_typ);
 
-  if(msk_out_id != NC_MIN_INT)
-    rcd=nco_get_vara(in_id_dst,msk_out_id,dmn_srt,dmn_cnt,msk_out,(nc_type)NC_INT);
+  if(msk_out_id != NC_MIN_INT) rcd=nco_get_vara(in_id_dst,msk_out_id,dmn_srt,dmn_cnt,msk_out,(nc_type)NC_INT);
 
   rcd=nco_get_vara(in_id_dst,dst_grd_ctr_lon_id,dmn_srt,dmn_cnt,lon_ctr_out,crd_typ);
   rcd=nco_get_vara(in_id_dst,dst_grd_ctr_lat_id,dmn_srt,dmn_cnt,lat_ctr_out,crd_typ);
@@ -881,7 +878,6 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     nco_poly_prn(pl_glb_out,0);
   }
 
-
   /* run though just to check - some (0-360) SCRIP files have a negative lon for wrapped cells ??*/
   nco_msh_lon_crr(lon_crn_in,grd_sz_in,grd_crn_nbr_in, grd_lon_typ_in, grd_lon_typ_in );
   nco_msh_lon_crr(lon_crn_out,grd_sz_out,grd_crn_nbr_out, grd_lon_typ_out, grd_lon_typ_out );
@@ -896,50 +892,44 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
 
   //  test nco_poly functions
   {
-
-    switch (grd_lon_typ_out) {
+    switch(grd_lon_typ_out){
 
       case nco_grd_lon_nil:
       case nco_grd_lon_unk:
       case nco_grd_lon_bb:
-        if (pl_typ == poly_crt)
+        if(pl_typ == poly_crt)
           nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
-        else if (pl_typ == poly_sph || pl_typ == poly_rll)
+        else if(pl_typ == poly_sph || pl_typ == poly_rll)
           nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
-
         break;
-
 
       case nco_grd_lon_180_ctr:
       case nco_grd_lon_180_wst:
-        if (pl_typ == poly_crt)
+        if(pl_typ == poly_crt)
           nco_crt_set_domain(-180.0, 180.0, -90.0, 90.0);
-        else if (pl_typ == poly_sph || pl_typ == poly_rll)
+        else if(pl_typ == poly_sph || pl_typ == poly_rll)
           nco_sph_set_domain(-M_PI, M_PI, -M_PI_2, M_PI_2);
-
         break;
-
 
       case nco_grd_lon_Grn_ctr:
       case nco_grd_lon_Grn_wst:
-        if (pl_typ == poly_crt)
+        if(pl_typ == poly_crt)
           nco_crt_set_domain(0.0, 360.0, -90.0, 90.0);
-        else if (pl_typ == poly_sph || pl_typ == poly_rll)
+        else if(pl_typ == poly_sph || pl_typ == poly_rll)
           nco_sph_set_domain(0.0, 2.0 * M_PI, -M_PI_2, M_PI_2);
-
         break;
-    }
+    } /* !grd_lon_typ_out */
 
-    if (pl_typ == poly_sph)
+    if(pl_typ == poly_sph)
       pl_lst_out = nco_poly_lst_mk_sph(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out,grd_sz_out, (size_t) grd_crn_nbr_out, grd_lon_typ_out);
-    else if (pl_typ == poly_rll)
+    else if(pl_typ == poly_rll)
       pl_lst_out = nco_poly_lst_mk_rll(area_out, msk_out, lat_ctr_out, lon_ctr_out, lat_crn_out, lon_crn_out, grd_sz_out, (size_t) grd_crn_nbr_out, grd_lon_typ_out);
 
     pl_cnt_out = grd_sz_out;
 
-    if (pl_typ == poly_sph)
+    if(pl_typ == poly_sph)
       pl_lst_in = nco_poly_lst_mk_sph(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in, (size_t) grd_crn_nbr_in, grd_lon_typ_out);
-    else if (pl_typ == poly_rll)
+    else if(pl_typ == poly_rll)
       pl_lst_in = nco_poly_lst_mk_rll(area_in, msk_in, lat_ctr_in, lon_ctr_in, lat_crn_in, lon_crn_in, grd_sz_in, (size_t) grd_crn_nbr_in, grd_lon_typ_out);
 
     pl_cnt_in = grd_sz_in;
@@ -958,7 +948,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     KDTree **tree;
     void **void_lst_vrl=NULL_CEWI;
 
-    if(rgr->fl_msh )
+    if(rgr->fl_msh)
       lst_typ=2;
     else
       lst_typ=1;
@@ -969,32 +959,28 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl_crt(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
      /* add "centers" - */
-     if(pl_typ==poly_sph)
-     {
+     if(pl_typ == poly_sph){
        nco_poly_lst_ctr_add(pl_lst_in, grd_sz_in,1);
        nco_poly_lst_ctr_add(pl_lst_out, grd_sz_out,1);
-
      }
 
+    if(pl_typ == poly_sph || pl_typ == poly_rll)
+      /* REMEMBER the return type is void ** but it may actually be wgt_sct ** or poly_sct **, so we recast it */
+      void_lst_vrl=nco_poly_lst_mk_vrl(pl_lst_in, grd_sz_in, grd_lon_typ_out, pl_typ, tree, nbr_tr, lst_typ, &pl_cnt_vrl);
 
-    if (pl_typ == poly_sph || pl_typ == poly_rll)
-      /* REMEMBER the return type is void**    but it may actually be wgt_sct** or poly_sct** - so we recast it */
-      void_lst_vrl = nco_poly_lst_mk_vrl(pl_lst_in, grd_sz_in, grd_lon_typ_out, pl_typ, tree, nbr_tr, lst_typ, &pl_cnt_vrl);
+    if(lst_typ == 1)
+      wgt_lst_vrl=(wgt_sct **)void_lst_vrl;
+    else if(lst_typ == 2)
+      pl_lst_vrl=(poly_sct **)void_lst_vrl;
 
-    if(lst_typ==1)
-      wgt_lst_vrl=(wgt_sct**)void_lst_vrl;
-    else if(lst_typ==2)
-      pl_lst_vrl=(poly_sct**)void_lst_vrl;
-
-    if (nco_dbg_lvl_get() >= nco_dbg_dev )
+    if(nco_dbg_lvl_get() >= nco_dbg_dev)
       fprintf(stderr, "%s: INFO: num input polygons=%lu, num output polygons=%lu num overlap polygons=%d\n", nco_prg_nm_get(), grd_sz_in, grd_sz_out, pl_cnt_vrl);
-
 
     /* Write-out overlap mesh
      20190526: Allow users to name and output mesh-file with --rgr msh_fl=msh.nc. https://github.com/nco/nco/issues/135 */
-    if (rgr->fl_msh) nco_msh_poly_lst_wrt(rgr->fl_msh, pl_lst_vrl, pl_cnt_vrl, grd_lon_typ_out, rgr->fl_out_fmt);
+    if(rgr->fl_msh) nco_msh_poly_lst_wrt(rgr->fl_msh, pl_lst_vrl, pl_cnt_vrl, grd_lon_typ_out, rgr->fl_out_fmt);
 
-    if (nco_dbg_lvl_get() >= nco_dbg_dev && lst_typ==2 && pl_lst_vrl) {
+    if(nco_dbg_lvl_get() >= nco_dbg_dev && lst_typ==2 && pl_lst_vrl){
       int io_flg = 1;
       int pl_nbr = 0;
 
@@ -1004,7 +990,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       fprintf(stderr, "%s(): Comparing dst areas with overlap areas\n", fnc_nm);
       pl_lst_dbg = nco_poly_lst_chk_dbg(pl_lst_out, grd_sz_out, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
-      if (pl_nbr) {
+      if(pl_nbr){
         nco_msh_poly_lst_wrt("nco_map_tst_out_dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out, rgr->fl_out_fmt);
         pl_lst_dbg = nco_poly_lst_free(pl_lst_dbg, pl_nbr);
       }
@@ -1013,10 +999,10 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       io_flg = 0;
 
       /* find area mismatch between src and overlap */
-      fprintf(stderr, "%s(): Comparing src areas with overlap areas\n", fnc_nm);
-      pl_lst_dbg = nco_poly_lst_chk_dbg(pl_lst_in, grd_sz_in, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
+      fprintf(stderr,"%s(): Comparing src areas with overlap areas\n",fnc_nm);
+      pl_lst_dbg=nco_poly_lst_chk_dbg(pl_lst_in, grd_sz_in, pl_lst_vrl, pl_cnt_vrl, io_flg, &pl_nbr);
 
-      if (pl_nbr) {
+      if(pl_nbr){
         nco_msh_poly_lst_wrt("nco_map_tst_in_dbg.nc", pl_lst_dbg, pl_nbr, grd_lon_typ_out, rgr->fl_out_fmt);
         pl_lst_dbg = nco_poly_lst_free(pl_lst_dbg, pl_nbr);
       }
@@ -1037,7 +1023,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
     lst_typ=1;
 
     /* temporarily disable crt code */
-    /*  if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl_crt(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
+    /* if(pl_typ == poly_crt) pl_lst_vrl=nco_poly_lst_mk_vrl_crt(pl_lst_in, pl_cnt_in, rtree, &pl_cnt_vrl); */
 
     if(pl_typ == poly_sph || pl_typ == poly_rll)
       wgt_lst_vrl = nco_poly_lst_mk_dwe_sph(map_rgr, pl_lst_out, grd_sz_out, grd_lon_typ_out, tree, nbr_tr, &pl_cnt_vrl);

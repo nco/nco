@@ -303,8 +303,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -v lat,lon,FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --vrt_fl=${DATA}/grids/vrt_hyb_L30.nc ${DATA}/ne30/raw/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # Time-varying hybrid input
 # ncremap -v FSNT,AODVIS,T,Q,U,V,Z3 --map=${DATA}/maps/map_ne30np4_to_fv129x256_aave.20150901.nc --drc_out=${DATA}/ne30/rgr ${DATA}/ne30/raw/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-0[123].nc 
-# ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-0[123].nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000103.nc
-# ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000103.nc ~/foo.nc
+# ncrcat -O -v FSNT,AODVIS,T,Q,U,V,Z3 ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-0[12].nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000103.nc
+# ncremap --dbg=3 -v FSNT,AODVIS,T,Q,U,V,Z3 --vrt_fl=${DATA}/grids/vrt_prs_ncep_L17.nc ${DATA}/ne30/rgr/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.000101_000102.nc ~/foo.nc
 
 # dbg_lvl: 0 = Quiet, print basic status during evaluation
 #          1 = Print configuration, full commands, and status to output during evaluation
