@@ -9,6 +9,11 @@
 
 #include "nco_rgr.h" /* Regridding */
 
+extern double min_dbl(double a, double b);
+extern double max_dbl(double a, double b);
+inline double min_dbl(double a, double b){return (a < b) ? a : b;}
+inline double max_dbl(double a, double b){return (a > b) ? a : b;}
+
 int /* O [enm] Return code */
 nco_rgr_ctl /* [fnc] Control regridding logic */
 (rgr_sct * const rgr, /* I/O [sct] Regridding structure */
@@ -3050,10 +3055,14 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
     /* Obtain 1-D rectangular interfaces from unrolled 1-D vertice arrays */
     for(idx=0L;idx<lon_nbr_out;idx++) lon_ntf_out[idx]=lon_crn_out[mpf.dst_grid_corners*idx];
-    lon_ntf_out[lon_nbr_out]=lon_crn_out[mpf.dst_grid_corners*lon_nbr_out-(mpf.dst_grid_corners-1L)];
+    /* 20201009 Order of storage of vertices is important here. NCO uses ul,ll,lr,ur. Does ESMF? */
+    // lon_ntf_out[lon_nbr_out]=lon_crn_out[mpf.dst_grid_corners*lon_nbr_out-(mpf.dst_grid_corners-1L)]; // ESMF?
+    lon_ntf_out[lon_nbr_out]=lon_crn_out[mpf.dst_grid_corners*lon_nbr_out-1L]; // NCO
+    assert(lon_ntf_out[lon_nbr_out] != lon_ntf_out[lon_nbr_out-1]);
     lon_spn=lon_ntf_out[lon_nbr_out]-lon_ntf_out[0L];
     for(idx=0L;idx<lat_nbr_out;idx++) lat_ntf_out[idx]=lat_crn_out[mpf.dst_grid_corners*idx];
-    lat_ntf_out[lat_nbr_out]=lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-1L];
+    if(flg_s2n) lat_ntf_out[lat_nbr_out]=max_dbl(lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-1L],lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-2L]); else lat_ntf_out[lat_nbr_out]=min_dbl(lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-1L],lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-2L]);
+    assert(lat_ntf_out[lat_nbr_out] != lat_ntf_out[lat_nbr_out-1]);
     lat_spn=fabs(lat_ntf_out[lat_nbr_out]-lat_ntf_out[0L]);
 
     /* Place 1-D rectangular interfaces into 2-D coordinate boundaries */
@@ -8733,7 +8742,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	break;
       case nco_grd_lat_eqa:
 	lat_ncr=lat_spn/lat_nbr;
-	/* 20201009 */
 	for(lat_idx=1L;lat_idx<lat_nbr;lat_idx++)
 	  if(flg_s2n) lat_ntf[lat_idx]=lat_ntf[0L]+lat_idx*lat_ncr; else lat_ntf[lat_idx]=lat_ntf[0L]-lat_idx*lat_ncr;
 	break;

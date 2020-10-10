@@ -1,8 +1,10 @@
 2020-10-09  Charlie Zender  <zender@uci.edu>
 
+	* Use NCO RLL storage convention (ul,ll,lr,ur) to determine final lat_ntf/lon_ntf
+
 	* NCO 4.9.6-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha02: Superspreader';git push
- 	git tag -a 4.9.6-alpha02 -m 'autotools libudunits2.dylib; ncremap nfr n2s rll nobnds, lat_d/lon_d, ; ncra -N';git push --tags
+ 	git tag -a 4.9.6-alpha02 -m 'autotools libudunits2.dylib; ncremap nfr n2s rll nobnds, lat_d/lon_d; ncra -N';git push --tags
 
 	* Fix grid inferral error for last interface boundary (grid_corner_lat) of N2S RLL grids without bounds
 
