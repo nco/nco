@@ -3055,10 +3055,19 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 
     /* Obtain 1-D rectangular interfaces from unrolled 1-D vertice arrays */
     for(idx=0L;idx<lon_nbr_out;idx++) lon_ntf_out[idx]=lon_crn_out[mpf.dst_grid_corners*idx];
-    /* 20201009 Order of storage of vertices is important here. NCO uses ul,ll,lr,ur. Does ESMF? */
+    /* 20201009 
+       The four possible CCW RLL orderings start with the ul, ll, lr, or ur vertice
+       NCO grid generators store vertices in order (0,1,2,3)=(ul,ll,lr,ur)
+       NCO final latitude is in upper vertices (0,3) for S2N grids, lower vertices (1,2) for N2S grids
+       NCO final longitude is in RHS vertices (2,3) for S2N and N2S grids
+       Need generic algorithm to pick easternmost longitude for any of the four CCW orderings
+       What is ESMF vertice ordering? or does ESMF always copy from input grid? 
+       Most grid generators probably start with ul or ll so vertice 2 is good choice for easternmost */
     // lon_ntf_out[lon_nbr_out]=lon_crn_out[mpf.dst_grid_corners*lon_nbr_out-(mpf.dst_grid_corners-1L)]; // ESMF?
-    lon_ntf_out[lon_nbr_out]=lon_crn_out[mpf.dst_grid_corners*lon_nbr_out-1L]; // NCO
-    assert(lon_ntf_out[lon_nbr_out] != lon_ntf_out[lon_nbr_out-1]);
+    lon_ntf_out[lon_nbr_out]=lon_crn_out[mpf.dst_grid_corners*lon_nbr_out-2L]; // NCO lr
+    if(lon_ntf_out[lon_nbr_out-1] == lon_ntf_out[lon_nbr_out]) lon_ntf_out[lon_nbr_out]=lon_crn_out[mpf.dst_grid_corners*lon_nbr_out-1L]; // NCO ur
+    if(lon_ntf_out[lon_nbr_out-1] == lon_ntf_out[lon_nbr_out]) lon_ntf_out[lon_nbr_out]=lon_crn_out[mpf.dst_grid_corners*lon_nbr_out-3L]; // NCO ll
+    assert(lon_ntf_out[lon_nbr_out-1] != lon_ntf_out[lon_nbr_out]);
     lon_spn=lon_ntf_out[lon_nbr_out]-lon_ntf_out[0L];
     for(idx=0L;idx<lat_nbr_out;idx++) lat_ntf_out[idx]=lat_crn_out[mpf.dst_grid_corners*idx];
     if(flg_s2n) lat_ntf_out[lat_nbr_out]=max_dbl(lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-1L],lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-2L]); else lat_ntf_out[lat_nbr_out]=min_dbl(lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-1L],lat_crn_out[mpf.dst_grid_corners*lat_nbr_out-2L]);

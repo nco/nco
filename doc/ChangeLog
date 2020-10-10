@@ -6,7 +6,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha02: Superspreader';git push
  	git tag -a 4.9.6-alpha02 -m 'autotools libudunits2.dylib; ncremap nfr n2s rll nobnds, lat_d/lon_d; ncra -N';git push --tags
 
-	* Fix grid inferral error for last interface boundary (grid_corner_lat) of N2S RLL grids without bounds
+	* Fix grid inferral error for last interface boundary (grid_corner_lat) of N2S RLL grids without coordinate bounds
 
 2020-10-08  Charlie Zender  <zender@uci.edu>
 
