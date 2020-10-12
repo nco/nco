@@ -7335,7 +7335,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double *lon_ntf=NULL; /* [dgr] Longitude interfaces of rectangular grid */
 
   double area_ttl=0.0; /* [frc] Exact sum of area */
-  double lat_nrt; /* [dgr] Latitude of northern edge of grid */
+  //double lat_nrt; /* [dgr] Latitude of northern edge of grid */
   double lat_sth; /* [dgr] Latitude of southern edge of grid */
   double lat_wgt_ttl=0.0; /* [frc] Actual sum of quadrature weights */
   double lat_wgt_gss; /* [frc] Latitude weight estimated from interface latitudes */
@@ -8740,7 +8740,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 
     /* Diagnose latitude interfaces from gridcell centers (if boundaries not provided) */
     if(flg_dgn_bnd || (lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT)){
-      if(flg_s2n) lat_nrt=lat_ntf[lat_nbr]; else lat_nrt=lat_ntf[0L];
+      //if(flg_s2n) lat_nrt=lat_ntf[lat_nbr]; else lat_nrt=lat_ntf[0L];
       lat_spn=fabs(lat_ntf[lat_nbr]-lat_ntf[0L]);
       switch(lat_typ){
       case nco_grd_lat_fv:

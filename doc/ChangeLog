@@ -1,5 +1,7 @@
 2020-10-09  Charlie Zender  <zender@uci.edu>
 
+	* Assignment of final interface latitude/longitude in regridder no longer assumes specific origin vertex for CCW ordering
+
 	* Use NCO RLL storage convention (ul,ll,lr,ur) to determine final lat_ntf/lon_ntf
 
 	* NCO 4.9.6-alpha02 release procedure:
