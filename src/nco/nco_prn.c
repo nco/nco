@@ -293,7 +293,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable or group */
 	      } /* !netCDF 4.7.4 */
 	      //if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"%s: DEBUG %s reports flt_id = %u, prm_nbr = %lu\n",nco_prg_nm_get(),fnc_nm,flt_id,(unsigned long)prm_nbr);
 	      if(flt_id != NC_MAX_UINT && flt_id != 0){
-		rcd=nco_inq_var_filterids(grp_id,var_id,&flt_nbr,NULL);
+		rcd=nco_inq_var_filter_ids(grp_id,var_id,&flt_nbr,NULL);
 		if(flt_nbr > 1){
 		  nco_inq_varname(grp_id,var_id,var_nm);
 		  (void)fprintf(stdout,"%s: WARNING %s reports variable %s has %lu filters applied. The proper library functions to correctly handle multiple filters are not present in netCDF version 4.7.4. Stay tuned.\n",nco_prg_nm_get(),fnc_nm,var_nm,(unsigned long)flt_nbr);

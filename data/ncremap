@@ -1498,7 +1498,7 @@ if [ "${prc_typ}" = 'cice' ]; then
     sgs_nrm='100.0'
     prc_cice='Yes'
 fi # !cice
-if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ]; then 
+if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpas-seaice' ]; then 
     # NB: 'mpasseaice' is an exact synonym for 'mpascice' (which should be deprecated)
     # Set MPAS-SeaIce-specific options first, then change prc_typ to sgs
     # MPAS-SeaIce requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'

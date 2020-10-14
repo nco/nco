@@ -5203,7 +5203,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
 
       // 20200914
       //      if(NC_LIB_VERSION >= 474){
-      //	int nco_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst)
+      //	int nco_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst)
       //} /* !NC_LIB_VERSION */
     
       /* Copy original deflation settings */

@@ -516,7 +516,7 @@ int nco_inq_var_endian(const int nc_id,const int var_id,int * const ndn_typ);
 int nco_inq_var_fill(const int nc_id,const int var_id,int * const fll_nil,void * const fll_val);
 int nco_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
 int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
-int nco_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst);
+int nco_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst);
 int nco_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
 int nco_var_filter_remove(const int nc_id,const int var_id,const unsigned int flt_id);
 int nco_inq_var_fletcher32(const int nc_id,const int var_id,int * const chk_typ);
@@ -596,8 +596,11 @@ int nco_get_att(const int nc_id,const int var_id,const char * const att_nm,void 
   int nc_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
 #endif /* !4.6.0 */
 
+#if NC_LIB_VERSION == 474
+# define nc_inq_var_filter_ids nc_inq_var_filterids
+#endif /* !4.7.4 */
 #if NC_LIB_VERSION < 474
-  int nc_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst);
+  int nc_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst);
   int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst);
   int nc_var_filter_remove(const int nc_id,const int var_id,const unsigned int flt_id);
 #endif /* !4.7.4 */

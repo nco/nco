@@ -601,8 +601,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "\n"
     printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate EAM/CAM climo\n"
     printf "${fnt_bld}${spt_nm} -c control -m clm2 -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate EAM/CLM climo\n"
-    printf "${fnt_bld}${spt_nm} -m mpasseaice -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}# Generate MPAS-Seaice climo\n"
-    printf "${fnt_bld}${spt_nm} -m mpaso -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${fnt_nrm}# Generate MPAS-Ocean climo\n"
+    printf "${fnt_bld}${spt_nm} -m mpasseaice -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${fnt_nrm}# Generate MPAS-Seaice climo\n"
+    printf "${fnt_bld}${spt_nm} -m mpaso -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oRRS18to6v3_to_cmip6_720x1440_nco.20200601.nc ${fnt_nrm}# Generate MPAS-Ocean climo\n"
     printf "${fnt_bld}cd output;ls *cam*19??-??*.nc | ${spt_nm} -v FSNT,TREFHT -s 1900 -e 1999 -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Split climo\n"
     printf "${fnt_bld}ncclimo -c ${caseid_xmp} -m cam -S 41 -E 50 -x ${drc_rgr_xmp}/0041-0050 -s 51 -e 60 -i ${drc_rgr_xmp}/0051-0060 -X ${drc_rgr_xmp}/0041-0060 ${fnt_nrm}# Combine two climos\n\n"
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
@@ -1024,7 +1024,7 @@ let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
 
 # Derived variables
 out_nm=${caseid}
-if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mpas' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ] || [ "${mdl_nm}" = 'mpassi' ]; then
+if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mpas' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpas-ocean' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ] || [ "${mdl_nm}" = 'mpas-seaice' ] || [ "${mdl_nm}" = 'mpassi' ]; then
     mdl_typ='mpas'
     nm_typ='mpas'
 fi # !caseid
@@ -2504,7 +2504,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		fi # !bch_flg
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 		    fl_rgr[${var_idx}]="${fl_rgr_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
-		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${spl_opt} ${spl_rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${spl_opt} ${spl_rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		    if [ "${mdl_typ}" = 'mpas' ]; then
 			# 20181114: Remove '-C' argument from ncremap invocation for MPAS splitter only
 			# This ensures CMIP6 MPAS timeseries will have _FillValue
@@ -2603,7 +2603,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
     # Block 2: Regrid climatological annual mean
     if [ -n "${rgr_opt}" ]; then 
 	printf "Regrid annual data...\n"
-	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]/.nc/.rgr.nc}"
+	cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_out[${clm_idx}]/.nc/.rgr.nc}"
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    echo ${cmd_rgr[${clm_idx}]} ${par_opt}
 	fi # !dbg
@@ -2762,7 +2762,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'dly' ]; then
 		let clm_idx_end=$((clm_nbr - 1))
 	    fi # !bch_flg
 	    for ((clm_idx=clm_idx_srt;clm_idx<=clm_idx_end;clm_idx++)); do
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
 		    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.daily.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
@@ -2890,7 +2890,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 		# already round-robin'ed onto existing nodes
 	    fi # !nd
 	    # printf "dbg: clm_idx = ${clm_idx}, nd_idx = ${nd_idx}, csn_nbr = ${csn_nbr}, nd_nbr = ${nd_nbr}\n"
-	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
@@ -3020,7 +3020,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 		if [ ${nd_idx} -lt ${csn_nbr} ]; then
 		    let nd_idx=${nd_idx}+${csn_nbr}
 		fi # !nd
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
 		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
@@ -3106,7 +3106,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	if [ -n "${rgr_opt}" ]; then 
 	    printf "Regrid annual data...\n"
 	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
-	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -t ${thr_nbr} -O ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ

@@ -1,3 +1,13 @@
+2020-10-14  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.6-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha03: Bly Manor';git push
+ 	git tag -a 4.9.6-alpha03 -m 'nco_inq_var_filter_ids(); ncremap fix rll bnds; ncclimo docs v2';git push --tags
+
+	* Change nc_inq_var_filterids() to nc_inq_var_filter_ids() unless NC_LIB_VERSION == 474
+
+	* Update Confluence, help screens to v2 options
+
 2020-10-09  Charlie Zender  <zender@uci.edu>
 
 	* Assignment of final interface latitude/longitude in regridder no longer assumes specific origin vertex for CCW ordering

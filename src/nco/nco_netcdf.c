@@ -990,19 +990,19 @@ int nc_inq_var_filter(const int nc_id,const int var_id,unsigned int * const flt_
 #endif /* !4.6.0 */
 
 #if NC_LIB_VERSION < 474
-int nc_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst)
+int nc_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst)
 {
   /* Purpose: Pseudo-library stub function to inquire all filter IDs for a variable
      This particular stub routine is only called by netCDF4-enabled code
-     when built against a netCDF library too old to have the nc_inq_var_filterids() function. */
+     when built against a netCDF library too old to have the nc_inq_var_filter_ids() function. */
   int rcd;
-  const char fnc_nm[]="nc_inq_var_filterids()";
+  const char fnc_nm[]="nc_inq_var_filter_ids()";
   rcd=NC_NOERR+0*(nc_id+var_id);
   *flt_nbr=*flt_lst=rcd; /* CEWI */
   (void)fprintf(stdout,"ERROR: %s reports inquire variable filter was foiled because libnetcdf.a does not contain %s. To obtain this functionality, please rebuild NCO against netCDF library version 4.7.4 (released ~20200327) or later.\nExiting...\n",fnc_nm,fnc_nm);
   nco_err_exit(rcd,fnc_nm);
   return rcd;
-} /* end nc_inq_var_filterids() */
+} /* end nc_inq_var_filter_ids() */
 
 int nc_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
 {
@@ -2162,14 +2162,14 @@ int nco_inq_var_filter_flg(const int nc_id,const int var_id,unsigned int * const
   return rcd;
 } /* !nco_inq_var_filter_flg() */
 
-int nco_inq_var_filterids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst)
+int nco_inq_var_filter_ids(const int nc_id,const int var_id,size_t * const flt_nbr,unsigned int * const flt_lst)
 {
-  /* Purpose: Wrapper for nc_inq_var_filterids() */
+  /* Purpose: Wrapper for nc_inq_var_filter_ids() */
   int rcd;
-  rcd=nc_inq_var_filterids(nc_id,var_id,flt_nbr,flt_lst);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filterids()");
+  rcd=nc_inq_var_filter_ids(nc_id,var_id,flt_nbr,flt_lst);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_var_filter_ids()");
   return rcd;
-} /* !nco_inq_var_filterids() */
+} /* !nco_inq_var_filter_ids() */
 
 int nco_inq_var_filter_info(const int nc_id,const int var_id,const unsigned int flt_id,size_t * const prm_nbr,unsigned int * const prm_lst)
 {
