@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha03: Bly Manor';git push
  	git tag -a 4.9.6-alpha03 -m 'nco_inq_var_filter_ids(); ncremap fix rll bnds; ncclimo docs v2';git push --tags
 
+	* Remove nc_var_filter_remove(), change nc_var_filterx() to nc_var_filter_ccr() (in case useful)
+
 	* Change nc_inq_var_filterids() to nc_inq_var_filter_ids() unless NC_LIB_VERSION == 474
 
 	* Update Confluence, help screens to v2 options
