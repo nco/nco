@@ -475,7 +475,7 @@ wgt_exe_mbt='mbtempest' # [sng] MOAB-Tempest executable (both mesh- and weight-g
 wgt_exe_nco='ncks' # [sng] NCO executable (both mesh- and weight-generation)
 wgt_exe_tps='GenerateOfflineMap' # [sng] TempestRemap weight-generation executable 
 msh_exe_tps='GenerateOverlapMesh' # [sng] TempestRemap mesh-generation executable
-wgt_typ='esmf' # [sng] Weight-generator program ('esmf' or 'nco' or 'tempest')
+wgt_typ='' # [sng] Weight-generator program ('esmf' or 'nco' or 'tempest')
 wgt_opt='' # [sng] Weight-generator options
 wgt_opt_esmf='--no_log --ignore_unmapped' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF < 7.1.0r)
 #wgt_opt_esmf='--ignore_unmapped --ignore_degenerate' # [sng] ESMF_RegridWeightGen weight-generation options (ESMF >= 7.1.0r) (ignore_degenerate is required for CICE regridding with ESMF >= 7.1.0r, and is not supported or required with ESMF < 7.1.0r)
@@ -842,9 +842,9 @@ if [ ${vrs_prn} = 'Yes' ]; then
 	printf "Config: ESMF weight-generation command ${wgt_exe_esmf} not found\n"
     fi # !err
     if [ -n "${cmd_wgt_mbt}" ]; then
-	printf "Config: MOAB-Tempest weight-generation command ${wgt_exe_mbt} found as ${cmd_wgt_mbt}\n"
+	printf "Config: MOAB-Tempest mesh- and weight-generation command ${wgt_exe_mbt} found as ${cmd_wgt_mbt}\n"
     else
-	printf "Config: MOAB-Tempest weight-generation command ${wgt_exe_mbt} not found\n"
+	printf "Config: MOAB-Tempest mesh- and weight-generation command ${wgt_exe_mbt} not found\n"
     fi # !err
     if [ -n "${cmd_dpt_mpas}" ]; then
 	printf "Config: MPAS depth coordinate addition command ${dpt_exe_mpas} found as ${cmd_dpt_mpas}\n"
@@ -1246,7 +1246,7 @@ if [ -n "${var_rgr}" ]; then
 fi # !var_rgr
 if [ -n "${xtn_var}" ]; then 
     rgr_opt="${rgr_opt} --xtn=${xtn_var}"
-fi # !var_lst
+fi # !xtn_var
 if [ -n "${out_fl}" ]; then 
     out_usr_flg='Yes'
 fi # !out_fl

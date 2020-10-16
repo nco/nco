@@ -216,7 +216,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Debugging and Benchmarking:
 # ncclimo -v FSNT,AODVIS,TREFHT -c 20180129.DECKv1b_piControl.ne30_oEC.edison -s 1 -e 2 -i ${DATA}/ne30/raw -o ${DATA}/ne30/clm -O ${DATA}/ne30/rgr -r ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
-# ncclimo --var_lst=FSNT,AODVIS,TREFHT --caseid=20180129.DECKv1b_piControl.ne30_oEC.edison --yr_srt=1 --yr_end=2 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --rgr_map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
+# ncclimo --var_lst=FSNT,AODVIS,TREFHT --caseid=20180129.DECKv1b_piControl.ne30_oEC.edison --yr_srt=1 --yr_end=2 --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc
 # ncclimo -v TOTEXTTAU -c merra2_198001.nc4 -s 1980 -e 2015 -i ${DATA}/merra2/raw -o ${DATA}/merra2/clm
 # ncclimo > ~/ncclimo.out 2>&1 &
 # ncclimo -c B1850C5e1_ne30 -s 2 -e 199 > ~/ncclimo.out 2>&1 &
@@ -685,7 +685,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	o) drc_out_usr="${OPTARG}" ;; # Output directory
 	O) drc_rgr_usr="${OPTARG}" ;; # Regridded directory
 	p) par_typ="${OPTARG}" ;; # Parallelism type
-	R) rgr_opt="${OPTARG}" ;; # Regridding options
+	R) rgr_opt_usr="${OPTARG}" ;; # Regridding options
 	r) rgr_map="${OPTARG}" ;; # Regridding map (horizontal)
 	S) yr_srt_prv="${OPTARG}" ;; # Start year previous
 	s) yr_srt="${OPTARG}" ;; # Start year
@@ -741,7 +741,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:p:R:r:S:s:t:v:X:x:Y:y:-: OPT
 	       drc_rgr=?* | rgr_drc=?* | dir_regrid=?* | regrid_dir=?* | regrid=?* ) drc_rgr_usr="${LONG_OPTARG}" ;; # -O # Regridded directory
 	       par_typ=?* | par_md=?* | parallel_type=?* | parallel_mode=?* | parallel=?* ) par_typ="${LONG_OPTARG}" ;; # -p # Parallelism type
 	       ppc=?* | ppc_prc=?* | precision=?* | quantize=?* ) ppc_prc="${LONG_OPTARG}" ;; # # Precision-preserving compression
-	       rgr_opt=?* | regrid_options=?* ) rgr_opt="${LONG_OPTARG}" ;; # -R # Regridding options
+	       rgr_opt=?* | regrid_options=?* ) rgr_opt_usr="${LONG_OPTARG}" ;; # -R # Regridding options
 	       rgr_map=?* | regrid_map=?* | map=?* ) rgr_map="${LONG_OPTARG}" ;; # -r # Regridding map (horizontal)
 	       yr_srt_prv=?* | prv_yr_srt=?* | previous_start=?* ) yr_srt_prv="${LONG_OPTARG}" ;; # -S # Start year previous
 	       yr_srt=?* | start_yr=?* | year_start=?* | start_year=?* | start=?* ) yr_srt="${LONG_OPTARG}" ;; # -s # Start year
@@ -1150,6 +1150,10 @@ else
     echo "HINT: Valid par_typ arguments include '${par_bck}' (or 'bck'), '${par_mpi}' (or 'MPI'), and '${par_srl}' (or 'srl' or 'nil' or 'none'). For background parallelism, select '${par_bck}' which causes ${spt_nm} to spawn parallel processes as background tasks on a single node. For MPI parallelism, select '${par_mpi}' which causes ${spt_nm} to spawn parallel processes on across available cluster nodes. For no parallelism (aka serial mode), select '${par_srl}', which causes ${spt_nm} to spawn all processes serially on a single compute node."
     exit 1
 fi # !par_typ
+if [ -n "${rgr_opt_usr}" ]; then
+    rgr_opt="${rgr_opt_usr}"
+    rmp_opt="-R \'${rgr_opt_usr}\'"
+fi # !rgr_opt_usr
 if [ -n "${rgr_map}" ]; then 
     if [ ! -f "${rgr_map}" ]; then
 	echo "${spt_nm}: ERROR Unable to find specified regrid map ${rgr_map}"
@@ -1162,6 +1166,7 @@ if [ -n "${rgr_map}" ]; then
     fi # !mdl_nm
     map_opt="--map=${rgr_map}"
     rgr_opt="${rgr_opt} ${map_opt}"
+    rmp_opt="${rmp_opt} ${map_opt}"
 else # !rgr_map
     if [ -n "${dpt_opt}" ]; then
 	echo "${spt_nm}: ERROR Cannot add depth coordinate unless horizontal regridding is invoked"
@@ -1179,6 +1184,7 @@ fi # !sbs_flg
 if [ -n "${sgs_frc}" ]; then
     sgs_opt="--rgr sgs_frc_nm=${sgs_frc}"
     rgr_opt="${rgr_opt} ${sgs_opt}"
+    rmp_opt="--sgs_frc=${sgs_frc} ${rmp_opt}"
 fi # !sgs_frc
 if [ -n "${thr_usr}" ]; then
     thr_nbr="${thr_usr}"
@@ -1192,11 +1198,14 @@ if [ -n "${vrt_fl}" ]; then
 	exit 1
     fi # ! -f
     vrt_opt="--vrt_fl=${vrt_fl}"
+    rmp_opt="--vrt_fl=${vrt_fl} ${rmp_opt}"
     if [ -n "${vrt_xtr}" ]; then
 	if [ ${vrt_xtr} = 'mss_val' ] || [ ${vrt_xtr} = 'missing_value' ] || [ ${vrt_xtr} = 'msv' ]; then 
 	    vrt_opt="--rgr xtr_mth=mss_val ${vrt_opt}"
+	    rmp_opt="--xtr_mth=mss_val ${rmp_opt}"
 	elif [ ${vrt_xtr} = 'nrs_ngh' ] || [ ${vrt_xtr} = 'nearest_neighbor' ] || [ ${vrt_xtr} = 'nn' ]; then 
 	    vrt_opt="--rgr xtr_mth=nrs_ngh ${vrt_opt}"
+	    rmp_opt="--xtr_mth=nrs_ngh ${rmp_opt}"
 	else 
 	    echo "${spt_nm}: ERROR ${vrt_xtr} is not a valid extrapolation method"
 	    echo "${spt_nm}: HINT Valid vertical extrapolation methods and synonyms are mss_val,missing_value,msv | nrs_ngh,nearest_neighbor,nn"
@@ -2890,7 +2899,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 		# already round-robin'ed onto existing nodes
 	    fi # !nd
 	    # printf "dbg: clm_idx = ${clm_idx}, nd_idx = ${nd_idx}, csn_nbr = ${csn_nbr}, nd_nbr = ${nd_nbr}\n"
-	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    #cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -u .pid${spt_pid}.climo.${clm_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${rmp_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
@@ -3020,7 +3030,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 		if [ ${nd_idx} -lt ${csn_nbr} ]; then
 		    let nd_idx=${nd_idx}+${csn_nbr}
 		fi # !nd
-		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		#cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+		cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -u .pid${spt_pid}.climo.${clm_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${rmp_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		if [ "${mdl_typ}" = 'mpas' ]; then
 		    cmd_rgr[${clm_idx}]="${cmd_mpi[${nd_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 		fi # !mdl_typ
@@ -3106,7 +3117,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	if [ -n "${rgr_opt}" ]; then 
 	    printf "Regrid annual data...\n"
 	    [[ ${dbg_lvl} -ge 1 ]] && date_rgr=$(date +"%s")
-	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    #cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
+	    cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -u .pid${spt_pid}.climo.${clm_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${rmp_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    if [ "${mdl_typ}" = 'mpas' ]; then
 		cmd_rgr[${clm_idx}]="${cmd_mpi[${clm_idx}]} ncremap -C -u .pid${spt_pid}.climo.${clm_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${clm_idx}]} ${fl_rgr[${clm_idx}]}"
 	    fi # !mdl_typ
