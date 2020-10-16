@@ -1,5 +1,7 @@
 2020-10-16  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo call ncremap rather than ncks for splitting
+
 	* ncclimo call ncremap rather than ncks for climo regridding
 
 	* ncremap generalize GenerateOverlapMesh as variables wgt_exe_tps, cmd_msh_tps

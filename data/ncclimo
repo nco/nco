@@ -243,14 +243,14 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # Split directory:
 # ncclimo --dbg=1 --ypf=50 -s 1 -e 2 --var=FSNT,AODVIS --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_in=${DATA}/ne30/raw --drc_out=${DATA}/ne30/clm
 # Split global mean
-# cd ${DATA}/ne30/raw;ls *0001-??*.nc *000[12]-??*.nc | ncclimo --dbg=1 --glb_avg -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 --glb_avg -s 1 -e 2 --var=FSNT,AODVIS --drc_out=${DATA}/ne30/clm
 # Split all:
-# cd ${DATA}/ne30/raw;ls *0001-??*.nc *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm
 # Split ELM:
 # ncclimo --dbg=1 -s 2000 -e 2000 --var=FSDS,TBOT --drc_out=${DATA}/ne30/clm ${DATA}/ne30/raw/F_acmev03_enso_camse_clm45bgc_ne30_co2cycle.clm2.h0.2000-??.nc
 # Split vertical:
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
-# cd ${DATA}/ne30/raw;ls *1979-??*.nc *198[01]-??*.nc | ncclimo --dbg=1 -s 1979 -e 1981 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --vrt_xtr=mss_val --drc_out=${DATA}/ne30/clm # Missing value interpolation
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --drc_out=${DATA}/ne30/clm
+# cd ${DATA}/ne30/raw;ls *000[12]-??*.nc | ncclimo --dbg=1 -s 1 -e 2 --var=T --vrt=${DATA}/grids/vrt_prs_ncep_L17.nc --vrt_xtr=mss_val --drc_out=${DATA}/ne30/clm # Missing value interpolation
 # Split production:
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.000[1-9]* | ncclimo --dbg=1 --yr_srt=1 --yr_end=9 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
 # cd /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run;ls *cam.h0.0[012]??* | ncclimo --dbg=1 --yr_srt=1 --yr_end=250 --var=FSNT,AODVIS,T --map=${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco.20190601.nc --drc_out=${DATA}/ne30/clm > ~/ncclimo.out 2>&1 &
@@ -517,7 +517,7 @@ ppc_prc='' # [nbr] Precision-preserving compression precision
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
-spl_rgr_opt='--rgr no_stagger' # [sng] Splitter regridding options
+spl_rgr_opt='--no_stagger' # [sng] Splitter regridding options
 sbs_flg='No' # [sng] Split (subset) climatologies
 sgs_frc='' # [sng] Sub-grid fraction variable
 std_chk='Yes' # [sng] Check stdin for input file list
@@ -2514,10 +2514,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
 		    fl_rgr[${var_idx}]="${fl_rgr_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
 		    cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncks -O -t ${thr_nbr} ${nco_opt} ${rgr_opt} ${spl_opt} ${spl_rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+		    #cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp --nco_opt=\"${nco_opt}\" -t ${thr_nbr} ${rmp_opt} ${spl_opt} ${spl_rgr_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		    if [ "${mdl_typ}" = 'mpas' ]; then
 			# 20181114: Remove '-C' argument from ncremap invocation for MPAS splitter only
 			# This ensures CMIP6 MPAS timeseries will have _FillValue
-			cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" ${sgs_opt} ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
+			cmd_rgr[${var_idx}]="${cmd_mpi[${var_idx}]} ncremap -u .pid${spt_pid}.split.${var_idx}.tmp -P mpas ${d2f_opt} ${dpt_opt} --nco_opt=\"${nco_opt}\" ${spl_opt} ${spl_rgr_opt} -t ${thr_nbr} ${map_opt} ${vrt_opt} ${fl_out[${var_idx}]} ${fl_rgr[${var_idx}]}"
 		    fi # !mdl_typ
 		    if [ ${dbg_lvl} -ge 1 ]; then
 			echo ${cmd_rgr[${var_idx}]}
