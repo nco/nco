@@ -1,8 +1,14 @@
+2020-10-16  Charlie Zender  <zender@uci.edu>
+
+	* ncremap generalize GenerateOverlapMesh as variables wgt_exe_tps, cmd_msh_tps
+
 2020-10-14  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.6-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha03: Bly Manor';git push
- 	git tag -a 4.9.6-alpha03 -m 'nco_inq_var_filter_ids(); ncremap fix rll bnds; ncclimo docs v2';git push --tags
+ 	git tag -a 4.9.6-alpha03 -m 'netCDF 4.8.0 filter mods; ncremap fix rll bnds; ncclimo docs v2';git push --tags
+
+	* Verify future-compatibility with upcoming 4.8.0 on glace
 
 	* Remove nc_var_filter_remove(), change nc_var_filterx() to nc_var_filter_ccr() (in case useful)
 

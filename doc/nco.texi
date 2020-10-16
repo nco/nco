@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.6-alpha02
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 22 September 2020
-@set update-month September 2020
+@set update-date 15 October 2020
+@set update-month October 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -6941,6 +6941,21 @@ ncremap -G ttl='T42 Gaussian grid'#latlon=64,128#lat_typ=gss#lon_typ=grn_ctr \
 # T62 Gaussian grid, first longitude centered at Greenwich, NCEP2 T62 Gaussian grid 
 ncremap -G ttl='NCEP2 T62 Gaussian grid'#latlon=94,192#lat_typ=gss#lon_typ=grn_ctr#lat_drc=n2s \
         -g ${DATA}/grids/ncep2_t62_SCRIP.20191001.nc
+
+# F256 Full Gaussian grid, first longitude centered at Greenwich
+ncremap -7 -L 1 \
+        -G ttl='ECMWF IFS F256 Full Gaussian grid 512x1024'#latlon=512,1024#lat_typ=gss#lon_typ=grn_ctr#lat_drc=n2s \
+        -g ${DATA}/grids/f256_scrip.20201001.nc
+
+# 513x1024 FV grid, first longitude centered at Greenwich
+ncremap -7 -L 1 \
+        -G ttl='FV scalar grid 513x1024'#latlon=513,1024#lat_typ=fv#lon_typ=grn_ctr \
+        -g ${DATA}/grids/513x1024_SCRIP.20201001.nc
+
+# 1025x2048 FV grid, first longitude centered at Greenwich
+ncremap -7 -L 1 \
+        -G ttl='FV scalar grid 1025x2048'#latlon=1025,2048#lat_typ=fv#lon_typ=grn_ctr \
+        -g ${DATA}/grids/1025x2048_SCRIP.20201001.nc
 
 # F640 Full Gaussian grid, first longitude centered at Greenwich
 ncremap -7 -L 1 \
