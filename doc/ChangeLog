@@ -1,5 +1,9 @@
 2020-10-16  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.6-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha03: Octopus teacher';git push
+	git tag -a 4.9.6-alpha03 -m 'netCDF 4.8.0 filter mods; ncremap fix rll bnds; ncclimo docs v2, -P prc_typ';git push --tags
+
 	* ncclimo add --prc_typ option and pass through to regridder, supercedes mdl_nm
 
 	* ncclimo call ncremap rather than ncks for splitting
@@ -9,10 +13,6 @@
 	* ncremap generalize GenerateOverlapMesh as variables wgt_exe_tps, cmd_msh_tps
 
 2020-10-14  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.9.6-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha03: Bly Manor';git push
- 	git tag -a 4.9.6-alpha03 -m 'netCDF 4.8.0 filter mods; ncremap fix rll bnds; ncclimo docs v2';git push --tags
 
 	* Verify future-compatibility with upcoming 4.8.0 on glace
 
