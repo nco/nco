@@ -1,5 +1,7 @@
 2020-10-16  Charlie Zender  <zender@uci.edu>
 
+	* ncclimo add --prc_typ option and pass through to regridder, supercedes mdl_nm
+
 	* ncclimo call ncremap rather than ncks for splitting
 
 	* ncclimo call ncremap rather than ncks for climo regridding
