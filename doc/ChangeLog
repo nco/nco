@@ -1,3 +1,7 @@
+2020-10-20  Charlie Zender  <zender@uci.edu>
+
+	* ncremap set wgt_typ=esmf for relevant algorithms
+
 2020-10-16  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.6-alpha03 release procedure:

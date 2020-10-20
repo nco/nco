@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.6-alpha03
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 15 October 2020
+@set update-date 19 October 2020
 @set update-month October 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18263,7 +18263,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [-h @var{hst_nm}] [-i @var{drc_in}]
 [-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
 [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
-[-O @var{drc_rgr}] [-o @var{drc_out}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
+[-O @var{drc_rgr}] [-o @var{drc_out}] [-P @var{prc_typ}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}]
 [-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [--uio] [-v @var{var_lst}] [--version] 
@@ -19285,25 +19285,43 @@ more than @var{ypf_max} (default 50) years of input, i.e.,
 @file{T_000101_005012.nc}, @file{T_005101_009912.nc},
 @file{T_010001_014912.nc}, etc.
 
-@unnumberedsubsec @acronym{MPAS-O/I} considerations
+@unnumberedsubsec @acronym{MPAS-O/I/L} considerations
 @acronym{MPAS} ocean and ice models currently have their own
 (non-CESM'ish) naming convention that guarantees output files have the
 same names for all simulations. 
 By default @command{ncclimo} analyzes the ``timeSeriesStatsMonthly''
 analysis member output (tell us if you want options for other analysis
 members). 
-@command{ncclimo} recognizes input files as being
-@acronym{MPAS}-style when invoked with @samp{-m mpaso} or 
-@samp{-m mpascice} like this: 
+@command{ncclimo} and @command{ncremap} recognize input files as being 
+@acronym{MPAS}-style when invoked with @samp{-P mpas} or with the
+more expressive synonym  @samp{--prc_typ=mpas}.
+While this works for generating climatologies for any @acronym{MPAS}
+model, some regridder options are model-specific and therefore it is
+smarter to specify which @acronym{MPAS} model produced the input
+data. 
+
+@samp{-m mpasocean},
+(or @samp{-m mpaso} for short), @samp{-m mpasseaice},
+(or @samp{-m mpasi} for short), or @samp{-m mpaslandice}
+(or @samp{-m mpasl} for short), like this: 
 @example
 @verbatim
-ncclimo -m mpaso    -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
-ncclimo -m mpascice -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-I
+ncclimo -m mpaso -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
+ncclimo -m mpasi -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-I
+ncclimo -m mpasl -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-L
 @end verbatim
 @end example
 
-@acronym{MPAS} climos are unaware of missing values until/unless
-input files are ``fixed''. 
+Raw output data from all @acronym{MPAS} models does not contain
+missing value attributes @footnote{
+We submitted pull-requests to implement the @code{_FillValue}
+attribute in all @acronym{MPAS}-ocean output in July, 2020.
+The status of this @acronym{PR} may be tracked at
+@url{https://github.com/MPAS-Dev/MPAS-Model/pull/677}.
+Once this @acronym{PR} is merged to master, we will do the same
+for the @acronym{MPAS}-Seaice and @acronym{MPAS}-Landice models.}.
+These attributes must be manually added before sending the data as
+input to @command{ncclimo} or @command{ncremap}.
 We recommend that simulation producers annotate all floating point
 variables with the appropriate @code{_FillValue} prior to invoking
 @command{ncclimo}. 
@@ -19626,7 +19644,7 @@ map_ice=$map_ocn
 ncclimo -p mpi -c $caseid -m cam  -s 2 -e 5 -i $drc_in -r $map_atm -o $drc_out/atm
 ncclimo        -c $caseid -m clm2 -s 2 -e 5 -i $drc_in -r $map_lnd -o $drc_out/lnd
 ncclimo -p mpi -m mpaso           -s 2 -e 5 -i $drc_in -r $map_ocn -o $drc_out/ocn 
-ncclimo        -m mpascice        -s 2 -e 5 -i $drc_in -r $map_ice -o $drc_out/ice
+ncclimo        -m mpasi           -s 2 -e 5 -i $drc_in -r $map_ice -o $drc_out/ice
 @end verbatim
 @end example
 Atmosphere and ocean model output is typically larger than land and ice
@@ -25889,7 +25907,7 @@ including input and output methods and regridding algorithms.
 <a name="clm"></a> <!-- http://nco.sf.net/nco.html#clm -->
 <a name="ctsm"></a> <!-- http://nco.sf.net/nco.html#ctsm -->
 <a name="elm"></a> <!-- http://nco.sf.net/nco.html#elm -->
-<a name="mpascice"></a> <!-- http://nco.sf.net/nco.html#mpascice -->
+<a name="mpasseaice"></a> <!-- http://nco.sf.net/nco.html#mpasseaice -->
 <a name="sgs"></a> <!-- http://nco.sf.net/nco.html#sgs -->
 <a name="sgs_frc"></a> <!-- http://nco.sf.net/nco.html#sgs_frc -->
 <a name="sgs_msk"></a> <!-- http://nco.sf.net/nco.html#sgs_msk -->

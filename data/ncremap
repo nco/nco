@@ -969,16 +969,22 @@ znl_fl=${znl_fl}${unq_sfx}
 # Algorithm options are bilinear|conserve|conserve2nd|nearestdtos|neareststod|patch|tempest|se2fv_flx|se2fv_stt|se2fv_alt|se2se|fv2se_flx|fv2se_stt|fv2se_alt|fv2fv_flx|fv2fv_stt|nco
 if [ ${alg_typ} = 'bilinear' ] || [ ${alg_typ} = 'bilin' ] || [ ${alg_typ} = 'blin' ] || [ ${alg_typ} = 'bln' ]; then 
     alg_opt='bilinear'
+    wgt_typ='esmf'
 elif [ ${alg_typ} = 'conserve' ] || [ ${alg_typ} = 'conservative' ] || [ ${alg_typ} = 'cns' ] || [ ${alg_typ} = 'c1' ] || [ ${alg_typ} = 'aave' ]; then 
     alg_opt='conserve'
+    wgt_typ='esmf'
 elif [ ${alg_typ} = 'conserve2nd' ] || [ ${alg_typ} = 'conservative2nd' ] || [ ${alg_typ} = 'c2' ] || [ ${alg_typ} = 'c2nd' ]; then 
     alg_opt='conserve2nd'
+    wgt_typ='esmf'
 elif [ ${alg_typ} = 'nearestdtos' ] || [ ${alg_typ} = 'ndtos' ] || [ ${alg_typ} = 'dtos' ] || [ ${alg_typ} = 'nds' ]; then 
     alg_opt='nearestdtos'
+    wgt_typ='esmf'
 elif [ ${alg_typ} = 'neareststod' ] || [ ${alg_typ} = 'nstod' ] || [ ${alg_typ} = 'stod' ] || [ ${alg_typ} = 'nsd' ]; then 
     alg_opt='neareststod'
+    wgt_typ='esmf'
 elif [ ${alg_typ} = 'patch' ] || [ ${alg_typ} = 'patc' ] || [ ${alg_typ} = 'pch' ]; then 
     alg_opt='patch'
+    wgt_typ='esmf'
 elif [ ${alg_typ} = 'tempest' ] || [ ${alg_typ} = 'tps' ] || [ ${alg_typ} = 'tmp' ]; then 
     # 20171108 'tempest' invokes TempestRemap with no automatic options, suitable for RLL re-mapping?
     # 20171108 TempestRemap boutique options based on particular remapping type

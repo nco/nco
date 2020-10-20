@@ -227,7 +227,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #  ncatted -O -t -a _FillValue,,o,d,-9.99999979021476795361e+33 ${fl}
 # done
 # New MPAS filename conventions (as of ~201612):
-# ncclimo --dec_md=sdd --vars=timeMonthly_avg_iceAreaCell --yr_srt=2 --yr_end=3 --mdl=mpascice --d2f --drc_in=/p/user_pub/work/E3SM/1_0/piControl/1deg_atm_60-30km_ocean/sea-ice/native/model-output/mon/ens1/v1 --map=${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr > ~/ncclimo.out 2>&1 &
+# ncclimo --dec_md=sdd --vars=timeMonthly_avg_iceAreaCell --yr_srt=2 --yr_end=3 --mdl=mpasseaice --d2f --drc_in=/p/user_pub/work/E3SM/1_0/piControl/1deg_atm_60-30km_ocean/sea-ice/native/model-output/mon/ens1/v1 --map=${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr > ~/ncclimo.out 2>&1 &
 # ncclimo --dec_md=sdd --vars=timeMonthly_avg_activeTracers_temperature --yr_srt=2 --yr_end=3 --mdl=mpaso --d2f --dpt_fl=${DATA}/grids/mpas_refBottomDepth_60lyr.nc --drc_in=/p/user_pub/work/E3SM/1_0/piControl/1deg_atm_60-30km_ocean/ocean/native/model-output/mon/ens1/v1 --map=${DATA}/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc --drc_out=${DATA}/ne30/clm --drc_rgr=${DATA}/ne30/rgr > ~/ncclimo.out 2>&1 &
 # Old MPAS filename conventions (until ~201609)::
 # ncclimo -v temperature -c hist -s 2 -e 3 -m ocn -i /gpfs/alpine/cli112/proj-shared/golaz/ACME_simulations/20160121.A_B2000ATMMOD.ne30_oEC.titan.a00/run -r ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc -o ${DATA}/mpas/clm > ~/ncclimo.out 2>&1 &
@@ -384,10 +384,10 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # fml_nm:  Family name (nickname) of output files referring to $fml_nm character sequence used in output climo file names:
 #          fml_nm_XX_YYYYMM_YYYYMM.nc (examples include '' (default), 'control', 'experiment')
 #          By default, fml_nm=$caseid. Use fml_nm instead of $caseid to simplify long names, avoid overlap, etc.
-# hst_nm:  History volume name referring to the $hst_nm character sequence used in history tape names:
-#          caseid.mdl_nm.hst_nm.YYYY-MM.nc (examples include 'h0' (default, works for cam, clm), 'h1', 'h' (for cism), 'hist' (for mpascice, mpasseaice, mpassi, mpaso)
-# mdl_nm:  Model name referring to the character sequence $mdl_nm used in history tape names:
-#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'eam', 'elm', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'pop')
+# hst_nm:  History volume name string, i.e., $hst_nm character sequence used in history tape names:
+#          caseid.mdl_nm.hst_nm.YYYY-MM.nc (examples include 'h0' (default, works for cam, clm), 'h1', 'h' (for cism), 'hist' (for mpasocean, mpasseaice)
+# mdl_nm:  Model name string in outpur filenames, i.e., character sequence $mdl_nm in standard names:
+#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'eam', 'elm', 'mpasocean', 'mpaso', 'mpasseaice', 'mpasi', 'pop')
 # nco_opt: String of options to pass-through to NCO, e.g.,
 #          '-D 2 -7 -L 1' for NCO debugging level 2, netCDF4-classic output, compression level 1
 #          '--no_tmp_fl -x' to skip temporary files, turn extraction into exclusion list
@@ -502,8 +502,8 @@ inp_std='No' # [sng] Input file list from stdin
 job_nbr=12 # [nbr] Job simultaneity for parallelism
 lnk_flg='No' # [sng] Link E3SM-climo to AMWG-climo filenames
 map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
-mdl_nm='cam' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
-mdl_nm_usr='' # [sng] Model name (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'ice', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'ocn')
+mdl_nm='cam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
+mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
@@ -514,7 +514,7 @@ no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ="${par_bck}" # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression precision
-prc_typ='' # [sng] Procedure type
+prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso')
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
@@ -568,7 +568,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-j${fnt_nrm} ${fnt_bld}job_nbr${fnt_nrm}  Job simultaneity for parallelism (default ${fnt_bld}${job_nbr}${fnt_nrm}) [${fnt_tlc}job_nbr, job_number, jobs${fnt_nrm}]"
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-l${fnt_nrm} ${fnt_bld}lnk_flg${fnt_nrm}  Link E3SM-climo to AMWG-climo filenames (default ${fnt_bld}${lnk_flg}${fnt_nrm}) [${fnt_tlc}lnk_flg, link_flag${fnt_nrm}]"
-    echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}mdl_nm${fnt_nrm}   Model name (default ${fnt_bld}${mdl_nm}${fnt_nrm}) [${fnt_tlc}mdl_nm, mdl, model_name, model${fnt_nrm}]"
+    echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}mdl_nm${fnt_nrm}   Model name string in output filenames (default ${fnt_bld}${mdl_nm}${fnt_nrm}) [${fnt_tlc}mdl_nm, mdl, model_name, model${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco, nco_options${fnt_nrm}]"
     echo " ${fnt_bld}--no_lnk${fnt_nrm}   Do not link E3SM-climo to AMWG-climo filenames [${fnt_tlc}no_links, no_amwg_links, no_amwg, no_AMWG_link${fnt_nrm}]"
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"
@@ -603,8 +603,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "\n"
     printf "${fnt_rvr}Examples:${fnt_nrm}\n${fnt_bld}${spt_nm} -c ${caseid_xmp} -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate EAM/CAM climo\n"
     printf "${fnt_bld}${spt_nm} -c control -m clm2 -s ${yr_srt} -e ${yr_end} -i ${drc_in_xmp} -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Generate EAM/CLM climo\n"
-    printf "${fnt_bld}${spt_nm} -m mpasseaice -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${fnt_nrm}# Generate MPAS-Seaice climo\n"
-    printf "${fnt_bld}${spt_nm} -m mpaso -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oRRS18to6v3_to_cmip6_720x1440_nco.20200601.nc ${fnt_nrm}# Generate MPAS-Ocean climo\n"
+    printf "${fnt_bld}${spt_nm} -P mpasseaice -s ${yr_srt} -e ${yr_end} -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oEC60to30v3_to_cmip6_180x360_aave.20181001.nc ${fnt_nrm}# Generate MPAS-Seaice climo\n"
+    printf "${fnt_bld}${spt_nm} -P mpaso -p mpi -s 1 -e 5 -i ${drc_in_mps} -o ${drc_out_mps} -r ~zender/data/maps/map_oRRS18to6v3_to_cmip6_720x1440_nco.20200601.nc ${fnt_nrm}# Generate MPAS-Ocean climo\n"
     printf "${fnt_bld}cd output;ls *cam*19??-??*.nc | ${spt_nm} -v FSNT,TREFHT -s 1900 -e 1999 -o ${drc_out_xmp} -r ~zender/data/maps/map_ne30np4_to_fv129x256_aave.20150901.nc ${fnt_nrm}# Split climo\n"
     printf "${fnt_bld}ncclimo -c ${caseid_xmp} -m cam -S 41 -E 50 -x ${drc_rgr_xmp}/0041-0050 -s 51 -e 60 -i ${drc_rgr_xmp}/0051-0060 -X ${drc_rgr_xmp}/0041-0060 ${fnt_nrm}# Combine two climos\n\n"
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
@@ -682,7 +682,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	j) job_usr="${OPTARG}" ;; # Job simultaneity
 	L) dfl_lvl="${OPTARG}" ;; # Deflate level
 	l) lnk_flg="${OPTARG}" ;; # Link E3SM to AMWG name
-	m) mdl_nm_usr="${OPTARG}" ;; # Model name
+	m) mdl_nm_usr="${OPTARG}" ;; # Model name string
 	n) nco_opt="${OPTARG} ${nco_opt}" ;; # NCO options
 	o) drc_out_usr="${OPTARG}" ;; # Output directory
 	O) drc_rgr_usr="${OPTARG}" ;; # Regridded directory
@@ -730,7 +730,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       amwg_link=?* | amwg_links=?* | AMWG_link=?* | AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Link E3SM to AMWG name
 	       no_amwg_link | no_amwg_links | no_amwg | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # # Link E3SM to AMWG name
 	       no_amwg_link=?* | no_amwg_links=?* | no_amwg=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM to AMWG name
-	       mdl_nm=?* | mdl=?* | model_name=?* | model=?* ) mdl_nm_usr="${LONG_OPTARG}" ;; # -m # Model name
+	       mdl_nm=?* | mdl=?* | model_name=?* | model=?* ) mdl_nm_usr="${LONG_OPTARG}" ;; # -m # Model name string
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG} ${nco_opt}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
 	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit cell_measures variables
