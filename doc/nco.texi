@@ -19300,15 +19300,14 @@ model, some regridder options are model-specific and therefore it is
 smarter to specify which @acronym{MPAS} model produced the input
 data. 
 
-@samp{-m mpasocean},
-(or @samp{-m mpaso} for short), @samp{-m mpasseaice},
-(or @samp{-m mpasi} for short), or @samp{-m mpaslandice}
-(or @samp{-m mpasl} for short), like this: 
+@samp{-m mpasocean}, (or @samp{-m mpaso} for short),
+@samp{-m mpasseaice}, (or @samp{-m mpassi} for short), or
+@samp{-m mpaslandice} (or @samp{-m mpasli} for short), like this: 
 @example
 @verbatim
-ncclimo -m mpaso -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
-ncclimo -m mpasi -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-I
-ncclimo -m mpasl -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-L
+ncclimo -m mpaso  -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-O
+ncclimo -m mpassi -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-SI
+ncclimo -m mpasli -s 1980 -e 1983 -i $drc_in -o $drc_out # MPAS-LI
 @end verbatim
 @end example
 
@@ -19644,7 +19643,7 @@ map_ice=$map_ocn
 ncclimo -p mpi -c $caseid -m cam  -s 2 -e 5 -i $drc_in -r $map_atm -o $drc_out/atm
 ncclimo        -c $caseid -m clm2 -s 2 -e 5 -i $drc_in -r $map_lnd -o $drc_out/lnd
 ncclimo -p mpi -m mpaso           -s 2 -e 5 -i $drc_in -r $map_ocn -o $drc_out/ocn 
-ncclimo        -m mpasi           -s 2 -e 5 -i $drc_in -r $map_ice -o $drc_out/ice
+ncclimo        -m mpassi          -s 2 -e 5 -i $drc_in -r $map_ice -o $drc_out/ice
 @end verbatim
 @end example
 Atmosphere and ocean model output is typically larger than land and ice

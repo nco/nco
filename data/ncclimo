@@ -387,7 +387,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # hst_nm:  History volume name string, i.e., $hst_nm character sequence used in history tape names:
 #          caseid.mdl_nm.hst_nm.YYYY-MM.nc (examples include 'h0' (default, works for cam, clm), 'h1', 'h' (for cism), 'hist' (for mpasocean, mpasseaice)
 # mdl_nm:  Model name string in outpur filenames, i.e., character sequence $mdl_nm in standard names:
-#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'eam', 'elm', 'mpasocean', 'mpaso', 'mpasseaice', 'mpasi', 'pop')
+#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'eam', 'elm', 'mpasocean', 'mpaso', 'mpasseaice', 'mpassi', 'pop')
 # nco_opt: String of options to pass-through to NCO, e.g.,
 #          '-D 2 -7 -L 1' for NCO debugging level 2, netCDF4-classic output, compression level 1
 #          '--no_tmp_fl -x' to skip temporary files, turn extraction into exclusion list

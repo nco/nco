@@ -624,10 +624,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   unsigned int msk_f32_u32_zro;
   unsigned int msk_f32_u32_one;
   unsigned int msk_f32_u32_hshv;
-  unsigned long int *u64_ptr;
-  unsigned long int msk_f64_u64_zro;
-  unsigned long int msk_f64_u64_one;
-  unsigned long int msk_f64_u64_hshv;
+  unsigned long long int *u64_ptr;
+  unsigned long long int msk_f64_u64_zro;
+  unsigned long long int msk_f64_u64_one;
+  unsigned long long int msk_f64_u64_hshv;
   unsigned short prc_bnr_ceil; /* [nbr] Exact binary digits of precision rounded-up */
   unsigned short prc_bnr_xpl_rqr; /* [nbr] Explicitly represented binary digits required to retain */
   
@@ -820,9 +820,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     bit_xpl_nbr_sgn=bit_xpl_nbr_sgn_dbl;
     bit_xpl_nbr_zro=bit_xpl_nbr_sgn-prc_bnr_xpl_rqr;
     assert(bit_xpl_nbr_zro <= bit_xpl_nbr_sgn-NCO_PPC_BIT_XPL_NBR_MIN);
-    u64_ptr=(unsigned long int *)op1.ui64p;
+    u64_ptr=(unsigned long long int *)op1.ui64p;
     /* Create mask */
-    msk_f64_u64_zro=0ul; /* Zero all bits */
+    msk_f64_u64_zro=0ull; /* Zero all bits */
     msk_f64_u64_zro=~msk_f64_u64_zro; /* Turn all bits to ones */
     /* Bit Shave mask for AND: Left shift zeros into bits to be rounded, leave ones in untouched bits */
     msk_f64_u64_zro <<= bit_xpl_nbr_zro;
@@ -834,14 +834,14 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       if(!has_mss_val){
 	for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
 	for(idx=1L;idx<sz;idx+=2L)
-	  if(u64_ptr[idx] != 0UL) /* Never quantize upwards floating point values of zero */
+	  if(u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
 	    u64_ptr[idx]|=msk_f64_u64_one;
       }else{
 	const double mss_val_dbl=*mss_val.dp;
 	for(idx=0L;idx<sz;idx+=2L)
 	  if(op1.dp[idx] != mss_val_dbl) u64_ptr[idx]&=msk_f64_u64_zro;
 	for(idx=1L;idx<sz;idx+=2L)
-	  if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0UL) u64_ptr[idx]|=msk_f64_u64_one;
+	  if(op1.dp[idx] != mss_val_dbl && u64_ptr[idx] != 0ULL) u64_ptr[idx]|=msk_f64_u64_one;
       } /* end else */
     }else if(nco_baa_cnv_get() == nco_baa_shv){
       /* Bit-Shave: always shave LSBs */

@@ -167,44 +167,44 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
 char *                 /* O [sng] contains newly malloced output string */
 nco_cln_fmt_dt         /*   [fnc] format an output string */
 (tm_cln_sct *ttx,      /* I [ptr] Calendar structure */
-int ifmt)              /* I [enm] nco_fmt_dt */
+ int ifmt)              /* I [enm] nco_fmt_dt */
 {
- char bdate[200]={0};
- char btime[200]={0};
- char *buff;
-
- buff=(char*)nco_malloc( sizeof(char) * NCO_MAX_LEN_FMT_SNG );
-
- switch(ifmt){
- case fmt_dt_nil:
-   buff[0]='\0';
-   break;
-   /* Plain format */
- case fmt_dt_rgl:
-   sprintf(buff,"%04d-%02d-%02d %02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec);
+  char bdate[200]={0};
+  char btime[200]={0};
+  char *bfr;
+  
+  bfr=(char*)nco_malloc( sizeof(char) * NCO_MAX_LEN_FMT_SNG );
+  
+  switch(ifmt){
+  case fmt_dt_nil:
+    bfr[0]='\0';
+    break;
+    /* Plain format */
+  case fmt_dt_rgl:
+    sprintf(bfr,"%04d-%02d-%02d %02d:%02d:%04.7f",ttx->year,ttx->month,ttx->day,ttx->hour,ttx->min,ttx->sec);
    break;
    /* Plain format all out with 'T' char as date-time spacer */
- case fmt_dt_iso8601:
-   sprintf(buff,"%04d-%02d-%02dT%02d:%02d:%f", ttx->year,ttx->month, ttx->day,ttx->hour,ttx->min,ttx->sec);
-   break;
-   /* Print date and time if time not all zero */
- case fmt_dt_sht:
-   sprintf(bdate,"%04d-%02d-%02d",ttx->year,ttx->month,ttx->day);
-   if(ttx->hour !=0 || ttx->min!=0 || ttx->sec !=0.0){
-     int isec;
-     double m_sec,frac_sec;
-     
-     frac_sec=modf(ttx->sec, &m_sec);
-     isec=(int)m_sec;
-     
-     if(frac_sec == 0.0) sprintf(btime, " %02d:%02d:%02d", ttx->hour,ttx->min, isec ); else sprintf(btime, " %02d:%02d:%02.7f", ttx->hour,ttx->min, ttx->sec);
-   }
-   sprintf(buff,"%s%s", bdate,btime);
-   break;
- }
+  case fmt_dt_iso8601:
+    sprintf(bfr,"%04d-%02d-%02dT%02d:%02d:%04.7f",ttx->year,ttx->month,ttx->day,ttx->hour,ttx->min,ttx->sec);
+    break;
+    /* Print date and time if time not all zero */
+  case fmt_dt_sht:
+    sprintf(bdate,"%04d-%02d-%02d",ttx->year,ttx->month,ttx->day);
+    if(ttx->hour != 0 || ttx->min != 0 || ttx->sec != 0.0){
+      int isec;
+      double m_sec,frc_sec;
+      
+      frc_sec=modf(ttx->sec,&m_sec);
+      isec=(int)m_sec;
+      
+      if(frc_sec == 0.0) sprintf(btime," %02d:%02d:%02d",ttx->hour,ttx->min,isec); else sprintf(btime," %02d:%02d:%02.7f",ttx->hour,ttx->min,ttx->sec);
+    }
+    sprintf(bfr,"%s%s",bdate,btime);
+    break;
+  }
  
- return buff;
-}
+  return bfr;
+} /* !nco_cln_fmt_dt() */
 
 nco_cln_typ /* [enm] Calendar type */
 nco_cln_get_cln_typ /* [fnc] Determine calendar type or cln_nil if not found */
@@ -232,7 +232,7 @@ nco_cln_get_cln_typ /* [fnc] Determine calendar type or cln_nil if not found */
   else if(strstr(lcl_sng,"360_day")) rcd_typ=cln_360;
   else if(strstr(lcl_sng,"noleap") || strstr(lcl_sng,"365_day")) rcd_typ=cln_365;
   else if(strstr(lcl_sng,"all_leap") || strstr(lcl_sng,"366_day")) rcd_typ=cln_366;
-
+  
   lcl_sng=(char *)nco_free(lcl_sng);
   
   return rcd_typ;
@@ -966,7 +966,7 @@ double *og_val)         /* O [dbl] output value */
   }else rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);
 
   /* Copy over iff successful */ 
-  if(rcd == NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s: report unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln, val_dbl);  
+  if(rcd == NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s: report unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln,val_dbl);  
  
   return rcd;        
 } /* !nco_cln_clc_dbl_org() */

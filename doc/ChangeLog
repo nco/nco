@@ -1,5 +1,11 @@
 2020-10-20  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.6-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha04: Osiris Rex';git push
+	git tag -a 4.9.6-alpha04 -m 'all: bgr 64bit fix; ncremap fix esmf bug;';git push --tags
+
+	* nco_ppc_bitmask() fix pointer union type for u64_ptr and msk_f64*
+
 	* ncremap set wgt_typ=esmf for relevant algorithms
 
 2020-10-16  Charlie Zender  <zender@uci.edu>
