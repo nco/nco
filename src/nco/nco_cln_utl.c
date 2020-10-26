@@ -164,17 +164,19 @@ nco_cln_get_tm_typ /* Returns time unit type or tm_void if not found */
   return rcd_typ;
 } /* !nco_cln_get_tm_typ() */
 
-char *                 /* O [sng] contains newly malloced output string */
-nco_cln_fmt_dt         /*   [fnc] format an output string */
-(tm_cln_sct *ttx,      /* I [ptr] Calendar structure */
- int ifmt)              /* I [enm] nco_fmt_dt */
+char * /* O [sng] contains newly malloced output string */
+nco_cln_fmt_dt /* [fnc] format an output string */
+(tm_cln_sct *ttx, /* I [ptr] Calendar structure */
+ int ifmt) /* I [enm] nco_fmt_dt */
 {
   char bdate[200]={0};
   char btime[200]={0};
   char *bfr;
   
-  bfr=(char*)nco_malloc( sizeof(char) * NCO_MAX_LEN_FMT_SNG );
+  bfr=(char*)nco_malloc(sizeof(char)*NCO_MAX_LEN_FMT_SNG);
   
+  /* ISO8601 formatter:
+     https://dencode.com/en/date */
   switch(ifmt){
   case fmt_dt_nil:
     bfr[0]='\0';
@@ -183,7 +185,7 @@ nco_cln_fmt_dt         /*   [fnc] format an output string */
   case fmt_dt_rgl:
     sprintf(bfr,"%04d-%02d-%02d %02d:%02d:%04.7f",ttx->year,ttx->month,ttx->day,ttx->hour,ttx->min,ttx->sec);
    break;
-   /* Plain format all out with 'T' char as date-time spacer */
+   /* Same as plain format but with 'T' char as date-time spacer */
   case fmt_dt_iso8601:
     sprintf(bfr,"%04d-%02d-%02dT%02d:%02d:%04.7f",ttx->year,ttx->month,ttx->day,ttx->hour,ttx->min,ttx->sec);
     break;
@@ -198,10 +200,10 @@ nco_cln_fmt_dt         /*   [fnc] format an output string */
       isec=(int)m_sec;
       
       if(frc_sec == 0.0) sprintf(btime," %02d:%02d:%02d",ttx->hour,ttx->min,isec); else sprintf(btime," %02d:%02d:%02.7f",ttx->hour,ttx->min,ttx->sec);
-    }
+    } /* !0 */
     sprintf(bfr,"%s%s",bdate,btime);
     break;
-  }
+  } /* !ifmt */
  
   return bfr;
 } /* !nco_cln_fmt_dt() */
