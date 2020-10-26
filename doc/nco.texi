@@ -21228,7 +21228,7 @@ Values @math{@var{dt_fmt}=0} or 1 correspond to the short format for
 dates that are the default.
 The value @math{@var{dt_fmt}=2} requests the ``regular'' format for
 dates, @math{@var{dt_fmt}=3} requests the full @acronym{ISO}-8601 format
-with the ``T'' separator:
+with the ``T'' separator and the comma:
 @example
 @verbatim
 ncks -H -m -v time_bnds -C --dt_fmt=value ~/nco/data/in.nc

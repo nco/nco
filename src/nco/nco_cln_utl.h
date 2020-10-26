@@ -140,7 +140,7 @@ extern "C" {
   nco_cln_var_prs
   (const char *fl_unt_sng,
    nco_cln_typ lmt_cln,
-   int ifmt,
+   int dt_fmt_enm,
    var_sct *var,
    var_sct *var_out
   );
