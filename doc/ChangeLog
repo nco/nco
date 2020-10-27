@@ -1,3 +1,7 @@
+2020-10-27  Charlie Zender  <zender@sastrugi.local>
+
+	* ncclimo warn when GAA string is empty (because e3sm_diagnostics depends on it)
+
 2020-10-26  Charlie Zender  <zender@sastrugi.local>
 
 	* NCO 4.9.6-alpha04 release procedure:

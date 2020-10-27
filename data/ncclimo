@@ -1097,9 +1097,12 @@ if [ -n "${gaa_sng_std}" ]; then
     else
 	yrs_avg_sng="${yr_srt}"
     fi # !yr_nbr
+    # NB: E3SM diagnostics (e3sm_diagnostics) relies on this attribute
     if [ "${sbs_flg}" != 'Yes' ]; then
 	gaa_sng="${gaa_sng_std} --gaa yrs_averaged=${yrs_avg_sng}"
     fi # !sbs_flg
+else
+    echo "${spt_nm}: INFO User-defined global attributes string is empty. Diagnostics routines (such as E3SM Diagnostics) that depend on these attributes may not work."
 fi # !gaa_sng
 if [ -n "${job_usr}" ]; then 
     job_nbr="${job_usr}"
