@@ -1087,7 +1087,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       msk_in[idx] = 1;
     } else {
       frc_in[idx] = 0.0;
-      msk_in[idx] = 0;
+      //msk_in[idx] = 0;
     }
   } /* !idx */
 
@@ -1097,7 +1097,7 @@ nco_msh_mk /* [fnc] Compute overlap mesh and weights */
       msk_out[idx] = 1;
     } else {
       frc_out[idx] = 0.0;
-      msk_out[idx] = 0;
+      //msk_out[idx] = 0;
     }
   } /* !idx */
 
