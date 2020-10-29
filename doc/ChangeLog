@@ -1,3 +1,7 @@
+2020-10-29 Henry Butowsky  <henryb@hush.com>
+
+	* nco_msh_mk()  msk_in and msk_out no longer modified, regardless of values of frac_in and frac_out
+	
 2020-10-26  Charlie Zender  <zender@sastrugi.local>
 
 	* NCO 4.9.6-alpha04 release procedure:
