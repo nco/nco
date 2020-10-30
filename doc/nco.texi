@@ -6980,7 +6980,7 @@ ncremap -G ttl='Equi-Angular Greenland 1x1 degree grid'#latlon=30,90#snwe=55.0,8
         -g ${HOME}/greenland_1x1.nc
 
 # 721x1440 ECMWF ERA5 resolution
-ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV grid 0.25x0.25 degree, dimensions 721x1440, cell centers on Poles/Equator and Prime Meridian/Date Line'#latlon=721,1440#lat_drc=n2s#lat_typ=cap#lon_typ=grn_ctr \
+ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV ECMWF ERA5 grid 0.25x0.25 degree, dimensions 721x1440, cell centers on Poles/Equator and Prime Meridian/Date Line'#latlon=721,1440#lat_drc=n2s#lat_typ=cap#lon_typ=grn_ctr \
         -g ${DATA}/grids/era5.nc
 
 # 105x401 Greenland ERA5
@@ -8246,13 +8246,25 @@ We are interested in user-feedback on these features.
 One aspect that deserves mention is that UDUnits, and thus
 @acronym{NCO}, supports run-time definition of the location of the
 relevant UDUnits databases. 
-With UDUnits @w{version 2}, users may specify the UDUnits database file 
-itself, @file{udunits2.xml}, via the @code{UDUNITS2_XML_PATH} 
-environment variable.
+UDUnits2 (specifically, the function @code{ut_read_xml()}) uses the
+environment variable @code{UDUNITS2_XML_PATH}, if any, to find its
+all-important @acronym{XML} database, named @file{udunits2.xml} by
+default.   
+If @code{UDUNITS2_XML_PATH} is undefined, then UDUnits2 looks in the
+fall-back default initial location that was hardcoded when the
+UDUnits2 library was built. 
+This location varies depending upon your operating system and UDUnits2
+compilation settings. 
+If UDUnits2 is correctly linked yet cannot find the @acronym{XML}
+database in either of these locations, then @acronym{NCO} will report
+that the UDUnits2 library has failed to initialize. 
+To fix this, export the location of the UDUnits2 @acronym{XML}
+database file @file{udunits2.xml} to the shell:
 @example
-# UDUnits2
-export UDUNITS2_XML_PATH='/unusual/location/share/udunits/udunits2.xml'
+export UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'
 @end example
+One can then invoke (without recompilation) @acronym{NCO} again, and
+UDUnit2 should work. 
 This run-time flexibility can enable the full functionality of
 pre-built binaries on machines with libraries in different locations.
 

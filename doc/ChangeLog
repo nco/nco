@@ -1,3 +1,7 @@
+2020-10-30  Charlie Zender  <zender@sastrugi.local>
+
+	* nco.texi clarify precedence/usage of UDUNITS2_XML_FILE
+
 2020-10-27  Charlie Zender  <zender@sastrugi.local>
 
 	* ncclimo warn when GAA string is empty (because e3sm_diagnostics depends on it)

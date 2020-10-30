@@ -673,8 +673,14 @@ nco_cln_cnv_mk  /* [fnc] UDUnits2 create a custom converter  */
   ut_unit *ut_sct_in; /* [sct] UDUnits structure, input units */
   ut_unit *ut_sct_out; /* [sct] UDUnits structure, output units */
   
-  /* When empty, ut_read_xml() uses environment variable UDUNITS2_XML_PATH, if any
-     Otherwise it uses default initial location hardcoded when library was built */
+  /* UDUnits2 (specifically, the function ut_read_xml()) uses the environment variable UDUNITS2_XML_PATH, if any, to find its all-important XML database named udunits2.xml by default.
+     If UDUNITS2_XML_PATH is undefined, UDUnits2 looks in the fall-back default initial location that was hardcoded when the UDUnits2 library was built.
+     This location varies depending upon your operating system and UDUnits2 compilation settings.
+     If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations,
+     then NCO will report that the UDUnits2 library has failed to initialize.
+     To fix this, export the location of the UDUnits2 XML database file udunits2.xml to the shell:
+     export UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'
+     One can then invoke (without recompilation) NCO again, and UDUNITS2 should work. */
   if(nco_dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
