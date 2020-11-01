@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.6-alpha03
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 19 October 2020
-@set update-month October 2020
+@set update-date 1 November 2020
+@set update-month November 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -8431,7 +8431,7 @@ coordinate (e.g., @code{climatology_bounds}) (@pxref{CF Conventions}).
 As of @acronym{NCO} version 4.6.3 (December, 2016), @acronym{NCO}
 also rebases the time coordinate when the units differ between files.
 For example the first file may have @code{units="days since 2014-03-01"} 
-and  the second file @code{units="hours since 2014-03-10 00:00"}.
+and the second file @code{units="hours since 2014-03-10 00:00"}.
 
 @html
 <a name="mrd"></a> <!-- http://nco.sf.net/nco.html#mrd -->
@@ -15065,14 +15065,19 @@ time_str="1964-03-13", "1964-03-14", "1964-03-15", "1964-03-16",
 @end verbatim
 @end example
 
-Under the hood there are  a few steps invoved. @*
-First the method reads 'var_time@@units' and 'var_time@@calendar' (if present) then converts var_time to 'seconds since 1970-01-01'.@*
-It then converts these possibly UTC seconds to the standard struture @code{struct *tm}.@* 
-Finally strftime is called with fmt_sng and the *tm struct. @*
-The c-standard @code{strftime} is used as defined in 'time.h' @*
-If the method is called without fmt_sng then the following default is used: @code{"%Y-%m-%d %H:%M:%S"} @*
-The method @code{regular} takes a single var argument and  uses the above default string @*
-
+Under the hood there are  a few steps invoved:
+First the method reads @code{var_time@@units} and
+@code{var_time@@calendar} (if present) then converts @code{var_time} to
+@code{seconds since 1970-01-01}.
+It then converts these possibly UTC seconds to the standard struture
+@code{struct *tm}.
+Finally @code{strftime()} is called with @code{fmt_sng} and the
+@code{*tm} struct.
+The C-standard @code{strftime()} is used as defined in @file{time.h}.
+If the method is called without @var{fmt_sng} then the following default is
+used: @code{"%Y-%m-%d %H:%M:%S"}.
+The method @code{regular} takes a single var argument and uses the
+above default string. 
 @example 
 @verbatim
 ncap2 -4  -v -O -s 'time_str=regular(time);' in.nc foo.nc
@@ -15084,7 +15089,7 @@ time_str = "1964-03-13 21:09:00", "1964-03-14 21:09:00", "1964-03-15 21:09:00",
 @end verbatim
 @end example
 
-@noindent Another  working example
+@noindent Another working example
 @example
 @verbatim
 ncap2 -v -O -s 'ts=strftime(frametime(0),"%Y-%m-%d/envlog_netcdf_L1_ua-mac_%Y-%m-%d.nc");' in.nc out.nc

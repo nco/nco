@@ -1,3 +1,7 @@
+2020-11-01  Charlie Zender  <zender@sastrugi.local>
+
+	* Add UDUNITS2_XML_FILE instructions as HINT to run-time WARNING
+
 2020-10-30  Charlie Zender  <zender@sastrugi.local>
 
 	* nco.texi clarify precedence/usage of UDUNITS2_XML_FILE

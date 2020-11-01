@@ -684,9 +684,10 @@ nco_cln_cnv_mk  /* [fnc] UDUnits2 create a custom converter  */
   if(nco_dbg_lvl_get() >= nco_dbg_vrb) ut_set_error_message_handler(ut_write_to_stderr); else ut_set_error_message_handler(ut_ignore);
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
-    (void)fprintf(stdout,"%s: %s failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
-    return (cv_converter*)NULL; /* Failure */
-  } /* end if err */ 
+    (void)fprintf(stdout,"%s: WARNING %s failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: HINT UDUnits2 (specifically, the function ut_read_xml()) uses the environment variable UDUNITS2_XML_PATH, if any, to find its all-important XML database named by default udunits2.xml. If UDUNITS2_XML_PATH is undefined, UDUnits2 looks in the fall-back default initial location that was hardcoded when the UDUnits2 library was built. This location varies depending upon your operating system and UDUnits2 compilation settings. If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations, then NCO warns that the UDUnits2 library has failed to initialize and prints this message. To fix this, export the location of the UDUnits2 XML database file udunits2.xml to the shell with, e.g.,\n\texport UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'\nOne can then invoke (without recompilation) NCO again, and UDUNITS2 should work.\n",nco_prg_nm_get());
+    return (cv_converter *)NULL; /* Failure */
+  } /* !ut_sys */ 
   
   /* Units string to convert from */
   ut_sct_in=ut_parse(ut_sys,fl_unt_sng,UT_ASCII); 
