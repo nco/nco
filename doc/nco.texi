@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.6-alpha03
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 1 November 2020
+@set update-date 3 November 2020
 @set update-month November 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -8071,9 +8071,9 @@ extensively.
 @example
 # Average monthly means into a climatological month
 ncra --cb=2014,2016,1,1,0 2014_01.nc 2015_01.nc 2016_01.nc clm_JAN.nc
-# Average seasonally contiguous climatological monthly means into a season
+# Average seasonally contiguous climatological monthly means into NH winter
 ncra --cb=2013,2016,12,2,0 -w 31,31,28 DEC.nc JAN.nc FEB.nc DJF.nc
-# Average seasonally discontiguous climatological means into a season
+# Average seasonally discontiguous climatological means into NH winter
 ncra --cb=2014,2016,1,12,0 -w 31,28,31 JAN.nc FEB.nc DEC.nc JFD.nc
 # Reduce four climatological seasons to make an annual climatology
 ncra --cb=2014,2016,1,12,0 -w 92,92,91,90 MAM.nc JJA.nc SON.nc DJF.nc ANN.nc
@@ -18389,23 +18389,43 @@ table of @command{ncremap} options.
 @table @option
 @html
 <a name="dec_md"></a> <!-- http://nco.sf.net/nco.html#dec_md -->
+<a name="dcm_md"></a> <!-- http://nco.sf.net/nco.html#dcm_md -->
+<a name="djf"></a> <!-- http://nco.sf.net/nco.html#djf -->
+<a name="DJF"></a> <!-- http://nco.sf.net/nco.html#DJF -->
+<a name="jfd"></a> <!-- http://nco.sf.net/nco.html#jfd -->
+<a name="JFD"></a> <!-- http://nco.sf.net/nco.html#JFD -->
 @end html
 @cindex @code{-a @var{dec_md}}
+@cindex @code{djf}
+@cindex @code{DJF}
+@cindex @code{JFD}
+@cindex @code{jfd}
 @cindex @code{--dec_md}
 @cindex @code{--dcm_md}
 @cindex @code{--dec_mode}
 @cindex @code{--december_mode}
 @cindex @var{dec_md}
 @item -a @var{dec_md} (@code{--dec_md}, @code{--dcm_md}, @code{--december_mode}, @code{--dec_mode})
-December mode determines the type of @acronym{DJF} average.
-The two valid options are @code{scd} (default) and @code{sdd}.
+December mode determines the start and end months of the climatology
+and the type of NH winter seasonal average.
+Two valid arguments are @code{scd} (default, or synonyms @code{djf}
+and @code{DJF}) and @code{sdd} (or synonyms @code{jfd} and
+@code{JFD}). 
 @acronym{SCD}-mode stands for ``Seasonally Continuous December''. 
 The first month used is December of the year before the start year
 specified with @samp{-s}.
 The last month is November of the end year specified with @samp{-e}.
+In @acronym{SCD}-mode the Northern Hemisphere winter seasonal
+climatology will be computed with sets of the three consecutive
+months December, January, and February (DJF) where the calendar
+year of the December months is always one less than the calendar
+year of January and February.
 @acronym{SDD}-mode stands for ``Seasonally Discontinuous December''. 
 The first month used is January of the specified start year. 
 The last month is December of the end year specified with @samp{-e}.
+In @acronym{SDD}-mode the Northern Hemisphere winter seasonal
+climatology will be computed with sets of the three non-consecutive
+months January, February, and December (JFD) from each calendar year. 
 
 @html
 <a name="clm_md"></a> <!-- http://nco.sf.net/nco.html#clm_md -->

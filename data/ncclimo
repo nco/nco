@@ -350,8 +350,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 
 # Other options (often their default settings work well):
 # dec_md:  December mode, i.e., how to treat December. One of two options:
-#          Seasonally-contiguous-december (SCD) mode (dec_md=scd) (default)
-#          Seasonally-discontiguous-december (SDD) mode (dec_md=sdd)
+#          Seasonally-contiguous-december (SCD) mode (dec_md=scd|djf) (default through 4.9.4)
+#          Seasonally-discontiguous-december (SDD) mode (dec_md=sdd|jfd) (default starting 4.9.5)
 #          Both modes use an integral multiple of 12 months, and _never alter any input files_
 #          SCD climatologies begin in Dec of yr_srt-1, and end in Nov of yr_end
 #          SDD climatologies begin in Jan of yr_srt,   and end in Dec of yr_end
@@ -471,7 +471,7 @@ d2f_opt='--d2f' # [sng] Option string to convert double-precision fields to sing
 dpt_fl='' # [sng] Depth file with refBottomDepth for MPAS ocean
 dpt_opt='' # [sng] Option string to add depth coordinate to regridded MPAS files
 dbg_lvl=0 # [nbr] Debugging level
-dec_md='sdd' # [sng] December mode ('scd' or 'sdd' as per above)
+dec_md='sdd' # [sng] December mode (contiguous: 'scd' | 'djf', discontiguous 'sdd' | 'jfd' as per above)
 dfl_lvl='' # [enm] Deflate level
 dpf_dfl='30' # [nbr] Days-per-file in input
 drc_in='' # [sng] Input file directory

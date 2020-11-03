@@ -1,3 +1,7 @@
+2020-11-03  Charlie Zender  <zender@uci.edu>
+
+	* Clarify SDD and SCD distinction for ncclimo
+
 2020-11-01  Charlie Zender  <zender@sastrugi.local>
 
 	* Add UDUNITS2_XML_FILE instructions as HINT to run-time WARNING
