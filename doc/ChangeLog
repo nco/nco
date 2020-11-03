@@ -6,6 +6,10 @@
 
 	* nco.texi clarify precedence/usage of UDUNITS2_XML_FILE
 
+2020-10-29 Henry Butowsky  <henryb@hush.com>
+
+	* nco_msh_mk() msk_in and msk_out no longer modified regardless of frc_in and frc_out
+
 2020-10-27  Charlie Zender  <zender@sastrugi.local>
 
 	* ncclimo warn when GAA string is empty (because e3sm_diagnostics depends on it)
