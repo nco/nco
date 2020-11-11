@@ -15017,7 +15017,7 @@ Gregorian/Julian as defined by UDUnits.
 If @code{varIn} is not a floating-point type then it is promoted to
 @code{NC_DOUBLE} for the system call in the UDUnits library,   
 and then demoted back to its original type after.
-s@example
+@example
 @verbatim
 T[lon]={0.0,100.0,150.0,200.0};
 T@units="Celsius";

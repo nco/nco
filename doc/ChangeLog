@@ -1,3 +1,9 @@
+2020-11-11  Charlie Zender  <zender@uci.edu>
+
+	* ncremap write node-file to drc_out not local directory
+
+	* ncremap change default parallelism from Background to Serial
+
 2020-11-03  Charlie Zender  <zender@uci.edu>
 
 	* Clarify SDD and SCD distinction for ncclimo
