@@ -1,5 +1,11 @@
 2020-11-11  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.6-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha04: Osiris Rex';git push
+	git tag -a 4.9.6-alpha04 -m 'all: bgr 64bit fix; ncremap fix esmf bug, mpi nd_fl bug, add cmem;ncclimo cmem nodes';git push --tags
+
+	* ncremap fix bone-headed MPI indexing error on Cori
+
 	* ncremap write node-file to drc_out not local directory
 
 	* ncremap change default parallelism from Background to Serial
@@ -25,10 +31,6 @@
 	* ncclimo warn when GAA string is empty (because e3sm_diagnostics depends on it)
 
 2020-10-26  Charlie Zender  <zender@sastrugi.local>
-
-	* NCO 4.9.6-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha04: Osiris Rex';git push
-	git tag -a 4.9.6-alpha04 -m 'all: bgr 64bit fix; ncremap fix esmf bug;';git push --tags
 
 	* ISO8601-compliant number of leading zeros prior to last decimal point
 
