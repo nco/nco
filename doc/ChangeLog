@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha04: Osiris Rex';git push
 	git tag -a 4.9.6-alpha04 -m 'all: bgr 64bit fix; ncremap fix esmf bug, mpi nd_fl bug, add cmem;ncclimo cmem nodes';git push --tags
 
+	* ncremap check for map-type by examining att_cnv_val, att_ttl_val, and att_gnr_val
+
 	* ncremap fix bone-headed MPI indexing error on Cori
 
 	* ncremap write node-file to drc_out not local directory

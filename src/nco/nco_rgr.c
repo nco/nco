@@ -2451,11 +2451,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      Tempest: Title = "TempestRemap Offline Regridding Weight Generator" */
   char *att_val;
   char *att_cnv_val=NULL;
+  char *att_gnr_val=NULL;
   char *att_ttl_val=NULL;
   char *cnv_sng=NULL;
   /* netCDF standard is uppercase Conventions, though some models user lowercase */
   char att_sng_Cnv[]="Conventions"; /* [sng] Unidata standard     string (uppercase) */
   char att_sng_cnv[]="conventions"; /* [sng] Unidata non-standard string (lowercase) */
+  char att_sng_gnr[]="weight_generator"; /* [sng] CMIP6 standard string */
   char att_sng_Ttl[]="Title"; /* [sng] NCO and Tempest use "Title" attribute, and Tempest does not use "Conventions" */
   char att_sng_ttl[]="title"; /* [sng] ERWG 7.1 weight_only uses "title" not "Conventions" attribute */
   char name0_sng[]="name0"; /* [sng] Attribute where Tempest stores least-rapidly-varying dimension name */
@@ -2466,10 +2468,11 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
   /* Look for map-type signature in [cC]onventions or [tT]itle attribute */
   att_cnv_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_cnv);
   if(!att_cnv_val) att_cnv_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_Cnv);
+  att_gnr_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_gnr);
   att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_ttl);
   if(!att_ttl_val) att_ttl_val=nco_char_att_get(in_id,NC_GLOBAL,att_sng_Ttl);
 
-  /* If "[cC]onventions" or "[tT]itle" attribute was found, it determines map-file type... */
+  /* Either "[cC]onventions" or "[tT]itle" attribute determines map-file type... */
   if(att_cnv_val && strstr(att_cnv_val,"SCRIP")) nco_rgr_mpf_typ=nco_rgr_mpf_SCRIP;
   if(nco_rgr_mpf_typ == nco_rgr_mpf_nil && att_ttl_val){
     if(strstr(att_ttl_val,"ESMF Offline Regridding Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF;
@@ -2477,11 +2480,18 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if(strstr(att_ttl_val,"Tempest")) nco_rgr_mpf_typ=nco_rgr_mpf_Tempest;
     else if(strstr(att_ttl_val,"ESMF Regrid Weight Generator")) nco_rgr_mpf_typ=nco_rgr_mpf_ESMF_weight_only;
   } /* !att_ttl_val */
+  if(nco_rgr_mpf_typ == nco_rgr_mpf_nil && att_cnv_val){
+    if(strstr(att_cnv_val,"NCO")) nco_rgr_mpf_typ=nco_rgr_mpf_NCO;
+  } /* !att_gnr_val */
+  if(nco_rgr_mpf_typ == nco_rgr_mpf_nil && att_gnr_val){
+    if(strstr(att_gnr_val,"NCO")) nco_rgr_mpf_typ=nco_rgr_mpf_NCO;
+  } /* !att_gnr_val */
   if(nco_rgr_mpf_typ == nco_rgr_mpf_nil){
-    (void)fprintf(stderr,"%s: WARNING %s unable to discern map-file type from global attributes \"[cC]onventions\" = \"%s\" and/or \"[tT]itle\" = \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_cnv_val ? att_cnv_val : "",att_ttl_val ? att_ttl_val : "");
+    (void)fprintf(stderr,"%s: WARNING %s unable to discern map-file type from global attributes \"[cC]onventions\" = \"%s\" and/or \"[tT]itle\" = \"%s\" and/or \"weight_generator\" = \"%s\"\n",nco_prg_nm_get(),fnc_nm,att_cnv_val ? att_cnv_val : "",att_ttl_val ? att_ttl_val : "",att_gnr_val ? att_gnr_val : "");
     nco_rgr_mpf_typ=nco_rgr_mpf_unknown;
   } /* !nco_rgr_mpf_typ */
   if(att_cnv_val) att_cnv_val=(char *)nco_free(att_cnv_val);
+  if(att_gnr_val) att_gnr_val=(char *)nco_free(att_gnr_val);
   if(att_ttl_val) att_ttl_val=(char *)nco_free(att_ttl_val);
 
   switch(nco_rgr_mpf_typ){
