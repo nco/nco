@@ -2,7 +2,7 @@
 
 	* NCO 4.9.6-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha04: Osiris Rex';git push
-	git tag -a 4.9.6-alpha04 -m 'all: bgr 64bit fix; ncremap fix esmf bug, mpi nd_fl bug, add cmem;ncclimo cmem nodes';git push --tags
+	git tag -a 4.9.6-alpha04 -m 'all: bgr 64bit fix; ncremap fix esmf bug, mpi nd_fl bug, add cmem, msk_in, msk_out fix, UDUNITS2_XML_FILE hints;ncclimo cmem nodes';git push --tags
 
 	* ncremap check for map-type by examining att_cnv_val, att_ttl_val, and att_gnr_val
 

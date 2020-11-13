@@ -125,11 +125,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.6-alpha03
-@set doc-edition 4.9.6-alpha03
+@set nco-edition 4.9.6-alpha04
+@set doc-edition 4.9.6-alpha04
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 3 November 2020
+@set update-date 13 November 2020
 @set update-month November 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3617,8 +3617,7 @@ mechanisms including the @command{msread}, @command{msrcp}, and
 @command{nrnet} commands invoked either automatically or with sentinels
 like @command{ncks -p mss:/ZENDER/nco -l . in.nc}.
 Once the @acronym{MSS} was decommissioned in March, 2011, support for
-these retrieval mechanisms was replaced by support for @acronym{HPSS}
-in @acronym{NCO}.
+these retrieval mechanisms was replaced by support for @acronym{HPSS}.
 }.
 The sixth command works if your local version of @acronym{NCO} is
 @acronym{OPeNDAP}-enabled (this is fully described in @ref{OPeNDAP}),

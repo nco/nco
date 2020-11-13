@@ -39,7 +39,7 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
      Otherwise returns system-dependent thr_nbr */
 
   /* Test run-time OpenMP configuration by calling regridder:
-     ncks -O --thr_nbr=4 --dbg=3 --rgr grd_ttl='Title'#grid=grd.nc#latlon=129,256#lat_typ=fv#lon_typ=grn_ctr ~/nco/data/in.nc ~/foo.nc;/bin/rm grd.nc ~/foo.nc */
+     ncks -O --thr_nbr=4 --dbg=5 --rgr grd_ttl='Title'#grid=grd.nc#latlon=3,6 ~/nco/data/in.nc ~/foo.nc;/bin/rm grd.nc ~/foo.nc */
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
