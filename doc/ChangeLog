@@ -1,8 +1,26 @@
-2020-11-11  Charlie Zender  <zender@uci.edu>
+2020-11-20  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.6-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha05: Iliza';git push
+	git tag -a 4.9.6-alpha05 -m '';git push --tags
+
+	* ncremap add cmd_sng and completion time to vrb_lvl=3
+
+2020-11-18  Charlie Zender  <zender@uci.edu>
+
+	* Build on macOS 11
+
+2020-11-13  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo infer tpd using %g not %f format
+
+	* Quiet long filename warnings unless dbg >= 1
 
 	* NCO 4.9.6-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha04: Osiris Rex';git push
 	git tag -a 4.9.6-alpha04 -m 'all: bgr 64bit fix; ncremap fix esmf bug, mpi nd_fl bug, add cmem, msk_in, msk_out fix, UDUNITS2_XML_FILE hints;ncclimo cmem nodes';git push --tags
+
+2020-11-11  Charlie Zender  <zender@uci.edu>
 
 	* ncremap check for map-type by examining att_cnv_val, att_ttl_val, and att_gnr_val
 

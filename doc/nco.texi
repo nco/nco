@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.6-alpha04
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 13 November 2020
+@set update-date 18 November 2020
 @set update-month November 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -13863,9 +13863,9 @@ operands are True/False.
 @example
 @verbatim
 # Simple example
-if(time>0)
+if(time > 0)
   print("All values of time are greater than zero\n");
-else if(time<0)
+else if(time < 0)
   print("All values of time are less than zero\n");   
 else {
   time_max=time.max();
@@ -13875,14 +13875,14 @@ else {
 }
 
 # Example from ddra.nco
-if(fl_typ==fl_typ_gcm){
+if(fl_typ == fl_typ_gcm){
   var_nbr_apx=32;
   lmn_nbr=1.0*var_nbr_apx*varsz_gcm_4D; /* [nbr] Variable size */
   if(nco_op_typ==nco_op_typ_avg){
     lmn_nbr_avg=1.0*var_nbr_apx*varsz_gcm_4D; // Block size
     lmn_nbr_wgt=dmnsz_gcm_lat; /* [nbr] Weight size */
   } // !nco_op_typ_avg
-}else if(fl_typ==fl_typ_stl){
+}else if(fl_typ == fl_typ_stl){
   var_nbr_apx=8;
   lmn_nbr=1.0*var_nbr_apx*varsz_stl_2D; /* [nbr] Variable size */
   if(nco_op_typ==nco_op_typ_avg){
@@ -13893,7 +13893,7 @@ if(fl_typ==fl_typ_gcm){
 @end verbatim
 @end example
 
-@noindent @strong{Conditional Operator @*}
+@noindent @strong{Conditional Operator@*}
 @example
 // netCDF4 needed for this example
 th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : \
@@ -13907,8 +13907,7 @@ th_nw=(three_dmn_var_sht >= 0 ? three_dmn_var_sht.uint() : \
 @subsection Print & String methods
 @cindex print() @command{ncap2}
 
-The print statement  comes in a variety of forms
-
+The print statement comes in a variety of forms:
 @example
 (A)   print(variable_name, format string?);
 (A1)  print(expression/string, format string?);
@@ -13962,10 +13961,10 @@ lon, size = 4 NC_DOUBLE, value = 0, 900, 1800, 2700
 print(lon_2D_rrg,"%3.2f,");
 0.00,0.00,180.00,0.00,180.00,0.00,180.00,0.00,
 
-print(lon*10.0, "%g,")
+print(lon*10.0,"%g,")
 0,900,1800,2700,
 
-print(att_var@float_att,"%g," )
+print(att_var@float_att,"%g,")
 73,72,71,70.01,69.001,68.01,67.01,
 @end verbatim
 @end example
@@ -13975,10 +13974,10 @@ These functions work in an identical fashion to (A1) except that @code{sprint()}
 and @code{sprint4()} outputs a netCDF4 @code{NC_STRING} attribute
 @example
 @verbatim
-time@units=sprint(nDays, "%d days since 1970-1-1") 
-bnd@num=sprint4(bnd_idx,"Band number=%d") 
+time@units=sprint(nDays,"%d days since 1970-1-1")
+bnd@num=sprint4(bnd_idx,"Band number=%d")
 
-time@arr=sprint4(time,"%.2f,")  // "1.00,2.00,3.00,4.00,5.00,6.00,7.00,8.00,9.00,10.00,"
+time@arr=sprint4(time,"%.2f,") // "1.00,2.00,3.00,4.00,5.00,6.00,7.00,8.00,9.00,10.00,"
 @end verbatim
 @end example
 
@@ -14159,8 +14158,8 @@ print("Number of missing values in three_dmn_var_dbl: ");
 print(mss_val_nbr,"%d");
 print(three_dmn_var_dbl);
 
-// Find the total number of missing values along dims $lat and $lon
-mss_ttl=three_mn_var_dbl.missing().ttl($lat,$lon);
+// Find total number of missing values along dims $lat and $lon
+mss_ttl=three_dmn_var_dbl.missing().ttl($lat,$lon);
 print(mss_ttl); // 0, 0, 0, 8, 0, 0, 0, 1, 0, 2 ;
 @end verbatim
 @end example
@@ -14293,8 +14292,7 @@ ncap2 -v -O -s 'rec_pck=pack(three_dmn_rec_var,-0.001,40.0);' in.nc foo.nc
 @end example
 
 @strong{Basic Methods @*}
-These methods work with variables and attributes. They have no arguments
-
+These methods work with variables and attributes. They have no arguments.
 @table @code
 @item size()	
 @cindex size()
@@ -14923,7 +14921,7 @@ cat > ~/ncap2_foo.nco << 'EOF'
 
 // Randomize the time coordinate
 time=10.0*gsl_rng_uniform(time);
-//print("original randomized time =\n");print(time);
+//print("original randomized time = \n");print(time);
 
 /* The sort() routine is overloaded, and takes one or two arguments
    The first argument is a one dimensional array
@@ -15220,12 +15218,12 @@ for(*idx=0;idx<sz;idx++){
 for(*idx=0;idx<sz;idx++){
   @var_nm=@prc(idx);
 
-  // we can work with att pointers as well 
+  // We can work with attribute pointers as well 
   // sprint - ouptut is of type NC_CHAR
   @att_total=sprint(@var_nm,"%s@total"); 
   @att_range=sprint(@var_nm,"%s@range"); 
 
-  // if you are still confused then print out the atts 
+  // If you are still confused then print out the atts 
   print(@att_total); 
   print(@att_range);
  
@@ -16121,7 +16119,7 @@ for (i=0;i<$lat.size;i++) // Loop over lat
   }
  }
 // slope (c1) missing values are set to '0', change to -999. (variable c0 intercept value)
-where( c0 == -999 ) c1 = -999;
+where(c0 == -999) c1=-999;
 @end verbatim
 @end example
 @* @*

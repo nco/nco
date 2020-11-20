@@ -431,12 +431,14 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   } /* end if */
 
   /* psn_arg_nbr can be 0 for ncap2 */
-  if(psn_arg_nbr > 0){
-    /* Might there be problems with any specified files? */
-    for(idx=arg_crr;idx<argc;idx++){
-      if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not play well with older operating systems\n",nco_prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
-    } /* end loop over idx */
-  } /* !psn_arg_nbr */
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    if(psn_arg_nbr > 0){
+      /* Might there be problems with any specified files? */
+      for(idx=arg_crr;idx<argc;idx++){
+	if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is long (%ld characters) and may not play well with older operating systems\n",nco_prg_nm_get(),argv[idx],(long int)strlen(argv[idx]));
+      } /* !idx */
+    } /* !psn_arg_nbr */
+  } /* !dbg */
   
   /* ncap2 dummy file */
   const char tmp_sng_1[]="_tmp_dmm.nc.pid"; /* Extra string appended to temporary filenames */

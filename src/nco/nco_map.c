@@ -588,7 +588,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   if(rgr->wgt_typ == nco_wgt_con) rcd=nco_char_att_put(out_id,NULL,"map_method","Conservative");
   else if(rgr->wgt_typ == nco_wgt_dwe) rcd=nco_char_att_put(out_id,NULL,"map_method","Bilinear"); /* NB: map_method values are constrained by SCRIP/ESMF precedence. Values besides "Conservative" and "Bilinear" may be unsupported by other regridders. */
   /* ERWG stores actual weight generation in "ESMF_regrid_method" */
-  if(rgr->wgt_typ == nco_wgt_con) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Integrated piecewise-constant reconstruction of common intersection mesh. Conservative, monotone, suitable for downscaling, blocky results for upscaling. First order accurate. Similar to ESMF \"conserve\".");
+  if(rgr->wgt_typ == nco_wgt_con) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Integrated piecewise-constant reconstruction of common intersection mesh. Conservative, monotone, suitable for downscaling, blocky results for upscaling. First order accurate. Similar to ESMF conserve method.");
   else if(rgr->wgt_typ == nco_wgt_dwe) rcd=nco_char_att_put(out_id,NULL,"NCO_regrid_method","Distance-Weighted Extrapolation");
   rcd=nco_char_att_put(out_id,NULL,"weight_generator","NCO");
   char vrs_cpp[]=TKN2SNG(NCO_VERSION); /* [sng] Version from C pre-processor */

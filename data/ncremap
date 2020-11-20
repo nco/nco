@@ -1965,7 +1965,7 @@ fi # !drc_tmp
 
 # Human-readable summary
 date_srt=$(date +"%s")
-if [ ${vrb_lvl} -ge ${vrb_4} ]; then
+if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     printf "NCO regridder invoked with command:\n"
     echo "${cmd_ln}"
 fi # !vrb_lvl
@@ -2972,6 +2972,7 @@ if [ ${vrb_lvl} -ge ${vrb_3} ]; then
     if [ ${fl_nbr} -eq 0 ]; then
 	printf "Completed generating map/grid-file(s) at `date`.\n"
     else # !fl_nbr
+	printf "Completed regridding data file(s) at `date`.\n"
 	echo "Quick plots of results from last regridded file:"
 	echo "ncview  ${out_fl} &"
 	echo "panoply ${out_fl} &"
