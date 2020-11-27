@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.6-alpha04
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 18 November 2020
+@set update-date 27 November 2020
 @set update-month November 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -18280,7 +18280,7 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-P @var{prc_typ}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}]
-[-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [--uio] [-v @var{var_lst}] [--version] 
+[-t @var{thr_nbr}] [--tpd=@var{tpd_dly}] [--uio] [-v @var{var_lst}] [--var_xtr=@var{var_xtr}] [--version] 
 [--vrt_fl=@var{vrt_fl}] [--vrt_xtr=@var{vrt_xtr}]
 [-X @var{drc_xtn}] [-x @var{drc_prv}] [--xcl_var]
 [-Y @var{rgr_xtn}] [-y @var{rgr_prv}] [--ypf=@var{ypf_max}]
@@ -19212,7 +19212,7 @@ This option only takes effect in daily-average climatology mode.
 @item -v @var{var_lst} (@code{--var_lst}, @code{--var}, @code{--vars}, @code{--variables}, @code{--variable_list})
 Variables to subset or to split.
 Same behavior as @ref{Subsetting Files}.
-The use of @var{var_lst} is optional in climate generation mode.
+The use of @var{var_lst} is optional in clim-generation mode.
 We suggest using this feature to test whether an @command{ncclimo}
 command, especially one that is lengthy and/or time-consuming, works as
 intended on one or a few variables with, e.g., @samp{-v T,FSNT} before
@@ -19227,6 +19227,23 @@ the variables @samp{PRECC,PRECL,PRECSC,PRECSL} if present.
 Currently in reshaping mode all matches to a regular expression are
 placed in the same output file.
 We hope to remove this limitation in the future.
+
+@html
+<a name="var_xtr"></a> <!-- http://nco.sf.net/nco.html#var_xtr -->
+@end html
+@cindex @var{var_xtr}
+@cindex @code{--var_xtr}
+@cindex @code{--var}
+@cindex @code{--vars}
+@cindex @code{--variables}
+@cindex @code{--variable_list}
+@item --var_xtr=@var{var_xtr} (@code{--var_xtr}, @code{--var_xtr}, @code{--var_extra}, @code{--variables_extra}, @code{--extra_variables})
+The @samp{-v} option causes @command{ncclimo} to include the extra
+variables specified in @var{var_xtr} in every timeseries split from
+the raw data.
+This is useful when extra variables are desired in timeseries.
+There are no limits on the extra variables---they may be of any rank
+and may be timeseries themselves.
 
 @cindex @code{--version}
 @cindex @code{--vrs}
@@ -26558,7 +26575,7 @@ retains (not removes) all intermediate files after completion.
 @item -v @var{var_lst} (@code{--var_lst}, @code{--var}, @code{--vars}, @code{--variables}, @code{--variable_list})
 The @samp{-v} option causes @command{ncremap} to regrid only the
 variables in @var{var_lst}. 
-3<It behaves like subsetting (@pxref{Subsetting Files}) in the rest of
+It behaves like subsetting (@pxref{Subsetting Files}) in the rest of
 @acronym{NCO}.   
 
 @html

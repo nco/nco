@@ -3734,7 +3734,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      CAM, CERES, CMIP5: lat, lon
      CAM, CMIP5: gw, lat_bnds, lon_bnds
      CAM-FV: slon, slat, w_stag (w_stag is weights for slat grid, analagous to gw for lat grid)
-     CAM-SE, EAM: area
+     CAM-SE, EAM, MOSART: area
      CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (NB: CICE uses ?LON and POP uses ?LONG) (aice is ice area, tmask is state-variable mask, both not currently excluded, although all binary masks like tmask should be recomputed on new grid)
      DSCOVR L2: latitude, longitude
      ESMF: gridcell_area

@@ -51,7 +51,8 @@
 # scp ~/nco/data/ncclimo skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncclimo theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:bin/ncclimo ~/bin
-# scp dust.ess.uci.edu:bin/ncclimo ~/${MY_BIN_DIR}
+# scp dust.ess.uci.edu:bin/ncclimo ${MY_BIN_DIR}
+# scp zender@dust.ess.uci.edu:bin/ncclimo ${MY_BIN_DIR}
 
 # Set script name, directory, PID, run directory
 drc_pwd=${PWD}
@@ -386,8 +387,8 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 #          By default, fml_nm=$caseid. Use fml_nm instead of $caseid to simplify long names, avoid overlap, etc.
 # hst_nm:  History volume name string, i.e., $hst_nm character sequence used in history tape names:
 #          caseid.mdl_nm.hst_nm.YYYY-MM.nc (examples include 'h0' (default, works for cam, clm), 'h1', 'h' (for cism), 'hist' (for mpasocean, mpasseaice)
-# mdl_nm:  Model name string in outpur filenames, i.e., character sequence $mdl_nm in standard names:
-#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cism', 'eam', 'elm', 'mpasocean', 'mpaso', 'mpasseaice', 'mpassi', 'pop')
+# mdl_nm:  Model name string in output filenames, i.e., character sequence $mdl_nm in standard names:
+#          caseid.mdl_nm.h0.YYYY-MM.nc (examples include 'cam' (default), 'clm2', 'cam2', 'cice', 'cism', 'eam', 'elm', 'mosart', 'mpasocean', 'mpaso', 'mpasseaice', 'mpassi', 'pop')
 # nco_opt: String of options to pass-through to NCO, e.g.,
 #          '-D 2 -7 -L 1' for NCO debugging level 2, netCDF4-classic output, compression level 1
 #          '--no_tmp_fl -x' to skip temporary files, turn extraction into exclusion list
@@ -502,8 +503,8 @@ inp_std='No' # [sng] Input file list from stdin
 job_nbr=12 # [nbr] Job simultaneity for parallelism
 lnk_flg='No' # [sng] Link E3SM-climo to AMWG-climo filenames
 map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
-mdl_nm='cam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
-mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
+mdl_nm='cam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
+mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-7 -D 1 -L 1')
@@ -527,6 +528,7 @@ tpd_out=1 # [nbr] Timesteps-per-day in output
 #var_lst='FSNT,AODVIS' # [sng] Variables to process (empty means all)
 var_lst='' # [sng] Variables to process (empty means all)
 var_lst_rx_xtr='No' # [sng] Process var_lst to expand rx
+var_xtr='' # [sng] Extra variables for splitter timeseries
 vrs_prn='No' # [sng] Print version information
 vrt_fl='' # [sng] Vertical coordinate file
 vrt_opt='' # [sng] Vertical interpolation options (e.g., '--vrt_fl=vrt_grd.nc')
@@ -591,6 +593,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo " ${fnt_bld}--tpd_out${fnt_nrm}  Timesteps-per-day in output (default ${fnt_bld}${tpd_out}${fnt_nrm}) [${fnt_tlc}tpd_out, tpd, timesteps_per_day${fnt_nrm}]"
     echo " ${fnt_bld}--uio${fnt_nrm}      Unbuffered I/O (NC_SHARE) for netCDF3 files [${fnt_tlc}uio, unbuffered, share${fnt_nrm}]"
     echo "${fnt_rvr}-v${fnt_nrm} ${fnt_bld}var_lst${fnt_nrm}  Variable list (empty means all) (default ${fnt_bld}${var_lst}${fnt_nrm}) [${fnt_tlc}var_lst, variable_list, var, vars, variable, variables${fnt_nrm}]"
+    echo " ${fnt_bld}--var_xtr{fnt_nrm}   Extra variables for splitter timeseries (empty means none) (default ${fnt_bld}${var_xtr}${fnt_nrm}) [${fnt_tlc}var_xtr, var_extra, variables_extra, extra_variables${fnt_nrm}]"
     echo " ${fnt_bld}--version${fnt_nrm}  Version and configuration information [${fnt_tlc}version, vrs, config, configuration, cnf${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_fl${fnt_nrm}   Vertical coordinate file (empty means none) (default ${fnt_bld}${vrt_fl}${fnt_nrm}) [${fnt_tlc}vrt_fl, vrt, vrt_crd, vertical_coordinate${fnt_nrm}]"
     echo " ${fnt_bld}--vrt_xtr${fnt_nrm}  Vertical extrapolation type (empty means none) (default ${fnt_bld}${vrt_xtr}${fnt_nrm}) [${fnt_tlc}vrt_xtr, xtr_mth, extrapolation_type, extrapolation_method${fnt_nrm}] (mss_val|nrs_ngh)"
@@ -760,6 +763,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       uio | unbuffered | share ) uio_flg='Yes' ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
 	       uio=?* | unbuffered=?* | share=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Unbuffered I/O (NC_SHARE) for netCDF3 files
 	       var_lst=?* | variable_list=?* | var=?* | vars=?* | variable=?* | variables=?* ) var_lst="${LONG_OPTARG}" ;; # -v # Variables
+	       var_xtr=?* | var_extra=?* | variables_extra=?* | extra_variables=?* ) var_xtr=",${LONG_OPTARG}" ;; # # Extra variables for splitter timeseries
 	       version | vrs | config | configuration | cnf ) vrs_prn='Yes' ;; # # Print version information
 	       version=?* | vrs=?* | config=?* | configuration=?* | cnf=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Print version information
 	       vrt_fl=?* | vrt=?* | vrt_crd=?* | vertical_coordinate=?* ) vrt_fl="${LONG_OPTARG}" ;; # # Vertical coordinate file
@@ -882,7 +886,7 @@ if [ -n "${prc_typ}" ]; then
     # and must be provided only when that name string differs from default name string for prc_typ
     prc_opt="-P ${prc_typ}"
     mdl_nm="${prc_typ}"
-    # Exceptions to this rule
+    # Exceptions to rule that mdl_nm == prc_typ
     [[ "${prc_typ}" = 'clm' ]] && mdl_nm='clm2'
 fi # !prc_typ
 if [ -n "${mdl_nm_usr}" ]; then 
@@ -950,7 +954,7 @@ if [ "${clm_md}" = 'hfs' ] || [ "${clm_md}" = 'mth' ] ; then
 	clm_flg='No'
 	dec_md='sdd'
 	if [ -z "${mdl_nm_usr}" ]; then 
-	    mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_lst_xtn
+	    mdl_nm='nil' # Unset model name for stdin pipe and positional arguments, otherwise default mdl_nm could be used to add model-specific variables to var_xtr
 	fi # !mdl_nm_usr
 	# Glob files in splitter mode if other input avenues were not used
 	if [ ${inp_psn} = 'No' ] && [ ${inp_std} = 'No' ] && [ "${drc_in_usr_flg}" = 'Yes' ]; then
@@ -2270,15 +2274,16 @@ fi # !clm_md
 # Block 1 Loop N: Split
 if [ "${sbs_flg}" = 'Yes' ]; then
 	
-    case ${mdl_nm} in
-	# CAM-SE contains area (though does not contain lat,lon until regridded)
-	cam* | eam* ) var_lst_xtn=",${area_nm}" ;;
-    esac # !mdl_nm
     if [ "${glb_avg}" = 'Yes' ]; then 
 	# 20191217 Global average timeseries require area variable
-	var_lst_xtn=",${area_nm}"
+	var_xtr="${var_xtr},${area_nm}"
+    else # !glb_avg
+	# Extract area from model output known to contain it
+	case ${mdl_nm} in
+	    cam* | eam* | mosart* ) var_xtr="${var_xtr},${area_nm}" ;;
+	esac # !mdl_nm
     fi # !glb_avg
-
+	
     # Populate input file arguments fl_sgm with all files necessary to bracket each segment
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
 	fl_sgm[${sgm_idx}]=''
@@ -2370,7 +2375,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    printf "sgm_rmd = ${sgm_rmd}\n"
 	    printf "spl_opt = ${spl_opt}\n"
 	    printf "tpd_out = ${tpd_out}\n"
-	    printf "var_lst_xtn = ${var_lst_xtn}\n"
+	    printf "var_xtr = ${var_xtr}\n"
 	    printf "ypf_max = ${ypf_max}\n"
 	    printf "yr_nbr = ${yr_nbr}\n"
 	    printf "yr_sbs = ${yr_sbs}\n"
@@ -2434,7 +2439,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		    tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-01-01T00:00:01"
 		    tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01T00:00:00"
 		    if [ ${tpd_out} -lt 3600 ]; then
-			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		    else
 			# Deprecated code to output in sub-average periods or different shapes
 			fl_rcat[${var_idx}]="${drc_out}/${var_sbs[${var_idx}]}_${yyyy_srt_sgm[${sgm_idx}]}01_${yyyy_end_sgm[${sgm_idx}]}12_ncrcat.nc"
@@ -2447,13 +2452,13 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			    fl_tpd_all="${fl_tpd_all} ${fl_tpd[${tpd_idx}]}"
 			done # !tpd_idx
 			# 20200627: Average all timesteps into one climatological record as data(time,space)
-			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
+			# cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncra --rec_apn -d time,\${srt},,${tpd_out} ${nco_opt} ${fl_rcat[${var_idx}]} ${fl_out[${var_idx}]};done;/bin/rm -f ${fl_rcat[${var_idx}]}"
 			# 20200628: Output one record per year as data(time,tpd,space), easier to regrid
-			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
+			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_rcat[${var_idx}]};/bin/rm -f ${fl_out[${var_idx}]};for srt in `seq 0 $((tpd_out-1))`; do ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} -d time,\${srt},,${tpd_out} ${ppn_opt} ${fl_rcat[${var_idx}]} ${fl_tpd_tpl}\${srt}.nc;ncra -O --mro -d time,,,${dpy},${dpy} ${fl_tpd_tpl}\${srt}.nc ${fl_tpd_tpl}\${srt}.nc;done;/bin/rm -f ${fl_rcat[${var_idx}]};ncecat -O -u hour ${nco_opt} ${fl_tpd_all} ${fl_ecat[${var_idx}]};/bin/rm -f ${fl_tpd_all};ncap2 -O ${nco_opt} -s 'hour=array(0.0,24/\$hour.size,\$hour);*hr_dlt=(hour(1)-hour(0))/2;hour+=hr_dlt;hour@units=\"hours\";hour@long_name=\"Hour of Day\";hour_bnds=make_bounds(hour,\$nbnd,\"hour_bnds\")' ${fl_ecat[${var_idx}]} ${fl_pdq[${var_idx}]};/bin/rm -f ${fl_ecat[${var_idx}]};ncpdq -O ${nco_opt} -a time,hour ${fl_pdq[${var_idx}]} ${fl_out[${var_idx}]};/bin/rm -f ${fl_pdq[${var_idx}]}"
 		    fi # !tpd_out
 		else
 		    # Normal splitting, non-high-frequency 
-		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_lst_xtn} ${nco_opt} ${spl_opt} ${gaa_sng} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
+		    cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		fi # !clm_md
 		if [ ${dbg_lvl} -ge 1 ]; then
 		    echo ${cmd_sbs[${var_idx}]}

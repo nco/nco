@@ -61,7 +61,9 @@
 # scp ~/nco/data/ncremap rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncremap skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncremap theta.alcf.anl.gov:bin_theta
-# scp dust.ess.uci.edu:nco/data/ncremap ~/bin
+# scp dust.ess.uci.edu:bin/ncremap ~/bin
+# scp dust.ess.uci.edu:bin/ncremap ${MY_BIN_DIR}
+# scp zender@dust.ess.uci.edu:bin/ncremap ${MY_BIN_DIR}
 
 # Set script name, directory, PID, run directory
 drc_pwd=${PWD}

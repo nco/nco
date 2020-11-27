@@ -1,8 +1,18 @@
-2020-11-20  Charlie Zender  <zender@uci.edu>
+2020-11-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.6-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha05: Iliza';git push
-	git tag -a 4.9.6-alpha05 -m '';git push --tags
+	git tag -a 4.9.6-alpha05 -m 'ncclimo mdl_nm=MOSART, tpd %g, var_xtr; ncremap vrb_lvl=3; ';git push --tags
+
+	* ncclimo add var_xtr option for extra variables in each timeseries
+
+2020-11-25  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo add MOSART to models that append area_nm variable to output unless --no_cll_msr is invoked
+
+2020-11-20  Charlie Zender  <zender@uci.edu>
+
+	* Add UDUNITS2_XML_FILE instructions as HINT to more run-time WARNINGs
 
 	* ncremap add cmd_sng and completion time to vrb_lvl=3
 
