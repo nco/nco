@@ -292,6 +292,7 @@ main(int argc,char **argv)
   nco_bool flg_frac_b_nrm=False; /* [flg] Normalize map-file weights when frac_b >> 1 */
   nco_bool flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
   nco_bool flg_rgr=False; /* [flg] Regrid */
+  nco_bool flg_s1d=False; /* [flg] Unpack sparse-1D CLM/ELM variables */
   nco_bool flg_trr=False; /* [flg] Terraref */
 
   nco_dmn_dne_t *flg_dne=NULL; /* [lst] Flag to check if input dimension -d "does not exist" */
@@ -401,6 +402,9 @@ main(int argc,char **argv)
     {"secret",no_argument,0,0},
     {"shh",no_argument,0,0},
     {"srm",no_argument,0,0}, /* [flg] Print ncStream */
+    {"s1d",no_argument,0,0}, /* [flg] Unpack sparse-1D CLM/ELM variables */
+    {"sparse",no_argument,0,0}, /* [flg] Unpack sparse-1D CLM/ELM variables */
+    {"unpack_sparse",no_argument,0,0}, /* [flg] Unpack sparse-1D CLM/ELM variables */
     {"sysconf",no_argument,0,0}, /* [flg] Perform sysconf() test */
     {"wrt_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
     {"write_tmp_fl",no_argument,0,0}, /* [flg] Write output to temporary file */
@@ -802,6 +806,7 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */
+      if(!strcmp(opt_crr,"s1d") || !strcmp(opt_crr,"sparse") || !strcmp(opt_crr,"unpack_sparse")) flg_s1d=True; /* [flg] Unpack sparse-1D CLM/ELM variables */
       if(!strcmp(opt_crr,"sysconf")){
 	long maxrss; /* [B] Maximum resident set size */
 	maxrss=nco_mmr_usg_prn((int)0);
@@ -1200,9 +1205,10 @@ main(int argc,char **argv)
       rgr_nfo->fl_out_fmt=fl_out_fmt;
       rgr_nfo->dfl_lvl=dfl_lvl;
       rgr_nfo->hdr_pad=hdr_pad;
+      rgr_nfo->flg_area_out=EXTRACT_CLL_MSR; /* [flg] Add area to output */
+      rgr_nfo->flg_s1d=flg_s1d; /* [flg] Unpack sparse-1D CLM/ELM variables */
       rgr_nfo->flg_uio=SHARE_CREATE;
       rgr_nfo->fl_out_tmp=nco_fl_out_open(rgr_nfo->fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
-      if(EXTRACT_CLL_MSR) rgr_nfo->flg_area_out=True; else rgr_nfo->flg_area_out=False; /* [flg] Add area to output */
 
       /* Copy Global Metadata */
       rgr_nfo->out_id=out_id;

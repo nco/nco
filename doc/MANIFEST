@@ -321,6 +321,8 @@ nco/src/nco/nco_sph.c
 nco/src/nco/nco_sph.h
 nco/src/nco/nco_srm.c
 nco/src/nco/nco_srm.h
+nco/src/nco/nco_srs.c
+nco/src/nco/nco_srs.h
 nco/src/nco/nco_typ.h
 nco/src/nco/nco_uthash.h
 nco/src/nco/nco_var_avg.c

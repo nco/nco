@@ -65,8 +65,8 @@
 #include "nco_sld.h" /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
 #include "nco_sph.h" /* Spherical geometry intersections */
-#include "nco_sph.h" /* Spherical geometry intersections */
 #include "nco_srm.h" /* Streams */
+#include "nco_s1d.h" /* Sparse-1D CLM/ELM datasets */
 #include "nco_uthash.h" /* Hash table functionality */
 #include "nco_var_avg.h" /* Average variables */
 #include "nco_var_lst.h" /* Variable list utilities */

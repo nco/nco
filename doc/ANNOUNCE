@@ -1,18 +1,16 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.9.5 have arrived.
+The netCDF Operators NCO version 4.9.6 have arrived.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.9.5 is a minor NCO release that contains a few new features
-and fixes to more smoothly work with current and future releases of
-the E3SM climate model and with the next netCDF release. Unless the
-features/fixes listed below affect you, chillax and upgrade next
-time. 
+Version 4.9.6 is a minor NCO release that contains a few new features
+and fixes. Unless the features/fixes listed below affect you, chillax
+and upgrade next time. 
 
-Work on NCO 4.9.6 has commenced and will improve high-freqency
+Work on NCO 4.9.7 has commenced and will improve high-freqency
 splitting and climo capabilities, more SIMD acceleration, and
 more GPU offloading support.
 
@@ -21,38 +19,27 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. ncclimo supports alternates to "area" and "ncol" as names
-for the area field and the horizontal dimension that it assumes
-for computing global average means from splitter output with
-the --glb_avg option, and for creating CMIP6-like timeseries that
-automatically include the area variable.  
-Two new options, --area_nm and --hrz_dmn, control the name
-of the area variable (default is "area") and of the horizontal
-dimension(s) (default="ncol") over which to average the
-splitter output when invoked with --glb_avg.
-For alternate names invoke with, e.g.,
+A. ncclimo supports a new option --var_xtr to specify "extra
+variables" for the splitter to add to every generated timerseries.
+The splitter attempts to keep the generated timeseries as lean as
+possible and by default adds only the most useful ancillary variables,  
+such as grid coordinates and CF-associated variable, to split
+timeseries. Previously, there was no way to add arbitrary variables, 
+e.g., the CO2 volume mixing ratio, to a split timeseries. Now users
+can specify an arbitrary number of variables to includes in every
+split timeseries, e.g.,
 
-ncclimo --glb_avg --area=area_p ...
-ncclimo --glb_avg --area=area_d --hrz_dmn=ncol_d ...
-ncclimo --glb_avg --hrz_dmn=lat,lon ...
+ncclimo --var=T,Q --var_xtr=co2vmr,FSDS ...
 
-In all cases the splitter will output the correct area variable. 
-http://nco.sf.net/nco.html#glb_avg
-http://nco.sf.net/nco.html#hrz_dmn
+In this example the splitter produces two output files because there
+are two primary variables (T,Q). Each timeseries also contain co2vmr
+and FSDS. Inclusion of other variables, e.g., area, depends on context
+and on other options
+http://nco.sf.net/nco.html#var_xtr
 
 BUG FIXES:
 
-A. The prototype for the nco_def_var_filterx() function
-has been changed to agree with the next netCDF release.
-
-B. An OpenMP incompatibility with the Intel Compiler Suite
-has been fixed. NCO once again builds fine with Intel.
-
-C. ncatted will now print the full list of parameters recorded
-in a (netCDF4) variable's _Filter attribute.
-
-D. Fix a bug in the computation of the intersection mesh
-between two RLL grids that crept into the 4.9.4 release.
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 
@@ -60,8 +47,8 @@ KNOWN PROBLEMS DUE TO NCO:
 
    This section of ANNOUNCE reports and reminds users of the
    existence and severity of known, not yet fixed, problems. 
-   These problems occur with NCO 4.9.5 built/tested under
-   MacOS 10.15.7 with netCDF 4.7.4 on HDF5 1.10.7 and with
+   These problems occur with NCO 4.9.6 built/tested under
+   MacOS 11.0.1 with netCDF 4.7.4 on HDF5 1.10.7 and with
    Linux with netCDF 4.8.0-development (2020715) on HDF5 1.8.19.
 
 A. NOT YET FIXED (NCO problem)

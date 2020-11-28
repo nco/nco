@@ -33,6 +33,61 @@
 extern "C" {
 #endif /* __cplusplus */
 
+  /* Types used in Sparse structure */
+  typedef enum nco_srs_ntl_typ_enm{ /* [enm] Interleave-type enum */
+    nco_srs_ntl_nil=0,
+    nco_srs_ntl_unk, /* Unknown or unclassified sparse-type */
+    nco_srs_ntl_pft, /* Sparse PFT dimension (pfts1d format) */
+    nco_srs_ntl_clm, /* Sparse Column dimension (cols1d format) */
+  } nco_srs_ntl_typ_enm;
+
+  /* Types used in Terraref structure */
+  typedef enum nco_trr_ntl_typ_enm{ /* [enm] Interleave-type enum */
+    nco_trr_ntl_nil=0,
+    nco_trr_ntl_unk, /* Unknown or unclassified interleave-type */ 
+    nco_trr_ntl_bsq, /* Band Sequential */
+    nco_trr_ntl_bip, /* Band-interleaved-by-pixel */
+    nco_trr_ntl_bil, /* Band-interleaved-by-line */
+  } nco_trr_ntl_typ_enm;
+
+  /* Terraref structure */
+  typedef struct{ /* trr_sct */
+    // File names specifiable with individual command line switches
+    char *fl_in; /* [sng] File containing raw imagery */
+    char *fl_out; /* [sng] File containing netCDF imagery */
+    char *fl_out_tmp; /* [sng] Temporary file containing netCDF imagery */
+    // Metadata specifiable with key-value syntax
+    char **trr_arg; /* [sng] Terraref arguments */
+    char *wvl_nm; /* [sng] Name of wavelength dimension */
+    char *xdm_nm; /* [sng] Name of x-coordinate dimension */
+    char *ydm_nm; /* [sng] Name of y-coordinate dimension */
+    char *var_nm; /* [sng] Variable containing imagery */
+    char *wvl_bnd_nm; /* [sng] Name of dimension to employ for wavelength bounds */
+    char *xdm_bnd_nm; /* [sng] Name of dimension to employ for x-coordinate bounds */
+    char *ydm_bnd_nm; /* [sng] Name of dimension to employ for y-coordinate bounds */
+    long wvl_nbr; /* [nbr] Number of wavelengths */
+    long xdm_nbr; /* [nbr] Number of pixels in x-dimension */
+    long ydm_nbr; /* [nbr] Number of pixels in y-dimension */
+    nc_type var_typ_in; /* [enm] NetCDF type */
+    nc_type var_typ_out; /* [enm] NetCDF type */
+    // Other internal data and metadata 
+    char *cmd_ln; /* [sng] Command-line */
+    char *ttl; /* [sng] Title */
+    int dfl_lvl; /* [enm] Deflate level [0..9] */
+    int trr_nbr; /* [nbr] Number of Terraref arguments */
+    nco_trr_ntl_typ_enm ntl_typ_in; /* [enm] Interleave-type of raw data */
+    nco_trr_ntl_typ_enm ntl_typ_out; /* [enm] Interleave-type or output */
+  } trr_sct; /* !Terraref structure */
+
+  const char * /* O [sng] String describing sparse-type */
+  nco_srs_ntl_sng /* [fnc] Convert sparse-type enum to string */
+  (const nco_srs_ntl_typ_enm nco_srs_ntl_typ); /* I [enm] Sparse-type enum */
+
+  int /* O [rcd] Return code */
+  nco_srs_rewrite /* [fnc] Rewrite contents of sparse CLM/ELM file into unrolled file */
+  (rgr_sct * const rgr, /* I/O [sct] Regridding structure */
+   trv_tbl_sct * const trv_tbl); /* I/O [sct] Traversal Table */
+
   int /* O [rcd] Return code */
   nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   (trr_sct *trr_nfo); /* I/O [sct] Terraref information */

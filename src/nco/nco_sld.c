@@ -418,88 +418,14 @@ nco_trr_read /* [fnc] Read, parse, and print contents of TERRAREF file */
   } /* !dfl_lvl */
   
   /* Define "units" attributes */
-  aed_sct aed_mtd;
-  char *att_nm;
-  char *att_val;
-  
-  att_nm=strdup("title");
-  att_val=strdup(trr->ttl);
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=NULL;
-  aed_mtd.id=NC_GLOBAL;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-  
+  rcd=nco_char_att_put(out_id,NULL,"title",trr->ttl);
   const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
-  att_nm=strdup("created_by");
-  att_val=strdup(usr_cpp);
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=NULL;
-  aed_mtd.id=NC_GLOBAL;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-  
-  att_nm=strdup("history");
-  att_val=strdup(trr->cmd_ln);
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=NULL;
-  aed_mtd.id=NC_GLOBAL;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,NC_GLOBAL,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-  
-  att_nm=strdup("long_name");
-  att_val=strdup("Exposure counts");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=var_nm;
-  aed_mtd.id=var_id;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,var_id,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-  
-  att_nm=strdup("meaning");
-  att_val=strdup("Counts on scale from 0 to 2^16-1 = 65535");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=var_nm;
-  aed_mtd.id=var_id;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,var_id,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
-  
-  att_nm=strdup("units");
-  att_val=strdup("1");
-  aed_mtd.att_nm=att_nm;
-  aed_mtd.var_nm=var_nm;
-  aed_mtd.id=var_id;
-  aed_mtd.sz=strlen(att_val);
-  aed_mtd.type=NC_CHAR;
-  aed_mtd.val.cp=att_val;
-  aed_mtd.mode=aed_create;
-  (void)nco_aed_prc(out_id,var_id,aed_mtd);
-  if(att_nm) att_nm=(char *)nco_free(att_nm);
-  if(att_val) att_val=(char *)nco_free(att_val);
+  rcd=nco_char_att_put(out_id,NULL,"created_by",usr_cpp);
+  (void)nco_hst_att_cat(out_id,trr->cmd_ln);
+  (void)nco_vrs_att_cat(out_id);
+  rcd=nco_char_att_put(out_id,var_nm,"long_name","Exposure counts");
+  rcd=nco_char_att_put(out_id,var_nm,"meaning","Counts on scale from 0 to 2^16-1 = 65535");
+  rcd=nco_char_att_put(out_id,var_nm,"units","1");
   
   /* Begin data mode */
   (void)nco_enddef(out_id);

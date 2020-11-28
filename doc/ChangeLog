@@ -1,8 +1,20 @@
-2020-11-27  Charlie Zender  <zender@uci.edu>
+2020-11-28  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.6-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.6-beta01: fxm';git push
+	git tag -a 4.9.6-beta01 -m 'netCDF-4.8.0 compatible; ncclimo mdl_nm=MOSART, var_xtr, cmem nodes, prc_typ; ncremap fix mpi nd_fl bug, msk_in/msk_out fix, nfr n2s rll, UDUNITS2_XML_FILE hints; ncra -N';git push --tags
 
 	* NCO 4.9.6-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha05: Iliza';git push
-	git tag -a 4.9.6-alpha05 -m 'ncclimo mdl_nm=MOSART, tpd %g, var_xtr; ncremap vrb_lvl=3; ';git push --tags
+	git tag -a 4.9.6-alpha05 -m 'ncclimo mdl_nm=MOSART, tpd %g, var_xtr; ncremap vrb_lvl=3; nco_s1d stubs';git push --tags
+
+2020-11-27  Charlie Zender  <zender@uci.edu>
+
+	* Create nco_s1d.[ch] files for handling sparse-1d packed (S1D) CLM/ELM variables
+
+	* ncks add --sparse, --s1d option to unpack CLM/ELM variables
+
+	* ncks perform Terraref attribute manipulation with nco_char_att_put()
 
 	* ncclimo add var_xtr option for extra variables in each timeseries
 

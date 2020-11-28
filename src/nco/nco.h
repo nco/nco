@@ -1037,15 +1037,6 @@ extern "C" {
     nco_bool PRN_CLN_LGB; /* [flg] Print UDUnits-formatted calendar dates/times human-legibly */
   } prn_fmt_sct;
   
-  /* Types used in Terraref structure */
-  typedef enum nco_trr_ntl_typ_enm{ /* [enm] Interleave-type enum */
-    nco_trr_ntl_nil=0,
-    nco_trr_ntl_unk, /* Unknown or unclassified interleave-type */ 
-    nco_trr_ntl_bsq, /* Band Sequential */
-    nco_trr_ntl_bip, /* Band-interleaved-by-pixel */
-    nco_trr_ntl_bil, /* Band-interleaved-by-line */
-  } nco_trr_ntl_typ_enm;
-
   /* Types used in regrid structure */
   typedef enum nco_grd_2D_typ_enm{ /* [enm] Two-dimensional grid-type enum */
     nco_grd_2D_nil=0,
@@ -1133,35 +1124,6 @@ typedef enum nco_xtr_typ_enm
     nc_type var_type; /* [enm] Coordinates variable type */
     nco_bool crd; /* [flg] CF coordinates information is complete */
   } cf_crd_sct; /* end CF coordinates structure */
-
-  /* Terraref structure */
-  typedef struct{ /* trr_sct */
-    // File names specifiable with individual command line switches
-    char *fl_in; /* [sng] File containing raw imagery */
-    char *fl_out; /* [sng] File containing netCDF imagery */
-    char *fl_out_tmp; /* [sng] Temporary file containing netCDF imagery */
-    // Metadata specifiable with key-value syntax
-    char **trr_arg; /* [sng] Terraref arguments */
-    char *wvl_nm; /* [sng] Name of wavelength dimension */
-    char *xdm_nm; /* [sng] Name of x-coordinate dimension */
-    char *ydm_nm; /* [sng] Name of y-coordinate dimension */
-    char *var_nm; /* [sng] Variable containing imagery */
-    char *wvl_bnd_nm; /* [sng] Name of dimension to employ for wavelength bounds */
-    char *xdm_bnd_nm; /* [sng] Name of dimension to employ for x-coordinate bounds */
-    char *ydm_bnd_nm; /* [sng] Name of dimension to employ for y-coordinate bounds */
-    long wvl_nbr; /* [nbr] Number of wavelengths */
-    long xdm_nbr; /* [nbr] Number of pixels in x-dimension */
-    long ydm_nbr; /* [nbr] Number of pixels in y-dimension */
-    nc_type var_typ_in; /* [enm] NetCDF type */
-    nc_type var_typ_out; /* [enm] NetCDF type */
-    // Other internal data and metadata 
-    char *cmd_ln; /* [sng] Command-line */
-    char *ttl; /* [sng] Title */
-    int dfl_lvl; /* [enm] Deflate level [0..9] */
-    int trr_nbr; /* [nbr] Number of Terraref arguments */
-    nco_trr_ntl_typ_enm ntl_typ_in; /* [enm] Interleave-type of raw data */
-    nco_trr_ntl_typ_enm ntl_typ_out; /* [enm] Interleave-type or output */
-  } trr_sct; /* end Terraref structure */
 
   /* Regrid structure */
   typedef struct{ /* rgr_sct */
@@ -1259,6 +1221,7 @@ typedef enum nco_xtr_typ_enm
     nco_bool flg_msk_out; /* [flg] Add mask to output */
     nco_bool flg_nfr; /* [flg] Infer SCRIP-format grid file */
     nco_bool flg_rnr; /* [flg] Renormalize destination values by valid area */
+    nco_bool flg_s1d; /* [flg] Unpack sparse-1D CLM/ELM variables */
     nco_bool flg_stg; /* [flg] Write staggered grid with FV output */
     nco_bool flg_uio; /* [flg] Unbuffered I/O (NC_SHARE) for netCDF3 files */
     nco_bool flg_usr_rqs; /* [flg] User-requested regridding */

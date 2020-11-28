@@ -103,6 +103,7 @@ nco_rgr.h \
 nco_rth_flt.h \
 nco_rth_utl.h \
 nco_scl_utl.h \
+nco_s1d.h \
 nco_scm.h \
 nco_sld.h \
 nco_sph.h \
@@ -171,6 +172,7 @@ nco_rgr.c \
 nco_rth_flt.c \
 nco_rth_utl.c \
 nco_scl_utl.c \
+nco_s1d.c \
 nco_scm.c \
 nco_sld.c \
 nco_sng_utl.c \

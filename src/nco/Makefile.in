@@ -156,20 +156,20 @@ am__libnco_la_SOURCES_DIST = libnco.h nco_getopt.h nco_kd.h \
 	nco_md5.h nco_mmr.h nco_mpi.h nco_msa.h nco_mss_val.h \
 	nco_mta.h nco_netcdf.h nco_omp.h nco_pck.h nco_ply.h \
 	nco_ply_lst.h nco_ppc.h nco_prn.h nco_rec_var.h nco_rgr.h \
-	nco_rth_flt.h nco_rth_utl.h nco_scl_utl.h nco_scm.h nco_sld.h \
-	nco_sph.h nco_sng_utl.h nco_srm.h nco_typ.h nco_uthash.h \
-	nco_var_avg.h nco_var_lst.h nco_var_rth.h nco_var_scv.h \
-	nco_var_utl.h nco_getopt.c nco_att_utl.c nco_aux.c nco_bnr.c \
-	nco_cln_utl.c nco_cnf_dmn.c nco_cnf_typ.c nco_cnk.c \
-	nco_cnv_arm.c nco_cnv_csm.c nco_crt.c nco_ctl.c nco_dbg.c \
-	nco_dmn_utl.c nco_fl_utl.c nco_flt.c nco_grp_utl.c \
+	nco_rth_flt.h nco_rth_utl.h nco_scl_utl.h nco_s1d.h nco_scm.h \
+	nco_sld.h nco_sph.h nco_sng_utl.h nco_srm.h nco_typ.h \
+	nco_uthash.h nco_var_avg.h nco_var_lst.h nco_var_rth.h \
+	nco_var_scv.h nco_var_utl.h nco_getopt.c nco_att_utl.c \
+	nco_aux.c nco_bnr.c nco_cln_utl.c nco_cnf_dmn.c nco_cnf_typ.c \
+	nco_cnk.c nco_cnv_arm.c nco_cnv_csm.c nco_crt.c nco_ctl.c \
+	nco_dbg.c nco_dmn_utl.c nco_fl_utl.c nco_flt.c nco_grp_utl.c \
 	nco_grp_trv.c nco_kd.c nco_lmt.c nco_lst_utl.c nco_map.c \
 	nco_md5.c nco_mmr.c nco_msa.c nco_mss_val.c nco_mta.c \
 	nco_netcdf.c nco_omp.c nco_pck.c nco_ply.c nco_ply_lst.c \
 	nco_ppc.c nco_prn.c nco_rec_var.c nco_rgr.c nco_rth_flt.c \
-	nco_rth_utl.c nco_scl_utl.c nco_scm.c nco_sld.c nco_sng_utl.c \
-	nco_sph.c nco_srm.c nco_var_avg.c nco_var_lst.c nco_var_rth.c \
-	nco_var_scv.c nco_var_utl.c
+	nco_rth_utl.c nco_scl_utl.c nco_s1d.c nco_scm.c nco_sld.c \
+	nco_sng_utl.c nco_sph.c nco_srm.c nco_var_avg.c nco_var_lst.c \
+	nco_var_rth.c nco_var_scv.c nco_var_utl.c
 am__objects_1 =
 am__objects_2 = $(am__objects_1)
 @NCO_NEED_GETOPT_LONG_TRUE@am__objects_3 = nco_getopt.lo
@@ -182,7 +182,7 @@ am_libnco_la_OBJECTS = $(am__objects_2) $(am__objects_3) \
 	nco_mmr.lo nco_msa.lo nco_mss_val.lo nco_mta.lo nco_netcdf.lo \
 	nco_omp.lo nco_pck.lo nco_ply.lo nco_ply_lst.lo nco_ppc.lo \
 	nco_prn.lo nco_rec_var.lo nco_rgr.lo nco_rth_flt.lo \
-	nco_rth_utl.lo nco_scl_utl.lo nco_scm.lo nco_sld.lo \
+	nco_rth_utl.lo nco_scl_utl.lo nco_s1d.lo nco_scm.lo nco_sld.lo \
 	nco_sng_utl.lo nco_sph.lo nco_srm.lo nco_var_avg.lo \
 	nco_var_lst.lo nco_var_rth.lo nco_var_scv.lo nco_var_utl.lo
 libnco_la_OBJECTS = $(am_libnco_la_OBJECTS)
@@ -279,14 +279,15 @@ am__depfiles_remade = ./$(DEPDIR)/mpncbo.Po ./$(DEPDIR)/mpncecat.Po \
 	./$(DEPDIR)/nco_ply_lst.Plo ./$(DEPDIR)/nco_ppc.Plo \
 	./$(DEPDIR)/nco_prn.Plo ./$(DEPDIR)/nco_rec_var.Plo \
 	./$(DEPDIR)/nco_rgr.Plo ./$(DEPDIR)/nco_rth_flt.Plo \
-	./$(DEPDIR)/nco_rth_utl.Plo ./$(DEPDIR)/nco_scl_utl.Plo \
-	./$(DEPDIR)/nco_scm.Plo ./$(DEPDIR)/nco_sld.Plo \
-	./$(DEPDIR)/nco_sng_utl.Plo ./$(DEPDIR)/nco_sph.Plo \
-	./$(DEPDIR)/nco_srm.Plo ./$(DEPDIR)/nco_var_avg.Plo \
-	./$(DEPDIR)/nco_var_lst.Plo ./$(DEPDIR)/nco_var_rth.Plo \
-	./$(DEPDIR)/nco_var_scv.Plo ./$(DEPDIR)/nco_var_utl.Plo \
-	./$(DEPDIR)/ncpdq.Po ./$(DEPDIR)/ncra.Po \
-	./$(DEPDIR)/ncrename.Po ./$(DEPDIR)/ncwa.Po
+	./$(DEPDIR)/nco_rth_utl.Plo ./$(DEPDIR)/nco_s1d.Plo \
+	./$(DEPDIR)/nco_scl_utl.Plo ./$(DEPDIR)/nco_scm.Plo \
+	./$(DEPDIR)/nco_sld.Plo ./$(DEPDIR)/nco_sng_utl.Plo \
+	./$(DEPDIR)/nco_sph.Plo ./$(DEPDIR)/nco_srm.Plo \
+	./$(DEPDIR)/nco_var_avg.Plo ./$(DEPDIR)/nco_var_lst.Plo \
+	./$(DEPDIR)/nco_var_rth.Plo ./$(DEPDIR)/nco_var_scv.Plo \
+	./$(DEPDIR)/nco_var_utl.Plo ./$(DEPDIR)/ncpdq.Po \
+	./$(DEPDIR)/ncra.Po ./$(DEPDIR)/ncrename.Po \
+	./$(DEPDIR)/ncwa.Po
 am__mv = mv -f
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
@@ -751,6 +752,7 @@ nco_rgr.h \
 nco_rth_flt.h \
 nco_rth_utl.h \
 nco_scl_utl.h \
+nco_s1d.h \
 nco_scm.h \
 nco_sld.h \
 nco_sph.h \
@@ -818,6 +820,7 @@ nco_rgr.c \
 nco_rth_flt.c \
 nco_rth_utl.c \
 nco_scl_utl.c \
+nco_s1d.c \
 nco_scm.c \
 nco_sld.c \
 nco_sng_utl.c \
@@ -1070,6 +1073,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_rgr.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_rth_flt.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_rth_utl.Plo@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_s1d.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_scl_utl.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_scm.Plo@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_sld.Plo@am__quote@ # am--include-marker
@@ -1466,6 +1470,7 @@ distclean: distclean-am
 	-rm -f ./$(DEPDIR)/nco_rgr.Plo
 	-rm -f ./$(DEPDIR)/nco_rth_flt.Plo
 	-rm -f ./$(DEPDIR)/nco_rth_utl.Plo
+	-rm -f ./$(DEPDIR)/nco_s1d.Plo
 	-rm -f ./$(DEPDIR)/nco_scl_utl.Plo
 	-rm -f ./$(DEPDIR)/nco_scm.Plo
 	-rm -f ./$(DEPDIR)/nco_sld.Plo
@@ -1578,6 +1583,7 @@ maintainer-clean: maintainer-clean-am
 	-rm -f ./$(DEPDIR)/nco_rgr.Plo
 	-rm -f ./$(DEPDIR)/nco_rth_flt.Plo
 	-rm -f ./$(DEPDIR)/nco_rth_utl.Plo
+	-rm -f ./$(DEPDIR)/nco_s1d.Plo
 	-rm -f ./$(DEPDIR)/nco_scl_utl.Plo
 	-rm -f ./$(DEPDIR)/nco_scm.Plo
 	-rm -f ./$(DEPDIR)/nco_sld.Plo

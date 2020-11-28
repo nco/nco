@@ -27,6 +27,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   nco_bool flg_map=False; /* [flg] Create ESMF-format mapfile */
   nco_bool flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
   nco_bool flg_smf=False; /* [flg] ESMF regridding (unused) */
+  nco_bool flg_s1d=False; /* [flg] Unpack sparse-1D CLM/ELM variables */
   nco_bool flg_tps=False; /* [flg] Tempest regridding (unused) */
   nco_bool flg_vrt=False; /* [flg] Interpolate to new vertical grid */
   nco_bool flg_wgt=False; /* [flg] Regrid with external weights */
@@ -37,6 +38,7 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
   if(rgr->flg_grd_src && rgr->flg_grd_dst && rgr->flg_wgt) flg_map=True;
   if(rgr->flg_nfr) flg_nfr=True;
   if(rgr->flg_wgt && !(rgr->flg_grd_src && rgr->flg_grd_dst)) flg_wgt=True;
+  if(rgr->flg_s1d) flg_s1d=True;
   if(rgr->fl_vrt) flg_vrt=True;
   assert(!flg_smf);
   assert(!flg_tps);
@@ -52,6 +54,9 @@ nco_rgr_ctl /* [fnc] Control regridding logic */
 
   /* Interpolate data file to new vertical grid */
   if(flg_vrt) rcd=nco_ntp_vrt(rgr,trv_tbl);
+
+  /* Unpack sparse-1D CLM/ELM variables into full file */
+  if(flg_s1d) rcd=nco_s1d_unpack(rgr,trv_tbl);
 
   /* Regrid data horizontally using weights from mapping file */
   if(flg_wgt) rcd=nco_rgr_wgt(rgr,trv_tbl);
@@ -299,6 +304,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_grd=False; /* [flg] Create SCRIP-format grid file */
   rgr->flg_msk_out=False; /* [flg] Add mask to output */
   rgr->flg_nfr=False; /* [flg] Infer SCRIP-format grid file */
+  rgr->flg_s1d=False; /* [flg] Unpack sparse-1D CLM/ELM variables */
   rgr->flg_stg=True; /* [flg] Write staggered grid with FV output */
   rgr->grd_ttl=strdup("None given (supply with --rgr grd_ttl=\"Grid Title\")"); /* [enm] Grid title */
   rgr->grd_typ=nco_grd_2D_eqa; /* [enm] Grid type */
