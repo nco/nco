@@ -8,6 +8,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha05: Iliza';git push
 	git tag -a 4.9.6-alpha05 -m 'ncclimo mdl_nm=MOSART, tpd %g, var_xtr; ncremap vrb_lvl=3; nco_s1d stubs';git push --tags
 
+	* Add nco_s1d.[ch] to Makefile and CMake build-engines
+
 2020-11-27  Charlie Zender  <zender@uci.edu>
 
 	* Create nco_s1d.[ch] files for handling sparse-1d packed (S1D) CLM/ELM variables

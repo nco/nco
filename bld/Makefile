@@ -2011,6 +2011,7 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_rgr.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_rth_flt.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_rth_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_s1d.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_scl_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_scm.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_sld.o) \
