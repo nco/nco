@@ -34,13 +34,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Usage:
      ncks -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc */
 
-  //  const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
 
   int rcd=NC_NOERR;
 
-#ifdef ENABLE_S1D
   const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
   const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
+
+#ifdef ENABLE_S1D
 
   char *fl_in;
   char *fl_out;
