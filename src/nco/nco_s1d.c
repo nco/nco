@@ -15,8 +15,10 @@ nco_s1d_sng /* [fnc] Convert sparse-1D type enum to string */
 {
   /* Purpose: Convert sparse-type enum to string */
   switch(nco_s1d_typ){
-  case nco_s1d_pft: return "Sparse PFT dimension (pfts1d format)" ;
-  case nco_s1d_clm: return "Sparse Column dimension (cols1d format)";
+  case nco_s1d_clm: return "Sparse Column (cols1d) format";
+  case nco_s1d_grd: return "Sparse Gridcell (grid1d) format";
+  case nco_s1d_lnd: return "Sparse Landunit (land1d) format";
+  case nco_s1d_pft: return "Sparse PFT (pfts1d) format" ;
   default: nco_dfl_case_generic_err(); break;
   } /* !nco_s1d_typ_enm */
 
@@ -32,6 +34,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Purpose: Read sparse CLM/ELM input file, inflate and write into output file */
 
   /* Usage:
+     ncks -O -C --s1d -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc
      ncks -O -C --s1d -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
@@ -50,11 +53,27 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
   int dmn_idx; /* [idx] Dimension index */
 
+  nco_bool flg_grd_in_1D=False;
+  nco_bool flg_grd_in_2D=False;
+  nco_bool flg_grd_out_1D=False;
+  nco_bool flg_grd_out_2D=False;
+
   int cols1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of column */
   int cols1d_ixy_id=NC_MIN_INT; /* [id] Column 2D longitude index */
   int cols1d_jxy_id=NC_MIN_INT; /* [id] Column 2D latitude index */
   int cols1d_lat_id=NC_MIN_INT; /* [id] Column latitude */
   int cols1d_lon_id=NC_MIN_INT; /* [id] Column longitude */
+
+  int grid1d_ixy_id=NC_MIN_INT; /* [id] Gridcell 2D longitude index */
+  int grid1d_jxy_id=NC_MIN_INT; /* [id] Gridcell 2D latitude index */
+  int grid1d_lat_id=NC_MIN_INT; /* [id] Gridcell latitude */
+  int grid1d_lon_id=NC_MIN_INT; /* [id] Gridcell longitude */
+
+  int land1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of landunit */
+  int land1d_ixy_id=NC_MIN_INT; /* [id] Landunit 2D longitude index */
+  int land1d_jxy_id=NC_MIN_INT; /* [id] Landunit 2D latitude index */
+  int land1d_lat_id=NC_MIN_INT; /* [id] Landunit latitude */
+  int land1d_lon_id=NC_MIN_INT; /* [id] Landunit longitude */
 
   int pfts1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of PFT */
   int pfts1d_column_index_id=NC_MIN_INT; /* [id] Column index of PFT */
@@ -75,6 +94,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   char pft_nm[]="pft";
 
   nco_bool flg_s1d_col=False; /* [flg] Dataset contains sparse variables for columns */
+  nco_bool flg_s1d_grd=False; /* [flg] Dataset contains sparse variables for gridcells */
+  nco_bool flg_s1d_lnd=False; /* [flg] Dataset contains sparse variables for landunits */
   nco_bool flg_s1d_pft=False; /* [flg] Dataset contains sparse variables for PFTs */
 
   /* Initialize local copies of command-line values */
@@ -84,14 +105,46 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   in_id=rgr->in_id;
   out_id=rgr->out_id;
 
+  /* Sanity check that input data file matches expectations from mapfile */
+  char *col_nm_in=rgr->col_nm_in; /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
+  char *lat_nm_in=rgr->lat_nm_in; /* [sng] Name of input dimension to recognize as latitude */
+  char *lon_nm_in=rgr->lon_nm_in; /* [sng] Name of input dimension to recognize as longitude */
+  int dmn_id_col=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_lat; /* [id] Dimension ID */
+  int dmn_id_lon; /* [id] Dimension ID */
+
+  char *fl_tpl; /* [sng] Template file (horizontal grid file) */
+  char *fl_pth_lcl=NULL;
+  int tpl_id; /* [id] Input netCDF file ID (for horizontal grid template) */
+  
+  if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
+  else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
+
   rcd=nco_inq_varid_flg(in_id,"cols1d_gridcell_index",&cols1d_gridcell_index_id);
   if(cols1d_gridcell_index_id != NC_MIN_INT) flg_s1d_col=True;
   if(flg_s1d_col){
-    rcd=nco_inq_varid_flg(in_id,"cols1d_ixy",&cols1d_ixy_id);
-    rcd=nco_inq_varid_flg(in_id,"cols1d_jxy",&cols1d_jxy_id);
-    rcd=nco_inq_varid_flg(in_id,"cols1d_lat",&cols1d_lat_id);
-    rcd=nco_inq_varid_flg(in_id,"cols1d_lon",&cols1d_lon_id);
+    rcd=nco_inq_varid(in_id,"cols1d_ixy",&cols1d_ixy_id);
+    rcd=nco_inq_varid(in_id,"cols1d_jxy",&cols1d_jxy_id);
+    rcd=nco_inq_varid(in_id,"cols1d_lat",&cols1d_lat_id);
+    rcd=nco_inq_varid(in_id,"cols1d_lon",&cols1d_lon_id);
   } /* !flg_s1d_col */
+     
+  rcd=nco_inq_varid_flg(in_id,"grid1d_ixy",&grid1d_ixy_id);
+  if(grid1d_ixy_id != NC_MIN_INT) flg_s1d_grd=True;
+  if(flg_s1d_grd){
+    rcd=nco_inq_varid(in_id,"grid1d_jxy",&grid1d_jxy_id);
+    rcd=nco_inq_varid(in_id,"grid1d_lat",&grid1d_lat_id);
+    rcd=nco_inq_varid(in_id,"grid1d_lon",&grid1d_lon_id);
+  } /* !flg_s1d_grd */
+     
+  rcd=nco_inq_varid_flg(in_id,"land1d_gridcell_index",&land1d_gridcell_index_id);
+  if(land1d_gridcell_index_id != NC_MIN_INT) flg_s1d_lnd=True;
+  if(flg_s1d_lnd){
+    rcd=nco_inq_varid(in_id,"land1d_ixy",&land1d_ixy_id);
+    rcd=nco_inq_varid(in_id,"land1d_jxy",&land1d_jxy_id);
+    rcd=nco_inq_varid(in_id,"land1d_lat",&land1d_lat_id);
+    rcd=nco_inq_varid(in_id,"land1d_lon",&land1d_lon_id);
+  } /* !flg_s1d_lnd */
      
   rcd=nco_inq_varid_flg(in_id,"pfts1d_gridcell_index",&pfts1d_gridcell_index_id);
   if(pfts1d_gridcell_index_id != NC_MIN_INT) flg_s1d_pft=True;

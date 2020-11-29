@@ -34,8 +34,10 @@ extern "C" {
   typedef enum nco_s1d_typ_enm{ /* [enm] Sparse-1D type enum */
     nco_s1d_nil=0,
     nco_s1d_unk, /* Unknown or unclassified sparse-type */
-    nco_s1d_pft, /* Sparse-1D PFT dimension (pfts1d format) */
-    nco_s1d_clm, /* Sparse-1D Column dimension (cols1d format) */
+    nco_s1d_clm, /* Sparse-1D Column (cols1d) format */
+    nco_s1d_grd, /* Sparse-1D Gridcell (grid1d) format */
+    nco_s1d_lnd, /* Sparse-1D Landunit (land1d) format */
+    nco_s1d_pft, /* Sparse-1D PFT (pfts1d) format */
   } nco_s1d_typ_enm;
 
   const char * /* O [sng] String describing sparse-type */
