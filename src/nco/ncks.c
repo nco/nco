@@ -806,7 +806,7 @@ main(int argc,char **argv)
         nco_exit(EXIT_SUCCESS);
       } /* endif "shh" */
       if(!strcmp(opt_crr,"srm")) PRN_SRM=True; /* [flg] Print ncStream */
-      if(!strcmp(opt_crr,"s1d") || !strcmp(opt_crr,"sparse") || !strcmp(opt_crr,"unpack_sparse")) flg_s1d=True; /* [flg] Unpack sparse-1D CLM/ELM variables */
+      if(!strcmp(opt_crr,"s1d") || !strcmp(opt_crr,"sparse") || !strcmp(opt_crr,"unpack_sparse")) flg_s1d=flg_rgr=True; /* [flg] Unpack sparse-1D CLM/ELM variables */
       if(!strcmp(opt_crr,"sysconf")){
 	long maxrss; /* [B] Maximum resident set size */
 	maxrss=nco_mmr_usg_prn((int)0);

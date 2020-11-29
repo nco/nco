@@ -32,91 +32,158 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Purpose: Read sparse CLM/ELM input file, inflate and write into output file */
 
   /* Usage:
-     ncks -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc */
+     ncks -O -C --s1d -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
 
-  int rcd=NC_NOERR;
-
-  const int dmn_nbr_3D=3; /* [nbr] Rank of 3-D grid variables */
-  const int dmn_nbr_grd_max=dmn_nbr_3D; /* [nbr] Maximum rank of grid variables */
-
-#ifdef ENABLE_S1D
-
+  char var_nm[NC_MAX_NAME+1L];
   char *fl_in;
   char *fl_out;
-  char *fl_out_tmp=NULL_CEWI;
-  char *var_nm;
-  char *wvl_nm;
-  char *xdm_nm;
-  char *ydm_nm;
 
-  int dmn_ids[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
-
-  int dmn_idx_wvl=int_CEWI; /* [idx] Index of wavelength dimension */
-  int dmn_idx_ydm=int_CEWI; /* [idx] Index of y-coordinate dimension */
-  int dmn_idx_xdm=int_CEWI; /* [idx] Index of x-coordinate dimension */
-  int dmn_id_wvl; /* [id] Wavelength dimension ID */
-  int dmn_id_xdm; /* [id] X-dimension ID */
-  int dmn_id_ydm; /* [id] Y-dimension ID */
-  int dfl_lvl; /* [enm] Deflate level [0..9] */
-  /* Terraref raw image files can be ~64 GB large so use netCDF4 */
-  int fl_out_fmt=NC_FORMAT_NETCDF4; /* [enm] Output file format */
+  int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
+  int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
+  int fll_md_old; /* [enm] Old fill mode */
+  int in_id; /* I [id] Input netCDF file ID */
+  int md_open; /* [enm] Mode flag for nc_open() call */
   int out_id; /* I [id] Output netCDF file ID */
   int rcd=NC_NOERR;
-  int var_id; /* [id] Current variable ID */
 
-  long dmn_srt[dmn_nbr_grd_max];
-  long dmn_cnt[dmn_nbr_grd_max];
+  int dmn_idx; /* [idx] Dimension index */
 
-  long wvl_nbr; /* [nbr] Number of wavelengths */
-  long xdm_nbr; /* [nbr] Number of pixels in x-dimension */
-  long ydm_nbr; /* [nbr] Number of pixels in y-dimension */
-  long wvl_idx;
-  long ydm_idx;
-  long var_sz; /* [nbr] Size of variable */
+  int cols1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of column */
+  int cols1d_ixy_id=NC_MIN_INT; /* [id] Column 2D longitude index */
+  int cols1d_jxy_id=NC_MIN_INT; /* [id] Column 2D latitude index */
+  int cols1d_lat_id=NC_MIN_INT; /* [id] Column latitude */
+  int cols1d_lon_id=NC_MIN_INT; /* [id] Column longitude */
 
-  nc_type var_typ_in; /* [enm] NetCDF type-equivalent of binary data (raw imagery) */
-  nc_type var_typ_out; /* [enm] NetCDF type of data in output file */
-
-  nco_bool FORCE_APPEND=False; /* Option A */
-  nco_bool FORCE_OVERWRITE=True; /* Option O */
-  nco_bool RAM_CREATE=False; /* [flg] Create file in RAM */
-  nco_bool RAM_OPEN=False; /* [flg] Open (netCDF3-only) file(s) in RAM */
-  nco_bool SHARE_CREATE=False; /* [flg] Create (netCDF3-only) file(s) with unbuffered I/O */
-  nco_bool SHARE_OPEN=False; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
-  nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
-
-  size_t bfr_sz_hnt=NC_SIZEHINT_DEFAULT; /* [B] Buffer size hint */
-
-  nco_s1d_typ_enm nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
-
-  ptr_unn var_raw;
-  ptr_unn var_val;
+  int pfts1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of PFT */
+  int pfts1d_column_index_id=NC_MIN_INT; /* [id] Column index of PFT */
+  int pfts1d_ixy_id=NC_MIN_INT; /* [id] PFT 2D longitude index */
+  int pfts1d_jxy_id=NC_MIN_INT; /* [id] PFT 2D latitude index */
+  int pfts1d_lat_id=NC_MIN_INT; /* [id] PFT latitude */
+  int pfts1d_lon_id=NC_MIN_INT; /* [id] PFT longitude */
   
-  if(strstr("cols1d",var_nm)){
-    nco_s1d_typ=nco_s1d_clm;
-  }else if(strstr("pfts1d",var_nm)){
-    nco_s1d_typ=nco_s1d_pft;
-  }else{
-    (void)fprintf(stderr,"%s: ERROR %s reports variable %s does not appear to be sparse\n",nco_prg_nm_get(),fnc_nm,var_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* !strstr() */
+  int dmn_id_gridcell=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_landunit=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_column=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_pft=NC_MIN_INT; /* [id] Dimension ID */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std){
-    (void)fprintf(stderr,"%s: INFO %s reports variable %s is sparse type %s",nco_prg_nm_get(),fnc_nm,var_nm,nco_s1d_sng(nco_s1d_typ));
-  } /* !dbg */
+  char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
+  char gridcell_nm[]="gridcell";
+  char landunit_nm[]="landunit";
+  char column_nm[]="column";
+  char pft_nm[]="pft";
+
+  nco_bool flg_s1d_col=False; /* [flg] Dataset contains sparse variables for columns */
+  nco_bool flg_s1d_pft=False; /* [flg] Dataset contains sparse variables for PFTs */
 
   /* Initialize local copies of command-line values */
   dfl_lvl=rgr->dfl_lvl;
   fl_in=rgr->fl_in;
   fl_out=rgr->fl_out;
-  var_nm=rgr->var_nm;
+  in_id=rgr->in_id;
+  out_id=rgr->out_id;
 
-  if(nco_dbg_lvl_get() >= nco_dbg_std){
-    (void)fprintf(stderr,"%s: INFO %s Terraref metadata: ",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stderr,"wvl_nbr = %li, xdm_nbr = %li, ydm_nbr = %li, s1d_typ = %s, var_typ_in = %s, var_typ_out = %s\n",wvl_nbr,xdm_nbr,ydm_nbr,nco_s1d_sng(nco_s1d_typ),nco_typ_sng(var_typ_in),nco_typ_sng(var_typ_out));
-  } /* endif dbg */
+  rcd=nco_inq_varid_flg(in_id,"cols1d_gridcell_index",&cols1d_gridcell_index_id);
+  if(cols1d_gridcell_index_id != NC_MIN_INT) flg_s1d_col=True;
+  if(flg_s1d_col){
+    rcd=nco_inq_varid_flg(in_id,"cols1d_ixy",&cols1d_ixy_id);
+    rcd=nco_inq_varid_flg(in_id,"cols1d_jxy",&cols1d_jxy_id);
+    rcd=nco_inq_varid_flg(in_id,"cols1d_lat",&cols1d_lat_id);
+    rcd=nco_inq_varid_flg(in_id,"cols1d_lon",&cols1d_lon_id);
+  } /* !flg_s1d_col */
+     
+  rcd=nco_inq_varid_flg(in_id,"pfts1d_gridcell_index",&pfts1d_gridcell_index_id);
+  if(pfts1d_gridcell_index_id != NC_MIN_INT) flg_s1d_pft=True;
+  if(flg_s1d_pft){
+    rcd=nco_inq_varid(in_id,"pfts1d_column_index",&pfts1d_column_index_id);
+    rcd=nco_inq_varid(in_id,"pfts1d_ixy",&pfts1d_ixy_id);
+    rcd=nco_inq_varid(in_id,"pfts1d_jxy",&pfts1d_jxy_id);
+    rcd=nco_inq_varid(in_id,"pfts1d_lat",&pfts1d_lat_id);
+    rcd=nco_inq_varid(in_id,"pfts1d_lon",&pfts1d_lon_id);
+  } /* !flg_s1d_pft */
+  
+  assert(flg_s1d_col || flg_s1d_pft);
+
+  rcd=nco_inq_dimid(in_id,gridcell_nm,&dmn_id_gridcell);
+  rcd=nco_inq_dimid(in_id,landunit_nm,&dmn_id_landunit);
+  rcd=nco_inq_dimid(in_id,column_nm,&dmn_id_column);
+  rcd=nco_inq_dimid(in_id,pft_nm,&dmn_id_pft);
+
+  if(flg_s1d_col && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Found all necessary information for unpacking cols1d variables\n",nco_prg_nm_get());
+  if(flg_s1d_pft && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Found all necessary information for unpacking pfts1d variables\n",nco_prg_nm_get());
+
+#ifdef ENABLE_S1D
+
+  int dmn_idx_col=int_CEWI; /* [idx] Index of column dimension */
+  int dmn_idx_lat=int_CEWI; /* [idx] Index of latitude dimension */
+  int dmn_idx_lon=int_CEWI; /* [idx] Index of longitude dimension */
+  int dmn_id_col; /* [id] Column dimension ID */
+  int dmn_id_lon; /* [id] Longitude dimension ID */
+  int dmn_id_lat; /* [id] Latitude dimension ID */
+  int var_id; /* [id] Current variable ID */
+
+  const int dmn_nbr_max=3; /* [nbr] Maximum number of dimensions input or output variables */
+
+  int dmn_ids[dmn_nbr_max]; /* [id] Dimension IDs array for output variable */
+
+  long dmn_srt[dmn_nbr_max];
+  long dmn_cnt[dmn_nbr_max];
+
+  long col_nbr; /* [nbr] Number of columns */
+  long lon_nbr; /* [nbr] Number of longitudes */
+  long lat_nbr; /* [nbr] Number of latitudes */
+  long var_sz; /* [nbr] Size of variable */
+
+  nc_type var_typ_in; /* [enm] NetCDF type of input data */
+  nc_type var_typ_out; /* [enm] NetCDF type of data in output file */
+
+  nco_s1d_typ_enm nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
+
+  ptr_unn var_val_in;
+  ptr_unn var_val_out;
+  
+#ifdef __GNUG__
+# pragma omp parallel for firstprivate(has_column,has_pft,var_val_in,var_val_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_column_in,dmn_id_column_out,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tm_in,flg_s1d_col,flg_s1d_pft,grd_nbr,idx_dbg,column_nbr_in,column_nbr_out,pft_nbr_in,pft_nbr_out,out_id,xtr_mth)
+#endif /* !__GNUG__ */
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv=trv_tbl->lst[idx_tbl];
+    thr_idx=omp_get_thread_num();
+    in_id=trv_tbl->in_id_arr[thr_idx];
+#ifdef _OPENMP
+    if(nco_dbg_lvl_get() >= nco_dbg_grp && !thr_idx && !idx_tbl) (void)fprintf(fp_stdout,"%s: INFO %s reports regrid loop uses %d thread%s\n",nco_prg_nm_get(),fnc_nm,omp_get_num_threads(),(omp_get_num_threads() > 1) ? "s" : "");
+    if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s: INFO thread = %d, idx_tbl = %d, nm = %s\n",nco_prg_nm_get(),thr_idx,idx_tbl,trv.nm);
+#endif /* !_OPENMP */
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
+      if(trv.flg_rgr){
+	/* Interpolate variable */
+	
+	if(strstr("cols1d",var_nm)){
+	  nco_s1d_typ=nco_s1d_clm;
+	}else if(strstr("pfts1d",var_nm)){
+	  nco_s1d_typ=nco_s1d_pft;
+	}else{
+	  (void)fprintf(stderr,"%s: ERROR %s reports variable %s does not appear to be sparse\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	  nco_exit(EXIT_FAILURE);
+	} /* !strstr() */
+
+	if(nco_dbg_lvl_get() >= nco_dbg_std){
+	  (void)fprintf(stderr,"%s: INFO %s reports variable %s is sparse type %s",nco_prg_nm_get(),fnc_nm,var_nm,nco_s1d_sng(nco_s1d_typ));
+	} /* !dbg */
+	
+      }else{ /* !trv.flg_rgr */
+	/* Use standard NCO copy routine for variables that are not regridded
+	   20190511: Copy them only once */
+#pragma omp critical
+	{ /* begin OpenMP critical */
+	  (void)nco_cpy_var_val(in_id,out_id,(FILE *)NULL,(md5_sct *)NULL,trv.nm,trv_tbl);
+	} /* end OpenMP critical */
+      } /* !flg_rgr */
+    } /* !xtr */
+  } /* end (OpenMP parallel for) loop over idx_tbl */
+  if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(stdout,"\n");
+  if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables interpolated = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
 
   /* Free output data memory */
 #endif /* !ENABLE_S1D */

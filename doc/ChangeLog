@@ -1,8 +1,12 @@
-2020-11-28  Charlie Zender  <zender@uci.edu>
+2020-11-29  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.6-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.6-beta01: fxm';git push
 	git tag -a 4.9.6-beta01 -m 'netCDF-4.8.0 compatible; ncclimo mdl_nm=MOSART, var_xtr, cmem nodes, prc_typ; ncremap fix mpi nd_fl bug, msk_in/msk_out fix, nfr n2s rll, UDUNITS2_XML_FILE hints; ncra -N';git push --tags
+
+	* Add skeleton code to nco_s1d.[ch]
+
+2020-11-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.6-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha05: Iliza';git push
