@@ -1,3 +1,9 @@
+2020-12-01  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.7-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha01: Late to School';git push
+	git tag -a 4.9.7-alpha01 -m 'Functionally identical to 4.9.6';git push --tags
+
 2020-11-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.6 release procedure:
