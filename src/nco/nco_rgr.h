@@ -191,6 +191,7 @@ extern "C" {
    char * const rgr_out, /* I [sng] File containing regridded fields */
    char * const rgr_grd_src, /* I [sng] File containing input grid */
    char * const rgr_grd_dst, /* I [sng] File containing destination grid */
+   char * const rgr_hrz, /* I [sng] File containing horizontal coordinate grid */
    char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
    char * const rgr_var, /* I [sng] Variable for special regridding treatment */
    char * const rgr_vrt, /* I [sng] File containing vertical coordinate grid */

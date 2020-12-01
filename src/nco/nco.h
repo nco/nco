@@ -355,14 +355,14 @@ extern "C" {
 # define NCO_VERSION_PATCH 6
 #endif /* !NCO_VERSION_PATCH */
 #ifndef NCO_VERSION_NOTE
-# define NCO_VERSION_NOTE "-alpha05" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
+# define NCO_VERSION_NOTE "" /* Blank for final versions, non-blank (e.g., "-beta37") for pre-release versions */
 #endif /* !NCO_VERSION_NOTE */
 #ifndef NCO_LIB_VERSION
   /* Define NC_LIB_VERSION as three-digit number for arithmetic comparisons by CPP */
 # define NCO_LIB_VERSION ( NCO_VERSION_MAJOR * 100 + NCO_VERSION_MINOR * 10 + NCO_VERSION_PATCH )
 #endif /* !NCO_LIB_VERSION */
 #ifndef NCO_VERSION
-# define NCO_VERSION "4.9.6-alpha05"
+# define NCO_VERSION "4.9.6"
 #endif /* !NCO_VERSION */
 
 /* Compatibility tokens new to netCDF4 netcdf.h: */
@@ -1131,6 +1131,7 @@ typedef enum nco_xtr_typ_enm
     char *drc_tps; /* [sng] Data directory for Tempest grids, meshes, and weights */
     char *fl_grd_src; /* [sng] File containing input grid */
     char *fl_grd_dst; /* [sng] File containing destination grid */
+    char *fl_hrz; /* [sng] File containing horizontal coordinate grid */
     char *fl_in; /* [sng] File containing fields to be regridded */
     char *fl_out; /* [sng] File containing regridded fields */
     char *fl_out_tmp; /* [sng] Temporary file containing regridded fields */

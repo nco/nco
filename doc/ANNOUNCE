@@ -7,12 +7,11 @@ http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
 Version 4.9.6 is a minor NCO release that contains a few new features
-and fixes. Unless the features/fixes listed below affect you, chillax
-and upgrade next time. 
+and fixes. Unless the features/fixes listed below affect you, no need
+to upgrade this time.
 
-Work on NCO 4.9.7 has commenced and will improve high-freqency
-splitting and climo capabilities, more SIMD acceleration, and
-more GPU offloading support.
+Work on NCO 4.9.7 has commenced and will improve analysis of land
+surface datasets packed into sparse-1D formats.
 
 Enjoy,
 Charlie
@@ -37,9 +36,47 @@ and FSDS. Inclusion of other variables, e.g., area, depends on context
 and on other options
 http://nco.sf.net/nco.html#var_xtr
 
+B. This version is forward-compatible with netCDF 4.8.0, which we know 
+will contain some backward-incompatibile changes to filter behavior.
+Once netCDF 4.8.0 is released, if it becomes the default version of
+netCDF on your syste, then you will likely need to upgrade to NCO
+4.9.6 as previous versions may be incompatible with netCDF 4.8.0.
+
+C. ncclimo now supports the -P (or --prc_typ) option instead of -m
+(or --mdl_nm) to determine the processing type. More importantly,
+ncclimo the -P option to ncremap internally, which simplifies some
+complex climo/regridding commands. For example, now it is possible to
+create regridded climatologies of output that requires sub-gridscale
+regridding with a single ncclimo command whereas previouly this
+required separate ncclimo and ncremap commands:
+
+ls *elm.h0* | ncclimo -P elm -s 1 -e 500 --map=map.nc 
+ls *mpaso* | ncclimo -P mpaso -s 1 -e 500 --map=map.nc 
+ls *mpassi* | ncclimo -P mpassi -s 1 -e 500 --map=map.nc 
+
+The ncclimo -m mdl_nm option is still supported, and is required in
+some situations, e.g., when the processing type is 'elm' yet the
+history filenames use 'clm2' not 'elm'. In such mixed cases both -P
+and -m options may be necessary.
+http://nco.sf.net/nco.html#ncclimo
+http://dust.ess.uci.edu/smn/smn_nco_e3sm_202010.pptx
+
+D. ncclimo and ncremap now support the large memory AMD (cmem) nodes
+on Cori when in MPI mode. 
+
+
 BUG FIXES:
 
-A. Hi
+A. ncremap fixes a bug that prevented MPI mode from working on Cori.
+
+B. ncremap always retains (rather than potentially altering) the
+input values of masks specified in SCRIP gridfiles when it writes
+the output map-file.
+
+C. ncremap correctly infers the final vertices of RLL grids stored
+in north-to-south order. Previously, the final vertex could be
+misdiagnosed for some counter-clockwise orderings of cells.
+
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

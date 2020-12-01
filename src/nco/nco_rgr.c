@@ -94,6 +94,7 @@ nco_rgr_free /* [fnc] Deallocate regridding structure */
   if(rgr->grd_ttl) rgr->grd_ttl=(char *)nco_free(rgr->grd_ttl);
   if(rgr->fl_grd_src) rgr->fl_grd_src=(char *)nco_free(rgr->fl_grd_src);
   if(rgr->fl_grd_dst) rgr->fl_grd_dst=(char *)nco_free(rgr->fl_grd_dst);
+  if(rgr->fl_hrz) rgr->fl_hrz=(char *)nco_free(rgr->fl_hrz);
   if(rgr->fl_in) rgr->fl_in=(char *)nco_free(rgr->fl_in);
   if(rgr->fl_map) rgr->fl_map=(char *)nco_free(rgr->fl_map);
   if(rgr->fl_msh) rgr->fl_msh=(char *)nco_free(rgr->fl_msh);
@@ -157,6 +158,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
  char * const rgr_out, /* I [sng] File containing regridded fields */
  char * const rgr_grd_src, /* I [sng] File containing input grid */
  char * const rgr_grd_dst, /* I [sng] File containing destination grid */
+ char * const rgr_hrz, /* I [sng] File containing horizontal coordinate grid */
  char * const rgr_map, /* I [sng] File containing mapping weights from source to destination grid */
  char * const rgr_var, /* I [sng] Variable for special regridding treatment */
  char * const rgr_vrt, /* I [sng] File containing vertical coordinate grid */
@@ -198,6 +200,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_wgt= rgr_map ? True : False; /* [flg] User-specified mapping weights */
   rgr->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
 
+  rgr->fl_hrz=rgr_hrz; /* [sng] [sng] File containing horizontal coordinate grid */
   rgr->fl_vrt=rgr_vrt; /* [sng] [sng] File containing vertical coordinate grid */
 
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */
@@ -219,6 +222,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
     (void)fprintf(stderr,"rgr_nbr = %d, ",rgr->rgr_nbr);
     (void)fprintf(stderr,"fl_grd_src = %s, ",rgr->fl_grd_src ? rgr->fl_grd_src : "NULL");
     (void)fprintf(stderr,"fl_grd_dst = %s, ",rgr->fl_grd_dst ? rgr->fl_grd_dst : "NULL");
+    (void)fprintf(stderr,"fl_hrz = %s, ",rgr->fl_hrz ? rgr->fl_hrz : "NULL");
     (void)fprintf(stderr,"fl_in = %s, ",rgr->fl_in ? rgr->fl_in : "NULL");
     (void)fprintf(stderr,"fl_out = %s, ",rgr->fl_out ? rgr->fl_out : "NULL");
     (void)fprintf(stderr,"fl_out_tmp = %s, ",rgr->fl_out_tmp ? rgr->fl_out_tmp : "NULL");
@@ -365,6 +369,10 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
       rgr->flg_nfr=True;
       continue;
     } /* !ugrid */
+    if(!strcasecmp(rgr_lst[rgr_var_idx].key,"fl_hrz") || !strcasecmp(rgr_lst[rgr_var_idx].key,"hrz")){
+      rgr->fl_hrz=(char *)strdup(rgr_lst[rgr_var_idx].val);
+      continue;
+    } /* !hrz */
     if(!strcasecmp(rgr_lst[rgr_var_idx].key,"fl_vrt") || !strcasecmp(rgr_lst[rgr_var_idx].key,"vrt")){
       rgr->fl_vrt=(char *)strdup(rgr_lst[rgr_var_idx].val);
       continue;
