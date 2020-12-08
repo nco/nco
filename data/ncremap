@@ -49,7 +49,7 @@
 
 # Insta-install:
 # scp ~/nco/data/ncremap zender1@acme1.llnl.gov:bin
-# scp ~/nco/data/ncremap zender1@aims4.llnl.gov:bin
+# scp ~/nco/data/ncremap andes.olcf.ornl.gov:bin_andes
 # scp ~/nco/data/ncremap blues.lcrc.anl.gov:bin
 # scp ~/nco/data/ncremap cheyenne.ucar.edu:bin
 # scp ~/nco/data/ncremap compy.pnl.gov:bin
@@ -58,7 +58,6 @@
 # scp ~/nco/data/ncremap dust.ess.uci.edu:bin
 # scp ~/nco/data/ncremap e3sm.ess.uci.edu:bin
 # scp ~/nco/data/ncremap frazil.ess.uci.edu:bin
-# scp ~/nco/data/ncremap rhea.ccs.ornl.gov:bin_rhea
 # scp ~/nco/data/ncremap skyglow.ess.uci.edu:bin
 # scp ~/nco/data/ncremap theta.alcf.anl.gov:bin_theta
 # scp dust.ess.uci.edu:bin/ncremap ~/bin
@@ -103,14 +102,14 @@ fi # HOSTNAME
 # Default input and output directory is ${DATA}
 if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
-	constance* | node* ) DATA='/scratch' ; ;; # PNNL
+	andes* | rhea* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
 	chrysalis* ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named fxm, 64|256 cores|GB/node 
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	compy* ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
+	constance* | node* ) DATA='/scratch' ; ;; # PNNL
 	cooley* | cc[0123456789][0123456789][0123456789] | mira* ) DATA="/projects/OceanClimate_2/${USER}" ; ;; # ALCF cooley compute nodes named ccNNN, 384 GB/node 
 	cori* ) DATA="${SCRATCH}" ; ;; # NERSC cori compute nodes named nidNNNNN (Haswell/KNL) or cmemNN (AMD) with (32/68/64)|(96/128/1024) cores|GB/node (knl/haswell/amd) (login nodes 512 GB)
-	andes* | rhea* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF rhea compute nodes named rheaNNN, 128 GB/node
 	theta* ) DATA="/projects/ClimateEnergy_3/${USER}" ; ;; # ALCF theta compute nodes named fxm, 64|192 cores|GB/node 
 	* ) DATA='/tmp' ; ;; # Other
     esac # !HOSTNAME
@@ -133,11 +132,19 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
 	acme1* | aims4* )
-	    export PATH='/export/zender1/bin:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.3.0/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/export/zender1/lib:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.3.0/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/export/zender1/bin:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.3.1.2/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/export/zender1/lib:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.3.1.2/lib'\:${LD_LIBRARY_PATH} ; ;;
+	andes* | rhea* )
+	    # 20190827: Must guarantee finding mpirun
+	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
+	    if [ ${spt_nm} = 'ncremap' ]; then
+		module load esmf
+	    fi # !ncremap
+            export PATH='/ccs/home/zender/bin_andes'\:${PATH}
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/e3sm_unified_1.3.1.2/lib'\:${LD_LIBRARY_PATH} ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
-	    export PATH='/home/zender/bin:/soft/bebop/ncl/6.6.2/bin'\:${PATH}
-	    export LD_LIBRARY_PATH='/home/zender/lib:/soft/bebop/ncl/6.6.2/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/home/zender/bin'\:${PATH}
+	    export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	*cheyenne* )
 	    # 20180112: Cheyenne support not yet tested in batch mode
 	    if [ ${spt_nm} = 'ncremap' ]; then
@@ -179,14 +186,6 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	mira* )
 	    export PATH='/home/zender/bin_mira'\:${PATH}
 	    export LD_LIBRARY_PATH='/soft/libraries/netcdf/current/library:/home/zender/lib_mira'\:${LD_LIBRARY_PATH} ; ;;
-	rhea* )
-	    # 20190827: Must guarantee finding mpirun
-	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
-	    if [ ${spt_nm} = 'ncremap' ]; then
-		module load esmf
-	    fi # !ncremap
-            export PATH='/ccs/home/zender/bin_rhea'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_rhea:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.3.0/lib'\:${LD_LIBRARY_PATH} ; ;;
 	theta* )
 	    export PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/opt/cray/pe/netcdf/4.6.1.2/gnu/7.1/lib'\:${LD_LIBRARY_PATH} ; ;;
@@ -1792,7 +1791,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    # Copy host-specific mpirun syntax but not node-allocation algorithms or loop indices between ncclimo and ncremap
 	    case "${HOSTNAME}" in 
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
-		blues* | blogin* | b[0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | rhea* )
+		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | rhea* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*

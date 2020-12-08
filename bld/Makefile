@@ -16,6 +16,7 @@
 # Machine build parameters
 #                         Source     Method   Packages Compiler
 # aerosol.ess.uci.edu: NCO          Configure All else GCC
+# andes.olcf.ornl.gov: NCO          Makefile  All else GCC
 # AppVeyor CI        : NCO          CMake     All else MSVC
 # cheyenne.ucar.edu  : NCO          Makefile  All else Intel
 # cooley.alcf.anl.g  : NCO          Configure All else GCC

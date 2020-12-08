@@ -1,3 +1,11 @@
+2020-12-08  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.7-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
+	git tag -a 4.9.7-alpha02 -m 'andes; ';git push --tags
+
+	* Add Andes configuration to ncremap ncclimo, build on andes.olcf.ornl.gov
+
 2020-12-01  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.7-alpha01 release procedure:
