@@ -347,6 +347,21 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
+# gcc/g++ 20201208 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on andes:
+# Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
+# Latest ticket to build NCO: 381695 on 20180413
+# Latest sysadmin-compiled module usage: module load netcdf/4.6.1 nco/4.7.4 # 20180423
+# Personal recipe last modified: 20201208
+# Personal recipe last used successfully: fxm (except ncgen does not link)
+export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
+export LINUX_CXX='g++ -std=c++11'
+export LINUX_FC='gfortran'
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.3.1.1/lib
+export NETCDF_ROOT=/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.3.1.1
+export PATH=${PATH}:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.3.1.1/bin
+cd ~/nco;git reset --hard origin/master
+cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.3.1.1' OPTS=D OMP=Y allinone;cd -
+
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on blues/anvil
 # LCRC uses Spack module written and tested by Adam Stewart: https://github.com/LLNL/spack/pull/4370/files
 # spack install --run-tests nco%gcc ^netcdf@4.4.0
