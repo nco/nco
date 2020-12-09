@@ -200,7 +200,7 @@ nco_rgr_ini /* [fnc] Initialize regridding structure */
   rgr->flg_wgt= rgr_map ? True : False; /* [flg] User-specified mapping weights */
   rgr->fl_map=rgr_map; /* [sng] File containing mapping weights from source to destination grid */
 
-  rgr->fl_hrz=rgr_hrz; /* [sng] [sng] File containing horizontal coordinate grid */
+  rgr->fl_hrz=rgr_hrz; /* [sng] [sng] File containing horizontal coordinate grid (for S1D) */
   rgr->fl_vrt=rgr_vrt; /* [sng] [sng] File containing vertical coordinate grid */
 
   rgr->var_nm=rgr_var; /* [sng] Variable for special regridding treatment */

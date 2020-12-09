@@ -290,8 +290,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # https://slurm.schedmd.com/sbatch.html # sbatch man page
 # https://slurm.schedmd.com/salloc.html # salloc man page
 # OLCF SLURM (after 20190903, PBS until 20190903): 
-# https://www.olcf.ornl.gov/support/system-user-guides/rhea-user-guide/#903
-# https://www.olcf.ornl.gov/for-users/system-user-guides/rhea/running-jobs/#slurm
+# https://docs.olcf.ornl.gov/systems/andes_user_guide.html
 # Requesting interactive nodes, Submitting non-interactive batch jobs, Monitoring queues, Deleting jobs:
 # Cobalt: qsub -I,   qsub,  qstat,    qdel, mpirun
 # LSF:    bsub -I,   bsub,jobstat,    qdel,  jsrun
