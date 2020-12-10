@@ -32,6 +32,20 @@
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
 
+#ifdef _OPENMP
+# ifndef OPENMP_LEGACY
+#  ifndef OPENMP_TARGET
+/* Unless OPENMP_LEGACY is defined, assume OpenMP library supports target offloading... */
+#   define OPENMP_TARGET
+#  endif /* !OPENMP_TARGET */
+# else /* !OPENMP_LEGACY */
+/* ...otherwise assume OpenMP library supports only SMP on host... */
+#  ifndef OPENMP_HOST
+#   define OPENMP_HOST
+#  endif /* !OPENMP_HOST */
+# endif /* !OPENMP_LEGACY */
+#endif /* !_OPENMP */
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

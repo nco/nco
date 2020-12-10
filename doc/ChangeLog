@@ -1,3 +1,7 @@
+2020-12-10  Charlie Zender  <zender@uci.edu>
+
+	* Define OPENMP_TARGET and OPENMP_HOST tokens
+
 2020-12-09  Charlie Zender  <zender@uci.edu>
 
 	* S1D stubs determine file, IDs, and shape of input/output horizontal grid
