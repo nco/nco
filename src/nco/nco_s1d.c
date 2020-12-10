@@ -35,7 +35,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
   /* Usage:
      ncks -O -C --s1d -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc
-     ncks -O -C --s1d -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc */
+     ncks -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_rst.nc ~/data/bm/elm_mali_ig_hst.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
 
@@ -114,12 +114,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_bool flg_grd_dat=False; /* [flg] Use horizontal grid from required input data file */
   nco_bool flg_grd_tpl=False; /* [flg] Use horizontal grid from optional horizontal grid template file */
 
- /* Does data file have unstructured grid? */
+  /* Does data file have unstructured grid? */
   if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
   else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
   if(dmn_id_col != NC_MIN_INT) flg_grd_1D=True;
 
-   /* Does data file have RLL grid? */
+  /* Does data file have RLL grid? */
   if(!flg_grd_1D){
     if(lat_nm_in && (rcd=nco_inq_dimid_flg(in_id,lat_nm_in,&dmn_id_lat)) == NC_NOERR) /* do nothing */; 
     else if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("lndgrid"); /* CF */
@@ -131,8 +131,13 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Set where to obtain horizontal grid */
   if(flg_grd_1D || flg_grd_rct) flg_grd_dat=True; else flg_grd_tpl=True;
 
-  /* Open grid template file if necessary */
-  if(flg_grd_tpl){
+  if(flg_grd_tpl && !rgr->fl_hrz){
+    (void)fprintf(stderr,"%s: ERROR %s did not locate horizontal grid in input data file and no optional horizontal gridfile was provided.\nHINT: Use option --hrz to specify file with horizontal grid used by input data.\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !flg_grd_tpl */
+
+  /* Open grid template file iff necessary */
+  if(flg_grd_tpl && rgr->fl_hrz){
     char *fl_tpl; /* [sng] Template file (contains horizontal grid) */
     char *fl_pth_lcl=NULL;
 
@@ -152,6 +157,27 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(RAM_OPEN) md_open=NC_NOWRITE|NC_DISKLESS; else md_open=NC_NOWRITE;
     if(SHARE_OPEN) md_open=md_open|NC_SHARE;
     rcd+=nco_fl_open(fl_tpl,md_open,&bfr_sz_hnt,&tpl_id);
+
+    /* Repeat above logic to find grid...
+       Does template file have unstructured grid? */
+    if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
+    else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
+    if(dmn_id_col != NC_MIN_INT) flg_grd_1D=True;
+
+    /* Does template file have RLL grid? */
+    if(!flg_grd_1D){
+      if(lat_nm_in && (rcd=nco_inq_dimid_flg(in_id,lat_nm_in,&dmn_id_lat)) == NC_NOERR) /* do nothing */; 
+      else if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("lndgrid"); /* CF */
+      if(lon_nm_in && (rcd=nco_inq_dimid_flg(in_id,lon_nm_in,&dmn_id_lon)) == NC_NOERR) /* do nothing */; 
+      else if((rcd=nco_inq_dimid_flg(in_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("lndgrid"); /* CF */
+    } /* !dmn_id_col */
+    if(dmn_id_lat != NC_MIN_INT && dmn_id_lon != NC_MIN_INT) flg_grd_rct=True;
+
+    /* Set where to obtain horizontal grid */
+    if(!flg_grd_1D && !flg_grd_rct){
+      (void)fprintf(stderr,"%s: ERROR %s did not locate horizontal grid in input data file %s or in template file %s.\nHINT: One of those files must contain the grid dimensions and coordinates used by the packed data in the input data file.\n",nco_prg_nm_get(),fnc_nm,fl_in,fl_tpl);
+      nco_exit(EXIT_FAILURE);
+    } /* !flg_grd_1D */
 
     /* No further access to template file, close it */
     nco_close(tpl_id);
