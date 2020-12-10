@@ -1985,7 +1985,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
   long var_dsk; /* [nbr] Variable index relative to disk */
   long var_szm1;
 
-  nco_cln_typ lmt_cln = cln_std;   /* calendar type - for time@units */
+  nco_cln_typ cln_typ = cln_std;   /* calendar type - for time@units */
 
   const nco_bool CDL=prn_flg->cdl; /* [flg] CDL output */
   const nco_bool XML=prn_flg->xml; /* [flg] XML output */
@@ -2071,7 +2071,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
     if(unit_sng_var && strlen(unit_sng_var)){
       flg_malloc_unit_var=True;
       cln_sng=nco_lmt_get_udu_att(grp_id, cf_var_id,"calendar");
-      if(cln_sng) lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt_cln=cln_std;
+      if(cln_sng) cln_typ=nco_cln_get_cln_typ(cln_sng); else cln_typ=cln_std;
       if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
     } /* !unit_sng_var */
 
@@ -2093,7 +2093,7 @@ nco_prn_var_val_trv /* [fnc] Print variable data (GTT version) */
         nco_var_cnf_typ(NC_STRING,var_aux);
 
         /* NB: nco_cln_var_prs() modifies var_tmp and var_aux */
-	if(nco_cln_var_prs(unit_sng_var,lmt_cln,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_NOERR){
+	if(nco_cln_var_prs(unit_sng_var,cln_typ,prn_flg->cdl_fmt_dt,var_tmp,var_aux) == NCO_NOERR){
 	  var_swp=var;var=var_aux;var_aux=var_swp;
 	}else{
 	  var_aux=nco_var_free(var_aux);

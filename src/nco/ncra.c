@@ -1542,7 +1542,7 @@ main(int argc,char **argv)
 		 nco_rgd_arr_lst_chk(rgd_arr_climo_lst,rgd_arr_climo_nbr,lmt_rec[idx_rec]->nm,var_prc[idx]->nm))
 		do_rebase=True;
               if(do_rebase && fl_udu_sng && lmt_rec[idx_rec]->rbs_sng){
-                if(nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng,lmt_rec[idx_rec]->lmt_cln,(double*)NULL,var_prc[idx]) != NCO_NOERR){
+                if(nco_cln_clc_dbl_var_dff(fl_udu_sng,lmt_rec[idx_rec]->rbs_sng,lmt_rec[idx_rec]->cln_typ,(double*)NULL,var_prc[idx]) != NCO_NOERR){
                   (void)fprintf(fp_stderr,"%s: ERROR in nco_cln_clc_dbl_var_dff() when attempting to re-base variable \"%s\" from units \"%s\" to \"%s\"\n",nco_prg_nm_get(),var_prc[idx]->nm,fl_udu_sng,lmt_rec[idx_rec]->rbs_sng);
                   nco_exit(EXIT_FAILURE);
                 } /* !nco_cln_clc_dbl_var_dff() */

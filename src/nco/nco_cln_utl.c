@@ -209,48 +209,48 @@ nco_cln_fmt_dt /* [fnc] Format date-string for printable output */
   return bfr;
 } /* !nco_cln_fmt_dt() */
 
-nco_cln_typ /* [enm] Calendar type */
+nco_cln_typ /* O [enm] Calendar type */
 nco_cln_get_cln_typ /* [fnc] Determine calendar type or cln_nil if not found */
 (const char *ud_sng) /* I [ptr] Units string */
 {
   int idx;
   int len; 
   char *lcl_sng;  
-  nco_cln_typ lmt_cln;
+  nco_cln_typ cln_typ;
   
   if(!ud_sng) return cln_nil;
   
   lcl_sng=strdup(ud_sng);
   
   /* Set initial return type to void then overwrite */
-  lmt_cln=cln_nil;
+  cln_typ=cln_nil;
   
   /* Convert to lower case */
   len=strlen(lcl_sng);
   for(idx=0;idx<len;idx++) lcl_sng[idx]=tolower(lcl_sng[idx]);
   
-  if(strstr(lcl_sng,"standard")) lmt_cln=cln_std;
-  else if(strstr(lcl_sng,"gregorian") || strstr(lcl_sng,"proleptic_gregorian")) lmt_cln=cln_grg;
-  else if(strstr(lcl_sng,"julian")) lmt_cln=cln_jul;
-  else if(strstr(lcl_sng,"360_day")) lmt_cln=cln_360;
-  else if(strstr(lcl_sng,"noleap") || strstr(lcl_sng,"365_day")) lmt_cln=cln_365;
-  else if(strstr(lcl_sng,"all_leap") || strstr(lcl_sng,"366_day")) lmt_cln=cln_366;
+  if(strstr(lcl_sng,"standard")) cln_typ=cln_std;
+  else if(strstr(lcl_sng,"gregorian") || strstr(lcl_sng,"proleptic_gregorian")) cln_typ=cln_grg;
+  else if(strstr(lcl_sng,"julian")) cln_typ=cln_jul;
+  else if(strstr(lcl_sng,"360_day")) cln_typ=cln_360;
+  else if(strstr(lcl_sng,"noleap") || strstr(lcl_sng,"365_day")) cln_typ=cln_365;
+  else if(strstr(lcl_sng,"all_leap") || strstr(lcl_sng,"366_day")) cln_typ=cln_366;
   
   lcl_sng=(char *)nco_free(lcl_sng);
   
-  return lmt_cln;
+  return cln_typ;
 } /* !nco_cln_get_cln_typ() */
 
 int /* O [nbr] Number of days */
 nco_cln_days_in_year_prior_to_given_month /* [fnc] Number of days in year prior to month */
-(nco_cln_typ lmt_cln, /* [enm] Calendar type */
+(nco_cln_typ cln_typ, /* [enm] Calendar type */
  int mth_idx) /* I [idx] Month (1-based counting, December == 12) */
 { 
   int *days=NULL_CEWI;
   int idx;
   int idays=0;
   
-  switch(lmt_cln){
+  switch(cln_typ){
   case cln_360:
     days=DAYS_PER_MONTH_360;
     break; 
@@ -275,7 +275,7 @@ nco_cln_days_in_year_prior_to_given_month /* [fnc] Number of days in year prior 
 } /* !nco_cln_days_in_year_prior_to_given_month() */
 
 void
-nco_cln_pop_tm         /* [fnc] Calculate other members  in cln_sct from value*/
+nco_cln_pop_tm /* [fnc] Calculate other members  in cln_sct from value*/
 (tm_cln_sct *cln_sct) /* I/O [ptr] Calendar structure */
 {
   int idx;
@@ -286,7 +286,7 @@ nco_cln_pop_tm         /* [fnc] Calculate other members  in cln_sct from value*/
   double m_value;
   double *data=NULL_CEWI;
 
-  switch(cln_sct->sc_cln){
+  switch(cln_sct->cln_typ){
     case cln_360:
       data=DATA_360;
       days_per_month=DAYS_PER_MONTH_360;
@@ -347,7 +347,7 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
   /* Purpose: Populate values in calendar structure */
   double *data;
   
-  switch(cln_sct->sc_cln){
+  switch(cln_sct->cln_typ){
   case cln_360:
     data=DATA_360;
     cln_sct->value=data[0]*(cln_sct->year-1)+
@@ -393,13 +393,13 @@ nco_cln_pop_val /* [fnc] Calculate value in cln_sct */
 
 double /* O [dbl] time in (base) seconds of tm_typ */
 nco_cln_val_tm_typ
-( nco_cln_typ lmt_cln, /* I [enm] Calendar type */ 
+( nco_cln_typ cln_typ, /* I [enm] Calendar type */ 
  tm_typ bs_tm_typ) /* I [enm] Time units */
 {
   double *data=NULL_CEWI;
   double scl=double_CEWI;
   
-  switch(lmt_cln){
+  switch(cln_typ){
   case cln_360:
     data=DATA_360;    
     break; 
@@ -447,7 +447,7 @@ nco_cln_prn_tm         /* [fnc] print tm sct*/
 (tm_cln_sct *cln_sct) /* I [ptr] Calendar structure */
 {
 
-  (void)fprintf(stderr ,"%s: tm_sct cln_type=%d date=\"%d-%d-%d %d:%d:%g\" value=%g\n",nco_prg_nm_get(),cln_sct->sc_cln,
+  (void)fprintf(stderr ,"%s: tm_sct cln_type=%d date=\"%d-%d-%d %d:%d:%g\" value=%g\n",nco_prg_nm_get(),cln_sct->cln_typ,
               cln_sct->year,cln_sct->month,cln_sct->day,cln_sct->hour,cln_sct->min,cln_sct->sec,cln_sct->value );
 
    return;
@@ -593,7 +593,7 @@ int /* [flg] NCO_NOERR or NCO_ERR */
 nco_cln_clc_dbl_var_dff( /* [fnc] difference between two co-ordinate units */
 const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
 const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
-nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
+nco_cln_typ cln_typ,    /* I [enum] Calendar type of coordinate var */ 
 double *val_dbl,        /* I/O [dbl] var values modified */
 var_sct *var)           /* I/O [var_sct] var values modified */
 {
@@ -606,7 +606,7 @@ int /* [flg] NCO_NOERR or NCO_ERR */
 nco_cln_clc_dbl_org(   /* [fnc] difference between two co-ordinate units */
 const char *val_unt_sng, /* I [ptr] input value and units in the same string */
 const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
-nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
+nco_cln_typ cln_typ,    /* I [enum] Calendar type of coordinate var */ 
 double *og_val)         /* O [dbl] output value */
 {
   *og_val=0.0; /* CEWI */
@@ -629,7 +629,7 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
 int
 nco_cln_var_prs
 (const char *fl_unt_sng,
- nco_cln_typ lmt_cln,
+ nco_cln_typ cln_typ,
  int dt_fmt_enm,
  var_sct *var,
  var_sct *var_ret)
@@ -682,7 +682,7 @@ nco_cln_cnv_mk /* [fnc] UDUnits2 create custom converter */
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
     (void)fprintf(stdout,"%s: WARNING %s failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stdout,"%s: HINT UDUnits2 (specifically, the function ut_read_xml()) uses the environment variable UDUNITS2_XML_PATH, if any, to find its all-important XML database named by default udunits2.xml. If UDUNITS2_XML_PATH is undefined, UDUnits2 looks in the fall-back default initial location that was hardcoded when the UDUnits2 library was built. This location varies depending upon your operating system and UDUnits2 compilation settings. If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations, then NCO warns that the UDUnits2 library has failed to initialize and prints this message. To fix this, export the location of the UDUnits2 XML database file udunits2.xml to the shell with, e.g.,\n\texport UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'\nOne can then invoke (without recompilation) NCO again, and UDUNITS2 should work.\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT UDUnits2 (specifically, the function ut_read_xml()) uses the environment variable UDUNITS2_XML_PATH, if any, to find its all-important XML database named by default udunits2.xml. If UDUNITS2_XML_PATH is undefined, UDUnits2 looks in the fall-back default initial location that was hardcoded when the UDUnits2 library was built. This location varies depending upon your operating system and UDUnits2 compilation settings. If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations, then NCO warns that the UDUnits2 library has failed to initialize and prints this message. To fix this, export the full location (path+name) of the UDUnits2 XML database file udunits2.xml to the shell with, e.g.,\n\texport UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'\nOne can then invoke (without recompilation) NCO again, and UDUNITS2 should work.\n",nco_prg_nm_get());
     return (cv_converter *)NULL; /* Failure */
   } /* !ut_sys */ 
   
@@ -833,11 +833,11 @@ nco_cln_clc_var_dff /* [fnc] difference between two co-ordinate units */
 
    fl_unt_sng - is the source units string
    fl_bs_sng  - is the targets unit string
-   lmt_cln    - is the calendar type or lmt_nil (as approriate)
+   cln_typ    - is the calendar type or lmt_nil (as approriate)
    *og_val    - input value or (double*)NULL if var is used
    *var       - input array of values or (var_sct*)NULL if og_val used.
    *
-   * if a non standard lmt_cln is used.then the nco_cln_utl is used (transparently) to do the conversion
+   * if a non standard cln_typ is used.then the nco_cln_utl is used (transparently) to do the conversion
    * otherwise the udunits2 library is used.
    *
    * If var type is less than NC_FLOAT or NC_DOUBLE. Then var is promoted to NC_DOUBLE for the conversion;
@@ -853,7 +853,7 @@ int /* [flg] NCO_NOERR or NCO_ERR */
 nco_cln_clc_dbl_var_dff( /* [fnc] difference between two co-ordinate units */
 const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
 const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
-nco_cln_typ lmt_cln, /* I [enum] Calendar type of coordinate var */ 
+nco_cln_typ cln_typ, /* I [enum] Calendar type of coordinate var */ 
 double *og_val, /* I/O [dbl] var values modified -can be NULL */
 var_sct *var) /* I/O [var_sct] var values modified - can be NULL */
 {
@@ -864,7 +864,7 @@ var_sct *var) /* I/O [var_sct] var values modified - can be NULL */
   int is_date;
   int rcd;
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,lmt_cln);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,cln_typ);
 
   /* Do nothing if units identical */
   if(!strcasecmp(fl_unt_sng,fl_bs_sng)) return NCO_NOERR;
@@ -873,8 +873,8 @@ var_sct *var) /* I/O [var_sct] var values modified - can be NULL */
   is_date=nco_cln_chk_tm(fl_bs_sng);
 
   /* Use custom time functions if irregular calendar */
-  if(is_date && (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366))
-    rcd=nco_cln_clc_tm(fl_unt_sng,fl_bs_sng,lmt_cln,og_val,var);  
+  if(is_date && (cln_typ == cln_360 || cln_typ == cln_365 || cln_typ == cln_366))
+    rcd=nco_cln_clc_tm(fl_unt_sng,fl_bs_sng,cln_typ,og_val,var);  
   else if(og_val != (double *)NULL) 
     rcd=nco_cln_clc_dbl_dff(fl_unt_sng,fl_bs_sng,og_val);
   else if(var != (var_sct *)NULL)
@@ -895,10 +895,10 @@ var_sct *var) /* I/O [var_sct] var values modified - can be NULL */
  * "1 mile" "m" 1609.34 (m)
  * "12 inches" "cm" 30.48 cm
  *
- * If lmt_cln is empty or of type "standard" (cln_std) or "julian" (cln_jul) or "gregorian" (cln_grg) then
+ * If cln_typ is empty or of type "standard" (cln_std) or "julian" (cln_jul) or "gregorian" (cln_grg) then
  * the conversion is done by the UDUnits2 library.
  *
- * If lmt_cln is of type "360_day" (cln_360) or "365_day" (cln_365) or "366_day" (cln_366) then
+ * If cln_typ is of type "360_day" (cln_360) or "365_day" (cln_365) or "366_day" (cln_366) then
  * the conversion is done "transparently" by the nco_cln_utl library.
  */
 
@@ -906,7 +906,7 @@ int /* [flg] NCO_NOERR or NCO_ERR */
 nco_cln_clc_dbl_org(   /* [fnc] difference between two co-ordinate units */
 const char *val_unt_sng, /* I [ptr] input value and units in the same string */
 const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
-nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
+nco_cln_typ cln_typ,    /* I [enum] Calendar type of coordinate var */ 
 double *og_val)         /* O [dbl] output value */
 {
   const char fnc_nm[]="nco_cln_clc_dbl_org()"; /* [sng] Function name */
@@ -923,7 +923,7 @@ double *og_val)         /* O [dbl] output value */
   is_date=nco_cln_chk_tm(fl_bs_sng);
   lcl_unt_sng[0]='\0';
   
-  if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stderr,"%s: INFO %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln);
+  if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stderr,"%s: INFO %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,cln_typ);
 
   /* Does fl_unt_sng look like a regular timestamp? */ 
   if(is_date && sscanf(val_unt_sng,"%d-%d",&year,&month) == 2){
@@ -944,12 +944,12 @@ double *og_val)         /* O [dbl] output value */
   } /* !is_date */
 
   /* Use custom time functions if irregular calendar */
-  if(is_date && (lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)){
-    rcd=nco_cln_clc_tm(lcl_unt_sng,fl_bs_sng,lmt_cln,&val_dbl,(var_sct *)NULL);
+  if(is_date && (cln_typ == cln_360 || cln_typ == cln_365 || cln_typ == cln_366)){
+    rcd=nco_cln_clc_tm(lcl_unt_sng,fl_bs_sng,cln_typ,&val_dbl,(var_sct *)NULL);
   }else rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);
 
   /* Copy iff successful */ 
-  if(rcd == NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s reports unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,lmt_cln,val_dbl);  
+  if(rcd == NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s reports unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,cln_typ,val_dbl);  
  
   return rcd;        
 } /* !nco_cln_clc_dbl_org() */
@@ -958,7 +958,7 @@ int /* [rcd] Successful conversion returns NCO_NOERR */
 nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
 (const char *fl_unt_sng, /* I [ptr] Units attribute string from disk */
  const char *fl_bs_sng, /* I [ptr] Units attribute string from disk */
- nco_cln_typ lmt_cln, /* I [enum] Calendar type of coordinate variable */
+ nco_cln_typ cln_typ, /* I [enum] Calendar type of coordinate variable */
  double *og_val, /* I/O [ptr] */
  var_sct *var) /* I/O [ptr] */
 {
@@ -978,10 +978,10 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   tm_cln_sct bs_cln_sct;
 
   /* Die if unsupported calendar type */
-  if(lmt_cln != cln_360 && lmt_cln != cln_365 && lmt_cln != cln_366){
-    (void)fprintf(stderr,"%s: %s reports invalid calendar type lmt_cln=%d. Only cln_365,cln_360 cln_366 allowed.\n",nco_prg_nm_get(),fnc_nm,lmt_cln);
+  if(cln_typ != cln_360 && cln_typ != cln_365 && cln_typ != cln_366){
+    (void)fprintf(stderr,"%s: %s reports invalid calendar type cln_typ=%d. Only cln_365, cln_360, and cln_366 allowed.\n",nco_prg_nm_get(),fnc_nm,cln_typ);
     nco_exit(EXIT_FAILURE);
-  } /* !lmt_cln */
+  } /* !cln_typ */
 
   /* Obtain units type from fl_bs_sng */
   tmp_sng=(char *)nco_calloc(NCO_MAX_LEN_TMP_SNG,sizeof(char));
@@ -1004,16 +1004,16 @@ nco_cln_clc_tm /* [fnc] Difference between two coordinate units */
   unt_cln_sct.sc_typ=bs_tm_typ;
   bs_cln_sct.sc_typ=bs_tm_typ;
 
-  unt_cln_sct.sc_cln=lmt_cln;
-  bs_cln_sct.sc_cln=lmt_cln;
+  unt_cln_sct.cln_typ=cln_typ;
+  bs_cln_sct.cln_typ=cln_typ;
   (void)nco_cln_pop_val(&unt_cln_sct);
   (void)nco_cln_pop_val(&bs_cln_sct);
 
   /* Get offset */
-  crr_val=(unt_cln_sct.value-bs_cln_sct.value)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
+  crr_val=(unt_cln_sct.value-bs_cln_sct.value)/nco_cln_val_tm_typ(cln_typ,bs_tm_typ);
 
   /* Scale factor */
-  if(unt_tm_typ == bs_tm_typ) scl_val=1.0; else scl_val=nco_cln_val_tm_typ(lmt_cln,unt_tm_typ)/nco_cln_val_tm_typ(lmt_cln,bs_tm_typ);
+  if(unt_tm_typ == bs_tm_typ) scl_val=1.0; else scl_val=nco_cln_val_tm_typ(cln_typ,unt_tm_typ)/nco_cln_val_tm_typ(cln_typ,bs_tm_typ);
 
   if(nco_dbg_lvl_get() >= nco_dbg_crr){
     nco_cln_prn_tm(&unt_cln_sct);
@@ -1120,7 +1120,7 @@ nco_cln_prs_tm /* UDUnits2 Extract time stamp from parsed UDUnits string */
   ut_sys=ut_read_xml(NULL);
   if(ut_sys == NULL){
     (void)fprintf(stdout,"%s: ERROR %s failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stdout,"%s: HINT UDUnits2 (specifically, the function ut_read_xml()) uses the environment variable UDUNITS2_XML_PATH, if any, to find its all-important XML database named by default udunits2.xml. If UDUNITS2_XML_PATH is undefined, UDUnits2 looks in the fall-back default initial location that was hardcoded when the UDUnits2 library was built. This location varies depending upon your operating system and UDUnits2 compilation settings. If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations, then NCO warns that the UDUnits2 library has failed to initialize and prints this message. To fix this, export the location of the UDUnits2 XML database file udunits2.xml to the shell with, e.g.,\n\texport UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'\nOne can then invoke (without recompilation) NCO again, and UDUNITS2 should work.\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT UDUnits2 (specifically, the function ut_read_xml()) uses the environment variable UDUNITS2_XML_PATH, if any, to find its all-important XML database named by default udunits2.xml. If UDUNITS2_XML_PATH is undefined, UDUnits2 looks in the fall-back default initial location that was hardcoded when the UDUnits2 library was built. This location varies depending upon your operating system and UDUnits2 compilation settings. If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations, then NCO warns that the UDUnits2 library has failed to initialize and prints this message. To fix this, export the full location (path+name) of the UDUnits2 XML database file udunits2.xml to the shell with, e.g.,\n\texport UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'\nOne can then invoke (without recompilation) NCO again, and UDUNITS2 should work.\n",nco_prg_nm_get());
     return NCO_ERR; /* Failure */
   } /* end if err */ 
 
@@ -1200,7 +1200,7 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
   ut_sys=ut_read_xml(NULL);
   if(!ut_sys){
     (void)fprintf(stdout,"%s: ERROR %s failed to initialize UDUnits2 library\n",nco_prg_nm_get(),fnc_nm);
-    (void)fprintf(stdout,"%s: HINT UDUnits2 (specifically, the function ut_read_xml()) uses the environment variable UDUNITS2_XML_PATH, if any, to find its all-important XML database named by default udunits2.xml. If UDUNITS2_XML_PATH is undefined, UDUnits2 looks in the fall-back default initial location that was hardcoded when the UDUnits2 library was built. This location varies depending upon your operating system and UDUnits2 compilation settings. If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations, then NCO warns that the UDUnits2 library has failed to initialize and prints this message. To fix this, export the location of the UDUnits2 XML database file udunits2.xml to the shell with, e.g.,\n\texport UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'\nOne can then invoke (without recompilation) NCO again, and UDUNITS2 should work.\n",nco_prg_nm_get());
+    (void)fprintf(stdout,"%s: HINT UDUnits2 (specifically, the function ut_read_xml()) uses the environment variable UDUNITS2_XML_PATH, if any, to find its all-important XML database named by default udunits2.xml. If UDUNITS2_XML_PATH is undefined, UDUnits2 looks in the fall-back default initial location that was hardcoded when the UDUnits2 library was built. This location varies depending upon your operating system and UDUnits2 compilation settings. If UDUnits2 is correctly linked yet cannot find the XML database in either of these locations, then NCO warns that the UDUnits2 library has failed to initialize and prints this message. To fix this, export the full location (path+name) of the UDUnits2 XML database file udunits2.xml to the shell with, e.g.,\n\texport UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'\nOne can then invoke (without recompilation) NCO again, and UDUNITS2 should work.\n",nco_prg_nm_get());
     return NCO_ERR; /* Failure */
   } /* end if err */ 
 
@@ -1241,7 +1241,7 @@ nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
 int
 nco_cln_var_prs
 (const char *fl_unt_sng,
- nco_cln_typ lmt_cln,
+ nco_cln_typ cln_typ,
  int dt_fmt_enm,
  var_sct *var,
  var_sct *var_ret)
@@ -1257,15 +1257,15 @@ nco_cln_var_prs
   const char *fnc_nm="nco_cln_var_prs()";
   empty_sng[0]='\0';
 
-  // if( lmt_cln != cln_std )
+  // if( cln_typ != cln_std )
   //   return NCO_ERR;
   if(var->type !=NC_DOUBLE && var->type!=NC_FLOAT)
     nco_var_cnf_typ(NC_DOUBLE,var);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: DEBUG %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,bs_sng,lmt_cln);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: DEBUG %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,bs_sng,cln_typ);
 
   /* Rebase to seconds since blah-blah */
-  if(nco_cln_clc_dbl_var_dff(fl_unt_sng,bs_sng,lmt_cln,(double *)NULL,var) != NCO_NOERR) return NCO_ERR;
+  if(nco_cln_clc_dbl_var_dff(fl_unt_sng,bs_sng,cln_typ,(double *)NULL,var) != NCO_NOERR) return NCO_ERR;
 
   cast_void_nctype(var->type,&var->val);
 
@@ -1282,7 +1282,7 @@ nco_cln_var_prs
 
   var_ret->mss_val.sngp[0]=strdup(empty_sng);
   sz=var->sz;
-  tm.sc_cln=lmt_cln;
+  tm.cln_typ=cln_typ;
   // (void)fprintf(stderr,"%s: %s reports var \"%s\" has missing value %d\n",nco_prg_nm_get(),fnc_nm,var->nm,var->has_mss_val);
 
   if(var->type == NC_DOUBLE){
@@ -1295,7 +1295,7 @@ nco_cln_var_prs
       }
 
       tm.value=var->val.dp[idx];
-      if(lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)
+      if(cln_typ == cln_360 || cln_typ == cln_365 || cln_typ == cln_366)
         nco_cln_pop_tm(&tm);
       else
         (void)ut_decode_time(tm.value,&tm.year,&tm.month,&tm.day,&tm.hour,&tm.min,&tm.sec,&resolution);
@@ -1314,7 +1314,7 @@ nco_cln_var_prs
       }
 
       tm.value=(double)(var->val.fp[idx]);
-      if(lmt_cln == cln_360 || lmt_cln == cln_365 || lmt_cln == cln_366)
+      if(cln_typ == cln_360 || cln_typ == cln_365 || cln_typ == cln_366)
         nco_cln_pop_tm(&tm);
       else
         (void)ut_decode_time(tm.value,&tm.year,&tm.month,&tm.day,&tm.hour,&tm.min,&tm.sec,&resolution);

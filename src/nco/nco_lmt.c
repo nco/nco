@@ -53,7 +53,7 @@ nco_lmt_init /* [fnc] Initialize limit to NULL/invalid values */
   lmt->is_usr_spc_lmt=False; /* [flg] True if any part of limit is user-specified, else False */
   lmt->is_usr_spc_max=False; /* [flg] True if user-specified, else False */
   lmt->is_usr_spc_min=False; /* [flg] True if user-specified, else False */
-  lmt->lmt_cln=cln_nil;      /* [enm] Used by ncra, ncrcat to store enum of calendar-type attribute */
+  lmt->cln_typ=cln_nil;      /* [enm] Used by ncra, ncrcat to store enum of calendar-type attribute */
 
 } /* end nco_lmt_init() */
 
@@ -99,7 +99,7 @@ nco_lmt_prn /* [fnc] Print a Limit structure */
   (void)fprintf(stdout,"Any part is user-specified: %d\n",lmt->is_usr_spc_lmt);
   (void)fprintf(stdout,"Is user-specified maximum: %d\n",lmt->is_usr_spc_max);
   (void)fprintf(stdout,"Is user-specified minimum: %d\n",lmt->is_usr_spc_min);
-  (void)fprintf(stdout,"Calendar-type attribute: %d\n",lmt->lmt_cln);
+  (void)fprintf(stdout,"Calendar-type attribute: %d\n",lmt->cln_typ);
 
 } /* end nco_lmt_prn() */
 
@@ -156,7 +156,7 @@ nco_lmt_cpy /* [fnc] Deep-copy a Limit structure */
   lmt2->is_usr_spc_lmt=lmt1->is_usr_spc_lmt;
   lmt2->is_usr_spc_max=lmt1->is_usr_spc_max;
   lmt2->is_usr_spc_min=lmt1->is_usr_spc_min;
-  lmt2->lmt_cln=lmt1->lmt_cln;
+  lmt2->cln_typ=lmt1->cln_typ;
 
 } /* end nco_lmt_cpy() */
 
@@ -446,7 +446,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
     /* Initialize types used to re-base coordinate variables */
     lmt[idx]->origin=0.0;
     lmt[idx]->rbs_sng=NULL_CEWI;
-    lmt[idx]->lmt_cln=cln_nil;
+    lmt[idx]->cln_typ=cln_nil;
 
     /* 20130903: Initialize cumulative number of records in all files opened so far (multi-file record dimension only) */
     lmt[idx]->rec_in_cml=0L;
@@ -802,7 +802,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails 
-      if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
+      if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.cln_typ,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
       */
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
@@ -810,7 +810,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* ncra and ncrcat read "calendar" attribute in main() 
        Avoid multiple reads of calendar attribute in multi-file operations */
     if(!rec_dmn_and_mfo){
-      if(cln_sng) lmt.lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt.lmt_cln=cln_nil;
+      if(cln_sng) lmt.cln_typ=nco_cln_get_cln_typ(cln_sng); else lmt.cln_typ=cln_nil;
     } /* endif */
     if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
   } /* end if limit is coordinate */
@@ -884,11 +884,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       } /* end if */
 
       if(lmt.min_sng)
- 	if(nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val) != NCO_NOERR)
+ 	if(nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng,lmt.cln_typ,&lmt.min_val) != NCO_NOERR)
            nco_exit(EXIT_FAILURE);
 
       if(lmt.max_sng)
- 	if(nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val) != NCO_NOERR)
+ 	if(nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng,lmt.cln_typ,&lmt.max_val) != NCO_NOERR)
            nco_exit(EXIT_FAILURE);
 
     }else{ /* end UDUnits conversion */
@@ -907,11 +907,11 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng && strcmp(fl_udu_sng,lmt.rbs_sng)){ 
 
         if(lmt.min_sng) 
-	  if(nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val,(var_sct *)NULL) != NCO_NOERR)
+	  if(nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng,lmt.cln_typ,&lmt.min_val,(var_sct *)NULL) != NCO_NOERR)
 	    nco_exit(EXIT_FAILURE);
 
         if(lmt.max_sng) 
-	  if(nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val,(var_sct *)NULL) != NCO_NOERR)
+	  if(nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng,lmt.cln_typ,&lmt.max_val,(var_sct *)NULL) != NCO_NOERR)
 	    nco_exit(EXIT_FAILURE);   
 
         if(nco_dbg_lvl_get() > nco_dbg_std) fprintf(stdout,"%s: INFO nco_lmt rebasing min_val=%f max_val=%f\n",nco_prg_nm_get(),lmt.min_val,lmt.max_val);  
@@ -1668,14 +1668,14 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
     if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng){ 
 #ifdef ENABLE_UDUNITS
       /* Re-base and reset origin to 0.0 if re-basing fails */
-      // if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.lmt_cln,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
+      // if(nco_cln_clc_org(fl_udu_sng,lmt.rbs_sng,lmt.cln_typ,&lmt.origin) != NCO_NOERR) lmt.origin=0.0;
 #endif /* !ENABLE_UDUNITS */
     } /* endif */
 
     /* ncra and ncrcat read the "calendar" attribute in main() 
        Avoid multiple reads of calendar attribute in multi-file operations */
     if(!rec_dmn_and_mfo){
-      if(cln_sng) lmt.lmt_cln=nco_cln_get_cln_typ(cln_sng); else lmt.lmt_cln=cln_nil;
+      if(cln_sng) lmt.cln_typ=nco_cln_get_cln_typ(cln_sng); else lmt.cln_typ=cln_nil;
     } /* endif */
     if(cln_sng) cln_sng=(char *)nco_free(cln_sng);
   } /* End Needed only to read variable, if dimension is a coordinate variable */
@@ -1747,11 +1747,11 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
       } /* end if */
 
       if(lmt.min_sng)
- 	if(nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val) != NCO_NOERR)
+ 	if(nco_cln_clc_dbl_org(lmt.min_sng,fl_udu_sng,lmt.cln_typ,&lmt.min_val) != NCO_NOERR)
 	  nco_exit(EXIT_FAILURE);
 
       if(lmt.max_sng)
- 	if(nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val) != NCO_NOERR)
+ 	if(nco_cln_clc_dbl_org(lmt.max_sng,fl_udu_sng,lmt.cln_typ,&lmt.max_val) != NCO_NOERR)
 	  nco_exit(EXIT_FAILURE);
 
     }else{ /* end UDUnits conversion */
@@ -1773,14 +1773,14 @@ nco_lmt_evl_dmn_crd            /* [fnc] Parse user-specified limits into hypersl
         if(lmt.max_sng) lmt.max_val-=lmt.origin;   
       } 
       */
-      if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng && strcmp(fl_udu_sng, lmt.rbs_sng) ){ 
+      if(rec_dmn_and_mfo && fl_udu_sng && lmt.rbs_sng && strcmp(fl_udu_sng,lmt.rbs_sng)){ 
 
         if(lmt.min_sng) 
-	  if(nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng,lmt.lmt_cln,&lmt.min_val,(var_sct*)NULL) != NCO_NOERR)
+	  if(nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng,lmt.cln_typ,&lmt.min_val,(var_sct*)NULL) != NCO_NOERR)
              nco_exit(EXIT_FAILURE);
 
         if(lmt.max_sng) 
-	  if(nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng,lmt.lmt_cln,&lmt.max_val,(var_sct*)NULL) != NCO_NOERR)
+	  if(nco_cln_clc_dbl_var_dff(lmt.rbs_sng,fl_udu_sng,lmt.cln_typ,&lmt.max_val,(var_sct*)NULL) != NCO_NOERR)
              nco_exit(EXIT_FAILURE);   
 
         if(nco_dbg_lvl_get() > nco_dbg_std) fprintf(stdout,"%s: INFO nco_lmt rebasing min_val=%f max_val=%f\n",nco_prg_nm_get(),lmt.min_val,lmt.max_val);

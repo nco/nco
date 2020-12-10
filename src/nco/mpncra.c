@@ -662,7 +662,7 @@ main(int argc,char **argv)
     if(nco_prg_id == ncra || nco_prg_id == ncrcat){
       int var_id;
       
-      lmt_rec->lmt_cln=cln_nil; 
+      lmt_rec->cln_typ=cln_nil; 
       lmt_rec->origin=0.0; 
       lmt_rec->rbs_sng=NULL;
 
@@ -672,7 +672,7 @@ main(int argc,char **argv)
 	char *cln_att_sng=NULL;
 	lmt_rec->rbs_sng=nco_lmt_get_udu_att(in_id,var_id,"units"); 
 	cln_att_sng=nco_lmt_get_udu_att(in_id,var_id,"calendar"); 
-	lmt_rec->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
+	lmt_rec->cln_typ=nco_cln_get_cln_typ(cln_att_sng); 
 	if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
       }else{ /* endif record coordinate exists */
 	/* Record dimension, but not record coordinate, exists, which is fine. Reset return code. */

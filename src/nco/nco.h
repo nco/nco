@@ -866,7 +866,7 @@ extern "C" {
     nco_bool is_usr_spc_max; /* True if user-specified, else False */
     nco_bool is_usr_spc_min; /* True if user-specified, else False */
 
-    nco_cln_typ lmt_cln; /* Used by ncra, ncrcat to store enum of calendar-type attribute */
+    nco_cln_typ cln_typ; /* Used by ncra, ncrcat to store enum of calendar-type attribute */
 
   } lmt_sct;
   

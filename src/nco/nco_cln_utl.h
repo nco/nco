@@ -63,7 +63,7 @@ extern "C" {
   
   typedef struct {
     tm_typ sc_typ;
-    nco_cln_typ sc_cln;
+    nco_cln_typ cln_typ;
     int year;
     int month;
     int day;
@@ -83,17 +83,17 @@ extern "C" {
   (const nco_int date, /* I [YYMMDD] Date */
    const nco_int day_srt); /* I [day] Days ahead of input date */
   
-  tm_typ /* [enum] Units type */
+  tm_typ /* [enm] Units type */
   nco_cln_get_tm_typ /* returns time unit type or tm_void if not found */
   (const char *ud_sng); /* I [ptr] units string */
 
-  nco_cln_typ /* [enum] Calendar type */    
+  nco_cln_typ /* O [enm] Calendar type */    
   nco_cln_get_cln_typ /* [fnc] Calendar type or cln_nil if not found */
   (const char *ud_sng); /* I [ptr] units string */
   
   int /* O [int] number of days */
   nco_cln_days_in_year_prior_to_given_month /* [fnc] Number of days in year prior to month */
-  (nco_cln_typ lmt_cln, /* [enum] calendar type */
+  (nco_cln_typ cln_typ, /* [enm] calendar type */
    int mth_idx); /* I [idx] Month (1-based counting, December == 12) */
   
   void
@@ -115,8 +115,8 @@ extern "C" {
 
   double /* O [dbl] time in (base) seconds of tm_typ */
   nco_cln_val_tm_typ /* [fnc] */
-  (nco_cln_typ lmt_cln, /* I [enum] Calendar type */
-   tm_typ bs_tm_typ); /* I [enum] Time units */
+  (nco_cln_typ cln_typ, /* I [enm] Calendar type */
+   tm_typ bs_tm_typ); /* I [enm] Time units */
   
   int /* O [flg] String is calendar date */
   nco_cln_chk_tm /* [fnc] Is string a UDUnits-compatible calendar format, e.g., "PERIOD since REFERENCE_DATE" */
@@ -132,33 +132,33 @@ extern "C" {
   nco_cln_clc_dbl_var_dff /* [fnc] difference between two co-ordinate units */
   (const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
    const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
-   nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
+   nco_cln_typ cln_typ,    /* I [enm] Calendar type of coordinate var */ 
    double *val_dbl,           /* I/O [dbl] var values modified */
    var_sct *var);           /* I/O [var_sct] var values modified */
 
   int
   nco_cln_var_prs
   (const char *fl_unt_sng,
-   nco_cln_typ lmt_cln,
+   nco_cln_typ cln_typ,
    int dt_fmt_enm,
    var_sct *var,
    var_sct *var_out
   );
 
   int /* [flg] NCO_NOERR or NCO_ERR */ 
-  nco_cln_clc_dbl_org   /* [fnc] difference between two co-ordinate units */
+  nco_cln_clc_dbl_org /* [fnc] difference between two co-ordinate units */
   (const char *val_unt_sng, /* I [ptr] input value and  units in the same string */
-   const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
-   nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
-   double *og_val);         /* O [dbl] output value */
+   const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
+   nco_cln_typ cln_typ, /* I [enm] Calendar type of coordinate var */ 
+   double *og_val); /* O [dbl] output value */
   
   int /* [flg] NCO_NOERR or NCO_ERR */ 
   nco_cln_clc_dbl_var_dff /* [fnc] difference between two co-ordinate units */
   (const char *fl_unt_sng, /* I [ptr] units attribute string from disk */
-   const char *fl_bs_sng,  /* I [ptr] units attribute string from disk */
-   nco_cln_typ lmt_cln,    /* I [enum] Calendar type of coordinate var */ 
-   double *val_dbl,           /* I/O [dbl] var values modified */
-   var_sct *var);           /* I/O [var_sct] var values modified */
+   const char *fl_bs_sng, /* I [ptr] units attribute string from disk */
+   nco_cln_typ cln_typ, /* I [enm] Calendar type of coordinate var */ 
+   double *val_dbl, /* I/O [dbl] var values modified */
+   var_sct *var); /* I/O [var_sct] var values modified */
 
   int /* [rcd] Return code */
   nco_cln_sng_rbs /* [fnc] Rebase calendar string for legibility */
@@ -203,9 +203,9 @@ extern "C" {
   nco_cln_clc_tm /* [fnc] Difference between two time coordinate units */
   (const char *fl_unt_sng, /* I [ptr] user units attribute string */
    const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-   nco_cln_typ lmt_cln,  /* I [enm] Calendar type of coordinate var */ 
+   nco_cln_typ cln_typ,  /* I [enm] Calendar type of coordinate var */ 
    double *rgn_val, /* I/O [ptr] time diff in units based on fl_bs_sng */ 
-   var_sct *var);   /* I/O [ptr]  */ 
+   var_sct *var); /* I/O [ptr] */ 
 
 # endif /* !HAVE_UDUNITS2_H */
 #endif /* !ENABLE_UDUNITS */

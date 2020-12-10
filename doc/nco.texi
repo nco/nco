@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.7-alpha01
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 30 November 2020
-@set update-month November 2020
+@set update-date 10 December 2020
+@set update-month December 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -8253,12 +8253,12 @@ If @code{UDUNITS2_XML_PATH} is undefined, then UDUnits2 looks in the
 fall-back default initial location that was hardcoded when the
 UDUnits2 library was built. 
 This location varies depending upon your operating system and UDUnits2
-compilation settings. 
+ncompilation settings. 
 If UDUnits2 is correctly linked yet cannot find the @acronym{XML}
 database in either of these locations, then @acronym{NCO} will report
 that the UDUnits2 library has failed to initialize. 
-To fix this, export the location of the UDUnits2 @acronym{XML}
-database file @file{udunits2.xml} to the shell:
+To fix this, export the full location (path+name) of the UDUnits2
+@acronym{XML} database file @file{udunits2.xml} to the shell:
 @example
 export UDUNITS2_XML_PATH='/opt/local/share/udunits/udunits2.xml'
 @end example

@@ -6730,7 +6730,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
 
             } /* b) case of dimension only (there is no coordinate variable for this dimension */
             
-            (*lmt_rec)[rec_nbr]->lmt_cln=cln_nil; 
+            (*lmt_rec)[rec_nbr]->cln_typ=cln_nil; 
             (*lmt_rec)[rec_nbr]->origin=0.0;
             (*lmt_rec)[rec_nbr]->rbs_sng=NULL;
 
@@ -6742,7 +6742,7 @@ nco_bld_rec_dmn                       /* [fnc] Build record dimensions array */
               char *cln_att_sng=NULL;     
               (*lmt_rec)[rec_nbr]->rbs_sng=nco_lmt_get_udu_att(grp_id,var_id,"units"); 
               cln_att_sng=nco_lmt_get_udu_att(grp_id,var_id,"calendar"); 
-              (*lmt_rec)[rec_nbr]->lmt_cln=nco_cln_get_cln_typ(cln_att_sng); 
+              (*lmt_rec)[rec_nbr]->cln_typ=nco_cln_get_cln_typ(cln_att_sng); 
               if(cln_att_sng) cln_att_sng=(char*)nco_free(cln_att_sng);  
             } /* endif */
 

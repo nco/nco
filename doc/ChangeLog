@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
 	git tag -a 4.9.7-alpha02 -m 'andes; S1D infrastructure';git push --tags
 
+	* Rename lmt_cln to cln_typ
+
 	* Tidy calendar routines while looking for HFC calendar bug
 
 	* Define OPENMP_TARGET and OPENMP_HOST tokens
