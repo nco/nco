@@ -1,5 +1,11 @@
 2020-12-10  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.7-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
+	git tag -a 4.9.7-alpha02 -m 'andes; S1D infrastructure';git push --tags
+
+	* Tidy calendar routines while looking for HFC calendar bug
+
 	* Define OPENMP_TARGET and OPENMP_HOST tokens
 
 2020-12-09  Charlie Zender  <zender@uci.edu>
@@ -7,10 +13,6 @@
 	* S1D stubs determine file, IDs, and shape of input/output horizontal grid
 
 2020-12-08  Charlie Zender  <zender@uci.edu>
-
-	* NCO 4.9.7-alpha02 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
-	git tag -a 4.9.7-alpha02 -m 'andes; ';git push --tags
 
 	* Add Andes configuration to ncremap ncclimo, build on andes.olcf.ornl.gov
 

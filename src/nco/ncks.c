@@ -831,10 +831,10 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"tst_udunits")){ 
 	/* Use this feature with, e.g.,
 	   ncks --tst_udunits='5 meters',centimeters ~/nco/data/in.nc
-	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',standard ~/nco/data/in.nc
-	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',360_day ~/nco/data/in.nc
-	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',365_day ~/nco/data/in.nc
-	   ncks --tst_udunits='days since 1918-11-11','days since 1939-09-09',366_day ~/nco/data/in.nc */
+	   ncks --tst_udunits='0 days since 1918-11-11','days since 1939-09-09',standard ~/nco/data/in.nc
+	   ncks --tst_udunits='0 days since 1918-11-11','days since 1939-09-09',360_day ~/nco/data/in.nc
+	   ncks --tst_udunits='0 days since 1918-11-11','days since 1939-09-09',365_day ~/nco/data/in.nc
+	   ncks --tst_udunits='0 days since 1918-11-11','days since 1939-09-09',366_day ~/nco/data/in.nc */
         char *cp;
         char **args;
         double crr_val;
@@ -845,7 +845,7 @@ main(int argc,char **argv)
         cp=strdup(optarg); 
         args=nco_lst_prs_1D(cp,",",&lmt_nbr);         
         nco_cln_clc_dbl_org(args[0],args[1],(lmt_nbr > 2 ? nco_cln_get_cln_typ(args[2]) : cln_nil),&crr_val);        
-        (void)fprintf(stdout,"Units in=%s, units out=%s, difference (date) or conversion (non-date) = %f\n",args[0],args[1],crr_val);
+        (void)fprintf(stdout,"Value+Units in=%s, units out=%s, time-difference (for dates) or value-conversion (for non-dates) = %f\n",args[0],args[1],crr_val);
         if(cp) cp=(char *)nco_free(cp);
         nco_exit(EXIT_SUCCESS);
       } /* endif "tst_udunits" */

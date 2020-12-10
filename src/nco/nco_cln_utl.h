@@ -203,7 +203,7 @@ extern "C" {
   nco_cln_clc_tm /* [fnc] Difference between two time coordinate units */
   (const char *fl_unt_sng, /* I [ptr] user units attribute string */
    const char *fl_bs_sng,  /* I [ptr] units attribute string from disk  */     
-   nco_cln_typ lmt_cln,  /* [enm] Calendar type of coordinate var */ 
+   nco_cln_typ lmt_cln,  /* I [enm] Calendar type of coordinate var */ 
    double *rgn_val, /* I/O [ptr] time diff in units based on fl_bs_sng */ 
    var_sct *var);   /* I/O [ptr]  */ 
 
