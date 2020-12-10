@@ -1,3 +1,7 @@
+2020-12-09  Charlie Zender  <zender@uci.edu>
+
+	* S1D stubs determine file, IDs, and shape of input/output horizontal grid
+
 2020-12-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.7-alpha02 release procedure:

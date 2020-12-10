@@ -35,7 +35,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
   /* Usage:
      ncks -O -C --s1d -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc
-     ncks -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_rst.nc ~/data/bm/elm_mali_ig_hst.nc ~/foo.nc */
+     ncks -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_ig_hst.nc ~/data/bm/elm_mali_rst.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
 
@@ -59,40 +59,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int tpl_id; /* [id] Input netCDF file ID (for horizontal grid template) */
 
   int dmn_idx; /* [idx] Dimension index */
-
-  int cols1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of column */
-  int cols1d_ixy_id=NC_MIN_INT; /* [id] Column 2D longitude index */
-  int cols1d_jxy_id=NC_MIN_INT; /* [id] Column 2D latitude index */
-  int cols1d_lat_id=NC_MIN_INT; /* [id] Column latitude */
-  int cols1d_lon_id=NC_MIN_INT; /* [id] Column longitude */
-
-  int grid1d_ixy_id=NC_MIN_INT; /* [id] Gridcell 2D longitude index */
-  int grid1d_jxy_id=NC_MIN_INT; /* [id] Gridcell 2D latitude index */
-  int grid1d_lat_id=NC_MIN_INT; /* [id] Gridcell latitude */
-  int grid1d_lon_id=NC_MIN_INT; /* [id] Gridcell longitude */
-
-  int land1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of landunit */
-  int land1d_ixy_id=NC_MIN_INT; /* [id] Landunit 2D longitude index */
-  int land1d_jxy_id=NC_MIN_INT; /* [id] Landunit 2D latitude index */
-  int land1d_lat_id=NC_MIN_INT; /* [id] Landunit latitude */
-  int land1d_lon_id=NC_MIN_INT; /* [id] Landunit longitude */
-
-  int pfts1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of PFT */
-  int pfts1d_column_index_id=NC_MIN_INT; /* [id] Column index of PFT */
-  int pfts1d_ixy_id=NC_MIN_INT; /* [id] PFT 2D longitude index */
-  int pfts1d_jxy_id=NC_MIN_INT; /* [id] PFT 2D latitude index */
-  int pfts1d_lat_id=NC_MIN_INT; /* [id] PFT latitude */
-  int pfts1d_lon_id=NC_MIN_INT; /* [id] PFT longitude */
-  
-  int dmn_id_gridcell=NC_MIN_INT; /* [id] Dimension ID */
-  int dmn_id_landunit=NC_MIN_INT; /* [id] Dimension ID */
-  int dmn_id_column=NC_MIN_INT; /* [id] Dimension ID */
-  int dmn_id_pft=NC_MIN_INT; /* [id] Dimension ID */
-
-  nco_bool flg_s1d_col=False; /* [flg] Dataset contains sparse variables for columns */
-  nco_bool flg_s1d_grd=False; /* [flg] Dataset contains sparse variables for gridcells */
-  nco_bool flg_s1d_lnd=False; /* [flg] Dataset contains sparse variables for landunits */
-  nco_bool flg_s1d_pft=False; /* [flg] Dataset contains sparse variables for PFTs */
 
   /* Initialize local copies of command-line values */
   dfl_lvl=rgr->dfl_lvl;
@@ -160,16 +126,16 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
     /* Repeat above logic to find grid...
        Does template file have unstructured grid? */
-    if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
-    else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
+    if(col_nm_in && (rcd=nco_inq_dimid_flg(tpl_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
+    else if((rcd=nco_inq_dimid_flg(tpl_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
     if(dmn_id_col != NC_MIN_INT) flg_grd_1D=True;
 
     /* Does template file have RLL grid? */
     if(!flg_grd_1D){
-      if(lat_nm_in && (rcd=nco_inq_dimid_flg(in_id,lat_nm_in,&dmn_id_lat)) == NC_NOERR) /* do nothing */; 
-      else if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("lndgrid"); /* CF */
-      if(lon_nm_in && (rcd=nco_inq_dimid_flg(in_id,lon_nm_in,&dmn_id_lon)) == NC_NOERR) /* do nothing */; 
-      else if((rcd=nco_inq_dimid_flg(in_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("lndgrid"); /* CF */
+      if(lat_nm_in && (rcd=nco_inq_dimid_flg(tpl_id,lat_nm_in,&dmn_id_lat)) == NC_NOERR) /* do nothing */; 
+      else if((rcd=nco_inq_dimid_flg(tpl_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("lndgrid"); /* CF */
+      if(lon_nm_in && (rcd=nco_inq_dimid_flg(tpl_id,lon_nm_in,&dmn_id_lon)) == NC_NOERR) /* do nothing */; 
+      else if((rcd=nco_inq_dimid_flg(tpl_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("lndgrid"); /* CF */
     } /* !dmn_id_col */
     if(dmn_id_lat != NC_MIN_INT && dmn_id_lon != NC_MIN_INT) flg_grd_rct=True;
 
@@ -185,6 +151,40 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     /* Remove local copy of file */
     if(FL_RTR_RMT_LCN && RM_RMT_FL_PST_PRC) (void)nco_fl_rm(fl_tpl);
   } /* !flg_grd_tpl */
+
+  int cols1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of column */
+  int cols1d_ixy_id=NC_MIN_INT; /* [id] Column 2D longitude index */
+  int cols1d_jxy_id=NC_MIN_INT; /* [id] Column 2D latitude index */
+  int cols1d_lat_id=NC_MIN_INT; /* [id] Column latitude */
+  int cols1d_lon_id=NC_MIN_INT; /* [id] Column longitude */
+
+  int grid1d_ixy_id=NC_MIN_INT; /* [id] Gridcell 2D longitude index */
+  int grid1d_jxy_id=NC_MIN_INT; /* [id] Gridcell 2D latitude index */
+  int grid1d_lat_id=NC_MIN_INT; /* [id] Gridcell latitude */
+  int grid1d_lon_id=NC_MIN_INT; /* [id] Gridcell longitude */
+
+  int land1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of landunit */
+  int land1d_ixy_id=NC_MIN_INT; /* [id] Landunit 2D longitude index */
+  int land1d_jxy_id=NC_MIN_INT; /* [id] Landunit 2D latitude index */
+  int land1d_lat_id=NC_MIN_INT; /* [id] Landunit latitude */
+  int land1d_lon_id=NC_MIN_INT; /* [id] Landunit longitude */
+
+  int pfts1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of PFT */
+  int pfts1d_column_index_id=NC_MIN_INT; /* [id] Column index of PFT */
+  int pfts1d_ixy_id=NC_MIN_INT; /* [id] PFT 2D longitude index */
+  int pfts1d_jxy_id=NC_MIN_INT; /* [id] PFT 2D latitude index */
+  int pfts1d_lat_id=NC_MIN_INT; /* [id] PFT latitude */
+  int pfts1d_lon_id=NC_MIN_INT; /* [id] PFT longitude */
+  
+  int dmn_id_gridcell=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_landunit=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_column=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_pft=NC_MIN_INT; /* [id] Dimension ID */
+
+  nco_bool flg_s1d_col=False; /* [flg] Dataset contains sparse variables for columns */
+  nco_bool flg_s1d_grd=False; /* [flg] Dataset contains sparse variables for gridcells */
+  nco_bool flg_s1d_lnd=False; /* [flg] Dataset contains sparse variables for landunits */
+  nco_bool flg_s1d_pft=False; /* [flg] Dataset contains sparse variables for PFTs */
 
   rcd=nco_inq_varid_flg(in_id,"cols1d_gridcell_index",&cols1d_gridcell_index_id);
   if(cols1d_gridcell_index_id != NC_MIN_INT) flg_s1d_col=True;
