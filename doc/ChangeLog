@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
 	git tag -a 4.9.7-alpha02 -m 'andes; S1D infrastructure';git push --tags
 
+	* Detect version of Nvidia nvc compiler
+
+	* Built on Cori with Nvidia HPC compilers version 11.1
+
 	* Rename lmt_cln to cln_typ
 
 	* Tidy calendar routines while looking for HFC calendar bug
