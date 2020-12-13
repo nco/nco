@@ -35,7 +35,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
   /* Usage:
      ncks -O -C --s1d -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc
-     ncks -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_ig_hst.nc ~/data/bm/elm_mali_rst.nc ~/foo.nc */
+     ncks -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_ig_hst.nc ${DATA}/bm/elm_mali_rst.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
 
@@ -44,10 +44,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   char *fl_out;
 
   char dmn_nm[NC_MAX_NAME]; /* [sng] Dimension name */
-  char gridcell_nm[]="gridcell";
-  char landunit_nm[]="landunit";
-  char column_nm[]="column";
-  char pft_nm[]="pft";
+  char *grd_nm_in=(char *)strdup("gridcell");
+  char *lnd_nm_in=(char *)strdup("landunit");
+  char *clm_nm_in=(char *)strdup("column");
+  char *pft_nm_in=(char *)strdup("pft");
 
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
@@ -71,28 +71,35 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   char *col_nm_in=rgr->col_nm_in; /* [sng] Name to recognize as input horizontal spatial dimension on unstructured grid */
   char *lat_nm_in=rgr->lat_nm_in; /* [sng] Name of input dimension to recognize as latitude */
   char *lon_nm_in=rgr->lon_nm_in; /* [sng] Name of input dimension to recognize as longitude */
-  int dmn_id_col=NC_MIN_INT; /* [id] Dimension ID */
-  int dmn_id_lat=NC_MIN_INT; /* [id] Dimension ID */
-  int dmn_id_lon=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_col_in=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_lat_in=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_lon_in=NC_MIN_INT; /* [id] Dimension ID */
 
   nco_bool flg_grd_1D=False; /* [flg] Unpacked data are on unstructured (1D) grid */
   nco_bool flg_grd_rct=False; /* [flg] Unpacked data are on rectangular (2D) grid */
   nco_bool flg_grd_dat=False; /* [flg] Use horizontal grid from required input data file */
   nco_bool flg_grd_tpl=False; /* [flg] Use horizontal grid from optional horizontal grid template file */
 
-  /* Does data file have unstructured grid? */
-  if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
-  else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
-  if(dmn_id_col != NC_MIN_INT) flg_grd_1D=True;
+  /* Does data file have unstructured grid? 
+     MB: Routine must handle two semantically distinct meanings of "column":
+     1. The horizontal dimension in an unstructured grid
+     2. A fraction of a landunit, which is a fraction of a CTSM/ELM gridcell
+        In particular, a column is a fraction of a vegetated, urban, glacier, or crop landunit
+     This routine distinguishes these meanings by abbreviating (1) as "col" and (2) as "clm" 
+     This usage maintains the precedent that "col" is the horizontal unstructured dimension in nco_rgr.c
+     It is necessary though unintuitive that "cols1d" variable metadata will use the "clm" abbreviation */
+  if(col_nm_in && (rcd=nco_inq_dimid_flg(in_id,col_nm_in,&dmn_id_col_in)) == NC_NOERR) /* do nothing */; 
+  else if((rcd=nco_inq_dimid_flg(in_id,"lndgrid",&dmn_id_col_in)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
+  if(dmn_id_col_in != NC_MIN_INT) flg_grd_1D=True;
 
   /* Does data file have RLL grid? */
   if(!flg_grd_1D){
-    if(lat_nm_in && (rcd=nco_inq_dimid_flg(in_id,lat_nm_in,&dmn_id_lat)) == NC_NOERR) /* do nothing */; 
-    else if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("lndgrid"); /* CF */
-    if(lon_nm_in && (rcd=nco_inq_dimid_flg(in_id,lon_nm_in,&dmn_id_lon)) == NC_NOERR) /* do nothing */; 
-    else if((rcd=nco_inq_dimid_flg(in_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("lndgrid"); /* CF */
-  } /* !dmn_id_col */
-  if(dmn_id_lat != NC_MIN_INT && dmn_id_lon != NC_MIN_INT) flg_grd_rct=True;
+    if(lat_nm_in && (rcd=nco_inq_dimid_flg(in_id,lat_nm_in,&dmn_id_lat_in)) == NC_NOERR) /* do nothing */; 
+    else if((rcd=nco_inq_dimid_flg(in_id,"latitude",&dmn_id_lat_in)) == NC_NOERR) lat_nm_in=strdup("lndgrid"); /* CF */
+    if(lon_nm_in && (rcd=nco_inq_dimid_flg(in_id,lon_nm_in,&dmn_id_lon_in)) == NC_NOERR) /* do nothing */; 
+    else if((rcd=nco_inq_dimid_flg(in_id,"longitude",&dmn_id_lon_in)) == NC_NOERR) lon_nm_in=strdup("lndgrid"); /* CF */
+  } /* !flg_grd_1D */
+  if(dmn_id_lat_in != NC_MIN_INT && dmn_id_lon_in != NC_MIN_INT) flg_grd_rct=True;
 
   /* Set where to obtain horizontal grid */
   if(flg_grd_1D || flg_grd_rct) flg_grd_dat=True; else flg_grd_tpl=True;
@@ -124,20 +131,20 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(SHARE_OPEN) md_open=md_open|NC_SHARE;
     rcd+=nco_fl_open(fl_tpl,md_open,&bfr_sz_hnt,&tpl_id);
 
-    /* Repeat above logic to find grid...
+    /* Same logic used to search for grid in data file and to search for grid in template file...
        Does template file have unstructured grid? */
-    if(col_nm_in && (rcd=nco_inq_dimid_flg(tpl_id,col_nm_in,&dmn_id_col)) == NC_NOERR) /* do nothing */; 
-    else if((rcd=nco_inq_dimid_flg(tpl_id,"lndgrid",&dmn_id_col)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
-    if(dmn_id_col != NC_MIN_INT) flg_grd_1D=True;
+    if(col_nm_in && (rcd=nco_inq_dimid_flg(tpl_id,col_nm_in,&dmn_id_col_in)) == NC_NOERR) /* do nothing */; 
+    else if((rcd=nco_inq_dimid_flg(tpl_id,"lndgrid",&dmn_id_col_in)) == NC_NOERR) col_nm_in=strdup("lndgrid"); /* CLM */
+    if(dmn_id_col_in != NC_MIN_INT) flg_grd_1D=True;
 
     /* Does template file have RLL grid? */
     if(!flg_grd_1D){
-      if(lat_nm_in && (rcd=nco_inq_dimid_flg(tpl_id,lat_nm_in,&dmn_id_lat)) == NC_NOERR) /* do nothing */; 
-      else if((rcd=nco_inq_dimid_flg(tpl_id,"latitude",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("lndgrid"); /* CF */
-      if(lon_nm_in && (rcd=nco_inq_dimid_flg(tpl_id,lon_nm_in,&dmn_id_lon)) == NC_NOERR) /* do nothing */; 
-      else if((rcd=nco_inq_dimid_flg(tpl_id,"longitude",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("lndgrid"); /* CF */
-    } /* !dmn_id_col */
-    if(dmn_id_lat != NC_MIN_INT && dmn_id_lon != NC_MIN_INT) flg_grd_rct=True;
+      if(lat_nm_in && (rcd=nco_inq_dimid_flg(tpl_id,lat_nm_in,&dmn_id_lat_in)) == NC_NOERR) /* do nothing */; 
+      else if((rcd=nco_inq_dimid_flg(tpl_id,"latitude",&dmn_id_lat_in)) == NC_NOERR) lat_nm_in=strdup("lndgrid"); /* CF */
+      if(lon_nm_in && (rcd=nco_inq_dimid_flg(tpl_id,lon_nm_in,&dmn_id_lon_in)) == NC_NOERR) /* do nothing */; 
+      else if((rcd=nco_inq_dimid_flg(tpl_id,"longitude",&dmn_id_lon_in)) == NC_NOERR) lon_nm_in=strdup("lndgrid"); /* CF */
+    } /* !flg_grd_1D */
+    if(dmn_id_lat_in != NC_MIN_INT && dmn_id_lon_in != NC_MIN_INT) flg_grd_rct=True;
 
     /* Set where to obtain horizontal grid */
     if(!flg_grd_1D && !flg_grd_rct){
@@ -176,30 +183,30 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int pfts1d_lat_id=NC_MIN_INT; /* [id] PFT latitude */
   int pfts1d_lon_id=NC_MIN_INT; /* [id] PFT longitude */
   
-  int dmn_id_gridcell=NC_MIN_INT; /* [id] Dimension ID */
-  int dmn_id_landunit=NC_MIN_INT; /* [id] Dimension ID */
-  int dmn_id_column=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_grd=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_lnd=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_clm=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_pft=NC_MIN_INT; /* [id] Dimension ID */
 
-  nco_bool flg_s1d_col=False; /* [flg] Dataset contains sparse variables for columns */
+  nco_bool flg_s1d_clm=False; /* [flg] Dataset contains sparse variables for columns */
   nco_bool flg_s1d_grd=False; /* [flg] Dataset contains sparse variables for gridcells */
   nco_bool flg_s1d_lnd=False; /* [flg] Dataset contains sparse variables for landunits */
   nco_bool flg_s1d_pft=False; /* [flg] Dataset contains sparse variables for PFTs */
 
   rcd=nco_inq_varid_flg(in_id,"cols1d_gridcell_index",&cols1d_gridcell_index_id);
-  if(cols1d_gridcell_index_id != NC_MIN_INT) flg_s1d_col=True;
-  if(flg_s1d_col){
+  if(cols1d_gridcell_index_id != NC_MIN_INT) flg_s1d_clm=True;
+  if(flg_s1d_clm){
     rcd=nco_inq_varid(in_id,"cols1d_ixy",&cols1d_ixy_id);
     rcd=nco_inq_varid(in_id,"cols1d_jxy",&cols1d_jxy_id);
     rcd=nco_inq_varid(in_id,"cols1d_lat",&cols1d_lat_id);
     rcd=nco_inq_varid(in_id,"cols1d_lon",&cols1d_lon_id);
-  } /* !flg_s1d_col */
+  } /* !flg_s1d_clm */
      
-  rcd=nco_inq_varid_flg(in_id,"grid1d_ixy",&grid1d_ixy_id);
-  if(grid1d_ixy_id != NC_MIN_INT) flg_s1d_grd=True;
+  rcd=nco_inq_varid_flg(in_id,"grid1d_lat",&grid1d_lat_id);
+  if(grid1d_lat_id != NC_MIN_INT) flg_s1d_grd=True;
   if(flg_s1d_grd){
+    rcd=nco_inq_varid(in_id,"grid1d_ixy",&grid1d_ixy_id);
     rcd=nco_inq_varid(in_id,"grid1d_jxy",&grid1d_jxy_id);
-    rcd=nco_inq_varid(in_id,"grid1d_lat",&grid1d_lat_id);
     rcd=nco_inq_varid(in_id,"grid1d_lon",&grid1d_lon_id);
   } /* !flg_s1d_grd */
      
@@ -222,16 +229,78 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_varid(in_id,"pfts1d_lon",&pfts1d_lon_id);
   } /* !flg_s1d_pft */
   
-  assert(flg_s1d_col || flg_s1d_lnd || flg_s1d_pft);
+  assert(flg_s1d_clm || flg_s1d_lnd || flg_s1d_pft);
 
-  if(flg_s1d_col) rcd=nco_inq_dimid(in_id,column_nm,&dmn_id_column);
-  if(flg_s1d_grd) rcd=nco_inq_dimid(in_id,gridcell_nm,&dmn_id_gridcell);
-  if(flg_s1d_lnd) rcd=nco_inq_dimid(in_id,landunit_nm,&dmn_id_landunit);
-  if(flg_s1d_pft) rcd=nco_inq_dimid(in_id,pft_nm,&dmn_id_pft);
+  if(flg_s1d_clm) rcd=nco_inq_dimid(in_id,clm_nm_in,&dmn_id_clm);
+  if(flg_s1d_grd) rcd=nco_inq_dimid(in_id,grd_nm_in,&dmn_id_grd);
+  if(flg_s1d_lnd) rcd=nco_inq_dimid(in_id,lnd_nm_in,&dmn_id_lnd);
+  if(flg_s1d_pft) rcd=nco_inq_dimid(in_id,pft_nm_in,&dmn_id_pft);
 
-  if(flg_s1d_col && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Found all necessary information for unpacking cols1d variables\n",nco_prg_nm_get());
-  if(flg_s1d_lnd && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Found all necessary information for unpacking lnds1d variables\n",nco_prg_nm_get());
-  if(flg_s1d_pft && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO Found all necessary information for unpacking pfts1d variables\n",nco_prg_nm_get());
+  if(nco_dbg_lvl_get() >= nco_dbg_std){
+    (void)fprintf(stderr,"%s: INFO %s necessary information to unpack cols1d variables\n",nco_prg_nm_get(),flg_s1d_clm ? "Found all" : "Could not find");
+    (void)fprintf(stderr,"%s: INFO %s necessary information to unpack lnds1d variables\n",nco_prg_nm_get(),flg_s1d_lnd ? "Found all" : "Could not find");
+    (void)fprintf(stderr,"%s: INFO %s necessary information to unpack pfts1d variables\n",nco_prg_nm_get(),flg_s1d_pft ? "Found all" : "Could not find");
+  } /* !dbg */
+
+  /* Collect other information from data and template files */
+  int dmn_nbr_in; /* [nbr] Number of dimensions in input file */
+  int dmn_nbr_out; /* [nbr] Number of dimensions in output file */
+  int var_nbr; /* [nbr] Number of variables in file */
+  rcd=nco_inq(in_id,&dmn_nbr_in,&var_nbr,(int *)NULL,(int *)NULL);
+
+  const unsigned int trv_nbr=trv_tbl->nbr; /* [idx] Number of traversal table entries */
+  int var_cpy_nbr=0; /* [nbr] Number of copied variables */
+  int var_rgr_nbr=0; /* [nbr] Number of unpacked variables */
+  int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
+  int var_crt_nbr=0; /* [nbr] Number of created variables */
+  long idx; /* [idx] Generic index */
+  unsigned int idx_tbl; /* [idx] Counter for traversal table */
+
+  char *dmn_nm_cp; /* [sng] Dimension name as char * to reduce indirection */
+  nco_bool has_clm; /* [flg] Contains column dimension */
+  nco_bool has_lnd; /* [flg] Contains landunit dimension */
+  nco_bool has_pft; /* [flg] Contains PFT dimension */
+  nco_bool need_clm=False; /* [flg] At least one variable to unpack needs column dimension */
+  nco_bool need_lnd=False; /* [flg] At least one variable to unpack needs landunit dimension */
+  nco_bool need_pft=False; /* [flg] At least one variable to unpack needs PFT dimension */ 
+  trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
+  /* Define unpacking flag for each variable */
+  for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+    trv=trv_tbl->lst[idx_tbl];
+    if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
+      dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
+      has_clm=False;
+      has_lnd=False;
+      has_pft=False;
+      for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	/* Pre-determine flags necessary during next loop */
+	dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
+	if(!has_clm && clm_nm_in) has_clm=!strcmp(dmn_nm_cp,clm_nm_in);
+	if(!has_lnd && lnd_nm_in) has_lnd=!strcmp(dmn_nm_cp,lnd_nm_in);
+	if(!has_pft && pft_nm_in) has_pft=!strcmp(dmn_nm_cp,pft_nm_in);
+      } /* !dmn_idx */
+      /* Unpack variables that contain a sparse-1D dimension */
+      if(has_clm || has_lnd || has_pft){
+	trv_tbl->lst[idx_tbl].flg_rgr=True;
+	var_rgr_nbr++;
+	if(has_clm) need_clm=True;
+	if(has_lnd) need_lnd=True;
+	if(has_pft) need_pft=True;
+      } /* endif */
+      assert(!(has_clm && has_lnd));
+      assert(!(has_clm && has_pft));
+      assert(!(has_lnd && has_pft));
+      /* Copy all variables that are not regridded or omitted */
+      if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;
+    } /* end nco_obj_typ_var */
+  } /* end idx_tbl */
+  if(!var_rgr_nbr) (void)fprintf(stdout,"%s: WARNING %s reports no variables fit unpacking criteria. The sparse data unpacker expects at least one variable to unpack, and variables not unpacked are copied straight to output. HINT: If the name(s) of the input sparse-1D dimensions (e.g., \"column\", \"landunit\", and \"pft\") do not match NCO's preset defaults (case-insensitive unambiguous forms and abbreviations of \"column\", \"landunit\", and/or \"pft\", respectively) then change the dimension names that NCO looks for. Instructions are at http://nco.sf.net/nco.html#sparse. For CTSM/ELM sparse-1D coordinate grids, ensure that the \"column\" and \"landunit\" variable names are known with, e.g., \"ncks --rgr column_nm=clm --rgr landunit_nm=lnd\" or \"ncremap -R '--rgr clm=clm --rgr lnd=lnd'\".\n",nco_prg_nm_get(),fnc_nm);
+  if(nco_dbg_lvl_get() >= nco_dbg_fl){
+    for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
+      trv=trv_tbl->lst[idx_tbl];
+      if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr) (void)fprintf(stderr,"Unpack %s? %s\n",trv.nm,trv.flg_rgr ? "Yes" : "No");
+    } /* end idx_tbl */
+  } /* end dbg */
 
   int dmn_idx_col=int_CEWI; /* [idx] Index of column dimension */
   int dmn_idx_lat=int_CEWI; /* [idx] Index of latitude dimension */
@@ -261,7 +330,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 #ifdef ENABLE_S1D
 
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(has_column,has_pft,var_val_in,var_val_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_column_in,dmn_id_column_out,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tm_in,flg_s1d_col,flg_s1d_pft,grd_nbr,idx_dbg,column_nbr_in,column_nbr_out,pft_nbr_in,pft_nbr_out,out_id,xtr_mth)
+# pragma omp parallel for firstprivate(has_clm,has_lnd,has_pft,var_val_in,var_val_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_col_in,dmn_id_col_out,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tm_in,flg_s1d_clm,flg_s1d_pft,grd_nbr,idx_dbg,col_nbr_in,col_nbr_out,pft_nbr_in,pft_nbr_out,out_id,xtr_mth)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -304,6 +373,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 
   /* Free output data memory */
 #endif /* !ENABLE_S1D */
+
+  //  if(col_nm_in) col_nm_in=(char *)nco_free(col_nm_in);
+  if(clm_nm_in) clm_nm_in=(char *)nco_free(clm_nm_in);
+  if(grd_nm_in) grd_nm_in=(char *)nco_free(grd_nm_in);
+  if(lnd_nm_in) lnd_nm_in=(char *)nco_free(lnd_nm_in);
+  if(pft_nm_in) pft_nm_in=(char *)nco_free(pft_nm_in);
 
   return rcd;
 } /* !nco_s1d_unpack() */

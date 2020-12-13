@@ -1,8 +1,12 @@
-2020-12-10  Charlie Zender  <zender@uci.edu>
+2020-12-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
 	git tag -a 4.9.7-alpha02 -m 'andes; S1D infrastructure';git push --tags
+
+	* Inspect variables for sparse-1D dimensions
+
+2020-12-10  Charlie Zender  <zender@uci.edu>
 
 	* Detect version of Nvidia nvc compiler
 
