@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
 	git tag -a 4.9.7-alpha02 -m 'andes; S1D infrastructure';git push --tags
 
+	* Start to define horizontal grid in output file
+
 	* Inspect variables for sparse-1D dimensions
 
 2020-12-10  Charlie Zender  <zender@uci.edu>
