@@ -864,7 +864,7 @@ var_sct *var) /* I/O [var_sct] var values modified - can be NULL */
   int is_date;
   int rcd;
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,cln_typ);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: %s reports unt_sng=%s, bs_sng=%s, calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,fl_bs_sng,cln_typ);
 
   /* Do nothing if units identical */
   if(!strcasecmp(fl_unt_sng,fl_bs_sng)) return NCO_NOERR;
@@ -923,7 +923,7 @@ double *og_val)         /* O [dbl] output value */
   is_date=nco_cln_chk_tm(fl_bs_sng);
   lcl_unt_sng[0]='\0';
   
-  if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stderr,"%s: INFO %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,cln_typ);
+  if(nco_dbg_lvl_get() >= nco_dbg_vrb) (void)fprintf(stderr,"%s: INFO %s reports unt_sng=%s, bs_sng=%s, calendar=%d\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,cln_typ);
 
   /* Does fl_unt_sng look like a regular timestamp? */ 
   if(is_date && sscanf(val_unt_sng,"%d-%d",&year,&month) == 2){
@@ -949,7 +949,7 @@ double *og_val)         /* O [dbl] output value */
   }else rcd=nco_cln_clc_dbl_dff(lcl_unt_sng,fl_bs_sng,&val_dbl);
 
   /* Copy iff successful */ 
-  if(rcd == NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s reports unt_sng=%s bs_sng=%s calendar=%d og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,cln_typ,val_dbl);  
+  if(rcd == NCO_NOERR) *og_val=val_dbl; else (void)fprintf(stderr,"%s: ERROR %s reports unt_sng=%s, bs_sng=%s, calendar=%d, og_val=%f\n",nco_prg_nm_get(),fnc_nm,val_unt_sng,fl_bs_sng,cln_typ,val_dbl);  
  
   return rcd;        
 } /* !nco_cln_clc_dbl_org() */
@@ -1257,12 +1257,10 @@ nco_cln_var_prs
   const char *fnc_nm="nco_cln_var_prs()";
   empty_sng[0]='\0';
 
-  // if( cln_typ != cln_std )
-  //   return NCO_ERR;
-  if(var->type !=NC_DOUBLE && var->type!=NC_FLOAT)
-    nco_var_cnf_typ(NC_DOUBLE,var);
+  // if(cln_typ != cln_std) return NCO_ERR;
+  if(var->type !=NC_DOUBLE && var->type != NC_FLOAT) nco_var_cnf_typ(NC_DOUBLE,var);
 
-  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: DEBUG %s reports unt_sng=%s bs_sng=%s calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,bs_sng,cln_typ);
+  if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stderr,"%s: DEBUG %s reports unt_sng=%s, bs_sng=%s, calendar=%d\n",nco_prg_nm_get(),fnc_nm,fl_unt_sng,bs_sng,cln_typ);
 
   /* Rebase to seconds since blah-blah */
   if(nco_cln_clc_dbl_var_dff(fl_unt_sng,bs_sng,cln_typ,(double *)NULL,var) != NCO_NOERR) return NCO_ERR;

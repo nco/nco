@@ -1,3 +1,7 @@
+2020-12-15  Charlie Zender  <zender@uci.edu>
+
+	* nco.texi document caseid meaning in high-frequency modes
+
 2020-12-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.7-alpha02 release procedure:

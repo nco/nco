@@ -896,7 +896,7 @@ if [ -n "${dec_md_usr}" ]; then
 	dec_md='scd'
     elif [ "${dec_md_usr}" = 'jfd' ] || [ "${dec_md_usr}" = 'JFD' ] || [ "${dec_md_usr}" = 'sdd' ] || [ "${dec_md_usr}" = 'seasonally_discontiguous_december' ] ; then
 	dec_md='sdd'
-    fi # !clm_md_usr
+    fi # !dec_md_usr
 fi # !dec_md_usr
 if [ -n "${clm_md_usr}" ]; then 
     # Climo mode must be explicitly selected with --clm_md when climo input files are piped or positional

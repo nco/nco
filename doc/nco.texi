@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.7-alpha01
 @set copyright-years 1995--2020
 @set update-year 2020
-@set update-date 10 December 2020
+@set update-date 15 December 2020
 @set update-month December 2020
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -8241,6 +8241,9 @@ The
 UDUnits2} package supports non-ASCII characters and logarithmic units. 
 We are interested in user-feedback on these features.
 
+@html
+<a name="UDUNITS2_XML_PATH"></a> <!-- http://nco.sf.net/nco.html#UDUNITS2_XML_PATH -->
+@end html
 @cindex @code{UDUNITS2_XML_PATH}
 One aspect that deserves mention is that UDUnits, and thus
 @acronym{NCO}, supports run-time definition of the location of the
@@ -18345,7 +18348,7 @@ files for high-frequency climos.
 @example
 @verbatim
 # Generate diurnal climos from high-frequency CMIP6 timeseries
-cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo --clm_md=hfc
+cd ${drc_in};ls ${caseid}*.h4.nc | ncclimo --clm_md=hfc \
   -c ${caseid} --yr_srt=2001 --yr_end=2002 --drc_out=${HOME}
 @end verbatim
 @end example
@@ -18514,8 +18517,8 @@ Modify these via the @option{-m @var{mdl_nm}} and @option{-h
 @var{hst_nm}} switches if needed.   
 For input files named slightly differently than standard
 @acronym{CESM}'ish names, supply the filename (excluding the path
-component) as the @var{caseid} and @command{ncclimo} will attempt
-to parse it by matching it to a database of know regular expressions
+component) as the @var{caseid} and then @command{ncclimo} will attempt
+to parse that by matching to a database of known regular expressions 
 common to model output.
 These are all of the format
 @var{prefix}[.-]@var{YYYY}[-]@var{MM}[-]@var{DD}.@var{suffix}.
@@ -18531,6 +18534,16 @@ automatically abstracted and used to template and generate all the
 filenames based on the specified @var{yr_srt} and @var{yr_end}. 
 Please tell us any dataset filename regular expressions that you would
 like added to @command{ncclimo}'s internal database.
+
+The @samp{--caseid=@var{caseid}} option is not mandatory in
+the High-Frequency-Splitter (@var{clm_md}=@code{hfs}) and
+High-Frequency-Climatology (@var{clm_md}=@code{hfc}) modes.
+Those modes expect all input filenames to be entered from the
+command-line so there is no internal need to create filenames
+from the @var{caseid} variable.
+Instead, when @var{caseid} is specified in a high-freqency mode,
+its value is used to name the output files in a similar manner
+to the @samp{-f @var{fml_nm}} option.
 
 @cindex @code{-D @var{dbg_lvl}}
 @cindex @var{dbg_lvl}

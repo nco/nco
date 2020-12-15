@@ -331,6 +331,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int dmn_id_col_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_lat_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_lon_out=NC_MIN_INT; /* [id] Dimension ID */
+  int col_out_id; /* [id] Variable ID for column */
+  int lon_out_id; /* [id] Variable ID for longitude */
+  int lat_out_id; /* [id] Variable ID for latitude */
 
   if(rgr->col_nm_out) col_nm_out=rgr->col_nm_out; else col_nm_out=col_nm_in;
   if(rgr->lat_dmn_nm) lat_dmn_nm_out=rgr->lat_dmn_nm; else lat_dmn_nm_out=lat_nm_in;
@@ -374,16 +377,25 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   dfl_lvl=rgr->dfl_lvl;
   fl_out_fmt=rgr->fl_out_fmt;
 
-#if 0  
+  const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables (scalars) */
+  const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
+  const nc_type crd_typ_out=NC_DOUBLE;
+  nc_type var_typ_rgr; /* [enm] Variable type used during regridding */
+  var_typ_rgr=NC_DOUBLE; /* NB: Perform interpolation in double precision */
+
   if(flg_grd_1D){
-    rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&lat_out_id);
-    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_out_id,shuffle,deflate,dfl_lvl);
-    var_crt_nbr++;
-    rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col,&lon_out_id);
-    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_out_id,shuffle,deflate,dfl_lvl);
+    rcd+=nco_def_var(out_id,col_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col_out,&col_out_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,col_out_id,shuffle,deflate,dfl_lvl);
     var_crt_nbr++;
   } /* !flg_grd_1D */
-#endif /* !0 */
+  if(flg_grd_rct){
+    rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat_out,&lat_out_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_out_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
+    rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon_out,&lon_out_id);
+    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_out_id,shuffle,deflate,dfl_lvl);
+    var_crt_nbr++;
+  } /* !flg_grd_rct */
   
   /* Free pre-allocated array space */
   if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
