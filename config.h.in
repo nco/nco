@@ -6,6 +6,9 @@
 /* Compatibility pvmgetarch token for UNICOS on DEC Alpha */
 #undef CRAY
 
+/* Compile operators with CCR support */
+#undef ENABLE_CCR
+
 /* Compile operators with DAP support from libnetcdf */
 #undef ENABLE_DAP
 
@@ -78,6 +81,9 @@
 
 /* Define to 1 if you have the `canonicalize_file_name' function. */
 #undef HAVE_CANONICALIZE_FILE_NAME
+
+/* Define to 1 if <ccr.h> is present */
+#undef HAVE_CCR_H
 
 /* Define to 1 if compiler finds external `ceilf' function */
 #undef HAVE_CEILF

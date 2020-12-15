@@ -1,12 +1,14 @@
 2020-12-15  Charlie Zender  <zender@uci.edu>
 
-	* nco.texi document caseid meaning in high-frequency modes
-
-2020-12-13  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.9.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
 	git tag -a 4.9.7-alpha02 -m 'andes; S1D infrastructure';git push --tags
+
+	* autoconf support for CCR detection/linking
+
+	* nco.texi document caseid meaning in high-frequency modes
+
+2020-12-13  Charlie Zender  <zender@uci.edu>
 
 	* Start to define horizontal grid in output file
 

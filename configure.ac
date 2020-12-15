@@ -642,6 +642,51 @@ AM_CONDITIONAL(ENABLE_GSL,[test "${enable_gsl}" = 'yes'])
 # AM_CONDITIONAL(TEST_GSL,[test "${enable_gsl}" = 'yes'])
 # End GSL
 
+echo "########################################"
+echo "#     Testing for CCR support          #"
+echo "########################################"
+# Begin CCR
+# If the env. variable HDF5_PLUGIN_PATH is set, or if
+# --with-hdf5-plugin-dir=<directory>, use it as the plugin
+# directory. This is necessary at the top level to provide the help
+# message and --with option. If used, the option will be passed to the
+# subdirs, and also handled by the configure in each filter
+# subdirectory.
+AC_MSG_CHECKING([where to put HDF5 plugins])
+AC_ARG_WITH([hdf5-plugin-path],
+            [AS_HELP_STRING([--with-hdf5-plugin-path=<directory>],
+                            [specify HDF5 plugin path (defaults to /usr/local/hdf5/lib/plugin, or value of HDF5_PLUGIN_PATH, if set)])],
+            [HDF5_PLUGIN_PATH=$with_hdf5_plugin_path])
+HDF5_PLUGIN_PATH=${HDF5_PLUGIN_PATH-.}
+AC_MSG_RESULT($HDF5_PLUGIN_PATH)
+
+AC_MSG_CHECKING([whether Community Codec Repository library should be used])
+AC_ARG_ENABLE([ccr],AS_HELP_STRING([--enable-ccr],[Build-in CCR support if possible [default=no]]),enable_ccr=${enableval},enable_ccr=no)
+test "x$enable_ccr" = xyes || enable_ccr=no
+AC_MSG_RESULT([$enable_ccr])
+
+# Check for CCR library
+if test "x$enable_ccr" = xyes; then
+    CPPFLAGS_backup="${CPPFLAGS}"
+    LIBS_backup="${LIBS}"
+    LDFLAGS_backup="${LDFLAGS}"
+    LDFLAGS="-L${HDF5_PLUGIN_PATH} ${LDFLAGS}"
+    AC_CHECK_HEADER([ccr.h],AC_DEFINE([HAVE_CCR_H],1,[Define to 1 if <ccr.h> is present]),nco_have_ccr=no)
+    AC_SEARCH_LIBS([nc_def_var_bitgroom], [ccr], [enable_ccr=yes], [AC_MSG_NOTICE([Cannot find or link to the CCR library, set CPPFLAGS/LDFLAGS])])
+    test "x$enable_ccr" = xyes || enable_ccr=no
+    if test "x$enable_ccr" = xno; then
+	AC_MSG_WARN([CCR support disabled (missing/unusable library or header file)])
+	CPPFLAGS="${CPPFLAGS_backup}"
+	LIBS="${LIBS_backup}"  
+	LDFLAGS="${LDFLAGS_backup}"  
+    fi
+    if test "x$enable_ccr" = xyes; then
+	AC_DEFINE(ENABLE_CCR,1,Compile operators with CCR support)
+    fi
+fi
+AM_CONDITIONAL(ENABLE_CCR, [test "x$enable_ccr" = xyes])
+# End CCR
+
 # Begin rx
 # Check to enable regular expression stuff, allow user to override
 AC_ARG_ENABLE(regex,AS_HELP_STRING([--enable-regex],[Allow extended regular expressions [default=yes]]),nco_have_regex=${enableval},nco_have_regex=yes)
@@ -742,11 +787,10 @@ if test "${enable_udunits2}" != 'no'; then
 		nco_udunits2_xml="$udunits2_data_file"
 	    fi
 	done
-
     fi # end NO UDUNITS2_PATH section
 
 # Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
-    AC_CHECK_FILE([$nco_udunits2_xml],,AC_WARN([file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support.]))
+    AC_CHECK_FILE([$nco_udunits2_xml],,AC_WARN([file UDUNITS2 XML database file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support.]))
 	# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
     AC_DEFINE_UNQUOTED([UDUNITS2_PATH],["$nco_udunits2_xml"],[Location of UDUnits2 data file])
 
@@ -1241,8 +1285,6 @@ LFLAGS="-P${NCO_YY_PFX}"
 AC_SUBST(LEX_OUTPUT_ROOT)
 AC_SUBST(LFLAGS)
 
-
-
 # Every autoconf script finishes by calling AC_OUTPUT to generate and run config.status
 AC_OUTPUT
 
@@ -1256,6 +1298,7 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
+echo "ENABLE_CCR........... ${enable_ccr}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
@@ -1266,6 +1309,7 @@ echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HAVE_ANTLR........... ${HAVE_ANTLR}"  
 echo "HAVE_MAKEINFO........ ${HAVE_MAKEINFO}"  
 echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
+echo "HDF5_PLUGIN_PATH..... ${HDF5_PLUGIN_PATH}"  
 echo "HOST................. ${HOST}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"

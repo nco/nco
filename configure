@@ -644,6 +644,8 @@ NCOXX
 NCO_CXX
 PATH_TO_NCGEN
 UDUNITS2_PATH
+ENABLE_CCR_FALSE
+ENABLE_CCR_TRUE
 ENABLE_GSL_FALSE
 ENABLE_GSL_TRUE
 I18N_SHARE
@@ -815,6 +817,8 @@ enable_fortran
 enable_i18n
 enable_nco_cplusplus
 enable_gsl
+with_hdf5_plugin_path
+enable_ccr
 enable_regex
 enable_udunits
 enable_udunits2
@@ -1497,6 +1501,7 @@ Optional Features:
                           Experimental, for future use) [default=no]
   --enable-nco_cplusplus  Build NCO C++ interface library [default=yes]
   --enable-gsl            Build-in GSL support if possible [default=yes]
+  --enable-ccr            Build-in CCR support if possible [default=no]
   --enable-regex          Allow extended regular expressions [default=yes]
   --enable-udunits        Build-in UDUnits support if possible [default=no]
   --enable-udunits2       Build-in UDUnits2 support if possible [default=yes]
@@ -1526,6 +1531,10 @@ Optional Packages:
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
   --with-sysroot=DIR Search for dependent libraries within DIR
                         (or the compiler's sysroot if not specified).
+  --with-hdf5-plugin-path=<directory>
+                          specify HDF5 plugin path (defaults to
+                          /usr/local/hdf5/lib/plugin, or value of
+                          HDF5_PLUGIN_PATH, if set)
 
 Some influential environment variables:
   CC          C compiler command
@@ -3427,12 +3436,7 @@ program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 if test x"${MISSING+set}" != xset; then
-  case $am_aux_dir in
-  *\ * | *\	*)
-    MISSING="\${SHELL} \"$am_aux_dir/missing\"" ;;
-  *)
-    MISSING="\${SHELL} $am_aux_dir/missing" ;;
-  esac
+  MISSING="\${SHELL} '$am_aux_dir/missing'"
 fi
 # Use eval to expand $SHELL
 if eval "$MISSING --is-lightweight"; then
@@ -19568,6 +19572,140 @@ fi
 # AM_CONDITIONAL(TEST_GSL,[test "${enable_gsl}" = 'yes'])
 # End GSL
 
+echo "########################################"
+echo "#     Testing for CCR support          #"
+echo "########################################"
+# Begin CCR
+# If the env. variable HDF5_PLUGIN_PATH is set, or if
+# --with-hdf5-plugin-dir=<directory>, use it as the plugin
+# directory. This is necessary at the top level to provide the help
+# message and --with option. If used, the option will be passed to the
+# subdirs, and also handled by the configure in each filter
+# subdirectory.
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking where to put HDF5 plugins" >&5
+$as_echo_n "checking where to put HDF5 plugins... " >&6; }
+
+# Check whether --with-hdf5-plugin-path was given.
+if test "${with_hdf5_plugin_path+set}" = set; then :
+  withval=$with_hdf5_plugin_path; HDF5_PLUGIN_PATH=$with_hdf5_plugin_path
+fi
+
+HDF5_PLUGIN_PATH=${HDF5_PLUGIN_PATH-.}
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $HDF5_PLUGIN_PATH" >&5
+$as_echo "$HDF5_PLUGIN_PATH" >&6; }
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether Community Codec Repository library should be used" >&5
+$as_echo_n "checking whether Community Codec Repository library should be used... " >&6; }
+# Check whether --enable-ccr was given.
+if test "${enable_ccr+set}" = set; then :
+  enableval=$enable_ccr; enable_ccr=${enableval}
+else
+  enable_ccr=no
+fi
+
+test "x$enable_ccr" = xyes || enable_ccr=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_ccr" >&5
+$as_echo "$enable_ccr" >&6; }
+
+# Check for CCR library
+if test "x$enable_ccr" = xyes; then
+    CPPFLAGS_backup="${CPPFLAGS}"
+    LIBS_backup="${LIBS}"
+    LDFLAGS_backup="${LDFLAGS}"
+    LDFLAGS="-L${HDF5_PLUGIN_PATH} ${LDFLAGS}"
+    ac_fn_c_check_header_mongrel "$LINENO" "ccr.h" "ac_cv_header_ccr_h" "$ac_includes_default"
+if test "x$ac_cv_header_ccr_h" = xyes; then :
+
+$as_echo "#define HAVE_CCR_H 1" >>confdefs.h
+
+else
+  nco_have_ccr=no
+fi
+
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing nc_def_var_bitgroom" >&5
+$as_echo_n "checking for library containing nc_def_var_bitgroom... " >&6; }
+if ${ac_cv_search_nc_def_var_bitgroom+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char nc_def_var_bitgroom ();
+int
+main ()
+{
+return nc_def_var_bitgroom ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ccr; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_nc_def_var_bitgroom=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_nc_def_var_bitgroom+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_nc_def_var_bitgroom+:} false; then :
+
+else
+  ac_cv_search_nc_def_var_bitgroom=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_nc_def_var_bitgroom" >&5
+$as_echo "$ac_cv_search_nc_def_var_bitgroom" >&6; }
+ac_res=$ac_cv_search_nc_def_var_bitgroom
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  enable_ccr=yes
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: Cannot find or link to the CCR library, set CPPFLAGS/LDFLAGS" >&5
+$as_echo "$as_me: Cannot find or link to the CCR library, set CPPFLAGS/LDFLAGS" >&6;}
+fi
+
+    test "x$enable_ccr" = xyes || enable_ccr=no
+    if test "x$enable_ccr" = xno; then
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: CCR support disabled (missing/unusable library or header file)" >&5
+$as_echo "$as_me: WARNING: CCR support disabled (missing/unusable library or header file)" >&2;}
+	CPPFLAGS="${CPPFLAGS_backup}"
+	LIBS="${LIBS_backup}"
+	LDFLAGS="${LDFLAGS_backup}"
+    fi
+    if test "x$enable_ccr" = xyes; then
+
+$as_echo "#define ENABLE_CCR 1" >>confdefs.h
+
+    fi
+fi
+ if test "x$enable_ccr" = xyes; then
+  ENABLE_CCR_TRUE=
+  ENABLE_CCR_FALSE='#'
+else
+  ENABLE_CCR_TRUE='#'
+  ENABLE_CCR_FALSE=
+fi
+
+# End CCR
+
 # Begin rx
 # Check to enable regular expression stuff, allow user to override
 # Check whether --enable-regex was given.
@@ -19900,7 +20038,6 @@ fi
 		nco_udunits2_xml="$udunits2_data_file"
 	    fi
 	done
-
     fi # end NO UDUNITS2_PATH section
 
 # Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
@@ -19924,8 +20061,8 @@ $as_echo "$ac_res" >&6; }
 if eval test \"x\$"$as_ac_File"\" = x"yes"; then :
 
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support." >&5
-$as_echo "$as_me: WARNING: file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support." >&2;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: file UDUNITS2 XML database file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support." >&5
+$as_echo "$as_me: WARNING: file UDUNITS2 XML database file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support." >&2;}
 fi
 
 	# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
@@ -20715,8 +20852,6 @@ LFLAGS="-P${NCO_YY_PFX}"
 
 
 
-
-
 # Every autoconf script finishes by calling AC_OUTPUT to generate and run config.status
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -20868,6 +21003,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_GSL_TRUE}" && test -z "${ENABLE_GSL_FALSE}"; then
   as_fn_error $? "conditional \"ENABLE_GSL\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${ENABLE_CCR_TRUE}" && test -z "${ENABLE_CCR_FALSE}"; then
+  as_fn_error $? "conditional \"ENABLE_CCR\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -23385,6 +23524,7 @@ echo "CPP.................. ${CPP}"
 echo "CPPFLAGS............. ${CPPFLAGS}"
 echo "CXX.................. ${CXX}"
 echo "CXXFLAGS............. ${CXXFLAGS}"
+echo "ENABLE_CCR........... ${enable_ccr}"
 echo "ENABLE_DAP........... ${enable_dap}"
 echo "ENABLE_GSL........... ${enable_gsl}"
 echo "ENABLE_NETCDF4....... ${enable_netcdf4}"
@@ -23395,6 +23535,7 @@ echo "GSL_ROOT............. ${GSL_ROOT}"
 echo "HAVE_ANTLR........... ${HAVE_ANTLR}"
 echo "HAVE_MAKEINFO........ ${HAVE_MAKEINFO}"
 echo "HAVE_NETCDF4_H....... ${header_defines_nc_chunked}"
+echo "HDF5_PLUGIN_PATH..... ${HDF5_PLUGIN_PATH}"
 echo "HOST................. ${HOST}"
 echo "HOSTNAME............. ${HOSTNAME}"
 echo "LDFLAGS.............. ${LDFLAGS}"
