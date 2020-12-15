@@ -410,10 +410,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int dmn_idx_lon=int_CEWI; /* [idx] Index of longitude dimension */
   int var_id; /* [id] Current variable ID */
 
-  int dmn_ids[dmn_nbr_max]; /* [id] Dimension IDs array for output variable */
-
-  long dmn_cnt[dmn_nbr_max];
-
   long var_sz; /* [nbr] Size of variable */
 
   nc_type var_typ_in; /* [enm] NetCDF type of input data */

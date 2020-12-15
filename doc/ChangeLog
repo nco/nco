@@ -2,7 +2,7 @@
 
 	* NCO 4.9.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
-	git tag -a 4.9.7-alpha02 -m 'andes; S1D infrastructure';git push --tags
+	git tag -a 4.9.7-alpha02 -m 'andes; S1D infrastructure, CCR detection';git push --tags
 
 	* autoconf support for CCR detection/linking
 
