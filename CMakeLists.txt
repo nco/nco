@@ -149,7 +149,10 @@ endif()
 #check for header file netcdf_mem.h existence
 #/////////////////////////////////////////////////////////////////////////////////////
 
-set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_LIBRARY})
+set(NETCDF_REQUIRED_LIBRARIES ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
+# Replace backslashes with forward slashes because it can cause problems with Windows' paths
+string(REPLACE "\\" "/" NETCDF_REQUIRED_LIBRARIES ${NETCDF_REQUIRED_LIBRARIES})
+set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_REQUIRED_LIBRARIES})
 
 check_library_exists(${NETCDF_LIBRARY} nc_rename_grp "" has_nc_rename_grp)
 if (has_nc_rename_grp)
@@ -236,7 +239,10 @@ endif()
 #which is not a requirement for the library to build successfully
 #//////////////////////////
 
-set(CMAKE_REQUIRED_LIBRARIES ${HDF5_LIBRARY})
+set(HDF5_REQUIRED_LIBRARIES ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
+# Replace backslashes with forward slashes because it can cause	problems with Windows' paths
+string(REPLACE "\\" "/" HDF5_REQUIRED_LIBRARIES ${HDF5_REQUIRED_LIBRARIES})
+set(CMAKE_REQUIRED_LIBRARIES ${HDF5_REQUIRED_LIBRARIES})
 
 message("-- Detecting if HDF5 library ${HDF5_LIBRARY} needs the ZLIB library...")
 check_library_exists(${HDF5_LIBRARY} H5Z_DEFLATE "" NEED_ZLIB)
