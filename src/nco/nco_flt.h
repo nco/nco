@@ -44,6 +44,7 @@ typedef enum nco_flt_typ_enm{ /* [enm] Chunking policy */
   nco_flt_bgr=4, /* 4 [enm] Bit Grooming */
   nco_flt_dgr=5, /* 5 [enm] Digit Rounding */
   nco_flt_btr=6, /* 6 [enm] Bit Rounding */
+  nco_flt_zst=7, /* 7 [enm] Zstandard */
 } nco_flt_typ_enm; /* end nco_flt_typ_enm */
 
 #ifdef __cplusplus
@@ -59,6 +60,10 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 const char * /* O [sng] Filter string */
 nco_flt_sng_get /* [fnc] Convert compression filter enum to string */
 (const nco_flt_typ_enm nco_flt_typ); /* I [enm] Compression filter type */
+
+const int /* O [enm] Filter type */
+nco_flt_get /* [fnc] Convert user-specified filter string to key */
+(const char *nco_flt_sng); /* [sng] User-specified filter string */
 
 #ifdef __cplusplus
 } /* end extern "C" */

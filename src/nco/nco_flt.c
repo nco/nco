@@ -173,9 +173,54 @@ nco_flt_sng_get /* [fnc] Convert compression filter enum to string */
   case nco_flt_bgr: return "Bit Grooming"; break;
   case nco_flt_dgr: return "Digit Rounding"; break;
   case nco_flt_btr: return "Bit Rounding"; break;
+  case nco_flt_zst: return "Zstandard"; break;
   default: nco_dfl_case_generic_err(); break;
   } /* end switch */
 
   return (char *)NULL;
   
 } /* !nco_flt_sng_get() */
+
+const int /* O [enm] Filter type */
+nco_flt_get /* [fnc] Convert user-specified filter string to key */
+(const char *nco_flt_sng) /* [sng] User-specified filter string */
+{
+  /* Purpose: Convert user-specified string to enumerated filter type
+     Return nco_flt_nil by default */
+  const char fnc_nm[]="nco_flt_get()"; /* [sng] Function name */
+  char *nco_prg_nm; /* [sng] Program name */
+  nco_prg_nm=nco_prg_nm_get(); /* [sng] Program name */
+
+  if(nco_flt_sng == NULL){
+    /* 20140815: Change default from g2d to xst */
+    if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit filter string. Defaulting to \"nil\".\n",nco_prg_nm,fnc_nm,nco_prg_nm);
+    return nco_flt_nil;
+  } /* endif */
+
+  if(!strcasecmp(nco_flt_sng,"nil")) return nco_flt_nil;
+  if(!strcasecmp(nco_flt_sng,"none")) return nco_flt_nil;
+  if(!strcasecmp(nco_flt_sng,"default")) return nco_flt_nil;
+  if(!strcasecmp(nco_flt_sng,"deflate")) return nco_flt_dfl;
+  if(!strcasecmp(nco_flt_sng,"dfl")) return nco_flt_dfl;
+  if(!strcasecmp(nco_flt_sng,"zlib")) return nco_flt_dfl;
+  if(!strcasecmp(nco_flt_sng,"bzp")) return nco_flt_bzp;
+  if(!strcasecmp(nco_flt_sng,"bzip")) return nco_flt_bzp;
+  if(!strcasecmp(nco_flt_sng,"bzip2")) return nco_flt_bzp;
+  if(!strcasecmp(nco_flt_sng,"lz4")) return nco_flt_lz4;
+  if(!strcasecmp(nco_flt_sng,"bgr")) return nco_flt_bgr;
+  if(!strcasecmp(nco_flt_sng,"bitgroom")) return nco_flt_bgr;
+  if(!strcasecmp(nco_flt_sng,"Zen16")) return nco_flt_bgr;
+  if(!strcasecmp(nco_flt_sng,"dgr")) return nco_flt_dgr;
+  if(!strcasecmp(nco_flt_sng,"digitround")) return nco_flt_dgr;
+  if(!strcasecmp(nco_flt_sng,"DCG19")) return nco_flt_dgr;
+  if(!strcasecmp(nco_flt_sng,"btr")) return nco_flt_btr;
+  if(!strcasecmp(nco_flt_sng,"bitround")) return nco_flt_btr;
+  if(!strcasecmp(nco_flt_sng,"Kou20")) return nco_flt_btr;
+  if(!strcasecmp(nco_flt_sng,"zst")) return nco_flt_zst;
+  if(!strcasecmp(nco_flt_sng,"zstd")) return nco_flt_zst;
+  if(!strcasecmp(nco_flt_sng,"zstandard")) return nco_flt_zst;
+
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified filter %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_sng);
+  nco_exit(EXIT_FAILURE);
+  return nco_flt_nil; /* Statement should not be reached */
+} /* end nco_flt_get() */

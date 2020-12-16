@@ -1968,7 +1968,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		for fl_crr in ${fl_all} ; do
 		    if [ ! -f "${drc_in}/${fl_crr}" ]; then
 			echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
-			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+			echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 			exit 1
 		    fi # ! -f
 		done # !fl_crr
@@ -2338,7 +2338,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
 	    if [ ! -f "${fl_crr}" ]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${fl_crr}"
-		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) must be in ${drc_in} before ${spt_nm} will proceed"
+		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
 	    fi # ! -f
 	done # !fl_crr
@@ -2629,7 +2629,7 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_md}" = 'ann' ]; then
 	for fl_crr in ${fl_all} ; do
 	    if [ ! -e "${drc_in}/${fl_crr}" ]; then
 		echo "${spt_nm}: ERROR Unable to find required input file ${drc_in}/${fl_crr}"
-		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year) must be in ${drc_in} before ${spt_nm} will proceed"
+		echo "${spt_nm}: HINT All files implied to exist by the climatology bounds (start/end year/month) and by the specified (with -P or -m) or default model type, must be in ${drc_in} before ${spt_nm} will proceed"
 		exit 1
 	    fi # ! -e
 	done # !fl_crr
