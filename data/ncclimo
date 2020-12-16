@@ -454,7 +454,6 @@ par_srl='serial' # [sng] Parallelism: serial
 # Modify these defaults to save typing later
 ann_sfx='01-01-00000' # [sng] Annual file suffix (MPAS, e.g., uses '01-01-00000')
 area_nm='area' # [sng] Name of variable containing gridcell area
-hrz_dmn='ncol' # [sng] Name of horizontal dimension(s) (comma-separated, if 2-D, e.g. 'lat,lon')
 bch_pbs='No' # [sng] PBS batch (non-interactive) job
 bch_slr='No' # [sng] SLURM batch (non-interactive) job
 bnr_flg='No' # [sng] Binary method
@@ -1726,6 +1725,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: glb_avg  = ${glb_avg}\n"
     printf "dbg: hdr_pad  = ${hdr_pad}\n"
     printf "dbg: hrd_pth  = ${hrd_pth}\n"
+    printf "dbg: hrz_dmn  = ${hrz_dmn}\n"
     printf "dbg: hst_nm   = ${hst_nm}\n"
     printf "dbg: inp_aut  = ${inp_aut}\n"
     printf "dbg: inp_glb  = ${inp_glb}\n"
@@ -1741,6 +1741,7 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: ncr_flg  = ${ncr_flg}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
     printf "dbg: nm_typ   = ${nm_typ}\n"
+    printf "dbg: no_ntv   = ${no_ntv_tms}\n"
     printf "dbg: out_nm   = ${out_nm}\n"
     printf "dbg: par_typ  = ${par_typ}\n"
     printf "dbg: ppc_prc  = ${ppc_prc}\n"
@@ -1748,7 +1749,6 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: rgr_map  = ${rgr_map}\n"
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
-    printf "dbg: no_ntv   = ${no_ntv_tms}\n"
     printf "dbg: sbs_flg  = ${sbs_flg}\n"
     printf "dbg: sgs_frc  = ${sgs_frc}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
@@ -2506,15 +2506,33 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 			if [ -z "${par_opt}" ]; then
 			    eval ${cmd_avg[${var_idx}]}
 			    if [ "$?" -ne 0 ]; then
-				printf "${spt_nm}: ERROR spatial average cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
+				printf "${spt_nm}: ERROR global average cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
 				exit 1
 			    fi # !err
 			else # !par_opt
-			    eval ${cmd_avg[${var_idx}]} ${par_opt}
+			    eval ${cmd_avg[${var_idx}]} ${par_opt} # eval always returns 0 on backgrounded processes
 			    avg_pid[${var_idx}]=$!
 			fi # !par_opt
 		    fi # !dbg
 		done # !var_idx
+
+		# Once ${job_nbr} jobs are running, wait() for all to finish before issuing another batch
+		if [ -n "${par_opt}" ]; then
+		    for ((var_idx=var_idx_srt;var_idx<=var_idx_end;var_idx++)); do
+			wait ${avg_pid[${var_idx}]}
+			if [ "$?" -eq 0 ]; then
+			    printf "`date`: Globally averaged ${cmd_avg[${var_idx}]##* }\n"
+			else
+			    printf "${spt_nm}: ERROR Failed to globally average. cmd_avg[${var_idx}] failed. Debug this:\n${cmd_avg[${var_idx}]}\n"
+			    # 20190323: exiting parent here creates orphans, kill live children then exit
+			    for ((kid_idx=var_idx+1;kid_idx<=var_idx_end;kid_idx++)); do
+				kill -9 ${avg_pid[${kid_idx}]}
+			    done # !kid_idx
+			    exit 1
+			fi # !err
+		    done # !var_idx
+		fi # !par_opt
+		
 	    fi # !glb_avg
 	    
 	done # !bch_idx
@@ -3456,7 +3474,7 @@ if [ "${clm_flg}" = 'Yes' ]; then
     fi # !yr_srt_prv
 fi # !clm_flg
 if [ "${sbs_flg}" = 'Yes' ]; then
-    echo "Quick plots of last variable split in last segment:"
+    echo "Quick plots of last timeseries segment of last variable split:"
     let idx_lst=${var_nbr}-1
     if [ -n "${rgr_opt}" ] && [ ${no_ntv_tms} = 'No' ] ; then 
 	echo "ncview ${fl_rgr[${idx_lst}]} &"

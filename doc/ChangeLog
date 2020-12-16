@@ -2,7 +2,9 @@
 
 	* NCO 4.9.7-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha02: Dandasana';git push
-	git tag -a 4.9.7-alpha02 -m 'andes; S1D infrastructure, CCR detection';git push --tags
+	git tag -a 4.9.7-alpha02 -m 'andes, S1D infrastructure, CCR detection; ncclimo --glb_avg wait() fix';git push --tags
+
+	* ncclimo implement wait() section for --glb_avg
 
 	* autoconf support for CCR detection/linking
 
