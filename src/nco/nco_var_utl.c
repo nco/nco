@@ -1245,10 +1245,74 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	  if(dfl_lvl == 0) deflate=(int)False; else deflate=(int)True;
 	  /* Turn-off shuffle when uncompressing otherwise chunking requests may fail */
 	  if(dfl_lvl == 0) shuffle=NC_NOSHUFFLE; 
-          if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
-        } /* endif */
-      } /* endif netCDF4 */
+#if ENABLE_CCR
+	  const nco_flt_typ_enm nco_flt_enm=(nco_flt_typ_enm)nco_flt_glb_get();
+	  /* Build list of filters available through the CCR API */
+	  char ccr_flt_lst[200]; /* [sng] List of available CCR filters */
+	  nco_bool ccr_has_flt=True; /* [flg] CCR has requested filter */
+	  ccr_flt_lst[0]='\0';
+	  strcat(ccr_flt_lst,"DEFLATE");
+#if CCR_HAS_BZIP2
+	  strcat(ccr_flt_lst,", Bzip2");
+#endif /* !CCR_HAS_BZIP2 */
+#if CCR_HAS_LZ4
+	  strcat(ccr_flt_lst,", LZ4");
+#endif /* !CCR_HAS_LZ4 */
+#if CCR_HAS_BITGROOM
+	  strcat(ccr_flt_lst,", BitGroom");
+#endif /* !CCR_HAS_BITGROOM */
+#if CCR_HAS_ZSTD
+	  strcat(ccr_flt_lst,", Zstd");
+#endif /* !CCR_HAS_ZSTD */
+	  switch(nco_flt_enm){
+	  case nco_flt_dfl: /* DEFLATE */
+	    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
+	    break;
+	  case nco_flt_bzp: /* Bzip2 */
+#if CCR_HAS_BZIP2
+	    if(dfl_lvl > 0) (void)nc_def_var_bzip2(out_id,var[idx]->id,dfl_lvl);
+#else /* !CCR_HAS_BZIP2 */
+	    ccr_has_flt=False;
+#endif /* !CCR_HAS_BZIP2 */
+	    break;
+	  case nco_flt_lz4: /* LZ4 */ 
+#if CCR_HAS_LZ4
+	    if(dfl_lvl > 0) (void)nc_def_var_lz4(out_id,var[idx]->id,dfl_lvl);
+#else /* !CCR_HAS_LZ4 */
+	    ccr_has_flt=False;
+#endif /* !CCR_HAS_LZ4 */
+	    break;
+	  case nco_flt_bgr: /* Bit Grooming */
+#if CCR_HAS_BITGROOM
+	    if(dfl_lvl > 0) (void)nc_def_var_bitgroom(out_id,var[idx]->id,dfl_lvl);
+#else /* !CCR_HAS_BITGROOM */
+	    ccr_has_flt=False;
+#endif /* !CCR_HAS_BITGROOM */
+	    break;
+	  case nco_flt_zst: /* Zstandard */
+#if CCR_HAS_ZSTD
+	    if(dfl_lvl > 0) (void)nc_def_var_zstandard(out_id,var[idx]->id,dfl_lvl);
+#else /* !CCR_HAS_ZSTD */
+	    ccr_has_flt=False;
+#endif /* !CCR_HAS_ZSTD */
+	    break;
+	  case nco_flt_dgr: /* Digit Rounding */
+	  case nco_flt_btr: /* Bit Rounding */
+	  case nco_flt_nil: 
+	  default: nco_dfl_case_generic_err(); break;
+	  } /* !nco_flt_enm */
 
+	  if(!ccr_has_flt){
+	    (void)fprintf(stdout,"%s: ERROR %s reports CCR library does not define API for requested filter \"%s\". If this filter name was not a typo, then probably this filter was not built and installed in the CCR when this NCO was built/installed. If the filter is newer, you might try updating the installed CCR then updating the installed NCO. Otherwise, re-try this command and specify an already-installed filter from this list: %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_enm2sng(nco_flt_enm),ccr_flt_lst);
+	    nco_exit(EXIT_FAILURE);
+	  } /* !ccr_has_flt */
+
+#else /* !ENABLE_CCR */
+	  if(dfl_lvl >= 0) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
+#endif /* !ENABLE_CCR */
+        } /* !dmn_nbr */
+      } /* !netCDF4 */
+      
       if(nco_dbg_lvl_get() > 3 && nco_prg_id != ncwa){
         /* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
 	   contains _wrong name_ when variables will be averaged.

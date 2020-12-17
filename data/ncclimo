@@ -41,6 +41,7 @@
 # scp ~/nco/data/ncclimo andes.olcf.ornl.gov:bin_andes
 # scp ~/nco/data/ncclimo blues.lcrc.anl.gov:bin
 # scp ~/nco/data/ncclimo cheyenne.ucar.edu:bin
+# scp ~/nco/data/ncclimo chrysalis.lcrc.anl.gov:bin
 # scp ~/nco/data/ncclimo compy.pnl.gov:bin
 # scp ~/nco/data/ncclimo cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncclimo cori.nersc.gov:bin_cori
@@ -91,7 +92,7 @@ if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	andes* | rhea* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
-	chrysalis* ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named fxm, 64|256 cores|GB/node 
+	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	compy* ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
@@ -129,7 +130,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/e3sm_unified_1.3.1.2/lib'\:${LD_LIBRARY_PATH} ; ;;
-	blues* | blogin* | b[0123456789][0123456789][0123456789] )
+	blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
 	    export PATH='/home/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	*cheyenne* )
@@ -298,13 +299,14 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # PBSPro: qsub -I,   qsub,  qstat,    qdel, mpirun
 # SLURM:   salloc, sbatch, squeue, scancel,   srun
 # Interactive queue: a) Reserve nodes and acquire prompt on control node b) Execute ncclimo command interactively
-#   Andes:  salloc  -A CLI115 --nodes=12 --time=00:30:00 --job-name=ncclimo # Bigmem: --partition=gpu
-#   Blues:  qsub -I -A ACME -q acme -l nodes=12 -l walltime=00:30:00 -N ncclimo
-#   Cheyenne: qsub -I -A SCSG0002 -l select=12:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
-#   Compy:  salloc  -A e3sm --nodes=12 --time=00:30:00 --job-name=ncclimo
-#   Cooley: qsub -I -A OceanClimate_2 --nodecount=12 --time=00:30:00 --jobname=ncclimo
-#   Cori:   salloc  -A e3sm -C knl --nodes=12 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
-#   Oldrhea:qsub -I -A CLI115 -V -l nodes=12 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
+#   Andes:  salloc  -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo # Bigmem: --partition=gpu
+#   Blues:  salloc  -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo
+#   Cheyenne: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo
+#   Chrysalis: salloc  -A e3sm --nodes=1 --partition=compute --time=00:30:00 --job-name=ncclimo
+#   Compy:  salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo
+#   Cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo
+#   Cori:   salloc  -A e3sm -C knl --nodes=1 --partition=debug --time=00:30:00 --job-name=ncclimo # NB: 30 minute limit
+#   Oldrhea:qsub -I -A CLI115 -V -l nodes=1 -l walltime=00:30:00 -N ncclimo # Bigmem: -l partition=gpu
 # Non-interactive batch procedure: a) Store ncclimo command in ncclimo.[cobalt|pbs|slurm] b) qsub ncclimo.[cobalt|pbs|slurm]
 # Non-interactive batch queue differences (besides argument syntax):
 # 1. Cobalt and SLURM require initial 'shebang' line to specify the shell interpreter (not required on PBS)
@@ -611,8 +613,9 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     printf "${fnt_rvr}Interactive batch queues:${fnt_nrm}\n"
     printf "andes : salloc  -A CLI115 --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "andes : salloc  -A CLI115 --nodes=1 --time=00:30:00 --partition=gpu --job-name=ncclimo # Bigmem\n"
-    printf "blues : qsub -I -A ACME -q acme -l nodes=1 -l walltime=00:30:00 -N ncclimo\n"
+    printf "blues : salloc  -A condo --nodes=1 --partition=acme-small --time=00:30:00 --job-name=ncclimo\n"
     printf "cheyen: qsub -I -A SCSG0002 -l select=1:ncpus=36:mpiprocs=1 -l walltime=00:30:00 -q regular -N ncclimo\n"
+    printf "chrysa: salloc  -A e3sm --nodes=1 --partition=compute --time=00:30:00 --job-name=ncclimo\n"
     printf "compy : salloc  -A e3sm --nodes=1 --time=00:30:00 --job-name=ncclimo\n"
     printf "cooley: qsub -I -A OceanClimate_2 --nodecount=1 --time=00:30:00 --jobname=ncclimo\n"
     printf "cori  : salloc  -A e3sm -C haswell --nodes=1 --time=00:30:00 --partition=debug --job-name=ncclimo\n"
@@ -1622,7 +1625,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		# ncclimo splitter-mode, and daily and annual climatology-mode, and ncremap all use 0-based cmd_mpi array
 		# Copy host-specific mpirun syntax but not node-allocation algorithms or loop indices between ncclimo and ncremap
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
-		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | rhea* )
+		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | rhea* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*

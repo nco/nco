@@ -317,6 +317,12 @@ const char * /* O [sng] Native Fortran90 type */
 f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
 (const nc_type type); /* I [enm] netCDF type */
 
+void
+nco_dfl_case_generic_err(void); /* [fnc] Print error and exit for illegal switch case */
+
+void
+nco_dfl_case_flt_err(void); /* [fnc] Print error and exit for illegal switch(nco_flt_enm) case */
+
 void 
 nco_dfl_case_nc_type_err /* [fnc] Print error and exit for illegal switch(nc_type) case */
 (void);
@@ -324,9 +330,6 @@ nco_dfl_case_nc_type_err /* [fnc] Print error and exit for illegal switch(nc_typ
 void 
 nco_dfl_case_prg_id_err /* [fnc] Print error and exit for illegal switch(prg_id) case */
 (void);
-
-void
-nco_dfl_case_generic_err(void); /* [fnc] Print error and exit for illegal switch case */
 
 void
 nco_sng_cnv_err /* [fnc] Print error and exit for failed strtol()-type calls */

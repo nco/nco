@@ -1,6 +1,18 @@
+2020-12-17  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo update interactive compute node procedures
+
+	* libnco add nco_dfl_case_flt_err()
+
+	* ncap2 support --ccr via nco_var_dfn()
+
+	* ncclimo/ncremap add chrlogin* and compute nodes to chrysalis support
+
 2020-12-16  Charlie Zender  <zender@uci.edu>
 
-	* Add nco_flt_get() to convert user-specified string to enum
+	* Create global variable to hold user-specified filter enum
+
+	* Add nco_flt_sng2enm() to convert user-specified string to ID/enum
 
 	* ncclimo clarify error message encountered when cam names are assumed and eam names are desired
 

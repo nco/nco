@@ -712,6 +712,26 @@ nco_ndn_sng /* [fnc] Convert netCDF endianness enum to string for hidden attribu
 } /* !nco_ndn_sng() */
 
 void
+nco_dfl_case_flt_err(void) /* [fnc] Print error and exit for illegal switch(nco_flt_enm) case */
+{
+  /* Purpose: Print error and exit when switch statement reaches illegal default case
+     Routine reduces bloat because many switch() statements invoke this functionality */
+  const char fnc_nm[]="nco_dfl_case_flt_err()";
+  (void)fprintf(stdout,"%s: ERROR switch statement fell through to default case, which is unsafe. This specific error handler ensures all switch(nco_flt_enm) statements are fully enumerated. This error may be triggered by invoking a filter (i.e., a compression filter like BitGroom or Zstandard) that is unknown to and/or not supported by the CCR library that NCO depends on for these filters.\nHINT: Choose a different filter or Re-Configure/build NCO with --enable-ccr after installing the latest CCR. Exiting...\n",fnc_nm);
+  nco_err_exit(0,fnc_nm);
+} /* !nco_dfl_case_flt_err() */
+
+void
+nco_dfl_case_generic_err(void) /* [fnc] Print error and exit for illegal switch case */
+{
+  /* Purpose: Print error and exit when switch statement reaches illegal default case
+     Routine reduces bloat because many switch() statements invoke this functionality */
+  const char fnc_nm[]="nco_dfl_case_generic_err()";
+  (void)fprintf(stdout,"%s: ERROR switch statement fell through to default case, which is unsafe. This generic error handler ensures all switch statements are fully enumerated. Exiting...\n",fnc_nm);
+  nco_err_exit(0,fnc_nm);
+} /* !nco_dfl_case_generic_err() */
+
+void
 nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(nc_type) case */
 {
   /* Purpose: Print error and exit when switch statement reaches illegal default case
@@ -736,17 +756,7 @@ nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(
 } /* !nco_dfl_case_nc_type_err() */
 
 void
-nco_dfl_case_generic_err(void) /* [fnc] Print error and exit for illegal switch case */
-{
-  /* Purpose: Print error and exit when switch statement reaches illegal default case
-     Routine reduces bloat because many switch() statements invoke this functionality */
-  const char fnc_nm[]="nco_dfl_case_generic_err()";
-  (void)fprintf(stdout,"%s: ERROR switch statement fell through to default case, which is unsafe. This generic error handler ensures all switch statements are fully enumerated. Exiting...\n",fnc_nm);
-  nco_err_exit(0,fnc_nm);
-} /* !nco_dfl_case_generic_err() */
-
-void
-nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(nco_prg_id_id) case */
+nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(nco_prg_id) case */
 {
   /* Purpose: Print error and exit when switch statement reaches illegal default case
      Routine reduces bloat because many switch() statements invoke this functionality */

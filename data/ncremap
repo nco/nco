@@ -52,6 +52,7 @@
 # scp ~/nco/data/ncremap andes.olcf.ornl.gov:bin_andes
 # scp ~/nco/data/ncremap blues.lcrc.anl.gov:bin
 # scp ~/nco/data/ncremap cheyenne.ucar.edu:bin
+# scp ~/nco/data/ncremap chrysalis.lcrc.anl.gov:bin
 # scp ~/nco/data/ncremap compy.pnl.gov:bin
 # scp ~/nco/data/ncremap cooley.alcf.anl.gov:bin
 # scp ~/nco/data/ncremap cori.nersc.gov:bin_cori
@@ -104,7 +105,7 @@ if [ -z "${DATA}" ]; then
     case "${HOSTNAME}" in 
 	andes* | rhea* | titan* ) DATA="/gpfs/alpine/world-shared/cli115/${USER}" ; ;; # OLCF andes compute nodes named andesNNN, 256 GB/node
 	blues* | blogin* | b[0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC blues compute nodes named bNNN, 36|64 cores|GB/node 
-	chrysalis* ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named fxm, 64|256 cores|GB/node 
+	chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] ) DATA="/lcrc/project/ACME/${USER}" ; ;; # ANL/LCRC chrysalis compute nodes named chr-NNNN, 64|256 cores|GB/node 
 	*cheyenne* ) DATA="/glade/p/work/${USER}" ; ;; # NCAR cheyenne compute nodes named, e.g., r8i0n8, r5i3n16, r12i5n29 ... 18|(64/128) cores|GB/node (cheyenne login nodes 256 GB)
 	compy* ) DATA="/qfs/people/${USER}/data" ; ;; # PNNL compy compute nodes all named nNNNN, 40|192 cores|GB/node (compy login nodes also 192 GB)
 	constance* | node* ) DATA='/scratch' ; ;; # PNNL
@@ -142,7 +143,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
 	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/e3sm_unified_1.3.1.2/lib'\:${LD_LIBRARY_PATH} ; ;;
-	blues* | blogin* | b[0123456789][0123456789][0123456789] )
+	blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] )
 	    export PATH='/home/zender/bin'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib'\:${LD_LIBRARY_PATH} ; ;;
 	*cheyenne* )
@@ -1791,7 +1792,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 	    # Copy host-specific mpirun syntax but not node-allocation algorithms or loop indices between ncclimo and ncremap
 	    case "${HOSTNAME}" in 
 		# 20160502: Remove tasks-per-node limits (ntasks, npernode) so round-robin algorithm can schedule multiple jobs on same node
-		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | rhea* )
+		andes* | blues* | blogin* | b[0123456789][0123456789][0123456789] | chrysalis* | chrlogin* | chr-[0123456789][0123456789][0123456789][0123456789] | cmem* | compy* | constance* | cori* | n[0123456789][0123456789][0123456789][0123456789] | nid* | node* | rhea* )
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*

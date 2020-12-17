@@ -41,6 +41,12 @@
 #include "nco_pck.h" /* Packing and unpacking variables */
 #include "nco_ppc.h" /* Precision-Preserving Compression */
 
+#if ENABLE_CCR
+# include <ccr.h> /* Community Codec Repository prototypes */
+# include <ccr_meta.h> /* Community Codec Repository configuration */
+# include "nco_flt.h" /* Compression filters */
+#endif /* !ENABLE_CCR */
+
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */

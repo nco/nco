@@ -118,6 +118,7 @@ main(int argc,char **argv)
   char *fl_pth=NULL_CEWI; /* Option p */
   char *fl_pth_lcl=NULL_CEWI; /* Option l */
   char *fl_spt_usr=NULL_CEWI; /* Option s */
+  char *flt_sng=NULL; /* [sng] Filter string */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_crr=NULL_CEWI; /* [sng] String representation of current long-option name */
   char *sng_cnv_rcd=NULL_CEWI; /* [sng] strtol()/strtoul() return code */
@@ -287,6 +288,11 @@ main(int argc,char **argv)
     {"chunk_scalar",required_argument,0,0}, /* [nbr] Chunk size scalar */
     {"fl_fmt",required_argument,0,0},
     {"file_format",required_argument,0,0},
+    {"flt",required_argument,0,0}, /* [sng] Filter string */
+    {"filter",required_argument,0,0}, /* [sng] Filter string */
+    {"ccr",required_argument,0,0}, /* [sng] CCR codec name */
+    {"cdc",required_argument,0,0}, /* [sng] CCR codec name */
+    {"codec",required_argument,0,0}, /* [sng] CCR codec name */
     {"gaa",required_argument,0,0}, /* [sng] Global attribute add */
     {"glb_att_add",required_argument,0,0}, /* [sng] Global attribute add */
     {"hdr_pad",required_argument,0,0},
@@ -402,6 +408,16 @@ main(int argc,char **argv)
       if(!strcmp(opt_crr,"mmr_cln") || !strcmp(opt_crr,"clean")) flg_mmr_cln=True; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"drt") || !strcmp(opt_crr,"mmr_drt") || !strcmp(opt_crr,"dirty")) flg_mmr_cln=False; /* [flg] Clean memory prior to exit */
       if(!strcmp(opt_crr,"fl_fmt") || !strcmp(opt_crr,"file_format")) rcd=nco_create_mode_prs(optarg,&fl_out_fmt);
+      if(!strcmp(opt_crr,"flt") || !strcmp(opt_crr,"filter")){
+	flt_sng=(char *)strdup(optarg);
+	/* [fnc] Parse filter string and exit */
+	if(flt_sng) nco_flt_prs(flt_sng);
+      } /* !flt */
+      if(!strcmp(opt_crr,"ccr") || !strcmp(opt_crr,"cdc") || !strcmp(opt_crr,"codec")){
+	nco_flt_glb=nco_flt_sng2enm(optarg);
+	(void)fprintf(stdout,"%s: INFO %s reports user-specified filter string translates to CCR string \"%s\".\n",nco_prg_nm,nco_prg_nm,nco_flt_enm2sng((nco_flt_typ_enm)nco_flt_glb_get()));
+	nco_exit(EXIT_SUCCESS);
+      } /* !ccr */
       if(!strcmp(opt_crr,"gaa") || !strcmp(opt_crr,"glb_att_add")){
         gaa_arg=(char **)nco_realloc(gaa_arg,(gaa_nbr+1)*sizeof(char *));
         gaa_arg[gaa_nbr++]=(char *)strdup(optarg);
@@ -1125,8 +1141,9 @@ main(int argc,char **argv)
   
   /* Clean memory unless dirty memory allowed */
   if(flg_mmr_cln){
-    /* ncap-specific memory */
+    /* ncap2-specific memory */
     if(fl_spt_usr) fl_spt_usr=(char *)nco_free(fl_spt_usr);
+    if(flt_sng) flt_sng=(char *)nco_free(flt_sng);
     
     /* Free extraction lists */ 
     xtr_lst=nco_nm_id_lst_free(xtr_lst,xtr_nbr);

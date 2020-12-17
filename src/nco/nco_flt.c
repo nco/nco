@@ -161,11 +161,11 @@ nco_flt_prs /* [fnc] Parse user-provided filter string */
 } /* !nco_flt_prs() */
 
 const char * /* O [sng] String describing compression filter */
-nco_flt_sng_get /* [fnc] Convert compression filter enum to string */
-(const nco_flt_typ_enm nco_flt_typ) /* I [enm] Compression filter type */
+nco_flt_enm2sng /* [fnc] Convert compression filter enum to string */
+(const nco_flt_typ_enm nco_flt_enm) /* I [enm] Compression filter type */
 {
   /* Purpose: Convert compression grid-type enum to descriptive string */
-  switch(nco_flt_typ){
+  switch(nco_flt_enm){
   case nco_flt_nil: return "Filter type is unset"; break;
   case nco_flt_dfl: return "DEFLATE"; break;
   case nco_flt_bzp: return "Bzip2"; break;
@@ -175,27 +175,30 @@ nco_flt_sng_get /* [fnc] Convert compression filter enum to string */
   case nco_flt_btr: return "Bit Rounding"; break;
   case nco_flt_zst: return "Zstandard"; break;
   default: nco_dfl_case_generic_err(); break;
-  } /* end switch */
+  } /* !nco_flt_enm */
 
   return (char *)NULL;
   
-} /* !nco_flt_sng_get() */
+} /* !nco_flt_enm2sng() */
 
-const int /* O [enm] Filter type */
-nco_flt_get /* [fnc] Convert user-specified filter string to key */
+const int /* O [enm] Filter enum */
+nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
 (const char *nco_flt_sng) /* [sng] User-specified filter string */
 {
   /* Purpose: Convert user-specified string to enumerated filter type
      Return nco_flt_nil by default */
+
   const char fnc_nm[]="nco_flt_get()"; /* [sng] Function name */
+
   char *nco_prg_nm; /* [sng] Program name */
+
   nco_prg_nm=nco_prg_nm_get(); /* [sng] Program name */
 
   if(nco_flt_sng == NULL){
     /* 20140815: Change default from g2d to xst */
     if(nco_dbg_lvl_get() >= nco_dbg_scl) (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit filter string. Defaulting to \"nil\".\n",nco_prg_nm,fnc_nm,nco_prg_nm);
     return nco_flt_nil;
-  } /* endif */
+  } /* !nco_flt_sng */
 
   if(!strcasecmp(nco_flt_sng,"nil")) return nco_flt_nil;
   if(!strcasecmp(nco_flt_sng,"none")) return nco_flt_nil;
@@ -223,4 +226,4 @@ nco_flt_get /* [fnc] Convert user-specified filter string to key */
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified filter %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_sng);
   nco_exit(EXIT_FAILURE);
   return nco_flt_nil; /* Statement should not be reached */
-} /* end nco_flt_get() */
+} /* !nco_flt_sng2enm() */

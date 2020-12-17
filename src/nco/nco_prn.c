@@ -972,71 +972,62 @@ nco_typ_fmt_sng_att_xml /* [fnc] Provide sprintf() format string for specified a
   return (char *)NULL;
 } /* end nco_typ_fmt_sng_att_xml() */
 
-
-const char * /* O [sng] sprintf() format string for JSN attribute type typ */
+const char * /* O [sng] sprintf() format string for JSON attribute type typ */
 nco_typ_fmt_sng_att_jsn /* [fnc] Provide sprintf() format string for specified attribute type in XML */
 (const nc_type typ) /* I [enm] netCDF attribute type to provide XML format string for */
 {
-	/* Purpose: Provide sprintf() format string for specified type attribute
-       Unidata formats shown in netcdf-c/ncdump/ncdump.c pr_att_valgs() near line 593
-       Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
-       and are user-configurable with -p float_digits,double_digits.
-       These default to 7 and 15, respectively
-       Use these formats for JSN attributes AND variables */
-
-	static const char fmt_NC_FLOAT[]="%.7g"; /* %g defaults to 6 digits of precision */
-	static const char fmt_NC_DOUBLE[]="%.15g"; /* %g defaults to 6 digits of precision */
-	static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
-	static const char fmt_NC_SHORT[]="%hi";
-	static const char fmt_NC_CHAR[]="%c";
-	static const char fmt_NC_BYTE[]="%hhi"; /* Takes signed char as arg and prints 0,1,2..,126,127,-127,-126,...-2,-1 */
-
-	static const char fmt_NC_UBYTE[]="%hhu"; /*  */
-	static const char fmt_NC_USHORT[]="%hu"; /*  */
-	static const char fmt_NC_UINT[]="%u"; /*  */
-	static const char fmt_NC_INT64[]="%lli"; /*  */
-	static const char fmt_NC_UINT64[]="%llu"; /*  */
-	static const char fmt_NC_STRING[]="%s"; /*  */
-
-	switch (typ){
-		case NC_FLOAT:
-			return fmt_NC_FLOAT;
-		case NC_DOUBLE:
-			return fmt_NC_DOUBLE;
-		case NC_INT:
-			return fmt_NC_INT;
-		case NC_SHORT:
-			return fmt_NC_SHORT;
-		case NC_CHAR:
-			return fmt_NC_CHAR;
-		case NC_BYTE:
-			return fmt_NC_BYTE;
-		case NC_UBYTE:
-			return fmt_NC_UBYTE;
-		case NC_USHORT:
-			return fmt_NC_USHORT;
-		case NC_UINT:
-			return fmt_NC_UINT;
-		case NC_INT64:
-			return fmt_NC_INT64;
-		case NC_UINT64:
-			return fmt_NC_UINT64;
-		case NC_STRING:
-			return fmt_NC_STRING;
-		default: nco_dfl_case_nc_type_err(); break;
-	} /* end switch */
-
-	/* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
-	return (char *)NULL;
-} /* end nco_typ_fmt_sng_att_jsn() */
-
-
-
-
-
-
-
-
+  /* Purpose: Provide sprintf() format string for specified type attribute
+     Unidata formats shown in netcdf-c/ncdump/ncdump.c pr_att_valgs() near line 593
+     Float formats called float_att_fmt, double_att_fmt are in dumplib.c,
+     and are user-configurable with -p float_digits,double_digits.
+     These default to 7 and 15, respectively
+     Use these formats for JSON attributes AND variables */
+  
+  static const char fmt_NC_FLOAT[]="%.7g"; /* %g defaults to 6 digits of precision */
+  static const char fmt_NC_DOUBLE[]="%.15g"; /* %g defaults to 6 digits of precision */
+  static const char fmt_NC_INT[]="%i"; /* NCO has stored NC_INT in native type int since 2009. Before that NC_INT was stored as native type long */
+  static const char fmt_NC_SHORT[]="%hi";
+  static const char fmt_NC_CHAR[]="%c";
+  static const char fmt_NC_BYTE[]="%hhi"; /* Takes signed char as arg and prints 0,1,2..,126,127,-127,-126,...-2,-1 */
+  
+  static const char fmt_NC_UBYTE[]="%hhu"; /*  */
+  static const char fmt_NC_USHORT[]="%hu"; /*  */
+  static const char fmt_NC_UINT[]="%u"; /*  */
+  static const char fmt_NC_INT64[]="%lli"; /*  */
+  static const char fmt_NC_UINT64[]="%llu"; /*  */
+  static const char fmt_NC_STRING[]="%s"; /*  */
+  
+  switch (typ){
+  case NC_FLOAT:
+    return fmt_NC_FLOAT;
+  case NC_DOUBLE:
+    return fmt_NC_DOUBLE;
+  case NC_INT:
+    return fmt_NC_INT;
+  case NC_SHORT:
+    return fmt_NC_SHORT;
+  case NC_CHAR:
+    return fmt_NC_CHAR;
+  case NC_BYTE:
+    return fmt_NC_BYTE;
+  case NC_UBYTE:
+    return fmt_NC_UBYTE;
+  case NC_USHORT:
+    return fmt_NC_USHORT;
+  case NC_UINT:
+    return fmt_NC_UINT;
+  case NC_INT64:
+    return fmt_NC_INT64;
+  case NC_UINT64:
+    return fmt_NC_UINT64;
+  case NC_STRING:
+    return fmt_NC_STRING;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* !nco_typ_fmt_sng_att_jsn() */
 
 const char * /* O [sng] sprintf() format string for type typ */
 nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */

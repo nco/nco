@@ -240,6 +240,7 @@ extern "C" {
   char *nco_not_mss_val_sng_get(void); /* [sng] Not missing value attribute name */
   char *nco_prg_nm_get(void);
   int nco_prg_id_get(void);
+  int nco_flt_glb_get(void);
   unsigned short nco_baa_cnv_get(void);
   unsigned short nco_bnr_cnv_get(void);
   unsigned short nco_dbg_lvl_get(void);
@@ -274,6 +275,9 @@ extern "C" {
 
   unsigned short nco_dbg_lvl=0; /* [enm] Debugging level */
   unsigned short nco_dbg_lvl_get(void){return nco_dbg_lvl;} /* [enm] Debugging level */
+
+  int nco_flt_glb=0; /* [enm] Filter enum */
+  int nco_flt_glb_get(void){return nco_flt_glb;} /* [enm] Filter enum */
 
   unsigned short nco_fmt_xtn=0; /* [enm] Extended file format */
   unsigned short nco_fmt_xtn_get(void){return nco_fmt_xtn;} /* [enm] Extended file format */
