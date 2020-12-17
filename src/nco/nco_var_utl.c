@@ -1297,9 +1297,12 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 #endif /* !CCR_HAS_ZSTD */
 	    break;
 	  case nco_flt_dgr: /* Digit Rounding */
+	    ccr_has_flt=False;
 	  case nco_flt_btr: /* Bit Rounding */
+	    ccr_has_flt=False;
 	  case nco_flt_nil: 
-	  default: nco_dfl_case_generic_err(); break;
+	    if(dfl_lvl <= 0) break;
+	  default: nco_dfl_case_flt_err(); break;
 	  } /* !nco_flt_enm */
 
 	  if(!ccr_has_flt){
