@@ -1264,7 +1264,9 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 #if CCR_HAS_ZSTD
 	  strcat(ccr_flt_lst,", Zstd");
 #endif /* !CCR_HAS_ZSTD */
+	  //(void)fprintf(stdout,"DEBUG quark: nco_flt_enm=%d, dfl_lvl=%d\n",(int)nco_flt_enm,dfl_lvl);
 	  switch(nco_flt_enm){
+	  case nco_flt_nil: /* If user did not select a filter then default to DEFLATE */
 	  case nco_flt_dfl: /* DEFLATE */
 	    if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,var[idx]->id,shuffle,deflate,dfl_lvl);
 	    break;
@@ -1297,10 +1299,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 #endif /* !CCR_HAS_ZSTD */
 	    break;
 	  case nco_flt_dgr: /* Digit Rounding */
-	    ccr_has_flt=False;
 	  case nco_flt_btr: /* Bit Rounding */
 	    ccr_has_flt=False;
-	  case nco_flt_nil: 
 	    if(dfl_lvl <= 0) break;
 	  default: nco_dfl_case_flt_err(); break;
 	  } /* !nco_flt_enm */

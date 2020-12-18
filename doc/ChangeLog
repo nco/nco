@@ -1,5 +1,11 @@
 2020-12-17  Charlie Zender  <zender@uci.edu>
 
+	* NCO 4.9.7-alpha03 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha03: Pernil';git push
+	git tag -a 4.9.7-alpha03 -m '';git push --tags
+
+	* ncap2 now uses --ccr to invoke CCR filters on all unchanged variables!
+
 	* ncclimo update interactive compute node procedures
 
 	* libnco add nco_dfl_case_flt_err()
@@ -17,10 +23,6 @@
 	* ncclimo clarify error message encountered when cam names are assumed and eam names are desired
 
 	* Create nco_ccr.[ch] for CCR, filter, and codec-related code
-
-	* NCO 4.9.7-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha03: Pernil';git push
-	git tag -a 4.9.7-alpha03 -m '';git push --tags
 
 2020-12-15  Charlie Zender  <zender@uci.edu>
 

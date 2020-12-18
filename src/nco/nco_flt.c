@@ -223,7 +223,7 @@ nco_flt_sng2enm /* [fnc] Convert user-specified filter string to NCO enum */
   if(!strcasecmp(nco_flt_sng,"zstd")) return nco_flt_zst;
   if(!strcasecmp(nco_flt_sng,"zstandard")) return nco_flt_zst;
 
-  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified filter %s\n",nco_prg_nm_get(),fnc_nm,nco_flt_sng);
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified filter \"%s\"\n",nco_prg_nm_get(),fnc_nm,nco_flt_sng);
   nco_exit(EXIT_FAILURE);
   return nco_flt_nil; /* Statement should not be reached */
 } /* !nco_flt_sng2enm() */
