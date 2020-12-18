@@ -1,8 +1,14 @@
-2020-12-17  Charlie Zender  <zender@uci.edu>
+2020-12-18  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha03: Pernil';git push
 	git tag -a 4.9.7-alpha03 -m '';git push --tags
+
+	* ncap2 accept negative Zstandard compression levels
+
+	* Merge "Add all NetCDF/HDF5 dependencies to CMAKE_REQUIRED_LIBRARIES" by Kyle Gerheiser
+
+2020-12-17  Charlie Zender  <zender@uci.edu>
 
 	* ncap2 now uses --ccr to invoke CCR filters on all unchanged variables!
 
