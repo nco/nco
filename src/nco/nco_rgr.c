@@ -8055,6 +8055,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       dmn_cnt[0]=col_nbr;
       dmn_cnt[1]=grd_crn_nbr;
       if(vrt_cll_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_cll_id,dmn_srt,dmn_cnt,vrt_cll,(nc_type)NC_INT);
+      dmn_cnt[0]=vrt_nbr;
       if(vrt_lat_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lat_id,dmn_srt,dmn_cnt,vrt_lat,crd_typ);
       if(vrt_lon_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lon_id,dmn_srt,dmn_cnt,vrt_lon,crd_typ);
       rcd=nco_inq_att_flg(in_id,vrt_lat_id,unt_sng,&att_typ,&att_sz);
@@ -8072,7 +8073,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	idx=col_idx*grd_crn_nbr;
 	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
 	  vrt_idx=vrt_cll[idx+crn_idx];
-	  assert(vrt_idx >= 0 && vrt_idx <= vrt_nbr);
+	  assert(vrt_idx >= 0);
+	  if(vrt_idx >= vrt_nbr) (void)fprintf(stdout,"%s: WARNING %s input gridcell %ld corner %ld has illegal MPAS input verticesOnCell value %ld (maximum valid vertex = vrt_nbr-1 = %ld-1 = %ld)\n",nco_prg_nm_get(),fnc_nm,col_idx,crn_idx,vrt_idx,vrt_nbr,vrt_nbr-1);
+	  //assert(vrt_idx < vrt_nbr);
 	  lat_crn[idx+crn_idx]=vrt_lat[vrt_idx];
 	  lon_crn[idx+crn_idx]=vrt_lon[vrt_idx];
 	} /* !vrt_idx */
