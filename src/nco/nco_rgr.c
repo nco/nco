@@ -7437,6 +7437,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long lon_idx2; /* [idx] Counting index for unrolled longitude */
   long lon_idx;
   long lon_nbr; /* [nbr] Number of longitudes in grid */
+  long vrt_idx; /* [idx] Counting index for vertices */
   long vrt_nbr; /* [nbr] Number of vertices in MPAS grid */
   
   long int idx_crn_ll;
@@ -8012,6 +8013,14 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
      Without counter-example, assume has_mss_val_bnd=has_mss_val_ctr and mss_val_bnd_dbl=mss_val_ctr_dbl */
   has_mss_val_bnd=has_mss_val_ctr=nco_mss_val_get_dbl(in_id,lat_ctr_id,&mss_val_ctr_dbl);
   
+  char *att_val;
+  char *area_unt=NULL; /* [sng] Dimensional units used in area */
+  char *ngl_unt=NULL; /* [sng] Angular units used in coordinates */
+  long att_sz;
+  nc_type att_typ;
+  nco_bool flg_area_sr=True; /* [flg] Input area is in sterradians not something weird like km2 */
+  nco_bool flg_crd_rdn=False; /* [flg] Input coordinates are in radians not degrees */
+  
   if(flg_grd_1D){
     /* Obtain fields that must be present in unstructured input file */
     dmn_srt[0]=0L;
@@ -8039,12 +8048,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       dmn_cnt[1]=bnd_nbr;
       if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
       if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
-    }else{
-      dmn_cnt[1]=grd_crn_nbr;
-      if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
-      if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
-    } /* !flg_1D_psd_rct_bnd */
-    if(flg_1D_mpas_bnd){
+    }else if(flg_1D_mpas_bnd){
       vrt_cll=(int *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng((nc_type)NC_INT));
       vrt_lat=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
       vrt_lon=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
@@ -8052,7 +8056,30 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(vrt_cll_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_cll_id,dmn_srt,dmn_cnt,vrt_cll,(nc_type)NC_INT);
       if(vrt_lat_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lat_id,dmn_srt,dmn_cnt,vrt_lat,crd_typ);
       if(vrt_lon_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lon_id,dmn_srt,dmn_cnt,vrt_lon,crd_typ);
-    } /* !flg_1D_mpas_bnd */
+      rcd=nco_inq_att_flg(in_id,vrt_lat_id,unt_sng,&att_typ,&att_sz);
+      if(rcd == NC_NOERR && att_typ == NC_CHAR){
+	att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+	rcd+=nco_get_att(in_id,vrt_lat_id,unt_sng,att_val,att_typ);
+	/* NUL-terminate attribute before using strstr() */
+	att_val[att_sz]='\0';
+	/* Match "radian" and "radians" */
+	if(strstr(att_val,"radian")) flg_crd_rdn=True;
+	if(att_val) ngl_unt=(char *)strdup(att_val);
+	if(att_val) att_val=(char *)nco_free(att_val);
+      } /* end rcd && att_typ */
+      for(col_idx=0;col_idx<col_nbr;col_idx++){
+	idx=grd_crn_nbr*col_idx;
+	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
+	  vrt_idx=vrt_cll[idx+crn_idx];
+	  lat_crn[idx+crn_idx]=vrt_lat[vrt_idx];
+	  lon_crn[idx+crn_idx]=vrt_lon[vrt_idx];
+	} /* !vrt_idx */
+      } /* !col_idx */
+    }else{ /* !flg_1D_mpas_bnd */
+      dmn_cnt[1]=grd_crn_nbr;
+      if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
+      if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
+    } /* !flg_1D_psd_rct_bnd */
   } /* !flg_grd_1D */
 
   if(flg_grd_crv){
@@ -8223,10 +8250,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
   } /* !flg_grd_2D */
 
+  /* Obtain units, if any, of input area */
+  rcd=nco_inq_att_flg(in_id,area_id,unt_sng,&att_typ,&att_sz);
+  if(rcd == NC_NOERR && att_typ == NC_CHAR){
+    att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+    rcd+=nco_get_att(in_id,area_id,unt_sng,att_val,att_typ);
+    /* NUL-terminate attribute before using strstr() */
+    att_val[att_sz]='\0';
+    if(!strcasestr(att_val,"radian")) flg_area_sr=False;
+    if(att_val) area_unt=(char *)strdup(att_val);
+    if(att_val) att_val=(char *)nco_free(att_val);
+  } /* end rcd && att_typ */
+  
   /* Additional information that may be required for any input grid */
   if(area_id != NC_MIN_INT) has_mss_val_area=nco_mss_val_get_dbl(in_id,area_id,&mss_val_area_dbl);
   if(msk_id != NC_MIN_INT) has_mss_val_msk=nco_mss_val_get_dbl(in_id,msk_id,&mss_val_msk_dbl);
-
+  
   /* 20160115: AMSR coordinates are packed as NC_SHORT with scale_value=0.01f. What to do? Is it worth unpacking everything? */
   int flg_pck; /* [flg] Variable is packed on disk  */
   rcd=nco_inq_var_packing(in_id,lat_ctr_id,&flg_pck);
@@ -9292,7 +9331,6 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   /* Define attributes */
   aed_sct aed_mtd;
   char *att_nm;
-  char *att_val;
   
   if(strstr(rgr->grd_ttl,"None given")){
     const char att_fmt[]="NCO inferred this grid from input file %s";
@@ -9311,24 +9349,50 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   rcd=nco_char_att_put(out_id,NULL,"latitude_grid_type",nco_grd_lat_sng(lat_typ));
   rcd=nco_char_att_put(out_id,NULL,"longitude_grid_type",nco_grd_lon_sng(lon_typ));
 
-  rcd=nco_char_att_put(out_id,area_nm,"long_name","Solid Angle Subtended on Source Grid");
-  rcd=nco_char_att_put(out_id,area_nm,"standard_name","solid_angle");
-  rcd=nco_char_att_put(out_id,area_nm,"units","steradian");
+  if(flg_area_sr){
+    rcd=nco_char_att_put(out_id,area_nm,"long_name","Solid Angle Subtended on Source Grid");
+    rcd=nco_char_att_put(out_id,area_nm,"standard_name","solid_angle");
+    rcd=nco_char_att_put(out_id,area_nm,"units","steradian");
+  }else{ /* !flg_area_sr */
+    rcd=nco_char_att_put(out_id,area_nm,"long_name","Area on Source Grid");
+    //    rcd=nco_char_att_put(out_id,area_nm,"standard_name","solid_angle");
+    rcd=nco_char_att_put(out_id,area_nm,"units",area_unt);
+  } /* !flg_area_sr */
 
   rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"long_name","Latitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"standard_name","latitude");
-  if(rgr->flg_cf_units) rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees_north"); else rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
+  if(ngl_unt){
+    rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,unt_sng,ngl_unt);
+  }else{
+    /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
+    if(rgr->flg_cf_units) rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees_north"); else rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"units","degrees");
+  } /* !ngl_unt */
 
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"long_name","Longitude of Grid Cell Centers");
   rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"standard_name","longitude");
-  if(rgr->flg_cf_units) rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees_east"); else rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
+  if(ngl_unt){
+    rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,unt_sng,ngl_unt);
+  }else{
+    /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
+    if(rgr->flg_cf_units) rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees_east"); else rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"units","degrees"); 
+  } /* !ngl_unt */
 
   if(flg_wrt_crn){
     rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"long_name","Latitude of Grid Cell Vertices");
-    if(rgr->flg_cf_units) rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees_north"); else rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
+    if(ngl_unt){
+      rcd=nco_char_att_put(out_id,grd_crn_lat_nm,unt_sng,ngl_unt);
+    }else{
+      /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
+      if(rgr->flg_cf_units) rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees_north"); else rcd=nco_char_att_put(out_id,grd_crn_lat_nm,"units","degrees");
+    } /* !ngl_unt */
     
     rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"long_name","Longitude of Grid Cell Vertices");
-    if(rgr->flg_cf_units) rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees_east"); else rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees"); /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
+    if(ngl_unt){
+      rcd=nco_char_att_put(out_id,grd_crn_lon_nm,unt_sng,ngl_unt);
+    }else{
+      /* 20191009: ERWG 7.1.0r- breaks on CF-compliant units strings */
+      if(rgr->flg_cf_units) rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees_north"); else rcd=nco_char_att_put(out_id,grd_crn_lon_nm,"units","degrees");
+    } /* !ngl_unt */
 
     rcd=nco_char_att_put(out_id,grd_ctr_lat_nm,"bounds",grd_crn_lat_nm);
     rcd=nco_char_att_put(out_id,grd_ctr_lon_nm,"bounds",grd_crn_lon_nm);
@@ -9816,16 +9880,18 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(vrt_lon) vrt_lon=(double *)nco_free(vrt_lon);
 
   /* Free strings */
-  if(col_dmn_nm) col_dmn_nm=(char *)nco_free(col_dmn_nm);
-  if(lat_dmn_nm) lat_dmn_nm=(char *)nco_free(lat_dmn_nm);
-  if(lon_dmn_nm) lon_dmn_nm=(char *)nco_free(lon_dmn_nm);
-  if(bnd_dmn_nm) bnd_dmn_nm=(char *)nco_free(bnd_dmn_nm);
-  if(lat_nm_in) lat_nm_in=(char *)nco_free(lat_nm_in);
-  if(lon_nm_in) lon_nm_in=(char *)nco_free(lon_nm_in);
-  if(lat_bnd_nm) lat_bnd_nm=(char *)nco_free(lat_bnd_nm);
-  if(lon_bnd_nm) lon_bnd_nm=(char *)nco_free(lon_bnd_nm);
   if(area_nm_in) area_nm_in=(char *)nco_free(area_nm_in);
+  if(area_unt) area_unt=(char *)nco_free(area_unt);
+  if(bnd_dmn_nm) bnd_dmn_nm=(char *)nco_free(bnd_dmn_nm);
+  if(col_dmn_nm) col_dmn_nm=(char *)nco_free(col_dmn_nm);
+  if(lat_bnd_nm) lat_bnd_nm=(char *)nco_free(lat_bnd_nm);
+  if(lat_dmn_nm) lat_dmn_nm=(char *)nco_free(lat_dmn_nm);
+  if(lat_nm_in) lat_nm_in=(char *)nco_free(lat_nm_in);
+  if(lon_bnd_nm) lon_bnd_nm=(char *)nco_free(lon_bnd_nm);
+  if(lon_dmn_nm) lon_dmn_nm=(char *)nco_free(lon_dmn_nm);
+  if(lon_nm_in) lon_nm_in=(char *)nco_free(lon_nm_in);
   if(msk_nm_in) msk_nm_in=(char *)nco_free(msk_nm_in);
+  if(ngl_unt) ngl_unt=(char *)nco_free(ngl_unt);
   if(vrt_cll_nm) vrt_cll_nm=(char *)nco_free(vrt_cll_nm);
   if(vrt_lat_nm) vrt_lat_nm=(char *)nco_free(vrt_lat_nm);
   if(vrt_lon_nm) vrt_lon_nm=(char *)nco_free(vrt_lon_nm);

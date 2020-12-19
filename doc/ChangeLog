@@ -1,8 +1,12 @@
-2020-12-18  Charlie Zender  <zender@uci.edu>
+2020-12-19  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha03: Pernil';git push
 	git tag -a 4.9.7-alpha03 -m 'nco_flt_enm; ncks, ncap2 --ccr; ncclimo/ncremap Chrysalis';git push --tags
+
+	* nco_grd_nfr() add logic to convey correct units (radians, m2)	for MPAS angles and area
+
+2020-12-18  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_nfr() add logic to retrieve MPAS bounds-related variables from restart files
 
