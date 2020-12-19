@@ -7357,6 +7357,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double *lon_crn=NULL; /* [dgr] Longitude corners of rectangular grid */
   double *lon_ctr=NULL_CEWI; /* [dgr] Longitude centers of rectangular grid */
   double *lon_ntf=NULL; /* [dgr] Longitude interfaces of rectangular grid */
+  double *vrt_lat=NULL; /* [rdn] MPAS latitude boundary variable latVertex */
+  double *vrt_lon=NULL; /* [rdn] MPAS longitude boundary variable lonVertex */
 
   double area_ttl=0.0; /* [frc] Exact sum of area */
   //double lat_nrt; /* [dgr] Latitude of northern edge of grid */
@@ -7374,6 +7376,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   double mss_val_msk_dbl;
   
   int *msk=NULL; /* [flg] Mask of grid */
+  int *vrt_cll=NULL; /* [enm] MPAS variable verticesOnCell */
   int *dmn_sz_int; /* [nbr] Array of dimension sizes of grid */
 
   int dmn_ids[dmn_nbr_grd_max]; /* [id] Dimension IDs array for output variable */
@@ -7408,6 +7411,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   int val_two=2; /* [nbr] Value that can be non-erroneously pointed to */
   int val_zero=0; /* [nbr] Value that can be non-erroneously pointed to */
   int var_id; /* [id] Current variable ID */
+  int vrt_cll_id=NC_MIN_INT; /* [id] MPAS variable verticesOnCell ID */
+  int vrt_lat_id=NC_MIN_INT; /* [id] MPAS latitude boundary variable latVertex ID */
+  int vrt_lon_id=NC_MIN_INT; /* [id] MPAS longitude boundary variable lonVertex ID */
 
   long dmn_srt[dmn_nbr_grd_max];
   long dmn_cnt[dmn_nbr_grd_max];
@@ -7431,6 +7437,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long lon_idx2; /* [idx] Counting index for unrolled longitude */
   long lon_idx;
   long lon_nbr; /* [nbr] Number of longitudes in grid */
+  long vrt_nbr; /* [nbr] Number of vertices in MPAS grid */
   
   long int idx_crn_ll;
   long int idx_crn_lr;
@@ -7448,6 +7455,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
   nco_bool flg_1D_psd_rct_bnd=False; /* [flg] Unstructured input grid with pseudo-rectangular bounds */
+  nco_bool flg_1D_mpas_bnd=False; /* [flg] Unstructured input grid with MPAS bounds */
   nco_bool flg_ccw; /* [flg] Gridcell is CCW */
   nco_bool flg_grd_1D=False;
   nco_bool flg_grd_2D=False;
@@ -7496,10 +7504,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   char *lon_nm_in=NULL_CEWI; /* [sng] Name of variable to recognize as longitude */
   char *lat_bnd_nm=NULL_CEWI; /* [sng] Name of latitude  boundary variable */
   char *lon_bnd_nm=NULL_CEWI; /* [sng] Name of longitude boundary variable */
+  char *vrt_dmn_nm=NULL_CEWI; /* [sng] Name of MPAS vertices dimension nVertices */
+  char *vrt_cll_nm=NULL_CEWI; /* [sng] Name of MPAS variable verticesOnCell */
+  char *vrt_lat_nm=NULL_CEWI; /* [sng] Name of MPAS latitude boundary variable latVertex */
+  char *vrt_lon_nm=NULL_CEWI; /* [sng] Name of MPAS longitude boundary variable lonVertex */
   int dmn_id_bnd=NC_MIN_INT; /* [id] Dimension ID for spatial bounds */
   int dmn_id_col=NC_MIN_INT; /* [id] Dimension ID for unstructured grids */
   int dmn_id_lat=NC_MIN_INT; /* [id] Dimension ID for latitude */
   int dmn_id_lon=NC_MIN_INT; /* [id] Dimension ID for longitude */
+  int dmn_id_vrt=NC_MIN_INT; /* [id] Dimension ID for MPAS vertices */
 
   /* Begin CF-coordinates block */
   cf_crd_sct *cf=NULL;
@@ -7775,7 +7788,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(lat_rnk*lon_rnk != 1 && lat_rnk*lon_rnk != 4) assert(False);
 
   /* Scrutinize coordinates for their dimensions
-     NB: Unstructure already known */
+     NB: Unstructured already known */
   if(flg_grd_2D){
     rcd+=nco_inq_dimname(in_id,dmn_id_lat,dmn_nm);
     lat_dmn_nm=(char *)strdup(dmn_nm);
@@ -7806,6 +7819,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
      Hence search for nvertices before nbnd to ensure spatial bound is found first */
   if((rcd=nco_inq_dimid_flg(in_id,"nv",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nv"); /* fxm */
   else if((rcd=nco_inq_dimid_flg(in_id,"nvertices",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("nvertices"); /* CICE */
+  else if((rcd=nco_inq_dimid_flg(in_id,"maxEdges",&dmn_id_bnd)) == NC_NOERR) bnd_dmn_nm=strdup("maxEdges"); /* MPAS */
+  if((rcd=nco_inq_dimid_flg(in_id,"nVertices",&dmn_id_vrt)) == NC_NOERR) vrt_dmn_nm=strdup("nVertices"); /* MPAS */
   
   /* Use dimension IDs to get dimension sizes and grid size */
   if(flg_grd_1D){
@@ -7818,6 +7833,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !flg_grd_1D */
   if(dmn_id_bnd != NC_MIN_INT) rcd+=nco_inq_dimlen(in_id,dmn_id_bnd,&grd_crn_nbr);
   if(dmn_id_bnd != NC_MIN_INT) rcd+=nco_inq_dimlen(in_id,dmn_id_bnd,&bnd_nbr);
+  if(dmn_id_vrt != NC_MIN_INT) rcd+=nco_inq_dimlen(in_id,dmn_id_vrt,&vrt_nbr);
   
   if(flg_grd_1D){
     /* Unstructured grid (e.g., CAM-SE) */
@@ -7847,6 +7863,22 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       grd_crn_nbr=4;
       flg_1D_psd_rct_bnd=True;
     } /* !bnd_nbr */
+    if(!strcmp(bnd_dmn_nm,"maxEdges")){
+      (void)fprintf(stdout,"%s: INFO Unstructured grid has dimension \"%s\" which indicates an MPAS grid. Will attempt to locate other MPAS information (dimension nVertices and variables verticesOnCell, lonVertex, and latVertex) to construct SCRIP-compliant bounds variables...\n",nco_prg_nm_get(),bnd_dmn_nm);
+      if((rcd=nco_inq_varid_flg(in_id,"verticesOnCell",&vrt_cll_id)) == NC_NOERR) vrt_cll_nm=strdup("verticesOnCell");
+      if((rcd=nco_inq_varid_flg(in_id,"lonVertex",&vrt_lon_id)) == NC_NOERR) vrt_lon_nm=strdup("lonVertex");
+      if((rcd=nco_inq_varid_flg(in_id,"latVertex",&vrt_lat_id)) == NC_NOERR) vrt_lat_nm=strdup("latVertex");
+
+      if(dmn_id_vrt != NC_MIN_INT) rcd+=nco_inq_dimlen(in_id,dmn_id_vrt,&vrt_nbr);
+      if(vrt_dmn_nm && vrt_cll_nm && vrt_lon_nm && vrt_lat_nm){
+	flg_1D_mpas_bnd=True;
+	(void)fprintf(stdout,"%s: INFO Found all MPAS information needed to construct SCRIP-compliant bounds variables.\n",nco_prg_nm_get());
+      }else{
+	(void)fprintf(stdout,"%s: INFO Unable to find all MPAS information needed to construct SCRIP-compliant bounds variables. Will not write bounds coordinates. This will degrade usefulness of SCRIP file for regridding schemes (e.g., conservative) that require cell boundaries.\n",nco_prg_nm_get());
+	(void)fprintf(stdout,"%s: HINT Often MPAS restart files contain the required bounds variables (verticesOnCell, lonVertex, latVertex) that normal MPAS data files lack. Try inferring the SCRIP grid from a restart file not a normal time-varying output dataset.\n",nco_prg_nm_get());
+	flg_wrt_crn=False;
+      } /* !vrt_cll_nm */
+    } /* !bnd_dmn_nm */
   }else if(flg_grd_2D){ /* !flg_grd_1D */
     /* Assume 2D grid of uninitialized type */
     grd_rnk_nbr=dmn_nbr_2D;
@@ -7927,6 +7959,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   else if((rcd=nco_inq_varid_flg(in_id,"lat_vertices",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("lat_vertices");
   else if((rcd=nco_inq_varid_flg(in_id,"latitude_bnds",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("latitude_bnds"); /* OCO2 */
   else if((rcd=nco_inq_varid_flg(in_id,"LatitudeCornerpoints",&lat_bnd_id)) == NC_NOERR) lat_bnd_nm=strdup("LatitudeCornerpoints"); /* OMI */
+
   if((rcd=nco_inq_varid_flg(in_id,"lon_bnds",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lon_bnds");
   else if((rcd=nco_inq_varid_flg(in_id,"lont_bounds",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lont_bounds");
   else if((rcd=nco_inq_varid_flg(in_id,"lonu_bounds",&lon_bnd_id)) == NC_NOERR) lon_bnd_nm=strdup("lonu_bounds");
@@ -8011,6 +8044,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
       if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
     } /* !flg_1D_psd_rct_bnd */
+    if(flg_1D_mpas_bnd){
+      vrt_cll=(int *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng((nc_type)NC_INT));
+      vrt_lat=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
+      vrt_lon=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
+      dmn_cnt[1]=grd_crn_nbr;
+      if(vrt_cll_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_cll_id,dmn_srt,dmn_cnt,vrt_cll,(nc_type)NC_INT);
+      if(vrt_lat_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lat_id,dmn_srt,dmn_cnt,vrt_lat,crd_typ);
+      if(vrt_lon_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lon_id,dmn_srt,dmn_cnt,vrt_lon,crd_typ);
+    } /* !flg_1D_mpas_bnd */
   } /* !flg_grd_1D */
 
   if(flg_grd_crv){
@@ -9769,6 +9811,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(lon_crn) lon_crn=(double *)nco_free(lon_crn);
   if(lon_ctr) lon_ctr=(double *)nco_free(lon_ctr);
   if(lon_ntf) lon_ntf=(double *)nco_free(lon_ntf);
+  if(vrt_cll) vrt_cll=(int *)nco_free(vrt_cll);
+  if(vrt_lat) vrt_lat=(double *)nco_free(vrt_lat);
+  if(vrt_lon) vrt_lon=(double *)nco_free(vrt_lon);
 
   /* Free strings */
   if(col_dmn_nm) col_dmn_nm=(char *)nco_free(col_dmn_nm);
@@ -9781,6 +9826,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   if(lon_bnd_nm) lon_bnd_nm=(char *)nco_free(lon_bnd_nm);
   if(area_nm_in) area_nm_in=(char *)nco_free(area_nm_in);
   if(msk_nm_in) msk_nm_in=(char *)nco_free(msk_nm_in);
+  if(vrt_cll_nm) vrt_cll_nm=(char *)nco_free(vrt_cll_nm);
+  if(vrt_lat_nm) vrt_lat_nm=(char *)nco_free(vrt_lat_nm);
+  if(vrt_lon_nm) vrt_lon_nm=(char *)nco_free(vrt_lon_nm);
   
   return rcd;
 

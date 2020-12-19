@@ -2,7 +2,9 @@
 
 	* NCO 4.9.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha03: Pernil';git push
-	git tag -a 4.9.7-alpha03 -m '';git push --tags
+	git tag -a 4.9.7-alpha03 -m 'nco_flt_enm; ncks, ncap2 --ccr; ncclimo/ncremap Chrysalis';git push --tags
+
+	* nco_grd_nfr() add logic to retrieve MPAS bounds-related variables from restart files
 
 	* ncap2 accept negative Zstandard compression levels
 
