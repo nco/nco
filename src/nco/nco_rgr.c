@@ -7455,8 +7455,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   nco_bool SHARE_OPEN=rgr->flg_uio; /* [flg] Open (netCDF3-only) file(s) with unbuffered I/O */
   nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
   nco_bool WRT_TMP_FL=False; /* [flg] Write output to temporary file */
-  nco_bool flg_1D_psd_rct_bnd=False; /* [flg] Unstructured input grid with pseudo-rectangular bounds */
   nco_bool flg_1D_mpas_bnd=False; /* [flg] Unstructured input grid with MPAS bounds */
+  nco_bool flg_1D_psd_rct_bnd=False; /* [flg] Unstructured input grid with pseudo-rectangular bounds */
   nco_bool flg_ccw; /* [flg] Gridcell is CCW */
   nco_bool flg_grd_1D=False;
   nco_bool flg_grd_2D=False;
@@ -8043,8 +8043,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       rcd=nco_get_vara(in_id,msk_id,dmn_srt,dmn_cnt,msk_unn.vp,msk_typ);
     } /* !msk_id */
     dmn_srt[0]=dmn_srt[1]=0L;
-    dmn_cnt[0]=col_nbr;
     if(flg_1D_psd_rct_bnd){
+      dmn_cnt[0]=col_nbr;
       dmn_cnt[1]=bnd_nbr;
       if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
       if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
@@ -8052,6 +8052,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       vrt_cll=(int *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng((nc_type)NC_INT));
       vrt_lat=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
       vrt_lon=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
+      dmn_cnt[0]=col_nbr;
       dmn_cnt[1]=grd_crn_nbr;
       if(vrt_cll_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_cll_id,dmn_srt,dmn_cnt,vrt_cll,(nc_type)NC_INT);
       if(vrt_lat_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lat_id,dmn_srt,dmn_cnt,vrt_lat,crd_typ);
@@ -8068,14 +8069,16 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	if(att_val) att_val=(char *)nco_free(att_val);
       } /* end rcd && att_typ */
       for(col_idx=0;col_idx<col_nbr;col_idx++){
-	idx=grd_crn_nbr*col_idx;
+	idx=col_idx*grd_crn_nbr;
 	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
 	  vrt_idx=vrt_cll[idx+crn_idx];
+	  assert(vrt_idx >= 0 && vrt_idx <= vrt_nbr);
 	  lat_crn[idx+crn_idx]=vrt_lat[vrt_idx];
 	  lon_crn[idx+crn_idx]=vrt_lon[vrt_idx];
 	} /* !vrt_idx */
       } /* !col_idx */
     }else{ /* !flg_1D_mpas_bnd */
+      dmn_cnt[0]=col_nbr;
       dmn_cnt[1]=grd_crn_nbr;
       if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_crn,crd_typ);
       if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_crn,crd_typ);
