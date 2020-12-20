@@ -1,8 +1,12 @@
-2020-12-19  Charlie Zender  <zender@uci.edu>
+2020-12-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.7-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha03: Pernil';git push
-	git tag -a 4.9.7-alpha03 -m 'nco_flt_enm; ncks, ncap2 --ccr; ncclimo/ncremap Chrysalis';git push --tags
+	git tag -a 4.9.7-alpha03 -m 'nco_flt_enm; ncks, ncap2 --ccr; ncclimo/ncremap Chrysalis; ncremap nfr MPAS';git push --tags
+
+	* nco_grd_nfr() implement Fortran-based vertex indexinng, validate MPAS grid inferral
+
+2020-12-19  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_nfr() found error in MPAS restart for QU120_zach.nc
 

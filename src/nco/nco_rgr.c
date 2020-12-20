@@ -7423,6 +7423,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long col_idx;
   long col_nbr; /* [nbr] Number of columns in grid */
   long crn_idx; /* [idx] Counting index for corners */
+  long ttl_idx; /* [idx] Total (unrolled) counting index for grid+corners */
   long dmn_sz; /* [nbr] Size of current dimension */
   long grd_crn_nbr; /* [nbr] Number of corners in gridcell */
   long grd_rnk_nbr=int_CEWI; /* [nbr] Number of dimensions in grid */
@@ -7865,7 +7866,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       flg_1D_psd_rct_bnd=True;
     } /* !bnd_nbr */
     if(!strcmp(bnd_dmn_nm,"maxEdges")){
-      (void)fprintf(stdout,"%s: INFO Unstructured grid has dimension \"%s\" which indicates an MPAS grid. Will attempt to locate other MPAS information (dimension nVertices and variables verticesOnCell, lonVertex, and latVertex) to construct SCRIP-compliant bounds variables...\n",nco_prg_nm_get(),bnd_dmn_nm);
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Unstructured grid has dimension \"%s\" which indicates an MPAS grid. Will attempt to locate other MPAS information (dimension nVertices and variables verticesOnCell, lonVertex, and latVertex) to construct SCRIP-compliant bounds variables...\n",nco_prg_nm_get(),bnd_dmn_nm);
       if((rcd=nco_inq_varid_flg(in_id,"verticesOnCell",&vrt_cll_id)) == NC_NOERR) vrt_cll_nm=strdup("verticesOnCell");
       if((rcd=nco_inq_varid_flg(in_id,"lonVertex",&vrt_lon_id)) == NC_NOERR) vrt_lon_nm=strdup("lonVertex");
       if((rcd=nco_inq_varid_flg(in_id,"latVertex",&vrt_lat_id)) == NC_NOERR) vrt_lat_nm=strdup("latVertex");
@@ -7873,7 +7874,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(dmn_id_vrt != NC_MIN_INT) rcd+=nco_inq_dimlen(in_id,dmn_id_vrt,&vrt_nbr);
       if(vrt_dmn_nm && vrt_cll_nm && vrt_lon_nm && vrt_lat_nm){
 	flg_1D_mpas_bnd=True;
-	(void)fprintf(stdout,"%s: INFO Found all MPAS information needed to construct SCRIP-compliant bounds variables.\n",nco_prg_nm_get());
+	if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO Found all MPAS information needed to construct SCRIP-compliant bounds variables.\n",nco_prg_nm_get());
       }else{
 	(void)fprintf(stdout,"%s: INFO Unable to find all MPAS information needed to construct SCRIP-compliant bounds variables. Will not write bounds coordinates. This will degrade usefulness of SCRIP file for regridding schemes (e.g., conservative) that require cell boundaries.\n",nco_prg_nm_get());
 	(void)fprintf(stdout,"%s: HINT Often MPAS restart files contain the required bounds variables (verticesOnCell, lonVertex, latVertex) that normal MPAS data files lack. Try inferring the SCRIP grid from a restart file not a normal time-varying output dataset.\n",nco_prg_nm_get());
@@ -8054,6 +8055,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       vrt_lon=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
       dmn_cnt[0]=col_nbr;
       dmn_cnt[1]=grd_crn_nbr;
+      if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO %s reports dimension sizes bnd_nbr=%ld, col_nbr=%ld, grd_crn_nbr=%ld, vrt_nbr=%ld\n",nco_prg_nm_get(),fnc_nm,bnd_nbr,col_nbr,grd_crn_nbr,vrt_nbr);
       if(vrt_cll_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_cll_id,dmn_srt,dmn_cnt,vrt_cll,(nc_type)NC_INT);
       dmn_cnt[0]=vrt_nbr;
       if(vrt_lat_id != NC_MIN_INT) rcd=nco_get_vara(in_id,vrt_lat_id,dmn_srt,dmn_cnt,vrt_lat,crd_typ);
@@ -8072,13 +8074,23 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       for(col_idx=0;col_idx<col_nbr;col_idx++){
 	idx=col_idx*grd_crn_nbr;
 	for(crn_idx=0;crn_idx<grd_crn_nbr;crn_idx++){
-	  vrt_idx=vrt_cll[idx+crn_idx];
+	  ttl_idx=idx+crn_idx;
+	  vrt_idx=vrt_cll[ttl_idx];
 	  assert(vrt_idx >= 0);
-	  if(vrt_idx >= vrt_nbr) (void)fprintf(stdout,"%s: WARNING %s input gridcell %ld corner %ld has illegal MPAS input verticesOnCell value %ld (maximum valid vertex = vrt_nbr-1 = %ld-1 = %ld)\n",nco_prg_nm_get(),fnc_nm,col_idx,crn_idx,vrt_idx,vrt_nbr,vrt_nbr-1);
-	  //assert(vrt_idx < vrt_nbr);
-	  lat_crn[idx+crn_idx]=vrt_lat[vrt_idx];
-	  lon_crn[idx+crn_idx]=vrt_lon[vrt_idx];
-	} /* !vrt_idx */
+	  //if(vrt_idx >= vrt_nbr) (void)fprintf(stdout,"%s: WARNING %s input gridcell %ld corner %ld has extreme MPAS input verticesOnCell value %ld (maximum valid vertex = vrt_nbr-1 = %ld-1 = %ld)\n",nco_prg_nm_get(),fnc_nm,col_idx,crn_idx,vrt_idx,vrt_nbr,vrt_nbr-1);
+	  if(vrt_idx == 0){
+	    /* 20201220: Convert values of zero to neighboring valid vertex index */
+	    if(crn_idx > 0 && vrt_cll[ttl_idx-1] != 0) vrt_idx=vrt_cll[ttl_idx-1];
+	    else if(crn_idx > 1 && vrt_cll[ttl_idx-2] != 0) vrt_idx=vrt_cll[ttl_idx-2];
+	    else if(crn_idx == 0 && vrt_cll[ttl_idx+1] != 0) vrt_idx=vrt_cll[ttl_idx+1];
+	    else abort();
+	  } /* !vrt_idx */
+	  /* 20201220: Stored vertex indices use Fortran-based convention---subtract one for C */
+	  vrt_idx--;
+	  lat_crn[ttl_idx]=vrt_lat[vrt_idx];
+	  lon_crn[ttl_idx]=vrt_lon[vrt_idx];
+	  //(void)fprintf(stdout,"%s: DEBUG %s reports col_idx = %ld, crn_idx = %ld, ttl_idx = %ld, vrt_idx = %ld, vrt_lat = %g, vrt_lon = %g\n",nco_prg_nm_get(),fnc_nm,col_idx,crn_idx,ttl_idx,vrt_idx,vrt_lat[vrt_idx],vrt_lon[vrt_idx]);
+	} /* !crn_idx */
       } /* !col_idx */
     }else{ /* !flg_1D_mpas_bnd */
       dmn_cnt[0]=col_nbr;
@@ -8134,7 +8146,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	dmn_cnt[2]=lon_nbr;
 	flg_crn_grd_lat_lon=True;
       }else{
-	(void)fprintf(stdout,"%s: WARNING %s confused by dimension-ordering of latitude bounds variable \"%s. Will ignore this bounds variable and attempt to extrapolate vertices from centers internally...\n",nco_prg_nm_get(),fnc_nm,lat_nm_in);
+	(void)fprintf(stdout,"%s: WARNING %s confused by dimension-ordering of latitude bounds variable \"%s\". Will ignore this bounds variable and attempt to extrapolate vertices from centers internally...\n",nco_prg_nm_get(),fnc_nm,lat_nm_in);
 	lat_bnd_id=NC_MIN_INT;
 	lon_bnd_id=NC_MIN_INT;
       } /* !dmn_ids */
