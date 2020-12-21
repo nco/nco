@@ -1,8 +1,8 @@
 2020-12-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.7-alpha03 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha03: Pernil';git push
-	git tag -a 4.9.7-alpha03 -m 'nco_flt_enm; ncks, ncap2 --ccr; ncclimo/ncremap Chrysalis; ncremap nfr MPAS';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha03: Bona';git push
+	git tag -a 4.9.7-alpha03 -m 'nco_flt_enm; ncks, ncap2 --ccr; ncclimo/ncremap Chrysalis; ncremap nfr MPAS; ncclimo fix 4.9.6 tpd bug';git push --tags
 
 	* Fix ncclimo date/time bug: Using %g not %f in tpd-inferral format results in tpd=10 not tpd=8 for 3-hourly EAM data
 
