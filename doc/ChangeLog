@@ -4,6 +4,10 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha03: Pernil';git push
 	git tag -a 4.9.7-alpha03 -m 'nco_flt_enm; ncks, ncap2 --ccr; ncclimo/ncremap Chrysalis; ncremap nfr MPAS';git push --tags
 
+	* Fix ncclimo date/time bug: Using %g not %f in tpd-inferral format results in tpd=10 not tpd=8 for 3-hourly EAM data
+
+	* Add long_name attribute to grid_dims variable
+
 	* nco_grd_nfr() implement Fortran-based vertex indexinng, validate MPAS grid inferral
 
 2020-12-19  Charlie Zender  <zender@uci.edu>

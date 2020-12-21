@@ -6999,6 +6999,8 @@ nco_grd_mk /* [fnc] Create SCRIP-format grid file */
   rcd=nco_char_att_put(out_id,NULL,"latitude_grid_type",nco_grd_lat_sng(lat_typ));
   rcd=nco_char_att_put(out_id,NULL,"longitude_grid_type",nco_grd_lon_sng(lon_typ));
 
+  rcd=nco_char_att_put(out_id,dmn_sz_nm,"long_name","Size(s) of horizontal dimensions (in Fortran storage order for historical reasons)");
+
   rcd=nco_char_att_put(out_id,grd_area_nm,"long_name","Solid Angle Subtended on Source Grid");
   rcd=nco_char_att_put(out_id,grd_area_nm,"standard_name","solid_angle");
   rcd=nco_char_att_put(out_id,grd_area_nm,"units","steradian");
@@ -9366,6 +9368,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   (void)nco_vrs_att_cat(out_id);
   rcd=nco_char_att_put(out_id,NULL,"latitude_grid_type",nco_grd_lat_sng(lat_typ));
   rcd=nco_char_att_put(out_id,NULL,"longitude_grid_type",nco_grd_lon_sng(lon_typ));
+
+  rcd=nco_char_att_put(out_id,dmn_sz_nm,"long_name","Size(s) of horizontal dimensions (in Fortran storage order for historical reasons)");
 
   if(flg_area_sr){
     rcd=nco_char_att_put(out_id,area_nm,"long_name","Solid Angle Subtended on Source Grid");
