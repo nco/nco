@@ -834,7 +834,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     if(nco_baa_cnv_get() == nco_baa_grm){
       /* Bit-Groom: alternately shave and set LSBs */
       if(!has_mss_val){
-	msk_f64_u64_zro <<= 2;
+	msk_f64_u64_zro <<= 1;
 	msk_f64_u64_one=~msk_f64_u64_zro;
 	for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
 	for(idx=1L;idx<sz;idx+=2L)
