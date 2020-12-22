@@ -22,7 +22,8 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Purpose: Copy single variable from input netCDF file to output netCDF file
      Routine does not account for user-specified limits, it just copies what it finds
      Routine copies variable-by-variable, old-style
-     As of 2013, routine used only in USE_MM3_WORKAROUND copying in nco_xtr_wrt() */
+     As of 2013, routine (only) used in USE_MM3_WORKAROUND copying in nco_xtr_wrt()
+     As of 2015, routine (additionally) used for non-regridded variables in nco_rgr_wgt(), nco_ntp_vrt() */
 
   const char fnc_nm[]="nco_cpy_var_val()"; /* [sng] Function name */
 

@@ -1273,9 +1273,9 @@ else
     exit 1
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'cam' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'eam' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ]; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'cam' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'eam' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mpassi' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ]; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'cam', 'clm', 'cice', 'ctsm', 'eam', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mpasseaice', 'mwf', 'nil', 'rrg', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'cam', 'clm', 'cice', 'ctsm', 'eam', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mpasseaice', 'mpassi', 'mwf', 'nil', 'rrg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -1300,9 +1300,9 @@ if [ "${prc_typ}" = 'mod04' ]; then
     fi # !pdq_opt
     hnt_dst='--dst_regional'
 fi # !mod04
-if [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ]; then 
+if [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpassi' ]; then 
     prc_mpas='Yes'
-fi # !mpas, !mpascice, !mpasseaice
+fi # !mpas, !mpascice, !mpasseaice, !mpassi
 if [ "${prc_mpas}" = 'Yes' ]; then 
 
     # Add/alter missing metadata to MPAS files unless script was invoked by ncclimo
@@ -1513,7 +1513,7 @@ if [ "${prc_typ}" = 'cice' ]; then
     sgs_nrm='100.0'
     prc_cice='Yes'
 fi # !cice
-if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpas-seaice' ]; then 
+if [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpassi' ]; then 
     # NB: 'mpasseaice' is an exact synonym for 'mpascice' (which should be deprecated)
     # Set MPAS-SeaIce-specific options first, then change prc_typ to sgs
     # MPAS-SeaIce requires two modes, MPAS and SGS, so set prc_mpas to 'Yes'

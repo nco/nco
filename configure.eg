@@ -367,14 +367,11 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-
 # spack install --run-tests nco%gcc ^netcdf@4.4.0
 # Sysadmin upgrade request: support@lcrc.anl.gov
 # Latest ticket to build NCO: AREQ0215917 on 20180413
-# Latest sysadmin-compiled module usage: soft add +netcdf-4.6.1 soft add +nco-4.7.4 # 20180417
+# Latest sysadmin-compiled module usage: 
 # Personal recipe last modified: 20200618
 # Personal recipe last used successfully: 20200905
 # Fails to link to system-installed udunits...why?
 # nm -a /soft/udunits/2.1.21/lib/libudunits2.a | grep ut_read_xml
-# soft add +antlr-2.7.7 # 20161223 this ANTLR appears to be stock and not NCO-compatible
-# soft add +udunits-2.1.21 # 20161223 this UDUnits was compiled without -fPIC so fails with NCO
-# 20200618: Removed loading any soft modules
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/soft/spack-0.10.0/opt/spack/linux-centos6-x86_64/gcc-5.3.0/netcdf-4.4.1.1-2dtwbu4ojkwj5tqd4uqvomnu6ecmh6tx' UDUNITS2_PATH=${HOME} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
@@ -405,6 +402,27 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 cd ~/nco;git reset --hard origin/master
 cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0' GSL_INC='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/include' SL_LIB='/glade/u/apps/ch/opt/gsl/2.4/gnu/6.3.0/lib' NETCDF_ROOT='/glade/u/apps/ch/opt/netcdf/4.6.3/gnu/9.1.0' UDUNITS_INC='/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/include' UDUNITS_LIB='/glade/u/apps/ch/opt/udunits/2.2.26/gnu/9.1.0/lib' OPTS=D allinone;cd -
+
+# gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on chrysalis
+# LCRC uses Spack module written and tested by Adam Stewart: https://github.com/LLNL/spack/pull/4370/files
+# spack install --run-tests nco%gcc ^netcdf@4.4.0
+# Sysadmin upgrade request: support@lcrc.anl.gov
+# Latest ticket to build NCO: AREQ0215917 on 20180413
+# Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
+# Personal recipe last modified: 20201221 (use gcc netCDF 4.7.4)
+# Personal recipe last used successfully: 20201221 
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+module load gcc/9.2.0-ugetvbp
+module load openmpi/4.0.4-hpcx-hghvhj5
+module load netcdf-c/4.7.4-a4uk6zy
+ANTLR_ROOT=${HOME} CC='gcc' CXX='g++' NETCDF_ROOT='/gpfs/fs1/soft/chrysalis/spack/opt/spack/linux-centos8-x86_64/gcc-9.2.0/netcdf-c-4.7.4-a4uk6zy' UDUNITS2_PATH=${HOME} ./configure --enable-ccr --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
+/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
+make clean;make > nco.make.${GNU_TRP}.foo 2>&1
+make check >> nco.make.${GNU_TRP}.foo 2>&1
+make install >> nco.make.${GNU_TRP}.foo 2>&1
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on compy
 # https://acme-climate.atlassian.net/wiki/spaces/ED/pages/928973795/CompyMcNodeFace+-+E3SM+RGMA+ESMD+dedicated+system+at+PNNL
@@ -919,7 +937,10 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 #CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/include' NETCDF_LIB='/usr/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 # 20191217 Produce core dumps and symbols, turn-on -Wall, without using --enable-debug-custom
 CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+# Use updated netCDF from Anaconda
 CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
+# 20201215 with CCR
+CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-ccr --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
 /bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
