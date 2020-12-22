@@ -643,10 +643,10 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Be conservative, round upwards */
   prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
   /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
-  //prc_bnr_xpl_rqr=prc_bnr_ceil-1;
+  prc_bnr_xpl_rqr=prc_bnr_ceil-1; /* Implimented after 20201222 by JPT */
   //prc_bnr_xpl_rqr=prc_bnr_ceil;
-  prc_bnr_xpl_rqr=prc_bnr_ceil+1;
-  if(type == NC_DOUBLE) prc_bnr_xpl_rqr++ ; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */
+  //prc_bnr_xpl_rqr=prc_bnr_ceil+1; /* Used until 20201222 */
+  if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */
   /* 20150128: Hand-tuning shows we can sacrifice one or two more bits for almost all cases
      20150205: However, small integers are an exception. In fact they require two more bits, at least for NSD=1.
      Thus minimum threshold to preserve half of least significant digit (LSD) is prc_bnr_xpl_rqr=prc_bnr_ceil
@@ -679,8 +679,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     if(nco_baa_cnv_get() == nco_baa_grm){
       /* Bit-Groom: alternately shave and set LSBs */
       if(!has_mss_val){
-	msk_f32_u32_zro <<= 2;
-	msk_f32_u32_one = ~msk_f32_u32_zro;
 	for(idx=0L;idx<sz;idx+=2L) u32_ptr[idx]&=msk_f32_u32_zro;
 	for(idx=1L;idx<sz;idx+=2L)
 	  if(u32_ptr[idx] != 0U) /* Never quantize upwards floating point values of zero */
@@ -834,8 +832,6 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
     if(nco_baa_cnv_get() == nco_baa_grm){
       /* Bit-Groom: alternately shave and set LSBs */
       if(!has_mss_val){
-	msk_f64_u64_zro <<= 1;
-	msk_f64_u64_one=~msk_f64_u64_zro;
 	for(idx=0L;idx<sz;idx+=2L) u64_ptr[idx]&=msk_f64_u64_zro;
 	for(idx=1L;idx<sz;idx+=2L)
 	  if(u64_ptr[idx] != 0ULL) /* Never quantize upwards floating point values of zero */
