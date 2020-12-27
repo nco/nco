@@ -1,8 +1,18 @@
-2020-12-22  Charlie Zender  <zender@uci.edu>
+2020-12-27  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.9.7-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.7-alpha04: White Christmas';git push
-	git tag -a 4.9.7-alpha04 -m '';git push --tags
+	* NCO 4.9.7 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.7: Oculus';git push
+	git tag -a 4.9.7 -m 'S1D progress, nvcc, Andes, Chrysalis, nco_flt_enm; ncks, ncap2 --ccr; ncremap nfr MPAS; ncclimo fix tpd bug, glb_avg wait()';git push --tags
+
+	* BitGroom: revert quantizing two additional bits based on my tests
+
+2020-12-23  Charlie Zender  <zender@uci.edu>
+
+	* BitGroom: quantize two additional bits based on Juan's tests
+
+	* S1D: Determine pft_nbr_out and clm_nbr_out based on generic tests
+
+	* S1D: interrogate both ELM crop model history file and ELM/MALI history/restart files
 
 2020-12-20  Charlie Zender  <zender@uci.edu>
 
@@ -146,7 +156,7 @@
 
 	* Quiet long filename warnings unless dbg >= 1
 
-	* NCO 4.9.6-alpha04 release procedure:
+	* NCO 4.9.6-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.6-alpha04: Osiris Rex';git push
 	git tag -a 4.9.6-alpha04 -m 'all: bgr 64bit fix; ncremap fix esmf bug, mpi nd_fl bug, add cmem, msk_in, msk_out fix, UDUNITS2_XML_FILE hints;ncclimo cmem nodes';git push --tags
 

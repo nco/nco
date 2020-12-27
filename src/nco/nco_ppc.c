@@ -643,7 +643,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Be conservative, round upwards */
   prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
   /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
-  //prc_bnr_xpl_rqr=prc_bnr_ceil-1;
+  //prc_bnr_xpl_rqr=prc_bnr_ceil-1; /* 20201223 CSZ verified this fails for small integers with NSD=1 */
   //prc_bnr_xpl_rqr=prc_bnr_ceil;
   prc_bnr_xpl_rqr=prc_bnr_ceil+1;
   if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */

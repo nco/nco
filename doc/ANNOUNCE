@@ -10,7 +10,7 @@ Version 4.9.7 is a minor NCO release that contains a few new features
 and fixes. Unless the features/fixes listed below affect you, no need
 to upgrade this time.
 
-Work on NCO 4.9.7 has commenced and will improve analysis of land
+Work on NCO 4.9.8 has commenced and will improve analysis of land
 surface datasets packed into sparse-1D formats.
 
 Enjoy,
@@ -18,14 +18,56 @@ Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Hi
-ncclimo --var=T,Q --var_xtr=co2vmr,FSDS ...
+A. ncremap can now infer SCRIP grids from MPAS restart files.
+This is useful when users lack access to the gridfiles their
+model used. This can easily happen when running standalone
+MPAS simulations that use non-scientifically validated grids.
+Previously inferring MPAS grids produce incomplete (no corners)
+and erroneous (degrees not radians in metadata) grids.
+Now the inferred grids are complete, consistent, and BFB with
+the original grids used in the MPAS simulation.
+
+ncremap -d ~/restart.2001-01-01_00.00.00.nc -g QU120_zach.nc
+
+http://nco.sf.net/nco.html#ncremap
+http://nco.sf.net/nco.html#infer
+
+B. ncremap and ncclimo have been updated to work in MPI mode
+on the new DOE machines Andes (ORNL) and Chrysalis (ANL LCRC).
+http://nco.sf.net/nco.html#par_typ
+
+C. NCO can be built to leverage the Communinty Codec Repository.
+The CCR is currently supports two lossless compression filters
+(BZip2, Zstandard) and one lossy quantization filter (BitGroom).
+More importantly, the CCR is extensible and provides the C/Fortran 
+API for defining alternative (non-DEFLATE) compression using
+a netCDF-like API at file creation time. The NCO ncap2 operator
+will now access these filters for rewriting variables in existing
+files:
+
+./configure --enable-ccr; make; make install # Build NCO with CCR
+ncap2 -O -7 --ccr=Zstd -L 3 -s 'two=one+one' in.nc out.nc
+ncap2 -O -7 --ccr=BitGroom -L 3 -s 'two=one+one' in.nc out.nc
+ncks -C --hdn -v three_dmn_rec_var out.nc # Examine data
+
+http://github.com/ccr/ccr
+CCR capabilities, and NCO support for them, will expand in 2021. 
+Thanks to Ed Hartnett of NOAA (and netCDF4/PIO fame) for partnering
+on the CCR! See our poster on the CCR 1.1 release at AMS.
 
 BUG FIXES:
 
 A. ncclimo fixes the bug that caused the --glb_avg option to fail
 when invoked in a batch-queue submission. Thanks to Chris Golaz
-for reporting.
+for reporting. The problem was subtle and only exposed itself when
+invoked on multiple input variables on nodes with fast response
+times (bug appeared only in batch queues not interactive nodes).
+The solution is to upgrade.
+
+B. ncclimo fixes a bug introduced in 4.9.6 that caused the
+high-frequency climo mode to diagnose the wrong timesteps-per-day
+(tpd) in the input file. Thanks to Jill Chang for reporting.
+Workaround is to manually specify with --tpd or to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

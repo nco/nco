@@ -84,6 +84,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_bool flg_grd_2D=False; /* [flg] Unpacked data are on rectangular (2D) grid */
   nco_bool flg_grd_dat=False; /* [flg] Use horizontal grid from required input data file */
   nco_bool flg_grd_tpl=False; /* [flg] Use horizontal grid from optional horizontal grid template file */
+  nco_bool flg_nm_hst=False; /* [flg] Names in data file are as in history files ("ltype_"...) */
+  nco_bool flg_nm_rst=False; /* [flg] Names in data file are as in restart files ("ilun_"...) */
 
   /* Does data file have unstructured grid? 
      MB: Routine must handle two semantically distinct meanings of "column":
@@ -194,6 +196,17 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_bool flg_s1d_lnd=False; /* [flg] Dataset contains sparse variables for landunits */
   nco_bool flg_s1d_pft=False; /* [flg] Dataset contains sparse variables for PFTs */
 
+  rcd=nco_inq_att_flg(in_id,NC_GLOBAL,"ilun_vegetated_or_bare_soil",(nc_type *)NULL,(long *)NULL);
+  if(rcd == NC_NOERR) flg_nm_rst=True;
+  rcd=nco_inq_att_flg(in_id,NC_GLOBAL,"ltype_vegetated_or_bare_soil",(nc_type *)NULL,(long *)NULL);
+  if(rcd == NC_NOERR) flg_nm_hst=True;
+  assert(!(flg_nm_hst && flg_nm_rst));
+  if(!flg_nm_hst && !flg_nm_rst){
+    (void)fprintf(stderr,"%s: ERROR %s reports input data file lacks expected global attributes\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !flg_nm_hst */
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s will assume input attributes and variables use CLM/ELM %s naming conventions like %s\n",nco_prg_nm_get(),fnc_nm,flg_nm_hst ? "history file" : "restart file",flg_nm_hst ? "\"ltype_...\"" : "\"ilun_...\"");
+
   rcd=nco_inq_varid_flg(in_id,"cols1d_lat",&cols1d_lat_id);
   if(cols1d_lat_id != NC_MIN_INT) flg_s1d_clm=True;
   if(flg_s1d_clm){
@@ -202,8 +215,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_varid(in_id,"cols1d_lon",&cols1d_lon_id);
     rcd=nco_inq_varid_flg(in_id,"cols1d_gridcell_index",&cols1d_gridcell_index_id); /* ELM/MALI restart */
     rcd=nco_inq_varid_flg(in_id,"cols1d_ityp",&cols1d_ityp_id); /* ELM/MALI restart */
-    rcd=nco_inq_varid_flg(in_id,"cols1d_itype_lunit",&cols1d_ityplun_id); /* ELM Crop history */
-    rcd=nco_inq_varid_flg(in_id,"cols1d_ityplun",&cols1d_ityplun_id); /* ELM/MALI restart */a
+    if(flg_nm_hst) rcd=nco_inq_varid(in_id,"cols1d_itype_lunit",&cols1d_ityplun_id); else rcd=nco_inq_varid(in_id,"cols1d_ityplun",&cols1d_ityplun_id);
   } /* !flg_s1d_clm */
      
   rcd=nco_inq_varid_flg(in_id,"grid1d_lat",&grid1d_lat_id);
@@ -231,10 +243,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_varid_flg(in_id,"pfts1d_column_index",&pfts1d_column_index_id);
     rcd=nco_inq_varid(in_id,"pfts1d_jxy",&pfts1d_jxy_id);
     rcd=nco_inq_varid(in_id,"pfts1d_lon",&pfts1d_lon_id);
-    rcd=nco_inq_varid_flg(in_id,"pfts1d_ityp",&pfts1d_ityp_id); /* ELM/MALI restart */
-    rcd=nco_inq_varid_flg(in_id,"pfts1d_itype_veg",&pfts1d_ityp_id); /* ELM Crop history */
-    rcd=nco_inq_varid_flg(in_id,"pfts1d_ityplun",&pfts1d_ityplun_id); /* ELM/MALI restart */
-    rcd=nco_inq_varid_flg(in_id,"pfts1d_itype_lunit",&pfts1d_ityplun_id); /* ELM Crop history */
+    if(flg_nm_hst) rcd=nco_inq_varid(in_id,"pfts1d_itype_veg",&pfts1d_ityp_id); else rcd=nco_inq_varid(in_id,"pfts1d_itypveg",&pfts1d_ityp_id);
+    if(flg_nm_hst) rcd=nco_inq_varid(in_id,"pfts1d_itype_lunit",&pfts1d_ityplun_id); else rcd=nco_inq_varid(in_id,"pfts1d_ityplun",&pfts1d_ityplun_id);
   } /* !flg_s1d_pft */
   
   assert(flg_s1d_clm || flg_s1d_lnd || flg_s1d_pft);
@@ -400,33 +410,45 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int ilun_urban_tbd; /* 7 [enm] */
   int ilun_urban_hd; /* 8 [enm] */
   int ilun_urban_md; /* 9 [enm] */
-  rcd+=nco_get_att(in_id,NC_GLOBAL,"ilun_vegetated_or_bare_soil",&ilun_vegetated_or_bare_soil,NC_INT);
-  rcd+=nco_get_att(in_id,NC_GLOBAL,"ilun_crop",&ilun_crop,NC_INT);
-  rcd+=nco_get_att(in_id,NC_GLOBAL,"ilun_landice",&ilun_landice,NC_INT);
-  rcd+=nco_get_att(in_id,NC_GLOBAL,"ilun_landice_multiple_elevation_classes",&ilun_landice_multiple_elevation_classes,NC_INT);
-  rcd+=nco_get_att(in_id,NC_GLOBAL,"ilun_deep_lake",&ilun_deep_lake,NC_INT);
-  rcd+=nco_get_att(in_id,NC_GLOBAL,"ilun_wetland",&ilun_wetland,NC_INT);
-  rcd+=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_tbd",&ilun_urban_tbd,NC_INT);
-  rcd+=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_hd",&ilun_urban_hd,NC_INT);
-  rcd+=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_md",&ilun_urban_md,NC_INT);
+  if(flg_nm_hst){
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_vegetated_or_bare_soil",&ilun_vegetated_or_bare_soil,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_crop",&ilun_crop,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_landice",&ilun_landice,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_landice_multiple_elevation_classes",&ilun_landice_multiple_elevation_classes,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_deep_lake",&ilun_deep_lake,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_wetland",&ilun_wetland,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_urban_tbd",&ilun_urban_tbd,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_urban_hd",&ilun_urban_hd,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ltype_urban_md",&ilun_urban_md,NC_INT);
+  }else{ /* !flg_nm_hst */
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_vegetated_or_bare_soil",&ilun_vegetated_or_bare_soil,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_crop",&ilun_crop,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_landice",&ilun_landice,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_landice_multiple_elevation_classes",&ilun_landice_multiple_elevation_classes,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_deep_lake",&ilun_deep_lake,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_wetland",&ilun_wetland,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_tbd",&ilun_urban_tbd,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_hd",&ilun_urban_hd,NC_INT);
+    rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_md",&ilun_urban_md,NC_INT);
+  } /* !flg_nm_hst */
 
   int *cols1d_ityp=NULL; /* [id] Column type */
   int *cols1d_ityplun=NULL; /* [id] Column landunit type */
 
-  cols1d_ityp=(int *)nco_malloc(clm_nbr_in*sizeof(int));
+  if(cols1d_ityp_id != NC_MIN_INT) cols1d_ityp=(int *)nco_malloc(clm_nbr_in*sizeof(int));
   cols1d_ityplun=(int *)nco_malloc(clm_nbr_in*sizeof(int));
 
-  rcd=nco_get_var(in_id,cols1d_ityp_id,cols1d_ityp,NC_INT);
+  if(cols1d_ityp_id != NC_MIN_INT) rcd=nco_get_var(in_id,cols1d_ityp_id,cols1d_ityp,NC_INT);
   rcd=nco_get_var(in_id,cols1d_ityplun_id,cols1d_ityplun,NC_INT);
 
+  clm_nbr_out=0;
   for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
-    clm_nbr_out=0;
     if(cols1d_ityplun[clm_idx] != ilun_landice_multiple_elevation_classes) continue;
     while(cols1d_ityplun[clm_idx++] == ilun_landice_multiple_elevation_classes) clm_nbr_out++;
     break;
   } /* !clm_idx */
   /* NB: landice_MEC (ilun=4) landunits (usually) have 10 glacier elevation classes */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO clm_nbr_out = %d\n",nco_prg_nm_get(),clm_nbr_out);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO clm_nbr_out = %ld\n",nco_prg_nm_get(),clm_nbr_out);
 
   int *pfts1d_ityp=NULL; /* [id] PFT column type */
   int *pfts1d_ityplun=NULL; /* [id] PFT landunit type */
@@ -437,28 +459,27 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   rcd=nco_get_var(in_id,pfts1d_ityp_id,pfts1d_ityp,NC_INT);
   rcd=nco_get_var(in_id,pfts1d_ityplun_id,pfts1d_ityplun,NC_INT);
 
+  pft_nbr_out=0;
   for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
-    pft_nbr_out=0;
-    if(pfts1d_ityplun[pft_idx] != ilun_vegetated_or_bare_soil) continue;
-    while(pfts1d_ityplun[pft_idx++] == ilun_landice_multiple_elevation_classes) pft_nbr_out++;
+    if((pfts1d_ityplun[pft_idx] != ilun_vegetated_or_bare_soil) && (pfts1d_ityplun[pft_idx] != ilun_crop)) continue;
+    /* Skip bare ground */
+    while(pfts1d_ityp[++pft_idx] != 0) pft_nbr_out++;
     break;
   } /* !pft_idx */
   /* NB: landice_MEC (ilun=4) landunits (usually) have 10 glacier elevation classes */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %d\n",nco_prg_nm_get(),pft_nbr_out);
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
 
   /* Determine unpacked dimensions */
   /* Define unpacked dimensions before all else */
   grd_nbr_out=grd_nbr_in;
   lnd_nbr_out=lnd_nbr_in;
-  pft_nbr_out=17; /* Every column has either 1 or 17 PFTs */
+  (void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
   if(need_clm) rcd=nco_def_dim(out_id,clm_nm_out,clm_nbr_out,&dmn_id_clm_out);
   if(need_grd) rcd=nco_def_dim(out_id,grd_nm_out,grd_nbr_out,&dmn_id_grd_out);
   if(need_lnd) rcd=nco_def_dim(out_id,lnd_nm_out,lnd_nbr_out,&dmn_id_lnd_out);
   if(need_pft) rcd=nco_def_dim(out_id,pft_nm_out,pft_nbr_out,&dmn_id_pft_out);
 
   /* Pre-allocate dimension ID and cnt/srt space */
-
-  //(void)fprintf(stdout,"%s: DEBUG quark1 dmn_nbr_out = %d, dmn_nbr_ps = %d\n",nco_prg_nm_get(),dmn_nbr_out,dmn_nbr_ps);
 
   char *var_nm; /* [sng] Variable name */
   int *dmn_id_in=NULL; /* [id] Dimension IDs */
@@ -685,10 +706,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Free output data memory */
 #endif /* !ENABLE_S1D */
 
-  if(cols1d_ityp) cols1d_ityp=(long *)nco_free(cols1d_ityp);
-  if(cols1d_ityplun) cols1d_ityplun=(long *)nco_free(cols1d_ityplun);
-  if(pfts1d_ityp) pfts1d_ityp=(long *)nco_free(pfts1d_ityp);
-  if(pfts1d_ityplun) pfts1d_ityplun=(long *)nco_free(pfts1d_ityplun);
+  if(cols1d_ityp) cols1d_ityp=(int *)nco_free(cols1d_ityp);
+  if(cols1d_ityplun) cols1d_ityplun=(int *)nco_free(cols1d_ityplun);
+  if(pfts1d_ityp) pfts1d_ityp=(int *)nco_free(pfts1d_ityp);
+  if(pfts1d_ityplun) pfts1d_ityplun=(int *)nco_free(pfts1d_ityplun);
 
   if(clm_nm_in) clm_nm_in=(char *)nco_free(clm_nm_in);
   if(grd_nm_in) grd_nm_in=(char *)nco_free(grd_nm_in);
