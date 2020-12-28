@@ -1,3 +1,9 @@
+2020-12-28  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.8-alpha01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha01: Alleles';git push
+	git tag -a 4.9.8-alpha01 -m 'Functionally identical to 4.9.7';git push --tags
+
 2020-12-27  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.7 release procedure:
