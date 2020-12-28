@@ -34,8 +34,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Purpose: Read sparse CLM/ELM input file, inflate and write into output file */
 
   /* Usage:
-     ncks -O -C --s1d -v cols1d_topoglc ~/data/bm/elm_mali_rst.nc ~/foo.nc
-     ncks -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_ig_hst.nc ${DATA}/bm/elm_mali_rst.nc ~/foo.nc */
+     ncks -D 1 -O -C --s1d ~/data/bm/elm_mali_bg_hst.nc ~/foo.nc
+     ncks -D 1 -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_ig_hst.nc ${DATA}/bm/elm_mali_rst.nc ~/foo.nc
+     ncks -D 1 -O -C --s1d ~/beth_in.nc ~/foo.nc */
 
   const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
 
@@ -226,7 +227,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_varid(in_id,"grid1d_lon",&grid1d_lon_id);
   } /* !flg_s1d_grd */
      
-  rcd=nco_inq_varid(in_id,"land1d_lat",&land1d_lat_id);
+  rcd=nco_inq_varid_flg(in_id,"land1d_lat",&land1d_lat_id);
   if(land1d_lat_id != NC_MIN_INT) flg_s1d_lnd=True;
   if(flg_s1d_lnd){
     rcd=nco_inq_varid_flg(in_id,"land1d_gridcell_index",&land1d_gridcell_index_id);
@@ -235,7 +236,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_varid(in_id,"land1d_lon",&land1d_lon_id);
   } /* !flg_s1d_lnd */
      
-  rcd=nco_inq_varid(in_id,"pfts1d_lat",&pfts1d_lat_id);
+  rcd=nco_inq_varid_flg(in_id,"pfts1d_lat",&pfts1d_lat_id);
   if(pfts1d_lat_id != NC_MIN_INT) flg_s1d_pft=True;
   if(flg_s1d_pft){
     rcd=nco_inq_varid(in_id,"pfts1d_ixy",&pfts1d_ixy_id);
@@ -247,7 +248,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(flg_nm_hst) rcd=nco_inq_varid(in_id,"pfts1d_itype_lunit",&pfts1d_ityplun_id); else rcd=nco_inq_varid(in_id,"pfts1d_ityplun",&pfts1d_ityplun_id);
   } /* !flg_s1d_pft */
   
-  assert(flg_s1d_clm || flg_s1d_lnd || flg_s1d_pft);
+  if(!(flg_s1d_clm || flg_s1d_lnd || flg_s1d_pft)){
+    (void)fprintf(stderr,"%s: ERROR %s does not detect any of the key variables (currently cols1d_lat, land1d_lat, pfts1d_lat) used to indicate presence of sparse-packed (S1D) variables\n",nco_prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* !flg_s1d_clm... */
 
   if(flg_s1d_clm) rcd=nco_inq_dimid(in_id,clm_nm_in,&dmn_id_clm_in);
   if(flg_s1d_grd) rcd=nco_inq_dimid(in_id,grd_nm_in,&dmn_id_grd_in);
@@ -520,6 +524,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nc_type var_typ_rgr; /* [enm] Variable type used during regridding */
   var_typ_rgr=NC_DOUBLE; /* NB: Perform interpolation in double precision */
 
+  (void)fprintf(stdout,"%s: DEBUG quark2\n",nco_prg_nm_get());
   if(flg_grd_1D){
     rcd+=nco_def_var(out_id,col_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_col_out,&col_out_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,col_out_id,shuffle,deflate,dfl_lvl);
@@ -541,7 +546,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_s1d_typ_enm nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
   aed_sct aed_mtd_fll_val;
 
-  /* Define interpolated and copied variables in output file */
+  (void)fprintf(stdout,"%s: DEBUG quark3\n",nco_prg_nm_get());
+  /* Define unpacked S1D and copied variables in output file */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
@@ -555,10 +561,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       /* If variable has not been defined, define it */
       if(rcd != NC_NOERR){
 	if(trv.flg_rgr){
-	  /* Interpolate */
+	  /* Unpack */
+	  (void)fprintf(stdout,"%s: DEBUG quark4\n",nco_prg_nm_get());
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  rcd=nco_inq_var_packing(in_id,var_id_in,&flg_pck);
-	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
+	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports S1D variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    if(clm_nm_in && !strcmp(dmn_nm,clm_nm_in)){
@@ -583,7 +590,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	}else{ /* !flg_rgr */
-	  /* Replicate non-interpolated variables */
+	  /* Replicate non-S1D variables */
+	  (void)fprintf(stdout,"%s: DEBUG quark5\n",nco_prg_nm_get());
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
@@ -598,7 +606,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	} /* !flg_rgr */
+	(void)fprintf(stdout,"%s: DEBUG quark6\n",nco_prg_nm_get());
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
+	(void)fprintf(stdout,"%s: DEBUG quark7\n",nco_prg_nm_get());
 	/* Duplicate netCDF4 settings when possible */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 	  /* Deflation */
@@ -618,6 +628,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	} /* !NC_FORMAT_NETCDF4 */
 	(void)nco_att_cpy(in_id,out_id,var_id_in,var_id_out,PCK_ATT_CPY);
 	/* Variables with subterranean levels and missing-value extrapolation must have _FillValue attribute */
+	(void)fprintf(stdout,"%s: DEBUG quark8\n",nco_prg_nm_get());
 	nco_bool flg_add_msv_att; /* [flg] Extrapolation requires _FillValue */
 	flg_add_msv_att=False;
 	if(flg_add_msv_att && trv.flg_rgr){
@@ -636,6 +647,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
       } /* !rcd */
     } /* !var */
   } /* end idx_tbl */
+  (void)fprintf(stdout,"%s: DEBUG quark9\n",nco_prg_nm_get());
 
   /* Free pre-allocated array space */
   if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
