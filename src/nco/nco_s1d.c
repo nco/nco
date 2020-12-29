@@ -50,6 +50,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   char *clm_nm_in=(char *)strdup("column");
   char *pft_nm_in=(char *)strdup("pft");
 
+  char *mec_nm_out=(char *)strdup("mec");
+
   int dfl_lvl=NCO_DFL_LVL_UNDEFINED; /* [enm] Deflate level */
   int fl_out_fmt=NCO_FORMAT_UNDEFINED; /* [enm] Output file format */
   int fll_md_old; /* [enm] Old fill mode */
@@ -286,6 +288,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_bool need_clm=False; /* [flg] At least one variable to unpack needs column dimension */
   nco_bool need_grd=False; /* [flg] At least one variable to unpack needs gridcell dimension */
   nco_bool need_lnd=False; /* [flg] At least one variable to unpack needs landunit dimension */
+  nco_bool need_mec=False; /* [flg] At least one variable to unpack needs MEC dimension */
   nco_bool need_pft=False; /* [flg] At least one variable to unpack needs PFT dimension */ 
   trv_sct trv; /* [sct] Traversal table object structure to reduce indirection */
   /* Define unpacking flag for each variable */
@@ -293,10 +296,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     trv=trv_tbl->lst[idx_tbl];
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       dmn_nbr_in=trv_tbl->lst[idx_tbl].nbr_dmn;
-      has_clm=False;
-      has_grd=False;
-      has_lnd=False;
-      has_pft=False;
+      has_clm=has_grd=has_lnd=has_pft=False;
       for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	/* Pre-determine flags necessary during next loop */
 	dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
@@ -329,13 +329,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     } /* end idx_tbl */
   } /* end dbg */
 
-  long clm_nbr_in=0L; /* [nbr] Number of columns in input data */
-  long grd_nbr_in=0L; /* [nbr] Number of gridcells in input data */
-  long lnd_nbr_in=0L; /* [nbr] Number of landunits in input data */
-  long pft_nbr_in=0L; /* [nbr] Number of PFTs in input data */
+  long clm_nbr_in=NC_MIN_INT; /* [nbr] Number of columns in input data */
+  long grd_nbr_in=NC_MIN_INT; /* [nbr] Number of gridcells in input data */
+  long lnd_nbr_in=NC_MIN_INT; /* [nbr] Number of landunits in input data */
+  long pft_nbr_in=NC_MIN_INT; /* [nbr] Number of PFTs in input data */
   long clm_nbr_out; /* [nbr] Number of columns in output data */
   long grd_nbr_out; /* [nbr] Number of gridcells in output data */
   long lnd_nbr_out; /* [nbr] Number of landunits in output data */
+  long mec_nbr_out; /* [nbr] Number of MECs in output data */
   long pft_nbr_out; /* [nbr] Number of PFTs in output data */
   if(need_clm) rcd=nco_inq_dimlen(in_id,dmn_id_clm_in,&clm_nbr_in);
   if(need_grd) rcd=nco_inq_dimlen(in_id,dmn_id_grd_in,&grd_nbr_in);
@@ -401,8 +402,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(need_pft) pft_nm_out=(char *)strdup(pft_nm_in);
 
   int dmn_id_clm_out=NC_MIN_INT; /* [id] Dimension ID */
-  int dmn_id_grd_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_lnd_out=NC_MIN_INT; /* [id] Dimension ID */
+  int dmn_id_mec_out=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_pft_out=NC_MIN_INT; /* [id] Dimension ID */
 
   int ilun_vegetated_or_bare_soil; /* 1 [enm] */
@@ -436,6 +437,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_md",&ilun_urban_md,NC_INT);
   } /* !flg_nm_hst */
 
+  /* Determine output Column dimension */
   int *cols1d_ityp=NULL; /* [id] Column type */
   int *cols1d_ityplun=NULL; /* [id] Column landunit type */
 
@@ -445,15 +447,27 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(cols1d_ityp_id != NC_MIN_INT) rcd=nco_get_var(in_id,cols1d_ityp_id,cols1d_ityp,NC_INT);
   rcd=nco_get_var(in_id,cols1d_ityplun_id,cols1d_ityplun,NC_INT);
 
-  clm_nbr_out=0;
+  mec_nbr_out=0;
   for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
     if(cols1d_ityplun[clm_idx] != ilun_landice_multiple_elevation_classes) continue;
-    while(cols1d_ityplun[clm_idx++] == ilun_landice_multiple_elevation_classes) clm_nbr_out++;
+    while(cols1d_ityplun[clm_idx++] == ilun_landice_multiple_elevation_classes) mec_nbr_out++;
     break;
   } /* !clm_idx */
-  /* NB: landice_MEC (ilun=4) landunits (usually) have 10 glacier elevation classes */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO clm_nbr_out = %ld\n",nco_prg_nm_get(),clm_nbr_out);
+  /* NB: landice_MEC (ilun=4, usually) landunits have 10 (always, AFAICT) glacier elevation classes */
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO mec_nbr_out = %ld\n",nco_prg_nm_get(),mec_nbr_out);
 
+  /* Determine output Grid dimension:
+     CLM/ELM 'gridcell' dimension counts each gridcell that contains land
+     Replace this dimension by horizontal dimension(s) in input data file */
+  if(flg_grd_1D) grd_nbr_out=col_nbr;
+  if(flg_grd_2D) grd_nbr_out=lat_nbr*lon_nbr;
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO grd_nbr_out = %ld\n",nco_prg_nm_get(),grd_nbr_out);
+
+  /* Determine output Landunit dimension */
+  lnd_nbr_out=3; /* fxm: Based on TBUILD variable for 3 urban landunit types */
+  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO lnd_nbr_out = %ld\n",nco_prg_nm_get(),lnd_nbr_out);
+
+  /* Determine output PFT dimension */
   int *pfts1d_ityp=NULL; /* [id] PFT column type */
   int *pfts1d_ityplun=NULL; /* [id] PFT landunit type */
 
@@ -470,18 +484,16 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     while(pfts1d_ityp[++pft_idx] != 0) pft_nbr_out++;
     break;
   } /* !pft_idx */
-  /* NB: landice_MEC (ilun=4) landunits (usually) have 10 glacier elevation classes */
   if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
 
-  /* Determine unpacked dimensions */
   /* Define unpacked dimensions before all else */
-  grd_nbr_out=grd_nbr_in;
-  lnd_nbr_out=lnd_nbr_in;
   (void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
-  if(need_clm) rcd=nco_def_dim(out_id,clm_nm_out,clm_nbr_out,&dmn_id_clm_out);
-  if(need_grd) rcd=nco_def_dim(out_id,grd_nm_out,grd_nbr_out,&dmn_id_grd_out);
-  if(need_lnd) rcd=nco_def_dim(out_id,lnd_nm_out,lnd_nbr_out,&dmn_id_lnd_out);
-  if(need_pft) rcd=nco_def_dim(out_id,pft_nm_out,pft_nbr_out,&dmn_id_pft_out);
+  if(need_clm && clm_nbr_out > 0L) rcd=nco_def_dim(out_id,clm_nm_out,clm_nbr_out,&dmn_id_clm_out);
+  if(need_lnd && lnd_nbr_out > 0L) rcd=nco_def_dim(out_id,lnd_nm_out,lnd_nbr_out,&dmn_id_lnd_out);
+  if(need_pft && pft_nbr_out > 0L) rcd=nco_def_dim(out_id,pft_nm_out,pft_nbr_out,&dmn_id_pft_out);
+
+  /* Assume MECs are new output dimension if they are enumerated in input */
+  if(mec_nbr_out > 0L) rcd=nco_def_dim(out_id,mec_nm_out,mec_nbr_out,&dmn_id_mec_out);
 
   /* Pre-allocate dimension ID and cnt/srt space */
 
@@ -510,6 +522,13 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
   dmn_cnt_in=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
   dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+
+  /* Obtain record dimension information from data file (restart files have no time dimension) */
+  rcd+=nco_inq_unlimdims(in_id,&dmn_nbr_rec,(int *)NULL);
+  if(dmn_nbr_rec > 0){
+    dmn_ids_rec=(int *)nco_malloc(dmn_nbr_rec*sizeof(int));
+    rcd=nco_inq_unlimdims(in_id,&dmn_nbr_rec,dmn_ids_rec);
+  } /* !dmn_nbr_rec */
 
   int shuffle; /* [flg] Turn-on shuffle filter */
   int deflate; /* [flg] Turn-on deflate filter */
@@ -564,23 +583,49 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  /* Unpack */
 	  (void)fprintf(stdout,"%s: DEBUG quark4\n",nco_prg_nm_get());
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	  dmn_in_fst=0;
 	  rcd=nco_inq_var_packing(in_id,var_id_in,&flg_pck);
 	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports S1D variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
 	    rcd=nco_inq_dimname(in_id,dmn_id_in[dmn_idx],dmn_nm);
 	    if(clm_nm_in && !strcmp(dmn_nm,clm_nm_in)){
-	      /* Change clm dimension */
-	      dmn_id_out[dmn_idx]=dmn_id_clm_out;
-	      dmn_cnt_out[dmn_idx]=clm_nbr_out;
+	      if(mec_nbr_out > 0L){
+		/* Change input column dimension to MEC if present */
+		dmn_id_out[dmn_idx]=dmn_id_mec_out;
+		dmn_cnt_out[dmn_idx]=mec_nbr_out;
+		dmn_in_fst++;
+		dmn_nbr_out++;
+	      } /* !mec_nbr_out */
+	      /* Follow by spatial dimension(s) */ 
+	      if(flg_grd_1D){
+		dmn_id_out[dmn_idx+dmn_in_fst]=dmn_id_col_out;
+		dmn_cnt_out[dmn_idx+dmn_in_fst]=col_nbr;
+	      } /* !flg_grd_1D */
+	      if(flg_grd_2D){
+		dmn_id_out[dmn_idx+dmn_in_fst]=dmn_id_lat_out;
+		dmn_cnt_out[dmn_idx+dmn_in_fst]=lat_nbr;
+		dmn_in_fst++;
+		dmn_nbr_out++;
+		dmn_id_out[dmn_idx+dmn_in_fst]=dmn_id_lon_out;
+		dmn_cnt_out[dmn_idx+dmn_in_fst]=lon_nbr;
+	      } /* !flg_grd_2D */
+	    }else if(!strcmp(dmn_nm,lnd_nm_in)){
+	      /* Change landunit dimension */
+	      dmn_id_out[dmn_idx]=dmn_id_lnd_out;
+	      dmn_cnt_out[dmn_idx]=lnd_nbr_out;
+	      /* fxm: we have not yet really defined lnd_nbr_out */
+	      assert(0);
 	    }else if(!strcmp(dmn_nm,pft_nm_in)){
-	      /* Change pft dimension */
+	      /* Change PFT dimension */
 	      dmn_id_out[dmn_idx]=dmn_id_pft_out;
 	      dmn_cnt_out[dmn_idx]=pft_nbr_out;
 	    }else{
-	      /* Dimensions clm/pft_nm_in have already been defined as clm/pft_nm_out, replicate all other dimensions */
+	      /* Dimensions [clm/lnd/pft]_nm_in were pre-defined above as [clm/lnd/pft]_nm_out, replicate all other dimensions */
 	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
 	    } /* !clm */
 	    if(rcd != NC_NOERR){
+	      /* Current input dimension is not yet in output file */
+	      (void)fprintf(stdout,"%s: DEBUG var_nm = %s, dmn_nm = %s\n",nco_prg_nm_get(),var_nm,dmn_nm);
 	      rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_out+dmn_idx);
 	      /* Check-for and, if found, retain record dimension property */
 	      for(int dmn_rec_idx=0;dmn_rec_idx < dmn_nbr_rec;dmn_rec_idx++)
@@ -652,6 +697,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Free pre-allocated array space */
   if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
   if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
+  if(dmn_ids_rec) dmn_ids_rec=(int *)nco_free(dmn_ids_rec);
   if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
   if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
   if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
