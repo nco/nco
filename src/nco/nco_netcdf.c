@@ -1601,8 +1601,11 @@ nco_def_dim(const int nc_id,const char * const dmn_nm,const long dmn_sz,int * co
   int rcd;
   rcd=nc_def_dim(nc_id,dmn_nm,(size_t)dmn_sz,dmn_id);
   if(rcd == NC_ENAMEINUSE){
-    (void)fprintf(stdout,"ERROR: %s cannot define dimension name \"%s\" which is already in use\n",fnc_nm,dmn_nm);
-  } /* endif */
+    (void)fprintf(stdout,"ERROR: %s cannot define dimension \"%s\" because that name is already in use\n",fnc_nm,dmn_nm);
+  } /* !rcd */
+  if(rcd == NC_EDIMSIZE){
+    (void)fprintf(stdout,"ERROR: %s cannot define dimension \"%s\" with illegal size = %ldL\n",fnc_nm,dmn_nm,dmn_sz);
+  } /* !rcd */
   if(rcd == NC_EBADNAME){
     char *nm_nc=NULL; /* [sng] netCDF-compatible name */
     (void)fprintf(stdout,"INFO: %s reports input file dimension name \"%s\" contains illegal characters. ",fnc_nm,dmn_nm);

@@ -333,11 +333,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   long grd_nbr_in=NC_MIN_INT; /* [nbr] Number of gridcells in input data */
   long lnd_nbr_in=NC_MIN_INT; /* [nbr] Number of landunits in input data */
   long pft_nbr_in=NC_MIN_INT; /* [nbr] Number of PFTs in input data */
-  long clm_nbr_out; /* [nbr] Number of columns in output data */
-  long grd_nbr_out; /* [nbr] Number of gridcells in output data */
-  long lnd_nbr_out; /* [nbr] Number of landunits in output data */
-  long mec_nbr_out; /* [nbr] Number of MECs in output data */
-  long pft_nbr_out; /* [nbr] Number of PFTs in output data */
+  long clm_nbr_out=NC_MIN_INT; /* [nbr] Number of columns in output data */
+  long grd_nbr_out=NC_MIN_INT; /* [nbr] Number of gridcells in output data */
+  long lnd_nbr_out=NC_MIN_INT; /* [nbr] Number of landunits in output data */
+  long mec_nbr_out=NC_MIN_INT; /* [nbr] Number of MECs in output data */
+  long pft_nbr_out=NC_MIN_INT; /* [nbr] Number of PFTs in output data */
   if(need_clm) rcd=nco_inq_dimlen(in_id,dmn_id_clm_in,&clm_nbr_in);
   if(need_grd) rcd=nco_inq_dimlen(in_id,dmn_id_grd_in,&grd_nbr_in);
   if(need_lnd) rcd=nco_inq_dimlen(in_id,dmn_id_lnd_in,&lnd_nbr_in);
@@ -560,6 +560,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   
   int flg_pck; /* [flg] Variable is packed on disk  */
   nco_bool has_mss_val; /* [flg] Has numeric missing value attribute */
+  nco_bool flg_add_spc_crd; /* [flg] Add spatial coordinates to S1D variable */
   float mss_val_flt;
   double mss_val_dbl;
   nco_s1d_typ_enm nco_s1d_typ; /* [enm] Sparse-1D type of input variable */
@@ -584,6 +585,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  (void)fprintf(stdout,"%s: DEBUG quark4\n",nco_prg_nm_get());
 	  rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	  dmn_in_fst=0;
+	  flg_add_spc_crd=False;
 	  rcd=nco_inq_var_packing(in_id,var_id_in,&flg_pck);
 	  if(flg_pck) (void)fprintf(stdout,"%s: WARNING %s reports S1D variable \"%s\" is packed so results unpredictable. HINT: If regridded values seems weird, retry after unpacking input file with, e.g., \"ncpdq -U in.nc out.nc\"\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
@@ -596,29 +598,24 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		dmn_in_fst++;
 		dmn_nbr_out++;
 	      } /* !mec_nbr_out */
-	      /* Follow by spatial dimension(s) */ 
-	      if(flg_grd_1D){
-		dmn_id_out[dmn_idx+dmn_in_fst]=dmn_id_col_out;
-		dmn_cnt_out[dmn_idx+dmn_in_fst]=col_nbr;
-	      } /* !flg_grd_1D */
-	      if(flg_grd_2D){
-		dmn_id_out[dmn_idx+dmn_in_fst]=dmn_id_lat_out;
-		dmn_cnt_out[dmn_idx+dmn_in_fst]=lat_nbr;
-		dmn_in_fst++;
-		dmn_nbr_out++;
-		dmn_id_out[dmn_idx+dmn_in_fst]=dmn_id_lon_out;
-		dmn_cnt_out[dmn_idx+dmn_in_fst]=lon_nbr;
-	      } /* !flg_grd_2D */
+	      flg_add_spc_crd=True;
+	    }else if(!strcmp(dmn_nm,grd_nm_in)){
+	      /* Gridcell dimension disappears to become spatial dimension in output */
+	      flg_add_spc_crd=True;
 	    }else if(!strcmp(dmn_nm,lnd_nm_in)){
 	      /* Change landunit dimension */
 	      dmn_id_out[dmn_idx]=dmn_id_lnd_out;
 	      dmn_cnt_out[dmn_idx]=lnd_nbr_out;
-	      /* fxm: we have not yet really defined lnd_nbr_out */
-	      assert(0);
+	      flg_add_spc_crd=True;
 	    }else if(!strcmp(dmn_nm,pft_nm_in)){
-	      /* Change PFT dimension */
-	      dmn_id_out[dmn_idx]=dmn_id_pft_out;
-	      dmn_cnt_out[dmn_idx]=pft_nbr_out;
+	      if(pft_nbr_out > 0L){
+		/* Change input PFT dimension to PFT if present */
+		dmn_id_out[dmn_idx]=dmn_id_pft_out;
+		dmn_cnt_out[dmn_idx]=pft_nbr_out;
+		dmn_in_fst++;
+		dmn_nbr_out++;
+	      } /* !pft_nbr_out */
+	      flg_add_spc_crd=True;
 	    }else{
 	      /* Dimensions [clm/lnd/pft]_nm_in were pre-defined above as [clm/lnd/pft]_nm_out, replicate all other dimensions */
 	      rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_id_out+dmn_idx);
@@ -633,6 +630,21 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 		  dmn_cnt_out[dmn_idx]=NC_UNLIMITED;
 	      rcd=nco_def_dim(out_id,dmn_nm,dmn_cnt_out[dmn_idx],dmn_id_out+dmn_idx);
 	    } /* !rcd */
+	    if(flg_add_spc_crd){
+	      /* Follow by spatial dimension(s) */ 
+	      if(flg_grd_1D){
+		dmn_id_out[dmn_idx+dmn_in_fst]=dmn_id_col_out;
+		dmn_cnt_out[dmn_idx+dmn_in_fst]=col_nbr;
+	      } /* !flg_grd_1D */
+	      if(flg_grd_2D){
+		dmn_id_out[dmn_idx+dmn_in_fst]=dmn_id_lat_out;
+		dmn_cnt_out[dmn_idx+dmn_in_fst]=lat_nbr;
+		dmn_in_fst++;
+		dmn_nbr_out++;
+		dmn_id_out[dmn_idx+dmn_in_fst]=dmn_id_lon_out;
+		dmn_cnt_out[dmn_idx+dmn_in_fst]=lon_nbr;
+	      } /* !flg_grd_2D */
+	    } /* !flg_add_spc_crd */
 	  } /* !dmn_idx */
 	}else{ /* !flg_rgr */
 	  /* Replicate non-S1D variables */
@@ -651,9 +663,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    } /* !rcd */
 	  } /* !dmn_idx */
 	} /* !flg_rgr */
-	(void)fprintf(stdout,"%s: DEBUG quark6\n",nco_prg_nm_get());
+	(void)fprintf(stdout,"%s: DEBUG quark6 defining %s...\n",nco_prg_nm_get(),var_nm);
 	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
-	(void)fprintf(stdout,"%s: DEBUG quark7\n",nco_prg_nm_get());
+	(void)fprintf(stdout,"%s: DEBUG quark7 defined %s\n",nco_prg_nm_get(),var_nm);
 	/* Duplicate netCDF4 settings when possible */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
 	  /* Deflation */
