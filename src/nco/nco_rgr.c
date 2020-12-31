@@ -2270,8 +2270,8 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	  if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
 	  if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
 	  if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
-	  if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
 	  if(var_val_dbl_in) var_val_dbl_in=(double *)nco_free(var_val_dbl_in);
+	  if(var_val_dbl_out) var_val_dbl_out=(double *)nco_free(var_val_dbl_out);
 	}else{ /* !trv.flg_rgr */
 	  /* Use standard NCO copy routine for variables that are not regridded
 	     20190511: Copy them only once */

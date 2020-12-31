@@ -306,7 +306,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	if(!has_pft && pft_nm_in) has_pft=!strcmp(dmn_nm_cp,pft_nm_in);
       } /* !dmn_idx */
       /* Unpack variables that contain a sparse-1D dimension */
-      if(has_clm || has_lnd || has_pft){
+      if(has_clm || has_grd || has_lnd || has_pft){
 	trv_tbl->lst[idx_tbl].flg_rgr=True;
 	var_rgr_nbr++;
 	if(has_clm) need_clm=True;
@@ -314,9 +314,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	if(has_lnd) need_lnd=True;
 	if(has_pft) need_pft=True;
       } /* endif */
-      assert(!(has_clm && has_lnd));
-      assert(!(has_clm && has_pft));
-      assert(!(has_lnd && has_pft));
       /* Copy all variables that are not regridded or omitted */
       if(!trv_tbl->lst[idx_tbl].flg_rgr) var_cpy_nbr++;
     } /* end nco_obj_typ_var */
@@ -493,7 +490,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
   } /* !need_pft */
 
-  /* Define unpacked dimensions before all else */
+  /* Define unpacked versions of needed dimensions before all else */
   (void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
   if(need_clm && clm_nbr_out > 0L) rcd=nco_def_dim(out_id,clm_nm_out,clm_nbr_out,&dmn_id_clm_out);
   if(need_lnd && lnd_nbr_out > 0L) rcd=nco_def_dim(out_id,lnd_nm_out,lnd_nbr_out,&dmn_id_lnd_out);
@@ -513,7 +510,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   long *dmn_cnt_in=NULL;
   long *dmn_cnt_out=NULL;
   long *dmn_srt=NULL;
-  nc_type var_typ_out; /* [enm] Variable type to write to disk */
+  nc_type var_typ; /* [enm] Variable type (same for input and output variable) */
   nco_bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
   int dmn_in_fst; /* [idx] Offset of input- relative to output-dimension due to non-MRV dimension insertion */
@@ -547,8 +544,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables (scalars) */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   const nc_type crd_typ_out=NC_DOUBLE;
-  nc_type var_typ_rgr; /* [enm] Variable type used during regridding */
-  var_typ_rgr=NC_DOUBLE; /* NB: Perform interpolation in double precision */
 
   (void)fprintf(stdout,"%s: DEBUG quark2\n",nco_prg_nm_get());
   if(flg_grd_1D){
@@ -580,7 +575,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       var_nm=trv.nm;
       /* Preserve input type in output type */
-      var_typ_out=trv.var_typ;
+      var_typ=trv.var_typ;
       dmn_nbr_in=trv.nbr_dmn;
       dmn_nbr_out=trv.nbr_dmn;
       rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
@@ -671,7 +666,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  } /* !dmn_idx */
 	} /* !flg_rgr */
 	(void)fprintf(stdout,"%s: DEBUG quark6 defining %s...\n",nco_prg_nm_get(),var_nm);
-	rcd=nco_def_var(out_id,var_nm,var_typ_out,dmn_nbr_out,dmn_id_out,&var_id_out);
+	rcd=nco_def_var(out_id,var_nm,var_typ,dmn_nbr_out,dmn_id_out,&var_id_out);
 	(void)fprintf(stdout,"%s: DEBUG quark7 defined %s\n",nco_prg_nm_get(),var_nm);
 	/* Duplicate netCDF4 settings when possible */
 	if(fl_out_fmt == NC_FORMAT_NETCDF4 || fl_out_fmt == NC_FORMAT_NETCDF4_CLASSIC){
@@ -701,9 +696,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	    nco_bool flg_att_chg; /* [flg] _FillValue attribute was written */
 	    aed_mtd_fll_val.var_nm=var_nm;
 	    aed_mtd_fll_val.id=var_id_out;
-	    aed_mtd_fll_val.type=var_typ_out;
-	    if(var_typ_out == NC_FLOAT) aed_mtd_fll_val.val.fp=&mss_val_flt;
-	    else if(var_typ_out == NC_DOUBLE) aed_mtd_fll_val.val.dp=&mss_val_dbl;
+	    aed_mtd_fll_val.type=var_typ;
+	    if(var_typ == NC_FLOAT) aed_mtd_fll_val.val.fp=&mss_val_flt;
+	    else if(var_typ == NC_DOUBLE) aed_mtd_fll_val.val.dp=&mss_val_dbl;
 	    flg_att_chg=nco_aed_prc(out_id,var_id_out,aed_mtd_fll_val);
 	    if(!flg_att_chg && nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: WARNING %s reports unsuccessful attempt to create _FillValue attribute for variable %s\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  } /* !has_mss_val */
@@ -725,19 +720,23 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int dmn_idx_col=int_CEWI; /* [idx] Index of column dimension */
   int dmn_idx_lat=int_CEWI; /* [idx] Index of latitude dimension */
   int dmn_idx_lon=int_CEWI; /* [idx] Index of longitude dimension */
+  int thr_idx; /* [idx] Thread index */
   int var_id; /* [id] Current variable ID */
 
-  long var_sz; /* [nbr] Size of variable */
-
-  nc_type var_typ_in; /* [enm] NetCDF type of input data */
+  size_t var_sz_in; /* [nbr] Number of elements in variable (will be self-multiplied) */
+  size_t var_sz_out; /* [nbr] Number of elements in variable (will be self-multiplied) */
 
   ptr_unn var_val_in;
   ptr_unn var_val_out;
   
-#ifdef ENABLE_S1D
+  /* Using naked stdin/stdout/stderr in parallel region generates warning
+     Copy appropriate filehandle to variable scoped as shared in parallel clause */
+  FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
+
+  //#ifdef ENABLE_S1D
 
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(has_clm,has_grd,has_lnd,has_pft,var_val_in,var_val_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ_out,var_typ_rgr) shared(dmn_id_col_in,dmn_id_col_out,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tm_in,flg_s1d_clm,flg_s1d_pft,grd_nbr,idx_dbg,col_nbr_in,col_nbr_out,pft_nbr_in,pft_nbr_out,out_id,xtr_mth)
+# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(dmn_cnt_in,dmn_cnt_out,dmn_id_in,dmn_id_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,grd_idx,has_clm,has_grd,has_lnd,has_pft,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ) shared(dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tm_in,flg_s1d_clm,flg_s1d_pft,grd_nbr,idx_dbg,clm_nbr_in,clm_nbr_out,col_nbr,lat_nbr,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr,pft_nbr_in,pft_nbr_out,out_id)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -750,23 +749,52 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     if(trv.nco_typ == nco_obj_typ_var && trv.flg_xtr){
       if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_stdout,"%s%s ",trv.flg_rgr ? "#" : "~",trv.nm);
       if(trv.flg_rgr){
-	/* Interpolate variable */
+	/* Unpack variable */
+	var_nm=trv.nm;
+	var_typ=trv.var_typ; /* NB: Output type in file is same as input type */
+	var_sz_in=1L;
+	var_sz_out=1L;
+	rcd=nco_inq_varid(in_id,var_nm,&var_id_in);
+	rcd=nco_inq_varid(out_id,var_nm,&var_id_out);
+	rcd=nco_inq_varndims(in_id,var_id_in,&dmn_nbr_in);
+	rcd=nco_inq_varndims(out_id,var_id_out,&dmn_nbr_out);
+	dmn_nbr_max= dmn_nbr_in > dmn_nbr_out ? dmn_nbr_in : dmn_nbr_out;
+	dmn_id_in=(int *)nco_malloc(dmn_nbr_in*sizeof(int));
+	dmn_id_out=(int *)nco_malloc(dmn_nbr_out*sizeof(int));
+	dmn_srt=(long *)nco_malloc(dmn_nbr_max*sizeof(long)); /* max() for both input and output grids */
+	dmn_cnt_in=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+	dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
+	rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
+	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_id_out);
 	
-	if(strstr("cols1d",var_nm)){
-	  nco_s1d_typ=nco_s1d_clm;
-	}else if(strstr("land1d",var_nm)){
-	  nco_s1d_typ=nco_s1d_lnd;
-	}else if(strstr("pfts1d",var_nm)){
-	  nco_s1d_typ=nco_s1d_pft;
-	}else{
+	has_clm=has_grd=has_lnd=has_pft=False;
+	nco_s1d_typ=nco_s1d_nil;
+	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	  dmn_nm_cp=trv.var_dmn[dmn_idx].dmn_nm;
+	  if(!has_clm && clm_nm_in) has_clm=!strcmp(dmn_nm_cp,clm_nm_in);
+	  if(!has_grd && grd_nm_in) has_grd=!strcmp(dmn_nm_cp,grd_nm_in);
+	  if(!has_lnd && lnd_nm_in) has_lnd=!strcmp(dmn_nm_cp,lnd_nm_in);
+	  if(!has_pft && pft_nm_in) has_pft=!strcmp(dmn_nm_cp,pft_nm_in);
+	} /* !dmn_idx */
+	if(has_clm) nco_s1d_typ=nco_s1d_clm;
+	else if(has_grd) nco_s1d_typ=nco_s1d_grd;
+	else if(has_lnd) nco_s1d_typ=nco_s1d_lnd;
+	else if(has_pft) nco_s1d_typ=nco_s1d_pft;
+	else{
 	  (void)fprintf(stderr,"%s: ERROR %s reports variable %s does not appear to be sparse\n",nco_prg_nm_get(),fnc_nm,var_nm);
 	  nco_exit(EXIT_FAILURE);
 	} /* !strstr() */
-
 	if(nco_dbg_lvl_get() >= nco_dbg_std){
-	  (void)fprintf(stderr,"%s: INFO %s reports variable %s is sparse type %s",nco_prg_nm_get(),fnc_nm,var_nm,nco_s1d_sng(nco_s1d_typ));
+	  (void)fprintf(stderr,"%s: INFO %s reports variable %s is sparse type %s\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_s1d_sng(nco_s1d_typ));
 	} /* !dbg */
 	
+	if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
+	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
+	if(dmn_srt) dmn_srt=(long *)nco_free(dmn_srt);
+	if(dmn_cnt_in) dmn_cnt_in=(long *)nco_free(dmn_cnt_in);
+	if(dmn_cnt_out) dmn_cnt_out=(long *)nco_free(dmn_cnt_out);
+	if(var_val_in.vp) var_val_in.vp=(void *)nco_free(var_val_in.vp);
+	if(var_val_out.vp) var_val_out.vp=(void *)nco_free(var_val_out.vp);
       }else{ /* !trv.flg_rgr */
 	/* Use standard NCO copy routine for variables that are not regridded
 	   20190511: Copy them only once */
@@ -781,7 +809,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables interpolated = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
 
   /* Free output data memory */
-#endif /* !ENABLE_S1D */
+  //#endif /* !ENABLE_S1D */
 
   if(cols1d_ityp) cols1d_ityp=(int *)nco_free(cols1d_ityp);
   if(cols1d_ityplun) cols1d_ityplun=(int *)nco_free(cols1d_ityplun);
