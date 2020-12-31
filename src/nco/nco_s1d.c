@@ -437,54 +437,61 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_get_att(in_id,NC_GLOBAL,"ilun_urban_md",&ilun_urban_md,NC_INT);
   } /* !flg_nm_hst */
 
-  /* Determine output Column dimension */
+  /* Determine output Column dimension if needed */
   int *cols1d_ityp=NULL; /* [id] Column type */
   int *cols1d_ityplun=NULL; /* [id] Column landunit type */
+  if(need_clm){
+    if(cols1d_ityp_id != NC_MIN_INT) cols1d_ityp=(int *)nco_malloc(clm_nbr_in*sizeof(int));
+    cols1d_ityplun=(int *)nco_malloc(clm_nbr_in*sizeof(int));
 
-  if(cols1d_ityp_id != NC_MIN_INT) cols1d_ityp=(int *)nco_malloc(clm_nbr_in*sizeof(int));
-  cols1d_ityplun=(int *)nco_malloc(clm_nbr_in*sizeof(int));
+    if(cols1d_ityp_id != NC_MIN_INT) rcd=nco_get_var(in_id,cols1d_ityp_id,cols1d_ityp,NC_INT);
+    rcd=nco_get_var(in_id,cols1d_ityplun_id,cols1d_ityplun,NC_INT);
 
-  if(cols1d_ityp_id != NC_MIN_INT) rcd=nco_get_var(in_id,cols1d_ityp_id,cols1d_ityp,NC_INT);
-  rcd=nco_get_var(in_id,cols1d_ityplun_id,cols1d_ityplun,NC_INT);
-
-  mec_nbr_out=0;
-  for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
-    if(cols1d_ityplun[clm_idx] != ilun_landice_multiple_elevation_classes) continue;
-    while(cols1d_ityplun[clm_idx++] == ilun_landice_multiple_elevation_classes) mec_nbr_out++;
-    break;
-  } /* !clm_idx */
-  /* NB: landice_MEC (ilun=4, usually) landunits have 10 (always, AFAICT) glacier elevation classes */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO mec_nbr_out = %ld\n",nco_prg_nm_get(),mec_nbr_out);
-
-  /* Determine output Grid dimension:
+    mec_nbr_out=0;
+    for(clm_idx=0;clm_idx<clm_nbr_in;clm_idx++){
+      if(cols1d_ityplun[clm_idx] != ilun_landice_multiple_elevation_classes) continue;
+      while(cols1d_ityplun[clm_idx++] == ilun_landice_multiple_elevation_classes) mec_nbr_out++;
+      break;
+    } /* !clm_idx */
+    /* NB: landice_MEC (ilun=4, usually) landunits have 10 (always, AFAICT) glacier elevation classes */
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO mec_nbr_out = %ld\n",nco_prg_nm_get(),mec_nbr_out);
+  } /* !need_clm */
+    
+  /* Determine output Grid dimension if needed:
      CLM/ELM 'gridcell' dimension counts each gridcell that contains land
      Replace this dimension by horizontal dimension(s) in input data file */
-  if(flg_grd_1D) grd_nbr_out=col_nbr;
-  if(flg_grd_2D) grd_nbr_out=lat_nbr*lon_nbr;
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO grd_nbr_out = %ld\n",nco_prg_nm_get(),grd_nbr_out);
+  if(need_clm){
+    if(flg_grd_1D) grd_nbr_out=col_nbr;
+    if(flg_grd_2D) grd_nbr_out=lat_nbr*lon_nbr;
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO grd_nbr_out = %ld\n",nco_prg_nm_get(),grd_nbr_out);
+  } /* !need_grd */
 
-  /* Determine output Landunit dimension */
-  lnd_nbr_out=3; /* fxm: Based on TBUILD variable for 3 urban landunit types */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO lnd_nbr_out = %ld\n",nco_prg_nm_get(),lnd_nbr_out);
+  /* Determine output Landunit dimension if needed */
+  if(need_lnd){
+    lnd_nbr_out=3; /* fxm: Based on TBUILD variable for 3 urban landunit types */
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO lnd_nbr_out = %ld\n",nco_prg_nm_get(),lnd_nbr_out);
+  } /* !need_lnd */
 
-  /* Determine output PFT dimension */
+    /* Determine output PFT dimension if needed */
   int *pfts1d_ityp=NULL; /* [id] PFT column type */
   int *pfts1d_ityplun=NULL; /* [id] PFT landunit type */
-
-  pfts1d_ityp=(int *)nco_malloc(pft_nbr_in*sizeof(int));
-  pfts1d_ityplun=(int *)nco_malloc(pft_nbr_in*sizeof(int));
-
-  rcd=nco_get_var(in_id,pfts1d_ityp_id,pfts1d_ityp,NC_INT);
-  rcd=nco_get_var(in_id,pfts1d_ityplun_id,pfts1d_ityplun,NC_INT);
-
-  pft_nbr_out=0;
-  for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
-    if((pfts1d_ityplun[pft_idx] != ilun_vegetated_or_bare_soil) && (pfts1d_ityplun[pft_idx] != ilun_crop)) continue;
+  if(need_pft){
+    
+    pfts1d_ityp=(int *)nco_malloc(pft_nbr_in*sizeof(int));
+    pfts1d_ityplun=(int *)nco_malloc(pft_nbr_in*sizeof(int));
+    
+    rcd=nco_get_var(in_id,pfts1d_ityp_id,pfts1d_ityp,NC_INT);
+    rcd=nco_get_var(in_id,pfts1d_ityplun_id,pfts1d_ityplun,NC_INT);
+    
+    pft_nbr_out=0;
+    for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
+      if((pfts1d_ityplun[pft_idx] != ilun_vegetated_or_bare_soil) && (pfts1d_ityplun[pft_idx] != ilun_crop)) continue;
     /* Skip bare ground */
-    while(pfts1d_ityp[++pft_idx] != 0) pft_nbr_out++;
-    break;
-  } /* !pft_idx */
-  if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
+      while(pfts1d_ityp[++pft_idx] != 0) pft_nbr_out++;
+      break;
+    } /* !pft_idx */
+    if(nco_dbg_lvl_get() >= nco_dbg_std) (void)fprintf(stdout,"%s: INFO pft_nbr_out = %ld\n",nco_prg_nm_get(),pft_nbr_out);
+  } /* !need_pft */
 
   /* Define unpacked dimensions before all else */
   (void)fprintf(stdout,"%s: DEBUG quark1\n",nco_prg_nm_get());
