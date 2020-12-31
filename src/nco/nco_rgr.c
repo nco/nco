@@ -1964,7 +1964,7 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    if(has_ilev && dmn_id_out[dmn_idx] == dmn_id_ilev_out) dmn_cnt_out[dmn_idx]=ilev_nbr_out;
 	    if(has_lev && dmn_id_out[dmn_idx] == dmn_id_lev_out) dmn_cnt_out[dmn_idx]=lev_nbr_out;
 	    var_sz_out*=dmn_cnt_out[dmn_idx];
-	  } /* end loop over dimensions */
+	  } /* !dmn_idx */
 	  var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 
 	  /* Missing value setup */
@@ -4816,7 +4816,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  } /* !dmn_cnt_out */
 	  var_sz_out*=dmn_cnt_out[dmn_idx];
 	  dmn_srt[dmn_idx]=0L;
-	} /* end loop over dimensions */
+	} /* !dmn_idx */
 
 	/* Compute number and size of non-lat/lon or non-col dimensions (e.g., level, time, species, wavelength)
 	   Denote their convolution by level or 'lvl' for shorthand
@@ -4829,7 +4829,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	/* Missing value setup */
 	has_mss_val=nco_mss_val_get_dbl(in_id,var_id_in,&mss_val_dbl);
 
-	/* Memory requirements of next four malloc's (i.e., exclusive of wgt_raw) add up to ~7*sizeof(uncompressed var) for NC_FLOAT and ~3.5*sizeof(uncompressed var) for NC_DOUBLE */
+	/* Memory requirements of next four malloc's (i.e., exclusive of wgt_raw) sum to ~7*sizeof(uncompressed var) for NC_FLOAT and ~3.5*sizeof(uncompressed var) for NC_DOUBLE */
 	var_val_dbl_in=(double *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() input value buffer");
 	var_val_dbl_out=(double *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ_rgr),fnc_nm,"Unable to malloc() output value buffer");
 	if(has_mss_val) tally=(int *)nco_malloc_dbg(var_sz_out*nco_typ_lng(NC_INT),fnc_nm,"Unable to malloc() tally buffer");

@@ -766,7 +766,34 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	dmn_cnt_out=(long *)nco_malloc(dmn_nbr_max*sizeof(long));
 	rcd=nco_inq_vardimid(in_id,var_id_in,dmn_id_in);
 	rcd=nco_inq_vardimid(out_id,var_id_out,dmn_id_out);
+	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
+	  rcd=nco_inq_dimlen(in_id,dmn_id_in[dmn_idx],dmn_cnt_in+dmn_idx);
+	  var_sz_in*=dmn_cnt_in[dmn_idx];
+	  dmn_srt[dmn_idx]=0L;
+	} /* !dmn_idx */
 	
+	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+	  rcd=nco_inq_dimlen(out_id,dmn_id_out[dmn_idx],dmn_cnt_out+dmn_idx);
+	  if(dmn_cnt_out[dmn_idx] == 0L){
+	    /* No records have been written, so overwrite zero output record size with input record size */
+	    char dmn_rec_nm[NC_MAX_NAME]; /* [sng] Record dimension name */
+	    int dmn_rec_id_in;
+	    rcd=nco_inq_dimname(out_id,dmn_id_out[dmn_idx],dmn_rec_nm);
+	    rcd=nco_inq_dimid(in_id,dmn_rec_nm,&dmn_rec_id_in);
+	    rcd=nco_inq_dimlen(in_id,dmn_rec_id_in,dmn_cnt_out+dmn_idx);
+	  } /* !dmn_cnt_out */
+	  var_sz_out*=dmn_cnt_out[dmn_idx];
+	  dmn_srt[dmn_idx]=0L;
+	} /* !dmn_idx */
+
+	var_val_in.vp=(void *)nco_malloc_dbg(var_sz_in*nco_typ_lng(var_typ),fnc_nm,"Unable to malloc() input value buffer");
+	var_val_out.vp=(void *)nco_malloc_dbg(var_sz_out*nco_typ_lng(var_typ),fnc_nm,"Unable to malloc() output value buffer");
+	/* Initialize output */
+	(void)memset(var_val_out.vp,0,var_sz_out*nco_typ_lng(var_typ));
+	
+	/* Obtain input variable */
+	rcd=nco_get_vara(in_id,var_id_in,dmn_srt,dmn_cnt_in,var_val_in.vp,var_typ);
+
 	has_clm=has_grd=has_lnd=has_pft=False;
 	nco_s1d_typ=nco_s1d_nil;
 	for(dmn_idx=0;dmn_idx<dmn_nbr_in;dmn_idx++){
@@ -787,6 +814,19 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	if(nco_dbg_lvl_get() >= nco_dbg_std){
 	  (void)fprintf(stderr,"%s: INFO %s reports variable %s is sparse type %s\n",nco_prg_nm_get(),fnc_nm,var_nm,nco_s1d_sng(nco_s1d_typ));
 	} /* !dbg */
+
+	/* Do the hard work */
+	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
+	  ;
+	  //dmn_cnt_out[dmn_idx]=dmn_cnt_in[dmn_idx];
+	  //if(has_pft && dmn_id_out[dmn_idx] == dmn_id_pft_out) dmn_cnt_out[dmn_idx]=pft_nbr_out;
+	  //if(has_clm && dmn_id_out[dmn_idx] == dmn_id_mec_out) dmn_cnt_out[dmn_idx]=mec_nbr_out;
+	} /* !dmn_idx */
+	
+#pragma omp critical
+	{ /* begin OpenMP critical */
+	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_out.vp,var_typ);
+	} /* end OpenMP critical */
 	
 	if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
 	if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
