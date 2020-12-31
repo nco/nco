@@ -30,7 +30,6 @@
 #include "nco_mmr.h" /* Memory management */
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_s1d.h" /* Sparse-1D CLM/ELM datasets */
-#include "nco_sld.h" /* Swath-Like Data */
 #include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus

@@ -708,6 +708,12 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   } /* end idx_tbl */
   (void)fprintf(stdout,"%s: DEBUG quark9\n",nco_prg_nm_get());
 
+  /* Turn-off default filling behavior to enhance efficiency */
+  nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+      
+  /* Begin data mode */
+  (void)nco_enddef(out_id);
+
   /* Free pre-allocated array space */
   if(dmn_id_in) dmn_id_in=(int *)nco_free(dmn_id_in);
   if(dmn_id_out) dmn_id_out=(int *)nco_free(dmn_id_out);
