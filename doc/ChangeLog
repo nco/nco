@@ -4,7 +4,7 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha02: Reef Point Shrine';git push
 	git tag -a 4.9.8-alpha02 -m '';git push --tags
 
-	* S1D: Write coordinate grid arrays to output file
+	* S1D: Write coordinate grid variables to output file
 
 2020-12-31  Charlie Zender  <zender@uci.edu>
 

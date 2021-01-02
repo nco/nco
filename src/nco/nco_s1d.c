@@ -575,11 +575,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   nco_bool flg_lat_bnd_out=False; /* [flg] Add latitude bounds to output */
   nco_bool flg_lon_bnd_out=False; /* [flg] Add longitude bounds to output */
   nco_bool flg_sgs_msk_out=False; /* [flg] Add mask to output */
-  area_nm=rgr->area_nm;
-  sgs_frc_nm=rgr->sgs_frc_nm;
-  lat_bnd_nm=rgr->lat_bnd_nm;
-  lon_bnd_nm=rgr->lon_bnd_nm;
-  sgs_msk_nm=rgr->sgs_msk_nm;
+  area_nm=rgr->area_nm ? rgr->area_nm : strdup("area");
+  lat_bnd_nm=rgr->lat_bnd_nm ? rgr->lat_bnd_nm : strdup("lat_bnd");
+  lon_bnd_nm=rgr->lon_bnd_nm ? rgr->lon_bnd_nm : strdup("lon_bnd");
+  sgs_frc_nm=rgr->sgs_frc_nm ? rgr->sgs_frc_nm : strdup("landfrac");
+  sgs_msk_nm=rgr->sgs_msk_nm ? rgr->sgs_msk_nm : strdup("landmask");
   if((rcd=nco_inq_varid_flg(hrz_id,area_nm,&area_in_id)) == NC_NOERR) flg_area_out=True;
   if((rcd=nco_inq_varid_flg(hrz_id,sgs_frc_nm,&sgs_frc_in_id)) == NC_NOERR) flg_sgs_frc_out=True;
   if((rcd=nco_inq_varid_flg(hrz_id,lat_bnd_nm,&lat_bnd_in_id)) == NC_NOERR) flg_lat_bnd_out=True;
