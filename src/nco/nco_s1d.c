@@ -832,13 +832,14 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Begin data mode */
   (void)nco_enddef(out_id);
 
-  /* Copy coordinate system before closing template file */
-  (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,lat_nm_in,trv_tbl);
-  (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,lon_nm_in,trv_tbl);
-  if(flg_lat_bnd_out) (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,lat_bnd_nm,trv_tbl);
-  if(flg_lon_bnd_out) (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,lon_bnd_nm,trv_tbl);
-  if(flg_sgs_frc_out) (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,sgs_frc_nm,trv_tbl);
-  if(flg_sgs_msk_out) (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,sgs_msk_nm,trv_tbl);
+  /* Copy coordinate system before closing template file
+     NB: nco_cpy_var_val() cannot be used here when coordinates are in fl_tpl not fl_in */
+  (void)nco_cpy_var_val_lmt(hrz_id,out_id,(FILE *)NULL,lat_nm_in,(lmt_sct *)NULL,(int)0);
+  (void)nco_cpy_var_val_lmt(hrz_id,out_id,(FILE *)NULL,lon_nm_in,(lmt_sct *)NULL,(int)0);
+  if(flg_lat_bnd_out) (void)nco_cpy_var_val_lmt(hrz_id,out_id,(FILE *)NULL,lat_bnd_nm,(lmt_sct *)NULL,(int)0);
+  if(flg_lon_bnd_out) (void)nco_cpy_var_val_lmt(hrz_id,out_id,(FILE *)NULL,lon_bnd_nm,(lmt_sct *)NULL,(int)0);
+  if(flg_sgs_frc_out) (void)nco_cpy_var_val_lmt(hrz_id,out_id,(FILE *)NULL,sgs_frc_nm,(lmt_sct *)NULL,(int)0);
+  if(flg_sgs_msk_out) (void)nco_cpy_var_val_lmt(hrz_id,out_id,(FILE *)NULL,sgs_msk_nm,(lmt_sct *)NULL,(int)0);
   
   if(flg_grd_tpl){
     nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
