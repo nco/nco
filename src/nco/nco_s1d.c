@@ -552,8 +552,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int lat_out_id; /* [id] Variable ID for latitude */
   int lon_in_id; /* [id] Variable ID for longitude */
   int lon_out_id; /* [id] Variable ID for longitude */
-  rcd=nco_inq_varid(in_id,lat_nm_in,&lat_in_id);
-  rcd=nco_inq_varid(in_id,lon_nm_in,&lon_in_id);
+  rcd=nco_inq_varid(hrz_id,lat_nm_in,&lat_in_id);
+  rcd=nco_inq_varid(hrz_id,lon_nm_in,&lon_in_id);
   /* Optional grid variables */
   char *area_nm;
   char *sgs_frc_nm;
@@ -571,9 +571,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int sgs_msk_in_id=NC_MIN_INT; /* [id] Variable ID for mask */
   int sgs_msk_out_id=NC_MIN_INT; /* [id] Variable ID for mask */
   nco_bool flg_area_out=False; /* [flg] Add area to output */
-  nco_bool flg_sgs_frc_out=False; /* [flg] Add fraction to output */
   nco_bool flg_lat_bnd_out=False; /* [flg] Add latitude bounds to output */
   nco_bool flg_lon_bnd_out=False; /* [flg] Add longitude bounds to output */
+  nco_bool flg_sgs_frc_out=False; /* [flg] Add fraction to output */
   nco_bool flg_sgs_msk_out=False; /* [flg] Add mask to output */
   area_nm=rgr->area_nm ? rgr->area_nm : strdup("area");
   lat_bnd_nm=rgr->lat_bnd_nm ? rgr->lat_bnd_nm : strdup("lat_bnd");
@@ -581,9 +581,9 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   sgs_frc_nm=rgr->sgs_frc_nm ? rgr->sgs_frc_nm : strdup("landfrac");
   sgs_msk_nm=rgr->sgs_msk_nm ? rgr->sgs_msk_nm : strdup("landmask");
   if((rcd=nco_inq_varid_flg(hrz_id,area_nm,&area_in_id)) == NC_NOERR) flg_area_out=True;
-  if((rcd=nco_inq_varid_flg(hrz_id,sgs_frc_nm,&sgs_frc_in_id)) == NC_NOERR) flg_sgs_frc_out=True;
   if((rcd=nco_inq_varid_flg(hrz_id,lat_bnd_nm,&lat_bnd_in_id)) == NC_NOERR) flg_lat_bnd_out=True;
   if((rcd=nco_inq_varid_flg(hrz_id,lon_bnd_nm,&lon_bnd_in_id)) == NC_NOERR) flg_lon_bnd_out=True;
+  if((rcd=nco_inq_varid_flg(hrz_id,sgs_frc_nm,&sgs_frc_in_id)) == NC_NOERR) flg_sgs_frc_out=True;
   if((rcd=nco_inq_varid_flg(hrz_id,sgs_msk_nm,&sgs_msk_in_id)) == NC_NOERR) flg_sgs_msk_out=True;
 
   (void)fprintf(stdout,"%s: DEBUG quark2\n",nco_prg_nm_get());
@@ -634,10 +634,48 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(flg_grd_2D){
     rcd+=nco_def_var(out_id,lat_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lat_out,&lat_out_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_out_id,shuffle,deflate,dfl_lvl);
+    (void)nco_att_cpy(hrz_id,out_id,lat_in_id,lat_out_id,PCK_ATT_CPY);
     var_crt_nbr++;
     rcd+=nco_def_var(out_id,lon_nm_out,crd_typ_out,dmn_nbr_1D,&dmn_id_lon_out,&lon_out_id);
     if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_out_id,shuffle,deflate,dfl_lvl);
+    (void)nco_att_cpy(hrz_id,out_id,lon_in_id,lon_out_id,PCK_ATT_CPY);
     var_crt_nbr++;
+    if(flg_lat_bnd_out){
+      dmn_ids_out[0]=dmn_id_lat_out;
+      dmn_ids_out[1]=dmn_id_bnd_out;
+      rcd+=nco_def_var(out_id,lat_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lat_bnd_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lat_bnd_out_id,shuffle,deflate,dfl_lvl);
+      (void)nco_att_cpy(hrz_id,out_id,lat_bnd_in_id,lat_bnd_out_id,PCK_ATT_CPY);
+      var_crt_nbr++;
+    } /* !flg_lat_bnd_out */
+    if(flg_lon_bnd_out){
+      dmn_ids_out[0]=dmn_id_lon_out;
+      dmn_ids_out[1]=dmn_id_bnd_out;
+      rcd+=nco_def_var(out_id,lon_bnd_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&lon_bnd_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,lon_bnd_out_id,shuffle,deflate,dfl_lvl);
+      (void)nco_att_cpy(hrz_id,out_id,lon_bnd_in_id,lon_bnd_out_id,PCK_ATT_CPY);
+      var_crt_nbr++;
+    } /* !flg_lon_bnd_out */
+    dmn_ids_out[0]=dmn_id_lat_out;
+    dmn_ids_out[1]=dmn_id_lon_out;
+    if(flg_area_out){
+      rcd+=nco_def_var(out_id,area_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&area_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,area_out_id,shuffle,deflate,dfl_lvl);
+      (void)nco_att_cpy(hrz_id,out_id,area_in_id,area_out_id,PCK_ATT_CPY);
+      var_crt_nbr++;
+    } /* !flg_area_out */
+    if(flg_sgs_frc_out){
+      rcd+=nco_def_var(out_id,sgs_frc_nm,crd_typ_out,dmn_nbr_2D,dmn_ids_out,&sgs_frc_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,sgs_frc_out_id,shuffle,deflate,dfl_lvl);
+      (void)nco_att_cpy(hrz_id,out_id,sgs_frc_in_id,sgs_frc_out_id,PCK_ATT_CPY);
+      var_crt_nbr++;
+    } /* !flg_sgs_frc_out */
+    if(flg_sgs_msk_out){
+      rcd+=nco_def_var(out_id,sgs_msk_nm,(nc_type)NC_INT,dmn_nbr_2D,dmn_ids_out,&sgs_msk_out_id);
+      if(dfl_lvl > 0) (void)nco_def_var_deflate(out_id,sgs_msk_out_id,shuffle,deflate,dfl_lvl);
+      (void)nco_att_cpy(hrz_id,out_id,sgs_msk_in_id,sgs_msk_out_id,PCK_ATT_CPY);
+      var_crt_nbr++;
+    } /* !flg_sgs_msk_out */
   } /* !flg_grd_2D */
   
   int flg_pck; /* [flg] Variable is packed on disk  */
@@ -797,6 +835,10 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Copy coordinate system before closing template file */
   (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,lat_nm_in,trv_tbl);
   (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,lon_nm_in,trv_tbl);
+  if(flg_lat_bnd_out) (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,lat_bnd_nm,trv_tbl);
+  if(flg_lon_bnd_out) (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,lon_bnd_nm,trv_tbl);
+  if(flg_sgs_frc_out) (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,sgs_frc_nm,trv_tbl);
+  if(flg_sgs_msk_out) (void)nco_cpy_var_val(hrz_id,out_id,(FILE *)NULL,(md5_sct *)NULL,sgs_msk_nm,trv_tbl);
   
   if(flg_grd_tpl){
     nco_bool RM_RMT_FL_PST_PRC=True; /* Option R */
