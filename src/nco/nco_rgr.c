@@ -5037,7 +5037,6 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 		    idx_in=col_src_adr[lnk_idx];
 		    idx_out=row_dst_adr[lnk_idx];
 		    var_val_dbl_out[idx_out+val_out_fst]+=var_val_dbl_in[idx_in+val_in_fst]*wgt_raw[lnk_idx]*sgs_frc_in[idx_in];
- 		    tally[idx_out]++;
 		  } /* !lnk_idx */
 		  /* Normalize current level values */
 		  for(dst_idx=0;dst_idx<grd_sz_out;dst_idx++)

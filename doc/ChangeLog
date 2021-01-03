@@ -4,7 +4,9 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha03: Cheyenne';git push
 	git tag -a 4.9.8-alpha03 -m '';git push --tags
 
-	* S1D: crd_typ_out := crd_typ_in instead of NC_DOUBLE (so ELM/CLM crds remain Nc_FLOAT)
+	* nco_rgr_wgt() eliminate bogus tally in SGS-weighted fields without missing values
+
+	* S1D: crd_typ_out := crd_typ_in instead of NC_DOUBLE (so ELM/CLM crds remain NC_FLOAT)
 
 	* NCO 4.9.8-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha02: Reef Point Shrine';git push
