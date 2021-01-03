@@ -987,8 +987,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
 	    pft_typ=pfts1d_ityp_veg[pft_idx]; /* [1 <= pft_typ <= pft_nbr_out] */
 	    /* [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= pfts1d_ixy <= col_nbr_out] */
-	    grd_idx_out= flg_grd_1D? pfts1d_ixy[pft_idx]-1L : (pfts1d_ixy[pft_idx]-1L)*lat_nbr+(pfts1d_jxy[pft_idx]-1L);
-	    idx_out=(pft_typ-1)*grd_nbr_out+grd_idx_out;
+	    grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_ixy[pft_idx]-1L)*lat_nbr+(pfts1d_jxy[pft_idx]-1L);
+	    idx_out=(pft_typ-1)*grd_sz_out+grd_idx_out;
 	    var_val_out.fp[idx_out]=var_val_in.fp[pft_idx];
 	  } /* !idx */
 	} /* !nco_s1d_typ */
