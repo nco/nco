@@ -574,7 +574,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   //const int dmn_nbr_0D=0; /* [nbr] Rank of 0-D grid variables (scalars) */
   const int dmn_nbr_1D=1; /* [nbr] Rank of 1-D grid variables */
   const int dmn_nbr_2D=2; /* [nbr] Rank of 2-D grid variables */
-  const nc_type crd_typ_out=NC_DOUBLE;
+  nc_type crd_typ_in;
+  nc_type crd_typ_out;
 
   /* Required grid variables */
   int lat_in_id; /* [id] Variable ID for latitude */
@@ -583,6 +584,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int lon_out_id; /* [id] Variable ID for longitude */
   rcd=nco_inq_varid(hrz_id,lat_nm_in,&lat_in_id);
   rcd=nco_inq_varid(hrz_id,lon_nm_in,&lon_in_id);
+  rcd=nco_inq_vartype(hrz_id,lat_in_id,&crd_typ_in);
+  /* NB: ELM/CLM history files default to NC_FLOAT for most grid variables
+     To convert to NC_DOUBLE on output, also convert _FillValue attribute type consistently */
+  crd_typ_out=crd_typ_in;
+  
   /* Optional grid variables */
   char *area_nm;
   char *sgs_frc_nm;
