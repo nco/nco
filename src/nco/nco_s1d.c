@@ -36,7 +36,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   /* Usage:
      ncks -D 1 -O -C --s1d ~/data/bm/elm_mali_bg_hst.nc ~/foo.nc
      ncks -D 1 -O -C --s1d -v cols1d_topoglc --hrz=${DATA}/bm/elm_mali_ig_hst.nc ${DATA}/bm/elm_mali_rst.nc ~/foo.nc
-     ncks -D 1 -O -C --s1d ~/beth_in.nc ~/foo.nc */
+     ncks -D 1 -O -C --s1d -v GPP,pfts1d_wtgcell ~/beth_in.nc ~/foo.nc
+     ncremap --dbg=1 --vrb=3 --devnull=No --nco='--dbg=1' -P elm -m ${DATA}/maps/map_ne30np4_to_fv128x256_aave.20160301.nc ~/foo.nc ~/foo_rgr.nc */
 
   const char fnc_nm[]="nco_s1d_unpack()"; /* [sng] Function name */
 
@@ -184,14 +185,15 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int land1d_lat_id=NC_MIN_INT; /* [id] Landunit latitude */
   int land1d_lon_id=NC_MIN_INT; /* [id] Landunit longitude */
 
-  int pfts1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of PFT */
   int pfts1d_column_index_id=NC_MIN_INT; /* [id] Column index of PFT */
+  int pfts1d_gridcell_index_id=NC_MIN_INT; /* [id] Gridcell index of PFT */
+  int pfts1d_ityp_veg_id=NC_MIN_INT; /* [id] PFT vegetation type */
+  int pfts1d_ityplun_id=NC_MIN_INT; /* [id] PFT landunit type */
   int pfts1d_ixy_id=NC_MIN_INT; /* [id] PFT 2D longitude index */
   int pfts1d_jxy_id=NC_MIN_INT; /* [id] PFT 2D latitude index */
   int pfts1d_lat_id=NC_MIN_INT; /* [id] PFT latitude */
   int pfts1d_lon_id=NC_MIN_INT; /* [id] PFT longitude */
-  int pfts1d_ityp_veg_id=NC_MIN_INT; /* [id] PFT vegetation type */
-  int pfts1d_ityplun_id=NC_MIN_INT; /* [id] PFT landunit type */
+  //int pfts1d_wtgcell_id=NC_MIN_INT; /* [id] PFT weight relative to corresponding gridcell */
   
   int dmn_id_clm_in=NC_MIN_INT; /* [id] Dimension ID */
   int dmn_id_grd_in=NC_MIN_INT; /* [id] Dimension ID */
@@ -248,10 +250,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
     rcd=nco_inq_varid(in_id,"pfts1d_ixy",&pfts1d_ixy_id);
     rcd=nco_inq_varid(in_id,"pfts1d_jxy",&pfts1d_jxy_id);
     rcd=nco_inq_varid(in_id,"pfts1d_lon",&pfts1d_lon_id);
-    rcd=nco_inq_varid_flg(in_id,"pfts1d_gridcell_index",&pfts1d_gridcell_index_id);
     rcd=nco_inq_varid_flg(in_id,"pfts1d_column_index",&pfts1d_column_index_id);
-    if(flg_nm_hst) rcd=nco_inq_varid(in_id,"pfts1d_itype_veg",&pfts1d_ityp_veg_id); else rcd=nco_inq_varid(in_id,"pfts1d_itypveg",&pfts1d_ityp_veg_id);
+    rcd=nco_inq_varid_flg(in_id,"pfts1d_gridcell_index",&pfts1d_gridcell_index_id);
+    //if(flg_nm_hst) rcd=nco_inq_varid(in_id,"pfts1d_wtgcell",&pfts1d_wtgcell_id); else rcd=nco_inq_varid(in_id,"pfts1d_wtxy",&pfts1d_wtgcell_id);
     if(flg_nm_hst) rcd=nco_inq_varid(in_id,"pfts1d_itype_lunit",&pfts1d_ityplun_id); else rcd=nco_inq_varid(in_id,"pfts1d_ityplun",&pfts1d_ityplun_id);
+    if(flg_nm_hst) rcd=nco_inq_varid(in_id,"pfts1d_itype_veg",&pfts1d_ityp_veg_id); else rcd=nco_inq_varid(in_id,"pfts1d_itypveg",&pfts1d_ityp_veg_id);
   } /* !flg_s1d_pft */
   
   if(!(flg_s1d_clm || flg_s1d_lnd || flg_s1d_pft)){
@@ -484,6 +487,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   } /* !need_lnd */
 
   /* Determine output PFT dimension if needed */
+  //double *pfts1d_wtgcell=NULL; /* [id] PFT weight relative to corresponding gridcell */
   int *pfts1d_ityp_veg=NULL; /* [id] PFT vegetation type */
   int *pfts1d_ityplun=NULL; /* [id] PFT landunit type */
   int *pfts1d_ixy=NULL; /* [id] PFT 2D longitude index */
@@ -491,9 +495,11 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   int pft_typ; /* [enm] PFT type */
   if(need_pft){
     
+    //pfts1d_wtgcell=(double *)nco_malloc(pft_nbr_in*sizeof(double));
     pfts1d_ityp_veg=(int *)nco_malloc(pft_nbr_in*sizeof(int));
     pfts1d_ityplun=(int *)nco_malloc(pft_nbr_in*sizeof(int));
     
+    //rcd=nco_get_var(in_id,pfts1d_wtgcell_id,pfts1d_wtgcell,NC_DOUBLE);
     rcd=nco_get_var(in_id,pfts1d_ityp_veg_id,pfts1d_ityp_veg,NC_INT);
     rcd=nco_get_var(in_id,pfts1d_ityplun_id,pfts1d_ityplun,NC_INT);
     
@@ -986,20 +992,26 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
 	  /* Turn GPP(time,pft) into GPP(time,pft,lndgrid) */
 	  for(pft_idx=0;pft_idx<pft_nbr_in;pft_idx++){
 	    pft_typ=pfts1d_ityp_veg[pft_idx]; /* [1 <= pft_typ <= pft_nbr_out] */
-	    /* [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= pfts1d_ixy <= col_nbr_out] */
+	    /* Skip bare ground, output array contains only vegetated types */
+	    if(!pft_typ) continue;
+	    /* grd_idx is the index relative to the origin of the horizontal grid for a given level
+	       [0 <= grd_idx_out <= col_nbr_out-1L], [1 <= pfts1d_ixy <= col_nbr_out] */
 	    grd_idx_out= flg_grd_1D ? pfts1d_ixy[pft_idx]-1L : (pfts1d_ixy[pft_idx]-1L)*lat_nbr+(pfts1d_jxy[pft_idx]-1L);
 	    idx_out=(pft_typ-1)*grd_sz_out+grd_idx_out;
-	    var_val_out.fp[idx_out]=var_val_in.fp[pft_idx];
+	    /* memcpy() would allow next statement to work for generic types
+	       However, memcpy() is a system call and could be expensive in an innermost loop */
+	    switch(var_typ){
+	    case NC_FLOAT: var_val_out.fp[idx_out]=var_val_in.fp[pft_idx]; break;
+	    case NC_DOUBLE: var_val_out.dp[idx_out]=var_val_in.dp[pft_idx]; break;
+	    case NC_INT: var_val_out.ip[idx_out]=var_val_in.ip[pft_idx]; break;
+	    default:
+	      (void)fprintf(fp_stdout,"%s: ERROR %s reports unsupported type\n",nco_prg_nm_get(),fnc_nm);
+	      nco_dfl_case_nc_type_err();
+	      break;
+	    } /* !var_typ */
 	  } /* !idx */
 	} /* !nco_s1d_typ */
 	  
-	for(dmn_idx=0;dmn_idx<dmn_nbr_out;dmn_idx++){
-	  ;
-	  //dmn_cnt_out[dmn_idx]=dmn_cnt_in[dmn_idx];
-	  //if(has_pft && dmn_ids_out[dmn_idx] == dmn_id_pft_out) dmn_cnt_out[dmn_idx]=pft_nbr_out;
-	  //if(has_clm && dmn_ids_out[dmn_idx] == dmn_id_mec_out) dmn_cnt_out[dmn_idx]=mec_nbr_out;
-	} /* !dmn_idx */
-	
 #pragma omp critical
 	{ /* begin OpenMP critical */
 	  rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_out.vp,var_typ);
@@ -1034,6 +1046,7 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(pfts1d_ityplun) pfts1d_ityplun=(int *)nco_free(pfts1d_ityplun);
   if(pfts1d_ixy) pfts1d_ixy=(int *)nco_free(pfts1d_ixy);
   if(pfts1d_jxy) pfts1d_jxy=(int *)nco_free(pfts1d_jxy);
+  //if(pfts1d_wtgcell) pfts1d_wtgcell=(double *)nco_free(pfts1d_wtgcell);
 
   if(clm_nm_in) clm_nm_in=(char *)nco_free(clm_nm_in);
   if(grd_nm_in) grd_nm_in=(char *)nco_free(grd_nm_in);
