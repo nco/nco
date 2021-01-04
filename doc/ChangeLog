@@ -2,7 +2,7 @@
 
 	* NCO 4.9.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha03: Cheyenne';git push
-	git tag -a 4.9.8-alpha03 -m '';git push --tags
+	git tag -a 4.9.8-alpha03 -m 'ncremap: tll fix sgs s1d';git push --tags
 
 	* nco_rgr_wgt() eliminate bogus tally in SGS-weighted fields without missing values
 
