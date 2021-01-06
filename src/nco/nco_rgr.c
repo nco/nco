@@ -7433,6 +7433,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   long idx; /* [idx] Counting index for unrolled grids */
   long idx_crn;
   long idx_ctr;
+  long idx_fst; /* [idx] Index offset */
+  long idx_tmp; /* [idx] Temporary index */
   long lat_idx2; /* [idx] Counting index for unrolled latitude */
   long lat_idx;
   long lat_nbr; /* [nbr] Number of latitudes in grid */
@@ -8051,6 +8053,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       if(lat_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lat_bnd_id,dmn_srt,dmn_cnt,lat_bnd,crd_typ);
       if(lon_bnd_id != NC_MIN_INT) rcd=nco_get_vara(in_id,lon_bnd_id,dmn_srt,dmn_cnt,lon_bnd,crd_typ);
     }else if(flg_1D_mpas_bnd){
+      const long grd_crn_nbrm1=grd_crn_nbr-1L; /* [nbr] Number of corners in gridcell minus one */
       vrt_cll=(int *)nco_malloc(grd_sz_nbr*grd_crn_nbr*nco_typ_lng((nc_type)NC_INT));
       vrt_lat=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
       vrt_lon=(double *)nco_malloc(vrt_nbr*nco_typ_lng(crd_typ));
@@ -8081,10 +8084,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  //if(vrt_idx >= vrt_nbr) (void)fprintf(stdout,"%s: WARNING %s input gridcell %ld corner %ld has extreme MPAS input verticesOnCell value %ld (maximum valid vertex = vrt_nbr-1 = %ld-1 = %ld)\n",nco_prg_nm_get(),fnc_nm,col_idx,crn_idx,vrt_idx,vrt_nbr,vrt_nbr-1);
 	  if(vrt_idx == 0){
 	    /* 20201220: Convert values of zero to neighboring valid vertex index */
-	    if(crn_idx > 0 && vrt_cll[ttl_idx-1] != 0) vrt_idx=vrt_cll[ttl_idx-1];
-	    else if(crn_idx > 1 && vrt_cll[ttl_idx-2] != 0) vrt_idx=vrt_cll[ttl_idx-2];
-	    else if(crn_idx == 0 && vrt_cll[ttl_idx+1] != 0) vrt_idx=vrt_cll[ttl_idx+1];
-	    else abort();
+	    for(idx_fst=1;idx_fst<grd_crn_nbr;idx_fst++){
+	      idx_tmp=crn_idx+idx_fst;
+	      /* Wrap to initial corner of this cell when candidate corner would be in next cell */
+	      if(idx_tmp > grd_crn_nbrm1) idx_tmp-=grd_crn_nbr;
+	      ttl_idx=idx+idx_tmp;
+	      vrt_idx=vrt_cll[ttl_idx];
+	      if(vrt_idx != 0) break;
+	    } /* !idx_fst */
+	    assert(idx_fst < grd_crn_nbr);
 	  } /* !vrt_idx */
 	  /* 20201220: Stored vertex indices use Fortran-based convention---subtract one for C */
 	  vrt_idx--;

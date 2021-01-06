@@ -464,6 +464,17 @@ make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
+# 20200105 Try NERSC-recommended procedures:
+# https://www.nersc.gov/assets/Uploads/04-PE-Compilations-NewUserTraining-20190621.pdf
+module swap PrgEnv-Intel PrgEnv-cray
+unset NETCDF4_ROOT
+unset NETCDF_INC
+unset NETCDF_LIB
+unset NETCDF_ROOT
+module load cray-netcdf/4.7.4.0
+ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global/common/sw/cray/cnl7/haswell/gsl/2.5/gcc/8.3.0/yfdt2hw' UDUNITS2_PATH='/global/common/sw/cray/cnl7/haswell/udunits2/2.2.24/gcc/8.2.0/y4j6eez' ./configure --prefix=${HOME} --bindir=${HOME}/bin_cori --datadir=${HOME}/nco/data --libdir=${HOME}/lib_cori --mandir=${HOME}/man 
+
+
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on cori with GNU:
 # Sysadmin upgrade request: https://nersc.service-now.com/navpage.do # NERSC Maintainer = Yun (Helen) He
 # Latest ticket to build NCO: INC0118469 on 20180413
