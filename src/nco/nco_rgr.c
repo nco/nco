@@ -8278,16 +8278,18 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
   } /* !flg_grd_2D */
 
   /* Obtain units, if any, of input area */
-  rcd=nco_inq_att_flg(in_id,area_id,unt_sng,&att_typ,&att_sz);
-  if(rcd == NC_NOERR && att_typ == NC_CHAR){
-    att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
-    rcd+=nco_get_att(in_id,area_id,unt_sng,att_val,att_typ);
-    /* NUL-terminate attribute before using strstr() */
-    att_val[att_sz]='\0';
-    if(!strcasestr(att_val,"radian")) flg_area_sr=False;
-    if(att_val) area_unt=(char *)strdup(att_val);
-    if(att_val) att_val=(char *)nco_free(att_val);
-  } /* end rcd && att_typ */
+  if(area_id != NC_MIN_INT){
+    rcd=nco_inq_att_flg(in_id,area_id,unt_sng,&att_typ,&att_sz);
+    if(rcd == NC_NOERR && att_typ == NC_CHAR){
+      att_val=(char *)nco_malloc((att_sz+1L)*nco_typ_lng(att_typ));
+      rcd+=nco_get_att(in_id,area_id,unt_sng,att_val,att_typ);
+      /* NUL-terminate attribute before using strstr() */
+      att_val[att_sz]='\0';
+      if(!strcasestr(att_val,"radian")) flg_area_sr=False;
+      if(att_val) area_unt=(char *)strdup(att_val);
+      if(att_val) att_val=(char *)nco_free(att_val);
+    } /* end rcd && att_typ */
+  } /* !area_id */
   
   /* Additional information that may be required for any input grid */
   if(area_id != NC_MIN_INT) has_mss_val_area=nco_mss_val_get_dbl(in_id,area_id,&mss_val_area_dbl);

@@ -1,8 +1,12 @@
-2021-01-05  Charlie Zender  <zender@uci.edu>
+2021-01-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha03: Cheyenne';git push
 	git tag -a 4.9.8-alpha03 -m 'ncremap: tll fix sgs s1d, fix nfr MALI';git push --tags
+
+	* nco_grd_nfr() do not query for units attribute of non-existant area variable (fixes RRG mode for Po Lun Ma)
+
+2021-01-05  Charlie Zender  <zender@uci.edu>
 
 	* nco_grd_nfr() fix MALI grid inferral by improving empty cell corner algorithm
 
