@@ -177,7 +177,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 	    # Why do cori and rhea require workarounds for different packages?
 	    # 20191023 NERSC incident INC0143724: ncl/6.5.0 provides broken ERWG, use 6.4.0 
 	    if [ ${spt_nm} = 'ncremap' ]; then
-		module load ncl/6.4.0
+		module load ncl/6.5.0
 	    fi # !ncremap
 	    if [ -n "${NCARG_ROOT}" ]; then
 		export PATH="${PATH}:${NCARG_ROOT}/bin"
