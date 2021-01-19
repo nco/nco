@@ -52,20 +52,6 @@ algorithms to transition geoscience data analysis from relying solely
 on traditional (or &ldquo;flat&rdquo;) datasets to allowing newer
 hierarchical (or &ldquo;nested&rdquo;) datasets.  
 
-The next logical step is to support and enable combining all
-datastreams that meet user-specified criteria into a 
-single or small number of files that hold *all* the
-science-relevant data organized in hierarchical structures.
-NCO (and no other software to our knowledge) can do this now.
-We call the resulting data storage, distribution, and analysis
-paradigm Group-Oriented Data Analysis and Distribution 
-([GODAD](http://nco.sf.net/nco.html#godad)).
-GODAD lets the scientific question organize the data, not the
-*ad hoc* granularity of all relevant datasets.
-The [User Guide](http://nco.sf.net/nco.html) illustrates 
-[GODAD](http://nco.sf.net/nco.html#godad) 
-techniques for climate data analysis: 
-
 | Operator | Full Name                  | Examples
 | -------- |:-------------------------- | :----------
 | `ncap2` | netCDF Arithmetic Processor | [here](http://nco.sf.net/nco.html#ncap2) |
@@ -88,3 +74,7 @@ techniques for climate data analysis:
 The NCO project [homepage](http://sf.net/projects/nco)
 points to mailing lists, discussion forums, and instructions to make
 contributing easy. 
+
+### Acknowledgements
+
+NCO has been supported by volunteers and professionals since 1995. External support from DOE, NASA, and NSF has sustained development and addition of its most powerful features.
