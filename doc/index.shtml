@@ -288,7 +288,7 @@ with Subject: &ldquo;NCO Proposal Endorsement&rdquo;.
 This information is useful advocating for more NCO support.
 &ldquo;What future proposals?&rdquo; you ask, &ldquo;Aren't you already funded?&rdquo;
 Yes, in 2012 NASA funded us to implement netCDF4 groups and HDF support,
-and in 2014 NASA funded us to improve SLD handling.
+and in 2014 NASA funded us to improve regridding.
 These funds are/were primarily for development and maintainance of
 specific features. 
 To realize our grander ambition, i.e., to shift geoscience data
@@ -318,7 +318,7 @@ This may incentivize us to tackle your favorite <a href="./TODO"><tt>TODO</tt></
 Inspired by President Obama's plan to bring more transparency to
 government investment, these homepage donation counters track the
 influence of your monetary donations on NCO development: 
-<dt>Donations received between 20030624 and 20200804: US$219.77. Thank you, donors!</dt>
+<dt>Donations received between 20030624 and 20210121: US$219.77. Thank you, donors!</dt>
 <dt>NCO features &ldquo;incentivized&rdquo; by these donations: More emoticons in the documentation :)</dt>
 <hr></p>
 

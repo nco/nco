@@ -1756,7 +1756,7 @@ var=NULL_CEWI;
                  // make sure var_lhs and var_rhs are the same size
                  // and that they are the same shape (ie they conform!!)          
                  if(var_rhs->sz != slb_sz){
-                   err_prn(fnc_nm, "Hyperslab for "+var_nm+" - number of elements on LHS(" +nbr2sng(slb_sz) +  ") doesn't equal number of elements on RHS(" +nbr2sng(var_rhs->sz) +  ")");                                       
+                   err_prn(fnc_nm, "Hyperslab for \""+var_nm+"\": LHS number of elements = "+nbr2sng(slb_sz)+" does not equal RHS number of elements = "+nbr2sng(var_rhs->sz));
                  }
                     
                 (void)nco_put_var_mem(var_rhs,var_lhs,lmt_vtr);
@@ -1777,7 +1777,7 @@ var=NULL_CEWI;
                  (void)ncap_att_cpy(var_nm,var_nm,prs_arg);
                  (void)prs_arg->ncap_var_write(var_lhs,false);
 
-                 wrn_prn(fnc_nm,"Var being read and written in ASSIGN "+ var_nm); 
+                 if(nco_dbg_lvl_get() >= nco_dbg_std) nfo_prn(fnc_nm,"Variable \""+var_nm+"\" being read and written in ASSIGN"); 
                }
  
                // Get "new" var_id   

@@ -73,15 +73,30 @@ err_prn(std::string msg) // [fnc] Print uniform error message and exit
 } // end err_prn()
 
 void 
-wrn_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg) // [fnc] Print uniform warning message and exit
+wrn_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg) // [fnc] Print uniform warning message
 {
   // Purpose: Print a uniform warning message
   std::cerr << nco_prg_nm << ": WARNING " << fnc_nm << "(): "+msg << std::endl;
 } // end wrn_prn()
 
 void 
-wrn_prn(std::string fnc_nm,std::string msg) // [fnc] Print uniform warning message and exit
+wrn_prn(std::string fnc_nm,std::string msg) // [fnc] Print uniform warning message
 {
   // Purpose: Print a uniform warning message
   std::cerr << nco_prg_nm_get() << ": WARNING " << fnc_nm << "(): "+msg << std::endl;
 } // end wrn_prn()
+
+void 
+nfo_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg) // [fnc] Print uniform informational message
+{
+  // Purpose: Print a uniform informational message
+  std::cerr << nco_prg_nm << ": INFO " << fnc_nm << "(): "+msg << std::endl;
+} // end nfo_prn()
+
+void 
+nfo_prn(std::string fnc_nm,std::string msg) // [fnc] Print uniform informational message
+{
+  // Purpose: Print a uniform informational message
+  std::cerr << nco_prg_nm_get() << ": INFO " << fnc_nm << "(): "+msg << std::endl;
+} // end nfo_prn()
+

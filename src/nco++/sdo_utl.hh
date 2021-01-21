@@ -51,6 +51,8 @@ void dbg_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg);
 void err_prn(std::string msg);
 void err_prn(std::string fnc_nm,std::string msg);
 void err_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg);
+void nfo_prn(std::string fnc_nm,std::string msg);
+void nfo_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg);
 void wrn_prn(std::string fnc_nm,std::string msg);
 void wrn_prn(std::string nco_prg_nm,std::string fnc_nm,std::string msg);
 
