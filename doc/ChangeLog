@@ -1,8 +1,12 @@
-2021-01-21  Charlie Zender  <zender@uci.edu>
+2021-01-22  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha03: Cheyenne';git push
 	git tag -a 4.9.8-alpha03 -m 'ncremap: tll fix sgs s1d, fix nfr MALI';git push --tags
+
+	* ncclimo add stubs like mth_srt/mth_end for splitting on month boundaries
+
+2021-01-21  Charlie Zender  <zender@uci.edu>
 
 	* Add nfo_prn() definitions to ncap2, change one WARNING to INFO when dbg_lvl >= 1
 

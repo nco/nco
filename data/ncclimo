@@ -541,6 +541,8 @@ xtn_flg='No' # [sng] Produce extended climatology
 ypf_max=50 # [yr] Years-per-output-file
 yr_end='2' # [yr] End year
 yr_srt='1' # [yr] Start year
+mth_end='12' # [yr] End month
+mth_srt='1' # [yr] Start month
 
 function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_nm{} syntax
     # Print usage
@@ -740,6 +742,8 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       no_amwg_link | no_amwg_links | no_amwg | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # # Link E3SM to AMWG name
 	       no_amwg_link=?* | no_amwg_links=?* | no_amwg=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM to AMWG name
 	       mdl_nm=?* | mdl=?* | model_name=?* | model=?* ) mdl_nm_usr="${LONG_OPTARG}" ;; # -m # Model name string
+	       mth_end=?* | end_mth=?* | month_end=?* | end_month=?* ) mth_end="${LONG_OPTARG}" ;; # # End month
+	       mth_srt=?* | start_mth=?* | month_start=?* | start_month=?* ) mth_srt="${LONG_OPTARG}" ;; # # Start month
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG} ${nco_opt}" ;; # -n # NCO options
 	       no_area | no_cll_msr | no_cell_measures ) no_cll_msr='Yes' ;; # # Omit cell_measures variables
 	       no_area=?* | no_cell_msr=?* | no_cell_measures=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Omit cell_measures variables
@@ -1045,6 +1049,14 @@ yyyy_end=`printf "%04d" ${yr_end_rth}`
 let yr_endm1=${yr_end_rth}-1
 let yr_endp1=${yr_end_rth}+1
 let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
+
+trim_leading_zeros ${mth_srt}
+mth_srt_rth=${sng_trm}
+mm_srt=`printf "%02d" ${mth_srt_rth}`
+trim_leading_zeros ${mth_end}
+mth_end_rth=${sng_trm}
+mm_end=`printf "%02d" ${mth_end_rth}`
+let mth_nbr=${mth_end_rth}-${mth_srt_rth}+1
 
 # Derived variables
 out_nm=${caseid}
