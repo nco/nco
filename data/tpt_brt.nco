@@ -32,7 +32,9 @@
 *hc2=5.9553531e-17f; // (5.9553531e-17) [J m2 s-1] Planck constant times speed of light squared = hc2
 *joules_per_calorie=4.1855f; // (4.1855) [J cal-1] Cal = energy to heat 1g H20 1C @ 15C
 
-/* Parameters from GOES16 ATBD p.44 */
+/* Parameters from GOES16 SST ATBD p.44
+   https://www.star.nesdis.noaa.gov/goesr/documents/ATBDs/Baseline/ATBD_GOES-R_SST-v2.0_Aug2010.pdf
+   ${DATA}/ess_rmt/atbd_goes_sst.pdf */
 a0=11.8430f;
 a1=0.963999f;
 a2=0.0711657f;
@@ -52,7 +54,7 @@ wvn_ctr@units="cm-1";
 rad=Rad/1000.0f; // [mW m-2 sr-1 (cm-1)-1] -> [W m-2 sr-1 (cm-1)-1]
 rad@units="W m-2 sr-1 (cm-1)-1";
 
-// Invert radiance field to obtain brightness temperature
+// Invert radiance field (in W m-2 sr-1 (cm-1)-1) to obtain brightness temperature
 tpt_brt=(100.0f*hc*wvn_ctr)/(cst_Boltzmann)/ln(1.0f+2.0e8f*hc2*wvn_ctr^3/rad); // Invert Planck equation for Tb
 tpt_brt@long_name="Brightness Temperature";
 tpt_brt@standard_name="toa_brightness_temperature";

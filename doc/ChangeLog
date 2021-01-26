@@ -1,8 +1,12 @@
-2021-01-22  Charlie Zender  <zender@uci.edu>
+2021-01-23  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha03: Cheyenne';git push
-	git tag -a 4.9.8-alpha03 -m 'ncremap: tll fix sgs s1d, fix nfr MALI';git push --tags
+	git tag -a 4.9.8-alpha03 -m 'ncclimo: mth_srt/end sbs; ncremap: tll fix sgs s1d, fix nfr MALI';git push --tags
+
+	* ncclimo mth_srt/end work for monthly subsetting
+
+2021-01-22  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo add stubs like mth_srt/mth_end for splitting on month boundaries
 

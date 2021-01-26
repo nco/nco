@@ -171,27 +171,28 @@ nco_cln_fmt_dt /* [fnc] Format date-string for printable output */
 {
   char bdate[200]={0};
   char btime[200]={0};
+
   char *bfr;
   
-  bfr=(char*)nco_malloc(sizeof(char)*NCO_MAX_LEN_FMT_SNG);
+  bfr=(char *)nco_malloc(sizeof(char)*NCO_MAX_LEN_FMT_SNG);
   
   switch(dt_fmt_enm){
   case fmt_dt_nil:
     bfr[0]='\0';
     break;
-    /* Plain format */
   case fmt_dt_rgl:
+    /* Plain format */
     sprintf(bfr,"%04d-%02d-%02d %02d:%02d:%09.6f",ttx->year,ttx->month,ttx->day,ttx->hour,ttx->min,ttx->sec);
-   break;
-   /* Same as plain format but with 'T' char as date-time spacer, and comma instead of decimal point
-      ISO8601 format tester:
-      https://dencode.com/en/date
-      20201026T182352,215Z */
+    break;
   case fmt_dt_iso8601:
+    /* Same as plain format except with 'T' character as date-time spacer
+       ISO8601 format tester:
+       https://dencode.com/en/date
+       20201026T182352,215Z */
     sprintf(bfr,"%04d-%02d-%02dT%02d:%02d:%09.6f",ttx->year,ttx->month,ttx->day,ttx->hour,ttx->min,ttx->sec);
     break;
-    /* Print date and time if time not all zero */
   case fmt_dt_sht:
+    /* Print date and print time if time not all zeros */
     sprintf(bdate,"%04d-%02d-%02d",ttx->year,ttx->month,ttx->day);
     if(ttx->hour != 0 || ttx->min != 0 || ttx->sec != 0.0){
       int isec;
@@ -1246,15 +1247,18 @@ nco_cln_var_prs
  var_sct *var,
  var_sct *var_ret)
 {
-  size_t sz;
-  size_t idx;
+  const char *fnc_nm="nco_cln_var_prs()";
+  const char *bs_sng="seconds since 2001-01-01"; /* [sng] Base units for UDUnits */
+
   char empty_sng[1];
 
   double resolution;
+
+  size_t sz;
+  size_t idx;
+
   tm_cln_sct tm;
-  /* base units for udunits */
-  const char *bs_sng="seconds since 2001-01-01";
-  const char *fnc_nm="nco_cln_var_prs()";
+
   empty_sng[0]='\0';
 
   // if(cln_typ != cln_std) return NCO_ERR;
@@ -1281,16 +1285,19 @@ nco_cln_var_prs
   var_ret->mss_val.sngp[0]=strdup(empty_sng);
   sz=var->sz;
   tm.cln_typ=cln_typ;
+
   // (void)fprintf(stderr,"%s: %s reports var \"%s\" has missing value %d\n",nco_prg_nm_get(),fnc_nm,var->nm,var->has_mss_val);
 
   if(var->type == NC_DOUBLE){
+
     double mss_val_dbl;
     if(var->has_mss_val) mss_val_dbl=var->mss_val.dp[0];
+
     for(idx=0;idx < sz;idx++){
       if(var->has_mss_val && var->val.dp[idx] == mss_val_dbl){
         var_ret->val.sngp[idx]=strdup(empty_sng);
         continue;
-      }
+      } /* !has_mss_val */
 
       tm.value=var->val.dp[idx];
       if(cln_typ == cln_360 || cln_typ == cln_365 || cln_typ == cln_366)
@@ -1299,8 +1306,8 @@ nco_cln_var_prs
         (void)ut_decode_time(tm.value,&tm.year,&tm.month,&tm.day,&tm.hour,&tm.min,&tm.sec,&resolution);
 
       var_ret->val.sngp[idx]=nco_cln_fmt_dt(&tm,dt_fmt_enm);
-    }
-  }else if(var->type==NC_FLOAT){
+    } /* !idx */
+  }else if(var->type == NC_FLOAT){
 
     float mss_val_flt;
     if(var->has_mss_val) mss_val_flt=var->mss_val.fp[0];
@@ -1309,16 +1316,18 @@ nco_cln_var_prs
       if(var->has_mss_val && var->val.fp[idx] == mss_val_flt){
         var_ret->val.sngp[idx]=strdup(empty_sng);
         continue;
-      }
+      } /* !has_mss_val */
 
       tm.value=(double)(var->val.fp[idx]);
       if(cln_typ == cln_360 || cln_typ == cln_365 || cln_typ == cln_366)
         nco_cln_pop_tm(&tm);
       else
         (void)ut_decode_time(tm.value,&tm.year,&tm.month,&tm.day,&tm.hour,&tm.min,&tm.sec,&resolution);
+
       var_ret->val.sngp[idx]=nco_cln_fmt_dt(&tm,dt_fmt_enm);
-    }
-  }
+    } /* !idx */
+  } /* !var->type */
+
   cast_nctype_void(var->type,&var->val);
   cast_nctype_void(var_ret->type,&var->val);
 
