@@ -339,6 +339,7 @@ main(int argc,char **argv)
     {"retain",no_argument,0,'R'},
     {"rtn",no_argument,0,'R'},
     {"revision",no_argument,0,'r'},
+    {"nco_script",required_argument,0,'S'},
     {"file",required_argument,0,'S'},
     {"script-file",required_argument,0,'S'},
     {"signal",no_argument,0,'z'},

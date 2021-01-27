@@ -12763,7 +12763,7 @@ The processing instructions are contained either in the @acronym{NCO}
 script file @file{fl.nco} or in a sequence of command line arguments.
 The options @samp{-s} (or long options @samp{--spt} or @samp{--script})
 are used for in-line scripts and @samp{-S} (or long options
-@samp{--fl_spt} or @samp{--script-file}) are used to provide the
+@samp{--fl_spt}, @samp{--nco_script}, or @samp{--script-file}) are used to provide the
 filename where (usually multiple) scripting commands are pre-stored.   
 @command{ncap2} was written to perform arbitrary algebraic
 transformations of data and archive the results as easily as
