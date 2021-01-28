@@ -1,8 +1,12 @@
-2021-01-23  Charlie Zender  <zender@uci.edu>
+2021-01-28  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha03: Cheyenne';git push
 	git tag -a 4.9.8-alpha03 -m 'ncclimo: mth_srt/end sbs; ncremap: tll fix sgs s1d, fix nfr MALI';git push --tags
+
+	* nco_ntp_vrt: Add lengthy warning about impending doom when attempting to vertically interpolate variables named US or VS
+
+2021-01-23  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo mth_srt/end work for monthly subsetting
 
