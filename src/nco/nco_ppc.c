@@ -643,9 +643,9 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
   /* Be conservative, round upwards */
   prc_bnr_ceil=(unsigned short)ceil(prc_bnr_xct);
   /* First bit is implicit not explicit but corner cases prevent our taking advantage of this */
-  prc_bnr_xpl_rqr=prc_bnr_ceil-1; /* Implimented after 20201222 by JPT */
+  //prc_bnr_xpl_rqr=prc_bnr_ceil-1;
   //prc_bnr_xpl_rqr=prc_bnr_ceil;
-  //prc_bnr_xpl_rqr=prc_bnr_ceil+1; /* Used until 20201222 */
+  prc_bnr_xpl_rqr=prc_bnr_ceil+1;
   if(type == NC_DOUBLE) prc_bnr_xpl_rqr++; /* Seems necessary for double-precision ppc=array(1.234567,1.0e-6,$dmn) */
   /* 20150128: Hand-tuning shows we can sacrifice one or two more bits for almost all cases
      20150205: However, small integers are an exception. In fact they require two more bits, at least for NSD=1.
@@ -811,9 +811,108 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 	  if(op1.fp[idx] != mss_val_flt){
 	    u32_ptr[idx]&=msk_f32_u32_zro; /* Shave as normal */
 	    u32_ptr[idx]|=msk_f32_u32_hshv; /* Set MSB of LSBs */
-          } /* !mss_val_flt */
+	  } /* !mss_val_flt */
 	} /* !idx */
       } /* !has_mss_val */
+      
+    }else if(nco_baa_cnv_get() == nco_baa_gbg){ /* JPT 20210102: baa_gbg (granualar bit grooming), brute force compression of each individual data point */
+      float raw32;
+      float temp32;
+      const unsigned int msk_rst32 = msk_f32_u32_zro; /* resets the mask to orginal garuntee mask */
+      float xpn32;
+      int xpn_flr32;
+      float err_max32;
+      bool x;
+
+      if(!has_mss_val){
+        for(idx=0L;idx<sz;idx+=2L){ // shave loop
+	  if(op1.fp[idx] != 0.0 && op1.fp[idx] != 1.0){
+	    raw32 = op1.fp[idx];
+	    msk_f32_u32_zro = msk_rst32;
+	    op1.uip[idx]&=msk_f32_u32_zro;
+	    xpn32=log10f(raw32);
+	    xpn_flr32=floor(xpn32);
+	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
+	    if(op1.fp[idx] != 0.0 && op1.fp[idx] != 1.0){
+	      while(fabs(raw32 - op1.fp[idx]) <= err_max32 && op1.fp[idx] != 1.0){
+		temp32=op1.fp[idx];
+		msk_f32_u32_zro<<=1;
+		op1.uip[idx]&=msk_f32_u32_zro;
+		fflush(stdout);
+	      } // close while loop
+	      op1.fp[idx] = temp32;
+	    } // close if before while
+	    //	    if(fabs(raw32 - op1.fp[idx]) >= err_max32) printf("Failed\n"); //test
+	  } //close if !=0	  
+	} // close shave loop
+	
+	for(idx=1L;idx<sz;idx+=2L){ // set loop
+	  raw32 = op1.fp[idx];
+	  msk_f32_u32_zro = msk_rst32;
+	  msk_f32_u32_one=~msk_f32_u32_zro; 
+          if(op1.fp[idx] != 0U){ /* Never quantize upwards floating point values of zero */
+	    op1.uip[idx]|=msk_f32_u32_one;
+	    xpn32=log10f(raw32);
+	    xpn_flr32=floor(xpn32);
+	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
+	    x = False;
+	    while(fabs(raw32 - op1.fp[idx]) <= err_max32){
+	      x = True;
+	      temp32 = op1.fp[idx];
+	      msk_f32_u32_zro <<= 1;
+	      msk_f32_u32_one =~ msk_f32_u32_zro;
+	      op1.uip[idx] |= msk_f32_u32_one;
+	      fflush(stdout);
+	    } //close while
+	    if(x) op1.fp[idx] = temp32;
+	  } // close if > 0
+	  //	  if(fabs(raw32 - op1.fp[idx]) >= err_max32) printf("Failed\n"); // test
+	} // close set loop
+      } // close if(!has_mss_val)
+      
+      else{
+        const float mss_val_flt=*mss_val.fp;
+        for(idx=0L;idx<sz;idx+=2L){
+          if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != 0.0){
+	    raw32 = op1.fp[idx];
+	    msk_f32_u32_zro = msk_rst32;
+	    op1.uip[idx]&=msk_f32_u32_zro;
+	    xpn32=log10f(raw32);
+	    xpn_flr32=floor(xpn32);
+	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
+	    if(op1.fp[idx] != 0.0 && op1.fp[idx] != 1.0){
+	      while(fabs(raw32 - op1.fp[idx]) <= err_max32 && op1.fp[idx] != 1.0){
+		temp32=op1.fp[idx];
+		msk_f32_u32_zro<<=1;
+		op1.uip[idx]&=msk_f32_u32_zro;
+		fflush(stdout);
+	      } // close while loop
+	      op1.fp[idx] = temp32;
+	    } // close if before while
+	  } // close if 
+	} // close shave loop
+        for(idx=1L;idx<sz;idx+=2L){
+          if(op1.fp[idx] != mss_val_flt && op1.fp[idx] != 0U){
+	    raw32 = op1.fp[idx];
+	    msk_f32_u32_zro = msk_rst32;
+	    msk_f32_u32_one=~msk_f32_u32_zro;
+	    op1.uip[idx]|=msk_f32_u32_one;
+	    xpn32=log10f(raw32);
+	    xpn_flr32=floor(xpn32);
+	    err_max32=0.5*pow(10.0,xpn_flr32-nsd+1);
+	    x = False;
+	    while(fabs(raw32 - op1.fp[idx]) <= err_max32){
+	      x = True;
+	      temp32 = op1.fp[idx];
+	      msk_f32_u32_zro <<= 1;
+	      msk_f32_u32_one =~ msk_f32_u32_zro;
+	      op1.uip[idx] |= msk_f32_u32_one;
+	      fflush(stdout);
+	    } //close while
+	    if(x) op1.fp[idx] = temp32;
+	  } // close if
+	} // close set loop 
+      } /* end else */
     }else abort();
     break; /* !NC_FLOAT */
   case NC_DOUBLE:
@@ -913,7 +1012,104 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
           } /* !mss_val_dbl */
 	} /* !idx */
       } /* !has_mss_val */
-    }else abort();
+      
+    }else if(nco_baa_cnv_get() == nco_baa_gbg){ /* JPT 20210102: baa_gbg (granualar bit grooming), brute force compression of each individual data point */ 
+      double raw64;
+      double temp64;
+      const unsigned long int msk_rst64 = msk_f64_u64_zro;
+      double xpn64;
+      int xpn_flr64;
+      double err_max64;
+      bool x;
+      
+      if(!has_mss_val){
+	for(idx=0L;idx<sz;idx+=2L){ // shave loop
+	  if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0){
+	    raw64 = op1.dp[idx];
+	    msk_f64_u64_zro = msk_rst64;
+	    u64_ptr[idx]&=msk_f64_u64_zro;
+	    xpn64=log10(raw64);
+	    xpn_flr64=floor(xpn64);
+	    err_max64=0.5*pow(10.0,xpn_flr64-nsd+1);
+	    if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0){
+	      while(fabs(raw64 - op1.dp[idx]) <= err_max64 && op1.dp[idx] != 1.0){
+		temp64  = op1.dp[idx];
+		msk_f64_u64_zro<<=1;
+		u64_ptr[idx]&=msk_f64_u64_zro;
+		fflush(stdout);
+	      } // close while loop
+	      op1.dp[idx] = temp64;
+	    } // close if before while
+	    //if(fabs(raw64 - op1.dp[idx]) >= err_max64) printf("Failed\n"); //test
+	  } // close if != 0
+	} // close shave loop
+	
+	for(idx=1L;idx<sz;idx+=2L){ // set loop
+	  raw64 = op1.dp[idx];
+	  msk_f64_u64_zro = msk_rst64;
+	  msk_f64_u64_one=~msk_f64_u64_zro;
+          if(op1.dp[idx] != 0U){ /* Never quantize upwards floating point values of zero */
+            u64_ptr[idx]|=msk_f64_u64_one;
+	    xpn64=log10(raw64);
+	    xpn_flr64=floor(xpn64);
+	    err_max64=0.5*pow(10.0,xpn_flr64-nsd+1);
+	    x = False;
+	    while(fabs(raw64 - op1.dp[idx]) <= err_max64){
+	      x = True;
+	      temp64 = op1.dp[idx];
+	      msk_f64_u64_zro <<= 1;
+	      msk_f64_u64_one =~ msk_f64_u64_zro;
+	      u64_ptr[idx]|= msk_f64_u64_one;
+	      fflush(stdout);
+	    } //close while
+	    if(x) op1.dp[idx] = temp64;
+	  } // close if 0
+	} // close set loop
+      }else{
+	const double mss_val_dbl=*mss_val.dp;
+	for(idx=0L;idx<sz;idx+=2L){
+	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != 0.0){
+	    raw64 = op1.dp[idx];
+	    msk_f64_u64_zro = msk_rst64;
+	    u64_ptr[idx]&=msk_f64_u64_zro;
+	    xpn64=log10(raw64);
+	    xpn_flr64=floor(xpn64);
+	    err_max64=0.5*pow(10.0,xpn_flr64-nsd+1);
+	    if(op1.dp[idx] != 0.0 && op1.dp[idx] != 1.0){
+	      while(fabs(raw64 - op1.dp[idx]) <= err_max64 && op1.dp[idx] != 1.0){
+		temp64  = op1.dp[idx];
+		msk_f64_u64_zro<<=1;
+		u64_ptr[idx]&=msk_f64_u64_zro;
+		fflush(stdout);
+	      } // close while loop
+	      op1.dp[idx] = temp64;
+	    } // close if before while
+	  } // close if     
+	} // close shave loop 
+	for(idx=1L;idx<sz;idx+=2L){
+	  if(op1.dp[idx] != mss_val_dbl && op1.dp[idx] != 0ULL){
+	    raw64 = op1.dp[idx];
+	    msk_f64_u64_zro = msk_rst64;
+	    msk_f64_u64_one=~msk_f64_u64_zro;
+	    u64_ptr[idx]|=msk_f64_u64_one;
+	    xpn64=log10(raw64);
+	    xpn_flr64=floor(xpn64);
+	    err_max64=0.5*pow(10.0,xpn_flr64-nsd+1);
+	    x = False;
+	    while(fabs(raw64 - op1.dp[idx]) <= err_max64){
+	      x = True;
+	      temp64 = op1.dp[idx];
+	      msk_f64_u64_zro <<= 1;
+	      msk_f64_u64_one =~ msk_f64_u64_zro;
+	      u64_ptr[idx]|= msk_f64_u64_one;
+	      fflush(stdout);
+	    } //close while
+	    if(x) op1.dp[idx] = temp64;
+	  } // close if != 
+	} //close set loop
+      }//close else
+    } else // closes baa_gbg
+      abort();
     break; /* !NC_DOUBLE */
   case NC_INT: /* Do nothing for non-floating point types ...*/
   case NC_SHORT:
