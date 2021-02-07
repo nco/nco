@@ -3679,6 +3679,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"natrack",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("natrack"); /* MODIS DeepBlue SeaWiFS L2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"nj",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nj"); /* CICE RTM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nlat",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nlat"); /* POP */
+    else if((rcd=nco_inq_dimid_flg(in_id,"rlat",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("rlat"); /* RACMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"nscan",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nscan"); /* AMSR, TRMM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nTimes",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nTimes"); /* OMI L2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"number_of_lines",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("number_of_lines"); /* DSCOVR L2 */
@@ -3714,6 +3715,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"XDim:MOD_Grid_monthly_CMG_VI",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("XDim:MOD_Grid_monthly_CMG_VI"); /* MODIS MOD13C2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"ni",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("ni"); /* CICE RTM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nlon",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("nlon"); /* POP */
+    else if((rcd=nco_inq_dimid_flg(in_id,"rlon",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("rlon"); /* POP */
     else if((rcd=nco_inq_dimid_flg(in_id,"npix",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("npix"); /* AMSR */
     else if((rcd=nco_inq_dimid_flg(in_id,"npixel",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("npixel"); /* TRMM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nxtrack",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("nxtrack"); /* MODIS DeepBlue SeaWiFS L2 */
@@ -3765,12 +3767,13 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      OMI DOMINO: Latitude, LatitudeCornerpoints, Longitude, LongitudeCornerpoints
      Oxford: global_latitude0, global_longitude0, latitude0, longitude0
      POP: TLAT, TLONG, ULAT, ULONG  (NB: CICE uses ?LON and POP uses ?LONG) (POP does not archive spatial bounds)
+     RACMO: rlat, rlon
      TRMM: Latitude, Longitude
      UV-CDAT regridder: bounds_lat, bounds_lon
      Unknown: XLAT_M, XLONG_M
      WRF: XLAT, XLONG */
-  const int var_xcl_lst_nbr=49; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LAT","/lat","/Latitude","/latitude","/nav_lat","/global_latitude0","gridlat_0","/latitude0","/slat","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/Longitude","/longitude","/nav_lon","/global_longitude0","gridlon_0","/longitude0","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
+  const int var_xcl_lst_nbr=51; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LAT","/lat","/Latitude","/latitude","/nav_lat","/global_latitude0","gridlat_0","/latitude0","/rlat","/slat","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/Longitude","/longitude","/nav_lon","/global_longitude0","gridlon_0","/longitude0","/rlon","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
