@@ -1,8 +1,12 @@
-2021-02-01  Charlie Zender  <zender@uci.edu>
+2021-02-07  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha03: Cheyenne';git push
 	git tag -a 4.9.8-alpha03 -m 'ncclimo: mth_srt/end sbs; ncremap: tll fix sgs s1d, fix nfr MALI';git push --tags
+
+	* ncremap add rlat, rlon to coordinate database for RACMO
+
+2021-02-01  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo fix usage message
 

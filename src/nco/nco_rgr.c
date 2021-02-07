@@ -7726,6 +7726,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("nav_lat"); /* NEMO */
+    else if((rcd=nco_inq_varid_flg(in_id,"rlat",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("rlat"); /* RACMO */
     else if((rcd=nco_inq_varid_flg(in_id,"global_latitude0",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("global_latitude0"); /* Oxford */
     else if((rcd=nco_inq_varid_flg(in_id,"latitude0",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latitude0"); /* Oxford NB: Must search for global_* first */
     else if((rcd=nco_inq_varid_flg(in_id,"CO_Latitude",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("CO_Latitude"); /* MLS */
@@ -7750,6 +7751,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"ULONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULONG"); /* POP */
     else if((rcd=nco_inq_varid_flg(in_id,"lonCell",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("lonCell"); /* MPAS-O/I */
     else if((rcd=nco_inq_varid_flg(in_id,"nav_lon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("nav_lon"); /* NEMO */
+    else if((rcd=nco_inq_varid_flg(in_id,"rlon",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("rlon"); /* RACMO */
     else if((rcd=nco_inq_varid_flg(in_id,"global_longitude0",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("global_longitude0"); /* Oxford NB: Must search for global_* first */
     else if((rcd=nco_inq_varid_flg(in_id,"longitude0",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("longitude0"); /* Oxford */
     else if((rcd=nco_inq_varid_flg(in_id,"CO_Longitude",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("CO_Longitude"); /* MLS */

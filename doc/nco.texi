@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.8-alpha02
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 5 January 2021
-@set update-month January 2021
+@set update-date 7 February 2021
+@set update-month February 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -13552,8 +13552,8 @@ three_dmn_var_prm=
 @node Attributes, Value List, Arrays and hyperslabs, ncap2 netCDF Arithmetic Processor
 @subsection Attributes
 @cindex attributes@command{ncap2}
-@noindent Attributes are referred to by @emph{var_nm@@att_nm} @*
-All the following are valid statements:
+Refer to attributes with @emph{var_nm@@att_nm}.
+The following are all valid statements:
 @example
 @verbatim
 global@text="Test Attributes"; /* Assign a global variable attribute */
@@ -13568,10 +13568,9 @@ a1($time.size-1)=a1@max;
 @end verbatim
 @end example
 
-The netCDF specification allows all attribute types to have a size
-greater than one. 
-The maximum is defined by @code{NC_MAX_ATTRS}.
-The following is an @command{ncdump} of the metadata for variable @var{a1} 
+NetCDF allows all attribute types to have a size between one
+@code{NC_MAX_ATTRS}. 
+Here is the metadata for variable @var{a1}:
 @example 
 double a1(time) ;
   a1:long_name = "Kelvin" ;
@@ -13581,16 +13580,19 @@ double a1(time) ;
   a1:triplet = 21., 110., 199. ;
 @end example
 
-The following basic methods @code{size(), type(), exists()} can be used with attributes.
-For example, to save an attribute text string in a variable,
+These basic methods can be used with attributes:
+@code{size()}, @code{type()}, and @code{exists()}.
+For example, to save an attribute text string in a variable:
 @example
 @verbatim
 defdim("sng_len",a1@long_name.size());
 sng_arr[$sng_len]=a1@long_name; // sng_arr now contains "Kelvin" 
 @end verbatim
 @end example
-Attributes defined in a script are stored in memory and are written to Output after script completion.
-To stop the attribute being written use the ram_delete() method or use a bogus variable name.
+Attributes defined in a script are stored in memory and are written to
+the output file after script completion. 
+To stop the attribute being written use the @code{ram_delete()} method
+or use a bogus variable name. 
 
 @noindent @strong{Attribute Propagation and Inheritance}
 @cindex attribute propagation
