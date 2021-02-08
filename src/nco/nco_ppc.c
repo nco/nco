@@ -816,13 +816,13 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
       } /* !has_mss_val */
       
     }else if(nco_baa_cnv_get() == nco_baa_gbg){ /* JPT 20210102: baa_gbg (granualar bit grooming), brute force compression of each individual data point */
+      bool x;
+      const unsigned int msk_rst32 = msk_f32_u32_zro; /* resets the mask to orginal garuntee mask */
+      float err_max32;
       float raw32;
       float temp32;
-      const unsigned int msk_rst32 = msk_f32_u32_zro; /* resets the mask to orginal garuntee mask */
       float xpn32;
       int xpn_flr32;
-      float err_max32;
-      bool x;
 
       if(!has_mss_val){
         for(idx=0L;idx<sz;idx+=2L){ // shave loop
@@ -838,7 +838,7 @@ nco_ppc_bitmask /* [fnc] Mask-out insignificant bits of significand */
 		temp32=op1.fp[idx];
 		msk_f32_u32_zro<<=1;
 		op1.uip[idx]&=msk_f32_u32_zro;
-		fflush(stdout);
+		//		fflush(stdout);
 	      } // close while loop
 	      op1.fp[idx] = temp32;
 	    } // close if before while
