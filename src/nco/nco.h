@@ -737,6 +737,7 @@ extern "C" {
     nco_baa_bg2, /* 4 Bit Groom version 2 dynamic masks (option since 20190203) */
     nco_baa_rnd, /* 5 Bit rounding */
     nco_baa_sh2, /* 6 Bit Half-shave  */
+    nco_baa_gbg, /* 7 Brute force granular bit grooming */
   }; /* end nco_baa_cnv */
 
   enum nco_bnr_cnv{ /* [enm] Binary byte-ordering convention to employ (native or byte-swapped) */
