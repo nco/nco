@@ -2,7 +2,7 @@
 
 /* Usage: ncap2 -O -S tpt_brt.nco in.nc out.nc
 
-   Purpose: ESS 138 Remote Sensing Lab 3 example conversion of GOES16 radiance to brightness temperature
+   Purpose: ESS 138 Remote Sensing conversion of GOES16 radiance to brightness temperature
 
    Procedure:
    1. Unpack GOES16 L1b data into netCDF3 format (otherwise ncap2 produces errors in following step)
@@ -40,7 +40,7 @@ a1=0.963999f;
 a2=0.0711657f;
 a3=0.820187f;
 TFG=288; // [K] First-guess temperature
-theta=0.0; // [rdn] Zenith angle
+theta=0.44; // [rdn] Viewing angle
 
 *wvl_ctr_mcr=band_wavelength;
 *wvl_ctr=wvl_ctr_mcr*1.0e-6f; // [um]->[m]
