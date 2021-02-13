@@ -1050,6 +1050,10 @@ let yr_endm1=${yr_end_rth}-1
 let yr_endp1=${yr_end_rth}+1
 let yr_nbr=${yr_end_rth}-${yr_srt_rth}+1
 
+if [ ${mth_srt} -eq '0' ]; then
+    echo "${spt_nm}: ERROR User-defined start month is ${mth_srt}. Please use 1-based (not 0-based) indexing for months, where [Jan..Dec] = [1..12]"
+    exit 1
+fi # !mth_srt
 trim_leading_zeros ${mth_srt}
 mth_srt_rth=${sng_trm}
 mm_srt=`printf "%02d" ${mth_srt_rth}`
@@ -1057,8 +1061,14 @@ trim_leading_zeros ${mth_end}
 mth_end_rth=${sng_trm}
 mm_end=`printf "%02d" ${mth_end_rth}`
 let mth_nbr=${yr_end_rth}*12+${mth_end_rth}-${yr_srt_rth}*12-${mth_srt_rth}+1
-if [ "${mm_srt}" != '00' ] || [ "${mm_end}" != '12' ]; then
-    flg_mth='Yes'
+let mth_srtm1=${mth_srt_rth}-1
+if [ ${mth_srtm1} -eq 0 ] ; then
+    mm_srtm1='12'
+else # !mth_srtm1
+    mm_srtm1=`printf "%02d" ${mth_srtm1}`
+fi # !mth_srtm1
+if [ "${mm_srt}" != '01' ] || [ "${mm_end}" != '12' ]; then
+    mth_flg='Yes'
 fi # !mm_srt
     
 # Derived variables
@@ -1382,13 +1392,13 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	let fl_rmd=${fl_nbr}%${fpy}
     fi # !clm_md
     if [ ${flg_dct} = 'Yes' ]; then
-	if [ "${flg_mth}" = 'Yes' ]; then
+	if [ "${mth_flg}" = 'Yes' ]; then
 	    if [ ${mth_nbr} -ne ${fl_nbr} ]; then
 		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} differs from number of months = ${mth_nbr} computed from calendar inputs for clm_md=${clm_md}\n"
 		printf "${spt_nm}: HINT In this mode splitter expects one monthly file per calendar month\n"
 		exit 1
 	    fi # !mth_nbr
-	else # !flg_mth
+	else # !mth_flg
 	    if [ ${fl_rmd} -ne 0 ]; then
 		printf "${spt_nm}: ERROR ${fl_nbr} files of clm_md=${clm_md} input contain non-integral number of years, ${fl_rmd} files leftover in final year\n"
 		printf "${spt_nm}: HINT Provide input filenames in multiples of ${fpy}\n"
@@ -1400,11 +1410,23 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		printf "${spt_nm}: HINT Number of files at ${fpy} files-per-year must match number of years implied by arguments to start- and end-year switches (--yr_srt=${yr_srt} and --yr_end=${yr_end}, respectively)\n"
 		exit 1
 	    fi # !yr_sbs
-	fi # !flg_mth
+	fi # !mth_flg
     fi # !flg_dct
 
     # How many segments of output?
-    if [ "${flg_mth}" = 'Yes' ]; then
+    if [ "${mth_flg}" = 'Yes' ]; then
+	# NB: When start/end months are not Jan/Dec, sgm_rmd measured in months
+	let mpf_max=${fpy}*${ypf_max}
+	let sgm_nbr=${mth_nbr}/${mpf_max}
+	let sgm_rmd=${mth_nbr}%${mpf_max}
+	if [ ${sgm_rmd} -ne 0 ]; then
+	    let sgm_nbr=${sgm_nbr}+1
+	    rmd_flg='Yes'
+	else # !sgm_rmd
+	    rmd_flg='No'
+	fi # !sgm_rmd  
+    else  # !mth_flg
+	# NB: When start/end months are Jan/Dec, sgm_rmd measured in years
 	let sgm_nbr=${yr_sbs}/${ypf_max}
 	let sgm_rmd=${yr_sbs}%${ypf_max}
 	if [ ${sgm_rmd} -ne 0 ]; then
@@ -1413,16 +1435,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	else # !sgm_rmd
 	    rmd_flg='No'
 	fi # !sgm_rmd  
-    else  # !flg_mth
-	let sgm_nbr=${yr_sbs}/${ypf_max}
-	let sgm_rmd=${yr_sbs}%${ypf_max}
-	if [ ${sgm_rmd} -ne 0 ]; then
-	    let sgm_nbr=${sgm_nbr}+1
-	    rmd_flg='Yes'
-	else # !sgm_rmd
-	    rmd_flg='No'
-	fi # !sgm_rmd  
-    fi  # !flg_mth
+    fi  # !mth_flg
     let sgm_nbrm1=${sgm_nbr}-1
 
 else # !sbs_flg
@@ -1778,7 +1791,9 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: mdl_typ  = ${mdl_typ}\n"
     printf "dbg: mpi_flg  = ${mpi_flg}\n"
     printf "dbg: mpi_nbr  = ${mpi_nbr}\n"
+    printf "dbg: mth_end  = ${mth_end}\n"
     printf "dbg: mth_nbr  = ${mth_nbr}\n"
+    printf "dbg: mth_srt  = ${mth_srt}\n"
     printf "dbg: nco_opt  = ${nco_opt}\n"
     printf "dbg: ncr_flg  = ${ncr_flg}\n"
     printf "dbg: nd_nbr   = ${nd_nbr}\n"
@@ -1792,6 +1807,8 @@ if [ ${dbg_lvl} -ge 2 ]; then
     printf "dbg: rgr_opt  = ${rgr_opt}\n"
     printf "dbg: rgr_sfx  = ${rgr_sfx}\n"
     printf "dbg: sbs_flg  = ${sbs_flg}\n"
+    printf "dbg: sgm_nbr  = ${sgm_nbr}\n"
+    printf "dbg: sgm_rmd  = ${sgm_rmd}\n"
     printf "dbg: sgs_frc  = ${sgs_frc}\n"
     printf "dbg: thr_nbr  = ${thr_nbr}\n"
     printf "dbg: uio_flg  = ${uio_flg}\n"
@@ -1852,11 +1869,19 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     else # !var_nbr
 	printf "Timeseries will be created for only one variable\n"
     fi # !var_nbr
+    rmd_units='year'
+    if [ ${mth_flg} = 'Yes' ]; then
+	rmd_units='month'
+    fi # !mth_flg
+    sgm_sng='0'
+    if [ ${sgm_rmd} -ne 0 ]; then
+	sgm_sng='1'
+    fi # !sgm_rmd
     if [ ${sgm_nbr} -gt 1 ]; then
-	printf "All this occurs within an outer loop of (yr_sbs/ypf_max) = ${yr_sbs}/${ypf_max} = ${sgm_nbr} time segments\n"
+	printf "All this occurs within an outer loop of (yr_sbs/ypf_max) + (remainder, if any) = ${yr_sbs}/${ypf_max} + ${sgm_sng} = ${sgm_nbr} time segments\n"
 	if [ ${rmd_flg} = 'Yes' ]; then 
-	    printf "Will split data for each variable into ${sgm_nbrm1} timeseries segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} year(s)\n"
-	else
+	    printf "Will split data for each variable into ${sgm_nbrm1} timeseries segment(s) of length ${ypf_max} years and 1 segment of length ${sgm_rmd} ${rmd_units}(s)\n"
+	else # !rmd_flg
 	    printf "Will split data for each variable into ${sgm_nbr} timeseries segment(s) of length ${ypf_max} years\n"
 	fi # !rmd_flg
     else # !sgm_nbr
@@ -2334,26 +2359,26 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	fl_sgm[${sgm_idx}]=''
 
 	if [ "${clm_md}" != 'hfs' ]; then
-	    # Non-high-frequency timeseries receive exact file-lists to hyperslab by index
-	    if [ "${flg_mth}" = 'Yes' ]; then
-		let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy}
-		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy}
+	    # Non-high-frequency timeseries receive exact file-lists to hyperslab by index (not by time-coordinate)
+	    if [ "${mth_flg}" = 'Yes' ]; then
+		let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy} # NB: 0-based
+		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy} # NB: 1-based
+		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
+		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}
+		if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd} # NB: 1-based
+		    let yr_end_sgm=${yr_end_rth}
+		fi # !sgm_nbrm1
+	    else # !mth_flg
+		let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy} # NB: 0-based
+		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy} # NB: 1-based
 		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
 		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
 		if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
-		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpy}
+		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpy} # NB: 1-based
 		    let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
 		fi # !sgm_nbrm1
-	    else # !flg_mth
-		let fl_idx_srt=${sgm_idx}*${ypf_max}*${fpy}
-		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpy}
-		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
-		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
-		if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
-		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpy}
-		    let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
-		fi # !sgm_nbrm1
-	    fi # !flg_mth
+	    fi # !mth_flg
 	else # !clm_md
 	    # High-frequency timeseries are hyperslabbed by date and so need fuzzy file-lists
 	    # that may contain an extra file or two in case year-boundaries are intermediate records.
@@ -2391,6 +2416,15 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	let yr_endp1_sgm=${yr_end_sgm}+1
 	yyyy_endp1_sgm[${sgm_idx}]=`printf "%04d" ${yr_endp1_sgm}`
 
+	mm_srt_sgm[${sgm_idx}]='01'
+	mm_end_sgm[${sgm_idx}]='12'
+	mm_srt_sgm[${sgm_idx}]=${mm_srt}
+	if [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+	    mm_end_sgm[${sgm_idx}]=${mm_end}
+	else # !sgm_idx
+	    mm_end_sgm[${sgm_idx}]=${mm_srtm1}
+	fi # !sgm_idx
+
 	# Sanity check all files existence before wasting time and space on concatenation
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
 	    if [ ! -f "${fl_crr}" ]; then
@@ -2401,21 +2435,6 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	done # !fl_crr
 
     done # !sgm_idx
-
-    if [ ${dbg_lvl} -ge 2 ]; then
-	printf "dbg: Will split into files for ${var_nbr} variable(s):\n"
-	for ((var_idx=0;var_idx<${var_nbr};var_idx++)); do
-	    printf "${var_sbs[${var_idx}]}\n"
-	done # !var_idx
-	printf "dbg: Will split timeseries into ${sgm_nbr} segment(s):\n"
-	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
-	    printf "Segment ${sgm_idx} months: ${yyyy_srt_sgm[${sgm_idx}]}01--${yyyy_end_sgm[${sgm_idx}]}12\n"
-	done # !sgm_idx
-#	printf "dbg: Will split ${fl_nbr} files into ${sgm_nbr} segment(s):\n"
-#	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
-#	    printf "${fl_sgm[${sgm_idx}]}\n"
-#	done # !sgm_idx
-    fi # !dbg
 
     if [ "${clm_md}" = 'hfs' ]; then
 
@@ -2439,20 +2458,27 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 
     fi # !clm_md
 
+    if [ ${dbg_lvl} -ge 2 ]; then
+	printf "dbg: Will split into files for ${var_nbr} variable(s):\n"
+	for ((var_idx=0;var_idx<${var_nbr};var_idx++)); do
+	    printf "${var_sbs[${var_idx}]}\n"
+	done # !var_idx
+	printf "dbg: Will split timeseries into ${sgm_nbr} segment(s):\n"
+	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
+	    printf "Segment ${sgm_idx} months: ${yyyy_srt_sgm[${sgm_idx}]}${mm_srt_sgm[${sgm_idx}]}--${yyyy_end_sgm[${sgm_idx}]}${mm_end_sgm[${sgm_idx}]}\n"
+	done # !sgm_idx
+#	printf "dbg: Will split ${fl_nbr} files into ${sgm_nbr} segment(s):\n"
+#	for ((sgm_idx=0;sgm_idx<${sgm_nbr};sgm_idx++)); do
+#	    printf "${fl_sgm[${sgm_idx}]}\n"
+#	done # !sgm_idx
+    fi # !dbg
+
     # Create template output filenames (to avoid Bash 2D string arrays)
     for ((sgm_idx=0;sgm_idx<sgm_nbr;sgm_idx++)); do
-	mm_srt_sgm='01'
-	mm_end_sgm='12'
-	if [ ${sgm_idx} -eq 0 ]; then
-	    mm_srt_sgm=${mm_srt}
-	fi # !sgm_idx
-	if [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
-	    mm_end_sgm=${mm_end}
-	fi # !sgm_idx
 	if [ -z "${fml_nm_usr}" ]; then 
-	    fl_out_tpl[${sgm_idx}]="${drc_out}/var_nm_tpl_${yyyy_srt_sgm[${sgm_idx}]}${mm_srt_sgm}_${yyyy_end_sgm[${sgm_idx}]}${mm_end_sgm}.nc"
+	    fl_out_tpl[${sgm_idx}]="${drc_out}/var_nm_tpl_${yyyy_srt_sgm[${sgm_idx}]}${mm_srt_sgm[${sgm_idx}]}_${yyyy_end_sgm[${sgm_idx}]}${mm_end_sgm[${sgm_idx}]}.nc"
 	else # !fml_nm_usr
-	    fl_out_tpl[${sgm_idx}]="${drc_out}/var_nm_tpl_${fml_nm}_${yyyy_srt_sgm[${sgm_idx}]}${mm_srt_sgm}_${yyyy_end_sgm[${sgm_idx}]}${mm_end_sgm}.nc"
+	    fl_out_tpl[${sgm_idx}]="${drc_out}/var_nm_tpl_${fml_nm}_${yyyy_srt_sgm[${sgm_idx}]}${mm_srt_sgm[${sgm_idx}]}_${yyyy_end_sgm[${sgm_idx}]}${mm_end_sgm[${sgm_idx}]}.nc"
 	fi # !fml_nm_usr
 	if [ -n "${rgr_opt}" ]; then
 	    fl_rgr_tpl[${sgm_idx}]="${fl_out_tpl[${sgm_idx}]/${drc_out}/${drc_rgr}}"
