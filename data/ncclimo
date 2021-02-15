@@ -576,6 +576,8 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-L${fnt_nrm} ${fnt_bld}dfl_lvl${fnt_nrm}  Deflate level (empty is none) (default ${fnt_bld}${dfl_lvl}${fnt_nrm}) [${fnt_tlc}dfl_lvl, dfl, deflate${fnt_nrm}]"
     echo "${fnt_rvr}-l${fnt_nrm} ${fnt_bld}lnk_flg${fnt_nrm}  Link E3SM-climo to AMWG-climo filenames (default ${fnt_bld}${lnk_flg}${fnt_nrm}) [${fnt_tlc}lnk_flg, link_flag${fnt_nrm}]"
     echo "${fnt_rvr}-m${fnt_nrm} ${fnt_bld}mdl_nm${fnt_nrm}   Model name string in output filenames (default ${fnt_bld}${mdl_nm}${fnt_nrm}) [${fnt_tlc}mdl_nm, mdl, model_name, model${fnt_nrm}]"
+    echo " ${fnt_bld}--mth_end${fnt_nrm}  End month (default ${fnt_bld}${mth_end}${fnt_nrm}) [${fnt_tlc}mth_end, end_mth, month_end, end_month${fnt_nrm}]"
+    echo " ${fnt_bld}--mth_srt${fnt_nrm}  Start month (default ${fnt_bld}${mth_srt}${fnt_nrm}) [${fnt_tlc}mth_srt, start_mth, month_start, start_month${fnt_nrm}]"
     echo "${fnt_rvr}-n${fnt_nrm} ${fnt_bld}nco_opt${fnt_nrm}  NCO options (empty means none) (default ${fnt_bld}${nco_opt}${fnt_nrm}) [${fnt_tlc}nco_opt, nco, nco_options${fnt_nrm}]"
     echo " ${fnt_bld}--no_lnk${fnt_nrm}   Do not link E3SM-climo to AMWG-climo filenames [${fnt_tlc}no_links, no_amwg_links, no_amwg, no_AMWG_link${fnt_nrm}]"
     echo " ${fnt_bld}--no_cll_msr${fnt_nrm}  Omit cell_measures variables (e.g., 'area') [${fnt_tlc}no_area, no_cll_msr, no_cell_measures${fnt_nrm}]"

@@ -1,3 +1,7 @@
+2021-02-15  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo document --mth_[srt/end] internally, in man pages
+
 2021-02-13  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8-alpha03 release procedure:

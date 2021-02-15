@@ -271,7 +271,7 @@ make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories with CMake:
-# Generic when netCDF is in /usr (Ubuntu glace, Fedora skyglow)
+# Generic when netCDF is in /usr (Ubuntu glace)
 # Personal recipe last modified: 20170814
 # Personal recipe last used successfully: 20171218
 export GNU_TRP=`~/nco/autobld/config.guess`
@@ -292,7 +292,7 @@ cd ~/nco/cmake;cmake .. -DCMAKE_INSTALL_PREFIX=${HOME} -DNETCDF_INCLUDE:PATH=${N
 make install
 
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in system directories with CMake:
-# Generic when netCDF is in /usr (Ubuntu glace, Fedora skyglow)
+# Generic when netCDF is in /usr (Ubuntu glace)
 # Personal recipe last modified: 20170814
 # Personal recipe last used successfully: 20200601
 cd ~/nco/cmake
@@ -566,6 +566,16 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
+
+# gcc/g++ 20210215 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on hpc3:
+# Sysadmin upgrade request: 
+# Latest ticket to build NCO: never
+# Latest sysadmin-compiled module usage: module load nco/4.9.6/gcc.8.4.0 # 20210215
+# Personal recipe last modified: 20210215
+# Personal recipe last used successfully: 20210215
+cd ~/nco;git reset --hard origin/master
+module load gcc/8.4.0
+CC='gcc' CFLAGS='-Wall -DNCO_ABORT_ON_ERROR' CXX='g++' CXXFLAGS='-Wall' NETCDF_INC="${HOME}/anaconda/include" NETCDF_LIB="${HOME}/anaconda/lib" ./configure --enable-debug-symbols --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on mira:
 # Sysadmin upgrade request: 20170825
@@ -925,19 +935,6 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Personal recipe last modified: 20200601
 # Personal recipe last used successfully: 20200601
 # cd ~/nco/bld;make GSL=Y OMP=Y OPTS=D UDUNITS=Y allinone
-
-# gcc/g++ Zender uses this to debug NCO with custom-install netCDF (and ESMF) binaries in /usr/local (givre, roulee)
-# Personal recipe last modified: 20190828
-# Personal recipe last used successfully: 
-export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CXX='g++' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool nco.libtool.${GNU_TRP}.foo
-make clean;make > nco.make.${GNU_TRP}.foo 2>&1
-make check >> nco.make.${GNU_TRP}.foo 2>&1
-make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
 
 # gcc/g++ Zender uses this to debug NCO with pre-built netCDF binaries in /usr (skyglow, e3sm.ess.uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
