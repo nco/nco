@@ -6043,10 +6043,10 @@ stride between sub-cycles.
 Thus interleaving allows deconvolution of periodic phenomena within a 
 time-series.
 
-Processing simple arithmetical sequences is a helpful way to gain 
-understanding of what interleaving does. 
+Processing simple arithmetic sequences is a helpful way to 
+understand what interleaving does. 
 Here are some examples to reify the abstract.
-Let @file{in1.nc} contain the record-arry [1..10],
+Let @file{in1.nc} contain the record-array [1..10],
 @file{in2.nc} contain [11..20], and @file{in12.nc} contain [1..20].
 @example
 @verbatim
@@ -13328,6 +13328,7 @@ four[]=four.int();
 
 @html
 <a name="ncap_arr"></a> <!-- http://nco.sf.net/nco.html#ncap_arr -->
+<a name="array"></a> <!-- http://nco.sf.net/nco.html#array -->
 @end html
 @node Arrays and hyperslabs, Attributes, Left hand casting, ncap2 netCDF Arithmetic Processor
 @subsection Arrays and hyperslabs
@@ -18280,8 +18281,9 @@ ncclimo [-3] [-4] [-5] [-6] [-7]
 [-a @var{dec_md}] [-C @var{clm_md}] [-c @var{caseid}]
 [-d @var{dbg_lvl}] [--d2f]  [--dpt_fl=@var{dpt_fl}] [-E @var{yr_prv}] [-e @var{yr_end}]
 [-f @var{fml_nm}] [--fl_fmt=@var{fl_fmt}] [--glb_avg] [-h @var{hst_nm}] [-i @var{drc_in}]
-[-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}] [-m @var{mdl_nm}] [-n @var{nco_opt}] 
-[--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
+[-j @var{job_nbr}] [-L @var{dfl_lvl}] [-l @var{lnk_flg}]
+[-m @var{mdl_nm}] [--mth_end=@var{mth_end}] [--mth_srt=@var{mth_srt}]
+[-n @var{nco_opt}] [--no_cll_msr] [--no_frm_trm] [--no_ntv_tms] [--no_stg_grd] [--no_stdin] 
 [-O @var{drc_rgr}] [-o @var{drc_out}] [-P @var{prc_typ}] [-p @var{par_typ}] [--ppc=@var{ppc_prc}]
 [-R @var{rgr_opt}] [-r @var{rgr_map}]
 [-S @var{yr_prv}] [-s @var{yr_srt}] [--seasons=@var{csn_lst}] [--sgs_frc=@var{sgs_frc}]
