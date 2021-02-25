@@ -6,7 +6,7 @@
 
 	* NCO 4.9.8-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha04: Pernil';git push
-	git tag -a 4.9.8-alpha04 -m 'ncap2: array() fix; ncclimo: mth_srt/end doc, mali; ';git push --tags
+	git tag -a 4.9.8-alpha04 -m 'ncap2: array() fix; ncclimo: mth_srt/end doc, mali; ncremap mali, mss_val';git push --tags
 
 	* ncremap autoset mss_val=-1.0e36 for MALI
 
