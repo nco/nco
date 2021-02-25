@@ -10,6 +10,8 @@
 
 	* ncap2 replace array() number generation algorithm to from iterative addition to multiplication to reduce round-off error
 
+	* ncclimo fix empty mth_flg bug
+
 2021-02-15  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo document --mth_[srt/end] internally, in man pages

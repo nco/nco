@@ -1872,7 +1872,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	printf "Timeseries will be created for only one variable\n"
     fi # !var_nbr
     rmd_units='year'
-    if [ ${mth_flg} = 'Yes' ]; then
+    if [ "${mth_flg}" = 'Yes' ]; then
 	rmd_units='month'
     fi # !mth_flg
     sgm_sng='0'
