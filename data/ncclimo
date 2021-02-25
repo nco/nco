@@ -506,8 +506,8 @@ inp_std='No' # [sng] Input file list from stdin
 job_nbr=12 # [nbr] Job simultaneity for parallelism
 lnk_flg='No' # [sng] Link E3SM-climo to AMWG-climo filenames
 map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
-mdl_nm='cam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
-mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
+mdl_nm='cam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
+mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
 mpi_flg='No' # [sng] Parallelize over nodes
 mth_end='12' # [yr] End month
@@ -520,7 +520,7 @@ no_ntv_tms='No' # [flg] Omit native-grid split timeseries
 par_opt='' # [sng] Parallel options to shell
 par_typ="${par_bck}" # [sng] Parallelism type
 ppc_prc='' # [nbr] Precision-preserving compression precision
-prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso')
+prc_typ='' # [sng] Procedure type (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso')
 rgr_map='' # [sng] Regridding (horizontal) map
 rgr_opt='' # [sng] Regridding options (e.g., '--rgr col_nm=lndgrid', '--rgr col_nm=nCells')
 spl_opt='' # [sng] Splitter options (non-MPAS only) (e.g., '--no_cll_msr')
@@ -1075,7 +1075,7 @@ fi # !mm_srt
     
 # Derived variables
 out_nm=${caseid}
-if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mpas' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpas-ocean' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ] || [ "${mdl_nm}" = 'mpas-seaice' ] || [ "${mdl_nm}" = 'mpassi' ] || [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpas-ocean' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpas-seaice' ] || [ "${prc_typ}" = 'mpassi' ]; then
+if [ "${caseid}" = 'hist' ] || [ "${mdl_nm}" = 'mali' ] || [ "${mdl_nm}" = 'mpas' ] || [ "${mdl_nm}" = 'mpaso' ] || [ "${mdl_nm}" = 'mpas-ocean' ] || [ "${mdl_nm}" = 'mpascice' ] || [ "${mdl_nm}" = 'mpasseaice' ] || [ "${mdl_nm}" = 'mpas-seaice' ] || [ "${mdl_nm}" = 'mpassi' ] || [ "${prc_typ}" = 'mali' ] || [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpaso' ] || [ "${prc_typ}" = 'mpas-ocean' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpas-seaice' ] || [ "${prc_typ}" = 'mpassi' ]; then
     mdl_typ='mpas'
     nm_typ='mpas'
     out_nm="${mdl_nm}"
@@ -1945,13 +1945,15 @@ if [ "${clm_flg}" = 'Yes' ]; then
 	printf "Climatology from ${yr_nbr} years of contiguous raw data touching ${yr_cln} calendar years from YYYYMM = ${yyyy_clm_srt_dec}${mm_ann_srt} to ${yyyy_end}${mm_ann_end}\n"
     fi # !bnr_flg
     if [ "${nm_typ}" = 'yyyymm' ]; then
-	printf "Filenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
+	printf "Input ilenames will be constructed with generic conventions as ${bs_nm}_YYYYMM.${bs_sfx}\n"
     elif [ "${nm_typ}" = 'yyyy-mm' ]; then
-	printf "Filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM.${bs_sfx}\n"
+	printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM.${bs_sfx}\n"
     elif [ "${nm_typ}" = 'yyyy-mm-01' ]; then
-	printf "Filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01.${bs_sfx}\n"
+	printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01.${bs_sfx}\n"
     elif [ "${nm_typ}" = 'yyyy-mm-01-00000' ]; then
-	printf "Filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01-00000.${bs_sfx}\n"
+	printf "Input filenames will be constructed with generic conventions as ${bs_nm}.YYYY-MM-01-00000.${bs_sfx}\n"
+    elif [ "${nm_typ}" = 'mpas' ]; then
+	printf "Input filenames will be constructed with MPAS conventions\n"
     elif [ ${inp_aut} = 'Yes' ]; then 
 	printf "Input filenames will be constructed with CESM'ish or E3SM'ish conventions\n"
     else # !nm_typ
@@ -2002,6 +2004,8 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		YYYY=`printf "%04d" ${yr}`
 		if [ ${nm_typ} = 'cesm' ]; then
 		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
+		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
+		    fl_all="${fl_all} ${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
 		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
 		    # 20161130: Old MPAS rule until today
 		    # fl_all="${fl_all} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
