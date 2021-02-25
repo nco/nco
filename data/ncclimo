@@ -2005,12 +2005,14 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ]; then
 		if [ ${nm_typ} = 'cesm' ]; then
 		    fl_all="${fl_all} ${caseid}.${mdl_nm}.${hst_nm}.${YYYY}-${MM}.nc"
 		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
-		    fl_all="${fl_all} ${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
-		elif [ ${nm_typ} = 'mpas' ]; then # Use MPAS not CESM conventions
-		    # 20161130: Old MPAS rule until today
-		    # fl_all="${fl_all} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
-		    # Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
- 		    fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
+		    if [ ${mdl_nm} = 'mali' ] ; then 
+			fl_all="${fl_all} ${mdl_nm}.${hst_nm}.${YYYY}-${MM}-01_00000.nc"
+		    else # !mdl_nm
+			# 20161130: Old MPAS rule until today
+			# fl_all="${fl_all} ${caseid}.${mdl_nm}.${YYYY}-${MM}-01_00.00.00.nc"
+			# Example file: /scratch2/scratchdirs/golaz/ACME_simulations/20161117.beta0.A_WCYCL1850S.ne30_oEC_ICG.edison/run/mpascice.hist.am.timeSeriesStatsMonthly.0001-02-01.nc
+ 			fl_all="${fl_all} ${mdl_nm}.hist.am.timeSeriesStatsMonthly.${YYYY}-${MM}-01.nc"
+		    fi # !mdl_nm
 		elif [ ${nm_typ} = 'yyyymm' ]; then # Generate from caseid + YYYYMM
 		    fl_all="${fl_all} ${bs_nm}_${YYYY}${MM}.${bs_sfx}"
 		elif [ ${nm_typ} = 'yyyy-mm' ]; then # Generate from caseid + YYYY-MM

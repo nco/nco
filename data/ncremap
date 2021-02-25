@@ -239,6 +239,7 @@ fi # !hrd_pth && !NCO_PATH_OVERRIDE
 # ncremap -P mpas -m ${DATA}/maps/map_oEC60to30_to_t62_bilin.20160301.nc ${DATA}/hdf/mpascice.hist.am.timeSeriesStatsMonthly.0251-01-01.nc ~/foo.nc
 # ncremap -P mpas --mss_val=-1.0e36 -s ${DATA}/grids/ais20km.150910.SCRIP.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/ais20km.20180117.nc ~/foo.nc
 # ncremap -P mpas --mss_val=-1.0e36 -s ${DATA}/grids/ais20km.150910.SCRIP.nc -g ${DATA}/grids/129x256_SCRIP.20150901.nc ${DATA}/hdf/mpasLIoutput.nc ~/foo.nc
+# ncremap -P mali -m ${DATA}/maps/map_mali_gis_to_greenland_r025_105x401_aave.20210301.nc ${DATA}/mpas/raw/mali.hist.0001-01-01_00000.nc ~/foo.nc
 # E3SM benchmarks:
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_cmip6_180x360_nco_dwe.20200901.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
 # ncremap -v FSNT,AODVIS -m ${DATA}/maps/map_ne30np4_to_fv129x256_nco.20190601.nc ${DATA}/bm/20180129.DECKv1b_piControl.ne30_oEC.edison.cam.h0.0001-01.nc ~/foo.nc
@@ -436,7 +437,7 @@ msk_dst='' # [sng] Mask-template variable in destination file
 msk_out='' # [sng] Mask variable in regridded file
 msk_src='' # [sng] Mask-template variable in source file
 mss_val='-9.99999979021476795361e+33' # [frc] Missing value for MPAS (ocean+seaice)
-#mss_val='-1.0e36' # [frc] Missing value for MPAS (landice)
+#mss_val='-1.0e36' # [frc] Missing value for MALI
 nco_opt='--no_tmp_fl' # [sng] NCO options (e.g., '-6 -t 1')
 nd_nbr=1 # [nbr] Number of nodes
 np_se_nbr=4 # [nbr] Polynomial order for TempestRemap SE maps
@@ -1273,9 +1274,9 @@ else
     exit 1
 fi # !par_typ
 if [ -n "${prc_typ}" ]; then
-    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'cam' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'eam' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mpassi' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ]; then 
+    if [ "${prc_typ}" != 'airs' ] && [ "${prc_typ}" != 'cam' ] && [ "${prc_typ}" != 'clm' ] && [ "${prc_typ}" != 'cice' ] && [ "${prc_typ}" != 'ctsm' ] && [ "${prc_typ}" != 'eam' ] && [ "${prc_typ}" != 'elm' ] && [ "${prc_typ}" != 'hirdls' ] && [ "${prc_typ}" != 'mali' ] && [ "${prc_typ}" != 'mls' ] && [ "${prc_typ}" != 'mod04' ] && [ "${prc_typ}" != 'mpas' ] && [ "${prc_typ}" != 'mpascice' ] && [ "${prc_typ}" != 'mpasseaice' ] && [ "${prc_typ}" != 'mpassi' ] && [ "${prc_typ}" != 'mwf' ] && [ "${prc_typ}" != 'nil' ] && [ "${prc_typ}" != 'rrg' ] && [ "${prc_typ}" != 'sgs' ]; then 
 	    echo "ERROR: Invalid -P prc_typ option = ${prc_typ}"
-	    echo "HINT: Valid prc_typ arguments are 'airs', 'cam', 'clm', 'cice', 'ctsm', 'eam', 'elm', 'hirdls', 'mls', 'mod04', 'mpas', 'mpascice', 'mpasseaice', 'mpassi', 'mwf', 'nil', 'rrg', and 'sgs'"
+	    echo "HINT: Valid prc_typ arguments are 'airs', 'cam', 'clm', 'cice', 'ctsm', 'eam', 'elm', 'hirdls', 'mali', 'mls', 'mod04', 'mpas', 'mpascice', 'mpasseaice', 'mpassi', 'mwf', 'nil', 'rrg', and 'sgs'"
 	    exit 1
     fi # !prc_typ
 fi # !prc_typ
@@ -1300,7 +1301,7 @@ if [ "${prc_typ}" = 'mod04' ]; then
     fi # !pdq_opt
     hnt_dst='--dst_regional'
 fi # !mod04
-if [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpassi' ]; then 
+if [ "${prc_typ}" = 'mali' ] || [ "${prc_typ}" = 'mpas' ] || [ "${prc_typ}" = 'mpascice' ] || [ "${prc_typ}" = 'mpasseaice' ] || [ "${prc_typ}" = 'mpassi' ]; then 
     prc_mpas='Yes'
 fi # !mpas, !mpascice, !mpasseaice, !mpassi
 if [ "${prc_mpas}" = 'Yes' ]; then 
@@ -1310,6 +1311,10 @@ if [ "${prc_mpas}" = 'Yes' ]; then
 	att_flg='Yes'
     fi # !clm_flg
 
+    if [ "${prc_typ}" = 'mali' ]; then
+	mss_val='-1.0e36'
+    fi # !prc_typ
+    
     # Add depth coordinate to MPAS file when requested to by specifying coordinate file, that file exists, and commmand is found
     if [ -n "${dpt_fl}" ] || [ "${dpt_flg}" = 'Yes' ]; then
 	if [ -n "${dpt_fl}" ]; then
@@ -1327,7 +1332,7 @@ if [ "${prc_mpas}" = 'Yes' ]; then
     if [ -z "${pdq_opt}" ]; then
 #	pdq_opt='-a Time,nVertLevels,maxEdges,MaxEdges2,nEdges,nCells' # MPAS-Ocean
 #	pdq_opt='-a Time,nCategories,ONE,nEdges,nCells' # MPAS-SeaIce
-#	pdq_opt='-a Time,nCategories,TWO,nEdges,nCells' # MPAS-LandIce
+#	pdq_opt='-a Time,nCategories,TWO,nEdges,nCells' # MALI
 #	pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,ONE,TWO,nEdges,nCells' # MPAS O,SI,LI and depth
 #	pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20190806: MPAS O,SI,LI,depth and BGC in one swell foop
 	pdq_opt='-a Time,depth,nVertLevels,nVertLevelsP1,nZBGCTracers,nBioLayersP1,nAlgaeIceLayers,nDisIronIceLayers,nIceLayers,maxEdges,MaxEdges2,nCategories,R3,ONE,TWO,FOUR,nEdges,nCells' # 20200620: MPAS O,SI,LI,depth and new SI BGC in one swell foop

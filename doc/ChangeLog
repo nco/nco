@@ -2,13 +2,15 @@
 
 	* NCO 4.9.8-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-beta01: Lamb2';git push
-	git tag -a 4.9.8-beta01 -m 'ncclimo: mth_srt/end sbs; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
+	git tag -a 4.9.8-beta01 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
 
 	* NCO 4.9.8-alpha04 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha04: Lamb';git push
-	git tag -a 4.9.8-alpha04 -m 'ncclimo: mth_srt/end doc; ';git push --tags
+	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha04: Pernil';git push
+	git tag -a 4.9.8-alpha04 -m 'ncap2: array() fix; ncclimo: mth_srt/end doc, mali; ';git push --tags
 
-	* ncclimo add mali as valid mdl_nm and prc_typ
+	* ncremap autoset mss_val=-1.0e36 for MALI
+
+	* ncclimo/ncremap add mali as valid mdl_nm and prc_typ
 
 	* ncap2 replace array() number generation algorithm to from iterative addition to multiplication to reduce round-off error
 
