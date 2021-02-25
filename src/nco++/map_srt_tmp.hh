@@ -124,8 +124,8 @@ T inc;
  tp=(T*)var_ret->val.vp; 
   
  for(idx=0 ;idx<sz; idx++){
-   tp[idx]=srt;
-   srt+=inc;
+   tp[idx]=srt+idx*inc;
+   //srt+=inc;
  }
  
 }
