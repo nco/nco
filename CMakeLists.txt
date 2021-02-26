@@ -1068,11 +1068,3 @@ if (MSVC)
  add_definitions(-DNEED_STRNCASECMP)
 endif(MSVC)
 
-#ncra.exe to nces.exe and ncrcat.exe
-if (MSVC)
- message("-- Renaming ncra.exe to nces.exe and ncrcat.exe")
- file(COPY ${CMAKE_CURRENT_BINARY_DIR}/Debug/ncra.exe DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
- file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/ncra.exe ${CMAKE_CURRENT_BINARY_DIR}/Debug/nces.exe)
- file(COPY ${CMAKE_CURRENT_BINARY_DIR}/Debug/ncra.exe DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
- file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/ncra.exe ${CMAKE_CURRENT_BINARY_DIR}/Debug/ncrcat.exe)
-endif(MSVC)
