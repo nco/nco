@@ -25,7 +25,7 @@
 #-DGSL_LIBRARY:FILE=<some_file>
 #-DGSL_CBLAS_LIBRARY:FILE=<some_file>
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.12)
 project (nco)
 include(CheckFunctionExists)
 include(CheckIncludeFile)
@@ -149,11 +149,6 @@ endif()
 #check for header file netcdf_mem.h existence
 #/////////////////////////////////////////////////////////////////////////////////////
 
-set(NETCDF_REQUIRED_LIBRARIES ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
-# Replace backslashes with forward slashes because it can cause problems with Windows' paths
-string(REPLACE "\\" "/" NETCDF_REQUIRED_LIBRARIES ${NETCDF_REQUIRED_LIBRARIES})
-set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_REQUIRED_LIBRARIES})
-
 check_library_exists(${NETCDF_LIBRARY} nc_rename_grp "" has_nc_rename_grp)
 if (has_nc_rename_grp)
   message("-- Found nc_rename_grp in: " ${NETCDF_LIBRARY})
@@ -210,6 +205,11 @@ if (has_nc_def_var_filter)
   add_definitions(-DHAVE_NC_INQ_FORMAT)
   add_definitions(-DHAVE_NETCDF_MEM_H)
 endif()
+
+set(NETCDF_REQUIRED_LIBRARIES ${NETCDF_LIBRARY} ${HDF5_HL_LIBRARY} ${HDF5_LIBRARY} ${ZLIB_LIBRARY} ${SZIP_LIBRARY})
+# Replace backslashes with forward slashes because it can cause problems with Windows' paths
+string(REPLACE "\\" "/" NETCDF_REQUIRED_LIBRARIES ${NETCDF_REQUIRED_LIBRARIES})
+set(CMAKE_REQUIRED_LIBRARIES ${NETCDF_REQUIRED_LIBRARIES})
 
 #/////////////////////////////////////////////////////////////////////////////////////
 #HDF5
@@ -1066,4 +1066,13 @@ if (MSVC)
    add_definitions(-DNEED_STRCASECMP)
  endif()
  add_definitions(-DNEED_STRNCASECMP)
+endif(MSVC)
+
+#ncra.exe to nces.exe and ncrcat.exe
+if (MSVC)
+ message("-- Renaming ncra.exe to nces.exe and ncrcat.exe")
+ file(COPY ${CMAKE_CURRENT_BINARY_DIR}/Debug/ncra.exe DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+ file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/ncra.exe ${CMAKE_CURRENT_BINARY_DIR}/Debug/nces.exe)
+ file(COPY ${CMAKE_CURRENT_BINARY_DIR}/Debug/ncra.exe DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+ file(RENAME ${CMAKE_CURRENT_BINARY_DIR}/ncra.exe ${CMAKE_CURRENT_BINARY_DIR}/Debug/ncrcat.exe)
 endif(MSVC)
