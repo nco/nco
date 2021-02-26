@@ -312,7 +312,7 @@ if exist %build%\GSL\build\GSL.sln (
            -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON ^
            -DBUILD_SHARED_LIBS=OFF ^
            -DGSL_DISABLE_TESTS=ON ^
-		   -DNO_AMPL_BINDINGS=ON
+           -DNO_AMPL_BINDINGS=ON
   msbuild GSL.sln /target:build /property:configuration=debug /nologo /verbosity:minimal
   popd
   popd
