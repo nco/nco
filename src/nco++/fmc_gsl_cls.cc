@@ -5547,7 +5547,7 @@ var_sct *nco_gsl_cls::fit_fnd(bool &,std::vector<RefAST> &vtr_args,fmc_cls &fmc_
       (void)cast_void_nctype(var_in[idx]->type,&var_in[idx]->val);
     }
 
-    //get fill value from "y_in" only: assumes type convertion to "double"
+    //get fill value from "y_in" only: assumes type conversion to "double"
     if(nco_dbg_lvl_get() == nco_dbg_old)
     {
       if(var_in[2]->mss_val.dp)

@@ -1,8 +1,16 @@
-2021-02-25  Charlie Zender  <zender@uci.edu>
+2021-02-26  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-beta01: Lamb2';git push
 	git tag -a 4.9.8-beta01 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
+
+	* NCO 4.9.8-alpha05 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha05: CVS';git push
+	git tag -a 4.9.8-alpha05 -m 'ncremap mali nVertInterfaces';git push --tags
+
+	* ncremap add nVertInterfaces, maxEdges to known MALI dimensions
+
+2021-02-25  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha04: Pernil';git push
