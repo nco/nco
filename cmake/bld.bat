@@ -37,7 +37,7 @@ echo using static crt %STATIC_CRT%
 :: git clone https://github.com/curl/curl
 :: git clone https://github.com/madler/zlib
 :: git clone https://github.com/nextgis-borsch/lib_szip szip
-:: git clone https://github.com/live-clones/hdf5
+:: git clone https://github.com/HDFGroup/hdf5
 :: git clone https://github.com/Unidata/UDUNITS-2
 :: git clone https://github.com/libexpat/libexpat
 :: git clone https://github.com/ampl/gsl
@@ -89,7 +89,7 @@ if not exist %build%\szip (
 )
 
 if not exist %build%\hdf5 (
- git clone https://github.com/live-clones/hdf5
+ git clone https://github.com/HDFGroup/hdf5
 ) else (
  echo skipping hdf5 git clone
 )
