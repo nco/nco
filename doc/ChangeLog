@@ -1,4 +1,4 @@
-2021-02-26  Charlie Zender  <zender@uci.edu>
+2021-03-04  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8-beta01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-beta01: Lamb2';git push
@@ -7,6 +7,10 @@
 	* NCO 4.9.8-alpha05 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha05: CVS';git push
 	git tag -a 4.9.8-alpha05 -m 'ncremap mali nVertInterfaces';git push --tags
+
+	* S1D: fix OpenMP clause for g++
+
+2021-02-26  Charlie Zender  <zender@uci.edu>
 
 	* ncremap add nVertInterfaces, maxEdges to known MALI dimensions
 

@@ -2,7 +2,7 @@
 
 /* Purpose: NCO utilities for Sparse-1D (S1D) datasets */
 
-/* Copyright (C) 2015--present Charlie Zender
+/* Copyright (C) 2020--present Charlie Zender
    This file is part of NCO, the netCDF Operators. NCO is free software.
    You may redistribute and/or modify NCO under the terms of the 
    3-Clause BSD License with exceptions described in the LICENSE file */
@@ -911,10 +911,8 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
      Copy appropriate filehandle to variable scoped as shared in parallel clause */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-  //#ifdef ENABLE_S1D
-
 #ifdef __GNUG__
-# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(dmn_cnt_in,dmn_cnt_out,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,has_clm,has_grd,has_lnd,has_pft,has_mss_val,idx_in,idx_out,idx_tbl,in_id,lvl_idx_in,lvl_idx_out,lvl_nbr_in,lvl_nbr_out,mss_val_dbl,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ) shared(dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_pft_in,dmn_id_pft_out,dmn_id_tm_in,flg_s1d_clm,flg_s1d_pft,grd_nbr,idx_dbg,clm_nbr_in,clm_nbr_out,col_nbr,lat_nbr,lnd_nbr_in,lnd_nbr_out,lon_nbr,mec_nbr,pft_nbr_in,pft_nbr_out,out_id,pfts1d_ixy,pfts1d_jxy)
+# pragma omp parallel for firstprivate(var_val_in,var_val_out) private(dmn_cnt_in,dmn_cnt_out,dmn_ids_in,dmn_ids_out,dmn_idx,dmn_nbr_in,dmn_nbr_out,dmn_nbr_max,dmn_nm,dmn_srt,has_clm,has_grd,has_lnd,has_pft,has_mss_val,idx_out,idx_tbl,in_id,mss_val_dbl,rcd,thr_idx,trv,var_id_in,var_id_out,var_nm,var_sz_in,var_sz_out,var_typ) shared(dmn_id_clm_in,dmn_id_clm_out,dmn_id_col_in,dmn_id_col_out,dmn_id_lat_in,dmn_id_lat_out,dmn_id_lnd_in,dmn_id_lnd_out,dmn_id_lon_in,dmn_id_lon_out,dmn_id_pft_in,dmn_id_pft_out,flg_s1d_clm,flg_s1d_pft,clm_nbr_in,clm_nbr_out,col_nbr,lat_nbr,lnd_nbr_in,lnd_nbr_out,lon_nbr,pft_nbr_in,pft_nbr_out,out_id,pfts1d_ixy,pfts1d_jxy)
 #endif /* !__GNUG__ */
   for(idx_tbl=0;idx_tbl<trv_nbr;idx_tbl++){
     trv=trv_tbl->lst[idx_tbl];
@@ -1044,8 +1042,6 @@ nco_s1d_unpack /* [fnc] Unpack sparse-1D CLM/ELM variables into full file */
   if(nco_dbg_lvl_get() >= nco_dbg_fl) (void)fprintf(stdout,"%s: INFO %s completion report: Variables interpolated = %d, copied unmodified = %d, omitted = %d, created = %d\n",nco_prg_nm_get(),fnc_nm,var_rgr_nbr,var_cpy_nbr,var_xcl_nbr,var_crt_nbr);
 
   /* Free output data memory */
-  //#endif /* !ENABLE_S1D */
-
   if(cols1d_ityp) cols1d_ityp=(int *)nco_free(cols1d_ityp);
   if(cols1d_ityplun) cols1d_ityplun=(int *)nco_free(cols1d_ityplun);
   if(pfts1d_ityp_veg) pfts1d_ityp_veg=(int *)nco_free(pfts1d_ityp_veg);
