@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.8-alpha04
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 8 February 2021
-@set update-month February 2021
+@set update-date 2 March 2021
+@set update-month March 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -1573,6 +1573,10 @@ Follow the same procedure as described below for reporting bugs
 That is, describe what you are trying to do, and include the complete
 commands (run with @samp{-D 5}), error messages, and version of
 @acronym{NCO} (with @samp{-r}).  
+Some commands behave differently depending on the exact order and
+rank of dimensions in the pertinent variables.
+In such cases we need you to provide that metadata, e.g., the text
+results of @samp{ncks -m} on your input and/or output files.
 Post your help request to the 
 @uref{http://sf.net/p/nco/discussion/9830, NCO Help forum}.
 
@@ -16034,15 +16038,18 @@ gsl_spline_integ()@*
 @end html
 @node GSL least-squares fitting, GSL statistics, GSL interpolation, ncap2 netCDF Arithmetic Processor
 @subsection  GSL least-squares fitting       
-@noindent Least Squares fitting is a method of calculating a straight line through a set of experimental data points in the XY plane. The data maybe weighted or unweighted. For more information please refer to the @acronym{GSL} manual.
+Least Squares fitting is a method of calculating a straight line
+through a set of experimental data points in the XY plane.
+Data may be weighted or unweighted.
+For more information please refer to the @acronym{GSL} manual. 
 
 @noindent These @acronym{GSL} functions fall into three categories:@*
 @strong{A)} Fitting data to Y=c0+c1*X@*
 @strong{B)} Fitting data (through the origin) Y=c1*X@*
 @strong{C)} Multi-parameter fitting (not yet implemented)@* 
 
-@strong{Section A} @* @*
-@code{status=@strong{gsl_fit_linear} (data_x,stride_x,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&sumsq) }
+@strong{Section A} @*
+@code{status=@strong{gsl_fit_linear} (data_x,stride_x,data_y,stride_y,n,&co,&c1,&cov00,&cov01,&cov11,&sumsq)}
 
 @noindent @strong{Input variables}: data_x, stride_x, data_y, stride_y, n @* 
 From the above variables an X and Y vector both of length 'n' are derived. 
@@ -16063,8 +16070,8 @@ If any of the output variables don't exist prior to the call then they are creat
 
 @noindent This function calculates y values along the line Y=c0+c1*X @* @*
 
-@strong{Section B} @* @*
-@code{status=@strong{gsl_fit_mul}(data_x,stride_x,data_y,stride_y,n,&c1,&cov11,&sumsq) }
+@strong{Section B} @*
+@code{status=@strong{gsl_fit_mul}(data_x,stride_x,data_y,stride_y,n,&c1,&cov11,&sumsq)}
 
 @noindent @strong{Input variables}: data_x, stride_x, data_y, stride_y, n @* 
 From the above variables an X and Y vector both of length 'n' are derived. 
@@ -16072,16 +16079,15 @@ If data_x or data_y is less than type @code{double} then it is converted to type
 
 @noindent @strong{Output variables}: c1,cov11,sumsq @* 
 
-@code{status= @strong{gsl_fit_wmul}(data_x,stride_x,data_w,stride_w,data_y,stride_y,n,&c1,&cov11,&sumsq) }
+@code{status= @strong{gsl_fit_wmul}(data_x,stride_x,data_w,stride_w,data_y,stride_y,n,&c1,&cov11,&sumsq)}
 
 @noindent Similar to the above call except it creates an additional weighting vector from the variables data_w, stride_w, n  
 
-@code{ data_y_out=@strong{gsl_fit_mul_est}(data_x,c0,c1,cov11) }
+@code{data_y_out=@strong{gsl_fit_mul_est}(data_x,c0,c1,cov11)}
 
-@noindent This function calculates y values along the line Y=c1*X @* @*
+@noindent This function calculates y values along the line Y=c1*X @*
 
 @noindent The below example shows @strong{gsl_fit_linear()} in action
-
 @example
 @verbatim
 defdim("d1",10);
@@ -16095,14 +16101,13 @@ defdim("e1",4);
 xout[e1]={1.0,3.0,4.0,11};
 yout[e1]=0.0;
 
-yout=gsl_fit_linear_est(xout, c0,c1, cov00,cov01, cov11, sumsq);
+yout=gsl_fit_linear_est(xout,c0,c1,cov00,cov01,cov11,sumsq);
 
-print(yout);  // 3.18545454545 ,9.15636363636, ,12.1418181818 ,33.04
+print(yout); // 3.18545454545, 9.15636363636, 12.1418181818, 33.04
 @end verbatim
 @end example
 
-@*@*
-@noindent The following code does linear regression of sst(time,lat,lon) for each time-step@* @*
+@noindent The following code does linear regression of sst(time,lat,lon) for each time-step@*
 @example
 @verbatim
 // Declare variables
@@ -16115,20 +16120,19 @@ for (i=0;i<$lat.size;i++) // Loop over lat
   for (j=0;j<$lon.size;j++) // Loop over lon
   {
       // Linear regression function
-      gsl_fit_linear(time,1,sst(:, i, j),1, $time.size, &tc0, &tc1, &cov00, &cov01,&cov11,&sumsq); 
-      c0(i,j) = tc0; // Output results
-      c1(i,j) = tc1; // Output results
+      gsl_fit_linear(time,1,sst(:, i, j),1,$time.size,&tc0,&tc1,&cov00,&cov01,&cov11,&sumsq); 
+      c0(i,j)=tc0; // Output results
+      c1(i,j)=tc1; // Output results
       // Covariance function
-      covxy(i,j) = gsl_stats_covariance(time,1,$time.size,double(sst(:,i,j)),1,$time.size); 
+      covxy(i,j)=gsl_stats_covariance(time,1,$time.size,double(sst(:,i,j)),1,$time.size); 
       // Standard deviation function
-      sdv(i,j) = gsl_stats_sd(sst(:,i,j), 1, $time.size); 
+      sdv(i,j)=gsl_stats_sd(sst(:,i,j),1,$time.size); 
   }
  }
 // slope (c1) missing values are set to '0', change to -999. (variable c0 intercept value)
 where(c0 == -999) c1=-999;
 @end verbatim
 @end example
-@* @*
 
 @html
 <a name="ncap_stat"></a> <!-- http://nco.sf.net/nco.html#ncap_stat -->
@@ -27432,7 +27436,7 @@ whose attributes are to be renamed.
 <a name="bug_nc4_rename"></a> <!-- http://nco.sf.net/nco.html#bug_nc4_rename -->
 @end html
 @cartouche
-Caveat lector: Unforunately from 2007--present (May, 2020) the
+Caveat lector: Unforunately from 2007--present (March, 2021) the
 netCDF library (versions 4.0.0--4.7.4) contains bugs or limitations
 that sometimes prevent @acronym{NCO} from correctly renaming coordinate
 variables, dimensions, and groups in netCDF4 files. 
