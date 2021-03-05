@@ -6,22 +6,31 @@ http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.9.8 is a minor NCO release that contains a few new features
-and fixes. Unless the features/fixes listed below affect you, no need
-to upgrade this time. Most notable are support for inferring SCRIP
-grids from MPAS restart files, initial support for the CCR in ncap2,
-and ncclimo bug-fixes for high frequency data and for the glb_avg
-option.  
+Version 4.9.8 contains a few cool features.
+These include support for unpacking sparse 1D (S1D) data and restart
+files used for plant functional types and multiple elevation classes,
+splitting monthly resolution timeseries that do not begin/end in
+Jan/Dec, seamless climos for the E3SM ice-sheet model (MALI), and
+corner-case bugfixes for inferring grid files and handling
+sub-gridscale data.
 
-Work on NCO 4.9.8 has commenced and will improve analysis of land
-surface datasets packed into sparse-1D formats.
+Work on NCO 4.9.9 has commenced and will continue improving support
+for analysis of land surface datasets packed into sparse-1D formats,
+and begin ncremap support for the MOAB regridding package. 
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Hi
+A. Windows builds should now contain the nces.exe and ncrcat.exe
+   executables. Previously, Windows users had to run nces and ncrcat
+   commands indirectly, using ncra.exe -Y nces ..., or manually copy
+   ncra.exe to nces.exe, etc. The executables are identical, and
+   behave differently depending on their invocation name. 
+   ncrcat             ... # These all do the same thing
+   ncrcat.exe         ... # These all do the same thing
+   ncra.exe -Y ncrcat ... # These all do the same thing
 
 ncremap -d ~/restart.2001-01-01_00.00.00.nc -g QU120_zach.nc
 
@@ -49,7 +58,21 @@ on the CCR! See our poster on the CCR 1.1 release at AMS.
 
 BUG FIXES:
 
-A. Hi
+A. ncap2's array() function was rewritten to use a starting value
+   plus an index times an increment, rather than adding increments, in
+   order to reduce rounding errors. Thanks to Henry Butowsky.
+
+B. The regridder in ncremap no longer attempts to access the
+   (non-existent) tally array in SGS-weighted fields without missing
+   values. The previous behavior would cause a crash. Fortunately
+   this combination does not often occur in practice. Upgrading to
+   4.9.8 is the only solution, there is no workaround. 
+
+C. The capability to infer MPAS grids introduced in 4.9.8 introduced
+   a bug by requiring that horizontal coordinates have a units
+   attribute. Many datafiles strongly disagree with this presumption!
+   The requirement has been removed. The solution is to upgrade to
+   4.9.8, there is no workaround.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

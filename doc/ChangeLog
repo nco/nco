@@ -1,12 +1,12 @@
 2021-03-04  Charlie Zender  <zender@uci.edu>
 
-	* NCO 4.9.8-beta01 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.8-beta01: Lamb2';git push
-	git tag -a 4.9.8-beta01 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
+	* NCO 4.9.8 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.8: Lamb2';git push
+	git tag -a 4.9.8 -m 'ncap2: array(); ncclimo: mth_srt/end sbs mali; ncks: s1d pft med; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
 
-	* NCO 4.9.8-alpha05 release procedure:
-	cd ~/nco;git commit -a -m 'Version 4.9.8-alpha05: CVS';git push
-	git tag -a 4.9.8-alpha05 -m 'ncremap mali nVertInterfaces';git push --tags
+	* NCO 4.9.8-beta01 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.8-beta01: Moderna';git push
+	git tag -a 4.9.8-beta01 -m 'ncremap mali nVertInterfaces, ncks fix s1d omp g++';git push --tags
 
 	* S1D: fix OpenMP clause for g++
 
