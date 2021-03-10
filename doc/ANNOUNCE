@@ -29,32 +29,19 @@ A. Windows builds should now contain the nces.exe and ncrcat.exe
    ncra.exe to nces.exe, etc. The executables are identical, and
    behave differently depending on their invocation name. 
    ncrcat             ... # These all do the same thing
-   ncrcat.exe         ... # These all do the same thing
-   ncra.exe -Y ncrcat ... # These all do the same thing
+   ncrcat.exe         ... # "
+   ncra.exe -Y ncrcat ... # "
+   http://nco.sf.net/nco.html#ncrcat
+   http://nco.sf.net/nco.html#nces
 
-ncremap -d ~/restart.2001-01-01_00.00.00.nc -g QU120_zach.nc
-
-http://nco.sf.net/nco.html#ncremap
-http://nco.sf.net/nco.html#infer
-
-C. NCO can be built to leverage the Communinty Codec Repository.
-The CCR is currently supports two lossless compression filters
-(BZip2, Zstandard) and one lossy quantization filter (BitGroom).
-More importantly, the CCR is extensible and provides the C/Fortran 
-API for defining alternative (non-DEFLATE) compression using
-a netCDF-like API at file creation time. The NCO ncap2 operator
-will now access these filters for rewriting variables in existing
-files:
-
-./configure --enable-ccr; make; make install # Build NCO with CCR
-ncap2 -O -7 --ccr=Zstd -L 3 -s 'two=one+one' in.nc out.nc
-ncap2 -O -7 --ccr=BitGroom -L 3 -s 'two=one+one' in.nc out.nc
-ncks -C --hdn -v three_dmn_rec_var out.nc # Examine data
-
-http://github.com/ccr/ccr
-CCR capabilities, and NCO support for them, will expand in 2021. 
-Thanks to Ed Hartnett of NOAA (and netCDF4/PIO fame) for partnering
-on the CCR! See our poster on the CCR 1.1 release at AMS.
+B. ncclimo supports new options --mth_srt and --mth_end in splitter
+   mode. The arguments to these options specify the (1-based) month in
+   which the requested timeseries will begin and end, respectively,
+   and these default to 1 (January) and 12 (December). To extract
+   14-month timeseries from individual monthly input files one would
+   use, e.g.,
+   ncclimo --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
+   http://nco.sf.net/nco.html#ncclimo
 
 BUG FIXES:
 
@@ -69,7 +56,7 @@ B. The regridder in ncremap no longer attempts to access the
    4.9.8 is the only solution, there is no workaround. 
 
 C. The capability to infer MPAS grids introduced in 4.9.8 introduced
-   a bug by requiring that horizontal coordinates have a units
+   a bug that requires that horizontal coordinates have a units
    attribute. Many datafiles strongly disagree with this presumption!
    The requirement has been removed. The solution is to upgrade to
    4.9.8, there is no workaround.

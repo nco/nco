@@ -781,7 +781,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       drc_xtn=?* | xtn_drc=?* | extended_dir=?* | extended_climo=?* | extended=?* ) drc_xtn="${LONG_OPTARG}" ;; # -X # Extended climo directory
 	       drc_prv=?* | prv_drc=?* | previous_dir=?* | previous_climo=?* | previous=?* ) drc_prv="${LONG_OPTARG}" ;; # -x # Previous climo directory
 	       drc_rgr_xtn=?* | drc_xtn_rgr=?* | regridded_extended=?* | extended_regridded=?* ) drc_rgr_xtn="$
-	       xcl_var | xcl | exclude | exclude_variables ) xcl_var='Yes' ;; # # Exclude rather than extract variable list
+	       xcl_var | xcl | exclude | exclude_variables ) xcl_flg='Yes' ;; # # Exclude rather than extract variable list
 	       xcl_var=?* | xcl=?* | exclude=?* | exclude_variables=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # Exclude rather than extract variable list
 {LONG_OPTARG}" ;; # -Y # Regridded extended climo directory
 	       drc_rgr_prv=?* | drc_prv_rgr=?* | regridded_previous=?* | previous_regridded=?* ) drc_rgr_prv="${LONG_OPTARG}" ;; # -y # Regridded previous climo directory
@@ -1648,6 +1648,14 @@ if [ "${mpi_flg}" = 'Yes' ]; then
     else
 	mpi_nbr=${clm_nbr}
     fi # !sbs_flg
+    # 20210310 MPI run command may need/use thr_nbr so set it first
+    if [ -z "${thr_usr}" ]; then 
+	if [ -n "${PBS_NUM_PPN}" ]; then
+#	NB: use export OMP_NUM_THREADS when thr_nbr > 8
+#	thr_nbr=${PBS_NUM_PPN}
+	    thr_nbr=$((PBS_NUM_PPN > 8 ? 8 : PBS_NUM_PPN))
+	fi # !pbs
+    fi # !thr_usr
     if [ -n "${nd_fl}" ]; then 
 	# NB: nodes are always 0-based, e.g., [0..11]
 	# For climo generation MPI index loops over months    and is 1-based, e.g., [1..17] (December is 12 and ANN is 17)
@@ -1685,6 +1693,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
  		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
 # 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
+# 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=1" ; ;; # SLURM
 		*cheyenne* )
 		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as cheyenne?
 		    # Cheyenne prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'
@@ -1718,13 +1727,6 @@ if [ "${mpi_flg}" = 'Yes' ]; then
     if [ -z "${job_usr}" ]; then 
 	job_nbr=${nd_nbr}
     fi # !job_usr
-    if [ -z "${thr_usr}" ]; then 
-	if [ -n "${PBS_NUM_PPN}" ]; then
-#	NB: use export OMP_NUM_THREADS when thr_nbr > 8
-#	thr_nbr=${PBS_NUM_PPN}
-	    thr_nbr=$((PBS_NUM_PPN > 8 ? 8 : PBS_NUM_PPN))
-	fi # !pbs
-    fi # !thr_usr
 fi # !mpi
 
 if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}" = 'No' ]; then
@@ -1742,10 +1744,6 @@ if [ "${clm_flg}" = 'Yes' ] && [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}"
 	    job_nbr=1
 	fi # !job_usr
     fi # !job_usr
-    if [ "${par_typ}" = ${par_mpi} ] && [ -n "${job_usr}" ]; then
-	# This needs more thought so reset to default old way
-	job_nbr=12
-    fi # !mpi && job_usr
 fi # !clm_md !bnr_flg
 
 # Print initial state

@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.8-beta01
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 2 March 2021
+@set update-date 9 March 2021
 @set update-month March 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3822,9 +3822,8 @@ The @acronym{NOAA} @acronym{OPeNDAP} server (hopefully!) serves these data.
 The local @command{ncwa} client then computes and stores (locally) the
 regional mean surface pressure @w{(in Pa)}. 
 @example
-ncwa -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l /tmp -p \
-http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis.dailyavgs/surface \
-  pres.sfc.1969.nc ~/foo.nc
+ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. \
+http://www.esrl.noaa.gov/psd/thredds/dodsC/Datasets/ncep.reanalysis.dailyavgs/surface/pres.sfc.1969.nc ~/foo.nc
 @end example
 @noindent
 @cindex packing
@@ -6923,6 +6922,11 @@ ncremap -G ttl='NASA MERRA2 Cap grid 361x576'#latlon=361,576#lat_typ=cap#lon_typ
 # 1441x2880 CAM-FV grid, first longitude centered at Greenwich
 ncremap -G ttl='CAM-FV scalar grid 1441x2880'#latlon=1441,2880#lat_typ=fv#lon_typ=grn_ctr \
         -g ${DATA}/grids/1441x2880_SCRIP.20170901.nc
+
+# 1440x2880 MOSART grid, first longitude west edge at DateLine
+ncremap -7 -L 1 \
+        -G ttl='MOSART 1440x2880'#latlon=1440,2880#lat_typ=uni#lon_typ=180_wst \
+        -g ${DATA}/grids/r0125_1440x2880.20210401.nc
 
 # 91x180 CAM-FV grid, first longitude centered at Greenwich (2 degree grid)
 ncremap -G ttl='CAM-FV scalar grid 91x180'#latlon=91,180#lat_typ=fv#lon_typ=grn_ctr \
@@ -18605,6 +18609,7 @@ this option.
 
 @html
 <a name="end_yr"></a> <!-- http://nco.sf.net/nco.html#end_yr -->
+<a name="yr_end"></a> <!-- http://nco.sf.net/nco.html#yr_end -->
 @end html
 @cindex @code{-e @var{end_yr}}
 @cindex @var{end_yr}
@@ -18614,9 +18619,8 @@ this option.
 @cindex @code{--end}
 @item -e @var{end_yr} (@code{--end_yr}, @code{--yr_end}, @code{--end_year}, @code{--year_end}, @code{--end})
 End year (example: 2000). 
-Unless the option @samp{-a sdd} is specified, the last month used 
-is November of the specified end year. 
-If @samp{-a sdd} is specified, the last month is December of the
+By default, the last month is December of the specified end year.  
+If @samp{-a scd} is specified, the last month used is November of the
 specified end year.  
 
 @html
@@ -19066,8 +19070,42 @@ arguments to the @samp{-R} switch.
 See below the discussion on regridding.
 
 @html
+<a name="mth_srt"></a> <!-- http://nco.sf.net/nco.html#mth_srt -->
+<a name="srt_mth"></a> <!-- http://nco.sf.net/nco.html#srt_mth -->
+<a name="mth_end"></a> <!-- http://nco.sf.net/nco.html#mth_end -->
+<a name="end_mth"></a> <!-- http://nco.sf.net/nco.html#end_mth -->
+@end html
+@cindex @code{--mth_srt}
+@cindex @code{--srt_mth}
+@cindex @code{--start_month}
+@cindex @code{--month_start}
+@item --mth_srt=@var{mth_srt} (@code{--mth_srt}, @code{--srt_mth}, @code{--month_start}, @code{--start_month})
+@cindex @code{--mth_end}
+@cindex @code{--end_mth}
+@cindex @code{--end_month}
+@cindex @code{--month_end}
+@item --mth_end=@var{mth_end} (@code{--mth_end}, @code{--end_mth}, @code{--month_end}, @code{--end_month})
+Start month (example: 4), and end month (example: 11).
+The starting month of monthly timeseries extracted by the splitter
+defaults to January of the specified start year, and the ending
+month defaults to December of the specified end year.
+As of @acronym{NCO} @w{version 4.9.8}, released in March, 2021,
+the splitter mode of @command{ncclimo} accepts user-specified
+start and end months with the @samp{--mth_srt} and @samp{--mth_end}
+options, respectively.
+Months are input as one-based integers so January @w{is 1} and
+December is @w{is 12}.
+To extract 14-month timeseries from individual monthly input files one
+could use, e.g., 
+@example
+ncclimo --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
+@end example
+Note that @code{mth_srt} and @code{mth_end} only affect the splitter,
+and that they play no role in climatology generation.
+
+@html
 <a name="srt_yr"></a> <!-- http://nco.sf.net/nco.html#srt_yr -->
-<a name="srt_yr"></a> <!-- http://nco.sf.net/nco.html#srt_yr -->
+<a name="yr_srt"></a> <!-- http://nco.sf.net/nco.html#yr_srt -->
 @end html
 @cindex @code{-s @var{srt_yr}}
 @cindex @var{srt_yr}
@@ -19077,11 +19115,10 @@ See below the discussion on regridding.
 @cindex @code{--start}
 @item -s @var{srt_yr} (@code{--srt_yr}, @code{--yr_srt}, @code{--start_year}, @code{--year_start}, @code{--start})
 Start year (example: 1980). 
-Unless the option @samp{-a sdd} is specified, the first month used will
-be December of the year before the start year (to allow for contiguous
-@acronym{DJF} climos).   
-If @samp{-a sdd} is specified, the first month used is January of
-the specified start year. 
+By default, the first month used is January of the specified start year. 
+If @samp{-a scd} is specified, the first month used will be December
+of the year before the start year (to allow for contiguous
+@acronym{DJF} climos).
 
 @html
 <a name="csn_lst"></a> <!-- http://nco.sf.net/nco.html#csn_lst -->
