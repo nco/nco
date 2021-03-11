@@ -1690,6 +1690,7 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # 20160502: Non-interactive batch jobs at NERSC return HOSTNAME as nid*, not cori*
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
+		    # 20210310: srun option<->long option equivalences are -N = --nodes, -n = --ntasks, -c = --cpus-per-task
 		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
  		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
 # 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM

@@ -1,8 +1,16 @@
-2021-03-10  Charlie Zender  <zender@uci.edu>
+2021-03-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8: Death Valley';git push
-	git tag -a 4.9.8 -m 'ncap2: array(); ncclimo: mth_srt/end, sbs mali, xcl_var; ncks: s1d pft med; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
+	git tag -a 4.9.8 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali, xcl_var; ncks: s1d pft mec; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
+
+	* Provide stub for nc_set_log_level() in nco_netcdf.c
+
+2021-03-10  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo MPI-mode define thr_nbr earlier for possible use in cmd_mpi
+
+	* nco.texi update -P prc_typ documentation
 
 	* ncclimo in MPI-mode do not override user-requested job_nbr in monthly climo mode anymore
 

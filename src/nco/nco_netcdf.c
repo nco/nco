@@ -1330,6 +1330,16 @@ nco_inq_format_extended(const int nc_id,int * const fl_fmt,int * const mode)
   return rcd;
 } /* !nco_inq_format_extended() */
 
+/* 20210311: nc_set_log_level() prototype always defined in netcdf.h since netCDF a.b.c, though definition could be disabled with --disable-logging (or must be enabled with --enable-logging? */
+#ifndef HAVE_NC_SET_LOG_LEVEL
+int nc_set_log_level(const int log_lvl)
+{
+  /* Purpose: Stub for nc_set_log_level()
+     Required for netCDF libraries compiled without --enable-logging */
+  return NC_NOERR+0*log_lvl; /* CEWI */
+} /* !nc_set_log_level() */
+#endif /* !HAVE_NC_SET_LOG_LEVEL */
+
 #ifdef HAVE_NETCDF4_H
 int
 nco_inq_ncid(const int nc_id,const char * const grp_nm,int * const grp_id)

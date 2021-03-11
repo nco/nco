@@ -1079,7 +1079,8 @@ The ANTLR 2.x source file <tt>CharScanner.hpp</tt> must include this line:
 <tt>#include &lt;cstring&gt;</tt> or else <tt>ncap2</tt> will not
 compile (<a href="http://dust.ess.uci.edu/nco/antlr-2.7.7.tar.gz">this</a>
 ANTLR tarball is already patched).
-Recent versions of netCDF automatically build OPeNDAP and UDUnits.
+Recent versions of netCDF will automatically build OPeNDAP and UDUnits.
+Be sure your netCDF was built with <tt>--enable-dap --enable-logging</t>.
 NCO is mostly written in&nbsp;C99, and although you <i>may</i> mix and
 match compilers, this is often difficult in practice and is not recommended.
 The exception is <tt>ncap2</tt> which is written in&nbsp;C++.

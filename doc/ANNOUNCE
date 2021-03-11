@@ -42,7 +42,36 @@ B. ncclimo supports new options --mth_srt and --mth_end in splitter
    use, e.g.,
    ncclimo --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
    http://nco.sf.net/nco.html#ncclimo
+   http://nco.sf.net/nco.html#mth_srt
+   http://nco.sf.net/nco.html#mth_end
 
+C. ncclimo/ncremap support analysis of MALI land ice model output
+   when invoked with the new '-P mali' or '--prc_typ=mali' options.
+   ncclimo -P mali -s 1 -e 2 -o climo mali.hist*.nc
+   ncremap -P mali --map=map.nc in.nc out.nc
+   http://nco.sf.net/nco.html#prc_typ
+   http://nco.sf.net/nco.html#ncclimo
+
+D. ncks now supports unpacking sparse 1D (S1D) ELM/CLM data and
+   restart files for plant functional types (PFTs) and multiple
+   elevation classes (MECs).
+   ncks --s1d -v cols1d_topoglc --hrz=elm_mali_ig_history.nc \
+        elm_mali_restart.nc out.nc
+   ncks --s1d -v GPP,pfts1d_wtgcell elm_crop_history.nc out.nc
+   After such S1D datasets have been "unpacked", they may easily
+   be regridded with, e.g., ncremap.
+   This feature is under continued development and user-feedback
+   would be appreciated. Documentation does not yet exist.
+   http://nco.sf.net/nco.html#ncks
+
+E. ncks now prints more informative messages when users attempt
+   to vertically interpolate variables (such as EAM/CAM US, VS) in
+   hybrid coordinate data files that contain multiple grids (e.g.,
+   the normal and staggered grids) though only one surface pressure
+   variable.
+   http://nco.sf.net/nco.html#ncremap
+   Thanks to Walter Hannah for noticing this.
+ 
 BUG FIXES:
 
 A. ncap2's array() function was rewritten to use a starting value
@@ -60,6 +89,12 @@ C. The capability to infer MPAS grids introduced in 4.9.8 introduced
    attribute. Many datafiles strongly disagree with this presumption!
    The requirement has been removed. The solution is to upgrade to
    4.9.8, there is no workaround.
+
+D. The ncclimo --xcl_var flag has been fixed. Previously the
+   flag had no effect. Now a variable extraction list may be turned
+   into a variable exclusion by using --xcl_var --vars=v1,v2,...vn.
+   The workaround is to use the option combination
+   --nco_opt='-x' -v v1,v2,...vn. The solution is to upgrade.
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

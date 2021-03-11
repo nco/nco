@@ -149,6 +149,12 @@ endif()
 #check for header file netcdf_mem.h existence
 #/////////////////////////////////////////////////////////////////////////////////////
 
+check_library_exists(${NETCDF_LIBRARY} nc_set_log_level "" has_nc_set_log_level)
+if (has_nc_set_log_level)
+  message("-- Found nc_set_log_level in: " ${NETCDF_LIBRARY})
+  add_definitions(-DHAVE_NC_SET_LOG_LEVEL)
+endif()
+
 check_library_exists(${NETCDF_LIBRARY} nc_rename_grp "" has_nc_rename_grp)
 if (has_nc_rename_grp)
   message("-- Found nc_rename_grp in: " ${NETCDF_LIBRARY})

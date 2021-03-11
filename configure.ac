@@ -357,7 +357,6 @@ if ((test "x${enable_openmp}" != 'xno') && (test "x${enable_netcdf4}" = 'xyes'))
 fi
 # End OpenMP
 
-
 # Begin DAP support
 echo "Beginning generic tests for DAP support"
 # Store pre-DAP LIBS value to restore from later
