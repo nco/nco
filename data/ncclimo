@@ -1691,10 +1691,10 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # 20160803: Non-interactive batch jobs at PNNL constance return HOSTNAME as node*, not constance*
 		    # 20190526: Non-interactive batch jobs at PNNL compy return HOSTNAME as n????, not compy*
 		    # 20210310: srun option<->long option equivalences are -N = --nodes, -n = --ntasks, -c = --cpus-per-task
-		    # NB: NERSC staff says srun automatically assigns to unique nodes even without "-L $node" argument?
+		    # NB: NERSC staff say srun automatically assigns to unique nodes even without "-L $node" argument?
  		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1" ; ;; # SLURM
-# 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
-# 		    cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=1" ; ;; # SLURM
+		    # cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1" ; ;; # SLURM
+		    # cmd_mpi[${mpi_idx}]="srun --nodelist ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} --nodes=1 --ntasks=1 --cpus-per-task=1" ; ;; # SLURM
 		*cheyenne* )
 		    # 20180120: Non-interactive batch jobs at NCAR return HOSTNAME as cheyenne?
 		    # Cheyenne prefers 'mpiexec_mpt dplace -s 1 ncclimo ...'
@@ -1714,6 +1714,20 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		* )
 		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -n 1" ; ;; # Other (Cobalt, PBS)
 #		    cmd_mpi[${mpi_idx}]="mpirun -H ${nd_nm[$((${mpi_idx_zro} % ${nd_nbr}))]} -npernode 1 -n 1" ; ;; # Other
+	    esac # !HOSTNAME
+	    case "${HOSTNAME}" in 
+		cori* | nid* )
+		    # 20210319: Multiple srun commands cannot run concurrently on single Cori node without special options
+		    # --gres=craynetwork:0 --mem=20000 tested by me, Noel Keen documented here:
+		    # https://docs.nersc.gov/jobs/examples/#multiple-parallel-jobs-while-sharing-nodes
+		    # These options are only expected to work on NERSC Cori
+		    # craynetwork:0 (instead of, e.g., :1) allows any number of MPI jobs to run
+		    # Argument to --mem is requested number of MB RAM per job so 96 GB Cori node with 4 MPI processes can use ~20000 MB RAM per job, and, I think, jobs in excess of that will queue until more RAM becomes available as old jobs finish
+		    # 20210319: --zonesort=off tested by me does eliminate zonesort messages like these:
+		    # slurmstepd: error: Detected zonesort setup failure: zonesort interface write failure (40558186.7)
+		    # However, using zonesort option appears to slow-down throughput considerably
+		    cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --gres=craynetwork:0 --mem=20000" ; ;; # SLURM    
+		    # cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --nodes=1 --gres=craynetwork:0 --mem=20000 --zonesort=off" ; ;; # SLURM
 	    esac # !HOSTNAME
 	done # !mpi_idx_zro
 	if [ -n "${SLURM_NODELIST}" ]; then 

@@ -2,9 +2,11 @@
 
 	* NCO 4.9.8 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8: Death Valley';git push
-	git tag -a 4.9.8 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali, xcl_var; ncks: s1d pft mec; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
+	git tag -a 4.9.8 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali, xcl_var, srun; ncks: s1d pft mec; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
 
-	* Try new stub for nc_set_log_level() in nco_netcdf.c that works with libnetcdf.a <= 4.6.1
+	* ncclimo add --gres=craynetwork:0 --mem=20000 to cmd_mpi on Cori to solve concurrent srun issue
+
+	* Modify nc_set_log_level() stub in nco_netcdf.c to work with libnetcdf.a <= 4.6.1 and Travis CI
 
 2021-03-11  Charlie Zender  <zender@uci.edu>
 
