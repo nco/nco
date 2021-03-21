@@ -72,6 +72,11 @@ E. ncks now prints more informative messages when users attempt
    http://nco.sf.net/nco.html#ncremap
    Thanks to Walter Hannah for noticing this.
  
+F. As of version 4.9.8 the default ncremap behavior is to omit the
+   staggered grid from output files on an cap grid.
+   The new flag --stg_grd turns-on outputting the staggered
+   grid, and thus recovers the previous default behavior. 
+
 BUG FIXES:
 
 A. ncap2's array() function was rewritten to use a starting value
@@ -95,6 +100,15 @@ D. The ncclimo --xcl_var flag has been fixed. Previously the
    into a variable exclusion by using --xcl_var --vars=v1,v2,...vn.
    The workaround is to use the option combination
    --nco_opt='-x' -v v1,v2,...vn. The solution is to upgrade.
+
+E. At some unknown point, the behavior of ncclimo in MPI mode on Cori
+   seems to have changed. Slurm on Cori does not (never did? no longer
+   does?) allow multiple srun commands to execute concurrently on the
+   same node by default. Thanks to Noel Keen to guiding me to the
+   options (--gres=craynetwork:0 --mem=20000) required to fix this.
+   This Slurm issue does not appear to affect any other DOE machines.
+   The workaround is to avoid MPI mode on Cori, the solution is to
+   upgrade. 
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

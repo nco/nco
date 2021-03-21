@@ -430,6 +430,7 @@ map_mk='No' # [flg] Generate map-file (i.e., map does not yet exist)
 map_usr_flg='No' # [flg] User supplied argument to --map option
 map_xmp='map.nc' # [sng] Map-file for examples
 mbt_flg='No' # [flg] mbtempest front-end to TempestRemap
+mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
 mlt_map_flg='Yes' # [sng] Multi-map flag
 mpi_flg='No' # [sng] Parallelize over nodes
 msh_fl='' # [sng] Mesh-file (for Tempest)
@@ -711,6 +712,7 @@ while getopts :34567a:CD:d:f:g:G:h:I:i:j:L:Mm:n:O:o:P:p:R:r:s:T:t:Uu:V:v:W:w:x:-
 	       map_fl=?* | map=?* | map_file=?* | rgr_map=?* | regrid_map=?* ) map_fl="${LONG_OPTARG}" ;; # -m # Map-file
 	       mbt | mbtempest | moabtempest | tfe_mbt ) mbt_flg='Yes' ;; # # mbtempest front-end to TempestRemap
 	       mbt=?* | mbtempest=?* | moabtempest=?* | tfe_mbt=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # # mbtempest front-end to TempestRemap
+	       mem_mb=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
 	       mlt_map | multimap | no_multimap | nomultimap ) mlt_map_flg='No' ;; # -M # Multi-map flag
 	       mlt_map=?* | multimap=?* | no_multimap=?* | nomultimap=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -M # Multi-map flag
 	       msh_fl=?* | msh=?* | mesh=?* | mesh_file=?* ) msh_fl="${LONG_OPTARG}" ;; # # Mesh file
@@ -1849,8 +1851,8 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # 20210319: --zonesort=off tested by me does eliminate zonesort messages like these:
 		    # slurmstepd: error: Detected zonesort setup failure: zonesort interface write failure (40558186.7)
 		    # However, using zonesort option appears to slow-down throughput considerably
-		    cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --gres=craynetwork:0 --mem=20000" ; ;; # SLURM    
-		    # cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --nodes=1 --gres=craynetwork:0 --mem=20000 --zonesort=off" ; ;; # SLURM
+		    cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --gres=craynetwork:0 --mem=${mem_mb}" ; ;; # SLURM    
+		    # cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --nodes=1 --gres=craynetwork:0 --mem=${mem_mb} --zonesort=off" ; ;; # SLURM
 	    esac # !HOSTNAME
 	done # !fl_idx
 	if [ -n "${SLURM_NODELIST}" ]; then 

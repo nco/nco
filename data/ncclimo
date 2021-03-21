@@ -509,6 +509,7 @@ map_opt='' # [sng] Map-file options (e.g., '--map=map.nc')
 mdl_nm='cam' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
 mdl_nm_usr='' # [sng] Model name string in history output (e.g., 'cam', 'cam2', 'cice', 'cism', 'clm', 'clm2', 'eam', 'elm', 'mali', 'mosart', 'mpascice', 'mpasseaice', 'mpassi', 'mpaso', 'mpasocean')
 mdl_typ='cesm' # [sng] Model type ('cesm', 'mpas') (for regridding)
+mem_mb=20000 # [MB] Megabytes of RAM per srun job in Cori SLURM in MPI mode
 mpi_flg='No' # [sng] Parallelize over nodes
 mth_end='12' # [yr] End month
 mth_srt='1' # [yr] Start month
@@ -744,6 +745,7 @@ while getopts :34567a:C:c:d:E:e:f:h:i:j:L:l:m:n:O:o:P:p:R:r:S:s:t:v:X:x:Y:y:-: O
 	       no_amwg_link | no_amwg_links | no_amwg | no_AMWG_link | no_AMWG_links ) lnk_flg='No' ;; # # Link E3SM to AMWG name
 	       no_amwg_link=?* | no_amwg_links=?* | no_amwg=?* | no_AMWG_link=?* | no_AMWG_links=?* ) echo "No argument allowed for --${OPTARG switch}" >&2; exit 1 ;; # -l # Link E3SM to AMWG name
 	       mdl_nm=?* | mdl=?* | model_name=?* | model=?* ) mdl_nm_usr="${LONG_OPTARG}" ;; # -m # Model name string
+	       mem_mb=?* ) mem_mb="${LONG_OPTARG}" ;; # # Megabytes of RAM per srun job in Cori SLURM in MPI mode
 	       mth_end=?* | end_mth=?* | month_end=?* | end_month=?* ) mth_end="${LONG_OPTARG}" ;; # # End month
 	       mth_srt=?* | start_mth=?* | month_start=?* | start_month=?* ) mth_srt="${LONG_OPTARG}" ;; # # Start month
 	       nco_opt=?* | nco=?* | nco_options=?* ) nco_opt="${LONG_OPTARG} ${nco_opt}" ;; # -n # NCO options
@@ -1726,8 +1728,8 @@ if [ "${mpi_flg}" = 'Yes' ]; then
 		    # 20210319: --zonesort=off tested by me does eliminate zonesort messages like these:
 		    # slurmstepd: error: Detected zonesort setup failure: zonesort interface write failure (40558186.7)
 		    # However, using zonesort option appears to slow-down throughput considerably
-		    cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --gres=craynetwork:0 --mem=20000" ; ;; # SLURM    
-		    # cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --nodes=1 --gres=craynetwork:0 --mem=20000 --zonesort=off" ; ;; # SLURM
+		    cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --gres=craynetwork:0 --mem=${mem_mb}" ; ;; # SLURM    
+		    # cmd_mpi[${mpi_idx}]="${cmd_mpi[${mpi_idx}]} --nodes=1 --gres=craynetwork:0 --mem=${mem_mb} --zonesort=off" ; ;; # SLURM
 	    esac # !HOSTNAME
 	done # !mpi_idx_zro
 	if [ -n "${SLURM_NODELIST}" ]; then 

@@ -7830,6 +7830,9 @@ These annotations include
 @cindex @code{--no_stg}
 @cindex @code{--no_stagger}
 @cindex @code{--no_stg_grd}
+@cindex @code{--stg}
+@cindex @code{--stagger}
+@cindex @code{--stg_grd}
 @cindex @code{slat}
 @cindex @code{slon}
 @cindex @code{w_stag}
@@ -7838,11 +7841,12 @@ These annotations include
 @cindex @acronym{AMWG}
 @cindex staggered-grid
 @cindex no stagger
+@cindex stagger
 @item Staggered Grid Coordinates and Weights
     Owing to its heritage as an early @acronym{CCM} analysis tool,
     @acronym{NCO} tries to create output interoperable with other
     @acronym{CESM} analysis tools. 
-    Like many models, @acronym{CAM-FV} computes and archives thermodynamic
+    Like many models, @acronym{CAM} computes and archives thermodynamic
     state variables on gridcell centers, and computes dynamics variables
     (zonal and meridional winds @var{U} and @var{V}, respectively) on
     gridcell edges (interfaces). 
@@ -7858,15 +7862,21 @@ These annotations include
     require access to these dual-grid coordinates with the names
     @code{slat} and @code{slon} (for ``staggered'' latitude and
     longitude).
-    By default the @acronym{NCO} regridder outputs these coordinates,
-    along with the latitude weights (called @code{w_stag}), when
-    the input is on a cap (aka @acronym{FV}) grid so that the result
-    can be processed by @acronym{AMWG} diagnostics. 
-    Turn-off archiving the staggered grid (i.e., @code{slat},
-    @code{slon}, and @code{w_stag}) by setting the @var{no_stagger}
-    flag. 
-    The @code{--no_stg_grd} flag in @command{ncremap} and
-    @command{ncclimo} sets this @code{--no_stagger} flag.
+    Until @acronym{NCO} version 4.9.8 (released March, 2021),
+    the @acronym{NCO} regridder output these coordinates,
+    along with the latitude weights (called @code{w_stag}), by default
+    when the input was on a cap (aka @acronym{FV}) grid so that the
+    result could be processed by @acronym{AMWG} diagnostics. 
+    Setting the @var{no_stagger} flag turns-off archiving the
+    staggered grid (i.e., @code{slat}, @code{slon}, and
+    @code{w_stag}). 
+    Do this with the @code{--no_stg_grd} flag in @command{ncremap}.
+    @command{ncclimo} always sets this @code{--no_stagger} flag.
+    As of @acronym{NCO} version 4.9.8 (released March, 2021),
+    the default @command{ncremap} and @command{ncclimo} behavior
+    is to omit the staggered grid.
+    The new flag @code{--stg_grd} turns-on outputting the staggered
+    grid, and thus recovers the previous default behavior. 
 @end table
 
 One may supply muliple @samp{--rgr @var{key}=@var{value}} options
