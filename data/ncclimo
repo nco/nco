@@ -1877,7 +1877,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     if [ ${var_nbr} -gt 1 ]; then
 	printf "Timeseries will be created for each of ${var_nbr} variables\n"
 	if [ "${par_typ}" = ${par_bck} ]; then
-	    printf "Background parallelism processing variables in var_nbr/job_nbr = ${var_nbr}/${job_nbr} = $((var_nbr / job_nbr)) sequential batches of job_nbr = ${job_nbr} simultaneous jobs (1 per variable), then remaining $((var_nbr % job_nbr)) jobs/variables simultaneously\n"
+	    printf "Background parallelism processing variables in var_nbr/job_nbr = ${var_nbr}/${job_nbr} = $((var_nbr / job_nbr)) sequential batches each concurrently processing job_nbr = ${job_nbr} jobs (1 per variable), then remaining $((var_nbr % job_nbr)) jobs/variables simultaneously\n"
 	elif [ "${par_typ}" = ${par_mpi} ]; then
 	    printf "MPI parallelism dividing processing of ${var_nbr} variables onto nd_nbr = ${nd_nbr} nodes simultaneously\n"
 	fi # !par_typ
@@ -1937,9 +1937,9 @@ fi # !sbs_flg
 if [ "${clm_flg}" = 'Yes' ]; then
     if [ "${clm_hfc_or_mth}" = 'Yes' ] && [ "${bnr_flg}" = 'No' ]; then
 	if [ "${par_typ}" = ${par_bck} ]; then
-	    printf "Background parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) batches of job_nbr = ${job_nbr} months simultaneously\n"
+	    printf "Background parallelism processing monthly climos in 12/job_nbr = 12/${job_nbr} = $((12 / job_nbr)) sequential batches each handling job_nbr = ${job_nbr} months concurrently\n"
 	elif [ "${par_typ}" = ${par_mpi} ]; then
-	    printf "MPI parallelism distributing monthly and then seasonal climos to ${nd_nbr} nodes simultaneously, and load-balancing with unused nodes, if any\n"
+	    printf "MPI parallelism distributing monthly and then seasonal climos to ${nd_nbr} nodes simultaneously via round-robin scheduling, and load-balancing with unused nodes, if any\n"
 	fi # !par_typ
     fi # !clm_md
     if [ "${xtn_flg}" = 'No' ]; then

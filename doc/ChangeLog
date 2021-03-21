@@ -1,8 +1,18 @@
-2021-03-19  Charlie Zender  <zender@uci.edu>
+2021-03-20  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8: Death Valley';git push
 	git tag -a 4.9.8 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali, xcl_var, srun; ncks: s1d pft mec; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn';git push --tags
+
+	* ncremap turn-off staggered grid by default, add new --stg_grd flag to output staggered grid
+
+2021-03-19  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo verify ncclimo MPI changes work on Cori, Compy, fxm
+
+	* ncremap incorporate MPI changes for Cori from ncclimo
+
+	* ncclimo/ncremap clarify MPI load scheduling messages
 
 	* ncclimo add --gres=craynetwork:0 --mem=20000 to cmd_mpi on Cori to solve concurrent srun issue
 
