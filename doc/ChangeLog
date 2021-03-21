@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha01: Sitton Peak';git push
 	git tag -a 4.9.9-alpha01 -m 'autoupdate configure.ac, acinclude.m4, aclocal.m4; functionally identical to 4.9.8';git push --tags
 
+	* ncremap/ncclimo update paths to E3SM-Unified from 1.3.1.2 to 1.4.0
+
 	* Hand-edit configure.ac to eliminate remaining autoconf warnings and obtain clean build
 
 	* autoupdate updates configure.ac, acinclude.m4, aclocal.m4

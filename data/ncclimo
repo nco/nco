@@ -120,8 +120,8 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
     hrd_pth_fnd='Yes' # [sng] Machine-dependent paths/modules for HOSTNAME found in database
     case "${HOSTNAME}" in 
 	acme1* | aims4* )
-	    export PATH='/export/zender1/bin:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.3.1.2/bin'\:${PATH}
-            export LD_LIBRARY_PATH='/export/zender1/lib:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.3.1.2/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export PATH='/export/zender1/bin:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0/bin'\:${PATH}
+            export LD_LIBRARY_PATH='/export/zender1/lib:/usr/local/e3sm_unified/envs/base/envs/e3sm_unified_1.4.0/lib'\:${LD_LIBRARY_PATH} ; ;;
 	andes* | rhea* )
 	    # 20190827: Must guarantee finding mpirun
 	    source ${MODULESHOME}/init/sh # 20150607: PMC Ensures find module commands will be found
@@ -129,7 +129,7 @@ if [ "${hrd_pth}" = 'Yes' ] && [ "${NCO_PATH_OVERRIDE}" = 'Yes' ]; then
 		module load esmf
 	    fi # !ncremap
             export PATH='/ccs/home/zender/bin_andes'\:${PATH}
-	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/e3sm_unified_1.3.1.2/lib'\:${LD_LIBRARY_PATH} ; ;;
+	    export LD_LIBRARY_PATH='/ccs/home/zender/lib_andes:/ccs/proj/cli900/sw/andes/e3sm-unified/base/envs/e3sm_unified_1.4.0/lib'\:${LD_LIBRARY_PATH} ; ;;
 	blues* | blogin* | b[0123456789][0123456789][0123456789] )
 	    export PATH='/home/zender/bin_blues'\:${PATH}
 	    export LD_LIBRARY_PATH='/home/zender/lib_blues'\:${LD_LIBRARY_PATH} ; ;;
