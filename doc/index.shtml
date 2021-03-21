@@ -152,7 +152,7 @@ and
 
 <ul>
 <li>2021 Jun&nbsp;XX: 4.9.9 <i>In Progress...</i>
-<li>2021 Mar&nbsp;20: 4.9.8 Small features/fixes
+<li>2021 Mar&nbsp;21: 4.9.8 Small features/fixes
 <li>2020 Dec&nbsp;27: 4.9.7 Small features/fixes
 <li>2020 Nov&nbsp;30: 4.9.6 Small features/fixes
 <li>2020 Sep&nbsp;23: 4.9.5 A feature and fixes
@@ -773,7 +773,7 @@ Thanks to Gavin Burris and Kyle Wilcox for documenting build procedures for RHEL
 <!-- 
 # Mac OS X 11.0 (Big Sur) systems (firn, sastrugi):
 /usr/bin/scp ~/nco/doc/index.shtml zender,nco@web.sf.net:/home/project-web/nco/htdocs
-cd ~/bin;tar cvzf ${DATA}/nco-4.9.8.macosx.11.0.tar.gz nc*;scp ${DATA}/nco-4.9.8.macosx.11.0.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
+cd ~/bin;tar cvzf ${DATA}/nco-4.9.8.macosx.11.2.tar.gz nc*;scp ${DATA}/nco-4.9.8.macosx.11.2.tar.gz zender,nco@web.sf.net:/home/project-web/nco/htdocs/src
 -->
 The most up-to-date executables are probably those in the tarball below. Those unfamiliar with installing executables from tarballs may try the (older) <a href="http://en.wikipedia.org/wiki/Apple_Disk_Image">DMG</a> files (you may need to add <tt>/opt/local/bin</tt> to your executable path to access those operators).
 <li><a href="src/nco-4.9.8.macosx.11.0.tar.gz">nco-4.9.8.macosx.11.0.tar.gz</a> (<!--#fsize file="src/nco-4.9.8.macosx.11.0.tar.gz"-->): Executables MacOSX 11.0-compatible (last updated <!--#flastmod file="src/nco-4.9.8.macosx.11.0.tar.gz"-->). 

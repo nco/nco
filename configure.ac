@@ -54,7 +54,7 @@
 # 20170808: Choose between traditional version and Git-based version
 # If Git, consider that Linux dynamic libraries will have full messy name, MacOSX will not
 # https://stackoverflow.com/questions/43526939/how-to-insert-git-based-version-in-autoconf-managed-project
-AC_INIT([NCO netCDF Operators],[4.9.8],[nco-bugs@lists.sourceforge.net],[nco])
+AC_INIT([NCO netCDF Operators],[4.9.9-alpha01],[nco-bugs@lists.sourceforge.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -176,12 +176,14 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_CXXCPP
-AC_PROG_CC_STDC
-AM_PROG_LEX
+# 20210321 autoupdate suggests but then autoconf fails with this:
+#AC_REQUIRE(AC_PROG_CC)
+# 20210321 autoconf after autoupdate say AC_PROG_LEX without either yywrap or noyywrap argument is obsolete
+AC_PROG_LEX(yywrap)
 # AC_PROG_YACC
 AC_PROG_INSTALL
 AC_PROG_LN_S
-AC_PROG_LIBTOOL
+LT_INIT
 
 # Until fix for libtool error is found
 LIBTOOL="${LIBTOOL} --tag=CXX"
@@ -202,7 +204,11 @@ AC_FUNC_STRTOD
 AC_CHECK_FUNCS([canonicalize_file_name floor gethostname getpagesize getrusage memchr memmove memset mkstemp pow readlink realpath regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol])
 
 # Check for header files
-AC_HEADER_STDC
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 AC_CHECK_HEADERS([getopt.h libintl.h limits.h locale.h netinet/in.h stdlib.h string.h strings.h unistd.h])
 AC_LANG_PUSH([C++])
 AC_CHECK_HEADERS(cstdlib)
@@ -219,7 +225,8 @@ AC_STRUCT_TM
 AC_TYPE_UID_T
 AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_SIZEOF(int*)
-AC_CXX_HAVE_VALARRAY
+# 20210321 autoconf after autoupdate complains AC_LANG([C++]) is obsolete here, so I delete it
+# AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
@@ -789,7 +796,7 @@ if test "${enable_udunits2}" != 'no'; then
     fi # end NO UDUNITS2_PATH section
 
 # Warn if udunits2.xml is not found, but continue anyway since builder may be savvy enough to add it when building packages (e.g., .debs)
-    AC_CHECK_FILE([$nco_udunits2_xml],,AC_WARN([file UDUNITS2 XML database file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support.]))
+    AC_CHECK_FILE([$nco_udunits2_xml],,AC_MSG_WARN(file UDUNITS2 XML database file $nco_udunits2_xml was not found but will still attempt to build NCO with UDUnits2 support.))
 	# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
     AC_DEFINE_UNQUOTED([UDUNITS2_PATH],["$nco_udunits2_xml"],[Location of UDUnits2 data file])
 

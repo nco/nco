@@ -223,9 +223,6 @@
 /* Define to 1 if you have the `mkstemp' function. */
 #undef HAVE_MKSTEMP
 
-/* Define if C++ compiler implements namespaces */
-#undef HAVE_NAMESPACES
-
 /* Define to 1 if compiler finds external `nc_inq_format' function */
 #undef HAVE_NC_INQ_FORMAT
 
@@ -388,9 +385,6 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
-
-/* Define if C++ compiler has working valarray<T> */
-#undef HAVE_VALARRAY
 
 /* Define to 1 if compiler finds external `__builtin_bswap16' function */
 #undef HAVE___BUILTIN_BSWAP16
