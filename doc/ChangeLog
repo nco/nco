@@ -1,8 +1,14 @@
-2021-03-20  Charlie Zender  <zender@uci.edu>
+2021-03-21  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.8 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8: Death Valley';git push
 	git tag -a 4.9.8 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali, xcl_var, srun, mem_mb; ncks: s1d pft mec; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn, stg_grd';git push --tags
+
+2021-03-20  Charlie Zender  <zender@uci.edu>
+
+	* autoconf now complains about obsolete macros, will run autoupdate in 4.9.9-alpha01
+
+	* Travis g++ builds now fail early in configure at -lnetcdf link test (Ubuntu Xenial)
 
 	* NCO 4.9.8-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-beta02: Death Valley';git push

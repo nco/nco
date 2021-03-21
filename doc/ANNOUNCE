@@ -16,6 +16,7 @@ sub-gridscale data.
 
 Work on NCO 4.9.9 has commenced and will continue improving support
 for analysis of land surface datasets packed into sparse-1D formats,
+splitting daily resolution datasets along monthly boundaries,
 and begin ncremap support for the MOAB regridding package. 
 
 Enjoy,
