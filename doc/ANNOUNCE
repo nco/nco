@@ -1,59 +1,35 @@
 $Header$ -*-text-*-
 
-The netCDF Operators NCO version 4.9.8 have arrived.
+The netCDF Operators NCO version 4.9.9 have arrived.
 
 http://nco.sf.net (Homepage, Mailing lists, Help)
 http://github.com/nco (Source Code, Issues, Releases, Developers)
 
 What's new?
-Version 4.9.8 contains a few cool features.
-These include support for unpacking sparse 1D (S1D) data and restart
-files used for plant functional types and multiple elevation classes,
-splitting monthly resolution timeseries that do not begin/end in
-Jan/Dec, seamless climos for the E3SM ice-sheet model (MALI), and
-corner-case bugfixes for inferring grid files and handling
-sub-gridscale data.
+Version 4.9.9 contains a few cool features. These include splitting
+daily resolution timeseries that do not begin/end in Jan/Dec, fxm
 
-Work on NCO 4.9.9 has commenced and will continue improving support
+Work on NCO 5.0.0 has commenced and will continue improving support
 for analysis of land surface datasets packed into sparse-1D formats,
-splitting daily resolution datasets along monthly boundaries,
-and begin ncremap support for the MOAB regridding package. 
+and more ncremap support for the MOAB regridding package. 
 
 Enjoy,
 Charlie
 
 NEW FEATURES (full details always in ChangeLog):
 
-A. Windows builds should now contain the nces.exe and ncrcat.exe
-   executables. Previously, Windows users had to run nces and ncrcat
-   commands indirectly, using ncra.exe -Y nces ..., or manually copy
-   ncra.exe to nces.exe, etc. The executables are identical, and
-   behave differently depending on their invocation name. 
-   ncrcat             ... # These all do the same thing
-   ncrcat.exe         ... # "
-   ncra.exe -Y ncrcat ... # "
-   http://nco.sf.net/nco.html#ncrcat
-   http://nco.sf.net/nco.html#nces
-
-B. ncclimo supports new options --mth_srt and --mth_end in splitter
-   mode. The arguments to these options specify the (1-based) month in
+A. ncclimo supports new options --day_srt and --day_end in splitter
+   mode. The arguments to these options specify the (1-based) day in
    which the requested timeseries will begin and end, respectively,
-   and these default to 1 (January) and 12 (December). To extract
+   and these default to . To extract
    14-month timeseries from individual monthly input files one would
    use, e.g.,
    ncclimo --yr_srt=1 --yr_end=2 --mth_srt=4 --mth_end=5 ...
    http://nco.sf.net/nco.html#ncclimo
-   http://nco.sf.net/nco.html#mth_srt
-   http://nco.sf.net/nco.html#mth_end
+   http://nco.sf.net/nco.html#day_srt
+   http://nco.sf.net/nco.html#day_end
 
-C. ncclimo/ncremap support analysis of MALI land ice model output
-   when invoked with the new '-P mali' or '--prc_typ=mali' options.
-   ncclimo -P mali -s 1 -e 2 -o climo mali.hist*.nc
-   ncremap -P mali --map=map.nc in.nc out.nc
-   http://nco.sf.net/nco.html#prc_typ
-   http://nco.sf.net/nco.html#ncclimo
-
-D. ncks now supports unpacking sparse 1D (S1D) ELM/CLM data and
+A. ncks now supports unpacking sparse 1D (S1D) ELM/CLM data and
    restart files for plant functional types (PFTs) and multiple
    elevation classes (MECs).
    ncks --s1d -v cols1d_topoglc --hrz=elm_mali_ig_history.nc \
@@ -65,51 +41,9 @@ D. ncks now supports unpacking sparse 1D (S1D) ELM/CLM data and
    would be appreciated. Documentation does not yet exist.
    http://nco.sf.net/nco.html#ncks
 
-E. ncks now prints more informative messages when users attempt
-   to vertically interpolate variables (such as EAM/CAM US, VS) in
-   hybrid coordinate data files that contain multiple grids (e.g.,
-   the normal and staggered grids) though only one surface pressure
-   variable.
-   http://nco.sf.net/nco.html#ncremap
-   Thanks to Walter Hannah for noticing this.
- 
-F. As of version 4.9.8 the default ncremap behavior is to omit the
-   staggered grid from output files on an cap grid.
-   The new flag --stg_grd turns-on outputting the staggered
-   grid, and thus recovers the previous default behavior. 
-
 BUG FIXES:
 
-A. ncap2's array() function was rewritten to use a starting value
-   plus an index times an increment, rather than adding increments, in
-   order to reduce rounding errors. Thanks to Henry Butowsky.
-
-B. The regridder in ncremap no longer attempts to access the
-   (non-existent) tally array in SGS-weighted fields without missing
-   values. The previous behavior would cause a crash. Fortunately
-   this combination does not often occur in practice. Upgrading to
-   4.9.8 is the only solution, there is no workaround. 
-
-C. The capability to infer MPAS grids introduced in 4.9.8 introduced
-   a bug that requires that horizontal coordinates have a units
-   attribute. Many datafiles strongly disagree with this presumption!
-   The requirement has been removed. The solution is to upgrade to
-   4.9.8, there is no workaround.
-
-D. The ncclimo --xcl_var flag has been fixed. Previously the
-   flag had no effect. Now a variable extraction list may be turned
-   into a variable exclusion by using --xcl_var --vars=v1,v2,...vn.
-   The workaround is to use the option combination
-   --nco_opt='-x' -v v1,v2,...vn. The solution is to upgrade.
-
-E. At some unknown point, the behavior of ncclimo in MPI mode on Cori
-   seems to have changed. Slurm on Cori does not (never did? no longer
-   does?) allow multiple srun commands to execute concurrently on the
-   same node by default. Thanks to Noel Keen to guiding me to the
-   options (--gres=craynetwork:0 --mem=20000) required to fix this.
-   This Slurm issue does not appear to affect any other DOE machines.
-   The workaround is to avoid MPI mode on Cori, the solution is to
-   upgrade. 
+A. Hi
 
 Full release statement at http://nco.sf.net/ANNOUNCE
 

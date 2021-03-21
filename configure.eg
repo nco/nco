@@ -314,8 +314,8 @@ make install
 # gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on acme1:
 # Sysadmin upgrade request: 
 # Latest sysadmin-compiled module usage: 
-# Personal recipe last modified: 20200825 (search e3sm-u 1.4.0)
-# Personal recipe last used successfully: 20200905
+# Personal recipe last modified: 20210321 (search e3sm-u 1.4.0)
+# Personal recipe last used successfully: 20210321
 # NB: aims4 and acme1 only accept connections from whitelisted domains (e.g., uci.edu)
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
@@ -351,8 +351,8 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
 # Latest ticket to build NCO: 381695 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4 nco/4.9.3 # 20201208
-# Personal recipe last modified: 20201208
-# Personal recipe last used successfully: 20201208
+# Personal recipe last modified: 20210321 (search e3sm-u 1.4.0)
+# Personal recipe last used successfully: 20210321
 export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
 export LINUX_CXX='g++ -std=c++11'
 export LINUX_FC='gfortran'
@@ -410,7 +410,7 @@ cd ~/nco/bld;make ANTLR_ROOT=${HOME} GSL_ROOT='/glade/u/apps/ch/opt/gsl/2.4/gnu/
 # Latest ticket to build NCO: AREQ0215917 on 20180413
 # Latest sysadmin-compiled module usage: module load netcdf-c/4.7.4-a4uk6zy # gcc netCDF 4.7.4
 # Personal recipe last modified: 20201221 (use gcc netCDF 4.7.4)
-# Personal recipe last used successfully: 20201221 
+# Personal recipe last used successfully: 20210321
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 module load gcc/9.2.0-ugetvbp
@@ -431,7 +431,7 @@ scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU
 # Latest ticket to build NCO: 20190525 ICS-40n99 (closed in 1 day!)
 # Latest sysadmin-compiled module usage: module add nco # 20190524 default version is 4.7.9
 # Personal recipe last modified: 20200114
-# Personal recipe last used successfully: 20200905
+# Personal recipe last used successfully: 20210321
 # 20190526: DAP functionality is present in libnetcdf but missing in my NCO because configure does not find libcurl although it is definitely in /lib64/libcurl.so.*
 # 20190806: Must load modules prior to (re-)building otherwise system GCC 4.8.5 C++ compiler will not link to g++ 8.1.0 Antlr library
 module purge
@@ -480,7 +480,7 @@ ANTLR_ROOT=${HOME} ANTLR_LIB=${HOME}/lib_cori CC='cc' CXX='CC' GSL_ROOT='/global
 # Latest ticket to build NCO: INC0118469 on 20180413
 # Latest sysadmin-compiled module usage: module load nco/4.7.4 # 20180430 (without ncap2)
 # Personal recipe last modified: 20200722 (updated to netCDF 4.7.3)
-# Personal recipe last used successfully: 20200905 (currently not linking ncap2 because needs -L${HOME}/lib_cori to find -lantlr. Moreover, ldd cannot find system libraries. also issues with HDF library mismatch)
+# Personal recipe last used successfully: 20210321 (currently not linking ncap2 because needs -L${HOME}/lib_cori to find -lantlr. Moreover, ldd cannot find system libraries. also issues with HDF library mismatch)
 module load gcc
 #module load udunits
 export GNU_TRP=`~/nco/autobld/config.guess`
@@ -591,21 +591,6 @@ make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
 scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:Sites/nco/rgr
-
-# gcc/g++ 20160107 Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on rhea:
-# Sysadmin upgrade request: https://www.olcf.ornl.gov/support/submit-ticket
-# Latest ticket to build NCO: 381695 on 20180413
-# Latest sysadmin-compiled module usage: module load netcdf/4.6.1 nco/4.7.4 # 20180423
-# Personal recipe last modified: 20190828
-# Personal recipe last used successfully: 20200601 (except ncgen does not link)
-export LINUX_CC='gcc -std=c99 -pedantic -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_POSIX_SOURCE'
-export LINUX_CXX='g++ -std=c++11'
-export LINUX_FC='gfortran'
-export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0/lib
-export NETCDF_ROOT=/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0
-export PATH=${PATH}:/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0/bin
-cd ~/nco;git reset --hard origin/master
-cd ~/nco/bld;make ANTLR_ROOT=${HOME} NETCDF_ROOT='/ccs/proj/cli900/sw/rhea/e3sm-unified/base/envs/e3sm_unified_1.4.0' OPTS=D OMP=Y allinone;cd -
 
 # 20160421: gcc/g++ Zender uses this to develop/install/update netCDF4-enabled NCO in personal directories on roger:
 # Sysadmin upgrade request: Yan Liu <yanliu@illinois.edu>

@@ -688,6 +688,8 @@ CPP_TKN_OS += -DHAVE_NC_INQ_FORMAT
 CPP_TKN_OS += -DHAVE_NC_RENAME_GRP
 # Assume netCDF >= 4.3.2
 CPP_TKN_OS += -DHAVE_NC_INQ_PATH
+# Assume netCDF >= 4.6.1
+CPP_TKN_OS += -DHAVE_NC_SET_LOG_LEVEL
 # Assume netCDF >= 4.4.0, but Ubuntu 4.4.0 (e.g., on grele) fumbled netcdf_mem.h header
 ifndef UBUNTU_440
  CPP_TKN_OS += -DHAVE_NETCDF_MEM_H

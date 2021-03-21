@@ -1,5 +1,7 @@
 2021-03-21  Charlie Zender  <zender@uci.edu>
 
+	* Add -DHAVE_NC_SET_LOG_LEVEL to bld/Makefile for Cheyenne to fix double-define error
+
 	* NCO 4.9.9-alpha01 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha01: Sitton Peak';git push
 	git tag -a 4.9.9-alpha01 -m 'autoupdate configure.ac, acinclude.m4, aclocal.m4; ncclimo/ncremap e3sm-u 1.4.0 paths; functionally identical to 4.9.8';git push --tags
