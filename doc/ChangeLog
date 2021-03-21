@@ -6,7 +6,7 @@
 
 	* NCO 4.9.8-beta02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.8-beta02: Death Valley';git push
-	git tag -a 4.9.8 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali, xcl_var, srun, mem_mb; ncks: s1d pft mec; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn, stg_grd';git push --tags
+	git tag -a 4.9.8-beta02 -m 'ncap2: array(); ncclimo: mth_srt/end sbs, mali, xcl_var, srun, mem_mb; ncks: s1d pft mec; ncremap: tll fix sgs, s1d, fix nfr MALI, US/VS wrn, stg_grd';git push --tags
 
 	* configure.ac change obsolete AM_CONFIG_HEADER to AC_CONFIG_HEADERS
 
