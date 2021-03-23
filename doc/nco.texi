@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.9-alpha01
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 21 March 2021
+@set update-date 22 March 2021
 @set update-month March 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -3745,14 +3745,21 @@ June, 2006, with @acronym{NCO} version 3.1.3.
 January, 2007, with @acronym{NCO} version 3.1.9.}.
 The @file{./configure} mechanism automatically enables @acronym{NCO} as
 @acronym{OPeNDAP} clients if it can find the required
-@acronym{OPeNDAP} libraries
+@acronym{OPeNDAP} libraries.
+Since about 2010 the netCDF library can be configured (with
+@code{--enable-dap}) to build @acronym{DAP} directly into the netCDF
+library, which @acronym{NCO} automatically links to, so @acronym{DAP}
+need not be installed as a third-party library.
+It has been so many years since @acronym{NCO} has needed to support
+linking to @acronym{DAP} installed outside of the netCDF library that
+is is unclear whether this configuration 
 @footnote{
 The minimal set of libraries required to build @acronym{NCO} as
 @acronym{OPeNDAP} clients, where @acronym{OPeNDAP} is supplied as a
 separate library apart from @file{libnetcdf.a}, are, in link order,
 @file{libnc-dap.a}, @file{libdap.a}, and 
 @file{libxml2} and @file{libcurl.a}.}.
- in the usual locations.
+still works.
 The @env{$DODS_ROOT} environment variable may be used to override the 
 default @acronym{OPeNDAP} library location at @acronym{NCO}
 compile-time.  
