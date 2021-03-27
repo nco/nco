@@ -1664,7 +1664,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   if(var_typ > NC_MAX_ATOMIC_TYPE) nco_inq_user_type(nc_id,var_typ,NULL,NULL,&bs_typ,NULL,&cls_typ);
   
   /* Storage properties */
-  if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433){
+  if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || (NC_LIB_VERSION >= 433 && NC_LIB_VERSION != 474)){
     (void)nco_inq_var_chunking(grp_id,var_id,&srg_typ,cnk_sz);
     (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
   } /* endif */
@@ -1742,7 +1742,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   if(prn_flg->jsn) prn_ndn=prn_flg->ndn;
 
   if(prn_flg->trd){
-    if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) (void)fprintf(fp_out,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? %s, chunked? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),dmn_nbr,(dmn_nbr == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(deflate) ? "yes" : "no",(srg_typ == NC_CHUNKED) ? "yes" : "no",(packing) ? "yes" : "no"); else (void)fprintf(fp_out,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? HDF4_UNKNOWN, chunked? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),dmn_nbr,(dmn_nbr == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
+    if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || (NC_LIB_VERSION >= 433 && NC_LIB_VERSION != 474)) (void)fprintf(fp_out,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? %s, chunked? %s, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),dmn_nbr,(dmn_nbr == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(deflate) ? "yes" : "no",(srg_typ == NC_CHUNKED) ? "yes" : "no",(packing) ? "yes" : "no"); else (void)fprintf(fp_out,"%*s%s: type %s, %i dimension%s, %i attribute%s, compressed? HDF4_UNKNOWN, chunked? HDF4_UNKNOWN, packed? %s\n",prn_ndn,spc_sng,var_trv->nm,nco_typ_sng(var_typ),dmn_nbr,(dmn_nbr == 1) ? "" : "s",nbr_att,(nbr_att == 1) ? "" : "s",(packing) ? "yes" : "no");
     /* 20170913: Typically users not interested in variable ID. However, ID helps diagnose susceptibility to CDF5 bug */
     if(nco_dbg_lvl_get() >= nco_dbg_var) (void)fprintf(fp_out,"%*s%s ID = netCDF define order = %d\n",prn_ndn,spc_sng,var_trv->nm,var_id);
   } /* !trd */
@@ -1810,7 +1810,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
       (void)strcat(sz_sng,sng_foo);
     } /* end loop over dim */
 
-    if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
+    if(nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || (NC_LIB_VERSION >= 433 && NC_LIB_VERSION != 474)) (void)nco_inq_var_deflate(grp_id,var_id,&shuffle,&deflate,&dfl_lvl);
 
   } /* !scalar */
 
@@ -1822,8 +1822,8 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   (void)strcat(sz_sng,sng_foo);
   
   if(dmn_nbr > 0 && prn_flg->trd){
-    if((nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433) && deflate) (void)fprintf(fp_out,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
-    if(nco_fmt_xtn_get() == nco_fmt_xtn_hdf4 && NC_LIB_VERSION < 433) (void)fprintf(fp_out,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
+    if((nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || (NC_LIB_VERSION >= 433 && NC_LIB_VERSION != 474)) && deflate) (void)fprintf(fp_out,"%*s%s compression (Lempel-Ziv %s shuffling) level = %d\n",prn_ndn,spc_sng,var_trv->nm,(shuffle) ? "with" : "without",dfl_lvl);
+    if(nco_fmt_xtn_get() == nco_fmt_xtn_hdf4 && (NC_LIB_VERSION < 433 || NC_LIB_VERSION == 474)) (void)fprintf(fp_out,"%*s%s compression and shuffling characteristics are HDF4_UNKNOWN\n",prn_ndn,spc_sng,var_trv->nm);
     if(cls_typ == NC_VLEN) (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%g*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,vln_lng_avg,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr); else (void)fprintf(fp_out,"%*s%s size (RAM) = %s = %li*%lu = %lu bytes\n",prn_ndn,spc_sng,var_trv->nm,sz_sng,var_sz,(unsigned long)nco_typ_lng_udt(nc_id,bs_typ),(unsigned long)ram_sz_crr);
   } /* !prn_flg->trd */
 

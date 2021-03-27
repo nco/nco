@@ -1,3 +1,7 @@
+2021-03-27  Charlie Zender  <zender@uci.edu>
+
+	* Workaround netCDF library regression relative to version 4.3.3 where nc_inq_var_deflate() fails with ERROR code -111 on HDF4 files
+
 2021-03-21  Charlie Zender  <zender@uci.edu>
 
 	* Add -DHAVE_NC_SET_LOG_LEVEL to bld/Makefile for Cheyenne to fix double-define error

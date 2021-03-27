@@ -1002,7 +1002,7 @@ nco_cnk_sz_set_trv /* [fnc] Set chunksize parameters (GTT version of nco_cnk_sz_
   if(is_rec_var || is_chk_var || is_cmp_var) must_be_chunked=True; else must_be_chunked=False;
 
   /* Is variable currently chunked? */
-  if( var_id_in>=0 &&  (nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || NC_LIB_VERSION >= 433))
+  if( var_id_in>=0 &&  (nco_fmt_xtn_get() != nco_fmt_xtn_hdf4 || (NC_LIB_VERSION >= 433 && NC_LIB_VERSION != 474)))
     is_chunked=nco_cnk_dsk_inq(grp_id_in,var_id_in);
   else
     is_chunked=False;

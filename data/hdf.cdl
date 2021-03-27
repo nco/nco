@@ -5,6 +5,8 @@
 // Usage:
 // /usr/bin/hncgen -b -o hdf.hdf hdf.cdl # 
 // /usr/bin/hncgen -b -o ~/nco/data/hdf.hdf ~/nco/data/hdf.cdl # 
+// /usr/bin/ncgen-hdf -b -o hdf.hdf hdf.cdl # Debian
+// /usr/bin/ncgen-hdf -b -o ~/nco/data/hdf.hdf ~/nco/data/hdf.cdl # Debian (hdf4-tools package)
 // /usr/bin/ncgen_hdf4 -b -o hdf.hdf hdf.cdl # Anaconda
 // /usr/bin/ncgen_hdf4 -b -o ~/nco/data/hdf.hdf ~/nco/data/hdf.cdl # Anaconda
 
