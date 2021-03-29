@@ -1,6 +1,16 @@
+2021-03-29  Charlie Zender  <zender@uci.edu>
+
+	* ncclimo change print format used to infer tpd from %f to %25.15f to fix off-by-1 (or off-by-2!) errors
+
+	* ncclimo print days-per-file (dpf) in output log to assist debugging
+
 2021-03-27  Charlie Zender  <zender@uci.edu>
 
-	* Workaround netCDF library regression relative to version 4.3.3 where nc_inq_var_deflate() fails with ERROR code -111 on HDF4 files
+	* NCO 4.9.9-alpha02 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha02: Dented Fender';git push
+	git tag -a 4.9.9-alpha02 -m 'all: workaround libnetcdf nc_inq_var_deflate() HDF4 regression';git push --tags
+
+	* Workaround netCDF library 4.7.4 regression relative to version 4.3.3 where nc_inq_var_deflate() fails with ERROR code -111 on HDF4 files
 
 2021-03-21  Charlie Zender  <zender@uci.edu>
 

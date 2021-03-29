@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.9-alpha01
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 22 March 2021
+@set update-date 27 March 2021
 @set update-month March 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -1388,6 +1388,10 @@ those properties was impossible.
 When compiled with netCDF version 4.3.3-rc2 (20140925) or later, 
 @acronym{NCO} versions 4.4.6 (October, 2014) and later fully support  
 chunking and deflation features of @acronym{HDF4} files.
+Unfortunately, netCDF version 4.7.4 (20200327) introduced a regression 
+that breaks this functionality for all @acronym{NCO} versions until
+we first noticed the regression a year later implemented a workaround
+to restore this functionality as of 4.9.9-alpha02 (20210327).
 The @samp{--hdf4} switch is supported (for backwards compatibility) yet
 redundant (i.e., does no harm) with current versions of @acronym{NCO}
 and netCDF. 

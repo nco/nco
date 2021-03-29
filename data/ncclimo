@@ -1340,7 +1340,7 @@ if [ ${clm_md} = 'hfc' ] || [ ${clm_md} = 'hfs' ]; then
 	tm_var='time'
 	tm_bnds=`ncks --trd -M -m -v ${tm_var} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
 	# 20201220 NB: Using %g not %f in format results in tpd=10 not tpd=8 for 3-hourly EAM data!
-	tpd_out=`ncks --trd -H -s '%f ' -v ${tm_bnds} -d ${tm_var},1 -C ${fl_in[0]} | awk '{ print 1.0/($2 - $1); exit }'`
+	tpd_out=`ncks --trd -H -s '%25.15f ' -v ${tm_bnds} -d ${tm_var},1 -C ${fl_in[0]} | awk '{ print 1.0/($2 - $1); exit }'`
 	# Ensure result is positive integer
 	[ "${tpd_out}" -ge 0 ] 2>/dev/null && tpd_ntg='Yes' || tpd_ntg='No'
 	if [ "${tpd_ntg}" != 'Yes' ]; then
@@ -1382,6 +1382,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     elif [ "${clm_md}" = 'hfs' ]; then
 	# CESM/E3SM high-frequency output often employs noleap calendar and 30 days per file (no matter how many timesteps per day)
 	if [ -z "${dpf}" ]; then
+	    # 20210329 Try to detect non-default dpf
 	    dpf=${dpf_dfl}
 	fi # !dpf
 	let fpy=${dpy}/${dpf}
@@ -1922,7 +1923,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     elif [ ${clm_md} = 'dly' ]; then 
 	printf "Each input file assumed to contain mean of one day\n"
     elif [ ${clm_md} = 'hfs' ]; then 
-	printf "Each input file assumed to contain an integer number of days each comprising ${tpd_out} timesteps\n"
+	printf "Each input file assumed to contain ${dpf} days each comprising ${tpd_out} timesteps\n"
     elif [ ${clm_md} = 'mth' ]; then 
 	printf "Each input file assumed to contain mean of one month\n"
     fi # !mth
@@ -2408,6 +2409,9 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    # Output high-frequency timeseries segments will start/end on year boundaries as normal
 	    # However, the number of files read in each segment may differ, and is not known a priori
 	    # NB: High-frequency timeseries underestimate fpy by [0,1) when fpy=dpy/dpf is non-integral
+	    # 20210329: Current formulation assumes manual minimal file list is specified
+	    # Extraneous (non-overlapping) files at beginning of list will cause failure
+	    # fxm: Omit extraneous files at start of list (extraneous at end are OK now)
 	    let fpyp1=${fpy}+1
 	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
 	    let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: uses fpyp1 to overestimate fl_idx_end
