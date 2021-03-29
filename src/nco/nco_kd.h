@@ -244,7 +244,7 @@ typedef struct {
     wgt_sct **wgt_lst;
     size_t pl_cnt;
     size_t blk_nbr;
-    KDPriority *kd_list;
+    KDPriority **kd_list;
     size_t kd_cnt;
     size_t kd_blk_nbr;
     size_t idx_cnt;   /* number of input cells processed by each thread */
