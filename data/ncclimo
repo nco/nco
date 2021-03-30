@@ -477,7 +477,6 @@ dpt_opt='' # [sng] Option string to add depth coordinate to regridded MPAS files
 dbg_lvl=0 # [nbr] Debugging level
 dec_md='sdd' # [sng] December mode (contiguous: 'scd' | 'djf', discontiguous 'sdd' | 'jfd' as per above)
 dfl_lvl='' # [enm] Deflate level
-dpf_dfl='30' # [nbr] Days-per-file in input
 drc_in='' # [sng] Input file directory
 drc_in_xmp="${DATA}/ne30/raw" # [sng] Input file directory for examples
 drc_in_mps="${DATA}/mpas/raw" # [sng] Input file directory for MPAS examples
@@ -563,7 +562,7 @@ function fnc_usg_prn { # NB: dash supports fnc_nm (){} syntax, not function fnc_
     echo "${fnt_rvr}-c${fnt_nrm} ${fnt_bld}caseid${fnt_nrm}   Case ID string to generate input names or to name HFC output (default ${fnt_bld}${caseid}${fnt_nrm}) [${fnt_tlc}caseid, case_id, case${fnt_nrm}]"
     echo "${fnt_rvr}-d${fnt_nrm} ${fnt_bld}dbg_lvl${fnt_nrm}  Debug level (default ${fnt_bld}${dbg_lvl}${fnt_nrm}) [${fnt_tlc}dbg_lvl, dbg, debug, debug_level${fnt_nrm}]"
     echo " ${fnt_bld}--d2f${fnt_nrm}      Convert double-precision fields to single-precision (default ${fnt_bld}${d2f_flg}${fnt_nrm}) [${fnt_tlc}d2f | d2s | dbl_flt | dbl_sgl | double_float${fnt_nrm}]"
-    echo " ${fnt_bld}--dpf${fnt_nrm}      Days per file in input (default ${fnt_bld}${dpf_dfl}${fnt_nrm}) [${fnt_tlc}dpf, days_per_file${fnt_nrm}]"
+    echo " ${fnt_bld}--dpf${fnt_nrm}      Days-per-file in every high-frequency splitter input file [${fnt_tlc}dpf, days_per_file${fnt_nrm}]"
     echo " ${fnt_bld}--dpt_fl${fnt_nrm}   Depth file with refBottomDepth for MPAS ocean (empty means none) (default ${fnt_bld}${dpt_fl}${fnt_nrm}) [${fnt_tlc}dpt_fl, mpas_fl, mpas_depth, depth_file${fnt_nrm}]"
     echo "${fnt_rvr}-E${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year previous climo (empty means none) (default ${fnt_bld}${yr_end_prv}${fnt_nrm}) [${fnt_tlc}yr_end_prv, prv_yr_end, previous_end${fnt_nrm}]"
     echo "${fnt_rvr}-e${fnt_nrm} ${fnt_bld}yr_end${fnt_nrm}   End year (default ${fnt_bld}${yr_end}${fnt_nrm}) [${fnt_tlc}yr_end, end_yr, year_end, end_year, end${fnt_nrm}]"
@@ -1383,9 +1382,15 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	# CESM/E3SM high-frequency output often employs noleap calendar and 30 days per file (no matter how many timesteps per day)
 	if [ -z "${dpf}" ]; then
 	    # 20210329 Automatically infer dpf from first input file
+	    # E3SM/CESM high-frequency timeseries (e.g., h4 files) are all equal # timesteps, not duration
+	    # First timestep in first file (often? always?) is of zero duration and contains the IC
+	    # Remaining timesteps in first file, and all timesteps in following files, is of normal duration
+	    # For example 3-hourly E3SM/CESM output files of 120 timesteps each are all 30 days duration except the first file which is only 29.875 days because its first timestep is of zero duration
+	    # Solution: Base dpf on second file, not first file, if it exists
+	    fl_idx=$((fl_nbr > 1 ? 1 : 0))
 	    tm_var='time'
-	    tm_bnds=`ncks --trd -M -m -v ${tm_var} ${fl_in[0]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
-	    dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_bnds} -d ${tm_var},0 -d ${tm_var},-1 -C ${fl_in[0]} | awk '{ print $4-$1; exit }'`
+	    tm_bnds=`ncks --trd -M -m -v ${tm_var} ${fl_in[${fl_idx}]} | grep -E -i "^${tm_var} attribute [0-9]+: bounds" | cut -f 11- -d ' ' | sed 's/^ *//g'`
+	    dpf=`ncks --trd -H -s '%25.15f ' -v ${tm_bnds} -d ${tm_var},0 -d ${tm_var},-1 -C ${fl_in[${fl_idx}]} | awk '{ print $4-$1; exit }'`
 	    # Ensure result is positive integer
 	    [ "${dpf}" -ge 0 ] 2>/dev/null && dpf_ntg='Yes' || dpf_ntg='No'
 	    if [ "${dpf_ntg}" != 'Yes' ]; then
@@ -1914,7 +1919,11 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	if [ ${mth_nbr} -eq 12 ]; then
 	    printf "Will split data for each variable into one timeseries of length ${yr_sbs} years\n"
 	else
-	    printf "Will split data for each variable into one timeseries of length ${yr_sbs} years and ${fl_rmd} months\n"
+	    if [ ${clm_md} = 'hfs' ]; then 
+		printf "Will split data for each variable into one timeseries of length ${yr_sbs} years\n"
+	    else
+		printf "Will split data for each variable into one timeseries of length ${yr_sbs} years and ${fl_rmd} months\n"
+	    fi # !clm_md
 	fi # !mth_nbr
     fi # !sgm_nbr
     if [ ${inp_std} = 'No' ]; then 
@@ -2475,6 +2484,7 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 
 	if [ ${dbg_lvl} -ge 1 ]; then
 	    printf "dbg: HFS variable(s):\n"
+	    printf "dpf = ${dpf}\n"
 	    printf "dpy = ${dpy}\n"
 	    printf "fl_idx_srt = ${fl_idx_srt}\n"
 	    printf "fl_idx_end = ${fl_idx_end}\n"

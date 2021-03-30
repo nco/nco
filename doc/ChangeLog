@@ -1,8 +1,12 @@
-2021-03-29  Charlie Zender  <zender@uci.edu>
+2021-03-30  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha02: Dented Fender';git push
 	git tag -a 4.9.9-alpha02 -m 'all: workaround libnetcdf nc_inq_var_deflate() HDF4 regression';git push --tags
+
+	* ncclimo infer dpf using second file, not first file, if present
+
+2021-03-29  Charlie Zender  <zender@uci.edu>
 
 	* ncclimo infer dpf when not supplied with --dpf, deprecate --dpf_dfl
 
