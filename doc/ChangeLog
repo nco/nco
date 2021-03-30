@@ -2,7 +2,7 @@
 
 	* NCO 4.9.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha02: Dented Fender';git push
-	git tag -a 4.9.9-alpha02 -m 'all: workaround libnetcdf nc_inq_var_deflate() HDF4 regression';git push --tags
+	git tag -a 4.9.9-alpha02 -m 'all: workaround libnetcdf nc_inq_var_deflate() HDF4 regression; ncclimo infer dpf, fix tpd inferral';git push --tags
 
 	* ncclimo infer dpf using second file, not first file, if present
 
