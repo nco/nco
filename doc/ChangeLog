@@ -1,4 +1,10 @@
+2021-03-31  Charlie Zender  <zender@uci.edu>
+
+	* Add function name to nco_mss_val_get() WARNINGs
+
 2021-03-30  Charlie Zender  <zender@uci.edu>
+
+	* Test builds with netCDF 4.8.0-final
 
 	* NCO 4.9.9-alpha02 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha02: Dented Fender';git push
