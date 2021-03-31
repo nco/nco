@@ -1,5 +1,7 @@
 2021-03-31  Charlie Zender  <zender@uci.edu>
 
+	* nco.texi add filters ncvardmnlst and ncvardmnlatlon for Jim Edwards
+
 	* Add function name to nco_mss_val_get() WARNINGs
 
 2021-03-30  Charlie Zender  <zender@uci.edu>

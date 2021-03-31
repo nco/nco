@@ -129,7 +129,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.9-alpha02
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 27 March 2021
+@set update-date 31 March 2021
 @set update-month March 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -17140,7 +17140,8 @@ LPH:     ( 'a'..'z' | 'A'..'Z' | '_' );
 name:    (LPH)(LPH|DGT)+
 @end example
 
-@noindent The first character of a valid name must be alphabetic or the underscore. Any subsequent characters must be alphanumeric or underscore. ( e.g., a1,_23, hell_is_666 )
+@noindent The first character of a valid name must be alphabetic or the underscore.
+Subsequent characters must be alphanumeric or underscore, e.g., a1, _23, hell_is_666.
 
 @noindent The valid characters in a quoted name are specified by the regular expressions:
 @example
@@ -22709,6 +22710,7 @@ include an NcML formatting characters (e.g., commas, angles, quotes).
 <a name="ncattget"></a> <!-- http://nco.sf.net/nco.html#ncattget -->
 <a name="nclst"></a> <!-- http://nco.sf.net/nco.html#nclst -->
 <a name="ncvarlst"></a> <!-- http://nco.sf.net/nco.html#ncvarlst -->
+<a name="ncvardmnlst"></a> <!-- http://nco.sf.net/nco.html#ncvardmnlst -->
 <a name="ncdmnlst"></a> <!-- http://nco.sf.net/nco.html#ncdmnlst -->
 <a name="ncdmnsz"></a> <!-- http://nco.sf.net/nco.html#ncdmnsz -->
 <a name="ncgrplst"></a> <!-- http://nco.sf.net/nco.html#ncgrplst -->
@@ -22733,6 +22735,8 @@ include an NcML formatting characters (e.g., commas, angles, quotes).
 @cindex @command{ncattget}
 @cindex @command{ncavg}
 @cindex @command{ncdmnlst}
+@cindex @command{ncvardmnlst}
+@cindex @command{ncvardmnlatlon}
 @cindex @command{ncdmnsz}
 @cindex @command{ncgrplst}
 @cindex @command{nclst}
@@ -22842,6 +22846,10 @@ function ncavg { ncwa -y avg -O -C -v ${1} ${2} ~/foo.nc ; ncks --trd -H -C -v $
 function ncavg { ncap2 -O -C -v -s "foo=${1}.avg();print(foo)" ${2} ~/foo.nc | cut -f 3- -d ' ' ; }
 # ncdmnlst $fl_nm : What dimensions are in file?
 function ncdmnlst { ncks --cdl -m ${1} | cut -d ':' -f 1 | cut -d '=' -s -f 1 ; }
+# ncvardmnlst $var_nm $fl_nm : What dimensions are in a variable?
+function ncvardmnlst { ncks --trd -m -v ${1} ${2} | grep -E -i "^${1} dimension [0-9]+: " | cut -f 4 -d ' ' | sed 's/,//' ; }
+# ncvardmnlatlon $var_nm $fl_nm : Does variable contain both lat and lon dimensions?
+function ncvardmnlatlon { flg=`ncks -C -v ${1} -m ${2} | grep -E -i "${1}\(" | grep -E "lat.*lon|lon.*lat"` ; [[ ! -z "$flg" ]] && echo "Yes, ${1} has both lat and lon dimensions" || echo "No, ${1} does not have both lat and lon dimensions" }
 # ncdmnsz $dmn_nm $fl_nm : What is dimension size?
 function ncdmnsz { ncks --trd -m -M ${2} | grep -E -i ": ${1}, size =" | cut -f 7 -d ' ' | uniq ; }
 # ncgrplst $fl_nm : What groups are in file?

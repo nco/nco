@@ -2004,7 +2004,7 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
         for(int idx_dmn=0;idx_dmn<var_prc->nbr_dim;idx_dmn++){
           var_prc->dim[idx_dmn]->xrf=(dmn_sct *)nco_dmn_free(var_prc->dim[idx_dmn]->xrf);
           var_prc->dim[idx_dmn]=(dmn_sct *)nco_dmn_free(var_prc->dim[idx_dmn]);   
-        } /* end loop over dimensions */
+        } /* !idx_dmn */
 
         var_prc=(var_sct *)nco_var_free(var_prc);
       } /* !CPY_VAR_METADATA */
@@ -2060,8 +2060,8 @@ nco_xtr_dfn                          /* [fnc] Define extracted groups, variables
 
       /* Memory management after current extracted variable */
       if(grp_out_fll) grp_out_fll=(char *)nco_free(grp_out_fll);
-    } /* end if variable and flg_xtr */
-  } /* end loop over idx_tbl */
+    } /* !flg_xtr */
+  } /* !idx_tbl */
 
   /* Retain all dimensions */
   if(RETAIN_ALL_DIMS) (void)nco_rad(nc_out_id,nbr_dmn_cmn_out,dmn_cmn_out,trv_tbl);
@@ -5277,7 +5277,7 @@ nco_cpy_var_dfn_trv                 /* [fnc] Define specified variable in output
   dmn_out_id_tmp=(int *)nco_free(dmn_out_id_tmp); 
 
   return var_out_id;
-} /* end nco_cpy_var_dfn_trv() */
+} /* !nco_cpy_var_dfn_trv() */
 
 void
 nco_dmn_swap                           /* [fnc] Swap dimensions */
