@@ -4,6 +4,8 @@
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha03: Pt. Concepcion IPA';git push
 	git tag -a 4.9.9-alpha03 -m 'nco.texi: ncvardmnlatlon';git push --tags
 
+	* ncclimo implement mth_srt/end with clm_md=hfs for Yannick Peings, seems to work
+
 	* nco.texi add filters ncvardmnlst and ncvardmnlatlon for Jim Edwards
 
 	* Add function name to nco_mss_val_get() WARNINGs

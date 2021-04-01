@@ -1065,11 +1065,17 @@ mth_end_rth=${sng_trm}
 mm_end=`printf "%02d" ${mth_end_rth}`
 let mth_nbr=${yr_end_rth}*12+${mth_end_rth}-${yr_srt_rth}*12-${mth_srt_rth}+1
 let mth_srtm1=${mth_srt_rth}-1
+let mth_endp1=${mth_end_rth}+1
 if [ ${mth_srtm1} -eq 0 ] ; then
     mm_srtm1='12'
 else # !mth_srtm1
     mm_srtm1=`printf "%02d" ${mth_srtm1}`
 fi # !mth_srtm1
+if [ ${mth_endp1} -eq 13 ] ; then
+    mm_endp1='01'
+else # !mth_endp1
+    mm_endp1=`printf "%02d" ${mth_endp1}`
+fi # !mth_endp1
 if [ "${mm_srt}" != '01' ] || [ "${mm_end}" != '12' ]; then
     mth_flg='Yes'
 fi # !mm_srt
@@ -1412,8 +1418,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
     if [ ${flg_dct} = 'Yes' ]; then
 	if [ "${mth_flg}" = 'Yes' ]; then
 	    if [ ${mth_nbr} -ne ${fl_nbr} ]; then
-		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} differs from number of months = ${mth_nbr} computed from calendar inputs for clm_md=${clm_md}\n"
-		printf "${spt_nm}: HINT In this mode splitter expects one monthly file per calendar month\n"
+		printf "${spt_nm}: ERROR Number of input files = ${fl_nbr} differs from number of months = ${mth_nbr} computed from calendar inputs\n"
+		printf "${spt_nm}: HINT In this mode (clm_md=${clm_md}) splitter expects one monthly file per calendar month\n"
 		exit 1
 	    fi # !mth_nbr
 	else # !mth_flg
@@ -2423,34 +2429,58 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	else # !clm_md
 	    # High-frequency timeseries are hyperslabbed by date and so need fuzzy file-lists
 	    # that may contain an extra file or two in case year-boundaries are intermediate records.
-	    # Output high-frequency timeseries segments will start/end on year boundaries as normal
+	    # 20210331: Prior to now, output high-frequency timeseries always start/end on year boundaries
+	    # 20210331: Support high-frequency splitter mode mth_srt/end != Jan/Dec
 	    # However, the number of files read in each segment may differ, and is not known a priori
 	    # NB: High-frequency timeseries underestimate fpy by [0,1) when fpy=dpy/dpf is non-integral
 	    # 20210329: Current formulation assumes manual minimal file list is specified
-	    # Extraneous (non-overlapping) files at beginning of list will cause failure
+	    # Extraneous (more than one non-overlapping) files at beginning of list will cause failure
 	    # fxm: Omit extraneous files at start of list (extraneous at end are OK now)
 	    let fpyp1=${fpy}+1
-	    let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
-	    let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: uses fpyp1 to overestimate fl_idx_end
-	    let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
-	    let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
-	    if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
-		let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpyp1} # NB: uses fpyp1 to overestimate fl_idx_end
-		let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
-	    fi # !sgm_nbrm1
-	    # Fuzzify list by including files nominally before and after first and last expected files
-	    if [ ${fl_idx_srt} -ne 0 ]; then
-		let fl_idx_srt=${fl_idx_srt}-1
-	    fi # !fl_idx_srt
-	    # Fuzziness may generate indices that are too large
-	    if [ ${fl_idx_end} -gt ${fl_nbr} ]; then
-		let fl_idx_end=${fl_nbr}
-	    fi # !fl_idx_end
-	    if [ ${fl_idx_end} -lt ${fl_nbr} ]; then
-		let fl_idx_end=${fl_idx_end}+1
-	    fi # !fl_idx_end
+	    if [ "${mth_flg}" = 'Yes' ]; then
+		# 20210331 Peings
+		let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
+		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
+		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
+		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
+		if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}
+		    let yr_end_sgm=${yr_end_rth}
+		fi # !sgm_nbrm1
+		# Fuzzify list by including files nominally before and after first and last expected files
+		if [ ${fl_idx_srt} -ne 0 ]; then
+		    let fl_idx_srt=${fl_idx_srt}-1
+		fi # !fl_idx_srt
+		# Fuzziness may generate indices that are too large
+		if [ ${fl_idx_end} -gt ${fl_nbr} ]; then
+		    let fl_idx_end=${fl_nbr}
+		fi # !fl_idx_end
+		if [ ${fl_idx_end} -lt ${fl_nbr} ]; then
+		    let fl_idx_end=${fl_idx_end}+1
+		fi # !fl_idx_end
+	    else # !mth_flg
+		let fl_idx_srt=${sgm_idx}*${ypf_max}*${dpy}/${dpf} # NB: dpy/dpf more accurate than fpy
+		let fl_idx_end=${fl_idx_srt}+${ypf_max}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
+		let yr_srt_sgm=${yr_srt_rth}+${sgm_idx}*${ypf_max}
+		let yr_end_sgm=${yr_srt_sgm}+${ypf_max}-1
+		if [ ${sgm_rmd} -ne 0 ] && [ ${sgm_idx} -eq ${sgm_nbrm1} ]; then
+		    let fl_idx_end=${fl_idx_srt}+${sgm_rmd}*${fpyp1} # NB: use fpyp1 to overestimate fl_idx_end
+		    let yr_end_sgm=${yr_srt_sgm}+${sgm_rmd}-1
+		fi # !sgm_nbrm1
+		# Fuzzify list by including files nominally before and after first and last expected files
+		if [ ${fl_idx_srt} -ne 0 ]; then
+		    let fl_idx_srt=${fl_idx_srt}-1
+		fi # !fl_idx_srt
+		# Fuzziness may generate indices that are too large
+		if [ ${fl_idx_end} -gt ${fl_nbr} ]; then
+		    let fl_idx_end=${fl_nbr}
+		fi # !fl_idx_end
+		if [ ${fl_idx_end} -lt ${fl_nbr} ]; then
+		    let fl_idx_end=${fl_idx_end}+1
+		fi # !fl_idx_end
+	    fi # !mth_flg
 	fi # !clm_md
-
+	
 	# NB: fl_idx_srt is zero-based while fl_idx_end one-based, i.e., the count, one more than the index
 	for ((fl_idx=fl_idx_srt;fl_idx<fl_idx_end;fl_idx++)); do
 	    fl_sgm[${sgm_idx}]="${fl_sgm[${sgm_idx}]} ${fl_in[${fl_idx}]}"
@@ -2468,6 +2498,8 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	else # !sgm_idx
 	    mm_end_sgm[${sgm_idx}]=${mm_srtm1}
 	fi # !sgm_idx
+	let mm_endp1_sgm=${mm_end_sgm}+1
+	mm_endp1_sgm[${sgm_idx}]=`printf "%02d" ${mm_endp1_sgm}`
 
 	# Sanity check all files existence before wasting time and space on concatenation
 	for fl_crr in ${fl_sgm[${sgm_idx}]} ; do
@@ -2488,10 +2520,12 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 	    printf "dpy = ${dpy}\n"
 	    printf "fl_idx_srt = ${fl_idx_srt}\n"
 	    printf "fl_idx_end = ${fl_idx_end}\n"
+	    printf "fl_nbr = ${fl_nbr}\n"
 	    printf "fpy = ${fpy}\n"
 	    printf "fpyp1 = ${fpyp1}\n"
 	    printf "nco_opt = ${nco_opt}\n"
 	    printf "ppn_opt = ${ppn_opt}\n"
+	    printf "sgm_nbr = ${sgm_nbr}\n"
 	    printf "sgm_rmd = ${sgm_rmd}\n"
 	    printf "spl_opt = ${spl_opt}\n"
 	    printf "tpd_out = ${tpd_out}\n"
@@ -2571,8 +2605,13 @@ if [ "${sbs_flg}" = 'Yes' ]; then
 		fl_out[${var_idx}]="${fl_out_tpl[${sgm_idx}]/var_nm_tpl/${var_sbs[${var_idx}]}}"
 		if [ "${clm_md}" = 'hfs' ]; then
 		    # 20200619 High-frequency output requires time-coordinate hyperslabs
-		    tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-01-01T00:00:01"
-		    tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01T00:00:00"
+		    if [ "${mth_flg}" = 'Yes' ]; then
+			tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-${mm_srt_sgm[${sgm_idx}]}-01T00:00:01"
+			tm_end="${yyyy_end_sgm[${sgm_idx}]}-${mm_endp1_sgm[${sgm_idx}]}-01T00:00:00"
+		    else # !mth_flg
+			tm_srt="${yyyy_srt_sgm[${sgm_idx}]}-01-01T00:00:01"
+			tm_end="${yyyy_endp1_sgm[${sgm_idx}]}-01-01T00:00:00"
+		    fi # !mth_flg
 		    if [ ${tpd_out} -lt 3600 ]; then
 			cmd_sbs[${var_idx}]="${cmd_mpi[${var_idx}]} OMP_PROC_BIND=false ncrcat -O -v ${var_sbs[${var_idx}]}${var_xtr} ${nco_opt} ${spl_opt} ${gaa_sng} -d time,${tm_srt},${tm_end} ${ppn_opt} ${fl_sgm[${sgm_idx}]} ${fl_out[${var_idx}]}"
 		    else
