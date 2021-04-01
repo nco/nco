@@ -2544,9 +2544,17 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_
   /* add node as necessary */
   if(bAddPnt){ 
     if(omp_mem->kd_blk_nbr*NCO_VRL_BLOCKSIZE < omp_mem->kd_cnt+1){
-      /* fxm */
+      /* fxm
       (void)fprintf(stderr,"%s: ERROR %s reports that the kd-tree overlap buffer (size=%d) is now full and currenly cannot be dynamically expanded. We are trying to fix this. In the meanwhile consider increasing NCO_VRL_BLOCKSIZE in nco_kd.h, and then re-compiling.\n",nco_prg_nm_get(),fnc_nm,NCO_VRL_BLOCKSIZE);
       nco_exit(EXIT_FAILURE);
+      */
+
+      /* remember this modifies kd_list and increments kd_blk_nbr */
+      kd_list_realloc(omp_mem, omp_mem->kd_blk_nbr+1 );
+
+      (void)fprintf(stderr,"%s: ERROR %s reports that the kd-tree overlap buffer  has been dynamically expanded to %d blocks\n",nco_prg_nm_get(),fnc_nm, omp_mem->kd_blk_nbr  );
+
+
 
       /*
         omp_mem->kd_list=(KDPriority*)nco_realloc(omp_mem->kd_list,++omp_mem->kd_blk_nbr*(NCO_VRL_BLOCKSIZE*sizeof(KDPriority)));
@@ -2555,7 +2563,7 @@ int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_
     } /* !omp_mem */
     omp_mem->kd_list[omp_mem->kd_cnt]->elem = node;
     omp_mem->kd_list[omp_mem->kd_cnt]->dist = 1.0;
-    omp_mem->kd_list[omp_mem->kd_cnt++]->area = -1.0;
+    omp_mem->kd_list[(omp_mem->kd_cnt)++]->area = -1.0;
   } /* !baddPnt */
 
   if(node->sons[0]){
@@ -2590,23 +2598,32 @@ int kd_priority_cmp_dist( const void *vp1, const void *vp2)
 }
 
 
+/* IMPORTANT this sorts a kd_list of kd pointers // that is list is **kd_list */
 int kd_priority_cmp( const void *vp1, const void *vp2)
 {
 
-  //const KDPriority * const kd1=((const KDPriority * const )vp1);
-  //const KDPriority * const kd2=((const KDPriority * const )vp2);
 
-  //ptrdiff_t df= (char*)kd1->elem->item - (char*)kd2->elem->item;
-  //ptrdiff_t df= kd1->elem->item - kd2->elem->item;
-  ptrdiff_t df=  ((KDPriority*)vp1)->elem->item - ((KDPriority*)vp2)->elem->item;
+  const KDPriority * const kd1=*((const KDPriority * const *)vp1);
+  const KDPriority * const kd2=*((const KDPriority * const *)vp2);
+
+  ptrdiff_t df=  kd1->elem->item - kd2->elem->item;
 
   return ( df < 0 ? -1 :  df >0 ? 1 : 0   );
+
+  //return kd1->elem->item < kd2->elem->item ? -1 : (kd1->elem->item > kd2->elem->item);
+
 }
+
+
 
 /* Sorts input list
  * if duplicates then copy new list over to old and True returned
  * no duplicates then sorted list remains and False is returned
  */
+
+
+
+
 nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *out_fll_nbr) {
 
 
@@ -2652,67 +2669,6 @@ nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *
 }
 
 
-nco_bool kd_priority_list_sort_omp(omp_mem_sct *omp_mem) {
-
-  int idx;
-  int fll_nbr_nw;
-  int fll_nbr;
-
-  nco_bool bret=False;
-
-  KDPriority *lcl_list=NULL_CEWI;
-
-
-
-  fll_nbr=omp_mem->kd_cnt;
-
-  lcl_list=(KDPriority*)nco_calloc(omp_mem->kd_blk_nbr*NCO_VRL_BLOCKSIZE, sizeof(KDPriority));
-  //lcl_list=(KDPriority*)nco_calloc(sizeof(KDPriority), fll_nbr);
-
-   
-
-
-  /* use stdlib sort  */
-  qsort((void *)omp_mem->kd_list, fll_nbr, sizeof(KDPriority*), kd_priority_cmp);
-
-  lcl_list[0]=*omp_mem->kd_list[0];
-  fll_nbr_nw=1;
-
-  for (idx = 1; idx < fll_nbr; idx++)
-    if(omp_mem->kd_list[idx]->elem->item != omp_mem->kd_list[idx - 1]->elem->item )
-      lcl_list[fll_nbr_nw++] = *(omp_mem->kd_list[idx]);
-
-
-
-
-  /* deal with duplicates */
-  if(fll_nbr_nw < fll_nbr  )
-  {
-    /* copy new local list over to old one
-    memcpy(omp_mem->kd_list, lcl_list, sizeof(KDPriority) * fll_nbr_nw);
-    */
-    for(idx=0;idx<fll_nbr_nw;idx++)
-      *(omp_mem->kd_list[idx])=lcl_list[idx];
-
-
-    omp_mem->kd_cnt=fll_nbr_nw;
-    bret=True;
-
-  }
-
-
-
-  lcl_list=(KDPriority*)nco_free(lcl_list);
-
-
-  return bret;
-
-}
-
-
-
-
-
 
 
 
@@ -2750,6 +2706,72 @@ int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m
 	return kd_neighbour(realTree->tree,Xq,m,alist,Bp,Bn);
 }
 
+
+void kd_list_realloc( omp_mem_sct *omp_mem,  int blk_nbr_nw   )
+{
+  int idx;
+  int sz;
+
+  /* new size same as old size so do nothing */
+  if( blk_nbr_nw == omp_mem->kd_blk_nbr )
+    return;
+
+
+  /* increase list size */
+  if( blk_nbr_nw > omp_mem->kd_blk_nbr )
+  {
+
+     omp_mem->kd_list=(KDPriority**)nco_realloc(omp_mem->kd_list, sizeof(KDPriority*)*blk_nbr_nw*NCO_VRL_BLOCKSIZE);
+
+     sz=blk_nbr_nw*NCO_VRL_BLOCKSIZE;
+     for(idx=omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE ; idx<sz;idx++)
+       omp_mem->kd_list[idx]=(KDPriority*)nco_calloc(1, sizeof(KDPriority));
+
+
+  }
+
+  /* decrease block size */
+  else
+  {
+
+   sz=omp_mem->kd_blk_nbr*NCO_VRL_BLOCKSIZE;
+
+   for(idx=blk_nbr_nw*NCO_VRL_BLOCKSIZE;idx<sz;idx++)
+     omp_mem->kd_list[idx]=(KDPriority*)nco_free(omp_mem->kd_list[idx]);
+
+    omp_mem->kd_list=(KDPriority**)nco_realloc(omp_mem->kd_list, sizeof(KDPriority*)*blk_nbr_nw*NCO_VRL_BLOCKSIZE);
+
+
+
+  }
+
+  omp_mem->kd_blk_nbr=blk_nbr_nw;
+
+  return;
+
+
+
+}
+
+
+
+int kd_nearest_intersect(KDTree** rTree, int nbr_tr, kd_box Xq, omp_mem_sct *omp_mem, int bSort)
+{
+  int idx;
+  int nw_lcl_cnt=0;
+  int ret_cnt=0;
+
+
+
+   for(idx=0;idx < nbr_tr;idx++)
+     (void)kd_neighbour_intersect3(rTree[idx]->tree,0,Xq, omp_mem,0,0);
+
+
+   ret_cnt=omp_mem->kd_cnt;
+
+   return ret_cnt;
+}
+
 int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem)
 {
   /* count duplicates for dbg */
@@ -2768,72 +2790,8 @@ int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, o
   (void)kd_nearest_intersect(rTree,nbr_tr, Xr, omp_mem, bSort);
 
 
-  //if( omp_mem->kd_cnt >1  &&  kd_priority_list_sort(omp_mem->kd_list,  omp_mem->kd_blk_nbr* NCO_VRL_BLOCKSIZE, omp_mem->kd_cnt , &ret_cnt_nw  )  )
-  //  omp_mem->kd_cnt=ret_cnt_nw;
-
-
-  if(omp_mem->kd_cnt >1)
-    kd_priority_list_sort_omp(omp_mem );
 
 
 
   return omp_mem->kd_cnt;
-}
-
-//int kd_nearest_intersect(KDTree* realTree, kd_box Xq, int m, KDPriority *list, int bSort)
-int kd_nearest_intersect(KDTree** rTree, int nbr_tr, kd_box Xq, omp_mem_sct *omp_mem, int bSort)
-{
-  int idx;
-  int nw_lcl_cnt=0;
-  int ret_cnt=0;
-
-  //const char fnc_nm[]="kd_nearest_intersect()";
-
-   //(void)fprintf(stderr,"%s:%s: just entered function\n", nco_prg_nm_get(),fnc_nm );
-    /*
-	list_srt= omp_mem->kd_list+ (size_t)omp_mem->kd_cnt;
-	list_end= omp_mem->kd_list;
-	m=omp_mem->kd_blk_nbr * NCO_VRL_BLOCKSIZE;
-	list_end+=m;
-   */
-   //node_cnt= kd_neighbour_intersect3(realTree->tree,0,Xq, &list_srt ,list_end,0,0);
-
-
-   for(idx=0;idx < nbr_tr;idx++)
-     (void)kd_neighbour_intersect3(rTree[idx]->tree,0,Xq, omp_mem,0,0);
-
-
-    /*
-    ret_cnt=( list_srt - omp_mem->kd_list)+ omp_mem->kd_cnt;
-    if(ret_cnt > 1 && bSort && kd_priority_list_sort(omp_mem->kd_list, m, ret_cnt, &nw_lcl_cnt)) ret_cnt=nw_lcl_cnt;
-    */
-    ret_cnt=omp_mem->kd_cnt;
-    if(omp_mem->kd_cnt && bSort)
-    {
-      kd_priority_list_sort_omp(omp_mem);
-      ret_cnt=omp_mem->kd_cnt;
-
-    }
-
-
-    if(0 && nco_dbg_lvl_get() >= nco_dbg_dev)
-    {
-      KDPriority *list;
-
-      list=omp_mem->kd_list;
-      (void)fprintf(stderr,"ret_cnt=%d\n", ret_cnt);
-
-      for(idx=0;idx<ret_cnt;idx++)
-      {
-        (void)fprintf(stderr," dist to center: %f units. elem=%p item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
-                      list[idx].dist,
-                      (void*)list[idx].elem,
-                      list[idx].elem->item,
-                      list[idx].elem->size[KD_LEFT],
-                      list[idx].elem->size[KD_RIGHT],
-                      list[idx].elem->size[KD_BOTTOM],
-                      list[idx].elem->size[KD_TOP]);
-      }
-    }
-  return ret_cnt;
 }

@@ -173,7 +173,8 @@ extern "C" {
 
   /* 20200121 Overlap buffer 
      Increase this as necessary until we get a dynamic overlap buffer working */
-#define NCO_VRL_BLOCKSIZE 6000
+//#define NCO_VRL_BLOCKSIZE 6000
+#define NCO_VRL_BLOCKSIZE 100
 
 typedef struct kd_dummy_defn {
     int dummy;
@@ -319,6 +320,7 @@ kd_gen kd_start (KDTree* tree, kd_box size);
 kd_status kd_is_member(KDTree* , kd_generic , kd_box );
 void kd_tree_badness(KDTree *tree, double *fact1, double *fact2, double *fact3, int *levs);
 
+void kd_list_realloc( omp_mem_sct *omp_mem,  int blk_nbr_nw   );
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
