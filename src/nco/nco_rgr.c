@@ -3678,6 +3678,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"YDim:MOD_Grid_monthly_CMG_VI",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("YDim:MOD_Grid_monthly_CMG_VI"); /* MODIS MOD13C2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"natrack",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("natrack"); /* MODIS DeepBlue SeaWiFS L2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"nj",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nj"); /* CICE RTM */
+    else if((rcd=nco_inq_dimid_flg(in_id,"lsmlat",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("lsmlat"); /* CISM/CLM/ELM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nlat",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nlat"); /* POP */
     else if((rcd=nco_inq_dimid_flg(in_id,"rlat",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("rlat"); /* RACMO */
     else if((rcd=nco_inq_dimid_flg(in_id,"nscan",&dmn_id_lat)) == NC_NOERR) lat_nm_in=strdup("nscan"); /* AMSR, TRMM */
@@ -3714,6 +3715,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
     else if((rcd=nco_inq_dimid_flg(in_id,"XDim:location",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("XDim:location"); /* AIRS L3 */
     else if((rcd=nco_inq_dimid_flg(in_id,"XDim:MOD_Grid_monthly_CMG_VI",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("XDim:MOD_Grid_monthly_CMG_VI"); /* MODIS MOD13C2 */
     else if((rcd=nco_inq_dimid_flg(in_id,"ni",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("ni"); /* CICE RTM */
+    else if((rcd=nco_inq_dimid_flg(in_id,"lsmlon",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("lsmlon"); /* CISM/CLM/ELM */
     else if((rcd=nco_inq_dimid_flg(in_id,"nlon",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("nlon"); /* POP */
     else if((rcd=nco_inq_dimid_flg(in_id,"rlon",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("rlon"); /* POP */
     else if((rcd=nco_inq_dimid_flg(in_id,"npix",&dmn_id_lon)) == NC_NOERR) lon_nm_in=strdup("npix"); /* AMSR */
@@ -7725,6 +7727,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"XLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("XLAT"); /* WRF */
     else if((rcd=nco_inq_varid_flg(in_id,"XLAT_M",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("XLAT_M"); /* Unknown */
     else if((rcd=nco_inq_varid_flg(in_id,"LAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LAT"); /* MAR/RACMO */
+    else if((rcd=nco_inq_varid_flg(in_id,"LATIXY",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("LATIXY"); /* CISM/CLM/ELM */
     else if((rcd=nco_inq_varid_flg(in_id,"TLAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("TLAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"ULAT",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("ULAT"); /* CICE, POP */
     else if((rcd=nco_inq_varid_flg(in_id,"latCell",&lat_ctr_id)) == NC_NOERR) lat_nm_in=strdup("latCell"); /* MPAS-O/I */
@@ -7748,6 +7751,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     else if((rcd=nco_inq_varid_flg(in_id,"XLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG"); /* WRF */
     else if((rcd=nco_inq_varid_flg(in_id,"XLONG_M",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("XLONG_M"); /* Unknown */
     else if((rcd=nco_inq_varid_flg(in_id,"LON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LON"); /* MAR/RACMO */
+    else if((rcd=nco_inq_varid_flg(in_id,"LONGXY",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("LONGXY"); /* CISM/CLM/ELM */
     else if((rcd=nco_inq_varid_flg(in_id,"TLON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLON"); /* CICE */
     else if((rcd=nco_inq_varid_flg(in_id,"TLONG",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("TLONG"); /* POP */
     else if((rcd=nco_inq_varid_flg(in_id,"ULON",&lon_ctr_id)) == NC_NOERR) lon_nm_in=strdup("ULON"); /* CICE */

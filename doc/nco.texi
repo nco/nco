@@ -129,8 +129,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 4.9.9-alpha02
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 31 March 2021
-@set update-month March 2021
+@set update-date 6 April 2021
+@set update-month April 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
 
@@ -1539,9 +1539,9 @@ comes with money or you have damaging information about our personal
 lives.
 @emph{Please use the Forums}---they preserve a record of the questions
 and answers so that others can learn from our exchange.
-Also, since @acronym{NCO} is government-funded, this record helps us
-provide program officers with information they need to evaluate our
-project. 
+Also, since @acronym{NCO} is both volunteer-driven and
+government-funded, this record helps us provide program officers with 
+information they need to evaluate our project. 
 
 Before posting to the @acronym{NCO} forums described below, you might
 first @uref{https://sf.net/account/register.php, register}
@@ -1552,10 +1552,9 @@ Once registered you may choose to @emph{monitor} any forum and to receive
 questions.
 We usually reply to the forum message, not to the original poster.
 
-If you want us to include a new feature in @acronym{NCO}, check first to 
-see if that feature is already on the @uref{file:./TODO,TODO} list.
-If it is, why not implement that feature yourself and send us the patch?
-If the feature is not yet on the list, then send a note to the
+If you want us to include a new feature in @acronym{NCO}, please 
+consider implementing the feature yourself and sending us the patch.
+If that is beyond your ken, then send a note to the
 @uref{http://sf.net/p/nco/discussion/9829, NCO Discussion forum}.
 
 Read the manual before reporting a bug or posting a help request.

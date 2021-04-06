@@ -1,8 +1,12 @@
+2021-04-06  Charlie Zender  <zender@uci.edu>
+
+	* ncremap add LATIXY, LONGXY coordinates and lsmlat, lsmlon dimensions to internal database to support regridding CISM/CLM/ELM glacier masks
+
 2021-03-31  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha03: Pt. Concepcion IPA';git push
-	git tag -a 4.9.9-alpha03 -m 'nco.texi: ncvardmnlatlon';git push --tags
+	git tag -a 4.9.9-alpha03 -m 'nco.texi: ncvardmnlatlon; ncclimo hfs mth_srt/end';git push --tags
 
 	* ncclimo implement mth_srt/end with clm_md=hfs for Yannick Peings, seems to work
 
