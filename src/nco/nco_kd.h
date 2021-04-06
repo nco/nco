@@ -321,6 +321,7 @@ kd_status kd_is_member(KDTree* , kd_generic , kd_box );
 void kd_tree_badness(KDTree *tree, double *fact1, double *fact2, double *fact3, int *levs);
 
 void kd_list_realloc( omp_mem_sct *omp_mem,  int blk_nbr_nw   );
+int kd_list_sort_omp( omp_mem_sct *omp_mem, int nbr_lst);
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
