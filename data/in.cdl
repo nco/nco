@@ -641,7 +641,7 @@ variables:
 
 	// 20210406: netCDF 4.8.0 no longer supports CDL type "long" as synonym for "int"
 	// Uncomment next line to demonstrate backwards-incompatibility of 4.8.0
-	//	long long_var;
+	//long long_var;
 	int long_var;
 	long_var:long_name = "long";
 	long_var:purpose = "Variable of CDL type=long, which is deprecated for int. Included to test back-compatibility";

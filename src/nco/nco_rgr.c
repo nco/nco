@@ -5098,6 +5098,21 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
 	  (void)fprintf(fp_stdout,"%s: INFO Compute time for %s (thread %d/%d): %g s\n",nco_prg_nm_get(),trv.nm,thr_idx,omp_get_num_threads(),tm_drn);
 	} /* !dbg */
 
+	if(nco_typ_ntg(var_typ_out)){
+	  /* 20210407: Round, with rint(), integer fields before sending to netCDF for output
+	     Otherwise implicit type conversion will truncate (rather than round) output values
+	     This is critical for masks where rounding errors produce near integer values (e.g., 0.999...)
+	     that could then be truncated to zero by implicit conversion instead of rounded up to 1. */
+	  if(has_mss_val){
+	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+	      if(var_val_dbl_out[dst_idx] != mss_val_dbl)
+		var_val_dbl_out[dst_idx]=rint(var_val_dbl_out[dst_idx]);
+	  }else{
+	    for(dst_idx=0;dst_idx<var_sz_out;dst_idx++)
+	      var_val_dbl_out[dst_idx]=rint(var_val_dbl_out[dst_idx]);
+	  } /* !has_mss_val */
+	} /* !nco_typ_ntg() */
+
 #pragma omp critical
 	{ /* begin OpenMP critical */
 	  //	  rcd=nco_put_var(out_id,var_id_out,var_val_dbl_out,var_typ_rgr);
