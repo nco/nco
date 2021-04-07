@@ -3755,6 +3755,7 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      CAM-FV: slon, slat, w_stag (w_stag is weights for slat grid, analagous to gw for lat grid)
      CAM-SE, EAM, MOSART: area
      CICE: latt_bounds, lont_bounds, latu_bounds, lonu_bounds, TLAT, TLON, ULAT, ULON (NB: CICE uses ?LON and POP uses ?LONG) (aice is ice area, tmask is state-variable mask, both not currently excluded, although all binary masks like tmask should be recomputed on new grid)
+     CISM/CLM/ELM: LATIXY, LONGXY (glacier mask files)
      DSCOVR L2: latitude, longitude
      ESMF: gridcell_area
      GPM: S1_Latitude, S1_Longitude
@@ -3774,8 +3775,8 @@ nco_rgr_wgt /* [fnc] Regrid with external weights */
      UV-CDAT regridder: bounds_lat, bounds_lon
      Unknown: XLAT_M, XLONG_M
      WRF: XLAT, XLONG */
-  const int var_xcl_lst_nbr=51; /* [nbr] Number of objects on exclusion list */
-  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LAT","/lat","/Latitude","/latitude","/nav_lat","/global_latitude0","gridlat_0","/latitude0","/rlat","/slat","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/Longitude","/longitude","/nav_lon","/global_longitude0","gridlon_0","/longitude0","/rlon","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
+  const int var_xcl_lst_nbr=53; /* [nbr] Number of objects on exclusion list */
+  const char *var_xcl_lst[]={"/area","/gridcell_area","/gw","/LAT","/lat","/Latitude","/latitude","/nav_lat","/global_latitude0","gridlat_0","/latitude0","/rlat","/slat","/LATIXY","/LONGXY","/TLAT","/ULAT","/XLAT","/XLAT_M","/CO_Latitude","/S1_Latitude","/lat_bnds","/lat_vertices","/latt_bounds","/latu_bounds","/latitude_bnds","/LatitudeCornerpoints","/bounds_lat","/LON","/lon","/Longitude","/longitude","/nav_lon","/global_longitude0","gridlon_0","/longitude0","/rlon","/slon","/TLON","/TLONG","/ULON","/ULONG","/XLONG","/XLONG_M","/CO_Longitude","/S1_Longitude","/lon_bnds","/lon_vertices","/lont_bounds","/lonu_bounds","/longitude_bnds","/LongitudeCornerpoints","/bounds_lon","/w_stag"};
   int var_cpy_nbr=0; /* [nbr] Number of copied variables */
   int var_rgr_nbr=0; /* [nbr] Number of regridded variables */
   int var_xcl_nbr=0; /* [nbr] Number of deleted variables */
