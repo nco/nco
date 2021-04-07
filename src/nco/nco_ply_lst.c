@@ -698,7 +698,7 @@ int *pl_cnt_vrl_ret){
   /* just duplicate output list to overlap */
   const char fnc_nm[]="nco_poly_lst_mk_vrl()";
 
-  nco_bool bDirtyRats=False;
+  nco_bool bDirtyRats=True;
   nco_bool bSort=True;
 
 
@@ -817,7 +817,8 @@ int *pl_cnt_vrl_ret){
 
 
     /* if a wrapped polygon then split and do two searches  */
-    if(nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 ))
+    bSplit=nco_poly_minmax_split(pl_lst_in[idx],grd_lon_typ, size1,size2 );
+    if(bSplit )
     {
 
       vrl_cnt=kd_nearest_intersect(tree, nbr_tr, size1, &mem_lst[thr_idx], False);
@@ -827,9 +828,9 @@ int *pl_cnt_vrl_ret){
       vrl_cnt=kd_nearest_intersect(tree, nbr_tr, size1, &mem_lst[thr_idx], False);
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
 
-    if(vrl_cnt && bSort)
-      qsort( &mem_lst[thr_idx].kd_list[0] ,vrl_cnt , sizeof(KDPriority*), kd_priority_cmp);
-      //vrl_cnt=kd_list_sort_omp(&mem_lst[thr_idx], vrl_cnt);
+
+    /* nb this func below sort AND reomves duplicates - then returns the size of the new list*/
+    vrl_cnt=kd_list_sort_omp(&mem_lst[thr_idx], vrl_cnt);
 
 
     for (jdx = 0; jdx < vrl_cnt; jdx++) {
@@ -838,8 +839,8 @@ int *pl_cnt_vrl_ret){
       poly_sct *pl_out = (poly_sct *) mem_lst[thr_idx].kd_list[jdx]->elem->item;
 
       /* check for duplicates normally occurs with a sorted wrapped polygon */
-      if(jdx>0 && (poly_sct*)mem_lst[thr_idx].kd_list[jdx-1]->elem->item== pl_out)
-        continue;
+      //if(jdx>0 && (poly_sct*)mem_lst[thr_idx].kd_list[jdx-1]->elem->item== pl_out)
+      //  continue;
 
 
       /* for area debug only */
