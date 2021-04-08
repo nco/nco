@@ -1,10 +1,14 @@
-2021-04-07  Charlie Zender  <zender@uci.edu>
+2021-04-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha03 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha03: Modern Times';git push
 	git tag -a 4.9.9-alpha03 -m 'nco.texi: ncvardmnlatlon; ncclimo hfs mth_srt/end; ncremap CISM glc msk, rint() integers';git push --tags
 
-	* ncremap nco_rgr() always rint() regridded values before output when netCDF implicitly demotes them to integers
+	* ncremap nco_ntp_vrt() add same rint() code as nco_rgr_wgt()
+
+2021-04-07  Charlie Zender  <zender@uci.edu>
+
+	* ncremap nco_rgr_wgt() always rint() regridded values before output when netCDF implicitly demotes them to integers
 
 2021-04-06  Charlie Zender  <zender@uci.edu>
 

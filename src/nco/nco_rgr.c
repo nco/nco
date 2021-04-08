@@ -2261,6 +2261,21 @@ nco_ntp_vrt /* [fnc] Interpolate vertically */
 	    if(dat_out_mnt) dat_out_mnt=(double *)nco_free(dat_out_mnt);
 	  } /* !out_ncr */
 	  
+	  if(nco_typ_ntg(var_typ_out)){
+	    /* 20210407: Round, with rint(), integer fields before sending to netCDF for output
+	       Otherwise implicit type conversion will truncate (rather than round) output values
+	       This is critical for masks where rounding errors produce near integer values (e.g., 0.999...)
+	       that could then be truncated to zero by implicit conversion instead of rounded up to 1. */
+	    if(has_mss_val){
+	      for(idx_out=0;idx_out<var_sz_out;idx_out++)
+		if(var_val_dbl_out[idx_out] != mss_val_dbl)
+		  var_val_dbl_out[idx_out]=rint(var_val_dbl_out[idx_out]);
+	    }else{
+	      for(idx_out=0;idx_out<var_sz_out;idx_out++)
+		var_val_dbl_out[idx_out]=rint(var_val_dbl_out[idx_out]);
+	    } /* !has_mss_val */
+	  } /* !nco_typ_ntg() */
+
 #pragma omp critical
 	  { /* begin OpenMP critical */
 	    rcd=nco_put_vara(out_id,var_id_out,dmn_srt,dmn_cnt_out,var_val_dbl_out,var_typ_rgr);
