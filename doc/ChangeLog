@@ -1,3 +1,14 @@
+2021-04-11  Charlie Zender  <zender@uci.edu>
+
+	* NCO 4.9.9-alpha04 release procedure:
+	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha04: Aliso Summit';git push
+	git tag -a 4.9.9-alpha04 -m 'ncremap crv area wrn, ccw_chk fix';git push --tags
+
+	* ncremap nco_ccw_chk() fix bug where quadrilateral vertex D was always overwritten by vertex A
+	Since 2016 this bug divided all quadrilaterals in two, halving all inferred curvilinear grid areas?
+
+	* ncremap nco_grd_nfr() WARNING when global grid has suspicious area
+
 2021-04-08  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha03 release procedure:

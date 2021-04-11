@@ -8507,7 +8507,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !lat_idx */
       if(lon_vld_nxt) lon_vld_nxt=(long *)nco_free(lon_vld_nxt);
       if(lon_vld_prv) lon_vld_prv=(long *)nco_free(lon_vld_prv);
-    } /* !CICE */
+    } /* !False || !CICE */
 
     if(lat_bnd_id == NC_MIN_INT && lon_bnd_id == NC_MIN_INT){
       /* Interfaces (ntf) and boundaries (bnd) for curvilinear grids are ill-defined since sides need not follow latitudes nor meridians 
@@ -8677,6 +8677,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	  crn_lon[1]=lon_crn[idx_crn_lr];
 	  crn_lon[2]=lon_crn[idx_crn_ur];
 	  crn_lon[3]=lon_crn[idx_crn_ul];
+	  /* 20210411: From 2016 until today, nco_ccw_chk() overwrote fourth (UL) with first (LL) corner */
 	  flg_ccw=nco_ccw_chk(crn_lat,crn_lon,grd_crn_nbr,idx_ccw,rcr_lvl);
 	  if(!flg_ccw && wrn_nbr < wrn_nbr_max){
 	    (void)fprintf(stdout,"%s: %s WARNING reports non-CCW gridcell at idx=%li, (lat,lon)_idx=(%li,%li), (lat,lon) = (%g, %g)\n",nco_prg_nm_get(),fnc_nm,idx_rl,lat_idx,lon_idx,lat_ctr[lat_idx],lon_ctr[lon_idx]);
@@ -9347,13 +9348,15 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     if(msk_unn.vp) msk_unn.vp=(void *)nco_free(msk_unn.vp);
   } /* !msk_id */
 
-  if(nco_dbg_lvl_get() >= nco_dbg_sbr){
+  if(nco_dbg_lvl_get() >= nco_dbg_scl){
     lat_wgt_ttl=0.0;
     area_ttl=0.0;
     if(flg_grd_2D){
-      (void)fprintf(stderr,"%s: INFO %s reports destination rectangular latitude grid:\n",nco_prg_nm_get(),fnc_nm);
+      (void)fprintf(stderr,"%s: INFO %s reports inferred rectangular latitude grid area diagnostics (lat_wgt_ttl and frc_lat_wgt should be valid):\n",nco_prg_nm_get(),fnc_nm);
       for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
 	lat_wgt_ttl+=lat_wgt[lat_idx];
+    }else{
+      (void)fprintf(stderr,"%s: INFO %s reports inferred unstructured or curvilinear latitude grid area diagnostics (ignore lat_wgt_ttl and frc_lat_wgt):\n",nco_prg_nm_get(),fnc_nm);
     } /* !flg_grd_2D */
     for(lat_idx=0;lat_idx<lat_nbr;lat_idx++)
       for(lon_idx=0;lon_idx<lon_nbr;lon_idx++)
@@ -9361,7 +9364,12 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, frc_lat_wgt = %20.15f, area_ttl = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,lat_wgt_ttl/2.0,area_ttl,area_ttl/(4.0*M_PI));
     assert(area_ttl > 0.0);
     assert(area_ttl <= 4.0*M_PI);
-  } /* endif dbg */
+    const double eps_rlt_area=1.0e-12; /* [frc] Error tolerance for global area */
+    if(nco_grd_xtn == nco_grd_xtn_glb){
+      if(fabs(1.0-area_ttl/(4.0*M_PI)) > eps_rlt_area)
+	(void)fprintf(stdout,"%s: WARNING %s reports area for inferred global grid differs from true global area (4*pi sr) by greater than allowed fraction %g\n",nco_prg_nm_get(),fnc_nm,eps_rlt_area);
+    } /* !nco_grd_xtn_glb */
+  } /* !dbg */
 
   /* Open grid file */
   fl_out_tmp=nco_fl_out_open(fl_out,&FORCE_APPEND,FORCE_OVERWRITE,fl_out_fmt,&bfr_sz_hnt,RAM_CREATE,RAM_OPEN,SHARE_CREATE,SHARE_OPEN,WRT_TMP_FL,&out_id);
@@ -10105,8 +10113,8 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
      Start crn_idx=0, i.e., quadrilateral LL corner
      Vector A runs from crn_idx=0 to crn_idx=1, i.e., quadrilateral LL->LR
      Vector B runs from crn_idx=1 to crn_idx=2, i.e., quadrilateral LR->UR
-     Compute cross-product A x B = C
-     C is normal to plane containining A and B
+     Compute cross-product C = A x B
+     C is normal to plane containing A and B
      Dot-product of C with radial vector to head A = tail B is positive if A and B are CCW
      if(ABC is CCW){
        if(CDA is CCW) 
@@ -10197,11 +10205,14 @@ nco_ccw_chk /* [fnc] Convert quadrilateral gridcell corners to CCW orientation *
     /* Original ABC is CCW, now check CDA */
     idx_ccw=2;
     flg_ccw=nco_ccw_chk(crn_lat,crn_lon,crn_nbr,idx_ccw,rcr_lvl+1);
-    if(!flg_ccw && nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports triangle ABC is and CDA is not CCW in quadrilateral gridcell with LL (lat,lon) = (%g, %g), dot_prd = %g. Setting D:=A to triangularize quadrilateral.\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
-    /* Triangularize quadrilateral D:=A */
-    crn_lat[3]=crn_lat[0];
-    crn_lon[3]=crn_lon[0];
-    return True;
+    if(!flg_ccw){
+      if(nco_dbg_lvl_get() >= nco_dbg_crr) (void)fprintf(stdout,"%s: WARNING %s reports triangle ABC is and CDA is not CCW in quadrilateral gridcell with LL (lat,lon) = (%g, %g), dot_prd = %g. Setting D:=A to triangularize quadrilateral.\n",nco_prg_nm_get(),fnc_nm,*crn_lat+0,*crn_lon+0,dot_prd);
+      /* Triangularize quadrilateral D:=A */
+      /* 20210411: From 2016 until today, nco_ccw_chk() overwrote fourth (UL) with first (LL) corner right here even when flg_ccw was True :( */
+      crn_lat[3]=crn_lat[0];
+      crn_lon[3]=crn_lon[0];
+      return True;
+    } /* !flg_ccw */
   }else if(!flg_ccw && crn_nbr == 4 && rcr_lvl == 1){
     /* Original ABC is not CCW
        20160124: Simplistic fix: reverse gridpoint order
