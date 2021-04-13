@@ -1435,12 +1435,13 @@ int *wgt_cnt_bln_ret) {
   mem_lst = (omp_mem_sct *) nco_malloc(sizeof(omp_mem_sct) * lcl_thr_nbr);
 
   for (idx = 0; idx < lcl_thr_nbr; idx++) {
+    mem_lst[idx].pl_lst = NULL_CEWI;
     mem_lst[idx].wgt_lst = NULL_CEWI;
     mem_lst[idx].blk_nbr = 0;
     mem_lst[idx].pl_cnt = 0;
     mem_lst[idx].kd_list = NULL_CEWI;
     mem_lst[idx].kd_cnt = 0;
-    mem_lst[idx].kd_blk_nbr = 1;
+    mem_lst[idx].kd_blk_nbr = 0;
     mem_lst[idx].idx_cnt = 0;
 
     kd_list_realloc(&mem_lst[idx],1);
@@ -1508,7 +1509,7 @@ int *wgt_cnt_bln_ret) {
     dp_x_wrp=KD_DBL_MAX;
 
     for(kdx=0;kdx<nbr_tr;kdx++)
-      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, pl_typ,  nbr_dwe, mem_lst[thr_idx].kd_list[0] + nbr_dwe *kdx );
+      kd_nearest(tree[kdx], pl_lst_out[idx]->dp_x_ctr, pl_lst_out[idx]->dp_y_ctr, pl_typ,  nbr_dwe, &mem_lst[thr_idx].kd_list[0] + nbr_dwe *kdx );
 
     nbr_lst_lcl=nbr_dwe*nbr_tr;
 
@@ -1537,13 +1538,13 @@ int *wgt_cnt_bln_ret) {
     if(dp_x_wrp != KD_DBL_MAX)
     {
       for (kdx = 0; kdx < nbr_tr; kdx++)
-        kd_nearest(tree[kdx], dp_x_wrp, pl_lst_out[idx]->dp_y_ctr, pl_typ, nbr_dwe, mem_lst[thr_idx].kd_list[0] + nbr_lst_lcl+nbr_dwe * kdx);
+        kd_nearest(tree[kdx], dp_x_wrp, pl_lst_out[idx]->dp_y_ctr, pl_typ, nbr_dwe, &mem_lst[thr_idx].kd_list[0] + nbr_lst_lcl+nbr_dwe * kdx);
 
       nbr_lst_lcl+=nbr_dwe*nbr_tr;
     }
 
     if(nbr_tr >1 )
-      qsort((void *)mem_lst[thr_idx].kd_list, nbr_lst_lcl,  sizeof(KDPriority), kd_priority_cmp_dist);
+      qsort((void *)mem_lst[thr_idx].kd_list, nbr_lst_lcl,  sizeof(KDPriority*), kd_priority_cmp_dist);
 
     /* remember kd list sorted according to distance */
 
