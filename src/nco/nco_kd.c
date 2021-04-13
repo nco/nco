@@ -2080,21 +2080,21 @@ double coord_dist(double x, double y)
 }
 
 
-void add_priority(int m, KDPriority *P, kd_box Xq, KDElem *elem)
+void add_priority(int m, KDPriority **P, kd_box Xq, KDElem *elem)
 {
 	int x;
 	double d;
 	d = KDdist(Xq,elem);
 	for(x=m-1;x>=0;x--)
 	{
-		if( d < P[x].dist )
+		if( d < P[x]->dist )
 		{
 			if(x != m-1 )
 			{
-				P[x+1] = P[x];
+				*P[x+1] = *P[x];
 			}
-			P[x].dist = d;
-			P[x].elem = elem;
+			P[x]->dist = d;
+			P[x]->elem = elem;
 		}
 		else
 			break;
@@ -2151,7 +2151,7 @@ int bounds_intersect(kd_box Xq, kd_box Bp, kd_box Bn)
 
 
 
-int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list)
+int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority **list)
 {
 	int idx;
 	double sum=0.0;
@@ -2159,7 +2159,7 @@ int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list
 	int dbg_flg=0;
 
 	if(dbg_flg)
-	  printf("ball: Bp(%.14f, %.14f) Bn(%.14f, %.14f) list[m-1].dist=%g ",  Bp[0], Bp[1], Bn[0], Bn[1], list[m-1].dist);
+	  printf("ball: Bp(%.14f, %.14f) Bn(%.14f, %.14f) list[m-1].dist=%g ",  Bp[0], Bp[1], Bn[0], Bn[1], list[m-1]->dist);
 
 
 	for(idx = 0; idx < 2; idx++)
@@ -2167,13 +2167,13 @@ int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list
 		if( Xq[idx] < Bn[idx] )
 		{
 			sum += coord_dist(Xq[idx],Bn[idx]);
-			if( sum > list[m-1].dist )
+			if( sum > list[m-1]->dist )
 			  return 0;
 		}
 		else if( Xq[idx] > Bp[idx] )
 		{
 			sum += coord_dist(Xq[idx],Bp[idx]);
-			if( sum > list[m-1].dist )
+			if( sum > list[m-1]->dist )
   			  return 0;
 		}
 	}
@@ -2184,7 +2184,7 @@ int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list
 	return 1;
 }
 
-int  kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority *list, kd_box Bp, kd_box Bn)
+int  kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority **list, kd_box Bp, kd_box Bn)
 {
     int d;
     short hort,vert;
@@ -2713,7 +2713,7 @@ nco_bool kd_priority_list_sort(KDPriority *list, int nbr_lst, int fll_nbr, int *
 
 
 
-int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m, KDPriority *alist)
+int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m, KDPriority **alist)
 {
 	int idx;
 	kd_box Bp,Bn,Xq;
@@ -2730,7 +2730,7 @@ int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m
 	//*alist = (KDPriority *)nco_calloc(sizeof(KDPriority),m);
 	for(idx=0;idx<m;idx++)
 	{
-	  alist[idx].dist = KD_DBL_MAX;
+	  alist[idx]->dist = KD_DBL_MAX;
 	  //alist[idx].elem = (KDElem*)NULL;
 	  //alist[idx].area = 0.0;
 	}

@@ -174,7 +174,7 @@ extern "C" {
   /* 20200121 Overlap buffer 
      Increase this as necessary until we get a dynamic overlap buffer working */
 //#define NCO_VRL_BLOCKSIZE 6000
-#define NCO_VRL_BLOCKSIZE 100
+#define NCO_VRL_BLOCKSIZE 1000
 
 typedef struct kd_dummy_defn {
     int dummy;
@@ -252,10 +252,10 @@ typedef struct {
 } omp_mem_sct;
 
 
-void add_priority(int m, KDPriority *P, kd_box Xq, KDElem *elem);
+void add_priority(int m, KDPriority **P, kd_box Xq, KDElem *elem);
 int add_priority_intersect(int m, KDPriority *P, kd_box Xq, KDElem *elem);
 int bounds_intersect(kd_box Xq, kd_box Bp, kd_box Bn);
-int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority *list);
+int bounds_overlap_ball(kd_box Xq, kd_box Bp, kd_box Bn, int m, KDPriority **list);
 void bounds_update(KDElem *elem, int disc, kd_box size);
 KDElem *build_node(KDElem *items, int num, kd_box extent, int disc, int level, int max_level, KDElem **spares, int *treecount, double mean);
 void collect_nodes(KDTree*, KDElem *, KDElem **, kd_box, long *, double *);
@@ -295,12 +295,12 @@ void kd_destroy(KDTree *this_one, void (*delfunc)(kd_generic item));
 char *kd_err_string(void);
 int kd_finish (kd_gen);
 void kd_insert(KDTree* , kd_generic , kd_box, kd_generic );
-int kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority *list, kd_box Bp, kd_box Bn);
+int kd_neighbour(KDElem *node, kd_box Xq, int nbr_list, KDPriority **list, kd_box Bp, kd_box Bn);
 int kd_neighbour_intersect(KDElem *node, kd_box Xq, int m, KDPriority *list, kd_box Bp, kd_box Bn);
 int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
 int kd_neighbour_intersect2(KDElem *node, int disc, kd_box Xq, int m, KDPriority *list);
 int kd_neighbour_intersect3(KDElem *node, int disc, kd_box Xq, omp_mem_sct *omp_mem, int stateH, int stateV );
-int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m, KDPriority *alist);
+int kd_nearest (KDTree* realTree, double x, double y, poly_typ_enm pl_typ, int m, KDPriority **alist);
 
 int kd_nearest_intersect(KDTree **rTree, int nbr_tr,kd_box Xq, omp_mem_sct *omp_mem, int bSort);
 int kd_nearest_intersect_wrp(KDTree **rTree, int nbr_tr, kd_box Xq, kd_box Xr, omp_mem_sct *omp_mem);
