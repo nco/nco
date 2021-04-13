@@ -2106,22 +2106,22 @@ void add_priority(int m, KDPriority **P, kd_box Xq, KDElem *elem)
 
 void kd_print_nearest(KDTree* tree, double x, double y, poly_typ_enm pl_typ, int m)
 {
-	KDPriority *list=NULL;
+	KDPriority **list=NULL;
 	int xz,i;
 	
 	xz = kd_nearest(tree, x, y, pl_typ,  m, list);
 	fprintf(stdout,"Nearest Search: visited %d nodes to find the %d closest objects.\n", xz, m);
 	for(i=0;i<m;i++)
 	{
-	  if(list[i].elem != NULL)
+	  if(list[i]->elem != NULL)
 	      (void)fprintf(stdout,"Nearest Neighbor: dist to center: %f units. elem=%p. item=%p. x(%.14f,%.14f) y(%.14f,%.14f)\n",
-				list[i].dist,
-				(void*)list[i].elem,
-				(void*)list[i].elem->item,
-				list[i].elem->size[KD_LEFT],
-				list[i].elem->size[KD_RIGHT],
-				list[i].elem->size[KD_BOTTOM],
-				list[i].elem->size[KD_TOP]);
+				list[i]->dist,
+				(void*)list[i]->elem,
+				(void*)list[i]->elem->item,
+				list[i]->elem->size[KD_LEFT],
+				list[i]->elem->size[KD_RIGHT],
+				list[i]->elem->size[KD_BOTTOM],
+				list[i]->elem->size[KD_TOP]);
 	}
 	nco_free(list);
 }
