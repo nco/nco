@@ -829,7 +829,7 @@ int *pl_cnt_vrl_ret){
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
 
 
-    /* nb this func below sort AND removes duplicates - then returns the size of the new unique list */
+    /* nb this func below sorts list - and then places duplicates at the end, then returns the  new size  */
     if(vrl_cnt)
       vrl_cnt=kd_list_sort_omp(&mem_lst[thr_idx], vrl_cnt);
 
@@ -850,7 +850,7 @@ int *pl_cnt_vrl_ret){
         continue;
       }
       */
-      
+
 
 
       if(pl_typ== poly_rll)
