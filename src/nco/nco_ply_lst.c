@@ -698,7 +698,7 @@ int *pl_cnt_vrl_ret){
   /* just duplicate output list to overlap */
   const char fnc_nm[]="nco_poly_lst_mk_vrl()";
 
-  nco_bool bDirtyRats=True;
+  nco_bool bDirtyRats=False;
   nco_bool bSort=True;
 
 
@@ -829,18 +829,15 @@ int *pl_cnt_vrl_ret){
     /* nco_poly_prn(2, pl_lst_in[idx] ); */
 
 
-    /* nb this func below sort AND reomves duplicates - then returns the size of the new list*/
-    vrl_cnt=kd_list_sort_omp(&mem_lst[thr_idx], vrl_cnt);
+    /* nb this func below sort AND removes duplicates - then returns the size of the new unique list */
+    if(vrl_cnt)
+      vrl_cnt=kd_list_sort_omp(&mem_lst[thr_idx], vrl_cnt);
 
 
     for (jdx = 0; jdx < vrl_cnt; jdx++) {
 
       poly_sct *pl_vrl = NULL_CEWI;
       poly_sct *pl_out = (poly_sct *) mem_lst[thr_idx].kd_list[jdx]->elem->item;
-
-      /* check for duplicates normally occurs with a sorted wrapped polygon */
-      //if(jdx>0 && (poly_sct*)mem_lst[thr_idx].kd_list[jdx-1]->elem->item== pl_out)
-      //  continue;
 
 
       /* for area debug only */
@@ -853,8 +850,7 @@ int *pl_cnt_vrl_ret){
         continue;
       }
       */
-
-
+      
 
 
       if(pl_typ== poly_rll)
