@@ -7003,6 +7003,14 @@ ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV ECMWF ERA5 grid 0.25x0.25 degree, dimensio
 # 105x401 Greenland ERA5
 ncremap -G ttl='Equi-Angular Greenland 0.25x0.25 degree ERA5 north-to-south grid'#latlon=105,401#snwe=58.875,85.125,-87.125,13.125#lat_typ=uni#lat_drc=n2s#lon_typ=grn_ctr \
         -g ${DATA}/grids/greenland_0.25x0.25_era5.nc
+
+# NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree, 3'x3') Equi-Angular grid
+# With land mask derived mainly from GLOBE 30" topography and anywhere Gardner 30" land ice data is valid
+# Date-line west edge of first longitude, east edge of last longitude
+# Write to compressed netCDF4-classic file to reduce filesize ~140x from 2.2 GB to 16 MB
+ncremap -7 -L 1 \
+     -G ttl='Equi-Angular grid 3-minute=0.05 degree resolution = 3600x7200, NASA CMG boundaries, with land mask derived mainly from GLOBE 30" topography and anywhere Gardner 30" land ice data is valid'#latlon=3600,7200#lat_typ=uni#lon_typ=180_wst \
+     -g ${DATA}/grids/r005_3600x7200_globe_gardner_landmask.20210501.nc
 @end verbatim
 @end example
 
