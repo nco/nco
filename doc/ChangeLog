@@ -1,3 +1,7 @@
+2021-04-15  Charlie Zender  <zender@uci.edu>
+
+	* nco.texi clarify that nco_grd_nfr() converts floating point zeros to integer zero masks values
+
 2021-04-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha04 release procedure:

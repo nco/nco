@@ -314,7 +314,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   //  if(area_in_id == NC_MIN_INT)
   for(idx=0;idx<grd_sz_in;idx++) area_in[idx]=-1.0;
 
-  /* If msk_in not in file then set each member to True */
+  /* If msk_in is not in grid then set entire mask to True */
   if(msk_in_id == NC_MIN_INT)
     for(idx=0;idx<grd_sz_in;idx++) msk_in[idx]=1;
 
@@ -330,7 +330,7 @@ nco_map_mk /* [fnc] Create ESMF-format map file */
   // if(area_out_id == NC_MIN_INT)
   for(idx=0;idx<grd_sz_out;idx++) area_out[idx]=-1.0;
 
-  /* If msk_in not in file then set mask in each to True */
+  /* If msk_out is not in file then set entire mask to True */
   if(msk_out_id == NC_MIN_INT)
     for(idx=0;idx<grd_sz_out;idx++) msk_out[idx]=1;
 

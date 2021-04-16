@@ -9276,8 +9276,9 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
     /* Change missing-value-masked points to 0 integer mask for SCRIP grids (SCRIP has no missing value convention)
        Input mask can be any type and output mask will always be NC_INT
        Applications: 
-       ALM/CLM mask (landmask) is NC_FLOAT and defines but does not use NC_FLOAT missing value
+       ALM/CLM mask (landmask) is NC_FLOAT and defines though does not use NC_FLOAT missing value
        CICE mask (tmask/umask) is NC_FLOAT and defines and uses NC_FLOAT missing value
+       RACMO mask is NC_FLOAT and defines though does not use NC_FLOAT missing value
        AMSR mask is NC_SHORT and has no missing value
        GHRSST mask is NC_BYTE and is a multi-valued surface-type flag with missing value == -1b */
     if(msk_typ != NC_INT){

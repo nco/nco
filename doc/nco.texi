@@ -125,11 +125,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 4.9.9-alpha02
-@set doc-edition 4.9.9-alpha02
+@set nco-edition 4.9.9-alpha03
+@set doc-edition 4.9.9-alpha03
 @set copyright-years 1995--2021
 @set update-year 2021
-@set update-date 6 April 2021
+@set update-date 15 April 2021
 @set update-month April 2021
 
 @settitle @acronym{NCO} @value{nco-edition} User Guide
@@ -2355,7 +2355,7 @@ This is accomplished by supplying a number greater @w{than 0} to the
 @cindex @var{debug-level}
 @cindex @var{dbg_lvl}
 @cindex debugging
-When the @var{debug-level} is nonzero, the operators report their
+When the @var{debug-level} is non-zero, the operators report their
 current status to the terminal through the @var{stderr} facility.
 Using @samp{-D} does not slow the operators down. 
 Choose a @var{debug-level} @w{between 1} @w{and 3} for most situations,
@@ -25529,10 +25529,10 @@ map-files (i.e., generating weights).
 Any variable on the same horizontal grid as a data file can serve as a
 mask template for that grid. 
 The mask will be one (i.e., gridcells will participate in regridding) 
-where @var{msk_dst} has valid values in the data file from which
+where @var{msk_dst} has valid, non-zero values in the data file from which
 @acronym{NCO} infers the destination grid.   
 The mask will be zero (i.e., gridcells will not participate in
-regridding) where @var{msk_nm} has a missing value.  
+regridding) where @var{msk_nm} has a missing value or is zero.  
 A typical example of this option would be to use Sea-surface Temperature
 (SST) as a template variable for an ocean mask because SST is often
 defined only over ocean, and missing values might denote locations to
@@ -25605,10 +25605,10 @@ map-files (i.e., generating weights).
 Any variable on the same horizontal grid as a data file can serve as a
 mask template for that grid. 
 The mask will be one (i.e., gridcells will participate in regridding) 
-where @var{msk_src} has valid values in the data file from which
+where @var{msk_src} has valid, non-zero values in the data file from which
 @acronym{NCO} infers the source grid.   
 The mask will be zero (i.e., gridcells will not participate in
-regridding) where @var{msk_nm} has a missing value.  
+regridding) where @var{msk_nm} has a missing value or is zero.  
 A typical example of this option would be to use Sea-surface Temperature
 (SST) as a template variable for an ocean mask because SST is often
 defined only over ocean, and missing values might denote locations from
