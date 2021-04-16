@@ -9282,8 +9282,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
        AMSR mask is NC_SHORT and has no missing value
        GHRSST mask is NC_BYTE and is a multi-valued surface-type flag with missing value == -1b */
     if(msk_typ != NC_INT){
-      if(nco_dbg_lvl_get() == nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s mask variable \"%s\" has odd type = %s. Re-run with higher debugging level for more information.\n",nco_prg_nm_get(),fnc_nm,msk_nm,nco_typ_sng(msk_typ));
-      if(nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s mask variable \"%s\" has odd type = %s. Regridding weight generators require a mask variable of type NC_INT to specify points to include/exclude as sources/destinations. Points where the mask variable is zero will be excluded (ignored) in regridding, all other points will be included. When inferring gridfiles, NCO assumes the first variable with a \"mask\"-like name (\"mask\", \"Mask\", \"grid_imask\", \"landmask\", or \"tmask\"), or the variable designated by the \"--msk_[src/dst]=msk_nm\" option, is this mask. However the variable \"%s\" in this file is not type NC_INT and so may not be intended as a regridding mask, hence this pleasant informational warning. To prevent NCO from interpreting \"%s\" as a regridding mask, specify \"--msk_src=none\" and/or \"--msk_dst=none\", as appropriate. To utilize some other variable as the mask variable, specify \"--msk_src=msk_nm\" and/or \"--msk_dst=msk_nm\", as appropriate. Mask treatment is subtle, and NCO tries to \"do the right thing\". Whether it does is often easiest to discern by visual inspection of the regridded results.\n",nco_prg_nm_get(),fnc_nm,msk_nm,nco_typ_sng(msk_typ),msk_nm,msk_nm);
+      if(nco_dbg_lvl_get() == nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s mask variable \"%s\" has odd type = %s. Re-run with higher debugging level for more information.\n",nco_prg_nm_get(),fnc_nm,msk_nm_in,nco_typ_sng(msk_typ));
+      if(nco_dbg_lvl_get() > nco_dbg_std) (void)fprintf(stderr,"%s: INFO %s mask variable \"%s\" has odd type = %s. Regridding weight generators require a mask variable of type NC_INT to specify points to include/exclude as sources/destinations. Points where the mask variable is zero or the missing value will be excluded (ignored) in regridding, all other points will be included. When inferring gridfiles, NCO assumes the first variable with a \"mask\"-like name (\"mask\", \"Mask\", \"grid_imask\", \"landmask\", or \"tmask\"), or the variable designated by the \"--msk_[src/dst]=msk_nm\" option, is this mask. However the variable \"%s\" in this file is not type NC_INT and so may not be intended as a regridding mask, hence this oh so pleasant informational WARNING. To prevent NCO from interpreting \"%s\" as a regridding mask, specify \"--msk_src=none\" and/or \"--msk_dst=none\", as appropriate. To utilize some other variable as the mask variable, specify \"--msk_src=msk_nm\" and/or \"--msk_dst=msk_nm\", as appropriate. Mask treatment is subtle, and NCO tries to \"do the right thing\". Whether it does is often easiest to discern by visual inspection of the regridded results in a turn-key viewer like Panoply or ncview.\n",nco_prg_nm_get(),fnc_nm,msk_nm_in,nco_typ_sng(msk_typ),msk_nm_in,msk_nm_in);
     } /* msk_typ */
     switch(msk_typ){
       case NC_FLOAT:
@@ -9341,7 +9341,7 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
       } /* !mss_val */
       break;
     default:
-      (void)fprintf(stderr,"%s: ERROR %s mask variable \"%s\" has unsupported type = %s\n",nco_prg_nm_get(),fnc_nm,msk_nm,nco_typ_sng(msk_typ));
+      (void)fprintf(stderr,"%s: ERROR %s mask variable \"%s\" has unsupported type = %s\n",nco_prg_nm_get(),fnc_nm,msk_nm_in,nco_typ_sng(msk_typ));
       nco_dfl_case_generic_err();
       return NCO_ERR;
       break;
@@ -9364,7 +9364,8 @@ nco_grd_nfr /* [fnc] Infer SCRIP-format grid file from input data file */
 	area_ttl+=area[lat_idx*lon_nbr+lon_idx];
     (void)fprintf(stdout,"lat_wgt_ttl = %20.15f, frc_lat_wgt = %20.15f, area_ttl = %20.15f, frc_area = %20.15f\n",lat_wgt_ttl,lat_wgt_ttl/2.0,area_ttl,area_ttl/(4.0*M_PI));
     assert(area_ttl > 0.0);
-    assert(area_ttl <= 4.0*M_PI);
+    /* Protect following assertion since area might be in, e.g., km2 (ELM, RACMO) */
+    if(flg_area_sr) assert(area_ttl <= 4.0*M_PI);
     const double eps_rlt_area=1.0e-12; /* [frc] Error tolerance for global area */
     if(nco_grd_xtn == nco_grd_xtn_glb){
       if(fabs(1.0-area_ttl/(4.0*M_PI)) > eps_rlt_area)

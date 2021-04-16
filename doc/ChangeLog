@@ -1,12 +1,14 @@
 2021-04-15  Charlie Zender  <zender@uci.edu>
 
-	* nco.texi clarify that nco_grd_nfr() converts floating point zeros to integer zero masks values
-
-2021-04-11  Charlie Zender  <zender@uci.edu>
-
 	* NCO 4.9.9-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha04: Aliso Summit';git push
 	git tag -a 4.9.9-alpha04 -m 'ncremap crv area wrn, ccw_chk fix';git push --tags
+
+	* nco.texi clarify that nco_grd_nfr() converts floating point zeros to integer zero masks values
+
+	* ncremap nco_grd_nfr() protect area <=4*pi assertion since area might be in, e.g., km2 (ELM, RACMO)
+
+2021-04-11  Charlie Zender  <zender@uci.edu>
 
 	* ncremap nco_ccw_chk() fix bug where quadrilateral vertex D was always overwritten by vertex A
 	Since 2016 this bug divided all quadrilaterals in two, halving all inferred curvilinear grid areas?
