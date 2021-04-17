@@ -1645,15 +1645,15 @@ int fl_out_fmt)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
-  fl_out_tmp=(char*)nco_free(fl_out_tmp);
+  fl_out_tmp=(char *)nco_free(fl_out_tmp);
 
-  area=(double*)nco_free(area);
-  lat_ctr=(double*)nco_free(lat_ctr);
-  lat_crn=(double*)nco_free(lat_crn);
+  area=(double *)nco_free(area);
+  lat_ctr=(double *)nco_free(lat_ctr);
+  lat_crn=(double *)nco_free(lat_crn);
 
-  lon_ctr=(double*)nco_free(lon_ctr);
-  lon_crn=(double*)nco_free(lon_crn);
-  msk=(int*)nco_free(msk);
+  lon_ctr=(double *)nco_free(lon_ctr);
+  lon_crn=(double *)nco_free(lon_crn);
+  msk=(int *)nco_free(msk);
 } /* !nco_msh_poly_lst_wrt() */
 
 int
@@ -1686,78 +1686,58 @@ const char *att_val
   return iret;
 } /* !nco_msh_att_char() */
 
-
 void
 nco_poly_area_add(
 poly_sct *pl){
 
   const char fnc_nm[]="nco_poly_area_add()";
 
-  /* only situation where map_rgr is null is when running debug program vrl-tst */
-  if(!map_rgr) {
-    map_rgr = (rgr_sct *) nco_calloc(1, sizeof(rgr_sct));
-    map_rgr->ply_tri_mth = nco_ply_tri_mth_csz;
-    map_rgr->edg_typ = nco_edg_gtc;
-    map_rgr->area_mth = 2;
-  }
+  /* map_rgr can only be NULL when running debug program vrl-tst */
+  if(!map_rgr){
+    map_rgr=(rgr_sct *)nco_calloc(1,sizeof(rgr_sct));
+    map_rgr->ply_tri_mth=nco_ply_tri_mth_csz;
+    map_rgr->edg_typ=nco_edg_gtc;
+    map_rgr->area_mth=2;
+  } /* !map_rgr */
 
-
-
-  if(pl->crn_nbr <3) {
-    pl->area = 0.0;
+  if(pl->crn_nbr < 3){
+    pl->area=0.0;
     return;
-  }
+  } /* !pl->crn_nbr */
 
-  if(pl->pl_typ == poly_sph )
-  {
+  if(pl->pl_typ == poly_sph){
 
-    if(map_rgr->area_mth==1) {
-      nco_sph_plg_area(map_rgr, pl->dp_y, pl->dp_x, 1, pl->crn_nbr, &pl->area);
-    }
-    else if(map_rgr->area_mth==2) {
-
-      if(!pl->shp)
-      {
-        (void)fprintf(stderr, "%s:%s: attempt to call nco_sph_area_quadrature() with pl->shp==null\n", nco_prg_nm_get(), fnc_nm);
-         abort();
-      }
-
+    if(map_rgr->area_mth == 1){
+      nco_sph_plg_area(map_rgr,pl->dp_y,pl->dp_x,1,pl->crn_nbr,&pl->area);
+    }else if(map_rgr->area_mth == 2){
+      if(!pl->shp){
+        (void)fprintf(stderr, "%s: %s reports attempt to call nco_sph_area_quadrature() with pl->shp==null\n",nco_prg_nm_get(),fnc_nm);
+	abort();
+      } /* !pl->shp */
       pl->area = nco_sph_area_quadrature(pl->shp, pl->crn_nbr);
-    }
+    } /* !map_rgr->areea_mth */
 
-    if (isnan(pl->area))
-      pl->area = 0.0;
+    if(isnan(pl->area)) pl->area=0.0;
+  } /* !pl->pl-typ */
 
-  }
-
-  /* rll poly polygon should only have 3 or 4 vertex */
+  /* rll poly polygon should only have 3 or 4 vertices */
   if(pl->pl_typ == poly_rll){
-    /* full formula area=(lon1-lon0)*(sin(lat1)-sin(lat0) ) */
-    double dp_tmp=sin(D2R( pl->dp_y_minmax[1] )) - sin(D2R(pl->dp_y_minmax[0]) );
+    /* Full formula for area: (lon1-lon0)*(sin(lat1)-sin(lat0)) */
+    double dp_tmp=sin(D2R(pl->dp_y_minmax[1]))-sin(D2R(pl->dp_y_minmax[0]));
 
-    double dff=pl->dp_x_minmax[1] - pl->dp_x_minmax[0];
+    double dff=pl->dp_x_minmax[1]-pl->dp_x_minmax[0];
 
-    if(pl->bwrp )
-      dp_tmp *= D2R(360.0 - dff );
+    if(pl->bwrp)
+      dp_tmp*=D2R(360.0-dff);
     else
       dp_tmp*=D2R(dff);
 
-
-    pl->area = fabs(dp_tmp);
-
-
-
-  }
+    pl->area=fabs(dp_tmp);
+  } /* !pl->pl_typ */
   //nco_rll_area(pl);
 
   return;
-
-}
-
-
-
-
-
+} /* !nco_poly_area_add() */
 
 nco_bool
 nco_map_hst_mk /* Create histogram */
@@ -2018,7 +1998,7 @@ nco_map_frac_a_clc /* Compute frac_a as area_b-weighted column sums of the weigh
   
   sz=var_S->sz;
   for(idx=0;idx<sz;idx++){
-    /* var_row and var_dol are one-based, guard against bogus row-indices, add area_b-weighted weight to appropriate column */
+    /* var_row and var_col are one-based, guard against bogus row-indices, add area_b-weighted weight to appropriate column */
     idx_row=var_row->val.ip[idx]-1L;
     idx_col=var_col->val.ip[idx]-1L;
     if(idx_row >= var_area_b->sz || idx_col >= var_area_a->sz) continue;
@@ -2095,9 +2075,6 @@ nco_map_chk /* Map-file evaluation */
   size_t idx_min;
   size_t idx_max;
   size_t sz;
-
-  
-
 
   var_sct *var_S=NULL_CEWI;
   var_sct *var_area_a=NULL_CEWI;
@@ -2209,7 +2186,7 @@ nco_map_chk /* Map-file evaluation */
       if(ival[idx] == 0) mask_a_zro++; else if(ival[idx] == 1) mask_a_one++;
     /* Source mask must have at least one unmasked value, i.e, one value of 1 */
     //assert(mask_a_zro != sz);
-    if(mask_a_zro == sz) (void)fprintf(stdout,"WARNING mask_a has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with the map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well still be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed. Also, the other WARNINGs below can probably be ignored for DWE maps. These warnings will be quieted in a future version.\n");
+    if(mask_a_zro == sz) (void)fprintf(stdout,"WARNING mask_a has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with the map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed. Also, the other WARNINGs below can probably be ignored for DWE maps. These warnings will be quieted in a future version.\n");
   } /* !var_mask_a */
 
   size_t mask_b_one=0UL;
@@ -2221,9 +2198,38 @@ nco_map_chk /* Map-file evaluation */
       if(ival[idx] == 0) mask_b_zro++; else if(ival[idx] == 1) mask_b_one++;
     /* Destination mask must have at least one unmasked value, i.e, one value of 1 */
     //assert(mask_b_zro != sz);
-    if(mask_b_zro == sz) (void)fprintf(stdout,"WARNING mask_b has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with the map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well still be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed. Also, the other WARNINGs below can probably be ignored for DWE maps. These warnings will be quieted in a future version.\n");
+    if(mask_b_zro == sz) (void)fprintf(stdout,"WARNING mask_b has no unmasked values, i.e., has no 1's. This is possibly a bookkeeping issue with the map generator for this algorithm (because the generator would have failed outright if there were truly no valid source gridcells) and not itself an issue with the weights, which may well be valid and usable. 20200901: this is a known issue with the NCO DWE algorithm that will soon be fixed. Also, the other WARNINGs below can probably be ignored for DWE maps. These warnings will be quieted in a future version.\n");
   } /* !var_mask_b */
-  
+
+  /* Check consistency of output weights with mask_a and mask_b */
+  size_t mask_a_err;
+  size_t mask_b_err;
+  mask_a_err=0L;
+  mask_b_err=0L;
+  if(has_mask_a || has_mask_b){
+    int *ival_a;
+    int *ival_b;
+    size_t idx_col;
+    size_t idx_row;
+    if(has_mask_a) ival_a=var_mask_a->val.ip;
+    if(has_mask_b) ival_b=var_mask_b->val.ip;
+    sz=var_S->sz;
+    val=var_S->val.dp;
+    for(idx=0;idx<sz;idx++){
+      /* var_row and var_col are one-based, guard against bogus row-indices */
+      idx_row=var_row->val.ip[idx]-1L;
+      idx_col=var_col->val.ip[idx]-1L;
+      if(has_mask_a && ival_a[idx_col] == 0){
+	fprintf(stdout,"WARNING Grid A cell [%lu,%+g,%+g] is masked yet contributes weight S(%lu) = % 0.16e to Grid B cell [%lu,%+g,%+g]\n",idx_col+1UL,var_yc_a->val.dp[idx_col],var_xc_a->val.dp[idx_col],idx+1UL,val[idx],idx_row+1UL,var_yc_b->val.dp[var_row->val.ip[idx_row]-1],var_xc_b->val.dp[var_row->val.ip[idx_row]-1]);
+	mask_a_err++;
+      } /* !has_mask_a */
+      if(has_mask_b && ival_b[idx_row] == 0){
+	fprintf(stdout,"WARNING Grid B cell [%lu,%+g,%+g] is masked yet receives weight S(%lu) = % 0.16e from Grid A cell [%lu,%+g,%+g]\n",idx_row+1UL,var_yc_b->val.dp[idx_row],var_xc_b->val.dp[idx_row],idx+1UL,val[idx],idx_col+1UL,var_yc_a->val.dp[var_col->val.ip[idx_col]-1],var_xc_a->val.dp[var_col->val.ip[idx_col]-1]);
+	mask_b_err++;
+      } /* !has_mask_b */
+    } /* !idx */
+  } /* !has_mask_a || !has_mask_b */
+
   /* Start Report in own scope */
   {
     const double eps_abs=5.0e-16;
@@ -2241,10 +2247,10 @@ nco_map_chk /* Map-file evaluation */
     nco_map_var_min_max_ttl(var_col,(double *)NULL,flg_area_wgt,&col_min,&idx_min,&col_max,&idx_max,&col_ttl,&avg,&mebs,&rms,&sdn);
     nco_map_var_min_max_ttl(var_row,(double *)NULL,flg_area_wgt,&row_min,&idx_min,&row_max,&idx_max,&row_ttl,&avg,&mebs,&rms,&sdn);
 
-    if(col_min < 1){fprintf(stdout,"WARNING: minimum column index < 1\n");}
-    else if(col_max > var_area_a->sz){fprintf(stdout,"WARNING: maximum col index > n_a\n");}
-    if(row_min < 1){fprintf(stdout,"WARNING: minimum row index < 1\n" );}
-    else if(row_max > var_area_b->sz){fprintf(stdout,"WARNING: maximum row index > n_b\n");}
+    if(col_min < 1){fprintf(stdout,"WARNING: minimum column index = %.0f < 1\n",col_min);}
+    else if(col_max > var_area_a->sz){fprintf(stdout,"WARNING: maximum col index = %.0f > n_a\n",col_max);}
+    if(row_min < 1){fprintf(stdout,"WARNING: minimum row index = %.0f < 1\n",row_min);}
+    else if(row_max > var_area_b->sz){fprintf(stdout,"WARNING: maximum row index = %.0f > n_b\n",row_max);}
     
     int hst_sz=31;
     int *hst_row;
@@ -2308,8 +2314,9 @@ nco_map_chk /* Map-file evaluation */
     } /* !idx */
     
     fprintf(stdout,"Grid A size n_a: %lu // Number of columns/sources\n",var_area_a->sz);
-    if(var_mask_a) fprintf(stdout,"mask_a 0's, 1's: %lu, %lu\n",mask_a_zro,mask_a_one);
+    if(var_mask_a) fprintf(stdout,"mask_a 0's, 1's: %lu, %lu\n",mask_a_zro,mask_a_one); else fprintf(stdout,"mask_a 0's, 1's: map-file omits mask_a\n");
     if(var_mask_a) fprintf(stdout,"mask_a min, max: %.0f, %.0f\n",mask_a_min,mask_a_max); else fprintf(stdout,"mask_a min, max: map-file omits mask_a\n");
+    if(var_mask_a) fprintf(stdout,"mask_a # errors: %lu\n",mask_a_err); else fprintf(stdout,"mask_a violated: map-file omits mask_a\n");
     if(has_area_a){
       fprintf(stdout,"area_a sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid A\n",area_a_ttl/4.0/M_PI,area_a_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_a_ttl/4.0/M_PI));
       fprintf(stdout,"area_a min, max: %0.16e, %0.16e\n",area_a_min,area_a_max);
@@ -2325,8 +2332,9 @@ nco_map_chk /* Map-file evaluation */
     if(var_mask_b) nco_map_var_min_max_ttl(var_mask_b,(double *)NULL,flg_area_wgt,&mask_b_min,&idx_min,&mask_b_max,&idx_max,&mask_b_ttl,&avg,&mebs,&rms,&sdn);
 
     fprintf(stdout,"Grid B size n_b: %lu // Number of rows/destinations\n",var_area_b->sz);
-    if(var_mask_b) fprintf(stdout,"mask_b 0's, 1's: %lu, %lu\n",mask_b_zro,mask_b_one);
+    if(var_mask_b) fprintf(stdout,"mask_b 0's, 1's: %lu, %lu\n",mask_b_zro,mask_b_one); else fprintf(stdout,"mask_b 0's, 1's: map-file omits mask_b\n");
     if(var_mask_b) fprintf(stdout,"mask_b min, max: %.0f, %.0f\n",mask_b_min,mask_b_max); else fprintf(stdout,"mask_b min, max: map-file omits mask_b\n");
+    if(var_mask_b) fprintf(stdout,"mask_b # errors: %lu\n",mask_b_err); else fprintf(stdout,"mask_b violated: map-file omits mask_b\n");
     if(has_area_b){
       fprintf(stdout,"area_b sum/4*pi: %0.16f = 1.0%s%0.1e // Perfect is 1.0 for global Grid B\n",area_b_ttl/4.0/M_PI,area_b_ttl/4.0/M_PI > 1 ? "+" : "-",fabs(1.0-area_b_ttl/4.0/M_PI));
       fprintf(stdout,"area_b min, max: %0.16e, %0.16e\n",area_b_min,area_b_max);

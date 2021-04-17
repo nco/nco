@@ -1,8 +1,12 @@
-2021-04-15  Charlie Zender  <zender@uci.edu>
+2021-04-17  Charlie Zender  <zender@uci.edu>
 
 	* NCO 4.9.9-alpha04 release procedure:
 	cd ~/nco;git commit -a -m 'Version 4.9.9-alpha04: Aliso Summit';git push
 	git tag -a 4.9.9-alpha04 -m 'ncremap crv area wrn, ccw_chk fix';git push --tags
+
+	* nco_chk_map() add mask_a/b error diagnostics
+
+2021-04-15  Charlie Zender  <zender@uci.edu>
 
 	* nco.texi clarify that nco_grd_nfr() converts floating point zeros to integer zero masks values
 

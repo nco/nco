@@ -7004,6 +7004,10 @@ ncremap -7 --dfl_lvl=1 -G ttl='Cap/FV ECMWF ERA5 grid 0.25x0.25 degree, dimensio
 ncremap -G ttl='Equi-Angular Greenland 0.25x0.25 degree ERA5 north-to-south grid'#latlon=105,401#snwe=58.875,85.125,-87.125,13.125#lat_typ=uni#lat_drc=n2s#lon_typ=grn_ctr \
         -g ${DATA}/grids/greenland_0.25x0.25_era5.nc
 
+# Greenland r025 with SNWE = 59,84,-73,-11 (in round numbers) with RACMO ice mask
+ncremap -G ttl='Equi-Angular Greenland 0.25x0.25 degree r025 south-to-north grid'#latlon=100,250#snwe=58.875,83.875,-73.25,-10.75#lat_typ=uni#lat_drc=s2n#lon_typ=grn_ctr \
+        -g ${DATA}/grids/greenland_r025_100x250.nc
+
 # NASA Climate Modeling Grid (CMG) 3600x7200 (0.05x0.05 degree, 3'x3') Equi-Angular grid
 # With land mask derived mainly from GLOBE 30" topography and anywhere Gardner 30" land ice data is valid
 # Date-line west edge of first longitude, east edge of last longitude
