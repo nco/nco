@@ -290,7 +290,7 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
   for(idx=0;idx<grd_sz; idx++)
   {
     /* check mask and area */
-    if( msk[idx]==0 || area[idx] == 0.0 ) {
+    if(area[idx] == 0.0 ) {
       pl_lst[idx]= nco_poly_dpl(pl_msk);
       msk_cnt++;
       continue;
@@ -336,6 +336,10 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
     /* area NOT set so add to the area - nb this will be eventually written to the map file in nco_map_mk */
     if(area[idx]==-1.0)
       area[idx]=pl->area;
+
+    /* we still need the area even though its masked */
+    if(!msk[idx])
+      pl->bmsk=False;
 
 
     /* simple center of a rll cell - should always be inside of polygon */
@@ -424,8 +428,8 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
   for(idx=0;idx<grd_sz; idx++)
   {
 
-    /* check mask and area */
-    if( msk[idx]==0 || area[idx] == 0.0 ) {
+    /* check area */
+    if(area[idx] == 0.0 ) {
       pl_lst[idx]= nco_poly_dpl(pl_msk);
       msk_cnt++;
       continue;
@@ -500,6 +504,21 @@ nco_grd_lon_typ_enm grd_lon_typ) /* I [num]  */
        nco_poly_ctr_add(pl, grd_lon_typ);
      */
 
+     /* even if masked we still need the area */
+     if(!msk[idx])
+     {
+       /*
+       pl_lst[idx]=nco_poly_dpl(pl_msk);
+       pl_lst[idx]->area=pl->area;
+       msk_cnt++;
+
+       pl=nco_poly_free(pl);
+       continue;
+       */
+       pl->bmsk=False;
+       msk_cnt++;
+
+     }
 
 
     if(nco_dbg_lvl_get()>= nco_dbg_dev  )
@@ -1320,7 +1339,12 @@ int *pl_cnt_dbg) /* size of output dbg grid */
 
   area=(double*)nco_malloc(sizeof(double)*pl_cnt);
   for(idx=0;idx<pl_cnt;idx++)
-    area[idx]=pl_lst[idx]->area;
+    if(!pl_lst[idx]->bmsk)
+      area[idx]=0.0;
+    else
+      area[idx]=pl_lst[idx]->area;
+
+
 
 
   for(idx=0;idx<pl_cnt_vrl;idx++)
